@@ -2,210 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C861AC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1511C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:52:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235841AbiEIHzc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 03:55:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32974 "EHLO
+        id S233873AbiEIHz3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 03:55:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236534AbiEIHxB (ORCPT
+        with ESMTP id S236522AbiEIHw5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 03:53:01 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBA581271A1
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 00:49:07 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id x18so18211802wrc.0
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 00:49:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=0WOritaX7TiJ2UopsHt1F9UHI9/f6Pz6lo2giHHHHfc=;
-        b=vLRuZyi6JG45t+95C6Zta3+FYr+M/sDzl2IdgVFDJRasR/zCxX43dHJf6IvPLSvtqr
-         tklZR3oTHy0zplc10ONoKpKCKy119QBEUcXrz1Oo6US9ejSe0sxQ6Vs+zLtR6kmLeO3i
-         vHXOUL9q9mUqXk+bL2tcVuMHUhrZPP1KYRc3NROkD5kFaia7iEggoHtDUbiq9gSA8Y+J
-         iap1VxxsVh2yRdaMG9hDRwZp/j7XRdaA9/AqTBLQ7QaM9NNAG8CzYhhoBTng+EwPHqU/
-         tyeDLWFLZmElgocGQtR1jrB4ySjno+zMB+m2U/GkDTCt1t2NIE1e2YCxprZnmzodlgTM
-         w1tw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=0WOritaX7TiJ2UopsHt1F9UHI9/f6Pz6lo2giHHHHfc=;
-        b=Eg9+C/SjNujB/TJE4rr9cnXQHkGgpaj9wJYPkjRDo5pxDyLt3cpid9OEKSsnQDI0lP
-         9bE33Xo2GQ5dLA3zLmpFJAIVadipYmRl8ppcOGy8zyUvyc8dtGhP4/3l87LUh6YmtT0X
-         hGtukVAT0S9WoGiqujv7JJcyhjNaqVeqoV+f1980cRhxoycINyk884+gGPfh7olBqC/o
-         0MTj8FUCULxrvrIz7ZCEXIbNY6drIJGBdopI1cELsF8TDFp4psd/WveNvQ+1hKSIizqs
-         8A64ywbjrFYDcANYJAlG9qrtcPWVrJXggeHduNGbM8vySSZAXvh7kuzMZsAKA6BfH820
-         9LPg==
-X-Gm-Message-State: AOAM532RrkinbDRLsA+rx1zX7c91i32WHf55qFbTVqVOg691mMqdBVuQ
-        dNx58PK8BEAOvSXH4yNzu0iC4w==
-X-Google-Smtp-Source: ABdhPJzGdqYQa5SLHwgOMU9gEnMe0J8cSx5N3gasbEOGt8sIW3sW/mNltLBQn2gM6MAQ/S5AV3AtcQ==
-X-Received: by 2002:a5d:42c8:0:b0:20a:d91f:87b5 with SMTP id t8-20020a5d42c8000000b0020ad91f87b5mr12678734wrr.301.1652082546379;
-        Mon, 09 May 2022 00:49:06 -0700 (PDT)
-Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id bw22-20020a0560001f9600b0020c5253d8d8sm11784768wrb.36.2022.05.09.00.49.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 00:49:05 -0700 (PDT)
-From:   Corentin Labbe <clabbe@baylibre.com>
-To:     alexandre.torgue@foss.st.com, andrew@lunn.ch, broonie@kernel.org,
-        calvin.johnson@oss.nxp.com, davem@davemloft.net,
-        edumazet@google.com, hkallweit1@gmail.com,
-        jernej.skrabec@gmail.com, joabreu@synopsys.com,
-        krzysztof.kozlowski+dt@linaro.org, kuba@kernel.org,
-        lgirdwood@gmail.com, linux@armlinux.org.uk, pabeni@redhat.com,
-        peppe.cavallaro@st.com, robh+dt@kernel.org, samuel@sholland.org,
-        wens@csie.org
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev, Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH 1/6] phy: handle optional regulator for PHY
-Date:   Mon,  9 May 2022 07:48:52 +0000
-Message-Id: <20220509074857.195302-2-clabbe@baylibre.com>
+        Mon, 9 May 2022 03:52:57 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2066.outbound.protection.outlook.com [40.107.244.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1431201B3
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 00:49:03 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IVYPWKvCb9obsQ7jvvYHvHUtwPf/3sIyn1qtrECkaEbbyp+dYqlSmpWxB+w52ARoaOPlOK3DpUc7613uWq4PDMu6+M0FF04ckil010i9MgVStyvpU9ZFzIx5qoin2M/v3D5VpxoMx4Z91Y95UQlXzLNNa0Yi1jhNqkOBgWXC1sooQjNbbC+4+dB+CInrBO6dfkAeI4zTGSu45Ncj82rL0dsfenwRXv3XMGQfcQpjnHJn7u6o2Q5GauHsYvfz8FD/Kf/QKxHceHuc+WbOHnbUawrN2WpkKKyEymRkaI/wW05pMne0e++4cXKIMf4zfn//cY3NZ+tu/sGMWF8iyGMMuQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=S58AkRv4Womp2Hi+k8lDsR3Setl6WEB9KBjy3HrYeC0=;
+ b=eQ3Chlt2bcpKd+WC9VnQkmZJuL39YN7/b9t5pp8+g5jEnBwVl4q9spIf4yjiq8ZsICGdyJhJV3juQLttL3Xf8fqIUTqyhc9mJ+dYReovYsE9S3X1zVnQoIThRYbPgTvBdyR1trb8DUxlSt/kjdOuo59T0dnve3w0E8W1a+rAF47Cj+vtfYjmuGGLZPvCgL4fK3jdHXN1Uc63mPpV6X5QXffmBUn5syuyEXCVbQWbyRTKujaxWKvl1d/OvYHXa7/e4+oC3IPBVMbBQgQkhZkG9N+rtOwQbIJmyF7EDuUmeR6HF0Ac6K8QmYqAScG6TlN3i9Ep9/kQxA0HQyvzZirvLA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=S58AkRv4Womp2Hi+k8lDsR3Setl6WEB9KBjy3HrYeC0=;
+ b=GBk+yyrQVHS/iba1H4UCBB3wjuxHMaEQcNS/T5Huan6V8JpFKHe+7sR+XFRcOVzTt4PIYIjCZYvprc2Knjk4OsDn8qdy6BUaoqW4VGoq0aT1+PTiOcfjRyGZ+r3AZ1tFrUVTjez5x1qh2aVbiWDQFCSGV/4UIi9ucAbKpi4VSIk=
+Received: from MW3PR05CA0021.namprd05.prod.outlook.com (2603:10b6:303:2b::26)
+ by BN7PR12MB2787.namprd12.prod.outlook.com (2603:10b6:408:2b::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23; Mon, 9 May
+ 2022 07:49:01 +0000
+Received: from CO1NAM11FT047.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:2b:cafe::c4) by MW3PR05CA0021.outlook.office365.com
+ (2603:10b6:303:2b::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13 via Frontend
+ Transport; Mon, 9 May 2022 07:49:00 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT047.mail.protection.outlook.com (10.13.174.132) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5227.15 via Frontend Transport; Mon, 9 May 2022 07:49:00 +0000
+Received: from sp5-759chost.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 9 May
+ 2022 02:48:29 -0500
+From:   Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+To:     <linux-kernel@vger.kernel.org>, <iommu@lists.linux-foundation.org>
+CC:     <joro@8bytes.org>, <vasant.hegde@amd.com>, <jon.grimm@amd.com>,
+        "Suravee Suthikulpanit" <suravee.suthikulpanit@amd.com>
+Subject: [PATCH v2] iommu/amd: Set translation valid bit only when IO page tables are in used
+Date:   Mon, 9 May 2022 02:48:15 -0500
+Message-ID: <20220509074815.11881-1-suravee.suthikulpanit@amd.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220509074857.195302-1-clabbe@baylibre.com>
-References: <20220509074857.195302-1-clabbe@baylibre.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: fb7fc74f-7fd1-4968-ce76-08da31906184
+X-MS-TrafficTypeDiagnostic: BN7PR12MB2787:EE_
+X-Microsoft-Antispam-PRVS: <BN7PR12MB2787A6D9D04C4227DB02159EF3C69@BN7PR12MB2787.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: WBqzGVrKmY4Y+6JFRvjVywmqG4TQlUl0zEaP2BDo+JVhJG6JFvH3dKMjQJ7MC4Ly4UEINoKlcKXzmnxv5E+s0si3giF+SJojXrfewwfLwKDPpOALfcWeIAKODojIDNxts8erHk1vlCLd1AO55tmPkiz/Ph5e5AVqEi/lVQDvvVWfgxLTRdFHc+0mBaXaG+7dl2dX7FsBjZeA5veZCTCE52z0OKJ0ekJ9pOv8rW9Wmms01zGz2sV5hyUISi20GIIB62iu+J89Tbvmh0GlVBu9674zS66J8VM84Kfa7KjtlFuLN84VfmjA2mI9pc1BBAQrSWVSi29O1g/IZ5pG/qXUm55v6RfHliinQrWsQghgcriYC5+Ux4xsX87VwI4wZudk0lZxjfjJD17m9ixsYG/K41E8n0tZMr3fmolxaNaq8VKgl4ft57lF5qyNFZmkMD7WheXJbFEb+sZsr+kLfT3wHOkq45Vn4EdLZnWD6X+c4qa+xJec09TeLy4/OvpSFStc7mr/Ggcrh5cYW9bMEHlXNkgDS2QvsaYXj8leKKJcmi/8oq5f+MqGQrWfGygr8oMic+eauN1YMwu2RxFhgMDekCCrerLh7lm7Ox0HmbXNHUFQovvoRoezVuKlrUO0wgUXAxzpUnv4kv9l1uHvBgZahSMQJF2Dt6zeS9ckFRGERte/TGRv3WabYVG3V4lClbj1FIhzTyratZ5JNyytWCeWqw==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(16526019)(186003)(83380400001)(36860700001)(26005)(1076003)(2616005)(7696005)(6666004)(2906002)(44832011)(36756003)(426003)(336012)(82310400005)(47076005)(40460700003)(508600001)(356005)(86362001)(5660300002)(8936002)(54906003)(70206006)(70586007)(8676002)(81166007)(4326008)(316002)(110136005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2022 07:49:00.5460
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: fb7fc74f-7fd1-4968-ce76-08da31906184
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT047.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR12MB2787
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add handling of optional regulators for PHY.
-Regulators need to be enabled before PHY scanning, so MDIO bus
-initiate this task.
+On AMD system with SNP enabled, IOMMU hardware checks the host translation
+valid (TV) and guest translation valid (GV) bits in the device
+table entry (DTE) before accessing the corresponded page tables.
 
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+However, current IOMMU driver sets the TV bit for all devices
+regardless of whether the host page table is in used.
+This results in ILLEGAL_DEV_TABLE_ENTRY event for devices, which
+do not the host page table root pointer set up.
+
+Thefore, only set TV bit when DMA remapping is not used, which is
+when domain ID in the AMD IOMMU device table entry (DTE) is zero.
+
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 ---
- drivers/net/mdio/fwnode_mdio.c | 32 ++++++++++++++++++++++++++++++++
- drivers/net/phy/phy_device.c   | 20 ++++++++++++++++++++
- include/linux/phy.h            |  3 +++
- 3 files changed, 55 insertions(+)
+ drivers/iommu/amd/init.c  | 4 +---
+ drivers/iommu/amd/iommu.c | 8 ++++++--
+ 2 files changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
-index 1c1584fca632..c377cadc14c3 100644
---- a/drivers/net/mdio/fwnode_mdio.c
-+++ b/drivers/net/mdio/fwnode_mdio.c
-@@ -10,6 +10,7 @@
- #include <linux/fwnode_mdio.h>
- #include <linux/of.h>
- #include <linux/phy.h>
-+#include <linux/regulator/consumer.h>
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index 648d6b94ba8c..6a2dadf2b2dc 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -2336,10 +2336,8 @@ static void init_device_table_dma(void)
+ {
+ 	u32 devid;
  
- MODULE_AUTHOR("Calvin Johnson <calvin.johnson@oss.nxp.com>");
- MODULE_LICENSE("GPL");
-@@ -95,6 +96,8 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
- 	bool is_c45 = false;
- 	u32 phy_id;
- 	int rc;
-+	struct regulator *regulator_phy;
-+	struct regulator *regulator_phy_io;
+-	for (devid = 0; devid <= amd_iommu_last_bdf; ++devid) {
++	for (devid = 0; devid <= amd_iommu_last_bdf; ++devid)
+ 		set_dev_entry_bit(devid, DEV_ENTRY_VALID);
+-		set_dev_entry_bit(devid, DEV_ENTRY_TRANSLATION);
+-	}
+ }
  
- 	mii_ts = fwnode_find_mii_timestamper(child);
- 	if (IS_ERR(mii_ts))
-@@ -104,6 +107,32 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
- 					  "ethernet-phy-ieee802.3-c45");
- 	if (rc >= 0)
- 		is_c45 = true;
-+	regulator_phy_io = devm_regulator_get_optional(&bus->dev, "phy-io");
-+	if (IS_ERR(regulator_phy_io)) {
-+		rc = PTR_ERR(regulator_phy_io);
-+		if (rc == -ENODEV)
-+			regulator_phy_io = NULL;
-+		else
-+			return rc;
-+	}
-+	regulator_phy = devm_regulator_get_optional(&bus->dev, "phy");
-+	if (IS_ERR(regulator_phy)) {
-+		rc = PTR_ERR(regulator_phy);
-+		if (rc == -ENODEV)
-+			regulator_phy = NULL;
-+		else
-+			return rc;
-+	}
-+	if (regulator_phy_io) {
-+		rc = regulator_enable(regulator_phy_io);
-+		if (rc)
-+			return rc;
-+	}
-+	if (regulator_phy) {
-+		rc = regulator_enable(regulator_phy);
-+		if (rc)
-+			return rc;
-+	}
+ static void __init uninit_device_table_dma(void)
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index a1ada7bff44e..cea254968f06 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -1473,7 +1473,7 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain,
  
- 	if (is_c45 || fwnode_get_phy_id(child, &phy_id))
- 		phy = get_phy_device(bus, addr, is_c45);
-@@ -114,6 +143,9 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
- 		return PTR_ERR(phy);
+ 	pte_root |= (domain->iop.mode & DEV_ENTRY_MODE_MASK)
+ 		    << DEV_ENTRY_MODE_SHIFT;
+-	pte_root |= DTE_FLAG_IR | DTE_FLAG_IW | DTE_FLAG_V | DTE_FLAG_TV;
++	pte_root |= DTE_FLAG_IR | DTE_FLAG_IW | DTE_FLAG_V;
+ 
+ 	flags = amd_iommu_dev_table[devid].data[1];
+ 
+@@ -1513,6 +1513,10 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain,
+ 		flags    |= tmp;
  	}
  
-+	phy->regulator_phy = regulator_phy;
-+	phy->regulator_phy_io = regulator_phy_io;
++	/* Only set TV bit when IOMMU page translation is in used */
++	if (domain->id != 0)
++		pte_root |= DTE_FLAG_TV;
 +
- 	if (is_acpi_node(child)) {
- 		phy->irq = bus->irq[addr];
+ 	flags &= ~DEV_DOMID_MASK;
+ 	flags |= domain->id;
  
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 431a8719c635..ce64df596580 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -27,6 +27,7 @@
- #include <linux/phy.h>
- #include <linux/phy_led_triggers.h>
- #include <linux/property.h>
-+#include <linux/regulator/consumer.h>
- #include <linux/sfp.h>
- #include <linux/skbuff.h>
- #include <linux/slab.h>
-@@ -1785,6 +1786,11 @@ int phy_suspend(struct phy_device *phydev)
- 	if (!ret)
- 		phydev->suspended = true;
- 
-+	if (phydev->regulator_phy)
-+		regulator_disable(phydev->regulator_phy);
-+	if (phydev->regulator_phy_io)
-+		regulator_disable(phydev->regulator_phy_io);
-+
- 	return ret;
- }
- EXPORT_SYMBOL(phy_suspend);
-@@ -1811,6 +1817,20 @@ int phy_resume(struct phy_device *phydev)
+@@ -1535,7 +1539,7 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain,
+ static void clear_dte_entry(u16 devid)
  {
- 	int ret;
+ 	/* remove entry from the device table seen by the hardware */
+-	amd_iommu_dev_table[devid].data[0]  = DTE_FLAG_V | DTE_FLAG_TV;
++	amd_iommu_dev_table[devid].data[0]  = DTE_FLAG_V;
+ 	amd_iommu_dev_table[devid].data[1] &= DTE_FLAG_MASK;
  
-+	if (phydev->regulator_phy_io) {
-+		ret = regulator_enable(phydev->regulator_phy_io);
-+		if (ret)
-+			return ret;
-+	}
-+	if (phydev->regulator_phy) {
-+		ret = regulator_enable(phydev->regulator_phy);
-+		if (ret) {
-+			if (phydev->regulator_phy_io)
-+				regulator_disable(phydev->regulator_phy_io);
-+			return ret;
-+		}
-+	}
-+
- 	mutex_lock(&phydev->lock);
- 	ret = __phy_resume(phydev);
- 	mutex_unlock(&phydev->lock);
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 2d12054932ba..c29f45668d94 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -704,6 +704,9 @@ struct phy_device {
- 	void (*phy_link_change)(struct phy_device *phydev, bool up);
- 	void (*adjust_link)(struct net_device *dev);
- 
-+	struct regulator *regulator_phy;
-+	struct regulator *regulator_phy_io;
-+
- #if IS_ENABLED(CONFIG_MACSEC)
- 	/* MACsec management functions */
- 	const struct macsec_ops *macsec_ops;
+ 	amd_iommu_apply_erratum_63(devid);
 -- 
-2.35.1
+2.25.1
 
