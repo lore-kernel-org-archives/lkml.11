@@ -2,127 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63EE2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:31:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 326B1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:31:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229505AbiEIKfQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 06:35:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39194 "EHLO
+        id S230434AbiEIKfh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 06:35:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230000AbiEIKex (ORCPT
+        with ESMTP id S229517AbiEIKeT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 06:34:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 739E52A2F4E
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 03:30:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652092211;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ifIovOYqUdORRjYP2T8sN9gqRG2FPawReokv1bujppM=;
-        b=fTPfs6EAJm4ITzTOkmK9ax/jK/uO1pUz+Vu2RuhHmm1K0Y9p2akknZGPab0y1+lQJS6qor
-        YPLg7VH/CuvqQZFcPv5RG72mjQog6j+cL3u+nbSTKkB+Lbp7HhCqrXNigpFvRkpo499CcM
-        D/ns1sVocwvWyXSFqLwPetM/V62UFy0=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-446-ILJmc7k2M0mIQx4SK2oPuQ-1; Mon, 09 May 2022 06:30:08 -0400
-X-MC-Unique: ILJmc7k2M0mIQx4SK2oPuQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 43D15100BAA0;
-        Mon,  9 May 2022 10:30:08 +0000 (UTC)
-Received: from starship (unknown [10.40.192.26])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2F4931468D40;
-        Mon,  9 May 2022 10:30:06 +0000 (UTC)
-Message-ID: <815c41ebfbe8876d2f2e8bbc779a035b66eeeafd.camel@redhat.com>
-Subject: Re: [PATCH v4 08/15] KVM: x86: Deactivate APICv on vCPU with APIC
- disabled
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     pbonzini@redhat.com, seanjc@google.com, joro@8bytes.org,
-        jon.grimm@amd.com, wei.huang2@amd.com, terry.bowman@amd.com
-Date:   Mon, 09 May 2022 13:30:05 +0300
-In-Reply-To: <b553737e9f7b587cd1ce598e276c1c9117fa2a98.camel@redhat.com>
-References: <20220508023930.12881-1-suravee.suthikulpanit@amd.com>
-         <20220508023930.12881-9-suravee.suthikulpanit@amd.com>
-         <b553737e9f7b587cd1ce598e276c1c9117fa2a98.camel@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Mon, 9 May 2022 06:34:19 -0400
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 784EA2701B1;
+        Mon,  9 May 2022 03:29:34 -0700 (PDT)
+Received: by mail-wm1-f42.google.com with SMTP id n126-20020a1c2784000000b0038e8af3e788so7992536wmn.1;
+        Mon, 09 May 2022 03:29:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=IpkNdWLB+i8ZcpamySoEP6TcMlhhIL5OjEgH/QYZ8SU=;
+        b=o11In6S7LBuaox/9BnCEU/Zcu8hg8UU7h1t1QlYvCNGhXX2d+7csyKk8K+bOpgIIme
+         RmIX8ZvewOoXFjkHECbPuJH8k+I1mLS1DdcnJZVA/DjzpKZ5VkYQ6DaN6n6KZZbtZIhU
+         3rdN5sbacCXyVfXm1YjK97wS5JRaMjq+kOBsDz0N/bKMyIZXd3JYHcr2t7kVHDaJv6si
+         CNFpPtXF6MItWT1i6wpH3jk7Tc8oh3MufAEDBK45+3VPo0nXlmXi5XumWIoK53fN4/Up
+         K4hsPRK6IY9qrOnQTPFy2ZEE3m/ZNjSLDdaITjsZP6U8nwRnr0m54Pkmq1NKueJaq6x8
+         lWYw==
+X-Gm-Message-State: AOAM531fFmUZcd7pnTNeNRi2VPyHiyo1WbfGr5svxO6uiNSBSxRUXAqj
+        y8UDRRJweJlHST0fWvaUH4BvXq45ugQ3Wg==
+X-Google-Smtp-Source: ABdhPJycHZI96SBHadCmYXAiG7+2NnnXdRqqb9xx36dMWRkGOOinsULCdInyG0c6r6YC12nePB7imA==
+X-Received: by 2002:a7b:c93a:0:b0:394:2583:69fe with SMTP id h26-20020a7bc93a000000b00394258369femr15664919wml.29.1652092115377;
+        Mon, 09 May 2022 03:28:35 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id p33-20020a05600c1da100b0038ec8b633fesm11890104wms.1.2022.05.09.03.28.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 09 May 2022 03:28:34 -0700 (PDT)
+Message-ID: <257e1972-a282-f5c9-40c4-a532fdfaf935@kernel.org>
+Date:   Mon, 9 May 2022 12:28:33 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 2/3] tty: n_gsm: fix mux activation issues in gsm_config()
+Content-Language: en-US
+To:     "D. Starke" <daniel.starke@siemens.com>,
+        linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org
+References: <20220504081733.3494-1-daniel.starke@siemens.com>
+ <20220504081733.3494-2-daniel.starke@siemens.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220504081733.3494-2-daniel.starke@siemens.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-05-09 at 13:18 +0300, Maxim Levitsky wrote:
-> On Sat, 2022-05-07 at 21:39 -0500, Suravee Suthikulpanit wrote:
-> > APICv should be deactivated on vCPU that has APIC disabled.
-> > Therefore, call kvm_vcpu_update_apicv() when changing
-> > APIC mode, and add additional check for APIC disable mode
-> > when determine APICV activation,
-> > 
-> > Suggested-by: Maxim Levitsky <mlevitsk@redhat.com>
-> > Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> > ---
-> >  arch/x86/kvm/lapic.c | 4 +++-
-> >  arch/x86/kvm/x86.c   | 4 +++-
-> >  2 files changed, 6 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-> > index 8b8c4a905976..680824d7aa0d 100644
-> > --- a/arch/x86/kvm/lapic.c
-> > +++ b/arch/x86/kvm/lapic.c
-> > @@ -2346,8 +2346,10 @@ void kvm_lapic_set_base(struct kvm_vcpu *vcpu, u64 value)
-> >  	if (((old_value ^ value) & X2APIC_ENABLE) && (value & X2APIC_ENABLE))
-> >  		kvm_apic_set_x2apic_id(apic, vcpu->vcpu_id);
-> >  
-> > -	if ((old_value ^ value) & (MSR_IA32_APICBASE_ENABLE | X2APIC_ENABLE))
-> > +	if ((old_value ^ value) & (MSR_IA32_APICBASE_ENABLE | X2APIC_ENABLE)) {
-> > +		kvm_vcpu_update_apicv(vcpu);
-> >  		static_call_cond(kvm_x86_set_virtual_apic_mode)(vcpu);
+On 04. 05. 22, 10:17, D. Starke wrote:
+> From: Daniel Starke <daniel.starke@siemens.com>
 > 
-> As futher optimization, we might even get rid of .set_virtual_apic_mode
-> and do all of this in kvm_vcpu_update_apicv.
-> But no need to this now.
+> The current implementation activates the mux if it was restarted and opens
+> the control channel if the mux was previously closed and we are now acting
+> as initiator instead of responder, which is the default setting.
+> This has two issues.
+> 1) No mux is activated if we keep all default values and only switch to
+> initiator. The control channel is not allocated but will be opened next
+> which results in a NULL pointer dereference.
+> 2) Switching the configuration after it was once configured while keeping
+> the initiator value the same will not reopen the control channel if it was
+> closed due to parameter incompatibilities. The mux remains dead.
 > 
+> Fix 1) by always activating the mux if it is dead after configuration.
+> Fix 2) by always opening the control channel after mux activation.
 > 
-> > +	}
-> >  
-> >  	apic->base_address = apic->vcpu->arch.apic_base &
-> >  			     MSR_IA32_APICBASE_BASE;
-> > diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> > index 8ee8c91fa762..77e49892dea1 100644
-> > --- a/arch/x86/kvm/x86.c
-> > +++ b/arch/x86/kvm/x86.c
-> > @@ -9836,7 +9836,9 @@ void kvm_vcpu_update_apicv(struct kvm_vcpu *vcpu)
-> >  
-> >  	down_read(&vcpu->kvm->arch.apicv_update_lock);
-> >  
-> > -	activate = kvm_vcpu_apicv_activated(vcpu);
-> > +	/* Do not activate APICV when APIC is disabled */
-> > +	activate = kvm_vcpu_apicv_activated(vcpu) &&
-> > +		   (kvm_get_apic_mode(vcpu) != LAPIC_MODE_DISABLED);
-> >  
-> >  	if (vcpu->arch.apicv_active == activate)
-> >  		goto out;
+> Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+> ---
+>   drivers/tty/n_gsm.c | 12 ++++++++----
+>   1 file changed, 8 insertions(+), 4 deletions(-)
 > 
-> Looks good!
-> 
-> Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-> 
-> Best regards,
-> 	Maxim Levitsky
-> 
+> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+> index 9b0b435cf26e..bcb714031d69 100644
+> --- a/drivers/tty/n_gsm.c
+> +++ b/drivers/tty/n_gsm.c
+> @@ -2352,6 +2352,7 @@ static void gsm_copy_config_values(struct gsm_mux *gsm,
+>   
+>   static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
+>   {
+> +	int ret = 0;
 
-Sorry for a duplicated reply - I tried to cancel it
-to correct a typo, but I was too late I see.
+Why is the initialization needed? You can as well declare the variable 
+only inside the if below.
 
-Best regards,
-	Maxim Levitsky
+>   	int need_close = 0;
+>   	int need_restart = 0;
+>   
+> @@ -2419,10 +2420,13 @@ static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
+>   	 * FIXME: We need to separate activation/deactivation from adding
+>   	 * and removing from the mux array
+>   	 */
+> -	if (need_restart)
+> -		gsm_activate_mux(gsm);
+> -	if (gsm->initiator && need_close)
+> -		gsm_dlci_begin_open(gsm->dlci[0]);
+> +	if (gsm->dead) {
+> +		ret = gsm_activate_mux(gsm);
+> +		if (ret)
+> +			return ret;
+> +		if (gsm->initiator)
+> +			gsm_dlci_begin_open(gsm->dlci[0]);
+> +	}
+>   	return 0;
+>   }
+>   
 
+
+-- 
+js
+suse labs
