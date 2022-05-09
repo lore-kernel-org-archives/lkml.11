@@ -2,79 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BDA3C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91793C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:34:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238201AbiEIJff (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 05:35:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46356 "EHLO
+        id S237965AbiEIJfG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 05:35:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237144AbiEIJQZ (ORCPT
+        with ESMTP id S237997AbiEIJDP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 05:16:25 -0400
-Received: from out28-124.mail.aliyun.com (out28-124.mail.aliyun.com [115.124.28.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A95D6205270;
-        Mon,  9 May 2022 02:12:29 -0700 (PDT)
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.411162|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_regular_dialog|0.0325975-0.00943409-0.957968;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047194;MF=zhouyanjie@wanyeetech.com;NM=1;PH=DS;RN=9;RT=9;SR=0;TI=SMTPD_---.NgYRNRV_1652087532;
-Received: from 192.168.1.123(mailfrom:zhouyanjie@wanyeetech.com fp:SMTPD_---.NgYRNRV_1652087532)
-          by smtp.aliyun-inc.com(33.40.73.199);
-          Mon, 09 May 2022 17:12:19 +0800
-Subject: Re: [PATCH v2 0/3] Clock fixes for Ingenic SoCs
-To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>, sboyd@kernel.org,
-        mturquette@baylibre.com, tsbogend@alpha.franken.de
-Cc:     paulburton@kernel.org, paul@crapouillou.net,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org
-References: <20220428164454.17908-1-aidanmacdonald.0x0@gmail.com>
-From:   =?UTF-8?B?5ZGo55Cw5p2w?= <zhouyanjie@wanyeetech.com>
-Message-ID: <f5ca7c72-6526-d733-93fd-933aa9b719bc@wanyeetech.com>
-Date:   Mon, 9 May 2022 17:12:11 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        Mon, 9 May 2022 05:03:15 -0400
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF4BB1F2D55;
+        Mon,  9 May 2022 01:59:21 -0700 (PDT)
+Received: (Authenticated sender: gregory.clement@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 72C8840010;
+        Mon,  9 May 2022 08:59:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1652086743;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GlfE+eMNWZzjVhKznIxmSnTKmF7zpHT4YD9wNmX5k2E=;
+        b=WMevReCeo2A5kiQiz+3netIPtBlgC36e1qsQMUdkXUBOmgSiXgr0s7iAxAKM7kxV9x1F3C
+        U/ZNrFIjK4maROzDydD0u1B4EjgServOkMIcOhUQhCTGM6lOgfN1GmkRRkJuPT488QPUft
+        F9eZgTf4pH0DxoF4Ag0gDu41wZuFk3ahKm0yPkxcI59FxmvyQ7k75x2soRFJtCO3QA/lVG
+        xds9u19AL0tYaAKTo1AIv+Nkqi1p25OPxyCzZZ0JxY5cT4k2fFMpnF2N0xJ1YPD2FmliHW
+        4YoqkukZ2ahSmC66t7ihMZYCpFbt0qem2n5RRMf6tKDOdFjhsNG7fUOM0xIOXQ==
+From:   Gregory CLEMENT <gregory.clement@bootlin.com>
+To:     Robert Marko <robert.marko@sartura.hr>, andrew@lunn.ch,
+        sebastian.hesselbarth@gmail.com, robh+dt@kernel.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, pali@kernel.org
+Cc:     Robert Marko <robert.marko@sartura.hr>
+Subject: Re: [PATCH v3 3/3] arm64: dts: marvell: espressobin-ultra: enable
+ front USB3 port
+In-Reply-To: <20210928170919.691845-3-robert.marko@sartura.hr>
+References: <20210928170919.691845-1-robert.marko@sartura.hr>
+ <20210928170919.691845-3-robert.marko@sartura.hr>
+Date:   Mon, 09 May 2022 10:58:53 +0200
+Message-ID: <87ee13rsj6.fsf@BL-laptop>
 MIME-Version: 1.0
-In-Reply-To: <20220428164454.17908-1-aidanmacdonald.0x0@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Robert Marko <robert.marko@sartura.hr> writes:
 
-On 2022/4/29 上午12:44, Aidan MacDonald wrote:
-> I ran across a problem trying to get Linux running on an Ingenic X1000 SoC:
-> since the memory clock isn't referenced by any driver, it appears unused and
-> gets disabled automatically. After that, the system hangs on any RAM access.
+> Espressobin Ultra has a front panel USB3.0 Type-A port which works
+> just fine so enable it.
+> I dont see a reason why it was disabled in the first place anyway.
 >
-> There is a hack in board-ingenic.c to forcibly enable the CPU clock, but this
-> is insufficient for the X1000 since the memory clock has its own gate and mux
-> that isn't tied to the CPU.
->
-> This patch series fixes the bug by adding CLK_IS_CRITICAL flags to important
-> clocks, which seems to be the approach used in many other SoC clock drivers.
->
-> v2: Add comments to patch 02 to explain why we need CLK_IS_CRITICAL.
->
-> Aidan MacDonald (3):
->    clk: ingenic: Allow specifying common clock flags
->    clk: ingenic: Mark critical clocks in Ingenic SoCs
->    mips: ingenic: Do not manually reference the CPU clock
->
->   arch/mips/generic/board-ingenic.c | 26 --------------------------
->   drivers/clk/ingenic/cgu.c         |  2 +-
->   drivers/clk/ingenic/cgu.h         |  3 +++
->   drivers/clk/ingenic/jz4725b-cgu.c | 10 ++++++++++
->   drivers/clk/ingenic/jz4740-cgu.c  | 10 ++++++++++
->   drivers/clk/ingenic/jz4760-cgu.c  | 10 ++++++++++
->   drivers/clk/ingenic/jz4770-cgu.c  |  5 +++++
->   drivers/clk/ingenic/jz4780-cgu.c  | 15 +++++++++++++++
->   drivers/clk/ingenic/x1000-cgu.c   | 15 +++++++++++++++
->   drivers/clk/ingenic/x1830-cgu.c   | 11 +++++++++++
->   10 files changed, 80 insertions(+), 27 deletions(-)
+> Fixes: 3404fe15a60f ("arm64: dts: marvell: add DT for ESPRESSObin-Ultra")
+> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
 
 
-Tested-by: 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com> # On X1000 and 
-X1830
+Applied on mvebu/dt64
+
+Thanks,
+
+Gregory
 
 
+> ---
+> Changes in v2:
+> * Add Fixes tag
+> ---
+>  arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts | 1 -
+>  1 file changed, 1 deletion(-)
+>
+> diff --git a/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts b/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
+> index 7c786d218f1b..070725b81be5 100644
+> --- a/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
+> +++ b/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
+> @@ -108,7 +108,6 @@ rtc@51 {
+>  
+>  &usb3 {
+>  	usb-phy = <&usb3_phy>;
+> -	status = "disabled";
+>  };
+>  
+>  &mdio {
+> -- 
+> 2.31.1
+>
+
+-- 
+Gregory Clement, Bootlin
+Embedded Linux and Kernel engineering
+http://bootlin.com
