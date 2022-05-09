@@ -2,393 +2,235 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57C25C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 21:50:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9AD7C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 21:50:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229494AbiEIVyk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 17:54:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59288 "EHLO
+        id S229750AbiEIVyq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 17:54:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230419AbiEIVwF (ORCPT
+        with ESMTP id S230297AbiEIVx4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 17:52:05 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 618A7282011
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 14:47:58 -0700 (PDT)
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 249Bt3ZF026043;
-        Mon, 9 May 2022 16:47:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=PODMain02222019;
- bh=SmFLBI7Xyajg8wMhgC4OEfEikEYaFF/sIuWve4nSd5Q=;
- b=bfUnRpgT8Qrzn7zzu82uktZErq95/e49kVaUj9sQnCDbrjxaAaHWg7HMsPc52qqNh2ee
- HkDCsW9qvEmxFFq7xLVJnUyM8u3izY4f4yqTy5sPToHrlCKZc8ep4eWYNeYh00gKs0VG
- kOMLawAmkJawY/9MtFORSk1c1acIHXKtOuD6fZOX5dWRVTQ0RILO+87Ocf3c8mlF6l96
- nXB+ZfRw+J8Kxiz0UMEfl+GVXVcfemUTBDcm1ujgkzOyBNSZImsB/wKZFv1ewLFd6Rm6
- G7Y1OqAaPMOP4nFhf9liSvwyLNnlIQIPKD2WnZn1+wa04ZJgvZDhS0Mhx/I43Ub3/2BM 9g== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3fwp613jeu-7
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 09 May 2022 16:47:15 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 9 May
- 2022 22:47:12 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Mon, 9 May 2022 22:47:12 +0100
-Received: from vitaly-Legion-7-16ACHg6.ad.cirrus.com (unknown [198.90.238.55])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 685B7475;
-        Mon,  9 May 2022 21:47:12 +0000 (UTC)
-From:   Vitaly Rodionov <vitalyr@opensource.cirrus.com>
-To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-        Mark Brown <broonie@kernel.org>
-CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
+        Mon, 9 May 2022 17:53:56 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9284B2CBFA0;
+        Mon,  9 May 2022 14:48:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1652132925; x=1683668925;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=h9SlY2Pqnt/O+bWLNsrdephega04tu1QDz/98WTiLs4=;
+  b=fdjURNvor1eyqELklpOMTYQEp5ME5NyiOVCNgP6jrL2nZ9Qs136QW3U3
+   pcBHH80YTtM3jWxcrASSASnOC159tLx6ESb+MsMYBTLofER2xLwF14ouH
+   Dzaypxwpy7h3vYKE3kA2cqjXHOoxjYjjurnflwuRUvEu+wHAMJRzJM5Mu
+   M=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 09 May 2022 14:48:43 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 14:48:42 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 9 May 2022 14:48:40 -0700
+Received: from jhugo-lnx.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 9 May 2022 14:48:38 -0700
+From:   Jeffrey Hugo <quic_jhugo@quicinc.com>
+To:     <kys@microsoft.com>, <haiyangz@microsoft.com>,
+        <sthemmin@microsoft.com>, <wei.liu@kernel.org>,
+        <decui@microsoft.com>, <lorenzo.pieralisi@arm.com>,
+        <robh@kernel.org>, <kw@linux.com>, <bhelgaas@google.com>
+CC:     <jakeo@microsoft.com>, <dazhan@microsoft.com>,
+        <linux-hyperv@vger.kernel.org>, <linux-pci@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>,
-        Stefan Binding <sbinding@opensource.cirrus.com>
-Subject: [PATCH v2 21/26] ALSA: hda: cs35l41: Support Hibernation during Suspend
-Date:   Mon, 9 May 2022 22:46:58 +0100
-Message-ID: <20220509214703.4482-22-vitalyr@opensource.cirrus.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220509214703.4482-1-vitalyr@opensource.cirrus.com>
-References: <20220509214703.4482-1-vitalyr@opensource.cirrus.com>
+        Jeffrey Hugo <quic_jhugo@quicinc.com>
+Subject: [PATCH 2/2] PCI: hv: Fix interrupt mapping for multi-MSI
+Date:   Mon, 9 May 2022 15:48:22 -0600
+Message-ID: <1652132902-27109-3-git-send-email-quic_jhugo@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1652132902-27109-1-git-send-email-quic_jhugo@quicinc.com>
+References: <1652132902-27109-1-git-send-email-quic_jhugo@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Content-Type: text/plain
-X-Proofpoint-GUID: Mf-LPjrjdIKLObn3_BSLu7UZXS7xNnTU
-X-Proofpoint-ORIG-GUID: Mf-LPjrjdIKLObn3_BSLu7UZXS7xNnTU
-X-Proofpoint-Spam-Reason: safe
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Binding <sbinding@opensource.cirrus.com>
+According to Dexuan, the hypervisor folks beleive that multi-msi
+allocations are not correct.  compose_msi_msg() will allocate multi-msi
+one by one.  However, multi-msi is a block of related MSIs, with alignment
+requirements.  In order for the hypervisor to allocate properly aligned
+and consecutive entries in the IOMMU Interrupt Remapping Table, there
+should be a single mapping request that requests all of the multi-msi
+vectors in one shot.
 
-CS35L41 supports hibernation during suspend when using
-DSP firmware.
-When the driver suspends it will hibernate the part, if
-firmware is running, and resume will wake from hibernation.
-CS35L41 driver will suspend/resume when requested by
-hda driver.
-Note that suspend/resume and hibernation is only supported
-when firmware is running.
+Dexuan suggests detecting the multi-msi case and composing a single
+request related to the first MSI.  Then for the other MSIs in the same
+block, use the cached information.  This appears to be viable, so do it.
 
-Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
-Signed-off-by: Vitaly Rodionov <vitalyr@opensource.cirrus.com>
+Suggested-by: Dexuan Cui <decui@microsoft.com>
+Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
 ---
- sound/pci/hda/cs35l41_hda.c     | 109 +++++++++++++++++++++++++++++++-
- sound/pci/hda/cs35l41_hda.h     |   2 +
- sound/pci/hda/cs35l41_hda_i2c.c |   1 +
- sound/pci/hda/cs35l41_hda_spi.c |   1 +
- sound/pci/hda/hda_component.h   |   2 +
- sound/pci/hda/patch_realtek.c   |  25 +++++++-
- 6 files changed, 136 insertions(+), 4 deletions(-)
+ drivers/pci/controller/pci-hyperv.c | 60 ++++++++++++++++++++++++++++++-------
+ 1 file changed, 50 insertions(+), 10 deletions(-)
 
-diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
-index 1d62a41fbc75..9c622104bf01 100644
---- a/sound/pci/hda/cs35l41_hda.c
-+++ b/sound/pci/hda/cs35l41_hda.c
-@@ -10,6 +10,7 @@
- #include <linux/module.h>
- #include <sound/hda_codec.h>
- #include <sound/soc.h>
-+#include <linux/pm_runtime.h>
- #include "hda_local.h"
- #include "hda_auto_parser.h"
- #include "hda_jack.h"
-@@ -425,6 +426,75 @@ static int cs35l41_hda_channel_map(struct device *dev, unsigned int tx_num, unsi
- 				    rx_slot);
- }
+diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
+index 5e2e637..a755a0c 100644
+--- a/drivers/pci/controller/pci-hyperv.c
++++ b/drivers/pci/controller/pci-hyperv.c
+@@ -1525,6 +1525,10 @@ static void hv_int_desc_free(struct hv_pci_dev *hpdev,
+ 		u8 buffer[sizeof(struct pci_delete_interrupt)];
+ 	} ctxt;
  
-+static int cs35l41_runtime_suspend(struct device *dev)
-+{
-+	struct cs35l41_hda *cs35l41 = dev_get_drvdata(dev);
-+
-+	dev_dbg(cs35l41->dev, "Suspend\n");
-+
-+	if (!cs35l41->firmware_running)
-+		return 0;
-+
-+	if (cs35l41_enter_hibernate(cs35l41->dev, cs35l41->regmap, cs35l41->hw_cfg.bst_type) < 0)
-+		return 0;
-+
-+	regcache_cache_only(cs35l41->regmap, true);
-+	regcache_mark_dirty(cs35l41->regmap);
-+
-+	return 0;
-+}
-+
-+static int cs35l41_runtime_resume(struct device *dev)
-+{
-+	struct cs35l41_hda *cs35l41 = dev_get_drvdata(dev);
-+	int ret;
-+
-+	dev_dbg(cs35l41->dev, "Resume.\n");
-+
-+	if (cs35l41->hw_cfg.bst_type == CS35L41_EXT_BOOST_NO_VSPK_SWITCH) {
-+		dev_dbg(cs35l41->dev, "System does not support Resume\n");
-+		return 0;
++	if (!int_desc->vector_count) {
++		kfree(int_desc);
++		return;
 +	}
-+
-+	if (!cs35l41->firmware_running)
-+		return 0;
-+
-+	regcache_cache_only(cs35l41->regmap, false);
-+
-+	ret = cs35l41_exit_hibernate(cs35l41->dev, cs35l41->regmap);
-+	if (ret) {
-+		regcache_cache_only(cs35l41->regmap, true);
-+		return ret;
-+	}
-+
-+	/* Test key needs to be unlocked to allow the OTP settings to re-apply */
-+	cs35l41_test_key_unlock(cs35l41->dev, cs35l41->regmap);
-+	ret = regcache_sync(cs35l41->regmap);
-+	cs35l41_test_key_lock(cs35l41->dev, cs35l41->regmap);
-+	if (ret) {
-+		dev_err(cs35l41->dev, "Failed to restore register cache: %d\n", ret);
-+		return ret;
-+	}
-+
-+	if (cs35l41->hw_cfg.bst_type == CS35L41_EXT_BOOST)
-+		cs35l41_init_boost(cs35l41->dev, cs35l41->regmap, &cs35l41->hw_cfg);
-+
-+	return 0;
-+}
-+
-+static int cs35l41_hda_suspend_hook(struct device *dev)
-+{
-+	dev_dbg(dev, "Request Suspend\n");
-+	pm_runtime_mark_last_busy(dev);
-+	return pm_runtime_put_autosuspend(dev);
-+}
-+
-+static int cs35l41_hda_resume_hook(struct device *dev)
-+{
-+	dev_dbg(dev, "Request Resume\n");
-+	return pm_runtime_get_sync(dev);
-+}
-+
- static int cs35l41_smart_amp(struct cs35l41_hda *cs35l41)
+ 	memset(&ctxt, 0, sizeof(ctxt));
+ 	int_pkt = (struct pci_delete_interrupt *)&ctxt.pkt.message;
+ 	int_pkt->message_type.type =
+@@ -1609,12 +1613,12 @@ static void hv_pci_compose_compl(void *context, struct pci_response *resp,
+ 
+ static u32 hv_compose_msi_req_v1(
+ 	struct pci_create_interrupt *int_pkt, struct cpumask *affinity,
+-	u32 slot, u8 vector)
++	u32 slot, u8 vector, u8 vector_count)
  {
- 	int halo_sts;
-@@ -482,17 +552,25 @@ static int cs35l41_hda_bind(struct device *dev, struct device *master, void *mas
- 	if (comps->dev)
- 		return -EBUSY;
+ 	int_pkt->message_type.type = PCI_CREATE_INTERRUPT_MESSAGE;
+ 	int_pkt->wslot.slot = slot;
+ 	int_pkt->int_desc.vector = vector;
+-	int_pkt->int_desc.vector_count = 1;
++	int_pkt->int_desc.vector_count = vector_count;
+ 	int_pkt->int_desc.delivery_mode = DELIVERY_MODE;
  
-+	pm_runtime_get_sync(dev);
-+
- 	comps->dev = dev;
- 	if (!cs35l41->acpi_subsystem_id)
- 		cs35l41->acpi_subsystem_id = devm_kasprintf(dev, GFP_KERNEL,
- 							    "%.8x", comps->subsystem_id);
- 	cs35l41->codec = comps->codec;
- 	strscpy(comps->name, dev_name(dev), sizeof(comps->name));
--	comps->playback_hook = cs35l41_hda_playback_hook;
+ 	/*
+@@ -1637,14 +1641,14 @@ static int hv_compose_msi_req_get_cpu(struct cpumask *affinity)
  
- 	if (cs35l41_smart_amp(cs35l41) < 0)
- 		dev_warn(cs35l41->dev, "Cannot Run Firmware, reverting to dsp bypass...\n");
+ static u32 hv_compose_msi_req_v2(
+ 	struct pci_create_interrupt2 *int_pkt, struct cpumask *affinity,
+-	u32 slot, u8 vector)
++	u32 slot, u8 vector, u8 vector_count)
+ {
+ 	int cpu;
  
-+	comps->playback_hook = cs35l41_hda_playback_hook;
-+	comps->suspend_hook = cs35l41_hda_suspend_hook;
-+	comps->resume_hook = cs35l41_hda_resume_hook;
-+
-+	pm_runtime_mark_last_busy(dev);
-+	pm_runtime_put_autosuspend(dev);
-+
- 	return 0;
- }
+ 	int_pkt->message_type.type = PCI_CREATE_INTERRUPT_MESSAGE2;
+ 	int_pkt->wslot.slot = slot;
+ 	int_pkt->int_desc.vector = vector;
+-	int_pkt->int_desc.vector_count = 1;
++	int_pkt->int_desc.vector_count = vector_count;
+ 	int_pkt->int_desc.delivery_mode = DELIVERY_MODE;
+ 	cpu = hv_compose_msi_req_get_cpu(affinity);
+ 	int_pkt->int_desc.processor_array[0] =
+@@ -1656,7 +1660,7 @@ static u32 hv_compose_msi_req_v2(
  
-@@ -588,7 +666,7 @@ static const struct regmap_irq cs35l41_reg_irqs[] = {
- 	CS35L41_REG_IRQ(IRQ1_STATUS1, AMP_SHORT_ERR),
- };
+ static u32 hv_compose_msi_req_v3(
+ 	struct pci_create_interrupt3 *int_pkt, struct cpumask *affinity,
+-	u32 slot, u32 vector)
++	u32 slot, u32 vector, u8 vector_count)
+ {
+ 	int cpu;
  
--static const struct regmap_irq_chip cs35l41_regmap_irq_chip = {
-+static struct regmap_irq_chip cs35l41_regmap_irq_chip = {
- 	.name = "cs35l41 IRQ1 Controller",
- 	.status_base = CS35L41_IRQ1_STATUS1,
- 	.mask_base = CS35L41_IRQ1_MASK1,
-@@ -596,6 +674,7 @@ static const struct regmap_irq_chip cs35l41_regmap_irq_chip = {
- 	.num_regs = 4,
- 	.irqs = cs35l41_reg_irqs,
- 	.num_irqs = ARRAY_SIZE(cs35l41_reg_irqs),
-+	.runtime_pm = true,
- };
- 
- static int cs35l41_hda_apply_properties(struct cs35l41_hda *cs35l41)
-@@ -1003,13 +1082,23 @@ int cs35l41_hda_probe(struct device *dev, const char *device_name, int id, int i
- 	if (ret)
- 		goto err;
- 
-+	pm_runtime_set_autosuspend_delay(cs35l41->dev, 3000);
-+	pm_runtime_use_autosuspend(cs35l41->dev);
-+	pm_runtime_mark_last_busy(cs35l41->dev);
-+	pm_runtime_set_active(cs35l41->dev);
-+	pm_runtime_get_noresume(cs35l41->dev);
-+	pm_runtime_enable(cs35l41->dev);
-+
- 	ret = cs35l41_hda_apply_properties(cs35l41);
- 	if (ret)
--		goto err;
-+		goto err_pm;
-+
-+	pm_runtime_put_autosuspend(cs35l41->dev);
- 
- 	ret = component_add(cs35l41->dev, &cs35l41_hda_comp_ops);
- 	if (ret) {
- 		dev_err(cs35l41->dev, "Register component failed: %d\n", ret);
-+		pm_runtime_disable(cs35l41->dev);
- 		goto err;
+@@ -1664,7 +1668,7 @@ static u32 hv_compose_msi_req_v3(
+ 	int_pkt->wslot.slot = slot;
+ 	int_pkt->int_desc.vector = vector;
+ 	int_pkt->int_desc.reserved = 0;
+-	int_pkt->int_desc.vector_count = 1;
++	int_pkt->int_desc.vector_count = vector_count;
+ 	int_pkt->int_desc.delivery_mode = DELIVERY_MODE;
+ 	cpu = hv_compose_msi_req_get_cpu(affinity);
+ 	int_pkt->int_desc.processor_array[0] =
+@@ -1695,6 +1699,8 @@ static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
+ 	struct cpumask *dest;
+ 	struct compose_comp_ctxt comp;
+ 	struct tran_int_desc *int_desc;
++	struct msi_desc *msi_desc;
++	u8 vector, vector_count;
+ 	struct {
+ 		struct pci_packet pci_pkt;
+ 		union {
+@@ -1716,7 +1722,8 @@ static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
+ 		return;
  	}
  
-@@ -1017,6 +1106,10 @@ int cs35l41_hda_probe(struct device *dev, const char *device_name, int id, int i
+-	pdev = msi_desc_to_pci_dev(irq_data_get_msi_desc(data));
++	msi_desc  = irq_data_get_msi_desc(data);
++	pdev = msi_desc_to_pci_dev(msi_desc);
+ 	dest = irq_data_get_effective_affinity_mask(data);
+ 	pbus = pdev->bus;
+ 	hbus = container_of(pbus->sysdata, struct hv_pcibus_device, sysdata);
+@@ -1729,6 +1736,36 @@ static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
+ 	if (!int_desc)
+ 		goto drop_reference;
  
- 	return 0;
- 
-+err_pm:
-+	pm_runtime_disable(cs35l41->dev);
-+	pm_runtime_put_noidle(cs35l41->dev);
-+
- err:
- 	if (cs35l41_safe_reset(cs35l41->regmap, cs35l41->hw_cfg.bst_type))
- 		gpiod_set_value_cansleep(cs35l41->reset_gpio, 0);
-@@ -1030,17 +1123,27 @@ void cs35l41_hda_remove(struct device *dev)
- {
- 	struct cs35l41_hda *cs35l41 = dev_get_drvdata(dev);
- 
-+	pm_runtime_get_sync(cs35l41->dev);
-+	pm_runtime_disable(cs35l41->dev);
-+
- 	if (cs35l41->firmware_running)
- 		cs35l41_remove_dsp(cs35l41);
- 
- 	component_del(cs35l41->dev, &cs35l41_hda_comp_ops);
- 
-+	pm_runtime_put_noidle(cs35l41->dev);
-+
- 	if (cs35l41_safe_reset(cs35l41->regmap, cs35l41->hw_cfg.bst_type))
- 		gpiod_set_value_cansleep(cs35l41->reset_gpio, 0);
- 	gpiod_put(cs35l41->reset_gpio);
- }
- EXPORT_SYMBOL_NS_GPL(cs35l41_hda_remove, SND_HDA_SCODEC_CS35L41);
- 
-+const struct dev_pm_ops cs35l41_hda_pm_ops = {
-+	SET_RUNTIME_PM_OPS(cs35l41_runtime_suspend, cs35l41_runtime_resume, NULL)
-+};
-+EXPORT_SYMBOL_NS_GPL(cs35l41_hda_pm_ops, SND_HDA_SCODEC_CS35L41);
-+
- MODULE_DESCRIPTION("CS35L41 HDA Driver");
- MODULE_IMPORT_NS(SND_HDA_CS_DSP_CONTROLS);
- MODULE_AUTHOR("Lucas Tanure, Cirrus Logic Inc, <tanureal@opensource.cirrus.com>");
-diff --git a/sound/pci/hda/cs35l41_hda.h b/sound/pci/hda/cs35l41_hda.h
-index 717b30a2e33b..54521a013e78 100644
---- a/sound/pci/hda/cs35l41_hda.h
-+++ b/sound/pci/hda/cs35l41_hda.h
-@@ -56,6 +56,8 @@ enum halo_state {
- 	HALO_STATE_CODE_RUN
- };
- 
-+extern const struct dev_pm_ops cs35l41_hda_pm_ops;
-+
- int cs35l41_hda_probe(struct device *dev, const char *device_name, int id, int irq,
- 		      struct regmap *regmap);
- void cs35l41_hda_remove(struct device *dev);
-diff --git a/sound/pci/hda/cs35l41_hda_i2c.c b/sound/pci/hda/cs35l41_hda_i2c.c
-index e810b278fb91..a669090a18e8 100644
---- a/sound/pci/hda/cs35l41_hda_i2c.c
-+++ b/sound/pci/hda/cs35l41_hda_i2c.c
-@@ -55,6 +55,7 @@ static struct i2c_driver cs35l41_i2c_driver = {
- 	.driver = {
- 		.name		= "cs35l41-hda",
- 		.acpi_match_table = ACPI_PTR(cs35l41_acpi_hda_match),
-+		.pm		= &cs35l41_hda_pm_ops,
- 	},
- 	.id_table	= cs35l41_hda_i2c_id,
- 	.probe		= cs35l41_hda_i2c_probe,
-diff --git a/sound/pci/hda/cs35l41_hda_spi.c b/sound/pci/hda/cs35l41_hda_spi.c
-index 22e088f28438..d7f15e2abe66 100644
---- a/sound/pci/hda/cs35l41_hda_spi.c
-+++ b/sound/pci/hda/cs35l41_hda_spi.c
-@@ -50,6 +50,7 @@ static struct spi_driver cs35l41_spi_driver = {
- 	.driver = {
- 		.name		= "cs35l41-hda",
- 		.acpi_match_table = ACPI_PTR(cs35l41_acpi_hda_match),
-+		.pm		= &cs35l41_hda_pm_ops,
- 	},
- 	.id_table	= cs35l41_hda_spi_id,
- 	.probe		= cs35l41_hda_spi_probe,
-diff --git a/sound/pci/hda/hda_component.h b/sound/pci/hda/hda_component.h
-index fa6df52e7855..72ec0d865a28 100644
---- a/sound/pci/hda/hda_component.h
-+++ b/sound/pci/hda/hda_component.h
-@@ -17,4 +17,6 @@ struct hda_component {
- 	int subsystem_id;
- 	struct hda_codec *codec;
- 	void (*playback_hook)(struct device *dev, int action);
-+	int (*suspend_hook)(struct device *dev);
-+	int (*resume_hook)(struct device *dev);
- };
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 13ddece6096a..c247f5c24a5d 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -4005,15 +4005,22 @@ static void alc5505_dsp_init(struct hda_codec *codec)
- static int alc269_suspend(struct hda_codec *codec)
- {
- 	struct alc_spec *spec = codec->spec;
-+	int i;
- 
- 	if (spec->has_alc5505_dsp)
- 		alc5505_dsp_suspend(codec);
-+
-+	for (i = 0; i < HDA_MAX_COMPONENTS; i++)
-+		if (spec->comps[i].suspend_hook)
-+			spec->comps[i].suspend_hook(spec->comps[i].dev);
-+
- 	return alc_suspend(codec);
- }
- 
- static int alc269_resume(struct hda_codec *codec)
- {
- 	struct alc_spec *spec = codec->spec;
-+	int i;
- 
- 	if (spec->codec_variant == ALC269_TYPE_ALC269VB)
- 		alc269vb_toggle_power_output(codec, 0);
-@@ -4044,6 +4051,10 @@ static int alc269_resume(struct hda_codec *codec)
- 	if (spec->has_alc5505_dsp)
- 		alc5505_dsp_resume(codec);
- 
-+	for (i = 0; i < HDA_MAX_COMPONENTS; i++)
-+		if (spec->comps[i].resume_hook)
-+			spec->comps[i].resume_hook(spec->comps[i].dev);
-+
- 	return 0;
- }
- #endif /* CONFIG_PM */
-@@ -6586,8 +6597,20 @@ static int comp_bind(struct device *dev)
- {
- 	struct hda_codec *cdc = dev_to_hda_codec(dev);
- 	struct alc_spec *spec = cdc->spec;
-+	int ret, i;
-+
-+	ret = component_bind_all(dev, spec->comps);
-+	if (ret)
-+		return ret;
- 
--	return component_bind_all(dev, spec->comps);
-+	if (snd_hdac_is_power_on(&cdc->core)) {
-+		codec_dbg(cdc, "Resuming after bind.\n");
-+		for (i = 0; i < HDA_MAX_COMPONENTS; i++)
-+			if (spec->comps[i].resume_hook)
-+				spec->comps[i].resume_hook(spec->comps[i].dev);
++	if (!msi_desc->pci.msi_attrib.is_msix && msi_desc->nvec_used > 1) {
++		/*
++		 * if this is not the first MSI of Multi MSI, we already have
++		 * a mapping.  Can exit early.
++		 */
++		if (msi_desc->irq != data->irq) {
++			data->chip_data = int_desc;
++			int_desc->address = msi_desc->msg.address_lo |
++					    (u64)msi_desc->msg.address_hi << 32;
++			int_desc->data = msi_desc->msg.data +
++					 (data->irq - msi_desc->irq);
++			msg->address_hi = msi_desc->msg.address_hi;
++			msg->address_lo = msi_desc->msg.address_lo;
++			msg->data = int_desc->data;
++			put_pcichild(hpdev);
++			return;
++		}
++		/*
++		 * The vector we select here is a dummy value.  The correct
++		 * value gets sent to the hypervisor in unmask().  This needs
++		 * to be aligned with the count, and also not zero.  Multi-msi
++		 * is powers of 2 up to 32, so 32 will always work here.
++		 */
++		vector = 32;
++		vector_count = msi_desc->nvec_used;
++	} else {
++		vector = hv_msi_get_int_vector(data);
++		vector_count = 1;
 +	}
 +
-+	return 0;
- }
+ 	memset(&ctxt, 0, sizeof(ctxt));
+ 	init_completion(&comp.comp_pkt.host_event);
+ 	ctxt.pci_pkt.completion_func = hv_pci_compose_compl;
+@@ -1739,7 +1776,8 @@ static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
+ 		size = hv_compose_msi_req_v1(&ctxt.int_pkts.v1,
+ 					dest,
+ 					hpdev->desc.win_slot.slot,
+-					hv_msi_get_int_vector(data));
++					vector,
++					vector_count);
+ 		break;
  
- static void comp_unbind(struct device *dev)
+ 	case PCI_PROTOCOL_VERSION_1_2:
+@@ -1747,14 +1785,16 @@ static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
+ 		size = hv_compose_msi_req_v2(&ctxt.int_pkts.v2,
+ 					dest,
+ 					hpdev->desc.win_slot.slot,
+-					hv_msi_get_int_vector(data));
++					vector,
++					vector_count);
+ 		break;
+ 
+ 	case PCI_PROTOCOL_VERSION_1_4:
+ 		size = hv_compose_msi_req_v3(&ctxt.int_pkts.v3,
+ 					dest,
+ 					hpdev->desc.win_slot.slot,
+-					hv_msi_get_int_vector(data));
++					vector,
++					vector_count);
+ 		break;
+ 
+ 	default:
 -- 
-2.34.1
+2.7.4
 
