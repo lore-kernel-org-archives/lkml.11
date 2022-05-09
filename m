@@ -2,132 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48EDDC47081
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF1EAC47080
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 08:57:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237594AbiEII7I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 04:59:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51948 "EHLO
+        id S237743AbiEII7a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 04:59:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237172AbiEIIzn (ORCPT
+        with ESMTP id S237105AbiEIIxV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 04:55:43 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 583BA1B7AD
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 01:51:49 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KxZbC663yzGpfG;
-        Mon,  9 May 2022 16:48:55 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+        Mon, 9 May 2022 04:53:21 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 862AE195BE1;
+        Mon,  9 May 2022 01:49:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1652086170; x=1683622170;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=5uZDOrDyWhl4JrBtHMF+1wZx+yLzlXX1NZxBrijfkes=;
+  b=J16So74tH2BhDzM7X286u3P7rBRzFUJK39lgCPEKEeOCBQt6GMu4Tmoy
+   kM6HxTU/9MqqnTNG/3uL5h9hG9zF8fBzWjRP/P2plC9GZ1jzJeX5rQPVB
+   p+oltsteOWLZsRbO9FGj09h6aP21e2Zddt10GoI7iIJrGryevpjssav6B
+   cLagP1+cFpyXc2HQhc1iRt6Pw3gOT3Um1BchP0xcbiII6ZALtfUsrLSaj
+   MwsZKTO5p4NRmbNZW4bZJIf+clMUDJOB8Mx3eTAbJrIerSc6HtQHbdgny
+   A2bKqt3wI0oragKp4VldvfZ8oUK/1NC+Ocg3rzY0NzTaXR7POoElMdKAc
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.91,210,1647327600"; 
+   d="scan'208";a="162812517"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 May 2022 01:49:30 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 9 May 2022 16:51:42 +0800
-Subject: Re: [PATCH v2 2/4] mm/migration: remove unneeded lock page and
- PageMovable check
-To:     David Hildenbrand <david@redhat.com>
-CC:     <ying.huang@intel.com>, <hch@lst.de>, <dhowells@redhat.com>,
-        <cl@linux.com>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>, <akpm@linux-foundation.org>,
-        <mike.kravetz@oracle.com>, <naoya.horiguchi@nec.com>
-References: <20220425132723.34824-1-linmiaohe@huawei.com>
- <20220425132723.34824-3-linmiaohe@huawei.com>
- <525298ad-5e6a-2f8d-366d-4dcb7eebd093@redhat.com>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <f5f933dc-450c-f3ac-34e6-d6dc1d901efd@huawei.com>
-Date:   Mon, 9 May 2022 16:51:41 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+ 15.1.2375.17; Mon, 9 May 2022 01:49:27 -0700
+Received: from kavya-HP-Compaq-6000-Pro-SFF-PC.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 9 May 2022 01:49:22 -0700
+From:   Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
+To:     <krzysztof.kozlowski+dt@linaro.org>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>,
+        <peda@axentia.se>
+CC:     <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <lee.jones@linaro.org>,
+        <linux@armlinux.org.uk>, <Manohar.Puri@microchip.com>,
+        <Kavyasree.Kotagiri@microchip.com>, <UNGLinuxDriver@microchip.com>
+Subject: [PATCH v2 0/4] Add support for lan966 flexcom multiplexer
+Date:   Mon, 9 May 2022 14:19:16 +0530
+Message-ID: <20220509084920.14529-1-kavyasree.kotagiri@microchip.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <525298ad-5e6a-2f8d-366d-4dcb7eebd093@redhat.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/29 18:07, David Hildenbrand wrote:
-> On 25.04.22 15:27, Miaohe Lin wrote:
->> When non-lru movable page was freed from under us, __ClearPageMovable must
->> have been done. Even if it's not done, ClearPageIsolated here won't hurt
->> as page will be freed anyway. So we can thus remove unneeded lock page and
->> PageMovable check here.
->>
->> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
->> Reviewed-by: Christoph Hellwig <hch@lst.de>
->> ---
->>  mm/migrate.c | 8 ++------
->>  1 file changed, 2 insertions(+), 6 deletions(-)
->>
->> diff --git a/mm/migrate.c b/mm/migrate.c
->> index b779646665fe..0fc4651b3e39 100644
->> --- a/mm/migrate.c
->> +++ b/mm/migrate.c
->> @@ -1093,12 +1093,8 @@ static int unmap_and_move(new_page_t get_new_page,
->>  		/* page was freed from under us. So we are done. */
->>  		ClearPageActive(page);
->>  		ClearPageUnevictable(page);
->> -		if (unlikely(__PageMovable(page))) {
->> -			lock_page(page);
->> -			if (!PageMovable(page))
->> -				ClearPageIsolated(page);
->> -			unlock_page(page);
->> -		}
->> +		if (unlikely(__PageMovable(page)))
->> +			ClearPageIsolated(page);
->>  		goto out;
->>  	}
-> 
-> Hm, that code+change raises a couple of questions.
-> 
-> We're doing here the same as in putback_movable_pages(). So I guess the
-> difference here is that the caller did release the reference while the
-> page was isolated, while we don't assume the same in
-> putback_movable_pages().
+This patch series implements driver for lan966 flexcom multiplexer.
+Converts atmel-flexcom.txt bindings to yaml format and add new
+compatible string for lan966 flexcom.
 
-Agree.
+This patch also adds dt bindings for lan966 flexcom multiplexer.
 
-> 
-> 
-> Shouldn't whoever owned the page have cleared that? IOW, is it even
-> valid that we see a movable or isolated page here (WARN/BUG?)?
-> 
-> At least for balloon compaction, I remember that __PageMovable() is
-> properly cleared before freeing it via balloon_page_delete().
+v1 -> v2:
+- addressed comments for atmel,flexcom.yaml.
+- added child node and its parameters properly in flexcom bindings.
+- added ref to mux-consumer.yaml.
+- added ref to mux-controller.yaml in lan966-flx-mux.yaml
+- added MODULE() stuff in lan966 mux driver.
 
-z3fold, zsmalloc will do __ClearPageMovable when the page is going to be released.
-So I think we shouldn't see a movable page here:
+Kavyasree Kotagiri (4):
+  dt-bindings: mfd: atmel,flexcom: Convert to json-schema
+  dt-bindings: mfd: atmel,flexcom: Add lan966 compatible string and mux
+    properties
+  dt-bindings: mux: Add lan966 flexcom mux controller
+  mux: lan966: Add support for flexcom mux controller
 
-void __ClearPageMovable(struct page *page)
-{
-	VM_BUG_ON_PAGE(!PageMovable(page), page);
-	/*
-	 * Clear registered address_space val with keeping PAGE_MAPPING_MOVABLE
-	 * flag so that VM can catch up released page by driver after isolation.
-	 * With it, VM migration doesn't try to put it back.
-	 */
-	page->mapping = (void *)((unsigned long)page->mapping &
-				PAGE_MAPPING_MOVABLE);
-}
+ .../bindings/mfd/atmel,flexcom.yaml           | 142 ++++++++++++++++++
+ .../devicetree/bindings/mfd/atmel-flexcom.txt |  63 --------
+ .../mux/microchip,lan966-flx-mux.yaml         |  51 +++++++
+ arch/arm/mach-at91/Kconfig                    |   2 +
+ drivers/mfd/atmel-flexcom.c                   |  55 ++++++-
+ drivers/mux/Kconfig                           |  12 ++
+ drivers/mux/Makefile                          |   2 +
+ drivers/mux/lan966-flx.c                      | 121 +++++++++++++++
+ 8 files changed, 384 insertions(+), 64 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml
+ delete mode 100644 Documentation/devicetree/bindings/mfd/atmel-flexcom.txt
+ create mode 100644 Documentation/devicetree/bindings/mux/microchip,lan966-flx-mux.yaml
+ create mode 100644 drivers/mux/lan966-flx.c
 
-But it seems there is no guarantee for PageIsolated flag. Or am I miss something?
-
-> 
-> 
-> Also, I am not sure how reliable that page count check is here: if we'd
-> have another speculative reference to the page, we might see
-> "page_count(page) > 1" and not take that path, although the previous
-> owner released the last reference.
-
-IIUC, there should not be such speculative reference. The driver should have taken care
-of it.
-
-Thanks!
-
-> 
-> 
+-- 
+2.17.1
 
