@@ -2,113 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A35BC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:29:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D988C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:31:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236171AbiEIHba (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 03:31:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40186 "EHLO
+        id S236774AbiEIHdZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 03:33:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236268AbiEIH3U (ORCPT
+        with ESMTP id S234780AbiEIHdK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 03:29:20 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95BA21ADAB
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 00:25:26 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id d6so15173305ede.8
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 00:25:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ffn9G0lVjAVw7VY7Gf2gVJa9bJPx61VNfBkBP4QKUhg=;
-        b=k5iU4+wpkI+gckTEyQH4UBbPHXsLPXH18PiLYdBl7uzRbx2ZqyT2op2yR7RabsO5sl
-         cq/bJYUju0o/GmAfREaayXamQwFhL8YqhzC8DWuq+eeOORl9FqAOQrIUl0wSMy6QuNuc
-         iCvDsShVxcJiy1+NWH8xT+RMYngLYWvMHgMf4T6He/YIjjmMr+GXNdUTS8MV2X/EASlh
-         nI/w+Dku3ZrXh/CItkCZ/o8/8JNmYxJub6JtAvkEDKQto1EtwhpHVglffKEsfoUaLAOJ
-         cfhzmwTtP7fGOFtHVo/RKo036vEwgSqEEAWJjKEu4dvGD7VA/OpiP7QaLMUXH9j60IjC
-         QZ+w==
+        Mon, 9 May 2022 03:33:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A88FFE70
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 00:29:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652081274;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=V2c9vBmEzL9GnOTwGUFGbuZHpMHymiK976kVFmr4dm0=;
+        b=ZddCWJR8NsmBNVhcHBJSojocLLv+JlfPIf/oPTmo7yjInCa/Fb7rMZqAwWAFIzNEAa6M55
+        Ic8BgKbgVuN7DsjADUv+IkDeXcPobnkh9Uk/bp58b+/EFL312HPJCFiN2QjdI4GJz5ux2Y
+        ujr0USkV1g0Y8LuYPd+mLY2jtia5tVY=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-219-0EVxRxb_N_qXiPscsywzSQ-1; Mon, 09 May 2022 03:27:53 -0400
+X-MC-Unique: 0EVxRxb_N_qXiPscsywzSQ-1
+Received: by mail-ed1-f72.google.com with SMTP id k13-20020a50ce4d000000b00425e4447e64so7801129edj.22
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 00:27:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ffn9G0lVjAVw7VY7Gf2gVJa9bJPx61VNfBkBP4QKUhg=;
-        b=ZqC06+1ulFLAPdHVeYK1ngWu+h1TD+u8yIlwkqIwwD2VZX93wxZ+0IiI+gFlpmJBul
-         3O1reAWeOxY6EqCe6EyYIq+2rJWu9fm6boykp8zDUfHZJL4r0+LVTigF8qyfkQIVSNy5
-         HWlTveJ0XnJw4+aFW0IT6SdyZeaUmoMfzpN+Ac7EitSXhpxHi6xkuZxTjH12jC3AjD1C
-         A1gvX04skbS6w3xl4O3PhbMPQ7QYnZdcpXHVaIkIUj3UnPEcW4800CH0T60EJkYaykqN
-         ho9rKV7io8DpM1XaMupwoxxdBVrRf/Pi4+qIc1BhBTmHtGM3SOSRWJ862u6yWyZSBrjC
-         SlTw==
-X-Gm-Message-State: AOAM532X/QKcDJJYjSsnV120fV7ziDCE+LglI7f6VF6HMGOZ2oE9VjcY
-        B0eEk57W3gH2WzQNHyzlmNW6bQ==
-X-Google-Smtp-Source: ABdhPJyLrNXAR9V95KOmH7TaGfKkewtlQeguVyMLABaxdfoHqhHBGdvEKNPUSXI80M5LoO9ChLiQxg==
-X-Received: by 2002:a05:6402:50d2:b0:427:f49e:71a0 with SMTP id h18-20020a05640250d200b00427f49e71a0mr16020611edb.211.1652081125192;
-        Mon, 09 May 2022 00:25:25 -0700 (PDT)
-Received: from [192.168.0.242] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id q10-20020a1709064cca00b006f3ef214dd7sm4788853ejt.61.2022.05.09.00.25.24
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
+         :subject:to:cc:content-language:content-transfer-encoding;
+        bh=V2c9vBmEzL9GnOTwGUFGbuZHpMHymiK976kVFmr4dm0=;
+        b=HSEWLW4y0dTU63VeRGo77bFRx0NKKS85LZRaJDZBKaRyImLV19yMYJJdYSpE8bC62D
+         vIYuzHxrAa2i9JGsAKeitA1bZGGW/a3uBIAfENiuYSebcbmf9ADAbbXrINpWle4XjZe2
+         xOEBu8jdGILgN2WbeTbx6AtJWqKVcpm+jvCk+YCYvoL4hIx+rGv+PNDAiRX7r4J7DGcX
+         TnjaDBnv1pMdrVnTwBRsTUiyNRw95td/Gi+/BCKAM1RwfHcMBNkBPLko8zfLHTGR1tJ/
+         EcchPVEQPW83FMyTLT5lWz6aWkRgFnKhxnCfNPOTICIRofXAlMjy3fI+NOZOngz9AJBa
+         D6SA==
+X-Gm-Message-State: AOAM5331uyZkSkb32KsW3ZKSeMG3sdfDHnCGhwKSqdzftfL/cLUt6Sfp
+        EO1RNIkpgCyAABCEZvhtkdoTWL8ujbr2riSmZWFSzKbDCn1cLXgc2qFOsA8BezcRYmOvVOs/fu2
+        VH6pr+oeDvco9RICTm1/JGUB2
+X-Received: by 2002:a05:6402:4256:b0:428:39:c6c7 with SMTP id g22-20020a056402425600b004280039c6c7mr15465373edb.374.1652081272625;
+        Mon, 09 May 2022 00:27:52 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxtLYjqjd+JSRhyz+2aHDlDZujkKSuS44yxRLRXeGdCffdJgodAPLKfV+vb4QTZPqFG8D2GdQ==
+X-Received: by 2002:a05:6402:4256:b0:428:39:c6c7 with SMTP id g22-20020a056402425600b004280039c6c7mr15465361edb.374.1652081272439;
+        Mon, 09 May 2022 00:27:52 -0700 (PDT)
+Received: from [10.40.98.142] ([78.108.130.194])
+        by smtp.gmail.com with ESMTPSA id k14-20020aa7c04e000000b0042617ba639asm5967014edo.36.2022.05.09.00.27.51
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 00:25:24 -0700 (PDT)
-Message-ID: <422bf3bc-7787-97dd-6ab4-7570e5ce2ed8@linaro.org>
-Date:   Mon, 9 May 2022 09:25:23 +0200
+        Mon, 09 May 2022 00:27:52 -0700 (PDT)
+Message-ID: <d9007c58-71a2-e081-c609-fbf04855b591@redhat.com>
+Date:   Mon, 9 May 2022 09:27:51 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2 1/3] dt-bindings: media: rockchip-vpu: Add RK3568 VEPU
- compatible
+ Thunderbird/91.8.0
+From:   Hans de Goede <hdegoede@redhat.com>
+Subject: [GIT PULL] platform-drivers-x86 for 5.18-4
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Mark Gross <mgross@linux.intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        platform-driver-x86@vger.kernel.org
 Content-Language: en-US
-To:     Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>
-Cc:     Ezequiel Garcia <ezequiel@collabora.com>,
-        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-References: <20220508202544.501981-1-frattaroli.nicolas@gmail.com>
- <20220508202544.501981-2-frattaroli.nicolas@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220508202544.501981-2-frattaroli.nicolas@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/05/2022 22:25, Nicolas Frattaroli wrote:
-> The RK3568 and RK3566 have a Hantro VPU node solely dedicated to
-> encoding. This patch adds a compatible for it, and also allows
-> the bindings to only come with a vepu interrupt.
-> 
-> Signed-off-by: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
-> ---
->  Documentation/devicetree/bindings/media/rockchip-vpu.yaml | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/media/rockchip-vpu.yaml b/Documentation/devicetree/bindings/media/rockchip-vpu.yaml
-> index bacb60a34989..4045f107ca4e 100644
-> --- a/Documentation/devicetree/bindings/media/rockchip-vpu.yaml
-> +++ b/Documentation/devicetree/bindings/media/rockchip-vpu.yaml
-> @@ -22,6 +22,7 @@ properties:
->            - rockchip,rk3288-vpu
->            - rockchip,rk3328-vpu
->            - rockchip,rk3399-vpu
-> +          - rockchip,rk3568-vepu
->            - rockchip,px30-vpu
->        - items:
->            - const: rockchip,rk3188-vpu
-> @@ -40,6 +41,7 @@ properties:
->    interrupt-names:
->      oneOf:
->        - const: vdpu
-> +      - const: vepu
+Hi Linus,
 
-This should be enum (for both lines above) and you should add
-allOf:if:then with a constraints which variant can have which interrupts.
+Here is a third round of bug-fixes for platform-drivers-x86
+for 5.18:
+
+ -  thinkpad_acpi AMD suspend/resume + fan detection fixes
+ -  2 other small fixes
+ -  1 hardware-id addition
+
+Regards,
+
+Hans
 
 
-Best regards,
-Krzysztof
+The following changes since commit eb2fd9b43fae0c51982ac4229535b6cfd77380db:
+
+  platform/x86/intel: pmc/core: change pmc_lpm_modes to static (2022-04-27 16:55:54 +0200)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git tags/platform-drivers-x86-v5.18-4
+
+for you to fetch changes up to 44acfc22c7d055d9c4f8f0974ee28422405b971a:
+
+  platform/surface: aggregator: Fix initialization order when compiling as builtin module (2022-05-06 13:05:57 +0200)
+
+----------------------------------------------------------------
+platform-drivers-x86 for v5.18-4
+
+3th set of pdx86 fixes for 5.18:
+ -  thinkpad_acpi AMD suspend/resume + fan detection fixes
+ -  2 other small fixes
+ -  1 hardware-id addition
+
+The following is an automated git shortlog grouped by driver:
+
+platform/surface:
+ -  aggregator: Fix initialization order when compiling as builtin module
+ -  gpe: Add support for Surface Pro 8
+
+platform/x86/intel:
+ -  Fix 'rmmod pmt_telemetry' panic
+
+thinkpad_acpi:
+ -  Correct dual fan probe
+ -  Add a s2idle resume quirk for a number of laptops
+ -  Convert btusb DMI list to quirks
+
+----------------------------------------------------------------
+Mario Limonciello (2):
+      platform/x86: thinkpad_acpi: Convert btusb DMI list to quirks
+      platform/x86: thinkpad_acpi: Add a s2idle resume quirk for a number of laptops
+
+Mark Pearson (1):
+      platform/x86: thinkpad_acpi: Correct dual fan probe
+
+Maximilian Luz (2):
+      platform/surface: gpe: Add support for Surface Pro 8
+      platform/surface: aggregator: Fix initialization order when compiling as builtin module
+
+Prarit Bhargava (1):
+      platform/x86/intel: Fix 'rmmod pmt_telemetry' panic
+
+ drivers/platform/surface/aggregator/core.c |   2 +-
+ drivers/platform/surface/surface_gpe.c     |   8 ++
+ drivers/platform/x86/intel/pmt/telemetry.c |   2 +-
+ drivers/platform/x86/thinkpad_acpi.c       | 175 +++++++++++++++++++++++++++--
+ 4 files changed, 173 insertions(+), 14 deletions(-)
+
