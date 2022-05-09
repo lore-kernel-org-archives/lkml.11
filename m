@@ -2,142 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19C99C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E1D5C3527B
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 08:57:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237314AbiEII6R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 04:58:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51732 "EHLO
+        id S237361AbiEII60 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 04:58:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236759AbiEIItl (ORCPT
+        with ESMTP id S237683AbiEIIrD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 04:49:41 -0400
-Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9973517B60D;
-        Mon,  9 May 2022 01:45:46 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R501e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=30;SR=0;TI=SMTPD_---0VChb3kD_1652085922;
-Received: from 30.32.96.14(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VChb3kD_1652085922)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 09 May 2022 16:45:24 +0800
-Message-ID: <a6cc9765-1d8c-b725-978f-53f226d2fbb9@linux.alibaba.com>
-Date:   Mon, 9 May 2022 16:46:03 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2 1/3] mm: change huge_ptep_clear_flush() to return the
- original pte
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Muchun Song <songmuchun@bytedance.com>
-Cc:     "dalias@libc.org" <dalias@libc.org>,
-        "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>,
-        "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "James.Bottomley@HansenPartnership.com" 
-        <James.Bottomley@HansenPartnership.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "paulus@samba.org" <paulus@samba.org>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
-        "agordeev@linux.ibm.com" <agordeev@linux.ibm.com>,
-        "will@kernel.org" <will@kernel.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "ysato@users.sourceforge.jp" <ysato@users.sourceforge.jp>,
-        "deller@gmx.de" <deller@gmx.de>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        "borntraeger@linux.ibm.com" <borntraeger@linux.ibm.com>,
-        "gor@linux.ibm.com" <gor@linux.ibm.com>,
-        "hca@linux.ibm.com" <hca@linux.ibm.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "tsbogend@alpha.franken.de" <tsbogend@alpha.franken.de>,
-        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "svens@linux.ibm.com" <svens@linux.ibm.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "mike.kravetz@oracle.com" <mike.kravetz@oracle.com>
-References: <cover.1652002221.git.baolin.wang@linux.alibaba.com>
- <012a484019e7ad77c39deab0af52a6755d8438c8.1652002221.git.baolin.wang@linux.alibaba.com>
- <Ynek+b3k6PVN3x7J@FVFYT0MHHV2J.usts.net>
- <bf627d1a-42f8-77f3-6ac2-67edde2feb8a@linux.alibaba.com>
- <d5055b48-d722-e03d-fc32-16fd76e3fa22@csgroup.eu>
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-In-Reply-To: <d5055b48-d722-e03d-fc32-16fd76e3fa22@csgroup.eu>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Mon, 9 May 2022 04:47:03 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 247081C196C;
+        Mon,  9 May 2022 01:43:08 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id A957A21BA8;
+        Mon,  9 May 2022 08:43:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1652085787; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=4fP40eSvF34iHipeWPs64su+UfsOQc7xa/5u//Nm++E=;
+        b=ITLzDwznAxOYPqTy41JoGTKG+v0edPIP0By/fktrWFAshuA+WpFlpj3+R0WIPT81rTEHyL
+        MMUDVuMYXOHKET57pu4W4RZjo1xwwlvSm0heY5ZIHeSuBiTHGk398aNQnDZqVEv/gg3hUs
+        uTOomNZImpQR8nsTwDxCnXkbjWNBA1o=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1652085787;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=4fP40eSvF34iHipeWPs64su+UfsOQc7xa/5u//Nm++E=;
+        b=buLvgq0UIGTEf49offxL6DOTTL+OwyuyXDtvho47b5RpYigc9W0x9/gOe5gG/MKc0Qm4mS
+        cG4JvaBIOElIlWDg==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 90DF82C141;
+        Mon,  9 May 2022 08:43:07 +0000 (UTC)
+Date:   Mon, 09 May 2022 10:43:07 +0200
+Message-ID: <s5hh75zm6zo.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        alsa-devel@alsa-project.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ALSA: hdsp: remove redundant assignment to pointer kctl
+In-Reply-To: <20220508212819.59188-1-colin.i.king@gmail.com>
+References: <20220508212819.59188-1-colin.i.king@gmail.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Sun, 08 May 2022 23:28:19 +0200,
+Colin Ian King wrote:
+> 
+> Pointer kctl is being assigned a value that is not being read, buf
+> is being re-assigned later. The assignment is redundant and can be
+> removed.
+> 
+> Cleans up clang scan build warning:
+> sound/pci/rme9652/hdsp.c:3317:28: warning: Although the value stored
+> to 'kctl' is used in the enclosing expression, the value is never
+> actually read from 'kctl' [deadcode.DeadStores]
+> 
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+
+Thanks, applied.
 
 
-On 5/9/2022 1:46 PM, Christophe Leroy wrote:
-> 
-> 
-> Le 08/05/2022 à 15:09, Baolin Wang a écrit :
->>
->>
->> On 5/8/2022 7:09 PM, Muchun Song wrote:
->>> On Sun, May 08, 2022 at 05:36:39PM +0800, Baolin Wang wrote:
->>>> It is incorrect to use ptep_clear_flush() to nuke a hugetlb page
->>>> table when unmapping or migrating a hugetlb page, and will change
->>>> to use huge_ptep_clear_flush() instead in the following patches.
->>>>
->>>> So this is a preparation patch, which changes the
->>>> huge_ptep_clear_flush()
->>>> to return the original pte to help to nuke a hugetlb page table.
->>>>
->>>> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
->>>> Acked-by: Mike Kravetz <mike.kravetz@oracle.com>
->>>
->>> Reviewed-by: Muchun Song <songmuchun@bytedance.com>
->>
->> Thanks for reviewing.
->>
->>>
->>> But one nit below:
->>>
->>> [...]
->>>> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
->>>> index 8605d7e..61a21af 100644
->>>> --- a/mm/hugetlb.c
->>>> +++ b/mm/hugetlb.c
->>>> @@ -5342,7 +5342,7 @@ static vm_fault_t hugetlb_wp(struct mm_struct
->>>> *mm, struct vm_area_struct *vma,
->>>>            ClearHPageRestoreReserve(new_page);
->>>>            /* Break COW or unshare */
->>>> -        huge_ptep_clear_flush(vma, haddr, ptep);
->>>> +        (void)huge_ptep_clear_flush(vma, haddr, ptep);
->>>
->>> Why add a "(void)" here? Is there any warning if no "(void)"?
->>> IIUC, I think we can remove this, right?
->>
->> I did not meet any warning without the casting, but this is per Mike's
->> comment[1] to make the code consistent with other functions casting to
->> void type explicitly in hugetlb.c file.
->>
->> [1]
->> https://lore.kernel.org/all/495c4ebe-a5b4-afb6-4cb0-956c1b18d0cc@oracle.com/
->>
-> 
-> As far as I understand, Mike said that you should be accompagnied with a
-> big fat comment explaining why we ignore the returned value from
-> huge_ptep_clear_flush(). >
-> By the way huge_ptep_clear_flush() is not declared 'must_check' so this
-> cast is just visual polution and should be removed.
-> 
-> In the meantime the comment suggested by Mike should be added instead.
-Sorry for my misunderstanding. I just follow the explicit void casting 
-like other places in hugetlb.c file. And I am not sure if it is useful 
-adding some comments like below, since we did not need the original pte 
-value in the COW case mapping with a new page, and the code is more 
-readable already I think.
-
-Mike, could you help to clarify what useful comments would you like? and 
-remove the explicit void casting? Thanks.
-
-/*
-  * Just ignore the return value with new page mapped.
-  */
+Takashi
