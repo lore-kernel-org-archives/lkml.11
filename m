@@ -2,102 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F7C3C352A1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51F7BC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:04:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235834AbiEIHGS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 03:06:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48062 "EHLO
+        id S235910AbiEIHGY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 03:06:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233462AbiEIHCH (ORCPT
+        with ESMTP id S231332AbiEIHBd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 03:02:07 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 63B971A35AA;
-        Sun,  8 May 2022 23:58:13 -0700 (PDT)
-Received: from linux.localdomain (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Axuth4u3hiwqkOAA--.49630S5;
-        Mon, 09 May 2022 14:58:06 +0800 (CST)
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-To:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next 3/3] bpf: Print some info if disable bpf_jit_enable failed
-Date:   Mon,  9 May 2022 14:57:55 +0800
-Message-Id: <1652079475-16684-4-git-send-email-yangtiezhu@loongson.cn>
-X-Mailer: git-send-email 2.1.0
-In-Reply-To: <1652079475-16684-1-git-send-email-yangtiezhu@loongson.cn>
-References: <1652079475-16684-1-git-send-email-yangtiezhu@loongson.cn>
-X-CM-TRANSID: AQAAf9Axuth4u3hiwqkOAA--.49630S5
-X-Coremail-Antispam: 1UD129KBjvJXoWxJrW7KF43Cw4UAF45CryrCrg_yoW8XryUpr
-        48Gr92krZ8X34xG39rAFnaqr13trWUXF1UCrnrCa15X3WDXr9rJrsYgryUKFZFvrWqga43
-        Ar4Iyr9ruaykKa7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUBFb7Iv0xC_Kw4lb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I2
-        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI
-        8067AKxVWUWwA2048vs2IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28CjxkF
-        64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0cI8IcV
-        CY1x0267AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwVC2z280
-        aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzV
-        Aqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S
-        6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JMxkIecxEwVAFwVW8AwCF04k20xvY0x
-        0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E
-        7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcV
-        C0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF
-        04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7
-        CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07bz2NNUUUUU=
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
+        Mon, 9 May 2022 03:01:33 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A4DA17EC22;
+        Sun,  8 May 2022 23:57:38 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id e5so11255747pgc.5;
+        Sun, 08 May 2022 23:57:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=i42mRfc6plgwDr9xKkcbZKYxsl3MvEdsg2vyK92DFBY=;
+        b=DwZe/s3uWRJgcaeMctfYp2UapVP0ZJbieh0Cf0MMg+Xm9N/zvZko2LVRzEPTr41dkL
+         ueFUwuj3igd/tk9ZyDmud1M4mLC5em43QBFALnEhPQxvWejUlyoWonEFzHcjquCGvzd3
+         AhJcXBIxHkuVUEJh60tO2d/BOc0Jn2tXToGtulzMmF4CjmkxMDr1GHNjueaDwbXT2EjD
+         9bPJw82HWTKbdSObcRRiICsowqse3RUVFW4unbx26/od3QXMU1++SXiWXHwnQto5e+2n
+         TbkryukAUxE8a6t8Rh8JCFkgqMZwCsO7bhio9UrXPl6WTcafpBBa9Wdhi6y8uZRIHnM/
+         Ct3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=i42mRfc6plgwDr9xKkcbZKYxsl3MvEdsg2vyK92DFBY=;
+        b=wP1QFYHp32GcF9mM5gAwkOYqCvUX3L87Ldoa0fVbQHI53YeSMENh89VrI46Rr/CP5h
+         acCn217MiOvDFULh8cX4S5OcWAjueizobljc0UQ/T8I84pY25vxQaD/h20dim9xy34mg
+         V199vaupcPz+CY/AVvk8Z5VsFmVRxkHJ0Cxxg/vfStmqoQe24agXCk8udDa9rqcdAfjh
+         KZR7gRcLIW3rnABBivoXGmGcNjNHuoVaYjOZTfnJ3zyHl0AI8LNh2TBHPwmhJj4kJHhn
+         yESxjlIto8dSbBFjhFqb09bffssm0T4DZvofM57Wfwh0UPz98mgHo6NGW0K2NTJ5ED57
+         vq+g==
+X-Gm-Message-State: AOAM532V5/hUNOkIM71FRfpw5W8HtldCID4CfOcAUbvIvNN3WvNQYx2h
+        f7/2IxF0XtOPVualzkyUqwQ=
+X-Google-Smtp-Source: ABdhPJyd2/9ww/c4Z2dEtoofDbc8dDsoh6d7YAJU7ovdjn12+kfHvrJl5xpUxH8nUsxkHai99UxerQ==
+X-Received: by 2002:a63:531c:0:b0:3c6:a5d7:8bae with SMTP id h28-20020a63531c000000b003c6a5d78baemr4931710pgb.505.1652079456203;
+        Sun, 08 May 2022 23:57:36 -0700 (PDT)
+Received: from localhost ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id t15-20020a6549cf000000b003c14af50621sm7770378pgs.57.2022.05.08.23.57.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 May 2022 23:57:35 -0700 (PDT)
+Message-ID: <6278bb5f.1c69fb81.e623f.215f@mx.google.com>
+X-Google-Original-Message-ID: <20220509065733.GB1109788@cgel.zte@gmail.com>
+Date:   Mon, 9 May 2022 06:57:33 +0000
+From:   CGEL <cgel.zte@gmail.com>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     akpm@linux-foundation.org, keescook@chromium.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, ran.xiaokai@zte.com.cn, wang.yong12@zte.com.cn,
+        xu.xin16@zte.com.cn, yang.yang29@zte.com.cn,
+        zhang.yunkai@zte.com.cn
+Subject: Re: [PATCH v5] mm/ksm: introduce ksm_force for each process
+References: <20220507105926.d4423601230f698b0f5228d1@linux-foundation.org>
+ <20220508092710.930126-1-xu.xin16@zte.com.cn>
+ <YngF+Lz01noCKRFc@casper.infradead.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YngF+Lz01noCKRFc@casper.infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A user told me that bpf_jit_enable can be disabled on one system, but he
-failed to disable bpf_jit_enable on the other system:
+On Sun, May 08, 2022 at 07:03:36PM +0100, Matthew Wilcox wrote:
+> On Sun, May 08, 2022 at 09:27:10AM +0000, cgel.zte@gmail.com wrote:
+> > If ksm_force is set to 0, cancel the feature of ksm_force of this
+> > process and unmerge those merged pages belonging to VMAs which is not
+> > madvised as MADV_MERGEABLE of this process, but leave MADV_MERGEABLE
+> > areas merged.
+> 
+> Is that actually a useful feature?  Otherwise, we could simply turn
+> on/off the existing MMF_VM_MERGEABLE flag instead of introducing this
+> new bool.
+> 
+I think this will be very useful for those apps which are very likely to
+cause Same Pages in memory and users and operators are not willing to
+modified the source codes for any reasons.
 
-  # echo 0 > /proc/sys/net/core/bpf_jit_enable
-  bash: echo: write error: Invalid argument
+Besides, simply turning of/off the existing MMF_VM_MERGEABLE flag may be
+not feasible because madvise will also turn on the MMF_VM_MERGEABLE
+flag.
 
-No useful info is available through the dmesg log, a quick analysis shows
-that the issue is related with CONFIG_BPF_JIT_ALWAYS_ON.
-
-When CONFIG_BPF_JIT_ALWAYS_ON is enabled, bpf_jit_enable is permanently set
-to 1 and setting any other value than that will return failure.
-
-It is better to print some info to tell the user if disable bpf_jit_enable
-failed.
-
-Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
----
- net/core/sysctl_net_core.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
-index 059352b..f8a1d450 100644
---- a/net/core/sysctl_net_core.c
-+++ b/net/core/sysctl_net_core.c
-@@ -266,6 +266,8 @@ static int proc_dointvec_minmax_bpf_enable(struct ctl_table *table, int write,
- 					   loff_t *ppos)
- {
- 	int ret, jit_enable = *(int *)table->data;
-+	int min = *(int *)table->extra1;
-+	int max = *(int *)table->extra2;
- 	struct ctl_table tmp = *table;
- 
- 	tmp.data = &jit_enable;
-@@ -280,6 +282,10 @@ static int proc_dointvec_minmax_bpf_enable(struct ctl_table *table, int write,
- 			ret = -EPERM;
- 		}
- 	}
-+
-+	if (write && ret && min == max)
-+		pr_info("CONFIG_BPF_JIT_ALWAYS_ON is enabled, bpf_jit_enable is permanently set to 1.\n");
-+
- 	return ret;
- }
- 
--- 
-2.1.0
-
+I think the following suggestions is good, and I will resend a patch.
+> > +Controlling KSM with procfs
+> > +===========================
+> > +
+> > +KSM can also operate on anonymous areas of address space of those processes's
+> > +knob ``/proc/<pid>/ksm_force`` is on, even if app codes doesn't call madvise()
+> > +explicitly to advise specific areas as MADV_MERGEABLE.
+> > +
+> > +You can set ksm_force to 1 to force all anonymous and qualified VMAs of
+> > +this process to be involved in KSM scanning. But It is effective only when the
+> > +klob of ``/sys/kernel/mm/ksm/run`` is set as 1.
+> 
+> I think that last sentence doesn't really add any value.
+> 
+> > +	memset(buffer, 0, sizeof(buffer));
+> > +	if (count > sizeof(buffer) - 1)
+> > +		count = sizeof(buffer) - 1;
+> > +	if (copy_from_user(buffer, buf, count)) {
+> > +		err = -EFAULT;
+> > +		goto out_return;
+> 
+> This feels a bit unnecessary.  Just 'return -EFAULT' here.
+> 
+> > +	}
+> > +
+> > +	err = kstrtoint(strstrip(buffer), 0, &force);
+> > +
+> > +	if (err)
+> > +		goto out_return;
+> 
+> 'return err'
+> 
+> > +	if (force != 0 && force != 1) {
+> > +		err = -EINVAL;
+> > +		goto out_return;
+> 
+> 'return -EINVAL'
+> 
+> > +	}
+> > +
+> > +	task = get_proc_task(file_inode(file));
+> > +	if (!task) {
+> > +		err = -ESRCH;
+> > +		goto out_return;
+> 
+> 'return -ESRCH'
