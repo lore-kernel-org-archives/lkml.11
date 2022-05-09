@@ -2,83 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7847DC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A97E7C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:30:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236132AbiEIJca (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 05:32:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43542 "EHLO
+        id S236432AbiEIJcj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 05:32:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237915AbiEIJIH (ORCPT
+        with ESMTP id S237158AbiEIJaX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 05:08:07 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE9D41D5277
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 02:04:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1652087053; x=1683623053;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=32hAsO1+ERVsJtppF5xPs+0dE3EElahoU3zfp8Y2qTA=;
-  b=GfiJdotJVFjQQcizxEIOrdbu4Dbvm32BxdjYL0pMuXDenFj3zlr5l+U0
-   adUp/iJoTmFas2MSMeEYoYtydtHOUxlcvAsdk9/HrmpbNsTpduKu7sONY
-   xueGehnw5b2Hcio985bl6rLKF3EWzni/EYiq4VuWwuskAnbmMGB+3Y6Az
-   1Z11cyRdemd98MpX5sNJHWjMp5xI3p9EqG/+8cJMy3CvaBe6mTaVvEfF2
-   pBCbGG74aL8bl2ucyTrPbppYkqGcJVyQcNpLwfOdLv9zH6hQtmTiB/36Y
-   9CxCsndKQ9mmVpvLOpuW0vQMARslECXxwWhUgiL7CUwV9R8mhFtqNxoKm
-   A==;
-X-IronPort-AV: E=Sophos;i="5.91,210,1647327600"; 
-   d="scan'208";a="155259907"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 May 2022 02:04:12 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 9 May 2022 02:04:11 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 9 May 2022 02:04:10 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <daniel.lezcano@linaro.org>, <tglx@linutronix.de>
-CC:     <linux-kernel@vger.kernel.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH 0/3] clocksource/drivers/timer-microchip-pit64b: improve clock management
-Date:   Mon, 9 May 2022 12:06:34 +0300
-Message-ID: <20220509090637.4058399-1-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+        Mon, 9 May 2022 05:30:23 -0400
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 616431C3465;
+        Mon,  9 May 2022 02:26:29 -0700 (PDT)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 6C332200E7E;
+        Mon,  9 May 2022 11:26:28 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 35FE9200E85;
+        Mon,  9 May 2022 11:26:28 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 81BD6180031E;
+        Mon,  9 May 2022 17:26:26 +0800 (+08)
+From:   Shengjiu Wang <shengjiu.wang@nxp.com>
+To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
+        shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org,
+        robh+dt@kernel.org, krzk+dt@kernel.org, devicetree@vger.kernel.org
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 2/2] ASoC: dt-bindings: fsl,micfil: Add compatible string for imx8mp
+Date:   Mon,  9 May 2022 17:14:23 +0800
+Message-Id: <1652087663-1908-2-git-send-email-shengjiu.wang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1652087663-1908-1-git-send-email-shengjiu.wang@nxp.com>
+References: <1652087663-1908-1-git-send-email-shengjiu.wang@nxp.com>
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Add compatible string for imx8mp, which has micfil module
 
-This series improves clock management on PIT64B driver such that PIT64B
-clocks to be disabled in case driver has been probed to be used as
-clockevent but there is already a better clockevent timer available.
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+---
+ Documentation/devicetree/bindings/sound/fsl,micfil.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-Along with it added a patch to fix compilation warnings.
-
-Patches were initially part of series at [1].
-
-Thank you,
-Claudiu Beznea
-
-[1] https://lore.kernel.org/linux-arm-kernel/80f949af-ddab-b54d-b6ee-0fbcb1f74b51@linaro.org/T/#mc9969713b69f7874dd3bc6de07e8e8bc9568ead5
-
-Claudiu Beznea (3):
-  clocksource/drivers/timer-microchip-pit64b: remove suspend/resume ops
-    for ce
-  clocksource/drivers/timer-microchip-pit64b: use mchp_pit64b_{suspend,
-    resume}
-  clocksource/drivers/timer-microchip-pit64b: fix compilation warnings
-
- drivers/clocksource/timer-microchip-pit64b.c | 64 +++++++++-----------
- 1 file changed, 27 insertions(+), 37 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/sound/fsl,micfil.txt b/Documentation/devicetree/bindings/sound/fsl,micfil.txt
+index 53e227b15277..1ea05d4996c7 100644
+--- a/Documentation/devicetree/bindings/sound/fsl,micfil.txt
++++ b/Documentation/devicetree/bindings/sound/fsl,micfil.txt
+@@ -6,6 +6,7 @@ microphone bitstream in a configurable output sampling rate.
+ Required properties:
+ 
+   - compatible		: Compatible list, contains "fsl,imx8mm-micfil"
++			  or "fsl,imx8mp-micfil"
+ 
+   - reg			: Offset and length of the register set for the device.
+ 
 -- 
-2.34.1
+2.17.1
 
