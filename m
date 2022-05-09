@@ -2,98 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78467C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5918EC3527B
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:30:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237207AbiEIJdT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 05:33:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45796 "EHLO
+        id S237156AbiEIJdP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 05:33:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237084AbiEIJaX (ORCPT
+        with ESMTP id S237741AbiEII7a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 05:30:23 -0400
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60C6A1C345D;
-        Mon,  9 May 2022 02:26:28 -0700 (PDT)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 3248F200E75;
-        Mon,  9 May 2022 11:26:27 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id F09C3200E74;
-        Mon,  9 May 2022 11:26:26 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 510B9180031C;
-        Mon,  9 May 2022 17:26:25 +0800 (+08)
-From:   Shengjiu Wang <shengjiu.wang@nxp.com>
-To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
-        shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org,
-        robh+dt@kernel.org, krzk+dt@kernel.org, devicetree@vger.kernel.org
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] ASoC: fsl_micfil: Add support for i.MX8MPlus
-Date:   Mon,  9 May 2022 17:14:22 +0800
-Message-Id: <1652087663-1908-1-git-send-email-shengjiu.wang@nxp.com>
-X-Mailer: git-send-email 2.7.4
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Mon, 9 May 2022 04:59:30 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA46B1C83CB
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 01:55:36 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id A848C21C37;
+        Mon,  9 May 2022 08:55:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1652086535; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=f0uG0/LlBEZjwhlgsnXOomtG9yPrEuDKrL/p6a5J2T0=;
+        b=yVlkIMdu8rvzJj0osrT5qts+Cj4LFP94lv3xO6YpspYSAA9bPHf6VJuYdAhs28bqMNz7mM
+        MTDlBG7I9d+ABPvXFoI5mVj4XFbGXr9cQeeB5umpQEKMOq60QXSg9fzNgOtLQR+4kKTXHA
+        ov2JaCDJThB45GkHTi9xo6I5KglmtRI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1652086535;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=f0uG0/LlBEZjwhlgsnXOomtG9yPrEuDKrL/p6a5J2T0=;
+        b=FS0EAieXafQi1Su9OWsZ6uMdTVMpc/kgRaqmR2zf3QO1Pvkg0k/b8CIAPjVA/VpD1MbIUT
+        m5oyfnzjH7NfqSCg==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 9E72E2C141;
+        Mon,  9 May 2022 08:55:35 +0000 (UTC)
+Date:   Mon, 09 May 2022 10:55:35 +0200
+Message-ID: <s5hbkw7m6ew.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Vitaly Rodionov <vitalyr@opensource.cirrus.com>
+Cc:     Mark Brown <broonie@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        patches@opensource.cirrus.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 00/26] ALSA: hda: cirrus: Add initial DSP support and firmware loading
+In-Reply-To: <YmljEm6jUr3Odsv9@sirena.org.uk>
+References: <20220427150720.9194-1-vitalyr@opensource.cirrus.com>
+        <YmljEm6jUr3Odsv9@sirena.org.uk>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On i.MX8Plus there are two updates for micfil module.
+On Wed, 27 Apr 2022 17:36:50 +0200,
+Mark Brown wrote:
+> 
+> On Wed, Apr 27, 2022 at 04:06:54PM +0100, Vitaly Rodionov wrote:
+> > The CS35L41 Amplifier contains a DSP, capable of running firmware.
+> > The firmware can run algorithms such as Speaker Protection, to ensure
+> > that playback at high gains do not harm the speakers.
+> > Adding support for CS35L41 firmware into the CS35L41 HDA driver also
+> > allows us to support several extra features, such as hiberation 
+> > and interrupts.
+> 
+> There's a bunch of changes for this driver in the ASoC tree, it looks
+> like the bits that touch ASoC will need basing off those.
 
-One is that the output format is S32_LE, only the 24 more
-significative bits have information, the other bits are always
-zero. Add 'formats' variable in soc data to distinguish the
-format on different platform.
-Another is that the fifo depth is 32 entries.
+How is the situation for the time being?
+I've been off in the last weeks, so couldn't follow the whole
+thread.
 
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
----
- sound/soc/fsl/fsl_micfil.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
 
-diff --git a/sound/soc/fsl/fsl_micfil.c b/sound/soc/fsl/fsl_micfil.c
-index e4d1da55293e..25c647ae080a 100644
---- a/sound/soc/fsl/fsl_micfil.c
-+++ b/sound/soc/fsl/fsl_micfil.c
-@@ -55,6 +55,7 @@ struct fsl_micfil_soc_data {
- 	unsigned int fifo_depth;
- 	unsigned int dataline;
- 	bool imx;
-+	u64  formats;
- };
- 
- static struct fsl_micfil_soc_data fsl_micfil_imx8mm = {
-@@ -62,10 +63,20 @@ static struct fsl_micfil_soc_data fsl_micfil_imx8mm = {
- 	.fifos = 8,
- 	.fifo_depth = 8,
- 	.dataline =  0xf,
-+	.formats = SNDRV_PCM_FMTBIT_S16_LE,
-+};
-+
-+static struct fsl_micfil_soc_data fsl_micfil_imx8mp = {
-+	.imx = true,
-+	.fifos = 8,
-+	.fifo_depth = 32,
-+	.dataline =  0xf,
-+	.formats = SNDRV_PCM_FMTBIT_S32_LE,
- };
- 
- static const struct of_device_id fsl_micfil_dt_ids[] = {
- 	{ .compatible = "fsl,imx8mm-micfil", .data = &fsl_micfil_imx8mm },
-+	{ .compatible = "fsl,imx8mp-micfil", .data = &fsl_micfil_imx8mp },
- 	{}
- };
- MODULE_DEVICE_TABLE(of, fsl_micfil_dt_ids);
-@@ -659,6 +670,8 @@ static int fsl_micfil_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
-+	fsl_micfil_dai.capture.formats = micfil->soc->formats;
-+
- 	ret = devm_snd_soc_register_component(&pdev->dev, &fsl_micfil_component,
- 					      &fsl_micfil_dai, 1);
- 	if (ret) {
--- 
-2.17.1
+thanks,
 
+Takashi
