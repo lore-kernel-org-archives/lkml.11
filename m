@@ -2,196 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 158C9C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C1E8C3527C
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:30:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237053AbiEIJdI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 05:33:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39660 "EHLO
+        id S237238AbiEIJdZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 05:33:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238316AbiEIJOR (ORCPT
+        with ESMTP id S237362AbiEII60 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 05:14:17 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4229C15E495
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 02:10:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652087424; x=1683623424;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=+9I3M3M149O5m/K/6SP4VV21MJHrSVn8FFuRfBVfwVo=;
-  b=KA+BaYhdgKSc/iGDbYKn/CiralU1wwc/rfG0pkssNYEEnWHxQnIXLpR1
-   trtTMyMgH0Gkw9e9xrMY5jHwaO644AkHuC0Hb14LMn3bChoYJjPY81b84
-   ZLxP6t5dnGIDmrWUS6eBaod5rwdDi/Fc3jnAHS1MdzPUbEdIHBE8StmcN
-   BftPNKEcjpEB/H5A9xchqifeS2x4PjUVJNCv9+66DMjVQiBkHsVPRGjfq
-   47+ev3Xsf3or8vzQTPm4N5ZSkbHvNVtJwY1wZlAosSPe1Rv7WvuOUk0c+
-   c1HTaWmAdXLinsfKxpn6MsWGE1w5EzzM6i+EH4/5MOhtsJDRNmYM9gGCX
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10341"; a="266580840"
-X-IronPort-AV: E=Sophos;i="5.91,210,1647327600"; 
-   d="scan'208";a="266580840"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 02:10:24 -0700
-X-IronPort-AV: E=Sophos;i="5.91,210,1647327600"; 
-   d="scan'208";a="668908606"
-Received: from rongch2-mobl.ccr.corp.intel.com (HELO [10.249.170.55]) ([10.249.170.55])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 02:10:22 -0700
-Subject: Re: [kbuild-all] Re: [PATCH] fs/ufs: Replace kmap() with
- kmap_local_page()
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Evgeniy Dushistov <dushistov@mail.ru>,
-        Ira Weiny <ira.weiny@intel.com>, linux-kernel@vger.kernel.org,
-        kernel test robot <lkp@intel.com>
-Cc:     kbuild-all@lists.01.org
-References: <20220508200755.24586-1-fmdefrancesco@gmail.com>
- <202205090835.NEUQ3VKB-lkp@intel.com> <4710227.GXAFRqVoOG@leap>
-From:   "Chen, Rong A" <rong.a.chen@intel.com>
-Message-ID: <b46bf8e8-9901-1026-2abf-ae7af163c7ad@intel.com>
-Date:   Mon, 9 May 2022 17:10:19 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.12.0
+        Mon, 9 May 2022 04:58:26 -0400
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41FDF1FB2CD;
+        Mon,  9 May 2022 01:54:33 -0700 (PDT)
+Received: from relay2-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::222])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id 49986CA961;
+        Mon,  9 May 2022 08:47:29 +0000 (UTC)
+Received: (Authenticated sender: gregory.clement@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 1050240007;
+        Mon,  9 May 2022 08:47:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1652086045;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ivoK15iFFrCyokd4/a45dZRdTsG0bp4wFqdXqPeAM7k=;
+        b=L+gPH//MEtnEnPB2S1YMtTVv5CEds3o+9pQNMRNwd3Unh17uEomiSh3BUwXgPTpTUxf0Dt
+        49guFFmxTUU+2rqXdBlDOzrVC0g1rpe50N70z04SiHxB/ZREv5OZbGyXxBYeCxNtFEZ0UE
+        Cablq2dqsLtAQCwAPcXAsLbVKnVnWIDhMgTPnH0MksYm8/OntgDPUFD7s9UY6qrjPoh1Q6
+        nzGM/iIdld711XjfVFIw8O9G4gjHWvm6XFdq1suGGT/D7fFKebNnSm6t+RD452gO/IkHGG
+        U0kXhck429GabN3N4WKAtnSEIbvAxOJc3NikFYbSIILE/7aIVmHFOTYon75M2A==
+From:   Gregory CLEMENT <gregory.clement@bootlin.com>
+To:     Robert Marko <robert.marko@sartura.hr>, andrew@lunn.ch,
+        sebastian.hesselbarth@gmail.com, robh+dt@kernel.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, pali@kernel.org, marek.behun@nic.cz
+Cc:     Robert Marko <robert.marko@sartura.hr>
+Subject: Re: [PATCH v2 1/2] arm64: dts: uDPU: update partition table
+In-Reply-To: <20220322105857.1107016-1-robert.marko@sartura.hr>
+References: <20220322105857.1107016-1-robert.marko@sartura.hr>
+Date:   Mon, 09 May 2022 10:47:18 +0200
+Message-ID: <87mtfrrt2h.fsf@BL-laptop>
 MIME-Version: 1.0
-In-Reply-To: <4710227.GXAFRqVoOG@leap>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Robert Marko <robert.marko@sartura.hr> writes:
+
+> Partition currently called "uboot" does not only contain U-boot, but
+> rather it contains TF-A, U-boot and U-boot environment.
+>
+> So, to avoid accidentally deleting the U-boot environment which is
+> located at 0x180000 split the partition.
+>
+> "uboot" is not the correct name as you can't boot these boards with U-boot
+> only, TF-A must be present as well, so rename the "uboot" partition to
+> "firmware".
+>
+> While we are here, describe the NOR node as "spi-flash@0" instead of
+> "m25p80@0" which is the old SPI-NOR driver name.
+>
+> This won't break booting for existing devices as the SoC-s BootROM is not
+> partition aware at all, it will simply try booting from 0x0 of the
+> boot device that is set by bootstrap pins.
+>
+> This will however prevent accidental or automated flashing of just U-boot
+> to the partition.
+>
+> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+> ---
+> Changes in v2:
+> * Update the commit description by adressing ABI breaking concerns
+
+Applied on mvebu/dt64
+
+Thanks,
+
+Gregory
 
 
-On 5/9/2022 2:14 PM, Fabio M. De Francesco wrote:
-> On lunedì 9 maggio 2022 02:25:00 CEST kernel test robot wrote:
->> Hi "Fabio,
->>
+> ---
+>  arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts | 13 +++++++++----
+>  1 file changed, 9 insertions(+), 4 deletions(-)
+>
+> diff --git a/arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts b/arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts
+> index 95d46e8d081c..ac64949bb53e 100644
+> --- a/arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts
+> +++ b/arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts
+> @@ -99,7 +99,7 @@ &spi0 {
+>  	pinctrl-names = "default";
+>  	pinctrl-0 = <&spi_quad_pins>;
+>  
+> -	m25p80@0 {
+> +	spi-flash@0 {
+>  		compatible = "jedec,spi-nor";
+>  		reg = <0>;
+>  		spi-max-frequency = <54000000>;
+> @@ -108,10 +108,15 @@ partitions {
+>  			compatible = "fixed-partitions";
+>  			#address-cells = <1>;
+>  			#size-cells = <1>;
+> -			/* only bootloader is located on the SPI */
+> +
+>  			partition@0 {
+> -				label = "uboot";
+> -				reg = <0 0x400000>;
+> +				label = "firmware";
+> +				reg = <0x0 0x180000>;
+> +			};
+> +
+> +			partition@180000 {
+> +				label = "u-boot-env";
+> +				reg = <0x180000 0x10000>;
+>  			};
+>  		};
+>  	};
+> -- 
+> 2.35.1
+>
 
-Hi Fabio,
-
-Here is a note:
-
->>
->> Note: the below error/warnings can be found in parent commit:
->> << WARNING: modpost: vmlinux.o(.text+0xa76d10): Section mismatch in
-> reference from the function rtc_update_irq() to the variable .init.text:.L0
->> << WARNING: modpost: vmlinux.o(.exit.text+0x9b48): Section mismatch in
-> reference from the function rproc_exit_sysfs() to the variable
-> .init.text:.L0
->> << WARNING: modpost: vmlinux.o(__ex_table+0x141c): Section mismatch in
-> reference from the variable .L0 to the variable .debug_str:.LASF1567
->> << WARNING: modpost: vmlinux.o(.text+0xa7839c): Section mismatch in
-> reference from the function rtc_get_dev_attribute_groups() to the variable
-> .init.text:.L0
->> << WARNING: modpost: vmlinux.o(.text+0xae2676): Section mismatch in
-> reference from the function ir_raw_get_allowed_protocols() to the variable
-> .init.text:.L0
->> << WARNING: modpost: vmlinux.o(.text+0xae2cb8): Section mismatch in
-> reference from the function ir_raw_event_prepare() to the variable
-> .init.text:.L0
->> << WARNING: modpost: vmlinux.o(.text+0xae2e16): Section mismatch in
-> reference from the function ir_raw_event_free() to the variable
-> .init.text:.L0
->> << WARNING: modpost: vmlinux.o(.text+0xae2e3a): Section mismatch in
-> reference from the function ir_raw_event_unregister() to the variable
-> .init.text:.L0
->> << WARNING: modpost: vmlinux.o(.text+0xb35172): Section mismatch in
-> reference from the function btintel_enter_mfg() to the variable
-> .init.text:.LBB19521
->> << WARNING: modpost: vmlinux.o(.text+0xa76d10): Section mismatch in
-> reference from the function rtc_update_irq() to the variable .init.text:.L0
->> << WARNING: modpost: vmlinux.o(.exit.text+0x9b48): Section mismatch in
-> reference from the function rproc_exit_sysfs() to the variable
-> .init.text:.L0
->> << WARNING: modpost: vmlinux.o(__ex_table+0x141c): Section mismatch in
-> reference from the variable .L0 to the variable .debug_str:.LASF1567
->> << WARNING: modpost: vmlinux.o(.text+0xa7839c): Section mismatch in
-> reference from the function rtc_get_dev_attribute_groups() to the variable
-> .init.text:.L0
->> << WARNING: modpost: vmlinux.o(.text+0xae2676): Section mismatch in
-> reference from the function ir_raw_get_allowed_protocols() to the variable
-> .init.text:.L0
->> << WARNING: modpost: vmlinux.o(.text+0xae2cb8): Section mismatch in
-> reference from the function ir_raw_event_prepare() to the variable
-> .init.text:.L0
->> << WARNING: modpost: vmlinux.o(.text+0xae2e16): Section mismatch in
-> reference from the function ir_raw_event_free() to the variable
-> .init.text:.L0
->> << WARNING: modpost: vmlinux.o(.text+0xae2e3a): Section mismatch in
-> reference from the function ir_raw_event_unregister() to the variable
-> .init.text:.L0
->> << WARNING: modpost: vmlinux.o(.text+0xb35172): Section mismatch in
-> reference from the function btintel_enter_mfg() to the variable
-> .init.text:.LBB19521
->> << WARNING: modpost: vmlinux.o(.text+0xa76d10): Section mismatch in
-> reference from the function rtc_update_irq() to the variable .init.text:.L0
->> << WARNING: modpost: vmlinux.o(.exit.text+0x9b48): Section mismatch in
-> reference from the function rproc_exit_sysfs() to the variable
-> .init.text:.L0
->> << WARNING: modpost: vmlinux.o(__ex_table+0x141c): Section mismatch in
-> reference from the variable .L0 to the variable .debug_str:.LASF1567
->> << WARNING: modpost: vmlinux.o(.text+0xa7839c): Section mismatch in
-> reference from the function rtc_get_dev_attribute_groups() to the variable
-> .init.text:.L0
->> << WARNING: modpost: vmlinux.o(.text+0xae2676): Section mismatch in
-> reference from the function ir_raw_get_allowed_protocols() to the variable
-> .init.text:.L0
->> << WARNING: modpost: vmlinux.o(.text+0xae2cb8): Section mismatch in
-> reference from the function ir_raw_event_prepare() to the variable
-> .init.text:.L0
->> << WARNING: modpost: vmlinux.o(.text+0xae2e16): Section mismatch in
-> reference from the function ir_raw_event_free() to the variable
-> .init.text:.L0
->> << WARNING: modpost: vmlinux.o(.text+0xae2e3a): Section mismatch in
-> reference from the function ir_raw_event_unregister() to the variable
-> .init.text:.L0
->> << WARNING: modpost: vmlinux.o(.text+0xb35172): Section mismatch in
-> reference from the function btintel_enter_mfg() to the variable
-> .init.text:.LBB19521
->> << WARNING: modpost: vmlinux.o(.text+0xa76d10): Section mismatch in
-> reference from the function rtc_update_irq() to the variable .init.text:.L0
->> << WARNING: modpost: vmlinux.o(.exit.text+0x9b48): Section mismatch in
-> reference from the function rproc_exit_sysfs() to the variable
-> .init.text:.L0
->> << WARNING: modpost: vmlinux.o(__ex_table+0x141c): Section mismatch in
-> reference from the variable .L0 to the variable .debug_str:.LASF1567
->> << WARNING: modpost: vmlinux.o(.text+0xa7839c): Section mismatch in
-> reference from the function rtc_get_dev_attribute_groups() to the variable
-> .init.text:.L0
->> << WARNING: modpost: vmlinux.o(.text+0xae2676): Section mismatch in
-> reference from the function ir_raw_get_allowed_protocols() to the variable
-> .init.text:.L0
->> << WARNING: modpost: vmlinux.o(.text+0xae2cb8): Section mismatch in
-> reference from the function ir_raw_event_prepare() to the variable
-> .init.text:.L0
->> << WARNING: modpost: vmlinux.o(.text+0xae2e16): Section mismatch in
-> reference from the function ir_raw_event_free() to the variable
-> .init.text:.L0
->> << WARNING: modpost: vmlinux.o(.text+0xae2e3a): Section mismatch in
-> reference from the function ir_raw_event_unregister() to the variable
-> .init.text:.L0
->> << WARNING: modpost: vmlinux.o(.text+0xb35172): Section mismatch in
-> reference from the function btintel_enter_mfg() to the variable
-> .init.text:.LBB19521
->>
->> -- 
->> 0-DAY CI Kernel Test Service
->> https://01.org/lkp
->>
-> I cannot understand this report. All the functions listed here seem to have
-> nothing to do with my patch. Can anyone explain how these errors are
-> related to my changes?
-> 
-> Thanks,
-> 
-> Fabio
-> 
-> 
-
-
-Please ignore this report, a lot of similar warnings can be found in 
-parent commit.
-
-Best Regards,
-Rong Chen
-
+-- 
+Gregory Clement, Bootlin
+Embedded Linux and Kernel engineering
+http://bootlin.com
