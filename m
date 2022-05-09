@@ -2,155 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58603C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 12:31:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CA05C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 12:31:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234481AbiEIMfM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 08:35:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48506 "EHLO
+        id S234492AbiEIMf2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 08:35:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234432AbiEIMfF (ORCPT
+        with ESMTP id S234475AbiEIMfV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 08:35:05 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E24011B434C;
-        Mon,  9 May 2022 05:31:11 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id q18so742306pln.12;
-        Mon, 09 May 2022 05:31:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MBkrt0SUkDfCJX6P4GbifrxeHSLkx5CXpfEy6Fo+oxI=;
-        b=j24J2mmCWVTfciS79l9WsXOME+o2GRmy+XDFsljOg+u/rf3JIlbK8C8C0/obdWTlYs
-         Lyti8j7T+/vIlQ1XYwUg2ldJUT97k2PP1fMeNVClx5eFDgP2NXxMtIYEtBVsPfXd23+k
-         sC6PJPEiTSPZ1oDuttnRAaFAuNgX2OUVT84kuFFx1RVubJu3ba4vG6Th4E96AgExGGeu
-         arf7htlXrjeuT5jr0ESUIH/b6InURDwz8lCl+eKwRXOEzGBcIfi9eoJNdUXsj22MT55A
-         tDsQqKWZw3Q6MEtyxVeyvhSDCEJYD5Ng3OSPtkcvTBCWOwAUXd4MsXOfab9pN6ncp3aj
-         QmGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MBkrt0SUkDfCJX6P4GbifrxeHSLkx5CXpfEy6Fo+oxI=;
-        b=zjdf0bY0/qQr1is5j5VtF7lJzivPT+1WfyQcNHv9jhgVDLmgS31DTXv7aHth+x4Pnn
-         6Z0U0jT1IRAnPJRw9uazPpZNShUQep5QlEL+4WdklPEu3StY2mbrJyWKqBzWGc0/ud5b
-         ludMXnGPP4xLr+kaQI2h3TSVgWz8I3uyOjhYPVHttPVYI/H5aIcPyfUmU0MJi2Hq+M2z
-         65bnIeM+NaYfN3frJbNXQ/eqw71R9QkjqLDHD4Wa1ouWl6U4D3qzXDcAAjK10bjryIvC
-         cN3aGvioNqB1qMm2uPg/QmPrQnbFlxBEgYBfTSsoRbVDl1F3tHZ1ejLQxXaVWvIqx3pE
-         Idng==
-X-Gm-Message-State: AOAM531KuKq0W1IiZ2VAScNgN2FHsrctYc80d+tTUxUKmiFtZXc6UmZf
-        FLtRAE/LQ7Errocr4Fw+nw8=
-X-Google-Smtp-Source: ABdhPJx0119ewapiTv0gtx/bvLqOkiUycrfiG2H+OZMR7WXYJoc3gdTakKXA4DiXUcUeaux2aKAShQ==
-X-Received: by 2002:a17:902:f681:b0:15e:ade1:b703 with SMTP id l1-20020a170902f68100b0015eade1b703mr16022627plg.112.1652099471413;
-        Mon, 09 May 2022 05:31:11 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.88])
-        by smtp.gmail.com with ESMTPSA id t20-20020a170902b21400b0015e8d4eb269sm7025761plr.179.2022.05.09.05.31.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 05:31:10 -0700 (PDT)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     kuba@kernel.org
-Cc:     horms@verge.net.au, ja@ssi.bg, pablo@netfilter.org,
-        kadlec@netfilter.org, fw@strlen.de, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
-        lvs-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        Menglong Dong <imagedong@tencent.com>
-Subject: [PATCH net-next] net: ipvs: random start for RR scheduler
-Date:   Mon,  9 May 2022 20:22:13 +0800
-Message-Id: <20220509122213.19508-1-imagedong@tencent.com>
-X-Mailer: git-send-email 2.36.0
+        Mon, 9 May 2022 08:35:21 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EABA20AE43;
+        Mon,  9 May 2022 05:31:27 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KxgWp3pt1z4xXh;
+        Mon,  9 May 2022 22:31:18 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1652099485;
+        bh=SaSGAWOIlHMiL03aULPz9oOhk6sxCFXHchcnqd+bBpA=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=PbX2S4d5oYkLXdvSGuVI7LqILlKlaziIAHMrU2vKHXvTe6E99DYJR/x2ZurxyP/Je
+         7aHELqir2k3dFvZPoTSHM/jeMpXpv2+YFxTNhcCZ8Qstt+S9P+pHZYY2oBu5os1xdZ
+         myKlub3bTkUWD6ekYYmZ1R0ueDrjMWqE7lnH6WvdxsyDzIIKvfjsTNeNYFBZ4VD+ye
+         EE4lAHSPR/UlLEivLGaVOUPqxAG4e3qB4rZ4lSA4eVckw92N9TYCr7ZfGgGlhaxhlW
+         TJp6Eb72phdng6mKi+w8+aPbBpiKZUuU6MM/LHyT2FKpLUoCZ1qqLmRxBOZX1rG9wj
+         PNkNm4ObBPm5w==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Josh Poimboeuf <jpoimboe@kernel.org>, linux-kernel@vger.kernel.org
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
+        linux-s390@vger.kernel.org
+Subject: Re: [PATCH] bug: Use normal relative pointers in 'struct bug_entry'
+In-Reply-To: <afddb4548e93f6458ec1d9ec185a834c348eda33.1651798983.git.jpoimboe@kernel.org>
+References: <afddb4548e93f6458ec1d9ec185a834c348eda33.1651798983.git.jpoimboe@kernel.org>
+Date:   Mon, 09 May 2022 22:31:14 +1000
+Message-ID: <871qx2ubu5.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+Josh Poimboeuf <jpoimboe@kernel.org> writes:
+> With CONFIG_GENERIC_BUG_RELATIVE_POINTERS, the addr/file relative
+> pointers are calculated weirdly: based on the beginning of the bug_entry
+> struct address, rather than their respective pointer addresses.
+>
+> Make the relative pointers less surprising to both humans and tools by
+> calculating them the normal way.
+>
+> Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+> ---
+...
+> diff --git a/arch/powerpc/include/asm/bug.h b/arch/powerpc/include/asm/bug.h
+> index ecbae1832de3..76252576d889 100644
+> --- a/arch/powerpc/include/asm/bug.h
+> +++ b/arch/powerpc/include/asm/bug.h
+> @@ -13,7 +13,8 @@
+>  #ifdef CONFIG_DEBUG_BUGVERBOSE
+>  .macro __EMIT_BUG_ENTRY addr,file,line,flags
+>  	 .section __bug_table,"aw"
+> -5001:	 .4byte \addr - 5001b, 5002f - 5001b
+> +5001:	 .4byte \addr - .
+> +	 .4byte 5002f - .
+>  	 .short \line, \flags
+>  	 .org 5001b+BUG_ENTRY_SIZE
+>  	 .previous
+> @@ -24,7 +25,7 @@
+>  #else
+>  .macro __EMIT_BUG_ENTRY addr,file,line,flags
+>  	 .section __bug_table,"aw"
+> -5001:	 .4byte \addr - 5001b
+> +5001:	 .4byte \addr - .
+>  	 .short \flags
+>  	 .org 5001b+BUG_ENTRY_SIZE
+>  	 .previous
 
-For now, the start of the RR scheduler is in the order of dest
-service added, it will result in imbalance if the load balance
-is done in client side and long connect is used.
+Embarrassingly, we have another copy of the logic, used in the C
+versions, they need updating too:
 
-For example, we have client1, client2, ..., client5 and real service
-service1, service2, service3. All clients have the same ipvs config,
-and each of them will create 2 long TCP connect to the virtual
-service. Therefore, all the clients will connect to service1 and
-service2, leaving service3 free.
+diff --git a/arch/powerpc/include/asm/bug.h b/arch/powerpc/include/asm/bug.h
+index ecbae1832de3..3fde35fd67f8 100644
+--- a/arch/powerpc/include/asm/bug.h
++++ b/arch/powerpc/include/asm/bug.h
+@@ -49,14 +49,14 @@
+ #ifdef CONFIG_DEBUG_BUGVERBOSE
+ #define _EMIT_BUG_ENTRY				\
+ 	".section __bug_table,\"aw\"\n"		\
+-	"2:\t.4byte 1b - 2b, %0 - 2b\n"		\
++	"2:\t.4byte 1b - ., %0 - .\n"		\
+ 	"\t.short %1, %2\n"			\
+ 	".org 2b+%3\n"				\
+ 	".previous\n"
+ #else
+ #define _EMIT_BUG_ENTRY				\
+ 	".section __bug_table,\"aw\"\n"		\
+-	"2:\t.4byte 1b - 2b\n"			\
++	"2:\t.4byte 1b - .\n"			\
+ 	"\t.short %2\n"				\
+ 	".org 2b+%3\n"				\
+ 	".previous\n"
 
-Fix this by randomize the start of dest service to RR scheduler when
-IP_VS_SVC_F_SCHED_RR_RANDOM is set.
 
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
----
- include/uapi/linux/ip_vs.h    |  2 ++
- net/netfilter/ipvs/ip_vs_rr.c | 25 ++++++++++++++++++++++++-
- 2 files changed, 26 insertions(+), 1 deletion(-)
+With that added it seems to be working correctly for me.
 
-diff --git a/include/uapi/linux/ip_vs.h b/include/uapi/linux/ip_vs.h
-index 4102ddcb4e14..7f74bafd3211 100644
---- a/include/uapi/linux/ip_vs.h
-+++ b/include/uapi/linux/ip_vs.h
-@@ -28,6 +28,8 @@
- #define IP_VS_SVC_F_SCHED_SH_FALLBACK	IP_VS_SVC_F_SCHED1 /* SH fallback */
- #define IP_VS_SVC_F_SCHED_SH_PORT	IP_VS_SVC_F_SCHED2 /* SH use port */
- 
-+#define IP_VS_SVC_F_SCHED_RR_RANDOM	IP_VS_SVC_F_SCHED1 /* random start */
-+
- /*
-  *      Destination Server Flags
-  */
-diff --git a/net/netfilter/ipvs/ip_vs_rr.c b/net/netfilter/ipvs/ip_vs_rr.c
-index 38495c6f6c7c..e309d97bdd08 100644
---- a/net/netfilter/ipvs/ip_vs_rr.c
-+++ b/net/netfilter/ipvs/ip_vs_rr.c
-@@ -22,13 +22,36 @@
- 
- #include <net/ip_vs.h>
- 
-+static void ip_vs_rr_random_start(struct ip_vs_service *svc)
-+{
-+	struct list_head *cur;
-+	u32 start;
-+
-+	if (!(svc->flags | IP_VS_SVC_F_SCHED_RR_RANDOM) ||
-+	    svc->num_dests <= 1)
-+		return;
-+
-+	spin_lock_bh(&svc->sched_lock);
-+	start = get_random_u32() % svc->num_dests;
-+	cur = &svc->destinations;
-+	while (start--)
-+		cur = cur->next;
-+	svc->sched_data = cur;
-+	spin_unlock_bh(&svc->sched_lock);
-+}
- 
- static int ip_vs_rr_init_svc(struct ip_vs_service *svc)
- {
- 	svc->sched_data = &svc->destinations;
-+	ip_vs_rr_random_start(svc);
- 	return 0;
- }
- 
-+static int ip_vs_rr_add_dest(struct ip_vs_service *svc, struct ip_vs_dest *dest)
-+{
-+	ip_vs_rr_random_start(svc);
-+	return 0;
-+}
- 
- static int ip_vs_rr_del_dest(struct ip_vs_service *svc, struct ip_vs_dest *dest)
- {
-@@ -104,7 +127,7 @@ static struct ip_vs_scheduler ip_vs_rr_scheduler = {
- 	.module =		THIS_MODULE,
- 	.n_list =		LIST_HEAD_INIT(ip_vs_rr_scheduler.n_list),
- 	.init_service =		ip_vs_rr_init_svc,
--	.add_dest =		NULL,
-+	.add_dest =		ip_vs_rr_add_dest,
- 	.del_dest =		ip_vs_rr_del_dest,
- 	.schedule =		ip_vs_rr_schedule,
- };
--- 
-2.36.0
+Acked-by: Michael Ellerman <mpe@ellerman.id.au> (powerpc)
 
+
+cheers
