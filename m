@@ -2,218 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C411C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 02:31:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EECFBC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 02:48:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231174AbiEICeu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 22:34:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44608 "EHLO
+        id S230063AbiEICwA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 22:52:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231419AbiEICdz (ORCPT
+        with ESMTP id S231215AbiEICvZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 22:33:55 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93A4E6A405
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 19:30:03 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id bx33so4540359ljb.12
-        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 19:30:03 -0700 (PDT)
+        Sun, 8 May 2022 22:51:25 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDD526462;
+        Sun,  8 May 2022 19:47:33 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id i1so12584348plg.7;
+        Sun, 08 May 2022 19:47:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=aOqAH8EMRjVpA1a72/5SVwGW2X9uIBefNDSxrS6QvxY=;
-        b=RiQzn7HXpJor/Kk7f+IbvS8/Ia1NLRkgHesdvo/jp5iBbC0sfCsp9iuH/HDp1j4Vst
-         XJlkwd6M2sRH/hjaAaqjFHB/o3KovIS54UD5eFH+OT9uCEECh+RDuTPXM7BaTYWDvT/H
-         tjafyQsRMkQ1c5C2DC5w7sScceoKVpJSheburkZSxsKKDjOYNMyyb6llccQiyD8j/SG4
-         5MzDXhW18brbiNuFaGPIbLB9Vl0/LeCN0WsFwlUtjT2z53vDXciULRg9h6ZN1e22gok0
-         FNbtwf7o/wVtH2qqacIbh9HAHEONNyDfnwHcVgCYjRzWH13SizKx6rFBCr2CsTrui3qv
-         yCUg==
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=09Vt4G6n2lDrTYL/OjY7UiKCXH1y9x+5kX8o8WWVQgw=;
+        b=NQruP2zCQHSaJQUmJCI9RhATtkSlIijZCS+mT5oc8iOV0GgqNp6+mmzKsSIuQLS/Sa
+         gb3ZP24Urz562/DxdMZTJuFuFvvpC+O3t7V/9jxxrrXBcRfy7j7See7/YI5izGYnJI5V
+         IAV/expdJmASHN2iU3Tpp0HITZILUsyvrBKOFspglPCO5S2tIKFc6Uhf50ws+LKt8v1q
+         V+/NfeC828eRkrlVvi0q86CoCLLFKJpxNYJF499nPqkGJ5AoDrBVe/3wPvNtCKUF/fdP
+         Hr5jrQJTmiCUQMD9hrNNP/wUOzRGjtll2Ep7D40W3SV2pahKmMSmv75Bx2/e4fFHa6dj
+         RD+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=aOqAH8EMRjVpA1a72/5SVwGW2X9uIBefNDSxrS6QvxY=;
-        b=U/b3FF5KVKAhJjv5kXKWCHvUWZngoqN6NJoGvkMXdA1vd5ULw589BqFnzKumd2uUv5
-         rJb/pMBBwK4+8nIYc6XuXcN0vTsA/ZtkNNsouGA0Mtoco0Cg/0wui3MnxjiLuYDP4YpV
-         p/g99JcfOb6Yo9ygJKHYKlDhQs4CmnKidw7Ev0Ox57REoEziElwNoPdjoDf5Xe4nIoWL
-         YxZCSyrjiRicoYcGFh0QeNUNG8zRwtUCMTkpvNEmN/yLnyd80iqEBarw9SP5eJJmFWGI
-         X/jZQ6F/Xn8PKfSQKzzYxJ+UxDi7n8GN9YHbCvO9yjWavg61VtNoL+O3AovP0lRr4ipI
-         mRLg==
-X-Gm-Message-State: AOAM532t8dNoDM2RlJAwqjeRQ0L8ETXDBg7dTKvar16Tv+ONCTBdVFsQ
-        a1vzM4WeeilF+doghZQtbkbgpwUbksBtRstWl9M=
-X-Google-Smtp-Source: ABdhPJytVI5YzfmMJuaCKlSgVixiRXRP61Qm8MWckRnAOGqK8p27WEzNUizDYexyOtCGNVixrKxzQ1NCBwHQfOZglrQ=
-X-Received: by 2002:a2e:a0c9:0:b0:24f:2a8e:8002 with SMTP id
- f9-20020a2ea0c9000000b0024f2a8e8002mr9034257ljm.355.1652063401751; Sun, 08
- May 2022 19:30:01 -0700 (PDT)
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=09Vt4G6n2lDrTYL/OjY7UiKCXH1y9x+5kX8o8WWVQgw=;
+        b=rLzomKUauY6fxWcqWgSOMcfGyL8BF/AmLbIMi7obTzTtU4GB0zSfhEid83AK6KqFjz
+         wvfDy1R9cICOZ7gwR3JE9qPYlLIfIRyWQdG7cukcGZ7ZYjT3vNgEdgzNOkCr4HhWCKFs
+         68tuhp6BZj8WlUU2JZ31dEKNZWV8eoA1lQNdaLo6nYq/dnItZH6qAmSgKZlU6FWTRo/u
+         wDs5c8DCMVU3JmLlvEPZANcjbriJNQdpEv7CnLtFIRt9N4KS6PZJxk1T2sYoa3F6u4U/
+         ruqM9H952kOy4RNenOIZYJ8x1DZ3a+ZvZVaYK2IqfJvZHxD02+Ci2AC0dO/BNPrez/t+
+         7v+A==
+X-Gm-Message-State: AOAM533uQjNrJEBIDB+Dl95c52rZMZbOGJz7Tc3nzxsOtVWw59A64LMn
+        jA7AhV6v3r8Q+1wcI8ZvYLY=
+X-Google-Smtp-Source: ABdhPJyqLCkqK3/akcURR3Rflog2HpRW6HLgyMluoXrSsDXRzsGQg+YZm5qwdBADAFGOHLV5BJzY5A==
+X-Received: by 2002:a17:903:189:b0:15e:9584:fbe7 with SMTP id z9-20020a170903018900b0015e9584fbe7mr14570008plg.65.1652064453194;
+        Sun, 08 May 2022 19:47:33 -0700 (PDT)
+Received: from sultan-box.localdomain ([204.152.216.102])
+        by smtp.gmail.com with ESMTPSA id s24-20020a656918000000b003c14af50607sm7346077pgq.31.2022.05.08.19.47.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 May 2022 19:47:32 -0700 (PDT)
+Sender: Sultan Alsawaf <sultan.kerneltoast@gmail.com>
+From:   Sultan Alsawaf <sultan@kerneltoast.com>
+X-Google-Original-From: Sultan Alsawaf
+Cc:     Sultan Alsawaf <sultan@kerneltoast.com>, stable@vger.kernel.org,
+        Minchan Kim <minchan@kernel.org>,
+        Nitin Gupta <ngupta@vflare.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] zsmalloc: Fix races between asynchronous zspage free and page migration
+Date:   Sun,  8 May 2022 19:47:02 -0700
+Message-Id: <20220509024703.243847-1-sultan@kerneltoast.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-References: <20220420135127.o7ttm5tddwvwrp2a@airbuntu> <CAB8ipk-tWjkeAbV=BDhNy04Yq6rdLf80x_7twuLV=HqT4nc1+w@mail.gmail.com>
- <20220421161509.asz25zmh25eurgrk@airbuntu> <CAB8ipk_rZnwDrMaY-zJxR3pByYWD1XOP2waCgU9DZzQNpCN2zA@mail.gmail.com>
- <20220425161209.ydugtrs3b7gyy3kk@airbuntu> <CAB8ipk9hZXDcTV3hakRV+dE5dwKtg-Ka93WZ60ds0=4ErN1-0w@mail.gmail.com>
- <20220426092142.lppfj5eqgt3d24nb@airbuntu> <CAB8ipk_tM8WhZOLwURkqyi5XDSNJ=twOg1Zub=dsTB_b9N9BRg@mail.gmail.com>
- <20220427105844.otru4yohja4s23ye@wubuntu> <CAB8ipk-QAE2_J_kpUVRcq-4KJ0cSGc1JT2oQhdzvrjDu25HsRQ@mail.gmail.com>
- <20220503144352.lxduzhl6jq6xdhw2@airbuntu>
-In-Reply-To: <20220503144352.lxduzhl6jq6xdhw2@airbuntu>
-From:   Xuewen Yan <xuewen.yan94@gmail.com>
-Date:   Mon, 9 May 2022 10:29:50 +0800
-Message-ID: <CAB8ipk--Y8HxetcmUhBmtWq6Mmd726QmDbcbibGLERJw_PUqkQ@mail.gmail.com>
-Subject: Re: [PATCH] sched: Take thermal pressure into account when determine
- rt fits capacity
-To:     Qais Yousef <qais.yousef@arm.com>
-Cc:     Xuewen Yan <xuewen.yan@unisoc.com>, dietmar.eggemann@arm.com,
-        lukasz.luba@arm.com, rafael@kernel.org, viresh.kumar@linaro.org,
-        mingo@redhat.com, peterz@infradead.org, vincent.guittot@linaro.org,
-        rostedt@goodmis.org, linux-kernel@vger.kernel.org,
-        di.shen@unisoc.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Qais
+From: Sultan Alsawaf <sultan@kerneltoast.com>
 
-Sorry for the late reply.
+The asynchronous zspage free worker tries to lock a zspage's entire page
+list without defending against page migration. Since pages which haven't
+yet been locked can concurrently migrate off the zspage page list while
+lock_zspage() churns away, lock_zspage() can suffer from a few different
+lethal races. It can lock a page which no longer belongs to the zspage and
+unsafely dereference page_private(), it can unsafely dereference a torn
+pointer to the next page (since there's a data race), and it can observe a
+spurious NULL pointer to the next page and thus not lock all of the
+zspage's pages (since a single page migration will reconstruct the entire
+page list, and create_page_chain() unconditionally zeroes out each list
+pointer in the process).
 
-On Tue, May 3, 2022 at 10:43 PM Qais Yousef <qais.yousef@arm.com> wrote:
->
-> Hi Xuewen
->
-> On 05/01/22 11:20, Xuewen Yan wrote:
-> > Hi Qais
-> > Thanks for the patient explanation.:)
-> > And I have some other concerns.
-> >
-> > On Wed, Apr 27, 2022 at 6:58 PM Qais Yousef <qais.yousef@arm.com> wrote=
-:
-> > >
-> > > On 04/27/22 09:38, Xuewen Yan wrote:
-> > > > > > > The best (simplest) way forward IMHO is to introduce a new fu=
-nction
-> > > > > > >
-> > > > > > >         bool cpu_in_capacity_inversion(int cpu);
-> >
-> > Maybe the implementation of this function, I have not thought of a
-> > good solution.
-> > (1)how to define the inversion, if the cpu has two
-> > cluster(little/big)=EF=BC=8Cit is easy, but still need mark which is th=
-e big
-> > cpu...
->
-> I'd define it as:
->
->         capacity_orig_of(cpu) - thermal_pressure(cpu) < capacity_orig_of(=
-next_level_cpu)
-ok.
->
-> > (2)because the mainline kernel should be common, if the cpu has three
-> > or more clusters, maybe the mid cpus also would be inversion;
->
-> Yes. I pray this is highly unlikely though! We should cater for it still.
->
-> > (3)what time update the cpu inversion state, if we judge the cpu
-> > inversion whenever the thermal pressure changed, could we receive the
-> > complexity? because may we should traverse all possible cpu.
->
-> In my head, it would make sense to detect the inversion in
-> update_cpu_capacity() OR in topology_update_thermal_pressure(). So at wha=
-tever
-> rate this happens at.
->
-> Does this answer your question?
-Yes, get.
->
-> Basically I believe something like this should be enough (completely unte=
-sted)
->
-> --->8---
->
->
-> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> index a68482d66535..44c7c2598d87 100644
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -8399,16 +8399,37 @@ static unsigned long scale_rt_capacity(int cpu)
->
->  static void update_cpu_capacity(struct sched_domain *sd, int cpu)
->  {
-> +       unsigned long capacity_orig =3D arch_scale_cpu_capacity(cpu);
->         unsigned long capacity =3D scale_rt_capacity(cpu);
->         struct sched_group *sdg =3D sd->groups;
-> +       struct rq *rq =3D cpu_rq(cpu);
->
-> -       cpu_rq(cpu)->cpu_capacity_orig =3D arch_scale_cpu_capacity(cpu);
-> +       rq->cpu_capacity_orig =3D capacity_orig;
->
->         if (!capacity)
->                 capacity =3D 1;
->
-> -       cpu_rq(cpu)->cpu_capacity =3D capacity;
-> -       trace_sched_cpu_capacity_tp(cpu_rq(cpu));
-> +       rq->cpu_capacity =3D capacity;
-> +       trace_sched_cpu_capacity_tp(rq);
-> +
-> +       if (static_branch_unlikely(&sched_asym_cpucapacity)) {
-> +               unsigned long inv_cap =3D capacity_orig - thermal_load_av=
-g(rq);
+Fix the races by using migrate_read_lock() in lock_zspage() to synchronize
+with page migration.
 
-Indeed, I prefer arch_thermal_pressure here, because the
-thermal_load_avg would change over time,
-but the inv_cap's update period may could not keep up with his changes.
-
-> +
-> +               rq->cpu_capacity_inverted =3D 0;
-> +
-> +               for_each_possible_cpu(cpu) {
-> +                       unsigned long cap =3D arch_scale_cpu_capacity(cpu=
-);
-> +
-> +                       if (capacity_orig <=3D cap)
-> +                               continue;
-> +
-> +                       if (cap > inv_cap) {
-> +                               rq->cpu_capacity_inverted =3D inv_cap;
-> +                               break;
-> +                       }
-> +               }
-> +
-> +       }
->
->         sdg->sgc->capacity =3D capacity;
->         sdg->sgc->min_capacity =3D capacity;
-> diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-> index 8dccb34eb190..bfe84c870bf9 100644
-> --- a/kernel/sched/sched.h
-> +++ b/kernel/sched/sched.h
-> @@ -992,6 +992,7 @@ struct rq {
->
->         unsigned long           cpu_capacity;
->         unsigned long           cpu_capacity_orig;
-> +       unsigned long           cpu_capacity_inverted;
->
->         struct callback_head    *balance_callback;
->
-> @@ -2807,6 +2808,11 @@ static inline unsigned long capacity_orig_of(int c=
-pu)
->         return cpu_rq(cpu)->cpu_capacity_orig;
->  }
->
-> +static inline unsigned long cpu_in_capacity_inversion(int cpu)
-> +{
-> +       return cpu_rq(cpu)->cpu_capacity_inverted;
-> +}
-> +
->  /**
->   * enum cpu_util_type - CPU utilization type
->   * @FREQUENCY_UTIL:    Utilization used to select frequency
->
->
-> --->8---
-
-The patch is amazing for me, and the complexity is not too high. Would
-you please push the patch?
-I think the idea is yours, I don't want to use it as my patch v2.
-
-Thanks!
-
+Cc: stable@vger.kernel.org
+Fixes: 48b4800a1c6a ("zsmalloc: page migration support")
+Signed-off-by: Sultan Alsawaf <sultan@kerneltoast.com>
 ---
-xuewen
+ mm/zsmalloc.c | 37 +++++++++++++++++++++++++++++++++----
+ 1 file changed, 33 insertions(+), 4 deletions(-)
+
+diff --git a/mm/zsmalloc.c b/mm/zsmalloc.c
+index 9152fbde33b5..5d5fc04385b8 100644
+--- a/mm/zsmalloc.c
++++ b/mm/zsmalloc.c
+@@ -1718,11 +1718,40 @@ static enum fullness_group putback_zspage(struct size_class *class,
+  */
+ static void lock_zspage(struct zspage *zspage)
+ {
+-	struct page *page = get_first_page(zspage);
++	struct page *curr_page, *page;
+ 
+-	do {
+-		lock_page(page);
+-	} while ((page = get_next_page(page)) != NULL);
++	/*
++	 * Pages we haven't locked yet can be migrated off the list while we're
++	 * trying to lock them, so we need to be careful and only attempt to
++	 * lock each page under migrate_read_lock(). Otherwise, the page we lock
++	 * may no longer belong to the zspage. This means that we may wait for
++	 * the wrong page to unlock, so we must take a reference to the page
++	 * prior to waiting for it to unlock outside migrate_read_lock().
++	 */
++	while (1) {
++		migrate_read_lock(zspage);
++		page = get_first_page(zspage);
++		if (trylock_page(page))
++			break;
++		get_page(page);
++		migrate_read_unlock(zspage);
++		wait_on_page_locked(page);
++		put_page(page);
++	}
++
++	curr_page = page;
++	while ((page = get_next_page(curr_page))) {
++		if (trylock_page(page)) {
++			curr_page = page;
++		} else {
++			get_page(page);
++			migrate_read_unlock(zspage);
++			wait_on_page_locked(page);
++			put_page(page);
++			migrate_read_lock(zspage);
++		}
++	}
++	migrate_read_unlock(zspage);
+ }
+ 
+ static int zs_init_fs_context(struct fs_context *fc)
+-- 
+2.36.0
+
