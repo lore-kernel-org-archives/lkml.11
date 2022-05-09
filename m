@@ -2,92 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02298C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 08:09:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12913C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 08:09:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233784AbiEIINK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 04:13:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39578 "EHLO
+        id S229606AbiEIINW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 04:13:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237957AbiEIIJA (ORCPT
+        with ESMTP id S237435AbiEIIAo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 04:09:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 960661D6774;
-        Mon,  9 May 2022 01:05:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BEEFA6135F;
-        Mon,  9 May 2022 08:04:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BDB2C385A8;
-        Mon,  9 May 2022 08:04:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652083476;
-        bh=3wjcx/H6Uk19bMqCn1cAxyyBNx/H0v6RBLIJgYSYUPc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PwTJfh6Rmur94pTzFA1G1OG9zVQXsWA7iVLfIt0+WmSXyh2s79L/+8goMWazd+E2j
-         PDbIQdyElnfi109QssMKcD1ErklYetfLOYWVxbwwTMPJfFNv9k5Jdfcb0Z4Dl8HbdV
-         m6PfE4g8LrfF0sX3jY24/5oCNdooTqTzx6oUT+aw=
-Date:   Mon, 9 May 2022 10:04:33 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 4.19 00/12] 4.19.241-rc1 review
-Message-ID: <YnjLEU1UoyzNYOUd@kroah.com>
-References: <20220429104048.459089941@linuxfoundation.org>
- <20220503141652.GA3698419@roeck-us.net>
- <YnE7aX7p4iQvOrZf@kroah.com>
- <fd8f1f86-1fb3-b4de-61f7-b7ec5aa2f95c@roeck-us.net>
+        Mon, 9 May 2022 04:00:44 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FA951FCE6;
+        Mon,  9 May 2022 00:56:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1652083001; x=1683619001;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=+dO5KbQ3Cgbia+ebcgEgHEy+ovujtFyyBT3iHByBRmQ=;
+  b=kqDFo60GH6ecOlUhJW4OXHeI+JcfLcD9ePBD4RYjjN9wzI9Hm9xvAnRW
+   ejQ54ze3BrKo7Rx/3U6ux6/fCLM4I+Fo84W27LU8v5dq5M7PjmYW3so5B
+   l6bS9r9Sal+V4NQntxX8D+12n8jYWmvIJp+Jfli8rcJMO2uVJNxUt1TvL
+   U=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 09 May 2022 00:53:34 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 00:53:33 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 9 May 2022 00:53:33 -0700
+Received: from blr-ubuntu-87.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 9 May 2022 00:53:28 -0700
+From:   Sibi Sankar <quic_sibis@quicinc.com>
+To:     <bjorn.andersson@linaro.org>, <robh+dt@kernel.org>
+CC:     <ohad@wizery.com>, <agross@kernel.org>,
+        <mathieu.poirier@linaro.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <evgreen@chromium.org>,
+        <dianders@chromium.org>, <swboyd@chromium.org>, <mka@chromium.org>,
+        <krzysztof.kozlowski@canonical.com>,
+        Sibi Sankar <quic_sibis@quicinc.com>
+Subject: [PATCH v2 0/2] Add support for proxy interconnect bandwidth votes
+Date:   Mon, 9 May 2022 13:23:16 +0530
+Message-ID: <1652082798-5855-1-git-send-email-quic_sibis@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fd8f1f86-1fb3-b4de-61f7-b7ec5aa2f95c@roeck-us.net>
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 03, 2022 at 09:41:48AM -0700, Guenter Roeck wrote:
-> On 5/3/22 07:25, Greg Kroah-Hartman wrote:
-> > On Tue, May 03, 2022 at 07:16:52AM -0700, Guenter Roeck wrote:
-> > > On Fri, Apr 29, 2022 at 12:41:17PM +0200, Greg Kroah-Hartman wrote:
-> > > > This is the start of the stable review cycle for the 4.19.241 release.
-> > > > There are 12 patches in this series, all will be posted as a response
-> > > > to this one.  If anyone has any issues with these being applied, please
-> > > > let me know.
-> > > > 
-> > > > Responses should be made by Sun, 01 May 2022 10:40:41 +0000.
-> > > > Anything received after that time might be too late.
-> > > > 
-> > > 
-> > > No cc this time ?
-> > 
-> > You and Pavel said this, yet I see your response here:
-> > 	https://lore.kernel.org/r/20220429234822.GB2444503@roeck-us.net
-> > that you sent on Friday.
-> > 
-> > Did some old email get unstuck and resent somehow?
-> > 
-> > 4.19.241 was released on Sunday, I have not sent out new -rc
-> > announcements yet.
-> > 
-> > confused,
-> > 
-> 
-> No, it is me who is confused. I saw Pavel's e-mail, checked stable,
-> found this announcement, and thought it was a new one since lore
-> reordered it after Pavel's reply.
-> 
-> The problem I reported is for v4.19.241-49-g667276a8c00e,
-> but is also affects v4.14.y.queue and v4.9.y.queue.
+Add proxy interconnect bandwidth votes during modem bootup on SC7280 SoCs.
 
-This should now be resolved.
+V2:
+ * Dropped patch 3 from version 1 [Sub with Bjorn's patch]
+ * Add YAML support [Krzysztof]
+ * Drop interconnect names [Bjorn]
 
-thanks,
+Sibi Sankar (2):
+  dt-bindings: remoteproc: qcom: Add SC7280 MSS bindings
+  arm64: dts: qcom: sc7280: Add proxy interconnect requirements for
+    modem
 
-greg k-h
+ .../bindings/remoteproc/qcom,sc7280-mss-pil.yaml   | 261 +++++++++++++++++++++
+ arch/arm64/boot/dts/qcom/sc7280-chrome-common.dtsi |   1 +
+ 2 files changed, 262 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/remoteproc/qcom,sc7280-mss-pil.yaml
+
+-- 
+2.7.4
+
