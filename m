@@ -2,152 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BCBCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 20:26:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D669FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 20:28:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229762AbiEIUaO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 16:30:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35136 "EHLO
+        id S229770AbiEIUcj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 16:32:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229652AbiEIUaB (ORCPT
+        with ESMTP id S229489AbiEIUb6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 16:30:01 -0400
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56E7B2878E0;
-        Mon,  9 May 2022 13:11:56 -0700 (PDT)
-Received: by mail-io1-xd31.google.com with SMTP id i20so16566658ion.0;
-        Mon, 09 May 2022 13:11:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=30uTAtTdESWAxrQ1din34mMJXjVpP1+AQMtPldKr0Ro=;
-        b=gyx42r12ZWOa0jIaRvU6Tmt6ZdJdxHVv55TWtTM9lvmcBbZuP+O8/E+5HMTQGdcJNP
-         +/asehHkwYGDZglS03uJk5YpBmwtw1UHMbbBbMXbUpIYPEF20LizauWVhmGIg/qyTa02
-         zvkglRJEeNtbeu4sKjAsBzpBbNGl0UR1fnEtILhwcMzFJRnv4uXm8F4oTli3DWHzW/CK
-         nv1MTA5JvlseRQh6p+EELdjL0gYQw23f2CyZlB5vsW/DS3fcNiSoYiMHieuf1UfC6LGG
-         5FybutPI+XzvITzGit9yjHnSl8Jzq8cSscIYewDsJhKj8eSVSg7MFERkZAe8DSLOGKjU
-         ZB4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=30uTAtTdESWAxrQ1din34mMJXjVpP1+AQMtPldKr0Ro=;
-        b=ITu/CzdJa8sE13NmaKGjlIoH6JyoB7ubjk8aOHY5S2bsBHmVNWf+ha6bC1wtN/SXAn
-         OT1OoG9Gv7oQYFCAS8SWcTum/BbSDqOFbOn/k8njAKkkSiong1gEnWKD9E/eHxdINRgk
-         Tmr69O01IP/r0GGgZCv5rbsX0Y7RmjHgML54altKvSXNuhqLikbePvKoD9yxD9JBJady
-         sNgk7INw05sjCtrzCowVfWqHSOv2kBI7c+IIhWt6d9FCEj7igpT7xHfUfR3S+dRuij/5
-         dX9r6kQtGdGnJpqfISWVonXZeqHgXm8ZimOFpitGvSLATCpBdHhoXfjzo2koWvNvAZl3
-         vVvA==
-X-Gm-Message-State: AOAM530Rb8Dy+Q/XWOWaTo6qNwV7oW/AzQjH+8UwJGx6XvtWzX1SD7pr
-        F+nZ63uQZ0nTi26yye3PPa8=
-X-Google-Smtp-Source: ABdhPJyhi4sIOam3l2MwfJCdm+Mt2h+pvDUPHUKpW9UPlt61O9tE8QIvNM9x3eeHLQbj9dpdMiKllQ==
-X-Received: by 2002:a02:ccd0:0:b0:32a:e2da:1e1f with SMTP id k16-20020a02ccd0000000b0032ae2da1e1fmr8105716jaq.313.1652127115768;
-        Mon, 09 May 2022 13:11:55 -0700 (PDT)
-Received: from ?IPV6:2600:1700:2442:6db0:4a3:2265:73fb:e310? ([2600:1700:2442:6db0:4a3:2265:73fb:e310])
-        by smtp.gmail.com with ESMTPSA id r6-20020a056638044600b0032b3a781756sm3835862jap.26.2022.05.09.13.11.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 13:11:55 -0700 (PDT)
-Message-ID: <b476913d-896d-309c-f304-3ab37b81b4a9@gmail.com>
-Date:   Mon, 9 May 2022 15:11:53 -0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 0/3] add dynamic PCI device of_node creation for overlay
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Pantelis Antoniou <pantelis.antoniou@konsulko.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        Thomas Petazzoni <thomas.petazonni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Mark Brown <broonie@kernel.org>,
+        Mon, 9 May 2022 16:31:58 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CA88D5A;
+        Mon,  9 May 2022 13:20:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=obE3GvP5MiFalr+zUuFTsVYAipwQCABa5LeNZRhk2iw=; b=hyHleL2qGRNzf/f0LIaT4+nAG0
+        7ldV8Th5xj9XD3zKxtMqCjfCZP2P548K9Exfs7scwOVT0ZO9/3RK9VKgXfcFNU6WMvqJt39n9f/rE
+        A5Jccm7RiR00kZn9xF6tW/7+VAqZVW+gfhAj6r5bor8oNoU2pl7RfV50UHpDpKF2C3R+C91DoeIge
+        Avvgcyb5d7MGKgcrfgZacnrnxMQB7dTTw3xRD0IcAP1H0l/I2RB1n2hlhAtWeKcdxM3WSrGeWweiy
+        OrgEmgnYUArHP0/C0B2f1z9ccASxFScvthsYLfDqH5+vOixi6KccN7kUPSPBpRKklhGB/i4CE3muW
+        VjWMN+tA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:60654)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1no9rt-0003i3-Uw; Mon, 09 May 2022 21:20:34 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1no9rq-0005Oe-CL; Mon, 09 May 2022 21:20:30 +0100
+Date:   Mon, 9 May 2022 21:20:30 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Andrew Lunn <andrew@lunn.ch>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org
-References: <20220427094502.456111-1-clement.leger@bootlin.com>
- <96db62bb-18be-f44a-6f53-05b22319f23a@gmail.com>
- <20220509141634.16158c38@xps-bootlin>
- <f9b0cbf1-dde2-ff97-cca0-5d2895734f91@gmail.com>
- <20220509180917.0f0ae851@xps-bootlin> <YnlIs312R4Temgu3@smile.fi.intel.com>
-From:   Frank Rowand <frowand.list@gmail.com>
-In-Reply-To: <YnlIs312R4Temgu3@smile.fi.intel.com>
-Content-Type: text/plain; charset=UTF-8
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?iso-8859-1?Q?Miqu=E8l?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v4 04/12] net: pcs: add Renesas MII converter
+ driver
+Message-ID: <Ynl3jpuJFqXLscvE@shell.armlinux.org.uk>
+References: <20220509131900.7840-1-clement.leger@bootlin.com>
+ <20220509131900.7840-5-clement.leger@bootlin.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220509131900.7840-5-clement.leger@bootlin.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/9/22 12:00, Andy Shevchenko wrote:
-> On Mon, May 09, 2022 at 06:09:17PM +0200, ClÃ©ment LÃ©ger wrote:
->> Le Mon, 9 May 2022 10:56:36 -0500,
->> Frank Rowand <frowand.list@gmail.com> a Ã©crit :
-> 
-> ...
-> 
->>> On the surface, it appears that your need might be well met by having
->>> a base devicetree that describes all of the pcie nodes, but with each
->>> node having a status of "disabled" so that they will not be used.
->>> Have a devicetree overlay describing the pcie card (as you proposed),
->>> where the overlay also includes a status of "ok" for the pcie node.
->>> Applying the overlay, with a method of redirecting the target to a
->>> specific pcie node would change the status of the pcie node to enable
->>> its use.  (You have already proposed a patch to modify
->>> of_overlay_fdt_apply() to allow a modified target, so not a new
->>> concept from me.)  My suggestion is to apply the overlay devicetree
->>> to the base devicetree before the combined FDT devicetree is passed
->>> to the kernel at boot.  The overlay apply could be done by several
->>> different entities.  It could be before the bootloader executes, it
->>> could be done by the bootloader, it could be done by a shim between
->>> the bootloader and the kernel.  This method avoids all of the issues
->>> of applying an overlay to a running system that I find problematic.
->>> It is also a method used by the U-boot bootloader, as an example.
->>
->> Ok, that is actually possible on a system that is given a device-tree
->> by the bootloader. But on a system that is desrcibed using ACPI (such
->> as the x86), this is much more difficult (at least to my knowledge)...
->> We want this feature to be easy to use for the end user. Adding such
->> configuration which also differs between various architecture is
->> clearly not so easy to setup.
->>
->> Moreover, since the PCI is meant to be "Plug and Play", such
->> configuration would completely break that. If the user switches the
->> PCIe card from one slot to another, the bootloader configuration will
->> need to be modified. This seems a big no way for me (and for the user).
-> 
-> The main problem here is that Linux does not support hotplugging for the
-> devices behind non-hotpluggable buses. You need to develop something to
-> say that the device tree (in terms of hardware) can morph at run-time
-> transparently to the user. I think the closest one is what FPGA does,
-> or at least should do.
+Hi,
 
-That is something I was not aware of yet.  Is the card in question a
-hotpluggable card?  Do the systems that you anticipate plugging the
-card into support hotplug?
+On Mon, May 09, 2022 at 03:18:52PM +0200, Clément Léger wrote:
+> +#define MIIC_PRCMD			0x0
+> +#define MIIC_ESID_CODE			0x4
+> +
+> +#define MIIC_MODCTRL			0x20
+> +#define MIIC_MODCTRL_SW_MODE		GENMASK(4, 0)
+> +
+> +#define MIIC_CONVCTRL(port)		(0x100 + (port) * 4)
+> +
+> +#define MIIC_CONVCTRL_CONV_SPEED	GENMASK(1, 0)
+> +#define CONV_MODE_10MBPS		0
+> +#define CONV_MODE_100MBPS		BIT(0)
+> +#define CONV_MODE_1000MBPS		BIT(1)
 
--Frank
+I think this is an inappropriate use of the BIT() macro. BIT() should be
+used for single bit rather than for field values.
 
-> 
->>> The other big issue is mixing ACPI and devicetree on a single system.
->>> Historically, the Linux devicetree community has not been receptive
->>> to the ides of that mixture.  Your example might be a specific case
->>> where the two can be isolated from each other, or maybe not.  (For
->>> disclosure, I am essentially ACPI ignorant.)  I suspect that mixing
->>> ACPI and devicetree is a recipe for disaster in the general case.
->>
->> Agreed, on that fact, it did raised some eyebrows, and it was for that
->> specific concern that initially, I proposed the fwnode solution.
->> Honestly, the fwnode conversion represent a lot of work (hundreds of
->> lines easily) + requires a conversion of all the subsystem that are not
->> fwnode ready (spoiler: almost all of them are not ready). 
-> 
-> In either case you need to provide a format that would be suitable for
-> DT-based as well as ACPI-based platforms.
-> 
+You seem to have a two bit field in bits 1 and 0 of a register, which
+has the values of:
+0 - 10MBPS
+1 - 100MBPS
+2 - 1GBPS
 
+I'd guess 3 is listed as "undefined", "do not use" or something similar?
+
+> +
+> +#define MIIC_CONVCTRL_CONV_MODE		GENMASK(3, 2)
+> +#define CONV_MODE_MII			0
+> +#define CONV_MODE_RMII			BIT(0)
+> +#define CONV_MODE_RGMII			BIT(1)
+
+This looks similar. a 2-bit field in bits 3 and 2 taking values:
+0 - MII
+1 - RMII
+2 - RGMII
+
+...
+
+> +static int miic_config(struct phylink_pcs *pcs, unsigned int mode,
+> +		       phy_interface_t interface,
+> +		       const unsigned long *advertising, bool permit)
+> +{
+> +	u32 speed = CONV_MODE_10MBPS, conv_mode = CONV_MODE_MII, val;
+> +	struct miic_port *miic_port = phylink_pcs_to_miic_port(pcs);
+> +	struct miic *miic = miic_port->miic;
+> +	int port = miic_port->port;
+> +
+> +	switch (interface) {
+> +	case PHY_INTERFACE_MODE_RMII:
+> +		conv_mode = CONV_MODE_RMII;
+> +		speed = CONV_MODE_100MBPS;
+> +		break;
+> +	case PHY_INTERFACE_MODE_RGMII:
+> +		conv_mode = CONV_MODE_RGMII;
+> +		speed = CONV_MODE_1000MBPS;
+> +		break;
+> +	case PHY_INTERFACE_MODE_MII:
+
+I'm not sure why you need to initialise "speed" and "conv_mode" above
+when you could set them here.
+
+Thanks. 
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
