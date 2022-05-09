@@ -2,200 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBAC1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 03:55:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AC27C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 03:55:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232192AbiEID52 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 23:57:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34360 "EHLO
+        id S232657AbiEID5a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 23:57:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233200AbiEIDvB (ORCPT
+        with ESMTP id S234083AbiEIDxt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 23:51:01 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EED0F13D60
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 20:47:06 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KxRqk1v62zGpgn;
-        Mon,  9 May 2022 11:44:18 +0800 (CST)
-Received: from M910t (10.110.54.157) by kwepemi500013.china.huawei.com
- (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 9 May
- 2022 11:47:04 +0800
-Date:   Mon, 9 May 2022 11:46:58 +0800
-From:   Changbin Du <changbin.du@huawei.com>
-To:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Steven Rostedt <rostedt@goodmis.org>
-CC:     <changbin.du@huawei.com>, <linux-riscv@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <llvm@lists.linux.dev>,
-        <llvm-dev@lists.llvm.org>, <llvm-bugs@lists.llvm.org>
-Subject: riscv: llvm-compiler: calling convention violation: temporary
- register $t2 is used to pass the ninth function parameter
-Message-ID: <20220509034658.kzwh7ocn4ilo4aed@M910t>
+        Sun, 8 May 2022 23:53:49 -0400
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D36CF61F3
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 20:49:57 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 3AAE95C00E3;
+        Sun,  8 May 2022 23:49:44 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Sun, 08 May 2022 23:49:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
+         s=fm2; t=1652068184; x=1652154584; bh=M8c+rWOG2tl/Ozu3xwi5hO5jK
+        mpxMCpEbGJNM99i7+w=; b=ooF5GKGp2cg5L2N2Tpr8VM4sB6j1ewQWnjTz9Y3NE
+        47VJHRzWElom5nREXP2RK+U+K4PtD3iK2mEsTxbWLmKN6KbOvB7N5cpMUbV5k841
+        xBn59G7hhOOJTHbFwpWCKMuzew6M0dzL1/alBoRu3UP/ipaFA1dU7i4NqKkGJDqu
+        ogPUJHHmSYLZR7Q0RWxHPtSU4xeUjY3gdzFOQCLL6rpmIVsfxZRF5/LU3kKGtQvK
+        PXfAxnTYmuBW1h8PYaq1/f5w0RHaEC1Rd8bxEWWsjuVsMX2W07jP9NFiWUuGajOa
+        xTz6w/eiunXTCDnEOYQpqWA3TKRNYzXEx1TkBQ/EsJxdg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :from:from:in-reply-to:message-id:mime-version:reply-to:sender
+        :subject:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender
+        :x-me-sender:x-sasl-enc; s=fm1; t=1652068184; x=1652154584; bh=M
+        8c+rWOG2tl/Ozu3xwi5hO5jKmpxMCpEbGJNM99i7+w=; b=Dl+OLImYeWZgRQKl7
+        zBfuXrSCrQ2LnPEu6skSVls95GpC5duSbXe7GZoYQ3AaF6F0ivjOUlICg4ogTO4R
+        l3Ph2nA/9vc1TSzJz32uoXsWisdvAE4jbD/lRVzbXSd6A0pz3ARILSzTDPLlUYX9
+        F7T02519LRoUxjIValjyXjWS1jS5ky0dwzrEwmF/8jGNvFV4bLMEs99T+gveGKcN
+        DQrouCJGNjANWpVS8dw3RQdpWsxVLsj2ol5gvO0uKhPDiQd7YEo/kpnCXP2MWspw
+        eLJicr/Kv9k0BX6X0s1AWOOWl1Wh90FkS/KTpvYCz22p8+qFvD4LdoCZZn8pDPeE
+        az4jg==
+X-ME-Sender: <xms:V494YjItRvSRNKaLccJCXEkjoIekBb-RHHM5mUdCNSHeMEiW8g5-fA>
+    <xme:V494YnJGilxRhniQTRm68Mg9wGBcPNJ1xbojNwklRvqPWBA3xbkM3jIWVVS-0gk4X
+    qhrFbUVdaUB1luOyQ>
+X-ME-Received: <xmr:V494YrvComZ1dHN-YuFuPLYrNQkFjyXczgPPxHfhF-whHX7dRwOXX8VgJcNDPy9R1ZNmsylG1DP3xAAfbhSOqElVrybJbeolAptvQP9-5L3HDeer52iUWp4TlTsa3xVlpg07sw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfeekgdejiecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgvlhcu
+    jfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtffrrg
+    htthgvrhhnpeekveelhfejueelleetvdejvdeffeetgeelheeujeffhefgffefkeehhffh
+    keekgeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
+X-ME-Proxy: <xmx:V494YsZXiOGCskiS-Chy_oTwadfT97wxJhArZAl2QKWATtLc_bwdLg>
+    <xmx:V494YqYHtWCsfAP1hOOHz0ZzWOkxrL0RN4JwfUed3fMbMjSLhzMF8w>
+    <xmx:V494YgAC4lO11G2bltf-SQDmI1vN7l5aXMZyNUXjh7od6ZVkfK2Vuw>
+    <xmx:WI94Ygn2Gnc52AKSVi-8MwuguqOLjG9WcjzNt1JaqW0Sw-jDXY3vDg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 8 May 2022 23:49:42 -0400 (EDT)
+From:   Samuel Holland <samuel@sholland.org>
+To:     Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
+Cc:     Samuel Holland <samuel@sholland.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev
+Subject: [PATCH] irqchip: Add Kconfig symbols for sunxi drivers
+Date:   Sun,  8 May 2022 22:49:41 -0500
+Message-Id: <20220509034941.30704-1-samuel@sholland.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-X-Originating-IP: [10.110.54.157]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemi500013.china.huawei.com (7.221.188.120)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello, folks,
+Not all of these drivers are needed on every ARCH_SUNXI platform. In
+particular, the ARCH_SUNXI symbol will be reused for the Allwinner D1,
+a RISC-V SoC which contains none of these irqchips.
 
-Recently I encountered a kernel crash problem when using ftrace with 'perf ftrace'
-command on risc-v kernel built with llvm.
+Introduce Kconfig symbols so we can select only the drivers actually
+used by a particular set of platforms. This also lets us move the
+irqchip driver dependencies to a more appropriate location.
 
-This crash only exists on llvm build, not reproducable with GCC. So I hope llvm
-guys can take a look :)
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+---
 
-The llvm versions I have tried are llvm-13.0.0 and mainline (commit 102bc634cb
-("[runtime] Build compiler-rt with --unwindlib=none")).
+ arch/arm/mach-sunxi/Kconfig  | 12 +++++++++---
+ arch/arm64/Kconfig.platforms |  5 ++---
+ drivers/irqchip/Kconfig      | 12 ++++++++++++
+ drivers/irqchip/Makefile     |  6 +++---
+ 4 files changed, 26 insertions(+), 9 deletions(-)
 
-[  612.947887][  T496] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000001
-[  613.050789][  T496] Hardware name: riscv-virtio,qemu (DT)
-[  613.087976][  T496] epc : __find_rr_leaf+0x128/0x220
-[  613.107493][  T496]  ra : return_to_handler+0x22/0x24
-[  613.125322][  T496] epc : ffffffff80a1915a ra : ffffffff80009506 sp : ff20000011e43860
-[  613.150124][  T496]  gp : ffffffff81812f40 tp : ff6000008bb01580 t0 : ff600000806cf0f0
-[  613.173657][  T496]  t1 : 000000000001b29a t2 : 0000000000000001 s0 : ff20000011e43920
-[  613.187311][  T496]  s1 : ff600000848c2a00 a0 : 0000000000000002 a1 : 0000000000000002
-[  613.202731][  T496]  a2 : fffffffffffffffd a3 : ff6000009d287000 a4 : 00000000000002c0
-[  613.213723][  T496]  a5 : ff6000009d259b40 a6 : ffffffffffffff9c a7 : ffffffffffffffff
-[  613.226648][  T496]  s2 : 0000000000000001 s3 : ff20000011e439d8 s4 : ffffffff8160d140
-[  613.246571][  T496]  s5 : 0000000000000002 s6 : 0000000000000000 s7 : 0000000000000000
-[  613.264681][  T496]  s8 : 0000000000000064 s9 : 0000000000000000 s10: 0000000000400000
-[  613.277999][  T496]  s11: ff600000848c2aa8 t3 : 0000000000000290 t4 : 00000000004002c0
-[  613.303729][  T496]  t5 : 00000000ffffffff t6 : ff6000009d2872d0
-[  613.322145][  T496] status: 0000000200000120 badaddr: 0000000000000001 cause: 000000000000000d
-[  613.346228][  T496] [<ffffffff80a12526>] ip6_pol_route+0xb6/0x602
-[  613.365722][  T496] [<ffffffff80a1321a>] ip6_pol_route_output+0x2c/0x34
-[  613.386374][  T496] [<ffffffff80a1c028>] fib6_rule_lookup+0x36/0xa0
-[  613.401865][  T496] [<ffffffff80a131da>] ip6_route_output_flags_noref+0xd6/0xea
-[  613.412776][  T496] [<ffffffff80a13274>] ip6_route_output_flags+0x52/0xd4
-[  613.432013][  T496] [<ffffffff809ffb3a>] ip6_dst_lookup_tail+0x68/0x23a
-[  613.456198][  T496] [<ffffffff809ffec6>] ip6_sk_dst_lookup_flow+0x132/0x1cc
-[  613.513174][  T496] [<ffffffff80003cd8>] ret_from_syscall+0x0/0x2
-[  613.518973][  T496] [<ffffffff800094e4>] return_to_handler+0x0/0x24
-[  613.563961][  T496] Kernel panic - not syncing: Fatal exception
-[  613.572278][  T496] SMP: stopping secondary CPUs
-[  613.587449][  T496] ---[ end Kernel panic - not syncing: Fatal exception ]---
-
-The crash happened when dereferencing the point 'mpri' at route.c:758.
-
-(gdb) l *__find_rr_leaf+0x128
-0xffffffff809da9c4 is in __find_rr_leaf (net/ipv6/route.c:758).
-753
-754             if (strict & RT6_LOOKUP_F_REACHABLE)
-755                     rt6_probe(nh);
-756
-757             /* note that m can be RT6_NUD_FAIL_PROBE at this point */
-758             if (m > *mpri) {
-759                     *do_rr = match_do_rr;
-760                     *mpri = m;
-761                     rc = true;
-762             }
-
-Adding some logs, I found the problem. The ninth passed parameter of function
-__find_rr_leaf() which is the address of local variable 'mpri', is changed to
-value '0x1' when inside the function __find_rr_leaf.
-Here is the code snippet and full link
-https://github.com/torvalds/linux/blob/9cb7c013420f98fa6fd12fc6a5dc055170c108db/net/ipv6/route.c.
-
-static void find_rr_leaf(struct fib6_node *fn, struct fib6_info *leaf,
-			 struct fib6_info *rr_head, int oif, int strict,
-			 bool *do_rr, struct fib6_result *res)
-{
-	u32 metric = rr_head->fib6_metric;
-	struct fib6_info *cont = NULL;
-	int mpri = -1;
-
-	__find_rr_leaf(rr_head, NULL, metric, res, &cont,
-		       oif, strict, do_rr, &mpri);
-	...
-}
-
-Then debugging with gdb, I found this probably is a compiler bug. We can see the
-local function __find_rr_leaf() is not optimized out and the compiler generates
-a local symbol for it. The find_rr_leaf() (inlined by fib6_table_lookup) invokes
-this function with 'jalr' instruction.
-
-(gdb) disassemble fib6_table_lookup
-Dump of assembler code for function fib6_table_lookup:
-   [snip]
-   0xffffffff80a1240e <+412>:   beqz    a1,0xffffffff80a12436 <fib6_table_lookup+452>
-   0xffffffff80a12410 <+414>:   slli    a1,s9,0x20
-   0xffffffff80a12414 <+418>:   srli    a1,a1,0x20
-   0xffffffff80a12416 <+420>:   sext.w  a2,a1
-   0xffffffff80a1241a <+424>:   addi    a7,s0,-125
-   0xffffffff80a1241e <+428>:   addi    t2,s0,-124
-   0xffffffff80a12422 <+432>:   li      a1,0
-   0xffffffff80a12424 <+434>:   mv      a3,s10
-   0xffffffff80a12426 <+436>:   li      a4,0
-   0xffffffff80a12428 <+438>:   ld      a5,-152(s0)
-   0xffffffff80a1242c <+442>:   mv      a6,s8
-   0xffffffff80a1242e <+444>:   auipc   ra,0x7
-   0xffffffff80a12432 <+448>:   jalr    -686(ra) # 0xffffffff80a19180 <__find_rr_leaf>
-   [snip]
-
-And at line route.c:758, the value of point 'mpri' is stored in temporary register
-$t2 and $s3 (copied from $t2).
-
-(gdb) info scope __find_rr_leaf
-[snip]
-Symbol mpri is multi-location:
-  Base address 0xffffffff80a10564  Range 0xffffffff80a19190-0xffffffff80a191ae: a variable in $t2
-  Range 0xffffffff80a191c0-0xffffffff80a191d6: a variable in $s3
-  Range 0xffffffff80a19200-0xffffffff80a19208: a variable in $s3
-  Range 0xffffffff80a1921e-0xffffffff80a192fe: a variable in $s3
-  Range 0xffffffff80a1930a-0xffffffff80a19356: a variable in $s3
-
-Let's see when register $t2 is corrupted with single-step mode. Obviously, register
-$t2 is changed by mcount function ftrace_caller(). This is why the bug happens
-to ftrace.
-
-Dump of assembler code for function __find_rr_leaf:
-   0xffffffff80a19180 <+0>:     sd      ra,-8(sp)   #  $t2 = 0xff200000120db7b4
-   0xffffffff80a19184 <+4>:     auipc   ra,0xff5f1
-   0xffffffff80a19188 <+8>:     jalr    -1744(ra) # 0xffffffff80009ab4 <ftrace_caller> #  $t2 = 0xff200000120db7b4
-=> 0xffffffff80a1918c <+12>:    ld      ra,-8(sp)    #  $t2 = 0x1, bug, $t2 is corrupted!!
-   0xffffffff80a19190 <+16>:    addi    sp,sp,-176
-   [snip]
-
-So now we can come to a conclusion. The generated local function __find_rr_leaf()
-violates the risc-v calling convention and leads to the panic. It should use stack
-but *not* temporary register $t2 to pass the ninth parameter! It's okay if the
-callsite can take care of local symbol callees, but the Function Instrumentation
-features should be considerated carefully.
-
-For comparison, here is the result from gcc (9.2.0):
-(gdb) info scope __find_rr_leaf
-[snip]
-Symbol mpri is a complex DWARF expression:
-     0: DW_OP_fbreg 0, length 8.
-
-I also built a simple test function with 9 parameters by clang and same cflags,
-but cannot reproduce it. Maybe it is conditional?
-
-Simple test code:
-__attribute__ ((noinline))
-void test_func(int *a, int *b, int *c, int *d, int *e, int *f, int *g, int *h, int *i)
-{
-        printf("__find_rr_leaf: %d\n", *i);
-}
-
-int main(void)
-{
-        int a,b,c,d,e,f,g,h,i = 100;
-
-        test_func(&a,&b,&c,&d,&e,&f,&g,&h,&i);
-        return 0;
-}
-
+diff --git a/arch/arm/mach-sunxi/Kconfig b/arch/arm/mach-sunxi/Kconfig
+index e5c2fce281cd..abdb99fe1e97 100644
+--- a/arch/arm/mach-sunxi/Kconfig
++++ b/arch/arm/mach-sunxi/Kconfig
+@@ -4,10 +4,7 @@ menuconfig ARCH_SUNXI
+ 	depends on ARCH_MULTI_V5 || ARCH_MULTI_V7
+ 	select ARCH_HAS_RESET_CONTROLLER
+ 	select CLKSRC_MMIO
+-	select GENERIC_IRQ_CHIP
+ 	select GPIOLIB
+-	select IRQ_DOMAIN_HIERARCHY
+-	select IRQ_FASTEOI_HIERARCHY_HANDLERS
+ 	select PINCTRL
+ 	select PM_OPP
+ 	select SUN4I_TIMER
+@@ -22,10 +19,12 @@ if ARCH_MULTI_V7
+ config MACH_SUN4I
+ 	bool "Allwinner A10 (sun4i) SoCs support"
+ 	default ARCH_SUNXI
++	select SUN4I_INTC
+ 
+ config MACH_SUN5I
+ 	bool "Allwinner A10s / A13 (sun5i) SoCs support"
+ 	default ARCH_SUNXI
++	select SUN4I_INTC
+ 	select SUN5I_HSTIMER
+ 
+ config MACH_SUN6I
+@@ -34,6 +33,8 @@ config MACH_SUN6I
+ 	select ARM_GIC
+ 	select MFD_SUN6I_PRCM
+ 	select SUN5I_HSTIMER
++	select SUN6I_R_INTC
++	select SUNXI_NMI_INTC
+ 
+ config MACH_SUN7I
+ 	bool "Allwinner A20 (sun7i) SoCs support"
+@@ -43,17 +44,21 @@ config MACH_SUN7I
+ 	select ARCH_SUPPORTS_BIG_ENDIAN
+ 	select HAVE_ARM_ARCH_TIMER
+ 	select SUN5I_HSTIMER
++	select SUNXI_NMI_INTC
+ 
+ config MACH_SUN8I
+ 	bool "Allwinner sun8i Family SoCs support"
+ 	default ARCH_SUNXI
+ 	select ARM_GIC
+ 	select MFD_SUN6I_PRCM
++	select SUN6I_R_INTC
++	select SUNXI_NMI_INTC
+ 
+ config MACH_SUN9I
+ 	bool "Allwinner (sun9i) SoCs support"
+ 	default ARCH_SUNXI
+ 	select ARM_GIC
++	select SUNXI_NMI_INTC
+ 
+ config ARCH_SUNXI_MC_SMP
+ 	bool
+@@ -69,6 +74,7 @@ if ARCH_MULTI_V5
+ config MACH_SUNIV
+ 	bool "Allwinner ARMv5 F-series (suniv) SoCs support"
+ 	default ARCH_SUNXI
++	select SUN4I_INTC
+ 	help
+ 	  Support for Allwinner suniv ARMv5 SoCs.
+ 	  (F1C100A, F1C100s, F1C200s, F1C500, F1C600)
+diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
+index 30b123cde02c..b9a9d5de0e00 100644
+--- a/arch/arm64/Kconfig.platforms
++++ b/arch/arm64/Kconfig.platforms
+@@ -11,12 +11,11 @@ config ARCH_ACTIONS
+ config ARCH_SUNXI
+ 	bool "Allwinner sunxi 64-bit SoC Family"
+ 	select ARCH_HAS_RESET_CONTROLLER
+-	select GENERIC_IRQ_CHIP
+-	select IRQ_DOMAIN_HIERARCHY
+-	select IRQ_FASTEOI_HIERARCHY_HANDLERS
+ 	select PINCTRL
+ 	select RESET_CONTROLLER
+ 	select SUN4I_TIMER
++	select SUN6I_R_INTC
++	select SUNXI_NMI_INTC
+ 	help
+ 	  This enables support for Allwinner sunxi based SoCs like the A64.
+ 
+diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+index 15edb9a6fcae..135c156673a7 100644
+--- a/drivers/irqchip/Kconfig
++++ b/drivers/irqchip/Kconfig
+@@ -257,6 +257,18 @@ config ST_IRQCHIP
+ 	help
+ 	  Enables SysCfg Controlled IRQs on STi based platforms.
+ 
++config SUN4I_INTC
++	bool
++
++config SUN6I_R_INTC
++	bool
++	select IRQ_DOMAIN_HIERARCHY
++	select IRQ_FASTEOI_HIERARCHY_HANDLERS
++
++config SUNXI_NMI_INTC
++	bool
++	select GENERIC_IRQ_CHIP
++
+ config TB10X_IRQC
+ 	bool
+ 	select IRQ_DOMAIN
+diff --git a/drivers/irqchip/Makefile b/drivers/irqchip/Makefile
+index 160a1d8ceaa9..9b1ffb0f98cc 100644
+--- a/drivers/irqchip/Makefile
++++ b/drivers/irqchip/Makefile
+@@ -23,9 +23,9 @@ obj-$(CONFIG_OMPIC)			+= irq-ompic.o
+ obj-$(CONFIG_OR1K_PIC)			+= irq-or1k-pic.o
+ obj-$(CONFIG_ORION_IRQCHIP)		+= irq-orion.o
+ obj-$(CONFIG_OMAP_IRQCHIP)		+= irq-omap-intc.o
+-obj-$(CONFIG_ARCH_SUNXI)		+= irq-sun4i.o
+-obj-$(CONFIG_ARCH_SUNXI)		+= irq-sun6i-r.o
+-obj-$(CONFIG_ARCH_SUNXI)		+= irq-sunxi-nmi.o
++obj-$(CONFIG_SUN4I_INTC)		+= irq-sun4i.o
++obj-$(CONFIG_SUN6I_R_INTC)		+= irq-sun6i-r.o
++obj-$(CONFIG_SUNXI_NMI_INTC)		+= irq-sunxi-nmi.o
+ obj-$(CONFIG_ARCH_SPEAR3XX)		+= spear-shirq.o
+ obj-$(CONFIG_ARM_GIC)			+= irq-gic.o irq-gic-common.o
+ obj-$(CONFIG_ARM_GIC_PM)		+= irq-gic-pm.o
 -- 
-Cheers,
-Changbin Du
+2.35.1
+
