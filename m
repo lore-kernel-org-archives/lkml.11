@@ -2,93 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91793C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6071C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:34:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237965AbiEIJfG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 05:35:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53438 "EHLO
+        id S236595AbiEIJeZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 05:34:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237997AbiEIJDP (ORCPT
+        with ESMTP id S236554AbiEII5g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 05:03:15 -0400
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF4BB1F2D55;
-        Mon,  9 May 2022 01:59:21 -0700 (PDT)
-Received: (Authenticated sender: gregory.clement@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 72C8840010;
-        Mon,  9 May 2022 08:59:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1652086743;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        Mon, 9 May 2022 04:57:36 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 304AE202B26;
+        Mon,  9 May 2022 01:53:36 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 9125E21B3D;
+        Mon,  9 May 2022 08:53:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1652086413; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=GlfE+eMNWZzjVhKznIxmSnTKmF7zpHT4YD9wNmX5k2E=;
-        b=WMevReCeo2A5kiQiz+3netIPtBlgC36e1qsQMUdkXUBOmgSiXgr0s7iAxAKM7kxV9x1F3C
-        U/ZNrFIjK4maROzDydD0u1B4EjgServOkMIcOhUQhCTGM6lOgfN1GmkRRkJuPT488QPUft
-        F9eZgTf4pH0DxoF4Ag0gDu41wZuFk3ahKm0yPkxcI59FxmvyQ7k75x2soRFJtCO3QA/lVG
-        xds9u19AL0tYaAKTo1AIv+Nkqi1p25OPxyCzZZ0JxY5cT4k2fFMpnF2N0xJ1YPD2FmliHW
-        4YoqkukZ2ahSmC66t7ihMZYCpFbt0qem2n5RRMf6tKDOdFjhsNG7fUOM0xIOXQ==
-From:   Gregory CLEMENT <gregory.clement@bootlin.com>
-To:     Robert Marko <robert.marko@sartura.hr>, andrew@lunn.ch,
-        sebastian.hesselbarth@gmail.com, robh+dt@kernel.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, pali@kernel.org
-Cc:     Robert Marko <robert.marko@sartura.hr>
-Subject: Re: [PATCH v3 3/3] arm64: dts: marvell: espressobin-ultra: enable
- front USB3 port
-In-Reply-To: <20210928170919.691845-3-robert.marko@sartura.hr>
-References: <20210928170919.691845-1-robert.marko@sartura.hr>
- <20210928170919.691845-3-robert.marko@sartura.hr>
-Date:   Mon, 09 May 2022 10:58:53 +0200
-Message-ID: <87ee13rsj6.fsf@BL-laptop>
-MIME-Version: 1.0
-Content-Type: text/plain
+        bh=dfcvUUdqksgvYc8rVDLHC5DOBo/kU2XO+VX1eeG4aV8=;
+        b=A34L+qWnS4KTuUIJIOdn/Oy0lRYM0k4tu6TprpUGGmO4q2IG6PgANqhT26b8ERa1UPxmL3
+        +i1ltyuQDR6b3JXdcEzOXVh1KYWhR2Zwt+tTJHHP3RNo/us6IFdzvOCkW7gcDMpTyzgCvx
+        xJwG93EwlvMl01wRmSewhq2A5QaBHXU=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1652086413;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dfcvUUdqksgvYc8rVDLHC5DOBo/kU2XO+VX1eeG4aV8=;
+        b=UKYq4/y/oVRFARjOiTG0UlZFJ7CNosy5fO4czqcNJLtcbGcYGz4OJwlbgEGhzVQm3iPfhB
+        Fx+12pZoeT2rmkDQ==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 79C5C2C141;
+        Mon,  9 May 2022 08:53:33 +0000 (UTC)
+Date:   Mon, 09 May 2022 10:53:33 +0200
+Message-ID: <s5hczgnm6ia.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Niklas Schnelle <schnelle@linux.ibm.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        alsa-devel@alsa-project.org (moderated list:SOUND)
+Subject: Re: [RFC v2 31/39] sound: add HAS_IOPORT dependencies
+In-Reply-To: <20220429135108.2781579-57-schnelle@linux.ibm.com>
+References: <20220429135108.2781579-1-schnelle@linux.ibm.com>
+        <20220429135108.2781579-57-schnelle@linux.ibm.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Robert Marko <robert.marko@sartura.hr> writes:
-
-> Espressobin Ultra has a front panel USB3.0 Type-A port which works
-> just fine so enable it.
-> I dont see a reason why it was disabled in the first place anyway.
->
-> Fixes: 3404fe15a60f ("arm64: dts: marvell: add DT for ESPRESSObin-Ultra")
-> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
-
-
-Applied on mvebu/dt64
-
-Thanks,
-
-Gregory
-
-
+On Fri, 29 Apr 2022 15:50:54 +0200,
+Niklas Schnelle wrote:
+> 
+> In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
+> not being declared. We thus need to add HAS_IOPORT as dependency for
+> those drivers using them. For SND_OPL3_LIB this adds its first
+> dependency so drivers currently selecting it unconditionally need to
+> depend on it instead.
+> 
+> Co-developed-by: Arnd Bergmann <arnd@kernel.org>
+> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
 > ---
-> Changes in v2:
-> * Add Fixes tag
-> ---
->  arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts | 1 -
->  1 file changed, 1 deletion(-)
->
-> diff --git a/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts b/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
-> index 7c786d218f1b..070725b81be5 100644
-> --- a/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
-> +++ b/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
-> @@ -108,7 +108,6 @@ rtc@51 {
+>  sound/drivers/Kconfig |  5 ++++
+>  sound/isa/Kconfig     | 44 ++++++++++++++---------------
+>  sound/pci/Kconfig     | 64 +++++++++++++++++++++++++++++--------------
+>  3 files changed, 70 insertions(+), 43 deletions(-)
+> 
+> diff --git a/sound/drivers/Kconfig b/sound/drivers/Kconfig
+> index ca4cdf666f82..4d250e619786 100644
+> --- a/sound/drivers/Kconfig
+> +++ b/sound/drivers/Kconfig
+> @@ -1,10 +1,12 @@
+>  # SPDX-License-Identifier: GPL-2.0-only
+>  config SND_MPU401_UART
+>  	tristate
+> +	depends on HAS_IOPORT
+>  	select SND_RAWMIDI
 >  
->  &usb3 {
->  	usb-phy = <&usb3_phy>;
-> -	status = "disabled";
->  };
->  
->  &mdio {
-> -- 
-> 2.31.1
->
+>  config SND_OPL3_LIB
+>  	tristate
+> +	depends on HAS_IOPPORT
+>  	select SND_TIMER
+>  	select SND_HWDEP
+>  	select SND_SEQ_DEVICE if SND_SEQUENCER != n
 
--- 
-Gregory Clement, Bootlin
-Embedded Linux and Kernel engineering
-http://bootlin.com
+Both of those are the items to be reverse-selected, so cannot fulfill
+the dependency with depends-on.  That is, the items that select those
+should have the dependency on HAS_IOPORT instead.
+
+That is, a change like below:
+
+> --- a/sound/isa/Kconfig
+> +++ b/sound/isa/Kconfig
+> @@ -31,7 +31,7 @@ if SND_ISA
+>  
+>  config SND_ADLIB
+>  	tristate "AdLib FM card"
+> -	select SND_OPL3_LIB
+> +	depends on SND_OPL3_LIB
+
+... won't work.  CONFIG_SND_OPL3_LIB is not enabled by itself but only
+to be selected.
+
+
+thanks,
+
+Takashi
