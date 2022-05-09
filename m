@@ -2,118 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B029C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 13:15:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE223C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 13:16:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235473AbiEINT1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 09:19:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42970 "EHLO
+        id S235452AbiEINUk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 09:20:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235411AbiEINSM (ORCPT
+        with ESMTP id S235365AbiEINUe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 09:18:12 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 901B82A76AE
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 06:14:16 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KxhSp0hK8zhZ3Q;
-        Mon,  9 May 2022 21:13:46 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 9 May
- 2022 21:14:09 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>
-CC:     <willy@infradead.org>, <vbabka@suse.cz>, <dhowells@redhat.com>,
-        <neilb@suse.de>, <apopple@nvidia.com>, <david@redhat.com>,
-        <surenb@google.com>, <peterx@redhat.com>,
-        <naoya.horiguchi@nec.com>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH 15/15] mm/swap: fix comment about swap extent
-Date:   Mon, 9 May 2022 21:14:16 +0800
-Message-ID: <20220509131416.17553-16-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20220509131416.17553-1-linmiaohe@huawei.com>
-References: <20220509131416.17553-1-linmiaohe@huawei.com>
+        Mon, 9 May 2022 09:20:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A291A20B54F;
+        Mon,  9 May 2022 06:16:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 57CE2B8124C;
+        Mon,  9 May 2022 13:16:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3816C385A8;
+        Mon,  9 May 2022 13:16:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652102198;
+        bh=P03P3iBuMQwdqJ10cdmFhzHRNAACOez3A/7gSDDSilU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KyR5MTpOgAqHAODnrDxnr1lv+DH9KAlEdcEQOo/sWC7VopWzufMbj+vt/btxIsIPA
+         Zl4Y1NEyjZhu1y/oI1FyqUO04V89yoC+MjCtfIM9KWx0n7kNigtiW5I1hJ22ui8UjM
+         yMAE3qNLYrzhr6IfCxLvmvc6NkAtruFFa9HeC+tAf97M9dvfe+pYCadgG8Hgo2RPFt
+         M2Ge5M2d6aTQ8WinlTis/RBgDU/BpMm/shoMqevh7lg4HyfmG/nyGEz5k9XNr4mFi+
+         82ZzOM1WW9RGc2Ruc1DS+6zKVAmJbWpnhVhWz9uwXiSi1ABbhe07yNxC6qxHuaj8Xs
+         YkUC43OCfu5jw==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 7E7D5400B1; Mon,  9 May 2022 10:16:35 -0300 (-03)
+Date:   Mon, 9 May 2022 10:16:35 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Madhavan Srinivasan <maddy@linux.ibm.com>,
+        Shunsuke Nakamura <nakamura.shun@fujitsu.com>,
+        Florian Fischer <florian.fischer@muhq.space>,
+        Andi Kleen <ak@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        James Clark <james.clark@arm.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Stephane Eranian <eranian@google.com>
+Subject: Re: [PATCH 3/5] perf evsel: Add tool event helpers
+Message-ID: <YnkUM32sISfq1fad@kernel.org>
+References: <20220507053410.3798748-1-irogers@google.com>
+ <20220507053410.3798748-4-irogers@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220507053410.3798748-4-irogers@google.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit 4efaceb1c5f8 ("mm, swap: use rbtree for swap_extent"), rbtree
-is used for swap extent. Also curr_swap_extent is removed at that time.
-Update the corresponding comment.
+Em Fri, May 06, 2022 at 10:34:08PM -0700, Ian Rogers escreveu:
+> Convert to and from a string. Fix evsel__tool_name as array is off-by-1.
+> Support more than just duration_time as a metric-id.
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
----
- include/linux/swap.h |  4 ++--
- mm/swapfile.c        | 15 ++++++---------
- 2 files changed, 8 insertions(+), 11 deletions(-)
+Good catch, I added this:
 
-diff --git a/include/linux/swap.h b/include/linux/swap.h
-index 8772132d21dc..e1f3201dec6f 100644
---- a/include/linux/swap.h
-+++ b/include/linux/swap.h
-@@ -173,8 +173,8 @@ struct zone;
+Fixes: 75eafc970bd9d36d ("perf list: Print all available tool events")
+
+- Arnaldo
  
- /*
-  * A swap extent maps a range of a swapfile's PAGE_SIZE pages onto a range of
-- * disk blocks.  A list of swap extents maps the entire swapfile.  (Where the
-- * term `swapfile' refers to either a blockdevice or an IS_REG file.  Apart
-+ * disk blocks.  A rbtree of swap extents maps the entire swapfile (Where the
-+ * term `swapfile' refers to either a blockdevice or an IS_REG file). Apart
-  * from setup, they're handled identically.
-  *
-  * We always assume that blocks are of size PAGE_SIZE.
-diff --git a/mm/swapfile.c b/mm/swapfile.c
-index 7ead5fb96d9d..b3f977d9c83e 100644
---- a/mm/swapfile.c
-+++ b/mm/swapfile.c
-@@ -2225,8 +2225,8 @@ EXPORT_SYMBOL_GPL(add_swap_extent);
- 
- /*
-  * A `swap extent' is a simple thing which maps a contiguous range of pages
-- * onto a contiguous range of disk blocks.  An ordered list of swap extents
-- * is built at swapon time and is then used at swap_writepage/swap_readpage
-+ * onto a contiguous range of disk blocks.  A rbtree of swap extents is
-+ * built at swapon time and is then used at swap_writepage/swap_readpage
-  * time for locating where on disk a page belongs.
-  *
-  * If the swapfile is an S_ISBLK block device, a single extent is installed.
-@@ -2234,12 +2234,12 @@ EXPORT_SYMBOL_GPL(add_swap_extent);
-  * swap files identically.
-  *
-  * Whether the swapdev is an S_ISREG file or an S_ISBLK blockdev, the swap
-- * extent list operates in PAGE_SIZE disk blocks.  Both S_ISREG and S_ISBLK
-+ * extent rbtree operates in PAGE_SIZE disk blocks.  Both S_ISREG and S_ISBLK
-  * swapfiles are handled *identically* after swapon time.
-  *
-  * For S_ISREG swapfiles, setup_swap_extents() will walk all the file's blocks
-- * and will parse them into an ordered extent list, in PAGE_SIZE chunks.  If
-- * some stray blocks are found which do not fall within the PAGE_SIZE alignment
-+ * and will parse them into a rbtree, in PAGE_SIZE chunks.  If some stray
-+ * blocks are found which do not fall within the PAGE_SIZE alignment
-  * requirements, they are simply tossed out - we will never use those blocks
-  * for swapping.
-  *
-@@ -2248,10 +2248,7 @@ EXPORT_SYMBOL_GPL(add_swap_extent);
-  *
-  * The amount of disk space which a single swap extent represents varies.
-  * Typically it is in the 1-4 megabyte range.  So we can have hundreds of
-- * extents in the list.  To avoid much list walking, we cache the previous
-- * search location in `curr_swap_extent', and start new searches from there.
-- * This is extremely effective.  The average number of iterations in
-- * map_swap_page() has been measured at about 0.3 per page.  - akpm.
-+ * extents in the rbtree. - akpm.
-  */
- static int setup_swap_extents(struct swap_info_struct *sis, sector_t *span)
- {
+> Signed-off-by: Ian Rogers <irogers@google.com>
+> ---
+>  tools/perf/util/evsel.c | 41 +++++++++++++++++++++++++++++++----------
+>  tools/perf/util/evsel.h | 11 +++++++++++
+>  2 files changed, 42 insertions(+), 10 deletions(-)
+> 
+> diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
+> index cdeace24d9be..5fd7924f8eb3 100644
+> --- a/tools/perf/util/evsel.c
+> +++ b/tools/perf/util/evsel.c
+> @@ -59,6 +59,33 @@ struct perf_missing_features perf_missing_features;
+>  
+>  static clockid_t clockid;
+>  
+> +static const char *const perf_tool_event__tool_names[PERF_TOOL_MAX] = {
+> +	NULL,
+> +	"duration_time",
+> +	"user_time",
+> +	"system_time",
+> +};
+> +
+> +const char *perf_tool_event__to_str(enum perf_tool_event ev)
+> +{
+> +	if (ev > PERF_TOOL_NONE && ev < PERF_TOOL_MAX)
+> +		return perf_tool_event__tool_names[ev];
+> +
+> +	return NULL;
+> +}
+> +
+> +enum perf_tool_event perf_tool_event__from_str(const char *str)
+> +{
+> +	int i;
+> +
+> +	perf_tool_event__for_each_event(i) {
+> +		if (!strcmp(str, perf_tool_event__tool_names[i]))
+> +			return i;
+> +	}
+> +	return PERF_TOOL_NONE;
+> +}
+> +
+> +
+>  static int evsel__no_extra_init(struct evsel *evsel __maybe_unused)
+>  {
+>  	return 0;
+> @@ -597,15 +624,9 @@ static int evsel__sw_name(struct evsel *evsel, char *bf, size_t size)
+>  	return r + evsel__add_modifiers(evsel, bf + r, size - r);
+>  }
+>  
+> -static const char *const evsel__tool_names[PERF_TOOL_MAX] = {
+> -	"duration_time",
+> -	"user_time",
+> -	"system_time",
+> -};
+> -
+>  static int evsel__tool_name(enum perf_tool_event ev, char *bf, size_t size)
+>  {
+> -	return scnprintf(bf, size, "%s", evsel__tool_names[ev]);
+> +	return scnprintf(bf, size, "%s", perf_tool_event__to_str(ev));
+>  }
+>  
+>  static int __evsel__bp_name(char *bf, size_t size, u64 addr, u64 type)
+> @@ -758,7 +779,7 @@ const char *evsel__name(struct evsel *evsel)
+>  		break;
+>  
+>  	case PERF_TYPE_SOFTWARE:
+> -		if (evsel->tool_event)
+> +		if (evsel__is_tool(evsel))
+>  			evsel__tool_name(evsel->tool_event, bf, sizeof(bf));
+>  		else
+>  			evsel__sw_name(evsel, bf, sizeof(bf));
+> @@ -791,8 +812,8 @@ const char *evsel__metric_id(const struct evsel *evsel)
+>  	if (evsel->metric_id)
+>  		return evsel->metric_id;
+>  
+> -	if (evsel->core.attr.type == PERF_TYPE_SOFTWARE && evsel->tool_event)
+> -		return "duration_time";
+> +	if (evsel__is_tool(evsel))
+> +		return perf_tool_event__to_str(evsel->tool_event);
+>  
+>  	return "unknown";
+>  }
+> diff --git a/tools/perf/util/evsel.h b/tools/perf/util/evsel.h
+> index a017781cdd47..d4b04537ce6d 100644
+> --- a/tools/perf/util/evsel.h
+> +++ b/tools/perf/util/evsel.h
+> @@ -36,6 +36,12 @@ enum perf_tool_event {
+>  	PERF_TOOL_MAX,
+>  };
+>  
+> +const char *perf_tool_event__to_str(enum perf_tool_event ev);
+> +enum perf_tool_event perf_tool_event__from_str(const char *str);
+> +
+> +#define perf_tool_event__for_each_event(ev)		\
+> +	for ((ev) = PERF_TOOL_DURATION_TIME; (ev) < PERF_TOOL_MAX; ev++)
+> +
+>  /** struct evsel - event selector
+>   *
+>   * @evlist - evlist this evsel is in, if it is in one.
+> @@ -269,6 +275,11 @@ int __evsel__hw_cache_type_op_res_name(u8 type, u8 op, u8 result, char *bf, size
+>  const char *evsel__name(struct evsel *evsel);
+>  const char *evsel__metric_id(const struct evsel *evsel);
+>  
+> +static inline bool evsel__is_tool(const struct evsel *evsel)
+> +{
+> +	return evsel->tool_event != PERF_TOOL_NONE;
+> +}
+> +
+>  const char *evsel__group_name(struct evsel *evsel);
+>  int evsel__group_desc(struct evsel *evsel, char *buf, size_t size);
+>  
+> -- 
+> 2.36.0.512.ge40c2bad7a-goog
+
 -- 
-2.23.0
 
+- Arnaldo
