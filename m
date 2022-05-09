@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6091AC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:21:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33E2AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:22:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230255AbiEIKZn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 06:25:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36554 "EHLO
+        id S229711AbiEIKZw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 06:25:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233774AbiEIKZO (ORCPT
+        with ESMTP id S231613AbiEIKZN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 06:25:14 -0400
+        Mon, 9 May 2022 06:25:13 -0400
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B506201EA8;
-        Mon,  9 May 2022 03:21:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 025991F8F37;
+        Mon,  9 May 2022 03:21:10 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id C5C011F4376E
+        with ESMTPSA id BBB721F43752
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1652091669;
-        bh=olbInTBcsJ7OBs0Az64gQWO87DN9MjbVGnMzsKIcrgw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lvi3SIcfXeRf4XU7UFmELdSoDYNvwzyS+GodMXAeztXY501u1tqhVvhHK5ok97XaR
-         NJTLdS9FxXSHmbeoOkHfxfGyRROOOLGktuQYN6qL4XGPYFVyW4mNkDEvpfAfAN5hDE
-         YsQ8jVB+BdjEQphUehmPmxRibikOUzaBKYAWOtYulS1KGWQdQCh5uTRIcXFcm8k2AQ
-         SUEa5i1SzrSJWrJ8sx6nmcaa8bHcl9y2+oLResDfgece6cPW9nFdo17gtwFD8ehmzU
-         hwJgL3Wld7ukzwGviCsC9GcU4uIkX6RQmUFx7okjDOy8Yp6QqxXCBOZDegZ9mppqxQ
-         3s/kCoV9quA6w==
+        s=mail; t=1652091668;
+        bh=kFY6xdvfRk2XofodD/pcIzhqwLnHWFBwbwW4/mpaiGk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=lCQetSKw8oY2VFDLVOJDfP0OQrIwkQXWFqrQ58A1/O1es7qBNOttUR2OO2BMPkXAO
+         c97xn4YW7SwxEf3ydcgUynbM26lydrJk6kJ5bE696XBO3SxD2Tc4C1fitRD6AHichg
+         1wBeQmoQUb8SYPJlsOneogQpDjNxw5kjIHwxf3bZEjVX7DcCQFEwDGBvWOGVdqK4L6
+         i+XNIsE5/pGvIzA/bNm1XrBOw6NseY7cOD4IUUVkAOauAIDWTtqGfxioHFK91fD6Br
+         lhBzsFkxvT/dkbOx2BTPFS3M65xwfb0uq4BdWIS1w3HtEeJ4m+2hoC0dBBVTDl87DX
+         jnu3WzBUcHJ0g==
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
 To:     daniel.lezcano@linaro.org
@@ -41,48 +41,39 @@ Cc:     tglx@linutronix.de, robh+dt@kernel.org,
         paul.bouchara@somainline.org,
         AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH 1/2] dt-bindings: timer: mediatek: Add CPUX System Timer and MT6795 compatible
-Date:   Mon,  9 May 2022 12:20:57 +0200
-Message-Id: <20220509102058.3064215-2-angelogioacchino.delregno@collabora.com>
+Subject: [PATCH 0/2] MediaTek SoC ARM/ARM64 System Timer
+Date:   Mon,  9 May 2022 12:20:56 +0200
+Message-Id: <20220509102058.3064215-1-angelogioacchino.delregno@collabora.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220509102058.3064215-1-angelogioacchino.delregno@collabora.com>
-References: <20220509102058.3064215-1-angelogioacchino.delregno@collabora.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document the "CPUXGPT" CPU General Purpose Timer, used as ARM/ARM64
-System Timer on MediaTek platforms and add the MT6795 compatible for it.
+In an effort to give some love to the apparently forgotten MT6795 SoC,
+I am upstreaming more components that are necessary to support platforms
+powered by this one apart from a simple boot to serial console.
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- .../devicetree/bindings/timer/mediatek,mtk-timer.txt          | 4 ++++
- 1 file changed, 4 insertions(+)
+This series introduces support to start the System Timer for the CPU
+cores found in various MediaTek SoCs including, but not limited to the
+MT6795 Helio X10 - and will most probably unblock many developers for
+the upstreaming of various platforms.
 
-diff --git a/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt b/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt
-index fbd76a8e023b..2d139d24e535 100644
---- a/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt
-+++ b/Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt
-@@ -2,6 +2,7 @@ MediaTek Timers
- ---------------
- 
- MediaTek SoCs have two different timers on different platforms,
-+- CPUX (ARM/ARM64 System Timer)
- - GPT (General Purpose Timer)
- - SYST (System Timer)
- 
-@@ -28,6 +29,9 @@ Required properties:
- 	* "mediatek,mt7629-timer" for MT7629 compatible timers (SYST)
- 	* "mediatek,mt6765-timer" for MT6765 and all above compatible timers (SYST)
- 
-+	For those SoCs that use CPUX
-+	* "mediatek,mt6795-systimer" for MT6795 compatible timers (CPUX)
-+
- - reg: Should contain location and length for timer register.
- - clocks: Should contain system clock.
- 
+For a broad overview of why/what/when, please look at the description
+of patch [2/2] in this series.
+
+Tested on a MT6795 Sony Xperia M5 (codename "Holly") smartphone.
+
+AngeloGioacchino Del Regno (2):
+  dt-bindings: timer: mediatek: Add CPUX System Timer and MT6795
+    compatible
+  clocksource/drivers/timer-mediatek: Implement CPUXGPT timers
+
+ .../bindings/timer/mediatek,mtk-timer.txt     |   4 +
+ drivers/clocksource/timer-mediatek.c          | 118 ++++++++++++++++++
+ 2 files changed, 122 insertions(+)
+
 -- 
 2.35.1
 
