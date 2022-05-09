@@ -2,103 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBD32C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 15:56:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BB2DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 15:56:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238717AbiEIQAR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 12:00:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33646 "EHLO
+        id S238716AbiEIQAc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 12:00:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238697AbiEIQAL (ORCPT
+        with ESMTP id S238680AbiEIQA3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 12:00:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D92961F8C5B;
-        Mon,  9 May 2022 08:56:16 -0700 (PDT)
+        Mon, 9 May 2022 12:00:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09B49226886
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 08:56:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8C513B8174E;
-        Mon,  9 May 2022 15:56:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B20B0C385B3;
-        Mon,  9 May 2022 15:56:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A5F2612CB
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 15:56:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07F99C385AE;
+        Mon,  9 May 2022 15:56:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652111774;
-        bh=9KBLlJzB+Vn8EeWf4pniCM2esT/SEQ/l/9rRS1+kJdo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gnP+8DQ6tWihM/xyf7+uFM3YtvEgh9FtTzBcVXuBL5jEo/mkJLpAT8efdz5K5umnH
-         WXlaEN6NDHlu+O52I7sU/hAAesgl2I+cU2gMoYKBIY66Nd554R1E2Ky3vEL9hLaRLt
-         lG6aG/AEHWwv3wBXD2klFOdGL7FRK5b6WtSKtps4cS1roQAQqb8yqjwDXPxB3DQPPv
-         9MrwKXne9+eNaLSm6VBO7LzpxxmbTm6k/QZvlOjlQByBCXf7FrbkL5V9BnF1ntA/bC
-         xTS0WU3nINx5AOu/ElLmQIKzrtYA9UnEI5E4fsfo/MRPdHGYlZVbnS2AQ8cjxpgknc
-         yACumn3tly7GA==
-Date:   Mon, 9 May 2022 16:56:06 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     LABBE Corentin <clabbe@baylibre.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, alexandre.torgue@foss.st.com,
-        calvin.johnson@oss.nxp.com, davem@davemloft.net,
-        edumazet@google.com, hkallweit1@gmail.com,
-        jernej.skrabec@gmail.com, joabreu@synopsys.com,
-        krzysztof.kozlowski+dt@linaro.org, kuba@kernel.org,
-        lgirdwood@gmail.com, linux@armlinux.org.uk, pabeni@redhat.com,
-        peppe.cavallaro@st.com, robh+dt@kernel.org, samuel@sholland.org,
-        wens@csie.org, netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH 0/6] arm64: add ethernet to orange pi 3
-Message-ID: <Ynk5loCKWCF4/DLT@sirena.org.uk>
-References: <20220509074857.195302-1-clabbe@baylibre.com>
- <YnkG9yV+Fbf7WtCh@lunn.ch>
- <YnkWwrKk4zjPnZLg@Red>
- <Ynkw9EekNj5Ih5gc@lunn.ch>
- <YnkyKiRmOEYEtO3z@Red>
+        s=k20201202; t=1652111794;
+        bh=6L+UzvyilUsWmuMKa2o6reD9OfemDuJY/UKqTwVgBj0=;
+        h=Date:From:To:Cc:Subject:Reply-To:From;
+        b=kjdUcIhIIui29wj/hMYd53aPq6YMMh+Wt7Luu6feeUmtFVqkVU8FkzD2jZMLSGv3u
+         EAXsFuMV8MtpLQI9GT7ux4X6wfFWxSp2oCitmYkuP9ZaIviTgZ2P9Jet7Bl+zG5yzl
+         Z8EhFpofju4vcPsncgxDasZtMO62CLcq/Z3COrpoZMYketOwzDmduZaCiF/WpmEU2x
+         edx+dCZ4VfScVEZ9mVy3OuIF8YlvCMcizEF1uH1Vb62z6gOFdZFjewi20xv3gyjf+f
+         sfW0ouUwH+mQOfYyI+k6i38yFPolT23qqI54MXJnHe4tUw/s5pZ/GllaEdz6FnN8mU
+         O6K0NsPIvA78g==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 9F8A45C00B8; Mon,  9 May 2022 08:56:33 -0700 (PDT)
+Date:   Mon, 9 May 2022 08:56:33 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     jolsa@redhat.com
+Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org
+Subject: Folllowing up on LSF/MM RCU/idle discussion
+Message-ID: <20220509155633.GA93071@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="zr6Z+Ap6mhoaAOIZ"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YnkyKiRmOEYEtO3z@Red>
-X-Cookie: Boycott meat -- suck your thumb.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello, Jiri!
 
---zr6Z+Ap6mhoaAOIZ
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+It was good chatting with you last week, and I hope that travels went
+well!
 
-On Mon, May 09, 2022 at 05:24:26PM +0200, LABBE Corentin wrote:
-> Le Mon, May 09, 2022 at 05:19:16PM +0200, Andrew Lunn a =E9crit :
+Just wanted to follow up on the non-noinstr code between the call
+to rcu_idle_enter() and rcu_idle_exit().  Although the most correct
+approach is to never have non-noinstr code in arch_cpu_idle(), for all I
+know there might well be architectures for which this is not feasible.
+If so, one workaround would be to supply a flag set by each arch (or
+subarch) that says that rcu_idle_enter() and rcu_idle_exit() are invoked
+within arch_cpu_idle().
 
-> > I'm trying to understand the differences between the two different
-> > regulators. If you tell me what the PHY is, i might be able to find
-> > the data sheet, and then understand why two regulators are needed and
-> > if one needs to be controlled by the PHY driver, not the MDIO bus
-> > driver.
+CCing Peter, who just might have an opinion on this.  ;-)
 
-> The schematic for the board is https://linux-sunxi.org/images/5/50/Orange=
-Pi_3_Schematics_v1.5.pdf
-> Which show a RTL8211E.
-
-Most hardware will want all the regulators for the device turned on or
-off en masse (possibly in a specific sequence) - it's rare for devices
-to support only having some of their supplies enabled for extended
-periods, I'd be surprised if something like a PHY did that.
-
---zr6Z+Ap6mhoaAOIZ
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJ5OZUACgkQJNaLcl1U
-h9Cv2wf/aIdmWmiQUzvAzeDMdKyyzMe0rAEZxUQEmobo8iKvWcHPao0ApwJso55S
-RbO7x97qFZYhpLZYHS/1YByP2+PMkdAOcnpHCAda+REafYnhKSyi2+wjMdHbGTU6
-87yzIt+QaGDrfC1STKmIa2/1YUIe01ktGk6fWV3uR6azy7VRtZMyZBW4WBhZg3sT
-IvzG+P5fdDvQcmQEGJWOhnNgfZs9+mVmMtWsbMym1vCmK5Ub8oPL3tJDJ1YLb/8U
-WosapnoYSDJNUGHaV7vs7HUnqHX/FB/DYB7rPTFOWvJSnuQCTQ4GWV++iKkn85n2
-HnUc4Dak9vj5+jmP30vcnGjXahk5Qg==
-=2ufh
------END PGP SIGNATURE-----
-
---zr6Z+Ap6mhoaAOIZ--
+							Thanx, Paul
