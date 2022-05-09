@@ -2,84 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83243C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:27:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E91D3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:29:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235554AbiEIH34 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 03:29:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59704 "EHLO
+        id S236142AbiEIHbW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 03:31:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236193AbiEIH1E (ORCPT
+        with ESMTP id S235148AbiEIH2G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 03:27:04 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF26BF62
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 00:23:09 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id t5so15154261edw.11
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 00:23:09 -0700 (PDT)
+        Mon, 9 May 2022 03:28:06 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 857EE6584;
+        Mon,  9 May 2022 00:24:13 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id w17-20020a17090a529100b001db302efed6so12035990pjh.4;
+        Mon, 09 May 2022 00:24:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=yh41zgnvY6/e7rd+RKrkrzj1vifp0kaAvEwbnIHLMjc=;
-        b=KQpoKsPG1Cr0vVlAeQP5epvMisubeLvtfvlzwlp4LwBIZaVem9j9Kql6ZY/EEqpZ0t
-         LnCZEj1f16BmSYYxf1ReN4Mnpc6gz574IbAeL3dXsn1t82ItSLnF+I2k+WnCUSViWPWG
-         P8Nh6RA3X1JxWOm+0jw9AJ2umv57ewK6fJqkDRu4ZdOqupbVuibC/sRJzo9vBYxvIKOj
-         icodQpuyWNKpkIR5GocQDmBzCFU/d5QEImd62IVRnN36cwyYYM51PnGBsHeDbeayXqwB
-         MFsH03Yp0XTNuyXTU124IKF58ev/tHGoIJWXanTcTXE9Tb85jJrSzF4rq/3TghOyafz1
-         5Fiw==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BSyObxIXmaw5ibvcX0FawVvjRmdC4oHfcmD/+YAXJH8=;
+        b=Cpa3JylI61TL4omhJYr4HUdHy4dDjr8Gu9DzBby4WY6Qwp1YGihoaKtdZonC4jJ+xQ
+         NyCevRCfU+9kzHgJQUj9ZzF3eMK/PUhJqexYYsUVaDs95IjfH3vdz5P3ZISXQbudzrkQ
+         4h/zefHj59q8Ca89DIW0MSvWljTznxdn/qLjYprJ9ggdhMn2S2wvIMGps45awZYUxLND
+         vzmt6TswM7QA0pHWtWI07TycCAQyfZ19TUl3OoA6d9bNnsy1CGfgxKoLFupuiBJv3yj+
+         6eNKd9Nk9nQ3+r8EKZmF9IQjQuv4B//RBirT8B8Cl3ZH6P3GQfV2rScGc66WAlHewviG
+         /rRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=yh41zgnvY6/e7rd+RKrkrzj1vifp0kaAvEwbnIHLMjc=;
-        b=P80ZeZ+puymgeMmcsxywYObAKJpg6g73W4IiHDssr4VYu2p59L1+mhuZdO1AC4Wz7p
-         ZdRJxKbbH8jykLMgv42RQNVKtpo8mULEOG4BqnKE7/llxTJPYoaW7I7WI0ODNLlvaPed
-         l8WVsiB58u6hNxm8g2KLMGA5sfHrJCyURSJ2RPzXlGYtMlM6yfLoYA8x6lKS6jzIWShK
-         uClPAf1arPRP/JThJXnS9S6H4BL/3kSFgYt9oVIKmm4TSj922uaH5TeFwTIRro4rrg9q
-         z/VShBSfPdhmewcWv/paS0z1DXQ8CXTQ5DbhQjtcEJfe0raegcmEQiitOCwvNYnmhCuf
-         QihQ==
-X-Gm-Message-State: AOAM530iDat6t7lR8C/p5vuIrtSi0VBHogEfDUTSt/i2XsUT2g4vuZ9c
-        gETm8adNCspgOTyS6Upqjw1eUg==
-X-Google-Smtp-Source: ABdhPJzq1dmrlLw9p3X4mAViSn0SPqXS55XG6DN2M8/VazgVx59OnsR6l5xHrOKvSk26BivZqTjLHg==
-X-Received: by 2002:a05:6402:2291:b0:425:deb5:73be with SMTP id cw17-20020a056402229100b00425deb573bemr15667701edb.392.1652080988098;
-        Mon, 09 May 2022 00:23:08 -0700 (PDT)
-Received: from [192.168.0.242] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id jx21-20020a170907761500b006f3ef214e29sm4842379ejc.143.2022.05.09.00.23.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 00:23:07 -0700 (PDT)
-Message-ID: <eee2d4f6-703d-d3bb-3949-493f9d65f676@linaro.org>
-Date:   Mon, 9 May 2022 09:23:06 +0200
+        bh=BSyObxIXmaw5ibvcX0FawVvjRmdC4oHfcmD/+YAXJH8=;
+        b=Gh2S8nxNlbZ0dCiIivkeBYzp0y6jya75dJtjmUe+189fIR1O0bOeMzvaDEldkpW/Xh
+         j7jBE1OaWkVIizkeuw0gHZ7eUenV7GuYCYaTAWsLpXZfyItL4OFWMN21mxxHUNtnTH3w
+         C0z/OI88SNTOfmkwXm06axzrFtFpQqpnWL3fXs63Z5vPsjl8I/Qj8eSbSRGgYkXUvyD2
+         BG24v27I+WG/TlsWD7myo9OmbBtX+KFa3lKIO2JmMkVPvcsCkcNEH14RupuW4aaFPleX
+         dDfHRHnaCSDtp+FcW+Ih0NNLStykuRPRNiciYU14WhqBScyW7RT9ihI4aIOmC+hnsmqz
+         kiTg==
+X-Gm-Message-State: AOAM5309vmeou63ohpWJCMYqt9FKrTeFQ3gN/BM+hQh0KKPtVb6rNKXj
+        BC8bWvTdyqm2Os/mefqh3og=
+X-Google-Smtp-Source: ABdhPJyrhPWwqX3SrKDowpboDc+L15KMZOBt6laplo58tJSNrThENeqHmKIoYExOwv9DHN6Z809jJA==
+X-Received: by 2002:a17:90a:7acb:b0:1d9:85a5:e1e3 with SMTP id b11-20020a17090a7acb00b001d985a5e1e3mr24612187pjl.172.1652081049760;
+        Mon, 09 May 2022 00:24:09 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id a1-20020aa78e81000000b0050dc7628137sm8181659pfr.17.2022.05.09.00.24.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 May 2022 00:24:09 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: lv.ruyi@zte.com.cn
+To:     jic23@kernel.org, lars@metafoo.de
+Cc:     anand.ashok.dumbre@xilinx.com, michal.simek@xilinx.com,
+        manish.narani@xilinx.com, linux-iio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] iio: adc: fix return error variable
+Date:   Mon,  9 May 2022 07:24:05 +0000
+Message-Id: <20220509072405.1118019-1-lv.ruyi@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v4 3/3] arm64: dts: intel: add device tree for n6000
-Content-Language: en-US
-To:     matthew.gerlach@linux.intel.com, dinguyen@kernel.org,
-        robh+dt@kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org
-References: <20220508142624.491045-1-matthew.gerlach@linux.intel.com>
- <20220508142624.491045-4-matthew.gerlach@linux.intel.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220508142624.491045-4-matthew.gerlach@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/05/2022 16:26, matthew.gerlach@linux.intel.com wrote:
-> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-> 
-> Add a device tree for the n6000 instantiation of Agilex
-> Hard Processor System (HPS).
-> 
-> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
+Return irq instead of ret which always equals to zero here.
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Fixes: d5c70627a794 ("iio: adc: Add Xilinx AMS driver")
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+---
+ drivers/iio/adc/xilinx-ams.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/iio/adc/xilinx-ams.c b/drivers/iio/adc/xilinx-ams.c
+index a55396c1f8b2..a7687706012d 100644
+--- a/drivers/iio/adc/xilinx-ams.c
++++ b/drivers/iio/adc/xilinx-ams.c
+@@ -1409,7 +1409,7 @@ static int ams_probe(struct platform_device *pdev)
+ 
+ 	irq = platform_get_irq(pdev, 0);
+ 	if (irq < 0)
+-		return ret;
++		return irq;
+ 
+ 	ret = devm_request_irq(&pdev->dev, irq, &ams_irq, 0, "ams-irq",
+ 			       indio_dev);
+-- 
+2.25.1
 
-Best regards,
-Krzysztof
