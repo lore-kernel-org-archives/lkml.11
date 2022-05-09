@@ -2,62 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 738ACC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8321EC41535
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:04:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235562AbiEIHFr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 03:05:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47828 "EHLO
+        id S235597AbiEIHFu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 03:05:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233038AbiEIHCF (ORCPT
+        with ESMTP id S234609AbiEIHDr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 03:02:05 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C20E41A3586;
-        Sun,  8 May 2022 23:58:10 -0700 (PDT)
-Received: from linux.localdomain (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Axuth4u3hiwqkOAA--.49630S2;
-        Mon, 09 May 2022 14:58:01 +0800 (CST)
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-To:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next 0/3] Modify some code in sysctl_net_core.c
-Date:   Mon,  9 May 2022 14:57:52 +0800
-Message-Id: <1652079475-16684-1-git-send-email-yangtiezhu@loongson.cn>
-X-Mailer: git-send-email 2.1.0
-X-CM-TRANSID: AQAAf9Axuth4u3hiwqkOAA--.49630S2
-X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
-        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUY07k0a2IF6F4UM7kC6x804xWl14x267AK
-        xVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AKwVWUJVWUGw
-        A2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20xvE14v26ryj
-        6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j6r4UJwA2z4x0Y4vEx4A2jsIE14v26r
-        4UJVWxJr1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvE
-        ncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I
-        8E87Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lc2xS
-        Y4AK67AK6r47MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I
-        8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8
-        ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x
-        0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AK
-        xVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x07
-        j2HqcUUUUU=
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
+        Mon, 9 May 2022 03:03:47 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59DC2393D7;
+        Sun,  8 May 2022 23:59:54 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id j14so13008230plx.3;
+        Sun, 08 May 2022 23:59:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=ukKPvUkS4+sda6n7hZd5RfiYJTJ8bOEAkMXzOtPmIYQ=;
+        b=RkZKGCXUY3WLo3y2zRC0HADNs7mY1Izvrx0xzLpIlB2hf3bjErAGfhwZoj7SpkH506
+         P5MGGJJI+9l2PmkcWbIcatsvwBsE5iDuFfT4y96sbiBzxojagNVQSZjHGvfhytDdQMdE
+         PO2kSfCjpUsTIvSOLWfa69ZR0857+HjEY2JokReKHoSyhgzfnugX9EjEQQQnKDpejEAh
+         tGUx0wD/aGNVaqW5sPkVOeVDSSAfgPrM0lWalyHC7yf85CJuSN4+Qp5dtH6muyBnhHAT
+         Fu7nSrpciTO4kz/JsFkAynPJwhmFqcu7SkyPdSmHRE2fk7a1n5ujHMPklFJ7onpRrc+r
+         0v2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=ukKPvUkS4+sda6n7hZd5RfiYJTJ8bOEAkMXzOtPmIYQ=;
+        b=PE7HbRkKwz+drFlSXurrTk4jcNjIV4svpgZrYSHJVFsPIJYiPYinukTiqgys0ZicY7
+         cJafQmhYOUX61mQH34ufPxeU3PrQIb0Lrw+GHC0f3sdlpBBItZDTJTbFdH5P8ygfBjYQ
+         zACsWUTGMkFCFZ8tcg9xclZuxHqYUEsBPIi1mTMdpuK4sMnpJa2yl7HiIt+qhhF8Ogse
+         l0VUGmue8HQu30+f5uudeo2Vm6ry+V6kJSqOjMImEJJFoTkj71337ROUr7ytiVWfQOZy
+         ScwGk4FGCqPhawrUNoWmQ8Dg9Lio3VwPyUM/roUzBsNmLlDT/x5c/Lukik96nTkDRH9I
+         eQsQ==
+X-Gm-Message-State: AOAM532IAKOxUqpOQP0PF16i/kFe/84plXFHUTR9qccircDTAugrq1Cb
+        K/pPSHNUUBFd5jbsx5Xcl6+oQSmIRPw=
+X-Google-Smtp-Source: ABdhPJwEWqRa848Y6b0nbhIetgmKuAHRwCdA9NXKfZeIWxhg4L+prw9ifbQbd3A3SFzUkc97mZUjXw==
+X-Received: by 2002:a17:90b:4b42:b0:1dc:15f8:821b with SMTP id mi2-20020a17090b4b4200b001dc15f8821bmr25322886pjb.131.1652079593876;
+        Sun, 08 May 2022 23:59:53 -0700 (PDT)
+Received: from [192.168.43.80] (subs32-116-206-28-19.three.co.id. [116.206.28.19])
+        by smtp.gmail.com with ESMTPSA id a13-20020aa794ad000000b0050dc76281desm7840546pfl.184.2022.05.08.23.59.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 08 May 2022 23:59:53 -0700 (PDT)
+Message-ID: <4dd26a0e-819d-8414-8b71-1783e263209c@gmail.com>
+Date:   Mon, 9 May 2022 13:59:48 +0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH net-next v3] net/core: Rephrase function description of
+ __dev_queue_xmit()
+Content-Language: en-US
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     Akira Yokosawa <akiyks@gmail.com>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ben Greear <greearb@candelatech.com>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-next@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+References: <20220507084643.18278-1-bagasdotme@gmail.com>
+ <0cf2306a-2218-2cd5-ad54-0d73e25680a7@gmail.com> <Yni6nBTq+0LrBvQN@debian.me>
+In-Reply-To: <Yni6nBTq+0LrBvQN@debian.me>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Tiezhu Yang (3):
-  net: sysctl: Use SYSCTL_TWO instead of &two
-  net: sysctl: No need to check CAP_SYS_ADMIN for bpf_jit_*
-  bpf: Print some info if disable bpf_jit_enable failed
+On 5/9/22 13:54, Bagas Sanjaya wrote:
+> I'm in favor of this patch. Thanks.
+> 
 
- net/core/sysctl_net_core.c | 22 +++++++++-------------
- 1 file changed, 9 insertions(+), 13 deletions(-)
+Oops, I mean I'm in favor of your patch suggestion.
 
 -- 
-2.1.0
-
+An old man doll... just what I always wanted! - Clara
