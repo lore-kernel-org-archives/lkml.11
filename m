@@ -2,114 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3451EC47085
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:30:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBE50C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:34:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233493AbiEIJeX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 05:34:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42252 "EHLO
+        id S238293AbiEIJfo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 05:35:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232093AbiEIJPN (ORCPT
+        with ESMTP id S235704AbiEIJY5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 05:15:13 -0400
-Received: from mail-wr1-x44a.google.com (mail-wr1-x44a.google.com [IPv6:2a00:1450:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C2921D3D62
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 02:11:19 -0700 (PDT)
-Received: by mail-wr1-x44a.google.com with SMTP id k29-20020adfb35d000000b0020adc94662dso5513120wrd.12
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 02:11:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=lywA1vt51kZck6PXzExT18cr3ZKuMyPEg8s9HmYYUI0=;
-        b=EFgQknN9kz0vNqF7IeQoUwRJZqgbytppSycHiqpb1+5jMewc1YNqZG83lLllsx66wi
-         hPWbTH5433R+3JdGpDwSUGgKg8RcTEclTZ1/DVxfUbuDR4hkAua6YTGmN1W9UdXaeBRb
-         JpFvmzH0GXHyi6sJK6D9BWsHIwwu6l0TYLLbmovQW+zC/8kec43+NsvCl95IMKXUfriq
-         XbS7eJaaxkzWsXuh1f0JSc4m/GymScAuYOUvm+IzOFWmKqQ/VoaAm4EI5sBtK4Soh7En
-         80vEz99Zl8vhpI3l+ldV+l+ScQXjgKuCd0ofKBObgcFFJx9t1vTPrj/XLSb+pUKEOAV6
-         hJog==
+        Mon, 9 May 2022 05:24:57 -0400
+Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD2EB131F22;
+        Mon,  9 May 2022 02:21:01 -0700 (PDT)
+Received: by mail-qk1-f173.google.com with SMTP id z126so10302506qkb.2;
+        Mon, 09 May 2022 02:21:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=lywA1vt51kZck6PXzExT18cr3ZKuMyPEg8s9HmYYUI0=;
-        b=8GlQbY0/Af5KWZ+6YoeG+Igtb8zYNmwz0/a73rTahzO0yapcMl86DbFU0U+3piYB5r
-         gHdFS1HD8r+hK5RKKJOeWqNES3WGLGziwp5crmX4xGwsxSJav0siKHnqCyKcj9Hq0T5S
-         gQtu41j99/jBpTfkklAwfRyJtvaVlbMYqsBph3UZWqEdivEolh3o1psTxsz2F/sOa+1+
-         10ZfyIWs2dRzB1hqCiCh1QTz6NXwYmxaGH/+BEmFwCguseMuPk7NEF6enMcSxw1eMXJY
-         lIDUtkBd4fA0lBoGHb1UtAgOeyigc3KM2CTJ65j3TMDwXdZmU4ixBl4xBLYZ4SHdbO2k
-         syuw==
-X-Gm-Message-State: AOAM533btRbhcTBmB2eIykGO2ZX1X6DDE7uqzYXIYpIcDKJyFfa8VXPm
-        pkGvZ6dlR5J0bS2mZByTQ+jehqejl3cflVawGYY=
-X-Google-Smtp-Source: ABdhPJwyZyyTcfhhEG5pFC5DO7mxarCBjChnI+cUNHBn5uZE7gpwtutADdy7LeFG44BngRzvvpGkp2ZI1Q9fRSrFcYo=
-X-Received: from sene.c.googlers.com ([fda3:e722:ac3:cc00:28:9cb1:c0a8:27c4])
- (user=sebastianene job=sendgmr) by 2002:a7b:c446:0:b0:394:3293:a88f with SMTP
- id l6-20020a7bc446000000b003943293a88fmr15090980wmi.22.1652087477500; Mon, 09
- May 2022 02:11:17 -0700 (PDT)
-Date:   Mon,  9 May 2022 09:11:02 +0000
-Message-Id: <20220509091103.2220604-1-sebastianene@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
-Subject: [PATCH v5 0/2] Detect stalls on guest vCPUS
-From:   Sebastian Ene <sebastianene@google.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Dragan Cvetic <dragan.cvetic@xilinx.com>
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        maz@kernel.org, will@kernel.org, qperret@google.com,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sebastian Ene <sebastianene@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gMtmW3ArowZdX4IsaNSLBpR+NhLcfUq95yoUD9gi7Sw=;
+        b=RPbtzqE7rsbQATU6SraHZ5WF8sqL/dJMsdRf3VxMG2l0nyGHyJnVeR1CbqgVgiZwk7
+         K1cckVRnICC1Ttt/J+vIz1+8hg5h+QsziFaqrJmHfKRWUYjfvSxW0IPzoW30Ycvtfqbr
+         LoWndeocqBDIPgtNck0MoZHx4HjJ0lqEFa0hLFNYy4smuKdUmcfolZ1j+xDxBptDU/Xg
+         32atW/LVRs28O66Vheo+fJqFaeGiyCyp/erqy7i0uKWGKDfXR0fipzGqm+mFGBNfGzJD
+         hMAubUMZzWeB9o0I2WBUBPUPnayKzdFJJ8kjdqSbhguMF4rsQXGHwusQpvWIqaCFzdkt
+         vCZg==
+X-Gm-Message-State: AOAM532LFEsIpxM5WTRCEERrNv9b5cC8eNYIx8Qt41ds9PoaToFJYDW8
+        +Oj2xyFjFF6gi2GNnMbfvOT+878GxtTFoA==
+X-Google-Smtp-Source: ABdhPJxnCxGOKIp1bvvTmGtnVq0s0cmUaxXisxLRgd67SYcfs1XylGWC/N82+lVAr1wxirT3+vyUEA==
+X-Received: by 2002:a05:620a:4488:b0:6a0:2aab:a736 with SMTP id x8-20020a05620a448800b006a02aaba736mr11287091qkp.717.1652088060478;
+        Mon, 09 May 2022 02:21:00 -0700 (PDT)
+Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com. [209.85.219.177])
+        by smtp.gmail.com with ESMTPSA id w24-20020ac87198000000b002f39b99f697sm7235538qto.49.2022.05.09.02.20.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 09 May 2022 02:20:59 -0700 (PDT)
+Received: by mail-yb1-f177.google.com with SMTP id g28so23731968ybj.10;
+        Mon, 09 May 2022 02:20:59 -0700 (PDT)
+X-Received: by 2002:a25:4506:0:b0:648:cfc2:301d with SMTP id
+ s6-20020a254506000000b00648cfc2301dmr12295875yba.380.1652088059134; Mon, 09
+ May 2022 02:20:59 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220507125443.2766939-1-daniel.lezcano@linexp.org> <20220507125443.2766939-2-daniel.lezcano@linexp.org>
+In-Reply-To: <20220507125443.2766939-2-daniel.lezcano@linexp.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 9 May 2022 11:20:47 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXXMzR+ukK9Bm+eWhLuWOozU6n96hTcGV5xf9omQvoHCA@mail.gmail.com>
+Message-ID: <CAMuHMdXXMzR+ukK9Bm+eWhLuWOozU6n96hTcGV5xf9omQvoHCA@mail.gmail.com>
+Subject: Re: [PATCH v2 01/14] thermal/core: Change thermal_zone_ops to thermal_sensor_ops
+To:     daniel.lezcano@linexp.org
+Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Alexandre Bailon <abailon@baylibre.com>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Jonathan Corbet <corbet@lwn.net>, Len Brown <lenb@kernel.org>,
+        Raju Rangoju <rajur@chelsio.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@kernel.org>, Peter Kaestle <peter@piie.net>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Support Opensource <support.opensource@diasemi.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        Miri Korenblit <miriam.rachel.korenblit@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Chuansheng Liu <chuansheng.liu@intel.com>,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Antoine Tenart <atenart@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        "open list:ACPI THERMAL DRIVER" <linux-acpi@vger.kernel.org>,
+        "open list:CXGB4 ETHERNET DRIVER (CXGB4)" <netdev@vger.kernel.org>,
+        "open list:INTEL WIRELESS WIFI LINK (iwlwifi)" 
+        <linux-wireless@vger.kernel.org>,
+        "open list:ACER ASPIRE ONE TEMPERATURE AND FAN DRIVER" 
+        <platform-driver-x86@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "open list:RENESAS R-CAR THERMAL DRIVERS" 
+        <linux-renesas-soc@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds a mechanism to detect stalls on the guest vCPUS by creating a
-per CPU hrtimer which periodically 'pets' the host backend driver.
-On a conventional watchdog-core driver, the userspace is responsible for
-delivering the 'pet' events by writing to the particular /dev/watchdogN node.
-In this case we require a strong thread affinity to be able to
-account for lost time on a per vCPU basis.
+Hi Daniel,
 
-This device driver acts as a soft lockup detector by relying on the host
-backend driver to measure the elapesed time between subsequent 'pet' events.
-If the elapsed time doesn't match an expected value, the backend driver
-decides that the guest vCPU is locked and resets the guest. The host
-backend driver takes into account the time that the guest is not
-running. The communication with the backend driver is done through MMIO
-and the register layout of the virtual watchdog is described as part of
-the backend driver changes.
+Thanks for your patch!
 
-The host backend driver is implemented as part of:
-https://chromium-review.googlesource.com/c/chromiumos/platform/crosvm/+/3548817
+On Sat, May 7, 2022 at 3:03 PM Daniel Lezcano <daniel.lezcano@linexp.org> wrote:
+> A thermal zone is software abstraction of a sensor associated with
+> properties and cooling devices if any.
+>
+> The fact that we have thermal_zone and thermal_zone_ops mixed is
+> confusing and does not clearly identify the different components
+> entering in the thermal management process. A thermal zone appears to
+> be a sensor while it is not.
+>
+> In order to set the scene for multiple thermal sensors aggregated into
+> a single thermal zone. Rename the thermal_zone_ops to
+> thermal_sensor_ops, that will appear clearyl the thermal zone is not a
 
-Changelog v5:
- - fix dt warnings
- - rename %s/watchdog/stall_detector/g
- - rename the config from Kconfig VM_WATCHDOG -> VCPU_STALL_DETECTOR
+to make it clear
 
-Changelog v4:
- - rename the source from vm-wdt.c -> vm-watchdog.c
- - convert all the error logging calls from pr_* to dev_* calls
- - rename the DTS node "clock" to "clock-frequency"
+> sensor but an abstraction of one [or multiple] sensor(s).
+>
+> Cc: Alexandre Bailon <abailon@baylibre.com>
+> Cc: Kevin Hilman <khilman@baylibre.com>
+> Cc; Eduardo Valentin <eduval@amazon.com>
+> Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
 
-Changelog v3:
- - cosmetic fixes, remove pr_info and version information
- - improve description in the commit messag
- - improve description in the Kconfig help section
+>  drivers/thermal/rcar_thermal.c                            | 4 ++--
 
-Sebastian Ene (2):
-  dt-bindings: vcpu_stall_detector: Add qemu,vcpu-stall-detector
-    compatible
-  misc: Add a mechanism to detect stalls on guest vCPUs
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
- .../bindings/misc/vcpu_stall_detector.yaml    |  47 ++++
- drivers/misc/Kconfig                          |  12 +
- drivers/misc/Makefile                         |   1 +
- drivers/misc/vcpu_stall_detector.c            | 218 ++++++++++++++++++
- 4 files changed, 278 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/misc/vcpu_stall_detector.yaml
- create mode 100644 drivers/misc/vcpu_stall_detector.c
+Gr{oetje,eeting}s,
 
--- 
-2.36.0.512.ge40c2bad7a-goog
+                        Geert
 
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
