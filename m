@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41ACAC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5571AC4167B
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 04:55:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234193AbiEIE6B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 00:58:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33194 "EHLO
+        id S234310AbiEIE6I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 00:58:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234329AbiEIEy1 (ORCPT
+        with ESMTP id S234318AbiEIExv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 00:54:27 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2069.outbound.protection.outlook.com [40.107.243.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2032329C;
-        Sun,  8 May 2022 21:50:32 -0700 (PDT)
+        Mon, 9 May 2022 00:53:51 -0400
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam07on2086.outbound.protection.outlook.com [40.107.95.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59824A1446;
+        Sun,  8 May 2022 21:49:58 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fTD0KPGAUQ0IWvhDWS+e4IFEhT+PBoPJx8TGpZfcVK99AKPzNucI9oiD2zWTSL6sfKoX6iUzkbwNO32UTKkTpn+5A+x2+0o+IVTlLfkNMV+AZ4fZ+JbvH7pci5z1q9m+rnb3asGzzpPF8NCr1hTBFez60p66BwDDorro0ID7+7Ixz6bVV6C2g8lk74GqYiY6NyCZKchYicb+YBU4NkDmGdX1IjHBUq7L3rzFzl+rAQV6cP8DZGgihCzs3dD4f3AagHOpq6Aj0cr2TE248mov7k/L35YII3LQ+xEbNadcdMZrvHTlck1qwcM0ojyBJZUiUH8t0n1FV+jstEinyXb1xw==
+ b=PfDKNc2e8NBNhRcJvc+eXqtIgpmdP7CBHIr0PvE4vggEZCiuV1kCwT/cn82Zb0pUl7za6rdP/iItniFng4FlSp2pBF+zj/qSwlD1vYZmpCOPHvCXeb3M9xVsYaVS6s5yKIoNehK0X04UU/XtdXJlba4UK5H6GDCKYFqH+EG7U1MMEGXbBz+xFvOzon/T5QnEfSC21DPqUfi1/u7MFc+OZdloYFbjbRldKh/KqvPKEMMhy49hbcBFvlCh/aS9AILr848wGvilDObKq++mhYOjeSta9/t4EZsizaZZ0NCkUQZe9zyf08Jx674Mb97mCkn5bLmvxxWfqjCCumRwhd2LxA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=O6CrwUMjg7j5oPD52iUObPLZlNGVwDXbbjjHWSg/GTQ=;
- b=MNM0PxgswpcwJxux1gWG1CDtYNePiBpIXx6An0uKEjkoaHYYGxDDuCe4ChzUDumVYLPf2YOF83Qe/oA+bGNos6MnsuyBzwwaxVPWPLmx0er2M3ZZSUiYIR04qQJ87V9/rQvIg3Nbf2qtFGzw7EKSBYKRqwF7tagb7Pg/cFySHXPeinzBnE1tdW083ufvXXnOdDwpyPPuSDZPOJdhGnPA5jUQwunvUO5BYL9rECc/Dm8GftmeHk3d3XqpC9h5bqD6bpNtbbfj75tScn/OqnpuFB4JsqicYN37PryD6kzehdcShIm7XL+9g8x94qGmoi1jFNQqAzgO0aBmUBntLkLLVQ==
+ bh=viSfehRVSWPnv8Dg8kKvgeXoTdkTLRPOYBxgFyiNSNw=;
+ b=G6oiYueeS6If72CNiBTdzXamD6OHPDpAkq08m4ITTAIAVzmz8M0VzQCYRj2r1dxD+Vrb7xBvrpqsjKFtjGg3hKUPPCCcJxA6ZGJgkSHgnWwYRG4epLIgLDEeZt8KUxoNm4C9UXyeWaXX+Eyz1vgaVJ27b1fe8kDEB5H1G/NQ2zC1wjSNllhsNwgSQ/vbVmHe26P/9XFgkC6+keG974TOHi2UqXCz1IGiemtN08JbtrSTVjm9wRVwF2C9uwGqcY3Z5ovy2LNsC59K5DiVmJxv/WhlP2+U9DDzf0ak1KVcfSobZ+EBvVUyBKHrx1JK+qqKFwjn3QCw7z+ANHDkqEh6tQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=infradead.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=O6CrwUMjg7j5oPD52iUObPLZlNGVwDXbbjjHWSg/GTQ=;
- b=SZTkNbkcX1GrKaPjRyHI/6Gd9dSx2W/4+UH4cS0Jl35cx0elcajFW1GC7FUDW5QRhrCJ1gHqrlqEJY/FsFLRx1pjDryEOMOoY+1+q54ZnXQ/HY0yEm8y9no2Ga+oaka1I05cFc1fBUgw65rqzMaz0cKwzek6ZPhzAqixNEwudlw=
-Received: from BN9PR03CA0348.namprd03.prod.outlook.com (2603:10b6:408:f6::23)
- by DM6PR12MB4387.namprd12.prod.outlook.com (2603:10b6:5:2ac::15) with
+ bh=viSfehRVSWPnv8Dg8kKvgeXoTdkTLRPOYBxgFyiNSNw=;
+ b=NHr0EQp5aaBeYAlgLlnks74hHWbYsZPF3SPkvzQMcc+XBFeTpjBFuBfQNOaCxqYsfM0Wc3RCeNe0xd0qh8KebbKurJqyQOE08RQyB9vpgETYKtfC77S3m9+6/9fOk9KP7L06GNxW22mYXPXdCiGUWFx8Mc4HeCCVN3RIQ0S1aUM=
+Received: from MW4PR04CA0356.namprd04.prod.outlook.com (2603:10b6:303:8a::31)
+ by CY5PR12MB6622.namprd12.prod.outlook.com (2603:10b6:930:42::20) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.18; Mon, 9 May
- 2022 04:50:30 +0000
-Received: from BN8NAM11FT003.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:f6:cafe::1d) by BN9PR03CA0348.outlook.office365.com
- (2603:10b6:408:f6::23) with Microsoft SMTP Server (version=TLS1_2,
+ 2022 04:49:56 +0000
+Received: from CO1NAM11FT025.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:8a:cafe::75) by MW4PR04CA0356.outlook.office365.com
+ (2603:10b6:303:8a::31) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23 via Frontend
- Transport; Mon, 9 May 2022 04:50:30 +0000
+ Transport; Mon, 9 May 2022 04:49:56 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -47,13 +47,13 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT003.mail.protection.outlook.com (10.13.177.90) with Microsoft SMTP
+ CO1NAM11FT025.mail.protection.outlook.com (10.13.175.232) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5227.15 via Frontend Transport; Mon, 9 May 2022 04:50:30 +0000
+ 15.20.5227.15 via Frontend Transport; Mon, 9 May 2022 04:49:55 +0000
 Received: from BLR-5CG113396H.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sun, 8 May
- 2022 23:50:20 -0500
+ 2022 23:49:46 -0500
 From:   Ravi Bangoria <ravi.bangoria@amd.com>
 To:     <peterz@infradead.org>, <acme@kernel.org>
 CC:     <ravi.bangoria@amd.com>, <rrichter@amd.com>, <mingo@redhat.com>,
@@ -66,12 +66,10 @@ CC:     <ravi.bangoria@amd.com>, <rrichter@amd.com>, <mingo@redhat.com>,
         <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <sandipan.das@amd.com>, <ananth.narayan@amd.com>,
         <kim.phillips@amd.com>, <santosh.shukla@amd.com>
-Subject: [PATCH v2 4/8] perf/amd/ibs: Advertise zen4_ibs_extensions as pmu capability attribute
-Date:   Mon, 9 May 2022 10:19:10 +0530
-Message-ID: <20220509044914.1473-5-ravi.bangoria@amd.com>
+Subject: [PATCH v2 0/8] perf/amd: Zen4 IBS extensions support
+Date:   Mon, 9 May 2022 10:19:06 +0530
+Message-ID: <20220509044914.1473-1-ravi.bangoria@amd.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220509044914.1473-1-ravi.bangoria@amd.com>
-References: <20220509044914.1473-1-ravi.bangoria@amd.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -80,112 +78,105 @@ X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: afd0efa6-9fd9-478c-f662-08da3177718f
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4387:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB43871B9E6919A5F1AC3D3058E0C69@DM6PR12MB4387.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 917a202c-0b70-4a85-a630-08da31775d38
+X-MS-TrafficTypeDiagnostic: CY5PR12MB6622:EE_
+X-Microsoft-Antispam-PRVS: <CY5PR12MB6622322FCCAD4C544381D1EAE0C69@CY5PR12MB6622.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: PAYayKB9qYdAAGjGZAU/htGnOFdOBLYoY34XhMFZfDHE6HwdKnIdbrm37Z9WvK2vnPOq0lVN5BXtcU6XiCuXEzns0C8QIXYLuqXQQzX+6st956wrntjRFdao6ozy2p7Aj/VU+v5HOSsY4iNIEofORimbcn1JEHYUIf0/lR+PRpXMAktzFrJRCAse3e71b6+ARLPx7l7+cQRARZ8vpW2B1qB7vL5tguPwQoJYQTgt2lIW/0+tHrN9rTtbVWPEQYnCm/WiQIZZaQud6ZwFQsZ9uk+sWpDG9ijdOt3DZqsiUwWVer3o4UZElZaskyPw3ZFjb+ia53t2QOvFigomc2KLH5azkgXydQfm9K3CpvIOnMGw1p02gQuE5Lc3Mon7VTxvfU0mAfBIyxaH+U2sYsTUpLWJz3BlPUvefPGnD1/hF8R5PJ6YRIX3Tg4E9UuEmPvE4NXvcaV4/4z3PEEFDbKULn/f4g5MBKs8JLKJFwri1FMw91t0C184pxvJZFgxpNw56Of84ZjjkUoXuZNZPYj/xbfndrHxeAZ+miVna70Tju19fDxKvcjMMB7tzlWFFHTxNf1bTgw8JygdQe0A8herVsDrshmQZooTTQ1I2fUvK1xnJ3mGHtuMBun3AMAcAr0S0ioLRJKMSRJdgNmfDMF4ydRhC0yqvkoU0zP233E3pKbK23NR05g6erlCRA88jJA1e+A5dhf+Fw3IJ6QkLusp6Q==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(316002)(16526019)(508600001)(8936002)(54906003)(36860700001)(110136005)(81166007)(356005)(8676002)(70206006)(86362001)(4326008)(70586007)(83380400001)(26005)(44832011)(6666004)(7416002)(40460700003)(7696005)(1076003)(2616005)(186003)(82310400005)(336012)(2906002)(47076005)(426003)(36756003)(5660300002)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: w7116qwfS63/QWdqdEosdAVFKsERGS2KAM541iHSwytBieWZTT8xZ6GTIiWTQOkE0PQNiCsLS4arSFmeJhN8WDKxgw0A8hZs0vnv1OTsVgoZZqT7yCQXSyd0n/2kiX6R/twcnpddrqcZpTx2rwnIdF9znRYUy+/lLBt47tdrJ/85bqFOdhjUAPK9I0EUwozW41+1GXnFhbMTn9pd7FyCVDdndAkDlmZP3D9UsRLnioU/CvvesfbbWv8u/nhNsLww2bTU6D5J0qvH5nPDe+tHY0fx5RN9SXDn+rZPqbY6DTmHnqdwYsr2oiV9CuKk/BN2zX2OpFGOOEVg7jjN8Li2eePcnNpVmaSR9k+Dw/SeGNQ/bceOeBNO2UhoFnPg0bMJMhE7EJ1COTwXd7A0nMw0N7YR04eMjWVjxq5gzt0fPfcoHrtQiQ2bLE/25ZLqTElPF6AIWqQQmOzxVWDH0nRY8MFvZourveD2EZuNBzLs283vug6NSEMFktIgdek7qNb+BO5ZB6oZNsf8ZtMsHMOQcQk9MwuCRfhprGxKJ1XItTle0tTpsdqCVVZhWdh0EKCVIYy5rNzasYfj+kxv+Kn8hGaSrx0oj1yWVCwF7hei1UgkAUsgElrUG8HD6GPCZOElLFnHs6ibrbkH57TcN7ryMJlO69SpKYEHMsahG3Ja/wi/cOxrwa53VMg1VjvGwqXFo81yHYs+4IAWZwPXfs8dEhFBlYuC+uQZEYDDDpWux9TUNPwGMfTdaltUuKprwxciQ1KCrRZ5r06Qk8DuXA5y+fyHtF1wWnHk6dXCZe4jb14=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(966005)(86362001)(6666004)(7696005)(8936002)(7416002)(5660300002)(508600001)(2906002)(44832011)(81166007)(83380400001)(356005)(26005)(2616005)(36860700001)(40460700003)(1076003)(16526019)(47076005)(186003)(336012)(426003)(70586007)(54906003)(70206006)(110136005)(316002)(8676002)(36756003)(82310400005)(4326008)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2022 04:50:30.1694
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2022 04:49:55.9490
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: afd0efa6-9fd9-478c-f662-08da3177718f
+X-MS-Exchange-CrossTenant-Network-Message-Id: 917a202c-0b70-4a85-a630-08da31775d38
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT003.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT025.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4387
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6622
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PMU driver can advertise certain feature via capability attribute('caps'
-sysfs directory) which can be consumed by userspace tools like perf. Add
-zen4_ibs_extensions capability attribute for IBS pmus. This attribute
-will be enabled when CPUID_Fn8000001B_EAX[11] is set.
+IBS support has been enhanced with two new features in upcoming uarch:
+1. DataSrc extension and 2. L3 Miss Filtering capability. Both are
+indicated by CPUID_Fn8000001B_EAX bit 11.
 
-With patch on Zen4:
+DataSrc extension provides additional data source details for tagged
+load/store operations. Add support for these new bits in perf report/
+script raw-dump.
 
-  $ ls /sys/bus/event_source/devices/ibs_op/caps
-  zen4_ibs_extensions
+IBS L3 miss filtering works by tagging an instruction on IBS counter
+overflow and generating an NMI if the tagged instruction causes an L3
+miss. Samples without an L3 miss are discarded and counter is reset
+with random value (between 1-15 for fetch pmu and 1-127 for op pmu).
+This helps in reducing sampling overhead when user is interested only
+in such samples. One of the use case of such filtered samples is to
+feed data to page-migration daemon in tiered memory systems.
 
-Signed-off-by: Ravi Bangoria <ravi.bangoria@amd.com>
----
- arch/x86/events/amd/ibs.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+Add support for L3 miss filtering in IBS driver via new pmu attribute
+"l3missonly". Example usage:
 
-diff --git a/arch/x86/events/amd/ibs.c b/arch/x86/events/amd/ibs.c
-index 52d2eb9ff19a..12b0fd4a0328 100644
---- a/arch/x86/events/amd/ibs.c
-+++ b/arch/x86/events/amd/ibs.c
-@@ -527,8 +527,14 @@ static struct attribute_group empty_format_group = {
- 	.attrs = attrs_empty,
- };
- 
-+static struct attribute_group empty_caps_group = {
-+	.name = "caps",
-+	.attrs = attrs_empty,
-+};
-+
- static const struct attribute_group *empty_attr_groups[] = {
- 	&empty_format_group,
-+	&empty_caps_group,
- 	NULL,
- };
- 
-@@ -536,6 +542,7 @@ PMU_FORMAT_ATTR(rand_en,	"config:57");
- PMU_FORMAT_ATTR(cnt_ctl,	"config:19");
- PMU_EVENT_ATTR_STRING(l3missonly, fetch_l3missonly, "config:59");
- PMU_EVENT_ATTR_STRING(l3missonly, op_l3missonly, "config:16");
-+PMU_EVENT_ATTR_STRING(zen4_ibs_extensions, zen4_ibs_extensions, "1");
- 
- static umode_t
- zen4_ibs_extensions_is_visible(struct kobject *kobj, struct attribute *attr, int i)
-@@ -553,6 +560,11 @@ static struct attribute *fetch_l3missonly_attrs[] = {
- 	NULL,
- };
- 
-+static struct attribute *zen4_ibs_extensions_attrs[] = {
-+	&zen4_ibs_extensions.attr.attr,
-+	NULL,
-+};
-+
- static struct attribute_group group_rand_en = {
- 	.name = "format",
- 	.attrs = rand_en_attrs,
-@@ -564,13 +576,21 @@ static struct attribute_group group_fetch_l3missonly = {
- 	.is_visible = zen4_ibs_extensions_is_visible,
- };
- 
-+static struct attribute_group group_zen4_ibs_extensions = {
-+	.name = "caps",
-+	.attrs = zen4_ibs_extensions_attrs,
-+	.is_visible = zen4_ibs_extensions_is_visible,
-+};
-+
- static const struct attribute_group *fetch_attr_groups[] = {
- 	&group_rand_en,
-+	&empty_caps_group,
- 	NULL,
- };
- 
- static const struct attribute_group *fetch_attr_update[] = {
- 	&group_fetch_l3missonly,
-+	&group_zen4_ibs_extensions,
- 	NULL,
- };
- 
-@@ -605,6 +625,7 @@ static struct attribute_group group_op_l3missonly = {
- static const struct attribute_group *op_attr_update[] = {
- 	&group_cnt_ctl,
- 	&group_op_l3missonly,
-+	&group_zen4_ibs_extensions,
- 	NULL,
- };
- 
+  # perf record -a -e ibs_op/l3missonly=1/ --raw-samples sleep 5
+  # perf report -D
+
+Some important points to keep in mind while using L3 miss filtering:
+1. Hw internally reset sampling period when tagged instruction does
+   not cause L3 miss. But there is no way to reconstruct aggregated
+   sampling period when this happens.
+2. L3 miss is not the actual event being counted. Rather, IBS will
+   count fetch, cycles or uOps depending on the configuration. Thus
+   sampling period have no direct connection to L3 misses.
+
+1st causes sampling period skew. Thus, I've added warning message at
+perf record:
+
+  # perf record -c 10000 -C 0 -e ibs_op/l3missonly=1/
+  WARNING: Hw internally resets sampling period when L3 Miss Filtering is enabled
+  and tagged operation does not cause L3 Miss. This causes sampling period skew.
+
+User can configure smaller sampling period to get more samples while
+using l3missonly.
+
+v1: https://lore.kernel.org/r/20220425044323.2830-1-ravi.bangoria@amd.com
+v1->v2:
+ - patch 1 and 2 are new. 1st patch passes on return value of pmu init
+   functions. 2nd patch refactors pmu attribute code by using
+   ->is_visible() callback.
+ - Patch 3 and 4 now also uses ->is_visible() callback for pmu format
+   and capability attributes respectively.
+ - Other minor improvements suggested by Robert
+
+Ravi Bangoria (8):
+  perf/amd/ibs: Cascade pmu init functions' return value
+  perf/amd/ibs: Use ->is_visible callback for dynamic attributes
+  perf/amd/ibs: Add support for L3 miss filtering
+  perf/amd/ibs: Advertise zen4_ibs_extensions as pmu capability
+    attribute
+  perf record ibs: Warn about sampling period skew
+  perf header: Parse non-cpu pmu capabilities
+  perf script ibs: Support new IBS bits in raw trace dump
+  perf ibs: Fix comment
+
+ arch/x86/events/amd/ibs.c                     | 191 +++++++++++++---
+ arch/x86/include/asm/amd-ibs.h                |  18 +-
+ arch/x86/include/asm/perf_event.h             |   3 +
+ tools/arch/x86/include/asm/amd-ibs.h          |  18 +-
+ .../Documentation/perf.data-file-format.txt   |  18 ++
+ tools/perf/arch/x86/util/evsel.c              |  34 +++
+ tools/perf/util/amd-sample-raw.c              |  68 +++++-
+ tools/perf/util/env.c                         |  48 +++-
+ tools/perf/util/env.h                         |  11 +
+ tools/perf/util/evsel.c                       |   7 +
+ tools/perf/util/evsel.h                       |   1 +
+ tools/perf/util/header.c                      | 211 ++++++++++++++++++
+ tools/perf/util/header.h                      |   1 +
+ tools/perf/util/pmu.c                         |  15 +-
+ tools/perf/util/pmu.h                         |   2 +
+ 15 files changed, 586 insertions(+), 60 deletions(-)
+
 -- 
 2.27.0
 
