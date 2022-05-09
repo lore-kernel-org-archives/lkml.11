@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64249C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F12F1C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 05:17:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232907AbiEIFSV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 01:18:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36600 "EHLO
+        id S234204AbiEIFUl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 01:20:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231476AbiEIFOR (ORCPT
+        with ESMTP id S234425AbiEIFOe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 01:14:17 -0400
+        Mon, 9 May 2022 01:14:34 -0400
 Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0DB4513FD67;
-        Sun,  8 May 2022 22:10:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DEA826269;
+        Sun,  8 May 2022 22:10:40 -0700 (PDT)
 X-IronPort-AV: E=Sophos;i="5.91,210,1647270000"; 
-   d="scan'208";a="120333377"
+   d="scan'208";a="120333429"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 09 May 2022 14:10:19 +0900
+  by relmlie6.idc.renesas.com with ESMTP; 09 May 2022 14:10:40 +0900
 Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 5FCAB40041A0;
-        Mon,  9 May 2022 14:10:15 +0900 (JST)
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id B97D54004199;
+        Mon,  9 May 2022 14:10:35 +0900 (JST)
 From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 To:     Thomas Gleixner <tglx@linutronix.de>,
         Marc Zyngier <maz@kernel.org>,
@@ -37,100 +37,72 @@ Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         Prabhakar <prabhakar.csengg@gmail.com>,
         Biju Das <biju.das.jz@bp.renesas.com>,
         Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH v2 0/5] Renesas RZ/G2L IRQC support
-Date:   Mon,  9 May 2022 06:09:48 +0100
-Message-Id: <20220509050953.11005-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH v2 4/5] gpio: gpiolib: Add ngirq member to struct gpio_irq_chip
+Date:   Mon,  9 May 2022 06:09:52 +0100
+Message-Id: <20220509050953.11005-5-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220509050953.11005-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20220509050953.11005-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi All,
+Supported GPIO IRQs by the chip is not always equal to the number of GPIO
+pins. For example on Renesas RZ/G2L SoC where it has GPIO0-122 pins but at
+a give point a maximum of only 32 GPIO pins can be used as IRQ lines in
+the IRQC domain.
 
-The RZ/G2L Interrupt Controller is a front-end for the GIC found on
-Renesas RZ/G2L SoC's with below pins:
-- IRQ sense select for 8 external interrupts, mapped to 8 GIC SPI interrupts
-- GPIO pins used as external interrupt input pins out of GPIOINT0-122 a
-  maximum of only 32 can be mapped to 32 GIC SPI interrupts,
-- NMI edge select.
+This patch adds ngirq member to struct gpio_irq_chip and passes this as a
+size to irq_domain_create_hierarchy()/irq_domain_create_simple() if it is
+being set in the driver otherwise fallbacks to using ngpio.
 
-                                                                _____________
-                                                                |    GIC     |
-                                                                |  ________  |
-                                         ____________           | |        | |
-NMI ------------------------------------>|          |  SPI0-479 | | GIC-600| |
-                _______                  |          |------------>|        | |
-                |      |                 |          |  PPI16-31 | |        | |
-                |      | IRQ0-IRQ7       |   IRQC   |------------>|        | |
-P0_P48_4 ------>| GPIO |---------------->|          |           | |________| |
-                |      |GPIOINT0-122     |          |           |            |
-                |      |---------------->| TINT0-31 |           |            |
-                |______|                 |__________|           |____________|
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+---
+ drivers/gpio/gpiolib.c      | 4 ++--
+ include/linux/gpio/driver.h | 8 ++++++++
+ 2 files changed, 10 insertions(+), 2 deletions(-)
 
-The proposed patches add hierarchical IRQ domain, one in IRQC driver and another in
-pinctrl driver. Upon interrupt requests map the interrupt to GIC. Out of GPIOINT0-122
-only 32 can be mapped to GIC SPI, this mapping is handled by the pinctrl and IRQC driver.
-
-Cheers,
-Prabhakar
-
-Changes for v1->v2:
-* Included RB tag from Rob
-* Fixed review comments pointed by Geert
-* included GPIO driver changes
-
-Changes for RFCV4 -> V1:
-* Used unevaluatedProperties.
-* Altered the sequence of reg property
-* Set the parent type
-* Used raw_spin_lock() instead of raw_spin_lock_irqsave()
-* Simplified parsing IRQ map.
-* Will send the GPIO and pinctrl changes as part of separate series
-
-Changes for RFC v4:
-* Used locking while RMW
-* Now using interrupts property instead of interrupt-map
-* Patch series depends on [0]
-* Updated binding doc
-* Fixed comments pointed by Andy
-
-[0] https://patchwork.kernel.org/project/linux-renesas-soc/patch/
-20220316200633.28974-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
-
-Changes for RFC v3:
--> Re-structured the driver as a hierarchical irq domain instead of chained
--> made use of IRQCHIP_* macros
--> dropped locking
--> Added support for IRQ0-7 interrupts
--> Introduced 2 new patches for GPIOLIB
--> Switched to using GPIOLIB for irqdomains in pinctrl
-
-RFC v2: https://patchwork.kernel.org/project/linux-renesas-soc/cover/
-20210921193028.13099-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
-
-RFC v1: https://patchwork.kernel.org/project/linux-renesas-soc/cover/
-20210803175109.1729-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
-
-Lad Prabhakar (5):
-  dt-bindings: interrupt-controller: Add Renesas RZ/G2L Interrupt
-    Controller
-  irqchip: Add RZ/G2L IA55 Interrupt Controller driver
-  gpio: gpiolib: Allow free() callback to be overridden
-  gpio: gpiolib: Add ngirq member to struct gpio_irq_chip
-  pinctrl: renesas: pinctrl-rzg2l: Add IRQ domain to handle GPIO
-    interrupt
-
- .../renesas,rzg2l-irqc.yaml                   | 131 ++++++
- drivers/gpio/gpiolib.c                        |  13 +-
- drivers/irqchip/Kconfig                       |   8 +
- drivers/irqchip/Makefile                      |   1 +
- drivers/irqchip/irq-renesas-rzg2l.c           | 445 ++++++++++++++++++
- drivers/pinctrl/renesas/pinctrl-rzg2l.c       | 205 ++++++++
- include/linux/gpio/driver.h                   |   8 +
- 7 files changed, 806 insertions(+), 5 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/interrupt-controller/renesas,rzg2l-irqc.yaml
- create mode 100644 drivers/irqchip/irq-renesas-rzg2l.c
-
+diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
+index 7be01c70ee4e..4b402141580e 100644
+--- a/drivers/gpio/gpiolib.c
++++ b/drivers/gpio/gpiolib.c
+@@ -1221,7 +1221,7 @@ static int gpiochip_hierarchy_add_domain(struct gpio_chip *gc)
+ 	gc->irq.domain = irq_domain_create_hierarchy(
+ 		gc->irq.parent_domain,
+ 		0,
+-		gc->ngpio,
++		gc->irq.ngirq ?: gc->ngpio,
+ 		gc->irq.fwnode,
+ 		&gc->irq.child_irq_domain_ops,
+ 		gc);
+@@ -1574,7 +1574,7 @@ static int gpiochip_add_irqchip(struct gpio_chip *gc,
+ 	} else {
+ 		/* Some drivers provide custom irqdomain ops */
+ 		gc->irq.domain = irq_domain_create_simple(fwnode,
+-			gc->ngpio,
++			gc->irq.ngirq ?: gc->ngpio,
+ 			gc->irq.first,
+ 			gc->irq.domain_ops ?: &gpiochip_domain_ops,
+ 			gc);
+diff --git a/include/linux/gpio/driver.h b/include/linux/gpio/driver.h
+index 874aabd270c9..ed6df186907d 100644
+--- a/include/linux/gpio/driver.h
++++ b/include/linux/gpio/driver.h
+@@ -51,6 +51,14 @@ struct gpio_irq_chip {
+ 	 */
+ 	const struct irq_domain_ops *domain_ops;
+ 
++	/**
++	 * @ngirq:
++	 *
++	 * The number of GPIO IRQ's handled by this IRQ domain; usually is
++	 * equal to ngpio.
++	 */
++	u16 ngirq;
++
+ #ifdef CONFIG_IRQ_DOMAIN_HIERARCHY
+ 	/**
+ 	 * @fwnode:
 -- 
 2.25.1
 
