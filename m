@@ -2,195 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DEB9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 13:09:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96739C43219
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 13:10:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235165AbiEINNV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 09:13:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50148 "EHLO
+        id S235294AbiEINOr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 09:14:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235274AbiEINNQ (ORCPT
+        with ESMTP id S235184AbiEINOn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 09:13:16 -0400
-Received: from outbound-smtp15.blacknight.com (outbound-smtp15.blacknight.com [46.22.139.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FA1A2944AD
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 06:09:21 -0700 (PDT)
-Received: from mail.blacknight.com (pemlinmail06.blacknight.ie [81.17.255.152])
-        by outbound-smtp15.blacknight.com (Postfix) with ESMTPS id E12A41C37E0
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 14:09:19 +0100 (IST)
-Received: (qmail 19633 invoked from network); 9 May 2022 13:09:19 -0000
-Received: from unknown (HELO morpheus.112glenside.lan) (mgorman@techsingularity.net@[84.203.198.246])
-  by 81.17.254.9 with ESMTPA; 9 May 2022 13:09:19 -0000
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Nicolas Saenz Julienne <nsaenzju@redhat.com>
-Cc:     Marcelo Tosatti <mtosatti@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Mel Gorman <mgorman@techsingularity.net>
-Subject: [PATCH 6/6] mm/page_alloc: Remotely drain per-cpu lists
-Date:   Mon,  9 May 2022 14:08:05 +0100
-Message-Id: <20220509130805.20335-7-mgorman@techsingularity.net>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220509130805.20335-1-mgorman@techsingularity.net>
-References: <20220509130805.20335-1-mgorman@techsingularity.net>
+        Mon, 9 May 2022 09:14:43 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B97322519;
+        Mon,  9 May 2022 06:10:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=c6E44QfcLWCPcpfVVn8DZm/tazb9qDNjecxU8jgjjwM=; b=JQ1X+XDjDPRoAxPLkbe9tWes8w
+        l11iC7oa/HVnyRK3qB7UvK9JEgQqPIREqD5654T0lMLes3kGheOm/R45s0nxu4hyBPxmCTVnzlJkN
+        ZvlwDaZFuWVIh4IaLUzoP+QdJvpm215SH2+0rVomODoRdVpIAavgxOQl3rDnkTMN+fyPnfNOV7B7S
+        PwRkKHJor0sF94EKnip9+x+OMSUvYBWlrOB2NiCodRGVM8ztswBp00gdyDLuMLY0TLuRV/nOMh+Z7
+        dku4FKzrs/p9E3LkAgwz4nFi/oHL/EcQWXaMAdDUro5POIL0/IvuDCL2llWo8K6mm9F1PYJhGhMV8
+        hibQS8tw==;
+Received: from [177.183.162.244] (helo=[192.168.0.5])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1no39b-0005V6-KV; Mon, 09 May 2022 15:10:24 +0200
+Message-ID: <65f24bc5-2211-0139-ee12-b2608e81ceb1@igalia.com>
+Date:   Mon, 9 May 2022 10:09:21 -0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 09/30] coresight: cpu-debug: Replace mutex with
+ mutex_trylock on panic notifier
+Content-Language: en-US
+To:     Suzuki K Poulose <suzuki.poulose@arm.com>,
+        akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
+        kexec@lists.infradead.org
+Cc:     linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
+        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
+        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
+        xen-devel@lists.xenproject.org, x86@kernel.org,
+        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
+        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
+        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
+        corbet@lwn.net, d.hatayama@jp.fujitsu.com,
+        dave.hansen@linux.intel.com, dyoung@redhat.com,
+        feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, Leo Yan <leo.yan@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Mike Leach <mike.leach@linaro.org>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-10-gpiccoli@igalia.com>
+ <3cafe4fd-8a0b-2633-44a3-2995abd6c38c@arm.com>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <3cafe4fd-8a0b-2633-44a3-2995abd6c38c@arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Saenz Julienne <nsaenzju@redhat.com>
+On 28/04/2022 05:11, Suzuki K Poulose wrote:
+> Hi Guilherme,
+> 
+> On 27/04/2022 23:49, Guilherme G. Piccoli wrote:
+>> The panic notifier infrastructure executes registered callbacks when
+>> a panic event happens - such callbacks are executed in atomic context,
+>> with interrupts and preemption disabled in the running CPU and all other
+>> CPUs disabled. That said, mutexes in such context are not a good idea.
+>>
+>> This patch replaces a regular mutex with a mutex_trylock safer approach;
+>> given the nature of the mutex used in the driver, it should be pretty
+>> uncommon being unable to acquire such mutex in the panic path, hence
+>> no functional change should be observed (and if it is, that would be
+>> likely a deadlock with the regular mutex).
+>>
+>> Fixes: 2227b7c74634 ("coresight: add support for CPU debug module")
+>> Cc: Leo Yan <leo.yan@linaro.org>
+>> Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+>> Cc: Mike Leach <mike.leach@linaro.org>
+>> Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
+>> Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+> 
+> How would you like to proceed with queuing this ? I am happy
+> either way. In case you plan to push this as part of this
+> series (I don't see any potential conflicts) :
+> 
+> Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
 
-Some setups, notably NOHZ_FULL CPUs, are too busy to handle the per-cpu
-drain work queued by __drain_all_pages(). So introduce new a mechanism
-to remotely drain the per-cpu lists. It is made possible by remotely
-locking 'struct per_cpu_pages' new per-cpu spinlocks. A benefit of this
-new scheme is that drain operations are now migration safe.
+Hi Suzuki, some other maintainers are taking the patches to their next
+branches for example. I'm working on V2, and I guess in the end would be
+nice to reduce the size of the series a bit.
 
-There was no observed performance degradation vs. the previous scheme.
-Both netperf and hackbench were run in parallel to triggering the
-__drain_all_pages(NULL, true) code path around ~100 times per second.
-The new scheme performs a bit better (~5%), although the important point
-here is there are no performance regressions vs. the previous mechanism.
-Per-cpu lists draining happens only in slow paths.
+So, do you think you could pick this one for your coresight/next branch
+(or even for rc cycle, your call - this is really a fix)?
+This way, I won't re-submit this one in V2, since it's gonna be merged
+already in your branch.
 
-Link: https://lore.kernel.org/r/20211103170512.2745765-4-nsaenzju@redhat.com
-Signed-off-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
-Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
----
- mm/page_alloc.c | 59 +++++--------------------------------------------
- 1 file changed, 5 insertions(+), 54 deletions(-)
+Thanks in advance,
 
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 7be21254087c..4ac39d30ec8f 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -164,13 +164,7 @@ DEFINE_PER_CPU(int, _numa_mem_);		/* Kernel "local memory" node */
- EXPORT_PER_CPU_SYMBOL(_numa_mem_);
- #endif
- 
--/* work_structs for global per-cpu drains */
--struct pcpu_drain {
--	struct zone *zone;
--	struct work_struct work;
--};
- static DEFINE_MUTEX(pcpu_drain_mutex);
--static DEFINE_PER_CPU(struct pcpu_drain, pcpu_drain);
- 
- #ifdef CONFIG_GCC_PLUGIN_LATENT_ENTROPY
- volatile unsigned long latent_entropy __latent_entropy;
-@@ -3090,9 +3084,6 @@ static int rmqueue_bulk(struct zone *zone, unsigned int order,
-  * Called from the vmstat counter updater to drain pagesets of this
-  * currently executing processor on remote nodes after they have
-  * expired.
-- *
-- * Note that this function must be called with the thread pinned to
-- * a single processor.
-  */
- void drain_zone_pages(struct zone *zone, struct per_cpu_pages *pcp)
- {
-@@ -3117,10 +3108,6 @@ void drain_zone_pages(struct zone *zone, struct per_cpu_pages *pcp)
- 
- /*
-  * Drain pcplists of the indicated processor and zone.
-- *
-- * The processor must either be the current processor and the
-- * thread pinned to the current processor or a processor that
-- * is not online.
-  */
- static void drain_pages_zone(unsigned int cpu, struct zone *zone)
- {
-@@ -3139,10 +3126,6 @@ static void drain_pages_zone(unsigned int cpu, struct zone *zone)
- 
- /*
-  * Drain pcplists of all zones on the indicated processor.
-- *
-- * The processor must either be the current processor and the
-- * thread pinned to the current processor or a processor that
-- * is not online.
-  */
- static void drain_pages(unsigned int cpu)
- {
-@@ -3155,9 +3138,6 @@ static void drain_pages(unsigned int cpu)
- 
- /*
-  * Spill all of this CPU's per-cpu pages back into the buddy allocator.
-- *
-- * The CPU has to be pinned. When zone parameter is non-NULL, spill just
-- * the single zone's pages.
-  */
- void drain_local_pages(struct zone *zone)
- {
-@@ -3169,24 +3149,6 @@ void drain_local_pages(struct zone *zone)
- 		drain_pages(cpu);
- }
- 
--static void drain_local_pages_wq(struct work_struct *work)
--{
--	struct pcpu_drain *drain;
--
--	drain = container_of(work, struct pcpu_drain, work);
--
--	/*
--	 * drain_all_pages doesn't use proper cpu hotplug protection so
--	 * we can race with cpu offline when the WQ can move this from
--	 * a cpu pinned worker to an unbound one. We can operate on a different
--	 * cpu which is alright but we also have to make sure to not move to
--	 * a different one.
--	 */
--	migrate_disable();
--	drain_local_pages(drain->zone);
--	migrate_enable();
--}
--
- /*
-  * The implementation of drain_all_pages(), exposing an extra parameter to
-  * drain on all cpus.
-@@ -3207,13 +3169,6 @@ static void __drain_all_pages(struct zone *zone, bool force_all_cpus)
- 	 */
- 	static cpumask_t cpus_with_pcps;
- 
--	/*
--	 * Make sure nobody triggers this path before mm_percpu_wq is fully
--	 * initialized.
--	 */
--	if (WARN_ON_ONCE(!mm_percpu_wq))
--		return;
--
- 	/*
- 	 * Do not drain if one is already in progress unless it's specific to
- 	 * a zone. Such callers are primarily CMA and memory hotplug and need
-@@ -3263,14 +3218,12 @@ static void __drain_all_pages(struct zone *zone, bool force_all_cpus)
- 	}
- 
- 	for_each_cpu(cpu, &cpus_with_pcps) {
--		struct pcpu_drain *drain = per_cpu_ptr(&pcpu_drain, cpu);
--
--		drain->zone = zone;
--		INIT_WORK(&drain->work, drain_local_pages_wq);
--		queue_work_on(cpu, mm_percpu_wq, &drain->work);
-+		if (zone) {
-+			drain_pages_zone(cpu, zone);
-+		} else {
-+			drain_pages(cpu);
-+		}
- 	}
--	for_each_cpu(cpu, &cpus_with_pcps)
--		flush_work(&per_cpu_ptr(&pcpu_drain, cpu)->work);
- 
- 	mutex_unlock(&pcpu_drain_mutex);
- }
-@@ -3279,8 +3232,6 @@ static void __drain_all_pages(struct zone *zone, bool force_all_cpus)
-  * Spill all the per-cpu pages from all CPUs back into the buddy allocator.
-  *
-  * When zone parameter is non-NULL, spill just the single zone's pages.
-- *
-- * Note that this can be extremely slow as the draining happens in a workqueue.
-  */
- void drain_all_pages(struct zone *zone)
- {
--- 
-2.34.1
 
+Guilherme
