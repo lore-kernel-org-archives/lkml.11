@@ -2,100 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F02DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:24:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 763C7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:24:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233298AbiEIK1r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 06:27:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44238 "EHLO
+        id S231939AbiEIK2Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 06:28:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232838AbiEIK1I (ORCPT
+        with ESMTP id S231791AbiEIK2J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 06:27:08 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 739A028E4D3;
-        Mon,  9 May 2022 03:22:20 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id i1so13408249plg.7;
-        Mon, 09 May 2022 03:22:20 -0700 (PDT)
+        Mon, 9 May 2022 06:28:09 -0400
+Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87A4228F7EE
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 03:23:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=/KscUgSu+DlH4SnTOHon3YcfRcvIy3eZGU1H9dQC07w=;
-        b=NuD79QXPiIDpamCnzpVgpF+Z/rwFjNUgkt28orvyyqiYCcOtiCjLll4jMZJR7GAu+F
-         Sig9HeJSUbTwYmIgdm6QeKXqgdERJF4zvuQO8QhwEILcdTR7HsN6GDN54FmUrUOfcxgA
-         8Gr6KSfVMOjg/UsrJ6zhu62iy2Ljkmz6zzBzM2IJKOdo6uNgtAqSOxSEtzxa3HaQxWjn
-         R2CGWN4rUKM6fxWIqMyhNJAtf7SoWme89hid/X0T/5xfIgtBNDJpgJ1CIhFvpXfmKa36
-         Kq0LHenY+FDdat1OVt5mALL/tHhJ4tO5mp05nCbGhlXYtDtYjYS2HhyHdM7vtHLHYCyU
-         Ll5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=/KscUgSu+DlH4SnTOHon3YcfRcvIy3eZGU1H9dQC07w=;
-        b=eet9jghre2RhvvlLDiA+cpa/UVe1k1O0VKXwE6rFSBkIKMNO/d2Gn2GgVPw16HByxB
-         0+DvAyTVpazvFRd1LnFguCPsd1lRJ/sUtgwCIhenprzt0uZbt6AZXvf+KDToxvAVD/0Z
-         LqigS61MWV9rIpChIQnFRZAENHcxRZ2j8x55i63AaLhJMgHGWNI4w63yby0wgkm0LrM4
-         SDFmy+P6XjxYWqJLVrRq5WrAsc2XkGtP2hhTVFKa8PtDbVui8vRD6oDH9hdZhQmDAb//
-         4K9fIpC9ODpxvaFDL3TINm7KQeBMkR4Pw1366vt9TV7FT08zEdkS3MM+2OcbGp/YcDlQ
-         vpJg==
-X-Gm-Message-State: AOAM532TTn0t7PUWYoymouSGU61KNoMjIWmqOB1dwz5Cx8fkUKFglwYa
-        7GaH3rbpRW7AZn2S6hTGb+FyzLhnCft6SA==
-X-Google-Smtp-Source: ABdhPJzSGfIDAJMvWOYBIZ1DcN/yg1OCjsbigRe0bvdQ6wHdVcd+wSIQLa/BiuHdwyVRoKpaS1dTrQ==
-X-Received: by 2002:a17:90a:408f:b0:1d1:d1ba:2abb with SMTP id l15-20020a17090a408f00b001d1d1ba2abbmr25819382pjg.152.1652091739545;
-        Mon, 09 May 2022 03:22:19 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.83])
-        by smtp.gmail.com with ESMTPSA id p17-20020a170902b09100b0015ee985a54csm6688891plr.56.2022.05.09.03.22.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 03:22:19 -0700 (PDT)
-From:   Like Xu <like.xu.linux@gmail.com>
-X-Google-Original-From: Like Xu <likexu@tencent.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Jim Mattson <jmattson@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 2/3] KVM: x86/pmu: Don't pre-set the pmu->global_ctrl when refreshing
-Date:   Mon,  9 May 2022 18:22:03 +0800
-Message-Id: <20220509102204.62389-2-likexu@tencent.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220509102204.62389-1-likexu@tencent.com>
-References: <20220509102204.62389-1-likexu@tencent.com>
+  d=amazon.de; i=@amazon.de; q=dns/txt; s=amazon201209;
+  t=1652091813; x=1683627813;
+  h=from:to:cc:date:message-id:references:in-reply-to:
+   content-id:mime-version:content-transfer-encoding:subject;
+  bh=6QgrGcyp4Mk+3G0VkFn4Q4LxCcjPCl+ZDoGb2wNFrMo=;
+  b=iSii5ImtOUmOu18wgSko8b9EWesLZE7WdNY63aCsRT9gOJ/HYpIY88CI
+   eSxP9DzrX7HQ0Pqj1YLq+R0/2n7GC+X1y1gvBoml4JijgD8h98L1TO9m9
+   J15Yxq1ZreY0nkUIJCASbfoxQfwrBYr9ocmlSL3zvNmzyAMxSRI+pYzuO
+   c=;
+X-IronPort-AV: E=Sophos;i="5.91,211,1647302400"; 
+   d="scan'208";a="196437020"
+Subject: Re: [PATCH] mm/damon/reclaim: Use resource_size function on resource object
+Thread-Topic: [PATCH] mm/damon/reclaim: Use resource_size function on resource object
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2c-5c4a15b1.us-west-2.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-2101.iad2.amazon.com with ESMTP; 09 May 2022 10:13:51 +0000
+Received: from EX13D13EUB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2c-5c4a15b1.us-west-2.amazon.com (Postfix) with ESMTPS id 797CB416C4;
+        Mon,  9 May 2022 10:13:49 +0000 (UTC)
+Received: from EX13D13EUB001.ant.amazon.com (10.43.166.101) by
+ EX13D13EUB001.ant.amazon.com (10.43.166.101) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.32; Mon, 9 May 2022 10:13:48 +0000
+Received: from EX13D13EUB001.ant.amazon.com ([10.43.166.101]) by
+ EX13D13EUB001.ant.amazon.com ([10.43.166.101]) with mapi id 15.00.1497.033;
+ Mon, 9 May 2022 10:13:48 +0000
+From:   "Boehme, Markus" <markubo@amazon.de>
+To:     "jiapeng.chong@linux.alibaba.com" <jiapeng.chong@linux.alibaba.com>,
+        "sj@kernel.org" <sj@kernel.org>
+CC:     "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "damon@lists.linux.dev" <damon@lists.linux.dev>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "abaci@linux.alibaba.com" <abaci@linux.alibaba.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>
+Thread-Index: AQHYYiihB0USfzggdUSRxWlPJRltUq0WVp2A
+Date:   Mon, 9 May 2022 10:13:48 +0000
+Message-ID: <5a9268fcd7bb829414da20aecd06d9e1d47a3489.camel@amazon.de>
+References: <20220507153833.45600-1-sj@kernel.org>
+In-Reply-To: <20220507153833.45600-1-sj@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.43.160.180]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <AB10E6E853AF69478F7EAEC9785FF1D0@amazon.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
-
-Assigning a value to pmu->global_ctrl just to set the value of
-pmu->global_ctrl_mask in a more readable way leaves a side effect of
-not conforming to the specification. The global_ctrl is reset to zero on
-Power up and Reset but keeps unchanged on INIT, like an ordinary MSR.
-
-Signed-off-by: Like Xu <likexu@tencent.com>
----
- arch/x86/kvm/vmx/pmu_intel.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-index cff03baf8921..4d6cc95bc770 100644
---- a/arch/x86/kvm/vmx/pmu_intel.c
-+++ b/arch/x86/kvm/vmx/pmu_intel.c
-@@ -525,9 +525,8 @@ static void intel_pmu_refresh(struct kvm_vcpu *vcpu)
- 		setup_fixed_pmc_eventsel(pmu);
- 	}
- 
--	pmu->global_ctrl = ((1ull << pmu->nr_arch_gp_counters) - 1) |
-+	pmu->global_ctrl_mask = ~((1ull << pmu->nr_arch_gp_counters) - 1) |
- 		(((1ull << pmu->nr_arch_fixed_counters) - 1) << INTEL_PMC_IDX_FIXED);
--	pmu->global_ctrl_mask = ~pmu->global_ctrl;
- 	pmu->global_ovf_ctrl_mask = pmu->global_ctrl_mask
- 			& ~(MSR_CORE_PERF_GLOBAL_OVF_CTRL_OVF_BUF |
- 			    MSR_CORE_PERF_GLOBAL_OVF_CTRL_COND_CHGD);
--- 
-2.36.1
+KEtlZXBpbmcgU0oncyBtYWlsIGZvciBjb250ZXh0LCBzaW5jZSBvcmlnaW5hbCBwYXRjaCBzZWVt
+cyB0byBub3QgaGF2ZQ0KZ29uZSB0byB0aGUgREFNT04gbGlzdC4pDQoNCk9uIFNhdCwgMjAyMi0w
+NS0wNyBhdCAxNTozOCArMDAwMCwgU2VvbmdKYWUgUGFyayB3cm90ZToNCj4gT24gU2F0LCA3IE1h
+eSAyMDIyIDExOjI1OjEyICswODAwIEppYXBlbmcgQ2hvbmcgPGppYXBlbmcuY2hvbmdAbGludXgu
+YWxpYmFiYS5jb20+IHdyb3RlOg0KPiANCj4gPiBGaXggdGhlIGZvbGxvd2luZyBjb2NjaWNoZWNr
+IHdhcm5pbmdzOg0KPiA+IA0KPiA+IC4vbW0vZGFtb24vcmVjbGFpbS5jOjI0MTozMC0zMzogV0FS
+TklORzogU3VzcGljaW91cyBjb2RlLiByZXNvdXJjZV9zaXplDQo+ID4gaXMgbWF5YmUgbWlzc2lu
+ZyB3aXRoIHJlcy4NCj4gDQo+IE5pdC4gIEknZCBwcmVmZXIgaGF2aW5nIHRoaXMga2luZCBvZiBw
+cm9ncmFtIG91dHB1dHMgaW4gY29tbWl0IG1lc3NhZ2UgYmUNCj4gaW5kZW50ZWQgYW5kIG5vdCBi
+cm9rZW4sIGxpa2UgYmVsb3c6DQo+IA0KPiAgICAgLi9tbS9kYW1vbi9yZWNsYWltLmM6MjQxOjMw
+LTMzOiBXQVJOSU5HOiBTdXNwaWNpb3VzIGNvZGUuIHJlc291cmNlX3NpemUgaXMgbWF5YmUgbWlz
+c2luZyB3aXRoIHJlcy4NCj4gDQo+ID4gUmVwb3J0ZWQtYnk6IEFiYWNpIFJvYm90IDxhYmFjaUBs
+aW51eC5hbGliYWJhLmNvbT4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBKaWFwZW5nIENob25nIDxqaWFw
+ZW5nLmNob25nQGxpbnV4LmFsaWJhYmEuY29tPg0KPiANCj4gT3RoZXIgdGhhbiB0aGUgbml0LA0K
+PiANCj4gUmV2aWV3ZWQtYnk6IFNlb25nSmFlIFBhcmsgPHNqQGtlcm5lbC5vcmc+DQo+IA0KPiAN
+Cj4gVGhhbmtzLA0KPiBTSg0KPiANCj4gPiAtLS0NCj4gPiAgbW0vZGFtb24vcmVjbGFpbS5jIHwg
+MiArLQ0KPiA+ICAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVsZXRpb24oLSkN
+Cj4gPiANCj4gPiBkaWZmIC0tZ2l0IGEvbW0vZGFtb24vcmVjbGFpbS5jIGIvbW0vZGFtb24vcmVj
+bGFpbS5jDQo+ID4gaW5kZXggZjM3YzVkNGIyN2ZhLi44ZWZiZmIyNGYzYTEgMTAwNjQ0DQo+ID4g
+LS0tIGEvbW0vZGFtb24vcmVjbGFpbS5jDQo+ID4gKysrIGIvbW0vZGFtb24vcmVjbGFpbS5jDQo+
+ID4gQEAgLTIzOCw3ICsyMzgsNyBAQCBzdGF0aWMgaW50IHdhbGtfc3lzdGVtX3JhbShzdHJ1Y3Qg
+cmVzb3VyY2UgKnJlcywgdm9pZCAqYXJnKQ0KPiA+ICB7DQo+ID4gICAgICAgc3RydWN0IGRhbW9u
+X3JlY2xhaW1fcmFtX3dhbGtfYXJnICphID0gYXJnOw0KPiA+IA0KPiA+IC0gICAgIGlmIChhLT5l
+bmQgLSBhLT5zdGFydCA8IHJlcy0+ZW5kIC0gcmVzLT5zdGFydCkgew0KPiA+ICsgICAgIGlmIChh
+LT5lbmQgLSBhLT5zdGFydCA8IHJlc291cmNlX3NpemUocmVzKSkgew0KPiA+ICAgICAgICAgICAg
+ICAgYS0+c3RhcnQgPSByZXMtPnN0YXJ0Ow0KPiA+ICAgICAgICAgICAgICAgYS0+ZW5kID0gcmVz
+LT5lbmQ7DQo+ID4gICAgICAgfQ0KPiA+IC0tDQo+ID4gMi4yMC4xLjcuZzE1MzE0NGMNCg0KVGhp
+cyBpcyBub3QganVzdCBmaXhpbmcgdGhlIHdhcm5pbmcsIGJ1dCBjaGFuZ2luZyB0aGUgY2FsY3Vs
+YXRpb24NCnNsaWdodGx5IHRvIGNvcnJlY3RseSBkZXRlcm1pbmUgc2l6ZSAocmVzLT5lbmQgbm90
+IHBvaW50aW5nIG9uZSBiZXlvbmQNCnRoZSBlbmQsIGJ1dCB0byB0aGUgbGFzdCBhZGRyZXNzIGlu
+IHRoZSByZWdpb24pLiBGb3IgZmluZGluZyB0aGUNCmJpZ2dlc3QgcmVnaW9uIGl0IGRvZXNuJ3Qg
+bWF0dGVyIGJlaW5nIG9mZiBieSBvbmUgY29uc2lzdGVudGx5LCBidXQNCmp1c3QgZml4aW5nIG9u
+ZSBzaWRlIG9mIHRoZSBjb21wYXJpc29uIGNoYW5nZXMgYmVoYXZpb3IgaW4gdGhlIHByZXNlbmNl
+DQpvZiB0d28gZXF1YWwgcmVnaW9ucy4gV2hlbiBmaXhpbmcgYm90aCBzaWRlcywgdGhlICJzdHJ1
+Y3QNCmRhbW9uX3JlY2xhaW1fcmFtX3dhbGtfYXJnIiBtaWdodCBqdXN0IGJlIHJlcGxhY2VkIHdp
+dGggYSAic3RydWN0DQpyZXNvdXJjZSIsIHRvby4NCg0KTWFya3VzDQoKCgpBbWF6b24gRGV2ZWxv
+cG1lbnQgQ2VudGVyIEdlcm1hbnkgR21iSApLcmF1c2Vuc3RyLiAzOAoxMDExNyBCZXJsaW4KR2Vz
+Y2hhZWZ0c2Z1ZWhydW5nOiBDaHJpc3RpYW4gU2NobGFlZ2VyLCBKb25hdGhhbiBXZWlzcwpFaW5n
+ZXRyYWdlbiBhbSBBbXRzZ2VyaWNodCBDaGFybG90dGVuYnVyZyB1bnRlciBIUkIgMTQ5MTczIEIK
+U2l0ejogQmVybGluClVzdC1JRDogREUgMjg5IDIzNyA4NzkKCgo=
 
