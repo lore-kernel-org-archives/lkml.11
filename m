@@ -2,110 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3975AC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 582A1C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 06:48:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235069AbiEIGtw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 02:49:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52406 "EHLO
+        id S235131AbiEIGtz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 02:49:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231817AbiEIGnH (ORCPT
+        with ESMTP id S236089AbiEIGqQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 02:43:07 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CD1118FF2A
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 23:39:12 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id dk23so24822461ejb.8
-        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 23:39:11 -0700 (PDT)
+        Mon, 9 May 2022 02:46:16 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7EBB122B73
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 23:42:22 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id bo5so11442288pfb.4
+        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 23:42:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=UV9zjmHYlW+6A7MQ6c6pItDR5gnRmcinDnUlAmO8o4s=;
-        b=hzjmM6oUphOTv/1VPY1VsofK8BtDOdAvdqw4l2wRm3nyyk3knoYA+470tzaBgBWByW
-         oEx9yq4xf8wLj8MarLGMhbvPhJitxVqIkJndkI0RUgIahTHHllfHLmQ2Cr3DEPh8mprK
-         T3jeoqxaCup6Y39F7tDd3zWaxPGAX0dtt4CaEzuZogh/QsUqL5yB1rdpHej9KjW1zq2I
-         4dL4ePYA2i/GnSoUFPfAHtketeRvOuxR+KBqGYwlAIN1Nv1AuSBG+gczDO8xiEQDEwCZ
-         hjMEsjHmmft2ZOAncTFIIHmOZE9IOLHUXfBC+/3qUVuevlU0m7kZ1HcWMDpVEMfE5Hfs
-         GzZw==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=KwBbyH87QLuFybJCJK1L3o2HCzGQtzlhndyFtKBo1+M=;
+        b=YUWb9VnH9CLdCOFSCg0EgRuHaol/guxgUnIE24J/u98QZ3I3dvqShcw6bHn8PbLn33
+         De91e3fLiUGBZs3puXjUkFqnGkfsceO/2eweNFJzxUeEtvloQSE+QJUqsSR4B/n5rCXn
+         fOwQjXfTmiY/r6o87bGR+3OcaUM524WjnTrpTYj/0PlXxJLh/+Gh7NH9mmwLwHUNU7RV
+         798mKiROjo4EcdLxdwMlUkdsZDYVb3TJer8JHISDq/bQz+F1seNMMayMZJHD4rOjmga0
+         GVFw2YGdi2fk3IJL1R+yM+i5a8XRpkgqS57S/UyObr/jP4lzVJidIkm4bfeiGNsDsFN7
+         rlTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=UV9zjmHYlW+6A7MQ6c6pItDR5gnRmcinDnUlAmO8o4s=;
-        b=XWLuAGZ2+IdOUY2yggJlBaSjeaCnCJxeld/Cyutk0jkzxcVf0L+kB+8z69HdjdiySJ
-         0LcCKHUYUEtGq0gI7igw6G7ZjCDBlKWmQ6QEgt8OC8pWUSzP8yGf+l3qQhkYWubxW8X/
-         MbxyDrt6P7BLbLK0o6+Gp6+RXgHttA2Qi1eVckHNrRrbpx1o8/o7uzmzOYUbPaM0DhWg
-         b8iueK4IzksFgRiCoHFJaHlMOY41NCIG3lAnacZUAbpUgFZzn9z5BraAzp5U56wWwA94
-         5RHGyK7JE96cXhyaO37m56LJ/+5ENIERvdfPqXcqz/xRjVl2/ZJmtceS2dEqX5IUES00
-         kdrg==
-X-Gm-Message-State: AOAM530k+QsvMIHYAv6PGHVOxEESk41RU4zEOEyB+102wv9KB0ogxupP
-        ifmpXkR0l8J7PgQJNGk5deQt7A==
-X-Google-Smtp-Source: ABdhPJwods/7Sd25/CejtLdRC3yOQ4HyzjC7vaMwqSaAKsR5nOmQu3wz5BjBUvUcVGvObNORipndng==
-X-Received: by 2002:a17:907:8693:b0:6f8:635a:1d32 with SMTP id qa19-20020a170907869300b006f8635a1d32mr7747735ejc.663.1652078333319;
-        Sun, 08 May 2022 23:38:53 -0700 (PDT)
-Received: from [192.168.0.242] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id mj9-20020a170906af8900b006f4c82c2b12sm4693247ejb.19.2022.05.08.23.38.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 08 May 2022 23:38:52 -0700 (PDT)
-Message-ID: <0fdfcc16-7b80-47e9-709c-648d3a0cd6fc@linaro.org>
-Date:   Mon, 9 May 2022 08:38:51 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KwBbyH87QLuFybJCJK1L3o2HCzGQtzlhndyFtKBo1+M=;
+        b=KiBl2dnFL/1GoYqabYHZTzv3Zoty4nUBItpM0Bfe8FRyUFZO7g0fFEfflyzCB4BtI+
+         ynMKuKxwyk9miZW6NgwPTrJNnSGMlzHzed3wsEXbedWlHySHgFdxvvAZqFB2waRPQU8j
+         ygmsgcD2NC6n3vEM4MmBweOfIUpNB55h5nXlPnjP5ojdvc8LjGANSVRm1lc65uVSlc59
+         O2yCodqR18ET48a2gnu+c/D6SHZ3rB/cbNCObghktrmcqZUs9SRxzKh0k9ZPr97ahVN3
+         jdTYcQgXvPhR9NgCJa6izIaXZ/nJhhOMhGa5QWcy565xKB6dPmfWmLKVO3LeU348KgdE
+         3hfA==
+X-Gm-Message-State: AOAM530DnuwUbovvDhZGCxdvhiXbSwf4CXqlbgqPvW3ip5m2tIGF6bDV
+        MehPQg34pV83mpvbbuVcsxedPQ==
+X-Google-Smtp-Source: ABdhPJzri2xI4eu2ZTD8cGUcHrOUq+LTIb9Xrei/K8/ULY+fOTzB8m7m6qoWPFqlzvQXcDaMYRtrhA==
+X-Received: by 2002:a63:6987:0:b0:3c6:c3ce:5097 with SMTP id e129-20020a636987000000b003c6c3ce5097mr2699720pgc.293.1652078540543;
+        Sun, 08 May 2022 23:42:20 -0700 (PDT)
+Received: from localhost ([139.177.225.250])
+        by smtp.gmail.com with ESMTPSA id r10-20020a170903020a00b0015e8d4eb21bsm6178989plh.101.2022.05.08.23.42.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 May 2022 23:42:20 -0700 (PDT)
+Date:   Mon, 9 May 2022 14:42:17 +0800
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     Baolin Wang <baolin.wang@linux.alibaba.com>
+Cc:     akpm@linux-foundation.org, mike.kravetz@oracle.com,
+        catalin.marinas@arm.com, will@kernel.org,
+        tsbogend@alpha.franken.de, James.Bottomley@HansenPartnership.com,
+        deller@gmx.de, mpe@ellerman.id.au, benh@kernel.crashing.org,
+        paulus@samba.org, hca@linux.ibm.com, gor@linux.ibm.com,
+        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+        svens@linux.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org,
+        davem@davemloft.net, arnd@arndb.de,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
+        sparclinux@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: Re: [PATCH v2 3/3] mm: rmap: Fix CONT-PTE/PMD size hugetlb issue
+ when unmapping
+Message-ID: <Yni3yTLblEF5aJw5@FVFYT0MHHV2J.usts.net>
+References: <cover.1652002221.git.baolin.wang@linux.alibaba.com>
+ <43b11b69e9f0d9d7e7960b86661db27cc404d0c7.1652002221.git.baolin.wang@linux.alibaba.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 2/3] dt-bindings: display: Add bindings for EBBG FT8719
-Content-Language: en-US
-To:     Joel Selvaraj <jo@jsfamily.in>
-Cc:     airlied@linux.ie, clabbe@baylibre.com, daniel@ffwll.ch,
-        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        fanghao11@huawei.com, linus.walleij@linaro.org,
-        linux-kernel@vger.kernel.org, linux@rempel-privat.de,
-        phone-devel@vger.kernel.org, robh+dt@kernel.org, sam@ravnborg.org,
-        shawnguo@kernel.org, stano.jakubek@gmail.com,
-        thierry.reding@gmail.com, ~postmarketos/upstreaming@lists.sr.ht
-References: <2ab35af2-b067-4243-35ed-a592a7046374@linaro.org>
- <BY5PR02MB7009A604AC912DC78FAF42A5D9C69@BY5PR02MB7009.namprd02.prod.outlook.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <BY5PR02MB7009A604AC912DC78FAF42A5D9C69@BY5PR02MB7009.namprd02.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <43b11b69e9f0d9d7e7960b86661db27cc404d0c7.1652002221.git.baolin.wang@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09/05/2022 07:08, Joel Selvaraj wrote:
-> Hi Krzysztof Kozlowski,
+On Sun, May 08, 2022 at 05:36:41PM +0800, Baolin Wang wrote:
+> On some architectures (like ARM64), it can support CONT-PTE/PMD size
+> hugetlb, which means it can support not only PMD/PUD size hugetlb:
+> 2M and 1G, but also CONT-PTE/PMD size: 64K and 32M if a 4K page
+> size specified.
 > 
-> A quick question.
+> When unmapping a hugetlb page, we will get the relevant page table
+> entry by huge_pte_offset() only once to nuke it. This is correct
+> for PMD or PUD size hugetlb, since they always contain only one
+> pmd entry or pud entry in the page table.
 > 
-> On 07/05/22 21:02, Krzysztof Kozlowski wrote:
->  >> +  backlight: true
->  >> +  port: true
->  >
->  > Both should not be needed - they come from panel-common.yaml. They might
->  > stay in list
+> However this is incorrect for CONT-PTE and CONT-PMD size hugetlb,
+> since they can contain several continuous pte or pmd entry with
+> same page table attributes, so we will nuke only one pte or pmd
+> entry for this CONT-PTE/PMD size hugetlb page.
 > 
-> I see that almost 54 panels mention "port: true" and 46 panels mention
-> "backlight: true". Almost all panels refer the panel-common.yaml too.
-
-They need them only if they use "additionalProperties:false".
+> And now try_to_unmap() is only passed a hugetlb page in the case
+> where the hugetlb page is poisoned. Which means now we will unmap
+> only one pte entry for a CONT-PTE or CONT-PMD size poisoned hugetlb
+> page, and we can still access other subpages of a CONT-PTE or CONT-PMD
+> size poisoned hugetlb page, which will cause serious issues possibly.
 > 
-> So I think specifying them as true is just for extra clarity that
-> these properties are usually used by this panel? But I am not very sure.
+> So we should change to use huge_ptep_clear_flush() to nuke the
+> hugetlb page table to fix this issue, which already considered
+> CONT-PTE and CONT-PMD size hugetlb.
+> 
+> We've already used set_huge_swap_pte_at() to set a poisoned
+> swap entry for a poisoned hugetlb page. Meanwhile adding a VM_BUG_ON()
+> to make sure the passed hugetlb page is poisoned in try_to_unmap().
+> 
+> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
 
-If they don't use additionalProperties:false, then the explanation could be:
-1. Just for clarity as you say, because they might want to require
-property/node which is listed in the properties, otherwise it is a bit
-confusing.
-2. They were copying first example without actually checking...
+Reviewed-by: Muchun Song <songmuchun@bytedance.com>
 
-> Should I leave them be? or it's still recommended to remove them?
-
-It's not a big deal and I do not have strong opinion, but I would
-propose to remove them from list of properties and still keep port in
-"required"
-
-
-Best regards,
-Krzysztof
+Thanks.
