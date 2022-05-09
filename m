@@ -2,107 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE95BC38161
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA828C47082
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:30:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238004AbiEIJeJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 05:34:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39090 "EHLO
+        id S237995AbiEIJeI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 05:34:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237940AbiEIJVY (ORCPT
+        with ESMTP id S237953AbiEIJVb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 05:21:24 -0400
-Received: from mail.codelabs.ch (mail.codelabs.ch [IPv6:2a02:168:860f:1::35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 453A71A0AFE
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 02:17:29 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.codelabs.ch (Postfix) with ESMTP id C21CD220002;
-        Mon,  9 May 2022 11:07:15 +0200 (CEST)
-Received: from mail.codelabs.ch ([127.0.0.1])
-        by localhost (fenrir.codelabs.ch [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id PsW_K7vs4HTv; Mon,  9 May 2022 11:07:14 +0200 (CEST)
-Received: from zaphod.codelabs.ch (unknown [192.168.10.129])
-        by mail.codelabs.ch (Postfix) with ESMTPSA id 115D2220001;
-        Mon,  9 May 2022 11:07:14 +0200 (CEST)
-From:   Adrian-Ken Rueegsegger <ken@codelabs.ch>
-To:     dave.hansen@linux.intel.com, osalvador@suse.de
-Cc:     david@redhat.com, luto@kernel.org, peterz@infradead.org,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
-        x86@kernel.org, linux-kernel@vger.kernel.org,
-        Adrian-Ken Rueegsegger <ken@codelabs.ch>
-Subject: Unhandled page fault in vmemmap_populate on x86_64
-Date:   Mon,  9 May 2022 11:06:36 +0200
-Message-Id: <20220509090637.24152-1-ken@codelabs.ch>
+        Mon, 9 May 2022 05:21:31 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 947D91A4091
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 02:17:37 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KxZk1431YzGpSV;
+        Mon,  9 May 2022 16:54:49 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 9 May 2022 16:57:35 +0800
+Subject: Re: [RFC PATCH v1 2/4] mm,hwpoison,hugetlb,memory_hotplug: hotremove
+ memory section with hwpoisoned hugepage
+To:     =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
+        <naoya.horiguchi@nec.com>
+CC:     Naoya Horiguchi <naoya.horiguchi@linux.dev>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Muchun Song <songmuchun@bytedance.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>
+References: <20220427042841.678351-1-naoya.horiguchi@linux.dev>
+ <20220427042841.678351-3-naoya.horiguchi@linux.dev>
+ <9bdddf53-b01a-9665-04c3-0146efc1404d@huawei.com>
+ <20220509075548.GC123646@hori.linux.bs1.fc.nec.co.jp>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <39674811-b814-8f8c-0823-99a62c0ced49@huawei.com>
+Date:   Mon, 9 May 2022 16:57:35 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
+In-Reply-To: <20220509075548.GC123646@hori.linux.bs1.fc.nec.co.jp>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On 2022/5/9 15:55, HORIGUCHI NAOYA(堀口 直也) wrote:
+> On Fri, Apr 29, 2022 at 04:49:16PM +0800, Miaohe Lin wrote:
+>> On 2022/4/27 12:28, Naoya Horiguchi wrote:
+>>> From: Naoya Horiguchi <naoya.horiguchi@nec.com>
+>>>
+>>> HWPoisoned page is not supposed to prevent memory hotremove, but
+>>> currently this does not properly work for hwpoisoned hugepages and the
+>>> kernel tries to migrate them, which could cause consuming corrupted
+>>> data.
+>>>
+>>> Move dissolve_free_huge_pages() before scan_movable_pages(). This is
+>>> because the result of the movable check depends on the result of the
+>>> dissolve.  Now delayed dissolve is available, so hwpoisoned hugepages
+>>> can be turned into 4kB hwpoison page which memory hotplug can handle.
+>>>
+>>> And clear HPageMigratable pseudo flag for hwpoisoned hugepages. This is
+>>> also important because dissolve_free_huge_page() can fail.  So it's
+>>> still necessary to prevent do_migrate_pages() from trying to migrate
+>>> hwpoison hugepages.
+>>>
+>>> Reported-by: Miaohe Lin <linmiaohe@huawei.com>
+>>> Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+>>> ---
+>>>  mm/hugetlb.c        | 11 +++++++++++
+>>>  mm/memory-failure.c |  2 ++
+>>>  mm/memory_hotplug.c | 23 +++++++++++------------
+>>>  3 files changed, 24 insertions(+), 12 deletions(-)
+>>>
+>>> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+>>> index 6867ea8345d1..95b1db852ca9 100644
+>>> --- a/mm/hugetlb.c
+>>> +++ b/mm/hugetlb.c
+>>> @@ -2159,6 +2159,17 @@ int dissolve_free_huge_pages(unsigned long start_pfn, unsigned long end_pfn)
+>>>  
+>>>  	for (pfn = start_pfn; pfn < end_pfn; pfn += 1 << minimum_order) {
+>>>  		page = pfn_to_page(pfn);
+>>> +
+>>> +		if (PageHuge(page) && PageHWPoison(page)) {
+>>> +			/*
+>>> +			 * Release the last refcount from hwpoison to turn into
+>>> +			 * a free hugepage.
+>>> +			 */
+>>> +			if (page_count(page) == 1)
+>>> +				put_page(page);
+>>> +			page = hugetlb_page_hwpoison(page);
+>>> +		}
+>>> +
+>>
+>> This patch looks good to me. Thanks!
+>>
+>> One question: Can this hugepage be put into buddy system? In free_huge_page,
+>> if h->surplus_huge_pages_node[nid] > 0, hugepage might be put into buddy via
+>> update_and_free_page. So it's not PageHuge anymore and won't be dissolved. If
+>> this happens, the "raw error page" is still missed and might be accessed later.
+> 
+> Yes, this put_page() could free pages directly into buddy.  In such case, I
+> expect __update_and_free_page() to move the PageHWpoison flag to the raw error
+> page, so I think the final result should be the same.
 
-While running Linux 5.15.32/x86_64 (with some out-of-tree patches) on top of
-Muen [1], I came across a BUG/page fault triggered in vmemmap_populate:
+Agree, __update_and_free_page could help move the PageHWpoison flag to the raw error page.
 
-[    0.000000] BUG: unable to handle page fault for address: ffffea0001e00000
-[    0.000000] #PF: supervisor write access in kernel mode
-[    0.000000] #PF: error_code(0x0002) - not-present page
-[    0.000000] PGD 1003a067 P4D 1003a067 PUD 10039067 PMD 0 
-[    0.000000] Oops: 0002 [#1] SMP PTI
-[    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 5.15.32-muen #1
-[    0.000000] RIP: 0010:vmemmap_populate+0x181/0x218
-[    0.000000] Code: 00 a9 ff ff 1f 00 0f 84 a1 00 00 00 e8 91 f7 ff ff b9 0e 00 00 00 31 c0 48 89 ef f3 ab 48 85 f6 74 0a b0 fd 48 89 ef 48 89 f1 <f3> aa 4d 85 c0 74 7c 48 89 1d 2e e2 05 00 eb 73 48 83 3c 24 00 0f
-[    0.000000] RSP: 0000:ffffffff82003e00 EFLAGS: 00010006
-[    0.000000] RAX: 00000000000000fd RBX: ffffea0001e00000 RCX: 0000000000180000
-[    0.000000] RDX: ffffea0000540000 RSI: 00000000001c0000 RDI: ffffea0001e00000
-[    0.000000] RBP: ffffea0001dc0000 R08: 0000000000000000 R09: 0000000088000000
-[    0.000000] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-[    0.000000] R13: ffffea0001f80000 R14: ffffea0001dc0000 R15: ffff888010039070
-[    0.000000] FS:  0000000000000000(0000) GS:ffffffff823ea000(0000) knlGS:0000000000000000
-[    0.000000] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    0.000000] CR2: ffffea0001e00000 CR3: 000000000200a000 CR4: 00000000000406b0
-[    0.000000] DR0: 000000000000003a DR1: 0000000000000003 DR2: 0000000000000000
-[    0.000000] DR3: ffffea0001e00000 DR6: 000000000200a000 DR7: ffffffff82003d58
-[    0.000000] Call Trace:
-[    0.000000]  <TASK>
-[    0.000000]  ? __populate_section_memmap+0x3a/0x47
-[    0.000000]  ? sparse_init_nid+0xc9/0x174
-[    0.000000]  ? sparse_init+0x1c1/0x1d2
-[    0.000000]  ? paging_init+0x5/0xa
-[    0.000000]  ? setup_arch+0x740/0x810
-[    0.000000]  ? start_kernel+0x43/0x5bb
-[    0.000000]  ? secondary_startup_64_no_verify+0xb0/0xbb
-[    0.000000]  </TASK>
-[    0.000000] Modules linked in:
-[    0.000000] CR2: ffffea0001e00000
-[    0.000000] random: get_random_bytes called from init_oops_id+0x1d/0x2c with crng_init=0
-[    0.000000] ---[ end trace 44fe402cfef775de ]---
+Thanks!
 
-Announcing an available RAM region at 0x88000000 to Linux (via e820) triggered
-the issue while placing it at 0x70000000 did not hit the bug. Since the problem
-had not been observed with 5.10, I did a bisect which pointed to commit
-8d400913c231 ("x86/vmemmap: handle unpopulated sub-pmd ranges") as the culprit.
-Further debugging showed that the #PF originates from vmemmap_use_new_sub_pmd
-in arch/x86/mm/init_64.c. In the error case the condition
-!IS_ALIGNED(start, PMD_SIZE) evaluates to true and the page-fault is caused by
-the memset marking the preceding region as unused:
+> 
+> Thanks,
+> Naoya Horiguchi
+> 
 
-    if (!IS_ALIGNED(start, PMD_SIZE))
-        memset((void *)start, PAGE_UNUSED,
-               start - ALIGN_DOWN(start, PMD_SIZE));
-
-If I am not mistaken, the start variable is the wrong address to use here,
-since it points to the beginning of the range that is to be *used*. Instead the
-"start" of the PMD should be used, i.e. ALIGN_DOWN(start, PMD_SIZE). Looking at
-arch/s390/mm/vmem.c, vmemmap_use_new_sub_pmd seems to confirm this. Is the
-above analysis correct or did I misread the code?
-
-The attached patch fixes the observed issue for me.
-
-Regards,
-Adrian
-
-PS: When replying please include my address as to/cc since I am not subscribed
-to LKML, thanks!
-
-[1] - https://muen.sk
