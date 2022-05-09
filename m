@@ -2,93 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99980C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 18:00:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A8D8C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 18:03:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239948AbiEISEN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 14:04:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37096 "EHLO
+        id S239968AbiEISHg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 14:07:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239891AbiEISEH (ORCPT
+        with ESMTP id S240033AbiEISFt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 14:04:07 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E35923109D;
-        Mon,  9 May 2022 11:00:11 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id p18so17202892edr.7;
-        Mon, 09 May 2022 11:00:11 -0700 (PDT)
+        Mon, 9 May 2022 14:05:49 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F102313CA33;
+        Mon,  9 May 2022 11:01:52 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso81034pjg.0;
+        Mon, 09 May 2022 11:01:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=xRBXx928dagw+3e9EPYrB5itePsWk8eOmqf8pq2vamA=;
-        b=RNexsFbRx1gQtdbWYE5hw4OJCI3HtPhqPUD5BUFamEViXuYg5ZmePtst0py1FQddKo
-         JChc+QzblTpxWVJOpOS38IPJ1kKZc2Uf8lJuvh2Wvk8tsJVPJSIijstdRvFLjm30B8kN
-         JRYRTWHjrXWXjVAK3Y6PmVuZcLB1+XuJntTCdHMqPNJ9eW5HKmz74TmtfA2mEDM/be7d
-         vdBDKUE1bAH2yugKRz6iNCqdlTc/J/DkabnHJ+S9DczdhEVf5VeIbG9zwIa/HCeyECz3
-         xUeTSVWL29mSNK6Y5Yw4h/SLWYRJrxxOy7FMZN9cDEEtRCNG2ft4/nfx5fHqdgyzlorW
-         oDag==
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=Zr4sf3jMmMYEtunS1AGBN0+UBbxqzKWjBhRS7eCzWvU=;
+        b=kpaE3+pcIgmBhM8YMFL+srUugcyrQZd15pyIU9uVjAb3Lhku1yhOBaH3E3dcG1ajGt
+         d92ozd2RFpublhOQGdgvwPKF338HhuoG5sQzeRZcoLG/QGpgDovlxI4cGG8HlNrMM6tp
+         xIf3B70b3eQHR5L/bFGOjd6CM8NirgYmuQzvW9TunWBpoiwfyNGePZIt0vKheZ6+M3Yy
+         cm2PzIZjf6BqCRlTyFUTBJ7QpvlDtD4Vo9vyffzeU/a+iHZa/ndF9a5Ono57bqKgQOE7
+         AQ1DSY7Tnr0CZELPJNXjpl6SKR43CJvVmSFTvPX0gWcwnamc3qyvaOX0dl1bJlnmOtXY
+         Hq7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=xRBXx928dagw+3e9EPYrB5itePsWk8eOmqf8pq2vamA=;
-        b=L2s0/sotDe/Zus3qc24u1FpHd9Quk+HsrnZMEes7NetUoWXj0q3wqpPTavNbQpmuDV
-         FS7mqP1GLBRZlAPWSFIToZPpUqzt20B6PW6XIb9HJQBMcmIqSbGyFiCuFnUaI2VJryuV
-         wxlkbhu7QpYTiBlwQKSEjagB2eO0D2jl2TlIQpuHTf0x9TtzNQ5g/M/XCA0aN0FrB1lm
-         EA2A8u+/wGcHsVzr7dL8XMmMWmOIJHIaeD63zuQjpj3MZLoL0RBU1htVthBALkS6wf/v
-         9mew/7H86AjX9vDw/eTptjP3rOayp8ZplKngwQ1+d/Q8PRf9frT82AzN47EiqYUegeiX
-         wHeA==
-X-Gm-Message-State: AOAM533pRa1LkYlChnW8bLCTBXwkhRIexKejzpzVzxgSrP3UW5P+Iph/
-        a3FQTGyRqvPc9tJZzl68Q1/9KjkS5FZ+1PwDWj4yYRNYDZN4ckJfkso=
-X-Google-Smtp-Source: ABdhPJwTVcHGdp+naHV+dUtWIr1b/VP6pyxUqV4WzQ+FWdmKeMBYD9rAUysZKVyHEV9Cb99QhXlNT+9auh6Atk7H9k0=
-X-Received: by 2002:aa7:d350:0:b0:425:e029:da56 with SMTP id
- m16-20020aa7d350000000b00425e029da56mr18665027edr.296.1652119209687; Mon, 09
- May 2022 11:00:09 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=Zr4sf3jMmMYEtunS1AGBN0+UBbxqzKWjBhRS7eCzWvU=;
+        b=CeWSUAhn1DFg6aZNCPTOk5N7raB9mTXuYc71jsu7fR4UC9JA8C0DO3Zq1HQKugvjn4
+         f/USE2klhFwojFsAFynH1kFtvNffOEGmez4vJeUSHx+BoqZ7ihu2wlG56cbkXllH5cD4
+         oy1nTjuHru0EZE/DIPKs7BkEcQ+Fziru9/GqagTOd/+TyScTvTASH/B2LvMrX+KXPA5C
+         SdJ7T2FuRWulmK2MrwVxFbD1SGJmx49PXCOYeH0yRrmcgOJbD6SxQT0oPkL2HfyYtdkZ
+         P20MRECBPY+HAkFVmptap88XviNydzwJ8VopTl/aQd/ucoQY9ZcCRUjs8YLUqIr/VN7u
+         Qnkw==
+X-Gm-Message-State: AOAM530I6Nugo3MphZVzrYs/vPK9Y3ZQI27kZCer8Jak0am6f9Eho5kw
+        vS5meBko+y/NThI54Dlwtn4Ipp8wOCfcqg==
+X-Google-Smtp-Source: ABdhPJyFbQaoXUAhKpnfNQIcQWJd7U/PXfNQ+yWN8cCtKartLmD7dTH2hzlMAQqaxWfS3ClH0R4g+Q==
+X-Received: by 2002:a17:90b:4c03:b0:1dc:50f5:e291 with SMTP id na3-20020a17090b4c0300b001dc50f5e291mr19305931pjb.214.1652119312201;
+        Mon, 09 May 2022 11:01:52 -0700 (PDT)
+Received: from [172.30.1.40] ([14.32.163.5])
+        by smtp.gmail.com with ESMTPSA id 10-20020a170902c10a00b0015e8d4eb27esm141329pli.200.2022.05.09.11.01.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 09 May 2022 11:01:51 -0700 (PDT)
+Message-ID: <faad0f87-1367-3a6a-9b99-805feb422c91@gmail.com>
+Date:   Tue, 10 May 2022 03:01:45 +0900
 MIME-Version: 1.0
-References: <20220509172129.37770-1-andriy.shevchenko@linux.intel.com> <d76c13b2-16a0-d53f-0cc9-562fa96f373d@wanadoo.fr>
-In-Reply-To: <d76c13b2-16a0-d53f-0cc9-562fa96f373d@wanadoo.fr>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 9 May 2022 19:59:33 +0200
-Message-ID: <CAHp75Vca60m+mkPDzh022B4pU2sng8-ZLoEK0POLQON3EWjBKg@mail.gmail.com>
-Subject: Re: [PATCH v1 1/2] serial: 8250_dw: Use devm_add_action_or_reset()
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v3 2/4] PM / devfreq: Add cpu based scaling support to
+ passive governor
+Content-Language: en-US
+From:   Chanwoo Choi <cwchoi00@gmail.com>
+To:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     johnson.wang@mediatek.com, mka@chromium.org, wenst@chromium.org,
+        jia-wei.chang@mediatek.com, andrew-sh.cheng@mediatek.com,
+        hsinyi@chromium.org, saravanak@google.com, cw00.choi@samsung.com,
+        myungjoo.ham@samsung.com, kyungmin.park@samsung.com,
+        Saravana Kannan <skannan@codeaurora.org>,
+        Sibi Sankar <sibis@codeaurora.org>
+References: <20220509120337.92472-1-cw00.choi@samsung.com>
+ <20220509120337.92472-3-cw00.choi@samsung.com>
+In-Reply-To: <20220509120337.92472-3-cw00.choi@samsung.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 9, 2022 at 7:49 PM Christophe JAILLET
-<christophe.jaillet@wanadoo.fr> wrote:
-> Le 09/05/2022 =C3=A0 19:21, Andy Shevchenko a =C3=A9crit :
+On 22. 5. 9. 21:03, Chanwoo Choi wrote:
+> - * @this:	the devfreq instance of own device.
+> - * @nb:		the notifier block for DEVFREQ_TRANSITION_NOTIFIER list
+> + + * @parent_type	parent type of the device.
+> + + * @this:		the devfreq instance of own device.
+> + + * @nb:		the notifier block for DEVFREQ_TRANSITION_NOTIFIER or
+> + *			CPUFREQ_TRANSITION_NOTIFIER list.
+> + + * @cpu_data:		the state min/max/current frequency of all online cpu's
 
-...
+There are some mistake with unneeded '+'. It will be fixed on next
+version but anyway it doesn't affect the passive governor operation.
 
-> > +static void dw8250_clk_disable_unprepare(void *data)
-> > +{
-> > +     clk_disable_unprepare(data);
-> > +}
-
-> we already have several time this function in different drivers.
-> Maybe, it would be nice to have something standart for it.
->
-> A devm_clk_prepare_enable() or something devm-helpers.h ([1])
-
-Seems you missed the full story. We tried to add that several times
-[1] and CCF maintainers refused all the time. You may work with them
-to convince them.
-
-[1]: https://lore.kernel.org/linux-clk/20210304221247.488173-2-linux@rasmus=
-villemoes.dk/
-(the latest one AFAIK)
-
---=20
-With Best Regards,
-Andy Shevchenko
+-- 
+Best Regards,
+Samsung Electronics
+Chanwoo Choi
