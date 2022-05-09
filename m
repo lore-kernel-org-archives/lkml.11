@@ -2,118 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC48FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:17:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ABDBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:18:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232370AbiEIKVs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 06:21:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48300 "EHLO
+        id S233413AbiEIKV4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 06:21:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234121AbiEIKVO (ORCPT
+        with ESMTP id S234652AbiEIKVi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 06:21:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6810A18430F
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 03:17:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652091438;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        Mon, 9 May 2022 06:21:38 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0E5E18F270;
+        Mon,  9 May 2022 03:17:45 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 12B7F1F9F5;
+        Mon,  9 May 2022 10:07:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1652090865; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=8rAG+hhLyyADjfWKc/qIMa3fRClDqyFw6+rAc7ZUweE=;
-        b=TBY0qSgrMGaSblfpeABrbY52GYWqUpAD6/5ERWkmHINoqzkTfYmNY854ethXRQjzU3uNIm
-        IA2egAh9lQVLHeyi/z7ejkUHwzpJ6ZNLSDkA/79Ch6/3vBUlWaOcz0kltJGz2iTN4KPcwE
-        EIwojyGUMPiaVFIJ/Zkk/b2ad2FqFpg=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-209-L_zjo35DOUi2bLfkt6TIZQ-1; Mon, 09 May 2022 06:17:17 -0400
-X-MC-Unique: L_zjo35DOUi2bLfkt6TIZQ-1
-Received: by mail-ej1-f70.google.com with SMTP id qa15-20020a170907868f00b006f4c89bf2e3so6305402ejc.9
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 03:17:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8rAG+hhLyyADjfWKc/qIMa3fRClDqyFw6+rAc7ZUweE=;
-        b=1ZQ6nr07egpGvR4wynCeqpQdxePXsfrWGXLtcXsTQeaFbNariLYTSbyDPZTV+5aaGC
-         zTf2OsoqHuQa/q1sC/e2IjN80lbl0fKB/Lr+CtE5oAL2CRmSD2ARea2ksOkVzibFKfZ6
-         Ke69OUa22P6R/vTsWSCJ72byAxs1isc3GQL5IobecZpFKShWPGTG2PP1vJfdQtSirgSK
-         rB4bco8c1+tjrHCrhGKU2DEoLZtuvFM8mkdjxzT0hYPeoHOPNrc1XLl0KTvEZCSgTrcU
-         RVKiY+P1onQNtLEGj/6vgFt2M+aLgpohMnNWRjTXxVRmNZ4PHb7q4sikZH+t54aacg3g
-         bPAQ==
-X-Gm-Message-State: AOAM530yYakNAI5FdQXE5nk3zM9D/+dIiIuQK5ehf02LaRZqjwgJQZ2G
-        IFJBSPjJ25hotgRkMwp3u/JKRpKDXOEHFCw8DMH4e7azQn8HJA2e6jaqsSXmlQf6bgA29Xjk6gH
-        4fJyZaMvNl5iAM/sczUmy5CHNMzgALavmaPxwIOkz
-X-Received: by 2002:a50:d08b:0:b0:425:eb86:f36d with SMTP id v11-20020a50d08b000000b00425eb86f36dmr16301831edd.235.1652091436040;
-        Mon, 09 May 2022 03:17:16 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwWF5i0r1wWzRnyta1jc1Xzs8fjC2bR2GTrVWYAaiAIuMqphiWE9pkwqenZGV0+CFmZVoPSFTydmMUJBGOVC04=
-X-Received: by 2002:a50:d08b:0:b0:425:eb86:f36d with SMTP id
- v11-20020a50d08b000000b00425eb86f36dmr16301818edd.235.1652091435909; Mon, 09
- May 2022 03:17:15 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220508130944.17860-1-vdronoff@gmail.com> <3f16033ef08063ef9fcb707010e78bd0@linux.ibm.com>
-In-Reply-To: <3f16033ef08063ef9fcb707010e78bd0@linux.ibm.com>
-From:   Vlad Dronov <vdronov@redhat.com>
-Date:   Mon, 9 May 2022 12:17:04 +0200
-Message-ID: <CAMusb+Q11JMyOXV0iy4VLJ8yST7L0QrmDUJWOpnvsBxfBzjrdA@mail.gmail.com>
-Subject: Re: [PATCH] s390/crypto: add crypto library interface for ChaCha20
-To:     freude@linux.ibm.com
-Cc:     Patrick Steuer <patrick.steuer@de.ibm.com>,
-        Harald Freudenberger <freude@de.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        linux-crypto@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        bh=onb2w7bPIYEEL78XxSeaROmCWn+3/YkmTbagPJ1Pgf8=;
+        b=Jqjtv2RNi2Pnvh6ZM46IOI5TpfIsI8xYg4gLrijHFmjifSiQ7khCVsp0w6tCU1HZWfTACE
+        GWO1JDpuUblYxIJ+mHBm6lPxo2yHon13IorS8/Itz1rpOKgY5N6ItbplIIbBnzSw2lczpj
+        R0Msg/L01Qsvw3wGcmPwZUKZM7Lge54=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1652090865;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=onb2w7bPIYEEL78XxSeaROmCWn+3/YkmTbagPJ1Pgf8=;
+        b=Lk4zaFnrmOX/vKujOu7M4v9u8c2PHCQKNsPfqs2hDcYJo3j2DU+b4/61v8V6e8/YIqYUl6
+        y7atC+/QOOSJQBBA==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id E7ECF2C141;
+        Mon,  9 May 2022 10:07:44 +0000 (UTC)
+Date:   Mon, 09 May 2022 12:07:44 +0200
+Message-ID: <s5h35hjm32n.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Niklas Schnelle <schnelle@linux.ibm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        "moderated list:SOUND" <alsa-devel@alsa-project.org>
+Subject: Re: [RFC v2 31/39] sound: add HAS_IOPORT dependencies
+In-Reply-To: <CAK8P3a3_ppFRY7y4TL21kXfthcbFJmjMivfmH2r4Cqy_vAiesA@mail.gmail.com>
+References: <20220429135108.2781579-1-schnelle@linux.ibm.com>
+        <20220429135108.2781579-57-schnelle@linux.ibm.com>
+        <s5hczgnm6ia.wl-tiwai@suse.de>
+        <CAK8P3a3_ppFRY7y4TL21kXfthcbFJmjMivfmH2r4Cqy_vAiesA@mail.gmail.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Harald,
-
-Thank you for your response, review and an ACK. Let me ask Herbert if
-he would agree
-to add your Reviewed-by and submit (so I do not send v2 just for this).
-
-Best regards,
-Vladis
-
-
-On Mon, May 9, 2022 at 12:10 PM Harald Freudenberger
-<freude@linux.ibm.com> wrote:
->
-> On 2022-05-08 15:09, Vladis Dronov wrote:
-> > From: Vladis Dronov <vdronov@redhat.com>
+On Mon, 09 May 2022 11:20:33 +0200,
+Arnd Bergmann wrote:
+> 
+> On Mon, May 9, 2022 at 10:53 AM Takashi Iwai <tiwai@suse.de> wrote:
+> > On Fri, 29 Apr 2022 15:50:54 +0200, Niklas Schnelle wrote:
+> 
+> > >
+> > >  config SND_OPL3_LIB
+> > >       tristate
+> > > +     depends on HAS_IOPPORT
+> > >       select SND_TIMER
+> > >       select SND_HWDEP
+> > >       select SND_SEQ_DEVICE if SND_SEQUENCER != n
 > >
-> > Implement a crypto library interface for the s390-native ChaCha20
-> > cipher
-> > algorithm. This allows us to stop to select CRYPTO_CHACHA20 and instead
-> > select CRYPTO_ARCH_HAVE_LIB_CHACHA. This allows BIG_KEYS=y not to build
-> > a whole ChaCha20 crypto infrastructure as a built-in, but build a
-> > smaller
-> > CRYPTO_LIB_CHACHA instead.
+> > Both of those are the items to be reverse-selected, so cannot fulfill
+> > the dependency with depends-on.  That is, the items that select those
+> > should have the dependency on HAS_IOPORT instead.
 > >
-> > Make CRYPTO_CHACHA_S390 config entry to look like similar ones on other
-> > architectures. Remove CRYPTO_ALGAPI select as anyway it is selected by
-> > CRYPTO_SKCIPHER.
+> > That is, a change like below:
 > >
-> > Add a new test module and a test script for ChaCha20 cipher and its
-> > interfaces. Here are test results on an idle z15 machine:
+> > > --- a/sound/isa/Kconfig
+> > > +++ b/sound/isa/Kconfig
+> > > @@ -31,7 +31,7 @@ if SND_ISA
+> > >
+> > >  config SND_ADLIB
+> > >       tristate "AdLib FM card"
+> > > -     select SND_OPL3_LIB
+> > > +     depends on SND_OPL3_LIB
 > >
-> > ...skip...
->
-> Hello Vladis
-> Thanks for your work. Please add my
-> Reviewed-by: Harald Freudenberger <freude@linux.ibm.com>
->
-> however, always the question who will pick and forward this patch ?
-> To me this looks like most parts are common so I would suggest that
-> Herbert Xu  will pick this patch.
->
+> > ... won't work.  CONFIG_SND_OPL3_LIB is not enabled by itself but only
+> > to be selected.
+> 
+> Right, I missed that in my review. Not sure if this was a mistake in
+> my original patch or if it started in a later version.
+> 
+> I think for the ISA drivers, I would still add 'depends on HAS_IOPORT'
+> to both CONFIG_SND_ISA and CONFIG_SND_OPL3_LIB if only to
+> make it easier to understand, even though CONFIG_ISA requires
+> HAS_IOPORT already, and CONFIG_SND_OPL3_LIB cannot be
+> selected by itself.
 
+Yes, that makes sense.
+
+> For the PCI drivers, I think we need to add the same dependency
+> on anything that either selects SND_OPL3_LIB or calls inb()/outb()
+> directly.
+
+Agreed.
+
+
+thanks,
+
+Takashi
