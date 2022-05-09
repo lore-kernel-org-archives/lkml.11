@@ -2,94 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11E97C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 12:45:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F3F7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 12:45:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234759AbiEIMtc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 08:49:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53366 "EHLO
+        id S234781AbiEIMtj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 08:49:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234714AbiEIMt2 (ORCPT
+        with ESMTP id S234714AbiEIMtd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 08:49:28 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56E52284938
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 05:45:35 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id n10so1972237pjh.5
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 05:45:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ar2Vj24oKrFskuk8K65yXVdl6lIbOLvc0eVWOcD6t+c=;
-        b=nnWuCyCgeU00gREk1DyCY05rHLgGLZ/rT9oZPgiZAo7Q+lB+LRyfUfW3eOYoImFpnY
-         5HDPar0WbvEBHKvkHcZ0JGwuSrCRY1XkNLunyMFXBal2ElodsHTcSYkc8hsOZE6CBz/p
-         KnXlRxU2KL5Lw/Sg+bXWAqqrGHBT2l8pq1x7g5pHKBK9TiHMcC10yt8N3Jm7WeaFGvEV
-         0A/ptu7xszFMVk8w3PmZxtdUVwRKvEmfIUjmc8PuUg05uQ3Pa+W8eKWepaZMz0k+IJM5
-         +Yo28iIe5NMhW5SFxZ+JE4hWWTT39sa89nUB+SjTmYSW0S5VNlpMbGkIgiNvgTNpQh3q
-         KNMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ar2Vj24oKrFskuk8K65yXVdl6lIbOLvc0eVWOcD6t+c=;
-        b=jTSiJ4hPfcLOkUJZdPgWi04UosTenHB0jUMTcNcnXpdNhcyv8FUukq3mG2j995iI27
-         OvocSqTNo5JTK+R1xfu1svDuonA0DQ6VrXdn/S4+JD5AEyRh5ZtsN5hp23NfE5RSOhiY
-         Qsi2GUErfZut/RbXALlNOFldOl5RSswNzhwZKbieWbCHacS7i383/VlKBXhPb4Id+zvZ
-         yyOUjxeA4ZS96Dh8+R0OvIClmK7Iyotuz+O5NiCwDpkQnZZ3duOIPZBEL7ZGGKAZYztg
-         36/BuNlguHoflboZ7KcS2YjePLBQN93b5XBZDnV5zHZsxWszQVBYpN24Pv8vJsOwPzRv
-         mzuA==
-X-Gm-Message-State: AOAM533UflQfZsM0Fn3zufqL1gFwzj+4q0nuYRwKes+snEPqQECwo2BU
-        eSz+rS1BsUHxxV/gOeqnzUzlfw==
-X-Google-Smtp-Source: ABdhPJzC+TQUxUOojLESFYPuEi0T3KKewg2ciEREu5Jl/wvbgjtQHHIfnvoI9tdvGUfpFXsF1oS6sQ==
-X-Received: by 2002:a17:902:ec8a:b0:15e:967b:f928 with SMTP id x10-20020a170902ec8a00b0015e967bf928mr16511860plg.133.1652100334928;
-        Mon, 09 May 2022 05:45:34 -0700 (PDT)
-Received: from [10.255.89.252] ([139.177.225.255])
-        by smtp.gmail.com with ESMTPSA id q3-20020a656243000000b003c14af5062asm8398023pgv.66.2022.05.09.05.45.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 05:45:34 -0700 (PDT)
-Message-ID: <9d51e5fc-6ab1-84e0-9956-8a084e0d2110@bytedance.com>
-Date:   Mon, 9 May 2022 20:41:40 +0800
+        Mon, 9 May 2022 08:49:33 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 145E66470;
+        Mon,  9 May 2022 05:45:37 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id AAE8721C65;
+        Mon,  9 May 2022 12:45:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1652100336; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uxdYBcICunTkdG1/SZy4Mj77Rlogz32NSC76mGFVEuo=;
+        b=iMTlcR04lrEe/o6Q6GDqButIw/r/mlL+DMSlNj5I9j6b+FcSPexC4ruBKvBIjvxKwVcu7S
+        ijowgiRz4Gc01ky8uLa++hu1nSKJSAMb3UGqcUXUUaHF4jziLT7gE/2rQ11PVoZyVEvhrR
+        uP+cL+/wtRcez0uK+7liJZeajl7Ztx4=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1652100336;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uxdYBcICunTkdG1/SZy4Mj77Rlogz32NSC76mGFVEuo=;
+        b=6hO/yfUcvh0nQ/dTGt+CWenpMLD7fCl43zeVFALAfN+lai6gjRMhNr6v7EV6mIepa6+c00
+        aiF+MgOuPDRgD2DA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 83176132C0;
+        Mon,  9 May 2022 12:45:36 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id ujZhH/AMeWJuSwAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Mon, 09 May 2022 12:45:36 +0000
+Message-ID: <389399bd-cf9f-4d6a-76fb-1fea1c05171e@suse.cz>
+Date:   Mon, 9 May 2022 14:45:36 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: Re: [PATCH 0/3] nvme: enable smart AEN
+Subject: Re: [v3 PATCH 2/8] mm: khugepaged: remove redundant check for
+ VM_NO_KHUGEPAGED
 Content-Language: en-US
-To:     kbusch@kernel.org, hch@lst.de
-Cc:     sagi@grimberg.me, axboe@fb.com, linux-nvme@lists.infradead.org,
+To:     Yang Shi <shy828301@gmail.com>, kirill.shutemov@linux.intel.com,
+        linmiaohe@huawei.com, songliubraving@fb.com, riel@surriel.com,
+        willy@infradead.org, ziy@nvidia.com, tytso@mit.edu,
+        akpm@linux-foundation.org
+Cc:     linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <20220507065026.260306-1-pizhenwei@bytedance.com>
-From:   zhenwei pi <pizhenwei@bytedance.com>
-In-Reply-To: <20220507065026.260306-1-pizhenwei@bytedance.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <20220404200250.321455-1-shy828301@gmail.com>
+ <20220404200250.321455-3-shy828301@gmail.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220404200250.321455-3-shy828301@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On 4/4/22 22:02, Yang Shi wrote:
+> The hugepage_vma_check() called by khugepaged_enter_vma_merge() does
+> check VM_NO_KHUGEPAGED. Remove the check from caller and move the check
+> in hugepage_vma_check() up.
+> 
+> More checks may be run for VM_NO_KHUGEPAGED vmas, but MADV_HUGEPAGE is
+> definitely not a hot path, so cleaner code does outweigh.
+> 
+> Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
+> Acked-by: Song Liu <song@kernel.org>
+> Signed-off-by: Yang Shi <shy828301@gmail.com>
 
-Sorry, I misunderstand OAES[7:0], only the first patch "nvme: introduce 
-bit 5 of smart critical warning" is available.
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
 
-On 5/7/22 14:50, zhenwei pi wrote:
-> Hi,
+> ---
+>  mm/khugepaged.c | 9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
 > 
-> There are several changes in this series:
-> - Add missing NVME_SMART_CRIT_PMR_UNRELIABLE enum type.
-> - Add missing NVME_AEN_CFG_SMART_CRIT_* enum types.
-> - Enable smart AEN.
-> 
-> zhenwei pi (3):
->    nvme: introduce bit 5 of smart critical warning
->    nvme: introduce smart bits of aen cfg
->    nvme: enable smart AEN
-> 
->   drivers/nvme/host/core.c |  6 +++++-
->   include/linux/nvme.h     | 20 ++++++++++++++++----
->   2 files changed, 21 insertions(+), 5 deletions(-)
-> 
+> diff --git a/mm/khugepaged.c b/mm/khugepaged.c
+> index a4e5eaf3eb01..7d197d9e3258 100644
+> --- a/mm/khugepaged.c
+> +++ b/mm/khugepaged.c
+> @@ -365,8 +365,7 @@ int hugepage_madvise(struct vm_area_struct *vma,
+>  		 * register it here without waiting a page fault that
+>  		 * may not happen any time soon.
+>  		 */
+> -		if (!(*vm_flags & VM_NO_KHUGEPAGED) &&
+> -				khugepaged_enter_vma_merge(vma, *vm_flags))
+> +		if (khugepaged_enter_vma_merge(vma, *vm_flags))
+>  			return -ENOMEM;
+>  		break;
+>  	case MADV_NOHUGEPAGE:
+> @@ -445,6 +444,9 @@ static bool hugepage_vma_check(struct vm_area_struct *vma,
+>  	if (!transhuge_vma_enabled(vma, vm_flags))
+>  		return false;
+>  
+> +	if (vm_flags & VM_NO_KHUGEPAGED)
+> +		return false;
+> +
+>  	if (vma->vm_file && !IS_ALIGNED((vma->vm_start >> PAGE_SHIFT) -
+>  				vma->vm_pgoff, HPAGE_PMD_NR))
+>  		return false;
+> @@ -470,7 +472,8 @@ static bool hugepage_vma_check(struct vm_area_struct *vma,
+>  		return false;
+>  	if (vma_is_temporary_stack(vma))
+>  		return false;
+> -	return !(vm_flags & VM_NO_KHUGEPAGED);
+> +
+> +	return true;
+>  }
+>  
+>  int __khugepaged_enter(struct mm_struct *mm)
 
--- 
-zhenwei pi
