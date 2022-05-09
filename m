@@ -2,164 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C26A5C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06730C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:04:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235751AbiEIHGI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 03:06:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41736 "EHLO
+        id S235612AbiEIHFy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 03:05:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234937AbiEIGxx (ORCPT
+        with ESMTP id S231962AbiEIGxC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 02:53:53 -0400
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2135.outbound.protection.outlook.com [40.107.20.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E34119CED7;
-        Sun,  8 May 2022 23:49:59 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jx3EsVaDxiPSNqnq1X6dYXrE78Lx7BvSoY+zNRIeNsTE8NtuehKyr8ZUe2ao/Hes93wNU+jkC6qJBczpGgKW1gpMaKhfuNvz0ly+iAlB8DXyzvJANvMnC2s8nwB6+HYjPiCkI+1ZoXQp24Dp3Q43OVfc2lwTXCmR5MEG96NVnxk7LSK3wsounfqMxaqCp0r7gYOjKWL42j1geojYRTFeoXKEF0tLiTXTxz41TXItwsm0qF4EiJcbWFrP8ep6tf+/TKAzmjSFFEsTVePY1UQO78jTpo8Jw4m7rP0fD5FX7PNUEvox5ya3U/r/qT4JwTnh3/Iz5bxI0ttFBfGfaejsbw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EeSz0fhmgis+L/1a9AQDdLJzOKbEiClYIR70D3qiwPk=;
- b=e7DFETQsgYkXFMflDwmjAQdTnfVGhG06PUKKkIK2NuVwNzEgXl9mRGvjbe5GYdU3zKxXVtaAoj1U0khmuAKF6QVs41nJvcyJrznoPZ4SQ4IogOp8u64iPqncb8hiGTaeUtVMxOtPo5Qvs6g+NYwggR9I8AOudz3tJ8QTMft7+CJJ7wxM6KvTBwUHZbv+doBIORm3JfOX0BBNTE3d4Bexe8geEeXAddG5g66XqEzHV6+BIQDFQk3F4g1tiO3KUustD90cC9GuvEWrwuuzO+jO8upggl+hhWxN5K9w/WrPsqymYeF9R9fJfQH7sFk5z/cuSWL0LcP53iBLbXIg0NW0VA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 193.8.40.94) smtp.rcpttodomain=kernel.org
- smtp.mailfrom=leica-geosystems.com.cn; dmarc=pass (p=quarantine sp=quarantine
- pct=100) action=none header.from=leica-geosystems.com.cn; dkim=none (message
- not signed); arc=none
+        Mon, 9 May 2022 02:53:02 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0B6719877D
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 23:49:09 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id g6so24882755ejw.1
+        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 23:49:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=leica-geosystems.com.cn; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EeSz0fhmgis+L/1a9AQDdLJzOKbEiClYIR70D3qiwPk=;
- b=zr5ZVtGqlzH4V5qlg7aEfMV+FugYURewU/gJHTpm9NG0BO0z7IuZLbq7lQTdFTQKdllbLYEblZk3WyWXxEc1LBtz4OXswLofBuc9VqcO731UrXIF7VZJCRKtTPCIdGtHBDuc91dV9u0yfIchMddOa3qMNgjiXyJIC75miw3hxAw=
-Received: from BE0P281CA0006.DEUP281.PROD.OUTLOOK.COM (2603:10a6:b10:a::16) by
- DB6PR0602MB3271.eurprd06.prod.outlook.com (2603:10a6:6:10::32) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5227.23; Mon, 9 May 2022 06:49:37 +0000
-Received: from HE1EUR02FT040.eop-EUR02.prod.protection.outlook.com
- (2603:10a6:b10:a:cafe::a6) by BE0P281CA0006.outlook.office365.com
- (2603:10a6:b10:a::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13 via Frontend
- Transport; Mon, 9 May 2022 06:49:36 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 193.8.40.94)
- smtp.mailfrom=leica-geosystems.com.cn; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=leica-geosystems.com.cn;
-Received-SPF: Pass (protection.outlook.com: domain of leica-geosystems.com.cn
- designates 193.8.40.94 as permitted sender) receiver=protection.outlook.com;
- client-ip=193.8.40.94; helo=aherlnxbspsrv01.lgs-net.com;
-Received: from aherlnxbspsrv01.lgs-net.com (193.8.40.94) by
- HE1EUR02FT040.mail.protection.outlook.com (10.152.11.92) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5227.15 via Frontend Transport; Mon, 9 May 2022 06:49:36 +0000
-From:   LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
-To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
-        tomas.melin@vaisala.com, andy.shevchenko@gmail.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Qing-wu.Li@leica-geosystems.com.cn
-Cc:     linux-iio@vger.kernel.org
-Subject: [PATCH V4 4/5] iio: accel: sca3300: Add support for SCL3300
-Date:   Mon,  9 May 2022 06:49:27 +0000
-Message-Id: <20220509064928.2352796-5-Qing-wu.Li@leica-geosystems.com.cn>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220509064928.2352796-1-Qing-wu.Li@leica-geosystems.com.cn>
-References: <20220509064928.2352796-1-Qing-wu.Li@leica-geosystems.com.cn>
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Q1uIYNMhCGy4rHwwDKHArD0ERJS+cdwEigc/mkUrZDE=;
+        b=Mb0zfiXOc10IiOZfJPPokzGs7XcA/7jpw/OIqiOD+eKHEEsR1Q8LBthkF/q+eCNL29
+         CNGF1orY/xbxnus7pNzHJc2rJ4hOzmuJys+rDQCMyCEucN8qhlKgNcvURUdntg2LzHu7
+         7E7lQyEi2FDEMzsqYFb2X+SLS1EAc6JlpK5VkFRL+zO5uZKLmlpNioK4Fj60HzsZN1vX
+         ec7l2HQWwDeLv+WTTo+80RDvwoc1NYTcGHJmLSv7VC6l6mmS2ZGxNipWSLC08vksFOL0
+         /M3W0fCxSW7ck/tuBf9nezQw4LZIk2fYn+hF5ajNJZzP/Ex0N+VLa979LoJK3QdeyuSK
+         l13g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Q1uIYNMhCGy4rHwwDKHArD0ERJS+cdwEigc/mkUrZDE=;
+        b=0++coBNxRdKJnndKAOWqnOVr4s7dWh3AZfV6NJvsbTfos0/1FeMyp3mQy8bpz1Wdnz
+         MxEKniWplbHnxGP90bDrzJ2ICTN/rTVUPDo3wH7gVj49SQVzi6JgNPH1wYQAwM/JhsIT
+         EHrCYcnDhJxhWbx5eECpQ6Hb54BEi1M/YGqxOVvrs3cF3yutKRVxqLNe/iLzXvk4EGW6
+         eFGSKhwJmvHhoKZHKmEpbTkjgLnxwSj79FYrHkEQrL2WY1t1cmI5VxDBD5cNUlsoQqNM
+         pUXEi+EvRrIm0FiVyW97QEhtlI3yp69FnUEmsgVym55s+KVU4ByeS9WpBtd4PnYfttyq
+         ai5A==
+X-Gm-Message-State: AOAM5306S8dqnU7JaO22vvZXEUNdhCCNDikLgUe+ABaB2z69nBWDfbdI
+        VNtNDJEg1JchKdnkAjCKsUqkWQ==
+X-Google-Smtp-Source: ABdhPJyVxgI4jg1+VhdIEC/Y1keifAQgLTtp3IHMJw9n628QQP1fmw3bGVB7LsEt9DCpBaOcdsvJsw==
+X-Received: by 2002:a17:907:1623:b0:6f6:e9ce:9926 with SMTP id hb35-20020a170907162300b006f6e9ce9926mr10073326ejc.360.1652078934509;
+        Sun, 08 May 2022 23:48:54 -0700 (PDT)
+Received: from [192.168.0.242] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id e1-20020a1709062c0100b006f3ef214dafsm4714932ejh.21.2022.05.08.23.48.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 08 May 2022 23:48:53 -0700 (PDT)
+Message-ID: <41d6b00f-d8ac-ca54-99db-ea99c9049e0a@linaro.org>
+Date:   Mon, 9 May 2022 08:48:52 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: 6b2ec6bd-7029-49bb-93a0-08da3188152e
-X-MS-TrafficTypeDiagnostic: DB6PR0602MB3271:EE_
-X-Microsoft-Antispam-PRVS: <DB6PR0602MB32719692326EB5618DA8E23CD7C69@DB6PR0602MB3271.eurprd06.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: o0p7cFJRV3s1gM5TBDmmRtJxHDIcGHpx3z3JB0d99HzKpRwHfprwH+NST0grhnMC49KYyRY9wj4/g9Y5ACKmPIWBNfHYgglkbqdO8lvRTLZuND7s1faJJ9kRxXyvg3zRISBghd+6ABe++k4JvtzRegujf4S/t3uWpX2er+EZK7IMGx33mHeqee05v0OrJOaWvfneSSCNhmpf+Dfmd+WOAHpmqQijEKXKhUJbvhsvvKOlCcYhKrSM/PN3CHTU+JVdSkU+8OOlAi/dC69L4c5p+QQPsWQ4y+5ujaZEaK1B9b2T5uu1MG4HUPlFWcDMs3EU/CZUXACwl99ggjaQqg3y9n7jYiooztOWG9oC9DSb5AqErSlDgxYhGn/HTcHlJ7ZgR7Epr951kawmAVYsuRQrKI8RC0vfZ2SgSB7IDXIM79OEg5tWIZqR89Ijp8EHXinqjuKAI9OIfrDCDI0FMSQafc613o0jYccldWSVYI6zsc0Z2IWjstP4Ysip7lSvuactvKmSHWTtEL57rcWjjK2YZu+XzkNMwFXHXAoQuB+okGRbcfrukzmF2qeletECoDn1aAzpwnfBcnyV/KG1aJrKISbaakWMjvAnVZ5sS6sQ/ZDsnkYanbFgNCq/3UXFuk0mXDVxZ3ykRMDyMKwueMrCnamF025dq+FZjqGU2SqyELByqPJcmCCiFFxw/Dx+j1cu4NvYEjdxoZZXG94wnRZhqGquMv3j6k4gXywIzBwjVmaZ9oZLqPFJD3gxEjAt2osLvTbctAwwk3RdZdhJpAE4Zg==
-X-Forefront-Antispam-Report: CIP:193.8.40.94;CTRY:CH;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:aherlnxbspsrv01.lgs-net.com;PTR:ahersrvdom50.leica-geosystems.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(40460700003)(6506007)(956004)(15974865002)(6666004)(2906002)(2616005)(36860700001)(356005)(82310400005)(6512007)(8936002)(86362001)(36756003)(508600001)(26005)(4326008)(8676002)(6486002)(1076003)(81166007)(118246002)(5660300002)(186003)(36736006)(316002)(336012)(70206006)(47076005)(70586007);DIR:OUT;SFP:1102;
-X-OriginatorOrg: leica-geosystems.com.cn
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2022 06:49:36.2190
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6b2ec6bd-7029-49bb-93a0-08da3188152e
-X-MS-Exchange-CrossTenant-Id: 1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a;Ip=[193.8.40.94];Helo=[aherlnxbspsrv01.lgs-net.com]
-X-MS-Exchange-CrossTenant-AuthSource: HE1EUR02FT040.eop-EUR02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0602MB3271
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v3 5/6] dt-bindings: net: dsa: make reset optional and add
+ rgmii-mode to mt7531
+Content-Language: en-US
+To:     Peter Geis <pgwipeout@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>
+Cc:     Heiko Stuebner <heiko@sntech.de>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        Frank Wunderlich <linux@fw-web.de>,
+        linux-mediatek@lists.infradead.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        arm-mail-list <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Ungerer <gerg@kernel.org>,
+        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+References: <20220507170440.64005-1-linux@fw-web.de>
+ <06157623-4b9c-6f26-e963-432c75cfc9e5@linaro.org>
+ <DC0D3996-DFFE-4E71-B843-8D34C613D498@public-files.de>
+ <2509116.Lt9SDvczpP@phil>
+ <trinity-7f04b598-0300-4f3c-80e7-0c2145e8ba8f-1652011928036@3c-app-gmx-bap68>
+ <CAMdYzYrG8bK-Yo15RjhhCQKS4ZQW53ePu1q4gbGxVVNKPJHBWg@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAMdYzYrG8bK-Yo15RjhhCQKS4ZQW53ePu1q4gbGxVVNKPJHBWg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for Murata SCL3300, a 3-axis MEMS accelerometer.
-Same as SCA3300, it has the accelerometer and temperature output.
-Datasheet:
-www.murata.com/en-us/products/sensor/inclinometer/overview/lineup/scl3300
+On 08/05/2022 19:04, Peter Geis wrote:
+> On Sun, May 8, 2022 at 8:12 AM Frank Wunderlich <frank-w@public-files.de> wrote:
+>>>
+>>> I think the issue is more for the description itself.
+>>>
+>>> Devicetree is only meant to describe the hardware and does in general don't
+>>> care how any firmware (Linux-kernel, *BSD, etc) handles it. So going with
+>>> "the kernel does it this way" is not a valid reason for a binding change ;-) .
 
-Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
----
- drivers/iio/accel/sca3300.c | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+Exactly. The argument in commit msg was not matching the change, because
+driver implementation should not be (mostly) a reason for such changes.
 
-diff --git a/drivers/iio/accel/sca3300.c b/drivers/iio/accel/sca3300.c
-index 39e6f9f162f2..618991c8da92 100644
---- a/drivers/iio/accel/sca3300.c
-+++ b/drivers/iio/accel/sca3300.c
-@@ -38,6 +38,7 @@
- /* Device ID */
- #define SCA3300_REG_WHOAMI	0x10
- #define SCA3300_WHOAMI_ID	0x51
-+#define SCL3300_WHOAMI_ID	0xC1
- 
- /* Device return status and mask */
- #define SCA3300_VALUE_RS_ERROR	0x3
-@@ -96,10 +97,18 @@ static const struct iio_chan_spec sca3300_channels[] = {
- static const int sca3300_lp_freq[] = {70, 10};
- static const int sca3300_lp_freq_map[] = {0, 0, 0, 1};
- 
-+static const int scl3300_lp_freq[] = {40, 70, 10};
-+static const int scl3300_lp_freq_map[] = {0, 1, 2};
-+
- static const int sca3300_accel_scale[][2] = {{0, 370}, {0, 741}, {0, 185}};
- static const int sca3300_accel_scale_map[] = {0, 1, 2, 2};
- 
-+static const int scl3300_accel_scale[][2] = {{0, 167}, {0, 333}, {0, 83}};
-+static const int scl3300_accel_scale_map[] = {0, 1, 2};
-+
- static const int sca3300_avail_modes_map[] = {0, 1, 2, 3};
-+static const int scl3300_avail_modes_map[] = {0, 1, 3};
-+
- static const unsigned long sca3300_scan_masks[] = {
- 	BIT(SCA3300_ACC_X) | BIT(SCA3300_ACC_Y) | BIT(SCA3300_ACC_Z) |
- 	BIT(SCA3300_TEMP),
-@@ -157,6 +166,20 @@ static const struct sca3300_chip_info sca3300_chip_tbl[] = {
- 		.name = "sca3300",
- 		.chip_id = SCA3300_WHOAMI_ID,
- 	},
-+	{	.channels = sca3300_channels,
-+		.num_channels = ARRAY_SIZE(sca3300_channels),
-+		.scan_masks = sca3300_scan_masks,
-+		.accel_scale = scl3300_accel_scale,
-+		.accel_scale_map = scl3300_accel_scale_map,
-+		.num_accel_scales = ARRAY_SIZE(scl3300_accel_scale)*2,
-+		.freq_table = scl3300_lp_freq,
-+		.freq_map = scl3300_lp_freq_map,
-+		.num_freqs = ARRAY_SIZE(scl3300_lp_freq),
-+		.avail_modes_table = scl3300_avail_modes_map,
-+		.num_avail_modes = 3,
-+		.name = "scl3300",
-+		.chip_id = SCL3300_WHOAMI_ID,
-+	},
- };
- 
- DECLARE_CRC8_TABLE(sca3300_crc_table);
-@@ -556,6 +579,7 @@ static int sca3300_probe(struct spi_device *spi)
- 
- static const struct of_device_id sca3300_dt_ids[] = {
- 	{ .compatible = "murata,sca3300"},
-+	{ .compatible = "murata,scl3300"},
- 	{}
- };
- MODULE_DEVICE_TABLE(of, sca3300_dt_ids);
--- 
-2.25.1
+>>>
+>>> Instead in general want to reason that there are boards without this reset
+>>> facility and thus make it optional for those.
+>>
+>> if only the wording is the problem i try to rephrase it from hardware PoV.
+>>
+>> maybe something like this?
+>>
+>> https://github.com/frank-w/BPI-R2-4.14/commits/5.18-mt7531-mainline2/Documentation/devicetree/bindings/net/dsa/mediatek%2Cmt7530.yaml
 
+Looks ok.
+
+>>
+>> Another way is maybe increasing the delay after the reset (to give more time all
+>> come up again), but imho it is no good idea resetting the gmac/mdio-bus from the
+>> child device.
+>>
+>> have not looked into the gmac driver if this always  does the initial reset to
+>> have a "clean state". In this initial reset the switch will be resetted too
+>> and does not need an additional one which needs the gmac/mdio initialization
+>> to be done again.
+> 
+> For clarification, the reset gpio line is purely to reset the phy.
+> If having the switch driver own the reset gpio instead of the gmac
+> breaks initialization that means there's a bug in the gmac driver
+> handling phy init.
+> In testing I've seen issues moving the reset line to the mdio node
+> with other phys and the stmmac gmac driver, so I do believe this is
+> the case.
+
+Yes, this seems reasonable, although Frank mentioned that reset is
+shared with gmac, so it resets some part of it as well?
+
+
+
+
+Best regards,
+Krzysztof
