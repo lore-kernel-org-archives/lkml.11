@@ -2,135 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16090C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25D51C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 03:49:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233383AbiEIDvu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 23:51:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43898 "EHLO
+        id S233555AbiEIDvy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 23:51:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229689AbiEIDm6 (ORCPT
+        with ESMTP id S233278AbiEIDrc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 23:42:58 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8608AD11F;
-        Sun,  8 May 2022 20:39:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1652067541; x=1683603541;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Eec18//IsPwyC++u7RUnbqlmOOXMwJSxguy1wuaYhpw=;
-  b=we78HVW9HlOQ/CHVIvPONMrWOEGsHpG9ajgN3+52cChGpxoq7sE2QWfd
-   2tZuSSPTFCrPxCTZD5mGFfA47RMAmrtnxhSLio9EKj+2wmPbvv2F4RBht
-   /xuSguEi6tos0JA23AJfVDJHOnADtepgXVed+iRan6Y3Bd+7lv/EaipsR
-   U=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 08 May 2022 20:38:53 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2022 20:38:53 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Sun, 8 May 2022 20:38:53 -0700
-Received: from hu-pkondeti-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Sun, 8 May 2022 20:38:47 -0700
-Date:   Mon, 9 May 2022 09:08:43 +0530
-From:   Pavan Kondeti <quic_pkondeti@quicinc.com>
-To:     Matthias Kaehlcke <mka@chromium.org>
-CC:     Krishna Kurapati <quic_kriskura@quicinc.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Andy Gross" <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        <devicetree@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-pm@vger.kernel.org>, <quic_pkondeti@quicinc.com>,
-        <quic_ppratap@quicinc.com>, <quic_vpulyala@quicinc.com>
-Subject: Re: [v15 2/6] usb: host: xhci-plat: Enable wakeup based on children
- wakeup status
-Message-ID: <20220509033843.GB9170@hu-pkondeti-hyd.qualcomm.com>
-References: <1651740973-7944-1-git-send-email-quic_kriskura@quicinc.com>
- <1651740973-7944-3-git-send-email-quic_kriskura@quicinc.com>
- <YnVAZSZYQvIJxOHv@google.com>
+        Sun, 8 May 2022 23:47:32 -0400
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 050127FF48
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 20:43:38 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id F14E15C0107;
+        Sun,  8 May 2022 23:43:35 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Sun, 08 May 2022 23:43:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
+         s=fm2; t=1652067815; x=1652154215; bh=nG582K4noeUxWpsuv0Rzqrrhj
+        CwgaWDqNW0bQwfFnVA=; b=i+lZR/vLOZ7l6H6J80E3KhbQ6mKbiedfZsJVspJO8
+        YM3/aeOeVb4EUHTHGeWVxT3MKLvxYUrx7HZ0yKKtAV2haLZRQwQBgHwdQQKk/11p
+        D5xNgtUgslVdKjn+mT830eYVJWeRi6jFg0I8pBAzExdL4wfo6xyZwRbTAxQ8tFjP
+        ejq9zbSFWqR4znpYKeMtF0ECf/XRLGZp/Qan+bmZraPxgGaKo+Dzy18P7yo+A5vl
+        FxVwAUju78BZVF7hZhoW8P+GxcSKKCmJfZ/tNBu0jXIMrUk2ZSa0ebFjXDim19+D
+        K2MRIs4uzpbjLjDt+zN19mZCxvLSK5axz2FkeGdqdu9sg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :from:from:in-reply-to:message-id:mime-version:reply-to:sender
+        :subject:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender
+        :x-me-sender:x-sasl-enc; s=fm1; t=1652067815; x=1652154215; bh=n
+        G582K4noeUxWpsuv0RzqrrhjCwgaWDqNW0bQwfFnVA=; b=Q5ALO86nXXK0ltJwo
+        VJNcvDI+EukCCwKujZpklyW4Sj26KwpwJuQZNL1OdZsD1xl9R0+3RgvZ3qH/Lvsp
+        tqgu6/jc/Irs6E3ypEmI/nbCsUa6WWi5zYF5qx9HkM5C2lu7ATMLQccdphaN5ERX
+        hjEHGOBbCaEwFpXGaSEiSMtIJoX+WkGBUAd9Ko13sXD4u2xoOgZT3DB6Wu5pzovc
+        mCd4Y+UxA2lzG3WL/3HojdftP0Del5KfS+9TtUBHD9M73bd5wQhFcW+a5HKVi5NU
+        Y8gkQUnrhj3uQrHdYU+wsxGffJx63Mbrn7yCbUvL14CoSyZVkgMQ6Iy8Dd87sRfS
+        ujnWQ==
+X-ME-Sender: <xms:5414YjRZQRPISvciOddcMux8SbpZGVA9eAGY4p_A0NHqZxNyl6B3KA>
+    <xme:5414YkzP3YRij9xyj1bRVYT__V9GGCmMrLkOUictYmLor4sQ1PDcW9zAg-NHF7pDb
+    vmfw9v53ja99lv3Lw>
+X-ME-Received: <xmr:5414Yo3jH9SCIEbcKec3F2APJf5gWr6CvqaOH2ql_kBCqaCo9USQgM8vDJuq5aHtkswBssewm_zyFawaxIgZyrKVBtwnkYDgvE02TU9eanyh-mlYQH6BS-hSDIrulx_ESbIMMg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfeekgdejhecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgvlhcu
+    jfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtffrrg
+    htthgvrhhnpeekveelhfejueelleetvdejvdeffeetgeelheeujeffhefgffefkeehhffh
+    keekgeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
+X-ME-Proxy: <xmx:5414YjD940h3lkM_OpydnX6bcGwX772OfGtnWem4Q_hdEn4v6lPPyw>
+    <xmx:5414YsixDyNMdGR0JhiPwDi7r_HrtplPyXiBKFLKtqM516doOgoIIw>
+    <xmx:5414Ynr-rtw6v8C1TaPDFI0HAGSh_vDIkdhRBYPHwO2LIa8Nn9TldA>
+    <xmx:5414YrRLag4J_YyiAxnhKnPsweK68wp4edlRqzQKoQGmCTJYnrAQZg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 8 May 2022 23:43:34 -0400 (EDT)
+From:   Samuel Holland <samuel@sholland.org>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+Cc:     Samuel Holland <samuel@sholland.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Guo Ren <guoren@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Wei Xu <xuwei5@hisilicon.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org
+Subject: [PATCH 0/5] genirq/irqchip: RISC-V PLIC cleanup and optimization
+Date:   Sun,  8 May 2022 22:43:28 -0500
+Message-Id: <20220509034333.60017-1-samuel@sholland.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <YnVAZSZYQvIJxOHv@google.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 06, 2022 at 08:36:31AM -0700, Matthias Kaehlcke wrote:
-> On Thu, May 05, 2022 at 02:26:09PM +0530, Krishna Kurapati wrote:
-> > device_wakeup_path() tells if any of the children devices needs
-> > wakeup. Use this hint to enable/disable wakeup of our device. This
-> > helps the parent device of xhci-plat (like sysdev) to retrieve
-> > the wakeup setting via device_wakeup_path().
-> > 
-> > Signed-off-by: Krishna Kurapati <quic_kriskura@quicinc.com>
-> > ---
-> >  drivers/usb/host/xhci-plat.c | 8 ++++++++
-> >  1 file changed, 8 insertions(+)
-> > 
-> > diff --git a/drivers/usb/host/xhci-plat.c b/drivers/usb/host/xhci-plat.c
-> > index 649ffd8..ad585fa 100644
-> > --- a/drivers/usb/host/xhci-plat.c
-> > +++ b/drivers/usb/host/xhci-plat.c
-> > @@ -415,6 +415,14 @@ static int __maybe_unused xhci_plat_suspend(struct device *dev)
-> >  	if (pm_runtime_suspended(dev))
-> >  		pm_runtime_resume(dev);
-> >  
-> > +	if (device_wakeup_path(dev)) {
-> > +		if (!device_may_wakeup(dev))
-> > +			device_wakeup_enable(dev);
-> > +	} else {
-> > +		if (device_may_wakeup(dev))
-> > +			device_wakeup_disable(dev);
-> > +	}
-> 
-> This code is not self-explantatory and deserves a comment.
-> 
-> Enabling/disabling wakeup for the purpose if signalling is a bit of a
-> hack. It might be an acceptable hack as long as it has no side effects.
-> However with the current implementation the wakeup state of the xHCI can
-> be different after resuming than it was before going to suspend:
-> 
-> after boot
->   grep -h xhci /sys/class/wakeup/*/name
->     => xhci-hcd.14.auto
-> 
-> after suspend w/o wakeup capable device
->   grep -h xhci /sys/class/wakeup/*/name
->     => no results
-> 
-> after suspend with wakeup capable device
->   grep -h xhci /sys/class/wakeup/*/name
->     => xhci-hcd.14.auto
-> 
-> The hack shouldn't alter the wakeup state 'persistently', i.e. you'll have
-> to restore it on resume, as in Pavan does in his reply to '[PATCH v14 2/7]
-> PM / wakeup: Add device_children_wakeup_capable()' (it needs to be done
-> conditionally though).
+This series removes the splinlocks and cpumask operations from the PLIC
+driver's hot path. To do that, it first makes the IRQ affinity mask
+behavior more consistent between uniprocessor and SMP configurations.
+(The Allwinner D1 is a uniprocessor SoC containing a PLIC.)
 
-I am worried that we are not doing the right thing here. why should the
-xhci-plat goes against the wishes of the user space policy here? Can we NOT
-just do anything here? If some one wants xhci-plat to wakeup all the time,
-dwc3 will be configured to wakeup the system provided that the support is
-available. This way we don't break any existing users of xhci-plat i.e not
-enabling wakeup from the kernel.
+A further optimization is to take advantage of the fact that multiple
+IRQs can be claimed at once. This allows removing the mask operations
+for oneshot IRQs -- i.e. the combination of IRQCHIP_ONESHOT_SAFE and
+IRQCHIP_EOI_THREADED, which is not currently supported. I will send
+this as a separate series, since it makes more invasive changes to the
+generic IRQ code.
 
-Thanks,
-Pavan
+
+Samuel Holland (5):
+  genirq: GENERIC_IRQ_EFFECTIVE_AFF_MASK depends on SMP
+  genirq: Refactor accessors to use irq_data_get_affinity_mask
+  genirq: Provide an IRQ affinity mask in non-SMP configs
+  irqchip/sifive-plic: Make better use of the effective affinity mask
+  irqchip/sifive-plic: Separate the enable and mask operations
+
+ arch/arm/mach-hisi/Kconfig        |  2 +-
+ drivers/irqchip/Kconfig           | 15 ++++----
+ drivers/irqchip/irq-sifive-plic.c | 61 ++++++++++++++++---------------
+ include/linux/irq.h               | 20 ++++++----
+ kernel/irq/Kconfig                |  1 +
+ 5 files changed, 54 insertions(+), 45 deletions(-)
+
+-- 
+2.35.1
+
