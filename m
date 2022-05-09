@@ -2,114 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B97CC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9255C4707F
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 01:29:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234360AbiEIBbS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 21:31:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40690 "EHLO
+        id S235470AbiEIBbu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 21:31:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235130AbiEIA3x (ORCPT
+        with ESMTP id S234318AbiEIAHW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 20:29:53 -0400
-Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D75167663
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 17:25:59 -0700 (PDT)
-Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id BEE878209D;
-        Mon,  9 May 2022 02:25:55 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1652055956;
-        bh=IC6HtACtxaNOv2PNkGQVyQk9T3ik9WinMG8LB9UQtUk=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=zLkDm04wTHaqGRE9Y54uCDxs/ZJIdG9qin1zf+VmqTEQ5zcFpSSo3Brin9GX5Imx5
-         EsHVLENGnj+sHkh/ptqXckSM4dZW0LAFirC7n4s571QpyHsaaIUX9SsMamy5G4PdQ0
-         Rt+NUfdSkuZvAi1B/O5UBJ8xTkMqMANQrEY8S0ZurDTWw3IkGViR3F3st/c2lk9xAt
-         4lhEeYO36sBygze2fyJ46C0vZo0Ew88Pcu07ynGIoDuKJ38USdlVbc3X/wPpP9oZbi
-         OgJsSj8lMvNIcrAOwdki9v6heLKsVNsc15ziMol9+IuigA+ZJSi85PfQU4Lbi8X/pl
-         j+KkdTuQwy7Ag==
-Message-ID: <f2b04356-c08b-4e44-4552-1fa6ee94ceba@denx.de>
-Date:   Mon, 9 May 2022 02:25:55 +0200
+        Sun, 8 May 2022 20:07:22 -0400
+Received: from mail104.syd.optusnet.com.au (mail104.syd.optusnet.com.au [211.29.132.246])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CCB33DEF1;
+        Sun,  8 May 2022 17:03:29 -0700 (PDT)
+Received: from dread.disaster.area (pa49-181-2-147.pa.nsw.optusnet.com.au [49.181.2.147])
+        by mail104.syd.optusnet.com.au (Postfix) with ESMTPS id 88BAC52DCAB;
+        Mon,  9 May 2022 10:03:28 +1000 (AEST)
+Received: from dave by dread.disaster.area with local (Exim 4.92.3)
+        (envelope-from <david@fromorbit.com>)
+        id 1nnqs2-009h1M-Jk; Mon, 09 May 2022 10:03:26 +1000
+Date:   Mon, 9 May 2022 10:03:26 +1000
+From:   Dave Chinner <david@fromorbit.com>
+To:     Carel Si <beibei.si@intel.com>
+Cc:     lkp@intel.com, linux-kernel@vger.kernel.org, lkp@lists.01.org,
+        fengwei.yin@intel.com, linux-xfs@vger.kernel.org,
+        oliver.sang@intel.com
+Subject: Re: [LKP] Re: [xfs]  32678f1513:  aim7.jobs-per-min -5.6% regression
+Message-ID: <20220509000326.GN1098723@dread.disaster.area>
+References: <20220502082018.1076561-2-david@fromorbit.com>
+ <20220506092250.GI23061@xsang-OptiPlex-9020>
+ <20220506212924.GJ1098723@dread.disaster.area>
+ <20220507110941.GA10880@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re:
- [broonie-ci:20220430_marex_regmap_add_bulk_read_write_callbacks_into_regmap_config
- 1/1] drivers/base/regmap/regmap.c:1842 _regmap_raw_write_impl() error: we
- previously assumed 'map->bus' could be null (see line 1770)
-Content-Language: en-US
-To:     Dan Carpenter <dan.carpenter@oracle.com>, kbuild@lists.01.org
-Cc:     lkp@intel.com, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>
-References: <202205060518.hir67qzc-lkp@intel.com>
-From:   Marek Vasut <marex@denx.de>
-In-Reply-To: <202205060518.hir67qzc-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.103.5 at phobos.denx.de
-X-Virus-Status: Clean
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220507110941.GA10880@linux.intel.com>
+X-Optus-CM-Score: 0
+X-Optus-CM-Analysis: v=2.4 cv=deDjYVbe c=1 sm=1 tr=0 ts=62785a51
+        a=ivVLWpVy4j68lT4lJFbQgw==:117 a=ivVLWpVy4j68lT4lJFbQgw==:17
+        a=8nJEP1OIZ-IA:10 a=oZkIemNP1mAA:10 a=NEAV23lmAAAA:8 a=VwQbUJbxAAAA:8
+        a=7-415B0cAAAA:8 a=OIWXXrKM4WwZCH1KPDMA:9 a=wPNLvfGTeEIA:10
+        a=AjGcO6oz07-iQ99wixmX:22 a=biEYGPWJfzWAr4FL6Ov7:22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/6/22 09:12, Dan Carpenter wrote:
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/ci.git 20220430_marex_regmap_add_bulk_read_write_callbacks_into_regmap_config
-> head:   d77e745613680c54708470402e2b623dcd769681
-> commit: d77e745613680c54708470402e2b623dcd769681 [1/1] regmap: Add bulk read/write callbacks into regmap_config
-> config: m68k-randconfig-m031-20220505 (https://download.01.org/0day-ci/archive/20220506/202205060518.hir67qzc-lkp@intel.com/config)
-> compiler: m68k-linux-gcc (GCC) 11.3.0
+On Sat, May 07, 2022 at 07:09:46PM +0800, Carel Si wrote:
+> Hi Dave,
 > 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> On Sat, May 07, 2022 at 07:29:24AM +1000, Dave Chinner wrote:
+> > On Fri, May 06, 2022 at 05:22:50PM +0800, kernel test robot wrote:
+> > > 
+> > > 
+> > > Greeting,
+> > > 
+> > > FYI, we noticed a -5.6% regression of aim7.jobs-per-min due to commit:
+> > > 
+> > > 
+> > > commit: 32678f151338b9a321e9e27139a63c81f353acb7 ("[PATCH 1/4] xfs: detect self referencing btree sibling pointers")
+> > > url: https://github.com/intel-lab-lkp/linux/commits/Dave-Chinner/xfs-fix-random-format-verification-issues/20220502-162206
+> > > base: https://git.kernel.org/cgit/fs/xfs/xfs-linux.git for-next
+> > > patch link: https://lore.kernel.org/linux-xfs/20220502082018.1076561-2-david@fromorbit.com
+> > 
+> > Well, that answers the concern I had about the impact of 
+> > changing the way endian conversions were done in that patch.
+> > 
+> > > a44a027a8b2a20fe 32678f151338b9a321e9e27139a 
+> > > ---------------- --------------------------- 
+> > >          %stddev     %change         %stddev
+> > >              \          |                \  
+> > >     464232            -5.6%     438315        aim7.jobs-per-min
+> > ....
+> > >       0.13 ±  5%      +0.2        0.33 ±  6%  perf-profile.children.cycles-pp.__xfs_btree_check_sblock
+> > ....
+> > >       0.11 ±  4%      +0.2        0.30 ±  5%  perf-profile.self.cycles-pp.__xfs_btree_check_sblock
+> > 
+> > Because there is it, right at the bottom of the profile.
+> > 
+> > Can you try the patch below and see if that fixes the issue?
 > 
-> New smatch warnings:
-> drivers/base/regmap/regmap.c:1842 _regmap_raw_write_impl() error: we previously assumed 'map->bus' could be null (see line 1770)
-> 
-> vim +1842 drivers/base/regmap/regmap.c
+> We tested below patch, it didn't fix the issue, still has -6.4% regression [1] 
+> comparing to a44a027a8b ("Merge tag 'large-extent-counters-v9' of 
+> https://github.com/chandanr/linux into xfs-5.19-for-next"). 
 
-[...]
+Really? It made the regression *worse*?
 
-> 0074f3f2b1e43d Colin Foster        2022-03-13  1754  	reg += map->reg_base;
-> 86fc59ef818beb Colin Foster        2022-03-13  1755  	reg >>= map->format.reg_downshift;
-> d939fb9a78b474 Marc Reilly         2012-03-16  1756  	map->format.format_reg(map->work_buf, reg, map->reg_shift);
-> f50e38c9966076 Tony Lindgren       2016-09-15  1757  	regmap_set_work_buf_flag_mask(map, map->format.reg_bytes,
-> f50e38c9966076 Tony Lindgren       2016-09-15  1758  				      map->write_flag_mask);
-> 6f306441e97f8f Lars-Peter Clausen  2011-09-05  1759
-> 651e013e3ce6c0 Mark Brown          2013-10-08  1760  	/*
-> 651e013e3ce6c0 Mark Brown          2013-10-08  1761  	 * Essentially all I/O mechanisms will be faster with a single
-> 651e013e3ce6c0 Mark Brown          2013-10-08  1762  	 * buffer to write.  Since register syncs often generate raw
-> 651e013e3ce6c0 Mark Brown          2013-10-08  1763  	 * writes of single registers optimise that case.
-> 651e013e3ce6c0 Mark Brown          2013-10-08  1764  	 */
-> 651e013e3ce6c0 Mark Brown          2013-10-08  1765  	if (val != work_val && val_len == map->format.val_bytes) {
-> 651e013e3ce6c0 Mark Brown          2013-10-08  1766  		memcpy(work_val, val, map->format.val_bytes);
-> 651e013e3ce6c0 Mark Brown          2013-10-08  1767  		val = work_val;
-> 651e013e3ce6c0 Mark Brown          2013-10-08  1768  	}
-> 651e013e3ce6c0 Mark Brown          2013-10-08  1769
-> d77e745613680c Marek Vasut         2022-04-30 @1770  	if (map->async && map->bus && map->bus->async_write) {
->                                                                            ^^^^^^^^
-> Do we really need to check map->bus?
+Oh, wait, *that* wasn't in the last set of profiles:
 
-Here I think so, because bus can be NULL.
+....
+>      35.30 ±  4%      +1.3       36.59 ±  3%      +1.9       37.24 ±  3%  perf-profile.children.cycles-pp.osq_lock
+>      36.88 ±  4%      +1.3       38.19 ±  2%      +1.9       38.83 ±  3%  perf-profile.children.cycles-pp.rwsem_optimistic_spin
+>      37.40 ±  4%      +1.4       38.77 ±  2%      +2.0       39.35 ±  3%  perf-profile.children.cycles-pp.rwsem_down_write_slowpath
+....
+>       1.89 ±  3%      +0.1        1.96 ±  4%      +0.0        1.90 ±  2%  perf-profile.self.cycles-pp.rwsem_spin_on_owner
+>       0.11 ±  4%      +0.2        0.30 ±  5%      +0.2        0.29        perf-profile.self.cycles-pp.__xfs_btree_check_sblock
+>      35.08 ±  4%      +1.3       36.33 ±  2%      +1.9       37.01 ±  3%  perf-profile.self.cycles-pp.osq_lock
 
-[...]
+This test is hammering an rwsem which is them spinning on exclusive
+write locks somewhere. That's where all the increase in system time
+has come from, and that's what's causing the difference in
+perofrmance. I bet this test is hammering single file write IO from
+all 96 CPUs at once, and that's where all the problems start.
 
-> c6b570d97c0e77 Philipp Zabel       2015-03-09  1831  	trace_regmap_hw_write_start(map, reg, val_len / map->format.val_bytes);
-> fb2736bbaee0e7 Mark Brown          2011-07-24  1832
-> 2547e201b3693f Mark Brown          2011-07-20  1833  	/* If we're doing a single register write we can probably just
-> 2547e201b3693f Mark Brown          2011-07-20  1834  	 * send the work_buf directly, otherwise try to do a gather
-> 2547e201b3693f Mark Brown          2011-07-20  1835  	 * write.
-> 2547e201b3693f Mark Brown          2011-07-20  1836  	 */
-> 0d509f2b112b21 Mark Brown          2013-01-27  1837  	if (val == work_val)
-> d77e745613680c Marek Vasut         2022-04-30  1838  		ret = map->write(map->bus_context, map->work_buf,
-> 82159ba8e6ef8c Mark Brown          2012-01-18  1839  				 map->format.reg_bytes +
-> 82159ba8e6ef8c Mark Brown          2012-01-18  1840  				 map->format.pad_bytes +
-> 82159ba8e6ef8c Mark Brown          2012-01-18  1841  				 val_len);
-> 2547e201b3693f Mark Brown          2011-07-20 @1842  	else if (map->bus->gather_write)
->                                                                   ^^^^^^^^
-> It's not checked here
+IOWs, this likley has nothing to with the btree validation change,
+and everything to do with the system being driven into a lock and
+cacheline contention corner. When there is lock contention like this
+on a large CPU count system, we can't infer anything at all from any
+other measurement because the cacheline contention skews
+everything...
 
-This is a bug indeed.
+I'm not going to look at this any further, and I think I'm going to
+ignore AIM7 write test regressions in future until the test is
+reconfigured to avoid this sort of "100 cpus all trying to do
+buffered writes to the same file" contention issue.
+
+Cheers,
+
+Dave.
+
+-- 
+Dave Chinner
+david@fromorbit.com
