@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D1A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 15:45:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E07BC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 15:46:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238415AbiEIPtj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 11:49:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42760 "EHLO
+        id S238469AbiEIPtv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 11:49:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238616AbiEIPtf (ORCPT
+        with ESMTP id S238400AbiEIPts (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 11:49:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73ABAABF64
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 08:45:40 -0700 (PDT)
+        Mon, 9 May 2022 11:49:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E000625FE
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 08:45:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DF9C760C7A
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 15:45:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D25F9C385B1;
-        Mon,  9 May 2022 15:45:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3A8CBB816DA
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 15:45:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4B1AC385B1;
+        Mon,  9 May 2022 15:45:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652111139;
-        bh=b+0bTNxvxsgDQNXw7Vjz5YHZ8VLG91q1lL5GmMMGn2M=;
+        s=k20201202; t=1652111142;
+        bh=oQ1ml70LJT9el9PON/9R0g3f3UYsMYuYJEQBReN2NJk=;
         h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=s+x9C0GGh4n8hjY6+DdrcoFVtXDfvVE3eSUlgBZRcq6dDybjYiZ9on7NpDX7xH6Av
-         47Q4RRrDlU7mayUQX3MbIcHWvO0pp/UgNRlly0ocFP8DU8dxpoEzH5dTh1g9PZ+QBa
-         aPBjPJmRwQk8decE0QWsM4HJY5pDPlENEgxuN7Mp760I2QXWdOFOU0jZN7VVEvjcg3
-         9ILHZX78SPM5E3TMiCKryWDVJmI/fZhvIF3v0SVeMKmRNhg6IEzwb8pxz+I4ns0+jV
-         7i0iTFTqjKQRdOp3pSzV3LurduMJV0VIsYFk+5yf29X9Q8sgJljYJ6B2WIBEUBvrOK
-         lP/4KEkI3/QUA==
+        b=ihzsCnFsMew8Zj98kEHx7dWpMilARnYHeUqvNasxqsg1MJFC400RZj/wU3X2Czhmr
+         wKwiU4flOJ3YgCO3/d5B/i+1qkDa6RSO0IznNeilX8gDn+zwkRFf1hlGoaOvpAONsl
+         34wAX3hus9nMOhj2OV6P4nX+G/Xt0dEaJxgSouDoFv+shqKBJw4Sbl6nm/B1I6/t53
+         /AIirOEMR5RYoYBnlSmaSlYtOedkm7nKAfuaGFsH2YSsmrGoBRimxhDz2EJxyI//AD
+         BHRU01krpiUsjyGpY/I/XuoP2Yk6Y+ZgocwstIOw8vfGx2ujxHpDQ+ePYYC7Gwj/q9
+         rWP1Kk27k6ACg==
 From:   Mark Brown <broonie@kernel.org>
 To:     lgirdwood@gmail.com, cgel.zte@gmail.com
-Cc:     chi.minghao@zte.com.cn, zealci@zte.com.cn,
-        linux-arm-kernel@lists.infradead.org, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220505021733.54275-1-chi.minghao@zte.com.cn>
-References: <20220505021733.54275-1-chi.minghao@zte.com.cn>
-Subject: Re: [PATCH] ASoC: uniphier: simplify the return expression of uniphier_aio_compr_set_params()
-Message-Id: <165211113755.774487.2751485031602325886.b4-ty@kernel.org>
-Date:   Mon, 09 May 2022 16:45:37 +0100
+Cc:     chi.minghao@zte.com.cn, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org, zealci@zte.com.cn
+In-Reply-To: <20220505022102.54650-1-chi.minghao@zte.com.cn>
+References: <20220505022102.54650-1-chi.minghao@zte.com.cn>
+Subject: Re: [PATCH] ASoC: pcm186x: simplify the return expression of pcm186x_power_off()
+Message-Id: <165211114145.774487.8579724629086117424.b4-ty@kernel.org>
+Date:   Mon, 09 May 2022 16:45:41 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -49,7 +48,7 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 5 May 2022 02:17:33 +0000, cgel.zte@gmail.com wrote:
+On Thu, 5 May 2022 02:21:02 +0000, cgel.zte@gmail.com wrote:
 > From: Minghao Chi <chi.minghao@zte.com.cn>
 > 
 > Simplify the return expression.
@@ -62,8 +61,8 @@ Applied to
 
 Thanks!
 
-[1/1] ASoC: uniphier: simplify the return expression of uniphier_aio_compr_set_params()
-      commit: ef1258a7820d99cc7999cafbd8ea78a24559ff12
+[1/1] ASoC: pcm186x: simplify the return expression of pcm186x_power_off()
+      commit: 5cb3bdd6bdcda6293aafe2a5adaaa44d011fbdf2
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
