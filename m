@@ -2,96 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FBC4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 14:03:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28B25C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 14:03:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236561AbiEIOHM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 10:07:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43656 "EHLO
+        id S236679AbiEIOHd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 10:07:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236533AbiEIOHH (ORCPT
+        with ESMTP id S236533AbiEIOHW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 10:07:07 -0400
-Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8FC8201320
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 07:03:12 -0700 (PDT)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:8886:2b92:63eb:2922])
-        by xavier.telenet-ops.be with bizsmtp
-        id Ue312700i0moLbn01e31NE; Mon, 09 May 2022 16:03:09 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1no3yX-003XrP-7E; Mon, 09 May 2022 16:03:01 +0200
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1no3yW-003Sj2-Mq; Mon, 09 May 2022 16:03:00 +0200
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>,
-        Ondrej Ille <ondrej.ille@gmail.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH] can: ctucanfd: Let users select instead of depend on CAN_CTUCANFD
-Date:   Mon,  9 May 2022 16:02:59 +0200
-Message-Id: <887b7440446b6244a20a503cc6e8dc9258846706.1652104941.git.geert+renesas@glider.be>
-X-Mailer: git-send-email 2.25.1
+        Mon, 9 May 2022 10:07:22 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EC722655C5
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 07:03:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652105008; x=1683641008;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=wRg20se85xJotz7rbGkd/WepRqWjswHgMGSblsVcHGk=;
+  b=LWsGQIeEJBORs/7SA4tEZR0T4REIBthCO6Kpari96gePCeHj/dMJJzPq
+   zxoBoFNfLAqNS6xliw7edCjeFApd97Iy/t5bN0e7JmbZmQc4abHL+MQLj
+   kI8ZM0KfRwoaGvJdlgwLM9qDgiikqHqeQgIRTrIrumwpIqJdzxpiRt7qg
+   Z3hFpqPlzAOjKPErgg5WG4u8SmF7ZzC/PeOWaSAE/goLESiSa1PuuDnFs
+   nToXUSJqXe0qF3OHCCoHoFDLLR4vGqmGdhWdnCdG7UJjlUVFJLZ8Ob5rr
+   4H47yisWzfIz7rPi5A0ifvG2Qgtf3uWxXYLsebZyoEYeAvUwQEZcOfd85
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="268723237"
+X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
+   d="scan'208";a="268723237"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 07:03:02 -0700
+X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
+   d="scan'208";a="710535731"
+Received: from rli9-dbox.sh.intel.com (HELO rli9-dbox) ([10.239.159.142])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 07:03:00 -0700
+Date:   Mon, 9 May 2022 22:01:13 +0800
+From:   Philip Li <philip.li@intel.com>
+To:     kernel test robot <lkp@intel.com>
+Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: Re: WARNING: modpost: vmlinux.o(.text+0xa76d36): Section mismatch in
+ reference from the function rtc_update_irq() to the variable .init.text:.L0
+Message-ID: <YnkeqQrMZrqkAZAP@rli9-dbox>
+References: <202205090847.j9NvIYxI-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202205090847.j9NvIYxI-lkp@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The CTU CAN-FD IP core is only useful when used with one of the
-corresponding PCI/PCIe or platform (FPGA, SoC) drivers, which depend on
-PCI resp. OF.
+On Mon, May 09, 2022 at 08:14:44AM +0800, kernel test robot wrote:
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> head:   c5eb0a61238dd6faf37f58c9ce61c9980aaffd7a
+> commit: 170f37d6aa6ad4582eefd7459015de79e244536e block: Do not call folio_next() on an unreferenced folio
+> date:   4 days ago
+> config: riscv-randconfig-r042-20220509 (https://download.01.org/0day-ci/archive/20220509/202205090847.j9NvIYxI-lkp@intel.com/config)
+> compiler: riscv32-linux-gcc (GCC) 11.3.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=170f37d6aa6ad4582eefd7459015de79e244536e
+>         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+>         git fetch --no-tags linus master
+>         git checkout 170f37d6aa6ad4582eefd7459015de79e244536e
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All warnings (new ones prefixed by >>, old ones prefixed by <<):
 
-Hence make the users select the core driver code, instead of letting
-then depend on it.  Keep the core code config option visible when
-compile-testing, to maintain compile-coverage.
+Sorry, kindly ignore this report, which is a false positive. We will
+block such report in future.
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
- drivers/net/can/ctucanfd/Kconfig | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/can/ctucanfd/Kconfig b/drivers/net/can/ctucanfd/Kconfig
-index 48963efc7f19955f..3c383612eb1764e2 100644
---- a/drivers/net/can/ctucanfd/Kconfig
-+++ b/drivers/net/can/ctucanfd/Kconfig
-@@ -1,5 +1,5 @@
- config CAN_CTUCANFD
--	tristate "CTU CAN-FD IP core"
-+	tristate "CTU CAN-FD IP core" if COMPILE_TEST
- 	help
- 	  This driver adds support for the CTU CAN FD open-source IP core.
- 	  More documentation and core sources at project page
-@@ -13,8 +13,8 @@ config CAN_CTUCANFD
- 
- config CAN_CTUCANFD_PCI
- 	tristate "CTU CAN-FD IP core PCI/PCIe driver"
--	depends on CAN_CTUCANFD
- 	depends on PCI
-+	select CAN_CTUCANFD
- 	help
- 	  This driver adds PCI/PCIe support for CTU CAN-FD IP core.
- 	  The project providing FPGA design for Intel EP4CGX15 based DB4CGX15
-@@ -23,8 +23,8 @@ config CAN_CTUCANFD_PCI
- 
- config CAN_CTUCANFD_PLATFORM
- 	tristate "CTU CAN-FD IP core platform (FPGA, SoC) driver"
--	depends on CAN_CTUCANFD
- 	depends on OF || COMPILE_TEST
-+	select CAN_CTUCANFD
- 	help
- 	  The core has been tested together with OpenCores SJA1000
- 	  modified to be CAN FD frames tolerant on MicroZed Zynq based
--- 
-2.25.1
-
+> 
+> >> WARNING: modpost: vmlinux.o(.text+0xa76d36): Section mismatch in reference from the function rtc_update_irq() to the variable .init.text:.L0
+> The function rtc_update_irq() references
+> the variable __init .L0 .
+> This is often because rtc_update_irq lacks a __init
+> annotation or the annotation of .L0 is wrong.
+> 
+> Note: the below error/warnings can be found in parent commit:
+> << WARNING: modpost: vmlinux.o(.text+0xa7418e): Section mismatch in reference from the function rtc_month_days() to the variable .init.setup:__setup_root_delay_setup
+> << WARNING: modpost: vmlinux.o(.text+0xb2080e): Section mismatch in reference from the function thermal_zone_device_unregister() to the variable .init.text:.L0
+> << WARNING: modpost: vmlinux.o(.text+0xb34ff0): Section mismatch in reference from the function btintel_enter_mfg() to the variable .init.text:.LBB18955
+> << WARNING: modpost: vmlinux.o(.text+0xb5964e): Section mismatch in reference from the function cpuidle_switch_governor() to the variable .init.text:.L0
+> << WARNING: modpost: vmlinux.o(.text+0xbacbfa): Section mismatch in reference from the function comedi_buf_map_get() to the variable .init.text:.L0
+> << WARNING: modpost: vmlinux.o(__ex_table+0x141c): Section mismatch in reference from the variable .L0 to the variable .debug_str:.LASF1100
+> 
+> -- 
+> 0-DAY CI Kernel Test Service
+> https://01.org/lkp
