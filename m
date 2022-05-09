@@ -2,184 +2,374 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F1C0C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40270C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 06:38:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235491AbiEIGkV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 02:40:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57112 "EHLO
+        id S235446AbiEIGkR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 02:40:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229586AbiEIGb3 (ORCPT
+        with ESMTP id S234729AbiEIGdp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 02:31:29 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F8791649A2;
-        Sun,  8 May 2022 23:27:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1652077653; x=1683613653;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=yfvG10XrnhwGAAePgBqghr3WRqOoC3+fKCu2vwjHMT4=;
-  b=SGQqoMu9YJg9hhpDoRrJwzw/4YtyqSxwi+WfY6oGXm1FE6xjPwH0UGV9
-   /GlN0PtHVFi1JFkHPYNsvEtYGvQeXgVCfsl+caT4C2fR9wJYzpLyj0rxv
-   GHWSdym7yiWw0H066e4VTUJMw5jGx7m2Zp1TvwKFmBH36zPCwgs9ap4pX
-   pqh4i5gULmZWoI+cVzDCnwifrjEf2WEiA4veMPhdDLt9ZFooVwn2+IwiV
-   FsOoNSobYj4+Gqv7AIM72rX41G+7KiMCB3tUsiDFZJatf9AJT+2FYUBE9
-   nr72WZcfPYZVEwHk6ZRTKR7s/DIt6WVFvtVeWmPrk4O2b6H8/16l9uneY
-   A==;
-X-IronPort-AV: E=Sophos;i="5.91,210,1647327600"; 
-   d="scan'208";a="172456599"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 May 2022 23:26:52 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Sun, 8 May 2022 23:26:52 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.72) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17 via Frontend
- Transport; Sun, 8 May 2022 23:26:52 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AxgOnZRLZORyYTEVJohyatWa9CHBbvRP8cAeSTQ+NSGFObbX1X8YCfSXkPQRjg7pp/k//A3qdw5CQuaLFGzEPMS51Xvq/eCXi385TkZsCfs8QSnx4AQh6Wgj8DDZplgZeGajzaql0OEbkefnUs9Z1ZVxLN/JeR/48GhYzlL0jJifAN7O1faAyyFbt38T5EgvcJREaMFnnqh+bbNx3Nwzn1iHXReL4o4DuQWZ784hfbBZ+qkrO6o4X+FfEPs/07klkfulNrZ67YYpjTee7aZxz5Qq2Q8pt+ouzLnVAViAdBiCHZgA31ZoONJbV2Pe0oPTh3uG2rg7wWBHppCFjq/d1g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yfvG10XrnhwGAAePgBqghr3WRqOoC3+fKCu2vwjHMT4=;
- b=beSvJQ3LcEMLQCXmimZBsCIkxumLjYagRWBfyrV9f2rfT1VrjQfJXmOd/BxQ+/4g4OIRvRqfd8fUwPK27ZKHZPVe7Db+KOrmtMTchNztJqJs55+BBKQpyeVqDskLm40uP4JVWbOmcvPgoRIlxOBzO5535TgA0IGjZiQWHR07aOM7CCBgExIPAINyysi+fI5WwWLj4n5qZE92M9i9FZahF/jE3XdXdWwRCQ3JqXDfEGRxCU6tl1bum9h08zyxY5qvpgcrXFX6eeHBNaR3/UvCwFtkqOCX2MGCDUPIB95McnC/F470outL6/3gIIw26XFRfJr2o4rZ/dtVzsA/yYRwiQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+        Mon, 9 May 2022 02:33:45 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB20918A6BF
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 23:29:51 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id x88so714718pjj.1
+        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 23:29:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yfvG10XrnhwGAAePgBqghr3WRqOoC3+fKCu2vwjHMT4=;
- b=LYRHXJiQEKmgxDPWqwvXqSrnsl5C7YpuqTCnA/h2arHt3zFki7PyLcs7+hHd0Sh55WCozAw2kpAmW6CG20OYAHFzmWrTXAEHN8KXPYQutUtN8NrmjK0CzBQkxmN1dTnQD5L7WI3sZRUfmU/fWa3cvedLYpUdwzKdWEYkua+Ks80=
-Received: from CO1PR11MB4769.namprd11.prod.outlook.com (2603:10b6:303:95::10)
- by DM6PR11MB4121.namprd11.prod.outlook.com (2603:10b6:5:199::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.21; Mon, 9 May
- 2022 06:26:48 +0000
-Received: from CO1PR11MB4769.namprd11.prod.outlook.com
- ([fe80::e906:3e8d:4741:c0f0]) by CO1PR11MB4769.namprd11.prod.outlook.com
- ([fe80::e906:3e8d:4741:c0f0%6]) with mapi id 15.20.5227.023; Mon, 9 May 2022
- 06:26:48 +0000
-From:   <Claudiu.Beznea@microchip.com>
-To:     <michael@walle.cc>, <Kavyasree.Kotagiri@microchip.com>,
-        <Nicolas.Ferre@microchip.com>
-CC:     <arnd@arndb.de>, <olof@lixom.net>, <soc@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski@canonical.com>,
-        <alexandre.belloni@bootlin.com>, <Tudor.Ambarus@microchip.com>,
-        <Horatiu.Vultur@microchip.com>
-Subject: Re: [PATCH v4 11/13] ARM: dts: lan966x: add serdes node
-Thread-Topic: [PATCH v4 11/13] ARM: dts: lan966x: add serdes node
-Thread-Index: AQHYY23CripvQdzo80if9kXNEcHuxg==
-Date:   Mon, 9 May 2022 06:26:47 +0000
-Message-ID: <743c06e8-a53b-4546-cad7-27e7a3ef77b6@microchip.com>
-References: <20220502224127.2604333-1-michael@walle.cc>
- <20220502224127.2604333-12-michael@walle.cc>
-In-Reply-To: <20220502224127.2604333-12-michael@walle.cc>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microchip.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 733d6ebc-b8a2-4a42-a8fd-08da3184e549
-x-ms-traffictypediagnostic: DM6PR11MB4121:EE_
-x-microsoft-antispam-prvs: <DM6PR11MB4121CFEE9C8604B9353B897687C69@DM6PR11MB4121.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: L8rsB+YhakeVus+hyU/kXBDasnLwdouMJAdiA3rc64m9BmxOsTEqEx4eNjaqxA1YTqL+erC+C5G17XCfCJfjKW57Bryg5fncxnguxFekCAq4L6LghpGHc4cMjovy5raswRqeR2gzMJKii6Lv2q3PqKpnhXWFiqFLWBu1GdQSamMNiu77dRjLwDGqf+sGpSKb1Xu3ih8kj95McigbVOzhdhtce4D6IixPoX6xU7bKYepMuaBSEwrc9pXeLAvTbS9sMBCgXuJp6iSG2zvPdMGnRD6ZzXq72cM5DGHo6V0ohIyrQjO9EUgCrGm9+VXdCrd35I5XVSQvdYlkvdtH3W6LXeQvqCSXJ7UMR9adlMQl8TPVy0tWLQ288vpRw+q8qmhxOk5avnnops4ml7lIcJNANJnrJixHyAQX+91QbX3Nl6RbRxHCUjceX9/hF32SCOGJgWliIJsoZMRoQVYmnMDiI7o1qAFqJxwW6CCv6fNg+Rm52AvK09tT2ew1rg3EuYzW4LGJOrl8vlYRHnfff+HUF9l713y9gSndtuHvdUruo4GsByez7RD6c2gv74QHt6KVigseZGiRaA0yS5ELyV2XMX3W2UuKftK5B+Ma/ebBEF2ddj8rkkt5gBodhTstuBKLhLtXldrXOyeopFFbC4L55UmapVracddiVUhOagJfne6dcDKwYB4XlQTy+pbgf2hDR9Gt0rFDzcCm2tCKjO9FXuCp9+pdy6uUF9CvE2bIyZT2rCLkE8xFK4RZpcfQvwOQoi+qkent8zbRlECNQMrm5g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4769.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(6512007)(7416002)(36756003)(2616005)(107886003)(5660300002)(110136005)(4326008)(6506007)(186003)(53546011)(26005)(31686004)(66446008)(66476007)(6636002)(66946007)(76116006)(8676002)(54906003)(64756008)(2906002)(66556008)(91956017)(38070700005)(71200400001)(122000001)(8936002)(83380400001)(6486002)(38100700002)(31696002)(86362001)(316002)(508600001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?OUVBOFRkOGhBTzNBeXp6aSs2SHJSOG5ic2NXVjA2NFVNWkNFZ1EwbFNwd0s5?=
- =?utf-8?B?bzJKeVBPWFhzbk1mR1hNTER4ckRpa1ZIcWlVRVQrdkpGaERtUU1RVkRpNWtW?=
- =?utf-8?B?cWEyMTI1emxod3FJQTBsRnFWNEVZOGUxbTQ3RXN1cVJpdTFlbk80ZTBSUDhW?=
- =?utf-8?B?ZlNtMEEvRHVDS2VWREdWdjZrbWF4TFU0UjRWaGZldGJIOFQ5elZtcWU4WWNS?=
- =?utf-8?B?TkVtZlkrMVpYcm0wK1BPZTJjOUtpS2Q2aXc1RGY0NEM0UGVZNW9XdGNyOW5m?=
- =?utf-8?B?YUZwb1RqQm16TEZ0Wi9GYnpGUlVGVFVRTmRXTXFHbm9sWEdTWHhTTnI0UW9p?=
- =?utf-8?B?SnpFQkw0SkZKb1pwWU1nN2d0aytNVkNkcEZ4UkI0UEJacVg0Sno2YW83V1ZC?=
- =?utf-8?B?K002R2YzdmFQdzNTdVRUWEhDZUJoeXlPYkZWWWNJQUFvWE5DNnFzTk9Xek1y?=
- =?utf-8?B?NWUyQ1FqV3lvK1djYTlUSVlHS0kyVjFrQ0ZjNldCZnFlalFnT1RWRTJ3Z2Zs?=
- =?utf-8?B?RTkxTEwxVncyY1R0aER3UFA1aDFkdUN2Vzd4bjBJaFNyZFdiR3VmajJrd1J3?=
- =?utf-8?B?T0dTZDNiTmNyUXpBZ3pMSWN3d2QvZi9QSGpXcU9vZ295QVB2bWNKZ0NMWGJL?=
- =?utf-8?B?YWFOT1Z6UkkvcUVmb08ydTJHcE5WVWNDN2xXdjNLZTlZV292UGdZUzhLUDVL?=
- =?utf-8?B?SWxtRTF3alIxMFZvZlZPbGJLMS9VaDNudVI5MWt4amFPVk1WMDFiTVpqbkMv?=
- =?utf-8?B?ZEhmTm9CbVZqMUpoZ2J5ZjRVSlAya0R3L2c1NUo2YmxkZ0tFRmV1VmEzd1d6?=
- =?utf-8?B?TjkzcFBUK01mdzl4YUExMlJiR3lwaEExY0hEaHBpYVMzV01nWTBDbUxVYWtz?=
- =?utf-8?B?T2YyNzV3c1hVcG5TYzhVYVM1TFVhaHpsL0xZQzcrZytVdmlIY1RrcllIK2FO?=
- =?utf-8?B?aENnZnkrT2JmZDhhQVJla3g5Wlgwb1VLblFhYzRtT2loU1kwMFNlL2llYk1C?=
- =?utf-8?B?d0c3Q051RGdqTjVnSTZzaW9lcWZMMG80NkRlcDFjSERtVWltcmJ6MThOYkZi?=
- =?utf-8?B?ZTRTNjRicDVneGQ0US9GOXpaZ3NpdE9MdmRHaDVNcXdxUzNOS29yZCtsQTgz?=
- =?utf-8?B?ZzRKMTUvQ2FWcHZOTHF6OHh1WEd1TTRZUncwSHZsR01aUU9MM1dwWWdhVHFy?=
- =?utf-8?B?U3FqWDkxeWx6ZUgzYlRZRC9oR25mZ1RaUHJBRzN2bDllRWQ0cy9PZXlrSy9U?=
- =?utf-8?B?RDJtdm1IZFNhRWpBQkJ3WU9HN2t4cVBMSitubXJjZG1SZFFtdVhxQ0dacGtw?=
- =?utf-8?B?RDZSVmR5V2M4RjV6L1VMcWhUTU1jRlltMFR6S29IakhBbEJsSjBYLzkrbDk5?=
- =?utf-8?B?SzlPTEhxRkhYcTF0MVJia1NtendOVjJLK3dtUkZNN0ZGTUNqZU9vcHNxOVls?=
- =?utf-8?B?c3dwY3B6Rk9ESzZhOWRpaVM3MGNOQzFsUlIwcE9WU1IxTEJTeHJoMWx4a0Jp?=
- =?utf-8?B?eW1FK0ZxVUJzOXZGaFFJVEZIYTVvY1RVbmdZekRDS0lNc1JkVklWaUw1M2Mw?=
- =?utf-8?B?ZzgrQUl5V3Q4ZmFlSkRPRDNzQlVyNDh5ZEFUeVlnOEhYNDRCTy8zZUd5ZFg2?=
- =?utf-8?B?RWZxcFV4MjBMVy9qNE1zZmhUTllnenJ1MW1vbjFXcStCQ1N6NWZPQ3lUUmJ0?=
- =?utf-8?B?SEpDZkx2Z20rd0RVSU1ySXJ5eGNIa0FEbXFrb1IwaCtkWHQ4ZGZhSDZGaGhP?=
- =?utf-8?B?SEFUTHZldXFWOGlFdlZrSEVyREZBU2Y0WGgzdHdhY2pxNnd4cGZHdGZJNGIr?=
- =?utf-8?B?b2tDa1JCVk92M05Oa01zZGdTWGwraUxHNzk1Z2svSXBLcG5NRGFHVlgzSHpx?=
- =?utf-8?B?Q0Q5Lzd1ZXFhWkdzQlIyS3pOWUhldG45YWZyUkFJbk5Bc1Y1RjJveEF1VTJq?=
- =?utf-8?B?Q0tZcXBlaVRwQlJPZkFtZVc5TjBob1MrOU13MG1QSXljNnhMQzVCRzlCMFRS?=
- =?utf-8?B?ZW9NdGVWMThVZzJ1a2RXclYwZ2NMWUYzWUVYT2FiSTRWZlEzeFcxa2VRVnJx?=
- =?utf-8?B?K1QvUVJrMzI4K1E3WWo4RGhzaWxlbDB0VDBZQmVQblFUcGZ2NmQzVHF2bG5m?=
- =?utf-8?B?dU1waG1NZEpIc0NTR1lJMFNXeklTQjgvQ2kyUklRSzBRTlNvcGE2VjJyeVVK?=
- =?utf-8?B?RkhLckE1QTY2WXBSRXFvQzNuL2hRenJPKytHTkRKS3ZsbjhHd1laWCtPdWpJ?=
- =?utf-8?B?cVNKTlJiWkNSakUxNWlaTzJYZ0JvNGtpd25BNGVpei9oc24zMWJ3VFQ1VzJj?=
- =?utf-8?B?bEhZZW5TNXVnaVJvTWtHb29XazRWbTVLTEx0cDJIdDczR2U1cHdqZDBxQU9R?=
- =?utf-8?Q?JZfQUxmnf2Ks/FPA=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <E1DBA549D32AA146926F1FF91F9436F6@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=3vUx5XYnNUQ4SpbVJ4KR5YqsE/7i6GdjQvDrH5RKigc=;
+        b=TC82INHLWZrU49CJ9vAbOyzbFZYnVPtZhj4HVMh0/PQ11kYlduRnmVkgVpkkAmIUnW
+         pp840rF3esS1AZXEMuittuqcKYnRssv1NCAHX+11MQu2rVZIYkFqwWTuqOqgiwjCNnBB
+         gdieRlCPhZ+IRj3xCyGAW1f3VK5ARJswXCwe76rmm0+I4sLIkCfkOQfdIDsxEfT4U7Dk
+         hACf8ULMirNyXDDJb1zw8YIoWhcmMXEMNjJxn3cd3XDd3M7dlOUFpz3jpcz1xnuXtzcA
+         kiAErI82e+jpbRnHXUxTgoNhziz8XhCLewLt0JtkWY8bFQn2IRNUTQr9/ZbaaK4lnTKd
+         +a2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=3vUx5XYnNUQ4SpbVJ4KR5YqsE/7i6GdjQvDrH5RKigc=;
+        b=JAV0CVg5JYEsRJZzV+wpsMgLZRKjnFQVcQ2nS2Tp6i06Lu2urq2vpPonfA5uJE8CP4
+         0wAmNam/hoTgRNkP6cGFl6oe7B9CcMAuOSaeHPnzbfm2Bh8TULoL9iL0V1RCBu5Xo9gt
+         7YcX7B8hhBr82QwRsYRXv7hRrUW1/qYCzQFan0YbOJW/0RoYId7MGeDRQ6rdzjVkZ+C3
+         2wU476H61uXxHQGQPG7FgQWjDGCvTq4y1prALzLxcMtvM37th7SMxP9tL/t98KSOcvyq
+         oz51NjR7bXeWjRuBj0UzeCeEJf4xMuAf/M3lCnbQSBuoXzW8SPNTE7BOm8toQWWXpRZ+
+         xz6Q==
+X-Gm-Message-State: AOAM5311c+2qFK/bVO1ZXP+cDHrLSbwoVyGkpnyxm/Pt+kxHyOIy0iEr
+        AVGIjv9Oia6fjhJx9w/H1C5/0w==
+X-Google-Smtp-Source: ABdhPJysbt69R8xvl2WHk4ESD/nLQCAsz2esg98Qalvazq3o1Jn35yLaPmDEGrRWUUQboLjeHbYzwg==
+X-Received: by 2002:a17:903:1210:b0:15e:8373:d4b8 with SMTP id l16-20020a170903121000b0015e8373d4b8mr14867375plh.11.1652077779569;
+        Sun, 08 May 2022 23:29:39 -0700 (PDT)
+Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.250])
+        by smtp.gmail.com with ESMTPSA id k17-20020a170902ba9100b0015e8d4eb2c2sm6162001pls.268.2022.05.08.23.29.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 May 2022 23:29:39 -0700 (PDT)
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     corbet@lwn.net, mike.kravetz@oracle.com, akpm@linux-foundation.org,
+        mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com,
+        osalvador@suse.de, david@redhat.com, masahiroy@kernel.org
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, duanxiongchun@bytedance.com, smuchun@gmail.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH v10 4/4] mm: hugetlb_vmemmap: add hugetlb_optimize_vmemmap sysctl
+Date:   Mon,  9 May 2022 14:27:03 +0800
+Message-Id: <20220509062703.64249-5-songmuchun@bytedance.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
+In-Reply-To: <20220509062703.64249-1-songmuchun@bytedance.com>
+References: <20220509062703.64249-1-songmuchun@bytedance.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4769.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 733d6ebc-b8a2-4a42-a8fd-08da3184e549
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 May 2022 06:26:47.7975
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: lghEbiPwUgkGOENuRsTR1d8DHOj24Juqy54lTxasjSrIeHXSyktnNEt/IN/ajfwwM4BoI2ZMHGScg22tRfFMnKzmxIYWnv2aZ0Gb6/XF8I0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4121
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gMDMuMDUuMjAyMiAwMTo0MSwgTWljaGFlbCBXYWxsZSB3cm90ZToNCj4gRVhURVJOQUwgRU1B
-SUw6IERvIG5vdCBjbGljayBsaW5rcyBvciBvcGVuIGF0dGFjaG1lbnRzIHVubGVzcyB5b3Uga25v
-dyB0aGUgY29udGVudCBpcyBzYWZlDQo+IA0KPiBBZGQgdGhlIFNlckRlcyBub2RlLiBPbiB0aGUg
-TEFOOTY2eCBTb0MgdGhlc2UgU2VyRGVzIGFyZSB1c2VkIHRvIGNvbm5lY3QNCj4gbmV0d29yayBQ
-SFlzLg0KPiANCj4gQnkgZGVmYXVsdCwgdGhhdCBub2RlIGlzIGRpc2FibGVkLg0KPiANCj4gU2ln
-bmVkLW9mZi1ieTogTWljaGFlbCBXYWxsZSA8bWljaGFlbEB3YWxsZS5jYz4NCg0KUmV2aWV3ZWQt
-Ynk6IENsYXVkaXUgQmV6bmVhIDxjbGF1ZGl1LmJlem5lYUBtaWNyb2NoaXAuY29tPg0KDQoNCj4g
-LS0tDQo+ICBhcmNoL2FybS9ib290L2R0cy9sYW45NjZ4LmR0c2kgfCA4ICsrKysrKysrDQo+ICAx
-IGZpbGUgY2hhbmdlZCwgOCBpbnNlcnRpb25zKCspDQo+IA0KPiBkaWZmIC0tZ2l0IGEvYXJjaC9h
-cm0vYm9vdC9kdHMvbGFuOTY2eC5kdHNpIGIvYXJjaC9hcm0vYm9vdC9kdHMvbGFuOTY2eC5kdHNp
-DQo+IGluZGV4IDcwMjBiMzEzMjJkOC4uZDgxODVmNWM3YmZjIDEwMDY0NA0KPiAtLS0gYS9hcmNo
-L2FybS9ib290L2R0cy9sYW45NjZ4LmR0c2kNCj4gKysrIGIvYXJjaC9hcm0vYm9vdC9kdHMvbGFu
-OTY2eC5kdHNpDQo+IEBAIC01MDAsNiArNTAwLDE0IEBAIGh3bW9uOiBod21vbkBlMjAxMDE4MCB7
-DQo+ICAgICAgICAgICAgICAgICAgICAgICAgIGNsb2NrcyA9IDwmc3lzX2Nsaz47DQo+ICAgICAg
-ICAgICAgICAgICB9Ow0KPiANCj4gKyAgICAgICAgICAgICAgIHNlcmRlczogc2VyZGVzQGUyMDJj
-MDAwIHsNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgY29tcGF0aWJsZSA9ICJtaWNyb2NoaXAs
-bGFuOTY2eC1zZXJkZXMiOw0KPiArICAgICAgICAgICAgICAgICAgICAgICByZWcgPSA8MHhlMjAy
-YzAwMCAweDljPiwNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPDB4ZTIwMDQwMTAg
-MHg0PjsNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgI3BoeS1jZWxscyA9IDwyPjsNCj4gKyAg
-ICAgICAgICAgICAgICAgICAgICAgc3RhdHVzID0gImRpc2FibGVkIjsNCj4gKyAgICAgICAgICAg
-ICAgIH07DQo+ICsNCj4gICAgICAgICAgICAgICAgIGdpYzogaW50ZXJydXB0LWNvbnRyb2xsZXJA
-ZThjMTEwMDAgew0KPiAgICAgICAgICAgICAgICAgICAgICAgICBjb21wYXRpYmxlID0gImFybSxn
-aWMtNDAwIiwgImFybSxjb3J0ZXgtYTctZ2ljIjsNCj4gICAgICAgICAgICAgICAgICAgICAgICAg
-I2ludGVycnVwdC1jZWxscyA9IDwzPjsNCj4gLS0NCj4gMi4zMC4yDQo+IA0KDQo=
+We must add hugetlb_free_vmemmap=on (or "off") to the boot cmdline and
+reboot the server to enable or disable the feature of optimizing vmemmap
+pages associated with HugeTLB pages.  However, rebooting usually takes a
+long time.  So add a sysctl to enable or disable the feature at runtime
+without rebooting.  Why we need this?  There are 3 use cases.
+
+1) The feature of minimizing overhead of struct page associated with each
+HugeTLB is disabled by default without passing "hugetlb_free_vmemmap=on"
+to the boot cmdline. When we (ByteDance) deliver the servers to the
+users who want to enable this feature, they have to configure the grub
+(change boot cmdline) and reboot the servers, whereas rebooting usually
+takes a long time (we have thousands of servers).  It's a very bad
+experience for the users.  So we need a approach to enable this feature
+after rebooting. This is a use case in our practical environment.
+
+2) Some use cases are that HugeTLB pages are allocated 'on the fly'
+instead of being pulled from the HugeTLB pool, those workloads would be
+affected with this feature enabled.  Those workloads could be identified
+by the characteristics of they never explicitly allocating huge pages
+with 'nr_hugepages' but only set 'nr_overcommit_hugepages' and then let
+the pages be allocated from the buddy allocator at fault time.  We can
+confirm it is a real use case from the commit 099730d67417.  For those
+workloads, the page fault time could be ~2x slower than before. We
+suspect those users want to disable this feature if the system has enabled
+this before and they don't think the memory savings benefit is enough to
+make up for the performance drop.
+
+3) If the workload which wants vmemmap pages to be optimized and the
+workload which wants to set 'nr_overcommit_hugepages' and does not want
+the extera overhead at fault time when the overcommitted pages be
+allocated from the buddy allocator are deployed in the same server.
+The user could enable this feature and set 'nr_hugepages' and
+'nr_overcommit_hugepages', then disable the feature.  In this case,
+the overcommited HugeTLB pages will not encounter the extra overhead
+at fault time.
+
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+---
+ Documentation/admin-guide/sysctl/vm.rst | 39 ++++++++++++++
+ include/linux/memory_hotplug.h          |  9 ++++
+ mm/hugetlb.c                            |  3 ++
+ mm/hugetlb_vmemmap.c                    | 93 +++++++++++++++++++++++++++++----
+ mm/memory_hotplug.c                     |  7 +--
+ 5 files changed, 136 insertions(+), 15 deletions(-)
+
+diff --git a/Documentation/admin-guide/sysctl/vm.rst b/Documentation/admin-guide/sysctl/vm.rst
+index 747e325ebcd0..5c9aa171a0d3 100644
+--- a/Documentation/admin-guide/sysctl/vm.rst
++++ b/Documentation/admin-guide/sysctl/vm.rst
+@@ -562,6 +562,45 @@ Change the minimum size of the hugepage pool.
+ See Documentation/admin-guide/mm/hugetlbpage.rst
+ 
+ 
++hugetlb_optimize_vmemmap
++========================
++
++This knob is not available when memory_hotplug.memmap_on_memory (kernel parameter)
++is configured or the size of 'struct page' (a structure defined in
++include/linux/mm_types.h) is not power of two (an unusual system config could
++result in this).
++
++Enable (set to 1) or disable (set to 0) the feature of optimizing vmemmap pages
++associated with each HugeTLB page.
++
++Once enabled, the vmemmap pages of subsequent allocation of HugeTLB pages from
++buddy allocator will be optimized (7 pages per 2MB HugeTLB page and 4095 pages
++per 1GB HugeTLB page), whereas already allocated HugeTLB pages will not be
++optimized.  When those optimized HugeTLB pages are freed from the HugeTLB pool
++to the buddy allocator, the vmemmap pages representing that range needs to be
++remapped again and the vmemmap pages discarded earlier need to be rellocated
++again.  If your use case is that HugeTLB pages are allocated 'on the fly' (e.g.
++never explicitly allocating HugeTLB pages with 'nr_hugepages' but only set
++'nr_overcommit_hugepages', those overcommitted HugeTLB pages are allocated 'on
++the fly') instead of being pulled from the HugeTLB pool, you should weigh the
++benefits of memory savings against the more overhead (~2x slower than before)
++of allocation or freeing HugeTLB pages between the HugeTLB pool and the buddy
++allocator.  Another behavior to note is that if the system is under heavy memory
++pressure, it could prevent the user from freeing HugeTLB pages from the HugeTLB
++pool to the buddy allocator since the allocation of vmemmap pages could be
++failed, you have to retry later if your system encounter this situation.
++
++Once disabled, the vmemmap pages of subsequent allocation of HugeTLB pages from
++buddy allocator will not be optimized meaning the extra overhead at allocation
++time from buddy allocator disappears, whereas already optimized HugeTLB pages
++will not be affected.  If you want to make sure there are no optimized HugeTLB
++pages, you can set "nr_hugepages" to 0 first and then disable this.  Note that
++writing 0 to nr_hugepages will make any "in use" HugeTLB pages become surplus
++pages.  So, those surplus pages are still optimized until they are no longer
++in use.  You would need to wait for those surplus pages to be released before
++there are no optimized pages in the system.
++
++
+ nr_hugepages_mempolicy
+ ======================
+ 
+diff --git a/include/linux/memory_hotplug.h b/include/linux/memory_hotplug.h
+index 029fb7e26504..917112661b5c 100644
+--- a/include/linux/memory_hotplug.h
++++ b/include/linux/memory_hotplug.h
+@@ -351,4 +351,13 @@ void arch_remove_linear_mapping(u64 start, u64 size);
+ extern bool mhp_supports_memmap_on_memory(unsigned long size);
+ #endif /* CONFIG_MEMORY_HOTPLUG */
+ 
++#ifdef CONFIG_MHP_MEMMAP_ON_MEMORY
++bool mhp_memmap_on_memory(void);
++#else
++static inline bool mhp_memmap_on_memory(void)
++{
++	return false;
++}
++#endif
++
+ #endif /* __LINUX_MEMORY_HOTPLUG_H */
+diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+index 8605d7eb7f5c..86158eb9da70 100644
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -1617,6 +1617,9 @@ static DECLARE_WORK(free_hpage_work, free_hpage_workfn);
+ 
+ static inline void flush_free_hpage_work(struct hstate *h)
+ {
++	if (!hugetlb_optimize_vmemmap_enabled())
++		return;
++
+ 	if (hugetlb_optimize_vmemmap_pages(h))
+ 		flush_work(&free_hpage_work);
+ }
+diff --git a/mm/hugetlb_vmemmap.c b/mm/hugetlb_vmemmap.c
+index cc4ec752ec16..fcd9f7872064 100644
+--- a/mm/hugetlb_vmemmap.c
++++ b/mm/hugetlb_vmemmap.c
+@@ -10,6 +10,7 @@
+  */
+ #define pr_fmt(fmt)	"HugeTLB: " fmt
+ 
++#include <linux/memory_hotplug.h>
+ #include "hugetlb_vmemmap.h"
+ 
+ /*
+@@ -22,21 +23,40 @@
+ #define RESERVE_VMEMMAP_NR		1U
+ #define RESERVE_VMEMMAP_SIZE		(RESERVE_VMEMMAP_NR << PAGE_SHIFT)
+ 
++enum vmemmap_optimize_mode {
++	VMEMMAP_OPTIMIZE_OFF,
++	VMEMMAP_OPTIMIZE_ON,
++};
++
+ DEFINE_STATIC_KEY_MAYBE(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
+ 			hugetlb_optimize_vmemmap_key);
+ EXPORT_SYMBOL(hugetlb_optimize_vmemmap_key);
+ 
++static enum vmemmap_optimize_mode vmemmap_optimize_mode =
++	IS_ENABLED(CONFIG_HUGETLB_PAGE_FREE_VMEMMAP_DEFAULT_ON);
++
++static void vmemmap_optimize_mode_switch(enum vmemmap_optimize_mode to)
++{
++	if (vmemmap_optimize_mode == to)
++		return;
++
++	if (to == VMEMMAP_OPTIMIZE_OFF)
++		static_branch_dec(&hugetlb_optimize_vmemmap_key);
++	else
++		static_branch_inc(&hugetlb_optimize_vmemmap_key);
++	WRITE_ONCE(vmemmap_optimize_mode, to);
++}
++
+ static int __init hugetlb_vmemmap_early_param(char *buf)
+ {
+ 	bool enable;
++	enum vmemmap_optimize_mode mode;
+ 
+ 	if (kstrtobool(buf, &enable))
+ 		return -EINVAL;
+ 
+-	if (enable)
+-		static_branch_enable(&hugetlb_optimize_vmemmap_key);
+-	else
+-		static_branch_disable(&hugetlb_optimize_vmemmap_key);
++	mode = enable ? VMEMMAP_OPTIMIZE_ON : VMEMMAP_OPTIMIZE_OFF;
++	vmemmap_optimize_mode_switch(mode);
+ 
+ 	return 0;
+ }
+@@ -69,8 +89,10 @@ int hugetlb_vmemmap_alloc(struct hstate *h, struct page *head)
+ 	 */
+ 	ret = vmemmap_remap_alloc(vmemmap_addr, vmemmap_end, vmemmap_reuse,
+ 				  GFP_KERNEL | __GFP_NORETRY | __GFP_THISNODE);
+-	if (!ret)
++	if (!ret) {
+ 		ClearHPageVmemmapOptimized(head);
++		static_branch_dec(&hugetlb_optimize_vmemmap_key);
++	}
+ 
+ 	return ret;
+ }
+@@ -84,6 +106,11 @@ void hugetlb_vmemmap_free(struct hstate *h, struct page *head)
+ 	if (!vmemmap_pages)
+ 		return;
+ 
++	if (READ_ONCE(vmemmap_optimize_mode) == VMEMMAP_OPTIMIZE_OFF)
++		return;
++
++	static_branch_inc(&hugetlb_optimize_vmemmap_key);
++
+ 	vmemmap_addr	+= RESERVE_VMEMMAP_SIZE;
+ 	vmemmap_end	= vmemmap_addr + (vmemmap_pages << PAGE_SHIFT);
+ 	vmemmap_reuse	= vmemmap_addr - PAGE_SIZE;
+@@ -93,7 +120,9 @@ void hugetlb_vmemmap_free(struct hstate *h, struct page *head)
+ 	 * to the page which @vmemmap_reuse is mapped to, then free the pages
+ 	 * which the range [@vmemmap_addr, @vmemmap_end] is mapped to.
+ 	 */
+-	if (!vmemmap_remap_free(vmemmap_addr, vmemmap_end, vmemmap_reuse))
++	if (vmemmap_remap_free(vmemmap_addr, vmemmap_end, vmemmap_reuse))
++		static_branch_dec(&hugetlb_optimize_vmemmap_key);
++	else
+ 		SetHPageVmemmapOptimized(head);
+ }
+ 
+@@ -110,9 +139,6 @@ void __init hugetlb_vmemmap_init(struct hstate *h)
+ 	BUILD_BUG_ON(__NR_USED_SUBPAGE >=
+ 		     RESERVE_VMEMMAP_SIZE / sizeof(struct page));
+ 
+-	if (!hugetlb_optimize_vmemmap_enabled())
+-		return;
+-
+ 	if (!is_power_of_2(sizeof(struct page))) {
+ 		pr_warn_once("cannot optimize vmemmap pages because \"struct page\" crosses page boundaries\n");
+ 		static_branch_disable(&hugetlb_optimize_vmemmap_key);
+@@ -134,3 +160,52 @@ void __init hugetlb_vmemmap_init(struct hstate *h)
+ 	pr_info("can optimize %d vmemmap pages for %s\n",
+ 		h->optimize_vmemmap_pages, h->name);
+ }
++
++#ifdef CONFIG_PROC_SYSCTL
++static int hugetlb_optimize_vmemmap_handler(struct ctl_table *table, int write,
++					    void *buffer, size_t *length,
++					    loff_t *ppos)
++{
++	int ret;
++	enum vmemmap_optimize_mode mode;
++	static DEFINE_MUTEX(sysctl_mutex);
++
++	if (write && !capable(CAP_SYS_ADMIN))
++		return -EPERM;
++
++	mutex_lock(&sysctl_mutex);
++	mode = vmemmap_optimize_mode;
++	table->data = &mode;
++	ret = proc_dointvec_minmax(table, write, buffer, length, ppos);
++	if (write && !ret)
++		vmemmap_optimize_mode_switch(mode);
++	mutex_unlock(&sysctl_mutex);
++
++	return ret;
++}
++
++static struct ctl_table hugetlb_vmemmap_sysctls[] = {
++	{
++		.procname	= "hugetlb_optimize_vmemmap",
++		.maxlen		= sizeof(enum vmemmap_optimize_mode),
++		.mode		= 0644,
++		.proc_handler	= hugetlb_optimize_vmemmap_handler,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_ONE,
++	},
++	{ }
++};
++
++static __init int hugetlb_vmemmap_sysctls_init(void)
++{
++	/*
++	 * If "memory_hotplug.memmap_on_memory" is enabled or "struct page"
++	 * crosses page boundaries, the vmemmap pages cannot be optimized.
++	 */
++	if (!mhp_memmap_on_memory() && is_power_of_2(sizeof(struct page)))
++		register_sysctl_init("vm", hugetlb_vmemmap_sysctls);
++
++	return 0;
++}
++late_initcall(hugetlb_vmemmap_sysctls_init);
++#endif /* CONFIG_PROC_SYSCTL */
+diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
+index a6101ae402f9..c72070cdd055 100644
+--- a/mm/memory_hotplug.c
++++ b/mm/memory_hotplug.c
+@@ -63,15 +63,10 @@ static bool memmap_on_memory __ro_after_init;
+ module_param_cb(memmap_on_memory, &memmap_on_memory_ops, &memmap_on_memory, 0444);
+ MODULE_PARM_DESC(memmap_on_memory, "Enable memmap on memory for memory hotplug");
+ 
+-static inline bool mhp_memmap_on_memory(void)
++bool mhp_memmap_on_memory(void)
+ {
+ 	return memmap_on_memory;
+ }
+-#else
+-static inline bool mhp_memmap_on_memory(void)
+-{
+-	return false;
+-}
+ #endif
+ 
+ enum {
+-- 
+2.11.0
+
