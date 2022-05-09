@@ -2,88 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9157AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 19:49:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA491C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 19:50:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240689AbiEITx0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 15:53:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51906 "EHLO
+        id S240684AbiEITx5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 15:53:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240677AbiEITxX (ORCPT
+        with ESMTP id S240677AbiEITxz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 15:53:23 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB9D74131A;
-        Mon,  9 May 2022 12:49:26 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id x88so2510306pjj.1;
-        Mon, 09 May 2022 12:49:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=6m2VrNTTXfrBfZVnKNmQiT4jmnrzVdwkBw/0JWejick=;
-        b=Duiqlh4x32JnThboBXKb88xk2jDl84O0+YUZ2CoK4/quC8maCjiyQvynXd0Wxh5ZPc
-         OvJiK0y4tvwijwB0YsKHuZbLgimrZYSiedv/G3qwXetLK+Bi3ueKHuWGE1L54kgg4C0p
-         YXmTvzh/rIxrhYNXO0T0KucZsK1X1hMY5kKHZ/bcKDfTy3kHIgRhp6oIKwBOrHYXxArO
-         euM7jsxVwIkP4CyeJ4ydZFbcdQ6iiO/DAOl+yX5H4tuWpO5KIpkSVp/23F8rOcVc0u+x
-         KYzvnFUzf3pnlxYgHFwiAFUIHufGEmGh5tW+InEozaEb07wJBSFo8/0e7mEmhbVZgGpH
-         pRig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=6m2VrNTTXfrBfZVnKNmQiT4jmnrzVdwkBw/0JWejick=;
-        b=n0G8sQfdWixCHAD2eq0514h6xBc1yYzknBvWFGP5xJwphb2CMvwqGM95FfuUhg35LT
-         s8wqQf8/Kxs/F3ThvAneh3TEyEoEftEzceBSHahNM5n4GELkP5Fwoa/no1BZgN3FK0GJ
-         FeW7S7I4K0UNHA9VUTyUN5TYc6oP+CkmnU1DUhMvumbpUEAxAJwy8eYh4HAOliwkKBF0
-         spI+49S+LmKBybpfApgPuhEXiafQZE8MEoBCwAD003Yb6MX2o4hhImI3Ht/88/xeV59o
-         UynuC5q9Uhzt4FeY2F9c07NL/FvVkv6HrFcdbTwAdapqbHG9abBb0t16GBlYnOoMLdiZ
-         xxGA==
-X-Gm-Message-State: AOAM5335gLiDaYxooAm1srLZRCkxsKAJOjEblVnVzBp732A/XivMfsQU
-        Ka2E2pRnYt13My8hQRFtHPI1AZ9kUgg=
-X-Google-Smtp-Source: ABdhPJwfX1xWagxk5nIzZEw/xq548A//ChfF7CREu3G3iVq1e6ZmUhJT3tT7N8HBlzcTtSK5q+KZXg==
-X-Received: by 2002:a17:903:11d0:b0:155:c240:a2c0 with SMTP id q16-20020a17090311d000b00155c240a2c0mr17333474plh.143.1652125766156;
-        Mon, 09 May 2022 12:49:26 -0700 (PDT)
-Received: from localhost ([157.51.71.11])
-        by smtp.gmail.com with ESMTPSA id v10-20020aa799ca000000b0050dc7628166sm9058255pfi.64.2022.05.09.12.49.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 12:49:25 -0700 (PDT)
-Date:   Tue, 10 May 2022 01:20:01 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     Yuntao Wang <ytcoode@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next] bpf: Remove unused parameter from
- find_kfunc_desc_btf()
-Message-ID: <20220509195001.vrfexsqty6igbh2r@apollo.legion>
-References: <20220505070114.3522522-1-ytcoode@gmail.com>
- <20220509175242.3zgihomxteagixfa@kafai-mbp.dhcp.thefacebook.com>
+        Mon, 9 May 2022 15:53:55 -0400
+Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5F5D18E877;
+        Mon,  9 May 2022 12:49:59 -0700 (PDT)
+Received: from imladris.surriel.com ([96.67.55.152])
+        by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <riel@shelob.surriel.com>)
+        id 1no9OD-0005ca-8v; Mon, 09 May 2022 15:49:53 -0400
+Message-ID: <1f94c48b4e0e7d73a689a076f78f0892095b4d89.camel@surriel.com>
+Subject: Re: [RFC] sched,livepatch: call stop_one_cpu in
+ klp_check_and_switch_task
+From:   Rik van Riel <riel@surriel.com>
+To:     Josh Poimboeuf <jpoimboe@kernel.org>
+Cc:     Song Liu <song@kernel.org>, linux-kernel@vger.kernel.org,
+        live-patching@vger.kernel.org, mingo@redhat.com,
+        peterz@infradead.org, vincent.guittot@linaro.org,
+        jpoimboe@redhat.com, joe.lawrence@redhat.com, kernel-team@fb.com
+Date:   Mon, 09 May 2022 15:49:52 -0400
+In-Reply-To: <20220509191745.yk2txsa4cv3ypf6k@treble>
+References: <20220507174628.2086373-1-song@kernel.org>
+         <20220509115227.6075105e@imladris.surriel.com>
+         <20220509180004.zmvhz65xlncwqrrc@treble>
+         <68f91fb233d5bf82e29cc5c6960a62863b297db3.camel@surriel.com>
+         <20220509191745.yk2txsa4cv3ypf6k@treble>
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-/zMvygGJfLAsI+n3XX7/"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220509175242.3zgihomxteagixfa@kafai-mbp.dhcp.thefacebook.com>
+Sender: riel@shelob.surriel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 11:22:42PM IST, Martin KaFai Lau wrote:
-> On Thu, May 05, 2022 at 03:01:14PM +0800, Yuntao Wang wrote:
-> > The func_id parameter in find_kfunc_desc_btf() is not used, get rid of it.
-> >
-> > Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
-> Although it is a bpf-next material, it is still useful to have a Fixes tag
-> such that the reviewer can quickly understand how the current code got here.
->
-> Fixes: 2357672c54c3 ("bpf: Introduce BPF support for kernel module function calls")
-> Acked-by: Martin KaFai Lau <kafai@fb.com>
 
-Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+--=-/zMvygGJfLAsI+n3XX7/
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
---
-Kartikeya
+On Mon, 2022-05-09 at 12:17 -0700, Josh Poimboeuf wrote:
+> On Mon, May 09, 2022 at 03:10:16PM -0400, Rik van Riel wrote:
+>=20
+>=20
+> > Should kernel threads that can use a lot of CPU have
+> > something in their outer loop to transition KLPs,
+> > just like the idle task does?
+>=20
+> Maybe - I suppose this is the first time we've had an issue with
+> CPU-bound kthreads.=C2=A0 I didn't know that was a thing ;-)
+>=20
+Kworkers have as much work as you want them to do, and with
+things like btrfs compression that can be quite a bit.
+
+--=20
+All Rights Reversed.
+
+--=-/zMvygGJfLAsI+n3XX7/
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEKR73pCCtJ5Xj3yADznnekoTE3oMFAmJ5cGAACgkQznnekoTE
+3oN/vwgAlL+sgfIYzv4Yn8QkvhM+LGFufW9bo9fyeDXE4x1pZZ2Z2k7H6JrQwUee
+fF4fCr+u6d7m5KS3ZhYjbYNEWsmTfDJusHOxn9EExSruLpHZwKVNDeJxBngD1agc
+vb3cj6qTPNiEtv6bxPF0HLCbaGyUSZ52pR7bv/KrcXlykAvCFZ49F5cebludpcGN
+Qe43vPoOouEksejhUceSzCHd9ja1Lb03xif5hvRO7/JyOQX8Sx6/FgNEeltTfwiR
+a8SPD8k51Uaq7d6y6saT+BPmCHa09KEBDi+SQqfDkwW9fn8IIZMtTJtmSNdJ7c3N
+/vqwM04dbcYoV9kmAlzx2OZNFsiOnQ==
+=MMoT
+-----END PGP SIGNATURE-----
+
+--=-/zMvygGJfLAsI+n3XX7/--
