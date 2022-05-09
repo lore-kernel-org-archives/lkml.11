@@ -2,286 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46414C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 03:21:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1282AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 03:21:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231690AbiEIDYE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 23:24:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57344 "EHLO
+        id S231670AbiEIDZE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 23:25:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231424AbiEIDUw (ORCPT
+        with ESMTP id S232795AbiEIDSO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 23:20:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97A6C941B8;
-        Sun,  8 May 2022 20:16:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0D190B80EA2;
-        Mon,  9 May 2022 03:16:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B97C6C385A4;
-        Mon,  9 May 2022 03:16:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652066208;
-        bh=XpKdiSCMOhceNW7IZDYMLGRLyCrV9oeZT9w46lX6OQk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cfWsz8/yKQG9uNuxMQEqfIQInQu9DwpjDcqSObWT4PWnJKeG+MMYgxlFj6bfzVmxf
-         37BV/L9W5LY8A/1T+IdALdev+wTkSTWLtaVt2Zye4s3dBVXkzu7jrB1Y1IN9+pa+gl
-         9ROLSzv6iQ/0QO9uE6r+TUKsHi7YY3mD7Se6Y7ooQxXwdzUkjrOrfPtvzVrM0rBjL6
-         lMp0NLF7C6yKr8aapzsmuk/n2aTYb96t5r9fFtOuSKEYOnmKW///yu+ZXIpb77DOue
-         V4f6Vd2EPsOyB78Pmobj1/OrGBLx1RuDTQvhJzeTWStyOUIIPhAVwYqLU3RxEJhTbU
-         F8pEcfieONmbA==
-Date:   Mon, 9 May 2022 11:16:31 +0800
-From:   Peter Chen <peter.chen@kernel.org>
-To:     Zhi Li <lznuaa@gmail.com>
-Cc:     Frank Li <Frank.Li@nxp.com>, pawell@cadence.com, rogerq@kernel.org,
-        a-govindraju@ti.com, linux-usb@vger.kernel.org,
-        Jun Li <jun.li@nxp.com>, Greg KH <gregkh@linuxfoundation.org>,
-        kernel list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v8 1/1] usb: cdns3: allocate TX FIFO size according to
- composite EP number
-Message-ID: <20220509031631.GA499681@Peter>
-References: <20220427163525.1129887-1-Frank.Li@nxp.com>
- <20220505022111.GA433739@Peter>
- <CAHrpEqTK9pa07RvnL7BWZfprrk5Rsg3qR0N5XgKcUiQqHsYwcA@mail.gmail.com>
+        Sun, 8 May 2022 23:18:14 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8614712FC;
+        Sun,  8 May 2022 20:14:21 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KxR5n6RftzGpfg;
+        Mon,  9 May 2022 11:11:25 +0800 (CST)
+Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 9 May 2022 11:14:12 +0800
+Received: from [127.0.0.1] (10.67.108.67) by dggpemm500013.china.huawei.com
+ (7.185.36.172) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 9 May
+ 2022 11:14:12 +0800
+Message-ID: <e8715911-f835-059d-27f8-cc5f5ad30a07@huawei.com>
+Date:   Mon, 9 May 2022 11:14:12 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHrpEqTK9pa07RvnL7BWZfprrk5Rsg3qR0N5XgKcUiQqHsYwcA@mail.gmail.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 5.10 v3] locking/csd_lock: fix csdlock_debug cause arm64
+ boot panic
+Content-Language: en-US
+To:     Greg KH <gregkh@linuxfoundation.org>
+CC:     <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-arch@vger.kernel.org>, <stable@vger.kernel.org>,
+        <peterz@infradead.org>, <tglx@linutronix.de>, <namit@vmware.com>,
+        <gor@linux.ibm.com>, <rdunlap@infradead.org>, <sashal@kernel.org>
+References: <20220507084510.14761-1-chenzhongjin@huawei.com>
+ <YnZAO+3Rhj0gwq38@kroah.com>
+From:   Chen Zhongjin <chenzhongjin@huawei.com>
+In-Reply-To: <YnZAO+3Rhj0gwq38@kroah.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.108.67]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500013.china.huawei.com (7.185.36.172)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22-05-05 10:24:12, Zhi Li wrote:
-> On Wed, May 4, 2022 at 9:21 PM Peter Chen <peter.chen@kernel.org> wrote:
-> >
-> > On 22-04-27 11:35:25, Frank Li wrote:
-> > > Some devices have USB compositions which may require multiple endpoints.
-> > > To get better performance, need bigger CDNS3_EP_BUF_SIZE.
-> > >
-> > > But bigger CDNS3_EP_BUF_SIZE may exceed total hardware FIFO size when
-> > > multiple endpoints.
-> > >
-> > > By introducing the check_config() callback, calculate CDNS3_EP_BUF_SIZE.
-> > >
-> > > Move CDNS3_EP_BUF_SIZE into cnds3_device: ep_buf_size
-> > > Combine CDNS3_EP_ISO_SS_BURST and CDNS3_EP_ISO_HS_MULT into
-> > > ecnds3_device:ep_iso_burst
-> >
-> > typo, and would you please explain usage for ep_iso_burst in your patch?
+Hi Greg,
+
+Since the patch:
+https://lore.kernel.org/all/20210420093559.23168-1-catalin.marinas@arm.com/
+has forced CONFIG_SPARSEMEM_VMEMMAP=y from 5.12, it's not necessary to include
+this patch on master.
+
+However this problem still exist on 5.10 stable, so either we can backport the
+above patch to 5.10, or independently apply mine.
+
+I'm not sure if backporting one exist patch is better, but that patch only
+changed configs without any fix for old builds.
+
+If you have any advice please tell me.
+
+Thanks!
+Chen
+
+On 2022/5/7 17:47, Greg KH wrote:
+> On Sat, May 07, 2022 at 04:45:10PM +0800, Chen Zhongjin wrote:
+>> csdlock_debug is a early_param to enable csd_lock_wait
+>> feature.
+>>
+>> It uses static_branch_enable in early_param which triggers
+>> a panic on arm64 with config:
+>> CONFIG_SPARSEMEM=y
+>> CONFIG_SPARSEMEM_VMEMMAP=n
+>>
+>> The log shows:
+>> Unable to handle kernel NULL pointer dereference at
+>> virtual address ", '0' <repeats 16 times>, "
+>> ...
+>> Call trace:
+>> __aarch64_insn_write+0x9c/0x18c
+>> ...
+>> static_key_enable+0x1c/0x30
+>> csdlock_debug+0x4c/0x78
+>> do_early_param+0x9c/0xcc
+>> parse_args+0x26c/0x3a8
+>> parse_early_options+0x34/0x40
+>> parse_early_param+0x80/0xa4
+>> setup_arch+0x150/0x6c8
+>> start_kernel+0x8c/0x720
+>> ...
+>> Kernel panic - not syncing: Oops: Fatal exception
+>>
+>> Call trace inside __aarch64_insn_write:
+>> __nr_to_section
+>> __pfn_to_page
+>> phys_to_page
+>> patch_map
+>> __aarch64_insn_write
+>>
+>> Here, with CONFIG_SPARSEMEM_VMEMMAP=n, __nr_to_section returns
+>> NULL and makes the NULL dereference because mem_section is
+>> initialized in sparse_init after parse_early_param stage.
+>>
+>> So, static_branch_enable shouldn't be used inside early_param.
+>> To avoid this, I changed it to __setup and fixed this.
+>>
+>> Reported-by: Chen jingwen <chenjingwen6@huawei.com>
+>> Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
+>> ---
+>> Change v2 -> v3:
+>> Add module name in title
+>>
+>> Change v1 -> v2:
+>> Fix return 1 for __setup
+>> ---
+>>
+>>  kernel/smp.c | 4 ++--
+>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/kernel/smp.c b/kernel/smp.c
+>> index 65a630f62363..381eb15cd28f 100644
+>> --- a/kernel/smp.c
+>> +++ b/kernel/smp.c
+>> @@ -174,9 +174,9 @@ static int __init csdlock_debug(char *str)
+>>  	if (val)
+>>  		static_branch_enable(&csdlock_debug_enabled);
+>>  
+>> -	return 0;
+>> +	return 1;
+>>  }
+>> -early_param("csdlock_debug", csdlock_debug);
+>> +__setup("csdlock_debug=", csdlock_debug);
+>>  
+>>  static DEFINE_PER_CPU(call_single_data_t *, cur_csd);
+>>  static DEFINE_PER_CPU(smp_call_func_t, cur_csd_func);
+>> -- 
+>> 2.17.1
+>>
 > 
-> ep_iso_burst just directly replaced old CDNS3_EP_ISO_SS_BURST.
 > 
-> This patch uses a simple algorithm to make ep_buf_size equal to ep_iso_burst.
+> <formletter>
 > 
-> using ep_iso_burst reduces code change and keeps old code logic.
-> Keep capability to finial tune ep_iso_burst for ep_buf_size in future
-> for difference
-> composite devices combination user case.
+> This is not the correct way to submit patches for inclusion in the
+> stable kernel tree.  Please read:
+>     https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+> for how to do this properly.
 > 
-> >
-> > >
-> > > Using a simple algorithm to calculate ep_buf_size.
-> > > ep_buf_size = ep_iso_burst = (onchip_buffers - 2k) / (number of IN EP +
-> > > 1).
-> > >
-> > > Test at 8qxp:
-> > >
-> > >       Gadget                  ep_buf_size
-> > >
-> > >       RNDIS:                          5
-> > >       RNDIS+ACM:                      3
-> > >       Mass Storage + NCM + ACM        2
-> > >
-> > > Previous CDNS3_EP_BUF_SIZE is 4, RNDIS + ACM will be failure because
-> > > exceed FIFO memory.
-> > >
-> > > Signed-off-by: Frank Li <Frank.Li@nxp.com>
-> > > ---
-> > > Change from v1 to v2:
-> > >  Add safe check for mult, buffering and maxburst
-> > >
-> > >  drivers/usb/cdns3/cdns3-gadget.c | 50 +++++++++++++++++++++++++++++---
-> > >  drivers/usb/cdns3/cdns3-gadget.h |  9 ++++--
-> > >  2 files changed, 52 insertions(+), 7 deletions(-)
-> > >
-> > > diff --git a/drivers/usb/cdns3/cdns3-gadget.c b/drivers/usb/cdns3/cdns3-gadget.c
-> > > index 1f3b4a1422126..e25e7a2b55862 100644
-> > > --- a/drivers/usb/cdns3/cdns3-gadget.c
-> > > +++ b/drivers/usb/cdns3/cdns3-gadget.c
-> > > @@ -2050,7 +2050,7 @@ int cdns3_ep_config(struct cdns3_endpoint *priv_ep, bool enable)
-> > >       u8 mult = 0;
-> > >       int ret;
-> > >
-> > > -     buffering = CDNS3_EP_BUF_SIZE - 1;
-> > > +     buffering = priv_dev->ep_buf_size - 1;
-> > >
-> > >       cdns3_configure_dmult(priv_dev, priv_ep);
-> > >
-> > > @@ -2069,7 +2069,7 @@ int cdns3_ep_config(struct cdns3_endpoint *priv_ep, bool enable)
-> > >               break;
-> > >       default:
-> > >               ep_cfg = EP_CFG_EPTYPE(USB_ENDPOINT_XFER_ISOC);
-> > > -             mult = CDNS3_EP_ISO_HS_MULT - 1;
-> > > +             mult = priv_dev->ep_iso_burst - 1;
-> > >               buffering = mult + 1;
-> > >       }
-> > >
-> > > @@ -2085,14 +2085,14 @@ int cdns3_ep_config(struct cdns3_endpoint *priv_ep, bool enable)
-> > >               mult = 0;
-> > >               max_packet_size = 1024;
-> > >               if (priv_ep->type == USB_ENDPOINT_XFER_ISOC) {
-> > > -                     maxburst = CDNS3_EP_ISO_SS_BURST - 1;
-> > > +                     maxburst = priv_dev->ep_iso_burst - 1;
-> > >                       buffering = (mult + 1) *
-> > >                                   (maxburst + 1);
-> > >
-> > >                       if (priv_ep->interval > 1)
-> > >                               buffering++;
-> > >               } else {
-> > > -                     maxburst = CDNS3_EP_BUF_SIZE - 1;
-> > > +                     maxburst = priv_dev->ep_buf_size - 1;
-> > >               }
-> > >               break;
-> > >       default:
-> > > @@ -2136,6 +2136,10 @@ int cdns3_ep_config(struct cdns3_endpoint *priv_ep, bool enable)
-> > >               ep_cfg |=  EP_CFG_STREAM_EN | EP_CFG_TDL_CHK | EP_CFG_SID_CHK;
-> > >       }
-> > >
-> > > +     mult = min_t(u8, mult, EP_CFG_MULT_MAX);
-> > > +     buffering = min_t(u8, buffering, EP_CFG_BUFFERING_MAX);
-> > > +     maxburst = min_t(u8, maxburst, EP_CFG_MAXBURST_MAX);
-
-These compare need to move above to keep variable "buffering" calculation
-correctly.
-
-> > > +
-> > >       ep_cfg |= EP_CFG_MAXPKTSIZE(max_packet_size) |
-> > >                 EP_CFG_MULT(mult) |
-> > >                 EP_CFG_BUFFERING(buffering) |
-> > > @@ -2970,6 +2974,43 @@ static int cdns3_gadget_udc_stop(struct usb_gadget *gadget)
-> > >       return 0;
-> > >  }
-> > >
-> > > +/**
-> > > + * cdns3_gadget_check_config - ensure cdns3 can support the USB configuration
-> > > + * @gadget: pointer to the USB gadget
-> > > + *
-> > > + * Used to record the maximum number of endpoints being used in a USB composite
-> > > + * device. (across all configurations)  This is to be used in the calculation
-> > > + * of the TXFIFO sizes when resizing internal memory for individual endpoints.
-> > > + * It will help ensured that the resizing logic reserves enough space for at
-> > > + * least one max packet.
-> > > + */
-> > > +static int cdns3_gadget_check_config(struct usb_gadget *gadget)
-> > > +{
-> > > +     struct cdns3_device *priv_dev = gadget_to_cdns3_device(gadget);
-> > > +     struct usb_ep *ep;
-> > > +     int n_in = 0;
-> > > +     int total;
-> > > +
-> > > +     list_for_each_entry(ep, &gadget->ep_list, ep_list) {
-> > > +             if (ep->claimed && (ep->address & USB_DIR_IN))
-> > > +                     n_in++;
-> > > +     }
-> > > +
-> > > +     priv_dev->ep_buf_size = 1;
-> > > +     priv_dev->ep_iso_burst = 1;
-> >
-> > You will re-calculate above variables below, why need to initialize them?
-> 
-> I worry about it is 0 or other random data at below error return branch.
-> Anyway, it should be okay to remove it.
-
-If it is failed, the .bind will fail, so it is okay to remove these.
-
-Other parts are okay for me.
-
-Peter
-
-> 
-> >
-> > Peter
-> > > +
-> > > +     /* 2KB are reserved for EP0, 1KB for out*/
-> > > +     total = 2 + n_in + 1;
-> > > +
-> > > +     if (total > priv_dev->onchip_buffers)
-> > > +             return -ENOMEM;
-> > > +
-> > > +     priv_dev->ep_buf_size = priv_dev->ep_iso_burst =
-> > > +                     (priv_dev->onchip_buffers - 2) / (n_in + 1);
-> > > +
-> > > +     return 0;
-> > > +}
-> > > +
-> > >  static const struct usb_gadget_ops cdns3_gadget_ops = {
-> > >       .get_frame = cdns3_gadget_get_frame,
-> > >       .wakeup = cdns3_gadget_wakeup,
-> > > @@ -2978,6 +3019,7 @@ static const struct usb_gadget_ops cdns3_gadget_ops = {
-> > >       .udc_start = cdns3_gadget_udc_start,
-> > >       .udc_stop = cdns3_gadget_udc_stop,
-> > >       .match_ep = cdns3_gadget_match_ep,
-> > > +     .check_config = cdns3_gadget_check_config,
-> > >  };
-> > >
-> > >  static void cdns3_free_all_eps(struct cdns3_device *priv_dev)
-> > > diff --git a/drivers/usb/cdns3/cdns3-gadget.h b/drivers/usb/cdns3/cdns3-gadget.h
-> > > index c5660f2c4293f..fbe4a8e3aa897 100644
-> > > --- a/drivers/usb/cdns3/cdns3-gadget.h
-> > > +++ b/drivers/usb/cdns3/cdns3-gadget.h
-> > > @@ -562,15 +562,18 @@ struct cdns3_usb_regs {
-> > >  /* Max burst size (used only in SS mode). */
-> > >  #define EP_CFG_MAXBURST_MASK GENMASK(11, 8)
-> > >  #define EP_CFG_MAXBURST(p)   (((p) << 8) & EP_CFG_MAXBURST_MASK)
-> > > +#define EP_CFG_MAXBURST_MAX  15
-> > >  /* ISO max burst. */
-> > >  #define EP_CFG_MULT_MASK     GENMASK(15, 14)
-> > >  #define EP_CFG_MULT(p)               (((p) << 14) & EP_CFG_MULT_MASK)
-> > > +#define EP_CFG_MULT_MAX              2
-> > >  /* ISO max burst. */
-> > >  #define EP_CFG_MAXPKTSIZE_MASK       GENMASK(26, 16)
-> > >  #define EP_CFG_MAXPKTSIZE(p) (((p) << 16) & EP_CFG_MAXPKTSIZE_MASK)
-> > >  /* Max number of buffered packets. */
-> > >  #define EP_CFG_BUFFERING_MASK        GENMASK(31, 27)
-> > >  #define EP_CFG_BUFFERING(p)  (((p) << 27) & EP_CFG_BUFFERING_MASK)
-> > > +#define EP_CFG_BUFFERING_MAX 15
-> > >
-> > >  /* EP_CMD - bitmasks */
-> > >  /* Endpoint reset. */
-> > > @@ -1094,9 +1097,6 @@ struct cdns3_trb {
-> > >  #define CDNS3_ENDPOINTS_MAX_COUNT    32
-> > >  #define CDNS3_EP_ZLP_BUF_SIZE                1024
-> > >
-> > > -#define CDNS3_EP_BUF_SIZE            4       /* KB */
-> > > -#define CDNS3_EP_ISO_HS_MULT         3
-> > > -#define CDNS3_EP_ISO_SS_BURST                3
-> > >  #define CDNS3_MAX_NUM_DESCMISS_BUF   32
-> > >  #define CDNS3_DESCMIS_BUF_SIZE               2048    /* Bytes */
-> > >  #define CDNS3_WA2_NUM_BUFFERS                128
-> > > @@ -1333,6 +1333,9 @@ struct cdns3_device {
-> > >       /*in KB */
-> > >       u16                             onchip_buffers;
-> > >       u16                             onchip_used_size;
-> > > +
-> > > +     u16                             ep_buf_size;
-> > > +     u16                             ep_iso_burst;
-> > >  };
-> > >
-> > >  void cdns3_set_register_bit(void __iomem *ptr, u32 mask);
-> > > --
-> > > 2.35.1
-> > >
-> >
-> > --
-> >
-> > Thanks,
-> > Peter Chen
-> >
-
--- 
-
-Thanks,
-Peter Chen
+> </formletter>
+> .
 
