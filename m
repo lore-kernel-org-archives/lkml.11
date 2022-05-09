@@ -2,137 +2,261 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36841C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 12:07:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7063DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 12:09:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233865AbiEIMLi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 08:11:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52838 "EHLO
+        id S233758AbiEIMNR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 08:13:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233830AbiEIMLg (ORCPT
+        with ESMTP id S233895AbiEIMNM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 08:11:36 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02517F7C
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 05:07:42 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id h29so23425361lfj.2
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 05:07:41 -0700 (PDT)
+        Mon, 9 May 2022 08:13:12 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CB83E32;
+        Mon,  9 May 2022 05:09:19 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id g184so9370567pgc.1;
+        Mon, 09 May 2022 05:09:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Hz3zG1O/2dJnaL0QRSc1BWnr4Oj4kSB/rZ/+LbRoQNo=;
-        b=HdD8N5grafzdCe33CeRKQJvrcU29ZFh4YJE3ipN+hI/kD/xf6bVomPvC2YyRkdduzw
-         seFgw/J3PAdFjodA2jhLq9eafg7HXuy5e0I8alCtityGQ+244GYkSm9tXadNbZngJFW/
-         ZiNHCkqyCi+U7bmqxjLhjtDWtP12gZeJFI2+1pPxUFaGKG1MAeQ5ixelX5iCgArN4dOu
-         lP4QykvJVm0+Yte69KSDGbP1oXXa0L5TxGf8bVMgBrVFewYU5O45Wsx6OxaxW7aoh0IY
-         /e2kgbe7gjDEmM2ZTK3UXbA6wJ8mEIraGqJDDBPB52n1wTblbqbw5SB7iTqjLrhnp1Kb
-         Vyfg==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ZCKR2KVToumZXg10SfRvbk1URc/xJPQvsDbss1BO/1o=;
+        b=ePKFMJwL5M1xzt0w76+6VlSDEby4h4o0iY4YRShL+32c2fNBngdZDBkJ8+lYgsifg1
+         JZ2yaxHPvbFrydTuxN9q91HvF5fv9hZvt35W+3wSMEZNIPaN3Tw5lO0uaNCR2JR2tlt8
+         o/FNAtivqYH3yIf+HOVGe8VtMMZHmkyLbhMRSqrkrXRqjedOxVFYV72tpvxfz9iqDLdS
+         xjO9YXahuk/4G5wCYGnJFObReCScziM3Rl7J9SUv0aDDIx2DGvpYbaLQpPSYgJIDrxLl
+         qjqFUgWKmPx9OGYuJisuhkoMB+226LCqRj+PH30FmG8NSFPalGLRRj2ry/mBRk3Yo+Jx
+         YMtw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Hz3zG1O/2dJnaL0QRSc1BWnr4Oj4kSB/rZ/+LbRoQNo=;
-        b=tyxD3ck/hP4+Bb2VQp5ldPsguia+2mxkiTCfpmIY8AdP9Q2K0ZWyE41sS6kLAoZpfF
-         6oim6B23wO4RfH17h5rebWirsO1PMYFweban2n4KC9bBDlk1B5X16FezeQZlZBBAwX39
-         pCYht8FTdFZBtluMPtJR3jbdMESGhkoP+Tt2c6I3Jx5kgc/FfVLxe1H3mVBhVQlxnoXj
-         X6LbvDm4u0kzANkAV5oE5Yj20JCmO4fFLWK2SJTxsuJi25rZ4kmRWBHEfT3tdK3nB8CE
-         wst0ppGlnYjLgQwStAGynHKZtZ9faoFu6CJfXOwxi3LiN1gEnlqVMem7foR3Ee9vE+T+
-         l5ng==
-X-Gm-Message-State: AOAM5302ItgsoK7gH2rotOmQ/93SIMSG5zJEFf8/Cv9AZDxB/zufECdu
-        yYcjvPuWhsUEM1Xa3mQi9pGhqQ==
-X-Google-Smtp-Source: ABdhPJwQM6U2NgGWtVQ07fnwW0qXKObLQlxYMDL5CCNjEwY0pTkUTytCkOqEuvDXVv17RWPqX8jdkA==
-X-Received: by 2002:a05:6512:13a7:b0:447:3dac:7a03 with SMTP id p39-20020a05651213a700b004473dac7a03mr12797757lfa.362.1652098060361;
-        Mon, 09 May 2022 05:07:40 -0700 (PDT)
-Received: from box.localdomain ([86.57.175.117])
-        by smtp.gmail.com with ESMTPSA id p7-20020a19f107000000b0047255d211cfsm1913325lfh.254.2022.05.09.05.07.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 05:07:39 -0700 (PDT)
-Received: by box.localdomain (Postfix, from userid 1000)
-        id 39CBB10446D; Mon,  9 May 2022 15:09:27 +0300 (+03)
-Date:   Mon, 9 May 2022 15:09:27 +0300
-From:   "Kirill A. Shutemov" <kirill@shutemov.name>
-To:     Kai Huang <kai.huang@intel.com>
-Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Sathyanarayanan Kuppuswamy 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>, Tony Luck <tony.luck@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Wander Lairson Costa <wander@redhat.com>,
-        Isaku Yamahata <isaku.yamahata@gmail.com>,
-        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
-        khalid.elmously@canonical.com, philip.cox@canonical.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 3/3] x86/tdx: Add Quote generation support
-Message-ID: <20220509120927.7rg6v5pyc3f4pxsh@box.shutemov.name>
-References: <20220503012721.ok7fbvxmnvsr6qny@box.shutemov.name>
- <58d07b2d-cef5-17ed-9c57-e12fe5665e04@intel.com>
- <40ccd0f0-35a1-5aa7-9e51-25ab196d79e5@linux.intel.com>
- <2ed5c9cc316950a5a47ee714715b7980f358a140.camel@intel.com>
- <ab17102c-0cb7-87d3-3494-969866d64573@linux.intel.com>
- <d53696f85ada39a91a3685c61d177c582810772e.camel@intel.com>
- <d63d2774-c44d-27da-74b6-550935a196fd@intel.com>
- <dca06ffa36abe9989f0a7abaeafc83c1a7250651.camel@intel.com>
- <20220507004236.5p5dyksftge7wwr3@black.fi.intel.com>
- <45d184273f1950320843f6696eb3071f7d354fd3.camel@intel.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ZCKR2KVToumZXg10SfRvbk1URc/xJPQvsDbss1BO/1o=;
+        b=dYNtyqgnmeSbq7k7y/FPy4GVsYnHBys5lYD9eomYnoDwaF947jSr0NZ0mU3SNTtwik
+         Lisglgl4UnsiASg89SodLbv5lPQXsOyGu+sEdbsYHkL5wGMUwxEsHpHQCoBQ8h7attFo
+         2zPtbKrGAQSW4Id8LjXBvI1ysqQrfNoJi/xaR++auNnMWv7PrzOOayx0dvBFaytAUDNr
+         uQA+/UmnO9GoPWQ4y36FWV7KVH1QsNr+kjnPdU+Kh49DNnCdB/c7oa5Cijxk9zB98aVZ
+         W5RNyTXyG/AEze7+qwUswsvx6NnRJbcej5M2SRB92O5l/pfaBDTOfNGQ6szz9HJSYi9h
+         85sQ==
+X-Gm-Message-State: AOAM531vG7eGFVvKOFkdwYTvtMCzXqlSomb8L8ueYPb1BY77Yi+qMag+
+        qHdIh1d2Ac5ENiemQ9LS4b8=
+X-Google-Smtp-Source: ABdhPJwCNlzwTWdyYUV9nLIUQ8FyUrTnDjVEBuHktiZQfP4Wryqs2YCdeWG4ZYYFdtjeADhw7PCaWg==
+X-Received: by 2002:a05:6a00:1307:b0:4b0:b1c:6fd9 with SMTP id j7-20020a056a00130700b004b00b1c6fd9mr15621633pfu.27.1652098158457;
+        Mon, 09 May 2022 05:09:18 -0700 (PDT)
+Received: from [172.30.1.40] ([14.32.163.5])
+        by smtp.gmail.com with ESMTPSA id y10-20020a170902d64a00b0015e8d4eb2d8sm6916016plh.290.2022.05.09.05.09.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 09 May 2022 05:09:18 -0700 (PDT)
+Message-ID: <94efefab-918d-2367-4b74-076dd6f23936@gmail.com>
+Date:   Mon, 9 May 2022 21:09:11 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <45d184273f1950320843f6696eb3071f7d354fd3.camel@intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v3 1/2] dt-bindings: interconnect: Add MediaTek CCI
+ dt-bindings
+Content-Language: en-US
+To:     Johnson Wang <johnson.wang@mediatek.com>, cw00.choi@samsung.com,
+        krzk+dt@kernel.org, robh+dt@kernel.org, kyungmin.park@samsung.com
+Cc:     khilman@kernel.org, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, jia-wei.chang@mediatek.com,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220425125546.4129-1-johnson.wang@mediatek.com>
+ <20220425125546.4129-2-johnson.wang@mediatek.com>
+From:   Chanwoo Choi <cwchoi00@gmail.com>
+In-Reply-To: <20220425125546.4129-2-johnson.wang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 03:37:22PM +1200, Kai Huang wrote:
-> On Sat, 2022-05-07 at 03:42 +0300, Kirill A. Shutemov wrote:
-> > On Fri, May 06, 2022 at 12:11:03PM +1200, Kai Huang wrote:
-> > > Kirill, what's your opinion?
-> > 
-> > I said before that I think DMA API is the right tool here.
-> > 
-> > Speculation about future of DMA in TDX is irrelevant here. If semantics
-> > change we will need to re-evaluate all users. VirtIO uses DMA API and it
-> > is conceptually the same use-case: communicate with the host.
+Hi,
+
+On 22. 4. 25. 21:55, Johnson Wang wrote:
+> Add devicetree binding of MediaTek CCI on MT8183 and MT8186.
 > 
-> Virtio is designed for device driver to use, so it's fine to use DMA API. And
-> real DMA can happen to the virtio DMA buffers.  Attestation doesn't have such
-> assumption.
-
-Whether attestation driver uses struct device is implementation detail.
-I don't see what is you point.
-
-> DMA API has it's limitations.
-
-Could you elaborate here?
-
-
-> So I don't see why TD guest kernel cannot have a simple protocol to vmap() a
-> page (or couple of pages) as shared on-demand, like below:
+> Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
+> Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
+> ---
+>   .../bindings/interconnect/mediatek,cci.yaml   | 139 ++++++++++++++++++
+>   1 file changed, 139 insertions(+)
+>   create mode 100644 Documentation/devicetree/bindings/interconnect/mediatek,cci.yaml
 > 
-> 	page = alloc_page();
-> 
-> 	addr = vmap(page,  pgprot_decrypted(PAGE_KERNEL));
-> 
-> 	clflush_cache_range(page_address(page), PAGE_SIZE);
-> 
-> 	MapGPA(page_to_phys(page) | cc_mkdec(0), PAGE_SIZE);
-> 
-> And we can even avoid above clflush_cache_range() if I understand correctly.
-> 
-> Or  I missed something?
+> diff --git a/Documentation/devicetree/bindings/interconnect/mediatek,cci.yaml b/Documentation/devicetree/bindings/interconnect/mediatek,cci.yaml
+> new file mode 100644
+> index 000000000000..e5221e17d11b
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/interconnect/mediatek,cci.yaml
+> @@ -0,0 +1,139 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/interconnect/mediatek,cci.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: MediaTek Cache Coherent Interconnect (CCI) frequency and voltage scaling
+> +
+> +maintainers:
+> +  - Jia-Wei Chang <jia-wei.chang@mediatek.com>
 
-For completeness, cover free path too. Are you going to opencode page
-accept too?
+Why did you add your author information?
+Please add your author information.
 
-Private->Shared conversion is destructive. You have to split SEPT, flush
-TLB. Backward conversion even more costly.
+And add this dt-binding information to MAINTAINERS
+as following: because I cannot catch the later patch
+of modification.
 
-Rule of thumb is avoid conversion where possible. DMA API is there for
-you.
+cwchoi00@chanwoo:~/kernel/linux.chanwoo$ d
+diff --git a/MAINTAINERS b/MAINTAINERS
+index edc96cdb85e8..a11e9c1947b7 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -5698,6 +5698,7 @@ L:        linux-pm@vger.kernel.org
+  S:     Maintained
+  T:     git git://git.kernel.org/pub/scm/linux/kernel/git/chanwoo/linux.git
+  F:     Documentation/devicetree/bindings/devfreq/
++F:     Documentation/devicetree/bindings/interconnect/mediatek,cci.yaml
+  F:     drivers/devfreq/
+  F:     include/linux/devfreq.h
+  F:     include/trace/events/devfreq.h
+
+
+> +
+> +description: |
+> +  MediaTek Cache Coherent Interconnect (CCI) is a hardware engine used by
+> +  MT8183 and MT8186 SoCs to scale the frequency and adjust the voltage in
+> +  hardware. It can also optimize the voltage to reduce the power consumption.
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - mediatek,mt8183-cci
+> +      - mediatek,mt8186-cci
+> +
+> +  clocks:
+> +    items:
+> +      - description:
+> +          The multiplexer for clock input of CPU cluster.
+> +      - description:
+> +          A parent of "cpu" clock which is used as an intermediate clock source
+> +          when the original CPU is under transition and not stable yet.
+> +
+> +  clock-names:
+> +    items:
+> +      - const: cci
+> +      - const: intermediate
+> +
+> +  operating-points-v2: true
+> +  opp-table: true
+> +
+> +  proc-supply:
+> +    description:
+> +      Phandle of the regulator for CCI that provides the supply voltage.
+> +
+> +  sram-supply:
+> +    description:
+> +      Phandle of the regulator for sram of CCI that provides the supply
+> +      voltage. When it presents, the cci devfreq driver needs to do
+> +      "voltage tracking" to step by step scale up/down Vproc and Vsram to fit
+> +      SoC specific needs. When absent, the voltage scaling flow is handled by
+> +      hardware, hence no software "voltage tracking" is needed.
+> +
+> +required:
+> +  - compatible
+> +  - clocks
+> +  - clock-names
+> +  - operating-points-v2
+> +  - proc-supply
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/clock/mt8183-clk.h>
+> +    cci: cci {
+> +        compatible = "mediatek,mt8183-cci";
+> +        clocks = <&mcucfg CLK_MCU_BUS_SEL>,
+> +                 <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
+> +        clock-names = "cci", "intermediate";
+> +        operating-points-v2 = <&cci_opp>;
+> +        proc-supply = <&mt6358_vproc12_reg>;
+> +    };
+> +
+> +    cci_opp: opp-table-cci {
+> +        compatible = "operating-points-v2";
+> +        opp-shared;
+> +        opp2_00: opp-273000000 {
+> +            opp-hz = /bits/ 64 <273000000>;
+> +            opp-microvolt = <650000>;
+> +        };
+> +        opp2_01: opp-338000000 {
+> +            opp-hz = /bits/ 64 <338000000>;
+> +            opp-microvolt = <687500>;
+> +        };
+> +        opp2_02: opp-403000000 {
+> +            opp-hz = /bits/ 64 <403000000>;
+> +            opp-microvolt = <718750>;
+> +        };
+> +        opp2_03: opp-463000000 {
+> +            opp-hz = /bits/ 64 <463000000>;
+> +            opp-microvolt = <756250>;
+> +        };
+> +        opp2_04: opp-546000000 {
+> +            opp-hz = /bits/ 64 <546000000>;
+> +            opp-microvolt = <800000>;
+> +        };
+> +        opp2_05: opp-624000000 {
+> +            opp-hz = /bits/ 64 <624000000>;
+> +            opp-microvolt = <818750>;
+> +        };
+> +        opp2_06: opp-689000000 {
+> +            opp-hz = /bits/ 64 <689000000>;
+> +            opp-microvolt = <850000>;
+> +        };
+> +        opp2_07: opp-767000000 {
+> +            opp-hz = /bits/ 64 <767000000>;
+> +            opp-microvolt = <868750>;
+> +        };
+> +        opp2_08: opp-845000000 {
+> +            opp-hz = /bits/ 64 <845000000>;
+> +            opp-microvolt = <893750>;
+> +        };
+> +        opp2_09: opp-871000000 {
+> +            opp-hz = /bits/ 64 <871000000>;
+> +            opp-microvolt = <906250>;
+> +        };
+> +        opp2_10: opp-923000000 {
+> +            opp-hz = /bits/ 64 <923000000>;
+> +            opp-microvolt = <931250>;
+> +        };
+> +        opp2_11: opp-962000000 {
+> +            opp-hz = /bits/ 64 <962000000>;
+> +            opp-microvolt = <943750>;
+> +        };
+> +        opp2_12: opp-1027000000 {
+> +            opp-hz = /bits/ 64 <1027000000>;
+> +            opp-microvolt = <975000>;
+> +        };
+> +        opp2_13: opp-1092000000 {
+> +            opp-hz = /bits/ 64 <1092000000>;
+> +            opp-microvolt = <1000000>;
+> +        };
+> +        opp2_14: opp-1144000000 {
+> +            opp-hz = /bits/ 64 <1144000000>;
+> +            opp-microvolt = <1025000>;
+> +        };
+> +        opp2_15: opp-1196000000 {
+> +            opp-hz = /bits/ 64 <1196000000>;
+> +            opp-microvolt = <1050000>;
+> +        };
+> +    };
+
 
 -- 
- Kirill A. Shutemov
+Best Regards,
+Samsung Electronics
+Chanwoo Choi
