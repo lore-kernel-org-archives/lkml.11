@@ -2,84 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10767C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 01:25:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3F7EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 01:25:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231938AbiEIB27 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 21:28:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52900 "EHLO
+        id S232835AbiEIB30 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 21:29:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236244AbiEIBTS (ORCPT
+        with ESMTP id S236003AbiEIBBq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 21:19:18 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 982D1DEAA
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 18:15:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=9JrCOCM30ilOC9vzCqWbSPlDJ7txpo/M+NzbZ8p3R0E=; b=WVjIBbD7AL0NyglpP6OcDY6XvD
-        cLHBlr4nlgTK1UpZtsOne3hlswXVeWg6YdtNHoQyX5yUoUAYd7sCtyk1eT1vZWYpDAPjYEyLKkgCZ
-        crvcRALGOijK2C9L4cxd9BB3YKXq3v8rkY7Hks3fwlqgp3VKquNj1zz3Ac89y8heVAoj6HEieLjNp
-        0MzPrzrx8+3ptaHQFfqSqdbNKmvppEUx2SLZ9nbFDiOULEJicK1lg/6AZlrrkZ4pGjb/iweV/WH7k
-        fqSO4RyXHB0Hve66aTaZjPh3j3tKrOiFIY3WLlg1FeDzW9LgnSraji+0P6SpcORzF+af72Tv0EhKV
-        BOX6kI6g==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nnrzR-002zYW-Tg; Mon, 09 May 2022 01:15:09 +0000
-Date:   Mon, 9 May 2022 02:15:09 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     kernel test robot <lkp@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: Re: WARNING: modpost: vmlinux.o(.text+0xa76d36): Section mismatch in
- reference from the function rtc_update_irq() to the variable .init.text:.L0
-Message-ID: <YnhrHXHv8tjotmnE@casper.infradead.org>
-References: <202205090847.j9NvIYxI-lkp@intel.com>
+        Sun, 8 May 2022 21:01:46 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D2DEBE0A
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 17:57:53 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id w1so21256638lfa.4
+        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 17:57:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ieee.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uk2GCo4tzO2z68A4aXi5qgjOdRQLhbqgNbxwMMvi8jk=;
+        b=Nql1Yjsic1g62x+3t7bP9sHcXY0u/gU5tmXaF5KQZzfGTru2e4lVe0MtlZA0k3imjr
+         YJxXKkTCdME5QT1vex+PZQooBQh5O0iISkVhcWdtmTb504b90IqPn944ijh9S2yR++u1
+         IQ1fIJlmWrCDlpWRNr+iMvB8UtpS7SN/swZmg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uk2GCo4tzO2z68A4aXi5qgjOdRQLhbqgNbxwMMvi8jk=;
+        b=wtjzD8KhOdMeicYB65U7QjSygkT2o7U4ZSzai94/4q9iJiZWjscf+mADve5p35aj4g
+         kJyjuJLi6Q7GmlMjgu8+BKIPIqvYhCJ8+w7Eb8Nm8S3kmsmI276/zDR0n9p/6CJX8sK1
+         grImbR+JfOx6I9Uy+C3sZVKYPUGcH/N+kSvmXEzi8N+7V86qibWsFM8ZXHrFjQP8MGQ6
+         rBWKQPKMcmPfOnLRHyaRhjIxEgiXpqyadyL4MRX+iSU+PybbyRaxEUSIiYwCsIddlkK9
+         MPetBYmS3TWOO8cFiR3EYDToUKh4uTKr1k3pLK9PD6BsqLtjfM+omvM/Fo7ux30KrWIu
+         T8HA==
+X-Gm-Message-State: AOAM530iDNlOPil4+lu5gdNFIkjvXMtGG04CBTfPGnfVgvpp2iDrF77D
+        9l2kHo4UR5Gj3gNFSSyGA+vLpk/Hg+wunBSmAb2F8g==
+X-Google-Smtp-Source: ABdhPJxYBGZN3P6DUr9QO720p7L7DYzFc6NRLCCRB9YrdPE8dAs6b+kSAN+4GFnljqurF4eRVhDm4HNiVEwm+vNJoIs=
+X-Received: by 2002:a05:6512:220d:b0:473:9ee1:660d with SMTP id
+ h13-20020a056512220d00b004739ee1660dmr11065115lfu.326.1652057870802; Sun, 08
+ May 2022 17:57:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202205090847.j9NvIYxI-lkp@intel.com>
+References: <20220508214500.60446-1-colin.i.king@gmail.com>
+In-Reply-To: <20220508214500.60446-1-colin.i.king@gmail.com>
+From:   Ozgur <ozgurk@ieee.org>
+Date:   Mon, 9 May 2022 04:57:40 +0400
+Message-ID: <CAADfD8wApw_v+uDTijY1K89WRJ_f7tkHmz=6LR086yMjEU4mWQ@mail.gmail.com>
+Subject: Re: [PATCH] x25: remove redundant pointer dev
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     Martin Schiller <ms@dev.tdt.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-x25@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        lkml <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 08:14:44AM +0800, kernel test robot wrote:
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> head:   c5eb0a61238dd6faf37f58c9ce61c9980aaffd7a
-> commit: 170f37d6aa6ad4582eefd7459015de79e244536e block: Do not call folio_next() on an unreferenced folio
-> date:   4 days ago
-> config: riscv-randconfig-r042-20220509 (https://download.01.org/0day-ci/archive/20220509/202205090847.j9NvIYxI-lkp@intel.com/config)
-> compiler: riscv32-linux-gcc (GCC) 11.3.0
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=170f37d6aa6ad4582eefd7459015de79e244536e
->         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
->         git fetch --no-tags linus master
->         git checkout 170f37d6aa6ad4582eefd7459015de79e244536e
->         # save the config file
->         mkdir build_dir && cp config build_dir/.config
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All warnings (new ones prefixed by >>, old ones prefixed by <<):
-> 
-> >> WARNING: modpost: vmlinux.o(.text+0xa76d36): Section mismatch in reference from the function rtc_update_irq() to the variable .init.text:.L0
-> The function rtc_update_irq() references
-> the variable __init .L0 .
-> This is often because rtc_update_irq lacks a __init
-> annotation or the annotation of .L0 is wrong.
-> 
-> Note: the below error/warnings can be found in parent commit:
-> << WARNING: modpost: vmlinux.o(.text+0xa7418e): Section mismatch in reference from the function rtc_month_days() to the variable .init.setup:__setup_root_delay_setup
-> << WARNING: modpost: vmlinux.o(.text+0xb2080e): Section mismatch in reference from the function thermal_zone_device_unregister() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0xb34ff0): Section mismatch in reference from the function btintel_enter_mfg() to the variable .init.text:.LBB18955
-> << WARNING: modpost: vmlinux.o(.text+0xb5964e): Section mismatch in reference from the function cpuidle_switch_governor() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0xbacbfa): Section mismatch in reference from the function comedi_buf_map_get() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(__ex_table+0x141c): Section mismatch in reference from the variable .L0 to the variable .debug_str:.LASF1100
+On Mon, May 9, 2022 at 1:45 AM Colin Ian King <colin.i.king@gmail.com> wrote:
+>
+> Pointer dev is being assigned a value that is never used, the assignment
+> and the variable are redundant and can be removed. Also replace null check
+> with the preferred !ptr idiom.
+>
 
-I'm going to suggest that my commit is not responsible for anything
-other than moving a warning around.  I do not intend to investigate
-this further unless someone tells me otherwise.
+Hello,
+
+*dev pointer is device assign global linked list and shouldnt be
+touched by the driver so *dev wont get any value right?
+Also seems to use this while network interface is initializing because
+some activation information and stats information is also kept here,
+for example, open *dev will call when ifconfig is called from.
+
+route, link, forward these inital activate and move all values with
+net_device *dev?
+
+Regards
+
+> Cleans up clang scan warning:
+> net/x25/x25_proc.c:94:26: warning: Although the value stored to 'dev' is
+> used in the enclosing expression, the value is never actually read
+> from 'dev' [deadcode.DeadStores]
+>
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> ---
+>  net/x25/x25_proc.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+>
+> diff --git a/net/x25/x25_proc.c b/net/x25/x25_proc.c
+> index 3bddcbdf2e40..91a2aade3960 100644
+> --- a/net/x25/x25_proc.c
+> +++ b/net/x25/x25_proc.c
+> @@ -79,7 +79,6 @@ static int x25_seq_socket_show(struct seq_file *seq, void *v)
+>  {
+>         struct sock *s;
+>         struct x25_sock *x25;
+> -       struct net_device *dev;
+>         const char *devname;
+>
+>         if (v == SEQ_START_TOKEN) {
+> @@ -91,7 +90,7 @@ static int x25_seq_socket_show(struct seq_file *seq, void *v)
+>         s = sk_entry(v);
+>         x25 = x25_sk(s);
+>
+> -       if (!x25->neighbour || (dev = x25->neighbour->dev) == NULL)
+> +       if (!x25->neighbour || !x25->neighbour->dev)
+>                 devname = "???";
+>         else
+>                 devname = x25->neighbour->dev->name;
+> --
+> 2.35.1
+>
