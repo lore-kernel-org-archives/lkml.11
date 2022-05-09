@@ -2,140 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EC6CC352A7
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8258FC352A8
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:30:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237767AbiEIJdy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 05:33:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43140 "EHLO
+        id S237948AbiEIJeD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 05:34:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235054AbiEIJP3 (ORCPT
+        with ESMTP id S235049AbiEIJAi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 05:15:29 -0400
-Received: from mail-wr1-x449.google.com (mail-wr1-x449.google.com [IPv6:2a00:1450:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4626F184336
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 02:11:34 -0700 (PDT)
-Received: by mail-wr1-x449.google.com with SMTP id s16-20020adfeb10000000b0020cc4e5e683so1244804wrn.6
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 02:11:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=IH0vvM/kP0uifpRXlZnh4SaDor5QOPAjFTBMDXDGKyo=;
-        b=B09v9hRISUnIUJr8S6o8wK7zVTSj8p7Dl9kKiv6agbvXdk0K+rYHFsQ20A91SX2LQY
-         a4u0BeNjZdtCIHaD6hg4CegDvRIumU+GG9+WswJSqcmqxyAaCndBhKWWA/sHm+mULJsM
-         EFxCoAVKUQ62TqFfcEoIcjcQwUlAeEZtk+790dMSF/NrjY3dhm3GMEzv7pcHJmafQvPW
-         Swp2yETs1yqHbFVgodLjp02YYtze2k5+QCtM7C7PB1k9Ldx4uTT94pFklbUwDiEih0lm
-         Ehlp6ZSZbFfSclo1Bo+RsNbp95CtRYg77mCiPGfj1uWYZY3VIMXOv+KR4Ovb2UgNcgsU
-         1xMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=IH0vvM/kP0uifpRXlZnh4SaDor5QOPAjFTBMDXDGKyo=;
-        b=q5nJysPh405O2JpIBZb8w3G5g2G4I3Z2nTU+DT+K4oPf3qfgEQfExfUtejMAzj4WsD
-         MgZuj4UsNRE+TU/FWcbfNXzuMMkQCcvi58CrwV9yxyU09apogWEUMjowwyF0kICpJ5Q/
-         Ks5py2q4AEbmaOdkKe4fnP2U0b/P8X9zJqRxzQ3c44OKspkgmf6FZSsNrAGXUf+0kviH
-         CrraDWdeGbMYnsncHKliroIS/YYvzhSR69vyiZB5FgRQdGbV5SxKjR15fC4PXfXrsob2
-         N8rU4f0bG04V6/7oqy0HBexAJdSeKCReTfg0+HAHNXVcGWn6kiJkCZBexqAQMHUZ83tJ
-         ACAg==
-X-Gm-Message-State: AOAM533XuWPkv2szjzfQR6j3ug2AduVZvam2J6rbxDnjlLldJ5vQAhG3
-        OkjCvGz6SWDxfIv+QCMfJbFvXnQo1ND+VBecLGo=
-X-Google-Smtp-Source: ABdhPJzDBb+IibuMCsYzEHx70Sg9Oqf6zDRjgWN+hqsk+ZHhARM2Qrlz4RolnqAZwHGEgHxe5gIWNvoQgmwIYQWQ/TM=
-X-Received: from sene.c.googlers.com ([fda3:e722:ac3:cc00:28:9cb1:c0a8:27c4])
- (user=sebastianene job=sendgmr) by 2002:a05:6000:1843:b0:20c:57b2:472c with
- SMTP id c3-20020a056000184300b0020c57b2472cmr12738619wri.142.1652087492700;
- Mon, 09 May 2022 02:11:32 -0700 (PDT)
-Date:   Mon,  9 May 2022 09:11:04 +0000
-In-Reply-To: <20220509091103.2220604-1-sebastianene@google.com>
-Message-Id: <20220509091103.2220604-2-sebastianene@google.com>
-Mime-Version: 1.0
-References: <20220509091103.2220604-1-sebastianene@google.com>
-X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
-Subject: [PATCH v5 1/2] dt-bindings: vcpu_stall_detector: Add
- qemu,vcpu-stall-detector compatible
-From:   Sebastian Ene <sebastianene@google.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Dragan Cvetic <dragan.cvetic@xilinx.com>
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        maz@kernel.org, will@kernel.org, qperret@google.com,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sebastian Ene <sebastianene@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 9 May 2022 05:00:38 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 175CB13FA29;
+        Mon,  9 May 2022 01:56:45 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KxZks2yMYzfbS7;
+        Mon,  9 May 2022 16:55:33 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 9 May 2022 16:56:42 +0800
+Subject: Re: [PATCH] MM: handle THP in swap_*page_fs() - count_vm_events()
+To:     Yang Shi <shy828301@gmail.com>
+CC:     NeilBrown <neilb@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Christoph Hellwig <hch@lst.de>, <linux-nfs@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Huang Ying <ying.huang@intel.com>
+References: <165146746627.24404.2324091720943354711@noble.neil.brown.name>
+ <Ym9pLhqtf61AVrZG@casper.infradead.org>
+ <165146932944.24404.17790836056748683378@noble.neil.brown.name>
+ <Ym9szKx7qYZTlKF2@casper.infradead.org>
+ <CAHbLzkqtjg6yaPp-yktRtUBo5-Yw9rJKvJWH9PDDHxsuHh6Mhw@mail.gmail.com>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <059786bc-191b-8126-0c76-34dbf2e29159@huawei.com>
+Date:   Mon, 9 May 2022 16:56:42 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
+MIME-Version: 1.0
+In-Reply-To: <CAHbLzkqtjg6yaPp-yktRtUBo5-Yw9rJKvJWH9PDDHxsuHh6Mhw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The VCPU stall detection mechanism allows to configure the expiration
-duration and the internal counter clock frequency measured in Hz.
-Add these properties in the schema.
+On 2022/5/7 1:26, Yang Shi wrote:
+> On Sun, May 1, 2022 at 10:32 PM Matthew Wilcox <willy@infradead.org> wrote:
+>>
+>> On Mon, May 02, 2022 at 03:28:49PM +1000, NeilBrown wrote:
+>>> On Mon, 02 May 2022, Matthew Wilcox wrote:
+>>>> On Mon, May 02, 2022 at 02:57:46PM +1000, NeilBrown wrote:
+>>>>> @@ -390,9 +392,9 @@ static void sio_read_complete(struct kiocb *iocb, long ret)
+>>>>>                   struct page *page = sio->bvec[p].bv_page;
+>>>>>
+>>>>>                   SetPageUptodate(page);
+>>>>> +                 count_swpout_vm_event(page);
+>>>>>                   unlock_page(page);
+>>>>>           }
+>>>>> -         count_vm_events(PSWPIN, sio->pages);
+>>>>
+>>>> Surely that should be count_swpIN_vm_event?
+>>>>
+>>> I'm not having a good day....
+>>>
+>>> Certainly shouldn't be swpout.  There isn't a count_swpin_vm_event().
+>>>
+>>> swap_readpage() only counts once for each page no matter how big it is.
+>>> While swap_writepage() counts one for each PAGE_SIZE written.
+>>>
+>>> And we have THP_SWPOUT but not THP_SWPIN
+>>
+>> _If_ I understand the swap-in patch correctly (at least as invoked by
+>> shmem), it won't attempt to swap in an entire THP.  Even if it swapped
+>> out an order-9 page, it will bring in order-0 pages from swap, and then
+>> rely on khugepaged to reassemble them.
+> 
+> Totally correct. The try_to_unmap() called by vmscan would split PMD
+> to PTEs then install swap entries for each PTE but keep the huge page
+> unsplit.
+> 
+> BTW, there were patches adding THP swapin support, but they were never merged.
 
-While this is a memory mapped virtual device, it is expected to be loaded
-when the DT contains the compatible: "qemu,vcpu-stall-detector" node.
-In a protected VM we trust the generated DT nodes and we don't rely on
-the host to present the hardware peripherals.
+Could you please tell me where the THP swapin patches are ? It would be really helpful
+if you can kindly figure that out for me! :)
 
-Signed-off-by: Sebastian Ene <sebastianene@google.com>
----
- .../bindings/misc/vcpu_stall_detector.yaml    | 47 +++++++++++++++++++
- 1 file changed, 47 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/misc/vcpu_stall_detector.yaml
+Thanks a lot!
 
-diff --git a/Documentation/devicetree/bindings/misc/vcpu_stall_detector.yaml b/Documentation/devicetree/bindings/misc/vcpu_stall_detector.yaml
-new file mode 100644
-index 000000000000..2496fd84faa0
---- /dev/null
-+++ b/Documentation/devicetree/bindings/misc/vcpu_stall_detector.yaml
-@@ -0,0 +1,47 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/misc/vcpu_stall_detector.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: VCPU stall detector
-+
-+description: |
-+  This binding describes a CPU stall detector mechanism for virtual cpus
-+  which is accessed through MMIO.
-+
-+maintainers:
-+  - Sebastian Ene <sebastianene@google.com>
-+
-+properties:
-+  compatible:
-+    enum:
-+      - qemu,vcpu-stall-detector
-+  clock-frequency:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description: |
-+      The internal clock of the stall detector peripheral measure in Hz used
-+      to decrement its internal counter register on each tick.
-+      Defaults to 10 if unset.
-+  timeout-sec:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description: |
-+      The stall detector expiration timeout measured in seconds.
-+      Defaults to 8 if unset. Please note that it also takes into account the
-+      time spent while the VCPU is not running.
-+
-+required:
-+  - compatible
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    vmwdt@9030000 {
-+      compatible = "qemu,vcpu-stall-detector";
-+      clock-frequency = <10>;
-+      timeout-sec = <8>;
-+      reg = <0x0 0x9030000 0x0 0x10000>;
-+    };
-+
-+...
--- 
-2.36.0.512.ge40c2bad7a-goog
+> 
+>>
+>> Someone who actually understands the swap code should check that my
+>> explanation here is correct.
+>>
+> .
+> 
 
