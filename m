@@ -2,181 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AB85C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78467C4707A
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:30:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237129AbiEIJdL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 05:33:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43076 "EHLO
+        id S237207AbiEIJdT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 05:33:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236972AbiEIJWb (ORCPT
+        with ESMTP id S237084AbiEIJaX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 05:22:31 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69B381CD24B;
-        Mon,  9 May 2022 02:18:38 -0700 (PDT)
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2498UabE017146;
-        Mon, 9 May 2022 11:18:35 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=C3wiR7qnEracRhKpAOx6YtBI+f6gCjQnqQN7TEosXEg=;
- b=z4glVLFgaqVLSpAbV0C/Y+xgGVW14z9XjRfrPXP0nwtS45E5FSNi+uyJ9oBpuwwQUR4e
- wUtLT/i/oAVJlHVSDSNJFCL6o6+4D3U1OgiwE9iILIjv6P38TwsaA7taUkCGWawqhEcz
- u2lT3y5wAPOJ6XVvqYHmcdgAH91TJ+gcD7v/y+8wKHDnx1Xldzfk6Qx+eOBSlMJlUohX
- YIeft7N+pD7u5McO6wc3zT01184mjh86EKB9hgvzTyC6OvKVTuqJBivhNI1AMihC1uf5
- I4gA97fE/1SJI1jhW6LgaZC5r/j3I3C32YBTrEJrNAzKJJ6d73MdIzIM9q8e4J7Sz/BC MQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3fwdw8tfu2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 09 May 2022 11:18:35 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id E0B78100038;
-        Mon,  9 May 2022 11:18:34 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id D793C21513B;
-        Mon,  9 May 2022 11:18:34 +0200 (CEST)
-Received: from [10.201.20.246] (10.75.127.50) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 9 May
- 2022 11:18:34 +0200
-Message-ID: <b7a3db59-201d-a5fb-f416-e1d60d79762f@foss.st.com>
-Date:   Mon, 9 May 2022 11:18:33 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] rpmsg: virtio: set dst address on first message received
-Content-Language: en-US
-To:     Mathieu Poirier <mathieu.poirier@linaro.org>
-CC:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>
-References: <20220315153856.3117676-1-arnaud.pouliquen@foss.st.com>
- <20220506171222.GA2816011@p14s>
-From:   Arnaud POULIQUEN <arnaud.pouliquen@foss.st.com>
-In-Reply-To: <20220506171222.GA2816011@p14s>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.50]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-09_03,2022-05-09_01,2022-02-23_01
+        Mon, 9 May 2022 05:30:23 -0400
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60C6A1C345D;
+        Mon,  9 May 2022 02:26:28 -0700 (PDT)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 3248F200E75;
+        Mon,  9 May 2022 11:26:27 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id F09C3200E74;
+        Mon,  9 May 2022 11:26:26 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 510B9180031C;
+        Mon,  9 May 2022 17:26:25 +0800 (+08)
+From:   Shengjiu Wang <shengjiu.wang@nxp.com>
+To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
+        shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org,
+        robh+dt@kernel.org, krzk+dt@kernel.org, devicetree@vger.kernel.org
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] ASoC: fsl_micfil: Add support for i.MX8MPlus
+Date:   Mon,  9 May 2022 17:14:22 +0800
+Message-Id: <1652087663-1908-1-git-send-email-shengjiu.wang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Mathieu,
+On i.MX8Plus there are two updates for micfil module.
 
-On 5/6/22 19:12, Mathieu Poirier wrote:
-> On Tue, Mar 15, 2022 at 04:38:56PM +0100, Arnaud Pouliquen wrote:
->> when a rpmsg channel has been locally created with a destination address
-> 
-> s/when/Wen
-> 
-> Also, please be more specific about the "locally created" part, i.e
-> rpmsg_ctrldev_ioctl() -> rpmsg_create_channel().  Otherwise it is really hard to
-> understand the context of this change.
-> 
->> set to RPMSG_ADDR_ANY, a name service announcement message is sent to
->> the remote side. Then the destination address is never updated, making it
->> impossible to send messages to the remote.
->>
->> An example of kernel trace observed:
->> rpmsg_tty virtio0.rpmsg-tty.29.-1: invalid addr (src 0x1d, dst 0xffffffff)
->>
->> Implement same strategy than the open-amp library:
->> On the reception of the first message, if the destination address is
->> RPMSG_ADDR_ANY, then set it to address of the remote endpoint that
->> send the message.
->>
-> 
-> I would have expected a "Fixes:" tag.
+One is that the output format is S32_LE, only the 24 more
+significative bits have information, the other bits are always
+zero. Add 'formats' variable in soc data to distinguish the
+format on different platform.
+Another is that the fifo depth is 32 entries.
 
-Difficult to give a reference. For me the issue exists since the creation
-of the rpmsg virtio bus. A driver can create a channel that generates a NS
-announcement leading to this issue.
-The issue as been highlighted by the creation of the  RPMSG_CREATE_DEV_IOCTL
-control.
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+---
+ sound/soc/fsl/fsl_micfil.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-> 
->> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
->>
->> ---
->> Remark:
->> An alternative (or a complement?) could be to add a NS bind/unbind in
->> the NS announcement channel (in rpmsg_ns.c).
->> This would allow the local and/or the remote processor to inform the
->> remote side the the service announced in bound.
->> ---
->>  drivers/rpmsg/virtio_rpmsg_bus.c | 10 ++++++++++
->>  1 file changed, 10 insertions(+)
->>
->> diff --git a/drivers/rpmsg/virtio_rpmsg_bus.c b/drivers/rpmsg/virtio_rpmsg_bus.c
->> index 3ede25b1f2e4..99d2119cc164 100644
->> --- a/drivers/rpmsg/virtio_rpmsg_bus.c
->> +++ b/drivers/rpmsg/virtio_rpmsg_bus.c
->> @@ -708,6 +708,7 @@ static ssize_t virtio_rpmsg_get_mtu(struct rpmsg_endpoint *ept)
->>  static int rpmsg_recv_single(struct virtproc_info *vrp, struct device *dev,
->>  			     struct rpmsg_hdr *msg, unsigned int len)
->>  {
->> +	struct rpmsg_device *rpdev;
->>  	struct rpmsg_endpoint *ept;
->>  	struct scatterlist sg;
->>  	bool little_endian = virtio_is_little_endian(vrp->vdev);
->> @@ -746,6 +747,15 @@ static int rpmsg_recv_single(struct virtproc_info *vrp, struct device *dev,
->>  	mutex_unlock(&vrp->endpoints_lock);
->>  
->>  	if (ept) {
->> +		rpdev = ept->rpdev;
->> +		if (rpdev->ept == ept && rpdev->dst == RPMSG_ADDR_ANY) {
-> 
-> Please add a comment to explain the first part of the if() clause.  It took me
-> quite some time to understand. 
-> 
->> +			/*
->> +			 * First message received from the remote side on the default endpoint,
->> +			 * update channel destination address.
->> +			 */
->> +			rpdev->dst = msg->src;
-> 
-> This triggers a bot warning and should be addressed.  If it can't be addressed add
-> a comment that clearly explains why so that we don't end up receiving patches
-> for it every 4 weeks.
+diff --git a/sound/soc/fsl/fsl_micfil.c b/sound/soc/fsl/fsl_micfil.c
+index e4d1da55293e..25c647ae080a 100644
+--- a/sound/soc/fsl/fsl_micfil.c
++++ b/sound/soc/fsl/fsl_micfil.c
+@@ -55,6 +55,7 @@ struct fsl_micfil_soc_data {
+ 	unsigned int fifo_depth;
+ 	unsigned int dataline;
+ 	bool imx;
++	u64  formats;
+ };
+ 
+ static struct fsl_micfil_soc_data fsl_micfil_imx8mm = {
+@@ -62,10 +63,20 @@ static struct fsl_micfil_soc_data fsl_micfil_imx8mm = {
+ 	.fifos = 8,
+ 	.fifo_depth = 8,
+ 	.dataline =  0xf,
++	.formats = SNDRV_PCM_FMTBIT_S16_LE,
++};
++
++static struct fsl_micfil_soc_data fsl_micfil_imx8mp = {
++	.imx = true,
++	.fifos = 8,
++	.fifo_depth = 32,
++	.dataline =  0xf,
++	.formats = SNDRV_PCM_FMTBIT_S32_LE,
+ };
+ 
+ static const struct of_device_id fsl_micfil_dt_ids[] = {
+ 	{ .compatible = "fsl,imx8mm-micfil", .data = &fsl_micfil_imx8mm },
++	{ .compatible = "fsl,imx8mp-micfil", .data = &fsl_micfil_imx8mp },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, fsl_micfil_dt_ids);
+@@ -659,6 +670,8 @@ static int fsl_micfil_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
+ 
++	fsl_micfil_dai.capture.formats = micfil->soc->formats;
++
+ 	ret = devm_snd_soc_register_component(&pdev->dev, &fsl_micfil_component,
+ 					      &fsl_micfil_dai, 1);
+ 	if (ret) {
+-- 
+2.17.1
 
-Oops, I missed it, thanks for pointing it out.
-
-
-Concerning the patch itself as discussed in RP open-amp meeting. I wonder if this issue
-could be addressed by the flow control[1][2][3], or if needed in any case.
-
-I propose to send a V2 when ready to propose in parallel the flow control.
-So both can be addressed at same time to have a global picture of the way to address the
-use case..
-
-Thanks,
-Arnaud
-
-[1] POC Linux code:
-https://github.com/arnopo/linux/commits/signalling
-
-[2] openamp library associated code:
-https://github.com/arnopo/open-amp/commits/flow_ctrl
-
-[3] overview presentation
-https://drive.google.com/file/d/1CLU3ybI3oSBGvor18AQ-HOzOJ2nOppEb/view
-
-
-> 
-> Thanks,
-> Mathieu
-> 
->> +		}
->> +
->>  		/* make sure ept->cb doesn't go away while we use it */
->>  		mutex_lock(&ept->cb_lock);
->>  
->> -- 
->> 2.25.1
->>
