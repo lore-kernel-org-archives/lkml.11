@@ -2,57 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFC0CC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0261AC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 05:44:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233257AbiEIFoH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 01:44:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44322 "EHLO
+        id S234101AbiEIFoM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 01:44:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231927AbiEIFhp (ORCPT
+        with ESMTP id S234512AbiEIFii (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 01:37:45 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1B921550EF
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 22:33:47 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id t6so17815055wra.4
-        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 22:33:46 -0700 (PDT)
+        Mon, 9 May 2022 01:38:38 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA668153F46
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 22:34:45 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id c190-20020a1c35c7000000b0038e37907b5bso10119905wma.0
+        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 22:34:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=brainfault-org.20210112.gappssmtp.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=PLUNZth0Gzu0RXkdCxlC7YsvIKkko3pZWci/8TjWfsg=;
-        b=1fEjcPA9ZwqimNLicimZh7D54btJlReV6ttUi5sPPHZnlucnlayki28FnMUzJ/QL9Y
-         M3c5KF+PPpNktxtj878OD+pC4SkuQy2P6dLZQYUe2Cujk0Gb7K/0i0a8L3+IV/hrdY4w
-         clL8WGuArZLzgWuOlj6y5KUXWtm0lP97uo8OZdfkDmwLMoLvksx9f6ufrBVKNZkXmh5d
-         nyuQNHzTw/00jpMFdO8AU/V3rp4KrVfb5sHGTxhTXdr+wSJhwyUxsMYI6zF73msEMXuS
-         oNnwgVMaQmo1HLNVjh1tA9fH8g64Xjq73hzz8gXkMiEDk3tyUN8wHgrRYsJh1psS5+Rt
-         GXfQ==
+        bh=ZM78wIZ6JLMPND7Ht3IA1Mgf/xPFUerHdSHdeZPHpFw=;
+        b=Rkns/KQugvEQmGsLLnfc60vj1l7V5wIkMGSPjxpCBigi+ckpY7MB9HM9yCG+ypQkhG
+         pWxETVX5ZTxLiddk/JMOIIhnbLZH4vd805xOKIzmPBv5dkPeSEsmm5E//LXP8fQ2W1Es
+         SiJKseZWMb4bbTNnDEm1aYChw5QX9PEO1kMgtH1SE09LD/28GI0WSAZG5cNQNKR1Q2JO
+         GR+FtIOxEqsmcnM9AcbjvZ7a5VzK/sk0Lw43s5qVzf64RMfv13eCm35YG63rGQzJgXNa
+         PZThzfS6C5Rdu8U1+I0gUfjyU4KtBflnnSicfKSMuSQzv8dhmPISS28YcMN9XJwEAbW0
+         CA1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=PLUNZth0Gzu0RXkdCxlC7YsvIKkko3pZWci/8TjWfsg=;
-        b=rDScGcW3BC95VMIyaEZMGhUBSeW+0dAS6hRjuRF0NCGRHoBszMWz4L/wq4IoEu0hXQ
-         31p6cXTlcLQwA21t41bJzU/nnzZG/weMfeJTV2q3zrK5lCICCu5bQJkV+BPCuv4u7Aro
-         0QQTXsC9amyQSM8jldrOhChttNtB5O3ITSfNi4EfDmgKgAVe//BrFyA/UNhESLoGHhJt
-         PPXFXW0x86Qh7k/UhZ1ynFjX93vJFT3+HXOeMhq5kUZU9NZsCPAAto8PFywMNBRKNk93
-         28tzteRrn+AlqxYS1WGvfz6glW6k93uZfqQ3FgxUgi9tg34pOHnDbLTGapKO8DOP/U2f
-         ulqQ==
-X-Gm-Message-State: AOAM533XYtG3HZNAL0aJuPlidyfnVW7eh9xzY9iV6PPynP6ySornEmgr
-        9VrRZ0+9hLhqgCGpjdt2SB+6YPcYnFPG11IlujU9KQ==
-X-Google-Smtp-Source: ABdhPJwm5HiGVrJo6H6A2ZwkRwo0cXAPq+C8yDH3Ar/UxfL9RCxY1/yZPp8l+hlWdvpp1E/Vv7lPAPz1K2H2BhU6/ug=
-X-Received: by 2002:a05:6000:12d1:b0:20a:d901:3828 with SMTP id
- l17-20020a05600012d100b0020ad9013828mr11892146wrx.313.1652074425312; Sun, 08
- May 2022 22:33:45 -0700 (PDT)
+        bh=ZM78wIZ6JLMPND7Ht3IA1Mgf/xPFUerHdSHdeZPHpFw=;
+        b=gqWIsesWue8ZwuIIqsWg5Ubv4iTiddIaSTEzPYc6PjJ2BBjuh0mO0yM9lnbmecFRIT
+         kg5Lrv2Mtde4o94JJehRTY9XFkQ8KA92PKSYom0jJQzmYGa6rO16YWpH6CFsPzK5LHs8
+         /LpKI7gcSfgAO7n7oTWQ4u1wCjab/x8s2nLZuxYQOZaLqjM68UABRTCJ4dVvCol+VqK0
+         W+DQJsHMCcjMRn55BKa5Vx7OxeLVbmf34USfBDDoga7EWStu+6lti+zdA5ax5m3SYKeh
+         fVSNtvV0eq9JZDeUJOBezGWVRI1+Msd0ZGUOWWfTVUPEEwOhUTOC/7Mw/UMieLQGvLIK
+         tH5A==
+X-Gm-Message-State: AOAM530UxYBi1ArwwqR+80Lni8XlVZ3OZvR8/FnMMpOJiGyMfIpSoc9f
+        AofgQ8AUtgTCMyrdxIQq+milwy2Y21iQIm9lTkSjiA==
+X-Google-Smtp-Source: ABdhPJx+XJja9QmJ3YmL5ZIcR7cEiHctbogPUidPX/ngHjqaF6Vs9HvPRSruYhOOLnu79JRJ91pGoIl9sM+wQ1uUUt4=
+X-Received: by 2002:a05:600c:5113:b0:394:800c:4c36 with SMTP id
+ o19-20020a05600c511300b00394800c4c36mr11044954wms.93.1652074484181; Sun, 08
+ May 2022 22:34:44 -0700 (PDT)
 MIME-Version: 1.0
 References: <20220420112450.155624-1-apatel@ventanamicro.com>
- <20220420112450.155624-6-apatel@ventanamicro.com> <CAOnJCU+yd7hqauHRYwnPqNKEgfy5FK06ezR64aH0Hm2AcNNadw@mail.gmail.com>
-In-Reply-To: <CAOnJCU+yd7hqauHRYwnPqNKEgfy5FK06ezR64aH0Hm2AcNNadw@mail.gmail.com>
+ <20220420112450.155624-8-apatel@ventanamicro.com> <CAOnJCUKPTwjGr9Lg1XRMVTCMswg0E+4VvknBQ0p+Qo6EHL3M5A@mail.gmail.com>
+In-Reply-To: <CAOnJCUKPTwjGr9Lg1XRMVTCMswg0E+4VvknBQ0p+Qo6EHL3M5A@mail.gmail.com>
 From:   Anup Patel <anup@brainfault.org>
-Date:   Mon, 9 May 2022 11:03:34 +0530
-Message-ID: <CAAhSdy1vwQ6BmjzvSuJHc8V37U78PPjGS19+XEQHHqE1=nQRpg@mail.gmail.com>
-Subject: Re: [PATCH v2 5/7] RISC-V: KVM: Reduce KVM_MAX_VCPUS value
+Date:   Mon, 9 May 2022 11:04:32 +0530
+Message-ID: <CAAhSdy0QxZ7kfh34DO_mPuCbXUM6Use7XT-TSpayR1B3BEU3tg@mail.gmail.com>
+Subject: Re: [PATCH v2 7/7] RISC-V: KVM: Cleanup stale TLB entries when host
+ CPU changes
 To:     Atish Patra <atishp@atishpatra.org>
 Cc:     Anup Patel <apatel@ventanamicro.com>,
         Paolo Bonzini <pbonzini@redhat.com>,
@@ -69,43 +70,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 4, 2022 at 7:45 AM Atish Patra <atishp@atishpatra.org> wrote:
+On Fri, May 6, 2022 at 1:23 PM Atish Patra <atishp@atishpatra.org> wrote:
 >
 > On Wed, Apr 20, 2022 at 4:25 AM Anup Patel <apatel@ventanamicro.com> wrote:
 > >
-> > Currently, the KVM_MAX_VCPUS value is 16384 for RV64 and 128
-> > for RV32.
+> > On RISC-V platforms with hardware VMID support, we share same
+> > VMID for all VCPUs of a particular Guest/VM. This means we might
+> > have stale G-stage TLB entries on the current Host CPU due to
+> > some other VCPU of the same Guest which ran previously on the
+> > current Host CPU.
 > >
-> > The KVM_MAX_VCPUS value is too high for RV64 and too low for
-> > RV32 compared to other architectures (e.g. x86 sets it to 1024
-> > and ARM64 sets it to 512). The too high value of KVM_MAX_VCPUS
-> > on RV64 also leads to VCPU mask on stack consuming 2KB.
-> >
-> > We set KVM_MAX_VCPUS to 1024 for both RV64 and RV32 to be
-> > aligned other architectures.
+> > To cleanup stale TLB entries, we simply flush all G-stage TLB
+> > entries by VMID whenever underlying Host CPU changes for a VCPU.
 > >
 > > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
 > > ---
-> >  arch/riscv/include/asm/kvm_host.h | 3 +--
-> >  1 file changed, 1 insertion(+), 2 deletions(-)
+> >  arch/riscv/include/asm/kvm_host.h |  5 +++++
+> >  arch/riscv/kvm/tlb.c              | 23 +++++++++++++++++++++++
+> >  arch/riscv/kvm/vcpu.c             | 11 +++++++++++
+> >  3 files changed, 39 insertions(+)
 > >
 > > diff --git a/arch/riscv/include/asm/kvm_host.h b/arch/riscv/include/asm/kvm_host.h
-> > index 806f74dc0bfc..61d8b40e3d82 100644
+> > index a40e88a9481c..94349a5ffd34 100644
 > > --- a/arch/riscv/include/asm/kvm_host.h
 > > +++ b/arch/riscv/include/asm/kvm_host.h
-> > @@ -16,8 +16,7 @@
-> >  #include <asm/kvm_vcpu_fp.h>
-> >  #include <asm/kvm_vcpu_timer.h>
+> > @@ -166,6 +166,9 @@ struct kvm_vcpu_arch {
+> >         /* VCPU ran at least once */
+> >         bool ran_atleast_once;
 > >
-> > -#define KVM_MAX_VCPUS                  \
-> > -       ((HGATP_VMID_MASK >> HGATP_VMID_SHIFT) + 1)
-> > +#define KVM_MAX_VCPUS                  1024
+> > +       /* Last Host CPU on which Guest VCPU exited */
+> > +       int last_exit_cpu;
+> > +
+> >         /* ISA feature bits (similar to MISA) */
+> >         unsigned long isa;
 > >
-> >  #define KVM_HALT_POLL_NS_DEFAULT       500000
+> > @@ -256,6 +259,8 @@ void kvm_riscv_local_hfence_vvma_gva(unsigned long vmid,
+> >                                      unsigned long order);
+> >  void kvm_riscv_local_hfence_vvma_all(unsigned long vmid);
 > >
+> > +void kvm_riscv_local_tlb_sanitize(struct kvm_vcpu *vcpu);
+> > +
+> >  void kvm_riscv_fence_i_process(struct kvm_vcpu *vcpu);
+> >  void kvm_riscv_hfence_gvma_vmid_all_process(struct kvm_vcpu *vcpu);
+> >  void kvm_riscv_hfence_vvma_all_process(struct kvm_vcpu *vcpu);
+> > diff --git a/arch/riscv/kvm/tlb.c b/arch/riscv/kvm/tlb.c
+> > index c0f86d09c41d..1a76d0b1907d 100644
+> > --- a/arch/riscv/kvm/tlb.c
+> > +++ b/arch/riscv/kvm/tlb.c
+> > @@ -215,6 +215,29 @@ void kvm_riscv_local_hfence_vvma_all(unsigned long vmid)
+> >         csr_write(CSR_HGATP, hgatp);
+> >  }
+> >
+> > +void kvm_riscv_local_tlb_sanitize(struct kvm_vcpu *vcpu)
+> > +{
+> > +       unsigned long vmid;
+> > +
+> > +       if (!kvm_riscv_gstage_vmid_bits() ||
+> > +           vcpu->arch.last_exit_cpu == vcpu->cpu)
+> > +               return;
+> > +
+> > +       /*
+> > +        * On RISC-V platforms with hardware VMID support, we share same
+> > +        * VMID for all VCPUs of a particular Guest/VM. This means we might
+> > +        * have stale G-stage TLB entries on the current Host CPU due to
+> > +        * some other VCPU of the same Guest which ran previously on the
+> > +        * current Host CPU.
+> > +        *
+> > +        * To cleanup stale TLB entries, we simply flush all G-stage TLB
+> > +        * entries by VMID whenever underlying Host CPU changes for a VCPU.
+> > +        */
+> > +
+> > +       vmid = READ_ONCE(vcpu->kvm->arch.vmid.vmid);
+> > +       kvm_riscv_local_hfence_gvma_vmid_all(vmid);
+> > +}
+> > +
+> >  void kvm_riscv_fence_i_process(struct kvm_vcpu *vcpu)
+> >  {
+> >         local_flush_icache_all();
+> > diff --git a/arch/riscv/kvm/vcpu.c b/arch/riscv/kvm/vcpu.c
+> > index 9cd8f6e91c98..a86710fcd2e0 100644
+> > --- a/arch/riscv/kvm/vcpu.c
+> > +++ b/arch/riscv/kvm/vcpu.c
+> > @@ -67,6 +67,8 @@ static void kvm_riscv_reset_vcpu(struct kvm_vcpu *vcpu)
+> >         if (loaded)
+> >                 kvm_arch_vcpu_put(vcpu);
+> >
+> > +       vcpu->arch.last_exit_cpu = -1;
+> > +
+> >         memcpy(csr, reset_csr, sizeof(*csr));
+> >
+> >         memcpy(cntx, reset_cntx, sizeof(*cntx));
+> > @@ -735,6 +737,7 @@ static void noinstr kvm_riscv_vcpu_enter_exit(struct kvm_vcpu *vcpu)
+> >  {
+> >         guest_state_enter_irqoff();
+> >         __kvm_riscv_switch_to(&vcpu->arch);
+> > +       vcpu->arch.last_exit_cpu = vcpu->cpu;
+> >         guest_state_exit_irqoff();
+> >  }
+> >
+> > @@ -829,6 +832,14 @@ int kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu)
+> >                         continue;
+> >                 }
+> >
+> > +               /*
+> > +                * Cleanup stale TLB enteries
+> > +                *
+> > +                * Note: This should be done after G-stage VMID has been
+> > +                * updated using kvm_riscv_gstage_vmid_ver_changed()
+> > +                */
+> > +               kvm_riscv_local_tlb_sanitize(vcpu);
+> > +
+> >                 guest_timing_enter_irqoff();
+> >
+> >                 kvm_riscv_vcpu_enter_exit(vcpu);
 > > --
 > > 2.25.1
 > >
+>
 >
 > Reviewed-by: Atish Patra <atishp@rivosinc.com>
 
@@ -114,7 +195,6 @@ Queued this patch for 5.19
 Thanks,
 Anup
 
->
 > --
 > Regards,
 > Atish
