@@ -2,147 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79219C43219
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 23:13:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6547BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 23:14:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232311AbiEIXRu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 19:17:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54670 "EHLO
+        id S232324AbiEIXRy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 19:17:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232281AbiEIXRn (ORCPT
+        with ESMTP id S232301AbiEIXRr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 19:17:43 -0400
-Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 937DA2A3BEE
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 16:13:48 -0700 (PDT)
-Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-2f7d19cac0bso161379217b3.13
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 16:13:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oazinpgomaqUG0jSYMm8ubizFPTzpD9YluLXTH1Uf+8=;
-        b=f6fWCk6p41OZaY/aYptJIOS/H7gQoR2LQU/vFrk5Gn4NSNwuGdiZDiDStk7AbG3yZD
-         IKBXb4w884/50UAgGFMYKZ1TW7UWPSrJsR6aU/0xVkQloWI1gv9dqJSDbnU+7ZRlaq+H
-         5q6FzLE9Jch5W51SjYRwMzmvNSaAVh59pmK1la7G6Ce7QS8+phGNXM1poUTxBJEghkkL
-         rkNzGIHiR6cg7h2j0E68I08LETn6PDCH3Bk2j2CtnK3mFxMH+qkZYlQ5Mbk0pgP96vbx
-         k86u84TYrd/iZlrt9edUpHqGeZQt6sH9DbxxljCpeCMl8DqbX8Q9LTMC9vVENf9lnOH2
-         8xnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oazinpgomaqUG0jSYMm8ubizFPTzpD9YluLXTH1Uf+8=;
-        b=ggCRmKixQk5YABhd+fkdT4XtH5h8w2d/9l5/S3LcvDMFsLNljr/SpiX+0trNk+f3qy
-         FGGgVHZwMj9/Sp1D7SxMQ3SeT2vKBCZj+GomzE5ymcCa5GBi0W1X8+Q0XVRPG3wvUqRW
-         uCOWJOuZpeUbrTDhrM5vPGPV5QeDSGA6Oem15ZYG+YwoLoWGtlFAOmKdzXqAbFE8khAH
-         PDji3kK/fEgJRSfsRPloweFoep6mvQ6HHwDZrsd1mTnTZBLYVN3qSzLwIV6fCg+1pr/R
-         1pMxesM5Si5ZYJWv7F2REVMJ2+tR6CypCGqeiWaBPAvqRB7g6PYpE7zpIg2vaAwELqu4
-         Dt1A==
-X-Gm-Message-State: AOAM532vK4/0xJLBShHp4Iuxf6xBeKSJlyV60JigxH+JhYBkP3ME0k+k
-        PrRuIHmC18u9wIj4kR+jPl/AsLruQAsdetEgVB2sYg==
-X-Google-Smtp-Source: ABdhPJxssHqsbnbsTj81I2dSgjtFlZace94GadSqyvpd5jqz1pk64Y4lHyhr+1TXl7QDxSK2F5OuNrrpLo+K4Kc2AN8=
-X-Received: by 2002:a81:1108:0:b0:2f7:bf11:3fb9 with SMTP id
- 8-20020a811108000000b002f7bf113fb9mr17011668ywr.305.1652138027673; Mon, 09
- May 2022 16:13:47 -0700 (PDT)
+        Mon, 9 May 2022 19:17:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7D7C2A4705;
+        Mon,  9 May 2022 16:13:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 66ACD61205;
+        Mon,  9 May 2022 23:13:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 824D8C385B3;
+        Mon,  9 May 2022 23:13:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652138030;
+        bh=4dK3VfombzihJEhoOsxtQumd0/18NJxcFNS6Q1FILXU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=s68VrmMb9I42RgQylAe6I2UHS7PbVefvxqYqUkTdxAbwRmUBGYlm88kQbjP4p5B93
+         bu840ucdXrrL/UB/LypRKnlEd1pSUCiJMw9a7nrt+ewBckJGkg6yR+GUntXl3SEs9E
+         GzbxrEg6cgx+pZVVelj4mLIbvyNxtYO4hO7u106EojHs9TMtnJs4N4flPCGgEC72VR
+         HCkj0dYSvb0rhS3L/OwOKJ+6r5QirqzJnp7fDgGwV+U6tb0cmBFBhtOwQHQokgU3rW
+         G9azWrWdfiVno9MlDqELZGU1cURr1KbN8tYcGDWuK5kUdd6jL0tRT3aGdUKiLe+/Sc
+         d9AvZWFfXbj6g==
+Date:   Mon, 9 May 2022 16:13:48 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     David Howells <dhowells@redhat.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        linux-hardening@vger.kernel.org, keyrings@vger.kernel.org,
+        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] big_keys: Use struct for internal payload
+Message-ID: <YnmgLLcJfPRKEYuk@sol.localdomain>
+References: <20220508175732.2693426-1-keescook@chromium.org>
 MIME-Version: 1.0
-References: <20220508190631.2386038-1-masahiroy@kernel.org> <20220508190631.2386038-10-masahiroy@kernel.org>
-In-Reply-To: <20220508190631.2386038-10-masahiroy@kernel.org>
-From:   Sami Tolvanen <samitolvanen@google.com>
-Date:   Mon, 9 May 2022 16:13:11 -0700
-Message-ID: <CABCJKudnbTS=_2WgX63xb_3oCwt_6jwotqfoV5wSjkmfjuUJZQ@mail.gmail.com>
-Subject: Re: [PATCH v4 09/14] kbuild: do not create *.prelink.o for Clang LTO
- or IBT
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild <linux-kbuild@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nicolas Schier <nicolas@fjasle.eu>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-modules@vger.kernel.org, linux-s390@vger.kernel.org,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Ard Biesheuvel <ardb@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220508175732.2693426-1-keescook@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 8, 2022 at 12:10 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> When CONFIG_LTO_CLANG=y, additional intermediate *.prelink.o is created
-> for each module. Also, objtool is postponed until LLVM bitcode is
-> converted to ELF.
->
-> CONFIG_X86_KERNEL_IBT works in a similar way to postpone objtool until
-> objects are merged together.
->
-> This commit stops generating *.prelink.o, so the build flow will look
-> the same with/without LTO.
->
-> The following figures show how the LTO build currently works, and
-> how this commit is changing it.
->
-> Current build flow
-> ==================
->
->  [1] single-object module
->
->                                       $(LD)
->            $(CC)                     +objtool              $(LD)
->     foo.c --------------------> foo.o -----> foo.prelink.o -----> foo.ko
->                            (LLVM bitcode)        (ELF)       |
->                                                              |
->                                                  foo.mod.o --/
->
->  [2] multi-object module
->                                       $(LD)
->            $(CC)         $(AR)       +objtool               $(LD)
->     foo1.c -----> foo1.o -----> foo.o -----> foo.prelink.o -----> foo.ko
->                            |  (archive)          (ELF)       |
->     foo2.c -----> foo2.o --/                                 |
->                 (LLVM bitcode)                   foo.mod.o --/
->
->   One confusion is foo.o in multi-object module is an archive despite of
->   its suffix.
->
-> New build flow
-> ==============
->
->  [1] single-object module
->
->   Since there is only one object, we do not need to have the LLVM
->   bitcode stage. Use $(CC)+$(LD) to generate an ELF object in one
->   build rule. When LTO is disabled, $(LD) is unneeded because $(CC)
->   produces an ELF object.
->
->            $(CC)+$(LD)+objtool             $(LD)
->     foo.c ------------------------> foo.o -------> foo.ko
->                                     (ELF)    |
->                                              |
->                                  foo.mod.o --/
->
->  [2] multi-object module
->
->   Previously, $(AR) was used to combine LLVM bitcode into an archive,
->   but there was no technical reason to do so.
->   This commit just uses $(LD) to combine and convert them into a single
->   ELF object.
->
->                             $(LD)
->             $(CC)          +objtool        $(LD)
->     foo1.c -------> foo1.o -------> foo.o -------> foo.ko
->                               |     (ELF)    |
->     foo2.c -------> foo2.o ---/              |
->                 (LLVM bitcode)   foo.mod.o --/
->
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> Reviewed-by: Nicolas Schier <nicolas@fjasle.eu>
-> Tested-by: Nathan Chancellor <nathan@kernel.org>
+On Sun, May 08, 2022 at 10:57:31AM -0700, Kees Cook wrote:
+> The randstruct GCC plugin gets upset when it sees struct path (which is
+> randomized) being assigned from a "void *" (which it cannot type-check).
+> 
+> There's no need for these casts, as the entire internal payload use is
+> following a normal struct layout. Convert the enum-based void * offset
+> dereferencing to the new big_key_payload struct. No meaningful machine
+> code changes result after this change, and source readability is improved.
+> 
+> Drop the randstruct exception now that there is no "confusing" cross-type
+> assignment.
+> 
+> Cc: David Howells <dhowells@redhat.com>
+> Cc: Jarkko Sakkinen <jarkko@kernel.org>
+> Cc: James Morris <jmorris@namei.org>
+> Cc: "Serge E. Hallyn" <serge@hallyn.com>
+> Cc: linux-hardening@vger.kernel.org
+> Cc: keyrings@vger.kernel.org
+> Cc: linux-security-module@vger.kernel.org
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+>  scripts/gcc-plugins/randomize_layout_plugin.c |  2 -
+>  security/keys/big_key.c                       | 64 ++++++++++---------
+>  2 files changed, 34 insertions(+), 32 deletions(-)
 
-Looks good, thanks for cleaning this up!
+This looks fine to me, although the way that an array of void pointers is cast
+to/from another struct is still weird.  I'd prefer if the payload was just
+changed into a separate allocation.
 
-Reviewed-by: Sami Tolvanen <samitolvanen@google.com>
+A couple nits below if you stay with your proposed solution:
 
-Sami
+>  void big_key_free_preparse(struct key_preparsed_payload *prep)
+>  {
+> +	struct big_key_payload *payload = to_big_key_payload(prep->payload);
+> +
+>  	if (prep->datalen > BIG_KEY_FILE_THRESHOLD) {
+> -		struct path *path = (struct path *)&prep->payload.data[big_key_path];
+> +		struct path *path = &payload->path;
+>  
+>  		path_put(path);
+>  	}
+
+This could just do:
+
+	if (prep->datalen > BIG_KEY_FILE_THRESHOLD)
+		path_put(&payload->path);
+
+>  void big_key_destroy(struct key *key)
+>  {
+> -	size_t datalen = (size_t)key->payload.data[big_key_len];
+> +	struct big_key_payload *payload = to_big_key_payload(key->payload);
+>  
+> -	if (datalen > BIG_KEY_FILE_THRESHOLD) {
+> -		struct path *path = (struct path *)&key->payload.data[big_key_path];
+> +	if (payload->length > BIG_KEY_FILE_THRESHOLD) {
+> +		struct path *path = &payload->path;
+>  
+>  		path_put(path);
+>  		path->mnt = NULL;
+>  		path->dentry = NULL;
+>  	}
+
+And similarly:
+
+	if (payload->length > BIG_KEY_FILE_THRESHOLD) {
+		path_put(&payload->path);
+		payload->path.mnt = NULL;
+		payload->path.dentry = NULL;
+	}
+
+- Eric
