@@ -2,160 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8420C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 11:22:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EF87C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 11:23:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232748AbiEIL0e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 07:26:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37064 "EHLO
+        id S232636AbiEIL06 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 07:26:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232417AbiEIL0U (ORCPT
+        with ESMTP id S232618AbiEIL0u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 07:26:20 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 018EC2528A;
-        Mon,  9 May 2022 04:22:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=I5w1l7kr42Qgl1B7paAXQrUp55JqRTIxrpC92Io5gcY=; b=LxIUWFwus+tGPEynRScRh9gh6Y
-        X64jWNjxl8Rt/cXVIAgJZhVY7crrfM4xLN7KDgzNu4d+wAzPhGOYUS1RWkm/+Ru6pPOmp3D+bASwq
-        KcpyRNECMOiaLhUWIXy/NGttEEIWsoZrNYkMsqN/JG9jBDDkN80LIVOytHIwMHTgKWT1RW3FBXJm2
-        B/VGxApqBfe/9R5adpqBf17LKdW4zbp18Hxmv5cgdRxw8nixjx/64X/lk+ry/Y/d6BeJuije5qhX9
-        w1Z3hWajT/AuogLRkzyB47Y5HjbYB4p+2vEFWsZf4jWJvyQVvfkcQyqRoBXkhC3E7Ekyv+9yw0Ic4
-        ZkDjCY1g==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1no1Sk-00CXFw-VS; Mon, 09 May 2022 11:22:03 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 6D241300385;
-        Mon,  9 May 2022 13:22:00 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 58C562026968A; Mon,  9 May 2022 13:22:00 +0200 (CEST)
-Date:   Mon, 9 May 2022 13:22:00 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Peter Collingbourne <pcc@google.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
-        andrew.cooper3@citrix.com, samitolvanen@google.com,
-        mark.rutland@arm.com, hjl.tools@gmail.com,
-        alyssa.milburn@linux.intel.com, ndesaulniers@google.com,
-        gabriel.gomes@linux.intel.com, rick.p.edgecombe@intel.com
-Subject: Re: [RFC PATCH 01/11] x86: kernel FineIBT
-Message-ID: <Ynj5WLYnuWs/3oZW@hirez.programming.kicks-ass.net>
-References: <20220420004241.2093-1-joao@overdrivepizza.com>
- <20220420004241.2093-2-joao@overdrivepizza.com>
- <20220429013704.4n4lmadpstdioe7a@treble>
- <d82459b887bcaf9181ad836051e2d16b@overdrivepizza.com>
- <20220503220244.vyz5flk3gg3y6rbw@treble>
- <YnJTYzralOhGGmED@hirez.programming.kicks-ass.net>
- <YnKx5a9WvJ1UhWPm@google.com>
- <YnLDGcJGKfqi5+8w@hirez.programming.kicks-ass.net>
- <202205080033.82AB3703C3@keescook>
+        Mon, 9 May 2022 07:26:50 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AB74209543
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 04:22:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652095362; x=1683631362;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=sdRt8mOxIA7UThkscuoBXXMGEYQzREYoFGpLUsiUhU4=;
+  b=H6xvaofrbCx3niQNR4a+i8djN5hLWTyCI1ZZrt2R+owQOhEgcjPckGmz
+   dFeqb9IzIcCvg+Ld0A8F6x5QZ7et7ykSNBpIsu7nIEpHDygO19CkUtwuy
+   nKLLU+yZP9QmIEy8OCoFIQS66aeWO5zTWjSTSz+Opf/IpYI+iCibLvHnR
+   pZA+bvocbksv70vBPA0wn3e1+wN1dZPKIo4Ba/kWorQNVUiVmhFAby/O6
+   uAl2oTR0N76AOWLCtk4v62fPpnKdI1fX3Y2I9Car52DN9RBLjmfThU6wa
+   rO272LtX8ODHXSO9U5E18WU1uRcZ0/PYfBcHD4C3PLFdTkIpbTonQTojD
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10341"; a="269159484"
+X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
+   d="scan'208";a="269159484"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 04:22:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
+   d="scan'208";a="565009451"
+Received: from shbuild999.sh.intel.com (HELO localhost) ([10.239.146.138])
+  by orsmga007.jf.intel.com with ESMTP; 09 May 2022 04:22:35 -0700
+Date:   Mon, 9 May 2022 19:22:35 +0800
+From:   Feng Tang <feng.tang@intel.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@intel.com>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Jonathan Corbet <corbet@lwn.net>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, paulmck@kernel.org,
+        rui.zhang@intel.com, len.brown@intel.com, tim.c.chen@intel.com
+Subject: Re: [PATCH] x86/tsc: Add option to force HW timer based recalibration
+Message-ID: <20220509112235.GD40730@shbuild999.sh.intel.com>
+References: <20220508144733.91343-1-feng.tang@intel.com>
+ <20220509045839.GA40730@shbuild999.sh.intel.com>
+ <20220509071652.GE76023@worktop.programming.kicks-ass.net>
+ <20220509073003.GB40730@shbuild999.sh.intel.com>
+ <87h75zrpmh.ffs@tglx>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202205080033.82AB3703C3@keescook>
+In-Reply-To: <87h75zrpmh.ffs@tglx>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 08, 2022 at 01:29:13AM -0700, Kees Cook wrote:
-> On Wed, May 04, 2022 at 08:16:57PM +0200, Peter Zijlstra wrote:
-> > 	FineIBT						kCFI
-> > 
-> > __fineibt_\hash:
-> > 	xor	\hash, %r10	# 7
-> > 	jz	1f		# 2
-> > 	ud2			# 2
-> > 1:	ret			# 1
-> > 	int3			# 1
-> > 
-> > 
-> > __cfi_\sym:					__cfi_\sym:
-> > 							int3; int3				# 2
-> > 	endbr			# 4			mov	\hash, %eax			# 5
-> > 	call	__fineibt_\hash	# 5			int3; int3				# 2
-> > \sym:						\sym:
-> > 	...						...
-> > 
-> > 
-> > caller:						caller:
-> > 	movl	\hash, %r10d	# 6			cmpl	\hash, -6(%r11)			# 8
-> > 	sub	$9, %r11	# 4			je	1f				# 2
-> > 	call	*%r11		# 3			ud2					# 2
-> > 	.nop 4			# 4 (or fixup r11)	call	__x86_indirect_thunk_r11	# 5
+Hi Thomas,
+
+Thanks for the comments!
+
+On Mon, May 09, 2022 at 12:01:42PM +0200, Thomas Gleixner wrote:
+> Feng,
 > 
-> This looks good!
+> On Mon, May 09 2022 at 15:30, Feng Tang wrote:
+> > On Mon, May 09, 2022 at 09:16:52AM +0200, Peter Zijlstra wrote:
+> >> On Mon, May 09, 2022 at 12:58:39PM +0800, Feng Tang wrote:
+> >> > And there is still very few corner case that the freq info is not
+> >> > accurate enough with small deviation from the actual value, like on
+> >> > a product with early buggy version of firmware or on some
+> >> > pre-production hardware.
+> >> >
+> >> > Add an option 'recalibrate' for 'tsc' kernel parameter to force the
+> >> > tsc freq recalibration with HPET/PM_TIMER, and warn if the deviation
+> >> > from previous value is more than about 500 PPM.
+> >> > 
+> >> > Signed-off-by: Feng Tang <feng.tang@intel.com>
+> >> 
+> >> Why isn't 'tsc_early_khz=' not working for you? Afaict that will
+> >> override calibrate_tsc() when provided and as such can be used on these
+> >> early platforms for provide the right value until such time that the
+> >> firmware is fixed.
+> >
+> > For the early platforms, the problem we met is we don't know what
+> > is the 'correct' tsc-freq, and the value from MSR/CUPID could be wrong. 
+> >
+> > And there was some generation, that after enabling some feature, each
+> > instance of HW will have slightly different frequency, so there is
+> > no central "one for all" value to set for 'tsc_early_khz'.
+> >
+> > This option is more like a way to double-check the correctness of
+> > tsc-freq got from MSR/CPUID(0x15).
 > 
-> And just to double-check my understanding here... \sym is expected to
-> start with endbr with IBT + kCFI?
-
-Ah, the thinking was that 'if IBT then FineIBT', so the combination of
-kCFI and IBT is of no concern. And since FineIBT will have the ENDBR in
-the __cfi_\sym thing, \sym will not need it.
-
-But thinking about this now I suppose __nocfi call symbols will stlil
-need the ENDBR on. Objtool IBT validation would need to either find
-ENDBR or a matching __cfi_\sym I suppose.
-
-So I was talking to Joao on IRC the other day, and I realized that if
-kCFI generates code as per the above, then we can do FineIBT purely
-in-kernel. That is; have objtool generate a section of __cfi_\sym
-locations. Then use the .retpoline_sites and .cfi_sites to rewrite kCFI
-into the FineIBT form in multi pass:
-
- - read all the __cfi_\sym sites and collect all unique hash values
-
- - allocate (module) memory and write __fineibt_\hash functions for each
-   unique hash value found
-
- - rewrite callers; nop out kCFI
-
- - rewrite all __cfi_\sym
-
- - rewrite all callers
-
- - enable IBT
-
-And the same on module load I suppose.
-
-But I've only thought about this, not actually implemented it, so who
-knows what surprises are lurking there :-)
-
-> Random extra thoughts... feel free to ignore. :) Given that both CFI
-> schemes depend on an attacker not being able to construct an executable
-> memory region that either starts with endbr (for FineIBT) or starts with
-> hash & 2 bytes (for kCFI), we should likely take another look at where
-> the kernel uses PAGE_KERNEL_EXEC.
+> If at all it's a workaround for the inability and ignorance of firmware
+> people. The crystal frequency and the TSC/crystal ratio _are_ known to
+> the system designer and firmware people. It's really not asked too much
+> to put the correct values into CPUID(0x15) and have proper quality
+> control to ensure the correctness.
 > 
-> It seems non-specialized use is entirely done via module_alloc(). Obviously
-> modules need to stay as-is. So we're left with other module_alloc()
-> callers: BPF JIT, ftrace, and kprobes.
+> The whole argument about early firmware and pre-production hardware is
+> bogus. It's 2022 and we are debating this problem for more than a decade
+> now and still hardware and firmware people think they can do what they
+> want and it all can be "fixed" in software. It's not rocket science to
+> get this straight.
+ 
+I completely understand it, as we've also suffered a lot from such
+problems. This patch doesn't change any current work flow, and it simply
+calibrates and prints out the freq info (warn if there is big deviation).
+It acctually provides SW guys a quick way to argue with HW/FW people:
+"See! You've given us a wrong number, please fix it", otherwise I heard
+there was customer long ago  who used atomic clock to prove the deviation. 
+
+> Aside of that HPET has become unrealiable and PM timer is not guaranteed
+> to be there either. So we really do not need a mechanism to enforce
+> recalibration against something which is not guaranteed to provide
+> sensible information.
+
+Correct. The HPET on new client platforms turn to be disabled for the
+PC10 issue, though it's fine on server platforms where tsc accuracy is
+more important. Also even for the disabled HPET case, I remembered that
+you've once suggested to leverage its capability for calibration, and
+only disable it before cpu idle framework really starts :)
+
+Thanks,
+Feng
+
+> Thanks,
 > 
-> Perhaps enabling CFI should tie bpf_jit_harden (which performs constant
-> blinding) to the value of bpf_jit_enable? (i.e. either use BPF VM which
-> reads from non-exec memory, or use BPF JIT with constant blinding.)
-> 
-> I *think* all the kprobes and ftrace stuff ends up using constructed
-> direct calls, though, yes? So if we did bounds checking, we could
-> "exclude" them as well as the BPF JIT. Though I'm not sure how
-> controllable the content written to the kprobes and ftrace regions are,
-> though?
-
-Both ftrace and kprobe only write fairly simple tramplines based off of
-a template. Neither has indirect calls.
-
-> For exclusion, we could separate actual modules from the other
-> module_alloc() users by maybe allocating in opposite directions from the
-> randomized offset and check indirect calls against the kernel text bounds
-> and the new modules-only bounds. Sounds expensive, though. Maybe PKS,
-> but I can't imagine 2 MSR writes per indirect call would be fast. Hmm...
-
-I'm not sure what problem you're trying to solve..
+>         tglx
