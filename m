@@ -2,112 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A814C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 15:50:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 585B5C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 15:51:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238654AbiEIPyD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 11:54:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35340 "EHLO
+        id S238653AbiEIPzm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 11:55:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238638AbiEIPx6 (ORCPT
+        with ESMTP id S238663AbiEIPzl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 11:53:58 -0400
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45D502D7ED6
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 08:50:04 -0700 (PDT)
-Received: by mail-io1-xd36.google.com with SMTP id h85so15759703iof.12
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 08:50:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OGkep1cFKgrJ0+QYCkcQH8E9lVqym+xbFUqlGchTBdA=;
-        b=GNqB9+dOPOgJAN/Rgmyvw+OC73ISW3HR99MI9WfWlaADf6nDOTS+TBu3SpiRznRYRU
-         5LOT/9Gz+134yQVjM6txYZRqLxzNgCM4/aOeyqNl75DzVfAKHNrLA8C+0JxLI/RQVHKF
-         4N70h0G5BK31FXQRH9JAHIiily8CdZhqzalBtINtMtBbkkYvKv/VkS6CfLCsZlWS5tol
-         ert88JvCzo4XUIo+Yg7i6T5WecqnOX/AzanJWBJLgqkXf81RuNESX4SbVEqu0v1h4J5c
-         2BBetxrqAo/N8KouURZrj8zJOuyIOOnWzA5Kf72qdgHPi1UbHMBQ8tQvF31PPd6QiVHK
-         aHew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OGkep1cFKgrJ0+QYCkcQH8E9lVqym+xbFUqlGchTBdA=;
-        b=NGjIdEuyaTKPXagkbaai5+4ee6VxGfudtNmT6yp6xRFVJSw7gFvpMoDSzzCouCyXiH
-         GPHPmlud6l4ZwmGblxV4aSh71nReBF2vSFjVVfZpzbMXX3jOpEMqBBc7xhIH7kDxcTiS
-         GtQaqk8W77EsMaW1CcLeDATmchMcM/v+XWwYkA/EVXfW9f2CwmVrtYYghAA70GCq0hNW
-         VJU2b1E1i4RWaGTVfiIXmxm/dM/jChJlBALhpBZ5q4hZws7UW1/NXXP/da5tEhcP6Lyy
-         JfIsxNZSGeyJA8xVGWI803IVrNEOr9nC6gj4s6ipgXiqPLPUz1Nh4g6v5q8nwbyFpkIm
-         c8Pw==
-X-Gm-Message-State: AOAM532y+y3VQea33rqyYJl7PiRONaKc9GNVaEqWTc/lHV1cSyA2rbqI
-        IjsbPENnux6GrZQ/TwSzS4f7epJib+21R2Og4O4=
-X-Google-Smtp-Source: ABdhPJwfjXOo+deeBis/EeuLvTu678Fa2xzj5BBYf3N5OZHQfcNrr+qi8opcvYMoOfZ0Ne3uB2cBJToFbVxyvJgrsMM=
-X-Received: by 2002:a05:6638:30e:b0:32a:f864:e4d4 with SMTP id
- w14-20020a056638030e00b0032af864e4d4mr7221878jap.218.1652111403703; Mon, 09
- May 2022 08:50:03 -0700 (PDT)
-MIME-Version: 1.0
-References: <3167cbec7a82704c1ed2c6bfe85b77534a836fdc.1651162840.git.andreyknvl@google.com>
- <CAG_fn=XFOA-qsvPwjwJ0iZH1Wy54aS7QtD4ETVdp9L-yvOkiWg@mail.gmail.com>
-In-Reply-To: <CAG_fn=XFOA-qsvPwjwJ0iZH1Wy54aS7QtD4ETVdp9L-yvOkiWg@mail.gmail.com>
-From:   Andrey Konovalov <andreyknvl@gmail.com>
-Date:   Mon, 9 May 2022 17:49:53 +0200
-Message-ID: <CA+fCnZfkKwYRTn+oK71c89jJG9CKAUqrURxq=g6z7EJXrr_Pzw@mail.gmail.com>
-Subject: Re: [PATCH 1/3] kasan: clean up comments in internal kasan.h
-To:     Alexander Potapenko <glider@google.com>
-Cc:     andrey.konovalov@linux.dev, Marco Elver <elver@google.com>,
+        Mon, 9 May 2022 11:55:41 -0400
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03EA61B4358
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 08:51:43 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1652111502;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NF8mg5QhZqll++5M0QCKA3K7h0Z/LuDMIxcghTm14BM=;
+        b=odwTjasOEy5BEtNI4bArN3VgUkslxt5vbxsBU3Lxo9ixI4OiO1oa7hIrIk+dxHJM9oK+tQ
+        YwhoLCuDt5Yw6Cz1p+lwhzGVctmX6C5uP6FZhJ0SOa3QpzH3ss7QO/HZ/re58842m6QBds
+        TDiCn57YiPikQ0l5hGqGnv6y7ajONp8=
+From:   andrey.konovalov@linux.dev
+To:     Marco Elver <elver@google.com>,
+        Alexander Potapenko <glider@google.com>
+Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
         Dmitry Vyukov <dvyukov@google.com>,
         Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
+        kasan-dev@googlegroups.com,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
         Andrey Konovalov <andreyknvl@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Subject: [PATCH v2 2/3] kasan: use tabs to align shadow values
+Date:   Mon,  9 May 2022 17:51:35 +0200
+Message-Id: <00e7e66b5fc375d58200dc1489949b3edcd096b7.1652111464.git.andreyknvl@google.com>
+In-Reply-To: <a0680ff30035b56cb7bdd5f59fd400e71712ceb5.1652111464.git.andreyknvl@google.com>
+References: <a0680ff30035b56cb7bdd5f59fd400e71712ceb5.1652111464.git.andreyknvl@google.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 6:42 PM Alexander Potapenko <glider@google.com> wrote:
->
-> On Thu, Apr 28, 2022 at 6:21 PM <andrey.konovalov@linux.dev> wrote:
-> >
-> > From: Andrey Konovalov <andreyknvl@google.com>
-> >
-> > Clean up comments in mm/kasan/kasan.h: clarify, unify styles, fix
-> > punctuation, etc.
-> >
-> > Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
->
-> Reviewed-by: Alexander Potapenko <glider@google.com>
->
-> >
-> > +/* alloca redzone size. Compiler's ABI, do not change. */
-> s/Compiler's/Compiler ?
->
-> >  #define KASAN_ALLOCA_REDZONE_SIZE      32
-> >
-> > -/*
-> > - * Stack frame marker (compiler ABI).
-> > - */
-> > +/* Stack frame marker. Compiler's ABI, do not change. */
-> Ditto
->
-> >
-> > -/* The layout of struct dictated by compiler */
-> > +/* Do not change the struct layout: compiler's ABI. */
-> Ditto
->
-> > -/* The layout of struct dictated by compiler */
-> > +/* Do not change the struct layout: compiler's ABI. */
-> Ditto
->
-> > -       unsigned long has_dynamic_init; /* This needed for C++ */
-> > +       unsigned long has_dynamic_init; /* This needed for C++. */
-> "is needed"?
->
->
-> > -        * is accepted since SLAB redzones aren't enabled in production builds.
-> > +        * is accepted since slab redzones aren't enabled in production builds.
-> s/accepted/acceptable ?
+From: Andrey Konovalov <andreyknvl@google.com>
 
-Will fix all in v2, thanks!
+Consistently use tabs instead of spaces to shadow value definitions.
+
+Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+---
+ mm/kasan/kasan.h | 32 ++++++++++++++++----------------
+ 1 file changed, 16 insertions(+), 16 deletions(-)
+
+diff --git a/mm/kasan/kasan.h b/mm/kasan/kasan.h
+index fed4f7a00d33..a60ed636e899 100644
+--- a/mm/kasan/kasan.h
++++ b/mm/kasan/kasan.h
+@@ -74,29 +74,29 @@ static inline bool kasan_sync_fault_possible(void)
+ #define KASAN_MEMORY_PER_SHADOW_PAGE	(KASAN_GRANULE_SIZE << PAGE_SHIFT)
+ 
+ #ifdef CONFIG_KASAN_GENERIC
+-#define KASAN_FREE_PAGE         0xFF  /* freed page */
+-#define KASAN_PAGE_REDZONE      0xFE  /* redzone for kmalloc_large allocation */
+-#define KASAN_KMALLOC_REDZONE   0xFC  /* redzone for slab object */
+-#define KASAN_KMALLOC_FREE      0xFB  /* freed slab object */
+-#define KASAN_VMALLOC_INVALID   0xF8  /* inaccessible space in vmap area */
++#define KASAN_FREE_PAGE		0xFF  /* freed page */
++#define KASAN_PAGE_REDZONE	0xFE  /* redzone for kmalloc_large allocation */
++#define KASAN_KMALLOC_REDZONE	0xFC  /* redzone for slab object */
++#define KASAN_KMALLOC_FREE	0xFB  /* freed slab object */
++#define KASAN_VMALLOC_INVALID	0xF8  /* inaccessible space in vmap area */
+ #else
+-#define KASAN_FREE_PAGE         KASAN_TAG_INVALID
+-#define KASAN_PAGE_REDZONE      KASAN_TAG_INVALID
+-#define KASAN_KMALLOC_REDZONE   KASAN_TAG_INVALID
+-#define KASAN_KMALLOC_FREE      KASAN_TAG_INVALID
+-#define KASAN_VMALLOC_INVALID   KASAN_TAG_INVALID /* only used for SW_TAGS */
++#define KASAN_FREE_PAGE		KASAN_TAG_INVALID
++#define KASAN_PAGE_REDZONE	KASAN_TAG_INVALID
++#define KASAN_KMALLOC_REDZONE	KASAN_TAG_INVALID
++#define KASAN_KMALLOC_FREE	KASAN_TAG_INVALID
++#define KASAN_VMALLOC_INVALID	KASAN_TAG_INVALID /* only used for SW_TAGS */
+ #endif
+ 
+ #ifdef CONFIG_KASAN_GENERIC
+ 
+-#define KASAN_KMALLOC_FREETRACK 0xFA  /* freed slab object with free track */
+-#define KASAN_GLOBAL_REDZONE    0xF9  /* redzone for global variable */
++#define KASAN_KMALLOC_FREETRACK	0xFA  /* freed slab object with free track */
++#define KASAN_GLOBAL_REDZONE	0xF9  /* redzone for global variable */
+ 
+ /* Stack redzone shadow values. Compiler ABI, do not change. */
+-#define KASAN_STACK_LEFT        0xF1
+-#define KASAN_STACK_MID         0xF2
+-#define KASAN_STACK_RIGHT       0xF3
+-#define KASAN_STACK_PARTIAL     0xF4
++#define KASAN_STACK_LEFT	0xF1
++#define KASAN_STACK_MID		0xF2
++#define KASAN_STACK_RIGHT	0xF3
++#define KASAN_STACK_PARTIAL	0xF4
+ 
+ /* alloca redzone shadow values. */
+ #define KASAN_ALLOCA_LEFT	0xCA
+-- 
+2.25.1
+
