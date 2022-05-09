@@ -2,114 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18E27C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EA13C43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:51:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236409AbiEIHwN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 03:52:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44822 "EHLO
+        id S236450AbiEIHw0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 03:52:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236956AbiEIHf7 (ORCPT
+        with ESMTP id S234694AbiEIHos (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 03:35:59 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D39DD13B8FB
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 00:32:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652081526; x=1683617526;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=1I5zSUaaRKz4//FnqhNByD1l6y1y2nV5JiA+hv2I3g0=;
-  b=RPJ8KbQtA5E+g2T0GJrkntBo1DqZSnikO2KO11Fr+6ltwdKrHXaYpy8A
-   tMVTPUNgFt2ElhIt5NHiutWhaRYnh13PRoqgO8Glvj/2vJBy1m0CUzdxX
-   NuGyGQ1zLfUdsER377B31wtWwqXm3+KaoXhhlR1mUuG3wyoe8tQ7P/96C
-   A7DdKmyXZcwPHOMCUaD+Bq6CtczwxWRL0giUiv7dYjKcyR5JFxqut4onU
-   mnfsAxwJTK7PmIdrV8rMGZcA2PWkzUnXDnVF1sBECDFpun8RxchvJtDdW
-   JiS0dNI/mgZq6YOUpDTihF96Ak1Z+shhkO2WaoVms8eWvVSpcc9ALUvJa
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10341"; a="355396109"
-X-IronPort-AV: E=Sophos;i="5.91,210,1647327600"; 
-   d="scan'208";a="355396109"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 00:30:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,210,1647327600"; 
-   d="scan'208";a="564920340"
-Received: from shbuild999.sh.intel.com (HELO localhost) ([10.239.146.138])
-  by orsmga007.jf.intel.com with ESMTP; 09 May 2022 00:30:04 -0700
-Date:   Mon, 9 May 2022 15:30:03 +0800
-From:   Feng Tang <feng.tang@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@intel.com>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Jonathan Corbet <corbet@lwn.net>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, paulmck@kernel.org,
-        rui.zhang@intel.com, len.brown@intel.com, tim.c.chen@intel.com
-Subject: Re: [PATCH] x86/tsc: Add option to force HW timer based recalibration
-Message-ID: <20220509073003.GB40730@shbuild999.sh.intel.com>
-References: <20220508144733.91343-1-feng.tang@intel.com>
- <20220509045839.GA40730@shbuild999.sh.intel.com>
- <20220509071652.GE76023@worktop.programming.kicks-ass.net>
+        Mon, 9 May 2022 03:44:48 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EAA2B86D;
+        Mon,  9 May 2022 00:40:55 -0700 (PDT)
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 248LUshn011815;
+        Mon, 9 May 2022 09:40:00 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=/j0WtA1ZdUqRFV99pN+qeJH/+Z3kUlv2gElgYxTejVo=;
+ b=nheer9I1FTvVEUlIHIa+vmqDDa2ea18u3DYv8HLTTLLdlgA2AVZnYKk0/D27meek9lfW
+ zeUL+xlMDvTrxf1HfDpdVnWYALfvq79gUfbWa3/U39fMYMH6GmvIJVeFlg6nyY29tIVe
+ eHwih2uk5kGBu9qy1PQLjAGax9/gii97BiWqgvCiXIzmNiI7hE5FCXj2jRBClVMHydDP
+ lox/zazXN9xcaKU0E3R6/7XQozmEnGK19mjogQamOpYn4n0oF5jbayYh9PWbmhxXVkpL
+ tI3YDl5OQmpBtz9VU7A8IfCF361bD1Ja6+2K7zy58bCLzZc2vQC/X4PADkkI54DOZRN1 Nw== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3fwfng9hsh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 09 May 2022 09:40:00 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 94AFF100034;
+        Mon,  9 May 2022 09:39:58 +0200 (CEST)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 8C30F2122E7;
+        Mon,  9 May 2022 09:39:58 +0200 (CEST)
+Received: from [10.48.1.150] (10.75.127.47) by SFHDAG2NODE2.st.com
+ (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 9 May
+ 2022 09:39:57 +0200
+Message-ID: <30a2c669-693f-45ec-df0e-610e1f94bffd@foss.st.com>
+Date:   Mon, 9 May 2022 09:39:57 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220509071652.GE76023@worktop.programming.kicks-ass.net>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v1 1/1] pinctrl: stm32: Unshadow np variable in
+ stm32_pctl_probe()
+Content-Language: en-US
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        <linux-gpio@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        kernel test robot <lkp@intel.com>
+References: <20220507102257.26414-1-andriy.shevchenko@linux.intel.com>
+From:   Fabien DESSENNE <fabien.dessenne@foss.st.com>
+In-Reply-To: <20220507102257.26414-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.47]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-09_02,2022-05-06_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Peter,
+Hi Andy
 
-Thanks for the review!
 
-On Mon, May 09, 2022 at 09:16:52AM +0200, Peter Zijlstra wrote:
-> On Mon, May 09, 2022 at 12:58:39PM +0800, Feng Tang wrote:
-> > Sorry, just spotted some typos, here is the updated version
-> > 
-> > 
-> > From ee8e3d772c623d27d79c43da5a76fb6252175aba Mon Sep 17 00:00:00 2001
-> > From: Feng Tang <feng.tang@intel.com>
-> > Date: Sun, 8 May 2022 20:22:12 +0800
-> > Subject: [PATCH] x86/tsc: Add option to force HW timer based recalibration
-> > 
-> > Currently when HW provides the tsc freq info through MSR or CPUID(0x15),
-> > the info will be taken as the 'best guess', and kernel will set the
-> > X86_FEATURE_TSC_KNOWN_FREQ flag and skip the HW timer based recalibration,
-> > which works pretty well.
-> > 
-> > And there is still very few corner case that the freq info is not
-> > accurate enough with small deviation from the actual value, like on
-> > a product with early buggy version of firmware or on some
-> > pre-production hardware.
-> > 
-> > Add an option 'recalibrate' for 'tsc' kernel parameter to force the
-> > tsc freq recalibration with HPET/PM_TIMER, and warn if the deviation
-> > from previous value is more than about 500 PPM.
-> > 
-> > Signed-off-by: Feng Tang <feng.tang@intel.com>
+Thank you for the patch.
+
+Will this patch be applied in Linus pinctrl tree, or in the gpio-intel 
+tree before being merged (linux-next) in the pinctrl tree?
+
+BR
+
+Fabien
+
+
+
+On 07/05/2022 12:22, Andy Shevchenko wrote:
+> The np variable is used globally for stm32_pctl_probe() and in one of
+> its code branches. cppcheck is not happy with that:
 > 
-> Why isn't 'tsc_early_khz=' not working for you? Afaict that will
-> override calibrate_tsc() when provided and as such can be used on these
-> early platforms for provide the right value until such time that the
-> firmware is fixed.
+>    pinctrl-stm32.c:1530:23: warning: Local variable 'np' shadows outer variable [shadowVariable]
+> 
+> Instead of simply renaming one of the variables convert some code to
+> use a device pointer directly.
+> 
+> Fixes: bb949ed9b16b ("pinctrl: stm32: Switch to use for_each_gpiochip_node() helper")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-For the early platforms, the problem we met is we don't know what
-is the 'correct' tsc-freq, and the value from MSR/CUPID could be wrong. 
-
-And there was some generation, that after enabling some feature, each
-instance of HW will have slightly different frequency, so there is
-no central "one for all" value to set for 'tsc_early_khz'.
-
-This option is more like a way to double-check the correctness of
-tsc-freq got from MSR/CPUID(0x15).
-
-Thanks,
-Feng
+Reviewed-by: Fabien Dessenne <fabien.dessenne@foss.st.com>
 
 
 
-
-
+> ---
+>   drivers/pinctrl/stm32/pinctrl-stm32.c | 21 +++++++++------------
+>   1 file changed, 9 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/pinctrl/stm32/pinctrl-stm32.c b/drivers/pinctrl/stm32/pinctrl-stm32.c
+> index e73f2d24611f..5d1d067b2247 100644
+> --- a/drivers/pinctrl/stm32/pinctrl-stm32.c
+> +++ b/drivers/pinctrl/stm32/pinctrl-stm32.c
+> @@ -1364,8 +1364,9 @@ static int stm32_gpiolib_register_bank(struct stm32_pinctrl *pctl, struct fwnode
+>   	return err;
+>   }
+>   
+> -static struct irq_domain *stm32_pctrl_get_irq_domain(struct device_node *np)
+> +static struct irq_domain *stm32_pctrl_get_irq_domain(struct platform_device *pdev)
+>   {
+> +	struct device_node *np = pdev->dev.of_node;
+>   	struct device_node *parent;
+>   	struct irq_domain *domain;
+>   
+> @@ -1482,23 +1483,19 @@ static int stm32_pctrl_create_pins_tab(struct stm32_pinctrl *pctl,
+>   
+>   int stm32_pctl_probe(struct platform_device *pdev)
+>   {
+> -	struct device_node *np = pdev->dev.of_node;
+> +	const struct stm32_pinctrl_match_data *match_data;
+>   	struct fwnode_handle *child;
+> -	const struct of_device_id *match;
+>   	struct device *dev = &pdev->dev;
+>   	struct stm32_pinctrl *pctl;
+>   	struct pinctrl_pin_desc *pins;
+>   	int i, ret, hwlock_id;
+>   	unsigned int banks;
+>   
+> -	if (!np)
+> -		return -EINVAL;
+> -
+> -	match = of_match_device(dev->driver->of_match_table, dev);
+> -	if (!match || !match->data)
+> +	match_data = device_get_match_data(dev);
+> +	if (!match_data)
+>   		return -EINVAL;
+>   
+> -	if (!of_find_property(np, "pins-are-numbered", NULL)) {
+> +	if (!device_property_present(dev, "pins-are-numbered")) {
+>   		dev_err(dev, "only support pins-are-numbered format\n");
+>   		return -EINVAL;
+>   	}
+> @@ -1510,7 +1507,7 @@ int stm32_pctl_probe(struct platform_device *pdev)
+>   	platform_set_drvdata(pdev, pctl);
+>   
+>   	/* check for IRQ controller (may require deferred probe) */
+> -	pctl->domain = stm32_pctrl_get_irq_domain(np);
+> +	pctl->domain = stm32_pctrl_get_irq_domain(pdev);
+>   	if (IS_ERR(pctl->domain))
+>   		return PTR_ERR(pctl->domain);
+>   
+> @@ -1526,10 +1523,10 @@ int stm32_pctl_probe(struct platform_device *pdev)
+>   	spin_lock_init(&pctl->irqmux_lock);
+>   
+>   	pctl->dev = dev;
+> -	pctl->match_data = match->data;
+> +	pctl->match_data = match_data;
+>   
+>   	/*  get optional package information */
+> -	if (!of_property_read_u32(np, "st,package", &pctl->pkg))
+> +	if (!device_property_read_u32(dev, "st,package", &pctl->pkg))
+>   		dev_dbg(pctl->dev, "package detected: %x\n", pctl->pkg);
+>   
+>   	pctl->pins = devm_kcalloc(pctl->dev, pctl->match_data->npins,
