@@ -2,106 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 600CBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 06:45:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3975AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 06:48:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233520AbiEIGsr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 02:48:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38060 "EHLO
+        id S235069AbiEIGtw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 02:49:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233453AbiEIGqc (ORCPT
+        with ESMTP id S231817AbiEIGnH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 02:46:32 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1ABB13C08C
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 23:42:37 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id d6so15063104ede.8
-        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 23:42:37 -0700 (PDT)
+        Mon, 9 May 2022 02:43:07 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CD1118FF2A
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 23:39:12 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id dk23so24822461ejb.8
+        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 23:39:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=uJOQksv/Nz7S6hCUok26zJ6fKbWWbQlYtjVxm6ipB6o=;
-        b=rPQ7B5yo6cD6nD6lgS4qglTb9gjR27VlU5Ie1sQOZvcSpF+l8ZfE8rPTipH7OnrLRK
-         zhl/da1BJmVs4UzWOoHQq6rfRV2XWth6NfQnge+zDf39c3wMYvt1OeqnHeN7r0o1UR1m
-         3b8x61LfsD5eo7AaltIOGOU7E70FHi+WRldTtz3+cIFQ14L0VeF6pvgMyPY5QFAGft5T
-         vRYCmHluuHCvORXc6DVO2wxAi7voI9im5N0w1/xfY9cxNkkeDKRnPQs3tzCwXOzrQZHz
-         YZtcXokO7fX+orSZXTie6NyyOS/8Nx4+zoOCpBv3SeLgQDkstwJILvL55tnoWBNtUPyJ
-         SKCA==
+        bh=UV9zjmHYlW+6A7MQ6c6pItDR5gnRmcinDnUlAmO8o4s=;
+        b=hzjmM6oUphOTv/1VPY1VsofK8BtDOdAvdqw4l2wRm3nyyk3knoYA+470tzaBgBWByW
+         oEx9yq4xf8wLj8MarLGMhbvPhJitxVqIkJndkI0RUgIahTHHllfHLmQ2Cr3DEPh8mprK
+         T3jeoqxaCup6Y39F7tDd3zWaxPGAX0dtt4CaEzuZogh/QsUqL5yB1rdpHej9KjW1zq2I
+         4dL4ePYA2i/GnSoUFPfAHtketeRvOuxR+KBqGYwlAIN1Nv1AuSBG+gczDO8xiEQDEwCZ
+         hjMEsjHmmft2ZOAncTFIIHmOZE9IOLHUXfBC+/3qUVuevlU0m7kZ1HcWMDpVEMfE5Hfs
+         GzZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=uJOQksv/Nz7S6hCUok26zJ6fKbWWbQlYtjVxm6ipB6o=;
-        b=mqaBN11kZ3GVUYf6+bhNg6GeVsMgkUAZaPTVakfBrF3FvC+IdMYG1i/PIdP7wjWQ49
-         1Gy8rXs5Mr5tk0v3/BuIMudDrZvPtGWadQXt2Khedg9ngOaW0qRcFkCw44+bUxgfMG+h
-         RDhrZcyIjcLUH+9FxanFcJEdJzqrucpnxhWzXE2Q6UfMkZ3GoD0dfv14bdwCBM9GUnF0
-         QSqPsQ2XH0YQnm6KmfRNnrfgBKZLZmN7zafeEtIY0LtG3jU4JhO/WwliMjfuGU20Z6CX
-         inHm+7yMheS/TMIh0d1BkHIcayqLkM3L8M+UU5TOHNZJ2b1KpHAy8GXDr4fDUQV/MnS+
-         PJNg==
-X-Gm-Message-State: AOAM531nIOkugkA8foH4aHp/6IPR35ufwXrX3SwwEJLyDiCO09Alt6XG
-        ruv9+o/yDKB5pqqPkikjMi7+zg==
-X-Google-Smtp-Source: ABdhPJxtgRhW3ZJj9MbSV+/lI8mw0cEll+Lr/P1aCjNSFND2BqVyrj1DygJfs/9L3aylDRAqiVBMVA==
-X-Received: by 2002:a05:6402:289a:b0:425:d682:105d with SMTP id eg26-20020a056402289a00b00425d682105dmr16072838edb.175.1652078556379;
-        Sun, 08 May 2022 23:42:36 -0700 (PDT)
+        bh=UV9zjmHYlW+6A7MQ6c6pItDR5gnRmcinDnUlAmO8o4s=;
+        b=XWLuAGZ2+IdOUY2yggJlBaSjeaCnCJxeld/Cyutk0jkzxcVf0L+kB+8z69HdjdiySJ
+         0LcCKHUYUEtGq0gI7igw6G7ZjCDBlKWmQ6QEgt8OC8pWUSzP8yGf+l3qQhkYWubxW8X/
+         MbxyDrt6P7BLbLK0o6+Gp6+RXgHttA2Qi1eVckHNrRrbpx1o8/o7uzmzOYUbPaM0DhWg
+         b8iueK4IzksFgRiCoHFJaHlMOY41NCIG3lAnacZUAbpUgFZzn9z5BraAzp5U56wWwA94
+         5RHGyK7JE96cXhyaO37m56LJ/+5ENIERvdfPqXcqz/xRjVl2/ZJmtceS2dEqX5IUES00
+         kdrg==
+X-Gm-Message-State: AOAM530k+QsvMIHYAv6PGHVOxEESk41RU4zEOEyB+102wv9KB0ogxupP
+        ifmpXkR0l8J7PgQJNGk5deQt7A==
+X-Google-Smtp-Source: ABdhPJwods/7Sd25/CejtLdRC3yOQ4HyzjC7vaMwqSaAKsR5nOmQu3wz5BjBUvUcVGvObNORipndng==
+X-Received: by 2002:a17:907:8693:b0:6f8:635a:1d32 with SMTP id qa19-20020a170907869300b006f8635a1d32mr7747735ejc.663.1652078333319;
+        Sun, 08 May 2022 23:38:53 -0700 (PDT)
 Received: from [192.168.0.242] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id cn18-20020a0564020cb200b0042617ba639esm5764601edb.40.2022.05.08.23.42.35
+        by smtp.gmail.com with ESMTPSA id mj9-20020a170906af8900b006f4c82c2b12sm4693247ejb.19.2022.05.08.23.38.52
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 08 May 2022 23:42:35 -0700 (PDT)
-Message-ID: <eb0745a6-ecf2-4b70-368b-9ad8a322f208@linaro.org>
-Date:   Mon, 9 May 2022 08:42:34 +0200
+        Sun, 08 May 2022 23:38:52 -0700 (PDT)
+Message-ID: <0fdfcc16-7b80-47e9-709c-648d3a0cd6fc@linaro.org>
+Date:   Mon, 9 May 2022 08:38:51 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: Re: [PATCH v6 1/4] dt-bindings: thermal: k3-j72xx: Add VTM bindings
- documentation
+Subject: Re: [PATCH 2/3] dt-bindings: display: Add bindings for EBBG FT8719
 Content-Language: en-US
-To:     "J, KEERTHY" <j-keerthy@ti.com>, robh+dt@kernel.org,
-        daniel.lezcano@linaro.org, rui.zhang@intel.com, amitk@kernel.org,
-        kristo@kernel.org, vigneshr@ti.com
-Cc:     linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220427064635.24898-1-j-keerthy@ti.com>
- <20220427064635.24898-2-j-keerthy@ti.com>
- <5859fed0-82b7-95eb-5719-9b0016916c50@ti.com>
+To:     Joel Selvaraj <jo@jsfamily.in>
+Cc:     airlied@linux.ie, clabbe@baylibre.com, daniel@ffwll.ch,
+        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        fanghao11@huawei.com, linus.walleij@linaro.org,
+        linux-kernel@vger.kernel.org, linux@rempel-privat.de,
+        phone-devel@vger.kernel.org, robh+dt@kernel.org, sam@ravnborg.org,
+        shawnguo@kernel.org, stano.jakubek@gmail.com,
+        thierry.reding@gmail.com, ~postmarketos/upstreaming@lists.sr.ht
+References: <2ab35af2-b067-4243-35ed-a592a7046374@linaro.org>
+ <BY5PR02MB7009A604AC912DC78FAF42A5D9C69@BY5PR02MB7009.namprd02.prod.outlook.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <5859fed0-82b7-95eb-5719-9b0016916c50@ti.com>
+In-Reply-To: <BY5PR02MB7009A604AC912DC78FAF42A5D9C69@BY5PR02MB7009.namprd02.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09/05/2022 05:18, J, KEERTHY wrote:
+On 09/05/2022 07:08, Joel Selvaraj wrote:
+> Hi Krzysztof Kozlowski,
 > 
+> A quick question.
 > 
-> On 4/27/2022 12:16 PM, Keerthy wrote:
->> Add VTM bindings documentation. In the Voltage Thermal
->> Management Module(VTM), K3 J72XX supplies a voltage
->> reference and a temperature sensor feature that are gathered in the band
->> gap voltage and temperature sensor (VBGAPTS) module. The band
->> gap provides current and voltage reference for its internal
->> circuits and other analog IP blocks. The analog-to-digital
->> converter (ADC) produces an output value that is proportional
->> to the silicon temperature.
+> On 07/05/22 21:02, Krzysztof Kozlowski wrote:
+>  >> +  backlight: true
+>  >> +  port: true
+>  >
+>  > Both should not be needed - they come from panel-common.yaml. They might
+>  > stay in list
 > 
-> Hi krzysztof,
+> I see that almost 54 panels mention "port: true" and 46 panels mention
+> "backlight: true". Almost all panels refer the panel-common.yaml too.
+
+They need them only if they use "additionalProperties:false".
 > 
-> Any comments on this version?
+> So I think specifying them as true is just for extra clarity that
+> these properties are usually used by this panel? But I am not very sure.
 
-You got Rob's review, so you don't need also mine.
+If they don't use additionalProperties:false, then the explanation could be:
+1. Just for clarity as you say, because they might want to require
+property/node which is listed in the properties, otherwise it is a bit
+confusing.
+2. They were copying first example without actually checking...
 
-If you want, then in general look okay, except the description for "reg"
-you could split per items:
+> Should I leave them be? or it's still recommended to remove them?
 
-reg:
-  items:
-    - description: VTM cfg1 register space
-    - description: VTM cfg2 register space
-    - description: efuse register space
+It's not a big deal and I do not have strong opinion, but I would
+propose to remove them from list of properties and still keep port in
+"required"
 
-It's more obvious what items you expect.
 
 Best regards,
 Krzysztof
