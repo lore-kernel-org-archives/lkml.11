@@ -2,239 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A411C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 22:33:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5418C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 22:33:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231843AbiEIWhD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 18:37:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56820 "EHLO
+        id S231887AbiEIWh3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 18:37:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231795AbiEIWg2 (ORCPT
+        with ESMTP id S231920AbiEIWhA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 18:36:28 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78BA02B9C9B
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 15:32:32 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id c11so15157139plg.13
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 15:32:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
-        h=subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding:cc:from:to;
-        bh=Z3KkgMzaCsKED3+22qU0jRs/X/gxCeKEBc73aw1loXs=;
-        b=5vPCveToxUi4ttmh8DPCDy3ak9rPZYrBa1vVaCCIrmS6NeHkVk5bHBq8IVjFktNkNG
-         AvYErCFvU0+hXObXVqDU8qyV4bDHC4+o8GCF5qmDERdGC4UhP8jFXa9zTk7wsrCBS3Ur
-         hYBnHEgjZeYUJO6BBpoZJiINRKpgW38BN9zIXLfpOOD6MVlW+Mj9iXUaiyV7h5ASvLqZ
-         hVURqRgWeSjGJCcO3SUgK9XiJKniI+25OVH+/6Lr3S1gUjbadvAJMRYa/PDQ436HjsAT
-         QrveNwpwVx4a+V1WgcLhb2cl1ZogdB/YI2keetilTCYkVwt47kvVoj8unXjX9rKFjbkg
-         CWsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding:cc:from:to;
-        bh=Z3KkgMzaCsKED3+22qU0jRs/X/gxCeKEBc73aw1loXs=;
-        b=yHv6K21NBoLCiXJnO8lMA/L5luf6Pcw/J/zCipwXmgAp1xwJCiuYOJvO7onRQtFsLy
-         BdyR8C3j8g/2GBCLQiiTa1wCULbD71qgVawAwUa0a3kGz2haWx08COEGyVcwVcR72lfq
-         ywhmslgiAH7mlTyMlB5TcJwVMC8JCxvYhUACfwpl7x5sczA5F7pPdd9sYlbBg2gPV0YH
-         bTTvz6jwtamPgV5eDztwjYVdFts5m/XblUfM+WIhzre10eb+H402bHNFW+BfzQXQxENP
-         CkqRjKId5ugH6pRYNlQHJ8T/Mpgl20AhOyI2c3kSQjlg8vrbtLC7J7uPOhJP4vs9LaHs
-         hwjQ==
-X-Gm-Message-State: AOAM531Yusa+gmA7aad0FA/v211KrvveBz6Hl8XeECNWaYwBqeH6WtnI
-        8IEE10v1HtoHyS4UWZa8CWLVtg==
-X-Google-Smtp-Source: ABdhPJw7JCborLgVxycE/OcVHLhZbdmXu7Ia1T+hDGVVlKqCVv1PQUH1RupjT9FzRxe0AXir7lMqhA==
-X-Received: by 2002:a17:90a:a385:b0:1cb:bfa8:ae01 with SMTP id x5-20020a17090aa38500b001cbbfa8ae01mr19875610pjp.116.1652135551812;
-        Mon, 09 May 2022 15:32:31 -0700 (PDT)
-Received: from localhost (76-210-143-223.lightspeed.sntcca.sbcglobal.net. [76.210.143.223])
-        by smtp.gmail.com with ESMTPSA id r5-20020a170902ea4500b0015eddb8e450sm412122plg.25.2022.05.09.15.32.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 15:32:31 -0700 (PDT)
-Subject: [PATCH v5 7/7] csky: Move to generic ticket-spinlock
-Date:   Mon,  9 May 2022 15:29:56 -0700
-Message-Id: <20220509222956.2886-8-palmer@rivosinc.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220509222956.2886-1-palmer@rivosinc.com>
-References: <20220509222956.2886-1-palmer@rivosinc.com>
+        Mon, 9 May 2022 18:37:00 -0400
+Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 739142B9C8B;
+        Mon,  9 May 2022 15:32:41 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:3d::5f6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id 6B9FB732;
+        Mon,  9 May 2022 22:32:41 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 6B9FB732
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1652135561; bh=HTkL9Ze4IkU4006Q8Vcgjjy6od50oft28ldpKD38Bhs=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=O3uonuVfVJtCWD2RVlNSsfnyOcttu7utR7SmYzjdMc/k1sBtiqfE8PTepkpz2FSdz
+         MIYyj3y8l/9zLf45BoHzjyYSpP1F2olpiwXfjgjIslOyLoRik3ynw4E/FUpO1d1DJh
+         mw6i7t9/Y8qfCiGIm5Cx2B9NkunGgfZVURltzS0Q/g7rS817nX0qwkoXTTdrltmx1S
+         O8/Oy41w4/xLsFfg/edw6omQJHxRoQat3BeWuQ+Q+cXxo+as6aD5xcu6wxyEHLnQpy
+         xl0hOhszcjF3cucI2xUdf/mJ3S00Lebwz7/wpAq0bOhTkJOhH5gp0G7I62ywn9UNjr
+         CFYTtcMzduvCw==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Miguel Ojeda <ojeda@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Finn Behrens <me@kloenk.de>,
+        Adam Bratschi-Kaye <ark.email@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sven Van Asbroeck <thesven73@gmail.com>,
+        Wu XiangCheng <bobwxc@email.cn>, Gary Guo <gary@garyguo.net>,
+        Boris-Chengbiao Zhou <bobo1239@web.de>,
+        Yuki Okushi <jtitor@2k36.org>, Wei Liu <wei.liu@kernel.org>,
+        Daniel Xu <dxu@dxuuu.xyz>, Julian Merkle <me@jvmerkle.de>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-doc@vger.kernel.org, linux-kbuild@vger.kernel.org
+Subject: Re: [PATCH v6 18/23] docs: add Rust documentation
+In-Reply-To: <20220507052451.12890-19-ojeda@kernel.org>
+References: <20220507052451.12890-1-ojeda@kernel.org>
+ <20220507052451.12890-19-ojeda@kernel.org>
+Date:   Mon, 09 May 2022 16:32:40 -0600
+Message-ID: <875ymecp6f.fsf@meer.lwn.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Cc:     guoren@kernel.org, peterz@infradead.org, mingo@redhat.com,
-        Will Deacon <will@kernel.org>, longman@redhat.com,
-        boqun.feng@gmail.com, jonas@southpole.se,
-        stefan.kristiansson@saunalahti.fi, shorne@gmail.com,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>, aou@eecs.berkeley.edu,
-        Arnd Bergmann <arnd@arndb.de>, macro@orcam.me.uk,
-        Greg KH <gregkh@linuxfoundation.org>,
-        sudipm.mukherjee@gmail.com, jszhang@kernel.org,
-        linux-csky@vger.kernel.org, linux-kernel@vger.kernel.org,
-        openrisc@lists.librecores.org, linux-riscv@lists.infradead.org,
-        linux-arch@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-From:   Palmer Dabbelt <palmer@rivosinc.com>
-To:     Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Ren <guoren@linux.alibaba.com>
+Miguel Ojeda <ojeda@kernel.org> writes:
 
-There is no benefit from custom implementation for ticket-spinlock,
-so move to generic ticket-spinlock for easy maintenance.
+> Most of the documentation for Rust is written within the source code
+> itself, as it is idiomatic for Rust projects. This applies to both
+> the shared infrastructure at `rust/` as well as any other Rust module
+> (e.g. drivers) written across the kernel.
+>
+> However, these documents contain general information that does not
+> fit particularly well in the source code, like the Quick Start guide.
+>
+> It also contains an asset (SVG logo) used for the `rustdoc` target
+> and a few other small changes elsewhere in the documentation folder.
 
-Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
----
- arch/csky/include/asm/Kbuild           |  3 +
- arch/csky/include/asm/spinlock.h       | 89 --------------------------
- arch/csky/include/asm/spinlock_types.h | 27 --------
- 3 files changed, 3 insertions(+), 116 deletions(-)
- delete mode 100644 arch/csky/include/asm/spinlock.h
- delete mode 100644 arch/csky/include/asm/spinlock_types.h
+Trying to take a closer look this time...
 
-diff --git a/arch/csky/include/asm/Kbuild b/arch/csky/include/asm/Kbuild
-index 888248235c23..103207a58f97 100644
---- a/arch/csky/include/asm/Kbuild
-+++ b/arch/csky/include/asm/Kbuild
-@@ -3,7 +3,10 @@ generic-y += asm-offsets.h
- generic-y += extable.h
- generic-y += gpio.h
- generic-y += kvm_para.h
-+generic-y += spinlock.h
-+generic-y += spinlock_types.h
- generic-y += qrwlock.h
-+generic-y += qrwlock_types.h
- generic-y += parport.h
- generic-y += user.h
- generic-y += vmlinux.lds.h
-diff --git a/arch/csky/include/asm/spinlock.h b/arch/csky/include/asm/spinlock.h
-deleted file mode 100644
-index 69f5aa249c5f..000000000000
---- a/arch/csky/include/asm/spinlock.h
-+++ /dev/null
-@@ -1,89 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 */
--
--#ifndef __ASM_CSKY_SPINLOCK_H
--#define __ASM_CSKY_SPINLOCK_H
--
--#include <linux/spinlock_types.h>
--#include <asm/barrier.h>
--
--/*
-- * Ticket-based spin-locking.
-- */
--static inline void arch_spin_lock(arch_spinlock_t *lock)
--{
--	arch_spinlock_t lockval;
--	u32 ticket_next = 1 << TICKET_NEXT;
--	u32 *p = &lock->lock;
--	u32 tmp;
--
--	asm volatile (
--		"1:	ldex.w		%0, (%2) \n"
--		"	mov		%1, %0	 \n"
--		"	add		%0, %3	 \n"
--		"	stex.w		%0, (%2) \n"
--		"	bez		%0, 1b   \n"
--		: "=&r" (tmp), "=&r" (lockval)
--		: "r"(p), "r"(ticket_next)
--		: "cc");
--
--	while (lockval.tickets.next != lockval.tickets.owner)
--		lockval.tickets.owner = READ_ONCE(lock->tickets.owner);
--
--	smp_mb();
--}
--
--static inline int arch_spin_trylock(arch_spinlock_t *lock)
--{
--	u32 tmp, contended, res;
--	u32 ticket_next = 1 << TICKET_NEXT;
--	u32 *p = &lock->lock;
--
--	do {
--		asm volatile (
--		"	ldex.w		%0, (%3)   \n"
--		"	movi		%2, 1	   \n"
--		"	rotli		%1, %0, 16 \n"
--		"	cmpne		%1, %0     \n"
--		"	bt		1f         \n"
--		"	movi		%2, 0	   \n"
--		"	add		%0, %0, %4 \n"
--		"	stex.w		%0, (%3)   \n"
--		"1:				   \n"
--		: "=&r" (res), "=&r" (tmp), "=&r" (contended)
--		: "r"(p), "r"(ticket_next)
--		: "cc");
--	} while (!res);
--
--	if (!contended)
--		smp_mb();
--
--	return !contended;
--}
--
--static inline void arch_spin_unlock(arch_spinlock_t *lock)
--{
--	smp_mb();
--	WRITE_ONCE(lock->tickets.owner, lock->tickets.owner + 1);
--}
--
--static inline int arch_spin_value_unlocked(arch_spinlock_t lock)
--{
--	return lock.tickets.owner == lock.tickets.next;
--}
--
--static inline int arch_spin_is_locked(arch_spinlock_t *lock)
--{
--	return !arch_spin_value_unlocked(READ_ONCE(*lock));
--}
--
--static inline int arch_spin_is_contended(arch_spinlock_t *lock)
--{
--	struct __raw_tickets tickets = READ_ONCE(lock->tickets);
--
--	return (tickets.next - tickets.owner) > 1;
--}
--#define arch_spin_is_contended	arch_spin_is_contended
--
--#include <asm/qrwlock.h>
--
--#endif /* __ASM_CSKY_SPINLOCK_H */
-diff --git a/arch/csky/include/asm/spinlock_types.h b/arch/csky/include/asm/spinlock_types.h
-deleted file mode 100644
-index db87a12c3827..000000000000
---- a/arch/csky/include/asm/spinlock_types.h
-+++ /dev/null
-@@ -1,27 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 */
--
--#ifndef __ASM_CSKY_SPINLOCK_TYPES_H
--#define __ASM_CSKY_SPINLOCK_TYPES_H
--
--#ifndef __LINUX_SPINLOCK_TYPES_RAW_H
--# error "please don't include this file directly"
--#endif
--
--#define TICKET_NEXT	16
--
--typedef struct {
--	union {
--		u32 lock;
--		struct __raw_tickets {
--			/* little endian */
--			u16 owner;
--			u16 next;
--		} tickets;
--	};
--} arch_spinlock_t;
--
--#define __ARCH_SPIN_LOCK_UNLOCKED	{ { 0 } }
--
--#include <asm-generic/qrwlock_types.h>
--
--#endif /* __ASM_CSKY_SPINLOCK_TYPES_H */
--- 
-2.34.1
+I foresee merge conflicts, but so it goes.  Trying to split this apart
+would not make a lot of sense.
 
+[...]
+
+> --- /dev/null
+> +++ b/Documentation/rust/arch-support.rst
+> @@ -0,0 +1,34 @@
+> +Arch Support
+> +============
+> +
+> +Currently, the Rust compiler (``rustc``) uses LLVM for code generation,
+> +which limits the supported architectures that can be targeted. In addition,
+> +support for building the kernel with LLVM/Clang varies (please see
+> +Documentation/kbuild/llvm.rst). This support is needed for ``bindgen``
+> +which uses ``libclang``.
+> +
+> +Below is a general summary of architectures that currently work. Level of
+> +support corresponds to ``S`` values in the ``MAINTAINERS`` file.
+> +
+> +.. list-table::
+> +   :widths: 10 10 10
+> +   :header-rows: 1
+
+Please use normal tables rather than list-table; this kind of thing is
+really unreadable in the source form.
+
+> +   * - Architecture
+> +     - Level of support
+> +     - Constraints
+> +   * - ``arm``
+> +     - Maintained
+> +     - ``armv6`` and compatible only, ``RUST_OPT_LEVEL >= 2``
+> +   * - ``arm64``
+> +     - Maintained
+> +     - None
+> +   * - ``powerpc``
+> +     - Maintained
+> +     - ``ppc64le`` only, ``RUST_OPT_LEVEL < 2`` requires ``CONFIG_THREAD_SHIFT=15``
+> +   * - ``riscv``
+> +     - Maintained
+> +     - ``riscv64`` only
+> +   * - ``x86``
+> +     - Maintained
+> +     - ``x86_64`` only
+> diff --git a/Documentation/rust/coding-guidelines.rst b/Documentation/rust/coding-guidelines.rst
+> new file mode 100644
+> index 000000000000..2a71fd68a06d
+> --- /dev/null
+> +++ b/Documentation/rust/coding-guidelines.rst
+> @@ -0,0 +1,214 @@
+> +Coding Guidelines
+> +=================
+> +
+> +This document describes how to write Rust code in the kernel.
+> +
+> +
+> +Style & formatting
+> +------------------
+> +
+> +The code should be formatted using ``rustfmt``. In this way, a person
+> +contributing from time to time to the kernel does not need to learn and
+> +remember one more style guide. More importantly, reviewers and maintainers
+> +do not need to spend time pointing out style issues anymore, and thus
+> +less patch roundtrips may be needed to land a change.
+
+I foresee disagreements over coding style conventions in the
+future... I don't plan to be part of that conversation :)
+
+> +.. note:: Conventions on comments and documentation are not checked by
+> +  ``rustfmt``. Thus those are still needed to be taken care of.
+> +
+> +The default settings of ``rustfmt`` are used. This means the idiomatic Rust
+> +style is followed. For instance, 4 spaces are used for indentation rather
+> +than tabs.
+> +
+> +It is convenient to instruct editors/IDEs to format while typing,
+> +when saving or at commit time. However, if for some reason reformatting
+> +the entire kernel Rust sources is needed at some point, the following can be
+> +run::
+> +
+> +	make LLVM=1 rustfmt
+
+I will ask whether we want this, though.  Why would anybody want to
+mass-reformat the entire body of kernel code?  This seems like something
+that would generate an endless stream of "helpful" patches and a lot of
+churn.
+
+Thanks,
+
+jon
