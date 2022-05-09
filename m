@@ -2,147 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A788C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 08:53:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4E00C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 08:55:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235599AbiEII5O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 04:57:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43002 "EHLO
+        id S231459AbiEII52 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 04:57:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232093AbiEIIxr (ORCPT
+        with ESMTP id S235012AbiEIIuf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 04:53:47 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F6DA248E0;
-        Mon,  9 May 2022 01:49:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1652086195; x=1683622195;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=n8bFpjbKPYvw3e9bni1/T6bQ+4R6TyrCTJBZUgNett4=;
-  b=DJbo119jsIT9ILlPUqLtxyaharrZlZM9b82hjGBbBVXKRmCAVkKigxKq
-   PrG894/dqrNNZq+kImyQ0sDZnEj/GeDqVSZ0LaPbzCrnsdobYaQ6v2aWs
-   84spgHeaowncODVVSjnoj847puOk1cQKcJepr0T4FAZTtCZH8mTrlic1W
-   SEVxG9S4I0f2Rtvtt431cB/Xonjv2ZHJYttzSE4FfPwZpcOgPe5cD+n1k
-   M3L/42eFa868U5udhPKj66WRZ7bnhOk91IcXDwW65TzBECTzbnpzOVdtp
-   9GEwLWVO5R1/odEzJGDJWUax8kvZuNfhJ8yWPa6wBFuOBztxq1tOFKDSo
-   g==;
-X-IronPort-AV: E=Sophos;i="5.91,210,1647327600"; 
-   d="scan'208";a="162812532"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 May 2022 01:49:44 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+        Mon, 9 May 2022 04:50:35 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A04AAE13;
+        Mon,  9 May 2022 01:46:41 -0700 (PDT)
+Received: from kwepemi500014.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KxYQp1XcRzCsX9;
+        Mon,  9 May 2022 15:56:34 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ kwepemi500014.china.huawei.com (7.221.188.232) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 9 May 2022 01:49:42 -0700
-Received: from kavya-HP-Compaq-6000-Pro-SFF-PC.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 9 May 2022 01:49:37 -0700
-From:   Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
-To:     <krzysztof.kozlowski+dt@linaro.org>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>,
-        <peda@axentia.se>
-CC:     <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <lee.jones@linaro.org>,
-        <linux@armlinux.org.uk>, <Manohar.Puri@microchip.com>,
-        <Kavyasree.Kotagiri@microchip.com>, <UNGLinuxDriver@microchip.com>
-Subject: [PATCH v2 2/4] dt-bindings: mfd: atmel,flexcom: Add lan966 compatible string and mux properties
-Date:   Mon, 9 May 2022 14:19:18 +0530
-Message-ID: <20220509084920.14529-3-kavyasree.kotagiri@microchip.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220509084920.14529-1-kavyasree.kotagiri@microchip.com>
-References: <20220509084920.14529-1-kavyasree.kotagiri@microchip.com>
+ 15.1.2375.24; Mon, 9 May 2022 16:01:19 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 9 May 2022 16:01:18 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
+        <chenhao288@hisilicon.com>
+Subject: [PATCH V2 net-next 2/6] net: hns3: remove the affinity settings of vector0
+Date:   Mon, 9 May 2022 15:55:28 +0800
+Message-ID: <20220509075532.32166-3-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220509075532.32166-1-huangguangbin2@huawei.com>
+References: <20220509075532.32166-1-huangguangbin2@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add lan966 flexcom compatible string and flexcom mux
-device tree properties.
+From: Yufeng Mo <moyufeng@huawei.com>
 
-Signed-off-by: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
+Vector0 is used for common interrupt control events and is
+irrelevant to performance. Currently, the driver sets the
+default affinity of vector0 to NUMA nodes, which is unnecessary.
+Therefore, the default setting is removed, and the driver does
+not set the affinity for vector0.
+
+Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- .../bindings/mfd/atmel,flexcom.yaml           | 52 ++++++++++++++++++-
- 1 file changed, 51 insertions(+), 1 deletion(-)
+ .../hisilicon/hns3/hns3pf/hclge_main.c        | 27 +------------------
+ .../hisilicon/hns3/hns3pf/hclge_main.h        |  2 --
+ 2 files changed, 1 insertion(+), 28 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml b/Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml
-index 79ec7ebc7055..228c095c84ca 100644
---- a/Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml
-+++ b/Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml
-@@ -16,7 +16,9 @@ description:
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index a5dd2c8c244a..1ebad0e50e6a 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -1546,9 +1546,8 @@ static void hclge_init_tc_config(struct hclge_dev *hdev)
+ static int hclge_configure(struct hclge_dev *hdev)
+ {
+ 	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(hdev->pdev);
+-	const struct cpumask *cpumask = cpu_online_mask;
+ 	struct hclge_cfg cfg;
+-	int node, ret;
++	int ret;
  
- properties:
-   compatible:
--    const: atmel,sama5d2-flexcom
-+    enum:
-+      - atmel,sama5d2-flexcom
-+      - microchip,lan966-flexcom
+ 	ret = hclge_get_cfg(hdev, &cfg);
+ 	if (ret)
+@@ -1594,13 +1593,6 @@ static int hclge_configure(struct hclge_dev *hdev)
+ 	hclge_init_tc_config(hdev);
+ 	hclge_init_kdump_kernel_config(hdev);
  
-   reg:
-     maxItems: 1
-@@ -57,6 +59,27 @@ required:
+-	/* Set the affinity based on numa node */
+-	node = dev_to_node(&hdev->pdev->dev);
+-	if (node != NUMA_NO_NODE)
+-		cpumask = cpumask_of_node(node);
+-
+-	cpumask_copy(&hdev->affinity_mask, cpumask);
+-
+ 	return ret;
+ }
  
- additionalProperties: false
+@@ -3564,17 +3556,6 @@ static void hclge_get_misc_vector(struct hclge_dev *hdev)
+ 	hdev->num_msi_used += 1;
+ }
  
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: microchip,lan966-flexcom
-+
-+    then:
-+      properties:
-+        mux-controls:
-+          minItems: 1
-+          maxItems: 2
-+          $ref: /schemas/types.yaml#/definitions/phandle-array
-+
-+        mux-control-names:
-+          minItems: 1
-+          $ref: ../mux/mux-consumer.yaml
-+          items:
-+            - const: cs0
-+            - const: cs1
-+
- patternProperties:
-   "^serial@[0-9a-f]+$":
-     description: See atmel-usart.txt for details of USART bindings.
-@@ -89,4 +112,31 @@ examples:
-                 atmel,fifo-size = <32>;
-           };
-     };
-+
-+  - |
-+    flx3: flexcom@e0064000 {
-+          compatible = "microchip,lan966-flexcom";
-+          reg = <0xe0064000 0x100>;
-+          clocks = <&fabric_clk>;
-+          #address-cells = <1>;
-+          #size-cells = <1>;
-+          ranges = <0x0 0xe0064000 0x800>;
-+          atmel,flexcom-mode = <2>;
-+          mux-controls = <&mux 0>;
-+          mux-control-names = "cs0";
-+
-+          spi3: spi@400 {
-+                compatible = "atmel,at91rm9200-spi";
-+                reg = <0x400 0x200>;
-+                interrupts = <0 51 4>;
-+                #address-cells = <1>;
-+                #size-cells = <0>;
-+                clocks = <&fabric_clk>;
-+                clock-names = "spi_clk";
-+                pinctrl-0 = <&fc3_b_sck_pins>, <&fc3_b_rxd_pins>,
-+                            <&fc3_b_txd_pins>, <&fc_shrd9_pins>;
-+                pinctrl-names = "default";
-+                atmel,fifo-size = <32>;
-+          };
-+    };
- ...
+-static void hclge_misc_affinity_setup(struct hclge_dev *hdev)
+-{
+-	irq_set_affinity_hint(hdev->misc_vector.vector_irq,
+-			      &hdev->affinity_mask);
+-}
+-
+-static void hclge_misc_affinity_teardown(struct hclge_dev *hdev)
+-{
+-	irq_set_affinity_hint(hdev->misc_vector.vector_irq, NULL);
+-}
+-
+ static int hclge_misc_irq_init(struct hclge_dev *hdev)
+ {
+ 	int ret;
+@@ -11457,11 +11438,6 @@ static int hclge_init_ae_dev(struct hnae3_ae_dev *ae_dev)
+ 	timer_setup(&hdev->reset_timer, hclge_reset_timer, 0);
+ 	INIT_DELAYED_WORK(&hdev->service_task, hclge_service_task);
+ 
+-	/* Setup affinity after service timer setup because add_timer_on
+-	 * is called in affinity notify.
+-	 */
+-	hclge_misc_affinity_setup(hdev);
+-
+ 	hclge_clear_all_event_cause(hdev);
+ 	hclge_clear_resetting_state(hdev);
+ 
+@@ -11879,7 +11855,6 @@ static void hclge_uninit_ae_dev(struct hnae3_ae_dev *ae_dev)
+ 
+ 	hclge_reset_vf_rate(hdev);
+ 	hclge_clear_vf_vlan(hdev);
+-	hclge_misc_affinity_teardown(hdev);
+ 	hclge_state_uninit(hdev);
+ 	hclge_ptp_uninit(hdev);
+ 	hclge_uninit_rxd_adv_layout(hdev);
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+index c70239758bb2..ab5c37848a7b 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+@@ -938,8 +938,6 @@ struct hclge_dev {
+ 	DECLARE_KFIFO(mac_tnl_log, struct hclge_mac_tnl_stats,
+ 		      HCLGE_MAC_TNL_LOG_SIZE);
+ 
+-	/* affinity mask and notify for misc interrupt */
+-	cpumask_t affinity_mask;
+ 	struct hclge_ptp *ptp;
+ 	struct devlink *devlink;
+ 	struct hclge_comm_rss_cfg rss_cfg;
 -- 
-2.17.1
+2.33.0
 
