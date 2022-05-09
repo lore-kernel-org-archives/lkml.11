@@ -2,76 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AF0AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 15:19:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 351EBC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 15:20:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238151AbiEIPXe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 11:23:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49136 "EHLO
+        id S238197AbiEIPYM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 11:24:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238115AbiEIPXb (ORCPT
+        with ESMTP id S238190AbiEIPYF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 11:23:31 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6989B233A71;
-        Mon,  9 May 2022 08:19:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=Vs4pKWIO8ghtfzDiPPWpzVvLUDOdEY+WjcGzBGinpww=; b=Zj
-        38KWpyFIE1rldm9h43e0xD67487kEzzUvJu0jiAurIiK1eG/aBCAn5lYK2s3MmYe+kg8YScajaJ9d
-        biCy4/Wer9aj72+q4NfUzqCR0Y2rcb5zs5RXgTSaenYKATy2gkQn1UB6VWPFo2+WBglXwXaepcfU7
-        xDNBwG2sgOxEw0A=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1no5AK-001xhf-8m; Mon, 09 May 2022 17:19:16 +0200
-Date:   Mon, 9 May 2022 17:19:16 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     LABBE Corentin <clabbe@baylibre.com>
-Cc:     alexandre.torgue@foss.st.com, broonie@kernel.org,
-        calvin.johnson@oss.nxp.com, davem@davemloft.net,
-        edumazet@google.com, hkallweit1@gmail.com,
-        jernej.skrabec@gmail.com, joabreu@synopsys.com,
-        krzysztof.kozlowski+dt@linaro.org, kuba@kernel.org,
-        lgirdwood@gmail.com, linux@armlinux.org.uk, pabeni@redhat.com,
-        peppe.cavallaro@st.com, robh+dt@kernel.org, samuel@sholland.org,
-        wens@csie.org, netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH 0/6] arm64: add ethernet to orange pi 3
-Message-ID: <Ynkw9EekNj5Ih5gc@lunn.ch>
-References: <20220509074857.195302-1-clabbe@baylibre.com>
- <YnkG9yV+Fbf7WtCh@lunn.ch>
- <YnkWwrKk4zjPnZLg@Red>
+        Mon, 9 May 2022 11:24:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BC4D28FE95
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 08:20:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C5623B816E9
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 15:20:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D957BC385AE;
+        Mon,  9 May 2022 15:20:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652109606;
+        bh=Otn/1pW+YnVWg2O+X9tl6pzhmsugj4MKdcjS46dn8R0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=L1t5LK1ioC0q9YcMSkEliKW70l9F/yrflXmF3DnLS+UrDqiqlHk23XBh2OvB1i6Gh
+         nh43mAnNM71AVPZUz5eFqc7hRzmu/nD8ktyKlYb9/UnKUfPfpfyrVl6/y2iC0eA+qh
+         s7uxSsn+VuaSl4gsY3I3h8ovcFiPn19goJGFaNsUQe62beoaxlN1EKrKNs4IvEUgNW
+         /tg29mJrjLGSeo9TGVWHAGnmP34bbQ8JFkEEAGKVAYD4JaIhNPK6ay+jYfY4iYwDaB
+         kDflRN5wyRe0dkGQmeLneHPVOku3tY0ruRCqmRjU4r2eYREDaS72ThhekUq56YgQQ6
+         9dGOVrtk9eJew==
+Date:   Mon, 9 May 2022 16:20:01 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Lukasz Majewski <lukma@denx.de>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org, patches@opensource.cirrus.com
+Subject: Re: [PATCH 1/2] ASoC: wm8940: add devicetree support
+Message-ID: <YnkxIe1nVUiKNmdq@sirena.org.uk>
+References: <20220509121055.31103-1-lukma@denx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="guiHyUClsBYNl/Vo"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YnkWwrKk4zjPnZLg@Red>
+In-Reply-To: <20220509121055.31103-1-lukma@denx.de>
+X-Cookie: Boycott meat -- suck your thumb.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 03:27:30PM +0200, LABBE Corentin wrote:
-> Le Mon, May 09, 2022 at 02:20:07PM +0200, Andrew Lunn a écrit :
-> > On Mon, May 09, 2022 at 07:48:51AM +0000, Corentin Labbe wrote:
-> > > Hello
-> > > 
-> > > 2 sunxi board still does not have ethernet working, orangepi 1+ and
-> > > orangepi 3.
-> > > This is due to the fact thoses boards have a PHY which need 2 regulators.
-> > 
-> > Why PHY make/module is it which is causing problems?
-> > 
-> 
-> The problem was stmmac support only one regulator for PHY.
 
-I'm trying to understand the differences between the two different
-regulators. If you tell me what the PHY is, i might be able to find
-the data sheet, and then understand why two regulators are needed and
-if one needs to be controlled by the PHY driver, not the MDIO bus
-driver.
+--guiHyUClsBYNl/Vo
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-	Andrew
+On Mon, May 09, 2022 at 02:10:55PM +0200, Lukasz Majewski wrote:
+
+> This adds devicetree support to the wm8940 codec driver.
+> With a DT-based kernel, there is no board-specific setting
+> to select the driver so allow it to be manually chosen.
+>=20
+> Signed-off-by: Lukasz Majewski <lukma@denx.de>
+> ---
+>  sound/soc/codecs/Kconfig  | 2 +-
+>  sound/soc/codecs/wm8940.c | 7 +++++++
+>  2 files changed, 8 insertions(+), 1 deletion(-)
+
+You need to provide a binding document for any new bindings you add in
+code.
+
+--guiHyUClsBYNl/Vo
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJ5MSAACgkQJNaLcl1U
+h9ABUAf/QLihyIhlv9B+mH3K/QMNPGVNFnQaQzlyt3XGwFECkKhgxluXAyk0aush
+IKXP04UdPiy/gC0iS3QXlrVDZhV094djNT42xGJzz2H9UKovYZjrYky76j7kduYI
+2WeMoo8KZ5GfxZ5/HfHW+bw168wfH8SGEzuUPMqOs6NZJZ1HgXOeCoc7X+C7QJh7
+d6Q0YKBafi8cYM0Eg48RloS17x5X8xYKYXdpc/ebA4buuM6NjQ83Jb3HN8w3IL/q
+yHi5178payfHMp9JDmFuqc+pTHIcyf9oW4eTVxe2b2BLIZjwciE8ZIU1Y93lJUOO
+7/rn7KPWzBaAgp/v0Uiup/jeelXIuQ==
+=JEQ5
+-----END PGP SIGNATURE-----
+
+--guiHyUClsBYNl/Vo--
