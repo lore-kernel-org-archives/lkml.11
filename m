@@ -2,102 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D34BC3527C
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:49:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AE0EC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:49:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233989AbiEIJxT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 05:53:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34470 "EHLO
+        id S235250AbiEIJx3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 05:53:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238828AbiEIJk1 (ORCPT
+        with ESMTP id S239802AbiEIJr2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 05:40:27 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97905193217;
-        Mon,  9 May 2022 02:36:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652088970; x=1683624970;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=D/x1ycw0QvCLLhMcVpaUSr9cP6MhaUOF3dS7CsbLTm8=;
-  b=OyKHWmdj/pFZhcct06STunaHCeRVGSb4/ct4OhGBMJPy4yjgGAPwTmI9
-   Yi5uS8B/6OVOmfuWrWjHpcdFHvZIiw6q2pn9TDsOjP2o4B8+yHDOJcUMw
-   F8wilyE3BgMMjqUbaTAxJsXXPF9P8IuEdihYy3LSWehX9x01/TgGl3liu
-   DJp3kT9HpIFb0RxhTRIYnstaaGVsJbqA0+ajzYxl3XDDG2WIrt7XhXTW1
-   73eGKVwY/dKUwTQF2EwPCYcUdsa8LO8oWZvX/YVpW6CS3od6IoP3VJ2zl
-   sT23FjMlme3kGmH1XnJgGP7OnDdEsD4GllAWglWTFpH3ZX3qOd294nCbk
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10341"; a="251040429"
-X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
-   d="scan'208";a="251040429"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 02:34:59 -0700
-X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
-   d="scan'208";a="564969527"
-Received: from mfuent2x-mobl1.amr.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.220.67])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 02:34:53 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Arnd Bergmann <arnd@arndb.de>, linux-alpha@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        sparclinux@vger.kernel.org, linux-arch@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 0/3] termbits.h: Further improvements
-Date:   Mon,  9 May 2022 12:34:43 +0300
-Message-Id: <20220509093446.6677-1-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
+        Mon, 9 May 2022 05:47:28 -0400
+Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B1491756B4
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 02:43:32 -0700 (PDT)
+Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-2f7c424c66cso137949937b3.1
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 02:43:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=M6N0wgYMD6AvDl9pK6OWMAXj6rVMyYj7BLt9cpbI8cI=;
+        b=GazxP/IPUdJpR9ySfbbmwBGpFTShUJw/9vCL34Abf2Vr7lgqLld5QeJSaPKVU3yN5H
+         tCJB++ISaQAxpt1YYsVQhvzwckMc1WIRedMUkF/bDC40jzpslm0Bu5kCkSYsm8ESW9kG
+         1tUkGKq7mBvOjFHofFfz2UT2WnyQ8bihwqOQRXuqHqUY670z7Gk4SlqFgO20JM5tJU3e
+         MrHTv2oL+M2TzDXxdH8OFHpp2u1AfVvYcYSpZc5tWi9JRQCOimhSdryUm1pSPTk/k1XS
+         GXLnehf/zxiDDuvpLlBwnGJO5BQ6eg6OGIuznFqR99T32qMeF74wtUDTkQVtUtqnFt+L
+         WWBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=M6N0wgYMD6AvDl9pK6OWMAXj6rVMyYj7BLt9cpbI8cI=;
+        b=x17ejPCgXiQjZIDtIkA1IgGUb0XdOOUb3grVePQOPTyH9+9t+QEfbTg6BtvaJpIZo6
+         nLJKvfdMfVhUncLLvW78idaw6H5zILdeT1FJc+h0pAINH+35Ss3rsYHHyI0VRJWD5/02
+         TK5ZJ/sqpLTus/n0bE0hxJk3Q7Um9DYRsL9BgGJMEWIrGPmMs1SQJldO+i+yOf8xdT7Z
+         tIs3s/62KAvelq8ua8ZajpcNWWPdXxFYC4AZuh11Wg8lbu+62FWrUWz0aYJiqdWEnl+r
+         oh20O/u8SH7DSJ9pY86FIP5/IHXMw1X05dqDeNkvJJOXMMf55qNqLBRpGMsph4uXlSqT
+         ZcBA==
+X-Gm-Message-State: AOAM53278JCssgKvPmL775o6MQ6LtSAB2hKiiVIbJpwhuF8IIht38izq
+        ZVslZbb4ovL4YNQboGtcDRsj71t+ZF4VB/v9ors=
+X-Google-Smtp-Source: ABdhPJxFBg9L0Iz6dbtr+9hxwvWVjmUJWCMwscsZod7XxM4XYLhUXuEATEYOq2wSbgUTDgUChPyF1PR3gWn8MtIEbZU=
+X-Received: by 2002:a0d:d510:0:b0:2f4:e202:2d9d with SMTP id
+ x16-20020a0dd510000000b002f4e2022d9dmr13462464ywd.237.1652089372220; Mon, 09
+ May 2022 02:42:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220430002555.3881-1-vvghjk1234@gmail.com> <49b0d611-e116-c78d-cf14-6d5f96ae500e@suse.cz>
+In-Reply-To: <49b0d611-e116-c78d-cf14-6d5f96ae500e@suse.cz>
+From:   Wonhyuk Yang <vvghjk1234@gmail.com>
+Date:   Mon, 9 May 2022 18:42:40 +0900
+Message-ID: <CAEcHRTo3keiv0Xjr_7CG-kiD+Y6ENbdf9fKZzW9zgRd9OrV03g@mail.gmail.com>
+Subject: Re: [Patch v3] mm/slub: Remove repeated action in calculate_order()
+To:     Vlastimil Babka <vbabka@suse.cz>
+Cc:     Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Again, I prefer Greg to take these through his tty tree.
+On Mon, May 2, 2022 at 7:00 PM Vlastimil Babka <vbabka@suse.cz> wrote:
+>
+> On 4/30/22 02:25, Wonhyuk Yang wrote:
+> > To calculate order, calc_slab_order() is called repeatly changing the
+> > fract_leftover. Thus, the branch which is not dependent on
+> > fract_leftover is executed repeatly. So make it run only once.
+> >
+> > Plus, when min_object reached to 1, we set fract_leftover to 1. In
+> > this case, we can calculate order by max(slub_min_order,
+> > get_order(size)) instead of calling calc_slab_order().
+> >
+> > No functional impact expected.
+> >
+> > Signed-off-by: Wonhyuk Yang <vvghjk1234@gmail.com>
+> > Reviewed-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+> > ---
+> >
+> >  mm/slub.c | 18 +++++++-----------
+> >  1 file changed, 7 insertions(+), 11 deletions(-)
+> >
+> > diff --git a/mm/slub.c b/mm/slub.c
+> > index ed5c2c03a47a..1fe4d62b72b8 100644
+> > --- a/mm/slub.c
+> > +++ b/mm/slub.c
+> > @@ -3795,9 +3795,6 @@ static inline unsigned int calc_slab_order(unsigned int size,
+> >       unsigned int min_order = slub_min_order;
+> >       unsigned int order;
+> >
+> > -     if (order_objects(min_order, size) > MAX_OBJS_PER_PAGE)
+> > -             return get_order(size * MAX_OBJS_PER_PAGE) - 1;
+> > -
+> >       for (order = max(min_order, (unsigned int)get_order(min_objects * size));
+> >                       order <= max_order; order++) {
+> >
+> > @@ -3820,6 +3817,11 @@ static inline int calculate_order(unsigned int size)
+> >       unsigned int max_objects;
+> >       unsigned int nr_cpus;
+> >
+> > +     if (unlikely(order_objects(slub_min_order, size) > MAX_OBJS_PER_PAGE)) {
+> > +             order = get_order(size * MAX_OBJS_PER_PAGE) - 1;
+> > +             goto out;
+> > +     }
+>
+> Hm interestingly, both before and after your patch, MAX_OBJS_PER_PAGE might
+> be theoretically overflowed not by slub_min_order, but then with higher
+> orders. Seems to be prevented only as a side-effect of fragmentation close
+> to none, thus higher orders not attempted. Would be maybe less confusing to
+> check that explicitly. Even if that's wasteful, but this is not really perf
+> critical code.
 
-Changes done by this serie:
+Yes, I agree that checking the overflow of object number explicitly is
+better even if
+it is almost impossible. But it checked repeatedly by calling
+calc_slab_order(). It
+seems to me that is unnecessary doesn't it?
 
-1) Create termbits-common.h for the most obvious termbits.h intersection.
-2) Reformat some lines that remain in termbits.h files.
-3) Don't include posix_types.h unnecessarily.
+>
+> > +
+> >       /*
+> >        * Attempt to find best configuration for a slab. This
+> >        * works by first attempting to generate a layout with
+> > @@ -3865,14 +3867,8 @@ static inline int calculate_order(unsigned int size)
+> >        * We were unable to place multiple objects in a slab. Now
+> >        * lets see if we can place a single object there.
+> >        */
+> > -     order = calc_slab_order(size, 1, slub_max_order, 1);
+> > -     if (order <= slub_max_order)
+> > -             return order;
+> > -
+> > -     /*
+> > -      * Doh this slab cannot be placed using slub_max_order.
+> > -      */
+> > -     order = calc_slab_order(size, 1, MAX_ORDER, 1);
+> > +     order = max_t(unsigned int, slub_min_order, get_order(size));
+>
+> If we failed to assign order above, then AFAICS it means even slub_min_order
+> will not give us more than 1 object per slub. Thus it doesn't make sense to
+> use it in a max() formula, and we can just se get_order(), no?
 
-Please do check I got the uapi include things done correctly! That is,
-that including using asm-generic/termbits-common.h path is the preferred
-approach for a header file that is not supposed to be overridden by the
-arch specific header files and that mandatory-y is not required for
-termbits-common.h.
+That's sounds reasonable. When it reached here, we don't need to keep the
+slub_min_order.
 
-Unfortunately I couldn't move also tcflag_t into termbits-common.h due
-to the way it is being defined for sparc. However, by the looks of how
-the type for tcflag_t is being chosen there, having just unsigned int
-might work also for sparc?
-
-Ilpo Järvinen (3):
-  termbits.h: create termbits-common.h for identical bits
-  termbits.h: Align lines & format
-  termbits.h: Remove posix_types.h include
-
- arch/alpha/include/uapi/asm/termbits.h     | 182 ++++++-----------
- arch/mips/include/uapi/asm/termbits.h      | 209 ++++++++-----------
- arch/parisc/include/uapi/asm/termbits.h    | 131 ++++--------
- arch/powerpc/include/uapi/asm/termbits.h   | 152 +++++---------
- arch/sparc/include/uapi/asm/termbits.h     | 223 ++++++++-------------
- include/uapi/asm-generic/termbits-common.h |  65 ++++++
- include/uapi/asm-generic/termbits.h        | 129 ++++--------
- 7 files changed, 418 insertions(+), 673 deletions(-)
- create mode 100644 include/uapi/asm-generic/termbits-common.h
-
--- 
-2.30.2
-
+>
+> > +out:
+> >       if (order < MAX_ORDER)
+> >               return order;
+> >       return -ENOSYS;
+>
