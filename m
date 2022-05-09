@@ -2,106 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85DDFC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55F5CC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 04:09:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233791AbiEIELe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 00:11:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45502 "EHLO
+        id S233619AbiEIELR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 00:11:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234005AbiEIEIu (ORCPT
+        with ESMTP id S232443AbiEIEFx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 00:08:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 12D3AD5CF9
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 21:04:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652069097;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=h5YXC8yQ1bsRoJU0nyu/b+oJN5MCJQkd8AXSZI7jF8Q=;
-        b=fepuYmzMjhlkIE8W8RLEfOsxQxmUY+XECljkpfh6cet7Q1tYQnZSUVBklRQorNg1MX1ith
-        hGGfB0j6lLIgt1oeo4ncfY6CRH42+F7sB6eLQ+31YiC1wBOpKywePqjFduFf9cj/FM3WYm
-        pSnLxDWgTXjwVKz+AmTuK4f5d0tNNlI=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-433-8GgaCYj_MqK_rmUOTlh5Cg-1; Mon, 09 May 2022 00:04:50 -0400
-X-MC-Unique: 8GgaCYj_MqK_rmUOTlh5Cg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2F12480B717;
-        Mon,  9 May 2022 04:04:49 +0000 (UTC)
-Received: from localhost (ovpn-13-212.pek2.redhat.com [10.72.13.212])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 781DDC27EB3;
-        Mon,  9 May 2022 04:04:46 +0000 (UTC)
-Date:   Mon, 9 May 2022 12:04:43 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     Zhen Lei <thunder.leizhen@huawei.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        linux-kernel@vger.kernel.org, Dave Young <dyoung@redhat.com>,
-        Vivek Goyal <vgoyal@redhat.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        kexec@lists.infradead.org, Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        devicetree@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Feng Zhou <zhoufeng.zf@bytedance.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Chen Zhou <dingguo.cz@antgroup.com>,
-        John Donnelly <John.p.donnelly@oracle.com>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>
-Subject: Re: [PATCH v24 3/6] arm64: kdump: Reimplement crashkernel=X
-Message-ID: <YniS29/Mjabnbs2E@MiWiFi-R3L-srv>
-References: <20220506114402.365-1-thunder.leizhen@huawei.com>
- <20220506114402.365-4-thunder.leizhen@huawei.com>
- <20220506231032.GA122876@MiWiFi-R3L-srv>
- <Yna/bc2nDb7PT40r@arm.com>
+        Mon, 9 May 2022 00:05:53 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 657A080BCB
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 21:02:00 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id q23so17648685wra.1
+        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 21:02:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SJ8dF+QuMh/vx+O3NBUHJR6SAWNkIGtKyfjSID7EqTw=;
+        b=IX/c5ofu+DaFlsi1jnFUDRl9XdZl1WZC81pKbYDuudzHveM/7WM6xfecMOUF5qp/iP
+         UI8sJlVCvDQJu4iXYlGVoDOJXtKSYhHLsGvFIYwo3t6mpuvLyL4SV/GZQbxEks1xNIik
+         A/qsIaxlFtb/rI8wddI/qlhzy3/XROR+J8pR7mQbtFI6eHQzZYEs+sP90pMRgb+sRhp5
+         YJCdYq+H61DwmHMO7UzpMOcUl8XhU9PiZk4YpDRb9UcxYoryYMhDzlhL+kACPoMnypAn
+         AqZq9MyceQ9jp3u40/eYgQYwNrKBLDrDFr4SaoFZxV+PWZMggMarlyz5+v6APJ8c5DEV
+         Caug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SJ8dF+QuMh/vx+O3NBUHJR6SAWNkIGtKyfjSID7EqTw=;
+        b=Z9RwVrVD6EMkB4cPPi1neFt1+LuE31Vj2Sv17+IV7zlx4v9eU/Tt9FGCxtXTjvoppv
+         z/BRvQEiQtBaGy3mv0/wWivVaO6Q1/PtIcEGGY7G5+VF7PwYjLhu69ZIMPOtkoqhnkvv
+         4HI9Yyf2gxdVp3fOHKFQ/2anhJdjl+IxazkUEsA2BrgQTowLqSdeVc3DYga19UftJmpi
+         bd1OEHuX29t0ajU5u8HP3ZFabJ6cu/QeLRM60SIuSLY84x3DhfDwI48l2TUgQkGPzK7Q
+         iMCr/8jfK9S+zBfrEd4zUD48gvc4uE2bnu1xtLfvM/qy8+LdUQ7a4BuopNdU0s2VMzod
+         BCKg==
+X-Gm-Message-State: AOAM530mpy9Iuv5nnAjg97Gn6u9dBrAYeB7tAF6TfRt63hv+T+BnbpvY
+        ZSb32pOJpZVIAbBwB1Qix2tQEuuM+t8iWQBiQc+YoQ==
+X-Google-Smtp-Source: ABdhPJxcZSyW1JpOeqlyUitgRFAErha6IKy2Qp5nxrezznBtFQsIryCYlE9BooGVgCcE5TEryK/szudYVHViUtmnsoM=
+X-Received: by 2002:a5d:6d0d:0:b0:20c:530c:1681 with SMTP id
+ e13-20020a5d6d0d000000b0020c530c1681mr11940881wrq.214.1652068918822; Sun, 08
+ May 2022 21:01:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yna/bc2nDb7PT40r@arm.com>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+References: <20220508160749.984-1-jszhang@kernel.org> <20220508160749.984-4-jszhang@kernel.org>
+In-Reply-To: <20220508160749.984-4-jszhang@kernel.org>
+From:   Anup Patel <anup@brainfault.org>
+Date:   Mon, 9 May 2022 09:31:47 +0530
+Message-ID: <CAAhSdy32C59ULdP7KNNgy08jF5vUbvYoF6_n+kAopJfiLsJQFw@mail.gmail.com>
+Subject: Re: [PATCH v2 3/4] riscv: replace has_fpu() with system_supports_fpu()
+To:     Jisheng Zhang <jszhang@kernel.org>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
+        kasan-dev@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/07/22 at 07:50pm, Catalin Marinas wrote:
-> On Sat, May 07, 2022 at 07:10:32AM +0800, Baoquan He wrote:
-> > On 05/06/22 at 07:43pm, Zhen Lei wrote:
-> > ......  
-> > > @@ -118,8 +162,7 @@ static void __init reserve_crashkernel(void)
-> > >  	if (crash_base)
-> > >  		crash_max = crash_base + crash_size;
-> > >  
-> > > -	/* Current arm64 boot protocol requires 2MB alignment */
-> > > -	crash_base = memblock_phys_alloc_range(crash_size, SZ_2M,
-> > > +	crash_base = memblock_phys_alloc_range(crash_size, CRASH_ALIGN,
-> > >  					       crash_base, crash_max);
-> > >  	if (!crash_base) {
-> > >  		pr_warn("cannot allocate crashkernel (size:0x%llx)\n",
-> > > @@ -127,6 +170,11 @@ static void __init reserve_crashkernel(void)
-> > >  		return;
-> > >  	}
-> > >  
-> > 
-> > There's corner case missed, e.g
-> > 1) ,high and ,low are specified, CONFIG_ZONE_DMA|DMA32 is not enabled;
-> > 2) ,high and ,low are specified, the whole system memory is under 4G.
-> 
-> My view of ,low is that it should only used to override the default
-> ZONE_DMA allocation if that one is not suitable. If no ZONE_DMA exists
-> or everything is ZONE_DMA, ignore it altogether. That's a specialist
-> case for people that know more about the memory layout, otherwise
-> crashkernel=X works in most case with crashkernel=X,high as an
-> alternative to allow high allocation.
+On Sun, May 8, 2022 at 9:46 PM Jisheng Zhang <jszhang@kernel.org> wrote:
+>
+> This is to use the unified cpus_have_{final|const}_cap() instead of
+> putting static key related here and there.
+>
+> Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+> ---
+>  arch/riscv/include/asm/cpufeature.h | 5 +++++
+>  arch/riscv/include/asm/switch_to.h  | 9 ++-------
+>  arch/riscv/kernel/cpufeature.c      | 8 ++------
+>  arch/riscv/kernel/process.c         | 2 +-
+>  arch/riscv/kernel/signal.c          | 4 ++--
+>  5 files changed, 12 insertions(+), 16 deletions(-)
+>
+> diff --git a/arch/riscv/include/asm/cpufeature.h b/arch/riscv/include/asm/cpufeature.h
+> index d80ddd2f3b49..634a653c7fa2 100644
+> --- a/arch/riscv/include/asm/cpufeature.h
+> +++ b/arch/riscv/include/asm/cpufeature.h
+> @@ -91,4 +91,9 @@ static inline void cpus_set_cap(unsigned int num)
+>         }
+>  }
+>
+> +static inline bool system_supports_fpu(void)
+> +{
+> +       return IS_ENABLED(CONFIG_FPU) && !cpus_have_final_cap(RISCV_HAS_NO_FPU);
 
-Totally agree with the conclusion.
+This should be checking for "f" and "d" ISA extensions since "FPU" is
+not an ISA extension name.
 
+> +}
+> +
+>  #endif
+> diff --git a/arch/riscv/include/asm/switch_to.h b/arch/riscv/include/asm/switch_to.h
+> index 0a3f4f95c555..362cb18d12d5 100644
+> --- a/arch/riscv/include/asm/switch_to.h
+> +++ b/arch/riscv/include/asm/switch_to.h
+> @@ -8,6 +8,7 @@
+>
+>  #include <linux/jump_label.h>
+>  #include <linux/sched/task_stack.h>
+> +#include <asm/cpufeature.h>
+>  #include <asm/processor.h>
+>  #include <asm/ptrace.h>
+>  #include <asm/csr.h>
+> @@ -56,13 +57,7 @@ static inline void __switch_to_aux(struct task_struct *prev,
+>         fstate_restore(next, task_pt_regs(next));
+>  }
+>
+> -extern struct static_key_false cpu_hwcap_fpu;
+> -static __always_inline bool has_fpu(void)
+> -{
+> -       return static_branch_likely(&cpu_hwcap_fpu);
+> -}
+>  #else
+> -static __always_inline bool has_fpu(void) { return false; }
+>  #define fstate_save(task, regs) do { } while (0)
+>  #define fstate_restore(task, regs) do { } while (0)
+>  #define __switch_to_aux(__prev, __next) do { } while (0)
+> @@ -75,7 +70,7 @@ extern struct task_struct *__switch_to(struct task_struct *,
+>  do {                                                   \
+>         struct task_struct *__prev = (prev);            \
+>         struct task_struct *__next = (next);            \
+> -       if (has_fpu())                                  \
+> +       if (system_supports_fpu())                                      \
+>                 __switch_to_aux(__prev, __next);        \
+>         ((last) = __switch_to(__prev, __next));         \
+>  } while (0)
+> diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
+> index e6c72cad0c1c..1edf3c3f8f62 100644
+> --- a/arch/riscv/kernel/cpufeature.c
+> +++ b/arch/riscv/kernel/cpufeature.c
+> @@ -22,10 +22,6 @@ unsigned long elf_hwcap __read_mostly;
+>  /* Host ISA bitmap */
+>  static DECLARE_BITMAP(riscv_isa, RISCV_ISA_EXT_MAX) __read_mostly;
+>
+> -#ifdef CONFIG_FPU
+> -__ro_after_init DEFINE_STATIC_KEY_FALSE(cpu_hwcap_fpu);
+> -#endif
+> -
+>  DECLARE_BITMAP(cpu_hwcaps, RISCV_NCAPS);
+>  EXPORT_SYMBOL(cpu_hwcaps);
+>
+> @@ -254,8 +250,8 @@ void __init riscv_fill_hwcap(void)
+>         pr_info("riscv: ELF capabilities %s\n", print_str);
+>
+>  #ifdef CONFIG_FPU
+> -       if (elf_hwcap & (COMPAT_HWCAP_ISA_F | COMPAT_HWCAP_ISA_D))
+> -               static_branch_enable(&cpu_hwcap_fpu);
+> +       if (!(elf_hwcap & (COMPAT_HWCAP_ISA_F | COMPAT_HWCAP_ISA_D)))
+> +               cpus_set_cap(RISCV_HAS_NO_FPU);
+>  #endif
+>         enable_cpu_capabilities();
+>         static_branch_enable(&riscv_const_caps_ready);
+> diff --git a/arch/riscv/kernel/process.c b/arch/riscv/kernel/process.c
+> index 504b496787aa..c9cd0b42299e 100644
+> --- a/arch/riscv/kernel/process.c
+> +++ b/arch/riscv/kernel/process.c
+> @@ -88,7 +88,7 @@ void start_thread(struct pt_regs *regs, unsigned long pc,
+>         unsigned long sp)
+>  {
+>         regs->status = SR_PIE;
+> -       if (has_fpu()) {
+> +       if (system_supports_fpu()) {
+>                 regs->status |= SR_FS_INITIAL;
+>                 /*
+>                  * Restore the initial value to the FP register
+> diff --git a/arch/riscv/kernel/signal.c b/arch/riscv/kernel/signal.c
+> index 9f4e59f80551..96aa593a989e 100644
+> --- a/arch/riscv/kernel/signal.c
+> +++ b/arch/riscv/kernel/signal.c
+> @@ -90,7 +90,7 @@ static long restore_sigcontext(struct pt_regs *regs,
+>         /* sc_regs is structured the same as the start of pt_regs */
+>         err = __copy_from_user(regs, &sc->sc_regs, sizeof(sc->sc_regs));
+>         /* Restore the floating-point state. */
+> -       if (has_fpu())
+> +       if (system_supports_fpu())
+>                 err |= restore_fp_state(regs, &sc->sc_fpregs);
+>         return err;
+>  }
+> @@ -143,7 +143,7 @@ static long setup_sigcontext(struct rt_sigframe __user *frame,
+>         /* sc_regs is structured the same as the start of pt_regs */
+>         err = __copy_to_user(&sc->sc_regs, regs, sizeof(sc->sc_regs));
+>         /* Save the floating-point state. */
+> -       if (has_fpu())
+> +       if (system_supports_fpu())
+>                 err |= save_fp_state(regs, &sc->sc_fpregs);
+>         return err;
+>  }
+> --
+> 2.34.1
+>
+>
+> _______________________________________________
+> linux-riscv mailing list
+> linux-riscv@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-riscv
+
+Regards,
+Anup
