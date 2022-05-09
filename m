@@ -2,103 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 133DFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 04:26:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00F9DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 04:26:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233495AbiEIE1E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 00:27:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43204 "EHLO
+        id S232701AbiEIE1B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 00:27:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230437AbiEIEWS (ORCPT
+        with ESMTP id S234220AbiEIERT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 00:22:18 -0400
-Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02A7711990D;
-        Sun,  8 May 2022 21:18:24 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R541e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0VCcryDl_1652069899;
-Received: from 30.32.96.14(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VCcryDl_1652069899)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 09 May 2022 12:18:20 +0800
-Message-ID: <fa5eb0c8-ca63-4100-2200-192aa3e4fc91@linux.alibaba.com>
-Date:   Mon, 9 May 2022 12:19:00 +0800
+        Mon, 9 May 2022 00:17:19 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D391A11922A;
+        Sun,  8 May 2022 21:13:25 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id cq17-20020a17090af99100b001dc0386cd8fso11719142pjb.5;
+        Sun, 08 May 2022 21:13:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=i4ZmSEZyae107M7woQKre9aBPoaep2udL6cDHmolvx4=;
+        b=EelE4Sk2rLVbk1vLK9xnYcqXSyseWXVcrB40eFirQUnctT0lgrGQBnNU9A2L6k+bb7
+         OjDg+CYdzVjkdzqvx5z0D/d1zRh6WjH0+7K8OQrg1yKK/yaIsti73fDLvugPzgRgE98p
+         Po61z8180HgTwzAO1H7b46taafqDlg2GeN2Z8lI+6hpgcfQhlQV2ivduSA92N8HYX79q
+         6qN07SFMZpwKLDRQr2aKIJiRfiaTUsp0HBUDbIAPm+s4S8xU32heA+KWOUxMF3xvaVvn
+         fTGg+jDPKbodCq8Vtpj2sSfKIvQXG4tMqXOx/iBl9keMTJkMEduWgBvuxY1EFLa/QuB1
+         Egqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=i4ZmSEZyae107M7woQKre9aBPoaep2udL6cDHmolvx4=;
+        b=ULAP5IHq7nPoYoWagFHgca4TVzdX6PcHk8CSjbkKR2uql9cD4ftNojc6sDAtfNhzfZ
+         gs/DPPBF5eSecSP3E4ww3H44ebF++e4mmUXt3x5NkFLak2WpbRH3wtZtd8GW9OWLSWd0
+         UWzdHQP1nMXIxwvrGBoGFowdggGALWfO0jFPLtC0/Y2+D4jK1EvCVQhlBIJ5rHYhxRjq
+         ZiOq91IbI6Zwh9dfRLzZ3KiprRZZnVRDBcp6kzibUtK9HuJELV32pavYPlvcKevQkpR3
+         Sbm2ew4AaFuVPdMMzxOeqQaXYi23P0R7wmDGgfZJxQrOoYycYttrYaX6evgudR7cUa/k
+         oKqA==
+X-Gm-Message-State: AOAM533s9h/53jyabYEWfvDRyFjQ2Ea7mZpZr1UXzprsOKkXkJjsRPe4
+        9OjfTEYK5H2IfIkBAq3rnZgdH70RPRsx
+X-Google-Smtp-Source: ABdhPJwA12GMNtxipiY1QrrqNCB1QXJ3EJmQp3Iv9uD5xQEH9BSDFsZL5vlxX/0LpgkUo1SfW2hNOg==
+X-Received: by 2002:a17:903:1211:b0:15e:8208:8cc0 with SMTP id l17-20020a170903121100b0015e82088cc0mr14708514plh.52.1652069600512;
+        Sun, 08 May 2022 21:13:20 -0700 (PDT)
+Received: from piliu.users.ipa.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id m19-20020a17090a7f9300b001cd60246575sm11478545pjl.17.2022.05.08.21.13.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 May 2022 21:13:20 -0700 (PDT)
+From:   Pingfan Liu <kernelfans@gmail.com>
+To:     linux-ia64@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Cc:     Pingfan Liu <kernelfans@gmail.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Vincent Donnefort <vincent.donnefort@arm.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Baokun Li <libaokun1@huawei.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        kexec@lists.infradead.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Kees Cook <keescook@chromium.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Russell King <linux@armlinux.org.uk>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Marc Zyngier <maz@kernel.org>
+Subject: [PATCHv3 0/2] cpu/hotplug: Keep cpu hotplug disabled until the rebooting cpu is stable
+Date:   Mon,  9 May 2022 12:13:03 +0800
+Message-Id: <20220509041305.15056-1-kernelfans@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [RFC PATCH 1/3] arm64/hugetlb: Introduce new
- huge_ptep_get_access_flags() interface
-To:     nh26223@qq.com, catalin.marinas@arm.com, will@kernel.org,
-        arnd@arndb.de, mike.kravetz@oracle.com, akpm@linux-foundation.org,
-        sj@kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-mm@kvack.org, Muchun Song <songmuchun@bytedance.com>
-References: <cover.1651998586.git.baolin.wang@linux.alibaba.com>
- <tencent_E3DE18C8CFE150F1EDCF887146BA374E6706@qq.com>
- <5e33cf5e-2c48-89fe-3447-2f29c7844928@linux.alibaba.com>
- <tencent_4743B3E2F61F15E3BBF4251CAF3C0810B207@qq.com>
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-In-Reply-To: <tencent_4743B3E2F61F15E3BBF4251CAF3C0810B207@qq.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+For the arches (arm/arm64/ia64/riscv), which relies on the cpu hot-removing
+mechanism to implement "kexec -e", it is important to make sure that the
+rebooting happens on a valid online cpu. And this logic should have been
+guaranteed in migrate_to_reboot_cpu().
 
+But the current code has either contradict (resolved by [2/2]) or
+redundancy (resolved by [1/2]) about the logic.
 
-On 5/9/2022 12:10 PM, nh26223@qq.com write:
-> ----------------8<---------------
->>>>
->>>> diff --git a/arch/arm64/mm/hugetlbpage.c b/arch/arm64/mm/hugetlbpage.c
->>>> index ca8e65c..ce39699 100644
->>>> --- a/arch/arm64/mm/hugetlbpage.c
->>>> +++ b/arch/arm64/mm/hugetlbpage.c
->>>> @@ -158,6 +158,30 @@ static inline int num_contig_ptes(unsigned long
->>>> size,
->>>> size_t *pgsize) return contig_ptes;
->>>>
->>>>    }
->>>>
->>>> +pte_t huge_ptep_get_access_flags(pte_t *ptep, unsigned long sz)
->>>
->>> The function name looks to me that it returns access flags of PTE.
->>
->> Yes, not a good name. That's why this is a RFC patch set to get more
->> suggestion :)
->>
->> Maybe huge_ptep_get_with_access_flags()? or do you have some better idea?
-> I don't have either. "Naming is hard". :)
-> 
->>>> diff --git a/include/asm-generic/hugetlb.h
->>>> b/include/asm-generic/hugetlb.h
->>>> index a57d667..bb77fb0 100644
->>>> --- a/include/asm-generic/hugetlb.h
->>>> +++ b/include/asm-generic/hugetlb.h
->>>> @@ -150,6 +150,13 @@ static inline pte_t huge_ptep_get(pte_t *ptep)
->>>>
->>>>    }
->>>>    #endif
->>>>
->>>> +#ifndef __HAVE_ARCH_HUGE_PTEP_GET_ACCESS_FLAGS
->>>> +static inline pte_t huge_ptep_get_access_flags(pte_t *ptep, unsigned
->>>> long
->>>> sz) +{
->>>> +	return ptep_get(ptep);
->>>
->>> Should be:
->>> 	return huge_ptep_get(ptep) ?
->>
->> I don't think so. If no ARCH-specific definition, the
->> huge_ptep_get_access_flags() implementation should be same as
->> huge_ptep_get(). Thanks for your comments.
-> If no __HAVE_ARCH_HUGE_PTEP_GET, huge_ptep_get() is same as
-> ptep_get().
-> 
-> Or it's not possible no __HAVE_ARCH_HUGE_PTEP_GET_ACCESS_FLAGS
-> but with __HAVE_ARCH_HUGE_PTEP_GET?
+V2 -> V3:
+Taking in [2/2], which also has problem with the valid rebooting
+cpu. (I had sent three patches for different arches. But maybe it is
+better to collapse them into one and collect acks from different arches'
+maintainers )
 
-Yes, I am wrong, shoule be huge_ptep_get(). Thanks for pointing out 
-issues :)
+Cc: Eric Biederman <ebiederm@xmission.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Valentin Schneider <valentin.schneider@arm.com>
+Cc: Vincent Donnefort <vincent.donnefort@arm.com>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: YueHaibing <yuehaibing@huawei.com>
+Cc: Baokun Li <libaokun1@huawei.com>
+Cc: Randy Dunlap <rdunlap@infradead.org>
+Cc: Valentin Schneider <valentin.schneider@arm.com>
+Cc: kexec@lists.infradead.org
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Jens Axboe <axboe@kernel.dk>
+To: linux-ia64@vger.kernel.org
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: Guenter Roeck <linux@roeck-us.net>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc: Lee Jones <lee.jones@linaro.org>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Peter Collingbourne <pcc@google.com>
+Cc: Marc Zyngier <maz@kernel.org>
+To: linux-arm-kernel@lists.infradead.org
+To: linux-kernel@vger.kernel.org
 
-PS: I think I will follow Muchun's suggestion in next version, so no 
-need to add a new interface.
+Pingfan Liu (2):
+  cpu/hotplug: Keep cpu hotplug disabled until the rebooting cpu is
+    stable
+  arm/arm64/ia64: kexec: fix the primary cpu passed to
+    smp_shutdown_nonboot_cpus()
+
+ arch/arm/kernel/reboot.c    |  2 +-
+ arch/arm64/kernel/process.c |  2 +-
+ arch/ia64/kernel/process.c  |  2 +-
+ kernel/cpu.c                | 16 ++++++++++------
+ kernel/kexec_core.c         | 10 ++++------
+ 5 files changed, 17 insertions(+), 15 deletions(-)
+
+-- 
+2.31.1
+
