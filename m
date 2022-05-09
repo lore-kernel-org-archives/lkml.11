@@ -2,113 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 644E2C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39B31C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:04:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235512AbiEIHFk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 03:05:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41738 "EHLO
+        id S235466AbiEIHFi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 03:05:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234939AbiEIGxx (ORCPT
+        with ESMTP id S233337AbiEIHCF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 02:53:53 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2113.outbound.protection.outlook.com [40.107.22.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1180819CEE0;
-        Sun,  8 May 2022 23:49:59 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ES8i/rcc7O1R8WvDFtmZkhXM4GAn1kFhj/W+Ls9PIqDf/GKZVbPk03IwndXb3FpKI1UkjveLdxUxhMayELnZ/WKoqCBjVZOZkh/ZTlKDBO1dP1M9RqM9qJbaNjvAED3a/OuqcJUJk2AKQvq+clm/TzHEt+F6uBAA3AvA86dcO2zmB+/RwyFc81dipis4bBzyrYnhF4KcPngxAzMHqF/yodqvoletBuA1VxrX1R9p6c+DgYH174WU2UcBE83SsaKqQRWL9u8YilYYgsqLZ1RfgULb6Nhx7miKgr1Ms80rWCjEVmmqHgJfOsUvUdwaDz8bbSJ8zEgOXF2aWHIQFI/1vw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=r8pF8QoyeW8SoNhfIv4dgfaNxj6MxM2G5WRPmaYL3rM=;
- b=WQo6u0j0F/vJjfdTXG5C8fTMmomE3Dl4gc+WLcIDRfnwfR+a5V8KtYbgzapt98XUuL4EeCr5K/k9XjXjISSgPpAckv7vWisQp9sDRXsE+G8W73lwms9Cwr0tr3kspAMYXYv1YrScU529udtABgTJaR0YsmZKrougv3lCRvGp+nmEV/pWf7s1TiziS9FsNlx9hKn93OHz1ggu1L8fPiSza61y9HuWCNEG0nBa8aG92ZveY/Uofal17zbH6ltGkRdapnVfcRJl1CbhMqQM4VpdoB4uUg0Sg5EAS4aafgh6qw1h8PzXiKPjxmqG7HPt8MoLHIeNOhsC+c3gjJvC4oSRUA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 193.8.40.94) smtp.rcpttodomain=kernel.org
- smtp.mailfrom=leica-geosystems.com.cn; dmarc=pass (p=quarantine sp=quarantine
- pct=100) action=none header.from=leica-geosystems.com.cn; dkim=none (message
- not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=leica-geosystems.com.cn; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=r8pF8QoyeW8SoNhfIv4dgfaNxj6MxM2G5WRPmaYL3rM=;
- b=NaHrtsJBte1cnQqqWmuhX7F/JfxanjsLRD3g6rkvRRMg2gfKzyMeEU1u5/VFJmFvVjjISm8NhVDtxoNWoUDTuODFBYu+ExrQCYN+5jrx3Kk/kBPZ8/skOLyKxb7eR2JrJZ39KHGRpR1+n80v6IkIeZvawMcXNdG285Z2je0jc2M=
-Received: from BE0P281CA0006.DEUP281.PROD.OUTLOOK.COM (2603:10a6:b10:a::16) by
- AM6PR06MB5173.eurprd06.prod.outlook.com (2603:10a6:20b:3d::13) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5227.18; Mon, 9 May 2022 06:49:33 +0000
-Received: from HE1EUR02FT040.eop-EUR02.prod.protection.outlook.com
- (2603:10a6:b10:a:cafe::6) by BE0P281CA0006.outlook.office365.com
- (2603:10a6:b10:a::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13 via Frontend
- Transport; Mon, 9 May 2022 06:49:33 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 193.8.40.94)
- smtp.mailfrom=leica-geosystems.com.cn; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=leica-geosystems.com.cn;
-Received-SPF: Pass (protection.outlook.com: domain of leica-geosystems.com.cn
- designates 193.8.40.94 as permitted sender) receiver=protection.outlook.com;
- client-ip=193.8.40.94; helo=aherlnxbspsrv01.lgs-net.com;
-Received: from aherlnxbspsrv01.lgs-net.com (193.8.40.94) by
- HE1EUR02FT040.mail.protection.outlook.com (10.152.11.92) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5227.15 via Frontend Transport; Mon, 9 May 2022 06:49:32 +0000
-From:   LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
-To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
-        tomas.melin@vaisala.com, andy.shevchenko@gmail.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Qing-wu.Li@leica-geosystems.com.cn
-Cc:     linux-iio@vger.kernel.org
-Subject: [PATCH V4 1/5] dt-bindings: iio: accel: sca3300: Document murata,scl3300
-Date:   Mon,  9 May 2022 06:49:24 +0000
-Message-Id: <20220509064928.2352796-2-Qing-wu.Li@leica-geosystems.com.cn>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220509064928.2352796-1-Qing-wu.Li@leica-geosystems.com.cn>
-References: <20220509064928.2352796-1-Qing-wu.Li@leica-geosystems.com.cn>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: b5ce2242-ef05-448c-d934-08da31881326
-X-MS-TrafficTypeDiagnostic: AM6PR06MB5173:EE_
-X-Microsoft-Antispam-PRVS: <AM6PR06MB5173EBE8669C550AB049FF15D7C69@AM6PR06MB5173.eurprd06.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: p8Hi4mO4GYbAMMPN4l44hGYWgfUFAZldsKoqfmD8nGkg0i39qsPZujVawPV4o5EvoamWf/Cw3Wpd4JmQcHpGCEa0CgdKnuUrZQSHasMzFGvyoWaqJtR0Pz4Uohq93lOOTGD/e6ocSs8BVw2NYedtHgod3mvQI/qLrCfBfcdXdaVOFYjiDBrh8EQms0ODHY1TTrK9M6GOBfEDGap6c4ZFrbriJ2avrzLD9C8biMZk5je9lnAujOOAn5lmik0boIeYqQuyTBIoXW8kVsQYqRdYNH2v29J/ZoPvyv3LE97EqZFKIZpDmLmvqg9NS7Wy3dQk0FjtYwZnMK5AjAw6dgQ7SvuZOrBIH2XZzrA5HkKnz/tGN+a5Kw+wAYiPG6YviNzhCRQth3Y7yX8czcnVaEgQvIzVs/YCUEfZWVJ970BsLOfBtQv4oeF+OYopJsXWTkz+SQbWqMgRqdgaZVK2Ldjt0BL+N6IUzvQIJF6UNonRQXcr9CkW7fE3B5gK4bwBEQq/S3bo+uWD8CkIvsbjzeXKhs9IIInt6WERMja7yOjv3FXsQ1Iw3QxTPBIxxQDfOCpeSKsXxUHac6VywUk2LVGR21z2OqzDyTsI0IjRPp51ud8WROwoiuOxHOZk+Y/uGBBlLCFkXTtnoKsreHCuTfzbxVft4HYTHT7P85TMgxBcx5gisL4qV2Hpe8evoA08cVBr
-X-Forefront-Antispam-Report: CIP:193.8.40.94;CTRY:CH;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:aherlnxbspsrv01.lgs-net.com;PTR:ahersrvdom50.leica-geosystems.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(36860700001)(6486002)(70586007)(70206006)(118246002)(40460700003)(6666004)(356005)(81166007)(36736006)(508600001)(2906002)(4326008)(82310400005)(86362001)(8676002)(4744005)(6506007)(26005)(186003)(5660300002)(2616005)(316002)(956004)(8936002)(1076003)(47076005)(36756003)(336012)(6512007);DIR:OUT;SFP:1102;
-X-OriginatorOrg: leica-geosystems.com.cn
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2022 06:49:32.8129
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b5ce2242-ef05-448c-d934-08da31881326
-X-MS-Exchange-CrossTenant-Id: 1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a;Ip=[193.8.40.94];Helo=[aherlnxbspsrv01.lgs-net.com]
-X-MS-Exchange-CrossTenant-AuthSource: HE1EUR02FT040.eop-EUR02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR06MB5173
+        Mon, 9 May 2022 03:02:05 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3523B1A359B;
+        Sun,  8 May 2022 23:58:12 -0700 (PDT)
+Received: from linux.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Axuth4u3hiwqkOAA--.49630S4;
+        Mon, 09 May 2022 14:58:03 +0800 (CST)
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+To:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH bpf-next 2/3] net: sysctl: No need to check CAP_SYS_ADMIN for bpf_jit_*
+Date:   Mon,  9 May 2022 14:57:54 +0800
+Message-Id: <1652079475-16684-3-git-send-email-yangtiezhu@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+In-Reply-To: <1652079475-16684-1-git-send-email-yangtiezhu@loongson.cn>
+References: <1652079475-16684-1-git-send-email-yangtiezhu@loongson.cn>
+X-CM-TRANSID: AQAAf9Axuth4u3hiwqkOAA--.49630S4
+X-Coremail-Antispam: 1UD129KBjvJXoW7ur15ZFyxur47uw4fGr1kuFg_yoW8Ar1UpF
+        WrKrWIkFZ8Kr1xGrZ7KFZYqr13Aa1DXF4Uuwn7Wa4SywnFgwnxJrn3XryYqFyYyrW2kFyY
+        qayFvr98uan3ta7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUBFb7Iv0xC_Zr1lb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I2
+        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI
+        8067AKxVWUXwA2048vs2IY020Ec7CjxVAFwI0_Gr0_Xr1l8cAvFVAK0II2c7xJM28CjxkF
+        64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0cI8IcV
+        CY1x0267AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwVC2z280
+        aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzV
+        Aqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S
+        6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JMxkIecxEwVAFwVW8AwCF04k20xvY0x
+        0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E
+        7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcV
+        C0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF
+        04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7
+        CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07jgJ5OUUUUU=
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add DT bindings for Murata scl3300 inclinometer.
+The mode of the following procnames are defined as 0644, 0600, 0600
+and 0600 respectively in net_core_table[], normal user can not write
+them, so no need to check CAP_SYS_ADMIN in the related proc_handler
+function, just remove the checks.
 
-Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+/proc/sys/net/core/bpf_jit_enable
+/proc/sys/net/core/bpf_jit_harden
+/proc/sys/net/core/bpf_jit_kallsyms
+/proc/sys/net/core/bpf_jit_limit
+
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
 ---
- Documentation/devicetree/bindings/iio/accel/murata,sca3300.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ net/core/sysctl_net_core.c | 9 ---------
+ 1 file changed, 9 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/accel/murata,sca3300.yaml b/Documentation/devicetree/bindings/iio/accel/murata,sca3300.yaml
-index 55fd3548e3b6..f6e2a16a710b 100644
---- a/Documentation/devicetree/bindings/iio/accel/murata,sca3300.yaml
-+++ b/Documentation/devicetree/bindings/iio/accel/murata,sca3300.yaml
-@@ -17,6 +17,7 @@ properties:
-   compatible:
-     enum:
-       - murata,sca3300
-+      - murata,scl3300
+diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
+index cf00dd7..059352b 100644
+--- a/net/core/sysctl_net_core.c
++++ b/net/core/sysctl_net_core.c
+@@ -268,9 +268,6 @@ static int proc_dointvec_minmax_bpf_enable(struct ctl_table *table, int write,
+ 	int ret, jit_enable = *(int *)table->data;
+ 	struct ctl_table tmp = *table;
  
-   reg:
-     maxItems: 1
+-	if (write && !capable(CAP_SYS_ADMIN))
+-		return -EPERM;
+-
+ 	tmp.data = &jit_enable;
+ 	ret = proc_dointvec_minmax(&tmp, write, buffer, lenp, ppos);
+ 	if (write && !ret) {
+@@ -291,9 +288,6 @@ static int
+ proc_dointvec_minmax_bpf_restricted(struct ctl_table *table, int write,
+ 				    void *buffer, size_t *lenp, loff_t *ppos)
+ {
+-	if (!capable(CAP_SYS_ADMIN))
+-		return -EPERM;
+-
+ 	return proc_dointvec_minmax(table, write, buffer, lenp, ppos);
+ }
+ # endif /* CONFIG_HAVE_EBPF_JIT */
+@@ -302,9 +296,6 @@ static int
+ proc_dolongvec_minmax_bpf_restricted(struct ctl_table *table, int write,
+ 				     void *buffer, size_t *lenp, loff_t *ppos)
+ {
+-	if (!capable(CAP_SYS_ADMIN))
+-		return -EPERM;
+-
+ 	return proc_doulongvec_minmax(table, write, buffer, lenp, ppos);
+ }
+ #endif
 -- 
-2.25.1
+2.1.0
 
