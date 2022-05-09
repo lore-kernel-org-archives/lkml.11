@@ -2,181 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39D8FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 13:40:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1B59C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 13:40:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236135AbiEINoM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 09:44:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50268 "EHLO
+        id S236154AbiEINoQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 09:44:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236101AbiEINoF (ORCPT
+        with ESMTP id S236114AbiEINoJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 09:44:05 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7F07261F8C;
-        Mon,  9 May 2022 06:40:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1652103611; x=1683639611;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=k53j15Te25HMdQ8gsnbKOwZKL0zwItkm6JoC0UjVfGo=;
-  b=Gyp/8R87R50fPoBDaPc6ZocCYmfP+2n8HQqCtD+ocw7D5fkCxEhq7+59
-   wNzpWaD4UrfdgZQTuw3ILgQ5bHeKd/cB/6sohsNNueJA0pQDB0+wFrPil
-   p5lIbBBIKjLej3i8YAWA9OHsrvxnGwrm1fuEmWlPEnatfoTYnapta5Ss8
-   w=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 09 May 2022 06:40:11 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 06:40:11 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 9 May 2022 06:40:10 -0700
-Received: from jinlmao-gv.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 9 May 2022 06:40:06 -0700
-From:   Mao Jinlong <quic_jinlmao@quicinc.com>
-To:     Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Konrad Dybcio <konradybcio@gmail.com>,
-        Mike Leach <mike.leach@linaro.org>
-CC:     Mao Jinlong <quic_jinlmao@quicinc.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <coresight@lists.linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Tingwei Zhang <quic_tingweiz@quicinc.com>,
-        Yuanfang Zhang <quic_yuanfang@quicinc.com>,
-        Tao Zhang <quic_taozha@quicinc.com>,
-        Trilok Soni <quic_tsoni@quicinc.com>,
-        Hao Zhang <quic_hazha@quicinc.com>,
-        <linux-arm-msm@vger.kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: [PATCH v7 01/10] coresight: core: Use IDR for non-cpu bound sources' paths.
-Date:   Mon, 9 May 2022 21:39:38 +0800
-Message-ID: <20220509133947.20987-2-quic_jinlmao@quicinc.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220509133947.20987-1-quic_jinlmao@quicinc.com>
-References: <20220509133947.20987-1-quic_jinlmao@quicinc.com>
+        Mon, 9 May 2022 09:44:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88A24262702;
+        Mon,  9 May 2022 06:40:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0231061564;
+        Mon,  9 May 2022 13:40:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 44B0FC385A8;
+        Mon,  9 May 2022 13:40:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652103614;
+        bh=VbUiUV4JNvYGLPeFk35MonaYtBG9dxRlYsJUUAeelM0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=WIgGUNBxQLp+obLesgugAGHPPK9yYkxSUQBOZqjYqxqbNWujAG8+o4Advjdv8pA2t
+         rho15uzL96KTVWFVP3PDINkfj2h4TdpbxyTiZOsnzt6LacKz51oR/Soyfrv6MNOZ5n
+         vUFvxu7u5GDyf+JaOehFIAtOkU+H3NKtqyH7x6ls0QpmY7auNamtJWpPmneRz8Ij3F
+         P3tMsBKGeZWLuCwLd1PUq3h8nEKiBq/jm66MN7FEwl4zYpHd0+Vnxv2Y/JCnpbBHJN
+         kU3X85XmTLbDv/iQGkmtUQfU9xhq8UauM/GFgN1DXFnymdZ0ft0nfNJZCo8NFcqOq9
+         CFknttJyBqnSw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2EBB3F0392A;
+        Mon,  9 May 2022 13:40:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH V2 net-next 0/6] net: hns3: updates for -next
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165210361417.30657.1832076685595767481.git-patchwork-notify@kernel.org>
+Date:   Mon, 09 May 2022 13:40:14 +0000
+References: <20220509075532.32166-1-huangguangbin2@huawei.com>
+In-Reply-To: <20220509075532.32166-1-huangguangbin2@huawei.com>
+To:     Guangbin Huang <huangguangbin2@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lipeng321@huawei.com,
+        chenhao288@hisilicon.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Except stm, there could be other sources which are not associated
-with cpus. Use IDR to store and search these sources' paths.
+Hello:
 
-Reviewed-by: Mike Leach <mike.leach@linaro.org>
-Signed-off-by: Mao Jinlong <quic_jinlmao@quicinc.com>
----
- drivers/hwtracing/coresight/coresight-core.c | 37 ++++++++++++++------
- 1 file changed, 26 insertions(+), 11 deletions(-)
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/drivers/hwtracing/coresight/coresight-core.c b/drivers/hwtracing/coresight/coresight-core.c
-index bbf415c252f9..23ab16dd9b5d 100644
---- a/drivers/hwtracing/coresight/coresight-core.c
-+++ b/drivers/hwtracing/coresight/coresight-core.c
-@@ -8,6 +8,7 @@
- #include <linux/types.h>
- #include <linux/device.h>
- #include <linux/io.h>
-+#include <linux/idr.h>
- #include <linux/err.h>
- #include <linux/export.h>
- #include <linux/slab.h>
-@@ -27,6 +28,13 @@
- static DEFINE_MUTEX(coresight_mutex);
- static DEFINE_PER_CPU(struct coresight_device *, csdev_sink);
- 
-+/*
-+ * Use IDR to map the hash of the source's device name
-+ * to the pointer of path for the source. The idr is for
-+ * the sources which aren't associated with CPU.
-+ */
-+static DEFINE_IDR(path_idr);
-+
- /**
-  * struct coresight_node - elements of a path, from source to sink
-  * @csdev:	Address of an element.
-@@ -43,14 +51,6 @@ struct coresight_node {
-  */
- static DEFINE_PER_CPU(struct list_head *, tracer_path);
- 
--/*
-- * As of this writing only a single STM can be found in CS topologies.  Since
-- * there is no way to know if we'll ever see more and what kind of
-- * configuration they will enact, for the time being only define a single path
-- * for STM.
-- */
--static struct list_head *stm_path;
--
- /*
-  * Set up a global trace ID map.
-  * We may need a per sink ID map in future for larger / multi sink systems.
-@@ -1061,6 +1061,7 @@ int coresight_enable(struct coresight_device *csdev)
- 	struct coresight_device *sink;
- 	struct list_head *path;
- 	enum coresight_dev_subtype_source subtype;
-+	u32 hash;
- 
- 	subtype = csdev->subtype.source_subtype;
- 
-@@ -1115,7 +1116,14 @@ int coresight_enable(struct coresight_device *csdev)
- 		per_cpu(tracer_path, cpu) = path;
- 		break;
- 	case CORESIGHT_DEV_SUBTYPE_SOURCE_SOFTWARE:
--		stm_path = path;
-+		/*
-+		 * Use the hash of source's device name as ID
-+		 * and map the ID to the pointer of the path.
-+		 */
-+		hash = hashlen_hash(hashlen_string(NULL, dev_name(&csdev->dev)));
-+		ret = idr_alloc_u32(&path_idr, path, &hash, hash, GFP_KERNEL);
-+		if (ret)
-+			goto err_source;
- 		break;
- 	default:
- 		/* We can't be here */
-@@ -1139,6 +1147,7 @@ void coresight_disable(struct coresight_device *csdev)
- {
- 	int cpu, ret;
- 	struct list_head *path = NULL;
-+	u32 hash;
- 
- 	mutex_lock(&coresight_mutex);
- 
-@@ -1156,14 +1165,20 @@ void coresight_disable(struct coresight_device *csdev)
- 		per_cpu(tracer_path, cpu) = NULL;
- 		break;
- 	case CORESIGHT_DEV_SUBTYPE_SOURCE_SOFTWARE:
--		path = stm_path;
--		stm_path = NULL;
-+		hash = hashlen_hash(hashlen_string(NULL, dev_name(&csdev->dev)));
-+		/* Find the path by the hash. */
-+		path = idr_find(&path_idr, hash);
-+		if (path == NULL) {
-+			pr_err("Path is not found for %s\n", dev_name(&csdev->dev));
-+			goto out;
-+		}
- 		break;
- 	default:
- 		/* We can't be here */
- 		break;
- 	}
- 
-+	idr_remove(&path_idr, hash);
- 	coresight_disable_path(path);
- 	coresight_release_path(path);
- 
+On Mon, 9 May 2022 15:55:26 +0800 you wrote:
+> This series includes some updates for the HNS3 ethernet driver.
+> 
+> Change logs:
+> V1 -> V2:
+>  - Fix some sparse warnings of patch 3# and 4#.
+>  - Add patch #6 to fix sparse warnings of incorrect type of argument.
+> 
+> [...]
+
+Here is the summary with links:
+  - [V2,net-next,1/6] net: hns3: fix access null pointer issue when set tx-buf-size as 0
+    https://git.kernel.org/netdev/net-next/c/a4fe9b6db6f9
+  - [V2,net-next,2/6] net: hns3: remove the affinity settings of vector0
+    https://git.kernel.org/netdev/net-next/c/bbed70241204
+  - [V2,net-next,3/6] net: hns3: add byte order conversion for PF to VF mailbox message
+    https://git.kernel.org/netdev/net-next/c/767975e582c5
+  - [V2,net-next,4/6] net: hns3: add byte order conversion for VF to PF mailbox message
+    https://git.kernel.org/netdev/net-next/c/416eedb60361
+  - [V2,net-next,5/6] net: hns3: add query vf ring and vector map relation
+    https://git.kernel.org/netdev/net-next/c/a1aed456e326
+  - [V2,net-next,6/6] net: hns3: fix incorrect type of argument in declaration of function hclge_comm_get_rss_indir_tbl
+    https://git.kernel.org/netdev/net-next/c/443edfd6d43d
+
+You are awesome, thank you!
 -- 
-2.17.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
