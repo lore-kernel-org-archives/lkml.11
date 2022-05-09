@@ -2,114 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD7CFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 11:45:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 517C6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 11:46:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233222AbiEILt3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 07:49:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53490 "EHLO
+        id S233251AbiEILu1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 07:50:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233165AbiEILtY (ORCPT
+        with ESMTP id S233221AbiEILuX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 07:49:24 -0400
-Received: from smtp2.infineon.com (smtp2.infineon.com [IPv6:2a00:18f0:1e00:4::4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22CB81C9676;
-        Mon,  9 May 2022 04:45:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=infineon.com; i=@infineon.com; q=dns/txt; s=IFXMAIL;
-  t=1652096730; x=1683632730;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=kMygQDKRp1jGxPYCSiZeHi1ypIZtJR5d8kJ5nHlpwjU=;
-  b=Z2c0I/6XouSn1o5P6QYUEwEIwyrBvPJlpY/RrP+7qeeHSqadZmMHKy7G
-   xOstDVLrNwDpTy7LCMMiqiKg2OdvledfnKdHwCoUJllDVekU4S7xJqORT
-   QgBvIsjSZt3XUnw7+MwExQlPnsEI+HuKwKfWdlerAZmvwyGKoe7DN+6zp
-   I=;
-X-SBRS: None
-X-IronPort-AV: E=McAfee;i="6400,9594,10341"; a="176637034"
-X-IronPort-AV: E=Sophos;i="5.91,211,1647298800"; 
-   d="scan'208";a="176637034"
-Received: from unknown (HELO mucxv001.muc.infineon.com) ([172.23.11.16])
-  by smtp2.infineon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 13:45:28 +0200
-Received: from MUCSE822.infineon.com (MUCSE822.infineon.com [172.23.29.53])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mucxv001.muc.infineon.com (Postfix) with ESMTPS;
-        Mon,  9 May 2022 13:45:28 +0200 (CEST)
-Received: from MUCSE818.infineon.com (172.23.29.44) by MUCSE822.infineon.com
- (172.23.29.53) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 9 May 2022
- 13:45:27 +0200
-Received: from smaha-lin-dev01.agb.infineon.com (172.23.8.247) by
- MUCSE818.infineon.com (172.23.29.44) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 9 May 2022 13:45:27 +0200
-From:   Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
-To:     <jarkko@kernel.org>
-CC:     <Marten.Lindahl@axis.com>, <jgg@ziepe.ca>,
-        <johannes.holland@infineon.com>, <jsnitsel@redhat.com>,
-        <linux-integrity@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <martenli@axis.com>, <nayna@linux.vnet.ibm.com>,
-        <peterhuewe@gmx.de>, <stable@vger.kernel.org>,
-        <stefan.mahnke-hartmann@infineon.com>
-Subject: Re: [PATCH 1/2] tpm: Fix buffer access in tpm2_get_tpm_pt()
-Date:   Mon, 9 May 2022 13:48:09 +0200
-Message-ID: <20220509114809.245621-1-stefan.mahnke-hartmann@infineon.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <YnbL2R/a3SwA3fMC@iki.fi>
-References: <YnbL2R/a3SwA3fMC@iki.fi>
+        Mon, 9 May 2022 07:50:23 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59CBC18430F
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 04:46:28 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id x18so19084227wrc.0
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 04:46:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=misjj5JTB12DlyGFP9aFMSgV8RGVVP30IJPFNdnpF+w=;
+        b=vcm8ol+n0vdvHjNkmFysmqfoMdnJAXp0XlqQZH4Vey9RcGcNJYWaS3XbqMxl2oE5Ka
+         sdrAxxme+/ilEdnK5OjXbaxee9lypHPC6Gd51l99xsBDm+of2Ag4mLmqoI0FKRbADWD0
+         ydvpxq8FdJ2SfX123spAoSTnX8V6mldE3qgEdwODYSq+9hEg+xu+h9urKS4lhOg10ip/
+         JFOIFtCvPRUQ366h67ipFMukKFsmeK2MqkRPel8OaskasEol/nzbbGxPInvorMO1YBcs
+         HIngSiNh2hwhybpxoltaFRL7ZpWfXMWyOqQMtTijw0rWYE6lR/bDb33jywYpO4OjriOP
+         +0JQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=misjj5JTB12DlyGFP9aFMSgV8RGVVP30IJPFNdnpF+w=;
+        b=eYN71BwYGcXs62lanW/laLh97bM0yEy7p1QPEX8WOMzFTykv3R3rhYQ/OYcEUHoiyE
+         gT06hfUXEolOGfjJ5p8GcNQfJiHsHtjNFlhYd8x0rhwxa99/d2HvvoMRJ+NYGoi3sM88
+         Wp2JPgQDXFYkdT/cEKOm97xkcWIyfrrfRqapFOFMEKZy1ptT2PUyFBJdEzApyf6spc98
+         7gmTqtEnYjAywNz8K9kuvmLcAxeLmiZPNeLY/MVJyBsTetnEErviNz8ccpJQ0amzQpny
+         fiP9QaSV0p/qin5aR0W6buhf12VUlPilk4iN0d2is22jPTAxUN0F+qnexq2UvKrweJUg
+         VOKA==
+X-Gm-Message-State: AOAM5338LhP+V1P5XA6pW/753329tN+cJ3giKxPNe+Qj5dMbnMeP/r/V
+        MKxXpltlovt8LT5GjzJrztd/KA==
+X-Google-Smtp-Source: ABdhPJxUHknTccYYo0FBvjr+ROc0w77xQIpr0J50KwaOVb50UXG/NivSAf3PnGfF/UHaxiJloSJzOg==
+X-Received: by 2002:a05:6000:136b:b0:20a:c416:e914 with SMTP id q11-20020a056000136b00b0020ac416e914mr13382462wrz.167.1652096787075;
+        Mon, 09 May 2022 04:46:27 -0700 (PDT)
+Received: from [192.168.1.41] (176-182-171-101.abo.bbox.fr. [176.182.171.101])
+        by smtp.googlemail.com with ESMTPSA id b12-20020adfc74c000000b0020c5253d8e8sm11399633wrh.52.2022.05.09.04.46.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 09 May 2022 04:46:26 -0700 (PDT)
+Message-ID: <a1d44fbb-c2a9-e422-8ce8-2a3982a75bb8@linaro.org>
+Date:   Mon, 9 May 2022 13:46:25 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2] clocksource/drivers/sp804: avoid error on multiple
+ instances
+Content-Language: en-US
+To:     Andre Przywara <andre.przywara@arm.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220506162522.3675399-1-andre.przywara@arm.com>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <20220506162522.3675399-1-andre.przywara@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [172.23.8.247]
-X-ClientProxiedBy: MUCSE823.infineon.com (172.23.29.54) To
- MUCSE818.infineon.com (172.23.29.44)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07.05.22 21:43, Jarkko Sakkinen wrote:
-> On Fri, May 06, 2022 at 02:31:46PM +0200, Stefan Mahnke-Hartmann wrote:
->> Under certain conditions uninitialized memory will be accessed.
->> As described by TCG Trusted Platform Module Library Specification,
->> rev. 1.59 (Part 3: Commands), if a TPM2_GetCapability is received,
->> requesting a capability, the TPM in Field Upgrade mode may return a
->                                       ~~~~~~~~~~~~~~~~~~
->
-> Looks like random picks for casing: two words with upper case letter and
-> one with lowe case.
+On 06/05/2022 18:25, Andre Przywara wrote:
+> When a machine sports more than one SP804 timer instance, we only bring
+> up the first one, since multiple timers of the same kind are not useful
+> to Linux. As this is intentional behaviour, we should not return an
+> error message, as we do today:
+> ===============
+> [    0.000800] Failed to initialize '/bus@8000000/motherboard-bus@8000000/iofpga-bus@300000000/timer@120000': -22
+> ===============
+> 
+> Replace the -EINVAL return with a debug message and return 0 instead.
+> 
+> Also we do not reach the init function anymore if the DT node is
+> disabled (as this is now handled by OF_DECLARE), so remove the explicit
+> check for that case.
+> 
+> This fixes a long standing bogus error when booting ARM's fastmodels.
+> 
+> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+> ---
 
-In the TCG specification it is unfortunately also inconsistent.
-I will change it to lower case then.
+Applied, thanks
 
->
->> zero length list.
->> Check the property count in tpm2_get_tpm_pt().
->>
->> Fixes: 2ab3241161b3 ("tpm: migrate tpm2_get_tpm_pt() to use struct tpm_buf")
->> Cc: stable@vger.kernel.org
->> Signed-off-by: Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
->
-> Which section is this in that specification documented?
 
-It is described in the TCG Trusted Platform Module Library Specification,
-rev. 1.59 (Part 3: Commands) in Chapter 30.2.1, Example 3. This example
-describes the behavior in failure mode, but it may occur in other
-circumstances, such as field upgrade mode.
+-- 
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
 
->
-> I looked into section 30.2 but could not find the part that documents this
-> behaviour, i.e. returning success in FW upgrade mode. Why it wouldn't just
-> return TPM_RC_UPGRADE?
-
-Since some computer system failed booting up in case the TPM returned
-anything else than SUCCESS, therefore Infineon decided to return SUCCESS
-when TPM is in field upgrade mode.
-
-BR, Stefan
-
->
-> BR, Jarkko
->
->  
-
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
