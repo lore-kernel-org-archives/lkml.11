@@ -2,165 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBDC2C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA490C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 08:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237244AbiEII6D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 04:58:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56396 "EHLO
+        id S237287AbiEII6I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 04:58:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237051AbiEIIoD (ORCPT
+        with ESMTP id S237186AbiEIIzy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 04:44:03 -0400
-Received: from michel.telenet-ops.be (michel.telenet-ops.be [IPv6:2a02:1800:110:4::f00:18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10C4F1A5386
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 01:40:08 -0700 (PDT)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:7048:8ec9:5f5b:8cb])
-        by michel.telenet-ops.be with bizsmtp
-        id UYg62700D1UlgJi06Yg60U; Mon, 09 May 2022 10:40:06 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1nnyw2-003Vxt-2J
-        for linux-kernel@vger.kernel.org; Mon, 09 May 2022 10:40:06 +0200
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1nnyw1-00HLRE-FB
-        for linux-kernel@vger.kernel.org; Mon, 09 May 2022 10:40:05 +0200
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-To:     linux-kernel@vger.kernel.org
-Subject: Build regressions/improvements in v5.18-rc6
-Date:   Mon,  9 May 2022 10:40:05 +0200
-Message-Id: <20220509084005.4133902-1-geert@linux-m68k.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <CAHk-=wi0vqZQUAS67tBsJQW+dtt89m+dqA-Z4bOs8CH-mm8u2w@mail.gmail.com>
-References: <CAHk-=wi0vqZQUAS67tBsJQW+dtt89m+dqA-Z4bOs8CH-mm8u2w@mail.gmail.com>
+        Mon, 9 May 2022 04:55:54 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F17013F1E7;
+        Mon,  9 May 2022 01:52:00 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1652086318;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=F47FNB3UPmZkk3XgxnsY0dE6OJ5OY97nItlGqfv1nig=;
+        b=MUrIGsX15rb+saRCqWwo7fGrHKkoPeYHsfDkuifsddStxXPK7vpsFeXPM+uJpMeqTJfiX0
+        1wfvYcDEWGBYWqqS9x0s9UYuvpdoshqHwuPmU5LVr55f8b5tQdqSd7PhzQVd7JLteNO3Kp
+        FZvdIIC4eE8GPD/RyItmNBom9EfEdBzWqZ/8FbxDmn3PRSy9tZD/10LWUQwVO199DbUjVA
+        sGJhjPZheZFhX2UkM/V24VEiyCISV6tGDKc0/MzMrrUXEA8lD4rR1vwuUZK2ToZS4+FOMP
+        6gx92yX0NOydhaxgBz9mOjrjjTnasPwhFwIlo6ru1SJHYaZ2YEH2lPPrPhqaaA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1652086318;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=F47FNB3UPmZkk3XgxnsY0dE6OJ5OY97nItlGqfv1nig=;
+        b=25QTTNR1gr/qNxOFt4KgxJmy+X+P9qgMg06xzXZUPudpM6mbF6bIcMMOloHobP2e4k15Ss
+        /FpS5Oy7H07w/4BQ==
+To:     Pali =?utf-8?Q?Roh=C3=A1r?= <pali@kernel.org>,
+        Marc Zyngier <maz@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Marek =?utf-8?Q?Beh=C3=BAn?= <kabel@kernel.org>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH 2/6] irqchip/armada-370-xp: Implement SoC Error interrupts
+In-Reply-To: <20220506185546.n5rl3chyyauy4bjt@pali>
+References: <20220506134029.21470-1-pali@kernel.org>
+ <20220506134029.21470-3-pali@kernel.org> <87mtfu7ccd.wl-maz@kernel.org>
+ <20220506183051.wimo7p4nuqfnl2aj@pali> <8735hmijlu.wl-maz@kernel.org>
+ <20220506185546.n5rl3chyyauy4bjt@pali>
+Date:   Mon, 09 May 2022 10:51:57 +0200
+Message-ID: <87sfpjytoy.ffs@tglx>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Below is the list of build error/warning regressions/improvements in
-v5.18-rc6[1] compared to v5.17[2].
+Pali,
 
-Summarized:
-  - build errors: +14/-5
-  - build warnings: +36/-21
+On Fri, May 06 2022 at 20:55, Pali Roh=C3=A1r wrote:
+> On Friday 06 May 2022 19:47:25 Marc Zyngier wrote:
+>> > I'm not rewriting driver or doing big refactor of it, as this is not in
+>> > the scope of the PCIe AER interrupt support.
+>>
+>> Fair enough. By the same logic, I'm not taking any change to the
+>> driver until it is put in a better shape. Your call.
+>
+> If you are maintainer of this code then it is expected from _you_ to
+> move the current code into _better shape_ as you wrote and expect. And
+> then show us exactly, how new changes in this driver should look like,
+> in examples.
 
-JFYI, when comparing v5.18-rc6[1] to v5.18-rc5[3], the summaries are:
-  - build errors: +1/-0
-  - build warnings: +0/-1
+this is not how kernel development works.
 
-Note that there may be false regressions, as some logs are incomplete.
-Still, they're build errors/warnings.
+Maintainers are not the servants who mop up the mess which random people
+dump into the tree. They are gatekeepers and one of their duties is to
+prevent that mess is created or existing mess is proliferated.
 
-Happy fixing! ;-)
+You are asking the maintainer to take your changes, deal with the
+fallout and maintain them for a long time free of charge. So it's a very
+reasonable request from a maintainer to ask for refactoring of existing
+code before adding new functionality to it.
 
-Thanks to the linux-next team for providing the build service.
+With such a request the refactoring becomes scope of your work, whether
+you and your manager like it or not. If you don't want to do that extra
+work, then don't expect maintainers to care about your fancy new
+features.
 
-[1] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/c5eb0a61238dd6faf37f58c9ce61c9980aaffd7a/ (131 out of 138 configs)
-[2] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/f443e374ae131c168a065ea1748feac6b2e76613/ (96 out of 138 configs)
-[3] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/672c0c5173427e6b3e2a9bbb7be51ceeec78093a/ (all 138 configs)
+Marc gave you very reasonable and consice directions how the code should
+be reworked. He spent a lot of time explaining it to you. Again, free of
+charge. Now you expect him to do your homework free of charge, so you
+can get your feature merged? Nice try.
 
+Thanks,
 
-*** ERRORS ***
-
-14 error regressions:
-  + /kisskb/src/arch/m68k/include/asm/bitops.h: error: array subscript 2 is above array bounds of 'long unsigned int[1]' [-Werror=array-bounds]:  => 329:20
-  + /kisskb/src/arch/sh/kernel/machvec.c: error: array subscript 'struct sh_machine_vector[0]' is partly outside array bounds of 'long int[1]' [-Werror=array-bounds]:  => 105:33
-  + /kisskb/src/arch/sparc/kernel/irq_32.c: error: array subscript [16, 79] is outside array bounds of 'struct tt_entry[1]' [-Werror=array-bounds]:  => 261:46, 262:14, 259:14, 258:14, 263:14
-  + /kisskb/src/drivers/gpu/drm/r128/r128_cce.c: error: case label does not reduce to an integer constant:  => 417:2, 418:2
-  + /kisskb/src/drivers/infiniband/hw/qib/qib_wc_x86_64.c: error: 'X86_VENDOR_AMD' undeclared (first use in this function):  => 149:37
-  + /kisskb/src/drivers/infiniband/hw/qib/qib_wc_x86_64.c: error: 'struct cpuinfo_um' has no member named 'x86_vendor':  => 149:22
-  + /kisskb/src/drivers/infiniband/hw/qib/qib_wc_x86_64.c: error: control reaches end of non-void function [-Werror=return-type]:  => 150:1
-  + /kisskb/src/drivers/infiniband/sw/rdmavt/qp.c: error: 'struct cpuinfo_um' has no member named 'x86_cache_size':  => 88:22
-  + /kisskb/src/drivers/infiniband/sw/rdmavt/qp.c: error: control reaches end of non-void function [-Werror=return-type]:  => 89:1
-  + /kisskb/src/drivers/infiniband/sw/rdmavt/qp.c: error: implicit declaration of function '__copy_user_nocache' [-Werror=implicit-function-declaration]:  => 100:2
-  + /kisskb/src/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c: error: case label does not reduce to an integer constant:  => 4917:4
-  + /kisskb/src/drivers/scsi/aacraid/commsup.c: error: case label does not reduce to an integer constant:  => 1983:2
-  + /kisskb/src/include/linux/sh_intc.h: error: division 'sizeof (void *) / sizeof (void)' does not compute the number of array elements [-Werror=sizeof-pointer-div]:  => 100:63
-  + {standard input}: Error: branch to a symbol in another ISA mode:  => 1295
-
-5 error improvements:
-  - /kisskb/src/drivers/vfio/pci/vfio_pci_rdwr.c: error: assignment makes pointer from integer without a cast [-Werror=int-conversion]: 324:9, 317:9 => 
-  - /kisskb/src/drivers/vfio/pci/vfio_pci_rdwr.c: error: implicit declaration of function 'ioport_map' [-Werror=implicit-function-declaration]: 317:11 => 
-  - /kisskb/src/drivers/vfio/pci/vfio_pci_rdwr.c: error: implicit declaration of function 'ioport_unmap' [-Werror=implicit-function-declaration]: 338:15 => 
-  - error: arch/powerpc/kvm/book3s_64_entry.o: relocation truncated to fit: R_PPC64_REL14 (stub) against symbol `machine_check_common' defined in .text section in arch/powerpc/kernel/head_64.o: (.text+0x3e4) => 
-  - error: arch/powerpc/kvm/book3s_64_entry.o: relocation truncated to fit: R_PPC64_REL14 (stub) against symbol `system_reset_common' defined in .text section in arch/powerpc/kernel/head_64.o: (.text+0x3ec) => 
-
-
-*** WARNINGS ***
-
-36 warning regressions:
-  + ./.config.32r1_defconfig: warning: override: CPU_BIG_ENDIAN changes choice state:  => 94
-  + ./.config.32r2_defconfig: warning: override: CPU_BIG_ENDIAN changes choice state:  => 94
-  + ./.config.32r6_defconfig: warning: override: CPU_BIG_ENDIAN changes choice state:  => 96
-  + ./.config.64r1_defconfig: warning: override: CPU_BIG_ENDIAN changes choice state:  => 97
-  + ./.config.64r2_defconfig: warning: override: CPU_BIG_ENDIAN changes choice state:  => 97
-  + ./.config.64r6_defconfig: warning: override: CPU_BIG_ENDIAN changes choice state:  => 99
-  + ./.config.micro32r2_defconfig: warning: override: CPU_BIG_ENDIAN changes choice state:  => 95
-  + .config: warning: override: CPU_BIG_ENDIAN changes choice state:  => 93, 98, 96, 95, 94
-  + .config: warning: override: reassigning to symbol MIPS_CPS_NS16550_SHIFT: 13516, 13503 => 13758, 13763, 13769
-  + /kisskb/src/arch/m68k/include/asm/string.h: warning: '__builtin_memset' offset [0, 11] is out of the bounds [0, 0] [-Warray-bounds]:  => 68:25
-  + /kisskb/src/arch/sh/kernel/cpu/sh2/../../entry-common.S: Warning: overflow in branch to __restore_all; converted into longer instruction sequence:  => 85
-  + /kisskb/src/arch/sh/kernel/cpu/sh2/../../entry-common.S: Warning: overflow in branch to syscall_exit_work; converted into longer instruction sequence:  => 360, 357
-  + /kisskb/src/arch/sh/kernel/machvec.c: warning: array subscript 'struct sh_machine_vector[0]' is partly outside array bounds of 'long int[1]' [-Warray-bounds]:  => 105:33
-  + /kisskb/src/drivers/net/ethernet/i825xx/sun3_82586.c: warning: array subscript 1 is above array bounds of 'volatile struct transmit_cmd_struct *[1]' [-Warray-bounds]:  => 989:122, 989:108
-  + /kisskb/src/drivers/scsi/mpt3sas/mpt3sas_base.c: warning: array subscript 'Mpi2SasIOUnitPage1_t {aka struct _MPI2_CONFIG_PAGE_SASIOUNIT_1}[0]' is partly outside array bounds of 'unsigned char[20]' [-Warray-bounds]:  => 5396:40, 5400:40, 5403:43
-  + /kisskb/src/fs/ext4/readpage.c: warning: the frame size of 1136 bytes is larger than 1024 bytes [-Wframe-larger-than=]:  => 407:1
-  + /kisskb/src/fs/mpage.c: warning: the frame size of 1088 bytes is larger than 1024 bytes [-Wframe-larger-than=]:  => 303:1
-  + /kisskb/src/fs/mpage.c: warning: the frame size of 1148 bytes is larger than 1024 bytes [-Wframe-larger-than=]:  => 636:1
-  + /opt/cross/kisskb/korg/gcc-5.5.0-nolibc/aarch64-linux/bin/../lib/gcc/aarch64-linux/5.5.0/plugin/include/config/elfos.h: warning: invalid suffix on literal; C++11 requires a space between literal and string macro [-Wliteral-suffix]:  => 102:21, 170:24
-  + /opt/cross/kisskb/korg/gcc-5.5.0-nolibc/aarch64-linux/bin/../lib/gcc/aarch64-linux/5.5.0/plugin/include/defaults.h: warning: invalid suffix on literal; C++11 requires a space between literal and string macro [-Wliteral-suffix]:  => 126:24
-  + modpost: WARNING: modpost: EXPORT symbol "___rw_read_enter" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "___rw_read_exit" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "___rw_read_try" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "___rw_write_enter" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "__ashldi3" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "__ashrdi3" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "__copy_1page" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "__divdi3" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "__lshrdi3" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "__muldi3" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "__ndelay" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "__udelay" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "_mcount" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "bzero_1page" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: EXPORT symbol "empty_zero_page" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-  + modpost: WARNING: modpost: vmlinux.o(.text.unlikely+0x45d4): Section mismatch in reference from the function __trace_event_discard_commit() to the variable .init.data:initcall_level_names:  => N/A
-
-21 warning improvements:
-  - /kisskb/src/samples/seccomp/user-trap.c: warning: dereferencing type-punned pointer will break strict-aliasing rules [-Wstrict-aliasing]: 83:2, 50:2 => 
-  - /opt/cross/kisskb/br-aarch64-glibc-2016.08-613-ge98b4dd/bin/../lib/gcc/aarch64-buildroot-linux-gnu/5.4.0/plugin/include/config/elfos.h: warning: invalid suffix on literal; C++11 requires a space between literal and string macro [-Wliteral-suffix]: 170:24, 102:21 => 
-  - /opt/cross/kisskb/br-aarch64-glibc-2016.08-613-ge98b4dd/bin/../lib/gcc/aarch64-buildroot-linux-gnu/5.4.0/plugin/include/defaults.h: warning: invalid suffix on literal; C++11 requires a space between literal and string macro [-Wliteral-suffix]: 126:24 => 
-  - modpost: WARNING: modpost: EXPORT symbol "___rw_read_enter" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "___rw_read_exit" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "___rw_read_try" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "___rw_write_enter" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "__ashldi3" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "__ashrdi3" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "__copy_1page" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "__divdi3" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "__lshrdi3" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "__muldi3" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "__ndelay" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "__udelay" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "_mcount" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "bzero_1page" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: EXPORT symbol "empty_zero_page" [vmlinux] version ...: N/A => 
-  - modpost: WARNING: modpost: vmlinux.o(.text.unlikely+0x4530): Section mismatch in reference from the function __trace_event_discard_commit() to the variable .init.data:initcall_level_names: N/A => 
-  - warning: LSE atomics not supported by binutils: N/A => 
-  - warning: ld does not support --fix-cortex-a53-843419; kernel may be susceptible to erratum: N/A => 
-
-Gr{oetje,eeting}s,
-
-						Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-							    -- Linus Torvalds
+        Thomas
