@@ -2,149 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88153C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 14:02:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FBC4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 14:03:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236901AbiEIOGT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 10:06:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39174 "EHLO
+        id S236561AbiEIOHM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 10:07:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236827AbiEIOGQ (ORCPT
+        with ESMTP id S236533AbiEIOHH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 10:06:16 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A122416D12D
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 07:02:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652104942; x=1683640942;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=gTtfhP6Ci9JlNhHPUP9Tt3f9Q6mRUH+C+clC/xLHJ00=;
-  b=TLXEO/y7+/jHdJems+1P/Nm1Eigm5+8t8/gHP8sVdp2ZMPc2+EJQjKNV
-   BSNEo7sP/u5RuVJJbdv7RITYqtIZ67Bn8dtv9jNUcoOG0bhIrJy7dJxd/
-   tdcyAsVUuz24fCiq+/jSkdvqyI3n2dJ9FZwJJWFS/iwj60tesJeROmzTw
-   JEnkHsTyZZezf98z5uckNeLimeh3TGNRJgoRi6GENOGrEbuE5GAICxCsm
-   KpzAm1g51yP2XnMzsHexfMOpAeRAIv6VzCa6kfS7Q4VYwEGj539wCQk6U
-   OPKth0UwHq0PcTI1fksRu/PV1pw/2y2/qdstPgiXuStJmtVGydC6+22Y8
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="269194626"
-X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
-   d="scan'208";a="269194626"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 07:02:01 -0700
-X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
-   d="scan'208";a="710535053"
-Received: from rli9-dbox.sh.intel.com (HELO rli9-dbox) ([10.239.159.142])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 07:01:58 -0700
-Date:   Mon, 9 May 2022 22:00:11 +0800
-From:   Philip Li <philip.li@intel.com>
-To:     kernel test robot <lkp@intel.com>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, kbuild-all@lists.01.org,
-        alaa@dev.mellanox.co.il, linux-kernel@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [alaahl:netdev-next 6/7] WARNING: modpost:
- vmlinux.o(.text+0xba9220): Section mismatch in reference from the function
- vhost_poll_init() to the variable .init.text:.L334
-Message-ID: <Ynkea0tmQXVCXv9S@rli9-dbox>
-References: <202205091902.efRQLfpK-lkp@intel.com>
+        Mon, 9 May 2022 10:07:07 -0400
+Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8FC8201320
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 07:03:12 -0700 (PDT)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:8886:2b92:63eb:2922])
+        by xavier.telenet-ops.be with bizsmtp
+        id Ue312700i0moLbn01e31NE; Mon, 09 May 2022 16:03:09 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1no3yX-003XrP-7E; Mon, 09 May 2022 16:03:01 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1no3yW-003Sj2-Mq; Mon, 09 May 2022 16:03:00 +0200
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>,
+        Ondrej Ille <ondrej.ille@gmail.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] can: ctucanfd: Let users select instead of depend on CAN_CTUCANFD
+Date:   Mon,  9 May 2022 16:02:59 +0200
+Message-Id: <887b7440446b6244a20a503cc6e8dc9258846706.1652104941.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202205091902.efRQLfpK-lkp@intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 07:16:11PM +0800, kernel test robot wrote:
-> tree:   https://github.com/alaahl/linux.git netdev-next
-> head:   c908565eecf2d310edddaecea6166015abe9df08
-> commit: fe5233b0ba0d2216d549f93e4540542b99b97642 [6/7] net: dsa: delete dsa_port_walk_{fdbs,mdbs}
-> config: riscv-randconfig-r042-20220509 (https://download.01.org/0day-ci/archive/20220509/202205091902.efRQLfpK-lkp@intel.com/config)
-> compiler: riscv32-linux-gcc (GCC) 11.3.0
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://github.com/alaahl/linux/commit/fe5233b0ba0d2216d549f93e4540542b99b97642
->         git remote add alaahl https://github.com/alaahl/linux.git
->         git fetch --no-tags alaahl netdev-next
->         git checkout fe5233b0ba0d2216d549f93e4540542b99b97642
->         # save the config file
->         mkdir build_dir && cp config build_dir/.config
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All warnings (new ones prefixed by >>, old ones prefixed by <<):
+The CTU CAN-FD IP core is only useful when used with one of the
+corresponding PCI/PCIe or platform (FPGA, SoC) drivers, which depend on
+PCI resp. OF.
 
-Sorry, kindly ignore this report, which is a false positive. We will
-block such report in future.
+Hence make the users select the core driver code, instead of letting
+then depend on it.  Keep the core code config option visible when
+compile-testing, to maintain compile-coverage.
 
-> 
-> >> WARNING: modpost: vmlinux.o(.text+0xba9220): Section mismatch in reference from the function vhost_poll_init() to the variable .init.text:.L334
-> The function vhost_poll_init() references
-> the variable __init .L334.
-> This is often because vhost_poll_init lacks a __init
-> annotation or the annotation of .L334 is wrong.
-> --
-> >> WARNING: modpost: vmlinux.o(.text+0xba9942): Section mismatch in reference from the function vhost_dev_reset_owner_prepare() to the variable .init.text:.L328
-> The function vhost_dev_reset_owner_prepare() references
-> the variable __init .L328.
-> This is often because vhost_dev_reset_owner_prepare lacks a __init
-> annotation or the annotation of .L328 is wrong.
-> --
-> >> WARNING: modpost: vmlinux.o(.text+0xba9d20): Section mismatch in reference from the function vhost_log_access_ok() to the variable .init.text:.L320
-> The function vhost_log_access_ok() references
-> the variable __init .L320.
-> This is often because vhost_log_access_ok lacks a __init
-> annotation or the annotation of .L320 is wrong.
-> --
-> >> WARNING: modpost: vmlinux.o(__ex_table+0x141c): Section mismatch in reference from the variable .L0 to the variable .debug_str:.LASF1172
-> FATAL: modpost: extable_entry size hasn't been discovered!
-> 
-> Note: the below error/warnings can be found in parent commit:
-> << WARNING: modpost: vmlinux.o(.text+0x20f7e): Section mismatch in reference from the function wq_watchdog_touch() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x4e838): Section mismatch in reference from the function calc_global_load_tick() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x2c801e): Section mismatch in reference from the function autofs_clean_ino() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x4cf2c2): Section mismatch in reference from the function bio_start_io_acct() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x4cf2da): Section mismatch in reference from the function disk_start_io_acct() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x4d4552): Section mismatch in reference from the function blk_abort_request() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x4d456a): Section mismatch in reference from the function blk_rq_timeout() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x7e5972): Section mismatch in reference from the function ipu_pre_update() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x846554): Section mismatch in reference from the function scsi_track_queue_full() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x9ccb28): Section mismatch in reference from the function ohci_setup() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x20f7e): Section mismatch in reference from the function wq_watchdog_touch() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x4e838): Section mismatch in reference from the function calc_global_load_tick() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x2c801e): Section mismatch in reference from the function autofs_clean_ino() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x4cf2c2): Section mismatch in reference from the function bio_start_io_acct() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x4cf2da): Section mismatch in reference from the function disk_start_io_acct() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x4d4552): Section mismatch in reference from the function blk_abort_request() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x4d456a): Section mismatch in reference from the function blk_rq_timeout() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x7e5972): Section mismatch in reference from the function ipu_pre_update() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x846554): Section mismatch in reference from the function scsi_track_queue_full() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x9ccb28): Section mismatch in reference from the function ohci_setup() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x20f7e): Section mismatch in reference from the function wq_watchdog_touch() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x4e838): Section mismatch in reference from the function calc_global_load_tick() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x2c801e): Section mismatch in reference from the function autofs_clean_ino() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x4cf2c2): Section mismatch in reference from the function bio_start_io_acct() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x4cf2da): Section mismatch in reference from the function disk_start_io_acct() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x4d4552): Section mismatch in reference from the function blk_abort_request() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x4d456a): Section mismatch in reference from the function blk_rq_timeout() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x7e5972): Section mismatch in reference from the function ipu_pre_update() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x846554): Section mismatch in reference from the function scsi_track_queue_full() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x9ccb28): Section mismatch in reference from the function ohci_setup() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x20f7e): Section mismatch in reference from the function wq_watchdog_touch() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x4e838): Section mismatch in reference from the function calc_global_load_tick() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x2c801e): Section mismatch in reference from the function autofs_clean_ino() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x4cf2c2): Section mismatch in reference from the function bio_start_io_acct() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x4cf2da): Section mismatch in reference from the function disk_start_io_acct() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x4d4552): Section mismatch in reference from the function blk_abort_request() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x4d456a): Section mismatch in reference from the function blk_rq_timeout() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x7e5972): Section mismatch in reference from the function ipu_pre_update() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x846554): Section mismatch in reference from the function scsi_track_queue_full() to the variable .init.text:.L0
-> << WARNING: modpost: vmlinux.o(.text+0x9ccb28): Section mismatch in reference from the function ohci_setup() to the variable .init.text:.L0
-> 
-> -- 
-> 0-DAY CI Kernel Test Service
-> https://01.org/lkp
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ drivers/net/can/ctucanfd/Kconfig | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/can/ctucanfd/Kconfig b/drivers/net/can/ctucanfd/Kconfig
+index 48963efc7f19955f..3c383612eb1764e2 100644
+--- a/drivers/net/can/ctucanfd/Kconfig
++++ b/drivers/net/can/ctucanfd/Kconfig
+@@ -1,5 +1,5 @@
+ config CAN_CTUCANFD
+-	tristate "CTU CAN-FD IP core"
++	tristate "CTU CAN-FD IP core" if COMPILE_TEST
+ 	help
+ 	  This driver adds support for the CTU CAN FD open-source IP core.
+ 	  More documentation and core sources at project page
+@@ -13,8 +13,8 @@ config CAN_CTUCANFD
+ 
+ config CAN_CTUCANFD_PCI
+ 	tristate "CTU CAN-FD IP core PCI/PCIe driver"
+-	depends on CAN_CTUCANFD
+ 	depends on PCI
++	select CAN_CTUCANFD
+ 	help
+ 	  This driver adds PCI/PCIe support for CTU CAN-FD IP core.
+ 	  The project providing FPGA design for Intel EP4CGX15 based DB4CGX15
+@@ -23,8 +23,8 @@ config CAN_CTUCANFD_PCI
+ 
+ config CAN_CTUCANFD_PLATFORM
+ 	tristate "CTU CAN-FD IP core platform (FPGA, SoC) driver"
+-	depends on CAN_CTUCANFD
+ 	depends on OF || COMPILE_TEST
++	select CAN_CTUCANFD
+ 	help
+ 	  The core has been tested together with OpenCores SJA1000
+ 	  modified to be CAN FD frames tolerant on MicroZed Zynq based
+-- 
+2.25.1
+
