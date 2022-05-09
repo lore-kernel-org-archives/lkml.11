@@ -2,140 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64DEDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 17:18:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D928EC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 17:20:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239613AbiEIRWO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 13:22:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44360 "EHLO
+        id S239623AbiEIRX7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 13:23:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239599AbiEIRWK (ORCPT
+        with ESMTP id S239614AbiEIRX5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 13:22:10 -0400
-Received: from mail.hallyn.com (mail.hallyn.com [178.63.66.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAC5124DC62;
-        Mon,  9 May 2022 10:18:12 -0700 (PDT)
-Received: by mail.hallyn.com (Postfix, from userid 1001)
-        id 1B270683; Mon,  9 May 2022 12:12:39 -0500 (CDT)
-Date:   Mon, 9 May 2022 12:12:39 -0500
-From:   "Serge E. Hallyn" <serge@hallyn.com>
-To:     Christian =?iso-8859-1?Q?G=F6ttsche?= <cgzones@googlemail.com>
-Cc:     selinux@vger.kernel.org, Serge Hallyn <serge@hallyn.com>,
-        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/8] capability: add capable_or to test for multiple
- caps with exactly one audit message
-Message-ID: <20220509171239.GA28406@mail.hallyn.com>
-References: <20220217145003.78982-2-cgzones@googlemail.com>
- <20220502160030.131168-1-cgzones@googlemail.com>
- <20220502160030.131168-8-cgzones@googlemail.com>
+        Mon, 9 May 2022 13:23:57 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C54024DC63
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 10:20:01 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id bq30so24997584lfb.3
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 10:20:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Xq5ml2d/MeiCgCuvTz1iX/vBFJV/Zf5wkHsF94chv1Q=;
+        b=FoDLMQ1CUcXkPH5YH2WUvQkrh4wyHkUUHZHcdPJapmG1T0eHAY1wc8brR60ppGMa5J
+         MvFXF3tuoDWJ6lkuzwDg+uXRKK1dpjzfA/uB5GQC4TIBsPxsrPlb2FDEA+M+F9oDz5r4
+         vtrjLZL3T3cOwM7JK/DHccrk8RMKefToEtmE3ezQ84jzYnAtOuLgLmSS8SPIbwmYpL8e
+         +569UZLjUuKlLJxuLia9HvqCZWJPaqW6wxZ2wKVmnB6sIpUzIEuoLVasYEAtGywHS+dy
+         NOLgCVKyfJ/Tlp9jDY6Jr3DzFF11gOShM2S20Pm+kw6ankpEDU3X7veoarlOtuIzCHqv
+         rMIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Xq5ml2d/MeiCgCuvTz1iX/vBFJV/Zf5wkHsF94chv1Q=;
+        b=MKnVDPNCtv3LczYvjdhQY30AT9gHHbyBJlXk+aCFQObgd4mfoC0JUSRIWm3GFcMjt3
+         ++ut8E0rUjZCKD4aSNiedAr/QN7JaPNyPHS7xhm/2T84LGhnC6iuAjg9Yh1kH+M4CXIV
+         M2rrwyn4kwc6lFLPr5SiBT6v+QwEPHwiuUw6f0sPtqujtGguEKuIA6/XH6iFFT4owj2o
+         Jnn16Ouha8TQVM9XQG+fk2fPcVAV0tXmJycESh3Dbt4jhI/a1vCH4mpUAUuFU0vBkmlC
+         lQm0vmjPsqPJ6FB9/eFNZnQaLVGU9J1iYvItMhDMpeNxdss+hnkDhNJmfgm5cf8uyAyO
+         PEpw==
+X-Gm-Message-State: AOAM530E7Puk7ljnNKmo9Uzt6KLfL65WivFXIevyK3P/uzJik86GnwwK
+        DsjpekAmrZxQjNOyTbvpxBERGbupXY1pVWrVveSGOA==
+X-Google-Smtp-Source: ABdhPJz9taxhLV4YRudjP7JD9rlg95k5LEcou1gLMLiVH/oLNlkumRLOmW/IlL/tmn/lb4A3bbzyo1/l2F7YyG1FIcQ=
+X-Received: by 2002:a19:4303:0:b0:473:f5fb:27b2 with SMTP id
+ q3-20020a194303000000b00473f5fb27b2mr12343182lfa.626.1652116799064; Mon, 09
+ May 2022 10:19:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220502160030.131168-8-cgzones@googlemail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <20220508190631.2386038-1-masahiroy@kernel.org> <20220508190631.2386038-4-masahiroy@kernel.org>
+In-Reply-To: <20220508190631.2386038-4-masahiroy@kernel.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Mon, 9 May 2022 10:19:47 -0700
+Message-ID: <CAKwvOd=LR=UNOeWJDmM-McJ=FrCWTo8w1ox+KGMQCwCVpiUyFg@mail.gmail.com>
+Subject: Re: [PATCH v4 03/14] modpost: split the section mismatch checks into section-check.c
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nicolas Schier <nicolas@fjasle.eu>,
+        Peter Zijlstra <peterz@infradead.org>,
+        linux-modules@vger.kernel.org, linux-s390@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, Ard Biesheuvel <ardb@kernel.org>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        clang-built-linux <llvm@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 02, 2022 at 06:00:30PM +0200, Christian Göttsche wrote:
-> Add the interface `capable_or()` as an alternative to or multiple
+On Sun, May 8, 2022 at 12:10 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
+>
+> modpost.c is too big, and the half of the code is for section checks.
+> Split it.
+>
+> I fixed some style issues in the moved code.
 
-How about 'capable_contains_oneof(x, y)' or 'capable_of_one(a, b)'?
+It would be helpful for review if the split and restyle were distinct
+patches.  Otherwise I can't tell what has changed.
 
-> `capable()` calls, like `capable_or(CAP_SYS_NICE, CAP_SYS_ADMIN)`
-> instead of `capable(CAP_SYS_NICE) || capable(CAP_SYS_ADMIN)`.
-> `capable_or()` will in particular generate exactly one audit message,
-> either for the left most capability in effect or, if the task has none,
-> the first one.
-> This is especially helpful with regard to SELinux, where each audit
-> message about a not allowed capability will create an avc denial.
-> Using this function with the least invasive capability as left most
-> argument (e.g. CAP_SYS_NICE before CAP_SYS_ADMIN) enables policy writers
-> to only allow the least invasive one and SELinux domains pass this check
-> with only capability:sys_nice or capability:sys_admin allowed without
-> any avc denial message.
-> 
-> Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
-> 
+This does lose the ability to use git blame to get more context on
+some of the oddities in modpost (which I have found useful in the
+past).  I don't feel strongly though.
+
+>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 > ---
-> v2:
->    avoid varargs and fix to two capabilities; capable_or3() can be added
->    later if needed
-> ---
->  include/linux/capability.h |  5 +++++
->  kernel/capability.c        | 29 +++++++++++++++++++++++++++++
->  2 files changed, 34 insertions(+)
-> 
-> diff --git a/include/linux/capability.h b/include/linux/capability.h
-> index 65efb74c3585..a16d1edea9b3 100644
-> --- a/include/linux/capability.h
-> +++ b/include/linux/capability.h
-> @@ -207,6 +207,7 @@ extern bool has_ns_capability(struct task_struct *t,
->  extern bool has_capability_noaudit(struct task_struct *t, int cap);
->  extern bool has_ns_capability_noaudit(struct task_struct *t,
->  				      struct user_namespace *ns, int cap);
-> +extern bool capable_or(int cap1, int cap2);
->  extern bool capable(int cap);
->  extern bool ns_capable(struct user_namespace *ns, int cap);
->  extern bool ns_capable_noaudit(struct user_namespace *ns, int cap);
-> @@ -230,6 +231,10 @@ static inline bool has_ns_capability_noaudit(struct task_struct *t,
->  {
->  	return true;
->  }
-> +static inline bool capable_or(int cap1, int cap2)
-> +{
-> +	return true;
-> +}
->  static inline bool capable(int cap)
->  {
->  	return true;
-> diff --git a/kernel/capability.c b/kernel/capability.c
-> index 765194f5d678..cd8f3efe6d08 100644
-> --- a/kernel/capability.c
-> +++ b/kernel/capability.c
-> @@ -435,6 +435,35 @@ bool ns_capable_setid(struct user_namespace *ns, int cap)
->  }
->  EXPORT_SYMBOL(ns_capable_setid);
->  
-> +/**
-> + * capable_or - Determine if the current task has one of two superior capabilities in effect
-> + * @cap1: The capabilities to be tested for first
-> + * @cap2: The capabilities to be tested for secondly
-> + *
-> + * Return true if the current task has at one of the two given superior
+>
+> Changes in v4:
+>   - New patch
+>
+>  scripts/mod/Makefile        |    2 +-
+>  scripts/mod/modpost.c       | 1202 +---------------------------------
+>  scripts/mod/modpost.h       |   34 +-
+>  scripts/mod/section-check.c | 1222 +++++++++++++++++++++++++++++++++++
+>  4 files changed, 1240 insertions(+), 1220 deletions(-)
+>  create mode 100644 scripts/mod/section-check.c
+>
+> diff --git a/scripts/mod/Makefile b/scripts/mod/Makefile
+> index c9e38ad937fd..ca739c6c68a1 100644
+> --- a/scripts/mod/Makefile
+> +++ b/scripts/mod/Makefile
+> @@ -5,7 +5,7 @@ CFLAGS_REMOVE_empty.o += $(CC_FLAGS_LTO)
+>  hostprogs-always-y     += modpost mk_elfconfig
+>  always-y               += empty.o
+>
+> -modpost-objs   := modpost.o file2alias.o sumversion.o
+> +modpost-objs   := modpost.o section-check.o file2alias.o sumversion.o
+>
+>  devicetable-offsets-file := devicetable-offsets.h
+>
+> diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+> index a78b75f0eeb0..e7e2c70a98f5 100644
+> --- a/scripts/mod/modpost.c
+> +++ b/scripts/mod/modpost.c
+> @@ -31,7 +31,7 @@ static bool external_module;
+>  /* Only warn about unresolved symbols */
+>  static bool warn_unresolved;
+>
+> -static int sec_mismatch_count;
+> +int sec_mismatch_count;
 
-s/has at one/has at least one/ ?
-
-> + * capabilities currently available for use, false if not.
-> + *
-> + * In contrast to or'ing capable() this call will create exactly one audit
-> + * message, either for @cap1, if it is granted or both are not permitted,
-> + * or @cap2, if it is granted while the other one is not.
-> + *
-> + * The capabilities should be ordered from least to most invasive, i.e. CAP_SYS_ADMIN last.
-> + *
-> + * This sets PF_SUPERPRIV on the task if the capability is available on the
-> + * assumption that it's about to be used.
-> + */
-> +bool capable_or(int cap1, int cap2)
-> +{
-> +	if (ns_capable_noaudit(&init_user_ns, cap1))
-> +		return ns_capable(&init_user_ns, cap1);
-> +
-> +	if (ns_capable_noaudit(&init_user_ns, cap2))
-> +		return ns_capable(&init_user_ns, cap2);
-> +
-> +	return ns_capable(&init_user_ns, cap1);
-
-Hm, too bad about the repetition of work, but I guess it has to be
-this way right now.
-
-> +}
-> +EXPORT_SYMBOL(capable_or);
-> +
->  /**
->   * capable - Determine if the current task has a superior capability in effect
->   * @cap: The capability to be tested for
-> -- 
-> 2.36.0
+^ this should go in modpost.h if it is to be used in two translation
+units, rather than forward declaring it in section-check.c.  You did
+this for the functions.
+-- 
+Thanks,
+~Nick Desaulniers
