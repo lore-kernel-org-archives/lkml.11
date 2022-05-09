@@ -2,81 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A013C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:49:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05B29C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:50:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230033AbiEIJxn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 05:53:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59458 "EHLO
+        id S229920AbiEIJyA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 05:54:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239527AbiEIJqb (ORCPT
+        with ESMTP id S230224AbiEIJvT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 05:46:31 -0400
-Received: from mail-vk1-xa34.google.com (mail-vk1-xa34.google.com [IPv6:2607:f8b0:4864:20::a34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46E9421E03;
-        Mon,  9 May 2022 02:42:33 -0700 (PDT)
-Received: by mail-vk1-xa34.google.com with SMTP id d132so6642170vke.0;
-        Mon, 09 May 2022 02:42:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2zdJr1D4+tOVKDyCMf5btV9F16hwBzLta+dcq/GYO3o=;
-        b=d8vnpsUJmFdQOs7ehYldCku6+vzQBhhGng4fPhDRY+TfRBQy12C2DVVQaCjn8T6waC
-         JOoeiQ/HdzWNEVpzLD7bzNnBOkLosvKImmK3Z9P6Kgf9U6YOWtkINzab8q3UZ0V+7sM1
-         pTLWnnePfezNoV35397EyOs353V1ANpZiqGZS/1kNREI5llWBziHCssLZIozoAcqtcpl
-         WUPTjbNdYZiV1nA8N/C+PA5zScP/vDvXs2bn/PlzLSlJ+zeocl9RMk/TjYRb+cuskof2
-         Nc6Hd5XxRsAyF89YPU0BZjT5bX9pwNTRlgLhTzpfGX04E8+9iBlIDbmGmnAdQm5eeE22
-         Ugcg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2zdJr1D4+tOVKDyCMf5btV9F16hwBzLta+dcq/GYO3o=;
-        b=O2uAOvPsBzBtdxDtKv0OLrO+QURTF3Hx0TaMrX97F6r8o92rnzNkCWt5rvrc/a0ZtP
-         gOd/bJzxz1nhywYAczlc63aLOmu+ne0w60znJeUBTy3wIGgT745itO53AeLcVJh67Mhj
-         quWcw7x9t5Jpv7xsqRBgx2GUFG36D2GXs8Y9f+TC4UNqfRL+CK5VZ6/QRjLtHFtrLGna
-         Vh/vnrGNwHUuG4z8Ms2d4DxFACV3FwaH0AlF4AMQwhKQPS2hECtJsjJ0bQdqYDmiBeH9
-         bXmLN3zx4W3wW98lPNEdtw9E/ZHg2gso+qgmq7wPiFQY5NyRnI5zIV2UUNbh7u+EK/5q
-         jVJQ==
-X-Gm-Message-State: AOAM531P3wMb6Y8ZGeakHrtXQVhyUJsQTCYT4YTmcJfsvfC43+V33jBp
-        wd+2AdyEBS8Yc9iaBIvkkZ6AD8rJfPx5rZdzL+4=
-X-Google-Smtp-Source: ABdhPJy8bywY0kXJ/mx1I4wIiEKnh1GL1ArVlZ2TTvmpxfraOvBQWZWf3Mp07c0n2sMkpQwh9ja2zkO6/cSgfrmMBNg=
-X-Received: by 2002:a1f:ae08:0:b0:352:6e83:e963 with SMTP id
- x8-20020a1fae08000000b003526e83e963mr7568288vke.0.1652089291126; Mon, 09 May
- 2022 02:41:31 -0700 (PDT)
+        Mon, 9 May 2022 05:51:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D062213334;
+        Mon,  9 May 2022 02:47:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EF6066151A;
+        Mon,  9 May 2022 09:46:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D372C385A8;
+        Mon,  9 May 2022 09:46:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652089583;
+        bh=Dj04vXxAkYJ5HJm69T0ul46686nkb8ZYAz4M/bwWH4g=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=J15uEuW//bzGlU0oq5UAtEwcq1keS9BwnzTYBQhHrzucTu0fMt6XzaK1XuZSkZmzB
+         lQTF+95goP+Xc32FVVYzurcmc9fA0vnxf4Z/KjECrtTZRMi5Dipk6sMfzS44fL1OUH
+         drNq+p241yPeEY+vav656bfSfPAS5KZ9UrJX+NrqhXbqgXlIQyiRaxzpvE+j0Skdyl
+         OXIkySvWZ4AVdWj4U96oDvjHhKIkD1w0dRPYFi4u59sqfJ3LIF0W9UjXtcCTsTvALS
+         6gFiBaTZEP/VFlgWosyFV7OobQ44WNDwWPKFW5iRnRri2dL2YQJmq30uwCYJtWTgmP
+         7UzN7Xpz2zEpQ==
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 2B74134DD23; Mon,  9 May 2022 11:46:20 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@kernel.org>
+To:     Zhengchao Shao <shaozhengchao@huawei.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        kuba@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        kpsingh@kernel.org
+Cc:     weiyongjun1@huawei.com, shaozhengchao@huawei.com,
+        yuehaibing@huawei.com
+Subject: Re: [PATCH bpf-next] samples/bpf: check detach prog exist or not in
+ xdp_fwd
+In-Reply-To: <20220509005105.271089-1-shaozhengchao@huawei.com>
+References: <20220509005105.271089-1-shaozhengchao@huawei.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 09 May 2022 11:46:20 +0200
+Message-ID: <87pmknyr6b.fsf@toke.dk>
 MIME-Version: 1.0
-References: <20220505134731.5295-1-jing.xia@unisoc.com> <Yni42sWLMFITtfmz@infradead.org>
-In-Reply-To: <Yni42sWLMFITtfmz@infradead.org>
-From:   jing xia <jing.xia.mail@gmail.com>
-Date:   Mon, 9 May 2022 17:41:20 +0800
-Message-ID: <CAN=25QM6Q1gQWzS27pBEpYokTpKXDamOVTrku40yy=YYGt=tTA@mail.gmail.com>
-Subject: Re: [PATCH] writeback: Avoid skipping inode writeback
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Jing Xia <jing.xia@unisoc.com>, viro@zeniv.linux.org.uk,
-        Jan Kara <jack@suse.cz>, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 9, 2022 at 2:46 PM Christoph Hellwig <hch@infradead.org> wrote:
->
-> On Thu, May 05, 2022 at 09:47:31PM +0800, Jing Xia wrote:
-> >       if (!(inode->i_state & I_DIRTY_ALL))
-> >               inode_cgwb_move_to_attached(inode, wb);
-> > +     else if (!(inode->i_state & I_SYNC_QUEUED) && (inode->i_state & I_DIRTY))
->
-> Please turn this into
->
->         else if ((inode->i_state & I_DIRTY) &&
->                  !(inode->i_state & I_SYNC_QUEUED))
->
-> to keep it a little more readable.
->
-> Otherwise looks good:
->
-> Reviewed-by: Christoph Hellwig <hch@lst.de>
+Zhengchao Shao <shaozhengchao@huawei.com> writes:
 
-Ok. And thanks for the review.
+> Before detach the prog, we should check detach prog exist or not.
+
+If we're adding such a check we should also check that it's the *right*
+program. I.e., query the ID for the program name and check that it
+matches what the program attached, then obtain an fd and pass that as
+XDP_EXPECTED_FD on detach to make sure it wasn't swapped out in the
+meantime...
+
+-Toke
