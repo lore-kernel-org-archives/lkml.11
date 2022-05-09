@@ -2,197 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8A48C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 05:19:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A8A5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 05:24:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234574AbiEIFVH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 01:21:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36794 "EHLO
+        id S233871AbiEIF20 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 01:28:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231783AbiEIFOU (ORCPT
+        with ESMTP id S234268AbiEIFZs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 01:14:20 -0400
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ED31E142803;
-        Sun,  8 May 2022 22:10:25 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="5.91,210,1647270000"; 
-   d="scan'208";a="119072744"
-Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie5.idc.renesas.com with ESMTP; 09 May 2022 14:10:24 +0900
-Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 4505640041A0;
-        Mon,  9 May 2022 14:10:20 +0900 (JST)
-From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        linux-gpio@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH v2 1/5] dt-bindings: interrupt-controller: Add Renesas RZ/G2L Interrupt Controller
-Date:   Mon,  9 May 2022 06:09:49 +0100
-Message-Id: <20220509050953.11005-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220509050953.11005-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20220509050953.11005-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        Mon, 9 May 2022 01:25:48 -0400
+Received: from relay5.hostedemail.com (relay5.hostedemail.com [64.99.140.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFCC9D5CCC;
+        Sun,  8 May 2022 22:21:51 -0700 (PDT)
+Received: from omf20.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay09.hostedemail.com (Postfix) with ESMTP id 92F2430168;
+        Mon,  9 May 2022 05:20:05 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf20.hostedemail.com (Postfix) with ESMTPA id 9A38C20025;
+        Mon,  9 May 2022 05:20:02 +0000 (UTC)
+Message-ID: <b2039ae7a9b33b61ea96919da2c53cbc3bca0049.camel@perches.com>
+Subject: Re: [PATCH v6 4/4] thermal: k3_j72xx_bandgap: Add the bandgap
+ driver support
+From:   Joe Perches <joe@perches.com>
+To:     Dan Carpenter <dan.carpenter@oracle.com>, kbuild@lists.01.org,
+        Keerthy <j-keerthy@ti.com>, robh+dt@kernel.org,
+        daniel.lezcano@linaro.org, rui.zhang@intel.com, amitk@kernel.org,
+        kristo@kernel.org, vigneshr@ti.com, krzysztof.kozlowski@linaro.org
+Cc:     lkp@intel.com, kbuild-all@lists.01.org, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Sun, 08 May 2022 22:20:02 -0700
+In-Reply-To: <202205030045.5GxgWkst-lkp@intel.com>
+References: <202205030045.5GxgWkst-lkp@intel.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Rspamd-Queue-Id: 9A38C20025
+X-Stat-Signature: d9zqnyyg63eizau1ckgb9u8dhfubqkb9
+X-Rspamd-Server: rspamout01
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1/3ca4Q9WkkjlN21HSVOUaQ9HmljpP9naQ=
+X-HE-Tag: 1652073602-450815
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add DT bindings for the Renesas RZ/G2L Interrupt Controller.
+On Wed, 2022-05-04 at 11:00 +0300, Dan Carpenter wrote:
+> Hi Keerthy,
+[]
+> vim +/ref_table +521 drivers/thermal/k3_j72xx_bandgap.c
+[]
+> bb7f95a68cbaa1 Keerthy 2022-04-27  426  	ref_table = kzalloc(sizeof(*ref_table) * TABLE_SIZE, GFP_KERNEL);
+> bb7f95a68cbaa1 Keerthy 2022-04-27  427  	if (!ref_table) {
+> bb7f95a68cbaa1 Keerthy 2022-04-27  428  		ret = -ENOMEM;
+> bb7f95a68cbaa1 Keerthy 2022-04-27  429  		goto err_alloc;
+> bb7f95a68cbaa1 Keerthy 2022-04-27  430  	}
 
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
----
- .../renesas,rzg2l-irqc.yaml                   | 131 ++++++++++++++++++
- 1 file changed, 131 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/interrupt-controller/renesas,rzg2l-irqc.yaml
+devm_kcalloc
 
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/renesas,rzg2l-irqc.yaml b/Documentation/devicetree/bindings/interrupt-controller/renesas,rzg2l-irqc.yaml
-new file mode 100644
-index 000000000000..5f2e1dd1d42a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/interrupt-controller/renesas,rzg2l-irqc.yaml
-@@ -0,0 +1,131 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/interrupt-controller/renesas,rzg2l-irqc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Renesas RZ/G2L (and alike SoC's) Interrupt Controller (IA55)
-+
-+maintainers:
-+  - Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-+  - Geert Uytterhoeven <geert+renesas@glider.be>
-+
-+description: |
-+  IA55 performs various interrupt controls including synchronization for the external
-+  interrupts of NMI, IRQ, and GPIOINT and the interrupts of the built-in peripheral
-+  interrupts output by each IP. And it notifies the interrupt to the GIC
-+    - IRQ sense select for 8 external interrupts, mapped to 8 GIC SPI interrupts
-+    - GPIO pins used as external interrupt input pins, mapped to 32 GIC SPI interrupts
-+    - NMI edge select (NMI is not treated as NMI exception and supports fall edge and
-+      stand-up edge detection interrupts)
-+
-+allOf:
-+  - $ref: /schemas/interrupt-controller.yaml#
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - renesas,r9a07g044-irqc    # RZ/G2L
-+      - const: renesas,rzg2l-irqc
-+
-+  '#interrupt-cells':
-+    const: 2
-+
-+  '#address-cells':
-+    const: 0
-+
-+  interrupt-controller: true
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 41
-+
-+  clocks:
-+    maxItems: 2
-+
-+  clock-names:
-+    items:
-+      - const: clk
-+      - const: pclk
-+
-+  power-domains:
-+    maxItems: 1
-+
-+  resets:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - '#interrupt-cells'
-+  - '#address-cells'
-+  - interrupt-controller
-+  - reg
-+  - interrupts
-+  - clocks
-+  - clock-names
-+  - power-domains
-+  - resets
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/r9a07g044-cpg.h>
-+
-+    irqc: interrupt-controller@110a0000 {
-+            compatible = "renesas,r9a07g044-irqc", "renesas,rzg2l-irqc";
-+            reg = <0x110a0000 0x10000>;
-+            #interrupt-cells = <2>;
-+            #address-cells = <0>;
-+            interrupt-controller;
-+            interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 444 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 445 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 446 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 447 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 448 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 449 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 450 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 451 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 452 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 453 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 454 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 455 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 456 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 457 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 458 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 459 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 460 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 461 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 462 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 463 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 464 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 465 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 466 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 467 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 468 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 469 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 470 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 471 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 472 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 473 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 474 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 475 IRQ_TYPE_LEVEL_HIGH>;
-+            clocks = <&cpg CPG_MOD R9A07G044_IA55_CLK>,
-+                     <&cpg CPG_MOD R9A07G044_IA55_PCLK>;
-+            clock-names = "clk", "pclk";
-+            power-domains = <&cpg>;
-+            resets = <&cpg R9A07G044_IA55_RESETN>;
-+    };
--- 
-2.25.1
+> bb7f95a68cbaa1 Keerthy 2022-04-27  431  
+> bb7f95a68cbaa1 Keerthy 2022-04-27  432  	derived_table = devm_kzalloc(bgp->dev, sizeof(*derived_table) * TABLE_SIZE,
+> bb7f95a68cbaa1 Keerthy 2022-04-27  433  				     GFP_KERNEL);
+
+here too
+
 
