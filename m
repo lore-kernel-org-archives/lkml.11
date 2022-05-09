@@ -2,88 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38EF0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 21:51:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E05D1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 21:54:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231326AbiEIVzZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 17:55:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59422 "EHLO
+        id S232072AbiEIV4d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 17:56:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231305AbiEIVxs (ORCPT
+        with ESMTP id S231519AbiEIVz4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 17:53:48 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 976672CBF8C;
-        Mon,  9 May 2022 14:48:43 -0700 (PDT)
+        Mon, 9 May 2022 17:55:56 -0400
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE59B2CF2A2
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 14:49:35 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id d127-20020a633685000000b003ab20e589a8so7905861pga.22
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 14:49:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1652132924; x=1683668924;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=OjuWDuA8wp2pAQhE78hbrB1ZqBopu0NlCqBoV3u9VOM=;
-  b=XoBTw2hh+QTXB8T4ZVkdF914KbEpZdAeK63UZSnuaK7ACsQA53W1Bv95
-   5hAHUXnngUNCDu9uj2MncyYIlTj3vqENLoD+no9uwphcHoNN/MN+PbTI8
-   YKQE16xOcT7nO1hUiGcPaH8WtnKC7KgssxdGRu75Q8VaCoL+1MixrAeGN
-   0=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 09 May 2022 14:48:43 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 14:48:42 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 9 May 2022 14:48:33 -0700
-Received: from jhugo-lnx.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 9 May 2022 14:48:31 -0700
-From:   Jeffrey Hugo <quic_jhugo@quicinc.com>
-To:     <kys@microsoft.com>, <haiyangz@microsoft.com>,
-        <sthemmin@microsoft.com>, <wei.liu@kernel.org>,
-        <decui@microsoft.com>, <lorenzo.pieralisi@arm.com>,
-        <robh@kernel.org>, <kw@linux.com>, <bhelgaas@google.com>
-CC:     <jakeo@microsoft.com>, <dazhan@microsoft.com>,
-        <linux-hyperv@vger.kernel.org>, <linux-pci@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Jeffrey Hugo <quic_jhugo@quicinc.com>
-Subject: [PATCH 0/2] hyperv compose_msi_msg fixups
-Date:   Mon, 9 May 2022 15:48:20 -0600
-Message-ID: <1652132902-27109-1-git-send-email-quic_jhugo@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=Y0bm740K5+F6biKf1anieq/YyEnbNkxKhtJ2NmAXxf4=;
+        b=aSchQdcqnmMb/VjA10rMe3/jVjjMT/JZX6/FYRJyK6VZCBKgNmWGVqzqjDPq4sm18f
+         feiEx05SXqX4mNbxsyK0x05JjPEvq0xh239aehUwjkmRGTbRakYFecinOJgy14/z9Zzj
+         33dF5DW43DXTiTEzJhEhw5U2jPDCCkbFN+sk4BhGowgddy2H9waNWiols9Tco5aRev6x
+         w6D5fdiKELFOebJOln+qHSV54+VmvSe1kLXoKhVrMXloF9qzCnpuqMyeNIzqBRs67wWf
+         P6gqlxTZNZjg7yzulRhn69Cjv1Fx7uIqvkRXZUpxUq//wPNu9fVg3l17uyjr+/b2mPS8
+         1zmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=Y0bm740K5+F6biKf1anieq/YyEnbNkxKhtJ2NmAXxf4=;
+        b=ffcYqlAyfCXjmGFhydCsIbw7v/1zO1lDrviy8lxEACUhbnn2J0By+czqdaprqMzI0b
+         SN19AyphjRJtwU8/4icd9gq4rK8ud/RNLIfrRdiklAPs4NZhu1bI5cWChNELDeNeMdrw
+         8Nq9GlkfHBg2ls1x4VZO/B77+LV1e8odhiCM1EymJ6+KsaCJNperOQrFtFYCGTNi60m9
+         yoj1E+OI3Oh5qJIs6IQm677gMX06/BoUXtO0i59yuXLL/JXbcgbFg2mKDB0DG/6pSaOY
+         OCcLSld9w5DblR3u3JJsHcqH0ActgH04zwFeP6mFrtWfSmhNCvKKssqzk1HbMR/AhPcS
+         DWzQ==
+X-Gm-Message-State: AOAM532tbFruAVyiQSdFP2QX5rfMYh90Ih3L4mdcOfU3RkkRARJcH5LW
+        MDK6EyStBvNDzsAIri+vatT4CJm5Zn7uYA==
+X-Google-Smtp-Source: ABdhPJwyTRI9THI5Gqo+5ll5l+vfaNn1LrixYDdSQE27lSRAXBNR5d7F6x17NOR/h4f72zkObxGlEhqwkrNyeA==
+X-Received: from wonchungspecialist.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:1440])
+ (user=wonchung job=sendgmr) by 2002:a17:90a:7acd:b0:1dd:12d7:5204 with SMTP
+ id b13-20020a17090a7acd00b001dd12d75204mr8606517pjl.145.1652132975207; Mon,
+ 09 May 2022 14:49:35 -0700 (PDT)
+Date:   Mon,  9 May 2022 21:49:30 +0000
+Message-Id: <20220509214930.3573518-1-wonchung@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
+Subject: [PATCH] driver core: location: Add "back" as a possible output for panel
+From:   Won Chung <wonchung@google.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Won Chung <wonchung@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While multi-MSI appears to work with pci-hyperv.c, there was a concern about
-how linux was doing the ITRE allocations.  Patch 2 addresses the concern.
+Add "back" as a possible panel output when _PLD output from ACPI
+indicates back panel.
 
-However, patch 2 exposed an issue with how compose_msi_msg() was freeing a
-previous allocation when called for the Nth time.  Imagine a driver using
-pci_alloc_irq_vectors() to request 32 MSIs.  This would cause compose_msi_msg()
-to be called 32 times, once for each MSI.  With patch 2, MSI0 would allocate
-the ITREs needed, and MSI1-31 would use the cached information.  Then the driver
-uses request_irq() on MSI1-17.  This would call compose_msi_msg() again on those
-MSIs, which would again use the cached information.  Then unmask() would be
-called to retarget the MSIs to the right VCPU vectors.  Finally, the driver
-calls request_irq() on MSI0.  This would call conpose_msi_msg(), which would
-free the block of 32 MSIs, and allocate a new block.  This would undo the
-retarget of MSI1-17, and likely leave those MSIs targeting invalid VCPU vectors.
-This is addressed by patch 1, which is introduced first to prevent a regression.
+Fixes: 6423d2951087 ("driver core: Add sysfs support for physical location of a device")
+Signed-off-by: Won Chung <wonchung@google.com>
+---
+ drivers/base/physical_location.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Jeffrey Hugo (2):
-  PCI: hv: Reuse existing ITRE allocation in compose_msi_msg()
-  PCI: hv: Fix interrupt mapping for multi-MSI
-
- drivers/pci/controller/pci-hyperv.c | 76 ++++++++++++++++++++++++++++---------
- 1 file changed, 59 insertions(+), 17 deletions(-)
-
+diff --git a/drivers/base/physical_location.c b/drivers/base/physical_location.c
+index fbd9f9839e92..2b60d2b51684 100644
+--- a/drivers/base/physical_location.c
++++ b/drivers/base/physical_location.c
+@@ -56,6 +56,9 @@ static ssize_t panel_show(struct device *dev, struct device_attribute *attr,
+ 	case DEVICE_PANEL_FRONT:
+ 		panel = "front";
+ 		break;
++	case DEVICE_PANEL_BACK:
++		panel = "back";
++		break;
+ 	default:
+ 		panel = "unknown";
+ 	}
 -- 
-2.7.4
+2.36.0.512.ge40c2bad7a-goog
 
