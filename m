@@ -2,154 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 844B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 20:58:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAF03C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 20:58:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229881AbiEIVCN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 17:02:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56994 "EHLO
+        id S229889AbiEIVCt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 17:02:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229756AbiEIVCM (ORCPT
+        with ESMTP id S229508AbiEIVCp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 17:02:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B7E32B8268;
-        Mon,  9 May 2022 13:58:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 051B861713;
-        Mon,  9 May 2022 20:58:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CA88C385BC;
-        Mon,  9 May 2022 20:58:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652129896;
-        bh=IeKZl1KrNR+/gyLaaVHgSTmZTx8tZ7Ut+UE732PbzY0=;
-        h=Date:From:To:Cc:Subject:Reply-To:From;
-        b=Z7hyQ9vdA8hcPsJOX0QKUWGEPk73NEEMkZCaMstQuinUwliA5ZJ1DzghKE9H8+iPH
-         hZTdxffQGxTruSgPhdosJaclIIwphu1NHrCIJz9jIVpSC06+1rTiAprrP+M5px2244
-         hWlqMs8/M0EmNHxfkMmm8N0RvDLotZvsibTKKnzddqSNewDGe7J1QT55WXDVjSHdM8
-         +FY26rlCnfGjObyjiiNvUH3YTYRWyvB/VFGkGNhdj5Evgi9I5g12vjshVFw9hxq4cH
-         XeP+d4lsUzFsri6vVmtfvYty3QMyaSxEQAjRqHgoUNcdm8rx99l32vCthdJcSKu4P2
-         t1fTMMm2+tjFQ==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id E87505C05F9; Mon,  9 May 2022 13:58:15 -0700 (PDT)
-Date:   Mon, 9 May 2022 13:58:15 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     urezki@gmail.com
-Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: And speaking of avoiding inconveniencing users...
-Message-ID: <20220509205815.GA1885269@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
+        Mon, 9 May 2022 17:02:45 -0400
+Received: from mail-oo1-xc32.google.com (mail-oo1-xc32.google.com [IPv6:2607:f8b0:4864:20::c32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D9932B8D24
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 13:58:51 -0700 (PDT)
+Received: by mail-oo1-xc32.google.com with SMTP id a23-20020a4ad5d7000000b0035ee70da7a9so2779892oot.1
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 13:58:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=yJKJ2ATgX9mu3/IffO/J0EaKq/jvo17mocUEhwCAE60=;
+        b=XSieEDeLW/rwABKUVPDCvXH0w6sECAEnkGHzfrpHucsx1SHRgM/dcBpPOgHjWjsqCb
+         leo0ETy5XMaX5kEfyv+oImCvgn/Nr2Cc8dOl33/gdLVYmaNnfeGnl1hjnE945VnzLQv+
+         BbtHxr0VqtYXncjJAAbHq+uy1Wp20P5IVOeeI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=yJKJ2ATgX9mu3/IffO/J0EaKq/jvo17mocUEhwCAE60=;
+        b=jINZHkSIR41o8oX4v7UQv2MDu6HXQHybOWzNArk46ZdpGBLFSxNkzAHfJWjWGoDeUB
+         ZuqdZkCPJEAVyrhUCgDEtfwOHWZ0T0vJ0YEv/7box7NC19kGowy5E88ceoWRLbOruP91
+         oy3NeYEaTXblOya/Zb+pgzatqajK7PNTyI3WSTPzCc3EV8kWakkn3u518YoJ11tleeN6
+         FG171/yttvHg5SD+O0fZThpaPc5tk3nMIFy5Ce9YcNlR7ESpaMcghF0uAtHSv8qgjtDN
+         aMziExxrg0Kg/Cuo/KFXLAsyr6ePq0zRXdi9maQoxiZPfUyE5Un1zmMUVzLq83M59KmR
+         sOWA==
+X-Gm-Message-State: AOAM533DmzF2Y9gHNt7Svk22iISyYtGVIzh9PB7YzpLX8AzK/ek2gnfr
+        WB8UQzCi28l1T31k1yoAb1/v23BAsGXcgXQiqrn5ew==
+X-Google-Smtp-Source: ABdhPJwgrl6Fn8gygCe1A38ovT3ghIsMz7Z+cffAmaDb1TNKssJHWbHAPz8jQeXiKh9qKc+zQcnEutlFHA7Nq+3CFlQ=
+X-Received: by 2002:a4a:6b49:0:b0:329:99cd:4fb8 with SMTP id
+ h9-20020a4a6b49000000b0032999cd4fb8mr6472783oof.25.1652129930567; Mon, 09 May
+ 2022 13:58:50 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Mon, 9 May 2022 16:58:49 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In-Reply-To: <8e472c9e-2076-bc25-5912-8433adf7b579@arbitrary.ch>
+References: <8e472c9e-2076-bc25-5912-8433adf7b579@arbitrary.ch>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Mon, 9 May 2022 16:58:49 -0400
+Message-ID: <CAE-0n53Ou1qgueFZ7zL-rFwsit6XJnYZkRtggdx3XXvL7HWrow@mail.gmail.com>
+Subject: Re: [PATCH] Decouple slub_debug= from no_hash_pointers again
+To:     Peter Gerber <peter@arbitrary.ch>,
+        kernel-hardening@lists.openwall.com,
+        linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Kees Cook <keescook@chromium.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Vlastimil Babka <vbabka@suse.cz>, linux-mm@kvack.org,
+        Petr Mladek <pmladek@suse.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello, Uladzislau,
+Quoting Peter Gerber (2022-05-08 07:56:29)
+> While, as mentioned in 792702911f58, no_hash_pointers is what
+> one wants for debugging, this option is also used for hardening.
+>
+> Various places recommend or use slub_debug for hardening:
+>
+> a) The Kernel Self Protection Project lists slub_debug as
+>    a recommended setting. [1]
+> b) Debian offers package hardening-runtime [2] which enables
+>    slub_debug for hardening.
+> c) Security- and privacy-oriented Tails enables slub_debug
+>    by default [3].
+>
+> I understand that encountering hashed pointers during debugging
+> is most unwanted. Thus, I updated the documentation to make
+> it as clear as possible that no_hash_pointers is what one
+> wants when using slub_debug for debugging. I also added a
+> mentioned of the hardening use case in order to discourage
+> any other, well-meant, tries to disable hashing with slub_debug.
 
-And I wasn't paying attention when reviewing this patch:
-
-084e1c049a8e ("rcu: Introduce CONFIG_RCU_EXP_CPU_STALL_TIMEOUT")
-
-Distros specifying 60 seconds for the stall timeout get hit with a silent
-change to 21 seconds for the expedited stall timeout.
-
-Unless you tell me otherwise, I will merge the following diff into the
-above commit.  So please let me know if this will cause any problems.
-
-							Thanx, Paul
-
-------------------------------------------------------------------------
-
-diff --git a/Documentation/RCU/stallwarn.rst b/Documentation/RCU/stallwarn.rst
-index 1d863b04727c3..794837eb519b9 100644
---- a/Documentation/RCU/stallwarn.rst
-+++ b/Documentation/RCU/stallwarn.rst
-@@ -166,10 +166,12 @@ CONFIG_RCU_EXP_CPU_STALL_TIMEOUT
- --------------------------------
- 
- 	Same as the CONFIG_RCU_CPU_STALL_TIMEOUT parameter but only for
--	the expedited grace period. This parameter defines the period of
--	time that RCU will wait from the beginning of an expedited grace
--	period until it issues an RCU CPU stall warning. This time period
--	is normally 20 milliseconds on Android devices.
-+	the expedited grace period. This parameter defines the period
-+	of time that RCU will wait from the beginning of an expedited
-+	grace period until it issues an RCU CPU stall warning. This time
-+	period is normally 20 milliseconds on Android devices.	A zero
-+	value causes the CONFIG_RCU_CPU_STALL_TIMEOUT value to be used,
-+	after conversion to milliseconds.
- 
- 	This configuration parameter may be changed at runtime via the
- 	/sys/module/rcupdate/parameters/rcu_exp_cpu_stall_timeout, however
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 34d44648f3f5d..ca9db809beda3 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -4936,6 +4936,9 @@
- 			and the maximum allowed value is 21000
- 			milliseconds. Please note that this value is
- 			adjusted to an arch timer tick resolution.
-+			Setting this to zero causes the value from
-+			rcupdate.rcu_cpu_stall_timeout to be used (after
-+			conversion from seconds to milliseconds).
- 
- 	rcupdate.rcu_expedited= [KNL]
- 			Use expedited grace-period primitives, for
-diff --git a/kernel/rcu/Kconfig.debug b/kernel/rcu/Kconfig.debug
-index 39dd4b9d647f8..9b64e55d4f615 100644
---- a/kernel/rcu/Kconfig.debug
-+++ b/kernel/rcu/Kconfig.debug
-@@ -85,15 +85,16 @@ config RCU_CPU_STALL_TIMEOUT
- config RCU_EXP_CPU_STALL_TIMEOUT
- 	int "Expedited RCU CPU stall timeout in milliseconds"
- 	depends on RCU_STALL_COMMON
--	range 1 21000
-+	range 0 21000
- 	default 20 if ANDROID
--	default 21000 if !ANDROID
--
-+	default 0 if !ANDROID
- 	help
- 	  If a given expedited RCU grace period extends more than the
- 	  specified number of milliseconds, a CPU stall warning is printed.
- 	  If the RCU grace period persists, additional CPU stall warnings
--	  are printed at more widely spaced intervals.
-+	  are printed at more widely spaced intervals.  A value of zero
-+	  says to use the RCU_CPU_STALL_TIMEOUT value converted from
-+	  seconds to milliseconds.
- 
- config RCU_TRACE
- 	bool "Enable tracing for RCU"
-diff --git a/kernel/rcu/tree_stall.h b/kernel/rcu/tree_stall.h
-index 0a25a4ea6eef8..2464b0eccfd02 100644
---- a/kernel/rcu/tree_stall.h
-+++ b/kernel/rcu/tree_stall.h
-@@ -31,15 +31,17 @@ int rcu_exp_jiffies_till_stall_check(void)
- 	int exp_stall_delay_delta = 0;
- 	int till_stall_check;
- 
--	/*
--	 * Limit check must be consistent with the Kconfig limits for
--	 * CONFIG_RCU_EXP_CPU_STALL_TIMEOUT, so check the allowed range.
--	 * The minimum clamped value is "2UL", because at least one full
--	 * tick has to be guaranteed.
--	 */
-+	// Zero says to use rcu_cpu_stall_timeout, but in milliseconds.
-+	if (!cpu_stall_timeout)
-+		cpu_stall_timeout = jiffies_to_msecs(rcu_jiffies_till_stall_check());
-+
-+	// Limit check must be consistent with the Kconfig limits for
-+	// CONFIG_RCU_EXP_CPU_STALL_TIMEOUT, so check the allowed range.
-+	// The minimum clamped value is "2UL", because at least one full
-+	// tick has to be guaranteed.
- 	till_stall_check = clamp(msecs_to_jiffies(cpu_stall_timeout), 2UL, 21UL * HZ);
- 
--	if (jiffies_to_msecs(till_stall_check) != cpu_stall_timeout)
-+	if (cpu_stall_timeout && jiffies_to_msecs(till_stall_check) != cpu_stall_timeout)
- 		WRITE_ONCE(rcu_exp_cpu_stall_timeout, jiffies_to_msecs(till_stall_check));
- 
- #ifdef CONFIG_PROVE_RCU
+Why not add a CONFIG_HARDENED_SLUB option that enables poisoning and
+also makes slub debugging not print any messages to the kernel log
+containing object internal details? Then it can be enabled in the kernel
+config to harden slub and if the flag is enabled we don't hash pointers
+based on 'slub_debug' existing on the commandline? And maybe add some
+commandline argument like 'slub_debug=H' for "hardened" so it can be
+turned off as well if it is built into the config.
