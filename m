@@ -2,77 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59B12C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 13:52:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31AF7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 13:53:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236514AbiEIN4I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 09:56:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52582 "EHLO
+        id S236553AbiEIN5I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 09:57:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236478AbiEIN4H (ORCPT
+        with ESMTP id S236485AbiEIN5D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 09:56:07 -0400
-Received: from laurent.telenet-ops.be (laurent.telenet-ops.be [IPv6:2a02:1800:110:4::f00:19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C39F5BE04
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 06:52:13 -0700 (PDT)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:8886:2b92:63eb:2922])
-        by laurent.telenet-ops.be with bizsmtp
-        id Uds52700G0moLbn01ds5Ae; Mon, 09 May 2022 15:52:12 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1no3nw-003Xo3-FV; Mon, 09 May 2022 15:52:04 +0200
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1no3nv-003NM2-Ot; Mon, 09 May 2022 15:52:03 +0200
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, Marek Vasut <marex@denx.de>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>
-Cc:     dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH] drm: bridge: DRM_FSL_LDB should depend on ARCH_MXC
-Date:   Mon,  9 May 2022 15:52:02 +0200
-Message-Id: <449e08ca791a3ca308de5477c1bdc1f6eb1b34e7.1652104211.git.geert+renesas@glider.be>
+        Mon, 9 May 2022 09:57:03 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 711B12AE0B;
+        Mon,  9 May 2022 06:53:07 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KxjKS5RqdzhYtW;
+        Mon,  9 May 2022 21:52:28 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 9 May 2022 21:53:05 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 9 May
+ 2022 21:53:04 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-media@vger.kernel.org>
+CC:     <mchehab@kernel.org>, <hverkuil-cisco@xs4all.nl>,
+        <robert.foss@linaro.org>, <bryan.odonoghue@linaro.org>,
+        <vladimir.zapolskiy@linaro.org>
+Subject: [PATCH] media: camss: csid: fix wrong size passed to devm_kmalloc_array()
+Date:   Mon, 9 May 2022 22:04:39 +0800
+Message-ID: <20220509140439.1361352-1-yangyingliang@huawei.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Freescale i.MX8MP LDB bridge is only present on Freescale i.MX8MP
-SoCs.  Hence add a dependency on ARCH_MXC, to prevent asking the user
-about this driver when configuring a kernel without i.MX SoC support.
+'supplies' is a pointer, the real size of struct regulator_bulk_data
+should be pass to devm_kmalloc_array().
 
-Fixes: 463db5c2ed4aed01 ("drm: bridge: ldb: Implement simple Freescale i.MX8MP LDB bridge")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Fixes: 0d8140179715 ("media: camss: Add regulator_bulk support")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- drivers/gpu/drm/bridge/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/media/platform/qcom/camss/camss-csid.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/bridge/Kconfig b/drivers/gpu/drm/bridge/Kconfig
-index da3441830d46a584..146ab069838fe97a 100644
---- a/drivers/gpu/drm/bridge/Kconfig
-+++ b/drivers/gpu/drm/bridge/Kconfig
-@@ -78,6 +78,7 @@ config DRM_DISPLAY_CONNECTOR
- config DRM_FSL_LDB
- 	tristate "Freescale i.MX8MP LDB bridge"
- 	depends on OF
-+	depends on ARCH_MXC || COMPILE_TEST
- 	select DRM_KMS_HELPER
- 	select DRM_PANEL_BRIDGE
- 	help
+diff --git a/drivers/media/platform/qcom/camss/camss-csid.c b/drivers/media/platform/qcom/camss/camss-csid.c
+index f993f349b66b..80628801cf09 100644
+--- a/drivers/media/platform/qcom/camss/camss-csid.c
++++ b/drivers/media/platform/qcom/camss/camss-csid.c
+@@ -666,7 +666,7 @@ int msm_csid_subdev_init(struct camss *camss, struct csid_device *csid,
+ 	if (csid->num_supplies) {
+ 		csid->supplies = devm_kmalloc_array(camss->dev,
+ 						    csid->num_supplies,
+-						    sizeof(csid->supplies),
++						    sizeof(*csid->supplies),
+ 						    GFP_KERNEL);
+ 		if (!csid->supplies)
+ 			return -ENOMEM;
 -- 
 2.25.1
 
