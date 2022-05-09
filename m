@@ -2,331 +2,274 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23407C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:14:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B678FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:14:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231611AbiEIKR6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 06:17:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60292 "EHLO
+        id S232312AbiEIKS2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 06:18:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231801AbiEIKRs (ORCPT
+        with ESMTP id S231857AbiEIKSQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 06:17:48 -0400
-Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58D292415C7
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 03:13:47 -0700 (PDT)
-Received: by mail-lf1-f54.google.com with SMTP id bq30so22912501lfb.3
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 03:13:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ip-fi.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SHCsC1uDLakwJtX7YsLeyfBSvYkKba8AoDt84Vx3l6w=;
-        b=eImb/xFHwcJD0dVU2MKXjffJmbqfXGzoSz26SAoyTMwxwud310YnP1ykPV927FTlbl
-         WeUDXTATM27OxAz74yYx021yoPt1G8n+O7ajy1ue2HUcGAu7y539OJ3Ek6VVSoNXzpOD
-         z4GzsLnzG/lAJIJoh/LilUyKaitKrbSkHHDnlGgF/LYtaqC6gPHl/XvHBdUpw0dXVMGV
-         8EVu7+fy3S85P79BEknTOiskgO05F77xssC7rGkII8U2wPwwOm2XexhCxx0TGVTwj3O7
-         WcIrpdLuXybFkYvB1vPfUOQATdh12z8Sa9vF6odlBAVbhLqUwMdI1gXs/wJ2HcmtDwHs
-         zK2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SHCsC1uDLakwJtX7YsLeyfBSvYkKba8AoDt84Vx3l6w=;
-        b=3cFiglT7Nzl3gJXIN5mkx/cnrPqSirXbf5XyK1jauEikDOCTGEUO5td0QL9B5CNOa8
-         NhxlGvt9YrzVG2m1mbd5EmXa6sPUwk23+Yp+Q46OsBX98iHjHFQhha2cxJmhDcoK2drr
-         j9XS82W2HRAeHM49il8qxKlWT2P1j+QzTxYso/kociiufx3ASwgvaa+/kWCgieP2QuYn
-         67TBrPec5C67GO56ZfJ+Um1MivN0Nwu85nMgiB0I9pWGK/so6QxDc8F1zOqJhmESxHTS
-         NWCI6FD3DuCm/f8k0URYinxMq37jLCp3C3/ODX+sbiwtJXVYx/dg8rZ/bdpK/wmsJayn
-         OgjQ==
-X-Gm-Message-State: AOAM531SeRDgANw3Jj8opIwdjccZyJ9D4aKG+VgsNSZuz/EVdSIw3bhr
-        mQi+pRUMv1YI/TPPI+Axc4TJuLO62NxkcF6+qFo=
-X-Google-Smtp-Source: ABdhPJyekIVKSk0V6Fd2WaWbbA6eYP1X/7K/nNdayL4DYwvGAoBqXBD9M+MfPDvU/KgQu2Y47a4p6g==
-X-Received: by 2002:a5d:640f:0:b0:20c:9be6:30c1 with SMTP id z15-20020a5d640f000000b0020c9be630c1mr12838289wru.273.1652090583920;
-        Mon, 09 May 2022 03:03:03 -0700 (PDT)
-Received: from localhost.localdomain ([45.152.183.54])
-        by smtp.gmail.com with ESMTPSA id 67-20020a1c1946000000b003942a244f2csm19203107wmz.5.2022.05.09.03.03.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 03:03:03 -0700 (PDT)
-From:   Johan Boger <jb@ip.fi>
-To:     jikos@kernel.org
-Cc:     benjamin.tissoires@redhat.com, linux-input@vger.kernel.org,
-        linux-kernel@vger.kernel.org, joe@perches.com,
-        Johan Boger <jb@ip.fi>
-Subject: [PATCH] staging: drivers: hid: hid-asus.c: Optimized input logic for keys
-Date:   Mon,  9 May 2022 12:02:58 +0200
-Message-Id: <20220509100258.24764-1-jb@ip.fi>
-X-Mailer: git-send-email 2.30.2
+        Mon, 9 May 2022 06:18:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0851C2802E6;
+        Mon,  9 May 2022 03:14:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B7099B810E2;
+        Mon,  9 May 2022 10:13:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDAD1C385A8;
+        Mon,  9 May 2022 10:13:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652091209;
+        bh=wBJvO4HerbOZOXHADib6WRnFN6eunqN7EJxDAkRDG+I=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OnC9RYumXnoFHXkHt6nmVW6qygKLUzh8wozP6NP1Xd9b9bOXvwdH6P/YDQIYkAqXE
+         TC9du22P4WaOj6ynzSFpHkxa0DYh4kOFs6rhAh+XSHdHCCBvh1FFRwuL73VtQWgE60
+         xQvKixt5h3+CvLqLW4c8vMCd2TcajIu5PxnwuORlTmGsZlctrl/jr7DjG9h1tJy/m9
+         wVFEIHylrNbyFzeedD7AJjD657kIWexWoMq95pFxzV6+GWJNdSjgvlyQqxSSx9f9Qv
+         bn/S7T/m9Rn3pWK5nkKNECL0l8Dh6A1uPQzULBwoGDFnzO+RSMtCuhO4Zabe9T4y0L
+         KKIFgDzXSkfmw==
+Date:   Mon, 9 May 2022 12:13:23 +0200
+From:   Christian Brauner <brauner@kernel.org>
+To:     Carlos Llamas <cmllamas@google.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>,
+        Todd Kjos <tkjos@android.com>,
+        Martijn Coenen <maco@android.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Hridya Valsaraju <hridya@google.com>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Li Li <dualli@google.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v2 2/5] binder: add BINDER_GET_EXTENDED_ERROR ioctl
+Message-ID: <20220509101323.myik2aqngjcepqix@wittgenstein>
+References: <20220429235644.697372-1-cmllamas@google.com>
+ <20220429235644.697372-3-cmllamas@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220429235644.697372-3-cmllamas@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of calling asus_map_key_clear() function in each case,
-we now set a temporary value and clear it after default.
-Patch was checked by checkpatch and adjusted accordingly.
+On Fri, Apr 29, 2022 at 11:56:41PM +0000, Carlos Llamas wrote:
+> Provide a userspace mechanism to pull precise error information upon
+> failed operations. Extending the current error codes returned by the
+> interfaces allows userspace to better determine the course of action.
+> This could be for instance, retrying a failed transaction at a later
+> point and thus offloading the error handling from the driver.
+> 
+> Signed-off-by: Carlos Llamas <cmllamas@google.com>
+> ---
 
-Signed-off-by: Johan Boger <jb@ip.fi>
----
- drivers/hid/hid-asus.c | 144 ++++++++++++++++++++++++++---------------
- 1 file changed, 93 insertions(+), 51 deletions(-)
+One comment below otherwise looks good to me,
+Acked-by: Christian Brauner (Microsoft) <brauner@kernel.org>
 
-diff --git a/drivers/hid/hid-asus.c b/drivers/hid/hid-asus.c
-index 08c9a9a60ae4..9c2080cd1de3 100644
---- a/drivers/hid/hid-asus.c
-+++ b/drivers/hid/hid-asus.c
-@@ -339,7 +339,7 @@ static int asus_raw_event(struct hid_device *hdev,
- 		/*
- 		 * Skip these report ID, the device emits a continuous stream associated
- 		 * with the AURA mode it is in which looks like an 'echo'.
--		*/
-+		 */
- 		if (report->id == FEATURE_KBD_LED_REPORT_ID1 ||
- 				report->id == FEATURE_KBD_LED_REPORT_ID2) {
- 			return -1;
-@@ -349,7 +349,7 @@ static int asus_raw_event(struct hid_device *hdev,
- 			 * G14 and G15 send these codes on some keypresses with no
- 			 * discernable reason for doing so. We'll filter them out to avoid
- 			 * unmapped warning messages later.
--			*/
-+			 */
- 			if (data[1] == 0xea || data[1] == 0xec || data[1] == 0x02 ||
- 					data[1] == 0x8a || data[1] == 0x9e) {
- 				return -1;
-@@ -359,10 +359,9 @@ static int asus_raw_event(struct hid_device *hdev,
- 			/*
- 			 * G713 and G733 send these codes on some keypresses, depending on
- 			 * the key pressed it can trigger a shutdown event if not caught.
--			*/
--			if(data[0] == 0x02 && data[1] == 0x30) {
-+			 */
-+			if (data[0] == 0x02 && data[1] == 0x30)
- 				return -1;
--			}
- 		}
- 
- 	}
-@@ -371,11 +370,10 @@ static int asus_raw_event(struct hid_device *hdev,
- 		/*
- 		 * CLAYMORE II keyboard sends this packet when it goes to sleep
- 		 * this causes the whole system to go into suspend.
--		*/
-+		 */
- 
--		if(size == 2 && data[0] == 0x02 && data[1] == 0x00) {
-+		if (size == 2 && data[0] == 0x02 && data[1] == 0x00)
- 			return -1;
--		}
- 	}
- 
- 	return 0;
-@@ -393,7 +391,7 @@ static int asus_kbd_set_report(struct hid_device *hdev, u8 *buf, size_t buf_size
- 	/*
- 	 * The report ID should be set from the incoming buffer due to LED and key
- 	 * interfaces having different pages
--	*/
-+	 */
- 	ret = hid_hw_raw_request(hdev, buf[0], dmabuf,
- 				 buf_size, HID_FEATURE_REPORT,
- 				 HID_REQ_SET_REPORT);
-@@ -828,6 +826,7 @@ static int asus_input_mapping(struct hid_device *hdev,
- 		int *max)
- {
- 	struct asus_drvdata *drvdata = hid_get_drvdata(hdev);
-+	int clear_key;
- 
- 	if (drvdata->quirks & QUIRK_SKIP_INPUT_MAPPING) {
- 		/* Don't map anything from the HID report.
-@@ -852,50 +851,73 @@ static int asus_input_mapping(struct hid_device *hdev,
- 	/* ASUS-specific keyboard hotkeys and led backlight */
- 	if ((usage->hid & HID_USAGE_PAGE) == HID_UP_ASUSVENDOR) {
- 		switch (usage->hid & HID_USAGE) {
--		case 0x10: asus_map_key_clear(KEY_BRIGHTNESSDOWN);	break;
--		case 0x20: asus_map_key_clear(KEY_BRIGHTNESSUP);		break;
--		case 0x35: asus_map_key_clear(KEY_DISPLAY_OFF);		break;
--		case 0x6c: asus_map_key_clear(KEY_SLEEP);		break;
--		case 0x7c: asus_map_key_clear(KEY_MICMUTE);		break;
--		case 0x82: asus_map_key_clear(KEY_CAMERA);		break;
--		case 0x88: asus_map_key_clear(KEY_RFKILL);			break;
--		case 0xb5: asus_map_key_clear(KEY_CALC);			break;
--		case 0xc4: asus_map_key_clear(KEY_KBDILLUMUP);		break;
--		case 0xc5: asus_map_key_clear(KEY_KBDILLUMDOWN);		break;
-+		case 0x10:
-+			clear_key = KEY_BRIGHTNESSDOWN;		break;
-+		case 0x20:
-+			clear_key = KEY_BRIGHTNESSUP;		break;
-+		case 0x35:
-+			clear_key = KEY_DISPLAY_OFF;		break;
-+		case 0x6c:
-+			clear_key = KEY_SLEEP;			break;
-+		case 0x7c:
-+			clear_key = KEY_MICMUTE;		break;
-+		case 0x82:
-+			clear_key = KEY_CAMERA;			break;
-+		case 0x88:
-+			clear_key = KEY_RFKILL;			break;
-+		case 0xb5:
-+			clear_key = KEY_CALC;			break;
-+		case 0xc4:
-+			clear_key = KEY_KBDILLUMUP;		break;
-+		case 0xc5:
-+			clear_key = KEY_KBDILLUMDOWN;		break;
- 
- 		/* ASUS touchpad toggle */
--		case 0x6b: asus_map_key_clear(KEY_F21);			break;
-+		case 0x6b:
-+			clear_key = KEY_F21;		break;
- 
- 		/* ROG key */
--		case 0x38: asus_map_key_clear(KEY_PROG1);		break;
-+		case 0x38:
-+			clear_key = KEY_PROG1;		break;
- 
- 		/* Fn+C ASUS Splendid */
--		case 0xba: asus_map_key_clear(KEY_PROG2);		break;
-+		case 0xba:
-+			clear_key = KEY_PROG2;		break;
- 
- 		/* Fn+Space Power4Gear Hybrid */
--		case 0x5c: asus_map_key_clear(KEY_PROG3);		break;
-+		case 0x5c:
-+			clear_key = KEY_PROG3;		break;
- 
- 		/* Fn+F5 "fan" symbol on FX503VD */
--		case 0x99: asus_map_key_clear(KEY_PROG4);		break;
-+		case 0x99:
-+			clear_key = KEY_PROG4;		break;
- 
- 		/* Fn+F5 "fan" symbol on N-Key keyboard */
--		case 0xae: asus_map_key_clear(KEY_PROG4);		break;
-+		case 0xae:
-+			clear_key = KEY_PROG4;		break;
- 
- 		/* Fn+Ret "Calc" symbol on N-Key keyboard */
--		case 0x92: asus_map_key_clear(KEY_CALC);		break;
-+		case 0x92:
-+			clear_key = KEY_CALC;		break;
- 
- 		/* Fn+Left Aura mode previous on N-Key keyboard */
--		case 0xb2: asus_map_key_clear(KEY_PROG2);		break;
-+		case 0xb2:
-+			clear_key = KEY_PROG2;		break;
- 
- 		/* Fn+Right Aura mode next on N-Key keyboard */
--		case 0xb3: asus_map_key_clear(KEY_PROG3);		break;
-+		case 0xb3:
-+			clear_key = KEY_PROG3;		break;
- 
- 		default:
- 			/* ASUS lazily declares 256 usages, ignore the rest,
--			 * as some make the keyboard appear as a pointer device. */
-+			 * as some make the keyboard appear as a pointer device.
-+			 */
- 			return -1;
- 		}
- 
-+		/* Clear temp key */
-+		asus_map_key_clear(clear_key);
-+
- 		/*
- 		 * Check and enable backlight only on devices with UsagePage ==
- 		 * 0xff31 to avoid initializing the keyboard firmware multiple
-@@ -907,31 +929,52 @@ static int asus_input_mapping(struct hid_device *hdev,
- 
- 		set_bit(EV_REP, hi->input->evbit);
- 		return 1;
-+
- 	}
- 
- 	if ((usage->hid & HID_USAGE_PAGE) == HID_UP_MSVENDOR) {
- 		switch (usage->hid & HID_USAGE) {
--		case 0xff01: asus_map_key_clear(BTN_1);	break;
--		case 0xff02: asus_map_key_clear(BTN_2);	break;
--		case 0xff03: asus_map_key_clear(BTN_3);	break;
--		case 0xff04: asus_map_key_clear(BTN_4);	break;
--		case 0xff05: asus_map_key_clear(BTN_5);	break;
--		case 0xff06: asus_map_key_clear(BTN_6);	break;
--		case 0xff07: asus_map_key_clear(BTN_7);	break;
--		case 0xff08: asus_map_key_clear(BTN_8);	break;
--		case 0xff09: asus_map_key_clear(BTN_9);	break;
--		case 0xff0a: asus_map_key_clear(BTN_A);	break;
--		case 0xff0b: asus_map_key_clear(BTN_B);	break;
--		case 0x00f1: asus_map_key_clear(KEY_WLAN);	break;
--		case 0x00f2: asus_map_key_clear(KEY_BRIGHTNESSDOWN);	break;
--		case 0x00f3: asus_map_key_clear(KEY_BRIGHTNESSUP);	break;
--		case 0x00f4: asus_map_key_clear(KEY_DISPLAY_OFF);	break;
--		case 0x00f7: asus_map_key_clear(KEY_CAMERA);	break;
--		case 0x00f8: asus_map_key_clear(KEY_PROG1);	break;
-+		case 0xff01:
-+			clear_key = BTN_1;		break;
-+		case 0xff02:
-+			clear_key = BTN_2;		break;
-+		case 0xff03:
-+			clear_key = BTN_3;		break;
-+		case 0xff04:
-+			clear_key = BTN_4;		break;
-+		case 0xff05:
-+			clear_key = BTN_5;		break;
-+		case 0xff06:
-+			clear_key = BTN_6;		break;
-+		case 0xff07:
-+			clear_key = BTN_7;		break;
-+		case 0xff08:
-+			clear_key = BTN_8;		break;
-+		case 0xff09:
-+			clear_key = BTN_9;		break;
-+		case 0xff0a:
-+			clear_key = BTN_A;		break;
-+		case 0xff0b:
-+			clear_key = BTN_B;		break;
-+		case 0x00f1:
-+			clear_key = KEY_WLAN;		break;
-+		case 0x00f2:
-+			clear_key = KEY_BRIGHTNESSDOWN;	break;
-+		case 0x00f3:
-+			clear_key = KEY_BRIGHTNESSUP;	break;
-+		case 0x00f4:
-+			clear_key = KEY_DISPLAY_OFF;	break;
-+		case 0x00f7:
-+			clear_key = KEY_CAMERA;		break;
-+		case 0x00f8:
-+			clear_key = KEY_PROG1;		break;
- 		default:
- 			return 0;
- 		}
- 
-+		/* Clear temp key */
-+		asus_map_key_clear(clear_key);
-+
- 		set_bit(EV_REP, hi->input->evbit);
- 		return 1;
- 	}
-@@ -1100,11 +1143,10 @@ static int asus_probe(struct hid_device *hdev, const struct hid_device_id *id)
- 		goto err_stop_hw;
- 	}
- 
--	if (drvdata->tp) {
-+	if (drvdata->tp)
- 		drvdata->input->name = "Asus TouchPad";
--	} else {
-+	else
- 		drvdata->input->name = "Asus Keyboard";
--	}
- 
- 	if (drvdata->tp) {
- 		ret = asus_start_multitouch(hdev);
-@@ -1131,8 +1173,8 @@ static void asus_remove(struct hid_device *hdev)
- }
- 
- static const __u8 asus_g752_fixed_rdesc[] = {
--        0x19, 0x00,			/*   Usage Minimum (0x00)       */
--        0x2A, 0xFF, 0x00,		/*   Usage Maximum (0xFF)       */
-+	0x19, 0x00,			/*   Usage Minimum (0x00)       */
-+	0x2A, 0xFF, 0x00,		/*   Usage Maximum (0xFF)       */
- };
- 
- static __u8 *asus_report_fixup(struct hid_device *hdev, __u8 *rdesc,
--- 
-2.30.2
+>  drivers/android/binder.c            | 60 +++++++++++++++++++++++++++++
+>  drivers/android/binder_internal.h   |  3 ++
+>  include/uapi/linux/android/binder.h | 16 ++++++++
+>  3 files changed, 79 insertions(+)
+> 
+> diff --git a/drivers/android/binder.c b/drivers/android/binder.c
+> index f0885baa53a1..b9df0c8a68d3 100644
+> --- a/drivers/android/binder.c
+> +++ b/drivers/android/binder.c
+> @@ -147,6 +147,13 @@ module_param_call(stop_on_user_error, binder_set_stop_on_user_error,
+>  			binder_stop_on_user_error = 2; \
+>  	} while (0)
+>  
+> +#define binder_set_extended_error(ee, _id, _command, _param) \
+> +	do { \
+> +		(ee)->id = _id; \
+> +		(ee)->command = _command; \
+> +		(ee)->param = _param; \
+> +	} while (0)
+> +
+>  #define to_flat_binder_object(hdr) \
+>  	container_of(hdr, struct flat_binder_object, hdr)
+>  
+> @@ -2697,6 +2704,24 @@ static struct binder_node *binder_get_node_refs_for_txn(
+>  	return target_node;
+>  }
+>  
+> +static void binder_set_txn_from_error(struct binder_transaction *t, int id,
+> +				      uint32_t command, int32_t param)
+> +{
+> +	struct binder_thread *from = binder_get_txn_from_and_acq_inner(t);
+> +
+> +	if (!from) {
+> +		/* annotation for sparse */
+> +		__release(&from->proc->inner_lock);
+> +		return;
+> +	}
+> +
+> +	/* don't override existing errors */
+> +	if (from->ee.command == BR_OK)
+> +		binder_set_extended_error(&from->ee, id, command, param);
+> +	binder_inner_proc_unlock(from->proc);
+> +	binder_thread_dec_tmpref(from);
+> +}
+> +
+>  static void binder_transaction(struct binder_proc *proc,
+>  			       struct binder_thread *thread,
+>  			       struct binder_transaction_data *tr, int reply,
+> @@ -2742,6 +2767,10 @@ static void binder_transaction(struct binder_proc *proc,
+>  	e->offsets_size = tr->offsets_size;
+>  	strscpy(e->context_name, proc->context->name, BINDERFS_MAX_NAME);
+>  
+> +	binder_inner_proc_lock(proc);
+> +	binder_set_extended_error(&thread->ee, t_debug_id, BR_OK, 0);
+> +	binder_inner_proc_unlock(proc);
+> +
+>  	if (reply) {
+>  		binder_inner_proc_lock(proc);
+>  		in_reply_to = thread->transaction_stack;
+> @@ -3487,10 +3516,16 @@ static void binder_transaction(struct binder_proc *proc,
+>  
+>  	BUG_ON(thread->return_error.cmd != BR_OK);
+>  	if (in_reply_to) {
+> +		binder_set_txn_from_error(in_reply_to, t_debug_id,
+> +				return_error, return_error_param);
+>  		thread->return_error.cmd = BR_TRANSACTION_COMPLETE;
+>  		binder_enqueue_thread_work(thread, &thread->return_error.work);
+>  		binder_send_failed_reply(in_reply_to, return_error);
+>  	} else {
+> +		binder_inner_proc_lock(proc);
+> +		binder_set_extended_error(&thread->ee, t_debug_id,
+> +				return_error, return_error_param);
+> +		binder_inner_proc_unlock(proc);
+>  		thread->return_error.cmd = return_error;
+>  		binder_enqueue_thread_work(thread, &thread->return_error.work);
+>  	}
+> @@ -4628,6 +4663,7 @@ static struct binder_thread *binder_get_thread_ilocked(
+>  	thread->return_error.cmd = BR_OK;
+>  	thread->reply_error.work.type = BINDER_WORK_RETURN_ERROR;
+>  	thread->reply_error.cmd = BR_OK;
+> +	thread->ee.command = BR_OK;
+>  	INIT_LIST_HEAD(&new_thread->waiting_thread_node);
+>  	return thread;
+>  }
+> @@ -5066,6 +5102,25 @@ static int binder_ioctl_get_freezer_info(
+>  	return 0;
+>  }
+>  
+> +static int binder_ioctl_get_extended_error(struct binder_thread *thread,
+> +					   void __user *ubuf)
+> +{
+> +	struct binder_extended_error *ee = &thread->ee;
+> +
+> +	binder_inner_proc_lock(thread->proc);
+> +	if (copy_to_user(ubuf, ee, sizeof(*ee))) {
+> +		binder_inner_proc_unlock(thread->proc);
+> +		return -EFAULT;
+> +	}
+> +
+> +	ee->id = 0;
+> +	ee->command = BR_OK;
+> +	ee->param = 0;
+> +	binder_inner_proc_unlock(thread->proc);
+> +
+> +	return 0;
+> +}
 
+Fwiw, could be:
+
+static int binder_ioctl_get_extended_error(struct binder_thread *thread,
+					   void __user *ubuf)
+{
+	int ret;
+	struct binder_extended_error *ee = &thread->ee;
+
+	binder_inner_proc_lock(thread->proc);
+	if (copy_to_user(ubuf, ee, sizeof(*ee))) {
+		ret = -EFAULT;
+	} else {
+		ee->id = 0;
+		ee->command = BR_OK;
+		ee->param = 0;
+	}
+	binder_inner_proc_unlock(thread->proc);
+
+	return ret;
+}
+
+> +
+>  static long binder_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+>  {
+>  	int ret;
+> @@ -5274,6 +5329,11 @@ static long binder_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+>  		binder_inner_proc_unlock(proc);
+>  		break;
+>  	}
+> +	case BINDER_GET_EXTENDED_ERROR:
+> +		ret = binder_ioctl_get_extended_error(thread, ubuf);
+> +		if (ret < 0)
+> +			goto err;
+> +		break;
+>  	default:
+>  		ret = -EINVAL;
+>  		goto err;
+> diff --git a/drivers/android/binder_internal.h b/drivers/android/binder_internal.h
+> index d6b6b8cb7346..7c366a854125 100644
+> --- a/drivers/android/binder_internal.h
+> +++ b/drivers/android/binder_internal.h
+> @@ -480,6 +480,8 @@ struct binder_proc {
+>   *                        (only accessed by this thread)
+>   * @reply_error:          transaction errors reported by target thread
+>   *                        (protected by @proc->inner_lock)
+> + * @ee:                   extended error information from this thread
+> + *                        (protected by @proc->inner_lock)
+>   * @wait:                 wait queue for thread work
+>   * @stats:                per-thread statistics
+>   *                        (atomics, no lock needed)
+> @@ -504,6 +506,7 @@ struct binder_thread {
+>  	bool process_todo;
+>  	struct binder_error return_error;
+>  	struct binder_error reply_error;
+> +	struct binder_extended_error ee;
+>  	wait_queue_head_t wait;
+>  	struct binder_stats stats;
+>  	atomic_t tmp_ref;
+> diff --git a/include/uapi/linux/android/binder.h b/include/uapi/linux/android/binder.h
+> index 11157fae8a8e..e6ee8cae303b 100644
+> --- a/include/uapi/linux/android/binder.h
+> +++ b/include/uapi/linux/android/binder.h
+> @@ -236,6 +236,21 @@ struct binder_frozen_status_info {
+>  	__u32            async_recv;
+>  };
+>  
+> +/* struct binder_extened_error - extended error information
+> + * @id:		identifier for the failed operation
+> + * @command:	command as defined by binder_driver_return_protocol
+> + * @param:	parameter holding a negative errno value
+> + *
+> + * Used with BINDER_GET_EXTENDED_ERROR. This extends the error information
+> + * returned by the driver upon a failed operation. Userspace can pull this
+> + * data to properly handle specific error scenarios.
+> + */
+> +struct binder_extended_error {
+> +	__u32	id;
+> +	__u32	command;
+> +	__s32	param;
+> +};
+> +
+>  #define BINDER_WRITE_READ		_IOWR('b', 1, struct binder_write_read)
+>  #define BINDER_SET_IDLE_TIMEOUT		_IOW('b', 3, __s64)
+>  #define BINDER_SET_MAX_THREADS		_IOW('b', 5, __u32)
+> @@ -249,6 +264,7 @@ struct binder_frozen_status_info {
+>  #define BINDER_FREEZE			_IOW('b', 14, struct binder_freeze_info)
+>  #define BINDER_GET_FROZEN_INFO		_IOWR('b', 15, struct binder_frozen_status_info)
+>  #define BINDER_ENABLE_ONEWAY_SPAM_DETECTION	_IOW('b', 16, __u32)
+> +#define BINDER_GET_EXTENDED_ERROR	_IOWR('b', 17, struct binder_extended_error)
+>  
+>  /*
+>   * NOTE: Two special error codes you should check for when calling
+> -- 
+> 2.36.0.464.gb9c8b46e94-goog
+> 
