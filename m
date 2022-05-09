@@ -2,166 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8594FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 11:04:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 651AAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 11:04:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231842AbiEILHu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 07:07:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35412 "EHLO
+        id S231640AbiEILH7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 07:07:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231640AbiEILHk (ORCPT
+        with ESMTP id S231596AbiEILHv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 07:07:40 -0400
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B83381AEC68
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 04:03:45 -0700 (PDT)
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20220509110344euoutp0103eb068a13a16cb1a6ba8dd917e6e8ef~tavGyFmFq2949529495euoutp01u
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 11:03:44 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20220509110344euoutp0103eb068a13a16cb1a6ba8dd917e6e8ef~tavGyFmFq2949529495euoutp01u
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1652094224;
-        bh=yWShTPSkbQKj4QHpHFbjnb4RBP2j9pvCoyESFCCbICs=;
-        h=Date:Subject:To:CC:From:In-Reply-To:References:From;
-        b=MoXFG2L7uR4en57keuyTTLvbGSc2sYOP4EbcJ3Id8LhxDtRjOTKEb6q8rjc2gcnZD
-         ctX6BjvQTcJ/XSNiJ5ECNYG2VQf3hfJUuJ2AK1BrbDn2y8lMmoySYzRW8XQ+DbWCRL
-         MISAac3Ceu8eQe4AEckbGiEOE7TGXm5zzYUShfT8=
-Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20220509110343eucas1p17f10fe921ea74d5a57e4d959c892d06b~tavGLcX-J0659106591eucas1p1G;
-        Mon,  9 May 2022 11:03:43 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges1new.samsung.com (EUCPMTA) with SMTP id 58.8A.10009.F05F8726; Mon,  9
-        May 2022 12:03:43 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20220509110343eucas1p136eb9833a9bbd0fb318c60dc246dfbff~tavFmYQjD1972519725eucas1p10;
-        Mon,  9 May 2022 11:03:43 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220509110343eusmtrp254cef33f07a685690c0ca325b781458c~tavFjCyPs1597715977eusmtrp2T;
-        Mon,  9 May 2022 11:03:43 +0000 (GMT)
-X-AuditID: cbfec7f2-e7fff70000002719-69-6278f50f8aae
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-        eusmgms1.samsung.com (EUCPMTA) with SMTP id BB.43.09522.F05F8726; Mon,  9
-        May 2022 12:03:43 +0100 (BST)
-Received: from CAMSVWEXC01.scsc.local (unknown [106.1.227.71]) by
-        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20220509110343eusmtip28e3f84fbe79d5a007a31ae369dd2facc~tavFXOD8J2741827418eusmtip2C;
-        Mon,  9 May 2022 11:03:43 +0000 (GMT)
-Received: from [106.110.32.130] (106.110.32.130) by CAMSVWEXC01.scsc.local
-        (2002:6a01:e347::6a01:e347) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
-        Mon, 9 May 2022 12:03:41 +0100
-Message-ID: <26ccce4c-da31-4e53-b71f-38adaea852a2@samsung.com>
-Date:   Mon, 9 May 2022 13:03:36 +0200
+        Mon, 9 May 2022 07:07:51 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E464213CA26
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 04:03:56 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id k27so15824689edk.4
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 04:03:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=qbFYEZjYFfyYucK7nmvu2wlEESY3MrT+Db4qYdgacL8=;
+        b=dTFGt+8vsmUW9QipngZI06mBRUuxUy/0OX/7FetidL1Eml3D1/bDFb5zKptI7FEZWl
+         Skbf5IJTNMNXiCTZHzFYAN6aCZ4tvp5Rt/KWOvnpztI6tRkRDxM2b195HaCkEUgh7Wkc
+         8tnlERXfvs0sDHI3hxBPXil8CWFQzZGvcXLxQOlzA7IekYLYM+FTWEhRIL9u1BXlJPf9
+         pGJlLe07eEfeMNBOIQf772zt27MUxtdQcF05IVhWxv/kSA8AkJJ2JsZD2rL/uIA/lP58
+         8RaJdWKWB2y5sCEzal5zg2k/fTTjiaKyHf8G/bFrB1fYepk95qpDG0fwgi0OTbobqbL0
+         ksnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=qbFYEZjYFfyYucK7nmvu2wlEESY3MrT+Db4qYdgacL8=;
+        b=2x+fMOqndeKeEgLccPB8tslC7BPBi6K2iSJjUEzM/2BlfeTspAfpVbDrr22prBpzof
+         zmc5ESN8tcUd4oUBdB6MVFJYLGNpjlimPX42QbSPiuSRFi2ThKc9D7ULI1w0VBYuk33N
+         Jnd+TujLQVx3g29e+XU2hFffAmMg9Pm6GoCg0mYurSGG6RY7QF3XnLGYQnHUKhp+fLRn
+         PHKhSv3WPRwa0NA/MjB4HWcogPRI1HXlpje0cXo/Oe5ZKhhXZHElqf8tjF3HJ8drIQD7
+         Nzb4058XBmrBgDLJyHfjP912Z/5n3asPLygRmSauB5UGC1WhDkufXCPDCRIJYVUReY7x
+         nYPg==
+X-Gm-Message-State: AOAM531xRLp1EzuB10YG8mRh4p9+XCDJoSINIR2MCZc+UWlMx5oeBYHl
+        WWTRizFoytdRVthhWm9e+LJOyw==
+X-Google-Smtp-Source: ABdhPJyRXRg5Njoc2yO7HgmgJtCS5wNte3EJhFkgE7+5DNI9kMVJB9O3WjxRXXeCogZUA/Ue3F2BAQ==
+X-Received: by 2002:a05:6402:155a:b0:425:c0b1:ab07 with SMTP id p26-20020a056402155a00b00425c0b1ab07mr16857965edx.258.1652094235555;
+        Mon, 09 May 2022 04:03:55 -0700 (PDT)
+Received: from [192.168.0.243] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id jl18-20020a17090775d200b006f3ef214e55sm4977129ejc.187.2022.05.09.04.03.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 09 May 2022 04:03:54 -0700 (PDT)
+Message-ID: <85c5b09d-de6e-976b-03af-2d8a0953341a@linaro.org>
+Date:   Mon, 9 May 2022 13:03:51 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
-        Thunderbird/91.8.1
-Subject: Re: [PATCH v3 11/11] dm-zoned: ensure only power of 2 zone sizes
- are allowed
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v1 23/24] dt-bindings: arm: fsl: add
+ toradex,colibri-imx7s/d/d-emmc-iris/-v2
 Content-Language: en-US
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        <jaegeuk@kernel.org>, <hare@suse.de>, <dsterba@suse.com>,
-        <axboe@kernel.dk>, <hch@lst.de>, <snitzer@kernel.org>
-CC:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        <bvanassche@acm.org>, <linux-fsdevel@vger.kernel.org>,
-        <matias.bjorling@wdc.com>, Jens Axboe <axboe@fb.com>,
-        <gost.dev@samsung.com>, <jonathan.derrick@linux.dev>,
-        <jiangbo.365@bytedance.com>, <linux-nvme@lists.infradead.org>,
-        <dm-devel@redhat.com>, Naohiro Aota <naohiro.aota@wdc.com>,
-        <linux-kernel@vger.kernel.org>,
-        Johannes Thumshirn <jth@kernel.org>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Alasdair Kergon <agk@redhat.com>,
-        <linux-block@vger.kernel.org>, Chaitanya Kulkarni <kch@nvidia.com>,
-        Keith Busch <kbusch@kernel.org>, <linux-btrfs@vger.kernel.org>,
-        Luis Chamberlain <mcgrof@kernel.org>
-From:   Pankaj Raghav <p.raghav@samsung.com>
-In-Reply-To: <7f1bd653-6f75-7c0d-9a82-e8992b1476e4@opensource.wdc.com>
-Content-Type: text/plain; charset="UTF-8"
+To:     Marcel Ziswiler <marcel@ziswiler.com>,
+        linux-arm-kernel@lists.infradead.org
+Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Ariel D'Alessandro <ariel.dalessandro@collabora.com>,
+        Christoph Niedermaier <cniedermaier@dh-electronics.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Li Yang <leoyang.li@nxp.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Tim Harvey <tharvey@gateworks.com>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220506152809.295409-1-marcel@ziswiler.com>
+ <20220506155641.297635-1-marcel@ziswiler.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220506155641.297635-1-marcel@ziswiler.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [106.110.32.130]
-X-ClientProxiedBy: CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347) To
-        CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347)
-X-Brightmail-Tracker: H4sIAAAAAAAAA01SfVBUVRztvvf27WNr5e1KcmdhqlmzKQySIZlLJIMN5Yum7ybKf3CBNyvG
-        h7PrBizGNwgELFCBLsssgZXuUosgygqrsskigRIgtK5jyLhIQnwJGLgM1vK04b/zu+ec+zvn
-        zqVwcTMpoeKTDrGKJFmClBQQZ2wrV/09l1JjdhhcO5DpNxuOHnbYSGS8qSFR1dwKjio1R/nI
-        daUfR5aZGh76fTkbQx31lRg6aezCkNOkxVHJxTkCncwbw9HqWCAaW3QQqNI6AtD4sBZDFsd2
-        NHj7BB91WHoINHRORyL9j+N8VF6whCN7+ThAFd0tPPTL1CyBLjt8wn2YoWvvMGuXG0mmIneG
-        z/T/eYpghq6omGZDEcl8n/UdzrQcz2Tar2eRTGnuDMmY80d5zOz5YZIxnR4mmJbedKa85RSP
-        WWh+5gPRXsHrcWxC/Jes4pWwfYL95XoLcfAGP/XWwHEsC1STxcCDgvSr8NeJSX4xEFBi+gSA
-        N4bqHg2LABaW6jBuWACwM3+V/9jydVENzhE/AbhwxE7+rxqw9PPcKjF9DsDSpgPFgKKEdBg0
-        XPrcDQn6ediu83QrhLQI9hxzEm78NP0ZrNL2rUfaTEfBS111uBvjtDd0OPXrIbxoA4CNU671
-        XTj9Aw82tZ3H3JeStB/MLloP50G/BR9MLmCc+SWYf9bF5/Cz8Oy0DnfLIS2FNUMBXJev4M+2
-        vvXGkHYKYPNKFc4REXCkIgdweDOc7D79qLwvfGjWYxxOh+N2F86Z8wDUmE0ktyAUlvUlcJrd
-        sN7xF+CON0H7tIiLswlWnqnGy8E27Yan0G6orN3QQLuhQR0gDMCbVSkT5awyMIlNCVDKEpWq
-        JHlAbHJiM/jvW/eudd9rA7WT8wFWgFHACiCFS72EF8pSY8TCOFmamlUkRytUCazSCnwoQuot
-        jI1vkolpuewQ+wXLHmQVj1mM8pBkYdH2Lff/8G1/Tz4dtKaK1FmfClnad8B215RzWPT3tokQ
-        h7orLjNYEnVvmtKYO0eDdj5X2PtaODX6TY9ak73H0/ThTuO14OX5idqGpV1B8vfv7oq/FTrb
-        lmZPbjQJfd+stDDmf2oNXgXtERmu25kdNXyZwAunpWkZEYUxF9TJL4zubY1ku3InE/SK4DtT
-        b8cc1gfPRz4o+HaOFEfVBdpyQ6olx4ySrS8vO3YbRSrP1ScGt4dX7cn9xBn10ZEcPEVUpw6V
-        Z8x3D76YM9Iwb894937rnbISaWxow83WPmfJ1ScH/FfYi3nK6M4gffJ45BvqT1NWP66tH6bT
-        r/tNh23JXIzwlxLK/bJAP1yhlP0LTkX9F0UEAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrBKsWRmVeSWpSXmKPExsVy+t/xe7r8XyuSDGY/5bFYf+oYs8X/PcfY
-        LFbf7WezmPbhJ7PFpP4Z7Ba/z55nttj7bjarxYUfjUwWexZNYrJYufook8WT9bOYLXoOfGCx
-        WNnykNniz0NDi4dfbrFYTDp0jdHi6dVZTBZ7b2lbXHq8gt1iz96TLBaXd81hs5i/7Cm7xYS2
-        r8wWNyY8ZbSYeHwzq8W61+9ZLE7cknaQ9rh8xdvj34k1bB4Tm9+xe5y/t5HF4/LZUo9NqzrZ
-        PBY2TGX22Lyk3mP3zQY2j97md2weO1vvs3q833eVzWP9lqssHptPV3tM2LyR1ePzJrkAwSg9
-        m6L80pJUhYz84hJbpWhDCyM9Q0sLPSMTSz1DY/NYKyNTJX07m5TUnMyy1CJ9uwS9jAnz97IU
-        3GaveHBxCVMD43S2LkZODgkBE4nuztnMXYxcHEICSxklPh+cwgqRkJH4dOUjO4QtLPHnWhcb
-        RNFHoKJlD1ghnF2MEj8ermDqYuTg4BWwk1h1JBLEZBFQkdg9hx+kl1dAUOLkzCcsILaoQITE
-        g91nweYLC4RLrHm7hRHEZhYQl7j1ZD4TyEgRgVWMEmte/wZbxiywmFXi4ux37BDLfjFK/Plz
-        nBlkA5uAlkRjJ9h1nAJuEr9efWaCmKQp0br9NzuELS+x/e0csHIJASWJ2Zf1IJ6plXh1fzfj
-        BEbRWUjum4XkjllIJs1CMmkBI8sqRpHU0uLc9NxiQ73ixNzi0rx0veT83E2MwCS37djPzTsY
-        5736qHeIkYmD8RCjBAezkgjv/r6KJCHelMTKqtSi/Pii0pzU4kOMpsAwmsgsJZqcD0yzeSXx
-        hmYGpoYmZpYGppZmxkrivJ4FHYlCAumJJanZqakFqUUwfUwcnFINTI1Gr6XlD9xkr7WRumrH
-        erXQi1n1yNeLO0rEb8Z18xlM0VexrOKfVenwKnSpAOt1URW7lbMll386WJl90mlyWOikWXnn
-        Pkk7/NeyC7/VFdf+Z5UjP8ev3wblbiFJU3WWL1oWU6510PRaLut0Y2XtykWTesw2X+w7Fih9
-        xv3jwdSX/1+mLrwQtcfhBOMaxZVGnNP2f/86f1dhZNjuvHW1DNmFCr9bKreqLeHxiqx5bzVZ
-        KePNc678L1V2mxff+3G3SfqOYJ1iS+vb9zpm537aa1WqMZ5ffNEqyFHkxZKUSQ6ZYROKHlVw
-        c359zmCXwOn38uoF9v71t1pXRSrrxUoXvN3/cEVx7J1Dlq1yUYXqSizFGYmGWsxFxYkAFaDj
-        FvsDAAA=
-X-CMS-MailID: 20220509110343eucas1p136eb9833a9bbd0fb318c60dc246dfbff
-X-Msg-Generator: CA
-X-RootMTR: 20220506081118eucas1p17f3c29cc36d748c3b5a3246f069f434a
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20220506081118eucas1p17f3c29cc36d748c3b5a3246f069f434a
-References: <20220506081105.29134-1-p.raghav@samsung.com>
-        <CGME20220506081118eucas1p17f3c29cc36d748c3b5a3246f069f434a@eucas1p1.samsung.com>
-        <20220506081105.29134-12-p.raghav@samsung.com>
-        <7f1bd653-6f75-7c0d-9a82-e8992b1476e4@opensource.wdc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->> ---
->>  drivers/md/dm-zone.c | 12 ++++++++++++
->>  1 file changed, 12 insertions(+)
->>
->> diff --git a/drivers/md/dm-zone.c b/drivers/md/dm-zone.c
->> index 3e7b1fe15..27dc4ddf2 100644
->> --- a/drivers/md/dm-zone.c
->> +++ b/drivers/md/dm-zone.c
->> @@ -231,6 +231,18 @@ static int dm_revalidate_zones(struct mapped_device *md, struct dm_table *t)
->>  	struct request_queue *q = md->queue;
->>  	unsigned int noio_flag;
->>  	int ret;
->> +	struct block_device *bdev = md->disk->part0;
->> +	sector_t zone_sectors;
->> +	char bname[BDEVNAME_SIZE];
->> +
->> +	zone_sectors = bdev_zone_sectors(bdev);
->> +
->> +	if (!is_power_of_2(zone_sectors)) {
->> +		DMWARN("%s: %s only power of two zone size supported\n",
->> +		       dm_device_name(md),
->> +		       bdevname(bdev, bname));
->> +		return 1;
+On 06/05/2022 17:56, Marcel Ziswiler wrote:
+> From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 > 
-> return -EINVAL;
+> Based on toradex,colibri-imx7s, toradex,colibri-imx7d and
+> toradex,colibri-imx7d-emmc module device trees add iris and iris-v2 for
+> carrier board dts.
 > 
-> The error propagates to dm_table_set_restrictions() so a proper error code must
-> be returned.
-> 
-Good point. I will add this in the next rev.
+> Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+
+
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
+Best regards,
+Krzysztof
