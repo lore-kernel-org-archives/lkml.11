@@ -2,134 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54055C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:49:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D34BC3527C
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:49:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233768AbiEIJxK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 05:53:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39576 "EHLO
+        id S233989AbiEIJxT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 05:53:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239377AbiEIJmU (ORCPT
+        with ESMTP id S238828AbiEIJk1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 05:42:20 -0400
-Received: from mail-vs1-xe2c.google.com (mail-vs1-xe2c.google.com [IPv6:2607:f8b0:4864:20::e2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24E7613F1E6;
-        Mon,  9 May 2022 02:38:26 -0700 (PDT)
-Received: by mail-vs1-xe2c.google.com with SMTP id q2so13244104vsr.5;
-        Mon, 09 May 2022 02:38:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8ms2OmWrZMbAmlfHzDQqtdt+wIiR2JhVE0s22ev6NcE=;
-        b=On7f4sc0xl6O7L7J/hV3ctEoS40biGja4bO+jZTVTS0VXNPAxYsU3GDA9g7uKZ6pp6
-         ynwoD0DFxhYHu8s+tXNi1cr2w6m75/dd5FVvOKhnPIdiUoiUvflYIvXGetyo5PiS3fAh
-         rGx7NVi8G6ZnQbt81ajCArZtw2MgS2nuadNt2U7jBwF4ILFV6iH1XEaZIgIMbxbwkkvP
-         wu+eZ0cUY6ZWqb272EifXWbgsnQyku6dg2zQslfTTeGKiYXYBjlMSGuTMMgJgKbxYTuT
-         h9e6b8fMxXGkTx6dMH5wl4KuelbdOPEi47oYsyDOmjxj803iSHQ1fWivA9t4O1U44o6k
-         uvQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8ms2OmWrZMbAmlfHzDQqtdt+wIiR2JhVE0s22ev6NcE=;
-        b=TqlQwaVkeIPwUkQe9IG1GKQ/f/K3eLL+FhPtw6CGdER8yJkGsjfJ3GnIF4BJ4G5fZV
-         ayXtGag3HbiBkdcfn3OpQW71+pHt/hBbQ1Hh4KvBJGsBXi7Jw/zpSSvsd0b4PbPqrcbm
-         od56EttjJTYY4QXYNhwWW5T/Bs/lU1w0dtS5r+inSy2cg9QwnnI+vxZlC8xpYhpPXKt+
-         3S8kAemge0D16ynTUPG0yhtiRUFkL8ORmTWGiXwIeT0KtF5JJ5Z12ef8mYy0SWj3xEf/
-         DqDN0OmC9AO1BP0dqsWCSnwpd+GSCQWBzp8yXLtM/MJgK5uQdCLJDoZO1Rl/yl5lru5r
-         f9bA==
-X-Gm-Message-State: AOAM533Th1pWBS00A7aktdBxOiCkvt7CSwEvHjtrjx4r79079ZPmuNz1
-        ap5MtnYIPik+sVGYsQokA4lx7qYarRa7DvdjF0A=
-X-Google-Smtp-Source: ABdhPJxQa+6QJ/CET2ydb15xzcLU4JG/ctU72rTIwybTeCOA12flltOKMmKvKfqZm/HT3uLxpGmQ1UgbNVerQJDwBsM=
-X-Received: by 2002:a05:6102:905:b0:32c:c256:b059 with SMTP id
- x5-20020a056102090500b0032cc256b059mr7184386vsh.21.1652089076919; Mon, 09 May
- 2022 02:37:56 -0700 (PDT)
+        Mon, 9 May 2022 05:40:27 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97905193217;
+        Mon,  9 May 2022 02:36:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652088970; x=1683624970;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=D/x1ycw0QvCLLhMcVpaUSr9cP6MhaUOF3dS7CsbLTm8=;
+  b=OyKHWmdj/pFZhcct06STunaHCeRVGSb4/ct4OhGBMJPy4yjgGAPwTmI9
+   Yi5uS8B/6OVOmfuWrWjHpcdFHvZIiw6q2pn9TDsOjP2o4B8+yHDOJcUMw
+   F8wilyE3BgMMjqUbaTAxJsXXPF9P8IuEdihYy3LSWehX9x01/TgGl3liu
+   DJp3kT9HpIFb0RxhTRIYnstaaGVsJbqA0+ajzYxl3XDDG2WIrt7XhXTW1
+   73eGKVwY/dKUwTQF2EwPCYcUdsa8LO8oWZvX/YVpW6CS3od6IoP3VJ2zl
+   sT23FjMlme3kGmH1XnJgGP7OnDdEsD4GllAWglWTFpH3ZX3qOd294nCbk
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10341"; a="251040429"
+X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
+   d="scan'208";a="251040429"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 02:34:59 -0700
+X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
+   d="scan'208";a="564969527"
+Received: from mfuent2x-mobl1.amr.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.220.67])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 02:34:53 -0700
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Arnd Bergmann <arnd@arndb.de>, linux-alpha@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        sparclinux@vger.kernel.org, linux-arch@vger.kernel.org
+Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 0/3] termbits.h: Further improvements
+Date:   Mon,  9 May 2022 12:34:43 +0300
+Message-Id: <20220509093446.6677-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20220505134731.5295-1-jing.xia@unisoc.com> <20220505154024.onreajr4xmtsswes@quack3.lan>
-In-Reply-To: <20220505154024.onreajr4xmtsswes@quack3.lan>
-From:   jing xia <jing.xia.mail@gmail.com>
-Date:   Mon, 9 May 2022 17:37:45 +0800
-Message-ID: <CAN=25QOT5h-CfBk9AagMz61TVxHd485QCyJED+mqX4LL6KTp7w@mail.gmail.com>
-Subject: Re: [PATCH] writeback: Avoid skipping inode writeback
-To:     Jan Kara <jack@suse.cz>
-Cc:     Jing Xia <jing.xia@unisoc.com>, viro@zeniv.linux.org.uk,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks, I'll update the patch.
+Again, I prefer Greg to take these through his tty tree.
 
-On Thu, May 5, 2022 at 11:40 PM Jan Kara <jack@suse.cz> wrote:
->
-> On Thu 05-05-22 21:47:31, Jing Xia wrote:
-> > We have run into an issue that a task gets stuck in
-> > balance_dirty_pages_ratelimited() when perform I/O stress testing.
-> > The reason we observed is that an I_DIRTY_PAGES inode with lots
-> > of dirty pages is in b_dirty_time list and standard background
-> > writeback cannot writeback the inode.
-> > After studing the relevant code, the following scenario may lead
-> > to the issue:
-> >
-> > task1                                   task2
-> > -----                                   -----
-> > fuse_flush
-> >  write_inode_now //in b_dirty_time
-> >   writeback_single_inode
-> >    __writeback_single_inode
-> >                                  fuse_write_end
-> >                                   filemap_dirty_folio
-> >                                    __xa_set_mark:PAGECACHE_TAG_DIRTY
-> >     lock inode->i_lock
-> >     if mapping tagged PAGECACHE_TAG_DIRTY
-> >     inode->i_state |= I_DIRTY_PAGES
-> >     unlock inode->i_lock
-> >                                    __mark_inode_dirty:I_DIRTY_PAGES
-> >                                       lock inode->i_lock
-> >                                       -was dirty,inode stays in
-> >                                       -b_dirty_time
-> >                                       unlock inode->i_lock
-> >
-> >    if(!(inode->i_state & I_DIRTY_All))
-> >       -not true,so nothing done
-> >
-> > This patch moves the dirty inode to b_dirty list when the inode
-> > currently is not queued in b_io or b_more_io list at the end of
-> > writeback_single_inode.
-> >
-> > Signed-off-by: Jing Xia <jing.xia@unisoc.com>
->
-> Thanks for report and the fix! The patch looks good so feel free to add:
->
-> Reviewed-by: Jan Kara <jack@suse.cz>
->
-> Also please add tags:
->
-> CC: stable@vger.kernel.org
-> Fixes: 0ae45f63d4ef ("vfs: add support for a lazytime mount option")
->
-> Thanks.
->                                                                 Honza
->
-> > diff --git a/fs/fs-writeback.c b/fs/fs-writeback.c
-> > index 591fe9cf1659..d7763feaf14a 100644
-> > --- a/fs/fs-writeback.c
-> > +++ b/fs/fs-writeback.c
-> > @@ -1712,6 +1712,9 @@ static int writeback_single_inode(struct inode *inode,
-> >        */
-> >       if (!(inode->i_state & I_DIRTY_ALL))
-> >               inode_cgwb_move_to_attached(inode, wb);
-> > +     else if (!(inode->i_state & I_SYNC_QUEUED) && (inode->i_state & I_DIRTY))
-> > +             redirty_tail_locked(inode, wb);
-> > +
-> >       spin_unlock(&wb->list_lock);
-> >       inode_sync_complete(inode);
-> >  out:
-> > --
-> > 2.17.1
-> >
-> --
-> Jan Kara <jack@suse.com>
-> SUSE Labs, CR
+Changes done by this serie:
+
+1) Create termbits-common.h for the most obvious termbits.h intersection.
+2) Reformat some lines that remain in termbits.h files.
+3) Don't include posix_types.h unnecessarily.
+
+Please do check I got the uapi include things done correctly! That is,
+that including using asm-generic/termbits-common.h path is the preferred
+approach for a header file that is not supposed to be overridden by the
+arch specific header files and that mandatory-y is not required for
+termbits-common.h.
+
+Unfortunately I couldn't move also tcflag_t into termbits-common.h due
+to the way it is being defined for sparc. However, by the looks of how
+the type for tcflag_t is being chosen there, having just unsigned int
+might work also for sparc?
+
+Ilpo Järvinen (3):
+  termbits.h: create termbits-common.h for identical bits
+  termbits.h: Align lines & format
+  termbits.h: Remove posix_types.h include
+
+ arch/alpha/include/uapi/asm/termbits.h     | 182 ++++++-----------
+ arch/mips/include/uapi/asm/termbits.h      | 209 ++++++++-----------
+ arch/parisc/include/uapi/asm/termbits.h    | 131 ++++--------
+ arch/powerpc/include/uapi/asm/termbits.h   | 152 +++++---------
+ arch/sparc/include/uapi/asm/termbits.h     | 223 ++++++++-------------
+ include/uapi/asm-generic/termbits-common.h |  65 ++++++
+ include/uapi/asm-generic/termbits.h        | 129 ++++--------
+ 7 files changed, 418 insertions(+), 673 deletions(-)
+ create mode 100644 include/uapi/asm-generic/termbits-common.h
+
+-- 
+2.30.2
+
