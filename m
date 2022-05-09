@@ -2,190 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15B5CC352A7
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25EA2C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 08:57:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237537AbiEII64 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 04:58:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53142 "EHLO
+        id S237559AbiEII67 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 04:58:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236398AbiEII1W (ORCPT
+        with ESMTP id S231160AbiEII2G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 04:27:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A18741DA643
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 01:22:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E05F7B80EA2
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 08:22:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AABA9C385AC;
-        Mon,  9 May 2022 08:22:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652084545;
-        bh=NANQp7QofUo34mrnijGjquxDhvq3koZzFJ1Pl4SUt7s=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OjF1Oe/yMsZC/GLxhVBM5iR+ydt4nG+AWfiqgmNmcbZgrMiFAV2L9IR+9Hbawkd5r
-         xr11NeHhJnKB6XNzLj2Xp/Q+J6izR3ZEV+cL8ujy+Ip5mAYn7bPrmG8KPwcD8wRPeW
-         PQ2f1KpChKEgfNBWUbmCfqHgwIL3kCIEBoG/7fdBFbAgbpu3+7i1+NAd0r3Cfz1hPd
-         6VZicyG3LwsBocvwfoQnE2TgFhmafZCjbC+2Y54VSZb7ezeWyDIszEvckKVfjZq9cI
-         fQ38Epym3mGrZvI5noU9UBngF9J+2MXQ5f+XALDDLhsDQ5UneyoQCqr/P4aZaWo9fL
-         FZlH3/dchVZrA==
-From:   Oded Gabbay <ogabbay@kernel.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Yuri Nudelman <ynudelman@habana.ai>
-Subject: [PATCH 2/3] habanalabs: add topic to memory manager buffer
-Date:   Mon,  9 May 2022 11:22:17 +0300
-Message-Id: <20220509082218.956916-2-ogabbay@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220509082218.956916-1-ogabbay@kernel.org>
-References: <20220509082218.956916-1-ogabbay@kernel.org>
+        Mon, 9 May 2022 04:28:06 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4E4A1E0123;
+        Mon,  9 May 2022 01:23:13 -0700 (PDT)
+Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KxYT55JWwzGpbX;
+        Mon,  9 May 2022 15:58:33 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ kwepemi500015.china.huawei.com (7.221.188.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 9 May 2022 16:01:20 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 9 May 2022 16:01:20 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
+        <chenhao288@hisilicon.com>
+Subject: [PATCH V2 net-next 5/6] net: hns3: add query vf ring and vector map relation
+Date:   Mon, 9 May 2022 15:55:31 +0800
+Message-ID: <20220509075532.32166-6-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220509075532.32166-1-huangguangbin2@huawei.com>
+References: <20220509075532.32166-1-huangguangbin2@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yuri Nudelman <ynudelman@habana.ai>
+This patch adds a new mailbox opcode to query map relation between
+vf ring and vector.
 
-Currently, buffers from multiple flows pass through the same infra.
-This way, in logs, we are unable to distinguish between buffers that
-came from separate flows.
-To address this problem, add a "topic" to buffer behavior
-descriptor - a string identifier that will be used to identify in logs
-the flow this buffer relates to.
-
-Signed-off-by: Yuri Nudelman <ynudelman@habana.ai>
-Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
-Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- .../misc/habanalabs/common/command_buffer.c   |  1 +
- drivers/misc/habanalabs/common/habanalabs.h   |  2 ++
- drivers/misc/habanalabs/common/memory.c       |  1 +
- drivers/misc/habanalabs/common/memory_mgr.c   | 23 +++++++++++--------
- 4 files changed, 18 insertions(+), 9 deletions(-)
+ .../net/ethernet/hisilicon/hns3/hclge_mbx.h   |  1 +
+ .../hisilicon/hns3/hns3pf/hclge_mbx.c         | 83 +++++++++++++++++++
+ 2 files changed, 84 insertions(+)
 
-diff --git a/drivers/misc/habanalabs/common/command_buffer.c b/drivers/misc/habanalabs/common/command_buffer.c
-index fd9ef32ea6a0..1fac72c38c87 100644
---- a/drivers/misc/habanalabs/common/command_buffer.c
-+++ b/drivers/misc/habanalabs/common/command_buffer.c
-@@ -319,6 +319,7 @@ static int hl_cb_mmap(struct hl_mmap_mem_buf *buf,
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h b/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
+index c52876555d4b..7d4ae467f3ad 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
+@@ -46,6 +46,7 @@ enum HCLGE_MBX_OPCODE {
+ 	HCLGE_MBX_PUSH_PROMISC_INFO,	/* (PF -> VF) push vf promisc info */
+ 	HCLGE_MBX_VF_UNINIT,            /* (VF -> PF) vf is unintializing */
+ 	HCLGE_MBX_HANDLE_VF_TBL,	/* (VF -> PF) store/clear hw table */
++	HCLGE_MBX_GET_RING_VECTOR_MAP,	/* (VF -> PF) get ring-to-vector map */
+ 
+ 	HCLGE_MBX_GET_VF_FLR_STATUS = 200, /* (M7 -> PF) get vf flr status */
+ 	HCLGE_MBX_PUSH_LINK_STATUS,	/* (M7 -> PF) get port link status */
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
+index 6957b5e158c9..e1012f7f9b73 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
+@@ -251,6 +251,81 @@ static int hclge_map_unmap_ring_to_vf_vector(struct hclge_vport *vport, bool en,
+ 	return ret;
  }
  
- static struct hl_mmap_mem_buf_behavior cb_behavior = {
-+	.topic = "CB",
- 	.mem_id = HL_MMAP_TYPE_CB,
- 	.alloc = hl_cb_mmap_mem_alloc,
- 	.release = hl_cb_mmap_mem_release,
-diff --git a/drivers/misc/habanalabs/common/habanalabs.h b/drivers/misc/habanalabs/common/habanalabs.h
-index 59150caa98a2..918e8a04acab 100644
---- a/drivers/misc/habanalabs/common/habanalabs.h
-+++ b/drivers/misc/habanalabs/common/habanalabs.h
-@@ -731,6 +731,7 @@ struct hl_mem_mgr {
- 
- /**
-  * struct hl_mmap_mem_buf_behavior - describes unified memory manager buffer behavior
-+ * @topic: string identifier used for logging
-  * @mem_id: memory type identifier, embedded in the handle and used to identify
-  *          the memory type by handle.
-  * @alloc: callback executed on buffer allocation, shall allocate the memory,
-@@ -739,6 +740,7 @@ struct hl_mem_mgr {
-  * @release: callback executed on release, must free the resources used by the buffer
-  */
- struct hl_mmap_mem_buf_behavior {
-+	const char *topic;
- 	u64 mem_id;
- 
- 	int (*alloc)(struct hl_mmap_mem_buf *buf, gfp_t gfp, void *args);
-diff --git a/drivers/misc/habanalabs/common/memory.c b/drivers/misc/habanalabs/common/memory.c
-index e7a0c44c487d..ecf3c094242a 100644
---- a/drivers/misc/habanalabs/common/memory.c
-+++ b/drivers/misc/habanalabs/common/memory.c
-@@ -2141,6 +2141,7 @@ static int hl_ts_alloc_buf(struct hl_mmap_mem_buf *buf, gfp_t gfp, void *args)
- }
- 
- static struct hl_mmap_mem_buf_behavior hl_ts_behavior = {
-+	.topic = "TS",
- 	.mem_id = HL_MMAP_TYPE_TS_BUFF,
- 	.mmap = hl_ts_mmap,
- 	.alloc = hl_ts_alloc_buf,
-diff --git a/drivers/misc/habanalabs/common/memory_mgr.c b/drivers/misc/habanalabs/common/memory_mgr.c
-index 9f3ab6cf25d3..0ddfebe3a9ef 100644
---- a/drivers/misc/habanalabs/common/memory_mgr.c
-+++ b/drivers/misc/habanalabs/common/memory_mgr.c
-@@ -162,7 +162,8 @@ hl_mmap_mem_buf_alloc(struct hl_mem_mgr *mmg,
- 	spin_unlock(&mmg->lock);
- 	if (rc < 0) {
- 		dev_err(mmg->dev,
--			"Failed to allocate IDR for a new buffer, rc=%d\n", rc);
-+			"%s: Failed to allocate IDR for a new buffer, rc=%d\n",
-+			behavior->topic, rc);
- 		goto free_buf;
- 	}
- 
-@@ -173,8 +174,8 @@ hl_mmap_mem_buf_alloc(struct hl_mem_mgr *mmg,
- 
- 	rc = buf->behavior->alloc(buf, gfp, args);
- 	if (rc) {
--		dev_err(mmg->dev, "Failure in buffer alloc callback %d\n",
--			rc);
-+		dev_err(mmg->dev, "%s: Failure in buffer alloc callback %d\n",
-+			behavior->topic, rc);
- 		goto remove_idr;
- 	}
- 
-@@ -253,8 +254,8 @@ int hl_mem_mgr_mmap(struct hl_mem_mgr *mmg, struct vm_area_struct *vma,
- 	user_mem_size = vma->vm_end - vma->vm_start;
- 	if (user_mem_size != ALIGN(buf->mappable_size, PAGE_SIZE)) {
- 		dev_err(mmg->dev,
--			"Memory mmap failed, mmap VM size 0x%llx != 0x%llx allocated physical mem size\n",
--			user_mem_size, buf->mappable_size);
-+			"%s: Memory mmap failed, mmap VM size 0x%llx != 0x%llx allocated physical mem size\n",
-+			buf->behavior->topic, user_mem_size, buf->mappable_size);
- 		rc = -EINVAL;
- 		goto put_mem;
- 	}
-@@ -266,8 +267,8 @@ int hl_mem_mgr_mmap(struct hl_mem_mgr *mmg, struct vm_area_struct *vma,
- 	if (!access_ok((void __user *)(uintptr_t)vma->vm_start,
- 		       user_mem_size)) {
- #endif
--		dev_err(mmg->dev, "user pointer is invalid - 0x%lx\n",
--			vma->vm_start);
-+		dev_err(mmg->dev, "%s: User pointer is invalid - 0x%lx\n",
-+			buf->behavior->topic, vma->vm_start);
- 
- 		rc = -EINVAL;
- 		goto put_mem;
-@@ -275,7 +276,8 @@ int hl_mem_mgr_mmap(struct hl_mem_mgr *mmg, struct vm_area_struct *vma,
- 
- 	if (atomic_cmpxchg(&buf->mmap, 0, 1)) {
- 		dev_err(mmg->dev,
--			"Memory mmap failed, already mmaped to user\n");
-+			"%s, Memory mmap failed, already mmaped to user\n",
-+			buf->behavior->topic);
- 		rc = -EINVAL;
- 		goto put_mem;
- 	}
-@@ -328,14 +330,17 @@ void hl_mem_mgr_fini(struct hl_mem_mgr *mmg)
++static int hclge_query_ring_vector_map(struct hclge_vport *vport,
++				       struct hnae3_ring_chain_node *ring_chain,
++				       struct hclge_desc *desc)
++{
++	struct hclge_ctrl_vector_chain_cmd *req =
++		(struct hclge_ctrl_vector_chain_cmd *)desc->data;
++	struct hclge_dev *hdev = vport->back;
++	u16 tqp_type_and_id;
++	int status;
++
++	hclge_cmd_setup_basic_desc(desc, HCLGE_OPC_ADD_RING_TO_VECTOR, true);
++
++	tqp_type_and_id = le16_to_cpu(req->tqp_type_and_id[0]);
++	hnae3_set_field(tqp_type_and_id, HCLGE_INT_TYPE_M, HCLGE_INT_TYPE_S,
++			hnae3_get_bit(ring_chain->flag, HNAE3_RING_TYPE_B));
++	hnae3_set_field(tqp_type_and_id, HCLGE_TQP_ID_M, HCLGE_TQP_ID_S,
++			ring_chain->tqp_index);
++	req->tqp_type_and_id[0] = cpu_to_le16(tqp_type_and_id);
++	req->vfid = vport->vport_id;
++
++	status = hclge_cmd_send(&hdev->hw, desc, 1);
++	if (status)
++		dev_err(&hdev->pdev->dev,
++			"Get VF ring vector map info fail, status is %d.\n",
++			status);
++
++	return status;
++}
++
++static int hclge_get_vf_ring_vector_map(struct hclge_vport *vport,
++					struct hclge_mbx_vf_to_pf_cmd *req,
++					struct hclge_respond_to_vf_msg *resp)
++{
++#define HCLGE_LIMIT_RING_NUM			1
++#define HCLGE_RING_TYPE_OFFSET			0
++#define HCLGE_TQP_INDEX_OFFSET			1
++#define HCLGE_INT_GL_INDEX_OFFSET		2
++#define HCLGE_VECTOR_ID_OFFSET			3
++#define HCLGE_RING_VECTOR_MAP_INFO_LEN		4
++	struct hnae3_ring_chain_node ring_chain;
++	struct hclge_desc desc;
++	struct hclge_ctrl_vector_chain_cmd *data =
++		(struct hclge_ctrl_vector_chain_cmd *)desc.data;
++	u16 tqp_type_and_id;
++	u8 int_gl_index;
++	int ret;
++
++	req->msg.ring_num = HCLGE_LIMIT_RING_NUM;
++
++	memset(&ring_chain, 0, sizeof(ring_chain));
++	ret = hclge_get_ring_chain_from_mbx(req, &ring_chain, vport);
++	if (ret)
++		return ret;
++
++	ret = hclge_query_ring_vector_map(vport, &ring_chain, &desc);
++	if (ret) {
++		hclge_free_vector_ring_chain(&ring_chain);
++		return ret;
++	}
++
++	tqp_type_and_id = le16_to_cpu(data->tqp_type_and_id[0]);
++	int_gl_index = hnae3_get_field(tqp_type_and_id,
++				       HCLGE_INT_GL_IDX_M, HCLGE_INT_GL_IDX_S);
++
++	resp->data[HCLGE_RING_TYPE_OFFSET] = req->msg.param[0].ring_type;
++	resp->data[HCLGE_TQP_INDEX_OFFSET] = req->msg.param[0].tqp_index;
++	resp->data[HCLGE_INT_GL_INDEX_OFFSET] = int_gl_index;
++	resp->data[HCLGE_VECTOR_ID_OFFSET] = data->int_vector_id_l;
++	resp->len = HCLGE_RING_VECTOR_MAP_INFO_LEN;
++
++	hclge_free_vector_ring_chain(&ring_chain);
++
++	return ret;
++}
++
+ static void hclge_set_vf_promisc_mode(struct hclge_vport *vport,
+ 				      struct hclge_mbx_vf_to_pf_cmd *req)
  {
- 	struct hl_mmap_mem_buf *buf;
- 	struct idr *idp;
-+	const char *topic;
- 	u32 id;
- 
- 	idp = &mmg->handles;
- 
- 	idr_for_each_entry(idp, buf, id) {
-+		topic = buf->behavior->topic;
- 		if (hl_mmap_mem_buf_put(buf) != 1)
- 			dev_err(mmg->dev,
--				"Buff handle %u for CTX is still alive\n", id);
-+				"%s: Buff handle %u for CTX is still alive\n",
-+				topic, id);
- 	}
- 
- 	/* TODO: can it happen that some buffer is still in use at this point? */
+@@ -755,6 +830,14 @@ void hclge_mbx_handler(struct hclge_dev *hdev)
+ 			ret = hclge_map_unmap_ring_to_vf_vector(vport, false,
+ 								req);
+ 			break;
++		case HCLGE_MBX_GET_RING_VECTOR_MAP:
++			ret = hclge_get_vf_ring_vector_map(vport, req,
++							   &resp_msg);
++			if (ret)
++				dev_err(&hdev->pdev->dev,
++					"PF fail(%d) to get VF ring vector map\n",
++					ret);
++			break;
+ 		case HCLGE_MBX_SET_PROMISC_MODE:
+ 			hclge_set_vf_promisc_mode(vport, req);
+ 			break;
 -- 
-2.25.1
+2.33.0
 
