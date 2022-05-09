@@ -2,200 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65749C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 12:31:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20B05C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 12:32:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234566AbiEIMfk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 08:35:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51448 "EHLO
+        id S234612AbiEIMgl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 08:36:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234486AbiEIMfh (ORCPT
+        with ESMTP id S234577AbiEIMge (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 08:35:37 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41E5D262653;
-        Mon,  9 May 2022 05:31:43 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id C7AA01F948;
-        Mon,  9 May 2022 12:31:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1652099501; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=D3NP2+AfAwypB8dY0Q7Ug6eLsoFCTz9seHAEXMlM3rE=;
-        b=ytxhXz4/4X/4ZUocjQYzh7Hr0W6tRQwbt9YKELwp2fkTQy/AbU5PuIOisC6RWWGKXGlIoj
-        jP0uhhlOEZkzUXWku7fLVF8BiLEYVIY2ia8rkLziXFx7z1rJU8CWWGlJzjb8GzLsZ9tbn5
-        oTHGnOCv2vK/30agcRle8RU5PymF+sk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1652099501;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=D3NP2+AfAwypB8dY0Q7Ug6eLsoFCTz9seHAEXMlM3rE=;
-        b=xjCMniOCStfULiGuvDqMybVagZXS58I0G6UrDb7F7bEXtB5AoQt/PKxZwcJvlCbP7xybJM
-        JpEPL2tDrpGLqHAA==
-Received: from quack3.suse.cz (unknown [10.163.28.18])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id A99522C141;
-        Mon,  9 May 2022 12:31:41 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id 4BC83A062A; Mon,  9 May 2022 14:31:38 +0200 (CEST)
-Date:   Mon, 9 May 2022 14:31:38 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     yebin <yebin10@huawei.com>
-Cc:     Jan Kara <jack@suse.cz>, tytso@mit.edu, adilger.kernel@dilger.ca,
-        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lczerner@redhat.com
-Subject: Re: [PATCH -next] ext4: fix bug_on in ext4_writepages
-Message-ID: <20220509123138.n3tmpybh2jf3x2eg@quack3.lan>
-References: <20220505135708.2629657-1-yebin10@huawei.com>
- <20220505154713.nig6rj76p2gl5mm7@quack3.lan>
- <6274797D.6050303@huawei.com>
- <20220506085034.akzobmffzosg7rem@quack3.lan>
- <6275192C.5080300@huawei.com>
+        Mon, 9 May 2022 08:36:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 97E70284929
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 05:32:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652099558;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=YyVeP8FyL2hyCQ2N083n40aBu6xoSDc160MDLkcNums=;
+        b=D2thnBq4I5ldVx9ixN6WngV4/0NSuy7DLBvTOONjforAiymfCBcWDxYit2EYKnzRx43muF
+        zjfvIIMbsz6xeeHvSdWs5pJXe8IDkNgRqrPLWBZLF9qvQjnhxUipu2MO6WCKbyAM6b4y4f
+        W0Ndq/+aZ9X9C4yGKwnfBtLHDZjzhVg=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-416-P7URrcIxP8mcowMcXOp81w-1; Mon, 09 May 2022 08:32:37 -0400
+X-MC-Unique: P7URrcIxP8mcowMcXOp81w-1
+Received: by mail-qt1-f199.google.com with SMTP id x10-20020ac8700a000000b002c3ef8fc44cso11943549qtm.8
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 05:32:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YyVeP8FyL2hyCQ2N083n40aBu6xoSDc160MDLkcNums=;
+        b=DuFtbngAGdw8nbrDROjiXNglF8MraQxZcSF7nUS3dvPzr2uv+7cwIfaRURwFnvYg+9
+         XBqXshVQ4zHm+gR399sikBtTDM1jzOnuPiG51nrVjEXySW5wrKL1LQtL80+s646wK2WE
+         B0omgl2/RVfyyC1iCcENQs6MhIgwQii1iF9qcUCOHsU3OME05qxyr1wqyB0+DqU9oAlK
+         ZFaoHZKUgBGvoTPpzDp/x8er8W/NIm0Y/NN+uB7Nv+E7aIfjFhnTYxWY6ebfH3UZpOSC
+         zAoYcCCcYgcnpFNuGn0FTZzz1KvaA+PF+PRxK1TUIe4CUCtTOQOl9CMUeA5DyUW17hvt
+         R8dQ==
+X-Gm-Message-State: AOAM5304D4VsRXNra37+aX5dFg+zozyC6/yPGLcJ8vn1IV+4isYVHPSx
+        V16GJ9KL1BM5PUqa+rRdzyaGWEUp6+FWlAQU4jh5iZOzrp9Bm04mF5YC7DSQPpdGUNzUmtoQmLo
+        9FpvY3+EwUbISewFyLbByLgqD
+X-Received: by 2002:a05:6214:3012:b0:45a:afde:568b with SMTP id ke18-20020a056214301200b0045aafde568bmr12922421qvb.2.1652099556892;
+        Mon, 09 May 2022 05:32:36 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyR0DnU583XohtUlCS3huesd3t60jnAeqmFyQSwk+kv9UkI5PNlzULAHfpsImS/2Qvu9b+YRQ==
+X-Received: by 2002:a05:6214:3012:b0:45a:afde:568b with SMTP id ke18-20020a056214301200b0045aafde568bmr12922403qvb.2.1652099556686;
+        Mon, 09 May 2022 05:32:36 -0700 (PDT)
+Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id t134-20020a37aa8c000000b0069fc13ce23bsm6818499qke.108.2022.05.09.05.32.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 May 2022 05:32:36 -0700 (PDT)
+From:   Tom Rix <trix@redhat.com>
+To:     hughd@google.com, akpm@linux-foundation.org, nathan@kernel.org,
+        ndesaulniers@google.com, willy@infradead.org
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, Tom Rix <trix@redhat.com>
+Subject: [PATCH] mm/shmem: restore setting of page variable
+Date:   Mon,  9 May 2022 08:32:32 -0400
+Message-Id: <20220509123232.3428667-1-trix@redhat.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <6275192C.5080300@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri 06-05-22 20:48:44, yebin wrote:
-> On 2022/5/6 16:50, Jan Kara wrote:
-> > On Fri 06-05-22 09:27:25, yebin wrote:
-> > > On 2022/5/5 23:47, Jan Kara wrote:
-> > > > On Thu 05-05-22 21:57:08, Ye Bin wrote:
-> > > > > we got issue as follows:
-> > > > > EXT4-fs error (device loop0): ext4_mb_generate_buddy:1141: group 0, block bitmap and bg descriptor inconsistent: 25 vs 31513 free cls
-> > > > > ------------[ cut here ]------------
-> > > > > kernel BUG at fs/ext4/inode.c:2708!
-> > > > > invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
-> > > > > CPU: 2 PID: 2147 Comm: rep Not tainted 5.18.0-rc2-next-20220413+ #155
-> > > > > RIP: 0010:ext4_writepages+0x1977/0x1c10
-> > > > > RSP: 0018:ffff88811d3e7880 EFLAGS: 00010246
-> > > > > RAX: 0000000000000000 RBX: 0000000000000001 RCX: ffff88811c098000
-> > > > > RDX: 0000000000000000 RSI: ffff88811c098000 RDI: 0000000000000002
-> > > > > RBP: ffff888128140f50 R08: ffffffffb1ff6387 R09: 0000000000000000
-> > > > > R10: 0000000000000007 R11: ffffed10250281ea R12: 0000000000000001
-> > > > > R13: 00000000000000a4 R14: ffff88811d3e7bb8 R15: ffff888128141028
-> > > > > FS:  00007f443aed9740(0000) GS:ffff8883aef00000(0000) knlGS:0000000000000000
-> > > > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > > > > CR2: 0000000020007200 CR3: 000000011c2a4000 CR4: 00000000000006e0
-> > > > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > > > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > > > > Call Trace:
-> > > > >    <TASK>
-> > > > >    do_writepages+0x130/0x3a0
-> > > > >    filemap_fdatawrite_wbc+0x83/0xa0
-> > > > >    filemap_flush+0xab/0xe0
-> > > > >    ext4_alloc_da_blocks+0x51/0x120
-> > > > >    __ext4_ioctl+0x1534/0x3210
-> > > > >    __x64_sys_ioctl+0x12c/0x170
-> > > > >    do_syscall_64+0x3b/0x90
-> > > > > 
-> > > > > It may happen as follows:
-> > > > > 1. write inline_data inode
-> > > > > vfs_write
-> > > > >     new_sync_write
-> > > > >       ext4_file_write_iter
-> > > > >         ext4_buffered_write_iter
-> > > > >           generic_perform_write
-> > > > > 	  ext4_da_write_begin
-> > > > > 	    ext4_da_write_inline_data_begin -> If inline data size too
-> > > > > 	    small will allocate block to write, then mapping will has
-> > > > > 	    dirty page
-> > > > > 	    	ext4_da_convert_inline_data_to_extent ->clear EXT4_STATE_MAY_INLINE_DATA
-> > > > > 2. fallocate
-> > > > > do_vfs_ioctl
-> > > > >     ioctl_preallocate
-> > > > >       vfs_fallocate
-> > > > >         ext4_fallocate
-> > > > >           ext4_convert_inline_data
-> > > > > 	  ext4_convert_inline_data_nolock
-> > > > > 	    ext4_map_blocks -> fail will goto restore data
-> > > > > 	    ext4_restore_inline_data
-> > > > > 	      ext4_create_inline_data
-> > > > > 	      ext4_write_inline_data
-> > > > > 	      ext4_set_inode_state -> set inode EXT4_STATE_MAY_INLINE_DATA
-> > > > > 3. writepages
-> > > > > __ext4_ioctl
-> > > > >     ext4_alloc_da_blocks
-> > > > >       filemap_flush
-> > > > >         filemap_fdatawrite_wbc
-> > > > >           do_writepages
-> > > > > 	  ext4_writepages
-> > > > > 	    if (ext4_has_inline_data(inode))
-> > > > > 	      BUG_ON(ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA))
-> > > > > 
-> > > > > To solved this issue, record origin 'EXT4_STATE_MAY_INLINE_DATA' flag, then pass
-> > > > > value to 'ext4_restore_inline_data', 'ext4_restore_inline_data' will
-> > > > > decide to if recovery 'EXT4_STATE_MAY_INLINE_DATA' flag according to parameter.
-> > > > > 
-> > > > > Signed-off-by: Ye Bin <yebin10@huawei.com>
-> > > > I think this will get also fixed by a patch from your colleague I've
-> > > > reviewed here [1], won't it?
-> > > > 
-> > > > [1] https://lore.kernel.org/all/20220428165725.mvjh6mx7gr5vekqe@quack3.lan
-> > > > 
-> > > The issue I fixed is not the same as the isuue my colleague fixed.
-> > OK, maybe I've jumped to conclusion too early but the fix I've referenced
-> > above will protect ext4_convert_inline_data() in ext4_fallocate() with
-> > inode->i_rwsem so I think the race you describe with ext4_da_write_begin()
-> > cannot happen. The inline conversion path with be entered either from
-> > ext4_da_write_begin() or from ext4_fallocate() but not from both. If I'm
-> > missing something, please explain how you think the problem happens with
-> > the above fix applied... Thanks!
-> > 
-> > 								Honza
-> It's happen as follows:
-> step1:
-> ext4_file_write_iter
->   ext4_buffered_write_iter
->     generic_perform_write
->       ext4_da_write_begin
->         if (ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA))
->           ext4_da_write_inline_data_begin
->             ext4_da_convert_inline_data_to_extent
->               __block_write_begin
->               ext4_clear_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
->             ->clear EXT4_STATE_MAY_INLINE_DATA flag,  If inline data size
-> too
->         small will allocate block to write, then mapping will has dirty page
-> 
->       ext4_da_write_end
->         generic_write_end
-> 
-> step2：
-> vfs_fallocate
->   ext4_fallocate
->     ext4_convert_inline_data
->       if (ext4_has_inline_data(inode))  -> This condition is satisfied
->         ext4_convert_inline_data_nolock
->           ext4_map_blocks -> fail will goto restore data
->           ext4_restore_inline_data
->            ext4_create_inline_data
->            ext4_write_inline_data
->            ext4_set_inode_state -> set inode EXT4_STATE_MAY_INLINE_DATA
-> step3:
-> do_writepages
->   ext4_writepages
->     if (ext4_has_inline_data(inode))
->       BUG_ON(ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA))
-> 
-> As we call "ext4_destroy_inline_data" to destory inline data when delay
-> allocation.  So，if we call fallocate before writepages while
-> ext4_map_blocks return failed, will lead to above issue.  This issue does
-> not require concurrency conditions.
+The clang build fails with
+mm/shmem.c:2337:8: error: variable 'page' is uninitialized when used here [-Werror,-Wuninitialized]
+  if (!page)
+       ^~~~
 
-Aha, I see now. Thanks for explanation and sorry for being a bit dense.
-I'll have a look at your original patch.
+In the commit listed in the fixes, there was a change to the
+from
+  page = shmem_alloc_page(..);
+to
+  page = &shmem_alloc_folio(..)->page;
+But in this case, instead of replacing, the setting of page was
+deleted.  So restore page with its new api.
 
-								Honza
+Fixes: b0bb08b2d5f3 ("mm/shmem: turn shmem_alloc_page() into shmem_alloc_folio()")
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ mm/shmem.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/mm/shmem.c b/mm/shmem.c
+index 7faaa61ff7fa..a2234f19b711 100644
+--- a/mm/shmem.c
++++ b/mm/shmem.c
+@@ -2334,6 +2334,7 @@ int shmem_mfill_atomic_pte(struct mm_struct *dst_mm,
+ 
+ 	if (!*pagep) {
+ 		ret = -ENOMEM;
++		page = &shmem_alloc_folio(gfp, info, pgoff)->page;
+ 		if (!page)
+ 			goto out_unacct_blocks;
+ 
 -- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+2.27.0
+
