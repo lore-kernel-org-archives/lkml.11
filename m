@@ -2,159 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12404C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 14:57:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65CD5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 14:58:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237522AbiEIPBi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 11:01:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37688 "EHLO
+        id S238095AbiEIPBY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 11:01:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237949AbiEIPBI (ORCPT
+        with ESMTP id S237914AbiEIPAA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 11:01:08 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7693927A899;
-        Mon,  9 May 2022 07:57:09 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id x18so14082481plg.6;
-        Mon, 09 May 2022 07:57:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :references:content-language:in-reply-to:content-transfer-encoding;
-        bh=Rv24537FAid4FkoG5vC//ersbcU5Q/QTrNuy2uhLE+c=;
-        b=YPkDSwQ5S0E7Oy1AUcGX1O14/o7qtUFAXUSXV/GU1bvmxUPafqgmsbqufLfn3pDvUz
-         KinPrlyrMM7g948dadsAtTQTbqkM0/oO4bsBTGY3Rt3uBP0jxW3EXKeWmgsguxTtOqLk
-         Ya0E4HH3YiQerNLit6T2CBwt6UPs8VV4vcP10SD/AhQpiJMwRQbR0guT8hMe9MaoMnTW
-         dzcvjEWgkvi4gdG4lVMVqzgWP7q4aghJFTwJ7qiGoR3ChpqZSSJpfu02kWGRrOw5+vwA
-         c5Esi9//CD67WHWnFWrSa8QFRdAAJ0OTP7+K8TfQ8ln4En7SfcAeJyHu4sGEOPQfmUnD
-         lN9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:references:content-language:in-reply-to
-         :content-transfer-encoding;
-        bh=Rv24537FAid4FkoG5vC//ersbcU5Q/QTrNuy2uhLE+c=;
-        b=N34x0eL3m+Cu9fks1aKN1puGOwwJ24UlZoEuI/onmBoW6/HmxZoDtb7Z7cgpmrupMu
-         tigkTWFEGHCdOKVk2Hly+vcZwkoKrmFLX9shm6YjFJvqCkjAWOpsbTdUsJcTR0oe4KIF
-         3bEpM7OrRvip7bVy3NfJV8xcErP2EYTRANwfZpZKPdrVPwGeGxH2oeaslzPKapc4g1qa
-         8q6+1DFmi8/Z6ifOwaFV1VEJGqck5wWNIaxfbFgiGAFNCInbu6ysGYCzdwOoQnkg574B
-         A1PUw6cU9xA6GD93lR4Xz4ns7ooAKWmjwyIx0sjA3KLm7ny6rz85b5bfdxnPwrBZ1ShR
-         yI4w==
-X-Gm-Message-State: AOAM531/l5ox8XQTrsWvu0oAa3U90fogP4UPgSo5kbtKvmsUHv43i2eo
-        vaJctF68HviASfHWVA6y+Zc=
-X-Google-Smtp-Source: ABdhPJwrkAzjNvukP+xrbe/mrqvr3+QVoCnL9nosgzjDlSCxY5RDZLM/k5624oZsIpeWrJEh6LhFcQ==
-X-Received: by 2002:a17:90b:4c10:b0:1dc:8289:7266 with SMTP id na16-20020a17090b4c1000b001dc82897266mr26873370pjb.190.1652108228929;
-        Mon, 09 May 2022 07:57:08 -0700 (PDT)
-Received: from [192.168.11.5] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
-        by smtp.gmail.com with ESMTPSA id hi1-20020a17090b30c100b001da3780bfd3sm133322pjb.0.2022.05.09.07.57.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 07:57:08 -0700 (PDT)
-Message-ID: <92a7010c-5bb2-65df-edde-0ca88e035c2e@gmail.com>
-Date:   Mon, 9 May 2022 23:56:59 +0900
+        Mon, 9 May 2022 11:00:00 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2082.outbound.protection.outlook.com [40.107.223.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14D3524BB29;
+        Mon,  9 May 2022 07:56:01 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GXmH2EH9fAxP2jAOPpQn5FSbLCm73Q7RGWddalGMsSN7VYJ91WumVEol4qyUTIK/YfiVZZ3LWxDB24I7wKoRPSZ6VFjR5Ijz2yP2DkWGasGv9kWm8GOGt6AJRR4NSeiZlh+d/ak0OD88qY5ilEvr+wfiVcmdwzk8RYda0ewU+jBMqmRT+iY0sUvcWnfj8zJXkPkl/stj52MxMXg26w1XxzsyhO0eZWcmGQo57CRxxN71vgsYZ+8CfE6uzc+IYmxr5QOFtQKuhI+9i0RuiIQnhoyKSTn9hAqdNw4dWzzVHC+aChjIWKQUNTtSnSn+pbnYJzTc6Aajou+xyGwWNz74Qw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=WOP6sdubyHv8i9LkxrD85AO2qRI7kXMvNjTNtlJkwNg=;
+ b=DNQSDPy2AVdvakfGWnU4TPE5MvpV7hVucNmpp2I92U2UwTK/0bENlfa7GlashBcaSzskkMVsFNWT3NQAVLeE5hjau9LIatiJ9Th5ubjBoOj7C6cBwdKOmgJjXO2JJ2lH4GTeJQecODR8nBd4FOn9u+cAAo4bICUaWmktG7Sl4kfUwWtJ+214jN30xLYJdmHkT0wutQJW7gCsnpSgwVwg/UlbboanPlo7Nvsq265cyZofAUW/7o2rqFvp9+HlyvBJeulwaqo4Y+n0szMg6nQHua9AvAinifAUPH3pEJ/KtWjry+R1lAW7H3UEyDJMgxfMXOcRpZuzZYzK+Rq2O970GA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=alien8.de smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WOP6sdubyHv8i9LkxrD85AO2qRI7kXMvNjTNtlJkwNg=;
+ b=bXKj9wqHSdkRk3evdlcOMQAjy58iQhUAMf7cuuP/slXIUL6J/yXIBGyrmIddNeaDRpXh4wlEkFDqEj6GJiOwrvAxnqR3jGDIRGGoV8mDmCF1bQJRbv6xx//g+eaQmFE1Gesg9+WZ5OG/a/ISqRTMfzGj968JLAk54AWBNfWKxvA=
+Received: from MW4PR03CA0215.namprd03.prod.outlook.com (2603:10b6:303:b9::10)
+ by CH2PR12MB4181.namprd12.prod.outlook.com (2603:10b6:610:a8::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.21; Mon, 9 May
+ 2022 14:55:59 +0000
+Received: from CO1NAM11FT012.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:b9:cafe::17) by MW4PR03CA0215.outlook.office365.com
+ (2603:10b6:303:b9::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.22 via Frontend
+ Transport; Mon, 9 May 2022 14:55:59 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT012.mail.protection.outlook.com (10.13.175.192) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5227.15 via Frontend Transport; Mon, 9 May 2022 14:55:59 +0000
+Received: from yaz-ethanolx.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 9 May
+ 2022 09:55:52 -0500
+From:   Yazen Ghannam <yazen.ghannam@amd.com>
+To:     <bp@alien8.de>, <linux-edac@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>,
+        <Smita.KoralahalliChannabasappa@amd.com>, <muralidhara.mk@amd.com>,
+        <naveenkrishna.chatradhi@amd.com>,
+        Yazen Ghannam <yazen.ghannam@amd.com>
+Subject: [PATCH 18/18] EDAC/amd64: Add get_err_info() into pvt->ops
+Date:   Mon, 9 May 2022 14:55:34 +0000
+Message-ID: <20220509145534.44912-19-yazen.ghannam@amd.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220509145534.44912-1-yazen.ghannam@amd.com>
+References: <20220509145534.44912-1-yazen.ghannam@amd.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-From:   Akira Yokosawa <akiyks@gmail.com>
-Subject: Re: [PATCH v6 18/23] docs: add Rust documentation
-To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>
-Cc:     Miguel Ojeda <ojeda@kernel.org>,
-        Alex Gaynor <alex.gaynor@gmail.com>,
-        Adam Bratschi-Kaye <ark.email@gmail.com>,
-        Boris-Chengbiao Zhou <bobo1239@web.de>,
-        Wu XiangCheng <bobwxc@email.cn>, Daniel Xu <dxu@dxuuu.xyz>,
-        Gary Guo <gary@garyguo.net>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Yuki Okushi <jtitor@2k36.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Julian Merkle <me@jvmerkle.de>, Finn Behrens <me@kloenk.de>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        rust-for-linux <rust-for-linux@vger.kernel.org>,
-        Sven Van Asbroeck <thesven73@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        Wei Liu <wei.liu@kernel.org>
-References: <20220507052451.12890-19-ojeda@kernel.org>
- <7e9c2e77-8b70-6e15-3f3d-905ab42b0fcd@gmail.com>
- <CANiq72mBVo4+htxVjY0wB1Y3GO2PEUiZjZKRYT8ddwx84-hAtg@mail.gmail.com>
-Content-Language: en-US
-In-Reply-To: <CANiq72mBVo4+htxVjY0wB1Y3GO2PEUiZjZKRYT8ddwx84-hAtg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 66ea85d1-2c1c-4a13-e817-08da31cc07a2
+X-MS-TrafficTypeDiagnostic: CH2PR12MB4181:EE_
+X-Microsoft-Antispam-PRVS: <CH2PR12MB4181052444433A81010D88BEF8C69@CH2PR12MB4181.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: k8gOzJOPJPQ1jDZabKcjg220uNJCwrvkRMkyCOXWPBtrjIFSsD+nlGmGo9fotyQDCUHY3y2Sqx+B4qYV0VETVy+pD6HiWEj1lp6fu5pmqctXreqKcE/TDys43XKrArPFJhhJwtzbknPwul4dEm5EwgUaGNRp6mO5xbi3Qx4dGw56ujoqs5HkyB/mfDdN3UB1A2Ek0Bs2jSswYS7Tj6EiQk8IWTv74vDSoYlZcPCK5bk4NkKpTx8Q6O9hkg0JttZi80HnNFsItRHSjdIt+nxW5rl54RnMrKlQCninLYzLOMb/V9XvysCVF6zv+7uMLLlrXj4KnbxmGiBzsQUUKNNjUi03VSFyy0m268BdEn2X1nu6YDqgUHNhbalgit+DnDSHbgyfuzo3qee6YuDogm99yFMlePtxqRA6N7k5n6YI71cej6/KR6TliCe9dGzXGk/L2ZEmzCxrG7R+EBrsVCQQA6OK7+1+XF6SAMTNpW9RIu6tPIa1O7BuHgsW/rvUuqkwVAKXEmOhKyv0b3rLBnkVIh392MiakGv9lWRpDZDOlZWSWJ9D1wUBSAuDtqdY6dCF7A7pYmWECiFoO/9yjJrZhQc5GpmgJjUisr7PxC1VpUgQ9KPpMLBHp6ZXPmC3w0CJw0bhTUpeAUBuySF3N7pZn/9yjf+I21wJD1d55FHzmo0ZTyiulfpP2B6ft4Fb2NHFkpruSRDoeXB2+68kVMKEEw==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(44832011)(2906002)(36756003)(356005)(40460700003)(36860700001)(16526019)(8936002)(81166007)(5660300002)(110136005)(4326008)(1076003)(186003)(83380400001)(70206006)(47076005)(426003)(336012)(508600001)(70586007)(8676002)(2616005)(82310400005)(54906003)(316002)(7696005)(6666004)(86362001)(26005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2022 14:55:59.5677
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 66ea85d1-2c1c-4a13-e817-08da31cc07a2
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT012.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4181
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[+To: Jon]
+From: Muralidhara M K <muralidhara.mk@amd.com>
 
-On Mon, 9 May 2022 12:41:28 +0200,
-Miguel Ojeda wrote:
-> Hi Akira,
-> 
-> On Mon, May 9, 2022 at 6:02 AM Akira Yokosawa <akiyks@gmail.com> wrote:
->>
->> I think you agreed splitting SVG part into its own patch with
->> a proper copying info, etc.  Let me see...  So, here is the link:
-> 
-> Yes, sorry, will do (in fact, it should have been there in v5 too).
-> 
-> By the way, the Linux SVG logo (used to make the one here) is pending
-> in the linux-doc ML.
+GPU Nodes will use a different method to determine the chip select
+and channel of an error. A function pointer should be used rather
+than introduce another branching condition.
 
-So you mean the following post:
+Prepare for this by adding get_err_info() to pvt->ops. This function is
+only called from the modern code path, so a legacy function is not
+defined.
 
-    https://lore.kernel.org/lkml/20220207014418.GA28724@kernel.org/
+Use a "umc" prefix for modern systems, since these use Unified Memory
+Controllers (UMCs).
 
-I'm not sure why Jon has not responded.
+Signed-off-by: Muralidhara M K <muralidhara.mk@amd.com>
+Signed-off-by: Naveen Krishna Chatradhi <naveenkrishna.chatradhi@amd.com>
+[Rebased/reworked patch and reworded commit message]
+Signed-off-by: Yazen Ghannam <yazen.ghannam@amd.com>
+---
+ drivers/edac/amd64_edac.c | 15 ++++++++++-----
+ drivers/edac/amd64_edac.h |  1 +
+ 2 files changed, 11 insertions(+), 5 deletions(-)
 
-Jon, was there any issue on this patch?
+diff --git a/drivers/edac/amd64_edac.c b/drivers/edac/amd64_edac.c
+index 248d1082736e..81d165bcd252 100644
+--- a/drivers/edac/amd64_edac.c
++++ b/drivers/edac/amd64_edac.c
+@@ -3067,10 +3067,16 @@ static inline void decode_bus_error(int node_id, struct mce *m)
+  * Currently, we can derive the channel number by looking at the 6th nibble in
+  * the instance_id. For example, instance_id=0xYXXXXX where Y is the channel
+  * number.
++ *
++ * csrow can be derived from the lower 3 bits of MCA_SYND value.
++ *
++ * For DRAM ECC errors, the Chip Select number is given in bits [2:0] of
++ * the MCA_SYND[ErrorInformation] field.
+  */
+-static int find_umc_channel(struct mce *m)
++static void umc_get_err_info(struct mce *m, struct err_info *err)
+ {
+-	return (m->ipid & GENMASK(31, 0)) >> 20;
++	err->channel = (m->ipid & GENMASK(31, 0)) >> 20;
++	err->csrow = m->synd & 0x7;
+ }
+ 
+ static void decode_umc_error(int node_id, struct mce *m)
+@@ -3092,8 +3098,6 @@ static void decode_umc_error(int node_id, struct mce *m)
+ 	if (m->status & MCI_STATUS_DEFERRED)
+ 		ecc_type = 3;
+ 
+-	err.channel = find_umc_channel(m);
+-
+ 	if (!(m->status & MCI_STATUS_SYNDV)) {
+ 		err.err_code = ERR_SYND;
+ 		goto log_error;
+@@ -3108,7 +3112,7 @@ static void decode_umc_error(int node_id, struct mce *m)
+ 			err.err_code = ERR_CHANNEL;
+ 	}
+ 
+-	err.csrow = m->synd & 0x7;
++	pvt->ops->get_err_info(m, &err);
+ 
+ 	if (umc_normaddr_to_sysaddr(m->addr, pvt->mc_node_id, err.channel, &sys_addr)) {
+ 		err.err_code = ERR_NORM_ADDR;
+@@ -3757,6 +3761,7 @@ static struct low_ops umc_ops = {
+ 	.init_csrows			= umc_init_csrows,
+ 	.dump_misc_regs			= umc_dump_misc_regs,
+ 	.get_cs_mode			= umc_get_cs_mode,
++	.get_err_info			= umc_get_err_info,
+ 	.setup_mci_misc_attrs		= setup_mci_misc_attrs,
+ };
+ 
+diff --git a/drivers/edac/amd64_edac.h b/drivers/edac/amd64_edac.h
+index 1f64c08ae0ce..d5a64b0639bb 100644
+--- a/drivers/edac/amd64_edac.h
++++ b/drivers/edac/amd64_edac.h
+@@ -480,6 +480,7 @@ struct low_ops {
+ 	int  (*init_csrows)(struct mem_ctl_info *mci);
+ 	void (*dump_misc_regs)(struct amd64_pvt *pvt);
+ 	int  (*get_cs_mode)(int dimm, u8 ctrl, struct amd64_pvt *pvt);
++	void (*get_err_info)(struct mce *m, struct err_info *err);
+ };
+ 
+ int __amd64_read_pci_cfg_dword(struct pci_dev *pdev, int offset,
+-- 
+2.25.1
 
-> 
->> I might have missed v5 of this patch series.
->> That might be because v5's 15/20 was not accepted by linux-doc's
->> lore archive (maybe) due to its size despite it had Cc: linux-doc.
->> v6's 18/23 was also rejected.
-> 
-> Yes, a few patches get rejected in several lists. We were told this
-> was fine as long as LKML gets them (the cover letter has the lists in
-> Cc).
-> 
->> I have some alternative ideas for table formatting in ReST.
-> 
-> I was following the LLVM one, but it makes sense to use the other ones
-> where possible. I can send a patch for that one too.
-> 
->> So here are a couple of alternative ways to represent the table
->>
->> * ASCII-art format:
->> * Literal block format:
-> 
-> Thanks for taking the time to format the examples, it is useful :)
-Glad you like it.  ;-)
-
-        Thanks, Akira
-
-> 
->> As you see, those inline-literal markers of ``xxxx``, which are
->> distracting when the .rst file is read as plain-text, are not
->> necessary in the literal-block approach.  And you can directly
-> 
-> I agree, it can be better (it is one reason I find Markdown a bit more
-> readable since it uses a single backquote for that instead of two).
-> 
->> In my opinion, the literal-block approach should be the most
->> reasonable choice here. Of course its your call which one
->> to choose.
-> 
-> Yeah, that sounds reasonable. I will take a look.
-> 
-> Thanks for the review!
-> 
-> Cheers,
-> Miguel
