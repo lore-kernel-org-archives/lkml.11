@@ -2,129 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39669C46467
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:30:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBF83C4167D
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:30:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237142AbiEIJdN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 05:33:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35032 "EHLO
+        id S236054AbiEIJdD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 05:33:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238238AbiEIJNd (ORCPT
+        with ESMTP id S233097AbiEIJBK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 05:13:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84141201EA8;
-        Mon,  9 May 2022 02:09:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B9285B810A6;
-        Mon,  9 May 2022 09:09:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72612C385AB;
-        Mon,  9 May 2022 09:09:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652087369;
-        bh=rYlTPSQ6FXF7zF9p7LDZTYP/JQglCROOG1/iNS2upeo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fkuJHZv3/usYj/OGKMcXT2qWre9/pHK4qg5n16+A6fFX+IDvUi8SI9RV5GRCWCshT
-         WOZKLk1Y13ZwwbjkGw0qlEfxoSM7yG4L6cvqL0tz5pUhXKX/eXT6GUAvuQxyTtJJne
-         Bx5AuXTil4kjjnugWv8OQJaYJD9DC8tAGIAzbXxipGExl9NWlQGFd7favllpB/NRpN
-         j01O7gs2TjlJiWP9SzMDRzDHYLBR7SKB3NJ8uAkyoTCoH3OhqHlbm35U6YcaUbZKsc
-         /9HtUeroHAVvTdVK4auEZnSnF9hT2mZbP9jd573dccqjDg+HEETQQ0ssMe3zqRjvVW
-         C2n0H3hWWU4RA==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nnzOQ-009uuU-VM; Mon, 09 May 2022 10:09:27 +0100
-Date:   Mon, 09 May 2022 10:09:26 +0100
-Message-ID: <87h75z6pix.wl-maz@kernel.org>
-From:   Marc Zyngier <maz@kernel.org>
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     Lukas Wunner <lukas@wunner.de>,
+        Mon, 9 May 2022 05:01:10 -0400
+Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AEBE15A3CE;
+        Mon,  9 May 2022 01:57:14 -0700 (PDT)
+Received: by mail-qt1-f182.google.com with SMTP id h3so10488247qtn.4;
+        Mon, 09 May 2022 01:57:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fkNL9UF9gn3bo4ZBmPpkTUdSu1SkuvIXS7tPfz0O7Z4=;
+        b=WxLPzbiNEEJgF+73W19C4piyoT9Rk94USD83uAZjnJuYs2nUh07S0InPXZUHLyiCpd
+         MausihgTOysVgKkhtHJET9/0U6bPQ8cVvL9niJr+fSWDIXrsVHUQpiQlnxyK4X8eznYa
+         Ane25Xviw+lG+sGXOAA1PTeTvDwFh8dxma8mkqkzeuqoUop0+qxFrxQaOUFreiKdxLBs
+         WNVDk3pcJ95iJREWMvUXQhV5X+np8k6SbeAyVS/LnBsvG2Zt+aT5j0Kk+kbQObubeWZf
+         /QE/AJWhTwVfJhqOL5TkW+qTM5D46ua9uNQ0yfg0aMRYPRGbVPpUws7yRmoV98ihQXVo
+         HcDA==
+X-Gm-Message-State: AOAM530QIC5fvJhPjQw17nu8dxVJFC899efiRFKFKFh1KpzqggW5K68T
+        zGPOqArHts7WWXmtLVolm2zqJaGqvKqq6g==
+X-Google-Smtp-Source: ABdhPJziinEhRR9kq9fTEUIXGw1u6VGoI1Xd9iZX4Sdh99qd6a/LWRQP5UPyaQ3eIMyGte0Gtr4rAQ==
+X-Received: by 2002:ac8:578a:0:b0:2e1:a0d2:c3a with SMTP id v10-20020ac8578a000000b002e1a0d20c3amr14075087qta.261.1652086633446;
+        Mon, 09 May 2022 01:57:13 -0700 (PDT)
+Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
+        by smtp.gmail.com with ESMTPSA id cm11-20020a05622a250b00b002f39b99f66fsm7505297qtb.9.2022.05.09.01.57.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 09 May 2022 01:57:13 -0700 (PDT)
+Received: by mail-yb1-f174.google.com with SMTP id m128so23647360ybm.5;
+        Mon, 09 May 2022 01:57:12 -0700 (PDT)
+X-Received: by 2002:a25:4506:0:b0:648:cfc2:301d with SMTP id
+ s6-20020a254506000000b00648cfc2301dmr12216717yba.380.1652086632606; Mon, 09
+ May 2022 01:57:12 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220509050953.11005-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20220509050953.11005-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20220509050953.11005-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 9 May 2022 10:57:00 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdW0RF=ESX+WmLTrMYyhQ_M18FVn_g3A83WOe6gBzn19mg@mail.gmail.com>
+Message-ID: <CAMuHMdW0RF=ESX+WmLTrMYyhQ_M18FVn_g3A83WOe6gBzn19mg@mail.gmail.com>
+Subject: Re: [PATCH v2 1/5] dt-bindings: interrupt-controller: Add Renesas
+ RZ/G2L Interrupt Controller
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Linus Walleij <linus.walleij@linaro.org>,
         Bartosz Golaszewski <brgl@bgdev.pl>,
-        linux-gpio@vger.kernel.org,
-        Octavian Purdila <octavian.purdila@nxp.com>,
-        linux-kernel@vger.kernel.org, aou@eecs.berkeley.edu,
-        catalin.marinas@arm.com, deanbo422@gmail.com, green.hu@gmail.com,
-        guoren@kernel.org, jonas@southpole.se, kernelfans@gmail.com,
-        linux-arm-kernel@lists.infradead.org, linux@armlinux.org.uk,
-        nickhu@andestech.com, palmer@dabbelt.com, paul.walmsley@sifive.com,
-        shorne@gmail.com, stefan.kristiansson@saunalahti.fi,
-        tglx@linutronix.de, tsbogend@alpha.franken.de, vgupta@kernel.org,
-        vladimir.murzin@arm.com, will@kernel.org
-Subject: Re: [PATCH v2 17/17] irq: remove handle_domain_{irq,nmi}()
-In-Reply-To: <YnjWvbzn8ox+f2Y2@FVFF77S0Q05N>
-References: <20211026092504.27071-1-mark.rutland@arm.com>
-        <20211026092504.27071-18-mark.rutland@arm.com>
-        <20220506203242.GA1855@wunner.de>
-        <YnjWvbzn8ox+f2Y2@FVFF77S0Q05N>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
- (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-Content-Type: text/plain; charset=US-ASCII
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: mark.rutland@arm.com, lukas@wunner.de, linus.walleij@linaro.org, brgl@bgdev.pl, linux-gpio@vger.kernel.org, octavian.purdila@nxp.com, linux-kernel@vger.kernel.org, aou@eecs.berkeley.edu, catalin.marinas@arm.com, deanbo422@gmail.com, green.hu@gmail.com, guoren@kernel.org, jonas@southpole.se, kernelfans@gmail.com, linux-arm-kernel@lists.infradead.org, linux@armlinux.org.uk, nickhu@andestech.com, palmer@dabbelt.com, paul.walmsley@sifive.com, shorne@gmail.com, stefan.kristiansson@saunalahti.fi, tglx@linutronix.de, tsbogend@alpha.franken.de, vgupta@kernel.org, vladimir.murzin@arm.com, will@kernel.org
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 09 May 2022 09:54:21 +0100,
-Mark Rutland <mark.rutland@arm.com> wrote:
-> 
-> On Fri, May 06, 2022 at 10:32:42PM +0200, Lukas Wunner wrote:
-> > On Tue, Oct 26, 2021 at 10:25:04AM +0100, Mark Rutland wrote:
-> > > Now that entry code handles IRQ entry (including setting the IRQ regs)
-> > > before calling irqchip code, irqchip code can safely call
-> > > generic_handle_domain_irq(), and there's no functional reason for it to
-> > > call handle_domain_irq().
-> > > 
-> > > Let's cement this split of responsibility and remove handle_domain_irq()
-> > > entirely, updating irqchip drivers to call generic_handle_domain_irq().
-> > > 
-> > > For consistency, handle_domain_nmi() is similarly removed and replaced
-> > > with a generic_handle_domain_nmi() function which also does not perform
-> > > any entry logic.
-> > > 
-> > > Previously handle_domain_{irq,nmi}() had a WARN_ON() which would fire
-> > > when they were called in an inappropriate context. So that we can
-> > > identify similar issues going forward, similar WARN_ON_ONCE() logic is
-> > > added to the generic_handle_*() functions, and comments are updated for
-> > > clarity and consistency.
-> > [...]
-> > >  int generic_handle_domain_irq(struct irq_domain *domain, unsigned int hwirq)
-> > >  {
-> > > +	WARN_ON_ONCE(!in_irq());
-> > >  	return handle_irq_desc(irq_resolve_mapping(domain, hwirq));
-> > >  }
-> > >  EXPORT_SYMBOL_GPL(generic_handle_domain_irq);
-> > 
-> > Why isn't the WARN_ON_ONCE() conditional on handle_enforce_irqctx()?
-> > (See handle_irq_desc() and c16816acd086.)
-> 
-> I did this for consistency with the in_nmi() check in
-> generic_handle_domain_nmi(); I was unaware of commit c16816acd086 and
-> IRQD_HANDLE_ENFORCE_IRQCTX.
-> 
-> I'll have ot leave it to Marc and Thomas as to what we should do there.
+Hi Prabhakar,
 
-My preference would be to not introduce things that result in
-different behaviours for drivers, specially for things that are
-evidently cross-architecture such as USB drivers (which seems to be
-the case here).
+On Mon, May 9, 2022 at 7:10 AM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> Add DT bindings for the Renesas RZ/G2L Interrupt Controller.
+>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
 
-I'd rather do something that allows these to be handled in the right
-context such as a self-IPI. This would certainly work for the GIC. No
-idea whether this is valid for x86, which is the other user.
+Thanks for your patch!
 
-Thanks,
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/interrupt-controller/renesas,rzg2l-irqc.yaml
+> @@ -0,0 +1,131 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/interrupt-controller/renesas,rzg2l-irqc.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Renesas RZ/G2L (and alike SoC's) Interrupt Controller (IA55)
+> +
+> +maintainers:
+> +  - Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> +  - Geert Uytterhoeven <geert+renesas@glider.be>
+> +
+> +description: |
+> +  IA55 performs various interrupt controls including synchronization for the external
+> +  interrupts of NMI, IRQ, and GPIOINT and the interrupts of the built-in peripheral
+> +  interrupts output by each IP. And it notifies the interrupt to the GIC
+> +    - IRQ sense select for 8 external interrupts, mapped to 8 GIC SPI interrupts
+> +    - GPIO pins used as external interrupt input pins, mapped to 32 GIC SPI interrupts
+> +    - NMI edge select (NMI is not treated as NMI exception and supports fall edge and
+> +      stand-up edge detection interrupts)
+> +
+> +allOf:
+> +  - $ref: /schemas/interrupt-controller.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    items:
+> +      - enum:
+> +          - renesas,r9a07g044-irqc    # RZ/G2L
+> +      - const: renesas,rzg2l-irqc
+> +
+> +  '#interrupt-cells':
+> +    const: 2
 
-	M.
+Please document the meaning of the cells.
 
+The rest LGTM, so
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
--- 
-Without deviation from the norm, progress is not possible.
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
