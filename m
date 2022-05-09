@@ -2,125 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DFE2C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 02:56:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED542C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 02:56:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229729AbiEIC7Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 22:59:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35920 "EHLO
+        id S230490AbiEIDAC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 23:00:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229585AbiEIC55 (ORCPT
+        with ESMTP id S232184AbiEIC5B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 22:57:57 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD4DD8164B
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 19:54:05 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id l7-20020a17090aaa8700b001dd1a5b9965so1113286pjq.2
-        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 19:54:05 -0700 (PDT)
+        Sun, 8 May 2022 22:57:01 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFF65719D2;
+        Sun,  8 May 2022 19:53:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ZTTQaK1MCP0Shiup/o7qs7DSoxAGZcC20JNp/8zusXE=;
-        b=lvu0tqEAYL4lMpXHlUzMzuGrVzNiSN1F7GkTpaXG15DPrHT1CKlKmPTSyxU7h/NV/j
-         kUWsTNFP/67CPMC2uOZi3lJkE0lLp5sDkHR5Vg4ZoLQibwozZlVvVrWAmrcTfYRpX//B
-         IUvdewS9yYA2LSGRsdHGz3Vy9in8L82rvGFwD3Zc8rtXp9G3nFfXed3dmePb2uW74wWS
-         gjRGNoAkLLOEaS+JIVqDdXS8Khp2rr6+h+bGKqkjlK7OSgl+ubpQebutmaP5tiQRi8Kq
-         5jTLundScFrLcZoaaz36HUq3ybV0gU6aQtsrRhtprHTBJRtzsvzNZ5USFQbLHaHia+ap
-         v4wA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZTTQaK1MCP0Shiup/o7qs7DSoxAGZcC20JNp/8zusXE=;
-        b=uwc8GOXxzAVOptfAoEPeWPTXfwkGbXb+kRV8MrDBNau51XVnlkJAcxiIuZPS4rx5oH
-         xY+DaWaC9YKlw3BdoJfgZoPO0SYtqKLPoV0Uy+7zTJgJoLBVWWZxehg0g1Q7z2w1YuDt
-         xA7fVXAZyETznEIG0hMeewiTyDrzv7SxkRppY5Gj6vb96Q/WvJwZUl+y9HMZSh4DexbZ
-         Tkl1g+iV7pjn+jN7FDBaNZLf/elJKEBlizOQPL/XnlYUcCkarCROAKut58YY6yXHT9Vh
-         dj2X+D6yLzWR/reZYbvNWZlNmvMFEjIPDPgbRE/u+8NkKWmtYak0ybxnbbjyksyDrSne
-         0NEw==
-X-Gm-Message-State: AOAM533lEF8EU2wI5d9FAsPStY9jjZOmKOIQBYJFcM7UQ6hACIrPZphd
-        MqohMT/x0YAYgQpLBEZgyyLaJg==
-X-Google-Smtp-Source: ABdhPJy7zWNcQupxAcYMUNYtQ/R40mo+W7VEUJcoJcHH9ByfyOdtqYbfEKoLlg6WSLCwLEQ+8OB54A==
-X-Received: by 2002:a17:902:d2c9:b0:15e:b28d:8ad2 with SMTP id n9-20020a170902d2c900b0015eb28d8ad2mr14262241plc.94.1652064845269;
-        Sun, 08 May 2022 19:54:05 -0700 (PDT)
-Received: from localhost ([139.177.225.250])
-        by smtp.gmail.com with ESMTPSA id o18-20020a170902e29200b0015e8d4eb258sm5783241plc.162.2022.05.08.19.54.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 May 2022 19:54:04 -0700 (PDT)
-Date:   Mon, 9 May 2022 10:54:00 +0800
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Baolin Wang <baolin.wang@linux.alibaba.com>,
-        catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-        mike.kravetz@oracle.com, akpm@linux-foundation.org, sj@kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [RFC PATCH 0/3] Introduce new huge_ptep_get_access_flags()
- interface
-Message-ID: <YniCSGvBeUq3yxCg@FVFYT0MHHV2J.usts.net>
-References: <cover.1651998586.git.baolin.wang@linux.alibaba.com>
- <Ynf5Aje8FXlPdOSl@casper.infradead.org>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1652064790; x=1683600790;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=6Wxg3fLn0A0xQwJ99WIYxTRHGTymqsdyy7BxyjO6OG8=;
+  b=u7gbwZ18aTHEIMnAzO1A9IP81w/TiS4bPRJpPAP+mjRPgJ4szV04+NYt
+   7SfBfVg5QdeIWmNc0xOpdA1MTtTSyowkRw+OWTV1rZ0LFI8X40kw7Hct0
+   Fkd+w6tsldqBIlByHunsbnXh42n8SriH4jWvptuIZAYO1xLBrpCk7bTqE
+   w=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 08 May 2022 19:53:09 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2022 19:53:08 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Sun, 8 May 2022 19:53:08 -0700
+Received: from hu-pkondeti-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Sun, 8 May 2022 19:53:02 -0700
+Date:   Mon, 9 May 2022 08:22:58 +0530
+From:   Pavan Kondeti <quic_pkondeti@quicinc.com>
+To:     Krishna Kurapati <quic_kriskura@quicinc.com>
+CC:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        "Doug Anderson" <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Wesley Cheng <wcheng@codeaurora.org>,
+        <devicetree@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-phy@lists.infradead.org>, <quic_pkondeti@quicinc.com>,
+        <quic_ppratap@quicinc.com>, <quic_vpulyala@quicinc.com>,
+        Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+Subject: Re: [v3 1/3] dt-bindings: phy: qcom,usb-snps-femto-v2: Add phy
+ override params bindings
+Message-ID: <20220509025258.GH4640@hu-pkondeti-hyd.qualcomm.com>
+References: <1652011947-18575-1-git-send-email-quic_kriskura@quicinc.com>
+ <1652011947-18575-2-git-send-email-quic_kriskura@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <Ynf5Aje8FXlPdOSl@casper.infradead.org>
+In-Reply-To: <1652011947-18575-2-git-send-email-quic_kriskura@quicinc.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 08, 2022 at 06:08:18PM +0100, Matthew Wilcox wrote:
-> On Sun, May 08, 2022 at 04:58:51PM +0800, Baolin Wang wrote:
-> > As Mike pointed out [1], the huge_ptep_get() will only return one specific
-> > pte value for the CONT-PTE or CONT-PMD size hugetlb on ARM64 system, which
-> > will not take into account the subpages' dirty or young bits of a CONT-PTE/PMD
-> > size hugetlb page. That will make us miss dirty or young flags of a CONT-PTE/PMD
-> > size hugetlb page for those functions that want to check the dirty or
-> > young flags of a hugetlb page. For example, the gather_hugetlb_stats() will
-> > get inaccurate dirty hugetlb page statistics, and the DAMON for hugetlb monitoring
-> > will also get inaccurate access statistics.
-> > 
-> > To fix this issue, one approach is that we can define an ARM64 specific huge_ptep_get()
-> > implementation, which will take into account any subpages' dirty or young bits.
-> > However we should add a new parameter for ARM64 specific huge_ptep_get() to check
-> > how many continuous PTEs or PMDs in this CONT-PTE/PMD size hugetlb, that means we
-> > should convert all the places using huge_ptep_get(), meanwhile most places using
-> > huge_ptep_get() did not care about the dirty or young flags at all.
-> > 
-> > So instead of changing the prototype of huge_ptep_get(), this patch set introduces
-> > a new huge_ptep_get_access_flags() interface and define an ARM64 specific implementation,
-> > that will take into account any subpages' dirty or young bits for CONT-PTE/PMD size
-> > hugetlb page. And we can only change to use huge_ptep_get_access_flags() for those
-> > functions that care about the dirty or young flags of a hugetlb page.
+Hi Krishna,
+
+On Sun, May 08, 2022 at 05:42:25PM +0530, Krishna Kurapati wrote:
+> From: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
 > 
-> I question whether this is the right approach.  I understand that
-> different hardware implementations have different requirements here,
-> but at least one that I'm aware of (AMD Zen 2/3) requires that all
-> PTEs that are part of a contig PTE must have identical A/D bits.  Now,
-> you could say that's irrelevant because it's x86 and we don't currently
-> support contPTE on x86, but I wouldn't be surprised to see that other
-> hardware has the same requirement.
+> Add device tree bindings for SNPS phy tuning parameters.
 > 
-> So what if we make that a Linux requirement?  Setting a contPTE dirty or
-> accessed becomes a bit more expensive (although still one/two cachelines,
-> so not really much more expensive than a single write).  Then there's no
-> need to change the "get" side of things because they're always identical.
+> Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+> Signed-off-by: Krishna Kurapati <quic_kriskura@quicinc.com>
+> ---
+>  .../bindings/phy/qcom,usb-snps-femto-v2.yaml       | 87 ++++++++++++++++++++++
+>  1 file changed, 87 insertions(+)
 > 
-> It does mean that we can't take advantage of hardware setting A/D bits,
-> unless hardware can be persuaded to behave this way.  I don't have any
-> ARM specs in front of me to check.
->
+> diff --git a/Documentation/devicetree/bindings/phy/qcom,usb-snps-femto-v2.yaml b/Documentation/devicetree/bindings/phy/qcom,usb-snps-femto-v2.yaml
+> index 1ce251d..6c2ecdd 100644
+> --- a/Documentation/devicetree/bindings/phy/qcom,usb-snps-femto-v2.yaml
+> +++ b/Documentation/devicetree/bindings/phy/qcom,usb-snps-femto-v2.yaml
+> @@ -53,6 +53,93 @@ properties:
+>    vdda33-supply:
+>      description: phandle to the regulator 3.3V supply node.
+>  
 
-I have looked at the comments in get_clear_flush() (in arch/arm64/mm/hugetlbpage.c).
-That says:
+<snip>
 
-	/*
-	 * If HW_AFDBM is enabled, then the HW could turn on
-	 * the dirty or accessed bit for any page in the set,
-	 * so check them all.
-	 */
+> +
+> +  qcom,hs-rise-fall-time-bps:
+> +    $ref: /schemas/types.yaml#/definitions/int32
+> +    description:
+> +      This adjusts the rise/fall times of the high-speed waveform.
+> +      The values defined are in multiples of basis points (1bp = 0.01%).
+> +      The hardware accepts only discrete values. The value closest to the
+> +      provided input will be chosen as the override value for this param.
+> +
+> +  qcom,hs-crossover-voltage:
+> +    $ref: /schemas/types.yaml#/definitions/int32
+> +    description:
+> +      This adjusts the voltage at which the DP<#> and DM<#>
+> +      signals cross while transmitting in HS mode.
+> +      The values defined are in milli volts. The hardware accepts only
+> +      discrete values. The value closest to the provided input will be
+> +      chosen as the override value for this param.
+> +
+> +  qcom,hs-output-impedance:
+> +    $ref: /schemas/types.yaml#/definitions/int32
+> +    description:
+> +      In some applications, there can be significant series resistance
+> +      on the D+ and D- paths between the transceiver and cable. This adjusts
+> +      the driver source impedance to compensate for added series
+> +      resistance on the USB. The values defined are in milliohms.
 
-Unfortunately, the AD bits are not identical in all subpages.
+%s/milliohms/mill ohms
 
-Thanks.
+> +      The hardware accepts only discrete values. The value closest to the
+> +      provided input will be chosen as the override value for this param.
+> +
+
+What are the units for HS crossover voltage and output impedence? can you add
+units as a suffix like other parameters?
+
+Thanks,
+Pavan
