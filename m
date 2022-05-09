@@ -2,298 +2,455 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A66EC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29A28C43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:04:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235329AbiEIHF1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 03:05:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41904 "EHLO
+        id S235360AbiEIHFc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 03:05:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235008AbiEIGxx (ORCPT
+        with ESMTP id S234934AbiEIGxv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 02:53:53 -0400
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70130.outbound.protection.outlook.com [40.107.7.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA05419CEDE;
-        Sun,  8 May 2022 23:49:59 -0700 (PDT)
+        Mon, 9 May 2022 02:53:51 -0400
+Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2095.outbound.protection.outlook.com [40.107.114.95])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBA5019CED8;
+        Sun,  8 May 2022 23:49:56 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ue7i4MZoJcVVt5n2Y9a9/Y0iSXGHnufDRqYmNfQwI6enLnp4b98ObBMkoYSjj+Xz7tJp9lkT0D7ISxypWJ9cMiA8ZgakiEjEPaCVtVhIdQDdrlHKrLjl2yyurPWLHr7GQUbnboX1gljeNX9O56+BgUcgKm+Fo1k9bCHVW+l6HdPsC0ikt+1LOI4kA+LuxyhFHSk/EyYcqVOIkOS18csDN4oKVu8dn3dhYaXayQVmB5n6f1kZ32g9hHbuGWC7q+psbz1ywWtB9qLgc2EzQXyc6UErptW15O51XXF7R99SNrIpyXNTVLzsDXnR9UTKNCMQg4h2PBH0vEG8p2qtPAcuWA==
+ b=aT4vRIcukIvaxpWLt3C1hNepXn2H4QccOPbO4w9Jeq/F8l8iqT/ICJyFZ4nTXncK6PzXegG1B84/N3whBYIU+fXMp8qHHOeFl370XZmMFnaDEb4zcRxwijlj+GVFSi5/soPTEIs51UJRCw5RMFFQR2FNvHmxwjSfFtjpXiGq6vepMbUPHyCqTXUvNqZxfafzdfyG3r4CaE+aLPm0vQM9rDFA8oUnAk0yI9rFLppwb0wZDYGljzJEUBcJMVYsWWHKq7o8rgDZ+Dhj/IkL8d5mUdVlyF8Y/CRZH/TV/g2WmJEP+M7ExfmXZQhaHjiMH+kccQjUJtATKgzG7Nrt9GYAuQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Aw9D5i2ECUvqkwDV0yds+1OFUKxoXYC2JbqzZQOSf10=;
- b=n98HJ8RxYIgfKWQjjlY7pbsGlPTWAVlMOMDLXhp9Ky1KdiEjko4Ia//t6m/nojeMwB/D5Gw94EuR4Z5sWVIHN3hyKHkVV3VcqOD0AEcnR39nrUg5NJP4wSOCyD3fO8BPE/BZluoqJ5Q31bOf4pWuEDCvZnM45wOS6/GudQQcq00LAEskbqDkaHvv503OXrOCrOpOgdVFuDiSCMMOsx3DFTHr1sAGwjio/9mbEXKoc6yxREsxNxmbWtszVFgUZw4S3n9w2lBrk2Df55sJf11UweA782wS5m3nbiTxBE2mwnnAXMzhvsJvkwGf4ccJa3YRawBqgvqPjRpOHq+lIcEWag==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 193.8.40.94) smtp.rcpttodomain=kernel.org
- smtp.mailfrom=leica-geosystems.com.cn; dmarc=pass (p=quarantine sp=quarantine
- pct=100) action=none header.from=leica-geosystems.com.cn; dkim=none (message
- not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=leica-geosystems.com.cn; s=selector1;
+ bh=zLCJ910pfyc0hRScdrrkD2Unilx4o8/MBOLEPHDVlz8=;
+ b=IK96cyiro2UkrrpBqwn59sEHkobUHGbtl6ngwW9ot/7AeLo0lmjSM3Ao44sLXhRIz0dzVIjXLQer89F93uHnYQdH1jQHY6Vh8th6qxb//165/JHAAQ7VkXuJhiE+t/HtHLQUNlXe/CLAW83GAH+P5L6lw8yOnzqHclJCuFT10DzAWDn6geyudgsDfYsV9clM4UBDUhhJA4kkJqMWvzocexJPHhCJtIVHaXMuOnBFr16xsyUb2GVOaeQJuK4AhH6cFm4arAisjjeKShfzbNF+iepcMTt2hvbekZ804w1F+Bis8c+ev2HnJkKET1LebnC7GI1DKqXj+t1eW+WZo0Vbvw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
+ header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Aw9D5i2ECUvqkwDV0yds+1OFUKxoXYC2JbqzZQOSf10=;
- b=oopEahUoQI72N5qg1JtL0MGZbQU8fpblXE150wOZWogzWFWi6z9wKtrjobIHANnS8A4FtqW/9FW+lckzd9x9E3cUd6Josyl6hj5kdKpiRCcvjGokCLVCgTrkMtj6qhEeYQpBm6gzSa3xy/os9e3Bcnh5AoX6/u9L7r3G+1IBBqI=
-Received: from BE0P281CA0006.DEUP281.PROD.OUTLOOK.COM (2603:10a6:b10:a::16) by
- VI1PR0602MB3248.eurprd06.prod.outlook.com (2603:10a6:802:7::14) with
+ bh=zLCJ910pfyc0hRScdrrkD2Unilx4o8/MBOLEPHDVlz8=;
+ b=rOuk392AR/e7rZGDXzRiV57P5M8pF86n+/d0bEfZUXsNT61I6gHB8ewm32qnBnTHRa3tEOHiXMDfo1n/FgSlj5vkyKQIQ3CYB6jA3jb5BMzkVwJ3X6E8Y6j2c356V7Qxayda02+bSMQrHACIPrMTklUUVw5RuOa2229sqlpDbnk=
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com (2603:1096:604:bb::5)
+ by TYCPR01MB5632.jpnprd01.prod.outlook.com (2603:1096:400:47::5) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.21; Mon, 9 May
- 2022 06:49:38 +0000
-Received: from HE1EUR02FT040.eop-EUR02.prod.protection.outlook.com
- (2603:10a6:b10:a:cafe::3) by BE0P281CA0006.outlook.office365.com
- (2603:10a6:b10:a::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13 via Frontend
- Transport; Mon, 9 May 2022 06:49:38 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 193.8.40.94)
- smtp.mailfrom=leica-geosystems.com.cn; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=leica-geosystems.com.cn;
-Received-SPF: Pass (protection.outlook.com: domain of leica-geosystems.com.cn
- designates 193.8.40.94 as permitted sender) receiver=protection.outlook.com;
- client-ip=193.8.40.94; helo=aherlnxbspsrv01.lgs-net.com;
-Received: from aherlnxbspsrv01.lgs-net.com (193.8.40.94) by
- HE1EUR02FT040.mail.protection.outlook.com (10.152.11.92) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5227.15 via Frontend Transport; Mon, 9 May 2022 06:49:37 +0000
-From:   LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
-To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
-        tomas.melin@vaisala.com, andy.shevchenko@gmail.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Qing-wu.Li@leica-geosystems.com.cn
-Cc:     linux-iio@vger.kernel.org
-Subject: [PATCH V4 5/5] iio: accel: sca3300: Add inclination channels
-Date:   Mon,  9 May 2022 06:49:28 +0000
-Message-Id: <20220509064928.2352796-6-Qing-wu.Li@leica-geosystems.com.cn>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220509064928.2352796-1-Qing-wu.Li@leica-geosystems.com.cn>
-References: <20220509064928.2352796-1-Qing-wu.Li@leica-geosystems.com.cn>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.18; Mon, 9 May
+ 2022 06:49:08 +0000
+Received: from OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::3e:970b:c238:f57]) by OS0PR01MB5922.jpnprd01.prod.outlook.com
+ ([fe80::3e:970b:c238:f57%9]) with mapi id 15.20.5227.023; Mon, 9 May 2022
+ 06:49:07 +0000
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: RE: [PATCH v2 5/5] pinctrl: renesas: pinctrl-rzg2l: Add IRQ domain to
+ handle GPIO interrupt
+Thread-Topic: [PATCH v2 5/5] pinctrl: renesas: pinctrl-rzg2l: Add IRQ domain
+ to handle GPIO interrupt
+Thread-Index: AQHYY2Mk76CXU0rqe0uShlNWW0dHWq0WGfew
+Date:   Mon, 9 May 2022 06:49:07 +0000
+Message-ID: <OS0PR01MB59228AE4AF4EE53C382E8BA986C69@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+References: <20220509050953.11005-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220509050953.11005-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20220509050953.11005-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=bp.renesas.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: dde74dbd-06d4-4710-25ab-08da318803bd
+x-ms-traffictypediagnostic: TYCPR01MB5632:EE_
+x-microsoft-antispam-prvs: <TYCPR01MB5632BAFA9943D6C5283089FC86C69@TYCPR01MB5632.jpnprd01.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: pRggfQtFT0CGjgZ68nSmEBMaA2nrboXF3Zv4mn92A1a2U20uRHs9SUBEMRHhEWu36FHZ3qd86yFCn8Y4Uf2aT2ZVozTIOrWAgMKYinM9FuiJK69D0W2lpM5XYcDMb6wVq0CBTY2RinrBxx9OPiSQwyiComeg8Z/Xq79sJfThVsnlkJrs5yN3PrWrDSmq3iz0Uy5MR/EddCiElJrQPFzM6MBLFT9/VX2DTKAga6CCBAUXHmgJix2YbKCDUZxvLCZMiDkNPmu3k/pzsrYnINAobWHaBGbB3Q6K6mFXG73Mydn0JQTcpprlvLvF1krOjVUGaM7KC5aOsxFEze4Grij74SOfw/yYh29aOBROa4egOjOuEIm4BZ40FXAENvSVB6pP01xPUiEiC9P3CUGETJg8KGZhn6CUCodgX/LtXbtVaUcOM8aoxzQyXbOiyZQYw3areZFTjh+3q9DGoc2lG5dPK1FCRoPiAMFXukQMEVUormg/ZLcY4PZEXOclxeINSFsOiaP/wyRUeZ9EtKwg4z6vGok8LJOpmzXxFgHeJe99c2hV6jClkzF3D+PfSSK1W5YqYtT5jXkgH7C1GQEgqazqBolY9S4V3ktshznk8nhvsZ3h26CooHy3ltgd5okewLgkFpcOXMZmZCThauct7Z6cuJIMXMRx4VlsQMsLJIAxPY1So0Kf4xcFZz0SADM7YAQGkguxoaid67MiGNTBnXt3cGMzuiXrYNBX+Apjg+BVFWs=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS0PR01MB5922.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(110136005)(52536014)(54906003)(66556008)(8936002)(26005)(7416002)(66946007)(71200400001)(5660300002)(76116006)(66446008)(64756008)(66476007)(107886003)(316002)(4326008)(8676002)(86362001)(83380400001)(921005)(6506007)(186003)(55016003)(7696005)(38100700002)(38070700005)(2906002)(9686003)(508600001)(33656002)(122000001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?lkVX3Ss1zJsfR/KnpzGAN1bKNc0G+FaR5Uh4hLrNiOAYkvAX1wbmFUZdND3r?=
+ =?us-ascii?Q?9dgqdSYjMyjPpA+EdGs0gImskJFsJn0bml/Dpk+BMB3E6RslDD/LX+G7bpY2?=
+ =?us-ascii?Q?HZsLPVr58gQI3FPvPlpKz1sYYWyR11ZnbYWJHM/GCtsyzxjSTGP9xb9do+k1?=
+ =?us-ascii?Q?z/CSTuxId1iz2NxiXBGUcW3BlpWsOAZmO5x+mznkCsXTA6nzaEZIWXXXZKVT?=
+ =?us-ascii?Q?XMn+Q7zHe8ln+gR/iWwK+r5wiclQq5DEBFRp/MfHZnjR69ezDosihTaSGBOK?=
+ =?us-ascii?Q?UlUUXX0rIu4aBM9RCoMcx7AXeuPdPz4oMpHN2Z48TMfTMJbtTRYvkjNC8njC?=
+ =?us-ascii?Q?G7IanciYIge1IBpCj+dYkkYn+ErwP4zM25ERtVYct7WHst6iYh2iv4WivM8S?=
+ =?us-ascii?Q?O59zGaq4A/LSqKDXkNnfStmGxkITBXKIAgqcLqeqLuWLHif4Z7d7hkhUgAv1?=
+ =?us-ascii?Q?uhKkL6tz9vPUJkFVujDHMq+0BsS5uF2NtQNKUBtv1kotA9WIm3IeqcyMh0be?=
+ =?us-ascii?Q?Ws1KL95Q0goOw7odfF2/eM1qRTKBmOsOWxAoq/OaZuHG4MaXxd+b5PnI47WX?=
+ =?us-ascii?Q?g9O8dUtJDXCTOaMC+l9/XeutD3wFdvNZQrMOGvRXLXU440hGoBhLuXWyALgp?=
+ =?us-ascii?Q?W9BTfuvdMNSS1OMfbElrYDY4TIPGm+Tmxabwe/xBZXEkkudhjHdLHR+ZmLUd?=
+ =?us-ascii?Q?en2uAM1XuKUvYM/vsop9dozcbyKwVWXGtMGf9Be0tTZFZpc3EZMuv4JDMpKW?=
+ =?us-ascii?Q?IcNjGSByP0gzVfGJLGIfM19Zjc5ZrtFNTg3CGsOUNzoSQjgTT98S6Uu6OcM5?=
+ =?us-ascii?Q?OFomldQJhgCQ6VFHlPVmedLiMnMesIOyeGHOFDGYes8xtEt2OGDzH9bEm7Zk?=
+ =?us-ascii?Q?UcNHmFYSrrbxQd0nDRG7GuVEmpA1/Csd4wWw5BAdSmdI7hd+vvLEaSTu2h7l?=
+ =?us-ascii?Q?JewIFijjvQI2NLzl9V9K/pM7EaS2yfCV+OasEVyB9Asnay8d++ahFboqn6K3?=
+ =?us-ascii?Q?EyVJuNohBboa8Unu/n/0d2Z1J4V6zOeO9tx9MgS7/aSkUpG+8pZ21yP8PpHA?=
+ =?us-ascii?Q?yF6xNhTWdykVj2DbsCFltvUb4bwuL2rb0VEQ2hytMRvJRIa+qC1VfQDdpm2z?=
+ =?us-ascii?Q?zTpnuthOr3Ia3ei64H/KdQdqoKWg9E+lTGuFor0HNYkrsmeOeLirLMe5Fz6J?=
+ =?us-ascii?Q?yj9qrPpaSsRArEvi7/0CyZvEVvZ4AtXC+rNC+hDe1nk941asFVWWQ+NmVzf8?=
+ =?us-ascii?Q?Nq2Od0Sa/45rrXkg9QUk5EBJTl/jS2xJL2CxctMp0O5bDHL3+4PX95j1pHpd?=
+ =?us-ascii?Q?T8X3W0C2Fs6nnVf7HItWlq6QxTSai2mda8ymjFJorLR2Z/5K6iXqLEKmlmBB?=
+ =?us-ascii?Q?Fr1hZ8fCP0BlGTXrrm01DxTdmgDFV7bZJL09wHh53oTNvJBuXQbJclaW2bJF?=
+ =?us-ascii?Q?EYXIl0I+H3LotzcN+HnlNL6EqNcG35HD3dgWX6XYZxR6rMvAZCv0eaPOwFss?=
+ =?us-ascii?Q?vwoNTKDAeYeYPFPoywvEl7MDOjv9g2CDyFUEMUFODl4OrUvrAJGjw4ggN/bH?=
+ =?us-ascii?Q?yMM8qUyni8cJvoN9FKq8Uzg/Epe1NryqY91DwhHuIAJrRJ8bhA/LCdFbWRzS?=
+ =?us-ascii?Q?ZNIpcpx/3Riyzq72xawTJbro9YeKQGjJMsUazYqhpfUVxGRf2bxsm2aF6TI6?=
+ =?us-ascii?Q?cIB0HreVg8RlkT5sHBjr5VlJh6Hbv/ndG8vzqjEVbtqA4zI9NcgzVfftj4eh?=
+ =?us-ascii?Q?Ri9Oh2p3PD16fSsU6BfUUd12P6vd4X0=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: 06ece379-75dd-408b-fdbe-08da318815fd
-X-MS-TrafficTypeDiagnostic: VI1PR0602MB3248:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR0602MB3248900CED596F3EA531A3AFD7C69@VI1PR0602MB3248.eurprd06.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: gURy6J9q831kS6e+EqArmLfC+dKuZlF4DO7YpHSKXDVdtTtb/jGC9GdDgItnwqaru5SAgh8Mso5ccdoqZPDA2GdLnUDtUdVEgmi/BgCoCA91K/z6jynwgSzD7DYLtLYCA3ISi7XtnQS58U/w69xzXS3TnP7yab8lZcub7iK6pvvQwwWH8hLyj2b2KKmc4Xr4pFkOrWdAnMrbqyZ/liZlVxkw9VAV/gseGCFu/sw0tgKI8tJevJcabW2Uw3spnQ9AGPscuq0QyCoendjd1pbHh3EPlqjPTEF7rdLrbST3p8eOWiL4q6WpqExszCLYDEiK9MaFxD2RI6vPMl0YXSH7+lzUDpB/Qe/2rViI4yqy8bLxChL5kxAXB2wSdBg/4TwWKWIsb//kHfKhhwA3LilKwIXHK3dJ2tHpagFUkZTsxZH2Geatps4SZYkyubUVyW68DibxTl+Tpt1DpOnyVSeHn0spIdJLgoYXWQwK4TkNHB+6OX9MUlXKcvc4x5Uxhki0BStlZ2Qf1DAHlawBPg/bsXLd91zxvn9yHqoOlC79H/VSFymyegcsql8WKw/4PzuV5f/5OXiUrByVbu0KVSEJUuiDuXu5887hnPGjAl+7YQ8qfTbm9Ce983OSuAfUTu3dDgwhxtA0hWZoA1449UYP6RtlR7XMhEI5F8XycoOdQO6ujXtiXh4yG096SwFWq2s5
-X-Forefront-Antispam-Report: CIP:193.8.40.94;CTRY:CH;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:aherlnxbspsrv01.lgs-net.com;PTR:ahersrvdom50.leica-geosystems.com;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(6506007)(82310400005)(508600001)(86362001)(118246002)(356005)(36736006)(316002)(6486002)(2906002)(6666004)(81166007)(186003)(70206006)(336012)(70586007)(36756003)(47076005)(2616005)(40460700003)(6512007)(5660300002)(26005)(83380400001)(1076003)(956004)(8676002)(4326008)(36860700001)(8936002);DIR:OUT;SFP:1102;
-X-OriginatorOrg: leica-geosystems.com.cn
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2022 06:49:37.4845
+X-OriginatorOrg: bp.renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: OS0PR01MB5922.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: dde74dbd-06d4-4710-25ab-08da318803bd
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 May 2022 06:49:07.4074
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 06ece379-75dd-408b-fdbe-08da318815fd
-X-MS-Exchange-CrossTenant-Id: 1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a;Ip=[193.8.40.94];Helo=[aherlnxbspsrv01.lgs-net.com]
-X-MS-Exchange-CrossTenant-AuthSource: HE1EUR02FT040.eop-EUR02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0602MB3248
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: u1KkKk8a1MJOxrupYtUrbFLKaMyj+/UUWimVpwnaILwLCuRlyGUBtnOTPXwTslS5RAjT7mwCabDBWqJWIYtlqM6qaPSlLrqwpsGKSazYUfU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCPR01MB5632
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Different from SCA3300, SCL3300 can output inclination angles.
-Angles are formed from acceleration with following equations:
-ANG_X = atan2(accx , sqrt(pow(accy , 2) + pow(accz , 2)))
-ANG_Y = atan2(accy , sqrt(pow(accx , 2) + pow(accz , 2)))
-ANG_Z = atan2(accz , sqrt(pow(accx , 2) + pow(accy , 2)))
+Hi Prabhakar,
 
-The commit adds the output of the raw value, scale
-and scale_available of angles.
+Thanks for the patch.
 
-New interfaces:
-  in_incli_scale
-  in_incli_scale_available
-  in_incli_x_raw
-  in_incli_y_raw
-  in_incli_z_raw
-Data converted by application of scale to degrees.
+> Subject: [PATCH v2 5/5] pinctrl: renesas: pinctrl-rzg2l: Add IRQ domain t=
+o
+> handle GPIO interrupt
+>=20
+> Add IRQ domian to RZ/G2L pinctrl driver to handle GPIO interrupt.
+>=20
+> GPIO0-GPIO122 pins can be used as IRQ lines but only 32 pins can be used =
+as
+> IRQ lines at given time. Selection of pins as IRQ lines is handled by IA5=
+5
+> (which is the IRQC block) which sits in between the GPIO and GIC.
+>=20
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> ---
+>  drivers/pinctrl/renesas/pinctrl-rzg2l.c | 205 ++++++++++++++++++++++++
+>  1 file changed, 205 insertions(+)
+>=20
+> diff --git a/drivers/pinctrl/renesas/pinctrl-rzg2l.c
+> b/drivers/pinctrl/renesas/pinctrl-rzg2l.c
+> index a48cac55152c..275dfec74329 100644
+> --- a/drivers/pinctrl/renesas/pinctrl-rzg2l.c
+> +++ b/drivers/pinctrl/renesas/pinctrl-rzg2l.c
+> @@ -9,8 +9,10 @@
+>  #include <linux/clk.h>
+>  #include <linux/gpio/driver.h>
+>  #include <linux/io.h>
+> +#include <linux/interrupt.h>
+>  #include <linux/module.h>
+>  #include <linux/of_device.h>
+> +#include <linux/of_irq.h>
+>  #include <linux/pinctrl/pinconf-generic.h>  #include
+> <linux/pinctrl/pinconf.h>  #include <linux/pinctrl/pinctrl.h> @@ -89,6
+> +91,7 @@
+>  #define PIN(n)			(0x0800 + 0x10 + (n))
+>  #define IOLH(n)			(0x1000 + (n) * 8)
+>  #define IEN(n)			(0x1800 + (n) * 8)
+> +#define ISEL(n)			(0x2c80 + (n) * 8)
+>  #define PWPR			(0x3014)
+>  #define SD_CH(n)		(0x3000 + (n) * 4)
+>  #define QSPI			(0x3008)
+> @@ -112,6 +115,10 @@
+>  #define RZG2L_PIN_ID_TO_PORT_OFFSET(id)	(RZG2L_PIN_ID_TO_PORT(id) +
+> 0x10)
+>  #define RZG2L_PIN_ID_TO_PIN(id)		((id) % RZG2L_PINS_PER_PORT)
+>=20
+> +#define RZG2L_TINT_MAX_INTERRUPT	32
+> +#define RZG2L_TINT_IRQ_START_INDEX	9
+> +#define RZG2L_PACK_HWIRQ(t, i)		(((t) << 16) | (i))
+> +
+>  struct rzg2l_dedicated_configs {
+>  	const char *name;
+>  	u32 config;
+> @@ -137,6 +144,9 @@ struct rzg2l_pinctrl {
+>=20
+>  	struct gpio_chip		gpio_chip;
+>  	struct pinctrl_gpio_range	gpio_range;
+> +	DECLARE_BITMAP(tint_slot, RZG2L_TINT_MAX_INTERRUPT);
+> +	spinlock_t			bitmap_lock;
+> +	unsigned int			hwirq[RZG2L_TINT_MAX_INTERRUPT];
+>=20
+>  	spinlock_t			lock;
+>  };
+> @@ -883,6 +893,8 @@ static int rzg2l_gpio_get(struct gpio_chip *chip,
+> unsigned int offset)
+>=20
+>  static void rzg2l_gpio_free(struct gpio_chip *chip, unsigned int offset)
+> {
+> +	unsigned int virq;
+> +
+>  	pinctrl_gpio_free(chip->base + offset);
+>=20
+>  	/*
+> @@ -890,6 +902,10 @@ static void rzg2l_gpio_free(struct gpio_chip *chip,
+> unsigned int offset)
+>  	 * drive the GPIO pin as an output.
+>  	 */
+>  	rzg2l_gpio_direction_input(chip, offset);
+> +
+> +	virq =3D irq_find_mapping(chip->irq.domain, offset);
+> +	if (virq)
+> +		irq_dispose_mapping(virq);
+>  }
+>=20
+>  static const char * const rzg2l_gpio_names[] =3D { @@ -1104,14 +1120,193=
+ @@
+> static struct {
+>  	}
+>  };
+>=20
+> +static int rzg2l_gpio_get_gpioint(unsigned int virq) {
+> +	unsigned int gpioint =3D 0;
+> +	unsigned int i =3D 0;
+> +	u32 port, bit;
+> +
+> +	port =3D virq / 8;
+> +	bit =3D virq % 8;
+> +
+> +	if (port >=3D ARRAY_SIZE(rzg2l_gpio_configs))
+> +		return -EINVAL;
+> +
+> +	for (i =3D 0; i < port; i++)
+> +		gpioint +=3D RZG2L_GPIO_PORT_GET_PINCNT(rzg2l_gpio_configs[i]);
+> +
+> +	if (bit >=3D RZG2L_GPIO_PORT_GET_PINCNT(rzg2l_gpio_configs[i]))
+> +		return -EINVAL;
 
-Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
----
- drivers/iio/accel/sca3300.c | 81 +++++++++++++++++++++++++++++++++++--
- 1 file changed, 78 insertions(+), 3 deletions(-)
+May be combine this statement to above with=20
 
-diff --git a/drivers/iio/accel/sca3300.c b/drivers/iio/accel/sca3300.c
-index 618991c8da92..af5292ebc99f 100644
---- a/drivers/iio/accel/sca3300.c
-+++ b/drivers/iio/accel/sca3300.c
-@@ -44,12 +44,18 @@
- #define SCA3300_VALUE_RS_ERROR	0x3
- #define SCA3300_MASK_RS_STATUS	GENMASK(1, 0)
- 
-+#define SCA3300_REG_ANG_CTRL 0x0C
-+#define SCA3300_ANG_ENABLE   0x1F
-+
- enum sca3300_scan_indexes {
- 	SCA3300_ACC_X = 0,
- 	SCA3300_ACC_Y,
- 	SCA3300_ACC_Z,
- 	SCA3300_TEMP,
- 	SCA3300_TIMESTAMP,
-+	SCA3300_INCLI_X,
-+	SCA3300_INCLI_Y,
-+	SCA3300_INCLI_Z,
- };
- 
- #define SCA3300_ACCEL_CHANNEL(index, reg, axis) {			\
-@@ -73,6 +79,24 @@ enum sca3300_scan_indexes {
- 	},								\
- }
- 
-+#define SCA3300_INCLI_CHANNEL(index, reg, axis) {			\
-+	.type = IIO_INCLI,						\
-+	.address = reg,							\
-+	.modified = 1,							\
-+	.channel2 = IIO_MOD_##axis,					\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
-+	.info_mask_shared_by_type_available =				\
-+	BIT(IIO_CHAN_INFO_SCALE),					\
-+	.scan_index = index,						\
-+	.scan_type = {							\
-+		.sign = 's',						\
-+		.realbits = 16,						\
-+		.storagebits = 16,					\
-+		.endianness = IIO_CPU,					\
-+	},								\
-+}
-+
- #define SCA3300_TEMP_CHANNEL(index, reg) {				\
- 		.type = IIO_TEMP,					\
- 		.address = reg,						\
-@@ -106,15 +130,36 @@ static const int sca3300_accel_scale_map[] = {0, 1, 2, 2};
- static const int scl3300_accel_scale[][2] = {{0, 167}, {0, 333}, {0, 83}};
- static const int scl3300_accel_scale_map[] = {0, 1, 2};
- 
-+static const int scl3300_incli_scale[][2] = {{0, 5495}};
-+static const int scl3300_incli_scale_map[] = {0, 0, 0};
-+
- static const int sca3300_avail_modes_map[] = {0, 1, 2, 3};
- static const int scl3300_avail_modes_map[] = {0, 1, 3};
- 
-+static const struct iio_chan_spec scl3300_channels[] = {
-+	SCA3300_ACCEL_CHANNEL(SCA3300_ACC_X, 0x1, X),
-+	SCA3300_ACCEL_CHANNEL(SCA3300_ACC_Y, 0x2, Y),
-+	SCA3300_ACCEL_CHANNEL(SCA3300_ACC_Z, 0x3, Z),
-+	SCA3300_TEMP_CHANNEL(SCA3300_TEMP, 0x05),
-+	IIO_CHAN_SOFT_TIMESTAMP(SCA3300_TIMESTAMP),
-+	SCA3300_INCLI_CHANNEL(SCA3300_INCLI_X, 0x09, X),
-+	SCA3300_INCLI_CHANNEL(SCA3300_INCLI_Y, 0x0A, Y),
-+	SCA3300_INCLI_CHANNEL(SCA3300_INCLI_Z, 0x0B, Z),
-+};
-+
- static const unsigned long sca3300_scan_masks[] = {
- 	BIT(SCA3300_ACC_X) | BIT(SCA3300_ACC_Y) | BIT(SCA3300_ACC_Z) |
- 	BIT(SCA3300_TEMP),
- 	0
- };
- 
-+static const unsigned long scl3300_scan_masks[] = {
-+	BIT(SCA3300_ACC_X) | BIT(SCA3300_ACC_Y) | BIT(SCA3300_ACC_Z) |
-+	BIT(SCA3300_TEMP) |
-+	BIT(SCA3300_INCLI_X) | BIT(SCA3300_INCLI_Y) | BIT(SCA3300_INCLI_Z),
-+	0
-+};
-+
- struct sca3300_chip_info {
- 	const struct iio_chan_spec *channels;
- 	u8 num_channels;
-@@ -122,6 +167,9 @@ struct sca3300_chip_info {
- 	const int (*accel_scale)[2];
- 	const int *accel_scale_map;
- 	u8 num_accel_scales;
-+	const int (*incli_scale)[2];
-+	const int *incli_scale_map;
-+	u8 num_incli_scales;
- 	const int *freq_table;
- 	const int *freq_map;
- 	u8 num_freqs;
-@@ -129,6 +177,7 @@ struct sca3300_chip_info {
- 	u8 num_avail_modes;
- 	const char *name;
- 	u8 chip_id;
-+	bool angle;
- };
- 
- /**
-@@ -158,6 +207,9 @@ static const struct sca3300_chip_info sca3300_chip_tbl[] = {
- 		.accel_scale = sca3300_accel_scale,
- 		.accel_scale_map = sca3300_accel_scale_map,
- 		.num_accel_scales = ARRAY_SIZE(sca3300_accel_scale)*2,
-+		.incli_scale = NULL,
-+		.incli_scale_map = NULL,
-+		.num_incli_scales = 0,
- 		.freq_table = sca3300_lp_freq,
- 		.freq_map = sca3300_lp_freq_map,
- 		.num_freqs = ARRAY_SIZE(sca3300_lp_freq),
-@@ -165,13 +217,18 @@ static const struct sca3300_chip_info sca3300_chip_tbl[] = {
- 		.num_avail_modes = 4,
- 		.name = "sca3300",
- 		.chip_id = SCA3300_WHOAMI_ID,
-+		.angle = false,
- 	},
--	{	.channels = sca3300_channels,
--		.num_channels = ARRAY_SIZE(sca3300_channels),
--		.scan_masks = sca3300_scan_masks,
-+	{
-+		.channels = scl3300_channels,
-+		.num_channels = ARRAY_SIZE(scl3300_channels),
-+		.scan_masks = scl3300_scan_masks,
- 		.accel_scale = scl3300_accel_scale,
- 		.accel_scale_map = scl3300_accel_scale_map,
- 		.num_accel_scales = ARRAY_SIZE(scl3300_accel_scale)*2,
-+		.incli_scale = scl3300_incli_scale,
-+		.incli_scale_map = scl3300_incli_scale_map,
-+		.num_incli_scales =  ARRAY_SIZE(scl3300_incli_scale)*2,
- 		.freq_table = scl3300_lp_freq,
- 		.freq_map = scl3300_lp_freq_map,
- 		.num_freqs = ARRAY_SIZE(scl3300_lp_freq),
-@@ -179,6 +236,7 @@ static const struct sca3300_chip_info sca3300_chip_tbl[] = {
- 		.num_avail_modes = 3,
- 		.name = "scl3300",
- 		.chip_id = SCL3300_WHOAMI_ID,
-+		.angle = true,
- 	},
- };
- 
-@@ -383,6 +441,11 @@ static int sca3300_read_raw(struct iio_dev *indio_dev,
- 		if (ret)
- 			return ret;
- 		switch (chan->type) {
-+		case IIO_INCLI:
-+			index = data->chip->incli_scale_map[index];
-+			*val = data->chip->incli_scale[index][0];
-+			*val2 = data->chip->incli_scale[index][1];
-+			return IIO_VAL_INT_PLUS_MICRO;
- 		case IIO_ACCEL:
- 			index = data->chip->accel_scale_map[index];
- 			*val = data->chip->accel_scale[index][0];
-@@ -469,6 +532,13 @@ static int sca3300_init(struct sca3300_data *sca_data,
- 
- 	sca_data->chip = &sca3300_chip_tbl[i];
- 
-+	if (sca_data->chip->angle) {
-+		ret = sca3300_write_reg(sca_data, SCA3300_REG_ANG_CTRL,
-+					SCA3300_ANG_ENABLE);
-+		if (ret)
-+			return ret;
-+	}
-+
- 	return 0;
- }
- 
-@@ -504,6 +574,11 @@ static int sca3300_read_avail(struct iio_dev *indio_dev,
- 	switch (mask) {
- 	case IIO_CHAN_INFO_SCALE:
- 		switch (chan->type) {
-+		case IIO_INCLI:
-+			*vals = (const int *)data->chip->incli_scale;
-+			*length = data->chip->num_incli_scales;
-+			*type = IIO_VAL_INT_PLUS_MICRO;
-+			return IIO_AVAIL_LIST;
- 		case IIO_ACCEL:
- 			*vals = (const int *)data->chip->accel_scale;
- 			*length = data->chip->num_accel_scales;
--- 
-2.25.1
+|| (bit >=3D RZG2L_GPIO_PORT_GET_PINCNT(rzg2l_gpio_configs[port]))
+		return -EINVAL;
+
+Cheers,
+BIju
+
+> +
+> +	gpioint +=3D bit;
+> +
+> +	return gpioint;
+> +}
+> +
+> +static void rzg2l_gpio_irq_domain_free(struct irq_domain *domain, unsign=
+ed
+> int virq,
+> +				       unsigned int nr_irqs)
+> +{
+> +	struct irq_data *d;
+> +
+> +	d =3D irq_domain_get_irq_data(domain, virq);
+> +	if (d) {
+> +		struct gpio_chip *gc =3D irq_data_get_irq_chip_data(d);
+> +		struct rzg2l_pinctrl *pctrl =3D container_of(gc, struct
+> rzg2l_pinctrl, gpio_chip);
+> +		irq_hw_number_t hwirq =3D irqd_to_hwirq(d);
+> +		unsigned long flags;
+> +		unsigned int i;
+> +
+> +		for (i =3D 0; i < RZG2L_TINT_MAX_INTERRUPT; i++) {
+> +			if (pctrl->hwirq[i] =3D=3D hwirq) {
+> +				spin_lock_irqsave(&pctrl->bitmap_lock, flags);
+> +				bitmap_release_region(pctrl->tint_slot, i,
+> get_order(1));
+> +				spin_unlock_irqrestore(&pctrl->bitmap_lock,
+> flags);
+> +				pctrl->hwirq[i] =3D 0;
+> +				break;
+> +			}
+> +		}
+> +	}
+> +	irq_domain_free_irqs_common(domain, virq, nr_irqs); }
+> +
+> +static void rzg2l_gpio_irq_disable(struct irq_data *d) {
+> +	struct gpio_chip *gc =3D irq_data_get_irq_chip_data(d);
+> +	struct rzg2l_pinctrl *pctrl =3D container_of(gc, struct rzg2l_pinctrl,
+> gpio_chip);
+> +	unsigned int hwirq =3D irqd_to_hwirq(d);
+> +	unsigned long flags;
+> +	void __iomem *addr;
+> +	u32 port;
+> +	u8 bit;
+> +
+> +	port =3D RZG2L_PIN_ID_TO_PORT(hwirq);
+> +	bit =3D RZG2L_PIN_ID_TO_PIN(hwirq);
+> +
+> +	addr =3D pctrl->base + ISEL(port);
+> +	if (bit >=3D 4) {
+> +		bit -=3D 4;
+> +		addr +=3D 4;
+> +	}
+> +
+> +	spin_lock_irqsave(&pctrl->lock, flags);
+> +	writel(readl(addr) & ~BIT(bit * 8), addr);
+> +	spin_unlock_irqrestore(&pctrl->lock, flags);
+> +
+> +	irq_chip_disable_parent(d);
+> +}
+> +
+> +static void rzg2l_gpio_irq_enable(struct irq_data *d) {
+> +	struct gpio_chip *gc =3D irq_data_get_irq_chip_data(d);
+> +	struct rzg2l_pinctrl *pctrl =3D container_of(gc, struct rzg2l_pinctrl,
+> gpio_chip);
+> +	unsigned int hwirq =3D irqd_to_hwirq(d);
+> +	unsigned long flags;
+> +	void __iomem *addr;
+> +	u32 port;
+> +	u8 bit;
+> +
+> +	port =3D RZG2L_PIN_ID_TO_PORT(hwirq);
+> +	bit =3D RZG2L_PIN_ID_TO_PIN(hwirq);
+> +
+> +	addr =3D pctrl->base + ISEL(port);
+> +	if (bit >=3D 4) {
+> +		bit -=3D 4;
+> +		addr +=3D 4;
+> +	}
+> +
+> +	spin_lock_irqsave(&pctrl->lock, flags);
+> +	writel(readl(addr) | BIT(bit * 8), addr);
+> +	spin_unlock_irqrestore(&pctrl->lock, flags);
+> +
+> +	irq_chip_enable_parent(d);
+> +}
+> +
+> +static int rzg2l_gpio_irq_set_type(struct irq_data *d, unsigned int
+> +type) {
+> +	return irq_chip_set_type_parent(d, type); }
+> +
+> +static void rzg2l_gpio_irqc_eoi(struct irq_data *d) {
+> +	irq_chip_eoi_parent(d);
+> +}
+> +
+> +static struct irq_chip rzg2l_gpio_irqchip =3D {
+> +	.name =3D "rzg2l-gpio",
+> +	.irq_disable =3D rzg2l_gpio_irq_disable,
+> +	.irq_enable =3D rzg2l_gpio_irq_enable,
+> +	.irq_mask =3D irq_chip_mask_parent,
+> +	.irq_unmask =3D irq_chip_unmask_parent,
+> +	.irq_set_type =3D rzg2l_gpio_irq_set_type,
+> +	.irq_eoi =3D rzg2l_gpio_irqc_eoi,
+> +};
+> +
+> +static int rzg2l_gpio_child_to_parent_hwirq(struct gpio_chip *gc,
+> +					    unsigned int child,
+> +					    unsigned int child_type,
+> +					    unsigned int *parent,
+> +					    unsigned int *parent_type)
+> +{
+> +	struct rzg2l_pinctrl *pctrl =3D gpiochip_get_data(gc);
+> +	unsigned long flags;
+> +	int gpioint, irq;
+> +
+> +	gpioint =3D rzg2l_gpio_get_gpioint(child);
+> +	if (gpioint < 0)
+> +		return gpioint;
+> +
+> +	spin_lock_irqsave(&pctrl->bitmap_lock, flags);
+> +	irq =3D bitmap_find_free_region(pctrl->tint_slot,
+> RZG2L_TINT_MAX_INTERRUPT, get_order(1));
+> +	spin_unlock_irqrestore(&pctrl->bitmap_lock, flags);
+> +	if (irq < 0)
+> +		return -ENOSPC;
+> +	pctrl->hwirq[irq] =3D child;
+> +	irq +=3D RZG2L_TINT_IRQ_START_INDEX;
+> +
+> +	/* All these interrupts are level high in the CPU */
+> +	*parent_type =3D IRQ_TYPE_LEVEL_HIGH;
+> +	*parent =3D RZG2L_PACK_HWIRQ(gpioint, irq);
+> +	return 0;
+> +}
+> +
+> +static void *rzg2l_gpio_populate_parent_fwspec(struct gpio_chip *chip,
+> +					       unsigned int parent_hwirq,
+> +					       unsigned int parent_type)
+> +{
+> +	struct irq_fwspec *fwspec;
+> +
+> +	fwspec =3D kzalloc(sizeof(*fwspec), GFP_KERNEL);
+> +	if (!fwspec)
+> +		return NULL;
+> +
+> +	fwspec->fwnode =3D chip->irq.parent_domain->fwnode;
+> +	fwspec->param_count =3D 2;
+> +	fwspec->param[0] =3D parent_hwirq;
+> +	fwspec->param[1] =3D parent_type;
+> +
+> +	return fwspec;
+> +}
+> +
+>  static int rzg2l_gpio_register(struct rzg2l_pinctrl *pctrl)  {
+>  	struct device_node *np =3D pctrl->dev->of_node;
+>  	struct gpio_chip *chip =3D &pctrl->gpio_chip;
+>  	const char *name =3D dev_name(pctrl->dev);
+> +	struct irq_domain *parent_domain;
+>  	struct of_phandle_args of_args;
+> +	struct device_node *parent_np;
+> +	struct gpio_irq_chip *girq;
+>  	int ret;
+>=20
+> +	parent_np =3D of_irq_find_parent(np);
+> +	if (!parent_np)
+> +		return -ENXIO;
+> +
+> +	parent_domain =3D irq_find_host(parent_np);
+> +	of_node_put(parent_np);
+> +	if (!parent_domain)
+> +		return -EPROBE_DEFER;
+> +
+>  	ret =3D of_parse_phandle_with_fixed_args(np, "gpio-ranges", 3, 0,
+> &of_args);
+>  	if (ret) {
+>  		dev_err(pctrl->dev, "Unable to parse gpio-ranges\n"); @@ -
+> 1138,6 +1333,15 @@ static int rzg2l_gpio_register(struct rzg2l_pinctrl
+> *pctrl)
+>  	chip->base =3D -1;
+>  	chip->ngpio =3D of_args.args[2];
+>=20
+> +	girq =3D &chip->irq;
+> +	girq->chip =3D &rzg2l_gpio_irqchip;
+> +	girq->fwnode =3D of_node_to_fwnode(np);
+> +	girq->parent_domain =3D parent_domain;
+> +	girq->child_to_parent_hwirq =3D rzg2l_gpio_child_to_parent_hwirq;
+> +	girq->populate_parent_alloc_arg =3D rzg2l_gpio_populate_parent_fwspec;
+> +	girq->child_irq_domain_ops.free =3D rzg2l_gpio_irq_domain_free;
+> +	girq->ngirq =3D RZG2L_TINT_MAX_INTERRUPT;
+> +
+>  	pctrl->gpio_range.id =3D 0;
+>  	pctrl->gpio_range.pin_base =3D 0;
+>  	pctrl->gpio_range.base =3D 0;
+> @@ -1253,6 +1457,7 @@ static int rzg2l_pinctrl_probe(struct platform_devi=
+ce
+> *pdev)
+>  	}
+>=20
+>  	spin_lock_init(&pctrl->lock);
+> +	spin_lock_init(&pctrl->bitmap_lock);
+>=20
+>  	platform_set_drvdata(pdev, pctrl);
+>=20
+> --
+> 2.25.1
 
