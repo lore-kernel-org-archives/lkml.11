@@ -2,84 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8321EC41535
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:04:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AA67C3527B
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:04:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235597AbiEIHFu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 03:05:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54930 "EHLO
+        id S235644AbiEIHGC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 03:06:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234609AbiEIHDr (ORCPT
+        with ESMTP id S235368AbiEIG41 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 03:03:47 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59DC2393D7;
-        Sun,  8 May 2022 23:59:54 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id j14so13008230plx.3;
-        Sun, 08 May 2022 23:59:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=ukKPvUkS4+sda6n7hZd5RfiYJTJ8bOEAkMXzOtPmIYQ=;
-        b=RkZKGCXUY3WLo3y2zRC0HADNs7mY1Izvrx0xzLpIlB2hf3bjErAGfhwZoj7SpkH506
-         P5MGGJJI+9l2PmkcWbIcatsvwBsE5iDuFfT4y96sbiBzxojagNVQSZjHGvfhytDdQMdE
-         PO2kSfCjpUsTIvSOLWfa69ZR0857+HjEY2JokReKHoSyhgzfnugX9EjEQQQnKDpejEAh
-         tGUx0wD/aGNVaqW5sPkVOeVDSSAfgPrM0lWalyHC7yf85CJuSN4+Qp5dtH6muyBnhHAT
-         Fu7nSrpciTO4kz/JsFkAynPJwhmFqcu7SkyPdSmHRE2fk7a1n5ujHMPklFJ7onpRrc+r
-         0v2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=ukKPvUkS4+sda6n7hZd5RfiYJTJ8bOEAkMXzOtPmIYQ=;
-        b=PE7HbRkKwz+drFlSXurrTk4jcNjIV4svpgZrYSHJVFsPIJYiPYinukTiqgys0ZicY7
-         cJafQmhYOUX61mQH34ufPxeU3PrQIb0Lrw+GHC0f3sdlpBBItZDTJTbFdH5P8ygfBjYQ
-         zACsWUTGMkFCFZ8tcg9xclZuxHqYUEsBPIi1mTMdpuK4sMnpJa2yl7HiIt+qhhF8Ogse
-         l0VUGmue8HQu30+f5uudeo2Vm6ry+V6kJSqOjMImEJJFoTkj71337ROUr7ytiVWfQOZy
-         ScwGk4FGCqPhawrUNoWmQ8Dg9Lio3VwPyUM/roUzBsNmLlDT/x5c/Lukik96nTkDRH9I
-         eQsQ==
-X-Gm-Message-State: AOAM532IAKOxUqpOQP0PF16i/kFe/84plXFHUTR9qccircDTAugrq1Cb
-        K/pPSHNUUBFd5jbsx5Xcl6+oQSmIRPw=
-X-Google-Smtp-Source: ABdhPJwEWqRa848Y6b0nbhIetgmKuAHRwCdA9NXKfZeIWxhg4L+prw9ifbQbd3A3SFzUkc97mZUjXw==
-X-Received: by 2002:a17:90b:4b42:b0:1dc:15f8:821b with SMTP id mi2-20020a17090b4b4200b001dc15f8821bmr25322886pjb.131.1652079593876;
-        Sun, 08 May 2022 23:59:53 -0700 (PDT)
-Received: from [192.168.43.80] (subs32-116-206-28-19.three.co.id. [116.206.28.19])
-        by smtp.gmail.com with ESMTPSA id a13-20020aa794ad000000b0050dc76281desm7840546pfl.184.2022.05.08.23.59.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 08 May 2022 23:59:53 -0700 (PDT)
-Message-ID: <4dd26a0e-819d-8414-8b71-1783e263209c@gmail.com>
-Date:   Mon, 9 May 2022 13:59:48 +0700
+        Mon, 9 May 2022 02:56:27 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 875A5158974;
+        Sun,  8 May 2022 23:52:33 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KxX0F71kyz4xPw;
+        Mon,  9 May 2022 16:51:57 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1652079118;
+        bh=W/+d4S9tcfXn8+PhKprWis+tDtcLApvdpUzHqCxGIkw=;
+        h=Date:From:To:Cc:Subject:From;
+        b=OBPIHa+/LXjGqFB3N7cSLTajCsWVLbRzdNunPFlIRWwkHhzH3n7eIpAsjttfSPOlN
+         otA0SMUs8a3IDuTXbvP32GBeBXGtLntVit0gXsRQzh43KF1YdQW+uPGrMc6PDaGRUj
+         Mi48MFqhk/4vrxxS6lj1dTgnooRZU+6PRCX8paBtk2ONwj97yMBxeEP5K/XB+8U7vq
+         YaWDyUGidLB+KYBKFXLA4mKrOkUGV4LcznsbFeOnHYKnlCmeRwYV8R3+CT39LiEMgU
+         R2mEqfOFRKrQHprxdqwdTVQCajiO1ahjZqQ+y0seJo1b368/qB9A6fsb9d95SmIqdw
+         SPFLjBqHLPyHQ==
+Date:   Mon, 9 May 2022 16:51:57 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>,
+        Arnd Bergmann <arnd@arndb.de>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: manual merge of the userns tree with the asm-generic
+ tree
+Message-ID: <20220509165157.0cb6505f@canb.auug.org.au>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH net-next v3] net/core: Rephrase function description of
- __dev_queue_xmit()
-Content-Language: en-US
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     Akira Yokosawa <akiyks@gmail.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ben Greear <greearb@candelatech.com>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-next@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org
-References: <20220507084643.18278-1-bagasdotme@gmail.com>
- <0cf2306a-2218-2cd5-ad54-0d73e25680a7@gmail.com> <Yni6nBTq+0LrBvQN@debian.me>
-In-Reply-To: <Yni6nBTq+0LrBvQN@debian.me>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/nM08NTFadHSvRcx+YSMBgO.";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/9/22 13:54, Bagas Sanjaya wrote:
-> I'm in favor of this patch. Thanks.
-> 
+--Sig_/nM08NTFadHSvRcx+YSMBgO.
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Oops, I mean I'm in favor of your patch suggestion.
+Hi all,
 
--- 
-An old man doll... just what I always wanted! - Clara
+Today's linux-next merge of the userns tree got a conflict in:
+
+  arch/h8300/kernel/process.c
+
+between commit:
+
+  1c4b5ecb7ea1 ("remove the h8300 architecture")
+
+from the asm-generic tree and commits:
+
+  c5febea0956f ("fork: Pass struct kernel_clone_args into copy_thread")
+  5bd2e97c868a ("fork: Generalize PF_IO_WORKER handling")
+
+from the userns tree.
+
+I fixed it up (I just removed the file) and can carry the fix as
+necessary. This is now fixed as far as linux-next is concerned, but any
+non trivial conflicts should be mentioned to your upstream maintainer
+when your tree is submitted for merging.  You may also want to consider
+cooperating with the maintainer of the conflicting tree to minimise any
+particularly complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/nM08NTFadHSvRcx+YSMBgO.
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJ4ug0ACgkQAVBC80lX
+0GwHdAf/XUpQ50Oj3C7ksmHd/nVHtJdcTJ6zxu8oTCnPYjVozYEXA922pG0Q/IOc
+J9INi9iLhibQKIxsm7NYUH37TEYekiQZBIxh+1pSv/Ft1Bo010BPmOPQ+2y4CChl
+lKEP3+5enGRcsqtMe0sSYWkC1lxgmLPk3PNCzlZRS4PjBjWPZieOjbf8j2T6jnUp
+pPkMSplvvmIR1PAxF5gUhO8nCRibM465vaaY/DrM8gVsfguT+7OX5IVbx3lMKFDS
+rTyXMFQdcw9cuUGCpC/LyyefmKTDwFvtQJCwSASdiGMBgm39rcWVtq2rbpxebUre
+kL692hMlhTWOx75qpOiaHAOpNWxqRg==
+=3MwO
+-----END PGP SIGNATURE-----
+
+--Sig_/nM08NTFadHSvRcx+YSMBgO.--
