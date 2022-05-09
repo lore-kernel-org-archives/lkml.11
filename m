@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92B33C4167E
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 05:44:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06100C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 05:45:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234815AbiEIFpf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 01:45:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38094 "EHLO
+        id S235187AbiEIFrJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 01:47:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235237AbiEIFnk (ORCPT
+        with ESMTP id S235043AbiEIFqr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 01:43:40 -0400
+        Mon, 9 May 2022 01:46:47 -0400
 Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3858113FD5E
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 22:39:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2073415E75A
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 22:42:54 -0700 (PDT)
 Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KxVKN24CQz9sTg;
-        Mon,  9 May 2022 07:36:40 +0200 (CEST)
+        by localhost (Postfix) with ESMTP id 4KxVKd230Zz9sW7;
+        Mon,  9 May 2022 07:36:53 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from pegase2.c-s.fr ([172.26.127.65])
         by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id Z5iQMiSJpOPp; Mon,  9 May 2022 07:36:40 +0200 (CEST)
+        with ESMTP id vtBHFhrxjztr; Mon,  9 May 2022 07:36:53 +0200 (CEST)
 Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KxVKF5Bcnz9sTT;
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KxVKF6VCPz9sWB;
         Mon,  9 May 2022 07:36:33 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id A1F308B763;
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id D31A38B776;
         Mon,  9 May 2022 07:36:33 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from messagerie.si.c-s.fr ([127.0.0.1])
         by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id PoDIUbzdMB8Z; Mon,  9 May 2022 07:36:33 +0200 (CEST)
+        with ESMTP id 5TFobGZUBxXF; Mon,  9 May 2022 07:36:33 +0200 (CEST)
 Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 4C5AA8B775;
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 7AF938B76C;
         Mon,  9 May 2022 07:36:33 +0200 (CEST)
 Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 2495aVcE1591283
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 2495aTqU1591235
         (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Mon, 9 May 2022 07:36:31 +0200
+        Mon, 9 May 2022 07:36:29 +0200
 Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 2495aVJr1591282;
-        Mon, 9 May 2022 07:36:31 +0200
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 2495aTBl1591234;
+        Mon, 9 May 2022 07:36:29 +0200
 X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
 From:   Christophe Leroy <christophe.leroy@csgroup.eu>
 To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
@@ -50,454 +50,111 @@ To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
         naveen.n.rao@linux.vnet.ibm.com
 Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
         linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH v3 19/25] powerpc/ftrace: Minimise number of #ifdefs
-Date:   Mon,  9 May 2022 07:36:17 +0200
-Message-Id: <18ce6708d6f8c71d87436f9c6019f04df4125128.1652074503.git.christophe.leroy@csgroup.eu>
+Subject: [PATCH v3 07/25] powerpc/ftrace: Use patch_instruction() return directly
+Date:   Mon,  9 May 2022 07:36:05 +0200
+Message-Id: <49a8597230713e2633e7d9d7b56140787c4a7e20.1652074503.git.christophe.leroy@csgroup.eu>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1652074503.git.christophe.leroy@csgroup.eu>
 References: <cover.1652074503.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1652074582; l=13745; s=20211009; h=from:subject:message-id; bh=pbcW6UGE+WrYQOSdo6W89HbOGE9CaSlQTo8B+0eGVJ0=; b=x5yc5YU4Wqgk4iMtCrv9QFupk/KUiLDZG2/83ZfPkTkCrNNMf6Msi+aGJxLqBU/KbmoL0XV+BlTj A4c22qc7CyZgxWoN+8Hft3gaYljrKmJsB+MrVA9ElvrL+NqO+dqs
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1652074581; l=3210; s=20211009; h=from:subject:message-id; bh=Md4LXS00pJjwBL+ITuR9eEwWCBaAOzBbKV+lmd2htSc=; b=bw+q62+/aBRPBc5kH6gDGF9O/ZQowCJR4GOLPi23Xf0KjpRe1VbdFMOWF85wGURwH2sKiEjwu5zF m1IIEnc/By+PEXlutM8oglp+rmJnGXI3RqxDYeFA8Vaqa9fmNmcW
 X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A lot of #ifdefs can be replaced by IS_ENABLED()
+Instead of returning -EPERM when patch_instruction() fails,
+just return what patch_instruction returns.
 
-Do so.
+That simplifies ftrace_modify_code():
 
-This requires to have kernel_toc_addr() defined at all time
-as well as PPC_INST_LD_TOC and PPC_INST_STD_LR.
+	   0:	94 21 ff c0 	stwu    r1,-64(r1)
+	   4:	93 e1 00 3c 	stw     r31,60(r1)
+	   8:	7c 7f 1b 79 	mr.     r31,r3
+	   c:	40 80 00 30 	bge     3c <ftrace_modify_code+0x3c>
+	  10:	93 c1 00 38 	stw     r30,56(r1)
+	  14:	7c 9e 23 78 	mr      r30,r4
+	  18:	7c a4 2b 78 	mr      r4,r5
+	  1c:	80 bf 00 00 	lwz     r5,0(r31)
+	  20:	7c 1e 28 40 	cmplw   r30,r5
+	  24:	40 82 00 34 	bne     58 <ftrace_modify_code+0x58>
+	  28:	83 c1 00 38 	lwz     r30,56(r1)
+	  2c:	7f e3 fb 78 	mr      r3,r31
+	  30:	83 e1 00 3c 	lwz     r31,60(r1)
+	  34:	38 21 00 40 	addi    r1,r1,64
+	  38:	48 00 00 00 	b       38 <ftrace_modify_code+0x38>
+				38: R_PPC_REL24	patch_instruction
+
+Before:
+
+	   0:	94 21 ff c0 	stwu    r1,-64(r1)
+	   4:	93 e1 00 3c 	stw     r31,60(r1)
+	   8:	7c 7f 1b 79 	mr.     r31,r3
+	   c:	40 80 00 4c 	bge     58 <ftrace_modify_code+0x58>
+	  10:	93 c1 00 38 	stw     r30,56(r1)
+	  14:	7c 9e 23 78 	mr      r30,r4
+	  18:	7c a4 2b 78 	mr      r4,r5
+	  1c:	80 bf 00 00 	lwz     r5,0(r31)
+	  20:	7c 08 02 a6 	mflr    r0
+	  24:	90 01 00 44 	stw     r0,68(r1)
+	  28:	7c 1e 28 40 	cmplw   r30,r5
+	  2c:	40 82 00 48 	bne     74 <ftrace_modify_code+0x74>
+	  30:	7f e3 fb 78 	mr      r3,r31
+	  34:	48 00 00 01 	bl      34 <ftrace_modify_code+0x34>
+				34: R_PPC_REL24	patch_instruction
+	  38:	80 01 00 44 	lwz     r0,68(r1)
+	  3c:	20 63 00 00 	subfic  r3,r3,0
+	  40:	83 c1 00 38 	lwz     r30,56(r1)
+	  44:	7c 63 19 10 	subfe   r3,r3,r3
+	  48:	7c 08 03 a6 	mtlr    r0
+	  4c:	83 e1 00 3c 	lwz     r31,60(r1)
+	  50:	38 21 00 40 	addi    r1,r1,64
+	  54:	4e 80 00 20 	blr
+
+It improves ftrace activation/deactivation duration by about 3%.
+
+Modify patch_instruction() return on failure to -EPERM in order to
+match with ftrace expectations. Other users of patch_instruction()
+do not care about the exact error value returned.
 
 Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
-v2: Moved the setup of pop outside of the big if()/else() in __ftrace_make_nop()
+v2: Make patch_instruction() return -EPERM in case of failure
 ---
- arch/powerpc/include/asm/code-patching.h |   2 -
- arch/powerpc/include/asm/module.h        |   2 -
- arch/powerpc/include/asm/sections.h      |  24 +--
- arch/powerpc/kernel/trace/ftrace.c       | 182 +++++++++++------------
- 4 files changed, 103 insertions(+), 107 deletions(-)
+ arch/powerpc/kernel/trace/ftrace.c | 5 +----
+ arch/powerpc/lib/code-patching.c   | 2 +-
+ 2 files changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/arch/powerpc/include/asm/code-patching.h b/arch/powerpc/include/asm/code-patching.h
-index 8b1a10868275..3f881548fb61 100644
---- a/arch/powerpc/include/asm/code-patching.h
-+++ b/arch/powerpc/include/asm/code-patching.h
-@@ -217,7 +217,6 @@ static inline unsigned long ppc_kallsyms_lookup_name(const char *name)
- 	return addr;
- }
- 
--#ifdef CONFIG_PPC64
- /*
-  * Some instruction encodings commonly used in dynamic ftracing
-  * and function live patching.
-@@ -234,6 +233,5 @@ static inline unsigned long ppc_kallsyms_lookup_name(const char *name)
- 
- /* usually preceded by a mflr r0 */
- #define PPC_INST_STD_LR		PPC_RAW_STD(_R0, _R1, PPC_LR_STKOFF)
--#endif /* CONFIG_PPC64 */
- 
- #endif /* _ASM_POWERPC_CODE_PATCHING_H */
-diff --git a/arch/powerpc/include/asm/module.h b/arch/powerpc/include/asm/module.h
-index 857d9ff24295..09e2ffd360bb 100644
---- a/arch/powerpc/include/asm/module.h
-+++ b/arch/powerpc/include/asm/module.h
-@@ -41,9 +41,7 @@ struct mod_arch_specific {
- 
- #ifdef CONFIG_DYNAMIC_FTRACE
- 	unsigned long tramp;
--#ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
- 	unsigned long tramp_regs;
--#endif
- #endif
- 
- 	/* List of BUG addresses, source line numbers and filenames */
-diff --git a/arch/powerpc/include/asm/sections.h b/arch/powerpc/include/asm/sections.h
-index 8be2c491c733..6980eaeb16fe 100644
---- a/arch/powerpc/include/asm/sections.h
-+++ b/arch/powerpc/include/asm/sections.h
-@@ -29,18 +29,6 @@ extern char start_virt_trampolines[];
- extern char end_virt_trampolines[];
- #endif
- 
--/*
-- * This assumes the kernel is never compiled -mcmodel=small or
-- * the total .toc is always less than 64k.
-- */
--static inline unsigned long kernel_toc_addr(void)
--{
--	unsigned long toc_ptr;
--
--	asm volatile("mr %0, 2" : "=r" (toc_ptr));
--	return toc_ptr;
--}
--
- static inline int overlaps_interrupt_vector_text(unsigned long start,
- 							unsigned long end)
- {
-@@ -60,5 +48,17 @@ static inline int overlaps_kernel_text(unsigned long start, unsigned long end)
- 
- #endif
- 
-+/*
-+ * This assumes the kernel is never compiled -mcmodel=small or
-+ * the total .toc is always less than 64k.
-+ */
-+static inline unsigned long kernel_toc_addr(void)
-+{
-+	unsigned long toc_ptr;
-+
-+	asm volatile("mr %0, 2" : "=r" (toc_ptr));
-+	return toc_ptr;
-+}
-+
- #endif /* __KERNEL__ */
- #endif	/* _ASM_POWERPC_SECTIONS_H */
 diff --git a/arch/powerpc/kernel/trace/ftrace.c b/arch/powerpc/kernel/trace/ftrace.c
-index c34cb394f8a8..5e7a4ed7ad22 100644
+index 98e82fa4980f..1b05d33f96c6 100644
 --- a/arch/powerpc/kernel/trace/ftrace.c
 +++ b/arch/powerpc/kernel/trace/ftrace.c
-@@ -150,26 +150,39 @@ __ftrace_make_nop(struct module *mod,
- 		return -EINVAL;
+@@ -78,10 +78,7 @@ ftrace_modify_code(unsigned long ip, ppc_inst_t old, ppc_inst_t new)
  	}
  
--	/* When using -mprofile-kernel or PPC32 there is no load to jump over */
--	pop = ppc_inst(PPC_RAW_NOP());
-+	if (IS_ENABLED(CONFIG_MPROFILE_KERNEL)) {
-+		if (copy_inst_from_kernel_nofault(&op, (void *)(ip - 4))) {
-+			pr_err("Fetching instruction at %lx failed.\n", ip - 4);
-+			return -EFAULT;
-+		}
- 
--#ifdef CONFIG_PPC64
--#ifdef CONFIG_MPROFILE_KERNEL
--	if (copy_inst_from_kernel_nofault(&op, (void *)(ip - 4))) {
--		pr_err("Fetching instruction at %lx failed.\n", ip - 4);
--		return -EFAULT;
--	}
-+		/* We expect either a mflr r0, or a std r0, LRSAVE(r1) */
-+		if (!ppc_inst_equal(op, ppc_inst(PPC_RAW_MFLR(_R0))) &&
-+		    !ppc_inst_equal(op, ppc_inst(PPC_INST_STD_LR))) {
-+			pr_err("Unexpected instruction %s around bl _mcount\n",
-+			       ppc_inst_as_str(op));
-+			return -EINVAL;
-+		}
-+	} else if (IS_ENABLED(CONFIG_PPC64)) {
-+		/*
-+		 * Check what is in the next instruction. We can see ld r2,40(r1), but
-+		 * on first pass after boot we will see mflr r0.
-+		 */
-+		if (copy_inst_from_kernel_nofault(&op, (void *)(ip + 4))) {
-+			pr_err("Fetching op failed.\n");
-+			return -EFAULT;
-+		}
- 
--	/* We expect either a mflr r0, or a std r0, LRSAVE(r1) */
--	if (!ppc_inst_equal(op, ppc_inst(PPC_RAW_MFLR(_R0))) &&
--	    !ppc_inst_equal(op, ppc_inst(PPC_INST_STD_LR))) {
--		pr_err("Unexpected instruction %s around bl _mcount\n",
--		       ppc_inst_as_str(op));
--		return -EINVAL;
-+		if (!ppc_inst_equal(op,  ppc_inst(PPC_INST_LD_TOC))) {
-+			pr_err("Expected %08lx found %s\n", PPC_INST_LD_TOC, ppc_inst_as_str(op));
-+			return -EINVAL;
-+		}
- 	}
--#else
-+
- 	/*
--	 * Our original call site looks like:
-+	 * When using -mprofile-kernel or PPC32 there is no load to jump over.
-+	 *
-+	 * Otherwise our original call site looks like:
- 	 *
- 	 * bl <tramp>
- 	 * ld r2,XX(r1)
-@@ -181,24 +194,10 @@ __ftrace_make_nop(struct module *mod,
- 	 *
- 	 * Use a b +8 to jump over the load.
- 	 */
+ 	/* replace the text with the new text */
+-	if (patch_instruction((u32 *)ip, new))
+-		return -EPERM;
 -
--	pop = ppc_inst(PPC_RAW_BRANCH(8));	/* b +8 */
--
--	/*
--	 * Check what is in the next instruction. We can see ld r2,40(r1), but
--	 * on first pass after boot we will see mflr r0.
--	 */
--	if (copy_inst_from_kernel_nofault(&op, (void *)(ip + 4))) {
--		pr_err("Fetching op failed.\n");
--		return -EFAULT;
--	}
--
--	if (!ppc_inst_equal(op,  ppc_inst(PPC_INST_LD_TOC))) {
--		pr_err("Expected %08lx found %s\n", PPC_INST_LD_TOC, ppc_inst_as_str(op));
--		return -EINVAL;
--	}
--#endif /* CONFIG_MPROFILE_KERNEL */
--#endif /* PPC64 */
-+	if (IS_ENABLED(CONFIG_MPROFILE_KERNEL) || IS_ENABLED(CONFIG_PPC32))
-+		pop = ppc_inst(PPC_RAW_NOP());
-+	else
-+		pop = ppc_inst(PPC_RAW_BRANCH(8));	/* b +8 */
- 
- 	if (patch_instruction((u32 *)ip, pop)) {
- 		pr_err("Patching NOP failed.\n");
-@@ -207,6 +206,11 @@ __ftrace_make_nop(struct module *mod,
- 
- 	return 0;
- }
-+#else
-+static int __ftrace_make_nop(struct module *mod, struct dyn_ftrace *rec, unsigned long addr)
-+{
-+	return 0;
-+}
- #endif /* CONFIG_MODULES */
- 
- static unsigned long find_ftrace_tramp(unsigned long ip)
-@@ -279,11 +283,11 @@ static int setup_mcount_compiler_tramp(unsigned long tramp)
- 	}
- 
- 	/* Let's re-write the tramp to go to ftrace_[regs_]caller */
--#ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
--	ptr = ppc_global_function_entry((void *)ftrace_regs_caller);
--#else
--	ptr = ppc_global_function_entry((void *)ftrace_caller);
--#endif
-+	if (IS_ENABLED(CONFIG_DYNAMIC_FTRACE_WITH_REGS))
-+		ptr = ppc_global_function_entry((void *)ftrace_regs_caller);
-+	else
-+		ptr = ppc_global_function_entry((void *)ftrace_caller);
-+
- 	if (patch_branch((u32 *)tramp, ptr, 0)) {
- 		pr_debug("REL24 out of range!\n");
- 		return -1;
-@@ -352,10 +356,12 @@ int ftrace_make_nop(struct module *mod,
- 		old = ftrace_call_replace(ip, addr, 1);
- 		new = ppc_inst(PPC_RAW_NOP());
- 		return ftrace_modify_code(ip, old, new);
--	} else if (core_kernel_text(ip))
-+	} else if (core_kernel_text(ip)) {
- 		return __ftrace_make_nop_kernel(rec, addr);
-+	} else if (!IS_ENABLED(CONFIG_MODULES)) {
-+		return -EINVAL;
-+	}
- 
--#ifdef CONFIG_MODULES
- 	/*
- 	 * Out of range jumps are called from modules.
- 	 * We should either already have a pointer to the module
-@@ -378,10 +384,6 @@ int ftrace_make_nop(struct module *mod,
- 		mod = rec->arch.mod;
- 
- 	return __ftrace_make_nop(mod, rec, addr);
--#else
--	/* We should not get here without modules */
--	return -EINVAL;
--#endif /* CONFIG_MODULES */
- }
- 
- #ifdef CONFIG_MODULES
-@@ -411,10 +413,9 @@ __ftrace_make_call(struct dyn_ftrace *rec, unsigned long addr)
- 	if (copy_inst_from_kernel_nofault(op, ip))
- 		return -EFAULT;
- 
--#ifdef CONFIG_PPC64_ELF_ABI_V1
--	if (copy_inst_from_kernel_nofault(op + 1, ip + 4))
-+	if (IS_ENABLED(CONFIG_PPC64_ELF_ABI_V1) &&
-+	    copy_inst_from_kernel_nofault(op + 1, ip + 4))
- 		return -EFAULT;
--#endif
- 
- 	if (!expected_nop_sequence(ip, op[0], op[1])) {
- 		pr_err("Unexpected call sequence at %p: %s %s\n",
-@@ -423,20 +424,15 @@ __ftrace_make_call(struct dyn_ftrace *rec, unsigned long addr)
- 	}
- 
- 	/* If we never set up ftrace trampoline(s), then bail */
--#ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
--	if (!mod->arch.tramp || !mod->arch.tramp_regs) {
--#else
--	if (!mod->arch.tramp) {
--#endif
-+	if (!mod->arch.tramp ||
-+	    (IS_ENABLED(CONFIG_DYNAMIC_FTRACE_WITH_REGS) && !mod->arch.tramp_regs)) {
- 		pr_err("No ftrace trampoline\n");
- 		return -EINVAL;
- 	}
- 
--#ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
--	if (rec->flags & FTRACE_FL_REGS)
-+	if (IS_ENABLED(CONFIG_DYNAMIC_FTRACE_WITH_REGS) && rec->flags & FTRACE_FL_REGS)
- 		tramp = mod->arch.tramp_regs;
- 	else
--#endif
- 		tramp = mod->arch.tramp;
- 
- 	if (module_trampoline_target(mod, tramp, &ptr)) {
-@@ -460,6 +456,11 @@ __ftrace_make_call(struct dyn_ftrace *rec, unsigned long addr)
- 
- 	return 0;
- }
-+#else
-+static int __ftrace_make_call(struct dyn_ftrace *rec, unsigned long addr)
-+{
-+	return 0;
-+}
- #endif /* CONFIG_MODULES */
- 
- static int __ftrace_make_call_kernel(struct dyn_ftrace *rec, unsigned long addr)
-@@ -472,16 +473,12 @@ static int __ftrace_make_call_kernel(struct dyn_ftrace *rec, unsigned long addr)
- 	entry = ppc_global_function_entry((void *)ftrace_caller);
- 	ptr = ppc_global_function_entry((void *)addr);
- 
--	if (ptr != entry) {
--#ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
-+	if (ptr != entry && IS_ENABLED(CONFIG_DYNAMIC_FTRACE_WITH_REGS))
- 		entry = ppc_global_function_entry((void *)ftrace_regs_caller);
--		if (ptr != entry) {
--#endif
--			pr_err("Unknown ftrace addr to patch: %ps\n", (void *)ptr);
--			return -EINVAL;
--#ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
--		}
--#endif
-+
-+	if (ptr != entry) {
-+		pr_err("Unknown ftrace addr to patch: %ps\n", (void *)ptr);
-+		return -EINVAL;
- 	}
- 
- 	/* Make sure we have a nop */
-@@ -524,10 +521,13 @@ int ftrace_make_call(struct dyn_ftrace *rec, unsigned long addr)
- 		old = ppc_inst(PPC_RAW_NOP());
- 		new = ftrace_call_replace(ip, addr, 1);
- 		return ftrace_modify_code(ip, old, new);
--	} else if (core_kernel_text(ip))
-+	} else if (core_kernel_text(ip)) {
- 		return __ftrace_make_call_kernel(rec, addr);
-+	} else if (!IS_ENABLED(CONFIG_MODULES)) {
-+		/* We should not get here without modules */
-+		return -EINVAL;
-+	}
- 
--#ifdef CONFIG_MODULES
- 	/*
- 	 * Out of range jumps are called from modules.
- 	 * Being that we are converting from nop, it had better
-@@ -539,10 +539,6 @@ int ftrace_make_call(struct dyn_ftrace *rec, unsigned long addr)
- 	}
- 
- 	return __ftrace_make_call(rec, addr);
--#else
--	/* We should not get here without modules */
--	return -EINVAL;
--#endif /* CONFIG_MODULES */
- }
- 
- #ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
-@@ -633,6 +629,11 @@ __ftrace_modify_call(struct dyn_ftrace *rec, unsigned long old_addr,
- 
- 	return 0;
- }
-+#else
-+static int __ftrace_modify_call(struct dyn_ftrace *rec, unsigned long old_addr, unsigned long addr)
-+{
-+	return 0;
-+}
- #endif
- 
- int ftrace_modify_call(struct dyn_ftrace *rec, unsigned long old_addr,
-@@ -657,9 +658,11 @@ int ftrace_modify_call(struct dyn_ftrace *rec, unsigned long old_addr,
- 		 * variant, so there is nothing to do here
- 		 */
- 		return 0;
-+	} else if (!IS_ENABLED(CONFIG_MODULES)) {
-+		/* We should not get here without modules */
-+		return -EINVAL;
- 	}
- 
--#ifdef CONFIG_MODULES
- 	/*
- 	 * Out of range jumps are called from modules.
- 	 */
-@@ -669,10 +672,6 @@ int ftrace_modify_call(struct dyn_ftrace *rec, unsigned long old_addr,
- 	}
- 
- 	return __ftrace_modify_call(rec, old_addr, addr);
--#else
--	/* We should not get here without modules */
--	return -EINVAL;
--#endif /* CONFIG_MODULES */
- }
- #endif
- 
-@@ -686,15 +685,13 @@ int ftrace_update_ftrace_func(ftrace_func_t func)
- 	new = ftrace_call_replace(ip, (unsigned long)func, 1);
- 	ret = ftrace_modify_code(ip, old, new);
- 
--#ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
- 	/* Also update the regs callback function */
--	if (!ret) {
-+	if (IS_ENABLED(CONFIG_DYNAMIC_FTRACE_WITH_REGS) && !ret) {
- 		ip = (unsigned long)(&ftrace_regs_call);
- 		old = ppc_inst_read((u32 *)&ftrace_regs_call);
- 		new = ftrace_call_replace(ip, (unsigned long)func, 1);
- 		ret = ftrace_modify_code(ip, old, new);
- 	}
--#endif
- 
- 	return ret;
- }
-@@ -710,6 +707,9 @@ void arch_ftrace_update_code(int command)
- 
- #ifdef CONFIG_PPC64
- #define PACATOC offsetof(struct paca_struct, kernel_toc)
-+#else
-+#define PACATOC 0
-+#endif
- 
- extern unsigned int ftrace_tramp_text[], ftrace_tramp_init[];
- 
-@@ -724,12 +724,18 @@ int __init ftrace_dyn_arch_init(void)
- 		PPC_RAW_MTCTR(_R12),
- 		PPC_RAW_BCTR()
- 	};
--#ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
--	unsigned long addr = ppc_global_function_entry((void *)ftrace_regs_caller);
--#else
--	unsigned long addr = ppc_global_function_entry((void *)ftrace_caller);
--#endif
--	long reladdr = addr - kernel_toc_addr();
-+	unsigned long addr;
-+	long reladdr;
-+
-+	if (IS_ENABLED(CONFIG_PPC32))
-+		return 0;
-+
-+	if (IS_ENABLED(CONFIG_DYNAMIC_FTRACE_WITH_REGS))
-+		addr = ppc_global_function_entry((void *)ftrace_regs_caller);
-+	else
-+		addr = ppc_global_function_entry((void *)ftrace_caller);
-+
-+	reladdr = addr - kernel_toc_addr();
- 
- 	if (reladdr >= SZ_2G || reladdr < -SZ_2G) {
- 		pr_err("Address of %ps out of range of kernel_toc.\n",
-@@ -746,12 +752,6 @@ int __init ftrace_dyn_arch_init(void)
- 
- 	return 0;
- }
--#else
--int __init ftrace_dyn_arch_init(void)
--{
 -	return 0;
--}
--#endif
++	return patch_instruction((u32 *)ip, new);
+ }
  
- #ifdef CONFIG_FUNCTION_GRAPH_TRACER
+ /*
+diff --git a/arch/powerpc/lib/code-patching.c b/arch/powerpc/lib/code-patching.c
+index 7adbdb05fee7..cd25c07df23c 100644
+--- a/arch/powerpc/lib/code-patching.c
++++ b/arch/powerpc/lib/code-patching.c
+@@ -32,7 +32,7 @@ static int __patch_instruction(u32 *exec_addr, ppc_inst_t instr, u32 *patch_addr
+ 	return 0;
  
+ failed:
+-	return -EFAULT;
++	return -EPERM;
+ }
+ 
+ int raw_patch_instruction(u32 *addr, ppc_inst_t instr)
 -- 
 2.35.1
 
