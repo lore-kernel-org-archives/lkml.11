@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94A92C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 13:14:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBB8EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 13:14:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235454AbiEINSj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 09:18:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41986 "EHLO
+        id S235509AbiEINSq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 09:18:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235283AbiEINSE (ORCPT
+        with ESMTP id S235305AbiEINSE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 9 May 2022 09:18:04 -0400
 Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3A5D2A804F
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A062E2A8043
         for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 06:14:10 -0700 (PDT)
 Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KxhST0WzczhZ3y;
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KxhST1mWxzhZ42;
         Mon,  9 May 2022 21:13:29 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
  (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 9 May
- 2022 21:14:02 +0800
+ 2022 21:14:04 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <akpm@linux-foundation.org>
 CC:     <willy@infradead.org>, <vbabka@suse.cz>, <dhowells@redhat.com>,
@@ -29,9 +29,9 @@ CC:     <willy@infradead.org>, <vbabka@suse.cz>, <dhowells@redhat.com>,
         <surenb@google.com>, <peterx@redhat.com>,
         <naoya.horiguchi@nec.com>, <linux-mm@kvack.org>,
         <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH 06/15] mm/swap: remove buggy cache->nr check in refill_swap_slots_cache
-Date:   Mon, 9 May 2022 21:14:07 +0800
-Message-ID: <20220509131416.17553-7-linmiaohe@huawei.com>
+Subject: [PATCH 08/15] mm/swap: make page_swapcount and __lru_add_drain_all
+Date:   Mon, 9 May 2022 21:14:09 +0800
+Message-ID: <20220509131416.17553-9-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20220509131416.17553-1-linmiaohe@huawei.com>
 References: <20220509131416.17553-1-linmiaohe@huawei.com>
@@ -46,28 +46,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-refill_swap_slots_cache is always called when cache->nr is 0. And if
-cache->nr != 0, we should return cache->nr instead of 0. So remove
-such buggy and confusing check.
+Make page_swapcount and __lru_add_drain_all static. They are only used
+within the file now.
 
 Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 ---
- mm/swap_slots.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/swap.h | 7 -------
+ mm/swap.c            | 2 +-
+ mm/swapfile.c        | 2 +-
+ 3 files changed, 2 insertions(+), 9 deletions(-)
 
-diff --git a/mm/swap_slots.c b/mm/swap_slots.c
-index 2f877e6f87d7..2a65a89b5b4d 100644
---- a/mm/swap_slots.c
-+++ b/mm/swap_slots.c
-@@ -258,7 +258,7 @@ void enable_swap_slots_cache(void)
- /* called with swap slot cache's alloc lock held */
- static int refill_swap_slots_cache(struct swap_slots_cache *cache)
+diff --git a/include/linux/swap.h b/include/linux/swap.h
+index 999c7d79c2d5..8772132d21dc 100644
+--- a/include/linux/swap.h
++++ b/include/linux/swap.h
+@@ -490,7 +490,6 @@ int swap_type_of(dev_t device, sector_t offset);
+ int find_first_swap(dev_t *device);
+ extern unsigned int count_swap_pages(int, int);
+ extern sector_t swapdev_block(int, pgoff_t);
+-extern int page_swapcount(struct page *);
+ extern int __swap_count(swp_entry_t entry);
+ extern int __swp_swapcount(swp_entry_t entry);
+ extern int swp_swapcount(swp_entry_t entry);
+@@ -562,12 +561,6 @@ static inline void put_swap_page(struct page *page, swp_entry_t swp)
  {
--	if (!use_swap_slot_cache || cache->nr)
-+	if (!use_swap_slot_cache)
- 		return 0;
+ }
  
- 	cache->cur = 0;
+-
+-static inline int page_swapcount(struct page *page)
+-{
+-	return 0;
+-}
+-
+ static inline int __swap_count(swp_entry_t entry)
+ {
+ 	return 0;
+diff --git a/mm/swap.c b/mm/swap.c
+index 7e320ec08c6a..6d2c37f781f8 100644
+--- a/mm/swap.c
++++ b/mm/swap.c
+@@ -748,7 +748,7 @@ static void lru_add_drain_per_cpu(struct work_struct *dummy)
+  * Calling this function with cpu hotplug locks held can actually lead
+  * to obscure indirect dependencies via WQ context.
+  */
+-inline void __lru_add_drain_all(bool force_all_cpus)
++static inline void __lru_add_drain_all(bool force_all_cpus)
+ {
+ 	/*
+ 	 * lru_drain_gen - Global pages generation number
+diff --git a/mm/swapfile.c b/mm/swapfile.c
+index 7b4c99ca2aea..133e03fea104 100644
+--- a/mm/swapfile.c
++++ b/mm/swapfile.c
+@@ -1430,7 +1430,7 @@ void swapcache_free_entries(swp_entry_t *entries, int n)
+  * This does not give an exact answer when swap count is continued,
+  * but does include the high COUNT_CONTINUED flag to allow for that.
+  */
+-int page_swapcount(struct page *page)
++static int page_swapcount(struct page *page)
+ {
+ 	int count = 0;
+ 	struct swap_info_struct *p;
 -- 
 2.23.0
 
