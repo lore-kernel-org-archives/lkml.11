@@ -2,86 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FAEDC352A1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EC6CC352A7
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:30:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237692AbiEIJdv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 05:33:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42916 "EHLO
+        id S237767AbiEIJdy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 05:33:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233689AbiEIJPW (ORCPT
+        with ESMTP id S235054AbiEIJP3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 05:15:22 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F85E184336
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 02:11:28 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id g8so11722020pfh.5
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 02:11:28 -0700 (PDT)
+        Mon, 9 May 2022 05:15:29 -0400
+Received: from mail-wr1-x449.google.com (mail-wr1-x449.google.com [IPv6:2a00:1450:4864:20::449])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4626F184336
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 02:11:34 -0700 (PDT)
+Received: by mail-wr1-x449.google.com with SMTP id s16-20020adfeb10000000b0020cc4e5e683so1244804wrn.6
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 02:11:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=7QpxuoVC9zQ059fU/VCO45VAfx6s8GhPEiX2c3POePM=;
-        b=NcDYpNTw04yugULw2lGRPP8uvp5iDaWIg0Cp83izxqM6A+vpvp3r73InUADA5S/+yl
-         /bUQgAbVun7lO/SrKqe3BscfTx87KV0KGXXOUtm05SEuQT2T/EzBfyBziD+Ru1pSxYxB
-         uRheeODB9N5K98Z+wxZkt75t7PyiIEBycBKZiwdobxmqb20wJMq6/69yPJXXtLYiBUta
-         p7NLsTeoh0mDe6rxbNgt23gvteCIu4YTAqeHIQTdeOWvQcu5t3cD5n6Q5aaK/JxJcWrw
-         qwQLl3kimsJcId7BZDfqPXNvL/Aw5boIH8aoSWxaIuiyYhEyH5CRxIzACxYLjwd96QS9
-         TttA==
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=IH0vvM/kP0uifpRXlZnh4SaDor5QOPAjFTBMDXDGKyo=;
+        b=B09v9hRISUnIUJr8S6o8wK7zVTSj8p7Dl9kKiv6agbvXdk0K+rYHFsQ20A91SX2LQY
+         a4u0BeNjZdtCIHaD6hg4CegDvRIumU+GG9+WswJSqcmqxyAaCndBhKWWA/sHm+mULJsM
+         EFxCoAVKUQ62TqFfcEoIcjcQwUlAeEZtk+790dMSF/NrjY3dhm3GMEzv7pcHJmafQvPW
+         Swp2yETs1yqHbFVgodLjp02YYtze2k5+QCtM7C7PB1k9Ldx4uTT94pFklbUwDiEih0lm
+         Ehlp6ZSZbFfSclo1Bo+RsNbp95CtRYg77mCiPGfj1uWYZY3VIMXOv+KR4Ovb2UgNcgsU
+         1xMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=7QpxuoVC9zQ059fU/VCO45VAfx6s8GhPEiX2c3POePM=;
-        b=qM3BmDYHpbvT4Z8SluX9yggtcYG4uxt5PPZruDJcZiwzqzdccyo5zS89l5viwVYZ1G
-         nKGdYZVY+K3nTfoCROVtqYOpyjdTImO7tYyoUu56h8zCXzypNOz5Mg81HzeACWj6hWCU
-         ixIMDTUDeUhRwpNm94rwX3e0xoKubcfjtDXgZ82UX0gSDcdNXRch1J+czs0v4dzk00Cb
-         cO642n301Lmg3F/f0Uw3jCeUJiihAAXqc8sN1LkwIxEODpm+HmwD+U5hK2wPJszGr3uu
-         9ivGaxW9T700IFC3dEup24dqYOW4QtRcHemTv4M6qQQHklNynpRHdSapfhvWccLvMCew
-         +yIg==
-X-Gm-Message-State: AOAM53121xq0IeLyu2bQFy9tsVXOehC5GNaHPkzpup8J6535SrxTzxBk
-        sItbAka4JbFr4NHCHt+A+Z2Ldg==
-X-Google-Smtp-Source: ABdhPJxOwO6usL9axVziBSOIzqmZTG8IQH2ceVvogPLS2D4/RbZmODDEy76gkcTU+6D0WXe67qjY/A==
-X-Received: by 2002:a63:d43:0:b0:3c1:475e:8341 with SMTP id 3-20020a630d43000000b003c1475e8341mr12236858pgn.533.1652087488293;
-        Mon, 09 May 2022 02:11:28 -0700 (PDT)
-Received: from localhost ([122.162.234.2])
-        by smtp.gmail.com with ESMTPSA id h27-20020a056a00001b00b0050dc76281d7sm8361307pfk.177.2022.05.09.02.11.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 02:11:27 -0700 (PDT)
-Date:   Mon, 9 May 2022 14:41:25 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     qianfanguijin@163.com
-Cc:     linux-sunxi@lists.linux.dev, Rob Herring <robh+dt@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
-Subject: Re: [PATCH v1] drivers: cpufreq: sun8i-r40: Add cpufreq support
-Message-ID: <20220509091125.tps3zwaq276jlgh3@vireshk-i7>
-References: <20220509084853.17068-1-qianfanguijin@163.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220509084853.17068-1-qianfanguijin@163.com>
-User-Agent: NeoMutt/20180716-391-311a52
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=IH0vvM/kP0uifpRXlZnh4SaDor5QOPAjFTBMDXDGKyo=;
+        b=q5nJysPh405O2JpIBZb8w3G5g2G4I3Z2nTU+DT+K4oPf3qfgEQfExfUtejMAzj4WsD
+         MgZuj4UsNRE+TU/FWcbfNXzuMMkQCcvi58CrwV9yxyU09apogWEUMjowwyF0kICpJ5Q/
+         Ks5py2q4AEbmaOdkKe4fnP2U0b/P8X9zJqRxzQ3c44OKspkgmf6FZSsNrAGXUf+0kviH
+         CrraDWdeGbMYnsncHKliroIS/YYvzhSR69vyiZB5FgRQdGbV5SxKjR15fC4PXfXrsob2
+         N8rU4f0bG04V6/7oqy0HBexAJdSeKCReTfg0+HAHNXVcGWn6kiJkCZBexqAQMHUZ83tJ
+         ACAg==
+X-Gm-Message-State: AOAM533XuWPkv2szjzfQR6j3ug2AduVZvam2J6rbxDnjlLldJ5vQAhG3
+        OkjCvGz6SWDxfIv+QCMfJbFvXnQo1ND+VBecLGo=
+X-Google-Smtp-Source: ABdhPJzDBb+IibuMCsYzEHx70Sg9Oqf6zDRjgWN+hqsk+ZHhARM2Qrlz4RolnqAZwHGEgHxe5gIWNvoQgmwIYQWQ/TM=
+X-Received: from sene.c.googlers.com ([fda3:e722:ac3:cc00:28:9cb1:c0a8:27c4])
+ (user=sebastianene job=sendgmr) by 2002:a05:6000:1843:b0:20c:57b2:472c with
+ SMTP id c3-20020a056000184300b0020c57b2472cmr12738619wri.142.1652087492700;
+ Mon, 09 May 2022 02:11:32 -0700 (PDT)
+Date:   Mon,  9 May 2022 09:11:04 +0000
+In-Reply-To: <20220509091103.2220604-1-sebastianene@google.com>
+Message-Id: <20220509091103.2220604-2-sebastianene@google.com>
+Mime-Version: 1.0
+References: <20220509091103.2220604-1-sebastianene@google.com>
+X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
+Subject: [PATCH v5 1/2] dt-bindings: vcpu_stall_detector: Add
+ qemu,vcpu-stall-detector compatible
+From:   Sebastian Ene <sebastianene@google.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Dragan Cvetic <dragan.cvetic@xilinx.com>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        maz@kernel.org, will@kernel.org, qperret@google.com,
+        Guenter Roeck <linux@roeck-us.net>,
+        Sebastian Ene <sebastianene@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09-05-22, 16:48, qianfanguijin@163.com wrote:
-> From: qianfan Zhao <qianfanguijin@163.com>
-> 
-> OPP table value is get from allwinner lichee 3.10 kernel.
-> 
-> Signed-off-by: qianfan Zhao <qianfanguijin@163.com>
-> ---
->  arch/arm/boot/dts/sun8i-r40.dtsi     | 47 ++++++++++++++++++++++++++++
->  drivers/cpufreq/cpufreq-dt-platdev.c |  1 +
->  2 files changed, 48 insertions(+)
+The VCPU stall detection mechanism allows to configure the expiration
+duration and the internal counter clock frequency measured in Hz.
+Add these properties in the schema.
 
-Applied. Thanks.
+While this is a memory mapped virtual device, it is expected to be loaded
+when the DT contains the compatible: "qemu,vcpu-stall-detector" node.
+In a protected VM we trust the generated DT nodes and we don't rely on
+the host to present the hardware peripherals.
 
+Signed-off-by: Sebastian Ene <sebastianene@google.com>
+---
+ .../bindings/misc/vcpu_stall_detector.yaml    | 47 +++++++++++++++++++
+ 1 file changed, 47 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/misc/vcpu_stall_detector.yaml
+
+diff --git a/Documentation/devicetree/bindings/misc/vcpu_stall_detector.yaml b/Documentation/devicetree/bindings/misc/vcpu_stall_detector.yaml
+new file mode 100644
+index 000000000000..2496fd84faa0
+--- /dev/null
++++ b/Documentation/devicetree/bindings/misc/vcpu_stall_detector.yaml
+@@ -0,0 +1,47 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/misc/vcpu_stall_detector.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: VCPU stall detector
++
++description: |
++  This binding describes a CPU stall detector mechanism for virtual cpus
++  which is accessed through MMIO.
++
++maintainers:
++  - Sebastian Ene <sebastianene@google.com>
++
++properties:
++  compatible:
++    enum:
++      - qemu,vcpu-stall-detector
++  clock-frequency:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: |
++      The internal clock of the stall detector peripheral measure in Hz used
++      to decrement its internal counter register on each tick.
++      Defaults to 10 if unset.
++  timeout-sec:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: |
++      The stall detector expiration timeout measured in seconds.
++      Defaults to 8 if unset. Please note that it also takes into account the
++      time spent while the VCPU is not running.
++
++required:
++  - compatible
++
++additionalProperties: false
++
++examples:
++  - |
++    vmwdt@9030000 {
++      compatible = "qemu,vcpu-stall-detector";
++      clock-frequency = <10>;
++      timeout-sec = <8>;
++      reg = <0x0 0x9030000 0x0 0x10000>;
++    };
++
++...
 -- 
-viresh
+2.36.0.512.ge40c2bad7a-goog
+
