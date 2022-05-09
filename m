@@ -2,85 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05700C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 18:22:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82230C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 18:25:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240133AbiEIS0X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 14:26:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38908 "EHLO
+        id S240122AbiEIS3m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 14:29:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240214AbiEIS0F (ORCPT
+        with ESMTP id S240107AbiEIS3f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 14:26:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62D2250E32
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 11:22:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 247D3B818E4
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 18:22:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92DCBC385B2;
-        Mon,  9 May 2022 18:22:05 +0000 (UTC)
-Date:   Mon, 9 May 2022 14:22:03 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Wang ShaoBo <bobo.shaobowang@huawei.com>,
-        cj.chengjian@huawei.com, huawei.libin@huawei.com,
-        xiexiuqi@huawei.com, liwei391@huawei.com,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        catalin.marinas@arm.com, will@kernel.org, zengshun.wu@outlook.com
-Subject: Re: [RFC PATCH -next v2 3/4] arm64/ftrace: support dynamically
- allocated trampolines
-Message-ID: <20220509142203.6c4f2913@gandalf.local.home>
-In-Reply-To: <20220505121538.04773ac98e2a8ba17f675d39@kernel.org>
-References: <YmFXrBG5AmX3+4f8@lakrids>
-        <20220421100639.03c0d123@gandalf.local.home>
-        <YmF0xYpTMoWOIl00@lakrids>
-        <20220421114201.21228eeb@gandalf.local.home>
-        <YmGF/OpIhAF8YeVq@lakrids>
-        <20220421130648.56b21951@gandalf.local.home>
-        <YmJ/l4vJoEpFt68l@FVFF77S0Q05N>
-        <20220422114541.34d71ad9@gandalf.local.home>
-        <YmLlmaXF00hPkOID@lakrids>
-        <20220426174749.b5372c5769af7bf901649a05@kernel.org>
-        <YnJUTuOIX9YoJq23@FVFF77S0Q05N>
-        <20220505121538.04773ac98e2a8ba17f675d39@kernel.org>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Mon, 9 May 2022 14:29:35 -0400
+X-Greylist: delayed 478 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 09 May 2022 11:25:37 PDT
+Received: from mg.ssi.bg (mg.ssi.bg [193.238.174.37])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7833E49242
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 11:25:34 -0700 (PDT)
+Received: from mg.ssi.bg (localhost [127.0.0.1])
+        by mg.ssi.bg (Proxmox) with ESMTP id 2B9E41AD6F;
+        Mon,  9 May 2022 21:17:35 +0300 (EEST)
+Received: from ink.ssi.bg (unknown [193.238.174.40])
+        by mg.ssi.bg (Proxmox) with ESMTP id 9603E1AEB7;
+        Mon,  9 May 2022 21:17:33 +0300 (EEST)
+Received: from ja.ssi.bg (unknown [178.16.129.10])
+        by ink.ssi.bg (Postfix) with ESMTPS id 18DCD3C07D1;
+        Mon,  9 May 2022 21:17:31 +0300 (EEST)
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+        by ja.ssi.bg (8.16.1/8.16.1) with ESMTP id 249IHPlO074453;
+        Mon, 9 May 2022 21:17:28 +0300
+Date:   Mon, 9 May 2022 21:17:25 +0300 (EEST)
+From:   Julian Anastasov <ja@ssi.bg>
+To:     menglong8.dong@gmail.com
+cc:     Simon Horman <horms@verge.net.au>, pablo@netfilter.org,
+        netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        netfilter-devel@vger.kernel.org,
+        Menglong Dong <imagedong@tencent.com>
+Subject: Re: [PATCH net-next] net: ipvs: random start for RR scheduler
+In-Reply-To: <20220509122213.19508-1-imagedong@tencent.com>
+Message-ID: <cb8eaad0-83c5-a150-d830-e078682ba18b@ssi.bg>
+References: <20220509122213.19508-1-imagedong@tencent.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 5 May 2022 12:15:38 +0900
-Masami Hiramatsu <mhiramat@kernel.org> wrote:
 
-> OK. But my interest is that the ftrace on arm64 can provide a limited
-> access to registers via pt_regs or not. I don't mind the contained values
-> so much because in the most case, 'users' will (most likely) access to the
-> ARGs via BPF or tracefs (and we can just warn users if they try to access
-> the registers which is not saved.) But if the arm64 ftrace only provides
-> a special data structure, arch-independent code must have 2 different access
-> code. That is inefficient. That is my concern.
-> IOW, I'm interested in interface abstraction.
+	Hello,
 
-Note, ftrace now has a ftrace_regs structure that is passed to the
-callbacks for the function tracer.
+On Mon, 9 May 2022, menglong8.dong@gmail.com wrote:
 
-It then has an arch dependent helper function ftrace_get_regs(fregs), that
-returns a pt_regs from the fregs only if the fregs has a full pt_regs to
-return. If not, it returns NULL.
+> From: Menglong Dong <imagedong@tencent.com>
+> 
+> For now, the start of the RR scheduler is in the order of dest
+> service added, it will result in imbalance if the load balance
 
-This was suggested by both Peter Zijlstra and Thomas Gleixner when I
-introduced FTRACE_WITH_ARGS, where all functions can now get the arguments
-from fregs, but not the full pt_regs. If a ftrace_ops has the REGS flag set
-(using ftrace_regs_caller), the ftrace_get_regs(fregs) will return the
-pt_regs, or it will return NULL if ftrace_regs_caller was not used.
+	...order of added destinations,...
 
-This way the same parameter can provide full pt_regs or a subset, and have
-an generic interface to tell the difference.
+> is done in client side and long connect is used.
 
--- Steve
+	..."long connections are used". Is this a case where
+small number of connections are used? And the two connections
+relatively overload the real servers?
+
+> For example, we have client1, client2, ..., client5 and real service
+> service1, service2, service3. All clients have the same ipvs config,
+> and each of them will create 2 long TCP connect to the virtual
+> service. Therefore, all the clients will connect to service1 and
+> service2, leaving service3 free.
+
+	You mean, there are many IPVS directors with same
+config and each director gets 2 connections? Third connection
+will get real server #3, right ? Also, are the clients local
+to the director?
+
+> Fix this by randomize the start of dest service to RR scheduler when
+
+	..."randomizing the starting destination when"
+
+> IP_VS_SVC_F_SCHED_RR_RANDOM is set.
+> 
+> Signed-off-by: Menglong Dong <imagedong@tencent.com>
+> ---
+>  include/uapi/linux/ip_vs.h    |  2 ++
+>  net/netfilter/ipvs/ip_vs_rr.c | 25 ++++++++++++++++++++++++-
+>  2 files changed, 26 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/uapi/linux/ip_vs.h b/include/uapi/linux/ip_vs.h
+> index 4102ddcb4e14..7f74bafd3211 100644
+> --- a/include/uapi/linux/ip_vs.h
+> +++ b/include/uapi/linux/ip_vs.h
+> @@ -28,6 +28,8 @@
+>  #define IP_VS_SVC_F_SCHED_SH_FALLBACK	IP_VS_SVC_F_SCHED1 /* SH fallback */
+>  #define IP_VS_SVC_F_SCHED_SH_PORT	IP_VS_SVC_F_SCHED2 /* SH use port */
+>  
+> +#define IP_VS_SVC_F_SCHED_RR_RANDOM	IP_VS_SVC_F_SCHED1 /* random start */
+> +
+>  /*
+>   *      Destination Server Flags
+>   */
+> diff --git a/net/netfilter/ipvs/ip_vs_rr.c b/net/netfilter/ipvs/ip_vs_rr.c
+> index 38495c6f6c7c..e309d97bdd08 100644
+> --- a/net/netfilter/ipvs/ip_vs_rr.c
+> +++ b/net/netfilter/ipvs/ip_vs_rr.c
+> @@ -22,13 +22,36 @@
+>  
+>  #include <net/ip_vs.h>
+>  
+> +static void ip_vs_rr_random_start(struct ip_vs_service *svc)
+> +{
+> +	struct list_head *cur;
+> +	u32 start;
+> +
+> +	if (!(svc->flags | IP_VS_SVC_F_SCHED_RR_RANDOM) ||
+
+	| -> &
+
+> +	    svc->num_dests <= 1)
+> +		return;
+> +
+> +	spin_lock_bh(&svc->sched_lock);
+> +	start = get_random_u32() % svc->num_dests;
+
+	May be prandom is more appropriate for non-crypto purposes. 
+Also, not sure if it is a good idea to limit the number of steps,
+eg. to 128...
+
+	start = prandom_u32_max(min(svc->num_dests, 128U));
+
+	or just use
+
+	start = prandom_u32_max(svc->num_dests);
+
+	Also, this line can be before the spin_lock_bh.
+
+> +	cur = &svc->destinations;
+
+	cur = svc->sched_data;
+
+	... and to start from current svc->sched_data because
+we are called for every added dest. Better to jump 0..127 steps
+ahead, to avoid delay with long lists?
+
+> +	while (start--)
+> +		cur = cur->next;
+> +	svc->sched_data = cur;
+> +	spin_unlock_bh(&svc->sched_lock);
+> +}
+>  
+>  static int ip_vs_rr_init_svc(struct ip_vs_service *svc)
+>  {
+>  	svc->sched_data = &svc->destinations;
+> +	ip_vs_rr_random_start(svc);
+>  	return 0;
+>  }
+>  
+> +static int ip_vs_rr_add_dest(struct ip_vs_service *svc, struct ip_vs_dest *dest)
+> +{
+> +	ip_vs_rr_random_start(svc);
+> +	return 0;
+> +}
+>  
+>  static int ip_vs_rr_del_dest(struct ip_vs_service *svc, struct ip_vs_dest *dest)
+>  {
+> @@ -104,7 +127,7 @@ static struct ip_vs_scheduler ip_vs_rr_scheduler = {
+>  	.module =		THIS_MODULE,
+>  	.n_list =		LIST_HEAD_INIT(ip_vs_rr_scheduler.n_list),
+>  	.init_service =		ip_vs_rr_init_svc,
+> -	.add_dest =		NULL,
+> +	.add_dest =		ip_vs_rr_add_dest,
+>  	.del_dest =		ip_vs_rr_del_dest,
+>  	.schedule =		ip_vs_rr_schedule,
+>  };
+> -- 
+> 2.36.0
+
+Regards
+
+--
+Julian Anastasov <ja@ssi.bg>
+
