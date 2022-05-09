@@ -2,118 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24B17C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 23:17:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 786DDC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 23:18:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232030AbiEIXVO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 19:21:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38692 "EHLO
+        id S232297AbiEIXWb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 19:22:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229696AbiEIXVL (ORCPT
+        with ESMTP id S229696AbiEIXW3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 19:21:11 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2D8E4BBA8
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 16:17:15 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id c11so15230747plg.13
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 16:17:15 -0700 (PDT)
+        Mon, 9 May 2022 19:22:29 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 221B051327
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 16:18:34 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id iq2-20020a17090afb4200b001d93cf33ae9so594054pjb.5
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 16:18:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=PU4arDubhm1mzoeAqk+ohB9PA5pICkopZ+sBRgK14Kk=;
-        b=7fY6KgqJhEepDJm10bht2MW1aTCNWa43SllusX6jo4tXsf49BXlV78tOsGgFq+tJ6J
-         coM5YuJnbKDyFwjqNfRt5B84ZqBoeIj+pD4e0xX42FMUShP+tDfWeVxdH6ziHSa/MGTq
-         9rBTEaBXZxkX6XABsGex6Ana6VJHyDYc3kFHXAYA7Cin0hBA7vLdubdrxhsnmKIcEHOU
-         /VpHHc2oKthf8FS9poqau+omXaGTZWmSYGvUwt/uZJv58sa9m0icsvXRTiXi4qH1KUir
-         p79FGtnnL5poT5LGHLi9biSKTVtpt9HHkcBxBV1I/+wDt/gJMxnXifCAcjbQoCuifuEy
-         zc1w==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=S3MsMPfbPAtt+LUx5QQOJPDQW/jqUKRczHTmbnCnNlo=;
+        b=Lo3FcdLeWFTsfpLIEtHet1p83g9yEAUTRFUUlVA9jNybAnhR0ACD66qvwx/Sni7Xvr
+         KOJFXQJJ8qK8OXYOYI4LF9vvQDnot8Nf0A1g/XQ2GznnKufeBlILgR3GcQlp7RGJ0Ebk
+         clgZZ1EnekJLzRptH/+bl1z/QggljRTkX5di4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=PU4arDubhm1mzoeAqk+ohB9PA5pICkopZ+sBRgK14Kk=;
-        b=ipYtEXUopgFv19ZRHFZPyOeGeBQKCvhX1Yd9N2eezral565zoauWas2BdeKIGAW4R+
-         CbR6lNFOlZEk/ve9ic6gprf3nuCYMIemgBt7Km2e7sto57SdFamG+CkUV6fnaqcj5CAp
-         zSBhtz0upPyJkgtutIPriAWGXBcjsD6XiXO0+CjUSP992e7PWNa3W+xNUnBkc2n9YEtK
-         bVfhkhVSNW+zZ848lWwYMAVGBIVdref51y2uMEZ6jszp7GM9i/ARv9oBprjLyaLuhk7T
-         DQK1Hh+EzGWZrBZCNF2idmCL+n76RrNIxT8o/ZWDnoi+jUomRI2vApqY5wCzIiamwPD9
-         8Nvw==
-X-Gm-Message-State: AOAM533D7lxmQSAqNLNhtyMWACiZV34ekvpuFcew05pHRt247qwQ/ojz
-        j9VIVidlcXMZuu3M+OV07bIDYA==
-X-Google-Smtp-Source: ABdhPJwqDxGwEZbmXACLYvDOlColRDAsLIHv+sM+2WP6mnY1nLaqlf0CiPDWRtwPWKNu35JLsr5Mtg==
-X-Received: by 2002:a17:902:ea06:b0:15e:8367:150b with SMTP id s6-20020a170902ea0600b0015e8367150bmr17410856plg.167.1652138235381;
-        Mon, 09 May 2022 16:17:15 -0700 (PDT)
-Received: from [192.168.1.100] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id z1-20020a17090acb0100b001dc7623950csm268949pjt.11.2022.05.09.16.17.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 16:17:14 -0700 (PDT)
-Message-ID: <1b504dc0-a5c4-06c8-e7b2-b3a859e15ad9@kernel.dk>
-Date:   Mon, 9 May 2022 17:17:13 -0600
+        bh=S3MsMPfbPAtt+LUx5QQOJPDQW/jqUKRczHTmbnCnNlo=;
+        b=YRBqtU7d1OhO2Ch6qyPKGkcwfHNTngAmztMIMw6Hop/TQzgLbJ0ajXv+y6oKhf3u8J
+         5TSvXd3Kty0eGuhq324wjS78cdGmgFMeQ1ZoCMHlgUAJ7zezTUNxGfTVhzZ7+w8KYzvp
+         TH2adDX/uOCMUWi2l6cGhOtwV/B93eOhij+q8zaeD0ptlFAwMfMbqANVRYqO4G1dwmuK
+         BJQBe6Uv966dsFPAlhfRvYd9TKm3Div8aTZEGrw6HtSnHNnbnqexo7jbdUwZkBuCsKtN
+         DfPS57FD3JZBOS5KOSFgW6cxa4k89O3xVuhdW9IuTFOWmAd/HY4jmThZHRtrTcMoWeJX
+         81NA==
+X-Gm-Message-State: AOAM531RsQCzHGbeAYwMGPjQUeN9V+zaPf6/HyaMNRX1Gkx3Ua8EDTi7
+        sNIaARX4z6pPk4OYgVhT7G9eQg==
+X-Google-Smtp-Source: ABdhPJwQCABxWhyzWje58moI3QY+RTSGkK5L/8OY0DPvxKxKjVGkEKQ2u55xzo2aEXZeNm94nOeQKw==
+X-Received: by 2002:a17:902:f708:b0:153:839f:bf2c with SMTP id h8-20020a170902f70800b00153839fbf2cmr18252580plo.113.1652138313471;
+        Mon, 09 May 2022 16:18:33 -0700 (PDT)
+Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:e0c:1ed:8d0b:2894])
+        by smtp.gmail.com with ESMTPSA id q13-20020a170902edcd00b0015ed003552fsm371045plk.293.2022.05.09.16.18.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 May 2022 16:18:33 -0700 (PDT)
+From:   Douglas Anderson <dianders@chromium.org>
+To:     dri-devel@lists.freedesktop.org
+Cc:     Robert Foss <robert.foss@linaro.org>,
+        Lyude Paul <lyude@redhat.com>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        linux-arm-msm@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
+        freedreno@lists.freedesktop.org,
+        Douglas Anderson <dianders@chromium.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] drm: Document the power requirements for DP AUX transfers
+Date:   Mon,  9 May 2022 16:18:09 -0700
+Message-Id: <20220509161733.v2.1.Ia8651894026707e4fa61267da944ff739610d180@changeid>
+X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 3/3] block: remove last remaining traces of IDE
- documentation
-Content-Language: en-US
-To:     Phillip Potter <phil@philpotter.co.uk>,
-        Jonathan Corbet <corbet@lwn.net>
-Cc:     Paul Gortmaker <paul.gortmaker@windriver.com>,
-        linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Randy Dunlap <rdunlap@infradead.org>
-References: <20220427132436.12795-1-paul.gortmaker@windriver.com>
- <20220427132436.12795-4-paul.gortmaker@windriver.com>
- <87wnfaa8ce.fsf@meer.lwn.net> <20220427165917.GE12977@windriver.com>
- <YmsmnGb3JNjH54Xb@equinox> <20220506153241.GH12977@windriver.com>
- <YnVgxEcRTQPu/DHE@equinox> <87bkw6cpvo.fsf@meer.lwn.net>
- <Ynmd23nhC3KHHX1i@equinox>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <Ynmd23nhC3KHHX1i@equinox>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/9/22 5:03 PM, Phillip Potter wrote:
-> On Mon, May 09, 2022 at 04:17:31PM -0600, Jonathan Corbet wrote:
->> Phillip Potter <phil@philpotter.co.uk> writes:
->>
->>> I was yes, the point I was trying to make (poorly) is that your patch
->>> conflicts with Randy's patch which itself is not yet in linux-next, as
->>> normally I send everything together at the start of the merge window to
->>> Jens, as I don't have my own kernel.org tree yet, and usually I only get
->>> one or two patches in a cycle anyway.
->>>
->>> This is not your fault, you couldn't have been expected to know this in
->>> retrospect, and I should probably look into getting my own tree/GPG key
->>> sorted to alleviate this problem in future.
->>>
->>> In the meantime, if you're comfortable with the idea, I can just resolve
->>> the conflict myself when I send the patches onto Jens this time and
->>> include patch 3/3 pre-fixed up. Merge window will be fairly soon anyway.
->>
->> So I'm a little confused by the state of everything at this point, but
->> I'm assuming that I need not worry about taking these changes through
->> docs-next.  Please let me know if that's not correct.
->>
->> Thanks,
->>
->> jon
-> 
-> Dear Jon,
-> 
-> Yes, that's right. Makes sense for the whole series to go together, so I
-> will fix up patch 3 to apply alongside Randy's patch (which I see you've
-> taken now) and send the whole lot through to Jens as the merge window
-> opens. Thanks.
+When doing DP AUX transfers there are two actors that need to be
+powered in order for the DP AUX transfer to work: the DP source and
+the DP sink. Commit bacbab58f09d ("drm: Mention the power state
+requirement on side-channel operations") added some documentation
+saying that the DP source is required to power itself up (if needed)
+to do AUX transfers. However, that commit doesn't talk anything about
+the DP sink.
 
-I'm fine with taking these, and if they need fixing up then all the
-easier, but patches from maintainers should be sent in well before the
-merge window opens. For doc updates it's not that important, but please
-do send them in at least a week before 5.18 final happens.
+For full fledged DP the sink isn't really a problem. It's expected
+that if an external DP monitor isn't plugged in that attempting to do
+AUX transfers won't work. It's also expected that if a DP monitor is
+plugged in (and thus asserting HPD) then AUX transfers will work.
 
+When we're looking at eDP, however, things are less obvious. Let's add
+some documentation about expectations. Here's what we'll say:
+
+1. We don't expect the DP AUX transfer function to power on an eDP
+panel. If an eDP panel is physically connected but powered off then it
+makes sense for the transfer to fail.
+
+2. We'll document that the official way to power on a panel is via the
+bridge chain, specifically by making sure that the panel's prepare
+function has been called (which is called by
+panel_bridge_pre_enable()). It's already specified in the kernel doc
+of drm_panel_prepare() that this is the way to power the panel on and
+also that after this call "it is possible to communicate with any
+integrated circuitry via a command bus."
+
+3. We'll also document that for code running in the panel driver
+itself that it is legal for the panel driver to power itself up
+however it wants (it doesn't need to officially call
+drm_panel_pre_enable()) and then it can do AUX bus transfers. This is
+currently the way that edp-panel works when it's running atop the DP
+AUX bus.
+
+NOTE: there was much discussion of all of this in response to v1 [1]
+of this patch. A summary of that is:
+* With the Intel i195 driver, apparently eDP panels do get powered
+  up. We won't forbid this but it is expected that code that wants to
+  run on a variety of platforms should ensure that the drm_panel's
+  prepare() function has been called.
+* There is at least a reasonable amount of agreement that the
+  transfer() functions itself shouldn't be responsible for powering
+  the panel. It's proposed that if we need the DP AUX dev nodes to be
+  robust for eDP that the code handling the DP AUX dev nodes could
+  handle powering the panel by ensuring that the panel's prepare()
+  call was made. Potentially drm_dp_aux_dev_get_by_minor() could be a
+  good place to do this. This is left as a future exercise. Until
+  that's fixed the DP AUX dev nodes for eDP are probably best just
+  used for debugging.
+* If a panel could be in PSR and DP AUX via the dev node needs to be
+  reliable then we need to be able to pull the panel out of PSR. On
+  i915 this is also apparently handled as part of the transfer()
+  function.
+
+[1] https://lore.kernel.org/r/20220503162033.1.Ia8651894026707e4fa61267da944ff739610d180@changeid
+
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Lyude Paul <lyude@redhat.com>
+---
+Hopefully I've resolved everything here to everyone's
+satisfaction. There's no crazy hurry here. I'll give this a week or so
+and then land it on drm-misc if there is no additional discussion.
+
+Changes in v2:
+- Updated wording as per discussion on v1.
+- Updated commit message as per discussion on v1.
+- Add pointer to v1 discussion for future reference.
+
+ include/drm/display/drm_dp_helper.h | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
+
+diff --git a/include/drm/display/drm_dp_helper.h b/include/drm/display/drm_dp_helper.h
+index dca40a045dd6..dc3c02225fcf 100644
+--- a/include/drm/display/drm_dp_helper.h
++++ b/include/drm/display/drm_dp_helper.h
+@@ -370,9 +370,19 @@ struct drm_dp_aux {
+ 	 * helpers assume this is the case.
+ 	 *
+ 	 * Also note that this callback can be called no matter the
+-	 * state @dev is in. Drivers that need that device to be powered
+-	 * to perform this operation will first need to make sure it's
+-	 * been properly enabled.
++	 * state @dev is in and also no matter what state the panel is
++	 * in. It's expected:
++	 * - If the @dev providing the AUX bus is currently unpowered then
++	 *   it will power itself up for the transfer.
++	 * - If we're on eDP (using a drm_panel) and the panel is not in a
++	 *   state where it can respond (it's not powered or it's in a
++	 *   low power state) then this function may return an error, but
++	 *   not crash. It's up to the caller of this code to make sure that
++	 *   the panel is powered on if getting an error back is not OK. If a
++	 *   drm_panel driver is initiating a DP AUX transfer it may power
++	 *   itself up however it wants. All other code should ensure that
++	 *   the pre_enable() bridge chain (which eventually calls the
++	 *   drm_panel prepare function) has powered the panel.
+ 	 */
+ 	ssize_t (*transfer)(struct drm_dp_aux *aux,
+ 			    struct drm_dp_aux_msg *msg);
 -- 
-Jens Axboe
+2.36.0.512.ge40c2bad7a-goog
 
