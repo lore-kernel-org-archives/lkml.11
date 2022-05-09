@@ -2,111 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92C55C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 22:56:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D35EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 23:00:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232082AbiEIXA0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 19:00:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51552 "EHLO
+        id S232066AbiEIXEO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 19:04:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232070AbiEIW77 (ORCPT
+        with ESMTP id S229490AbiEIXEJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 18:59:59 -0400
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B828D238852;
-        Mon,  9 May 2022 15:55:58 -0700 (PDT)
-Received: by mail-ot1-x32a.google.com with SMTP id z15-20020a9d65cf000000b00605f064482cso11114772oth.6;
-        Mon, 09 May 2022 15:55:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:content-language:to
-         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=WPEqwpSkDhH17QgMuD3O8fQNAiG+FXjmq1yi2Qup3Eg=;
-        b=BpdxNyLK1nxpO+t9BXCOt1evEZHcelr80/RAFtEcTY2J2t3otnYFRhZcHd+lv+T8y/
-         /CU495fkncbkXJFeFGPH+m9JxMvyUhbZtCxwLlpbOx/Q9KNOfT3L1BfrLPs7O4ERoa2x
-         pqXWtxw0Xvzb5hcyOhWvMMD5w6gpWeJhabjInirjFEPOh5Fnz9rwPz6KlNGfjcEYCkUX
-         hGsd3HAmJyZk0LiNv+i8UWL6sNQ5Zib8tnteCR/q1B/+b6fAdmcoqDOnBf6Eb5wfF2n5
-         Dfp9epBdmv3JVrxiY18JXYv95LYXMrd3XWy45b1XHB6WWgnL1in6OxcHsvxCJSS1O6Mk
-         JQUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=WPEqwpSkDhH17QgMuD3O8fQNAiG+FXjmq1yi2Qup3Eg=;
-        b=ReYQiPupNLqwbeXfmjhENlBPH4ERlM8QxCldMJyRhVsnx5u2mecmkPN08AvacJDAD6
-         0Jn0NLgdFzoy7IelNF8haA+GyqAEFs+/cPWNsXe2hdD2FKY73+dk9rBp1WtwQcZplP9k
-         +Ui1VzttOHASwsyxMSJUyemNb9TVJ3bVsS/j44/2OMF9pUJpV+GimeiKxMsyy/857lM2
-         4JKxMKJrqAFNJN/mYnMXt+6Ghr200OAflxrSavLnJhaS3Q2I6JJMlUALpNd1UiU91IsX
-         8WP1FMH3iJV6aQv8Z1AbB97UnFSSlPJ8Chm+8pc2eEBwRuRxRPsc0k+O5zJsqheARSEo
-         MMrQ==
-X-Gm-Message-State: AOAM530UmJMWPZlcKCinDey5f8RaBJa/SXDnRT9GqhPcuB81/JogIq/Z
-        /NjhUYKlrNn50aukqQIONlM=
-X-Google-Smtp-Source: ABdhPJyUUxShSfi177wqgEYgqdqpxgK76tQmYQAmJrC89+pZUaoW0qGaSj+eCXEPq492PM2sakkkEw==
-X-Received: by 2002:a9d:480e:0:b0:606:59b:2b2 with SMTP id c14-20020a9d480e000000b00606059b02b2mr6763556otf.277.1652136957988;
-        Mon, 09 May 2022 15:55:57 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id p20-20020a056830319400b006060322124csm5210182ots.28.2022.05.09.15.55.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 15:55:57 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <b394bfcf-9f0d-b27c-5bc0-3d628de98755@roeck-us.net>
-Date:   Mon, 9 May 2022 15:55:54 -0700
+        Mon, 9 May 2022 19:04:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 225612685C9;
+        Mon,  9 May 2022 16:00:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B219F61166;
+        Mon,  9 May 2022 23:00:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 17D66C385C5;
+        Mon,  9 May 2022 23:00:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652137213;
+        bh=VcvEmvsda6PrBaWwE9OW+g7p7P/vLgVTvyoyN+0s2yg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=MrE3sA1Idu/OhNdVHNzoVed1qL3IqBTt70wXZbZbmMj9a8MNpfR8LCzkLUKGgLrsd
+         UPzL0A2sKa5uT+6deFs2iSRREykEpO+p2JZBw8yvrrvlkp6eGnkt+7VL8+ke+lkoO9
+         cPua8mqJtkQrQWLDZjpyeMWd5zEXI6eRr1dqr7j1GcJIQ0KWF7HEG0EJBcI6nInj7A
+         CVPBSRsCitln4Jyjmo4TJ/t5Dex/XkNgqH0lIGAcG4yqveSYS8rOlun1KwymShZryp
+         FB72HjhNvSjS1RElNk7RpLsWzp1JdxPq0aAmrLE4uh3SPKhVDVWqB56ZYV3wCB1Iqo
+         6BL7bweGuPj4Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EC929F0392B;
+        Mon,  9 May 2022 23:00:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Content-Language: en-US
-To:     Mario Limonciello <mario.limonciello@amd.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        "open list:WATCHDOG DEVICE DRIVERS" <linux-watchdog@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Cc:     ionut_n2001@yahoo.com
-References: <20220509163304.86-1-mario.limonciello@amd.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH] Watchdog: sp5100_tco: Lower verbosity of disabled
- watchdog hardware
-In-Reply-To: <20220509163304.86-1-mario.limonciello@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] ionic: fix missing pci_release_regions() on error in
+ ionic_probe()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165213721296.9878.17919495289155310348.git-patchwork-notify@kernel.org>
+Date:   Mon, 09 May 2022 23:00:12 +0000
+References: <20220506034040.2614129-1-yangyingliang@huawei.com>
+In-Reply-To: <20220506034040.2614129-1-yangyingliang@huawei.com>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        snelson@pensando.io, davem@davemloft.net, kuba@kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/9/22 09:33, Mario Limonciello wrote:
-> If watchdog hardware has been disabled, currently the kernel driver
-> will show at err level during probe:
-> 
-> "Watchdog hardware is disabled"
-> 
-> This is unnecessarily verbose as there is already a -ENODEV returned.
-> Lower the level to debug.
+Hello:
 
-Is it ? Without this message, a user may try to load the driver,
-get an error message, and have no idea why the driver was not
-enabled even though the hardware exists. If anything , -ENODEV
-is less than perfect. Unfortunately there does not seem to be
-a better error code, or at least I don't see one.
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Guenter
-
+On Fri, 6 May 2022 11:40:40 +0800 you wrote:
+> If ionic_map_bars() fails, pci_release_regions() need be called.
 > 
-> Reported-by: ionut_n2001@yahoo.com
-> Link: https://bugzilla.kernel.org/show_bug.cgi?id=215762
-> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+> Fixes: fbfb8031533c ("ionic: Add hardware init and device commands")
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 > ---
->   drivers/watchdog/sp5100_tco.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/watchdog/sp5100_tco.c b/drivers/watchdog/sp5100_tco.c
-> index 86ffb58fbc85..e51ecbd5c8b7 100644
-> --- a/drivers/watchdog/sp5100_tco.c
-> +++ b/drivers/watchdog/sp5100_tco.c
-> @@ -286,7 +286,7 @@ static int sp5100_tco_timer_init(struct sp5100_tco *tco)
->   
->   	val = readl(SP5100_WDT_CONTROL(tco->tcobase));
->   	if (val & SP5100_WDT_DISABLED) {
-> -		dev_err(dev, "Watchdog hardware is disabled\n");
-> +		dev_dbg(dev, "Watchdog hardware is disabled\n");
->   		return -ENODEV;
->   	}
->   
+>  drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+
+Here is the summary with links:
+  - ionic: fix missing pci_release_regions() on error in ionic_probe()
+    https://git.kernel.org/netdev/net/c/e4b1045bf9cf
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
