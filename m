@@ -2,95 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12D7DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 17:17:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64DEDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 17:18:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239601AbiEIRVo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 13:21:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42214 "EHLO
+        id S239613AbiEIRWO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 13:22:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239589AbiEIRVk (ORCPT
+        with ESMTP id S239599AbiEIRWK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 13:21:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6729224B5BD;
-        Mon,  9 May 2022 10:17:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B81FE6155B;
-        Mon,  9 May 2022 17:17:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4641CC385B2;
-        Mon,  9 May 2022 17:17:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652116665;
-        bh=/vK4hUOw5XVzRCz9/q9BHaDHH7etX4k7UQOvk8DgWS8=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=gCsrO0C+bYZ/fHs1oJCf4AMGfTrJSzwOMuhCfjt/XmGRTrgzPIR+B6p9NmeMLZLCD
-         4LudReQE+eKCtnC9S7sQ3LZ3xJwwh9xwHEUCqWGLixZsWJR/WwX9nfkEjBGwSQ4Cx4
-         Wwo3bqP0R3R45UaLPOeLY4um28DSZm8LC7AA2kU3pPnxayOW3zvdRnXQGWLW5Rjrm2
-         PwLjzvdU67ApymHm6qL8R0fes/Bhkw73qWkujPLE0gIVrVfxA6XYzo/ZfE02zriWpa
-         vMKnO8zadPBp46V5WSXYRGii3ty1lYnyuehqGWxEcWlbY/YAZ1tRRR4RxaSYWHkVUY
-         IcChFz6cpW/mw==
-From:   Mark Brown <broonie@kernel.org>
-To:     nfraprado@collabora.com
-Cc:     matthias.bgg@gmail.com, devicetree@vger.kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, jiaxin.yu@mediatek.com,
-        angelogioacchino.delregno@collabora.com,
-        linux-kernel@vger.kernel.org, shane.chien@mediatek.com,
-        linux-mediatek@lists.infradead.org, lgirdwood@gmail.com,
-        linux-arm-kernel@lists.infradead.org, alsa-devel@alsa-project.org,
-        robh+dt@kernel.org, kernel@collabora.com, tzungbi@google.com
-In-Reply-To: <20220429203039.2207848-1-nfraprado@collabora.com>
-References: <20220429203039.2207848-1-nfraprado@collabora.com>
-Subject: Re: [PATCH 0/3] Add missing dt-binding properties for audio components on mt8192-asurada
-Message-Id: <165211666198.1065748.1151009730882312510.b4-ty@kernel.org>
-Date:   Mon, 09 May 2022 18:17:41 +0100
+        Mon, 9 May 2022 13:22:10 -0400
+Received: from mail.hallyn.com (mail.hallyn.com [178.63.66.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAC5124DC62;
+        Mon,  9 May 2022 10:18:12 -0700 (PDT)
+Received: by mail.hallyn.com (Postfix, from userid 1001)
+        id 1B270683; Mon,  9 May 2022 12:12:39 -0500 (CDT)
+Date:   Mon, 9 May 2022 12:12:39 -0500
+From:   "Serge E. Hallyn" <serge@hallyn.com>
+To:     Christian =?iso-8859-1?Q?G=F6ttsche?= <cgzones@googlemail.com>
+Cc:     selinux@vger.kernel.org, Serge Hallyn <serge@hallyn.com>,
+        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/8] capability: add capable_or to test for multiple
+ caps with exactly one audit message
+Message-ID: <20220509171239.GA28406@mail.hallyn.com>
+References: <20220217145003.78982-2-cgzones@googlemail.com>
+ <20220502160030.131168-1-cgzones@googlemail.com>
+ <20220502160030.131168-8-cgzones@googlemail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220502160030.131168-8-cgzones@googlemail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 29 Apr 2022 16:30:36 -0400, NÃ­colas F. R. A. Prado wrote:
-> These patches add properties that were missing on the dt-bindings of the
-> audio components used by mt8192-asurada. Namely the i2s-share
-> properties for the sound platform and the #sound-dai-cells on the
-> rt1015p and rt5682 codecs when they're referenced by the machine sound
-> node.
+On Mon, May 02, 2022 at 06:00:30PM +0200, Christian Göttsche wrote:
+> Add the interface `capable_or()` as an alternative to or multiple
+
+How about 'capable_contains_oneof(x, y)' or 'capable_of_one(a, b)'?
+
+> `capable()` calls, like `capable_or(CAP_SYS_NICE, CAP_SYS_ADMIN)`
+> instead of `capable(CAP_SYS_NICE) || capable(CAP_SYS_ADMIN)`.
+> `capable_or()` will in particular generate exactly one audit message,
+> either for the left most capability in effect or, if the task has none,
+> the first one.
+> This is especially helpful with regard to SELinux, where each audit
+> message about a not allowed capability will create an avc denial.
+> Using this function with the least invasive capability as left most
+> argument (e.g. CAP_SYS_NICE before CAP_SYS_ADMIN) enables policy writers
+> to only allow the least invasive one and SELinux domains pass this check
+> with only capability:sys_nice or capability:sys_admin allowed without
+> any avc denial message.
 > 
+> Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
 > 
-> [...]
+> ---
+> v2:
+>    avoid varargs and fix to two capabilities; capable_or3() can be added
+>    later if needed
+> ---
+>  include/linux/capability.h |  5 +++++
+>  kernel/capability.c        | 29 +++++++++++++++++++++++++++++
+>  2 files changed, 34 insertions(+)
+> 
+> diff --git a/include/linux/capability.h b/include/linux/capability.h
+> index 65efb74c3585..a16d1edea9b3 100644
+> --- a/include/linux/capability.h
+> +++ b/include/linux/capability.h
+> @@ -207,6 +207,7 @@ extern bool has_ns_capability(struct task_struct *t,
+>  extern bool has_capability_noaudit(struct task_struct *t, int cap);
+>  extern bool has_ns_capability_noaudit(struct task_struct *t,
+>  				      struct user_namespace *ns, int cap);
+> +extern bool capable_or(int cap1, int cap2);
+>  extern bool capable(int cap);
+>  extern bool ns_capable(struct user_namespace *ns, int cap);
+>  extern bool ns_capable_noaudit(struct user_namespace *ns, int cap);
+> @@ -230,6 +231,10 @@ static inline bool has_ns_capability_noaudit(struct task_struct *t,
+>  {
+>  	return true;
+>  }
+> +static inline bool capable_or(int cap1, int cap2)
+> +{
+> +	return true;
+> +}
+>  static inline bool capable(int cap)
+>  {
+>  	return true;
+> diff --git a/kernel/capability.c b/kernel/capability.c
+> index 765194f5d678..cd8f3efe6d08 100644
+> --- a/kernel/capability.c
+> +++ b/kernel/capability.c
+> @@ -435,6 +435,35 @@ bool ns_capable_setid(struct user_namespace *ns, int cap)
+>  }
+>  EXPORT_SYMBOL(ns_capable_setid);
+>  
+> +/**
+> + * capable_or - Determine if the current task has one of two superior capabilities in effect
+> + * @cap1: The capabilities to be tested for first
+> + * @cap2: The capabilities to be tested for secondly
+> + *
+> + * Return true if the current task has at one of the two given superior
 
-Applied to
+s/has at one/has at least one/ ?
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+> + * capabilities currently available for use, false if not.
+> + *
+> + * In contrast to or'ing capable() this call will create exactly one audit
+> + * message, either for @cap1, if it is granted or both are not permitted,
+> + * or @cap2, if it is granted while the other one is not.
+> + *
+> + * The capabilities should be ordered from least to most invasive, i.e. CAP_SYS_ADMIN last.
+> + *
+> + * This sets PF_SUPERPRIV on the task if the capability is available on the
+> + * assumption that it's about to be used.
+> + */
+> +bool capable_or(int cap1, int cap2)
+> +{
+> +	if (ns_capable_noaudit(&init_user_ns, cap1))
+> +		return ns_capable(&init_user_ns, cap1);
+> +
+> +	if (ns_capable_noaudit(&init_user_ns, cap2))
+> +		return ns_capable(&init_user_ns, cap2);
+> +
+> +	return ns_capable(&init_user_ns, cap1);
 
-Thanks!
+Hm, too bad about the repetition of work, but I guess it has to be
+this way right now.
 
-[1/3] ASoC: dt-bindings: mediatek: mt8192: Add i2s-share properties
-      commit: e056cf4341ae3f856f1e38da02b27cb04de4c69b
-[2/3] ASoC: dt-bindings: rt1015p: Add #sound-dai-cells
-      commit: 2f45536587e53a7a22024e12fbe97ef13598e623
-[3/3] ASoC: dt-bindings: rt5682: Add #sound-dai-cells
-      commit: 0adccaf1eac91a2c2ee6a54a6de042affe9860f4
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
+> +}
+> +EXPORT_SYMBOL(capable_or);
+> +
+>  /**
+>   * capable - Determine if the current task has a superior capability in effect
+>   * @cap: The capability to be tested for
+> -- 
+> 2.36.0
