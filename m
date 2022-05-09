@@ -2,353 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 615B4C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 11:53:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 282D6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 11:54:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233439AbiEIL5P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 07:57:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56392 "EHLO
+        id S233459AbiEIL62 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 07:58:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233367AbiEIL5L (ORCPT
+        with ESMTP id S233314AbiEIL6Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 07:57:11 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87DDF35AA4
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 04:53:16 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id i5so19062021wrc.13
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 04:53:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=RxUzrPlGd351YrggkQ+XVPFB6IRBoiOml8FovLXDQls=;
-        b=QkXMW5uuaL3UWTGchOY4X5vIz2WtCTt+ksTinRvBmWsybFlbwoMxdLcDQOxye3ohgi
-         gnmzf6e3rnEgJ0uOQrRNHKHMU+ULsY9FJBBhSFJH3TbPAzKHQRPdwW8EZk+j1tH88eFn
-         ODC8CR8RZbxKmtHeS/vTb/W53fH8Q0NSiS5Wf2GvXdi1xEIO75iAFQ3FqlQEB0N2SwPQ
-         NPldIAEDAPHH+KnG9POHjALKNJnbvNCs0azsHHRbqYi9pGvMmBcrZX+QIbQ6CfQXF/K9
-         jezmJsaQymWVYXSUG1qlVuJTpoy+2xkS7uvm/evWWoQo/OYMOBNVeeuOMLCRK4EA8ryy
-         rdtg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=RxUzrPlGd351YrggkQ+XVPFB6IRBoiOml8FovLXDQls=;
-        b=4RzrTjgYZi4+YGuQkswYgspbdomU/cnY3OUQl0l8jbgJNSVXqb1dK0yZMr9Pzh72/3
-         yhmSDWOhuv8TvN28VEEYyJqoCr9zeFU88jC1ZlxcocRIusrFsXhc6tQVvGBnNGehrSND
-         ntKNmHLaqATbvyfD5U34S4tktv4zkXfFQYVVMBpjuL9oZ1+PhabSIioo7P2w6eQmplNr
-         u89ncHCXkVf9L4++d2bAPivqM5J3x4N0Ii4o5mhrbtXiNb2LxkVlOO+vY5dM9yLXJKhw
-         CF5LS29yM8qaA14gRGGkM1uh9u7pgEhC+lzBGE8UA5ljW7zEDwsMZAPd8NGaBBMWjYbg
-         78OA==
-X-Gm-Message-State: AOAM5307V8za2dMLkSDM3hvK4nceYMifOhMYYgJyNCtGbgR+mluVDMmR
-        IW3McCljboac8BWaxpL8Ob7gHg==
-X-Google-Smtp-Source: ABdhPJynPqQUzeFT4sckq1r/7NDs65EafIDtt517li/wAXth+qZSTmTNNlUOB6AgZGr6bSeEd4qyTw==
-X-Received: by 2002:a5d:598c:0:b0:20c:6912:6870 with SMTP id n12-20020a5d598c000000b0020c69126870mr13265519wri.465.1652097194941;
-        Mon, 09 May 2022 04:53:14 -0700 (PDT)
-Received: from [192.168.0.33] (cpc78119-cwma10-2-0-cust590.7-3.cable.virginm.net. [81.96.50.79])
-        by smtp.gmail.com with ESMTPSA id y17-20020a7bc191000000b003942a244f45sm5298524wmi.30.2022.05.09.04.53.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 04:53:14 -0700 (PDT)
-Message-ID: <b148d9a1-9c3b-9e6f-1419-7a644bcd43b5@linaro.org>
-Date:   Mon, 9 May 2022 12:53:12 +0100
+        Mon, 9 May 2022 07:58:25 -0400
+X-Greylist: delayed 548 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 09 May 2022 04:54:31 PDT
+Received: from server.lespinasse.org (server.lespinasse.org [IPv6:2001:470:82ab::100:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37CE81BDADC
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 04:54:30 -0700 (PDT)
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed;
+ d=lespinasse.org; i=@lespinasse.org; q=dns/txt; s=srv-67-ed;
+ t=1652096721; h=date : from : to : cc : subject : message-id :
+ references : mime-version : content-type : content-transfer-encoding :
+ in-reply-to : from; bh=A7VZnkOooDmMVt0zmVkAt2c4XohtDtf3/DK9V1jJLOM=;
+ b=6NIYylgjhPZog+yLwPODPJcIfvcr2ocFDpkqISi70tNxjI7/Rel1tXmowCuX+rKmvyQ0t
+ U5XYZcoyTYbdnViCg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lespinasse.org;
+ i=@lespinasse.org; q=dns/txt; s=srv-67-rsa; t=1652096721; h=date :
+ from : to : cc : subject : message-id : references : mime-version :
+ content-type : content-transfer-encoding : in-reply-to : from;
+ bh=A7VZnkOooDmMVt0zmVkAt2c4XohtDtf3/DK9V1jJLOM=;
+ b=QqIDruEzcYTOkudQdoZ/epVo8dv8ZoFkhL3ztjpET6S2nM91npiPlvF4tBDb2OrJ9Zlqf
+ 4gfNS9L6uVA9/dFOQw2eL/CnoRcplDDly4lIDHp6oGZ7oglzlelpg/9fZaYmFHuKCDuI3rS
+ AN+WY15QcCV1Io2u9sjbqv9xOaSI53TwnmZGB4/RiGqxOHkMLCzUVrfiFknVF0rKZE5ikWx
+ 6Ynasu07e15ty34sCnZI0ejeYOf5XaT/ptwLTnxBZ0oybifX/2JPjA4UDiZ9hE1/zVSOiKj
+ R253BT8DQBBh764iBmuw7+zSmw3GGes4T6fXtv2XPuSVDau7gRDm+7UUGIlw==
+Received: by server.lespinasse.org (Postfix, from userid 1000)
+        id 5C500160B4E; Mon,  9 May 2022 04:45:21 -0700 (PDT)
+Date:   Mon, 9 May 2022 04:45:21 -0700
+From:   Michel Lespinasse <michel@lespinasse.org>
+To:     "lipeifeng@oppo.com" <lipeifeng@oppo.com>
+Cc:     akpm <akpm@linux-foundation.org>, michel <michel@lespinasse.org>,
+        hughd <hughd@google.com>, linux-mm <linux-mm@kvack.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Barry Song <21cnbao@gmail.com>,
+        zhangshiming <zhangshiming@oppo.com>,
+        peifengl55 <peifengl55@gmail.com>
+Subject: Re: Re: [PATCH] mm: fix align-error when get_addr in
+ unmapped_area_topdown
+Message-ID: <20220509114521.GA9512@lespinasse.org>
+References: <20220412081014.399-1-lipeifeng@oppo.com>
+ <20220412142238.93e36cc4095e4e0b362db348@linux-foundation.org>
+ <2022041310411426044561@oppo.com>
+ <2022050110235766139218@oppo.com>
+ <20220501181041.6d53cb9ed54bf697840e36cc@linux-foundation.org>
+ <2022050211305415626916@oppo.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v14 05/10] iio: adc: qcom-spmi-rradc: introduce round
- robin adc
-Content-Language: en-US
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org,
-        Jami Kettunen <jami.kettunen@somainline.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>
-References: <20220429220904.137297-1-caleb.connolly@linaro.org>
- <20220429220904.137297-6-caleb.connolly@linaro.org>
- <20220501183850.5bbbcbab@jic23-huawei>
-From:   Caleb Connolly <caleb.connolly@linaro.org>
-In-Reply-To: <20220501183850.5bbbcbab@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <2022050211305415626916@oppo.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, May 02, 2022 at 11:33:18AM +0800, lipeifeng@oppo.com wrote:
+> Hi Andrew：
+> 
+> Thanks for your quick response.
+> 
+> > They caused me some merge issues against mapletree, which I had
+> > resolved.  Mapletree is dropped at present so I set these patches aside
+> > until the next version of the mapletree patches are available.
+> 
+> Do we have a definite time for the next available version of the mapletree patches?
+> Excuse me, is it possible for our patch to be independent of mapletree and brought in separately?
 
+I think it's unavoidable that there will be a conflict with maple tree
+because they are changing the way we track gaps between vmas.
 
-On 01/05/2022 18:38, Jonathan Cameron wrote:
-> On Fri, 29 Apr 2022 23:09:00 +0100
-> Caleb Connolly <caleb.connolly@linaro.org> wrote:
+> > I've been holding your patches until Michel Lespinasse has had time to
+> > review them (and hopefully explain them to me ;)).  Please review
+> > earlier comments which Michel has provided and ensure that those
+> > comments have been fully addressed so we can hopefully move forward on
+> > this.
 > 
->> The Round Robin ADC is responsible for reading data about the rate of
->> charge from the USB or DC input ports, it can also read the battery
->> ID (resistence), skin temperature and the die temperature of the pmic.
->> It is found on the PMI8998 and PM660 Qualcomm PMICs.
->>
->> Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
-> Hi Caleb,
-Hi Jonathan,
+> We will reply soon if Mr.Lespinasse provideds any advices or question.
+> And I haven't received any reply from Mr.Lespinasse yet, pls let me know
+> if I missed the reply.
 
-Thanks for spotting this, I completely missed it... Yeah this should be 
-IIO_INFO_PROCESSED, the battery ID calculation doesn't fit in the 
-raw/offset/scale format.
-> 
-> I took another quick read through of this and noticed that the battery channel
-> is providing on IIO_INFO_RAW but there is code for IIO_INFO_PROCESSED.
-> 
-> Something gone wrong along the way?  If all we need is to change it to
-> BIT(IIO_INFO_PROCESSED) I can do that whilst applying or you can do a v15 if
-> you prefer.
-That would be hugely appreciated, thanks a lot.
-> 
-> Thanks,
-> 
-> Jonathan
-> 
->> ---
-> 
->> diff --git a/drivers/iio/adc/qcom-spmi-rradc.c b/drivers/iio/adc/qcom-spmi-rradc.c
->> new file mode 100644
->> index 000000000000..c437546d8a4c
->> --- /dev/null
->> +++ b/drivers/iio/adc/qcom-spmi-rradc.c
-> 
-> 
-> ..
-> 
->> +
->> +/*
->> + * These functions explicitly cast int64_t to int.
->> + * They will never overflow, as the values are small enough.
-> 
-> See below. I don't think this gets used...
-> 
->> + */
->> +static int rradc_post_process_batt_id(struct rradc_chip *chip, u16 adc_code,
->> +				      int *result_ohms)
->> +{
->> +	uint32_t current_value;
->> +	int64_t r_id;
->> +
->> +	current_value = chip->batt_id_data;
->> +	r_id = ((int64_t)adc_code * RR_ADC_FS_VOLTAGE_MV);
->> +	r_id = div64_s64(r_id, (RR_ADC_CHAN_MSB * current_value));
->> +	*result_ohms = (int)(r_id * MILLI);
->> +
->> +	return 0;
->> +}
->> +
-> 
-> 
->> +
->> +static int rradc_read_raw(struct iio_dev *indio_dev,
->> +			  struct iio_chan_spec const *chan_spec, int *val,
->> +			  int *val2, long mask)
->> +{
->> +	struct rradc_chip *chip = iio_priv(indio_dev);
->> +	const struct rradc_channel *chan;
->> +	int ret;
->> +	u16 adc_code;
->> +
->> +	if (chan_spec->address >= RR_ADC_CHAN_MAX) {
->> +		dev_err(chip->dev, "Invalid channel index:%lu\n",
->> +			chan_spec->address);
->> +		return -EINVAL;
->> +	}
->> +
->> +	switch (mask) {
->> +	case IIO_CHAN_INFO_SCALE:
->> +		return rradc_read_scale(chip, chan_spec->address, val, val2);
->> +	case IIO_CHAN_INFO_OFFSET:
->> +		return rradc_read_offset(chip, chan_spec->address, val);
->> +	case IIO_CHAN_INFO_RAW:
->> +		ret = rradc_do_conversion(chip, chan_spec->address, &adc_code);
->> +		if (ret < 0)
->> +			return ret;
->> +
->> +		*val = adc_code;
->> +		return IIO_VAL_INT;
->> +	case IIO_CHAN_INFO_PROCESSED:
-> 
-> This doesn't seem to apply to any channels....
-> 
->> +		chan = &rradc_chans[chan_spec->address];
->> +		if (!chan->scale_fn)
->> +			return -EINVAL;
->> +		ret = rradc_do_conversion(chip, chan_spec->address, &adc_code);
->> +		if (ret < 0)
->> +			return ret;
->> +
->> +		*val = chan->scale_fn(chip, adc_code, val);
->> +		return IIO_VAL_INT;
->> +	default:
->> +		return -EINVAL;
->> +	}
->> +}
->> +
->> +static int rradc_read_label(struct iio_dev *indio_dev,
->> +			    struct iio_chan_spec const *chan, char *label)
->> +{
->> +	return snprintf(label, PAGE_SIZE, "%s\n",
->> +			rradc_chans[chan->address].label);
->> +}
->> +
->> +static const struct iio_info rradc_info = {
->> +	.read_raw = rradc_read_raw,
->> +	.read_label = rradc_read_label,
->> +};
->> +
->> +static const struct rradc_channel rradc_chans[RR_ADC_CHAN_MAX] = {
->> +	{
->> +		.label = "batt_id",
->> +		.scale_fn = rradc_post_process_batt_id,
->> +		.lsb = RR_ADC_BATT_ID_5_LSB,
->> +		.status = RR_ADC_BATT_ID_STS,
->> +		.size = 6,
->> +		.trigger_addr = RR_ADC_BATT_ID_TRIGGER,
->> +		.trigger_mask = BIT(0),
->> +	}, {
->> +		.label = "batt",
->> +		.lsb = RR_ADC_BATT_THERM_LSB,
->> +		.status = RR_ADC_BATT_THERM_STS,
->> +		.size = 2,
->> +		.trigger_addr = RR_ADC_BATT_THERM_TRIGGER,
->> +	}, {
->> +		.label = "pmi8998_skin",
->> +		.lsb = RR_ADC_SKIN_TEMP_LSB,
->> +		.status = RR_ADC_AUX_THERM_STS,
->> +		.size = 2,
->> +		.trigger_addr = RR_ADC_AUX_THERM_TRIGGER,
->> +	}, {
->> +		.label = "usbin_i",
->> +		.lsb = RR_ADC_USB_IN_I_LSB,
->> +		.status = RR_ADC_USB_IN_I_STS,
->> +		.size = 2,
->> +		.trigger_addr = RR_ADC_USB_IN_I_TRIGGER,
->> +	}, {
->> +		.label = "usbin_v",
->> +		.lsb = RR_ADC_USB_IN_V_LSB,
->> +		.status = RR_ADC_USB_IN_V_STS,
->> +		.size = 2,
->> +		.trigger_addr = RR_ADC_USB_IN_V_TRIGGER,
->> +		.trigger_mask = BIT(7),
->> +	}, {
->> +		.label = "dcin_i",
->> +		.lsb = RR_ADC_DC_IN_I_LSB,
->> +		.status = RR_ADC_DC_IN_I_STS,
->> +		.size = 2,
->> +		.trigger_addr = RR_ADC_DC_IN_I_TRIGGER,
->> +	}, {
->> +		.label = "dcin_v",
->> +		.lsb = RR_ADC_DC_IN_V_LSB,
->> +		.status = RR_ADC_DC_IN_V_STS,
->> +		.size = 2,
->> +		.trigger_addr = RR_ADC_DC_IN_V_TRIGGER,
->> +	}, {
->> +		.label = "pmi8998_die",
->> +		.lsb = RR_ADC_PMI_DIE_TEMP_LSB,
->> +		.status = RR_ADC_PMI_DIE_TEMP_STS,
->> +		.size = 2,
->> +		.trigger_addr = RR_ADC_PMI_DIE_TEMP_TRIGGER,
->> +		.trigger_mask = RR_ADC_TRIGGER_EVERY_CYCLE,
->> +	}, {
->> +		.label = "chg",
->> +		.lsb = RR_ADC_CHARGER_TEMP_LSB,
->> +		.status = RR_ADC_CHARGER_TEMP_STS,
->> +		.size = 2,
->> +		.trigger_addr = RR_ADC_CHARGER_TEMP_TRIGGER,
->> +	}, {
->> +		.label = "gpio",
->> +		.lsb = RR_ADC_GPIO_LSB,
->> +		.status = RR_ADC_GPIO_STS,
->> +		.size = 2,
->> +		.trigger_addr = RR_ADC_GPIO_TRIGGER,
->> +	},
->> +};
->> +
->> +static const struct iio_chan_spec rradc_iio_chans[RR_ADC_CHAN_MAX] = {
->> +	{
->> +		.type = IIO_RESISTANCE,
->> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->> +		.address = RR_ADC_BATT_ID,
->> +		.channel = 0,
->> +		.indexed = 1,
->> +	}, {
->> +		.type = IIO_TEMP,
->> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->> +		.address = RR_ADC_BATT_THERM,
->> +		.channel = 0,
->> +		.indexed = 1,
->> +	}, {
->> +		.type = IIO_TEMP,
->> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->> +				      BIT(IIO_CHAN_INFO_SCALE) |
->> +				      BIT(IIO_CHAN_INFO_OFFSET),
->> +		.address = RR_ADC_SKIN_TEMP,
->> +		.channel = 1,
->> +		.indexed = 1,
->> +	}, {
->> +		.type = IIO_CURRENT,
->> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->> +				      BIT(IIO_CHAN_INFO_SCALE),
->> +		.address = RR_ADC_USBIN_I,
->> +		.channel = 0,
->> +		.indexed = 1,
->> +	}, {
->> +		.type = IIO_VOLTAGE,
->> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->> +				      BIT(IIO_CHAN_INFO_SCALE),
->> +		.address = RR_ADC_USBIN_V,
->> +		.channel = 0,
->> +		.indexed = 1,
->> +	}, {
->> +		.type = IIO_CURRENT,
->> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->> +				      BIT(IIO_CHAN_INFO_SCALE),
->> +		.address = RR_ADC_DCIN_I,
->> +		.channel = 1,
->> +		.indexed = 1,
->> +	}, {
->> +		.type = IIO_VOLTAGE,
->> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->> +				      BIT(IIO_CHAN_INFO_SCALE),
->> +		.address = RR_ADC_DCIN_V,
->> +		.channel = 1,
->> +		.indexed = 1,
->> +	}, {
->> +		.type = IIO_TEMP,
->> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->> +				      BIT(IIO_CHAN_INFO_SCALE) |
->> +				      BIT(IIO_CHAN_INFO_OFFSET),
->> +		.address = RR_ADC_DIE_TEMP,
->> +		.channel = 2,
->> +		.indexed = 1,
->> +	}, {
->> +		.type = IIO_TEMP,
->> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->> +				      BIT(IIO_CHAN_INFO_OFFSET) |
->> +				      BIT(IIO_CHAN_INFO_SCALE),
->> +		.address = RR_ADC_CHG_TEMP,
->> +		.channel = 3,
->> +		.indexed = 1,
->> +	}, {
->> +		.type = IIO_VOLTAGE,
->> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->> +				      BIT(IIO_CHAN_INFO_SCALE),
->> +		.address = RR_ADC_GPIO,
->> +		.channel = 2,
->> +		.indexed = 1,
->> +	},
->> +};
->> +
-> 
+This previous thread is very relevant here:
+https://lore.kernel.org/lkml/CANN689G6mGLSOkyj31ympGgnqxnJosPVc4EakW5gYGtA_45L7g@mail.gmail.com/
 
--- 
-Kind Regards,
-Caleb (they/he)
+I am sorry that I had confused you with the original poster on that
+thread - your proposed changes are very similar. That said, I still
+have the exact same concerns that I had at the time. The current
+search algorithm is guaranteed to find a gap in O(log N) time, if there
+is an available gap of size (requested_size + alignment - page_size).
+The modified search only requires an available gap of the requested
+size and alignment, but it can take O(N) time which might be too slow.
+Maybe we could afford the slow search if it's only used as a fallback
+when the fast search fails, but very few people would ever execute
+that fallback and that makes it hard to test / easy for bugs to hide in.
+
+If I understand your message at
+https://lore.kernel.org/lkml/202204241833454848958@oppo.com/ ,
+it seems like some andoid apps such as wechat are filling up
+a 32-bit address space such as there is no 13MB gap available anymore
+(as would be required by the current search), but there are still some
+12MB gaps aligned on a 1MB boundary, which they are then trying to
+allocate from. It seems very odd to me that one would find themselves
+in that situation, could you give us some details as to how that happened ?
+Do you know what the app is trying to do to fill the address space that way ?
+Also, why is this odd behavior considered to be a kernel issue - was the
+app previously running on a (quite old !) kernel that didn't have the fast
+vma gap search, and is now failing when ported to a more recent kernel ?
+
+> Thank you very much indeed.
+> 
+> lipeifeng@oppo.com
+>  
+> From: Andrew Morton
+> Date: 2022-05-02 09:10
+> To: lipeifeng@oppo.com
+> CC: michel; hughd; linux-mm; linux-kernel; Barry Song; zhangshiming; peifengl55
+> Subject: Re: [PATCH] mm: fix align-error when get_addr in unmapped_area_topdown
+> On Sun, 1 May 2022 10:26:35 +0800 "lipeifeng@oppo.com" <lipeifeng@oppo.com> wrote:
+>  
+> > Why did the two patches suddenly disappear without any email or notice for us?
+> > And they had been merged in linux-next.git on April 5 and 13.
+>  
+> They caused me some merge issues against mapletree, which I had
+> resolved.  Mapletree is dropped at present so I set these patches aside
+> until the next version of the mapletree patches are available.
+>  
+>  
+> I've been holding your patches until Michel Lespinasse has had time to
+> review them (and hopefully explain them to me ;)).  Please review
+> earlier comments which Michel has provided and ensure that those
+> comments have been fully addressed so we can hopefully move forward on
+> this.
+>  
+>  
