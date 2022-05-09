@@ -2,70 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C6B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 15:59:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C24DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 16:00:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238759AbiEIQDJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 12:03:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43888 "EHLO
+        id S238754AbiEIQEm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 12:04:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238770AbiEIQDE (ORCPT
+        with ESMTP id S238726AbiEIQEk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 12:03:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDE3E2D9EF4;
-        Mon,  9 May 2022 08:59:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 86D0FB81252;
-        Mon,  9 May 2022 15:59:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 414A4C385AE;
-        Mon,  9 May 2022 15:59:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652111948;
-        bh=3WqpGb4b7mV7spWAV8RawQwEEHkl0hO6Vsc2rKASjFE=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=bAeqQ9dtNwYyeWxWYzg5ackhrkGBMhf4bHNoqedbzV/xnilOHN1b/RmTrt9xGjaFp
-         dDj3gb4klNyZKJ52zEglFB7ljdxcIbG/ANXaz6SomL0OpB70FiS/aJlDh+y+Ca/xv4
-         u+sEw9DZ8veaERabwo70T/YSiLmflolNCDI38VSNl7icGBVp2Qfmq8myNBSHR9jrrW
-         xaR9oRYA70YQpJdL1Mp0RxciEXp82d3khiwu7FwXMcN94zfrytyB7/jDI0bgupRqYv
-         8i0B1CALTuBBThlQcNgYBL34AIOdNfNbgz5Ics9bNAF3uusUT0nZhS0BbsDziSNtbP
-         G2skyMcXhGy4w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2D392F03928;
-        Mon,  9 May 2022 15:59:08 +0000 (UTC)
-Subject: Re: [GIT PULL] platform-drivers-x86 for 5.18-4
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <d9007c58-71a2-e081-c609-fbf04855b591@redhat.com>
-References: <d9007c58-71a2-e081-c609-fbf04855b591@redhat.com>
-X-PR-Tracked-List-Id: <platform-driver-x86.vger.kernel.org>
-X-PR-Tracked-Message-Id: <d9007c58-71a2-e081-c609-fbf04855b591@redhat.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git tags/platform-drivers-x86-v5.18-4
-X-PR-Tracked-Commit-Id: 44acfc22c7d055d9c4f8f0974ee28422405b971a
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 9be9ed2612b5aedb52a2c240edb1630b6b743cb6
-Message-Id: <165211194817.13222.583089385536373493.pr-tracker-bot@kernel.org>
-Date:   Mon, 09 May 2022 15:59:08 +0000
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Mark Gross <mgross@linux.intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        platform-driver-x86@vger.kernel.org
+        Mon, 9 May 2022 12:04:40 -0400
+X-Greylist: delayed 483 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 09 May 2022 09:00:45 PDT
+Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0472F0D;
+        Mon,  9 May 2022 09:00:44 -0700 (PDT)
+Received: from [2603:3005:d05:2b00:6e0b:84ff:fee2:98bb] (helo=imladris.surriel.com)
+        by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <riel@shelob.surriel.com>)
+        id 1no5gT-0002xt-UY; Mon, 09 May 2022 11:52:29 -0400
+Date:   Mon, 9 May 2022 11:52:27 -0400
+From:   Rik van Riel <riel@surriel.com>
+To:     Song Liu <song@kernel.org>
+Cc:     <linux-kernel@vger.kernel.org>, <live-patching@vger.kernel.org>,
+        <mingo@redhat.com>, <peterz@infradead.org>,
+        <vincent.guittot@linaro.org>, <jpoimboe@redhat.com>,
+        <joe.lawrence@redhat.com>, <kernel-team@fb.com>
+Subject: [RFC] sched,livepatch: call stop_one_cpu in
+ klp_check_and_switch_task
+Message-ID: <20220509115227.6075105e@imladris.surriel.com>
+In-Reply-To: <20220507174628.2086373-1-song@kernel.org>
+References: <20220507174628.2086373-1-song@kernel.org>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Sender: riel@shelob.surriel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 9 May 2022 09:27:51 +0200:
+After talking with Peter, this seems like it might be a potential approach
+to fix the issue for kernels both with PREEMPT enabled and disabled.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git tags/platform-drivers-x86-v5.18-4
+If this looks like a reasonable approach to people, we can run experiments
+with this patch on a few thousand systems, and compare it with the kernel
+live patch transition latencies (and number of failures) on a kernel without
+that patch.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/9be9ed2612b5aedb52a2c240edb1630b6b743cb6
+Does this look like an approach that could work?
 
-Thank you!
+---8<---
+sched,livepatch: call stop_one_cpu in klp_check_and_switch_task
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+If a running task fails to transition to the new kernel live patch after the
+first attempt, use the stopper thread to preempt it during subsequent attempts
+at switching to the new kernel live patch.
+
+<INSERT EXPERIMENTAL RESULTS HERE>
+
+Signed-off-by: Rik van Riel <riel@surriel.com>
+
+diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+index 5d03a2ad1066..26e9e5f09822 100644
+--- a/kernel/livepatch/transition.c
++++ b/kernel/livepatch/transition.c
+@@ -9,6 +9,7 @@
+ 
+ #include <linux/cpu.h>
+ #include <linux/stacktrace.h>
++#include <linux/stop_machine.h>
+ #include "core.h"
+ #include "patch.h"
+ #include "transition.h"
+@@ -281,6 +282,11 @@ static int klp_check_and_switch_task(struct task_struct *task, void *arg)
+ 	return 0;
+ }
+ 
++static int kpatch_dummy_fn(void *dummy)
++{
++	return 0;
++}
++
+ /*
+  * Try to safely switch a task to the target patch state.  If it's currently
+  * running, or it's sleeping on a to-be-patched or to-be-unpatched function, or
+@@ -315,6 +321,9 @@ static bool klp_try_switch_task(struct task_struct *task)
+ 	case -EBUSY:	/* klp_check_and_switch_task() */
+ 		pr_debug("%s: %s:%d is running\n",
+ 			 __func__, task->comm, task->pid);
++		/* Preempt the task from the second KLP switch attempt. */
++		if (klp_signals_cnt)
++			stop_one_cpu(task_cpu(task), kpatch_dummy_fn, NULL);
+ 		break;
+ 	case -EINVAL:	/* klp_check_and_switch_task() */
+ 		pr_debug("%s: %s:%d has an unreliable stack\n",
+
