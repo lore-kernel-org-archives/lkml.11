@@ -2,173 +2,407 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EA13C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FB03C43217
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:51:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236450AbiEIHw0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 03:52:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58698 "EHLO
+        id S236421AbiEIHwU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 03:52:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234694AbiEIHos (ORCPT
+        with ESMTP id S235861AbiEIHpE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 03:44:48 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EAA2B86D;
-        Mon,  9 May 2022 00:40:55 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 248LUshn011815;
-        Mon, 9 May 2022 09:40:00 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=/j0WtA1ZdUqRFV99pN+qeJH/+Z3kUlv2gElgYxTejVo=;
- b=nheer9I1FTvVEUlIHIa+vmqDDa2ea18u3DYv8HLTTLLdlgA2AVZnYKk0/D27meek9lfW
- zeUL+xlMDvTrxf1HfDpdVnWYALfvq79gUfbWa3/U39fMYMH6GmvIJVeFlg6nyY29tIVe
- eHwih2uk5kGBu9qy1PQLjAGax9/gii97BiWqgvCiXIzmNiI7hE5FCXj2jRBClVMHydDP
- lox/zazXN9xcaKU0E3R6/7XQozmEnGK19mjogQamOpYn4n0oF5jbayYh9PWbmhxXVkpL
- tI3YDl5OQmpBtz9VU7A8IfCF361bD1Ja6+2K7zy58bCLzZc2vQC/X4PADkkI54DOZRN1 Nw== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3fwfng9hsh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 09 May 2022 09:40:00 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 94AFF100034;
-        Mon,  9 May 2022 09:39:58 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 8C30F2122E7;
-        Mon,  9 May 2022 09:39:58 +0200 (CEST)
-Received: from [10.48.1.150] (10.75.127.47) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 9 May
- 2022 09:39:57 +0200
-Message-ID: <30a2c669-693f-45ec-df0e-610e1f94bffd@foss.st.com>
-Date:   Mon, 9 May 2022 09:39:57 +0200
+        Mon, 9 May 2022 03:45:04 -0400
+Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 415A123179;
+        Mon,  9 May 2022 00:41:09 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0VCgwzGy_1652082063;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0VCgwzGy_1652082063)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 09 May 2022 15:41:04 +0800
+From:   Jeffle Xu <jefflexu@linux.alibaba.com>
+To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
+        chao@kernel.org, linux-erofs@lists.ozlabs.org
+Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
+        willy@infradead.org, linux-fsdevel@vger.kernel.org,
+        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
+        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
+        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
+        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
+        yinxin.x@bytedance.com, zhangjiachen.jaycee@bytedance.com,
+        zhujia.zj@bytedance.com
+Subject: [PATCH v11 22/22] erofs: change to use asynchronous io for fscache readpage/readahead
+Date:   Mon,  9 May 2022 15:40:28 +0800
+Message-Id: <20220509074028.74954-23-jefflexu@linux.alibaba.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220509074028.74954-1-jefflexu@linux.alibaba.com>
+References: <20220509074028.74954-1-jefflexu@linux.alibaba.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v1 1/1] pinctrl: stm32: Unshadow np variable in
- stm32_pctl_probe()
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        <linux-gpio@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        kernel test robot <lkp@intel.com>
-References: <20220507102257.26414-1-andriy.shevchenko@linux.intel.com>
-From:   Fabien DESSENNE <fabien.dessenne@foss.st.com>
-In-Reply-To: <20220507102257.26414-1-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.47]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-09_02,2022-05-06_01,2022-02-23_01
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andy
+From: Xin Yin <yinxin.x@bytedance.com>
 
+Use asynchronous io to read data from fscache may greatly improve IO
+bandwidth for sequential buffer read scenario.
 
-Thank you for the patch.
+Change erofs_fscache_read_folios to erofs_fscache_read_folios_async,
+and read data from fscache asynchronously.
+Make .readpage()/.readahead() to use this new helper.
 
-Will this patch be applied in Linus pinctrl tree, or in the gpio-intel 
-tree before being merged (linux-next) in the pinctrl tree?
+Signed-off-by: Xin Yin <yinxin.x@bytedance.com>
+Reviewed-by: Jeffle Xu <jefflexu@linux.alibaba.com>
+Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
+---
+ fs/erofs/fscache.c | 239 +++++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 199 insertions(+), 40 deletions(-)
 
-BR
+diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
+index a402d8f0a063..f23fde003c6d 100644
+--- a/fs/erofs/fscache.c
++++ b/fs/erofs/fscache.c
+@@ -5,57 +5,203 @@
+ #include <linux/fscache.h>
+ #include "internal.h"
+ 
++static struct netfs_io_request *erofs_fscache_alloc_request(struct address_space *mapping,
++					     loff_t start, size_t len)
++{
++	struct netfs_io_request *rreq;
++
++	rreq = kzalloc(sizeof(struct netfs_io_request), GFP_KERNEL);
++	if (!rreq)
++		return ERR_PTR(-ENOMEM);
++
++	rreq->start	= start;
++	rreq->len	= len;
++	rreq->mapping	= mapping;
++	INIT_LIST_HEAD(&rreq->subrequests);
++	refcount_set(&rreq->ref, 1);
++
++	return rreq;
++}
++
++static void erofs_fscache_put_request(struct netfs_io_request *rreq)
++{
++	if (refcount_dec_and_test(&rreq->ref)) {
++		if (rreq->cache_resources.ops)
++			rreq->cache_resources.ops->end_operation(&rreq->cache_resources);
++		kfree(rreq);
++	}
++}
++
++static void erofs_fscache_put_subrequest(struct netfs_io_subrequest *subreq)
++{
++	if (refcount_dec_and_test(&subreq->ref)) {
++		erofs_fscache_put_request(subreq->rreq);
++		kfree(subreq);
++	}
++}
++
++static void erofs_fscache_clear_subrequests(struct netfs_io_request *rreq)
++{
++	struct netfs_io_subrequest *subreq;
++
++	while (!list_empty(&rreq->subrequests)) {
++		subreq = list_first_entry(&rreq->subrequests,
++				struct netfs_io_subrequest, rreq_link);
++		list_del(&subreq->rreq_link);
++		erofs_fscache_put_subrequest(subreq);
++	}
++}
++
++static void erofs_fscache_rreq_unlock_folios(struct netfs_io_request *rreq)
++{
++	struct netfs_io_subrequest *subreq;
++	struct folio *folio;
++	unsigned int iopos;
++	pgoff_t start_page = rreq->start / PAGE_SIZE;
++	pgoff_t last_page = ((rreq->start + rreq->len) / PAGE_SIZE) - 1;
++	bool subreq_failed = false;
++
++	XA_STATE(xas, &rreq->mapping->i_pages, start_page);
++
++	subreq = list_first_entry(&rreq->subrequests,
++				  struct netfs_io_subrequest, rreq_link);
++	iopos = 0;
++	subreq_failed = (subreq->error < 0);
++
++	rcu_read_lock();
++	xas_for_each(&xas, folio, last_page) {
++		unsigned int pgpos = (folio_index(folio) - start_page) * PAGE_SIZE;
++		unsigned int pgend = pgpos + folio_size(folio);
++		bool pg_failed = false;
++
++		for (;;) {
++			if (!subreq) {
++				pg_failed = true;
++				break;
++			}
++
++			pg_failed |= subreq_failed;
++			if (pgend < iopos + subreq->len)
++				break;
++
++			iopos += subreq->len;
++			if (!list_is_last(&subreq->rreq_link, &rreq->subrequests)) {
++				subreq = list_next_entry(subreq, rreq_link);
++				subreq_failed = (subreq->error < 0);
++			} else {
++				subreq = NULL;
++				subreq_failed = false;
++			}
++			if (pgend == iopos)
++				break;
++		}
++
++		if (!pg_failed)
++			folio_mark_uptodate(folio);
++
++		folio_unlock(folio);
++	}
++	rcu_read_unlock();
++}
++
++static void erofs_fscache_rreq_complete(struct netfs_io_request *rreq)
++{
++	erofs_fscache_rreq_unlock_folios(rreq);
++	erofs_fscache_clear_subrequests(rreq);
++	erofs_fscache_put_request(rreq);
++}
++
++static void erofc_fscache_subreq_complete(void *priv,
++		ssize_t transferred_or_error, bool was_async)
++{
++	struct netfs_io_subrequest *subreq = priv;
++	struct netfs_io_request *rreq = subreq->rreq;
++
++	if (IS_ERR_VALUE(transferred_or_error))
++		subreq->error = transferred_or_error;
++
++	if (atomic_dec_and_test(&rreq->nr_outstanding))
++		erofs_fscache_rreq_complete(rreq);
++
++	erofs_fscache_put_subrequest(subreq);
++}
++
+ /*
+  * Read data from fscache and fill the read data into page cache described by
+- * @start/len, which shall be both aligned with PAGE_SIZE. @pstart describes
++ * @rreq, which shall be both aligned with PAGE_SIZE. @pstart describes
+  * the start physical address in the cache file.
+  */
+-static int erofs_fscache_read_folios(struct fscache_cookie *cookie,
+-				     struct address_space *mapping,
+-				     loff_t start, size_t len,
++static int erofs_fscache_read_folios_async(struct fscache_cookie *cookie,
++				     struct netfs_io_request *rreq,
+ 				     loff_t pstart)
+ {
+ 	enum netfs_io_source source;
+-	struct netfs_io_request rreq = {};
+-	struct netfs_io_subrequest subreq = { .rreq = &rreq, };
+-	struct netfs_cache_resources *cres = &rreq.cache_resources;
+-	struct super_block *sb = mapping->host->i_sb;
++	struct super_block *sb = rreq->mapping->host->i_sb;
++	struct netfs_io_subrequest *subreq;
++	struct netfs_cache_resources *cres = &rreq->cache_resources;
+ 	struct iov_iter iter;
++	loff_t start = rreq->start;
++	size_t len = rreq->len;
+ 	size_t done = 0;
+ 	int ret;
+ 
++	atomic_set(&rreq->nr_outstanding, 1);
++
+ 	ret = fscache_begin_read_operation(cres, cookie);
+ 	if (ret)
+-		return ret;
++		goto out;
+ 
+ 	while (done < len) {
+-		subreq.start = pstart + done;
+-		subreq.len = len - done;
+-		subreq.flags = 1 << NETFS_SREQ_ONDEMAND;
++		subreq = kzalloc(sizeof(struct netfs_io_subrequest), GFP_KERNEL);
++		if (subreq) {
++			INIT_LIST_HEAD(&subreq->rreq_link);
++			refcount_set(&subreq->ref, 2);
++			subreq->rreq = rreq;
++			refcount_inc(&rreq->ref);
++		} else {
++			ret = -ENOMEM;
++			goto out;
++		}
++
++		subreq->start = pstart + done;
++		subreq->len	=  len - done;
++		subreq->flags = 1 << NETFS_SREQ_ONDEMAND;
+ 
+-		source = cres->ops->prepare_read(&subreq, LLONG_MAX);
+-		if (WARN_ON(subreq.len == 0))
++		list_add_tail(&subreq->rreq_link, &rreq->subrequests);
++
++		source = cres->ops->prepare_read(subreq, LLONG_MAX);
++		if (WARN_ON(subreq->len == 0))
+ 			source = NETFS_INVALID_READ;
+ 		if (source != NETFS_READ_FROM_CACHE) {
+ 			erofs_err(sb, "failed to fscache prepare_read (source %d)",
+ 				  source);
+ 			ret = -EIO;
++			subreq->error = ret;
++			erofs_fscache_put_subrequest(subreq);
+ 			goto out;
+ 		}
+ 
+-		iov_iter_xarray(&iter, READ, &mapping->i_pages,
+-				start + done, subreq.len);
+-		ret = fscache_read(cres, subreq.start, &iter,
+-				   NETFS_READ_HOLE_FAIL, NULL, NULL);
++		atomic_inc(&rreq->nr_outstanding);
++
++		iov_iter_xarray(&iter, READ, &rreq->mapping->i_pages,
++				start + done, subreq->len);
++
++		ret = fscache_read(cres, subreq->start, &iter,
++				   NETFS_READ_HOLE_FAIL,
++				   erofc_fscache_subreq_complete, subreq);
++		if (ret == -EIOCBQUEUED)
++			ret = 0;
+ 		if (ret) {
+ 			erofs_err(sb, "failed to fscache_read (ret %d)", ret);
+ 			goto out;
+ 		}
+ 
+-		done += subreq.len;
++		done += subreq->len;
+ 	}
+ out:
+-	fscache_end_operation(cres);
++	if (atomic_dec_and_test(&rreq->nr_outstanding))
++		erofs_fscache_rreq_complete(rreq);
++
+ 	return ret;
+ }
+ 
+@@ -64,6 +210,7 @@ static int erofs_fscache_meta_readpage(struct file *data, struct page *page)
+ 	int ret;
+ 	struct folio *folio = page_folio(page);
+ 	struct super_block *sb = folio_mapping(folio)->host->i_sb;
++	struct netfs_io_request *rreq;
+ 	struct erofs_map_dev mdev = {
+ 		.m_deviceid = 0,
+ 		.m_pa = folio_pos(folio),
+@@ -73,11 +220,13 @@ static int erofs_fscache_meta_readpage(struct file *data, struct page *page)
+ 	if (ret)
+ 		goto out;
+ 
+-	ret = erofs_fscache_read_folios(mdev.m_fscache->cookie,
+-			folio_mapping(folio), folio_pos(folio),
+-			folio_size(folio), mdev.m_pa);
+-	if (!ret)
+-		folio_mark_uptodate(folio);
++	rreq = erofs_fscache_alloc_request(folio_mapping(folio),
++				folio_pos(folio), folio_size(folio));
++	if (IS_ERR(rreq))
++		goto out;
++
++	return erofs_fscache_read_folios_async(mdev.m_fscache->cookie,
++				rreq, mdev.m_pa);
+ out:
+ 	folio_unlock(folio);
+ 	return ret;
+@@ -117,6 +266,7 @@ static int erofs_fscache_readpage(struct file *file, struct page *page)
+ 	struct super_block *sb = inode->i_sb;
+ 	struct erofs_map_blocks map;
+ 	struct erofs_map_dev mdev;
++	struct netfs_io_request *rreq;
+ 	erofs_off_t pos;
+ 	loff_t pstart;
+ 	int ret;
+@@ -149,10 +299,15 @@ static int erofs_fscache_readpage(struct file *file, struct page *page)
+ 	if (ret)
+ 		goto out_unlock;
+ 
++
++	rreq = erofs_fscache_alloc_request(folio_mapping(folio),
++				folio_pos(folio), folio_size(folio));
++	if (IS_ERR(rreq))
++		goto out_unlock;
++
+ 	pstart = mdev.m_pa + (pos - map.m_la);
+-	ret = erofs_fscache_read_folios(mdev.m_fscache->cookie,
+-			folio_mapping(folio), folio_pos(folio),
+-			folio_size(folio), pstart);
++	return erofs_fscache_read_folios_async(mdev.m_fscache->cookie,
++				rreq, pstart);
+ 
+ out_uptodate:
+ 	if (!ret)
+@@ -162,15 +317,16 @@ static int erofs_fscache_readpage(struct file *file, struct page *page)
+ 	return ret;
+ }
+ 
+-static void erofs_fscache_unlock_folios(struct readahead_control *rac,
+-					size_t len)
++static void erofs_fscache_advance_folios(struct readahead_control *rac,
++					size_t len, bool unlock)
+ {
+ 	while (len) {
+ 		struct folio *folio = readahead_folio(rac);
+-
+ 		len -= folio_size(folio);
+-		folio_mark_uptodate(folio);
+-		folio_unlock(folio);
++		if (unlock) {
++			folio_mark_uptodate(folio);
++			folio_unlock(folio);
++		}
+ 	}
+ }
+ 
+@@ -192,6 +348,7 @@ static void erofs_fscache_readahead(struct readahead_control *rac)
+ 	do {
+ 		struct erofs_map_blocks map;
+ 		struct erofs_map_dev mdev;
++		struct netfs_io_request *rreq;
+ 
+ 		pos = start + done;
+ 		map.m_la = pos;
+@@ -211,7 +368,7 @@ static void erofs_fscache_readahead(struct readahead_control *rac)
+ 					offset, count);
+ 			iov_iter_zero(count, &iter);
+ 
+-			erofs_fscache_unlock_folios(rac, count);
++			erofs_fscache_advance_folios(rac, count, true);
+ 			ret = count;
+ 			continue;
+ 		}
+@@ -237,15 +394,17 @@ static void erofs_fscache_readahead(struct readahead_control *rac)
+ 		if (ret)
+ 			return;
+ 
+-		ret = erofs_fscache_read_folios(mdev.m_fscache->cookie,
+-				rac->mapping, offset, count,
+-				mdev.m_pa + (pos - map.m_la));
++		rreq = erofs_fscache_alloc_request(rac->mapping, offset, count);
++		if (IS_ERR(rreq))
++			return;
+ 		/*
+-		 * For the error cases, the folios will be unlocked when
+-		 * .readahead() returns.
++		 * Drop the ref of folios here. Unlock them in
++		 * rreq_unlock_folios() when rreq complete.
+ 		 */
++		erofs_fscache_advance_folios(rac, count, false);
++		ret = erofs_fscache_read_folios_async(mdev.m_fscache->cookie,
++					rreq, mdev.m_pa + (pos - map.m_la));
+ 		if (!ret) {
+-			erofs_fscache_unlock_folios(rac, count);
+ 			ret = count;
+ 		}
+ 	} while (ret > 0 && ((done += ret) < len));
+-- 
+2.27.0
 
-Fabien
-
-
-
-On 07/05/2022 12:22, Andy Shevchenko wrote:
-> The np variable is used globally for stm32_pctl_probe() and in one of
-> its code branches. cppcheck is not happy with that:
-> 
->    pinctrl-stm32.c:1530:23: warning: Local variable 'np' shadows outer variable [shadowVariable]
-> 
-> Instead of simply renaming one of the variables convert some code to
-> use a device pointer directly.
-> 
-> Fixes: bb949ed9b16b ("pinctrl: stm32: Switch to use for_each_gpiochip_node() helper")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
-Reviewed-by: Fabien Dessenne <fabien.dessenne@foss.st.com>
-
-
-
-> ---
->   drivers/pinctrl/stm32/pinctrl-stm32.c | 21 +++++++++------------
->   1 file changed, 9 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/pinctrl/stm32/pinctrl-stm32.c b/drivers/pinctrl/stm32/pinctrl-stm32.c
-> index e73f2d24611f..5d1d067b2247 100644
-> --- a/drivers/pinctrl/stm32/pinctrl-stm32.c
-> +++ b/drivers/pinctrl/stm32/pinctrl-stm32.c
-> @@ -1364,8 +1364,9 @@ static int stm32_gpiolib_register_bank(struct stm32_pinctrl *pctl, struct fwnode
->   	return err;
->   }
->   
-> -static struct irq_domain *stm32_pctrl_get_irq_domain(struct device_node *np)
-> +static struct irq_domain *stm32_pctrl_get_irq_domain(struct platform_device *pdev)
->   {
-> +	struct device_node *np = pdev->dev.of_node;
->   	struct device_node *parent;
->   	struct irq_domain *domain;
->   
-> @@ -1482,23 +1483,19 @@ static int stm32_pctrl_create_pins_tab(struct stm32_pinctrl *pctl,
->   
->   int stm32_pctl_probe(struct platform_device *pdev)
->   {
-> -	struct device_node *np = pdev->dev.of_node;
-> +	const struct stm32_pinctrl_match_data *match_data;
->   	struct fwnode_handle *child;
-> -	const struct of_device_id *match;
->   	struct device *dev = &pdev->dev;
->   	struct stm32_pinctrl *pctl;
->   	struct pinctrl_pin_desc *pins;
->   	int i, ret, hwlock_id;
->   	unsigned int banks;
->   
-> -	if (!np)
-> -		return -EINVAL;
-> -
-> -	match = of_match_device(dev->driver->of_match_table, dev);
-> -	if (!match || !match->data)
-> +	match_data = device_get_match_data(dev);
-> +	if (!match_data)
->   		return -EINVAL;
->   
-> -	if (!of_find_property(np, "pins-are-numbered", NULL)) {
-> +	if (!device_property_present(dev, "pins-are-numbered")) {
->   		dev_err(dev, "only support pins-are-numbered format\n");
->   		return -EINVAL;
->   	}
-> @@ -1510,7 +1507,7 @@ int stm32_pctl_probe(struct platform_device *pdev)
->   	platform_set_drvdata(pdev, pctl);
->   
->   	/* check for IRQ controller (may require deferred probe) */
-> -	pctl->domain = stm32_pctrl_get_irq_domain(np);
-> +	pctl->domain = stm32_pctrl_get_irq_domain(pdev);
->   	if (IS_ERR(pctl->domain))
->   		return PTR_ERR(pctl->domain);
->   
-> @@ -1526,10 +1523,10 @@ int stm32_pctl_probe(struct platform_device *pdev)
->   	spin_lock_init(&pctl->irqmux_lock);
->   
->   	pctl->dev = dev;
-> -	pctl->match_data = match->data;
-> +	pctl->match_data = match_data;
->   
->   	/*  get optional package information */
-> -	if (!of_property_read_u32(np, "st,package", &pctl->pkg))
-> +	if (!device_property_read_u32(dev, "st,package", &pctl->pkg))
->   		dev_dbg(pctl->dev, "package detected: %x\n", pctl->pkg);
->   
->   	pctl->pins = devm_kcalloc(pctl->dev, pctl->match_data->npins,
