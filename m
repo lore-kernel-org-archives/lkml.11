@@ -2,134 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53615C3527C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0749AC3527B
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:34:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238220AbiEIJfi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 05:35:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39746 "EHLO
+        id S238090AbiEIJec (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 05:34:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237246AbiEIJ2r (ORCPT
+        with ESMTP id S238016AbiEIJDh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 05:28:47 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 119FF209B5D;
-        Mon,  9 May 2022 02:24:54 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id ba17so15535269edb.5;
-        Mon, 09 May 2022 02:24:53 -0700 (PDT)
+        Mon, 9 May 2022 05:03:37 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC72D1A3B8
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 01:59:44 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id k1so13248781pll.4
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 01:59:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=LFcgVVJ7bK726HSSPtE+r4B2aXmQmGmr8tjtETzF3YE=;
-        b=SCk+kS+aXSHUKOVJ2iBIKunz+vcKeLZXVRZZHJfW4513NoPDMHM/BlO9OtZ7pastdC
-         W/17ymo2ZabbKF5AqescJlLZ70aU1Y97l5qpVLrA18jRc0OHqWQv8jc26EcjZrcOWJgx
-         dHj0tCBpALYRpyVM+ddvFgwFOppJimHwgMIcd7eh5EABQOJIUoZWVsSh9zUzOph1salq
-         27jvi086X5pbvzJgzxj/oTtHN9/bkaCl2rc7R84n0hivnm28KWv6VgNhxEqHfcwFy1Km
-         FZvm+nMTTAeT0s1Qlvuzm7IvUgUETmh90LwK2vTHxI9i5QZ6N26z1U30HAg3ur85Fc7A
-         avug==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sx4X5idiTB8diHSkHofGP7McwC9VOX2bxNNbtsqQ25g=;
+        b=RTlCVXMRkBRx7ZUc8I4lCbIk1BB+b9OR4ZKDkuCW8re6QEYw7hwZB3O7t3HZGsPpVX
+         8+9CANeoTlvXFyxID9IUrFZjtLX0lgWFhRDKB/IJb6m701ulacPVPInNOwbjLcsWsC6a
+         rA2O4a98nRz8o+wDHPdBKWhfGRmn2ynDZL8uY5Guat4KzCLWX90WLm3yB6v57kyC+cfF
+         29QLm4X/ty4ir2S1FKPJbujvf7oIyRJV30Xrr+IE2OfkfbeLKbifEX6EgJz81u46grF1
+         Pn05W4Y+UCDp6zj7rasqXbbiiTzyqgQ+P0uSo6PDguSEeh7uKwseBPSKhnG6rUS1F/3v
+         0waw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=LFcgVVJ7bK726HSSPtE+r4B2aXmQmGmr8tjtETzF3YE=;
-        b=IDm4iiYbLlhGGsSLZxelMdi/705R5RMDyqR7X+ypHUCuKCALZPHFimb/WuJ6knErEs
-         rrroWqPiXD1NRSqU43obj2ONhUgSw1zp5BSODz9uQbg/pdraTvjC5LuHakbhY3m8lqj9
-         0G+UgdugKH7fa7nHvnlTo4X2UkD+uZGnRBCMnopVxiU5ZtbwdUvX76A3UY9WwQJTU676
-         o0f93gazFNX5gyQJuxUl1x86uL+2tRaWOLxSXSp662+w3IX8014i2qd30LSYOqn46QoE
-         icTEDuID6FrZi2LT19K0TlqQUbrV4Um3kuhL2x1hH7ZaBoreDAQ97WWOtIefOmp0L8Uy
-         GAZQ==
-X-Gm-Message-State: AOAM530+P5+0SO2MMJbtvo16q2fOI9YJ8DOfMNYOQ09HQq83qmYJDYHU
-        Bo4IP1DmqCl+l5/NpPtrgIs=
-X-Google-Smtp-Source: ABdhPJx86XxIR0CMtq+ONANDVnTdQClivXE2E+RefrUi2Gb8ihwn5DKx9ngWTXM2K4DIENT7/NS20A==
-X-Received: by 2002:a05:6402:4384:b0:427:b5c0:4bf with SMTP id o4-20020a056402438400b00427b5c004bfmr16757704edc.127.1652088292537;
-        Mon, 09 May 2022 02:24:52 -0700 (PDT)
-Received: from archbook.localnet (84-72-105-84.dclient.hispeed.ch. [84.72.105.84])
-        by smtp.gmail.com with ESMTPSA id gz14-20020a170907a04e00b006f3ef214e62sm4869938ejc.200.2022.05.09.02.24.51
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sx4X5idiTB8diHSkHofGP7McwC9VOX2bxNNbtsqQ25g=;
+        b=1V8iovVuF/jfhjtFCz92j9jZwzoJpiWRBRf6MDz+TbbW0+anAeKOLeunY+uoI28dyW
+         aiC0ey48Ia7fIBIRi/sSkxfgN0H5gxYvHK+EuMRNvqHawLAfQ90dsa1EJjlJJkwAy80M
+         1Jj/P3BNLDuJhGDq4kVz721MYUU6EcyxgkQXXWSUMe5kMRmppNcVxJCoBHDSB6g/04Bc
+         Z8NuwqpceoHANLBdBA+7cYNMMypRZzpP8tXHXI/y7dcMOAfmp3BNKW5JKr8u8fkuA2vC
+         kBrKEIPa/RHkQUYU5qbKVl0rExKGwggYepxD9IHqDPbLOQKJ3JWfUQsbdE5u2fnN8UhV
+         /zBg==
+X-Gm-Message-State: AOAM532GIePZO3eVAWRoI3wFKzY9xurskZv5fGf68bez/uNsOhw6qQbQ
+        rI0wOiwxY3sVKIGN1l+Rkw==
+X-Google-Smtp-Source: ABdhPJwSUOEf5enWGUDjDGUYXVYfE7P7K5G3N+W0oPGsMNLPlQZ1JtL9o+AiSKOGqoPSgCM6dHWZWA==
+X-Received: by 2002:a17:90b:3445:b0:1d6:91a5:29fe with SMTP id lj5-20020a17090b344500b001d691a529femr25286739pjb.138.1652086784472;
+        Mon, 09 May 2022 01:59:44 -0700 (PDT)
+Received: from localhost.localdomain ([144.202.91.207])
+        by smtp.gmail.com with ESMTPSA id t15-20020a1709028c8f00b0015e8d4eb1d7sm6455346plo.33.2022.05.09.01.59.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 02:24:52 -0700 (PDT)
-From:   Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
-To:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Ezequiel Garcia <ezequiel@collabora.com>,
-        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/3] dt-bindings: media: rockchip-vpu: Add RK3568 VEPU compatible
-Date:   Mon, 09 May 2022 11:24:50 +0200
-Message-ID: <3594222.Ivq9XVSPaC@archbook>
-In-Reply-To: <422bf3bc-7787-97dd-6ab4-7570e5ce2ed8@linaro.org>
-References: <20220508202544.501981-1-frattaroli.nicolas@gmail.com> <20220508202544.501981-2-frattaroli.nicolas@gmail.com> <422bf3bc-7787-97dd-6ab4-7570e5ce2ed8@linaro.org>
+        Mon, 09 May 2022 01:59:44 -0700 (PDT)
+From:   Zheyu Ma <zheyuma97@gmail.com>
+To:     lgirdwood@gmail.com, broonie@kernel.org, perex@perex.cz,
+        tiwai@suse.com
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        Zheyu Ma <zheyuma97@gmail.com>
+Subject: [PATCH] ASoC: tlv320adcx140: Register a callback to disable the regulator_disable
+Date:   Mon,  9 May 2022 16:59:25 +0800
+Message-Id: <20220509085925.1548328-1-zheyuma97@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Montag, 9. Mai 2022 09:25:23 CEST Krzysztof Kozlowski wrote:
-> On 08/05/2022 22:25, Nicolas Frattaroli wrote:
-> > The RK3568 and RK3566 have a Hantro VPU node solely dedicated to
-> > encoding. This patch adds a compatible for it, and also allows
-> > the bindings to only come with a vepu interrupt.
-> > 
-> > Signed-off-by: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
-> > ---
-> >  Documentation/devicetree/bindings/media/rockchip-vpu.yaml | 2 ++
-> >  1 file changed, 2 insertions(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/media/rockchip-vpu.yaml b/Documentation/devicetree/bindings/media/rockchip-vpu.yaml
-> > index bacb60a34989..4045f107ca4e 100644
-> > --- a/Documentation/devicetree/bindings/media/rockchip-vpu.yaml
-> > +++ b/Documentation/devicetree/bindings/media/rockchip-vpu.yaml
-> > @@ -22,6 +22,7 @@ properties:
-> >            - rockchip,rk3288-vpu
-> >            - rockchip,rk3328-vpu
-> >            - rockchip,rk3399-vpu
-> > +          - rockchip,rk3568-vepu
-> >            - rockchip,px30-vpu
-> >        - items:
-> >            - const: rockchip,rk3188-vpu
-> > @@ -40,6 +41,7 @@ properties:
-> >    interrupt-names:
-> >      oneOf:
-> >        - const: vdpu
-> > +      - const: vepu
-> 
-> This should be enum (for both lines above) and you should add
-> allOf:if:then with a constraints which variant can have which interrupts.
-> 
-> 
-> Best regards,
-> Krzysztof
-> 
+The driver should register a callback that will deal with the disabling
+when it fails to probe.
 
-So something like this?
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+---
+ sound/soc/codecs/tlv320adcx140.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-  interrupt-names:
-    oneOf:
-      - enum:
-         - vdpu
-         - vepu
-      - items:
-          - const: vepu
-          - const: vdpu
-
-What's the difference between a list of consts and an enum here?
-I'm not very familiar with dt-schema, my apologies.
-
-Also, since I don't know which of the other variants can have
-the encoding interrupt and this wasn't brought up until now, I think
-my solution will be to have a check for -vepu in the compatible and in
-that case require that only the vepu interrupt is present, if that's
-alright with you.
-
-Regards,
-Nicolas Frattaroli
-
+diff --git a/sound/soc/codecs/tlv320adcx140.c b/sound/soc/codecs/tlv320adcx140.c
+index 32b120d624b2..f70ea59259f1 100644
+--- a/sound/soc/codecs/tlv320adcx140.c
++++ b/sound/soc/codecs/tlv320adcx140.c
+@@ -1083,6 +1083,13 @@ static const struct of_device_id tlv320adcx140_of_match[] = {
+ MODULE_DEVICE_TABLE(of, tlv320adcx140_of_match);
+ #endif
+ 
++static void adcx140_disable_regulator(void *arg)
++{
++	struct adcx140_priv *adcx140 = arg;
++
++	regulator_disable(adcx140->supply_areg);
++}
++
+ static int adcx140_i2c_probe(struct i2c_client *i2c,
+ 			     const struct i2c_device_id *id)
+ {
+@@ -1113,6 +1120,10 @@ static int adcx140_i2c_probe(struct i2c_client *i2c,
+ 			dev_err(adcx140->dev, "Failed to enable areg\n");
+ 			return ret;
+ 		}
++
++		ret = devm_add_action_or_reset(&i2c->dev, adcx140_disable_regulator, adcx140);
++		if (ret)
++			return ret;
+ 	}
+ 
+ 	adcx140->regmap = devm_regmap_init_i2c(i2c, &adcx140_i2c_regmap);
+-- 
+2.25.1
 
