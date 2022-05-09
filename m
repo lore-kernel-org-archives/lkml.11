@@ -2,130 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB6D0C43219
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 08:57:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05701C4167E
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 08:57:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237168AbiEII5u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 04:57:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47940 "EHLO
+        id S237305AbiEII6M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 04:58:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236224AbiEIIsy (ORCPT
+        with ESMTP id S233443AbiEIIjr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 04:48:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB64BAE261;
-        Mon,  9 May 2022 01:45:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5838D614B0;
-        Mon,  9 May 2022 08:45:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FD05C385A8;
-        Mon,  9 May 2022 08:44:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652085899;
-        bh=jbrH4/qpfA9AmXv1qKe8PiTNy6NOxj0RKjG7cces7nQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TQYtfq4g3nnuFdk0cK9T+WkWsvsnuaestgpk3iEgBR++lx5uMpntKGbuJDVcb5lAm
-         R+xdjPD0UIE+wE3qC/D2deGoTxywI/DYhD0WQNmqGKoXXhUlqV6OcKuPEYplpJrnpR
-         RnKceLhufuU83HeMOBV/ONAfTPd3iFEDk8OSlc40=
-Date:   Mon, 9 May 2022 10:43:52 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-acpi@vger.kernel.org, stable@vger.kernel.org,
-        rafael@kernel.org, linux-kernel@vger.kernel.org,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Kees Cook <keescook@chromium.org>,
-        Bob Moore <robert.moore@intel.com>,
-        Erik Kaneda <erik.kaneda@intel.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
-Subject: Re: [PATCH 5.4] ACPICA: Always create namespace nodes using
- acpi_ns_create_node()
-Message-ID: <YnjUSERLzEFLZpBv@kroah.com>
-References: <YnPmDlf3KD9ckpM1@zx2c4.com>
- <20220505150140.159449-1-Jason@zx2c4.com>
+        Mon, 9 May 2022 04:39:47 -0400
+X-Greylist: delayed 1011 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 09 May 2022 01:35:52 PDT
+Received: from mxout70.expurgate.net (mxout70.expurgate.net [91.198.224.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C528AC067
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 01:35:51 -0700 (PDT)
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <prvs=71422e7e6f=fe@dev.tdt.de>)
+        id 1nnyaf-000NM9-2A; Mon, 09 May 2022 10:18:01 +0200
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <fe@dev.tdt.de>)
+        id 1nnyae-0002yS-G0; Mon, 09 May 2022 10:18:00 +0200
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id CA7A3240049;
+        Mon,  9 May 2022 10:17:59 +0200 (CEST)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id 7B958240040;
+        Mon,  9 May 2022 10:17:59 +0200 (CEST)
+Received: from mail.dev.tdt.de (localhost [IPv6:::1])
+        by mail.dev.tdt.de (Postfix) with ESMTP id E20EE27512;
+        Mon,  9 May 2022 10:17:58 +0200 (CEST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220505150140.159449-1-Jason@zx2c4.com>
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 09 May 2022 10:17:58 +0200
+From:   Florian Eckert <fe@dev.tdt.de>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     kernel test robot <lkp@intel.com>, Arnd Bergmann <arnd@arndb.de>,
+        llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Alex Shi <alexs@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: Re: drivers/hwmon/ltq-cputemp.c:23:2: error: call to undeclared
+ function 'ltq_cgu_w32'; ISO C99 and later do not support implicit function
+ declarations
+In-Reply-To: <65c92404-1d6f-6969-89bf-20b8eefaeff6@infradead.org>
+References: <202205080416.vzIXy16B-lkp@intel.com>
+ <65c92404-1d6f-6969-89bf-20b8eefaeff6@infradead.org>
+Message-ID: <81b9b2cd3f981b6206e9d8c52b3306b3@dev.tdt.de>
+X-Sender: fe@dev.tdt.de
+User-Agent: Roundcube Webmail/1.3.17
+X-purgate: clean
+X-purgate-ID: 151534::1652084280-0000C1DF-9F1DFEF7/0/0
+X-purgate-type: clean
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 05, 2022 at 05:01:40PM +0200, Jason A. Donenfeld wrote:
-> From: Vegard Nossum <vegard.nossum@oracle.com>
-> 
-> commit 25928deeb1e4e2cdae1dccff349320c6841eb5f8 upstream.
-> 
-> ACPICA commit 29da9a2a3f5b2c60420893e5c6309a0586d7a329
-> 
-> ACPI is allocating an object using kmalloc(), but then frees it
-> using kmem_cache_free(<"Acpi-Namespace" kmem_cache>).
-> 
-> This is wrong and can lead to boot failures manifesting like this:
-> 
->     hpet0: 3 comparators, 64-bit 100.000000 MHz counter
->     clocksource: Switched to clocksource tsc-early
->     BUG: unable to handle page fault for address: 000000003ffe0018
->     #PF: supervisor read access in kernel mode
->     #PF: error_code(0x0000) - not-present page
->     PGD 0 P4D 0
->     Oops: 0000 [#1] SMP PTI
->     CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.6.0+ #211
->     Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-> Ubuntu-1.8.2-1ubuntu1 04/01/2014
->     RIP: 0010:kmem_cache_alloc+0x70/0x1d0
->     Code: 00 00 4c 8b 45 00 65 49 8b 50 08 65 4c 03 05 6f cc e7 7e 4d 8b
-> 20 4d 85 e4 0f 84 3d 01 00 00 8b 45 20 48 8b 7d 00 48 8d 4a 01 <49> 8b
->    1c 04 4c 89 e0 65 48 0f c7 0f 0f 94 c0 84 c0 74 c5 8b 45 20
->     RSP: 0000:ffffc90000013df8 EFLAGS: 00010206
->     RAX: 0000000000000018 RBX: ffffffff81c49200 RCX: 0000000000000002
->     RDX: 0000000000000001 RSI: 0000000000000dc0 RDI: 000000000002b300
->     RBP: ffff88803e403d00 R08: ffff88803ec2b300 R09: 0000000000000001
->     R10: 0000000000000dc0 R11: 0000000000000006 R12: 000000003ffe0000
->     R13: ffffffff8110a583 R14: 0000000000000dc0 R15: ffffffff81c49a80
->     FS:  0000000000000000(0000) GS:ffff88803ec00000(0000)
-> knlGS:0000000000000000
->     CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->     CR2: 000000003ffe0018 CR3: 0000000001c0a001 CR4: 00000000003606f0
->     DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->     DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->     Call Trace:
->      __trace_define_field+0x33/0xa0
->      event_trace_init+0xeb/0x2b4
->      tracer_init_tracefs+0x60/0x195
->      ? register_tracer+0x1e7/0x1e7
->      do_one_initcall+0x74/0x160
->      kernel_init_freeable+0x190/0x1f0
->      ? rest_init+0x9a/0x9a
->      kernel_init+0x5/0xf6
->      ret_from_fork+0x35/0x40
->     CR2: 000000003ffe0018
->     ---[ end trace 707efa023f2ee960 ]---
->     RIP: 0010:kmem_cache_alloc+0x70/0x1d0
-> 
-> Bisection leads to unrelated changes in slab; Vlastimil Babka
-> suggests an unrelated layout or slab merge change merely exposed
-> the underlying bug.
-> 
-> Link: https://lore.kernel.org/lkml/4dc93ff8-f86e-f4c9-ebeb-6d3153a78d03@oracle.com/
-> Link: https://lore.kernel.org/r/a1461e21-c744-767d-6dfc-6641fd3e3ce2@siemens.com
-> Link: https://github.com/acpica/acpica/commit/29da9a2a
-> Fixes: f79c8e4136ea ("ACPICA: Namespace: simplify creation of the initial/default namespace")
-> Reported-by: Jan Kiszka <jan.kiszka@siemens.com>
-> Diagnosed-by: Vlastimil Babka <vbabka@suse.cz>
-> Diagnosed-by: Kees Cook <keescook@chromium.org>
-> Signed-off-by: Vegard Nossum <vegard.nossum@oracle.com>
-> Signed-off-by: Bob Moore <robert.moore@intel.com>
-> Signed-off-by: Erik Kaneda <erik.kaneda@intel.com>
-> Cc: 5.10+ <stable@vger.kernel.org> # 5.10+
-> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> ---
-> Greg/Rafael - tihs was marked as 5.10, but 5.4 crashes without it. So
-> maybe it was mistagged? Will let you guys decide. -Jason
 
-Makes sense, now queued up, thanks.
+>> 
+>> vim +/ltq_cgu_w32 +23 drivers/hwmon/ltq-cputemp.c
+>> 
+>> 7074d0a9275860 Florian Eckert 2017-09-01  20
+>> 7074d0a9275860 Florian Eckert 2017-09-01  21  static void 
+>> ltq_cputemp_enable(void)
+>> 7074d0a9275860 Florian Eckert 2017-09-01  22  {
+>> 7074d0a9275860 Florian Eckert 2017-09-01 @23  
+>> 	ltq_cgu_w32(ltq_cgu_r32(CGU_GPHY1_CR) | CGU_TEMP_PD, CGU_GPHY1_CR);
+>> 7074d0a9275860 Florian Eckert 2017-09-01  24  }
+>> 7074d0a9275860 Florian Eckert 2017-09-01  25
+>> 
+>> :::::: The code at line 23 was first introduced by commit
+>> :::::: 7074d0a92758603369655ef5d4f49e6caaae0b4e hwmon: (ltq-cputemp) 
+>> add cpu temp sensor driver
+>> 
+>> :::::: TO: Florian Eckert <fe@dev.tdt.de>
+>> :::::: CC: Guenter Roeck <linux@roeck-us.net>
+> 
+> This driver builds fine if I change it from SOC_FALCON to SOC_XWAY.
+> Maybe its Kconfig entry should be stronger?
+> 
+> config SENSORS_LTQ_CPUTEMP
+> 	bool "Lantiq cpu temperature sensor driver"
+> -	depends on LANTIQ
+> +	depends on SOC_XWAY
 
-greg k-h
+Fine with me. I think it's better to narrow it down.
+Because this macro is only available for the SOC_TYPE_XWAY [1]
+
+[1] 
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/arch/mips/include/asm/mach-lantiq/xway/lantiq_soc.h?h=v5.17.6#n10
+
+Best regards
+-- Florian
