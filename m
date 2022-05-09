@@ -2,95 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35839C47084
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:34:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54055C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:49:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233914AbiEIJh4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 05:37:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40358 "EHLO
+        id S233768AbiEIJxK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 05:53:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238243AbiEIJfk (ORCPT
+        with ESMTP id S239377AbiEIJmU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 05:35:40 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 587D11E028C
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 02:31:47 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id 7so11528465pga.12
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 02:31:47 -0700 (PDT)
+        Mon, 9 May 2022 05:42:20 -0400
+Received: from mail-vs1-xe2c.google.com (mail-vs1-xe2c.google.com [IPv6:2607:f8b0:4864:20::e2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24E7613F1E6;
+        Mon,  9 May 2022 02:38:26 -0700 (PDT)
+Received: by mail-vs1-xe2c.google.com with SMTP id q2so13244104vsr.5;
+        Mon, 09 May 2022 02:38:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=JpCRaDNZYevpLkY4KOz+K7YSl/uzka5d9oakp3W77tc=;
-        b=HCmVcQ84A1B0mzXMIys8FhK9PENXHAKemAfPPPxoXKFdSh1QQXAzaPKVIqUEZLBs3/
-         H3pOb5uEAcuA5+F3hsUEogfhE/lRjNABeErSGu86+1ArNxEujpz8rVgWRX6v8tqEHwvx
-         0Xqpg/6Ry0GYJyosH55MLUfXrVeFOeBbGMK0uDInQXOaKGgdh2bcfZdABop9RngLLwa+
-         byDloH8cGSO4Dgs0GAKgT2GGWD3uNvjIr77nTWojR1RPoerG/QTxBZopGJZ/enkgNXjI
-         JKPl1sWprQahCNAmvlKDtaIJKpENBTMrQIA16/z2HPN40vin7eLoO7VkkbrQPSCVNvLk
-         7pew==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8ms2OmWrZMbAmlfHzDQqtdt+wIiR2JhVE0s22ev6NcE=;
+        b=On7f4sc0xl6O7L7J/hV3ctEoS40biGja4bO+jZTVTS0VXNPAxYsU3GDA9g7uKZ6pp6
+         ynwoD0DFxhYHu8s+tXNi1cr2w6m75/dd5FVvOKhnPIdiUoiUvflYIvXGetyo5PiS3fAh
+         rGx7NVi8G6ZnQbt81ajCArZtw2MgS2nuadNt2U7jBwF4ILFV6iH1XEaZIgIMbxbwkkvP
+         wu+eZ0cUY6ZWqb272EifXWbgsnQyku6dg2zQslfTTeGKiYXYBjlMSGuTMMgJgKbxYTuT
+         h9e6b8fMxXGkTx6dMH5wl4KuelbdOPEi47oYsyDOmjxj803iSHQ1fWivA9t4O1U44o6k
+         uvQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=JpCRaDNZYevpLkY4KOz+K7YSl/uzka5d9oakp3W77tc=;
-        b=Da2vqOaAz6xpoPlB77z104oVMzlC0el2QH+f+VohjxQSUnDWKgBsb2tgD+0wsHXxxg
-         4EuBflnZplsvHH3DRyeAA6ZvBHh+HlTRy8SbUllnvbyhWD48zygJjLET4ZT6YWQEzusp
-         M7VopKecLjuHl3/VFnfAus4k9S9DRlIo3EcvTi4Egp++IiZPlqF6dhddyMk8Alh+fYWl
-         S13vhGhhC52BRJv+zSA/k3MT0RtesWxnDSLX09w/gizWUgFK1A+dyRtAbqGHxX6ZJUeM
-         duQzQIQoXidAK8YFhgZ63W+DH9FTwI1L8NmJr73vnoza8cOssL8Ybf3HAZz410YzEoAE
-         K24g==
-X-Gm-Message-State: AOAM530bFgkZZ6ZElUCDN8gho7XNWXmyaN4eEDlG+1+8uFlNBUulb+7i
-        SJdUNMIbTDnss6umpMnauT0qVQ==
-X-Google-Smtp-Source: ABdhPJxdD04mCtOjOZoG59KlHgaCvKklPPxlk10wG2ZHb2KCQ4qNWZv9oKioDl7bTyyCDTPNP632lQ==
-X-Received: by 2002:a63:ad0c:0:b0:374:50b4:c955 with SMTP id g12-20020a63ad0c000000b0037450b4c955mr12237883pgf.530.1652088692871;
-        Mon, 09 May 2022 02:31:32 -0700 (PDT)
-Received: from localhost ([122.162.234.2])
-        by smtp.gmail.com with ESMTPSA id n28-20020a056a000d5c00b0050dc7628148sm8110335pfv.34.2022.05.09.02.31.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 02:31:32 -0700 (PDT)
-Date:   Mon, 9 May 2022 15:01:30 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Maxime Ripard <maxime@cerno.tech>
-Cc:     qianfanguijin@163.com, linux-sunxi@lists.linux.dev,
-        Rob Herring <robh+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
-Subject: Re: [PATCH v1] drivers: cpufreq: sun8i-r40: Add cpufreq support
-Message-ID: <20220509093130.jegqpe6m7xtbouqa@vireshk-i7>
-References: <20220509084853.17068-1-qianfanguijin@163.com>
- <20220509091125.tps3zwaq276jlgh3@vireshk-i7>
- <20220509092306.22ttfunrislztbvh@houat>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8ms2OmWrZMbAmlfHzDQqtdt+wIiR2JhVE0s22ev6NcE=;
+        b=TqlQwaVkeIPwUkQe9IG1GKQ/f/K3eLL+FhPtw6CGdER8yJkGsjfJ3GnIF4BJ4G5fZV
+         ayXtGag3HbiBkdcfn3OpQW71+pHt/hBbQ1Hh4KvBJGsBXi7Jw/zpSSvsd0b4PbPqrcbm
+         od56EttjJTYY4QXYNhwWW5T/Bs/lU1w0dtS5r+inSy2cg9QwnnI+vxZlC8xpYhpPXKt+
+         3S8kAemge0D16ynTUPG0yhtiRUFkL8ORmTWGiXwIeT0KtF5JJ5Z12ef8mYy0SWj3xEf/
+         DqDN0OmC9AO1BP0dqsWCSnwpd+GSCQWBzp8yXLtM/MJgK5uQdCLJDoZO1Rl/yl5lru5r
+         f9bA==
+X-Gm-Message-State: AOAM533Th1pWBS00A7aktdBxOiCkvt7CSwEvHjtrjx4r79079ZPmuNz1
+        ap5MtnYIPik+sVGYsQokA4lx7qYarRa7DvdjF0A=
+X-Google-Smtp-Source: ABdhPJxQa+6QJ/CET2ydb15xzcLU4JG/ctU72rTIwybTeCOA12flltOKMmKvKfqZm/HT3uLxpGmQ1UgbNVerQJDwBsM=
+X-Received: by 2002:a05:6102:905:b0:32c:c256:b059 with SMTP id
+ x5-20020a056102090500b0032cc256b059mr7184386vsh.21.1652089076919; Mon, 09 May
+ 2022 02:37:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220509092306.22ttfunrislztbvh@houat>
-User-Agent: NeoMutt/20180716-391-311a52
+References: <20220505134731.5295-1-jing.xia@unisoc.com> <20220505154024.onreajr4xmtsswes@quack3.lan>
+In-Reply-To: <20220505154024.onreajr4xmtsswes@quack3.lan>
+From:   jing xia <jing.xia.mail@gmail.com>
+Date:   Mon, 9 May 2022 17:37:45 +0800
+Message-ID: <CAN=25QOT5h-CfBk9AagMz61TVxHd485QCyJED+mqX4LL6KTp7w@mail.gmail.com>
+Subject: Re: [PATCH] writeback: Avoid skipping inode writeback
+To:     Jan Kara <jack@suse.cz>
+Cc:     Jing Xia <jing.xia@unisoc.com>, viro@zeniv.linux.org.uk,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09-05-22, 11:23, Maxime Ripard wrote:
-> Hi,
-> 
-> On Mon, May 09, 2022 at 02:41:25PM +0530, Viresh Kumar wrote:
-> > On 09-05-22, 16:48, qianfanguijin@163.com wrote:
-> > > From: qianfan Zhao <qianfanguijin@163.com>
-> > > 
-> > > OPP table value is get from allwinner lichee 3.10 kernel.
-> > > 
-> > > Signed-off-by: qianfan Zhao <qianfanguijin@163.com>
-> > > ---
-> > >  arch/arm/boot/dts/sun8i-r40.dtsi     | 47 ++++++++++++++++++++++++++++
-> > >  drivers/cpufreq/cpufreq-dt-platdev.c |  1 +
-> > >  2 files changed, 48 insertions(+)
-> > 
-> > Applied. Thanks.
-> 
-> Shouldn't you wait for the maintainers feedback for the DT bits at least?
+Thanks, I'll update the patch.
 
-I should have, will drop it.
-
--- 
-viresh
+On Thu, May 5, 2022 at 11:40 PM Jan Kara <jack@suse.cz> wrote:
+>
+> On Thu 05-05-22 21:47:31, Jing Xia wrote:
+> > We have run into an issue that a task gets stuck in
+> > balance_dirty_pages_ratelimited() when perform I/O stress testing.
+> > The reason we observed is that an I_DIRTY_PAGES inode with lots
+> > of dirty pages is in b_dirty_time list and standard background
+> > writeback cannot writeback the inode.
+> > After studing the relevant code, the following scenario may lead
+> > to the issue:
+> >
+> > task1                                   task2
+> > -----                                   -----
+> > fuse_flush
+> >  write_inode_now //in b_dirty_time
+> >   writeback_single_inode
+> >    __writeback_single_inode
+> >                                  fuse_write_end
+> >                                   filemap_dirty_folio
+> >                                    __xa_set_mark:PAGECACHE_TAG_DIRTY
+> >     lock inode->i_lock
+> >     if mapping tagged PAGECACHE_TAG_DIRTY
+> >     inode->i_state |= I_DIRTY_PAGES
+> >     unlock inode->i_lock
+> >                                    __mark_inode_dirty:I_DIRTY_PAGES
+> >                                       lock inode->i_lock
+> >                                       -was dirty,inode stays in
+> >                                       -b_dirty_time
+> >                                       unlock inode->i_lock
+> >
+> >    if(!(inode->i_state & I_DIRTY_All))
+> >       -not true,so nothing done
+> >
+> > This patch moves the dirty inode to b_dirty list when the inode
+> > currently is not queued in b_io or b_more_io list at the end of
+> > writeback_single_inode.
+> >
+> > Signed-off-by: Jing Xia <jing.xia@unisoc.com>
+>
+> Thanks for report and the fix! The patch looks good so feel free to add:
+>
+> Reviewed-by: Jan Kara <jack@suse.cz>
+>
+> Also please add tags:
+>
+> CC: stable@vger.kernel.org
+> Fixes: 0ae45f63d4ef ("vfs: add support for a lazytime mount option")
+>
+> Thanks.
+>                                                                 Honza
+>
+> > diff --git a/fs/fs-writeback.c b/fs/fs-writeback.c
+> > index 591fe9cf1659..d7763feaf14a 100644
+> > --- a/fs/fs-writeback.c
+> > +++ b/fs/fs-writeback.c
+> > @@ -1712,6 +1712,9 @@ static int writeback_single_inode(struct inode *inode,
+> >        */
+> >       if (!(inode->i_state & I_DIRTY_ALL))
+> >               inode_cgwb_move_to_attached(inode, wb);
+> > +     else if (!(inode->i_state & I_SYNC_QUEUED) && (inode->i_state & I_DIRTY))
+> > +             redirty_tail_locked(inode, wb);
+> > +
+> >       spin_unlock(&wb->list_lock);
+> >       inode_sync_complete(inode);
+> >  out:
+> > --
+> > 2.17.1
+> >
+> --
+> Jan Kara <jack@suse.com>
+> SUSE Labs, CR
