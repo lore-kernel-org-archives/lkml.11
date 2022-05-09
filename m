@@ -2,100 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33DDAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 19:16:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2987FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 19:16:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240508AbiEITUF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 15:20:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43382 "EHLO
+        id S240516AbiEITUp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 15:20:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240486AbiEITUB (ORCPT
+        with ESMTP id S240486AbiEITUm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 15:20:01 -0400
-X-Greylist: delayed 712 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 09 May 2022 12:16:04 PDT
-Received: from relay-b03.edpnet.be (relay-b03.edpnet.be [212.71.1.220])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5736D6353D
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 12:16:03 -0700 (PDT)
-X-ASG-Debug-ID: 1652123048-15c435381a966b00001-xx1T2L
-Received: from srv21.vandijck-laurijssen.be (77.109.97.42.adsl.dyn.edpnet.net [77.109.97.42]) by relay-b03.edpnet.be with ESMTP id evQvZkMsT4fx48c7; Mon, 09 May 2022 21:04:08 +0200 (CEST)
-X-Barracuda-Envelope-From: dev.kurt@vandijck-laurijssen.be
-X-Barracuda-Effective-Source-IP: 77.109.97.42.adsl.dyn.edpnet.net[77.109.97.42]
-X-Barracuda-Apparent-Source-IP: 77.109.97.42
-Received: from x1.vandijck-laurijssen.be (x1.vandijck-laurijssen.be [IPv6:fd01::1a1d:eaff:fe02:d339])
-        by srv21.vandijck-laurijssen.be (Postfix) with ESMTPSA id 0E1DA1063BE;
-        Mon,  9 May 2022 21:04:08 +0200 (CEST)
-Date:   Mon, 9 May 2022 21:04:06 +0200
-From:   Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>
-To:     Devid Antonio Filoni <devid.filoni@egluetechnologies.com>
-Cc:     Robin van der Gracht <robin@protonic.nl>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        kernel@pengutronix.de, linux-can@vger.kernel.org,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Jayat <maxime.jayat@mobile-devices.fr>,
-        kbuild test robot <lkp@intel.com>, netdev@vger.kernel.org,
+        Mon, 9 May 2022 15:20:42 -0400
+Received: from mail-oa1-f43.google.com (mail-oa1-f43.google.com [209.85.160.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C473413B8FA;
+        Mon,  9 May 2022 12:16:47 -0700 (PDT)
+Received: by mail-oa1-f43.google.com with SMTP id 586e51a60fabf-edeb6c3642so15842537fac.3;
+        Mon, 09 May 2022 12:16:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=J9UHLsCgwlEtwC93yM9iNbxfAUErMfSSi5tgfl2OGhA=;
+        b=x4l4b7QYZH/8VG+e8un3hJFaqkzuJYSVh0+KD6z0bqk7/u2fmMA+3I/girlbti7Fyz
+         bj8WFIox0ZRPnPXmR/foBaVfCnewv99VHMD/9u+n8O90OXtq4/jKrkY9n/HYPsdAaYOR
+         1n1XIpk8OugBVOyiTCHhU3C9NfxeikUws3Vct4bZnCmb8CaF8KWFeRspkQ6ML2lMjf8w
+         SfL8Gp6SvJvj4jp9HMclsKhtRCReqXwQmRfDhHrFE2uSmibaerMahNMNgPSIOQt1SDiS
+         2cw08xa4T6QGoHgIQsBkiIMgtDYprWHkGFmHA5WPGZmNL7/+nYXLWoFZeyHc+lHvr3d7
+         gWEA==
+X-Gm-Message-State: AOAM533Rz8fHMu+RjsDU5WSYUvg2nmIi1GeqynmZIZcP6RDd6UrFsTZG
+        4bTQSYdDmgQ1vc6dZwnGIg==
+X-Google-Smtp-Source: ABdhPJyygcw6TMCxSg9TGmvmJfsyB7vAnz1q+HGku1a2ZCtUU9MEEi3VMOYqBXydfOmx6zjApJz/vA==
+X-Received: by 2002:a05:6870:344f:b0:e2:c4c0:86a5 with SMTP id i15-20020a056870344f00b000e2c4c086a5mr8157215oah.189.1652123807049;
+        Mon, 09 May 2022 12:16:47 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id be8-20020a056808218800b00325cf57766bsm4720560oib.1.2022.05.09.12.16.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 May 2022 12:16:46 -0700 (PDT)
+Received: (nullmailer pid 27400 invoked by uid 1000);
+        Mon, 09 May 2022 19:16:45 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Stephen Boyd <sboyd@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Michael Turquette <mturquette@baylibre.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RESEND] can: j1939: do not wait 250ms if the same addr
- was already claimed
-Message-ID: <YnllpntZ8V5CD07v@x1.vandijck-laurijssen.be>
-X-ASG-Orig-Subj: Re: [PATCH RESEND] can: j1939: do not wait 250ms if the same addr
- was already claimed
-Mail-Followup-To: Devid Antonio Filoni <devid.filoni@egluetechnologies.com>,
-        Robin van der Gracht <robin@protonic.nl>,
-        Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-can@vger.kernel.org, Oleksij Rempel <linux@rempel-privat.de>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Maxime Jayat <maxime.jayat@mobile-devices.fr>,
-        kbuild test robot <lkp@intel.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220509170303.29370-1-devid.filoni@egluetechnologies.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220509170303.29370-1-devid.filoni@egluetechnologies.com>
-X-Barracuda-Connect: 77.109.97.42.adsl.dyn.edpnet.net[77.109.97.42]
-X-Barracuda-Start-Time: 1652123048
-X-Barracuda-URL: https://212.71.1.220:443/cgi-mod/mark.cgi
-X-Virus-Scanned: by bsmtpd at edpnet.be
-X-Barracuda-Scan-Msg-Size: 1034
-X-Barracuda-BRTS-Status: 1
-X-Barracuda-Spam-Score: 0.00
-X-Barracuda-Spam-Status: No, SCORE=0.00 using global scores of TAG_LEVEL=1000.0 QUARANTINE_LEVEL=1000.0 KILL_LEVEL=7.0 tests=
-X-Barracuda-Spam-Report: Code version 3.2, rules version 3.2.3.97894
-        Rule breakdown below
-         pts rule name              description
-        ---- ---------------------- --------------------------------------------------
+In-Reply-To: <20220509134658.16267-1-alexandre.torgue@foss.st.com>
+References: <20220509134658.16267-1-alexandre.torgue@foss.st.com>
+Subject: Re: [PATCH] dt-bindings: clock: stm32mp1: adapt example for "st,stm32mp1-rcc-secure"
+Date:   Mon, 09 May 2022 14:16:45 -0500
+Message-Id: <1652123805.754133.27398.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On ma, 09 mei 2022 19:03:03 +0200, Devid Antonio Filoni wrote:
-> This is not explicitly stated in SAE J1939-21 and some tools used for
-> ISO-11783 certification do not expect this wait.
+On Mon, 09 May 2022 15:46:58 +0200, Alexandre Torgue wrote:
+> For "st,stm32mp1-rcc-secure" schema, clocks and clock-names entries are now
+> required properties.
+> 
+> Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
+> 
 
-IMHO, the current behaviour is not explicitely stated, but nor is the opposite.
-And if I'm not mistaken, this introduces a 250msec delay.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-1. If you want to avoid the 250msec gap, you should avoid to contest the same address.
+yamllint warnings/errors:
 
-2. It's a balance between predictability and flexibility, but if you try to accomplish both,
-as your patch suggests, there is slight time-window until the current owner responds,
-in which it may be confusing which node has the address. It depends on how much history
-you have collected on the bus.
+dtschema/dtc warnings/errors:
+Error: Documentation/devicetree/bindings/clock/st,stm32mp1-rcc.example.dts:27.33-34 syntax error
+FATAL ERROR: Unable to parse input tree
+make[1]: *** [scripts/Makefile.lib:364: Documentation/devicetree/bindings/clock/st,stm32mp1-rcc.example.dtb] Error 1
+make[1]: *** Waiting for unfinished jobs....
+make: *** [Makefile:1401: dt_binding_check] Error 2
 
-I'm sure that this problem decreases with increasing processing power on the nodes,
-but bigger internal queues also increase this window.
+doc reference errors (make refcheckdocs):
 
-It would certainly help if you describe how the current implementation fails.
+See https://patchwork.ozlabs.org/patch/
 
-Would decreasing the dead time to 50msec help in such case.
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
 
-Kind regards,
-Kurt
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
