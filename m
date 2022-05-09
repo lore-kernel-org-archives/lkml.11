@@ -2,122 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE9F9C3527C
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 08:29:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A788C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 08:53:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236209AbiEII0x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 04:26:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43662 "EHLO
+        id S235599AbiEII5O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 04:57:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236303AbiEIIRL (ORCPT
+        with ESMTP id S232093AbiEIIxr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 04:17:11 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E83C1595BE
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 01:12:55 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KxYCf71WDzCsP6;
-        Mon,  9 May 2022 15:46:54 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+        Mon, 9 May 2022 04:53:47 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F6DA248E0;
+        Mon,  9 May 2022 01:49:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1652086195; x=1683622195;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=n8bFpjbKPYvw3e9bni1/T6bQ+4R6TyrCTJBZUgNett4=;
+  b=DJbo119jsIT9ILlPUqLtxyaharrZlZM9b82hjGBbBVXKRmCAVkKigxKq
+   PrG894/dqrNNZq+kImyQ0sDZnEj/GeDqVSZ0LaPbzCrnsdobYaQ6v2aWs
+   84spgHeaowncODVVSjnoj847puOk1cQKcJepr0T4FAZTtCZH8mTrlic1W
+   SEVxG9S4I0f2Rtvtt431cB/Xonjv2ZHJYttzSE4FfPwZpcOgPe5cD+n1k
+   M3L/42eFa868U5udhPKj66WRZ7bnhOk91IcXDwW65TzBECTzbnpzOVdtp
+   9GEwLWVO5R1/odEzJGDJWUax8kvZuNfhJ8yWPa6wBFuOBztxq1tOFKDSo
+   g==;
+X-IronPort-AV: E=Sophos;i="5.91,210,1647327600"; 
+   d="scan'208";a="162812532"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 May 2022 01:49:44 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 9 May 2022 15:51:39 +0800
-Subject: Re: [PATCH v2 3/4] mm/migration: return errno when isolate_huge_page
- failed
-To:     Muchun Song <songmuchun@bytedance.com>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
-        <naoya.horiguchi@nec.com>, Huang Ying <ying.huang@intel.com>,
-        Christoph Hellwig <hch@lst.de>, <dhowells@redhat.com>,
-        Christoph Lameter <cl@linux.com>,
-        David Hildenbrand <david@redhat.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20220425132723.34824-1-linmiaohe@huawei.com>
- <20220425132723.34824-4-linmiaohe@huawei.com>
- <YmvNqWhC0uBwJ2yF@FVFYT0MHHV2J.usts.net>
- <09ccdbac-c267-15de-0d81-57e211dea6d2@huawei.com>
- <CAMZfGtVeFj_qh6e7DzNnN7jdXwXhBwqxPCwnq26V2ziHDxTiFA@mail.gmail.com>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <bf4e383e-243a-115f-aed9-3cce4399aac5@huawei.com>
-Date:   Mon, 9 May 2022 15:51:39 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+ 15.1.2375.17; Mon, 9 May 2022 01:49:42 -0700
+Received: from kavya-HP-Compaq-6000-Pro-SFF-PC.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 9 May 2022 01:49:37 -0700
+From:   Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
+To:     <krzysztof.kozlowski+dt@linaro.org>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>,
+        <peda@axentia.se>
+CC:     <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <lee.jones@linaro.org>,
+        <linux@armlinux.org.uk>, <Manohar.Puri@microchip.com>,
+        <Kavyasree.Kotagiri@microchip.com>, <UNGLinuxDriver@microchip.com>
+Subject: [PATCH v2 2/4] dt-bindings: mfd: atmel,flexcom: Add lan966 compatible string and mux properties
+Date:   Mon, 9 May 2022 14:19:18 +0530
+Message-ID: <20220509084920.14529-3-kavyasree.kotagiri@microchip.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220509084920.14529-1-kavyasree.kotagiri@microchip.com>
+References: <20220509084920.14529-1-kavyasree.kotagiri@microchip.com>
 MIME-Version: 1.0
-In-Reply-To: <CAMZfGtVeFj_qh6e7DzNnN7jdXwXhBwqxPCwnq26V2ziHDxTiFA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/9 12:21, Muchun Song wrote:
-> On Mon, May 9, 2022 at 11:24 AM Miaohe Lin <linmiaohe@huawei.com> wrote:
->>
->> On 2022/4/29 19:36, Muchun Song wrote:
->>> On Mon, Apr 25, 2022 at 09:27:22PM +0800, Miaohe Lin wrote:
->>>> We might fail to isolate huge page due to e.g. the page is under migration
->>>> which cleared HPageMigratable. So we should return -EBUSY in this case
->>>> rather than always return 1 which could confuse the user. Also we make
->>>> the prototype of isolate_huge_page consistent with isolate_lru_page to
->>>> improve the readability.
->>>>
->>>> Fixes: e8db67eb0ded ("mm: migrate: move_pages() supports thp migration")
->>>> Suggested-by: Huang Ying <ying.huang@intel.com>
->>>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
->>>> ---
->>>>  include/linux/hugetlb.h |  6 +++---
->>>>  mm/gup.c                |  2 +-
->>>>  mm/hugetlb.c            | 11 +++++------
->>>>  mm/memory-failure.c     |  2 +-
->>>>  mm/mempolicy.c          |  2 +-
->>>>  mm/migrate.c            |  5 +++--
->>>>  6 files changed, 14 insertions(+), 14 deletions(-)
->>>>
->>>> diff --git a/include/linux/hugetlb.h b/include/linux/hugetlb.h
->>>> index 04f0186b089b..306d6ef3fa22 100644
->>>> --- a/include/linux/hugetlb.h
->>>> +++ b/include/linux/hugetlb.h
->>>> @@ -170,7 +170,7 @@ bool hugetlb_reserve_pages(struct inode *inode, long from, long to,
->>>>                                              vm_flags_t vm_flags);
->>>>  long hugetlb_unreserve_pages(struct inode *inode, long start, long end,
->>>>                                              long freed);
->>>> -bool isolate_huge_page(struct page *page, struct list_head *list);
->>>> +int isolate_huge_page(struct page *page, struct list_head *list);
->>>>  int get_hwpoison_huge_page(struct page *page, bool *hugetlb);
->>>>  int get_huge_page_for_hwpoison(unsigned long pfn, int flags);
->>>>  void putback_active_hugepage(struct page *page);
->>>> @@ -376,9 +376,9 @@ static inline pte_t *huge_pte_offset(struct mm_struct *mm, unsigned long addr,
->>>>      return NULL;
->>>>  }
->>>>
->>>> -static inline bool isolate_huge_page(struct page *page, struct list_head *list)
->>>> +static inline int isolate_huge_page(struct page *page, struct list_head *list)
->>>
->>> Since you already touched all the call sites, how about renaming this
->>> to hugetlb_isolate()? I've always felt that huge_page is not a
->>> straightforward and clear name since we also have another type of
->>> huge page (THP).  I think hugetlb is more specific.
->>>
->>
->> Sorry for late respond. This suggestion looks good to me. But is isolate_hugetlb more suitable?
->> This could make it more consistent with isolate_lru_page? What do you think?
->>
-> 
-> There is also a function named folio_isolate_lru(). My initial consideration was
-> making it consistent with folio_isolate_lru(). isolate_hugetlb looks good to me
-> as well.
+Add lan966 flexcom compatible string and flexcom mux
+device tree properties.
 
-I see. Many thanks for your explanation. :)
+Signed-off-by: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
+---
+ .../bindings/mfd/atmel,flexcom.yaml           | 52 ++++++++++++++++++-
+ 1 file changed, 51 insertions(+), 1 deletion(-)
 
-> 
-> Thanks.
-> .
-> 
+diff --git a/Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml b/Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml
+index 79ec7ebc7055..228c095c84ca 100644
+--- a/Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml
++++ b/Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml
+@@ -16,7 +16,9 @@ description:
+ 
+ properties:
+   compatible:
+-    const: atmel,sama5d2-flexcom
++    enum:
++      - atmel,sama5d2-flexcom
++      - microchip,lan966-flexcom
+ 
+   reg:
+     maxItems: 1
+@@ -57,6 +59,27 @@ required:
+ 
+ additionalProperties: false
+ 
++allOf:
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: microchip,lan966-flexcom
++
++    then:
++      properties:
++        mux-controls:
++          minItems: 1
++          maxItems: 2
++          $ref: /schemas/types.yaml#/definitions/phandle-array
++
++        mux-control-names:
++          minItems: 1
++          $ref: ../mux/mux-consumer.yaml
++          items:
++            - const: cs0
++            - const: cs1
++
+ patternProperties:
+   "^serial@[0-9a-f]+$":
+     description: See atmel-usart.txt for details of USART bindings.
+@@ -89,4 +112,31 @@ examples:
+                 atmel,fifo-size = <32>;
+           };
+     };
++
++  - |
++    flx3: flexcom@e0064000 {
++          compatible = "microchip,lan966-flexcom";
++          reg = <0xe0064000 0x100>;
++          clocks = <&fabric_clk>;
++          #address-cells = <1>;
++          #size-cells = <1>;
++          ranges = <0x0 0xe0064000 0x800>;
++          atmel,flexcom-mode = <2>;
++          mux-controls = <&mux 0>;
++          mux-control-names = "cs0";
++
++          spi3: spi@400 {
++                compatible = "atmel,at91rm9200-spi";
++                reg = <0x400 0x200>;
++                interrupts = <0 51 4>;
++                #address-cells = <1>;
++                #size-cells = <0>;
++                clocks = <&fabric_clk>;
++                clock-names = "spi_clk";
++                pinctrl-0 = <&fc3_b_sck_pins>, <&fc3_b_rxd_pins>,
++                            <&fc3_b_txd_pins>, <&fc_shrd9_pins>;
++                pinctrl-names = "default";
++                atmel,fifo-size = <32>;
++          };
++    };
+ ...
+-- 
+2.17.1
 
