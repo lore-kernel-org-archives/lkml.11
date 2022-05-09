@@ -2,85 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AEB5C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B179C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:27:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235319AbiEIH3w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 03:29:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56646 "EHLO
+        id S232373AbiEIH3q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 03:29:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236169AbiEIH0l (ORCPT
+        with ESMTP id S236140AbiEIH0k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 03:26:41 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF90614C749
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 00:22:43 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id dk23so25006535ejb.8
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 00:22:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=VG0oaYVNS9oo5B6XMztTWMiu1FjZGmQyZ6YxOAa/js4=;
-        b=hMTkW99YPsnxM0OE2gDcGn6KOlMx97QE4JaAp3FFrot5uu1dyYgpSQ9aJtujmJCyZU
-         ++TXlvw7s1u9e99ut+fBNRa0DHgrLioWMN323lqAxEMqOf9riMTPeX2sD978VfQrOkqm
-         EsuReGEUOdwN8n9mXHl6Qj4t4mH1uTkwipjZSf4Ng+33c3HnwvRoi/7UmllLhIt3LWNg
-         XcK95R0A34+CXtS5MBNbyLNb6T2x3IGMYmbQloU8eelgZLbSw+RkOrHfySj1/oE9BEqG
-         2Ak8c3hdPvmYIA/K2P7eeLB9IqFocfGdDCJHED5kWzlARQwkd3CR7NEMjC1/v3N1qjhv
-         yw9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=VG0oaYVNS9oo5B6XMztTWMiu1FjZGmQyZ6YxOAa/js4=;
-        b=EYE9vIwkBypeqZbirjMwTZxaxs9R7DCDJA/9fwmGY8zoRZVT5DkoCgcoWugJjAgL1z
-         ezDjEoFaPuCBNsh1HkW6OBsjZhWgUkkBpitAjDZZGmJIjCuUc2jl/3vy85DloFx5uuGM
-         x9tiKmfFDD5aUbJplVm9h7+0j/VSaFerE27LH0FHKjX1rrR5ak/0tTm2puuVJBQIdv78
-         cH562AXU07/DKf+Ok8IdOwjh79wIT6Sklx4zaRBMBCxsewrbzfkiyqXdxKoXIrjKArZF
-         wnA+9c5PHWCgfzbwQMdjqykNR93rYVJEl1I7HdK66qR+G3MlT9qwuVeS4UUvGHUGNYX+
-         m/NA==
-X-Gm-Message-State: AOAM531aTsZuxGX8cpM0N6ITHb22+gst7w28ukzx9D1XaAzCiJJh1jgG
-        447HUlYFLq+8ZZdPHx1SsuEZBhZ7zOgI+NYB
-X-Google-Smtp-Source: ABdhPJzSjwMq3Bv+9F1DnuhXi9B8hZ/IBbeR2RU7xebFBmkE+68CjPuVtWhkPW6MPlyAZCv8FPoL9w==
-X-Received: by 2002:a17:906:7944:b0:6da:b834:2f3e with SMTP id l4-20020a170906794400b006dab8342f3emr13824811ejo.353.1652080962390;
-        Mon, 09 May 2022 00:22:42 -0700 (PDT)
-Received: from [192.168.0.242] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id gv56-20020a1709072bf800b006f3ef214e5fsm4691166ejc.197.2022.05.09.00.22.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 00:22:41 -0700 (PDT)
-Message-ID: <e14122b9-cd7a-b2a9-93a5-cde6139969c1@linaro.org>
-Date:   Mon, 9 May 2022 09:22:40 +0200
+        Mon, 9 May 2022 03:26:40 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98D9B703D2
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 00:22:04 -0700 (PDT)
+Received: from mail-yb1-f179.google.com ([209.85.219.179]) by
+ mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MEC8L-1ngZji0Te1-00AIZs for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022
+ 09:22:03 +0200
+Received: by mail-yb1-f179.google.com with SMTP id w187so23297482ybe.2
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 00:22:02 -0700 (PDT)
+X-Gm-Message-State: AOAM530XdgEBVpcq6wTpawfxh6h32h1ec4lYKp9f6hGkA0WLzAwRiylu
+        R5YrmAu3fkJsWlB+0LtfDuuVdRm2vF/92FuNWf0=
+X-Google-Smtp-Source: ABdhPJxt4CASAW8ZKzj36LdTWe52+0XJ2aNG9pCduw1Eludcmsn3N95TuvRDw1YMXssIPezp/9tZ2HFgWN/aJHBsKsI=
+X-Received: by 2002:a25:c50a:0:b0:647:b840:df2c with SMTP id
+ v10-20020a25c50a000000b00647b840df2cmr11688150ybe.106.1652080921984; Mon, 09
+ May 2022 00:22:01 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v4 1/3] dt-bindings: soc: add bindings for Intel HPS Copy
- Engine
-Content-Language: en-US
-To:     matthew.gerlach@linux.intel.com, dinguyen@kernel.org,
-        robh+dt@kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org
-References: <20220508142624.491045-1-matthew.gerlach@linux.intel.com>
- <20220508142624.491045-2-matthew.gerlach@linux.intel.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220508142624.491045-2-matthew.gerlach@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220509020222.1219813-1-starzhangzsd@gmail.com>
+In-Reply-To: <20220509020222.1219813-1-starzhangzsd@gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 9 May 2022 09:21:45 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a14LLfOs1YFnGj=1Qt_-kLQzg9_P1XgPRLZAC7OeWpCpA@mail.gmail.com>
+Message-ID: <CAK8P3a14LLfOs1YFnGj=1Qt_-kLQzg9_P1XgPRLZAC7OeWpCpA@mail.gmail.com>
+Subject: Re: [PATCH v2] pcmcia: add MIPS_DB1XXX dependence
+To:     Stephen Zhang <starzhangzsd@gmail.com>
+Cc:     Dominik Brodowski <linux@dominikbrodowski.net>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Mark Brown <broonie@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Daniel Mack <daniel@zonque.org>, zhangshida@kylinos.cn,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:ZBdTcJc0+COmio6i2ceMFGs7zaP2/zeIA4VQxnfJ3BZisDHx5eZ
+ VMRkFGHH7uNuqL3PV2LJbqJ2Lvh4bn25yFJ5ZoTIofQqxFBc+9KPWDEkzFiG/Iqlribc6yh
+ IBpgNwjyIBYdelGdcbWtgLAaWjKZhw7zI1peC+70ohwpAUvhSnw9joOAtpLvy141j/A80sP
+ zN9OBk3+Qbrw+uhsLZBqQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Ks146LI0jp0=:N4Md6k+BciX5ZIQFd3F2x0
+ vqzI67KhZdo7OW+1H1yEr8BfZHV7PbBTm/WeyOKH7esQwvV4kTwJ6YRpfh5SQJtUB8bmBqkco
+ Tkyxxp9FlZRdcNeK/QPGzX8PFbzx+AZUdTnGKr6foTqD8HsL1nC7sK9DmUVSTMc9hWq4KlOv4
+ YqP6HSol0NwvEd7VlUDDAXHa2cSXpHYO9UvjX0f7G90JUKHSXiQpJWBB6QiXf7RGpp22ZBpqm
+ ENzoTfGIzN2whOrzZBKD7LHtig89Ro4iS6U6A7gFUe/7A3xAbGN1xQacg9QTqOfmfYRP6aXd6
+ f/TBfB9PiszmhJ8jZI+9JUYiZRW2XPAQWqNvqWZ3vvPLS1p7PxgPh0cXIcPcn5ITCDi+Dqfun
+ 5UtVfe1hSV5IqafQ9ReuJjZQ7YpzwnAWx+8b0V32cz4gpLIgHWzQDfS+AqfEXgOs9ypsqM+Hw
+ PgkWCRM7Kjh4Q0iyZhq+ntiHTYaBiGQuJwQ+ejo28e95ztJ9xOecLMAsiw6O84xB8ozsMrGMx
+ EuKIT/U6qlDCLxYdJN0vqdXysXDOt06a1LjFIjiOMB8Rd4k27vqmEuqbfYbunJnoXZ1F8ozmE
+ QU6KoCqOyYcP6dND1v/CVTzDvWchHHeHmA5vRXJu9tmJ8rPdsiDK0MyKnpVBMhqlVur/Vep1O
+ tVS08ckjSC4/yXKUBaFOFppuU6e3IugB+HCYwA0LrGbg/mUuXSF5ChEQUqHyzgq2vDtEntTCi
+ Uz9Y8N7+1rq21ULups15CsoYZeNt3wRXKemX4gxOd3RhXliwsp+dJC6cuKaPXySBwhOwG4mVv
+ 4iRQqlbjV58TuU6i3yXIvTB7gyL9cEEsmHSbywR1QBRzHOiEAs=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/05/2022 16:26, matthew.gerlach@linux.intel.com wrote:
-> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-> 
-> Add device tree bindings documentation for the Intel Hard
-> Processor System (HPS) Copy Engine.
-> 
-> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+On Mon, May 9, 2022 at 4:02 AM Stephen Zhang <starzhangzsd@gmail.com> wrote:
+>
+> From: Shida Zhang <zhangshida@kylinos.cn>
+>
+> drivers/pcmcia/db1xxx_ss.c uses the bcsr_xxxx() from
+> arch/mips/alchemy/devboards/bcsr.c, which causes a link
+> error:
+>
+> drivers/pcmcia/db1xxx_ss.c:(.text+0x2b4): undefined reference to `bcsr_read'
+> mips-linux-gnu-ld: ../drivers/pcmcia/db1xxx_ss.c:(.text+0x2fc): undefined reference to `bcsr_read'
+> drivers/pcmcia/db1xxx_ss.c:(.text+0x374): undefined reference to `bcsr_read'
+> mips-linux-gnu-ld: ../drivers/pcmcia/db1xxx_ss.c:(.text+0x380): undefined reference to `bcsr_read'
+> drivers/pcmcia/db1xxx_ss.c:(.text+0x534): undefined reference to `bcsr_read'
+> drivers/pcmcia/db1xxx_ss.c:(.text+0xcc8): undefined reference to `bcsr_mod'
+>
+>
+> So add MIPS_DB1XXX dependence.
+>
+> Signed-off-by: Shida Zhang <zhangshida@kylinos.cn>
+> ---
 
+Looks good to me,
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-
-Best regards,
-Krzysztof
+Acked-by: Arnd Bergmann <arnd@arndb.de>
