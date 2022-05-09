@@ -2,143 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80D0DC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6737DC47084
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:51:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236771AbiEIHx7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 03:53:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52450 "EHLO
+        id S236753AbiEIHx5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 03:53:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233897AbiEIHud (ORCPT
+        with ESMTP id S235576AbiEIHo5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 03:50:33 -0400
-Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0A2617CC87;
-        Mon,  9 May 2022 00:46:38 -0700 (PDT)
-Received: by mail-qt1-f174.google.com with SMTP id hf18so10439352qtb.0;
-        Mon, 09 May 2022 00:46:38 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3XPGjru+uW0hOeRykS42TNYyIx8ZkoC8DFG5cF+O4o4=;
-        b=41F9GyWZlsfocB5MenQJl7d0bF5bQN5+OHhw7IwhQxihHqhhYlAwOGtex2kpjR0nap
-         3KGJyib2NQ5zz1sidV1zAHrPdoPy3m2SNZKaCBT9W38BBGzrA1tciu2RylX2SteqAllA
-         LLehhLi/JSu34sDMJ/AaPp6Zkhr7pYzq2WN3PaMe65tShsZni2Fw1RR3wKMxtmo1fY6h
-         ge6NTGekiWrRiRN4KMseD4yqI/ErHE5DvVy7b66yV8g6bEv6Od4TFvfCvislmTHz4quo
-         Dqx11FZoM1WEuPg1p1+f8qanvEPJtnJnb074yBcVtZMAhtiewu5SdbV/t/N7rLKEVQFU
-         9SpA==
-X-Gm-Message-State: AOAM531ngeJfEyi/zsqFB7W0egtP9qBf3rw2rEG70Zf6DPfEbA0a5+81
-        JCeZiiUYHQrqBCmtE5GLjyaaJDlcoISUqQ==
-X-Google-Smtp-Source: ABdhPJy4TyR1k/BcB6Il7OOSsz4Ai0gOSQz4I1J9xfUsRwEOEjElDVeCSVQEoRs/W1+8J27CkS5Y7Q==
-X-Received: by 2002:a05:622a:13d2:b0:2f3:d2aa:7c5a with SMTP id p18-20020a05622a13d200b002f3d2aa7c5amr7638987qtk.155.1652082397698;
-        Mon, 09 May 2022 00:46:37 -0700 (PDT)
-Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com. [209.85.128.176])
-        by smtp.gmail.com with ESMTPSA id o12-20020ac8554c000000b002f39b99f6a8sm6913691qtr.66.2022.05.09.00.46.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 00:46:37 -0700 (PDT)
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-2f83983782fso134895587b3.6;
-        Mon, 09 May 2022 00:46:37 -0700 (PDT)
-X-Received: by 2002:a81:9b0c:0:b0:2f4:c522:7d3c with SMTP id
- s12-20020a819b0c000000b002f4c5227d3cmr12831128ywg.316.1652082396821; Mon, 09
- May 2022 00:46:36 -0700 (PDT)
+        Mon, 9 May 2022 03:44:57 -0400
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD17B17050;
+        Mon,  9 May 2022 00:41:02 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=alimailimapcm10staff010182156082;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0VCfxsZ3_1652082046;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0VCfxsZ3_1652082046)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 09 May 2022 15:40:47 +0800
+From:   Jeffle Xu <jefflexu@linux.alibaba.com>
+To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
+        chao@kernel.org, linux-erofs@lists.ozlabs.org
+Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
+        willy@infradead.org, linux-fsdevel@vger.kernel.org,
+        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
+        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
+        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
+        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
+        yinxin.x@bytedance.com, zhangjiachen.jaycee@bytedance.com,
+        zhujia.zj@bytedance.com
+Subject: [PATCH v11 11/22] erofs: register fscache volume
+Date:   Mon,  9 May 2022 15:40:17 +0800
+Message-Id: <20220509074028.74954-12-jefflexu@linux.alibaba.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220509074028.74954-1-jefflexu@linux.alibaba.com>
+References: <20220509074028.74954-1-jefflexu@linux.alibaba.com>
 MIME-Version: 1.0
-References: <YjeEbHL8ITkW692W@rowland.harvard.edu> <YmKt3kH+85kjzdbL@kroah.com>
- <YmSc29YZvxgT5fEJ@rowland.harvard.edu> <YmSo6fU1FlNq8cOZ@rowland.harvard.edu>
- <YmSpKpnWR8WWEk/p@rowland.harvard.edu> <YmSpdxaDNeC2BBOf@rowland.harvard.edu>
- <alpine.DEB.2.22.394.2205031209030.681336@ramsan.of.borg> <YnFCEn45XwDWM/9Y@rowland.harvard.edu>
- <CAMuHMdVDK0W0T3=+2c1E6wtwy5JTUemTGYyj3PFuVUhK++AzrA@mail.gmail.com>
- <YnFO0Qr8RY7peFCg@rowland.harvard.edu> <YnaR8LaaPTdLTiok@rowland.harvard.edu>
-In-Reply-To: <YnaR8LaaPTdLTiok@rowland.harvard.edu>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 9 May 2022 09:46:25 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUpOiHHMktPk_-NauDW2ufvGThnkFU7Pok376pM6OEyYw@mail.gmail.com>
-Message-ID: <CAMuHMdUpOiHHMktPk_-NauDW2ufvGThnkFU7Pok376pM6OEyYw@mail.gmail.com>
-Subject: Re: [PATCH 4/4] USB: gadget: Add a new bus for gadgets
-To:     Alan Stern <stern@rowland.harvard.edu>
-Cc:     Felipe Balbi <balbi@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        USB mailing list <linux-usb@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Alan,
+A new fscache based mode is going to be introduced for erofs, in which
+case on-demand read semantics is implemented through fscache.
 
-On Sat, May 7, 2022 at 5:36 PM Alan Stern <stern@rowland.harvard.edu> wrote:
-> On Tue, May 03, 2022 at 11:48:33AM -0400, Alan Stern wrote:
-> > On Tue, May 03, 2022 at 05:27:08PM +0200, Geert Uytterhoeven wrote:
-> > > On Tue, May 3, 2022 at 5:14 PM Alan Stern <stern@rowland.harvard.edu> wrote:
-> > > > On Tue, May 03, 2022 at 12:14:30PM +0200, Geert Uytterhoeven wrote:
-> > > > > On Sat, 23 Apr 2022, Alan Stern wrote:
-> > > > > > This patch adds a "gadget" bus and uses it for registering gadgets and
-> > > > > > their drivers.  From now on, bindings will be managed by the driver
-> > > > > > core rather than through ad-hoc manipulations in the UDC core.
-> > > > > >
-> > > > > > As part of this change, the driver_pending_list is removed.  The UDC
-> > > > > > core won't need to keep track of unbound drivers for later binding,
-> > > > > > because the driver core handles all of that for us.
-> > > > > >
-> > > > > > However, we do need one new feature: a way to prevent gadget drivers
-> > > > > > from being bound to more than one gadget at a time.  The existing code
-> > > > > > does this automatically, but the driver core doesn't -- it's perfectly
-> > > > > > happy to bind a single driver to all the matching devices on the bus.
-> > > > > > The patch adds a new bitflag to the usb_gadget_driver structure for
-> > > > > > this purpose.
-> > > > > >
-> > > > > > A nice side effect of this change is a reduction in the total lines of
-> > > > > > code, since now the driver core will do part of the work that the UDC
-> > > > > > used to do.
-> > > > > >
-> > > > > > A possible future patch could add udc devices to the gadget bus, say
-> > > > > > as a separate device type.
-> > > > > >
-> > > > > > Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
-> > > > >
-> > > > > Thanks for your patch, which is now commit fc274c1e997314bf ("USB:
-> > > > > gadget: Add a new bus for gadgets") in usb-next.
-> > > > >
-> > > > > This patch cause a regression on the Renesas Salvator-XS development
-> > > > > board, as R-Car H3 has multiple USB gadget devices:
-> > > >
-> > > > Then these gadgets ought to have distinct names in order to avoid the
-> > > > conflict below:
->
-> Geert:
->
-> Can you test the patch below?  It ought to fix the problem (although it
+As the first step, register fscache volume for each erofs filesystem.
+That means, data blobs can not be shared among erofs filesystems. In the
+following iteration, we are going to introduce the domain semantics, in
+which case several erofs filesystems can belong to one domain, and data
+blobs can be shared among these erofs filesystems of one domain.
 
-Thanks!
+Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
+Reviewed-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+---
+ fs/erofs/Kconfig    | 10 ++++++++++
+ fs/erofs/Makefile   |  1 +
+ fs/erofs/fscache.c  | 37 +++++++++++++++++++++++++++++++++++++
+ fs/erofs/internal.h | 16 ++++++++++++++++
+ fs/erofs/super.c    |  5 +++++
+ 5 files changed, 69 insertions(+)
+ create mode 100644 fs/erofs/fscache.c
 
-root@h3-salvator-xs:~# ls -l /sys/bus/gadget/devices/
-total 0
-lrwxrwxrwx 1 root root 0 Feb 14  2019 gadget.0 ->
-../../../devices/platform/soc/e659c000.usb/gadget.0
-lrwxrwxrwx 1 root root 0 Feb 14  2019 gadget.1 ->
-../../../devices/platform/soc/ee020000.usb/gadget.1
-lrwxrwxrwx 1 root root 0 Feb 14  2019 gadget.2 ->
-../../../devices/platform/soc/e6590000.usb/gadget.2
+diff --git a/fs/erofs/Kconfig b/fs/erofs/Kconfig
+index f57255ab88ed..85490370e0ca 100644
+--- a/fs/erofs/Kconfig
++++ b/fs/erofs/Kconfig
+@@ -98,3 +98,13 @@ config EROFS_FS_ZIP_LZMA
+ 	  systems will be readable without selecting this option.
+ 
+ 	  If unsure, say N.
++
++config EROFS_FS_ONDEMAND
++	bool "EROFS fscache-based on-demand read support"
++	depends on CACHEFILES_ONDEMAND && (EROFS_FS=m && FSCACHE || EROFS_FS=y && FSCACHE=y)
++	default n
++	help
++	  This permits EROFS to use fscache-backed data blobs with on-demand
++	  read support.
++
++	  If unsure, say N.
+diff --git a/fs/erofs/Makefile b/fs/erofs/Makefile
+index 8a3317e38e5a..99bbc597a3e9 100644
+--- a/fs/erofs/Makefile
++++ b/fs/erofs/Makefile
+@@ -5,3 +5,4 @@ erofs-objs := super.o inode.o data.o namei.o dir.o utils.o pcpubuf.o sysfs.o
+ erofs-$(CONFIG_EROFS_FS_XATTR) += xattr.o
+ erofs-$(CONFIG_EROFS_FS_ZIP) += decompressor.o zmap.o zdata.o
+ erofs-$(CONFIG_EROFS_FS_ZIP_LZMA) += decompressor_lzma.o
++erofs-$(CONFIG_EROFS_FS_ONDEMAND) += fscache.o
+diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
+new file mode 100644
+index 000000000000..7a6d0239ebb1
+--- /dev/null
++++ b/fs/erofs/fscache.c
+@@ -0,0 +1,37 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Copyright (C) 2022, Alibaba Cloud
++ */
++#include <linux/fscache.h>
++#include "internal.h"
++
++int erofs_fscache_register_fs(struct super_block *sb)
++{
++	struct erofs_sb_info *sbi = EROFS_SB(sb);
++	struct fscache_volume *volume;
++	char *name;
++	int ret = 0;
++
++	name = kasprintf(GFP_KERNEL, "erofs,%s", sbi->opt.fsid);
++	if (!name)
++		return -ENOMEM;
++
++	volume = fscache_acquire_volume(name, NULL, NULL, 0);
++	if (IS_ERR_OR_NULL(volume)) {
++		erofs_err(sb, "failed to register volume for %s", name);
++		ret = volume ? PTR_ERR(volume) : -EOPNOTSUPP;
++		volume = NULL;
++	}
++
++	sbi->volume = volume;
++	kfree(name);
++	return ret;
++}
++
++void erofs_fscache_unregister_fs(struct super_block *sb)
++{
++	struct erofs_sb_info *sbi = EROFS_SB(sb);
++
++	fscache_relinquish_volume(sbi->volume, NULL, false);
++	sbi->volume = NULL;
++}
+diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
+index 05a97533b1e9..e4f6a13f161f 100644
+--- a/fs/erofs/internal.h
++++ b/fs/erofs/internal.h
+@@ -74,6 +74,7 @@ struct erofs_mount_opts {
+ 	unsigned int max_sync_decompress_pages;
+ #endif
+ 	unsigned int mount_opt;
++	char *fsid;
+ };
+ 
+ struct erofs_dev_context {
+@@ -146,6 +147,9 @@ struct erofs_sb_info {
+ 	/* sysfs support */
+ 	struct kobject s_kobj;		/* /sys/fs/erofs/<devname> */
+ 	struct completion s_kobj_unregister;
++
++	/* fscache support */
++	struct fscache_volume *volume;
+ };
+ 
+ #define EROFS_SB(sb) ((struct erofs_sb_info *)(sb)->s_fs_info)
+@@ -618,6 +622,18 @@ static inline int z_erofs_load_lzma_config(struct super_block *sb,
+ }
+ #endif	/* !CONFIG_EROFS_FS_ZIP */
+ 
++/* fscache.c */
++#ifdef CONFIG_EROFS_FS_ONDEMAND
++int erofs_fscache_register_fs(struct super_block *sb);
++void erofs_fscache_unregister_fs(struct super_block *sb);
++#else
++static inline int erofs_fscache_register_fs(struct super_block *sb)
++{
++	return 0;
++}
++static inline void erofs_fscache_unregister_fs(struct super_block *sb) {}
++#endif
++
+ #define EFSCORRUPTED    EUCLEAN         /* Filesystem is corrupted */
+ 
+ #endif	/* __EROFS_INTERNAL_H */
+diff --git a/fs/erofs/super.c b/fs/erofs/super.c
+index 724d5ff0d78c..fd8daa447237 100644
+--- a/fs/erofs/super.c
++++ b/fs/erofs/super.c
+@@ -602,6 +602,10 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
+ 	if (erofs_is_fscache_mode(sb)) {
+ 		sb->s_blocksize = EROFS_BLKSIZ;
+ 		sb->s_blocksize_bits = LOG_BLOCK_SIZE;
++
++		err = erofs_fscache_register_fs(sb);
++		if (err)
++			return err;
+ 	} else {
+ 		if (!sb_set_blocksize(sb, EROFS_BLKSIZ)) {
+ 			erofs_err(sb, "failed to set erofs blksize");
+@@ -768,6 +772,7 @@ static void erofs_kill_sb(struct super_block *sb)
+ 
+ 	erofs_free_dev_context(sbi->devs);
+ 	fs_put_dax(sbi->dax_dev);
++	erofs_fscache_unregister_fs(sb);
+ 	kfree(sbi);
+ 	sb->s_fs_info = NULL;
+ }
+-- 
+2.27.0
 
-Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-LGTM, so
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-> might end up causing other problems down the line...)
-
-Can you please elaborate? I'm not too familiar with UBS gadgets.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
