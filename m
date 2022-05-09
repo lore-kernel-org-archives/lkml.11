@@ -2,123 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1948BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 15:43:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E70DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 15:43:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238552AbiEIPrD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 11:47:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58974 "EHLO
+        id S238568AbiEIPr2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 11:47:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238415AbiEIPrB (ORCPT
+        with ESMTP id S238415AbiEIPrX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 11:47:01 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBDC6167C6
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 08:43:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652110987; x=1683646987;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=F07pa9D+FBqxW75bj3/sUmJoTeJzP7PbSvZK6FEkXfE=;
-  b=C9quxwEMtO56JXBUEpbPdXNRz0atiZRXtwb1NoNGCL3m1YVA7m1w4oDM
-   vGVKHG2SpBUl6y7APedHRtTzVGFN2LiUvXs7by6Vs1Sws2T2+PmOpkvQ5
-   pSjedKdSu3KuacXIa1A0h6qlm9+eRaqcpHvXB/AQyVcAqbBtGnr0cCY7X
-   Hbqzgs+xfTM0/PJBGM1rJJx2R8zlPQ6CEpXbU43GVLGvtQ/79z25xZk4D
-   E294KCe3ORbTACmROzgL/YYG5GfUSqcyfPnBYN7BLALp3mvcsMfjGLFiy
-   xPZWBht3rVQ5oMX70B8MN7ax1vOxdcWpY3uFm36OBr7RCHMqTen9j0Pbc
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="256623358"
-X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
-   d="scan'208";a="256623358"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 08:43:07 -0700
-X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
-   d="scan'208";a="669379347"
-Received: from smveseck-mobl2.amr.corp.intel.com (HELO [10.251.26.62]) ([10.251.26.62])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 08:43:05 -0700
-Message-ID: <09b28e14-cb55-6945-bc03-7554e5e6ae61@linux.intel.com>
-Date:   Mon, 9 May 2022 08:43:03 -0700
+        Mon, 9 May 2022 11:47:23 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 963241B5F97;
+        Mon,  9 May 2022 08:43:29 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 5125D21C54;
+        Mon,  9 May 2022 15:43:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1652111008; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=G8T6pl1iznxs13Ey9cez14qQxbbfQ6jd4EKhTAHfONQ=;
+        b=OIX4wvitWGHcNBQ8JmpcU3rPsZU1gR6+LHcNOwZdDXt/ctTFk3ovA/alCFpxrJgZHkU0jO
+        j8H8ca2us26w1OtLpELOr66VCMVrsGfD9mSVAmr9PH2eHNxXsyMiymy4TEEYmN0veUZ4rO
+        jmPneqJd3q3wmPSpiG3aBLWFqPbxo1E=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1652111008;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=G8T6pl1iznxs13Ey9cez14qQxbbfQ6jd4EKhTAHfONQ=;
+        b=jK3ZXCl1D7XaTIz1+9uo9WVUNqIOJAFF6WB0oqleV2JaHMus92O7168s829hFh2XwbYV9M
+        8GbAzUyq/BtpAbBw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 245CD13AA5;
+        Mon,  9 May 2022 15:43:28 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id b11GCKA2eWJIIgAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Mon, 09 May 2022 15:43:28 +0000
+Message-ID: <0d8f368a-54bb-b4e7-931f-9bf3ae24af4c@suse.cz>
+Date:   Mon, 9 May 2022 17:43:27 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.7.0
-Subject: Re: [PATCH v5 3/3] x86/tdx: Add Quote generation support
+ Thunderbird/91.8.1
+Subject: Re: [v3 PATCH 8/8] mm: mmap: register suitable readonly file vmas for
+ khugepaged
 Content-Language: en-US
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Dave Hansen <dave.hansen@intel.com>
-Cc:     "Kirill A. Shutemov" <kirill@shutemov.name>,
-        Kai Huang <kai.huang@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>, Tony Luck <tony.luck@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Wander Lairson Costa <wander@redhat.com>,
-        Isaku Yamahata <isaku.yamahata@gmail.com>,
-        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
-        khalid.elmously@canonical.com, philip.cox@canonical.com,
+To:     Yang Shi <shy828301@gmail.com>, kirill.shutemov@linux.intel.com,
+        linmiaohe@huawei.com, songliubraving@fb.com, riel@surriel.com,
+        willy@infradead.org, ziy@nvidia.com, tytso@mit.edu,
+        akpm@linux-foundation.org
+Cc:     linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <40ccd0f0-35a1-5aa7-9e51-25ab196d79e5@linux.intel.com>
- <2ed5c9cc316950a5a47ee714715b7980f358a140.camel@intel.com>
- <ab17102c-0cb7-87d3-3494-969866d64573@linux.intel.com>
- <d53696f85ada39a91a3685c61d177c582810772e.camel@intel.com>
- <d63d2774-c44d-27da-74b6-550935a196fd@intel.com>
- <dca06ffa36abe9989f0a7abaeafc83c1a7250651.camel@intel.com>
- <20220507004236.5p5dyksftge7wwr3@black.fi.intel.com>
- <45d184273f1950320843f6696eb3071f7d354fd3.camel@intel.com>
- <20220509120927.7rg6v5pyc3f4pxsh@box.shutemov.name>
- <4506e2c2-af4b-623d-5618-48269e65c295@intel.com>
- <20220509153534.i6v4xcb2g24ia2i4@black.fi.intel.com>
-From:   Sathyanarayanan Kuppuswamy 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-In-Reply-To: <20220509153534.i6v4xcb2g24ia2i4@black.fi.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <20220404200250.321455-1-shy828301@gmail.com>
+ <20220404200250.321455-9-shy828301@gmail.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220404200250.321455-9-shy828301@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 4/4/22 22:02, Yang Shi wrote:
+> The readonly FS THP relies on khugepaged to collapse THP for suitable
+> vmas.  But it is kind of "random luck" for khugepaged to see the
+> readonly FS vmas (https://lore.kernel.org/linux-mm/00f195d4-d039-3cf2-d3a1-a2c88de397a0@suse.cz/)
+> since currently the vmas are registered to khugepaged when:
+>   - Anon huge pmd page fault
+>   - VMA merge
+>   - MADV_HUGEPAGE
+>   - Shmem mmap
+> 
+> If the above conditions are not met, even though khugepaged is enabled
+> it won't see readonly FS vmas at all.  MADV_HUGEPAGE could be specified
+> explicitly to tell khugepaged to collapse this area, but when khugepaged
+> mode is "always" it should scan suitable vmas as long as VM_NOHUGEPAGE
+> is not set.
+> 
+> So make sure readonly FS vmas are registered to khugepaged to make the
+> behavior more consistent.
+> 
+> Registering suitable vmas in common mmap path, that could cover both
+> readonly FS vmas and shmem vmas, so removed the khugepaged calls in
+> shmem.c.
+> 
+> Still need to keep the khugepaged call in vma_merge() since vma_merge()
+> is called in a lot of places, for example, madvise, mprotect, etc.
+> 
+> Reported-by: Vlastimil Babka <vbabka@suse.cz>
+> Signed-off-by: Yang Shi <shy828301@gmail.com>
 
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
 
-On 5/9/22 8:35 AM, Kirill A. Shutemov wrote:
-> On Mon, May 09, 2022 at 07:14:20AM -0700, Dave Hansen wrote:
->> On 5/9/22 05:09, Kirill A. Shutemov wrote:
->>> Private->Shared conversion is destructive. You have to split SEPT, flush
->>> TLB. Backward conversion even more costly.
->>>
->>> Rule of thumb is avoid conversion where possible. DMA API is there for
->>> you.
->>
->> Kirill, I understand that the DMA API is a quick fix today.  But is it
->> _really_ the right long-term interface?
+> ---
+>  mm/mmap.c  | 6 ++++++
+>  mm/shmem.c | 4 ----
+>  2 files changed, 6 insertions(+), 4 deletions(-)
 > 
-> Yes, I think so.
-> 
->> There will surely come a time when TDX I/O devices won't be using fixed
->> bounce buffers.  What will the quote generation code do then?  How will
->> we know to come back around and fix this up?
-> 
-> VirtIO will not go away with TDX I/O in picture. TDX I/O will be addition
-> to existing stuff, not replacement.
-> 
-> And we have hooks in place to accommodate this: force_dma_unencrypted()
-> will return false for devices capable of TDX I/O. While the rest of
-> devices, including VirtIO and attestation, keep using existing paths with
-> swiotlb.
-> 
->> Does SEV or the s390 ultravisor need anything like this?
-> 
-> At quick glance sev-guest.c uses set_memory_decrypted()/encrypted() for
-> allocation and freeing shared memory. I consider it inferior to using DMA
-> API.
+> diff --git a/mm/mmap.c b/mm/mmap.c
+> index 604c8dece5dd..616ebbc2d052 100644
+> --- a/mm/mmap.c
+> +++ b/mm/mmap.c
+> @@ -1842,6 +1842,12 @@ unsigned long mmap_region(struct file *file, unsigned long addr,
+>  	}
+>  
+>  	vma_link(mm, vma, prev, rb_link, rb_parent);
+> +
+> +	/*
+> +	 * vma_merge() calls khugepaged_enter_vma() either, the below
+> +	 * call covers the non-merge case.
+> +	 */
+> +	khugepaged_enter_vma(vma, vma->vm_flags);
+>  	/* Once vma denies write, undo our temporary denial count */
+>  unmap_writable:
+>  	if (file && vm_flags & VM_SHARED)
+> diff --git a/mm/shmem.c b/mm/shmem.c
+> index 92eca974771d..0c448080d210 100644
+> --- a/mm/shmem.c
+> +++ b/mm/shmem.c
+> @@ -34,7 +34,6 @@
+>  #include <linux/export.h>
+>  #include <linux/swap.h>
+>  #include <linux/uio.h>
+> -#include <linux/khugepaged.h>
+>  #include <linux/hugetlb.h>
+>  #include <linux/fs_parser.h>
+>  #include <linux/swapfile.h>
+> @@ -2239,7 +2238,6 @@ static int shmem_mmap(struct file *file, struct vm_area_struct *vma)
+>  
+>  	file_accessed(file);
+>  	vma->vm_ops = &shmem_vm_ops;
+> -	khugepaged_enter_vma(vma, vma->vm_flags);
+>  	return 0;
+>  }
+>  
+> @@ -4132,8 +4130,6 @@ int shmem_zero_setup(struct vm_area_struct *vma)
+>  	vma->vm_file = file;
+>  	vma->vm_ops = &shmem_vm_ops;
+>  
+> -	khugepaged_enter_vma(vma, vma->vm_flags);
+> -
+>  	return 0;
+>  }
+>  
 
-Following is the link for the SEV attestation driver. It does seem to
-use alloc_pages() and set_memory_*() calls.
-
-https://lore.kernel.org/lkml/20220307215344.2799259-1-brijesh.singh@amd.com/
-
-> 
-
--- 
-Sathyanarayanan Kuppuswamy
-Linux Kernel Developer
