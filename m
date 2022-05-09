@@ -2,479 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4C5FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 11:00:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 712D2C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 11:01:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231516AbiEILEq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 07:04:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52680 "EHLO
+        id S231560AbiEILFC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 07:05:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231485AbiEILEc (ORCPT
+        with ESMTP id S231564AbiEILE6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 07:04:32 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1610C25EB0
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 04:00:38 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id m20so26021854ejj.10
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 04:00:38 -0700 (PDT)
+        Mon, 9 May 2022 07:04:58 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D06D7219C17
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 04:00:59 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id v11so11941075pff.6
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 04:00:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sartura-hr.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=K9C/dOs+COLporee6Egh1ahx65haWLbpcqSzk8GrRKY=;
-        b=iH5TErsDifUOIuQcIKUmXt37hX972ny5G1Q1A5T57sV8QY/1wn38qyb2PwE/VJxQCu
-         t+5vxfCUNm7vRWcJRdRlT/RphIQsW09fx+O17RSfw0IiK5mSGgqYW6YtekZfGQ/WPq84
-         VAxSXfHCORAcU0sJKRoLmSR9wPOZVzoFeo7/dtZJZpdZjMyezBo8AE0Zb8lKI5llgZiO
-         DE7z7c1h7DfCNaP8/2heK+3BOWlkMBCgMd5SucJMe5n5lByVzLaRoSBbWjfLdN03CTOv
-         lUydmpssZ4XoOfWwmREi0bo0HNxFLkH0DdqoU8elOimpm3Ey43Rhfb1it7BweWJ7JQND
-         drKQ==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JqGcGcuUwLK05LGJI1ajsT/xW0rShgwvLzQMUoOkfkw=;
+        b=EX80u1FgJBDMCHrzbHFVOjvLJY1UUYVtuQOC/wpMOEqIHTAh4jEcrxrWzJW2CQFpPg
+         tauJptGinburWR+S+xrNaby09Sr9vlwlQHzwdrwy0iHshuyXvCgkHYGFu+Aeks0oMXdo
+         iIVG/PtGR/ongrMfBzhfhvJJOHbGZR2SJBqfP8jnR0okDS+NKso52/KTywOTpp4ww5UX
+         PlErlui1S/GuKpm4ZWArZxgrcievn2Eei9iNY/mGvDLmLI8cWpSzDUQwVFmgojyQawfd
+         VCt1692u7d6Z5qvdrYHjGDom0bmizuAfn6zL4r3qKxTI5CG7ICW5E4jW+Td+wI8EfTiT
+         AhRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=K9C/dOs+COLporee6Egh1ahx65haWLbpcqSzk8GrRKY=;
-        b=F1PmSP3h1jQCHfrpRkKouLPD1zeIutwm2GIrcEuB20l81343FGGDrUpq4Wi0zkRJep
-         3cL6xLoLE/d6whe9xfBcZybiMHtE8O6PdxQXtS3afc5VYDzntO5jdym97b9yUwx7+8Bt
-         fi0WVz69wCAZ9sVYYcBvSUaKN1o2sNDaYHq4K+HAUpI9qnwl8rVltk5FOkmdrRyxxyY3
-         ChZeuCxLUB2YSkd39CGC6F4iie6sf0tnLqcWQnEuP7ScPMcpjVNLfwwAYCxhLMZc2bdo
-         3R0D2sG9aHoKJjrvZp06VvVNUgKiT+zTdSrZ/gq3+UOAUTSxSI92FZykb4Kr7njaDmIE
-         ImAg==
-X-Gm-Message-State: AOAM530VSuEiNm5YqXtsjLN2H1xNQiCnkBxHq1te2t63wGoS0QbScSne
-        EgivvGSH5gJ+vKPzj+1H+xIiYQ==
-X-Google-Smtp-Source: ABdhPJza++Loo4dFcU6TUoRfB7Pf+eTPDr8GrjTW2XkhQo/47G11FQS0KoBnVF2y+nX3nqV3ZCEX4Q==
-X-Received: by 2002:a17:907:62a6:b0:6ef:8118:d3e2 with SMTP id nd38-20020a17090762a600b006ef8118d3e2mr13713700ejc.605.1652094036401;
-        Mon, 09 May 2022 04:00:36 -0700 (PDT)
-Received: from fedora.robimarko.hr (cpezg-94-253-144-244-cbl.xnet.hr. [94.253.144.244])
-        by smtp.googlemail.com with ESMTPSA id hw7-20020a170907a0c700b006f3ef214e73sm4963822ejc.217.2022.05.09.04.00.35
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JqGcGcuUwLK05LGJI1ajsT/xW0rShgwvLzQMUoOkfkw=;
+        b=QNrgdCe6oARGvZRC9chIXl+gfEBgUZUj9gQeLCkhFvvAHBzV2JbdQ2D6U3ios6GOFm
+         NxRoUutQytYhGEVicO2xfh188ZCgOEq9Txvm2zeEn3WW3DPuRI2K+zNObML+yHu0Oxf2
+         H/F5AICknd09rnvU5NN2Cp4+fviPSVaeEMwr1pi4NzYhXnLbPhS8ZMlL4iNIE0XFDAhn
+         I4MiL59P5AW28l4lz/09+9AYOx0dwxh+7LXUuUpHSYJdTavRCiJ3U8Ebf3xfWsEM8xVc
+         jwpe7dGly0A9+dvlMN25W35GDvt+bjNwAga9ybFoRJ5Myw5XgY12/2j//1thxqJGepql
+         M67Q==
+X-Gm-Message-State: AOAM530KCAc9fNPUq36q/tq2Igzqz17Jfnf6KLqMlN68mc5g0FE90XLJ
+        jdB5Ih0ifilEG1MhietsKJ2FkA==
+X-Google-Smtp-Source: ABdhPJwaGUhNTPgReYxZbf915o71BtxX+6pcZwG8eJNzhOfcIaOxs1UXcmb8oyitY4T6NxyuvXZYdw==
+X-Received: by 2002:a63:f1e:0:b0:3c1:d54f:fc47 with SMTP id e30-20020a630f1e000000b003c1d54ffc47mr13164738pgl.51.1652094058513;
+        Mon, 09 May 2022 04:00:58 -0700 (PDT)
+Received: from always-x1.www.tendawifi.com ([139.177.225.239])
+        by smtp.gmail.com with ESMTPSA id n12-20020a170902968c00b0015e8d4eb244sm6813303plp.142.2022.05.09.04.00.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 04:00:35 -0700 (PDT)
-From:   Robert Marko <robert.marko@sartura.hr>
-To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        andrew@lunn.ch, gregory.clement@bootlin.com,
-        sebastian.hesselbarth@gmail.com, shawnguo@kernel.org,
-        linus.walleij@linaro.org, kostap@marvell.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, pali@kernel.org,
-        marek.behun@nic.cz
-Cc:     Robert Marko <robert.marko@sartura.hr>
-Subject: [PATCH 2/2] arm64: dts: marvell: add support for Methode eDPU
-Date:   Mon,  9 May 2022 13:00:28 +0200
-Message-Id: <20220509110028.144226-2-robert.marko@sartura.hr>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220509110028.144226-1-robert.marko@sartura.hr>
-References: <20220509110028.144226-1-robert.marko@sartura.hr>
+        Mon, 09 May 2022 04:00:57 -0700 (PDT)
+From:   zhenwei pi <pizhenwei@bytedance.com>
+To:     akpm@linux-foundation.org, naoya.horiguchi@nec.com
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        zhenwei pi <pizhenwei@bytedance.com>
+Subject: [PATCH v2 0/5] memory-failure: fix hwpoison_filter
+Date:   Mon,  9 May 2022 18:56:36 +0800
+Message-Id: <20220509105641.491313-1-pizhenwei@bytedance.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Methode eDPU is an Armada 3720 powered board based on the Methode uDPU.
+v1 -> v2:
+- move clear_hwpoisoned_pages() near the definitions of
+  hwpoison_filter*.
+- fix typo.
+- remove "mm/memofy-failure.c: optimize hwpoison_filter".
+- call hwpoison_filter() after get_hwpoison_page().
+- disable hwpoison filter during removing
+- simplify num_poisoned_pages_inc/dec
 
-They feature the same CPU, RAM, and storage as well as the form factor.
+Also add background of this work:
+As well known, the memory failure mechanism handles memory corrupted event, and try to send SIGBUS to the user process which uses this corrupted page.
 
-However, eDPU only has one SFP slot plus a copper G.hn port.
+For the virtualization case, QEMU catches SIGBUS and tries to inject MCE into the guest, and the guest handles memory failure again. Thus the guest gets the minimal effect from hardware memory corruption.
 
-In order to reduce duplication, split the uDPU DTS into a common one.
+The further step I'm working on:
+1, try to modify code to decrease poisoned pages in a single place (mm/memofy-failure.c: simplify num_poisoned_pages_dec in this series).
 
-Signed-off-by: Robert Marko <robert.marko@sartura.hr>
----
- arch/arm64/boot/dts/marvell/Makefile          |   1 +
- .../boot/dts/marvell/armada-3720-eDPU.dts     |  14 ++
- .../boot/dts/marvell/armada-3720-uDPU.dts     | 148 +---------------
- .../boot/dts/marvell/armada-3720-uDPU.dtsi    | 163 ++++++++++++++++++
- 4 files changed, 179 insertions(+), 147 deletions(-)
- create mode 100644 arch/arm64/boot/dts/marvell/armada-3720-eDPU.dts
- create mode 100644 arch/arm64/boot/dts/marvell/armada-3720-uDPU.dtsi
+2, try to use page_handle_poison() to handle SetPageHWPoison() and num_poisoned_pages_inc() together. It would be best to call num_poisoned_pages_inc() in a single place too.
 
-diff --git a/arch/arm64/boot/dts/marvell/Makefile b/arch/arm64/boot/dts/marvell/Makefile
-index 1c794cdcb8e6..104d7d7e8215 100644
---- a/arch/arm64/boot/dts/marvell/Makefile
-+++ b/arch/arm64/boot/dts/marvell/Makefile
-@@ -1,6 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0
- # Mvebu SoC Family
- dtb-$(CONFIG_ARCH_MVEBU) += armada-3720-db.dtb
-+dtb-$(CONFIG_ARCH_MVEBU) += armada-3720-eDPU.dtb
- dtb-$(CONFIG_ARCH_MVEBU) += armada-3720-espressobin.dtb
- dtb-$(CONFIG_ARCH_MVEBU) += armada-3720-espressobin-emmc.dtb
- dtb-$(CONFIG_ARCH_MVEBU) += armada-3720-espressobin-ultra.dtb
-diff --git a/arch/arm64/boot/dts/marvell/armada-3720-eDPU.dts b/arch/arm64/boot/dts/marvell/armada-3720-eDPU.dts
-new file mode 100644
-index 000000000000..6b573a6854cc
---- /dev/null
-+++ b/arch/arm64/boot/dts/marvell/armada-3720-eDPU.dts
-@@ -0,0 +1,14 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+
-+/dts-v1/;
-+
-+#include "armada-3720-uDPU.dtsi"
-+
-+/ {
-+	model = "Methode eDPU Board";
-+	compatible = "methode,edpu", "marvell,armada3720";
-+};
-+
-+&eth0 {
-+	phy-mode = "2500base-x";
-+};
-diff --git a/arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts b/arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts
-index 95d46e8d081c..b146fae9f60b 100644
---- a/arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts
-+++ b/arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts
-@@ -1,67 +1,13 @@
- // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
--/*
-- * Device tree for the uDPU board.
-- * Based on Marvell Armada 3720 development board (DB-88F3720-DDR3)
-- * Copyright (C) 2016 Marvell
-- * Copyright (C) 2019 Methode Electronics
-- * Copyright (C) 2019 Telus
-- *
-- * Vladimir Vid <vladimir.vid@sartura.hr>
-- */
- 
- /dts-v1/;
- 
--#include <dt-bindings/gpio/gpio.h>
--#include "armada-372x.dtsi"
-+#include "armada-3720-uDPU.dtsi"
- 
- / {
- 	model = "Methode uDPU Board";
- 	compatible = "methode,udpu", "marvell,armada3720";
- 
--	chosen {
--		stdout-path = "serial0:115200n8";
--	};
--
--	memory@0 {
--		device_type = "memory";
--		reg = <0x00000000 0x00000000 0x00000000 0x20000000>;
--	};
--
--	leds {
--		pinctrl-names = "default";
--		compatible = "gpio-leds";
--
--		power1 {
--			label = "udpu:green:power";
--			gpios = <&gpionb 11 GPIO_ACTIVE_LOW>;
--		};
--
--		power2 {
--			label = "udpu:red:power";
--			gpios = <&gpionb 12 GPIO_ACTIVE_LOW>;
--		};
--
--		network1 {
--			label = "udpu:green:network";
--			gpios = <&gpionb 13 GPIO_ACTIVE_LOW>;
--		};
--
--		network2 {
--			label = "udpu:red:network";
--			gpios = <&gpionb 14 GPIO_ACTIVE_LOW>;
--		};
--
--		alarm1 {
--			label = "udpu:green:alarm";
--			gpios = <&gpionb 15 GPIO_ACTIVE_LOW>;
--		};
--
--		alarm2 {
--			label = "udpu:red:alarm";
--			gpios = <&gpionb 16 GPIO_ACTIVE_LOW>;
--		};
--	};
--
- 	sfp_eth0: sfp-eth0 {
- 		compatible = "sff,sfp";
- 		i2c-bus = <&i2c0>;
-@@ -71,50 +17,6 @@ sfp_eth0: sfp-eth0 {
- 		tx-fault-gpio = <&gpiosb 5 GPIO_ACTIVE_HIGH>;
- 		maximum-power-milliwatt = <3000>;
- 	};
--
--	sfp_eth1: sfp-eth1 {
--		compatible = "sff,sfp";
--		i2c-bus = <&i2c1>;
--		los-gpio = <&gpiosb 7 GPIO_ACTIVE_HIGH>;
--		mod-def0-gpio = <&gpiosb 8 GPIO_ACTIVE_LOW>;
--		tx-disable-gpio = <&gpiosb 9 GPIO_ACTIVE_HIGH>;
--		tx-fault-gpio = <&gpiosb 10 GPIO_ACTIVE_HIGH>;
--		maximum-power-milliwatt = <3000>;
--	};
--};
--
--&sdhci0 {
--	status = "okay";
--	bus-width = <8>;
--	mmc-ddr-1_8v;
--	mmc-hs400-1_8v;
--	marvell,pad-type = "fixed-1-8v";
--	non-removable;
--	no-sd;
--	no-sdio;
--};
--
--&spi0 {
--	status = "okay";
--	pinctrl-names = "default";
--	pinctrl-0 = <&spi_quad_pins>;
--
--	m25p80@0 {
--		compatible = "jedec,spi-nor";
--		reg = <0>;
--		spi-max-frequency = <54000000>;
--
--		partitions {
--			compatible = "fixed-partitions";
--			#address-cells = <1>;
--			#size-cells = <1>;
--			/* only bootloader is located on the SPI */
--			partition@0 {
--				label = "uboot";
--				reg = <0 0x400000>;
--			};
--		};
--	};
- };
- 
- &pinctrl_nb {
-@@ -122,11 +24,6 @@ i2c1_recovery_pins: i2c1-recovery-pins {
- 		groups = "i2c1";
- 		function = "gpio";
- 	};
--
--	i2c2_recovery_pins: i2c2-recovery-pins {
--		groups = "i2c2";
--		function = "gpio";
--	};
- };
- 
- &i2c0 {
-@@ -139,50 +36,7 @@ &i2c0 {
- 	sda-gpios = <&gpionb 1 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
- };
- 
--&i2c1 {
--	status = "okay";
--	pinctrl-names = "default", "recovery";
--	pinctrl-0 = <&i2c2_pins>;
--	pinctrl-1 = <&i2c2_recovery_pins>;
--	/delete-property/mrvl,i2c-fast-mode;
--	scl-gpios = <&gpionb 2 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
--	sda-gpios = <&gpionb 3 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
--
--	lm75@48 {
--		status = "okay";
--		compatible = "lm75";
--		reg = <0x48>;
--	};
--
--	lm75@49 {
--		status = "okay";
--		compatible = "lm75";
--		reg = <0x49>;
--	};
--};
--
- &eth0 {
- 	phy-mode = "sgmii";
--	status = "okay";
--	managed = "in-band-status";
--	phys = <&comphy1 0>;
- 	sfp = <&sfp_eth0>;
- };
--
--&eth1 {
--	phy-mode = "sgmii";
--	status = "okay";
--	managed = "in-band-status";
--	phys = <&comphy0 1>;
--	sfp = <&sfp_eth1>;
--};
--
--&usb3 {
--	status = "okay";
--	phys = <&usb2_utmi_otg_phy>;
--	phy-names = "usb2-utmi-otg-phy";
--};
--
--&uart0 {
--	status = "okay";
--};
-diff --git a/arch/arm64/boot/dts/marvell/armada-3720-uDPU.dtsi b/arch/arm64/boot/dts/marvell/armada-3720-uDPU.dtsi
-new file mode 100644
-index 000000000000..5e38acc92a31
---- /dev/null
-+++ b/arch/arm64/boot/dts/marvell/armada-3720-uDPU.dtsi
-@@ -0,0 +1,163 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * Device tree for the uDPU board.
-+ * Based on Marvell Armada 3720 development board (DB-88F3720-DDR3)
-+ * Copyright (C) 2016 Marvell
-+ * Copyright (C) 2019 Methode Electronics
-+ * Copyright (C) 2019 Telus
-+ *
-+ * Vladimir Vid <vladimir.vid@sartura.hr>
-+ */
-+
-+/dts-v1/;
-+
-+#include <dt-bindings/gpio/gpio.h>
-+#include "armada-372x.dtsi"
-+
-+/ {
-+	chosen {
-+		stdout-path = "serial0:115200n8";
-+	};
-+
-+	memory@0 {
-+		device_type = "memory";
-+		reg = <0x00000000 0x00000000 0x00000000 0x20000000>;
-+	};
-+
-+	leds {
-+		pinctrl-names = "default";
-+		compatible = "gpio-leds";
-+
-+		power1 {
-+			label = "udpu:green:power";
-+			gpios = <&gpionb 11 GPIO_ACTIVE_LOW>;
-+		};
-+
-+		power2 {
-+			label = "udpu:red:power";
-+			gpios = <&gpionb 12 GPIO_ACTIVE_LOW>;
-+		};
-+
-+		network1 {
-+			label = "udpu:green:network";
-+			gpios = <&gpionb 13 GPIO_ACTIVE_LOW>;
-+		};
-+
-+		network2 {
-+			label = "udpu:red:network";
-+			gpios = <&gpionb 14 GPIO_ACTIVE_LOW>;
-+		};
-+
-+		alarm1 {
-+			label = "udpu:green:alarm";
-+			gpios = <&gpionb 15 GPIO_ACTIVE_LOW>;
-+		};
-+
-+		alarm2 {
-+			label = "udpu:red:alarm";
-+			gpios = <&gpionb 16 GPIO_ACTIVE_LOW>;
-+		};
-+	};
-+
-+	sfp_eth1: sfp-eth1 {
-+		compatible = "sff,sfp";
-+		i2c-bus = <&i2c1>;
-+		los-gpio = <&gpiosb 7 GPIO_ACTIVE_HIGH>;
-+		mod-def0-gpio = <&gpiosb 8 GPIO_ACTIVE_LOW>;
-+		tx-disable-gpio = <&gpiosb 9 GPIO_ACTIVE_HIGH>;
-+		tx-fault-gpio = <&gpiosb 10 GPIO_ACTIVE_HIGH>;
-+		maximum-power-milliwatt = <3000>;
-+	};
-+};
-+
-+&sdhci0 {
-+	status = "okay";
-+	bus-width = <8>;
-+	mmc-ddr-1_8v;
-+	mmc-hs400-1_8v;
-+	marvell,pad-type = "fixed-1-8v";
-+	non-removable;
-+	no-sd;
-+	no-sdio;
-+};
-+
-+&spi0 {
-+	status = "okay";
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&spi_quad_pins>;
-+
-+	spi-flash@0 {
-+		compatible = "jedec,spi-nor";
-+		reg = <0>;
-+		spi-max-frequency = <54000000>;
-+
-+		partitions {
-+			compatible = "fixed-partitions";
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			/* only bootloader is located on the SPI */
-+			partition@0 {
-+				label = "firmware";
-+				reg = <0x0 0x180000>;
-+			};
-+
-+			partition@180000 {
-+				label = "u-boot-env";
-+				reg = <0x180000 0x10000>;
-+			};
-+		};
-+	};
-+};
-+
-+&pinctrl_nb {
-+	i2c2_recovery_pins: i2c2-recovery-pins {
-+		groups = "i2c2";
-+		function = "gpio";
-+	};
-+};
-+
-+&i2c1 {
-+	status = "okay";
-+	pinctrl-names = "default", "recovery";
-+	pinctrl-0 = <&i2c2_pins>;
-+	pinctrl-1 = <&i2c2_recovery_pins>;
-+	/delete-property/mrvl,i2c-fast-mode;
-+	scl-gpios = <&gpionb 2 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
-+	sda-gpios = <&gpionb 3 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
-+
-+	nct375@48 {
-+		status = "okay";
-+		compatible = "ti,tmp75c";
-+		reg = <0x48>;
-+	};
-+
-+	nct375@49 {
-+		status = "okay";
-+		compatible = "ti,tmp75c";
-+		reg = <0x49>;
-+	};
-+};
-+
-+&eth0 {
-+	status = "okay";
-+	managed = "in-band-status";
-+	phys = <&comphy1 0>;
-+};
-+
-+&eth1 {
-+	phy-mode = "sgmii";
-+	status = "okay";
-+	managed = "in-band-status";
-+	phys = <&comphy0 1>;
-+	sfp = <&sfp_eth1>;
-+};
-+
-+&usb3 {
-+	status = "okay";
-+	phys = <&usb2_utmi_otg_phy>;
-+	phy-names = "usb2-utmi-otg-phy";
-+};
-+
-+&uart0 {
-+	status = "okay";
-+};
+3, introduce memory failure notifier list in memory-failure.c: notify the corrupted PFN to someone who registers this list.
+If I can complete [1] and [2] part, [3] will be quite easy(just call notifier list after increasing poisoned page).
+
+4, introduce memory recover VQ for memory balloon device, and registers memory failure notifier list. During the guest kernel handles memory failure, balloon device gets notified by memory failure notifier list, and tells the host to recover the corrupted PFN(GPA) by the new VQ.
+
+5, host side remaps the corrupted page(HVA), and tells the guest side to unpoison the PFN(GPA). Then the guest fixes the corrupted page(GPA) dynamically.
+
+Thanks to Naoya & David for the suggestions!
+
+v1:
+- move clear_hwpoisoned_pages() from sparse.c to memory-failure.c.
+- simplify num_poisoned_pages_dec().
+- call hwpoison_filter() early in memory_failure().
+- add hwpoison_filter for soft offline.
+
+zhenwei pi (5):
+  mm/memory-failure.c: move clear_hwpoisoned_pages
+  mm/memory-failure.c: simplify num_poisoned_pages_dec
+  mm/memory-failure.c: add hwpoison_filter for soft offline
+  mm/hwpoison: disable hwpoison filter during removing
+  mm/memory-failure.c: simplify num_poisoned_pages_inc/dec
+
+ mm/hwpoison-inject.c |  1 +
+ mm/internal.h        | 11 ++++++
+ mm/memory-failure.c  | 85 ++++++++++++++++++++++++--------------------
+ mm/page_alloc.c      |  1 -
+ mm/sparse.c          | 27 --------------
+ 5 files changed, 59 insertions(+), 66 deletions(-)
+
 -- 
-2.36.0
+2.20.1
 
