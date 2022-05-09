@@ -2,354 +2,265 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3780FC352A8
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4584C47084
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 08:57:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237573AbiEII7D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 04:59:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43284 "EHLO
+        id S237807AbiEII7j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 04:59:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235907AbiEIIx6 (ORCPT
+        with ESMTP id S236989AbiEIIts (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 04:53:58 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 703341F63A6;
-        Mon,  9 May 2022 01:50:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1652086201; x=1683622201;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=ieGfMLq5LDxsat388CrFyabnXfbuBIV0dPDiKawScOY=;
-  b=EMJpFW7+Jf8RMq8nHFAvxrR5Y9nFEHxGs/a0seMvBmHziYolP5QGltzJ
-   rXpxCdop1tT3C/0r47yEZs0pFvC2JkXe9wTUWr39QyXd/a0PXN11y2ZU1
-   GV93dPzwHzYuE3i46uLiHfPrhVTwkw2OMV7+fHuN0HLUnc1prbGTXun3Z
-   UJHE02+KYy2eJmVaW6ADCtq4WKMdG58ZfbtDmTkDzxqnfZz9HOWdvnTzq
-   v7uPdJ2FiWrMCbEtYgzAg+wpHknj9ZDq2SAT3f9e/UFVJhx1MUL5ymhGR
-   dQnLP+k4wKfLmUGpAfBXWUn+l2l+SJXPs/Q18CrK2kfhmL6Kv2ZhASTrX
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.91,210,1647327600"; 
-   d="scan'208";a="94992693"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 May 2022 01:49:55 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 9 May 2022 01:49:55 -0700
-Received: from kavya-HP-Compaq-6000-Pro-SFF-PC.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 9 May 2022 01:49:50 -0700
-From:   Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
-To:     <krzysztof.kozlowski+dt@linaro.org>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>,
-        <peda@axentia.se>
-CC:     <devicetree@vger.kernel.org>,
+        Mon, 9 May 2022 04:49:48 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F296619B3AF;
+        Mon,  9 May 2022 01:45:52 -0700 (PDT)
+X-UUID: b13aee952fc048978f6059a48e5462e1-20220509
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:7730f550-ca22-4d26-a3ed-1240a9238bbc,OB:0,LO
+        B:0,IP:0,URL:8,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:53
+X-CID-INFO: VERSION:1.1.4,REQID:7730f550-ca22-4d26-a3ed-1240a9238bbc,OB:0,LOB:
+        0,IP:0,URL:8,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:53
+X-CID-META: VersionHash:faefae9,CLOUDID:c1f019b3-56b5-4c9e-8d83-0070b288eb6a,C
+        OID:f2f2a8b00f34,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
+        ,QS:0,BEC:nil
+X-UUID: b13aee952fc048978f6059a48e5462e1-20220509
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1070502207; Mon, 09 May 2022 16:45:47 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Mon, 9 May 2022 16:45:46 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 9 May 2022 16:45:46 +0800
+Message-ID: <fbbbc7e6a951bdde648ddd896f1fa163dafa16f1.camel@mediatek.com>
+Subject: Re: [PATCH v2 1/3] dt-bindings: mediatek: add vdosys1 RDMA
+ definition for mt8195
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "chunkuang.hu@kernel.org" <chunkuang.hu@kernel.org>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>
+CC:     "airlied@linux.ie" <airlied@linux.ie>,
+        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+        "angelogioacchino.delregno@collabora.com" 
+        <angelogioacchino.delregno@collabora.com>,
+        Jason-JH Lin =?UTF-8?Q?=28=E6=9E=97=E7=9D=BF=E7=A5=A5=29?= 
+        <Jason-JH.Lin@mediatek.com>,
+        Nancy Lin =?UTF-8?Q?=28=E6=9E=97=E6=AC=A3=E8=9E=A2=29?= 
+        <Nancy.Lin@mediatek.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "linux-arm-kernel@lists.infradead.org" 
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <lee.jones@linaro.org>,
-        <linux@armlinux.org.uk>, <Manohar.Puri@microchip.com>,
-        <Kavyasree.Kotagiri@microchip.com>, <UNGLinuxDriver@microchip.com>
-Subject: [PATCH v2 4/4] mux: lan966: Add support for flexcom mux controller
-Date:   Mon, 9 May 2022 14:19:20 +0530
-Message-ID: <20220509084920.14529-5-kavyasree.kotagiri@microchip.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220509084920.14529-1-kavyasree.kotagiri@microchip.com>
-References: <20220509084920.14529-1-kavyasree.kotagiri@microchip.com>
+        Project_Global_Chrome_Upstream_Group 
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Mon, 9 May 2022 16:45:46 +0800
+In-Reply-To: <a5c9e7ad-c4b5-e757-cd6d-f79de47d1ff3@linaro.org>
+References: <20220509044302.27878-1-rex-bc.chen@mediatek.com>
+         <20220509044302.27878-2-rex-bc.chen@mediatek.com>
+         <a5c9e7ad-c4b5-e757-cd6d-f79de47d1ff3@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-LAN966 SoC have 5 flexcoms. Each flexcom has 2 chip-selects.
-For each chip select of each flexcom there is a configuration
-register FLEXCOM_SHARED[0-4]:SS_MASK[0-1]. The width of
-configuration register is 21 because there are 21 shared pins
-on each of which the chip select can be mapped. Each bit of the
-register represents a different FLEXCOM_SHARED pin.
+On Mon, 2022-05-09 at 15:31 +0800, Krzysztof Kozlowski wrote:
+> On 09/05/2022 06:43, Rex-BC Chen wrote:
+> > From: "Nancy.Lin" <nancy.lin@mediatek.com>
+> > 
+> > Add vdosys1 RDMA definition.
+> > 
+> > Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
+> > Reviewed-by: AngeloGioacchino Del Regno <
+> > angelogioacchino.delregno@collabora.com>
+> > ---
+> >  .../display/mediatek/mediatek,mdp-rdma.yaml   | 94
+> > +++++++++++++++++++
+> >  1 file changed, 94 insertions(+)
+> >  create mode 100644
+> > Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-
+> > rdma.yaml
+> > 
+> > diff --git
+> > a/Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-
+> > rdma.yaml
+> > b/Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-
+> > rdma.yaml
+> > new file mode 100644
+> > index 000000000000..ca31accb0a95
+> > --- /dev/null
+> > +++
+> > b/Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-
+> > rdma.yaml
+> > @@ -0,0 +1,94 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: 
+> > https://urldefense.com/v3/__http://devicetree.org/schemas/display/mediatek/mediatek,mdp-rdma.yaml*__;Iw!!CTRNKA9wMg0ARbw!x6pqRSLbN1fx6j57PKXCTTp8n7bulgpLzXS8uUh5vAIxkRKD8K6EqOopnFrXvT54LQXmIEDFFvPQzC4ldr1TddEeTw$
+> >  
+> > +$schema: 
+> > https://urldefense.com/v3/__http://devicetree.org/meta-schemas/core.yaml*__;Iw!!CTRNKA9wMg0ARbw!x6pqRSLbN1fx6j57PKXCTTp8n7bulgpLzXS8uUh5vAIxkRKD8K6EqOopnFrXvT54LQXmIEDFFvPQzC4ldr3y-9sW3w$
+> >  
+> > +
+> > +title: MediaTek MDP RDMA
+> > +
+> > +maintainers:
+> > +  - Chun-Kuang Hu <chunkuang.hu@kernel.org>
+> > +  - Philipp Zabel <p.zabel@pengutronix.de>
+> > +
+> > +description:
+> > +  The MediaTek MDP RDMA stands for Read Direct Memory Access.
+> > +  It provides real time data to the back-end panel driver, such as
+> > DSI,
+> > +  DPI and DP_INTF.
+> > +  It contains one line buffer to store the sufficient pixel data.
+> > +  RDMA device node must be siblings to the central MMSYS_CONFIG
+> > node.
+> > +  For a description of the MMSYS_CONFIG binding, see
+> > +  Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.ya
+> > ml for details.
+> > +
+> > +properties:
+> > +  compatible:
+> > +    oneOf:
+> 
+> oneOf is not needed
+> 
+> > +      - items:
+> 
+> items not needed, you have only one item.
+> 
 
-Signed-off-by: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
----
- arch/arm/mach-at91/Kconfig  |   2 +
- drivers/mfd/atmel-flexcom.c |  55 +++++++++++++++-
- drivers/mux/Kconfig         |  12 ++++
- drivers/mux/Makefile        |   2 +
- drivers/mux/lan966-flx.c    | 121 ++++++++++++++++++++++++++++++++++++
- 5 files changed, 191 insertions(+), 1 deletion(-)
- create mode 100644 drivers/mux/lan966-flx.c
+Hello Krzysztof,
 
-diff --git a/arch/arm/mach-at91/Kconfig b/arch/arm/mach-at91/Kconfig
-index 279810381256..26fb0f4e1b79 100644
---- a/arch/arm/mach-at91/Kconfig
-+++ b/arch/arm/mach-at91/Kconfig
-@@ -74,6 +74,8 @@ config SOC_LAN966
- 	select DW_APB_TIMER_OF
- 	select ARM_GIC
- 	select MEMORY
-+	select MULTIPLEXER
-+	select MUX_LAN966
- 	help
- 	  This enables support for ARMv7 based Microchip LAN966 SoC family.
- 
-diff --git a/drivers/mfd/atmel-flexcom.c b/drivers/mfd/atmel-flexcom.c
-index 559eb4d352b6..7cfd0fc3f4f0 100644
---- a/drivers/mfd/atmel-flexcom.c
-+++ b/drivers/mfd/atmel-flexcom.c
-@@ -17,6 +17,7 @@
- #include <linux/io.h>
- #include <linux/clk.h>
- #include <dt-bindings/mfd/atmel-flexcom.h>
-+#include <linux/mux/consumer.h>
- 
- /* I/O register offsets */
- #define FLEX_MR		0x0	/* Mode Register */
-@@ -28,6 +29,10 @@
- #define FLEX_MR_OPMODE(opmode)	(((opmode) << FLEX_MR_OPMODE_OFFSET) &	\
- 				 FLEX_MR_OPMODE_MASK)
- 
-+struct atmel_flex_caps {
-+	bool has_flx_mux;
-+};
-+
- struct atmel_flexcom {
- 	void __iomem *base;
- 	u32 opmode;
-@@ -37,6 +42,7 @@ struct atmel_flexcom {
- static int atmel_flexcom_probe(struct platform_device *pdev)
- {
- 	struct device_node *np = pdev->dev.of_node;
-+	const struct atmel_flex_caps *caps;
- 	struct resource *res;
- 	struct atmel_flexcom *ddata;
- 	int err;
-@@ -76,13 +82,60 @@ static int atmel_flexcom_probe(struct platform_device *pdev)
- 	 */
- 	writel(FLEX_MR_OPMODE(ddata->opmode), ddata->base + FLEX_MR);
- 
-+	caps = of_device_get_match_data(&pdev->dev);
-+	if (!caps) {
-+		dev_err(&pdev->dev, "Could not retrieve flexcom caps\n");
-+		return -EINVAL;
-+	}
-+
-+	/* Flexcom Mux */
-+	if (caps->has_flx_mux && of_property_read_bool(np, "mux-controls")) {
-+		struct mux_control *flx_mux;
-+		struct of_phandle_args args;
-+		int i, count;
-+
-+		flx_mux = devm_mux_control_get(&pdev->dev, NULL);
-+		if (IS_ERR(flx_mux))
-+			return PTR_ERR(flx_mux);
-+
-+		count = of_property_count_strings(np, "mux-control-names");
-+		for (i = 0; i < count; i++) {
-+			err = of_parse_phandle_with_fixed_args(np, "mux-controls", 1, i, &args);
-+			if (err)
-+				break;
-+
-+			err = mux_control_select(flx_mux, args.args[0]);
-+			if (!err) {
-+				mux_control_deselect(flx_mux);
-+			} else {
-+				dev_err(&pdev->dev, "Failed to select FLEXCOM mux\n");
-+				return err;
-+			}
-+		}
-+	}
-+
- 	clk_disable_unprepare(ddata->clk);
- 
- 	return devm_of_platform_populate(&pdev->dev);
- }
- 
-+static const struct atmel_flex_caps atmel_flexcom_caps = {};
-+
-+static const struct atmel_flex_caps lan966x_flexcom_caps = {
-+	.has_flx_mux = true,
-+};
-+
- static const struct of_device_id atmel_flexcom_of_match[] = {
--	{ .compatible = "atmel,sama5d2-flexcom" },
-+	{
-+		.compatible = "atmel,sama5d2-flexcom",
-+		.data = &atmel_flexcom_caps,
-+	},
-+
-+	{
-+		.compatible = "microchip,lan966-flexcom",
-+		.data = &lan966x_flexcom_caps,
-+	},
-+
- 	{ /* sentinel */ }
- };
- MODULE_DEVICE_TABLE(of, atmel_flexcom_of_match);
-diff --git a/drivers/mux/Kconfig b/drivers/mux/Kconfig
-index e5c571fd232c..ea09f474bc2f 100644
---- a/drivers/mux/Kconfig
-+++ b/drivers/mux/Kconfig
-@@ -45,6 +45,18 @@ config MUX_GPIO
- 	  To compile the driver as a module, choose M here: the module will
- 	  be called mux-gpio.
- 
-+config MUX_LAN966
-+	tristate "LAN966 Flexcom multiplexer"
-+	depends on OF || COMPILE_TEST
-+	help
-+	Lan966 Flexcom Multiplexer controller.
-+
-+	The driver supports mapping 2 chip-selects of each of the lan966
-+	flexcoms to 21 flexcom shared pins.
-+
-+	To compile the driver as a module, choose M here: the module will
-+	be called mux-lan966.
-+
- config MUX_MMIO
- 	tristate "MMIO/Regmap register bitfield-controlled Multiplexer"
- 	depends on OF || COMPILE_TEST
-diff --git a/drivers/mux/Makefile b/drivers/mux/Makefile
-index 6e9fa47daf56..53a9840d96fa 100644
---- a/drivers/mux/Makefile
-+++ b/drivers/mux/Makefile
-@@ -7,10 +7,12 @@ mux-core-objs			:= core.o
- mux-adg792a-objs		:= adg792a.o
- mux-adgs1408-objs		:= adgs1408.o
- mux-gpio-objs			:= gpio.o
-+mux-lan966-objs			:= lan966-flx.o
- mux-mmio-objs			:= mmio.o
- 
- obj-$(CONFIG_MULTIPLEXER)	+= mux-core.o
- obj-$(CONFIG_MUX_ADG792A)	+= mux-adg792a.o
- obj-$(CONFIG_MUX_ADGS1408)	+= mux-adgs1408.o
- obj-$(CONFIG_MUX_GPIO)		+= mux-gpio.o
-+obj-$(CONFIG_MUX_LAN966)	+= mux-lan966.o
- obj-$(CONFIG_MUX_MMIO)		+= mux-mmio.o
-diff --git a/drivers/mux/lan966-flx.c b/drivers/mux/lan966-flx.c
-new file mode 100644
-index 000000000000..2c7dab616a6a
---- /dev/null
-+++ b/drivers/mux/lan966-flx.c
-@@ -0,0 +1,121 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * LAN966 Flexcom MUX driver
-+ *
-+ * Copyright (c) 2022 Microchip Inc.
-+ *
-+ * Author: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
-+ */
-+
-+#include <linux/err.h>
-+#include <linux/module.h>
-+#include <linux/of_platform.h>
-+#include <linux/platform_device.h>
-+#include <linux/property.h>
-+#include <linux/mux/driver.h>
-+#include <linux/io.h>
-+
-+#define FLEX_SHRD_MASK		0x1FFFFF
-+#define LAN966_MAX_CS		21
-+
-+static void __iomem *flx_shared_base;
-+struct mux_lan966x {
-+	u32 offset;
-+	u32 ss_pin;
-+};
-+
-+static int mux_lan966x_set(struct mux_control *mux, int state)
-+{
-+	struct mux_lan966x *mux_lan966x = mux_chip_priv(mux->chip);
-+	u32 val;
-+
-+	val = ~(1 << mux_lan966x[state].ss_pin) & FLEX_SHRD_MASK;
-+	writel(val, flx_shared_base + mux_lan966x[state].offset);
-+
-+	return 0;
-+}
-+
-+static const struct mux_control_ops mux_lan966x_ops = {
-+	.set = mux_lan966x_set,
-+};
-+
-+static const struct of_device_id mux_lan966x_dt_ids[] = {
-+	{ .compatible = "microchip,lan966-flx-mux", },
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(of, mux_lan966x_dt_ids);
-+
-+static int mux_lan966x_probe(struct platform_device *pdev)
-+{
-+	struct device_node *np = pdev->dev.of_node;
-+	struct device *dev = &pdev->dev;
-+	struct mux_lan966x *mux_lan966x;
-+	struct mux_chip *mux_chip;
-+	int ret, num_fields, i;
-+
-+	ret = of_property_count_u32_elems(np, "mux-offset-pin");
-+	if (ret == 0 || ret % 2)
-+		ret = -EINVAL;
-+	if (ret < 0)
-+		return dev_err_probe(dev, ret,
-+				     "mux-offset-pin property missing or invalid");
-+	num_fields = ret / 2;
-+
-+	mux_chip = devm_mux_chip_alloc(dev, num_fields, sizeof(*mux_lan966x));
-+	if (IS_ERR(mux_chip))
-+		return dev_err_probe(dev, PTR_ERR(mux_chip),
-+				     "failed to allocate mux_chips\n");
-+
-+	mux_lan966x = mux_chip_priv(mux_chip);
-+
-+	flx_shared_base = devm_platform_get_and_ioremap_resource(pdev, 0, NULL);
-+	if (IS_ERR(flx_shared_base))
-+		return dev_err_probe(dev, PTR_ERR(flx_shared_base),
-+				     "failed to get flexcom shared base address\n");
-+
-+	for (i = 0; i < num_fields; i++) {
-+		struct mux_control *mux = &mux_chip->mux[i];
-+		u32 offset, shared_pin;
-+
-+		ret = of_property_read_u32_index(np, "mux-offset-pin",
-+						 2 * i, &offset);
-+		if (ret == 0)
-+			ret = of_property_read_u32_index(np, "mux-offset-pin",
-+							 2 * i + 1,
-+							 &shared_pin);
-+		if (ret < 0)
-+			return dev_err_probe(dev, ret,
-+					     "failed to read mux-offset-pin property: %d", i);
-+
-+		if (shared_pin >= LAN966_MAX_CS)
-+			return -EINVAL;
-+
-+		mux_lan966x[i].offset = offset;
-+		mux_lan966x[i].ss_pin = shared_pin;
-+
-+		mux->states = LAN966_MAX_CS;
-+	}
-+
-+	mux_chip->ops = &mux_lan966x_ops;
-+
-+	ret = devm_mux_chip_register(dev, mux_chip);
-+	if (ret < 0)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+static struct platform_driver mux_lan966x_driver = {
-+	.driver = {
-+		.name = "lan966-mux",
-+		.of_match_table	= of_match_ptr(mux_lan966x_dt_ids),
-+	},
-+	.probe = mux_lan966x_probe,
-+};
-+
-+module_platform_driver(mux_lan966x_driver);
-+
-+MODULE_DESCRIPTION("LAN966 Flexcom multiplexer driver");
-+MODULE_AUTHOR("Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>");
-+MODULE_LICENSE("GPL v2");
-+
--- 
-2.17.1
+Thanks for your review.
+ok, we will drop them.
+
+> > +          - const: mediatek,mt8195-vdo1-rdma
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  interrupts:
+> > +    maxItems: 1
+> > +
+> > +  power-domains:
+> > +    description: A phandle and PM domain specifier as defined by
+> > bindings of
+> > +      the power controller specified by phandle. See
+> > +      Documentation/devicetree/bindings/power/power-domain.yaml
+> > for details.
+> 
+> Skip description, it's obvious. Instead maxItems.
+> 
+
+ok, we will fix it.
+
+> > +
+> > +  clocks:
+> > +    items:
+> > +      - description: RDMA Clock
+> > +
+> > +  iommus:
+> > +    description:
+> > +      This property should point to the respective IOMMU block
+> > with master port as argument,
+> > +      see
+> > Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml for
+> > details.
+> 
+> Skip description, it's obvious. Instead maxItems.
+> 
+
+ok, we will fix it.
+
+> > +
+> > +  mediatek,gce-client-reg:
+> > +    description:
+> > +      The register of display function block to be set by gce.
+> > There are 4 arguments,
+> > +      such as gce node, subsys id, offset and register size. The
+> > subsys id that is
+> > +      mapping to the register of display function blocks is
+> > defined in the gce header
+> > +      include/include/dt-bindings/gce/<chip>-gce.h of each chips.
+> 
+> Double "include" in the path.
+
+ok, we will fix it.
+
+> 
+> > +    $ref: /schemas/types.yaml#/definitions/phandle-array
+> > +    items:
+> > +      items:
+> > +        - description: phandle of GCE
+> > +        - description: GCE subsys id
+> > +        - description: register offset
+> > +        - description: register size
+> > +    maxItems: 1
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - power-domains
+> > +  - clocks
+> > +  - iommus
+> > +  - mediatek,gce-client-reg
+> > +
+> > +additionalProperties: false
+> > +
+> > +examples:
+> > +  - |
+> > +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> > +    #include <dt-bindings/clock/mt8195-clk.h>
+> > +    #include <dt-bindings/power/mt8195-power.h>
+> > +    #include <dt-bindings/gce/mt8195-gce.h>
+> > +    #include <dt-bindings/memory/mt8195-memory-port.h>
+> > +
+> > +    soc {
+> > +        #address-cells = <2>;
+> > +        #size-cells = <2>;
+> > +
+> > +        vdo1_rdma0: mdp-rdma@1c104000 {
+> 
+> Generic node name. dma-controller (if it does not conflict with
+> dma-common.yaml schema)?
+
+We don't understand what dma-controller you are referring to? Can you
+help explain more? Thanks!
+
+BRs,
+Rex
+
+> 
+> > +            compatible = "mediatek,mt8195-vdo1-rdma";
+> > +            reg = <0 0x1c104000 0 0x1000>;
+> > +            interrupts = <GIC_SPI 495 IRQ_TYPE_LEVEL_HIGH 0>;
+> > +            clocks = <&vdosys1 CLK_VDO1_MDP_RDMA0>;
+> > +            power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS1>;
+> > +            iommus = <&iommu_vdo M4U_PORT_L2_MDP_RDMA0>;
+> > +            mediatek,gce-client-reg = <&gce0 SUBSYS_1c10XXXX
+> > 0x4000 0x1000>;
+> > +        };
+> > +    };
+> 
+> 
+> Best regards,
+> Krzysztof
 
