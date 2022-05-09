@@ -2,114 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED2ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 15:10:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92E3DC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 15:14:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238049AbiEIPOQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 11:14:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37978 "EHLO
+        id S238148AbiEIPQI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 11:16:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238029AbiEIPOI (ORCPT
+        with ESMTP id S238078AbiEIPP4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 11:14:08 -0400
-Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97A1428B87B
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 08:10:13 -0700 (PDT)
-Received: by mail-qv1-xf31.google.com with SMTP id kj8so10613986qvb.6
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 08:10:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=4MK5Z5duMa87oHfTgQRev3JJqnSTwXWH5fVcV34L7dM=;
-        b=l+MeEY8PFGfskD3FsCOlvSab9XgG1oPg/iynQwlXTFrp/alh8KkZYehnFpakdk+2y6
-         jKiO9k7kOkYPU29eqCecdB6DUs7C1PNR2Ev/yXH8aw2fNbvvy9l/YtVVbQahxBmKHV76
-         m/29e1REy8tS9WU0KLk8b+3BVI/mNjWrTP6+evBbdVEgKqv6XW/bg6XuZXwtDZOlT/Hf
-         fQDDLvknV+r9yrtTnJrM1LaVNhutiu1tHOYhsUCqSsvBfrOsnuazqm6H4R9vbMlZoy6J
-         3FHixuJyOBVhZ7sr+23dJSEwCWrY0/paq2Z0MtQCeTzBTz5qsjpX6Mro80MNDaSvgMJT
-         nGGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=4MK5Z5duMa87oHfTgQRev3JJqnSTwXWH5fVcV34L7dM=;
-        b=f1d6KxDow25XBGnGkVRJ3rcyqDATj49tAPs9CRrnK9+aF5NvkjlXxLOqhIm7qrgue1
-         af3iNAtWnl8Fd4y0Hrqp+zx56UAd/Jf1EVNSjQIh20wZxYCFuAoxZrSIBKr1DDGsqZO/
-         6RerlXHsicnDFMOlYG+sWhemOPLn4oC1mPTJhvZD7ER+11a8kRxhLxsEjQl5QKhqsi9C
-         Kv+vJLMpyEesCoSp1nGjk6Wlp3JfOy9bUWngMV6iwApmOq7OUwfqBM2L5ubwrC+Tqsc2
-         oex4+exAQi17/m0MCVfP8eqFIg6Tu2S18Ed5jZSCrvp5Ac1qtSCiHTOsGvquPQ9Ivmrf
-         IB5w==
-X-Gm-Message-State: AOAM530TQVRpAva9JAysscEwyJN0VOwNvXFH6TlKRAJyLgDJ1Vm6g+gk
-        vJOoBKWNODNbznXYxZGdQdmAuQ==
-X-Google-Smtp-Source: ABdhPJyrdOc5aCCIZRy/kHlzbTcozCuWKwx16OcowRT8isOJHxngJEvIX80+q3pDpiFPpK3GOzPE2A==
-X-Received: by 2002:ad4:5504:0:b0:456:35e0:1968 with SMTP id az4-20020ad45504000000b0045635e01968mr13517316qvb.126.1652109012556;
-        Mon, 09 May 2022 08:10:12 -0700 (PDT)
-Received: from localhost ([2620:10d:c091:480::1:538c])
-        by smtp.gmail.com with ESMTPSA id n1-20020ac81e01000000b002f39b99f679sm7883463qtl.19.2022.05.09.08.10.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 08:10:11 -0700 (PDT)
-Date:   Mon, 9 May 2022 11:09:15 -0400
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     David Vernet <void@manifault.com>
-Cc:     Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
-        akpm@linux-foundation.org, tj@kernel.org, roman.gushchin@linux.dev,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        cgroups@vger.kernel.org, mhocko@kernel.org, shakeelb@google.com,
-        kernel-team@fb.com, Richard Palethorpe <rpalethorpe@suse.com>
-Subject: Re: [PATCH v2 2/5] cgroup: Account for memory_recursiveprot in
- test_memcg_low()
-Message-ID: <Ynkum8DeJIAtGi9y@cmpxchg.org>
-References: <20220423155619.3669555-1-void@manifault.com>
- <20220423155619.3669555-3-void@manifault.com>
- <20220427140928.GD9823@blackbody.suse.cz>
- <20220429010333.5rt2jwpiumnbuapf@dev0025.ash9.facebook.com>
- <20220429092620.GA23621@blackbody.suse.cz>
- <20220506164015.fsdsuv226nhllos5@dev0025.ash9.facebook.com>
+        Mon, 9 May 2022 11:15:56 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9BA115E624;
+        Mon,  9 May 2022 08:12:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=pqsJDz6qnnvShqx1Sral3htZd6sOhUooH5JnGt+uNbA=; b=nl/ZNhhfBjpKQcfCiuuktzjyYF
+        7hzJCoDh+Z4e21DuYXpsouSMiCAjGQFIO2m/d3/wkURLxL5MY46JA/QOEPbVsbAhoy62WXWD4qGUR
+        cw/L0waUJLGU3WOMfPy/Dd8hMzm6G641/Yn+oonq7SI7tletQQubpJTfAa/2RUtRVrHg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1no535-001xeg-BT; Mon, 09 May 2022 17:11:47 +0200
+Date:   Mon, 9 May 2022 17:11:47 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Wan Jiabing <wanjiabing@vivo.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 net] net: phy: micrel: Fix incorret variable type in
+ micrel
+Message-ID: <YnkvM5iuSuAOqBg+@lunn.ch>
+References: <20220509144519.2343399-1-wanjiabing@vivo.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220506164015.fsdsuv226nhllos5@dev0025.ash9.facebook.com>
+In-Reply-To: <20220509144519.2343399-1-wanjiabing@vivo.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 06, 2022 at 09:40:15AM -0700, David Vernet wrote:
-> Sorry for the delayed reply, Michal. I've been at LSFMM this week.
+On Mon, May 09, 2022 at 10:45:19PM +0800, Wan Jiabing wrote:
+> In lanphy_read_page_reg, calling __phy_read() might return a negative
+> error code. Use 'int' to check the error code.
 > 
-> On Fri, Apr 29, 2022 at 11:26:20AM +0200, Michal Koutný wrote:
-> > I still think that the behavior when there's no protection left for the
-> > memory.low == 0 child, there should be no memory.low events (not just
-> > uncounted but not happening) and test should not accept this (even
-> > though it's the current behavior).
->
-> That's fair. I think part of the problem here is that in general, the
-> memcontroller itself is quite heuristic, so it's tough to write tests that
-> provide useful coverage while also being sufficiently flexible to avoid
-> flakiness and over-prescribing expected behavior. In this case I think it's
-> probably correct that the memory.low == 0 child shouldn't inherit
-> protection from its parent under any circumstances due to its siblings
-> overcommitting the parent's protection, but I also wonder if it's really
-> necessary to enforce that. If you look at how much memory A/B/E gets at the
-> end of the reclaim, it's still far less than 1MB (though should it be 0?).
-> I'd be curious to hear what Johannes thinks.
+> Fixes: 7c2dcfa295b1 ("net: phy: micrel: Add support for LAN8804 PHY")
+> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
 
-We need to distinguish between what the siblings declare and what they
-consume.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-My understanding of the issue you're raising, Michal, is that
-protected siblings start with current > low, then get reclaimed
-slightly too much and end up with current < low. This results in a
-tiny bit of float that then gets assigned to the low=0 sibling; when
-that sibling gets reclaimed regardless, it sees a low event. Correct
-me if I missed a detail or nuance here.
-
-But unused float going to siblings is intentional. This is documented
-in point 3 in the comment above effective_protection(): if you use
-less than you're legitimately claiming, the float goes to your
-siblings. So the problem doesn't seem to be with low accounting and
-event generation, but rather it's simply overreclaim.
-
-It's conceivable to make reclaim more precise and then tighten up the
-test. But right now, David's patch looks correct to me.
+    Andrew
