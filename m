@@ -2,104 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0749AC3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33B94C35280
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:34:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238090AbiEIJec (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 05:34:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55664 "EHLO
+        id S237357AbiEIJeu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 05:34:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238016AbiEIJDh (ORCPT
+        with ESMTP id S237917AbiEIJII (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 05:03:37 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC72D1A3B8
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 01:59:44 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id k1so13248781pll.4
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 01:59:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sx4X5idiTB8diHSkHofGP7McwC9VOX2bxNNbtsqQ25g=;
-        b=RTlCVXMRkBRx7ZUc8I4lCbIk1BB+b9OR4ZKDkuCW8re6QEYw7hwZB3O7t3HZGsPpVX
-         8+9CANeoTlvXFyxID9IUrFZjtLX0lgWFhRDKB/IJb6m701ulacPVPInNOwbjLcsWsC6a
-         rA2O4a98nRz8o+wDHPdBKWhfGRmn2ynDZL8uY5Guat4KzCLWX90WLm3yB6v57kyC+cfF
-         29QLm4X/ty4ir2S1FKPJbujvf7oIyRJV30Xrr+IE2OfkfbeLKbifEX6EgJz81u46grF1
-         Pn05W4Y+UCDp6zj7rasqXbbiiTzyqgQ+P0uSo6PDguSEeh7uKwseBPSKhnG6rUS1F/3v
-         0waw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sx4X5idiTB8diHSkHofGP7McwC9VOX2bxNNbtsqQ25g=;
-        b=1V8iovVuF/jfhjtFCz92j9jZwzoJpiWRBRf6MDz+TbbW0+anAeKOLeunY+uoI28dyW
-         aiC0ey48Ia7fIBIRi/sSkxfgN0H5gxYvHK+EuMRNvqHawLAfQ90dsa1EJjlJJkwAy80M
-         1Jj/P3BNLDuJhGDq4kVz721MYUU6EcyxgkQXXWSUMe5kMRmppNcVxJCoBHDSB6g/04Bc
-         Z8NuwqpceoHANLBdBA+7cYNMMypRZzpP8tXHXI/y7dcMOAfmp3BNKW5JKr8u8fkuA2vC
-         kBrKEIPa/RHkQUYU5qbKVl0rExKGwggYepxD9IHqDPbLOQKJ3JWfUQsbdE5u2fnN8UhV
-         /zBg==
-X-Gm-Message-State: AOAM532GIePZO3eVAWRoI3wFKzY9xurskZv5fGf68bez/uNsOhw6qQbQ
-        rI0wOiwxY3sVKIGN1l+Rkw==
-X-Google-Smtp-Source: ABdhPJwSUOEf5enWGUDjDGUYXVYfE7P7K5G3N+W0oPGsMNLPlQZ1JtL9o+AiSKOGqoPSgCM6dHWZWA==
-X-Received: by 2002:a17:90b:3445:b0:1d6:91a5:29fe with SMTP id lj5-20020a17090b344500b001d691a529femr25286739pjb.138.1652086784472;
-        Mon, 09 May 2022 01:59:44 -0700 (PDT)
-Received: from localhost.localdomain ([144.202.91.207])
-        by smtp.gmail.com with ESMTPSA id t15-20020a1709028c8f00b0015e8d4eb1d7sm6455346plo.33.2022.05.09.01.59.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 01:59:44 -0700 (PDT)
-From:   Zheyu Ma <zheyuma97@gmail.com>
-To:     lgirdwood@gmail.com, broonie@kernel.org, perex@perex.cz,
-        tiwai@suse.com
-Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        Zheyu Ma <zheyuma97@gmail.com>
-Subject: [PATCH] ASoC: tlv320adcx140: Register a callback to disable the regulator_disable
-Date:   Mon,  9 May 2022 16:59:25 +0800
-Message-Id: <20220509085925.1548328-1-zheyuma97@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 9 May 2022 05:08:08 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2D601D737D
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 02:04:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1652087053; x=1683623053;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=WM3JFuf+XYcullGR01eKGb7NQo6CAvDdzpgDWQsXV8g=;
+  b=kPX4dKOfqtO/CoRb/NP6p3dWygLBnkyZ9uf/UxVZnWs5Ae/41zsdjrNK
+   8ONa+UluSl3mIIhOHQN2IKQHPr8VAgofmAgJi0KlXhOC5urQI/kbbP8Bx
+   aDQnj0XVUc50hnZke4NZpOAB+gQqMyXnY2M2D6+x/saTU4BatCABlGi6l
+   t3jf/vf1m8j2tRWImhuEnc934Jg+rU0QjJwDPR8ZqtJMdP7PzbtuZVvOe
+   HQLbI+tlt/x+UAttID29OZ92WRw+jeV9UkkuunS4TC/L4xdneeYR1GJHP
+   +xptJ2X471Giw9j1QWkl4FRFPLQYg3HI4L7Q1D75rnFs7sjXnsrjWO4GN
+   g==;
+X-IronPort-AV: E=Sophos;i="5.91,210,1647327600"; 
+   d="scan'208";a="163213408"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 May 2022 02:04:13 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 9 May 2022 02:04:12 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 9 May 2022 02:04:11 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <daniel.lezcano@linaro.org>, <tglx@linutronix.de>
+CC:     <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH 1/3] clocksource/drivers/timer-microchip-pit64b: remove suspend/resume ops for ce
+Date:   Mon, 9 May 2022 12:06:35 +0300
+Message-ID: <20220509090637.4058399-2-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220509090637.4058399-1-claudiu.beznea@microchip.com>
+References: <20220509090637.4058399-1-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The driver should register a callback that will deal with the disabling
-when it fails to probe.
+Remove suspend and resume ops for clockevent and add set_state_oneshot()
+instead. Along with this mchp_pit64b_{suspend, resume}() were called on
+proper function to disable/enable clocks. This will allow disabling clocks
+for clockevent in case it is not selected as active clockevent.
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
- sound/soc/codecs/tlv320adcx140.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/clocksource/timer-microchip-pit64b.c | 30 +++++++++++---------
+ 1 file changed, 16 insertions(+), 14 deletions(-)
 
-diff --git a/sound/soc/codecs/tlv320adcx140.c b/sound/soc/codecs/tlv320adcx140.c
-index 32b120d624b2..f70ea59259f1 100644
---- a/sound/soc/codecs/tlv320adcx140.c
-+++ b/sound/soc/codecs/tlv320adcx140.c
-@@ -1083,6 +1083,13 @@ static const struct of_device_id tlv320adcx140_of_match[] = {
- MODULE_DEVICE_TABLE(of, tlv320adcx140_of_match);
- #endif
- 
-+static void adcx140_disable_regulator(void *arg)
-+{
-+	struct adcx140_priv *adcx140 = arg;
-+
-+	regulator_disable(adcx140->supply_areg);
-+}
-+
- static int adcx140_i2c_probe(struct i2c_client *i2c,
- 			     const struct i2c_device_id *id)
+diff --git a/drivers/clocksource/timer-microchip-pit64b.c b/drivers/clocksource/timer-microchip-pit64b.c
+index abce83d2f00b..b51259395ac3 100644
+--- a/drivers/clocksource/timer-microchip-pit64b.c
++++ b/drivers/clocksource/timer-microchip-pit64b.c
+@@ -173,7 +173,8 @@ static int mchp_pit64b_clkevt_shutdown(struct clock_event_device *cedev)
  {
-@@ -1113,6 +1120,10 @@ static int adcx140_i2c_probe(struct i2c_client *i2c,
- 			dev_err(adcx140->dev, "Failed to enable areg\n");
- 			return ret;
- 		}
-+
-+		ret = devm_add_action_or_reset(&i2c->dev, adcx140_disable_regulator, adcx140);
-+		if (ret)
-+			return ret;
- 	}
+ 	struct mchp_pit64b_timer *timer = clkevt_to_mchp_pit64b_timer(cedev);
  
- 	adcx140->regmap = devm_regmap_init_i2c(i2c, &adcx140_i2c_regmap);
+-	writel_relaxed(MCHP_PIT64B_CR_SWRST, timer->base + MCHP_PIT64B_CR);
++	if (!clockevent_state_detached(cedev))
++		mchp_pit64b_suspend(timer);
+ 
+ 	return 0;
+ }
+@@ -182,35 +183,37 @@ static int mchp_pit64b_clkevt_set_periodic(struct clock_event_device *cedev)
+ {
+ 	struct mchp_pit64b_timer *timer = clkevt_to_mchp_pit64b_timer(cedev);
+ 
++	if (clockevent_state_shutdown(cedev))
++		mchp_pit64b_resume(timer);
++
+ 	mchp_pit64b_reset(timer, mchp_pit64b_ce_cycles, MCHP_PIT64B_MR_CONT,
+ 			  MCHP_PIT64B_IER_PERIOD);
+ 
+ 	return 0;
+ }
+ 
+-static int mchp_pit64b_clkevt_set_next_event(unsigned long evt,
+-					     struct clock_event_device *cedev)
++static int mchp_pit64b_clkevt_set_oneshot(struct clock_event_device *cedev)
+ {
+ 	struct mchp_pit64b_timer *timer = clkevt_to_mchp_pit64b_timer(cedev);
+ 
+-	mchp_pit64b_reset(timer, evt, MCHP_PIT64B_MR_ONE_SHOT,
++	if (clockevent_state_shutdown(cedev))
++		mchp_pit64b_resume(timer);
++
++	mchp_pit64b_reset(timer, mchp_pit64b_ce_cycles, MCHP_PIT64B_MR_ONE_SHOT,
+ 			  MCHP_PIT64B_IER_PERIOD);
+ 
+ 	return 0;
+ }
+ 
+-static void mchp_pit64b_clkevt_suspend(struct clock_event_device *cedev)
++static int mchp_pit64b_clkevt_set_next_event(unsigned long evt,
++					     struct clock_event_device *cedev)
+ {
+ 	struct mchp_pit64b_timer *timer = clkevt_to_mchp_pit64b_timer(cedev);
+ 
+-	mchp_pit64b_suspend(timer);
+-}
+-
+-static void mchp_pit64b_clkevt_resume(struct clock_event_device *cedev)
+-{
+-	struct mchp_pit64b_timer *timer = clkevt_to_mchp_pit64b_timer(cedev);
++	mchp_pit64b_reset(timer, evt, MCHP_PIT64B_MR_ONE_SHOT,
++			  MCHP_PIT64B_IER_PERIOD);
+ 
+-	mchp_pit64b_resume(timer);
++	return 0;
+ }
+ 
+ static irqreturn_t mchp_pit64b_interrupt(int irq, void *dev_id)
+@@ -395,9 +398,8 @@ static int __init mchp_pit64b_init_clkevt(struct mchp_pit64b_timer *timer,
+ 	ce->clkevt.rating = 150;
+ 	ce->clkevt.set_state_shutdown = mchp_pit64b_clkevt_shutdown;
+ 	ce->clkevt.set_state_periodic = mchp_pit64b_clkevt_set_periodic;
++	ce->clkevt.set_state_oneshot = mchp_pit64b_clkevt_set_oneshot;
+ 	ce->clkevt.set_next_event = mchp_pit64b_clkevt_set_next_event;
+-	ce->clkevt.suspend = mchp_pit64b_clkevt_suspend;
+-	ce->clkevt.resume = mchp_pit64b_clkevt_resume;
+ 	ce->clkevt.cpumask = cpumask_of(0);
+ 	ce->clkevt.irq = irq;
+ 
 -- 
-2.25.1
+2.34.1
 
