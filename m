@@ -2,75 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AA67C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 11:13:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 492ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 11:16:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232494AbiEILRj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 07:17:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38464 "EHLO
+        id S232342AbiEILUm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 07:20:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232456AbiEILRS (ORCPT
+        with ESMTP id S232286AbiEILUi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 07:17:18 -0400
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70C0A1BD72B;
-        Mon,  9 May 2022 04:13:22 -0700 (PDT)
-Received: by mail-wr1-f46.google.com with SMTP id e2so18928979wrh.7;
-        Mon, 09 May 2022 04:13:22 -0700 (PDT)
+        Mon, 9 May 2022 07:20:38 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 375FB1C6C80
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 04:16:44 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id m2-20020a1ca302000000b003943bc63f98so8058976wme.4
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 04:16:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=jNOBE1z/4NtpGLe00EXXh4Iu7ejgcHgzbGnUckjMihw=;
+        b=WvdzSshWmxodyKHlw6VFoeqRqJESG3fTgU+7I4UwSjiytpfn8XZqxJYSvw9CVd7fCf
+         k6Kkw32dLAD4+IDNlIel9WEjVDjB8/qRninhCMqLZ4ZnIzv5Hw0gWmEfZTsGuWkv2HZf
+         lWZh0P36OMaddpkd7Wj+ExVdMlgsEF59SrAhYtILImU8N0lKcECHW0noMqjcZWMwMIhp
+         Vwy2EdGEgMxB3+AwgoNiyxalqy4iH3U+dx20/Pf0ui84FGgt/27RpNlHCLjToRJiPNlL
+         BKyP0jBH50B/Lm4odz69ikfLK6Ojo+7uKc0BoeUzj9Anp5d7P6iETJpIF5RwTRO6i4wq
+         QNqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=T4LAt8Asg06X7YXFQcHI6MAN9LrQ6fkQ8tBm57S4Ejs=;
-        b=QxRjhP3Zu9qW5iEu+QAg4OH43uvDv/9AMvL1ZkROknil0P7diJha+5uNWGG3Gl1AZR
-         CrB81dDwVTaHLLA3aspMk+Ws6jSA1FOmkdrepNfsPdCWv5fVhGv0mA4pC9YUclZxxB/e
-         L+mqvOCLfimz1jv7YxqE+GHiLBeDvxDKrBkswuGEV1MltKEQ2VqsxBCiLole3JLkMwtN
-         vaFqEnirBEp9fO9PYPOiAIsdq5MDb+CxIIRHyhAI6Y3zfJvMP3j+0Y9y0es0MjLGf8vb
-         /utBvO5rkMBIm3FGEkXfJXZEhmHrBfDcLhSte/4XBQ+IA5VbLjpfehGpd8QQ7wpjbuJR
-         RGeg==
-X-Gm-Message-State: AOAM5325Uuib37LxqnYT2AKFGa962cijG/lZIY72WqgsXEoOMphSxW38
-        4fz8selY1nJ1pU2K8ZsmeHo+/f4qGgzrM0No
-X-Google-Smtp-Source: ABdhPJxDND7vbdlA5MD/2X7uKYc0iSgTVYyTgNvpg/WHGyKwyWq3RS3N3WJGNl+Vyvm3K1dxidaE6Q==
-X-Received: by 2002:a5d:5960:0:b0:20c:5a12:20ed with SMTP id e32-20020a5d5960000000b0020c5a1220edmr13399839wri.303.1652094800996;
-        Mon, 09 May 2022 04:13:20 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id j14-20020adfe50e000000b0020c6a524fd5sm12439829wrm.99.2022.05.09.04.13.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 04:13:20 -0700 (PDT)
-Message-ID: <b42bc4d1-cc9d-d115-c981-aaa053bdc59f@kernel.org>
-Date:   Mon, 9 May 2022 13:13:19 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=jNOBE1z/4NtpGLe00EXXh4Iu7ejgcHgzbGnUckjMihw=;
+        b=ep2Dq4VF4/mG9bphJZKnR220GeiC7mVxq2AoMELDw4sByXli0dQKocGtrCP7tmO9uC
+         UKvOVcrb5Tc4G0bAozs+WtGxQZNVXlHS/dhiKewf1NBmlcCWhWiWJ4qIQYrE4DsOK1Bi
+         OmR5Z8enTppma/p8a4UZ7dBD4X0lgyZqYG4DbHVcKRkCYnX/kUhdQv739P/fcnSHRUqQ
+         qG6tAONyU8FzpAdYjbc7/WaB9k16Ah6n+oWfMK4viNkB0/cjWa2ESnXbjjDmChr5FSnl
+         RWKgxDkj0ieMiPqs76b8KL6eCM7lAT4fUnKpnxlMTMABS6ZNsSKZgaX7o1qVJ77xkkxA
+         QqWg==
+X-Gm-Message-State: AOAM533zioIzsICCxJufCWjV+CxaP13lC1AF+vFDTz9ePoKf7In7Z2R6
+        64oajBIKeMZK0MXJUnuI4+38wA==
+X-Google-Smtp-Source: ABdhPJw/uA3KyEOb7IOfYdcJibXDQ2ibAG9h0d3kW5wk9pYdwo4Xg6EC+5Z1GD4ZWa2JBQRLRfPIJw==
+X-Received: by 2002:a7b:c215:0:b0:394:5235:fe1 with SMTP id x21-20020a7bc215000000b0039452350fe1mr21703152wmi.56.1652095002759;
+        Mon, 09 May 2022 04:16:42 -0700 (PDT)
+Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
+        by smtp.googlemail.com with ESMTPSA id x18-20020a5d4912000000b0020c5253d928sm10611514wrq.116.2022.05.09.04.16.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 May 2022 04:16:42 -0700 (PDT)
+Date:   Mon, 9 May 2022 13:16:38 +0200
+From:   LABBE Corentin <clabbe@baylibre.com>
+To:     Andre Przywara <andre.przywara@arm.com>
+Cc:     alexandre.torgue@foss.st.com, andrew@lunn.ch, broonie@kernel.org,
+        calvin.johnson@oss.nxp.com, davem@davemloft.net,
+        edumazet@google.com, hkallweit1@gmail.com,
+        jernej.skrabec@gmail.com, joabreu@synopsys.com,
+        krzysztof.kozlowski+dt@linaro.org, kuba@kernel.org,
+        lgirdwood@gmail.com, linux@armlinux.org.uk, pabeni@redhat.com,
+        peppe.cavallaro@st.com, robh+dt@kernel.org, samuel@sholland.org,
+        wens@csie.org, netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev
+Subject: Re: [PATCH 4/6] ARM: dts: sunxi: move phy regulator in PHY node
+Message-ID: <Ynj4FlyhZ3lEtLBT@Red>
+References: <20220509074857.195302-1-clabbe@baylibre.com>
+ <20220509074857.195302-5-clabbe@baylibre.com>
+ <20220509115533.1493db30@donnerap.cambridge.arm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 2/3] tty: n_gsm: fix mux activation issues in gsm_config()
-Content-Language: en-US
-To:     "Starke, Daniel" <daniel.starke@siemens.com>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <DB9PR10MB588149B7E9A31D3476762776E0C69@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <DB9PR10MB588149B7E9A31D3476762776E0C69@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220509115533.1493db30@donnerap.cambridge.arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09. 05. 22, 13:03, Starke, Daniel wrote:
->>>    static int gsm_config(struct gsm_mux *gsm, struct gsm_config *c)
->>>    {
->>> +	int ret = 0;
->>
->> Why is the initialization needed? You can as well declare the variable only inside the if below.
+Le Mon, May 09, 2022 at 11:55:33AM +0100, Andre Przywara a écrit :
+> On Mon,  9 May 2022 07:48:55 +0000
+> Corentin Labbe <clabbe@baylibre.com> wrote:
 > 
-> You are right, this was unneeded. But this patch was already included in
-> the tty-linus branch. Shall I resubmit it nevertheless?
+> Hi!
+> 
+> > Now that PHY core can handle regulators, move regulator handle in PHY
+> > node.
+> 
+> Other than this is somewhat more "correct", is it really needed for those
+> boards? Because it breaks compatibility with older kernels, so when we
+> update the DTs in U-Boot, we run into problems (again).
+> 
+> IIUC this series is about the OPi3 & friends, which didn't work with older
+> kernels anyway, so can we just skip this patch (and 5/6), to just enable
+> the boards that didn't work before?
+> 
+> Cheers,
+> Andre
+> 
 
-In that case, you can only send a fixup patch...
-
-thanks,
--- 
-js
-suse labs
+We could have a situation where stmmac handle phy for older boards, and PHY core handle them for new boards.
+Up to maintainers to see if they want a split situation or not.
