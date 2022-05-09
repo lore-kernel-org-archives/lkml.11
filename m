@@ -2,92 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB4B0C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBCE0C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 05:36:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231572AbiEIFhp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 01:37:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51254 "EHLO
+        id S230285AbiEIFh2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 01:37:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233749AbiEIFbJ (ORCPT
+        with ESMTP id S231927AbiEIFgF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 01:31:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 414BF3ED34
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 22:27:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652074036;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=eNbW88joc1WQormM6ug+550JQKLgPb1W/CR1qXZE5SQ=;
-        b=SLpt+2XVeBmkoZqUTY45/nhvjNePLKeNCG5wmW0Tr5BWsIrO9GE1EPkPeJApYndaAgwuHq
-        ZDsMNnfsBXXT2QTLpyovfVHWqyfjifc4vGt95pfHIamd/YjAdynzvHI1IZvjqdE5Db0+qm
-        nvvLEAOpiNN92WuRL9GZ0at66tUg8cA=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-622-V-K_kfjLMYiiNSbbAzXMAA-1; Mon, 09 May 2022 01:27:10 -0400
-X-MC-Unique: V-K_kfjLMYiiNSbbAzXMAA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id EAE7C85A5BE;
-        Mon,  9 May 2022 05:27:09 +0000 (UTC)
-Received: from localhost (ovpn-13-212.pek2.redhat.com [10.72.13.212])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 8DAE62166B2F;
-        Mon,  9 May 2022 05:27:02 +0000 (UTC)
-Date:   Mon, 9 May 2022 13:26:59 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Sourabh Jain <sourabhjain@linux.ibm.com>
-Cc:     Eric DeVolder <eric.devolder@oracle.com>,
-        linux-kernel@vger.kernel.org, x86@kernel.org,
-        kexec@lists.infradead.org, ebiederm@xmission.com,
-        dyoung@redhat.com, vgoyal@redhat.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        hpa@zytor.com, nramas@linux.microsoft.com, thomas.lendacky@amd.com,
-        robh@kernel.org, efault@gmx.de, rppt@kernel.org, david@redhat.com,
-        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com
-Subject: Re: [PATCH v8 1/7] x86/crash: fix minor typo/bug in debug message
-Message-ID: <YnimI5cZWXKeNSHY@MiWiFi-R3L-srv>
-References: <20220505184603.1548-1-eric.devolder@oracle.com>
- <20220505184603.1548-2-eric.devolder@oracle.com>
- <72764a3c-8b8c-8652-945e-9b15f31cda15@linux.ibm.com>
+        Mon, 9 May 2022 01:36:05 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF959149170
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 22:32:10 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id n126-20020a1c2784000000b0038e8af3e788so7599224wmn.1
+        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 22:32:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LcfykvzzxOiiw+jUTB5oG4jSYC/kWrfsWiX4vYPyo9M=;
+        b=kcIUmvvtYBneIxYWYiv7+ZFh4noeZ8Am8LxJbwy0tzXZr9y8d+KI/QsxlJYsuNmM08
+         OGVALXNd+CoIDFW0iCeuANfBqIyQS40FLvfNaMi065NgKl77XGww480iffDwl6iePFnE
+         /vJB/ZxTrHlkneSUP3qUDzxPQAp3k9HVD/gzvdtZ1VCKGBwXgKM82C1otDJIg0CsWkjK
+         vsabX+kfPaNfmRig6dYdjkMY9DINlp5EnFbw/ugfF3n9ZVJn+hGULwm5aCit+DiPEilU
+         PCSa4bC99EGefh/P+fD5m0E04J6FnoNl2PNtaY0heLJiAHpFynaawAWRjO/PVQgC5jjR
+         TvSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LcfykvzzxOiiw+jUTB5oG4jSYC/kWrfsWiX4vYPyo9M=;
+        b=iJDpceZyz7JoaYgY0gGuIgCFWOgt1culGYrEDm90GxS2m82XR8A44YldhSws/LHtmR
+         J0HSh7M31PoS4ub613QDPae7p0ndyWpSpTyzGjSLn4kZ8pc0SCewyYSAe2Zma9vElPT0
+         WVZ3dLJYjuH8os0wRMDVkH3Hjk36a4v2ouAmYY7PTy51jYZCi5TuLq1zcwf6bCs0r8Qv
+         oJxJQgplIUcr+LT6+sVvVvyKBB0ecMrFX1kurYwGU5jNDjv50AuZvZ/SoRks3y1gwLOm
+         dxyNkk4TzYuJYAqghHcnV4Hsm/syaj00vO2MvIQB9mm2pEAGlji/FJDVPJF7bV4YgLW9
+         y7iQ==
+X-Gm-Message-State: AOAM532OCXfxW1FXiXI7uhA2Zw1+rufBO0+hIGoAxnDwO8/TaRF84wCf
+        ylzJ3hOxZjRt0V9rLiC6+aCNRb+XPyXPrBALVgq+QQ==
+X-Google-Smtp-Source: ABdhPJxcZ1/tgNOui63k7ToPoh6qdNSpLhheGOV0wgT4W9krBezLdETiXX52tCZksOb5ycmvbLFkw5ri8O5JCMC9+GA=
+X-Received: by 2002:a05:600c:3caa:b0:394:8fb8:716 with SMTP id
+ bg42-20020a05600c3caa00b003948fb80716mr3550006wmb.105.1652074328778; Sun, 08
+ May 2022 22:32:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <72764a3c-8b8c-8652-945e-9b15f31cda15@linux.ibm.com>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+References: <20220420112450.155624-1-apatel@ventanamicro.com>
+ <20220420112450.155624-3-apatel@ventanamicro.com> <CAOnJCUJ3KzJdqLa3zXUd+YEa00_W1P7aNWY0ibpvO9jaqarOtA@mail.gmail.com>
+In-Reply-To: <CAOnJCUJ3KzJdqLa3zXUd+YEa00_W1P7aNWY0ibpvO9jaqarOtA@mail.gmail.com>
+From:   Anup Patel <anup@brainfault.org>
+Date:   Mon, 9 May 2022 11:01:57 +0530
+Message-ID: <CAAhSdy1gyJekSvUtZ6TQutTryGATupjP3YEzEts-QJ_DifJVjw@mail.gmail.com>
+Subject: Re: [PATCH v2 2/7] RISC-V: KVM: Add Sv57x4 mode support for G-stage
+To:     Atish Patra <atishp@atishpatra.org>
+Cc:     Anup Patel <apatel@ventanamicro.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Alistair Francis <Alistair.Francis@wdc.com>,
+        KVM General <kvm@vger.kernel.org>,
+        "open list:KERNEL VIRTUAL MACHINE FOR RISC-V (KVM/riscv)" 
+        <kvm-riscv@lists.infradead.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/09/22 at 10:46am, Sourabh Jain wrote:
-> 
-> On 06/05/22 00:15, Eric DeVolder wrote:
-> > The pr_debug() intends to display the memsz member, but the
-> > parameter is actually the bufsz member (which is already
-> > displayed). Correct this to display memsz value.
-> > 
-> > Signed-off-by: Eric DeVolder<eric.devolder@oracle.com>
-> > Reviewed-by: David Hildenbrand<david@redhat.com>
-> > Acked-by: Baoquan He<bhe@redhat.com>
+On Wed, May 4, 2022 at 7:44 AM Atish Patra <atishp@atishpatra.org> wrote:
+>
+> On Wed, Apr 20, 2022 at 4:25 AM Anup Patel <apatel@ventanamicro.com> wrote:
+> >
+> > Latest QEMU supports G-stage Sv57x4 mode so this patch extends KVM
+> > RISC-V G-stage handling to detect and use Sv57x4 mode when available.
+> >
+> > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
 > > ---
-> >   arch/x86/kernel/crash.c | 2 +-
-> >   1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/arch/x86/kernel/crash.c b/arch/x86/kernel/crash.c
-> > index e8326a8d1c5d..9730c88530fc 100644
-> > --- a/arch/x86/kernel/crash.c
-> > +++ b/arch/x86/kernel/crash.c
-> > @@ -407,7 +407,7 @@ int crash_load_segments(struct kimage *image)
-> >   	}
-> >   	image->elf_load_addr = kbuf.mem;
-> >   	pr_debug("Loaded ELF headers at 0x%lx bufsz=0x%lx memsz=0x%lx\n",
-> > -		 image->elf_load_addr, kbuf.bufsz, kbuf.bufsz);
-> > +		 image->elf_load_addr, kbuf.bufsz, kbuf.memsz);
-> > 
-> I think we can push this patch separately.
+> >  arch/riscv/include/asm/csr.h |  1 +
+> >  arch/riscv/kvm/main.c        |  3 +++
+> >  arch/riscv/kvm/mmu.c         | 11 ++++++++++-
+> >  3 files changed, 14 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/arch/riscv/include/asm/csr.h b/arch/riscv/include/asm/csr.h
+> > index e935f27b10fd..cc40521e438b 100644
+> > --- a/arch/riscv/include/asm/csr.h
+> > +++ b/arch/riscv/include/asm/csr.h
+> > @@ -117,6 +117,7 @@
+> >  #define HGATP_MODE_SV32X4      _AC(1, UL)
+> >  #define HGATP_MODE_SV39X4      _AC(8, UL)
+> >  #define HGATP_MODE_SV48X4      _AC(9, UL)
+> > +#define HGATP_MODE_SV57X4      _AC(10, UL)
+> >
+> >  #define HGATP32_MODE_SHIFT     31
+> >  #define HGATP32_VMID_SHIFT     22
+> > diff --git a/arch/riscv/kvm/main.c b/arch/riscv/kvm/main.c
+> > index c374dad82eee..1549205fe5fe 100644
+> > --- a/arch/riscv/kvm/main.c
+> > +++ b/arch/riscv/kvm/main.c
+> > @@ -105,6 +105,9 @@ int kvm_arch_init(void *opaque)
+> >         case HGATP_MODE_SV48X4:
+> >                 str = "Sv48x4";
+> >                 break;
+> > +       case HGATP_MODE_SV57X4:
+> > +               str = "Sv57x4";
+> > +               break;
+> >         default:
+> >                 return -ENODEV;
+> >         }
+> > diff --git a/arch/riscv/kvm/mmu.c b/arch/riscv/kvm/mmu.c
+> > index dc0520792e31..8823eb32dcde 100644
+> > --- a/arch/riscv/kvm/mmu.c
+> > +++ b/arch/riscv/kvm/mmu.c
+> > @@ -751,14 +751,23 @@ void kvm_riscv_gstage_update_hgatp(struct kvm_vcpu *vcpu)
+> >  void kvm_riscv_gstage_mode_detect(void)
+> >  {
+> >  #ifdef CONFIG_64BIT
+> > +       /* Try Sv57x4 G-stage mode */
+> > +       csr_write(CSR_HGATP, HGATP_MODE_SV57X4 << HGATP_MODE_SHIFT);
+> > +       if ((csr_read(CSR_HGATP) >> HGATP_MODE_SHIFT) == HGATP_MODE_SV57X4) {
+> > +               gstage_mode = (HGATP_MODE_SV57X4 << HGATP_MODE_SHIFT);
+> > +               gstage_pgd_levels = 5;
+> > +               goto skip_sv48x4_test;
+> > +       }
+> > +
+> >         /* Try Sv48x4 G-stage mode */
+> >         csr_write(CSR_HGATP, HGATP_MODE_SV48X4 << HGATP_MODE_SHIFT);
+> >         if ((csr_read(CSR_HGATP) >> HGATP_MODE_SHIFT) == HGATP_MODE_SV48X4) {
+> >                 gstage_mode = (HGATP_MODE_SV48X4 << HGATP_MODE_SHIFT);
+> >                 gstage_pgd_levels = 4;
+> >         }
+> > -       csr_write(CSR_HGATP, 0);
+> > +skip_sv48x4_test:
+> >
+> > +       csr_write(CSR_HGATP, 0);
+> >         __kvm_riscv_hfence_gvma_all();
+> >  #endif
+> >  }
+> > --
+> > 2.25.1
+> >
+>
+> Reviewed-by: Atish Patra <atishp@rivosinc.com>
 
-Boris has taken this into tip/x86/kdump.
+Queued this patch for 5.19
 
+Thanks,
+Anup
+
+>
+> --
+> Regards,
+> Atish
