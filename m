@@ -2,222 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11FDCC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 20:42:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B082C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 20:43:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229787AbiEIUqB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 16:46:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52362 "EHLO
+        id S229802AbiEIUrp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 16:47:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229760AbiEIUpl (ORCPT
+        with ESMTP id S229567AbiEIUrl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 16:45:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E55B3248D1;
-        Mon,  9 May 2022 13:41:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 72320B81980;
-        Mon,  9 May 2022 20:41:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02D56C385BA;
-        Mon,  9 May 2022 20:41:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652128903;
-        bh=J8j9VzcB8Y4gabiwK3Jn4PyF1nARtTRu3BMbfR7/Pu4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=W1rGwqCqVBponkVtMWTvVdEuLOszyeOvBvx2bPU/eDR5SQTj1L0gmKM3gf+/laYR8
-         4VVpewzhS/3j9ng5/FE2+uOQV8nuan7ZGFSLvF09D8CB8y02sNe4F5fkcyaz5rldyg
-         BrWWMGDW2tMk53H0eMlUAA2KGVzN7d/tojdLbv7pMV/+o+V+Q8gTRQiwOnL/iwLOj8
-         D9TUcJRX1Ry1wMG0Fg4mw9RZEtsfwijkTLPqTzD5P7ajl18+RuiIOX3/pf5qEkCzXu
-         8+awz7QDbUAQ0lLipKDFuSqDifz9iiLdqZuDONRffma3WxVFIeEPGr+oFbF8tr4TXz
-         TyH7KrPc9tOrg==
-Date:   Mon, 9 May 2022 15:50:56 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH v2][next] x86/mm/pgtable: Fix -Wstringop-overflow warnings
-Message-ID: <20220509205056.GA109715@embeddedor>
-References: <20220509194541.GA91598@embeddedor>
- <202205091251.5703DE2@keescook>
+        Mon, 9 May 2022 16:47:41 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36153B1D3;
+        Mon,  9 May 2022 13:43:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=zxtHEZB7FJXcLD4uWhqlrNQfKLg4uYSZS3iQcpPv3Q8=; b=Um4T745eraA4H0ZgNxS0pk18PZ
+        Xq97mepNxGxMSUjCP+wxeGnaWEH5/cdZnQBcwwp/nYhhVo0LZ0izp4JI5JLx/tuGEZhpgwmnCpwbf
+        2txDSDfzQXZuX51PS3ujK++12T6SuqFqyX9iHBdzrIXBEwXzKGUPjXBHtkEGWls89KE/8klzoNmKc
+        OtRsmT+7lqC9xf9aTPvk9a7bUeFPBORXhMxzsTl8lnLlgwKsSrZfIa7TmD/4zQ2C9RPd7NtoZqmth
+        dF3gybOaVG6RP99mI4FvocGXiSQrwuUY58gBdt2p0lR6Ir2l99ABzRmYO+DKAJ8vfOhqZfu0Trp+2
+        2ega45ZQ==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1noAEG-00GCg8-KP; Mon, 09 May 2022 20:43:40 +0000
+Date:   Mon, 9 May 2022 13:43:40 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     David Gow <davidgow@google.com>
+Cc:     Daniel Latypov <dlatypov@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        Aaron Tomlin <atomlin@redhat.com>,
+        linux-fsdevel@vger.kernel.org, linux-block@vger.kernel.org,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        "Guilherme G . Piccoli" <gpiccoli@igalia.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Joe Fradley <joefradley@google.com>,
+        KUnit Development <kunit-dev@googlegroups.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jani Nikula <jani.nikula@linux.intel.com>
+Subject: Re: [PATCH v2] kunit: Taint kernel if any tests run
+Message-ID: <Ynl8/MqmDZzpbh5y@bombadil.infradead.org>
+References: <Ym7P7mCoMiQq99EM@bombadil.infradead.org>
+ <Ym7QXOMK3fLQ+b6t@bombadil.infradead.org>
+ <CABVgOSmXyN3SrDkUt4y_TaKPvEGVJgbuE3ycrVDa-Kt1NFGH7g@mail.gmail.com>
+ <YnKS3MwNxvEi73OP@bombadil.infradead.org>
+ <CAGS_qxrz1WoUd5oGa7p1-H2mQVbkRxSTEbqnCG=aBj=xnMu1zQ@mail.gmail.com>
+ <YnLJ6dJQBTYjBRHZ@bombadil.infradead.org>
+ <CAGS_qxoFECVJD3Jby1eTWG741hBWuotuEM78PU-qfyvp-nLV7Q@mail.gmail.com>
+ <YnLsPgbQ7CHiannN@bombadil.infradead.org>
+ <YnNnLIZDxkNwECv+@bombadil.infradead.org>
+ <CABVgOS=8=41KgVEgRAGcDZ_JrZpsVaK24ca0jR5J74XY9GCmDA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202205091251.5703DE2@keescook>
+In-Reply-To: <CABVgOS=8=41KgVEgRAGcDZ_JrZpsVaK24ca0jR5J74XY9GCmDA@mail.gmail.com>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 12:59:15PM -0700, Kees Cook wrote:
-> On Mon, May 09, 2022 at 02:45:41PM -0500, Gustavo A. R. Silva wrote:
-> > Fix the following -Wstringop-overflow warnings when building with GCC-12.1:
-> > 
-> > arch/x86/mm/pgtable.c:437:13: warning: 'preallocate_pmds' accessing 8 bytes in a region of size 0 [-Wstringop-overflow=]
-> > arch/x86/mm/pgtable.c:440:13: warning: 'preallocate_pmds' accessing 8 bytes in a region of size 0 [-Wstringop-overflow=]
-> > arch/x86/mm/pgtable.c:462:9: warning: 'free_pmds' accessing 8 bytes in a region of size 0 [-Wstringop-overflow=]
-> > arch/x86/mm/pgtable.c:454:9: warning: 'pgd_prepopulate_pmd' accessing 8 bytes in a region of size 0 [-Wstringop-overflow=]
-> > arch/x86/mm/pgtable.c:455:9: warning: 'pgd_prepopulate_user_pmd' accessing 8 bytes in a region of size 0 [-Wstringop-overflow=]
-> > arch/x86/mm/pgtable.c:464:9: warning: 'free_pmds' accessing 8 bytes in a region of size 0 [-Wstringop-overflow=]
-> > 
-> > There is a case in which PREALLOCATED_PMDS, MAX_PREALLOCATED_PMDS,
-> > PREALLOCATED_USER_PMDS and MAX_PREALLOCATED_USER_PMDS are defined as
-> > zero:
-> > 
-> > 204 #else  /* !CONFIG_X86_PAE */
-> > 205 
-> > 206 /* No need to prepopulate any pagetable entries in non-PAE modes. */
-> > 207 #define PREALLOCATED_PMDS       0
-> > 208 #define MAX_PREALLOCATED_PMDS   0
-> > 209 #define PREALLOCATED_USER_PMDS   0
-> > 210 #define MAX_PREALLOCATED_USER_PMDS 0
-> > 211 #endif  /* CONFIG_X86_PAE */
-> > 
-> > It seems that GCC is legitimately complaining about the fact that, under
-> > certain circumstances, u_pmds and pmds are declared as zero-length arrays
-> > in the stack and, of course, they are not flexible arrays.
+On Fri, May 06, 2022 at 03:01:34PM +0800, David Gow wrote:
+> On Thu, May 5, 2022 at 1:57 PM Luis Chamberlain <mcgrof@kernel.org> wrote:
+> >
+> > On Wed, May 04, 2022 at 02:12:30PM -0700, Luis Chamberlain wrote:
+> > > On Wed, May 04, 2022 at 02:19:59PM -0500, Daniel Latypov wrote:
+> > > > On Wed, May 4, 2022 at 1:46 PM Luis Chamberlain <mcgrof@kernel.org> wrote:
+> > > > > OK so, we can just skip tainting considerations for selftests which
+> > > > > don't use modules for now. There may be selftests which do wonky
+> > > > > things in userspace but indeed I agree the userspace taint would
+> > > > > be better for those but I don't think it may be worth bother
+> > > > > worrying about those at this point in time.
+> > > > >
+> > > > > But my point in that sharing a taint between kunit / selftests modules
+> > > > > does make sense and is easily possible. The unfortunate aspect is just
+> > > >
+> > > > Yes, I 100% agree that we should share a taint for kernelspace testing
+> > > > from both kunit/kselftest.
+> > > > Someone running the system won't care what framework was used.
+> > >
+> > > OK do you mind doing the nasty work of manually adding the new
+> > > MODULE_TAINT() to the selftests as part of your effort?
+> > >
+> > > *Alternatively*, if we *moved* all sefltests modules to a new
+> > > lib/debug/selftests/ directory or something like that then t would
+> > > seem modpost *could* add the taint flag automagically for us without
+> > > having to edit or require it on new drivers. We have similar type of
+> > > taint for staging, see add_staging_flag().
+> > >
+> > > I would *highly* prefer this approach, event though it is more work,
+> > > because I think this is a step we should take anyway.
+> > >
+> > > However, I just checked modules on lib/ and well, some of them are
+> > > already in their own directory, like lib/math/test_div64.c. So not
+> > > sure, maybe just move a few modules which are just in lib/*.c for now
+> > > and then just sprinkle the MODULE_TAINT() to the others?
+> >
+> > I *think* we could just pull this off with a much easier approach,
+> > simply looking for the substrings in the module name in modpost.c:
+> >
+> >   * "_test." || "-test."
+> >   * ^"test_" || ^"test-"
+> >
+> > An issue with this of course is a vendor $FOO with an out of tree
+> > test driver may end up with the taint. Perhaps we don't care.
+> >
+> > That means moving selftests to its own directory is not needed at this
+> > point in time.
 > 
-> Ah yeah, I've run into this a few times. Since the relationship between
-> the macro pairs can't be seen by GCC, it gets upset (i.e. sizeof(u_pmds)
-> has no relationship wtih PREALLOCATED_USER_PMDS and the calls weren't
-> inlined, so it can't see that it'll always be 0 and 0).
+> I can't say I'm thrilled with the idea of just doing name comparisons,
+> particularly since not all of them match this pattern, for example:
+> bpf_testmod.ko. (Though, frankly, more of them do than I'd've
+> guessed.)
 > 
-> > 424 pgd_t *pgd_alloc(struct mm_struct *mm)
-> > 425 {
-> > 426         pgd_t *pgd;
-> > 427         pmd_t *u_pmds[MAX_PREALLOCATED_USER_PMDS];
-> > 428         pmd_t *pmds[MAX_PREALLOCATED_PMDS];
-> > 429
-> > 
-> > Notice that "Accessing elements of zero-length arrays declared in such
-> > contexts is undefined and may be diagnosed."[1]
-> > 
-> > We can fix this by checking that MAX_PREALLOCATED_PMDS and MAX_PREALLOCATED_USER_PMDS
-> > are different than zero, prior to passing u_pmds amd pmds as arguments to any
-> > function, in this case to functions preallocate_pmds(), pgd_prepopulate_pmd()
-> > and free_pmds().
-> > 
-> > This helps with the ongoing efforts to globally enable
-> > -Wstringop-overflow.
-> > 
-> > [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-> > 
-> > Link: https://github.com/KSPP/linux/issues/181
-> > Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> > ---
-> > Changes in v2:
-> >  - Check MAX_PREALLOCATED_PMDS and MAX_PREALLOCATED_USER_PMDS
-> >    instead of using pointer notation.
-> >    Link: https://lore.kernel.org/linux-hardening/20220401005834.GA182932@embeddedor/
-> >  - Update changelog text.
-> > 
-> >  arch/x86/mm/pgtable.c | 16 ++++++++++------
-> >  1 file changed, 10 insertions(+), 6 deletions(-)
-> > 
-> > diff --git a/arch/x86/mm/pgtable.c b/arch/x86/mm/pgtable.c
-> > index f16059e9a85e..96c3f402a1da 100644
-> > --- a/arch/x86/mm/pgtable.c
-> > +++ b/arch/x86/mm/pgtable.c
-> > @@ -434,14 +434,18 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
-> >  
-> >  	mm->pgd = pgd;
-> >  
-> > -	if (preallocate_pmds(mm, pmds, PREALLOCATED_PMDS) != 0)
-> > -		goto out_free_pgd;
-> > +	if (MAX_PREALLOCATED_PMDS != 0 && MAX_PREALLOCATED_USER_PMDS != 0) {
-> > +		if (preallocate_pmds(mm, pmds, PREALLOCATED_PMDS) != 0)
-> > +			goto out_free_pgd;
-> >  
-> > -	if (preallocate_pmds(mm, u_pmds, PREALLOCATED_USER_PMDS) != 0)
-> > -		goto out_free_pmds;
-> > +		if (preallocate_pmds(mm, u_pmds, PREALLOCATED_USER_PMDS) != 0)
-> > +			goto out_free_pmds;
-> >  
-> > -	if (paravirt_pgd_alloc(mm) != 0)
-> > -		goto out_free_user_pmds;
-> > +		if (paravirt_pgd_alloc(mm) != 0)
-> > +			goto out_free_user_pmds;
-> > +	} else {
-> > +		goto out_free_pgd;
-> 
-> The "all 0" case shouldn't be a failure mode; it should just skip the
-> preallocate_pmds() calls.
+> Maybe adding a taint call to the selftest helper module framework in
+> kselftest_module.h, though again, there are several tests which don't
+> use it.
 
-Do you mean something like this:
+Right, I can't think of a generic way to peg this. I think long term
+we do stand to gain to move all selftests under a lib/debug/selftests/
+or something like that, but for now what I suggested is the only thing
+I can come up with.
 
-diff --git a/arch/x86/mm/pgtable.c b/arch/x86/mm/pgtable.c
-index f16059e9a85e..4dae168408f1 100644
---- a/arch/x86/mm/pgtable.c
-+++ b/arch/x86/mm/pgtable.c
-@@ -434,11 +434,13 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
+> I _suspect_ we'd be able to hit most of them by tainting in frameworks
+> like the above, and patch the remaining modules manually.
 
-        mm->pgd = pgd;
+Works with me.
 
--       if (preallocate_pmds(mm, pmds, PREALLOCATED_PMDS) != 0)
--               goto out_free_pgd;
-+       if (MAX_PREALLOCATED_PMDS != 0 && MAX_PREALLOCATED_USER_PMDS != 0) {
-+               if (preallocate_pmds(mm, pmds, PREALLOCATED_PMDS) != 0)
-+                       goto out_free_pgd;
+> There's also
+> definitely a grey area with things like netdevsim, which are used a
+> lot as helper modules by selftests, but may have other uses as well.
 
--       if (preallocate_pmds(mm, u_pmds, PREALLOCATED_USER_PMDS) != 0)
--               goto out_free_pmds;
-+               if (preallocate_pmds(mm, u_pmds, PREALLOCATED_USER_PMDS) != 0)
-+                       goto out_free_pmds;
-+       }
+They can peg the module if they want the taint.
 
-        if (paravirt_pgd_alloc(mm) != 0)
-                goto out_free_user_pmds;
+> (The advantage of the KUnit tainting is that, due to KUnit's
+> centralised executor, we can be sure all KUnit tests will correctly
+> trigger the taint. But maybe it doesn't matter as much if one or two
+> selftests miss out.)
 
-It seems that the above is not enough, because we have the same issue
-when calling pgd_prepopulate_pmd(), pgd_prepopulate_user_pmd() and
-free_pmds():
+That is what I was thinking.
 
-  CC      arch/x86/mm/pgtable.o
-arch/x86/mm/pgtable.c: In function 'pgd_alloc':
-arch/x86/mm/pgtable.c:464:9: warning: 'free_pmds' accessing 8 bytes in a region of size 0 [-Wstringop-overflow=]
-  464 |         free_pmds(mm, u_pmds, PREALLOCATED_USER_PMDS);
-      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-arch/x86/mm/pgtable.c:464:9: note: referencing argument 2 of type 'pmd_t *[0]'
-arch/x86/mm/pgtable.c:213:13: note: in a call to function 'free_pmds'
-  213 | static void free_pmds(struct mm_struct *mm, pmd_t *pmds[], int count)
-      |             ^~~~~~~~~
-arch/x86/mm/pgtable.c:466:9: warning: 'free_pmds' accessing 8 bytes in a region of size 0 [-Wstringop-overflow=]
-  466 |         free_pmds(mm, pmds, PREALLOCATED_PMDS);
-      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-arch/x86/mm/pgtable.c:466:9: note: referencing argument 2 of type 'pmd_t *[0]'
-arch/x86/mm/pgtable.c:213:13: note: in a call to function 'free_pmds'
-  213 | static void free_pmds(struct mm_struct *mm, pmd_t *pmds[], int count)
-      |             ^~~~~~~~~
-arch/x86/mm/pgtable.c:456:9: warning: 'pgd_prepopulate_pmd' accessing 8 bytes in a region of size 0 [-Wstringop-overflow=]
-  456 |         pgd_prepopulate_pmd(mm, pgd, pmds);
-      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-arch/x86/mm/pgtable.c:456:9: note: referencing argument 3 of type 'pmd_t *[0]'
-arch/x86/mm/pgtable.c:296:13: note: in a call to function 'pgd_prepopulate_pmd'
-  296 | static void pgd_prepopulate_pmd(struct mm_struct *mm, pgd_t *pgd, pmd_t *pmds[])
-      |             ^~~~~~~~~~~~~~~~~~~
-arch/x86/mm/pgtable.c:457:9: warning: 'pgd_prepopulate_user_pmd' accessing 8 bytes in a region of size 0 [-Wstringop-overflow=]
-  457 |         pgd_prepopulate_user_pmd(mm, pgd, u_pmds);
-      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-arch/x86/mm/pgtable.c:457:9: note: referencing argument 3 of type 'pmd_t *[0]'
-arch/x86/mm/pgtable.c:320:13: note: in a call to function 'pgd_prepopulate_user_pmd'
-  320 | static void pgd_prepopulate_user_pmd(struct mm_struct *mm,
-      |             ^~~~~~~~~~~~~~~~~~~~~~~~
+I'm convinced we *should* move selftests to a one directory. The
+amount of stuff in lib/ is getting out of hand.
 
---
-Gustavo
-> 
-> > +	}
-> >  
-> >  	/*
-> >  	 * Make sure that pre-populating the pmds is atomic with
-> > -- 
-> > 2.27.0
-> > 
-> 
-> -- 
-> Kees Cook
+  Luis
