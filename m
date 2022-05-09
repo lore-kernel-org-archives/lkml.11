@@ -2,188 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE224C352AA
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 01:29:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CB52C388F3
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 01:29:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235684AbiEIBb4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 21:31:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53590 "EHLO
+        id S230514AbiEIBdr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 21:33:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236282AbiEIBWR (ORCPT
+        with ESMTP id S234292AbiEIBbK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 21:22:17 -0400
-Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F044DEAA;
-        Sun,  8 May 2022 18:18:24 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VCc6ZLn_1652059099;
-Received: from 30.32.96.14(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VCc6ZLn_1652059099)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 09 May 2022 09:18:20 +0800
-Message-ID: <5e33cf5e-2c48-89fe-3447-2f29c7844928@linux.alibaba.com>
-Date:   Mon, 9 May 2022 09:19:00 +0800
+        Sun, 8 May 2022 21:31:10 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1084513F63;
+        Sun,  8 May 2022 18:25:19 -0700 (PDT)
+Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KxNh16Np0zGpg9;
+        Mon,  9 May 2022 09:22:25 +0800 (CST)
+Received: from [10.174.177.174] (10.174.177.174) by
+ dggpeml500020.china.huawei.com (7.185.36.88) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 9 May 2022 09:25:12 +0800
+Message-ID: <83ed1d6f-84f9-0e47-ddb1-b8cafc12338a@huawei.com>
+Date:   Mon, 9 May 2022 09:25:11 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: Re: [RFC PATCH 1/3] arm64/hugetlb: Introduce new
- huge_ptep_get_access_flags() interface
-To:     nh26223@qq.com, catalin.marinas@arm.com, will@kernel.org,
-        arnd@arndb.de, mike.kravetz@oracle.com, akpm@linux-foundation.org,
-        sj@kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-mm@kvack.org
-References: <cover.1651998586.git.baolin.wang@linux.alibaba.com>
- <a73f07314e79299b85fa4d7612d6ac22548f58c1.1651998586.git.baolin.wang@linux.alibaba.com>
- <tencent_E3DE18C8CFE150F1EDCF887146BA374E6706@qq.com>
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-In-Reply-To: <tencent_E3DE18C8CFE150F1EDCF887146BA374E6706@qq.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Subject: Re: [PATCH v3] ext4: fix race condition between ext4_write and
+ ext4_convert_inline_data
+To:     <linux-ext4@vger.kernel.org>
+CC:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>, <jack@suse.cz>,
+        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>,
+        <yebin10@huawei.com>, <yukuai3@huawei.com>,
+        <stable@vger.kernel.org>, Hulk Robot <hulkci@huawei.com>,
+        Baokun Li <libaokun1@huawei.com>
+References: <20220428134031.4153381-1-libaokun1@huawei.com>
+From:   "libaokun (A)" <libaokun1@huawei.com>
+In-Reply-To: <20220428134031.4153381-1-libaokun1@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.177.174]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpeml500020.china.huawei.com (7.185.36.88)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+A gentle ping.
+
+在 2022/4/28 21:40, Baokun Li 写道:
+> Hulk Robot reported a BUG_ON:
+>   ==================================================================
+>   EXT4-fs error (device loop3): ext4_mb_generate_buddy:805: group 0,
+>   block bitmap and bg descriptor inconsistent: 25 vs 31513 free clusters
+>   kernel BUG at fs/ext4/ext4_jbd2.c:53!
+>   invalid opcode: 0000 [#1] SMP KASAN PTI
+>   CPU: 0 PID: 25371 Comm: syz-executor.3 Not tainted 5.10.0+ #1
+>   RIP: 0010:ext4_put_nojournal fs/ext4/ext4_jbd2.c:53 [inline]
+>   RIP: 0010:__ext4_journal_stop+0x10e/0x110 fs/ext4/ext4_jbd2.c:116
+>   [...]
+>   Call Trace:
+>    ext4_write_inline_data_end+0x59a/0x730 fs/ext4/inline.c:795
+>    generic_perform_write+0x279/0x3c0 mm/filemap.c:3344
+>    ext4_buffered_write_iter+0x2e3/0x3d0 fs/ext4/file.c:270
+>    ext4_file_write_iter+0x30a/0x11c0 fs/ext4/file.c:520
+>    do_iter_readv_writev+0x339/0x3c0 fs/read_write.c:732
+>    do_iter_write+0x107/0x430 fs/read_write.c:861
+>    vfs_writev fs/read_write.c:934 [inline]
+>    do_pwritev+0x1e5/0x380 fs/read_write.c:1031
+>   [...]
+>   ==================================================================
+>
+> Above issue may happen as follows:
+>             cpu1                     cpu2
+> __________________________|__________________________
+> do_pwritev
+>   vfs_writev
+>    do_iter_write
+>     ext4_file_write_iter
+>      ext4_buffered_write_iter
+>       generic_perform_write
+>        ext4_da_write_begin
+>                             vfs_fallocate
+>                              ext4_fallocate
+>                               ext4_convert_inline_data
+>                                ext4_convert_inline_data_nolock
+>                                 ext4_destroy_inline_data_nolock
+>                                  clear EXT4_STATE_MAY_INLINE_DATA
+>                                 ext4_map_blocks
+>                                  ext4_ext_map_blocks
+>                                   ext4_mb_new_blocks
+>                                    ext4_mb_regular_allocator
+>                                     ext4_mb_good_group_nolock
+>                                      ext4_mb_init_group
+>                                       ext4_mb_init_cache
+>                                        ext4_mb_generate_buddy  --> error
+>         ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA)
+>                                  ext4_restore_inline_data
+>                                   set EXT4_STATE_MAY_INLINE_DATA
+>         ext4_block_write_begin
+>        ext4_da_write_end
+>         ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA)
+>         ext4_write_inline_data_end
+>          handle=NULL
+>          ext4_journal_stop(handle)
+>           __ext4_journal_stop
+>            ext4_put_nojournal(handle)
+>             ref_cnt = (unsigned long)handle
+>             BUG_ON(ref_cnt == 0)  ---> BUG_ON
+>
+> The lock held by ext4_convert_inline_data is xattr_sem, but the lock
+> held by generic_perform_write is i_rwsem. Therefore, the two locks can
+> be concurrent.
+>
+> To solve above issue, we add inode_lock() for ext4_convert_inline_data().
+> At the same time, move ext4_convert_inline_data() in front of
+> ext4_punch_hole(), remove similar handling from ext4_punch_hole().
+>
+> Fixes: 0c8d414f163f ("ext4: let fallocate handle inline data correctly")
+> Cc: stable@vger.kernel.org
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Baokun Li <libaokun1@huawei.com>
+> ---
+> V1->V2:
+> 	Increase the range of the inode_lock.
+> V2->V3:
+> 	Move the lock outside the ext4_convert_inline_data().
+> 	And reorganize ext4_fallocate().
+>
+>   fs/ext4/extents.c | 10 ++++++----
+>   fs/ext4/inode.c   |  9 ---------
+>   2 files changed, 6 insertions(+), 13 deletions(-)
+>
+> diff --git a/fs/ext4/extents.c b/fs/ext4/extents.c
+> index e473fde6b64b..474479ce76e0 100644
+> --- a/fs/ext4/extents.c
+> +++ b/fs/ext4/extents.c
+> @@ -4693,15 +4693,17 @@ long ext4_fallocate(struct file *file, int mode, loff_t offset, loff_t len)
+>   		     FALLOC_FL_INSERT_RANGE))
+>   		return -EOPNOTSUPP;
+>   
+> +	inode_lock(inode);
+> +	ret = ext4_convert_inline_data(inode);
+> +	inode_unlock(inode);
+> +	if (ret)
+> +		goto exit;
+> +
+>   	if (mode & FALLOC_FL_PUNCH_HOLE) {
+>   		ret = ext4_punch_hole(file, offset, len);
+>   		goto exit;
+>   	}
+>   
+> -	ret = ext4_convert_inline_data(inode);
+> -	if (ret)
+> -		goto exit;
+> -
+>   	if (mode & FALLOC_FL_COLLAPSE_RANGE) {
+>   		ret = ext4_collapse_range(file, offset, len);
+>   		goto exit;
+> diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+> index 646ece9b3455..4779673d733e 100644
+> --- a/fs/ext4/inode.c
+> +++ b/fs/ext4/inode.c
+> @@ -3967,15 +3967,6 @@ int ext4_punch_hole(struct file *file, loff_t offset, loff_t length)
+>   
+>   	trace_ext4_punch_hole(inode, offset, length, 0);
+>   
+> -	ext4_clear_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
+> -	if (ext4_has_inline_data(inode)) {
+> -		filemap_invalidate_lock(mapping);
+> -		ret = ext4_convert_inline_data(inode);
+> -		filemap_invalidate_unlock(mapping);
+> -		if (ret)
+> -			return ret;
+> -	}
+> -
+>   	/*
+>   	 * Write out all dirty pages to avoid race conditions
+>   	 * Then release them.
 
 
-On 5/8/2022 9:14 PM, nh26223@qq.com wrote:
-> On 2022年5月8日星期日 CST 下午4:58:52 Baolin Wang wrote:
->> Now we use huge_ptep_get() to get the pte value of a hugetlb page,
->> however it will only return one specific pte value for the CONT-PTE
->> or CONT-PMD size hugetlb on ARM64 system, which can contain seravel
->> continuous pte or pmd entries with same page table attributes. And it
->> will not take into account the subpages' dirty or young bits of a
->> CONT-PTE/PMD size hugetlb page.
->>
->> So the huge_ptep_get() is inconsistent with huge_ptep_get_and_clear(),
->> which already takes account the dirty or young bits for any subpages
->> in this CONT-PTE/PMD size hugetlb [1]. Meanwhile we can miss dirty or
->> young flags statistics for hugetlb pages with current huge_ptep_get(),
->> such as the gather_hugetlb_stats() function.
->>
->> Thus introduce a new huge_ptep_get_access_flags() interface and define
->> an ARM64 specific implementation, that will take into account any subpages'
->> dirty or young bits for CONT-PTE/PMD size hugetlb page, for those functions
->> that want to check the dirty and young flags of a hugetlb page.
->>
->> [1]
->> https://lore.kernel.org/linux-mm/85bd80b4-b4fd-0d3f-a2e5-149559f2f387@oracl
->> e.com/
->>
->> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
->> ---
->>   arch/arm64/include/asm/hugetlb.h |  2 ++
->>   arch/arm64/mm/hugetlbpage.c      | 24 ++++++++++++++++++++++++
->>   include/asm-generic/hugetlb.h    |  7 +++++++
->>   3 files changed, 33 insertions(+)
->>
->> diff --git a/arch/arm64/include/asm/hugetlb.h
->> b/arch/arm64/include/asm/hugetlb.h index 616b2ca..a473544 100644
->> --- a/arch/arm64/include/asm/hugetlb.h
->> +++ b/arch/arm64/include/asm/hugetlb.h
->> @@ -44,6 +44,8 @@ extern pte_t huge_ptep_clear_flush(struct vm_area_struct
->> *vma, #define __HAVE_ARCH_HUGE_PTE_CLEAR
->>   extern void huge_pte_clear(struct mm_struct *mm, unsigned long addr,
->>   			   pte_t *ptep, unsigned long sz);
->> +#define __HAVE_ARCH_HUGE_PTEP_GET_ACCESS_FLAGS
->> +extern pte_t huge_ptep_get_access_flags(pte_t *ptep, unsigned long sz);
->>   extern void set_huge_swap_pte_at(struct mm_struct *mm, unsigned long addr,
->>   				 pte_t *ptep, pte_t pte, unsigned long
-> sz);
->>   #define set_huge_swap_pte_at set_huge_swap_pte_at
->> diff --git a/arch/arm64/mm/hugetlbpage.c b/arch/arm64/mm/hugetlbpage.c
->> index ca8e65c..ce39699 100644
->> --- a/arch/arm64/mm/hugetlbpage.c
->> +++ b/arch/arm64/mm/hugetlbpage.c
->> @@ -158,6 +158,30 @@ static inline int num_contig_ptes(unsigned long size,
->> size_t *pgsize) return contig_ptes;
->>   }
->>
->> +pte_t huge_ptep_get_access_flags(pte_t *ptep, unsigned long sz)
-> The function name looks to me that it returns access flags of PTE.
-
-Yes, not a good name. That's why this is a RFC patch set to get more 
-suggestion :)
-
-Maybe huge_ptep_get_with_access_flags()? or do you have some better idea?
-
-> 
->> +{
->> +	int ncontig, i;
->> +	size_t pgsize;
->> +	pte_t orig_pte = ptep_get(ptep);
->> +
->> +	if (!pte_cont(orig_pte))
->> +		return orig_pte;
->> +
->> +	ncontig = num_contig_ptes(sz, &pgsize);
->> +
->> +	for (i = 0; i < ncontig; i++, ptep++) {
->> +		pte_t pte = ptep_get(ptep);
->> +
->> +		if (pte_dirty(pte))
->> +			orig_pte = pte_mkdirty(orig_pte);
->> +
->> +		if (pte_young(pte))
->> +			orig_pte = pte_mkyoung(orig_pte);
->> +	}
->> +
->> +	return orig_pte;
->> +}
-> Not sure whether it's worthy being changed to:
-> 
->          bool dirty = false, young = false;
-> 
->          for (i = 0; i < ncontig; i++, ptep++) {
->                  pte_t pte = ptep_get(ptep);
-> 
->                  if (pte_dirty(pte))
->                          dirty = true;
-> 
->                  if (pte_young(pte))
->                          young = true;
-> 
->                  if (dirty && young)
->                          break;
->          }
-> 
->          if (dirty)
->                  orig_pte = pte_mkdirty(orig_pte);
-> 
->          if (young)
->                  orig_pte = pte_mkyoung(orit_pte);
-> 
->          return orig_pte;
-
-I followed the same logics in get_clear_flush(), which is more readable 
-I think. Yes, your approach can save some cycles, I can change to use it 
-in next version if arm64 maintainers have no objection.
-
->> +
->>   /*
->>    * Changing some bits of contiguous entries requires us to follow a
->>    * Break-Before-Make approach, breaking the whole contiguous set
->> diff --git a/include/asm-generic/hugetlb.h b/include/asm-generic/hugetlb.h
->> index a57d667..bb77fb0 100644
->> --- a/include/asm-generic/hugetlb.h
->> +++ b/include/asm-generic/hugetlb.h
->> @@ -150,6 +150,13 @@ static inline pte_t huge_ptep_get(pte_t *ptep)
->>   }
->>   #endif
->>
->> +#ifndef __HAVE_ARCH_HUGE_PTEP_GET_ACCESS_FLAGS
->> +static inline pte_t huge_ptep_get_access_flags(pte_t *ptep, unsigned long
->> sz) +{
->> +	return ptep_get(ptep);
-> Should be:
-> 	return huge_ptep_get(ptep) ?
-
-I don't think so. If no ARCH-specific definition, the 
-huge_ptep_get_access_flags() implementation should be same as 
-huge_ptep_get(). Thanks for your comments.
-
-#ifndef __HAVE_ARCH_HUGE_PTEP_GET
-static inline pte_t huge_ptep_get(pte_t *ptep)
-{
-         return ptep_get(ptep);
-}
-#endif
