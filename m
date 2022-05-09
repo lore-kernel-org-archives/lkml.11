@@ -2,88 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52451C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73AD0C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 05:19:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234384AbiEIFUn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 01:20:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36942 "EHLO
+        id S234414AbiEIFUo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 01:20:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234422AbiEIFO3 (ORCPT
+        with ESMTP id S234444AbiEIFPF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 01:14:29 -0400
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C60CF2F8;
-        Sun,  8 May 2022 22:10:35 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="5.91,210,1647270000"; 
-   d="scan'208";a="119072773"
-Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie5.idc.renesas.com with ESMTP; 09 May 2022 14:10:35 +0900
-Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 84CB040083F7;
-        Mon,  9 May 2022 14:10:30 +0900 (JST)
-From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        linux-gpio@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH v2 3/5] gpio: gpiolib: Allow free() callback to be overridden
-Date:   Mon,  9 May 2022 06:09:51 +0100
-Message-Id: <20220509050953.11005-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220509050953.11005-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20220509050953.11005-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        Mon, 9 May 2022 01:15:05 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011FB20F44
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 22:11:11 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id s16so979075pgs.3
+        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 22:11:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=rDSFCO+czyrWwVIb/ri2W/5CAZ/bjTYqyMNHNUzLBgc=;
+        b=NGeVsQ++HGtjZxzvUZn1nbfaCrKKTfnM27oWvJsxcQJiAy3hRTbcCH2794ZktMDynH
+         R9268OPrKnRi0SxVYCY6APSONAAW56+inot6dKaYvxxiVLvViByq6EpMmXmtQQ9W3zvM
+         noWZh5xnsQQHzXO1FSFi+X4Gumb189wYfLmLhtqViQkZVktne7fXneH4BFF7cj6X4rsq
+         6QI1jPOs3L5/8JvrCyigC6idtOfVxKY1C9aluVUxfuDMub6jQGS5embdFASWhukIScVZ
+         SOatnziUTIe157Q6TVh9w90rUGNYDl7h0PZEjTMKQ0OZlr0FEd9q3rIyrlMMKzdAKDX6
+         5+ZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=rDSFCO+czyrWwVIb/ri2W/5CAZ/bjTYqyMNHNUzLBgc=;
+        b=L0Q3vF6tsyN9jglGcbcHUqynBB5AIIsCEiMnV3JW9Qdsa2krctJCoaVdWB4+FGQRXz
+         vgZ8Ab8zA1BEQr9WwO0A9f91XfllaDMDB84Lsaq79dvvSZnKgJjbeYed91jcoZ3OJWSo
+         M6Zpkut3QItWRhpH5Fgc9KRV7HhjELZMrImcQswqu0koFzpraWAaRF2AM2Hr4uGFeKaL
+         CQoHxjTxZnFfxdgCWVp3o1EKdrqJrkdcEkTYQnlE8iKUFEAXZ9Y1JNy+vyxkVGFKalUv
+         P2zbytmWfTEHXWUW+Q3jkFZgCPGLxNsFIjHTJs69ASC98HpZzaAu8MnUYmKcESxeTggV
+         l5/g==
+X-Gm-Message-State: AOAM5323PkqJyz3MqAaa1JAHr9P4upN277JZi26HLC2z42wFSLNhzN2Y
+        3uyMH0FZVTE/FMYtrJURT6yoGQ==
+X-Google-Smtp-Source: ABdhPJzQmAGyTKxouc0RQtiPKY+fyHgHySgxrAsDXhahZmKoQArbKkfoIBffIe19H+asxSznCOZPgA==
+X-Received: by 2002:a63:7d4a:0:b0:398:dad:6963 with SMTP id m10-20020a637d4a000000b003980dad6963mr11871980pgn.329.1652073071387;
+        Sun, 08 May 2022 22:11:11 -0700 (PDT)
+Received: from x1 ([2601:1c2:1001:7090:8a29:6b15:2464:b015])
+        by smtp.gmail.com with ESMTPSA id t9-20020a170902a5c900b0015e8d4eb1e3sm6027714plq.45.2022.05.08.22.11.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 May 2022 22:11:10 -0700 (PDT)
+Date:   Sun, 8 May 2022 22:12:08 -0700
+From:   Drew Fustini <dfustini@baylibre.com>
+To:     Tony Lindgren <tony@atomide.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     Dave Gerlach <d-gerlach@ti.com>, linux-omap@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: dmtimer: ack pending interrupt during suspend on am335x/am437x?
+Message-ID: <YniiqM0S+hwsGFni@x1>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allow free() callback to be overridden from irq_domain_ops for
-hierarchical chips.
+Hello Daniel, Tony suggested I mail you along with the list to get
+feedback. I'm attempting to upstream these two patches [1][2] from
+ti-linux-5.4.y for arch/arm/mach-omap2/timer.c:
+96f4c6e2ba8a ("ARM: OMAP2+: timer: Ack pending interrupt during suspend")
+7ae7dd5f8272 ("ARM: OMAP2+: timer: Extend pending interrupt ACK for gic")
 
-This allows drivers to free any resources which are allocated during
-populate_parent_alloc_arg().
+On the TI AM335x and AM437x SoCs, it is possible for a late interrupt to
+be generated which will cause a suspend failure. The first patch makes
+omap_clkevt_idle() ack the irq both in the timer peripheral register
+and in the interrupt controller to avoid the issue.
 
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
----
- drivers/gpio/gpiolib.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+On AM437x only, the GIC cannot be directly acked using only the irqchip
+calls. To workaround that, the second patch maps the GIC_CPU_BASE and
+reads the GIC_CPU_INTACK register before calling irq_eoi to properly ack
+the late timer interrupts that show up during suspend.
 
-diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
-index b7694171655c..7be01c70ee4e 100644
---- a/drivers/gpio/gpiolib.c
-+++ b/drivers/gpio/gpiolib.c
-@@ -1187,15 +1187,18 @@ static void gpiochip_hierarchy_setup_domain_ops(struct irq_domain_ops *ops)
- 	ops->activate = gpiochip_irq_domain_activate;
- 	ops->deactivate = gpiochip_irq_domain_deactivate;
- 	ops->alloc = gpiochip_hierarchy_irq_domain_alloc;
--	ops->free = irq_domain_free_irqs_common;
- 
- 	/*
--	 * We only allow overriding the translate() function for
-+	 * We only allow overriding the translate() and free() function for
- 	 * hierarchical chips, and this should only be done if the user
--	 * really need something other than 1:1 translation.
-+	 * really need something other than 1:1 translation for translate()
-+	 * callback and free if user wants to free up any resources which
-+	 * were allocated during callbacks for example populate_parent_alloc_arg.
- 	 */
- 	if (!ops->translate)
- 		ops->translate = gpiochip_hierarchy_irq_domain_translate;
-+	if (!ops->free)
-+		ops->free = irq_domain_free_irqs_common;
- }
- 
- static int gpiochip_hierarchy_add_domain(struct gpio_chip *gc)
--- 
-2.25.1
+However, Tony removed most of arch/arm/mach-omap2/timer.c with:
+2ee04b88547a ("ARM: OMAP2+: Drop old timer code for dmtimer and 32k counter")
 
+The timers are now implemented in drivers/clocksource/timer-ti-dm.c and
+drivers/clocksource/timer-ti-dm-systimer.c. The function
+dmtimer_clocksource_suspend() disables the dmtimer and clock but does
+not ack any interrupts.
+
+Tony suggested the right place to ack the interrupt during suspend is
+in CPU_CLUSTER_PM_ENTER inside omap_timer_context_notifier().
+
+Do you think that would be an acceptable approach?
+
+Thank you,
+Drew
+
+[1] https://git.ti.com/cgit/ti-linux-kernel/ti-linux-kernel/commit/?h=ti-linux-5.4.y&id=96f4c6e2ba8a
+[2] https://git.ti.com/cgit/ti-linux-kernel/ti-linux-kernel/commit/?h=ti-linux-5.4.y&id=7ae7dd5f8272
