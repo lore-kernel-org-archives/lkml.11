@@ -2,73 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31AF7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 13:53:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E56EBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 13:53:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236553AbiEIN5I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 09:57:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57880 "EHLO
+        id S236655AbiEIN5Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 09:57:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236485AbiEIN5D (ORCPT
+        with ESMTP id S236485AbiEIN5U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 09:57:03 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 711B12AE0B;
-        Mon,  9 May 2022 06:53:07 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KxjKS5RqdzhYtW;
-        Mon,  9 May 2022 21:52:28 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 9 May 2022 21:53:05 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 9 May
- 2022 21:53:04 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-media@vger.kernel.org>
-CC:     <mchehab@kernel.org>, <hverkuil-cisco@xs4all.nl>,
-        <robert.foss@linaro.org>, <bryan.odonoghue@linaro.org>,
-        <vladimir.zapolskiy@linaro.org>
-Subject: [PATCH] media: camss: csid: fix wrong size passed to devm_kmalloc_array()
-Date:   Mon, 9 May 2022 22:04:39 +0800
-Message-ID: <20220509140439.1361352-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 9 May 2022 09:57:20 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6C12D1C0;
+        Mon,  9 May 2022 06:53:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Kxxyg1HZnQSs/qeLzfqToEvB7I7JnrqLFn5Ofm/34bY=; b=mkpF3BTb9sYAwjiKkfmAKvRtRR
+        ta5V+lcRSuTlh4plsa5nFCL0LXnihub+nNgTIzgxSU1xT7urt4+VNvXnAP/AnSCOLVBobQsOmhgBW
+        pz/K0YRJlb4ZwMUDrFsRojpY4T2ELh3V6rI11kweNRCSvQz3J/QOhMgVeSNyqbbfrLtI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1no3p5-001x4a-GG; Mon, 09 May 2022 15:53:15 +0200
+Date:   Mon, 9 May 2022 15:53:15 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Wan Jiabing <wanjiabing@vivo.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: phy: micrel: Fix incorret variable type in micrel
+Message-ID: <Ynkcy0VhJ/HTfqMU@lunn.ch>
+References: <20220509134951.2327924-1-wanjiabing@vivo.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220509134951.2327924-1-wanjiabing@vivo.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-'supplies' is a pointer, the real size of struct regulator_bulk_data
-should be pass to devm_kmalloc_array().
+On Mon, May 09, 2022 at 09:49:51PM +0800, Wan Jiabing wrote:
+> In lanphy_read_page_reg, calling __phy_read() might return a negative
+> error code. Use 'int' to check the negative error code.
 
-Fixes: 0d8140179715 ("media: camss: Add regulator_bulk support")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/media/platform/qcom/camss/camss-csid.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi Wan
 
-diff --git a/drivers/media/platform/qcom/camss/camss-csid.c b/drivers/media/platform/qcom/camss/camss-csid.c
-index f993f349b66b..80628801cf09 100644
---- a/drivers/media/platform/qcom/camss/camss-csid.c
-+++ b/drivers/media/platform/qcom/camss/camss-csid.c
-@@ -666,7 +666,7 @@ int msm_csid_subdev_init(struct camss *camss, struct csid_device *csid,
- 	if (csid->num_supplies) {
- 		csid->supplies = devm_kmalloc_array(camss->dev,
- 						    csid->num_supplies,
--						    sizeof(csid->supplies),
-+						    sizeof(*csid->supplies),
- 						    GFP_KERNEL);
- 		if (!csid->supplies)
- 			return -ENOMEM;
--- 
-2.25.1
+As far as the code goes, this looks good.
 
+Please could you add a Fixes: tag, to indicate where the problem was
+introduced. Please also read the netdev FAQ, so you can correctly set
+the patch subject. This should be against the net tree, since it is a
+fix.
+
+Thanks
+	Andrew
