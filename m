@@ -2,240 +2,257 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7381FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 15:51:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E72AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 15:52:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238683AbiEIPzs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 11:55:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41912 "EHLO
+        id S238675AbiEIPzv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 11:55:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238660AbiEIPzj (ORCPT
+        with ESMTP id S238635AbiEIPzm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 11:55:39 -0400
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42B561B3B97
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 08:51:42 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1652111501;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=eJT1KTqzq39O6p9NSa8tv7mPnliZo+mxhdkjwWmbXd4=;
-        b=n0gexs5Cn++GK9dkGC5XmksVQLkWk0QHkQKMXn9AnAinoRMj4668cfqG1gs1lWfC6gORjt
-        v+oawY8qY5mi/koqh/nJx101QOAjc/AeVHCgemG39KfDXUsydFteH5xU//XjEIaQzhfL9o
-        Hm5hasLexJVAuWB4G6XuXUQq5RsqS7o=
-From:   andrey.konovalov@linux.dev
-To:     Marco Elver <elver@google.com>,
-        Alexander Potapenko <glider@google.com>
-Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev@googlegroups.com,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH v2 1/3] kasan: clean up comments in internal kasan.h
-Date:   Mon,  9 May 2022 17:51:34 +0200
-Message-Id: <a0680ff30035b56cb7bdd5f59fd400e71712ceb5.1652111464.git.andreyknvl@google.com>
+        Mon, 9 May 2022 11:55:42 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDA3A1B57BA;
+        Mon,  9 May 2022 08:51:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652111508; x=1683647508;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=TOnajFuy+Bsd4TrZHLgvhFhLa8Pkjax9guTUhBNOExE=;
+  b=IUdXV+hRhkjm4S9sYTZwhiChZTnZQb6PgHDLJz/AJc/p3min6/CpIyEA
+   Zu+U5rW/QciupMQZtHB4vI+96fXwlUpnDaHoUqV3k2E08xW9d3MYbVy3k
+   ZtVT4cBx7pIL7DhVgSTlqVFDWojljymbPYQBHMlRxxUMG8BpuwLEakxC/
+   gWkYQwgsZUqXFWRkPTtiU4CH8FbCMvm55Asun3bH8DoZXIV0AkbdWmku3
+   T+wK/EgOxYuHLlmN+m01Ew0bORL523nbnyAclToiQYKFjxjf8UKxW5ffy
+   i5TLi8W9atUE9O2ZrD9abDADs0cQ5a7yMQEAp483dcDRpj0oj874WUcoF
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="269020481"
+X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
+   d="scan'208";a="269020481"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 08:51:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
+   d="scan'208";a="519292213"
+Received: from fmsmsx605.amr.corp.intel.com ([10.18.126.85])
+  by orsmga003.jf.intel.com with ESMTP; 09 May 2022 08:51:47 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Mon, 9 May 2022 08:51:46 -0700
+Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Mon, 9 May 2022 08:51:46 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Mon, 9 May 2022 08:51:46 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.109)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Mon, 9 May 2022 08:51:46 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=P8pqQcH+aVTMd12LW6ZG+1N5fxAX5xsKesKlg6AmnXPFom3IksrDi3wcK0Fci0+XzZ9mVh+qzRfFlk9DQz4pRAydXrfNo/hWL4nyXIWzzagVzkN/CUcvppYqKpIA8X0gCuekrzJDVOFXhsULxuYIFXXr8DUPr5dvZb/ejvXdv0LdKgoaDMG0lgjltMyEIbETilwuajhqbuVzMvS6eePPIl830iSWtOzhe6EPQ6FfOKM8WocftUImEejiTBf1e2JpQDDHAYYy2G6gASSvRjUmyVUab2l8yp2fMlThgZgq/eWd3r8/Zfq822TuO6A/+QctYCl4S3s5zFb4pYPdnoRrhA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=azQpjh6+aTJrXbdAXB14zBxlAQ6fG0QpozqL0O/bmuk=;
+ b=W2N9N+EwRjWMddMQ84++cMVOznI7paYfp0PosfxLHjwdKfh/uqvtU5x7QkySvm//HvPdBWFX5H2pjorw76+WzcFyf632mXO5K/IZkalfQ2iZSBFtLRWeCarpPNBL72Gny2/37qA6Xq/SNXdGB5pgKTkI0cIryaFg3qdFX8G+8Ss2L0/gP0n2JD8jnKZ11QjdsytnAC3PoOUnhm6EibioA+2m5MJberigVaTWz6kQEpws5+O1EZIGkyriMNC4cgKtCxg5cR7Ci9wPVKEiIIJP8Xi7nWRVGyWwQiUgrWkhyclpoufCGA3O1IwOspLr5+8RwbB6QgKtxMCnbZpaO9+Cdw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM6PR11MB3180.namprd11.prod.outlook.com (2603:10b6:5:9::13) by
+ SN6PR11MB2942.namprd11.prod.outlook.com (2603:10b6:805:cb::28) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5227.20; Mon, 9 May 2022 15:51:42 +0000
+Received: from DM6PR11MB3180.namprd11.prod.outlook.com
+ ([fe80::b1fa:393c:9fb6:6871]) by DM6PR11MB3180.namprd11.prod.outlook.com
+ ([fe80::b1fa:393c:9fb6:6871%5]) with mapi id 15.20.5227.022; Mon, 9 May 2022
+ 15:51:42 +0000
+Message-ID: <a339df59-9e00-c7cb-e33d-2ac626443639@intel.com>
+Date:   Mon, 9 May 2022 17:51:36 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.8.1
+Subject: Re: [PATCH v3 1/4] fbdev: Prevent possible use-after-free in
+ fb_release()
+Content-Language: en-US
+To:     Javier Martinez Canillas <javierm@redhat.com>,
+        <linux-kernel@vger.kernel.org>
+CC:     <linux-fbdev@vger.kernel.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Helge Deller <deller@gmx.de>,
+        <dri-devel@lists.freedesktop.org>,
+        "Thomas Zimmermann" <tzimmermann@suse.de>,
+        Daniel Vetter <daniel.vetter@intel.com>
+References: <20220505215947.364694-1-javierm@redhat.com>
+ <20220505220413.365977-1-javierm@redhat.com>
+ <753d0350-42dc-389b-b10b-4533ddcf32ac@intel.com>
+ <1f788b8f-0bea-1818-349e-b1bc907bf251@redhat.com>
+From:   Andrzej Hajda <andrzej.hajda@intel.com>
+Organization: Intel Technology Poland sp. z o.o. - ul. Slowackiego 173, 80-298
+ Gdansk - KRS 101882 - NIP 957-07-52-316
+In-Reply-To: <1f788b8f-0bea-1818-349e-b1bc907bf251@redhat.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: DU2P250CA0015.EURP250.PROD.OUTLOOK.COM
+ (2603:10a6:10:231::20) To DM6PR11MB3180.namprd11.prod.outlook.com
+ (2603:10b6:5:9::13)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a1487ec2-3b6c-4c62-7fa9-08da31d3cfd5
+X-MS-TrafficTypeDiagnostic: SN6PR11MB2942:EE_
+X-Microsoft-Antispam-PRVS: <SN6PR11MB294299BF9165D4E10CC7ECA3EBC69@SN6PR11MB2942.namprd11.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: uH5zBKlNVodB9QdFt4eSKROi35xm5LX3GBORvL2BIn6h1wio1bXDcGn44P4rXoUuhqB8LQptklxdWSdN4XH42tWsYrWclXNHVx512WLvJ6wvG/DThAuNBn7YPysdVm2Z0cTI+gYQ+3znV4bCCa1y3moNKJ2VZRNoW0sB5EuR+gWgPJ7tmic7QuCtmGJbdqbJyz+XLT6yGw2MkloQYMqM0Zu2B3j0jfQdku+41s09rQ95v1w0id2H0SSWAU2PFTBDIMYoFwddV1KrxrVL2nh1mlcGFqfviMSKqlsSLwI/erR8+VzouUWAH1Wd7VgKoHDPqGnD2BkQb2LpqFKdiuXsk4Zh8W9gyKyHZKcz1WimtFmdpN7qZyUk0IZ9wo5lpn1Acb7nQOj3Si+I9TtRiI8Z3K+yBso2RLfb5xrmVea/5bjRfZSsPCeY10AwAkDpf+WbYslkNxhePapuVtA+E/rDtUZYcm6vpjpTT03/cWpIqO+0H1HByAqVodOU2r34yPQfj3DBfpEJhejHHdqWKCewlhtonZzvGFEXoDfH7sJsyprOSToFJ14T/qXdZ8YHVgeZVMlRrub667+L12N5Ap0RPpptMX7oI1q3/GC2TGzIvyr3mQTjb4RT7Gsl+9twgqSSzdaZ12ByEZUhyYeHyrbpSBkpjrU6RRU0IpwOTlHoDCYxG++reRGAtjXVS5vMM4f89vCLo+CTha8vj2GyI/41xJ41s2ZcfowFtx7y0USMUep0aqqqoO1tudnkIQpeJ3+B
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3180.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(66476007)(66946007)(6486002)(316002)(66556008)(6512007)(6666004)(508600001)(44832011)(2906002)(36916002)(186003)(4326008)(54906003)(31696002)(8676002)(38100700002)(86362001)(2616005)(82960400001)(8936002)(31686004)(6506007)(83380400001)(107886003)(5660300002)(36756003)(53546011)(26005)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UlNSR2NaMnZCeWJ0QXJMOGY4TllmbkRPVVY3a1hBS3VmNVcraE42MGFTVXh3?=
+ =?utf-8?B?UHZSMDFaWExYeW1sZVRCSEpMNmtON1dnbUZMbnlqMTVVWDlFWm9NYTdkdmtD?=
+ =?utf-8?B?ajNQUmtYcnFyb1oxT0xRa2poam1VSFpxSHNVSzJwSWRTbGJESSthbEJJSmI3?=
+ =?utf-8?B?QmlHbkxNL20yWVJQV2xyWTVZTU0xR2YxMkN6dUVTajF5TWErWitJL1Q3TjZQ?=
+ =?utf-8?B?RHJVOXduVjZkZ1FjY3haWGYyMXlCOWlMWVN1NWRzMHQ2UlZWN1Q5K1NrQTNw?=
+ =?utf-8?B?YTJzSXNZU2RzelViamxWUkNVdFVIQ3QwNHZxY0s4dDNKM3NTMnF4TXB5RHhB?=
+ =?utf-8?B?eEVIY3hpbjN1VTB1c0N6YXRsdTIzUnZuNGJ6NVd0ak5ad2IwNGdXWm1EeWVC?=
+ =?utf-8?B?eHIzd2ZySnNZM2FkTGdKUE84ZFhIc2FVMXRhK25WQTZvL09STThmc2dIZXRC?=
+ =?utf-8?B?WHpDQTZkRlUxbjV3eGhvQXNtc0Z4V0VSN21LOXFoLzBuYzdDd3NadTE3TElh?=
+ =?utf-8?B?djltNWhYRUMxenExOFB5OEt5V29LdFVoQzlIaUpPbDhGOVBPVGVYa0wzRGo2?=
+ =?utf-8?B?OCtyTEpBU0dCcmpac0Zka2s4U2d3Vyt4ZTZMUTY1UVZObnFVL0VxdmlaaWk2?=
+ =?utf-8?B?UFhmeGwzS0JVY2oxaTVxbDVnRXJ0UVlMQjlGSGFRelY3akk0NVA5Slo1Qjly?=
+ =?utf-8?B?Qkgyck5QSmh6YUNua0RZdVYvNUcwbjBtVEJZS1BMVzdXQk91ZDhBT0o3SXYv?=
+ =?utf-8?B?VGRCWVZjWVFRZllnV3ZUNXJQcGpyR2k0VDVtK2J1a2h2OVY0OWw4Z1E5MkFs?=
+ =?utf-8?B?MHRFV2pvL09GMFVHZW5HOTlDaktmZ1NhRjRxWHBlUG9qcFkzQ014c0ZIUFpC?=
+ =?utf-8?B?SHNpMEdyR3lTQnIrK2ZabGE5Y3QyZHFTQ3NjYmhISVJOVDZkTW1LVU1RTFlu?=
+ =?utf-8?B?ckp2cnV4MGpiVVJTZjVhbWxGTytLdnJxN2dMdnRMdGQvWEFVRzFaVmpGaDRs?=
+ =?utf-8?B?dk03QWV1UjYrbkJBZW9jSlpaTTFFMGE2cVFtb0RIL1V0WXRXYUN4WUZ4NDRE?=
+ =?utf-8?B?Wmx1cWpNSEFVQU1GNlY5T0FPaVRsWTNRNU5NZitkOUtPZ1UxMkVDSjdQUjcz?=
+ =?utf-8?B?YmkwU3FlalptV3FWcGhNbzUyN1NzdkdqeG15dm1GeGVVM25ZcXBQb2I2NTBn?=
+ =?utf-8?B?SFY2NXI2RGd0SWpmN0Q3WWE4MlhWcEVCUW9idHNvR2NNcHdxL093WElIQTNF?=
+ =?utf-8?B?STRiamZpS3grSm4rRFNKN1ZDL3NWdnZ2aGtPVG5SKzVjVEhrUnBSd2MvbGEr?=
+ =?utf-8?B?R3dxaUowcjdmb0VUWEhTVHpXN1ZqNWJUalNoRTl2Y1lFdm5FbUxlYU9OWC95?=
+ =?utf-8?B?VWVqT01wN1VKcXY4MkdEY1BMdVVMbWtzVzJoYUs2dnYxOWFVNEU1MHVaZS9a?=
+ =?utf-8?B?NWZPeFJZQWxvZVVnRHR6SlEzVjRndkpiMHpDdXVaQUd2OXZLcHM0VGZWMjJH?=
+ =?utf-8?B?OHVJbjV4WDlZWDBWTTRtbm1NQkpkcGVOR2wwRCsrWmJpeEx6ajd3a3d4TjZX?=
+ =?utf-8?B?UWZoQ2YvSlJqTlVOd0JZbFhOYkJQQXR4SHQyZ1ZXUzZNaUpZSGpHZXJZKzJO?=
+ =?utf-8?B?NFh1UG5tU1NsOUhIRzBWYks2QXdnVlQ1Q21ReHFNR01QcHFOWUxTeUpSY0F3?=
+ =?utf-8?B?Mnlic29IUzhFckQyYXNJWjE3UHUyWXoyTXFMRlg0eHFaMWhSTG1YNFBoU280?=
+ =?utf-8?B?M0tJVjFkaUVwY3lwZW9KK0w4NytIS0cvOFBMemJFKzlOUFR4aVZBbVNQZm1K?=
+ =?utf-8?B?Qzc2b1daLzlFN2JXT09sZUh1RU9PMEIzK29URy9rMFY1QjdzNHduM3hHNjFF?=
+ =?utf-8?B?Q0paVmlyTHZiUmZ6elVLUEY0T01hYmlTR0NCakNwUzBMNE9tSEJiWUdIanR4?=
+ =?utf-8?B?TXoyaEpNOTJnbGpzMXlBLzRDN0x5anNNeFhVMGxhUzZHTXM4UUpHenRtTTJ6?=
+ =?utf-8?B?eTRtZG5WYkZUbW9FRXBKVVVEMGJzd1dCSTJ3TFk0cVhwL2h3U3NDMmxBQ3lG?=
+ =?utf-8?B?NzJJWFhqTkdzSCtCcVBVdmk0Q1luVi9oRGxPWTJsdXpJazJGMDZMWkVqUkZs?=
+ =?utf-8?B?SW51cHZGcEkySU9qQXBuOEdVbVlYWS9seUJSOEdDaUtra0dIUkJ5eUk1Rmxa?=
+ =?utf-8?B?RUI4amREQUFnTVhiRWxCSHo3REE3SSs1V2g1UVJXTDVmNDh5THFvYzZ5QnQz?=
+ =?utf-8?B?a2VKTklBQlhDWE1BZnNkQVhiTkcyTjRnWnBBVlBneWhjQ3A3cDJ6QmdsNHBG?=
+ =?utf-8?B?K3pYVzFWNzlnTVpiV3ZiZkRtKzFuRjJBWnVFa3FETjlyMGRQL2t3TkR6b3Jn?=
+ =?utf-8?Q?2yeqtDgL5zcE8Xpc=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: a1487ec2-3b6c-4c62-7fa9-08da31d3cfd5
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3180.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2022 15:51:42.2957
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: +s0/R086I0/Uxr93Ntl3Tm+l53WxroDULsSaH3RSLTxElTWmepnbONJdUk9gFBcbFGl86qRSvrrT4ySZ0kbpkA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR11MB2942
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrey Konovalov <andreyknvl@google.com>
 
-Clean up comments in mm/kasan/kasan.h: clarify, unify styles, fix
-punctuation, etc.
 
-Reviewed-by: Alexander Potapenko <glider@google.com>
-Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
----
- mm/kasan/kasan.h | 74 +++++++++++++++++++++---------------------------
- 1 file changed, 33 insertions(+), 41 deletions(-)
+On 09.05.2022 17:30, Javier Martinez Canillas wrote:
+> Hello Andrzej,
+>
+> On 5/9/22 16:56, Andrzej Hajda wrote:
+>> On 06.05.2022 00:04, Javier Martinez Canillas wrote:
+>>> From: Daniel Vetter <daniel.vetter@ffwll.ch>
+>>>
+>>> Most fbdev drivers have issues with the fb_info lifetime, because call to
+>>> framebuffer_release() from their driver's .remove callback, rather than
+>>> doing from fbops.fb_destroy callback.
+>>>
+>>> Doing that will destroy the fb_info too early, while references to it may
+>>> still exist, leading to a use-after-free error.
+>>>
+>>> To prevent this, check the fb_info reference counter when attempting to
+>>> kfree the data structure in framebuffer_release(). That will leak it but
+>>> at least will prevent the mentioned error.
+>>>
+>>> Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+>>> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+>>> Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
+>>> ---
+>>>
+>>> (no changes since v1)
+>>>
+>>>    drivers/video/fbdev/core/fbsysfs.c | 4 ++++
+>>>    1 file changed, 4 insertions(+)
+>>>
+>>> diff --git a/drivers/video/fbdev/core/fbsysfs.c b/drivers/video/fbdev/core/fbsysfs.c
+>>> index 8c1ee9ecec3d..c2a60b187467 100644
+>>> --- a/drivers/video/fbdev/core/fbsysfs.c
+>>> +++ b/drivers/video/fbdev/core/fbsysfs.c
+>>> @@ -80,6 +80,10 @@ void framebuffer_release(struct fb_info *info)
+>>>    {
+>>>    	if (!info)
+>>>    		return;
+>>> +
+>>> +	if (WARN_ON(refcount_read(&info->count)))
+>>> +		return;
+>>> +
+>> Regarding drm:
+>> What about drm_fb_helper_fini? It calls also framebuffer_release and is
+>> called often from _remove paths (checked intel/radeon/nouveau). I guess
+>> it should be fixed as well. Do you plan to fix it?
+>>
+> I think you are correct. Maybe we need something like the following?
+>
+> diff --git a/drivers/gpu/drm/drm_fb_helper.c b/drivers/gpu/drm/drm_fb_helper.c
+> index d265a73313c9..b09598f7af28 100644
+> --- a/drivers/gpu/drm/drm_fb_helper.c
+> +++ b/drivers/gpu/drm/drm_fb_helper.c
+> @@ -631,7 +631,6 @@ void drm_fb_helper_fini(struct drm_fb_helper *fb_helper)
+>          if (info) {
+>                  if (info->cmap.len)
+>                          fb_dealloc_cmap(&info->cmap);
+> -               framebuffer_release(info);
 
-diff --git a/mm/kasan/kasan.h b/mm/kasan/kasan.h
-index b01b4bbe0409..fed4f7a00d33 100644
---- a/mm/kasan/kasan.h
-+++ b/mm/kasan/kasan.h
-@@ -42,6 +42,7 @@ static inline bool kasan_sync_fault_possible(void)
- {
- 	return kasan_mode == KASAN_MODE_SYNC || kasan_mode == KASAN_MODE_ASYMM;
- }
-+
- #else
- 
- static inline bool kasan_stack_collection_enabled(void)
-@@ -73,47 +74,41 @@ static inline bool kasan_sync_fault_possible(void)
- #define KASAN_MEMORY_PER_SHADOW_PAGE	(KASAN_GRANULE_SIZE << PAGE_SHIFT)
- 
- #ifdef CONFIG_KASAN_GENERIC
--#define KASAN_FREE_PAGE         0xFF  /* page was freed */
--#define KASAN_PAGE_REDZONE      0xFE  /* redzone for kmalloc_large allocations */
--#define KASAN_KMALLOC_REDZONE   0xFC  /* redzone inside slub object */
--#define KASAN_KMALLOC_FREE      0xFB  /* object was freed (kmem_cache_free/kfree) */
--#define KASAN_VMALLOC_INVALID   0xF8  /* unallocated space in vmapped page */
-+#define KASAN_FREE_PAGE         0xFF  /* freed page */
-+#define KASAN_PAGE_REDZONE      0xFE  /* redzone for kmalloc_large allocation */
-+#define KASAN_KMALLOC_REDZONE   0xFC  /* redzone for slab object */
-+#define KASAN_KMALLOC_FREE      0xFB  /* freed slab object */
-+#define KASAN_VMALLOC_INVALID   0xF8  /* inaccessible space in vmap area */
- #else
- #define KASAN_FREE_PAGE         KASAN_TAG_INVALID
- #define KASAN_PAGE_REDZONE      KASAN_TAG_INVALID
- #define KASAN_KMALLOC_REDZONE   KASAN_TAG_INVALID
- #define KASAN_KMALLOC_FREE      KASAN_TAG_INVALID
--#define KASAN_VMALLOC_INVALID   KASAN_TAG_INVALID /* only for SW_TAGS */
-+#define KASAN_VMALLOC_INVALID   KASAN_TAG_INVALID /* only used for SW_TAGS */
- #endif
- 
- #ifdef CONFIG_KASAN_GENERIC
- 
--#define KASAN_KMALLOC_FREETRACK 0xFA  /* object was freed and has free track set */
-+#define KASAN_KMALLOC_FREETRACK 0xFA  /* freed slab object with free track */
- #define KASAN_GLOBAL_REDZONE    0xF9  /* redzone for global variable */
- 
--/*
-- * Stack redzone shadow values
-- * (Those are compiler's ABI, don't change them)
-- */
-+/* Stack redzone shadow values. Compiler ABI, do not change. */
- #define KASAN_STACK_LEFT        0xF1
- #define KASAN_STACK_MID         0xF2
- #define KASAN_STACK_RIGHT       0xF3
- #define KASAN_STACK_PARTIAL     0xF4
- 
--/*
-- * alloca redzone shadow values
-- */
-+/* alloca redzone shadow values. */
- #define KASAN_ALLOCA_LEFT	0xCA
- #define KASAN_ALLOCA_RIGHT	0xCB
- 
-+/* alloca redzone size. Compiler ABI, do not change. */
- #define KASAN_ALLOCA_REDZONE_SIZE	32
- 
--/*
-- * Stack frame marker (compiler ABI).
-- */
-+/* Stack frame marker. Compiler ABI, do not change. */
- #define KASAN_CURRENT_STACK_FRAME_MAGIC 0x41B58AB3
- 
--/* Don't break randconfig/all*config builds */
-+/* Dummy value to avoid breaking randconfig/all*config builds. */
- #ifndef KASAN_ABI_VERSION
- #define KASAN_ABI_VERSION 1
- #endif
-@@ -141,21 +136,21 @@ struct kasan_report_info {
- 	unsigned long ip;
- };
- 
--/* The layout of struct dictated by compiler */
-+/* Do not change the struct layout: compiler ABI. */
- struct kasan_source_location {
- 	const char *filename;
- 	int line_no;
- 	int column_no;
- };
- 
--/* The layout of struct dictated by compiler */
-+/* Do not change the struct layout: compiler ABI. */
- struct kasan_global {
- 	const void *beg;		/* Address of the beginning of the global variable. */
- 	size_t size;			/* Size of the global variable. */
--	size_t size_with_redzone;	/* Size of the variable + size of the red zone. 32 bytes aligned */
-+	size_t size_with_redzone;	/* Size of the variable + size of the redzone. 32 bytes aligned. */
- 	const void *name;
- 	const void *module_name;	/* Name of the module where the global variable is declared. */
--	unsigned long has_dynamic_init;	/* This needed for C++ */
-+	unsigned long has_dynamic_init;	/* This is needed for C++. */
- #if KASAN_ABI_VERSION >= 4
- 	struct kasan_source_location *location;
- #endif
-@@ -164,9 +159,7 @@ struct kasan_global {
- #endif
- };
- 
--/**
-- * Structures to keep alloc and free tracks *
-- */
-+/* Structures for keeping alloc and free tracks. */
- 
- #define KASAN_STACK_DEPTH 64
- 
-@@ -183,11 +176,8 @@ struct kasan_track {
- 
- struct kasan_alloc_meta {
- 	struct kasan_track alloc_track;
-+	/* Generic mode stores free track in kasan_free_meta. */
- #ifdef CONFIG_KASAN_GENERIC
--	/*
--	 * The auxiliary stack is stored into struct kasan_alloc_meta.
--	 * The free stack is stored into struct kasan_free_meta.
--	 */
- 	depot_stack_handle_t aux_stack[2];
- #else
- 	struct kasan_track free_track[KASAN_NR_FREE_STACKS];
-@@ -203,18 +193,18 @@ struct qlist_node {
- };
- 
- /*
-- * Generic mode either stores free meta in the object itself or in the redzone
-- * after the object. In the former case free meta offset is 0, in the latter
-- * case it has some sane value smaller than INT_MAX. Use INT_MAX as free meta
-- * offset when free meta isn't present.
-+ * Free meta is stored either in the object itself or in the redzone after the
-+ * object. In the former case, free meta offset is 0. In the latter case, the
-+ * offset is between 0 and INT_MAX. INT_MAX marks that free meta is not present.
-  */
- #define KASAN_NO_FREE_META INT_MAX
- 
-+/*
-+ * Free meta is only used by Generic mode while the object is in quarantine.
-+ * After that, slab allocator stores the freelist pointer in the object.
-+ */
- struct kasan_free_meta {
- #ifdef CONFIG_KASAN_GENERIC
--	/* This field is used while the object is in the quarantine.
--	 * Otherwise it might be used for the allocator freelist.
--	 */
- 	struct qlist_node quarantine_link;
- 	struct kasan_track free_track;
- #endif
-@@ -417,9 +407,10 @@ static inline void kasan_unpoison(const void *addr, size_t size, bool init)
- 		return;
- 	/*
- 	 * Explicitly initialize the memory with the precise object size to
--	 * avoid overwriting the SLAB redzone. This disables initialization in
--	 * the arch code and may thus lead to performance penalty. The penalty
--	 * is accepted since SLAB redzones aren't enabled in production builds.
-+	 * avoid overwriting the slab redzone. This disables initialization in
-+	 * the arch code and may thus lead to performance penalty. This penalty
-+	 * does not affect production builds, as slab redzones are not enabled
-+	 * there.
- 	 */
- 	if (__slub_debug_enabled() &&
- 	    init && ((unsigned long)size & KASAN_GRANULE_MASK)) {
-@@ -503,8 +494,9 @@ void kasan_restore_multi_shot(bool enabled);
- 
- /*
-  * Exported functions for interfaces called from assembly or from generated
-- * code. Declarations here to avoid warning about missing declarations.
-+ * code. Declared here to avoid warnings about missing declarations.
-  */
-+
- asmlinkage void kasan_unpoison_task_stack_below(const void *watermark);
- void __asan_register_globals(struct kasan_global *globals, size_t size);
- void __asan_unregister_globals(struct kasan_global *globals, size_t size);
-@@ -573,4 +565,4 @@ void __hwasan_storeN_noabort(unsigned long addr, size_t size);
- 
- void __hwasan_tag_memory(unsigned long addr, u8 tag, unsigned long size);
- 
--#endif
-+#endif /* __MM_KASAN_KASAN_H */
--- 
-2.25.1
+What about cmap? I am not an fb expert, but IMO cmap can be accessed 
+from userspace as well.
+
+Regards
+Andrzej
+
+>          }
+>          fb_helper->fbdev = NULL;
+>   
+> @@ -2112,6 +2111,7 @@ static void drm_fbdev_release(struct drm_fb_helper *fb_helper)
+>   static void drm_fbdev_fb_destroy(struct fb_info *info)
+>   {
+>          drm_fbdev_release(info->par);
+> +       framebuffer_release(info);
+>   }
+>   
+>   static int drm_fbdev_fb_mmap(struct fb_info *info, struct vm_area_struct *vma)
+>
+>> Regarding fb drivers, just for stats:
+>> git grep -p framebuffer_release | grep _remove | wc -l
+>> Suggests there is at least 70 incorrect users of this :)
+>>
+> Yes, Daniel already mentioned that most of them get this wrong but I was
+> mostly interested in {simple,efi,vesa}fb since are used with "nomodeset".
+>
+> But given that I only touched those tree and still managed to introduce
+> a regression, I won't attempt to fix the others.
+>
 
