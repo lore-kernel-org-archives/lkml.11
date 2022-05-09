@@ -2,226 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9915AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:31:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DCE2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:31:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232645AbiEIKe7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 06:34:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39392 "EHLO
+        id S231260AbiEIKfH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 06:35:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231347AbiEIKee (ORCPT
+        with ESMTP id S231610AbiEIKej (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 06:34:34 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C1D22A5EB9;
-        Mon,  9 May 2022 03:29:44 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id g184so9168652pgc.1;
-        Mon, 09 May 2022 03:29:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=TwS3BLFTGGCldPOj2qtqx13iW7It+EgR/QGQVKU6mFs=;
-        b=QDHOSjP6pRdjfSA6MR7m2GA9AC4ZqHBbRc5Crqq/8fBnZjt2tSu/vSHF/c321IayGu
-         RafA+2BryZWv8Gxuz1ixzW6f0cSYQANaSPQqhvX2lejQgcqrKVSsuB4FMi1D3buY54T9
-         aDhh8/XVr287qxtLH2YsQR7vMVIGjDxjpIpA3H0FFC9LI/26szY+hKlX4tA9LUEwOdDR
-         qK6sPqMsKHxgUT40ke+se8DmdlTmBLd+sRh0/f0oHF6K2JBSpd8AfH9Bl7imXe0rstDY
-         1DHyQL8CfG7sGQSDuHE5V9M9Xh6mc8eU3IybnSn0gZ5O4JRnYfSDq+6vS/mTJ+NfXwaC
-         Cf9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=TwS3BLFTGGCldPOj2qtqx13iW7It+EgR/QGQVKU6mFs=;
-        b=uZeC3xQuwHwcFI83xie/UlLNnXzX+/D9pwN+JBqa/t+kIYX0+DUyKSgWbElN+VwmPU
-         M6SF8gBlGmvnPaSF7rIEiNWnUTSmEgIt1upQGwt4No5hzcOAbQr+VWHdNngsMD2GJ94U
-         7ol4YhH6AI1z74kVrljYmUPsoQiQOX9qZqGg+Ttmwdv5pb3yL6uryg6Kdy2bBMdsv8BQ
-         uKDwYNaBBCA7/yeQOA1Gm+3Wdtfo6P/iDVkKiam/Mu8KKZU4duJLGxNKgT3H+M/D0RAv
-         sdmedBVe+P7+FvCylrIL7F8xnQLlBZlPvf71hBmiPlo2G7Qu+/ZXnQbkSTSHL1GJftqp
-         cIyA==
-X-Gm-Message-State: AOAM5303fyw/NDVqhrtDLvciJUWuRH0WCzqQ7r9C6NXjC+opfYI3QZGy
-        CtKyGEMot9pGGDA7EZRRZWo=
-X-Google-Smtp-Source: ABdhPJwIep48Sp0SysTbaidcp0H14dyixs70fYKkIaiQY3J/GMhK0+xCO7vWSJ0oGiSCq3RACW1qpQ==
-X-Received: by 2002:a63:ff0b:0:b0:3c6:b0b:dfee with SMTP id k11-20020a63ff0b000000b003c60b0bdfeemr13094365pgi.346.1652092180848;
-        Mon, 09 May 2022 03:29:40 -0700 (PDT)
-Received: from [172.30.1.41] ([14.32.163.5])
-        by smtp.gmail.com with ESMTPSA id g15-20020a056a001a0f00b0050dc76281f1sm8335203pfv.203.2022.05.09.03.29.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 03:29:40 -0700 (PDT)
-Message-ID: <ad5aa4cb-485f-abf5-87b1-e78b3305a562@gmail.com>
-Date:   Mon, 9 May 2022 19:29:31 +0900
+        Mon, 9 May 2022 06:34:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0B4042A4A05
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 03:29:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652092102;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6H/6ecBRlSRkZDMv8ER1vowHrJ0f9/tbpgvVRebvDPM=;
+        b=UJPIUnrze52s7YC4EyRFMk7Y+36tS4tBSuzHgVqFErqn4RlVnfzZvKwO7AP55fUYStfOm3
+        W0ZN2D4TYP/85v4OxGoToiRGvjsd7Kyoss+mIljsoHX5L6HmgcViXf7myPEeP98N8aScV6
+        35XGyR1ElsXx3QsmTeqpyu7HaRoasIE=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-646-JrX56wR3PXCIMLTqmToTCQ-1; Mon, 09 May 2022 06:28:19 -0400
+X-MC-Unique: JrX56wR3PXCIMLTqmToTCQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 49B48185A794;
+        Mon,  9 May 2022 10:28:19 +0000 (UTC)
+Received: from starship (unknown [10.40.192.26])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 35B00C27EB6;
+        Mon,  9 May 2022 10:28:17 +0000 (UTC)
+Message-ID: <506fc55bd1001e0ffb4c5b20edd057fe7b8dcfb4.camel@redhat.com>
+Subject: Re: [PATCH v4 00/15] Introducing AMD x2AVIC and hybrid-AVIC modes
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     pbonzini@redhat.com, seanjc@google.com, joro@8bytes.org,
+        jon.grimm@amd.com, wei.huang2@amd.com, terry.bowman@amd.com
+Date:   Mon, 09 May 2022 13:28:16 +0300
+In-Reply-To: <20220508023930.12881-1-suravee.suthikulpanit@amd.com>
+References: <20220508023930.12881-1-suravee.suthikulpanit@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2 5/5] PM / devfreq: passive: Update frequency when start
- governor
-Content-Language: en-US
-To:     Chen-Yu Tsai <wenst@chromium.org>
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        cw00.choi@samsung.com, myungjoo.ham@samsung.com,
-        kyungmin.park@samsung.com, johnson.wang@mediatek.com,
-        mka@chromium.org, jia-wei.chang@mediatek.com,
-        andrew-sh.cheng@mediatek.com, hsinyi@chromium.org,
-        sibis@codeaurora.org, saravanak@google.com
-References: <20220507150145.531864-1-cw00.choi@samsung.com>
- <20220507150145.531864-6-cw00.choi@samsung.com> <YniX1w+oI1eOCmCx@google.com>
-From:   Chanwoo Choi <cwchoi00@gmail.com>
-In-Reply-To: <YniX1w+oI1eOCmCx@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Sat, 2022-05-07 at 21:39 -0500, Suravee Suthikulpanit wrote:
+> Introducing support for AMD x2APIC virtualization. This feature is
+> indicated by the CPUID Fn8000_000A EDX[14], and it can be activated
+> by setting bit 31 (enable AVIC) and bit 30 (x2APIC mode) of VMCB
+> offset 60h.
+> 
+> With x2AVIC support, the guest local APIC can be fully virtualized in
+> both xAPIC and x2APIC modes, and the mode can be changed during runtime.
+> For example, when AVIC is enabled, the hypervisor set VMCB bit 31
+> to activate AVIC for each vCPU. Then, it keeps track of each vCPU's
+> APIC mode, and updates VMCB bit 30 to enable/disable x2APIC
+> virtualization mode accordingly.
+> 
+> Besides setting bit VMCB bit 30 and 31, for x2AVIC, kvm_amd driver needs
+> to disable interception for the x2APIC MSR range to allow AVIC hardware
+> to virtualize register accesses.
+> 
+> This series also introduce a partial APIC virtualization (hybrid-AVIC)
+> mode, where APIC register accesses are trapped (i.e. not virtualized
+> by hardware), but leverage AVIC doorbell for interrupt injection.
+> This eliminates need to disable x2APIC in the guest on system without
+> x2AVIC support. (Note: suggested by Maxim)
+> 
+> Regards,
+> Suravee
+> 
+> Testing for v4:
+>   * Tested booting a Linux VM with x2APIC physical and logical modes upto 512 vCPUs.
+>   * Test enable AVIC in L0 with xAPIC and x2AVIC modes in L1 and launch L2 guest
+>   * Test partial AVIC mode by launching a VM with x2APIC mode
+> 
+> Changes from v3:
+> (https://lore.kernel.org/lkml/ff67344c0efe06d1422aa84e56738a0812c69bfc.camel@redhat.com/T/)
+>  * Patch  3 : Update logic force_avic
+>  * Patch  8 : Move logic for handling APIC disable to common code (new)
+>  * Patch  9 : Only call avic_refresh_apicv_exec_ctrl
+>  * Patch 12 : Remove APICV_INHIBIT_REASON_X2APIC, and add more comment for hybrid-AVIC mode
+> 
+> Suravee Suthikulpanit (15):
+>   x86/cpufeatures: Introduce x2AVIC CPUID bit
+>   KVM: x86: lapic: Rename [GET/SET]_APIC_DEST_FIELD to
+>     [GET/SET]_XAPIC_DEST_FIELD
+>   KVM: SVM: Detect X2APIC virtualization (x2AVIC) support
+>   KVM: SVM: Update max number of vCPUs supported for x2AVIC mode
+>   KVM: SVM: Update avic_kick_target_vcpus to support 32-bit APIC ID
+>   KVM: SVM: Do not support updating APIC ID when in x2APIC mode
+>   KVM: SVM: Adding support for configuring x2APIC MSRs interception
+>   KVM: x86: Deactivate APICv on vCPU with APIC disabled
+>   KVM: SVM: Refresh AVIC configuration when changing APIC mode
+>   KVM: SVM: Introduce helper functions to (de)activate AVIC and x2AVIC
+>   KVM: SVM: Do not throw warning when calling avic_vcpu_load on a
+>     running vcpu
+>   KVM: SVM: Introduce hybrid-AVIC mode
+>   KVM: x86: Warning APICv inconsistency only when vcpu APIC mode is
+>     valid
+>   KVM: SVM: Use target APIC ID to complete x2AVIC IRQs when possible
+>   KVM: SVM: Add AVIC doorbell tracepoint
+> 
+>  arch/x86/hyperv/hv_apic.c          |   2 +-
+>  arch/x86/include/asm/apicdef.h     |   4 +-
+>  arch/x86/include/asm/cpufeatures.h |   1 +
+>  arch/x86/include/asm/kvm_host.h    |   1 -
+>  arch/x86/include/asm/svm.h         |  21 +++-
+>  arch/x86/kernel/apic/apic.c        |   2 +-
+>  arch/x86/kernel/apic/ipi.c         |   2 +-
+>  arch/x86/kvm/lapic.c               |   6 +-
+>  arch/x86/kvm/svm/avic.c            | 191 ++++++++++++++++++++++++++---
+>  arch/x86/kvm/svm/svm.c             |  56 +++++----
+>  arch/x86/kvm/svm/svm.h             |   6 +-
+>  arch/x86/kvm/trace.h               |  18 +++
+>  arch/x86/kvm/x86.c                 |   8 +-
+>  13 files changed, 262 insertions(+), 56 deletions(-)
+> 
 
-On 22. 5. 9. 13:25, Chen-Yu Tsai wrote:
-> Hi,
-> 
-> On Sun, May 08, 2022 at 12:01:45AM +0900, Chanwoo Choi wrote:
->> If the parent device changes the their frequency before registering
->> the passive device, the passive device cannot receive the notification
->> from parent device and then the passive device cannot be able to
->> set the proper frequency according to the frequency of parent device.
->>
->> So, when start the passive governor, update the frequency
->> according to the frequency of parent device.
->>
->> Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
->> Link: https://lore.kernel.org/r/20220507150145.531864-6-cw00.choi@samsung.com
->> ---
->>   drivers/devfreq/governor_passive.c | 17 +++++++++++++++++
->>   1 file changed, 17 insertions(+)
->>
->> diff --git a/drivers/devfreq/governor_passive.c b/drivers/devfreq/governor_passive.c
->> index b34dbe750c0a..74d26c193fdb 100644
->> --- a/drivers/devfreq/governor_passive.c
->> +++ b/drivers/devfreq/governor_passive.c
->> @@ -412,6 +412,23 @@ static int devfreq_passive_event_handler(struct devfreq *devfreq,
->>   		if (!p_data->this)
->>   			p_data->this = devfreq;
->>   
->> +		/*
->> +		 * If the parent device changes the their frequency before
->> +		 * registering the passive device, the passive device cannot
->> +		 * receive the notification from parent device and then the
->> +		 * passive device cannot be able to set the proper frequency
->> +		 * according to the frequency of parent device.
->> +		 *
->> +		 * When start the passive governor, update the frequency
->> +		 * according to the frequency of parent device.
->> +		 */
->> +		mutex_lock(&devfreq->lock);
->> +		ret = devfreq_update_target(devfreq, parent->previous_freq);
-> 
-> This crashes when parent is NULL, in the case where parent is cpufreq.
-> This is the case with the MTK ccifreq driver, which produces the panic
-> and backtrace below [1].
-> 
-> I made a fix for a previous version of this patch:
-> 
->      https://github.com/wens/linux/commit/f85c1834dd07388abb57a00200c80f7440823a03
-> 
-> BTW, could you CC me on future revisions? I'm not subscribed to the
-> linux-pm mailing list.
+Patch series looks good.
 
-OK. I'll.
+I will smoke test it today on my normal AVIC, just in case.
 
-> 
-> 
-> Regards
-> ChenYu
-> 
-> [1]
-> 
-> Unable to handle kernel read from unreadable memory at virtual address 0000000000000420
-> Mem abort info:
-> ESR = 0x0000000096000005
-> EC = 0x25: DABT (current EL), IL = 32 bits
-> SET = 0, FnV = 0
-> EA = 0, S1PTW = 0
-> FSC = 0x05: level 1 translation fault
-> Data abort info:
-> ISV = 0, ISS = 0x00000005
-> CM = 0, WnR = 0
-> [0000000000000420] user address but active_mm is swapper
-> Internal error: Oops: 96000005 [#1] PREEMPT SMP
-> Modules linked in:
-> CPU: 7 PID: 1 Comm: swapper/0 Not tainted 5.18.0-rc5-next-20220505-09393-g38dc825c1d73 #155 b348fdb8d61a403eef7a9c5857bc02a261fcb213
-> Hardware name: Google juniper sku16 board (DT)
-> pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-> pc : devfreq_passive_event_handler (drivers/devfreq/governor_passive.c:426)
-> lr : devfreq_passive_event_handler (drivers/devfreq/governor_passive.c:426)
-> sp : ffffffc00808ba80
-> x29: ffffffc00808ba80 x28: 0000000000000000 x27: ffffffe99bb90458
-> x26: 0000000000000010 x25: ffffff80c1843848 x24: ffffff80c1843810
-> x23: ffffffe99babf3f5 x22: ffffffe99c278190 x21: ffffff80c0924d80
-> x20: ffffff80c1843800 x19: 0000000000000000 x18: 0000000000000000
-> x17: 0000000065516d0e x16: 00000000fc90660b x15: 0000000000000018
-> x14: 0000000000000000 x13: ffffffffff000000 x12: 0000000000000038
-> x11: 0101010101010101 x10: 8000000000000000 x9 : ffffffe99acb8458
-> x8 : 0065766973000000 x7 : 0000000000000080 x6 : 0000000000000000
-> x5 : 8000000000000000 x4 : 0000000000000000 x3 : ffffff80c1843810
-> x2 : ffffff80c0228000 x1 : 0000000000000000 x0 : 0000000000000000
-> Call trace:
-> devfreq_passive_event_handler (drivers/devfreq/governor_passive.c:426)
-> devfreq_add_device (drivers/devfreq/devfreq.c:932)
-> devm_devfreq_add_device (drivers/devfreq/devfreq.c:1028)
-> mtk_ccifreq_probe (drivers/devfreq/mtk-cci-devfreq.c:366)
-> platform_probe (drivers/base/platform.c:1398)
-> really_probe (drivers/base/dd.c:542 drivers/base/dd.c:621 drivers/base/dd.c:566)
-> __driver_probe_device (drivers/base/dd.c:752)
-> driver_probe_device (drivers/base/dd.c:782)
-> __driver_attach (drivers/base/dd.c:1143 drivers/base/dd.c:1094)
-> bus_for_each_dev (drivers/base/bus.c:301)
-> driver_attach (drivers/base/dd.c:1160)
-> bus_add_driver (drivers/base/bus.c:619)
-> driver_register (drivers/base/driver.c:240)
-> __platform_driver_register (drivers/base/platform.c:866)
-> mtk_ccifreq_platdrv_init (drivers/devfreq/mtk-cci-devfreq.c:468)
-> do_one_initcall (init/main.c:1301)
-> kernel_init_freeable (init/main.c:1375 init/main.c:1392 init/main.c:1411 init/main.c:1618)
-> kernel_init (init/main.c:1511)
-> ret_from_fork (arch/arm64/kernel/entry.S:868)
-> Code: f9000eb4 91004298 aa1803e0 940979d4 (f9421261)
-> All code
-> ========
->     0:	f9000eb4 	str	x20, [x21, #24]
->     4:	91004298 	add	x24, x20, #0x10
->     8:	aa1803e0 	mov	x0, x24
->     c:	940979d4 	bl	0x25e75c
->    10:*	f9421261 	ldr	x1, [x19, #1056]		<-- trapping instruction
-> 
-> Code starting with the faulting instruction
-> ===========================================
->     0:	f9421261 	ldr	x1, [x19, #1056]
-> ---[ end trace 0000000000000000 ]---
-> Kernel panic - not syncing: Oops: Fatal exception
-> SMP: stopping secondary CPUs
-> Kernel Offset: 0x2992c00000 from 0xffffffc008000000
-> PHYS_OFFSET: 0x40000000
-> CPU features: 0x000,00324811,00001086
-> Memory Limit: none
-> PANIC in EL3.
-> 
->> +		if (ret < 0)
->> +			dev_warn(&devfreq->dev,
->> +			"failed to update devfreq using passive governor\n");
->> +		mutex_unlock(&devfreq->lock);
->> +
->>   		if (p_data->parent_type == DEVFREQ_PARENT_DEV)
->>   			ret = devfreq_passive_register_notifier(devfreq);
->>   		else if (p_data->parent_type == CPUFREQ_PARENT_DEV)
->>
->> -- 
->> 2.25.1
->>
+Did you had a chance to look at my comments on your report
+that nesting got broken by my nested PAUSE filtering patch?
 
-Thanks for the testing. I'll drop the last patch
-and then send next version.
+I tried to reproduce it on my side, so far no luck.
 
--- 
-Best Regards,
-Samsung Electronics
-Chanwoo Choi
+I tried to oversubscribe L1, by booting a VM with 16 vCPUs
+all pinned to single physical CPU, and then booting a nested guest 
+in it with about the same amount of vCPUs. Slow but it did work.
+
+
+Also did you had a chance to look for my comments about the AMD's manual
+asking the user to flush guest's TLB when changing apic backing page,
+regardless of ASID?
+
+Best regards,
+	Maxim Levitsky
+
+
+
+
+
