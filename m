@@ -2,117 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C70DC3527C
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 08:57:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A34C352A1
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 08:57:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237388AbiEII63 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 04:58:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47766 "EHLO
+        id S237497AbiEII6x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 04:58:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236994AbiEIIdG (ORCPT
+        with ESMTP id S234598AbiEIIu2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 04:33:06 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D051ED2AF;
-        Mon,  9 May 2022 01:28:56 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 3D5E522239;
-        Mon,  9 May 2022 10:28:10 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1652084892;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hrOfN70yR3Xmn60iX12X/vbExJnwtfnTCJkusHb3SdA=;
-        b=DQWCSooUC5U5bBhhytCawhmFXz8gb3vpIlFwcze4HcHjgEm8ezacosCjVWtl/EpOKNuuPa
-        ynDzk2fwl2H8DjkuOvxRcBAgDLWZnHxNxHAXlKrcGTFwzc3yyGHRYC2+rMBdHnrbL5Q+OK
-        9ZMW0JopppSeIOnASmu/MRTq0SPCljk=
+        Mon, 9 May 2022 04:50:28 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F4C1668B0
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 01:46:34 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id l11so5891928pgt.13
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 01:46:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=1/7elBoAbz4DhwZSp9qhlRxUepEAsfaM092cMSCKhjU=;
+        b=Z7LWiMLZqSUmz5TAbdmVr54c46DqUfEWR9eNOrTPgTEYQfPiEZjVVHQDo3y7d0tS4Y
+         wwZdsJEg/AUVWulEbnuJrdowoYrVMMZVj5oxng8kF6JmjGtFwh+ESC/mdZi3+WlYS0X7
+         8T4DZBhcOaBDg9qS+YEPZ+12Qv3WChxeLApJAlWGVtQs5DKk781vzY1IYMWl5cfbAhDH
+         8ZDxxYvUiNa13YcXzsT2bbnmlljCdif77mtAej4xNC7J1sIxorSBdY1/+sxfkgI1pIxC
+         9PKsh430rPl/dKqukwzzJuTDjC0YZ9yPl6fgARvmevSqpU/SYSBeTKI8amJxtuL4fFsX
+         MQ6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1/7elBoAbz4DhwZSp9qhlRxUepEAsfaM092cMSCKhjU=;
+        b=NQOAlTYVXWj/N3L+1kh7kWs/ddFlHabjUh/OxhuIGj/Gl2oZlZTRuptha3yrOIQixu
+         hfxH5EGD0o/oCN7K+m9ZpLx7sYIrvHXyr00mTVfkICCi5E58RwArNmMGTqk0V2nPfWun
+         LL3ihx6ea+NOOImawDJBlrvRwl2CCXiaVgMah8OBOvfXy3FTr76bRunAW+cNcYcbOnfH
+         SVqJkW901ZjT8iCGXj212RYOOEDCM9I7W5CaoWlu1PY2FGtzCDd3y6Qqzm4UrcsDcTE8
+         Z2yrpyRRp/GameL50qg16RPa4HF7Ew8WW29OoSmO1egyvBfBe+kEg2XYzpRr1l2s5jpG
+         p4Vg==
+X-Gm-Message-State: AOAM531of3KWcyLfmRZBk0wj23cs2mGhfe5ts6EF/t/p5R7ATaV37JN7
+        UhzmVHlJmRIGfzbzBOOYNYXWyg==
+X-Google-Smtp-Source: ABdhPJxtjZYLRINP945+SmzGiyei89c/S6WAnRi5M/Ofwvo4QqR4tCp+UWHSSEYBsNIOqWBJrzQNsQ==
+X-Received: by 2002:a05:6a00:1145:b0:4f6:3ebc:a79b with SMTP id b5-20020a056a00114500b004f63ebca79bmr15093728pfm.41.1652085982666;
+        Mon, 09 May 2022 01:46:22 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s (104-237-153-19.ip.linodeusercontent.com. [104.237.153.19])
+        by smtp.gmail.com with ESMTPSA id b132-20020a621b8a000000b0050dc76281d2sm8312818pfb.172.2022.05.09.01.46.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 May 2022 01:46:22 -0700 (PDT)
+Date:   Mon, 9 May 2022 16:46:17 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>, Ian Rogers <irogers@google.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-kernel@vger.kernel.org, James Clark <James.Clark@arm.com>,
+        German Gomez <german.gomez@arm.com>
+Subject: Re: [PATCH V2 00/23] perf intel-pt: Better support for perf record
+ --cpu
+Message-ID: <20220509084617.GA352398@leoy-ThinkPad-X240s>
+References: <20220506122601.367589-1-adrian.hunter@intel.com>
+ <20220508150832.GA278102@leoy-ThinkPad-X240s>
+ <a9e97cca-8bd6-9a47-a7d9-79198e6b9a81@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 09 May 2022 10:28:09 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Cc:     Sean Anderson <sean.anderson@seco.com>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        Li Yang <leoyang.li@nxp.com>, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH v3 0/9] nvmem: sfp: binding updates and additions
-In-Reply-To: <3b8fc56f64508f7604f3b9e14b048568@walle.cc>
-References: <20220428181703.2194171-1-sean.anderson@seco.com>
- <7aa5d553-04ad-5198-153c-39a9375a6a12@linaro.org>
- <3b8fc56f64508f7604f3b9e14b048568@walle.cc>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <8602f6adb0fcf591e2923c736b345abd@walle.cc>
-X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a9e97cca-8bd6-9a47-a7d9-79198e6b9a81@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-05-03 15:43, schrieb Michael Walle:
-> Am 2022-04-29 17:56, schrieb Srinivas Kandagatla:
->> On 28/04/2022 19:16, Sean Anderson wrote:
->>> This adds several properties to the Layerscape Security Fuse 
->>> Processor
->>> (SFP) necessary for writing. Although the Linux driver does not use
->>> these bindings, I plan to use them in U-Boot [1]. It also adds a new
->>> compatibles for Trust Architecture (TA) 2.1 devices. In addition, it
->>> also adds an SFP binding for all TA 2.1 and 3.0 devices.
->>> 
->>> I would like to get this series merged for 5.18. As noted in patch 2,
->>> making the clock property mandatory is not an ABI break, but if this 
->>> is
->>> not applied then it would become an ABI break. The absolute minimum
->>> patches to apply for this would be patches 2 and 5. The rest 
->>> (including
->>> the regmap changes) could be deferred if necessary.
->>> 
->>> [1] 
->>> https://lore.kernel.org/u-boot/7c8e206a-cd40-2a77-6282-7f4bead2b13a@seco.com/T/#m591f8425b6f096ab3d54e6f7bd258e41cfa4c43b
->>> 
->>> Changes in v3:
->>> - Update commit message to note that this binding has not yet been
->>>    present in a relase, so it is OK to make otherwise breaking 
->>> changes.
->>> 
->>> Changes in v2:
->>> - Mention "regulator" in the description for ta-prog-sfp-supply
->>> - Convert sfp driver to use regmap
->>> - Fix various typos in commit messages
->>> 
->>> Sean Anderson (9):
->>>    dt-bindings: nvmem: sfp: Fix typo
->>>    dt-bindings: nvmem: sfp: Add clock properties
->>>    dt-bindings: nvmem: sfp: Add TA_PROG_SFP supply
->>>    dt-bindings: nvmem: sfp: Add compatible binding for TA 2.1 SFPs
->>>    arm64: dts: ls1028a: Update SFP binding to include clock
->>>    ARM: dts: layerscape: Add SFP binding for TA 2.1 devices
->>>    ARM: dts: Add SFP binding for TA 3.0 devices
->>>    nvmem: sfp: Use regmap
->>>    nvmem: sfp: Add support for TA 2.1 devices
->>> 
->> 
->> I have applied all the patches except 5/9, 6/9, and 7/9 dts patches
->> which need to go via dts maintainer tree.
-> 
-> Ahh. At least the device tree binding change (and the device tree
-> changes itself) should be applied as fixes for the 5.18 release,
-> so we don't have any conflicting descriptions. My fixes tag was never
-> picked up, unfortunately:
-> https://lore.kernel.org/linux-devicetree/4a45db184fbadc278624571dfbeb5004@walle.cc/
-> 
-> Srinivas, I've seen you picked it up into your for-next branch.
-> Can we fix that?
-> 
-> I'd guess the layerscape device tree change also need a Fixes: tag.
+On Mon, May 09, 2022 at 08:44:02AM +0300, Adrian Hunter wrote:
 
-Ping. We are now -rc7 :/
+[...]
 
--michael
+> > Thanks a lot for this patch set, I believe this is a common issue for
+> > AUX trace (not only for Intel-PT), so I verified this patch set for both
+> > Arm CoreSight and SPE; unfortunately both cannot see MMAP events for
+> > migrated task.  I used below commands:
+> > 
+> >   # perf record -B -N --no-bpf-event -e cs_etm//u -C 0 -- taskset --cpu-list 1 uname
+> >   # perf script  --no-itrace --show-mmap-events -C 1 2>/dev/null | grep MMAP | wc -l
+> >   0
+> > 
+> > 
+> >   # perf record -B -N --no-bpf-event -e arm_spe_0//u -C 0 -- taskset --cpu-list 1 uname
+> >   # perf script --no-itrace --show-mmap-events -C 1 2>/dev/null | grep MMAP | wc -l
+> >   0
+> > 
+> > I didn't dive into details for this patch set, so I cannot say the
+> > failure is caused by any issue in this patch set.  But it's definitely
+> > we need to look into for Arm platforms to root cause what's the reason
+> > it cannot record MMAP events properly when migrate tasks.  Loop James
+> > and German for this reason.
+> 
+> You would need the equivalent of patch "perf intel-pt: Track sideband
+> system-wide when needed" which makes use of new helper
+> evlist__add_aux_dummy() to set up the dummy event with the option to
+> make it "system wide".
+> 
+> cs_etm_recording_options() and arm_spe_recording_options() have similar
+> code.
+
+Thanks a lot for the guidance.
+
+I applied the simliar change for cs_etm_recording_options() and
+arm_spe_recording_options(), both can pass below tests:
+
+  # perf record -B -N --no-bpf-event -e cs_etm//u -C 0 -- taskset --cpu-list 1 uname
+  # perf script  --no-itrace --show-mmap-events -C 1 2>/dev/null | grep MMAP | wc -l
+  4
+
+  # perf record -B -N --no-bpf-event -e arm_spe_0//u -C 0 -- taskset --cpu-list 1 uname
+  # perf script --no-itrace --show-mmap-events -C 1 2>/dev/null | grep MMAP | wc -l      
+  4
+
+And I tested a more complex case for migrating a test program 'sysbench'
+in the middle of perf session, it still fails to parse any samples
+testing program 'sysbench'.  I need to do more homework for this part,
+but welcome any suggestions, thanks!  The testing script is:
+
+---8<---
+
+export PATH=/mnt/export/arm-linux-kernel/tools/perf/:$PATH
+
+perf record --kcore -C 1 -e cs_etm// &
+PERF_PID=$!
+echo "Perf PID ${PERF_PID}"
+
+sleep 2
+
+taskset 0x1 ./sysbench --test=memory --max-requests=1000000000 run &
+TEST_PROG_PID=$!
+echo "Test Prog PID ${TEST_PROG_PID}"
+
+sleep 1
+
+taskset -p 0x2 $TEST_PROG_PID
+
+sleep 1
+
+kill $PERF_PID
+
+> You will need to decide if it is worth the extra sideband.  I decided
+> if it became an issue, it could be made optional in the future.
+
+Yeah, the condition checking for system wide tracking in patch 16/23
+looks good to me.
+
+Thanks,
+Leo
