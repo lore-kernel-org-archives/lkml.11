@@ -2,81 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B16F1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 12:12:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFCF3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 12:12:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234065AbiEIMQX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 08:16:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43568 "EHLO
+        id S234130AbiEIMQc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 08:16:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233823AbiEIMQM (ORCPT
+        with ESMTP id S234071AbiEIMQ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 08:16:12 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00F0B24F0C;
-        Mon,  9 May 2022 05:12:18 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1652098337;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=srsynYuBpe8e28DoE8JdVL1cys9Y1o9AwvMFSnIsIfQ=;
-        b=OFA8QOSVTQ+hT7lcy5Ybp/F+7o/kCZtozbzATnblIZ4ALc9fjHFlabtwKXW34AYHXVuD8K
-        qa4j3YI7mI8KJXl+xE9u/8ZSAaGs221b6DhHCabeKJBDtRVZbRxqdKnZNVn0p6Aboj1wt4
-        DXaxjqGESKSMxd9Slcav5dfaSVF9FqUoIk/9Y3mp26voUhL4LKGkZdEBnQD6sM5r1d39W/
-        p7Y79x6/rAw/9qow5Rjg6QFbunCHE3hfkXcvBcEMvUmFCvUDXQl0PvhuKcVr/HvKvRPQBd
-        GLxL1jHysWCcfeP3V6j8AdYMz82/m4CZnm4IMb5LlYeLMun6N3BxTCxdi7WKWQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1652098337;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=srsynYuBpe8e28DoE8JdVL1cys9Y1o9AwvMFSnIsIfQ=;
-        b=X2n3wm36y9cSAsKWfZVzmKtJuTc4pxZ7p30ZG04EmnHzCkHRiOpVjJX+/wKjNdl9rCaqxG
-        1XMTA/DwhKIb/tBw==
-To:     Tony Luck <tony.luck@intel.com>, hdegoede@redhat.com,
-        markgross@kernel.org
-Cc:     mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, hpa@zytor.com, corbet@lwn.net,
-        gregkh@linuxfoundation.org, andriy.shevchenko@linux.intel.com,
-        jithu.joseph@intel.com, ashok.raj@intel.com, tony.luck@intel.com,
-        rostedt@goodmis.org, dan.j.williams@intel.com,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, patches@lists.linux.dev,
-        ravi.v.shankar@intel.com
-Subject: Re: [PATCH v7 09/12] platform/x86/intel/ifs: Add IFS sysfs interface
-In-Reply-To: <20220506225410.1652287-10-tony.luck@intel.com>
-References: <20220506014035.1173578-1-tony.luck@intel.com>
- <20220506225410.1652287-1-tony.luck@intel.com>
- <20220506225410.1652287-10-tony.luck@intel.com>
-Date:   Mon, 09 May 2022 14:12:17 +0200
-Message-ID: <87tu9yrjku.ffs@tglx>
+        Mon, 9 May 2022 08:16:29 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF7041D5718
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 05:12:33 -0700 (PDT)
+Received: from canpemm500007.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kxg2v3PrQzGpj4;
+        Mon,  9 May 2022 20:09:43 +0800 (CST)
+Received: from localhost (10.174.179.215) by canpemm500007.china.huawei.com
+ (7.192.104.62) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 9 May
+ 2022 20:12:30 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <lgirdwood@gmail.com>, <broonie@kernel.org>, <perex@perex.cz>,
+        <tiwai@suse.com>, <matthias.bgg@gmail.com>, <tzungbi@google.com>,
+        <angelogioacchino.delregno@collabora.com>,
+        <trevor.wu@mediatek.com>, <arnd@arndb.de>
+CC:     <alsa-devel@alsa-project.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH v3 -next] ASoC: mediatek: mt8195: Fix build warning without CONFIG_OF
+Date:   Mon, 9 May 2022 20:09:18 +0800
+Message-ID: <20220509120918.9000-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.215]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500007.china.huawei.com (7.192.104.62)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 06 2022 at 15:54, Tony Luck wrote:
-> Implement sysfs interface to trigger ifs test for a specific cpu.
-> Additional interfaces related to checking the status of the
-> scan test and seeing the version of the loaded IFS binary
-> are also added.
->
-> The basic usage is as below.
->    - To start test, for example on cpu5:
->        echo 5 > /sys/devices/platform/intel_ifs/run_test
->    - To see the status of the last test
->        cat /sys/devices/platform/intel_ifs/status
->    - To see the version of the loaded scan binary
->        cat /sys/devices/platform/intel_ifs/image_version
->
-> Reviewed-by: Dan Williams <dan.j.williams@intel.com>
-> Signed-off-by: Jithu Joseph <jithu.joseph@intel.com>
-> Co-developed-by: Tony Luck <tony.luck@intel.com>
-> Signed-off-by: Tony Luck <tony.luck@intel.com>
-> Acked-by: Hans de Goede <hdegoede@redhat.com>
-> Reviewed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+sound/soc/mediatek/mt8195/mt8195-mt6359.c:1639:32: warning: ‘mt8195_mt6359_max98390_rt5682_card’ defined but not used [-Wunused-variable]
+ 1639 | static struct mt8195_card_data mt8195_mt6359_max98390_rt5682_card = {
+      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+sound/soc/mediatek/mt8195/mt8195-mt6359.c:1634:32: warning: ‘mt8195_mt6359_rt1011_rt5682_card’ defined but not used [-Wunused-variable]
+ 1634 | static struct mt8195_card_data mt8195_mt6359_rt1011_rt5682_card = {
+      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+sound/soc/mediatek/mt8195/mt8195-mt6359.c:1629:32: warning: ‘mt8195_mt6359_rt1019_rt5682_card’ defined but not used [-Wunused-variable]
+ 1629 | static struct mt8195_card_data mt8195_mt6359_rt1019_rt5682_card = {
+      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+Since all users of this driver do need CONFIG_OF anyway, there is no
+need to save a few bytes on kernel builds while CONFIG_OF disabled, so
+just remove the #ifdef to fix this warning.
+
+Fixes: 86a6b9c9dfff ("ASoC: mediatek: mt8195: add machine support for max98390 and rt5682")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+---
+v3: rebase on next-20220509
+v2: remove #ifdef block as Arnd suggested
+---
+ sound/soc/mediatek/mt8195/mt8195-mt6359.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/sound/soc/mediatek/mt8195/mt8195-mt6359.c b/sound/soc/mediatek/mt8195/mt8195-mt6359.c
+index 3e32fe801b3c..54a00b0699b1 100644
+--- a/sound/soc/mediatek/mt8195/mt8195-mt6359.c
++++ b/sound/soc/mediatek/mt8195/mt8195-mt6359.c
+@@ -1641,7 +1641,6 @@ static struct mt8195_card_data mt8195_mt6359_max98390_rt5682_card = {
+ 	.quirk = MAX98390_SPEAKER_AMP_PRESENT,
+ };
+ 
+-#ifdef CONFIG_OF
+ static const struct of_device_id mt8195_mt6359_dt_match[] = {
+ 	{
+ 		.compatible = "mediatek,mt8195_mt6359_rt1019_rt5682",
+@@ -1657,7 +1656,6 @@ static const struct of_device_id mt8195_mt6359_dt_match[] = {
+ 	},
+ 	{},
+ };
+-#endif
+ 
+ static const struct dev_pm_ops mt8195_mt6359_pm_ops = {
+ 	.poweroff = snd_soc_poweroff,
+@@ -1667,9 +1665,7 @@ static const struct dev_pm_ops mt8195_mt6359_pm_ops = {
+ static struct platform_driver mt8195_mt6359_driver = {
+ 	.driver = {
+ 		.name = "mt8195_mt6359",
+-#ifdef CONFIG_OF
+ 		.of_match_table = mt8195_mt6359_dt_match,
+-#endif
+ 		.pm = &mt8195_mt6359_pm_ops,
+ 	},
+ 	.probe = mt8195_mt6359_dev_probe,
+-- 
+2.17.1
+
