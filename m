@@ -2,126 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EACBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:44:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C4F5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:44:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231512AbiEIKse (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 06:48:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54564 "EHLO
+        id S229849AbiEIKss (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 06:48:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231185AbiEIKs1 (ORCPT
+        with ESMTP id S230274AbiEIKsa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 06:48:27 -0400
-X-Greylist: delayed 837 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 09 May 2022 03:43:36 PDT
-Received: from smtp.dbxyz.space (constantine.dbxyz.space [IPv6:2001:19f0:5801:2cd::100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CE3CF2CF285;
-        Mon,  9 May 2022 03:43:33 -0700 (PDT)
-Date:   Mon, 9 May 2022 20:20:31 +1000
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=dropbear.xyz;
-        s=202004; t=1652091632;
-        bh=3zD69nrHAktkpTKFutEwYOSsRHajHgFDe+9rh8XQpuI=;
-        h=Date:From:To:Subject:From;
-        b=tup1bIwVPl0WxW5/6un4amNbnCVGUUQ3RABKvKlix0WP12QSN0etB5a1SwinOkHbE
-         Sw0jJCkyWEbhsneivwAP5tkoqRk8By362rpNn2E/5Rbo99YCVAsvkXlVZ5O8tYUPTw
-         cZ3g9LZ5MzJ1HA2Fkvf1DskNV5W9qx3m0CIIM4A8=
-From:   Craig Small <csmall@dropbear.xyz>
-To:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
-Subject: procfs: mnt namespace behaviour with block devices (resend)
-Message-ID: <Ynjq7yN+r6sibyUd@dropbear.xyz>
+        Mon, 9 May 2022 06:48:30 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F6E82D5701;
+        Mon,  9 May 2022 03:42:34 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id c125so14802290iof.9;
+        Mon, 09 May 2022 03:42:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RUbxlyQv9Rnrcr0jkzwd4nmwPYsVNPj/1DE7vk0W4dU=;
+        b=mJE0VdjpRsTxZTx6Swa30zi8jr6E8MfARPwt1GzzQ07K9cPVY0gRLQxTuuwhsP+1OE
+         Bnk1zeZmKSmjGhp7cHj2GOZb9j/rvF5Q/+W8auc7ldzjnhgL2h/jHQODIpiEFs9qh3tK
+         cP/G3iz/dTOjCdbI1hNs+lFx9ZjInX4RX6DFesdvcjvQCAQqRtWV002eNEK5VwMYcgV1
+         dc8xIeVBhUia8oQaSzQ1ckle87ZDyhAVdvL6GGKlKZvD2wUBFhIsnVxv6tjm6HgrcPKY
+         B2HGCCxzfrZ2HJmqLQsZdrEUm/jtl8bmWhI3NeRiBYEs5djhP3IsVCZshZrE7oLqePbP
+         N5/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RUbxlyQv9Rnrcr0jkzwd4nmwPYsVNPj/1DE7vk0W4dU=;
+        b=k9wC5iMbgvkbBkbKRvAphSs+IwTQDYoYT5WNG2lKrJyG6KTZRuAGt29LrxICEzBJT6
+         C1k9GAEdnB9HyDca8vFiB1m8dReG4sEaGI3fX0I3BTrja50LmbrF1mqsmeHzY114vSJ5
+         Xl3im2aOEo2gJZild6EBkwSAR1cb0pWJREoH+Ud5KI7N5/Im01I8Hnl3N9npqMhkcHsw
+         tkX68mwFhyHQ4qebGw/HplNkQCPv7rrWo9ZHYsNXlfGmyCU6syLO9Rphf0R4nz998lht
+         xVi/y9evmqQ6tpXnDm2s/tKdjEH5Nzz5jv9mR+k/nJOOY2ZXQyT+L/TmzCf7gBmJIKdc
+         qFtg==
+X-Gm-Message-State: AOAM533DtQp3K8cGD2jY+bqydX+jSnkW5mRTyGDbizmZdFYrTr++MB/9
+        RhpgaZTsCbDTQ/w4gsJIfQ2n7N36D8u1wS9sEdO11YJJ
+X-Google-Smtp-Source: ABdhPJxKzpzb9+WG2tCZaHirmDD6/FM40ugx3aBOyzAzMNEUY/Hcd40wj9X4GSSMG5tONefq4BgcVCHeqoCwpvXnjp4=
+X-Received: by 2002:a05:6602:2d90:b0:63d:b41e:e4e4 with SMTP id
+ k16-20020a0566022d9000b0063db41ee4e4mr6088084iow.172.1652092899514; Mon, 09
+ May 2022 03:41:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220507052451.12890-19-ojeda@kernel.org> <7e9c2e77-8b70-6e15-3f3d-905ab42b0fcd@gmail.com>
+In-Reply-To: <7e9c2e77-8b70-6e15-3f3d-905ab42b0fcd@gmail.com>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Mon, 9 May 2022 12:41:28 +0200
+Message-ID: <CANiq72mBVo4+htxVjY0wB1Y3GO2PEUiZjZKRYT8ddwx84-hAtg@mail.gmail.com>
+Subject: Re: [PATCH v6 18/23] docs: add Rust documentation
+To:     Akira Yokosawa <akiyks@gmail.com>
+Cc:     Miguel Ojeda <ojeda@kernel.org>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Adam Bratschi-Kaye <ark.email@gmail.com>,
+        Boris-Chengbiao Zhou <bobo1239@web.de>,
+        Wu XiangCheng <bobwxc@email.cn>,
+        Jonathan Corbet <corbet@lwn.net>, Daniel Xu <dxu@dxuuu.xyz>,
+        Gary Guo <gary@garyguo.net>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Yuki Okushi <jtitor@2k36.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Julian Merkle <me@jvmerkle.de>, Finn Behrens <me@kloenk.de>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        rust-for-linux <rust-for-linux@vger.kernel.org>,
+        Sven Van Asbroeck <thesven73@gmail.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Wei Liu <wei.liu@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-(resending as plain text as the first got bounced)
+Hi Akira,
 
-Hi,
-  I'm the maintainer of the psmisc package that provides system tools
-for things like fuser and killall. I am trying to establish if
-something I have found with the proc filesystem is as intended
-(knowing why would be nice) or if it's a strange corner-case bug.
+On Mon, May 9, 2022 at 6:02 AM Akira Yokosawa <akiyks@gmail.com> wrote:
+>
+> I think you agreed splitting SVG part into its own patch with
+> a proper copying info, etc.  Let me see...  So, here is the link:
 
-Apologies to the non-procfs maintainers but these two lists are what
-MAINTAINER said to go to. If you could CC me on replies that would be
-great.
+Yes, sorry, will do (in fact, it should have been there in v5 too).
 
-The proc file descriptor for a block device mounted in a different
-namespace will show the device id of that different namespace and not
-the device id of the process stat()ing the file.
+By the way, the Linux SVG logo (used to make the one here) is pending
+in the linux-doc ML.
 
-The issue came up in fuser not finding certain processes that were
-directly accessing a block device, see
-https://gitlab.com/psmisc/psmisc/-/issues/39 Programs such as lsof are
-caught by this too.
+> I might have missed v5 of this patch series.
+> That might be because v5's 15/20 was not accepted by linux-doc's
+> lore archive (maybe) due to its size despite it had Cc: linux-doc.
+> v6's 18/23 was also rejected.
 
-My question is: When I am in the bash mount namespace (4026531840 below)
-then shouldn't all the device IDs be from that namespace? In other
-words, the device id of the dereferenced symlink and what it points to
-are the same (device id 5) and not symlink has 44 and /dev/dm-8 has 5.
+Yes, a few patches get rejected in several lists. We were told this
+was fine as long as LKML gets them (the cover letter has the lists in
+Cc).
 
-I get that if I could look at the device IDs in qemu or use nsenter to
-switch to its namespace, then the device should be 44 for the symlink
-and device (which it is and seems correct to me).
+> I have some alternative ideas for table formatting in ReST.
 
-How to replicate
-=============
-# uname -a
-Linux elmo 5.16.0-5-amd64 #1 SMP PREEMPT Debian 5.16.14-1 (2022-03-15)
-x86_64 GNU/Linux
+I was following the LLVM one, but it makes sense to use the other ones
+where possible. I can send a patch for that one too.
 
-The easiest way to replicate this is to make a qemu virtual machine and
-have it mount a block device. I suspect there are other ways, but I
-don't have many things that mount a device and switch namespaces. The
-qemu process (here it is 136775) will have a different mount namespace.
+> So here are a couple of alternative ways to represent the table
+>
+> * ASCII-art format:
+> * Literal block format:
 
-# ps -o pid,mntns,comm $$ 136775
-    PID      MNTNS COMMAND
- 136775 4026532762 qemu-system-x86
- 142359 4026531840 bash
+Thanks for taking the time to format the examples, it is useful :)
 
-File descriptor 23 is what qemu is using to mount the block device
-# ls -l /proc/136775/fd/23
-lrwx------ 1 libvirt-qemu libvirt-qemu 64 Apr 12 16:34
-/proc/136775/fd/23 -> /dev/dm-8
+> As you see, those inline-literal markers of ``xxxx``, which are
+> distracting when the .rst file is read as plain-text, are not
+> necessary in the literal-block approach.  And you can directly
 
-However, the dereferenced symlink and where the symlink points to show
-different data.
+I agree, it can be better (it is one reason I find Markdown a bit more
+readable since it uses a single backquote for that instead of two).
 
-# stat -L /proc/136775/fd/23
-  File: /proc/136775/fd/23
-  Size: 0         Blocks: 0          IO Block: 4096   block special file
-Device: 2ch/44d Inode: 9           Links: 1     Device type: fd,8
-Access: (0660/brw-rw----)  Uid: (64055/libvirt-qemu)   Gid: (64055/libvirt-qemu)
-Access: 2022-04-12 16:34:25.687147886 +1000
-Modify: 2022-04-12 16:34:25.519151533 +1000
-Change: 2022-04-12 16:34:25.595149882 +1000
- Birth: -
+> In my opinion, the literal-block approach should be the most
+> reasonable choice here. Of course its your call which one
+> to choose.
 
-# stat /dev/dm-8
-  File: /dev/dm-8
-  Size: 0         Blocks: 0          IO Block: 4096   block special file
-Device: 5h/5d Inode: 348         Links: 1     Device type: fd,8
-Access: (0660/brw-rw----)  Uid: (    0/    root)   Gid: (    0/    root)
-Access: 2022-04-12 16:15:12.684434884 +1000
-Modify: 2022-04-12 16:15:12.684434884 +1000
-Change: 2022-04-12 16:15:12.684434884 +1000
- Birth: -
+Yeah, that sounds reasonable. I will take a look.
 
-If we change to the qemu process' mount namespace then we do see that
-/dev/dm-8 has the same device/inode as the symlink.
+Thanks for the review!
 
-# nsenter -m -t 136775 stat /dev/dm-8
-  File: /dev/dm-8
-  Size: 0         Blocks: 0          IO Block: 4096   block special file
-Device: 2ch/44d Inode: 9           Links: 1     Device type: fd,8
-Access: (0660/brw-rw----)  Uid: (64055/libvirt-qemu)   Gid: (64055/libvirt-qemu)
-Access: 2022-04-12 16:34:25.687147886 +1000
-Modify: 2022-04-12 16:34:25.519151533 +1000
-Change: 2022-04-12 16:34:25.595149882 +1000
- Birth: -
-
-Thanks for your time.
-
- - Craig
+Cheers,
+Miguel
