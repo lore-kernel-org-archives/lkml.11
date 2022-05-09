@@ -2,106 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8258FC352A8
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCB27C47084
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:30:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237948AbiEIJeD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 05:34:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42554 "EHLO
+        id S238014AbiEIJeN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 05:34:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235049AbiEIJAi (ORCPT
+        with ESMTP id S238319AbiEIJOR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 05:00:38 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 175CB13FA29;
-        Mon,  9 May 2022 01:56:45 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KxZks2yMYzfbS7;
-        Mon,  9 May 2022 16:55:33 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 9 May 2022 16:56:42 +0800
-Subject: Re: [PATCH] MM: handle THP in swap_*page_fs() - count_vm_events()
-To:     Yang Shi <shy828301@gmail.com>
-CC:     NeilBrown <neilb@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Christoph Hellwig <hch@lst.de>, <linux-nfs@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Huang Ying <ying.huang@intel.com>
-References: <165146746627.24404.2324091720943354711@noble.neil.brown.name>
- <Ym9pLhqtf61AVrZG@casper.infradead.org>
- <165146932944.24404.17790836056748683378@noble.neil.brown.name>
- <Ym9szKx7qYZTlKF2@casper.infradead.org>
- <CAHbLzkqtjg6yaPp-yktRtUBo5-Yw9rJKvJWH9PDDHxsuHh6Mhw@mail.gmail.com>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <059786bc-191b-8126-0c76-34dbf2e29159@huawei.com>
-Date:   Mon, 9 May 2022 16:56:42 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Mon, 9 May 2022 05:14:17 -0400
+Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD9321572B;
+        Mon,  9 May 2022 02:10:24 -0700 (PDT)
+Received: by mail-qk1-f180.google.com with SMTP id z126so10288762qkb.2;
+        Mon, 09 May 2022 02:10:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CgQLbQVdIN14SPt3YzwHXDrfh8JRKAmJocLk5KwR+yk=;
+        b=CoM3Jn0gY4RTQLUh5mul6q4k1LbmPG7Xf2bLFJAhTx7kGLie8eWTqnko4hlHCMDCiy
+         0zo+vLGC3IALXPbB5lWNjV3SXDjJmoMuFUt9daucrQQ5028/LA4qxs8velATTuGiH3W0
+         65x38TBN5dfliT4mPQRDZXLsEub292mzuYA8xCaho8SOVyK2FGBHNpWCe9Rg87HVl9lC
+         rbNiTm728F5F+SoqirChKn5S7qRR7lMBWcP2C0uEtjGGUUrTpBQHPulSakNWA5YwX9Az
+         whINVSLUA9B9AB0o/gMRHKpPzrdUa+U/bHb/JqCxpt2OjrE3Zuiz+eYckHhtqpPa8+c2
+         GUXA==
+X-Gm-Message-State: AOAM530xVfcw4GbNgMdzlaTn6SBby29Vra/bJZCYfNIpoIXr23XESmQb
+        hnS2MJgz3ivBXS1+Y/cWZQB0a/WNVKAnzw==
+X-Google-Smtp-Source: ABdhPJxdc3uoOtr8jzAZ5g6dgVL6PCn7gBiAhbUBMVoPz6Umt8CKVTgCfE51/93MENuFL2EYnUzhog==
+X-Received: by 2002:a05:620a:444e:b0:6a0:68da:2105 with SMTP id w14-20020a05620a444e00b006a068da2105mr5045212qkp.366.1652087423153;
+        Mon, 09 May 2022 02:10:23 -0700 (PDT)
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com. [209.85.128.176])
+        by smtp.gmail.com with ESMTPSA id d5-20020ae9ef05000000b0069fc13ce1ebsm6504891qkg.28.2022.05.09.02.10.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 09 May 2022 02:10:22 -0700 (PDT)
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-2f7b815ac06so136900937b3.3;
+        Mon, 09 May 2022 02:10:22 -0700 (PDT)
+X-Received: by 2002:a81:547:0:b0:2f8:6e8:19d7 with SMTP id 68-20020a810547000000b002f806e819d7mr13589711ywf.383.1652087422113;
+ Mon, 09 May 2022 02:10:22 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAHbLzkqtjg6yaPp-yktRtUBo5-Yw9rJKvJWH9PDDHxsuHh6Mhw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+References: <20220509050953.11005-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220509050953.11005-3-prabhakar.mahadev-lad.rj@bp.renesas.com> <OS0PR01MB5922B58BB70B92813041745786C69@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+In-Reply-To: <OS0PR01MB5922B58BB70B92813041745786C69@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 9 May 2022 11:10:10 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVuLq1Q2KB7gFQ5MsQmyUTv4yuu-GUBVn_xGwKhUwYQZg@mail.gmail.com>
+Message-ID: <CAMuHMdVuLq1Q2KB7gFQ5MsQmyUTv4yuu-GUBVn_xGwKhUwYQZg@mail.gmail.com>
+Subject: Re: [PATCH v2 2/5] irqchip: Add RZ/G2L IA55 Interrupt Controller driver
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/7 1:26, Yang Shi wrote:
-> On Sun, May 1, 2022 at 10:32 PM Matthew Wilcox <willy@infradead.org> wrote:
->>
->> On Mon, May 02, 2022 at 03:28:49PM +1000, NeilBrown wrote:
->>> On Mon, 02 May 2022, Matthew Wilcox wrote:
->>>> On Mon, May 02, 2022 at 02:57:46PM +1000, NeilBrown wrote:
->>>>> @@ -390,9 +392,9 @@ static void sio_read_complete(struct kiocb *iocb, long ret)
->>>>>                   struct page *page = sio->bvec[p].bv_page;
->>>>>
->>>>>                   SetPageUptodate(page);
->>>>> +                 count_swpout_vm_event(page);
->>>>>                   unlock_page(page);
->>>>>           }
->>>>> -         count_vm_events(PSWPIN, sio->pages);
->>>>
->>>> Surely that should be count_swpIN_vm_event?
->>>>
->>> I'm not having a good day....
->>>
->>> Certainly shouldn't be swpout.  There isn't a count_swpin_vm_event().
->>>
->>> swap_readpage() only counts once for each page no matter how big it is.
->>> While swap_writepage() counts one for each PAGE_SIZE written.
->>>
->>> And we have THP_SWPOUT but not THP_SWPIN
->>
->> _If_ I understand the swap-in patch correctly (at least as invoked by
->> shmem), it won't attempt to swap in an entire THP.  Even if it swapped
->> out an order-9 page, it will bring in order-0 pages from swap, and then
->> rely on khugepaged to reassemble them.
-> 
-> Totally correct. The try_to_unmap() called by vmscan would split PMD
-> to PTEs then install swap entries for each PTE but keep the huge page
-> unsplit.
-> 
-> BTW, there were patches adding THP swapin support, but they were never merged.
+On Mon, May 9, 2022 at 9:22 AM Biju Das <biju.das.jz@bp.renesas.com> wrote:
+> > Subject: [PATCH v2 2/5] irqchip: Add RZ/G2L IA55 Interrupt Controller
+> > driver
+> >
+> > Add a driver for the Renesas RZ/G2L Interrupt Controller.
+> >
+> > This supports external pins being used as interrupts. It supports one line
+> > for NMI, 8 external pins and 32 GPIO pins (out of 123) to be used as IRQ
+> > lines.
+> >
+> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-Could you please tell me where the THP swapin patches are ? It would be really helpful
-if you can kindly figure that out for me! :)
+> > --- /dev/null
+> > +++ b/drivers/irqchip/irq-renesas-rzg2l.c
 
-Thanks a lot!
+> > +static void rzg2l_irqc_irq_disable(struct irq_data *d) {
+> > +     unsigned int hw_irq = irqd_to_hwirq(d);
+> > +
+> > +     if (hw_irq >= IRQC_TINT_START && hw_irq <= IRQC_TINT_COUNT) {
+> > +             struct rzg2l_irqc_priv *priv = irq_data_to_priv(d);
+> > +             u32 offset = hw_irq - IRQC_TINT_START;
+> > +             u32 tssr_offset = TSSR_OFFSET(offset);
+> > +             u8 tssr_index = TSSR_INDEX(offset);
+> > +             u32 reg;
+> > +
+> > +             raw_spin_lock(&priv->lock);
+> > +             reg = readl_relaxed(priv->base + TSSR(tssr_index));
+> > +             reg &= ~(TSSEL_MASK << tssr_offset);
+> > +             writel_relaxed(reg, priv->base + TSSR(tssr_index));
+> > +             raw_spin_unlock(&priv->lock);
+> > +     }
+> > +     irq_chip_disable_parent(d);
+> > +}
 
-> 
->>
->> Someone who actually understands the swap code should check that my
->> explanation here is correct.
->>
-> .
-> 
+> > +static int rzg2l_tint_set_edge(struct irq_data *d, unsigned int type) {
+> > +     struct rzg2l_irqc_priv *priv = irq_data_to_priv(d);
+> > +     unsigned int hwirq = irqd_to_hwirq(d);
+> > +     u32 titseln = hwirq - IRQC_TINT_START;
+> > +     u32 offset;
+> > +     u8 sense;
+> > +     u32 reg;
+> > +
+> > +     switch (type & IRQ_TYPE_SENSE_MASK) {
+> > +     case IRQ_TYPE_EDGE_RISING:
+> > +             sense = TITSR_TITSEL_EDGE_RISING;
+> > +             break;
+> > +
+> > +     case IRQ_TYPE_EDGE_FALLING:
+> > +             sense = TITSR_TITSEL_EDGE_FALLING;
+> > +             break;
+> > +
+> > +     default:
+> > +             return -EINVAL;
+> > +     }
+> > +
+>
+> > +     if (titseln < TITSR0_MAX_INT) {
+> > +             offset = TITSR0;
+> > +     } else {
+> > +             titseln /= TITSEL_WIDTH;
+> > +             offset  = TITSR1;
+> > +     }
+>
+> as TITSR0 (0x24) and TITSR1(0x28) are contiguous address location
+>
+> May be like others, above declare it as
+> u32 offset = TITSR0; ??
+>
+> and here
+>  if ((titseln >= TITSR0_MAX_INT) {
+>         titseln /= TITSEL_WIDTH;
+>         offset  += 4;
+>  }
 
+Why "titseln /= TITSEL_WIDTH"?
+Shouldn't that be "titseln -= TITSR0_MAX_INT"?
+Do I need more coffee?
+
+Can't you define TITSR_{OFFSET,INDEX}() helper macros, like for
+TSSR above?
+
+> > +
+> > +     raw_spin_lock(&priv->lock);
+> > +     reg = readl_relaxed(priv->base + offset);
+> > +     reg &= ~(IRQ_MASK << (titseln * TITSEL_WIDTH));
+> > +     reg |= sense << (titseln * TITSEL_WIDTH);
+> > +     writel_relaxed(reg, priv->base + offset);
+> > +     raw_spin_unlock(&priv->lock);
+> > +
+> > +     return 0;
+> > +}
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
