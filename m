@@ -2,125 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4303C46467
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 06:38:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 048FBC3527C
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 06:38:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235903AbiEIGk5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 02:40:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42044 "EHLO
+        id S235918AbiEIGk7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 02:40:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234679AbiEIGdm (ORCPT
+        with ESMTP id S234952AbiEIGeP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 02:33:42 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74DED18A6BB
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 23:29:49 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id z5-20020a17090a468500b001d2bc2743c4so11967133pjf.0
-        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 23:29:49 -0700 (PDT)
+        Mon, 9 May 2022 02:34:15 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D5E56272
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 23:30:19 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id e24so17941015wrc.9
+        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 23:30:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=NyzkOphQ+s3WVfI9qZfbl6Rk93jtvh1L9Nek6U2DnhA=;
-        b=MAi1RD94OdpjwH1pi8YbdqfTnkUKhdIKyjN/91Iiop2H2NF4JDF3N5PanHUWjP88F1
-         fUcAqUykTqgJo80i3V/4pawA8SeixCYIwVsOt+YS97K7cBVFe6m8Bt6eovF7+rmv3Sh1
-         I70dZyLpAuCmziwAXdrz8QrbyLP79Fb7laHzZ8WE3bN2ooDGxsBQ4XCvj1YAVJjcTVz1
-         sZWHPm1Treje0k0lQSyJ5RKtLLtaTs+wEKfjknWRbarWvd0zVZljThZWlCdPDV+7j4mQ
-         GaBv2VEhB6F6AdWxIM3Vqe2XkbD8Ias/esGjM9ITPdVc2SZFTXoFrmeSAQvLe8X1mSd6
-         yX8g==
+        bh=vVvWe9CoZBTdNyE3eHbun0xPih5mbPe7IlFMtVIhZ0k=;
+        b=MOLzcEDMe1y6FCozVl6TnJUpB7oHIbvublW8A/Zk1jKtktM7sLQOm1XJryDMd5yJq2
+         OSZjwQvAE3HP8ZH932R5lyVc40cqAKCFi2+B+KtNA8Uvs3NNKJgQCZ76onjK9o49TiBr
+         /sKg60y+VDkNFwE7toeDnxqyAzQcEDtkggjj1EM8Lft6ING7Du+Wkg13C7vnE+kH8zHj
+         NsmzzMr0gZYau6ggCmTLKnAqUPHktuThv0HBrojoC8JBvsd9u8kOY6oIJQWQojEF2vnJ
+         BM4XNoIwyNwgJTKJEPSqbxujkRwTx/UZwpO+uw/txKREWt/gafE2gYkg5jwCpxFZCCjG
+         xA+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=NyzkOphQ+s3WVfI9qZfbl6Rk93jtvh1L9Nek6U2DnhA=;
-        b=lrQ+8Sr0W/YzAfwNUevV444wAtYhM+/GG9+aU22njL0U/eMOHqjpTOyDtkcYwBmWws
-         fwD86i/XoYGg/Xb1vzUrhVAbe/y359pOIs+ZBQzorx/B0pTh3mTUhL/ZbJRFa6dJ6gOQ
-         dRBK6BhsbGbcdN+YHMRaaONpNfrIIx12faDQ4unUBLd7lVCvj9DbIX+Y/qtHX5c0LPkX
-         i+bI2taobAlK0i4AOAJvAuEycUJSzt2lfxTyd39zR/a0RbhO/LYhhe2ciefRFwMtJHwD
-         cTAdN3cn9t3Q3C8JCkIKwc7hgU/pQkNFVlJI9McLsk5Rf1jxTjO20cp5wdm+SGg1FR1p
-         4v0g==
-X-Gm-Message-State: AOAM531LGK/N0bgKAbcNfdk2ocrKw85KdRZ3MPvk8tfMoI9s4kaw/MsS
-        MJRvE0u9tXjt+MyOb+0v4ijctbfj42cb7g==
-X-Google-Smtp-Source: ABdhPJyUeNp5lyUBRQZydy9WfLbxkuPhlCBdpMAI02q3YSVfY3kMmne5Gx42MkLs4yh2Hehx52YfiA==
-X-Received: by 2002:a17:903:31d1:b0:159:804:e852 with SMTP id v17-20020a17090331d100b001590804e852mr15083698ple.19.1652077773702;
-        Sun, 08 May 2022 23:29:33 -0700 (PDT)
-Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.250])
-        by smtp.gmail.com with ESMTPSA id k17-20020a170902ba9100b0015e8d4eb2c2sm6162001pls.268.2022.05.08.23.29.28
+        bh=vVvWe9CoZBTdNyE3eHbun0xPih5mbPe7IlFMtVIhZ0k=;
+        b=P4oiS+Uv9SWFHlHBMZ9aXeAT3i7+XOIGkrRD6W0AqK3A1QReQlPzKq2C3ptCEOXcvf
+         ycvyaK8MT5U51+Vn4TzEm2NNyonmJIBv8ucE7h2uZr9vW77ije5tkogV8cHg9i5QOW6t
+         nacMdNrvH4PvaXoDuXjGpVe5kX7LM/rVoqw2h1110W/QXY6H9YbljPMrJl89zGCOLDva
+         0borAUpv9I5oPwoQH8CXfHVWsVoTLmYvne53uY3Qkyucalp6gCwL3HDkyaTQVluu36uG
+         PG0/WEpxcISWTAO7a4oEcVRSSl1w/O2024Tv+fFFJO12bCX0UvXee08VDAXEUerypoDN
+         PGpw==
+X-Gm-Message-State: AOAM531nFhhl+4gFO+2xtHlL6D5PQROnCNyAJde8aD8kVdO1Bey9TouM
+        v6FDxNQ42Hcab+Uci5s7sHEOoJ8Ewhk8BQ==
+X-Google-Smtp-Source: ABdhPJyKEzM+oTZA8CGO87qivdU2FEjZvFn+JGied66/bemneEPFkFYCPT1OT6Z0Ic9e8Jtdf/+yJA==
+X-Received: by 2002:a05:6000:1d98:b0:20c:c29d:76db with SMTP id bk24-20020a0560001d9800b0020cc29d76dbmr4585218wrb.710.1652077817942;
+        Sun, 08 May 2022 23:30:17 -0700 (PDT)
+Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.googlemail.com with ESMTPSA id z18-20020adff1d2000000b0020c77f36b13sm10074833wro.100.2022.05.08.23.30.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 May 2022 23:29:33 -0700 (PDT)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     corbet@lwn.net, mike.kravetz@oracle.com, akpm@linux-foundation.org,
-        mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com,
-        osalvador@suse.de, david@redhat.com, masahiroy@kernel.org
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, duanxiongchun@bytedance.com, smuchun@gmail.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH v10 3/4] mm: hugetlb_vmemmap: use kstrtobool for hugetlb_vmemmap param parsing
-Date:   Mon,  9 May 2022 14:27:02 +0800
-Message-Id: <20220509062703.64249-4-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
-In-Reply-To: <20220509062703.64249-1-songmuchun@bytedance.com>
-References: <20220509062703.64249-1-songmuchun@bytedance.com>
+        Sun, 08 May 2022 23:30:17 -0700 (PDT)
+From:   Corentin Labbe <clabbe@baylibre.com>
+To:     jdelvare@suse.com, linux@roeck-us.net
+Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Corentin Labbe <clabbe@baylibre.com>
+Subject: [PATCH v3 1/2] hwmon: acpi_power_meter: fix style issue
+Date:   Mon,  9 May 2022 06:30:09 +0000
+Message-Id: <20220509063010.3878134-2-clabbe@baylibre.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220509063010.3878134-1-clabbe@baylibre.com>
+References: <20220509063010.3878134-1-clabbe@baylibre.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use kstrtobool rather than open coding "on" and "off" parsing in
-mm/hugetlb_vmemmap.c,  which is more powerful to handle all kinds
-of parameters like 'Yy1Nn0' or [oO][NnFf] for "on" and "off".
+Fix style issues found by checkpatch.
 
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
 ---
- Documentation/admin-guide/kernel-parameters.txt |  6 +++---
- mm/hugetlb_vmemmap.c                            | 10 +++++-----
- 2 files changed, 8 insertions(+), 8 deletions(-)
+ drivers/hwmon/acpi_power_meter.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 308da668bbb1..43b8385073ad 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -1703,10 +1703,10 @@
- 			enabled.
- 			Allows heavy hugetlb users to free up some more
- 			memory (7 * PAGE_SIZE for each 2MB hugetlb page).
--			Format: { on | off (default) }
-+			Format: { [oO][Nn]/Y/y/1 | [oO][Ff]/N/n/0 (default) }
+diff --git a/drivers/hwmon/acpi_power_meter.c b/drivers/hwmon/acpi_power_meter.c
+index c405a5869581..d2545a1be9fc 100644
+--- a/drivers/hwmon/acpi_power_meter.c
++++ b/drivers/hwmon/acpi_power_meter.c
+@@ -481,7 +481,7 @@ static struct sensor_template meter_attrs[] = {
+ 	RO_SENSOR_TEMPLATE("power1_average_interval_max", show_val, 1),
+ 	RO_SENSOR_TEMPLATE("power1_is_battery", show_val, 5),
+ 	RW_SENSOR_TEMPLATE(POWER_AVG_INTERVAL_NAME, show_avg_interval,
+-		set_avg_interval, 0),
++			   set_avg_interval, 0),
+ 	{},
+ };
  
--			on:  enable the feature
--			off: disable the feature
-+			[oO][Nn]/Y/y/1: enable the feature
-+			[oO][Ff]/N/n/0: disable the feature
+@@ -530,6 +530,7 @@ static void remove_domain_devices(struct acpi_power_meter_resource *resource)
  
- 			Built with CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON=y,
- 			the default is on.
-diff --git a/mm/hugetlb_vmemmap.c b/mm/hugetlb_vmemmap.c
-index 6254bb2d4ae5..cc4ec752ec16 100644
---- a/mm/hugetlb_vmemmap.c
-+++ b/mm/hugetlb_vmemmap.c
-@@ -28,15 +28,15 @@ EXPORT_SYMBOL(hugetlb_optimize_vmemmap_key);
- 
- static int __init hugetlb_vmemmap_early_param(char *buf)
- {
--	if (!buf)
-+	bool enable;
+ 	for (i = 0; i < resource->num_domain_devices; i++) {
+ 		struct acpi_device *obj = resource->domain_devices[i];
 +
-+	if (kstrtobool(buf, &enable))
+ 		if (!obj)
+ 			continue;
+ 
+@@ -580,7 +581,7 @@ static int read_domain_devices(struct acpi_power_meter_resource *resource)
+ 	}
+ 
+ 	resource->holders_dir = kobject_create_and_add("measures",
+-					&resource->acpi_dev->dev.kobj);
++						       &resource->acpi_dev->dev.kobj);
+ 	if (!resource->holders_dir) {
+ 		res = -ENOMEM;
+ 		goto exit_free;
+@@ -590,7 +591,7 @@ static int read_domain_devices(struct acpi_power_meter_resource *resource)
+ 
+ 	for (i = 0; i < pss->package.count; i++) {
+ 		struct acpi_device *obj;
+-		union acpi_object *element = &(pss->package.elements[i]);
++		union acpi_object *element = &pss->package.elements[i];
+ 
+ 		/* Refuse non-references */
+ 		if (element->type != ACPI_TYPE_LOCAL_REFERENCE)
+@@ -603,7 +604,7 @@ static int read_domain_devices(struct acpi_power_meter_resource *resource)
+ 			continue;
+ 
+ 		res = sysfs_create_link(resource->holders_dir, &obj->dev.kobj,
+-				      kobject_name(&obj->dev.kobj));
++					kobject_name(&obj->dev.kobj));
+ 		if (res) {
+ 			acpi_dev_put(obj);
+ 			resource->domain_devices[i] = NULL;
+@@ -788,7 +789,7 @@ static int read_capabilities(struct acpi_power_meter_resource *resource)
+ 	str = &resource->model_number;
+ 
+ 	for (i = 11; i < 14; i++) {
+-		union acpi_object *element = &(pss->package.elements[i]);
++		union acpi_object *element = &pss->package.elements[i];
+ 
+ 		if (element->type != ACPI_TYPE_STRING) {
+ 			res = -EINVAL;
+@@ -868,8 +869,7 @@ static int acpi_power_meter_add(struct acpi_device *device)
+ 	if (!device)
  		return -EINVAL;
  
--	if (!strcmp(buf, "on"))
-+	if (enable)
- 		static_branch_enable(&hugetlb_optimize_vmemmap_key);
--	else if (!strcmp(buf, "off"))
--		static_branch_disable(&hugetlb_optimize_vmemmap_key);
- 	else
--		return -EINVAL;
-+		static_branch_disable(&hugetlb_optimize_vmemmap_key);
+-	resource = kzalloc(sizeof(struct acpi_power_meter_resource),
+-			   GFP_KERNEL);
++	resource = kzalloc(sizeof(*resource), GFP_KERNEL);
+ 	if (!resource)
+ 		return -ENOMEM;
  
- 	return 0;
- }
+@@ -884,7 +884,8 @@ static int acpi_power_meter_add(struct acpi_device *device)
+ 	if (res)
+ 		goto exit_free;
+ 
+-	resource->trip[0] = resource->trip[1] = -1;
++	resource->trip[0] = -1;
++	resource->trip[1] = -1;
+ 
+ 	res = setup_attrs(resource);
+ 	if (res)
 -- 
-2.11.0
+2.35.1
 
