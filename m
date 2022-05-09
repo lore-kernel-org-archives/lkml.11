@@ -2,195 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C92E0C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:51:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D057C47082
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:51:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236811AbiEIHyH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 03:54:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58566 "EHLO
+        id S236841AbiEIHyP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 03:54:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234497AbiEIHoq (ORCPT
+        with ESMTP id S236072AbiEIHkG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 03:44:46 -0400
-Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90A3E62E8
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 00:40:51 -0700 (PDT)
-Received: from epcas1p1.samsung.com (unknown [182.195.41.45])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220509073954epoutp0430003e04b6355b8fc3e316eed5889f06~tX9IpiVom1131511315epoutp04U
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 07:39:54 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220509073954epoutp0430003e04b6355b8fc3e316eed5889f06~tX9IpiVom1131511315epoutp04U
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1652081994;
-        bh=rRe3C0Q8ATjSIOb08O8/klpyddeuBgZBmXw+O02/wG8=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=W69BJpF10Enj+We6lqF84BW1dnchR1zx2WwxN08LWPR+6YOQmQMeLkezOLBMBmlH8
-         /UvOOIaRX1fcsW4qCDxBXSJEcaF6jaoKAQxlHkRM6dfqx28qNvCKQiY9qx7F0E0l0q
-         XDdGYEt+nfT4x6uCuxdG6SIS0i5sEm4nt1fbw038=
-Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
-        epcas1p4.samsung.com (KnoxPortal) with ESMTP id
-        20220509073954epcas1p4258dee46bc81eb06eae1cb458752d9d3~tX9IXUE_S2991229912epcas1p4E;
-        Mon,  9 May 2022 07:39:54 +0000 (GMT)
-Received: from epsmges1p3.samsung.com (unknown [182.195.36.223]) by
-        epsnrtp3.localdomain (Postfix) with ESMTP id 4KxY3Y5Fq9z4x9Pr; Mon,  9 May
-        2022 07:39:53 +0000 (GMT)
-Received: from epcas1p3.samsung.com ( [182.195.41.47]) by
-        epsmges1p3.samsung.com (Symantec Messaging Gateway) with SMTP id
-        CE.14.10038.945C8726; Mon,  9 May 2022 16:39:53 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20220509073953epcas1p127f2d36186316642068c92c5d9dee1c4~tX9HiwVnC2388723887epcas1p1K;
-        Mon,  9 May 2022 07:39:53 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220509073953epsmtrp1ff76061dfbae49c1d3f0b4636c4352dc~tX9HhkE5i1674016740epsmtrp1h;
-        Mon,  9 May 2022 07:39:53 +0000 (GMT)
-X-AuditID: b6c32a37-111ff70000002736-75-6278c549122a
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        E7.86.08924.945C8726; Mon,  9 May 2022 16:39:53 +0900 (KST)
-Received: from jaewon-linux.10.32.193.11 (unknown [10.253.100.104]) by
-        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20220509073953epsmtip265c272ca8e262f75384d56b250e7910a~tX9HXuIeM2917129171epsmtip2z;
-        Mon,  9 May 2022 07:39:53 +0000 (GMT)
-From:   Jaewon Kim <jaewon31.kim@samsung.com>
-To:     vbabka@suse.cz, akpm@linux-foundation.org
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        jaewon31.kim@gmail.com, Jaewon Kim <jaewon31.kim@samsung.com>
-Subject: [RFC PATCH] page_ext: create page extension for all memblock memory
- regions
-Date:   Mon,  9 May 2022 16:43:30 +0900
-Message-Id: <20220509074330.4822-1-jaewon31.kim@samsung.com>
-X-Mailer: git-send-email 2.17.1
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrNKsWRmVeSWpSXmKPExsWy7bCmvq7n0Yokg7Pf1S3mrF/DZtG9eSaj
-        Re/7V0wWl3fNYbO4t+Y/q8Xsxj5GBzaPnbPusnts+jSJ3ePEjN8sHn1bVjF6nFlwhN3j8ya5
-        ALaobJuM1MSU1CKF1Lzk/JTMvHRbJe/geOd4UzMDQ11DSwtzJYW8xNxUWyUXnwBdt8wcoDOU
-        FMoSc0qBQgGJxcVK+nY2RfmlJakKGfnFJbZKqQUpOQVmBXrFibnFpXnpenmpJVaGBgZGpkCF
-        CdkZ3x9vZSu4IFrx+Cx3A+MfgS5GTg4JAROJ/mvbWbsYuTiEBHYwSkzZ1McO4XxilLh/B8b5
-        zCixfe96RpiWhjkToBK7GCXWrHkI5fxglHh7aTorSBWbgLbE+wWTwGwRAV2Jgz0tzCA2s0Cp
-        xNs3J8BsYYEwiYPvnwPZHBwsAqoS/x6VgYR5BWwk3h66wgSxTF5i9YYDzCDzJQQ2sUtsv9jJ
-        CpFwkdj4/SxUkbDEq+Nb2CFsKYmX/W1QdrbE05NHwOZLCORINGyQhTDtJd5fsgAxmQU0Jdbv
-        0ocoVpTY+XsuI8SRfBLvvvawQlTzSnS0CUGUqEm0PPsKtV9G4u+/Z1C2h8SVRYfB9ggJxEq8
-        3681gVF2FsL8BYyMqxjFUguKc9NTiw0LjOERlJyfu4kRnKq0zHcwTnv7Qe8QIxMH4yFGCQ5m
-        JRHe/X0VSUK8KYmVValF+fFFpTmpxYcYTYFhNZFZSjQ5H5gs80riDU0sDUzMjEwsjC2NzZTE
-        eVdNO50oJJCeWJKanZpakFoE08fEwSnVwDSXo/J0QkVrlsQOvyRRjewttd9OLavc6me3aX3Y
-        75WyZ7Jbu30+Cr/2ZPgo4/7HiDvb58dhn7VuT25+frz1rMjfR51d+2Ubvq47bhw67dCsBapV
-        c6aIabevVX+UsOYV6x2lxDvfEh/oVumqbN7yZbKTFveroBV/3z141PIoN974zT8rIeeo1ytr
-        b59Uujn5j67EHuMl9Vw906qy69w7XxeI6dR95FtYIrvX7nq0yk4psfc7b1ho/IvIv+o5NeCa
-        NsO2Z2FrH+vzxH+ULNI5dCP4hU7GVraOP5fvOr96bs1Q3Vr0sUnLd6Lq//B1crzGhXc7l2xu
-        7+e735j6UmnzBvPGzv8OwtvzTx8PqPluuVyJpTgj0VCLuag4EQDpjvIU3gMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrNJMWRmVeSWpSXmKPExsWy7bCSvK7n0Yokg50zBS3mrF/DZtG9eSaj
-        Re/7V0wWl3fNYbO4t+Y/q8Xsxj5GBzaPnbPusnts+jSJ3ePEjN8sHn1bVjF6nFlwhN3j8ya5
-        ALYoLpuU1JzMstQifbsErozvj7eyFVwQrXh8lruB8Y9AFyMnh4SAiUTDnAnsXYxcHEICOxgl
-        Tr35xAaRkJF4c/4pSxcjB5AtLHH4cDFEzTdGieVn74PVsAloS7xfMIkVxBYR0JfYu2oSC4jN
-        LFAp8e/2LVaQXmGBEIlZn0pATBYBVYl/j8pAKngFbCTeHrrCBLFJXmL1hgPMExh5FjAyrGKU
-        TC0ozk3PLTYsMMpLLdcrTswtLs1L10vOz93ECA4fLa0djHtWfdA7xMjEwXiIUYKDWUmEd39f
-        RZIQb0piZVVqUX58UWlOavEhRmkOFiVx3gtdJ+OFBNITS1KzU1MLUotgskwcnFINTNN12b7y
-        ezOlOZ/tf35SZTnnFL2jR+8c39Adk77ITamzSMJ0m38S+z+pY0v3xG3lUvp5z0ml0f6WE1vy
-        0zDXU1f5WjwP8SkGKvzwu/Nz6razO+ouSQeWBU+5PuPHFrkdzxXil7zuu3j0r9OUlyePutd3
-        bZt8YP+t0tccXzuDFt14KjA58cveKberlwl+W2Z582ZP4I5z95wbVhwTbNvb8TBns6rYp7wD
-        RVrPEl/cWs9uVjGJ97FTTtJeMY+Jpj+CFOwWbe2+ZvY2xOH1hryLnufi+Huu8L46mMckp9Pb
-        ZRdnkGNatfXcJPOpe++d89+1Q+Uii+CPJNV1+SkKUn9y93dfNYwyWr387kofy5kvlisqsRRn
-        JBpqMRcVJwIA7iuqCI4CAAA=
-X-CMS-MailID: 20220509073953epcas1p127f2d36186316642068c92c5d9dee1c4
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: SVC_REQ_APPROVE
-CMS-TYPE: 101P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220509073953epcas1p127f2d36186316642068c92c5d9dee1c4
-References: <CGME20220509073953epcas1p127f2d36186316642068c92c5d9dee1c4@epcas1p1.samsung.com>
+        Mon, 9 May 2022 03:40:06 -0400
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam08on2071.outbound.protection.outlook.com [40.107.100.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33C74A1461;
+        Mon,  9 May 2022 00:36:09 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ntMR60SvsoJLKcTAyc54LvAUEa5B3qw7DjcMfaEhwwsbpw9vG+F8ejYm0eMdRDgGx0ZFlB7grBxnueXNV6MEzyZpB+WcCZwAmI6zEdcTd51i7tmfzsWYTkZRnLoxayd4UH4o0ChxHGlNwtygoUAPr/hf8SLweqA8WsYU0QkgC60yPkxd/o8YQJfaP/6U4QfkMBYd2qFaLIxp+8+XPUU8kmL6GqWs0srawzTZ3h2qpMpwLT77OyhR6PnGfVw6iWrQqgtFRgrmC78qImbrAt4DilvQTw38jUeZCX64PJp5Cmx40AwLxpYBv+8FJLaYQbRtUUOqPuCTk8pjOtZDN6M6XA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=MvqJ02TnpENRUTIsplNLQCWRqp3jILwdvV62G90TeRo=;
+ b=iNkSzLH6H04PDdvaW+m1aCqG7EUuaiOnZnmChmgp7jJcbTBy6LN6R0tVvxF8GF+fxP8n5BXwg9PpFMVdUxKPe6Z31ZC/hsONXkEbTxC3IR2FFlr8kJVqQN0drMnK2dt2zPeloFHg16gvihkJ76OjH6S0pdy2cw+5aWeBgRnLk4Ei8KK+s74ranB3SrK7xGHqP7kb8ZfGT0CfwKilQtTIqjIotlBTXda6hH61Rx3PlKw4wosFoq5Xsqete8eFR1spyJ9OR8+29jRBCQAtwicBjctQSql6Y1mJeYEc02IWAHMPzJUVuuSoIl1fBYf6iDs5Uuo8Fa75ZdhCp6FYH1LQNQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=gmail.com smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MvqJ02TnpENRUTIsplNLQCWRqp3jILwdvV62G90TeRo=;
+ b=XbWMuxiaIdpRdCxjTnAHh+Mfy0lqLdcs83sO99xH7/de0QvlwLvNC5b2daaQ8Q2WZFz7LWpTjh8quwdRQN29QQ6JL6Bcb1uNgL+uKdKJ9WOm2m0JiJjslukIzIs9hgDkfGYCSnBLxj4jP837yxVOTjsFsyW6byB+FrXTK21b6XQ=
+Received: from DM6PR04CA0006.namprd04.prod.outlook.com (2603:10b6:5:334::11)
+ by BY5PR02MB6082.namprd02.prod.outlook.com (2603:10b6:a03:1fe::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.22; Mon, 9 May
+ 2022 07:35:01 +0000
+Received: from DM3NAM02FT059.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:5:334:cafe::4b) by DM6PR04CA0006.outlook.office365.com
+ (2603:10b6:5:334::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.24 via Frontend
+ Transport; Mon, 9 May 2022 07:35:01 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com;
+Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
+ DM3NAM02FT059.mail.protection.outlook.com (10.13.4.97) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5227.15 via Frontend Transport; Mon, 9 May 2022 07:35:00 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Mon, 9 May 2022 00:35:00 -0700
+Received: from smtp.xilinx.com (172.19.127.96) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Mon, 9 May 2022 00:35:00 -0700
+Envelope-to: cgel.zte@gmail.com,
+ jic23@kernel.org,
+ lars@metafoo.de,
+ linux-iio@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org,
+ lv.ruyi@zte.com.cn,
+ zealci@zte.com.cn
+Received: from [10.254.241.50] (port=37252)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <michal.simek@xilinx.com>)
+        id 1nnxv2-000Dyx-11; Mon, 09 May 2022 00:35:00 -0700
+Message-ID: <c19cce8d-ca99-4993-435d-1a4e53543713@xilinx.com>
+Date:   Mon, 9 May 2022 09:34:57 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH] iio: adc: fix return error variable
+Content-Language: en-US
+To:     <cgel.zte@gmail.com>, <jic23@kernel.org>, <lars@metafoo.de>
+CC:     <anand.ashok.dumbre@xilinx.com>, <michal.simek@xilinx.com>,
+        <manish.narani@xilinx.com>, <linux-iio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+References: <20220509072405.1118019-1-lv.ruyi@zte.com.cn>
+From:   Michal Simek <michal.simek@xilinx.com>
+In-Reply-To: <20220509072405.1118019-1-lv.ruyi@zte.com.cn>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5258545a-1ca4-4769-fdf5-08da318e6d05
+X-MS-TrafficTypeDiagnostic: BY5PR02MB6082:EE_
+X-Microsoft-Antispam-PRVS: <BY5PR02MB608274A308DB13E3406CADE9C6C69@BY5PR02MB6082.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: eErOMalYHkTq9dS4ox707RxnQhXZ+1yS5buprsdu3kh0EG7oM+br1X9J139fQUkuxQI7je3GvX8qnRxpJ9avK1VPUxnbDrTzQ0liTf+LibApF5UrWJbUeXfaOIUs4QyFjwt1xPIBstT97/9Gevp6U+sESn78ehwWyuKYX5IZyINrg/6TrJUzO9cYYwLLGDii/1z5txiIlsM2AXrOKkJMM4vfbX8LttvMxea6foYkRP3C8bKR3neQRr/9D7kJ4wZDQqMn/Yfa+mSmGfWSR2ZBewj8YphhpbCpkX93ixOu0jffDvQEaQb9Ysw3pIrq8gwjf+E/qKzuYfc6YGRW594ka9c6bcWRWD4oMQVDg1QxN7IiRJJWAb/YRi5GRyvOy4Ws1NrIpwpHEDMP6ofdVy+1T0ey52KO1Oi47Db7LyNksw17tT4LfQKyk4KuCahD0p5fBtweyv1cfT8TbI9tx0d4BAi00dRDU4S90Ig8rjAu1H7IuC9goUrHfoeODiAawticFHn8yF7D/i5ZpszEGcDFOn8wc3lPYruV6rariHNEOwWQU0RcpCNt5VpBZkB4vLyqtbF74APOy0BLRum0ng0cgofsvUtalsE0kQyD/7SUeqot01yF9iPii7ET0LXhUZ/KxV+jhHBorcObcaCM/lLpvEptpYjH289B/K9oLgJ74BkfraIfOz034kX+33z54EZ7oW2tyL3JQHPD7k117cPhYxvv2jEXHVUf9/XnDeYJV1I=
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(82310400005)(44832011)(36756003)(356005)(7636003)(31696002)(2616005)(4744005)(83380400001)(8936002)(53546011)(110136005)(9786002)(70586007)(70206006)(54906003)(4326008)(8676002)(31686004)(336012)(36860700001)(26005)(426003)(40460700003)(47076005)(508600001)(2906002)(5660300002)(6666004)(186003)(316002)(50156003)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2022 07:35:00.9635
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5258545a-1ca4-4769-fdf5-08da318e6d05
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT059.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR02MB6082
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The page extension can be prepared for each section. But if the first
-page is not valid, the page extension for the section was not
-initialized though there were many other valid pages within the section.
 
-To support the page extension for all sections, refer to memblock memory
-regions. If the page is valid use the nid from pfn_to_nid, otherwise use
-the previous nid.
 
-Also this pagech changed log to include total sections and a section
-size.
+On 5/9/22 09:24, cgel.zte@gmail.com wrote:
+> From: Lv Ruyi <lv.ruyi@zte.com.cn>
+> 
+> Return irq instead of ret which always equals to zero here.
+> 
+> Fixes: d5c70627a794 ("iio: adc: Add Xilinx AMS driver")
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+> ---
+>   drivers/iio/adc/xilinx-ams.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/adc/xilinx-ams.c b/drivers/iio/adc/xilinx-ams.c
+> index a55396c1f8b2..a7687706012d 100644
+> --- a/drivers/iio/adc/xilinx-ams.c
+> +++ b/drivers/iio/adc/xilinx-ams.c
+> @@ -1409,7 +1409,7 @@ static int ams_probe(struct platform_device *pdev)
+>   
+>   	irq = platform_get_irq(pdev, 0);
+>   	if (irq < 0)
+> -		return ret;
+> +		return irq;
+>   
+>   	ret = devm_request_irq(&pdev->dev, irq, &ams_irq, 0, "ams-irq",
+>   			       indio_dev);
 
-i.e.
-allocated 100663296 bytes of page_ext for 64 sections (1 section : 0x8000000)
+Reviewed-by: Michal Simek <michal.simek@amd.com>
 
-Signed-off-by: Jaewon Kim <jaewon31.kim@samsung.com>
----
- mm/page_ext.c | 42 ++++++++++++++++++++++--------------------
- 1 file changed, 22 insertions(+), 20 deletions(-)
-
-diff --git a/mm/page_ext.c b/mm/page_ext.c
-index 2e66d934d63f..506d58b36a1d 100644
---- a/mm/page_ext.c
-+++ b/mm/page_ext.c
-@@ -381,41 +381,43 @@ static int __meminit page_ext_callback(struct notifier_block *self,
- void __init page_ext_init(void)
- {
- 	unsigned long pfn;
--	int nid;
-+	int nid = 0;
-+	struct memblock_region *rgn;
-+	int nr_section = 0;
-+	unsigned long next_section_pfn = 0;
- 
- 	if (!invoke_need_callbacks())
- 		return;
- 
--	for_each_node_state(nid, N_MEMORY) {
-+	/*
-+	 * iterate each memblock memory region and do not skip a section having
-+	 * !pfn_valid(pfn)
-+	 */
-+	for_each_mem_region(rgn) {
- 		unsigned long start_pfn, end_pfn;
- 
--		start_pfn = node_start_pfn(nid);
--		end_pfn = node_end_pfn(nid);
--		/*
--		 * start_pfn and end_pfn may not be aligned to SECTION and the
--		 * page->flags of out of node pages are not initialized.  So we
--		 * scan [start_pfn, the biggest section's pfn < end_pfn) here.
--		 */
-+		start_pfn = (unsigned long)(rgn->base >> PAGE_SHIFT);
-+		end_pfn = start_pfn + (unsigned long)(rgn->size >> PAGE_SHIFT);
-+
-+		if (start_pfn < next_section_pfn)
-+			start_pfn = next_section_pfn;
-+
- 		for (pfn = start_pfn; pfn < end_pfn;
- 			pfn = ALIGN(pfn + 1, PAGES_PER_SECTION)) {
- 
--			if (!pfn_valid(pfn))
--				continue;
--			/*
--			 * Nodes's pfns can be overlapping.
--			 * We know some arch can have a nodes layout such as
--			 * -------------pfn-------------->
--			 * N0 | N1 | N2 | N0 | N1 | N2|....
--			 */
--			if (pfn_to_nid(pfn) != nid)
--				continue;
-+			if (pfn_valid(pfn))
-+				nid = pfn_to_nid(pfn);
-+			nr_section++;
- 			if (init_section_page_ext(pfn, nid))
- 				goto oom;
- 			cond_resched();
- 		}
-+		next_section_pfn = pfn;
- 	}
-+
- 	hotplug_memory_notifier(page_ext_callback, 0);
--	pr_info("allocated %ld bytes of page_ext\n", total_usage);
-+	pr_info("allocated %ld bytes of page_ext for %d sections (1 section : 0x%x)\n",
-+		total_usage, nr_section, (1 << SECTION_SIZE_BITS));
- 	invoke_init_callbacks();
- 	return;
- 
--- 
-2.17.1
-
+Thanks,
+Michal
