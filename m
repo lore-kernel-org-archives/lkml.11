@@ -2,136 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51F7BC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32B39C47080
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:04:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235910AbiEIHGY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 03:06:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44780 "EHLO
+        id S235867AbiEIHGV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 03:06:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231332AbiEIHBd (ORCPT
+        with ESMTP id S234946AbiEIG6q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 03:01:33 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A4DA17EC22;
-        Sun,  8 May 2022 23:57:38 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id e5so11255747pgc.5;
-        Sun, 08 May 2022 23:57:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=i42mRfc6plgwDr9xKkcbZKYxsl3MvEdsg2vyK92DFBY=;
-        b=DwZe/s3uWRJgcaeMctfYp2UapVP0ZJbieh0Cf0MMg+Xm9N/zvZko2LVRzEPTr41dkL
-         ueFUwuj3igd/tk9ZyDmud1M4mLC5em43QBFALnEhPQxvWejUlyoWonEFzHcjquCGvzd3
-         AhJcXBIxHkuVUEJh60tO2d/BOc0Jn2tXToGtulzMmF4CjmkxMDr1GHNjueaDwbXT2EjD
-         9bPJw82HWTKbdSObcRRiICsowqse3RUVFW4unbx26/od3QXMU1++SXiWXHwnQto5e+2n
-         TbkryukAUxE8a6t8Rh8JCFkgqMZwCsO7bhio9UrXPl6WTcafpBBa9Wdhi6y8uZRIHnM/
-         Ct3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=i42mRfc6plgwDr9xKkcbZKYxsl3MvEdsg2vyK92DFBY=;
-        b=wP1QFYHp32GcF9mM5gAwkOYqCvUX3L87Ldoa0fVbQHI53YeSMENh89VrI46Rr/CP5h
-         acCn217MiOvDFULh8cX4S5OcWAjueizobljc0UQ/T8I84pY25vxQaD/h20dim9xy34mg
-         V199vaupcPz+CY/AVvk8Z5VsFmVRxkHJ0Cxxg/vfStmqoQe24agXCk8udDa9rqcdAfjh
-         KZR7gRcLIW3rnABBivoXGmGcNjNHuoVaYjOZTfnJ3zyHl0AI8LNh2TBHPwmhJj4kJHhn
-         yESxjlIto8dSbBFjhFqb09bffssm0T4DZvofM57Wfwh0UPz98mgHo6NGW0K2NTJ5ED57
-         vq+g==
-X-Gm-Message-State: AOAM532V5/hUNOkIM71FRfpw5W8HtldCID4CfOcAUbvIvNN3WvNQYx2h
-        f7/2IxF0XtOPVualzkyUqwQ=
-X-Google-Smtp-Source: ABdhPJyd2/9ww/c4Z2dEtoofDbc8dDsoh6d7YAJU7ovdjn12+kfHvrJl5xpUxH8nUsxkHai99UxerQ==
-X-Received: by 2002:a63:531c:0:b0:3c6:a5d7:8bae with SMTP id h28-20020a63531c000000b003c6a5d78baemr4931710pgb.505.1652079456203;
-        Sun, 08 May 2022 23:57:36 -0700 (PDT)
-Received: from localhost ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id t15-20020a6549cf000000b003c14af50621sm7770378pgs.57.2022.05.08.23.57.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 May 2022 23:57:35 -0700 (PDT)
-Message-ID: <6278bb5f.1c69fb81.e623f.215f@mx.google.com>
-X-Google-Original-Message-ID: <20220509065733.GB1109788@cgel.zte@gmail.com>
-Date:   Mon, 9 May 2022 06:57:33 +0000
-From:   CGEL <cgel.zte@gmail.com>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     akpm@linux-foundation.org, keescook@chromium.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, ran.xiaokai@zte.com.cn, wang.yong12@zte.com.cn,
-        xu.xin16@zte.com.cn, yang.yang29@zte.com.cn,
-        zhang.yunkai@zte.com.cn
-Subject: Re: [PATCH v5] mm/ksm: introduce ksm_force for each process
-References: <20220507105926.d4423601230f698b0f5228d1@linux-foundation.org>
- <20220508092710.930126-1-xu.xin16@zte.com.cn>
- <YngF+Lz01noCKRFc@casper.infradead.org>
+        Mon, 9 May 2022 02:58:46 -0400
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 459C815E615
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 23:54:54 -0700 (PDT)
+Received: from localhost.localdomain (unknown [138.197.159.143])
+        by gnuweeb.org (Postfix) with ESMTPSA id 647107E7F6;
+        Mon,  9 May 2022 06:54:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1652079293;
+        bh=S0U9M32154HScyfLSnF1HZ9qZvAR0EcCgcUUKQmmE44=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=WHfbcEyoxuzZ2fSeGRnGn8fybzzOrakqv0xyTMDpZZADLUDgiaQ5U02yjbXyKtgV+
+         IkWPjQvCgsAOUuuQ7J2zbiPNvpxcLTZ/4BWH/81NNxvhWGc2TJhYfi10JS74vBa9BC
+         303lJS1TaaNn4Rh512aK20HkxZgVLy/+RjWzhnOlYxJspgX06Bb4yclmPg/nBA5/+w
+         5Yr8o8o3jAWurcDjuyrFgQjC3n811L4WZmdzEPqlUErAPppZF+qZaavLhsyHn1F6P8
+         sesXfFJujp1R0DbYiZJmJ7XTwesHLxywUqLkUTTNW6zVnhB3Jj6LeUseHuMVg0XkU+
+         EFzkaxsQsz+yQ==
+From:   Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
+To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Cc:     GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
+Subject: [PATCH 1/1] tools/nolibc/stdio: Add format attribute to enable printf warnings
+Date:   Mon,  9 May 2022 06:54:45 +0000
+Message-Id: <20220509065445.3912334-2-alviro.iskandar@gnuweeb.org>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220509065445.3912334-1-alviro.iskandar@gnuweeb.org>
+References: <20220509065445.3912334-1-alviro.iskandar@gnuweeb.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YngF+Lz01noCKRFc@casper.infradead.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 08, 2022 at 07:03:36PM +0100, Matthew Wilcox wrote:
-> On Sun, May 08, 2022 at 09:27:10AM +0000, cgel.zte@gmail.com wrote:
-> > If ksm_force is set to 0, cancel the feature of ksm_force of this
-> > process and unmerge those merged pages belonging to VMAs which is not
-> > madvised as MADV_MERGEABLE of this process, but leave MADV_MERGEABLE
-> > areas merged.
-> 
-> Is that actually a useful feature?  Otherwise, we could simply turn
-> on/off the existing MMF_VM_MERGEABLE flag instead of introducing this
-> new bool.
-> 
-I think this will be very useful for those apps which are very likely to
-cause Same Pages in memory and users and operators are not willing to
-modified the source codes for any reasons.
+When we use printf and fprintf functions from nolibc, we don't get any
+warning from the compiler if we have wrong arguments, for example the
+following calls will compile silently:
+```
+  printf("%s %s\n", "aaa");
+  fprintf(stdout, "%s %s\n", "xxx", 1);
+```
+Those calls are undefined behavior. We can catch it at compile time by
+adding format attribute to those function declarations. After this
+patch, we get the following warnings:
+```
+  warning: format `%s` expects a matching `char *` argument [-Wformat=]
+  warning: format `%s` expects argument of type `char *`, but argument 4 has type `int` [-Wformat=]
+```
 
-Besides, simply turning of/off the existing MMF_VM_MERGEABLE flag may be
-not feasible because madvise will also turn on the MMF_VM_MERGEABLE
-flag.
+Signed-off-by: Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
+---
+ tools/include/nolibc/stdio.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-I think the following suggestions is good, and I will resend a patch.
-> > +Controlling KSM with procfs
-> > +===========================
-> > +
-> > +KSM can also operate on anonymous areas of address space of those processes's
-> > +knob ``/proc/<pid>/ksm_force`` is on, even if app codes doesn't call madvise()
-> > +explicitly to advise specific areas as MADV_MERGEABLE.
-> > +
-> > +You can set ksm_force to 1 to force all anonymous and qualified VMAs of
-> > +this process to be involved in KSM scanning. But It is effective only when the
-> > +klob of ``/sys/kernel/mm/ksm/run`` is set as 1.
-> 
-> I think that last sentence doesn't really add any value.
-> 
-> > +	memset(buffer, 0, sizeof(buffer));
-> > +	if (count > sizeof(buffer) - 1)
-> > +		count = sizeof(buffer) - 1;
-> > +	if (copy_from_user(buffer, buf, count)) {
-> > +		err = -EFAULT;
-> > +		goto out_return;
-> 
-> This feels a bit unnecessary.  Just 'return -EFAULT' here.
-> 
-> > +	}
-> > +
-> > +	err = kstrtoint(strstrip(buffer), 0, &force);
-> > +
-> > +	if (err)
-> > +		goto out_return;
-> 
-> 'return err'
-> 
-> > +	if (force != 0 && force != 1) {
-> > +		err = -EINVAL;
-> > +		goto out_return;
-> 
-> 'return -EINVAL'
-> 
-> > +	}
-> > +
-> > +	task = get_proc_task(file_inode(file));
-> > +	if (!task) {
-> > +		err = -ESRCH;
-> > +		goto out_return;
-> 
-> 'return -ESRCH'
+diff --git a/tools/include/nolibc/stdio.h b/tools/include/nolibc/stdio.h
+index 15dedf8d0902..009dd6ae68f2 100644
+--- a/tools/include/nolibc/stdio.h
++++ b/tools/include/nolibc/stdio.h
+@@ -273,7 +273,7 @@ int vfprintf(FILE *stream, const char *fmt, va_list args)
+ 	return written;
+ }
+ 
+-static __attribute__((unused))
++static __attribute__((unused)) __attribute__((format(printf, 2, 3)))
+ int fprintf(FILE *stream, const char *fmt, ...)
+ {
+ 	va_list args;
+@@ -285,7 +285,7 @@ int fprintf(FILE *stream, const char *fmt, ...)
+ 	return ret;
+ }
+ 
+-static __attribute__((unused))
++static __attribute__((unused)) __attribute__((format(printf, 1, 2)))
+ int printf(const char *fmt, ...)
+ {
+ 	va_list args;
+-- 
+Alviro Iskandar Setiawan
+
