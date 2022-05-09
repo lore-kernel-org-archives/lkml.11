@@ -2,78 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7343C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 14:26:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5410EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 14:26:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236992AbiEIOan (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 10:30:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33552 "EHLO
+        id S237073AbiEIOas (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 10:30:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237071AbiEIOaj (ORCPT
+        with ESMTP id S236923AbiEIOak (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 10:30:39 -0400
-Received: from sonata.ens-lyon.org (domu-toccata.ens-lyon.fr [140.77.166.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9E9E198758
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 07:26:44 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by sonata.ens-lyon.org (Postfix) with ESMTP id 7FAF9201A9;
-        Mon,  9 May 2022 16:26:42 +0200 (CEST)
-Received: from sonata.ens-lyon.org ([127.0.0.1])
-        by localhost (sonata.ens-lyon.org [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id ogE-C3U51zax; Mon,  9 May 2022 16:26:42 +0200 (CEST)
-Received: from begin (nat-inria-interne-52-gw-01-bso.bordeaux.inria.fr [194.199.1.52])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by sonata.ens-lyon.org (Postfix) with ESMTPSA id 7FAF8201A5;
-        Mon,  9 May 2022 16:26:42 +0200 (CEST)
-Received: from samy by begin with local (Exim 4.95)
-        (envelope-from <samuel.thibault@ens-lyon.org>)
-        id 1no4LS-002SUz-MI;
-        Mon, 09 May 2022 16:26:42 +0200
-Date:   Mon, 9 May 2022 16:26:42 +0200
-From:   Samuel Thibault <samuel.thibault@ens-lyon.org>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, speakup@linux-speakup.org
-Subject: Re: [PATCHv2] speakup: Generate speakupmap.h automatically
-Message-ID: <20220509142642.gsi5cppgadc2gojy@begin>
-Mail-Followup-To: Samuel Thibault <samuel.thibault@ens-lyon.org>,
-        Greg KH <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org,
-        speakup@linux-speakup.org
-References: <20220430003934.fkua7vwoz6heigrp@begin>
- <20220430073321.6b4lvrrt7buzh7dp@begin>
- <YnkfeyobcOOgDGkH@kroah.com>
- <20220509140705.n3eei4r5ko6bbex4@begin>
- <Ynki154mxF+2L8WH@kroah.com>
+        Mon, 9 May 2022 10:30:40 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9B831CFD1;
+        Mon,  9 May 2022 07:26:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1652106406; x=1683642406;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=HCdSIoiGs6J+p/OfruwdFMvCF2xJa6k7Z24v4z1d0G4=;
+  b=ieimuAF2XOeLfLl6Nao7HUhSrUP4lBHs55NGo2iCcXnxS09wQoh50S1C
+   gvNEoNnU2+2Dwux0Z06MI2TLZT7KWjSBHQPWEbtjHPolVx26qfGP6HxJ9
+   VUfAx/8uH+XX1h5sZ4lkAbkuOUsDOl72cw27Vh8B4sXA9006DW7invIWQ
+   YZwGfKTbCf4V7355Vrx0hnWg/4jjzKp2Xc7beBPc91R6dR62Xlt5VVZWD
+   4nWqPhd9sAuaI4WAMW2hAtVI9fZusYgzDTPi0SmIGtoDWlE9PdhRpMKPh
+   kxTczioilSe19yy6Jw9Vf6HL17pJ/cH6N9b8rI5VdrOOoF8VGP1wJc4qY
+   A==;
+X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
+   d="scan'208";a="162858666"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 May 2022 07:26:45 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 9 May 2022 07:26:44 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Mon, 9 May 2022 07:26:41 -0700
+From:   Conor Dooley <conor.dooley@microchip.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>
+CC:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Daire McNamara <daire.mcnamara@microchip.com>,
+        Cyril Jean <Cyril.Jean@microchip.com>,
+        <devicetree@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <heiko@sntech.de>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH v5 00/10] PolarFire SoC dt for 5.19
+Date:   Mon, 9 May 2022 15:26:01 +0100
+Message-ID: <20220509142610.128590-1-conor.dooley@microchip.com>
+X-Mailer: git-send-email 2.35.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ynki154mxF+2L8WH@kroah.com>
-Organization: I am not organized
-User-Agent: NeoMutt/20170609 (1.8.3)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Greg KH, le lun. 09 mai 2022 16:19:03 +0200, a ecrit:
-> On Mon, May 09, 2022 at 04:07:05PM +0200, Samuel Thibault wrote:
-> > Greg KH, le lun. 09 mai 2022 16:04:43 +0200, a ecrit:
-> > > Any reason you can't add the code in utils.c into genmap.c and then
-> > > merge into makemapdata.c to make this a single .c file that does both
-> > > things?
-> > 
-> > Yes: genmap is a tool that end-users can use without needing the Linux
-> > source code, while makemapdata needs it.
-> 
-> But who will run genmap?
+Hey all,
+Got a few PolarFire SoC device tree related changes here for 5.19.
 
-I guess you meant makemapdata?
+Firstly, patches 1 & 2 of this series supersede [0] & are unchanged
+compared to that submission, figured it would just be easier to keep
+all the changes in one series.
 
-Long-term-wise this patchset will need a bit of work to properly install
-the genmap tool so the user can call it.  I'm here mostly making sure
-to put into the Linux kernel how speakupmap.h is generated (rather
-than the currently very magic file), while at the same time keeping
-the separation between makemapdata and genmap that will make sense
-longterm-wise.
+As discussed on irc, patch 3 removes the duplicated "microchip" from
+the device tree files so that they follow a soc-board.dts & a
+soc{,-fabric}.dtsi format.
 
-Samuel
+Patch 5 makes the fabric dtsi board specific by renaming the file to
+mpfs-icicle-kit-fabric.dtsi & including it in the dts rather than
+mpfs.dtsi. Additionally this will allow other boards to define their
+own reference fabric design. A revision specific compatible, added in
+patch 4, is added to the dt also.
+
+The remainder of the series adds a bare minimum devicetree for the
+Sundance Polarberry.
+
+Thanks,
+Conor.
+
+Changes since v4:
+- Whitespace and status ordering changes in the polarberry dt pointed
+  out by Heiko
+- A new patch for same whitspace and status order changes, but applied
+  to the icicle dt
+- A reordering of the icicle dt alphabetically to match the formatting
+  of the polarberry dt
+
+Changes since v3:
+- remove an extra line of wshitespace added to dt-binding
+- remove unneeded "okay" status & sort status to node end
+- sort polarberry dts entries in ~alphabetical order
+- add a comment explaining why the second mac (mac0) is disabled on
+  polarberry
+
+Changes since v2:
+- make ,icicle-reference compatible with ,mpfs & put it inside the enum
+
+Changes since v1:
+- fixed whitespace problems in the polarberry dts
+- disabled mac0 for the polarberry as its port is on the optional
+  carrier board
+
+Conor Dooley (10):
+  riscv: dts: microchip: remove icicle memory clocks
+  riscv: dts: microchip: move sysctrlr out of soc bus
+  riscv: dts: microchip: remove soc vendor from filenames
+  dt-bindings: riscv: microchip: document icicle reference design
+  riscv: dts: microchip: make the fabric dtsi board specific
+  dt-bindings: vendor-prefixes: add Sundance DSP
+  dt-bindings: riscv: microchip: add polarberry compatible string
+  riscv: dts: microchip: add the sundance polarberry
+  riscv: microchip: icicle: readability fixes
+  riscv: dts: icicle: sort nodes alphabetically
+
+ .../devicetree/bindings/riscv/microchip.yaml  |   2 +
+ .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
+ arch/riscv/boot/dts/microchip/Makefile        |   3 +-
+ ...abric.dtsi => mpfs-icicle-kit-fabric.dtsi} |   2 +
+ ...pfs-icicle-kit.dts => mpfs-icicle-kit.dts} | 105 +++++++++---------
+ .../dts/microchip/mpfs-polarberry-fabric.dtsi |  16 +++
+ .../boot/dts/microchip/mpfs-polarberry.dts    |  99 +++++++++++++++++
+ .../{microchip-mpfs.dtsi => mpfs.dtsi}        |  11 +-
+ 8 files changed, 181 insertions(+), 59 deletions(-)
+ rename arch/riscv/boot/dts/microchip/{microchip-mpfs-fabric.dtsi => mpfs-icicle-kit-fabric.dtsi} (91%)
+ rename arch/riscv/boot/dts/microchip/{microchip-mpfs-icicle-kit.dts => mpfs-icicle-kit.dts} (95%)
+ create mode 100644 arch/riscv/boot/dts/microchip/mpfs-polarberry-fabric.dtsi
+ create mode 100644 arch/riscv/boot/dts/microchip/mpfs-polarberry.dts
+ rename arch/riscv/boot/dts/microchip/{microchip-mpfs.dtsi => mpfs.dtsi} (98%)
+
+-- 
+2.35.2
+
