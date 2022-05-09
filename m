@@ -2,99 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6038BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 19:40:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A895AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 19:40:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240627AbiEITn4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 15:43:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47932 "EHLO
+        id S240635AbiEIToc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 15:44:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231781AbiEITnw (ORCPT
+        with ESMTP id S231781AbiEITo2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 15:43:52 -0400
-X-Greylist: delayed 2246 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 09 May 2022 12:39:56 PDT
-Received: from a4-5.smtp-out.eu-west-1.amazonses.com (a4-5.smtp-out.eu-west-1.amazonses.com [54.240.4.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA9816D5CE
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 12:39:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
-        s=ob2ngmaigrjtzxgmrxn2h6b3gszyqty3; d=urbackup.org; t=1652120094;
-        h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-        bh=moCKIlR1VoGBDZv7bxLTB0rBLKiRz1QcPC33EzoNnt0=;
-        b=C4lPPFd/BL1NLovwh7MWYmrvYs820UC3KP7QN8CoQZTJ0GLWjcnwO2NN8zxHEE58
-        h7eL/Ie+WMnJRxCiGE+kr6LE2RFcFOaZd+FrNuV/YgRDvQ/24XsOLFRhz7pM9KLNqr9
-        BJKdJ44XvY6fhWNkjCYti4tvQZp0UKjPHsozKq6Y=
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
-        s=ihchhvubuqgjsxyuhssfvqohv7z3u4hn; d=amazonses.com; t=1652120094;
-        h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:In-Reply-To:Content-Type:Content-Transfer-Encoding:Feedback-ID;
-        bh=moCKIlR1VoGBDZv7bxLTB0rBLKiRz1QcPC33EzoNnt0=;
-        b=lzPMZQwKC5VH4ANqtvKfzIX194vwwB+Oxsf4b+F2oMy/se9Bm89BPKWK17ZFrroA
-        pVWEXnsGs0foBMQ6lfAlmY/LNDP8rHU6HUS/g6GPtPG0Kd+qBMeXlXWfk116ct69ces
-        abUhf0RTuXETFcMXYvXMsHVyKPv/u6+sWTxdHSdU=
-Message-ID: <01020180aa080721-08a3231e-71b7-4fb2-a411-cac2cbf85ae3-000000@eu-west-1.amazonses.com>
-Date:   Mon, 9 May 2022 18:14:54 +0000
+        Mon, 9 May 2022 15:44:28 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC68B17706D;
+        Mon,  9 May 2022 12:40:32 -0700 (PDT)
+Received: from zn.tnic (p5de8eeb4.dip0.t-ipconnect.de [93.232.238.180])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 8BA8B1EC0494;
+        Mon,  9 May 2022 21:40:26 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1652125226;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=AoQvWKpDU2P9lFLXU3ELvlGMrlfk5EWwWkEu8isye3M=;
+        b=DQuH+dnuMo1XHCdc4ZpdApzMaFQlpLltEumRjTO50gpT+YcXRQwzFwSB5wJ2DyhUWQ/HFz
+        KZ50vFjPK3Eo8Oo0PNr+rFPebrt+K0CRHG4cS6DBsf7DllxhAOeBaeyMX23V+ApO6wOyW5
+        8OnulC85syhrH2iJiEvQ95QtbvZ2bOo=
+Date:   Mon, 9 May 2022 21:40:28 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Jonathan McDowell <noodles@fb.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        James Morris <jmorris@namei.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>
+Subject: Re: [PATCH v2] Carry forward IMA measurement log on kexec on x86_64
+Message-ID: <YnluLIEN9HH+QvrD@zn.tnic>
+References: <YmKyvlF3my1yWTvK@noodles-fedora-PC23Y6EG>
+ <YmgjXZphkmDKgaOA@noodles-fedora-PC23Y6EG>
+ <YnjvfNs5pgWiomWx@noodles-fedora.dhcp.thefacebook.com>
+ <0960C132-581C-4881-8948-C566657C3998@alien8.de>
+ <YnlTaawPH6T7LOUs@noodles-fedora.dhcp.thefacebook.com>
+ <YnlY87wm6WmQjs7m@zn.tnic>
+ <YnlgTCyB2ciaD1so@noodles-fedora.dhcp.thefacebook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-From:   Martin Raiber <martin@urbackup.org>
-Subject: Re: [RFC PATCH] ubd: add io_uring based userspace block driver
-To:     Ming Lei <ming.lei@redhat.com>, Jens Axboe <axboe@kernel.dk>
-Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        io-uring@vger.kernel.org,
-        Gabriel Krisman Bertazi <krisman@collabora.com>,
-        ZiyangZhang <ZiyangZhang@linux.alibaba.com>,
-        Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
-References: <20220509092312.254354-1-ming.lei@redhat.com>
-In-Reply-To: <20220509092312.254354-1-ming.lei@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Feedback-ID: 1.eu-west-1.zKMZH6MF2g3oUhhjaE2f3oQ8IBjABPbvixQzV8APwT0=:AmazonSES
-X-SES-Outgoing: 2022.05.09-54.240.4.5
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YnlgTCyB2ciaD1so@noodles-fedora.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09.05.2022 11:23 Ming Lei wrote:
-> This is the driver part of userspace block driver(ubd driver), the other
-> part is userspace daemon part(ubdsrv)[1].
->
-> The two parts communicate by io_uring's IORING_OP_URING_CMD with one
-> shared cmd buffer for storing io command, and the buffer is read only for
-> ubdsrv, each io command is indexed by io request tag directly, and
-> is written by ubd driver.
->
-> For example, when one READ io request is submitted to ubd block driver, ubd
-> driver stores the io command into cmd buffer first, then completes one
-> IORING_OP_URING_CMD for notifying ubdsrv, and the URING_CMD is issued to
-> ubd driver beforehand by ubdsrv for getting notification of any new io request,
-> and each URING_CMD is associated with one io request by tag.
->
-> After ubdsrv gets the io command, it translates and handles the ubd io
-> request, such as, for the ubd-loop target, ubdsrv translates the request
-> into same request on another file or disk, like the kernel loop block
-> driver. In ubdsrv's implementation, the io is still handled by io_uring,
-> and share same ring with IORING_OP_URING_CMD command. When the target io
-> request is done, the same IORING_OP_URING_CMD is issued to ubd driver for
-> both committing io request result and getting future notification of new
-> io request.
->
-> Another thing done by ubd driver is to copy data between kernel io
-> request and ubdsrv's io buffer:
->
-> 1) before ubsrv handles WRITE request, copy the request's data into
-> ubdsrv's userspace io buffer, so that ubdsrv can handle the write
-> request
->
-> 2) after ubsrv handles READ request, copy ubdsrv's userspace io buffer
-> into this READ request, then ubd driver can complete the READ request
->
-> Zero copy may be switched if mm is ready to support it.
->
-> ubd driver doesn't handle any logic of the specific user space driver,
-> so it should be small/simple enough.
->
-> [1] ubdsrv
-> https://github.com/ming1/ubdsrv/commits/devel
+On Mon, May 09, 2022 at 06:41:17PM +0000, Jonathan McDowell wrote:
+> I'm not tied to setup_data but given the concerns I raise above with
+> device tree on x86 and the need to handle this in the kernel it seemed
+> like a reasonable first approach. You seem to be saying it's not and
+> either adding the device tree infrastructure or doing a command line
+> hack would be preferable?
 
-Great! It would be interesting to do some tests on how much faster (IOPS) this is than doing this via fuse: https://github.com/uroni/fuseuring
+All I'm doing is asking more questions to make you give more details as
+to why you wanna do it this way. I'll take a detailed look tomorrow but
+it looks ok from a quick glance.
 
+Thx.
 
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
