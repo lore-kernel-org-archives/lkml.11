@@ -2,101 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E45ACC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 12:21:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DBD2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 12:22:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234358AbiEIMZL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 08:25:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56228 "EHLO
+        id S234338AbiEIM0q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 08:26:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234314AbiEIMZB (ORCPT
+        with ESMTP id S234277AbiEIM0n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 08:25:01 -0400
-Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C08152573E3;
-        Mon,  9 May 2022 05:21:07 -0700 (PDT)
-Received: by mail-oi1-f169.google.com with SMTP id v65so14916826oig.10;
-        Mon, 09 May 2022 05:21:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=eaGt5OyolhplGC6uOu4KJBZNOPQ6VU39njlT+3mB1VQ=;
-        b=a4YiBcQT29zWFdXUbOLhZeGpuX434Hlp4O+8xXADEcJ52B/HT5N0JvVyckFg01leww
-         J8Ko6q9FsCiswpGhrRRBXqx3ZH9k0ZKd0s70K4ljzUThfNDwbE+YKNV5VspFCdXme6R3
-         ANGFjswnuJD1EMZKc3VvZoX08GYvac+NUC1vLE/V6AIEW0kndrASS9k2fRr8YHrNjvah
-         3M+Pmr3znA7B30kgwEcZrTluOxEJH2n/M5bcRuXr7unEN/rt7XVKdbc1So52zsbi1W4J
-         dI4PJZnkMuX6jQaTliw0UWD6NVYIE/XOtKq41CFu2PvHLfGkhNZ3p4OxAYY0rSDZzPtY
-         0Gwg==
-X-Gm-Message-State: AOAM530B078SMYZnJAfM4g9by561p4XG8GE1+uN8AvUq1d2QCUhWDl3V
-        4Kw1at4bZx4x0qByw7F8pbCGrwX7Hg==
-X-Google-Smtp-Source: ABdhPJzk6aBwaYU1fUd7SMLss146WuFEPgsGy12u0eTEobAY+83Gk+1qrXHoH6d1k/T7lx1IxVyHOg==
-X-Received: by 2002:a05:6808:10d6:b0:326:d4b2:83b with SMTP id s22-20020a05680810d600b00326d4b2083bmr1150047ois.92.1652098867014;
-        Mon, 09 May 2022 05:21:07 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id l21-20020a544515000000b00325cda1ffb8sm4241847oil.55.2022.05.09.05.21.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 05:21:06 -0700 (PDT)
-Received: (nullmailer pid 3576233 invoked by uid 1000);
-        Mon, 09 May 2022 12:20:58 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Sebastian Ene <sebastianene@google.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Guenter Roeck <linux@roeck-us.net>,
-        Arnd Bergmann <arnd@arndb.de>, maz@kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        will@kernel.org, qperret@google.com, linux-kernel@vger.kernel.org,
-        Dragan Cvetic <dragan.cvetic@xilinx.com>
-In-Reply-To: <20220509091103.2220604-2-sebastianene@google.com>
-References: <20220509091103.2220604-1-sebastianene@google.com> <20220509091103.2220604-2-sebastianene@google.com>
-Subject: Re: [PATCH v5 1/2] dt-bindings: vcpu_stall_detector: Add qemu,vcpu-stall-detector compatible
-Date:   Mon, 09 May 2022 07:20:58 -0500
-Message-Id: <1652098858.579388.3576232.nullmailer@robh.at.kernel.org>
+        Mon, 9 May 2022 08:26:43 -0400
+Received: from mout-xforward.gmx.net (mout-xforward.gmx.net [82.165.159.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A269184311
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 05:22:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1652098968;
+        bh=yustGOfw6oNT71WmQfTQNYiblyjxN+Vm25SoRTUJDHQ=;
+        h=X-UI-Sender-Class:Date:To:From:Subject;
+        b=UyGsFUjlbDo7HqK5m4BqJuOhMf7O6O5z4e3WFb6gNPIpHAsawLhBBW4iRxqry6UNB
+         KuxRUBimPJOXxXxJ11NiP4Y0PGgCi5FUsnLve267xXENjaxBCl2lIQs4SKkJE8lBS/
+         F95YQzS87WVM03hWsFfePL73sCNjWXl2uBBTVgIs=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [10.11.110.3] ([143.244.37.12]) by mail.gmx.net (mrgmx105
+ [212.227.17.174]) with ESMTPSA (Nemesis) id 1M9nxt-1nkTVN0v4v-005uD4 for
+ <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 14:22:48 +0200
+Message-ID: <51e141aa-1046-edda-580a-30b05f15fa17@gmx.com>
+Date:   Mon, 9 May 2022 12:22:47 +0000
+MIME-Version: 1.0
+To:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+From:   "Artem S. Tashkinov" <aros@gmx.com>
+Autocrypt: addr=aros@gmx.com; keydata=
+ xjMEYmhJvxYJKwYBBAHaRw8BAQdADk5pbZqvkTjYgJNhuhFnEhGm3wf0wlkSvA1WW6e7PUrN
+ IUFydGVtIFMuIFRhc2hraW5vdiA8YXJvc0BnbXguY29tPsKPBBMWCAA3FiEEj8ke+4cCTXTh
+ Yr4cMvC8tezQK8cFAmJoSb8FCQAnjQACGwMECwkIBwUVCAkKCwUWAgMBAAAKCRAy8Ly17NAr
+ x2A1AP9wVrFztQcuTnO/yDzisQyZsRu8kf7zVcEhAqEOdyLiMwEA6duhPI9mrzMpGbrVbv8m
+ o0qOdDlsNWLHcFO9p0qxiQnOOARiaEm/EgorBgEEAZdVAQUBAQdA+jFDQNBNlZr55n45Xdis
+ baC3LHPn3V7+1FW8hJfOETIDAQgHwn4EGBYIACYWIQSPyR77hwJNdOFivhwy8Ly17NArxwUC
+ YmhJvwUJACeNAAIbDAAKCRAy8Ly17NArx9uPAQDCxAWW7bF3RgiG065nEYYyIbqEziys+sPz
+ 5fDG+HahXAD+IVVf6Lh9DYeivQN12kSEssZhfy2/qHkmzt+69p2f7AI=
+Subject: Linux swap file and LUKS
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
+X-Provags-ID: V03:K1:LNGJv9+PdFZCXYzeb9YEnWhYhhVbbxMjk2uC/QB+S9RgO+mGTbv
+ 5ysFeu/M392wXx8QegWC5G8C1K96skOqbw6bJgJ0zS3nXd5XhO7vVLn0liSyW2A8VbvmbzM
+ pZDuqryjRDIdpzuo4Z3ggwMcfkfD1zI5/4ac5p0mIMRmv57e0PCvLRV69sdSw/4CxOGUSi3
+ 0Y8ofASaRx60w/CT4upQA==
+X-UI-Out-Filterresults: junk:10;V03:K0:fBd6lOt0X1c=:eNvVpbnPIVtSKIK33Tgu0nq4
+ I+wvsJAhsOsBACBwYGS8XxtOsOllYLxuzUJ0LRsTvyn26DE2vsacLCX1YVL2ljdlTwKNACyya
+ F0ZJGCjDTledUFgcIGQE/pnhHtFK0ED+jvgGdJfK0EUVr8JA/LzQbKjK/0PnpYJWVjGAvk9hC
+ tgSxUyY4sw71IZ8w8AuH72pNOsqXtLUok6pQmTxtWPrpawjw/WT+KAzlgAB7EH1C39e0++UqJ
+ fQqKuyoNoW2z2anFVJFkYD+28pYw7ehgtIHHi6ER6unHyhx5yxNf10/GwlSgjNcOCEwFQUXFJ
+ fhWL/ckz2O70ttwtwh2RL9bnShpcOwETTHodqb4SEe4bOYUCbCh+J70JfbBi6UXjssk/JfYTj
+ eDK2hfx95XMPfMF2dO6uA4EsrC1/1i9BAXh7QDuBftUG8zX29CDq3/Gf36FNwghZMnNkMZlQ+
+ sUczrppInpNmUfUGnncIkJ4wzKGCFCXWEJcJrTGiF/SVbU55D2BQ7D6sw/aNEco+Zt+glR3Ty
+ jJYJO/yhw5eZyJ6oPsqkPxUGFWFVPlDWnE1uRNOPz/5ogZcqgK5FEmfKVOoHw57Q3yMbZ63aO
+ ypc1nBOAy6hggl/0pe3EtOYRF3NZ8VWlxb5hfEEY4pXO7oQqaC3YfteVfqVjBJDHbSJ/5hxPK
+ du9nfEyu9bcdL7TTl5jU3UAZ6nQmrSjcH/uCm+BGx+uumblU/ynkCFt4v38aF9u4ErIOEr907
+ 2C7oVoa5JHEj+qcaGDoDLUW+6zY5Ixe4MadP9jY7NujAxzYpuP8IveWjPrdXuGtszsrh9+05X
+ QpPdE1EKEz7keYsnQV7C5IVWXpgbAF5zHeZtA6f00umiPvALe0cQHxfnexlRLxjYjqy61JdTh
+ B5oi85alRJGgX005Yo142ztjQj7rnLCRPiaF5G+8QBwcydBAfHS/xuVLCmlLY6d7pLy2mSDgU
+ 6QaBuk0zKewkWdTDa6ImPClIiXEhS+sNNs9PsKKeUqixSDxi/GAa2AGeMBwojNt7Tt6eLsk6s
+ cD16x6h9H06vclV9zdgwGUK3+DRlR39m9vcskwpYBFDLlIngPoI9G2CTtGxu68pMyOI2s6pic
+ dRGB3iP59VMaMv7uE6V7XYDplpcs5ZsAD
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 09 May 2022 09:11:04 +0000, Sebastian Ene wrote:
-> The VCPU stall detection mechanism allows to configure the expiration
-> duration and the internal counter clock frequency measured in Hz.
-> Add these properties in the schema.
-> 
-> While this is a memory mapped virtual device, it is expected to be loaded
-> when the DT contains the compatible: "qemu,vcpu-stall-detector" node.
-> In a protected VM we trust the generated DT nodes and we don't rely on
-> the host to present the hardware peripherals.
-> 
-> Signed-off-by: Sebastian Ene <sebastianene@google.com>
-> ---
->  .../bindings/misc/vcpu_stall_detector.yaml    | 47 +++++++++++++++++++
->  1 file changed, 47 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/misc/vcpu_stall_detector.yaml
-> 
-
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
-
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/misc/vcpu_stall_detector.yaml: properties:timeout-sec: '$ref' should not be valid under {'const': '$ref'}
-	hint: Standard unit suffix properties don't need a type $ref
-	from schema $id: http://devicetree.org/meta-schemas/core.yaml#
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/misc/vcpu_stall_detector.yaml: ignoring, error in schema: properties: timeout-sec
-Documentation/devicetree/bindings/misc/vcpu_stall_detector.example.dtb:0:0: /example-0/vmwdt@9030000: failed to match any schema with compatible: ['qemu,vcpu-stall-detector']
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+SGVsbG8sDQoNClRoZSBtYW4tcGFnZSBvZiBzd2Fwb24gc2F5czoNCg0KICAgICBUaGUgc3dh
+cCBmaWxlIGltcGxlbWVudGF0aW9uIGluIHRoZSBrZXJuZWwgZXhwZWN0cyB0byBiZSBhYmxl
+IHRvIA0Kd3JpdGUgdG8gdGhlIGZpbGUgZGlyZWN0bHksIHdpdGhvdXQgdGhlIGFzc2lzdGFu
+Y2Ugb2YgdGhlIGZpbGVzeXN0ZW0uDQoNCkRvZXMgdGhhdCBtZWFuIHRoYXQgaWYgdGhlIHVz
+ZXIgaGFzIGEgTFVLUyB2b2x1bWUgd2l0aCBhIHBhcnRpdGlvbiBvbiANCml0LCBpbiB0aGUg
+ZW5kIHRoZSBzd2FwZmlsZSBvbiB0aGlzIHBhcnRpdGlvbiB3aWxsIGVuZCB1cCB1bmVjcnlw
+dGVkPw0KDQpDb3VsZCBzb21lb25lIHBsZWFzZSBleHBsYWluIGl0IGluIG1vcmUgZGV0YWls
+cz8NCg0KUmVnYXJkcywNCkFydGVtDQo=
