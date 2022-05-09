@@ -2,106 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65A1BC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82AEFC43217
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:34:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238367AbiEIJfy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 05:35:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53222 "EHLO
+        id S235653AbiEIJel (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 05:34:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237985AbiEIJDO (ORCPT
+        with ESMTP id S238516AbiEIJKq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 05:03:14 -0400
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39AAB1F2D4E;
-        Mon,  9 May 2022 01:59:20 -0700 (PDT)
-Received: (Authenticated sender: gregory.clement@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 4040060007;
-        Mon,  9 May 2022 08:58:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1652086709;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=U5akIdDJMA918kHVeaD7i8OAyc7tkvrEggEeV1bPsrU=;
-        b=iKuTHEQnWjVPXjepUTc+lXdj3UOlHjvQqyp6A+KGvVdAoOfTv5cQYMWxYE/+5vvbatIdmC
-        MKeceG5AJh86KzuemZUzBCFSdOIU9x30h+6rtJEyHz4AD3wQLzogKPoJ6go/Oq5RKUggsS
-        M+oUM9vFXMsvD7lfFru9oQsazbI/RKiomPtNDFvqJYDVNXEbKhoBqi6RmUkfjXlkYiF8ns
-        OCMobAtojXyx9h4J3qYLjGKbuRnyGFg78WmjOvQGjDfW94fuZVGdo5yJQciWaLJIqOCm5c
-        ypXrRknf0Ccnjvhj0c5aWyIycEayIgQEiBhYIHRaO2ImGbMktqXl6vs44r54hg==
-From:   Gregory CLEMENT <gregory.clement@bootlin.com>
-To:     Robert Marko <robert.marko@sartura.hr>, andrew@lunn.ch,
-        sebastian.hesselbarth@gmail.com, robh+dt@kernel.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, pali@kernel.org
-Cc:     Robert Marko <robert.marko@sartura.hr>
-Subject: Re: [PATCH v3 2/3] arm64: dts: marvell: espressobin-ultra: add PHY
- and switch reset pins
-In-Reply-To: <20210928170919.691845-2-robert.marko@sartura.hr>
-References: <20210928170919.691845-1-robert.marko@sartura.hr>
- <20210928170919.691845-2-robert.marko@sartura.hr>
-Date:   Mon, 09 May 2022 10:57:33 +0200
-Message-ID: <87h75zrsle.fsf@BL-laptop>
+        Mon, 9 May 2022 05:10:46 -0400
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1099637BE6;
+        Mon,  9 May 2022 02:06:50 -0700 (PDT)
+Received: by mail-io1-xd32.google.com with SMTP id c125so14585402iof.9;
+        Mon, 09 May 2022 02:06:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=8n+UZz9zrRIKwTdPcPWk2HfhPy3k0sFBqqr8zGSJSl4=;
+        b=UN/WwazTyvjfSXpC3RwEF1N+VP/O30WhKkOKb/5LmJ6iNs+PfRuSL1S9SAeNkwyATc
+         0lF9TZtIQ1wLZqHRlJd93GfJxYODd84iC9HffRl+2D/n/EScTq0WbFp0wMauRSiuLG8O
+         wqnPWMrZiYbclXdn/SkV2VpCXS7s1Xc+GF3obEOM9Kymlf97+PolnAjK/3suIYDtOA0P
+         6tjbdbaqii30neRcN1Id0ItDqF0ADcmgAt06EyCG8EFSXWw6ou0mRuoEQKBMU1qBDIqO
+         k4l/hJ5btvnzkAqVjDnHtKhzs73PXu54DKB2NpJgJMrlJYUa7uZlKgFFChpDebXsuyKc
+         ivgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=8n+UZz9zrRIKwTdPcPWk2HfhPy3k0sFBqqr8zGSJSl4=;
+        b=01RC78xp0RVLDm8UkE/Dkl1IpqHb/RqofBNWrCgfXk8YhGBIQWkBGzhf+7+q4dKKV7
+         sw92edi7g1WoCKlYZR2SG0UxVrzhyTT9a558cuAjRxkpk13tMFN8Rpjr4Er9A036xebh
+         yVWtxmsYPB75D3Py/0zvRhyUJu4WrUdoFCqFpaB7mzUvNijuUS/QyCtUEL0/XN4RTDXi
+         aJslWCs4m7hQJ+XCY1CZ1hQ8cLebYLICgPIbUe3Nj7DIMZ62qb7+Lxh9QsUHoXT14Evv
+         BsZIYE/hmPc/7U6OwrYr+ibokQ2hQF1eXWT9pb+zVXnfmcA9bhjc1bwplk7yAWmtqT3A
+         vygg==
+X-Gm-Message-State: AOAM5314Ql+E6VaJOWHhI0D8T/4vye9IqdYTV1Xd84RyDEDhGqpgdcQ1
+        9uvSLJyZhsKfXzy/QPC9prkP/CcZueOJvyUAGW7bQ/uRfaA=
+X-Google-Smtp-Source: ABdhPJwWLNtuNKAMqgJzLLlmJTNRSjpeugL9SrdzC+W672o06pMtBK1/kujW6Pcx0SJH9uJEyA8SDUBW3rhXJDjh5JI=
+X-Received: by 2002:a05:6638:16d2:b0:32b:ebfe:8672 with SMTP id
+ g18-20020a05663816d200b0032bebfe8672mr3066459jat.199.1652087209496; Mon, 09
+ May 2022 02:06:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20220506160513.523257-1-mic@digikod.net>
+In-Reply-To: <20220506160513.523257-1-mic@digikod.net>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Mon, 9 May 2022 11:06:38 +0200
+Message-ID: <CANiq72=SWen7sJxvQGD5N=ur-gpOiFGeHHfjegHxjaHfN_i95Q@mail.gmail.com>
+Subject: Re: [PATCH v1 0/7] Landlock: Clean up coding style with clang-format
+To:     =?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mic@digikod.net>
+Cc:     James Morris <jmorris@namei.org>,
+        "Serge E . Hallyn" <serge@hallyn.com>,
+        Kees Cook <keescook@chromium.org>,
+        Konstantin Meskhidze <konstantin.meskhidze@huawei.com>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Paul Moore <paul@paul-moore.com>,
+        Shuah Khan <shuah@kernel.org>, Tom Rix <trix@redhat.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-security-module <linux-security-module@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Robert Marko <robert.marko@sartura.hr> writes:
+Hi Micka=C3=ABl,
 
-> Both the Topaz switch and 88E1512 PHY have their reset and interrupts
-> connected to the SoC.
+(Answering in v1 since I want to quote something in this cover letter)
+
+On Fri, May 6, 2022 at 6:03 PM Micka=C3=ABl Sala=C3=BCn <mic@digikod.net> w=
+rote:
 >
-> So, define the Topaz and 88E1512 reset pins in the DTS.
->
-> Defining the interrupt pins wont work as both the 88E1512 and the
-> Topaz switch uses active LOW IRQ signals but the A37xx GPIO controller
-> only supports edge triggers.
-> 88E1512 would require special setup anyway as its INT pin is shared with
-> the LED2 and you first need to configure it as INT.
->
-> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> I used a simple coding style for the initial Landlock code.  However,
+> this may be subject to different interpretations.  To avoid relying
+> on tacit knowledge or text editors for these kind of rules, let's
+> automate it as much as possible thanks to clang-format.  This makes the
+> code formatting simple, consistent and impersonal.
 
+Thanks for moving your subsystem to `clang-format`. I am glad you
+found it useful.
 
-Applied on mvebu/dt64
+> Several versions of clang-format can be use but they may have (small)
+> different behaviors for undefined/new configuration parts.  After
+> testing different versions, I picked clang-format-14 which is relatively
+> new and fixes a bug present in version 11 to 13 (visible in the Landlock
+> formatted code).
 
-Thanks,
+Which was the bug?
 
-Gregory
-
-
-> ---
->  arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts | 4 ++++
->  1 file changed, 4 insertions(+)
->
-> diff --git a/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts b/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
-> index 610ff6f385c7..7c786d218f1b 100644
-> --- a/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
-> +++ b/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
-> @@ -114,12 +114,16 @@ &usb3 {
->  &mdio {
->  	extphy: ethernet-phy@1 {
->  		reg = <1>;
-> +
-> +		reset-gpios = <&gpionb 2 GPIO_ACTIVE_LOW>;
->  	};
->  };
->  
->  &switch0 {
->  	reg = <3>;
->  
-> +	reset-gpios = <&gpiosb 23 GPIO_ACTIVE_LOW>;
-> +
->  	ports {
->  		switch0port1: port@1 {
->  			reg = <1>;
-> -- 
-> 2.31.1
->
-
--- 
-Gregory Clement, Bootlin
-Embedded Linux and Kernel engineering
-http://bootlin.com
+Cheers,
+Miguel
