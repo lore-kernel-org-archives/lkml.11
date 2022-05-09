@@ -2,138 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85C72C35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 944BFC4707F
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:34:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238066AbiEIJe3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 05:34:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47122 "EHLO
+        id S238506AbiEIJgY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 05:36:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237486AbiEIJap (ORCPT
+        with ESMTP id S235313AbiEIJ1I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 05:30:45 -0400
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF3E36E8F7;
-        Mon,  9 May 2022 02:26:51 -0700 (PDT)
-Received: (Authenticated sender: gregory.clement@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 010901BF207;
-        Mon,  9 May 2022 09:26:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1652088408;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Cdjhq5fJB25B8P8JUsIktHRDMTHRFBnJXY7MYLgwfNA=;
-        b=Q9KAGW10Fdlstaz3h58sRvOXgIV8Gn0oa5TUa1WGO9UpY0+AfBUcyDK6A1Quijpm771JxL
-        JahcqFG05SQs8gdCOU9OMU3cPO3gDV8lNzxkqcJIBYK+Xx5+uJd9vEpHMFz0ytTvY4th0D
-        rCcxxs248tJEZfbTjFBf9yuqwzbGuDQiiil34xLflKKmdoa5/KNPoxzSDsRfWX18BzycGS
-        jcQXMaLExHxWgJvQTfeh4t+VtG3sc2a3fRdAMXnpcxQyHsYHaQkH6qjnU+fCnSyP076jsZ
-        a9c6LUDBpPYq5cKetO+UvwhmwmK9iqvwwnBrfGavnhOARObXknHs6D3Fn+miCg==
-From:   Gregory CLEMENT <gregory.clement@bootlin.com>
-To:     Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        ulf.hansson@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org,
-        huziji@marvell.com, andrew@lunn.ch, sebastian.hesselbarth@gmail.com
-Cc:     linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>
-Subject: Re: [PATCH v5 1/2] arm64: dts: marvell: Update sdhci node names to
- match schema
-In-Reply-To: <20220329220544.2132135-2-chris.packham@alliedtelesis.co.nz>
-References: <20220329220544.2132135-1-chris.packham@alliedtelesis.co.nz>
- <20220329220544.2132135-2-chris.packham@alliedtelesis.co.nz>
-Date:   Mon, 09 May 2022 11:26:35 +0200
-Message-ID: <87bkw7rr90.fsf@BL-laptop>
+        Mon, 9 May 2022 05:27:08 -0400
+Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70A491EEE02;
+        Mon,  9 May 2022 02:23:14 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id E5E6F3200915;
+        Mon,  9 May 2022 05:23:09 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Mon, 09 May 2022 05:23:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm3; t=1652088189; x=
+        1652174589; bh=Ry+sG7AeUuuSUyeaD2CqDfW56d5oAW3SwnbrciZOPu8=; b=b
+        dkILA9FZ2V2Of/AuvGmRShHZ8HV0pudACEbHev17TrYQVZIL2zudheJnxnVvuXY1
+        GDtkOfAYt3C+X5PCgZs5qCrejhkhf+d3Ovmfi067Tos61i8k6blm4XLsj43abDOS
+        ChWFqcoJNjBzXD03QIYPmPemAOmjICwSg7WenPGkcWZ91egni2UC0g4hRCI+yfkk
+        mt1aVRQisb5sV7j1HYAlVfkzjjeYcsz/mh+d2QIE8YxdDnIwmPOcDocJrv0i/gng
+        w7lnWzCD59uotp8ewhX5ZIfJB19NE6MPnakXoyqt6dZwXn+aVhSwDQVPmSgFT0wx
+        BmJJ7r421yIZB3SZSSM4g==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; t=1652088189; x=1652174589; bh=Ry+sG7AeUuuSU
+        yeaD2CqDfW56d5oAW3SwnbrciZOPu8=; b=T2Ij/FDU1n1eCko98Av+rvmtnY2kG
+        N3Pbb/B0+04qsCq0L1whc7KLszmTQDeLv9yeNo5Q4E2qIry1QhiU/lbHns1zAt7L
+        IwRy5oxXDeCpYWg6cWnZpbPl1zG7PbwJeqfS8kRuCqjusGeci7PLZ/9w1cS5c8Ql
+        5lOP5aWb5Dhjd8WgnexuaCjXQ3ZQuJm/GeDP5J0n3u7I4QE9CS3gFwyueY1JTv5V
+        GkitRW7rmYZrUVoCAeiJnHAHdwTw/urAj32z2VEjC+n113ldhbqKZtwsDrt529aW
+        NSmwbY9o0rain9KTuRcn136U8SqsEKEoxRTT2/b+ArHn0LkTD9ag78L9w==
+X-ME-Sender: <xms:fd14YuKh5KxGK6GvdRXY_15ewX9BbTykIyUFFhXDGjViEB8ARyjwQA>
+    <xme:fd14YmIVGIfd3Rh6uzGtmsjxTICWV66k-skXiLYgj5B-BbTGz057XEA7XNOqBzd0B
+    NoBcnIOCeQfws8R1vU>
+X-ME-Received: <xmr:fd14Yut-L9KwQkkgp_UzG2siIEz9w0SNxzicKwGkZWHppbHZFiQCiW30X0KY5EMRYXcVPrYgdCR-E6Ujri7t4HeChHnWv08OUi7ensg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfeelgddugecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvvefukfhfgggtugfgjgesthhqredttddtvdenucfhrhhomhepofgrgihi
+    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
+    htthgvrhhnpeetgfelgefggeekkefggfeludeiudffjeffgeevveekjedukedtudeuteef
+    teefgfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hmrgigihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:fd14YjaYxzmOmOV5koXZ5qJFoj64d7iI-AaPJmeKAyZ0cF3Sk_F5Qg>
+    <xmx:fd14YlYXyE6KaXrkoCJVcIDeNzdVToBvqKHz47YRk65sMQ76zeaCgQ>
+    <xmx:fd14YvDPV-jU1B9NaFDHL0ZTp0pp7a31ghhh0XjXjKhNGP9n-9ZasQ>
+    <xmx:fd14Ynkya5CXWwUIPy7ND0GIy_vPeS241DQ5hdRAjlP7fEGp3np8CQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 9 May 2022 05:23:08 -0400 (EDT)
+Date:   Mon, 9 May 2022 11:23:06 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     qianfanguijin@163.com, linux-sunxi@lists.linux.dev,
+        Rob Herring <robh+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
+Subject: Re: [PATCH v1] drivers: cpufreq: sun8i-r40: Add cpufreq support
+Message-ID: <20220509092306.22ttfunrislztbvh@houat>
+References: <20220509084853.17068-1-qianfanguijin@163.com>
+ <20220509091125.tps3zwaq276jlgh3@vireshk-i7>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220509091125.tps3zwaq276jlgh3@vireshk-i7>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Chris Packham <chris.packham@alliedtelesis.co.nz> writes:
+Hi,
 
-> Update the node names of the sdhci@ interfaces to be mmc@ to match the
-> node name enforced by the mmc-controller.yaml schema.
->
-> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
-> Acked-by: Krzysztof Kozlowski <krzk@kernel.org>
+On Mon, May 09, 2022 at 02:41:25PM +0530, Viresh Kumar wrote:
+> On 09-05-22, 16:48, qianfanguijin@163.com wrote:
+> > From: qianfan Zhao <qianfanguijin@163.com>
+> >=20
+> > OPP table value is get from allwinner lichee 3.10 kernel.
+> >=20
+> > Signed-off-by: qianfan Zhao <qianfanguijin@163.com>
+> > ---
+> >  arch/arm/boot/dts/sun8i-r40.dtsi     | 47 ++++++++++++++++++++++++++++
+> >  drivers/cpufreq/cpufreq-dt-platdev.c |  1 +
+> >  2 files changed, 48 insertions(+)
+>=20
+> Applied. Thanks.
 
-Applied on mvebu/dt64
+Shouldn't you wait for the maintainers feedback for the DT bits at least?
 
-Thanks,
-
-Gregory
-> ---
->
-> Notes:
->     This has been sent separately [1] but on Krzysztof's advice I've
->     included it in v3 of this series.
->     
->     [1] -  https://lore.kernel.org/linux-arm-kernel/20220321212007.2961581-1-chris.packham@alliedtelesis.co.nz/
->     Changes in v5:
->     - None
->     Changes in v4:
->     - None
->     Changes in v3:
->     - New
->
->  arch/arm64/boot/dts/marvell/armada-37xx.dtsi  | 4 ++--
->  arch/arm64/boot/dts/marvell/armada-ap80x.dtsi | 2 +-
->  arch/arm64/boot/dts/marvell/armada-cp11x.dtsi | 2 +-
->  3 files changed, 4 insertions(+), 4 deletions(-)
->
-> diff --git a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
-> index 30233de58bb3..78adb803df26 100644
-> --- a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
-> +++ b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
-> @@ -434,7 +434,7 @@ rwtm: mailbox@b0000 {
->  				#mbox-cells = <1>;
->  			};
->  
-> -			sdhci1: sdhci@d0000 {
-> +			sdhci1: mmc@d0000 {
->  				compatible = "marvell,armada-3700-sdhci",
->  					     "marvell,sdhci-xenon";
->  				reg = <0xd0000 0x300>,
-> @@ -445,7 +445,7 @@ sdhci1: sdhci@d0000 {
->  				status = "disabled";
->  			};
->  
-> -			sdhci0: sdhci@d8000 {
-> +			sdhci0: mmc@d8000 {
->  				compatible = "marvell,armada-3700-sdhci",
->  					     "marvell,sdhci-xenon";
->  				reg = <0xd8000 0x300>,
-> diff --git a/arch/arm64/boot/dts/marvell/armada-ap80x.dtsi b/arch/arm64/boot/dts/marvell/armada-ap80x.dtsi
-> index 6614472100c2..a06a0a889c43 100644
-> --- a/arch/arm64/boot/dts/marvell/armada-ap80x.dtsi
-> +++ b/arch/arm64/boot/dts/marvell/armada-ap80x.dtsi
-> @@ -250,7 +250,7 @@ watchdog: watchdog@610000 {
->  				interrupts = <GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>;
->  			};
->  
-> -			ap_sdhci0: sdhci@6e0000 {
-> +			ap_sdhci0: mmc@6e0000 {
->  				compatible = "marvell,armada-ap806-sdhci";
->  				reg = <0x6e0000 0x300>;
->  				interrupts = <GIC_SPI 16 IRQ_TYPE_LEVEL_HIGH>;
-> diff --git a/arch/arm64/boot/dts/marvell/armada-cp11x.dtsi b/arch/arm64/boot/dts/marvell/armada-cp11x.dtsi
-> index 3bd2182817fb..d6c0990a267d 100644
-> --- a/arch/arm64/boot/dts/marvell/armada-cp11x.dtsi
-> +++ b/arch/arm64/boot/dts/marvell/armada-cp11x.dtsi
-> @@ -493,7 +493,7 @@ CP11X_LABEL(trng): trng@760000 {
->  			status = "okay";
->  		};
->  
-> -		CP11X_LABEL(sdhci0): sdhci@780000 {
-> +		CP11X_LABEL(sdhci0): mmc@780000 {
->  			compatible = "marvell,armada-cp110-sdhci";
->  			reg = <0x780000 0x300>;
->  			interrupts = <27 IRQ_TYPE_LEVEL_HIGH>;
-> -- 
-> 2.35.1
->
-
--- 
-Gregory Clement, Bootlin
-Embedded Linux and Kernel engineering
-http://bootlin.com
+Maxime
