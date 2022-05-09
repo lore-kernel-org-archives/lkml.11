@@ -2,137 +2,326 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F9ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:50:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EE98C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:50:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232237AbiEIJy2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 05:54:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56380 "EHLO
+        id S232730AbiEIJyj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 05:54:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238352AbiEIJpo (ORCPT
+        with ESMTP id S238436AbiEIJjg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 05:45:44 -0400
-Received: from mail-oo1-xc2d.google.com (mail-oo1-xc2d.google.com [IPv6:2607:f8b0:4864:20::c2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE0442300CE;
-        Mon,  9 May 2022 02:41:41 -0700 (PDT)
-Received: by mail-oo1-xc2d.google.com with SMTP id bm18-20020a056820189200b0035f7e56a3dfso423215oob.8;
-        Mon, 09 May 2022 02:41:41 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/2S52I/7rnpAZPZBnPAQrsYd+UWQvbEGjZCjMYNcziY=;
-        b=SaJcfRTmzrIU3dMkD+We4rkg1XIReS5NS79HAoK0MegmHM847XqmBul86CxGWtKcw/
-         3dQjG6Kp2K+wRg/d0soSR9LRkUU92Nk2go4EzSzDXyNlzmh93N9VEshjUhV0cSYCx3o3
-         +R2UXL7llLjz9s7jIpA+70uqNh4Z3WiLeMP9KBE06UHAbtRfv82efm7FkuEvZlt59aYn
-         1JVZYAdVYcnj/2gs7zjOMpUEyPQ/gttVpQ7wFVUCbPqz8/0B6Vz5trpnQCDbuNBX/kdF
-         /Jz1JnltJNTY5Dvr9u1Oj35tbZEJdiAQm8JEeGFiXbdcqKxrAXZG9R8lqbr7QGCCH3yR
-         WtkQ==
-X-Gm-Message-State: AOAM5313TKZow2GK4gpyqo2YszOhPSVhbKtlzdSwPZ2esBbYjqs1GVKY
-        uLZz/mb+vuG3HThcamHQ9bGwsleKIaja3Q==
-X-Google-Smtp-Source: ABdhPJxLFleYDC+MrO2l8La8D4Yi8Vw0mJAWR1LKq8xR8Eajy8FC/ZdWGe+byu4mPvRWtslo/pg5dw==
-X-Received: by 2002:a05:6820:1007:b0:35e:a77a:e712 with SMTP id v7-20020a056820100700b0035ea77ae712mr5488413oor.64.1652088906127;
-        Mon, 09 May 2022 02:35:06 -0700 (PDT)
-Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com. [209.85.210.54])
-        by smtp.gmail.com with ESMTPSA id 26-20020aca0d1a000000b00325d7b6cab8sm4158479oin.16.2022.05.09.02.35.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 02:35:06 -0700 (PDT)
-Received: by mail-ot1-f54.google.com with SMTP id z5-20020a9d62c5000000b00606041d11f1so9708000otk.2;
-        Mon, 09 May 2022 02:35:05 -0700 (PDT)
-X-Received: by 2002:a25:448:0:b0:64a:94d6:e420 with SMTP id
- 69-20020a250448000000b0064a94d6e420mr8778268ybe.89.1652088533360; Mon, 09 May
- 2022 02:28:53 -0700 (PDT)
+        Mon, 9 May 2022 05:39:36 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 765B063AF;
+        Mon,  9 May 2022 02:35:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1652088941; x=1683624941;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=syR8P+mt9QV8tucBeUOXhbjWsl8FndzQFvO1w3uDjk0=;
+  b=eTifIH9VIWOtAUOrkB02Qmu/zlr6DknyVt14HUwPFihxVNeUfx4O3fQ4
+   ccCggsA6FxB4GgI7x6MgRjqRH3upU2u7oybYqdqjBftQSTzyMVaDu/7Zz
+   acaeeTO0lPTEt2ULlBfp6+yVPwOJ9AQMb5hAojXXsgN6JtyyC2S4lghPt
+   4=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 09 May 2022 02:35:02 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 02:35:00 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 9 May 2022 02:35:01 -0700
+Received: from [10.216.5.153] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 9 May 2022
+ 02:34:55 -0700
+Message-ID: <6b37e1a4-e9f4-5812-f97e-b216a3828c65@quicinc.com>
+Date:   Mon, 9 May 2022 15:04:50 +0530
 MIME-Version: 1.0
-References: <20220507125443.2766939-1-daniel.lezcano@linexp.org> <20220507125443.2766939-3-daniel.lezcano@linexp.org>
-In-Reply-To: <20220507125443.2766939-3-daniel.lezcano@linexp.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 9 May 2022 11:28:41 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdW9A5NC64yzErhUZd5y88cHN0xgzOAiwzVcdYse9sdUsQ@mail.gmail.com>
-Message-ID: <CAMuHMdW9A5NC64yzErhUZd5y88cHN0xgzOAiwzVcdYse9sdUsQ@mail.gmail.com>
-Subject: Re: [PATCH v2 02/14] thermal/core: Add a thermal sensor structure in
- the thermal zone
-To:     daniel.lezcano@linexp.org
-Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Alexandre Bailon <abailon@baylibre.com>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Broadcom Kernel Team <bcm-kernel-feedback-list@broadcom.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Lukasz Luba <lukasz.luba@arm.com>,
-        =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-rpi-kernel@lists.infradead.org>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "open list:RENESAS R-CAR THERMAL DRIVERS" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "open list:SAMSUNG THERMAL DRIVER" 
-        <linux-samsung-soc@vger.kernel.org>,
-        "open list:TEGRA ARCHITECTURE SUPPORT" <linux-tegra@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH V5 2/5] mmc: sdhci: Capture eMMC and SD card errors
+Content-Language: en-US
+To:     Adrian Hunter <adrian.hunter@intel.com>, <ulf.hansson@linaro.org>,
+        <wsa+renesas@sang-engineering.com>,
+        <yoshihiro.shimoda.uh@renesas.com>, <linus.walleij@linaro.org>,
+        <digetx@gmail.com>, <briannorris@chromium.org>,
+        <quic_riteshh@quicinc.com>
+CC:     <linux-mmc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <quic_asutoshd@quicinc.com>, <quic_rampraka@quicinc.com>,
+        <quic_pragalla@quicinc.com>, <quic_sartgarg@quicinc.com>,
+        <quic_nitirawa@quicinc.com>, <quic_sayalil@quicinc.com>,
+        Liangliang Lu <quic_luliang@quicinc.com>,
+        "Bao D . Nguyen" <quic_nguyenb@quicinc.com>
+References: <1650902443-26357-1-git-send-email-quic_c_sbhanu@quicinc.com>
+ <1650902443-26357-3-git-send-email-quic_c_sbhanu@quicinc.com>
+ <d643e80e-a7a7-818f-5d75-09d198e1a5b3@intel.com>
+From:   "Sajida Bhanu (Temp)" <quic_c_sbhanu@quicinc.com>
+In-Reply-To: <d643e80e-a7a7-818f-5d75-09d198e1a5b3@intel.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniel,
+Hi,
 
-On Sat, May 7, 2022 at 3:02 PM Daniel Lezcano <daniel.lezcano@linexp.org> wrote:
-> The thermal sensor ops is directly defined in the thermal zone but
-> still its data structuration makes the sensor ops and the thermal zone
-> too much interconnected for multiple sensors per thermal zone.
+Thank you for the review.
+
+Please find the review comments.
+
+Thanks,
+
+Sajida
+
+On 4/26/2022 1:21 PM, Adrian Hunter wrote:
+> On 25/04/22 19:00, Shaik Sajida Bhanu wrote:
+>> Add changes to capture eMMC and SD card errors.
+>> This is useful for debug and testing.
+>>
+>> Signed-off-by: Liangliang Lu <quic_luliang@quicinc.com>
+>> Signed-off-by: Sayali Lokhande <quic_sayalil@quicinc.com>
+>> Signed-off-by: Bao D. Nguyen <quic_nguyenb@quicinc.com>
+>> Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
+> Looks good.  A couple of minor comments.
+Thank you
 >
-> Create a dedicated structure for the thermal sensor to be included in
-> the thermal zone structure so these components are clearly separated.
+>> ---
+>>   drivers/mmc/host/sdhci.c | 54 ++++++++++++++++++++++++++++++++++++------------
+>>   drivers/mmc/host/sdhci.h |  3 +++
+>>   include/linux/mmc/mmc.h  |  6 ++++++
+>>   3 files changed, 50 insertions(+), 13 deletions(-)
+>>
+>> diff --git a/drivers/mmc/host/sdhci.c b/drivers/mmc/host/sdhci.c
+>> index 2215202..1cda28ba 100644
+>> --- a/drivers/mmc/host/sdhci.c
+>> +++ b/drivers/mmc/host/sdhci.c
+>> @@ -224,6 +224,7 @@ void sdhci_reset(struct sdhci_host *host, u8 mask)
+>>   		if (timedout) {
+>>   			pr_err("%s: Reset 0x%x never completed.\n",
+>>   				mmc_hostname(host->mmc), (int)mask);
+>> +			sdhci_err_stats_inc(host, CTRL_TIMEOUT);
+>>   			sdhci_dumpregs(host);
+>>   			return;
+>>   		}
+>> @@ -1716,6 +1717,7 @@ static bool sdhci_send_command_retry(struct sdhci_host *host,
+>>   		if (!timeout--) {
+>>   			pr_err("%s: Controller never released inhibit bit(s).\n",
+>>   			       mmc_hostname(host->mmc));
+>> +			sdhci_err_stats_inc(host, CTRL_TIMEOUT);
+>>   			sdhci_dumpregs(host);
+>>   			cmd->error = -EIO;
+>>   			return false;
+>> @@ -1965,6 +1967,7 @@ void sdhci_enable_clk(struct sdhci_host *host, u16 clk)
+>>   		if (timedout) {
+>>   			pr_err("%s: Internal clock never stabilised.\n",
+>>   			       mmc_hostname(host->mmc));
+>> +			sdhci_err_stats_inc(host, CTRL_TIMEOUT);
+>>   			sdhci_dumpregs(host);
+>>   			return;
+>>   		}
+>> @@ -1987,6 +1990,7 @@ void sdhci_enable_clk(struct sdhci_host *host, u16 clk)
+>>   			if (timedout) {
+>>   				pr_err("%s: PLL clock never stabilised.\n",
+>>   				       mmc_hostname(host->mmc));
+>> +				sdhci_err_stats_inc(host, CTRL_TIMEOUT);
+>>   				sdhci_dumpregs(host);
+>>   				return;
+>>   			}
+>> @@ -3161,6 +3165,7 @@ static void sdhci_timeout_timer(struct timer_list *t)
+>>   	if (host->cmd && !sdhci_data_line_cmd(host->cmd)) {
+>>   		pr_err("%s: Timeout waiting for hardware cmd interrupt.\n",
+>>   		       mmc_hostname(host->mmc));
+>> +		sdhci_err_stats_inc(host, REQ_TIMEOUT);
+>>   		sdhci_dumpregs(host);
+>>   
+>>   		host->cmd->error = -ETIMEDOUT;
+>> @@ -3183,6 +3188,7 @@ static void sdhci_timeout_data_timer(struct timer_list *t)
+>>   	    (host->cmd && sdhci_data_line_cmd(host->cmd))) {
+>>   		pr_err("%s: Timeout waiting for hardware interrupt.\n",
+>>   		       mmc_hostname(host->mmc));
+>> +		sdhci_err_stats_inc(host, REQ_TIMEOUT);
+>>   		sdhci_dumpregs(host);
+>>   
+>>   		if (host->data) {
+>> @@ -3234,17 +3240,21 @@ static void sdhci_cmd_irq(struct sdhci_host *host, u32 intmask, u32 *intmask_p)
+>>   			return;
+>>   		pr_err("%s: Got command interrupt 0x%08x even though no command operation was in progress.\n",
+>>   		       mmc_hostname(host->mmc), (unsigned)intmask);
+>> +		sdhci_err_stats_inc(host, UNEXPECTED_IRQ);
+>>   		sdhci_dumpregs(host);
+>>   		return;
+>>   	}
+>>   
+>>   	if (intmask & (SDHCI_INT_TIMEOUT | SDHCI_INT_CRC |
+>>   		       SDHCI_INT_END_BIT | SDHCI_INT_INDEX)) {
+>> -		if (intmask & SDHCI_INT_TIMEOUT)
+>> +		if (intmask & SDHCI_INT_TIMEOUT) {
+>>   			host->cmd->error = -ETIMEDOUT;
+>> -		else
+>> +			sdhci_err_stats_inc(host, CMD_TIMEOUT);
+>> +		} else {
+>>   			host->cmd->error = -EILSEQ;
+>> -
+>> +			if (!mmc_op_tuning(host->cmd->opcode))
+>> +				sdhci_err_stats_inc(host, CMD_CRC);
+>> +		}
+>>   		/* Treat data command CRC error the same as data CRC error */
+>>   		if (host->cmd->data &&
+>>   		    (intmask & (SDHCI_INT_CRC | SDHCI_INT_TIMEOUT)) ==
+>> @@ -3266,6 +3276,8 @@ static void sdhci_cmd_irq(struct sdhci_host *host, u32 intmask, u32 *intmask_p)
+>>   			  -ETIMEDOUT :
+>>   			  -EILSEQ;
+>>   
+>> +		sdhci_err_stats_inc(host, AUTO_CMD);
+>> +
+>>   		if (sdhci_auto_cmd23(host, mrq)) {
+>>   			mrq->sbc->error = err;
+>>   			__sdhci_finish_mrq(host, mrq);
+>> @@ -3342,6 +3354,7 @@ static void sdhci_data_irq(struct sdhci_host *host, u32 intmask)
+>>   			if (intmask & SDHCI_INT_DATA_TIMEOUT) {
+>>   				host->data_cmd = NULL;
+>>   				data_cmd->error = -ETIMEDOUT;
+>> +				sdhci_err_stats_inc(host, CMD_TIMEOUT);
+>>   				__sdhci_finish_mrq(host, data_cmd->mrq);
+>>   				return;
+>>   			}
+>> @@ -3370,23 +3383,29 @@ static void sdhci_data_irq(struct sdhci_host *host, u32 intmask)
+>>   
+>>   		pr_err("%s: Got data interrupt 0x%08x even though no data operation was in progress.\n",
+>>   		       mmc_hostname(host->mmc), (unsigned)intmask);
+>> +		sdhci_err_stats_inc(host, UNEXPECTED_IRQ);
+>>   		sdhci_dumpregs(host);
+>>   
+>>   		return;
+>>   	}
+>>   
+>> -	if (intmask & SDHCI_INT_DATA_TIMEOUT)
+>> +	if (intmask & SDHCI_INT_DATA_TIMEOUT) {
+>>   		host->data->error = -ETIMEDOUT;
+>> -	else if (intmask & SDHCI_INT_DATA_END_BIT)
+>> +		sdhci_err_stats_inc(host, DAT_TIMEOUT);
+>> +	} else if (intmask & SDHCI_INT_DATA_END_BIT)
+>>   		host->data->error = -EILSEQ;
+> Seems to be missing here:
 >
-> Cc: Alexandre Bailon <abailon@baylibre.com>
-> Cc: Kevin Hilman <khilman@baylibre.com>
-> Cc; Eduardo Valentin <eduval@amazon.com>
-> Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
-
-Thanks for your patch!
-
->  drivers/thermal/rcar_gen3_thermal.c        |  6 +--
-
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-> --- a/include/linux/thermal.h
-> +++ b/include/linux/thermal.h
-> @@ -80,6 +80,11 @@ struct thermal_sensor_ops {
->         void (*critical)(struct thermal_zone_device *);
->  };
+> 		sdhci_err_stats_inc(host, DAT_CRC);
 >
-> +struct thermal_sensor {
-> +       struct thermal_sensor_ops *ops;
-> +       struct device *dev;
+> Also it would be nice to have braces {} on all arms of if-else-if
+> Can use checkpatch.pl --strict to see where
+Sure Thank you
+>
+>>   	else if ((intmask & SDHCI_INT_DATA_CRC) &&
+>>   		SDHCI_GET_CMD(sdhci_readw(host, SDHCI_COMMAND))
+>> -			!= MMC_BUS_TEST_R)
+>> +			!= MMC_BUS_TEST_R) {
+>>   		host->data->error = -EILSEQ;
+>> +		if (!mmc_op_tuning(host->cmd->opcode))
+>> +			sdhci_err_stats_inc(host, DAT_CRC);
+>> +	}
+>>   	else if (intmask & SDHCI_INT_ADMA_ERROR) {
+>>   		pr_err("%s: ADMA error: 0x%08x\n", mmc_hostname(host->mmc),
+>>   		       intmask);
+>>   		sdhci_adma_show_error(host);
+>> +		sdhci_err_stats_inc(host, ADMA);
+>>   		host->data->error = -EIO;
+>>   		if (host->ops->adma_workaround)
+>>   			host->ops->adma_workaround(host, intmask);
+>> @@ -3584,6 +3603,7 @@ static irqreturn_t sdhci_irq(int irq, void *dev_id)
+>>   	if (unexpected) {
+>>   		pr_err("%s: Unexpected interrupt 0x%08x.\n",
+>>   			   mmc_hostname(host->mmc), unexpected);
+>> +		sdhci_err_stats_inc(host, UNEXPECTED_IRQ);
+>>   		sdhci_dumpregs(host);
+>>   	}
+>>   
+>> @@ -3905,20 +3925,27 @@ bool sdhci_cqe_irq(struct sdhci_host *host, u32 intmask, int *cmd_error,
+>>   	if (!host->cqe_on)
+>>   		return false;
+>>   
+>> -	if (intmask & (SDHCI_INT_INDEX | SDHCI_INT_END_BIT | SDHCI_INT_CRC))
+>> +	if (intmask & (SDHCI_INT_INDEX | SDHCI_INT_END_BIT | SDHCI_INT_CRC)) {
+>>   		*cmd_error = -EILSEQ;
+>> -	else if (intmask & SDHCI_INT_TIMEOUT)
+>> +		if (!mmc_op_tuning(host->cmd->opcode))
+>> +			sdhci_err_stats_inc(host, CMD_CRC);
+>> +	} else if (intmask & SDHCI_INT_TIMEOUT) {
+>>   		*cmd_error = -ETIMEDOUT;
+>> -	else
+>> +		sdhci_err_stats_inc(host, CMD_TIMEOUT);
+>> +	} else
+>>   		*cmd_error = 0;
+>>   
+>> -	if (intmask & (SDHCI_INT_DATA_END_BIT | SDHCI_INT_DATA_CRC))
+>> +	if (intmask & (SDHCI_INT_DATA_END_BIT | SDHCI_INT_DATA_CRC)) {
+>>   		*data_error = -EILSEQ;
+>> -	else if (intmask & SDHCI_INT_DATA_TIMEOUT)
+>> +		if (!mmc_op_tuning(host->cmd->opcode))
+>> +			sdhci_err_stats_inc(host, DAT_CRC);
+>> +	} else if (intmask & SDHCI_INT_DATA_TIMEOUT) {
+>>   		*data_error = -ETIMEDOUT;
+>> -	else if (intmask & SDHCI_INT_ADMA_ERROR)
+>> +		sdhci_err_stats_inc(host, DAT_TIMEOUT);
+>> +	} else if (intmask & SDHCI_INT_ADMA_ERROR) {
+>>   		*data_error = -EIO;
+>> -	else
+>> +		sdhci_err_stats_inc(host, ADMA);
+>> +	} else
+>>   		*data_error = 0;
+>>   
+>>   	/* Clear selected interrupts. */
+>> @@ -3934,6 +3961,7 @@ bool sdhci_cqe_irq(struct sdhci_host *host, u32 intmask, int *cmd_error,
+>>   		sdhci_writel(host, intmask, SDHCI_INT_STATUS);
+>>   		pr_err("%s: CQE: Unexpected interrupt 0x%08x.\n",
+>>   		       mmc_hostname(host->mmc), intmask);
+>> +		sdhci_err_stats_inc(host, UNEXPECTED_IRQ);
+>>   		sdhci_dumpregs(host);
+>>   	}
+>>   
+>> diff --git a/drivers/mmc/host/sdhci.h b/drivers/mmc/host/sdhci.h
+>> index d7929d7..95a08f0 100644
+>> --- a/drivers/mmc/host/sdhci.h
+>> +++ b/drivers/mmc/host/sdhci.h
+>> @@ -356,6 +356,9 @@ struct sdhci_adma2_64_desc {
+>>    */
+>>   #define MMC_CMD_TRANSFER_TIME	(10 * NSEC_PER_MSEC) /* max 10 ms */
+>>   
+>> +#define sdhci_err_stats_inc(host, err_name) \
+>> +	mmc_debugfs_err_stats_inc((host)->mmc, MMC_ERR_##err_name)
+>> +
+>>   enum sdhci_cookie {
+>>   	COOKIE_UNMAPPED,
+>>   	COOKIE_PRE_MAPPED,	/* mapped by sdhci_pre_req() */
+>> diff --git a/include/linux/mmc/mmc.h b/include/linux/mmc/mmc.h
+>> index d9a65c6..9c50bc4 100644
+>> --- a/include/linux/mmc/mmc.h
+>> +++ b/include/linux/mmc/mmc.h
+>> @@ -99,6 +99,12 @@ static inline bool mmc_op_multi(u32 opcode)
+>>   	       opcode == MMC_READ_MULTIPLE_BLOCK;
+>>   }
+>>   
+>> +static inline bool mmc_op_tuning(u32 opcode)
+>> +{
+>> +	return opcode == MMC_SEND_TUNING_BLOCK ||
+>> +			opcode == MMC_SEND_TUNING_BLOCK_HS200;
+>> +}
+>> +
+>>   /*
+>>    * MMC_SWITCH argument format:
+>>    *
+> There does not seem to be any:
+>
+> 	sdhci_err_stats_inc(host, TUNING);
+>
+> MMC_ERR_TUNING does not seem to get used.
 
-Unless I missed something, the "dev" field is unused in this series?
+Yes... Thank you for pointing.
 
-> +};
-> +
->  struct thermal_cooling_device_ops {
->         int (*get_max_state) (struct thermal_cooling_device *, unsigned long *);
->         int (*get_cur_state) (struct thermal_cooling_device *, unsigned long *);
+We need to update this, will update this in patch set.
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
