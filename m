@@ -2,135 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FB90C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 04:40:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1332C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 04:46:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231540AbiEIEoG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 00:44:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48640 "EHLO
+        id S231204AbiEIEt4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 00:49:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233120AbiEIElW (ORCPT
+        with ESMTP id S234235AbiEIErG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 00:41:22 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B99C128158
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 21:37:29 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id k126so7678991wme.2
-        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 21:37:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ov4p0XX7tQqCu3BT1O07xpESNC6AFz/oTsF1DSF1DeY=;
-        b=CIUvEXQyV6Kw6zKcKwganTJ9uL4GSu7nCc1HaR22V3NpFhh+o/R4HnNzPn0jj3j5M6
-         vn/IV/XESXhwVIdYHG4JU3+9T/wWZ9nank20/BzpGqc16kNP8f7o3vJnimo0wKpXD1V5
-         2LMdi50z6dz6gCkumhOzrSy+FABWc4j2i8Xl9VlKA1OFVQHNzqyYnRHgoiz9jf6DsaWe
-         Pm49CVfMF28G1PN038G0Lb+MHYfsv6rkxdNb3qDmD/vUZBbFUG6ba1r9a2iEszdq3SvZ
-         xZK4XRvgiLu2uTHHyoYz+VorXX7rByxY4TI7PZm1eTJ18bIEa9qW1RN7E6Xqd+Vmcp9k
-         FBMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ov4p0XX7tQqCu3BT1O07xpESNC6AFz/oTsF1DSF1DeY=;
-        b=Ug0kqxtkk+lbod7nmSQ5ChMbAXgBY13uYkiNqHQ6Fx8/Lr4g6EE/lzDyMyCLzD7/5A
-         6lXjbCko1zaUOdw7GoyYV6RbOVrpi4FTbBHHdW5eTEqpg+meyA6eATvH9v8qtxATTeUA
-         bvJP4oooGOIV2YOs9zQ6Q4xvQj0IftG6mqtESP4/ySaDLf9YclVkiLnhF75B5Heb1WGn
-         3U0fL5wOXCAg4E+A9dK7utHgi8VIf0FtD5t9hc5j4rkYy6OS5tmJ5TeXdqkSghk0Fcjf
-         VelznwumyNOrSGPPnnAQ107B+Gm3o/N5xi1FXYcHsOw0f7nRAyI6ide+PId6dyD37vR5
-         DisQ==
-X-Gm-Message-State: AOAM530YBXmfjo/aYs3kdlEEMEDpsTLENeZbBGEA0o59ipp8QnhW/CZX
-        QVYken+fAhuhunFey/KAP0fZo783lsV35/QA2fHbFA==
-X-Google-Smtp-Source: ABdhPJwKlNzuRE3DL81XLBWis1ERv1cq+V1muXCMdHLI5gzEuRvadbetbhnukQ9XzoVFdhzjI2CaXT+vNeqj1MdG5qo=
-X-Received: by 2002:a05:600c:1d08:b0:394:54ee:c994 with SMTP id
- l8-20020a05600c1d0800b0039454eec994mr13927419wms.137.1652071047349; Sun, 08
- May 2022 21:37:27 -0700 (PDT)
+        Mon, 9 May 2022 00:47:06 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B826E12EA1F;
+        Sun,  8 May 2022 21:43:12 -0700 (PDT)
+X-UUID: 6ddea7754db54f6b8682a4bb85ce9004-20220509
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:183dd2bd-9a99-44c1-8f82-bad0fa61a24e,OB:0,LO
+        B:0,IP:0,URL:25,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:25
+X-CID-META: VersionHash:faefae9,CLOUDID:e7dd0fb3-56b5-4c9e-8d83-0070b288eb6a,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: 6ddea7754db54f6b8682a4bb85ce9004-20220509
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 748000762; Mon, 09 May 2022 12:43:05 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Mon, 9 May 2022 12:43:04 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 9 May 2022 12:43:04 +0800
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>
+CC:     <airlied@linux.ie>, <matthias.bgg@gmail.com>,
+        <angelogioacchino.delregno@collabora.com>,
+        <jason-jh.lin@mediatek.com>, <nancy.lin@mediatek.com>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH v2 1/3] dt-bindings: mediatek: add vdosys1 RDMA definition for mt8195
+Date:   Mon, 9 May 2022 12:43:00 +0800
+Message-ID: <20220509044302.27878-2-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220509044302.27878-1-rex-bc.chen@mediatek.com>
+References: <20220509044302.27878-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
-References: <20220508160749.984-1-jszhang@kernel.org>
-In-Reply-To: <20220508160749.984-1-jszhang@kernel.org>
-From:   Anup Patel <anup@brainfault.org>
-Date:   Mon, 9 May 2022 10:07:16 +0530
-Message-ID: <CAAhSdy1qri5L9pVcZO8areB=TXMSJBg2+cTNMZGQ3g+3Qhxmfg@mail.gmail.com>
-Subject: Re: [PATCH v2 0/4] unified way to use static key and optimize pgtable_l4_enabled
-To:     Jisheng Zhang <jszhang@kernel.org>
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
-        kasan-dev@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 8, 2022 at 9:46 PM Jisheng Zhang <jszhang@kernel.org> wrote:
->
-> Currently, riscv has several features which may not be supported on all
-> riscv platforms, for example, FPU, SV48, SV57 and so on. To support
-> unified kernel Image style, we need to check whether the feature is
-> suportted or not. If the check sits at hot code path, then performance
-> will be impacted a lot. static key can be used to solve the issue. In
-> the past, FPU support has been converted to use static key mechanism.
-> I believe we will have similar cases in the future. For example, the
-> SV48 support can take advantage of static key[1].
->
-> patch1 is a simple W=1 warning fix.
-> patch2 introduces an unified mechanism to use static key for riscv cpu
-> features.
-> patch3 converts has_cpu() to use the mechanism.
-> patch4 uses the mechanism to optimize pgtable_l4|[l5]_enabled.
->
-> [1] http://lists.infradead.org/pipermail/linux-riscv/2021-December/011164.html
+From: "Nancy.Lin" <nancy.lin@mediatek.com>
 
-Overall, using a script to generate CPU capabilities seems a bit
-over-engineered to me. We already have RISC-V ISA extension
-parsing infrastructure which can be easily extended to support
-static key arrays.
+Add vdosys1 RDMA definition.
 
-Regards,
-Anup
+Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ .../display/mediatek/mediatek,mdp-rdma.yaml   | 94 +++++++++++++++++++
+ 1 file changed, 94 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml
 
->
-> Since v1:
->  - Add a W=1 warning fix
->  - Fix W=1 error
->  - Based on v5.18-rcN, since SV57 support is added, so convert
->    pgtable_l5_enabled as well.
->
-> Jisheng Zhang (4):
->   riscv: mm: init: make pt_ops_set_[early|late|fixmap] static
->   riscv: introduce unified static key mechanism for CPU features
->   riscv: replace has_fpu() with system_supports_fpu()
->   riscv: convert pgtable_l4|[l5]_enabled to static key
->
->  arch/riscv/Makefile                 |   3 +
->  arch/riscv/include/asm/cpufeature.h | 110 ++++++++++++++++++++++++++++
->  arch/riscv/include/asm/pgalloc.h    |  16 ++--
->  arch/riscv/include/asm/pgtable-64.h |  40 +++++-----
->  arch/riscv/include/asm/pgtable.h    |   5 +-
->  arch/riscv/include/asm/switch_to.h  |   9 +--
->  arch/riscv/kernel/cpu.c             |   4 +-
->  arch/riscv/kernel/cpufeature.c      |  29 ++++++--
->  arch/riscv/kernel/process.c         |   2 +-
->  arch/riscv/kernel/signal.c          |   4 +-
->  arch/riscv/mm/init.c                |  52 ++++++-------
->  arch/riscv/mm/kasan_init.c          |  16 ++--
->  arch/riscv/tools/Makefile           |  22 ++++++
->  arch/riscv/tools/cpucaps            |   7 ++
->  arch/riscv/tools/gen-cpucaps.awk    |  40 ++++++++++
->  15 files changed, 274 insertions(+), 85 deletions(-)
->  create mode 100644 arch/riscv/include/asm/cpufeature.h
->  create mode 100644 arch/riscv/tools/Makefile
->  create mode 100644 arch/riscv/tools/cpucaps
->  create mode 100755 arch/riscv/tools/gen-cpucaps.awk
->
-> --
-> 2.34.1
->
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml
+new file mode 100644
+index 000000000000..ca31accb0a95
+--- /dev/null
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml
+@@ -0,0 +1,94 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/display/mediatek/mediatek,mdp-rdma.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: MediaTek MDP RDMA
++
++maintainers:
++  - Chun-Kuang Hu <chunkuang.hu@kernel.org>
++  - Philipp Zabel <p.zabel@pengutronix.de>
++
++description:
++  The MediaTek MDP RDMA stands for Read Direct Memory Access.
++  It provides real time data to the back-end panel driver, such as DSI,
++  DPI and DP_INTF.
++  It contains one line buffer to store the sufficient pixel data.
++  RDMA device node must be siblings to the central MMSYS_CONFIG node.
++  For a description of the MMSYS_CONFIG binding, see
++  Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml for details.
++
++properties:
++  compatible:
++    oneOf:
++      - items:
++          - const: mediatek,mt8195-vdo1-rdma
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  power-domains:
++    description: A phandle and PM domain specifier as defined by bindings of
++      the power controller specified by phandle. See
++      Documentation/devicetree/bindings/power/power-domain.yaml for details.
++
++  clocks:
++    items:
++      - description: RDMA Clock
++
++  iommus:
++    description:
++      This property should point to the respective IOMMU block with master port as argument,
++      see Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml for details.
++
++  mediatek,gce-client-reg:
++    description:
++      The register of display function block to be set by gce. There are 4 arguments,
++      such as gce node, subsys id, offset and register size. The subsys id that is
++      mapping to the register of display function blocks is defined in the gce header
++      include/include/dt-bindings/gce/<chip>-gce.h of each chips.
++    $ref: /schemas/types.yaml#/definitions/phandle-array
++    items:
++      items:
++        - description: phandle of GCE
++        - description: GCE subsys id
++        - description: register offset
++        - description: register size
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - power-domains
++  - clocks
++  - iommus
++  - mediatek,gce-client-reg
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/clock/mt8195-clk.h>
++    #include <dt-bindings/power/mt8195-power.h>
++    #include <dt-bindings/gce/mt8195-gce.h>
++    #include <dt-bindings/memory/mt8195-memory-port.h>
++
++    soc {
++        #address-cells = <2>;
++        #size-cells = <2>;
++
++        vdo1_rdma0: mdp-rdma@1c104000 {
++            compatible = "mediatek,mt8195-vdo1-rdma";
++            reg = <0 0x1c104000 0 0x1000>;
++            interrupts = <GIC_SPI 495 IRQ_TYPE_LEVEL_HIGH 0>;
++            clocks = <&vdosys1 CLK_VDO1_MDP_RDMA0>;
++            power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS1>;
++            iommus = <&iommu_vdo M4U_PORT_L2_MDP_RDMA0>;
++            mediatek,gce-client-reg = <&gce0 SUBSYS_1c10XXXX 0x4000 0x1000>;
++        };
++    };
+-- 
+2.18.0
+
