@@ -2,95 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BFFCC47080
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:30:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB412C35295
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 09:30:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237564AbiEIJdq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 05:33:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36172 "EHLO
+        id S237530AbiEIJdk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 05:33:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237479AbiEII6v (ORCPT
+        with ESMTP id S236595AbiEIJaN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 04:58:51 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09EF61B2145;
-        Mon,  9 May 2022 01:54:58 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KxZfr4KTXzGpfv;
-        Mon,  9 May 2022 16:52:04 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 9 May 2022 16:54:51 +0800
-Subject: Re: [PATCH v2] MM: handle THP in swap_*page_fs() - count_vm_events()
-To:     NeilBrown <neilb@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>
-CC:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Christoph Hellwig <hch@lst.de>, <linux-nfs@vger.kernel.org>,
-        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        Matthew Wilcox <willy@infradead.org>
-References: <165146746627.24404.2324091720943354711@noble.neil.brown.name>
- <165146948934.24404.5909750610552745025@noble.neil.brown.name>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <37653eca-e82e-62aa-6829-7413cb844b75@huawei.com>
-Date:   Mon, 9 May 2022 16:54:50 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Mon, 9 May 2022 05:30:13 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FD8A19FB2F
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 02:26:19 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id q23so18541280wra.1
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 02:26:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=XvC4vuGJ/fReLhoxIOtj//WxywUWuOvAGbrh68Zu2XI=;
+        b=u6KPetVh5gX4en9xXua4fJ39OdDbDXqtbrrZWvzZxpNleg18yURy1rvlOoUc67jXpt
+         z2L3P9Tn2W6SeMKdyQJae2cR5zmqj+myuOPg92SBDK14CJ7z5o4noKdalzFKviRvYMBb
+         Q5CSL5BsKBd5VSj/gP48C/4v9hbPDTKBGPyv8L9U/fcLqVTWtFl8cWzl8HiC9sz0my9S
+         e21d9xfBGXBEc6IA+hDISz/5h/wgydCrvPOwY5SQFbbk/eEPCcfsqauhzzRDr8kTgqlO
+         FuJQUpmmMHipb0h/N3yQRV+Q7Shro/EXOmoK3MQf03NVKNlsMh6cuBmPZEIAqw/Y3Ufm
+         94Xw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=XvC4vuGJ/fReLhoxIOtj//WxywUWuOvAGbrh68Zu2XI=;
+        b=cfiHIqG4Z7iWVQhkWHJQyPmmoXftir2jCWM1Wl9tovose5VF5m9jIRmxk4LqjnQBXA
+         1n1l+kExgAgogVRmbpJKFd47QFUlOG+hUaTKdEogQX4yhjYvjhtmqYaQZ60LFoCpJAnn
+         CXvA6POWGiAi2+qDqbpO72u+iCEmE2TjmDz+AYrF3w5/jj3Y+C3ML9fHuY3jtX0sp191
+         5IOPnMivr/5Hm+z6HSYPAhdMBY4ojXUeLM13pOpYy6RiusHCQMtVKubW7YIbgI/80PfK
+         F75oApWeYAZ3UljxEmQmCUEy4WgkLSIO3mGawwEbX3HeTwKUmFjbEZus0Vkjtzgfq0m2
+         slAA==
+X-Gm-Message-State: AOAM532emKqAVThCyAcMWGPiztemeQBW8Eh+xzJnFsDGQdhElKgp0+HI
+        Xb1y0hWPSg62dL69GQBIcVy2ug==
+X-Google-Smtp-Source: ABdhPJwfgmvpJMpAjetQ6aDrppF91DRKlFGaxClEH22/Wu+jpjajhRFwccHLxRXUs5lU0FsZ/Q+9xw==
+X-Received: by 2002:a05:6000:1549:b0:20c:7183:439 with SMTP id 9-20020a056000154900b0020c71830439mr13118696wry.104.1652088375832;
+        Mon, 09 May 2022 02:26:15 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id f10-20020a1cc90a000000b003942a244ec1sm11633124wmb.6.2022.05.09.02.26.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 May 2022 02:26:15 -0700 (PDT)
+Date:   Mon, 9 May 2022 10:26:13 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     David Heidelberg <david@ixit.cz>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>, ~okias/devicetree@lists.sr.ht,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] dt-bindings: spmi: convert QCOM PMIC SPMI bindings to
+ yaml
+Message-ID: <YnjeNUOy5zZFu+M9@google.com>
+References: <20211227170151.73116-1-david@ixit.cz>
+ <YnjeGIGW6Pe1R/gY@google.com>
 MIME-Version: 1.0
-In-Reply-To: <165146948934.24404.5909750610552745025@noble.neil.brown.name>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YnjeGIGW6Pe1R/gY@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/2 13:31, NeilBrown wrote:
-> 
-> We need to use count_swpout_vm_event() for sio_write_complete() to get
-> correct counting.
-> 
-> Note that THP swap in (if it ever happens) is current accounted 1 for
-> each page, whether HUGE or normal.  This is different from swap-out
-> accounting.
+On Mon, 09 May 2022, Lee Jones wrote:
 
-Agree, there is no THP swap-in now.
-
+> On Mon, 27 Dec 2021, David Heidelberg wrote:
 > 
-> This patch should be squashed into
->     MM: handle THP in swap_*page_fs()
+> > Convert Qualcomm PMIC SPMI binding to yaml format.
+> > 
+> > Signed-off-by: David Heidelberg <david@ixit.cz>
+> > 
+> > ---
+> > v2:
+> >  - add #address and #size-cells
+> >  - add reg and remove spmi include from example
+> > v3:
+> >  - fix doc reference error (make refcheckdocs)
+> > 
+> > Signed-off-by: David Heidelberg <david@ixit.cz>
+> > ---
+> >  .../bindings/mfd/qcom,spmi-pmic.txt           |   2 +-
+> >  .../bindings/spmi/qcom,spmi-pmic-arb.txt      |  65 ----------
+> >  .../bindings/spmi/qcom,spmi-pmic-arb.yaml     | 120 ++++++++++++++++++
+> >  3 files changed, 121 insertions(+), 66 deletions(-)
+> >  delete mode 100644 Documentation/devicetree/bindings/spmi/qcom,spmi-pmic-arb.txt
+> >  create mode 100644 Documentation/devicetree/bindings/spmi/qcom,spmi-pmic-arb.yaml
 > 
+> Applied, thanks.
 
-This patch looks good to me. Thanks!
+Cancel.  I see that Rob already applied it.
 
-Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
-
-> Reported-by: Miaohe Lin <linmiaohe@huawei.com>
-> Signed-off-by: NeilBrown <neilb@suse.de>
-> ---
->  mm/page_io.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/mm/page_io.c b/mm/page_io.c
-> index d636a3531cad..1b8075ef3418 100644
-> --- a/mm/page_io.c
-> +++ b/mm/page_io.c
-> @@ -280,8 +280,10 @@ static void sio_write_complete(struct kiocb *iocb, long ret)
->  			set_page_dirty(page);
->  			ClearPageReclaim(page);
->  		}
-> -	} else
-> -		count_vm_events(PSWPOUT, sio->pages);
-> +	} else {
-> +		for (p = 0; p < sio->pages; p++)
-> +			count_swpout_vm_event(sio->bvec[p].bv_page);
-> +	}
->  
->  	for (p = 0; p < sio->pages; p++)
->  		end_page_writeback(sio->bvec[p].bv_page);
-> 
-
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
