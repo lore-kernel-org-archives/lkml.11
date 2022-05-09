@@ -2,213 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1A15C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD5D4C43217
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:52:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236191AbiEIHzA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 03:55:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43370 "EHLO
+        id S236074AbiEIHzf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 03:55:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236912AbiEIHfp (ORCPT
+        with ESMTP id S236528AbiEIHw7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 03:35:45 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E3E91271A0
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 00:31:52 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id p18so15188482edr.7
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 00:31:52 -0700 (PDT)
+        Mon, 9 May 2022 03:52:59 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F1C1ABF42
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 00:49:06 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id v64-20020a1cac43000000b0038cfd1b3a6dso10227357wme.5
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 00:49:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=A8pj1+wMsIZD+HTmycpfJEnCkNCLx0gmUucobTkIYaQ=;
-        b=h+/nQjrNWIm/+IzgiaU+RfjfBcP8yy2to76CRpsCWL6uieGrlrTVnxYL/R3JFfiWsX
-         t36+98kYMes6YSrsZXJHznPejjDhLdU8rj4MzXY25aYYGWxSBIwGyIVHaU+MQg6qOBFX
-         IHYx8i81PL33awO2cbqEztnQLnP4l8bSlOkqK0ubcIA4qsyRF3i2e9UAwvDEdZqb7jvP
-         bAG8fIpRCNDY93VHZePYN2AhuJmwMwsXjVexhwkufB3noX7N9Y8nCZJWXVs/1cMxrK4L
-         OjfDbonWgvZWhkG5T/Vp1uJ0q/JuzdPGEmgQWP4Te2W/zAbO63kENVphxeqV+g7H+69H
-         mPLA==
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PZ2W3KNFaY25uwPYOAUBqo//QhydCTG90+jdDVlc4xA=;
+        b=SsCIPp2ySQpY3254xzJt4ErJObYSQGSZEWU6X7IY0SFlD1Kh8uODF6gzKe/ygx7J/o
+         QSN9M64o4SLkt1XmMTnzD1rheiktoy3zResGYIC/18S5uNdX/HLiMfVmuwfHS0UmH2J1
+         56zMKZiNaUulXDHuZyqd/XlGQ5KOyC6WJCZRnW+PstcyfuttFGZzrUkPS7LIpC1QjC14
+         GCU/gunXAFEWBYE6EEq1137icpShNdb4bflJwng7mR12JSqqhaEq0LNkz5Z+RvSgjeRY
+         fbR26UOPA3yDsXPBzJ9H7UbMJw0Pe4IrvJ3380Baz+N09dkYijZcf6k1lQ10EfHHhtLw
+         TXCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=A8pj1+wMsIZD+HTmycpfJEnCkNCLx0gmUucobTkIYaQ=;
-        b=NKZ7Qzi1N66+DG7/N+Q8XUzxxZSX6prr78AA3RBkI0LzQunZIPmMw5GYK0rh+DaVH+
-         LfX6zQRV5DmDkCeSBRSgOjAHtTqH9v00A9X00NflSsDbRh4uKJVs/XEMNQxPkya+6Jsu
-         FZuKTgaqI4M12iPw/FVL5IlUTYjbPDUHyEKyE1MrzNUVO3ox5J4NsYGtN/G1z+ZoLCKi
-         T0MGvfyxQjJLHwjz7aOZsg9Sn+HFIQ9qxPj3vJkiXNyqwqS5gjbpo2RNZSiKJiJScGY9
-         8YK+d0g2/Hrhhj7FTQrGPkTH2iDYQyHmzC6TZ4XFPC+Evto0uAS2vgOFmjgHFIXQ/bKj
-         UYaQ==
-X-Gm-Message-State: AOAM530YE9wvtgMS8gcHzPgNIB3BnogySmV0+tWnya+kDk4VyvB8UW4T
-        Vv7nxWq5tZw1pP6xhOUMquZRnA==
-X-Google-Smtp-Source: ABdhPJxlWjAFIEPsqpoSUm5gzanVawOJDQfbWbKqKN8sD/EsEk+84GEF8xhbJ/wD76HV8JoK4Xlh4Q==
-X-Received: by 2002:a05:6402:5243:b0:427:caa4:f75 with SMTP id t3-20020a056402524300b00427caa40f75mr16216381edd.153.1652081508151;
-        Mon, 09 May 2022 00:31:48 -0700 (PDT)
-Received: from [192.168.0.242] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id yl26-20020a17090693fa00b006f3ef214de2sm4753139ejb.72.2022.05.09.00.31.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 00:31:47 -0700 (PDT)
-Message-ID: <a5c9e7ad-c4b5-e757-cd6d-f79de47d1ff3@linaro.org>
-Date:   Mon, 9 May 2022 09:31:46 +0200
+        bh=PZ2W3KNFaY25uwPYOAUBqo//QhydCTG90+jdDVlc4xA=;
+        b=VQuEZrqfTD5bdKvplNjRjIdP3FvsrWbP4YKVC+nlT63RPXR4iVMYbsVl73wI2lOToF
+         Vba6gQq94z+SgjWRDTXOVFaFUXYGDl4K+WfMpl8M2dfds/gK8E+/nV3mk1oZzWNl4b2G
+         tOPlVhn64GCsBOxzFHMMDtjdCT6I0kdoCCOjwcBcana4EuPvX1UaFnrqVAkFAYHCAp9g
+         vk32nSRIAVc0P9yTehDLG96H7iFkqotUM7lEeWVmskSTrdmbw1NbmP2L6YYbiUnNwT9H
+         KQMW4A5+qVTZIsY5ogN3eiF1Ntf64Yq6YkTqLyr4Lo99q9DonlMbys3d3Q41TvIWavkR
+         SE4A==
+X-Gm-Message-State: AOAM5335pw6ur4+tmtc5x5VcTHp91vqSGFiSPOmFPVKf0PwRtD079F1t
+        XZlL+hY6PG/nbEGmTPVEIUu9+Q==
+X-Google-Smtp-Source: ABdhPJxYTas8Q7heHVKK5/emA1Py+N5pnUGGlYHfJx5IL39sb779Z2eLroXzNCY64Rbv4EnQKVnVAA==
+X-Received: by 2002:a1c:35c1:0:b0:38e:c4f6:1931 with SMTP id c184-20020a1c35c1000000b0038ec4f61931mr14583358wma.161.1652082545111;
+        Mon, 09 May 2022 00:49:05 -0700 (PDT)
+Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.googlemail.com with ESMTPSA id bw22-20020a0560001f9600b0020c5253d8d8sm11784768wrb.36.2022.05.09.00.49.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 May 2022 00:49:04 -0700 (PDT)
+From:   Corentin Labbe <clabbe@baylibre.com>
+To:     alexandre.torgue@foss.st.com, andrew@lunn.ch, broonie@kernel.org,
+        calvin.johnson@oss.nxp.com, davem@davemloft.net,
+        edumazet@google.com, hkallweit1@gmail.com,
+        jernej.skrabec@gmail.com, joabreu@synopsys.com,
+        krzysztof.kozlowski+dt@linaro.org, kuba@kernel.org,
+        lgirdwood@gmail.com, linux@armlinux.org.uk, pabeni@redhat.com,
+        peppe.cavallaro@st.com, robh+dt@kernel.org, samuel@sholland.org,
+        wens@csie.org
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev, Corentin Labbe <clabbe@baylibre.com>
+Subject: [PATCH 0/6] arm64: add ethernet to orange pi 3
+Date:   Mon,  9 May 2022 07:48:51 +0000
+Message-Id: <20220509074857.195302-1-clabbe@baylibre.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2 1/3] dt-bindings: mediatek: add vdosys1 RDMA definition
- for mt8195
-Content-Language: en-US
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, chunkuang.hu@kernel.org,
-        p.zabel@pengutronix.de
-Cc:     airlied@linux.ie, matthias.bgg@gmail.com,
-        angelogioacchino.delregno@collabora.com, jason-jh.lin@mediatek.com,
-        nancy.lin@mediatek.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220509044302.27878-1-rex-bc.chen@mediatek.com>
- <20220509044302.27878-2-rex-bc.chen@mediatek.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220509044302.27878-2-rex-bc.chen@mediatek.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09/05/2022 06:43, Rex-BC Chen wrote:
-> From: "Nancy.Lin" <nancy.lin@mediatek.com>
-> 
-> Add vdosys1 RDMA definition.
-> 
-> Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> ---
->  .../display/mediatek/mediatek,mdp-rdma.yaml   | 94 +++++++++++++++++++
->  1 file changed, 94 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml
-> new file mode 100644
-> index 000000000000..ca31accb0a95
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,mdp-rdma.yaml
-> @@ -0,0 +1,94 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/display/mediatek/mediatek,mdp-rdma.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: MediaTek MDP RDMA
-> +
-> +maintainers:
-> +  - Chun-Kuang Hu <chunkuang.hu@kernel.org>
-> +  - Philipp Zabel <p.zabel@pengutronix.de>
-> +
-> +description:
-> +  The MediaTek MDP RDMA stands for Read Direct Memory Access.
-> +  It provides real time data to the back-end panel driver, such as DSI,
-> +  DPI and DP_INTF.
-> +  It contains one line buffer to store the sufficient pixel data.
-> +  RDMA device node must be siblings to the central MMSYS_CONFIG node.
-> +  For a description of the MMSYS_CONFIG binding, see
-> +  Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml for details.
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
+Hello
 
-oneOf is not needed
+2 sunxi board still does not have ethernet working, orangepi 1+ and
+orangepi 3.
+This is due to the fact thoses boards have a PHY which need 2 regulators.
 
-> +      - items:
+A first attempt was made to support them was made by adding support in
+stmmac driver:
+https://lore.kernel.org/lkml/20190820145343.29108-6-megous@megous.com/
+Proposal rejected, since regulators need to be handled by the PHY core.
 
-items not needed, you have only one item.
+This serie try to handle this.
 
-> +          - const: mediatek,mt8195-vdo1-rdma
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  power-domains:
-> +    description: A phandle and PM domain specifier as defined by bindings of
-> +      the power controller specified by phandle. See
-> +      Documentation/devicetree/bindings/power/power-domain.yaml for details.
+This serie was tested on whole range of board and PHY architecture:
+- internal PHY
+  * sun8i-h3-orangepi-pc
+- external PHY
+  * sun50i-h6-pine-h64
+  * sun8i-r40-bananapi-m2-ultra
+  * sun8i-a83t-bananapi-m3
+  * sun50i-a64-bananapi-m64
+  * sun50i-h6-orangepi-3
+  * sun50i-h5-nanopi-neo-plus2
 
-Skip description, it's obvious. Instead maxItems.
+The resume/suspend of PHY was tested.
 
-> +
-> +  clocks:
-> +    items:
-> +      - description: RDMA Clock
-> +
-> +  iommus:
-> +    description:
-> +      This property should point to the respective IOMMU block with master port as argument,
-> +      see Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml for details.
+Regards
 
-Skip description, it's obvious. Instead maxItems.
+Corentin Labbe (5):
+  phy: handle optional regulator for PHY
+  net: stmmac: dwmac-sun8i: remove regulator
+  dt-bindings: net: Add documentation for phy-supply
+  ARM: dts: sunxi: move phy regulator in PHY node
+  arm64: dts: allwinner: move phy regulator in PHY node
 
-> +
-> +  mediatek,gce-client-reg:
-> +    description:
-> +      The register of display function block to be set by gce. There are 4 arguments,
-> +      such as gce node, subsys id, offset and register size. The subsys id that is
-> +      mapping to the register of display function blocks is defined in the gce header
-> +      include/include/dt-bindings/gce/<chip>-gce.h of each chips.
+Ondřej Jirman (1):
+  arm64: dts: allwinner: orange-pi-3: Enable ethernet
 
-Double "include" in the path.
+ .../devicetree/bindings/net/ethernet-phy.yaml | 10 +++++
+ arch/arm/boot/dts/sun8i-a83t-bananapi-m3.dts  |  2 +-
+ .../boot/dts/sun8i-a83t-cubietruck-plus.dts   |  2 +-
+ arch/arm/boot/dts/sun8i-h3-nanopi-m1-plus.dts |  2 +-
+ arch/arm/boot/dts/sun8i-h3-nanopi-r1.dts      |  2 +-
+ arch/arm/boot/dts/sun8i-h3-orangepi-plus.dts  |  2 +-
+ .../arm/boot/dts/sun8i-h3-orangepi-plus2e.dts |  2 +-
+ arch/arm/boot/dts/sun8i-h3-zeropi.dts         |  2 +-
+ .../boot/dts/sun8i-r40-bananapi-m2-ultra.dts  |  2 +-
+ arch/arm/boot/dts/sun8i-r40-oka40i-c.dts      |  2 +-
+ .../boot/dts/sun8i-v40-bananapi-m2-berry.dts  |  2 +-
+ arch/arm/boot/dts/sun9i-a80-cubieboard4.dts   |  2 +-
+ arch/arm/boot/dts/sun9i-a80-optimus.dts       |  2 +-
+ arch/arm/boot/dts/sunxi-bananapi-m2-plus.dtsi |  2 +-
+ .../dts/allwinner/sun50i-a64-bananapi-m64.dts |  2 +-
+ .../dts/allwinner/sun50i-a64-nanopi-a64.dts   |  2 +-
+ .../sun50i-a64-oceanic-5205-5inmfd.dts        |  2 +-
+ .../dts/allwinner/sun50i-a64-olinuxino.dts    |  2 +-
+ .../dts/allwinner/sun50i-a64-orangepi-win.dts |  2 +-
+ .../boot/dts/allwinner/sun50i-a64-pine64.dts  |  2 +-
+ .../allwinner/sun50i-a64-sopine-baseboard.dts |  2 +-
+ .../sun50i-h5-libretech-all-h5-cc.dts         |  2 +-
+ .../allwinner/sun50i-h5-nanopi-neo-plus2.dts  |  2 +-
+ .../dts/allwinner/sun50i-h5-nanopi-neo2.dts   |  2 +-
+ .../dts/allwinner/sun50i-h5-nanopi-r1s-h5.dts |  2 +-
+ .../dts/allwinner/sun50i-h5-orangepi-pc2.dts  |  2 +-
+ .../allwinner/sun50i-h5-orangepi-prime.dts    |  2 +-
+ .../sun50i-h5-orangepi-zero-plus.dts          |  2 +-
+ .../dts/allwinner/sun50i-h6-beelink-gs1.dts   |  2 +-
+ .../dts/allwinner/sun50i-h6-orangepi-3.dts    | 38 +++++++++++++++++++
+ .../allwinner/sun50i-h6-pine-h64-model-b.dts  |  8 ++--
+ .../boot/dts/allwinner/sun50i-h6-pine-h64.dts |  2 +-
+ .../net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 37 +-----------------
+ drivers/net/mdio/fwnode_mdio.c                | 32 ++++++++++++++++
+ drivers/net/phy/phy_device.c                  | 20 ++++++++++
+ include/linux/phy.h                           |  3 ++
+ 36 files changed, 138 insertions(+), 68 deletions(-)
 
-> +    $ref: /schemas/types.yaml#/definitions/phandle-array
-> +    items:
-> +      items:
-> +        - description: phandle of GCE
-> +        - description: GCE subsys id
-> +        - description: register offset
-> +        - description: register size
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - power-domains
-> +  - clocks
-> +  - iommus
-> +  - mediatek,gce-client-reg
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    #include <dt-bindings/clock/mt8195-clk.h>
-> +    #include <dt-bindings/power/mt8195-power.h>
-> +    #include <dt-bindings/gce/mt8195-gce.h>
-> +    #include <dt-bindings/memory/mt8195-memory-port.h>
-> +
-> +    soc {
-> +        #address-cells = <2>;
-> +        #size-cells = <2>;
-> +
-> +        vdo1_rdma0: mdp-rdma@1c104000 {
+-- 
+2.35.1
 
-Generic node name. dma-controller (if it does not conflict with
-dma-common.yaml schema)?
-
-> +            compatible = "mediatek,mt8195-vdo1-rdma";
-> +            reg = <0 0x1c104000 0 0x1000>;
-> +            interrupts = <GIC_SPI 495 IRQ_TYPE_LEVEL_HIGH 0>;
-> +            clocks = <&vdosys1 CLK_VDO1_MDP_RDMA0>;
-> +            power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS1>;
-> +            iommus = <&iommu_vdo M4U_PORT_L2_MDP_RDMA0>;
-> +            mediatek,gce-client-reg = <&gce0 SUBSYS_1c10XXXX 0x4000 0x1000>;
-> +        };
-> +    };
-
-
-Best regards,
-Krzysztof
