@@ -2,210 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C19F3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 03:58:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65F94C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 04:06:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234020AbiEID7O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 23:59:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48404 "EHLO
+        id S230201AbiEIEJz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 00:09:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233214AbiEIDze (ORCPT
+        with ESMTP id S234179AbiEIEBh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 23:55:34 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 913E0308
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 20:51:39 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KxRxl6KpyzhZ3T;
-        Mon,  9 May 2022 11:49:31 +0800 (CST)
-Received: from M910t (10.110.54.157) by kwepemi500013.china.huawei.com
- (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 9 May
- 2022 11:49:56 +0800
-Date:   Mon, 9 May 2022 11:49:51 +0800
-From:   Changbin Du <changbin.du@huawei.com>
-To:     Changbin Du <changbin.du@huawei.com>
-CC:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <llvm@lists.linux.dev>, <llvm-dev@lists.llvm.org>,
-        <llvm-bugs@lists.llvm.org>, <hw.huiwang@huawei.com>
-Subject: Re: riscv: llvm-compiler: calling convention violation: temporary
- register $t2 is used to pass the ninth function parameter
-Message-ID: <20220509034951.trbbxhmgedocoxqm@M910t>
-References: <20220509034658.kzwh7ocn4ilo4aed@M910t>
+        Mon, 9 May 2022 00:01:37 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75F3DFC773
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 20:57:44 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id q76so10948075pgq.10
+        for <linux-kernel@vger.kernel.org>; Sun, 08 May 2022 20:57:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QA3QBtPI3O1Tfh2czp5nCb1ZHar3YqBZK+8IBbh2GL4=;
+        b=XLrOMOGf7eUqDcGo2C93lcSbcOVHHwJ9AgWvnOp8InbUmMb/p3Scnt+HB8KagrN/tc
+         UjylYfTzYjNZRUfJqWwtyl51PBL3wEUZ8yVf8OR3+euT7YTetZ851DxFJi5YuQa1d7lm
+         uFvF3reXbjEUoD1nBmIOTiCP1wj+Y295CLSSFeA6m+2RBshBptzctNgjEgFWhAwXrvp4
+         XnPP6Ol9tToQu0lWkTS3TxmwTZmuaxWKIUGOdN0RlTCKMvoN8oBPyg/q2Wdv1ESm0ScD
+         es+sg8xzgki86NGN9fG04yl6k6R15szh60hwNjgmJ6mMjNM0k9iyOre+UpjfhNlBEzAv
+         8xYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QA3QBtPI3O1Tfh2czp5nCb1ZHar3YqBZK+8IBbh2GL4=;
+        b=HJ68RwfOHpbr0/vo2T+etrBcqtoS5SGMxPd6b9cn6aJlpni+okVRMfk/90X07UYukc
+         seQyiMZv1PqgVZCwcTMjcH3291jijv9hj6yU4hYB6gOYNSif7A2j+IzWUNBljki628XV
+         +/Fre8Lv6c0d4nE2H2UAay1TWdezrt/pimmWyGu+Y2SJbYEEM7R+qjCVOauqf6UeMYmf
+         o2poklR6Hw8P/Xiwtn7RJhyvMygArMpYLl4BkaQBRI3kj1FbagKXHTbbjLGrKSs2NJLj
+         b7BnFZwpm+LgBcyhqCDOe1i3pXjzYaMo9V/f0DQojEBtfsP2ZarPvQjdUAlJOPuxU15J
+         gzAQ==
+X-Gm-Message-State: AOAM531meqnLbiRU9tk1MwSZR/pfJxNhBMXPakadh2nFFZdtvhrG21J+
+        sk5wmEAc5C8PxH3TRNWRIYjR0A==
+X-Google-Smtp-Source: ABdhPJyfcZT4vyA7LsNd4ftNp8j+EWMdDGp+1rPoJM6Ybs2WwPT8EbYICPTbejvD3GjrYAYUfrqAgA==
+X-Received: by 2002:a62:ce82:0:b0:50d:512f:7b76 with SMTP id y124-20020a62ce82000000b0050d512f7b76mr14401183pfg.79.1652068663103;
+        Sun, 08 May 2022 20:57:43 -0700 (PDT)
+Received: from localhost ([122.162.234.2])
+        by smtp.gmail.com with ESMTPSA id l4-20020a170903244400b0015e8d4eb1d0sm5961358pls.26.2022.05.08.20.57.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 May 2022 20:57:42 -0700 (PDT)
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Rafael Wysocki <rjw@rjwysocki.net>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Schspa Shi <schspa@gmail.com>
+Cc:     linux-pm@vger.kernel.org,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] Revert "cpufreq: Fix possible race in cpufreq online error path"
+Date:   Mon,  9 May 2022 09:27:37 +0530
+Message-Id: <7f505491f4e8207bb5d79b1b7b34a28b6d1f03b6.1652068655.git.viresh.kumar@linaro.org>
+X-Mailer: git-send-email 2.31.1.272.g89b43f80a514
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220509034658.kzwh7ocn4ilo4aed@M910t>
-X-Originating-IP: [10.110.54.157]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemi500013.china.huawei.com (7.221.188.120)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+cc hw.huiwang@huawei.com
+This reverts commit f346e96267cd76175d6c201b40f770c0116a8a04.
 
-On Mon, May 09, 2022 at 11:47:01AM +0800, Changbin Du wrote:
-> Hello, folks,
-> 
-> Recently I encountered a kernel crash problem when using ftrace with 'perf ftrace'
-> command on risc-v kernel built with llvm.
-> 
-> This crash only exists on llvm build, not reproducable with GCC. So I hope llvm
-> guys can take a look :)
-> 
-> The llvm versions I have tried are llvm-13.0.0 and mainline (commit 102bc634cb
-> ("[runtime] Build compiler-rt with --unwindlib=none")).
-> 
-> [  612.947887][  T496] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000001
-> [  613.050789][  T496] Hardware name: riscv-virtio,qemu (DT)
-> [  613.087976][  T496] epc : __find_rr_leaf+0x128/0x220
-> [  613.107493][  T496]  ra : return_to_handler+0x22/0x24
-> [  613.125322][  T496] epc : ffffffff80a1915a ra : ffffffff80009506 sp : ff20000011e43860
-> [  613.150124][  T496]  gp : ffffffff81812f40 tp : ff6000008bb01580 t0 : ff600000806cf0f0
-> [  613.173657][  T496]  t1 : 000000000001b29a t2 : 0000000000000001 s0 : ff20000011e43920
-> [  613.187311][  T496]  s1 : ff600000848c2a00 a0 : 0000000000000002 a1 : 0000000000000002
-> [  613.202731][  T496]  a2 : fffffffffffffffd a3 : ff6000009d287000 a4 : 00000000000002c0
-> [  613.213723][  T496]  a5 : ff6000009d259b40 a6 : ffffffffffffff9c a7 : ffffffffffffffff
-> [  613.226648][  T496]  s2 : 0000000000000001 s3 : ff20000011e439d8 s4 : ffffffff8160d140
-> [  613.246571][  T496]  s5 : 0000000000000002 s6 : 0000000000000000 s7 : 0000000000000000
-> [  613.264681][  T496]  s8 : 0000000000000064 s9 : 0000000000000000 s10: 0000000000400000
-> [  613.277999][  T496]  s11: ff600000848c2aa8 t3 : 0000000000000290 t4 : 00000000004002c0
-> [  613.303729][  T496]  t5 : 00000000ffffffff t6 : ff6000009d2872d0
-> [  613.322145][  T496] status: 0000000200000120 badaddr: 0000000000000001 cause: 000000000000000d
-> [  613.346228][  T496] [<ffffffff80a12526>] ip6_pol_route+0xb6/0x602
-> [  613.365722][  T496] [<ffffffff80a1321a>] ip6_pol_route_output+0x2c/0x34
-> [  613.386374][  T496] [<ffffffff80a1c028>] fib6_rule_lookup+0x36/0xa0
-> [  613.401865][  T496] [<ffffffff80a131da>] ip6_route_output_flags_noref+0xd6/0xea
-> [  613.412776][  T496] [<ffffffff80a13274>] ip6_route_output_flags+0x52/0xd4
-> [  613.432013][  T496] [<ffffffff809ffb3a>] ip6_dst_lookup_tail+0x68/0x23a
-> [  613.456198][  T496] [<ffffffff809ffec6>] ip6_sk_dst_lookup_flow+0x132/0x1cc
-> [  613.513174][  T496] [<ffffffff80003cd8>] ret_from_syscall+0x0/0x2
-> [  613.518973][  T496] [<ffffffff800094e4>] return_to_handler+0x0/0x24
-> [  613.563961][  T496] Kernel panic - not syncing: Fatal exception
-> [  613.572278][  T496] SMP: stopping secondary CPUs
-> [  613.587449][  T496] ---[ end Kernel panic - not syncing: Fatal exception ]---
-> 
-> The crash happened when dereferencing the point 'mpri' at route.c:758.
-> 
-> (gdb) l *__find_rr_leaf+0x128
-> 0xffffffff809da9c4 is in __find_rr_leaf (net/ipv6/route.c:758).
-> 753
-> 754             if (strict & RT6_LOOKUP_F_REACHABLE)
-> 755                     rt6_probe(nh);
-> 756
-> 757             /* note that m can be RT6_NUD_FAIL_PROBE at this point */
-> 758             if (m > *mpri) {
-> 759                     *do_rr = match_do_rr;
-> 760                     *mpri = m;
-> 761                     rc = true;
-> 762             }
-> 
-> Adding some logs, I found the problem. The ninth passed parameter of function
-> __find_rr_leaf() which is the address of local variable 'mpri', is changed to
-> value '0x1' when inside the function __find_rr_leaf.
-> Here is the code snippet and full link
-> https://github.com/torvalds/linux/blob/9cb7c013420f98fa6fd12fc6a5dc055170c108db/net/ipv6/route.c.
-> 
-> static void find_rr_leaf(struct fib6_node *fn, struct fib6_info *leaf,
-> 			 struct fib6_info *rr_head, int oif, int strict,
-> 			 bool *do_rr, struct fib6_result *res)
-> {
-> 	u32 metric = rr_head->fib6_metric;
-> 	struct fib6_info *cont = NULL;
-> 	int mpri = -1;
-> 
-> 	__find_rr_leaf(rr_head, NULL, metric, res, &cont,
-> 		       oif, strict, do_rr, &mpri);
-> 	...
-> }
-> 
-> Then debugging with gdb, I found this probably is a compiler bug. We can see the
-> local function __find_rr_leaf() is not optimized out and the compiler generates
-> a local symbol for it. The find_rr_leaf() (inlined by fib6_table_lookup) invokes
-> this function with 'jalr' instruction.
-> 
-> (gdb) disassemble fib6_table_lookup
-> Dump of assembler code for function fib6_table_lookup:
->    [snip]
->    0xffffffff80a1240e <+412>:   beqz    a1,0xffffffff80a12436 <fib6_table_lookup+452>
->    0xffffffff80a12410 <+414>:   slli    a1,s9,0x20
->    0xffffffff80a12414 <+418>:   srli    a1,a1,0x20
->    0xffffffff80a12416 <+420>:   sext.w  a2,a1
->    0xffffffff80a1241a <+424>:   addi    a7,s0,-125
->    0xffffffff80a1241e <+428>:   addi    t2,s0,-124
->    0xffffffff80a12422 <+432>:   li      a1,0
->    0xffffffff80a12424 <+434>:   mv      a3,s10
->    0xffffffff80a12426 <+436>:   li      a4,0
->    0xffffffff80a12428 <+438>:   ld      a5,-152(s0)
->    0xffffffff80a1242c <+442>:   mv      a6,s8
->    0xffffffff80a1242e <+444>:   auipc   ra,0x7
->    0xffffffff80a12432 <+448>:   jalr    -686(ra) # 0xffffffff80a19180 <__find_rr_leaf>
->    [snip]
-> 
-> And at line route.c:758, the value of point 'mpri' is stored in temporary register
-> $t2 and $s3 (copied from $t2).
-> 
-> (gdb) info scope __find_rr_leaf
-> [snip]
-> Symbol mpri is multi-location:
->   Base address 0xffffffff80a10564  Range 0xffffffff80a19190-0xffffffff80a191ae: a variable in $t2
->   Range 0xffffffff80a191c0-0xffffffff80a191d6: a variable in $s3
->   Range 0xffffffff80a19200-0xffffffff80a19208: a variable in $s3
->   Range 0xffffffff80a1921e-0xffffffff80a192fe: a variable in $s3
->   Range 0xffffffff80a1930a-0xffffffff80a19356: a variable in $s3
-> 
-> Let's see when register $t2 is corrupted with single-step mode. Obviously, register
-> $t2 is changed by mcount function ftrace_caller(). This is why the bug happens
-> to ftrace.
-> 
-> Dump of assembler code for function __find_rr_leaf:
->    0xffffffff80a19180 <+0>:     sd      ra,-8(sp)   #  $t2 = 0xff200000120db7b4
->    0xffffffff80a19184 <+4>:     auipc   ra,0xff5f1
->    0xffffffff80a19188 <+8>:     jalr    -1744(ra) # 0xffffffff80009ab4 <ftrace_caller> #  $t2 = 0xff200000120db7b4
-> => 0xffffffff80a1918c <+12>:    ld      ra,-8(sp)    #  $t2 = 0x1, bug, $t2 is corrupted!!
->    0xffffffff80a19190 <+16>:    addi    sp,sp,-176
->    [snip]
-> 
-> So now we can come to a conclusion. The generated local function __find_rr_leaf()
-> violates the risc-v calling convention and leads to the panic. It should use stack
-> but *not* temporary register $t2 to pass the ninth parameter! It's okay if the
-> callsite can take care of local symbol callees, but the Function Instrumentation
-> features should be considerated carefully.
-> 
-> For comparison, here is the result from gcc (9.2.0):
-> (gdb) info scope __find_rr_leaf
-> [snip]
-> Symbol mpri is a complex DWARF expression:
->      0: DW_OP_fbreg 0, length 8.
-> 
-> I also built a simple test function with 9 parameters by clang and same cflags,
-> but cannot reproduce it. Maybe it is conditional?
-> 
-> Simple test code:
-> __attribute__ ((noinline))
-> void test_func(int *a, int *b, int *c, int *d, int *e, int *f, int *g, int *h, int *i)
-> {
->         printf("__find_rr_leaf: %d\n", *i);
-> }
-> 
-> int main(void)
-> {
->         int a,b,c,d,e,f,g,h,i = 100;
-> 
->         test_func(&a,&b,&c,&d,&e,&f,&g,&h,&i);
->         return 0;
-> }
-> 
-> -- 
-> Cheers,
-> Changbin Du
+The commit tried to fix a possible real bug but it made it even worse.
+The fix was simply buggy as now an error out to out_offline_policy or
+out_exit_policy will try to release a semaphore which was never taken in
+the first place. This works fine only if we failed late, i.e. via
+out_destroy_policy.
 
+Fixes: f346e96267cd ("cpufreq: Fix possible race in cpufreq online error path")
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+---
+ drivers/cpufreq/cpufreq.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
+index 233e8af48848..fbaa8e6c7d23 100644
+--- a/drivers/cpufreq/cpufreq.c
++++ b/drivers/cpufreq/cpufreq.c
+@@ -1534,6 +1534,8 @@ static int cpufreq_online(unsigned int cpu)
+ 	for_each_cpu(j, policy->real_cpus)
+ 		remove_cpu_dev_symlink(policy, get_cpu_device(j));
+ 
++	up_write(&policy->rwsem);
++
+ out_offline_policy:
+ 	if (cpufreq_driver->offline)
+ 		cpufreq_driver->offline(policy);
+@@ -1542,9 +1544,6 @@ static int cpufreq_online(unsigned int cpu)
+ 	if (cpufreq_driver->exit)
+ 		cpufreq_driver->exit(policy);
+ 
+-	cpumask_clear(policy->cpus);
+-	up_write(&policy->rwsem);
+-
+ out_free_policy:
+ 	cpufreq_policy_free(policy);
+ 	return ret;
 -- 
-Cheers,
-Changbin Du
+2.31.1.272.g89b43f80a514
+
