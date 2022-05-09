@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62F63C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 11:01:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2741EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 11:01:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230412AbiEILFX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 07:05:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55442 "EHLO
+        id S231777AbiEILF1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 07:05:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231600AbiEILFG (ORCPT
+        with ESMTP id S231643AbiEILFN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 07:05:06 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49446224040
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 04:01:09 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id n18so13502226plg.5
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 04:01:09 -0700 (PDT)
+        Mon, 9 May 2022 07:05:13 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7C5226880
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 04:01:15 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id n8so13515183plh.1
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 04:01:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bytedance-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=lgBugjMBjpGQ7xeNvhxji4XO8XtdFmxbyx8qWXB/d1E=;
-        b=Pj3odeW7eWCV6Y3wbzSEpD8iLoimaxAI1ooehshks8JT1P+ojlGgtSlicuvorjqyuO
-         kT/iSH9IeTlMksEU/xWsoNwYko7rqXxxjzmm7oEHy9uBn+PwWOaxTT/EMhftkdQSxcNs
-         eGk5ULQ2fgZEg9dJac5mZduPWbV1z0FGFUj8xKI7mox5vPPrbdfNxmtVi1H3bZwnCcgR
-         E4bjgy+vFNnAUACAkd4XWb2qxrFBOJ1RYP1wyhLjvM97E3+yfhHY3zIHCohiu5BeTRVE
-         IE3l1JXhD1BJyLIUALFNepOCs3HyemnMQzn2YuOIZ/1ccCAkhgRSWZN+uw75l01f5aGc
-         7Qmg==
+        bh=t0KsZv2R4FmOpyzJ37nNuFGF3hEBVQUSZOEw7FIgU2A=;
+        b=yjtzA8SItPH7R6S1S+OGpTA8lpujjgtHSpoSwPxtQUypZnh+LhhkrVjtjaxYiSIVAp
+         iVo3fIPQGwplTUrHyLZm+y+PW7GyXKOyGCa/Mk5TpRRWgY8ampXvMrn3BYumiT5GRlHB
+         BAPwL6edGJN/fGAQUqu92vb6/tAVD3lhNQBVMpBoHpI0a8/1mEJZcCGlQmMGNkMSwbsr
+         17l7fH1SLbbetWfYC50CRYmCDeskVHYFWSZYWmXLz1WuvE0MByPEXHTARY5dFhTICCxG
+         mR3NVxFDYHIgork84g9o9A8HXp9wLBJY+kZqiVmveHEhPszocewvWXXDYls9OOPHvKg2
+         7ZLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lgBugjMBjpGQ7xeNvhxji4XO8XtdFmxbyx8qWXB/d1E=;
-        b=SDiyQLa0nchMPvNrcbnGWspUrju9llIrZpIZrKdH8Cb3wH2guJrlXkIshLPRtpkai9
-         qlYu4vSOKn0TZBnBVtmJ6nhy+UoIWWeyqSwPBx85gpCiXqvncX5PsClwgMPQcKY4heMH
-         DZQqwXvLuUacMqn/U6FLb7ugLivcPxXpdVnsd4302d1wbh3WzDMuK5umXFMn2+CDEyBH
-         jwH8EqWhFSuPwpTGiuJ0CrwT52qiMU0OeN4w7C8eMugarKy5pE4x5JXHxj+Tv41mxPKW
-         q7enWILy3LdWQUJabkUKogpf1sv77ckh9Up4qB53U/bTBonRnPTquVPL7jPHUvnyiYyf
-         lhbg==
-X-Gm-Message-State: AOAM533EHzZdoce9RSxCIXqjJjLA9lrQgad7D78kTX9H3288acgEJPg3
-        gAM9YBVcuz37noeAcHtdA0IzxA==
-X-Google-Smtp-Source: ABdhPJzX90hgfGWeg918bEYrTW1cS8gQltC1OktUE0gYPnZCoiRblOWmhlkao5W1SGi61URQ7uy4sQ==
-X-Received: by 2002:a17:903:210:b0:15e:f139:f901 with SMTP id r16-20020a170903021000b0015ef139f901mr14084732plh.66.1652094068623;
-        Mon, 09 May 2022 04:01:08 -0700 (PDT)
+        bh=t0KsZv2R4FmOpyzJ37nNuFGF3hEBVQUSZOEw7FIgU2A=;
+        b=VaVi7y01ySUK0yNenjjGG8biIKinbKbvVQrwF1dbVk1RhRs7NaGoD7MGvEH0lo9Qnd
+         LehuExYc8hgAQ5Qwvyde4k1ix9rqkVKjbYhKYnFtGn8u0+Uq2kJ9fUwHLpd9u22/qTvb
+         yfTpzGLbfS623jGqVx/NGdO7RozaWQ5sEw5VoshzayEJV0Xuk7S8mfX7HQQoGDy3rlXo
+         iuHFQuxzLbziyQq7x4s25yKlDdykmZxwzMn6CkCdbiCI9sr0dg9DqkhBWcGNFRkd3nZY
+         zFYOuYzjBY3SucpIfR4flNs3KraHKroxaRA+NyFwfzmFwHpvo07HYPGelZUyy0qEFfHz
+         Yxvw==
+X-Gm-Message-State: AOAM533zugyPyRByOwGHZ8KuoSV8c0Bn5uJGu+XQuOwWg1JkmL5dkXYd
+        ZfYXDuTjXoPiLjF2BwWbpbiWcAqe9X53xg==
+X-Google-Smtp-Source: ABdhPJx/WzlB7PylnxnAdFCim/SskrKr0osvOo6sFRdb5OtHidyhPLSUg7ojKRvRf81iZeBPIyd+DQ==
+X-Received: by 2002:a17:90a:f2ce:b0:1d9:a18f:87f3 with SMTP id gt14-20020a17090af2ce00b001d9a18f87f3mr25860804pjb.213.1652094074838;
+        Mon, 09 May 2022 04:01:14 -0700 (PDT)
 Received: from always-x1.www.tendawifi.com ([139.177.225.239])
-        by smtp.gmail.com with ESMTPSA id n12-20020a170902968c00b0015e8d4eb244sm6813303plp.142.2022.05.09.04.01.05
+        by smtp.gmail.com with ESMTPSA id n12-20020a170902968c00b0015e8d4eb244sm6813303plp.142.2022.05.09.04.01.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 04:01:08 -0700 (PDT)
+        Mon, 09 May 2022 04:01:14 -0700 (PDT)
 From:   zhenwei pi <pizhenwei@bytedance.com>
 To:     akpm@linux-foundation.org, naoya.horiguchi@nec.com
 Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
         zhenwei pi <pizhenwei@bytedance.com>
-Subject: [PATCH v2 3/5] mm/memory-failure.c: add hwpoison_filter for soft offline
-Date:   Mon,  9 May 2022 18:56:39 +0800
-Message-Id: <20220509105641.491313-4-pizhenwei@bytedance.com>
+Subject: [PATCH v2 5/5] mm/memory-failure.c: simplify num_poisoned_pages_inc/dec
+Date:   Mon,  9 May 2022 18:56:41 +0800
+Message-Id: <20220509105641.491313-6-pizhenwei@bytedance.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220509105641.491313-1-pizhenwei@bytedance.com>
 References: <20220509105641.491313-1-pizhenwei@bytedance.com>
@@ -64,60 +64,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hwpoison_filter is missing in the soft offline path, this leads an
-issue: after enabling the corrupt filter, the user process still has
-a chance to inject hwpoison fault by
-madvise(addr, len, MADV_SOFT_OFFLINE) at PFN which is expected to
-reject.
+Originally, do num_poisoned_pages_inc() in memory failure routine,
+use num_poisoned_pages_dec() to rollback the number if filtered/
+cancelled.
 
-Also do a minor change in comment of memory_failure().
+Suggested by Naoya, do num_poisoned_pages_inc() only in
+action_result(), this make this clear and simple.
 
 Signed-off-by: zhenwei pi <pizhenwei@bytedance.com>
 ---
- mm/memory-failure.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+ mm/memory-failure.c | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
 diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-index ece05858568f..ed280ef5473d 100644
+index ed280ef5473d..2d590cba412c 100644
 --- a/mm/memory-failure.c
 +++ b/mm/memory-failure.c
-@@ -1762,7 +1762,7 @@ static DEFINE_MUTEX(mf_mutex);
-  * enabled and no spinlocks hold.
-  *
-  * Return: 0 for successfully handled the memory error,
-- *         -EOPNOTSUPP for memory_filter() filtered the error event,
-+ *         -EOPNOTSUPP for hwpoison_filter() filtered the error event,
-  *         < 0(except -EOPNOTSUPP) on failure.
-  */
- int memory_failure(unsigned long pfn, int flags)
-@@ -2317,7 +2317,9 @@ static void put_ref_page(struct page *page)
-  * @pfn: pfn to soft-offline
-  * @flags: flags. Same as memory_failure().
-  *
-- * Returns 0 on success, otherwise negated errno.
-+ * Returns 0 on success
-+ *         -EOPNOTSUPP for hwpoison_filter() filtered the error event
-+ *         < 0 otherwise negated errno.
-  *
-  * Soft offline a page, by migration or invalidation,
-  * without killing anything. This is for the case when
-@@ -2368,6 +2370,16 @@ int soft_offline_page(unsigned long pfn, int flags)
- 	ret = get_hwpoison_page(page, flags | MF_SOFT_OFFLINE);
- 	put_online_mems();
+@@ -1133,6 +1133,7 @@ static void action_result(unsigned long pfn, enum mf_action_page_type type,
+ {
+ 	trace_memory_failure_event(pfn, type, result);
  
-+	if (hwpoison_filter(page)) {
-+		if (ret > 0)
-+			put_page(page);
-+		else
-+			put_ref_page(ref_page);
-+
-+		mutex_unlock(&mf_mutex);
-+		return -EOPNOTSUPP;
-+	}
-+
- 	if (ret > 0) {
- 		ret = soft_offline_in_use_page(page);
- 	} else if (ret == 0) {
++	num_poisoned_pages_inc();
+ 	pr_err("Memory failure: %#lx: recovery action for %s: %s\n",
+ 		pfn, action_page_types[type], action_name[result]);
+ }
+@@ -1588,8 +1589,6 @@ static int try_memory_failure_hugetlb(unsigned long pfn, int flags, int *hugetlb
+ 		goto out;
+ 	}
+ 
+-	num_poisoned_pages_inc();
+-
+ 	/*
+ 	 * Handling free hugepage.  The possible race with hugepage allocation
+ 	 * or demotion can be prevented by PageHWPoison flag.
+@@ -1815,7 +1814,6 @@ int memory_failure(unsigned long pfn, int flags)
+ 	}
+ 
+ 	hpage = compound_head(p);
+-	num_poisoned_pages_inc();
+ 
+ 	/*
+ 	 * We need/can do nothing about count=0 pages.
+@@ -1839,7 +1837,6 @@ int memory_failure(unsigned long pfn, int flags)
+ 					/* We lost the race, try again */
+ 					if (retry) {
+ 						ClearPageHWPoison(p);
+-						num_poisoned_pages_dec();
+ 						retry = false;
+ 						goto try_again;
+ 					}
+@@ -1915,8 +1912,7 @@ int memory_failure(unsigned long pfn, int flags)
+ 	 */
+ 	if (PageCompound(p)) {
+ 		if (retry) {
+-			if (TestClearPageHWPoison(p))
+-				num_poisoned_pages_dec();
++			ClearPageHWPoison(p);
+ 			unlock_page(p);
+ 			put_page(p);
+ 			flags &= ~MF_COUNT_INCREASED;
+@@ -1938,8 +1934,7 @@ int memory_failure(unsigned long pfn, int flags)
+ 	page_flags = p->flags;
+ 
+ 	if (hwpoison_filter(p)) {
+-		if (TestClearPageHWPoison(p))
+-			num_poisoned_pages_dec();
++		TestClearPageHWPoison(p);
+ 		unlock_page(p);
+ 		put_page(p);
+ 		res = -EOPNOTSUPP;
 -- 
 2.20.1
 
