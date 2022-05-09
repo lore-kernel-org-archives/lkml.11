@@ -2,81 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2DE9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:17:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC48FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:17:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233074AbiEIKUw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 06:20:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43496 "EHLO
+        id S232370AbiEIKVs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 06:21:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233162AbiEIKUj (ORCPT
+        with ESMTP id S234121AbiEIKVO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 06:20:39 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 573FADF2B;
-        Mon,  9 May 2022 03:16:37 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id B098321C1C;
-        Mon,  9 May 2022 10:00:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1652090433; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
+        Mon, 9 May 2022 06:21:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6810A18430F
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 03:17:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652091438;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=EnVbGbF3CiTcycSBZO/loerdaCBwAlV6olMPMO9R0Qs=;
-        b=crXHB0LGP0sk30wzd0kWaM5SpjARbCCh70lfRoTsVFXEIuaZcoMvyMb1tID3C62z31gqYe
-        yQ7D8QfaK+pJpNbEPL+K5d78N02gEkqfCsXBVAgUwGGbsSMibVYHliBh+Lr3X45ftFpA+w
-        keJFS3J/goZuc+Z0vjcFJEU3EQEGDXE=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 0B1902C141;
-        Mon,  9 May 2022 10:00:31 +0000 (UTC)
-Date:   Mon, 9 May 2022 12:00:28 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     CGEL <cgel.zte@gmail.com>
-Cc:     akpm@linux-foundation.org, hannes@cmpxchg.org, willy@infradead.org,
-        shy828301@gmail.com, roman.gushchin@linux.dev, shakeelb@google.com,
-        linmiaohe@huawei.com, william.kucharski@oracle.com,
-        peterx@redhat.com, hughd@google.com, vbabka@suse.cz,
-        songmuchun@bytedance.com, surenb@google.com,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        cgroups@vger.kernel.org, Yang Yang <yang.yang29@zte.com.cn>
-Subject: Re: [PATCH] mm/memcg: support control THP behaviour in cgroup
-Message-ID: <YnjmPAToTR0C5o8x@dhcp22.suse.cz>
-References: <20220505033814.103256-1-xu.xin16@zte.com.cn>
- <YnUlntNFR4zeD+qa@dhcp22.suse.cz>
- <6275d3e7.1c69fb81.1d62.4504@mx.google.com>
+        bh=8rAG+hhLyyADjfWKc/qIMa3fRClDqyFw6+rAc7ZUweE=;
+        b=TBY0qSgrMGaSblfpeABrbY52GYWqUpAD6/5ERWkmHINoqzkTfYmNY854ethXRQjzU3uNIm
+        IA2egAh9lQVLHeyi/z7ejkUHwzpJ6ZNLSDkA/79Ch6/3vBUlWaOcz0kltJGz2iTN4KPcwE
+        EIwojyGUMPiaVFIJ/Zkk/b2ad2FqFpg=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-209-L_zjo35DOUi2bLfkt6TIZQ-1; Mon, 09 May 2022 06:17:17 -0400
+X-MC-Unique: L_zjo35DOUi2bLfkt6TIZQ-1
+Received: by mail-ej1-f70.google.com with SMTP id qa15-20020a170907868f00b006f4c89bf2e3so6305402ejc.9
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 03:17:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8rAG+hhLyyADjfWKc/qIMa3fRClDqyFw6+rAc7ZUweE=;
+        b=1ZQ6nr07egpGvR4wynCeqpQdxePXsfrWGXLtcXsTQeaFbNariLYTSbyDPZTV+5aaGC
+         zTf2OsoqHuQa/q1sC/e2IjN80lbl0fKB/Lr+CtE5oAL2CRmSD2ARea2ksOkVzibFKfZ6
+         Ke69OUa22P6R/vTsWSCJ72byAxs1isc3GQL5IobecZpFKShWPGTG2PP1vJfdQtSirgSK
+         rB4bco8c1+tjrHCrhGKU2DEoLZtuvFM8mkdjxzT0hYPeoHOPNrc1XLl0KTvEZCSgTrcU
+         RVKiY+P1onQNtLEGj/6vgFt2M+aLgpohMnNWRjTXxVRmNZ4PHb7q4sikZH+t54aacg3g
+         bPAQ==
+X-Gm-Message-State: AOAM530yYakNAI5FdQXE5nk3zM9D/+dIiIuQK5ehf02LaRZqjwgJQZ2G
+        IFJBSPjJ25hotgRkMwp3u/JKRpKDXOEHFCw8DMH4e7azQn8HJA2e6jaqsSXmlQf6bgA29Xjk6gH
+        4fJyZaMvNl5iAM/sczUmy5CHNMzgALavmaPxwIOkz
+X-Received: by 2002:a50:d08b:0:b0:425:eb86:f36d with SMTP id v11-20020a50d08b000000b00425eb86f36dmr16301831edd.235.1652091436040;
+        Mon, 09 May 2022 03:17:16 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwWF5i0r1wWzRnyta1jc1Xzs8fjC2bR2GTrVWYAaiAIuMqphiWE9pkwqenZGV0+CFmZVoPSFTydmMUJBGOVC04=
+X-Received: by 2002:a50:d08b:0:b0:425:eb86:f36d with SMTP id
+ v11-20020a50d08b000000b00425eb86f36dmr16301818edd.235.1652091435909; Mon, 09
+ May 2022 03:17:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6275d3e7.1c69fb81.1d62.4504@mx.google.com>
+References: <20220508130944.17860-1-vdronoff@gmail.com> <3f16033ef08063ef9fcb707010e78bd0@linux.ibm.com>
+In-Reply-To: <3f16033ef08063ef9fcb707010e78bd0@linux.ibm.com>
+From:   Vlad Dronov <vdronov@redhat.com>
+Date:   Mon, 9 May 2022 12:17:04 +0200
+Message-ID: <CAMusb+Q11JMyOXV0iy4VLJ8yST7L0QrmDUJWOpnvsBxfBzjrdA@mail.gmail.com>
+Subject: Re: [PATCH] s390/crypto: add crypto library interface for ChaCha20
+To:     freude@linux.ibm.com
+Cc:     Patrick Steuer <patrick.steuer@de.ibm.com>,
+        Harald Freudenberger <freude@de.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        linux-crypto@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat 07-05-22 02:05:25, CGEL wrote:
-[...]
-> If there are many containers to run on one host, and some of them have high
-> performance requirements, administrator could turn on thp for them:
-> # docker run -it --thp-enabled=always
-> Then all the processes in those containers will always use thp.
-> While other containers turn off thp by:
-> # docker run -it --thp-enabled=never
+Hi, Harald,
 
-I do not know. The THP config space is already too confusing and complex
-and this just adds on top. E.g. is the behavior of the knob
-hierarchical? What is the policy if parent memcg says madivise while
-child says always? How does the per-application configuration aligns
-with all that (e.g. memcg policy madivise but application says never via
-prctl while still uses some madvised - e.g. via library).
+Thank you for your response, review and an ACK. Let me ask Herbert if
+he would agree
+to add your Reviewed-by and submit (so I do not send v2 just for this).
 
-> By doing this we could promote important containers's performance with less
-> footprint of thp.
+Best regards,
+Vladis
 
-Do we really want to provide something like THP based QoS? To me it
-sounds like a bad idea and if the justification is "it might be useful"
-then I would say no. So you really need to come with a very good usecase
-to promote this further.
--- 
-Michal Hocko
-SUSE Labs
+
+On Mon, May 9, 2022 at 12:10 PM Harald Freudenberger
+<freude@linux.ibm.com> wrote:
+>
+> On 2022-05-08 15:09, Vladis Dronov wrote:
+> > From: Vladis Dronov <vdronov@redhat.com>
+> >
+> > Implement a crypto library interface for the s390-native ChaCha20
+> > cipher
+> > algorithm. This allows us to stop to select CRYPTO_CHACHA20 and instead
+> > select CRYPTO_ARCH_HAVE_LIB_CHACHA. This allows BIG_KEYS=y not to build
+> > a whole ChaCha20 crypto infrastructure as a built-in, but build a
+> > smaller
+> > CRYPTO_LIB_CHACHA instead.
+> >
+> > Make CRYPTO_CHACHA_S390 config entry to look like similar ones on other
+> > architectures. Remove CRYPTO_ALGAPI select as anyway it is selected by
+> > CRYPTO_SKCIPHER.
+> >
+> > Add a new test module and a test script for ChaCha20 cipher and its
+> > interfaces. Here are test results on an idle z15 machine:
+> >
+> > ...skip...
+>
+> Hello Vladis
+> Thanks for your work. Please add my
+> Reviewed-by: Harald Freudenberger <freude@linux.ibm.com>
+>
+> however, always the question who will pick and forward this patch ?
+> To me this looks like most parts are common so I would suggest that
+> Herbert Xu  will pick this patch.
+>
+
