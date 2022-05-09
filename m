@@ -2,130 +2,392 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE478C38161
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 08:57:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA88AC4707F
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 08:57:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237775AbiEII7f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 04:59:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43662 "EHLO
+        id S237477AbiEII6u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 04:58:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235691AbiEIIx4 (ORCPT
+        with ESMTP id S235057AbiEIIuf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 04:53:56 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D48E1F639C;
-        Mon,  9 May 2022 01:50:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1652086200; x=1683622200;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=P1qgV17lnh2akycIs/7RD3U7hySjZfZcLWGAANbzE+U=;
-  b=AafctKHDrq8rWkdEnNDJnybSUa6WZFHoFUiefQ6O/oS06AHMbmNl1PXc
-   SLGLbpxdkwJQorwXAKSWZyax+kG/Ez8JdUDlSPRekVgkApyJQMejXCUhi
-   YsvFDjXXE31VNcO4j1dijIjQ3xdEyRkv8Mbw2e09eT1K3TIPpC34Wk4ps
-   F5vk331qB93/ePDyIx89XsHt0Q4kSywTFQ1IVojw/8Xi7KMYgZLHDU/AZ
-   PeCv46IcNRN9ao05fLLVTU+A5T1bTvYCKqPBXFYyBeZKKVtiavuMFGUD9
-   3oAg1+KG/aBHw69XShTwFN3aKVzaueyDbpc/6SkBFWQC0KPcDP/CU+ysT
-   w==;
-X-IronPort-AV: E=Sophos;i="5.91,210,1647327600"; 
-   d="scan'208";a="172473008"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 May 2022 01:49:49 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+        Mon, 9 May 2022 04:50:35 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF59A12DEC3;
+        Mon,  9 May 2022 01:46:41 -0700 (PDT)
+Received: from kwepemi500016.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KxYQp6t5GzCsY8;
+        Mon,  9 May 2022 15:56:34 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ kwepemi500016.china.huawei.com (7.221.188.220) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 9 May 2022 01:49:48 -0700
-Received: from kavya-HP-Compaq-6000-Pro-SFF-PC.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 9 May 2022 01:49:43 -0700
-From:   Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
-To:     <krzysztof.kozlowski+dt@linaro.org>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>,
-        <peda@axentia.se>
-CC:     <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <lee.jones@linaro.org>,
-        <linux@armlinux.org.uk>, <Manohar.Puri@microchip.com>,
-        <Kavyasree.Kotagiri@microchip.com>, <UNGLinuxDriver@microchip.com>
-Subject: [PATCH v2 3/4] dt-bindings: mux: Add lan966 flexcom mux controller
-Date:   Mon, 9 May 2022 14:19:19 +0530
-Message-ID: <20220509084920.14529-4-kavyasree.kotagiri@microchip.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220509084920.14529-1-kavyasree.kotagiri@microchip.com>
-References: <20220509084920.14529-1-kavyasree.kotagiri@microchip.com>
+ 15.1.2375.24; Mon, 9 May 2022 16:01:20 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 9 May 2022 16:01:19 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
+        <chenhao288@hisilicon.com>
+Subject: [PATCH V2 net-next 4/6] net: hns3: add byte order conversion for VF to PF mailbox message
+Date:   Mon, 9 May 2022 15:55:30 +0800
+Message-ID: <20220509075532.32166-5-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220509075532.32166-1-huangguangbin2@huawei.com>
+References: <20220509075532.32166-1-huangguangbin2@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds DT bindings documentation for lan966 flexcom
-mux controller.
+From: Jie Wang <wangjie125@huawei.com>
 
-Signed-off-by: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
+This patch uses __le16/__32 to define mailbox data structures. Then byte
+order conversion are added for mailbox messages from VF to PF.
+
+Signed-off-by: Jie Wang <wangjie125@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- .../mux/microchip,lan966-flx-mux.yaml         | 51 +++++++++++++++++++
- 1 file changed, 51 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/mux/microchip,lan966-flx-mux.yaml
+ .../net/ethernet/hisilicon/hns3/hclge_mbx.h   | 25 ++++++++-
+ .../hisilicon/hns3/hns3pf/hclge_main.h        |  4 +-
+ .../hisilicon/hns3/hns3pf/hclge_mbx.c         | 50 ++++++++---------
+ .../hisilicon/hns3/hns3vf/hclgevf_main.c      | 54 +++++++++----------
+ 4 files changed, 75 insertions(+), 58 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/mux/microchip,lan966-flx-mux.yaml b/Documentation/devicetree/bindings/mux/microchip,lan966-flx-mux.yaml
-new file mode 100644
-index 000000000000..63147a2e8f3a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mux/microchip,lan966-flx-mux.yaml
-@@ -0,0 +1,51 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/mux/microchip,lan966-flx-mux.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h b/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
+index e1ba0ae055b0..c52876555d4b 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
+@@ -92,8 +92,8 @@ struct hclge_ring_chain_param {
+ struct hclge_basic_info {
+ 	u8 hw_tc_map;
+ 	u8 rsv;
+-	u16 mbx_api_version;
+-	u32 pf_caps;
++	__le16 mbx_api_version;
++	__le32 pf_caps;
+ };
+ 
+ struct hclgevf_mbx_resp_status {
+@@ -198,6 +198,27 @@ struct hclge_mbx_port_base_vlan {
+ 	__le16 vlan_tag;
+ };
+ 
++struct hclge_mbx_vf_queue_info {
++	__le16 num_tqps;
++	__le16 rss_size;
++	__le16 rx_buf_len;
++};
 +
-+title: Microchip Lan966 Flexcom multiplexer bindings
++struct hclge_mbx_vf_queue_depth {
++	__le16 num_tx_desc;
++	__le16 num_rx_desc;
++};
 +
-+maintainers:
-+  - Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
++struct hclge_mbx_vlan_filter {
++	u8 is_kill;
++	__le16 vlan_id;
++	__le16 proto;
++};
 +
-+description: |+
-+  The Microchip Lan966 have 5 Flexcoms. Each flexcom has 2 chip-selects
-+  when operating in USART and SPI modes.
-+  Each chip select of each flexcom can be mapped to 21 flexcom shared pins.
-+  Define register offset and pin number to map a flexcom chip-select
-+  to flexcom shared pin.
++struct hclge_mbx_mtu_info {
++	__le32 mtu;
++};
 +
-+allOf:
-+  - $ref: /schemas/mux/mux-controller.yaml#
+ #pragma pack()
+ 
+ /* used by VF to store the received Async responses from PF */
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+index ab5c37848a7b..18caddd541f8 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+@@ -780,8 +780,8 @@ struct hclge_vf_vlan_cfg {
+ 	union {
+ 		struct {
+ 			u8 is_kill;
+-			u16 vlan;
+-			u16 proto;
++			__le16 vlan;
++			__le16 proto;
+ 		};
+ 		u8 enable;
+ 	};
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
+index d3c4d2c4a5ba..6957b5e158c9 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
+@@ -362,13 +362,16 @@ static int hclge_set_vf_vlan_cfg(struct hclge_vport *vport,
+ 	struct hnae3_handle *handle = &vport->nic;
+ 	struct hclge_dev *hdev = vport->back;
+ 	struct hclge_vf_vlan_cfg *msg_cmd;
++	__be16 proto;
++	u16 vlan_id;
+ 
+ 	msg_cmd = (struct hclge_vf_vlan_cfg *)&mbx_req->msg;
+ 	switch (msg_cmd->subcode) {
+ 	case HCLGE_MBX_VLAN_FILTER:
+-		return hclge_set_vlan_filter(handle,
+-					     cpu_to_be16(msg_cmd->proto),
+-					     msg_cmd->vlan, msg_cmd->is_kill);
++		proto = cpu_to_be16(le16_to_cpu(msg_cmd->proto));
++		vlan_id = le16_to_cpu(msg_cmd->vlan);
++		return hclge_set_vlan_filter(handle, proto, vlan_id,
++					     msg_cmd->is_kill);
+ 	case HCLGE_MBX_VLAN_RX_OFF_CFG:
+ 		return hclge_en_hw_strip_rxvtag(handle, msg_cmd->enable);
+ 	case HCLGE_MBX_GET_PORT_BASE_VLAN_STATE:
+@@ -411,15 +414,17 @@ static void hclge_get_basic_info(struct hclge_vport *vport,
+ 	struct hnae3_ae_dev *ae_dev = vport->back->ae_dev;
+ 	struct hclge_basic_info *basic_info;
+ 	unsigned int i;
++	u32 pf_caps;
+ 
+ 	basic_info = (struct hclge_basic_info *)resp_msg->data;
+ 	for (i = 0; i < kinfo->tc_info.num_tc; i++)
+ 		basic_info->hw_tc_map |= BIT(i);
+ 
++	pf_caps = le32_to_cpu(basic_info->pf_caps);
+ 	if (test_bit(HNAE3_DEV_SUPPORT_VLAN_FLTR_MDF_B, ae_dev->caps))
+-		hnae3_set_bit(basic_info->pf_caps,
+-			      HNAE3_PF_SUPPORT_VLAN_FLTR_MDF_B, 1);
++		hnae3_set_bit(pf_caps, HNAE3_PF_SUPPORT_VLAN_FLTR_MDF_B, 1);
+ 
++	basic_info->pf_caps = cpu_to_le32(pf_caps);
+ 	resp_msg->len = HCLGE_MBX_MAX_RESP_DATA_SIZE;
+ }
+ 
+@@ -427,19 +432,15 @@ static void hclge_get_vf_queue_info(struct hclge_vport *vport,
+ 				    struct hclge_respond_to_vf_msg *resp_msg)
+ {
+ #define HCLGE_TQPS_RSS_INFO_LEN		6
+-#define HCLGE_TQPS_ALLOC_OFFSET		0
+-#define HCLGE_TQPS_RSS_SIZE_OFFSET	2
+-#define HCLGE_TQPS_RX_BUFFER_LEN_OFFSET	4
+ 
++	struct hclge_mbx_vf_queue_info *queue_info;
+ 	struct hclge_dev *hdev = vport->back;
+ 
+ 	/* get the queue related info */
+-	memcpy(&resp_msg->data[HCLGE_TQPS_ALLOC_OFFSET],
+-	       &vport->alloc_tqps, sizeof(u16));
+-	memcpy(&resp_msg->data[HCLGE_TQPS_RSS_SIZE_OFFSET],
+-	       &vport->nic.kinfo.rss_size, sizeof(u16));
+-	memcpy(&resp_msg->data[HCLGE_TQPS_RX_BUFFER_LEN_OFFSET],
+-	       &hdev->rx_buf_len, sizeof(u16));
++	queue_info = (struct hclge_mbx_vf_queue_info *)resp_msg->data;
++	queue_info->num_tqps = cpu_to_le16(vport->alloc_tqps);
++	queue_info->rss_size = cpu_to_le16(vport->nic.kinfo.rss_size);
++	queue_info->rx_buf_len = cpu_to_le16(hdev->rx_buf_len);
+ 	resp_msg->len = HCLGE_TQPS_RSS_INFO_LEN;
+ }
+ 
+@@ -454,16 +455,15 @@ static void hclge_get_vf_queue_depth(struct hclge_vport *vport,
+ 				     struct hclge_respond_to_vf_msg *resp_msg)
+ {
+ #define HCLGE_TQPS_DEPTH_INFO_LEN	4
+-#define HCLGE_TQPS_NUM_TX_DESC_OFFSET	0
+-#define HCLGE_TQPS_NUM_RX_DESC_OFFSET	2
+ 
++	struct hclge_mbx_vf_queue_depth *queue_depth;
+ 	struct hclge_dev *hdev = vport->back;
+ 
+ 	/* get the queue depth info */
+-	memcpy(&resp_msg->data[HCLGE_TQPS_NUM_TX_DESC_OFFSET],
+-	       &hdev->num_tx_desc, sizeof(u16));
+-	memcpy(&resp_msg->data[HCLGE_TQPS_NUM_RX_DESC_OFFSET],
+-	       &hdev->num_rx_desc, sizeof(u16));
++	queue_depth = (struct hclge_mbx_vf_queue_depth *)resp_msg->data;
++	queue_depth->num_tx_desc = cpu_to_le16(hdev->num_tx_desc);
++	queue_depth->num_rx_desc = cpu_to_le16(hdev->num_rx_desc);
 +
-+properties:
-+  compatible:
-+    const: microchip,lan966-flx-mux
+ 	resp_msg->len = HCLGE_TQPS_DEPTH_INFO_LEN;
+ }
+ 
+@@ -549,7 +549,7 @@ static int hclge_mbx_reset_vf_queue(struct hclge_vport *vport,
+ 	u16 queue_id;
+ 	int ret;
+ 
+-	memcpy(&queue_id, mbx_req->msg.data, sizeof(queue_id));
++	queue_id = le16_to_cpu(*(__le16 *)mbx_req->msg.data);
+ 	resp_msg->data[0] = HCLGE_RESET_ALL_QUEUE_DONE;
+ 	resp_msg->len = sizeof(u8);
+ 
+@@ -585,9 +585,11 @@ static void hclge_vf_keep_alive(struct hclge_vport *vport)
+ static int hclge_set_vf_mtu(struct hclge_vport *vport,
+ 			    struct hclge_mbx_vf_to_pf_cmd *mbx_req)
+ {
++	struct hclge_mbx_mtu_info *mtu_info;
+ 	u32 mtu;
+ 
+-	memcpy(&mtu, mbx_req->msg.data, sizeof(mtu));
++	mtu_info = (struct hclge_mbx_mtu_info *)mbx_req->msg.data;
++	mtu = le32_to_cpu(mtu_info->mtu);
+ 
+ 	return hclge_set_vport_mtu(vport, mtu);
+ }
+@@ -600,7 +602,7 @@ static int hclge_get_queue_id_in_pf(struct hclge_vport *vport,
+ 	struct hclge_dev *hdev = vport->back;
+ 	u16 queue_id, qid_in_pf;
+ 
+-	memcpy(&queue_id, mbx_req->msg.data, sizeof(queue_id));
++	queue_id = le16_to_cpu(*(__le16 *)mbx_req->msg.data);
+ 	if (queue_id >= handle->kinfo.num_tqps) {
+ 		dev_err(&hdev->pdev->dev, "Invalid queue id(%u) from VF %u\n",
+ 			queue_id, mbx_req->mbx_src_vfid);
+@@ -608,7 +610,7 @@ static int hclge_get_queue_id_in_pf(struct hclge_vport *vport,
+ 	}
+ 
+ 	qid_in_pf = hclge_covert_handle_qid_global(&vport->nic, queue_id);
+-	memcpy(resp_msg->data, &qid_in_pf, sizeof(qid_in_pf));
++	*(__le16 *)resp_msg->data = cpu_to_le16(qid_in_pf);
+ 	resp_msg->len = sizeof(qid_in_pf);
+ 	return 0;
+ }
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+index 38a26797c9d4..5eaf09ea4009 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+@@ -189,8 +189,8 @@ static int hclgevf_get_basic_info(struct hclgevf_dev *hdev)
+ 	basic_info = (struct hclge_basic_info *)resp_msg;
+ 
+ 	hdev->hw_tc_map = basic_info->hw_tc_map;
+-	hdev->mbx_api_version = basic_info->mbx_api_version;
+-	caps = basic_info->pf_caps;
++	hdev->mbx_api_version = le16_to_cpu(basic_info->mbx_api_version);
++	caps = le32_to_cpu(basic_info->pf_caps);
+ 	if (test_bit(HNAE3_PF_SUPPORT_VLAN_FLTR_MDF_B, &caps))
+ 		set_bit(HNAE3_DEV_SUPPORT_VLAN_FLTR_MDF_B, ae_dev->caps);
+ 
+@@ -223,10 +223,8 @@ static int hclgevf_get_port_base_vlan_filter_state(struct hclgevf_dev *hdev)
+ static int hclgevf_get_queue_info(struct hclgevf_dev *hdev)
+ {
+ #define HCLGEVF_TQPS_RSS_INFO_LEN	6
+-#define HCLGEVF_TQPS_ALLOC_OFFSET	0
+-#define HCLGEVF_TQPS_RSS_SIZE_OFFSET	2
+-#define HCLGEVF_TQPS_RX_BUFFER_LEN_OFFSET	4
+ 
++	struct hclge_mbx_vf_queue_info *queue_info;
+ 	u8 resp_msg[HCLGEVF_TQPS_RSS_INFO_LEN];
+ 	struct hclge_vf_to_pf_msg send_msg;
+ 	int status;
+@@ -241,12 +239,10 @@ static int hclgevf_get_queue_info(struct hclgevf_dev *hdev)
+ 		return status;
+ 	}
+ 
+-	memcpy(&hdev->num_tqps, &resp_msg[HCLGEVF_TQPS_ALLOC_OFFSET],
+-	       sizeof(u16));
+-	memcpy(&hdev->rss_size_max, &resp_msg[HCLGEVF_TQPS_RSS_SIZE_OFFSET],
+-	       sizeof(u16));
+-	memcpy(&hdev->rx_buf_len, &resp_msg[HCLGEVF_TQPS_RX_BUFFER_LEN_OFFSET],
+-	       sizeof(u16));
++	queue_info = (struct hclge_mbx_vf_queue_info *)resp_msg;
++	hdev->num_tqps = le16_to_cpu(queue_info->num_tqps);
++	hdev->rss_size_max = le16_to_cpu(queue_info->rss_size);
++	hdev->rx_buf_len = le16_to_cpu(queue_info->rx_buf_len);
+ 
+ 	return 0;
+ }
+@@ -254,9 +250,8 @@ static int hclgevf_get_queue_info(struct hclgevf_dev *hdev)
+ static int hclgevf_get_queue_depth(struct hclgevf_dev *hdev)
+ {
+ #define HCLGEVF_TQPS_DEPTH_INFO_LEN	4
+-#define HCLGEVF_TQPS_NUM_TX_DESC_OFFSET	0
+-#define HCLGEVF_TQPS_NUM_RX_DESC_OFFSET	2
+ 
++	struct hclge_mbx_vf_queue_depth *queue_depth;
+ 	u8 resp_msg[HCLGEVF_TQPS_DEPTH_INFO_LEN];
+ 	struct hclge_vf_to_pf_msg send_msg;
+ 	int ret;
+@@ -271,10 +266,9 @@ static int hclgevf_get_queue_depth(struct hclgevf_dev *hdev)
+ 		return ret;
+ 	}
+ 
+-	memcpy(&hdev->num_tx_desc, &resp_msg[HCLGEVF_TQPS_NUM_TX_DESC_OFFSET],
+-	       sizeof(u16));
+-	memcpy(&hdev->num_rx_desc, &resp_msg[HCLGEVF_TQPS_NUM_RX_DESC_OFFSET],
+-	       sizeof(u16));
++	queue_depth = (struct hclge_mbx_vf_queue_depth *)resp_msg;
++	hdev->num_tx_desc = le16_to_cpu(queue_depth->num_tx_desc);
++	hdev->num_rx_desc = le16_to_cpu(queue_depth->num_rx_desc);
+ 
+ 	return 0;
+ }
+@@ -288,11 +282,11 @@ static u16 hclgevf_get_qid_global(struct hnae3_handle *handle, u16 queue_id)
+ 	int ret;
+ 
+ 	hclgevf_build_send_msg(&send_msg, HCLGE_MBX_GET_QID_IN_PF, 0);
+-	memcpy(send_msg.data, &queue_id, sizeof(queue_id));
++	*(__le16 *)send_msg.data = cpu_to_le16(queue_id);
+ 	ret = hclgevf_send_mbx_msg(hdev, &send_msg, true, resp_data,
+ 				   sizeof(resp_data));
+ 	if (!ret)
+-		qid_in_pf = *(u16 *)resp_data;
++		qid_in_pf = le16_to_cpu(*(__le16 *)resp_data);
+ 
+ 	return qid_in_pf;
+ }
+@@ -1245,11 +1239,8 @@ static int hclgevf_set_vlan_filter(struct hnae3_handle *handle,
+ 				   __be16 proto, u16 vlan_id,
+ 				   bool is_kill)
+ {
+-#define HCLGEVF_VLAN_MBX_IS_KILL_OFFSET	0
+-#define HCLGEVF_VLAN_MBX_VLAN_ID_OFFSET	1
+-#define HCLGEVF_VLAN_MBX_PROTO_OFFSET	3
+-
+ 	struct hclgevf_dev *hdev = hclgevf_ae_get_hdev(handle);
++	struct hclge_mbx_vlan_filter *vlan_filter;
+ 	struct hclge_vf_to_pf_msg send_msg;
+ 	int ret;
+ 
+@@ -1271,11 +1262,11 @@ static int hclgevf_set_vlan_filter(struct hnae3_handle *handle,
+ 
+ 	hclgevf_build_send_msg(&send_msg, HCLGE_MBX_SET_VLAN,
+ 			       HCLGE_MBX_VLAN_FILTER);
+-	send_msg.data[HCLGEVF_VLAN_MBX_IS_KILL_OFFSET] = is_kill;
+-	memcpy(&send_msg.data[HCLGEVF_VLAN_MBX_VLAN_ID_OFFSET], &vlan_id,
+-	       sizeof(vlan_id));
+-	memcpy(&send_msg.data[HCLGEVF_VLAN_MBX_PROTO_OFFSET], &proto,
+-	       sizeof(proto));
++	vlan_filter = (struct hclge_mbx_vlan_filter *)send_msg.data;
++	vlan_filter->is_kill = is_kill;
++	vlan_filter->vlan_id = cpu_to_le16(vlan_id);
++	vlan_filter->proto = cpu_to_le16(be16_to_cpu(proto));
 +
-+  reg:
-+    maxItems: 1
+ 	/* when remove hw vlan filter failed, record the vlan id,
+ 	 * and try to remove it from hw later, to be consistence
+ 	 * with stack.
+@@ -1347,7 +1338,7 @@ static int hclgevf_reset_tqp(struct hnae3_handle *handle)
+ 
+ 	for (i = 1; i < handle->kinfo.num_tqps; i++) {
+ 		hclgevf_build_send_msg(&send_msg, HCLGE_MBX_QUEUE_RESET, 0);
+-		memcpy(send_msg.data, &i, sizeof(i));
++		*(__le16 *)send_msg.data = cpu_to_le16(i);
+ 		ret = hclgevf_send_mbx_msg(hdev, &send_msg, true, NULL, 0);
+ 		if (ret)
+ 			return ret;
+@@ -1359,10 +1350,13 @@ static int hclgevf_reset_tqp(struct hnae3_handle *handle)
+ static int hclgevf_set_mtu(struct hnae3_handle *handle, int new_mtu)
+ {
+ 	struct hclgevf_dev *hdev = hclgevf_ae_get_hdev(handle);
++	struct hclge_mbx_mtu_info *mtu_info;
+ 	struct hclge_vf_to_pf_msg send_msg;
+ 
+ 	hclgevf_build_send_msg(&send_msg, HCLGE_MBX_SET_MTU, 0);
+-	memcpy(send_msg.data, &new_mtu, sizeof(new_mtu));
++	mtu_info = (struct hclge_mbx_mtu_info *)send_msg.data;
++	mtu_info->mtu = cpu_to_le32(new_mtu);
 +
-+  '#mux-control-cells':
-+    const: 1
-+
-+  mux-offset-pin:
-+    description: an array of register offset and flexcom shared pin(0-20).
-+
-+required:
-+  - compatible
-+  - reg
-+  - '#mux-control-cells'
-+  - mux-offset-pin
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    mux: mux-controller@e2004168 {
-+        compatible = "microchip,lan966-flx-mux";
-+        reg = <0xe2004168 0x8>;
-+        #mux-control-cells = <1>;
-+        mux-offset-pin = <0x18 9>; /* 0: flx3 cs0 offset, pin-9 */
-+    };
-+...
+ 	return hclgevf_send_mbx_msg(hdev, &send_msg, true, NULL, 0);
+ }
+ 
 -- 
-2.17.1
+2.33.0
 
