@@ -2,441 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F1EBC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:52:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82A30C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:52:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236394AbiEIH4C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 03:56:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33244 "EHLO
+        id S235349AbiEIHyz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 03:54:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236562AbiEIHxG (ORCPT
+        with ESMTP id S235627AbiEIHo6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 03:53:06 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA2698DDEB
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 00:49:12 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id 125-20020a1c1983000000b003941f354c62so7757518wmz.0
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 00:49:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=zTaVkhFaCPYCczWcQ3UIpvV8zmzZn3hB54zbZQSdmG4=;
-        b=1DemtbvsRKtrhV3ePwedVSa4B6ZoyqXgD8J6jeaNE+U7pHBpMoZkYswymkl3R+QtPC
-         v6781QcDXuR2Vd6m5X8WXhiQ8kFXOL6HVYCt9XlOA0oYxEqbhwT4ErSXlX0NeIT/Lrif
-         MTfBZCPJVeT+Of6w2Km68jO2N1GGLmZgsKYxMXBrJkhwoPEYRemJnoWp8AlyjXhpp1yS
-         O1S/ckT6MCH73GhyuQR/uo4yYgg0FLubgZbmIEHlauLRA/LYykhTpj9GY03VVw9C/Mjk
-         2bM/NsNHjg6saLcO+OGmRXztU7DtK6IVRoHzvexneF8yDdKSqdinD2QoEfpPmyhCfB2u
-         s1PQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=zTaVkhFaCPYCczWcQ3UIpvV8zmzZn3hB54zbZQSdmG4=;
-        b=oiYYaFZOLo63aeKObBzyJCflGHM2E0N4oQV6tU7NbKzQ4h3hs94QzMUS2DPOj81c81
-         huV41IlY3xTefs4nswe55FZ9IAkG7PaWbrp3/1pjnIxA5TiOfRO8tOt38AO3gjW9Jg+G
-         X26ne/8SFspnELEu3GoZahkWoKoIoOnVKV377e6GYbnwjI+T6au+4+GInltDV9TR0byV
-         WX6MoRTMTVJXvYsTo1poiJLYbFq6YCXU7sFERi63r5TDXIpTzhhBIPmS/Tb0qeErxzJB
-         7EbM4K45HhOUYsyoutsHbz3+cVOhDBf6aBMdklpPrzc5Exy6vfNzG7WakdyDGQ4T/LWZ
-         uKlA==
-X-Gm-Message-State: AOAM5306r2t1W1MwcEo2vNE2y2n1pDjWBguRn5o6HJzHriednmMA4bHf
-        wyjCruaCd0GBrCXtEBq1vbnH17ZClpkTpQ==
-X-Google-Smtp-Source: ABdhPJxQckEVugqpsah7Dbi8JOUeJ6p80TG34ZBuqw6yeCfFRMA5KFoFE/sun4z2Jhb4d+BrpE4+nw==
-X-Received: by 2002:a05:600c:3490:b0:394:5616:ac78 with SMTP id a16-20020a05600c349000b003945616ac78mr14892739wmq.80.1652082551264;
-        Mon, 09 May 2022 00:49:11 -0700 (PDT)
-Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id bw22-20020a0560001f9600b0020c5253d8d8sm11784768wrb.36.2022.05.09.00.49.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 00:49:10 -0700 (PDT)
-From:   Corentin Labbe <clabbe@baylibre.com>
-To:     alexandre.torgue@foss.st.com, andrew@lunn.ch, broonie@kernel.org,
-        calvin.johnson@oss.nxp.com, davem@davemloft.net,
-        edumazet@google.com, hkallweit1@gmail.com,
-        jernej.skrabec@gmail.com, joabreu@synopsys.com,
-        krzysztof.kozlowski+dt@linaro.org, kuba@kernel.org,
-        lgirdwood@gmail.com, linux@armlinux.org.uk, pabeni@redhat.com,
-        peppe.cavallaro@st.com, robh+dt@kernel.org, samuel@sholland.org,
-        wens@csie.org
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev, Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH 5/6] arm64: dts: allwinner: move phy regulator in PHY node
-Date:   Mon,  9 May 2022 07:48:56 +0000
-Message-Id: <20220509074857.195302-6-clabbe@baylibre.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220509074857.195302-1-clabbe@baylibre.com>
-References: <20220509074857.195302-1-clabbe@baylibre.com>
+        Mon, 9 May 2022 03:44:58 -0400
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F32318E20;
+        Mon,  9 May 2022 00:41:03 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R771e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0VCfxsZc_1652082047;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0VCfxsZc_1652082047)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 09 May 2022 15:40:48 +0800
+From:   Jeffle Xu <jefflexu@linux.alibaba.com>
+To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
+        chao@kernel.org, linux-erofs@lists.ozlabs.org
+Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
+        willy@infradead.org, linux-fsdevel@vger.kernel.org,
+        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
+        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
+        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
+        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
+        yinxin.x@bytedance.com, zhangjiachen.jaycee@bytedance.com,
+        zhujia.zj@bytedance.com
+Subject: [PATCH v11 12/22] erofs: add fscache context helper functions
+Date:   Mon,  9 May 2022 15:40:18 +0800
+Message-Id: <20220509074028.74954-13-jefflexu@linux.alibaba.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220509074028.74954-1-jefflexu@linux.alibaba.com>
+References: <20220509074028.74954-1-jefflexu@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that PHY core can handle regulators, move regulator handle in PHY
-node.
+Introduce a context structure for managing data blobs, and helper
+functions for initializing and cleaning up this context structure.
 
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
+Reviewed-by: Gao Xiang <hsiangkao@linux.alibaba.com>
 ---
- arch/arm64/boot/dts/allwinner/sun50i-a64-bananapi-m64.dts | 2 +-
- arch/arm64/boot/dts/allwinner/sun50i-a64-nanopi-a64.dts   | 2 +-
- .../boot/dts/allwinner/sun50i-a64-oceanic-5205-5inmfd.dts | 2 +-
- arch/arm64/boot/dts/allwinner/sun50i-a64-olinuxino.dts    | 2 +-
- arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts | 2 +-
- arch/arm64/boot/dts/allwinner/sun50i-a64-pine64.dts       | 2 +-
- .../boot/dts/allwinner/sun50i-a64-sopine-baseboard.dts    | 2 +-
- .../boot/dts/allwinner/sun50i-h5-libretech-all-h5-cc.dts  | 2 +-
- .../boot/dts/allwinner/sun50i-h5-nanopi-neo-plus2.dts     | 2 +-
- arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-neo2.dts   | 2 +-
- arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-r1s-h5.dts | 2 +-
- arch/arm64/boot/dts/allwinner/sun50i-h5-orangepi-pc2.dts  | 2 +-
- .../arm64/boot/dts/allwinner/sun50i-h5-orangepi-prime.dts | 2 +-
- .../boot/dts/allwinner/sun50i-h5-orangepi-zero-plus.dts   | 2 +-
- arch/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts   | 2 +-
- .../boot/dts/allwinner/sun50i-h6-pine-h64-model-b.dts     | 8 ++++----
- arch/arm64/boot/dts/allwinner/sun50i-h6-pine-h64.dts      | 2 +-
- 17 files changed, 20 insertions(+), 20 deletions(-)
+ fs/erofs/fscache.c  | 41 +++++++++++++++++++++++++++++++++++++++++
+ fs/erofs/internal.h | 19 +++++++++++++++++++
+ 2 files changed, 60 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-bananapi-m64.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-bananapi-m64.dts
-index 997a19372683..f44345e0f749 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-a64-bananapi-m64.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-bananapi-m64.dts
-@@ -107,7 +107,6 @@ &emac {
- 	pinctrl-0 = <&rgmii_pins>;
- 	phy-mode = "rgmii-id";
- 	phy-handle = <&ext_rgmii_phy>;
--	phy-supply = <&reg_dc1sw>;
- 	status = "okay";
+diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
+index 7a6d0239ebb1..dfff245b006b 100644
+--- a/fs/erofs/fscache.c
++++ b/fs/erofs/fscache.c
+@@ -5,6 +5,47 @@
+ #include <linux/fscache.h>
+ #include "internal.h"
+ 
++int erofs_fscache_register_cookie(struct super_block *sb,
++				  struct erofs_fscache **fscache, char *name)
++{
++	struct fscache_volume *volume = EROFS_SB(sb)->volume;
++	struct erofs_fscache *ctx;
++	struct fscache_cookie *cookie;
++
++	ctx = kzalloc(sizeof(*ctx), GFP_KERNEL);
++	if (!ctx)
++		return -ENOMEM;
++
++	cookie = fscache_acquire_cookie(volume, FSCACHE_ADV_WANT_CACHE_SIZE,
++					name, strlen(name), NULL, 0, 0);
++	if (!cookie) {
++		erofs_err(sb, "failed to get cookie for %s", name);
++		kfree(name);
++		return -EINVAL;
++	}
++
++	fscache_use_cookie(cookie, false);
++	ctx->cookie = cookie;
++
++	*fscache = ctx;
++	return 0;
++}
++
++void erofs_fscache_unregister_cookie(struct erofs_fscache **fscache)
++{
++	struct erofs_fscache *ctx = *fscache;
++
++	if (!ctx)
++		return;
++
++	fscache_unuse_cookie(ctx->cookie, NULL, NULL);
++	fscache_relinquish_cookie(ctx->cookie, false);
++	ctx->cookie = NULL;
++
++	kfree(ctx);
++	*fscache = NULL;
++}
++
+ int erofs_fscache_register_fs(struct super_block *sb)
+ {
+ 	struct erofs_sb_info *sbi = EROFS_SB(sb);
+diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
+index e4f6a13f161f..b1f19f058503 100644
+--- a/fs/erofs/internal.h
++++ b/fs/erofs/internal.h
+@@ -97,6 +97,10 @@ struct erofs_sb_lz4_info {
+ 	u16 max_pclusterblks;
  };
  
-@@ -134,6 +133,7 @@ &mdio {
- 	ext_rgmii_phy: ethernet-phy@1 {
- 		compatible = "ethernet-phy-ieee802.3-c22";
- 		reg = <1>;
-+		phy-supply = <&reg_dc1sw>;
- 	};
- };
++struct erofs_fscache {
++	struct fscache_cookie *cookie;
++};
++
+ struct erofs_sb_info {
+ 	struct erofs_mount_opts opt;	/* options */
+ #ifdef CONFIG_EROFS_FS_ZIP
+@@ -626,12 +630,27 @@ static inline int z_erofs_load_lzma_config(struct super_block *sb,
+ #ifdef CONFIG_EROFS_FS_ONDEMAND
+ int erofs_fscache_register_fs(struct super_block *sb);
+ void erofs_fscache_unregister_fs(struct super_block *sb);
++
++int erofs_fscache_register_cookie(struct super_block *sb,
++				  struct erofs_fscache **fscache, char *name);
++void erofs_fscache_unregister_cookie(struct erofs_fscache **fscache);
+ #else
+ static inline int erofs_fscache_register_fs(struct super_block *sb)
+ {
+ 	return 0;
+ }
+ static inline void erofs_fscache_unregister_fs(struct super_block *sb) {}
++
++static inline int erofs_fscache_register_cookie(struct super_block *sb,
++						struct erofs_fscache **fscache,
++						char *name)
++{
++	return -EOPNOTSUPP;
++}
++
++static inline void erofs_fscache_unregister_cookie(struct erofs_fscache **fscache)
++{
++}
+ #endif
  
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-nanopi-a64.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-nanopi-a64.dts
-index e47ff06a6fa9..9923d8fb3289 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-a64-nanopi-a64.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-nanopi-a64.dts
-@@ -82,7 +82,6 @@ &emac {
- 	pinctrl-0 = <&rgmii_pins>;
- 	phy-mode = "rgmii";
- 	phy-handle = <&ext_rgmii_phy>;
--	phy-supply = <&reg_dcdc1>;
- 	status = "okay";
- };
- 
-@@ -106,6 +105,7 @@ &mdio {
- 	ext_rgmii_phy: ethernet-phy@1 {
- 		compatible = "ethernet-phy-ieee802.3-c22";
- 		reg = <7>;
-+		phy-supply = <&reg_dcdc1>;
- 	};
- };
- 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-oceanic-5205-5inmfd.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-oceanic-5205-5inmfd.dts
-index 577f9e1d08a1..ec511efee942 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-a64-oceanic-5205-5inmfd.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-oceanic-5205-5inmfd.dts
-@@ -30,7 +30,6 @@ &emac {
- 	pinctrl-0 = <&rgmii_pins>;
- 	phy-mode = "rgmii";
- 	phy-handle = <&ext_rgmii_phy>;
--	phy-supply = <&reg_dc1sw>;
- 	allwinner,tx-delay-ps = <600>;
- 	status = "okay";
- };
-@@ -55,6 +54,7 @@ &mdio {
- 	ext_rgmii_phy: ethernet-phy@1 {
- 		compatible = "ethernet-phy-ieee802.3-c22";
- 		reg = <1>;
-+		phy-supply = <&reg_dc1sw>;
- 	};
- };
- 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-olinuxino.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-olinuxino.dts
-index bfb806cf6d7a..c172cc4291b7 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-a64-olinuxino.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-olinuxino.dts
-@@ -104,7 +104,6 @@ &emac {
- 	pinctrl-0 = <&rgmii_pins>;
- 	phy-mode = "rgmii";
- 	phy-handle = <&ext_rgmii_phy>;
--	phy-supply = <&reg_dcdc1>;
- 	allwinner,tx-delay-ps = <600>;
- 	status = "okay";
- };
-@@ -124,6 +123,7 @@ &mdio {
- 	ext_rgmii_phy: ethernet-phy@1 {
- 		compatible = "ethernet-phy-ieee802.3-c22";
- 		reg = <1>;
-+		phy-supply = <&reg_dcdc1>;
- 	};
- };
- 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts
-index c519d9fa6967..3f9622f141b6 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts
-@@ -122,7 +122,6 @@ &emac {
- 	pinctrl-0 = <&rgmii_pins>;
- 	phy-mode = "rgmii-id";
- 	phy-handle = <&ext_rgmii_phy>;
--	phy-supply = <&reg_gmac_3v3>;
- 	status = "okay";
- };
- 
-@@ -141,6 +140,7 @@ &mdio {
- 	ext_rgmii_phy: ethernet-phy@1 {
- 		compatible = "ethernet-phy-ieee802.3-c22";
- 		reg = <1>;
-+		phy-supply = <&reg_gmac_3v3>;
- 	};
- };
- 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pine64.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-pine64.dts
-index 2accb5ddf783..70039380d454 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pine64.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pine64.dts
-@@ -83,7 +83,6 @@ &emac {
- 	pinctrl-0 = <&rmii_pins>;
- 	phy-mode = "rmii";
- 	phy-handle = <&ext_rmii_phy1>;
--	phy-supply = <&reg_dc1sw>;
- 	status = "okay";
- 
- };
-@@ -111,6 +110,7 @@ &mdio {
- 	ext_rmii_phy1: ethernet-phy@1 {
- 		compatible = "ethernet-phy-ieee802.3-c22";
- 		reg = <1>;
-+		phy-supply = <&reg_dc1sw>;
- 	};
- };
- 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-sopine-baseboard.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-sopine-baseboard.dts
-index 5e66ce1a334f..716a8c1faef2 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-a64-sopine-baseboard.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-sopine-baseboard.dts
-@@ -81,7 +81,6 @@ &emac {
- 	pinctrl-0 = <&rgmii_pins>;
- 	phy-mode = "rgmii-txid";
- 	phy-handle = <&ext_rgmii_phy>;
--	phy-supply = <&reg_dc1sw>;
- 	status = "okay";
- };
- 
-@@ -100,6 +99,7 @@ &mdio {
- 	ext_rgmii_phy: ethernet-phy@1 {
- 		compatible = "ethernet-phy-ieee802.3-c22";
- 		reg = <1>;
-+		phy-supply = <&reg_dc1sw>;
- 	};
- };
- 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h5-libretech-all-h5-cc.dts b/arch/arm64/boot/dts/allwinner/sun50i-h5-libretech-all-h5-cc.dts
-index 6e30a564c87f..4e3dae6ee3a4 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-h5-libretech-all-h5-cc.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-h5-libretech-all-h5-cc.dts
-@@ -34,7 +34,6 @@ &codec {
- &emac {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&emac_rgmii_pins>;
--	phy-supply = <&reg_gmac_3v3>;
- 	phy-handle = <&ext_rgmii_phy>;
- 	phy-mode = "rgmii-id";
- 	/delete-property/ allwinner,leds-active-low;
-@@ -45,6 +44,7 @@ &external_mdio {
- 	ext_rgmii_phy: ethernet-phy@1 {
- 		compatible = "ethernet-phy-ieee802.3-c22";
- 		reg = <1>;
-+		phy-supply = <&reg_gmac_3v3>;
- 	};
- };
- 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-neo-plus2.dts b/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-neo-plus2.dts
-index 4c3921ac236c..e07142b0cddf 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-neo-plus2.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-neo-plus2.dts
-@@ -94,7 +94,6 @@ &ehci3 {
- &emac {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&emac_rgmii_pins>;
--	phy-supply = <&reg_gmac_3v3>;
- 	phy-handle = <&ext_rgmii_phy>;
- 	phy-mode = "rgmii-id";
- 	status = "okay";
-@@ -104,6 +103,7 @@ &external_mdio {
- 	ext_rgmii_phy: ethernet-phy@7 {
- 		compatible = "ethernet-phy-ieee802.3-c22";
- 		reg = <7>;
-+		phy-supply = <&reg_gmac_3v3>;
- 	};
- };
- 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-neo2.dts b/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-neo2.dts
-index 05486cccee1c..77940e90bd36 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-neo2.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-neo2.dts
-@@ -73,7 +73,6 @@ &ehci3 {
- &emac {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&emac_rgmii_pins>;
--	phy-supply = <&reg_gmac_3v3>;
- 	phy-handle = <&ext_rgmii_phy>;
- 	phy-mode = "rgmii-id";
- 	status = "okay";
-@@ -83,6 +82,7 @@ &external_mdio {
- 	ext_rgmii_phy: ethernet-phy@7 {
- 		compatible = "ethernet-phy-ieee802.3-c22";
- 		reg = <7>;
-+		phy-supply = <&reg_gmac_3v3>;
- 	};
- };
- 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-r1s-h5.dts b/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-r1s-h5.dts
-index 55b369534a08..7280bcbc0f40 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-r1s-h5.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-h5-nanopi-r1s-h5.dts
-@@ -125,7 +125,6 @@ &ehci2 {
- &emac {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&emac_rgmii_pins>;
--	phy-supply = <&reg_gmac_3v3>;
- 	phy-handle = <&ext_rgmii_phy>;
- 	phy-mode = "rgmii-id";
- 	status = "okay";
-@@ -135,6 +134,7 @@ &external_mdio {
- 	ext_rgmii_phy: ethernet-phy@7 {
- 		compatible = "ethernet-phy-ieee802.3-c22";
- 		reg = <7>;
-+		phy-supply = <&reg_gmac_3v3>;
- 	};
- };
- 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h5-orangepi-pc2.dts b/arch/arm64/boot/dts/allwinner/sun50i-h5-orangepi-pc2.dts
-index 1010c1b22d2e..95bc670a4b8e 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-h5-orangepi-pc2.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-h5-orangepi-pc2.dts
-@@ -121,7 +121,6 @@ &ehci3 {
- &emac {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&emac_rgmii_pins>;
--	phy-supply = <&reg_gmac_3v3>;
- 	phy-handle = <&ext_rgmii_phy>;
- 	phy-mode = "rgmii-id";
- 	status = "okay";
-@@ -131,6 +130,7 @@ &external_mdio {
- 	ext_rgmii_phy: ethernet-phy@1 {
- 		compatible = "ethernet-phy-ieee802.3-c22";
- 		reg = <1>;
-+		phy-supply = <&reg_gmac_3v3>;
- 	};
- };
- 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h5-orangepi-prime.dts b/arch/arm64/boot/dts/allwinner/sun50i-h5-orangepi-prime.dts
-index 74e0444af19b..8b4403ca610f 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-h5-orangepi-prime.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-h5-orangepi-prime.dts
-@@ -122,7 +122,6 @@ &ehci3 {
- &emac {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&emac_rgmii_pins>;
--	phy-supply = <&reg_gmac_3v3>;
- 	phy-handle = <&ext_rgmii_phy>;
- 	phy-mode = "rgmii-id";
- 	status = "okay";
-@@ -132,6 +131,7 @@ &external_mdio {
- 	ext_rgmii_phy: ethernet-phy@1 {
- 		compatible = "ethernet-phy-ieee802.3-c22";
- 		reg = <1>;
-+		phy-supply = <&reg_gmac_3v3>;
- 	};
- };
- 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h5-orangepi-zero-plus.dts b/arch/arm64/boot/dts/allwinner/sun50i-h5-orangepi-zero-plus.dts
-index 7ec5ac850a0d..74d2a60ce113 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-h5-orangepi-zero-plus.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-h5-orangepi-zero-plus.dts
-@@ -67,7 +67,6 @@ &ehci1 {
- &emac {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&emac_rgmii_pins>;
--	phy-supply = <&reg_gmac_3v3>;
- 	phy-handle = <&ext_rgmii_phy>;
- 	phy-mode = "rgmii-id";
- 	status = "okay";
-@@ -77,6 +76,7 @@ &external_mdio {
- 	ext_rgmii_phy: ethernet-phy@1 {
- 		compatible = "ethernet-phy-ieee802.3-c22";
- 		reg = <1>;
-+		phy-supply = <&reg_gmac_3v3>;
- 	};
- };
- 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts b/arch/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts
-index 6249e9e02928..ecfb99c07f69 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-beelink-gs1.dts
-@@ -99,7 +99,6 @@ &emac {
- 	pinctrl-0 = <&ext_rgmii_pins>;
- 	phy-mode = "rgmii-id";
- 	phy-handle = <&ext_rgmii_phy>;
--	phy-supply = <&reg_aldo2>;
- 	status = "okay";
- };
- 
-@@ -122,6 +121,7 @@ &mdio {
- 	ext_rgmii_phy: ethernet-phy@1 {
- 		compatible = "ethernet-phy-ieee802.3-c22";
- 		reg = <1>;
-+		phy-supply = <&reg_aldo2>;
- 	};
- };
- 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6-pine-h64-model-b.dts b/arch/arm64/boot/dts/allwinner/sun50i-h6-pine-h64-model-b.dts
-index 686f58e77004..6594d2e5284a 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-h6-pine-h64-model-b.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-pine-h64-model-b.dts
-@@ -18,12 +18,12 @@ wifi_pwrseq: wifi_pwrseq {
- 	};
- };
- 
--&hdmi_connector {
--	/delete-property/ ddc-en-gpios;
-+&ext_rgmii_phy {
-+	phy-supply = <&reg_aldo2>;
- };
- 
--&emac {
--	phy-supply = <&reg_aldo2>;
-+&hdmi_connector {
-+	/delete-property/ ddc-en-gpios;
- };
- 
- &mmc1 {
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6-pine-h64.dts b/arch/arm64/boot/dts/allwinner/sun50i-h6-pine-h64.dts
-index 1ffd68f43f87..dae637720432 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-h6-pine-h64.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-pine-h64.dts
-@@ -102,7 +102,6 @@ &emac {
- 	pinctrl-0 = <&ext_rgmii_pins>;
- 	phy-mode = "rgmii-id";
- 	phy-handle = <&ext_rgmii_phy>;
--	phy-supply = <&reg_gmac_3v3>;
- 	allwinner,rx-delay-ps = <200>;
- 	allwinner,tx-delay-ps = <200>;
- 	status = "okay";
-@@ -127,6 +126,7 @@ &mdio {
- 	ext_rgmii_phy: ethernet-phy@1 {
- 		compatible = "ethernet-phy-ieee802.3-c22";
- 		reg = <1>;
-+		phy-supply = <&reg_gmac_3v3>;
- 	};
- };
- 
+ #define EFSCORRUPTED    EUCLEAN         /* Filesystem is corrupted */
 -- 
-2.35.1
+2.27.0
 
