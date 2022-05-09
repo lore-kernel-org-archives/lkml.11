@@ -2,78 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD08DC4707E
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 08:57:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15B5CC352A7
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 08:57:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237448AbiEII6p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 04:58:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51756 "EHLO
+        id S237537AbiEII64 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 04:58:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236754AbiEIItl (ORCPT
+        with ESMTP id S236398AbiEII1W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 04:49:41 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3294517B84E;
-        Mon,  9 May 2022 01:45:48 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 954951042;
-        Mon,  9 May 2022 01:45:39 -0700 (PDT)
-Received: from FVFF77S0Q05N (unknown [10.57.3.22])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 964263F66F;
-        Mon,  9 May 2022 01:45:37 -0700 (PDT)
-Date:   Mon, 9 May 2022 09:45:30 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Jason Wang <wangborong@cdjrlc.com>
-Cc:     will@kernel.org, catalin.marinas@arm.com, peterz@infradead.org,
-        mingo@redhat.com, acme@kernel.org,
-        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
-        namhyung@kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] arm64: perf: no need to initialise statics to 0
-Message-ID: <YnjUqm3lu75+LjqH@FVFF77S0Q05N>
-References: <20220508022312.93905-1-wangborong@cdjrlc.com>
+        Mon, 9 May 2022 04:27:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A18741DA643
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 01:22:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E05F7B80EA2
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 08:22:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AABA9C385AC;
+        Mon,  9 May 2022 08:22:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652084545;
+        bh=NANQp7QofUo34mrnijGjquxDhvq3koZzFJ1Pl4SUt7s=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=OjF1Oe/yMsZC/GLxhVBM5iR+ydt4nG+AWfiqgmNmcbZgrMiFAV2L9IR+9Hbawkd5r
+         xr11NeHhJnKB6XNzLj2Xp/Q+J6izR3ZEV+cL8ujy+Ip5mAYn7bPrmG8KPwcD8wRPeW
+         PQ2f1KpChKEgfNBWUbmCfqHgwIL3kCIEBoG/7fdBFbAgbpu3+7i1+NAd0r3Cfz1hPd
+         6VZicyG3LwsBocvwfoQnE2TgFhmafZCjbC+2Y54VSZb7ezeWyDIszEvckKVfjZq9cI
+         fQ38Epym3mGrZvI5noU9UBngF9J+2MXQ5f+XALDDLhsDQ5UneyoQCqr/P4aZaWo9fL
+         FZlH3/dchVZrA==
+From:   Oded Gabbay <ogabbay@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Yuri Nudelman <ynudelman@habana.ai>
+Subject: [PATCH 2/3] habanalabs: add topic to memory manager buffer
+Date:   Mon,  9 May 2022 11:22:17 +0300
+Message-Id: <20220509082218.956916-2-ogabbay@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220509082218.956916-1-ogabbay@kernel.org>
+References: <20220509082218.956916-1-ogabbay@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220508022312.93905-1-wangborong@cdjrlc.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 08, 2022 at 10:23:12AM +0800, Jason Wang wrote:
-> Static variables do not need to be initialised to 0, because compiler
-> will initialise all uninitialised statics to 0. Thus, remove the
-> unneeded initializations.
-> 
-> Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+From: Yuri Nudelman <ynudelman@habana.ai>
 
-I would strongly prefer that we leave this as-is.
+Currently, buffers from multiple flows pass through the same infra.
+This way, in logs, we are unable to distinguish between buffers that
+came from separate flows.
+To address this problem, add a "topic" to buffer behavior
+descriptor - a string identifier that will be used to identify in logs
+the flow this buffer relates to.
 
-There is no problem with explicitly initializing a static variable to 0, and it
-clearly aligns with the cmpxchg arguments below. Removing the initialization
-makes that *less* clear.
+Signed-off-by: Yuri Nudelman <ynudelman@habana.ai>
+Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
+Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
+---
+ .../misc/habanalabs/common/command_buffer.c   |  1 +
+ drivers/misc/habanalabs/common/habanalabs.h   |  2 ++
+ drivers/misc/habanalabs/common/memory.c       |  1 +
+ drivers/misc/habanalabs/common/memory_mgr.c   | 23 +++++++++++--------
+ 4 files changed, 18 insertions(+), 9 deletions(-)
 
-Thanks,
-Mark.
+diff --git a/drivers/misc/habanalabs/common/command_buffer.c b/drivers/misc/habanalabs/common/command_buffer.c
+index fd9ef32ea6a0..1fac72c38c87 100644
+--- a/drivers/misc/habanalabs/common/command_buffer.c
++++ b/drivers/misc/habanalabs/common/command_buffer.c
+@@ -319,6 +319,7 @@ static int hl_cb_mmap(struct hl_mmap_mem_buf *buf,
+ }
+ 
+ static struct hl_mmap_mem_buf_behavior cb_behavior = {
++	.topic = "CB",
+ 	.mem_id = HL_MMAP_TYPE_CB,
+ 	.alloc = hl_cb_mmap_mem_alloc,
+ 	.release = hl_cb_mmap_mem_release,
+diff --git a/drivers/misc/habanalabs/common/habanalabs.h b/drivers/misc/habanalabs/common/habanalabs.h
+index 59150caa98a2..918e8a04acab 100644
+--- a/drivers/misc/habanalabs/common/habanalabs.h
++++ b/drivers/misc/habanalabs/common/habanalabs.h
+@@ -731,6 +731,7 @@ struct hl_mem_mgr {
+ 
+ /**
+  * struct hl_mmap_mem_buf_behavior - describes unified memory manager buffer behavior
++ * @topic: string identifier used for logging
+  * @mem_id: memory type identifier, embedded in the handle and used to identify
+  *          the memory type by handle.
+  * @alloc: callback executed on buffer allocation, shall allocate the memory,
+@@ -739,6 +740,7 @@ struct hl_mem_mgr {
+  * @release: callback executed on release, must free the resources used by the buffer
+  */
+ struct hl_mmap_mem_buf_behavior {
++	const char *topic;
+ 	u64 mem_id;
+ 
+ 	int (*alloc)(struct hl_mmap_mem_buf *buf, gfp_t gfp, void *args);
+diff --git a/drivers/misc/habanalabs/common/memory.c b/drivers/misc/habanalabs/common/memory.c
+index e7a0c44c487d..ecf3c094242a 100644
+--- a/drivers/misc/habanalabs/common/memory.c
++++ b/drivers/misc/habanalabs/common/memory.c
+@@ -2141,6 +2141,7 @@ static int hl_ts_alloc_buf(struct hl_mmap_mem_buf *buf, gfp_t gfp, void *args)
+ }
+ 
+ static struct hl_mmap_mem_buf_behavior hl_ts_behavior = {
++	.topic = "TS",
+ 	.mem_id = HL_MMAP_TYPE_TS_BUFF,
+ 	.mmap = hl_ts_mmap,
+ 	.alloc = hl_ts_alloc_buf,
+diff --git a/drivers/misc/habanalabs/common/memory_mgr.c b/drivers/misc/habanalabs/common/memory_mgr.c
+index 9f3ab6cf25d3..0ddfebe3a9ef 100644
+--- a/drivers/misc/habanalabs/common/memory_mgr.c
++++ b/drivers/misc/habanalabs/common/memory_mgr.c
+@@ -162,7 +162,8 @@ hl_mmap_mem_buf_alloc(struct hl_mem_mgr *mmg,
+ 	spin_unlock(&mmg->lock);
+ 	if (rc < 0) {
+ 		dev_err(mmg->dev,
+-			"Failed to allocate IDR for a new buffer, rc=%d\n", rc);
++			"%s: Failed to allocate IDR for a new buffer, rc=%d\n",
++			behavior->topic, rc);
+ 		goto free_buf;
+ 	}
+ 
+@@ -173,8 +174,8 @@ hl_mmap_mem_buf_alloc(struct hl_mem_mgr *mmg,
+ 
+ 	rc = buf->behavior->alloc(buf, gfp, args);
+ 	if (rc) {
+-		dev_err(mmg->dev, "Failure in buffer alloc callback %d\n",
+-			rc);
++		dev_err(mmg->dev, "%s: Failure in buffer alloc callback %d\n",
++			behavior->topic, rc);
+ 		goto remove_idr;
+ 	}
+ 
+@@ -253,8 +254,8 @@ int hl_mem_mgr_mmap(struct hl_mem_mgr *mmg, struct vm_area_struct *vma,
+ 	user_mem_size = vma->vm_end - vma->vm_start;
+ 	if (user_mem_size != ALIGN(buf->mappable_size, PAGE_SIZE)) {
+ 		dev_err(mmg->dev,
+-			"Memory mmap failed, mmap VM size 0x%llx != 0x%llx allocated physical mem size\n",
+-			user_mem_size, buf->mappable_size);
++			"%s: Memory mmap failed, mmap VM size 0x%llx != 0x%llx allocated physical mem size\n",
++			buf->behavior->topic, user_mem_size, buf->mappable_size);
+ 		rc = -EINVAL;
+ 		goto put_mem;
+ 	}
+@@ -266,8 +267,8 @@ int hl_mem_mgr_mmap(struct hl_mem_mgr *mmg, struct vm_area_struct *vma,
+ 	if (!access_ok((void __user *)(uintptr_t)vma->vm_start,
+ 		       user_mem_size)) {
+ #endif
+-		dev_err(mmg->dev, "user pointer is invalid - 0x%lx\n",
+-			vma->vm_start);
++		dev_err(mmg->dev, "%s: User pointer is invalid - 0x%lx\n",
++			buf->behavior->topic, vma->vm_start);
+ 
+ 		rc = -EINVAL;
+ 		goto put_mem;
+@@ -275,7 +276,8 @@ int hl_mem_mgr_mmap(struct hl_mem_mgr *mmg, struct vm_area_struct *vma,
+ 
+ 	if (atomic_cmpxchg(&buf->mmap, 0, 1)) {
+ 		dev_err(mmg->dev,
+-			"Memory mmap failed, already mmaped to user\n");
++			"%s, Memory mmap failed, already mmaped to user\n",
++			buf->behavior->topic);
+ 		rc = -EINVAL;
+ 		goto put_mem;
+ 	}
+@@ -328,14 +330,17 @@ void hl_mem_mgr_fini(struct hl_mem_mgr *mmg)
+ {
+ 	struct hl_mmap_mem_buf *buf;
+ 	struct idr *idp;
++	const char *topic;
+ 	u32 id;
+ 
+ 	idp = &mmg->handles;
+ 
+ 	idr_for_each_entry(idp, buf, id) {
++		topic = buf->behavior->topic;
+ 		if (hl_mmap_mem_buf_put(buf) != 1)
+ 			dev_err(mmg->dev,
+-				"Buff handle %u for CTX is still alive\n", id);
++				"%s: Buff handle %u for CTX is still alive\n",
++				topic, id);
+ 	}
+ 
+ 	/* TODO: can it happen that some buffer is still in use at this point? */
+-- 
+2.25.1
 
-> ---
->  arch/arm64/kernel/perf_event.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/arch/arm64/kernel/perf_event.c b/arch/arm64/kernel/perf_event.c
-> index cb69ff1e6138..919fdcf8fce6 100644
-> --- a/arch/arm64/kernel/perf_event.c
-> +++ b/arch/arm64/kernel/perf_event.c
-> @@ -1226,7 +1226,7 @@ static struct ctl_table armv8_pmu_sysctl_table[] = {
->  
->  static void armv8_pmu_register_sysctl_table(void)
->  {
-> -	static u32 tbl_registered = 0;
-> +	static u32 tbl_registered;
->  
->  	if (!cmpxchg_relaxed(&tbl_registered, 0, 1))
->  		register_sysctl("kernel", armv8_pmu_sysctl_table);
-> -- 
-> 2.35.1
-> 
-> 
