@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C346C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 18:08:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2142EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 18:10:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240035AbiEISMt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 14:12:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40692 "EHLO
+        id S240044AbiEISNu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 14:13:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239999AbiEISMq (ORCPT
+        with ESMTP id S239999AbiEISNq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 14:12:46 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A8262AC6ED
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 11:08:52 -0700 (PDT)
+        Mon, 9 May 2022 14:13:46 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B551E45055
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 11:09:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652119732; x=1683655732;
+  t=1652119792; x=1683655792;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=8TSlMiX/FE6UJmGXIWDEnhucIoFp0cHoRqbTJX0Gy8Y=;
-  b=AKC2kPmEC1sH8EuUVjp37gbjDCr9y8qPu3xYYXcgig4c0ArqPiEbgp2p
-   7VVevQe8+xTWDgW4nrcQg8h+OvHwvNBs+UO/3hlt+jkSzLqdYFH2tWJLw
-   0GiBIJndU88XdCE1YL5lS4WXpmr00jzTeaDhwFv1mCy8b9iKTLzv7NLq8
-   45O7nFL1I5SL4/8mX2ayQr59Y/H57Mz3sWnyJYXRNS69szYnm84L9NFah
-   Zb91yFtU9mGcuhG/gRlKyEx+iXDq/D7zDV8Yw+I6LOFNfiCBJogh1WJJx
-   tJADYG7YiTPh7hldj2rwPXyWLMm4PC17RhC2xaYs5WGZHoVhJtu6HiDa3
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="355556316"
-X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
-   d="scan'208";a="355556316"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 11:08:52 -0700
+  bh=r1IUId8yuQjqJHP70NeoADjEBW/27W4PnJMCiW3EteU=;
+  b=Q/EFjx67xbX3un2ORL3tt/SDnbV2CVf+zMuMNAO7jmrUtSXvMBMor0Ac
+   UCy1JyQs04khe5sAeRxx21gv3av77QC0hSBF+RFwpQAf6axMorPPTICWu
+   mDoS2MWvzBY0pX3iEpmiGETnqG1PfeIN14g9+qGhnUUdfel7ka87s6G7L
+   lI3vxS5Qyd0TvtY5ebZlEsKowKqakUmgnfSvjVwVMWH5m5OiNTp1lEtw+
+   h6mk4MISMHSld28dzUMRjEayrMZPjlUMPEJwWsMPjrpBs5Wo9hFEfIL3C
+   miqppAJ729TQWPSprS5t7sDZbJLefMUutlLWoUyWH5aWIsAQrDPz0IUNf
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="266718934"
+X-IronPort-AV: E=Sophos;i="5.91,212,1647327600"; 
+   d="scan'208";a="266718934"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 11:09:52 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
-   d="scan'208";a="710636651"
+   d="scan'208";a="813583659"
 Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 09 May 2022 11:08:51 -0700
+  by fmsmga006.fm.intel.com with ESMTP; 09 May 2022 11:09:51 -0700
 Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1no7oQ-000Gkq-JN;
-        Mon, 09 May 2022 18:08:50 +0000
-Date:   Tue, 10 May 2022 02:08:23 +0800
+        id 1no7pO-000Gkw-Kf;
+        Mon, 09 May 2022 18:09:50 +0000
+Date:   Tue, 10 May 2022 02:09:01 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     "Steven Rostedt (Google)" <rostedt@goodmis.org>
 Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
 Subject: include/trace/stages/init.h:2:23: warning:
  'str__irq_vectors__trace_system_name' defined but not used
-Message-ID: <202205100202.Ag0S76wP-lkp@intel.com>
+Message-ID: <202205100242.TCazrhkS-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -59,7 +59,7 @@ tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git maste
 head:   9be9ed2612b5aedb52a2c240edb1630b6b743cb6
 commit: af6b9668e85ffd1502aada8036ccbf4dbd481708 tracing: Move the defines to create TRACE_EVENTS into their own files
 date:   8 weeks ago
-config: i386-randconfig-s002-20220509 (https://download.01.org/0day-ci/archive/20220510/202205100202.Ag0S76wP-lkp@intel.com/config)
+config: i386-randconfig-s002-20220509 (https://download.01.org/0day-ci/archive/20220510/202205100242.TCazrhkS-lkp@intel.com/config)
 compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
 reproduce:
         # apt-get install sparse
