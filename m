@@ -2,135 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E49AC3527B
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 05:47:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03BDEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 05:50:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234544AbiEIFuJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 01:50:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55334 "EHLO
+        id S229629AbiEIFuZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 01:50:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235336AbiEIFr5 (ORCPT
+        with ESMTP id S235376AbiEIFsA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 01:47:57 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 459A0126C3A
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 22:44:04 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KxVKn0kMLz9sWH;
-        Mon,  9 May 2022 07:37:01 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id G2G3Rqetc9sH; Mon,  9 May 2022 07:37:01 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KxVKH4kVxz9sWK;
-        Mon,  9 May 2022 07:36:35 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 8E1418B763;
-        Mon,  9 May 2022 07:36:35 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id DRe330hselgB; Mon,  9 May 2022 07:36:35 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 5BE688B76E;
-        Mon,  9 May 2022 07:36:35 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 2495aV6N1591291
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Mon, 9 May 2022 07:36:31 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 2495aVO01591290;
-        Mon, 9 May 2022 07:36:31 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        naveen.n.rao@linux.vnet.ibm.com
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH v3 21/25] powerpc/ftrace: Don't use copy_from_kernel_nofault() in module_trampoline_target()
-Date:   Mon,  9 May 2022 07:36:19 +0200
-Message-Id: <c55559103e014b7863161559d340e8e9484eaaa6.1652074503.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1652074503.git.christophe.leroy@csgroup.eu>
-References: <cover.1652074503.git.christophe.leroy@csgroup.eu>
+        Mon, 9 May 2022 01:48:00 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4264126C37
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 22:44:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652075047; x=1683611047;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=vGLWB6wm2R99i0n5ZImSofDpnx0nFa2JTFNR1F4AQvM=;
+  b=C4fCUU1JlnJoQ1JEFR5W7XzdYptSq2G0lu6dDbGCW8BV6wLCyaKPYdqS
+   vzF8RuNPzst7T5w7roiz9b1STHKbmuF6yY5aIgQ7ixy3OpseWu0+pYf5k
+   8400p/a33pizXm4MQvARx4DWaZT24lxH0rISgLekjc8LCQ8f7SSN4J+zh
+   783hJE5lGUtstJvyiJiRz8CMXReFb97koKseHjTQle8ify17qmXyk9bK4
+   MZ6hAz7s1Y/MmMeuItT7odT1PtxpgQrsq1CYatimD7Vjb5YtWzb/AqdG7
+   r0cXgzDDtMj+rER2upCL/FuHwdZ32krA4Hewkkz0QlFcuY2oxhlokbByL
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10341"; a="249483601"
+X-IronPort-AV: E=Sophos;i="5.91,210,1647327600"; 
+   d="scan'208";a="249483601"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2022 22:44:07 -0700
+X-IronPort-AV: E=Sophos;i="5.91,210,1647327600"; 
+   d="scan'208";a="591129784"
+Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.32.199])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2022 22:44:04 -0700
+Message-ID: <a9e97cca-8bd6-9a47-a7d9-79198e6b9a81@intel.com>
+Date:   Mon, 9 May 2022 08:44:02 +0300
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1652074582; l=2705; s=20211009; h=from:subject:message-id; bh=CfrUCzqErjkJ1BZ8LHw9+4wpcEnd2IhUoh9LhAGXY+w=; b=YOzklA9WshRXJoWz/vL2ydfXuPpqPlkb1zNRY5YKGdK2hfy+hK1QunRD+f/fAduTLVNB0cMdrOMz q7Ayb0u+CU3mt9WoSRNIqPyy501HRL4jnIi1SU5DDCNOvoRDIVoV
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.8.1
+Subject: Re: [PATCH V2 00/23] perf intel-pt: Better support for perf record
+ --cpu
+Content-Language: en-US
+To:     Leo Yan <leo.yan@linaro.org>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>, Ian Rogers <irogers@google.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-kernel@vger.kernel.org, James Clark <James.Clark@arm.com>,
+        German Gomez <german.gomez@arm.com>
+References: <20220506122601.367589-1-adrian.hunter@intel.com>
+ <20220508150832.GA278102@leoy-ThinkPad-X240s>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <20220508150832.GA278102@leoy-ThinkPad-X240s>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-module_trampoline_target() is quite a hot path used when
-activating/deactivating function tracer.
+On 8/05/22 18:08, Leo Yan wrote:
+> Hi Adrian,
+> 
+> On Fri, May 06, 2022 at 03:25:38PM +0300, Adrian Hunter wrote:
+>> Hi
+>>
+>> Here are V2 patches to support capturing Intel PT sideband events such as
+>> mmap, task, context switch, text poke etc, on every CPU even when tracing
+>> selected user_requested_cpus.  That is, when using the perf record -C or
+>>  --cpu option.
+>>
+>> This is needed for:
+>> 1. text poke: a text poke on any CPU affects all CPUs
+>> 2. tracing user space: a user space process can migrate between CPUs so
+>> mmap events that happen on a different CPU can be needed to decode a
+>> user_requested_cpus CPU.
+>>
+>> For example:
+>>
+>> 	Trace on CPU 1:
+>>
+>> 	perf record --kcore -C 1 -e intel_pt// &
+>>
+>> 	Start a task on CPU 0:
+>>
+>> 	taskset 0x1 testprog &
+>>
+>> 	Migrate it to CPU 1:
+>>
+>> 	taskset -p 0x2 <testprog pid>
+>>
+>> 	Stop tracing:
+>>
+>> 	kill %1
+>>
+>> 	Prior to these changes there will be errors decoding testprog
+>> 	in userspace because the comm and mmap events for testprog will not
+>> 	have been captured.
+> 
+> Thanks a lot for this patch set, I believe this is a common issue for
+> AUX trace (not only for Intel-PT), so I verified this patch set for both
+> Arm CoreSight and SPE; unfortunately both cannot see MMAP events for
+> migrated task.  I used below commands:
+> 
+>   # perf record -B -N --no-bpf-event -e cs_etm//u -C 0 -- taskset --cpu-list 1 uname
+>   # perf script  --no-itrace --show-mmap-events -C 1 2>/dev/null | grep MMAP | wc -l
+>   0
+> 
+> 
+>   # perf record -B -N --no-bpf-event -e arm_spe_0//u -C 0 -- taskset --cpu-list 1 uname
+>   # perf script --no-itrace --show-mmap-events -C 1 2>/dev/null | grep MMAP | wc -l
+>   0
+> 
+> I didn't dive into details for this patch set, so I cannot say the
+> failure is caused by any issue in this patch set.  But it's definitely
+> we need to look into for Arm platforms to root cause what's the reason
+> it cannot record MMAP events properly when migrate tasks.  Loop James
+> and German for this reason.
 
-Avoid the heavy copy_from_kernel_nofault() by doing four calls
-to copy_inst_from_kernel_nofault().
+You would need the equivalent of patch "perf intel-pt: Track sideband
+system-wide when needed" which makes use of new helper
+evlist__add_aux_dummy() to set up the dummy event with the option to
+make it "system wide".
 
-Use __copy_inst_from_kernel_nofault() for the 3 last calls. First call
-is done to copy_from_kernel_nofault() to check address is within
-kernel space. No risk to wrap out the top of kernel space because the
-last page is never mapped so if address is in last page the first copy
-will fails and the other ones will never be performed.
+cs_etm_recording_options() and arm_spe_recording_options() have similar
+code.
 
-And also make it notrace just like all functions that call it.
-
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
-v3: Use ppc_inst_t to fix sparse warnings and split trampoline verification in one line per instruction.
----
- arch/powerpc/kernel/module_32.c | 27 ++++++++++++++++++---------
- 1 file changed, 18 insertions(+), 9 deletions(-)
-
-diff --git a/arch/powerpc/kernel/module_32.c b/arch/powerpc/kernel/module_32.c
-index a0432ef46967..715a42f383d0 100644
---- a/arch/powerpc/kernel/module_32.c
-+++ b/arch/powerpc/kernel/module_32.c
-@@ -289,23 +289,32 @@ int apply_relocate_add(Elf32_Shdr *sechdrs,
- }
- 
- #ifdef CONFIG_DYNAMIC_FTRACE
--int module_trampoline_target(struct module *mod, unsigned long addr,
--			     unsigned long *target)
-+notrace int module_trampoline_target(struct module *mod, unsigned long addr,
-+				     unsigned long *target)
- {
--	unsigned int jmp[4];
-+	ppc_inst_t jmp[4];
- 
- 	/* Find where the trampoline jumps to */
--	if (copy_from_kernel_nofault(jmp, (void *)addr, sizeof(jmp)))
-+	if (copy_inst_from_kernel_nofault(jmp, (void *)addr))
-+		return -EFAULT;
-+	if (__copy_inst_from_kernel_nofault(jmp + 1, (void *)addr + 4))
-+		return -EFAULT;
-+	if (__copy_inst_from_kernel_nofault(jmp + 2, (void *)addr + 8))
-+		return -EFAULT;
-+	if (__copy_inst_from_kernel_nofault(jmp + 3, (void *)addr + 12))
- 		return -EFAULT;
- 
- 	/* verify that this is what we expect it to be */
--	if ((jmp[0] & 0xffff0000) != PPC_RAW_LIS(_R12, 0) ||
--	    (jmp[1] & 0xffff0000) != PPC_RAW_ADDI(_R12, _R12, 0) ||
--	    jmp[2] != PPC_RAW_MTCTR(_R12) ||
--	    jmp[3] != PPC_RAW_BCTR())
-+	if ((ppc_inst_val(jmp[0]) & 0xffff0000) != PPC_RAW_LIS(_R12, 0))
-+		return -EINVAL;
-+	if ((ppc_inst_val(jmp[1]) & 0xffff0000) != PPC_RAW_ADDI(_R12, _R12, 0))
-+		return -EINVAL;
-+	if (ppc_inst_val(jmp[2]) != PPC_RAW_MTCTR(_R12))
-+		return -EINVAL;
-+	if (ppc_inst_val(jmp[3]) != PPC_RAW_BCTR())
- 		return -EINVAL;
- 
--	addr = (jmp[1] & 0xffff) | ((jmp[0] & 0xffff) << 16);
-+	addr = (ppc_inst_val(jmp[1]) & 0xffff) | ((ppc_inst_val(jmp[0]) & 0xffff) << 16);
- 	if (addr & 0x8000)
- 		addr -= 0x10000;
- 
--- 
-2.35.1
-
+You will need to decide if it is worth the extra sideband.  I decided
+if it became an issue, it could be made optional in the future.
