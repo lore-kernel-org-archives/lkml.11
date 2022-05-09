@@ -2,90 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDDE6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:15:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0054C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:16:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232604AbiEIKTM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 06:19:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38084 "EHLO
+        id S232905AbiEIKUC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 06:20:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231322AbiEIKTE (ORCPT
+        with ESMTP id S233968AbiEIKTm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 06:19:04 -0400
+        Mon, 9 May 2022 06:19:42 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2B991BDDA8;
-        Mon,  9 May 2022 03:15:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F10CF132776
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 03:15:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FC5E60C0B;
-        Mon,  9 May 2022 10:14:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 729AEC385AB;
-        Mon,  9 May 2022 10:14:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652091290;
-        bh=+9srvDHqiWKm6OjKS3qVUqzfohs6qxQD/zq2WlbkEa0=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 057F760B00
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 10:15:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55607C385A8;
+        Mon,  9 May 2022 10:15:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652091342;
+        bh=sxUAcaLLSaqfGpbMutvCvdhAXxJ4xVgqlea0hGl2N/s=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=z7vtLfTH8SA1J3f2yk0yw/6kQ1lAOH0G7IygugS0czPnxCS71yOLEDkH9PKXy1in/
-         PshnArIMLgpNvDyeaVZIyWVAGJn5J67zPbng2Cu+rjP7yWCDRKdyHzx1SaHITM5mB4
-         UQmrOxirfZMwsX7gnCdghtChxLaLJI+zMEpL/yGI=
-Date:   Mon, 9 May 2022 12:14:46 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Chen Zhongjin <chenzhongjin@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-arch@vger.kernel.org, stable@vger.kernel.org,
-        peterz@infradead.org, tglx@linutronix.de, namit@vmware.com,
-        gor@linux.ibm.com, rdunlap@infradead.org, sashal@kernel.org
-Subject: Re: [PATCH 5.10 v3] locking/csd_lock: fix csdlock_debug cause arm64
- boot panic
-Message-ID: <YnjpljvWncezV0G0@kroah.com>
-References: <20220507084510.14761-1-chenzhongjin@huawei.com>
- <YnZAO+3Rhj0gwq38@kroah.com>
- <e8715911-f835-059d-27f8-cc5f5ad30a07@huawei.com>
+        b=lF1n9cNupiZV2/RLcE7nDILUkQhSJRmxMAUfJkQ/3qwJApfB67NfGjxqkLCycdIQp
+         eUCCr1JihRwQcZCsMQtMwB6IhkdXgwWESy8evcTcjym6MUkAydKkJ3PQDkVdLd93Si
+         LLAJRWR+qcxzAWO0zE6jvpLsXghuI5rM2r31PW+yJ99zq2NcAYGYRt1CqHH4DlI1gM
+         7XBnl+xlhAKYbeQRqj2GZnQ63nRne2DAfGWEVqLQl4LYjSWCvygzdwrdr4tq0KcPeN
+         FglTk7c6PXJvhnb9+vcht95w4eVyWseydSkyBFkPPlUnWinAVLjttWXDuGNlHHmS3T
+         7hDBmtEYnziwg==
+Date:   Mon, 9 May 2022 13:15:35 +0300
+From:   Mike Rapoport <rppt@kernel.org>
+To:     Rebecca Mckeever <remckee0@gmail.com>
+Cc:     outreachy@lists.linux.dev, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, David Hildenbrand <david@redhat.com>
+Subject: Re: [PATCH v4 0/5] memblock tests: update style of comments
+Message-ID: <Ynjpx8wVOMMEo2r2@kernel.org>
+References: <cover.1651357434.git.remckee0@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <e8715911-f835-059d-27f8-cc5f5ad30a07@huawei.com>
+In-Reply-To: <cover.1651357434.git.remckee0@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-A: http://en.wikipedia.org/wiki/Top_post
-Q: Were do I find info about this thing called top-posting?
-A: Because it messes up the order in which people normally read text.
-Q: Why is top-posting such a bad thing?
-A: Top-posting.
-Q: What is the most annoying thing in e-mail?
-
-A: No.
-Q: Should I include quotations after my reply?
-
-http://daringfireball.net/2007/07/on_top
-
-On Mon, May 09, 2022 at 11:14:12AM +0800, Chen Zhongjin wrote:
-> Hi Greg,
+On Sat, Apr 30, 2022 at 05:49:35PM -0500, Rebecca Mckeever wrote:
+> These patches update the style of comments for memblock_add_*(),
+> memblock_reserve_*(), memblock_remove_*(), and memblock_free_*()
+> functions to match the style of comments in tests/alloc_*.c and
+> remove extra spaces in those comments to conform to Linux kernel
+> coding style. This completes an item from the TODO list.
 > 
-> Since the patch:
-> https://lore.kernel.org/all/20210420093559.23168-1-catalin.marinas@arm.com/
-> has forced CONFIG_SPARSEMEM_VMEMMAP=y from 5.12, it's not necessary to include
-> this patch on master.
+> Rebecca Mckeever (5):
+>   memblock tests: update style of comments for memblock_add_*()
+>     functions
+>   memblock tests: update style of comments for memblock_reserve_*()
+>     functions
+>   memblock tests: update style of comments for memblock_remove_*()
+>     functions
+>   memblock tests: update style of comments for memblock_free_*()
+>     functions
+>   memblock tests: remove completed TODO item
 > 
-> However this problem still exist on 5.10 stable, so either we can backport the
-> above patch to 5.10, or independently apply mine.
-> 
-> I'm not sure if backporting one exist patch is better, but that patch only
-> changed configs without any fix for old builds.
-> 
-> If you have any advice please tell me.
+>  tools/testing/memblock/TODO              |   3 -
+>  tools/testing/memblock/tests/basic_api.c | 392 ++++++++++++++++-------
+>  2 files changed, 278 insertions(+), 117 deletions(-)
 
-If you want to include a patch in the stable tree that is NOT in Linus's
-tree, then you need to document it very very well as to why this is not
-the case.
-
-If backporting the above commit is better, I would much rather do that,
-please ask the maintainers and developers of it if they will do that.
-
-thanks,
-
-greg k-h
+Applied, thanks!
+ 
+-- 
+Sincerely yours,
+Mike.
