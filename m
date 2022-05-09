@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A54F1C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B50EAC41535
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 05:44:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234902AbiEIFpu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 01:45:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38112 "EHLO
+        id S235174AbiEIFrG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 01:47:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235242AbiEIFnn (ORCPT
+        with ESMTP id S235019AbiEIFqn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 01:43:43 -0400
+        Mon, 9 May 2022 01:46:43 -0400
 Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D4A913FD5E
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 22:39:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07BF715E75A
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 22:42:51 -0700 (PDT)
 Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KxVKP1lhNz9sTT;
-        Mon,  9 May 2022 07:36:41 +0200 (CEST)
+        by localhost (Postfix) with ESMTP id 4KxVKc3PLKz9sW9;
+        Mon,  9 May 2022 07:36:52 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from pegase2.c-s.fr ([172.26.127.65])
         by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id AR1W8gDEP_uC; Mon,  9 May 2022 07:36:41 +0200 (CEST)
+        with ESMTP id MvxXOftsaf4D; Mon,  9 May 2022 07:36:52 +0200 (CEST)
 Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KxVKF5Sxyz9sTj;
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KxVKF6G45z9sW7;
         Mon,  9 May 2022 07:36:33 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id B1FEB8B774;
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id CE4148B76E;
         Mon,  9 May 2022 07:36:33 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from messagerie.si.c-s.fr ([127.0.0.1])
         by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id IavGzwKucdaz; Mon,  9 May 2022 07:36:33 +0200 (CEST)
+        with ESMTP id VuS5VDGUey6H; Mon,  9 May 2022 07:36:33 +0200 (CEST)
 Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 615328B77B;
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 723BB8B780;
         Mon,  9 May 2022 07:36:33 +0200 (CEST)
 Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 2495aUeG1591255
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 2495aT0G1591239
         (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Mon, 9 May 2022 07:36:30 +0200
+        Mon, 9 May 2022 07:36:29 +0200
 Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 2495aUGs1591254;
-        Mon, 9 May 2022 07:36:30 +0200
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 2495aTIL1591238;
+        Mon, 9 May 2022 07:36:29 +0200
 X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
 From:   Christophe Leroy <christophe.leroy@csgroup.eu>
 To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
@@ -50,40 +50,93 @@ To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
         naveen.n.rao@linux.vnet.ibm.com
 Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
         linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH v3 12/25] powerpc/ftrace: Don't include ftrace.o for CONFIG_FTRACE_SYSCALLS
-Date:   Mon,  9 May 2022 07:36:10 +0200
-Message-Id: <275932a5d61543b825ff9a64f61abed6da5d4a2a.1652074503.git.christophe.leroy@csgroup.eu>
+Subject: [PATCH v3 08/25] powerpc: Add CONFIG_PPC64_ELF_ABI_V1 and CONFIG_PPC64_ELF_ABI_V2
+Date:   Mon,  9 May 2022 07:36:06 +0200
+Message-Id: <1eca1addbc550167da9841c7340a010d0c4b2200.1652074503.git.christophe.leroy@csgroup.eu>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1652074503.git.christophe.leroy@csgroup.eu>
 References: <cover.1652074503.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1652074582; l=797; s=20211009; h=from:subject:message-id; bh=dBT+4KIjHuCkAQQu4k+Tl2VRVeqnuyJrNn++RX40GAM=; b=armQhxjL03kCeRWxv46aRmfigz0t0GPdf6n2sK/szxXPL61wKraxnaoHXBlgobWokcpTE/dUfcKd tpWyp9nfCpMi9S9hnwWocI8g8JylQ6jeMy58Qj4Z/AQCntSraqWS
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1652074581; l=2625; s=20211009; h=from:subject:message-id; bh=NBoBcjsTO1tovFFuP2hBDk2AHE9R2iPK5NfoSRq7M98=; b=HRQc/3CrXc8/4Z0lkCGnXifgCtBr3PfIptOJHdq93TN9cEQ+yqTmWT/bzKDS0qNsO40+SgprPROk A7ZXYCHBCmYkv/I4u9gj1zH2iTHQLu7F9FzDa005cck3ZDQfEcCh
 X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit 7bea7ac0ca01 ("powerpc/syscalls: Fix syscall tracing")
-ftrace.o is not needed anymore for CONFIG_FTRACE_SYSCALLS.
+At the time being, we use CONFIG_CPU_LITTLE_ENDIAN and
+CONFIG_CPU_BIG_ENDIAN to pass -mabi=elfv1 or elfv2 to
+compiler, then define a PPC64_ELF_ABI_v1 or PPC64_ELF_ABI_v2
+macro in asm/types.h based on _CALL_ELF define set by the compiler.
+
+Make it more straight forward with a CONFIG option that
+is directly usable.
 
 Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
- arch/powerpc/kernel/trace/Makefile | 1 -
- 1 file changed, 1 deletion(-)
+ arch/powerpc/Makefile                  | 10 +++++-----
+ arch/powerpc/boot/Makefile             |  2 ++
+ arch/powerpc/platforms/Kconfig.cputype |  6 ++++++
+ 3 files changed, 13 insertions(+), 5 deletions(-)
 
-diff --git a/arch/powerpc/kernel/trace/Makefile b/arch/powerpc/kernel/trace/Makefile
-index 542aa7a8b2b4..fc32ec30b297 100644
---- a/arch/powerpc/kernel/trace/Makefile
-+++ b/arch/powerpc/kernel/trace/Makefile
-@@ -17,7 +17,6 @@ endif
- obj-$(CONFIG_FUNCTION_TRACER)		+= ftrace_low.o
- obj-$(CONFIG_DYNAMIC_FTRACE)		+= ftrace.o
- obj-$(CONFIG_FUNCTION_GRAPH_TRACER)	+= ftrace.o
--obj-$(CONFIG_FTRACE_SYSCALLS)		+= ftrace.o
- obj-$(CONFIG_TRACING)			+= trace_clock.o
+diff --git a/arch/powerpc/Makefile b/arch/powerpc/Makefile
+index eb541e730d3c..1ba98be84101 100644
+--- a/arch/powerpc/Makefile
++++ b/arch/powerpc/Makefile
+@@ -89,10 +89,10 @@ endif
  
- obj-$(CONFIG_PPC64)			+= $(obj64-y)
+ ifdef CONFIG_PPC64
+ ifndef CONFIG_CC_IS_CLANG
+-cflags-$(CONFIG_CPU_BIG_ENDIAN)		+= $(call cc-option,-mabi=elfv1)
+-cflags-$(CONFIG_CPU_BIG_ENDIAN)		+= $(call cc-option,-mcall-aixdesc)
+-aflags-$(CONFIG_CPU_BIG_ENDIAN)		+= $(call cc-option,-mabi=elfv1)
+-aflags-$(CONFIG_CPU_LITTLE_ENDIAN)	+= -mabi=elfv2
++cflags-$(CONFIG_PPC64_ELF_ABI_V1)	+= $(call cc-option,-mabi=elfv1)
++cflags-$(CONFIG_PPC64_ELF_ABI_V1)	+= $(call cc-option,-mcall-aixdesc)
++aflags-$(CONFIG_PPC64_ELF_ABI_V1)	+= $(call cc-option,-mabi=elfv1)
++aflags-$(CONFIG_PPC64_ELF_ABI_V2)	+= -mabi=elfv2
+ endif
+ endif
+ 
+@@ -141,7 +141,7 @@ endif
+ 
+ CFLAGS-$(CONFIG_PPC64)	:= $(call cc-option,-mtraceback=no)
+ ifndef CONFIG_CC_IS_CLANG
+-ifdef CONFIG_CPU_LITTLE_ENDIAN
++ifdef CONFIG_PPC64_ELF_ABI_V2
+ CFLAGS-$(CONFIG_PPC64)	+= $(call cc-option,-mabi=elfv2,$(call cc-option,-mcall-aixdesc))
+ AFLAGS-$(CONFIG_PPC64)	+= $(call cc-option,-mabi=elfv2)
+ else
+diff --git a/arch/powerpc/boot/Makefile b/arch/powerpc/boot/Makefile
+index 4b4827c475c6..b6d4fe04c594 100644
+--- a/arch/powerpc/boot/Makefile
++++ b/arch/powerpc/boot/Makefile
+@@ -49,6 +49,8 @@ ifdef CONFIG_CPU_BIG_ENDIAN
+ BOOTCFLAGS	+= -mbig-endian
+ else
+ BOOTCFLAGS	+= -mlittle-endian
++endif
++ifdef CONFIG_PPC64_ELF_ABI_V2
+ BOOTCFLAGS	+= $(call cc-option,-mabi=elfv2)
+ endif
+ 
+diff --git a/arch/powerpc/platforms/Kconfig.cputype b/arch/powerpc/platforms/Kconfig.cputype
+index e2e1fec91c6e..9bfcf972d21d 100644
+--- a/arch/powerpc/platforms/Kconfig.cputype
++++ b/arch/powerpc/platforms/Kconfig.cputype
+@@ -556,6 +556,12 @@ config CPU_LITTLE_ENDIAN
+ 
+ endchoice
+ 
++config PPC64_ELF_ABI_V1
++	def_bool PPC64 && CPU_BIG_ENDIAN
++
++config PPC64_ELF_ABI_V2
++	def_bool PPC64 && CPU_LITTLE_ENDIAN
++
+ config PPC64_BOOT_WRAPPER
+ 	def_bool n
+ 	depends on CPU_LITTLE_ENDIAN
 -- 
 2.35.1
 
