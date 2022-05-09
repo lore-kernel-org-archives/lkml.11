@@ -2,159 +2,262 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D08F7C43219
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 05:47:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F42CC41535
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 05:47:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235107AbiEIFtG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 01:49:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48922 "EHLO
+        id S235398AbiEIFtU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 01:49:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235007AbiEIFq3 (ORCPT
+        with ESMTP id S235012AbiEIFqk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 01:46:29 -0400
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8F7A15E498;
-        Sun,  8 May 2022 22:42:36 -0700 (PDT)
-Received: by mail-wm1-f49.google.com with SMTP id 125-20020a1c1983000000b003941f354c62so7614128wmz.0;
-        Sun, 08 May 2022 22:42:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=PgUJQCGuVuN7RMUt/u/GB2vkYIZJaEjDbMnifyGw+XM=;
-        b=uWYHN/OTPaoS3Qf10LSpocUCCLihQH0lh6ZiwjMj9Rtsb3OJYGFaBLfkbhP2sRjEEo
-         +MQtww0LFDu9g394XKJlkHNE9/F3jnwxdbpWjb0Tp/HRV75iiQzEMiXWRfeZt5xnH0R1
-         7PfJmAJrL7NxAP3Ack+LcTXerTbXkUKnIXIuLOq4U9WBzXUIqoaSKHgfSYNCOfp9aWOl
-         LMRF1A9EQWp3P/YotgFrhDZMAEf8w4NtIq3E5FdHQDgJcYyxZI5H3la0gYa2pdFmumrR
-         d2Tukv0VeIb5JILapRcrBya/+8ZhjsN5AR8MqMWmaqbJZKjxUdIxO/uqKnnbDVDlhjAy
-         JgZA==
-X-Gm-Message-State: AOAM530hKvIzA/eORU6ymucSZcLJqZ6PB5mgmD8qAeZSP2GWo4WnM1Ia
-        uuAqbTGB3HU1geQ2IkqPWus=
-X-Google-Smtp-Source: ABdhPJwc4eYBOaGWeOZpzdHrP/EzHMr+8axHRm30/zjzwNtxs/nJxF3qH+zPotS6vDu9D2X/XzPbUQ==
-X-Received: by 2002:a05:600c:3b11:b0:394:57eb:c58b with SMTP id m17-20020a05600c3b1100b0039457ebc58bmr20723567wms.3.1652074950839;
-        Sun, 08 May 2022 22:42:30 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id d7-20020adffbc7000000b0020c66310845sm9972919wrs.55.2022.05.08.22.42.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 08 May 2022 22:42:30 -0700 (PDT)
-Message-ID: <c0eac83f-8483-7709-b558-561ff7a382b0@kernel.org>
-Date:   Mon, 9 May 2022 07:42:12 +0200
+        Mon, 9 May 2022 01:46:40 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 273F815E746
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 22:42:46 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4KxVKb6ZH6z9sW5;
+        Mon,  9 May 2022 07:36:51 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 3P-IuZ94XPXD; Mon,  9 May 2022 07:36:51 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KxVKF6Mvxz9sW9;
+        Mon,  9 May 2022 07:36:33 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id D126A8B774;
+        Mon,  9 May 2022 07:36:33 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id 62giFMHnIRrU; Mon,  9 May 2022 07:36:33 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 880A58B799;
+        Mon,  9 May 2022 07:36:33 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 2495aUjE1591251
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Mon, 9 May 2022 07:36:30 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 2495aU4U1591250;
+        Mon, 9 May 2022 07:36:30 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        naveen.n.rao@linux.vnet.ibm.com
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH v3 11/25] powerpc/ftrace: Make __ftrace_make_{nop/call}() common to PPC32 and PPC64
+Date:   Mon,  9 May 2022 07:36:09 +0200
+Message-Id: <96f53c237316dab4b1b8c682685266faa92da816.1652074503.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1652074503.git.christophe.leroy@csgroup.eu>
+References: <cover.1652074503.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v1] serial: meson: acquire port->lock in startup()
-Content-Language: en-US
-To:     John Ogness <john.ogness@linutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        linux-kernel@vger.kernel.org, Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>
-References: <20220508103547.626355-1-john.ogness@linutronix.de>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220508103547.626355-1-john.ogness@linutronix.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1652074581; l=5657; s=20211009; h=from:subject:message-id; bh=kjbdQgVSoXinGhSt3swSZOi5xLdbYAjoi00hLjURjbg=; b=PJLn3ghzOyJ3VzJSZ1km0z6eeHzmzy4xpCe/bhbw/GDR1aGWtL78xYOzY1TqcAOdW+uxAkvP4A3A /iHj2UrpBCUqCSHFmov2JwgrM659EkGBWMw5qJY54RR6gcHzp3r0
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08. 05. 22, 12:35, John Ogness wrote:
-> The uart_ops startup() callback is called without interrupts
-> disabled and without port->lock locked, relatively late during the
-> boot process (from the call path of console_on_rootfs()). If the
-> device is a console, it was already previously registered and could
-> be actively printing messages.
-> 
-> Since the startup() callback is reading/writing registers used by
-> the console write() callback (AML_UART_CONTROL), its access must
-> be synchronized using the port->lock. Currently it is not.
-> 
-> The startup() callback is the only function that explicitly enables
-> interrupts. Without the synchronization, it is possible that
-> interrupts become accidentally permanently disabled.
-> 
-> CPU0                           CPU1
-> meson_serial_console_write     meson_uart_startup
-> --------------------------     ------------------
-> spin_lock(port->lock)
-> val = readl(AML_UART_CONTROL)
-> uart_console_write()
->                                 writel(INT_EN, AML_UART_CONTROL)
-> writel(val, AML_UART_CONTROL)
-> spin_unlock(port->lock)
-> 
-> Add port->lock synchronization to meson_uart_startup() to avoid
-> racing with meson_serial_console_write().
-> 
-> Also add detailed comments to meson_uart_reset() explaining why it
-> is *not* using port->lock synchronization.
-> 
-> Link: https://lore.kernel.org/lkml/2a82eae7-a256-f70c-fd82-4e510750906e@samsung.com
-> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> Signed-off-by: John Ogness <john.ogness@linutronix.de>
-> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Since c93d4f6ecf4b ("powerpc/ftrace: Add module_trampoline_target()
+for PPC32"), __ftrace_make_nop() for PPC32 is very similar to the
+one for PPC64.
 
-Makes sense to me.
+Same for __ftrace_make_call().
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Make them common.
 
-> ---
->   drivers/tty/serial/meson_uart.c | 13 +++++++++++++
->   1 file changed, 13 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
-> index 2bf1c57e0981..39021dac09cc 100644
-> --- a/drivers/tty/serial/meson_uart.c
-> +++ b/drivers/tty/serial/meson_uart.c
-> @@ -253,6 +253,14 @@ static const char *meson_uart_type(struct uart_port *port)
->   	return (port->type == PORT_MESON) ? "meson_uart" : NULL;
->   }
->   
-> +/*
-> + * This function is called only from probe() using a temporary io mapping
-> + * in order to perform a reset before setting up the device. Since the
-> + * temporarily mapped region was successfully requested, there can be no
-> + * console on this port at this time. Hence it is not necessary for this
-> + * function to acquire the port->lock. (Since there is no console on this
-> + * port at this time, the port->lock is not initialized yet.)
-> + */
->   static void meson_uart_reset(struct uart_port *port)
->   {
->   	u32 val;
-> @@ -267,9 +275,12 @@ static void meson_uart_reset(struct uart_port *port)
->   
->   static int meson_uart_startup(struct uart_port *port)
->   {
-> +	unsigned long flags;
->   	u32 val;
->   	int ret = 0;
->   
-> +	spin_lock_irqsave(&port->lock, flags);
-> +
->   	val = readl(port->membase + AML_UART_CONTROL);
->   	val |= AML_UART_CLEAR_ERR;
->   	writel(val, port->membase + AML_UART_CONTROL);
-> @@ -285,6 +296,8 @@ static int meson_uart_startup(struct uart_port *port)
->   	val = (AML_UART_RECV_IRQ(1) | AML_UART_XMIT_IRQ(port->fifosize / 2));
->   	writel(val, port->membase + AML_UART_MISC);
->   
-> +	spin_unlock_irqrestore(&port->lock, flags);
-> +
->   	ret = request_irq(port->irq, meson_uart_interrupt, 0,
->   			  port->name, port);
->   
-> 
-> base-commit: 672c0c5173427e6b3e2a9bbb7be51ceeec78093a
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+v2:
+- Fixed comment to -mprofile-kernel versus -mkernel_profile
+- Replaced a couple of #ifdef with CONFIG_PPC64_ELF_ABI_V1 as suggested by Naveen.
+---
+ arch/powerpc/kernel/trace/ftrace.c | 108 +++--------------------------
+ 1 file changed, 8 insertions(+), 100 deletions(-)
 
-
+diff --git a/arch/powerpc/kernel/trace/ftrace.c b/arch/powerpc/kernel/trace/ftrace.c
+index 0b199fc9cfd3..531da4d93c58 100644
+--- a/arch/powerpc/kernel/trace/ftrace.c
++++ b/arch/powerpc/kernel/trace/ftrace.c
+@@ -114,7 +114,6 @@ static unsigned long find_bl_target(unsigned long ip, ppc_inst_t op)
+ }
+ 
+ #ifdef CONFIG_MODULES
+-#ifdef CONFIG_PPC64
+ static int
+ __ftrace_make_nop(struct module *mod,
+ 		  struct dyn_ftrace *rec, unsigned long addr)
+@@ -154,10 +153,11 @@ __ftrace_make_nop(struct module *mod,
+ 		return -EINVAL;
+ 	}
+ 
+-#ifdef CONFIG_MPROFILE_KERNEL
+-	/* When using -mkernel_profile there is no load to jump over */
++	/* When using -mprofile-kernel or PPC32 there is no load to jump over */
+ 	pop = ppc_inst(PPC_RAW_NOP());
+ 
++#ifdef CONFIG_PPC64
++#ifdef CONFIG_MPROFILE_KERNEL
+ 	if (copy_inst_from_kernel_nofault(&op, (void *)(ip - 4))) {
+ 		pr_err("Fetching instruction at %lx failed.\n", ip - 4);
+ 		return -EFAULT;
+@@ -201,6 +201,7 @@ __ftrace_make_nop(struct module *mod,
+ 		return -EINVAL;
+ 	}
+ #endif /* CONFIG_MPROFILE_KERNEL */
++#endif /* PPC64 */
+ 
+ 	if (patch_instruction((u32 *)ip, pop)) {
+ 		pr_err("Patching NOP failed.\n");
+@@ -209,48 +210,6 @@ __ftrace_make_nop(struct module *mod,
+ 
+ 	return 0;
+ }
+-
+-#else /* !PPC64 */
+-static int
+-__ftrace_make_nop(struct module *mod,
+-		  struct dyn_ftrace *rec, unsigned long addr)
+-{
+-	ppc_inst_t op;
+-	unsigned long ip = rec->ip;
+-	unsigned long tramp, ptr;
+-
+-	if (copy_from_kernel_nofault(&op, (void *)ip, MCOUNT_INSN_SIZE))
+-		return -EFAULT;
+-
+-	/* Make sure that that this is still a 24bit jump */
+-	if (!is_bl_op(op)) {
+-		pr_err("Not expected bl: opcode is %s\n", ppc_inst_as_str(op));
+-		return -EINVAL;
+-	}
+-
+-	/* lets find where the pointer goes */
+-	tramp = find_bl_target(ip, op);
+-
+-	/* Find where the trampoline jumps to */
+-	if (module_trampoline_target(mod, tramp, &ptr)) {
+-		pr_err("Failed to get trampoline target\n");
+-		return -EFAULT;
+-	}
+-
+-	if (ptr != addr) {
+-		pr_err("Trampoline location %08lx does not match addr\n",
+-		       tramp);
+-		return -EINVAL;
+-	}
+-
+-	op = ppc_inst(PPC_RAW_NOP());
+-
+-	if (patch_instruction((u32 *)ip, op))
+-		return -EPERM;
+-
+-	return 0;
+-}
+-#endif /* PPC64 */
+ #endif /* CONFIG_MODULES */
+ 
+ static unsigned long find_ftrace_tramp(unsigned long ip)
+@@ -437,13 +396,12 @@ int ftrace_make_nop(struct module *mod,
+ }
+ 
+ #ifdef CONFIG_MODULES
+-#ifdef CONFIG_PPC64
+ /*
+  * Examine the existing instructions for __ftrace_make_call.
+  * They should effectively be a NOP, and follow formal constraints,
+  * depending on the ABI. Return false if they don't.
+  */
+-#ifndef CONFIG_MPROFILE_KERNEL
++#ifdef CONFIG_PPC64_ELF_ABI_V1
+ static int
+ expected_nop_sequence(void *ip, ppc_inst_t op0, ppc_inst_t op1)
+ {
+@@ -465,7 +423,7 @@ expected_nop_sequence(void *ip, ppc_inst_t op0, ppc_inst_t op1)
+ static int
+ expected_nop_sequence(void *ip, ppc_inst_t op0, ppc_inst_t op1)
+ {
+-	/* look for patched "NOP" on ppc64 with -mprofile-kernel */
++	/* look for patched "NOP" on ppc64 with -mprofile-kernel or ppc32 */
+ 	if (!ppc_inst_equal(op0, ppc_inst(PPC_RAW_NOP())))
+ 		return 0;
+ 	return 1;
+@@ -484,8 +442,10 @@ __ftrace_make_call(struct dyn_ftrace *rec, unsigned long addr)
+ 	if (copy_inst_from_kernel_nofault(op, ip))
+ 		return -EFAULT;
+ 
++#ifdef CONFIG_PPC64_ELF_ABI_V1
+ 	if (copy_inst_from_kernel_nofault(op + 1, ip + 4))
+ 		return -EFAULT;
++#endif
+ 
+ 	if (!expected_nop_sequence(ip, op[0], op[1])) {
+ 		pr_err("Unexpected call sequence at %p: %s %s\n",
+@@ -531,58 +491,6 @@ __ftrace_make_call(struct dyn_ftrace *rec, unsigned long addr)
+ 
+ 	return 0;
+ }
+-
+-#else  /* !CONFIG_PPC64: */
+-static int
+-__ftrace_make_call(struct dyn_ftrace *rec, unsigned long addr)
+-{
+-	int err;
+-	ppc_inst_t op;
+-	u32 *ip = (u32 *)rec->ip;
+-	struct module *mod = rec->arch.mod;
+-	unsigned long tramp;
+-
+-	/* read where this goes */
+-	if (copy_inst_from_kernel_nofault(&op, ip))
+-		return -EFAULT;
+-
+-	/* It should be pointing to a nop */
+-	if (!ppc_inst_equal(op,  ppc_inst(PPC_RAW_NOP()))) {
+-		pr_err("Expected NOP but have %s\n", ppc_inst_as_str(op));
+-		return -EINVAL;
+-	}
+-
+-	/* If we never set up a trampoline to ftrace_caller, then bail */
+-#ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
+-	if (!mod->arch.tramp || !mod->arch.tramp_regs) {
+-#else
+-	if (!mod->arch.tramp) {
+-#endif
+-		pr_err("No ftrace trampoline\n");
+-		return -EINVAL;
+-	}
+-
+-#ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
+-	if (rec->flags & FTRACE_FL_REGS)
+-		tramp = mod->arch.tramp_regs;
+-	else
+-#endif
+-		tramp = mod->arch.tramp;
+-	/* create the branch to the trampoline */
+-	err = create_branch(&op, ip, tramp, BRANCH_SET_LINK);
+-	if (err) {
+-		pr_err("REL24 out of range!\n");
+-		return -EINVAL;
+-	}
+-
+-	pr_devel("write to %lx\n", rec->ip);
+-
+-	if (patch_instruction(ip, op))
+-		return -EPERM;
+-
+-	return 0;
+-}
+-#endif /* CONFIG_PPC64 */
+ #endif /* CONFIG_MODULES */
+ 
+ static int __ftrace_make_call_kernel(struct dyn_ftrace *rec, unsigned long addr)
 -- 
-js
-suse labs
+2.35.1
+
