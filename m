@@ -2,112 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CADA6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 17:57:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55CA2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 18:00:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239992AbiEISBp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 14:01:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52666 "EHLO
+        id S239943AbiEISEI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 14:04:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239970AbiEISBg (ORCPT
+        with ESMTP id S239925AbiEISEE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 14:01:36 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77D2C1F7E35;
-        Mon,  9 May 2022 10:57:38 -0700 (PDT)
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by gandalf.ozlabs.org (Postfix) with ESMTP id 4KxpmK07cmz4xcY;
-        Tue, 10 May 2022 03:57:37 +1000 (AEST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Mon, 9 May 2022 14:04:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A16522A2F9;
+        Mon,  9 May 2022 11:00:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KxpmC2sCwz4xVP;
-        Tue, 10 May 2022 03:57:31 +1000 (AEST)
-From:   =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>
-To:     linux-spi@vger.kernel.org, linux-mtd@lists.infradead.org
-Cc:     Mark Brown <broonie@kernel.org>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-aspeed@lists.ozlabs.org, Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Potin Lai <potin.lai@quantatw.com>,
-        Jae Hyun Yoo <quic_jaehyoo@quicinc.com>,
-        =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>
-Subject: [PATCH v7 11/11] mtd: spi-nor: aspeed: set the decoding size to at least 2MB for AST2600
-Date:   Mon,  9 May 2022 19:56:16 +0200
-Message-Id: <20220509175616.1089346-12-clg@kaod.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220509175616.1089346-1-clg@kaod.org>
-References: <20220509175616.1089346-1-clg@kaod.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 989E0615D7;
+        Mon,  9 May 2022 18:00:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 970D7C385B2;
+        Mon,  9 May 2022 18:00:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652119207;
+        bh=+6bV93j1JQUzPiPeS8iW/xrGtw1Q0Og6QhFnv7F7R9o=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Z2PsqCWAw810MTRoGUm/er10ah2EoSb8C3TIGr0VVdrDmjwgg/sscRHBpjkY3W7jM
+         VhsZ9+kX73Xe+ftMhQnNipnQvsP/30DiVxzTZGYa2jfaUN9MukhesI6yzuyk/rR/kO
+         L3XW8VteSAYo6nK3bPwi1L5nJAS7JzUj+p/08wT9/KUujrggG25DvydboTo417/4Xh
+         wtncttQe3b6xivcbNmQouhyr3qQDCu2swo9sUlPMAxeKDUnp00/e1qgYQ3B9Yfvn1G
+         07wOnSoD7D6g8j0Y14JmRtnuSEwroJDw34//38KD+1ko2mETo4AZBKh1vPtaT0dvAl
+         FMSGt6tUD9gKA==
+Date:   Mon, 9 May 2022 11:00:04 -0700
+From:   Josh Poimboeuf <jpoimboe@kernel.org>
+To:     Rik van Riel <riel@surriel.com>
+Cc:     Song Liu <song@kernel.org>, linux-kernel@vger.kernel.org,
+        live-patching@vger.kernel.org, mingo@redhat.com,
+        peterz@infradead.org, vincent.guittot@linaro.org,
+        jpoimboe@redhat.com, joe.lawrence@redhat.com, kernel-team@fb.com
+Subject: Re: [RFC] sched,livepatch: call stop_one_cpu in
+ klp_check_and_switch_task
+Message-ID: <20220509180004.zmvhz65xlncwqrrc@treble>
+References: <20220507174628.2086373-1-song@kernel.org>
+ <20220509115227.6075105e@imladris.surriel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220509115227.6075105e@imladris.surriel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Potin Lai <potin.lai@quantatw.com>
+On Mon, May 09, 2022 at 11:52:27AM -0400, Rik van Riel wrote:
+> Does this look like an approach that could work?
+> 
+> ---8<---
+> sched,livepatch: call stop_one_cpu in klp_check_and_switch_task
+> 
+> If a running task fails to transition to the new kernel live patch after the
+> first attempt, use the stopper thread to preempt it during subsequent attempts
+> at switching to the new kernel live patch.
+> 
+> <INSERT EXPERIMENTAL RESULTS HERE>
 
-In AST2600, the unit of SPI CEx decoding range register is 1MB, and end
-address offset is set to the acctual offset - 1MB. If the flash only has
-1MB, the end address will has same value as start address, which will
-causing unexpected errors.
+It would be helpful to add more info about the original problem being
+solved, and how this is supposed to fix it.
 
-This patch set the decoding size to at least 2MB to avoid decoding errors.
+> +static int kpatch_dummy_fn(void *dummy)
 
-Tested:
-root@bletchley:~# dmesg | grep "aspeed-smc 1e631000.spi: CE0 window"
-[   59.328134] aspeed-smc 1e631000.spi: CE0 window resized to 2MB (AST2600 Decoding)
-[   59.343001] aspeed-smc 1e631000.spi: CE0 window [ 0x50000000 - 0x50200000 ] 2MB
-root@bletchley:~# devmem 0x1e631030
-0x00100000
+s/kpatch/klp/
 
-Tested-by: Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
-Signed-off-by: Potin Lai <potin.lai@quantatw.com>
-[ clg : Ported on new spi-mem driver ]
-Signed-off-by: Cédric Le Goater <clg@kaod.org>
----
- drivers/spi/spi-aspeed-smc.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+> +{
+> +	return 0;
+> +}
+> +
+>  /*
+>   * Try to safely switch a task to the target patch state.  If it's currently
+>   * running, or it's sleeping on a to-be-patched or to-be-unpatched function, or
+> @@ -315,6 +321,9 @@ static bool klp_try_switch_task(struct task_struct *task)
+>  	case -EBUSY:	/* klp_check_and_switch_task() */
+>  		pr_debug("%s: %s:%d is running\n",
+>  			 __func__, task->comm, task->pid);
+> +		/* Preempt the task from the second KLP switch attempt. */
+> +		if (klp_signals_cnt)
+> +			stop_one_cpu(task_cpu(task), kpatch_dummy_fn, NULL);
 
-diff --git a/drivers/spi/spi-aspeed-smc.c b/drivers/spi/spi-aspeed-smc.c
-index 35f6934847b7..496f3e1e9079 100644
---- a/drivers/spi/spi-aspeed-smc.c
-+++ b/drivers/spi/spi-aspeed-smc.c
-@@ -474,6 +474,8 @@ static int aspeed_spi_set_window(struct aspeed_spi *aspi,
-  *   is correct.
-  */
- static const struct aspeed_spi_data ast2500_spi_data;
-+static const struct aspeed_spi_data ast2600_spi_data;
-+static const struct aspeed_spi_data ast2600_fmc_data;
- 
- static int aspeed_spi_chip_adjust_window(struct aspeed_spi_chip *chip,
- 					 u32 local_offset, u32 size)
-@@ -497,6 +499,17 @@ static int aspeed_spi_chip_adjust_window(struct aspeed_spi_chip *chip,
- 			 chip->cs, size >> 20);
- 	}
- 
-+	/*
-+	 * The decoding size of AST2600 SPI controller should set at
-+	 * least 2MB.
-+	 */
-+	if ((aspi->data == &ast2600_spi_data || aspi->data == &ast2600_fmc_data) &&
-+	    size < SZ_2M) {
-+		size = SZ_2M;
-+		dev_info(aspi->dev, "CE%d window resized to %dMB (AST2600 Decoding)",
-+			 chip->cs, size >> 20);
-+	}
-+
- 	aspeed_spi_get_windows(aspi, windows);
- 
- 	/* Adjust this chip window */
+I must be missing something, how is briefly preempting a kthread
+supposed to actually transition it?  Won't it likely go back to running
+on the CPU before the next periodic klp_transition_work_fn() check?
+
 -- 
-2.35.1
-
+Josh
