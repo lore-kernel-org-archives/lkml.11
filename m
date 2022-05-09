@@ -2,66 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59E49C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 08:22:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BE21C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 08:28:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235861AbiEIIZ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 04:25:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42676 "EHLO
+        id S236956AbiEII1n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 04:27:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236025AbiEIIPg (ORCPT
+        with ESMTP id S235585AbiEIIOw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 04:15:36 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8728134E27
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 01:11:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=wKFmhrP3WzJLDbdv59rm6WBSkcF7RLZCEwBXG20oLYE=; b=GSkcMaBNEadXEJdb8WkyJrrUKh
-        YgemITSvEkkzI312GJ6/E9gL8QWQ6DA3xOK8TlkV1/DjftLPGKygWzUCT7AHhVW/IsB5i6c9fy75T
-        RCjV4rUXOGHSSaGNt8zysF91fe+3E3Gf4CjUe2CChbmeG81c6CNTTFRf28PfGH0M2qniI25lRcium
-        4w8f068Fjsf1EP6cAoxuNWVdj+BRzfaoBYx/DanZ7hBOZ7tIJV+M2PnoKH2DA8cKkOzQe1A4Q5dTV
-        HY8jNsw2pJlpZK44P+dMDijPXiz48NhIPhk+u0kFFf0/fZjgc1a9GSUgliPvr3SEjxVKufO2seIvx
-        S1kYXmBQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nnyRH-00CV35-LD; Mon, 09 May 2022 08:08:19 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 39961300385;
-        Mon,  9 May 2022 10:08:17 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 11E5A2026968A; Mon,  9 May 2022 10:08:17 +0200 (CEST)
-Date:   Mon, 9 May 2022 10:08:17 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Hao Jia <jiahao.os@bytedance.com>
-Cc:     mingo@redhat.com, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 0/2] sched/core: Avoid obvious double update_rq_clock
- warning
-Message-ID: <YnjL8UQ1ejVnsMG6@hirez.programming.kicks-ass.net>
-References: <20220430085843.62939-1-jiahao.os@bytedance.com>
- <20b9822d-4a87-c868-1683-30b0a7e97777@bytedance.com>
+        Mon, 9 May 2022 04:14:52 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BE246473F;
+        Mon,  9 May 2022 01:10:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1652083626;
+        bh=MlFNdZlzZ1snP/e8iwy/NN+cugdEdZuPrb2VR9D/dQ4=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=O8QrEhCGbPZo4V0UbdRtWXDGegJxC/q7TxlkZFDu8D7KDYCKO54G05lBP1exTUysf
+         0gZR4rKMVnRMGjvdE/lY2+/piYIwZeCm2hx+DUahgx3qa4B5PRDQElsw+AoUYvzIz7
+         zXZ2N5xIns7U7iIm2+mfVazWNG4piP/myJ64X97M=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from Venus.fritz.box ([46.223.3.89]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MBDnC-1neeTk2glq-00CimZ; Mon, 09
+ May 2022 10:07:06 +0200
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+To:     peterhuewe@gmx.de, jarkko@kernel.org, jgg@ziepe.ca
+Cc:     stefanb@linux.vnet.ibm.com, linux@mniewoehner.de,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        LinoSanfilippo@gmx.de, lukas@wunner.de, p.rosenberger@kunbus.com,
+        Lino Sanfilippo <l.sanfilippo@kunbus.com>
+Subject: [PATCH v4 3/6] tpm, tpm_tis: enable irq test
+Date:   Mon,  9 May 2022 10:05:56 +0200
+Message-Id: <20220509080559.4381-4-LinoSanfilippo@gmx.de>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220509080559.4381-1-LinoSanfilippo@gmx.de>
+References: <20220509080559.4381-1-LinoSanfilippo@gmx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20b9822d-4a87-c868-1683-30b0a7e97777@bytedance.com>
+Content-Transfer-Encoding: base64
+X-Provags-ID: V03:K1:yDUEsYMEp33tNMI3hYBWQ7K+MU7i9kK/HNCWtJpBfpdLjIDGXmK
+ hK65PnsSMXLlSD9PJiEOIRbsYskx1mVM9YanE8G/Lh2vd0DLw2RwmQ4glhRYg+eStG7eN0a
+ JDPxDqG97Vm4P0cQY0BBPqS9ozql8x/IN4+dOXvJLlYKTb66taHWzAbqSHXCszUb4y/mRQF
+ MType551/F0d1hn0BayCQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:eoh8oySfHEU=:a46htkS9luq/lb4KtZLhWp
+ fLXOYEjfcOSsAtHxybz+hKDW5UpEcg04hhwxMRxutiqr3uH+D5thZD0MKulPSjIm+byVpGsrf
+ 5rDQfGBl+al4O0I58RvBLRc1UpSB3cdqFf9VtO3jxYV563PIPabBIlJyyjsUU1Rjx762DT2UL
+ EQcMg2h+O4HzVflG+snRaBhxGl6QB5BndkXFh/tm5XmiqIvLSWzfYfwRkNIVJfbiDMwLNI58s
+ iu/gISWfgCvB1s2FQ3VtY9EaCi2TVpPGQKIg4JUmeMMjb2h/QhMvh3PUxCMa2zCj2xcIy/C77
+ 9Jk87vbP7zDPoMQCNPq0FfmWC1nUwjEdBBH8P0GbxYtx8PADh+72Mf+1GSp+MymDX38Ch4Afd
+ EIWTv0PulZPXdtIZBknplZBYSQ2czbYBabhMcH2/gg1DyfBfNE27UnORJVJdLLdU/Mu7cV0iz
+ ez0OoBAmHSZ+j1zYbfQcFxrP7yLe3H8tHTNTG9DImtOnh+2VJyOZ3j4yCZ0Z/NRcaon69awpF
+ l6diwp3IKX+Q2wi1WGByu9Ngc71CheLK0/xgflPNWicmUKJmPRdBeORtG4VrY6jyHiJNjqtjp
+ HQBM3UR4SX6GbN1e+G8v9Ml5Q/2noBJ29rOGW6SBXN9dnpYhKVf7SH4eE8CDRZm5ECjceVojE
+ t/7XpV+3ZcBqlpFRwMRBs/C/OacPVD5QzHbiS5eSp5sJRa6LC/6RSgiIwb+6WDy82kPfgJsda
+ XwOfrWHY/FlfhDqq29EwRvRXKI0GKlMmtCrpTLrfeqWLL27TeRnuO/99etRSywwh2+uG5Moxr
+ cEmYRF6+ptj8ktWM0sacB0f1CH3sp0JxCYX4aG6RrMNEEd0MPA+K1SpKd4GC3UQSvffJ7KxGS
+ b+AYbnYt6Bye44Jx37r0UbIYMXSGsx/gmJbcimmLC0HM5tvm4SiS/YbDtpnAojHpKNGFFtw9Q
+ YNJRqkOtc9cIeI0bFYvuzmlZfUjQ+4B4s/tgc5nwwyIlr05m5v3Lw/1XcSs98/XIcBboSmaWW
+ o7UZrNCiwhYMOUoiiZBvRWXstm7KN3nAQvf3kg3zpL26Arg1A945tjcemOpjqsJ/hqsDH0dA7
+ jNi0sWnu1aSHCw=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 11:16:39AM +0800, Hao Jia wrote:
-> Friendly ping...
-> 
-> Hi Dietmar Eggemann & Peter Zijlstra,
-> If you have time, please review these two patches.
-
-I've picked them up, shall push them to tip soonish.
-
-Thanks!
+RnJvbTogTGlubyBTYW5maWxpcHBvIDxsLnNhbmZpbGlwcG9Aa3VuYnVzLmNvbT4KClRoZSB0ZXN0
+IGZvciB3b3JraW5nIGlycXMgd2hpY2ggaXMgZG9uZSBpbiB0cG1fdGlzX3NlbmQoKSBpcyBvbmx5
+IGV4ZWN1dGVkCmlmIGJvdGggcHJpdi0+aXJxX3Rlc3RlZCBpcyBmYWxzZSBhbmQgVFBNX0NISVBf
+RkxBR19JUlEgaXMgc2V0IGluCmNoaXAtPmZsYWdzLgoKV2hpbGUgdGhlIGZpcnN0IGNvbmRpdGlv
+biBpcyBpbml0aWFsbHkgbWV0LCB0aGUgVFBNX0NISVBfRkxBR19JUlEgZmxhZyBpcwpuZXZlciBz
+ZXQsIHdoaWNoIHByZXZlbnRzIHRoZSBpcnEgdGVzdCBmcm9tIGJlaW5nIGV2ZXIgZXhlY3V0ZWQu
+IEZpeCB0aGlzCmJ5IHNldHRpbmcgVFBNX0NISVBfRkxBR19JUlEganVzdCBiZWZvcmUgdGhlIHRl
+c3QgaXMgbWFkZS4KClNpZ25lZC1vZmYtYnk6IExpbm8gU2FuZmlsaXBwbyA8bC5zYW5maWxpcHBv
+QGt1bmJ1cy5jb20+Ci0tLQogZHJpdmVycy9jaGFyL3RwbS90cG1fdGlzX2NvcmUuYyB8IDEgKwog
+MSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9jaGFy
+L3RwbS90cG1fdGlzX2NvcmUuYyBiL2RyaXZlcnMvY2hhci90cG0vdHBtX3Rpc19jb3JlLmMKaW5k
+ZXggNDZmNTA0ZmI1MDg0Li40ZjNiODJjM2YyMDUgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvY2hhci90
+cG0vdHBtX3Rpc19jb3JlLmMKKysrIGIvZHJpdmVycy9jaGFyL3RwbS90cG1fdGlzX2NvcmUuYwpA
+QCAtNzgxLDYgKzc4MSw3IEBAIHN0YXRpYyBpbnQgdHBtX3Rpc19wcm9iZV9pcnFfc2luZ2xlKHN0
+cnVjdCB0cG1fY2hpcCAqY2hpcCwgdTMyIGludG1hc2ssCiAJCXJldHVybiByYzsKIAogCXByaXYt
+PmlycV90ZXN0ZWQgPSBmYWxzZTsKKwljaGlwLT5mbGFncyB8PSBUUE1fQ0hJUF9GTEFHX0lSUTsK
+IAogCS8qIEdlbmVyYXRlIGFuIGludGVycnVwdCBieSBoYXZpbmcgdGhlIGNvcmUgY2FsbCB0aHJv
+dWdoIHRvCiAJICogdHBtX3Rpc19zZW5kCi0tIAoyLjM2LjAKCg==
