@@ -2,69 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39A5DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:10:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0C97C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 10:13:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232496AbiEIKOH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 06:14:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41302 "EHLO
+        id S230399AbiEIKRa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 06:17:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233837AbiEIKOC (ORCPT
+        with ESMTP id S229453AbiEIKR1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 06:14:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 132C4237266;
-        Mon,  9 May 2022 03:10:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 181B560ABC;
-        Mon,  9 May 2022 10:06:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19415C385AB;
-        Mon,  9 May 2022 10:06:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652090805;
-        bh=QzkMLjT1rOqOza+MZUJwpgWcVa9l/57yvp1guEUS1qw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tU+FTu+4vYjYnrI1KJU+jqWTkfjBpB+IeBMiyj0ffy4S8v6tfZHRA6JYAw4d5oXio
-         w9psrS2628omHe0e8/jy3ZjRHh8kTR5/TJNJPop7+vrxhYhAq3/2taQuIVeaRomD1O
-         jjkDR+ngZnxDmyRO1lGKqhTC6KI7CfKWm38bO45EjUlLxMl8pFNw8yVu7EvLJQixWd
-         gt66y+2E7M2njOrPwpWR0g3/w+ArCjQ3luhRpFdbdxTsqJp7JgI8rDNkWHFaDKVqY0
-         82YFcqfF0qJ9EiwocJkp1f/tqq/Ir6l50zazDm/2zLpDJaWM6Fh8806d3jRN1pEMuU
-         OJ+JTHuWep3KQ==
-Date:   Mon, 9 May 2022 12:06:39 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     Carlos Llamas <cmllamas@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Hridya Valsaraju <hridya@google.com>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Li Li <dualli@google.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v2 5/5] binder: additional transaction error logs
-Message-ID: <20220509100639.y5qwofnyqlnooeig@wittgenstein>
-References: <20220429235644.697372-1-cmllamas@google.com>
- <20220429235644.697372-6-cmllamas@google.com>
+        Mon, 9 May 2022 06:17:27 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52B3B27EBA6
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 03:13:34 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id 129so8081991wmz.0
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 03:13:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Qgkx9ZC8YGJJeK5iTMZYlOqvFF3Oqattg27UJCiRY1Q=;
+        b=Pi3Xgsw+zt4lcSvgy01HxAxeKPFRomrVRyzr1Mh7iUX24+iKZGe77eE/XeZokDgUK8
+         yUpbrar1CwEtSqJpt1JaYJ+Vcm4ESYQMY5t8/5jvPYr9NRz6jW/7mcM8vSfHXYhoZvrS
+         28hHPFW/5ec+50Fces0xUNsRNMNMrSqjjieqIR28jeszSVFYacK7MUZ8Xrq/JzblklgI
+         CjGsMLz3dVfBZ6g1SBY8xywboRbMcVIVPCGx9vV800o7TB3nMkShpEkkIIVxlKWahg2s
+         8YECUEGbCuReXVLhhsK8RcgUFWbViaxNg31dPs8Ms/zPhjMxtuXBn0Ir46i/rGa4KNzQ
+         wxow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Qgkx9ZC8YGJJeK5iTMZYlOqvFF3Oqattg27UJCiRY1Q=;
+        b=TvqWnoDzhahBPOEjrS2msql/rTHTTrXQnWuhvNntWHo21BGivVZkN7dQ7BCk2ByEjd
+         kKXCweuW3r448Lxu/oYJEOYKhYQ50qhkwIpMD+xm6WLdtc0Tj/ZbQsmHTGaHcmyUPR4q
+         NJFDhyUzCZUOettnYqCYGSvQgoAIjNUB1Q1BkG68oM017q2SGD2wycFV0VRd/ygV+vxe
+         hDA1uyorDcFFKZrAWkjvj0rOoIgc8tC4wTn0pcliYCtnGg0+wlSc6ueDzGYIK4rc2gUs
+         2u7QnsAenEiUF9gi1DEUn9vT9W8blFTe4WQpickEkZME98HrW8DKtJQ+Oa+CMIWGL+qV
+         Dj9Q==
+X-Gm-Message-State: AOAM530s4gOPQ8gSW/v/ElOe3tnDEXXAJmL7cnu9gs0VaCFnabcnuh+w
+        b0P2vOlJQ8JU6AVC49e+MfFbJg1LGxK8wg==
+X-Google-Smtp-Source: ABdhPJwIftT/UsBQmfVV48i+Vgca7Yqe2sTYcpBIUm433z+geRhMUia1x9txLA/Oj+TL2SMmKfKeXQ==
+X-Received: by 2002:a05:600c:190b:b0:394:96d3:5780 with SMTP id j11-20020a05600c190b00b0039496d35780mr1627274wmq.82.1652090567943;
+        Mon, 09 May 2022 03:02:47 -0700 (PDT)
+Received: from [192.168.1.41] (176-182-171-101.abo.bbox.fr. [176.182.171.101])
+        by smtp.googlemail.com with ESMTPSA id n11-20020a056000170b00b0020c5253d8c7sm10283350wrc.19.2022.05.09.03.02.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 09 May 2022 03:02:47 -0700 (PDT)
+Message-ID: <bb05dd4b-3114-73bc-0bd8-81e30dac1497@linaro.org>
+Date:   Mon, 9 May 2022 12:02:46 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220429235644.697372-6-cmllamas@google.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 1/2] thermal/drivers/qcom/lmh: Add sc8180x compatible
+Content-Language: en-US
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Thara Gopinath <thara.gopinath@linaro.org>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220502164504.3972938-1-bjorn.andersson@linaro.org>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <20220502164504.3972938-1-bjorn.andersson@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 11:56:44PM +0000, Carlos Llamas wrote:
-> Log readable and specific error messages whenever a transaction failure
-> happens. This will ensure better context is given to regular users about
-> these unique error cases, without having to decode a cryptic log.
+On 02/05/2022 18:45, Bjorn Andersson wrote:
+> The LMh instances in the Qualcomm SC8180X platform looks to behave
+> similar to those in SM8150, add additional compatibles to allow
+> platform specific behavior to be added if needed.
 > 
-> Signed-off-by: Carlos Llamas <cmllamas@google.com>
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 > ---
 
-Looks good to me,
-Acked-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+Applied, thanks
+
+-- 
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
