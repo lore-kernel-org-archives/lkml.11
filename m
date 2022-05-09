@@ -2,84 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF4C9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 05:41:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06C27C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 05:43:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232571AbiEIFoC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 01:44:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50940 "EHLO
+        id S232926AbiEIFpR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 01:45:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234525AbiEIFj6 (ORCPT
+        with ESMTP id S235196AbiEIFna (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 01:39:58 -0400
-Received: from relay.hostedemail.com (smtprelay0011.hostedemail.com [216.40.44.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C41F939166
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 22:36:05 -0700 (PDT)
-Received: from omf17.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay09.hostedemail.com (Postfix) with ESMTP id DA84C2FD39;
-        Mon,  9 May 2022 05:36:03 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf17.hostedemail.com (Postfix) with ESMTPA id B49131E;
-        Mon,  9 May 2022 05:36:01 +0000 (UTC)
-Message-ID: <918affc0a0a91dab08647696ed6587021264f25f.camel@perches.com>
-Subject: Re: [PATCH] KVM: selftests: riscv: Remove unneeded semicolon
-From:   Joe Perches <joe@perches.com>
-To:     Anup Patel <anup@brainfault.org>,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        KVM General <kvm@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Date:   Sun, 08 May 2022 22:36:01 -0700
-In-Reply-To: <CAAhSdy15CE5ZUROH-mOwhpR0AuwsK8h+8W-Kd0jxwsTixpQOQg@mail.gmail.com>
-References: <20220506094512.116729-1-jiapeng.chong@linux.alibaba.com>
-         <CAAhSdy15CE5ZUROH-mOwhpR0AuwsK8h+8W-Kd0jxwsTixpQOQg@mail.gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Mon, 9 May 2022 01:43:30 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05C7F13FD5E
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 22:39:36 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4KxVKK4tNXz9sT7;
+        Mon,  9 May 2022 07:36:37 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id FPwFrJmwv649; Mon,  9 May 2022 07:36:37 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KxVKF4hxJz9sTN;
+        Mon,  9 May 2022 07:36:33 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 8E74A8B770;
+        Mon,  9 May 2022 07:36:33 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id ZYcdwSDnGbSn; Mon,  9 May 2022 07:36:33 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 45B878B773;
+        Mon,  9 May 2022 07:36:33 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 2495aVqV1591287
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Mon, 9 May 2022 07:36:31 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 2495aV8a1591286;
+        Mon, 9 May 2022 07:36:31 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        naveen.n.rao@linux.vnet.ibm.com
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH v3 20/25] powerpc/inst: Add __copy_inst_from_kernel_nofault()
+Date:   Mon,  9 May 2022 07:36:18 +0200
+Message-Id: <1f3702890d6dbd64702b61834753bcc96851c18c.1652074503.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1652074503.git.christophe.leroy@csgroup.eu>
+References: <cover.1652074503.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Stat-Signature: q34mkbymsd5c8i4guxezgn8qm5yedycu
-X-Rspamd-Server: rspamout06
-X-Rspamd-Queue-Id: B49131E
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1/6eHbjh40QHHy98IswUgEhKu3HfsOuVzY=
-X-HE-Tag: 1652074561-122139
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1652074582; l=1534; s=20211009; h=from:subject:message-id; bh=uNUWZzzzPfrKXF6jD9unCulUYAF0cNf3EZC4MAgTHXc=; b=FrAE5/ZTxKUxlACNTbwIuVUFM//TtMPyfgYdKe5iiMoA7Aa65TRgGdY5GTk77k5AJ1bezEwzfA55 wjI9bKlVCxkjBMqMMbYXD+DOJL79X4UWX3vvkawyFLWyCX4KXdZC
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-05-09 at 10:37 +0530, Anup Patel wrote:
-> On Fri, May 6, 2022 at 3:15 PM Jiapeng Chong
-> <jiapeng.chong@linux.alibaba.com> wrote:
-> > 
-> > Fix the following coccicheck warnings:
-> > 
-> > ./tools/testing/selftests/kvm/lib/riscv/processor.c:353:3-4: Unneeded
-> > semicolon.
-> > 
-> > Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> > Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-> 
-> In future, please CC kvm-riscv@lists.infradead.org for KVM RISC-V related
-> patches.
+On the same model as get_user() versus __get_user(),
+introduce __copy_inst_from_kernel_nofault() which doesn't
+check address.
 
-Perhaps add or update some MAINTAINERS entry as this list is not
-currently specified by:
+To be used by callers that have already checked that the adress
+is a kernel address.
 
-$ ./scripts/get_maintainer.pl -f tools/testing/selftests/kvm/lib/riscv/processor.c --nogit --nogit-fallback
-Paolo Bonzini <pbonzini@redhat.com> (supporter:KERNEL VIRTUAL MACHINE (KVM))
-Shuah Khan <shuah@kernel.org> (maintainer:KERNEL SELFTEST FRAMEWORK)
-Paul Walmsley <paul.walmsley@sifive.com> (supporter:RISC-V ARCHITECTURE)
-Palmer Dabbelt <palmer@dabbelt.com> (supporter:RISC-V ARCHITECTURE)
-Albert Ou <aou@eecs.berkeley.edu> (supporter:RISC-V ARCHITECTURE)
-kvm@vger.kernel.org (open list:KERNEL VIRTUAL MACHINE (KVM))
-linux-kselftest@vger.kernel.org (open list:KERNEL SELFTEST FRAMEWORK)
-linux-riscv@lists.infradead.org (open list:RISC-V ARCHITECTURE)
-linux-kernel@vger.kernel.org (open list)
-$
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ arch/powerpc/include/asm/inst.h | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
+diff --git a/arch/powerpc/include/asm/inst.h b/arch/powerpc/include/asm/inst.h
+index 80b6d74146c6..b49aae9f6f27 100644
+--- a/arch/powerpc/include/asm/inst.h
++++ b/arch/powerpc/include/asm/inst.h
+@@ -158,13 +158,10 @@ static inline char *__ppc_inst_as_str(char str[PPC_INST_STR_LEN], ppc_inst_t x)
+ 	__str;				\
+ })
+ 
+-static inline int copy_inst_from_kernel_nofault(ppc_inst_t *inst, u32 *src)
++static inline int __copy_inst_from_kernel_nofault(ppc_inst_t *inst, u32 *src)
+ {
+ 	unsigned int val, suffix;
+ 
+-	if (unlikely(!is_kernel_addr((unsigned long)src)))
+-		return -ERANGE;
+-
+ /* See https://github.com/ClangBuiltLinux/linux/issues/1521 */
+ #if defined(CONFIG_CC_IS_CLANG) && CONFIG_CLANG_VERSION < 140000
+ 	val = suffix = 0;
+@@ -181,4 +178,12 @@ static inline int copy_inst_from_kernel_nofault(ppc_inst_t *inst, u32 *src)
+ 	return -EFAULT;
+ }
+ 
++static inline int copy_inst_from_kernel_nofault(ppc_inst_t *inst, u32 *src)
++{
++	if (unlikely(!is_kernel_addr((unsigned long)src)))
++		return -ERANGE;
++
++	return __copy_inst_from_kernel_nofault(inst, src);
++}
++
+ #endif /* _ASM_POWERPC_INST_H */
+-- 
+2.35.1
 
