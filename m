@@ -2,114 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D65B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 12:48:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 065DBC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 12:48:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234828AbiEIMvw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 08:51:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35790 "EHLO
+        id S234937AbiEIMwY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 08:52:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234910AbiEIMvq (ORCPT
+        with ESMTP id S234907AbiEIMwR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 08:51:46 -0400
-Received: from smtp14.infineon.com (smtp14.infineon.com [IPv6:2a00:18f0:1e00:4::6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B05D2A1FD8;
-        Mon,  9 May 2022 05:47:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=infineon.com; i=@infineon.com; q=dns/txt; s=IFXMAIL;
-  t=1652100473; x=1683636473;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=DGC/Jxk5wtyvy6vNWf7S1XzQjNkoQDadcKmWQ7WC7VI=;
-  b=RKpEqJL4ppYlyrGP7SBlhas7PCUK7Yop7K6+OQLUaYGATNFnYko5f1Bl
-   2Gxie6YCQwGeaDK7WOmGi4L8q+H8Y0GfYgStIP3byac5h/ETIcE6z6/WO
-   IOeWNPhCEgcRhu41GYruey32yHbpbrBdTNjbgIY39zSln2xp+M9/XK+Rt
-   4=;
-X-SBRS: None
-X-IronPort-AV: E=McAfee;i="6400,9594,10341"; a="119780255"
-X-IronPort-AV: E=Sophos;i="5.91,211,1647298800"; 
-   d="scan'208";a="119780255"
-Received: from unknown (HELO mucxv002.muc.infineon.com) ([172.23.11.17])
-  by smtp14.infineon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 14:47:51 +0200
-Received: from MUCSE812.infineon.com (MUCSE812.infineon.com [172.23.29.38])
+        Mon, 9 May 2022 08:52:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9345291CE6;
+        Mon,  9 May 2022 05:48:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mucxv002.muc.infineon.com (Postfix) with ESMTPS;
-        Mon,  9 May 2022 14:47:50 +0200 (CEST)
-Received: from MUCSE818.infineon.com (172.23.29.44) by MUCSE812.infineon.com
- (172.23.29.38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 9 May 2022
- 14:47:49 +0200
-Received: from smaha-lin-dev01.agb.infineon.com (172.23.8.247) by
- MUCSE818.infineon.com (172.23.29.44) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 9 May 2022 14:47:49 +0200
-From:   Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
-To:     <jarkko@kernel.org>
-CC:     <Marten.Lindahl@axis.com>, <jgg@ziepe.ca>,
-        <johannes.holland@infineon.com>, <jsnitsel@redhat.com>,
-        <linux-integrity@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <martenli@axis.com>, <nayna@linux.vnet.ibm.com>,
-        <peterhuewe@gmx.de>, <stefan.mahnke-hartmann@infineon.com>
-Subject: Re: [PATCH 2/2] tpm: Add Field Upgrade mode support for Infineon TPM2 modules
-Date:   Mon, 9 May 2022 14:50:18 +0200
-Message-ID: <20220509125018.246093-1-stefan.mahnke-hartmann@infineon.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <YnbL9LwDkY+MHdkK@iki.fi>
-References: <YnbL9LwDkY+MHdkK@iki.fi>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 60DC160F83;
+        Mon,  9 May 2022 12:48:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC776C385AB;
+        Mon,  9 May 2022 12:48:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652100502;
+        bh=PEkal2Mg+V+a1Uc4DwNy01rEfPajZVpu3xEyPDheL7g=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nLdqiKtUmlalSDwS1n1Pd+QPOl3ZQ5Z/Px3VzfgDfi/iTVQE75a4Mx59sqYinG3Y/
+         6JQ6tPdvw+spGntcA6/qBbzc0EWVWgvTCSeRhFt1TJnwfvlS403/93TzCxeTfDI7bL
+         Y5ZOPkievIcmDHqw93+6S/hqUlUH3A62X+d+bPRUfl+mF2CJW2bDhz2iBiCLZyWITr
+         djQO1sd/jt9/OKnyv7F6kp5sV6MSxq3kG3Cdq0CXHpH2YpoyabNaeZddaukEfsezds
+         fZkIgyWymXJHtqeaAT7YcpcuzYjWrtm8sVHbltjmgphJAmYJA3YXh3Yq2Rnko/B5MD
+         lwieyoWchdbeg==
+Date:   Mon, 9 May 2022 14:48:15 +0200
+From:   Christian Brauner <brauner@kernel.org>
+To:     Miklos Szeredi <miklos@szeredi.hu>
+Cc:     linux-fsdevel@vger.kernel.org, Dave Chinner <david@fromorbit.com>,
+        Theodore Ts'o <tytso@mit.edu>, Karel Zak <kzak@redhat.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org,
+        Linux API <linux-api@vger.kernel.org>,
+        linux-man <linux-man@vger.kernel.org>,
+        LSM <linux-security-module@vger.kernel.org>,
+        Ian Kent <raven@themaw.net>,
+        David Howells <dhowells@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christian Brauner <christian@brauner.io>,
+        Amir Goldstein <amir73il@gmail.com>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>
+Subject: Re: [RFC PATCH] getting misc stats/attributes via xattr API
+Message-ID: <20220509124815.vb7d2xj5idhb2wq6@wittgenstein>
+References: <YnEeuw6fd1A8usjj@miu.piliscsaba.redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [172.23.8.247]
-X-ClientProxiedBy: MUCSE824.infineon.com (172.23.29.55) To
- MUCSE818.infineon.com (172.23.29.44)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YnEeuw6fd1A8usjj@miu.piliscsaba.redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07.05.22 21:43, Jarkko Sakkinen wrote:
-> On Fri, May 06, 2022 at 02:31:48PM +0200, Stefan Mahnke-Hartmann wrote:
->> TPM2_GetCapability with a capability that has the property type value
->> of TPM_PT_TOTAL_COMMANDS returns a zero length list, when an Infineon
->> TPM2 is in Field Upgrade mode.
->> Since an Infineon TPM2.0 in Field Upgrade mode returns RC_SUCCESS on
->> TPM2_Startup, the Field Upgrade mode has to be detected by
->> TPM2_GetCapability.
->>
->> Signed-off-by: Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
->> ---
->>  drivers/char/tpm/tpm2-cmd.c | 6 ++++++
->>  1 file changed, 6 insertions(+)
->>
->> diff --git a/drivers/char/tpm/tpm2-cmd.c b/drivers/char/tpm/tpm2-cmd.c
->> index e62a644ce26b..659130e2936e 100644
->> --- a/drivers/char/tpm/tpm2-cmd.c
->> +++ b/drivers/char/tpm/tpm2-cmd.c
->> @@ -746,6 +746,12 @@ int tpm2_auto_startup(struct tpm_chip *chip)
->>  	}
->>  
->>  	rc = tpm2_get_cc_attrs_tbl(chip);
->> +	/*
->> +	 * Infineon TPM in Field Upgrade mode will return no data for the number
->> +	 * of supported commands.
->> +	 */
->> +	if (rc == -ENODATA)
->> +		rc = TPM2_RC_UPGRADE;
->
-> Injecting hardware error codes like this is not considered a great idea.
+On Tue, May 03, 2022 at 02:23:23PM +0200, Miklos Szeredi wrote:
+> This is a simplification of the getvalues(2) prototype and moving it to the
+> getxattr(2) interface, as suggested by Dave.
+> 
+> The patch itself just adds the possibility to retrieve a single line of
+> /proc/$$/mountinfo (which was the basic requirement from which the fsinfo
+> patchset grew out of).
+> 
+> But this should be able to serve Amir's per-sb iostats, as well as a host of
+> other cases where some statistic needs to be retrieved from some object.  Note:
+> a filesystem object often represents other kinds of objects (such as processes
+> in /proc) so this is not limited to fs attributes.
+> 
+> This also opens up the interface to setting attributes via setxattr(2).
+> 
+> After some pondering I made the namespace so:
+> 
+> : - root
+> bar - an attribute
+> foo: - a folder (can contain attributes and/or folders)
+> 
+> The contents of a folder is represented by a null separated list of names.
+> 
+> Examples:
+> 
+> $ getfattr -etext -n ":" .
+> # file: .
+> :="mnt:\000mntns:"
+> 
+> $ getfattr -etext -n ":mnt:" .
+> # file: .
+> :mnt:="info"
+> 
+> $ getfattr -etext -n ":mnt:info" .
+> # file: .
+> :mnt:info="21 1 254:0 / / rw,relatime - ext4 /dev/root rw\012"
 
-Resetting the error code was to avoid code duplication, while following the
-same rationale as Mårten's patch. I can also add the -ENODATA to the if clause
-below or duplicate the code block (similar to Mårten's). Do you have a better
-suggestion?
+Hey Miklos,
 
->
->>  
->>  out:
->>  	if (rc == TPM2_RC_UPGRADE) {
->> -- 
->> 2.25.1
->>
->
-> BR, Jarkko
+One comment about this. We really need to have this interface support
+giving us mount options like "relatime" back in numeric form (I assume
+this will be possible.). It is royally annoying having to maintain a
+mapping table in userspace just to do:
 
+relatime -> MS_RELATIME/MOUNT_ATTR_RELATIME
+ro	 -> MS_RDONLY/MOUNT_ATTR_RDONLY
+
+A library shouldn't be required to use this interface. Conservative
+low-level software that keeps its shared library dependencies minimal
+will need to be able to use that interface without having to go to an
+external library that transforms text-based output to binary form (Which
+I'm very sure will need to happen if we go with a text-based
+interface.).
+
+> 
+> $ getfattr -etext -n ":mntns:" .
+> # file: .
+> :mntns:="21:\00022:\00024:\00025:\00023:\00026:\00027:\00028:\00029:\00030:\00031:"
+> 
+> $ getfattr -etext -n ":mntns:28:" .
+> # file: .
+> :mntns:28:="info"
+> 
+> Comments?
+
+I'm not a fan of text-based APIs and I'm particularly not a fan of the
+xattr APIs. But at this point I'm ready to compromise on a lot as long
+as it gets us values out of the kernel in some way. :)
+
+I had to use xattrs extensively in various low-level userspace projects
+and they continue to be a source of races and memory bugs.
+
+A few initial questions:
+
+* The xattr APIs often require the caller to do sm like (copying some go
+  code quickly as I have that lying around):
+
+	for _, x := range split {
+		xattr := string(x)
+		// Call Getxattr() twice: First, to determine the size of the
+		// buffer we need to allocate to store the extended attributes,
+		// second, to actually store the extended attributes in the
+		// buffer. Also, check if the size of the extended attribute
+		// hasn't increased between the two calls.
+		pre, err = unix.Getxattr(path, xattr, nil)
+		if err != nil || pre < 0 {
+			return nil, err
+		}
+
+		dest = make([]byte, pre)
+		post := 0
+		if pre > 0 {
+			post, err = unix.Getxattr(path, xattr, dest)
+			if err != nil || post < 0 {
+				return nil, err
+			}
+		}
+
+		if post > pre {
+			return nil, fmt.Errorf("Extended attribute '%s' size increased from %d to %d during retrieval", xattr, pre, post)
+		}
+
+		xattrs[xattr] = string(dest)
+	}
+
+  This pattern of requesting the size first by passing empty arguments,
+  then allocating the buffer and then passing down that buffer to
+  retrieve that value is really annoying to use and error prone (I do
+  of course understand why it exists.).
+
+  For real xattrs it's not that bad because we can assume that these
+  values don't change often and so the race window between
+  getxattr(GET_SIZE) and getxattr(GET_VALUES) often doesn't matter. But
+  fwiw, the post > pre check doesn't exist for no reason; we do indeed
+  hit that race.
+  
+  In addition, it is costly having to call getxattr() twice. Again, for
+  retrieving xattrs it often doesn't matter because it's not a super
+  common operation but for mount and other info it might matter.
+
+  Will we have to use the same pattern for mnt and other info as well?
+  If so, I worry that the race is way more likely than it is for real
+  xattrs.
+
+* Would it be possible to support binary output with this interface?
+  I really think users would love to have an interfact where they can
+  get a struct with binary info back. I'm not advocating to make the
+  whole interface binary but I wouldn't mind having the option to
+  support it.
+  Especially for some information at least. I'd really love to have a
+  way go get a struct mount_info or whatever back that gives me all the
+  details about a mount encompassed in a single struct.
+
+  Callers like systemd will have to parse text and will end up
+  converting everything from text into binary anyway; especially for
+  mount information. So giving them an option for this out of the box
+  would be quite good.
+
+  Interfaces like statx aim to be as fast as possible because we exptect
+  them to be called quite often. Retrieving mount info is quite costly
+  and is done quite often as well. Maybe not for all software but for a
+  lot of low-level software. Especially when starting services in
+  systemd a lot of mount parsing happens similar when starting
+  containers in runtimes.
+
+* If we decide to go forward with this interface - and I think I
+  mentioned this in the lsfmm session - could we please at least add a
+  new system call? It really feels wrong to retrieve mount and other
+  information through the xattr interfaces. They aren't really xattrs.
+
+  Imho, xattrs are a bit like a wonky version of streams already (One of
+  the reasons I find them quite unpleasant.). Making mount and other
+  information retrievable directly through the getxattr() interface will
+  turn them into a full-on streams implementation imho. I'd prefer not
+  to do that (Which is another reason I'd prefer at least a separate
+  system call.).
