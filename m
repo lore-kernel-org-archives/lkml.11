@@ -2,147 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4E00C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 08:55:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E30DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 08:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231459AbiEII52 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 04:57:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55694 "EHLO
+        id S236463AbiEII5f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 04:57:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235012AbiEIIuf (ORCPT
+        with ESMTP id S236132AbiEIIvD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 04:50:35 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A04AAE13;
-        Mon,  9 May 2022 01:46:41 -0700 (PDT)
-Received: from kwepemi500014.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KxYQp1XcRzCsX9;
-        Mon,  9 May 2022 15:56:34 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi500014.china.huawei.com (7.221.188.232) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 9 May 2022 16:01:19 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 9 May 2022 16:01:18 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
-        <chenhao288@hisilicon.com>
-Subject: [PATCH V2 net-next 2/6] net: hns3: remove the affinity settings of vector0
-Date:   Mon, 9 May 2022 15:55:28 +0800
-Message-ID: <20220509075532.32166-3-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220509075532.32166-1-huangguangbin2@huawei.com>
-References: <20220509075532.32166-1-huangguangbin2@huawei.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
+        Mon, 9 May 2022 04:51:03 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB00A1BE137
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 01:47:09 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 032B71FA06;
+        Mon,  9 May 2022 08:47:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1652086028; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Se7uPlOHSIZCXjRaPGhfUC+SZL9VD4Ssg1Lc02/gjjI=;
+        b=CVmD/lXHLlNLR7j4RMNpik3VbN5dqLjpgUyW+iLXgpHnAJ4xc1mq+rMAitW4L/aROdv36e
+        Xe77cIP86FDxH2nUBd8/EC1qihwAahJlQ80A4TPbiv0AsRVlnNsT+RAAXGgYNPW6j5DvBd
+        L0tnPuS7AcDQVzL2BfGw0ek8McO6HaA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1652086028;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Se7uPlOHSIZCXjRaPGhfUC+SZL9VD4Ssg1Lc02/gjjI=;
+        b=cmTrod8Uusz1b9BAk5WqbwfJbJFUKtJjPAARQ4yuYbjwC2cbIEz4+ULfM8wF9ZYUQLYMYv
+        it7YzFoixRMYL/Dw==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id E88392C141;
+        Mon,  9 May 2022 08:47:07 +0000 (UTC)
+Date:   Mon, 09 May 2022 10:47:07 +0200
+Message-ID: <s5hfsljm6t0.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Stefan Binding <sbinding@opensource.cirrus.com>
+Cc:     Mark Brown <broonie@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, <alsa-devel@alsa-project.org>,
+        <linux-kernel@vger.kernel.org>, <patches@opensource.cirrus.com>
+Subject: Re: [PATCH v1 0/3]  Add Manual Mode Jack Detection for CS42L42 in HDA
+In-Reply-To: <20220504161236.2490532-1-sbinding@opensource.cirrus.com>
+References: <20220504161236.2490532-1-sbinding@opensource.cirrus.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yufeng Mo <moyufeng@huawei.com>
+On Wed, 04 May 2022 18:12:33 +0200,
+Stefan Binding wrote:
+> 
+> CS42L42 supports automatic type detection, to determine headset type,
+> or headphones. However, automatic type detection does not always work
+> correctly. To improve detection accuracy, manual mode detection can be
+> run. This is already done in the ASoC version of the CS42L42 driver,
+> and this chain adds the same support into the HDA version.
+> 
+> In addition, to better align the ASoC and HDA drivers, the ASoC header
+> file has been moved into the general sound includes, which allows both
+> ASoC and HDA to have access to the header.
+> This improves the maintainability of the HDA driver, and makes it
+> easier to port fixes/features from CS42L42 ASoC to HDA.
+> 
+> Stefan Binding (3):
+>   ASoC: cs42l42: Move CS42L42 register descriptions to general include
+>   ALSA: hda/cs8409: Use general cs42l42 include in cs8409 hda driver
+>   ALSA: hda/cs8409: Support manual mode detection for CS42L42
 
-Vector0 is used for common interrupt control events and is
-irrelevant to performance. Currently, the driver sets the
-default affinity of vector0 to NUMA nodes, which is unnecessary.
-Therefore, the default setting is removed, and the driver does
-not set the affinity for vector0.
+Applied all three patches now.  Thanks.
 
-Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- .../hisilicon/hns3/hns3pf/hclge_main.c        | 27 +------------------
- .../hisilicon/hns3/hns3pf/hclge_main.h        |  2 --
- 2 files changed, 1 insertion(+), 28 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index a5dd2c8c244a..1ebad0e50e6a 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -1546,9 +1546,8 @@ static void hclge_init_tc_config(struct hclge_dev *hdev)
- static int hclge_configure(struct hclge_dev *hdev)
- {
- 	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(hdev->pdev);
--	const struct cpumask *cpumask = cpu_online_mask;
- 	struct hclge_cfg cfg;
--	int node, ret;
-+	int ret;
- 
- 	ret = hclge_get_cfg(hdev, &cfg);
- 	if (ret)
-@@ -1594,13 +1593,6 @@ static int hclge_configure(struct hclge_dev *hdev)
- 	hclge_init_tc_config(hdev);
- 	hclge_init_kdump_kernel_config(hdev);
- 
--	/* Set the affinity based on numa node */
--	node = dev_to_node(&hdev->pdev->dev);
--	if (node != NUMA_NO_NODE)
--		cpumask = cpumask_of_node(node);
--
--	cpumask_copy(&hdev->affinity_mask, cpumask);
--
- 	return ret;
- }
- 
-@@ -3564,17 +3556,6 @@ static void hclge_get_misc_vector(struct hclge_dev *hdev)
- 	hdev->num_msi_used += 1;
- }
- 
--static void hclge_misc_affinity_setup(struct hclge_dev *hdev)
--{
--	irq_set_affinity_hint(hdev->misc_vector.vector_irq,
--			      &hdev->affinity_mask);
--}
--
--static void hclge_misc_affinity_teardown(struct hclge_dev *hdev)
--{
--	irq_set_affinity_hint(hdev->misc_vector.vector_irq, NULL);
--}
--
- static int hclge_misc_irq_init(struct hclge_dev *hdev)
- {
- 	int ret;
-@@ -11457,11 +11438,6 @@ static int hclge_init_ae_dev(struct hnae3_ae_dev *ae_dev)
- 	timer_setup(&hdev->reset_timer, hclge_reset_timer, 0);
- 	INIT_DELAYED_WORK(&hdev->service_task, hclge_service_task);
- 
--	/* Setup affinity after service timer setup because add_timer_on
--	 * is called in affinity notify.
--	 */
--	hclge_misc_affinity_setup(hdev);
--
- 	hclge_clear_all_event_cause(hdev);
- 	hclge_clear_resetting_state(hdev);
- 
-@@ -11879,7 +11855,6 @@ static void hclge_uninit_ae_dev(struct hnae3_ae_dev *ae_dev)
- 
- 	hclge_reset_vf_rate(hdev);
- 	hclge_clear_vf_vlan(hdev);
--	hclge_misc_affinity_teardown(hdev);
- 	hclge_state_uninit(hdev);
- 	hclge_ptp_uninit(hdev);
- 	hclge_uninit_rxd_adv_layout(hdev);
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-index c70239758bb2..ab5c37848a7b 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-@@ -938,8 +938,6 @@ struct hclge_dev {
- 	DECLARE_KFIFO(mac_tnl_log, struct hclge_mac_tnl_stats,
- 		      HCLGE_MAC_TNL_LOG_SIZE);
- 
--	/* affinity mask and notify for misc interrupt */
--	cpumask_t affinity_mask;
- 	struct hclge_ptp *ptp;
- 	struct devlink *devlink;
- 	struct hclge_comm_rss_cfg rss_cfg;
--- 
-2.33.0
-
+Takashi
