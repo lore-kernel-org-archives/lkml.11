@@ -2,98 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AA67C3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B773C46467
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:04:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235644AbiEIHGC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 03:06:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50272 "EHLO
+        id S235624AbiEIHF7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 03:05:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235368AbiEIG41 (ORCPT
+        with ESMTP id S235533AbiEIGuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 02:56:27 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 875A5158974;
-        Sun,  8 May 2022 23:52:33 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KxX0F71kyz4xPw;
-        Mon,  9 May 2022 16:51:57 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1652079118;
-        bh=W/+d4S9tcfXn8+PhKprWis+tDtcLApvdpUzHqCxGIkw=;
-        h=Date:From:To:Cc:Subject:From;
-        b=OBPIHa+/LXjGqFB3N7cSLTajCsWVLbRzdNunPFlIRWwkHhzH3n7eIpAsjttfSPOlN
-         otA0SMUs8a3IDuTXbvP32GBeBXGtLntVit0gXsRQzh43KF1YdQW+uPGrMc6PDaGRUj
-         Mi48MFqhk/4vrxxS6lj1dTgnooRZU+6PRCX8paBtk2ONwj97yMBxeEP5K/XB+8U7vq
-         YaWDyUGidLB+KYBKFXLA4mKrOkUGV4LcznsbFeOnHYKnlCmeRwYV8R3+CT39LiEMgU
-         R2mEqfOFRKrQHprxdqwdTVQCajiO1ahjZqQ+y0seJo1b368/qB9A6fsb9d95SmIqdw
-         SPFLjBqHLPyHQ==
-Date:   Mon, 9 May 2022 16:51:57 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        Arnd Bergmann <arnd@arndb.de>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: manual merge of the userns tree with the asm-generic
- tree
-Message-ID: <20220509165157.0cb6505f@canb.auug.org.au>
+        Mon, 9 May 2022 02:50:55 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DAAA15352F;
+        Sun,  8 May 2022 23:47:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=NXqU/aWXlEJRQ0qJPG0UDAA6ajCwUtVVCzntAHnRaiA=; b=A8UyI3dyR0UMChql8GiSRtDrdG
+        NhJfAe8bZH5q0+JtAhELL8B6mM1KMBMh03KRjiYG5iWh35ecaxA6qSZP3pTY6niEKlwyBnya+MRXu
+        OUcmmFXOWKfCfS5i5npygLP/dSdE18dckI+xdIpn3rTI/IYtG26eLZDQV83aXUe75HcLkeDy0UVTj
+        J6OfGdbhAtTdw9BhztJGloZTOnWLDblt/Sflv6pSpQyHZhHsiAjq22JQnfVXrj7V/KV3WDFZGeGEN
+        YkVyvD5JYbkNfqoVw+2qJcYI6KWi9izviBWZG2wlla30ZffNX9zqiIqSurWHjxvL6BuZ5PFkyFsrq
+        7ImMYZqw==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nnxAQ-00CkUE-D3; Mon, 09 May 2022 06:46:50 +0000
+Date:   Sun, 8 May 2022 23:46:50 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Jing Xia <jing.xia@unisoc.com>
+Cc:     viro@zeniv.linux.org.uk, jack@suse.cz, jing.xia.mail@gmail.com,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] writeback: Avoid skipping inode writeback
+Message-ID: <Yni42sWLMFITtfmz@infradead.org>
+References: <20220505134731.5295-1-jing.xia@unisoc.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/nM08NTFadHSvRcx+YSMBgO.";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220505134731.5295-1-jing.xia@unisoc.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/nM08NTFadHSvRcx+YSMBgO.
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Thu, May 05, 2022 at 09:47:31PM +0800, Jing Xia wrote:
+>  	if (!(inode->i_state & I_DIRTY_ALL))
+>  		inode_cgwb_move_to_attached(inode, wb);
+> +	else if (!(inode->i_state & I_SYNC_QUEUED) && (inode->i_state & I_DIRTY))
 
-Hi all,
+Please turn this into
 
-Today's linux-next merge of the userns tree got a conflict in:
+	else if ((inode->i_state & I_DIRTY) &&
+	         !(inode->i_state & I_SYNC_QUEUED))
 
-  arch/h8300/kernel/process.c
+to keep it a little more readable.
 
-between commit:
+Otherwise looks good:
 
-  1c4b5ecb7ea1 ("remove the h8300 architecture")
-
-from the asm-generic tree and commits:
-
-  c5febea0956f ("fork: Pass struct kernel_clone_args into copy_thread")
-  5bd2e97c868a ("fork: Generalize PF_IO_WORKER handling")
-
-from the userns tree.
-
-I fixed it up (I just removed the file) and can carry the fix as
-necessary. This is now fixed as far as linux-next is concerned, but any
-non trivial conflicts should be mentioned to your upstream maintainer
-when your tree is submitted for merging.  You may also want to consider
-cooperating with the maintainer of the conflicting tree to minimise any
-particularly complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/nM08NTFadHSvRcx+YSMBgO.
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJ4ug0ACgkQAVBC80lX
-0GwHdAf/XUpQ50Oj3C7ksmHd/nVHtJdcTJ6zxu8oTCnPYjVozYEXA922pG0Q/IOc
-J9INi9iLhibQKIxsm7NYUH37TEYekiQZBIxh+1pSv/Ft1Bo010BPmOPQ+2y4CChl
-lKEP3+5enGRcsqtMe0sSYWkC1lxgmLPk3PNCzlZRS4PjBjWPZieOjbf8j2T6jnUp
-pPkMSplvvmIR1PAxF5gUhO8nCRibM465vaaY/DrM8gVsfguT+7OX5IVbx3lMKFDS
-rTyXMFQdcw9cuUGCpC/LyyefmKTDwFvtQJCwSASdiGMBgm39rcWVtq2rbpxebUre
-kL692hMlhTWOx75qpOiaHAOpNWxqRg==
-=3MwO
------END PGP SIGNATURE-----
-
---Sig_/nM08NTFadHSvRcx+YSMBgO.--
+Reviewed-by: Christoph Hellwig <hch@lst.de>
