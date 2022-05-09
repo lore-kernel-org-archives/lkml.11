@@ -2,104 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A499BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 11:48:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 367C8C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 11:48:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233258AbiEILwU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 07:52:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36956 "EHLO
+        id S233002AbiEILwf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 07:52:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233127AbiEILwM (ORCPT
+        with ESMTP id S233304AbiEILwW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 07:52:12 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A0732044D2
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 04:48:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652096892; x=1683632892;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=fFar3KClk1BmxDxCpPWcEt+L/UfzZwm2En91uS7R+og=;
-  b=kN5vHjixTmjeqUnxeWPpdZf46f2TNVVbbOg5/fkPf8RZHu3layLdpVCD
-   n9hR0lsFAgdOYrYlWZIzOF0dHQlcbecIcuRpS//g4EOnsKDfdHOMml1lw
-   QINf2YFZ49LM9rDb1SM2TXTSb5H/tcQa9eiwoGO36nz+NWZxINjFwW6Ub
-   jbv3sZOXBx4jYD6TFc2REKAe4Yj253JZ1aLY67mr87g+MMmUMWu7ouHcw
-   0npumgXfn3WvT9L37cpCk7qPSRZAimszeK/xdvxzFlAVw0lQIXPuNkte3
-   BaZX4p8JaRDx+tGXtsDzAU10yqw31kVznCdcZ7MaFIuPFn7vHT9xSr9a2
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10341"; a="269163928"
-X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
-   d="scan'208";a="269163928"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 04:48:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
-   d="scan'208";a="696452097"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 09 May 2022 04:48:10 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1no1s1-000GU6-Dr;
-        Mon, 09 May 2022 11:48:09 +0000
-Date:   Mon, 9 May 2022 19:47:09 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Peter Collingbourne <pcc@google.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>
-Subject: mm/kasan/sw_tags.c:211:6: warning: no previous prototype for
- function 'kasan_tag_mismatch'
-Message-ID: <202205091936.6zgAr885-lkp@intel.com>
+        Mon, 9 May 2022 07:52:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3F99216073
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 04:48:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE1F161219
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 11:48:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8B8EC385A8;
+        Mon,  9 May 2022 11:48:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652096902;
+        bh=cd1eyufqewLBiozYF7IjayD6HKPYr13nvygC0lANLlw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dCCZDMBg6ReQTD29fQLdwgvReyi6b6WtcFjPlJ2lZ8vxL8RZHqdRybT4ZV3DgskMn
+         +BOOgda6YecpkLMiStUHe1bDTIHuhcuTc9A8SUSu39UhMX0yLnFHsM3zoCQULWGJpg
+         fm3vvO9yuPTIbObPjLt4p2wo3pAS6mdll6TlecHcs0JXpO7CBqXlVGuhZuvyepuiSn
+         QVhethMwXyjAanyl2PdIEtjsRpXx8hnvYpkMPaMnjPZOQXmSIFyhmCR0lUjbu2rim4
+         vDdPS3PYRsY1RaogYc6ckuTg+rmkteeXZj8V4qRphjjEmtQj5Gk8l0B4eh88cf/aFx
+         dlNyPrB6rqeIg==
+Date:   Mon, 9 May 2022 12:48:17 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Zheyu Ma <zheyuma97@gmail.com>
+Cc:     lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ASoC: tlv320adcx140: Register a callback to disable the
+ regulator_disable
+Message-ID: <Ynj/gQQbQ8JFEcQL@sirena.org.uk>
+References: <20220509085925.1548328-1-zheyuma97@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="3fbrUoSA93r0CmS5"
 Content-Disposition: inline
+In-Reply-To: <20220509085925.1548328-1-zheyuma97@gmail.com>
+X-Cookie: To err is humor.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Peter,
 
-FYI, the error/warning still remains.
+--3fbrUoSA93r0CmS5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   c5eb0a61238dd6faf37f58c9ce61c9980aaffd7a
-commit: 1cbdf60bd1b74e397d48aa877367cfc621f45ffe kasan: arm64: support specialized outlined tag mismatch checks
-date:   12 months ago
-config: arm64-randconfig-r006-20220509 (https://download.01.org/0day-ci/archive/20220509/202205091936.6zgAr885-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a385645b470e2d3a1534aae618ea56b31177639f)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=1cbdf60bd1b74e397d48aa877367cfc621f45ffe
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 1cbdf60bd1b74e397d48aa877367cfc621f45ffe
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/gpu/drm/i915/ mm/kasan/
+On Mon, May 09, 2022 at 04:59:25PM +0800, Zheyu Ma wrote:
+> The driver should register a callback that will deal with the disabling
+> when it fails to probe.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+This doesn't apply against current code, please check and resend.
 
-All warnings (new ones prefixed by >>):
+--3fbrUoSA93r0CmS5
+Content-Type: application/pgp-signature; name="signature.asc"
 
->> mm/kasan/sw_tags.c:211:6: warning: no previous prototype for function 'kasan_tag_mismatch' [-Wmissing-prototypes]
-   void kasan_tag_mismatch(unsigned long addr, unsigned long access_info,
-        ^
-   mm/kasan/sw_tags.c:211:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void kasan_tag_mismatch(unsigned long addr, unsigned long access_info,
-   ^
-   static 
-   1 warning generated.
+-----BEGIN PGP SIGNATURE-----
 
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJ4/4AACgkQJNaLcl1U
+h9D+Ewf/fxATUeYh+xRG7Mylx3kTcxLKKYB0GdYAv/UpVPmuJS5Ad12vOZiu93Ep
+nRuiuUCjOWqsavf7eUawKkqL508SemrhLvpP7VIejhtF9LbSopnZxKmpYU3nGmJK
+dAq9rdg92EqderFmy4pBlMxDST8fuuJgyeouyP6KTsWv0GhMYlZQ+wCK23opkDc8
+HL6SOWLvQz0stZUIWahiuonfCgtg7/vULv/7FiKvPkVNvnzBgVQ9ba1gE23SmUBZ
+CGbdMsGz9cuwxEvvFTODcylKp/VK6jo67wUaFvO8OH3rzjKYEciXFghyGosGunUf
+LItiY6tIhtkUDTyNSPDUVAkrXEAZtw==
+=cWs+
+-----END PGP SIGNATURE-----
 
-vim +/kasan_tag_mismatch +211 mm/kasan/sw_tags.c
-
-   210	
- > 211	void kasan_tag_mismatch(unsigned long addr, unsigned long access_info,
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+--3fbrUoSA93r0CmS5--
