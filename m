@@ -2,146 +2,347 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60518C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 01:47:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7000CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 01:52:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234174AbiEIBsd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 8 May 2022 21:48:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50260 "EHLO
+        id S231671AbiEIBz4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 8 May 2022 21:55:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235294AbiEIBnx (ORCPT
+        with ESMTP id S234334AbiEIBxU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 8 May 2022 21:43:53 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E199A39684
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 18:39:59 -0700 (PDT)
+        Sun, 8 May 2022 21:53:20 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F33940A2E
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 18:49:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652060399; x=1683596399;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=qceWRXkU6iL7pzgXX9c+cKKpLWjsMu5+5mPb88eXB8s=;
-  b=HoMRN+qFSbHfbFiXvJdktVUrWjL61WachzGOO2Sv0KBwwJpwP8UWH0TO
-   CLhzhoKyoUN2Rk2fj1sLLcHCh+SJQhAnvep1IT/5udJ9u4wLsrkNFeM+1
-   MkbgeWOn5phycUOw7jsH+Dj+eFJTHLY2KkAkL1418i5kSWRD4Aj845m+M
-   4Xt0Pbo1kGkpKIm8zJVNzp6NGguuUO9E1hcjrEpxo8Nu3FmsMXzkUmZ9r
-   leWVOUMqMWTL/Uzfm8o8Lo8f3uJAo3z4zfwnjDNlYlpbD9cxco75xURcI
-   Y/IW590mMaqOvXh5SAio77etK3Hzs4pmuUz/MstYuA2GT/6z64r9H/N/F
+  t=1652060968; x=1683596968;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=dmu4xavnXeAZTi/O/LTWt/8dZsQ1SzTfqu+cuWojN10=;
+  b=KNoQ5q+abi+cj8Kc4ne6VI2YT9a+eqg6jccbn9C3GjGNwI455LCPWqpB
+   JtcJ77NgQ42o/fy2m7HlXdSvMzPz9HvG/JwgXAc1INFuhWTByeW+q4e/6
+   J86dUgXuyxyh0UeKn8N3tdenRhO2w8q9tKYgGQkSF/03yTHh2yyh0ZcMa
+   GRG5a2Y1SsaO6hswl5Xn72U6R8VaRt8P7OrX2JZsg469IyVkUiukm4l53
+   bwSbcprEbg1r9n8yi8+PL1JPD4Ur4fcBDt23LzEfJ2AH74NSk+qCItjFS
+   nxfah0WnErr+LyCSBu8ZfQzf6nI6lcJqIlUQngWjbJ0anHFD1SemkMM4G
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10341"; a="268561964"
+X-IronPort-AV: E=McAfee;i="6400,9594,10341"; a="250946867"
 X-IronPort-AV: E=Sophos;i="5.91,210,1647327600"; 
-   d="scan'208";a="268561964"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2022 18:37:27 -0700
+   d="scan'208";a="250946867"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2022 18:49:28 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,210,1647327600"; 
-   d="scan'208";a="601725697"
+   d="scan'208";a="550775029"
 Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 08 May 2022 18:37:26 -0700
+  by orsmga002.jf.intel.com with ESMTP; 08 May 2022 18:49:26 -0700
 Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1nnsKz-000G4c-H7;
-        Mon, 09 May 2022 01:37:25 +0000
-Date:   Mon, 9 May 2022 09:36:30 +0800
+        id 1nnsWc-000G5e-2Z;
+        Mon, 09 May 2022 01:49:26 +0000
+Date:   Mon, 09 May 2022 09:48:34 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Vineet Gupta <vgupta@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org
-Subject: arch/arc/kernel/smp.c:279:18: sparse: sparse: dereference of noderef
- expression
-Message-ID: <202205090924.E8PT5SCw-lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:timers/core] BUILD SUCCESS
+ f4b62e1e1137507268c2c63dc4e6da279dc58e9f
+Message-ID: <627872f2.SmpGexX7alsYKmf9%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   c5eb0a61238dd6faf37f58c9ce61c9980aaffd7a
-commit: e188f3330a13df904d77003846eafd3edf99009d ARC: cmpxchg/xchg: rewrite as macros to make type safe
-date:   9 months ago
-config: arc-randconfig-s031-20220509 (https://download.01.org/0day-ci/archive/20220509/202205090924.E8PT5SCw-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 11.3.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=e188f3330a13df904d77003846eafd3edf99009d
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout e188f3330a13df904d77003846eafd3edf99009d
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arc SHELL=/bin/bash arch/arc/kernel/ drivers/misc/ net/ipv4/
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git timers/core
+branch HEAD: f4b62e1e1137507268c2c63dc4e6da279dc58e9f  time/sched_clock: Fix formatting of frequency reporting code
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+elapsed time: 9388m
 
+configs tested: 267
+configs skipped: 6
 
-sparse warnings: (new ones prefixed by >>)
-   arch/arc/kernel/smp.c:264:48: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected unsigned long [noderef] __percpu *ipi_data_ptr @@     got unsigned long * @@
-   arch/arc/kernel/smp.c:264:48: sparse:     expected unsigned long [noderef] __percpu *ipi_data_ptr
-   arch/arc/kernel/smp.c:264:48: sparse:     got unsigned long *
-   arch/arc/kernel/smp.c:279:18: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile *v @@     got unsigned long [noderef] __percpu *__ai_ptr @@
-   arch/arc/kernel/smp.c:279:18: sparse:     expected void const volatile *v
-   arch/arc/kernel/smp.c:279:18: sparse:     got unsigned long [noderef] __percpu *__ai_ptr
-   arch/arc/kernel/smp.c:277:29: sparse: sparse: cast removes address space '__percpu' of expression
-   arch/arc/kernel/smp.c:413:72: sparse: sparse: incorrect type in argument 4 (different address spaces) @@     expected void [noderef] __percpu *percpu_dev_id @@     got int *dev @@
-   arch/arc/kernel/smp.c:413:72: sparse:     expected void [noderef] __percpu *percpu_dev_id
-   arch/arc/kernel/smp.c:413:72: sparse:     got int *dev
->> arch/arc/kernel/smp.c:279:18: sparse: sparse: dereference of noderef expression
->> arch/arc/kernel/smp.c:279:18: sparse: sparse: dereference of noderef expression
---
-   net/ipv4/tcp_cong.c:238:24: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected struct tcp_congestion_ops const [noderef] __rcu *_val_ @@     got struct tcp_congestion_ops *[assigned] ca @@
-   net/ipv4/tcp_cong.c:238:24: sparse:     expected struct tcp_congestion_ops const [noderef] __rcu *_val_
-   net/ipv4/tcp_cong.c:238:24: sparse:     got struct tcp_congestion_ops *[assigned] ca
->> net/ipv4/tcp_cong.c:238:22: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct tcp_congestion_ops const *prev @@     got struct tcp_congestion_ops const [noderef] __rcu *[assigned] _val_ @@
-   net/ipv4/tcp_cong.c:238:22: sparse:     expected struct tcp_congestion_ops const *prev
-   net/ipv4/tcp_cong.c:238:22: sparse:     got struct tcp_congestion_ops const [noderef] __rcu *[assigned] _val_
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-vim +279 arch/arc/kernel/smp.c
+gcc tested configs:
+arm64                               defconfig
+arm64                            allyesconfig
+arm                              allmodconfig
+arm                                 defconfig
+arm                              allyesconfig
+i386                          randconfig-c001
+powerpc                         ps3_defconfig
+arc                     haps_hs_smp_defconfig
+arc                            hsdk_defconfig
+arm                         vf610m4_defconfig
+powerpc                     ep8248e_defconfig
+nios2                            allyesconfig
+parisc                              defconfig
+sh                         microdev_defconfig
+powerpc                     taishan_defconfig
+m68k                           sun3_defconfig
+powerpc                      pcm030_defconfig
+parisc                           allyesconfig
+arm                       aspeed_g5_defconfig
+powerpc                 mpc834x_mds_defconfig
+xtensa                    xip_kc705_defconfig
+m68k                         apollo_defconfig
+sh                               j2_defconfig
+sh                        apsh4ad0a_defconfig
+mips                             allyesconfig
+powerpc                mpc7448_hpc2_defconfig
+sh                         ap325rxa_defconfig
+x86_64                              defconfig
+m68k                          hp300_defconfig
+ia64                          tiger_defconfig
+m68k                          atari_defconfig
+powerpc                           allnoconfig
+powerpc                     tqm8555_defconfig
+mips                           jazz_defconfig
+um                               alldefconfig
+xtensa                    smp_lx200_defconfig
+openrisc                    or1ksim_defconfig
+m68k                       m5275evb_defconfig
+sparc                       sparc64_defconfig
+sh                          polaris_defconfig
+arm                      jornada720_defconfig
+xtensa                              defconfig
+parisc                generic-64bit_defconfig
+sh                          lboxre2_defconfig
+sparc64                             defconfig
+arm                           sunxi_defconfig
+powerpc                       maple_defconfig
+m68k                       m5249evb_defconfig
+arc                 nsimosci_hs_smp_defconfig
+mips                           ip32_defconfig
+powerpc                     asp8347_defconfig
+sh                            shmin_defconfig
+alpha                            alldefconfig
+arc                     nsimosci_hs_defconfig
+arc                           tb10x_defconfig
+ia64                        generic_defconfig
+mips                       bmips_be_defconfig
+i386                                defconfig
+sh                 kfr2r09-romimage_defconfig
+powerpc                      cm5200_defconfig
+arm                         nhk8815_defconfig
+arm                        clps711x_defconfig
+arm                            zeus_defconfig
+powerpc                       holly_defconfig
+csky                                defconfig
+arc                        vdk_hs38_defconfig
+m68k                        mvme16x_defconfig
+arc                        nsimosci_defconfig
+powerpc64                           defconfig
+powerpc                    klondike_defconfig
+sh                   sh7724_generic_defconfig
+sh                        sh7785lcr_defconfig
+powerpc                     redwood_defconfig
+arm                       multi_v4t_defconfig
+arm                        realview_defconfig
+arc                         haps_hs_defconfig
+riscv             nommu_k210_sdcard_defconfig
+mips                         cobalt_defconfig
+openrisc                  or1klitex_defconfig
+powerpc                     sequoia_defconfig
+sh                          sdk7786_defconfig
+arm                         lpc18xx_defconfig
+powerpc                      chrp32_defconfig
+mips                     decstation_defconfig
+powerpc                         wii_defconfig
+powerpc                 mpc8540_ads_defconfig
+s390                             allyesconfig
+arm                            lart_defconfig
+microblaze                          defconfig
+sh                                  defconfig
+arm                         at91_dt_defconfig
+arm                        mvebu_v7_defconfig
+sh                     magicpanelr2_defconfig
+powerpc                      tqm8xx_defconfig
+arm                           imxrt_defconfig
+m68k                             alldefconfig
+arm                            qcom_defconfig
+s390                          debug_defconfig
+sh                        sh7763rdp_defconfig
+m68k                             allmodconfig
+arm                        oxnas_v6_defconfig
+ia64                             alldefconfig
+mips                         bigsur_defconfig
+sh                           se7721_defconfig
+sh                           se7705_defconfig
+sh                             sh03_defconfig
+arm                        mini2440_defconfig
+m68k                       m5475evb_defconfig
+mips                        bcm47xx_defconfig
+m68k                        stmark2_defconfig
+arm                            mps2_defconfig
+x86_64                        randconfig-c001
+arm                  randconfig-c002-20220501
+arm                  randconfig-c002-20220506
+x86_64               randconfig-c001-20220502
+i386                 randconfig-c001-20220502
+arm                  randconfig-c002-20220502
+ia64                                defconfig
+ia64                             allmodconfig
+ia64                             allyesconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+alpha                               defconfig
+alpha                            allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+xtensa                           allyesconfig
+s390                                defconfig
+s390                             allmodconfig
+parisc64                            defconfig
+sparc                               defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+x86_64                        randconfig-a006
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+x86_64               randconfig-a006-20220502
+x86_64               randconfig-a001-20220502
+x86_64               randconfig-a003-20220502
+x86_64               randconfig-a002-20220502
+x86_64               randconfig-a004-20220502
+x86_64               randconfig-a005-20220502
+i386                          randconfig-a001
+i386                          randconfig-a003
+i386                          randconfig-a005
+i386                 randconfig-a004-20220502
+i386                 randconfig-a006-20220502
+i386                 randconfig-a002-20220502
+i386                 randconfig-a003-20220502
+i386                 randconfig-a001-20220502
+i386                 randconfig-a005-20220502
+x86_64                        randconfig-a011
+x86_64                        randconfig-a013
+x86_64                        randconfig-a015
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+riscv                randconfig-r042-20220501
+arc                  randconfig-r043-20220502
+arc                  randconfig-r043-20220501
+s390                 randconfig-r044-20220501
+arc                  randconfig-r043-20220505
+s390                 randconfig-r044-20220505
+riscv                randconfig-r042-20220505
+riscv                               defconfig
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+riscv                    nommu_k210_defconfig
+riscv                             allnoconfig
+riscv                            allmodconfig
+riscv                            allyesconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                          rhel-8.3-func
+x86_64                           rhel-8.3-syz
+x86_64                                  kexec
+x86_64                         rhel-8.3-kunit
+x86_64                               rhel-8.3
+x86_64                           allyesconfig
 
-41195d236e8445 Vineet Gupta    2013-01-18  261  
-ddf84433f411b6 Vineet Gupta    2013-11-25  262  static void ipi_send_msg_one(int cpu, enum ipi_msg_type msg)
-41195d236e8445 Vineet Gupta    2013-01-18  263  {
-f2a4aa5646687f Vineet Gupta    2013-11-26 @264  	unsigned long __percpu *ipi_data_ptr = per_cpu_ptr(&ipi_data, cpu);
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  265  	unsigned long old, new;
-41195d236e8445 Vineet Gupta    2013-01-18  266  	unsigned long flags;
-41195d236e8445 Vineet Gupta    2013-01-18  267  
-f2a4aa5646687f Vineet Gupta    2013-11-26  268  	pr_debug("%d Sending msg [%d] to %d\n", smp_processor_id(), msg, cpu);
-f2a4aa5646687f Vineet Gupta    2013-11-26  269  
-41195d236e8445 Vineet Gupta    2013-01-18  270  	local_irq_save(flags);
-41195d236e8445 Vineet Gupta    2013-01-18  271  
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  272  	/*
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  273  	 * Atomically write new msg bit (in case others are writing too),
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  274  	 * and read back old value
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  275  	 */
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  276  	do {
-6aa7de059173a9 Mark Rutland    2017-10-23  277  		new = old = READ_ONCE(*ipi_data_ptr);
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  278  		new |= 1U << msg;
-d8e8c7dda11f5d Vineet Gupta    2013-11-28 @279  	} while (cmpxchg(ipi_data_ptr, old, new) != old);
-41195d236e8445 Vineet Gupta    2013-01-18  280  
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  281  	/*
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  282  	 * Call the platform specific IPI kick function, but avoid if possible:
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  283  	 * Only do so if there's no pending msg from other concurrent sender(s).
-82a423053eb3cf Changcheng Deng 2021-08-14  284  	 * Otherwise, receiver will see this msg as well when it takes the
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  285  	 * IPI corresponding to that msg. This is true, even if it is already in
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  286  	 * IPI handler, because !@old means it has not yet dequeued the msg(s)
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  287  	 * so @new msg can be a free-loader
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  288  	 */
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  289  	if (plat_smp_ops.ipi_send && !old)
-ddf84433f411b6 Vineet Gupta    2013-11-25  290  		plat_smp_ops.ipi_send(cpu);
-41195d236e8445 Vineet Gupta    2013-01-18  291  
-41195d236e8445 Vineet Gupta    2013-01-18  292  	local_irq_restore(flags);
-41195d236e8445 Vineet Gupta    2013-01-18  293  }
-41195d236e8445 Vineet Gupta    2013-01-18  294  
-
-:::::: The code at line 279 was first introduced by commit
-:::::: d8e8c7dda11f5d5cf90495f2e89d917a83509bc0 ARC: [SMP] optimize IPI send and receive
-
-:::::: TO: Vineet Gupta <vgupta@synopsys.com>
-:::::: CC: Vineet Gupta <vgupta@synopsys.com>
+clang tested configs:
+x86_64                        randconfig-c007
+i386                          randconfig-c001
+powerpc              randconfig-c003-20220501
+riscv                randconfig-c006-20220501
+mips                 randconfig-c004-20220501
+arm                  randconfig-c002-20220501
+powerpc              randconfig-c003-20220508
+riscv                randconfig-c006-20220508
+mips                 randconfig-c004-20220508
+arm                  randconfig-c002-20220508
+s390                 randconfig-c005-20220506
+powerpc              randconfig-c003-20220506
+riscv                randconfig-c006-20220506
+mips                 randconfig-c004-20220506
+arm                  randconfig-c002-20220506
+powerpc              randconfig-c003-20220505
+riscv                randconfig-c006-20220505
+arm                  randconfig-c002-20220505
+mips                     loongson2k_defconfig
+arm                   milbeaut_m10v_defconfig
+powerpc                    ge_imp3a_defconfig
+arm                           omap1_defconfig
+arm                          moxart_defconfig
+arm                          collie_defconfig
+powerpc                    socrates_defconfig
+mips                     cu1830-neo_defconfig
+mips                      pic32mzda_defconfig
+riscv                    nommu_virt_defconfig
+powerpc                  mpc866_ads_defconfig
+mips                  cavium_octeon_defconfig
+arm                          ep93xx_defconfig
+arm                        neponset_defconfig
+powerpc                 mpc832x_mds_defconfig
+mips                        qi_lb60_defconfig
+arm                  colibri_pxa270_defconfig
+powerpc                 mpc8315_rdb_defconfig
+powerpc                      ppc44x_defconfig
+powerpc                  mpc885_ads_defconfig
+powerpc                      pmac32_defconfig
+powerpc                     ksi8560_defconfig
+powerpc                      katmai_defconfig
+powerpc                 mpc8560_ads_defconfig
+powerpc                     tqm8540_defconfig
+arm                            mmp2_defconfig
+arm                     davinci_all_defconfig
+arm                            dove_defconfig
+riscv                          rv32_defconfig
+mips                          ath25_defconfig
+arm                        multi_v5_defconfig
+powerpc                     kmeter1_defconfig
+arm                      tct_hammer_defconfig
+x86_64                        randconfig-a005
+x86_64                        randconfig-a003
+x86_64                        randconfig-a001
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+x86_64               randconfig-a011-20220502
+x86_64               randconfig-a014-20220502
+x86_64               randconfig-a012-20220502
+x86_64               randconfig-a013-20220502
+x86_64               randconfig-a015-20220502
+x86_64               randconfig-a016-20220502
+i386                 randconfig-a011-20220502
+i386                 randconfig-a013-20220502
+i386                 randconfig-a016-20220502
+i386                 randconfig-a015-20220502
+i386                 randconfig-a014-20220502
+i386                 randconfig-a012-20220502
+i386                          randconfig-a013
+i386                          randconfig-a011
+i386                          randconfig-a015
+hexagon              randconfig-r045-20220502
+hexagon              randconfig-r045-20220501
+hexagon              randconfig-r041-20220501
+s390                 randconfig-r044-20220502
+riscv                randconfig-r042-20220502
+hexagon              randconfig-r041-20220502
+hexagon              randconfig-r045-20220506
+riscv                randconfig-r042-20220506
+hexagon              randconfig-r041-20220506
 
 -- 
 0-DAY CI Kernel Test Service
