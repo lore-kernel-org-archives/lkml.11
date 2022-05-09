@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60EA4C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B14E8C43217
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:52:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236313AbiEIHzo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 03:55:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33040 "EHLO
+        id S236482AbiEIH4H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 03:56:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236537AbiEIHxC (ORCPT
+        with ESMTP id S236573AbiEIHxH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 03:53:02 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 155C813C095
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 00:49:09 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id bg25so7860448wmb.4
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 00:49:09 -0700 (PDT)
+        Mon, 9 May 2022 03:53:07 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 025CB14C76F
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 00:49:13 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id j15so18215951wrb.2
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 00:49:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=VgEKyO0L0uA3SGFAWkGQhNMbC7clsq3EFnRg59TyA70=;
-        b=bBiGh/AhGl38/MpaSnWoH0kWx8noJq58musIpZ/g2oeqIKpuW2Su1Y4ZgNGVc2+Dz6
-         eXZiC83MRh77Kw3wvrYE2FR9xnbKOu9zRJEiqGkQIGyxLFuKlF9LDz5gXlubAdjw1rDy
-         WwH53vZ1MkSY48ocvhfyQEHnOx3fjcof2u4WLTKJmBcsRR3KDpvkUKuhW7s9VWTNwXfv
-         RveFcmrPMlo9oDIBI6fj7bhQ8q8DTI/LJBkvk9rJAWZ6ecAiiJWhEHZfOE9jTwbD8Mde
-         Lah4Ki9hI1OHi/rRtcH5nwvxEwepu0M84Wkgdz7Ei73qHvAm68iq93wkbgAhbBr5uQ4V
-         9BVg==
+        bh=q/wAy1TbeV5Udmm91pas07M2plXYLkR5RXGzDlfWEKs=;
+        b=Mz1U3xqaHzLf32jHaFUq5wH5UT6+YXlAZPhIPFuRedkXRkRdOeYm6T5Sf4ZeCe5W/a
+         XTqwpmUYrJcOkXvnkKoB7Ce/bTPuGRI8wkuPhY1W78BYk5dB/rmCRRoUUg015Qu92LLh
+         VBHZ06pkjyW4KEjczSJQBSwtoXnVx3i8cX+bhdWV/f0Hat/8+DjZbIH1QJ02cqvrjh6E
+         /DGL6om7h5LGaqo7+b4GZSo24Rt0Px0MC12dRvbog2yJPVjc8imq5h20UFv2z4zT5pdE
+         fWhPA3VnJMfdV/dVtUvXJOW7rvYFb0GavCDb/7KrcDegzW8gOLRliFSBhFBBEoxvD/HM
+         hvyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=VgEKyO0L0uA3SGFAWkGQhNMbC7clsq3EFnRg59TyA70=;
-        b=fRZyDAC5noxICsXaOAqau1/ttQLOHtWio9AdCHIvswcCePv31PpBJVfR1sCfKdkDnO
-         6CVhfA1CZgWSwhNacaCNSAvLJwh72q3cXiXFsj3DPsUlUWgHa52TlodzCfwhFCLAQJVP
-         Vx+p+FjM1Y6sJobZOgW+B5yuEOrUJxs62DvnnsXSRy/CaDRtuJg6ljAMyK5OkZRMqNkr
-         EWmNYA71iMdz5YFO8Fn6HdEv5kzCj0Huf0MmrD0GnPzmpinEP/krHUYBsiThXupkcrPQ
-         SeTO39Upkp4BOzUmboHt4KjPagx9wUGUwtnqewUDjdc2Ifgf1SkUxIMxmaWd05WSCTub
-         XLWg==
-X-Gm-Message-State: AOAM530xUJPkQaIOZmqhz50/IJR26q72EhtCVsGhn4SudIirsXa272Td
-        /VimpOfrl5pMtITgdR7lbW9CuQ==
-X-Google-Smtp-Source: ABdhPJwiYLJm2AFKSikbo89a1SKZiOmfCAFxQ5X7TJwAoWGnUQJ66VAG9OF9Sr3O4w9WN8Znulrgyg==
-X-Received: by 2002:a7b:c202:0:b0:394:1e7d:af44 with SMTP id x2-20020a7bc202000000b003941e7daf44mr14700879wmi.139.1652082547691;
-        Mon, 09 May 2022 00:49:07 -0700 (PDT)
+        bh=q/wAy1TbeV5Udmm91pas07M2plXYLkR5RXGzDlfWEKs=;
+        b=PapW0Yh/6Sz2bTrSEI6NdOWRF3eEzois31n/Yd1hnXSu+akYXdpIQU3VCV6OiBJWda
+         iEu8gYTH+AJqP6Y/50Ziok+irj8VA1PjW5gtD1eIMRnaYWnJPZGqg5fOsNTVHnhhk7x2
+         0X0YQA3yA+61iaK25W7a+8njzkZFI8WfrbcmjlCvzoGDjWI7vhxj2eiSBIwLZoMjn9QC
+         hsBT04DZNiOvsbA/p7fBPvNMS3r1aVoCTjFGBQI/gPf6vmG1geYP5U+Ht418Srlo8e1c
+         9PhPHTVwXsrnX1utBjvP7GO3za34PW/2BhaaLmRBFf8/hctZk+PZ9LWtsI5Fh5KYpTPF
+         LGkw==
+X-Gm-Message-State: AOAM5322Q59STebcPN9dqQsR27nAEAKX2Lokeq39Ji98VbaMsk7MbQZM
+        qjGCeOYV5OLmWnjI9LRgvNI0dw==
+X-Google-Smtp-Source: ABdhPJzL/bzJC/0GZFFuu0/iBuWDwc79RvZ2RpR+JFTjPC3wz1nhPclk6lVJ8xe3Uqv4ZuISsOMxUg==
+X-Received: by 2002:adf:eb87:0:b0:20c:a5b5:6731 with SMTP id t7-20020adfeb87000000b0020ca5b56731mr12936661wrn.199.1652082552477;
+        Mon, 09 May 2022 00:49:12 -0700 (PDT)
 Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id bw22-20020a0560001f9600b0020c5253d8d8sm11784768wrb.36.2022.05.09.00.49.06
+        by smtp.googlemail.com with ESMTPSA id bw22-20020a0560001f9600b0020c5253d8d8sm11784768wrb.36.2022.05.09.00.49.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 00:49:07 -0700 (PDT)
+        Mon, 09 May 2022 00:49:12 -0700 (PDT)
 From:   Corentin Labbe <clabbe@baylibre.com>
 To:     alexandre.torgue@foss.st.com, andrew@lunn.ch, broonie@kernel.org,
         calvin.johnson@oss.nxp.com, davem@davemloft.net,
@@ -59,113 +59,113 @@ To:     alexandre.torgue@foss.st.com, andrew@lunn.ch, broonie@kernel.org,
         wens@csie.org
 Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev, Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH 2/6] net: stmmac: dwmac-sun8i: remove regulator
-Date:   Mon,  9 May 2022 07:48:53 +0000
-Message-Id: <20220509074857.195302-3-clabbe@baylibre.com>
+        linux-sunxi@lists.linux.dev,
+        =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>,
+        Corentin Labbe <clabbe@baylibre.com>
+Subject: [PATCH 6/6] arm64: dts: allwinner: orange-pi-3: Enable ethernet
+Date:   Mon,  9 May 2022 07:48:57 +0000
+Message-Id: <20220509074857.195302-7-clabbe@baylibre.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220509074857.195302-1-clabbe@baylibre.com>
 References: <20220509074857.195302-1-clabbe@baylibre.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now regulator is handled by phy core, there is no need to handle it in
-stmmac driver.
+From: Ondřej Jirman <megi@xff.cz>
 
+Orange Pi 3 has two regulators that power the Realtek RTL8211E
+PHY. According to the datasheet, both regulators need to be enabled
+at the same time, or that "phy-io" should be enabled slightly earlier
+than "phy" regulator.
+
+RTL8211E/RTL8211EG datasheet says:
+
+  Note 4: 2.5V (or 1.8/1.5V) RGMII power should be risen simultaneously
+  or slightly earlier than 3.3V power. Rising 2.5V (or 1.8/1.5V) power
+  later than 3.3V power may lead to errors.
+
+The timing is set in DT via startup-delay-us.
+
+Signed-off-by: Ondrej Jirman <megi@xff.cz>
 Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
 ---
- .../net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 37 +------------------
- 1 file changed, 2 insertions(+), 35 deletions(-)
+ .../dts/allwinner/sun50i-h6-orangepi-3.dts    | 38 +++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-index f834472599f7..17888813c707 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-@@ -17,7 +17,6 @@
- #include <linux/phy.h>
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
--#include <linux/regulator/consumer.h>
- #include <linux/regmap.h>
- #include <linux/stmmac.h>
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
+index c45d7b7fb39a..fd1d4f5bbc83 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
+@@ -13,6 +13,7 @@ / {
+ 	compatible = "xunlong,orangepi-3", "allwinner,sun50i-h6";
  
-@@ -59,7 +58,6 @@ struct emac_variant {
+ 	aliases {
++		ethernet0 = &emac;
+ 		serial0 = &uart0;
+ 		serial1 = &uart1;
+ 	};
+@@ -55,6 +56,15 @@ led-1 {
+ 		};
+ 	};
  
- /* struct sunxi_priv_data - hold all sunxi private data
-  * @ephy_clk:	reference to the optional EPHY clock for the internal PHY
-- * @regulator:	reference to the optional regulator
-  * @rst_ephy:	reference to the optional EPHY reset for the internal PHY
-  * @variant:	reference to the current board variant
-  * @regmap:	regmap for using the syscon
-@@ -69,7 +67,6 @@ struct emac_variant {
-  */
- struct sunxi_priv_data {
- 	struct clk *ephy_clk;
--	struct regulator *regulator;
- 	struct reset_control *rst_ephy;
- 	const struct emac_variant *variant;
- 	struct regmap_field *regmap_field;
-@@ -568,29 +565,11 @@ static int sun8i_dwmac_init(struct platform_device *pdev, void *priv)
- {
- 	struct net_device *ndev = platform_get_drvdata(pdev);
- 	struct sunxi_priv_data *gmac = priv;
--	int ret;
++	reg_gmac_2v5: gmac-2v5 {
++		compatible = "regulator-fixed";
++		regulator-name = "gmac-2v5";
++		regulator-min-microvolt = <2500000>;
++		regulator-max-microvolt = <2500000>;
++		enable-active-high;
++		gpio = <&pio 3 6 GPIO_ACTIVE_HIGH>; /* PD6 */
++	};
++
+ 	reg_vcc5v: vcc5v {
+ 		/* board wide 5V supply directly from the DC jack */
+ 		compatible = "regulator-fixed";
+@@ -113,6 +123,33 @@ &ehci3 {
+ 	status = "okay";
+ };
  
--	if (gmac->regulator) {
--		ret = regulator_enable(gmac->regulator);
--		if (ret) {
--			dev_err(&pdev->dev, "Fail to enable regulator\n");
--			return ret;
--		}
--	}
--
--	if (gmac->use_internal_phy) {
--		ret = sun8i_dwmac_power_internal_phy(netdev_priv(ndev));
--		if (ret)
--			goto err_disable_regulator;
--	}
-+	if (gmac->use_internal_phy)
-+		return sun8i_dwmac_power_internal_phy(netdev_priv(ndev));
++&emac {
++	pinctrl-names = "default";
++	pinctrl-0 = <&ext_rgmii_pins>;
++	phy-mode = "rgmii-id";
++	phy-handle = <&ext_rgmii_phy>;
++	status = "okay";
++};
++
++&mdio {
++	ext_rgmii_phy: ethernet-phy@1 {
++		compatible = "ethernet-phy-ieee802.3-c22";
++		reg = <1>;
++		/*
++		 * The board uses 2.5V RGMII signalling. Power sequence to enable
++		 * the phy is to enable GMAC-2V5 and GMAC-3V (aldo2) power rails
++		 * at the same time and to wait 100ms. The driver enables phy-io
++		 * first. Delay is achieved with enable-ramp-delay on reg_aldo2.
++		 */
++		phy-io-supply = <&reg_gmac_2v5>;
++		phy-supply = <&reg_aldo2>;
++
++		reset-gpios = <&pio 3 14 GPIO_ACTIVE_LOW>; /* PD14 */
++		reset-assert-us = <15000>;
++		reset-deassert-us = <40000>;
++	};
++};
++
+ &gpu {
+ 	mali-supply = <&reg_dcdcc>;
+ 	status = "okay";
+@@ -211,6 +248,7 @@ reg_aldo2: aldo2 {
+ 				regulator-min-microvolt = <3300000>;
+ 				regulator-max-microvolt = <3300000>;
+ 				regulator-name = "vcc33-audio-tv-ephy-mac";
++				regulator-enable-ramp-delay = <100000>;
+ 			};
  
- 	return 0;
--
--err_disable_regulator:
--	if (gmac->regulator)
--		regulator_disable(gmac->regulator);
--
--	return ret;
- }
- 
- static void sun8i_dwmac_core_init(struct mac_device_info *hw,
-@@ -1034,9 +1013,6 @@ static void sun8i_dwmac_exit(struct platform_device *pdev, void *priv)
- 
- 	if (gmac->variant->soc_has_internal_phy)
- 		sun8i_dwmac_unpower_internal_phy(gmac);
--
--	if (gmac->regulator)
--		regulator_disable(gmac->regulator);
- }
- 
- static void sun8i_dwmac_set_mac_loopback(void __iomem *ioaddr, bool enable)
-@@ -1157,15 +1133,6 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
- 		return -EINVAL;
- 	}
- 
--	/* Optional regulator for PHY */
--	gmac->regulator = devm_regulator_get_optional(dev, "phy");
--	if (IS_ERR(gmac->regulator)) {
--		if (PTR_ERR(gmac->regulator) == -EPROBE_DEFER)
--			return -EPROBE_DEFER;
--		dev_info(dev, "No regulator found\n");
--		gmac->regulator = NULL;
--	}
--
- 	/* The "GMAC clock control" register might be located in the
- 	 * CCU address range (on the R40), or the system control address
- 	 * range (on most other sun8i and later SoCs).
+ 			/* ALDO3 is shorted to CLDO1 */
 -- 
 2.35.1
 
