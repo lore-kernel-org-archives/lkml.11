@@ -2,62 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A787C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 21:48:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FA0CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 21:48:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230338AbiEIVw2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 17:52:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55856 "EHLO
+        id S230427AbiEIVwf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 17:52:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230254AbiEIVvR (ORCPT
+        with ESMTP id S230256AbiEIVvR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 9 May 2022 17:51:17 -0400
 Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE13D2725E8
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 14:47:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1544A2734F6
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 14:47:23 -0700 (PDT)
 Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 249Bt3ZB026043;
-        Mon, 9 May 2022 16:47:13 -0500
+        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 249Bt3ZE026043;
+        Mon, 9 May 2022 16:47:15 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=PODMain02222019;
- bh=cg8Z72bZzSUa4fOqu2MXM+DpOt9HsvCXWVuD2oBsUw8=;
- b=T4OFion7xS5jU9XaxzD5uj3LiDCdwbm1WLpj+qjuVZLDB20VBrGHJ5usvgkKkqm201Mr
- hqBP887I1Dm8fTVeHbn3UcorlKmqWsTA2iL+/d2VakCwuw9xGbjjb4HuZjDAG/H5gcpN
- HvpyRExtA/Z6VwTku/RFjCASgyUEtzbSuLtDgVjzFGaJECmvZsbgsfBjnbXSmEAuKzdR
- RHnpmPqbVbW7kIKr2ySq/ZRPW64p/Y9LPmojd1dVOG9XbJUbAtyElYFSfYYpJInhO4fu
- jaykoEZEr7Y5S80cp1HnjSJIkM9O/P+PezWEL4P3S4lRv0YRl0ZsuR+Me8PYt0oqxBN8 bg== 
+ bh=AeTi/0ntakaOsDizqbK3Yl89HyXJuFjIDJN3l+/qPNA=;
+ b=Ydn/MApzjKqSZ71jk6u8N3mg4PWLf5kDFcHSHNXATlhydN4pZRDyG9A7PvDxJP+jqqv3
+ waZ1uNhoKnQKeRHFgRZaYQf5uV2OgCLex/5+VqWQ8C/+XuFAeCpR3ezftYbpWSXvSFWV
+ rxBB933s8TaPQ6T7umLaxbsOdkDwTUnjX1F4p2SY5aNOqegniPC2DXDI7bm4nCOdeeko
+ NnZnvaMbslN0skr5ZAmcHfgdOrIVS7b7SmJdeN6m+Kem7xtTrvKwUOm0gxPSqQnUFwg0
+ 1Zhm1RmJhIk2tfmcQTNhcMRuE7kFLEAV5qpBi1mzO8SOVeV3NuGzXuu18ZQD+sdp+Zph KQ== 
 Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3fwp613jeu-3
+        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3fwp613jeu-6
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 09 May 2022 16:47:12 -0500
+        Mon, 09 May 2022 16:47:15 -0500
 Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 9 May
- 2022 22:47:10 +0100
+ 2022 22:47:11 +0100
 Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Mon, 9 May 2022 22:47:10 +0100
+ Transport; Mon, 9 May 2022 22:47:11 +0100
 Received: from vitaly-Legion-7-16ACHg6.ad.cirrus.com (unknown [198.90.238.55])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 03BA5475;
-        Mon,  9 May 2022 21:47:09 +0000 (UTC)
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 26454B10;
+        Mon,  9 May 2022 21:47:11 +0000 (UTC)
 From:   Vitaly Rodionov <vitalyr@opensource.cirrus.com>
 To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
         Mark Brown <broonie@kernel.org>
 CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
         <linux-kernel@vger.kernel.org>,
-        Stefan Binding <sbinding@opensource.cirrus.com>
-Subject: [PATCH v2 15/26] ALSA: hda: cs35l41: Support reading subsystem id from ACPI
-Date:   Mon, 9 May 2022 22:46:52 +0100
-Message-ID: <20220509214703.4482-16-vitalyr@opensource.cirrus.com>
+        Stefan Binding <sbinding@opensource.cirrus.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>
+Subject: [PATCH v2 18/26] ASoC: cs35l41: Move cs35l41 exit hibernate function into shared code
+Date:   Mon, 9 May 2022 22:46:55 +0100
+Message-ID: <20220509214703.4482-19-vitalyr@opensource.cirrus.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220509214703.4482-1-vitalyr@opensource.cirrus.com>
 References: <20220509214703.4482-1-vitalyr@opensource.cirrus.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-GUID: iS6TYpYz2HX96uY2j7aYZxjRSmnNcHxc
-X-Proofpoint-ORIG-GUID: iS6TYpYz2HX96uY2j7aYZxjRSmnNcHxc
+X-Proofpoint-GUID: 66GmFrRYn5ULHTQsapDPdxi-g3jxnkxf
+X-Proofpoint-ORIG-GUID: 66GmFrRYn5ULHTQsapDPdxi-g3jxnkxf
 X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -65,70 +66,182 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Stefan Binding <sbinding@opensource.cirrus.com>
 
-On some laptop models, the ACPI contains the unique
-Subsystem ID, and this value should be preferred
-over the value from the HDA driver.
+CS35L41 HDA Driver will support hibernation using DSP firmware,
+move the exit hibernate function into shared code so this can
+be reused.
+
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
 
 Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
 Signed-off-by: Vitaly Rodionov <vitalyr@opensource.cirrus.com>
 ---
- sound/pci/hda/cs35l41_hda.c | 36 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
+ include/sound/cs35l41.h        |  1 +
+ sound/soc/codecs/cs35l41-lib.c | 60 +++++++++++++++++++++++++++++++++
+ sound/soc/codecs/cs35l41.c     | 61 +---------------------------------
+ 3 files changed, 62 insertions(+), 60 deletions(-)
 
-diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
-index c235b899aa04..81d6f4cf0166 100644
---- a/sound/pci/hda/cs35l41_hda.c
-+++ b/sound/pci/hda/cs35l41_hda.c
-@@ -533,6 +533,36 @@ static int cs35l41_hda_apply_properties(struct cs35l41_hda *cs35l41)
- 	return cs35l41_hda_channel_map(cs35l41->dev, 0, NULL, 1, &hw_cfg->spk_pos);
+diff --git a/include/sound/cs35l41.h b/include/sound/cs35l41.h
+index 8887087815a7..f848ba1e75b3 100644
+--- a/include/sound/cs35l41.h
++++ b/include/sound/cs35l41.h
+@@ -885,6 +885,7 @@ void cs35l41_configure_cs_dsp(struct device *dev, struct regmap *reg, struct cs_
+ int cs35l41_set_cspl_mbox_cmd(struct device *dev, struct regmap *regmap,
+ 			      enum cs35l41_cspl_mbox_cmd cmd);
+ int cs35l41_write_fs_errata(struct device *dev, struct regmap *regmap);
++int cs35l41_exit_hibernate(struct device *dev, struct regmap *regmap);
+ int cs35l41_init_boost(struct device *dev, struct regmap *regmap,
+ 		       struct cs35l41_hw_cfg *hw_cfg);
+ bool cs35l41_safe_reset(struct regmap *regmap, enum cs35l41_boost_type b_type);
+diff --git a/sound/soc/codecs/cs35l41-lib.c b/sound/soc/codecs/cs35l41-lib.c
+index 6d3070ea9e06..cc5366c8bdd6 100644
+--- a/sound/soc/codecs/cs35l41-lib.c
++++ b/sound/soc/codecs/cs35l41-lib.c
+@@ -1321,6 +1321,66 @@ int cs35l41_write_fs_errata(struct device *dev, struct regmap *regmap)
  }
+ EXPORT_SYMBOL_GPL(cs35l41_write_fs_errata);
  
-+static int cs35l41_get_acpi_sub_string(struct device *dev, struct acpi_device *adev,
-+				       const char **subsysid)
++static void cs35l41_wait_for_pwrmgt_sts(struct device *dev, struct regmap *regmap)
 +{
-+	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
-+	union acpi_object *obj;
-+	acpi_status status;
-+	int ret = 0;
++	const int pwrmgt_retries = 10;
++	unsigned int sts;
++	int i, ret;
 +
-+	status = acpi_evaluate_object(adev->handle, "_SUB", NULL, &buffer);
-+	if (ACPI_SUCCESS(status)) {
-+		obj = buffer.pointer;
-+		if (obj->type == ACPI_TYPE_STRING) {
-+			*subsysid = devm_kstrdup(dev, obj->string.pointer, GFP_KERNEL);
-+			if (*subsysid == NULL) {
-+				dev_err(dev, "Cannot allocate Subsystem ID");
-+				ret = -ENOMEM;
-+			}
-+		} else {
-+			dev_warn(dev, "Warning ACPI _SUB did not return a string\n");
-+			ret = -ENODEV;
-+		}
-+		acpi_os_free(buffer.pointer);
-+	} else {
-+		dev_dbg(dev, "Warning ACPI _SUB failed: %#x\n", status);
-+		ret = -ENODEV;
++	for (i = 0; i < pwrmgt_retries; i++) {
++		ret = regmap_read(regmap, CS35L41_PWRMGT_STS, &sts);
++		if (ret)
++			dev_err(dev, "Failed to read PWRMGT_STS: %d\n", ret);
++		else if (!(sts & CS35L41_WR_PEND_STS_MASK))
++			return;
++
++		udelay(20);
 +	}
 +
-+	return ret;
++	dev_err(dev, "Timed out reading PWRMGT_STS\n");
 +}
 +
- static int cs35l41_hda_read_acpi(struct cs35l41_hda *cs35l41, const char *hid, int id)
- {
- 	struct cs35l41_hw_cfg *hw_cfg = &cs35l41->hw_cfg;
-@@ -552,6 +582,12 @@ static int cs35l41_hda_read_acpi(struct cs35l41_hda *cs35l41, const char *hid, i
- 	physdev = get_device(acpi_get_first_physical_node(adev));
- 	acpi_dev_put(adev);
- 
-+	ret = cs35l41_get_acpi_sub_string(cs35l41->dev, adev, &cs35l41->acpi_subsystem_id);
-+	if (ret)
-+		dev_info(cs35l41->dev, "No Subsystem ID found in ACPI: %d", ret);
-+	else
-+		dev_dbg(cs35l41->dev, "Subsystem ID %s found", cs35l41->acpi_subsystem_id);
++int cs35l41_exit_hibernate(struct device *dev, struct regmap *regmap)
++{
++	const int wake_retries = 20;
++	const int sleep_retries = 5;
++	int ret, i, j;
 +
- 	property = "cirrus,dev-index";
- 	ret = device_property_count_u32(physdev, property);
- 	if (ret <= 0)
++	for (i = 0; i < sleep_retries; i++) {
++		dev_dbg(dev, "Exit hibernate\n");
++
++		for (j = 0; j < wake_retries; j++) {
++			ret = cs35l41_set_cspl_mbox_cmd(dev, regmap,
++							CSPL_MBOX_CMD_OUT_OF_HIBERNATE);
++			if (!ret)
++				break;
++
++			usleep_range(100, 200);
++		}
++
++		if (j < wake_retries) {
++			dev_dbg(dev, "Wake success at cycle: %d\n", j);
++			return 0;
++		}
++
++		dev_err(dev, "Wake failed, re-enter hibernate: %d\n", ret);
++
++		cs35l41_wait_for_pwrmgt_sts(dev, regmap);
++		regmap_write(regmap, CS35L41_WAKESRC_CTL, 0x0088);
++
++		cs35l41_wait_for_pwrmgt_sts(dev, regmap);
++		regmap_write(regmap, CS35L41_WAKESRC_CTL, 0x0188);
++
++		cs35l41_wait_for_pwrmgt_sts(dev, regmap);
++		regmap_write(regmap, CS35L41_PWRMGT_CTL, 0x3);
++	}
++
++	dev_err(dev, "Timed out waking device\n");
++
++	return -ETIMEDOUT;
++}
++EXPORT_SYMBOL_GPL(cs35l41_exit_hibernate);
++
+ MODULE_DESCRIPTION("CS35L41 library");
+ MODULE_AUTHOR("David Rhodes, Cirrus Logic Inc, <david.rhodes@cirrus.com>");
+ MODULE_AUTHOR("Lucas Tanure, Cirrus Logic Inc, <tanureal@opensource.cirrus.com>");
+diff --git a/sound/soc/codecs/cs35l41.c b/sound/soc/codecs/cs35l41.c
+index 5f0eca229dd3..0400c6e091d5 100644
+--- a/sound/soc/codecs/cs35l41.c
++++ b/sound/soc/codecs/cs35l41.c
+@@ -1349,65 +1349,6 @@ static int __maybe_unused cs35l41_runtime_suspend(struct device *dev)
+ 	return 0;
+ }
+ 
+-static void cs35l41_wait_for_pwrmgt_sts(struct cs35l41_private *cs35l41)
+-{
+-	const int pwrmgt_retries = 10;
+-	unsigned int sts;
+-	int i, ret;
+-
+-	for (i = 0; i < pwrmgt_retries; i++) {
+-		ret = regmap_read(cs35l41->regmap, CS35L41_PWRMGT_STS, &sts);
+-		if (ret)
+-			dev_err(cs35l41->dev, "Failed to read PWRMGT_STS: %d\n", ret);
+-		else if (!(sts & CS35L41_WR_PEND_STS_MASK))
+-			return;
+-
+-		udelay(20);
+-	}
+-
+-	dev_err(cs35l41->dev, "Timed out reading PWRMGT_STS\n");
+-}
+-
+-static int cs35l41_exit_hibernate(struct cs35l41_private *cs35l41)
+-{
+-	const int wake_retries = 20;
+-	const int sleep_retries = 5;
+-	int ret, i, j;
+-
+-	for (i = 0; i < sleep_retries; i++) {
+-		dev_dbg(cs35l41->dev, "Exit hibernate\n");
+-
+-		for (j = 0; j < wake_retries; j++) {
+-			ret = cs35l41_set_cspl_mbox_cmd(cs35l41->dev, cs35l41->regmap,
+-							CSPL_MBOX_CMD_OUT_OF_HIBERNATE);
+-			if (!ret)
+-				break;
+-
+-			usleep_range(100, 200);
+-		}
+-
+-		if (j < wake_retries) {
+-			dev_dbg(cs35l41->dev, "Wake success at cycle: %d\n", j);
+-			return 0;
+-		}
+-
+-		dev_err(cs35l41->dev, "Wake failed, re-enter hibernate: %d\n", ret);
+-
+-		cs35l41_wait_for_pwrmgt_sts(cs35l41);
+-		regmap_write(cs35l41->regmap, CS35L41_WAKESRC_CTL, 0x0088);
+-
+-		cs35l41_wait_for_pwrmgt_sts(cs35l41);
+-		regmap_write(cs35l41->regmap, CS35L41_WAKESRC_CTL, 0x0188);
+-
+-		cs35l41_wait_for_pwrmgt_sts(cs35l41);
+-		regmap_write(cs35l41->regmap, CS35L41_PWRMGT_CTL, 0x3);
+-	}
+-
+-	dev_err(cs35l41->dev, "Timed out waking device\n");
+-
+-	return -ETIMEDOUT;
+-}
+-
+ static int __maybe_unused cs35l41_runtime_resume(struct device *dev)
+ {
+ 	struct cs35l41_private *cs35l41 = dev_get_drvdata(dev);
+@@ -1420,7 +1361,7 @@ static int __maybe_unused cs35l41_runtime_resume(struct device *dev)
+ 
+ 	regcache_cache_only(cs35l41->regmap, false);
+ 
+-	ret = cs35l41_exit_hibernate(cs35l41);
++	ret = cs35l41_exit_hibernate(cs35l41->dev, cs35l41->regmap);
+ 	if (ret)
+ 		return ret;
+ 
 -- 
 2.34.1
 
