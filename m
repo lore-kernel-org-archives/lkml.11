@@ -2,136 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC3BFC47080
-	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:51:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A360C47081
+	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:51:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236676AbiEIHxe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 03:53:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59452 "EHLO
+        id S236705AbiEIHxs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 03:53:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235773AbiEIHo7 (ORCPT
+        with ESMTP id S235802AbiEIHm1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 03:44:59 -0400
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EAB5140C9;
-        Mon,  9 May 2022 00:41:05 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R711e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0VCgX6lg_1652082052;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0VCgX6lg_1652082052)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 09 May 2022 15:40:53 +0800
-From:   Jeffle Xu <jefflexu@linux.alibaba.com>
-To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
-        chao@kernel.org, linux-erofs@lists.ozlabs.org
-Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
-        willy@infradead.org, linux-fsdevel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
-        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
-        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
-        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
-        yinxin.x@bytedance.com, zhangjiachen.jaycee@bytedance.com,
-        zhujia.zj@bytedance.com
-Subject: [PATCH v11 15/22] erofs: register fscache context for primary data blob
-Date:   Mon,  9 May 2022 15:40:21 +0800
-Message-Id: <20220509074028.74954-16-jefflexu@linux.alibaba.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220509074028.74954-1-jefflexu@linux.alibaba.com>
-References: <20220509074028.74954-1-jefflexu@linux.alibaba.com>
+        Mon, 9 May 2022 03:42:27 -0400
+Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FCA419C397;
+        Mon,  9 May 2022 00:38:30 -0700 (PDT)
+Received: from localhost.localdomain (unknown [10.101.196.174])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 8B45041385;
+        Mon,  9 May 2022 07:37:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1652081847;
+        bh=BGdQS7GDt72NyKsTP48y7ylwYoRPiomJUKtDk9kD5KI=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=APTuzxakfgtwQV4qWpjpID7To9ihg0LEQfJO+iSozdAPobUQA3OmkO5dM13Z8tXIr
+         uyKI8TGKfVF7ZRPaq0tL2ipecAozQlsWseqk7zYXVCpHkf/Jl+N/PyNhOExN0ghUgo
+         wYWD40D3zKb3MPDSslzTiFdfTWLyH3SQW1x9e8ZaJz6AKkiWoAQI6gDK8OYECZh/Uq
+         vbtFM/J8vIqJ+4C57R7qE4Qna+fUPWIoufYy9KcVzcM7LacNd8oIktY/eoK5xW9iSR
+         cNv2+Pr3rHSrc7QRMihpFMBjjG/gtRW81P5QIGWGtdqgZY4PKZqVCL8msKGFINT3Ms
+         /be0ReZS7CmiQ==
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+To:     bhelgaas@google.com
+Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        "Saheed O. Bolarinwa" <refactormyself@gmail.com>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Rajat Jain <rajatja@google.com>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] PCI:ASPM: Remove pcie_aspm_pm_state_change()
+Date:   Mon,  9 May 2022 15:36:37 +0800
+Message-Id: <20220509073639.2048236-1-kai.heng.feng@canonical.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Registers fscache context for primary data blob. Also move the
-initialization of s_op and related fields forward, since anonymous
-inode will be allocated under the super block when registering the
-fscache context.
+pcie_aspm_pm_state_change() was introduced at the inception of PCIe
+ASPM code.
 
-Something worth mentioning about the cleanup routine.
+However, it can cause some issues. For instance, when ASPM config is
+changed via sysfs, those changes won't persist across power state change
+because pcie_aspm_pm_state_change() overwrites them.
 
-1. The fscache context will instantiate anonymous inodes under the super
-block. Release these anonymous inodes when .put_super() is called, or
-we'll get "VFS: Busy inodes after unmount." warning.
+In addition to that, if the driver is to restore L1ss [1] after system
+resume, the restored states will also be overwritten by
+pcie_aspm_pm_state_change().
 
-2. The fscache context is initialized prior to the root inode. If
-.kill_sb() is called when mount failed, .put_super() won't be called
-when root inode has not been initialized yet. Thus .kill_sb() shall
-also contain the cleanup routine.
+So remove pcie_aspm_pm_state_change() for now, if there's any hardware
+really needs it to function, a quirk can be used instead.
 
-Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
-Reviewed-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+[1] https://lore.kernel.org/linux-pci/20220201123536.12962-1-vidyas@nvidia.com/
+
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 ---
- fs/erofs/internal.h |  1 +
- fs/erofs/super.c    | 15 +++++++++++----
- 2 files changed, 12 insertions(+), 4 deletions(-)
+ drivers/pci/pci.c       |  3 ---
+ drivers/pci/pci.h       |  2 --
+ drivers/pci/pcie/aspm.c | 19 -------------------
+ 3 files changed, 24 deletions(-)
 
-diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
-index 5867cb63fd74..386658416159 100644
---- a/fs/erofs/internal.h
-+++ b/fs/erofs/internal.h
-@@ -155,6 +155,7 @@ struct erofs_sb_info {
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index 9ecce435fb3f1..d09f7b60ee4dc 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -1181,9 +1181,6 @@ static int pci_raw_set_power_state(struct pci_dev *dev, pci_power_t state)
+ 	if (need_restore)
+ 		pci_restore_bars(dev);
  
- 	/* fscache support */
- 	struct fscache_volume *volume;
-+	struct erofs_fscache *s_fscache;
- };
- 
- #define EROFS_SB(sb) ((struct erofs_sb_info *)(sb)->s_fs_info)
-diff --git a/fs/erofs/super.c b/fs/erofs/super.c
-index fd8daa447237..61dc900295f9 100644
---- a/fs/erofs/super.c
-+++ b/fs/erofs/super.c
-@@ -589,6 +589,9 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
- 	int err;
- 
- 	sb->s_magic = EROFS_SUPER_MAGIC;
-+	sb->s_flags |= SB_RDONLY | SB_NOATIME;
-+	sb->s_maxbytes = MAX_LFS_FILESIZE;
-+	sb->s_op = &erofs_sops;
- 
- 	sbi = kzalloc(sizeof(*sbi), GFP_KERNEL);
- 	if (!sbi)
-@@ -606,6 +609,11 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
- 		err = erofs_fscache_register_fs(sb);
- 		if (err)
- 			return err;
-+
-+		err = erofs_fscache_register_cookie(sb, &sbi->s_fscache,
-+						    sbi->opt.fsid, true);
-+		if (err)
-+			return err;
- 	} else {
- 		if (!sb_set_blocksize(sb, EROFS_BLKSIZ)) {
- 			erofs_err(sb, "failed to set erofs blksize");
-@@ -628,11 +636,8 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
- 			clear_opt(&sbi->opt, DAX_ALWAYS);
- 		}
- 	}
--	sb->s_flags |= SB_RDONLY | SB_NOATIME;
--	sb->s_maxbytes = MAX_LFS_FILESIZE;
--	sb->s_time_gran = 1;
- 
--	sb->s_op = &erofs_sops;
-+	sb->s_time_gran = 1;
- 	sb->s_xattr = erofs_xattr_handlers;
- 
- 	if (test_opt(&sbi->opt, POSIX_ACL))
-@@ -772,6 +777,7 @@ static void erofs_kill_sb(struct super_block *sb)
- 
- 	erofs_free_dev_context(sbi->devs);
- 	fs_put_dax(sbi->dax_dev);
-+	erofs_fscache_unregister_cookie(&sbi->s_fscache);
- 	erofs_fscache_unregister_fs(sb);
- 	kfree(sbi);
- 	sb->s_fs_info = NULL;
-@@ -790,6 +796,7 @@ static void erofs_put_super(struct super_block *sb)
- 	iput(sbi->managed_cache);
- 	sbi->managed_cache = NULL;
- #endif
-+	erofs_fscache_unregister_cookie(&sbi->s_fscache);
+-	if (dev->bus->self)
+-		pcie_aspm_pm_state_change(dev->bus->self);
+-
+ 	return 0;
  }
  
- static struct file_system_type erofs_fs_type = {
+diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+index 3d60cabde1a15..86a19f293d4ad 100644
+--- a/drivers/pci/pci.h
++++ b/drivers/pci/pci.h
+@@ -560,12 +560,10 @@ bool pcie_wait_for_link(struct pci_dev *pdev, bool active);
+ #ifdef CONFIG_PCIEASPM
+ void pcie_aspm_init_link_state(struct pci_dev *pdev);
+ void pcie_aspm_exit_link_state(struct pci_dev *pdev);
+-void pcie_aspm_pm_state_change(struct pci_dev *pdev);
+ void pcie_aspm_powersave_config_link(struct pci_dev *pdev);
+ #else
+ static inline void pcie_aspm_init_link_state(struct pci_dev *pdev) { }
+ static inline void pcie_aspm_exit_link_state(struct pci_dev *pdev) { }
+-static inline void pcie_aspm_pm_state_change(struct pci_dev *pdev) { }
+ static inline void pcie_aspm_powersave_config_link(struct pci_dev *pdev) { }
+ #endif
+ 
+diff --git a/drivers/pci/pcie/aspm.c b/drivers/pci/pcie/aspm.c
+index a96b7424c9bc8..7f76a5875feb4 100644
+--- a/drivers/pci/pcie/aspm.c
++++ b/drivers/pci/pcie/aspm.c
+@@ -1012,25 +1012,6 @@ void pcie_aspm_exit_link_state(struct pci_dev *pdev)
+ 	up_read(&pci_bus_sem);
+ }
+ 
+-/* @pdev: the root port or switch downstream port */
+-void pcie_aspm_pm_state_change(struct pci_dev *pdev)
+-{
+-	struct pcie_link_state *link = pdev->link_state;
+-
+-	if (aspm_disabled || !link)
+-		return;
+-	/*
+-	 * Devices changed PM state, we should recheck if latency
+-	 * meets all functions' requirement
+-	 */
+-	down_read(&pci_bus_sem);
+-	mutex_lock(&aspm_lock);
+-	pcie_update_aspm_capable(link->root);
+-	pcie_config_aspm_path(link);
+-	mutex_unlock(&aspm_lock);
+-	up_read(&pci_bus_sem);
+-}
+-
+ void pcie_aspm_powersave_config_link(struct pci_dev *pdev)
+ {
+ 	struct pcie_link_state *link = pdev->link_state;
 -- 
-2.27.0
+2.34.1
 
