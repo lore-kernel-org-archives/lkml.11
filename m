@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09F3BC4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 199A1C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 07:51:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236583AbiEIHxI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 03:53:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59782 "EHLO
+        id S236593AbiEIHxJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 03:53:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235875AbiEIHpE (ORCPT
+        with ESMTP id S235012AbiEIHoy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 03:45:04 -0400
-Received: from out199-2.us.a.mail.aliyun.com (out199-2.us.a.mail.aliyun.com [47.90.199.2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C6371B7AD;
-        Mon,  9 May 2022 00:41:08 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0VCggcGT_1652082062;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0VCggcGT_1652082062)
+        Mon, 9 May 2022 03:44:54 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49DB618E20;
+        Mon,  9 May 2022 00:41:00 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0VCfaImD_1652082044;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0VCfaImD_1652082044)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 09 May 2022 15:41:03 +0800
+          Mon, 09 May 2022 15:40:45 +0800
 From:   Jeffle Xu <jefflexu@linux.alibaba.com>
 To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
         chao@kernel.org, linux-erofs@lists.ozlabs.org
@@ -30,9 +30,9 @@ Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
         luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
         yinxin.x@bytedance.com, zhangjiachen.jaycee@bytedance.com,
         zhujia.zj@bytedance.com
-Subject: [PATCH v11 21/22] erofs: add 'fsid' mount option
-Date:   Mon,  9 May 2022 15:40:27 +0800
-Message-Id: <20220509074028.74954-22-jefflexu@linux.alibaba.com>
+Subject: [PATCH v11 10/22] erofs: add fscache mode check helper
+Date:   Mon,  9 May 2022 15:40:16 +0800
+Message-Id: <20220509074028.74954-11-jefflexu@linux.alibaba.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220509074028.74954-1-jefflexu@linux.alibaba.com>
 References: <20220509074028.74954-1-jefflexu@linux.alibaba.com>
@@ -42,139 +42,118 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce 'fsid' mount option to enable on-demand read sementics, in
-which case, erofs will be mounted from data blobs. Users could specify
-the name of primary data blob by this mount option.
+Until then erofs is exactly blockdev based filesystem.
+
+A new fscache-based mode is going to be introduced for erofs to support
+scenarios where on-demand read semantics is needed, e.g. container
+image distribution. In this case, erofs could be mounted from data blobs
+through fscache.
+
+Add a helper checking which mode erofs works in, and twist the code in
+preparation for the upcoming fscache mode.
 
 Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
 Reviewed-by: Gao Xiang <hsiangkao@linux.alibaba.com>
-Tested-by: Zichen Tian <tianzichen@kuaishou.com>
-Tested-by: Jia Zhu <zhujia.zj@bytedance.com>
 ---
- fs/erofs/super.c | 31 ++++++++++++++++++++++++++++++-
- fs/erofs/sysfs.c |  4 ++--
- 2 files changed, 32 insertions(+), 3 deletions(-)
+ fs/erofs/internal.h |  5 +++++
+ fs/erofs/super.c    | 44 +++++++++++++++++++++++++++++---------------
+ 2 files changed, 34 insertions(+), 15 deletions(-)
 
+diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
+index fe9564e5091e..05a97533b1e9 100644
+--- a/fs/erofs/internal.h
++++ b/fs/erofs/internal.h
+@@ -161,6 +161,11 @@ struct erofs_sb_info {
+ #define set_opt(opt, option)	((opt)->mount_opt |= EROFS_MOUNT_##option)
+ #define test_opt(opt, option)	((opt)->mount_opt & EROFS_MOUNT_##option)
+ 
++static inline bool erofs_is_fscache_mode(struct super_block *sb)
++{
++	return IS_ENABLED(CONFIG_EROFS_FS_ONDEMAND) && !sb->s_bdev;
++}
++
+ enum {
+ 	EROFS_ZIP_CACHE_DISABLED,
+ 	EROFS_ZIP_CACHE_READAHEAD,
 diff --git a/fs/erofs/super.c b/fs/erofs/super.c
-index f68ba929100d..4a623630e1c4 100644
+index 0c4b41130c2f..724d5ff0d78c 100644
 --- a/fs/erofs/super.c
 +++ b/fs/erofs/super.c
-@@ -371,6 +371,8 @@ static int erofs_read_superblock(struct super_block *sb)
- 
- 	if (erofs_sb_has_ztailpacking(sbi))
- 		erofs_info(sb, "EXPERIMENTAL compressed inline data feature in use. Use at your own risk!");
-+	if (erofs_is_fscache_mode(sb))
-+		erofs_info(sb, "EXPERIMENTAL fscache-based on-demand read feature in use. Use at your own risk!");
- out:
- 	erofs_put_metabuf(&buf);
- 	return ret;
-@@ -399,6 +401,7 @@ enum {
- 	Opt_dax,
- 	Opt_dax_enum,
- 	Opt_device,
-+	Opt_fsid,
- 	Opt_err
- };
- 
-@@ -423,6 +426,7 @@ static const struct fs_parameter_spec erofs_fs_parameters[] = {
- 	fsparam_flag("dax",             Opt_dax),
- 	fsparam_enum("dax",		Opt_dax_enum, erofs_dax_param_enums),
- 	fsparam_string("device",	Opt_device),
-+	fsparam_string("fsid",		Opt_fsid),
- 	{}
- };
- 
-@@ -518,6 +522,16 @@ static int erofs_fc_parse_param(struct fs_context *fc,
+@@ -259,15 +259,19 @@ static int erofs_init_devices(struct super_block *sb,
  		}
- 		++ctx->devs->extra_devices;
- 		break;
-+	case Opt_fsid:
-+#ifdef CONFIG_EROFS_FS_ONDEMAND
-+		kfree(ctx->opt.fsid);
-+		ctx->opt.fsid = kstrdup(param->string, GFP_KERNEL);
-+		if (!ctx->opt.fsid)
-+			return -ENOMEM;
-+#else
-+		errorfc(fc, "fsid option not supported");
-+#endif
-+		break;
- 	default:
- 		return -ENOPARAM;
- 	}
-@@ -604,6 +618,7 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
+ 		dis = ptr + erofs_blkoff(pos);
+ 
+-		bdev = blkdev_get_by_path(dif->path,
+-					  FMODE_READ | FMODE_EXCL,
+-					  sb->s_type);
+-		if (IS_ERR(bdev)) {
+-			err = PTR_ERR(bdev);
+-			break;
++		if (!erofs_is_fscache_mode(sb)) {
++			bdev = blkdev_get_by_path(dif->path,
++						  FMODE_READ | FMODE_EXCL,
++						  sb->s_type);
++			if (IS_ERR(bdev)) {
++				err = PTR_ERR(bdev);
++				break;
++			}
++			dif->bdev = bdev;
++			dif->dax_dev = fs_dax_get_by_bdev(bdev,
++							  &dif->dax_part_off);
+ 		}
+-		dif->bdev = bdev;
+-		dif->dax_dev = fs_dax_get_by_bdev(bdev, &dif->dax_part_off);
++
+ 		dif->blocks = le32_to_cpu(dis->blocks);
+ 		dif->mapped_blkaddr = le32_to_cpu(dis->mapped_blkaddr);
+ 		sbi->total_blocks += dif->blocks;
+@@ -586,21 +590,28 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
+ 
+ 	sb->s_magic = EROFS_SUPER_MAGIC;
+ 
+-	if (!sb_set_blocksize(sb, EROFS_BLKSIZ)) {
+-		erofs_err(sb, "failed to set erofs blksize");
+-		return -EINVAL;
+-	}
+-
+ 	sbi = kzalloc(sizeof(*sbi), GFP_KERNEL);
+ 	if (!sbi)
+ 		return -ENOMEM;
  
  	sb->s_fs_info = sbi;
  	sbi->opt = ctx->opt;
-+	ctx->opt.fsid = NULL;
+-	sbi->dax_dev = fs_dax_get_by_bdev(sb->s_bdev, &sbi->dax_part_off);
  	sbi->devs = ctx->devs;
  	ctx->devs = NULL;
  
-@@ -690,6 +705,11 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
- 
- static int erofs_fc_get_tree(struct fs_context *fc)
- {
-+	struct erofs_fs_context *ctx = fc->fs_private;
++	if (erofs_is_fscache_mode(sb)) {
++		sb->s_blocksize = EROFS_BLKSIZ;
++		sb->s_blocksize_bits = LOG_BLOCK_SIZE;
++	} else {
++		if (!sb_set_blocksize(sb, EROFS_BLKSIZ)) {
++			erofs_err(sb, "failed to set erofs blksize");
++			return -EINVAL;
++		}
 +
-+	if (IS_ENABLED(CONFIG_EROFS_FS_ONDEMAND) && ctx->opt.fsid)
-+		return get_tree_nodev(fc, erofs_fc_fill_super);
++		sbi->dax_dev = fs_dax_get_by_bdev(sb->s_bdev,
++						  &sbi->dax_part_off);
++	}
 +
- 	return get_tree_bdev(fc, erofs_fc_fill_super);
- }
- 
-@@ -739,6 +759,7 @@ static void erofs_fc_free(struct fs_context *fc)
- 	struct erofs_fs_context *ctx = fc->fs_private;
- 
- 	erofs_free_dev_context(ctx->devs);
-+	kfree(ctx->opt.fsid);
- 	kfree(ctx);
- }
- 
-@@ -779,7 +800,10 @@ static void erofs_kill_sb(struct super_block *sb)
- 
- 	WARN_ON(sb->s_magic != EROFS_SUPER_MAGIC);
- 
--	kill_block_super(sb);
-+	if (erofs_is_fscache_mode(sb))
-+		generic_shutdown_super(sb);
-+	else
-+		kill_block_super(sb);
- 
- 	sbi = EROFS_SB(sb);
- 	if (!sbi)
-@@ -789,6 +813,7 @@ static void erofs_kill_sb(struct super_block *sb)
- 	fs_put_dax(sbi->dax_dev);
- 	erofs_fscache_unregister_cookie(&sbi->s_fscache);
- 	erofs_fscache_unregister_fs(sb);
-+	kfree(sbi->opt.fsid);
- 	kfree(sbi);
- 	sb->s_fs_info = NULL;
- }
-@@ -938,6 +963,10 @@ static int erofs_show_options(struct seq_file *seq, struct dentry *root)
- 		seq_puts(seq, ",dax=always");
- 	if (test_opt(opt, DAX_NEVER))
- 		seq_puts(seq, ",dax=never");
-+#ifdef CONFIG_EROFS_FS_ONDEMAND
-+	if (opt->fsid)
-+		seq_printf(seq, ",fsid=%s", opt->fsid);
-+#endif
- 	return 0;
- }
- 
-diff --git a/fs/erofs/sysfs.c b/fs/erofs/sysfs.c
-index f3babf1e6608..c1383e508bbe 100644
---- a/fs/erofs/sysfs.c
-+++ b/fs/erofs/sysfs.c
-@@ -205,8 +205,8 @@ int erofs_register_sysfs(struct super_block *sb)
- 
- 	sbi->s_kobj.kset = &erofs_root;
- 	init_completion(&sbi->s_kobj_unregister);
--	err = kobject_init_and_add(&sbi->s_kobj, &erofs_sb_ktype, NULL,
--				   "%s", sb->s_id);
-+	err = kobject_init_and_add(&sbi->s_kobj, &erofs_sb_ktype, NULL, "%s",
-+			erofs_is_fscache_mode(sb) ? sbi->opt.fsid : sb->s_id);
+ 	err = erofs_read_superblock(sb);
  	if (err)
- 		goto put_sb_kobj;
- 	return 0;
+ 		return err;
+@@ -857,7 +868,10 @@ static int erofs_statfs(struct dentry *dentry, struct kstatfs *buf)
+ {
+ 	struct super_block *sb = dentry->d_sb;
+ 	struct erofs_sb_info *sbi = EROFS_SB(sb);
+-	u64 id = huge_encode_dev(sb->s_bdev->bd_dev);
++	u64 id = 0;
++
++	if (!erofs_is_fscache_mode(sb))
++		id = huge_encode_dev(sb->s_bdev->bd_dev);
+ 
+ 	buf->f_type = sb->s_magic;
+ 	buf->f_bsize = EROFS_BLKSIZ;
 -- 
 2.27.0
 
