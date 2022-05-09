@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B74FC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49DA8C43219
 	for <linux-kernel@archiver.kernel.org>; Mon,  9 May 2022 05:44:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234740AbiEIFpV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 01:45:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38042 "EHLO
+        id S234685AbiEIFpG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 01:45:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235234AbiEIFne (ORCPT
+        with ESMTP id S235075AbiEIFnG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 01:43:34 -0400
+        Mon, 9 May 2022 01:43:06 -0400
 Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 863CF13FD5E
-        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 22:39:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A92913FD5D
+        for <linux-kernel@vger.kernel.org>; Sun,  8 May 2022 22:39:12 -0700 (PDT)
 Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KxVKL3Ljgz9sTN;
-        Mon,  9 May 2022 07:36:38 +0200 (CEST)
+        by localhost (Postfix) with ESMTP id 4KxVKJ2xmsz9sTD;
+        Mon,  9 May 2022 07:36:36 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from pegase2.c-s.fr ([172.26.127.65])
         by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id q4ENcxRLtERw; Mon,  9 May 2022 07:36:38 +0200 (CEST)
+        with ESMTP id cpQb6tMvOx0T; Mon,  9 May 2022 07:36:36 +0200 (CEST)
 Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KxVKF4y51z9sSv;
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KxVKF479Cz9sT7;
         Mon,  9 May 2022 07:36:33 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 995408B773;
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 77E708B794;
         Mon,  9 May 2022 07:36:33 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at c-s.fr
 Received: from messagerie.si.c-s.fr ([127.0.0.1])
         by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id l3e1F9ofiGNP; Mon,  9 May 2022 07:36:33 +0200 (CEST)
+        with ESMTP id cbyx-2MR_D7F; Mon,  9 May 2022 07:36:33 +0200 (CEST)
 Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 3C9058B76D;
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 3994E8B763;
         Mon,  9 May 2022 07:36:33 +0200 (CEST)
 Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 2495aUYA1591271
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 2495aUMr1591259
         (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
         Mon, 9 May 2022 07:36:30 +0200
 Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 2495aUlS1591270;
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 2495aUxU1591258;
         Mon, 9 May 2022 07:36:30 +0200
 X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
 From:   Christophe Leroy <christophe.leroy@csgroup.eu>
@@ -50,139 +50,81 @@ To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
         naveen.n.rao@linux.vnet.ibm.com
 Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
         linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH v3 16/25] powerpc/ftrace: Use PPC_RAW_xxx() macros instead of opencoding.
-Date:   Mon,  9 May 2022 07:36:14 +0200
-Message-Id: <9292094c9a69cef6d29ee83f435a557b59c45065.1652074503.git.christophe.leroy@csgroup.eu>
+Subject: [PATCH v3 13/25] powerpc/ftrace: Use CONFIG_FUNCTION_TRACER instead of CONFIG_DYNAMIC_FTRACE
+Date:   Mon,  9 May 2022 07:36:11 +0200
+Message-Id: <628d357503eb90b4a034f99b7df516caaff4d279.1652074503.git.christophe.leroy@csgroup.eu>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1652074503.git.christophe.leroy@csgroup.eu>
 References: <cover.1652074503.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1652074582; l=4146; s=20211009; h=from:subject:message-id; bh=l9MWFNRL2JH1tmWE8RlPsArFLXGPKhtcJE5wWg52jNU=; b=BjwVF24cYZSpNEQ4wzCW4wYBRPDWHpAq9e3ecDgwK4JgU1BiFvbWkEMBlvBoKLz2HLmpQO5pjJje k1+azgGcBPjJB2dikGGZvZ0NxzdbjIrhz4Qb5xUFh2kpwFVuHWjY
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1652074582; l=2342; s=20211009; h=from:subject:message-id; bh=bji15qs2JPAG4suNrV+7J234iPVSFPzCbSxwzfrHc3k=; b=Kd84EKFgYgwez8uFPBZrU5HS1xBVEOglCr+t0139mh5/fh9zpNcFaPRb70f4tok7Ky0eDm7Z4ReZ zEAz5rDeD/Z4lFLpo4VNbFRvpM5nVSdVoy6Kf8BNr47FHW+PzxH4
 X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PPC_RAW_xxx() macros are self explanatory and less error prone
-than open coding.
+Since commit 0c0c52306f47 ("powerpc: Only support DYNAMIC_FTRACE not
+static"), CONFIG_DYNAMIC_FTRACE is always selected when
+CONFIG_FUNCTION_TRACER is selected.
 
-Use them in ftrace.c
+To avoid confusion and have the reader wonder what's happen when
+CONFIG_FUNCTION_TRACER is selected and CONFIG_DYNAMIC_FTRACE is not,
+use CONFIG_FUNCTION_TRACER in ifdefs instead of CONFIG_DYNAMIC_FTRACE.
+
+As CONFIG_FUNCTION_GRAPH_TRACER depends on CONFIG_FUNCTION_TRACER,
+ftrace.o doesn't need to appear for both symbols in Makefile.
+
+Then as ftrace.o is built only when CONFIG_FUNCTION_TRACER is selected
+ifdef CONFIG_FUNCTION_TRACER is not needed in ftrace.c, and since it
+implies CONFIG_DYNAMIC_FTRACE, CONFIG_DYNAMIC_FTRACE is not needed
+in ftrace.c
 
 Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
-v2:
-- Replaced PPC_INST_OFFSET24_MASK by PPC_LI_MASK and added PPC_LI().
-- Fix ADDI instead of ADDIS
+v2: Limit the change to the content of arch/powerpc/kernel/trace as suggested by Naveen.
 ---
- arch/powerpc/include/asm/ppc-opcode.h |  5 +++++
- arch/powerpc/kernel/trace/ftrace.c    | 32 +++++++++------------------
- 2 files changed, 16 insertions(+), 21 deletions(-)
+ arch/powerpc/kernel/trace/Makefile | 4 +---
+ arch/powerpc/kernel/trace/ftrace.c | 4 ----
+ 2 files changed, 1 insertion(+), 7 deletions(-)
 
-diff --git a/arch/powerpc/include/asm/ppc-opcode.h b/arch/powerpc/include/asm/ppc-opcode.h
-index 82f1f0041c6f..3e9aa96ae74b 100644
---- a/arch/powerpc/include/asm/ppc-opcode.h
-+++ b/arch/powerpc/include/asm/ppc-opcode.h
-@@ -352,6 +352,10 @@
- #define PPC_HIGHER(v)	(((v) >> 32) & 0xffff)
- #define PPC_HIGHEST(v)	(((v) >> 48) & 0xffff)
+diff --git a/arch/powerpc/kernel/trace/Makefile b/arch/powerpc/kernel/trace/Makefile
+index fc32ec30b297..af8527538fe4 100644
+--- a/arch/powerpc/kernel/trace/Makefile
++++ b/arch/powerpc/kernel/trace/Makefile
+@@ -14,9 +14,7 @@ obj64-$(CONFIG_FUNCTION_TRACER)		+= ftrace_mprofile.o
+ else
+ obj64-$(CONFIG_FUNCTION_TRACER)		+= ftrace_64_pg.o
+ endif
+-obj-$(CONFIG_FUNCTION_TRACER)		+= ftrace_low.o
+-obj-$(CONFIG_DYNAMIC_FTRACE)		+= ftrace.o
+-obj-$(CONFIG_FUNCTION_GRAPH_TRACER)	+= ftrace.o
++obj-$(CONFIG_FUNCTION_TRACER)		+= ftrace_low.o ftrace.o
+ obj-$(CONFIG_TRACING)			+= trace_clock.o
  
-+/* LI Field */
-+#define PPC_LI_MASK	0x03fffffc
-+#define PPC_LI(v)	((v) & PPC_LI_MASK)
-+
- /*
-  * Only use the larx hint bit on 64bit CPUs. e500v1/v2 based CPUs will treat a
-  * larx with EH set as an illegal instruction.
-@@ -572,6 +576,7 @@
- #define PPC_RAW_EIEIO()			(0x7c0006ac)
- 
- #define PPC_RAW_BRANCH(addr)		(PPC_INST_BRANCH | ((addr) & 0x03fffffc))
-+#define PPC_RAW_BL(offset)		(0x48000001 | PPC_LI(offset))
- 
- /* Deal with instructions that older assemblers aren't aware of */
- #define	PPC_BCCTR_FLUSH		stringify_in_c(.long PPC_INST_BCCTR_FLUSH)
+ obj-$(CONFIG_PPC64)			+= $(obj64-y)
 diff --git a/arch/powerpc/kernel/trace/ftrace.c b/arch/powerpc/kernel/trace/ftrace.c
-index c4a68340a351..ac3f97dd1729 100644
+index 531da4d93c58..f89bcaa5f0fc 100644
 --- a/arch/powerpc/kernel/trace/ftrace.c
 +++ b/arch/powerpc/kernel/trace/ftrace.c
-@@ -90,19 +90,19 @@ static int test_24bit_addr(unsigned long ip, unsigned long addr)
+@@ -28,9 +28,6 @@
+ #include <asm/syscall.h>
+ #include <asm/inst.h>
  
- static int is_bl_op(ppc_inst_t op)
- {
--	return (ppc_inst_val(op) & 0xfc000003) == 0x48000001;
-+	return (ppc_inst_val(op) & ~PPC_LI_MASK) == PPC_RAW_BL(0);
+-
+-#ifdef CONFIG_DYNAMIC_FTRACE
+-
+ /*
+  * We generally only have a single long_branch tramp and at most 2 or 3 plt
+  * tramps generated. But, we don't use the plt tramps currently. We also allot
+@@ -783,7 +780,6 @@ int __init ftrace_dyn_arch_init(void)
+ 	return 0;
  }
+ #endif
+-#endif /* CONFIG_DYNAMIC_FTRACE */
  
- static int is_b_op(ppc_inst_t op)
- {
--	return (ppc_inst_val(op) & 0xfc000003) == 0x48000000;
-+	return (ppc_inst_val(op) & ~PPC_LI_MASK) == PPC_RAW_BRANCH(0);
- }
+ #ifdef CONFIG_FUNCTION_GRAPH_TRACER
  
- static unsigned long find_bl_target(unsigned long ip, ppc_inst_t op)
- {
- 	int offset;
- 
--	offset = (ppc_inst_val(op) & 0x03fffffc);
-+	offset = PPC_LI(ppc_inst_val(op));
- 	/* make it signed */
- 	if (offset & 0x02000000)
- 		offset |= 0xfe000000;
-@@ -182,7 +182,7 @@ __ftrace_make_nop(struct module *mod,
- 	 * Use a b +8 to jump over the load.
- 	 */
- 
--	pop = ppc_inst(PPC_INST_BRANCH | 8);	/* b +8 */
-+	pop = ppc_inst(PPC_RAW_BRANCH(8));	/* b +8 */
- 
- 	/*
- 	 * Check what is in the next instruction. We can see ld r2,40(r1), but
-@@ -394,17 +394,8 @@ int ftrace_make_nop(struct module *mod,
- static int
- expected_nop_sequence(void *ip, ppc_inst_t op0, ppc_inst_t op1)
- {
--	/*
--	 * We expect to see:
--	 *
--	 * b +8
--	 * ld r2,XX(r1)
--	 *
--	 * The load offset is different depending on the ABI. For simplicity
--	 * just mask it out when doing the compare.
--	 */
--	if (!ppc_inst_equal(op0, ppc_inst(0x48000008)) ||
--	    (ppc_inst_val(op1) & 0xffff0000) != 0xe8410000)
-+	if (!ppc_inst_equal(op0, ppc_inst(PPC_RAW_BRANCH(8))) ||
-+	    !ppc_inst_equal(op1, ppc_inst(PPC_INST_LD_TOC)))
- 		return 0;
- 	return 1;
- }
-@@ -412,7 +403,6 @@ expected_nop_sequence(void *ip, ppc_inst_t op0, ppc_inst_t op1)
- static int
- expected_nop_sequence(void *ip, ppc_inst_t op0, ppc_inst_t op1)
- {
--	/* look for patched "NOP" on ppc64 with -mprofile-kernel or ppc32 */
- 	if (!ppc_inst_equal(op0, ppc_inst(PPC_RAW_NOP())))
- 		return 0;
- 	return 1;
-@@ -738,11 +728,11 @@ int __init ftrace_dyn_arch_init(void)
- 	int i;
- 	unsigned int *tramp[] = { ftrace_tramp_text, ftrace_tramp_init };
- 	u32 stub_insns[] = {
--		0xe98d0000 | PACATOC,	/* ld      r12,PACATOC(r13)	*/
--		0x3d8c0000,		/* addis   r12,r12,<high>	*/
--		0x398c0000,		/* addi    r12,r12,<low>	*/
--		0x7d8903a6,		/* mtctr   r12			*/
--		0x4e800420,		/* bctr				*/
-+		PPC_RAW_LD(_R12, _R13, PACATOC),
-+		PPC_RAW_ADDIS(_R12, _R12, 0),
-+		PPC_RAW_ADDI(_R12, _R12, 0),
-+		PPC_RAW_MTCTR(_R12),
-+		PPC_RAW_BCTR()
- 	};
- #ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
- 	unsigned long addr = ppc_global_function_entry((void *)ftrace_regs_caller);
 -- 
 2.35.1
 
