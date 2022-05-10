@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D70E7C3A589
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 020A1C3A59D
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:38:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244781AbiEJNmI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:42:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32802 "EHLO
+        id S244849AbiEJNmM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:42:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243079AbiEJNZa (ORCPT
+        with ESMTP id S243089AbiEJNZa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:25:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B72A91683FC;
-        Tue, 10 May 2022 06:18:45 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 154812311CF;
+        Tue, 10 May 2022 06:18:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5E090B81B32;
-        Tue, 10 May 2022 13:18:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B39EC385A6;
-        Tue, 10 May 2022 13:18:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A8810615F8;
+        Tue, 10 May 2022 13:18:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B33B4C385A6;
+        Tue, 10 May 2022 13:18:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188723;
-        bh=Ug3fk8Vt8Pk8CQvWev9QH73Z1POTQgfDaPxABlOgu54=;
+        s=korg; t=1652188729;
+        bh=syvbfAMOEbim3F1NblPad85qNNOn39u3qZiZAyUDIdY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yN8eXI2dEIVa2jYzcxH8nia8mnwmpL+cyuNYbtiTlHTuvuBNOlSxb6AZilCWqdtj5
-         wEc9GPTDG0n8aMLhJNrVztUXJZPLUlqCrgTjHlIc3nyC0PcoA3Z9PASe59F26An++9
-         Fae1BvaJ5ceGvhxAGGI7e7VewPAId0piM8upaGDg=
+        b=cbm1qwslSwzwmAKHzPzEqJIdnQiLKZoogYMFMDvXvnSbESWBbtbD0+7myImmzdKjT
+         DPvyHgGflhd6rMJdbcW+wSSvBCeYZl34bO5H5FWicape+Z/o/KJ3vEhAArT5993LIn
+         y/qpfqM7amBvEhIN+Ou3nayofgHx4ENZ6j8pSFTg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Slark Xiao <slark_xiao@163.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 4.19 06/88] USB: serial: option: add support for Cinterion MV32-WA/MV32-WB
-Date:   Tue, 10 May 2022 15:06:51 +0200
-Message-Id: <20220510130733.926886756@linuxfoundation.org>
+        stable@vger.kernel.org, Henry Lin <henryl@nvidia.com>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: [PATCH 4.19 08/88] xhci: stop polling roothubs after shutdown
+Date:   Tue, 10 May 2022 15:06:53 +0200
+Message-Id: <20220510130733.986683627@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 References: <20220510130733.735278074@linuxfoundation.org>
@@ -48,75 +48,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Slark Xiao <slark_xiao@163.com>
+From: Henry Lin <henryl@nvidia.com>
 
-commit b4a64ed6e7b857317070fcb9d87ff5d4a73be3e8 upstream.
+commit dc92944a014cd6a6f6c94299aaa36164dd2c238a upstream.
 
-Add support for Cinterion device MV32-WA/MV32-WB. MV32-WA PID is
-0x00F1, and MV32-WB PID is 0x00F2.
+While rebooting, XHCI controller and its bus device will be shut down
+in order by .shutdown callback. Stopping roothubs polling in
+xhci_shutdown() can prevent XHCI driver from accessing port status
+after its bus device shutdown.
 
-Test evidence as below:
-T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  4 Spd=5000 MxCh= 0
-D:  Ver= 3.20 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
-P:  Vendor=1e2d ProdID=00f1 Rev=05.04
-S:  Manufacturer=Cinterion
-S:  Product=Cinterion PID 0x00F1 USB Mobile Broadband
-S:  SerialNumber=78ada8c4
-C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
-I:  If#=0x0 Alt= 0 #EPs= 1 Cls=02(commc) Sub=0e Prot=00 Driver=cdc_mbim
-I:  If#=0x1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=02 Driver=cdc_mbim
-I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=40 Driver=option
-I:  If#=0x3 Alt= 0 #EPs= 1 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
-I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=60 Driver=option
-I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30 Driver=option
+Take PCIe XHCI controller as example, if XHCI driver doesn't stop roothubs
+polling, XHCI driver may access PCIe BAR register for port status after
+parent PCIe root port driver is shutdown and cause PCIe bus error.
 
-T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  3 Spd=5000 MxCh= 0
-D:  Ver= 3.20 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
-P:  Vendor=1e2d ProdID=00f2 Rev=05.04
-S:  Manufacturer=Cinterion
-S:  Product=Cinterion PID 0x00F2 USB Mobile Broadband
-S:  SerialNumber=cdd06a78
-C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
-I:  If#=0x0 Alt= 0 #EPs= 1 Cls=02(commc) Sub=0e Prot=00 Driver=cdc_mbim
-I:  If#=0x1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=02 Driver=cdc_mbim
-I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=40 Driver=option
-I:  If#=0x3 Alt= 0 #EPs= 1 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
-I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=60 Driver=option
-I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30 Driver=option
+[check shared hcd exist before stopping its roothub polling -Mathias]
 
-Interface 0&1: MBIM, 2:Modem, 3: GNSS, 4: NMEA, 5: Diag
-GNSS port don't use serial driver.
-
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
-Link: https://lore.kernel.org/r/20220414074434.5699-1-slark_xiao@163.com
 Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Henry Lin <henryl@nvidia.com>
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Link: https://lore.kernel.org/r/20220408134823.2527272-3-mathias.nyman@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/option.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/usb/host/xhci.c |   11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
---- a/drivers/usb/serial/option.c
-+++ b/drivers/usb/serial/option.c
-@@ -432,6 +432,8 @@ static void option_instat_callback(struc
- #define CINTERION_PRODUCT_CLS8			0x00b0
- #define CINTERION_PRODUCT_MV31_MBIM		0x00b3
- #define CINTERION_PRODUCT_MV31_RMNET		0x00b7
-+#define CINTERION_PRODUCT_MV32_WA		0x00f1
-+#define CINTERION_PRODUCT_MV32_WB		0x00f2
+--- a/drivers/usb/host/xhci.c
++++ b/drivers/usb/host/xhci.c
+@@ -778,6 +778,17 @@ void xhci_shutdown(struct usb_hcd *hcd)
+ 	if (xhci->quirks & XHCI_SPURIOUS_REBOOT)
+ 		usb_disable_xhci_ports(to_pci_dev(hcd->self.sysdev));
  
- /* Olivetti products */
- #define OLIVETTI_VENDOR_ID			0x0b3c
-@@ -1969,6 +1971,10 @@ static const struct usb_device_id option
- 	  .driver_info = RSVD(3)},
- 	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV31_RMNET, 0xff),
- 	  .driver_info = RSVD(0)},
-+	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV32_WA, 0xff),
-+	  .driver_info = RSVD(3)},
-+	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV32_WB, 0xff),
-+	  .driver_info = RSVD(3)},
- 	{ USB_DEVICE(OLIVETTI_VENDOR_ID, OLIVETTI_PRODUCT_OLICARD100),
- 	  .driver_info = RSVD(4) },
- 	{ USB_DEVICE(OLIVETTI_VENDOR_ID, OLIVETTI_PRODUCT_OLICARD120),
++	/* Don't poll the roothubs after shutdown. */
++	xhci_dbg(xhci, "%s: stopping usb%d port polling.\n",
++			__func__, hcd->self.busnum);
++	clear_bit(HCD_FLAG_POLL_RH, &hcd->flags);
++	del_timer_sync(&hcd->rh_timer);
++
++	if (xhci->shared_hcd) {
++		clear_bit(HCD_FLAG_POLL_RH, &xhci->shared_hcd->flags);
++		del_timer_sync(&xhci->shared_hcd->rh_timer);
++	}
++
+ 	spin_lock_irq(&xhci->lock);
+ 	xhci_halt(xhci);
+ 	/* Workaround for spurious wakeups at shutdown with HSW */
 
 
