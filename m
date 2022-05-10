@@ -2,88 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82AEBC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:00:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39AE7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:00:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240397AbiEJQE1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 12:04:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57460 "EHLO
+        id S1347132AbiEJQEh (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 12:04:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346995AbiEJQBB (ORCPT
+        with ESMTP id S1347034AbiEJQCj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 12:01:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B358B3CA52;
-        Tue, 10 May 2022 08:53:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4284961673;
-        Tue, 10 May 2022 15:53:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C17F4C385A6;
-        Tue, 10 May 2022 15:53:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652198019;
-        bh=9pgUcC73MMhE3nPFiSsB/Zp0JFryDLtpwGsW8VKXMIc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=u7AzoJ/Wk3+3/R2dR6hL3nO2cRTFVkpejdusu1cWWqVxNKpzc9Vy/meXirezGrwZi
-         J0ZEbm2n4fxpjjgMY/pmT/vd2Mfu9pcKIxWKj95uWzWf40AodLu8S0c6nIM19gJ0Tw
-         kSXcRleqg5eBZ5f/7ks7y1nufYS4P6+8qpjb9XOe0fmD6kocBMMPPBx+gDCifjtF1z
-         2Zp/8QdJFjY+q9EAns9A3uZUD9ZctwxPKJN+UbTg8PKs6esQzU2pPpusSbNwm8Am3L
-         tgGo6JPSNRMoETWilBHweh5lLCuzXFJFNFzTyG3qS4ZYm5/zyhCRYffXVvbjjgP0Br
-         uc7+JMwnO6kow==
-Date:   Tue, 10 May 2022 17:53:32 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     Miklos Szeredi <miklos@szeredi.hu>
-Cc:     linux-fsdevel@vger.kernel.org, Dave Chinner <david@fromorbit.com>,
-        Theodore Ts'o <tytso@mit.edu>, Karel Zak <kzak@redhat.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org,
-        Linux API <linux-api@vger.kernel.org>,
-        linux-man <linux-man@vger.kernel.org>,
-        LSM <linux-security-module@vger.kernel.org>,
-        Ian Kent <raven@themaw.net>,
-        David Howells <dhowells@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Christian Brauner <christian@brauner.io>,
-        Amir Goldstein <amir73il@gmail.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>
-Subject: Re: [RFC PATCH] getting misc stats/attributes via xattr API
-Message-ID: <20220510155332.3zm5nycl7nmuxgdx@wittgenstein>
-References: <YnEeuw6fd1A8usjj@miu.piliscsaba.redhat.com>
- <20220509124815.vb7d2xj5idhb2wq6@wittgenstein>
- <CAJfpegveWaS5pR3O1c_7qLnaEDWwa8oi26x2v_CwDXB_sir1tg@mail.gmail.com>
- <20220510115316.acr6gl5ayqszada6@wittgenstein>
- <CAJfpegtVgyumJiFM_ujjuRTjg07vwOd4h9AT+mbh+n1Qn-LqqA@mail.gmail.com>
- <20220510141932.lth3bryefbl6ykny@wittgenstein>
- <CAJfpegt94fP-_eDAk=_C=24ahCtjQ4vhh8Xg+SrZbwPHs1waLA@mail.gmail.com>
- <20220510153050.cgbt3wezbvf2jfnb@wittgenstein>
- <CAJfpegu8d2VQ+WjfmUJ6g7YBPJsYUABt0jG5ByVh-dMt_waV8A@mail.gmail.com>
+        Tue, 10 May 2022 12:02:39 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FBCE1C766D
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:56:56 -0700 (PDT)
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24A5hOmD011917;
+        Tue, 10 May 2022 10:56:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=PODMain02222019;
+ bh=01coq6eTT3NkAd1JAlLJ176jzYKNUqPt6tC/ku5+Gg4=;
+ b=Irrw5HvsKteuLiWTuQ00AKnBil3Lvkdg+2DpXsJNMKKnLVCm/WxGOCAofxNn75RswMWM
+ AxC4kM1Scz3Y7yo/IV4afHwXyfpvyQpBzIL5/AnCOr8+AhJpDt5DnaVrPBFRwMqIMloy
+ b9N4v9TY4DKSHyULzE4NtVNZIktOgzYsu8XTxpkdl4h6gw0V1rYSspFQPQop3quEJOgN
+ JVUcaYT9ODa5RPmlHtgeNs/4KPmWIIkctPsWAaaMwALM4aDtsC0QG0QwipvTbvOIw+iP
+ PyVp5N/ZAfvEpKbGzQ2kE8qtHeDW4C7UaZRjYNHouVUnonVZWnzc7K7Rek32UbcEMyej cA== 
+Received: from ediex01.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3fwn6nvhkj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 10 May 2022 10:56:02 -0500
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 10 May
+ 2022 16:56:01 +0100
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
+ Transport; Tue, 10 May 2022 16:56:01 +0100
+Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 38020B10;
+        Tue, 10 May 2022 15:56:01 +0000 (UTC)
+Date:   Tue, 10 May 2022 15:56:01 +0000
+From:   Charles Keepax <ckeepax@opensource.cirrus.com>
+To:     Zheyu Ma <zheyuma97@gmail.com>
+CC:     <james.schulman@cirrus.com>, <david.rhodes@cirrus.com>,
+        <tanureal@opensource.cirrus.com>, <rf@opensource.cirrus.com>,
+        <lgirdwood@gmail.com>, <broonie@kernel.org>, <perex@perex.cz>,
+        <tiwai@suse.com>, <oder_chiou@realtek.com>,
+        <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 6/6] ASoC: wm8903: Fix the error handling of
+ wm8903_i2c_probe()
+Message-ID: <20220510155601.GE38351@ediswmail.ad.cirrus.com>
+References: <20220510153251.1741210-1-zheyuma97@gmail.com>
+ <20220510153251.1741210-7-zheyuma97@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <CAJfpegu8d2VQ+WjfmUJ6g7YBPJsYUABt0jG5ByVh-dMt_waV8A@mail.gmail.com>
+In-Reply-To: <20220510153251.1741210-7-zheyuma97@gmail.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-Proofpoint-ORIG-GUID: 4cY41mpm9RoEhmYdlHWbVW6g7Takd3_A
+X-Proofpoint-GUID: 4cY41mpm9RoEhmYdlHWbVW6g7Takd3_A
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 05:47:13PM +0200, Miklos Szeredi wrote:
-> On Tue, 10 May 2022 at 17:30, Christian Brauner <brauner@kernel.org> wrote:
+On Tue, May 10, 2022 at 11:32:51PM +0800, Zheyu Ma wrote:
+> The driver should goto label 'err' when failing to request the irq.
 > 
-> > But now we're in the process of extending the *xattr() calls to operate
-> > on mounts and filesystems so an additional getfsattr() (or another name)
-> > is not fragmentation imho. And I definitely don't think this would
-> > qualify as "crazy".
-> 
-> In that spirit st_dev does not belong in struct stat, because that is
-> the property of the block device, not the inode.
-> 
-> But I feel we are going round in circles, lets please not get hung up
-> on this issue.  Linus will have the final word on which variant (if
-> either) is going to go in.
+> Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+> ---
 
-Well yes, I'm obviously not going to be d*ck about it and go around
-NAKing it just because I didn't get my favorite name but I at least
-want to register my strong opposition to the current "unification"
-approach loud and clear. :)
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+
+Thanks,
+Charles
