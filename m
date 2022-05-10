@@ -2,97 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63302C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87616C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:33:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345002AbiEJOgu (ORCPT
+        id S1345044AbiEJOg5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:36:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36854 "EHLO
+        Tue, 10 May 2022 10:36:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343969AbiEJOLg (ORCPT
+        with ESMTP id S1343553AbiEJOHI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:11:36 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B775B36EC
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 06:45:28 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id d22so16761303plr.9
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 06:45:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=wjc6PfFrSQortCgG9GxXghDMK5FYTEjIw0LOemqQcCU=;
-        b=FSqyTGvtT5BzaNJ0cEzaJ9nEZlF4IdkKy5VKAbKJ7VJxxTVXT6tG7p6K0fQnQFpmoU
-         C0zLLsgjLRB07p6+YP0ZCw8uwxBwd2eo6BN1SfxV29oU8IgszqFJTYo4R7mukOzq+5lq
-         7CyMeWgdT0zjj/37BxHKcjat/NjLVN7k7oIPNCnq6357NX5HQ7/w+pZYSHYQSTLmmJjv
-         qJWt9bG3Nzl67Stmy5FJ3N7nJJp9/4B4ueV6KrJl5DFAhAKqsHdbtyEUq1krFFxuHsoW
-         j3WjAA1RKYIv2jDr8FsS6o1UT5Cj0NU9YQTZHZ0PGqhAQwcdBrbGCkpvvVXPfSsJ7FjT
-         VBwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=wjc6PfFrSQortCgG9GxXghDMK5FYTEjIw0LOemqQcCU=;
-        b=fHiopzUpvS/6rsBKK8eF+nwYDSlrJZrraIPLPFQ+8kLpN7KVxu6lbk1vZ2CgLR0Z28
-         0fsJo8YZaUl+NN9ioLDQ+hnbHMc27SeVdVNtwnOKTLUA4K1+WOyjATg6iCLHDhSWZAY6
-         CNbllNXpatP5IUkKfbocinQp3PZKIa3JbPqAh+ASwOBfcmHFfC8yCRfmptMTAp9MjmZc
-         hmlEfz3op72zEufUTQtH+GodrnhGl/swTQZdDP6z52J9f2/iLaXmLvJsoi2KC9sDcxnD
-         qPm++FQdENXdLuLHxP9//PBjGxgAS2IKnwXeMJ3SHRjdh+REIOpP97zH0nnoQ0rHMOvy
-         ULOw==
-X-Gm-Message-State: AOAM532jln53vjQa4XJTpF4ky1zXM3v9QHSjqiw2uWFnrsKnamHDg1lr
-        YTFhV6fK0ebyxalG538bYmsGmA==
-X-Google-Smtp-Source: ABdhPJzbTkXxf13uKqE3E/u2nciMx07tOwqoGcEiwvBA1d3qlqf8g9bNdOQxD/pzZ6vQ2S0YM16GhA==
-X-Received: by 2002:a17:902:8605:b0:15d:10dc:1c6f with SMTP id f5-20020a170902860500b0015d10dc1c6fmr21105344plo.4.1652190326941;
-        Tue, 10 May 2022 06:45:26 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id o10-20020a170903300a00b0015e9d4a5d27sm2013473pla.23.2022.05.10.06.45.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 06:45:26 -0700 (PDT)
-Date:   Tue, 10 May 2022 13:45:23 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     syzbot <syzbot+0c6da80218456f1edc36@syzkaller.appspotmail.com>
-Cc:     akpm@linux-foundation.org, davem@davemloft.net, jhs@mojatatu.com,
-        jiri@resnulli.us, kvm@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mingo@elte.hu, mlevitsk@redhat.com, netdev@vger.kernel.org,
-        pbonzini@redhat.com, peterz@infradead.org,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        vinicius.gomes@intel.com, viro@zeniv.linux.org.uk,
-        xiyou.wangcong@gmail.com
-Subject: Re: [syzbot] INFO: task hung in synchronize_rcu (3)
-Message-ID: <Ynpsc7dRs8tZugpl@google.com>
-References: <000000000000402c5305ab0bd2a2@google.com>
- <0000000000004f3c0d05dea46dac@google.com>
+        Tue, 10 May 2022 10:07:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F306920791E;
+        Tue, 10 May 2022 06:41:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF936B81DA0;
+        Tue, 10 May 2022 13:41:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4610EC385A6;
+        Tue, 10 May 2022 13:41:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652190065;
+        bh=84Cf+kNuFriqtENNa1ezqce+lu2J/desx9OHStUV0J4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HrI50niXBIv5+GldavaT87HYTmlwvZBvTBdYT6zhtQp+wJ1kj20jgCv+RL61ivnsP
+         ijpNfJUxTvqIBbb+Y4yCGIAij4Lj2N5s0lNPMr1JoByXNHOTgazyfrrUvyGX1xU8Z6
+         ZTOf78fNr5zqt+s85e84myhtuLqNCrvLBh44ll08=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Chao Gao <chao.gao@intel.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 116/140] KVM: x86: Do not change ICR on write to APIC_SELF_IPI
+Date:   Tue, 10 May 2022 15:08:26 +0200
+Message-Id: <20220510130744.922507518@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
+References: <20220510130741.600270947@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0000000000004f3c0d05dea46dac@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022, syzbot wrote:
-> syzbot suspects this issue was fixed by commit:
-> 
-> commit 2d08935682ac5f6bfb70f7e6844ec27d4a245fa4
-> Author: Sean Christopherson <seanjc@google.com>
-> Date:   Fri Apr 15 00:43:41 2022 +0000
-> 
->     KVM: x86: Don't re-acquire SRCU lock in complete_emulated_io()
-> 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16dc2e49f00000
-> start commit:   ea4424be1688 Merge tag 'mtd/fixes-for-5.17-rc8' of git://g..
-> git tree:       upstream
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=442f8ac61e60a75e
-> dashboard link: https://syzkaller.appspot.com/bug?extid=0c6da80218456f1edc36
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1685af9e700000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11b09df1700000
-> 
-> If the result looks correct, please mark the issue as fixed by replying with:
-> 
-> #syz fix: KVM: x86: Don't re-acquire SRCU lock in complete_emulated_io()
-> 
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+From: Paolo Bonzini <pbonzini@redhat.com>
 
-#syz fix: KVM: x86: Don't re-acquire SRCU lock in complete_emulated_io()
+[ Upstream commit d22a81b304a27fca6124174a8e842e826c193466 ]
+
+Emulating writes to SELF_IPI with a write to ICR has an unwanted side effect:
+the value of ICR in vAPIC page gets changed.  The lists SELF_IPI as write-only,
+with no associated MMIO offset, so any write should have no visible side
+effect in the vAPIC page.
+
+Reported-by: Chao Gao <chao.gao@intel.com>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/x86/kvm/lapic.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+index 2a10d0033c96..6b6f9359d29e 100644
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -2125,10 +2125,9 @@ int kvm_lapic_reg_write(struct kvm_lapic *apic, u32 reg, u32 val)
+ 		break;
+ 
+ 	case APIC_SELF_IPI:
+-		if (apic_x2apic_mode(apic)) {
+-			kvm_lapic_reg_write(apic, APIC_ICR,
+-					    APIC_DEST_SELF | (val & APIC_VECTOR_MASK));
+-		} else
++		if (apic_x2apic_mode(apic))
++			kvm_apic_send_ipi(apic, APIC_DEST_SELF | (val & APIC_VECTOR_MASK), 0);
++		else
+ 			ret = 1;
+ 		break;
+ 	default:
+-- 
+2.35.1
+
+
+
