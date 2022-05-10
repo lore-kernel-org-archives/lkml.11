@@ -2,92 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15097C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 07:31:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2E66C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 07:31:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241627AbiEJHex (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 03:34:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50024 "EHLO
+        id S241665AbiEJHfU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 03:35:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240965AbiEJH0Z (ORCPT
+        with ESMTP id S238223AbiEJHGR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 03:26:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E55363A5D7;
-        Tue, 10 May 2022 00:22:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5E0D2B81A0A;
-        Tue, 10 May 2022 07:22:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2F7AC385A6;
-        Tue, 10 May 2022 07:22:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652167343;
-        bh=7K3MJOtEcuHFbzjGMBK9G/czvkGrWXEYQvzkmmVBkhQ=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=kZWStkvFA8dnpda13YuPiWGK0wi+F3QMo+0rLC4WwxoXWbBokY9OOoBlHQk5hoX6H
-         9Ev58O9/bLrAXY12Cp+Zy0Fqxwhr2JFzkFkd5C4K2WzSiLpUWI5R7c+l9FTvQ1V3BN
-         W74dn3lvc5yAgBieYb9QwIO9r0d4vlpc/L/qbIs0KkAVctuDVdMQGa1unzI3GJHOAU
-         hOJfC70rggZj7Q+1r3OGZaEVGpb+4eUjFQoTmZzwymFGdocaVeuXngtRtXylCyBLkq
-         AQfI43pXdyN4PA1DaXOCo/EBp9j7xa0gMelyDi7lLpS6lbBwHob9TKQ1gDQxT7wt/g
-         z79lkfNH5V6BA==
-Message-ID: <20fd1a74-c0f5-d8e9-4903-b74c185d5aa3@kernel.org>
-Date:   Tue, 10 May 2022 10:22:18 +0300
+        Tue, 10 May 2022 03:06:17 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B26E89CDE;
+        Tue, 10 May 2022 00:02:19 -0700 (PDT)
+Received: from mail-yb1-f171.google.com ([209.85.219.171]) by
+ mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1M7s1M-1njOCR3gdG-004yY2; Tue, 10 May 2022 09:02:18 +0200
+Received: by mail-yb1-f171.google.com with SMTP id y76so29055581ybe.1;
+        Tue, 10 May 2022 00:02:17 -0700 (PDT)
+X-Gm-Message-State: AOAM533ETVQqOGd98mKKn5I3jsOydLd8pfc9K4zQhooUGt9dJm4p1/8b
+        3UeFHFMLwIhMPqCtbms+ZAofTta2br3qPE7El+M=
+X-Google-Smtp-Source: ABdhPJzCoErVlOlWP+3agvpOC/u6kgO4/gR8EykNKzu19PrW0u0Z98t99jOPlEpsD8ttySzd6YiVB2UWW4A083+k8U4=
+X-Received: by 2002:a25:cbc9:0:b0:645:879a:cdd3 with SMTP id
+ b192-20020a25cbc9000000b00645879acdd3mr15923423ybg.550.1652166136461; Tue, 10
+ May 2022 00:02:16 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] memory: OMAP_GPMC should depend on ARCH_OMAP2PLUS ||
- ARCH_K3
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Tony Lindgren <tony@atomide.com>, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <2b7d411b4a7913335082c858cb0d63b9e4bf7c5b.1652103920.git.geert+renesas@glider.be>
-From:   Roger Quadros <rogerq@kernel.org>
-In-Reply-To: <2b7d411b4a7913335082c858cb0d63b9e4bf7c5b.1652103920.git.geert+renesas@glider.be>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220510032558.10304-1-ychuang3@nuvoton.com> <20220510032558.10304-4-ychuang3@nuvoton.com>
+In-Reply-To: <20220510032558.10304-4-ychuang3@nuvoton.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Tue, 10 May 2022 09:01:59 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1tbvE+PTB-qy2y7o3_i3VP0zkgMueDy3zBd64BsGKssw@mail.gmail.com>
+Message-ID: <CAK8P3a1tbvE+PTB-qy2y7o3_i3VP0zkgMueDy3zBd64BsGKssw@mail.gmail.com>
+Subject: Re: [PATCH V4 3/5] arm64: dts: nuvoton: Add initial support for MA35D1
+To:     Jacky Huang <ychuang3@nuvoton.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        ychuang570808@gmail.com, Rob Herring <robh+dt@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, SoC Team <soc@kernel.org>,
+        cfli0@nuvoton.com
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:41uXJV8ZDI63xzuVbY8paB13ziPpltqOnktwNglwfUmNJw9cwCd
+ 5P5mu20L/Nj1xc8WlYqCwvAtU+g/vFs7tbrlxZxKacQTrJIa434jFkbAQTSRxmbOa8wx3qA
+ PTGOpcRLTwidHUrxL/WFup/F9NkJjUsJ1A79nwzzRNgynnIp3dB3zvvkyjGmL+sk0Jbe66W
+ JorYpPblV4AbPGXK6o7YA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:EywyeRWjnAM=:tgppNxSMe33OniewTBHltP
+ sdTFdQQeI4ME11si5cRlTj8pqdF21LRzNVODnHZJTYonX/jKI4dt3kV1l5pGSfPgDcg4Yi5pm
+ F4yngPZPg55zwDBCOAyFgcqTtidatGFt98rNZMfUOiy7U5IxFcmrbl4dfTf3R9pGyBHmuTjco
+ ZF2p9tmplFKS37hwWL2zChcEExR9UkXrSJY8IkGoOozZHL2CUjNp9QLBBSqcFdDEKdnLGVKO0
+ pmu2ZCvbbM2IYYX+UwoRM0Kad/77LkRDNWJCpFtZO7/SeahAwg7K5JyhuJ0xi9VQMiusB9n6C
+ fNjCog6hWmmqmtLph55AGx0aBcPJxZzLMmotvyLmedU15Eo7b+VT/o87qEjVFWqc+IzX4/Y+S
+ Ul5uVdzNhaiLsrjRheSC5cvJYmuNzOrGqGLSyV3g8zA1lo9SItndZnex4CSmr4BI+FjCZmKJl
+ wSdIF2o83cmogKKZxdihAJCGGEmqNGLc5SMoME7T10fg+6emYUSAB7sXWMLErSCbol5A8P0d/
+ M/PVqAnlTrWHwpZFe8bEvEw01YJPaberRT4nHnLnS7xwwT8Rff+jBn+Tn01NbtleAdK54+pS1
+ qwJw6sBbbpZQoGa5DqvzFR4l7iQHSwVZlsyfj1rCTwgPsS7aSIwZ1PC93Us17D/mxS0+sDvrt
+ ufOzQNe30mZ7+zv2f506yzooqzxSB30NuK+Kp8DhYHrLH6QL17L1H9+ZgMBpeiEtl+nC0DLvy
+ xOvkVHyJoRHuxBgal47FNPOVMogUx4oBdVw7yNw1YAORqXVHnKfddA+9jq/cU6Ikoly7uexoA
+ 0bn3ObIxyt1W4I2uDU3dsn2H+9hQmzXk/Bmj/8AApXSfu+1/Uk=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Geert,
-
-On 09/05/2022 16:48, Geert Uytterhoeven wrote:
-> The Texas Instruments OMAP General Purpose Memory Controller (GPMC) is
-> only present on TI OMAP2/3/4/5, AM33xx, AM43x, DRA7xx, TI81xx, and K3
-> SoCs.  Hence add a dependency on ARCH_OMAP2PLUS || ARCH_K3, to prevent
-> asking the user about this driver when configuring a kernel without
-> OMAP2+ or K3 SoC family support.
-> 
-> Fixes: be34f45f0d4aa91c ("memory: omap-gpmc: Make OMAP_GPMC config visible and selectable")
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+On Tue, May 10, 2022 at 5:25 AM Jacky Huang <ychuang3@nuvoton.com> wrote:
+>
+> Add the initial device tree files for Nuvoton MA35D1 Soc.
+>
+> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
 > ---
->  drivers/memory/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/memory/Kconfig b/drivers/memory/Kconfig
-> index b7800b37af78a996..f00757912e2e4c1e 100644
-> --- a/drivers/memory/Kconfig
-> +++ b/drivers/memory/Kconfig
-> @@ -105,6 +105,7 @@ config TI_EMIF
->  config OMAP_GPMC
->  	tristate "Texas Instruments OMAP SoC GPMC driver"
->  	depends on OF_ADDRESS
-> +	depends on ARCH_OMAP2PLUS || ARCH_K3 || COMPILE_TEST
->  	select GPIOLIB
->  	help
->  	  This driver is for the General Purpose Memory Controller (GPMC)
+> +
+> +/ {
+> +       model = "Nuvoton MA35D1-EVB";
+> +       compatible = "nuvoton,ma35d1-evb", "nuvoton,ma35d1";
+> +
+> +       chosen {
+> +               stdout-path = "serial0:115200n8";
+> +       };
 
-Is there any possibility that CONFIG_IRQ_DOMAIN is not set while both
-OF_ADDRESS and COMPILE_TEST are set?
+Something seems to be missing here: you set the console to the serial0
+alias, but that is not defined anywhere, and the ma35d1.dtsi file does not
+appear to define any UART at all. Are you still missing the driver for this?
 
-That particular case will lead to build failures.
+Please add a more detailed description in the changelog text above that
+explains what kind of SoC this is (maybe a link to the product web page,
+if there is one), and a status of how complete the support is: which drivers
+are already merged, and which ones are still being worked on?
 
-e.g.
-https://krzk.eu/#/builders/63/builds/162
-
-cheers,
--roger
+        Arnd
