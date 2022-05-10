@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CDA3C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BADBC388F3
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:28:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344862AbiEJOcI (ORCPT
+        id S1344914AbiEJOcU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:32:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54306 "EHLO
+        Tue, 10 May 2022 10:32:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343567AbiEJOHI (ORCPT
+        with ESMTP id S1343751AbiEJOHM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:07:08 -0400
+        Tue, 10 May 2022 10:07:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5495D21A961;
-        Tue, 10 May 2022 06:41:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB8311F63B1;
+        Tue, 10 May 2022 06:41:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 325E6615C8;
-        Tue, 10 May 2022 13:41:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FC73C385C2;
-        Tue, 10 May 2022 13:41:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 81B0961937;
+        Tue, 10 May 2022 13:41:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FCB4C385C9;
+        Tue, 10 May 2022 13:41:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652190062;
-        bh=4jWXUFL4sGPebXcKjYdd9XhHrmSzS5fbyAElvBDd/Vk=;
+        s=korg; t=1652190074;
+        bh=g9pNUFd+Po/y6lsMmMGBAgpvwsInn4kXThXwqDSMj9s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l+ztJcQ0RntulvhVHRhaklqmxcgvdEb9+JM93knwopkIjd6dMEk7xOzub3O4wBerc
-         /nNGM9K6tmoG7fMhV/e5fdXbS9YfH+rdT3s7+OdRVfVne0gjLb9aspWRIDr0EDJG4L
-         Y2WrLa6oFLvEtY35oL27lNe6XY1PVeSf07OG/ZfQ=
+        b=eb0fJ5eiAmGokXWf/PUS9yYj/qkvc6keF8z4ktI5zXBxmOVEsDJCjMQuy8HymgblG
+         ab4j+PqwH+IzXPABD6KyxZGUsn5aLZ+AKAToiBmEuP7Ra2pFzYU4mSZcvpRguGiLwi
+         6npyBnBCAKAGssmUiC7lPun3b/n5DVybd2vwdh7I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marcelo Tosatti <mtosatti@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org,
+        Sidhartha Kumar <sidhartha.kumar@oracle.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 115/140] x86/kvm: Preserve BSP MSR_KVM_POLL_CONTROL across suspend/resume
-Date:   Tue, 10 May 2022 15:08:25 +0200
-Message-Id: <20220510130744.894269431@linuxfoundation.org>
+Subject: [PATCH 5.17 119/140] selftest/vm: verify mmap addr in mremap_test
+Date:   Tue, 10 May 2022 15:08:29 +0200
+Message-Id: <20220510130745.005993511@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -51,69 +53,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wanpeng Li <wanpengli@tencent.com>
+From: Sidhartha Kumar <sidhartha.kumar@oracle.com>
 
-[ Upstream commit 0361bdfddca20c8855ea3bdbbbc9c999912b10ff ]
+[ Upstream commit 9c85a9bae267f6b5e5e374d0d023bbbe9db096d3 ]
 
-MSR_KVM_POLL_CONTROL is cleared on reset, thus reverting guests to
-host-side polling after suspend/resume.  Non-bootstrap CPUs are
-restored correctly by the haltpoll driver because they are hot-unplugged
-during suspend and hot-plugged during resume; however, the BSP
-is not hotpluggable and remains in host-sde polling mode after
-the guest resume.  The makes the guest pay for the cost of vmexits
-every time the guest enters idle.
+Avoid calling mmap with requested addresses that are less than the
+system's mmap_min_addr.  When run as root, mmap returns EACCES when
+trying to map addresses < mmap_min_addr.  This is not one of the error
+codes for the condition to retry the mmap in the test.
 
-Fix it by recording BSP's haltpoll state and resuming it during guest
-resume.
+Rather than arbitrarily retrying on EACCES, don't attempt an mmap until
+addr > vm.mmap_min_addr.
 
-Cc: Marcelo Tosatti <mtosatti@redhat.com>
-Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
-Message-Id: <1650267752-46796-1-git-send-email-wanpengli@tencent.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Add a munmap call after an alignment check as the mappings are retained
+after the retry and can reach the vm.max_map_count sysctl.
+
+Link: https://lkml.kernel.org/r/20220420215721.4868-1-sidhartha.kumar@oracle.com
+Signed-off-by: Sidhartha Kumar <sidhartha.kumar@oracle.com>
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/kvm.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ tools/testing/selftests/vm/mremap_test.c | 29 ++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
 
-diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
-index ed8a13ac4ab2..4c2a158bb6c4 100644
---- a/arch/x86/kernel/kvm.c
-+++ b/arch/x86/kernel/kvm.c
-@@ -69,6 +69,7 @@ static DEFINE_PER_CPU_DECRYPTED(struct kvm_vcpu_pv_apf_data, apf_reason) __align
- DEFINE_PER_CPU_DECRYPTED(struct kvm_steal_time, steal_time) __aligned(64) __visible;
- static int has_steal_clock = 0;
+diff --git a/tools/testing/selftests/vm/mremap_test.c b/tools/testing/selftests/vm/mremap_test.c
+index 58775dab3cc6..380a4593dbd6 100644
+--- a/tools/testing/selftests/vm/mremap_test.c
++++ b/tools/testing/selftests/vm/mremap_test.c
+@@ -65,6 +65,35 @@ enum {
+ 	.expect_failure = should_fail				\
+ }
  
-+static int has_guest_poll = 0;
++/* Returns mmap_min_addr sysctl tunable from procfs */
++static unsigned long long get_mmap_min_addr(void)
++{
++	FILE *fp;
++	int n_matched;
++	static unsigned long long addr;
++
++	if (addr)
++		return addr;
++
++	fp = fopen("/proc/sys/vm/mmap_min_addr", "r");
++	if (fp == NULL) {
++		ksft_print_msg("Failed to open /proc/sys/vm/mmap_min_addr: %s\n",
++			strerror(errno));
++		exit(KSFT_SKIP);
++	}
++
++	n_matched = fscanf(fp, "%llu", &addr);
++	if (n_matched != 1) {
++		ksft_print_msg("Failed to read /proc/sys/vm/mmap_min_addr: %s\n",
++			strerror(errno));
++		fclose(fp);
++		exit(KSFT_SKIP);
++	}
++
++	fclose(fp);
++	return addr;
++}
++
  /*
-  * No need for any "IO delay" on KVM
-  */
-@@ -706,14 +707,26 @@ static int kvm_cpu_down_prepare(unsigned int cpu)
- 
- static int kvm_suspend(void)
- {
-+	u64 val = 0;
-+
- 	kvm_guest_cpu_offline(false);
- 
-+#ifdef CONFIG_ARCH_CPUIDLE_HALTPOLL
-+	if (kvm_para_has_feature(KVM_FEATURE_POLL_CONTROL))
-+		rdmsrl(MSR_KVM_POLL_CONTROL, val);
-+	has_guest_poll = !(val & 1);
-+#endif
- 	return 0;
- }
- 
- static void kvm_resume(void)
- {
- 	kvm_cpu_online(raw_smp_processor_id());
-+
-+#ifdef CONFIG_ARCH_CPUIDLE_HALTPOLL
-+	if (kvm_para_has_feature(KVM_FEATURE_POLL_CONTROL) && has_guest_poll)
-+		wrmsrl(MSR_KVM_POLL_CONTROL, 0);
-+#endif
- }
- 
- static struct syscore_ops kvm_syscore_ops = {
+  * Returns false if the requested remap region overlaps with an
+  * existing mapping (e.g text, stack) else returns true.
 -- 
 2.35.1
 
