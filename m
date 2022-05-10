@@ -2,100 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8B8DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 10:02:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3B7FC43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 10:05:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239479AbiEJKGm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 06:06:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39574 "EHLO
+        id S239497AbiEJKJI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 06:09:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239459AbiEJKGa (ORCPT
+        with ESMTP id S239476AbiEJKJF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 06:06:30 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7769613C34F;
-        Tue, 10 May 2022 03:02:32 -0700 (PDT)
-Received: from localhost.localdomain.localdomain (unknown [10.2.5.46])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9AxOtgVOHpi0_UPAA--.222S2;
-        Tue, 10 May 2022 18:02:13 +0800 (CST)
-From:   Hongchen Zhang <zhanghongchen@loongson.cn>
-To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Palmer Dabbelt <palmerdabbelt@google.com>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>, Guo Ren <guoren@kernel.org>,
-        Hongchen Zhang <zhanghongchen@loongson.cn>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] MIPS: fix pmd_bad check for huge pmd
-Date:   Tue, 10 May 2022 18:01:48 +0800
-Message-Id: <1652176908-22288-1-git-send-email-zhanghongchen@loongson.cn>
-X-Mailer: git-send-email 1.8.3.1
-X-CM-TRANSID: AQAAf9AxOtgVOHpi0_UPAA--.222S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxJr4xWF48Zw4DGw1rWF45Wrg_yoW8Gr1rpF
-        srAF9YgFW2gFyfGFy5Ar93Kr13Aa9xGr90gw1q93WDJa45XF47Jrn3Kw1YvF18XayqvFW8
-        WFy7XF15Cr4Ivw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvl14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
-        6r4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
-        Y2ka0xkIwI1lc2xSY4AK6svPMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r
-        4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF
-        67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2I
-        x0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI42IY
-        6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvj
-        DU0xZFpf9x0JUdHUDUUUUU=
-X-CM-SenderInfo: x2kd0w5krqwupkhqwqxorr0wxvrqhubq/
+        Tue, 10 May 2022 06:09:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 718611DB585;
+        Tue, 10 May 2022 03:05:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2033AB81C25;
+        Tue, 10 May 2022 10:05:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9A90C385C6;
+        Tue, 10 May 2022 10:05:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652177104;
+        bh=MOo8nsiLJfqxrIWRjZulpDT7AErX6Kq8hkthnCTA5uU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jy9sOx5IhAIDejPVKVF2+Bd/T0Py/5wx8+Po+Ecv0CR8BCrEvcq4NXAPEFAm802Ty
+         8cRLHqys6IkXu4/djRBMoMkQByyOaFyW7LcnB56PnnqYCrewDk0t6vAPt0ilmAqrP9
+         bNMqa/zDBvxt0x7TuFwji5mwsLRZamsLaTtuQqGt1cN7zj1bUdASCaiZelDL/z3VNI
+         p6Pj8oL0tYCYRKw+uLngJYl8jq0JkOQqTFSh+zQdDgfqqYgwiiEl9uEIIUab3OLN22
+         s6YnDdfn2O6lVXVwCwlbEjUqg8hcgBeNsxeTbQ0nkjXTKMo0wGcRneJRpqWIfMrr3l
+         ymPB75JvnFwsw==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=hot-poop.lan)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1noMjm-00ACgV-4r; Tue, 10 May 2022 11:05:02 +0100
+From:   Marc Zyngier <maz@kernel.org>
+To:     kvmarm@lists.cs.columbia.edu, Oliver Upton <oupton@google.com>
+Cc:     will@kernel.org, tabba@google.com, qperret@google.com,
+        james.morse@arm.com, alexandru.elisei@arm.com, kvm@vger.kernel.org,
+        suzuki.poulose@arm.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2] KVM: arm64: Minor pKVM cleanups
+Date:   Tue, 10 May 2022 11:04:59 +0100
+Message-Id: <165217709150.1535314.2127016424159834600.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220509162559.2387784-1-oupton@google.com>
+References: <20220509162559.2387784-1-oupton@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: kvmarm@lists.cs.columbia.edu, oupton@google.com, will@kernel.org, tabba@google.com, qperret@google.com, james.morse@arm.com, alexandru.elisei@arm.com, kvm@vger.kernel.org, suzuki.poulose@arm.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-a huge pmd is also a bad pmd,so make pmd_bad return 1 when
-passed in a huge pmd.
+On Mon, 9 May 2022 16:25:57 +0000, Oliver Upton wrote:
+> I was reading through some of the pKVM stuff to get an idea of how it
+> handles feature registers and spotted a few minor nits.
+> 
+> Applies cleanly to 5.18-rc5.
+> 
+> Oliver Upton (2):
+>   KVM: arm64: pkvm: Drop unnecessary FP/SIMD trap handler
+>   KVM: arm64: pkvm: Don't mask already zeroed FEAT_SVE
+> 
+> [...]
 
-Signed-off-by: Hongchen Zhang <zhanghongchen@loongson.cn>
----
- arch/mips/include/asm/pgtable-32.h | 6 ------
- arch/mips/include/asm/pgtable-64.h | 6 ------
- 2 files changed, 12 deletions(-)
+Applied to next, thanks!
 
-diff --git a/arch/mips/include/asm/pgtable-32.h b/arch/mips/include/asm/pgtable-32.h
-index 95df9c2..252887b 100644
---- a/arch/mips/include/asm/pgtable-32.h
-+++ b/arch/mips/include/asm/pgtable-32.h
-@@ -129,12 +129,6 @@ static inline int pmd_none(pmd_t pmd)
- 
- static inline int pmd_bad(pmd_t pmd)
- {
--#ifdef CONFIG_MIPS_HUGE_TLB_SUPPORT
--	/* pmd_huge(pmd) but inline */
--	if (unlikely(pmd_val(pmd) & _PAGE_HUGE))
--		return 0;
--#endif
--
- 	if (unlikely(pmd_val(pmd) & ~PAGE_MASK))
- 		return 1;
- 
-diff --git a/arch/mips/include/asm/pgtable-64.h b/arch/mips/include/asm/pgtable-64.h
-index 41921ac..ef52812 100644
---- a/arch/mips/include/asm/pgtable-64.h
-+++ b/arch/mips/include/asm/pgtable-64.h
-@@ -249,12 +249,6 @@ static inline int pmd_none(pmd_t pmd)
- 
- static inline int pmd_bad(pmd_t pmd)
- {
--#ifdef CONFIG_MIPS_HUGE_TLB_SUPPORT
--	/* pmd_huge(pmd) but inline */
--	if (unlikely(pmd_val(pmd) & _PAGE_HUGE))
--		return 0;
--#endif
--
- 	if (unlikely(pmd_val(pmd) & ~PAGE_MASK))
- 		return 1;
- 
+[1/2] KVM: arm64: pkvm: Drop unnecessary FP/SIMD trap handler
+      commit: 4d2e469e163ec79340b2f42c2a07838b5ff30686
+[2/2] KVM: arm64: pkvm: Don't mask already zeroed FEAT_SVE
+      commit: 249838b7660ac04a67bfb017364a7f01029370a0
+
+Cheers,
+
+	M.
 -- 
-1.8.3.1
+Without deviation from the norm, progress is not possible.
+
 
