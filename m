@@ -2,172 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF0F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 07:50:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44CBBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 07:52:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237271AbiEJHyq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 03:54:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40414 "EHLO
+        id S237407AbiEJH4h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 03:56:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231309AbiEJHyo (ORCPT
+        with ESMTP id S231309AbiEJH4b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 03:54:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C129BDF81
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 00:50:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652169042;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=X8I80A1MFc0J/yZVJgHBHlpH5enDkuIotq+SGXDDvEU=;
-        b=B/RzamKN1v9Iu4P5IQFp74xvatQEsTTcCLLWZ/8KbrLEechDQtsvruShl74v7SlQvqwXp6
-        hK06AyEXwpchHsYhFPE1/IShdyQUjfL61cC3pFe0Sf/pkvbqlN4RbmIl8GC1OFtTSCOKRc
-        OaNdWLVrVOJS8r18EHZlUPdbGY83kLE=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-660--FRiQI59NP2IY1OrcWpcPA-1; Tue, 10 May 2022 03:50:41 -0400
-X-MC-Unique: -FRiQI59NP2IY1OrcWpcPA-1
-Received: by mail-wm1-f72.google.com with SMTP id k35-20020a05600c1ca300b003946a9764baso896455wms.1
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 00:50:41 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=X8I80A1MFc0J/yZVJgHBHlpH5enDkuIotq+SGXDDvEU=;
-        b=t3rZ3Tt4AJy58kN541SaRs6NBtEOYcwMV23axqeCf8WBwRC/MppInT202Nzq7JRyle
-         i7o0B74Nzc3l7twMOrlxEDkC+nrQ7omvEqAR6S72Wp4aqUaWuQSiruUqAzlihk9dq2Ww
-         vCuyOL9FpPsvSFu/cyqDUtO/U3yrwaLMTod2D/D9JMI2UfDYp9uXXTeFM1C9ZCRJTEu9
-         WUc/ihcr4Z3aL/niXXnwBscSg1hgb7V4FhjzOQW/Dhi5ntD84kfcuBx/VLTOGIFY+dxy
-         f8/N/V4E1g9oBRssMNOLnkmPaZGap2TkQK/VmslhaAainV/D2buEh3BUOYQwpVtmefbu
-         RB3Q==
-X-Gm-Message-State: AOAM532FbOAD/KITjTTfflxJ5X2XMlH+Xl952JDL5G67FOQx5f/BTW6P
-        9XkPETqS5EooBd406Y+pXsEBWr7jx8uv8QwkgtMmNP3vAnR0U1eJS6eJg+ctyU+LMVdxCFTlzDE
-        zdl+nC/lS5C8JmgGpdxwr/7a4
-X-Received: by 2002:adf:e0cc:0:b0:207:b690:acb8 with SMTP id m12-20020adfe0cc000000b00207b690acb8mr17049524wri.412.1652169040386;
-        Tue, 10 May 2022 00:50:40 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxt1PXXZ4GfsjU4JVU3VAyn3tFLEyxIj8zvNpeAQhxz0Dh39tYNxE2S/Hqlk3T8BEeisJpmCQ==
-X-Received: by 2002:adf:e0cc:0:b0:207:b690:acb8 with SMTP id m12-20020adfe0cc000000b00207b690acb8mr17049501wri.412.1652169040086;
-        Tue, 10 May 2022 00:50:40 -0700 (PDT)
-Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id b19-20020a05600c4e1300b003942a244ec7sm1700839wmq.12.2022.05.10.00.50.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 May 2022 00:50:39 -0700 (PDT)
-Message-ID: <42fe44ae-de02-5506-d1b4-059af0419366@redhat.com>
-Date:   Tue, 10 May 2022 09:50:38 +0200
+        Tue, 10 May 2022 03:56:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A939A243106;
+        Tue, 10 May 2022 00:52:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 437A160EE0;
+        Tue, 10 May 2022 07:52:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E4F0C385A6;
+        Tue, 10 May 2022 07:52:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652169153;
+        bh=vc0jkaHHDEyk7KcfLPoRwXfVaaRAgF8uAKkEtH+i3d8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=o57B2N5NdHj7ACnoHZLdj/Sa5tQnRlJKGhzqPWmo1TjmXKTWjaFI/zfkc/krS0ub9
+         BGZrDFhJqFRQ21zDj0sNbTs+Ok6mbSEx1VRlhShub15jp/y/8M0FOyyZ38aGeDhikp
+         PhGcRhsSQIDt0NLaMOR4bJSmBpD/uIJP610tetDk=
+Date:   Tue, 10 May 2022 09:52:29 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Alan Stern <stern@rowland.harvard.edu>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        USB mailing list <linux-usb@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: Re: [PATCH 4/4] USB: gadget: Add a new bus for gadgets
+Message-ID: <YnoZva+tZa8Ix+aI@kroah.com>
+References: <YnFCEn45XwDWM/9Y@rowland.harvard.edu>
+ <CAMuHMdVDK0W0T3=+2c1E6wtwy5JTUemTGYyj3PFuVUhK++AzrA@mail.gmail.com>
+ <YnFO0Qr8RY7peFCg@rowland.harvard.edu>
+ <YnaR8LaaPTdLTiok@rowland.harvard.edu>
+ <CAMuHMdUpOiHHMktPk_-NauDW2ufvGThnkFU7Pok376pM6OEyYw@mail.gmail.com>
+ <Ynkh5eKtfxU+AyZX@rowland.harvard.edu>
+ <CAMuHMdVi6jCi=tRBNjBodVcA48ygiqPACQcmHx+1HRYnArJ9tQ@mail.gmail.com>
+ <YnktokC8Uk9j53yO@rowland.harvard.edu>
+ <YnlAAxT5Lq0NvxX0@kroah.com>
+ <YnlFl0M0FRzhxwpK@rowland.harvard.edu>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v3 1/4] fbdev: Prevent possible use-after-free in
- fb_release()
-Content-Language: en-US
-To:     Andrzej Hajda <andrzej.hajda@intel.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        linux-kernel@vger.kernel.org
-Cc:     linux-fbdev@vger.kernel.org,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Helge Deller <deller@gmx.de>, dri-devel@lists.freedesktop.org,
-        Daniel Vetter <daniel.vetter@intel.com>
-References: <20220505215947.364694-1-javierm@redhat.com>
- <20220505220413.365977-1-javierm@redhat.com>
- <753d0350-42dc-389b-b10b-4533ddcf32ac@intel.com>
- <1f788b8f-0bea-1818-349e-b1bc907bf251@redhat.com>
- <a339df59-9e00-c7cb-e33d-2ac626443639@intel.com>
- <3b7fe4fe-fdec-cef2-4e0e-309d9dc4a8af@redhat.com>
- <b5ab1c49-04e7-36c3-677d-2989b79e50ca@suse.de>
- <2bf27b09-0896-1849-254f-d5b19abdc892@redhat.com>
- <fc3e8a40-664f-07ae-7474-c0412a1ab1b5@intel.com>
- <1c36d431-d5c0-7278-c9e0-61867e9dc174@redhat.com>
- <8401c328-ed67-8d5e-4ba2-b487f256e139@intel.com>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <8401c328-ed67-8d5e-4ba2-b487f256e139@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YnlFl0M0FRzhxwpK@rowland.harvard.edu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/10/22 09:19, Andrzej Hajda wrote:
+On Mon, May 09, 2022 at 12:47:19PM -0400, Alan Stern wrote:
+> On Mon, May 09, 2022 at 06:23:31PM +0200, Greg KH wrote:
+> > On Mon, May 09, 2022 at 11:05:06AM -0400, Alan Stern wrote:
+> > > On Mon, May 09, 2022 at 04:42:01PM +0200, Geert Uytterhoeven wrote:
+> > > > Hi Alan,
+> > > > 
+> > > > On Mon, May 9, 2022 at 4:15 PM Alan Stern <stern@rowland.harvard.edu> wrote:
+> > > > > On Mon, May 09, 2022 at 09:46:25AM +0200, Geert Uytterhoeven wrote:
+> > > > > > > Geert:
+> > > > > > >
+> > > > > > > Can you test the patch below?  It ought to fix the problem (although it
+> > > > > >
+> > > > > > Thanks!
+> > > > > >
+> > > > > > root@h3-salvator-xs:~# ls -l /sys/bus/gadget/devices/
+> > > > > > total 0
+> > > > > > lrwxrwxrwx 1 root root 0 Feb 14  2019 gadget.0 ->
+> > > > > > ../../../devices/platform/soc/e659c000.usb/gadget.0
+> > > > > > lrwxrwxrwx 1 root root 0 Feb 14  2019 gadget.1 ->
+> > > > > > ../../../devices/platform/soc/ee020000.usb/gadget.1
+> > > > > > lrwxrwxrwx 1 root root 0 Feb 14  2019 gadget.2 ->
+> > > > > > ../../../devices/platform/soc/e6590000.usb/gadget.2
+> > > > > >
+> > > > > > Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> > > > > >
+> > > > > > LGTM, so
+> > > > > > Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> > > > >
+> > > > > Thanks!
+> > > > >
+> > > > > > > might end up causing other problems down the line...)
+> > > > > >
+> > > > > > Can you please elaborate? I'm not too familiar with UBS gadgets.
+> > > > >
+> > > > > I was concerned about the fact that changing the name of a file,
+> > > > > directory, or symbolic link in sysfs means changing a user API, and so
+> > > > > it might cause some existing programs to fail.  That would be a
+> > > > > regression.
+> > > > >
+> > > > > Perhaps the best way to work around the problem is to leave the name set
+> > > > > to "gadget" if the ID number is 0, while adding the ID number on to the
+> > > > > name if the value is > 0.  What do you think?
+> > > > 
+> > > > Oh, you mean the "gadget.N" subdirs, which are the targets of the
+> > > > symlinks above? These were indeed named "gadget" before.
+> > > > 
+> > > > Would it be possible to append the ".N" suffixes only to the actual
+> > > > symlinks, while keeping the target directory names unchanged?
+> > > > E.g. /sys/bus/gadget/devices/gadget.0 ->
+> > > > ../../../devices/platform/soc/e659c000.usb/gadget
+> > > 
+> > > No, it's not possible.  Or at least, not without significant changes to 
+> > > the driver core.  Besides, people expect these names to be the same.
+> > 
+> > It should always be ok to change the names of devices as those are not
+> > going to be persistent / determinisitic.  It's the attributes of devices
+> > that are supposed to be used to determine those types of things.
+> > 
+> > So I think let's start out with the .N suffix for everything for now.
+> > I'll be glad to submit the fixed patch to the Android kernel build
+> > system to see what their testing comes back with to see if they happened
+> > to make any name assumptions as that's the largest user of this
+> > codebase.
 > 
-> 
-> On 10.05.2022 00:42, Javier Martinez Canillas wrote:
->> On 5/10/22 00:22, Andrzej Hajda wrote:
->>
->> [snip]
->>
->>>>    static void drm_fbdev_fb_destroy(struct fb_info *info)
->>>>    {
->>>> +       if (info->cmap.len)
->>>> +               fb_dealloc_cmap(&info->cmap);
->>>> +
->>>>           drm_fbdev_release(info->par);
->>>> +       framebuffer_release(info);
->>> I would put drm_fbdev_release at the beginning - it cancels workers
->>> which could expect cmap to be still valid.
->>>
->> Indeed, you are correct again. [0] is the final version of the patch I've
->> but don't have an i915 test machine to give it a try. I'll test tomorrow
->> on my test systems to verify that it doesn't cause any regressions since
->> with other DRM drivers.
->>
->> I think that besides this patch, drivers shouldn't need to call to the
->> drm_fb_helper_fini() function directly. Since that would be called during
->> drm_fbdev_fb_destroy() anyways.
->>
->> We should probably remove that call in all drivers and make this helper
->> function static and just private to drm_fb_helper functions.
->>
->> Or am I missing something here ?
-> 
-> This is question for experts :)
+> Okay.  Do you need me to send it as a proper patch before you try it 
+> out?
 
-Fair. I'm definitely not one of them :)
+Yes please.
 
-> I do not know what are user API/ABI expectations regarding removal of 
-> fbdev driver, I wonder if they are documented somewhere :)
+thanks,
 
-I don't know. At least I haven't found them.
-
-> Apparently we have some process of 'zombification'  here - we need to 
-> remove the driver without waiting for userspace closing framebuffer(???) 
-> (to unbind ops-es and remove references to driver related things), but 
-> we need to leave some structures to fool userspace, 'info' seems to be 
-> one of them.
-
-That's correct, yes. I think that any driver that provides a .mmap file
-operation would have the same issue. But drivers keep an internal state
-and just return -ENODEV or whatever on read/write/close after a removal.
-
-The fbdev subsystem is different though since as you said it, the fbdev
-core unconditionally calls to the driver .fb_release() callback with a
-struct fb_info reference as argument.
-
-I tried to prevent that with commit aafa025c76dc ("fbdev: Make fb_release()
-return -ENODEV if fbdev was unregistered") but Daniel pointed out that
-is was wrong since could leak memory allocated and was expected to be
-freed on release.
-
-That's why I instead fixed the issue in the fbdev drivers and just added
-a warn on fb_release(), that is $SUBJECT.
-
-> So I guess there should be something called on driver's _remove path, 
-> and sth on destroy path.
->
-
-That was my question actually, do we need something to be called in the
-destroy path ? Since that could just be internal to the DRM fb helpers.
-
-In other words, drivers should only care about setting a generic fbdev
-by calling drm_fbdev_generic_setup(), and then do any HW cleanup in the
-removal path, but let the fb helpers to handle the SW cleanup in destroy.
- 
--- 
-Best regards,
-
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
-
+greg k-h
