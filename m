@@ -2,151 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB25EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 07:36:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDB31C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 07:36:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232789AbiEJHk3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 03:40:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44060 "EHLO
+        id S236020AbiEJHkj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 03:40:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240832AbiEJHYm (ORCPT
+        with ESMTP id S240151AbiEJHSx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 03:24:42 -0400
-X-Greylist: delayed 54674 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 10 May 2022 00:20:42 PDT
-Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [IPv6:2001:4b98:dc4:8::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B043F114B;
-        Tue, 10 May 2022 00:20:41 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id D47EC200006;
-        Tue, 10 May 2022 07:20:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1652167240;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VjBiSLomRv6igpU/Mg7hyx/ooaQxfzOs4t2cLH5GZqQ=;
-        b=GZD+MUXvtDVmMeq9rB9ZWTd8LjsAooTVD8g2VaUvTXAtdU9p1bTGy9pLj7kaBuNkC4zC8O
-        DcmPNlqqrJNEamDk19Mk++jhe0I+GvOM7QssuBd9z5OlJag/a8Phf0E2hfx2QZ5XE9MHrf
-        LTGkccHPkYj9Ke/HNMl+UdP+alY5h17cd4GPjJbuc0EkbIqhxYyC3A6voiJsvSV6lpDILH
-        jqLOq0ZRSJz++ooNH4aYGPTCETp9qA2BUzAib6hUCd/L5Sbmdfn7EhErjrFLatHH6kaLDK
-        CXScBTWv690FfMbnUNZVdqOiCJ1GMZ81GziK5+KDeNVCEmBpiGc2ndCK/B+COQ==
-Date:   Tue, 10 May 2022 09:20:35 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Frank Rowand <frowand.list@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Pantelis Antoniou <pantelis.antoniou@konsulko.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        Thomas Petazzoni <thomas.petazonni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Mark Brown <broonie@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Andrew Lunn <andrew@lunn.ch>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org
-Subject: Re: [PATCH 0/3] add dynamic PCI device of_node creation for overlay
-Message-ID: <20220510092035.79164930@xps-bootlin>
-In-Reply-To: <e6828dce-3e10-779e-4d12-67e7bdfd0f73@gmail.com>
-References: <20220427094502.456111-1-clement.leger@bootlin.com>
-        <96db62bb-18be-f44a-6f53-05b22319f23a@gmail.com>
-        <20220509141634.16158c38@xps-bootlin>
-        <f9b0cbf1-dde2-ff97-cca0-5d2895734f91@gmail.com>
-        <20220509180917.0f0ae851@xps-bootlin>
-        <e6828dce-3e10-779e-4d12-67e7bdfd0f73@gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
+        Tue, 10 May 2022 03:18:53 -0400
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CDDE2992C3
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 00:14:54 -0700 (PDT)
+Received: by mail-yb1-xb31.google.com with SMTP id i11so7052664ybq.9
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 00:14:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=zH66pFJDkZ1HOEqqc9deO5rWvxbXbeVm/jZJlJAb3ZM=;
+        b=JI4/46W0SmXlBajA2jdSbBcKv7/qUwhqfEmwodozi+lypUYA2YzKdfX9DWTbHj4asI
+         0qXmTNLaDI0ts7jBR8p31VIZ4P+QlI5ADOOZUp4LxfNjHKlbSxcYaVJrDxlxVIj5VCce
+         6eLEzzSD2pFV6tHP1vwXo4Z25D3Jt80zpaFLKc4kS651rVShFgEcjR86J7akwE4OJ5+B
+         ZNKeeFBxoxf2feeiG4EmHTMs+vZbL2sQ7O0rRJAODEV3Dy2GEPM/fmRHfooQ6ursn3rr
+         CNJdDmDk+bLvfo4r/fjSovnWcyLi0VTUCMriYdgCR/mXEqM+hTcyOpZtHSHkfwwn2+Xc
+         dycQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=zH66pFJDkZ1HOEqqc9deO5rWvxbXbeVm/jZJlJAb3ZM=;
+        b=VuOnfok/zASUphWk1gbrO0O815x9JSqGYstoBf6D+tZ7TfTR3Il49hobKbzGB6tOC3
+         e8JulMNW57Ed/GJWV1G06RIJZSMiG5oFHrOVBK22UeKOrjIY9tk6KjYSbg/dC1OsjFCl
+         FmAU+IBRJKEWMZ+CuhFEMIiv4jpitZ+nZ3v0AHPfTfgpvpZ+YAYsBhGw8fYC84iWK8PI
+         0rRNEsG4ZQe00J/xQ5CKnZWuwIv3eeuLfQ8p5WnyIeFTOv2fqdf2OhvTFowtKvqhwFZy
+         8ksBCyggsg4Vx85JW5EwygSM/U+gtNpHuXG3aLXwzj6TZQJjkpivqyI6PGfHRlcdpB70
+         Seqg==
+X-Gm-Message-State: AOAM530S4WUGv6lFfOYvvw8RqUPclgC9sSgc7Sc86eUBXhKFYZ9knv5z
+        QjxJulCs/HhNPj0j8UjRH0p1LjZ28tlibhRN+bzJjPb68nM=
+X-Google-Smtp-Source: ABdhPJxqyluTn+dW0xXkCrs3+GYZ2zj6BUVtG6u3JBwCFG5zbNS9Yt3xWMJnzBk1tEDiNK0zcNZ1N64E47elnnWvF3U=
+X-Received: by 2002:a05:6902:124d:b0:649:2a55:18a with SMTP id
+ t13-20020a056902124d00b006492a55018amr16766765ybu.155.1652166893685; Tue, 10
+ May 2022 00:14:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+From:   butt3rflyh4ck <butterflyhuangxx@gmail.com>
+Date:   Tue, 10 May 2022 15:14:42 +0800
+Message-ID: <CAFcO6XNpj6e+OGba30usr_miODhbhmqk7vh3ymU+NLoe2HBqFA@mail.gmail.com>
+Subject: A slab-out-of-bounds Write when invoke udf_write_fi via ioctl
+To:     jack@suse.com
+Cc:     LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Mon, 9 May 2022 15:07:18 -0500,
-Frank Rowand <frowand.list@gmail.com> a =C3=A9crit :
+Hi, if mounts a malicious udf image,  there is a slab out of bounds
+write  bug when a user invokes udf_write_fi via ioctl.
+I have reproduced it in the latest kernel.
 
-> > Ok, that is actually possible on a system that is given a
-> > device-tree by the bootloader. But on a system that is desrcibed
-> > using ACPI (such as the x86), this is much more difficult (at least
-> > to my knowledge)... We want this feature to be easy to use for the
-> > end user. Adding such configuration which also differs between
-> > various architecture is clearly not so easy to setup. =20
->=20
-> Are you trying to make your card work on any ACPI based system (x86,
-> x86-64, etc)?  Or do you have a specific model of computer that you
-> want to make this work on for a specific customer or appliance?
+##smaple analyse
+the function call chains:
+do_sys_open
+    --->do_sys_openat2
+       --->do_filp_open
+          --->path_openat
+              --->open_last_lookups
+                 --->lookup_open
+                     --->udf_add_nondir
+                        --->udf_add_entry
 
-There is no particular appliance/architecture targeted. This card should
-work with any system that can support PCIe.
+There would traverse to get a `fi` in the function udf_add_entry.
+```
+if (dinfo->i_alloc_type == ICBTAG_FLAG_AD_IN_ICB) {   [1]
+         block = dinfo->i_location.logicalBlockNum;
+         fi = (struct fileIdentDesc *)
+           (dinfo->i_data + fibh->soffset -
+             udf_ext0_offset(dir) +
+              dinfo->i_lenEAttr);
+             [2]
+} else {
+          block = eloc.logicalBlockNum +
+              ((elen - 1) >>
+            dir->i_sb->s_blocksize_bits);
+            fi = (struct fileIdentDesc *)
+                 (fibh->sbh->b_data + fibh->soffset);
+}
+```
+[1] if dinfo->i_alloc_type is ICBTAG_FLAG_AD_IN_ICB, [2] it  would
+calculate an offset as `fi`,
+through the debugger, the `fi` is as below:
+```
+ p/x *(struct fileIdentDesc*)fi
+$24 = {
+  descTag = {
+    tagIdent = 0x2f70,
+    descVersion = 0xea55,
+    tagChecksum = 0xcd,
+    reserved = 0x66,
+    tagSerialNum = 0x511f,
+    descCRC = 0x5a9c,
+    descCRCLength = 0x5142,
+    tagLocation = 0x373ce06a
+  },
+  fileVersionNum = 0x3139,
+  fileCharacteristics = 0xf6,
+  lengthFileIdent = 0x7e,
+  icb = {
+    extLength = 0x6059792,
+    extLocation = {
+      logicalBlockNum = 0x73886466,
+      partitionReferenceNum = 0x7cc6
+    },
+    impUse = {0x3c, 0xcc, 0x4a, 0xed, 0xdc, 0xfb}
+  },
+  lengthOfImpUse = 0x1a6a,
+  impUse = 0xffff888019ca716a
+}
+```
+These data are wrong and all data are part of  udf image mounted.
+Then next it would invoke function udf_write_fi to write fileident into `fi`.
+```
+if (fileident) {
+      if (adinicb || (offset + lfi < 0)) {
+          memcpy(udf_get_fi_ident(sfi), fileident, lfi);   [3]
+} else if (offset >= 0) {
+          memcpy(fibh->ebh->b_data + offset, fileident, lfi);
+} else {
+          memcpy(udf_get_fi_ident(sfi), fileident, -offset);
+          memcpy(fibh->ebh->b_data, fileident - offset,
+                  lfi + offset);
+       }
+}
+```
+The fileident was controlled by user. `sfi` is `fi`, the memcpy
+function is called to copy the data, so an out-of-bounds write occurs
 
->=20
-> If for many arbitrary systems, can you limit it to one architecture
-> or sub-architecture?
+##reproduce
+CONFIG_KASAN is opened.
+[   27.437559][ T4631] loop0: detected capacity change from 0 to 5376
+[   27.440865][ T4631] UDF-fs: warning (device loop0): udf_load_vrs:
+No anchor found
+[   27.441638][ T4631] UDF-fs: Scanning with blocksize 512 failed
+[   27.444203][ T4631] UDF-fs: INFO Mounting volume 'LinuxUDF',
+timestamp 2020/09/19 18:44 (1000)
+[   27.462341][ T4631]
+==================================================================
+[   27.463081][ T4631] BUG: KASAN: slab-out-of-bounds in
+udf_write_fi+0x353/0x1170
+[   27.463778][ T4631] Write of size 165 at addr ffff888014fe5c98 by
+task udf_write_fi1/4631
+[   27.464524][ T4631]
+[   27.464736][ T4631] CPU: 0 PID: 4631 Comm: udf_write_fi1 Not
+tainted 5.18.0-rc5-00028-ga7391ad35724 #47
+[   27.465598][ T4631] Hardware name: QEMU Standard PC (i440FX + PIIX,
+1996), BIOS 1.14.0-2 04/01/2014
+[   27.466427][ T4631] Call Trace:
+[   27.466721][ T4631]  <TASK>
+[   27.466990][ T4631]  dump_stack_lvl+0x11c/0x1b4
+[   27.467416][ T4631]  print_address_description.constprop.0.cold+0xeb/0x48f
+[   27.468051][ T4631]  ? udf_write_fi+0x353/0x1170
+[   27.468481][ T4631]  kasan_report.cold+0xf4/0x1c6
+[   27.468914][ T4631]  ? udf_get_fileident+0x271/0x2d0
+[   27.469371][ T4631]  ? udf_write_fi+0x353/0x1170
+[   27.469801][ T4631]  kasan_check_range+0x13d/0x180
+[   27.470246][ T4631]  memcpy+0x39/0x60
+[   27.470588][ T4631]  udf_write_fi+0x353/0x1170
+[   27.470998][ T4631]  ? udf_new_tag+0x1fd/0x3c0
+[   27.471412][ T4631]  udf_add_entry+0x10c7/0x24d0
+[   27.471822][ T4631]  ? udf_write_fi+0x1170/0x1170
+[   27.472218][ T4631]  ? __mark_inode_dirty+0x76a/0xb00
+[   27.472643][ T4631]  ? lock_downgrade+0x810/0x810
+[   27.473045][ T4631]  udf_add_nondir+0xf8/0x410
+[   27.473424][ T4631]  ? udf_rename+0x1050/0x1050
+[   27.473806][ T4631]  ? userns_owner+0x30/0x30
+[   27.474177][ T4631]  ? rcu_read_lock_sched_held+0x3a/0xa0
+[   27.474628][ T4631]  ? __mark_inode_dirty+0x5f8/0xb00
+[   27.475051][ T4631]  ? udf_get_parent+0x1c0/0x1c0
+[   27.475455][ T4631]  lookup_open.isra.0+0xec3/0x1760
+[   27.475876][ T4631]  ? lock_release+0x890/0x890
+[   27.476273][ T4631]  ? path_lookupat+0x6b0/0x6b0
+[   27.476670][ T4631]  ? __mnt_want_write+0x184/0x260
+[   27.477107][ T4631]  path_openat+0x7d5/0x2360
+[   27.477480][ T4631]  ? lookup_open.isra.0+0x1760/0x1760
+[   27.477915][ T4631]  ? lockdep_hardirqs_on_prepare+0x430/0x430
+[   27.478412][ T4631]  ? lockdep_hardirqs_on_prepare+0x430/0x430
+[   27.478901][ T4631]  do_filp_open+0x199/0x3d0
+[   27.479271][ T4631]  ? find_held_lock+0x2d/0x110
+[   27.479663][ T4631]  ? may_open_dev+0xd0/0xd0
+[   27.480036][ T4631]  ? rwlock_bug.part.0+0x90/0x90
+[   27.480429][ T4631]  ? _raw_spin_unlock+0x24/0x40
+[   27.480825][ T4631]  ? alloc_fd+0x1ef/0x560
+[   27.481173][ T4631]  ? getname_flags.part.0+0x89/0x440
+[   27.481602][ T4631]  do_sys_openat2+0x11e/0x3f0
+[   27.481978][ T4631]  ? build_open_flags+0x490/0x490
+[   27.482384][ T4631]  ? lock_downgrade+0x810/0x810
+[   27.482777][ T4631]  __x64_sys_openat+0x11b/0x1d0
+[   27.483188][ T4631]  ? __ia32_sys_open+0x190/0x190
+[   27.483594][ T4631]  ? lockdep_hardirqs_on_prepare+0x22b/0x430
+[   27.484177][ T4631]  ? syscall_enter_from_user_mode+0x21/0x80
+[   27.484890][ T4631]  ? lockdep_hardirqs_on+0x8b/0x110
+[   27.485538][ T4631]  do_syscall_64+0x35/0xb0
+[   27.486095][ T4631]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[   27.486692][ T4631] RIP: 0033:0x44914d
+[   27.487019][ T4631] Code: 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 f3
+0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b
+4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff 8
+[   27.488797][ T4631] RSP: 002b:00007ffc787d2f68 EFLAGS: 00000246
+ORIG_RAX: 0000000000000101
+[   27.489518][ T4631] RAX: ffffffffffffffda RBX: 0000000000400540
+RCX: 000000000044914d
+[   27.490179][ T4631] RDX: 0000000000000040 RSI: 0000000020000140
+RDI: 0000000000000005
+[   27.490825][ T4631] RBP: 00007ffc787d2f80 R08: 0000000020000170
+R09: 0000000000000000
+[   27.491469][ T4631] R10: 0000000000000000 R11: 0000000000000246
+R12: 0000000000404dd0
+[   27.492125][ T4631] R13: 0000000000000000 R14: 00000000004c0018
+R15: 0000000000400540
 
-Previous answer does rule out this one.
+If needed a reproduce, I can provided to you.
 
->=20
-> >=20
-> > Moreover, since the PCI is meant to be "Plug and Play", such
-> > configuration would completely break that. If the user switches the
-> > PCIe card from one slot to another, the bootloader configuration
-> > will need to be modified. This seems a big no way for me (and for
-> > the user). =20
->=20
-> Yes.  I was envisioning the pre-bootloader, bootloader, or Linux
-> pre-boot shim dynamically determining the slot containing the card,
-> and applying the overlay devicetree to the base devicetree,
-> retargeting the overlay to the proper location, before the Linux boot.
 
-Ok, this is however not doable on many already existing platforms since
-it would require to adapt this system for whatever bootloader is
-present on the platform. Moreover, AFAIK some platforms bootchain (x86)
-are hardly modifiable.
 
->=20
-> The base devicetree would be for a specific type of machine or family
-> of machines, just as is the case for all devicetree based systems.
->=20
-> >  =20
-> >>
-> >> The other big issue is mixing ACPI and devicetree on a single
-> >> system. Historically, the Linux devicetree community has not been
-> >> receptive to the ides of that mixture.  Your example might be a
-> >> specific case where the two can be isolated from each other, or
-> >> maybe not.  (For disclosure, I am essentially ACPI ignorant.)  I
-> >> suspect that mixing ACPI and devicetree is a recipe for disaster
-> >> in the general case. =20
-> >=20
-> > Agreed, on that fact, it did raised some eyebrows, and it was for
-> > that specific concern that initially, I proposed the fwnode
-> > solution. Honestly, the fwnode conversion represent a lot of work
-> > (hundreds of lines easily) + requires a conversion of all the
-> > subsystem that are not fwnode ready (spoiler: almost all of them
-> > are not ready).=20
-> >=20
-> > After implementing Rob's solution, the device-tree overlay really
-> > seems the cleaner to me and requires much less modifications.
-> >  =20
-> >>
-> >> More to come later as I finish reading through the various
-> >> threads. =20
-> >=20
-> > Ok, thanks for your time ! =20
->=20
-> Your welcome.  I'll keep looking deeper into the previous threads.
->=20
-> -Frank
->=20
-> >=20
-> > Cl=C3=A9ment
-> >  =20
-> >>
-> >> -Frank =20
-> >=20
-> > . =20
->=20
 
+Regards,
+   butt3rflyh4ck.
+
+
+
+
+-- 
+Active Defense Lab of Venustech
