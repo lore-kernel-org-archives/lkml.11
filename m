@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCD0EC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:45:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25D2CC43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:45:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343629AbiEJNsS (ORCPT
+        id S1343797AbiEJNsb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:48:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57436 "EHLO
+        Tue, 10 May 2022 09:48:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243869AbiEJNcT (ORCPT
+        with ESMTP id S243876AbiEJNcT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:32:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64D1449CB6;
-        Tue, 10 May 2022 06:22:54 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B489353A5D;
+        Tue, 10 May 2022 06:22:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 03B0861763;
-        Tue, 10 May 2022 13:22:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A3C0C385A6;
-        Tue, 10 May 2022 13:22:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 75186B81D7A;
+        Tue, 10 May 2022 13:22:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCEC0C385C2;
+        Tue, 10 May 2022 13:22:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188973;
-        bh=JpV8vRtiyWpPKkhCTGwdWJ/f2raCu88HguXmG46rotU=;
+        s=korg; t=1652188976;
+        bh=fEpcMmrKFpB8UztQOH0NvMjh+LJsGZOvJM5WGQPdAbI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ahgLtRgCyhKhl+3p8VAzQCBClDklP+05fMq5vLwi455kcQipacthfWOyc7+PhdhQM
-         iPJKcCO0SeWKwCZkq3tqx+8yvdPDbPhCIjMOllghkIoyyYrvq306eR1cto4JPa0tQX
-         nVaRJcsY0jYh4jk9gItxuGFjRUerWFdYtoPFtGdU=
+        b=R7GHjNNHFmgee1m0EQLS75xxjUiKOJhcuCSfIEMIoVfK8H+aZ6y76rysXTbUXN8WT
+         HJD8irX6CG2PhGhwOfct51qmUTf8czI5h4+7q+D09yya/N3v54LlqwU9zdJI7VMRT+
+         x77YcPVGTiqP7X9Oif5LwtZgs85Y7Cn+r+fFige4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 5.4 22/52] NFC: netlink: fix sleep in atomic bug when firmware download timeout
-Date:   Tue, 10 May 2022 15:07:51 +0200
-Message-Id: <20220510130730.501650145@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Armin Wolf <W_Armin@gmx.de>, Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 5.4 23/52] hwmon: (adt7470) Fix warning on module removal
+Date:   Tue, 10 May 2022 15:07:52 +0200
+Message-Id: <20220510130730.529649825@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.852544477@linuxfoundation.org>
 References: <20220510130729.852544477@linuxfoundation.org>
@@ -50,65 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Armin Wolf <W_Armin@gmx.de>
 
-commit 4071bf121d59944d5cd2238de0642f3d7995a997 upstream.
+commit 7b2666ce445c700b8dcee994da44ddcf050a0842 upstream.
 
-There are sleep in atomic bug that could cause kernel panic during
-firmware download process. The root cause is that nlmsg_new with
-GFP_KERNEL parameter is called in fw_dnld_timeout which is a timer
-handler. The call trace is shown below:
+When removing the adt7470 module, a warning might be printed:
 
-BUG: sleeping function called from invalid context at include/linux/sched/mm.h:265
-Call Trace:
-kmem_cache_alloc_node
-__alloc_skb
-nfc_genl_fw_download_done
-call_timer_fn
-__run_timers.part.0
-run_timer_softirq
-__do_softirq
-...
+do not call blocking ops when !TASK_RUNNING; state=1
+set at [<ffffffffa006052b>] adt7470_update_thread+0x7b/0x130 [adt7470]
 
-The nlmsg_new with GFP_KERNEL parameter may sleep during memory
-allocation process, and the timer handler is run as the result of
-a "software interrupt" that should not call any other function
-that could sleep.
+This happens because adt7470_update_thread() can leave the kthread in
+TASK_INTERRUPTIBLE state when the kthread is being stopped before
+the call of set_current_state(). Since kthread_exit() might sleep in
+exit_signals(), the warning is printed.
+Fix that by using schedule_timeout_interruptible() and removing
+the call of set_current_state().
+This causes TASK_INTERRUPTIBLE to be set after kthread_should_stop()
+which might cause the kthread to exit.
 
-This patch changes allocation mode of netlink message from GFP_KERNEL
-to GFP_ATOMIC in order to prevent sleep in atomic bug. The GFP_ATOMIC
-flag makes memory allocation operation could be used in atomic context.
-
-Fixes: 9674da8759df ("NFC: Add firmware upload netlink command")
-Fixes: 9ea7187c53f6 ("NFC: netlink: Rename CMD_FW_UPLOAD to CMD_FW_DOWNLOAD")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220504055847.38026-1-duoming@zju.edu.cn
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Reported-by: Zheyu Ma <zheyuma97@gmail.com>
+Fixes: 93cacfd41f82 (hwmon: (adt7470) Allow faster removal)
+Signed-off-by: Armin Wolf <W_Armin@gmx.de>
+Tested-by: Zheyu Ma <zheyuma97@gmail.com>
+Link: https://lore.kernel.org/r/20220407101312.13331-1-W_Armin@gmx.de
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/nfc/netlink.c |    4 ++--
+ drivers/hwmon/adt7470.c |    4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/net/nfc/netlink.c
-+++ b/net/nfc/netlink.c
-@@ -1252,7 +1252,7 @@ int nfc_genl_fw_download_done(struct nfc
- 	struct sk_buff *msg;
- 	void *hdr;
+--- a/drivers/hwmon/adt7470.c
++++ b/drivers/hwmon/adt7470.c
+@@ -20,6 +20,7 @@
+ #include <linux/kthread.h>
+ #include <linux/slab.h>
+ #include <linux/util_macros.h>
++#include <linux/sched.h>
  
--	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
-+	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_ATOMIC);
- 	if (!msg)
- 		return -ENOMEM;
+ /* Addresses to scan */
+ static const unsigned short normal_i2c[] = { 0x2C, 0x2E, 0x2F, I2C_CLIENT_END };
+@@ -260,11 +261,10 @@ static int adt7470_update_thread(void *p
+ 		adt7470_read_temperatures(client, data);
+ 		mutex_unlock(&data->lock);
  
-@@ -1268,7 +1268,7 @@ int nfc_genl_fw_download_done(struct nfc
+-		set_current_state(TASK_INTERRUPTIBLE);
+ 		if (kthread_should_stop())
+ 			break;
  
- 	genlmsg_end(msg, hdr);
- 
--	genlmsg_multicast(&nfc_genl_family, msg, 0, 0, GFP_KERNEL);
-+	genlmsg_multicast(&nfc_genl_family, msg, 0, 0, GFP_ATOMIC);
+-		schedule_timeout(msecs_to_jiffies(data->auto_update_interval));
++		schedule_timeout_interruptible(msecs_to_jiffies(data->auto_update_interval));
+ 	}
  
  	return 0;
- 
 
 
