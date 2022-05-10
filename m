@@ -2,162 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A0C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:08:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32902C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:08:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345404AbiEJPM1 (ORCPT
+        id S1345232AbiEJPMi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:12:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53060 "EHLO
+        Tue, 10 May 2022 11:12:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346080AbiEJPLt (ORCPT
+        with ESMTP id S1345583AbiEJPLz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:11:49 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92A8125BA46
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:44:59 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id x88so4521105pjj.1
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:44:59 -0700 (PDT)
+        Tue, 10 May 2022 11:11:55 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38BFE659E;
+        Tue, 10 May 2022 07:45:39 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id ks9so27013744ejb.2;
+        Tue, 10 May 2022 07:45:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=J+j65+g15fCsV+Woqx6SguatojsTFMU+fypv/4RCtgE=;
-        b=UTKi9sbH4ZRyjDc/7lHYfVs9p+QExxFt9/+sbFXNine0VCZsiYBonNCzQr9PVXDNu9
-         QWx7xX/dW3O0HVOK8KbAOsU0vj7r1WZj64aBaM42JQrWhvHplMFMlet/XWgeCe+fBX1M
-         5/obDfisv/+8zQrzGAaXXgJovXZmvJPru63YyrKVxAY/He8u9DhzcDaIfLqwezGoPfCs
-         Mt1bVCF6ZEdokq17J2DgC5oXLJTxjhB6jqeQ4DlifycFKhjIQ/WvF6CK0l2BQKFhniHg
-         KnklIDO0Qq3yf1Y46nZtjYBZ9wcmnYlIZO62+aWAcG+vWvJbv9+tNUccgFmHuE7mM/hB
-         pWow==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=eGTN6aMN0s/KhqZVZqbtoSr5BOPu4zHPp3TT3ztEYwQ=;
+        b=gRi76ycWfaYj+DC25eRDShAGPnPSRBQtz4hKna7OLzNJqQFxUfaZqLK5rMatNpo+Xt
+         OPYUMyOpLJM6QsTiZbA/DVzp7wIDRp2Ss2VWbS2G+vKzgZKATIfvZn6N4sxmosUXP8Y6
+         p+20OI+1VBjQGsdqkMtq8ANdsjTYlUL4Q0jvD3FdM0lLJanQzBZB02p1VAlQZecjuzG9
+         mvsmd9JK5ELIzkdno43Yd59DehKPp8OvEDAq+YBQ6hSo7mEI5kqKSPVp0NAtqSAmQo+I
+         OvXHsYnfIvdcgRAggH9QifrSa4Hc0BSrA7VqOlA+LGceJgGmdiRbAaENatxJJdhHTKfm
+         TzsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=J+j65+g15fCsV+Woqx6SguatojsTFMU+fypv/4RCtgE=;
-        b=W3KBHT54SsNKPQTL5762lgULicn9vaZftaHddHi/eY/uKj1AKMdhUMvOzPMzb1LFUe
-         O5w/ZIXDAXzXz9msBVSj1a+7UGAIMQ5SqeMs76RRGdjprIKrFTGpVvCsxVX3Hqozgia2
-         PrP4qu2fwqmmgRcQEffQTkQbP69HUuRhedq2tYURzd1kCxdmo6oLNmZ0UmMMH0hmwaDc
-         WogNEi6f6Zq3rqr60MYONDQlk1lSi+ZiR9d0aCaQU15p+bKZhNaRVkGKFiB/AmHyoHeq
-         As2oGejjwU4EpEuXJU9m3DV/3NFEJQZ/z1HoS4lFtI4U8foHQHqg5Y73r1Os346F4JqC
-         Hmzg==
-X-Gm-Message-State: AOAM533ZSSxcd/fpia4mDR2ojlBmOYR1jHMoZv0C7WeniuN6U4UdeO7A
-        c5BZ2dy5faxCx8PrkgkewixgNg==
-X-Google-Smtp-Source: ABdhPJzNdRCklFLDmwhjIZK4nIKrvpEW7TlAilVB41p7zRwaLd6gMiqaPsg66tubxXerZRc5n5Z5XA==
-X-Received: by 2002:a17:903:2312:b0:15e:a6c8:a313 with SMTP id d18-20020a170903231200b0015ea6c8a313mr20952499plh.122.1652193898495;
-        Tue, 10 May 2022 07:44:58 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id k22-20020a170902761600b0015e8d4eb1d4sm2181590pll.30.2022.05.10.07.44.57
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=eGTN6aMN0s/KhqZVZqbtoSr5BOPu4zHPp3TT3ztEYwQ=;
+        b=j12soXoiUdoYson0fHeXanLvSgk1ymvooWZYUMW8OImxurAFviVmJe8aE8/yOw/HSA
+         5YYLG9x9GjYlokScDAjljY39i2ACL/CmDoHlul1SOQs/PW5K5bIXmy2PykJ6zspXJ8eT
+         3dIqCuGjD/WFHUn7c5Sy0kjPVRKadL0+nqNJ3dPCOnQKTBND/HWA97msCGmOKY+19+E+
+         7u+Bo54lqlJkOiKXixWAwi+htssqQcDtHGldVCEQY+uukOE3WC/uzFK2e+jIGIRuUxYA
+         Y0HRFMCmEsT5K3CXnhr5OeTX8wboA9zjPA6VO5E5ZM2CyHnSSWSY2RNiA9x5nP4jNw0u
+         o1mw==
+X-Gm-Message-State: AOAM530Btm9PeMaTula9JiLSKZBaZrHvNiJ9heuO286NgcJG2QguaIAo
+        2A9G7eNY6QCXRqdwfUNlJhY=
+X-Google-Smtp-Source: ABdhPJxqZSKXdWSVeTuLaqUhIC+S7MYZ+4pUf5FWmkaMNwvzSXpE7agGc7utHZ28cZ4QcKHb6o+t8w==
+X-Received: by 2002:a17:907:2da2:b0:6f4:7395:568b with SMTP id gt34-20020a1709072da200b006f47395568bmr20115064ejc.766.1652193937643;
+        Tue, 10 May 2022 07:45:37 -0700 (PDT)
+Received: from localhost.localdomain (89-38-99-188.hosted-by-worldstream.net. [89.38.99.188])
+        by smtp.gmail.com with ESMTPSA id z16-20020a170906241000b006fb6d9d25bfsm829652eja.22.2022.05.10.07.45.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 07:44:57 -0700 (PDT)
-Date:   Tue, 10 May 2022 14:44:54 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Jon Kohler <jon@nutanix.com>, Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Balbir Singh <sblbir@amazon.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        Waiman Long <longman@redhat.com>
-Subject: Re: [PATCH v3] x86/speculation, KVM: only IBPB for
- switch_mm_always_ibpb on vCPU load
-Message-ID: <Ynp6ZoQUwtlWPI0Z@google.com>
-References: <645E4ED5-F6EE-4F8F-A990-81F19ED82BFA@nutanix.com>
- <Ymw9UZDpXym2vXJs@zn.tnic>
- <YmxKqpWFvdUv+GwJ@google.com>
- <YmxRnwSUBIkOIjLA@zn.tnic>
- <Ymxf2Jnmz5y4CHFN@google.com>
- <YmxlHBsxcIy8uYaB@zn.tnic>
- <YmxzdAbzJkvjXSAU@google.com>
- <Ym0GcKhPZxkcMCYp@zn.tnic>
- <4E46337F-79CB-4ADA-B8C0-009E7500EDF8@nutanix.com>
- <Ym1fGZIs6K7T6h3n@zn.tnic>
+        Tue, 10 May 2022 07:45:37 -0700 (PDT)
+From:   Yassine Oudjana <yassine.oudjana@gmail.com>
+X-Google-Original-From: Yassine Oudjana <y.oudjana@protonmail.com>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Cc:     Yassine Oudjana <y.oudjana@protonmail.com>,
+        Yassine Oudjana <yassine.oudjana@gmail.com>,
+        linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org
+Subject: [RFC PATCH 2/2] slimbus: qcom-ngd-ctrl: Initialize ngd_up_work before it can be scheduled
+Date:   Tue, 10 May 2022 18:42:19 +0400
+Message-Id: <20220510144219.806391-3-y.oudjana@protonmail.com>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220510144219.806391-1-y.oudjana@protonmail.com>
+References: <20220510144219.806391-1-y.oudjana@protonmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <Ym1fGZIs6K7T6h3n@zn.tnic>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 30, 2022, Borislav Petkov wrote:
-> On Sat, Apr 30, 2022 at 02:50:35PM +0000, Jon Kohler wrote:
-> > This is 100% a fair ask, I appreciate the diligence, as we’ve all been there
-> > on the ‘other side’ of changes to complex areas and spend hours digging on
-> > git history, LKML threads, SDM/APM, and other sources trying to derive
-> > why the heck something is the way it is.
-> 
-> Yap, that's basically proving my point and why I want stuff to be
-> properly documented so that the question "why was it done this way" can
-> always be answered satisfactorily.
-> 
-> > AFAIK, the KVM IBPB is avoided when switching in between vCPUs
-> > belonging to the same vmcs/vmcb (i.e. the same guest), e.g. you could 
-> > have one VM highly oversubscribed to the host and you wouldn’t see
-> > either the KVM IBPB or the switch_mm IBPB. All good. 
-> > 
-> > Reference vmx_vcpu_load_vmcs() and svm_vcpu_load() and the 
-> > conditionals prior to the barrier.
-> 
-> So this is where something's still missing.
-> 
-> > However, the pain ramps up when you have a bunch of separate guests,
-> > especially with a small amount of vCPUs per guest, so the switching is more
-> > likely to be in between completely separate guests.
-> 
-> If the guests are completely separate, then it should fall into the
-> switch_mm() case.
-> 
-> Unless it has something to do with, as I looked at the SVM side of
-> things, the VMCBs:
-> 
-> 	if (sd->current_vmcb != svm->vmcb) {
-> 
-> So it is not only different guests but also within the same guest and
-> when the VMCB of the vCPU is not the current one.
+From: Yassine Oudjana <y.oudjana@protonmail.com>
 
-Yep.
+ngd_up_work can be scheduled by the SSR notifier, which is registered
+before it is initialized. Move initialization of ngd_up_work before
+SSR notifier registration.
 
-> But then if VMCB of the vCPU is not the current, per-CPU VMCB, then that
-> CPU ran another guest so in order for that other guest to attack the
-> current guest, then its branch pred should be flushed.
+Fixes: a899d324863a3 ("slimbus: qcom-ngd-ctrl: add Sub System Restart support")
+Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
+---
+ drivers/slimbus/qcom-ngd-ctrl.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-That CPU ran a different _vCPU_, whether or not it ran a different guest, i.e. a
-different security domain, is unknown.
-
-> But I'm likely missing a virt aspect here so I'd let Sean explain what
-> the rules are...
-
-I don't think you're missing anything.  I think the original 15d45071523d ("KVM/x86:
-Add IBPB support") was simply wrong.
-
-As I see it:
-
-  1. If the vCPUs belong to the same VM, they are in the same security domain and
-     do not need an IPBP.
-
-  2. If the vCPUs belong to different VMs, and each VM is in its own mm_struct,
-     defer to switch_mm_irqs_off() to handle IBPB as an mm switch is guaranteed to
-     occur prior to loading a vCPU belonging to a different VMs.
+diff --git a/drivers/slimbus/qcom-ngd-ctrl.c b/drivers/slimbus/qcom-ngd-ctrl.c
+index 7040293c2ee8..73b9abba305f 100644
+--- a/drivers/slimbus/qcom-ngd-ctrl.c
++++ b/drivers/slimbus/qcom-ngd-ctrl.c
+@@ -1490,7 +1490,6 @@ static int qcom_slim_ngd_probe(struct platform_device *pdev)
+ 	}
  
-  3. If the vCPUs belong to different VMs, but multiple VMs share an mm_struct,
-     then the security benefits of an IBPB when switching vCPUs are dubious, at best.
+ 	INIT_WORK(&ctrl->m_work, qcom_slim_ngd_master_worker);
+-	INIT_WORK(&ctrl->ngd_up_work, qcom_slim_ngd_up_worker);
+ 	ctrl->mwq = create_singlethread_workqueue("ngd_master");
+ 	if (!ctrl->mwq) {
+ 		dev_err(&pdev->dev, "Failed to start master worker\n");
+@@ -1539,6 +1538,8 @@ static int qcom_slim_ngd_ctrl_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
+ 
++	INIT_WORK(&ctrl->ngd_up_work, qcom_slim_ngd_up_worker);
++
+ 	ctrl->nb.notifier_call = qcom_slim_ngd_ssr_notify;
+ 	ctrl->notifier = qcom_register_ssr_notifier("lpass", &ctrl->nb);
+ 	if (IS_ERR(ctrl->notifier))
+-- 
+2.36.0
 
-If we only consider #1 and #2, then KVM doesn't need an IBPB, period.
-
-#3 is the only one that's a grey area.  I have no objection to omitting IBPB entirely
-even in that case, because none of us can identify any tangible value in doing so.
