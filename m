@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C128AC38A06
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01906C4707E
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:35:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244777AbiEJNiD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:38:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44432 "EHLO
+        id S244725AbiEJNh7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:37:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243667AbiEJN1P (ORCPT
+        with ESMTP id S243852AbiEJN1b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:27:15 -0400
+        Tue, 10 May 2022 09:27:31 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF393239DB6;
-        Tue, 10 May 2022 06:20:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17E372C13FF;
+        Tue, 10 May 2022 06:20:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 40FE8B81CF8;
-        Tue, 10 May 2022 13:20:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9344AC385A6;
-        Tue, 10 May 2022 13:20:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 95113B81B32;
+        Tue, 10 May 2022 13:20:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B084C385C2;
+        Tue, 10 May 2022 13:20:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188814;
-        bh=yu9sE/T90FsB+AVfl0at0UisupwhGrSZoDwZSWb/y0g=;
+        s=korg; t=1652188836;
+        bh=xcXfCRcoyhfyUlxipCdVEsXYo0JlNezMMEx8Crxqedw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xO1DxS/wzSzvOmnjBbDivZBAbS9+UdD7PysHoxE9CDoPek0REG9Kr5kGGh5A/ILdz
-         ANaSCglxN/PtVlpXfAjHsVRxdRHbivlA9g1jWwMebcKTMCIdUoW6Kr6I+vPlvmItx3
-         7U4lHwNLMEkwzKLS/RsTabORltt86NCT4Ajo+Pf8=
+        b=WzcBvZqfEb90xGACMiLCFEWj/6qjA6SEuGP1DGWxVTCaPouZeGdIvj1uOzTe4w22U
+         ziv9600r7Uwi9DDIRBGi/PBt9NxbqsU4/ikhFHnBtEvNIfg3i5jbSk+rhdAJXXXqzT
+         F9XqBCDlex2eBShzri5KQdPco4IjtHmrlvIDAhSc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 4.19 53/88] tty: n_gsm: fix missing explicit ldisc flush
-Date:   Tue, 10 May 2022 15:07:38 +0200
-Message-Id: <20220510130735.286583909@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Sakamoto <o-takashi@sakamocchi.jp>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 4.19 60/88] ALSA: fireworks: fix wrong return count shorter than expected by 4 bytes
+Date:   Tue, 10 May 2022 15:07:45 +0200
+Message-Id: <20220510130735.485052969@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 References: <20220510130733.735278074@linuxfoundation.org>
@@ -47,35 +48,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Takashi Sakamoto <o-takashi@sakamocchi.jp>
 
-commit 17eac652028501df7ea296b1d9b9c134db262b7d upstream.
+commit eb9d84b0ffe39893cb23b0b6712bbe3637fa25fa upstream.
 
-In gsm_cleanup_mux() the muxer is closed down and all queues are removed.
-However, removing the queues is done without explicit control of the
-underlying buffers. Flush those before freeing up our queues to ensure
-that all outgoing queues are cleared consistently. Otherwise, a new mux
-connection establishment attempt may time out while the underlying tty is
-still busy sending out the remaining data from the previous connection.
+ALSA fireworks driver has a bug in its initial state to return count
+shorter than expected by 4 bytes to userspace applications when handling
+response frame for Echo Audio Fireworks transaction. It's due to missing
+addition of the size for the type of event in ALSA firewire stack.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220414094225.4527-10-daniel.starke@siemens.com
+Fixes: 555e8a8f7f14 ("ALSA: fireworks: Add command/response functionality into hwdep interface")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
+Link: https://lore.kernel.org/r/20220424102428.21109-1-o-takashi@sakamocchi.jp
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_gsm.c |    1 +
+ sound/firewire/fireworks/fireworks_hwdep.c |    1 +
  1 file changed, 1 insertion(+)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -2099,6 +2099,7 @@ static void gsm_cleanup_mux(struct gsm_m
- 			gsm_dlci_release(gsm->dlci[i]);
- 	mutex_unlock(&gsm->mutex);
- 	/* Now wipe the queues */
-+	tty_ldisc_flush(gsm->tty);
- 	list_for_each_entry_safe(txq, ntxq, &gsm->tx_list, list)
- 		kfree(txq);
- 	INIT_LIST_HEAD(&gsm->tx_list);
+--- a/sound/firewire/fireworks/fireworks_hwdep.c
++++ b/sound/firewire/fireworks/fireworks_hwdep.c
+@@ -35,6 +35,7 @@ hwdep_read_resp_buf(struct snd_efw *efw,
+ 	type = SNDRV_FIREWIRE_EVENT_EFW_RESPONSE;
+ 	if (copy_to_user(buf, &type, sizeof(type)))
+ 		return -EFAULT;
++	count += sizeof(type);
+ 	remained -= sizeof(type);
+ 	buf += sizeof(type);
+ 
 
 
