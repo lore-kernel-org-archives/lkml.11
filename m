@@ -2,97 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85DBDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 22:44:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E492C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 22:45:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229597AbiEJWoD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 18:44:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42464 "EHLO
+        id S234055AbiEJWp3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 18:45:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235287AbiEJWoB (ORCPT
+        with ESMTP id S237157AbiEJWpV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 18:44:01 -0400
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A3191C0F20
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 15:44:00 -0700 (PDT)
-Received: by mail-oi1-x235.google.com with SMTP id m25so719274oih.2
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 15:44:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=okZqXBGdND/7mCD8PNjRXPAn7Y3C+537RMJOCdZJrPs=;
-        b=Jioh0mRWzUAkMZ/OtLncEs8h+saIAyh3Wjd3eOpMLnCKT2AwWY6xj+IAniD6VpBbx1
-         FKdyoGZ+NXomjDJBLv5+xJS3co6NdC3q3n/xa8BaxfKpt2Hf8gNamIR+WQzWSaSeCoBx
-         7lMGu3nQEvG5BL4DZ/WgnWEILSfGSvuJuxmrE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=okZqXBGdND/7mCD8PNjRXPAn7Y3C+537RMJOCdZJrPs=;
-        b=jvSVEsSwrM8wE0nDsoKfTWnkTbpsLUy0ix6ZkfrHgW/AtXejVIkswd0tpxu2hBalRV
-         QXj7RVOkTPr/SbI4DDX5uR1ObplWMiYTo6PvsLMZDsHmAxtk+lU2RDhUEFaKH7/1ELyz
-         fP9RTPf2Kgh+GISRy/j5DdtP+0OEGmzoXxC0vOuPGiZaN6dqZ5pLkxFSk0ntCoJIPEUS
-         Z5vady2vDJsiYsLL9q0uta3G0g/qJod1ozVPFs4p8rNHSGA5GSks5OojrXuGPnWXOYxX
-         VEBtOH7LoNTCOPZJdjlZQnQp4oG1NwKnk815XuW5ZWLjimRJn3Iz0a4vlIsoEx5Itj9s
-         Q93g==
-X-Gm-Message-State: AOAM53058No++jEnn8+n+j6wPWGtDu8lpFTesdtummL72PcZBK1/TjgJ
-        jO0ir9bfwKiap4Aox1VZs6EMgw==
-X-Google-Smtp-Source: ABdhPJy65xq17anGKjyDkR1ipE43MLs7SLlAynvEvlIFWMAwktZRVcGnq3Fdd28F8fusZBCaLVBtvw==
-X-Received: by 2002:a05:6808:1184:b0:322:4c18:2f7e with SMTP id j4-20020a056808118400b003224c182f7emr1186115oil.109.1652222639734;
-        Tue, 10 May 2022 15:43:59 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id z42-20020a056870c22a00b000e686d1387bsm103791oae.21.2022.05.10.15.43.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 May 2022 15:43:59 -0700 (PDT)
-Subject: Re: [PATCH 4.9 00/66] 4.9.313-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220510130729.762341544@linuxfoundation.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <84f00f23-6693-743f-a47a-c9240a6dd157@linuxfoundation.org>
-Date:   Tue, 10 May 2022 16:43:58 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
-MIME-Version: 1.0
-In-Reply-To: <20220510130729.762341544@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+        Tue, 10 May 2022 18:45:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4C1E20D27B;
+        Tue, 10 May 2022 15:45:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5895061879;
+        Tue, 10 May 2022 22:45:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 842DFC385CE;
+        Tue, 10 May 2022 22:45:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1652222719;
+        bh=l1vmJ0NFpJhLqoL8ubbQwXu5GhzaUzteA5eQtuoCjZc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=rlDok8GeO8X7D2s4AQahhbSbp5+j7xQn3GIKrXsoo5bV94EUgsSI6+v2KYgijhbWq
+         W88/OFU25lbZxW18Y4NFBXRsgqFEzNJNKJMNxigBjR5nhkwy1yTpawfkfwiIxTKuFP
+         NNZ/3QoprUqTPXCOy/UcBBWGG/IsTkIJy85A2eOw=
+Date:   Tue, 10 May 2022 15:45:18 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [GIT PULL] Two folio fixes for 5.18
+Message-Id: <20220510154518.0410c1966c37cfa66cfeeab0@linux-foundation.org>
+In-Reply-To: <YnrnaoCVjAZfqNvW@casper.infradead.org>
+References: <YnRhFrLuRM5SY+hq@casper.infradead.org>
+        <20220510151809.f06c7580af34221c16003264@linux-foundation.org>
+        <YnrnaoCVjAZfqNvW@casper.infradead.org>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/10/22 7:06 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 4.9.313 release.
-> There are 66 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Thu, 12 May 2022 13:07:16 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.313-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+On Tue, 10 May 2022 23:30:02 +0100 Matthew Wilcox <willy@infradead.org> wrote:
 
-Compiled and booted on my test system. No dmesg regressions.
+> On Tue, May 10, 2022 at 03:18:09PM -0700, Andrew Morton wrote:
+> > On Fri, 6 May 2022 00:43:18 +0100 Matthew Wilcox <willy@infradead.org> wrote:
+> > 
+> > >  - Fix readahead creating single-page folios instead of the intended
+> > >    large folios when doing reads that are not a power of two in size.
+> > 
+> > I worry about the idea of using hugepages in readahead.  We're
+> > increasing the load on the hugepage allocator, which is already
+> > groaning under the load.
+> 
+> Well, hang on.  We're not using the hugepage allocator, we're using
+> the page allocator.  We're also using variable order pages, not
+> necessarily PMD_ORDER.
 
-Tested-by: Shuah Khan <skhan@linuxfoundation.org>
+Ah, OK, misapprehended.  I guess there remains a fragmentation risk.
 
-thanks,
--- Shuah
+>  I was under the impression that we were
+> using GFP_TRANSHUGE_LIGHT, but I now don't see that.  So that might
+> be something that needs to be changed.
+> 
+> > The obvious risk is that handing out hugepages to a low-value consumer
+> > (copying around pagecache which is only ever accessed via the direct
+> > map) will deny their availability to high-value consumers (that
+> > compute-intensive task against a large dataset).
+> > 
+> > Has testing and instrumentation been used to demonstrate that this is
+> > not actually going to be a problem, or are we at risk of getting
+> > unhappy reports?
+> 
+> It's hard to demonstrate that it's definitely not going to cause a
+> problem.  But I actually believe it will help; by keeping page cache
+> memory in larger chunks, we make it easier to defrag memory and create
+> PMD-order pages when they're needed.
+
+Obviously it'll be very workload-dependent.
