@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AE14C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:21:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 319BFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:21:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238558AbiEJNZY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:25:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45976 "EHLO
+        id S242946AbiEJNZa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:25:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243339AbiEJNVs (ORCPT
+        with ESMTP id S243400AbiEJNVv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:21:48 -0400
+        Tue, 10 May 2022 09:21:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B97EE32079;
-        Tue, 10 May 2022 06:15:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07111473BD;
+        Tue, 10 May 2022 06:15:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 543CD6166C;
-        Tue, 10 May 2022 13:15:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69E6FC385A6;
-        Tue, 10 May 2022 13:15:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A9CB61668;
+        Tue, 10 May 2022 13:15:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A61DEC385C2;
+        Tue, 10 May 2022 13:15:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188538;
-        bh=36p3854PZ7hZDvZb9kEHObmWlzU8+m1CZyy2hKINlLY=;
+        s=korg; t=1652188550;
+        bh=91cH3L1VOAhw76ePh5Cx8T4GAcal67FgrHUFzd3Uz3w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vota2cn3Cti+vFYbuuK+5xm1ZLLaURGuXJ28YEiZ30tcQezkY+o4Q+zHIl8PTUrEp
-         C+ZfQ975EhQvXMBzolupieVEVvs3tux7EO2F85vSjSF8rKiNx2aZpsgkZe7eRf15Xd
-         MMkS75dmHLY20GbfpXry8i2m5MM1xnMZEBU9lg/U=
+        b=yNYqBn/cYqfd+i6WRoCVdjW4GDNI9dNf+rlyVMksymzrHQfdHUOHT3g18pjU3k+sr
+         TsIlc24DYXYZ/cWt+OnUfipsiH3zJhLbT4cCFg63ypAr0WvIW6tg9Ah9Y7pPjZqFat
+         jy6kz1UiR7lnsIK3vvb/Tzv+UtAT80p+rQ2lWuL4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ying Xu <yinxu@redhat.com>,
-        Xin Long <lucien.xin@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 33/78] sctp: check asoc strreset_chunk in sctp_generate_reconf_event
-Date:   Tue, 10 May 2022 15:07:19 +0200
-Message-Id: <20220510130733.515442574@linuxfoundation.org>
+        stable@vger.kernel.org, "Kyle D. Pelton" <kyle.d.pelton@intel.com>,
+        Borislav Petkov <bp@suse.de>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Subject: [PATCH 4.14 45/78] x86/cpu: Load microcode during restore_processor_state()
+Date:   Tue, 10 May 2022 15:07:31 +0200
+Message-Id: <20220510130733.869269749@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
 References: <20220510130732.522479698@linuxfoundation.org>
@@ -51,66 +49,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
+From: Borislav Petkov <bp@suse.de>
 
-[ Upstream commit 165e3e17fe8fe6a8aab319bc6e631a2e23b9a857 ]
+commit f9e14dbbd454581061c736bf70bf5cbb15ac927c upstream.
 
-A null pointer reference issue can be triggered when the response of a
-stream reconf request arrives after the timer is triggered, such as:
+When resuming from system sleep state, restore_processor_state()
+restores the boot CPU MSRs. These MSRs could be emulated by microcode.
+If microcode is not loaded yet, writing to emulated MSRs leads to
+unchecked MSR access error:
 
-  send Incoming SSN Reset Request --->
-  CPU0:
-   reconf timer is triggered,
-   go to the handler code before hold sk lock
-                            <--- reply with Outgoing SSN Reset Request
-  CPU1:
-   process Outgoing SSN Reset Request,
-   and set asoc->strreset_chunk to NULL
-  CPU0:
-   continue the handler code, hold sk lock,
-   and try to hold asoc->strreset_chunk, crash!
+  ...
+  PM: Calling lapic_suspend+0x0/0x210
+  unchecked MSR access error: WRMSR to 0x10f (tried to write 0x0...0) at rIP: ... (native_write_msr)
+  Call Trace:
+    <TASK>
+    ? restore_processor_state
+    x86_acpi_suspend_lowlevel
+    acpi_suspend_enter
+    suspend_devices_and_enter
+    pm_suspend.cold
+    state_store
+    kobj_attr_store
+    sysfs_kf_write
+    kernfs_fop_write_iter
+    new_sync_write
+    vfs_write
+    ksys_write
+    __x64_sys_write
+    do_syscall_64
+    entry_SYSCALL_64_after_hwframe
+   RIP: 0033:0x7fda13c260a7
 
-In Ying Xu's testing, the call trace is:
+To ensure microcode emulated MSRs are available for restoration, load
+the microcode on the boot CPU before restoring these MSRs.
 
-  [ ] BUG: kernel NULL pointer dereference, address: 0000000000000010
-  [ ] RIP: 0010:sctp_chunk_hold+0xe/0x40 [sctp]
-  [ ] Call Trace:
-  [ ]  <IRQ>
-  [ ]  sctp_sf_send_reconf+0x2c/0x100 [sctp]
-  [ ]  sctp_do_sm+0xa4/0x220 [sctp]
-  [ ]  sctp_generate_reconf_event+0xbd/0xe0 [sctp]
-  [ ]  call_timer_fn+0x26/0x130
+  [ Pawan: write commit message and productize it. ]
 
-This patch is to fix it by returning from the timer handler if asoc
-strreset_chunk is already set to NULL.
-
-Fixes: 7b9438de0cd4 ("sctp: add stream reconf timer")
-Reported-by: Ying Xu <yinxu@redhat.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: e2a1256b17b1 ("x86/speculation: Restore speculation related MSRs during S3 resume")
+Reported-by: Kyle D. Pelton <kyle.d.pelton@intel.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Tested-by: Kyle D. Pelton <kyle.d.pelton@intel.com>
+Cc: stable@vger.kernel.org
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215841
+Link: https://lore.kernel.org/r/4350dfbf785cd482d3fafa72b2b49c83102df3ce.1650386317.git.pawan.kumar.gupta@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sctp/sm_sideeffect.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/x86/include/asm/microcode.h     |    2 ++
+ arch/x86/kernel/cpu/microcode/core.c |    6 +++---
+ arch/x86/power/cpu.c                 |    8 ++++++++
+ 3 files changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/net/sctp/sm_sideeffect.c b/net/sctp/sm_sideeffect.c
-index 1a1128355d86..169819263c0b 100644
---- a/net/sctp/sm_sideeffect.c
-+++ b/net/sctp/sm_sideeffect.c
-@@ -456,6 +456,10 @@ void sctp_generate_reconf_event(unsigned long data)
- 		goto out_unlock;
- 	}
+--- a/arch/x86/include/asm/microcode.h
++++ b/arch/x86/include/asm/microcode.h
+@@ -147,11 +147,13 @@ extern void load_ucode_ap(void);
+ void reload_early_microcode(void);
+ extern bool get_builtin_firmware(struct cpio_data *cd, const char *name);
+ extern bool initrd_gone;
++void microcode_bsp_resume(void);
+ #else
+ static inline int __init microcode_init(void)			{ return 0; };
+ static inline void __init load_ucode_bsp(void)			{ }
+ static inline void load_ucode_ap(void)				{ }
+ static inline void reload_early_microcode(void)			{ }
++static inline void microcode_bsp_resume(void)			{ }
+ static inline bool
+ get_builtin_firmware(struct cpio_data *cd, const char *name)	{ return false; }
+ #endif
+--- a/arch/x86/kernel/cpu/microcode/core.c
++++ b/arch/x86/kernel/cpu/microcode/core.c
+@@ -773,9 +773,9 @@ static struct subsys_interface mc_cpu_in
+ };
  
-+	/* This happens when the response arrives after the timer is triggered. */
-+	if (!asoc->strreset_chunk)
-+		goto out_unlock;
+ /**
+- * mc_bp_resume - Update boot CPU microcode during resume.
++ * microcode_bsp_resume - Update boot CPU microcode during resume.
+  */
+-static void mc_bp_resume(void)
++void microcode_bsp_resume(void)
+ {
+ 	int cpu = smp_processor_id();
+ 	struct ucode_cpu_info *uci = ucode_cpu_info + cpu;
+@@ -787,7 +787,7 @@ static void mc_bp_resume(void)
+ }
+ 
+ static struct syscore_ops mc_syscore_ops = {
+-	.resume			= mc_bp_resume,
++	.resume			= microcode_bsp_resume,
+ };
+ 
+ static int mc_cpu_starting(unsigned int cpu)
+--- a/arch/x86/power/cpu.c
++++ b/arch/x86/power/cpu.c
+@@ -26,6 +26,7 @@
+ #include <asm/cpu.h>
+ #include <asm/mmu_context.h>
+ #include <asm/cpu_device_id.h>
++#include <asm/microcode.h>
+ 
+ #ifdef CONFIG_X86_32
+ __visible unsigned long saved_context_ebx;
+@@ -268,6 +269,13 @@ static void notrace __restore_processor_
+ 	x86_platform.restore_sched_clock_state();
+ 	mtrr_bp_restore();
+ 	perf_restore_debug_store();
 +
- 	error = sctp_do_sm(net, SCTP_EVENT_T_TIMEOUT,
- 			   SCTP_ST_TIMEOUT(SCTP_EVENT_TIMEOUT_RECONF),
- 			   asoc->state, asoc->ep, asoc,
--- 
-2.35.1
-
++	microcode_bsp_resume();
++
++	/*
++	 * This needs to happen after the microcode has been updated upon resume
++	 * because some of the MSRs are "emulated" in microcode.
++	 */
+ 	msr_restore_context(ctxt);
+ }
+ 
 
 
