@@ -2,50 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0D35C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:45:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E958C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:45:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346314AbiEJPtc (ORCPT
+        id S1346388AbiEJPth (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:49:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60518 "EHLO
+        Tue, 10 May 2022 11:49:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346306AbiEJPsU (ORCPT
+        with ESMTP id S1346319AbiEJPsX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:48:20 -0400
+        Tue, 10 May 2022 11:48:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBB8A2802CB;
-        Tue, 10 May 2022 08:44:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AE0B26AD98;
+        Tue, 10 May 2022 08:44:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 81418614A6;
-        Tue, 10 May 2022 15:44:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B669C385CC;
-        Tue, 10 May 2022 15:44:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F0AD3614EC;
+        Tue, 10 May 2022 15:44:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39755C385CA;
+        Tue, 10 May 2022 15:44:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652197458;
-        bh=lhW8NJEDdIn54Z0I2VF12YbCHzDA9ZNvrF4WYLJPgbY=;
+        s=k20201202; t=1652197464;
+        bh=wvVEqKubDLAU8d+EGjBw6OMLzgm5quhGvEY1JhEPk9g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lyC5tfYaBLuViTOr2H66clPsg7QRWQuFgpg75MQFmfAD1/aLc423HW1wFVDPkXzky
-         WvPn94ca/wrHBrsQt945f1VmZNU7jEeJpnzQq5aqr3RUSxAU75sgLA9PfekBVkhQj1
-         PJAoaC8r2hfPrxsy3Ach39CKGuScsxE5CVUQtNRItB36JqaEJbVZixIIm55HTVO74N
-         Y9IcbOsK9Reo8WuY+rKjmAfpWZL0MzfCvc6Rc4QibAHwD99n+Z/yGXTe7wlsLPdtO6
-         YO+vsYFP6pt2n00/I+l0vcMKBP+2kMuT9flQ5lmwiy/TKC5vDikhCodNUm0cX1Vi4P
-         j+o3AzVDXUsWQ==
+        b=VVZE0rKaq4oefkhTvoFDBjTXyXd/DtThwHc3vrdVfxnBJLXuWa+a+4gk5Qdz+zJV8
+         03VUoQXlgegohxICrrS3SiQibnuazd01oE6Tc2xLrb6UfpciPCi2zZGRjEJbR5CV6f
+         96NhPEcYJhiUBZcUTlXa+6H5qLPznTZmcTiIDgaY005BNFPdfgPiaXlI8EzmwuxUmo
+         UXGXFdFO1AZ7YCxALxHqx8AeiHHkpQ2UeBqDVmX92gMpvNGdkn6pvf3YvXE/M7TFxf
+         um4FnRXw9z7SwvVuvDhBprj+qa9xNzvpBi7noAvM2teLJtU189VCgVqaB/zaU2Ns9z
+         8VwitstkO6eeA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Willy Tarreau <w@1wt.eu>, Moshe Kol <moshe.kol@mail.huji.ac.il>,
-        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
-        Amit Klein <aksecurity@gmail.com>,
+Cc:     Willy Tarreau <w@1wt.eu>, Amit Klein <aksecurity@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
         yoshfuji@linux-ipv6.org, dsahern@kernel.org, pabeni@redhat.com,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 16/21] tcp: add small random increments to the source port
-Date:   Tue, 10 May 2022 11:43:35 -0400
-Message-Id: <20220510154340.153400-16-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.17 19/21] tcp: drop the hash_32() part from the index calculation
+Date:   Tue, 10 May 2022 11:43:38 -0400
+Message-Id: <20220510154340.153400-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220510154340.153400-1-sashal@kernel.org>
 References: <20220510154340.153400-1-sashal@kernel.org>
@@ -59,53 +57,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Willy Tarreau <w@1wt.eu>
 
-[ Upstream commit ca7af0402550f9a0b3316d5f1c30904e42ed257d ]
+[ Upstream commit e8161345ddbb66e449abde10d2fdce93f867eba9 ]
 
-Here we're randomly adding between 0 and 7 random increments to the
-selected source port in order to add some noise in the source port
-selection that will make the next port less predictable.
+In commit 190cc82489f4 ("tcp: change source port randomizarion at
+connect() time"), the table_perturb[] array was introduced and an
+index was taken from the port_offset via hash_32(). But it turns
+out that hash_32() performs a multiplication while the input here
+comes from the output of SipHash in secure_seq, that is well
+distributed enough to avoid the need for yet another hash.
 
-With the default port range of 32768-60999 this means a worst case
-reuse scenario of 14116/8=1764 connections between two consecutive
-uses of the same port, with an average of 14116/4.5=3137. This code
-was stressed at more than 800000 connections per second to a fixed
-target with all connections closed by the client using RSTs (worst
-condition) and only 2 connections failed among 13 billion, despite
-the hash being reseeded every 10 seconds, indicating a perfectly
-safe situation.
-
-Cc: Moshe Kol <moshe.kol@mail.huji.ac.il>
-Cc: Yossi Gilad <yossi.gilad@mail.huji.ac.il>
-Cc: Amit Klein <aksecurity@gmail.com>
+Suggested-by: Amit Klein <aksecurity@gmail.com>
 Reviewed-by: Eric Dumazet <edumazet@google.com>
 Signed-off-by: Willy Tarreau <w@1wt.eu>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/inet_hashtables.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ net/ipv4/inet_hashtables.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index 29c701cd8312..63bb4902f018 100644
+index cc5f66328b47..a5d57fa679ca 100644
 --- a/net/ipv4/inet_hashtables.c
 +++ b/net/ipv4/inet_hashtables.c
-@@ -833,11 +833,12 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
- 	return -EADDRNOTAVAIL;
+@@ -778,7 +778,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
  
- ok:
--	/* If our first attempt found a candidate, skip next candidate
--	 * in 1/16 of cases to add some noise.
-+	/* Here we want to add a little bit of randomness to the next source
-+	 * port that will be chosen. We use a max() with a random here so that
-+	 * on low contention the randomness is maximal and on high contention
-+	 * it may be inexistent.
- 	 */
--	if (!i && !(prandom_u32() % 16))
--		i = 2;
-+	i = max_t(int, i, (prandom_u32() & 7) * 2);
- 	WRITE_ONCE(table_perturb[index], READ_ONCE(table_perturb[index]) + i + 2);
+ 	net_get_random_once(table_perturb,
+ 			    INET_TABLE_PERTURB_SIZE * sizeof(*table_perturb));
+-	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
++	index = port_offset & (INET_TABLE_PERTURB_SIZE - 1);
  
- 	/* Head lock still held and bh's disabled */
+ 	offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32);
+ 	offset %= remaining;
 -- 
 2.35.1
 
