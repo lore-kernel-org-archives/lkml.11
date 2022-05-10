@@ -2,100 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D551C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 17:26:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 618FAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 17:26:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348144AbiEJRac (ORCPT
+        id S1348161AbiEJRah (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 13:30:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34218 "EHLO
+        Tue, 10 May 2022 13:30:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348079AbiEJR3z (ORCPT
+        with ESMTP id S1348119AbiEJR34 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 13:29:55 -0400
+        Tue, 10 May 2022 13:29:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E544658F
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 10:25:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECA07C6F;
+        Tue, 10 May 2022 10:25:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8F89AB81D1B
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 17:25:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33AB8C385C2;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7A02CB81E71;
+        Tue, 10 May 2022 17:25:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC696C385A6;
         Tue, 10 May 2022 17:25:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652203542;
-        bh=+0eyN2nfbMubCkVIS+NqHdmV9ENcdjgyUIRK5bT5xBU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ldEywOFDf2GcjlVa6Ce7bCZh6+SC0QVkijEsgcoeBYmyy9qdutHuFjttp6Y5MaIAL
-         EN0zzx0QCy7gT/S+PFwkbRN9z0auiH0r7WI/UNCiTstgXk28b66x1xdrUkWaPN3D7N
-         1WxBA3ey22VdLw7WZX8jD3sdykbS2tjTZ8JBg2F3UVLOn0OWhb95ijKCd3U4s1hX2G
-         sRB0BPDHHcE2xQVCridn0PH0RPydEynPBzq5c+6G0ojjhG7EfMjTpgJcs9KwDqf1Ha
-         cu9RO5Ol4x1H2DsNC0kAaQFO87l0An+XlzTB0Kn5do7tb7FgEyO+r18CC4uyOE3mAE
-         ZM02KNJ4PDaBA==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 2C5BC400B1; Tue, 10 May 2022 14:25:40 -0300 (-03)
-Date:   Tue, 10 May 2022 14:25:40 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Adrian Hunter <adrian.hunter@intel.com>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Ian Rogers <irogers@google.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Leo Yan <leo.yan@linaro.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V2 05/23] perf auxtrace: Do not mix up mmap idx
-Message-ID: <YnqgFIqV08QReZES@kernel.org>
-References: <20220506122601.367589-1-adrian.hunter@intel.com>
- <20220506122601.367589-6-adrian.hunter@intel.com>
+        s=k20201202; t=1652203544;
+        bh=E5tHulDdEyVbd8pyewc2Uh4nakVaKYnyEVavHR0gbbo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=nNclPHat4Q7+ZlM4hhZGyqFCwCyksH2rUNpBG3i2aFfAJt/+adHb/BQJSXxQUeDv5
+         amrhDziLqfE8FPKkxzcasNLJauBjiTbUDqHp1VDbKsBIplpVgYASrdrxY0cYOJ2MV0
+         enV4eotJADu7s8nb6+sIES+H5fRForV9Q6rGhmyHSTZKXCxtwWwhGT1nDF+MaS+Q6m
+         lbM/6EZ66+EJs1wIGfL9SDOhHYhlokJRfueoAspCczc+lNF9ySZYFkjkcPgpnTj8si
+         wUeuIvruTtiaHaSgmXVi1A/W3Ggr6QTW38VXPhMe/XQCSFnsKafoGBmxBGG2S/kuo7
+         2Fp7NMqDnQ3qQ==
+From:   Miguel Ojeda <ojeda@kernel.org>
+To:     Jonathan Corbet <corbet@lwn.net>
+Cc:     Garrett LeSage <garrett@lesage.us>,
+        IFo Hancroft <contact@ifohancroft.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Miguel Ojeda <ojeda@kernel.org>
+Subject: [PATCH v1 1/2] docs: move Linux logo into a new `images` folder
+Date:   Tue, 10 May 2022 19:25:29 +0200
+Message-Id: <20220510172530.29704-1-ojeda@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220506122601.367589-6-adrian.hunter@intel.com>
-X-Url:  http://acmel.wordpress.com
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Fri, May 06, 2022 at 03:25:43PM +0300, Adrian Hunter escreveu:
-> The idx is with respect to evlist not evsel. That hasn't mattered because
-> they are the same at present. Prepare for that not being the case, which it
-> won't be when sideband tracking events are allowed on all CPUs even when
-> auxtrace is limited to selected CPUs.
-> 
-> Acked-by: Ian Rogers <irogers@google.com>
-> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Having assets in the top-level `Documentation` directory can make
+it harder to find the documents one needs, especially if we want
+to add more of them later on.
 
-Thanks, applied.
+Instead, create a new `images` folder inside it that is used
+to hold assets such as logos.
 
-- Arnaldo
+Link: https://lore.kernel.org/lkml/8735hicoy7.fsf@meer.lwn.net/
+Suggested-by: Jonathan Corbet <corbet@lwn.net>
+Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
+---
+ Documentation/{ => images}/COPYING-logo |   0
+ Documentation/{ => images}/logo.gif     | Bin
+ 2 files changed, 0 insertions(+), 0 deletions(-)
+ rename Documentation/{ => images}/COPYING-logo (100%)
+ rename Documentation/{ => images}/logo.gif (100%)
 
-> ---
->  tools/perf/util/auxtrace.c | 10 ++++++++--
->  1 file changed, 8 insertions(+), 2 deletions(-)
-> 
-> diff --git a/tools/perf/util/auxtrace.c b/tools/perf/util/auxtrace.c
-> index 10936a38031f..b11549ae39df 100644
-> --- a/tools/perf/util/auxtrace.c
-> +++ b/tools/perf/util/auxtrace.c
-> @@ -640,8 +640,14 @@ static int evlist__enable_event_idx(struct evlist *evlist, struct evsel *evsel,
->  {
->  	bool per_cpu_mmaps = !perf_cpu_map__empty(evlist->core.user_requested_cpus);
->  
-> -	if (per_cpu_mmaps)
-> -		return perf_evsel__enable_cpu(&evsel->core, idx);
-> +	if (per_cpu_mmaps) {
-> +		struct perf_cpu evlist_cpu = perf_cpu_map__cpu(evlist->core.all_cpus, idx);
-> +		int cpu_map_idx = perf_cpu_map__idx(evsel->core.cpus, evlist_cpu);
-> +
-> +		if (cpu_map_idx == -1)
-> +			return -EINVAL;
-> +		return perf_evsel__enable_cpu(&evsel->core, cpu_map_idx);
-> +	}
->  
->  	return perf_evsel__enable_thread(&evsel->core, idx);
->  }
-> -- 
-> 2.25.1
+diff --git a/Documentation/COPYING-logo b/Documentation/images/COPYING-logo
+similarity index 100%
+rename from Documentation/COPYING-logo
+rename to Documentation/images/COPYING-logo
+diff --git a/Documentation/logo.gif b/Documentation/images/logo.gif
+similarity index 100%
+rename from Documentation/logo.gif
+rename to Documentation/images/logo.gif
 
+base-commit: c5eb0a61238dd6faf37f58c9ce61c9980aaffd7a
 -- 
+2.36.1
 
-- Arnaldo
