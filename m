@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AACAFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE594C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:25:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242979AbiEJO2v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:28:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52660 "EHLO
+        id S1344180AbiEJO24 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:28:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245531AbiEJN6A (ORCPT
+        with ESMTP id S245676AbiEJN6f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:58:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 168C18B0B8;
-        Tue, 10 May 2022 06:39:31 -0700 (PDT)
+        Tue, 10 May 2022 09:58:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D3479B192;
+        Tue, 10 May 2022 06:39:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BD66CB81DC2;
-        Tue, 10 May 2022 13:39:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21114C385A6;
-        Tue, 10 May 2022 13:39:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 97DCE615C8;
+        Tue, 10 May 2022 13:39:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 195D5C385A6;
+        Tue, 10 May 2022 13:39:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189968;
-        bh=ZS4YX0gYWuUArXMDi1K/gNPON1wBSM2zlX0d9VfYLWk=;
+        s=korg; t=1652189972;
+        bh=Upg2fVux1kOn9Xu3eb4RDmui7oOrZF25naDZqBVlILI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FqM4/exug2zj0F5SeOvRLTWVPBSC17XIiO78jbQFYwZU9EuE4NWRtpLCsKHUvIdAV
-         ztF7Bc7YMgfhVPbhZ2KFan77+FgqSKrYkmiNrXKfz8M5CJCqkxvD5MYy5ld2NavYDu
-         V0SN0vMnlWMG+eDBDbkfxlpSyPSV69ExH8toTEC8=
+        b=Ei9J6o8oNb+lPghtyX/8nJRhEzTOd0OiAVfXhryAZgDc9cStTqdnvWtiz4p83YkVi
+         Mws4ERhM3Vhbsb+vg6gTc5k+czEWdqSLVzVrjaNJaX4NQsIrWufaVoAgpIcVWApY73
+         5R2mXhJYyB5U5uvCB9s/ALlDZR7Y3I9iB3hbwxy8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oliver Hartkopp <socketcan@hartkopp.net>,
+        stable@vger.kernel.org, Daniel Hellstrom <daniel@gaisler.com>,
+        Andreas Larsson <andreas@gaisler.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.17 046/140] can: isotp: remove re-binding of bound socket
-Date:   Tue, 10 May 2022 15:07:16 +0200
-Message-Id: <20220510130742.939072513@linuxfoundation.org>
+Subject: [PATCH 5.17 047/140] can: grcan: use ofdev->dev when allocating DMA memory
+Date:   Tue, 10 May 2022 15:07:17 +0200
+Message-Id: <20220510130742.966376928@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -48,74 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Daniel Hellstrom <daniel@gaisler.com>
 
-commit 72ed3ee9fa0b461ad086403a8b5336154bd82234 upstream.
+commit 101da4268626b00d16356a6bf284d66e44c46ff9 upstream.
 
-As a carry over from the CAN_RAW socket (which allows to change the CAN
-interface while mantaining the filter setup) the re-binding of the
-CAN_ISOTP socket needs to take care about CAN ID address information and
-subscriptions. It turned out that this feature is so limited (e.g. the
-sockopts remain fix) that it finally has never been needed/used.
+Use the device of the device tree node should be rather than the
+device of the struct net_device when allocating DMA buffers.
 
-In opposite to the stateless CAN_RAW socket the switching of the CAN ID
-subscriptions might additionally lead to an interrupted ongoing PDU
-reception. So better remove this unneeded complexity.
+The driver got away with it on sparc32 until commit 53b7670e5735
+("sparc: factor the dma coherent mapping into helper") after which the
+driver oopses.
 
-Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
-Link: https://lore.kernel.org/all/20220422082337.1676-1-socketcan@hartkopp.net
+Fixes: 6cec9b07fe6a ("can: grcan: Add device driver for GRCAN and GRHCAN cores")
+Link: https://lore.kernel.org/all/20220429084656.29788-2-andreas@gaisler.com
 Cc: stable@vger.kernel.org
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Signed-off-by: Daniel Hellstrom <daniel@gaisler.com>
+Signed-off-by: Andreas Larsson <andreas@gaisler.com>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/can/isotp.c |   22 +++++-----------------
- 1 file changed, 5 insertions(+), 17 deletions(-)
+ drivers/net/can/grcan.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -1146,6 +1146,11 @@ static int isotp_bind(struct socket *soc
+--- a/drivers/net/can/grcan.c
++++ b/drivers/net/can/grcan.c
+@@ -248,6 +248,7 @@ struct grcan_device_config {
+ struct grcan_priv {
+ 	struct can_priv can;	/* must be the first member */
+ 	struct net_device *dev;
++	struct device *ofdev_dev;
+ 	struct napi_struct napi;
  
- 	lock_sock(sk);
+ 	struct grcan_registers __iomem *regs;	/* ioremap'ed registers */
+@@ -921,7 +922,7 @@ static void grcan_free_dma_buffers(struc
+ 	struct grcan_priv *priv = netdev_priv(dev);
+ 	struct grcan_dma *dma = &priv->dma;
  
-+	if (so->bound) {
-+		err = -EINVAL;
-+		goto out;
-+	}
-+
- 	/* do not register frame reception for functional addressing */
- 	if (so->opt.flags & CAN_ISOTP_SF_BROADCAST)
- 		do_rx_reg = 0;
-@@ -1156,10 +1161,6 @@ static int isotp_bind(struct socket *soc
- 		goto out;
- 	}
+-	dma_free_coherent(&dev->dev, dma->base_size, dma->base_buf,
++	dma_free_coherent(priv->ofdev_dev, dma->base_size, dma->base_buf,
+ 			  dma->base_handle);
+ 	memset(dma, 0, sizeof(*dma));
+ }
+@@ -946,7 +947,7 @@ static int grcan_allocate_dma_buffers(st
  
--	if (so->bound && addr->can_ifindex == so->ifindex &&
--	    rx_id == so->rxid && tx_id == so->txid)
--		goto out;
--
- 	dev = dev_get_by_index(net, addr->can_ifindex);
- 	if (!dev) {
- 		err = -ENODEV;
-@@ -1186,19 +1187,6 @@ static int isotp_bind(struct socket *soc
- 
- 	dev_put(dev);
- 
--	if (so->bound && do_rx_reg) {
--		/* unregister old filter */
--		if (so->ifindex) {
--			dev = dev_get_by_index(net, so->ifindex);
--			if (dev) {
--				can_rx_unregister(net, dev, so->rxid,
--						  SINGLE_MASK(so->rxid),
--						  isotp_rcv, sk);
--				dev_put(dev);
--			}
--		}
--	}
--
- 	/* switch to new settings */
- 	so->ifindex = ifindex;
- 	so->rxid = rx_id;
+ 	/* Extra GRCAN_BUFFER_ALIGNMENT to allow for alignment */
+ 	dma->base_size = lsize + ssize + GRCAN_BUFFER_ALIGNMENT;
+-	dma->base_buf = dma_alloc_coherent(&dev->dev,
++	dma->base_buf = dma_alloc_coherent(priv->ofdev_dev,
+ 					   dma->base_size,
+ 					   &dma->base_handle,
+ 					   GFP_KERNEL);
+@@ -1589,6 +1590,7 @@ static int grcan_setup_netdev(struct pla
+ 	memcpy(&priv->config, &grcan_module_config,
+ 	       sizeof(struct grcan_device_config));
+ 	priv->dev = dev;
++	priv->ofdev_dev = &ofdev->dev;
+ 	priv->regs = base;
+ 	priv->can.bittiming_const = &grcan_bittiming_const;
+ 	priv->can.do_set_bittiming = grcan_set_bittiming;
 
 
