@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77791C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:31:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77487C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:33:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344698AbiEJOfu (ORCPT
+        id S1344735AbiEJOfy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:35:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40410 "EHLO
+        Tue, 10 May 2022 10:35:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245474AbiEJOId (ORCPT
+        with ESMTP id S244853AbiEJOIP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:08:33 -0400
+        Tue, 10 May 2022 10:08:15 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7320C9ED3;
-        Tue, 10 May 2022 06:42:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F4382716CD;
+        Tue, 10 May 2022 06:42:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 69CB3617E4;
-        Tue, 10 May 2022 13:42:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69FB0C385A6;
-        Tue, 10 May 2022 13:42:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C0F661931;
+        Tue, 10 May 2022 13:42:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4950C385A6;
+        Tue, 10 May 2022 13:42:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652190148;
-        bh=Wj5Hvo3EI9/ClIFsOlMSIyc5RZ6VM1C11DL/NbLekXU=;
+        s=korg; t=1652190142;
+        bh=3BROekrajQ8eZtFfapC/03jcVX2gHLm08MrUKeGjcLI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DHrEZDHSt+uF7NEwfId+D8+xCC36LJ/FV2x8j0wrbUlVxchLnzZ2DykCG7yrL4bmd
-         Y0QXzKvf9cX/ytZJrLdjtsxWoilROjQZM1SnfVZ9qqw9V5OUvBR3/hys08WAvnLCmP
-         qd0JYB491xB5wgWrttakfenUjDnA0DZMEs1gPTPo=
+        b=Hv/6NYQ1XExGXFp9g1I2CPdt89WrzMhHW+RrVsygrShI+OvQOguOvUBa2vNejFILl
+         6Rz6KOJX1FMDq9VNncaRpn6aKtaochPXiZda4HQg1hr08VhudLT3AVZ7RSkHKUO6x9
+         MhqziZCsrQ1CT4qE5GkypJ7/doAWGOahhuAwUJIY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, pali@kernel.org,
         =?UTF-8?q?Marek=20Beh=FAn?= <kabel@kernel.org>,
         Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH 5.17 131/140] PCI: aardvark: Enable MSI-X support
-Date:   Tue, 10 May 2022 15:08:41 +0200
-Message-Id: <20220510130745.340554578@linuxfoundation.org>
+Subject: [PATCH 5.17 129/140] PCI: aardvark: Add support for masking MSI interrupts
+Date:   Tue, 10 May 2022 15:08:39 +0200
+Message-Id: <20220510130745.281245324@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -52,41 +52,120 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Pali Rohár <pali@kernel.org>
 
-commit 754e449889b22fc3c34235e8836f08f51121d307 upstream.
+commit e77d9c90691071769cd2b86ef097f7d07167dc3b upstream.
 
-According to PCI 3.0 specification, sending both MSI and MSI-X interrupts
-is done by DWORD memory write operation to doorbell message address. The
-write operation for MSI has zero upper 16 bits and the MSI interrupt number
-in the lower 16 bits, while the write operation for MSI-X contains a 32-bit
-value from MSI-X table.
+We should not unmask MSIs at setup, but only when kernel asks for them
+to be unmasked.
 
-Since the driver only uses interrupt numbers from range 0..31, the upper
-16 bits of the DWORD memory write operation to doorbell message address
-are zero even for MSI-X interrupts. Thus we can enable MSI-X interrupts.
+At setup, mask all MSIs, and implement IRQ chip callbacks for masking
+and unmasking particular MSIs.
 
-Testing proves that kernel can correctly receive MSI-X interrupts from PCIe
-cards which supports both MSI and MSI-X interrupts.
-
-Link: https://lore.kernel.org/r/20220110015018.26359-13-kabel@kernel.org
+Link: https://lore.kernel.org/r/20220110015018.26359-11-kabel@kernel.org
 Signed-off-by: Pali Rohár <pali@kernel.org>
 Signed-off-by: Marek Behún <kabel@kernel.org>
 Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 Signed-off-by: Marek Behún <kabel@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/pci-aardvark.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pci/controller/pci-aardvark.c |   54 ++++++++++++++++++++++++++++++----
+ 1 file changed, 49 insertions(+), 5 deletions(-)
 
 --- a/drivers/pci/controller/pci-aardvark.c
 +++ b/drivers/pci/controller/pci-aardvark.c
-@@ -1337,7 +1337,7 @@ static struct irq_chip advk_msi_irq_chip
+@@ -274,6 +274,7 @@ struct advk_pcie {
+ 	raw_spinlock_t irq_lock;
+ 	struct irq_domain *msi_domain;
+ 	struct irq_domain *msi_inner_domain;
++	raw_spinlock_t msi_irq_lock;
+ 	DECLARE_BITMAP(msi_used, MSI_IRQ_NUM);
+ 	struct mutex msi_used_lock;
+ 	u16 msi_msg;
+@@ -570,12 +571,10 @@ static void advk_pcie_setup_hw(struct ad
+ 	advk_writel(pcie, PCIE_ISR1_ALL_MASK, PCIE_ISR1_REG);
+ 	advk_writel(pcie, PCIE_IRQ_ALL_MASK, HOST_CTRL_INT_STATUS_REG);
  
- static struct msi_domain_info advk_msi_domain_info = {
- 	.flags	= MSI_FLAG_USE_DEF_DOM_OPS | MSI_FLAG_USE_DEF_CHIP_OPS |
--		  MSI_FLAG_MULTI_PCI_MSI,
-+		  MSI_FLAG_MULTI_PCI_MSI | MSI_FLAG_PCI_MSIX,
- 	.chip	= &advk_msi_irq_chip,
+-	/* Disable All ISR0/1 Sources */
++	/* Disable All ISR0/1 and MSI Sources */
+ 	advk_writel(pcie, PCIE_ISR0_ALL_MASK, PCIE_ISR0_MASK_REG);
+ 	advk_writel(pcie, PCIE_ISR1_ALL_MASK, PCIE_ISR1_MASK_REG);
+-
+-	/* Unmask all MSIs */
+-	advk_writel(pcie, ~(u32)PCIE_MSI_ALL_MASK, PCIE_MSI_MASK_REG);
++	advk_writel(pcie, PCIE_MSI_ALL_MASK, PCIE_MSI_MASK_REG);
+ 
+ 	/* Unmask summary MSI interrupt */
+ 	reg = advk_readl(pcie, PCIE_ISR0_MASK_REG);
+@@ -1191,10 +1190,52 @@ static int advk_msi_set_affinity(struct
+ 	return -EINVAL;
+ }
+ 
++static void advk_msi_irq_mask(struct irq_data *d)
++{
++	struct advk_pcie *pcie = d->domain->host_data;
++	irq_hw_number_t hwirq = irqd_to_hwirq(d);
++	unsigned long flags;
++	u32 mask;
++
++	raw_spin_lock_irqsave(&pcie->msi_irq_lock, flags);
++	mask = advk_readl(pcie, PCIE_MSI_MASK_REG);
++	mask |= BIT(hwirq);
++	advk_writel(pcie, mask, PCIE_MSI_MASK_REG);
++	raw_spin_unlock_irqrestore(&pcie->msi_irq_lock, flags);
++}
++
++static void advk_msi_irq_unmask(struct irq_data *d)
++{
++	struct advk_pcie *pcie = d->domain->host_data;
++	irq_hw_number_t hwirq = irqd_to_hwirq(d);
++	unsigned long flags;
++	u32 mask;
++
++	raw_spin_lock_irqsave(&pcie->msi_irq_lock, flags);
++	mask = advk_readl(pcie, PCIE_MSI_MASK_REG);
++	mask &= ~BIT(hwirq);
++	advk_writel(pcie, mask, PCIE_MSI_MASK_REG);
++	raw_spin_unlock_irqrestore(&pcie->msi_irq_lock, flags);
++}
++
++static void advk_msi_top_irq_mask(struct irq_data *d)
++{
++	pci_msi_mask_irq(d);
++	irq_chip_mask_parent(d);
++}
++
++static void advk_msi_top_irq_unmask(struct irq_data *d)
++{
++	pci_msi_unmask_irq(d);
++	irq_chip_unmask_parent(d);
++}
++
+ static struct irq_chip advk_msi_bottom_irq_chip = {
+ 	.name			= "MSI",
+ 	.irq_compose_msi_msg	= advk_msi_irq_compose_msi_msg,
+ 	.irq_set_affinity	= advk_msi_set_affinity,
++	.irq_mask		= advk_msi_irq_mask,
++	.irq_unmask		= advk_msi_irq_unmask,
  };
  
+ static int advk_msi_irq_domain_alloc(struct irq_domain *domain,
+@@ -1284,7 +1325,9 @@ static const struct irq_domain_ops advk_
+ };
+ 
+ static struct irq_chip advk_msi_irq_chip = {
+-	.name = "advk-MSI",
++	.name		= "advk-MSI",
++	.irq_mask	= advk_msi_top_irq_mask,
++	.irq_unmask	= advk_msi_top_irq_unmask,
+ };
+ 
+ static struct msi_domain_info advk_msi_domain_info = {
+@@ -1298,6 +1341,7 @@ static int advk_pcie_init_msi_irq_domain
+ 	struct device *dev = &pcie->pdev->dev;
+ 	phys_addr_t msi_msg_phys;
+ 
++	raw_spin_lock_init(&pcie->msi_irq_lock);
+ 	mutex_init(&pcie->msi_used_lock);
+ 
+ 	msi_msg_phys = virt_to_phys(&pcie->msi_msg);
 
 
