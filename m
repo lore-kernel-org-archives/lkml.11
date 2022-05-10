@@ -2,107 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19A22C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:24:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E427C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:24:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244010AbiEJP2D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:28:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57804 "EHLO
+        id S1345800AbiEJP17 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 11:27:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345741AbiEJP11 (ORCPT
+        with ESMTP id S1345865AbiEJP11 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 11:27:27 -0400
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 656876252;
-        Tue, 10 May 2022 08:17:43 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:60048)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1noRcL-00D06M-QG; Tue, 10 May 2022 09:17:41 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:37644 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1noRcK-00D119-OQ; Tue, 10 May 2022 09:17:41 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Oleg Nesterov <oleg@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
-        Will Deacon <will@kernel.org>, tj@kernel.org,
-        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org
-References: <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
-        <20220505182645.497868-10-ebiederm@xmission.com>
-        <20220510142202.GB23277@redhat.com>
-Date:   Tue, 10 May 2022 10:17:32 -0500
-In-Reply-To: <20220510142202.GB23277@redhat.com> (Oleg Nesterov's message of
-        "Tue, 10 May 2022 16:23:18 +0200")
-Message-ID: <87ee11wh6b.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE4E6C2F;
+        Tue, 10 May 2022 08:17:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652195870; x=1683731870;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Y7E4CLRa6BgtD+lqadZc0VtoWUMuhkwoVujS7HBVdOA=;
+  b=As11Y4/5EZEMN1iV5KohWMCQ5SvtcxXQmFl2FIcY3mSXjR+QEP3Pn96u
+   nfGl4RbAgWQCTFnDrNam/EV5f3k4CHMrSQiMnDeajAtrAwWlSh3LEz5bg
+   bbwxIRRORjohaXyyt1LdJ2kDTA0QSA6CMA/O0MI2JV3HcayyXhqHYdn2L
+   yyiX0XYoHBPDdlSbTgSituPJaXIcjat6M/x8Bib0c7A152w3xFaa3VUmw
+   87uVT0n04Y80fsX8izGJgV4vRxiqlkRtz0bZdv7sgX8ZwWc6QodhmkklH
+   XGdOodk1xNbypAd9vx6I89qpch6IUum+q03SYwYg1vdy38BSwkHUfBGDX
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="355830866"
+X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
+   d="scan'208";a="355830866"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 08:17:38 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
+   d="scan'208";a="635995834"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga004.fm.intel.com with ESMTP; 10 May 2022 08:17:32 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 9DA63590; Tue, 10 May 2022 18:15:16 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Tony Luck <tony.luck@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Wolfram Sang <wsa@kernel.org>, Jean Delvare <jdelvare@suse.de>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        =?UTF-8?q?=C5=81ukasz=20Bartosik?= <lb@semihalf.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jonathan Yong <jonathan.yong@intel.com>,
+        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Jean Delvare <jdelvare@suse.com>,
+        Peter Tyser <ptyser@xes-inc.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        Mark Gross <markgross@kernel.org>,
+        Henning Schild <henning.schild@siemens.com>
+Subject: [PATCH v5 4/8] mfd: lpc_ich: Switch to generic p2sb_bar()
+Date:   Tue, 10 May 2022 18:14:47 +0300
+Message-Id: <20220510151451.85561-5-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220510151451.85561-1-andriy.shevchenko@linux.intel.com>
+References: <20220510151451.85561-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1noRcK-00D119-OQ;;;mid=<87ee11wh6b.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1/Y8vXvnEYjPf/cn2xYcSjvlg/Nnds05MI=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH v4 10/12] ptrace: Don't change __state
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Oleg Nesterov <oleg@redhat.com> writes:
+Instead of open coding p2sb_bar() functionality we are going to
+use generic library. There is one more user en route.
 
-> On 05/05, Eric W. Biederman wrote:
->>
->>  static void ptrace_unfreeze_traced(struct task_struct *task)
->>  {
->> -	if (READ_ONCE(task->__state) != __TASK_TRACED)
->> -		return;
->> -
->> -	WARN_ON(!task->ptrace || task->parent != current);
->> +	unsigned long flags;
->>  
->>  	/*
->> -	 * PTRACE_LISTEN can allow ptrace_trap_notify to wake us up remotely.
->> -	 * Recheck state under the lock to close this race.
->> +	 * The child may be awake and may have cleared
->> +	 * JOBCTL_PTRACE_FROZEN (see ptrace_resume).  The child will
->> +	 * not set JOBCTL_PTRACE_FROZEN or enter __TASK_TRACED anew.
->>  	 */
->> -	spin_lock_irq(&task->sighand->siglock);
->> -	if (READ_ONCE(task->__state) == __TASK_TRACED) {
->> +	if (lock_task_sighand(task, &flags)) {
->
-> But I still think that a lockless
->
-> 	if (!(task->jobctl & JOBCTL_PTRACE_FROZEN))
-> 		return;
->
-> check at the start of ptrace_unfreeze_traced() makes sense to avoid
-> lock_task_sighand() if possible.
->
-> And ptrace_resume() can probably clear JOBCTL_PTRACE_FROZEN along with
-> JOBCTL_TRACED to make this optimization work better. The same for
-> ptrace_signal_wake_up().
+This is more than just a clean-up. It also fixes a potential issue
+seen when SPI BAR is 64-bit. The current code works if and only if
+the PCI BAR of the hidden device is inside 4G address space. In case
+when firmware decides to go above 4G, we will get a wrong address.
 
-What do you have that suggests that taking siglock there is a problem?
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Tested-by: Henning Schild <henning.schild@siemens.com>
+Acked-by: Hans de Goede <hdegoede@redhat.com>
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
+Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+---
+ drivers/mfd/Kconfig   |  1 +
+ drivers/mfd/lpc_ich.c | 27 ++++++++-------------------
+ 2 files changed, 9 insertions(+), 19 deletions(-)
 
-What you propose will definitely work as an incremental change, and
-in an incremental change we can explain why doing the stupid simple
-thing is not good enough.
-
-I am not really opposed on any grounds except that simplicity is good,
-and hard to get wrong.
-
-Eric
+diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+index 3b59456f5545..9566341de470 100644
+--- a/drivers/mfd/Kconfig
++++ b/drivers/mfd/Kconfig
+@@ -572,6 +572,7 @@ config LPC_ICH
+ 	tristate "Intel ICH LPC"
+ 	depends on PCI
+ 	select MFD_CORE
++	select P2SB if X86
+ 	help
+ 	  The LPC bridge function of the Intel ICH provides support for
+ 	  many functional units. This driver provides needed support for
+diff --git a/drivers/mfd/lpc_ich.c b/drivers/mfd/lpc_ich.c
+index d9175cb8a2d5..e360651c5406 100644
+--- a/drivers/mfd/lpc_ich.c
++++ b/drivers/mfd/lpc_ich.c
+@@ -45,6 +45,7 @@
+ #include <linux/mfd/core.h>
+ #include <linux/mfd/lpc_ich.h>
+ #include <linux/platform_data/itco_wdt.h>
++#include <linux/platform_data/x86/p2sb.h>
+ 
+ #define ACPIBASE		0x40
+ #define ACPIBASE_GPE_OFF	0x28
+@@ -71,8 +72,6 @@
+ #define BCR			0xdc
+ #define BCR_WPD			BIT(0)
+ 
+-#define SPIBASE_APL_SZ		4096
+-
+ #define GPIOBASE_ICH0		0x58
+ #define GPIOCTRL_ICH0		0x5C
+ #define GPIOBASE_ICH6		0x48
+@@ -1134,6 +1133,7 @@ static int lpc_ich_init_spi(struct pci_dev *dev)
+ 	struct resource *res = &intel_spi_res[0];
+ 	struct intel_spi_boardinfo *info;
+ 	u32 spi_base, rcba;
++	int ret;
+ 
+ 	info = devm_kzalloc(&dev->dev, sizeof(*info), GFP_KERNEL);
+ 	if (!info)
+@@ -1164,30 +1164,19 @@ static int lpc_ich_init_spi(struct pci_dev *dev)
+ 		}
+ 		break;
+ 
+-	case INTEL_SPI_BXT: {
+-		unsigned int p2sb = PCI_DEVFN(13, 0);
+-		unsigned int spi = PCI_DEVFN(13, 2);
+-		struct pci_bus *bus = dev->bus;
+-
++	case INTEL_SPI_BXT:
+ 		/*
+ 		 * The P2SB is hidden by BIOS and we need to unhide it in
+ 		 * order to read BAR of the SPI flash device. Once that is
+ 		 * done we hide it again.
+ 		 */
+-		pci_bus_write_config_byte(bus, p2sb, 0xe1, 0x0);
+-		pci_bus_read_config_dword(bus, spi, PCI_BASE_ADDRESS_0,
+-					  &spi_base);
+-		if (spi_base != ~0) {
+-			res->start = spi_base & 0xfffffff0;
+-			res->end = res->start + SPIBASE_APL_SZ - 1;
+-
+-			info->set_writeable = lpc_ich_bxt_set_writeable;
+-			info->data = dev;
+-		}
++		ret = p2sb_bar(dev->bus, PCI_DEVFN(13, 2), res);
++		if (ret)
++			return ret;
+ 
+-		pci_bus_write_config_byte(bus, p2sb, 0xe1, 0x1);
++		info->set_writeable = lpc_ich_bxt_set_writeable;
++		info->data = dev;
+ 		break;
+-	}
+ 
+ 	default:
+ 		return -EINVAL;
+-- 
+2.35.1
 
