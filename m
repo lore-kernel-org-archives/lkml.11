@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7D59C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:12:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A2A6C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:12:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242404AbiEJNPz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:15:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60870 "EHLO
+        id S242356AbiEJNQU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:16:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242318AbiEJNPc (ORCPT
+        with ESMTP id S242366AbiEJNPd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:15:32 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9B8A369CD;
-        Tue, 10 May 2022 06:11:16 -0700 (PDT)
+        Tue, 10 May 2022 09:15:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF2323BA65;
+        Tue, 10 May 2022 06:11:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B976ACE1EE2;
-        Tue, 10 May 2022 13:11:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4D0EC385D3;
-        Tue, 10 May 2022 13:11:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 83C41B81D7A;
+        Tue, 10 May 2022 13:11:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D341EC385C2;
+        Tue, 10 May 2022 13:11:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188273;
-        bh=xNaN2J7XaIrUH2DW0OpIFN3289nXX4c1YssyrcL1db8=;
+        s=korg; t=1652188276;
+        bh=sh06TBAH1ezWV6utqcJE5j/Qf8oUhesqUDZWGeWV1Jc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pw8pOGGubpV+CxEvoWX0cVWgJtpVS7YE+kuPgt8Dk4IDVeNQrTqnb9gjYLkrHBWOE
-         8Id6VIzafnH5/GB0Bi4MZlUUP1A0A018j+sk4QDu/a7TyDrKUw+6Sv3z1XiVDdVV6N
-         F0pXuCp7Ho6BsJ5+37i7FhiIdckUMzRnQ4mYQwS4=
+        b=wt0zqS77w+fpNJVxPW1PEk7G2qOwswmUoutYycHWx69mCGogZbat5MRCwbuwgK5QG
+         sbq65Qo3Vv0/oNji/Cb8eRvqFb1sg3ASyCgH5hDREwtTMFK05Z8myBcz0ur1AK+6rw
+         LVaRD4gMbNvYnreac1nuS0dlQwo09yguG4bOu0Uk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.9 19/66] hex2bin: make the function hex_to_bin constant-time
-Date:   Tue, 10 May 2022 15:07:09 +0200
-Message-Id: <20220510130730.327688811@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 02/66] Revert "net: ethernet: stmmac: fix altr_tse_pcs function when using a fixed-link"
+Date:   Tue, 10 May 2022 15:06:52 +0200
+Message-Id: <20220510130729.835099538@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.762341544@linuxfoundation.org>
 References: <20220510130729.762341544@linuxfoundation.org>
@@ -48,91 +50,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+This reverts commit edba120f094394454f5b9511d04abd7e8c2c31ee which is
+commit a6aaa00324240967272b451bfa772547bd576ee6 upstream.
 
-commit e5be15767e7e284351853cbaba80cde8620341fb upstream.
+Pavel reports that it causes boot issues, so revert it for now.
 
-The function hex2bin is used to load cryptographic keys into device
-mapper targets dm-crypt and dm-integrity.  It should take constant time
-independent on the processed data, so that concurrently running
-unprivileged code can't infer any information about the keys via
-microarchitectural convert channels.
-
-This patch changes the function hex_to_bin so that it contains no
-branches and no memory accesses.
-
-Note that this shouldn't cause performance degradation because the size
-of the new function is the same as the size of the old function (on
-x86-64) - and the new function causes no branch misprediction penalties.
-
-I compile-tested this function with gcc on aarch64 alpha arm hppa hppa64
-i386 ia64 m68k mips32 mips64 powerpc powerpc64 riscv sh4 s390x sparc32
-sparc64 x86_64 and with clang on aarch64 arm hexagon i386 mips32 mips64
-powerpc powerpc64 s390x sparc32 sparc64 x86_64 to verify that there are
-no branches in the generated code.
-
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Link: https://lore.kernel.org/r/20220429074341.GB1423@amd
+Reported-by: Pavel Machek <pavel@denx.de>
+Cc: Dinh Nguyen <dinguyen@kernel.org>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Sasha Levin <sashal@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/kernel.h |    2 +-
- lib/hexdump.c          |   32 +++++++++++++++++++++++++-------
- 2 files changed, 26 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c  |    8 ++++++++
+ drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h  |    4 ----
+ drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c |   13 ++++++++-----
+ 3 files changed, 16 insertions(+), 9 deletions(-)
 
---- a/include/linux/kernel.h
-+++ b/include/linux/kernel.h
-@@ -530,7 +530,7 @@ static inline char *hex_byte_pack_upper(
- 	return buf;
- }
+--- a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c
++++ b/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c
+@@ -68,6 +68,10 @@
+ #define TSE_PCS_USE_SGMII_ENA				BIT(0)
+ #define TSE_PCS_IF_USE_SGMII				0x03
  
--extern int hex_to_bin(char ch);
-+extern int hex_to_bin(unsigned char ch);
- extern int __must_check hex2bin(u8 *dst, const char *src, size_t count);
- extern char *bin2hex(char *dst, const void *src, size_t count);
++#define SGMII_ADAPTER_CTRL_REG				0x00
++#define SGMII_ADAPTER_DISABLE				0x0001
++#define SGMII_ADAPTER_ENABLE				0x0000
++
+ #define AUTONEGO_LINK_TIMER				20
  
---- a/lib/hexdump.c
-+++ b/lib/hexdump.c
-@@ -24,15 +24,33 @@ EXPORT_SYMBOL(hex_asc_upper);
-  *
-  * hex_to_bin() converts one hex digit to its actual value or -1 in case of bad
-  * input.
-+ *
-+ * This function is used to load cryptographic keys, so it is coded in such a
-+ * way that there are no conditions or memory accesses that depend on data.
-+ *
-+ * Explanation of the logic:
-+ * (ch - '9' - 1) is negative if ch <= '9'
-+ * ('0' - 1 - ch) is negative if ch >= '0'
-+ * we "and" these two values, so the result is negative if ch is in the range
-+ *	'0' ... '9'
-+ * we are only interested in the sign, so we do a shift ">> 8"; note that right
-+ *	shift of a negative value is implementation-defined, so we cast the
-+ *	value to (unsigned) before the shift --- we have 0xffffff if ch is in
-+ *	the range '0' ... '9', 0 otherwise
-+ * we "and" this value with (ch - '0' + 1) --- we have a value 1 ... 10 if ch is
-+ *	in the range '0' ... '9', 0 otherwise
-+ * we add this value to -1 --- we have a value 0 ... 9 if ch is in the range '0'
-+ *	... '9', -1 otherwise
-+ * the next line is similar to the previous one, but we need to decode both
-+ *	uppercase and lowercase letters, so we use (ch & 0xdf), which converts
-+ *	lowercase to uppercase
-  */
--int hex_to_bin(char ch)
-+int hex_to_bin(unsigned char ch)
+ static int tse_pcs_reset(void __iomem *base, struct tse_pcs *pcs)
+@@ -211,8 +215,12 @@ void tse_pcs_fix_mac_speed(struct tse_pc
+ 			   unsigned int speed)
  {
--	if ((ch >= '0') && (ch <= '9'))
--		return ch - '0';
--	ch = tolower(ch);
--	if ((ch >= 'a') && (ch <= 'f'))
--		return ch - 'a' + 10;
--	return -1;
-+	unsigned char cu = ch & 0xdf;
-+	return -1 +
-+		((ch - '0' +  1) & (unsigned)((ch - '9' - 1) & ('0' - 1 - ch)) >> 8) +
-+		((cu - 'A' + 11) & (unsigned)((cu - 'F' - 1) & ('A' - 1 - cu)) >> 8);
+ 	void __iomem *tse_pcs_base = pcs->tse_pcs_base;
++	void __iomem *sgmii_adapter_base = pcs->sgmii_adapter_base;
+ 	u32 val;
+ 
++	writew(SGMII_ADAPTER_ENABLE,
++	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
++
+ 	pcs->autoneg = phy_dev->autoneg;
+ 
+ 	if (phy_dev->autoneg == AUTONEG_ENABLE) {
+--- a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h
++++ b/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h
+@@ -21,10 +21,6 @@
+ #include <linux/phy.h>
+ #include <linux/timer.h>
+ 
+-#define SGMII_ADAPTER_CTRL_REG		0x00
+-#define SGMII_ADAPTER_ENABLE		0x0000
+-#define SGMII_ADAPTER_DISABLE		0x0001
+-
+ struct tse_pcs {
+ 	struct device *dev;
+ 	void __iomem *tse_pcs_base;
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
+@@ -29,6 +29,9 @@
+ 
+ #include "altr_tse_pcs.h"
+ 
++#define SGMII_ADAPTER_CTRL_REG                          0x00
++#define SGMII_ADAPTER_DISABLE                           0x0001
++
+ #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_GMII_MII 0x0
+ #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RGMII 0x1
+ #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RMII 0x2
+@@ -62,14 +65,16 @@ static void socfpga_dwmac_fix_mac_speed(
+ {
+ 	struct socfpga_dwmac *dwmac = (struct socfpga_dwmac *)priv;
+ 	void __iomem *splitter_base = dwmac->splitter_base;
++	void __iomem *tse_pcs_base = dwmac->pcs.tse_pcs_base;
+ 	void __iomem *sgmii_adapter_base = dwmac->pcs.sgmii_adapter_base;
+ 	struct device *dev = dwmac->dev;
+ 	struct net_device *ndev = dev_get_drvdata(dev);
+ 	struct phy_device *phy_dev = ndev->phydev;
+ 	u32 val;
+ 
+-	writew(SGMII_ADAPTER_DISABLE,
+-	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
++	if ((tse_pcs_base) && (sgmii_adapter_base))
++		writew(SGMII_ADAPTER_DISABLE,
++		       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
+ 
+ 	if (splitter_base) {
+ 		val = readl(splitter_base + EMAC_SPLITTER_CTRL_REG);
+@@ -91,9 +96,7 @@ static void socfpga_dwmac_fix_mac_speed(
+ 		writel(val, splitter_base + EMAC_SPLITTER_CTRL_REG);
+ 	}
+ 
+-	writew(SGMII_ADAPTER_ENABLE,
+-	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
+-	if (phy_dev)
++	if (tse_pcs_base && sgmii_adapter_base)
+ 		tse_pcs_fix_mac_speed(&dwmac->pcs, phy_dev, speed);
  }
- EXPORT_SYMBOL(hex_to_bin);
  
 
 
