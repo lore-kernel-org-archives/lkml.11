@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1385C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBE46C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:56:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343702AbiEJN7b (ORCPT
+        id S1343720AbiEJN7e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:59:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47270 "EHLO
+        Tue, 10 May 2022 09:59:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245317AbiEJNiq (ORCPT
+        with ESMTP id S245406AbiEJNiy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:38:46 -0400
+        Tue, 10 May 2022 09:38:54 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9993231C88;
-        Tue, 10 May 2022 06:29:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 353F723675B;
+        Tue, 10 May 2022 06:29:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3E02FB81DA2;
-        Tue, 10 May 2022 13:29:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4983C385C2;
-        Tue, 10 May 2022 13:29:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 67E98B81DA8;
+        Tue, 10 May 2022 13:29:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4412C385A6;
+        Tue, 10 May 2022 13:29:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189344;
-        bh=WtU2MifjE7WdVm6QX8N19707fXD4NfeoLMb7jSc2l6A=;
+        s=korg; t=1652189350;
+        bh=CQsU3eE5Y9okUjsZ2/gw2WNAtqA8UvV3jiFtqDYMyIM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jXtLlNSJVT8GoYXFpNySRWhd1WjhQJkhkppjhSzSs8sjqEQx/dHD3c3eI3XcmheO/
-         4nXVzpUvnxIdYLIZOiBRqyziw37TItfuWBOW+L6rg5bD8lpc1/uZQwq+7nYWsRv3qB
-         VFoNyUccKYh56RrYbFfdJYAzxZl0HtRjWb3TlPN8=
+        b=ISPG0Owx/FDtzTFnhUExrhBZNqwE0XmSn0rsEm2j2hFIYEpa/iKua8XUJInkmo5RF
+         1o82UUMMIr9bzPfpLU+vP6bY5t6TvXSIlJrhKJw5N1aOIMM8BXFhXjT8ssh2p6cD5A
+         Sb2aj5NCbaZaj7g6rC9tUzcNwj0qugKzZv3EmJLU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
-        Takashi Sakamoto <o-takashi@sakamocchi.jp>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 020/135] firewire: core: extend card->lock in fw_core_handle_bus_reset
-Date:   Tue, 10 May 2022 15:06:42 +0200
-Message-Id: <20220510130740.977690731@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Pfaff <tpfaff@pcs.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>
+Subject: [PATCH 5.15 022/135] genirq: Synchronize interrupt thread startup
+Date:   Tue, 10 May 2022 15:06:44 +0200
+Message-Id: <20220510130741.035054831@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -50,91 +50,173 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Thomas Pfaff <tpfaff@pcs.com>
 
-commit a7ecbe92b9243edbe94772f6f2c854e4142a3345 upstream.
+commit 8707898e22fd665bc1d7b18b809be4b56ce25bdd upstream.
 
-card->local_node and card->bm_retries are both always accessed under
-card->lock.
-fw_core_handle_bus_reset has a check whose condition depends on
-card->local_node and whose body writes to card->bm_retries.
-Both of these accesses are not under card->lock. Move the lock acquiring
-of card->lock to before this check such that these accesses do happen
-when card->lock is held.
-fw_destroy_nodes is called inside the check.
-Since fw_destroy_nodes already acquires card->lock inside its function
-body, move this out to the callsites of fw_destroy_nodes.
-Also add a comment to indicate which locking is necessary when calling
-fw_destroy_nodes.
+A kernel hang can be observed when running setserial in a loop on a kernel
+with force threaded interrupts. The sequence of events is:
 
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Signed-off-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
-Link: https://lore.kernel.org/r/20220409041243.603210-4-o-takashi@sakamocchi.jp
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+   setserial
+     open("/dev/ttyXXX")
+       request_irq()
+     do_stuff()
+      -> serial interrupt
+         -> wake(irq_thread)
+	      desc->threads_active++;
+     close()
+       free_irq()
+         kthread_stop(irq_thread)
+     synchronize_irq() <- hangs because desc->threads_active != 0
+
+The thread is created in request_irq() and woken up, but does not get on a
+CPU to reach the actual thread function, which would handle the pending
+wake-up. kthread_stop() sets the should stop condition which makes the
+thread immediately exit, which in turn leaves the stale threads_active
+count around.
+
+This problem was introduced with commit 519cc8652b3a, which addressed a
+interrupt sharing issue in the PCIe code.
+
+Before that commit free_irq() invoked synchronize_irq(), which waits for
+the hard interrupt handler and also for associated threads to complete.
+
+To address the PCIe issue synchronize_irq() was replaced with
+__synchronize_hardirq(), which only waits for the hard interrupt handler to
+complete, but not for threaded handlers.
+
+This was done under the assumption, that the interrupt thread already
+reached the thread function and waits for a wake-up, which is guaranteed to
+be handled before acting on the stop condition. The problematic case, that
+the thread would not reach the thread function, was obviously overlooked.
+
+Make sure that the interrupt thread is really started and reaches
+thread_fn() before returning from __setup_irq().
+
+This utilizes the existing wait queue in the interrupt descriptor. The
+wait queue is unused for non-shared interrupts. For shared interrupts the
+usage might cause a spurious wake-up of a waiter in synchronize_irq() or the
+completion of a threaded handler might cause a spurious wake-up of the
+waiter for the ready flag. Both are harmless and have no functional impact.
+
+[ tglx: Amended changelog ]
+
+Fixes: 519cc8652b3a ("genirq: Synchronize only with single thread on free_irq()")
+Signed-off-by: Thomas Pfaff <tpfaff@pcs.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Marc Zyngier <maz@kernel.org>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/552fe7b4-9224-b183-bb87-a8f36d335690@pcs.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/firewire/core-card.c     |    3 +++
- drivers/firewire/core-topology.c |    9 +++------
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ kernel/irq/internals.h |    2 ++
+ kernel/irq/irqdesc.c   |    2 ++
+ kernel/irq/manage.c    |   39 +++++++++++++++++++++++++++++----------
+ 3 files changed, 33 insertions(+), 10 deletions(-)
 
---- a/drivers/firewire/core-card.c
-+++ b/drivers/firewire/core-card.c
-@@ -668,6 +668,7 @@ EXPORT_SYMBOL_GPL(fw_card_release);
- void fw_core_remove_card(struct fw_card *card)
- {
- 	struct fw_card_driver dummy_driver = dummy_driver_template;
-+	unsigned long flags;
+--- a/kernel/irq/internals.h
++++ b/kernel/irq/internals.h
+@@ -29,12 +29,14 @@ extern struct irqaction chained_action;
+  * IRQTF_WARNED    - warning "IRQ_WAKE_THREAD w/o thread_fn" has been printed
+  * IRQTF_AFFINITY  - irq thread is requested to adjust affinity
+  * IRQTF_FORCED_THREAD  - irq action is force threaded
++ * IRQTF_READY     - signals that irq thread is ready
+  */
+ enum {
+ 	IRQTF_RUNTHREAD,
+ 	IRQTF_WARNED,
+ 	IRQTF_AFFINITY,
+ 	IRQTF_FORCED_THREAD,
++	IRQTF_READY,
+ };
  
- 	card->driver->update_phy_reg(card, 4,
- 				     PHY_LINK_ACTIVE | PHY_CONTENDER, 0);
-@@ -682,7 +683,9 @@ void fw_core_remove_card(struct fw_card
- 	dummy_driver.stop_iso		= card->driver->stop_iso;
- 	card->driver = &dummy_driver;
+ /*
+--- a/kernel/irq/irqdesc.c
++++ b/kernel/irq/irqdesc.c
+@@ -407,6 +407,7 @@ static struct irq_desc *alloc_desc(int i
+ 	lockdep_set_class(&desc->lock, &irq_desc_lock_class);
+ 	mutex_init(&desc->request_mutex);
+ 	init_rcu_head(&desc->rcu);
++	init_waitqueue_head(&desc->wait_for_threads);
  
-+	spin_lock_irqsave(&card->lock, flags);
- 	fw_destroy_nodes(card);
-+	spin_unlock_irqrestore(&card->lock, flags);
- 
- 	/* Wait for all users, especially device workqueue jobs, to finish. */
- 	fw_card_put(card);
---- a/drivers/firewire/core-topology.c
-+++ b/drivers/firewire/core-topology.c
-@@ -375,16 +375,13 @@ static void report_found_node(struct fw_
- 	card->bm_retries = 0;
+ 	desc_set_defaults(irq, desc, node, affinity, owner);
+ 	irqd_set(&desc->irq_data, flags);
+@@ -575,6 +576,7 @@ int __init early_irq_init(void)
+ 		raw_spin_lock_init(&desc[i].lock);
+ 		lockdep_set_class(&desc[i].lock, &irq_desc_lock_class);
+ 		mutex_init(&desc[i].request_mutex);
++		init_waitqueue_head(&desc[i].wait_for_threads);
+ 		desc_set_defaults(i, &desc[i], node, NULL, NULL);
+ 	}
+ 	return arch_early_irq_init();
+--- a/kernel/irq/manage.c
++++ b/kernel/irq/manage.c
+@@ -1249,6 +1249,31 @@ static void irq_wake_secondary(struct ir
  }
  
-+/* Must be called with card->lock held */
- void fw_destroy_nodes(struct fw_card *card)
- {
--	unsigned long flags;
--
--	spin_lock_irqsave(&card->lock, flags);
- 	card->color++;
- 	if (card->local_node != NULL)
- 		for_each_fw_node(card, card->local_node, report_lost_node);
- 	card->local_node = NULL;
--	spin_unlock_irqrestore(&card->lock, flags);
- }
- 
- static void move_tree(struct fw_node *node0, struct fw_node *node1, int port)
-@@ -510,6 +507,8 @@ void fw_core_handle_bus_reset(struct fw_
- 	struct fw_node *local_node;
- 	unsigned long flags;
- 
-+	spin_lock_irqsave(&card->lock, flags);
+ /*
++ * Internal function to notify that a interrupt thread is ready.
++ */
++static void irq_thread_set_ready(struct irq_desc *desc,
++				 struct irqaction *action)
++{
++	set_bit(IRQTF_READY, &action->thread_flags);
++	wake_up(&desc->wait_for_threads);
++}
 +
- 	/*
- 	 * If the selfID buffer is not the immediate successor of the
- 	 * previously processed one, we cannot reliably compare the
-@@ -521,8 +520,6 @@ void fw_core_handle_bus_reset(struct fw_
- 		card->bm_retries = 0;
++/*
++ * Internal function to wake up a interrupt thread and wait until it is
++ * ready.
++ */
++static void wake_up_and_wait_for_irq_thread_ready(struct irq_desc *desc,
++						  struct irqaction *action)
++{
++	if (!action || !action->thread)
++		return;
++
++	wake_up_process(action->thread);
++	wait_event(desc->wait_for_threads,
++		   test_bit(IRQTF_READY, &action->thread_flags));
++}
++
++/*
+  * Interrupt handler thread
+  */
+ static int irq_thread(void *data)
+@@ -1259,6 +1284,8 @@ static int irq_thread(void *data)
+ 	irqreturn_t (*handler_fn)(struct irq_desc *desc,
+ 			struct irqaction *action);
+ 
++	irq_thread_set_ready(desc, action);
++
+ 	if (force_irqthreads() && test_bit(IRQTF_FORCED_THREAD,
+ 					   &action->thread_flags))
+ 		handler_fn = irq_forced_thread_fn;
+@@ -1683,8 +1710,6 @@ __setup_irq(unsigned int irq, struct irq
  	}
  
--	spin_lock_irqsave(&card->lock, flags);
+ 	if (!shared) {
+-		init_waitqueue_head(&desc->wait_for_threads);
 -
- 	card->broadcast_channel_allocated = card->broadcast_channel_auto_allocated;
- 	card->node_id = node_id;
- 	/*
+ 		/* Setup the type (level, edge polarity) if configured: */
+ 		if (new->flags & IRQF_TRIGGER_MASK) {
+ 			ret = __irq_set_trigger(desc,
+@@ -1780,14 +1805,8 @@ __setup_irq(unsigned int irq, struct irq
+ 
+ 	irq_setup_timings(desc, new);
+ 
+-	/*
+-	 * Strictly no need to wake it up, but hung_task complains
+-	 * when no hard interrupt wakes the thread up.
+-	 */
+-	if (new->thread)
+-		wake_up_process(new->thread);
+-	if (new->secondary)
+-		wake_up_process(new->secondary->thread);
++	wake_up_and_wait_for_irq_thread_ready(desc, new);
++	wake_up_and_wait_for_irq_thread_ready(desc, new->secondary);
+ 
+ 	register_irq_proc(irq, desc);
+ 	new->dir = NULL;
 
 
