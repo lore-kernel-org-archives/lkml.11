@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B6E9C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:30:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5B39C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:30:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235527AbiEJNeF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:34:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41362 "EHLO
+        id S243454AbiEJNeK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:34:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242913AbiEJNZQ (ORCPT
+        with ESMTP id S242911AbiEJNZQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:25:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE11A22406F;
-        Tue, 10 May 2022 06:18:16 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29D092181D5;
+        Tue, 10 May 2022 06:18:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5924A615F8;
-        Tue, 10 May 2022 13:18:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A8B0C385C6;
-        Tue, 10 May 2022 13:18:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BBD2A61661;
+        Tue, 10 May 2022 13:18:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD877C385C9;
+        Tue, 10 May 2022 13:18:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188695;
-        bh=eFPjMgElhDEszECLNXLR9KghKw55KcyONnperHZm5LM=;
+        s=korg; t=1652188690;
+        bh=9E39mHLbOPtkiWOEOKFy56IbZL3g5wvMyD0A5kF6R7k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tOTPSSSSWzbXJZ34Fir2MuSqxLVbr2JKD9FcKGZhPk6y0Freh7TsXQ8avZ3hVq2G3
-         67MHC4IRzGtZ5PhEhvRwzNIcC/6gjtiyXepgIxnMUzl7lEpHafDM2DdoNoXrbxUQaT
-         Zhrk8beZvXdofhZD0qKO7P3t4cPiM7a86AIiOzN8=
+        b=snUBKY2GIk/TPzL3FJdUPAoeNhpP1yUm8/J8NUVRD+e3Ytjx01kBGnmDOnANJq1zz
+         GnIqIhbAOPi6eet/BiZshJ8ReaFwosjlhEGjVkMdmzjAjdqBvulBmBO4sieml5ZN1X
+         HwaS8TFpK9nCNWVOHHRLzVPkuNyYEGGaC1++dKmI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vijayavardhan Vennapusa <vvreddy@codeaurora.org>,
-        Dan Vacura <w36195@motorola.com>, stable <stable@kernel.org>
-Subject: [PATCH 4.19 14/88] usb: gadget: configfs: clear deactivation flag in configfs_composite_unbind()
-Date:   Tue, 10 May 2022 15:06:59 +0200
-Message-Id: <20220510130734.162062350@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        Hangyu Hua <hbh25y@gmail.com>
+Subject: [PATCH 4.19 12/88] usb: misc: fix improper handling of refcount in uss720_probe()
+Date:   Tue, 10 May 2022 15:06:57 +0200
+Message-Id: <20220510130734.105636714@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 References: <20220510130733.735278074@linuxfoundation.org>
@@ -49,37 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vijayavardhan Vennapusa <vvreddy@codeaurora.org>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-commit bf95c4d4630c7a2c16e7b424fdea5177d9ce0864 upstream.
+commit 0a96fa640dc928da9eaa46a22c46521b037b78ad upstream.
 
-If any function like UVC is deactivating gadget as part of composition
-switch which results in not calling pullup enablement, it is not getting
-enabled after switch to new composition due to this deactivation flag
-not cleared. This results in USB enumeration not happening after switch
-to new USB composition. Hence clear deactivation flag inside gadget
-structure in configfs_composite_unbind() before switch to new USB
-composition.
+usb_put_dev shouldn't be called when uss720_probe succeeds because of
+priv->usbdev. At the same time, priv->usbdev shouldn't be set to NULL
+before destroy_priv in uss720_disconnect because usb_put_dev is in
+destroy_priv.
 
-Signed-off-by: Vijayavardhan Vennapusa <vvreddy@codeaurora.org>
-Signed-off-by: Dan Vacura <w36195@motorola.com>
+Fix this by moving priv->usbdev = NULL after usb_put_dev.
+
+Fixes: dcb4b8ad6a44 ("misc/uss720: fix memory leak in uss720_probe")
 Cc: stable <stable@kernel.org>
-Link: https://lore.kernel.org/r/20220413211038.72797-1-w36195@motorola.com
+Reviewed-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Link: https://lore.kernel.org/r/20220407024001.11761-1-hbh25y@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/gadget/configfs.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/usb/misc/uss720.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/drivers/usb/gadget/configfs.c
-+++ b/drivers/usb/gadget/configfs.c
-@@ -1412,6 +1412,8 @@ static void configfs_composite_unbind(st
- 	usb_ep_autoconfig_reset(cdev->gadget);
- 	spin_lock_irqsave(&gi->spinlock, flags);
- 	cdev->gadget = NULL;
-+	cdev->deactivations = 0;
-+	gadget->deactivated = false;
- 	set_gadget_data(gadget, NULL);
- 	spin_unlock_irqrestore(&gi->spinlock, flags);
+--- a/drivers/usb/misc/uss720.c
++++ b/drivers/usb/misc/uss720.c
+@@ -71,6 +71,7 @@ static void destroy_priv(struct kref *kr
+ 
+ 	dev_dbg(&priv->usbdev->dev, "destroying priv datastructure\n");
+ 	usb_put_dev(priv->usbdev);
++	priv->usbdev = NULL;
+ 	kfree(priv);
  }
+ 
+@@ -736,7 +737,6 @@ static int uss720_probe(struct usb_inter
+ 	parport_announce_port(pp);
+ 
+ 	usb_set_intfdata(intf, pp);
+-	usb_put_dev(usbdev);
+ 	return 0;
+ 
+ probe_abort:
+@@ -754,7 +754,6 @@ static void uss720_disconnect(struct usb
+ 	usb_set_intfdata(intf, NULL);
+ 	if (pp) {
+ 		priv = pp->private_data;
+-		priv->usbdev = NULL;
+ 		priv->pp = NULL;
+ 		dev_dbg(&intf->dev, "parport_remove_port\n");
+ 		parport_remove_port(pp);
 
 
