@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A394DC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:24:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68720C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:24:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243220AbiEJN2s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:28:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45960 "EHLO
+        id S243227AbiEJN2y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:28:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243389AbiEJNVu (ORCPT
+        with ESMTP id S243401AbiEJNVv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:21:50 -0400
+        Tue, 10 May 2022 09:21:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AB1C48393;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 307DA4B846;
         Tue, 10 May 2022 06:15:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C6026166E;
-        Tue, 10 May 2022 13:15:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D39E9C385A6;
-        Tue, 10 May 2022 13:15:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E18D615DD;
+        Tue, 10 May 2022 13:15:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 388C5C385A6;
+        Tue, 10 May 2022 13:15:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188553;
-        bh=UijIQ3SLZpbUro05ZQA+Qa+W6F8cFx3scj6Osw79oHY=;
+        s=korg; t=1652188544;
+        bh=KR943c8CFkXLKMhnK9yAbS4g5Lha2CsC/opzgmgUJ6o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c8uyCa7ORiGGExI0CMy/gBRcb93vZ2xOrtJvtmD0axvdj6y5VrQzYtsBKqJb/e3Lr
-         IJHWq+0XtDs1/b892uj4fzlBG9jtklmkIh2FGaobFDBTm7ZtvA9N8ViXiZmrRzaX+X
-         dDsq0+nEoz+a9x/IUKfm9b1FGxotYa3orGINHLkc=
+        b=t1leVvz/ppVsGjIz4KVsoYjkrq2SNw74QqZwyQwGawEaHSkAzuDiV5CAbc9LiAidO
+         8isfNi0GJCPp0+VmWF+w9GQ3gEuFgA2UXUjBr+63eyimpniWRUyk/cYhzLAxD4Yk3R
+         UVKo5ELyuqq189wlMBoynbctT3MLCKkd0zKa69Ek=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 4.14 46/78] tty: n_gsm: fix wrong signal octet encoding in convergence layer type 2
-Date:   Tue, 10 May 2022 15:07:32 +0200
-Message-Id: <20220510130733.900794072@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaoli Feng <xifeng@redhat.com>,
+        Ronnie Sahlberg <lsahlber@redhat.com>,
+        Steve French <stfrench@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 43/78] cifs: destage any unwritten data to the server before calling copychunk_write
+Date:   Tue, 10 May 2022 15:07:29 +0200
+Message-Id: <20220510130733.809826225@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
 References: <20220510130732.522479698@linuxfoundation.org>
@@ -47,40 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Ronnie Sahlberg <lsahlber@redhat.com>
 
-commit 06d5afd4d640eea67f5623e76cd5fc03359b7f3c upstream.
+[ Upstream commit f5d0f921ea362636e4a2efb7c38d1ead373a8700 ]
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.5.2 describes that the signal octet in
-convergence layer type 2 can be either one or two bytes. The length is
-encoded in the EA bit. This is set 1 for the last byte in the sequence.
-gsmtty_modem_update() handles this correctly but gsm_dlci_data_output()
-fails to set EA to 1. There is no case in which we encode two signal octets
-as there is no case in which we send out a break signal.
-Therefore, always set the EA bit to 1 for the signal octet to fix this.
+because the copychunk_write might cover a region of the file that has not yet
+been sent to the server and thus fail.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220414094225.4527-5-daniel.starke@siemens.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+A simple way to reproduce this is:
+truncate -s 0 /mnt/testfile; strace -f -o x -ttT xfs_io -i -f -c 'pwrite 0k 128k' -c 'fcollapse 16k 24k' /mnt/testfile
+
+the issue is that the 'pwrite 0k 128k' becomes rearranged on the wire with
+the 'fcollapse 16k 24k' due to write-back caching.
+
+fcollapse is implemented in cifs.ko as a SMB2 IOCTL(COPYCHUNK_WRITE) call
+and it will fail serverside since the file is still 0b in size serverside
+until the writes have been destaged.
+To avoid this we must ensure that we destage any unwritten data to the
+server before calling COPYCHUNK_WRITE.
+
+Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1997373
+Reported-by: Xiaoli Feng <xifeng@redhat.com>
+Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/cifs/smb2ops.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -835,7 +835,7 @@ static int gsm_dlci_data_output(struct g
- 			break;
- 		case 2:	/* Unstructed with modem bits.
- 		Always one byte as we never send inline break data */
--			*dp++ = gsm_encode_modem(dlci);
-+			*dp++ = (gsm_encode_modem(dlci) << 1) | EA;
- 			break;
- 		}
- 		WARN_ON(kfifo_out_locked(dlci->fifo, dp , len, &dlci->lock) != len);
+diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
+index ba56c00f2650..3280a801b1d7 100644
+--- a/fs/cifs/smb2ops.c
++++ b/fs/cifs/smb2ops.c
+@@ -855,9 +855,17 @@ smb2_copychunk_range(const unsigned int xid,
+ 	int chunks_copied = 0;
+ 	bool chunk_sizes_updated = false;
+ 	ssize_t bytes_written, total_bytes_written = 0;
++	struct inode *inode;
+ 
+ 	pcchunk = kmalloc(sizeof(struct copychunk_ioctl), GFP_KERNEL);
+ 
++	/*
++	 * We need to flush all unwritten data before we can send the
++	 * copychunk ioctl to the server.
++	 */
++	inode = d_inode(trgtfile->dentry);
++	filemap_write_and_wait(inode->i_mapping);
++
+ 	if (pcchunk == NULL)
+ 		return -ENOMEM;
+ 
+-- 
+2.35.1
+
 
 
