@@ -2,174 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8670DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:54:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8B77C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:54:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242040AbiEJM6F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 08:58:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50376 "EHLO
+        id S242030AbiEJM6V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 08:58:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242264AbiEJM4i (ORCPT
+        with ESMTP id S241816AbiEJM6F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 08:56:38 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAE8F2AD8
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 05:52:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652187160; x=1683723160;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=bm2lo75Y8U82TesofbKiy9P6Lga824nihfJpemUvpXg=;
-  b=aHIs8dwOY6EpJbA5A0SyRTfpbarrzivwuMDyJqFpV5eonAqlaVCikTjh
-   uw0S2rSpwHbvI+tYqW0HyssYlEOzpZbq0iK20dj4rUSc8EqGP0y3pl5TA
-   lYAz5WRv3M8eAqfi4hVESa0/mLg8Lzoji1VVv6eQQ8xGjkKgCEeASk1e6
-   MZ3X3LJ6qniW6416Rpno6uIGiv6Vp7N6E7lSRAaJjnU361hK+1SX0iE9u
-   8DD7TH3AFSPAdVnEQxlSUCvI6SuviXm5JD7tCweQ9PZleJUEugyncEStm
-   lMvqTbg+mz00OYDGpbNmSVz9Io6FOO05va1b5N+ZAYSDvWJNt9n1aigTa
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="268203012"
-X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
-   d="scan'208";a="268203012"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 05:52:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
-   d="scan'208";a="711005142"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 10 May 2022 05:52:38 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1noPLy-000Hu2-3E;
-        Tue, 10 May 2022 12:52:38 +0000
-Date:   Tue, 10 May 2022 20:52:04 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Liam R. Howlett" <Liam.Howlett@oracle.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: [akpm-mm:mm-unstable 338/431] mm/nommu.c:579:2: error: call to
- undeclared function 'vma_mas_store'; ISO C99 and later do not support
- implicit function declarations
-Message-ID: <202205102024.jnJMagOr-lkp@intel.com>
+        Tue, 10 May 2022 08:58:05 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E01B2550AD
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 05:54:08 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id w24so12129573edx.3
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 05:54:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=8ZXDhVwfP9b/t3UBf3NPpQNR6CAeGAVJW+qQkAZj5Ko=;
+        b=euXwwMN+44LSnVe58GHN3cQNvSZzRsRMZMrWbY83XR04MkNKGe9KxfYl2XjOBQ2rAm
+         NeGgFovJ7w80bRYLSul/3kupJl1LsM2BjyUFhOUi/HDx2QP1R8Esh4WUOAGEzKNXVWpk
+         DBx3xHnvXB8eYG8dFU00iNwnDbRiATCA8TzNhFRf1kg5vdvS6SxKXjwaUX4a7T2WF6hL
+         h0DTKR2ZqV94fbVJaUTzlNJ7QxFjSv7JdHmd6jCwGXm3rXKiXcy84vB7UDhT65N7O3B9
+         ZzbQHCBhOmCF4blxyvHUJtcyi7t+VCUQAtpcTNDQUhPlZrIoLc2f2+0rW9TOZZ2pk8Sy
+         G8MA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=8ZXDhVwfP9b/t3UBf3NPpQNR6CAeGAVJW+qQkAZj5Ko=;
+        b=u82Bnda0MirPwBrLg4lSm+0u2p5t5DSoJ/kH9Z5gSmIW1ijCfn3MwWBBCKB2kzqx7P
+         JOevb2wcN50ptTmmmFTFjNIVZBnkSucrm27jzCnl+AXEClaVn792v+7QSe7ykU7adxfP
+         mU9Yt0TZO6wpAOxnlrFAqwi8F9BwHkS5FBh1E07RDYJ9ir1xAHk/rqkx3Oh6icmQLiqB
+         PKXMOKdw6PHyCGZty01veH+fSplN/TlX22Ku20GtxrDGIsJ8e/x9yTJO0FJ5SGm3NMfk
+         rOAVLvXK75r/V+9Va/ApuheQB5PGmFzf0oc55Rt62FZkbNwGcvb5Mn9GWrY9h3MBcjIj
+         T3GA==
+X-Gm-Message-State: AOAM531c91+TU9BpTsKPp/GcSJ0ZJXwTuN/lQB599fAKQa7ne847x0et
+        QNaw/8uxI2ng9CHk9WBpBnCfSg==
+X-Google-Smtp-Source: ABdhPJwih/KHvqR7RfCUpPJRC7LqDV0GHHqs6+c7WhjgmhAopq8u7vTMOgYFocRdLALC7G7Iz1hMpA==
+X-Received: by 2002:a05:6402:50a:b0:426:16c3:4283 with SMTP id m10-20020a056402050a00b0042616c34283mr23282269edv.371.1652187247138;
+        Tue, 10 May 2022 05:54:07 -0700 (PDT)
+Received: from [192.168.0.252] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id u17-20020a170906781100b006f3ef214dacsm6228554ejm.18.2022.05.10.05.54.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 May 2022 05:54:06 -0700 (PDT)
+Message-ID: <9365247a-8aa0-bad5-c619-9d5a984b17de@linaro.org>
+Date:   Tue, 10 May 2022 14:54:05 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v5 1/2] arm64: dts: marvell: Add Armada 98DX2530 SoC and
+ RD-AC5X board
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Chris Packham <Chris.Packham@alliedtelesis.co.nz>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "gregory.clement@bootlin.com" <gregory.clement@bootlin.com>,
+        "sebastian.hesselbarth@gmail.com" <sebastian.hesselbarth@gmail.com>,
+        "kostap@marvell.com" <kostap@marvell.com>,
+        "robert.marko@sartura.hr" <robert.marko@sartura.hr>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+References: <20220504044624.951841-1-chris.packham@alliedtelesis.co.nz>
+ <20220504044624.951841-2-chris.packham@alliedtelesis.co.nz>
+ <dcc80690-c159-99f8-4686-536b9e87eb69@linaro.org>
+ <6770d320-b998-0c9d-3824-0d429834b289@alliedtelesis.co.nz>
+ <3498643b-cb2e-5685-65e0-7efe1113783f@linaro.org> <Ynpclx4z5z1Emx+b@lunn.ch>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <Ynpclx4z5z1Emx+b@lunn.ch>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-unstable
-head:   584a50635cc1deee2eeab5a17dfdcf9db7add21b
-commit: a245f2ec995564195c1956813ff4fee7a894f099 [338/431] mm: remove rb tree.
-config: arm-randconfig-r012-20220509 (https://download.01.org/0day-ci/archive/20220510/202205102024.jnJMagOr-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 18dd123c56754edf62c7042dcf23185c3727610f)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git/commit/?id=a245f2ec995564195c1956813ff4fee7a894f099
-        git remote add akpm-mm https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git
-        git fetch --no-tags akpm-mm mm-unstable
-        git checkout a245f2ec995564195c1956813ff4fee7a894f099
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+On 10/05/2022 14:37, Andrew Lunn wrote:
+> On Tue, May 10, 2022 at 09:08:08AM +0200, Krzysztof Kozlowski wrote:
+>> On 10/05/2022 06:14, Chris Packham wrote:
+>>>
+>>> Based on the information I have (which isn't much) there is a ref_clk 
+>>> input that is connected to a 25MHz oscillator and then I'm assuming 
+>>> these are all generated from that with various dividers. 25MHz is the 
+>>> only documented option.
+>>>
+>>> There doesn't appear to be any documented register where I can read out 
+>>> the divider ratios. It might be nice I could have the fixed osc node and 
+>>> have these 3 clocks derived with fixed divisors but I don't see any what 
+>>> of achieving that.
+>>
+>>
+>> OK, but where are the dividers? The ref_clk is outside of SoC, so should
+>> be defined in board DTS (at least its rate). If the rest is in the SoC,
+>> they are usually part of clock controller, because usually they belong
+>> to some power domain or have some clock gating.
+> 
+> 25MHz is a 'magic value' in Ethernet, nearly everything is based
+> around it. And remember this SoC is basically an Ethernet switch with
+> a small CPU glued on one side. If you gated clocks derived from the
+> 25MHz reference clock, probably part of your Ethernet switch stops
+> working, which is the whole point of this SoC. So i doubt there are
+> gates on the derived clocks. If there is any gating and power domains,
+> it is generally at a different level. You can power down individual
+> ports of the Ethernet switch. But generally, there is one bit in a
+> register somewhere to do that, and you don't have direct control over
+> clocks and regulators etc.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> mm/nommu.c:579:2: error: call to undeclared function 'vma_mas_store'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-           vma_mas_store(vma, &mas);
-           ^
-   mm/nommu.c:579:2: note: did you mean 'mas_store'?
-   include/linux/maple_tree.h:454:7: note: 'mas_store' declared here
-   void *mas_store(struct ma_state *mas, void *entry);
-         ^
->> mm/nommu.c:615:2: error: call to undeclared function 'vma_mas_remove'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-           vma_mas_remove(vma, &mas);
-           ^
-   2 errors generated.
+The 25 MHz input clock I understand, it was about other clocks, like
+spi, axi and core. These clearly look like part of SoC, so defining them
+with a "stubs" (uncontrollable fixed-clock) is not the best way of
+modelling an SoC. Although maybe this SoC does not have a proper clock
+controller and even SPI and AXI clocks are always on?
 
 
-vim +/vma_mas_store +579 mm/nommu.c
-
-   547	
-   548	/*
-   549	 * add a VMA into a process's mm_struct in the appropriate place in the list
-   550	 * and tree and add to the address space's page tree also if not an anonymous
-   551	 * page
-   552	 * - should be called with mm->mmap_lock held writelocked
-   553	 */
-   554	static void add_vma_to_mm(struct mm_struct *mm, struct vm_area_struct *vma)
-   555	{
-   556		struct address_space *mapping;
-   557		struct vm_area_struct *prev;
-   558		MA_STATE(mas, &mm->mm_mt, vma->vm_start, vma->vm_end);
-   559	
-   560		BUG_ON(!vma->vm_region);
-   561	
-   562		mm->map_count++;
-   563		vma->vm_mm = mm;
-   564	
-   565		/* add the VMA to the mapping */
-   566		if (vma->vm_file) {
-   567			mapping = vma->vm_file->f_mapping;
-   568	
-   569			i_mmap_lock_write(mapping);
-   570			flush_dcache_mmap_lock(mapping);
-   571			vma_interval_tree_insert(vma, &mapping->i_mmap);
-   572			flush_dcache_mmap_unlock(mapping);
-   573			i_mmap_unlock_write(mapping);
-   574		}
-   575	
-   576		prev = mas_prev(&mas, 0);
-   577		mas_reset(&mas);
-   578		/* add the VMA to the tree */
- > 579		vma_mas_store(vma, &mas);
-   580		__vma_link_list(mm, vma, prev);
-   581	}
-   582	
-   583	/*
-   584	 * delete a VMA from its owning mm_struct and address space
-   585	 */
-   586	static void delete_vma_from_mm(struct vm_area_struct *vma)
-   587	{
-   588		int i;
-   589		struct address_space *mapping;
-   590		struct mm_struct *mm = vma->vm_mm;
-   591		struct task_struct *curr = current;
-   592		MA_STATE(mas, &vma->vm_mm->mm_mt, 0, 0);
-   593	
-   594		mm->map_count--;
-   595		for (i = 0; i < VMACACHE_SIZE; i++) {
-   596			/* if the vma is cached, invalidate the entire cache */
-   597			if (curr->vmacache.vmas[i] == vma) {
-   598				vmacache_invalidate(mm);
-   599				break;
-   600			}
-   601		}
-   602	
-   603		/* remove the VMA from the mapping */
-   604		if (vma->vm_file) {
-   605			mapping = vma->vm_file->f_mapping;
-   606	
-   607			i_mmap_lock_write(mapping);
-   608			flush_dcache_mmap_lock(mapping);
-   609			vma_interval_tree_remove(vma, &mapping->i_mmap);
-   610			flush_dcache_mmap_unlock(mapping);
-   611			i_mmap_unlock_write(mapping);
-   612		}
-   613	
-   614		/* remove from the MM's tree and list */
- > 615		vma_mas_remove(vma, &mas);
-   616		__vma_unlink_list(mm, vma);
-   617	}
-   618	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Best regards,
+Krzysztof
