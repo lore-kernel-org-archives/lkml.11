@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73F18C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54957C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:00:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242903AbiEJOC1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:02:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49466 "EHLO
+        id S240702AbiEJOCU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:02:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245494AbiEJNjB (ORCPT
+        with ESMTP id S242911AbiEJNjL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:39:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0191728F1F2;
-        Tue, 10 May 2022 06:29:24 -0700 (PDT)
+        Tue, 10 May 2022 09:39:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 267DF291E48;
+        Tue, 10 May 2022 06:29:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F56F60C1C;
-        Tue, 10 May 2022 13:29:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53029C385A6;
-        Tue, 10 May 2022 13:29:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DA3361768;
+        Tue, 10 May 2022 13:29:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B290C385C6;
+        Tue, 10 May 2022 13:29:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189362;
-        bh=YpKJBiYbIBRLNkiHda5QMm3L+zXhaJseWyql1maFGDA=;
+        s=korg; t=1652189365;
+        bh=XvdFnLpnH8rg/tJlNoJuTp1Us8A3o+r1OR7Q0sYWAhU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UefwNQ2HGYritiBrJQ7Dd3/q/4vtNms8bfnqmTSi4O3LSCrIVtiuMm/64CjkSCaQe
-         H5EqrWitu+lxoAfCh1pYBvHaF2mHtW9XmUfjr/X7UIR181XLjtl2ywMP5BpgtYxxHT
-         SKWfRSgDM02QkMoim0dKTO35MdALYbNgvrzqyx4U=
+        b=1N+F2RCuJBelaQffgiQQjYWsyQM5hcjr6VOr94z7rS5QvylXRUYpYAYgj5xzLiRiQ
+         my40VrjC2x8Oh2lMlhX7sICdNtV8ENAcTLiLqcKyDkEc7zSHeHiEK+ai57PQ07WJUU
+         1BEQmGkVppKNcbHUv1VsL6hJbzxOoqN5AFH3I/ds=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
         Jerome Brunet <jbrunet@baylibre.com>
-Subject: [PATCH 5.15 026/135] ASoC: meson: Fix event generation for G12A tohdmi mux
-Date:   Tue, 10 May 2022 15:06:48 +0200
-Message-Id: <20220510130741.150894960@linuxfoundation.org>
+Subject: [PATCH 5.15 027/135] ASoC: meson: Fix event generation for AUI CODEC mux
+Date:   Tue, 10 May 2022 15:06:49 +0200
+Message-Id: <20220510130741.179125479@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -50,26 +50,26 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Mark Brown <broonie@kernel.org>
 
-commit 12131008fc13ff7f7690d170b7a8f72d24fd7d1e upstream.
+commit fce49921a22262736cdc3cc74fa67915b75e9363 upstream.
 
-The G12A tohdmi has a custom put() operation which returns 0 when the value
+The AIU CODEC has a custom put() operation which returns 0 when the value
 of the mux changes, meaning that events are not generated for userspace.
 Change to return 1 in this case, the function returns early in the case
 where there is no change.
 
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Reviewed-by: Jerome Brunet <jbrunet@baylibre.com>
-Link: https://lore.kernel.org/r/20220421123803.292063-4-broonie@kernel.org
+Link: https://lore.kernel.org/r/20220421123803.292063-3-broonie@kernel.org
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/meson/g12a-tohdmitx.c |    2 +-
+ sound/soc/meson/aiu-codec-ctrl.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/sound/soc/meson/g12a-tohdmitx.c
-+++ b/sound/soc/meson/g12a-tohdmitx.c
-@@ -67,7 +67,7 @@ static int g12a_tohdmitx_i2s_mux_put_enu
+--- a/sound/soc/meson/aiu-codec-ctrl.c
++++ b/sound/soc/meson/aiu-codec-ctrl.c
+@@ -57,7 +57,7 @@ static int aiu_codec_ctrl_mux_put_enum(s
  
  	snd_soc_dapm_mux_update_power(dapm, kcontrol, mux, e, NULL);
  
@@ -77,6 +77,6 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 +	return 1;
  }
  
- static SOC_ENUM_SINGLE_DECL(g12a_tohdmitx_i2s_mux_enum, TOHDMITX_CTRL0,
+ static SOC_ENUM_SINGLE_DECL(aiu_hdmi_ctrl_mux_enum, AIU_HDMI_CLK_DATA_CTRL,
 
 
