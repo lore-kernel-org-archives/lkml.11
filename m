@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07E72C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:59:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F221DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:59:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232613AbiEJODE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:03:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45700 "EHLO
+        id S245251AbiEJODQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:03:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244532AbiEJNhs (ORCPT
+        with ESMTP id S234163AbiEJNkQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:37:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80B2EB7F3;
-        Tue, 10 May 2022 06:25:53 -0700 (PDT)
+        Tue, 10 May 2022 09:40:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 154C42370E7;
+        Tue, 10 May 2022 06:29:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 193626170D;
-        Tue, 10 May 2022 13:25:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25939C385C2;
-        Tue, 10 May 2022 13:25:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D2989B81DA0;
+        Tue, 10 May 2022 13:29:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CE63C385A6;
+        Tue, 10 May 2022 13:29:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189150;
-        bh=+s4ngMBxOytcXovP8uK7iv8qXRfC12Uas4BGp8mGNzo=;
+        s=korg; t=1652189371;
+        bh=WAC2T/PFvI26Rh781lfEXaly7tnF4TXThSPFMyXmm1M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T2HJx0xX9egFxW9YnCqESd3/G06r9CbPZLQFIUwt10UT5/X8je7L5FqpDR4A6cmnG
-         Fp+B+9tcROPMkyomCkMcALPkU6gBXE36SDoE3jjIcJqL9ObZwwfT9rLsCEza7iLZA2
-         xn2FSHsDz4/mb87LnguID1ZlGU8fZ9uquRLa4cLA=
+        b=jurWyp+ogJ8cuc9V/DrMT2PrqtMMe65VzQ3zvv7YF+bywUJ6FZIa1v7n1xhSjx6Cu
+         Qd94YUpPb2WMIEUUsH6UeCwWpZFmo8MxEFyOVou7OqNOxY2C2wcSQY+pADEzcVqQvo
+         mMbndVx8cQ1FSFYx3O5tzQgT1pegpP/x1rvzuI8s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kyle Huey <me@kylehuey.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.10 08/70] KVM: x86/svm: Account for family 17h event renumberings in amd_pmc_perf_hw_id
-Date:   Tue, 10 May 2022 15:07:27 +0200
-Message-Id: <20220510130733.107273459@linuxfoundation.org>
+        stable@vger.kernel.org, Stefan Haberland <sth@linux.ibm.com>,
+        Jan Hoeppner <hoeppner@linux.ibm.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 029/135] s390/dasd: prevent double format of tracks for ESE devices
+Date:   Tue, 10 May 2022 15:06:51 +0200
+Message-Id: <20220510130741.237133863@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
-References: <20220510130732.861729621@linuxfoundation.org>
+In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
+References: <20220510130740.392653815@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,84 +49,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kyle Huey <me@kylehuey.com>
+From: Stefan Haberland <sth@linux.ibm.com>
 
-commit 5eb849322d7f7ae9d5c587c7bc3b4f7c6872cd2f upstream.
+commit 71f3871657370dbbaf942a1c758f64e49a36c70f upstream.
 
-Zen renumbered some of the performance counters that correspond to the
-well known events in perf_hw_id. This code in KVM was never updated for
-that, so guest that attempt to use counters on Zen that correspond to the
-pre-Zen perf_hw_id values will silently receive the wrong values.
+For ESE devices we get an error for write operations on an unformatted
+track. Afterwards the track will be formatted and the IO operation
+restarted.
+When using alias devices a track might be accessed by multiple requests
+simultaneously and there is a race window that a track gets formatted
+twice resulting in data loss.
 
-This has been observed in the wild with rr[0] when running in Zen 3
-guests. rr uses the retired conditional branch counter 00d1 which is
-incorrectly recognized by KVM as PERF_COUNT_HW_STALLED_CYCLES_BACKEND.
+Prevent this by remembering the amount of formatted tracks when starting
+a request and comparing this number before actually formatting a track
+on the fly. If the number has changed there is a chance that the current
+track was finally formatted in between. As a result do not format the
+track and restart the current IO to check.
 
-[0] https://rr-project.org/
+The number of formatted tracks does not match the overall number of
+formatted tracks on the device and it might wrap around but this is no
+problem. It is only needed to recognize that a track has been formatted at
+all in between.
 
-Signed-off-by: Kyle Huey <me@kylehuey.com>
-Message-Id: <20220503050136.86298-1-khuey@kylehuey.com>
-Cc: stable@vger.kernel.org
-[Check guest family, not host. - Paolo]
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: 5e2b17e712cf ("s390/dasd: Add dynamic formatting support for ESE volumes")
+Cc: stable@vger.kernel.org # 5.3+
+Signed-off-by: Stefan Haberland <sth@linux.ibm.com>
+Reviewed-by: Jan Hoeppner <hoeppner@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220505141733.1989450-3-sth@linux.ibm.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/svm/pmu.c |   28 +++++++++++++++++++++++++---
- 1 file changed, 25 insertions(+), 3 deletions(-)
+ drivers/s390/block/dasd.c      |    7 +++++++
+ drivers/s390/block/dasd_eckd.c |   19 +++++++++++++++++--
+ drivers/s390/block/dasd_int.h  |    2 ++
+ 3 files changed, 26 insertions(+), 2 deletions(-)
 
---- a/arch/x86/kvm/svm/pmu.c
-+++ b/arch/x86/kvm/svm/pmu.c
-@@ -44,6 +44,22 @@ static struct kvm_event_hw_type_mapping
- 	[7] = { 0xd1, 0x00, PERF_COUNT_HW_STALLED_CYCLES_BACKEND },
- };
- 
-+/* duplicated from amd_f17h_perfmon_event_map. */
-+static struct kvm_event_hw_type_mapping amd_f17h_event_mapping[] = {
-+	[0] = { 0x76, 0x00, PERF_COUNT_HW_CPU_CYCLES },
-+	[1] = { 0xc0, 0x00, PERF_COUNT_HW_INSTRUCTIONS },
-+	[2] = { 0x60, 0xff, PERF_COUNT_HW_CACHE_REFERENCES },
-+	[3] = { 0x64, 0x09, PERF_COUNT_HW_CACHE_MISSES },
-+	[4] = { 0xc2, 0x00, PERF_COUNT_HW_BRANCH_INSTRUCTIONS },
-+	[5] = { 0xc3, 0x00, PERF_COUNT_HW_BRANCH_MISSES },
-+	[6] = { 0x87, 0x02, PERF_COUNT_HW_STALLED_CYCLES_FRONTEND },
-+	[7] = { 0x87, 0x01, PERF_COUNT_HW_STALLED_CYCLES_BACKEND },
-+};
+--- a/drivers/s390/block/dasd.c
++++ b/drivers/s390/block/dasd.c
+@@ -1422,6 +1422,13 @@ int dasd_start_IO(struct dasd_ccw_req *c
+ 		if (!cqr->lpm)
+ 			cqr->lpm = dasd_path_get_opm(device);
+ 	}
++	/*
++	 * remember the amount of formatted tracks to prevent double format on
++	 * ESE devices
++	 */
++	if (cqr->block)
++		cqr->trkcount = atomic_read(&cqr->block->trkcount);
 +
-+/* amd_pmc_perf_hw_id depends on these being the same size */
-+static_assert(ARRAY_SIZE(amd_event_mapping) ==
-+	     ARRAY_SIZE(amd_f17h_event_mapping));
-+
- static unsigned int get_msr_base(struct kvm_pmu *pmu, enum pmu_type type)
- {
- 	struct kvm_vcpu *vcpu = pmu_to_vcpu(pmu);
-@@ -128,19 +144,25 @@ static inline struct kvm_pmc *get_gp_pmc
- 
- static unsigned int amd_pmc_perf_hw_id(struct kvm_pmc *pmc)
- {
-+	struct kvm_event_hw_type_mapping *event_mapping;
- 	u8 event_select = pmc->eventsel & ARCH_PERFMON_EVENTSEL_EVENT;
- 	u8 unit_mask = (pmc->eventsel & ARCH_PERFMON_EVENTSEL_UMASK) >> 8;
- 	int i;
- 
-+	if (guest_cpuid_family(pmc->vcpu) >= 0x17)
-+		event_mapping = amd_f17h_event_mapping;
-+	else
-+		event_mapping = amd_event_mapping;
-+
- 	for (i = 0; i < ARRAY_SIZE(amd_event_mapping); i++)
--		if (amd_event_mapping[i].eventsel == event_select
--		    && amd_event_mapping[i].unit_mask == unit_mask)
-+		if (event_mapping[i].eventsel == event_select
-+		    && event_mapping[i].unit_mask == unit_mask)
- 			break;
- 
- 	if (i == ARRAY_SIZE(amd_event_mapping))
- 		return PERF_COUNT_HW_MAX;
- 
--	return amd_event_mapping[i].event_type;
-+	return event_mapping[i].event_type;
+ 	if (cqr->cpmode == 1) {
+ 		rc = ccw_device_tm_start(device->cdev, cqr->cpaddr,
+ 					 (long) cqr, cqr->lpm);
+--- a/drivers/s390/block/dasd_eckd.c
++++ b/drivers/s390/block/dasd_eckd.c
+@@ -3095,13 +3095,24 @@ static int dasd_eckd_format_device(struc
  }
  
- /* return PERF_COUNT_HW_MAX as AMD doesn't have fixed events */
+ static bool test_and_set_format_track(struct dasd_format_entry *to_format,
+-				      struct dasd_block *block)
++				      struct dasd_ccw_req *cqr)
+ {
++	struct dasd_block *block = cqr->block;
+ 	struct dasd_format_entry *format;
+ 	unsigned long flags;
+ 	bool rc = false;
+ 
+ 	spin_lock_irqsave(&block->format_lock, flags);
++	if (cqr->trkcount != atomic_read(&block->trkcount)) {
++		/*
++		 * The number of formatted tracks has changed after request
++		 * start and we can not tell if the current track was involved.
++		 * To avoid data corruption treat it as if the current track is
++		 * involved
++		 */
++		rc = true;
++		goto out;
++	}
+ 	list_for_each_entry(format, &block->format_list, list) {
+ 		if (format->track == to_format->track) {
+ 			rc = true;
+@@ -3121,6 +3132,7 @@ static void clear_format_track(struct da
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&block->format_lock, flags);
++	atomic_inc(&block->trkcount);
+ 	list_del_init(&format->list);
+ 	spin_unlock_irqrestore(&block->format_lock, flags);
+ }
+@@ -3182,8 +3194,11 @@ dasd_eckd_ese_format(struct dasd_device
+ 	}
+ 	format->track = curr_trk;
+ 	/* test if track is already in formatting by another thread */
+-	if (test_and_set_format_track(format, block))
++	if (test_and_set_format_track(format, cqr)) {
++		/* this is no real error so do not count down retries */
++		cqr->retries++;
+ 		return ERR_PTR(-EEXIST);
++	}
+ 
+ 	fdata.start_unit = curr_trk;
+ 	fdata.stop_unit = curr_trk;
+--- a/drivers/s390/block/dasd_int.h
++++ b/drivers/s390/block/dasd_int.h
+@@ -188,6 +188,7 @@ struct dasd_ccw_req {
+ 	void (*callback)(struct dasd_ccw_req *, void *data);
+ 	void *callback_data;
+ 	unsigned int proc_bytes;	/* bytes for partial completion */
++	unsigned int trkcount;		/* count formatted tracks */
+ };
+ 
+ /*
+@@ -611,6 +612,7 @@ struct dasd_block {
+ 
+ 	struct list_head format_list;
+ 	spinlock_t format_lock;
++	atomic_t trkcount;
+ };
+ 
+ struct dasd_attention_data {
 
 
