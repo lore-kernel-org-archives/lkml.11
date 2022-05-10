@@ -2,95 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEB41C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:47:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52507C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:47:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241222AbiEJLvQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 07:51:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53526 "EHLO
+        id S241231AbiEJLvU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 07:51:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241218AbiEJLu4 (ORCPT
+        with ESMTP id S241237AbiEJLvC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 07:50:56 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 565EF235C04
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 04:46:54 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 20CDC11FB;
-        Tue, 10 May 2022 04:46:54 -0700 (PDT)
-Received: from FVFF77S0Q05N (unknown [10.57.1.67])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A60163F66F;
-        Tue, 10 May 2022 04:46:52 -0700 (PDT)
-Date:   Tue, 10 May 2022 12:46:48 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Alexander Popov <alex.popov@linux.com>
-Cc:     linux-arm-kernel@lists.infradead.org, akpm@linux-foundation.org,
-        catalin.marinas@arm.com, keescook@chromium.org,
-        linux-kernel@vger.kernel.org, luto@kernel.org, will@kernel.org
-Subject: Re: [PATCH v2 03/13] stackleak: remove redundant check
-Message-ID: <YnpQqBwYjlVffJk8@FVFF77S0Q05N>
-References: <20220427173128.2603085-1-mark.rutland@arm.com>
- <20220427173128.2603085-4-mark.rutland@arm.com>
- <a604fa2b-e7c3-3fff-dd81-1a0585a9e2fa@linux.com>
+        Tue, 10 May 2022 07:51:02 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BAB0229FCE
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 04:47:05 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id kq17so32390697ejb.4
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 04:47:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version;
+        bh=mIOxc2Hr0TwMKC4GyCG7ad4BrNm8On4BnelZfSZoMY8=;
+        b=Cq0YVifZjAg/L4a+qlOkNkDWcHo+balp673bgz2Xzq8NYuyUWd4UIlNecRZHOmOZtL
+         WITd7u5+Q3fwt/lMny//WQLUUvidBhKfkO/Jl2oNOUFBqFEwcFcey9lf7Y1aelLuySDz
+         FKzgrBUKgHOFhkT5RWUHKLhJIy72//L2kETTY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
+         :in-reply-to:message-id:mime-version;
+        bh=mIOxc2Hr0TwMKC4GyCG7ad4BrNm8On4BnelZfSZoMY8=;
+        b=m+c5gomGNatNKLxQj/PA8TBCdMkyGWDxoDgCuc/LJmpnvHowwMPB6r3o/UefNXMymR
+         ja+JwtWP8OJtnLka1FGGeKTtc3FNTskJgzK0cCTMJgFTBDkow57ZJTUOumbfZRtuDwRt
+         yYtzsi8+/nsRFaxif/AGIaa4Zyg9onk1K3FHz0reDLUpnNCqpCHq4rA5hSzHPxqWDQPs
+         Bj4w6fytQyLixUPhGO6ZkSw9EBBXU3E3CRuuysbTFpGYSGHX2KfyQijU5U8PF8r0ypjs
+         J5wkD3iQ2JL397ACMEFI8Z7NXYAGxBEeKQOiJWZX4uHLqx4i2Ks29OVPSr0jh9L9cu2L
+         zR3Q==
+X-Gm-Message-State: AOAM533cWYFbfyc8P+MyWjqkCdw1QXVIwm0ECDVk+EFUAg/FJn28CBOr
+        e6hd/NuCjhkzeJBhZSeC1o+ucQ==
+X-Google-Smtp-Source: ABdhPJwH5mhjRvh6ubT75T74jcRYxHqZKy0ovowvflSqOUgy8E1RfmWmmzchzDbkunBXYV3eG+hSPw==
+X-Received: by 2002:a17:906:d554:b0:6f5:2242:a499 with SMTP id cr20-20020a170906d55400b006f52242a499mr18119410ejc.488.1652183223425;
+        Tue, 10 May 2022 04:47:03 -0700 (PDT)
+Received: from cloudflare.com (79.184.139.106.ipv4.supernova.orange.pl. [79.184.139.106])
+        by smtp.gmail.com with ESMTPSA id lr9-20020a170906fb8900b006f3ef214dd9sm5997773ejb.63.2022.05.10.04.47.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 04:47:02 -0700 (PDT)
+References: <20220424154028.1698685-1-xukuohai@huawei.com>
+ <20220424154028.1698685-5-xukuohai@huawei.com>
+User-agent: mu4e 1.6.10; emacs 27.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Xu Kuohai <xukuohai@huawei.com>
+Cc:     bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        hpa@zytor.com, Shuah Khan <shuah@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Daniel Kiss <daniel.kiss@arm.com>,
+        Steven Price <steven.price@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Mark Brown <broonie@kernel.org>,
+        Delyan Kratunov <delyank@fb.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Subject: Re: [PATCH bpf-next v3 4/7] bpf, arm64: Impelment
+ bpf_arch_text_poke() for arm64
+Date:   Tue, 10 May 2022 13:45:38 +0200
+In-reply-to: <20220424154028.1698685-5-xukuohai@huawei.com>
+Message-ID: <87ee11obih.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a604fa2b-e7c3-3fff-dd81-1a0585a9e2fa@linux.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 08, 2022 at 09:17:01PM +0300, Alexander Popov wrote:
-> On 27.04.2022 20:31, Mark Rutland wrote:
-> > In __stackleak_erase() we check that the `erase_low` value derived from
-> > `current->lowest_stack` is above the lowest legitimate stack pointer
-> > value, but this is already enforced by stackleak_track_stack() when
-> > recording the lowest stack value.
-> > 
-> > Remove the redundant check.
-> > 
-> > There should be no functional change as a result of this patch.
-> 
-> Mark, I can't agree here. I think this check is important.
-> The performance profit from dropping it is less than the confidence decrease :)
-> 
-> With this check, if the 'lowest_stack' value is corrupted, stackleak doesn't
-> overwrite some wrong kernel memory, but simply clears the whole thread
-> stack, which is safe behavior.
+On Sun, Apr 24, 2022 at 11:40 AM -04, Xu Kuohai wrote:
+> Impelment bpf_arch_text_poke() for arm64, so bpf trampoline code can use
+> it to replace nop with jump, or replace jump with nop.
+>
+> Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
+> Acked-by: Song Liu <songliubraving@fb.com>
+> ---
+>  arch/arm64/net/bpf_jit_comp.c | 63 +++++++++++++++++++++++++++++++++++
+>  1 file changed, 63 insertions(+)
+>
+> diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
+> index 8ab4035dea27..3f9bdfec54c4 100644
+> --- a/arch/arm64/net/bpf_jit_comp.c
+> +++ b/arch/arm64/net/bpf_jit_comp.c
+> @@ -9,6 +9,7 @@
+>  
+>  #include <linux/bitfield.h>
+>  #include <linux/bpf.h>
+> +#include <linux/memory.h>
+>  #include <linux/filter.h>
+>  #include <linux/printk.h>
+>  #include <linux/slab.h>
+> @@ -18,6 +19,7 @@
+>  #include <asm/cacheflush.h>
+>  #include <asm/debug-monitors.h>
+>  #include <asm/insn.h>
+> +#include <asm/patching.h>
+>  #include <asm/set_memory.h>
+>  
+>  #include "bpf_jit.h"
+> @@ -1529,3 +1531,64 @@ void bpf_jit_free_exec(void *addr)
+>  {
+>  	return vfree(addr);
+>  }
+> +
+> +static int gen_branch_or_nop(enum aarch64_insn_branch_type type, void *ip,
+> +			     void *addr, u32 *insn)
+> +{
+> +	if (!addr)
+> +		*insn = aarch64_insn_gen_nop();
+> +	else
+> +		*insn = aarch64_insn_gen_branch_imm((unsigned long)ip,
+> +						    (unsigned long)addr,
+> +						    type);
+> +
+> +	return *insn != AARCH64_BREAK_FAULT ? 0 : -EFAULT;
+> +}
+> +
+> +int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type poke_type,
+> +		       void *old_addr, void *new_addr)
+> +{
+> +	int ret;
+> +	u32 old_insn;
+> +	u32 new_insn;
+> +	u32 replaced;
+> +	enum aarch64_insn_branch_type branch_type;
+> +
+> +	if (!is_bpf_text_address((long)ip))
+> +		/* Only poking bpf text is supported. Since kernel function
+> +		 * entry is set up by ftrace, we reply on ftrace to poke kernel
+> +		 * functions. For kernel funcitons, bpf_arch_text_poke() is only
 
-If you feel strongly about it, I can restore the check, but I struggle to
-believe that it's worthwhile. The `lowest_stack` value lives in the
-task_struct, and if you have the power to corrupt that you have the power to do
-much more interesting things.
+Nit: s/funcitons/functions/
 
-If we do restore it, I'd like to add a big fat comment explaining the
-rationale (i.e. that it only matter if someone could corrupt
-`current->lowest_stack`, as otherwise that's guarnateed to be within bounds).
+> +		 * called after a failed poke with ftrace. In this case, there
+> +		 * is probably something wrong with fentry, so there is nothing
+> +		 * we can do here. See register_fentry, unregister_fentry and
+> +		 * modify_fentry for details.
+> +		 */
+> +		return -EINVAL;
+> +
+> +	if (poke_type == BPF_MOD_CALL)
+> +		branch_type = AARCH64_INSN_BRANCH_LINK;
+> +	else
+> +		branch_type = AARCH64_INSN_BRANCH_NOLINK;
+> +
+> +	if (gen_branch_or_nop(branch_type, ip, old_addr, &old_insn) < 0)
+> +		return -EFAULT;
+> +
+> +	if (gen_branch_or_nop(branch_type, ip, new_addr, &new_insn) < 0)
+> +		return -EFAULT;
+> +
+> +	mutex_lock(&text_mutex);
+> +	if (aarch64_insn_read(ip, &replaced)) {
+> +		ret = -EFAULT;
+> +		goto out;
+> +	}
+> +
+> +	if (replaced != old_insn) {
+> +		ret = -EFAULT;
+> +		goto out;
+> +	}
+> +
+> +	ret = aarch64_insn_patch_text_nosync((void *)ip, new_insn);
 
-Thanks,
-Mark.
+Nit: No need for the explicit cast to void *. Type already matches.
 
-> > Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-> > Cc: Alexander Popov <alex.popov@linux.com>
-> > Cc: Andrew Morton <akpm@linux-foundation.org>
-> > Cc: Andy Lutomirski <luto@kernel.org>
-> > Cc: Kees Cook <keescook@chromium.org>
-> > ---
-> >   kernel/stackleak.c | 4 ----
-> >   1 file changed, 4 deletions(-)
-> > 
-> > diff --git a/kernel/stackleak.c b/kernel/stackleak.c
-> > index 753eab797a04d..f7a0f8cf73c37 100644
-> > --- a/kernel/stackleak.c
-> > +++ b/kernel/stackleak.c
-> > @@ -78,10 +78,6 @@ static __always_inline void __stackleak_erase(void)
-> >   	unsigned int poison_count = 0;
-> >   	const unsigned int depth = STACKLEAK_SEARCH_DEPTH / sizeof(unsigned long);
-> > -	/* Check that 'lowest_stack' value is sane */
-> > -	if (unlikely(kstack_ptr - boundary >= THREAD_SIZE))
-> > -		kstack_ptr = boundary;
-> > -
-> >   	/* Search for the poison value in the kernel stack */
-> >   	while (kstack_ptr > boundary && poison_count <= depth) {
-> >   		if (*(unsigned long *)kstack_ptr == STACKLEAK_POISON)
-> 
+> +out:
+> +	mutex_unlock(&text_mutex);
+> +	return ret;
+> +}
+
