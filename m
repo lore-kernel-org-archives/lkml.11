@@ -2,149 +2,311 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DF85C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC506C46467
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:28:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244164AbiEJNck (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:32:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41378 "EHLO
+        id S244237AbiEJNcq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:32:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243041AbiEJNXn (ORCPT
+        with ESMTP id S243043AbiEJNXn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:23:43 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCF631CEEC7;
-        Tue, 10 May 2022 06:17:22 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id i1so16708909plg.7;
-        Tue, 10 May 2022 06:17:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PL7sPaFj+QCRve6dBe9Fauw5svHYwmbiQnm9OKBKRhw=;
-        b=apT2Ehr+H+5fTQGrpJioLeqa8vOoglU48+tiko2np7d9DQ51eLzs7sKoFarSsUOQpM
-         NxyGfKGfhhfJFAo1YvY5j3dE6cQeEmbuFM2Qz0Oj5zjXsY0EIi5INWu+VrzqgTWgwHRI
-         04EGSwGLJRlFsje55BtnuHorXGoL3pkdr2w/C7Dgv+NmtQ4z/I4OORNLPYhAeY1s5Jtx
-         YsZvGyUtR62KhIaLBNXFJ8KTjTOmpjJakv0iaouAN2Lnx7ra2QxExME+R6TQAfKQEVjj
-         /u3Arnit11noQyA5VKfh1jMbpytpEfyAZ/yj7ckbeNhfu8C3Dxa5ns49en0Ufac8H+tU
-         rYtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PL7sPaFj+QCRve6dBe9Fauw5svHYwmbiQnm9OKBKRhw=;
-        b=f+K/xPN9fKkd1F8Ca/7cmhUhnV09el9t0VKm17/DnSsfr5PRccHSMAM6B9gsVekSpt
-         kxExnJlOYtgqNaLEszbtwZ9nPP2Mni1Es4ov2deDDA4pO+JqqREe5RamjyyTQg5c3mPs
-         WvaFCC+gzaJShH6m4q0q/5jmrZR2+bH3LnLLHCwo3SFDeKS+/MCCQV/8yhIMY39zXYAo
-         eXvkWBdHfOza5lGQLDDrhbtBMT1pygsWTHKXL1YAYkTeUYua77q+BLihJFkaBwkixyeW
-         frpzXzC9IF9NAKuXPhr+AN0n/CkviZvJ2dsYNkSdB7vUzIPtFGxKiLchxmHyDtIFo+ho
-         o4Ig==
-X-Gm-Message-State: AOAM533TDeUO3sDqhddVrM/aAnX34o6WO4IYA71MItAdoBkJkG55Z8OR
-        YXGpjVBuxNmDLmC4JpnK9F0=
-X-Google-Smtp-Source: ABdhPJx4uVD7n3Qfbq8IHmn2O0S1T1vXYyKJqgceZeBor9rVT7A8gOKft6R+2T494SBGh2vFlvrcwA==
-X-Received: by 2002:a17:902:bb92:b0:153:4eae:c77e with SMTP id m18-20020a170902bb9200b001534eaec77emr20558762pls.93.1652188641953;
-        Tue, 10 May 2022 06:17:21 -0700 (PDT)
-Received: from localhost ([166.111.139.123])
-        by smtp.gmail.com with ESMTPSA id d8-20020a170902654800b0015f2b3bc97asm1133455pln.13.2022.05.10.06.17.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 06:17:21 -0700 (PDT)
-From:   Zixuan Fu <r33s3n6@gmail.com>
-To:     doshir@vmware.com, pv-drivers@vmware.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        baijiaju1990@gmail.com, Zixuan Fu <r33s3n6@gmail.com>,
-        TOTE Robot <oslab@tsinghua.edu.cn>
-Subject: [PATCH v2] drivers: net: vmxnet3: fix possible use-after-free bugs in vmxnet3_rq_alloc_rx_buf()
-Date:   Tue, 10 May 2022 21:17:16 +0800
-Message-Id: <20220510131716.929387-1-r33s3n6@gmail.com>
-X-Mailer: git-send-email 2.25.1
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 679C01CEECC;
+        Tue, 10 May 2022 06:17:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B822AB81DA0;
+        Tue, 10 May 2022 13:17:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CC79C385CB;
+        Tue, 10 May 2022 13:17:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652188641;
+        bh=Ywp8AQPMexBaG2LWlyMH3o6rfZDkUcOInMlkxk5lBYs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ZrGbkGxuK1uD5iIN1HUADPguf+zDVEWmv2jUQonegrV0E8DkcQGqr7TMvDxJOjUYF
+         M/SRrH5tjzQm0sbxdK3OhGyHaJwzGkB5xufvR6lzJMU4vyisyEuUhJc3B/IF005Ut+
+         xWRjgh7PXOBrsi4SZhazyJriKiN04ALpsULIlrxM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Flavio Leitner <fbl@sysclose.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.14 72/78] net: igmp: respect RCU rules in ip_mc_source() and ip_mc_msfilter()
+Date:   Tue, 10 May 2022 15:07:58 +0200
+Message-Id: <20220510130734.661991988@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
+References: <20220510130732.522479698@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In vmxnet3_rq_alloc_rx_buf(), when dma_map_single() fails, rbi->skb is
-freed immediately. Similarly, in another branch, when dma_map_page() fails,
-rbi->page is also freed. In the two cases, vmxnet3_rq_alloc_rx_buf()
-returns an error to its callers vmxnet3_rq_init() -> vmxnet3_rq_init_all()
--> vmxnet3_activate_dev(). Then vmxnet3_activate_dev() calls
-vmxnet3_rq_cleanup_all() in error handling code, and rbi->skb or rbi->page
-are freed again in vmxnet3_rq_cleanup_all(), causing use-after-free bugs.
+From: Eric Dumazet <edumazet@google.com>
 
-To fix these possible bugs, rbi->skb and rbi->page should be cleared after
-they are freed.
+commit dba5bdd57bea587ea4f0b79b03c71135f84a7e8b upstream.
 
-The error log in our fault-injection testing is shown as follows:
+syzbot reported an UAF in ip_mc_sf_allow() [1]
 
-[   14.319016] BUG: KASAN: use-after-free in consume_skb+0x2f/0x150
-...
-[   14.321586] Call Trace:
-...
-[   14.325357]  consume_skb+0x2f/0x150
-[   14.325671]  vmxnet3_rq_cleanup_all+0x33a/0x4e0 [vmxnet3]
-[   14.326150]  vmxnet3_activate_dev+0xb9d/0x2ca0 [vmxnet3]
-[   14.326616]  vmxnet3_open+0x387/0x470 [vmxnet3]
-...
-[   14.361675] Allocated by task 351:
-...
-[   14.362688]  __netdev_alloc_skb+0x1b3/0x6f0
-[   14.362960]  vmxnet3_rq_alloc_rx_buf+0x1b0/0x8d0 [vmxnet3]
-[   14.363317]  vmxnet3_activate_dev+0x3e3/0x2ca0 [vmxnet3]
-[   14.363661]  vmxnet3_open+0x387/0x470 [vmxnet3]
-...
-[   14.367309] 
-[   14.367412] Freed by task 351:
-...
-[   14.368932]  __dev_kfree_skb_any+0xd2/0xe0
-[   14.369193]  vmxnet3_rq_alloc_rx_buf+0x71e/0x8d0 [vmxnet3]
-[   14.369544]  vmxnet3_activate_dev+0x3e3/0x2ca0 [vmxnet3]
-[   14.369883]  vmxnet3_open+0x387/0x470 [vmxnet3]
-[   14.370174]  __dev_open+0x28a/0x420
-[   14.370399]  __dev_change_flags+0x192/0x590
-[   14.370667]  dev_change_flags+0x7a/0x180
-[   14.370919]  do_setlink+0xb28/0x3570
-[   14.371150]  rtnl_newlink+0x1160/0x1740
-[   14.371399]  rtnetlink_rcv_msg+0x5bf/0xa50
-[   14.371661]  netlink_rcv_skb+0x1cd/0x3e0
-[   14.371913]  netlink_unicast+0x5dc/0x840
-[   14.372169]  netlink_sendmsg+0x856/0xc40
-[   14.372420]  ____sys_sendmsg+0x8a7/0x8d0
-[   14.372673]  __sys_sendmsg+0x1c2/0x270
-[   14.372914]  do_syscall_64+0x41/0x90
-[   14.373145]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-...
+Whenever RCU protected list replaces an object,
+the pointer to the new object needs to be updated
+_before_ the call to kfree_rcu() or call_rcu()
 
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
+Because kfree_rcu(ptr, rcu) got support for NULL ptr
+only recently in commit 12edff045bc6 ("rcu: Make kfree_rcu()
+ignore NULL pointers"), I chose to use the conditional
+to make sure stable backports won't miss this detail.
+
+if (psl)
+    kfree_rcu(psl, rcu);
+
+net/ipv6/mcast.c has similar issues, addressed in a separate patch.
+
+[1]
+BUG: KASAN: use-after-free in ip_mc_sf_allow+0x6bb/0x6d0 net/ipv4/igmp.c:2655
+Read of size 4 at addr ffff88807d37b904 by task syz-executor.5/908
+
+CPU: 0 PID: 908 Comm: syz-executor.5 Not tainted 5.18.0-rc4-syzkaller-00064-g8f4dd16603ce #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0xeb/0x467 mm/kasan/report.c:313
+ print_report mm/kasan/report.c:429 [inline]
+ kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
+ ip_mc_sf_allow+0x6bb/0x6d0 net/ipv4/igmp.c:2655
+ raw_v4_input net/ipv4/raw.c:190 [inline]
+ raw_local_deliver+0x4d1/0xbe0 net/ipv4/raw.c:218
+ ip_protocol_deliver_rcu+0xcf/0xb30 net/ipv4/ip_input.c:193
+ ip_local_deliver_finish+0x2ee/0x4c0 net/ipv4/ip_input.c:233
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ NF_HOOK include/linux/netfilter.h:301 [inline]
+ ip_local_deliver+0x1b3/0x200 net/ipv4/ip_input.c:254
+ dst_input include/net/dst.h:461 [inline]
+ ip_rcv_finish+0x1cb/0x2f0 net/ipv4/ip_input.c:437
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ NF_HOOK include/linux/netfilter.h:301 [inline]
+ ip_rcv+0xaa/0xd0 net/ipv4/ip_input.c:556
+ __netif_receive_skb_one_core+0x114/0x180 net/core/dev.c:5405
+ __netif_receive_skb+0x24/0x1b0 net/core/dev.c:5519
+ netif_receive_skb_internal net/core/dev.c:5605 [inline]
+ netif_receive_skb+0x13e/0x8e0 net/core/dev.c:5664
+ tun_rx_batched.isra.0+0x460/0x720 drivers/net/tun.c:1534
+ tun_get_user+0x28b7/0x3e30 drivers/net/tun.c:1985
+ tun_chr_write_iter+0xdb/0x200 drivers/net/tun.c:2015
+ call_write_iter include/linux/fs.h:2050 [inline]
+ new_sync_write+0x38a/0x560 fs/read_write.c:504
+ vfs_write+0x7c0/0xac0 fs/read_write.c:591
+ ksys_write+0x127/0x250 fs/read_write.c:644
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f3f12c3bbff
+Code: 89 54 24 18 48 89 74 24 10 89 7c 24 08 e8 99 fd ff ff 48 8b 54 24 18 48 8b 74 24 10 41 89 c0 8b 7c 24 08 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 31 44 89 c7 48 89 44 24 08 e8 cc fd ff ff 48
+RSP: 002b:00007f3f13ea9130 EFLAGS: 00000293 ORIG_RAX: 0000000000000001
+RAX: ffffffffffffffda RBX: 00007f3f12d9bf60 RCX: 00007f3f12c3bbff
+RDX: 0000000000000036 RSI: 0000000020002ac0 RDI: 00000000000000c8
+RBP: 00007f3f12ce308d R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000036 R11: 0000000000000293 R12: 0000000000000000
+R13: 00007fffb68dd79f R14: 00007f3f13ea9300 R15: 0000000000022000
+ </TASK>
+
+Allocated by task 908:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track mm/kasan/common.c:45 [inline]
+ set_alloc_info mm/kasan/common.c:436 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:515 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:474 [inline]
+ __kasan_kmalloc+0xa6/0xd0 mm/kasan/common.c:524
+ kasan_kmalloc include/linux/kasan.h:234 [inline]
+ __do_kmalloc mm/slab.c:3710 [inline]
+ __kmalloc+0x209/0x4d0 mm/slab.c:3719
+ kmalloc include/linux/slab.h:586 [inline]
+ sock_kmalloc net/core/sock.c:2501 [inline]
+ sock_kmalloc+0xb5/0x100 net/core/sock.c:2492
+ ip_mc_source+0xba2/0x1100 net/ipv4/igmp.c:2392
+ do_ip_setsockopt net/ipv4/ip_sockglue.c:1296 [inline]
+ ip_setsockopt+0x2312/0x3ab0 net/ipv4/ip_sockglue.c:1432
+ raw_setsockopt+0x274/0x2c0 net/ipv4/raw.c:861
+ __sys_setsockopt+0x2db/0x6a0 net/socket.c:2180
+ __do_sys_setsockopt net/socket.c:2191 [inline]
+ __se_sys_setsockopt net/socket.c:2188 [inline]
+ __x64_sys_setsockopt+0xba/0x150 net/socket.c:2188
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Freed by task 753:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track+0x21/0x30 mm/kasan/common.c:45
+ kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
+ ____kasan_slab_free mm/kasan/common.c:366 [inline]
+ ____kasan_slab_free+0x13d/0x180 mm/kasan/common.c:328
+ kasan_slab_free include/linux/kasan.h:200 [inline]
+ __cache_free mm/slab.c:3439 [inline]
+ kmem_cache_free_bulk+0x69/0x460 mm/slab.c:3774
+ kfree_bulk include/linux/slab.h:437 [inline]
+ kfree_rcu_work+0x51c/0xa10 kernel/rcu/tree.c:3318
+ process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e9/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:298
+
+Last potentially related work creation:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ __kasan_record_aux_stack+0x7e/0x90 mm/kasan/generic.c:348
+ kvfree_call_rcu+0x74/0x990 kernel/rcu/tree.c:3595
+ ip_mc_msfilter+0x712/0xb60 net/ipv4/igmp.c:2510
+ do_ip_setsockopt net/ipv4/ip_sockglue.c:1257 [inline]
+ ip_setsockopt+0x32e1/0x3ab0 net/ipv4/ip_sockglue.c:1432
+ raw_setsockopt+0x274/0x2c0 net/ipv4/raw.c:861
+ __sys_setsockopt+0x2db/0x6a0 net/socket.c:2180
+ __do_sys_setsockopt net/socket.c:2191 [inline]
+ __se_sys_setsockopt net/socket.c:2188 [inline]
+ __x64_sys_setsockopt+0xba/0x150 net/socket.c:2188
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Second to last potentially related work creation:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ __kasan_record_aux_stack+0x7e/0x90 mm/kasan/generic.c:348
+ call_rcu+0x99/0x790 kernel/rcu/tree.c:3074
+ mpls_dev_notify+0x552/0x8a0 net/mpls/af_mpls.c:1656
+ notifier_call_chain+0xb5/0x200 kernel/notifier.c:84
+ call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:1938
+ call_netdevice_notifiers_extack net/core/dev.c:1976 [inline]
+ call_netdevice_notifiers net/core/dev.c:1990 [inline]
+ unregister_netdevice_many+0x92e/0x1890 net/core/dev.c:10751
+ default_device_exit_batch+0x449/0x590 net/core/dev.c:11245
+ ops_exit_list+0x125/0x170 net/core/net_namespace.c:167
+ cleanup_net+0x4ea/0xb00 net/core/net_namespace.c:594
+ process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e9/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:298
+
+The buggy address belongs to the object at ffff88807d37b900
+ which belongs to the cache kmalloc-64 of size 64
+The buggy address is located 4 bytes inside of
+ 64-byte region [ffff88807d37b900, ffff88807d37b940)
+
+The buggy address belongs to the physical page:
+page:ffffea0001f4dec0 refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff88807d37b180 pfn:0x7d37b
+flags: 0xfff00000000200(slab|node=0|zone=1|lastcpupid=0x7ff)
+raw: 00fff00000000200 ffff888010c41340 ffffea0001c795c8 ffff888010c40200
+raw: ffff88807d37b180 ffff88807d37b000 000000010000001f 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 0, migratetype Unmovable, gfp_mask 0x342040(__GFP_IO|__GFP_NOWARN|__GFP_COMP|__GFP_HARDWALL|__GFP_THISNODE), pid 2963, tgid 2963 (udevd), ts 139732238007, free_ts 139730893262
+ prep_new_page mm/page_alloc.c:2441 [inline]
+ get_page_from_freelist+0xba2/0x3e00 mm/page_alloc.c:4182
+ __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5408
+ __alloc_pages_node include/linux/gfp.h:587 [inline]
+ kmem_getpages mm/slab.c:1378 [inline]
+ cache_grow_begin+0x75/0x350 mm/slab.c:2584
+ cache_alloc_refill+0x27f/0x380 mm/slab.c:2957
+ ____cache_alloc mm/slab.c:3040 [inline]
+ ____cache_alloc mm/slab.c:3023 [inline]
+ __do_cache_alloc mm/slab.c:3267 [inline]
+ slab_alloc mm/slab.c:3309 [inline]
+ __do_kmalloc mm/slab.c:3708 [inline]
+ __kmalloc+0x3b3/0x4d0 mm/slab.c:3719
+ kmalloc include/linux/slab.h:586 [inline]
+ kzalloc include/linux/slab.h:714 [inline]
+ tomoyo_encode2.part.0+0xe9/0x3a0 security/tomoyo/realpath.c:45
+ tomoyo_encode2 security/tomoyo/realpath.c:31 [inline]
+ tomoyo_encode+0x28/0x50 security/tomoyo/realpath.c:80
+ tomoyo_realpath_from_path+0x186/0x620 security/tomoyo/realpath.c:288
+ tomoyo_get_realpath security/tomoyo/file.c:151 [inline]
+ tomoyo_path_perm+0x21b/0x400 security/tomoyo/file.c:822
+ security_inode_getattr+0xcf/0x140 security/security.c:1350
+ vfs_getattr fs/stat.c:157 [inline]
+ vfs_statx+0x16a/0x390 fs/stat.c:232
+ vfs_fstatat+0x8c/0xb0 fs/stat.c:255
+ __do_sys_newfstatat+0x91/0x110 fs/stat.c:425
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+page last free stack trace:
+ reset_page_owner include/linux/page_owner.h:24 [inline]
+ free_pages_prepare mm/page_alloc.c:1356 [inline]
+ free_pcp_prepare+0x549/0xd20 mm/page_alloc.c:1406
+ free_unref_page_prepare mm/page_alloc.c:3328 [inline]
+ free_unref_page+0x19/0x6a0 mm/page_alloc.c:3423
+ __vunmap+0x85d/0xd30 mm/vmalloc.c:2667
+ __vfree+0x3c/0xd0 mm/vmalloc.c:2715
+ vfree+0x5a/0x90 mm/vmalloc.c:2746
+ __do_replace+0x16b/0x890 net/ipv6/netfilter/ip6_tables.c:1117
+ do_replace net/ipv6/netfilter/ip6_tables.c:1157 [inline]
+ do_ip6t_set_ctl+0x90d/0xb90 net/ipv6/netfilter/ip6_tables.c:1639
+ nf_setsockopt+0x83/0xe0 net/netfilter/nf_sockopt.c:101
+ ipv6_setsockopt+0x122/0x180 net/ipv6/ipv6_sockglue.c:1026
+ tcp_setsockopt+0x136/0x2520 net/ipv4/tcp.c:3696
+ __sys_setsockopt+0x2db/0x6a0 net/socket.c:2180
+ __do_sys_setsockopt net/socket.c:2191 [inline]
+ __se_sys_setsockopt net/socket.c:2188 [inline]
+ __x64_sys_setsockopt+0xba/0x150 net/socket.c:2188
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Memory state around the buggy address:
+ ffff88807d37b800: 00 00 00 00 00 fc fc fc fc fc fc fc fc fc fc fc
+ ffff88807d37b880: 00 00 00 00 00 fc fc fc fc fc fc fc fc fc fc fc
+>ffff88807d37b900: fa fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+                   ^
+ ffff88807d37b980: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+ ffff88807d37ba00: 00 00 00 00 00 fc fc fc fc fc fc fc fc fc fc fc
+
+Fixes: c85bb41e9318 ("igmp: fix ip_mc_sf_allow race [v5]")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Cc: Flavio Leitner <fbl@sysclose.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-v2:
-* Free and clear pointers right after freeing them.
-  Thank Jakub Kicinski for helpful advice.
----
- drivers/net/vmxnet3/vmxnet3_drv.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/ipv4/igmp.c |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index d9d90baac72a..1154f1884212 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -589,6 +589,7 @@ vmxnet3_rq_alloc_rx_buf(struct vmxnet3_rx_queue *rq, u32 ring_idx,
- 				if (dma_mapping_error(&adapter->pdev->dev,
- 						      rbi->dma_addr)) {
- 					dev_kfree_skb_any(rbi->skb);
-+					rbi->skb = NULL;
- 					rq->stats.rx_buf_alloc_failure++;
- 					break;
- 				}
-@@ -613,6 +614,7 @@ vmxnet3_rq_alloc_rx_buf(struct vmxnet3_rx_queue *rq, u32 ring_idx,
- 				if (dma_mapping_error(&adapter->pdev->dev,
- 						      rbi->dma_addr)) {
- 					put_page(rbi->page);
-+					rbi->page = NULL;
- 					rq->stats.rx_buf_alloc_failure++;
- 					break;
- 				}
--- 
-2.25.1
+--- a/net/ipv4/igmp.c
++++ b/net/ipv4/igmp.c
+@@ -2368,9 +2368,10 @@ int ip_mc_source(int add, int omode, str
+ 				newpsl->sl_addr[i] = psl->sl_addr[i];
+ 			/* decrease mem now to avoid the memleak warning */
+ 			atomic_sub(IP_SFLSIZE(psl->sl_max), &sk->sk_omem_alloc);
+-			kfree_rcu(psl, rcu);
+ 		}
+ 		rcu_assign_pointer(pmc->sflist, newpsl);
++		if (psl)
++			kfree_rcu(psl, rcu);
+ 		psl = newpsl;
+ 	}
+ 	rv = 1;	/* > 0 for insert logic below if sl_count is 0 */
+@@ -2468,11 +2469,13 @@ int ip_mc_msfilter(struct sock *sk, stru
+ 			psl->sl_count, psl->sl_addr, 0);
+ 		/* decrease mem now to avoid the memleak warning */
+ 		atomic_sub(IP_SFLSIZE(psl->sl_max), &sk->sk_omem_alloc);
+-		kfree_rcu(psl, rcu);
+-	} else
++	} else {
+ 		(void) ip_mc_del_src(in_dev, &msf->imsf_multiaddr, pmc->sfmode,
+ 			0, NULL, 0);
++	}
+ 	rcu_assign_pointer(pmc->sflist, newpsl);
++	if (psl)
++		kfree_rcu(psl, rcu);
+ 	pmc->sfmode = msf->imsf_fmode;
+ 	err = 0;
+ done:
+
 
