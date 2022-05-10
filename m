@@ -2,51 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1525EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 17:26:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A57D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 17:26:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348109AbiEJRaQ (ORCPT
+        id S1348156AbiEJRa1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 13:30:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32926 "EHLO
+        Tue, 10 May 2022 13:30:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348093AbiEJR32 (ORCPT
+        with ESMTP id S1348077AbiEJR31 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 13:29:28 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D812BF332;
-        Tue, 10 May 2022 10:24:51 -0700 (PDT)
-Message-ID: <20220510171254.908144392@linutronix.de>
+        Tue, 10 May 2022 13:29:27 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93D552BF321;
+        Tue, 10 May 2022 10:24:45 -0700 (PDT)
+Message-ID: <20220510171254.655035023@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1652203490;
+        s=2020; t=1652203484;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=unPNkyGvWMidy4JaC2kQtqwHz1fQ+NhrzjFEsiK6uMA=;
-        b=aDeCDqJTp9TKruJapXQm3Kus5xptIAWTCv3zAl4N15uObZfUi8AZ6yjmz37YpPzh/k6SCw
-        MNDv5adW9J0IdsOTVmG1EF7rM1tFnwBQGSIBV+bhzbBEmCqKCoeprWTFz8ELcRAvn8S5/v
-        0KTT5MHWX9Dmsm111idR28DwESWPivI9uzKxYGFDOqCQKsPa/kfzMrWYg0G75r/EFZYSGB
-        UaSgpWtXx2dePJw8Yj4tnOKMcK5aE6FjVRiBztsKLSm0k59j/vQ5bW1tVjQy+aTtmPX1Fz
-        MpWGcgpNAk5H3ypgznGAY1wUYa729c4zjU4w4Vq77QZoOFE8foC0skNeKwWUDg==
+         references:references; bh=OX3ZZIHB57cv1ap5MwgGLW9zpPS1Hd+CwymGFolU6dQ=;
+        b=WcQ74u2sd4hEN9YEoL3Ht4xcPqtjK64tQbBX9wbpsF67mUFi85KPf5ZS1wwRq3ivleNx6+
+        XWGTOaM7HgrZqzlk4KlmHZWqYoZ7ctOw7pMso2sYgz/2TPhIS/AOzmLLUB+55lyWxH3HL0
+        hkdljM9J2UcJJQfxlX4tb0nQNEKXITs5gv2yH7U0m1nVadztUS/hqzO1/9AG2Gyko9fH7F
+        llLfoKeM+jpqXneJRuH/XdYJMYXqi5SbeGuZkv6q3LOeRedAxWVWjq0U5C3uX/q6b1gaXw
+        8QK9/nOX6qtrKBKsT5BrmEIMvv6pHwUP+7fS+RbnS3RqcuBd+26ZC2Y7XpfvMg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1652203490;
+        s=2020e; t=1652203484;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=unPNkyGvWMidy4JaC2kQtqwHz1fQ+NhrzjFEsiK6uMA=;
-        b=ecJA8YEBST6T511ekgAkMzvCtNzIjltlSVmFxiDWvX2nFjXads6yau/G7WxGftNnW+Ss70
-        dkWY9JLRYPYsImAg==
+         references:references; bh=OX3ZZIHB57cv1ap5MwgGLW9zpPS1Hd+CwymGFolU6dQ=;
+        b=KkweOoYl2z3X1JIKSBy74gRNXqDNGADL0x7imrAOR5u9ZsD8mgwHKrEfLAv0DA7hrwtXz/
+        n/+O8STJAn5vauBg==
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     linux-spdx@vger.kernel.org,
         Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        linux-sunxi@lists.linux.dev
-Subject: [patch 09/10] clocksource/drivers/timer-sun4i: Convert to SPDX identifier
+        Baruch Siach <baruch@tkos.co.il>,
+        linux-arm-kernel@lists.infradead.org
+Subject: [patch 05/10] clocksource/drivers/digicolor: Convert to SPDX identifier
 References: <20220510171003.952873904@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Date:   Tue, 10 May 2022 19:24:49 +0200 (CEST)
+Date:   Tue, 10 May 2022 19:24:43 +0200 (CEST)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -59,30 +57,28 @@ So the SPDX identifier covers it completely.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc: Chen-Yu Tsai <wens@csie.org>
-Cc: Jernej Skrabec <jernej.skrabec@gmail.com>
-Cc: Samuel Holland <samuel@sholland.org>
-Cc: linux-sunxi@lists.linux.dev
+Cc: Baruch Siach <baruch@tkos.co.il>
+Cc: linux-arm-kernel@lists.infradead.org
 ---
- drivers/clocksource/timer-sun4i.c |    5 +----
+ drivers/clocksource/timer-digicolor.c |    5 +----
  1 file changed, 1 insertion(+), 4 deletions(-)
 
---- a/drivers/clocksource/timer-sun4i.c
-+++ b/drivers/clocksource/timer-sun4i.c
+--- a/drivers/clocksource/timer-digicolor.c
++++ b/drivers/clocksource/timer-digicolor.c
 @@ -1,3 +1,4 @@
 +// SPDX-License-Identifier: GPL-2.0
  /*
-  * Allwinner A1X SoCs timer handling.
+  * Conexant Digicolor timer driver
   *
-@@ -8,10 +9,6 @@
-  * Based on code from
-  * Allwinner Technology Co., Ltd. <www.allwinnertech.com>
-  * Benn Huang <benn@allwinnertech.com>
+@@ -11,10 +12,6 @@
+  * Copyright (C) 2013 Maxime Ripard
+  *
+  * Maxime Ripard <maxime.ripard@free-electrons.com>
 - *
 - * This file is licensed under the terms of the GNU General Public
 - * License version 2.  This program is licensed "as is" without any
 - * warranty of any kind, whether express or implied.
   */
  
- #include <linux/clk.h>
+ /*
 
