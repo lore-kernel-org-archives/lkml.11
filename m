@@ -2,105 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92DAEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:31:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE5F5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:31:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344406AbiEJOe6 (ORCPT
+        id S1344612AbiEJOfE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:34:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44978 "EHLO
+        Tue, 10 May 2022 10:35:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245270AbiEJOJ0 (ORCPT
+        with ESMTP id S245614AbiEJOIf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:09:26 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C0BC7658
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 06:43:46 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id c14so14987346pfn.2
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 06:43:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=no4knFj2QkkG24w5BpGtHthRtUO1MTUEciG91xe028g=;
-        b=fTLJckD+LdKD21kXVmiJtp60Iev8s/1LA8KcxKZqvHWZt7LbRid5lQbpzOVFixyRXr
-         6c/SwjoaijWHCa/cY11vzsye30v95o28+AKDT9eb5rYsxBcX744c4SCq0nnH50Vptu6c
-         OpXcz3VbtQnJ9BdmNn5OyRBrspO7m6Hc+3PzVFhbrKuhnAEofJABBFoU0Nfo4nBhAckN
-         57+R+5GIZT/KIob/+juDeGfCbhwUvXqF8/ugGVejcy4wfHysUBRMAZjXcvayfsFee8pT
-         5ocBjrR5QgsGbfjWCD4I/IUhu4iAM+5Gad4aEIO4+gjq7ZkI+pATFyfYiom9Zsme11JS
-         Hs/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=no4knFj2QkkG24w5BpGtHthRtUO1MTUEciG91xe028g=;
-        b=eXHEkF243KSTRTV9dwrhBkOCP8X0YVoWDpZrHvXCrQQnfEEfv0kdcUCDP0La+z5uhd
-         xH8+AkWRN9W17Rr22ixWUI6DSHaXbbjCgzNniAeirsnupz4mDYHMa9q9BiLvF42Uu+09
-         Ik1NNGn62KdjpJDPB+hkA8g4z2cytq3LpUJ7JovHf34dz6lubmIpmY8JW3ebaGCiM3h3
-         4VsNCvqfUPGYMAHaTtF8cREDhXDN74eQwJQVnFNAPXL8Yz1iA++G2JIWyCVb6k0//b24
-         uqE/rkXQ4v42DTv0TUXArXKiQsx28/VICmAG3LCQH/5+kY3Uxkjzp2P65A9wL+RkFKBI
-         eTDw==
-X-Gm-Message-State: AOAM533cZ8NNQ9XowfaqCyKg3Tr1bvNRs8rZDT3p6sexqrJVFx24Ps6C
-        KpMKFzooRlaHsNN/nHVvPgo95Q==
-X-Google-Smtp-Source: ABdhPJyOopUd0tEn4NWLvw+TLQgnEqGNe3teQaVnB3OwAvTVYOpo3ul4fVGXJ+cPKtzzJYqEczgAAw==
-X-Received: by 2002:a63:d504:0:b0:3c6:ab6b:fd2b with SMTP id c4-20020a63d504000000b003c6ab6bfd2bmr9333333pgg.437.1652190225544;
-        Tue, 10 May 2022 06:43:45 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id o20-20020a635a14000000b003c5e836eddasm10175398pgb.94.2022.05.10.06.43.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 06:43:45 -0700 (PDT)
-Date:   Tue, 10 May 2022 13:43:41 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Wanpeng Li <kernellwp@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] KVM: LAPIC: Disarm LAPIC timer includes pending timer
- around TSC deadline switch
-Message-ID: <YnpsDSDqU5oNK3bQ@google.com>
-References: <1652175386-31587-1-git-send-email-wanpengli@tencent.com>
+        Tue, 10 May 2022 10:08:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D0692E7AF8;
+        Tue, 10 May 2022 06:42:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B9E94B81DB8;
+        Tue, 10 May 2022 13:42:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19677C385A6;
+        Tue, 10 May 2022 13:42:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652190164;
+        bh=pkLRzJ/S+sL/wsjFUdOwbSvYDjaBp200aQ5LQ9T9mTA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GQHtQRPzP3T4pAc3erHi3enjz6risE/8g8FrJ79TSJEUAtws08XNAUZQHa1QhStge
+         P9IYIn07lV4I6nO2dlBs1793U32UMlofnenGPQNX3Eg1OChl5V/WgPe8HO1fdWZnwp
+         WBKzdUWC5G1aBNMqFaehKl1ZbB5iKVNQf1ayyRqQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, pali@kernel.org,
+        =?UTF-8?q?Marek=20Beh=FAn?= <kabel@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: [PATCH 5.17 126/140] PCI: aardvark: Make msi_domain_info structure a static driver structure
+Date:   Tue, 10 May 2022 15:08:36 +0200
+Message-Id: <20220510130745.198631954@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
+References: <20220510130741.600270947@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1652175386-31587-1-git-send-email-wanpengli@tencent.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022, Wanpeng Li wrote:
-> From: Wanpeng Li <wanpengli@tencent.com>
-> 
-> The timer is disarmed when switching between TSC deadline and other modes, 
-> however, the pending timer is still in-flight, so let's accurately set 
-> everything to a disarmed state.
-> 
-> Fixes: 4427593258 (KVM: x86: thoroughly disarm LAPIC timer around TSC deadline switch)
-> Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
-> ---
->  arch/x86/kvm/lapic.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-> index 66b0eb0bda94..0274d17d91c2 100644
-> --- a/arch/x86/kvm/lapic.c
-> +++ b/arch/x86/kvm/lapic.c
-> @@ -1562,6 +1562,7 @@ static void apic_update_lvtt(struct kvm_lapic *apic)
->  			kvm_lapic_set_reg(apic, APIC_TMICT, 0);
->  			apic->lapic_timer.period = 0;
->  			apic->lapic_timer.tscdeadline = 0;
-> +			atomic_set(&apic->lapic_timer.pending, 0);
+From: "Marek Behún" <kabel@kernel.org>
 
-What about doing this in cancel_apic_timer()?  That seems to be a more natural
-place to clear pending.  It's somewhat redundant since the other two callers of
-cancel_apic_timer() start the timer immediately after, i.e. clear pending anyways,
-but IMO it's odd to leave pending set when canceling the timer.
+commit 26bcd54e4a5cd51ec12d06fdc30e22863ed4c422 upstream.
 
->  		}
->  		apic->lapic_timer.timer_mode = timer_mode;
->  		limit_periodic_timer_frequency(apic);
-> -- 
-> 2.25.1
-> 
+Make Aardvark's msi_domain_info structure into a private driver structure.
+Domain info is same for every potential instatination of a controller.
+
+Link: https://lore.kernel.org/r/20220110015018.26359-8-kabel@kernel.org
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/pci/controller/pci-aardvark.c |   16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+--- a/drivers/pci/controller/pci-aardvark.c
++++ b/drivers/pci/controller/pci-aardvark.c
+@@ -274,7 +274,6 @@ struct advk_pcie {
+ 	raw_spinlock_t irq_lock;
+ 	struct irq_domain *msi_domain;
+ 	struct irq_domain *msi_inner_domain;
+-	struct msi_domain_info msi_domain_info;
+ 	DECLARE_BITMAP(msi_used, MSI_IRQ_NUM);
+ 	struct mutex msi_used_lock;
+ 	u16 msi_msg;
+@@ -1286,20 +1285,20 @@ static struct irq_chip advk_msi_irq_chip
+ 	.name = "advk-MSI",
+ };
+ 
++static struct msi_domain_info advk_msi_domain_info = {
++	.flags	= MSI_FLAG_USE_DEF_DOM_OPS | MSI_FLAG_USE_DEF_CHIP_OPS |
++		  MSI_FLAG_MULTI_PCI_MSI,
++	.chip	= &advk_msi_irq_chip,
++};
++
+ static int advk_pcie_init_msi_irq_domain(struct advk_pcie *pcie)
+ {
+ 	struct device *dev = &pcie->pdev->dev;
+ 	struct device_node *node = dev->of_node;
+-	struct msi_domain_info *msi_di;
+ 	phys_addr_t msi_msg_phys;
+ 
+ 	mutex_init(&pcie->msi_used_lock);
+ 
+-	msi_di = &pcie->msi_domain_info;
+-	msi_di->flags = MSI_FLAG_USE_DEF_DOM_OPS | MSI_FLAG_USE_DEF_CHIP_OPS |
+-		MSI_FLAG_MULTI_PCI_MSI;
+-	msi_di->chip = &advk_msi_irq_chip;
+-
+ 	msi_msg_phys = virt_to_phys(&pcie->msi_msg);
+ 
+ 	advk_writel(pcie, lower_32_bits(msi_msg_phys),
+@@ -1315,7 +1314,8 @@ static int advk_pcie_init_msi_irq_domain
+ 
+ 	pcie->msi_domain =
+ 		pci_msi_create_irq_domain(of_node_to_fwnode(node),
+-					  msi_di, pcie->msi_inner_domain);
++					  &advk_msi_domain_info,
++					  pcie->msi_inner_domain);
+ 	if (!pcie->msi_domain) {
+ 		irq_domain_remove(pcie->msi_inner_domain);
+ 		return -ENOMEM;
+
+
