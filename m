@@ -2,244 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCB16C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:05:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DFE4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:06:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242233AbiEJNJH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:09:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37600 "EHLO
+        id S241127AbiEJNKG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:10:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241407AbiEJNJC (ORCPT
+        with ESMTP id S237826AbiEJNKD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:09:02 -0400
-Received: from conssluserg-04.nifty.com (conssluserg-04.nifty.com [210.131.2.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13BA0285ECA;
-        Tue, 10 May 2022 06:05:01 -0700 (PDT)
-Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176]) (authenticated)
-        by conssluserg-04.nifty.com with ESMTP id 24AD4gO3008126;
-        Tue, 10 May 2022 22:04:43 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-04.nifty.com 24AD4gO3008126
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1652187883;
-        bh=qBEayftl5ZwYSJPRCuQSWMNdT3wNrCO/ZLylUnM9Pos=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=nLq/5ipHudJNOcGUJsWwdYUfl6xYm9Kx/LfCF2DY/yWhpE2Mctf32CiOyfNIQ2gBC
-         bGdfW9kjNaCML706UPRh8nLD1Lny1Azy1bLZ2h1RpS3RhbdZZDMMkc5uqHLDsQXABC
-         envI7kUNL04QM+8N4XW1CfSxf0scjWNceOPOA2a/dAh+pxD7eITqXbziVw5bIEp4xH
-         2WKVeNfb8PcpdVWBZW4CJg29uml36zc9AIKtqgWMVaQO517fRQOnyxwr53ndEVRIVV
-         5STEVG0h72KmyM63AeINzu91D9azv4AP8JWDJmYj1EIjvtwg4wchFlg47xQzbS9eVJ
-         p5TsaotGJk1Pg==
-X-Nifty-SrcIP: [209.85.214.176]
-Received: by mail-pl1-f176.google.com with SMTP id m12so2940658plb.4;
-        Tue, 10 May 2022 06:04:43 -0700 (PDT)
-X-Gm-Message-State: AOAM532vNZvbVnwj5oeJMduiGmW5AAaHyTaS5aTvrce5csVhe4i5+jOj
-        opA8Ph3jVoX9Qjr2jfgrJmQK6Dv4V9QsGdJrXQ8=
-X-Google-Smtp-Source: ABdhPJyavnWgf46gRQwW/3BEwUehZ9JzWKuqbx9T+L5WacD6flQsWB/O7++u6qzJBiUbBulyt3k71693TE6NXQEFYOk=
-X-Received: by 2002:a17:903:1205:b0:15e:8cbc:fd2b with SMTP id
- l5-20020a170903120500b0015e8cbcfd2bmr20893636plh.99.1652187882421; Tue, 10
- May 2022 06:04:42 -0700 (PDT)
+        Tue, 10 May 2022 09:10:03 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E9D51FCEC;
+        Tue, 10 May 2022 06:06:04 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 80D4A1F8C5;
+        Tue, 10 May 2022 13:06:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1652187963; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=h/N9r55RmDL/P9k3rTsZHZPvN6mp52YHLJIGiCPRLKk=;
+        b=HFVf+OtUg9TYMgd3f48zTa9GREuZx+/CvV/j811tjcwFhT7hKlvedqhIzE4vCon9BCMCLb
+        vGCdo0xzZU9i6gOEGqX05QMZv6nmFYoJ7qE4LQL54vqsPW73edif4xO7s7P+/YQJJvq6l3
+        3+B2mCNHrrvRCUpgP+rhMkzTiotdB38=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id DDF572C141;
+        Tue, 10 May 2022 13:06:02 +0000 (UTC)
+Date:   Tue, 10 May 2022 15:05:59 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Suren Baghdasaryan <surenb@google.com>
+Cc:     akpm@linux-foundation.org, rientjes@google.com,
+        willy@infradead.org, hannes@cmpxchg.org, guro@fb.com,
+        minchan@kernel.org, kirill@shutemov.name, aarcange@redhat.com,
+        brauner@kernel.org, hch@infradead.org, oleg@redhat.com,
+        david@redhat.com, jannh@google.com, shakeelb@google.com,
+        peterx@redhat.com, jhubbard@nvidia.com, shuah@kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kselftest@vger.kernel.org, kernel-team@android.com
+Subject: Re: [PATCH 2/3] mm: drop oom code from exit_mmap
+Message-ID: <YnpjNyrdqT/QxBPI@dhcp22.suse.cz>
+References: <20220510030014.3842475-1-surenb@google.com>
+ <20220510030014.3842475-2-surenb@google.com>
 MIME-Version: 1.0
-References: <20220508190631.2386038-1-masahiroy@kernel.org>
- <20220508190631.2386038-7-masahiroy@kernel.org> <CAKwvOdm_oSLHddWWSzF5UuYrLCsAwF8AwbUGotUnPvV+6JkSkg@mail.gmail.com>
-In-Reply-To: <CAKwvOdm_oSLHddWWSzF5UuYrLCsAwF8AwbUGotUnPvV+6JkSkg@mail.gmail.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Tue, 10 May 2022 22:03:31 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASb40kWgvOM42WyS82p42HQ7Mqhwo3GDffg4yHcKgJk0w@mail.gmail.com>
-Message-ID: <CAK7LNASb40kWgvOM42WyS82p42HQ7Mqhwo3GDffg4yHcKgJk0w@mail.gmail.com>
-Subject: Re: [PATCH v4 06/14] kbuild: link symbol CRCs at final link, removing CONFIG_MODULE_REL_CRCS
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nicolas Schier <nicolas@fjasle.eu>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-modules <linux-modules@vger.kernel.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        clang-built-linux <llvm@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220510030014.3842475-2-surenb@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 2:51 AM Nick Desaulniers
-<ndesaulniers@google.com> wrote:
->
->  On Sun, May 8, 2022 at 12:10 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
-> >
-> > diff --git a/include/asm-generic/export.h b/include/asm-generic/export.h
-> > index 07a36a874dca..51ce72ce80fa 100644
-> > --- a/include/asm-generic/export.h
-> > +++ b/include/asm-generic/export.h
-> > @@ -2,6 +2,14 @@
-> >  #ifndef __ASM_GENERIC_EXPORT_H
-> >  #define __ASM_GENERIC_EXPORT_H
-> >
-> > +/*
-> > + * This comment block is used by fixdep. Please do not remove.
->
-> I don't know much about fixdep. How does that work, if you could summarize?
+On Mon 09-05-22 20:00:13, Suren Baghdasaryan wrote:
+> With the oom-killer being able to operate on locked pages, exit_mmap
+> does not need to ensure that oom_reap_task_mm is done before it can
+> proceed. Instead it can rely on mmap_lock write lock to prevent
+> oom-killer from operating on the vma tree while it's freeing page
+> tables. exit_mmap can hold mmap_lock read lock when unmapping vmas
+> and then take mmap_lock write lock before freeing page tables.
 
+The changelog is rather light on nasty details which might be good but
+for the sake of our future us let's be more verbose so that we do not
+have to reinvent the prior history each time we are looking into this
+code. I would go with something like this instead:
+"
+The primary reason to invoke the oom reaper from the exit_mmap path used
+to be a prevention of an excessive oom killing if the oom victim exit
+races with the oom reaper (see 212925802454 ("mm: oom: let oom_reap_task
+and exit_mmap run concurrently") for more details. The invocation has
+moved around since then because of the interaction with the munlock
+logic but the underlying reason has remained the same (see 27ae357fa82b
+("mm, oom: fix concurrent munlock and oom reaper unmap, v3").
 
-You can find detailed explanation in scripts/basic/fixdep.c
+Munlock code is no longer a problem since a213e5cf71cb ("mm/munlock:
+delete munlock_vma_pages_all(), allow oomreap") and there shouldn't be
+any blocking operation before the memory is unmapped by exit_mmap so
+the oom reaper invocation can be dropped. The unmapping part can be done
+with the non-exclusive mmap_sem and the exclusive one is only required
+when page tables are freed.
 
+Remove the oom_reaper from exit_mmap which will make the code easier to
+read. This is really unlikely to make any observable difference although
+some microbenchmarks could benefit from one less branch that needs to be
+evaluated even though it almost never is true.
+"
 
-In short, it works like this:
+One minor comment below. Other than that \o/ this is finally going away.
+I strongly suspect that the history of this code is a nice example about how
+over optimizing code can cause more harm than good.
 
-fixdep parses every source (including headers).
-If it finds "CONFIG_MODVERSIONS", it adds a dependency
-on $(wildcard include/config/MODVERSIONS)
-to the .cmd files.
+Acked-by: Michal Hocko <mhocko@suse.com>
 
-If CONFIG_MODVERSIONS is toggled in Kconfig,
-it touches include/config/MODVERSIONS.    [1]
+Thanks!
+> 
+> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> ---
+>  include/linux/oom.h |  2 --
+>  mm/mmap.c           | 25 ++++++-------------------
+>  mm/oom_kill.c       |  2 +-
+>  3 files changed, 7 insertions(+), 22 deletions(-)
+> 
+[...]
+> @@ -3138,6 +3121,10 @@ void exit_mmap(struct mm_struct *mm)
+>  	/* update_hiwater_rss(mm) here? but nobody should be looking */
+>  	/* Use -1 here to ensure all VMAs in the mm are unmapped */
+>  	unmap_vmas(&tlb, vma, 0, -1);
+> +	mmap_read_unlock(mm);
+> +	/* Set MMF_OOM_SKIP to disregard this mm from further consideration.*/
+> +	set_bit(MMF_OOM_SKIP, &mm->flags);
 
-In the next run of Make, all the sources depending on
-CONFIG_MODVERSIONS will be re-compiled because the
-timestamp of include/config/MODVERSIONS is up-to-date.
+I think that it would be slightly more readable to add an empty line
+above and below of this. Also the comment would be more helpful if it
+explaind what the further consideration actually means. I would go with
 
+	/*
+	 * Set MMF_OOM_SKIP to hide this task from the oom killer/reaper
+	 * because the memory has been already freed. Do not bother
+	 * checking mm_is_oom_victim because setting a bit
+	 * unconditionally is just cheaper.
+	 */
 
-[1]: https://github.com/torvalds/linux/blob/v5.17/scripts/kconfig/confdata.c#L141
+> +	mmap_write_lock(mm);
+>  	free_pgtables(&tlb, vma, FIRST_USER_ADDRESS, USER_PGTABLES_CEILING);
+>  	tlb_finish_mmu(&tlb);
 
-
-
-
-
-> > + *
-> > + * When CONFIG_MODVERSIONS is changed from n to y, all source files having
-> > + * EXPORT_SYMBOL variants must be re-compiled because genksyms is run as a
-> > + * side effect of the .o build rule.
-> > + */
-> > +
-> >  #ifndef KSYM_FUNC
-> >  #define KSYM_FUNC(x) x
-> >  #endif
-> > @@ -12,9 +20,6 @@
-> >  #else
-> >  #define KSYM_ALIGN 4
-> >  #endif
-> > -#ifndef KCRC_ALIGN
-> > -#define KCRC_ALIGN 4
-> > -#endif
->
-> The #ifndef is there because arch/m68k/include/asm/export.h:1 defines
-> KCRC_ALIGN. You should delete that, too.
-
-Nice catch! I will clean it up too.
-
-
-
-
->
-> > diff --git a/scripts/genksyms/genksyms.c b/scripts/genksyms/genksyms.c
-> > index 4827c5abe5b7..6e6933ae7911 100644
-> > --- a/scripts/genksyms/genksyms.c
-> > +++ b/scripts/genksyms/genksyms.c
-> > @@ -33,7 +33,7 @@ char *cur_filename;
-> >  int in_source_file;
-> >
-> >  static int flag_debug, flag_dump_defs, flag_reference, flag_dump_types,
-> > -          flag_preserve, flag_warnings, flag_rel_crcs;
-> > +          flag_preserve, flag_warnings;
-> >
-> >  static int errors;
-> >  static int nsyms;
-> > @@ -681,10 +681,7 @@ void export_symbol(const char *name)
-> >                         fputs(">\n", debugfile);
-> >
-> >                 /* Used as a linker script. */
->
-> ^ Does this comment still apply?
-
-No.  From this commit going forward,
-the genksyms output will not be used as a linker script.
-
-08/14 will delete this comment anyway, but
-it is possible to remove it in this commit.
-
-
-
-
-
-
-
-
->
-> > -               printf(!flag_rel_crcs ? "__crc_%s = 0x%08lx;\n" :
-> > -                      "SECTIONS { .rodata : ALIGN(4) { "
-> > -                      "__crc_%s = .; LONG(0x%08lx); } }\n",
-> > -                      name, crc);
-> > +               printf("__crc_%s = 0x%08lx;\n", name, crc);
-> >         }
-> >  }
-> >
-> > diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-> > index eceb3ee7ec06..6aee2401f3ad 100755
-> > --- a/scripts/link-vmlinux.sh
-> > +++ b/scripts/link-vmlinux.sh
-> > @@ -88,11 +88,6 @@ modpost_link()
-> >                 gen_initcalls
-> >                 lds="-T .tmp_initcalls.lds"
-> >
-> > -               if is_enabled CONFIG_MODVERSIONS; then
-> > -                       gen_symversions
->
-> ^ this is the only caller of gen_symversions, right? Then
-> gen_symversions can be cleaned up, too?
-
-
-We can keep it in this commit.
-
-The follow-up cleaning is done in 07/14.
-
-To avoid too big commit,
-I separated the build flow change and
-trivial cleanups.
-
-
-
->
-> > -                       lds="${lds} -T .tmp_symversions.lds"
-> > -               fi
-> > -
-> >                 # This might take a while, so indicate that we're doing
-> >                 # an LTO link
-> >                 info LTO ${1}
-> > @@ -183,6 +178,10 @@ vmlinux_link()
-> >                 libs="${KBUILD_VMLINUX_LIBS}"
-> >         fi
-> >
-> > +       if is_enabled CONFIG_MODULES; then
-> > +               objs="${objs} .vmlinux.export.o"
-> > +       fi
-> > +
-> >         if [ "${SRCARCH}" = "um" ]; then
-> >                 wl=-Wl,
-> >                 ld="${CC}"
-> > @@ -312,6 +311,7 @@ cleanup()
-> >         rm -f vmlinux.o
-> >         rm -f .vmlinux.d
-> >         rm -f .vmlinux.objs
-> > +       rm -f .vmlinux.export.c
->
-> Probably can drop the `rm -f .tmp_symversions.lds` here, too?
-
-It will be cleaned up by 07/14.
-
-
-
-
-
-
-
-> --
-> Thanks,
-> ~Nick Desaulniers
-
-
-
---
-Best Regards
-Masahiro Yamada
+-- 
+Michal Hocko
+SUSE Labs
