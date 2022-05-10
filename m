@@ -2,475 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42241C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01625C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 10:54:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240973AbiEJK4w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 06:56:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36386 "EHLO
+        id S240505AbiEJK5w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 06:57:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240341AbiEJKxb (ORCPT
+        with ESMTP id S240392AbiEJKzC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 06:53:31 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3BD042B032B;
-        Tue, 10 May 2022 03:49:28 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2877E1650;
-        Tue, 10 May 2022 03:49:28 -0700 (PDT)
-Received: from hype-n1-sdp.warwick.arm.com (hype-n1-sdp.warwick.arm.com [10.32.33.46])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id AECB03F66F;
-        Tue, 10 May 2022 03:49:25 -0700 (PDT)
-From:   Nick Forrington <nick.forrington@arm.com>
-To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        acme@kernel.org
-Cc:     Nick Forrington <nick.forrington@arm.com>,
-        John Garry <john.garry@huawei.com>,
-        Will Deacon <will@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        James Clark <james.clark@arm.com>,
-        Andrew Kilroy <andrew.kilroy@arm.com>
-Subject: [PATCH 15/20] perf vendors events arm64: Arm Cortex-A77
-Date:   Tue, 10 May 2022 11:47:53 +0100
-Message-Id: <20220510104758.64677-16-nick.forrington@arm.com>
+        Tue, 10 May 2022 06:55:02 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D12A42B24C2;
+        Tue, 10 May 2022 03:50:10 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id t13so14318679pgn.8;
+        Tue, 10 May 2022 03:50:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sclbHhVCpytXbP5B6C6SSIufZdheKQomWRC+pnC/oHY=;
+        b=J83OMZaGsO5W6zKvuiaTqIx0nBsfHdG04fjk39gFIltlniK/KSRu1IMnkW3MaA1fnM
+         lxQm00q9pF2NFBTvX9nslTJqF5qeojReu//XMLTgkJhEFSCXG1Q/TlVTbGZ5Pb1Qxxti
+         NVsQfQ97X1VQTy1MJkTahp4HYv4XESVLxq135JTE+pKkc9HU0QxtPlHudp7kCm9W8yL0
+         C2Bhvn9+mpZUGIOv62qCR6oH4DZWJOwgYxITmo0mBD1bHcqLqLzl6rbr5NGG4YjqWSzT
+         aD+JlD/YafSn7b/hxhd4OhTrQw7L4nr7NGMEzdnidDeBIIlu7OOvcGl4M9Y+koIAnM4V
+         K5Ow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sclbHhVCpytXbP5B6C6SSIufZdheKQomWRC+pnC/oHY=;
+        b=fgiBOicBJFxbxCTL9+2T2cyCI1TzmE46dq+0Fx63PLZO6bAH3aRbICQwFk8C0iFLfk
+         uQvbu9mU/qlOJxxO2mICimuR1htDh/ZU/X+IQcLILlk3xBTw5YWbSndGW5Xoc4AxZUfO
+         wbK1o7WRJyPFDyiLbg0qi9UcjuuLQu8Z9f6oahVFTymXfHmm8hB45SVxfwK4hMhTqXc1
+         qEsRdNDBNpiL7uAXB/PmSX22oo6UMjrWDQA/pfvybp/n14w6E2Ra8arYEgsnYC0naP3A
+         jBsvULZ4rv/nUnrK3mrb47KtPppzlRFcX/XvLgkpbKOpiMvYKVu0RlnzPRToDkHPNu7Y
+         CAhg==
+X-Gm-Message-State: AOAM532J79h6a61ktzQKWh1Sc+tvsqrhgMN2P71zzCikQfa8ph+xo6Iu
+        MlVa6Y4LjGbcGF26dFM/lzQ=
+X-Google-Smtp-Source: ABdhPJwCTtqekQA/FsLVdM36s38qq5EgyEfuY54L17XXT0Rd/L7KC9PL819Tdhgw9IMBR9aTRjoQLA==
+X-Received: by 2002:a63:2114:0:b0:3c4:995c:344a with SMTP id h20-20020a632114000000b003c4995c344amr16459225pgh.125.1652179810344;
+        Tue, 10 May 2022 03:50:10 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id hv8-20020a17090ae40800b001d9927ef1desm1499917pjb.34.2022.05.10.03.50.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 03:50:09 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     aradford@gmail.com
+Cc:     jejb@linux.ibm.com, martin.petersen@oracle.com,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] [SCSI] 3w-sas: use kobj_to_dev()
+Date:   Tue, 10 May 2022 10:50:05 +0000
+Message-Id: <20220510105005.1351587-1-chi.minghao@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220510104758.64677-1-nick.forrington@arm.com>
-References: <20220510104758.64677-1-nick.forrington@arm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add PMU events for Arm Cortex-A77
-Update mapfile.csv
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-Event data based on:
-https://github.com/ARM-software/data/tree/master/pmu/cortex-a77.json
+Use kobj_to_dev() instead of open-coding it.
 
-which is based on PMU event descriptions from the Arm Cortex-A77 Technical
-Reference Manual.
-
-Mapping data (for mapfile.csv) based on:
-https://github.com/ARM-software/data/blob/master/cpus.json
-
-which is based on Main ID Register (MIDR) information found in the Arm
-Technical Reference Manuals for individual CPUs.
-
-Signed-off-by: Nick Forrington <nick.forrington@arm.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 ---
- .../arch/arm64/arm/cortex-a77/branch.json     |  17 +++
- .../arch/arm64/arm/cortex-a77/bus.json        |  17 +++
- .../arch/arm64/arm/cortex-a77/cache.json      | 143 ++++++++++++++++++
- .../arch/arm64/arm/cortex-a77/exception.json  |  47 ++++++
- .../arm64/arm/cortex-a77/instruction.json     |  77 ++++++++++
- .../arch/arm64/arm/cortex-a77/memory.json     |  23 +++
- .../arch/arm64/arm/cortex-a77/pipeline.json   |   8 +
- tools/perf/pmu-events/arch/arm64/mapfile.csv  |   1 +
- 8 files changed, 333 insertions(+)
- create mode 100644 tools/perf/pmu-events/arch/arm64/arm/cortex-a77/branch.json
- create mode 100644 tools/perf/pmu-events/arch/arm64/arm/cortex-a77/bus.json
- create mode 100644 tools/perf/pmu-events/arch/arm64/arm/cortex-a77/cache.json
- create mode 100644 tools/perf/pmu-events/arch/arm64/arm/cortex-a77/exception.json
- create mode 100644 tools/perf/pmu-events/arch/arm64/arm/cortex-a77/instruction.json
- create mode 100644 tools/perf/pmu-events/arch/arm64/arm/cortex-a77/memory.json
- create mode 100644 tools/perf/pmu-events/arch/arm64/arm/cortex-a77/pipeline.json
+ drivers/scsi/3w-sas.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/perf/pmu-events/arch/arm64/arm/cortex-a77/branch.json b/tools/perf/pmu-events/arch/arm64/arm/cortex-a77/branch.json
-new file mode 100644
-index 000000000000..2f2d137f5f55
---- /dev/null
-+++ b/tools/perf/pmu-events/arch/arm64/arm/cortex-a77/branch.json
-@@ -0,0 +1,17 @@
-+[
-+    {
-+        "ArchStdEvent": "BR_MIS_PRED"
-+    },
-+    {
-+        "ArchStdEvent": "BR_PRED"
-+    },
-+    {
-+        "ArchStdEvent": "BR_IMMED_SPEC"
-+    },
-+    {
-+        "ArchStdEvent": "BR_RETURN_SPEC"
-+    },
-+    {
-+        "ArchStdEvent": "BR_INDIRECT_SPEC"
-+    }
-+]
-diff --git a/tools/perf/pmu-events/arch/arm64/arm/cortex-a77/bus.json b/tools/perf/pmu-events/arch/arm64/arm/cortex-a77/bus.json
-new file mode 100644
-index 000000000000..75d850b781ac
---- /dev/null
-+++ b/tools/perf/pmu-events/arch/arm64/arm/cortex-a77/bus.json
-@@ -0,0 +1,17 @@
-+[
-+    {
-+        "ArchStdEvent": "CPU_CYCLES"
-+    },
-+    {
-+        "ArchStdEvent": "BUS_ACCESS"
-+    },
-+    {
-+        "ArchStdEvent": "BUS_CYCLES"
-+    },
-+    {
-+        "ArchStdEvent": "BUS_ACCESS_RD"
-+    },
-+    {
-+        "ArchStdEvent": "BUS_ACCESS_WR"
-+    }
-+]
-diff --git a/tools/perf/pmu-events/arch/arm64/arm/cortex-a77/cache.json b/tools/perf/pmu-events/arch/arm64/arm/cortex-a77/cache.json
-new file mode 100644
-index 000000000000..cbb365f5091f
---- /dev/null
-+++ b/tools/perf/pmu-events/arch/arm64/arm/cortex-a77/cache.json
-@@ -0,0 +1,143 @@
-+[
-+    {
-+        "ArchStdEvent": "L1I_CACHE_REFILL"
-+    },
-+    {
-+        "ArchStdEvent": "L1I_TLB_REFILL"
-+    },
-+    {
-+        "ArchStdEvent": "L1D_CACHE_REFILL"
-+    },
-+    {
-+        "ArchStdEvent": "L1D_CACHE"
-+    },
-+    {
-+        "ArchStdEvent": "L1D_TLB_REFILL"
-+    },
-+    {
-+        "ArchStdEvent": "L1I_CACHE"
-+    },
-+    {
-+        "ArchStdEvent": "L1D_CACHE_WB"
-+    },
-+    {
-+        "ArchStdEvent": "L2D_CACHE"
-+    },
-+    {
-+        "ArchStdEvent": "L2D_CACHE_REFILL"
-+    },
-+    {
-+        "ArchStdEvent": "L2D_CACHE_WB"
-+    },
-+    {
-+        "ArchStdEvent": "L2D_CACHE_ALLOCATE"
-+    },
-+    {
-+        "ArchStdEvent": "L1D_TLB"
-+    },
-+    {
-+        "ArchStdEvent": "L1I_TLB"
-+    },
-+    {
-+        "ArchStdEvent": "L3D_CACHE_ALLOCATE"
-+    },
-+    {
-+        "ArchStdEvent": "L3D_CACHE_REFILL"
-+    },
-+    {
-+        "ArchStdEvent": "L3D_CACHE"
-+    },
-+    {
-+        "ArchStdEvent": "L2D_TLB_REFILL"
-+    },
-+    {
-+        "ArchStdEvent": "L2D_TLB"
-+    },
-+    {
-+        "ArchStdEvent": "DTLB_WALK"
-+    },
-+    {
-+        "ArchStdEvent": "ITLB_WALK"
-+    },
-+    {
-+        "ArchStdEvent": "LL_CACHE_RD"
-+    },
-+    {
-+        "ArchStdEvent": "LL_CACHE_MISS_RD"
-+    },
-+    {
-+        "ArchStdEvent": "L1D_CACHE_RD"
-+    },
-+    {
-+        "ArchStdEvent": "L1D_CACHE_WR"
-+    },
-+    {
-+        "ArchStdEvent": "L1D_CACHE_REFILL_RD"
-+    },
-+    {
-+        "ArchStdEvent": "L1D_CACHE_REFILL_WR"
-+    },
-+    {
-+        "ArchStdEvent": "L1D_CACHE_REFILL_INNER"
-+    },
-+    {
-+        "ArchStdEvent": "L1D_CACHE_REFILL_OUTER"
-+    },
-+    {
-+        "ArchStdEvent": "L1D_CACHE_WB_VICTIM"
-+    },
-+    {
-+        "ArchStdEvent": "L1D_CACHE_WB_CLEAN"
-+    },
-+    {
-+        "ArchStdEvent": "L1D_CACHE_INVAL"
-+    },
-+    {
-+        "ArchStdEvent": "L1D_TLB_REFILL_RD"
-+    },
-+    {
-+        "ArchStdEvent": "L1D_TLB_REFILL_WR"
-+    },
-+    {
-+        "ArchStdEvent": "L1D_TLB_RD"
-+    },
-+    {
-+        "ArchStdEvent": "L1D_TLB_WR"
-+    },
-+    {
-+        "ArchStdEvent": "L2D_CACHE_RD"
-+    },
-+    {
-+        "ArchStdEvent": "L2D_CACHE_WR"
-+    },
-+    {
-+        "ArchStdEvent": "L2D_CACHE_REFILL_RD"
-+    },
-+    {
-+        "ArchStdEvent": "L2D_CACHE_REFILL_WR"
-+    },
-+    {
-+        "ArchStdEvent": "L2D_CACHE_WB_VICTIM"
-+    },
-+    {
-+        "ArchStdEvent": "L2D_CACHE_WB_CLEAN"
-+    },
-+    {
-+        "ArchStdEvent": "L2D_CACHE_INVAL"
-+    },
-+    {
-+        "ArchStdEvent": "L2D_TLB_REFILL_RD"
-+    },
-+    {
-+        "ArchStdEvent": "L2D_TLB_REFILL_WR"
-+    },
-+    {
-+        "ArchStdEvent": "L2D_TLB_RD"
-+    },
-+    {
-+        "ArchStdEvent": "L2D_TLB_WR"
-+    },
-+    {
-+        "ArchStdEvent": "L3D_CACHE_RD"
-+    }
-+]
-diff --git a/tools/perf/pmu-events/arch/arm64/arm/cortex-a77/exception.json b/tools/perf/pmu-events/arch/arm64/arm/cortex-a77/exception.json
-new file mode 100644
-index 000000000000..344a2d552ad5
---- /dev/null
-+++ b/tools/perf/pmu-events/arch/arm64/arm/cortex-a77/exception.json
-@@ -0,0 +1,47 @@
-+[
-+    {
-+        "ArchStdEvent": "EXC_TAKEN"
-+    },
-+    {
-+        "ArchStdEvent": "MEMORY_ERROR"
-+    },
-+    {
-+        "ArchStdEvent": "EXC_UNDEF"
-+    },
-+    {
-+        "ArchStdEvent": "EXC_SVC"
-+    },
-+    {
-+        "ArchStdEvent": "EXC_PABORT"
-+    },
-+    {
-+        "ArchStdEvent": "EXC_DABORT"
-+    },
-+    {
-+        "ArchStdEvent": "EXC_IRQ"
-+    },
-+    {
-+        "ArchStdEvent": "EXC_FIQ"
-+    },
-+    {
-+        "ArchStdEvent": "EXC_SMC"
-+    },
-+    {
-+        "ArchStdEvent": "EXC_HVC"
-+    },
-+    {
-+        "ArchStdEvent": "EXC_TRAP_PABORT"
-+    },
-+    {
-+        "ArchStdEvent": "EXC_TRAP_DABORT"
-+    },
-+    {
-+        "ArchStdEvent": "EXC_TRAP_OTHER"
-+    },
-+    {
-+        "ArchStdEvent": "EXC_TRAP_IRQ"
-+    },
-+    {
-+        "ArchStdEvent": "EXC_TRAP_FIQ"
-+    }
-+]
-diff --git a/tools/perf/pmu-events/arch/arm64/arm/cortex-a77/instruction.json b/tools/perf/pmu-events/arch/arm64/arm/cortex-a77/instruction.json
-new file mode 100644
-index 000000000000..1a74786271d4
---- /dev/null
-+++ b/tools/perf/pmu-events/arch/arm64/arm/cortex-a77/instruction.json
-@@ -0,0 +1,77 @@
-+[
-+    {
-+        "ArchStdEvent": "SW_INCR"
-+    },
-+    {
-+        "ArchStdEvent": "INST_RETIRED"
-+    },
-+    {
-+        "ArchStdEvent": "EXC_RETURN"
-+    },
-+    {
-+        "ArchStdEvent": "CID_WRITE_RETIRED"
-+    },
-+    {
-+        "ArchStdEvent": "INST_SPEC"
-+    },
-+    {
-+        "ArchStdEvent": "TTBR_WRITE_RETIRED"
-+    },
-+    {
-+        "ArchStdEvent": "BR_RETIRED"
-+    },
-+    {
-+        "ArchStdEvent": "BR_MIS_PRED_RETIRED"
-+    },
-+    {
-+        "ArchStdEvent": "LDREX_SPEC"
-+    },
-+    {
-+        "ArchStdEvent": "STREX_PASS_SPEC"
-+    },
-+    {
-+        "ArchStdEvent": "STREX_FAIL_SPEC"
-+    },
-+    {
-+        "ArchStdEvent": "STREX_SPEC"
-+    },
-+    {
-+        "ArchStdEvent": "LD_SPEC"
-+    },
-+    {
-+        "ArchStdEvent": "ST_SPEC"
-+    },
-+    {
-+        "ArchStdEvent": "LDST_SPEC"
-+    },
-+    {
-+        "ArchStdEvent": "DP_SPEC"
-+    },
-+    {
-+        "ArchStdEvent": "ASE_SPEC"
-+    },
-+    {
-+        "ArchStdEvent": "VFP_SPEC"
-+    },
-+    {
-+        "ArchStdEvent": "PC_WRITE_SPEC"
-+    },
-+    {
-+        "ArchStdEvent": "CRYPTO_SPEC"
-+    },
-+    {
-+        "ArchStdEvent": "ISB_SPEC"
-+    },
-+    {
-+        "ArchStdEvent": "DSB_SPEC"
-+    },
-+    {
-+        "ArchStdEvent": "DMB_SPEC"
-+    },
-+    {
-+        "ArchStdEvent": "RC_LD_SPEC"
-+    },
-+    {
-+        "ArchStdEvent": "RC_ST_SPEC"
-+    }
-+]
-diff --git a/tools/perf/pmu-events/arch/arm64/arm/cortex-a77/memory.json b/tools/perf/pmu-events/arch/arm64/arm/cortex-a77/memory.json
-new file mode 100644
-index 000000000000..5aff6e93c1ad
---- /dev/null
-+++ b/tools/perf/pmu-events/arch/arm64/arm/cortex-a77/memory.json
-@@ -0,0 +1,23 @@
-+[
-+    {
-+        "ArchStdEvent": "MEM_ACCESS"
-+    },
-+    {
-+        "ArchStdEvent": "REMOTE_ACCESS"
-+    },
-+    {
-+        "ArchStdEvent": "MEM_ACCESS_RD"
-+    },
-+    {
-+        "ArchStdEvent": "MEM_ACCESS_WR"
-+    },
-+    {
-+        "ArchStdEvent": "UNALIGNED_LD_SPEC"
-+    },
-+    {
-+        "ArchStdEvent": "UNALIGNED_ST_SPEC"
-+    },
-+    {
-+        "ArchStdEvent": "UNALIGNED_LDST_SPEC"
-+    }
-+]
-diff --git a/tools/perf/pmu-events/arch/arm64/arm/cortex-a77/pipeline.json b/tools/perf/pmu-events/arch/arm64/arm/cortex-a77/pipeline.json
-new file mode 100644
-index 000000000000..eeac798d403a
---- /dev/null
-+++ b/tools/perf/pmu-events/arch/arm64/arm/cortex-a77/pipeline.json
-@@ -0,0 +1,8 @@
-+[
-+    {
-+        "ArchStdEvent": "STALL_FRONTEND"
-+    },
-+    {
-+        "ArchStdEvent": "STALL_BACKEND"
-+    }
-+]
-diff --git a/tools/perf/pmu-events/arch/arm64/mapfile.csv b/tools/perf/pmu-events/arch/arm64/mapfile.csv
-index 43cdeae3f1b6..1fa58d247132 100644
---- a/tools/perf/pmu-events/arch/arm64/mapfile.csv
-+++ b/tools/perf/pmu-events/arch/arm64/mapfile.csv
-@@ -31,6 +31,7 @@
- 0x00000000410fd0a0,v1,arm/cortex-a75,core
- 0x00000000410fd0b0,v1,arm/cortex-a76-n1,core
- 0x00000000410fd0c0,v1,arm/cortex-a76-n1,core
-+0x00000000410fd0d0,v1,arm/cortex-a77,core
- 0x00000000410fd400,v1,arm/neoverse-v1,core
- 0x00000000410fd460,v1,arm/cortex-a510,core
- 0x00000000410fd490,v1,arm/neoverse-n2,core
+diff --git a/drivers/scsi/3w-sas.c b/drivers/scsi/3w-sas.c
+index 3ebe66151dcb..8d63e642715d 100644
+--- a/drivers/scsi/3w-sas.c
++++ b/drivers/scsi/3w-sas.c
+@@ -99,7 +99,7 @@ static ssize_t twl_sysfs_aen_read(struct file *filp, struct kobject *kobj,
+ 				  struct bin_attribute *bin_attr,
+ 				  char *outbuf, loff_t offset, size_t count)
+ {
+-	struct device *dev = container_of(kobj, struct device, kobj);
++	struct device *dev = kobj_to_dev(kobj);
+ 	struct Scsi_Host *shost = class_to_shost(dev);
+ 	TW_Device_Extension *tw_dev = (TW_Device_Extension *)shost->hostdata;
+ 	unsigned long flags = 0;
+@@ -130,7 +130,7 @@ static ssize_t twl_sysfs_compat_info(struct file *filp, struct kobject *kobj,
+ 				     struct bin_attribute *bin_attr,
+ 				     char *outbuf, loff_t offset, size_t count)
+ {
+-	struct device *dev = container_of(kobj, struct device, kobj);
++	struct device *dev = kobj_to_dev(kobj);
+ 	struct Scsi_Host *shost = class_to_shost(dev);
+ 	TW_Device_Extension *tw_dev = (TW_Device_Extension *)shost->hostdata;
+ 	unsigned long flags = 0;
 -- 
 2.25.1
+
 
