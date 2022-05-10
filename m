@@ -2,143 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFC20C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 00:33:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D4A8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 00:33:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233677AbiEJAha (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 20:37:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60608 "EHLO
+        id S233780AbiEJAhv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 20:37:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229696AbiEJAhZ (ORCPT
+        with ESMTP id S233751AbiEJAhs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 20:37:25 -0400
-Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F50D2AC6FD;
-        Mon,  9 May 2022 17:33:30 -0700 (PDT)
-Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-e656032735so16609871fac.0;
-        Mon, 09 May 2022 17:33:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=64L3c9mM134nU08ZcOwqqRtvzxpfpmFyW/XcEdewfog=;
-        b=DklkJSJQIzB9odhVCeZcEpjwt8ipi0M/j47TWaWuwQ1NSDqsgXr0nc5RwNyYKoJpkR
-         t4R9OhUL4HLE7gIwTV9NR7GxF9XRYzWJdVJfBTNz+UyraFdyZB+65/45NcMi59WaalUP
-         qRBKZg9naJYYv7ZdCQK3b8rE0rPv/l43QRv48LlOHAe8A7KH+cNSDb/UcEVuoYwEOCJT
-         VrwekoorWPINytaUhsfre6QB0BtQSEnowO/Pvv7q+5bUa6iCG40KKC9jUrR3/JMT/4WJ
-         USekykU4qZJ2vVI4/UDQTuH9I312O2juYGU8T+us5kwKusfZA3KLnFR5fWngeaVPlBJ4
-         olNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=64L3c9mM134nU08ZcOwqqRtvzxpfpmFyW/XcEdewfog=;
-        b=yebfwbKt3Bkxnw8sNdAvEjj7/LTQ8TN0l0Y+Aa/zOrqjRRMg/F9aNmboORurXwp4AO
-         Fh+amaMS6i9xy8Ur0BepMFqba3dfW5OfLdW4waX8wHOlY4zj6r80vWE3BIPdExZ3vjBx
-         FIS9Ia3Rdu+IAtTKuFzHnX06wUP7T+jx8O6+AxBw2a5SiC8pgUB3s4aFOXej1lT5f8nM
-         /gIADRKhIVs6JmmXcMxus5rblVNBKKFcgZc3OCvg7k4JX2LVWxr3P/qRGOuNnUFQ4lW+
-         i6L6CWNNdauYil5GVtpMAseShWe01NWusjG2/pNKuOX7kuQJOOr6AXB7j5mP+qBNP8Wq
-         bSfg==
-X-Gm-Message-State: AOAM533sNlIR41Ld99n/7syRnRaHNnBMPgMwAn6ECgUtM05UPdnxuPVW
-        NtxY8zS0bfsDF3Za+T7RxDRLZzyayFaMqw==
-X-Google-Smtp-Source: ABdhPJy377jdrFVTBfRZFBojoqd9vuoahvNrUz3dtMSIRseHPXi1/86DGlMNcjz9ZrL/wiToNlkPwA==
-X-Received: by 2002:a05:6870:1807:b0:d7:2a4c:14b8 with SMTP id t7-20020a056870180700b000d72a4c14b8mr11295005oaf.97.1652142809351;
-        Mon, 09 May 2022 17:33:29 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id n8-20020a0568080a0800b00325cda1ff8csm4980517oij.11.2022.05.09.17.33.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 17:33:28 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Mon, 9 May 2022 17:33:27 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Eugene Shalygin <eugene.shalygin@gmail.com>
-Cc:     Debabrata Banerjee <dbavatar@gmail.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-hwmon@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] hwmon: (asus-ec-sensors) add ROG STRIX X570-E GAMING
- WIFI II
-Message-ID: <20220510003327.GA1561946@roeck-us.net>
-References: <20220505073351.123753-1-eugene.shalygin@gmail.com>
+        Mon, 9 May 2022 20:37:48 -0400
+Received: from lgeamrelo11.lge.com (lgeamrelo11.lge.com [156.147.23.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 901EA2AF606
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 17:33:51 -0700 (PDT)
+Received: from unknown (HELO lgemrelse6q.lge.com) (156.147.1.121)
+        by 156.147.23.51 with ESMTP; 10 May 2022 09:33:49 +0900
+X-Original-SENDERIP: 156.147.1.121
+X-Original-MAILFROM: byungchul.park@lge.com
+Received: from unknown (HELO X58A-UD3R) (10.177.244.38)
+        by 156.147.1.121 with ESMTP; 10 May 2022 09:33:49 +0900
+X-Original-SENDERIP: 10.177.244.38
+X-Original-MAILFROM: byungchul.park@lge.com
+Date:   Tue, 10 May 2022 09:32:13 +0900
+From:   Byungchul Park <byungchul.park@lge.com>
+To:     Theodore Ts'o <tytso@mit.edu>
+Cc:     torvalds@linux-foundation.org, damien.lemoal@opensource.wdc.com,
+        linux-ide@vger.kernel.org, adilger.kernel@dilger.ca,
+        linux-ext4@vger.kernel.org, mingo@redhat.com,
+        linux-kernel@vger.kernel.org, peterz@infradead.org,
+        will@kernel.org, tglx@linutronix.de, rostedt@goodmis.org,
+        joel@joelfernandes.org, sashal@kernel.org, daniel.vetter@ffwll.ch,
+        chris@chris-wilson.co.uk, duyuyang@gmail.com,
+        johannes.berg@intel.com, tj@kernel.org, willy@infradead.org,
+        david@fromorbit.com, amir73il@gmail.com, bfields@fieldses.org,
+        gregkh@linuxfoundation.org, kernel-team@lge.com,
+        linux-mm@kvack.org, akpm@linux-foundation.org, mhocko@kernel.org,
+        minchan@kernel.org, hannes@cmpxchg.org, vdavydov.dev@gmail.com,
+        sj@kernel.org, jglisse@redhat.com, dennis@kernel.org, cl@linux.com,
+        penberg@kernel.org, rientjes@google.com, vbabka@suse.cz,
+        ngupta@vflare.org, linux-block@vger.kernel.org,
+        paolo.valente@linaro.org, josef@toxicpanda.com,
+        linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk,
+        jack@suse.cz, jack@suse.com, jlayton@kernel.org,
+        dan.j.williams@intel.com, hch@infradead.org, djwong@kernel.org,
+        dri-devel@lists.freedesktop.org, airlied@linux.ie,
+        rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
+        hamohammed.sa@gmail.com, 42.hyeyoo@gmail.com
+Subject: Re: [PATCH RFC v6 00/21] DEPT(Dependency Tracker)
+Message-ID: <20220510003213.GD6047@X58A-UD3R>
+References: <1651652269-15342-1-git-send-email-byungchul.park@lge.com>
+ <YnmCE2iwa0MSqocr@mit.edu>
+ <YnmVgVQ7usoXnJ1N@mit.edu>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220505073351.123753-1-eugene.shalygin@gmail.com>
+In-Reply-To: <YnmVgVQ7usoXnJ1N@mit.edu>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 05, 2022 at 09:33:51AM +0200, Eugene Shalygin wrote:
-> From: Debabrata Banerjee <dbavatar@gmail.com>
-> 
-> Adds support for the ROG STRIX X570-E GAMING WIFI II board and
-> simplifies formatting for the list of supported models.
-> 
-> Signed-off-by: Debabrata Banerjee <dbavatar@gmail.com>
-> Signed-off-by: Eugene Shalygin <eugene.shalygin@gmail.com>
+On Mon, May 09, 2022 at 06:28:17PM -0400, Theodore Ts'o wrote:
+> Oh, one other problem with DEPT --- it's SLOW --- the overhead is
+> enormous.  Using kvm-xfstests[1] running "kvm-xfstests smoke", here
+> are some sample times:
 
-Applied.
+Yes, right. DEPT has never been optimized. It rather turns on
+CONFIG_LOCKDEP and even CONFIG_PROVE_LOCKING when CONFIG_DEPT gets on
+because of porting issue. I have no choice but to rely on those to
+develop DEPT out of tree. Of course, that's what I don't like.
 
-Thanks,
-Guenter
+Plus, for now, I'm focusing on removing false positives. Once it's
+considered settled down, I will work on performance optimizaition. But
+it should still keep relying on Lockdep CONFIGs and adding additional
+overhead on it until DEPT can be developed in the tree.
 
-> ---
->  Documentation/hwmon/asus_ec_sensors.rst | 23 ++++++++++++-----------
->  drivers/hwmon/asus-ec-sensors.c         |  8 ++++++++
->  2 files changed, 20 insertions(+), 11 deletions(-)
+> 			LOCKDEP		DEPT
+> Time to first test	49 seconds	602 seconds
+> ext4/001      		2 s		22 s
+> ext4/003		2 s		8 s
+> ext4/005		0 s		7 s
+> ext4/020		1 s		8 s
+> ext4/021		11 s		17 s
+> ext4/023		0 s		83 s
+> generic/001		4 s		76 s
+> generic/002		0 s		11 s
+> generic/003		10 s		19 s
 > 
-> diff --git a/Documentation/hwmon/asus_ec_sensors.rst b/Documentation/hwmon/asus_ec_sensors.rst
-> index 1700fe619597..78ca69eda877 100644
-> --- a/Documentation/hwmon/asus_ec_sensors.rst
-> +++ b/Documentation/hwmon/asus_ec_sensors.rst
-> @@ -4,19 +4,20 @@ Kernel driver asus_ec_sensors
->  =================================
->  
->  Supported boards:
-> - * PRIME X470-PRO,
-> - * PRIME X570-PRO,
-> - * Pro WS X570-ACE,
-> + * PRIME X470-PRO
-> + * PRIME X570-PRO
-> + * Pro WS X570-ACE
->   * ProArt X570-CREATOR WIFI
-> - * ROG CROSSHAIR VIII DARK HERO,
-> + * ROG CROSSHAIR VIII DARK HERO
->   * ROG CROSSHAIR VIII HERO (WI-FI)
-> - * ROG CROSSHAIR VIII FORMULA,
-> - * ROG CROSSHAIR VIII HERO,
-> - * ROG CROSSHAIR VIII IMPACT,
-> - * ROG STRIX B550-E GAMING,
-> - * ROG STRIX B550-I GAMING,
-> - * ROG STRIX X570-E GAMING,
-> - * ROG STRIX X570-F GAMING,
-> + * ROG CROSSHAIR VIII FORMULA
-> + * ROG CROSSHAIR VIII HERO
-> + * ROG CROSSHAIR VIII IMPACT
-> + * ROG STRIX B550-E GAMING
-> + * ROG STRIX B550-I GAMING
-> + * ROG STRIX X570-E GAMING
-> + * ROG STRIX X570-E GAMING WIFI II
-> + * ROG STRIX X570-F GAMING
->   * ROG STRIX X570-I GAMING
->  
->  Authors:
-> diff --git a/drivers/hwmon/asus-ec-sensors.c b/drivers/hwmon/asus-ec-sensors.c
-> index 998d49d6b799..611e897429b1 100644
-> --- a/drivers/hwmon/asus-ec-sensors.c
-> +++ b/drivers/hwmon/asus-ec-sensors.c
-> @@ -315,6 +315,14 @@ static const struct ec_board_info board_info[] = {
->  		.mutex_path = ASUS_HW_ACCESS_MUTEX_ASMX,
->  		.family = family_amd_500_series,
->  	},
-> +	{
-> +		.board_names = {"ROG STRIX X570-E GAMING WIFI II"},
-> +		.sensors = SENSOR_SET_TEMP_CHIPSET_CPU_MB |
-> +			SENSOR_TEMP_T_SENSOR | SENSOR_CURR_CPU |
-> +			SENSOR_IN_CPU_CORE,
-> +		.mutex_path = ASUS_HW_ACCESS_MUTEX_ASMX,
-> +		.family = family_amd_500_series,
-> +	},
->  	{
->  		.board_names = {"ROG STRIX X570-F GAMING"},
->  		.sensors = SENSOR_SET_TEMP_CHIPSET_CPU_MB |
+> There are some large variations; in some cases, some xfstests take 10x
+> as much time or more to run.  In fact, when I first started the
+> kvm-xfstests run with DEPT, I thought something had hung and that
+> tests would never start.  (In fact, with gce-xfstests the default
+> watchdog "something has gone terribly wrong with the kexec" had fired,
+> and I didn't get any test results using gce-xfstests at all.  If DEPT
+> goes in without any optimizations, I'm going to have to adjust the
+> watchdogs timers for gce-xfstests.)
+
+Thank you for informing it. I will go for the optimization as well.
+
+> The bottom line is that at the moment, between the false positives,
+> and the significant overhead imposed by DEPT, I would suggest that if
+> DEPT ever does go in, that it should be possible to disable DEPT and
+> only use the existing CONFIG_PROVE_LOCKING version of LOCKDEP, just
+> because DEPT is S - L - O - W.
+> 
+> [1] https://github.com/tytso/xfstests-bld/blob/master/Documentation/kvm-quickstart.md
+> 
+> 						- Ted
+> 
+> P.S.  Darrick and I both have disabled using LOCKDEP by default
+> because it slows down ext4 -g auto testing by a factor 2, and xfs -g
+> auto testing by a factor of 3.  So the fact that DEPT is a factor of
+> 2x to 10x or more slower than LOCKDEP when running various xfstests
+> tests should be a real concern.
+
+DEPT is tracking way more objects than Lockdep so it's inevitable to be
+slower, but let me try to make it have the similar performance to
+Lockdep.
+
+	Byungchul
