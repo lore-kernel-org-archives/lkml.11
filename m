@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B159C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:41:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E186C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:41:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244136AbiEJNpN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:45:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55734 "EHLO
+        id S244170AbiEJNpW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:45:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243798AbiEJNcP (ORCPT
+        with ESMTP id S243781AbiEJNcO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:32:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5FA52CFE8E;
-        Tue, 10 May 2022 06:22:12 -0700 (PDT)
+        Tue, 10 May 2022 09:32:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50B652CF2A5;
+        Tue, 10 May 2022 06:22:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AD5C61663;
-        Tue, 10 May 2022 13:22:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 502ACC385A6;
-        Tue, 10 May 2022 13:22:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1151DB81DA6;
+        Tue, 10 May 2022 13:22:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 677F6C385A6;
+        Tue, 10 May 2022 13:22:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188931;
-        bh=lyBqSR0EnOVA8i/cJ7U1vjDXnqHAh9OtfQbsNi3k8Ys=;
+        s=korg; t=1652188925;
+        bh=tUBIoF9N6X0NiJbBCmDtbiWMfzpX2+Dhrt4Z/jqBemM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ezj1ElVrWjSYPRkmFikVOGG3wgU3OJxWBY9E8r9E05kfxn+m6jILM2Kgf479HezGm
-         eXOLoRcBQZ9Igr2zTJpUw4hgzDEmbJIFZaTgYR/e/+neZs+hcTEA4FB60BeOC1WyBj
-         YSBjZdsB+e4LX53rqiSbxbmxy87mOBsqSmqH/m5g=
+        b=uFXi+tnl5mOV/uP2yeRlbQkNL3HvIK2c0ilH/W0uuB7c8bx5dqGEvdPyYGZrg7APc
+         dVKe+zQuLdmXbuPrnXNaYYHlQyQXJ2dH/rMM+CVJmGAhOk9VZmhQiWD+bg7guBDqN/
+         2ffXZMpmtb1BNmtvT+tVmOiatHuPHHrBTfjLu/Mw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chengfeng Ye <cyeaa@connect.ust.hk>,
-        Takashi Sakamoto <o-takashi@sakamocchi.jp>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.19 63/88] firewire: fix potential uaf in outbound_phy_packet_callback()
-Date:   Tue, 10 May 2022 15:07:48 +0200
-Message-Id: <20220510130735.571310602@linuxfoundation.org>
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.19 71/88] nfc: nfcmrvl: main: reorder destructive operations in nfcmrvl_nci_unregister_dev to avoid bugs
+Date:   Tue, 10 May 2022 15:07:56 +0200
+Message-Id: <20220510130735.795322640@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 References: <20220510130733.735278074@linuxfoundation.org>
@@ -49,47 +48,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengfeng Ye <cyeaa@connect.ust.hk>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-commit b7c81f80246fac44077166f3e07103affe6db8ff upstream.
+commit d270453a0d9ec10bb8a802a142fb1b3601a83098 upstream.
 
-&e->event and e point to the same address, and &e->event could
-be freed in queue_event. So there is a potential uaf issue if
-we dereference e after calling queue_event(). Fix this by adding
-a temporary variable to maintain e->client in advance, this can
-avoid the potential uaf issue.
+There are destructive operations such as nfcmrvl_fw_dnld_abort and
+gpio_free in nfcmrvl_nci_unregister_dev. The resources such as firmware,
+gpio and so on could be destructed while the upper layer functions such as
+nfcmrvl_fw_dnld_start and nfcmrvl_nci_recv_frame is executing, which leads
+to double-free, use-after-free and null-ptr-deref bugs.
 
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Chengfeng Ye <cyeaa@connect.ust.hk>
-Signed-off-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
-Link: https://lore.kernel.org/r/20220409041243.603210-2-o-takashi@sakamocchi.jp
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+There are three situations that could lead to double-free bugs.
+
+The first situation is shown below:
+
+   (Thread 1)                 |      (Thread 2)
+nfcmrvl_fw_dnld_start         |
+ ...                          |  nfcmrvl_nci_unregister_dev
+ release_firmware()           |   nfcmrvl_fw_dnld_abort
+  kfree(fw) //(1)             |    fw_dnld_over
+                              |     release_firmware
+  ...                         |      kfree(fw) //(2)
+                              |     ...
+
+The second situation is shown below:
+
+   (Thread 1)                 |      (Thread 2)
+nfcmrvl_fw_dnld_start         |
+ ...                          |
+ mod_timer                    |
+ (wait a time)                |
+ fw_dnld_timeout              |  nfcmrvl_nci_unregister_dev
+   fw_dnld_over               |   nfcmrvl_fw_dnld_abort
+    release_firmware          |    fw_dnld_over
+     kfree(fw) //(1)          |     release_firmware
+     ...                      |      kfree(fw) //(2)
+
+The third situation is shown below:
+
+       (Thread 1)               |       (Thread 2)
+nfcmrvl_nci_recv_frame          |
+ if(..->fw_download_in_progress)|
+  nfcmrvl_fw_dnld_recv_frame    |
+   queue_work                   |
+                                |
+fw_dnld_rx_work                 | nfcmrvl_nci_unregister_dev
+ fw_dnld_over                   |  nfcmrvl_fw_dnld_abort
+  release_firmware              |   fw_dnld_over
+   kfree(fw) //(1)              |    release_firmware
+                                |     kfree(fw) //(2)
+
+The firmware struct is deallocated in position (1) and deallocated
+in position (2) again.
+
+The crash trace triggered by POC is like below:
+
+BUG: KASAN: double-free or invalid-free in fw_dnld_over
+Call Trace:
+  kfree
+  fw_dnld_over
+  nfcmrvl_nci_unregister_dev
+  nci_uart_tty_close
+  tty_ldisc_kill
+  tty_ldisc_hangup
+  __tty_hangup.part.0
+  tty_release
+  ...
+
+What's more, there are also use-after-free and null-ptr-deref bugs
+in nfcmrvl_fw_dnld_start. If we deallocate firmware struct, gpio or
+set null to the members of priv->fw_dnld in nfcmrvl_nci_unregister_dev,
+then, we dereference firmware, gpio or the members of priv->fw_dnld in
+nfcmrvl_fw_dnld_start, the UAF or NPD bugs will happen.
+
+This patch reorders destructive operations after nci_unregister_device
+in order to synchronize between cleanup routine and firmware download
+routine.
+
+The nci_unregister_device is well synchronized. If the device is
+detaching, the firmware download routine will goto error. If firmware
+download routine is executing, nci_unregister_device will wait until
+firmware download routine is finished.
+
+Fixes: 3194c6870158 ("NFC: nfcmrvl: add firmware download support")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/firewire/core-cdev.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/nfc/nfcmrvl/main.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/firewire/core-cdev.c
-+++ b/drivers/firewire/core-cdev.c
-@@ -1495,6 +1495,7 @@ static void outbound_phy_packet_callback
+--- a/drivers/nfc/nfcmrvl/main.c
++++ b/drivers/nfc/nfcmrvl/main.c
+@@ -194,6 +194,7 @@ void nfcmrvl_nci_unregister_dev(struct n
  {
- 	struct outbound_phy_packet_event *e =
- 		container_of(packet, struct outbound_phy_packet_event, p);
-+	struct client *e_client;
+ 	struct nci_dev *ndev = priv->ndev;
  
- 	switch (status) {
- 	/* expected: */
-@@ -1511,9 +1512,10 @@ static void outbound_phy_packet_callback
- 	}
- 	e->phy_packet.data[0] = packet->timestamp;
++	nci_unregister_device(ndev);
+ 	if (priv->ndev->nfc_dev->fw_download_in_progress)
+ 		nfcmrvl_fw_dnld_abort(priv);
  
-+	e_client = e->client;
- 	queue_event(e->client, &e->event, &e->phy_packet,
- 		    sizeof(e->phy_packet) + e->phy_packet.length, NULL, 0);
--	client_put(e->client);
-+	client_put(e_client);
+@@ -202,7 +203,6 @@ void nfcmrvl_nci_unregister_dev(struct n
+ 	if (gpio_is_valid(priv->config.reset_n_io))
+ 		gpio_free(priv->config.reset_n_io);
+ 
+-	nci_unregister_device(ndev);
+ 	nci_free_device(ndev);
+ 	kfree(priv);
  }
- 
- static int ioctl_send_phy_packet(struct client *client, union ioctl_arg *arg)
 
 
