@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED427C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:19:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A88E6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:20:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245432AbiEJOXv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:23:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45310 "EHLO
+        id S1343606AbiEJOYD (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:24:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240679AbiEJNwg (ORCPT
+        with ESMTP id S245328AbiEJNwP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:52:36 -0400
+        Tue, 10 May 2022 09:52:15 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7299B29B807;
-        Tue, 10 May 2022 06:38:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC542375D4;
+        Tue, 10 May 2022 06:38:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 31A486193C;
-        Tue, 10 May 2022 13:38:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41E8DC385A6;
-        Tue, 10 May 2022 13:38:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E65E9618B4;
+        Tue, 10 May 2022 13:37:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1575C385A6;
+        Tue, 10 May 2022 13:37:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189889;
-        bh=JAHRXEIWY8lxKD+wFjsb89waQRDNc35/078AmjBzWLA=;
+        s=korg; t=1652189864;
+        bh=/jM/xkpLU4pNVj7m9v810zL6YmMq+x9MUFy1AJ5qtFc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jUZOg+bQFcqeiIAYTu8E4uPiewTXrZtuUPB9d3ZP4JLPEiS4Ob/HkJJ9HC5gkqrhn
-         soHBrGrfFzv1e/ZZ3rRUa4YJNuUs562WwOo93EvMSPzpJ+rRJvusf7V5XJfgNfgSh2
-         1pmM0iRtXVG/D1LMl+BGWk60xYLX74ugsj23/sUs=
+        b=uXpG8sitF6PnOLYnxhI+v0WYMpgeauqUtHZ7Wpl/xdiUj1SpY0/55cqQfPJAFkYUe
+         ogCRnlXGKuRXFevL6co+0rlMJopizZYoFAoofhtAhO0nKiq5RDKCon4gGLHTtG0fz5
+         4Tj8vgyswHIhNhg9TyGgDJ+bmqaVE2oaz6Xcg9uA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Joerg Roedel <jroedel@suse.de>
-Subject: [PATCH 5.17 061/140] iommu/vt-d: Drop stop marker messages
-Date:   Tue, 10 May 2022 15:07:31 +0200
-Message-Id: <20220510130743.363788473@linuxfoundation.org>
+        stable@vger.kernel.org, Puyou Lu <puyou.lu@gmail.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>
+Subject: [PATCH 5.17 054/140] gpio: pca953x: fix irq_stat not updated when irq is disabled (irq_mask not set)
+Date:   Tue, 10 May 2022 15:07:24 +0200
+Message-Id: <20220510130743.165069556@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -50,45 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lu Baolu <baolu.lu@linux.intel.com>
+From: Puyou Lu <puyou.lu@gmail.com>
 
-commit da8669ff41fa31573375c9a4180f5c080677204b upstream.
+commit dba785798526a3282cc4d0f0ea751883715dbbb4 upstream.
 
-The page fault handling framework in the IOMMU core explicitly states
-that it doesn't handle PCI PASID Stop Marker and the IOMMU drivers must
-discard them before reporting faults. This handles Stop Marker messages
-in prq_event_thread() before reporting events to the core.
+When one port's input state get inverted (eg. from low to hight) after
+pca953x_irq_setup but before setting irq_mask (by some other driver such as
+"gpio-keys"), the next inversion of this port (eg. from hight to low) will not
+be triggered any more (because irq_stat is not updated at the first time). Issue
+should be fixed after this commit.
 
-The VT-d driver explicitly drains the pending page requests when a CPU
-page table (represented by a mm struct) is unbound from a PASID according
-to the procedures defined in the VT-d spec. The Stop Marker messages do
-not need a response. Hence, it is safe to drop the Stop Marker messages
-silently if any of them is found in the page request queue.
-
-Fixes: d5b9e4bfe0d88 ("iommu/vt-d: Report prq to io-pgfault framework")
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Link: https://lore.kernel.org/r/20220421113558.3504874-1-baolu.lu@linux.intel.com
-Link: https://lore.kernel.org/r/20220423082330.3897867-2-baolu.lu@linux.intel.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Fixes: 89ea8bbe9c3e ("gpio: pca953x.c: add interrupt handling capability")
+Signed-off-by: Puyou Lu <puyou.lu@gmail.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iommu/intel/svm.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/gpio/gpio-pca953x.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -956,6 +956,10 @@ bad_req:
- 			goto bad_req;
- 		}
+--- a/drivers/gpio/gpio-pca953x.c
++++ b/drivers/gpio/gpio-pca953x.c
+@@ -762,11 +762,11 @@ static bool pca953x_irq_pending(struct p
+ 	bitmap_xor(cur_stat, new_stat, old_stat, gc->ngpio);
+ 	bitmap_and(trigger, cur_stat, chip->irq_mask, gc->ngpio);
  
-+		/* Drop Stop Marker message. No need for a response. */
-+		if (unlikely(req->lpig && !req->rd_req && !req->wr_req))
-+			goto prq_advance;
++	bitmap_copy(chip->irq_stat, new_stat, gc->ngpio);
 +
- 		if (!svm || svm->pasid != req->pasid) {
- 			/*
- 			 * It can't go away, because the driver is not permitted
+ 	if (bitmap_empty(trigger, gc->ngpio))
+ 		return false;
+ 
+-	bitmap_copy(chip->irq_stat, new_stat, gc->ngpio);
+-
+ 	bitmap_and(cur_stat, chip->irq_trig_fall, old_stat, gc->ngpio);
+ 	bitmap_and(old_stat, chip->irq_trig_raise, new_stat, gc->ngpio);
+ 	bitmap_or(new_stat, old_stat, cur_stat, gc->ngpio);
 
 
