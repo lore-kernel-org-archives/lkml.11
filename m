@@ -2,118 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B6DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 04:29:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75EADC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 04:29:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235184AbiEJEda (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 00:33:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33860 "EHLO
+        id S235781AbiEJEde (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 00:33:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236701AbiEJEbq (ORCPT
+        with ESMTP id S236677AbiEJEbg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 00:31:46 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E0BF252DE3;
-        Mon,  9 May 2022 21:27:28 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id e24so14865962pjt.2;
-        Mon, 09 May 2022 21:27:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=xKRAV/0WhjqQKBeF/P7yZiZfvRuC4R3b8RZ22MxUCh8=;
-        b=dd6XhIeMYjfLZ5mCHf715M4qM/S4/M0cK3wDD7BFdVTchSMvP3f0lCYniK+9ItFIY9
-         nE4j84r05i8BcqghbyJhXIZl5CR6xGSQvKmTDBKg+VoiKnkQxrbZabTAvzbBUYcO6Ymo
-         amLq2pe2MfE07Z290U8MN2ZWomVLM/ML65I7tpEM0dzFRrYYsn6ds9Nz99rITaa9HI2s
-         8795/bWTrCKMDqrwhhvOX9Q0ZYpDEcNv56dljHcH2HvzZaviz3HfnYuw1cbZ1DbMsrC1
-         oHmkaH8u13PJg37BwOzFxG5nucEpwoc+zulE/Dmut7INuFKL/LHZmadxSmmubuza8mkx
-         Gt8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=xKRAV/0WhjqQKBeF/P7yZiZfvRuC4R3b8RZ22MxUCh8=;
-        b=AFUf61FVXOoKXmPf0z2e2flIm7dww9yiPayIa9Obm5N2xTjrDb4LfInEMljAIIut18
-         uXzbMsFvb+0Vw/pzOGJJPFIfWQq2o5k/jcij8u0UKByM1vy6noyOyZL2e6XgWvEQHEsl
-         +ff/1ZFJG+HXRhUB0OnS6p/aml2HgOF7EXyJOaUJVpYaZKssoYUCNkqSWTBoLyQoCjlA
-         clY/CXtfNFPofA5liXQy8hXGeE1p6z1pgggSPibVEAWrIwvH0aqYGf0zZyCW/rRIQAO2
-         ascyJIr0OHY1L4QyxvSm4LlFIgEYebXD8zMOSnLyojBwdYXKFDMoHYOAkO7RgRkt5z/+
-         SYAA==
-X-Gm-Message-State: AOAM533v9GIFEgBJLNJWWA7YWTwATi/756pLLXolYqbUuXn8g2ZMEBq0
-        eb+5RRCMZxnUMtPwyymsdpdU+/jn3bzQgg==
-X-Google-Smtp-Source: ABdhPJwP3+sbRFfYAYCxxMhQ/rcMcORClDoKk5ZbOJi8iEWE1FjcZb72ntagW0TDI+sNuJJTKN//9A==
-X-Received: by 2002:a17:902:eb85:b0:15e:bf29:bd9f with SMTP id q5-20020a170902eb8500b0015ebf29bd9fmr18822020plg.135.1652156847342;
-        Mon, 09 May 2022 21:27:27 -0700 (PDT)
-Received: from skynet-linux.local ([2401:4900:33a2:808d:da42:4e61:10ad:478d])
-        by smtp.googlemail.com with ESMTPSA id x4-20020a1709028ec400b0015e8d4eb2aesm741263plo.248.2022.05.09.21.27.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 21:27:26 -0700 (PDT)
-From:   Sireesh Kodali <sireeshkodali1@gmail.com>
-To:     devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org
-Cc:     bjorn.andersson@linaro.org,
-        Sireesh Kodali <sireeshkodali1@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH 1/2] remoteproc: qcom: wcnss: Fix handling of IRQs
-Date:   Tue, 10 May 2022 09:56:53 +0530
-Message-Id: <20220510042654.71152-2-sireeshkodali1@gmail.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220510042654.71152-1-sireeshkodali1@gmail.com>
-References: <20220510042654.71152-1-sireeshkodali1@gmail.com>
+        Tue, 10 May 2022 00:31:36 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A9054CD5F
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 21:26:31 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1noHRr-00070V-Nc; Tue, 10 May 2022 06:26:11 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1noHRp-0007KV-SV; Tue, 10 May 2022 06:26:09 +0200
+Date:   Tue, 10 May 2022 06:26:09 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Devid Antonio Filoni <devid.filoni@egluetechnologies.com>,
+        Robin van der Gracht <robin@protonic.nl>,
+        kernel@pengutronix.de, linux-can@vger.kernel.org,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Jayat <maxime.jayat@mobile-devices.fr>,
+        kbuild test robot <lkp@intel.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RESEND] can: j1939: do not wait 250ms if the same addr
+ was already claimed
+Message-ID: <20220510042609.GA10669@pengutronix.de>
+References: <20220509170303.29370-1-devid.filoni@egluetechnologies.com>
+ <YnllpntZ8V5CD07v@x1.vandijck-laurijssen.be>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YnllpntZ8V5CD07v@x1.vandijck-laurijssen.be>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 06:19:23 up 40 days, 16:49, 62 users,  load average: 0.01, 0.09,
+ 0.08
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The wcnss_get_irq function is expected to return a value > 0 in the
-event that an IRQ is succssfully obtained, but it instead returns 0.
-This causes the stop and ready IRQs to never actually be used despite
-being defined in the device-tree. This patch fixes that.
+Hi,
 
-Fixes: aed361adca9f ("remoteproc: qcom: Introduce WCNSS peripheral image loader")
+On Mon, May 09, 2022 at 09:04:06PM +0200, Kurt Van Dijck wrote:
+> On ma, 09 mei 2022 19:03:03 +0200, Devid Antonio Filoni wrote:
+> > This is not explicitly stated in SAE J1939-21 and some tools used for
+> > ISO-11783 certification do not expect this wait.
 
-Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
----
- drivers/remoteproc/qcom_wcnss.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+It will be interesting to know which certification tool do not expect it and
+what explanation is used if it fails?
 
-diff --git a/drivers/remoteproc/qcom_wcnss.c b/drivers/remoteproc/qcom_wcnss.c
-index 9a223d394087..68f37296b151 100644
---- a/drivers/remoteproc/qcom_wcnss.c
-+++ b/drivers/remoteproc/qcom_wcnss.c
-@@ -467,6 +467,7 @@ static int wcnss_request_irq(struct qcom_wcnss *wcnss,
- 			     irq_handler_t thread_fn)
- {
- 	int ret;
-+	int irq_number;
- 
- 	ret = platform_get_irq_byname(pdev, name);
- 	if (ret < 0 && optional) {
-@@ -477,14 +478,19 @@ static int wcnss_request_irq(struct qcom_wcnss *wcnss,
- 		return ret;
- 	}
- 
-+	irq_number = ret;
-+
- 	ret = devm_request_threaded_irq(&pdev->dev, ret,
- 					NULL, thread_fn,
- 					IRQF_TRIGGER_RISING | IRQF_ONESHOT,
- 					"wcnss", wcnss);
--	if (ret)
-+	if (ret) {
- 		dev_err(&pdev->dev, "request %s IRQ failed\n", name);
-+		return ret;
-+	}
- 
--	return ret;
-+	/* Return the IRQ number if the IRQ was successfully acquired */
-+	return irq_number;
- }
- 
- static int wcnss_alloc_memory_region(struct qcom_wcnss *wcnss)
+> IMHO, the current behaviour is not explicitely stated, but nor is the opposite.
+> And if I'm not mistaken, this introduces a 250msec delay.
+> 
+> 1. If you want to avoid the 250msec gap, you should avoid to contest the same address.
+> 
+> 2. It's a balance between predictability and flexibility, but if you try to accomplish both,
+> as your patch suggests, there is slight time-window until the current owner responds,
+> in which it may be confusing which node has the address. It depends on how much history
+> you have collected on the bus.
+> 
+> I'm sure that this problem decreases with increasing processing power on the nodes,
+> but bigger internal queues also increase this window.
+> 
+> It would certainly help if you describe how the current implementation fails.
+> 
+> Would decreasing the dead time to 50msec help in such case.
+> 
+> Kind regards,
+> Kurt
+> 
+
 -- 
-2.36.0
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
