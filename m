@@ -2,49 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 553DEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:30:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C029C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:30:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243496AbiEJNeb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:34:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32802 "EHLO
+        id S242045AbiEJNel (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:34:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242909AbiEJNZQ (ORCPT
+        with ESMTP id S242912AbiEJNZQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:25:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08E6B20D252;
-        Tue, 10 May 2022 06:18:02 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F41E321A94A;
+        Tue, 10 May 2022 06:18:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 986E461532;
-        Tue, 10 May 2022 13:18:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A540DC385C9;
-        Tue, 10 May 2022 13:18:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D63161665;
+        Tue, 10 May 2022 13:18:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C550C385A6;
+        Tue, 10 May 2022 13:18:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188681;
-        bh=QAylgGAnWTHI63CrZv++ZasyUi2vG4ZKOEZ/qv6ifDQ=;
+        s=korg; t=1652188693;
+        bh=zL7m3jJKBlSnNR74+VWXMFcYh75Cfk2X59tlw/vprHk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kPE89+DAkhAz+QzAQpdM+e0td3hqnlZzHx6Qevn4W7uTelYK5sDUWR8tz7QljN8Jy
-         yOYeOEc/aJQzHZGEF5zTDtEivLZAORHzszPrH/o4II1JO5PbsRB3904c0WJpG67zfA
-         kSqeNQKUOva/xKdXkR1EcaeN0AorW9ujvtY4oplA=
+        b=eFVErV6zjDNHdQuYxTFVcJmRNtNvAChQ2CBKiiZUX82v9O5YkXEeWbdg3/TZTO7Ll
+         OYgEoz3nUztgjYCI8bqHe4mNOzywWh9hbHWm3DM9fskYIQzxC+7436lUsBshlzkdED
+         5+tj7gUDdc4ehjleQ4fegvf22mtr6IUqJuOJd4TI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabien Parent <fparent@baylibre.com>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Macpaul Lin <macpaul.lin@mediatek.com>,
-        Tainping Fang <tianping.fang@mediatek.com>
-Subject: [PATCH 4.19 01/88] usb: mtu3: fix USB 3.0 dual-role-switch from device to host
-Date:   Tue, 10 May 2022 15:06:46 +0200
-Message-Id: <20220510130733.781213599@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Vacura <w36195@motorola.com>
+Subject: [PATCH 4.19 13/88] usb: gadget: uvc: Fix crash when encoding data for usb request
+Date:   Tue, 10 May 2022 15:06:58 +0200
+Message-Id: <20220510130734.133672673@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 References: <20220510130733.735278074@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -52,51 +47,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Macpaul Lin <macpaul.lin@mediatek.com>
+From: Dan Vacura <w36195@motorola.com>
 
-commit 456244aeecd54249096362a173dfe06b82a5cafa upstream.
+commit 71d471e3faf90c9674cadc7605ac719e82cb7fac upstream.
 
-Issue description:
-  When an OTG port has been switched to device role and then switch back
-  to host role again, the USB 3.0 Host (XHCI) will not be able to detect
-  "plug in event of a connected USB 2.0/1.0 ((Highspeed and Fullspeed)
-  devices until system reboot.
+During the uvcg_video_pump() process, if an error occurs and
+uvcg_queue_cancel() is called, the buffer queue will be cleared out, but
+the current marker (queue->buf_used) of the active buffer (no longer
+active) is not reset. On the next iteration of uvcg_video_pump() the
+stale buf_used count will be used and the logic of min((unsigned
+int)len, buf->bytesused - queue->buf_used) may incorrectly calculate a
+nbytes size, causing an invalid memory access.
 
-Root cause and Solution:
-  There is a condition checking flag "ssusb->otg_switch.is_u3_drd" in
-  toggle_opstate(). At the end of role switch procedure, toggle_opstate()
-  will be called to set DC_SESSION and SOFT_CONN bit. If "is_u3_drd" was
-  set and switched the role to USB host 3.0, bit DC_SESSION and SOFT_CONN
-  will be skipped hence caused the port cannot detect connected USB 2.0
-  (Highspeed and Fullspeed) devices. Simply remove the condition check to
-  solve this issue.
+[80802.185460][  T315] configfs-gadget gadget: uvc: VS request completed
+with status -18.
+[80802.185519][  T315] configfs-gadget gadget: uvc: VS request completed
+with status -18.
+...
+uvcg_queue_cancel() is called and the queue is cleared out, but the
+marker queue->buf_used is not reset.
+...
+[80802.262328][ T8682] Unable to handle kernel paging request at virtual
+address ffffffc03af9f000
+...
+...
+[80802.263138][ T8682] Call trace:
+[80802.263146][ T8682]  __memcpy+0x12c/0x180
+[80802.263155][ T8682]  uvcg_video_pump+0xcc/0x1e0
+[80802.263165][ T8682]  process_one_work+0x2cc/0x568
+[80802.263173][ T8682]  worker_thread+0x28c/0x518
+[80802.263181][ T8682]  kthread+0x160/0x170
+[80802.263188][ T8682]  ret_from_fork+0x10/0x18
+[80802.263198][ T8682] Code: a8c12829 a88130cb a8c130
 
-Fixes: d0ed062a8b75 ("usb: mtu3: dual-role mode support")
-Cc: stable@vger.kernel.org
-Tested-by: Fabien Parent <fparent@baylibre.com>
-Reviewed-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
-Signed-off-by: Macpaul Lin <macpaul.lin@mediatek.com>
-Signed-off-by: Tainping Fang <tianping.fang@mediatek.com>
-Link: https://lore.kernel.org/r/20220419081245.21015-1-macpaul.lin@mediatek.com
+Fixes: d692522577c0 ("usb: gadget/uvc: Port UVC webcam gadget to use videobuf2 framework")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Dan Vacura <w36195@motorola.com>
+Link: https://lore.kernel.org/r/20220331184024.23918-1-w36195@motorola.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/mtu3/mtu3_dr.c |    6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/usb/gadget/function/uvc_queue.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/usb/mtu3/mtu3_dr.c
-+++ b/drivers/usb/mtu3/mtu3_dr.c
-@@ -30,10 +30,8 @@ enum mtu3_vbus_id_state {
- 
- static void toggle_opstate(struct ssusb_mtk *ssusb)
- {
--	if (!ssusb->otg_switch.is_u3_drd) {
--		mtu3_setbits(ssusb->mac_base, U3D_DEVICE_CONTROL, DC_SESSION);
--		mtu3_setbits(ssusb->mac_base, U3D_POWER_MANAGEMENT, SOFT_CONN);
--	}
-+	mtu3_setbits(ssusb->mac_base, U3D_DEVICE_CONTROL, DC_SESSION);
-+	mtu3_setbits(ssusb->mac_base, U3D_POWER_MANAGEMENT, SOFT_CONN);
- }
- 
- /* only port0 supports dual-role mode */
+--- a/drivers/usb/gadget/function/uvc_queue.c
++++ b/drivers/usb/gadget/function/uvc_queue.c
+@@ -242,6 +242,8 @@ void uvcg_queue_cancel(struct uvc_video_
+ 		buf->state = UVC_BUF_STATE_ERROR;
+ 		vb2_buffer_done(&buf->buf.vb2_buf, VB2_BUF_STATE_ERROR);
+ 	}
++	queue->buf_used = 0;
++
+ 	/* This must be protected by the irqlock spinlock to avoid race
+ 	 * conditions between uvc_queue_buffer and the disconnection event that
+ 	 * could result in an interruptible wait in uvc_dequeue_buffer. Do not
 
 
