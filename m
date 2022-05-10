@@ -2,200 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0DADC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:27:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1083EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:28:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345746AbiEJPbC (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:31:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45336 "EHLO
+        id S243922AbiEJPcD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 11:32:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345792AbiEJP37 (ORCPT
+        with ESMTP id S1345769AbiEJPak (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:29:59 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4FC8192A5;
-        Tue, 10 May 2022 08:20:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652196052; x=1683732052;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=An2DWh+lnicdQp5Dv4UeRITSb7pkwS9koGVbJHHuvPo=;
-  b=N0hpA3cQWSVBPVamn3rJRSt5MqsZYoTvjsvt+Y5fKbqBy1gIu2kL2d/b
-   Ewhm7MEzCdz41njYLkv/Fuou8ZYAQc5it9C4bn1SWyY69NJ84CNsw5KdV
-   PMoqFKwUMyyXU5azsbB2kfQ8dsJJdZhihbwxOHdZOPLmSyZ4M9kgtYoO+
-   /c0zsofXjWFMzINEJoo9HQ2vfI62O0sXfd3fFy+M+QIX1mwFIzGa+Z7FB
-   6iIYboSKoLOoKWUn6J+so/qCB5T6O6o+fgibF4R+zb7WgENzGl62di2FO
-   0n94uPfZpaj223nEwxIQJm0iqN7RtjHBZ0HRSfSCWchsg5+9XGOTgJDbF
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="256943417"
-X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
-   d="scan'208";a="256943417"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 08:17:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
-   d="scan'208";a="593559675"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga008.jf.intel.com with ESMTP; 10 May 2022 08:17:38 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id B77435D0; Tue, 10 May 2022 18:15:16 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Tony Luck <tony.luck@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Wolfram Sang <wsa@kernel.org>, Jean Delvare <jdelvare@suse.de>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        =?UTF-8?q?=C5=81ukasz=20Bartosik?= <lb@semihalf.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jonathan Yong <jonathan.yong@intel.com>,
-        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org
-Cc:     Borislav Petkov <bp@alien8.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>,
-        Jean Delvare <jdelvare@suse.com>,
-        Peter Tyser <ptyser@xes-inc.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Mark Gross <markgross@kernel.org>,
-        Henning Schild <henning.schild@siemens.com>
-Subject: [PATCH v5 6/8] i2c: i801: convert to use common P2SB accessor
-Date:   Tue, 10 May 2022 18:14:49 +0300
-Message-Id: <20220510151451.85561-7-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220510151451.85561-1-andriy.shevchenko@linux.intel.com>
-References: <20220510151451.85561-1-andriy.shevchenko@linux.intel.com>
+        Tue, 10 May 2022 11:30:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CEE0E8B;
+        Tue, 10 May 2022 08:22:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DA57CB81D2E;
+        Tue, 10 May 2022 15:22:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB09EC385A6;
+        Tue, 10 May 2022 15:21:57 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="oSz0v5jD"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1652196116;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=jQUkGCxXuyYdfB8EFts+R/cnSrZv1NNEb17EWkTxpE0=;
+        b=oSz0v5jDiso+8LQSOyfVPpH0gl/qQ2kBl3bRjz9RkAqImxsVIL172g2Y2cT+ytv5RZdZC4
+        Vct5QvyVIxRfWBmhLOm36xiAe5bECP92C8+C3ZFHolt8F3u7t/9qXKJINSelQQotw7XmqT
+        Zmq4auWd/ClKcPYJdQ6xClHUWJ5Xsow=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id a0f2cae3 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Tue, 10 May 2022 15:21:55 +0000 (UTC)
+Date:   Tue, 10 May 2022 17:21:47 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Yevgeniy Dodis <dodis@cs.nyu.edu>
+Cc:     tytso <tytso@mit.edu>, Nadia Heninger <nadiah@cs.ucsd.edu>,
+        Noah Stephens-Dawidowitz <noahsd@gmail.com>,
+        Stefano Tessaro <tessaro@cs.washington.edu>,
+        torvalds@linux-foundation.org, "D. J. Bernstein" <djb@cr.yp.to>,
+        jeanphilippe.aumasson@gmail.com, jann@thejh.net,
+        keescook@chromium.org, gregkh@linuxfoundation.org,
+        Peter Schwabe <peter@cryptojedi.org>,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: is "premature next" a real world rng concern, or just an
+ academic exercise?
+Message-ID: <YnqDC25iR8mcL3XB@zx2c4.com>
+References: <YmlMGx6+uigkGiZ0@zx2c4.com>
+ <Ym3ZM1P+uYYABtRm@mit.edu>
+ <Ym5sICj5iBMn2w/E@zx2c4.com>
+ <CAMvzKsiA52Si=PzOJXYwGSA1WUz-1S0A8cpgRJWDzpMkfFbX+Q@mail.gmail.com>
+ <CAMvzKsiMY_+8HZqeFqD3tR65a3-JB0LG=+0jBBy1zF4GanrsGA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAMvzKsiMY_+8HZqeFqD3tR65a3-JB0LG=+0jBBy1zF4GanrsGA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since we have a common P2SB accessor in tree we may use it instead of
-open coded variants.
+Hi Yevgeniy,
 
-Replace custom code by p2sb_bar() call.
+Thanks for your email. Replies to parts are inline below:
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Tested-by: Henning Schild <henning.schild@siemens.com>
-Acked-by: Hans de Goede <hdegoede@redhat.com>
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Jean Delvare <jdelvare@suse.de>
-Acked-by: Wolfram Sang <wsa@kernel.org>
----
- drivers/i2c/busses/Kconfig        |  1 +
- drivers/i2c/busses/i2c-i801.c     | 39 +++++++------------------------
- drivers/platform/x86/intel/p2sb.c |  6 +++++
- 3 files changed, 16 insertions(+), 30 deletions(-)
+On Mon, May 9, 2022 at 11:15 AM Yevgeniy Dodis <dodis@cs.nyu.edu> wrote:
+> 2) As Jason says, there are two distinct attack vectors needed to make the premature next attack.
+> A) compromising the state
+> B) (nearly) continuously observing RNG outputs
+>
+> I agree with Jason's point that finding places where
+> -- A)+B) is possible, but
+> --- A)+A) is not possible,
+> is tricky.
 
-diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
-index a1bae59208e3..4d0a195ca3ef 100644
---- a/drivers/i2c/busses/Kconfig
-+++ b/drivers/i2c/busses/Kconfig
-@@ -108,6 +108,7 @@ config I2C_HIX5HD2
- config I2C_I801
- 	tristate "Intel 82801 (ICH/PCH)"
- 	depends on PCI
-+	select P2SB if X86
- 	select CHECK_SIGNATURE if X86 && DMI
- 	select I2C_SMBUS
- 	help
-diff --git a/drivers/i2c/busses/i2c-i801.c b/drivers/i2c/busses/i2c-i801.c
-index ff706349bdfb..f7a0bb372e8e 100644
---- a/drivers/i2c/busses/i2c-i801.c
-+++ b/drivers/i2c/busses/i2c-i801.c
-@@ -111,6 +111,7 @@
- #include <linux/err.h>
- #include <linux/platform_device.h>
- #include <linux/platform_data/itco_wdt.h>
-+#include <linux/platform_data/x86/p2sb.h>
- #include <linux/pm_runtime.h>
- #include <linux/mutex.h>
- 
-@@ -140,7 +141,6 @@
- #define TCOBASE		0x050
- #define TCOCTL		0x054
- 
--#define SBREG_BAR		0x10
- #define SBREG_SMBCTRL		0xc6000c
- #define SBREG_SMBCTRL_DNV	0xcf000c
- 
-@@ -1482,45 +1482,24 @@ i801_add_tco_spt(struct i801_priv *priv, struct pci_dev *pci_dev,
- 		.version = 4,
- 	};
- 	struct resource *res;
--	unsigned int devfn;
--	u64 base64_addr;
--	u32 base_addr;
--	u8 hidden;
-+	int ret;
- 
- 	/*
- 	 * We must access the NO_REBOOT bit over the Primary to Sideband
--	 * bridge (P2SB). The BIOS prevents the P2SB device from being
--	 * enumerated by the PCI subsystem, so we need to unhide/hide it
--	 * to lookup the P2SB BAR.
-+	 * (P2SB) bridge.
- 	 */
--	pci_lock_rescan_remove();
--
--	devfn = PCI_DEVFN(PCI_SLOT(pci_dev->devfn), 1);
--
--	/* Unhide the P2SB device, if it is hidden */
--	pci_bus_read_config_byte(pci_dev->bus, devfn, 0xe1, &hidden);
--	if (hidden)
--		pci_bus_write_config_byte(pci_dev->bus, devfn, 0xe1, 0x0);
--
--	pci_bus_read_config_dword(pci_dev->bus, devfn, SBREG_BAR, &base_addr);
--	base64_addr = base_addr & 0xfffffff0;
--
--	pci_bus_read_config_dword(pci_dev->bus, devfn, SBREG_BAR + 0x4, &base_addr);
--	base64_addr |= (u64)base_addr << 32;
--
--	/* Hide the P2SB device, if it was hidden before */
--	if (hidden)
--		pci_bus_write_config_byte(pci_dev->bus, devfn, 0xe1, hidden);
--	pci_unlock_rescan_remove();
- 
- 	res = &tco_res[1];
-+	ret = p2sb_bar(pci_dev->bus, 0, res);
-+	if (ret)
-+		return ERR_PTR(ret);
-+
- 	if (pci_dev->device == PCI_DEVICE_ID_INTEL_DNV_SMBUS)
--		res->start = (resource_size_t)base64_addr + SBREG_SMBCTRL_DNV;
-+		res->start += SBREG_SMBCTRL_DNV;
- 	else
--		res->start = (resource_size_t)base64_addr + SBREG_SMBCTRL;
-+		res->start += SBREG_SMBCTRL;
- 
- 	res->end = res->start + 3;
--	res->flags = IORESOURCE_MEM;
- 
- 	return platform_device_register_resndata(&pci_dev->dev, "iTCO_wdt", -1,
- 					tco_res, 2, &pldata, sizeof(pldata));
-diff --git a/drivers/platform/x86/intel/p2sb.c b/drivers/platform/x86/intel/p2sb.c
-index b598ef14dbc6..fb2e141f3eb8 100644
---- a/drivers/platform/x86/intel/p2sb.c
-+++ b/drivers/platform/x86/intel/p2sb.c
-@@ -21,6 +21,12 @@
- 
- static const struct x86_cpu_id p2sb_cpu_ids[] = {
- 	X86_MATCH_INTEL_FAM6_MODEL(ATOM_GOLDMONT,	PCI_DEVFN(13, 0)),
-+	X86_MATCH_INTEL_FAM6_MODEL(ATOM_GOLDMONT_D,	PCI_DEVFN(31, 1)),
-+	X86_MATCH_INTEL_FAM6_MODEL(ATOM_SILVERMONT_D,	PCI_DEVFN(31, 1)),
-+	X86_MATCH_INTEL_FAM6_MODEL(KABYLAKE,		PCI_DEVFN(31, 1)),
-+	X86_MATCH_INTEL_FAM6_MODEL(KABYLAKE_L,		PCI_DEVFN(31, 1)),
-+	X86_MATCH_INTEL_FAM6_MODEL(SKYLAKE,		PCI_DEVFN(31, 1)),
-+	X86_MATCH_INTEL_FAM6_MODEL(SKYLAKE_L,		PCI_DEVFN(31, 1)),
- 	{}
- };
- 
--- 
-2.35.1
+That's a useful way of describing the problem.
 
+> Although Nadya kind of indicated a place like that. VM1 and VM2 start
+> with the same RNG state (for whatever reason). VM1 is insecure, so can
+> leak the state via A). VM2 is more secure, but obviously allows for B)
+> through system interface. This does not seem so hypothetical for me,
+> especially in light of my mega-point 1) above -- almost any real-world
+> RNG attack is hard.
+
+Right, VMs are super problematic, but for that, there's now this
+"vmgenid" driver, where the hypervisor actually gives a 128-bit seed to
+guests when they're resumed, so that we can immediately reseed, which
+should pretty comprehensively handle that situation.
+
+> Protection against A) is trickier. But my read of Jason's email is
+> that all his criticism comes exactly from this point.  If your system
+> allows for state compromise, you have bigger problems than the
+> premature next, etc. But let's ask ourselves the question. Are we
+> ready to design RNGs without recovery from state compromise? I believe
+> nobody on this list would be comfortable saying "yes". Because this
+> would mean we don;t need to accumulate entropy beyond system start-up.
+> Once we reach the point of good initial state, and state compromise is
+> not an issue, just use straight ChaCha or whatever other stream
+> cipher.
+>
+> The point is, despite all arguments Jason puts, we all would feel
+> extremely uncomfortable/uneasy to let continuous entropy accumulation
+> go, right?
+
+I went through the same thought experiment. If we're not considering
+premature next, maybe we shouldn't consider compromises _in general_, in
+which case we'd just seed once at boot and then never again. But as you
+rightfully point out, nobody here is okay with such a thing. The reason
+you've provided for that feeling is that A) without B) is still
+something important to defend against. But there's another more basic
+reason, which is that we really can't be certain exactly /when/ we've
+gathered enough entropy that the RNG is initialized. Sure, we try to
+estimate that using some pretty questionable algorithms, so that
+getrandom() can "unblock" at some point when the RNG has been deemed to
+be sufficiently initialized. But that is a guess at best, and the most
+we can say is that *eventually* it becomes initialized, but we never
+really know when that is, given that we can't even begin to accurately
+model all of the machines Linux runs on. So since we can't actually
+determine when we've initialized, for that reason alone our only choice
+is to keep gathering new entropy and reseeding periodically (or
+continuously, as Nadia recommends).
+
+> This means we all hopefully agree that we need protection against A) and B) individually.
+>
+> 3) Now comes the question. If we want to design a sound RNG using tools of modern cryptography, and we allow
+> the attacker an individual capability to enforce A) or B) individually, are we comfortable with the design where we:
+> * offer protection against A)
+> * offer protection against B)
+> * do NOT offer protection against A)+B), because we think it's too expensive given A)+B) is so rare?
+
+There's an additional point to consider here, which I took to be Nadia's
+main idea: any kind of protection against A)+B) will hinder protection
+against A) individually. All current solutions to A)+B) involve some
+form of buffering / delaying of using new entropy sources, because
+they're sent to different pools, or are simply not used until a certain
+threshold, etc. Meanwhile, better protection against A) individually
+involves making use of new entropy as soon as possible, to reduce the
+duration of time in which the RNG is compromised and doing dangerous
+things. Since we can't actually know when a compromise is over or when
+enough new entropy has been collected, the best we can do is "as soon as
+possible", which means any form of a delay is contrary to that goal.
+
+So it's not just that A)+B) is both an unlikely attack vector and has
+solutions that involve undue implementation complexity, but also that
+A)+B) solutions weaken solutions to the heavier problem of A)
+individually.
+
+> I do not have a convincing answer to this question, but it is at least
+> not obvious to me. On a good note, one worry we might have is how to
+> even have a definition protecting A), protecting B), but not
+> protecting A)+B).  Fortunately, our papers resolve this question
+> (although there are still theoretical annoyances which I do not want
+> to get into in this email). So, at least from this perspective, we are
+> good. We have a definition with exactly these (suboptimal) properties.
+
+I actually would be interested to see how you have this defined. It
+seems like from a formal perspective, this issue with being "eventually
+seeded" naturally leads itself to Fortuna-like designs, where the whole
+design is structured around eventually meeting the desired security
+properties. But on the other hand a A) without B) design would suggest
+some notion of being properly seeded at some point in time, and when
+that is seems hard to define. So anyway I'm curious to learn how you've
+organized this. 
+
+Regards,
+Jason
