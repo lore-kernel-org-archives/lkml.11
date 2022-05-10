@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4443C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 19:30:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADCD0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 19:30:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233620AbiEJTaG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 15:30:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46378 "EHLO
+        id S236887AbiEJTaO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 15:30:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232361AbiEJTaB (ORCPT
+        with ESMTP id S233738AbiEJTaH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 15:30:01 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F82F2992E5
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 12:29:59 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id x52so4101pfu.11
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 12:29:59 -0700 (PDT)
+        Tue, 10 May 2022 15:30:07 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7116B2A2F68
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 12:30:02 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id cx11-20020a17090afd8b00b001d9fe5965b3so2817949pjb.3
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 12:30:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=zvX7gsickFQTadjtrYNgvijsVxLzBuPY+lzXCPfdMic=;
-        b=h5NRX/t/3JyPYbL9z5iKgKKIXs3pj78+XyWNFf5wd51084g3f1xCekZsqJPUukvcPc
-         oTOncU/sklId/q9IiCLzrfxM6K470JJ0mlX8UZlM9cPUCyuTPMJns1/sD5imD8365vZ9
-         WBlGpTxmL9mfRV4AAcEROMuBBaUCQSnBWsILc=
+        bh=spc3e6Lp3Smlzf38aH5fCH48i9kTiBR8/UYKG1CLueQ=;
+        b=cz0Xr0eL1ajvZSsgLbzZbq39CiowXavZ6oKFanIVRSuNSdPrMxAI9a+lUYIybRRI8Z
+         l9f9QgXxhrErMb0+Rw3GcIBYoSBZvvHafQIs7JEGkOMAMdASorM5GZlqQ/R8kl67yLk+
+         MbgQgs1sU2wNKMz62e7ITFkvv7ogeaeVCTLPs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=zvX7gsickFQTadjtrYNgvijsVxLzBuPY+lzXCPfdMic=;
-        b=pL9IhTG0UahZFwyDdhhq6bDQ3gIvi2CVkMwHNU3m6O6HjBEkdQLZTfhevGJkDJGzHI
-         f8VCwXQHTp2FkRCesQ0ZxFMkQYNuw1EGQvsWCToFFrRstG2yzZ2H9zbj+O/5GrL9qBcw
-         3KkHdHjcSx87gxbeaN/4LI5l7rzFn43uIfl8QxUfefYtTIzXz1j0pjpucd937tNBR+wt
-         tTvWkc4RGk2/kHpxhOewIhK/Lio0gdUhM+DbCKEO6/2+E088EbJGJ4dBsuNrhKc0aI2I
-         D747eFL3lu+7Vp6r81JIOIpvrEcsDF73INhSAz9LNk3S3M1yZcuN+ZyAFOlY4lgGOYM1
-         /D7w==
-X-Gm-Message-State: AOAM53097fNNQ5DOG0nlwTdj6LAPYHkR9zTXh3HjQo5xZpH+WGM3P2w3
-        SwTvtszzy8l6Kotk33S7SwRKMg==
-X-Google-Smtp-Source: ABdhPJyahyDgFCU09TgF1fxSqRtJB1NMfsOwWIAdRG+4PWbHwz72o5ifalC4goK3AWXMjIro5XEw4Q==
-X-Received: by 2002:a65:5c48:0:b0:382:2c7:28e9 with SMTP id v8-20020a655c48000000b0038202c728e9mr18452749pgr.472.1652210999063;
-        Tue, 10 May 2022 12:29:59 -0700 (PDT)
+        bh=spc3e6Lp3Smlzf38aH5fCH48i9kTiBR8/UYKG1CLueQ=;
+        b=UDXah5T632zXw6bxYBXGavK7+WV1tvP7X0Lmgc4ao+/kL71NTpBTfxT26jWt3Heur+
+         e5Iy0s1xN3dE19FUvx5xfPgX3DJvRD24i+KJbcrEgonGgdS4ES/+xeTbOOTgSHHGcEOO
+         4FwHGCK0fpzgzLiEMSjwKkN2cZIaaqfo8laxzKTGzaIXiiexYtph9XNm75ULkDT7y0DM
+         n1y5iqblHv22n3fALqhjQvQee9oXC+f8qZUFC8jxI/lcLAo5tEM+Iraw13pUXGxmlDvT
+         H8ktiuMz/cE2lL/0LX6DWP533ob82XGQP9DOQxMbP0m2C37EHCq4eGx0yCbrmBTsxx9b
+         2+zQ==
+X-Gm-Message-State: AOAM532/lXOaPO8j7QM8AjRDrJwjXk099IpKHvwrQpWggs7ynmxN4jvp
+        GmUtXrWEQ3goa2Z/N/lLGtDALQ==
+X-Google-Smtp-Source: ABdhPJzOGtFQdD3JQK9OwWb3IO12+CBeitf6Rww1LcnbNvhYQovH5NU3lYy2huG1tVOn6wVcGz6pqg==
+X-Received: by 2002:a17:90b:1001:b0:1d8:4978:c7d5 with SMTP id gm1-20020a17090b100100b001d84978c7d5mr1405066pjb.167.1652211001798;
+        Tue, 10 May 2022 12:30:01 -0700 (PDT)
 Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:6f08:624c:c762:d238])
-        by smtp.gmail.com with ESMTPSA id s43-20020a056a001c6b00b0050dc762819dsm10786989pfw.119.2022.05.10.12.29.58
+        by smtp.gmail.com with ESMTPSA id s43-20020a056a001c6b00b0050dc762819dsm10786989pfw.119.2022.05.10.12.30.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 12:29:58 -0700 (PDT)
+        Tue, 10 May 2022 12:30:01 -0700 (PDT)
 From:   Douglas Anderson <dianders@chromium.org>
 To:     dri-devel@lists.freedesktop.org
 Cc:     Hsin-Yi Wang <hsinyi@chromium.org>,
@@ -58,14 +58,13 @@ Cc:     Hsin-Yi Wang <hsinyi@chromium.org>,
         Douglas Anderson <dianders@chromium.org>,
         Daniel Vetter <daniel@ffwll.ch>,
         David Airlie <airlied@linux.ie>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Lyude Paul <lyude@redhat.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
         Thomas Zimmermann <tzimmermann@suse.de>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v3 1/4] drm/dp: Export symbol / kerneldoc fixes for DP AUX bus
-Date:   Tue, 10 May 2022 12:29:41 -0700
-Message-Id: <20220510122726.v3.1.Ia91f4849adfc5eb9da1eb37ba79aa65fb3c95a0f@changeid>
+Subject: [PATCH v3 3/4] drm/bridge: Add devm_drm_bridge_add()
+Date:   Tue, 10 May 2022 12:29:43 -0700
+Message-Id: <20220510122726.v3.3.Iba4b9bf6c7a1ee5ea2835ad7bd5eaf84d7688520@changeid>
 X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
 In-Reply-To: <20220510192944.2408515-1-dianders@chromium.org>
 References: <20220510192944.2408515-1-dianders@chromium.org>
@@ -75,54 +74,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While working on the DP AUX bus code I found a few small things that
-should be fixed. Namely the non-devm version of
-of_dp_aux_populate_ep_devices() was missing an export. There was also
-an extra blank line in a kerneldoc and a kerneldoc that incorrectly
-documented a return value. Fix these.
+This adds a devm managed version of drm_bridge_add(). Like other
+"devm" function listed in drm_bridge.h, this function takes an
+explicit "dev" to use for the lifetime management. A few notes:
+* In general we have a "struct device" for bridges that makes a good
+  candidate for where the lifetime matches exactly what we want.
+* The "bridge->dev->dev" device appears to be the encoder
+  device. That's not the right device to use for lifetime management.
 
-Fixes: aeb33699fc2c ("drm: Introduce the DP AUX bus")
+Suggested-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Douglas Anderson <dianders@chromium.org>
 ---
-None of these seem critical, so my plan is to land this in
-drm-misc-next and not drm-misc-fixes. This will avoid merge conflicts
-with future patches.
 
 Changes in v3:
-- Patch ("drm/dp: Export symbol / kerneldoc fixes...") split for v3.
+- Patch ("drm/bridge: Add devm_drm_bridge_add()") new for v3.
 
- drivers/gpu/drm/display/drm_dp_aux_bus.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/gpu/drm/drm_bridge.c | 23 +++++++++++++++++++++++
+ include/drm/drm_bridge.h     |  1 +
+ 2 files changed, 24 insertions(+)
 
-diff --git a/drivers/gpu/drm/display/drm_dp_aux_bus.c b/drivers/gpu/drm/display/drm_dp_aux_bus.c
-index dccf3e2ea323..552f949cff59 100644
---- a/drivers/gpu/drm/display/drm_dp_aux_bus.c
-+++ b/drivers/gpu/drm/display/drm_dp_aux_bus.c
-@@ -66,7 +66,6 @@ static int dp_aux_ep_probe(struct device *dev)
-  * @dev: The device to remove.
-  *
-  * Calls through to the endpoint driver remove.
-- *
-  */
- static void dp_aux_ep_remove(struct device *dev)
- {
-@@ -120,8 +119,6 @@ ATTRIBUTE_GROUPS(dp_aux_ep_dev);
- /**
-  * dp_aux_ep_dev_release() - Free memory for the dp_aux_ep device
-  * @dev: The device to free.
-- *
-- * Return: 0 if no error or negative error code.
-  */
- static void dp_aux_ep_dev_release(struct device *dev)
- {
-@@ -256,6 +253,7 @@ int of_dp_aux_populate_ep_devices(struct drm_dp_aux *aux)
- 
- 	return 0;
+diff --git a/drivers/gpu/drm/drm_bridge.c b/drivers/gpu/drm/drm_bridge.c
+index c96847fc0ebc..e275b4ca344b 100644
+--- a/drivers/gpu/drm/drm_bridge.c
++++ b/drivers/gpu/drm/drm_bridge.c
+@@ -170,6 +170,29 @@ void drm_bridge_add(struct drm_bridge *bridge)
  }
-+EXPORT_SYMBOL_GPL(of_dp_aux_populate_ep_devices);
+ EXPORT_SYMBOL(drm_bridge_add);
  
- static void of_dp_aux_depopulate_ep_devices_void(void *data)
- {
++static void drm_bridge_remove_void(void *bridge)
++{
++	drm_bridge_remove(bridge);
++}
++
++/**
++ * devm_drm_bridge_add - devm managed version of drm_bridge_add()
++ *
++ * @dev: device to tie the bridge lifetime to
++ * @bridge: bridge control structure
++ *
++ * This is the managed version of drm_bridge_add() which automatically
++ * calls drm_bridge_remove() when @dev is unbound.
++ *
++ * Return: 0 if no error or negative error code.
++ */
++int devm_drm_bridge_add(struct device *dev, struct drm_bridge *bridge)
++{
++	drm_bridge_add(bridge);
++	return devm_add_action_or_reset(dev, drm_bridge_remove_void, bridge);
++}
++EXPORT_SYMBOL(devm_drm_bridge_add);
++
+ /**
+  * drm_bridge_remove - remove the given bridge from the global bridge list
+  *
+diff --git a/include/drm/drm_bridge.h b/include/drm/drm_bridge.h
+index f27b4060faa2..42aec8612f37 100644
+--- a/include/drm/drm_bridge.h
++++ b/include/drm/drm_bridge.h
+@@ -796,6 +796,7 @@ drm_priv_to_bridge(struct drm_private_obj *priv)
+ }
+ 
+ void drm_bridge_add(struct drm_bridge *bridge);
++int devm_drm_bridge_add(struct device *dev, struct drm_bridge *bridge);
+ void drm_bridge_remove(struct drm_bridge *bridge);
+ int drm_bridge_attach(struct drm_encoder *encoder, struct drm_bridge *bridge,
+ 		      struct drm_bridge *previous,
 -- 
 2.36.0.550.gb090851708-goog
 
