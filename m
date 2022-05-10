@@ -2,122 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95615C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:05:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D4A2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:06:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345560AbiEJPJu convert rfc822-to-8bit (ORCPT
+        id S1345658AbiEJPKJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:09:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36080 "EHLO
+        Tue, 10 May 2022 11:10:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345886AbiEJPGf (ORCPT
+        with ESMTP id S1345559AbiEJPJu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:06:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA4492944BC
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:32:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 38A90B81DC3
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 14:31:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12C07C385C2;
-        Tue, 10 May 2022 14:31:53 +0000 (UTC)
-Date:   Tue, 10 May 2022 10:31:52 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Qais Yousef <qais.yousef@arm.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Delyan Kratunov <delyank@fb.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        "bigeasy@linutronix.de" <bigeasy@linutronix.de>,
-        "dietmar.eggemann@arm.com" <dietmar.eggemann@arm.com>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>,
-        "vincent.guittot@linaro.org" <vincent.guittot@linaro.org>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "mingo@kernel.org" <mingo@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "Kenta.Tada@sony.com" <Kenta.Tada@sony.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "bristot@redhat.com" <bristot@redhat.com>,
-        "ebiederm@xmission.com" <ebiederm@xmission.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "legion@kernel.org" <legion@kernel.org>,
-        "adharmap@quicinc.com" <adharmap@quicinc.com>,
-        "valentin.schneider@arm.com" <valentin.schneider@arm.com>,
-        "ed.tsai@mediatek.com" <ed.tsai@mediatek.com>,
-        "juri.lelli@redhat.com" <juri.lelli@redhat.com>
-Subject: Re: [PATCH] sched/tracing: append prev_state to tp args instead
-Message-ID: <20220510103152.68b8b66d@gandalf.local.home>
-In-Reply-To: <20220510082940.GA100765@worktop.programming.kicks-ass.net>
-References: <056e9bb0d0e3fc20572d42db7386face1d0665d6.camel@fb.com>
-        <CAADnVQKsah4aka-LJ+X+5XHHESKbbw36D8fXTLqcYp2io3PN_w@mail.gmail.com>
-        <YmflVPQlwpiBuxRc@hirez.programming.kicks-ass.net>
-        <20220426140959.op6u5m7id57aq7yc@wubuntu>
-        <CAEf4BzaoL5HVc8U16kz7m--RiPhBwuLt8ZGZppwfxV85AXXrcw@mail.gmail.com>
-        <20220427103458.ecnqtaj3af63625h@wubuntu>
-        <CAEf4BzYc3f2-9hvuGL_mTO8qNxZjdQn8AabEb-N6Q7XjmEQQ1A@mail.gmail.com>
-        <20220428100235.sqoxunbylqk2surk@wubuntu>
-        <CAEf4BzaEo+dxSRJZHQiXYrj-a3_B-eODZUxGh3HrnPjquMYFXQ@mail.gmail.com>
-        <20220510070122.GJ76023@worktop.programming.kicks-ass.net>
-        <20220510082940.GA100765@worktop.programming.kicks-ass.net>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Tue, 10 May 2022 11:09:50 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F0054B1EC
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:41:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652193694; x=1683729694;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=N8drDJX7EjyPxyYIr/6B3eFepmHr9YPwLFJHcd7Dioo=;
+  b=DC2cWzhaCxZJlXxKxTHswoa4WmFs258/mAjaknvrwPsIL83RN2PulNsB
+   1cawQyuqP38szuzZV2ykYKajk+i+Mpuizs+anH33Zge3aCcq+HJd/s0qw
+   6HJmtiDZrIMMNpwKksst09eNvL6hbJoUSbMjJZj91FF3HY4k8NzHZjnLo
+   qNYejGL355n7/mmfuooB1BQaipeFR2nyIm7hPoRC29Fd790nuSmcPFTcJ
+   UmCGS578UGsmckV8Tzhs7zr0EdlJ8jfBPogGs0yLytTxqZ9iJrXhYdQH1
+   ExvzConkZ0F3JIFHjPuYQAQDSnOkHWTB1NAojYxswYiConrmgLpoalYc0
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="266982132"
+X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
+   d="scan'208";a="266982132"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 07:41:11 -0700
+X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
+   d="scan'208";a="565671977"
+Received: from fangy-mobl.ger.corp.intel.com (HELO [10.252.50.83]) ([10.252.50.83])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 07:41:09 -0700
+Message-ID: <12bebc80-b792-5739-0d9d-ef1466a9b2aa@linux.intel.com>
+Date:   Tue, 10 May 2022 16:41:00 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.8.1
+Subject: Re: Linux regressions report for mainline [2022-05-09] (was: Linux
+ 5.18-rc6)
+Content-Language: en-US
+To:     Hans de Goede <hdegoede@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        "Regzbot (on behalf of Thorsten Leemhuis)" 
+        <regressions@leemhuis.info>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Matthew Auld <matthew.auld@intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linux regressions mailing list <regressions@lists.linux.dev>
+References: <CAHk-=wi0vqZQUAS67tBsJQW+dtt89m+dqA-Z4bOs8CH-mm8u2w@mail.gmail.com>
+ <165209064657.193515.10163777181547077546@leemhuis.info>
+ <CAHk-=wj0gHsG6iw3D8ufptm9a_dvTSqrrOFY9WopObbYbyuwnA@mail.gmail.com>
+ <54664f6a-b046-1330-e794-cb533e942a94@redhat.com>
+From:   Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+In-Reply-To: <54664f6a-b046-1330-e794-cb533e942a94@redhat.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 10 May 2022 10:29:40 +0200
-Peter Zijlstra <peterz@infradead.org> wrote:
+Op 09-05-2022 om 21:04 schreef Hans de Goede:
+> Hi,
+>
+> On 5/9/22 19:20, Linus Torvalds wrote:
+>> On Mon, May 9, 2022 at 3:47 AM Regzbot (on behalf of Thorsten
+>> Leemhuis) <regressions@leemhuis.info> wrote:
+>>> Hi Linus! Here's a quick compilation of open reports about regressions in
+>>> 5.18-rc that I'm currently aware of; most of the reports are quite
+>>> recent and there afaics is nothing that looks particularly worrisome.
+>> Well, the Intel GPU issue seems likely to cause problems for lots of people:
+>>
+>>> [ *NEW* ] drm/i915: BYT rendering broken due to "Remove short-term pins from execbuf, v6"
+>>> -----------------------------------------------------------------------------------------
+>>> https://linux-regtracking.leemhuis.info/regzbot/regression/1366349e-f96a-3f2c-3094-f5cd1a6fa31f@redhat.com/
+>>> https://lore.kernel.org/dri-devel/1366349e-f96a-3f2c-3094-f5cd1a6fa31f@redhat.com/
+>>>
+>>> By Hans de Goede; 0 days ago; 2 activities, latest 0 days ago.
+>>> Introduced in b5cfe6f7a6e1 (v5.18-rc1)
+>>>
+>>> Recent activities from: Tvrtko Ursulin (1), Hans de Goede (1)
+>> Although it looks possible that it mainly affects old chipsets (ie the
+>> two reports are for a Bay Trail chip and a Core 2 Duo chip - I have no
+>> idea how they compare).
+>>
+>> That probably means there are a lot of machines out there, but likely
+>> not the kind that most kernel developers will be testing, so not a ton
+>> of reports until it hits distro kernels etc.
+>>
+>> It looks like Maarten is already involved.
+> This is being tracked here:
+> https://gitlab.freedesktop.org/drm/intel/-/issues/5806
+>
+> I've just tested a patch from Maarten which fixes things for me,
+> so hopefully we can get this resolved soon.
+>
+> Regards,
+>
+> Hans
+>
+Hey,
 
-> On Tue, May 10, 2022 at 09:01:22AM +0200, Peter Zijlstra wrote:
-> > On Mon, May 09, 2022 at 12:32:31PM -0700, Andrii Nakryiko wrote:  
-> > > So can this patch be applied, please, or it's a hard no?  
-> > 
-> > Sorry; I got distracted with other work. I'll grudingly apply the patch.  
-> 
->   gcc-11-i386-allmodconfig [15:35]  FAILED
->   | In file included from ../include/trace/define_custom_trace.h:55,
->   |                  from ../samples/trace_events/trace_custom_sched.h:96,
->   |                  from ../samples/trace_events/trace_custom_sched.c:24:
->   | ../samples/trace_events/./trace_custom_sched.h: In function ‘ftrace_test_custom_probe_sched_switch’:
->   | ../include/trace/trace_custom_events.h:178:42: error: passing argument 1 of ‘check_trace_callback_type_sched_switch’ from incompatible pointer type [-Werror=incompatible-pointer-types]
->   |   178 |         check_trace_callback_type_##call(trace_custom_event_raw_event_##template); \
->   |       |                                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->   |       |                                          |
->   |       |                                          void (*)(void *, bool,  unsigned int,  struct task_struct *, struct task_struct *) {aka void (*)(void *, _Bool,  unsigned int,  struct task_struct *, struct task_struct *)}
->   | ../include/trace/trace_custom_events.h:34:9: note: in expansion of macro ‘DEFINE_CUSTOM_EVENT’
->   |    34 |         DEFINE_CUSTOM_EVENT(name, name, PARAMS(proto), PARAMS(args));
+I'm still waiting on feedback on the last patch there, can you test it?
 
+That should be the real fix most likely, waiting for binding to complete before using the vma.
 
-Yes, the custom tracepoint sample code uses the sched_switch tracepoint as
-an example. That sample code needs to be updated:
+~Maarten
 
-In samples/trace_events/trace_custom_sched.h:
-
-TRACE_CUSTOM_EVENT(sched_switch,
-
-        /*
-         * The TP_PROTO() and TP_ARGS must match the trace event
-         * that the custom event is using.
-         */
-        TP_PROTO(bool preempt,
-                 unsigned int prev_state,
-                 struct task_struct *prev,
-                 struct task_struct *next),
-
-        TP_ARGS(preempt, prev_state, prev, next),
-
-
-
-The arguments need to be updated.
-
--- Steve
