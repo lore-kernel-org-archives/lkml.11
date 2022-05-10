@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF3E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:25:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FC73C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:25:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245376AbiEJO3M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:29:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43422 "EHLO
+        id S1344385AbiEJO3R (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:29:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343696AbiEJN7a (ORCPT
+        with ESMTP id S245177AbiEJN77 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:59:30 -0400
+        Tue, 10 May 2022 09:59:59 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F94C3F8BB;
-        Tue, 10 May 2022 06:39:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EABE7D80B6;
+        Tue, 10 May 2022 06:39:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5DE44B81DB8;
-        Tue, 10 May 2022 13:39:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A37A2C385A6;
-        Tue, 10 May 2022 13:39:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6FA83B81DC2;
+        Tue, 10 May 2022 13:39:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5C66C385C2;
+        Tue, 10 May 2022 13:39:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189978;
-        bh=Weyb4TA3ATTSARhzD42JJKD7YbniFgc7Mc8OARMLrug=;
+        s=korg; t=1652189984;
+        bh=P3SVQNOO3B7N/QZLCcWPzgOahP2/LyoDyJ/f3OPaNKs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y/94IhYi2b55KzWwrZNRV5VDb6H4GGQFb7iAgwxm42w2//aVUKELzo5I6CIYMyxaZ
-         TxIM7pdlwjh6aJqjuq7iMgBxeKbDAVsiZUHBLWK2E3HcNwYpSwOrd+YbjDYPqi3af/
-         Wrupw4ynrHDSeEv9XT2cXFppy17eA2tYkx4NPDHY=
+        b=uC4PtlPVj4QyvDETPKifX85FTa2NH7ErvFWSIuOy3WBF+NGHwER358DoxcKZZm+di
+         7XCl07GZOft2L3KksaKrpDpZHBaWL49Ptt2wtpNK7PCo2cyoLRU7XuOK+n9S9nk7Hq
+         v4la2gK1JMc8hjFWEwOyoGctzg2BMUZ77SgHhsXA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andreas Larsson <andreas@gaisler.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.17 049/140] can: grcan: only use the NAPI poll budget for RX
-Date:   Tue, 10 May 2022 15:07:19 +0200
-Message-Id: <20220510130743.022031810@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.17 084/140] net: ethernet: mediatek: add missing of_node_put() in mtk_sgmii_init()
+Date:   Tue, 10 May 2022 15:07:54 +0200
+Message-Id: <20220510130744.013145208@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -48,87 +49,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andreas Larsson <andreas@gaisler.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-commit 2873d4d52f7c52d60b316ba6c47bd7122b5a9861 upstream.
+commit ff5265d45345d01fefc98fcb9ae891b59633c919 upstream.
 
-The previous split budget between TX and RX made it return not using
-the entire budget but at the same time not having calling called
-napi_complete. This sometimes led to the poll to not be called, and at
-the same time having TX and RX interrupts disabled resulting in the
-driver getting stuck.
+The node pointer returned by of_parse_phandle() with refcount incremented,
+so add of_node_put() after using it in mtk_sgmii_init().
 
-Fixes: 6cec9b07fe6a ("can: grcan: Add device driver for GRCAN and GRHCAN cores")
-Link: https://lore.kernel.org/all/20220429084656.29788-4-andreas@gaisler.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Andreas Larsson <andreas@gaisler.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: 9ffee4a8276c ("net: ethernet: mediatek: Extend SGMII related functions")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220428062543.64883-1-yangyingliang@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/grcan.c |   22 +++++++---------------
- 1 file changed, 7 insertions(+), 15 deletions(-)
+ drivers/net/ethernet/mediatek/mtk_sgmii.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/net/can/grcan.c
-+++ b/drivers/net/can/grcan.c
-@@ -1125,7 +1125,7 @@ static int grcan_close(struct net_device
- 	return 0;
- }
+--- a/drivers/net/ethernet/mediatek/mtk_sgmii.c
++++ b/drivers/net/ethernet/mediatek/mtk_sgmii.c
+@@ -26,6 +26,7 @@ int mtk_sgmii_init(struct mtk_sgmii *ss,
+ 			break;
  
--static int grcan_transmit_catch_up(struct net_device *dev, int budget)
-+static void grcan_transmit_catch_up(struct net_device *dev)
- {
- 	struct grcan_priv *priv = netdev_priv(dev);
- 	unsigned long flags;
-@@ -1133,7 +1133,7 @@ static int grcan_transmit_catch_up(struc
- 
- 	spin_lock_irqsave(&priv->lock, flags);
- 
--	work_done = catch_up_echo_skb(dev, budget, true);
-+	work_done = catch_up_echo_skb(dev, -1, true);
- 	if (work_done) {
- 		if (!priv->resetting && !priv->closing &&
- 		    !(priv->can.ctrlmode & CAN_CTRLMODE_LISTENONLY))
-@@ -1147,8 +1147,6 @@ static int grcan_transmit_catch_up(struc
+ 		ss->regmap[i] = syscon_node_to_regmap(np);
++		of_node_put(np);
+ 		if (IS_ERR(ss->regmap[i]))
+ 			return PTR_ERR(ss->regmap[i]);
  	}
- 
- 	spin_unlock_irqrestore(&priv->lock, flags);
--
--	return work_done;
- }
- 
- static int grcan_receive(struct net_device *dev, int budget)
-@@ -1230,19 +1228,13 @@ static int grcan_poll(struct napi_struct
- 	struct net_device *dev = priv->dev;
- 	struct grcan_registers __iomem *regs = priv->regs;
- 	unsigned long flags;
--	int tx_work_done, rx_work_done;
--	int rx_budget = budget / 2;
--	int tx_budget = budget - rx_budget;
-+	int work_done;
- 
--	/* Half of the budget for receiving messages */
--	rx_work_done = grcan_receive(dev, rx_budget);
-+	work_done = grcan_receive(dev, budget);
- 
--	/* Half of the budget for transmitting messages as that can trigger echo
--	 * frames being received
--	 */
--	tx_work_done = grcan_transmit_catch_up(dev, tx_budget);
-+	grcan_transmit_catch_up(dev);
- 
--	if (rx_work_done < rx_budget && tx_work_done < tx_budget) {
-+	if (work_done < budget) {
- 		napi_complete(napi);
- 
- 		/* Guarantee no interference with a running reset that otherwise
-@@ -1259,7 +1251,7 @@ static int grcan_poll(struct napi_struct
- 		spin_unlock_irqrestore(&priv->lock, flags);
- 	}
- 
--	return rx_work_done + tx_work_done;
-+	return work_done;
- }
- 
- /* Work tx bug by waiting while for the risky situation to clear. If that fails,
 
 
