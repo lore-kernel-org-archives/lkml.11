@@ -2,110 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26B3CC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:06:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A5CBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:08:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347236AbiEJQKc (ORCPT
+        id S1347169AbiEJQJz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 12:10:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45970 "EHLO
+        Tue, 10 May 2022 12:09:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347202AbiEJQJ7 (ORCPT
+        with ESMTP id S1348226AbiEJQH7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 12:09:59 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F0C32670B7;
-        Tue, 10 May 2022 09:05:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652198737; x=1683734737;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=knKoDSX6XXVi1UoUVL9DwH66JaiGwiaJztWXaAd6inc=;
-  b=XryxLngxqZCXypeKsueZ0AsnkNZ++ArGYWUAOhsrAy7R5n23abIRRjsZ
-   eg8YLcC1nP95DD0AJhuZ6+PC96L7lwOT25Yg5aBDE3A4+Q+7473Lemrpj
-   wJg5SgCrPj44Tu3yLaFimmfHpNdKdbEDvqaTluegaCZ4Tpif+3XcDLqs1
-   o07bfPLT9y7cj+8MXp6TMDAb+AHJ+AcXXHbMZ8A547sQnB5Kzy8ECoqbH
-   wdjeOrRCHPKHP1s4weEy0OaWXrHCjmBeh6i8cOvU+UilOmuMANkGU8nQo
-   iNH3hxghXgrLoIZsCQjqPE0K/JY+u6/jbcAWwr11emAJQ1E/UF98xpn+R
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="269558159"
-X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
-   d="scan'208";a="269558159"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 09:05:25 -0700
-X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
-   d="scan'208";a="738765503"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 09:05:22 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1noSMR-00EOjV-12;
-        Tue, 10 May 2022 19:05:19 +0300
-Date:   Tue, 10 May 2022 19:05:18 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Henning Schild <henning.schild@siemens.com>
-Cc:     Mark Gross <markgross@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-kernel@vger.kernel.org, linux-leds@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, Enrico Weigelt <lkml@metux.net>,
-        Gerd Haeussler <gerd.haeussler.ext@siemens.com>
-Subject: Re: [PATCH 0/2] simatic-ipc additions to p2sb apl lake gpio
-Message-ID: <YnqNPpIKFAoLegMr@smile.fi.intel.com>
-References: <20220131151346.45792-1-andriy.shevchenko@linux.intel.com>
- <20220308193522.26696-1-henning.schild@siemens.com>
- <YnJ2tYjCpJi7yc4j@smile.fi.intel.com>
- <20220504171951.0d569632@md1za8fc.ad001.siemens.net>
- <20220510173053.10a14aeb@md1za8fc.ad001.siemens.net>
+        Tue, 10 May 2022 12:07:59 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34FA624DC60;
+        Tue, 10 May 2022 09:00:20 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id m20so33866594ejj.10;
+        Tue, 10 May 2022 09:00:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lXiJ2mpQAyNa13YBj7uo5j5cpdvbXfoTHRY/ZoleQ8I=;
+        b=IZbaHguCzhrLkeqeNzdjWnw9BgNCAivwRMIbuG7i2jy/0GX0M62xw5OxR4xod6O83w
+         XDaMxhGEJ+5r5BOY8+qqsHRHnf8k+6CxF7+Adp7aeD5zvCRth2QcXG1yy37DG0iKKa5b
+         /NK1FrXW4vh7rnRVBqAdSgUv+f7e5ngbn61f+F1SOF+zOSZ7K0D0EhiF700lGZ0/IHoV
+         uXTxCq0VoFYacqFuQgIVKhzCGURu9p6CQceBW8+FCtXTeIStXeRO5riJAlDw7j0picnW
+         0+RXVXme73vy0mIPKOWFnH9c7R2tLZHEYkqHC5VtImm/QPZkI+Md101sbSsJxEtymKmG
+         mfbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lXiJ2mpQAyNa13YBj7uo5j5cpdvbXfoTHRY/ZoleQ8I=;
+        b=RJHi29S2pXGHhoCZSw/nYjD9iqEA5N8BMKQp7vW2eNdEy2uBG76QZfxrp5OUgWg/1W
+         N6qWB5s02ky+WfCOqihyv/rFjrI7DFC38a01IbmiM5nClZNx6yAABdAse11R/uZU3ACX
+         IL5gYLH1yIJe1rzp1TXe/aLNRKGAq8XuV5Nf1kwFzf/Natxct+yeU1B9hHgGeRcucE6j
+         bnNyLf0zclsc0dCvsYtoDu63qY+8ypoFLey1RSP8TMT/sGEzZPNg6HBJ+VI0gdWtI5ra
+         f1R80EDBlcB9eG+eOvm7+xk/Ux3VDvze6ek0eNPt9VuNnPaSEARAGPySKtZVrGLPvfQJ
+         Xz0g==
+X-Gm-Message-State: AOAM53380JEkEqTfjWat9z4DtT9Hjzvku+NthXmwn+hbe5QmgukVyguL
+        ug63a83tCT4hGPwOpyXQ/mU=
+X-Google-Smtp-Source: ABdhPJyIljUWSLO2j3YWHl9pOuRFnsYpaUfsJit/WEiUAAfcaL6+Cmo3n0jZf7MnwLOtbq5fTC+RCQ==
+X-Received: by 2002:a17:907:6d08:b0:6f4:45ca:c410 with SMTP id sa8-20020a1709076d0800b006f445cac410mr20741792ejc.679.1652198418622;
+        Tue, 10 May 2022 09:00:18 -0700 (PDT)
+Received: from localhost.localdomain (89-38-99-188.hosted-by-worldstream.net. [89.38.99.188])
+        by smtp.gmail.com with ESMTPSA id d2-20020a170907272200b006f3ef214e21sm6306949ejl.135.2022.05.10.09.00.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 09:00:18 -0700 (PDT)
+From:   Yassine Oudjana <yassine.oudjana@gmail.com>
+X-Google-Original-From: Yassine Oudjana <y.oudjana@protonmail.com>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Loic Poulain <loic.poulain@linaro.org>
+Cc:     Yassine Oudjana <yassine.oudjana@gmail.com>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Martin Botka <martin.botka@somainline.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht
+Subject: [PATCH v2 0/3] MSM8996 Coherent Bus Fabric clock support
+Date:   Tue, 10 May 2022 19:57:41 +0400
+Message-Id: <20220510155744.812471-1-y.oudjana@protonmail.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220510173053.10a14aeb@md1za8fc.ad001.siemens.net>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 05:30:53PM +0200, Henning Schild wrote:
-> Am Wed, 4 May 2022 17:19:51 +0200
-> schrieb Henning Schild <henning.schild@siemens.com>:
-> > Am Wed, 4 May 2022 15:51:01 +0300
-> > schrieb Andy Shevchenko <andriy.shevchenko@linux.intel.com>:
-> > > On Tue, Mar 08, 2022 at 08:35:20PM +0100, Henning Schild wrote:
+From: Yassine Oudjana <yassine.oudjana@gmail.com>
 
-...
+This series adds support for the CBF clock found on MSM8996 and sets it to
+a high enough frequency to fix some devices not being able to boot with all
+4 cores enabled.
 
-> > > [1]: https://gitlab.com/andy-shev/next/-/tree/topic/p2sb-next
-> > > It would be nice if you can perform another round of testing.
->
-> Just got around to testing this with my patches on top. My stuff will
-> need some more work before i can send again.
->
-> Is this a rebasing branch?
-> With efc7d77ea372 ("EDAC, pnd2: convert to use common P2SB accessor")
+(I'm picking this up and adding DT bindings following a discussion on
+another series[1] since Konrad is fine with it.)
 
-It's rebased over and over. I just pushed the same version I have sent as v5.
+Changes since v1:
+ - Update DT bindings with the CBF clock and reg.
 
-> I am seeing problems while booting ... things do work but still error
-> messages which probably should not be there.
+[1] https://lore.kernel.org/linux-arm-msm/aa54cc23-e479-688c-6a3c-b9c73babd9b4@linaro.org/
 
-It's okay. This is not related to my stuff, it's a new series from Marc which
-enables that (harmless) warning.
+Konrad Dybcio (2):
+  clk: qcom: msm8996-cpu: Add CBF support
+  arm64: dts: qcom: msm8996: Add support for the CBF clock
 
-> [    2.217506] broxton-pinctrl apollolake-pinctrl.1: Failed to attach ACPI GPIO chip
-> [    2.217542] gpio gpiochip1: (apollolake-pinctrl.1): not an immutable chip, please consider fixing it!
-> [    2.217771] i801_smbus 0000:00:1f.1: Failed to enable SMBus PCI device (-22)
-> [    2.217788] i801_smbus: probe of 0000:00:1f.1 failed with error -22
-> [    2.221460] broxton-pinctrl apollolake-pinctrl.2: Failed to attach ACPI GPIO chip
-> [    2.221482] gpio gpiochip2: (apollolake-pinctrl.2): not an immutable chip, please consider fixing it!
-> [    2.222010] broxton-pinctrl apollolake-pinctrl.3: Failed to attach ACPI GPIO chip
-> [    2.222023] gpio gpiochip3: (apollolake-pinctrl.3): not an immutable
-> chip, please consider fixing it!
+Yassine Oudjana (1):
+  dt-bindings: clk: qcom: msm8996-apcc: Add CBF
+
+ .../bindings/clock/qcom,msm8996-apcc.yaml     |  10 +-
+ arch/arm64/boot/dts/qcom/msm8996.dtsi         |   5 +-
+ drivers/clk/qcom/clk-cpu-8996.c               | 162 +++++++++++++++++-
+ 3 files changed, 169 insertions(+), 8 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.36.0
 
