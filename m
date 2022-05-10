@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48507C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A89BC4167D
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:04:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344200AbiEJOHm (ORCPT
+        id S1344267AbiEJOHs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:07:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51408 "EHLO
+        Tue, 10 May 2022 10:07:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243493AbiEJNpi (ORCPT
+        with ESMTP id S244239AbiEJNpi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:45:38 -0400
 Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB7953E00;
-        Tue, 10 May 2022 06:31:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A5629137C;
+        Tue, 10 May 2022 06:31:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id AF50FCE1E67;
-        Tue, 10 May 2022 13:30:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1AD9C385A6;
-        Tue, 10 May 2022 13:30:48 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id DBD75CE1EDE;
+        Tue, 10 May 2022 13:30:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3DD3C385C2;
+        Tue, 10 May 2022 13:30:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189449;
-        bh=H80LzjsCwwDuMoTh8aPlJp2dEdjqVJunQqjAV47P7vE=;
+        s=korg; t=1652189458;
+        bh=vmU4qBASEUpfgc/BCPgOm30brd4+MRNEFxdubd5lS4s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LRkMMc+wdA/W2MWEkG5pbb3oUOT4QwisVbUVSSNmzb2ZAb2x9V/DOgmbAA2bWDJXD
-         lEufoEC+Zor5MphOVwTnQ6sWop1VeCmn3ouo8Y0TY9oRRo2QDXi4tWy1c994IZWWVf
-         wb2hzlof7LTcJwtEITlQbC2kNScVBSiHD/byUg20=
+        b=ls0fT2i50tvpTM4eQQ9yyI/HSSOWj4P14i2NpwM+9ASMIgQLmKsPBbTwZOuCGt05l
+         sANAlHEKeO1IHdCdNtvtM00iVK3/YtUyhSu7Af0f2fyptyEROhdQ0GQRkInZ71bk1S
+         eE5xUA3v7BiFAoTFZj9GRjjZ22LBx+AkTy2ilG8E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 5.15 055/135] SUNRPC release the transport of a relocated task with an assigned transport
-Date:   Tue, 10 May 2022 15:07:17 +0200
-Message-Id: <20220510130741.984760719@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Tatyana Nikolova <tatyana.e.nikolova@intel.com>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 5.15 057/135] RDMA/irdma: Flush iWARP QP if modified to ERR from RTR state
+Date:   Tue, 10 May 2022 15:07:19 +0200
+Message-Id: <20220510130742.041305605@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -49,39 +51,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Olga Kornievskaia <kolga@netapp.com>
+From: Tatyana Nikolova <tatyana.e.nikolova@intel.com>
 
-commit e13433b4416fa31a24e621cbbbb39227a3d651dd upstream.
+commit 7b8943b821bafab492f43aafbd006b57c6b65845 upstream.
 
-A relocated task must release its previous transport.
+When connection establishment fails in iWARP mode, an app can drain the
+QPs and hang because flush isn't issued when the QP is modified from RTR
+state to error. Issue a flush in this case using function
+irdma_cm_disconn().
 
-Fixes: 82ee41b85cef1 ("SUNRPC don't resend a task on an offlined transport")
-Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Update irdma_cm_disconn() to do flush when cm_id is NULL, which is the
+case when the QP is in RTR state and there is an error in the connection
+establishment.
+
+Fixes: b48c24c2d710 ("RDMA/irdma: Implement device supported verb APIs")
+Link: https://lore.kernel.org/r/20220425181703.1634-2-shiraz.saleem@intel.com
+Signed-off-by: Tatyana Nikolova <tatyana.e.nikolova@intel.com>
+Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sunrpc/clnt.c |   11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ drivers/infiniband/hw/irdma/cm.c    |   16 +++++-----------
+ drivers/infiniband/hw/irdma/verbs.c |    4 ++--
+ 2 files changed, 7 insertions(+), 13 deletions(-)
 
---- a/net/sunrpc/clnt.c
-+++ b/net/sunrpc/clnt.c
-@@ -1065,10 +1065,13 @@ rpc_task_get_next_xprt(struct rpc_clnt *
- static
- void rpc_task_set_transport(struct rpc_task *task, struct rpc_clnt *clnt)
- {
--	if (task->tk_xprt &&
--			!(test_bit(XPRT_OFFLINE, &task->tk_xprt->state) &&
--                        (task->tk_flags & RPC_TASK_MOVEABLE)))
+--- a/drivers/infiniband/hw/irdma/cm.c
++++ b/drivers/infiniband/hw/irdma/cm.c
+@@ -3465,12 +3465,6 @@ static void irdma_cm_disconn_true(struct
+ 	}
+ 
+ 	cm_id = iwqp->cm_id;
+-	/* make sure we havent already closed this connection */
+-	if (!cm_id) {
+-		spin_unlock_irqrestore(&iwqp->lock, flags);
 -		return;
-+	if (task->tk_xprt) {
-+		if (!(test_bit(XPRT_OFFLINE, &task->tk_xprt->state) &&
-+		      (task->tk_flags & RPC_TASK_MOVEABLE)))
-+			return;
-+		xprt_release(task);
-+		xprt_put(task->tk_xprt);
-+	}
- 	if (task->tk_flags & RPC_TASK_NO_ROUND_ROBIN)
- 		task->tk_xprt = rpc_task_get_first_xprt(clnt);
- 	else
+-	}
+-
+ 	original_hw_tcp_state = iwqp->hw_tcp_state;
+ 	original_ibqp_state = iwqp->ibqp_state;
+ 	last_ae = iwqp->last_aeq;
+@@ -3492,11 +3486,11 @@ static void irdma_cm_disconn_true(struct
+ 			disconn_status = -ECONNRESET;
+ 	}
+ 
+-	if ((original_hw_tcp_state == IRDMA_TCP_STATE_CLOSED ||
+-	     original_hw_tcp_state == IRDMA_TCP_STATE_TIME_WAIT ||
+-	     last_ae == IRDMA_AE_RDMAP_ROE_BAD_LLP_CLOSE ||
+-	     last_ae == IRDMA_AE_BAD_CLOSE ||
+-	     last_ae == IRDMA_AE_LLP_CONNECTION_RESET || iwdev->rf->reset)) {
++	if (original_hw_tcp_state == IRDMA_TCP_STATE_CLOSED ||
++	    original_hw_tcp_state == IRDMA_TCP_STATE_TIME_WAIT ||
++	    last_ae == IRDMA_AE_RDMAP_ROE_BAD_LLP_CLOSE ||
++	    last_ae == IRDMA_AE_BAD_CLOSE ||
++	    last_ae == IRDMA_AE_LLP_CONNECTION_RESET || iwdev->rf->reset || !cm_id) {
+ 		issue_close = 1;
+ 		iwqp->cm_id = NULL;
+ 		qp->term_flags = 0;
+--- a/drivers/infiniband/hw/irdma/verbs.c
++++ b/drivers/infiniband/hw/irdma/verbs.c
+@@ -1617,13 +1617,13 @@ int irdma_modify_qp(struct ib_qp *ibqp,
+ 
+ 	if (issue_modify_qp && iwqp->ibqp_state > IB_QPS_RTS) {
+ 		if (dont_wait) {
+-			if (iwqp->cm_id && iwqp->hw_tcp_state) {
++			if (iwqp->hw_tcp_state) {
+ 				spin_lock_irqsave(&iwqp->lock, flags);
+ 				iwqp->hw_tcp_state = IRDMA_TCP_STATE_CLOSED;
+ 				iwqp->last_aeq = IRDMA_AE_RESET_SENT;
+ 				spin_unlock_irqrestore(&iwqp->lock, flags);
+-				irdma_cm_disconn(iwqp);
+ 			}
++			irdma_cm_disconn(iwqp);
+ 		} else {
+ 			int close_timer_started;
+ 
 
 
