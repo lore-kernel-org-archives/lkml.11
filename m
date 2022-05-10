@@ -2,438 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 951AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:26:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A98AC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:26:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240944AbiEJN3z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:29:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45940 "EHLO
+        id S243294AbiEJNaB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:30:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242891AbiEJNWj (ORCPT
+        with ESMTP id S242879AbiEJNWj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:22:39 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8224119CB41;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C7819FB03;
         Tue, 10 May 2022 06:16:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1652188618; x=1683724618;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Z+wkcPFgaLI/W7TPrfrb/qCEWLZD/AQJbcpUvu5HPSw=;
-  b=MvX+TOk7sV4W28jpCwcGfT2fjMqLxIjeRge5tqGsVXI+6CzPMurYri57
-   gYYru2lNHFsodZxpWkjz3VrgwaZfcjO7jX0IkDxVz7HhaR+vZBEvT09A1
-   JQmIHQ37Crr2Yfi3kyvJPNseSv+CA5zyYDlO+VH+YBsGLIuaJf/Mm+KOK
-   j3/nBhFrRq9GGdW649J/St/oZkToTgnaqfmAry39NYjpxePSjf3z4asoI
-   AQ+k6NRiQTBd7ZXfnJIrx4IBN7dLwk6z/J1nGepfsDRBNVuX0MiX4F+CO
-   QtKQE+5jFyeam4Cr/4A8JYrqLFAZjkrjt+JpOCNfyzN1nf8bTYyOdtugO
-   g==;
-X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
-   d="scan'208";a="163025727"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 May 2022 06:16:44 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 10 May 2022 06:16:43 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Tue, 10 May 2022 06:16:41 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>
-CC:     <daire.mcnamara@microchip.com>, <lewis.hanly@microchip.com>,
-        <conor.dooley@microchip.com>, <linux-kernel@vger.kernel.org>,
-        <linux-rtc@vger.kernel.org>, <linux-riscv@lists.infradead.org>
-Subject: [PATCH v2 1/2] rtc: Add driver for Microchip PolarFire SoC
-Date:   Tue, 10 May 2022 14:21:16 +0100
-Message-ID: <20220510132116.506572-2-conor.dooley@microchip.com>
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3442B6165A;
+        Tue, 10 May 2022 13:16:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 486B5C385C9;
+        Tue, 10 May 2022 13:16:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652188614;
+        bh=PLBcffHUTxEwDYZ2I2HzXLMI033QZq0mU5i+o1QVl8o=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=InLX1GgHU1XLSBf6rPiRrOzffV7JTdWwie6LSBe0DG+j9FQOV0ex6bqDlkXOwRsEB
+         xXC5m5xs83dKFoHa/xT2/XwlR32KZEYoCintbJx7KY22DPp6b6qwFRP2jGC+cRk/Ve
+         l1WSwtNHy5QZhA2NG4Xd/ETckajRVIIIbulllivs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.14 64/78] nfc: replace improper check device_is_registered() in netlink related functions
+Date:   Tue, 10 May 2022 15:07:50 +0200
+Message-Id: <20220510130734.427117291@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510132116.506572-1-conor.dooley@microchip.com>
-References: <20220510132116.506572-1-conor.dooley@microchip.com>
+In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
+References: <20220510130732.522479698@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for the built-in RTC on Microchip PolarFire SoC
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-Co-Developed-by: Daire McNamara <daire.mcnamara@microchip.com>
-Signed-off-by: Daire McNamara <daire.mcnamara@microchip.com>
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+commit da5c0f119203ad9728920456a0f52a6d850c01cd upstream.
+
+The device_is_registered() in nfc core is used to check whether
+nfc device is registered in netlink related functions such as
+nfc_fw_download(), nfc_dev_up() and so on. Although device_is_registered()
+is protected by device_lock, there is still a race condition between
+device_del() and device_is_registered(). The root cause is that
+kobject_del() in device_del() is not protected by device_lock.
+
+   (cleanup task)         |     (netlink task)
+                          |
+nfc_unregister_device     | nfc_fw_download
+ device_del               |  device_lock
+  ...                     |   if (!device_is_registered)//(1)
+  kobject_del//(2)        |   ...
+ ...                      |  device_unlock
+
+The device_is_registered() returns the value of state_in_sysfs and
+the state_in_sysfs is set to zero in kobject_del(). If we pass check in
+position (1), then set zero in position (2). As a result, the check
+in position (1) is useless.
+
+This patch uses bool variable instead of device_is_registered() to judge
+whether the nfc device is registered, which is well synchronized.
+
+Fixes: 3e256b8f8dfa ("NFC: add nfc subsystem core")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/rtc/Kconfig    |  10 ++
- drivers/rtc/Makefile   |   1 +
- drivers/rtc/rtc-mpfs.c | 328 +++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 339 insertions(+)
- create mode 100644 drivers/rtc/rtc-mpfs.c
+ net/nfc/core.c |   29 ++++++++++++++---------------
+ 1 file changed, 14 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/rtc/Kconfig b/drivers/rtc/Kconfig
-index 41c65b4d2baf..a194422328da 100644
---- a/drivers/rtc/Kconfig
-+++ b/drivers/rtc/Kconfig
-@@ -1966,4 +1966,14 @@ config RTC_DRV_MSC313
- 	  This driver can also be built as a module, if so, the module
- 	  will be called "rtc-msc313".
+--- a/net/nfc/core.c
++++ b/net/nfc/core.c
+@@ -50,7 +50,7 @@ int nfc_fw_download(struct nfc_dev *dev,
  
-+config RTC_DRV_POLARFIRE_SOC
-+	tristate "Microchip PolarFire SoC built-in RTC"
-+	depends on SOC_MICROCHIP_POLARFIRE
-+	help
-+	  If you say yes here you will get support for the
-+	  built-in RTC on Polarfire SoC.
-+
-+	  This driver can also be built as a module, if so, the module
-+	  will be called "rtc-mpfs".
-+
- endif # RTC_CLASS
-diff --git a/drivers/rtc/Makefile b/drivers/rtc/Makefile
-index 2d827d8261d5..25ee5ba870a9 100644
---- a/drivers/rtc/Makefile
-+++ b/drivers/rtc/Makefile
-@@ -130,6 +130,7 @@ obj-$(CONFIG_RTC_DRV_PIC32)	+= rtc-pic32.o
- obj-$(CONFIG_RTC_DRV_PL030)	+= rtc-pl030.o
- obj-$(CONFIG_RTC_DRV_PL031)	+= rtc-pl031.o
- obj-$(CONFIG_RTC_DRV_PM8XXX)	+= rtc-pm8xxx.o
-+obj-$(CONFIG_RTC_DRV_POLARFIRE_SOC)	+= rtc-mpfs.o
- obj-$(CONFIG_RTC_DRV_PS3)	+= rtc-ps3.o
- obj-$(CONFIG_RTC_DRV_PXA)	+= rtc-pxa.o
- obj-$(CONFIG_RTC_DRV_R7301)	+= rtc-r7301.o
-diff --git a/drivers/rtc/rtc-mpfs.c b/drivers/rtc/rtc-mpfs.c
-new file mode 100644
-index 000000000000..57867878f9c6
---- /dev/null
-+++ b/drivers/rtc/rtc-mpfs.c
-@@ -0,0 +1,328 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Microchip MPFS RTC driver
-+ *
-+ * Copyright (c) 2021-2022 Microchip Corporation. All rights reserved.
-+ *
-+ * Author: Daire McNamara <daire.mcnamara@microchip.com>
-+ *         & Conor Dooley <conor.dooley@microchip.com>
-+ */
-+#include "linux/bits.h"
-+#include <linux/clk.h>
-+#include <linux/io.h>
-+#include <linux/module.h>
-+#include <linux/kernel.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+#include <linux/pm_wakeirq.h>
-+#include <linux/slab.h>
-+#include <linux/rtc.h>
-+
-+#define CONTROL_REG		0x00
-+#define MODE_REG		0x04
-+#define PRESCALER_REG		0x08
-+#define ALARM_LOWER_REG		0x0c
-+#define ALARM_UPPER_REG		0x10
-+#define COMPARE_LOWER_REG	0x14
-+#define COMPARE_UPPER_REG	0x18
-+#define DATETIME_LOWER_REG	0x20
-+#define DATETIME_UPPER_REG	0x24
-+
-+#define CONTROL_RUNNING_BIT	BIT(0)
-+#define CONTROL_START_BIT	BIT(0)
-+#define CONTROL_STOP_BIT	BIT(1)
-+#define CONTROL_ALARM_ON_BIT	BIT(2)
-+#define CONTROL_ALARM_OFF_BIT	BIT(3)
-+#define CONTROL_RESET_BIT	BIT(4)
-+#define CONTROL_UPLOAD_BIT	BIT(5)
-+#define CONTROL_DOWNLOAD_BIT	BIT(6)
-+#define CONTROL_DOWNLOAD_BIT	BIT(6)
-+#define CONTROL_WAKEUP_CLR_BIT	BIT(8)
-+#define CONTROL_WAKEUP_SET_BIT	BIT(9)
-+#define CONTROL_UPDATED_BIT	BIT(10)
-+
-+#define MODE_CLOCK_CALENDAR	BIT(0)
-+#define MODE_WAKE_EN		BIT(1)
-+#define MODE_WAKE_RESET		BIT(2)
-+#define MODE_WAKE_CONTINUE	BIT(3)
-+
-+#define MAX_PRESCALER_COUNT	GENMASK(25, 0)
-+#define DATETIME_UPPER_MASK	GENMASK(29, 0)
-+#define ALARM_UPPER_MASK	GENMASK(10, 0)
-+
-+struct mpfs_rtc_dev {
-+	struct rtc_device *rtc;
-+	void __iomem *base;
-+	int wakeup_irq;
-+	u32 prescaler;
-+};
-+
-+static void mpfs_rtc_start(struct mpfs_rtc_dev *rtcdev)
-+{
-+	u32 ctrl;
-+
-+	ctrl = readl(rtcdev->base + CONTROL_REG);
-+	ctrl &= ~(CONTROL_STOP_BIT | CONTROL_START_BIT);
-+	ctrl |= CONTROL_START_BIT;
-+	writel(ctrl, rtcdev->base + CONTROL_REG);
-+}
-+
-+static void mpfs_rtc_clear_irq(struct mpfs_rtc_dev *rtcdev)
-+{
-+	u32 val = readl(rtcdev->base + CONTROL_REG);
-+
-+	val &= ~(CONTROL_ALARM_ON_BIT | CONTROL_STOP_BIT);
-+	val |= CONTROL_ALARM_OFF_BIT;
-+	writel(val, rtcdev->base + CONTROL_REG);
-+	/*
-+	 * Ensure that the posted write to the CONTROL_REG register completed before
-+	 * returning from this function. Not doing this may result in the interrupt
-+	 * only being cleared some time after this function returns.
-+	 */
-+	(void)readl(rtcdev->base + CONTROL_REG);
-+}
-+
-+static int mpfs_rtc_readtime(struct device *dev, struct rtc_time *tm)
-+{
-+	struct mpfs_rtc_dev *rtcdev = dev_get_drvdata(dev);
-+	u64 time;
-+
-+	time = ((u64)readl(rtcdev->base + DATETIME_UPPER_REG) & DATETIME_UPPER_MASK) << 32;
-+	time |= readl(rtcdev->base + DATETIME_LOWER_REG);
-+	rtc_time64_to_tm(time + rtcdev->rtc->range_min, tm);
-+
-+	return 0;
-+}
-+
-+static int mpfs_rtc_settime(struct device *dev, struct rtc_time *tm)
-+{
-+	struct mpfs_rtc_dev *rtcdev = dev_get_drvdata(dev);
-+	u32 ctrl, prog;
-+	u64 time;
-+
-+	time = rtc_tm_to_time64(tm) - rtcdev->rtc->range_min;
-+
-+	writel((u32)time, rtcdev->base + DATETIME_LOWER_REG);
-+	writel((u32)(time >> 32) & DATETIME_UPPER_MASK, rtcdev->base + DATETIME_UPPER_REG);
-+
-+	ctrl = readl(rtcdev->base + CONTROL_REG);
-+	ctrl &= ~CONTROL_STOP_BIT;
-+	ctrl |= CONTROL_UPLOAD_BIT;
-+	writel(ctrl, rtcdev->base + CONTROL_REG);
-+
-+	do {
-+		prog = readl(rtcdev->base + CONTROL_REG);
-+		prog &= CONTROL_UPLOAD_BIT;
-+	} while (prog);
-+
-+	mpfs_rtc_start(rtcdev);
-+
-+	return 0;
-+}
-+
-+static int mpfs_rtc_readalarm(struct device *dev, struct rtc_wkalrm *alrm)
-+{
-+	struct mpfs_rtc_dev *rtcdev = dev_get_drvdata(dev);
-+	u32 mode = readl(rtcdev->base + MODE_REG);
-+	u64 time;
-+
-+	mode = readl(rtcdev->base + MODE_REG);
-+
-+	if (mode & MODE_WAKE_EN)
-+		alrm->enabled = true;
-+	else
-+		alrm->enabled = false;
-+
-+	time = (u64)readl(rtcdev->base + ALARM_LOWER_REG) << 32;
-+	time |= (readl(rtcdev->base + ALARM_UPPER_REG) & ALARM_UPPER_MASK);
-+	rtc_time64_to_tm(time + rtcdev->rtc->range_min, &alrm->time);
-+
-+	return 0;
-+}
-+
-+static int mpfs_rtc_setalarm(struct device *dev, struct rtc_wkalrm *alrm)
-+{
-+	struct mpfs_rtc_dev *rtcdev = dev_get_drvdata(dev);
-+	u32 mode, ctrl;
-+	u64 time;
-+
-+	/* Disable the alarm before updating */
-+	ctrl = readl(rtcdev->base + CONTROL_REG);
-+	ctrl |= CONTROL_ALARM_OFF_BIT;
-+	writel(ctrl, rtcdev->base + CONTROL_REG);
-+
-+	time = rtc_tm_to_time64(&alrm->time) - rtcdev->rtc->range_min;
-+
-+	writel((u32)time, rtcdev->base + ALARM_LOWER_REG);
-+	writel((u32)(time >> 32) & ALARM_UPPER_MASK, rtcdev->base + ALARM_UPPER_REG);
-+
-+	/* Bypass compare register in alarm mode */
-+	writel(GENMASK(31, 0), rtcdev->base + COMPARE_LOWER_REG);
-+	writel(GENMASK(29, 0), rtcdev->base + COMPARE_UPPER_REG);
-+
-+	/* Configure the RTC to enable the alarm. */
-+	ctrl = readl(rtcdev->base + CONTROL_REG);
-+	mode = readl(rtcdev->base + MODE_REG);
-+	if (alrm->enabled) {
-+		mode = MODE_WAKE_EN | MODE_WAKE_CONTINUE;
-+		/* Enable the alarm */
-+		ctrl &= ~CONTROL_ALARM_OFF_BIT;
-+		ctrl |= CONTROL_ALARM_ON_BIT;
-+	}
-+	ctrl &= ~CONTROL_STOP_BIT;
-+	ctrl |= CONTROL_START_BIT;
-+	writel(ctrl, rtcdev->base + CONTROL_REG);
-+	writel(mode, rtcdev->base + MODE_REG);
-+
-+	return 0;
-+}
-+
-+static int mpfs_rtc_alarm_irq_enable(struct device *dev, unsigned int enabled)
-+{
-+	struct mpfs_rtc_dev *rtcdev = dev_get_drvdata(dev);
-+	u32 ctrl;
-+
-+	ctrl = readl(rtcdev->base + CONTROL_REG);
-+	ctrl &= ~(CONTROL_ALARM_ON_BIT | CONTROL_ALARM_OFF_BIT | CONTROL_STOP_BIT);
-+
-+	if (enabled)
-+		ctrl |= CONTROL_ALARM_ON_BIT;
-+	else
-+		ctrl |= CONTROL_ALARM_OFF_BIT;
-+
-+	writel(ctrl, rtcdev->base + CONTROL_REG);
-+
-+	return 0;
-+}
-+
-+static inline struct clk *mpfs_rtc_init_clk(struct device *dev)
-+{
-+	struct clk *clk;
-+	int ret;
-+
-+	clk = devm_clk_get(dev, "rtc");
-+	if (IS_ERR(clk))
-+		return clk;
-+
-+	ret = clk_prepare_enable(clk);
-+	if (ret)
-+		return ERR_PTR(ret);
-+
-+	devm_add_action_or_reset(dev, (void (*) (void *))clk_disable_unprepare, clk);
-+	return clk;
-+}
-+
-+static irqreturn_t mpfs_rtc_wakeup_irq_handler(int irq, void *d)
-+{
-+	struct mpfs_rtc_dev *rtcdev = d;
-+	unsigned long pending;
-+
-+	pending = readl(rtcdev->base + CONTROL_REG);
-+	pending &= CONTROL_ALARM_ON_BIT;
-+	mpfs_rtc_clear_irq(rtcdev);
-+
-+	rtc_update_irq(rtcdev->rtc, 1, RTC_IRQF | RTC_AF);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static const struct rtc_class_ops mpfs_rtc_ops = {
-+	.read_time		= mpfs_rtc_readtime,
-+	.set_time		= mpfs_rtc_settime,
-+	.read_alarm		= mpfs_rtc_readalarm,
-+	.set_alarm		= mpfs_rtc_setalarm,
-+	.alarm_irq_enable	= mpfs_rtc_alarm_irq_enable,
-+};
-+
-+static int mpfs_rtc_probe(struct platform_device *pdev)
-+{
-+	struct mpfs_rtc_dev *rtcdev;
-+	struct clk *clk;
-+	int ret;
-+
-+	rtcdev = devm_kzalloc(&pdev->dev, sizeof(struct mpfs_rtc_dev), GFP_KERNEL);
-+	if (!rtcdev)
-+		return -ENOMEM;
-+
-+	platform_set_drvdata(pdev, rtcdev);
-+
-+	rtcdev->rtc = devm_rtc_allocate_device(&pdev->dev);
-+	if (IS_ERR(rtcdev->rtc))
-+		return PTR_ERR(rtcdev->rtc);
-+
-+	rtcdev->rtc->ops = &mpfs_rtc_ops;
-+
-+	/* range is capped by alarm max, lower reg is 31:0 & upper is 10:0 */
-+	rtcdev->rtc->range_max = GENMASK_ULL(42, 0);
-+
-+	clk = mpfs_rtc_init_clk(&pdev->dev);
-+	if (IS_ERR(clk))
-+		return PTR_ERR(clk);
-+
-+	rtcdev->base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(rtcdev->base)) {
-+		dev_dbg(&pdev->dev, "invalid ioremap resources\n");
-+		return PTR_ERR(rtcdev->base);
-+	}
-+
-+	rtcdev->wakeup_irq = platform_get_irq(pdev, 0);
-+	if (rtcdev->wakeup_irq <= 0) {
-+		dev_dbg(&pdev->dev, "could not get wakeup irq\n");
-+		return rtcdev->wakeup_irq;
-+	}
-+	ret = devm_request_irq(&pdev->dev, rtcdev->wakeup_irq, mpfs_rtc_wakeup_irq_handler, 0,
-+			       dev_name(&pdev->dev), rtcdev);
-+	if (ret) {
-+		dev_dbg(&pdev->dev, "could not request wakeup irq\n");
-+		return ret;
-+	}
-+
-+	// prescaler hardware adds 1 to reg value
-+	rtcdev->prescaler = clk_get_rate(devm_clk_get(&pdev->dev, "rtcref")) - 1;
-+
-+	if (rtcdev->prescaler > MAX_PRESCALER_COUNT) {
-+		dev_dbg(&pdev->dev, "invalid prescaler %d\n", rtcdev->prescaler);
-+		return -EPERM;
-+	}
-+
-+	writel(rtcdev->prescaler, rtcdev->base + PRESCALER_REG);
-+	dev_info(&pdev->dev, "prescaler set to: 0x%X \r\n", rtcdev->prescaler);
-+
-+	device_init_wakeup(&pdev->dev, true);
-+	ret = dev_pm_set_wake_irq(&pdev->dev, rtcdev->wakeup_irq);
-+	if (ret)
-+		dev_err(&pdev->dev, "failed to enable irq wake\n");
-+
-+	return devm_rtc_register_device(rtcdev->rtc);
-+}
-+
-+static int mpfs_rtc_remove(struct platform_device *pdev)
-+{
-+	mpfs_rtc_alarm_irq_enable(&pdev->dev, 0);
-+	device_init_wakeup(&pdev->dev, 0);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id mpfs_rtc_of_match[] = {
-+	{ .compatible = "microchip,mpfs-rtc" },
-+	{ }
-+};
-+
-+MODULE_DEVICE_TABLE(of, mpfs_rtc_of_match);
-+
-+static struct platform_driver mpfs_rtc_driver = {
-+	.probe = mpfs_rtc_probe,
-+	.remove = mpfs_rtc_remove,
-+	.driver	= {
-+		.name = "mpfs_rtc",
-+		.of_match_table = mpfs_rtc_of_match,
-+	},
-+};
-+
-+module_platform_driver(mpfs_rtc_driver);
-+
-+MODULE_DESCRIPTION("Real time clock for Microchip Polarfire SoC");
-+MODULE_AUTHOR("Daire McNamara <daire.mcnamara@microchip.com>");
-+MODULE_AUTHOR("Conor Dooley <conor.dooley@microchip.com>");
-+MODULE_LICENSE("GPL");
--- 
-2.36.1
+ 	device_lock(&dev->dev);
+ 
+-	if (!device_is_registered(&dev->dev)) {
++	if (dev->shutting_down) {
+ 		rc = -ENODEV;
+ 		goto error;
+ 	}
+@@ -106,7 +106,7 @@ int nfc_dev_up(struct nfc_dev *dev)
+ 
+ 	device_lock(&dev->dev);
+ 
+-	if (!device_is_registered(&dev->dev)) {
++	if (dev->shutting_down) {
+ 		rc = -ENODEV;
+ 		goto error;
+ 	}
+@@ -154,7 +154,7 @@ int nfc_dev_down(struct nfc_dev *dev)
+ 
+ 	device_lock(&dev->dev);
+ 
+-	if (!device_is_registered(&dev->dev)) {
++	if (dev->shutting_down) {
+ 		rc = -ENODEV;
+ 		goto error;
+ 	}
+@@ -218,7 +218,7 @@ int nfc_start_poll(struct nfc_dev *dev,
+ 
+ 	device_lock(&dev->dev);
+ 
+-	if (!device_is_registered(&dev->dev)) {
++	if (dev->shutting_down) {
+ 		rc = -ENODEV;
+ 		goto error;
+ 	}
+@@ -257,7 +257,7 @@ int nfc_stop_poll(struct nfc_dev *dev)
+ 
+ 	device_lock(&dev->dev);
+ 
+-	if (!device_is_registered(&dev->dev)) {
++	if (dev->shutting_down) {
+ 		rc = -ENODEV;
+ 		goto error;
+ 	}
+@@ -302,7 +302,7 @@ int nfc_dep_link_up(struct nfc_dev *dev,
+ 
+ 	device_lock(&dev->dev);
+ 
+-	if (!device_is_registered(&dev->dev)) {
++	if (dev->shutting_down) {
+ 		rc = -ENODEV;
+ 		goto error;
+ 	}
+@@ -346,7 +346,7 @@ int nfc_dep_link_down(struct nfc_dev *de
+ 
+ 	device_lock(&dev->dev);
+ 
+-	if (!device_is_registered(&dev->dev)) {
++	if (dev->shutting_down) {
+ 		rc = -ENODEV;
+ 		goto error;
+ 	}
+@@ -412,7 +412,7 @@ int nfc_activate_target(struct nfc_dev *
+ 
+ 	device_lock(&dev->dev);
+ 
+-	if (!device_is_registered(&dev->dev)) {
++	if (dev->shutting_down) {
+ 		rc = -ENODEV;
+ 		goto error;
+ 	}
+@@ -458,7 +458,7 @@ int nfc_deactivate_target(struct nfc_dev
+ 
+ 	device_lock(&dev->dev);
+ 
+-	if (!device_is_registered(&dev->dev)) {
++	if (dev->shutting_down) {
+ 		rc = -ENODEV;
+ 		goto error;
+ 	}
+@@ -505,7 +505,7 @@ int nfc_data_exchange(struct nfc_dev *de
+ 
+ 	device_lock(&dev->dev);
+ 
+-	if (!device_is_registered(&dev->dev)) {
++	if (dev->shutting_down) {
+ 		rc = -ENODEV;
+ 		kfree_skb(skb);
+ 		goto error;
+@@ -562,7 +562,7 @@ int nfc_enable_se(struct nfc_dev *dev, u
+ 
+ 	device_lock(&dev->dev);
+ 
+-	if (!device_is_registered(&dev->dev)) {
++	if (dev->shutting_down) {
+ 		rc = -ENODEV;
+ 		goto error;
+ 	}
+@@ -611,7 +611,7 @@ int nfc_disable_se(struct nfc_dev *dev,
+ 
+ 	device_lock(&dev->dev);
+ 
+-	if (!device_is_registered(&dev->dev)) {
++	if (dev->shutting_down) {
+ 		rc = -ENODEV;
+ 		goto error;
+ 	}
+@@ -1142,6 +1142,7 @@ int nfc_register_device(struct nfc_dev *
+ 			dev->rfkill = NULL;
+ 		}
+ 	}
++	dev->shutting_down = false;
+ 	device_unlock(&dev->dev);
+ 
+ 	rc = nfc_genl_device_added(dev);
+@@ -1174,12 +1175,10 @@ void nfc_unregister_device(struct nfc_de
+ 		rfkill_unregister(dev->rfkill);
+ 		rfkill_destroy(dev->rfkill);
+ 	}
++	dev->shutting_down = true;
+ 	device_unlock(&dev->dev);
+ 
+ 	if (dev->ops->check_presence) {
+-		device_lock(&dev->dev);
+-		dev->shutting_down = true;
+-		device_unlock(&dev->dev);
+ 		del_timer_sync(&dev->check_pres_timer);
+ 		cancel_work_sync(&dev->check_pres_work);
+ 	}
+
 
