@@ -2,42 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C20C8C47087
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5A80C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:48:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245363AbiEJNwR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:52:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56582 "EHLO
+        id S245314AbiEJNwO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:52:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243459AbiEJNfW (ORCPT
+        with ESMTP id S243570AbiEJNf1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:35:22 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BD822B9CB0;
-        Tue, 10 May 2022 06:24:43 -0700 (PDT)
+        Tue, 10 May 2022 09:35:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C2E92BE500;
+        Tue, 10 May 2022 06:24:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5790BCE1EED;
-        Tue, 10 May 2022 13:24:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AD3DC385A6;
-        Tue, 10 May 2022 13:24:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1299BB81D7A;
+        Tue, 10 May 2022 13:24:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70CE4C385A6;
+        Tue, 10 May 2022 13:24:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189080;
-        bh=tVVWGkF/iT6p3c+HWVoArkGTv1eamDF6usUjCAoXFHM=;
+        s=korg; t=1652189086;
+        bh=Bjwo4rxmq8DnkoKrefPxhqJmd2vd9qgzbgUmZJujVhk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gTr7wbeOWfnweWN/w1ycAyYj1dLmXckUct3TCv8i/cc4EyUR3nr47I/EoHZ4gn60b
-         /OQ34G469IRCg7PzcLtKkcfcz75/PYBHkw9GMQe/DKWzZoQ/4bdd+Yxgz2s/2cQtBi
-         WEh8oXBe9SnB1/dCU8pP6xS57MkJbkbDr70l8/b0=
+        b=a1fPBhtKmh8WqzTJ6VhGR7P+L0/mx5VmHAat258unegWdee1ALmbVfbRyLIqhVR53
+         MotKP5gEmiwPajTH9kBulVnLQ85/cu7USfrUYN6ob4iMkKTuKtK2Em7s3szyD8ZNG4
+         zyzjUJSdwb56+5PGll7YSfDBjDJEsf4uia36nCDQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 5.4 49/52] dm: interlock pending dm_io and dm_wait_for_bios_completion
-Date:   Tue, 10 May 2022 15:08:18 +0200
-Message-Id: <20220510130731.288376880@linuxfoundation.org>
+        stable@vger.kernel.org, Ivan Babrou <ivan@cloudflare.com>,
+        Minchan Kim <minchan@kernel.org>,
+        Nitin Gupta <ngupta@vflare.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        David Hildenbrand <david@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.4 41/52] mm: fix unexpected zeroed page mapping with zram swap
+Date:   Tue, 10 May 2022 15:08:10 +0200
+Message-Id: <20220510130731.053838711@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.852544477@linuxfoundation.org>
 References: <20220510130729.852544477@linuxfoundation.org>
@@ -49,64 +54,156 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Snitzer <snitzer@redhat.com>
+From: Minchan Kim <minchan@kernel.org>
 
-commit 9f6dc633761006f974701d4c88da71ab68670749 upstream.
+commit e914d8f00391520ecc4495dd0ca0124538ab7119 upstream.
 
-Commit d208b89401e0 ("dm: fix mempool NULL pointer race when
-completing IO") didn't go far enough.
+Two processes under CLONE_VM cloning, user process can be corrupted by
+seeing zeroed page unexpectedly.
 
-When bio_end_io_acct ends the count of in-flight I/Os may reach zero
-and the DM device may be suspended. There is a possibility that the
-suspend races with dm_stats_account_io.
+      CPU A                        CPU B
 
-Fix this by adding percpu "pending_io" counters to track outstanding
-dm_io. Move kicking of suspend queue to dm_io_dec_pending(). Also,
-rename md_in_flight_bios() to dm_in_flight_bios() and update it to
-iterate all pending_io counters.
+  do_swap_page                do_swap_page
+  SWP_SYNCHRONOUS_IO path     SWP_SYNCHRONOUS_IO path
+  swap_readpage valid data
+    swap_slot_free_notify
+      delete zram entry
+                              swap_readpage zeroed(invalid) data
+                              pte_lock
+                              map the *zero data* to userspace
+                              pte_unlock
+  pte_lock
+  if (!pte_same)
+    goto out_nomap;
+  pte_unlock
+  return and next refault will
+  read zeroed data
 
-Fixes: d208b89401e0 ("dm: fix mempool NULL pointer race when completing IO")
-Cc: stable@vger.kernel.org
-Co-developed-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Reviewed-by: Mike Snitzer <snitzer@kernel.org>
+The swap_slot_free_notify is bogus for CLONE_VM case since it doesn't
+increase the refcount of swap slot at copy_mm so it couldn't catch up
+whether it's safe or not to discard data from backing device.  In the
+case, only the lock it could rely on to synchronize swap slot freeing is
+page table lock.  Thus, this patch gets rid of the swap_slot_free_notify
+function.  With this patch, CPU A will see correct data.
+
+      CPU A                        CPU B
+
+  do_swap_page                do_swap_page
+  SWP_SYNCHRONOUS_IO path     SWP_SYNCHRONOUS_IO path
+                              swap_readpage original data
+                              pte_lock
+                              map the original data
+                              swap_free
+                                swap_range_free
+                                  bd_disk->fops->swap_slot_free_notify
+  swap_readpage read zeroed data
+                              pte_unlock
+  pte_lock
+  if (!pte_same)
+    goto out_nomap;
+  pte_unlock
+  return
+  on next refault will see mapped data by CPU B
+
+The concern of the patch would increase memory consumption since it
+could keep wasted memory with compressed form in zram as well as
+uncompressed form in address space.  However, most of cases of zram uses
+no readahead and do_swap_page is followed by swap_free so it will free
+the compressed form from in zram quickly.
+
+Link: https://lkml.kernel.org/r/YjTVVxIAsnKAXjTd@google.com
+Fixes: 0bcac06f27d7 ("mm, swap: skip swapcache for swapin of synchronous device")
+Reported-by: Ivan Babrou <ivan@cloudflare.com>
+Tested-by: Ivan Babrou <ivan@cloudflare.com>
+Signed-off-by: Minchan Kim <minchan@kernel.org>
+Cc: Nitin Gupta <ngupta@vflare.org>
+Cc: Sergey Senozhatsky <senozhatsky@chromium.org>
+Cc: Jens Axboe <axboe@kernel.dk>
+Cc: David Hildenbrand <david@redhat.com>
+Cc: <stable@vger.kernel.org>	[4.14+]
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm.c |   10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ mm/page_io.c |   54 ------------------------------------------------------
+ 1 file changed, 54 deletions(-)
 
---- a/drivers/md/dm.c
-+++ b/drivers/md/dm.c
-@@ -681,14 +681,16 @@ static void end_io_acct(struct mapped_de
- {
- 	unsigned long duration = jiffies - start_time;
- 
--	generic_end_io_acct(md->queue, bio_op(bio), &dm_disk(md)->part0,
--			    start_time);
--
- 	if (unlikely(dm_stats_used(&md->stats)))
- 		dm_stats_account_io(&md->stats, bio_data_dir(bio),
- 				    bio->bi_iter.bi_sector, bio_sectors(bio),
- 				    true, duration, stats_aux);
- 
-+	smp_wmb();
-+
-+	generic_end_io_acct(md->queue, bio_op(bio), &dm_disk(md)->part0,
-+			    start_time);
-+
- 	/* nudge anyone waiting on suspend queue */
- 	if (unlikely(wq_has_sleeper(&md->wait)))
- 		wake_up(&md->wait);
-@@ -2494,6 +2496,8 @@ static int dm_wait_for_completion(struct
- 	}
- 	finish_wait(&md->wait, &wait);
- 
-+	smp_rmb();
-+
- 	return r;
+--- a/mm/page_io.c
++++ b/mm/page_io.c
+@@ -69,54 +69,6 @@ void end_swap_bio_write(struct bio *bio)
+ 	bio_put(bio);
  }
  
+-static void swap_slot_free_notify(struct page *page)
+-{
+-	struct swap_info_struct *sis;
+-	struct gendisk *disk;
+-	swp_entry_t entry;
+-
+-	/*
+-	 * There is no guarantee that the page is in swap cache - the software
+-	 * suspend code (at least) uses end_swap_bio_read() against a non-
+-	 * swapcache page.  So we must check PG_swapcache before proceeding with
+-	 * this optimization.
+-	 */
+-	if (unlikely(!PageSwapCache(page)))
+-		return;
+-
+-	sis = page_swap_info(page);
+-	if (!(sis->flags & SWP_BLKDEV))
+-		return;
+-
+-	/*
+-	 * The swap subsystem performs lazy swap slot freeing,
+-	 * expecting that the page will be swapped out again.
+-	 * So we can avoid an unnecessary write if the page
+-	 * isn't redirtied.
+-	 * This is good for real swap storage because we can
+-	 * reduce unnecessary I/O and enhance wear-leveling
+-	 * if an SSD is used as the as swap device.
+-	 * But if in-memory swap device (eg zram) is used,
+-	 * this causes a duplicated copy between uncompressed
+-	 * data in VM-owned memory and compressed data in
+-	 * zram-owned memory.  So let's free zram-owned memory
+-	 * and make the VM-owned decompressed page *dirty*,
+-	 * so the page should be swapped out somewhere again if
+-	 * we again wish to reclaim it.
+-	 */
+-	disk = sis->bdev->bd_disk;
+-	entry.val = page_private(page);
+-	if (disk->fops->swap_slot_free_notify && __swap_count(entry) == 1) {
+-		unsigned long offset;
+-
+-		offset = swp_offset(entry);
+-
+-		SetPageDirty(page);
+-		disk->fops->swap_slot_free_notify(sis->bdev,
+-				offset);
+-	}
+-}
+-
+ static void end_swap_bio_read(struct bio *bio)
+ {
+ 	struct page *page = bio_first_page_all(bio);
+@@ -132,7 +84,6 @@ static void end_swap_bio_read(struct bio
+ 	}
+ 
+ 	SetPageUptodate(page);
+-	swap_slot_free_notify(page);
+ out:
+ 	unlock_page(page);
+ 	WRITE_ONCE(bio->bi_private, NULL);
+@@ -371,11 +322,6 @@ int swap_readpage(struct page *page, boo
+ 
+ 	ret = bdev_read_page(sis->bdev, swap_page_sector(page), page);
+ 	if (!ret) {
+-		if (trylock_page(page)) {
+-			swap_slot_free_notify(page);
+-			unlock_page(page);
+-		}
+-
+ 		count_vm_event(PSWPIN);
+ 		return 0;
+ 	}
 
 
