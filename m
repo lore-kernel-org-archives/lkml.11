@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58564C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86D39C43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:35:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243853AbiEJNgZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:36:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41370 "EHLO
+        id S243962AbiEJNgg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:36:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243092AbiEJNZa (ORCPT
+        with ESMTP id S243118AbiEJNZa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:25:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 431BF185C8F;
-        Tue, 10 May 2022 06:18:53 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CD8018C048;
+        Tue, 10 May 2022 06:19:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D12D961574;
-        Tue, 10 May 2022 13:18:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0DBBC385C2;
-        Tue, 10 May 2022 13:18:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F96D615F8;
+        Tue, 10 May 2022 13:19:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 918F9C385A6;
+        Tue, 10 May 2022 13:19:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188732;
-        bh=sXILfzq9IW3DCNFKyH1tGuQNRkOLW85EMG6ylDqHGXM=;
+        s=korg; t=1652188743;
+        bh=W7ZK7KD0miQc+0GIjSeypunCKQIaBHTvFxVnApOunKs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0VNr79mSkRRMylbvytpex57m+NHNLxfm+0l3NuFuKAioEQgGmoqEAQ0XALBElJAQJ
-         MCQkrWmWqgBQ2QXkx3Kqr97jNQwlpNVFX55UT5qj2S4glkMUyYGaL1p7mJ7W28vhN2
-         6UpSULqyqfbU+hHW3z2xQpCSO2X6b7M0kG0kS53s=
+        b=YapPu2c1KsWvG28HY0dMOK8UVKcVzrrA3PW4H90CxOD8ic0hUOxn2ZCjFR8hRsNxn
+         o7odThb9wlBG6JgCnWropnK/7cPO3egODV2mUgBYC02NpfQhMqkjDD9X4PcWxFlkLh
+         2z1f7Jf6OsEgz/MRMBx1t2Quzc9fY92VbQjr9s1E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zizhuang Deng <sunsetdzz@gmail.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 4.19 09/88] iio: dac: ad5592r: Fix the missing return value.
-Date:   Tue, 10 May 2022 15:06:54 +0200
-Message-Id: <20220510130734.015700859@linuxfoundation.org>
+        stable@vger.kernel.org, Pengcheng Yang <yangpc@wangsu.com>,
+        Julian Anastasov <ja@ssi.bg>,
+        Simon Horman <horms@verge.net.au>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 30/88] ipvs: correctly print the memory size of ip_vs_conn_tab
+Date:   Tue, 10 May 2022 15:07:15 +0200
+Message-Id: <20220510130734.622178686@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 References: <20220510130733.735278074@linuxfoundation.org>
@@ -49,34 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zizhuang Deng <sunsetdzz@gmail.com>
+From: Pengcheng Yang <yangpc@wangsu.com>
 
-commit b55b38f7cc12da3b9ef36e7a3b7f8f96737df4d5 upstream.
+[ Upstream commit eba1a872cb73314280d5448d934935b23e30b7ca ]
 
-The third call to `fwnode_property_read_u32` did not record
-the return value, resulting in `channel_offstate` possibly
-being assigned the wrong value.
+The memory size of ip_vs_conn_tab changed after we use hlist
+instead of list.
 
-Fixes: 56ca9db862bf ("iio: dac: Add support for the AD5592R/AD5593R ADCs/DACs")
-Signed-off-by: Zizhuang Deng <sunsetdzz@gmail.com>
-Link: https://lore.kernel.org/r/20220310125450.4164164-1-sunsetdzz@gmail.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 731109e78415 ("ipvs: use hlist instead of list")
+Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
+Acked-by: Julian Anastasov <ja@ssi.bg>
+Acked-by: Simon Horman <horms@verge.net.au>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/dac/ad5592r-base.c |    2 +-
+ net/netfilter/ipvs/ip_vs_conn.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/iio/dac/ad5592r-base.c
-+++ b/drivers/iio/dac/ad5592r-base.c
-@@ -531,7 +531,7 @@ static int ad5592r_alloc_channels(struct
- 		if (!ret)
- 			st->channel_modes[reg] = tmp;
+diff --git a/net/netfilter/ipvs/ip_vs_conn.c b/net/netfilter/ipvs/ip_vs_conn.c
+index 2780a847701e..95c35aa639ec 100644
+--- a/net/netfilter/ipvs/ip_vs_conn.c
++++ b/net/netfilter/ipvs/ip_vs_conn.c
+@@ -1426,7 +1426,7 @@ int __init ip_vs_conn_init(void)
+ 	pr_info("Connection hash table configured "
+ 		"(size=%d, memory=%ldKbytes)\n",
+ 		ip_vs_conn_tab_size,
+-		(long)(ip_vs_conn_tab_size*sizeof(struct list_head))/1024);
++		(long)(ip_vs_conn_tab_size*sizeof(*ip_vs_conn_tab))/1024);
+ 	IP_VS_DBG(0, "Each connection entry needs %zd bytes at least\n",
+ 		  sizeof(struct ip_vs_conn));
  
--		fwnode_property_read_u32(child, "adi,off-state", &tmp);
-+		ret = fwnode_property_read_u32(child, "adi,off-state", &tmp);
- 		if (!ret)
- 			st->channel_offstate[reg] = tmp;
- 	}
+-- 
+2.35.1
+
 
 
