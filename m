@@ -2,125 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A109C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 07:44:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED7BFC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 07:45:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236341AbiEJHsT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 03:48:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51562 "EHLO
+        id S235776AbiEJHtV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 03:49:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235464AbiEJHpw (ORCPT
+        with ESMTP id S236871AbiEJHtG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 03:45:52 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5942CF29D9
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 00:37:00 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id g23so18930233edy.13
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 00:37:00 -0700 (PDT)
+        Tue, 10 May 2022 03:49:06 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2B29223874;
+        Tue, 10 May 2022 00:44:45 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id i24so14252863pfa.7;
+        Tue, 10 May 2022 00:44:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=6RZWCbAFEodD2+2XSMEoagvUogOze2cw3QzyxFw/BDQ=;
-        b=tgeEd74zRUA5aO1Do8LwMzp/J1ozn+9YH1LrXvTSv/C+z7ex3kM0d2ODIFPoyr17PP
-         nrH1NlExLYf0J6IkMJUpZzAXHDjo3dbx2UIzk3LVeQxQUiLKXnBmD24avQgq7JIUpUNv
-         BvQASI3UfasFBVTdby7HX4OHej8bHtsCSM0BxXvZsmj6d008CgdRuHFVAh2yqvIoOsnz
-         Q+Y2qy0IokBsZRt75QRHC/eb84dCwkozQd1A9z3ZjPOxDw86e8NyvVmr2f/tkvTOKyyC
-         nLQw9fD75PV/1fIdAgXHIJ5xinRE5+m4Mm10+dc29VSAuRdTXGA9cap1t7tqu9j61Mgm
-         5TqA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/PQpWDOLtgetCHx/Dm+r4oknUTM2WK+PRWdFcr5XoII=;
+        b=aURwVS5zElR52e8zV0QIOuj1FVJJkiACBIsmRaO9iIegJRMF+wu+p5WlRSh1hWGk62
+         McGGASA7KaNIZCxvdGxk/20xGF0WScmDWfsXY2EJsXyKcsMnajuhXQ7tbk+u5BVqYo0L
+         2KR3rLTua6et8Nl640WAKPJLsivZWemlxof5yRLbzmywoH2yGuJGRKZj9htqY3SobXlZ
+         ZzNLSgOERY2lRrxnEFlO1YHW2QwMkEh5QYhylJeXl4+c1g8OuDGbty+jJXFmhqix7tAg
+         aS1XMz0H3NkadthMDz/wChWkiA7mksnMYx+xava+g1uEAXc7oOUeHu30WMLxS5erI/yu
+         L0NQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=6RZWCbAFEodD2+2XSMEoagvUogOze2cw3QzyxFw/BDQ=;
-        b=MtIIXdNqbNso9fD3IGFz2G0RVOaOPKR8p2APfCjlCk0MACctW2hmYstMI5c2QAEw8M
-         2pe1jUxtBRTW4P03bc703vjDTMIGVhXi1brLyxHneQmfg9wYVzYEBwdhPI0bzbrIRUji
-         HEpw5MofS3+SuC9FKaBMguBD54b8/ifX7w8nE1J+ffQ21bHFndHjIxCAZZ6CW0EqMfQj
-         MxR6LniH5+m0FaJrW3SMoVooI+h929B+7E6gxnfpK5Bwcl1Cu5gJfWI5B8SEUZls5CUP
-         8TWoN/hZjYLOwjnoQxg3jfxaebfY6ZaBJGtiWPETR1uDQzTRo8ZEPpMJC5LmBa+ComQq
-         kd8g==
-X-Gm-Message-State: AOAM531doquib3gXAGW0jzlRgkX2Hl75Mqp6M3qCTKdkAHpRmLeJqUIH
-        htdxBJjIP28ERMpP1Q17ZhMwobAMsdq1wuw1
-X-Google-Smtp-Source: ABdhPJxyax1mRAPGS5sipxq+bFV0bICt1+ObVB9C2oSv1/7OuFLXOtOyvd1HWcYDvgkfQYZMYcAY8g==
-X-Received: by 2002:a05:6402:4301:b0:427:c8e4:4acd with SMTP id m1-20020a056402430100b00427c8e44acdmr21961658edc.230.1652168218886;
-        Tue, 10 May 2022 00:36:58 -0700 (PDT)
-Received: from [192.168.0.250] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id hx15-20020a170906846f00b006f3ef214e4csm5964412ejc.178.2022.05.10.00.36.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 May 2022 00:36:58 -0700 (PDT)
-Message-ID: <b8983ff3-7dca-0556-1bcc-05897aef212c@linaro.org>
-Date:   Tue, 10 May 2022 09:36:57 +0200
+        bh=/PQpWDOLtgetCHx/Dm+r4oknUTM2WK+PRWdFcr5XoII=;
+        b=wYaYCf44/x41sGhw3hoX7cCRyi05GfCiLy4BWDU9ttIYKDw1nKcqwLxEaWEhsPvg7m
+         8zQuP7/JFG0Aoi01K8g/+UwEFDGkPaexm4QiNhkACKo34YZ1CJzZCbp7LgLCFndNldJU
+         WBK/D5Lf9xIrYFGzDF/cLi2vM7syG4pHrsvDYOoF5lb+hu09QYAUYdoj1tvRu0EkRFMA
+         fzG9BnDbCZ23sTI4TVRCU/iclKnz77Th6CzK+BNA2BS5Lm1nEkyUfjvyB2j5CUc47tli
+         XxBf02EJyzmfUwSnyF7Ip6w0zRLijlKLvkT52jw5sS/rOY7yRkFjvdwELtKVBqHpVMPR
+         IvWA==
+X-Gm-Message-State: AOAM533l70o0wls+l5yFaf9fDjlfxt8ynOIlOQMWjLZ6ULOYZaianflP
+        Ru0e8sCHhPAw4ZrWgs86IbHPN5G2fljZCQ==
+X-Google-Smtp-Source: ABdhPJzzaedDYADezJGpjwZ8bNAtrKZ8OqKV3KQDacZ7iMk0B8M1dLDQghGOrnn1GLj0gJrRODK91g==
+X-Received: by 2002:a05:6a00:1908:b0:4f7:8813:b2cb with SMTP id y8-20020a056a00190800b004f78813b2cbmr19572766pfi.54.1652168685273;
+        Tue, 10 May 2022 00:44:45 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.88])
+        by smtp.gmail.com with ESMTPSA id a2-20020a170903100200b0015ef27092aasm1212146plb.190.2022.05.10.00.44.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 00:44:44 -0700 (PDT)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     ja@ssi.bg
+Cc:     horms@verge.net.au, pablo@netfilter.org, kadlec@netfilter.org,
+        fw@strlen.de, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        lvs-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        Menglong Dong <imagedong@tencent.com>,
+        Jiang Biao <benbjiang@tencent.com>,
+        Hao Peng <flyingpeng@tencent.com>
+Subject: [PATCH net-next v2] net: ipvs: randomize starting destination of RR/WRR scheduler
+Date:   Tue, 10 May 2022 15:43:01 +0800
+Message-Id: <20220510074301.480941-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] memory: OMAP_GPMC should depend on ARCH_OMAP2PLUS ||
- ARCH_K3
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Roger Quadros <rogerq@kernel.org>
-Cc:     Tony Lindgren <tony@atomide.com>,
-        "open list:TI ETHERNET SWITCH DRIVER (CPSW)" 
-        <linux-omap@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <2b7d411b4a7913335082c858cb0d63b9e4bf7c5b.1652103920.git.geert+renesas@glider.be>
- <20fd1a74-c0f5-d8e9-4903-b74c185d5aa3@kernel.org>
- <CAMuHMdVXHSnOOnn3jchezQc+bsPYTnSPuw_rOe+pyskAVaQGnQ@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CAMuHMdVXHSnOOnn3jchezQc+bsPYTnSPuw_rOe+pyskAVaQGnQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/05/2022 09:30, Geert Uytterhoeven wrote:
-> Hi Roger,
-> 
-> On Tue, May 10, 2022 at 9:22 AM Roger Quadros <rogerq@kernel.org> wrote:
->> On 09/05/2022 16:48, Geert Uytterhoeven wrote:
->>> The Texas Instruments OMAP General Purpose Memory Controller (GPMC) is
->>> only present on TI OMAP2/3/4/5, AM33xx, AM43x, DRA7xx, TI81xx, and K3
->>> SoCs.  Hence add a dependency on ARCH_OMAP2PLUS || ARCH_K3, to prevent
->>> asking the user about this driver when configuring a kernel without
->>> OMAP2+ or K3 SoC family support.
->>>
->>> Fixes: be34f45f0d4aa91c ("memory: omap-gpmc: Make OMAP_GPMC config visible and selectable")
->>> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> 
->>> --- a/drivers/memory/Kconfig
->>> +++ b/drivers/memory/Kconfig
->>> @@ -105,6 +105,7 @@ config TI_EMIF
->>>  config OMAP_GPMC
->>>       tristate "Texas Instruments OMAP SoC GPMC driver"
->>>       depends on OF_ADDRESS
->>> +     depends on ARCH_OMAP2PLUS || ARCH_K3 || COMPILE_TEST
->>>       select GPIOLIB
->>>       help
->>>         This driver is for the General Purpose Memory Controller (GPMC)
->>
->> Is there any possibility that CONFIG_IRQ_DOMAIN is not set while both
->> OF_ADDRESS and COMPILE_TEST are set?
->>
->> That particular case will lead to build failures.
->>
->> e.g.
->> https://krzk.eu/#/builders/63/builds/162
-> 
-> So it needs an additional dependency on IRQ_DOMAIN.
-> That is a pre-existing problem, not caused by my patch (which adds
-> more dependencies, and doesn't remove any).
+From: Menglong Dong <imagedong@tencent.com>
 
-Is this really a case here? The failure reported above was for earlier
-version of Roger's patch which was changing to:
-	depends on OF_ADDRESS || COMPILE_TEST
+For now, the start of the RR/WRR scheduler is in order of added
+destinations, it will result in imbalance if the director is local
+to the clients and the number of connection is small.
 
-Here, OF_ADDRESS will be always a dependency. If it builds in current
-configuration (having only OF_ADDRESS), then adding dependencies should
-not cause more issues.... It only restricts the config, not widens it.
+For example, we have client1, client2, ..., client100 and real service
+service1, service2, ..., service10. All clients have local director with
+the same ipvs config, and each of them will create 2 long TCP connect to
+the virtual service. Therefore, all the clients will connect to service1
+and service2, leaving others free, which will make service1 and service2
+overloaded.
 
-Therefore the patch looks actually correct, but some testing would be
-nice that we don't hit the same issues as before.
+Fix this by randomizing the starting destination when
+IP_VS_SVC_F_SCHED_RR_RANDOM/IP_VS_SVC_F_SCHED_WRR_RANDOM is set.
 
-Best regards,
-Krzysztof
+I start the randomizing from svc->destinations, as we choose the starting
+destination from all of the destinations, so it makes no different to
+start from svc->sched_data or svc->destinations. If we start from
+svc->sched_data, we have to avoid the 'head' node of the list being the
+next node of svc->sched_data, to make the choose totally random.
+
+Reviewed-by: Jiang Biao <benbjiang@tencent.com>
+Reviewed-by: Hao Peng <flyingpeng@tencent.com>
+Signed-off-by: Menglong Dong <imagedong@tencent.com>
+---
+v2:
+- randomizing the starting of WRR scheduler too
+- Replace '|' with '&' in ip_vs_rr_random_start(Julian Anastasov)
+- Replace get_random_u32() with prandom_u32_max() (Julian Anastasov)
+---
+ include/uapi/linux/ip_vs.h     |  3 +++
+ net/netfilter/ipvs/ip_vs_rr.c  | 25 ++++++++++++++++++++++++-
+ net/netfilter/ipvs/ip_vs_wrr.c | 20 ++++++++++++++++++++
+ 3 files changed, 47 insertions(+), 1 deletion(-)
+
+diff --git a/include/uapi/linux/ip_vs.h b/include/uapi/linux/ip_vs.h
+index 4102ddcb4e14..9543906dae7d 100644
+--- a/include/uapi/linux/ip_vs.h
++++ b/include/uapi/linux/ip_vs.h
+@@ -28,6 +28,9 @@
+ #define IP_VS_SVC_F_SCHED_SH_FALLBACK	IP_VS_SVC_F_SCHED1 /* SH fallback */
+ #define IP_VS_SVC_F_SCHED_SH_PORT	IP_VS_SVC_F_SCHED2 /* SH use port */
+ 
++#define IP_VS_SVC_F_SCHED_WRR_RANDOM	IP_VS_SVC_F_SCHED1 /* random start */
++#define IP_VS_SVC_F_SCHED_RR_RANDOM	IP_VS_SVC_F_SCHED1 /* random start */
++
+ /*
+  *      Destination Server Flags
+  */
+diff --git a/net/netfilter/ipvs/ip_vs_rr.c b/net/netfilter/ipvs/ip_vs_rr.c
+index 38495c6f6c7c..d53bfaf7aadf 100644
+--- a/net/netfilter/ipvs/ip_vs_rr.c
++++ b/net/netfilter/ipvs/ip_vs_rr.c
+@@ -22,13 +22,36 @@
+ 
+ #include <net/ip_vs.h>
+ 
++static void ip_vs_rr_random_start(struct ip_vs_service *svc)
++{
++	struct list_head *cur;
++	u32 start;
++
++	if (!(svc->flags & IP_VS_SVC_F_SCHED_RR_RANDOM) ||
++	    svc->num_dests <= 1)
++		return;
++
++	start = prandom_u32_max(svc->num_dests);
++	spin_lock_bh(&svc->sched_lock);
++	cur = &svc->destinations;
++	while (start--)
++		cur = cur->next;
++	svc->sched_data = cur;
++	spin_unlock_bh(&svc->sched_lock);
++}
+ 
+ static int ip_vs_rr_init_svc(struct ip_vs_service *svc)
+ {
+ 	svc->sched_data = &svc->destinations;
++	ip_vs_rr_random_start(svc);
+ 	return 0;
+ }
+ 
++static int ip_vs_rr_add_dest(struct ip_vs_service *svc, struct ip_vs_dest *dest)
++{
++	ip_vs_rr_random_start(svc);
++	return 0;
++}
+ 
+ static int ip_vs_rr_del_dest(struct ip_vs_service *svc, struct ip_vs_dest *dest)
+ {
+@@ -104,7 +127,7 @@ static struct ip_vs_scheduler ip_vs_rr_scheduler = {
+ 	.module =		THIS_MODULE,
+ 	.n_list =		LIST_HEAD_INIT(ip_vs_rr_scheduler.n_list),
+ 	.init_service =		ip_vs_rr_init_svc,
+-	.add_dest =		NULL,
++	.add_dest =		ip_vs_rr_add_dest,
+ 	.del_dest =		ip_vs_rr_del_dest,
+ 	.schedule =		ip_vs_rr_schedule,
+ };
+diff --git a/net/netfilter/ipvs/ip_vs_wrr.c b/net/netfilter/ipvs/ip_vs_wrr.c
+index 1bc7a0789d85..ed6230976379 100644
+--- a/net/netfilter/ipvs/ip_vs_wrr.c
++++ b/net/netfilter/ipvs/ip_vs_wrr.c
+@@ -102,6 +102,24 @@ static int ip_vs_wrr_max_weight(struct ip_vs_service *svc)
+ 	return weight;
+ }
+ 
++static void ip_vs_wrr_random_start(struct ip_vs_service *svc)
++{
++	struct ip_vs_wrr_mark *mark = svc->sched_data;
++	struct list_head *cur;
++	u32 start;
++
++	if (!(svc->flags & IP_VS_SVC_F_SCHED_WRR_RANDOM) ||
++	    svc->num_dests <= 1)
++		return;
++
++	start = prandom_u32_max(svc->num_dests);
++	spin_lock_bh(&svc->sched_lock);
++	cur = &svc->destinations;
++	while (start--)
++		cur = cur->next;
++	mark->cl = list_entry(cur, struct ip_vs_dest, n_list);
++	spin_unlock_bh(&svc->sched_lock);
++}
+ 
+ static int ip_vs_wrr_init_svc(struct ip_vs_service *svc)
+ {
+@@ -119,6 +137,7 @@ static int ip_vs_wrr_init_svc(struct ip_vs_service *svc)
+ 	mark->mw = ip_vs_wrr_max_weight(svc) - (mark->di - 1);
+ 	mark->cw = mark->mw;
+ 	svc->sched_data = mark;
++	ip_vs_wrr_random_start(svc);
+ 
+ 	return 0;
+ }
+@@ -149,6 +168,7 @@ static int ip_vs_wrr_dest_changed(struct ip_vs_service *svc,
+ 	else if (mark->di > 1)
+ 		mark->cw = (mark->cw / mark->di) * mark->di + 1;
+ 	spin_unlock_bh(&svc->sched_lock);
++	ip_vs_wrr_random_start(svc);
+ 	return 0;
+ }
+ 
+-- 
+2.36.0
+
