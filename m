@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F289C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55491C35296
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:28:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344755AbiEJObs (ORCPT
+        id S1344832AbiEJOcF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:31:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43068 "EHLO
+        Tue, 10 May 2022 10:32:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242960AbiEJOFw (ORCPT
+        with ESMTP id S245625AbiEJOHC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:05:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98D012E1830;
-        Tue, 10 May 2022 06:40:52 -0700 (PDT)
+        Tue, 10 May 2022 10:07:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1803D22B3A2;
+        Tue, 10 May 2022 06:41:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20970B81038;
-        Tue, 10 May 2022 13:40:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFE01C385A6;
-        Tue, 10 May 2022 13:40:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA6336194D;
+        Tue, 10 May 2022 13:40:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB5AFC385C2;
+        Tue, 10 May 2022 13:40:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652190049;
-        bh=Mlz60deRt36HdXJ7XN/igo+0gnVNPamU0Zlo9kbZ+Ss=;
+        s=korg; t=1652190059;
+        bh=vq6a1fG3vO1KR35Jg16mN5QOD1teXM12MIU7i8SU6zk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TevuN/KiGMwxP5XpVf5ienSCEMN/XwCgaJXkYUHmdGpSVXzcHv7jh1zlEa14l3SZc
-         klm4aYeoEC8I+471aUL4iHQaSd9FIBo/HxmlRTrIdGbUNzLMGb9QT265fS/ZvJ53w6
-         pYtTaeb3fxj4Oy7zPB4FKamuZEzvqBJBvgi4yHko=
+        b=RwJtJZzmEtnODs9TPi3HF6i5cCdMAKqtzHNcsgvRxYD05SNt+SVH9z3feBaXDe9rQ
+         D+e8Afw+k8kHlNPxRXUyP4Id5oktUHI2RNs4X5OfIPZ5eQp4/PDKfxljsgNWGUqEll
+         8Jj77L3+r6boX1C3zB9NS0qcGp8w1Cs6IQIQdUxg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+cfafed3bb76d3e37581b@syzkaller.appspotmail.com,
-        Sean Christopherson <seanjc@google.com>,
+        stable@vger.kernel.org, Thomas Huth <thuth@redhat.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
         Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 112/140] KVM: VMX: Exit to userspace if vCPU has injected exception and invalid state
-Date:   Tue, 10 May 2022 15:08:22 +0200
-Message-Id: <20220510130744.805207869@linuxfoundation.org>
+Subject: [PATCH 5.17 114/140] KVM: selftests: Silence compiler warning in the kvm_page_table_test
+Date:   Tue, 10 May 2022 15:08:24 +0200
+Message-Id: <20220510130744.866749157@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -52,44 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Thomas Huth <thuth@redhat.com>
 
-[ Upstream commit 053d2290c0307e3642e75e0185ddadf084dc36c1 ]
+[ Upstream commit 266a19a0bc4fbfab4d981a47640ca98972a01865 ]
 
-Exit to userspace with an emulation error if KVM encounters an injected
-exception with invalid guest state, in addition to the existing check of
-bailing if there's a pending exception (KVM doesn't support emulating
-exceptions except when emulating real mode via vm86).
+When compiling kvm_page_table_test.c, I get this compiler warning
+with gcc 11.2:
 
-In theory, KVM should never get to such a situation as KVM is supposed to
-exit to userspace before injecting an exception with invalid guest state.
-But in practice, userspace can intervene and manually inject an exception
-and/or stuff registers to force invalid guest state while a previously
-injected exception is awaiting reinjection.
+kvm_page_table_test.c: In function 'pre_init_before_test':
+../../../../tools/include/linux/kernel.h:44:24: warning: comparison of
+ distinct pointer types lacks a cast
+   44 |         (void) (&_max1 == &_max2);              \
+      |                        ^~
+kvm_page_table_test.c:281:21: note: in expansion of macro 'max'
+  281 |         alignment = max(0x100000, alignment);
+      |                     ^~~
 
-Fixes: fc4fad79fc3d ("KVM: VMX: Reject KVM_RUN if emulation is required with pending exception")
-Reported-by: syzbot+cfafed3bb76d3e37581b@syzkaller.appspotmail.com
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220502221850.131873-1-seanjc@google.com>
+Fix it by adjusting the type of the absolute value.
+
+Signed-off-by: Thomas Huth <thuth@redhat.com>
+Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+Message-Id: <20220414103031.565037-1-thuth@redhat.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/vmx/vmx.c | 2 +-
+ tools/testing/selftests/kvm/kvm_page_table_test.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index ef63cfd57029..267d6dc4b818 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -5473,7 +5473,7 @@ static bool vmx_emulation_required_with_pending_exception(struct kvm_vcpu *vcpu)
- 	struct vcpu_vmx *vmx = to_vmx(vcpu);
+diff --git a/tools/testing/selftests/kvm/kvm_page_table_test.c b/tools/testing/selftests/kvm/kvm_page_table_test.c
+index ba1fdc3dcf4a..2c4a7563a4f8 100644
+--- a/tools/testing/selftests/kvm/kvm_page_table_test.c
++++ b/tools/testing/selftests/kvm/kvm_page_table_test.c
+@@ -278,7 +278,7 @@ static struct kvm_vm *pre_init_before_test(enum vm_guest_mode mode, void *arg)
+ 	else
+ 		guest_test_phys_mem = p->phys_offset;
+ #ifdef __s390x__
+-	alignment = max(0x100000, alignment);
++	alignment = max(0x100000UL, alignment);
+ #endif
+ 	guest_test_phys_mem = align_down(guest_test_phys_mem, alignment);
  
- 	return vmx->emulation_required && !vmx->rmode.vm86_active &&
--	       vcpu->arch.exception.pending;
-+	       (vcpu->arch.exception.pending || vcpu->arch.exception.injected);
- }
- 
- static int handle_invalid_guest_state(struct kvm_vcpu *vcpu)
 -- 
 2.35.1
 
