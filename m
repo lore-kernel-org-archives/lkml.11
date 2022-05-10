@@ -2,109 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8905CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 19:13:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5162DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 19:15:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345923AbiEJTNw (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 15:13:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47268 "EHLO
+        id S233704AbiEJTPl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 15:15:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237140AbiEJTNq (ORCPT
+        with ESMTP id S231388AbiEJTPj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 15:13:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E08611D811E
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 12:13:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9FBF2B81ECF
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:13:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13A64C385C2;
-        Tue, 10 May 2022 19:13:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1652210023;
-        bh=u0t/vwSsLdadPi1EI1J7kbn0NOaLNLclvmuuTIEZPgI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=kuJzEOM2WWLGZZO+F65HpaNa6Sd0Zd8F8CPiVCm3wP8ZGqJ4c9ZMdgB1yaBNroIl+
-         6LWc8Sezq8nnZNTW4+QqSX0OqLepkdT3IF0GqRcZ+X8SaV8XKWHwR2wl5Y1qUWKWec
-         DAmHNObFUYjwKZo9pQ906gogwXZhuyTgWd6XW8TY=
-Date:   Tue, 10 May 2022 12:13:42 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     SeongJae Park <sj@kernel.org>
-Cc:     Liam Howlett <liam.howlett@oracle.com>,
-        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "damon@lists.linux.dev" <damon@lists.linux.dev>
-Subject: Re: [PATCH v9 15/69] damon: Convert __damon_va_three_regions to use
- the VMA iterator
-Message-Id: <20220510121342.704d3b415bf4cadb92814ce8@linux-foundation.org>
-In-Reply-To: <20220510104428.152064-1-sj@kernel.org>
-References: <20220504011215.661968-1-Liam.Howlett@oracle.com>
-        <20220510104428.152064-1-sj@kernel.org>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Tue, 10 May 2022 15:15:39 -0400
+Received: from mail-oo1-f41.google.com (mail-oo1-f41.google.com [209.85.161.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCB4B1F1C8E;
+        Tue, 10 May 2022 12:15:38 -0700 (PDT)
+Received: by mail-oo1-f41.google.com with SMTP id s12-20020a4aeacc000000b0035ebb6d1a5fso3680054ooh.3;
+        Tue, 10 May 2022 12:15:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UWdmzVGiWJEQpiXknEZ2ZsL5Gp0ikmaqn7ovyBn/uhI=;
+        b=dEYkytqPyG9RY/DD3l/ReKtLEhi8ug0jH7nsqfKtwvpvF5ftG0H0hnUt0KThXyv5gJ
+         trCryfZvw/qiCRcCiq0kbVfLkd246bDcB/aFsJRf5s5+3K8FcDldscAdAsk+sBHO1YDk
+         b32/BJYbT0ec6c8SyQt/QuszWf9Wgjt1jOvAwSV2HeosKBxJdJIjVh4TmMJmnCc3u8sY
+         2sPyjn9cqU7Z1OEKN2HVG0BArfYkFu6TKX7FOihTCa0k78b+p7+DhAxjfSibsN9S5/5u
+         ZTmv8w2xPdrRqYe5JQaVjVXKqVPwJNYecyDOg2VvnDT9z7MqyyUjbCS6r6Jaxx3aICtW
+         uOAw==
+X-Gm-Message-State: AOAM533eT9xhUMdGrfVOCvlBdIIIhhXmyuRdbaL9s6pusAmkr1SaKKBx
+        Ia18U8qzToLad2Wx/pnCaQ==
+X-Google-Smtp-Source: ABdhPJymEIx0DSq4CwAZWyZqEOyBdFZqggzMouoTPYGQBph+ZmfCLYrx+F2v8IQfSOvMCJIG824wKw==
+X-Received: by 2002:a05:6830:3143:b0:606:4edc:7e86 with SMTP id c3-20020a056830314300b006064edc7e86mr8465081ots.170.1652210137991;
+        Tue, 10 May 2022 12:15:37 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id 3-20020aca1003000000b00325cda1ffa0sm5605817oiq.31.2022.05.10.12.15.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 12:15:37 -0700 (PDT)
+Received: (nullmailer pid 2426705 invoked by uid 1000);
+        Tue, 10 May 2022 19:15:36 -0000
+Date:   Tue, 10 May 2022 14:15:36 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     matthew.gerlach@linux.intel.com
+Cc:     dinguyen@kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org
+Subject: Re: [PATCH v4 1/3] dt-bindings: soc: add bindings for Intel HPS Copy
+ Engine
+Message-ID: <Ynq52E93mcTXcw9H@robh.at.kernel.org>
+References: <20220508142624.491045-1-matthew.gerlach@linux.intel.com>
+ <20220508142624.491045-2-matthew.gerlach@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220508142624.491045-2-matthew.gerlach@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 10 May 2022 10:44:28 +0000 SeongJae Park <sj@kernel.org> wrote:
-
-> On Wed, 4 May 2022 01:12:26 +0000 Liam Howlett <liam.howlett@oracle.com> wrote:
+On Sun, May 08, 2022 at 07:26:22AM -0700, matthew.gerlach@linux.intel.com wrote:
+> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
 > 
-> > From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
-> > 
-> > This rather specialised walk can use the VMA iterator.  If this proves to
-> > be too slow, we can write a custom routine to find the two largest gaps,
-> > but it will be somewhat complicated, so let's see if we need it first.
-> > 
-> > Update the kunit test case to use the maple tree.  This also fixes an
-> > issue with the kunit testcase not adding the last VMA to the list.
-> > 
-> > Fixes: 17ccae8bb5c9 (mm/damon: add kunit tests)
-> > Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
-> > Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-> > Reviewed-by: SeongJae Park <sj@kernel.org>
-> > ---
-> >  mm/damon/vaddr-test.h | 37 +++++++++++-------------------
-> >  mm/damon/vaddr.c      | 53 ++++++++++++++++++++++---------------------
-> >  2 files changed, 40 insertions(+), 50 deletions(-)
-> > 
-> > diff --git a/mm/damon/vaddr-test.h b/mm/damon/vaddr-test.h
-> > index 5431da4fe9d4..dbf2b8759607 100644
-> > --- a/mm/damon/vaddr-test.h
-> > +++ b/mm/damon/vaddr-test.h
-> > @@ -13,34 +13,21 @@
-> >  #define _DAMON_VADDR_TEST_H
-> >  
-> >  #include <kunit/test.h>
-> > +#include "../../mm/internal.h"
+> Add device tree bindings documentation for the Intel Hard
+> Processor System (HPS) Copy Engine.
 > 
-> V9 maple tree patchset has moved the definition of vma_mas_store() from
-> internal.h to mmap.c, so inclusion of internal.h wouldn't needed here, right?
+> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> ---
+> v4:
+>   - move from soc to soc/intel/
 > 
-> If we end up moving the definitions back to internal.h, because this file is
-> under mm/damon/, we can also use shorter include path, "../internal.h".
+> v3:
+>   - remove unused label
+>   - move from misc to soc
+>   - remove 0x from #address-cells/#size-cells values
+>   - change hps_cp_eng@0 to dma-controller@0
+>   - remote inaccurate 'items:' tag
+> ---
+>  .../soc/intel/intel,hps-copy-engine.yaml      | 51 +++++++++++++++++++
+>  1 file changed, 51 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/soc/intel/intel,hps-copy-engine.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/soc/intel/intel,hps-copy-engine.yaml b/Documentation/devicetree/bindings/soc/intel/intel,hps-copy-engine.yaml
+> new file mode 100644
+> index 000000000000..8634865015cd
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/soc/intel/intel,hps-copy-engine.yaml
+> @@ -0,0 +1,51 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +# Copyright (C) 2022, Intel Corporation
+> +%YAML 1.2
+> +---
+> +$id: "http://devicetree.org/schemas/soc/intel/intel,hps-copy-engine.yaml#"
+> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+> +
+> +title: Intel HPS Copy Engine
+> +
+> +maintainers:
+> +  - Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> +
+> +description: |
+> +  The Intel Hard Processor System (HPS) Copy Engine is an IP block used to copy
+> +  a bootable image from host memory to HPS DDR.  Additionally, there is a
+> +  register the HPS can use to indicate the state of booting the copied image as
+> +  well as a keep-a-live indication to the host.
+> +
+> +properties:
+> +  compatible:
+> +    const: intel,hps-copy-engine
+> +
+> +  '#dma-cells':
+> +    const: 1
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    bus@80000000 {
+> +        compatible = "simple-bus";
+> +        reg = <0x80000000 0x60000000>,
+> +              <0xf9000000 0x00100000>;
+> +        reg-names = "axi_h2f", "axi_h2f_lw";
 
-I put the vma_mas_store() and vma_mas_remove() declarations into
-include/linux/mm.h so yes, internal.h is no longer required.  I queued
-a fixlet against
-damon-convert-__damon_va_three_regions-to-use-the-vma-iterator.patch
+A simple-bus doesn't have regs because it is simple. If you have 
+registers, then you need a specific compatible. You can have 
+'simple-bus' as a fallback if the bus is completely setup by firmware 
+and the OS never needs to configure/manage it.
 
+It also looks odd that ranges only has 4K of bus space and the bus 
+registers are 1.5GB of space.
 
---- a/mm/damon/vaddr-test.h~damon-convert-__damon_va_three_regions-to-use-the-vma-iterator-fix
-+++ a/mm/damon/vaddr-test.h
-@@ -13,7 +13,6 @@
- #define _DAMON_VADDR_TEST_H
- 
- #include <kunit/test.h>
--#include "../../mm/internal.h"
- 
- static void __link_vmas(struct maple_tree *mt, struct vm_area_struct *vmas,
- 			ssize_t nr_vmas)
-_
+That's all kind of outside of the scope of this binding and you should 
+just drop that part.
 
+> +        #address-cells = <2>;
+> +        #size-cells = <1>;
+> +        ranges = <0x00000000 0x00000000 0xf9000000 0x00001000>;
+> +
+> +        dma-controller@0 {
+> +            compatible = "intel,hps-copy-engine";
+> +            reg = <0x00000000 0x00000000 0x00001000>;
+> +            #dma-cells = <1>;
+> +        };
+> +    };
+> -- 
+> 2.25.1
+> 
+> 
