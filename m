@@ -2,100 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53B08C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 02:21:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 946FAC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 02:23:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234582AbiEJCZX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 22:25:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39546 "EHLO
+        id S234615AbiEJC1f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 22:27:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231676AbiEJCZU (ORCPT
+        with ESMTP id S231676AbiEJC13 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 22:25:20 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D94BC590BB
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 19:21:24 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Ky1x33jL3zhYym;
-        Tue, 10 May 2022 10:20:55 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 10 May 2022 10:21:21 +0800
-Subject: Re: [PATCH 09/15] mm/swap: avoid calling swp_swap_info when try to
- check SWP_STABLE_WRITES
-To:     NeilBrown <neilb@suse.de>
-CC:     <akpm@linux-foundation.org>, <willy@infradead.org>,
-        <vbabka@suse.cz>, <dhowells@redhat.com>, <apopple@nvidia.com>,
-        <david@redhat.com>, <surenb@google.com>, <peterx@redhat.com>,
-        <naoya.horiguchi@nec.com>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220509131416.17553-1-linmiaohe@huawei.com>
- <20220509131416.17553-10-linmiaohe@huawei.com>
- <165214248406.14782.6536817483979050668@noble.neil.brown.name>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <d674bc33-fcf2-ebc1-b252-1e7232b3bd1c@huawei.com>
-Date:   Tue, 10 May 2022 10:21:21 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Mon, 9 May 2022 22:27:29 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EBEA17EC33;
+        Mon,  9 May 2022 19:23:33 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id i17so15525523pla.10;
+        Mon, 09 May 2022 19:23:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=6/agFKZVEdVDsrXQEEfaXW6kYgW1c8TH8P87O2R+AuI=;
+        b=mG9g2mMstF8Cm/8Ole2BQDDCAn/yBDrtFtfPrKm4u+9rkbufL9pK5fRbsf6eBYZzI3
+         +kbCSyTF7wPsoB4WwC1H8/dXvNdUoHMBisTI1lOXAn/cFp3WlaaC7pj+f4EswXey+rdi
+         8/MKrRaMLc5TmRnWvqT3Bm/nwaIUrY6FuL60MYSsLycLVXSRwBI9wWoz7pE3Z4o9UrXR
+         UylW7JhbxB7Bhko8uwYEfdhuejwrbAeKMtOOt0xSXWUmECbFcejZp+Q0+WRUQOFNElYf
+         CrL+pGY7FaE2ctaNDcqEWicnzByj1PpKlhN/YAjrStFDAOtywnDpD2x06mzAYO+MhWrH
+         n7/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6/agFKZVEdVDsrXQEEfaXW6kYgW1c8TH8P87O2R+AuI=;
+        b=R0gG3tR0CcQk9a7uCku7nE0YIckDO/UjpUCzZUB5cD4IIXVql3udL277kV4Pg8LXn2
+         pyIuxImM2vQvV0M9f2L4ODmsPyKMfBD50oMdufv6MQ+lXcazSlDbyHYI1RO7XBgEXeQc
+         F7Bh9siTClTKEMZIxkAo/+jN9V90TcyLGw37liTvIa12OPFQMes3cXigvTQO8NXiE/cM
+         oaMgCcPLBSvJCCocpBimOnHtmqCbtUHqIgHFWjUwuMa18A32eZmmS2ItV8fhLoD4FAki
+         1H5fe3Noz/CQZbEnK7vkszLtBZCMWPbpd9PcAHSXAeGm9HnCGM470b6qqHFjES5gWcMW
+         PcRA==
+X-Gm-Message-State: AOAM531UIPJ62BNZ9kDIvgrzvhTfPNbewv28N3oIqoIFt3bUnRHwZYNB
+        6xvnESl2h4LeexKva/GUmuY=
+X-Google-Smtp-Source: ABdhPJzYcvj9/KVB+ZVKxAPPK6e99ItRz2VlkXR1gDQExEfNPTMYalzk9Np8fZOiwVxmDZEAbNWoug==
+X-Received: by 2002:a17:90b:3d0:b0:1d9:52e1:de86 with SMTP id go16-20020a17090b03d000b001d952e1de86mr28829581pjb.73.1652149412660;
+        Mon, 09 May 2022 19:23:32 -0700 (PDT)
+Received: from localhost ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id p67-20020a622946000000b0050dc7628150sm9305952pfp.42.2022.05.09.19.23.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 May 2022 19:23:31 -0700 (PDT)
+Message-ID: <6279cca3.1c69fb81.c4e50.581d@mx.google.com>
+X-Google-Original-Message-ID: <20220510022329.GA1278331@cgel.zte@gmail.com>
+Date:   Tue, 10 May 2022 02:23:29 +0000
+From:   CGEL <cgel.zte@gmail.com>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     akpm@linux-foundation.org, keescook@chromium.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, ran.xiaokai@zte.com.cn, wang.yong12@zte.com.cn,
+        xu.xin16@zte.com.cn, yang.yang29@zte.com.cn,
+        zhang.yunkai@zte.com.cn
+Subject: Re: [PATCH v5] mm/ksm: introduce ksm_force for each process
+References: <20220507105926.d4423601230f698b0f5228d1@linux-foundation.org>
+ <20220508092710.930126-1-xu.xin16@zte.com.cn>
+ <YngF+Lz01noCKRFc@casper.infradead.org>
+ <6278bb5f.1c69fb81.e623f.215f@mx.google.com>
+ <Ynk2AsCEl1fk/WaS@casper.infradead.org>
 MIME-Version: 1.0
-In-Reply-To: <165214248406.14782.6536817483979050668@noble.neil.brown.name>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ynk2AsCEl1fk/WaS@casper.infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/10 8:28, NeilBrown wrote:
-> On Mon, 09 May 2022, Miaohe Lin wrote:
->> Use flags of si directly to check SWP_STABLE_WRITES to avoid possible
->> READ_ONCE and thus save some cpu cycles.
->>
->> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
->> ---
->>  mm/memory.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/mm/memory.c b/mm/memory.c
->> index 9c3e7e6ac202..89dd15504f3d 100644
->> --- a/mm/memory.c
->> +++ b/mm/memory.c
->> @@ -3892,7 +3892,7 @@ vm_fault_t do_swap_page(struct vm_fault *vmf)
->>  			 */
->>  			exclusive = true;
->>  		} else if (exclusive && PageWriteback(page) &&
->> -			  (swp_swap_info(entry)->flags & SWP_STABLE_WRITES)) {
->> +			  (si->flags & SWP_STABLE_WRITES)) {
+On Mon, May 09, 2022 at 04:40:50PM +0100, Matthew Wilcox wrote:
+> On Mon, May 09, 2022 at 06:57:33AM +0000, CGEL wrote:
+> > On Sun, May 08, 2022 at 07:03:36PM +0100, Matthew Wilcox wrote:
+> > > On Sun, May 08, 2022 at 09:27:10AM +0000, cgel.zte@gmail.com wrote:
+> > > > If ksm_force is set to 0, cancel the feature of ksm_force of this
+> > > > process and unmerge those merged pages belonging to VMAs which is not
+> > > > madvised as MADV_MERGEABLE of this process, but leave MADV_MERGEABLE
+> > > > areas merged.
+> > > 
+> > > Is that actually a useful feature?  Otherwise, we could simply turn
+> > > on/off the existing MMF_VM_MERGEABLE flag instead of introducing this
+> > > new bool.
+> > > 
+> > I think this will be very useful for those apps which are very likely to
+> > cause Same Pages in memory and users and operators are not willing to
+> > modified the source codes for any reasons.
 > 
-> Should this have a data_race() annotation.  Other bit-tests of si->flags
-> do because scan_swap_map_slots can update it asynchronously, but we know
-> that won't matter in practice.
-
-Yes, you're right. scan_swap_map_slots can update si->flags asynchronously while
-do_swap_page tests SWP_STABLE_WRITES here. We know this is harmless because
-SWP_STABLE_WRITES is only changed at swapon/swapoff.
-
-Will add data_race() annotation in next version to avoid possible KCSAN data-race complaint.
-
-Many thanks for pointing this out! :)
-
+> No, you misunderstand.  Is it useful to have the "force KSM off"
+> functionality?  ie code which has been modified to allow KSM, but
+> then overridden by an admin?
 > 
-> Thanks,
-> NeilBrown
-> 
-> 
->>  			/*
->>  			 * This is tricky: not all swap backends support
->>  			 * concurrent page modifications while under writeback.
->> -- 
->> 2.23.0
->>
->>
-> .
-> 
+Oh, I see what you mean. It should be mentioned that "force KSM off" is not
+implemented for the current patch. In this patch, setting ksm_force to 0 just
+restores the system to the default state (the state before patching)
 
+> > Besides, simply turning of/off the existing MMF_VM_MERGEABLE flag may be
+> > not feasible because madvise will also turn on the MMF_VM_MERGEABLE
+> > flag.
+> > 
+> > I think the following suggestions is good, and I will resend a patch.
+> > > > +Controlling KSM with procfs
+> > > > +===========================
+> > > > +
+> > > > +KSM can also operate on anonymous areas of address space of those processes's
+> > > > +knob ``/proc/<pid>/ksm_force`` is on, even if app codes doesn't call madvise()
+> > > > +explicitly to advise specific areas as MADV_MERGEABLE.
+> > > > +
+> > > > +You can set ksm_force to 1 to force all anonymous and qualified VMAs of
+> > > > +this process to be involved in KSM scanning. But It is effective only when the
+> > > > +klob of ``/sys/kernel/mm/ksm/run`` is set as 1.
+> > > 
+> > > I think that last sentence doesn't really add any value.
+> > > 
+> > > > +	memset(buffer, 0, sizeof(buffer));
+> > > > +	if (count > sizeof(buffer) - 1)
+> > > > +		count = sizeof(buffer) - 1;
+> > > > +	if (copy_from_user(buffer, buf, count)) {
+> > > > +		err = -EFAULT;
+> > > > +		goto out_return;
+> > > 
+> > > This feels a bit unnecessary.  Just 'return -EFAULT' here.
+> > > 
+> > > > +	}
+> > > > +
+> > > > +	err = kstrtoint(strstrip(buffer), 0, &force);
+> > > > +
+> > > > +	if (err)
+> > > > +		goto out_return;
+> > > 
+> > > 'return err'
+> > > 
+> > > > +	if (force != 0 && force != 1) {
+> > > > +		err = -EINVAL;
+> > > > +		goto out_return;
+> > > 
+> > > 'return -EINVAL'
+> > > 
+> > > > +	}
+> > > > +
+> > > > +	task = get_proc_task(file_inode(file));
+> > > > +	if (!task) {
+> > > > +		err = -ESRCH;
+> > > > +		goto out_return;
+> > > 
+> > > 'return -ESRCH'
