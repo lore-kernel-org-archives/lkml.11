@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E2F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:46:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF2A9C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:46:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346395AbiEJPua (ORCPT
+        id S1346419AbiEJPum (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:50:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60556 "EHLO
+        Tue, 10 May 2022 11:50:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346253AbiEJPsq (ORCPT
+        with ESMTP id S1346183AbiEJPuV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:48:46 -0400
+        Tue, 10 May 2022 11:50:21 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4592281341;
-        Tue, 10 May 2022 08:44:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8634285AE5;
+        Tue, 10 May 2022 08:44:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 41B866142F;
-        Tue, 10 May 2022 15:44:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFEB8C385CA;
-        Tue, 10 May 2022 15:44:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E9B0561414;
+        Tue, 10 May 2022 15:44:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C95FC385CD;
+        Tue, 10 May 2022 15:44:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652197468;
-        bh=21bwpjNudExl89E+GWay/earnO1hhomI8Dv+7vwzFGE=;
+        s=k20201202; t=1652197482;
+        bh=neXHOKi229Sgtbs4jWuGm4TMYdxq/uhV/QYN2mcwRGQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sqpvUS8ZgmHhDeo0KFl0Nkrv41ZmRy2f4Gvezhty9ov9qd4cbBshyOjn1JugpF90R
-         /Q6dnOwktw7rHOMoSADOW1HQSVN/29Yasb9BcL0bvavjyhgG/8BjRyItSoFOkY3AUM
-         lzEtHdFvhNySKf5Ku7mvMzsJJjQwHcXsgt+/ZAQnMg+ct29eZEJn2l9pvcD7m40c8M
-         qWmNfMb21M6PjUb9vbjq4sm7cwOvvkqHkfcER7JdnJoCYI3npaCymLPDIkxh+udnRy
-         bblDgOAo3ghINMD+vgHreEDq6Lik8sUTf88ab7lwagq1VS/lzaJ5Xr897GIT5dDC5Z
-         D/Nt6aSSQlPzw==
+        b=VU2fhX5Qvcij68RJIvRK2OVe+qgXcGXLVt/9Ct6KcEyO22MQ8htaaKLtQv5HCljEE
+         DQEpwUTM0QdZh2qTETO9S1PFPen7Jn7LO/2UdpgUMLjl06dyxjR2ObxMtRp9xh/cHQ
+         YXwWsyhDtJSBLpx2kcwuRpPk7c1A06Mk7VxlaEiFeNDIeS3HiZQc/K0x2cpPGCuvs1
+         m4gkk8wcH1osrx+Wy66bdiQ1SuGimJNxrCCDv5RW0QE+VAWmosQM6I7lyd8X6kgpka
+         FIxvXcWT88+tuIj5nxw0Ku9eZwCOoCZTeVLaaTKWO4W4qu2ZbDrKhwSNg5gQEta4nW
+         LrVwYeF/rV62g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
-        James.Bottomley@HansenPartnership.com, dave.anglin@bell.net,
-        linux-parisc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 21/21] Revert "parisc: Fix patch code locking and flushing"
-Date:   Tue, 10 May 2022 11:43:40 -0400
-Message-Id: <20220510154340.153400-21-sashal@kernel.org>
+Cc:     Mark Brown <broonie@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.15 06/19] ASoC: ops: Validate input values in snd_soc_put_volsw_range()
+Date:   Tue, 10 May 2022 11:44:16 -0400
+Message-Id: <20220510154429.153677-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220510154340.153400-1-sashal@kernel.org>
-References: <20220510154340.153400-1-sashal@kernel.org>
+In-Reply-To: <20220510154429.153677-1-sashal@kernel.org>
+References: <20220510154429.153677-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,86 +52,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit 6c800d7f55fcd78e17deae5ae4374d8e73482c13 ]
+[ Upstream commit aa22125c57f9e577f0a667e4fa07fc3fa8ca1e60 ]
 
-This reverts commit a9fe7fa7d874a536e0540469f314772c054a0323.
+Check that values written via snd_soc_put_volsw_range() are
+within the range advertised by the control, ensuring that we
+don't write out of spec values to the hardware.
 
-Leads to segfaults on 32bit kernel.
-
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220423131239.3375261-1-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/parisc/kernel/patch.c | 25 ++++++++++++++-----------
- 1 file changed, 14 insertions(+), 11 deletions(-)
+ sound/soc/soc-ops.c | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
 
-diff --git a/arch/parisc/kernel/patch.c b/arch/parisc/kernel/patch.c
-index e59574f65e64..80a0ab372802 100644
---- a/arch/parisc/kernel/patch.c
-+++ b/arch/parisc/kernel/patch.c
-@@ -40,7 +40,10 @@ static void __kprobes *patch_map(void *addr, int fixmap, unsigned long *flags,
+diff --git a/sound/soc/soc-ops.c b/sound/soc/soc-ops.c
+index ee3782ecd7e3..bd88e56cacac 100644
+--- a/sound/soc/soc-ops.c
++++ b/sound/soc/soc-ops.c
+@@ -519,7 +519,15 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
+ 	unsigned int mask = (1 << fls(max)) - 1;
+ 	unsigned int invert = mc->invert;
+ 	unsigned int val, val_mask;
+-	int err, ret;
++	int err, ret, tmp;
++
++	tmp = ucontrol->value.integer.value[0];
++	if (tmp < 0)
++		return -EINVAL;
++	if (mc->platform_max && tmp > mc->platform_max)
++		return -EINVAL;
++	if (tmp > mc->max - mc->min + 1)
++		return -EINVAL;
  
- 	*need_unmap = 1;
- 	set_fixmap(fixmap, page_to_phys(page));
--	raw_spin_lock_irqsave(&patch_lock, *flags);
-+	if (flags)
-+		raw_spin_lock_irqsave(&patch_lock, *flags);
-+	else
-+		__acquire(&patch_lock);
+ 	if (invert)
+ 		val = (max - ucontrol->value.integer.value[0]) & mask;
+@@ -534,6 +542,14 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
+ 	ret = err;
  
- 	return (void *) (__fix_to_virt(fixmap) + (uintaddr & ~PAGE_MASK));
- }
-@@ -49,7 +52,10 @@ static void __kprobes patch_unmap(int fixmap, unsigned long *flags)
- {
- 	clear_fixmap(fixmap);
- 
--	raw_spin_unlock_irqrestore(&patch_lock, *flags);
-+	if (flags)
-+		raw_spin_unlock_irqrestore(&patch_lock, *flags);
-+	else
-+		__release(&patch_lock);
- }
- 
- void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
-@@ -61,9 +67,8 @@ void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
- 	int mapped;
- 
- 	/* Make sure we don't have any aliases in cache */
--	flush_kernel_dcache_range_asm(start, end);
--	flush_kernel_icache_range_asm(start, end);
--	flush_tlb_kernel_range(start, end);
-+	flush_kernel_vmap_range(addr, len);
-+	flush_icache_range(start, end);
- 
- 	p = fixmap = patch_map(addr, FIX_TEXT_POKE0, &flags, &mapped);
- 
-@@ -76,10 +81,8 @@ void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
- 			 * We're crossing a page boundary, so
- 			 * need to remap
- 			 */
--			flush_kernel_dcache_range_asm((unsigned long)fixmap,
--						      (unsigned long)p);
--			flush_tlb_kernel_range((unsigned long)fixmap,
--					       (unsigned long)p);
-+			flush_kernel_vmap_range((void *)fixmap,
-+						(p-fixmap) * sizeof(*p));
- 			if (mapped)
- 				patch_unmap(FIX_TEXT_POKE0, &flags);
- 			p = fixmap = patch_map(addr, FIX_TEXT_POKE0, &flags,
-@@ -87,10 +90,10 @@ void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
- 		}
- 	}
- 
--	flush_kernel_dcache_range_asm((unsigned long)fixmap, (unsigned long)p);
--	flush_tlb_kernel_range((unsigned long)fixmap, (unsigned long)p);
-+	flush_kernel_vmap_range((void *)fixmap, (p-fixmap) * sizeof(*p));
- 	if (mapped)
- 		patch_unmap(FIX_TEXT_POKE0, &flags);
-+	flush_icache_range(start, end);
- }
- 
- void __kprobes __patch_text(void *addr, u32 insn)
+ 	if (snd_soc_volsw_is_stereo(mc)) {
++		tmp = ucontrol->value.integer.value[1];
++		if (tmp < 0)
++			return -EINVAL;
++		if (mc->platform_max && tmp > mc->platform_max)
++			return -EINVAL;
++		if (tmp > mc->max - mc->min + 1)
++			return -EINVAL;
++
+ 		if (invert)
+ 			val = (max - ucontrol->value.integer.value[1]) & mask;
+ 		else
 -- 
 2.35.1
 
