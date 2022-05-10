@@ -2,182 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD445C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 08:11:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1D5BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 08:12:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237897AbiEJIPl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 04:15:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59546 "EHLO
+        id S237907AbiEJIQe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 04:16:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229737AbiEJIPh (ORCPT
+        with ESMTP id S232974AbiEJIQc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 04:15:37 -0400
-Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDC248AE43;
-        Tue, 10 May 2022 01:11:39 -0700 (PDT)
-Received: by mail-qk1-f171.google.com with SMTP id 185so3209750qke.7;
-        Tue, 10 May 2022 01:11:39 -0700 (PDT)
+        Tue, 10 May 2022 04:16:32 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD0E712B025
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 01:12:34 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id j10-20020a17090a94ca00b001dd2131159aso1448362pjw.0
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 01:12:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=GgyywbUmtILgp/wvvcsqELPk8sbdswIe5sEtYfMivvE=;
+        b=rNbeIahNNjFADBiapx76jRbHbwNwPqBjvbS/yGH4r1iAKLOzpPaEC9ZDc8hkixik73
+         P5uD0eZRQv8jWs5/sV+8UV3bidqToM98pKnpRIuUkYOfhfstIwTJoPBxA/uz2PdvEQ9I
+         K/m0YsAXA7u2zeUHjBxT7KL5oi8XIhwNZDjqLOxOEEC1GmumbHrC0W6UmwAJ5Nq6F40H
+         ZneAzcK3oab6uJyxJMXx4u1MPuEDb9svPJ0VmuW/xJ2DAjoofz7pBDNWSY6YvAdglEAt
+         GYPDfTst6IAi1aUPvylXif9IxulGpqXGh7TuOP3YdX/TJEfrA/GDsOodVmyIoqrMEjBt
+         kBOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uhALeu7x2VWkulby+gfNBCQt8rp7fFwVaYXJL9pXNm0=;
-        b=wt8wMIuDjMB7gU1zffk+qKhq0Dqu47nN9ruZfJH6BOtlakLsn53tgFWt6WpKUfmyT2
-         pP9xrpknGd6Fk1G7X7QElv432Y/hrQKnycimP25w1rhkbGtHZjADI0kEKr7SIToCiPqQ
-         b1APwc75I5AmheWD18cV5+Anm8mSMKC0WDdHdGjNmdyXJzqZx28LGC4X+jEtBG1J89OX
-         hy5ZimmHZkXJ21sJbU2tfVS6IxmiuOxqEV5nztq2Ph2PEISLxUiXNxIiX9i18DutzopO
-         YZ6Zp+OssF3g0R+V6J4TWAmxnyKpC2eQVOqCL8dLS0nTan0f9rFGrwAGW5YodQbZrnrE
-         mmLw==
-X-Gm-Message-State: AOAM532TsZlmcPDS/+Df5YjrIis1QEtDUeHh0HNIgT2wJ7khh6hoeItD
-        CK0i6/0xB2flwX1TiP9VUJsHT/8L66ejqg==
-X-Google-Smtp-Source: ABdhPJyS1rN8w/pK5oYsNJ6Y32WLozIy/jd1LWLGWxbsG0kF0+/qV/kpaiavv8RSFj85offI9wB71g==
-X-Received: by 2002:a05:620a:210e:b0:69f:9d3e:3ced with SMTP id l14-20020a05620a210e00b0069f9d3e3cedmr13925529qkl.536.1652170298850;
-        Tue, 10 May 2022 01:11:38 -0700 (PDT)
-Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com. [209.85.128.180])
-        by smtp.gmail.com with ESMTPSA id 191-20020a3705c8000000b0069fc13ce204sm8319786qkf.53.2022.05.10.01.11.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 May 2022 01:11:37 -0700 (PDT)
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-2f7d621d1caso170537987b3.11;
-        Tue, 10 May 2022 01:11:37 -0700 (PDT)
-X-Received: by 2002:a81:913:0:b0:2f7:c833:f304 with SMTP id
- 19-20020a810913000000b002f7c833f304mr18325160ywj.283.1652170296892; Tue, 10
- May 2022 01:11:36 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=GgyywbUmtILgp/wvvcsqELPk8sbdswIe5sEtYfMivvE=;
+        b=5SlWiLcuOb1Jc8lkOcCaOJNYh0yjq/VPv2Z+MwcCJBag/gSDj3i+XJC84hwMNUTv53
+         Rjean8p8spYRoCYRoouA9Scl3wFxz1AFAabpref1VQ6MSIf7QxnELrW1WvcxPzky5GYY
+         3UgQORqfqTsK0qF8fUckCRnyQP3nHWBWzVK6f+II1rMGKiOG1GvNZIq4Jrnp6xE8M/j5
+         PAasdAPNMllxi819Q7RmFyNEwyxy5wYHYdanbeOnlzXVRqxCHApCV4uGwX+UcykwfSFI
+         ahBoUiixS/9/u5WbXohV1qtwGWP41esfvATFrMkIUn+Z1VPhntrt6EA7ZRfEGwF7u/aW
+         w+nQ==
+X-Gm-Message-State: AOAM530KSVSSqVfQLOPm1KBuXv+YcmkTJmmk+X/o4g0tlMCFdeejqlnL
+        HHaaZ+inyu+sWJ7ECPk6iIlS1Q==
+X-Google-Smtp-Source: ABdhPJwcv12Soh8pLojrYlMpwtpxb8N7+SLb4GnvbtYHqs/lqRSoCcmiAtufKplJ/GKYTHrtAaj0QA==
+X-Received: by 2002:a17:903:410b:b0:15c:fd57:aa34 with SMTP id r11-20020a170903410b00b0015cfd57aa34mr19368857pld.82.1652170354409;
+        Tue, 10 May 2022 01:12:34 -0700 (PDT)
+Received: from localhost ([122.162.234.2])
+        by smtp.gmail.com with ESMTPSA id b15-20020a056a0002cf00b0050dc762814dsm10011525pft.39.2022.05.10.01.12.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 01:12:33 -0700 (PDT)
+Date:   Tue, 10 May 2022 13:42:32 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Wan Jiabing <wanjiabing@vivo.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        "Andrew-sh.Cheng" <andrew-sh.cheng@mediatek.com>,
+        Jia-Wei Chang <jia-wei.chang@mediatek.com>,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH] cpufreq: mediatek: Fix potential deadlock problem in
+ mtk_cpufreq_set_target
+Message-ID: <20220510081232.4u25qgryszzqblho@vireshk-i7>
+References: <20220510080136.11950-1-wanjiabing@vivo.com>
 MIME-Version: 1.0
-References: <20220509050953.11005-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220509050953.11005-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <OS0PR01MB5922B58BB70B92813041745786C69@OS0PR01MB5922.jpnprd01.prod.outlook.com>
- <CAMuHMdVuLq1Q2KB7gFQ5MsQmyUTv4yuu-GUBVn_xGwKhUwYQZg@mail.gmail.com> <CA+V-a8uG8qzzWj+=6EhzSd5j8NC3bpf=9tU9jgxzK8Cg75BTtw@mail.gmail.com>
-In-Reply-To: <CA+V-a8uG8qzzWj+=6EhzSd5j8NC3bpf=9tU9jgxzK8Cg75BTtw@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 10 May 2022 10:11:25 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdU+WprHzht+daRpvF_mYe+b8SoCYhN_F=DhBgn55cAH9Q@mail.gmail.com>
-Message-ID: <CAMuHMdU+WprHzht+daRpvF_mYe+b8SoCYhN_F=DhBgn55cAH9Q@mail.gmail.com>
-Subject: Re: [PATCH v2 2/5] irqchip: Add RZ/G2L IA55 Interrupt Controller driver
-To:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220510080136.11950-1-wanjiabing@vivo.com>
+User-Agent: NeoMutt/20180716-391-311a52
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Prabhakar,
+On 10-05-22, 16:01, Wan Jiabing wrote:
+> Fix following coccichek error:
+> ./drivers/cpufreq/mediatek-cpufreq.c:199:2-8: preceding lock on line
+> ./drivers/cpufreq/mediatek-cpufreq.c:208:2-8: preceding lock on line
+> 
+> mutex_lock is acquired but not released before return.
+> Use 'goto out' to help releasing the mutex_lock.
+> 
+> Fixes: c210063b40ac ("cupful: mediatek: Add opp notification support")
 
-On Mon, May 9, 2022 at 9:24 PM Lad, Prabhakar
-<prabhakar.csengg@gmail.com> wrote:
-> On Mon, May 9, 2022 at 10:10 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > On Mon, May 9, 2022 at 9:22 AM Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> > > > Subject: [PATCH v2 2/5] irqchip: Add RZ/G2L IA55 Interrupt Controller
-> > > > driver
-> > > >
-> > > > Add a driver for the Renesas RZ/G2L Interrupt Controller.
-> > > >
-> > > > This supports external pins being used as interrupts. It supports one line
-> > > > for NMI, 8 external pins and 32 GPIO pins (out of 123) to be used as IRQ
-> > > > lines.
-> > > >
-> > > > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> >
-> > > > --- /dev/null
-> > > > +++ b/drivers/irqchip/irq-renesas-rzg2l.c
-> >
-> > > > +static void rzg2l_irqc_irq_disable(struct irq_data *d) {
-> > > > +     unsigned int hw_irq = irqd_to_hwirq(d);
-> > > > +
-> > > > +     if (hw_irq >= IRQC_TINT_START && hw_irq <= IRQC_TINT_COUNT) {
-> > > > +             struct rzg2l_irqc_priv *priv = irq_data_to_priv(d);
-> > > > +             u32 offset = hw_irq - IRQC_TINT_START;
-> > > > +             u32 tssr_offset = TSSR_OFFSET(offset);
-> > > > +             u8 tssr_index = TSSR_INDEX(offset);
-> > > > +             u32 reg;
-> > > > +
-> > > > +             raw_spin_lock(&priv->lock);
-> > > > +             reg = readl_relaxed(priv->base + TSSR(tssr_index));
-> > > > +             reg &= ~(TSSEL_MASK << tssr_offset);
-> > > > +             writel_relaxed(reg, priv->base + TSSR(tssr_index));
-> > > > +             raw_spin_unlock(&priv->lock);
-> > > > +     }
-> > > > +     irq_chip_disable_parent(d);
-> > > > +}
-> >
-> > > > +static int rzg2l_tint_set_edge(struct irq_data *d, unsigned int type) {
-> > > > +     struct rzg2l_irqc_priv *priv = irq_data_to_priv(d);
-> > > > +     unsigned int hwirq = irqd_to_hwirq(d);
-> > > > +     u32 titseln = hwirq - IRQC_TINT_START;
-> > > > +     u32 offset;
-> > > > +     u8 sense;
-> > > > +     u32 reg;
-> > > > +
-> > > > +     switch (type & IRQ_TYPE_SENSE_MASK) {
-> > > > +     case IRQ_TYPE_EDGE_RISING:
-> > > > +             sense = TITSR_TITSEL_EDGE_RISING;
-> > > > +             break;
-> > > > +
-> > > > +     case IRQ_TYPE_EDGE_FALLING:
-> > > > +             sense = TITSR_TITSEL_EDGE_FALLING;
-> > > > +             break;
-> > > > +
-> > > > +     default:
-> > > > +             return -EINVAL;
-> > > > +     }
-> > > > +
-> > >
-> > > > +     if (titseln < TITSR0_MAX_INT) {
-> > > > +             offset = TITSR0;
-> > > > +     } else {
-> > > > +             titseln /= TITSEL_WIDTH;
-> > > > +             offset  = TITSR1;
-> > > > +     }
-> > >
-> > > as TITSR0 (0x24) and TITSR1(0x28) are contiguous address location
-> > >
-> > > May be like others, above declare it as
-> > > u32 offset = TITSR0; ??
-> > >
-> > > and here
-> > >  if ((titseln >= TITSR0_MAX_INT) {
-> > >         titseln /= TITSEL_WIDTH;
-> > >         offset  += 4;
-> > >  }
-> >
-> > Why "titseln /= TITSEL_WIDTH"?
-> > Shouldn't that be "titseln -= TITSR0_MAX_INT"?
->
-> Ouch, that should be "titseln -= TITSR0_MAX_INT".
->
-> > Do I need more coffee?
-> >
-> > Can't you define TITSR_{OFFSET,INDEX}() helper macros, like for
-> > TSSR above?
-> >
-> you mean a macro to get the TITSELx offset?
+cupful ??
 
-Either a macro, or an open-coded calculation (if you need it in only
-one place).
+> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+> ---
+>  drivers/cpufreq/mediatek-cpufreq.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/cpufreq/mediatek-cpufreq.c b/drivers/cpufreq/mediatek-cpufreq.c
+> index 75bf21ddf61f..4c6d53c99d79 100644
+> --- a/drivers/cpufreq/mediatek-cpufreq.c
+> +++ b/drivers/cpufreq/mediatek-cpufreq.c
+> @@ -196,7 +196,8 @@ static int mtk_cpufreq_set_target(struct cpufreq_policy *policy,
+>  
+>  	if (pre_vproc < 0) {
+>  		dev_err(cpu_dev, "invalid Vproc value: %d\n", pre_vproc);
+> -		return pre_vproc;
+> +		ret = pre_vproc;
+> +		goto out;
+>  	}
+>  
+>  	freq_hz = freq_table[index].frequency * 1000;
+> @@ -205,7 +206,8 @@ static int mtk_cpufreq_set_target(struct cpufreq_policy *policy,
+>  	if (IS_ERR(opp)) {
+>  		dev_err(cpu_dev, "cpu%d: failed to find OPP for %ld\n",
+>  			policy->cpu, freq_hz);
+> -		return PTR_ERR(opp);
+> +		ret = PTR_ERR(opp);
+> +		goto out;
+>  	}
+>  	vproc = dev_pm_opp_get_voltage(opp);
+>  	dev_pm_opp_put(opp);
+> -- 
+> 2.35.1
 
-As TITSR0 and TITSR1 are stored contiguous, you can easily
-derive offset/shift from irq index.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+-- 
+viresh
