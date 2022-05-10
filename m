@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02D7CC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:04:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5D62C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:04:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344089AbiEJOH3 (ORCPT
+        id S1343948AbiEJOHW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:07:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57554 "EHLO
+        Tue, 10 May 2022 10:07:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244235AbiEJNph (ORCPT
+        with ESMTP id S244029AbiEJNpA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:45:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CBC6F137A;
-        Tue, 10 May 2022 06:31:19 -0700 (PDT)
+        Tue, 10 May 2022 09:45:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C353D101141;
+        Tue, 10 May 2022 06:31:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C893CB81DB1;
-        Tue, 10 May 2022 13:31:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30541C385C2;
-        Tue, 10 May 2022 13:31:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DC258B81DB2;
+        Tue, 10 May 2022 13:31:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C0D2C385A6;
+        Tue, 10 May 2022 13:31:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189476;
-        bh=Jc1hw+gqix56pSd24P6pHffkRwHVTZeWougTj51oJt0=;
+        s=korg; t=1652189464;
+        bh=KZUPbZ2/lAnhpPz4LDVUkyit7YrbW8ZuGD+hJrBPgNA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k4dy3gd6zvnXd04A7g+l5w002Ta2+b7mFPpTRK3ZOHQEVBZNaNnaF6LRfGlYjhs+o
-         9R/C1oc4SDcfFOlOOyolW8n/at4eIfEBo8v6TpCbiWuF14N25AhJBScFbAmnEoBfk6
-         AvvfKyyWH4NX34QzaHbdYOc0rElMe8MJzLHSSPm0=
+        b=StmMmUaEj35i7OK4wveW+9rr/Ubziv31qADvGU6FiKQCKuk0+hTc/4iIG22Um/cU+
+         eEuh32aGAlufIA0+5EDvpY77PEiYOo5rd3aUL05LYYras1so9tDIW5zc1foZ2uYVUY
+         v6LoeQ9ARUty4ZRRrqDaMpD+E5fHOt3N3E3ogCt8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 063/135] net: stmmac: dwmac-sun8i: add missing of_node_put() in sun8i_dwmac_register_mdio_mux()
-Date:   Tue, 10 May 2022 15:07:25 +0200
-Message-Id: <20220510130742.215168169@linuxfoundation.org>
+        stable@vger.kernel.org, Mustafa Ismail <mustafa.ismail@intel.com>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 5.15 059/135] RDMA/irdma: Fix possible crash due to NULL netdev in notifier
+Date:   Tue, 10 May 2022 15:07:21 +0200
+Message-Id: <20220510130742.100969677@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -50,31 +50,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Mustafa Ismail <mustafa.ismail@intel.com>
 
-commit 1a15267b7be77e0792cf0c7b36ca65c8eb2df0d8 upstream.
+commit 1c9043ae0667a43bd87beeebbdd4bed674713629 upstream.
 
-The node pointer returned by of_get_child_by_name() with refcount incremented,
-so add of_node_put() after using it.
+For some net events in irdma_net_event notifier, the netdev can be NULL
+which will cause a crash in rdma_vlan_dev_real_dev.  Fix this by moving
+all processing to the NETEVENT_NEIGH_UPDATE case where the netdev is
+guaranteed to not be NULL.
 
-Fixes: 634db83b8265 ("net: stmmac: dwmac-sun8i: Handle integrated/external MDIOs")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220428095716.540452-1-yangyingliang@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 6702bc147448 ("RDMA/irdma: Fix netdev notifications for vlan's")
+Link: https://lore.kernel.org/r/20220425181703.1634-4-shiraz.saleem@intel.com
+Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
+Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/infiniband/hw/irdma/utils.c |   21 +++++++++------------
+ 1 file changed, 9 insertions(+), 12 deletions(-)
 
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-@@ -916,6 +916,7 @@ static int sun8i_dwmac_register_mdio_mux
+--- a/drivers/infiniband/hw/irdma/utils.c
++++ b/drivers/infiniband/hw/irdma/utils.c
+@@ -258,18 +258,16 @@ int irdma_net_event(struct notifier_bloc
+ 	u32 local_ipaddr[4] = {};
+ 	bool ipv4 = true;
  
- 	ret = mdio_mux_init(priv->device, mdio_mux, mdio_mux_syscon_switch_fn,
- 			    &gmac->mux_handle, priv, priv->mii);
-+	of_node_put(mdio_mux);
- 	return ret;
+-	real_dev = rdma_vlan_dev_real_dev(netdev);
+-	if (!real_dev)
+-		real_dev = netdev;
+-
+-	ibdev = ib_device_get_by_netdev(real_dev, RDMA_DRIVER_IRDMA);
+-	if (!ibdev)
+-		return NOTIFY_DONE;
+-
+-	iwdev = to_iwdev(ibdev);
+-
+ 	switch (event) {
+ 	case NETEVENT_NEIGH_UPDATE:
++		real_dev = rdma_vlan_dev_real_dev(netdev);
++		if (!real_dev)
++			real_dev = netdev;
++		ibdev = ib_device_get_by_netdev(real_dev, RDMA_DRIVER_IRDMA);
++		if (!ibdev)
++			return NOTIFY_DONE;
++
++		iwdev = to_iwdev(ibdev);
+ 		p = (__be32 *)neigh->primary_key;
+ 		if (neigh->tbl->family == AF_INET6) {
+ 			ipv4 = false;
+@@ -290,13 +288,12 @@ int irdma_net_event(struct notifier_bloc
+ 			irdma_manage_arp_cache(iwdev->rf, neigh->ha,
+ 					       local_ipaddr, ipv4,
+ 					       IRDMA_ARP_DELETE);
++		ib_device_put(ibdev);
+ 		break;
+ 	default:
+ 		break;
+ 	}
+ 
+-	ib_device_put(ibdev);
+-
+ 	return NOTIFY_DONE;
  }
  
 
