@@ -2,100 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0667C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 02:28:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6DDAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 02:28:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234561AbiEJCc0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 22:32:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39738 "EHLO
+        id S234645AbiEJCc3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 22:32:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231139AbiEJCcW (ORCPT
+        with ESMTP id S233963AbiEJCcZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 22:32:22 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D2017EC00
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 19:28:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652149706; x=1683685706;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=dlB5MTx2ZXI2dQXqV+azNgC3+AD2rChCKzMArvkB4r0=;
-  b=ahlXwGaGq2fc8KFIZW66fRB+R6b7eEt1chr7/wEH9VIA1bPCLxJSVqmX
-   hTlZ0np99afJPICCfRWc3/TCxDFiklHqk/3T8IMq+oVwA8JDd5C26ZF2x
-   J7NLAZvtg+UFK+ikq7GGjrpb1Rw287APn9tG7HVv0UxpasC1VwATYRFqt
-   CUPvlwP3/rT+bRjMupulDPIxvUQfBdt3aNrpOv3qSGzV2aM/85ye0Va9L
-   MqBxNY0vFRU6YlrX/3PC+gKkjUJQCB/Lzih2qdeCDx72WpNmjqvqRCrWR
-   D2kQkbkI5MBEESLLZRwenOIRX4rW+sKi4t0b7pRV5VAcFBCh5T2bq8tA0
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="251282036"
-X-IronPort-AV: E=Sophos;i="5.91,213,1647327600"; 
-   d="scan'208";a="251282036"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 19:28:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,213,1647327600"; 
-   d="scan'208";a="657427856"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 09 May 2022 19:28:24 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1noFbr-000HBo-RE;
-        Tue, 10 May 2022 02:28:23 +0000
-Date:   Tue, 10 May 2022 10:27:34 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: drivers/crypto/atmel-sha204a.c:135:34: warning:
- 'atmel_sha204a_dt_ids' defined but not used
-Message-ID: <202205101001.UUeWDJtR-lkp@intel.com>
+        Mon, 9 May 2022 22:32:25 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 070D31A8E3A
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 19:28:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=qVEOoGsIlooEpfnjcilZ8EKGRE3sSWxS4g1FKGjMuzQ=; b=sghlFxVgp9mMCsYDnyEhX8rGzt
+        pODjDgmXBMdUHve+PBFiy6rLDIwmRC08E6XgoQc1VWp8FNzeGJyrZNtGAVmRkEyWLM3AhW/GUjKiw
+        PAlqx3UV0l+rmimlsEHElHfBjndfPCLoHgEdjQSq/0ZJ3K+hyOmuRuWRXv0JOfbgCVAKq3hFopcWR
+        uHntW3bn3MuaAZjzMyiE4/igsw9Ak6Ym13OPF9Z+csD2dH2FL2n/otj5ZLFAj7oawg3onTPKjbY3i
+        /8GifdJP/gsGEMfqQXHlh6vozZOEfKVst+IzMfXe6rsO1dBDqlp8AUJyGIPHKPd5DVYx3Tdnlvaoc
+        jDBWdb9Q==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1noFbZ-004177-LN; Tue, 10 May 2022 02:28:05 +0000
+Date:   Tue, 10 May 2022 03:28:05 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Naoya Horiguchi <naoya.horiguchi@linux.dev>
+Cc:     linux-mm@kvack.org, Miaohe Lin <linmiaohe@huawei.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        William Kucharski <william.kucharski@oracle.com>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] mm/hwpoison: use pr_err() instead of dump_page() in
+ get_any_page()
+Message-ID: <YnnNteG8+V6dTNna@casper.infradead.org>
+References: <20220427053220.719866-1-naoya.horiguchi@linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220427053220.719866-1-naoya.horiguchi@linux.dev>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   9be9ed2612b5aedb52a2c240edb1630b6b743cb6
-commit: da001fb651b00e1deeaf24767dd691ae8152a4f5 crypto: atmel-i2c - add support for SHA204A random number generator
-date:   2 years, 11 months ago
-config: i386-randconfig-r026-20220509 (https://download.01.org/0day-ci/archive/20220510/202205101001.UUeWDJtR-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=da001fb651b00e1deeaf24767dd691ae8152a4f5
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout da001fb651b00e1deeaf24767dd691ae8152a4f5
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/crypto/
+On Wed, Apr 27, 2022 at 02:32:20PM +0900, Naoya Horiguchi wrote:
+> From: Naoya Horiguchi <naoya.horiguchi@nec.com>
+> 
+> The following VM_BUG_ON_FOLIO() is triggered when memory error event
+> happens on the (thp/folio) pages which are about to be freed:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+So the real problem is that we're calling dump_page() when we don't
+have a reference to the page, right?  Otherwise it wouldn't be freed.
 
-All warnings (new ones prefixed by >>):
+>  out:
+>  	if (ret == -EIO)
+> -		dump_page(p, "hwpoison: unhandlable page");
+> +		pr_err("Memory failure: %#lx: unhandlable page.\n", page_to_pfn(p));
 
->> drivers/crypto/atmel-sha204a.c:135:34: warning: 'atmel_sha204a_dt_ids' defined but not used [-Wunused-const-variable=]
-     135 | static const struct of_device_id atmel_sha204a_dt_ids[] = {
-         |                                  ^~~~~~~~~~~~~~~~~~~~
-   In file included from drivers/crypto/atmel-sha204a.c:19:
-   drivers/crypto/atmel-i2c.h:67:3: warning: 'error_list' defined but not used [-Wunused-const-variable=]
-      67 | } error_list[] = {
-         |   ^~~~~~~~~~
+It would be nice to get some more information out of the page than that
+,.. but taking a refcount inside dump_page() conflicts with the other
+"would be nice", which is for dump_page() to take a const struct page *
+so we can (eg) make folio_test_uptodate() take a const struct folio *.
 
+We've had some other problems with inconsistent pages being printed in
+dump_page().  It can be quite confusing when debugging.  I still don't
+have a good solution to that either.
 
-vim +/atmel_sha204a_dt_ids +135 drivers/crypto/atmel-sha204a.c
-
-   134	
- > 135	static const struct of_device_id atmel_sha204a_dt_ids[] = {
-   136		{ .compatible = "atmel,atsha204a", },
-   137		{ /* sentinel */ }
-   138	};
-   139	MODULE_DEVICE_TABLE(of, atmel_sha204a_dt_ids);
-   140	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+I do have a proposal for reforming mapcount which will solve this
+particular problem, but I'm not quite sure when I'll get to it.
+This patch is probably the best thing to do for now.
