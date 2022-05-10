@@ -2,108 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7C0BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 10:01:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8124FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 10:01:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239446AbiEJKFo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 06:05:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35214 "EHLO
+        id S239448AbiEJKFs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 06:05:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239236AbiEJKFf (ORCPT
+        with ESMTP id S239433AbiEJKFj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 06:05:35 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 852465C67E
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 03:01:38 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id c11so16285373plg.13
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 03:01:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=dKd6PeE6IoUKq5eCY4sziXe/k6yepX5DHoIEP3vKroI=;
-        b=p6Q9lZbwn2txxQit8nNlpATWOpBAOzcZa8fKxyWqZAa/9+k1fNNzSiiu2QwKypIGJ+
-         1LI375tPYG6AGJXq23nOIZ8fmx9Do4c20ehHoypDJ5L/9RbWK9KMd/p2qbkMNw2K6INC
-         Hzc6WD0QdebWx3Rp20yoyLfWXgwHEg0JGxnS/c+xuTQyXofTj6noo6Q1nJiU4WbYg+I3
-         4W8R/y1ThaRCLOXONMwD7oTG2Yh5QJlpmxxr216c0Q0aSBXAz09rSQ5FEG4uLazteNkS
-         ww+qVAhJzS8pLLC6gG8V7TqhcFV5W73wys74hRXZ/i63B+mkHc3mkEbe6O+OiXnDEsiN
-         bI5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dKd6PeE6IoUKq5eCY4sziXe/k6yepX5DHoIEP3vKroI=;
-        b=ooZsas1P+kNQAlVBsCyAqU2Z9AOxZPJAQSj4bL4FPTOOwnS5oJMm1HK5GyMj5ikfz9
-         3We67ENwn0AU8LQAiAVjzCSngyBZG2Vpa5AF8EwqeEWT/V1Dpm6Dwhdyf5sV0GHQ3EJx
-         Di40yNQG/hDhQ+1GH5Rr8sj6b/LHfA5Fn+E2eyVVmmu4LuP05TMePgsBFHf+SaP0SJQZ
-         4pSipgNNHqF9dZ52NzFhBkNeER9T9NxijH8JiPx0siHTx3EDT5m++AINMbmhH79LHxzT
-         ulXcZ4YPeNowNfgj6UAQXO5dmrwl0jtiSf6IM3W4Nz9uBoByhHDi9rFs+x8REU2+E/eA
-         4dkw==
-X-Gm-Message-State: AOAM532cVF3DuAI/TEcCo6kXnDw0mhf8czHDvYU8RX/fpi064FruY/BM
-        II0WbxgWCMMI4/ChuXoHFyU=
-X-Google-Smtp-Source: ABdhPJwhBlOh8c5+Do3yO77gT/Bb4S3/knIx47b5lw6oc/UX26n0E7WAAoaKPg5Ya/cfRKW2qBV9RQ==
-X-Received: by 2002:a17:90b:3a8b:b0:1dc:4eb4:1f2a with SMTP id om11-20020a17090b3a8b00b001dc4eb41f2amr30991656pjb.50.1652176897983;
-        Tue, 10 May 2022 03:01:37 -0700 (PDT)
-Received: from hyeyoo ([114.29.24.243])
-        by smtp.gmail.com with ESMTPSA id a14-20020aa794ae000000b0050dc7628153sm10413812pfl.45.2022.05.10.03.01.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 03:01:37 -0700 (PDT)
-Date:   Tue, 10 May 2022 19:01:32 +0900
-From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To:     Vlastimil Babka <vbabka@suse.cz>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH] MAINTAINERS: add myself as reviewer for slab
-Message-ID: <Yno3/I/lBeQTNJ7A@hyeyoo>
-References: <20220507073506.241963-1-42.hyeyoo@gmail.com>
- <42799bd1-2c5a-d2ae-65a4-76e7de4f68a3@suse.cz>
+        Tue, 10 May 2022 06:05:39 -0400
+Received: from mail.meizu.com (unknown [14.29.68.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91FE18565C;
+        Tue, 10 May 2022 03:01:40 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
+ (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Tue, 10 May
+ 2022 18:01:39 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Tue, 10 May
+ 2022 18:01:38 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     <will@kernel.org>, <peterz@infradead.org>,
+        <daniel.thompson@linaro.org>, <bristot@redhat.com>
+CC:     <linux-ia64@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Haowen Bai <baihaowen@meizu.com>
+Subject: [PATCH] ia64: mca: Drop redundant spinlock initialization
+Date:   Tue, 10 May 2022 18:01:37 +0800
+Message-ID: <1652176897-4754-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <42799bd1-2c5a-d2ae-65a4-76e7de4f68a3@suse.cz>
+Content-Type: text/plain
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 10:09:24AM +0200, Vlastimil Babka wrote:
-> On 5/7/22 09:35, Hyeonggon Yoo wrote:
-> > Recently I was involved in slab subsystem (reviewing struct slab,
-> > SLUB debugfs and etc). I would like to help maintainers and people
-> > working on slab allocators by reviewing and testing their work.
-> > 
-> > Let me be Cc'd on patches related to slab.
-> > 
-> > Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-> 
-> Added to slab tree, thanks for your efforts!
->
+mlogbuf_rlock has declared and initialized by DEFINE_SPINLOCK,
+so we don't need to spin_lock_init again, drop it.
 
-Thanks Vlastimil, you are so thoughtful and nice.
-I enjoy working with you ;-)
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+---
+ arch/ia64/kernel/mca.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-> > ---
-> >  MAINTAINERS | 1 +
-> >  1 file changed, 1 insertion(+)
-> > 
-> > diff --git a/MAINTAINERS b/MAINTAINERS
-> > index edc96cdb85e8..c21e6221513f 100644
-> > --- a/MAINTAINERS
-> > +++ b/MAINTAINERS
-> > @@ -18103,6 +18103,7 @@ M:	Joonsoo Kim <iamjoonsoo.kim@lge.com>
-> >  M:	Andrew Morton <akpm@linux-foundation.org>
-> >  M:	Vlastimil Babka <vbabka@suse.cz>
-> >  R:	Roman Gushchin <roman.gushchin@linux.dev>
-> > +R:	Hyeonggon Yoo <42.hyeyoo@gmail.com>
-> >  L:	linux-mm@kvack.org
-> >  S:	Maintained
-> >  T:	git git://git.kernel.org/pub/scm/linux/kernel/git/vbabka/slab.git
-> 
-
+diff --git a/arch/ia64/kernel/mca.c b/arch/ia64/kernel/mca.c
+index e628a88607bb..c62a66710ad6 100644
+--- a/arch/ia64/kernel/mca.c
++++ b/arch/ia64/kernel/mca.c
+@@ -290,7 +290,6 @@ static void ia64_mlogbuf_finish(int wait)
+ {
+ 	BREAK_LOGLEVEL(console_loglevel);
+ 
+-	spin_lock_init(&mlogbuf_rlock);
+ 	ia64_mlogbuf_dump();
+ 	printk(KERN_EMERG "mlogbuf_finish: printing switched to urgent mode, "
+ 		"MCA/INIT might be dodgy or fail.\n");
 -- 
-Thanks,
-Hyeonggon
+2.7.4
+
