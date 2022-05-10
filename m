@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A552C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:03:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42241C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:04:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245518AbiEJOG4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:06:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53226 "EHLO
+        id S245699AbiEJOHF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:07:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243499AbiEJNmd (ORCPT
+        with ESMTP id S244142AbiEJNnX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:42:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C9DF31908;
-        Tue, 10 May 2022 06:30:51 -0700 (PDT)
+        Tue, 10 May 2022 09:43:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 321FF338B2;
+        Tue, 10 May 2022 06:31:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54AFFB81DAB;
-        Tue, 10 May 2022 13:30:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FB9EC385C9;
-        Tue, 10 May 2022 13:30:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BC6761821;
+        Tue, 10 May 2022 13:31:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 195D0C385C2;
+        Tue, 10 May 2022 13:31:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189446;
-        bh=S6iESqWsvrhbvbkUTioFW+6EaW8QdM0/2OaPIP0PLMY=;
+        s=korg; t=1652189461;
+        bh=+mJTXgsOIxd3Wmqr468P9HZLAksdzKwrV1S7ZpA+WV8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ghDX50oPwo/UEfevOgg6nf1FaKGPosw2M4btrXqnbkoT4pD2GqEvPd10Gu6655+yg
-         B+aGngth4VMrx8JFd3O4AuXn5c6f4FBxreizL+jIN4KdO+aNZg0FCxU66YNF1ky+6d
-         I8YBK6apSIs5gQUttdsqNOGJSTsHh40B9S8C/vJk=
+        b=LHJPqfXVR/fGhndkIyYAbq7tHhv4fnVbuBJzESqCGhe51aywDlAOkc27N/GdoahCS
+         6+vSAK6s8brwPt7+/3w3mR6acXGO1csridOE1DVDrmrUC+DEBSSWuLAKO9mqZoZ2DI
+         eLAG7RB7GSfmRDE2zExmZdwx5F3lp3ccPqEY1zmo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
-        Kees Cook <keescook@chromium.org>
-Subject: [PATCH 5.15 054/135] selftests/seccomp: Dont call read() on TTY from background pgrp
-Date:   Tue, 10 May 2022 15:07:16 +0200
-Message-Id: <20220510130741.955512439@linuxfoundation.org>
+        stable@vger.kernel.org, Shiraz Saleem <shiraz.saleem@intel.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 5.15 058/135] RDMA/irdma: Reduce iWARP QP destroy time
+Date:   Tue, 10 May 2022 15:07:20 +0200
+Message-Id: <20220510130742.073546413@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -48,73 +48,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jann Horn <jannh@google.com>
+From: Shiraz Saleem <shiraz.saleem@intel.com>
 
-commit 2bfed7d2ffa5d86c462d3e2067f2832eaf8c04c7 upstream.
+commit 2df6d895907b2f5dfbc558cbff7801bba82cb3cc upstream.
 
-Since commit 92d25637a3a4 ("kselftest: signal all child processes"), tests
-are executed in background process groups. This means that trying to read
-from stdin now throws SIGTTIN when stdin is a TTY, which breaks some
-seccomp selftests that try to use read(0, NULL, 0) as a dummy syscall.
+QP destroy is synchronous and waits for its refcnt to be decremented in
+irdma_cm_node_free_cb (for iWARP) which fires after the RCU grace period
+elapses.
 
-The simplest way to fix that is probably to just use -1 instead of 0 as
-the dummy read()'s FD.
+Applications running a large number of connections are exposed to high
+wait times on destroy QP for events like SIGABORT.
 
-Fixes: 92d25637a3a4 ("kselftest: signal all child processes")
-Signed-off-by: Jann Horn <jannh@google.com>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220319010011.1374622-1-jannh@google.com
+The long pole for this wait time is the firing of the call_rcu callback
+during a CM node destroy which can be slow. It holds the QP reference
+count and blocks the destroy QP from completing.
+
+call_rcu only needs to make sure that list walkers have a reference to the
+cm_node object before freeing it and thus need to wait for grace period
+elapse. The rest of the connection teardown in irdma_cm_node_free_cb is
+moved out of the grace period wait in irdma_destroy_connection. Also,
+replace call_rcu with a simple kfree_rcu as it just needs to do a kfree on
+the cm_node
+
+Fixes: 146b9756f14c ("RDMA/irdma: Add connection manager")
+Link: https://lore.kernel.org/r/20220425181703.1634-3-shiraz.saleem@intel.com
+Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/seccomp/seccomp_bpf.c |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/infiniband/hw/irdma/cm.c |   10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
---- a/tools/testing/selftests/seccomp/seccomp_bpf.c
-+++ b/tools/testing/selftests/seccomp/seccomp_bpf.c
-@@ -955,7 +955,7 @@ TEST(ERRNO_valid)
- 	ASSERT_EQ(0, ret);
- 
- 	EXPECT_EQ(parent, syscall(__NR_getppid));
--	EXPECT_EQ(-1, read(0, NULL, 0));
-+	EXPECT_EQ(-1, read(-1, NULL, 0));
- 	EXPECT_EQ(E2BIG, errno);
+--- a/drivers/infiniband/hw/irdma/cm.c
++++ b/drivers/infiniband/hw/irdma/cm.c
+@@ -2305,10 +2305,8 @@ err:
+ 	return NULL;
  }
  
-@@ -974,7 +974,7 @@ TEST(ERRNO_zero)
+-static void irdma_cm_node_free_cb(struct rcu_head *rcu_head)
++static void irdma_destroy_connection(struct irdma_cm_node *cm_node)
+ {
+-	struct irdma_cm_node *cm_node =
+-			    container_of(rcu_head, struct irdma_cm_node, rcu_head);
+ 	struct irdma_cm_core *cm_core = cm_node->cm_core;
+ 	struct irdma_qp *iwqp;
+ 	struct irdma_cm_info nfo;
+@@ -2356,7 +2354,6 @@ static void irdma_cm_node_free_cb(struct
+ 	}
  
- 	EXPECT_EQ(parent, syscall(__NR_getppid));
- 	/* "errno" of 0 is ok. */
--	EXPECT_EQ(0, read(0, NULL, 0));
-+	EXPECT_EQ(0, read(-1, NULL, 0));
+ 	cm_core->cm_free_ah(cm_node);
+-	kfree(cm_node);
  }
  
- /*
-@@ -995,7 +995,7 @@ TEST(ERRNO_capped)
- 	ASSERT_EQ(0, ret);
+ /**
+@@ -2384,8 +2381,9 @@ void irdma_rem_ref_cm_node(struct irdma_
  
- 	EXPECT_EQ(parent, syscall(__NR_getppid));
--	EXPECT_EQ(-1, read(0, NULL, 0));
-+	EXPECT_EQ(-1, read(-1, NULL, 0));
- 	EXPECT_EQ(4095, errno);
+ 	spin_unlock_irqrestore(&cm_core->ht_lock, flags);
+ 
+-	/* wait for all list walkers to exit their grace period */
+-	call_rcu(&cm_node->rcu_head, irdma_cm_node_free_cb);
++	irdma_destroy_connection(cm_node);
++
++	kfree_rcu(cm_node, rcu_head);
  }
  
-@@ -1026,7 +1026,7 @@ TEST(ERRNO_order)
- 	ASSERT_EQ(0, ret);
- 
- 	EXPECT_EQ(parent, syscall(__NR_getppid));
--	EXPECT_EQ(-1, read(0, NULL, 0));
-+	EXPECT_EQ(-1, read(-1, NULL, 0));
- 	EXPECT_EQ(12, errno);
- }
- 
-@@ -2579,7 +2579,7 @@ void *tsync_sibling(void *data)
- 	ret = prctl(PR_GET_NO_NEW_PRIVS, 0, 0, 0, 0);
- 	if (!ret)
- 		return (void *)SIBLING_EXIT_NEWPRIVS;
--	read(0, NULL, 0);
-+	read(-1, NULL, 0);
- 	return (void *)SIBLING_EXIT_UNKILLED;
- }
- 
+ /**
 
 
