@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4033CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:50:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5FDCC43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:50:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244085AbiEJNyP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:54:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47270 "EHLO
+        id S243861AbiEJNy2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:54:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244333AbiEJNh3 (ORCPT
+        with ESMTP id S244411AbiEJNhd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:37:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C26462CC6;
-        Tue, 10 May 2022 06:25:36 -0700 (PDT)
+        Tue, 10 May 2022 09:37:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAFE3393E7;
+        Tue, 10 May 2022 06:25:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8528161767;
-        Tue, 10 May 2022 13:25:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C7A3C385C2;
-        Tue, 10 May 2022 13:25:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4066D617AE;
+        Tue, 10 May 2022 13:25:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4604BC385A6;
+        Tue, 10 May 2022 13:25:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189134;
-        bh=fzdfAEKxwWwnKcFkBTlhyxorVAZZr97R3k+ylvtGsGQ=;
+        s=korg; t=1652189131;
+        bh=mnF5DNybPMFqD1aTb6h8yuUvQgN5VtdclTck+jttI7c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GKfwDitnJC4RGyGEFaWdZRl1zUuE1rc1lViTW/OSC6i03yP3Um2UqpqSSeY68vMN8
-         HCxZxCAM1tWc203k3VtW7pkTxQEiicBMwN1cEVg4vJF+0TIs/jMQz9mKBfyceGIjii
-         Ksbx0aosQX0t2hPTlE0AUTMiRAKGDVXv056muEPg=
+        b=IdnxxmZlO5UT7R3/n7/mE1Lmfvxf1nqKk93rwL3Ck+/pkzOpDyGAkk610KENtTjwg
+         OBmwbMrJnvtvcGRvwiTtDtmL8r++2q9ksl7G2+k0Bdv4BR+eXIUlWtv9RhjRT5hUiC
+         JAUWoiSmQQ9VEShI/086DQaQ8/2+nWE97Sebobn0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zihao Wang <wzhd@ustc.edu>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.10 03/70] ALSA: hda/realtek: Add quirk for Yoga Duet 7 13ITL6 speakers
-Date:   Tue, 10 May 2022 15:07:22 +0200
-Message-Id: <20220510130732.964782467@linuxfoundation.org>
+        stable@vger.kernel.org, Stefan Haberland <sth@linux.ibm.com>,
+        Jan Hoeppner <hoeppner@linux.ibm.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.10 22/70] s390/dasd: fix data corruption for ESE devices
+Date:   Tue, 10 May 2022 15:07:41 +0200
+Message-Id: <20220510130733.517463800@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
 References: <20220510130732.861729621@linuxfoundation.org>
@@ -48,32 +49,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zihao Wang <wzhd@ustc.edu>
+From: Stefan Haberland <sth@linux.ibm.com>
 
-commit 3b79954fd00d540677c97a560622b73f3a1f4e28 upstream.
+commit 5b53a405e4658580e1faf7c217db3f55a21ba849 upstream.
 
-Lenovo Yoga Duet 7 13ITL6 has Realtek ALC287 and built-in
-speakers do not work out of the box. The fix developed for
-Yoga 7i 14ITL5 also enables speaker output for this model.
+For ESE devices we get an error when accessing an unformatted track.
+The handling of this error will return zero data for read requests and
+format the track on demand before writing to it. To do this the code needs
+to distinguish between read and write requests. This is done with data from
+the blocklayer request. A pointer to the blocklayer request is stored in
+the CQR.
 
-Signed-off-by: Zihao Wang <wzhd@ustc.edu>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220424084120.74125-1-wzhd@ustc.edu
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+If there is an error on the device an ERP request is built to do error
+recovery. While the ERP request is mostly a copy of the original CQR the
+pointer to the blocklayer request is not copied to not accidentally pass
+it back to the blocklayer without cleanup.
+
+This leads to the error that during ESE handling after an ERP request was
+built it is not possible to determine the IO direction. This leads to the
+formatting of a track for read requests which might in turn lead to data
+corruption.
+
+Fixes: 5e2b17e712cf ("s390/dasd: Add dynamic formatting support for ESE volumes")
+Cc: stable@vger.kernel.org # 5.3+
+Signed-off-by: Stefan Haberland <sth@linux.ibm.com>
+Reviewed-by: Jan Hoeppner <hoeppner@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220505141733.1989450-2-sth@linux.ibm.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/s390/block/dasd.c      |    8 +++++++-
+ drivers/s390/block/dasd_eckd.c |    2 +-
+ drivers/s390/block/dasd_int.h  |   12 ++++++++++++
+ 3 files changed, 20 insertions(+), 2 deletions(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -8969,6 +8969,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x17aa, 0x3813, "Legion 7i 15IMHG05", ALC287_FIXUP_LEGION_15IMHG05_SPEAKERS),
- 	SND_PCI_QUIRK(0x17aa, 0x3818, "Lenovo C940", ALC298_FIXUP_LENOVO_SPK_VOLUME),
- 	SND_PCI_QUIRK(0x17aa, 0x3819, "Lenovo 13s Gen2 ITL", ALC287_FIXUP_13S_GEN2_SPEAKERS),
-+	SND_PCI_QUIRK(0x17aa, 0x3820, "Yoga Duet 7 13ITL6", ALC287_FIXUP_YOGA7_14ITL_SPEAKERS),
- 	SND_PCI_QUIRK(0x17aa, 0x3824, "Legion Y9000X 2020", ALC285_FIXUP_LEGION_Y9000X_SPEAKERS),
- 	SND_PCI_QUIRK(0x17aa, 0x3827, "Ideapad S740", ALC285_FIXUP_IDEAPAD_S740_COEF),
- 	SND_PCI_QUIRK(0x17aa, 0x3834, "Lenovo IdeaPad Slim 9i 14ITL5", ALC287_FIXUP_YOGA7_14ITL_SPEAKERS),
+--- a/drivers/s390/block/dasd.c
++++ b/drivers/s390/block/dasd.c
+@@ -1680,6 +1680,7 @@ void dasd_int_handler(struct ccw_device
+ 	unsigned long now;
+ 	int nrf_suppressed = 0;
+ 	int fp_suppressed = 0;
++	struct request *req;
+ 	u8 *sense = NULL;
+ 	int expires;
+ 
+@@ -1780,7 +1781,12 @@ void dasd_int_handler(struct ccw_device
+ 	}
+ 
+ 	if (dasd_ese_needs_format(cqr->block, irb)) {
+-		if (rq_data_dir((struct request *)cqr->callback_data) == READ) {
++		req = dasd_get_callback_data(cqr);
++		if (!req) {
++			cqr->status = DASD_CQR_ERROR;
++			return;
++		}
++		if (rq_data_dir(req) == READ) {
+ 			device->discipline->ese_read(cqr, irb);
+ 			cqr->status = DASD_CQR_SUCCESS;
+ 			cqr->stopclk = now;
+--- a/drivers/s390/block/dasd_eckd.c
++++ b/drivers/s390/block/dasd_eckd.c
+@@ -3088,7 +3088,7 @@ dasd_eckd_ese_format(struct dasd_device
+ 	sector_t curr_trk;
+ 	int rc;
+ 
+-	req = cqr->callback_data;
++	req = dasd_get_callback_data(cqr);
+ 	block = cqr->block;
+ 	base = block->base;
+ 	private = base->private;
+--- a/drivers/s390/block/dasd_int.h
++++ b/drivers/s390/block/dasd_int.h
+@@ -723,6 +723,18 @@ dasd_check_blocksize(int bsize)
+ 	return 0;
+ }
+ 
++/*
++ * return the callback data of the original request in case there are
++ * ERP requests build on top of it
++ */
++static inline void *dasd_get_callback_data(struct dasd_ccw_req *cqr)
++{
++	while (cqr->refers)
++		cqr = cqr->refers;
++
++	return cqr->callback_data;
++}
++
+ /* externals in dasd.c */
+ #define DASD_PROFILE_OFF	 0
+ #define DASD_PROFILE_ON 	 1
 
 
