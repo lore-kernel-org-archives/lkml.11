@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B46B8C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DF8EC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:45:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343538AbiEJNsM (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:48:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48724 "EHLO
+        id S245713AbiEJNsH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:48:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243891AbiEJNcU (ORCPT
+        with ESMTP id S243894AbiEJNcU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:32:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC639178560;
-        Tue, 10 May 2022 06:23:19 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46C95178562;
+        Tue, 10 May 2022 06:23:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A3051B81DA8;
-        Tue, 10 May 2022 13:23:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0695BC385C2;
-        Tue, 10 May 2022 13:23:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D7A0E61768;
+        Tue, 10 May 2022 13:23:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6614C385A6;
+        Tue, 10 May 2022 13:23:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188997;
-        bh=M++pNsSDyjD/GlMxredGq+cpP1ZDMWAdbPKhR1TW1Ls=;
+        s=korg; t=1652189000;
+        bh=tm/Y3N1xRtkC0eTpSWQ2qqM2l+6CezNMfRdf2u3uhmA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WUltoTgHYn+R/ymz6dJJVV14QwJkEuLHa6Si8Ochd8bOGDK69nN5o32M3geH/im2w
-         WzbUjF0Ryo4YBC1MdcVjmIZsmG3MJAHu0vt4YAbPp9odR9rXj3NWio8lDPIe+Oa2UJ
-         9M5OYmbFGBeqREI12ee2rAvlg3ztixdf8q0rQzZQ=
+        b=NB9O4CyfeK3PlALCvmuxjZPLP+rJABn/PGfZwIJ/PqoyOBPusDfUAMVgv3djEjS9P
+         NW7FSlG495zv5Ixw7Vv3r3MqFigeYfYXKHzjQ4Znr+BE/UCjivzCVVp7Epn/CviTme
+         lPvXJKw7LTiHfivu5C3joGWquz1AVsysm2oafyhc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Sakamoto <o-takashi@sakamocchi.jp>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.4 03/52] ALSA: fireworks: fix wrong return count shorter than expected by 4 bytes
-Date:   Tue, 10 May 2022 15:07:32 +0200
-Message-Id: <20220510130729.956371337@linuxfoundation.org>
+        stable@vger.kernel.org, Somnath Kotur <somnath.kotur@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.4 30/52] bnxt_en: Fix possible bnxt_open() failure caused by wrong RFS flag
+Date:   Tue, 10 May 2022 15:07:59 +0200
+Message-Id: <20220510130730.735895357@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.852544477@linuxfoundation.org>
 References: <20220510130729.852544477@linuxfoundation.org>
@@ -49,34 +49,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Sakamoto <o-takashi@sakamocchi.jp>
+From: Somnath Kotur <somnath.kotur@broadcom.com>
 
-commit eb9d84b0ffe39893cb23b0b6712bbe3637fa25fa upstream.
+commit 13ba794397e45e52893cfc21d7a69cb5f341b407 upstream.
 
-ALSA fireworks driver has a bug in its initial state to return count
-shorter than expected by 4 bytes to userspace applications when handling
-response frame for Echo Audio Fireworks transaction. It's due to missing
-addition of the size for the type of event in ALSA firewire stack.
+bnxt_open() can fail in this code path, especially on a VF when
+it fails to reserve default rings:
 
-Fixes: 555e8a8f7f14 ("ALSA: fireworks: Add command/response functionality into hwdep interface")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
-Link: https://lore.kernel.org/r/20220424102428.21109-1-o-takashi@sakamocchi.jp
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+bnxt_open()
+  __bnxt_open_nic()
+    bnxt_clear_int_mode()
+    bnxt_init_dflt_ring_mode()
+
+RX rings would be set to 0 when we hit this error path.
+
+It is possible for a subsequent bnxt_open() call to potentially succeed
+with a code path like this:
+
+bnxt_open()
+  bnxt_hwrm_if_change()
+    bnxt_fw_init_one()
+      bnxt_fw_init_one_p3()
+        bnxt_set_dflt_rfs()
+          bnxt_rfs_capable()
+            bnxt_hwrm_reserve_rings()
+
+On older chips, RFS is capable if we can reserve the number of vnics that
+is equal to RX rings + 1.  But since RX rings is still set to 0 in this
+code path, we may mistakenly think that RFS is supported for 0 RX rings.
+
+Later, when the default RX rings are reserved and we try to enable
+RFS, it would fail and cause bnxt_open() to fail unnecessarily.
+
+We fix this in 2 places.  bnxt_rfs_capable() will always return false if
+RX rings is not yet set.  bnxt_init_dflt_ring_mode() will call
+bnxt_set_dflt_rfs() which will always clear the RFS flags if RFS is not
+supported.
+
+Fixes: 20d7d1c5c9b1 ("bnxt_en: reliably allocate IRQ table on reset to avoid crash")
+Signed-off-by: Somnath Kotur <somnath.kotur@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/firewire/fireworks/fireworks_hwdep.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c |    9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
---- a/sound/firewire/fireworks/fireworks_hwdep.c
-+++ b/sound/firewire/fireworks/fireworks_hwdep.c
-@@ -34,6 +34,7 @@ hwdep_read_resp_buf(struct snd_efw *efw,
- 	type = SNDRV_FIREWIRE_EVENT_EFW_RESPONSE;
- 	if (copy_to_user(buf, &type, sizeof(type)))
- 		return -EFAULT;
-+	count += sizeof(type);
- 	remained -= sizeof(type);
- 	buf += sizeof(type);
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -9791,7 +9791,7 @@ static bool bnxt_rfs_capable(struct bnxt
  
+ 	if (bp->flags & BNXT_FLAG_CHIP_P5)
+ 		return bnxt_rfs_supported(bp);
+-	if (!(bp->flags & BNXT_FLAG_MSIX_CAP) || !bnxt_can_reserve_rings(bp))
++	if (!(bp->flags & BNXT_FLAG_MSIX_CAP) || !bnxt_can_reserve_rings(bp) || !bp->rx_nr_rings)
+ 		return false;
+ 
+ 	vnics = 1 + bp->rx_nr_rings;
+@@ -11725,10 +11725,9 @@ static int bnxt_init_dflt_ring_mode(stru
+ 		goto init_dflt_ring_err;
+ 
+ 	bp->tx_nr_rings_per_tc = bp->tx_nr_rings;
+-	if (bnxt_rfs_supported(bp) && bnxt_rfs_capable(bp)) {
+-		bp->flags |= BNXT_FLAG_RFS;
+-		bp->dev->features |= NETIF_F_NTUPLE;
+-	}
++
++	bnxt_set_dflt_rfs(bp);
++
+ init_dflt_ring_err:
+ 	bnxt_ulp_irq_restart(bp, rc);
+ 	return rc;
 
 
