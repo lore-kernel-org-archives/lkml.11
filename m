@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8710EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:13:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79828C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:13:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242473AbiEJNRL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:17:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34914 "EHLO
+        id S242495AbiEJNRR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:17:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242456AbiEJNQF (ORCPT
+        with ESMTP id S242462AbiEJNQG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:16:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D41449CBC;
-        Tue, 10 May 2022 06:11:43 -0700 (PDT)
+        Tue, 10 May 2022 09:16:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2808249F18;
+        Tue, 10 May 2022 06:11:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B881361601;
-        Tue, 10 May 2022 13:11:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7FF7C385C2;
-        Tue, 10 May 2022 13:11:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A519A61574;
+        Tue, 10 May 2022 13:11:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2120C385C2;
+        Tue, 10 May 2022 13:11:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188300;
-        bh=3Ii+zVJBBJqPS/UXZOnbbU6C3QsOInDSgnahpire11Y=;
+        s=korg; t=1652188303;
+        bh=A/JRDkuq2cNykGWSuoZt6p3ZN9nfI+Zo+Gq7fBTW8h8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yV/HYHTduYrbtJC0yNfkJCRZPtQey4oLesGL6vq2lNYrpO5OjHR38wT/yXBkOev/W
-         r5Dh0suGGapPI8i4131G81uRUuVA8F4zZLoiEr3PfW0SFCc9J1GLqUo+ja8fh4ZId7
-         sT5Ka2xQ7IHjMbtlZpoEzdLxuqZnxG3YbDAMQXPE=
+        b=BxuY2JwaTgm/shgeWSPVF0rlepxZ6Rg70rMs7Pep5f9xk9sq1qCpxjM0HE8LkI//e
+         7m80zuKRzZZJt4jCMQnXujmd20j2/0EwPl4KYapXsRymKsa+z1JG6pCwptWu+eXKEP
+         gnZ4LhwXhAohagzD/KvDC2N2i0Vm+vBMQDCV0z2U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bruno Thomsen <bruno.thomsen@gmail.com>,
+        stable@vger.kernel.org, Slark Xiao <slark_xiao@163.com>,
         Johan Hovold <johan@kernel.org>
-Subject: [PATCH 4.9 07/66] USB: serial: cp210x: add PIDs for Kamstrup USB Meter Reader
-Date:   Tue, 10 May 2022 15:06:57 +0200
-Message-Id: <20220510130729.976708515@linuxfoundation.org>
+Subject: [PATCH 4.9 08/66] USB: serial: option: add support for Cinterion MV32-WA/MV32-WB
+Date:   Tue, 10 May 2022 15:06:58 +0200
+Message-Id: <20220510130730.014747979@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.762341544@linuxfoundation.org>
 References: <20220510130729.762341544@linuxfoundation.org>
@@ -48,38 +48,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bruno Thomsen <bruno.thomsen@gmail.com>
+From: Slark Xiao <slark_xiao@163.com>
 
-commit 35a923a0b329c343e9e81d79518e2937eba06fcd upstream.
+commit b4a64ed6e7b857317070fcb9d87ff5d4a73be3e8 upstream.
 
-Wireless reading of water and heat meters using 868 MHz wM-Bus mode C1.
+Add support for Cinterion device MV32-WA/MV32-WB. MV32-WA PID is
+0x00F1, and MV32-WB PID is 0x00F2.
 
-The two different product IDs allow detection of dongle antenna
-solution:
-- Internal antenna
-- External antenna using SMA connector
+Test evidence as below:
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  4 Spd=5000 MxCh= 0
+D:  Ver= 3.20 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
+P:  Vendor=1e2d ProdID=00f1 Rev=05.04
+S:  Manufacturer=Cinterion
+S:  Product=Cinterion PID 0x00F1 USB Mobile Broadband
+S:  SerialNumber=78ada8c4
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 1 Cls=02(commc) Sub=0e Prot=00 Driver=cdc_mbim
+I:  If#=0x1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=02 Driver=cdc_mbim
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=40 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 1 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=60 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30 Driver=option
 
-https://www.kamstrup.com/en-en/water-solutions/water-meter-reading/usb-meter-reader
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  3 Spd=5000 MxCh= 0
+D:  Ver= 3.20 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
+P:  Vendor=1e2d ProdID=00f2 Rev=05.04
+S:  Manufacturer=Cinterion
+S:  Product=Cinterion PID 0x00F2 USB Mobile Broadband
+S:  SerialNumber=cdd06a78
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 1 Cls=02(commc) Sub=0e Prot=00 Driver=cdc_mbim
+I:  If#=0x1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=02 Driver=cdc_mbim
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=40 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 1 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=60 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30 Driver=option
 
-Signed-off-by: Bruno Thomsen <bruno.thomsen@gmail.com>
-Link: https://lore.kernel.org/r/20220414081202.5591-1-bruno.thomsen@gmail.com
+Interface 0&1: MBIM, 2:Modem, 3: GNSS, 4: NMEA, 5: Diag
+GNSS port don't use serial driver.
+
+Signed-off-by: Slark Xiao <slark_xiao@163.com>
+Link: https://lore.kernel.org/r/20220414074434.5699-1-slark_xiao@163.com
 Cc: stable@vger.kernel.org
 Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/cp210x.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/usb/serial/option.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/drivers/usb/serial/cp210x.c
-+++ b/drivers/usb/serial/cp210x.c
-@@ -192,6 +192,8 @@ static const struct usb_device_id id_tab
- 	{ USB_DEVICE(0x16DC, 0x0015) }, /* W-IE-NE-R Plein & Baus GmbH CML Control, Monitoring and Data Logger */
- 	{ USB_DEVICE(0x17A8, 0x0001) }, /* Kamstrup Optical Eye/3-wire */
- 	{ USB_DEVICE(0x17A8, 0x0005) }, /* Kamstrup M-Bus Master MultiPort 250D */
-+	{ USB_DEVICE(0x17A8, 0x0101) }, /* Kamstrup 868 MHz wM-Bus C-Mode Meter Reader (Int Ant) */
-+	{ USB_DEVICE(0x17A8, 0x0102) }, /* Kamstrup 868 MHz wM-Bus C-Mode Meter Reader (Ext Ant) */
- 	{ USB_DEVICE(0x17F4, 0xAAAA) }, /* Wavesense Jazz blood glucose meter */
- 	{ USB_DEVICE(0x1843, 0x0200) }, /* Vaisala USB Instrument Cable */
- 	{ USB_DEVICE(0x18EF, 0xE00F) }, /* ELV USB-I2C-Interface */
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -430,6 +430,8 @@ static void option_instat_callback(struc
+ #define CINTERION_PRODUCT_CLS8			0x00b0
+ #define CINTERION_PRODUCT_MV31_MBIM		0x00b3
+ #define CINTERION_PRODUCT_MV31_RMNET		0x00b7
++#define CINTERION_PRODUCT_MV32_WA		0x00f1
++#define CINTERION_PRODUCT_MV32_WB		0x00f2
+ 
+ /* Olivetti products */
+ #define OLIVETTI_VENDOR_ID			0x0b3c
+@@ -1945,6 +1947,10 @@ static const struct usb_device_id option
+ 	  .driver_info = RSVD(3)},
+ 	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV31_RMNET, 0xff),
+ 	  .driver_info = RSVD(0)},
++	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV32_WA, 0xff),
++	  .driver_info = RSVD(3)},
++	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV32_WB, 0xff),
++	  .driver_info = RSVD(3)},
+ 	{ USB_DEVICE(OLIVETTI_VENDOR_ID, OLIVETTI_PRODUCT_OLICARD100),
+ 	  .driver_info = RSVD(4) },
+ 	{ USB_DEVICE(OLIVETTI_VENDOR_ID, OLIVETTI_PRODUCT_OLICARD120),
 
 
