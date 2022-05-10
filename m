@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4BE6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:14:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D204C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:14:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343628AbiEJOSg (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:18:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52710 "EHLO
+        id S245101AbiEJOSk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:18:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344022AbiEJNss (ORCPT
+        with ESMTP id S1343638AbiEJNsT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:48:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 693986FD2A;
-        Tue, 10 May 2022 06:37:11 -0700 (PDT)
+        Tue, 10 May 2022 09:48:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2F5A2B52F7;
+        Tue, 10 May 2022 06:36:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A70A618B4;
-        Tue, 10 May 2022 13:37:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BB09C385A6;
-        Tue, 10 May 2022 13:37:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F3851B81DB7;
+        Tue, 10 May 2022 13:36:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DB9EC385C9;
+        Tue, 10 May 2022 13:36:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189830;
-        bh=SXyEZMAQcqYISW4MVCLhRpD3aV940h5MdKUH9HHsXWY=;
+        s=korg; t=1652189771;
+        bh=FQdv7igAHs4SnnQcV16g0/g66iR1BYYDbYDRj5V0wak=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=loteEV+xKbTA1wwmtna2Cb/Sk9isJi97sZTl143tzLDVFJpPH+pGoGPmJdIZq/ndh
-         HN+afcPOGOFFRJ2LsF9JAHu/DwxO61WxjarHVbN3jhM7lAXvC3bJKT0drKxUXp9qPu
-         yMzDLzQwC3MgWOSBQ1VgavPTBfFG3WEdX9dz/MXw=
+        b=MbWb39/RETnPe9s6KjGs8LmD3lmKQk4g2GO1jsc5oqdqZg+h/bGQ3GmFinbpcHzjz
+         C2dzOCAvx5yxADeNQZLkB/Z9le2SJkBj88YgEG2oYSXuIeEQM0ZJ8pUXos6OiPWAYa
+         5Ov9PS+IPxlcUqipaLYPKNXG5Hmfe0PWQT644shA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>,
-        John David Anglin <dave.anglin@bell.net>
-Subject: [PATCH 5.17 005/140] Revert "parisc: Mark cr16 CPU clocksource unstable on all SMP machines"
-Date:   Tue, 10 May 2022 15:06:35 +0200
-Message-Id: <20220510130741.760254485@linuxfoundation.org>
+        stable@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH 5.17 023/140] timekeeping: Mark NMI safe time accessors as notrace
+Date:   Tue, 10 May 2022 15:06:53 +0200
+Message-Id: <20220510130742.274036138@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -49,61 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Kurt Kanzenbach <kurt@linutronix.de>
 
-commit 9dc4241bb14afecd16518a0760bceb3d7359b12a upstream.
+commit 2c33d775ef4c25c0e1e1cc0fd5496d02f76bfa20 upstream.
 
-This reverts commit afdb4a5b1d340e4afffc65daa21cc71890d7d589.
+Mark the CLOCK_MONOTONIC fast time accessors as notrace. These functions are
+used in tracing to retrieve timestamps, so they should not recurse.
 
-It triggers RCU stalls at boot with a 32-bit kernel.
-
-Signed-off-by: Helge Deller <deller@gmx.de>
-Noticed-by: John David Anglin <dave.anglin@bell.net>
-Cc: stable@vger.kernel.org # v5.16+
+Fixes: 4498e7467e9e ("time: Parametrize all tk_fast_mono users")
+Fixes: f09cb9a1808e ("time: Introduce tk_fast_raw")
+Reported-by: Steven Rostedt <rostedt@goodmis.org>
+Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220426175338.3807ca4f@gandalf.local.home/
+Link: https://lore.kernel.org/r/20220428062432.61063-1-kurt@linutronix.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/parisc/kernel/time.c |   28 +++++++++++++++++++++-------
- 1 file changed, 21 insertions(+), 7 deletions(-)
+ kernel/time/timekeeping.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/parisc/kernel/time.c
-+++ b/arch/parisc/kernel/time.c
-@@ -249,16 +249,30 @@ void __init time_init(void)
- static int __init init_cr16_clocksource(void)
+--- a/kernel/time/timekeeping.c
++++ b/kernel/time/timekeeping.c
+@@ -482,7 +482,7 @@ static __always_inline u64 __ktime_get_f
+  * of the following timestamps. Callers need to be aware of that and
+  * deal with it.
+  */
+-u64 ktime_get_mono_fast_ns(void)
++u64 notrace ktime_get_mono_fast_ns(void)
  {
- 	/*
--	 * The cr16 interval timers are not syncronized across CPUs, even if
--	 * they share the same socket.
-+	 * The cr16 interval timers are not syncronized across CPUs on
-+	 * different sockets, so mark them unstable and lower rating on
-+	 * multi-socket SMP systems.
- 	 */
- 	if (num_online_cpus() > 1 && !running_on_qemu) {
--		/* mark sched_clock unstable */
--		clear_sched_clock_stable();
-+		int cpu;
-+		unsigned long cpu0_loc;
-+		cpu0_loc = per_cpu(cpu_data, 0).cpu_loc;
- 
--		clocksource_cr16.name = "cr16_unstable";
--		clocksource_cr16.flags = CLOCK_SOURCE_UNSTABLE;
--		clocksource_cr16.rating = 0;
-+		for_each_online_cpu(cpu) {
-+			if (cpu == 0)
-+				continue;
-+			if ((cpu0_loc != 0) &&
-+			    (cpu0_loc == per_cpu(cpu_data, cpu).cpu_loc))
-+				continue;
-+
-+			/* mark sched_clock unstable */
-+			clear_sched_clock_stable();
-+
-+			clocksource_cr16.name = "cr16_unstable";
-+			clocksource_cr16.flags = CLOCK_SOURCE_UNSTABLE;
-+			clocksource_cr16.rating = 0;
-+			break;
-+		}
- 	}
- 
- 	/* register at clocksource framework */
+ 	return __ktime_get_fast_ns(&tk_fast_mono);
+ }
+@@ -494,7 +494,7 @@ EXPORT_SYMBOL_GPL(ktime_get_mono_fast_ns
+  * Contrary to ktime_get_mono_fast_ns() this is always correct because the
+  * conversion factor is not affected by NTP/PTP correction.
+  */
+-u64 ktime_get_raw_fast_ns(void)
++u64 notrace ktime_get_raw_fast_ns(void)
+ {
+ 	return __ktime_get_fast_ns(&tk_fast_raw);
+ }
 
 
