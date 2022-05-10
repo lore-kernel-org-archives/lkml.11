@@ -2,114 +2,380 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7914C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:34:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14479C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:34:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345883AbiEJPiG (ORCPT
+        id S1345976AbiEJPiK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:38:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36200 "EHLO
+        Tue, 10 May 2022 11:38:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345971AbiEJPff (ORCPT
+        with ESMTP id S1346004AbiEJPgC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:35:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2782C3B574;
-        Tue, 10 May 2022 08:31:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ACCA6B81D7C;
-        Tue, 10 May 2022 15:30:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C68EC385C2;
-        Tue, 10 May 2022 15:30:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652196657;
-        bh=S6exA6OSyNi01JKIfIMf9AjDS/wnlwFSx2RTUuwC2CM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lNXs8Q6V+p1cDUy2KdDM13MJl3NoY5Qdq/BwxZegnMRh/5ZI29oP1SPUkaBoDIGCV
-         TRre5hHPsOtIqmvWOicVnIVAb69UshJhuh5Hn99PJZSqYrNXj+PEsbz00L2u/60aiy
-         j/FmlT3/v5f6i27tQ3nCUDKETS37dKvkAokYkmfCcvj0jeFCRHv+QYEjusHvlLhp89
-         7ytt5cHhPBXg6wivc7CRGViEZUUDaQ/784NyBc5Bri20QayljHQ8hiEsos+SZktroI
-         zT+IFRGAHv991qAJXSy2bRr4D8ys4ClAXT8buFbLgaUzPyTnlFf0byM0DdjSi8okVb
-         W1diT2O5XTk/w==
-Date:   Tue, 10 May 2022 17:30:50 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     Miklos Szeredi <miklos@szeredi.hu>
-Cc:     linux-fsdevel@vger.kernel.org, Dave Chinner <david@fromorbit.com>,
-        Theodore Ts'o <tytso@mit.edu>, Karel Zak <kzak@redhat.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org,
-        Linux API <linux-api@vger.kernel.org>,
-        linux-man <linux-man@vger.kernel.org>,
-        LSM <linux-security-module@vger.kernel.org>,
-        Ian Kent <raven@themaw.net>,
-        David Howells <dhowells@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Christian Brauner <christian@brauner.io>,
-        Amir Goldstein <amir73il@gmail.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>
-Subject: Re: [RFC PATCH] getting misc stats/attributes via xattr API
-Message-ID: <20220510153050.cgbt3wezbvf2jfnb@wittgenstein>
-References: <YnEeuw6fd1A8usjj@miu.piliscsaba.redhat.com>
- <20220509124815.vb7d2xj5idhb2wq6@wittgenstein>
- <CAJfpegveWaS5pR3O1c_7qLnaEDWwa8oi26x2v_CwDXB_sir1tg@mail.gmail.com>
- <20220510115316.acr6gl5ayqszada6@wittgenstein>
- <CAJfpegtVgyumJiFM_ujjuRTjg07vwOd4h9AT+mbh+n1Qn-LqqA@mail.gmail.com>
- <20220510141932.lth3bryefbl6ykny@wittgenstein>
- <CAJfpegt94fP-_eDAk=_C=24ahCtjQ4vhh8Xg+SrZbwPHs1waLA@mail.gmail.com>
+        Tue, 10 May 2022 11:36:02 -0400
+Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 613E460B88
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:31:36 -0700 (PDT)
+Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-edf9ddb312so17772826fac.8
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:31:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=A3C2Y5JnBnbYNhD+5UVTyjVuDk7iGLJEb4DhyztVkt8=;
+        b=Pz1mBlFBCcu0WcRSg4+psd9pn7Xyf58AdJDaYFm5NNz6AjRMG60yRGxErVIdKcLI+n
+         bZSxryxpcmbwLRfTRjEwNOAKimyaLERrSCBw2I3cQW6CDkKRPmebJZt46WTL35DKJURF
+         mOOrt7EMktFs473uAySR8o4QzsbcTOyhaTyXSO7u5DKm7+fFMw7kyFCXEResPrrLuGie
+         r7G+9pNTQbNUDmb5QJoM9QlSiOCQ3LsxSnYKoj9VxXbhZ5WBFwTkq6isd2IDEJ26k3xu
+         G6Xf8X4MivBYB323v2iSZU7WusvIgLkTrPQ3byR7XrF4I1PEC+aBFZ6JjKVhedRqUXP3
+         Cbrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=A3C2Y5JnBnbYNhD+5UVTyjVuDk7iGLJEb4DhyztVkt8=;
+        b=GAEbKczN4MeqhZgBm6/kWg6mOlPPboaVFKJk22DiD+Q2gAOrmMrOfZcU/48YZVgJ0H
+         anZVNblGHEuPCjwOO4R4+wozuDMC1PhfSqV9NPmNMP0ohWbd/+O2Il0tpD1hGnRT+PVG
+         DiHyTxFt7HcZ2qmTSWx0/AdPnqu5T65TtHUEerdnmfM18A89B/lRsEA3c45BbBpASJ0u
+         FnXmLOb44mQ8l/s4AOEXqurklIJEWrCb62w/vR49au4eJ+OMvheu6pWEvqKVihHXRHBx
+         ZDzUm0BnGLc2nr51pn2GXC9eqgUuZhJ4d39K2uKPMSA5q+HH3WQ/l+aFTQY6VYM2/p+8
+         Bq/A==
+X-Gm-Message-State: AOAM531NDqGMWDsJdPdED2DV3XYMXEZkDFOgwiln98vPeC8y5bocoyeB
+        +KkdMkIYhggrT4CVbDGBQ9GZpuIOzqstG9OchFY=
+X-Google-Smtp-Source: ABdhPJznI0Y4Evv1DPJe4fnOMpS+e+MVx31IvsR7XPyEWshyVNYic6thdcCHP3nUWS5ZuRNguMEFp4U2Qz9wr0cfzoQ=
+X-Received: by 2002:a05:6870:d683:b0:de:eaa2:3550 with SMTP id
+ z3-20020a056870d68300b000deeaa23550mr350285oap.253.1652196695239; Tue, 10 May
+ 2022 08:31:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAJfpegt94fP-_eDAk=_C=24ahCtjQ4vhh8Xg+SrZbwPHs1waLA@mail.gmail.com>
+References: <YnTAc96Uv0CXcGhD@suse.de> <CADnq5_NT3UtawpGuPDwF+dgmRdaoysb7sD_-oWWBC=T3BoUH7Q@mail.gmail.com>
+ <YnpIjdTT3esZ72Bf@suse.de>
+In-Reply-To: <YnpIjdTT3esZ72Bf@suse.de>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Tue, 10 May 2022 11:31:24 -0400
+Message-ID: <CADnq5_NYVvjcUru9hfbnATfcHJR5+eiK9bJAA9m41WKa=OJsog@mail.gmail.com>
+Subject: Re: [BUG] Warning and NULL-ptr dereference in amdgpu driver with 5.18
+To:     =?UTF-8?B?SsO2cmcgUsO2ZGVs?= <jroedel@suse.de>
+Cc:     "Wentland, Harry" <Harry.Wentland@amd.com>,
+        "Siqueira, Rodrigo" <Rodrigo.Siqueira@amd.com>,
+        "Kazlauskas, Nicholas" <nicholas.kazlauskas@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Christian Koenig <christian.koenig@amd.com>,
+        xinhui pan <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Maling list - DRI developers 
+        <dri-devel@lists.freedesktop.org>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 04:41:35PM +0200, Miklos Szeredi wrote:
-> On Tue, 10 May 2022 at 16:19, Christian Brauner <brauner@kernel.org> wrote:
-> 
-> > Fwiw, turning this around: unifying semantically distinct interfaces
-> > because of syntactical similarities is bad. Moving them into a
-> > syntactically equivalent system call that expresses the difference in
-> > semantics in its name is good.
-> 
-> You are ignoring the arguments against fragmentation.
+On Tue, May 10, 2022 at 7:12 AM J=C3=B6rg R=C3=B6del <jroedel@suse.de> wrot=
+e:
+>
+> Gentle ping. This is a 5.18 regression and I also see it with
+> 5.18-rc6. Please let me know if you need anything else to debug.
+>
 
-No, I'm not ignoring it and really wasn't trying to. What I tried to say
-by this, is that the inverse of the argument against fragmentation is
-simply equally worth supporting. Meaning the argument against
-fragmentation isn't stronger than the argument against aggressive
-unification.
+Are you doing anything special when it happens?  I.e., does it happen
+when the monitor is coming out of DPMS or something like that?
 
-(Fwiw, I think that basing the argument on syntactical similarities is
-problematic. Stretching this argument for a second, all multiplexers are
-almost by necessity syntactically similar (e.g. ptrace() and seccomp())
-but we don't use that as an argument to make them a single system call.)
+Alex
 
-> 
-> You are also ignoring the fact that semantically the current xattr
-> interface is already fragmented.   Grep for "strncmp(name, XATTR_" in
-> fs/xattr.c.
-> 
-> We don't have getsecurityxattr(), getuserxattr(), gettrustedxattr()
-> and getsystemxattr().  It would be crazy.   Adding getfsxattr()  would
-> be equally crazy.  getxattr() pretty much describes the semantics of
-> all of these things.
-
-getxattr() describes the syntax of all of these things and barely that.
-It describes the method of retrieval. And the method of retrieval is
-super generic to the point where strings _or binary data_ can be
-returned (e.g. POSIX ACLs or fscaps) depending on the xattr namespace.
-But wight now, everything we currently get from getxattr() is attributes
-associated with inodes.
-
-So getsecurityxattr(), getuserxattr(), gettrustedxattr() etc. would
-arguably be fragmentation because all of these things are associated
-with inodes.
-
-But now we're in the process of extending the *xattr() calls to operate
-on mounts and filesystems so an additional getfsattr() (or another name)
-is not fragmentation imho. And I definitely don't think this would
-qualify as "crazy".
+> Thanks,
+>
+>         Joerg
+>
+> On Fri, May 06, 2022 at 09:16:12AM -0400, Alex Deucher wrote:
+> > + some display folks
+> >
+> > On Fri, May 6, 2022 at 6:19 AM J=C3=B6rg R=C3=B6del <jroedel@suse.de> w=
+rote:
+> > >
+> > > Hi,
+> > >
+> > > since recently I started to experience warnings and NULL-ptr
+> > > dereferences in the amdgpu driver with kernel 5.18-rc5+. Earlier
+> > > 5.18-based kernels might be affected as well, but I havn't seen this
+> > > with 5.17.
+> > >
+> > > The kernel was built from the iommu-next branch, based on 5.18-rc5.
+> > >
+> > > The messages start with some PCIe error being reported:
+> > >
+> > > [20389.984993] pcieport 0000:00:03.1: AER: Multiple Corrected error r=
+eceived: 0000:0a:00.0
+> > > [20389.985005] amdgpu 0000:0a:00.0: PCIe Bus Error: severity=3DCorrec=
+ted, type=3DData Link Layer, (Receiver ID)
+> > > [20389.985007] amdgpu 0000:0a:00.0:   device [1002:6995] error status=
+/mask=3D000000c0/00002000
+> > > [20389.985010] amdgpu 0000:0a:00.0:    [ 6] BadTLP
+> > > [20389.985013] amdgpu 0000:0a:00.0:    [ 7] BadDLLP
+> > >
+> > > Directly followed by a waring:
+> > >
+> > > [81829.087101] ------------[ cut here ]------------
+> > > [81829.087105] WARNING: CPU: 4 PID: 644 at drivers/gpu/drm/amd/amdgpu=
+/../display/dc/clk_mgr/dce110/dce110_clk_mgr.c:140 dce110_fill_display_conf=
+igs+0x4a/0x150 [amdgpu]
+> > > [81829.087461] Modules linked in: snd_seq_dummy(E) snd_hrtimer(E) snd=
+_seq(E) rfcomm(E) af_packet(E) ocrdma(E) ib_uverbs(E) ib_core(E) nft_fib_in=
+et(E) nft_fib_ipv4(E) nft_fib_ipv6(E) nft_fib(E) nft_reject_inet(E) nf_reje=
+ct_ipv4(E) nf_reject_ipv6(E) nft_reject(E) nft_ct(E) nft_chain_nat(E) nf_ta=
+bles(E) ebtable_nat(E) ebtable_broute(E) ip6table_nat(E) ip6table_mangle(E)=
+ ip6table_raw(E) ip6table_security(E) iptable_nat(E) nf_nat(E) nf_conntrack=
+(E) nf_defrag_ipv6(E) nf_defrag_ipv4(E) iptable_mangle(E) iptable_raw(E) ip=
+table_security(E) ip_set(E) nfnetlink(E) ebtable_filter(E) ebtables(E) ip6t=
+able_filter(E) ip6_tables(E) iptable_filter(E) bpfilter(E) cmac(E) algif_ha=
+sh(E) algif_skcipher(E) af_alg(E) bnep(E) dmi_sysfs(E) intel_rapl_msr(E) in=
+tel_rapl_common(E) snd_hda_codec_realtek(E) eeepc_wmi(E) btusb(E) asus_wmi(=
+E) kvm_amd(E) btrtl(E) snd_hda_codec_generic(E) nls_iso8859_1(E) battery(E)=
+ uvcvideo(E) sparse_keymap(E) ledtrig_audio(E) btbcm(E) video(E) wmi_bmof(E=
+)
+> > > [81829.087502]  platform_profile(E) mxm_wmi(E) snd_hda_codec_hdmi(E) =
+nls_cp437(E) videobuf2_vmalloc(E) btintel(E) asus_wmi_sensors(E) btmtk(E) v=
+fat(E) snd_hda_intel(E) videobuf2_memops(E) videobuf2_v4l2(E) snd_intel_dsp=
+cfg(E) bluetooth(E) kvm(E) videobuf2_common(E) fat(E) snd_usb_audio(E) snd_=
+virtuoso(E) irqbypass(E) snd_usbmidi_lib(E) snd_hda_codec(E) snd_oxygen_lib=
+(E) videodev(E) snd_hwdep(E) snd_mpu401_uart(E) mc(E) snd_hda_core(E) ecdh_=
+generic(E) snd_rawmidi(E) snd_pcm(E) snd_seq_device(E) rfkill(E) pcspkr(E) =
+i2c_piix4(E) efi_pstore(E) k10temp(E) snd_timer(E) ext4(E) igb(E) snd(E) dc=
+a(E) soundcore(E) mbcache(E) be2net(E) jbd2(E) wmi(E) gpio_amdpt(E) gpio_ge=
+neric(E) tiny_power_button(E) button(E) acpi_cpufreq(E) fuse(E) configfs(E)=
+ ip_tables(E) x_tables(E) xfs(E) libcrc32c(E) dm_crypt(E) essiv(E) authenc(=
+E) trusted(E) asn1_encoder(E) tee(E) hid_logitech_hidpp(E) hid_logitech_dj(=
+E) hid_generic(E) usbhid(E) sr_mod(E) cdrom(E) uas(E) usb_storage(E) amdgpu=
+(E)
+> > > [81829.087551]  drm_ttm_helper(E) ttm(E) iommu_v2(E) gpu_sched(E) i2c=
+_algo_bit(E) crct10dif_pclmul(E) drm_dp_helper(E) crc32_pclmul(E) crc32c_in=
+tel(E) drm_kms_helper(E) syscopyarea(E) sysfillrect(E) sysimgblt(E) fb_sys_=
+fops(E) drm(E) xhci_pci(E) cec(E) ghash_clmulni_intel(E) xhci_pci_renesas(E=
+) aesni_intel(E) crypto_simd(E) cryptd(E) sp5100_tco(E) xhci_hcd(E) ccp(E) =
+rc_core(E) nvme(E) usbcore(E) nvme_core(E) sg(E) br_netfilter(E) bridge(E) =
+stp(E) llc(E) dm_multipath(E) dm_mod(E) scsi_dh_rdac(E) scsi_dh_emc(E) scsi=
+_dh_alua(E) ledtrig_timer(E) msr(E) efivarfs(E)
+> > > [81829.087581] CPU: 4 PID: 644 Comm: kworker/4:1H Tainted: G         =
+   E     5.18.0-rc5-iommu-next+ #1 4d1b12f73ec264927e45e8f2e5d1c0c8e280bc7d
+> > > [81829.087585] Hardware name: System manufacturer System Product Name=
+/PRIME X470-PRO, BIOS 5406 11/13/2019
+> > > [81829.087588] Workqueue: events_highpri dm_irq_work_func [amdgpu]
+> > > [81829.087928] RIP: 0010:dce110_fill_display_configs+0x4a/0x150 [amdg=
+pu]
+> > > [81829.088274] Code: 31 ff 4d 8d 98 f0 01 00 00 49 8b 0c f8 4c 89 da =
+31 c0 48 39 0a 0f 84 e4 00 00 00 83 c0 01 48 81 c2 10 08 00 00 83 f8 06 75 =
+e8 <0f> 0b 31 c0 80 b9 48 03 00 00 00 0f 85 a9 00 00 00 48 8b 50 08 8b
+> > > [81829.088277] RSP: 0018:ffffb891810c3be0 EFLAGS: 00010246
+> > > [81829.088280] RAX: 0000000000000006 RBX: ffff9719a6b60000 RCX: ffff9=
+71d08e07800
+> > > [81829.088282] RDX: ffff9719a6b63250 RSI: ffff9719a6b72980 RDI: 00000=
+00000000001
+> > > [81829.088284] RBP: ffff971a812f0000 R08: ffff9719a6b60000 R09: 00000=
+00000000000
+> > > [81829.088286] R10: ffff9719a6b72980 R11: ffff9719a6b601f0 R12: ffff9=
+719a6b72980
+> > > [81829.088287] R13: ffff9719a6b60000 R14: 0000000000000006 R15: 00000=
+00000003258
+> > > [81829.088289] FS:  0000000000000000(0000) GS:ffff97285eb00000(0000) =
+knlGS:0000000000000000
+> > > [81829.088291] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > [81829.088293] CR2: 00007fbc4800bb28 CR3: 00000002909c0000 CR4: 00000=
+000003506e0
+> > > [81829.088295] Call Trace:
+> > > [81829.088298]  <TASK>
+> > > [81829.088300]  dce11_pplib_apply_display_requirements+0x129/0x200 [a=
+mdgpu 1a7cfa9f14a3ef2ba289fa21a3c241108d69cd98]
+> > > [81829.088646]  dce112_update_clocks+0x8d/0xf0 [amdgpu 1a7cfa9f14a3ef=
+2ba289fa21a3c241108d69cd98]
+> > > [81829.088992]  dc_commit_updates_for_stream+0x1a91/0x1ef0 [amdgpu 1a=
+7cfa9f14a3ef2ba289fa21a3c241108d69cd98]
+> > > [81829.089330]  ? detect_link_and_local_sink+0x3b4/0xb40 [amdgpu 1a7c=
+fa9f14a3ef2ba289fa21a3c241108d69cd98]
+> > > [81829.089665]  set_all_streams_dpms_off_for_link+0x10e/0x120 [amdgpu=
+ 1a7cfa9f14a3ef2ba289fa21a3c241108d69cd98]
+> > > [81829.090002]  dc_link_detect+0x187/0x420 [amdgpu 1a7cfa9f14a3ef2ba2=
+89fa21a3c241108d69cd98]
+> > > [81829.090336]  handle_hpd_irq_helper+0xe9/0x190 [amdgpu 1a7cfa9f14a3=
+ef2ba289fa21a3c241108d69cd98]
+> > > [81829.090701]  process_one_work+0x217/0x3e0
+> > > [81829.090707]  worker_thread+0x4d/0x3c0
+> > > [81829.090712]  ? rescuer_thread+0x380/0x380
+> > > [81829.090715]  kthread+0xd9/0x100
+> > > [81829.090719]  ? kthread_complete_and_exit+0x20/0x20
+> > > [81829.090722]  ret_from_fork+0x22/0x30
+> > > [81829.090728]  </TASK>
+> > > [81829.090729] ---[ end trace 0000000000000000 ]---
+> > >
+> > > And this NULL-ptr dereference:
+> > >
+> > > [81829.090732] BUG: kernel NULL pointer dereference, address: 0000000=
+000000008
+> > > [81829.090737] #PF: supervisor read access in kernel mode
+> > > [81829.090741] #PF: error_code(0x0000) - not-present page
+> > > [81829.090744] PGD 0 P4D 0
+> > > [81829.090747] Oops: 0000 [#1] PREEMPT SMP NOPTI
+> > > [81829.090751] CPU: 4 PID: 644 Comm: kworker/4:1H Tainted: G        W=
+   E     5.18.0-rc5-iommu-next+ #1 4d1b12f73ec264927e45e8f2e5d1c0c8e280bc7d
+> > > [81829.090756] Hardware name: System manufacturer System Product Name=
+/PRIME X470-PRO, BIOS 5406 11/13/2019
+> > > [81829.090758] Workqueue: events_highpri dm_irq_work_func [amdgpu]
+> > > [81829.091111] RIP: 0010:dce110_fill_display_configs+0x5b/0x150 [amdg=
+pu]
+> > > [81829.091455] Code: c0 48 39 0a 0f 84 e4 00 00 00 83 c0 01 48 81 c2 =
+10 08 00 00 83 f8 06 75 e8 0f 0b 31 c0 80 b9 48 03 00 00 00 0f 85 a9 00 00 =
+00 <48> 8b 50 08 8b 9a 44 03 00 00 49 63 d1 41 83 c1 01 48 8d 14 92 49
+> > > [81829.091458] RSP: 0018:ffffb891810c3be0 EFLAGS: 00010246
+> > > [81829.091461] RAX: 0000000000000000 RBX: ffff9719a6b60000 RCX: ffff9=
+71d08e07800
+> > > [81829.091463] RDX: ffff9719a6b63250 RSI: ffff9719a6b72980 RDI: 00000=
+00000000001
+> > > [81829.091465] RBP: ffff971a812f0000 R08: ffff9719a6b60000 R09: 00000=
+00000000000
+> > > [81829.091467] R10: ffff9719a6b72980 R11: ffff9719a6b601f0 R12: ffff9=
+719a6b72980
+> > > [81829.091469] R13: ffff9719a6b60000 R14: 0000000000000006 R15: 00000=
+00000003258
+> > > [81829.091471] FS:  0000000000000000(0000) GS:ffff97285eb00000(0000) =
+knlGS:0000000000000000
+> > > [81829.091474] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > [81829.091476] CR2: 0000000000000008 CR3: 00000002909c0000 CR4: 00000=
+000003506e0
+> > > [81829.091479] Call Trace:
+> > > [81829.091480]  <TASK>
+> > > [81829.091482]  dce11_pplib_apply_display_requirements+0x129/0x200 [a=
+mdgpu 1a7cfa9f14a3ef2ba289fa21a3c241108d69cd98]
+> > > [81829.091828]  dce112_update_clocks+0x8d/0xf0 [amdgpu 1a7cfa9f14a3ef=
+2ba289fa21a3c241108d69cd98]
+> > > [81829.092173]  dc_commit_updates_for_stream+0x1a91/0x1ef0 [amdgpu 1a=
+7cfa9f14a3ef2ba289fa21a3c241108d69cd98]
+> > > [81829.092509]  ? detect_link_and_local_sink+0x3b4/0xb40 [amdgpu 1a7c=
+fa9f14a3ef2ba289fa21a3c241108d69cd98]
+> > > [81829.092844]  set_all_streams_dpms_off_for_link+0x10e/0x120 [amdgpu=
+ 1a7cfa9f14a3ef2ba289fa21a3c241108d69cd98]
+> > > [81829.093180]  dc_link_detect+0x187/0x420 [amdgpu 1a7cfa9f14a3ef2ba2=
+89fa21a3c241108d69cd98]
+> > > [81829.093514]  handle_hpd_irq_helper+0xe9/0x190 [amdgpu 1a7cfa9f14a3=
+ef2ba289fa21a3c241108d69cd98]
+> > > [81829.093853]  process_one_work+0x217/0x3e0
+> > > [81829.093858]  worker_thread+0x4d/0x3c0
+> > > [81829.093861]  ? rescuer_thread+0x380/0x380
+> > > [81829.093865]  kthread+0xd9/0x100
+> > > [81829.093868]  ? kthread_complete_and_exit+0x20/0x20
+> > > [81829.093872]  ret_from_fork+0x22/0x30
+> > > [81829.093876]  </TASK>
+> > > [81829.093878] Modules linked in: snd_seq_dummy(E) snd_hrtimer(E) snd=
+_seq(E) rfcomm(E) af_packet(E) ocrdma(E) ib_uverbs(E) ib_core(E) nft_fib_in=
+et(E) nft_fib_ipv4(E) nft_fib_ipv6(E) nft_fib(E) nft_reject_inet(E) nf_reje=
+ct_ipv4(E) nf_reject_ipv6(E) nft_reject(E) nft_ct(E) nft_chain_nat(E) nf_ta=
+bles(E) ebtable_nat(E) ebtable_broute(E) ip6table_nat(E) ip6table_mangle(E)=
+ ip6table_raw(E) ip6table_security(E) iptable_nat(E) nf_nat(E) nf_conntrack=
+(E) nf_defrag_ipv6(E) nf_defrag_ipv4(E) iptable_mangle(E) iptable_raw(E) ip=
+table_security(E) ip_set(E) nfnetlink(E) ebtable_filter(E) ebtables(E) ip6t=
+able_filter(E) ip6_tables(E) iptable_filter(E) bpfilter(E) cmac(E) algif_ha=
+sh(E) algif_skcipher(E) af_alg(E) bnep(E) dmi_sysfs(E) intel_rapl_msr(E) in=
+tel_rapl_common(E) snd_hda_codec_realtek(E) eeepc_wmi(E) btusb(E) asus_wmi(=
+E) kvm_amd(E) btrtl(E) snd_hda_codec_generic(E) nls_iso8859_1(E) battery(E)=
+ uvcvideo(E) sparse_keymap(E) ledtrig_audio(E) btbcm(E) video(E) wmi_bmof(E=
+)
+> > > [81829.093913]  platform_profile(E) mxm_wmi(E) snd_hda_codec_hdmi(E) =
+nls_cp437(E) videobuf2_vmalloc(E) btintel(E) asus_wmi_sensors(E) btmtk(E) v=
+fat(E) snd_hda_intel(E) videobuf2_memops(E) videobuf2_v4l2(E) snd_intel_dsp=
+cfg(E) bluetooth(E) kvm(E) videobuf2_common(E) fat(E) snd_usb_audio(E) snd_=
+virtuoso(E) irqbypass(E) snd_usbmidi_lib(E) snd_hda_codec(E) snd_oxygen_lib=
+(E) videodev(E) snd_hwdep(E) snd_mpu401_uart(E) mc(E) snd_hda_core(E) ecdh_=
+generic(E) snd_rawmidi(E) snd_pcm(E) snd_seq_device(E) rfkill(E) pcspkr(E) =
+i2c_piix4(E) efi_pstore(E) k10temp(E) snd_timer(E) ext4(E) igb(E) snd(E) dc=
+a(E) soundcore(E) mbcache(E) be2net(E) jbd2(E) wmi(E) gpio_amdpt(E) gpio_ge=
+neric(E) tiny_power_button(E) button(E) acpi_cpufreq(E) fuse(E) configfs(E)=
+ ip_tables(E) x_tables(E) xfs(E) libcrc32c(E) dm_crypt(E) essiv(E) authenc(=
+E) trusted(E) asn1_encoder(E) tee(E) hid_logitech_hidpp(E) hid_logitech_dj(=
+E) hid_generic(E) usbhid(E) sr_mod(E) cdrom(E) uas(E) usb_storage(E) amdgpu=
+(E)
+> > > [81829.093952]  drm_ttm_helper(E) ttm(E) iommu_v2(E) gpu_sched(E) i2c=
+_algo_bit(E) crct10dif_pclmul(E) drm_dp_helper(E) crc32_pclmul(E) crc32c_in=
+tel(E) drm_kms_helper(E) syscopyarea(E) sysfillrect(E) sysimgblt(E) fb_sys_=
+fops(E) drm(E) xhci_pci(E) cec(E) ghash_clmulni_intel(E) xhci_pci_renesas(E=
+) aesni_intel(E) crypto_simd(E) cryptd(E) sp5100_tco(E) xhci_hcd(E) ccp(E) =
+rc_core(E) nvme(E) usbcore(E) nvme_core(E) sg(E) br_netfilter(E) bridge(E) =
+stp(E) llc(E) dm_multipath(E) dm_mod(E) scsi_dh_rdac(E) scsi_dh_emc(E) scsi=
+_dh_alua(E) ledtrig_timer(E) msr(E) efivarfs(E)
+> > > [81829.093978] CR2: 0000000000000008
+> > > [81829.093980] ---[ end trace 0000000000000000 ]---
+> > > [81829.338958] RIP: 0010:dce110_fill_display_configs+0x5b/0x150 [amdg=
+pu]
+> > > [81829.339333] Code: c0 48 39 0a 0f 84 e4 00 00 00 83 c0 01 48 81 c2 =
+10 08 00 00 83 f8 06 75 e8 0f 0b 31 c0 80 b9 48 03 00 00 00 0f 85 a9 00 00 =
+00 <48> 8b 50 08 8b 9a 44 03 00 00 49 63 d1 41 83 c1 01 48 8d 14 92 49
+> > > [81829.339336] RSP: 0018:ffffb891810c3be0 EFLAGS: 00010246
+> > > [81829.339340] RAX: 0000000000000000 RBX: ffff9719a6b60000 RCX: ffff9=
+71d08e07800
+> > > [81829.339343] RDX: ffff9719a6b63250 RSI: ffff9719a6b72980 RDI: 00000=
+00000000001
+> > > [81829.339345] RBP: ffff971a812f0000 R08: ffff9719a6b60000 R09: 00000=
+00000000000
+> > > [81829.339347] R10: ffff9719a6b72980 R11: ffff9719a6b601f0 R12: ffff9=
+719a6b72980
+> > > [81829.339349] R13: ffff9719a6b60000 R14: 0000000000000006 R15: 00000=
+00000003258
+> > > [81829.339352] FS:  0000000000000000(0000) GS:ffff97285eb00000(0000) =
+knlGS:0000000000000000
+> > > [81829.339355] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > [81829.339357] CR2: 0000000000000008 CR3: 00000002909c0000 CR4: 00000=
+000003506e0
+> > >
+> > > Usually one of the displays does not power on anymore after this and =
+the
+> > > machine locks up pretty soon as well, probably because the worker thr=
+ead
+> > > is dead.
+> > >
+> > > My GPU device is:
+> > >
+> > > 0a:00.0 VGA compatible controller: Advanced Micro Devices, Inc. [AMD/=
+ATI] Lexa XT [Radeon PRO WX 2100] (prog-if 00 [VGA controller])
+> > >         Subsystem: Advanced Micro Devices, Inc. [AMD/ATI] Device 0b0c
+> > >         Flags: bus master, fast devsel, latency 0, IRQ 90, IOMMU grou=
+p 15
+> > >         Memory at e0000000 (64-bit, prefetchable) [size=3D256M]
+> > >         Memory at f0000000 (64-bit, prefetchable) [size=3D2M]
+> > >         I/O ports at e000 [size=3D256]
+> > >         Memory at fce00000 (32-bit, non-prefetchable) [size=3D256K]
+> > >         Expansion ROM at 000c0000 [disabled] [size=3D128K]
+> > >         Capabilities: <access denied>
+> > >         Kernel driver in use: amdgpu
+> > >         Kernel modules: amdgpu
+> > >
+> > > Please let me know if anything else is needed to debug this. Bisectio=
+n
+> > > is not really feasible, because the issue happens at random, sometime=
+s
+> > > after one or two days of uptime.
+> > >
+> > > Regards,
+> > >
+> > > --
+> > > J=C3=B6rg R=C3=B6del
+> > > jroedel@suse.de
+> > >
+> > > SUSE Software Solutions Germany GmbH
+> > > Maxfeldstr. 5
+> > > 90409 N=C3=BCrnberg
+> > > Germany
+> > >
+> > > (HRB 36809, AG N=C3=BCrnberg)
+> > > Gesch=C3=A4ftsf=C3=BChrer: Ivo Totev
+> > >
+>
+> --
+> J=C3=B6rg R=C3=B6del
+> jroedel@suse.de
+>
+> SUSE Software Solutions Germany GmbH
+> Maxfeldstr. 5
+> 90409 N=C3=BCrnberg
+> Germany
+>
+> (HRB 36809, AG N=C3=BCrnberg)
+> Gesch=C3=A4ftsf=C3=BChrer: Ivo Totev
+>
