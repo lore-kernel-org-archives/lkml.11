@@ -2,92 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDA96C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:34:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7914C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:34:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346035AbiEJPhz (ORCPT
+        id S1345883AbiEJPiG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:37:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45564 "EHLO
+        Tue, 10 May 2022 11:38:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345909AbiEJPht (ORCPT
+        with ESMTP id S1345971AbiEJPff (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:37:49 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 444EC289A6
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:33:19 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id cx11-20020a17090afd8b00b001d9fe5965b3so2315376pjb.3
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:33:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=XgBcNoHF+H5YHWhoRdIUmpBDPDoFkHi2u+F0mxHHboU=;
-        b=SqlnRkOBavZUfRbJwMbK/YH4lJboO/H6W9MGbF1Yr8P3VdOycLTYi6X8sxipFmctzz
-         Sip8xnN1tVt+E+KB3GObsdE4JlFanBX/u27osIqtF0PSPAJ1XR1F6QACv6LQIc4U/dyr
-         7jwaKmTINGJsQxtoXTY7xQt+ULsVPni3miKhV6QEWS8GpL0apIdYLDp4iizJ0IwJcrGO
-         Z1kAXxv/Gg20ZCFB5DSXa7QGkB1NNF9jcxOpv2NgM7kfpcR3+mRvB6jQKpjcoKhg0ZzR
-         AlHth8RnP5dD7DJ7f9MwHjTrZuGMgQcr4lFnA96B7sJJvi+GRlZtDzbImfHt7wyaFTvi
-         z+iQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=XgBcNoHF+H5YHWhoRdIUmpBDPDoFkHi2u+F0mxHHboU=;
-        b=z380iZvzNUW5D4tkT4ceaPATwOHx1wIi1EQcxYd1ZR08SQ85czW+yDx5chBr8+2jHq
-         U4Ug7sCctW98Gm0T2aDjUad1VOq2Dtnwn/d1smApBVj4lFaNSJ4V52sePYxJuycWi6S/
-         v4EeexGWj/2f6D96jWNsy+iRgQcdY3jl0LBCdTPmITfzOQJ8TQJ5fvSz0RNbl4xcwPf1
-         fuvNF909lVSt0Yk/RbShtlh6We3u5e/YSIwTE6dy5lzda6S7rkfITMgGV2jTA5kvVNgN
-         nhESsz7v/cui6+RL0xsX3JstFlZ7dazziIpa2fDrOSvhrjzxdvyHgFcYdmZcBLd3EPY2
-         pu/w==
-X-Gm-Message-State: AOAM532U53md7rtGlk+hfNuC8NqjiXrDIwSW+WmoLUwIR5O7M/5iF6Io
-        F2JzRnyrlJ6b7YhVRLh4GA==
-X-Google-Smtp-Source: ABdhPJxIg+lFFBXwy/xu/9dN8ld18Dmoa8zxjI0DMkcnvYRYOp5IZmTm31F5Gz51fbFrsofGjLfMyA==
-X-Received: by 2002:a17:90b:4a90:b0:1dc:aec3:c04 with SMTP id lp16-20020a17090b4a9000b001dcaec30c04mr546709pjb.118.1652196798797;
-        Tue, 10 May 2022 08:33:18 -0700 (PDT)
-Received: from localhost.localdomain ([144.202.91.207])
-        by smtp.gmail.com with ESMTPSA id cd10-20020a056a00420a00b0050dc76281d0sm11104248pfb.170.2022.05.10.08.33.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 08:33:18 -0700 (PDT)
-From:   Zheyu Ma <zheyuma97@gmail.com>
-To:     james.schulman@cirrus.com, david.rhodes@cirrus.com,
-        tanureal@opensource.cirrus.com, rf@opensource.cirrus.com,
-        lgirdwood@gmail.com, broonie@kernel.org, perex@perex.cz,
-        tiwai@suse.com, oder_chiou@realtek.com
-Cc:     alsa-devel@alsa-project.org, patches@opensource.cirrus.com,
-        linux-kernel@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>
-Subject: [PATCH 1/6] ASoC: cs42l52: Fix the error handling of cs42l56_i2c_probe()
-Date:   Tue, 10 May 2022 23:32:46 +0800
-Message-Id: <20220510153251.1741210-2-zheyuma97@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220510153251.1741210-1-zheyuma97@gmail.com>
-References: <20220510153251.1741210-1-zheyuma97@gmail.com>
+        Tue, 10 May 2022 11:35:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2782C3B574;
+        Tue, 10 May 2022 08:31:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ACCA6B81D7C;
+        Tue, 10 May 2022 15:30:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C68EC385C2;
+        Tue, 10 May 2022 15:30:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652196657;
+        bh=S6exA6OSyNi01JKIfIMf9AjDS/wnlwFSx2RTUuwC2CM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lNXs8Q6V+p1cDUy2KdDM13MJl3NoY5Qdq/BwxZegnMRh/5ZI29oP1SPUkaBoDIGCV
+         TRre5hHPsOtIqmvWOicVnIVAb69UshJhuh5Hn99PJZSqYrNXj+PEsbz00L2u/60aiy
+         j/FmlT3/v5f6i27tQ3nCUDKETS37dKvkAokYkmfCcvj0jeFCRHv+QYEjusHvlLhp89
+         7ytt5cHhPBXg6wivc7CRGViEZUUDaQ/784NyBc5Bri20QayljHQ8hiEsos+SZktroI
+         zT+IFRGAHv991qAJXSy2bRr4D8ys4ClAXT8buFbLgaUzPyTnlFf0byM0DdjSi8okVb
+         W1diT2O5XTk/w==
+Date:   Tue, 10 May 2022 17:30:50 +0200
+From:   Christian Brauner <brauner@kernel.org>
+To:     Miklos Szeredi <miklos@szeredi.hu>
+Cc:     linux-fsdevel@vger.kernel.org, Dave Chinner <david@fromorbit.com>,
+        Theodore Ts'o <tytso@mit.edu>, Karel Zak <kzak@redhat.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org,
+        Linux API <linux-api@vger.kernel.org>,
+        linux-man <linux-man@vger.kernel.org>,
+        LSM <linux-security-module@vger.kernel.org>,
+        Ian Kent <raven@themaw.net>,
+        David Howells <dhowells@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christian Brauner <christian@brauner.io>,
+        Amir Goldstein <amir73il@gmail.com>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>
+Subject: Re: [RFC PATCH] getting misc stats/attributes via xattr API
+Message-ID: <20220510153050.cgbt3wezbvf2jfnb@wittgenstein>
+References: <YnEeuw6fd1A8usjj@miu.piliscsaba.redhat.com>
+ <20220509124815.vb7d2xj5idhb2wq6@wittgenstein>
+ <CAJfpegveWaS5pR3O1c_7qLnaEDWwa8oi26x2v_CwDXB_sir1tg@mail.gmail.com>
+ <20220510115316.acr6gl5ayqszada6@wittgenstein>
+ <CAJfpegtVgyumJiFM_ujjuRTjg07vwOd4h9AT+mbh+n1Qn-LqqA@mail.gmail.com>
+ <20220510141932.lth3bryefbl6ykny@wittgenstein>
+ <CAJfpegt94fP-_eDAk=_C=24ahCtjQ4vhh8Xg+SrZbwPHs1waLA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAJfpegt94fP-_eDAk=_C=24ahCtjQ4vhh8Xg+SrZbwPHs1waLA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The driver should goto label 'err_enable' when failing at regmap_read().
+On Tue, May 10, 2022 at 04:41:35PM +0200, Miklos Szeredi wrote:
+> On Tue, 10 May 2022 at 16:19, Christian Brauner <brauner@kernel.org> wrote:
+> 
+> > Fwiw, turning this around: unifying semantically distinct interfaces
+> > because of syntactical similarities is bad. Moving them into a
+> > syntactically equivalent system call that expresses the difference in
+> > semantics in its name is good.
+> 
+> You are ignoring the arguments against fragmentation.
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
----
- sound/soc/codecs/cs42l56.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+No, I'm not ignoring it and really wasn't trying to. What I tried to say
+by this, is that the inverse of the argument against fragmentation is
+simply equally worth supporting. Meaning the argument against
+fragmentation isn't stronger than the argument against aggressive
+unification.
 
-diff --git a/sound/soc/codecs/cs42l56.c b/sound/soc/codecs/cs42l56.c
-index 2c4e09b43199..dc23007336c5 100644
---- a/sound/soc/codecs/cs42l56.c
-+++ b/sound/soc/codecs/cs42l56.c
-@@ -1245,7 +1245,7 @@ static int cs42l56_i2c_probe(struct i2c_client *i2c_client)
- 	ret = regmap_read(cs42l56->regmap, CS42L56_CHIP_ID_1, &reg);
- 	if (ret) {
- 		dev_err(&i2c_client->dev, "Failed to read chip ID: %d\n", ret);
--		return ret;
-+		goto err_enable;
- 	}
- 
- 	devid = reg & CS42L56_CHIP_ID_MASK;
--- 
-2.25.1
+(Fwiw, I think that basing the argument on syntactical similarities is
+problematic. Stretching this argument for a second, all multiplexers are
+almost by necessity syntactically similar (e.g. ptrace() and seccomp())
+but we don't use that as an argument to make them a single system call.)
 
+> 
+> You are also ignoring the fact that semantically the current xattr
+> interface is already fragmented.   Grep for "strncmp(name, XATTR_" in
+> fs/xattr.c.
+> 
+> We don't have getsecurityxattr(), getuserxattr(), gettrustedxattr()
+> and getsystemxattr().  It would be crazy.   Adding getfsxattr()  would
+> be equally crazy.  getxattr() pretty much describes the semantics of
+> all of these things.
+
+getxattr() describes the syntax of all of these things and barely that.
+It describes the method of retrieval. And the method of retrieval is
+super generic to the point where strings _or binary data_ can be
+returned (e.g. POSIX ACLs or fscaps) depending on the xattr namespace.
+But wight now, everything we currently get from getxattr() is attributes
+associated with inodes.
+
+So getsecurityxattr(), getuserxattr(), gettrustedxattr() etc. would
+arguably be fragmentation because all of these things are associated
+with inodes.
+
+But now we're in the process of extending the *xattr() calls to operate
+on mounts and filesystems so an additional getfsattr() (or another name)
+is not fragmentation imho. And I definitely don't think this would
+qualify as "crazy".
