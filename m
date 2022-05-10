@@ -2,129 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0C78C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:21:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D216DC4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:23:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345662AbiEJPZW (ORCPT
+        id S1345732AbiEJP1f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:25:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55938 "EHLO
+        Tue, 10 May 2022 11:27:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345696AbiEJPYq (ORCPT
+        with ESMTP id S1345926AbiEJP1Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:24:46 -0400
-Received: from mail-oo1-xc2d.google.com (mail-oo1-xc2d.google.com [IPv6:2607:f8b0:4864:20::c2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A30B5A59F
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:09:27 -0700 (PDT)
-Received: by mail-oo1-xc2d.google.com with SMTP id l9-20020a4abe09000000b0035eb3d4a2aeso3172745oop.0
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:09:27 -0700 (PDT)
+        Tue, 10 May 2022 11:27:25 -0400
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBDFEE86
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:17:25 -0700 (PDT)
+Received: by mail-io1-xd32.google.com with SMTP id a10so1386739ioe.9
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:17:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=sartura-hr.20210112.gappssmtp.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=xz5dj/sAI16FlyJ/oMGNXUrGgnVqkXZ5u3e0YW3gpHs=;
-        b=PtrL5qWveEvv6rrV6LCRolslMgz2D5A05Filc1C4eA/tW3SXB586KpETA/BPDuw2K5
-         tVQWrrkFShOhj3P6/zbYLmkTeglTiwkevgQdp68+vQSDDARFHbkFUEtM0/MN1b3aFSm4
-         vM/9ukGaR4N8+FdJQZeUQaN7qjGEXqBZBSiqrzPoBePqORYTC1liLmB/DdIfiAg4g7q1
-         zHfiJzsNz9JOtXIFaCk7cGYgEdfiZGcGQx1TtIERtkEQPkPEhNVSM/ySzvupMxrSR52u
-         jy+sDL6AjEId0S5DG5lJBft0cwUUMVx1gPu+uaePTy2tmzSA1s3ekTM0htfITXWHskKE
-         1Srw==
+        bh=2B5Vkl7TFzY6huBpLT1bUz9mIIjjQyx9+L3zupaHP/E=;
+        b=kUfXtfH9Zonopkyd79eaW/m77x8S8R7qo80V2tCzd9JOlsQ06sdS6sGJbzM+8yjoY9
+         m+XmvO2xJeWlqHJCjJolAYENtfzZsaFEyw9wyzc8MkO4WDZFWa314wUPVIzlmiJZcjA8
+         VQfnOVy24KVA3D8ezVnljqbKm7hf45os3aX2XsnlqxxgyVXhS8VR8x3BgIl/nQZJLwgg
+         vgmojE5RPPTRhLfcnOtVuaoWLYWu1oWkbxVCczSja7blDxGU7Atw8m9rLXFuPyURmTzS
+         0YcR8UNLAn6IeEZCHKZIato4Lg8ssgcXXg7k19XYrjBpJCes/KX4bqJTTHAgv6h0dS8s
+         Qn0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=xz5dj/sAI16FlyJ/oMGNXUrGgnVqkXZ5u3e0YW3gpHs=;
-        b=lLBKl3i/Q1EEJcIE6Lw6rSCEpUMMdC9qD+ZpwAXcYpToe425GL4cPgc/UOgxn+NIJs
-         v0y5Ns4808oMr90fxU2u5N08BLbZ2gzpYY1avD/tSTltA8nuGBP5jP1OeG/pKTIDrWQM
-         mLb1+EHsEsadPuJHgTrqpKqirRh4pLaUZ/1bhnqN1wyvjWIyJ5acUYizlt7WjwWHYRdM
-         Gb8RkUkKJLQwTjYyVeI8VquB4Jfhdo8HVitsTGOR19EH6KLcBywLBeBUewvKNSy4ocvz
-         JUGhXGma11waOORTQKEQRUn2myneNJ8ttfpeuZuR/12O1sESfwwjXY1pjuO2AVCf074c
-         AhFQ==
-X-Gm-Message-State: AOAM530f5o6hOc7hHjDXWJGXK6G9s42l6DNMcOZbmTxM0c/o0/jXJirs
-        00skcXNCE7pu1xC1lYWw9oC5qK5ftt4EMyDzuTs=
-X-Google-Smtp-Source: ABdhPJxNg9Nb8TbOJv6OiCoApQXhEYw+7atDL1anmm12hsxZez/BrbxD1eJXy1tAN/8hP0gam/1pP6JWHg2zwDu7Gjg=
-X-Received: by 2002:a4a:4a86:0:b0:35e:a2d3:763b with SMTP id
- k128-20020a4a4a86000000b0035ea2d3763bmr8169819oob.23.1652195366837; Tue, 10
- May 2022 08:09:26 -0700 (PDT)
+        bh=2B5Vkl7TFzY6huBpLT1bUz9mIIjjQyx9+L3zupaHP/E=;
+        b=s+vDTC5WpJ/Hw0iXP/cnN9PfuL4VwDZNeq7Ck6WazV92QtdA5I9IC8GrbjhMb3R6d0
+         GE9nVErgJyyHPdhkZB4wXvdZXMaRtOthEDrUpCvtZALvBVTcXbgEHf/ztry+dA2vIGcR
+         EEnID4wf4E8ItlcoIbSfbCQVnmWnkW5dSgvEXXhYzFouzgE0oV4Henup1jAeKXXF6GlH
+         0B37xM8nI9rwWD3e9vSVsLAHg40ZVFHAm058+eZ9VTUoC+eTJKQfhk9qGX7vCE679Dge
+         kO1kFte4KK5VMP/GPb48hKAORWE5pbjYcoXGmV6cRFHKPvS+vXAQoptZhHqZ3Ar6hQGt
+         W4ww==
+X-Gm-Message-State: AOAM5333SDWJwoa7FmgBldDOj5e0TGbzEGKOheIdNHQRbQ39XDTqQbqo
+        934giW41HEvGVtGqE9IPOwUlojCZw8EHeECRTPilBQ==
+X-Google-Smtp-Source: ABdhPJxNspW+ngbi0U/I2ZjEzZydwyZIbEbjDc4pUkE02twM2tokN7gph1uMIPpmqO4/YO1WsuVpjI+o2sl2PzHACAA=
+X-Received: by 2002:a05:6638:3288:b0:32b:5f8e:19f1 with SMTP id
+ f8-20020a056638328800b0032b5f8e19f1mr10407822jav.248.1652195845296; Tue, 10
+ May 2022 08:17:25 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220510060440.67178-1-jiapeng.chong@linux.alibaba.com>
-In-Reply-To: <20220510060440.67178-1-jiapeng.chong@linux.alibaba.com>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Tue, 10 May 2022 11:09:15 -0400
-Message-ID: <CADnq5_NxH5WzL6=5ZG2Cb0CBPU3FwP7ZS2ZMzyYHZ00XKe3E5w@mail.gmail.com>
-Subject: Re: [PATCH] drm/amdgpu: clean up some inconsistent indenting
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     "Deucher, Alexander" <alexander.deucher@amd.com>,
-        Dave Airlie <airlied@linux.ie>,
-        xinhui pan <Xinhui.Pan@amd.com>,
-        Abaci Robot <abaci@linux.alibaba.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Christian Koenig <christian.koenig@amd.com>
+References: <20220322105857.1107016-1-robert.marko@sartura.hr> <b183f838-359c-752a-dd23-9bd1a160eee5@linaro.org>
+In-Reply-To: <b183f838-359c-752a-dd23-9bd1a160eee5@linaro.org>
+From:   Robert Marko <robert.marko@sartura.hr>
+Date:   Tue, 10 May 2022 17:17:14 +0200
+Message-ID: <CA+HBbNHJtHexMHUiZ8d-OStCP57nbDXhQtgL+hvjQkA2FFsXZg@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] arm64: dts: uDPU: update partition table
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, gregory.clement@bootlin.com,
+        sebastian.hesselbarth@gmail.com, Rob Herring <robh+dt@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
+        =?UTF-8?B?TWFyZWsgQmVow7pu?= <marek.behun@nic.cz>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Applied.  Thanks!
+On Tue, May 10, 2022 at 3:56 PM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 22/03/2022 11:58, Robert Marko wrote:
+> > Partition currently called "uboot" does not only contain U-boot, but
+> > rather it contains TF-A, U-boot and U-boot environment.
+> >
+> > So, to avoid accidentally deleting the U-boot environment which is
+> > located at 0x180000 split the partition.
+> >
+> > "uboot" is not the correct name as you can't boot these boards with U-boot
+> > only, TF-A must be present as well, so rename the "uboot" partition to
+> > "firmware".
+> >
+> > While we are here, describe the NOR node as "spi-flash@0" instead of
+> > "m25p80@0" which is the old SPI-NOR driver name.
+>
+> This patch was applied, but it was never tested with dtbs_check (nor
+> rebased on my cleanups). spi-flash is still wrong.
 
-Alex
+Hi Krzysztof, sorry for that, I did run dtbs_check on it but there is
+a whole forest of
+warnings about schemas not being matched as most of the bindings are
+still plaintext
+and I missed this.
 
-On Tue, May 10, 2022 at 2:05 AM Jiapeng Chong
-<jiapeng.chong@linux.alibaba.com> wrote:
+I did correct this to flash@0 in the eDPU series that was sent out today.
+Regards,
+Robert
 >
-> Eliminate the follow smatch warning:
->
-> drivers/gpu/drm/amd/amdgpu/nbio_v7_7.c:35 nbio_v7_7_get_rev_id() warn:
-> inconsistent indenting.
->
-> drivers/gpu/drm/amd/amdgpu/nbio_v7_7.c:214 nbio_v7_7_init_registers()
-> warn: inconsistent indenting.
->
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-> ---
->  drivers/gpu/drm/amd/amdgpu/nbio_v7_7.c | 17 ++++++++---------
->  1 file changed, 8 insertions(+), 9 deletions(-)
->
-> diff --git a/drivers/gpu/drm/amd/amdgpu/nbio_v7_7.c b/drivers/gpu/drm/amd/amdgpu/nbio_v7_7.c
-> index e32c874b42b5..cdc0c9779848 100644
-> --- a/drivers/gpu/drm/amd/amdgpu/nbio_v7_7.c
-> +++ b/drivers/gpu/drm/amd/amdgpu/nbio_v7_7.c
-> @@ -32,8 +32,7 @@ static u32 nbio_v7_7_get_rev_id(struct amdgpu_device *adev)
->  {
->         u32 tmp;
->
-> -               tmp = RREG32_SOC15(NBIO, 0, regRCC_STRAP0_RCC_DEV0_EPF0_STRAP0);
-> -
-> +       tmp = RREG32_SOC15(NBIO, 0, regRCC_STRAP0_RCC_DEV0_EPF0_STRAP0);
->         tmp &= RCC_STRAP0_RCC_DEV0_EPF0_STRAP0__STRAP_ATI_REV_ID_DEV0_F0_MASK;
->         tmp >>= RCC_STRAP0_RCC_DEV0_EPF0_STRAP0__STRAP_ATI_REV_ID_DEV0_F0__SHIFT;
->
-> @@ -211,14 +210,14 @@ static void nbio_v7_7_init_registers(struct amdgpu_device *adev)
->  {
->         uint32_t def, data;
->
-> -               def = data = RREG32_SOC15(NBIO, 0, regBIF0_PCIE_MST_CTRL_3);
-> -               data = REG_SET_FIELD(data, BIF0_PCIE_MST_CTRL_3,
-> -                       CI_SWUS_MAX_READ_REQUEST_SIZE_MODE, 1);
-> -               data = REG_SET_FIELD(data, BIF0_PCIE_MST_CTRL_3,
-> -                       CI_SWUS_MAX_READ_REQUEST_SIZE_PRIV, 1);
-> +       def = data = RREG32_SOC15(NBIO, 0, regBIF0_PCIE_MST_CTRL_3);
-> +       data = REG_SET_FIELD(data, BIF0_PCIE_MST_CTRL_3,
-> +                            CI_SWUS_MAX_READ_REQUEST_SIZE_MODE, 1);
-> +       data = REG_SET_FIELD(data, BIF0_PCIE_MST_CTRL_3,
-> +                            CI_SWUS_MAX_READ_REQUEST_SIZE_PRIV, 1);
->
-> -               if (def != data)
-> -                       WREG32_SOC15(NBIO, 0, regBIF0_PCIE_MST_CTRL_3, data);
-> +       if (def != data)
-> +               WREG32_SOC15(NBIO, 0, regBIF0_PCIE_MST_CTRL_3, data);
->
->  }
->
-> --
-> 2.20.1.7.g153144c
->
+> Best regards,
+> Krzysztof
+
+
+
+-- 
+Robert Marko
+Staff Embedded Linux Engineer
+Sartura Ltd.
+Lendavska ulica 16a
+10000 Zagreb, Croatia
+Email: robert.marko@sartura.hr
+Web: www.sartura.hr
