@@ -2,52 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3682C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:18:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C79FC4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:18:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344238AbiEJOV2 (ORCPT
+        id S1344299AbiEJOVj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:21:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47050 "EHLO
+        Tue, 10 May 2022 10:21:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244993AbiEJNrK (ORCPT
+        with ESMTP id S244978AbiEJNrK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:47:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41BFE39BBB;
-        Tue, 10 May 2022 06:33:25 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F94E2380E5;
+        Tue, 10 May 2022 06:33:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D211A6188A;
-        Tue, 10 May 2022 13:33:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5715C385C2;
-        Tue, 10 May 2022 13:33:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DFCCC6182F;
+        Tue, 10 May 2022 13:33:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE998C385A6;
+        Tue, 10 May 2022 13:33:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189604;
-        bh=KqOU/pUGQdhnvyBqs5TI1Kuqwvj5N0BbGyVQazdzZco=;
+        s=korg; t=1652189586;
+        bh=nt4Jl+T/r56aML4HwP1tjND6t2tSipFlS5Q/81Noaz0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jHTWJzK4zEKIHso88ry9f+sLMmO9Ytz267LpH2UrUONwmmK1yH5hS70STLsLwXf88
-         PtsG5hlMAHJdsNlRqwV/8wyhNbndFIbLht/XlIw9mpk3As80dgg5SQnggV7Z/NIMTR
-         /Ksa0hN0eaA86ciLVr7pzay8MZjMaYBf3Abtonow=
+        b=1nTZlDdt0vVD9IjdDTL4EtmR99YopGjh8XCw4z/FW1VlVVw0qxZ354p2YQ4f+rNrx
+         74YqwV4EFmUsS6lwv/7yk9rbVBBdqmSgOBQzbHXK5eyf4TWAHGuOoAbPqUyjLmOenk
+         s+f9SVReLfsGJEmn7GJ6fky65UYgtLYexxqxdQbo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Neeraj Upadhyay <neeraju@codeaurora.org>,
-        Uladzislau Rezki <urezki@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Paul E. McKenney" <paulmck@kernel.org>
-Subject: [PATCH 5.15 104/135] rcu: Fix callbacks processing time limit retaining cond_resched()
-Date:   Tue, 10 May 2022 15:08:06 +0200
-Message-Id: <20220510130743.390330035@linuxfoundation.org>
+        stable@vger.kernel.org, Aili Yao <yaoaili@kingsoft.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 099/135] KVM: LAPIC: Enable timer posted-interrupt only when mwait/hlt is advertised
+Date:   Tue, 10 May 2022 15:08:01 +0200
+Message-Id: <20220510130743.249028835@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -59,82 +52,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frederic Weisbecker <frederic@kernel.org>
+From: Wanpeng Li <wanpengli@tencent.com>
 
-commit 3e61e95e2d095e308616cba4ffb640f95a480e01 upstream.
+[ Upstream commit 1714a4eb6fb0cb79f182873cd011a8ed60ac65e8 ]
 
-The callbacks processing time limit makes sure we are not exceeding a
-given amount of time executing the queue.
+As commit 0c5f81dad46 ("KVM: LAPIC: Inject timer interrupt via posted
+interrupt") mentioned that the host admin should well tune the guest
+setup, so that vCPUs are placed on isolated pCPUs, and with several pCPUs
+surplus for *busy* housekeeping.  In this setup, it is preferrable to
+disable mwait/hlt/pause vmexits to keep the vCPUs in non-root mode.
 
-However its "continue" clause bypasses the cond_resched() call on
-rcuc and NOCB kthreads, delaying it until we reach the limit, which can
-be very long...
+However, if only some guests isolated and others not, they would not
+have any benefit from posted timer interrupts, and at the same time lose
+VMX preemption timer fast paths because kvm_can_post_timer_interrupt()
+returns true and therefore forces kvm_can_use_hv_timer() to false.
 
-Make sure the scheduler has a higher priority than the time limit.
+By guaranteeing that posted-interrupt timer is only used if MWAIT or
+HLT are done without vmexit, KVM can make a better choice and use the
+VMX preemption timer and the corresponding fast paths.
 
-Reviewed-by: Valentin Schneider <valentin.schneider@arm.com>
-Tested-by: Valentin Schneider <valentin.schneider@arm.com>
-Tested-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
-Cc: Valentin Schneider <valentin.schneider@arm.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Josh Triplett <josh@joshtriplett.org>
-Cc: Joel Fernandes <joel@joelfernandes.org>
-Cc: Boqun Feng <boqun.feng@gmail.com>
-Cc: Neeraj Upadhyay <neeraju@codeaurora.org>
-Cc: Uladzislau Rezki <urezki@gmail.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-[UR: backport to 5.15-stable + commit update]
-Signed-off-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Aili Yao <yaoaili@kingsoft.com>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Cc: Aili Yao <yaoaili@kingsoft.com>
+Cc: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
+Message-Id: <1643112538-36743-1-git-send-email-wanpengli@tencent.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/rcu/tree.c |   27 ++++++++++++++++-----------
- 1 file changed, 16 insertions(+), 11 deletions(-)
+ arch/x86/kvm/lapic.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/kernel/rcu/tree.c
-+++ b/kernel/rcu/tree.c
-@@ -2513,10 +2513,22 @@ static void rcu_do_batch(struct rcu_data
- 		/*
- 		 * Stop only if limit reached and CPU has something to do.
- 		 */
--		if (count >= bl && !offloaded &&
--		    (need_resched() ||
--		     (!is_idle_task(current) && !rcu_is_callbacks_kthread())))
--			break;
-+		if (in_serving_softirq()) {
-+			if (count >= bl && (need_resched() ||
-+					(!is_idle_task(current) && !rcu_is_callbacks_kthread())))
-+				break;
-+		} else {
-+			local_bh_enable();
-+			lockdep_assert_irqs_enabled();
-+			cond_resched_tasks_rcu_qs();
-+			lockdep_assert_irqs_enabled();
-+			local_bh_disable();
-+		}
-+
-+		/*
-+		 * Make sure we don't spend too much time here and deprive other
-+		 * softirq vectors of CPU cycles.
-+		 */
- 		if (unlikely(tlimit)) {
- 			/* only call local_clock() every 32 callbacks */
- 			if (likely((count & 31) || local_clock() < tlimit))
-@@ -2524,13 +2536,6 @@ static void rcu_do_batch(struct rcu_data
- 			/* Exceeded the time limit, so leave. */
- 			break;
- 		}
--		if (!in_serving_softirq()) {
--			local_bh_enable();
--			lockdep_assert_irqs_enabled();
--			cond_resched_tasks_rcu_qs();
--			lockdep_assert_irqs_enabled();
--			local_bh_disable();
--		}
- 	}
+diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+index 83d1743a1dd0..493d636e6231 100644
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -113,7 +113,8 @@ static inline u32 kvm_x2apic_id(struct kvm_lapic *apic)
  
- 	local_irq_save(flags);
+ static bool kvm_can_post_timer_interrupt(struct kvm_vcpu *vcpu)
+ {
+-	return pi_inject_timer && kvm_vcpu_apicv_active(vcpu);
++	return pi_inject_timer && kvm_vcpu_apicv_active(vcpu) &&
++		(kvm_mwait_in_guest(vcpu->kvm) || kvm_hlt_in_guest(vcpu->kvm));
+ }
+ 
+ bool kvm_can_use_hv_timer(struct kvm_vcpu *vcpu)
+-- 
+2.35.1
+
 
 
