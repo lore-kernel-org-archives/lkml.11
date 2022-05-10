@@ -2,196 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D353FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 19:22:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64C01C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 19:22:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237083AbiEJTWK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 15:22:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43546 "EHLO
+        id S236316AbiEJTWQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 15:22:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233375AbiEJTV7 (ORCPT
+        with ESMTP id S234119AbiEJTWE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 15:21:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 47D863057B
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 12:21:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652210510;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=DosvskhYNZcL9p2AZGEwHPWxkQMwuPh1HQwfAYOCCag=;
-        b=INMi4Nj/3IEgw09coBVAIC6cU9L+ch6LOKSFOHul3rDRr4qvQSaGCsodxeEr1k7ZANIY+r
-        +W4/BiFsOQDusz/u0BwRcCjqgddup2Qpqvn//jtn++luOTYTwsuWRd9KXubDJ4dIOj+f3x
-        tuhzPwCDRlYWHB4eeg7qOWfnjgN2AN0=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-556-L4nWQIQpMrWmWAegaaLalA-1; Tue, 10 May 2022 15:21:46 -0400
-X-MC-Unique: L4nWQIQpMrWmWAegaaLalA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 57E4D3C138CA;
-        Tue, 10 May 2022 19:21:46 +0000 (UTC)
-Received: from llong.com (dhcp-17-215.bos.redhat.com [10.18.17.215])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id ED59A40CFD06;
-        Tue, 10 May 2022 19:21:45 +0000 (UTC)
-From:   Waiman Long <longman@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>
-Cc:     linux-kernel@vger.kernel.org, Waiman Long <longman@redhat.com>
-Subject: [PATCH 1/2] locking/qrwlock: Change "queue rwlock" to "queued rwlock"
-Date:   Tue, 10 May 2022 15:21:33 -0400
-Message-Id: <20220510192134.434753-1-longman@redhat.com>
+        Tue, 10 May 2022 15:22:04 -0400
+Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDF931FCE9;
+        Tue, 10 May 2022 12:22:02 -0700 (PDT)
+Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-edeb6c3642so200488fac.3;
+        Tue, 10 May 2022 12:22:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=JOeO/afyFS/XTtDfqJaGTJH459YM3JndEn1z08dciLU=;
+        b=nLrDqlUz3zpt/gXv6mZU60/TNkQ0JJqVfDDv/DUPzDRv8QfyQE/qpLYveyDIkPoPiV
+         ou033oE0QLqqCI0lVU+YkgPAygKKaQ1bbqn8P2VgmGaU4ST6lj2l2uO0CBH0gAp0fY3a
+         CQdGzFeIqId4IzWyhNjqlDzNwgL11DiKCcqzkHZhT0/Sz0DBT444Q8UfoRHAL7Xf5vRw
+         HN3GeXrdFRJs96tC9Szx2HbxQ2jUFMEBCIE+2zsTPoAR0wiPPX/HkpZG0T7GalYwWshF
+         Xyz3ZaTUfLrQTu7Av2sHaNviBLNwxWD2veTOXv+0X95BcsAfUK40iU+H5wPYJ0wWiryh
+         uhNA==
+X-Gm-Message-State: AOAM532h3VZ6foH9aWwJgZOUooF1tTv1FMNJR+DXy63KUxGOuZs8Y17x
+        VsTB/Unah8/OmCLvLotTMg==
+X-Google-Smtp-Source: ABdhPJxpQ1XAsWPMyaBF13bhgHrh4lNMGmsczuL2k3FYenOZZriJV7SoSzmwEwNFMtH4JSzDTWqMXw==
+X-Received: by 2002:a05:6870:ecac:b0:ec:f11f:db99 with SMTP id eo44-20020a056870ecac00b000ecf11fdb99mr966384oab.266.1652210522089;
+        Tue, 10 May 2022 12:22:02 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id 3-20020a9d0d83000000b00606a6f74748sm11384ots.25.2022.05.10.12.22.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 12:22:01 -0700 (PDT)
+Received: (nullmailer pid 2436736 invoked by uid 1000);
+        Tue, 10 May 2022 19:22:01 -0000
+Date:   Tue, 10 May 2022 14:22:01 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     matthew.gerlach@linux.intel.com
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        dinguyen@kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org
+Subject: Re: [PATCH v4 3/3] arm64: dts: intel: add device tree for n6000
+Message-ID: <20220510192201.GB2427587-robh@kernel.org>
+References: <20220508142624.491045-1-matthew.gerlach@linux.intel.com>
+ <20220508142624.491045-4-matthew.gerlach@linux.intel.com>
+ <eee2d4f6-703d-d3bb-3949-493f9d65f676@linaro.org>
+ <alpine.DEB.2.22.394.2205100717170.612063@rhweight-WRK1>
 MIME-Version: 1.0
-Content-type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.22.394.2205100717170.612063@rhweight-WRK1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Queued rwlock was originally named "queue rwlock" which wasn't quite
-grammatically correct. However there are still some "queue rwlock"
-references in the code. Change those to "queued rwlock" for consistency.
+On Tue, May 10, 2022 at 07:17:59AM -0700, matthew.gerlach@linux.intel.com wrote:
+> 
+> 
+> On Mon, 9 May 2022, Krzysztof Kozlowski wrote:
+> 
+> > On 08/05/2022 16:26, matthew.gerlach@linux.intel.com wrote:
+> > > From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> > > 
+> > > Add a device tree for the n6000 instantiation of Agilex
+> > > Hard Processor System (HPS).
+> > > 
+> > > Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+> > 
+> > 
+> > Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> 
+> Hi Kryzysztof,
+> 
+> Thanks for the Acked-by.  I will add your tag to a v5 patch set submission.
 
-Signed-off-by: Waiman Long <longman@redhat.com>
----
- include/asm-generic/qrwlock.h       | 28 ++++++++++++++--------------
- include/asm-generic/qrwlock_types.h |  2 +-
- kernel/locking/qrwlock.c            |  8 ++++----
- 3 files changed, 19 insertions(+), 19 deletions(-)
+Before I commented, why would there be a v5? TBC, you don't need to 
+resend just to add tags. The tools (b4, PW) do this for us. But when you 
+do send another version you need to add the tags as the tools don't look 
+at prior versions.
 
-diff --git a/include/asm-generic/qrwlock.h b/include/asm-generic/qrwlock.h
-index 7ae0ece07b4e..d4cd4cc4389c 100644
---- a/include/asm-generic/qrwlock.h
-+++ b/include/asm-generic/qrwlock.h
-@@ -33,8 +33,8 @@ extern void queued_read_lock_slowpath(struct qrwlock *lock);
- extern void queued_write_lock_slowpath(struct qrwlock *lock);
- 
- /**
-- * queued_read_trylock - try to acquire read lock of a queue rwlock
-- * @lock : Pointer to queue rwlock structure
-+ * queued_read_trylock - try to acquire read lock of a queued rwlock
-+ * @lock : Pointer to queued rwlock structure
-  * Return: 1 if lock acquired, 0 if failed
-  */
- static inline int queued_read_trylock(struct qrwlock *lock)
-@@ -52,8 +52,8 @@ static inline int queued_read_trylock(struct qrwlock *lock)
- }
- 
- /**
-- * queued_write_trylock - try to acquire write lock of a queue rwlock
-- * @lock : Pointer to queue rwlock structure
-+ * queued_write_trylock - try to acquire write lock of a queued rwlock
-+ * @lock : Pointer to queued rwlock structure
-  * Return: 1 if lock acquired, 0 if failed
-  */
- static inline int queued_write_trylock(struct qrwlock *lock)
-@@ -68,8 +68,8 @@ static inline int queued_write_trylock(struct qrwlock *lock)
- 				_QW_LOCKED));
- }
- /**
-- * queued_read_lock - acquire read lock of a queue rwlock
-- * @lock: Pointer to queue rwlock structure
-+ * queued_read_lock - acquire read lock of a queued rwlock
-+ * @lock: Pointer to queued rwlock structure
-  */
- static inline void queued_read_lock(struct qrwlock *lock)
- {
-@@ -84,8 +84,8 @@ static inline void queued_read_lock(struct qrwlock *lock)
- }
- 
- /**
-- * queued_write_lock - acquire write lock of a queue rwlock
-- * @lock : Pointer to queue rwlock structure
-+ * queued_write_lock - acquire write lock of a queued rwlock
-+ * @lock : Pointer to queued rwlock structure
-  */
- static inline void queued_write_lock(struct qrwlock *lock)
- {
-@@ -98,8 +98,8 @@ static inline void queued_write_lock(struct qrwlock *lock)
- }
- 
- /**
-- * queued_read_unlock - release read lock of a queue rwlock
-- * @lock : Pointer to queue rwlock structure
-+ * queued_read_unlock - release read lock of a queued rwlock
-+ * @lock : Pointer to queued rwlock structure
-  */
- static inline void queued_read_unlock(struct qrwlock *lock)
- {
-@@ -110,8 +110,8 @@ static inline void queued_read_unlock(struct qrwlock *lock)
- }
- 
- /**
-- * queued_write_unlock - release write lock of a queue rwlock
-- * @lock : Pointer to queue rwlock structure
-+ * queued_write_unlock - release write lock of a queued rwlock
-+ * @lock : Pointer to queued rwlock structure
-  */
- static inline void queued_write_unlock(struct qrwlock *lock)
- {
-@@ -120,7 +120,7 @@ static inline void queued_write_unlock(struct qrwlock *lock)
- 
- /**
-  * queued_rwlock_is_contended - check if the lock is contended
-- * @lock : Pointer to queue rwlock structure
-+ * @lock : Pointer to queued rwlock structure
-  * Return: 1 if lock contended, 0 otherwise
-  */
- static inline int queued_rwlock_is_contended(struct qrwlock *lock)
-@@ -130,7 +130,7 @@ static inline int queued_rwlock_is_contended(struct qrwlock *lock)
- 
- /*
-  * Remapping rwlock architecture specific functions to the corresponding
-- * queue rwlock functions.
-+ * queued rwlock functions.
-  */
- #define arch_read_lock(l)		queued_read_lock(l)
- #define arch_write_lock(l)		queued_write_lock(l)
-diff --git a/include/asm-generic/qrwlock_types.h b/include/asm-generic/qrwlock_types.h
-index c36f1d5a2572..12392c14c4d0 100644
---- a/include/asm-generic/qrwlock_types.h
-+++ b/include/asm-generic/qrwlock_types.h
-@@ -7,7 +7,7 @@
- #include <asm/spinlock_types.h>
- 
- /*
-- * The queue read/write lock data structure
-+ * The queued read/write lock data structure
-  */
- 
- typedef struct qrwlock {
-diff --git a/kernel/locking/qrwlock.c b/kernel/locking/qrwlock.c
-index 7f42e52a648f..2e1600906c9f 100644
---- a/kernel/locking/qrwlock.c
-+++ b/kernel/locking/qrwlock.c
-@@ -15,8 +15,8 @@
- #include <trace/events/lock.h>
- 
- /**
-- * queued_read_lock_slowpath - acquire read lock of a queue rwlock
-- * @lock: Pointer to queue rwlock structure
-+ * queued_read_lock_slowpath - acquire read lock of a queued rwlock
-+ * @lock: Pointer to queued rwlock structure
-  */
- void queued_read_lock_slowpath(struct qrwlock *lock)
- {
-@@ -60,8 +60,8 @@ void queued_read_lock_slowpath(struct qrwlock *lock)
- EXPORT_SYMBOL(queued_read_lock_slowpath);
- 
- /**
-- * queued_write_lock_slowpath - acquire write lock of a queue rwlock
-- * @lock : Pointer to queue rwlock structure
-+ * queued_write_lock_slowpath - acquire write lock of a queued rwlock
-+ * @lock : Pointer to queued rwlock structure
-  */
- void queued_write_lock_slowpath(struct qrwlock *lock)
- {
--- 
-2.27.0
-
+Rob
