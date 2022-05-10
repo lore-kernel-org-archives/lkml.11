@@ -2,178 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2380AC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:23:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82B04C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:24:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240888AbiEJP1s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:27:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34182 "EHLO
+        id S1345594AbiEJP1y (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 11:27:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345813AbiEJP1a (ORCPT
+        with ESMTP id S1345883AbiEJP13 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:27:30 -0400
-Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CBB1DAC
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:18:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1652195909;
-  x=1683731909;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=L72R/3pl0k6gCMx5L3/WImeqw8/7Ha/qfVw/S09dPtQ=;
-  b=gViiMAO+5bLXAeI5jvxXT4YWPU+thGY38nyY16QABfVOaLMg5cTpYIze
-   ZVWNl8n/rwc/YyGQ0ZClTvR8n4Vli95YRCWmiejFPYS1P+8LFDLWe5IsL
-   +eEmJ1kmsZ70nVi08JHGjHdjRNO236mDtb9PuNhkW8bu2UEI3NLEbNJtJ
-   qKZeoYh2hsLAxfCHcWCDVk39f771ZMRZjsGW3EgV4tWhcmbaJ36bf0YsC
-   mJJ62QAg1Ph2TTKcq4ZP3e2Jwz5aMR7a9Xeq7qjwKEiqq/ZD/4kZ+A4K7
-   V8QPkY3bwvVxjH7LjgrW1P0Mq8U+SZh0l0CcTBchKf8mibTiu3Retja0Z
+        Tue, 10 May 2022 11:27:29 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45EF844770;
+        Tue, 10 May 2022 08:18:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652195903; x=1683731903;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=JWpmuWGckDGxnk/uZUys3BBddrTcm/+K70SPYQoNxaU=;
+  b=aWzePNjgYRs7aXMYQ+73vtEvyovqIVdRs9H9/uANK/6WarULz5N3BUNS
+   2dw2S661pXFA0f6Qe0J20huGjWLrZt53uItiWuvoaWYuUEyXHaCNKVxsV
+   V1SvR+WTojN/jAGuWKclnaZXUJJog1Oqb52dim3SGsU+E4oer+atqx256
+   TUqmW3f320q828CKJeHnJe+oUlzciTFO9olaOelxUzmMkGH0ujR2rC9B/
+   ODpCpj0ev1LV73xkMVRuuABQN/oGkaLr04Mp0IqxMXe74lD8ENoMfZda4
+   7iFxI3NZ6r39AeX+SgFG6kZyE2ToezQ2wBxDt7AG+vZ9f7ZV3qxsjvwna
    Q==;
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     Joern Engel <joern@lazybastard.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>
-CC:     <kernel@axis.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v4] mtd: phram: Allow cached mappings
-Date:   Tue, 10 May 2022 17:18:22 +0200
-Message-ID: <20220510151822.1809278-1-vincent.whitchurch@axis.com>
-X-Mailer: git-send-email 2.34.1
+X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="249933666"
+X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
+   d="scan'208";a="249933666"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 08:17:38 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
+   d="scan'208";a="602512412"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga001.jf.intel.com with ESMTP; 10 May 2022 08:17:31 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 8218B556; Tue, 10 May 2022 18:15:16 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Tony Luck <tony.luck@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Wolfram Sang <wsa@kernel.org>, Jean Delvare <jdelvare@suse.de>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        =?UTF-8?q?=C5=81ukasz=20Bartosik?= <lb@semihalf.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jonathan Yong <jonathan.yong@intel.com>,
+        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Jean Delvare <jdelvare@suse.com>,
+        Peter Tyser <ptyser@xes-inc.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        Mark Gross <markgross@kernel.org>,
+        Henning Schild <henning.schild@siemens.com>
+Subject: [PATCH v5 2/8] pinctrl: intel: Check against matching data instead of ACPI companion
+Date:   Tue, 10 May 2022 18:14:45 +0300
+Message-Id: <20220510151451.85561-3-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220510151451.85561-1-andriy.shevchenko@linux.intel.com>
+References: <20220510151451.85561-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently phram always uses ioremap(), but this is unnecessary when
-normal memory is used.  If the reserved-memory node does not specify the
-no-map property, indicating it should be mapped as system RAM and
-ioremap() cannot be used on it, use a cached mapping using
-memremap(MEMREMAP_WB) instead.
+In some cases we may get a platform device that has ACPI companion
+which is different to the pin control described in the ACPI tables.
+This is primarily happens when device is instantiated by board file.
 
-On one of my systems this improves read performance by ~70%.
+In order to allow this device being enumerated, refactor
+intel_pinctrl_get_soc_data() to check the matching data instead of
+ACPI companion.
 
-(Note that this driver has always used normal memcpy/memset functions on
-memory obtained from ioremap(), which sparse doesn't like.  There is no
-memremap() variant which maps exactly to ioremap() on all architectures,
-so that behaviour of the driver is not changed to avoid affecting
-existing users, but the sparse warnings are suppressed in the moved code
-with __force.)
-
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+Reported-by: Henning Schild <henning.schild@siemens.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Tested-by: Henning Schild <henning.schild@siemens.com>
+Acked-by: Hans de Goede <hdegoede@redhat.com>
+Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
 ---
+ drivers/pinctrl/intel/pinctrl-intel.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
-Notes:
-    v4:
-    - Split out from "[PATCH v3] mtd: phram: Allow cached mappings"[0] since the
-      rest of the patches have been merged to mtd-next.
-    - Rebased on mtd-next.
-    - Refactored to avoid code duplication, fix sparse warnings in the existing
-      code which is moved, and also to avoid SH build problems[1]
-    
-    [0] https://lore.kernel.org/lkml/20220412135302.1682890-1-vincent.whitchurch@axis.com/"
-    [1] https://lore.kernel.org/lkml/CAMuHMdW-8HaQip+DT5W2Owq8M8kbYwHsf8_Zd-5rRfSjSjK0=g@mail.gmail.com/
-
- drivers/mtd/devices/phram.c | 43 +++++++++++++++++++++++++++++++------
- 1 file changed, 37 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/mtd/devices/phram.c b/drivers/mtd/devices/phram.c
-index 506e9edf5c85..208bd4d871f4 100644
---- a/drivers/mtd/devices/phram.c
-+++ b/drivers/mtd/devices/phram.c
-@@ -34,6 +34,7 @@
- struct phram_mtd_list {
- 	struct mtd_info mtd;
- 	struct list_head list;
-+	bool cached;
- };
+diff --git a/drivers/pinctrl/intel/pinctrl-intel.c b/drivers/pinctrl/intel/pinctrl-intel.c
+index 826d494f3cc6..48f55991ae8c 100644
+--- a/drivers/pinctrl/intel/pinctrl-intel.c
++++ b/drivers/pinctrl/intel/pinctrl-intel.c
+@@ -1626,16 +1626,14 @@ EXPORT_SYMBOL_GPL(intel_pinctrl_probe_by_uid);
  
- static LIST_HEAD(phram_list);
-@@ -80,13 +81,41 @@ static int phram_write(struct mtd_info *mtd, loff_t to, size_t len,
- 	return 0;
- }
- 
-+static int phram_map(struct phram_mtd_list *phram, phys_addr_t start, size_t len)
-+{
-+	void *addr = NULL;
-+
-+	if (phram->cached)
-+		addr = memremap(start, len, MEMREMAP_WB);
-+	else
-+		addr = (void __force *)ioremap(start, len);
-+	if (!addr)
-+		return -EIO;
-+
-+	phram->mtd.priv = addr;
-+
-+	return 0;
-+}
-+
-+static void phram_unmap(struct phram_mtd_list *phram)
-+{
-+	void *addr = phram->mtd.priv;
-+
-+	if (phram->cached) {
-+		memunmap(addr);
-+		return;
-+	}
-+
-+	iounmap((void __iomem *)addr);
-+}
-+
- static void unregister_devices(void)
+ const struct intel_pinctrl_soc_data *intel_pinctrl_get_soc_data(struct platform_device *pdev)
  {
- 	struct phram_mtd_list *this, *safe;
++	const struct intel_pinctrl_soc_data * const *table;
+ 	const struct intel_pinctrl_soc_data *data = NULL;
+-	const struct intel_pinctrl_soc_data **table;
+-	struct acpi_device *adev;
+-	unsigned int i;
  
- 	list_for_each_entry_safe(this, safe, &phram_list, list) {
- 		mtd_device_unregister(&this->mtd);
--		iounmap(this->mtd.priv);
-+		phram_unmap(this);
- 		kfree(this->mtd.name);
- 		kfree(this);
+-	adev = ACPI_COMPANION(&pdev->dev);
+-	if (adev) {
+-		const void *match = device_get_match_data(&pdev->dev);
++	table = device_get_match_data(&pdev->dev);
++	if (table) {
++		struct acpi_device *adev = ACPI_COMPANION(&pdev->dev);
++		unsigned int i;
+ 
+-		table = (const struct intel_pinctrl_soc_data **)match;
+ 		for (i = 0; table[i]; i++) {
+ 			if (!strcmp(adev->pnp.unique_id, table[i]->uid)) {
+ 				data = table[i];
+@@ -1649,7 +1647,7 @@ const struct intel_pinctrl_soc_data *intel_pinctrl_get_soc_data(struct platform_
+ 		if (!id)
+ 			return ERR_PTR(-ENODEV);
+ 
+-		table = (const struct intel_pinctrl_soc_data **)id->driver_data;
++		table = (const struct intel_pinctrl_soc_data * const *)id->driver_data;
+ 		data = table[pdev->id];
  	}
-@@ -96,6 +125,7 @@ static int register_device(struct platform_device *pdev, const char *name,
- 			   phys_addr_t start, size_t len, uint32_t erasesize)
- {
- 	struct device_node *np = pdev ? pdev->dev.of_node : NULL;
-+	bool cached = np ? !of_property_read_bool(np, "no-map") : false;
- 	struct phram_mtd_list *new;
- 	int ret = -ENOMEM;
  
-@@ -103,9 +133,10 @@ static int register_device(struct platform_device *pdev, const char *name,
- 	if (!new)
- 		goto out0;
- 
--	ret = -EIO;
--	new->mtd.priv = ioremap(start, len);
--	if (!new->mtd.priv) {
-+	new->cached = cached;
-+
-+	ret = phram_map(new, start, len);
-+	if (ret) {
- 		pr_err("ioremap failed\n");
- 		goto out1;
- 	}
-@@ -140,7 +171,7 @@ static int register_device(struct platform_device *pdev, const char *name,
- 	return 0;
- 
- out2:
--	iounmap(new->mtd.priv);
-+	phram_unmap(new);
- out1:
- 	kfree(new);
- out0:
-@@ -362,7 +393,7 @@ static int phram_remove(struct platform_device *pdev)
- 	struct phram_mtd_list *phram = platform_get_drvdata(pdev);
- 
- 	mtd_device_unregister(&phram->mtd);
--	iounmap(phram->mtd.priv);
-+	phram_unmap(phram);
- 	kfree(phram);
- 
- 	return 0;
 -- 
-2.34.1
+2.35.1
 
