@@ -2,101 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF10BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:24:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D17EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:24:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347407AbiEJQ0a (ORCPT
+        id S1347323AbiEJQ2U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 12:26:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53924 "EHLO
+        Tue, 10 May 2022 12:28:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347319AbiEJQZ5 (ORCPT
+        with ESMTP id S1345070AbiEJQ2P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 12:25:57 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 256C82CE0F;
-        Tue, 10 May 2022 09:22:00 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id a11so15354538pff.1;
-        Tue, 10 May 2022 09:22:00 -0700 (PDT)
+        Tue, 10 May 2022 12:28:15 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23F9F132A03;
+        Tue, 10 May 2022 09:24:17 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id s27so21491950ljd.2;
+        Tue, 10 May 2022 09:24:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Pbf0U9Vnpx4jkjWp1F0KY1vQuVLo9K0VLSq7N3TN5ZI=;
-        b=EBmeLMxb+tNSLdGXw+Plepzz/BILeSIgS8UJ0x0BpAl5rKivDI1nrZd+GPdJx4XC8Y
-         d/gVeEcu0rCLMEqAyBI6SwM1vh7bcU1uCDTFcMO5sGdMX9U7N3BuUSJr5DjtH0eiIKt0
-         ICapWbtDXO3OVV53RMgKuSOjAGEiDlMHjhKLWi2UFAMeBNpOlPIMlc2w9kEZg3ViJ8es
-         gjkprP3QXgUa4PtjxA5AoFKsuZKzF+G3LAzIClkIgpsIBxu62se2rhOCWaZ9FkGpj9I+
-         IUQ5tjHGMrPky9ofvVkUaEQmMl3Fjn8JpFSMdJndIHdPeMMHUkpSotU712bPJUZjVIhn
-         tvzg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Z+YkSbV6bjoznxMCuUfht3UUoaizx6Wbg5BycQIS6zs=;
+        b=A05ZxnXVAWmmDDGxBx9E47mbX7S0Lb5kx3BXIz0LE4ucreSY1X5yTdw7uft1fPn42/
+         aSTUlBrV3mgtTEgdylYx+nll563rrNB3yLv3YfpwcocKTTB2nJlHQuPPZGDOFo9FkApv
+         /nt7jSKjA7VUx7/6XV8T/FD/6BPbfx5kbcMXuaFE9qU1KY5ooZyFiGQsQQjAxe8SV26L
+         n4CchBQ/O/UQcRId+lmCaDgNha4pS/0skcAe5ggQpZbwwC2dvFNIifmWQZeGdp+Mn/9X
+         3IfuPe7QNMlHO9mJiWu7xumyVo9xH3sYL1B7a3UvEOfhiosc9MogVya8LuVtSls1mevH
+         u79A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Pbf0U9Vnpx4jkjWp1F0KY1vQuVLo9K0VLSq7N3TN5ZI=;
-        b=lxNMFVcRqvZMlJxZ8E624o9uFDp02Eg4NdPgdLrkwDvQXUF7/Iwr0MM3s17dlCPe62
-         mze2CykSakY+Sqku7GY3ee4kYbsDEXRt26B/EPqbzfNDi4fFIU10WiaSPMQJWwu3S39g
-         TrXI1pCGC18vlf84n7ejZwystPY6+roVWKshmR6fDf/t7asz3roplyMMDtPanVO942Rs
-         GdVJtw2QT7H6DR4QC/89bKNZcxJ5KOmNFN//MElDXyVTZMkntBNdlBN1qVxStBV3hX6E
-         zZEsnNoTUHpy6SF9nbmeg3wXcxbAGIXFD0VHWP9H/7LQUBmdaW/36ijNoaObAAaYEHdJ
-         MdGg==
-X-Gm-Message-State: AOAM533AM7FeOo7LC9o8idqzSrmKWOWrmvnUGxtKNwsqwqH04Xa+/WZv
-        wo/l25aAfzd4b3Ivr5ioqik=
-X-Google-Smtp-Source: ABdhPJwTomrdTK6D+UsyoNNSWLOmSNkKE2NiG1YyqE6019zPkmBGLLBGI6NzoahHEx6Fw3YJi73+1Q==
-X-Received: by 2002:a62:5ec6:0:b0:50d:a467:3cb7 with SMTP id s189-20020a625ec6000000b0050da4673cb7mr20609487pfb.85.1652199719604;
-        Tue, 10 May 2022 09:21:59 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id nn6-20020a17090b38c600b001d8abe4bb17sm2083985pjb.32.2022.05.10.09.21.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 May 2022 09:21:59 -0700 (PDT)
-Message-ID: <ff1e936b-a56c-3177-0fcf-1549c44ac837@gmail.com>
-Date:   Tue, 10 May 2022 09:21:47 -0700
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Z+YkSbV6bjoznxMCuUfht3UUoaizx6Wbg5BycQIS6zs=;
+        b=Htqzv5IVAxLwP1XzYTQ6YO2Lsz6FFFGZ6B5mDH7uj/4KEoBSh6TLd1ic4zdA67r1aW
+         fjeNXvS1y0G4SW8YvUqJZWny+4IKVa2rggdPsA766U8/d7eYUBbb4O/ttdU4tGp8wBgI
+         Aic0r1e1yGoy3gOupr0bfMG25iZ5vcLf3nDqR7z4+FofFDcn5S0vbHJ2e8uonGR1fYdR
+         6DQibOtNdpb9FtTPFVO/6c4RDFb7m7PVb4MHNnGkWGIVn6d5YIw7xGKm5wZbq89S4h+r
+         7v1jPo839tvsf6RCeBcutfDjKubUN8EAHufbuLjxZ5e+oRdrASgznW32enJLTZD93Mv+
+         cY6A==
+X-Gm-Message-State: AOAM531mrVl8ApK1hwInPPCtECZeZoz+7w8unnyh0vjHEuJJ4v6+pnh/
+        v7V6JtNJDo1a8jdK+yPNWw4=
+X-Google-Smtp-Source: ABdhPJyJMk2lXCJXghy02HIfIaweFY01KpQ6Pmd5e5ocPKNv1uom8v6aOVxqjQNPks87LU5Q4KIkog==
+X-Received: by 2002:a2e:a30a:0:b0:24f:cf6:11ab with SMTP id l10-20020a2ea30a000000b0024f0cf611abmr14027237lje.461.1652199855528;
+        Tue, 10 May 2022 09:24:15 -0700 (PDT)
+Received: from vmu1804.lan ([2a06:a003:501a:a7ce::887])
+        by smtp.googlemail.com with ESMTPSA id r12-20020a19ac4c000000b0047255d2111fsm2338420lfc.78.2022.05.10.09.24.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 09:24:15 -0700 (PDT)
+From:   Mikhail Zhilkin <csharper2005@gmail.com>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Karim <Karimdplay@gmail.com>,
+        M <x1@disroot.org>, Mikhail Zhilkin <csharper2005@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v4 2/3] dt-bindings: mtd: partitions: Extend fixed-partitions binding
+Date:   Tue, 10 May 2022 16:24:03 +0000
+Message-Id: <20220510162403.20861-1-csharper2005@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220510161641.20655-1-csharper2005@gmail.com>
+References: <20220510161641.20655-1-csharper2005@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH net-next v4 03/12] dt-bindings: net: pcs: add bindings for
- Renesas RZ/N1 MII converter
-Content-Language: en-US
-To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?Q?Miqu=c3=a8l_Raynal?= <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-References: <20220509131900.7840-1-clement.leger@bootlin.com>
- <20220509131900.7840-4-clement.leger@bootlin.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220509131900.7840-4-clement.leger@bootlin.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/9/22 06:18, Clément Léger wrote:
-> This MII converter can be found on the RZ/N1 processor family. The MII
-> converter ports are declared as subnodes which are then referenced by
-> users of the PCS driver such as the switch.
-> 
-> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+Extend fixed-partitions binding for support of Sercomm partition parser
+(add "sercomm,sc-partitions" compatible).
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Mikhail Zhilkin <csharper2005@gmail.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ .../mtd/partitions/fixed-partitions.yaml      | 55 ++++++++++++++++++-
+ 1 file changed, 53 insertions(+), 2 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/mtd/partitions/fixed-partitions.yaml b/Documentation/devicetree/bindings/mtd/partitions/fixed-partitions.yaml
+index ea4cace6a955..ad3ccd250802 100644
+--- a/Documentation/devicetree/bindings/mtd/partitions/fixed-partitions.yaml
++++ b/Documentation/devicetree/bindings/mtd/partitions/fixed-partitions.yaml
+@@ -19,7 +19,11 @@ maintainers:
+ 
+ properties:
+   compatible:
+-    const: fixed-partitions
++    oneOf:
++      - const: fixed-partitions
++      - items:
++          - const: sercomm,sc-partitions
++          - const: fixed-partitions
+ 
+   "#address-cells": true
+ 
+@@ -27,7 +31,24 @@ properties:
+ 
+ patternProperties:
+   "@[0-9a-f]+$":
+-    $ref: "partition.yaml#"
++    allOf:
++      - $ref: "partition.yaml#"
++      - if:
++          properties:
++            compatible:
++              contains:
++                const: sercomm,sc-partitions
++        then:
++          properties:
++            sercomm,scpart-id:
++              description: Partition id in Sercomm partition map. Mtd
++                parser uses this id to find a record in the partition map
++                containing offset and size of the current partition. The
++                values from partition map overrides partition offset and
++                size defined in reg property of the dts. Frequently these
++                values are the same, but may differ if device has bad
++                eraseblocks on a flash.
++              $ref: /schemas/types.yaml#/definitions/uint32
+ 
+ required:
+   - "#address-cells"
+@@ -52,6 +73,7 @@ examples:
+             reg = <0x0100000 0x200000>;
+         };
+     };
++
+   - |
+     partitions {
+         compatible = "fixed-partitions";
+@@ -64,6 +86,7 @@ examples:
+             reg = <0x00000000 0x1 0x00000000>;
+         };
+     };
++
+   - |
+     partitions {
+         compatible = "fixed-partitions";
+@@ -82,6 +105,7 @@ examples:
+             reg = <0x2 0x00000000 0x1 0x00000000>;
+         };
+     };
++
+   - |
+     partitions {
+         compatible = "fixed-partitions";
+@@ -119,3 +143,30 @@ examples:
+             };
+         };
+     };
++
++  - |
++    partitions {
++        compatible = "sercomm,sc-partitions", "fixed-partitions";
++        #address-cells = <1>;
++        #size-cells = <1>;
++
++        partition@0 {
++            label = "u-boot";
++            reg = <0x0 0x100000>;
++            sercomm,scpart-id = <0>;
++            read-only;
++        };
++
++        partition@100000 {
++            label = "dynamic partition map";
++            reg = <0x100000 0x100000>;
++            sercomm,scpart-id = <1>;
++        };
++
++        partition@200000 {
++            label = "Factory";
++            reg = <0x200000 0x100000>;
++            sercomm,scpart-id = <2>;
++            read-only;
++        };
++    };
 -- 
-Florian
+2.25.1
+
