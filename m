@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A136C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:24:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1381C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:24:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344124AbiEJO2e (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:28:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53734 "EHLO
+        id S244264AbiEJO2n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:28:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245376AbiEJN5f (ORCPT
+        with ESMTP id S245524AbiEJN57 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:57:35 -0400
+        Tue, 10 May 2022 09:57:59 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA268FD69;
-        Tue, 10 May 2022 06:39:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75EFEC5DB3;
+        Tue, 10 May 2022 06:39:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BFF96615C8;
-        Tue, 10 May 2022 13:39:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84271C385C6;
-        Tue, 10 May 2022 13:39:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A085615C8;
+        Tue, 10 May 2022 13:39:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C44B9C385A6;
+        Tue, 10 May 2022 13:39:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189952;
-        bh=9pxyK0GKEphEY4ydetmT/RXOXOC4/m+3r46HStjAp24=;
+        s=korg; t=1652189965;
+        bh=q2cnGZI5KL2N4Rpj0SR3H6GEeRtah2UShY03euT6kJE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h5uXKZ3SMw9pYR2OsCxqOzGgExYFbhC2ey5oxCa6odnuqKwGLkIirZRREgTQvPCKp
-         x1sY9fg3kMQl5MOevkL5a/ZLswwLWy1QoNLEN2jjf0ZVbV1Yg8/WrTNAd7HkzqEEQG
-         BfUtF3jFaCXI/3AVlzlmCn158sMWW3T60/daGMaA=
+        b=gTeWNMUBTH0ZxWvi+0KbS4jMQjmv9B78XYiC5FDmniXqc9bLHZD0rKPJvW9hizRNn
+         BcCzb/MKv7cVVIiQK8WNUlupStEntFErLI4XX1zPC8o477wKgWSy31b9W3W55K9Kke
+         IXqqAl+njNzzQPxbe9AqS5eJ+iQa4SsNVZiWsuh0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jan=20H=C3=B6ppner?= <hoeppner@linux.ibm.com>,
-        Stefan Haberland <sth@linux.ibm.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.17 044/140] s390/dasd: Fix read inconsistency for ESE DASD devices
-Date:   Tue, 10 May 2022 15:07:14 +0200
-Message-Id: <20220510130742.881678224@linuxfoundation.org>
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Andreas Larsson <andreas@gaisler.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.17 045/140] can: grcan: grcan_close(): fix deadlock
+Date:   Tue, 10 May 2022 15:07:15 +0200
+Message-Id: <20220510130742.910507818@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -51,52 +49,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Höppner <hoeppner@linux.ibm.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-commit b9c10f68e23c13f56685559a0d6fdaca9f838324 upstream.
+commit 47f070a63e735bcc8d481de31be1b5a1aa62b31c upstream.
 
-Read requests that return with NRF error are partially completed in
-dasd_eckd_ese_read(). The function keeps track of the amount of
-processed bytes and the driver will eventually return this information
-back to the block layer for further processing via __dasd_cleanup_cqr()
-when the request is in the final stage of processing (from the driver's
-perspective).
+There are deadlocks caused by del_timer_sync(&priv->hang_timer) and
+del_timer_sync(&priv->rr_timer) in grcan_close(), one of the deadlocks
+are shown below:
 
-For this, blk_update_request() is used which requires the number of
-bytes to complete the request. As per documentation the nr_bytes
-parameter is described as follows:
-   "number of bytes to complete for @req".
+   (Thread 1)              |      (Thread 2)
+                           | grcan_reset_timer()
+grcan_close()              |  mod_timer()
+ spin_lock_irqsave() //(1) |  (wait a time)
+ ...                       | grcan_initiate_running_reset()
+ del_timer_sync()          |  spin_lock_irqsave() //(2)
+ (wait timer to stop)      |  ...
 
-This was mistakenly interpreted as "number of bytes _left_ for @req"
-leading to new requests with incorrect data length. The consequence are
-inconsistent and completely wrong read requests as data from random
-memory areas are read back.
+We hold priv->lock in position (1) of thread 1 and use
+del_timer_sync() to wait timer to stop, but timer handler also need
+priv->lock in position (2) of thread 2. As a result, grcan_close()
+will block forever.
 
-Fix this by correctly specifying the amount of bytes that should be used
-to complete the request.
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irqsave(), which could let timer handler to obtain the
+needed lock.
 
-Fixes: 5e6bdd37c552 ("s390/dasd: fix data corruption for thin provisioned devices")
-Cc: stable@vger.kernel.org # 5.3+
-Signed-off-by: Jan Höppner <hoeppner@linux.ibm.com>
-Reviewed-by: Stefan Haberland <sth@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220505141733.1989450-5-sth@linux.ibm.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Link: https://lore.kernel.org/all/20220425042400.66517-1-duoming@zju.edu.cn
+Fixes: 6cec9b07fe6a ("can: grcan: Add device driver for GRCAN and GRHCAN cores")
+Cc: stable@vger.kernel.org
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Reviewed-by: Andreas Larsson <andreas@gaisler.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/s390/block/dasd.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/can/grcan.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/s390/block/dasd.c
-+++ b/drivers/s390/block/dasd.c
-@@ -2778,8 +2778,7 @@ static void __dasd_cleanup_cqr(struct da
- 		 * complete a request partially.
- 		 */
- 		if (proc_bytes) {
--			blk_update_request(req, BLK_STS_OK,
--					   blk_rq_bytes(req) - proc_bytes);
-+			blk_update_request(req, BLK_STS_OK, proc_bytes);
- 			blk_mq_requeue_request(req, true);
- 		} else if (likely(!blk_should_fake_timeout(req->q))) {
- 			blk_mq_complete_request(req);
+--- a/drivers/net/can/grcan.c
++++ b/drivers/net/can/grcan.c
+@@ -1102,8 +1102,10 @@ static int grcan_close(struct net_device
+ 
+ 	priv->closing = true;
+ 	if (priv->need_txbug_workaround) {
++		spin_unlock_irqrestore(&priv->lock, flags);
+ 		del_timer_sync(&priv->hang_timer);
+ 		del_timer_sync(&priv->rr_timer);
++		spin_lock_irqsave(&priv->lock, flags);
+ 	}
+ 	netif_stop_queue(dev);
+ 	grcan_stop_hardware(dev);
 
 
