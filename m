@@ -2,104 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18455C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:56:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1F95C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:56:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237262AbiEJOAU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:00:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48858 "EHLO
+        id S242335AbiEJOAa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:00:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245000AbiEJNiV (ORCPT
+        with ESMTP id S244878AbiEJNiJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:38:21 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD9C8073F;
-        Tue, 10 May 2022 06:26:50 -0700 (PDT)
-X-UUID: e9e4fe1c2fa349a2831d8a92d91f6198-20220510
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:cf7588dd-2b6d-4660-a492-a766291dd8e7,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:faefae9,CLOUDID:82164ab3-56b5-4c9e-8d83-0070b288eb6a,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: e9e4fe1c2fa349a2831d8a92d91f6198-20220510
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <allen-kh.cheng@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1792481390; Tue, 10 May 2022 21:26:43 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Tue, 10 May 2022 21:26:42 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Tue, 10 May 2022 21:26:41 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Tue, 10 May 2022 21:26:41 +0800
-From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski@canonical.com>
-CC:     Lala Lin <lala.lin@mediatek.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        "Chen-Yu Tsai" <wenst@chromium.org>,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Subject: [PATCH v4 3/3] arm64: dts: mediatek: update efuse compatible fallbacks
-Date:   Tue, 10 May 2022 21:26:37 +0800
-Message-ID: <20220510132637.5864-4-allen-kh.cheng@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220510132637.5864-1-allen-kh.cheng@mediatek.com>
-References: <20220510132637.5864-1-allen-kh.cheng@mediatek.com>
+        Tue, 10 May 2022 09:38:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFA1D72226;
+        Tue, 10 May 2022 06:26:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1396961767;
+        Tue, 10 May 2022 13:26:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1506DC385A6;
+        Tue, 10 May 2022 13:26:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652189196;
+        bh=KROBn0sVKqejLhXC5hNUtuLqTsLA0EpNTTg+h0Jc3Nc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=WFDLWD/hOgqlQM+RBOAvutKdLGvSNBPNFwYG6V7mLRHDwdKf5n5JITbUzN4h2DAbx
+         dyT2/ystn59Jk4Z/65Kcz/MrMrF6vmoDj1GKakmXl4y03722j9QW4NCelLBlXiJkBM
+         t2qVkOTvkL9r+CtgqfA41OYAdg//ErQjz+2mHegY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>,
+        Bernard Metzler <bmt@zurich.ibm.com>,
+        Cheng Xu <chengyou@linux.alibaba.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 5.10 43/70] RDMA/siw: Fix a condition race issue in MPA request processing
+Date:   Tue, 10 May 2022 15:08:02 +0200
+Message-Id: <20220510130734.122923464@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
+References: <20220510130732.861729621@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-dtschema expects mediatek,efuse to be a generic fallback. We add
-mediatek,efuse fallback for mt8173 and mt8192 SoC.
+From: Cheng Xu <chengyou@linux.alibaba.com>
 
-Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+commit ef91271c65c12d36e4c2b61c61d4849fb6d11aa0 upstream.
+
+The calling of siw_cm_upcall and detaching new_cep with its listen_cep
+should be atomistic semantics. Otherwise siw_reject may be called in a
+temporary state, e,g, siw_cm_upcall is called but the new_cep->listen_cep
+has not being cleared.
+
+This fixes a WARN:
+
+  WARNING: CPU: 7 PID: 201 at drivers/infiniband/sw/siw/siw_cm.c:255 siw_cep_put+0x125/0x130 [siw]
+  CPU: 2 PID: 201 Comm: kworker/u16:22 Kdump: loaded Tainted: G            E     5.17.0-rc7 #1
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
+  Workqueue: iw_cm_wq cm_work_handler [iw_cm]
+  RIP: 0010:siw_cep_put+0x125/0x130 [siw]
+  Call Trace:
+   <TASK>
+   siw_reject+0xac/0x180 [siw]
+   iw_cm_reject+0x68/0xc0 [iw_cm]
+   cm_work_handler+0x59d/0xe20 [iw_cm]
+   process_one_work+0x1e2/0x3b0
+   worker_thread+0x50/0x3a0
+   ? rescuer_thread+0x390/0x390
+   kthread+0xe5/0x110
+   ? kthread_complete_and_exit+0x20/0x20
+   ret_from_fork+0x1f/0x30
+   </TASK>
+
+Fixes: 6c52fdc244b5 ("rdma/siw: connection management")
+Link: https://lore.kernel.org/r/d528d83466c44687f3872eadcb8c184528b2e2d4.1650526554.git.chengyou@linux.alibaba.com
+Reported-by: Luis Chamberlain <mcgrof@kernel.org>
+Reviewed-by: Bernard Metzler <bmt@zurich.ibm.com>
+Signed-off-by: Cheng Xu <chengyou@linux.alibaba.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/mediatek/mt8173.dtsi | 3 ++-
- arch/arm64/boot/dts/mediatek/mt8192.dtsi | 3 ++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ drivers/infiniband/sw/siw/siw_cm.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8173.dtsi b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-index 40d7b47fc52e..a62fb810d2a0 100644
---- a/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-@@ -594,7 +594,8 @@
- 		};
+--- a/drivers/infiniband/sw/siw/siw_cm.c
++++ b/drivers/infiniband/sw/siw/siw_cm.c
+@@ -968,14 +968,15 @@ static void siw_accept_newconn(struct si
  
- 		efuse: efuse@10206000 {
--			compatible = "mediatek,mt8173-efuse";
-+			compatible = "mediatek,mt8173-efuse",
-+				     "mediatek,efuse";
- 			reg = <0 0x10206000 0 0x1000>;
- 			#address-cells = <1>;
- 			#size-cells = <1>;
-diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-index 26dbe9ecc528..4a5af1ed3abf 100644
---- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-@@ -911,7 +911,8 @@
- 		};
+ 		siw_cep_set_inuse(new_cep);
+ 		rv = siw_proc_mpareq(new_cep);
+-		siw_cep_set_free(new_cep);
+-
+ 		if (rv != -EAGAIN) {
+ 			siw_cep_put(cep);
+ 			new_cep->listen_cep = NULL;
+-			if (rv)
++			if (rv) {
++				siw_cep_set_free(new_cep);
+ 				goto error;
++			}
+ 		}
++		siw_cep_set_free(new_cep);
+ 	}
+ 	return;
  
- 		efuse: efuse@11c10000 {
--			compatible = "mediatek,efuse";
-+			compatible = "mediatek,mt8192-efuse",
-+				     "mediatek,efuse";
- 			reg = <0 0x11c10000 0 0x1000>;
- 			#address-cells = <1>;
- 			#size-cells = <1>;
--- 
-2.18.0
+
 
