@@ -2,187 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 335ECC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:09:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB6B2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:09:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243910AbiEJPNY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:13:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55514 "EHLO
+        id S1344843AbiEJPNx (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 11:13:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345532AbiEJPMX (ORCPT
+        with ESMTP id S1345274AbiEJPNl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:12:23 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E3EA5B3D0
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:46:01 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id w24so12546586edx.3
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:46:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=m3/At7y3DpyH1xn4UVfn5ukqMWdZeC51Z6nb713nrEM=;
-        b=fmwv+DkIw7qBc9dQvmK6dD2y9go7fNS8TbsYEOs3Z/4JbUN88xgE0dOxW7G7zdd0aL
-         MtXMnd/Quc7Q+xJcY2adZVj6BpixNyMeZ0zWlmwjLzOw+CTiOetT3F5GIQoDgNnH5/FH
-         hb90U2G6cv0nTLk7m4OQ5HvqH1rxUybdg3ZbaoyQnZT7Fs8I6DgT/rNyn6wVUJOJ/ijG
-         0rqEQOixxhf65y7+OF13MiCIQ3Qpdn9iOpVYKpzuhtEWg1AQyqRTieyGjwF0KUytAOrN
-         Nah5IxqwAgCEdSPr4dIVWQxzlUjRd5KSHA/mV+xxpktq9Te0SQqawc5ohTRuQdAXo8XT
-         IbbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=m3/At7y3DpyH1xn4UVfn5ukqMWdZeC51Z6nb713nrEM=;
-        b=w3JnKdDh2d7Tl3dut/pW57Jm6T7zhChQ/CKCzCCcpjRzMKxpnaRCy+esrsg95sN4fF
-         H0r042Pq/U9YWZ6vkUVO3lCl5hmdMCl/IYTvwsfoPStl0KLAHkkY8xTBHtXgqxBJjAiN
-         VM4wys8R8DBqMh5b63HMknsDecixaGHc/j+ONbXmLwmfapDcHulfpC5QCBde1iznBO4S
-         fReAj2BMXnCzVSIeiD+ahB19rRcaOek8dE3jjdcVu2GsD+F6fe2BaPCzEfhr2MObaHZa
-         OdeoHH39FzEqsg6wwgLZQfga5bfkgwEJX9lYhAesOojqzbKHTmTBsSAkqRWPXzh7EPuu
-         i8TA==
-X-Gm-Message-State: AOAM532n/u6ZgBalXSLbE02WI/wbXKoFiqaoYoGMo00t/XS2kEaywrHH
-        E0+njeqPBKz6R08MSXM3xrCoDKYxYUWbRJftzL4/kw==
-X-Google-Smtp-Source: ABdhPJyx8gmtrp9VEPth+GApYG51c0O501gkymHP+UpTVpU/3iDCq4sfkmvUz/9lxc3bdD5ilhpOQLuDyT6XFLRbsmk=
-X-Received: by 2002:a05:6402:335:b0:425:e3e0:5a90 with SMTP id
- q21-20020a056402033500b00425e3e05a90mr23350271edw.14.1652193960197; Tue, 10
- May 2022 07:46:00 -0700 (PDT)
+        Tue, 10 May 2022 11:13:41 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06A6956C0B;
+        Tue, 10 May 2022 07:47:35 -0700 (PDT)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24ADiC0n032561;
+        Tue, 10 May 2022 14:47:32 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : subject :
+ date : message-id : content-transfer-encoding : mime-version; s=pp1;
+ bh=nc4wvKIlLNgw5pp2mTULQu+zzV+gEDQdNP16pTfNqVY=;
+ b=Vru/aqLwDpkkm7IcJYPNzMkpRa40IjPHiZbYWP9XYi1BPOpgBSsTWbiQeZtZMzqDtVHT
+ aJvn+L+aaDFRV9qyH9g3XC4qXtp3t1/lLTEhyxN1u0f+gfNji0O4aQzgx5V7k7JMDK0d
+ L34tXkLQgZCWOR+VF6uNpcI0lp1KjacUi/HQXGyV7RMNyTM5BjUXAuhvDrkINwmvIF62
+ WmbPGh5mZ/nCkcYBuHnsFMqD+I31Q4qxMHsE42I+wki/MH5B3Bk5iu0Zc6ILzdBtJBRW
+ kjsgAQddyFgw0ollI6dZzTK/PypW0FEUVHw9QHs+3ae5i2WYFu8R5SrbTglTii6ZXvZZ Bg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fyrupt3ps-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 10 May 2022 14:47:31 +0000
+Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24AEkkaG011453;
+        Tue, 10 May 2022 14:47:31 GMT
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fyrupt3ny-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 10 May 2022 14:47:31 +0000
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24AEdqIm022211;
+        Tue, 10 May 2022 14:47:28 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma05fra.de.ibm.com with ESMTP id 3fwgd8u9hx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 10 May 2022 14:47:28 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24AEl8X032309726
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 10 May 2022 14:47:08 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 65DE0A405B;
+        Tue, 10 May 2022 14:47:25 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 05821A4054;
+        Tue, 10 May 2022 14:47:25 +0000 (GMT)
+Received: from t46lp73.. (unknown [9.152.108.100])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 10 May 2022 14:47:24 +0000 (GMT)
+From:   Steffen Eiden <seiden@linux.ibm.com>
+To:     Greg KH <greg@kroah.com>, Heiko Carstens <hca@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Nico Boehr <nrb@linux.ibm.com>, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, kvm@vger.kernel.org
+Subject: [PATCH v4 0/2] s390: Ultravisor device
+Date:   Tue, 10 May 2022 14:47:22 +0000
+Message-Id: <20220510144724.3321985-1-seiden@linux.ibm.com>
+X-Mailer: git-send-email 2.30.2
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 8iDgig8a50N3AyShSf76EGHVd1nDRDSk
+X-Proofpoint-GUID: WcSUbroq2uyI-mc9ttzLo7UNlzw2fkNW
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-References: <20220315153856.3117676-1-arnaud.pouliquen@foss.st.com>
- <20220506171222.GA2816011@p14s> <b7a3db59-201d-a5fb-f416-e1d60d79762f@foss.st.com>
-In-Reply-To: <b7a3db59-201d-a5fb-f416-e1d60d79762f@foss.st.com>
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-Date:   Tue, 10 May 2022 08:45:48 -0600
-Message-ID: <CANLsYkzEXQbcWBEOecVa2jkJFLY4a_sXm1ig-HA_OMb7u=R7Ww@mail.gmail.com>
-Subject: Re: [PATCH] rpmsg: virtio: set dst address on first message received
-To:     Arnaud POULIQUEN <arnaud.pouliquen@foss.st.com>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Content-Type: text/plain; charset="UTF-8"
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-10_03,2022-05-10_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 bulkscore=0
+ clxscore=1015 adultscore=0 mlxscore=0 mlxlogscore=999 lowpriorityscore=0
+ suspectscore=0 spamscore=0 priorityscore=1501 phishscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2205100067
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 9 May 2022 at 03:18, Arnaud POULIQUEN
-<arnaud.pouliquen@foss.st.com> wrote:
->
-> Hello Mathieu,
->
-> On 5/6/22 19:12, Mathieu Poirier wrote:
-> > On Tue, Mar 15, 2022 at 04:38:56PM +0100, Arnaud Pouliquen wrote:
-> >> when a rpmsg channel has been locally created with a destination address
-> >
-> > s/when/Wen
-> >
-> > Also, please be more specific about the "locally created" part, i.e
-> > rpmsg_ctrldev_ioctl() -> rpmsg_create_channel().  Otherwise it is really hard to
-> > understand the context of this change.
-> >
-> >> set to RPMSG_ADDR_ANY, a name service announcement message is sent to
-> >> the remote side. Then the destination address is never updated, making it
-> >> impossible to send messages to the remote.
-> >>
-> >> An example of kernel trace observed:
-> >> rpmsg_tty virtio0.rpmsg-tty.29.-1: invalid addr (src 0x1d, dst 0xffffffff)
-> >>
-> >> Implement same strategy than the open-amp library:
-> >> On the reception of the first message, if the destination address is
-> >> RPMSG_ADDR_ANY, then set it to address of the remote endpoint that
-> >> send the message.
-> >>
-> >
-> > I would have expected a "Fixes:" tag.
->
-> Difficult to give a reference. For me the issue exists since the creation
-> of the rpmsg virtio bus. A driver can create a channel that generates a NS
-> announcement leading to this issue.
-> The issue as been highlighted by the creation of the  RPMSG_CREATE_DEV_IOCTL
-> control.
->
+This series adds an Ultravisor(UV) device letting the userspace send some
+Ultravisor calls to the UV. Currently two calls are supported.
+Query Ultravisor Information (QUI) and
+Receive Attestation Measurement (Attest[ation]).
 
-Ok
+The UV device is implemented as a miscdevice accepting only IOCTLs.
+The IOCTL cmd specifies the UV call and the IOCTL arg the request
+and response data depending on the UV call.
+The device driver writes the UV response in the ioctl argument data.
 
-> >
-> >> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-> >>
-> >> ---
-> >> Remark:
-> >> An alternative (or a complement?) could be to add a NS bind/unbind in
-> >> the NS announcement channel (in rpmsg_ns.c).
-> >> This would allow the local and/or the remote processor to inform the
-> >> remote side the the service announced in bound.
-> >> ---
-> >>  drivers/rpmsg/virtio_rpmsg_bus.c | 10 ++++++++++
-> >>  1 file changed, 10 insertions(+)
-> >>
-> >> diff --git a/drivers/rpmsg/virtio_rpmsg_bus.c b/drivers/rpmsg/virtio_rpmsg_bus.c
-> >> index 3ede25b1f2e4..99d2119cc164 100644
-> >> --- a/drivers/rpmsg/virtio_rpmsg_bus.c
-> >> +++ b/drivers/rpmsg/virtio_rpmsg_bus.c
-> >> @@ -708,6 +708,7 @@ static ssize_t virtio_rpmsg_get_mtu(struct rpmsg_endpoint *ept)
-> >>  static int rpmsg_recv_single(struct virtproc_info *vrp, struct device *dev,
-> >>                           struct rpmsg_hdr *msg, unsigned int len)
-> >>  {
-> >> +    struct rpmsg_device *rpdev;
-> >>      struct rpmsg_endpoint *ept;
-> >>      struct scatterlist sg;
-> >>      bool little_endian = virtio_is_little_endian(vrp->vdev);
-> >> @@ -746,6 +747,15 @@ static int rpmsg_recv_single(struct virtproc_info *vrp, struct device *dev,
-> >>      mutex_unlock(&vrp->endpoints_lock);
-> >>
-> >>      if (ept) {
-> >> +            rpdev = ept->rpdev;
-> >> +            if (rpdev->ept == ept && rpdev->dst == RPMSG_ADDR_ANY) {
-> >
-> > Please add a comment to explain the first part of the if() clause.  It took me
-> > quite some time to understand.
-> >
-> >> +                    /*
-> >> +                     * First message received from the remote side on the default endpoint,
-> >> +                     * update channel destination address.
-> >> +                     */
-> >> +                    rpdev->dst = msg->src;
-> >
-> > This triggers a bot warning and should be addressed.  If it can't be addressed add
-> > a comment that clearly explains why so that we don't end up receiving patches
-> > for it every 4 weeks.
->
-> Oops, I missed it, thanks for pointing it out.
->
->
-> Concerning the patch itself as discussed in RP open-amp meeting. I wonder if this issue
-> could be addressed by the flow control[1][2][3], or if needed in any case.
->
-> I propose to send a V2 when ready to propose in parallel the flow control.
-> So both can be addressed at same time to have a global picture of the way to address the
-> use case..
->
+The 'uvdevice' does no checks on the request beside faulty userspace
+addresses, if sizes are in a sane range before allocating in kernel space,
+and other tests that prevent the system from corruption.
+Especially, no checks are made, that will be performed by the UV anyway
+(E.g. 'invalid command' in case of attestation on unsupported hardware).
+These errors are reported back to userspace using the UV return code
+field.
 
-It will be one or the other, we can't have two ways to do things.  If
-the flow control patchset addresses this problem on top of adding more
-functionality then we should go with that one.
+The first patch introduces the new device as a module configured to be
+compiled directly into the kernel (y) similar to the s390 SCLP and CHSH
+miscdevice modules. The second atch introduces Kselftests which verify error
+paths of the ioctl.
 
-> Thanks,
-> Arnaud
->
-> [1] POC Linux code:
-> https://github.com/arnopo/linux/commits/signalling
->
-> [2] openamp library associated code:
-> https://github.com/arnopo/open-amp/commits/flow_ctrl
->
-> [3] overview presentation
-> https://drive.google.com/file/d/1CLU3ybI3oSBGvor18AQ-HOzOJ2nOppEb/view
->
->
-> >
-> > Thanks,
-> > Mathieu
-> >
-> >> +            }
-> >> +
-> >>              /* make sure ept->cb doesn't go away while we use it */
-> >>              mutex_lock(&ept->cb_lock);
-> >>
-> >> --
-> >> 2.25.1
-> >>
+@Greg
+   There is now a userspace tool "pvattest" that uses the new device:
+   https://github.com/ibm-s390-linux/s390-tools/tree/for-2.22
+
+   We are currently discussing some nits regarding the processing
+   of certificates and the user interface and add the tool to
+   s390-tools/master afterwards.
+   However, the interface to the kernel is fixed.
+   The tool (pvattest) will be in s390-tools 2.22 that accompanies
+   linux 5.18.
+   You will be most interested in S390-tools/pvattest/src/uvio.{h,c}
+   and S390-tools/pvattest/src/pvattest.c
+
+v3->v4:
+  * Dropped the QUI related patches, as we agreed that we do not want
+    to expose the QUI-UVC to userspace for now.
+  * Kconfig option was misplaced inside the S390 TAPE group ->fixed
+  * Some nits fixed:
+  	* dropped the X from S390X in the uvdevice.h guard
+	* fixes kernel doc style issue in uvdevice.c
+
+v2->v3:
+   The main change is that QUI is now introduced after Attestation as we
+   might not want pick it. Also the Kselftest patch is splitted into
+   Attestation and QUI so that they can be picked without requiring
+   QUI support of the uvdevice.
+
+  * dropped the Kconfig dependency
+  * reorganized the series:
+    - Patch 1 now covers the introduction of the uvdevice and Attestation
+    - Patch 2 adds QUI to uvdevice
+    - Patch 3/4 add Kselftests for Attestation and QUI
+  * fixed some nits
+  * added some comments
+
+v1->v2:
+  * ioctl returns -ENOIOCTLCMD in case of a invalid ioctl command
+  * streamlined reserved field test
+  * default Kconfig is y instead of m
+  * improved selftest documentation
+
+Steffen Eiden (2):
+  drivers/s390/char: Add Ultravisor io device
+  selftests: drivers/s390x: Add uvdevice tests
+
+ MAINTAINERS                                   |   3 +
+ arch/s390/include/asm/uv.h                    |  23 +-
+ arch/s390/include/uapi/asm/uvdevice.h         |  51 ++++
+ drivers/s390/char/Kconfig                     |  10 +
+ drivers/s390/char/Makefile                    |   1 +
+ drivers/s390/char/uvdevice.c                  | 264 +++++++++++++++++
+ tools/testing/selftests/Makefile              |   1 +
+ tools/testing/selftests/drivers/.gitignore    |   1 +
+ .../selftests/drivers/s390x/uvdevice/Makefile |  22 ++
+ .../selftests/drivers/s390x/uvdevice/config   |   1 +
+ .../drivers/s390x/uvdevice/test_uvdevice.c    | 276 ++++++++++++++++++
+ 11 files changed, 652 insertions(+), 1 deletion(-)
+ create mode 100644 arch/s390/include/uapi/asm/uvdevice.h
+ create mode 100644 drivers/s390/char/uvdevice.c
+ create mode 100644 tools/testing/selftests/drivers/s390x/uvdevice/Makefile
+ create mode 100644 tools/testing/selftests/drivers/s390x/uvdevice/config
+ create mode 100644 tools/testing/selftests/drivers/s390x/uvdevice/test_uvdevice.c
+
+-- 
+2.30.2
+
