@@ -2,192 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74D2BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:42:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BE85C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:43:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347535AbiEJQqp (ORCPT
+        id S1347551AbiEJQq5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 12:46:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48696 "EHLO
+        Tue, 10 May 2022 12:46:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343547AbiEJQqm (ORCPT
+        with ESMTP id S1347555AbiEJQqx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 12:46:42 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB8652124D
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 09:42:44 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id e12so31722157ybc.11
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 09:42:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CyIHSpV7urkNC/m60X3OuzStVpyeIryc1aK1Punw4D8=;
-        b=V92PI4bmOdix/67urkG91/TJAjUY3Ex/AdHQvLC+n6j+EjO3mVD7v3Mz4eGUlGoEJ7
-         zRNK7bexwodR/5e4GXaB5rQtzm4pkmocwRan7CNTEzgNkJXNdLAHUYpfx9bDBRNojZEj
-         1aHaCp25650Pvre4A5jQlG2Ku68l073Z6vB/qyS6TUMrMEakIwuxYunG9ihkOykkv5aD
-         n1Ui5FW3lbLiZagup2m7ABMIdbLVCmw7qTRG8mK3vm/NXR/wtXg2LAeBCA3FWtYN/fx6
-         1PHDacN8QP0kfjppDBfC0ZgdsgdLqP288ie4lkFHXo0SLOZWiBUol1lgo7C3v2kNkaIE
-         4Vcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CyIHSpV7urkNC/m60X3OuzStVpyeIryc1aK1Punw4D8=;
-        b=tBYsa2jMOGme683Dk+WmTLroAf/N5RdWr/i4CbNI1flKPwX993IF4yZ4TDdmYBFN/c
-         4SocCcfVquLhPorZl/Fl+K0eZrQYYbjwkK/Y8qtDFL7uGbjtVvGZDjNUBOcISdGiD+q6
-         jnVx4b+0ye1kFb3m2tig+KfqEk9SGV+MXkIZaB6EQfnbDELJwqCyzUKxh+u48c5wbJu0
-         6y3Ansu8d9R3WZpX0krYrxGBcaJvm2LavzLmxNjPgo7OoUw/D7+eBfcmEhhFyiRZHeX0
-         xfudS1UJPYlMTT5XXWmR+TeB3MXmjTOU/g4YzBnp+WktgqMbiequaR75bxaDevlP/mQg
-         111g==
-X-Gm-Message-State: AOAM533g33f+jcyAoLDNaxdGPWVgkDGAUW9usOQmX/RW6cyjlmrFCCnT
-        ui/tigws3CqK/j5RhDcvpVr3coysG7kUWfRhj8tYug==
-X-Google-Smtp-Source: ABdhPJxZ/+tgVgvg8fQm/jcM9aB8pFitGhgZM6GXVcw+NtkFAeAj8nhv59Uys3MXLYyvAYh+f32/Oi2k53WS8hYVTeY=
-X-Received: by 2002:a25:d55:0:b0:648:7008:61e0 with SMTP id
- 82-20020a250d55000000b00648700861e0mr18424242ybn.282.1652200963633; Tue, 10
- May 2022 09:42:43 -0700 (PDT)
+        Tue, 10 May 2022 12:46:53 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ACCE2A727
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 09:42:54 -0700 (PDT)
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24ACrHKi011776;
+        Tue, 10 May 2022 18:42:21 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=selector1;
+ bh=a+EtpUIXpsP9dQ8fNMclc8SiQiMp8KylWZlaOQgjTPM=;
+ b=QTrxWQTWRXT0pQUuhBhAf3cwM1Y6Q0mE8NPUntRuxaVlTW0/lWKPd1yX+OEvNKBtefzc
+ aPrTy4PF3nwhhJugGYcB+yqTt/ERkxhuLXPgWV44kruG9FCz2UsypW9Ix6oDgxuFc2bZ
+ zROM11by3CPoMgtzV9XEDhRW0BTClmpIt0y9v3g4BB1EqSClNMXZIRdG0gJOaPhZFVj5
+ FQAN9I58rgz6C+tKXib7KsHizeY042FuVza2F19izNYplkkW2O/0Peol6ul+kctapsGI
+ M5qrytUZeUpnPsPJRY8MiocYUpHq2G1nZYHOSnGUwZ4VUOtILlzsegRmShyPbxV08OXD hw== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3fwfngkwxv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 10 May 2022 18:42:21 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 2BA8510002A;
+        Tue, 10 May 2022 18:42:20 +0200 (CEST)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 199C022ECFA;
+        Tue, 10 May 2022 18:42:20 +0200 (CEST)
+Received: from localhost (10.75.127.50) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Tue, 10 May 2022 18:42:19
+ +0200
+From:   Antonio Borneo <antonio.borneo@foss.st.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>
+CC:     Ludovic Barre <ludovic.barre@foss.st.com>,
+        Loic Pallardy <loic.pallardy@foss.st.com>,
+        Pascal Paillet <p.paillet@foss.st.com>,
+        Antonio Borneo <antonio.borneo@foss.st.com>
+Subject: [PATCH 1/7] irqchip/stm32-exti: set_affinity return IRQ_SET_MASK_OK_DONE if no parent
+Date:   Tue, 10 May 2022 18:41:17 +0200
+Message-ID: <20220510164123.557921-1-antonio.borneo@foss.st.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-References: <20220510030014.3842475-1-surenb@google.com> <04858a5d-98c8-69be-025f-214e4b10d502@linuxfoundation.org>
- <CAJuCfpEAqEEf-SCi87-VZrFYcoPff8Gkda5uF8fYRyKQo_vkjw@mail.gmail.com> <ebaad398-110d-6a6b-70a5-3abeacfcb14a@linuxfoundation.org>
-In-Reply-To: <ebaad398-110d-6a6b-70a5-3abeacfcb14a@linuxfoundation.org>
-From:   Suren Baghdasaryan <surenb@google.com>
-Date:   Tue, 10 May 2022 09:42:32 -0700
-Message-ID: <CAJuCfpG5dDv61NFmBLi+8oNuOMgS51Q4Cq6SNvM68n9z0XE5cA@mail.gmail.com>
-Subject: Re: [PATCH 1/3] selftests: vm: add process_mrelease tests
-To:     Shuah Khan <skhan@linuxfoundation.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@suse.com>,
-        David Rientjes <rientjes@google.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Roman Gushchin <guro@fb.com>, Minchan Kim <minchan@kernel.org>,
-        "Kirill A. Shutemov" <kirill@shutemov.name>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Oleg Nesterov <oleg@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
-        Jann Horn <jannh@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Peter Xu <peterx@redhat.com>,
-        John Hubbard <jhubbard@nvidia.com>, shuah@kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>, linux-kselftest@vger.kernel.org,
-        kernel-team <kernel-team@android.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.50]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-10_04,2022-05-10_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 9:36 AM Shuah Khan <skhan@linuxfoundation.org> wrote:
->
-> On 5/10/22 10:29 AM, Suren Baghdasaryan wrote:
-> > On Tue, May 10, 2022 at 8:43 AM Shuah Khan <skhan@linuxfoundation.org> wrote:
-> >>
-> >> On 5/9/22 9:00 PM, Suren Baghdasaryan wrote:
-> >>> Introduce process_mrelease syscall sanity tests. They include tests of
-> >>> invalid pidfd and flags inputs, attempting to call process_mrelease
-> >>> with a live process and a valid usage of process_mrelease. Because
-> >>> process_mrelease has to be used against a process with a pending SIGKILL,
-> >>> it's possible that the process exits before process_mrelease gets called.
-> >>> In such cases we retry the test with a victim that allocates twice more
-> >>> memory up to 1GB. This would require the victim process to spend more
-> >>> time during exit and process_mrelease has a better chance of catching
-> >>> the process before it exits.
-> >>>
-> >>
-> >> +1 on Mike's comments on improving the change log. List what is getting
-> >> tested as opposed to describing the test code.
-> >
-> > I'll try to improve the description but IMHO it does describe what
-> > it's testing - the process_mrelease syscall with valid and invalid
-> > inputs. I could omit the implementation details if that helps.
-> >
-> >>
-> >>> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> >>> ---
-> >>>    tools/testing/selftests/vm/Makefile        |   1 +
-> >>>    tools/testing/selftests/vm/mrelease_test.c | 176 +++++++++++++++++++++
-> >>>    tools/testing/selftests/vm/run_vmtests.sh  |  16 ++
-> >>>    3 files changed, 193 insertions(+)
-> >>>    create mode 100644 tools/testing/selftests/vm/mrelease_test.c
-> >>
-> >> Please update .gitignore with the new executable.
-> >
-> > Ack.
-> >
-> >>
-> >>>
-> >>> diff --git a/tools/testing/selftests/vm/Makefile b/tools/testing/selftests/vm/Makefile
-> >>> index 04a49e876a46..733fccbff0ef 100644
-> >>> --- a/tools/testing/selftests/vm/Makefile
-> >>> +++ b/tools/testing/selftests/vm/Makefile
-> >>> @@ -43,6 +43,7 @@ TEST_GEN_FILES += map_populate
-> >>>    TEST_GEN_FILES += memfd_secret
-> >>>    TEST_GEN_FILES += mlock-random-test
-> >>>    TEST_GEN_FILES += mlock2-tests
-> >>> +TEST_GEN_FILES += mrelease_test
-> >>>    TEST_GEN_FILES += mremap_dontunmap
-> >>>    TEST_GEN_FILES += mremap_test
-> >>>    TEST_GEN_FILES += on-fault-limit
-> >>> diff --git a/tools/testing/selftests/vm/mrelease_test.c b/tools/testing/selftests/vm/mrelease_test.c
-> >>> new file mode 100644
-> >>> index 000000000000..a61061bf8433
-> >>> --- /dev/null
-> >>> +++ b/tools/testing/selftests/vm/mrelease_test.c
-> >>> @@ -0,0 +1,176 @@
-> >>> +// SPDX-License-Identifier: GPL-2.0
-> >>> +/*
-> >>> + * Copyright 2022 Google LLC
-> >>> + */
-> >>> +#define _GNU_SOURCE
-> >>> +#include <errno.h>
-> >>> +#include <stdio.h>
-> >>> +#include <stdlib.h>
-> >>> +#include <sys/wait.h>
-> >>> +#include <unistd.h>
-> >>> +
-> >>> +#include "util.h"
-> >>> +
-> >>> +static inline int pidfd_open(pid_t pid, unsigned int flags)
-> >>> +{
-> >>> +#ifdef __NR_pidfd_open
-> >>> +     return syscall(__NR_pidfd_open, pid, flags);
-> >>> +#else
-> >>> +     errno = ENOSYS;
-> >>
-> >> This isn't an error - this would be skip because this syscall
-> >> isn't supported.
-> >
-> > Ack.
-> >
-> >>
-> >>> +     return -1;
-> >>> +#endif
-> >>
-> >> Key off of syscall return instead of these ifdefs - same comment
-> >> on all of the ifdefs
-> >
-> > Ack. I was using some other test as an example but I guess that was
-> > not a good model.
-> >
-> >>
-> >>> +}
-> >>> +
-> >>
-> >> I am not seeing any reason for breaking this code up have a separate
-> >> routine for pidfd_open().
-> >
-> > I'm a bit unclear what you mean. Do you mean that userspace headers
-> > should already define pidfd_open() and I don't need to define it?
-> >
->
-> Do you need pidfd_open() or can this be part of main? Without the ifdefs,
-> it is really a one line code.
+From: Ludovic Barre <ludovic.barre@foss.st.com>
 
-Ah, I see. I think it's cleaner that way but I'll make them one-line
-inline functions.
+If no parent, there is no specific action to do in
+stm32 irqchip, and so return IRQ_SET_MASK_OK_DONE.
 
->
-> thanks,
-> -- Shuah
+Signed-off-by: Ludovic Barre <ludovic.barre@foss.st.com>
+Signed-off-by: Antonio Borneo <antonio.borneo@foss.st.com>
+---
+ drivers/irqchip/irq-stm32-exti.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/irqchip/irq-stm32-exti.c b/drivers/irqchip/irq-stm32-exti.c
+index 9d18f47040eb..10c9c742c216 100644
+--- a/drivers/irqchip/irq-stm32-exti.c
++++ b/drivers/irqchip/irq-stm32-exti.c
+@@ -614,7 +614,7 @@ static int stm32_exti_h_set_affinity(struct irq_data *d,
+ 	if (d->parent_data->chip)
+ 		return irq_chip_set_affinity_parent(d, dest, force);
+ 
+-	return -EINVAL;
++	return IRQ_SET_MASK_OK_DONE;
+ }
+ 
+ static int __maybe_unused stm32_exti_h_suspend(void)
+-- 
+2.36.0
+
