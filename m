@@ -2,62 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 090CCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 10:55:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16740C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 10:57:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240437AbiEJK7b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 06:59:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33038 "EHLO
+        id S238735AbiEJLBn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 07:01:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238735AbiEJK6l (ORCPT
+        with ESMTP id S240768AbiEJLBG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 06:58:41 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86DCA532DB;
-        Tue, 10 May 2022 03:52:26 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id o69so15531427pjo.3;
-        Tue, 10 May 2022 03:52:26 -0700 (PDT)
+        Tue, 10 May 2022 07:01:06 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA23C1ACFB2
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 03:55:55 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id x23so14614269pff.9
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 03:55:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=PJ19cK/envJskyodpfZTbyEN4RvPNH8GFQqBxIv1mp8=;
-        b=OqQX04ELVSJkzn03+KnPYLsZV/PfYbrAvIteqwvsBMA95bBx0tMBOfzm37QUmroTp7
-         C6XjObXqZIPtcJ16IUFV0OywxvJQdtiHt1vQ3QI0w65BtqO4V83QyAt1QMs108+/tmSy
-         J8bhF+HrO/KzjEvBNueFuBVM8NX8dacOzF/u4QgFCHaPmZqRh0yrwpYtOY37g1Tvjw1B
-         WePpiQh4WnJe4VO6ZdK4PzqNWZdeD3payqUMSDAZb3p2eA/mrKyvoWtXSWXhchrMA8Oh
-         naFgZkwiKYtnpRH+xJ9EvMho9ldUtdpYLIUq0XKEloh8wkh2NSuBTiUi8LDQ/Es/zCFd
-         NqEw==
+        bh=BDpr4fgOnvVyQYrFekFWe52UirgkPK8wiEQGbAdUq4g=;
+        b=IQ59VPtA88LWqzTp7fRTwZwyfdBWVvFMqHuZ0jsgBBPzROR5O6cPm28KDvKuVB6j1p
+         BHnONpOyhh5X4j4B8Ar2QJ90KsSkk2om0KEQyKzgdnPmezHr4ijzfJe8chcXGOlPTLyb
+         7HU6hcMDqqRV28YwhMMZhccuscV2hFqEe7nsM799XTMrOfiFmAs3pCTjnL41g427bVCY
+         v2iV8u/r+tkzFXPXLEaEB3/sGloqNKxIanhVAYx9wLvWi3xp0nmqoREIbtYzT1ozeTiH
+         lvWNzFUrxcZTzCq63zhY53fjjAP174at7Fm6GZioxGxIi8dX7q/09Yt7tcrbVMJW/ysS
+         gkQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=PJ19cK/envJskyodpfZTbyEN4RvPNH8GFQqBxIv1mp8=;
-        b=6xpa9F/qgTcc7Ppshqpr60/gMKWhMR6ChPoOjP0t+Lorpfx8LeE9sdVQLswmeDKTmP
-         5gGeCFx2MF5vm7MEFbqlSFckAOjYaTi63EdZ9PPue6Wv07hWib05SKX0tWoLTBSLMFOa
-         0kqgkEFmKgTIlyzhuUAffWWOL+wiklFE9bwCwAt60GJBRBCZb4dIB4hVrHMVAtt8e7UJ
-         zo2hEb2dlLgt7Qr6iGxQ17p3+wPwMT6yY30tuNGhDfdtkxIsrWHNLmafo03Csbx4kYjx
-         SXJF7axhB66ObSr8jh9wf5LkTA5XE+Skk9tsorDEgJr189yhHj6rDKKuz536evXSSFiR
-         4awQ==
-X-Gm-Message-State: AOAM533n3jIPygLXsgof/rU5F0gO7ROaHZoZz8ZTD2ZrX/dfgeElsBbD
-        CXhkSIhWj0zM4g+3EVlL77A=
-X-Google-Smtp-Source: ABdhPJy2AlVyshNEMGtTlQ5Qqj2C39ByBFIUe0dpJOjCLSjfphGlb1eCyT4322y484FXlMN+Ep2NLA==
-X-Received: by 2002:a17:903:40cf:b0:15e:9bd0:2cab with SMTP id t15-20020a17090340cf00b0015e9bd02cabmr19787997pld.170.1652179946124;
-        Tue, 10 May 2022 03:52:26 -0700 (PDT)
+        bh=BDpr4fgOnvVyQYrFekFWe52UirgkPK8wiEQGbAdUq4g=;
+        b=bxppWEMYfoMK4Nt43pwfc8orD62bLITL31UJ+72h0Iso2RAYPXpplpMjd8uTwKasIk
+         QxFFeZlHJbexxp+n17o3TkZD2PY7/ryRr7q5i6XsXDxV0zAw7ynWulwJliN3b1kR/LFy
+         LYER0NsC+twDysl29hhOjnPwkCn6ZnXvxs27eJYHCd4Dc1jQ+rTVrX2qCXS0D12HEDhD
+         VymvscFW/20LhM4ce7TsuTCF/PQ7eP+U3+BfnA7AUtEqyRuJvRizNskYa8/1pf35QF+i
+         hWwAbKOasLz4TaNrA3Rg63Z7tDH6oWjXfR3jAH9JVstYdZXDeSZxpZ1IoCNFDIFTRdDQ
+         EaOQ==
+X-Gm-Message-State: AOAM530Kr7l+VJmPxaE4/8UjsXVSbisjwEd1bYU5lW/XJDaJSC8IoGqV
+        YdECBrF1kivGwdXsOp7s9b4=
+X-Google-Smtp-Source: ABdhPJxIq7oyNrunIkIE6opFYDusf+6BjoTkzofLq9YkNdo883HyN1gIEhfwWtVNj1Y6Zavx6CNyMA==
+X-Received: by 2002:a63:3dc9:0:b0:3c6:4085:9de0 with SMTP id k192-20020a633dc9000000b003c640859de0mr16741051pga.57.1652180155296;
+        Tue, 10 May 2022 03:55:55 -0700 (PDT)
 Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id b9-20020aa78709000000b0050dc7628202sm10230135pfo.220.2022.05.10.03.52.24
+        by smtp.gmail.com with ESMTPSA id ls6-20020a17090b350600b001dcf9fe5cddsm1526501pjb.38.2022.05.10.03.55.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 03:52:25 -0700 (PDT)
+        Tue, 10 May 2022 03:55:54 -0700 (PDT)
 From:   cgel.zte@gmail.com
 X-Google-Original-From: chi.minghao@zte.com.cn
-To:     coproscefalo@gmail.com
-Cc:     hdegoede@redhat.com, markgross@kernel.org,
-        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
+To:     dan.j.williams@intel.com
+Cc:     vishal.l.verma@intel.com, dave.jiang@intel.com,
+        nvdimm@lists.linux.dev, linux-kernel@vger.kernel.org,
         Minghao Chi <chi.minghao@zte.com.cn>,
         Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] toshiba_acpi: use kobj_to_dev()
-Date:   Tue, 10 May 2022 10:52:22 +0000
-Message-Id: <20220510105222.1352180-1-chi.minghao@zte.com.cn>
+Subject: [PATCH] dax: use kobj_to_dev()
+Date:   Tue, 10 May 2022 10:55:51 +0000
+Message-Id: <20220510105551.1352798-1-chi.minghao@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -72,21 +72,30 @@ Use kobj_to_dev() instead of open-coding it.
 Reported-by: Zeal Robot <zealci@zte.com.cn>
 Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 ---
- drivers/platform/x86/toshiba_acpi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/dax/bus.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/platform/x86/toshiba_acpi.c b/drivers/platform/x86/toshiba_acpi.c
-index f113dec98e21..0fc9e8b8827b 100644
---- a/drivers/platform/x86/toshiba_acpi.c
-+++ b/drivers/platform/x86/toshiba_acpi.c
-@@ -2353,7 +2353,7 @@ static struct attribute *toshiba_attributes[] = {
- static umode_t toshiba_sysfs_is_visible(struct kobject *kobj,
- 					struct attribute *attr, int idx)
+diff --git a/drivers/dax/bus.c b/drivers/dax/bus.c
+index 1dad813ee4a6..f0f45962005d 100644
+--- a/drivers/dax/bus.c
++++ b/drivers/dax/bus.c
+@@ -512,7 +512,7 @@ static DEVICE_ATTR_WO(delete);
+ static umode_t dax_region_visible(struct kobject *kobj, struct attribute *a,
+ 		int n)
  {
 -	struct device *dev = container_of(kobj, struct device, kobj);
 +	struct device *dev = kobj_to_dev(kobj);
- 	struct toshiba_acpi_dev *drv = dev_get_drvdata(dev);
- 	bool exists = true;
+ 	struct dax_region *dax_region = dev_get_drvdata(dev);
+ 
+ 	if (is_static(dax_region))
+@@ -1241,7 +1241,7 @@ static DEVICE_ATTR_RO(numa_node);
+ 
+ static umode_t dev_dax_visible(struct kobject *kobj, struct attribute *a, int n)
+ {
+-	struct device *dev = container_of(kobj, struct device, kobj);
++	struct device *dev = kobj_to_dev(kobj);
+ 	struct dev_dax *dev_dax = to_dev_dax(dev);
+ 	struct dax_region *dax_region = dev_dax->region;
  
 -- 
 2.25.1
