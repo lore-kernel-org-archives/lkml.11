@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D06FC38A2D
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5107DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245732AbiEJN6o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:58:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56516 "EHLO
+        id S245589AbiEJN6P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:58:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245197AbiEJNii (ORCPT
+        with ESMTP id S245183AbiEJNih (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:38:38 -0400
+        Tue, 10 May 2022 09:38:37 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB1BDDECC;
-        Tue, 10 May 2022 06:28:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4F122670BE;
+        Tue, 10 May 2022 06:28:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5595360B12;
-        Tue, 10 May 2022 13:28:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54B9AC385C2;
-        Tue, 10 May 2022 13:28:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 74D2360B12;
+        Tue, 10 May 2022 13:28:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 806A9C385A6;
+        Tue, 10 May 2022 13:28:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189319;
-        bh=QjF3jReUNDcYQveU7Tauj4YfmC8J+BQBTJfIbX5n0ME=;
+        s=korg; t=1652189294;
+        bh=hFIuOSmorWGqU0IxMcmFpsSBqdhBQkUAzQNjyHuPQQQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DHWLK4VHiahUEYTMKMDtsGQkA6i0R4uQr1rL477vsqXf+HUkYi7CyCbnRxpN5iqUn
-         3hp9oMhvOvTWqtE13j9AWO2bgyBYHyL/e6qiPLqFsajKwIzxjXVIZ7UBPfB12HtG3y
-         Ondz4tQe8wMC7CNfGdSf45OM2oJzohPtlosg0OWY=
+        b=yuSBdQPZNVKjXMvlOmA6y+lwYEj9mUvTtLPGz74ZOKa6wWj5YZUzZ2XbB89uaqe4E
+         Ogn31zaDnTEsSjF38uuz96D9/qLGMjfmrxNzPMw3d5FGOjnZiRwKNJJHBSilb4Rmcp
+         D2cSBXnqBsyKAwy0IKjDq0w5oj4Uh9UziGve/CCg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.15 013/135] drm/amd/display: Avoid reading audio pattern past AUDIO_CHANNELS_COUNT
-Date:   Tue, 10 May 2022 15:06:35 +0200
-Message-Id: <20220510130740.778835335@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: [PATCH 5.10 68/70] PCI: aardvark: Clear all MSIs at setup
+Date:   Tue, 10 May 2022 15:08:27 +0200
+Message-Id: <20220510130734.854899980@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
-References: <20220510130740.392653815@linuxfoundation.org>
+In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
+References: <20220510130732.861729621@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,33 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Harry Wentland <harry.wentland@amd.com>
+From: Pali Rohár <pali@kernel.org>
 
-commit 3dfe85fa87b2a26bdbd292b66653bba065cf9941 upstream.
+commit 7d8dc1f7cd007a7ce94c5b4c20d63a8b8d6d7751 upstream.
 
-A faulty receiver might report an erroneous channel count. We
-should guard against reading beyond AUDIO_CHANNELS_COUNT as
-that would overflow the dpcd_pattern_period array.
+We already clear all the other interrupts (ISR0, ISR1, HOST_CTRL_INT).
 
-Signed-off-by: Harry Wentland <harry.wentland@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
+Define a new macro PCIE_MSI_ALL_MASK and do the same clearing for MSIs,
+to ensure that we don't start receiving spurious interrupts.
+
+Use this new mask in advk_pcie_handle_msi();
+
+Link: https://lore.kernel.org/r/20211130172913.9727-5-kabel@kernel.org
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pci/controller/pci-aardvark.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
-+++ b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
-@@ -3118,7 +3118,7 @@ static void dp_test_get_audio_test_data(
- 		&dpcd_pattern_type.value,
- 		sizeof(dpcd_pattern_type));
+--- a/drivers/pci/controller/pci-aardvark.c
++++ b/drivers/pci/controller/pci-aardvark.c
+@@ -114,6 +114,7 @@
+ #define PCIE_MSI_ADDR_HIGH_REG			(CONTROL_BASE_ADDR + 0x54)
+ #define PCIE_MSI_STATUS_REG			(CONTROL_BASE_ADDR + 0x58)
+ #define PCIE_MSI_MASK_REG			(CONTROL_BASE_ADDR + 0x5C)
++#define     PCIE_MSI_ALL_MASK			GENMASK(31, 0)
+ #define PCIE_MSI_PAYLOAD_REG			(CONTROL_BASE_ADDR + 0x9C)
+ #define     PCIE_MSI_DATA_MASK			GENMASK(15, 0)
  
--	channel_count = dpcd_test_mode.bits.channel_count + 1;
-+	channel_count = min(dpcd_test_mode.bits.channel_count + 1, AUDIO_CHANNELS_COUNT);
+@@ -577,6 +578,7 @@ static void advk_pcie_setup_hw(struct ad
+ 	advk_writel(pcie, reg, PCIE_CORE_CTRL2_REG);
  
- 	// read pattern periods for requested channels when sawTooth pattern is requested
- 	if (dpcd_pattern_type.value == AUDIO_TEST_PATTERN_SAWTOOTH ||
+ 	/* Clear all interrupts */
++	advk_writel(pcie, PCIE_MSI_ALL_MASK, PCIE_MSI_STATUS_REG);
+ 	advk_writel(pcie, PCIE_ISR0_ALL_MASK, PCIE_ISR0_REG);
+ 	advk_writel(pcie, PCIE_ISR1_ALL_MASK, PCIE_ISR1_REG);
+ 	advk_writel(pcie, PCIE_IRQ_ALL_MASK, HOST_CTRL_INT_STATUS_REG);
+@@ -589,7 +591,7 @@ static void advk_pcie_setup_hw(struct ad
+ 	advk_writel(pcie, PCIE_ISR1_ALL_MASK, PCIE_ISR1_MASK_REG);
+ 
+ 	/* Unmask all MSIs */
+-	advk_writel(pcie, 0, PCIE_MSI_MASK_REG);
++	advk_writel(pcie, ~(u32)PCIE_MSI_ALL_MASK, PCIE_MSI_MASK_REG);
+ 
+ 	/* Enable summary interrupt for GIC SPI source */
+ 	reg = PCIE_IRQ_ALL_MASK & (~PCIE_IRQ_ENABLE_INTS_MASK);
+@@ -1390,7 +1392,7 @@ static void advk_pcie_handle_msi(struct
+ 
+ 	msi_mask = advk_readl(pcie, PCIE_MSI_MASK_REG);
+ 	msi_val = advk_readl(pcie, PCIE_MSI_STATUS_REG);
+-	msi_status = msi_val & ~msi_mask;
++	msi_status = msi_val & ((~msi_mask) & PCIE_MSI_ALL_MASK);
+ 
+ 	for (msi_idx = 0; msi_idx < MSI_IRQ_NUM; msi_idx++) {
+ 		if (!(BIT(msi_idx) & msi_status))
 
 
