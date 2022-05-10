@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7DC4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:20:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E459C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:20:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343589AbiEJOYk (ORCPT
+        id S1343916AbiEJOYs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:24:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46702 "EHLO
+        Tue, 10 May 2022 10:24:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243724AbiEJNww (ORCPT
+        with ESMTP id S244545AbiEJNqu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:52:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 454A4663FD;
-        Tue, 10 May 2022 06:38:15 -0700 (PDT)
+        Tue, 10 May 2022 09:46:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9219154B22;
+        Tue, 10 May 2022 06:31:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E437BB81DA8;
-        Tue, 10 May 2022 13:37:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B6BBC385C2;
-        Tue, 10 May 2022 13:37:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C0AE4B81DA2;
+        Tue, 10 May 2022 13:31:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9859FC385C9;
+        Tue, 10 May 2022 13:31:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189836;
-        bh=WTnl3+B6yRLPj0eRn2sUYYRUVNpckkYKXc79sNWkQus=;
+        s=korg; t=1652189495;
+        bh=yoCwmthqTWLrTpChDssSy8r1GU2Q8VGPcgaoXwsiVu8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WTgooY4m3Ik/m0UMCHM/36ffJDtHZG9jdlu8Knqqpqp7JegKHBO3A89O09uUUUKhq
-         WpWK+iX4JNkZfGOCs0l7jLKrnWi4E71nupoL7we+LM1zaCwDMG1woo12ELlMO1iA/o
-         12XjPWTi5NiRBEg0+4E/SRsIplZVko6U8/gHE4NY=
+        b=HT0hUI8WSMwtYXOOLREW6NAP2dMSJC5MeJb6G37ngKMYNeAf3CzLnyUo2R/zfuO7h
+         oI7Dlu4Oeqey04Y7MNhDNzonWkLN7roAoEx+Cf5UX8RBabNZjq4LCzo3wzw723A8pP
+         CQpU2cGWn6q4tMlxvDYTW+rZFqPlvwxgJ0sXuhio=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.17 007/140] parisc: Merge model and model name into one line in /proc/cpuinfo
-Date:   Tue, 10 May 2022 15:06:37 +0200
-Message-Id: <20220510130741.817380046@linuxfoundation.org>
+        stable@vger.kernel.org, Carlos Llamas <cmllamas@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH 5.15 068/135] selftests/net: so_txtime: fix parsing of start time stamp on 32 bit systems
+Date:   Tue, 10 May 2022 15:07:30 +0200
+Message-Id: <20220510130742.361520300@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
-References: <20220510130741.600270947@linuxfoundation.org>
+In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
+References: <20220510130740.392653815@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,32 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-commit 5b89966bc96a06f6ad65f64ae4b0461918fcc9d3 upstream.
+commit 97926d5a847ca1758ad8702ce591e3b05a701e0d upstream.
 
-The Linux tool "lscpu" shows the double amount of CPUs if we have
-"model" and "model name" in two different lines in /proc/cpuinfo.
-This change combines the model and the model name into one line.
+This patch fixes the parsing of the cmd line supplied start time on 32
+bit systems. A "long" on 32 bit systems is only 32 bit wide and cannot
+hold a timestamp in nano second resolution.
 
-Signed-off-by: Helge Deller <deller@gmx.de>
-Cc: stable@vger.kernel.org
+Fixes: 040806343bb4 ("selftests/net: so_txtime multi-host support")
+Cc: Carlos Llamas <cmllamas@google.com>
+Cc: Willem de Bruijn <willemb@google.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Acked-by: Willem de Bruijn <willemb@google.com>
+Reviewed-by: Carlos Llamas <cmllamas@google.com>
+Link: https://lore.kernel.org/r/20220502094638.1921702-2-mkl@pengutronix.de
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/parisc/kernel/processor.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ tools/testing/selftests/net/so_txtime.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/parisc/kernel/processor.c
-+++ b/arch/parisc/kernel/processor.c
-@@ -418,8 +418,7 @@ show_cpuinfo (struct seq_file *m, void *
- 		}
- 		seq_printf(m, " (0x%02lx)\n", boot_cpu_data.pdc.capabilities);
- 
--		seq_printf(m, "model\t\t: %s\n"
--				"model name\t: %s\n",
-+		seq_printf(m, "model\t\t: %s - %s\n",
- 				 boot_cpu_data.pdc.sys_model_name,
- 				 cpuinfo->dev ?
- 				 cpuinfo->dev->name : "Unknown");
+--- a/tools/testing/selftests/net/so_txtime.c
++++ b/tools/testing/selftests/net/so_txtime.c
+@@ -475,7 +475,7 @@ static void parse_opts(int argc, char **
+ 			cfg_rx = true;
+ 			break;
+ 		case 't':
+-			cfg_start_time_ns = strtol(optarg, NULL, 0);
++			cfg_start_time_ns = strtoll(optarg, NULL, 0);
+ 			break;
+ 		case 'm':
+ 			cfg_mark = strtol(optarg, NULL, 0);
 
 
