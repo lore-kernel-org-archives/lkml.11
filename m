@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 316F9C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E282C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:58:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347016AbiEJQBI (ORCPT
+        id S1346996AbiEJQBB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 12:01:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34726 "EHLO
+        Tue, 10 May 2022 12:01:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347235AbiEJPwG (ORCPT
+        with ESMTP id S1347238AbiEJPwI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:52:06 -0400
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C9EF192B7
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:47:57 -0700 (PDT)
-Received: by mail-qt1-x834.google.com with SMTP id p4so13818002qtq.12
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:47:57 -0700 (PDT)
+        Tue, 10 May 2022 11:52:08 -0400
+Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE8501A81A;
+        Tue, 10 May 2022 08:47:59 -0700 (PDT)
+Received: by mail-qt1-x82e.google.com with SMTP id hf18so13860148qtb.0;
+        Tue, 10 May 2022 08:47:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ZBCHbbVfn2W7GCIwQZshDqoULkmiIrMZcuv1e33Ldn0=;
-        b=dQ1GWa7V+6A4Ba0P/Loz6vdV8JkdlmKJOFYNtQyPpOLMo+TUFCoGk3C/oxbyjIEUR9
-         qF8YHJmazC8RFIO7AvVXR3xUfjNQprYyQiXRQ7saJ8W/DkT0ozzAasW7JG9L2ALUYFkp
-         1TQXGYSjQpdi8zpVvuxcZdxEJNTnzJv26oWSGrcJIyHWNod9AjDbXvzlay+wvTIF2anN
-         lViq1b7ZCcsfVpRDVzOcNeOEVCXUbStQRloVX3eRJMtCSoFzL4Bs0SRTHObbsJITWZtZ
-         +1NYpYaxGJfQv++ZyHlLTWtyWsO8HylA0GPqD6YiSYpwm79JUee4tVWS6sVbTTj2+oRb
-         QF6Q==
+        bh=8XwVIoqaEjrb3iMSCaJMjNScsN/uhpRfrQ8NarzetBA=;
+        b=TRtRj0OV5KH470cMHDPWUxl3cSGx95ngPsN0DC93pj0q8lGKr6CIDI7KqIjvYte1Hq
+         DqQZeHliFkhzx++RKygoPz5nE4Aqk2UIQzgMw/6D7YlBFtqCr1XJQeY0aXrD7Z3I7zL8
+         vdYXHH5j0T9lwr4UaICLcWXUHX0ik0X+sJnHHfGa8ofweq10xOcV5vZi7VReLlWYtqqn
+         nHzBpLgUII9FKyjiNIqU9JJdGkKXpJ8qxoycCK70hC8aBK07eSXmnxo2CnbJXB+wPmRf
+         eG+ftCF5WaKR0/SbaXZWXn93wkpkW1VusQ4Xh9LxdA3A1hrUIpyXsC+T7vM12H0qF72o
+         ZkGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ZBCHbbVfn2W7GCIwQZshDqoULkmiIrMZcuv1e33Ldn0=;
-        b=U+M7+c8Oxh+WvJZ2ebk2G0Wnm2MlWMIq7suIMWpm9H3G0ZpRQ2s7OeZ+pZ/aElK+XE
-         Ka2NVOXS91bymW8PyiFtvm/mnxpIqHT5I6gj1eepZdFGwhhlLMG0snuvVD0evgvEFnkW
-         wuASZK3DJkvZP5LuRGRdskyLJ3Bxeej8IBDCacEfDe44oOXUG/waYPJRk5UGUXYOdDMI
-         3QAcqz3wR9Toz5PvXYvErSJkPTqPGNZiJU8KubJ+fFwEPFMOvYM46N2sQnNuY8ZW6Uns
-         V8DwCk+c/nIprCKlcZGlHTBxh+AUT1hC4poYBpP/uSlMiW/naQo/Tn8MDJmrG2byLFYd
-         0IIA==
-X-Gm-Message-State: AOAM533KJiHjRKGMz2rkxmg1fDhu0TwdKQunhuapXtqUjNYc/jyZkSiB
-        BtQxV8KmlWXt2hoxE4mY5cE=
-X-Google-Smtp-Source: ABdhPJyJdQoZPyN3OxTbCUAfBqM+mpRRLD8sKoA6zBSO0+BMr1gYl5dyLfJnD+oibRJ+xp3OG2oVWg==
-X-Received: by 2002:ac8:7d86:0:b0:2f3:c523:19a2 with SMTP id c6-20020ac87d86000000b002f3c52319a2mr20026391qtd.566.1652197676437;
-        Tue, 10 May 2022 08:47:56 -0700 (PDT)
+        bh=8XwVIoqaEjrb3iMSCaJMjNScsN/uhpRfrQ8NarzetBA=;
+        b=YttMwB8O6ncQnx11oCNG/1q2sfqdNlXA9Dr7W8V5gnSwyoVwYv/UTG1qi5m1p2Jzry
+         urcXOzFtut1WnmVPNCU+elgC2WlEFqSTaOcaiMjHxv6v/DVfTrOi8Mhkm4zUy4llY9T/
+         oGPg8zSoy2NsvpDmM3SbmjiyceAW9RIB43TdbmtbRR6hpdRp2LZ0Y/ZpACTgqGPZzDcX
+         1aVmCNyrigv2AvgpacenE/Vb9Xyp/6mui3BvUU5RuYDq6e+4AdtD41FqoEU8v/jo6VCb
+         /ckD70zNhU0NUnhF/w9qgiuNf4ZHN+LDGrfxy+A9CIvSeTcrXfmv3ygmhs/8dGddmt05
+         CnAQ==
+X-Gm-Message-State: AOAM533FC8mRzanlHpvbT+ujwA1IDP90Oa6GMAnXlCPWUAq2Hp8Zqo+t
+        Q3t+1X/EE57ZDQz0+44dqmA=
+X-Google-Smtp-Source: ABdhPJx1lvQ2cAFBLJUoEVeXgxIKrxcn5z7aIGeJaHLVOgtu8J7l1okT1ZHyyT7jgo7gM8c1D/jlvA==
+X-Received: by 2002:ac8:58ca:0:b0:2f3:da32:ab1 with SMTP id u10-20020ac858ca000000b002f3da320ab1mr10163209qta.308.1652197678887;
+        Tue, 10 May 2022 08:47:58 -0700 (PDT)
 Received: from localhost ([98.242.65.84])
-        by smtp.gmail.com with ESMTPSA id e13-20020a05620a014d00b0069fc13ce23esm8906393qkn.111.2022.05.10.08.47.55
+        by smtp.gmail.com with ESMTPSA id a123-20020ae9e881000000b0069fc13ce227sm8659793qkg.88.2022.05.10.08.47.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 08:47:56 -0700 (PDT)
+        Tue, 10 May 2022 08:47:58 -0700 (PDT)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         David Laight <David.Laight@ACULAB.COM>,
@@ -62,10 +62,17 @@ To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         Matti Vaittinen <Matti.Vaittinen@fi.rohmeurope.com>,
         linux-kernel@vger.kernel.org
-Cc:     Yury Norov <yury.norov@gmail.com>, cocci@inria.fr
-Subject: [PATCH 02/22] introduce cpumask.cocci
-Date:   Tue, 10 May 2022 08:47:30 -0700
-Message-Id: <20220510154750.212913-3-yury.norov@gmail.com>
+Cc:     Yury Norov <yury.norov@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: [PATCH 04/22] ice: use bitmap_empty() in ice_vf_has_no_qs_ena()
+Date:   Tue, 10 May 2022 08:47:32 -0700
+Message-Id: <20220510154750.212913-5-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220510154750.212913-1-yury.norov@gmail.com>
 References: <20220510154750.212913-1-yury.norov@gmail.com>
@@ -75,94 +82,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Using cpumask_weight() to compare weight of cpumask against a number
-or expression is common but wrong pattern. The more efficient way is
-to use cpumask_weight_{empty,full,gt,lt,ge,le,eq} as appropriate.
+bitmap_empty() is better than bitmap_weight() because it may return
+earlier, and improves on readability.
 
-This patch adds cocci script to test sources for this.
-
-CC: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-CC: Julia Lawall <Julia.Lawall@inria.fr>
-CC: Nicolas Palix <nicolas.palix@imag.fr>
-CC: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+CC: David S. Miller <davem@davemloft.net>
+CC: Eric Dumazet <edumazet@google.com>
+CC: Jakub Kicinski <kuba@kernel.org>
+CC: Jesse Brandeburg <jesse.brandeburg@intel.com>
+CC: Paolo Abeni <pabeni@redhat.com>
+CC: Tony Nguyen <anthony.l.nguyen@intel.com>
+CC: intel-wired-lan@lists.osuosl.org
+CC: netdev@vger.kernel.org
 CC: linux-kernel@vger.kernel.org
-CC: cocci@inria.fr
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- MAINTAINERS                          |  1 +
- scripts/coccinelle/api/cpumask.cocci | 51 ++++++++++++++++++++++++++++
- 2 files changed, 52 insertions(+)
- create mode 100644 scripts/coccinelle/api/cpumask.cocci
+ drivers/net/ethernet/intel/ice/ice_vf_lib.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 17fd10824636..ecd97fdd5d67 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -3524,6 +3524,7 @@ F:	lib/find_bit_benchmark.c
- F:	lib/nodemask.c
- F:	lib/test_bitmap.c
- F:	scripts/coccinelle/api/bitmap.cocci
-+F:	scripts/coccinelle/api/cpumask.cocci
- F:	tools/include/linux/bitmap.h
- F:	tools/include/linux/find.h
- F:	tools/lib/bitmap.c
-diff --git a/scripts/coccinelle/api/cpumask.cocci b/scripts/coccinelle/api/cpumask.cocci
-new file mode 100644
-index 000000000000..2eb930dbe9c4
---- /dev/null
-+++ b/scripts/coccinelle/api/cpumask.cocci
-@@ -0,0 +1,51 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/// Use cpumask_empty rather than cpumask_weight() == 0 etc
-+///
-+// Confidence: High
-+// Copyright: (C) 2022 Yury Norov
-+// URL: http://coccinelle.lip6.fr/
-+// Comments:
-+// Options: --no-includes --include-headers
-+
-+virtual org
-+virtual report
-+virtual context
-+virtual patch
-+
-+@rempty1 depends on !patch@
-+position p;
-+statement S;
-+@@
-+
-+if (cpumask_weight@p(...)) S
-+
-+@script:python depends on report@
-+p << rempty1.p;
-+@@
-+
-+for p0 in p:
-+        coccilib.report.print_report(p0, "ERROR: use !cpumask_empty()")
-+
-+@script:python depends on org@
-+p << rempty1.p;
-+@@
-+
-+@rcmp depends on !patch@
-+expression exp;
-+binary operator cmp = {>, <, >=, <=, ==, !=};
-+position p;
-+@@
-+
-+ cpumask_weight(...) cmp@p exp
-+
-+@script:python depends on report@
-+p << rcmp.p;
-+@@
-+
-+for p0 in p:
-+        coccilib.report.print_report(p0,
-+		"ERROR: use cpumask_weight_{empty,full,gt,lt,ge,le,eq} as appropriate")
-+
-+@script:python depends on org@
-+p << rcmp.p;
-+@@
+diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib.c b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
+index 6578059d9479..de67ac4075f0 100644
+--- a/drivers/net/ethernet/intel/ice/ice_vf_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
+@@ -740,8 +740,8 @@ bool ice_is_vf_trusted(struct ice_vf *vf)
+  */
+ bool ice_vf_has_no_qs_ena(struct ice_vf *vf)
+ {
+-	return (!bitmap_weight(vf->rxq_ena, ICE_MAX_RSS_QS_PER_VF) &&
+-		!bitmap_weight(vf->txq_ena, ICE_MAX_RSS_QS_PER_VF));
++	return bitmap_empty(vf->rxq_ena, ICE_MAX_RSS_QS_PER_VF) &&
++	       bitmap_empty(vf->txq_ena, ICE_MAX_RSS_QS_PER_VF);
+ }
+ 
+ /**
 -- 
 2.32.0
 
