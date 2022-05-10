@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0BA9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:26:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51EA3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:28:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344063AbiEJOao (ORCPT
+        id S1344356AbiEJObA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:30:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50198 "EHLO
+        Tue, 10 May 2022 10:31:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244806AbiEJOBW (ORCPT
+        with ESMTP id S244765AbiEJOBV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:01:22 -0400
+        Tue, 10 May 2022 10:01:21 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C3342DE5A3;
-        Tue, 10 May 2022 06:40:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CFDB27FD5;
+        Tue, 10 May 2022 06:40:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D76C7B81D24;
-        Tue, 10 May 2022 13:40:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49AE1C36AEA;
-        Tue, 10 May 2022 13:40:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BBBE4B81DB8;
+        Tue, 10 May 2022 13:40:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3809FC385D0;
+        Tue, 10 May 2022 13:40:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652190005;
-        bh=XgOyfwY09cKOKNRpN4Ehrh0m6E4OuJybLh6K6uDvmp0=;
+        s=korg; t=1652190002;
+        bh=FxIhdZqIw91pbHMbO5gwTOdjHrJnWK2rh0Rb9gXuISc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HFcQMLo5mC31tmslDvswKo2hAHdR887qesWIz0MTGwYlJot5LvZlv0zcwkPGYnfhC
-         kNENpWbCLDuClVxWVKrXGcrmz3cpxcVYmFPFirQfHTFpT+ApxITVLCmeO4xjHYTQei
-         vTpSGW62TdJbLYCyy+b5IifMFubEqQGgSPbpF/QI=
+        b=BvsSH/ZQBr8D38vSFheYdza+MzqnRq3QPkgE31y1kLlQOATXB5qXTKLNDJWqRZPgq
+         Tph77JwcKzu1KumiFPG5LWzSXZAwfzamW+z8gEyvHFN78QJL7V5yxUHeM8JevP1GVn
+         tz+CoWcKrGFYRqHiP5AeyqEp/jzmWGKiC9BwDKVU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hector Martin <marcan@marcan.st>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH 5.17 099/140] dt-bindings: pci: apple,pcie: Drop max-link-speed from example
-Date:   Tue, 10 May 2022 15:08:09 +0200
-Message-Id: <20220510130744.437692269@linuxfoundation.org>
+        stable@vger.kernel.org, Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH 5.17 098/140] selftests: mirror_gre_bridge_1q: Avoid changing PVID while interface is operational
+Date:   Tue, 10 May 2022 15:08:08 +0200
+Message-Id: <20220510130744.408551358@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -50,53 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Ido Schimmel <idosch@nvidia.com>
 
-commit 5dc4630426511f641b7ac44fc550b8e21eafb237 upstream.
+commit 3122257c02afd9f199a8fc84ae981e1fc4958532 upstream.
 
-We no longer use these since 111659c2a570 (and they never worked
-anyway); drop them from the example to avoid confusion.
+In emulated environments, the bridge ports enslaved to br1 get a carrier
+before changing br1's PVID. This means that by the time the PVID is
+changed, br1 is already operational and configured with an IPv6
+link-local address.
 
-Fixes: 111659c2a570 ("arm64: dts: apple: t8103: Remove PCIe max-link-speed properties")
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Reviewed-by: Alyssa Rosenzweig <alyssa@rosenzweig.io>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/20220502091308.28233-1-marcan@marcan.st
+When the test is run with netdevs registered by mlxsw, changing the PVID
+is vetoed, as changing the VID associated with an existing L3 interface
+is forbidden. This restriction is similar to the 8021q driver's
+restriction of changing the VID of an existing interface.
+
+Fix this by taking br1 down and bringing it back up when it is fully
+configured.
+
+With this fix, the test reliably passes on top of both the SW and HW
+data paths (emulated or not).
+
+Fixes: 239e754af854 ("selftests: forwarding: Test mirror-to-gretap w/ UL 802.1q")
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Petr Machata <petrm@nvidia.com>
+Link: https://lore.kernel.org/r/20220502084507.364774-1-idosch@nvidia.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/pci/apple,pcie.yaml | 3 ---
- 1 file changed, 3 deletions(-)
+ tools/testing/selftests/net/forwarding/mirror_gre_bridge_1q.sh |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/pci/apple,pcie.yaml b/Documentation/devicetree/bindings/pci/apple,pcie.yaml
-index 7f01e15fc81c..daf602ac0d0f 100644
---- a/Documentation/devicetree/bindings/pci/apple,pcie.yaml
-+++ b/Documentation/devicetree/bindings/pci/apple,pcie.yaml
-@@ -142,7 +142,6 @@ examples:
-           device_type = "pci";
-           reg = <0x0 0x0 0x0 0x0 0x0>;
-           reset-gpios = <&pinctrl_ap 152 0>;
--          max-link-speed = <2>;
+--- a/tools/testing/selftests/net/forwarding/mirror_gre_bridge_1q.sh
++++ b/tools/testing/selftests/net/forwarding/mirror_gre_bridge_1q.sh
+@@ -61,9 +61,12 @@ setup_prepare()
  
-           #address-cells = <3>;
-           #size-cells = <2>;
-@@ -153,7 +152,6 @@ examples:
-           device_type = "pci";
-           reg = <0x800 0x0 0x0 0x0 0x0>;
-           reset-gpios = <&pinctrl_ap 153 0>;
--          max-link-speed = <2>;
+ 	vrf_prepare
+ 	mirror_gre_topo_create
++	# Avoid changing br1's PVID while it is operational as a L3 interface.
++	ip link set dev br1 down
  
-           #address-cells = <3>;
-           #size-cells = <2>;
-@@ -164,7 +162,6 @@ examples:
-           device_type = "pci";
-           reg = <0x1000 0x0 0x0 0x0 0x0>;
-           reset-gpios = <&pinctrl_ap 33 0>;
--          max-link-speed = <1>;
+ 	ip link set dev $swp3 master br1
+ 	bridge vlan add dev br1 vid 555 pvid untagged self
++	ip link set dev br1 up
+ 	ip address add dev br1 192.0.2.129/28
+ 	ip address add dev br1 2001:db8:2::1/64
  
-           #address-cells = <3>;
-           #size-cells = <2>;
--- 
-2.36.1
-
 
 
