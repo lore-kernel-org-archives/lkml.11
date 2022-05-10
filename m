@@ -2,169 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6EDEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:59:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC611C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:59:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345518AbiEJPDg (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:03:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48924 "EHLO
+        id S244969AbiEJPDm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 11:03:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345423AbiEJPDX (ORCPT
+        with ESMTP id S1345245AbiEJPDX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 11:03:23 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7911B229239
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:26:47 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id a15-20020a17090ad80f00b001dc2e23ad84so2149141pjv.4
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:26:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=4L5S8FVGf1sMR35eidZeiyVG8JnT7nykUFphbiRbJOE=;
-        b=D0yJ+81QhdVQKnSC1cDM6q74m4kyDY226rltceKQLyqMl5nkiLbFIHHfkt4vev55oW
-         NEZwe8kry7HmVjGb/vG2Nu0ZcuYX0x7LFy+G4hFriF3LEMQH3PKlgWP0ZGvqkUFewTfj
-         OafwLSMF6qHvoe8gK0SR7SkAWbuHRH/jz7wbyYP/YBo34GSypmopha4d7WYQoUgFGoxG
-         t1m8X9h8n6Muqg7J/cSVg9b7PkA4Rc2I/drY2YCZ7Xnq2ltx62MCVYofFSk1RMY+Nlo/
-         SAq9cJA6fjxDVryf2skE0anV/isCzIG6kkwf158Qc0SxWnghXfRxMP7oVSnmA27L78QC
-         Rv4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=4L5S8FVGf1sMR35eidZeiyVG8JnT7nykUFphbiRbJOE=;
-        b=Kqll/4JTkgDk4tsUcMj8BWxrbq52oAs9Xty5TLSXZGNsIL6091Of0ZMwgh8guzm86D
-         lyO+NrLMQd7SvOIKhYONN3nB5r1kUDVEhPHex7jQdOxSg+Ou0wYrt6yLUlh6DT1FeX6d
-         gPuA6yvUVJZeSQqDMopDtPYGi8y86+QxrEvaADLzFkDze4JWVCvmyQ7Xo9AFNyo+T2ak
-         1hDchPK0ud2UMKFFXss5WjWo41BV/pzgYgjPilag4dKc0rA46AYyq+xtWR73RhK0V+Of
-         EfI4wZAcBWFy/Nu/mWUWYGHIw0Gr1TOsAEu+D40DY0NkRczjMg1702NKVkQ6Q4PZsy4r
-         ubpA==
-X-Gm-Message-State: AOAM530TJNH+RR6hbCCA9b9Xq+40QmYNJoAgyBWETBoMsHFwsR6phKoB
-        L+broKh6FVbhu0QxQQQDxOtl8kkCFTVpY6CG
-X-Google-Smtp-Source: ABdhPJyBqsurrR904pcspa44t3Se2r7m2fHOr/QA5JhLtVn5m+o0oMztQhsUUErQLkVErJJHrhwIZA==
-X-Received: by 2002:a17:903:22d2:b0:15e:a3a4:918c with SMTP id y18-20020a17090322d200b0015ea3a4918cmr20284232plg.36.1652192806635;
-        Tue, 10 May 2022 07:26:46 -0700 (PDT)
-Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
-        by smtp.gmail.com with ESMTPSA id x10-20020a1709028eca00b0015ea8b4b8f3sm2057568plo.263.2022.05.10.07.26.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 07:26:46 -0700 (PDT)
-Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
-From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH 2/2] x86/asm/bitops: __ffs,ffz: use __builtin_ctzl to evaluate constant expressions
-Date:   Tue, 10 May 2022 23:25:50 +0900
-Message-Id: <20220510142550.1686866-3-mailhol.vincent@wanadoo.fr>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220510142550.1686866-1-mailhol.vincent@wanadoo.fr>
-References: <20220510142550.1686866-1-mailhol.vincent@wanadoo.fr>
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 757CC22906B
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:26:46 -0700 (PDT)
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24AA1Sdn011815;
+        Tue, 10 May 2022 16:26:21 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=selector1;
+ bh=2ANARSm+ciPJ+EjWxzvHYDRB4kCEaNE52zN2k7UHgmI=;
+ b=cnAreZzybHx90XAf0OpH2JQdBBCyuOAxvBFJiz/p45vtOREgtV/yR42ihA+9J6VTrCqA
+ 618UFwYEMvF4Ez5JUQMtfHEtmvQurvbYOoDZzy5ARYPvDgJceIW4IubgmN6Dh1W49xWw
+ h0asDzAQouDf7OoofPM8wuJxqY0OmzbWdrtT8iNJNH8ZyeiQaPJnlTwGnuvArTKr0rEz
+ g+rsUZRVf/zGhh3LMX06Nj4KKExpLvZWLlv3O8txWDsDcdBbFw2ds4UID+kxL14DsC76
+ Wx2/vCAcPSWYaO8qd4y960rfj5CvqPVcbAQGaDT3eLpZGOf0RX+BJZIoq+aCH3byyrMc gg== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3fwfngjywv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 10 May 2022 16:26:21 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 5449610002A;
+        Tue, 10 May 2022 16:26:17 +0200 (CEST)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 408252291D0;
+        Tue, 10 May 2022 16:26:17 +0200 (CEST)
+Received: from localhost (10.75.127.50) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Tue, 10 May 2022 16:26:16
+ +0200
+From:   Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>
+To:     Yannick Fertre <yannick.fertre@foss.st.com>,
+        Philippe Cornu <philippe.cornu@foss.st.com>
+CC:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>,
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [PATCH] drm/stm: ltdc: fix unchecked dereferenced pointer
+Date:   Tue, 10 May 2022 16:24:03 +0200
+Message-ID: <20220510142403.835902-1-raphael.gallais-pou@foss.st.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.50]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-10_03,2022-05-10_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-__ffs(x) is equivalent to (unsigned long)__builtin_ctzl(x) and ffz(x)
-is equivalent to (unsigned long)__builtin_ctzl(~x). Because
-__builting_ctzl() returns an int, a cast to (unsigned long) is
-necessary to avoid potential warnings on implicit casts.
+Pointer of struct *drm_crtc was dereferenced before checking it was non
+NULL. This could potentially create a kernel panic.
 
-For x86_64, the current __ffs() and ffz() implementations do not
-produce optimized code when called with a constant expression. On the
-contrary, the __builtin_ctzl() gets simplified into a single
-instruction.
-
-However, for non constant expressions, the __ffs() and ffz() asm
-versions of the kernel remains slightly better than the code produced
-by GCC (it produces a useless instruction to clear eax).
-
-This patch uses the __builtin_constant_p() to select between the
-kernel's __ffs()/ffz() and the __builtin_ctzl() depending on whether
-the argument is constant or not.
-
-
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Fixes: 79b44684a14e ("drm/stm: ltdc: add support for CRC hashing feature")
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>
 ---
-Usually, helper functions are prefixed by two underscores. But here,
-__ffs() is already prefixed, instead of creating an ____ffs(), I
-renamed it instead to __ffs_asm_not_zero(). The _not_zero() suffix is
-to differentiate it from the __ffs_asm() helper function of the
-previous patch.
+ drivers/gpu/drm/stm/ltdc.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-If someone has better inspiration of the naming for this patch and the
-previous one, please let me know().
----
- arch/x86/include/asm/bitops.h | 36 ++++++++++++++++++++++-------------
- 1 file changed, 23 insertions(+), 13 deletions(-)
-
-diff --git a/arch/x86/include/asm/bitops.h b/arch/x86/include/asm/bitops.h
-index 535a7a358c14..694d0d100399 100644
---- a/arch/x86/include/asm/bitops.h
-+++ b/arch/x86/include/asm/bitops.h
-@@ -224,13 +224,7 @@ static __always_inline bool variable_test_bit(long nr, volatile const unsigned l
- 	 ? constant_test_bit((nr), (addr))	\
- 	 : variable_test_bit((nr), (addr)))
+diff --git a/drivers/gpu/drm/stm/ltdc.c b/drivers/gpu/drm/stm/ltdc.c
+index 6bd45df8f5a7..9c0fadd58d2a 100644
+--- a/drivers/gpu/drm/stm/ltdc.c
++++ b/drivers/gpu/drm/stm/ltdc.c
+@@ -1120,7 +1120,7 @@ static void ltdc_crtc_disable_vblank(struct drm_crtc *crtc)
  
--/**
-- * __ffs - find first set bit in word
-- * @word: The word to search
-- *
-- * Undefined if no bit exists, so code should check against 0 first.
-- */
--static __always_inline unsigned long __ffs(unsigned long word)
-+static __always_inline unsigned long __ffs_asm_not_zero(unsigned long word)
+ static int ltdc_crtc_set_crc_source(struct drm_crtc *crtc, const char *source)
  {
- 	asm("rep; bsf %1,%0"
- 		: "=r" (word)
-@@ -239,12 +233,17 @@ static __always_inline unsigned long __ffs(unsigned long word)
- }
+-	struct ltdc_device *ldev = crtc_to_ltdc(crtc);
++	struct ltdc_device *ldev;
+ 	int ret;
  
- /**
-- * ffz - find first zero bit in word
-- * @word: The word to search
-- *
-- * Undefined if no zero exists, so code should check against ~0UL first.
-- */
--static __always_inline unsigned long ffz(unsigned long word)
-+ * __ffs - find first set bit in word
-+ * @word: The word to search
-+ *
-+ * Undefined if no bit exists, so code should check against 0 first.
-+ */
-+#define __ffs(word)				\
-+	(__builtin_constant_p(word) ?		\
-+	 (unsigned long)__builtin_ctzl(word) :	\
-+	 __ffs_asm_not_zero(word))
-+
-+static __always_inline unsigned long __ffz_asm(unsigned long word)
- {
- 	asm("rep; bsf %1,%0"
- 		: "=r" (word)
-@@ -252,6 +251,17 @@ static __always_inline unsigned long ffz(unsigned long word)
- 	return word;
- }
+ 	DRM_DEBUG_DRIVER("\n");
+@@ -1128,6 +1128,8 @@ static int ltdc_crtc_set_crc_source(struct drm_crtc *crtc, const char *source)
+ 	if (!crtc)
+ 		return -ENODEV;
  
-+/**
-+ * ffz - find first zero bit in word
-+ * @word: The word to search
-+ *
-+ * Undefined if no zero exists, so code should check against ~0UL first.
-+ */
-+#define ffz(word)				\
-+	(__builtin_constant_p(word) ?		\
-+	 (unsigned long)__builtin_ctzl(~word) :	\
-+	 __ffz_asm(word))
++	ldev = crtc_to_ltdc(crtc);
 +
- /*
-  * __fls: find last set bit in word
-  * @word: The word to search
+ 	if (source && strcmp(source, "auto") == 0) {
+ 		ldev->crc_active = true;
+ 		ret = regmap_set_bits(ldev->regmap, LTDC_GCR, GCR_CRCEN);
 -- 
-2.35.1
+2.25.1
 
