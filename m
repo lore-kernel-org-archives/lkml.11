@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE09FC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:00:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08E44C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:00:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242277AbiEJOEL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:04:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54786 "EHLO
+        id S242908AbiEJOEQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:04:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244687AbiEJNmF (ORCPT
+        with ESMTP id S244714AbiEJNmG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:42:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6926663E3;
-        Tue, 10 May 2022 06:30:25 -0700 (PDT)
+        Tue, 10 May 2022 09:42:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7288663F9;
+        Tue, 10 May 2022 06:30:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 56ED861763;
-        Tue, 10 May 2022 13:30:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D193C385A6;
-        Tue, 10 May 2022 13:30:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3B3B6B81DA2;
+        Tue, 10 May 2022 13:30:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78299C385A6;
+        Tue, 10 May 2022 13:30:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189423;
-        bh=Y5enQchBqWtPw3dWMTz3w6z5H0ksi/HU71mEpy8zCqA=;
+        s=korg; t=1652189405;
+        bh=AJ+gO/EpsEuTOmdauQVf2kJ+REMEPZB2E5c3urtWcxU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oj8NDw556+FfubpMIcTwT6U0t7dE4Ub+3LORegS/xVpMueWTUg07t53D4np+HeFea
-         g17cp5j9cJSM4l0bWOsUtHjHzZ4rGk7GCrZUDEDMxvpQzb7FL8sQDKHJicVQj0TGqV
-         2uEoSSmOoXbz/SUtp86z2eibCNTHqbB4zOIrLE2w=
+        b=DomvtButiSt6zqKeVQ6aeISmnATtSfN8H98cc/nEleVXYi6hBv6Yosk2HNB61ea7X
+         G5p0xOFzUtAJF+C05YSYw6Ddfu7+u8+1wl6r4w0IE1Y6bhtsnBxeUfz5RM2ipbWAA0
+         NWbU7b0T7XkEmQOET2HU87OcT53cTvGBvYsZo764=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Sven Peter <sven@svenpeter.dev>, Joerg Roedel <jroedel@suse.de>
-Subject: [PATCH 5.15 047/135] iommu/dart: check return value after calling platform_get_resource()
-Date:   Tue, 10 May 2022 15:07:09 +0200
-Message-Id: <20220510130741.748749921@linuxfoundation.org>
+        stable@vger.kernel.org, Samuel Holland <samuel@sholland.org>,
+        Andre Przywara <andre.przywara@arm.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH 5.15 006/135] mmc: sunxi-mmc: Fix DMA descriptors allocated above 32 bits
+Date:   Tue, 10 May 2022 15:06:28 +0200
+Message-Id: <20220510130740.579919388@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -48,47 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Samuel Holland <samuel@sholland.org>
 
-commit a15932f4377062364d22096afe25bc579134a1c3 upstream.
+commit e9f3fb523dbf476dc86beea23f5b5ca8f9687c93 upstream.
 
-It will cause null-ptr-deref in resource_size(), if platform_get_resource()
-returns NULL, move calling resource_size() after devm_ioremap_resource() that
-will check 'res' to avoid null-ptr-deref.
-And use devm_platform_get_and_ioremap_resource() to simplify code.
+Newer variants of the MMC controller support a 34-bit physical address
+space by using word addresses instead of byte addresses. However, the
+code truncates the DMA descriptor address to 32 bits before applying the
+shift. This breaks DMA for descriptors allocated above the 32-bit limit.
 
-Fixes: 46d1fb072e76 ("iommu/dart: Add DART iommu driver")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Reviewed-by: Sven Peter <sven@svenpeter.dev>
-Link: https://lore.kernel.org/r/20220425090826.2532165-1-yangyingliang@huawei.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Fixes: 3536b82e5853 ("mmc: sunxi: add support for A100 mmc controller")
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Reviewed-by: Andre Przywara <andre.przywara@arm.com>
+Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220424231751.32053-1-samuel@sholland.org
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iommu/apple-dart.c |    9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/mmc/host/sunxi-mmc.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/drivers/iommu/apple-dart.c
-+++ b/drivers/iommu/apple-dart.c
-@@ -832,16 +832,15 @@ static int apple_dart_probe(struct platf
- 	dart->dev = dev;
- 	spin_lock_init(&dart->lock);
- 
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	dart->regs = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
-+	if (IS_ERR(dart->regs))
-+		return PTR_ERR(dart->regs);
-+
- 	if (resource_size(res) < 0x4000) {
- 		dev_err(dev, "MMIO region too small (%pr)\n", res);
- 		return -EINVAL;
+--- a/drivers/mmc/host/sunxi-mmc.c
++++ b/drivers/mmc/host/sunxi-mmc.c
+@@ -377,8 +377,9 @@ static void sunxi_mmc_init_idma_des(stru
+ 		pdes[i].buf_addr_ptr1 =
+ 			cpu_to_le32(sg_dma_address(&data->sg[i]) >>
+ 				    host->cfg->idma_des_shift);
+-		pdes[i].buf_addr_ptr2 = cpu_to_le32((u32)next_desc >>
+-						    host->cfg->idma_des_shift);
++		pdes[i].buf_addr_ptr2 =
++			cpu_to_le32(next_desc >>
++				    host->cfg->idma_des_shift);
  	}
  
--	dart->regs = devm_ioremap_resource(dev, res);
--	if (IS_ERR(dart->regs))
--		return PTR_ERR(dart->regs);
--
- 	dart->irq = platform_get_irq(pdev, 0);
- 	if (dart->irq < 0)
- 		return -ENODEV;
+ 	pdes[0].config |= cpu_to_le32(SDXC_IDMAC_DES0_FD);
 
 
