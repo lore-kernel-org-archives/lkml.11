@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC14BC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93799C43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:28:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344697AbiEJObk (ORCPT
+        id S1344625AbiEJObX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:31:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49912 "EHLO
+        Tue, 10 May 2022 10:31:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244729AbiEJOEq (ORCPT
+        with ESMTP id S244708AbiEJODa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:04:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0623D980B5;
-        Tue, 10 May 2022 06:40:45 -0700 (PDT)
+        Tue, 10 May 2022 10:03:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03BED2E07EB;
+        Tue, 10 May 2022 06:40:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B46F3615C8;
-        Tue, 10 May 2022 13:40:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1605C385A6;
-        Tue, 10 May 2022 13:40:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2723F6195F;
+        Tue, 10 May 2022 13:40:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BD8BC385C9;
+        Tue, 10 May 2022 13:40:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652190044;
-        bh=5RCcXThUFzSNyUhsvTR0v2sb3kkSfTl2uoQ6d7Azquw=;
+        s=korg; t=1652190031;
+        bh=tFBjLhkyPHG2we+mnumSh33pt05zBmr0pMSY5dq+rXU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VRUKDYTMlQxAnyykIKvmtdSCB7yreCHQEHiWt0eJ/c7P9ldoTaIek+tEn5bEQ1E2k
-         wn+rr4O1nYlatNvIvX/szPZTOSuxCc9GW9/ID/gNLEjeN6/1pRQYpJNa+hHsuWKvjK
-         Avm5/a+UICk/1vRduKFNm+j4+ZhVr3uJZF/XSZRI=
+        b=IPQMyBv247qjbgth9TO3d18sP5U3q71EI4HPZ2GMiehKOeHdEdea/2leDgqU6+drT
+         cS3QJcqyCuQ88ztYwDCjeAuY/JwESTds3jHmfoI7Qe5CFznxl3TDtBdezM4mut+sAl
+         mfOsYtVyxFSSHW268E6jYKQHr1mlJxnFzVIiGiHE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>,
-        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 110/140] iommu/dart: Add missing module owner to ops structure
-Date:   Tue, 10 May 2022 15:08:20 +0200
-Message-Id: <20220510130744.748791643@linuxfoundation.org>
+        stable@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 106/140] gpio: mvebu: drop pwm base assignment
+Date:   Tue, 10 May 2022 15:08:16 +0200
+Message-Id: <20220510130744.635445874@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -50,34 +53,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Baruch Siach <baruch@tkos.co.il>
 
-[ Upstream commit 2ac2fab52917ae82cbca97cf6e5d2993530257ed ]
+[ Upstream commit e5f6e5d554ac274f9c8ba60078103d0425b93c19 ]
 
-This is required to make loading this as a module work.
+pwmchip_add() unconditionally assigns the base ID dynamically. Commit
+f9a8ee8c8bcd1 ("pwm: Always allocate PWM chip base ID dynamically")
+dropped all base assignment from drivers under drivers/pwm/. It missed
+this driver. Fix that.
 
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Fixes: 46d1fb072e76 ("iommu/dart: Add DART iommu driver")
-Reviewed-by: Sven Peter <sven@svenpeter.dev>
-Link: https://lore.kernel.org/r/20220502092238.30486-1-marcan@marcan.st
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Fixes: f9a8ee8c8bcd1 ("pwm: Always allocate PWM chip base ID dynamically")
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/apple-dart.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpio/gpio-mvebu.c | 7 -------
+ 1 file changed, 7 deletions(-)
 
-diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-index 6c111bd8283d..68821f86b063 100644
---- a/drivers/iommu/apple-dart.c
-+++ b/drivers/iommu/apple-dart.c
-@@ -782,6 +782,7 @@ static const struct iommu_ops apple_dart_iommu_ops = {
- 	.get_resv_regions = apple_dart_get_resv_regions,
- 	.put_resv_regions = generic_iommu_put_resv_regions,
- 	.pgsize_bitmap = -1UL, /* Restricted during dart probe */
-+	.owner = THIS_MODULE,
- };
+diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
+index 4c1f9e1091b7..a2c8dd329b31 100644
+--- a/drivers/gpio/gpio-mvebu.c
++++ b/drivers/gpio/gpio-mvebu.c
+@@ -871,13 +871,6 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
+ 	mvpwm->chip.dev = dev;
+ 	mvpwm->chip.ops = &mvebu_pwm_ops;
+ 	mvpwm->chip.npwm = mvchip->chip.ngpio;
+-	/*
+-	 * There may already be some PWM allocated, so we can't force
+-	 * mvpwm->chip.base to a fixed point like mvchip->chip.base.
+-	 * So, we let pwmchip_add() do the numbering and take the next free
+-	 * region.
+-	 */
+-	mvpwm->chip.base = -1;
  
- static irqreturn_t apple_dart_irq(int irq, void *dev)
+ 	spin_lock_init(&mvpwm->lock);
+ 
 -- 
 2.35.1
 
