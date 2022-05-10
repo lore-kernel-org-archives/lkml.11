@@ -2,92 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61D0DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:57:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6EDEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:59:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345381AbiEJPBw (ORCPT
+        id S1345518AbiEJPDg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:01:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56046 "EHLO
+        Tue, 10 May 2022 11:03:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345495AbiEJPBN (ORCPT
+        with ESMTP id S1345423AbiEJPDX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:01:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3097A2BE532;
-        Tue, 10 May 2022 07:24:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F170A6178F;
-        Tue, 10 May 2022 14:24:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D559C385A6;
-        Tue, 10 May 2022 14:24:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652192657;
-        bh=Pc46AuG13t873MQN9JMMXmwCqYFzgX3gktX+Clx2xJ0=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=SgRYJI5+Fy88ZZRFej4EMh0HZBYJwKDdgfnTD7JllCWtmfJG++8Qg6D1kkBXms5Dr
-         HCzm1pcepruOinNgMjLnEkqvH03MHvjRYds9S63IhpB6BopivPO9A9ZCu+j0h4DidW
-         pMohA3xAwQTj9WL+tuvKJp6uaASmRDEF+vOfJ1yla+KV68bzlcbz5LYfLtHrh+b7u+
-         vE35wr2N1sSiYYi3wWerICw5+fmA52qHEJ7YQhSvv2aoqaHbZxclXpLgPd83JytVqf
-         DkHBTNBCPiu1qdWhark0xD/yvhCQFh/gXKmQI0ejvkE4bHb2H1MRvSwIjw40Elrpst
-         i0WCtlJdzdoJQ==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id E425A5C0602; Tue, 10 May 2022 07:24:16 -0700 (PDT)
-Date:   Tue, 10 May 2022 07:24:16 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Uladzislau Rezki <urezki@gmail.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Alison Chaiken <achaiken@aurora.tech>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>, RCU <rcu@vger.kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <neeraj.iitr10@gmail.com>,
-        Oleksiy Avramchenko <oleksiy.avramchenko@sony.com>
-Subject: Re: [PATCH] rcu/nocb: Add an option to ON/OFF an offloading from RT
- context
-Message-ID: <20220510142416.GR1790663@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220507223247.GK1790663@paulmck-ThinkPad-P17-Gen-1>
- <CAEXW_YSyYRSRQwfMTJU1dowMaxrj6Daa17-BMx4syoPV05bZFg@mail.gmail.com>
- <20220508213222.GL1790663@paulmck-ThinkPad-P17-Gen-1>
- <CAEXW_YQ9t8gxp9cKCpba+e4NZ6ohPr8jHxJYuqRBFRtvSDa0Lw@mail.gmail.com>
- <20220509033740.GM1790663@paulmck-ThinkPad-P17-Gen-1>
- <CAEXW_YSbWetMt2_-m4G9Nt5S8ybATihB+5FMJMMo3jKDG4pPjg@mail.gmail.com>
- <20220509181417.GO1790663@paulmck-ThinkPad-P17-Gen-1>
- <YnldSkaWu40cVimj@pc638.lan>
- <20220509183934.GQ1790663@paulmck-ThinkPad-P17-Gen-1>
- <20220510100946.5fdff700@gandalf.local.home>
+        Tue, 10 May 2022 11:03:23 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7911B229239
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:26:47 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id a15-20020a17090ad80f00b001dc2e23ad84so2149141pjv.4
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:26:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=4L5S8FVGf1sMR35eidZeiyVG8JnT7nykUFphbiRbJOE=;
+        b=D0yJ+81QhdVQKnSC1cDM6q74m4kyDY226rltceKQLyqMl5nkiLbFIHHfkt4vev55oW
+         NEZwe8kry7HmVjGb/vG2Nu0ZcuYX0x7LFy+G4hFriF3LEMQH3PKlgWP0ZGvqkUFewTfj
+         OafwLSMF6qHvoe8gK0SR7SkAWbuHRH/jz7wbyYP/YBo34GSypmopha4d7WYQoUgFGoxG
+         t1m8X9h8n6Muqg7J/cSVg9b7PkA4Rc2I/drY2YCZ7Xnq2ltx62MCVYofFSk1RMY+Nlo/
+         SAq9cJA6fjxDVryf2skE0anV/isCzIG6kkwf158Qc0SxWnghXfRxMP7oVSnmA27L78QC
+         Rv4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=4L5S8FVGf1sMR35eidZeiyVG8JnT7nykUFphbiRbJOE=;
+        b=Kqll/4JTkgDk4tsUcMj8BWxrbq52oAs9Xty5TLSXZGNsIL6091Of0ZMwgh8guzm86D
+         lyO+NrLMQd7SvOIKhYONN3nB5r1kUDVEhPHex7jQdOxSg+Ou0wYrt6yLUlh6DT1FeX6d
+         gPuA6yvUVJZeSQqDMopDtPYGi8y86+QxrEvaADLzFkDze4JWVCvmyQ7Xo9AFNyo+T2ak
+         1hDchPK0ud2UMKFFXss5WjWo41BV/pzgYgjPilag4dKc0rA46AYyq+xtWR73RhK0V+Of
+         EfI4wZAcBWFy/Nu/mWUWYGHIw0Gr1TOsAEu+D40DY0NkRczjMg1702NKVkQ6Q4PZsy4r
+         ubpA==
+X-Gm-Message-State: AOAM530TJNH+RR6hbCCA9b9Xq+40QmYNJoAgyBWETBoMsHFwsR6phKoB
+        L+broKh6FVbhu0QxQQQDxOtl8kkCFTVpY6CG
+X-Google-Smtp-Source: ABdhPJyBqsurrR904pcspa44t3Se2r7m2fHOr/QA5JhLtVn5m+o0oMztQhsUUErQLkVErJJHrhwIZA==
+X-Received: by 2002:a17:903:22d2:b0:15e:a3a4:918c with SMTP id y18-20020a17090322d200b0015ea3a4918cmr20284232plg.36.1652192806635;
+        Tue, 10 May 2022 07:26:46 -0700 (PDT)
+Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
+        by smtp.gmail.com with ESMTPSA id x10-20020a1709028eca00b0015ea8b4b8f3sm2057568plo.263.2022.05.10.07.26.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 07:26:46 -0700 (PDT)
+Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: [PATCH 2/2] x86/asm/bitops: __ffs,ffz: use __builtin_ctzl to evaluate constant expressions
+Date:   Tue, 10 May 2022 23:25:50 +0900
+Message-Id: <20220510142550.1686866-3-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220510142550.1686866-1-mailhol.vincent@wanadoo.fr>
+References: <20220510142550.1686866-1-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220510100946.5fdff700@gandalf.local.home>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 10:09:46AM -0400, Steven Rostedt wrote:
-> On Mon, 9 May 2022 11:39:34 -0700
-> "Paul E. McKenney" <paulmck@kernel.org> wrote:
-> 
-> > This allows your current RCU_NOCB_CPU_CB_BOOST with something like
-> > this in place of the "default n":
-> > 
-> > 	default y if PREEMPT_RT
-> > 	default n if !PREEMPT_RT
-> 
-> BTW, I don't think you need the !PREEMPT_RT, because all configs are
-> 'n' by  default. That is:
-> 
-> 	default y if PREEMPT_RT
-> 
-> should be good enough.
+__ffs(x) is equivalent to (unsigned long)__builtin_ctzl(x) and ffz(x)
+is equivalent to (unsigned long)__builtin_ctzl(~x). Because
+__builting_ctzl() returns an int, a cast to (unsigned long) is
+necessary to avoid potential warnings on implicit casts.
 
-Good point, thank you!
+For x86_64, the current __ffs() and ffz() implementations do not
+produce optimized code when called with a constant expression. On the
+contrary, the __builtin_ctzl() gets simplified into a single
+instruction.
 
-That said, there is a lot of "default n" in a lot of Kconfig files.
-And I am OK making this explicit.  So Uladzislau's choice.  ;-)
+However, for non constant expressions, the __ffs() and ffz() asm
+versions of the kernel remains slightly better than the code produced
+by GCC (it produces a useless instruction to clear eax).
 
-							Thanx, Paul
+This patch uses the __builtin_constant_p() to select between the
+kernel's __ffs()/ffz() and the __builtin_ctzl() depending on whether
+the argument is constant or not.
+
+
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+---
+Usually, helper functions are prefixed by two underscores. But here,
+__ffs() is already prefixed, instead of creating an ____ffs(), I
+renamed it instead to __ffs_asm_not_zero(). The _not_zero() suffix is
+to differentiate it from the __ffs_asm() helper function of the
+previous patch.
+
+If someone has better inspiration of the naming for this patch and the
+previous one, please let me know().
+---
+ arch/x86/include/asm/bitops.h | 36 ++++++++++++++++++++++-------------
+ 1 file changed, 23 insertions(+), 13 deletions(-)
+
+diff --git a/arch/x86/include/asm/bitops.h b/arch/x86/include/asm/bitops.h
+index 535a7a358c14..694d0d100399 100644
+--- a/arch/x86/include/asm/bitops.h
++++ b/arch/x86/include/asm/bitops.h
+@@ -224,13 +224,7 @@ static __always_inline bool variable_test_bit(long nr, volatile const unsigned l
+ 	 ? constant_test_bit((nr), (addr))	\
+ 	 : variable_test_bit((nr), (addr)))
+ 
+-/**
+- * __ffs - find first set bit in word
+- * @word: The word to search
+- *
+- * Undefined if no bit exists, so code should check against 0 first.
+- */
+-static __always_inline unsigned long __ffs(unsigned long word)
++static __always_inline unsigned long __ffs_asm_not_zero(unsigned long word)
+ {
+ 	asm("rep; bsf %1,%0"
+ 		: "=r" (word)
+@@ -239,12 +233,17 @@ static __always_inline unsigned long __ffs(unsigned long word)
+ }
+ 
+ /**
+- * ffz - find first zero bit in word
+- * @word: The word to search
+- *
+- * Undefined if no zero exists, so code should check against ~0UL first.
+- */
+-static __always_inline unsigned long ffz(unsigned long word)
++ * __ffs - find first set bit in word
++ * @word: The word to search
++ *
++ * Undefined if no bit exists, so code should check against 0 first.
++ */
++#define __ffs(word)				\
++	(__builtin_constant_p(word) ?		\
++	 (unsigned long)__builtin_ctzl(word) :	\
++	 __ffs_asm_not_zero(word))
++
++static __always_inline unsigned long __ffz_asm(unsigned long word)
+ {
+ 	asm("rep; bsf %1,%0"
+ 		: "=r" (word)
+@@ -252,6 +251,17 @@ static __always_inline unsigned long ffz(unsigned long word)
+ 	return word;
+ }
+ 
++/**
++ * ffz - find first zero bit in word
++ * @word: The word to search
++ *
++ * Undefined if no zero exists, so code should check against ~0UL first.
++ */
++#define ffz(word)				\
++	(__builtin_constant_p(word) ?		\
++	 (unsigned long)__builtin_ctzl(~word) :	\
++	 __ffz_asm(word))
++
+ /*
+  * __fls: find last set bit in word
+  * @word: The word to search
+-- 
+2.35.1
+
