@@ -2,107 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC611C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:59:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33C33C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:59:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244969AbiEJPDm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:03:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39168 "EHLO
+        id S1345485AbiEJPDv (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 11:03:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345245AbiEJPDX (ORCPT
+        with ESMTP id S1345496AbiEJPDe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:03:23 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 757CC22906B
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:26:46 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24AA1Sdn011815;
-        Tue, 10 May 2022 16:26:21 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=selector1;
- bh=2ANARSm+ciPJ+EjWxzvHYDRB4kCEaNE52zN2k7UHgmI=;
- b=cnAreZzybHx90XAf0OpH2JQdBBCyuOAxvBFJiz/p45vtOREgtV/yR42ihA+9J6VTrCqA
- 618UFwYEMvF4Ez5JUQMtfHEtmvQurvbYOoDZzy5ARYPvDgJceIW4IubgmN6Dh1W49xWw
- h0asDzAQouDf7OoofPM8wuJxqY0OmzbWdrtT8iNJNH8ZyeiQaPJnlTwGnuvArTKr0rEz
- g+rsUZRVf/zGhh3LMX06Nj4KKExpLvZWLlv3O8txWDsDcdBbFw2ds4UID+kxL14DsC76
- Wx2/vCAcPSWYaO8qd4y960rfj5CvqPVcbAQGaDT3eLpZGOf0RX+BJZIoq+aCH3byyrMc gg== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3fwfngjywv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 10 May 2022 16:26:21 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 5449610002A;
-        Tue, 10 May 2022 16:26:17 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 408252291D0;
-        Tue, 10 May 2022 16:26:17 +0200 (CEST)
-Received: from localhost (10.75.127.50) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Tue, 10 May 2022 16:26:16
- +0200
-From:   Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>
-To:     Yannick Fertre <yannick.fertre@foss.st.com>,
-        Philippe Cornu <philippe.cornu@foss.st.com>
-CC:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        <dri-devel@lists.freedesktop.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [PATCH] drm/stm: ltdc: fix unchecked dereferenced pointer
-Date:   Tue, 10 May 2022 16:24:03 +0200
-Message-ID: <20220510142403.835902-1-raphael.gallais-pou@foss.st.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 10 May 2022 11:03:34 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C51731361;
+        Tue, 10 May 2022 07:28:24 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 3A6AE1F896;
+        Tue, 10 May 2022 14:28:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1652192903; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5Vk/8pdLWJKvC1pkcnRQ/HwoU2ABECojPYTjSUx9JWI=;
+        b=qCuBe8399OKc/XhS2YM19THr9x0w+LK3v0+yrYrVMx1O5y8bO2nhr7ld/xwzdNWpoeMnQv
+        KDbf9vzeiGs4Zk4jc5/KyT1Cq3WiPlflRqYiR6m11RKyyC/hq4LcZ09p+y2XB4Mv583rFK
+        /mj4yXQtU5XfZ45MAwfj3oDOrq6/m9Q=
+Received: from suse.cz (unknown [10.100.208.146])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 344FF2C141;
+        Tue, 10 May 2022 14:28:22 +0000 (UTC)
+Date:   Tue, 10 May 2022 16:28:21 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     akpm@linux-foundation.org, bhe@redhat.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
+        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
+        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
+        xen-devel@lists.xenproject.org, x86@kernel.org,
+        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
+        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
+        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
+        corbet@lwn.net, d.hatayama@jp.fujitsu.com,
+        dave.hansen@linux.intel.com, dyoung@redhat.com,
+        feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Richard Weinberger <richard@nod.at>
+Subject: Re: [PATCH 11/30] um: Improve panic notifiers consistency and
+ ordering
+Message-ID: <Ynp2hRodh04K3pzK@alley>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-12-gpiccoli@igalia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.50]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-10_03,2022-05-10_01,2022-02-23_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220427224924.592546-12-gpiccoli@igalia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Pointer of struct *drm_crtc was dereferenced before checking it was non
-NULL. This could potentially create a kernel panic.
+On Wed 2022-04-27 19:49:05, Guilherme G. Piccoli wrote:
+> Currently the panic notifiers from user mode linux don't follow
+> the convention for most of the other notifiers present in the
+> kernel (indentation, priority setting, numeric return).
+> More important, the priorities could be improved, since it's a
+> special case (userspace), hence we could run the notifiers earlier;
+> user mode linux shouldn't care much with other panic notifiers but
+> the ordering among the mconsole and arch notifier is important,
+> given that the arch one effectively triggers a core dump.
 
-Fixes: 79b44684a14e ("drm/stm: ltdc: add support for CRC hashing feature")
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>
----
- drivers/gpu/drm/stm/ltdc.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+It is not clear to me why user mode linux should not care about
+the other notifiers. It might be because I do not know much
+about the user mode linux.
 
-diff --git a/drivers/gpu/drm/stm/ltdc.c b/drivers/gpu/drm/stm/ltdc.c
-index 6bd45df8f5a7..9c0fadd58d2a 100644
---- a/drivers/gpu/drm/stm/ltdc.c
-+++ b/drivers/gpu/drm/stm/ltdc.c
-@@ -1120,7 +1120,7 @@ static void ltdc_crtc_disable_vblank(struct drm_crtc *crtc)
- 
- static int ltdc_crtc_set_crc_source(struct drm_crtc *crtc, const char *source)
- {
--	struct ltdc_device *ldev = crtc_to_ltdc(crtc);
-+	struct ltdc_device *ldev;
- 	int ret;
- 
- 	DRM_DEBUG_DRIVER("\n");
-@@ -1128,6 +1128,8 @@ static int ltdc_crtc_set_crc_source(struct drm_crtc *crtc, const char *source)
- 	if (!crtc)
- 		return -ENODEV;
- 
-+	ldev = crtc_to_ltdc(crtc);
-+
- 	if (source && strcmp(source, "auto") == 0) {
- 		ldev->crc_active = true;
- 		ret = regmap_set_bits(ldev->regmap, LTDC_GCR, GCR_CRCEN);
--- 
-2.25.1
+Is the because they always create core dump or are never running
+in a hypervisor or ...?
 
+AFAIK, the notifiers do many different things. For example, there
+is a notifier that disables RCU watchdog, print some extra
+information. Why none of them make sense here?
+
+> This patch fixes that by running the mconsole notifier as the first
+> panic notifier, followed by the architecture one (that coredumps).
+> Also, we remove a useless header inclusion.
+
+
+Best Regards,
+Petr
