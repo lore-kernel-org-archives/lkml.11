@@ -2,74 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EBDDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 22:30:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 916BFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 22:30:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236663AbiEJWaM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 18:30:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52300 "EHLO
+        id S236708AbiEJWa0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 18:30:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236659AbiEJWaH (ORCPT
+        with ESMTP id S236719AbiEJWaW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 18:30:07 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 468B16BFD0;
-        Tue, 10 May 2022 15:30:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=m8IxzcCYbau6+4M1TLsz/PQ8XysgsXWA0LXlKrdhYwg=; b=pkw1z0azOcX6iZcvHLiPHtrpAG
-        J1EBb7HZRbp7W8BT6vFLOPYRxdcwHidXPb7z0vADps54pBtLfokCZstnKrNfY7yss5qEE6BSRASAY
-        Md468FT/liHxESlPK/B27x1vjbBM9eFevOJ6rwtiWHD4/ong8l/29Xl0w0KLEzOADGKyfP4Sbj77C
-        7bMMxtQqXWr/VCsGSWtnC9W8pObNNZ2+57bRunNcAAL9ys3Qu8A8JrsLjELfQ1vOm4L4NpAhAy9rv
-        n6LmKA7GAIxO1+5y8x0IYprZtHp5WzdHGGWOmYz97iE8lnGijqT6rTaPLNL5RnJdc7mO3Fpkq3H1e
-        C1FspTuA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1noYMk-004rYS-Hk; Tue, 10 May 2022 22:30:02 +0000
-Date:   Tue, 10 May 2022 23:30:02 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [GIT PULL] Two folio fixes for 5.18
-Message-ID: <YnrnaoCVjAZfqNvW@casper.infradead.org>
-References: <YnRhFrLuRM5SY+hq@casper.infradead.org>
- <20220510151809.f06c7580af34221c16003264@linux-foundation.org>
+        Tue, 10 May 2022 18:30:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37682E15FA;
+        Tue, 10 May 2022 15:30:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CA74161811;
+        Tue, 10 May 2022 22:30:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 248F8C385D3;
+        Tue, 10 May 2022 22:30:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652221813;
+        bh=tq6Lj50E3IpWlV66/XO9VHgtd+iJ7qGiygGljBpexSE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ZFbI0mVlqtJAqJqDGvIkU6SmKMUeudh0g0dwm2PdiafUS77KOMwApTxbCp6E+4BJh
+         Ir8rEqVxHijTtAHgUuA1paXx1qX5oXQ+zycaGrxpYzK75nveFulQ+TQZccWobOlNtW
+         aaLrA4yhG0WOB3ttTg56c2wyXHnlpOkDHlEhy7RgmAnOMWuvhyytl25bmHOeAUPlzs
+         9oHwpByI95zm+SPS6UB9UsTm+9/vUdWU24IF+1mMr/WhK3yPyvVRfT8UB1TctvDht4
+         ZhY9TEpMk4Mrhz/N1LKPoFUdJg1NlLuihuIbxIG5kHGSa4ZPSUeCIPqNxcI9cdN4M/
+         OGdVf5LToKwyg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F30ABF03933;
+        Tue, 10 May 2022 22:30:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220510151809.f06c7580af34221c16003264@linux-foundation.org>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v3 net] net: phy: micrel: Fix incorrect variable type in
+ micrel
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165222181298.9200.1509164955750702026.git-patchwork-notify@kernel.org>
+Date:   Tue, 10 May 2022 22:30:12 +0000
+References: <20220510015521.2542096-1-wanjiabing@vivo.com>
+In-Reply-To: <20220510015521.2542096-1-wanjiabing@vivo.com>
+To:     Wan Jiabing <wanjiabing@vivo.com>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, horatiu.vultur@microchip.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 03:18:09PM -0700, Andrew Morton wrote:
-> On Fri, 6 May 2022 00:43:18 +0100 Matthew Wilcox <willy@infradead.org> wrote:
-> 
-> >  - Fix readahead creating single-page folios instead of the intended
-> >    large folios when doing reads that are not a power of two in size.
-> 
-> I worry about the idea of using hugepages in readahead.  We're
-> increasing the load on the hugepage allocator, which is already
-> groaning under the load.
+Hello:
 
-Well, hang on.  We're not using the hugepage allocator, we're using
-the page allocator.  We're also using variable order pages, not
-necessarily PMD_ORDER.  I was under the impression that we were
-using GFP_TRANSHUGE_LIGHT, but I now don't see that.  So that might
-be something that needs to be changed.
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-> The obvious risk is that handing out hugepages to a low-value consumer
-> (copying around pagecache which is only ever accessed via the direct
-> map) will deny their availability to high-value consumers (that
-> compute-intensive task against a large dataset).
+On Tue, 10 May 2022 09:55:21 +0800 you wrote:
+> In lanphy_read_page_reg, calling __phy_read() might return a negative
+> error code. Use 'int' to check the error code.
 > 
-> Has testing and instrumentation been used to demonstrate that this is
-> not actually going to be a problem, or are we at risk of getting
-> unhappy reports?
+> Fixes: 7c2dcfa295b1 ("net: phy: micrel: Add support for LAN8804 PHY")
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+> 
+> [...]
 
-It's hard to demonstrate that it's definitely not going to cause a
-problem.  But I actually believe it will help; by keeping page cache
-memory in larger chunks, we make it easier to defrag memory and create
-PMD-order pages when they're needed.
+Here is the summary with links:
+  - [v3,net] net: phy: micrel: Fix incorrect variable type in micrel
+    https://git.kernel.org/netdev/net/c/12a4d677b1c3
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
