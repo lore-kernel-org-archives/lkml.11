@@ -2,470 +2,230 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80611C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 23:57:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17832C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 23:57:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238843AbiEJX53 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 19:57:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44530 "EHLO
+        id S237000AbiEJX5k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 19:57:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238687AbiEJX5H (ORCPT
+        with ESMTP id S236711AbiEJX5K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 19:57:07 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FF7827CE1
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 16:57:05 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2d11b6259adso2722827b3.19
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 16:57:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc:content-transfer-encoding;
-        bh=wNfZpS1Ph0bCGjgLml9yBH3I6aG1qAbhk+0rc1ZP/hY=;
-        b=m1tdinBInvIZUHU5JN8ycqjveEnO3YkgAIzQKbLrHFO+rIyratWnLSMd/kGnkUfYxk
-         QFS/2sxqcTKfPU9D7Jan8j+W3sUE663CsF0y9eEANP3DjiMd1xLCBGOc76l47EOivEIc
-         nnQjAGKyPasbtMCN+cHTSXayLOljIA9JwLJ/0w5tpYggjUtqZGRZWAqsRwx2rDPySXTX
-         BOSDHRItyryrPr94KsXB6Df9No8XpxQVOB+yj0ELIMH3iRkb+eGxnDAmoPx14qfzwJAS
-         jgoMOfoLuHXh1ShUSoUHz7WMbiAgGhN2lB6gEakFMZBsumeevB5jjXpyx9Nlem7NwE0t
-         IhGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc:content-transfer-encoding;
-        bh=wNfZpS1Ph0bCGjgLml9yBH3I6aG1qAbhk+0rc1ZP/hY=;
-        b=5qAQffCYH0vTcsvofsI+z8pyquRTmgDvtmDCjoT1tjFkpJbb9Pnb5MWQpaByy6HTsY
-         jjjxnYL9yOyJ67IAVymDr3ZyPaL+/4dtzJdO7qidueYIVi34h+rLtH3ISdoegF90GkGo
-         lqlSnlFu/E6fu9/ZDwNyW0NPjep+5j6HyUDZbTuVPxeBoBJl/Z0BXB/fyPAlBn+Pl3Rx
-         LfXUMa0tGMU0nOXrUuGPsaGvTHPwvElw3LEUvsFMTSTV70x0Gxsy+IAc3FCp6EQ0SwjE
-         DriTa9jIXyo1HlaWgPnPRIYalwcaj2D6uv59xNvJ5gJltwPpEImklGAfBccTTEkyh6VR
-         DdVQ==
-X-Gm-Message-State: AOAM531x1YK/MpQi2DKeBtG7RVZFf893/2xOsZn4N+ffm0SJh5GMxJr7
-        JpZtO3qEZPjNoqdn3JWcOIRmr2NjpGale5o=
-X-Google-Smtp-Source: ABdhPJxzdN7A8Vnn6rBrUXgMrzw73E3knQrmokxQfU7igRSDoyBhnjeXgirKX7Wm4wFIxWhyPcQgOh5qijErwe0=
-X-Received: from tj.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:53a])
- (user=tjmercier job=sendgmr) by 2002:a81:b044:0:b0:2d6:bd1f:5d8b with SMTP id
- x4-20020a81b044000000b002d6bd1f5d8bmr22265953ywk.27.1652227024764; Tue, 10
- May 2022 16:57:04 -0700 (PDT)
-Date:   Tue, 10 May 2022 23:56:47 +0000
-In-Reply-To: <20220510235653.933868-1-tjmercier@google.com>
-Message-Id: <20220510235653.933868-4-tjmercier@google.com>
-Mime-Version: 1.0
-References: <20220510235653.933868-1-tjmercier@google.com>
-X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
-Subject: [PATCH v7 3/6] dmabuf: heaps: export system_heap buffers with GPU
- cgroup charging
-From:   "T.J. Mercier" <tjmercier@google.com>
-To:     tjmercier@google.com, Sumit Semwal <sumit.semwal@linaro.org>,
-        "=?UTF-8?q?Christian=20K=C3=B6nig?=" <christian.koenig@amd.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Liam Mark <lmark@codeaurora.org>,
-        Laura Abbott <labbott@redhat.com>,
-        Brian Starkey <Brian.Starkey@arm.com>,
-        John Stultz <john.stultz@linaro.org>
-Cc:     daniel@ffwll.ch, tj@kernel.org, hridya@google.com,
-        jstultz@google.com, tkjos@android.com, cmllamas@google.com,
-        surenb@google.com, kaleshsingh@google.com, Kenny.Ho@amd.com,
-        mkoutny@suse.com, skhan@linuxfoundation.org,
-        kernel-team@android.com, linux-media@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Tue, 10 May 2022 19:57:10 -0400
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 226FFB2E;
+        Tue, 10 May 2022 16:57:07 -0700 (PDT)
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24ANL9Rt030213;
+        Tue, 10 May 2022 16:57:07 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=OeH7cdhm5xo2GGUXXPYVmpsG4mhfNqOB8lblirUqHCI=;
+ b=iiPy/EsMx8TXgf5tSr1UwBL3RzGGcjrN0esE3lq8uJzGwpydr1e4B6BivVy/2Z489VtG
+ tsg6mqtUOvSflTZUF61W1AyLIBltZksyD6vaaOTtvrfNhAHsvkfV5ak3YNKP6JrrIpFF
+ Mr0iEO9FadhKsMeP8lqWSQCZMTjuZs6WINA= 
+Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2046.outbound.protection.outlook.com [104.47.66.46])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3fyx2n1r2c-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 10 May 2022 16:57:06 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=foVCvN6K7L1LaxcCW9goA68dbG4Wru4jLCRndG9Iay/0eR40W97/y2/Z5mC3al+VrM7hz9dZHNJ/iPqVcCdSl6920bsuErjV+Ktz0pLQOZJmSb/7zCJbIjD7IOlkjYU5F+9+w7Ki+2ZSxtz534KlpX1xQr31zg2GzuwoU4aWM61c4N5+yGTU+PcvuHy77PhmGPUoPWL0B9nGjwfb/JobzbktNqaRm6m6BFPFHjoMIJAtsu5TEqDY7DKlYnGc3X49grzs00kSnID2MeAUTlx+4xHDHUWolOn/2oWCwauRvHal94HeD6HES3zuBSfqK4dGtpPUNxwSSXa0zd22FQ6naA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=OeH7cdhm5xo2GGUXXPYVmpsG4mhfNqOB8lblirUqHCI=;
+ b=QBz1LzaQbre4C0c8N3D15Ch1LEwFNnKFLZMLK5KAD9lEo1LXLvvYPYunq8Bouikp/5eVeAtlkzRXpfiO+hR1+IH7YIv/haLYl+uE7WCpXMZKvZ1mWY3zgGwm8bMPYpTd9igI5weZKSGB3+f4sou/LOMCea+Q2oxMtlzXq41ymOPd1nGLBW2FSB/Vu46/n15PEYl0XYfFsHskBCmg4uM+rv9H3Lw3VQ9pkqdVdYyy6ZookTaK/oUAeBb6JdifK1cRYZblR4Jshz3xtEavsZQMOEOH9Y3Bs4YbEQbzX2j05+mhOU16UFyRIzlCM3TGGK2GUpVnL83m+00F0yZGC0iuIw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SA1PR15MB5109.namprd15.prod.outlook.com (2603:10b6:806:1dc::10)
+ by SN6PR1501MB2192.namprd15.prod.outlook.com (2603:10b6:805:12::32) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23; Tue, 10 May
+ 2022 23:57:04 +0000
+Received: from SA1PR15MB5109.namprd15.prod.outlook.com
+ ([fe80::3061:40ff:2ad:33aa]) by SA1PR15MB5109.namprd15.prod.outlook.com
+ ([fe80::3061:40ff:2ad:33aa%4]) with mapi id 15.20.5227.023; Tue, 10 May 2022
+ 23:57:04 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Josh Poimboeuf <jpoimboe@kernel.org>
+CC:     Rik van Riel <riel@fb.com>, "song@kernel.org" <song@kernel.org>,
+        "joe.lawrence@redhat.com" <joe.lawrence@redhat.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "vincent.guittot@linaro.org" <vincent.guittot@linaro.org>,
+        "pmladek@suse.com" <pmladek@suse.com>,
+        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "jpoimboe@redhat.com" <jpoimboe@redhat.com>
+Subject: Re: [RFC] sched,livepatch: call klp_try_switch_task in __cond_resched
+Thread-Topic: [RFC] sched,livepatch: call klp_try_switch_task in
+ __cond_resched
+Thread-Index: AQHYYjpsu2JIKZQIXUOp7t0Qujiczq0WqGoAgAAU/gCAAQUkgIAAXf2AgAAkx4CAAAZjAIAADJUAgAAUwACAAAnWgIAAEcOAgAA3ZACAAA7PAA==
+Date:   Tue, 10 May 2022 23:57:04 +0000
+Message-ID: <D298A3F1-43A5-4FD5-B198-906364BF4B79@fb.com>
+References: <YnkuFrm1YR46OFx/@alley>
+ <9C7DF147-5112-42E7-9F7C-7159EFDFB766@fb.com> <YnoawYtoCSvrK7lb@alley>
+ <3a9bfb4a52b715bd8739d8834409c9549ec7f22f.camel@fb.com>
+ <YnqIcw+dYsWz/w7g@alley>
+ <6bf85ff908377508a5f5bcc7c4e75d598b96f388.camel@fb.com>
+ <20220510165244.ikfh64ertnvodxb4@treble>
+ <1bd15361edfd4db9fc9271d35e7bbe5edad1b87a.camel@fb.com>
+ <20220510184213.l3gjweeleyg7obca@treble>
+ <47440502-930F-4CBD-B859-3AC9BBFF8FC6@fb.com>
+ <20220510230402.e5ymkwt45sg7bd35@treble>
+In-Reply-To: <20220510230402.e5ymkwt45sg7bd35@treble>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3696.80.82.1.1)
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5bf80ef8-88cf-4a63-65bf-08da32e0c875
+x-ms-traffictypediagnostic: SN6PR1501MB2192:EE_
+x-microsoft-antispam-prvs: <SN6PR1501MB2192AEFEC69DF3A36AAEE730B3C99@SN6PR1501MB2192.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: d4PL/0KAmDc9YQa+ZU/BnXOmfaPZ0G2ki7fi9Q1QI1f0Mxi3MKjHkcPf3gWuxm+J0imExYouhsw/MCsXG9iwXOGAq9b/86WqwoPAP1ytwTHejZi2fl3oRWfg6p8MyHfNbuCwKbIXJGdXh+2FATTmMuiPjATCDYeuc2yxX0GniN8QBCvNBfH0cqcKQPCB1n6G6XxjWNj01IAcba/VT4lGS03+RiNoFrYi5eURiqJl2f3u8YRxRcJ4BJKQ2U2fLGjviK+mHjC9SgrNob/mZxtHGaMJKRlqGqLq0NXVWQScJowx2z0C7TF9SEtJFBUZVuwl9e43f9Kyjr0ZTvGtBkuVGQfrMIjN2dJD88cBzu612dbhfUemnVNnNhCkjeWTIHx/eCNi9v0YSj2yooMW4NZOadga0QLTPgiYA2mDRZ6TvBPzwaIcoUZfHf8hboIqfIJTsrZTjTwwWINjfCAii/GLxYBYdFjMPUa1BhtYoBKT+lmzmwEnRSCVLOmLfMdh3BtLbKeViSYSJ0ql+zeQG5fxlTb2oPEFKw3/qJbruk6SePCZSKiuN1OXbG0n2/kU83/28lV7tfPjKs+BJsl1O627RrVkAUh/vkLLUlUFYkUsc/yr4zWGoY5ZPjxP1T1Pqx2SomaSTmvYFwaSIXNZZtlWxeZ1w5Kz+FRuRdG8P7s+Ih6evhMaQzbLvXU+vsuKf43TX4eJ4+3I6Bo+MlU0O4GNvHC0NFy/yVfml12h0l95Hx7ADLj1WSkZ+rLOvS4XzBYO
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5109.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(7416002)(2906002)(36756003)(122000001)(8936002)(38070700005)(38100700002)(5660300002)(186003)(83380400001)(4326008)(33656002)(508600001)(66476007)(66946007)(91956017)(76116006)(2616005)(66446008)(64756008)(66556008)(8676002)(54906003)(316002)(53546011)(6916009)(6506007)(6512007)(6486002)(86362001)(71200400001)(45980500001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?YnpDVUJlNXdIS25IMXVRRFpRZXJqazBtUjBxWkVSWE5LSEdqdEl1T2tzSUM4?=
+ =?utf-8?B?S1hCYnVhVTQ3bmlvTDl5UU1jbEVwOEdGUXUwMC9YbzBid2R6MWNsUExjbk1r?=
+ =?utf-8?B?OE96MlQ4WFZreTFtMGhwWkt1d0R0Ui82d2k2OUMwQ0pnTkVJd2p0QkJwWUZ1?=
+ =?utf-8?B?OWIxQytOZ1c0SnM3bHZwRVlnT0pMMXZ6RUdoR20wWTN5QVRVZndCZ29ld3lh?=
+ =?utf-8?B?TXVhMzIvR2hFNlNPTTFTRFBRNEMra0o3a3o2dDlDMTNxOWY2ZU4yNFZFT0M4?=
+ =?utf-8?B?V0Z6UkZGbm5MeXpJTEd3YkFpMEFhSmEweHNzcFF6NzdmWVR5eGFEeVFnL2tC?=
+ =?utf-8?B?eUVRNkJ2VDR2OE84S0JPTGVLck9ZK05WM3N0VEtFME9qMWpZTmRUUWNPNDlY?=
+ =?utf-8?B?VnVpRXRTdTJFR0FWeUcvMklTbDZEdlA4THg5bEpkVXlSVXRjRUtBaEpMM09k?=
+ =?utf-8?B?ejhJR1BEcmtBdkZKVDM4eGxmNTJsRnlwQ2FqTFNyNitoSXpncHVHaEIza29G?=
+ =?utf-8?B?N2luN0FhU3hDTHZOVUFYZGdIWDh0Wmh6cHIrWHNVRVJZTE8rZWVyOTJ4Nkkw?=
+ =?utf-8?B?U1djUllZcmh1bXlWU0kxTlFyNExDU29hL3lIMTIyZzdjK2tESTFMM21UR0ZX?=
+ =?utf-8?B?RVB4clQwNnViSWpxUDdia1pHTzNoMEtkYTd4cUlheVd3eS96OWZ6Z0Fiei9T?=
+ =?utf-8?B?bWt3NlNRbTBEZFY5TU9nRnJEcm5aZzdZZ0FvSXJScGJ3NWRCNDVKdW15L1dO?=
+ =?utf-8?B?dnRkNUlCem5yVFYxdUFldHRST3pSMFMySzdTNVRNbVhtNzVPUSticlJPRmcr?=
+ =?utf-8?B?eWQwU3hsZ09oRFFiSldJVXZUVi9tWitRdG5hNWNGcEZkWUxGc1o2d3JuaGlp?=
+ =?utf-8?B?YUl1cHNwQzNzWGJCeWRSM2ZPZGl6alF6a2c5SXdxVVErTjZ5ZnRyVTBrNEZz?=
+ =?utf-8?B?R2ZObm4vZldBdEY0TW5BczJ6K3VsMmdMZXg0OVpMYi9lL3M5RzR1OGx5NHBy?=
+ =?utf-8?B?anlvS1owZ3EyK21yaG01N3ArNTY5RFVoZGZiWjVZbVBVV05DSU9CTEllazZQ?=
+ =?utf-8?B?NnpDZGFHUDlyTlRHQ3ZqeWxNRDJiR2E1b1NqTnJDZnhYN0dpa01qWXdLU1NM?=
+ =?utf-8?B?anRwUU5RMTBRb0huajNsS2dJUFR6VjRlTXhjUGlHZUdCQTJSZW9uVm1oRFkr?=
+ =?utf-8?B?TkprbExiSmY4UXM0bTFXUzRYRmplc1gyZUpwTldrU3YwcGZ2a01oS1VhaDdN?=
+ =?utf-8?B?TUZ6TUJaMEl0a3pqTldVRVNzSk04bVpVd3JuQkZiYkIzakg5YmU3dmVZUTlZ?=
+ =?utf-8?B?aGxEZnNMcFpUMHJIMEJwck5yVnIwYkQzWUxFSjBWZzkwY0Q2NHRXdzB2SGV6?=
+ =?utf-8?B?Q2UzR1NNZkowRWVucjg5blpCVXRDVWxObUNsYndyRWNaNnhES05oN21YTWJp?=
+ =?utf-8?B?cmtKK21CZUR2MjQ5UThCc0lBbXB6RlNSQnhxZlhVWFdVaG9EVVVyVllpYjJk?=
+ =?utf-8?B?WXVQMjNpV1JVTWFNeTJzVUlRcC9SNGZDOTJoWDlzdkNock9xOGJLVlp5endo?=
+ =?utf-8?B?TkNiSGVyQTVSVkdtQVpNOWN0REZveFA4Tk5jNmRXajV6U2NJVG8wb1NBSFR0?=
+ =?utf-8?B?cU9ENlpldGNaY3RsRVJOQmswZUF1a2VpYlJxVUV0T3B2Z3QzQmhWMERsb2NE?=
+ =?utf-8?B?MUFtcGdEdE5HT1RldEZ5cVFjTnFGMmszWmpibkcrdGlOZ25OTHE4b3UwTVRE?=
+ =?utf-8?B?TllGWXNoRzFPRjVvWGZlZjVZOXFSN3VsNFNpY1dTR0s4MXNJczZ5U3hKa1di?=
+ =?utf-8?B?c01CMEc2R09iZ1JsNzlxNlZZcndUMGRnd2NuUFVsYmt6UU1JQmttQUFVcnJG?=
+ =?utf-8?B?TE0rU1l5V2t1cytQd3JQbUVCLzV2VEs0QWQ5TnkzQ2ZMTm13cHZpY2k0Szd6?=
+ =?utf-8?B?ODVaZ3FmTXV4Q1dQOGduczljaUhOSW52a042VUdXaG85eisxcXkzdW1MQmha?=
+ =?utf-8?B?aTdxUmoyemZLUWtJYUxoWWlwb0JuU1FtM2FsQkhGcnFBZ1BRZXQ5VXVmbXpS?=
+ =?utf-8?B?WEwxbmNVckQ3T0hhRmpNRjhIbGpJdFRLWEhydXBualh2NWYwZ0I1RFE1WVMx?=
+ =?utf-8?B?QlJObTBNQVQ3Y0dzNG8rbGhJaEwranpRcUQxK0FBU1BpNU8ySmd6czNZQm5q?=
+ =?utf-8?B?RmRzMXZ3Z3RlNDNYN0NxbEozUjgxS285dGdCa1dYSE1JbWZ4VmY0WXA3bW1r?=
+ =?utf-8?B?YUdSQzJBcktQRTVETkgwSFhNQ1VsTU9za290aXZXSjFFY1FRYVl0RzBkKy8w?=
+ =?utf-8?B?cmJneElzUi9pc3loT2kyM2x4WlZNa1lEeGhCTVpMRGxEUi8vaVIzZXBQUkJH?=
+ =?utf-8?Q?OSq0c7hJpPLT7SOlL80MYX+xC/k/L5vxzgr4k?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <867E0CAD670EB54781925508CBFAA7D9@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: fb.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5109.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5bf80ef8-88cf-4a63-65bf-08da32e0c875
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 May 2022 23:57:04.3391
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 6wu/QRjyB2LElVC4VdQQqubwBHYOK+iLRK/H9ySrzTPKqPuCG1JWiazEOG4jubSLyAdGMr+UG0SpTJHsNETl7A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR1501MB2192
+X-Proofpoint-GUID: 7lLH4MPUA7P7RuafTQKz9nUXg3QYwYcH
+X-Proofpoint-ORIG-GUID: 7lLH4MPUA7P7RuafTQKz9nUXg3QYwYcH
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-10_07,2022-05-10_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-All DMA heaps now register a new GPU cgroup bucket upon creation, and the
-system_heap now exports buffers associated with its GPU cgroup bucket for
-tracking purposes.
-
-In order to support GPU cgroup charge transfer on a dma-buf, the current
-GPU cgroup information must be stored inside the dma-buf struct. For
-tracked buffers, exporters include the struct gpucg and struct
-gpucg_bucket pointers in the export info which can later be modified if
-the charge is migrated to another cgroup.
-
-Signed-off-by: Hridya Valsaraju <hridya@google.com>
-Signed-off-by: T.J. Mercier <tjmercier@google.com>
----
-v7 changes
-Adapt to new gpucg_register_bucket API.
-
-v5 changes
-Merge dmabuf: Use the GPU cgroup charge/uncharge APIs into this patch.
-
-Remove all GPU cgroup code from dma-buf except what's necessary to support
-charge transfer. Previously charging was done in export, but for
-non-Android graphics use-cases this is not ideal since there may be a
-dealy between allocation and export, during which time there is no
-accounting.
-
-Append "-heap" to gpucg_bucket names.
-
-Charge on allocation instead of export. This should more closely mirror
-non-Android use-cases where there is potentially a delay between allocation
-and export.
-
-Put the charge and uncharge code in the same file (system_heap_allocate,
-system_heap_dma_buf_release) instead of splitting them between the heap and
-the dma_buf_release.
-
-Move no-op code to header file to match other files in the series.
-
-v3 changes
-Use more common dual author commit message format per John Stultz.
-
-v2 changes
-Move dma-buf cgroup charge transfer from a dma_buf_op defined by every
-heap to a single dma-buf function for all heaps per Daniel Vetter and
-Christian K=C3=B6nig.
----
- drivers/dma-buf/dma-buf.c           | 19 +++++++++++++
- drivers/dma-buf/dma-heap.c          | 38 ++++++++++++++++++++++++++
- drivers/dma-buf/heaps/system_heap.c | 28 +++++++++++++++++---
- include/linux/dma-buf.h             | 41 +++++++++++++++++++++++------
- include/linux/dma-heap.h            | 15 +++++++++++
- 5 files changed, 129 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/dma-buf/dma-buf.c b/drivers/dma-buf/dma-buf.c
-index df23239b04fc..bc89c44bd9b9 100644
---- a/drivers/dma-buf/dma-buf.c
-+++ b/drivers/dma-buf/dma-buf.c
-@@ -462,6 +462,24 @@ static struct file *dma_buf_getfile(struct dma_buf *dm=
-abuf, int flags)
-  * &dma_buf_ops.
-  */
-=20
-+#ifdef CONFIG_CGROUP_GPU
-+static void dma_buf_set_gpucg(struct dma_buf *dmabuf, const struct dma_buf=
-_export_info *exp)
-+{
-+	dmabuf->gpucg =3D exp->gpucg;
-+	dmabuf->gpucg_bucket =3D exp->gpucg_bucket;
-+}
-+
-+void dma_buf_exp_info_set_gpucg(struct dma_buf_export_info *exp_info,
-+				struct gpucg *gpucg,
-+				struct gpucg_bucket *gpucg_bucket)
-+{
-+	exp_info->gpucg =3D gpucg;
-+	exp_info->gpucg_bucket =3D gpucg_bucket;
-+}
-+#else
-+static void dma_buf_set_gpucg(struct dma_buf *dmabuf, struct dma_buf_expor=
-t_info *exp) {}
-+#endif
-+
- /**
-  * dma_buf_export - Creates a new dma_buf, and associates an anon file
-  * with this buffer, so it can be exported.
-@@ -527,6 +545,7 @@ struct dma_buf *dma_buf_export(const struct dma_buf_exp=
-ort_info *exp_info)
- 	init_waitqueue_head(&dmabuf->poll);
- 	dmabuf->cb_in.poll =3D dmabuf->cb_out.poll =3D &dmabuf->poll;
- 	dmabuf->cb_in.active =3D dmabuf->cb_out.active =3D 0;
-+	dma_buf_set_gpucg(dmabuf, exp_info);
-=20
- 	if (!resv) {
- 		resv =3D (struct dma_resv *)&dmabuf[1];
-diff --git a/drivers/dma-buf/dma-heap.c b/drivers/dma-buf/dma-heap.c
-index 8f5848aa144f..48173a66d70d 100644
---- a/drivers/dma-buf/dma-heap.c
-+++ b/drivers/dma-buf/dma-heap.c
-@@ -7,10 +7,12 @@
-  */
-=20
- #include <linux/cdev.h>
-+#include <linux/cgroup_gpu.h>
- #include <linux/debugfs.h>
- #include <linux/device.h>
- #include <linux/dma-buf.h>
- #include <linux/err.h>
-+#include <linux/kconfig.h>
- #include <linux/xarray.h>
- #include <linux/list.h>
- #include <linux/slab.h>
-@@ -21,6 +23,7 @@
- #include <uapi/linux/dma-heap.h>
-=20
- #define DEVNAME "dma_heap"
-+#define HEAP_NAME_SUFFIX "-heap"
-=20
- #define NUM_HEAP_MINORS 128
-=20
-@@ -31,6 +34,7 @@
-  * @heap_devt		heap device node
-  * @list		list head connecting to list of heaps
-  * @heap_cdev		heap char device
-+ * @gpucg_bucket	gpu cgroup bucket for memory accounting
-  *
-  * Represents a heap of memory from which buffers can be made.
-  */
-@@ -41,6 +45,9 @@ struct dma_heap {
- 	dev_t heap_devt;
- 	struct list_head list;
- 	struct cdev heap_cdev;
-+#ifdef CONFIG_CGROUP_GPU
-+	struct gpucg_bucket *gpucg_bucket;
-+#endif
- };
-=20
- static LIST_HEAD(heap_list);
-@@ -216,6 +223,18 @@ const char *dma_heap_get_name(struct dma_heap *heap)
- 	return heap->name;
- }
-=20
-+/**
-+ * dma_heap_get_gpucg_bucket() - get struct gpucg_bucket pointer for the h=
-eap.
-+ * @heap: DMA-Heap to get the gpucg_bucket struct for.
-+ *
-+ * Returns:
-+ * The gpucg_bucket struct pointer for the heap. NULL if the GPU cgroup co=
-ntroller is not enabled.
-+ */
-+struct gpucg_bucket *dma_heap_get_gpucg_bucket(struct dma_heap *heap)
-+{
-+	return heap->gpucg_bucket;
-+}
-+
- struct dma_heap *dma_heap_add(const struct dma_heap_export_info *exp_info)
- {
- 	struct dma_heap *heap, *h, *err_ret;
-@@ -228,6 +247,12 @@ struct dma_heap *dma_heap_add(const struct dma_heap_ex=
-port_info *exp_info)
- 		return ERR_PTR(-EINVAL);
- 	}
-=20
-+	if (IS_ENABLED(CONFIG_CGROUP_GPU) && strlen(exp_info->name) + strlen(HEAP=
-_NAME_SUFFIX) >=3D
-+		GPUCG_BUCKET_NAME_MAX_LEN) {
-+		pr_err("dma_heap: Name is too long for GPU cgroup\n");
-+		return ERR_PTR(-ENAMETOOLONG);
-+	}
-+
- 	if (!exp_info->ops || !exp_info->ops->allocate) {
- 		pr_err("dma_heap: Cannot add heap with invalid ops struct\n");
- 		return ERR_PTR(-EINVAL);
-@@ -253,6 +278,19 @@ struct dma_heap *dma_heap_add(const struct dma_heap_ex=
-port_info *exp_info)
- 	heap->ops =3D exp_info->ops;
- 	heap->priv =3D exp_info->priv;
-=20
-+	if (IS_ENABLED(CONFIG_CGROUP_GPU)) {
-+		char gpucg_bucket_name[GPUCG_BUCKET_NAME_MAX_LEN];
-+
-+		snprintf(gpucg_bucket_name, sizeof(gpucg_bucket_name), "%s%s",
-+			 exp_info->name, HEAP_NAME_SUFFIX);
-+
-+		heap->gpucg_bucket =3D gpucg_register_bucket(gpucg_bucket_name);
-+		if (IS_ERR(heap->gpucg_bucket)) {
-+			err_ret =3D ERR_CAST(heap->gpucg_bucket);
-+			goto err0;
-+		}
-+	}
-+
- 	/* Find unused minor number */
- 	ret =3D xa_alloc(&dma_heap_minors, &minor, heap,
- 		       XA_LIMIT(0, NUM_HEAP_MINORS - 1), GFP_KERNEL);
-diff --git a/drivers/dma-buf/heaps/system_heap.c b/drivers/dma-buf/heaps/sy=
-stem_heap.c
-index fcf836ba9c1f..27f686faef00 100644
---- a/drivers/dma-buf/heaps/system_heap.c
-+++ b/drivers/dma-buf/heaps/system_heap.c
-@@ -297,6 +297,11 @@ static void system_heap_dma_buf_release(struct dma_buf=
- *dmabuf)
- 	}
- 	sg_free_table(table);
- 	kfree(buffer);
-+
-+	if (dmabuf->gpucg && dmabuf->gpucg_bucket) {
-+		gpucg_uncharge(dmabuf->gpucg, dmabuf->gpucg_bucket, dmabuf->size);
-+		gpucg_put(dmabuf->gpucg);
-+	}
- }
-=20
- static const struct dma_buf_ops system_heap_buf_ops =3D {
-@@ -346,11 +351,21 @@ static struct dma_buf *system_heap_allocate(struct dm=
-a_heap *heap,
- 	struct scatterlist *sg;
- 	struct list_head pages;
- 	struct page *page, *tmp_page;
--	int i, ret =3D -ENOMEM;
-+	struct gpucg *gpucg;
-+	struct gpucg_bucket *gpucg_bucket;
-+	int i, ret;
-+
-+	gpucg =3D gpucg_get(current);
-+	gpucg_bucket =3D dma_heap_get_gpucg_bucket(heap);
-+	ret =3D gpucg_charge(gpucg, gpucg_bucket, len);
-+	if (ret)
-+		goto put_gpucg;
-=20
- 	buffer =3D kzalloc(sizeof(*buffer), GFP_KERNEL);
--	if (!buffer)
--		return ERR_PTR(-ENOMEM);
-+	if (!buffer) {
-+		ret =3D -ENOMEM;
-+		goto uncharge_gpucg;
-+	}
-=20
- 	INIT_LIST_HEAD(&buffer->attachments);
- 	mutex_init(&buffer->lock);
-@@ -396,6 +411,8 @@ static struct dma_buf *system_heap_allocate(struct dma_=
-heap *heap,
- 	exp_info.size =3D buffer->len;
- 	exp_info.flags =3D fd_flags;
- 	exp_info.priv =3D buffer;
-+	dma_buf_exp_info_set_gpucg(&exp_info, gpucg, gpucg_bucket);
-+
- 	dmabuf =3D dma_buf_export(&exp_info);
- 	if (IS_ERR(dmabuf)) {
- 		ret =3D PTR_ERR(dmabuf);
-@@ -414,7 +431,10 @@ static struct dma_buf *system_heap_allocate(struct dma=
-_heap *heap,
- 	list_for_each_entry_safe(page, tmp_page, &pages, lru)
- 		__free_pages(page, compound_order(page));
- 	kfree(buffer);
--
-+uncharge_gpucg:
-+	gpucg_uncharge(gpucg, gpucg_bucket, len);
-+put_gpucg:
-+	gpucg_put(gpucg);
- 	return ERR_PTR(ret);
- }
-=20
-diff --git a/include/linux/dma-buf.h b/include/linux/dma-buf.h
-index 2097760e8e95..8e7c55c830b3 100644
---- a/include/linux/dma-buf.h
-+++ b/include/linux/dma-buf.h
-@@ -13,6 +13,7 @@
- #ifndef __DMA_BUF_H__
- #define __DMA_BUF_H__
-=20
-+#include <linux/cgroup_gpu.h>
- #include <linux/iosys-map.h>
- #include <linux/file.h>
- #include <linux/err.h>
-@@ -303,7 +304,7 @@ struct dma_buf {
- 	/**
- 	 * @size:
- 	 *
--	 * Size of the buffer; invariant over the lifetime of the buffer.
-+	 * Size of the buffer in bytes; invariant over the lifetime of the buffer=
-.
- 	 */
- 	size_t size;
-=20
-@@ -453,6 +454,14 @@ struct dma_buf {
- 		struct dma_buf *dmabuf;
- 	} *sysfs_entry;
- #endif
-+
-+#ifdef CONFIG_CGROUP_GPU
-+	/** @gpucg: Pointer to the GPU cgroup this buffer currently belongs to. *=
-/
-+	struct gpucg *gpucg;
-+
-+	/* @gpucg_bucket: Pointer to the GPU cgroup bucket whence this buffer ori=
-ginates. */
-+	struct gpucg_bucket *gpucg_bucket;
-+#endif
- };
-=20
- /**
-@@ -526,13 +535,15 @@ struct dma_buf_attachment {
-=20
- /**
-  * struct dma_buf_export_info - holds information needed to export a dma_b=
-uf
-- * @exp_name:	name of the exporter - useful for debugging.
-- * @owner:	pointer to exporter module - used for refcounting kernel module
-- * @ops:	Attach allocator-defined dma buf ops to the new buffer
-- * @size:	Size of the buffer - invariant over the lifetime of the buffer
-- * @flags:	mode flags for the file
-- * @resv:	reservation-object, NULL to allocate default one
-- * @priv:	Attach private data of allocator to this buffer
-+ * @exp_name:		name of the exporter - useful for debugging.
-+ * @owner:		pointer to exporter module - used for refcounting kernel modul=
-e
-+ * @ops:		Attach allocator-defined dma buf ops to the new buffer
-+ * @size:		Size of the buffer in bytes - invariant over the lifetime of th=
-e buffer
-+ * @flags:		mode flags for the file
-+ * @resv:		reservation-object, NULL to allocate default one
-+ * @priv:		Attach private data of allocator to this buffer
-+ * @gpucg:		Pointer to GPU cgroup this buffer is charged to, or NULL if no=
-t charged
-+ * @gpucg_bucket:	Pointer to GPU cgroup bucket this buffer comes from, or =
-NULL if not charged
-  *
-  * This structure holds the information required to export the buffer. Use=
-d
-  * with dma_buf_export() only.
-@@ -545,6 +556,10 @@ struct dma_buf_export_info {
- 	int flags;
- 	struct dma_resv *resv;
- 	void *priv;
-+#ifdef CONFIG_CGROUP_GPU
-+	struct gpucg *gpucg;
-+	struct gpucg_bucket *gpucg_bucket;
-+#endif
- };
-=20
- /**
-@@ -630,4 +645,14 @@ int dma_buf_mmap(struct dma_buf *, struct vm_area_stru=
-ct *,
- 		 unsigned long);
- int dma_buf_vmap(struct dma_buf *dmabuf, struct iosys_map *map);
- void dma_buf_vunmap(struct dma_buf *dmabuf, struct iosys_map *map);
-+
-+#ifdef CONFIG_CGROUP_GPU
-+void dma_buf_exp_info_set_gpucg(struct dma_buf_export_info *exp_info,
-+				struct gpucg *gpucg,
-+				struct gpucg_bucket *gpucg_bucket);
-+#else/* CONFIG_CGROUP_GPU */
-+static inline void dma_buf_exp_info_set_gpucg(struct dma_buf_export_info *=
-exp_info,
-+					      struct gpucg *gpucg,
-+					      struct gpucg_bucket *gpucg_bucket) {}
-+#endif /* CONFIG_CGROUP_GPU */
- #endif /* __DMA_BUF_H__ */
-diff --git a/include/linux/dma-heap.h b/include/linux/dma-heap.h
-index 0c05561cad6e..6321e7636538 100644
---- a/include/linux/dma-heap.h
-+++ b/include/linux/dma-heap.h
-@@ -10,6 +10,7 @@
- #define _DMA_HEAPS_H
-=20
- #include <linux/cdev.h>
-+#include <linux/cgroup_gpu.h>
- #include <linux/types.h>
-=20
- struct dma_heap;
-@@ -59,6 +60,20 @@ void *dma_heap_get_drvdata(struct dma_heap *heap);
-  */
- const char *dma_heap_get_name(struct dma_heap *heap);
-=20
-+#ifdef CONFIG_CGROUP_GPU
-+/**
-+ * dma_heap_get_gpucg_bucket() - get a pointer to the struct gpucg_bucket =
-for the heap.
-+ * @heap: DMA-Heap to retrieve gpucg_bucket for
-+ *
-+ * Returns:
-+ * The gpucg_bucket struct for the heap.
-+ */
-+struct gpucg_bucket *dma_heap_get_gpucg_bucket(struct dma_heap *heap);
-+#else /* CONFIG_CGROUP_GPU */
-+static inline struct gpucg_bucket *dma_heap_get_gpucg_bucket(struct dma_he=
-ap *heap)
-+{ return NULL; }
-+#endif /* CONFIG_CGROUP_GPU */
-+
- /**
-  * dma_heap_add - adds a heap to dmabuf heaps
-  * @exp_info:		information needed to register this heap
---=20
-2.36.0.512.ge40c2bad7a-goog
-
+DQoNCj4gT24gTWF5IDEwLCAyMDIyLCBhdCA0OjA0IFBNLCBKb3NoIFBvaW1ib2V1ZiA8anBvaW1i
+b2VAa2VybmVsLm9yZz4gd3JvdGU6DQo+IA0KPiBPbiBUdWUsIE1heSAxMCwgMjAyMiBhdCAwNzo0
+NTo0OVBNICswMDAwLCBTb25nIExpdSB3cm90ZToNCj4+Pj4gQSBLTFAgdHJhbnNpdGlvbiBwcmVl
+bXB0IG5vdGlmaWVyIHdvdWxkIGhlbHAgdGhvc2UNCj4+Pj4ga2VybmVsIHRocmVhZHMgdHJhbnNp
+dGlvbiB0byB0aGUgbmV3IEtMUCB2ZXJzaW9uIGF0DQo+Pj4+IGFueSB0aW1lIHRoZXkgcmVzY2hl
+ZHVsZS4NCj4+PiANCj4+PiAuLi4gdW5sZXNzIGNvbmRfcmVzY2hlZCgpIGlzIGEgbm8tb3AgZHVl
+IHRvIENPTkZJR19QUkVFTVBUPw0KPj4gDQo+PiBCYXNlZCBvbiBteSB1bmRlcnN0YW5kaW5nIChh
+bmQgYSBmZXcgb3RoZXIgZm9sa3Mgd2UgY2hhdHRlZCB3aXRoKSwNCj4+IGEga2VybmVsIHRocmVh
+ZCBjYW4gbGVnYWxseSBydW4gZm9yIGV4dGVuZGVkIHRpbWUsIGFzIGxvbmcgYXMgaXQgDQo+PiBj
+YWxscyBjb25kX3Jlc2NoZWQoKSBhdCBhIHJlYXNvbmFibGUgZnJlcXVlbmN5LiBUaGVyZWZvcmUs
+IEkgDQo+PiB0aGluayB3ZSBzaG91bGQgYmUgYWJsZSB0byBwYXRjaCBzdWNoIHRocmVhZCBlYXNp
+bHksIHVubGVzcyBpdCANCj4+IGNhbGxzIGNvbmRfcmVzY2hlZCgpIHdpdGggYmVpbmctcGF0Y2hl
+ZCBmdW5jdGlvbiBpbiB0aGUgc3RhY2ssIA0KPj4gb2YgY291cnNlLg0KPiANCj4gQnV0IGFnYWlu
+LCB3aXRoIENPTkZJR19QUkVFTVBULCB0aGF0IGRvZXNuJ3Qgd29yay4NCj4gDQo+PiBPVE9ILCBQ
+ZXRyJ3MgbWluZHNldCBvZiBhbGxvd2luZyBtYW55IG1pbnV0ZXMgZm9yIHRoZSBwYXRjaCANCj4+
+IHRyYW5zaXRpb24gaXMgbmV3IHRvIG1lLiBJIG5lZWQgdG8gdGhpbmsgbW9yZSBhYm91dCBpdC4g
+DQo+PiBKb3NoLCB3aGF04oCZcyB5b3Ugb3BpbmlvbiBvbiB0aGlzPyBJSVVDLCBrcGF0Y2ggaXMg
+ZGVzaWduZWQgdG8gDQo+PiBvbmx5IHdhaXQgdXAgdG8gNjAgc2Vjb25kcyAobm8gb3B0aW9uIHRv
+IG92ZXJ3cml0ZSB0aGUgdGltZSkuIA0KPiANCj4gSSB3b3VsZG4ndCBiZSBuZWNlc3NhcmlseSBv
+cHBvc2VkIHRvIGNoYW5naW5nIHRoZSBrcGF0Y2ggdGltZW91dCB0bw0KPiBzb21ldGhpbmcgYmln
+Z2VyLCBvciBlbGltaW5hdGluZyBpdCBhbHRvZ2V0aGVyIGluIGZhdm9yIG9mIGEgV0FSTigpDQo+
+IGFmdGVyIHggbWludXRlcy4NCj4gDQo+Pj4+IEhvdyBtdWNoIGl0IHdpbGwgaGVscCBpcyBoYXJk
+IHRvIHByZWRpY3QsIGJ1dCBJIHNob3VsZA0KPj4+PiBiZSBhYmxlIHRvIGdldCByZXN1bHRzIGZy
+b20gYSBmYWlybHkgbGFyZ2Ugc2FtcGxlIHNpemUNCj4+Pj4gb2Ygc3lzdGVtcyB3aXRoaW4gYSBm
+ZXcgd2Vla3MgOikNCj4+PiANCj4+PiBBcyBQZXRlciBzYWlkLCBrZWVwIGluIG1pbmQgdGhhdCB3
+ZSB3aWxsIG5lZWQgdG8gZml4IG90aGVyIGNhc2VzIGJleW9uZA0KPj4+IEZhY2Vib29rLCBpLmUu
+LCBDT05GSUdfUFJFRU1QVCBjb21iaW5lZCB3aXRoIG5vbi14ODYgYXJjaGVzIHdoaWNoIGRvbid0
+DQo+Pj4gaGF2ZSBPUkMgc28gdGhleSBjYW4ndCByZWxpYWJseSB1bndpbmQgZnJvbSBhbiBJUlEu
+DQo+PiANCj4+IEkgdGhpbmsgbGl2ZXBhdGNoIHRyYW5zaXRpb24gbWF5IGZhaWwgaW4gZGlmZmVy
+ZW50IGNhc2VzLCBhbmQgd2UNCj4+IGRvbid0IG5lZWQgdG8gYWRkcmVzcyBhbGwgb2YgdGhlbSBp
+biBvbmUgc2hvb3QuIEZpeGluZyBzb21lIGNhc2VzDQo+PiBpcyBhbiBpbXByb3ZlbWVudCBhcyBs
+b25nIGFzIHdlIGRvbid0IHNsb3cgZG93biBvdGhlciBjYXNlcy4gSSANCj4+IHVuZGVyc3RhbmQg
+dGhhdCBhZGRpbmcgdGlueSBvdmVyaGVhZCB0byBfX2NvbmRfcmVzY2hlZCgpIG1heSBlbmQgDQo+
+PiB1cCBhcyBhIHZpc2libGUgcmVncmVzc2lvbi4gQnV0IG1heWJlIGFkZGluZyBpdCB0byANCj4+
+IHByZWVtcHRfc2NoZWR1bGVfY29tbW9uKCkgaXMgbGlnaHQgZW5vdWdoPw0KPj4gDQo+PiBEaWQg
+SSBtaXNzL21pc3VuZGVyc3RhbmQgc29tZXRoaW5nPw0KPiANCj4gSWYgaXQncyBhIHJlYWwgYnVn
+LCB3ZSBzaG91bGQgZml4IGl0IGV2ZXJ5d2hlcmUsIG5vdCBqdXN0IGZvciBGYWNlYm9vay4NCj4g
+T3RoZXJ3aXNlIENPTkZJR19QUkVFTVBUIGFuZC9vciBub24teDg2IGFyY2hlcyBiZWNvbWUgc2Vj
+b25kLWNsYXNzDQo+IGNpdGl6ZW5zLg0KDQpJIHRoaW5rICJpcyBpdCBhIHJlYWwgYnVnPyIgaXMg
+dGhlIHRvcCBxdWVzdGlvbiBmb3IgbWUuIFNvIG1heWJlIHdlIA0Kc2hvdWxkIHRha2UgYSBzdGVw
+IGJhY2suDQoNClRoZSBiZWhhdmlvciB3ZSBzZWUgaXM6IEEgYnVzeSBrZXJuZWwgdGhyZWFkIGJs
+b2NrcyBrbHAgdHJhbnNpdGlvbiANCmZvciBtb3JlIHRoYW4gYSBtaW51dGUuIEJ1dCB0aGUgdHJh
+bnNpdGlvbiBldmVudHVhbGx5IHN1Y2NlZWRlZCBhZnRlciANCjwgMTAgcmV0cmllcyBvbiBtb3N0
+IHN5c3RlbXMuIFRoZSBrZXJuZWwgdGhyZWFkIGlzIHdlbGwtYmVoYXZlZCwgYXMgDQppdCBjYWxs
+cyBjb25kX3Jlc2NoZWQoKSBhdCBhIHJlYXNvbmFibGUgZnJlcXVlbmN5LCBzbyB0aGlzIGlzIG5v
+dCBhIA0KZGVhZGxvY2suIA0KDQpJZiBJIHVuZGVyc3RhbmQgUGV0ciBjb3JyZWN0bHksIHRoaXMg
+YmVoYXZpb3IgaXMgZXhwZWN0ZWQsIGFuZCB0aHVzIA0KaXMgbm90IGEgYnVnIG9yIGlzc3VlIGZv
+ciB0aGUgbGl2ZXBhdGNoIHN1YnN5c3RlbS4gVGhpcyBpcyBkaWZmZXJlbnQNCnRvIG91ciBvcmln
+aW5hbCBleHBlY3RhdGlvbiwgYnV0IGlmIHRoaXMgaXMgd2hhdCB3ZSBhZ3JlZSBvbiwgd2UgDQp3
+aWxsIGxvb2sgaW50byB3YXlzIHRvIGluY29ycG9yYXRlIGxvbmcgd2FpdCB0aW1lIGZvciBwYXRj
+aCANCnRyYW5zaXRpb24gaW4gb3VyIGF1dG9tYXRpb25zLiANCg0KT1RPSCwgaWYgd2UgdGhpbmsg
+dGhpcyBpcyBhIHN1Ym9wdGltYWwgYmVoYXZpb3IgKG5vdCBuZWNlc3NhcmlseSBhIA0KYnVnLCBJ
+SVVDKSwgd2Ugc2hvdWxkIGNvbnNpZGVyIGltcHJvdmUgaXQuIEkgcGVyc29uYWxseSBkb27igJl0
+IHRoaW5rIA0Kc2hpcHBpbmcgYW4gaW1wcm92ZW1lbnQgdG8gb25lIGNvbmZpZ3VyYXRpb24gbWFr
+ZXMgb3RoZXIgY29uZmlndXJhdGlvbnMNCnNlY29uZC1jbGFzcyBjaXRpemVucy4gQW5kLCBpdCBp
+cyBwb3NzaWJsZSBQUkVFTVBUIGtlcm5lbCBkb2VzIE5PVA0KZXZlbiBoYXZlIHN1Y2ggc3Vib3B0
+aW1hbCBiZWhhdmlvciwgcmlnaHQ/IChJIHJlYWxseSBkb24ndCBrbm93LikNCg0KU28sIGlmIHdl
+IGNvbWUgYmFjayB0byB0aGUgc2FtZSBxdWVzdGlvbjogaXMgdGhpcyBhIGJ1ZyAob3IgYSBzdWJv
+cHRpbWFsDQpiZWhhdmlvciB0aGF0IHdvcnRoIGZpeGluZyk/IElmIHNvLCB3ZSBhcmUgb3BlbiB0
+byBhbnkgc29sdXRpb24gdGhhdCANCndvdWxkIGFsc28gaGVscCBQUkVFTVBUIGFuZC9vciBub24t
+eDg2IGFyY2hlcy4gDQoNCkxhc3RseSwgbWF5YmUgYSByZWFsbHkgbmFpdmUgcXVlc3Rpb246IGRv
+ZXMgdGhlIGZvbGxvd2luZyBhbHNvIGhlbHBzDQpQUkVFTVBUPXkgY29uZmlndXJhdGlvbnM/DQoN
+ClRoYW5rcywNClNvbmcNCg0KZGlmZiAtLWdpdCBjL2tlcm5lbC9zY2hlZC9jb3JlLmMgdy9rZXJu
+ZWwvc2NoZWQvY29yZS5jDQppbmRleCBhNzMwMmI3YjY1ZjIuLmNjOWIxYzljMDJiYSAxMDA2NDQN
+Ci0tLSBjL2tlcm5lbC9zY2hlZC9jb3JlLmMNCisrKyB3L2tlcm5lbC9zY2hlZC9jb3JlLmMNCkBA
+IC01MjI2LDYgKzUyMjYsOSBAQCB2b2lkIF9fc2NoZWQgc2NoZWR1bGVfcHJlZW1wdF9kaXNhYmxl
+ZCh2b2lkKQ0KDQogc3RhdGljIHZvaWQgX19zY2hlZCBub3RyYWNlIHByZWVtcHRfc2NoZWR1bGVf
+Y29tbW9uKHZvaWQpDQogew0KKyAgICAgICBpZiAodW5saWtlbHkoa2xwX3BhdGNoX3BlbmRpbmco
+Y3VycmVudCkpKQ0KKyAgICAgICAgICAgICAgIGtscF90cnlfc3dpdGNoX3Rhc2soY3VycmVudCk7
+DQorDQogICAgICAgIGRvIHsNCiAgICAgICAgICAgICAgICAvKg0KICAgICAgICAgICAgICAgICAq
+IEJlY2F1c2UgdGhlIGZ1bmN0aW9uIHRyYWNlciBjYW4gdHJhY2UgcHJlZW1wdF9jb3VudF9zdWIo
+KQ==
