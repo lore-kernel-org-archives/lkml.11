@@ -2,452 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DD0CC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 09:43:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1A76C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 09:43:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231691AbiEJJqx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 05:46:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54252 "EHLO
+        id S239102AbiEJJrT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 05:47:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232618AbiEJJqg (ORCPT
+        with ESMTP id S238957AbiEJJrN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 05:46:36 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E95D3DDF0;
-        Tue, 10 May 2022 02:42:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1652175759; x=1683711759;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=NuZ+ce14yWDCUZnk+5vM9M6pcF0vrXF4CGc7D2BC69A=;
-  b=xkRWqa8Lli84G7wXhVwoI49L2elEI7iRjy5Y7sel8VGhIGsxALdNV/Zc
-   6cc6sC8nRiVNLqYGPMdQQxQmuMKggcZScL9onJ2YgWxArmxPPcThyI2Xd
-   8MADwwVtrvDjOxfiWOBPRWzpXaUoRN94wPExgYtuFc74lVpmu9iRuBuC4
-   7o6U2HMK12vMiLzSUGitexTWDwcMgVW65dy/TjTDJF2ziRqvHvNuLcDy2
-   t1AJtg5IRRalmmKVMnESqDEQf1D79BN7KzXceynfLhJMKQxZ+3LAaf0cT
-   F55QH31jsndmWEBt2UK07GsMVWk8SApPj3GGM+C/DCjA9lfyzALlYTEvl
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
-   d="scan'208";a="155418771"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 May 2022 02:42:38 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 10 May 2022 02:42:38 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 10 May 2022 02:42:36 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <srinivas.kandagatla@linaro.org>, <robh+dt@kernel.org>,
-        <krzk+dt@kernel.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH 2/2] nvmem: microchip-otpc: add support
-Date:   Tue, 10 May 2022 12:44:57 +0300
-Message-ID: <20220510094457.4070764-3-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220510094457.4070764-1-claudiu.beznea@microchip.com>
-References: <20220510094457.4070764-1-claudiu.beznea@microchip.com>
+        Tue, 10 May 2022 05:47:13 -0400
+Received: from de-smtp-delivery-102.mimecast.com (de-smtp-delivery-102.mimecast.com [194.104.111.102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEE1180BF7
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 02:43:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
+        t=1652175793;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FHxDje3mVmNbbMwIxADuIEN4YVX05XVSwTuZP7Tjgu8=;
+        b=SEjAj5VUfBBBnMK7L7NdqUty03u0266DlHYEH6Nwb5iOFaPzsPpKvPAmHs/+i0mOjks/s6
+        IOQbdcUoT9s3z9aDPMPwsWirBRF7xMWxIlGLqp1RewEHMzzddOFkSbAd/L/1X/BdmM1JoD
+        NN2y3fvnL0oen2frbbsSaztf+dWvcTg=
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com
+ (mail-he1eur04lp2056.outbound.protection.outlook.com [104.47.13.56]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ de-mta-30-zxeNnP75OL-2nZsVhVbiTw-2; Tue, 10 May 2022 11:43:12 +0200
+X-MC-Unique: zxeNnP75OL-2nZsVhVbiTw-2
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lKUzOYvFG7Bwr7g8+yBG+sLHfYzyAYDZQv16k5CjjFD8/Pnr4zOrNAkSVUTnhRf4H0mrP1SwW5lsTHYxNscYtWTaEPPqCwYQ/UP2ZbeikfN1yXoVt5oCpRq1s0SZ0YRuuDTpY8IJdi+4iHvWI3yYL46PmiqeIef+hOWdxm4ObPIh1lqJoSaqzrmoTOECmKCP8GgtQoAWO87wjxVAJgVwqpb8moL8jCOi26Dg4eiPQdO0ScY/aGT1/qLtKu6DacPrnRXyJkiMTSfHVsipQYzNgTXSs6zzwLXzPNzUL46eNyY9cXNhbtWCODA2Mn24AOHpr/FKW6NQmSfG7mPy351J2Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FHxDje3mVmNbbMwIxADuIEN4YVX05XVSwTuZP7Tjgu8=;
+ b=QMFmthykpINJ07bXQpihDqWpM/UcPCWAJyydpP0oYdAipZjXa2sxr6DfQ46bwzd1E9ikcoR5RDTaU3F1zDChksbqlCpGA1Aa9v7fjIb1U+QymK4C40MFFxE+X/OZpQB8BoX+tPDFb7jM3Ie1tQv4ovRCWMbxS3a5qNZPeZTnswZe/MiIhH7D+NRWSPRpCxrDsc4Rnmx1A7IAE2msJ8VztT2Oml0DyJdRX0pc+U/fqM2KME+DCAKrajBLns+k7ry7dQrk/NxdyZnR1XcA2VwfES1iPTflMZD3i+E89/ITNIgF1uLVsbucPIzkeRrg2BPTmIsSAtZ3abO9kOSMjoQxzw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
+ dkim=pass header.d=suse.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=suse.com;
+Received: from AM5PR0402MB2785.eurprd04.prod.outlook.com
+ (2603:10a6:203:98::15) by PAXPR04MB8288.eurprd04.prod.outlook.com
+ (2603:10a6:102:1bc::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23; Tue, 10 May
+ 2022 09:43:09 +0000
+Received: from AM5PR0402MB2785.eurprd04.prod.outlook.com
+ ([fe80::11f4:192a:78c9:3943]) by AM5PR0402MB2785.eurprd04.prod.outlook.com
+ ([fe80::11f4:192a:78c9:3943%9]) with mapi id 15.20.5227.023; Tue, 10 May 2022
+ 09:43:09 +0000
+Message-ID: <55f4b515-1d1c-fd3e-0f93-4cda45261c91@suse.com>
+Date:   Tue, 10 May 2022 10:43:07 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: linux-next: manual merge of the folio tree with the btrfs tree
+Content-Language: en-US
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Matthew Wilcox <willy@infradead.org>,
+        David Sterba <dsterba@suse.cz>
+Cc:     David Sterba <dsterba@suse.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220510183908.7571cb73@canb.auug.org.au>
+From:   Filipe Manana <fdmanana@suse.com>
+In-Reply-To: <20220510183908.7571cb73@canb.auug.org.au>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: LO2P265CA0458.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:a2::14) To AM5PR0402MB2785.eurprd04.prod.outlook.com
+ (2603:10a6:203:98::15)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8b1d12dd-71cf-4b6c-b547-08da32697ddd
+X-MS-TrafficTypeDiagnostic: PAXPR04MB8288:EE_
+X-LD-Processed: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba,ExtFwd
+X-Microsoft-Antispam-PRVS: <PAXPR04MB82881127C6B31F3B0554EBBAABC99@PAXPR04MB8288.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: EQES0MjhGQwZnJq0A/475xRjNnnEZX/ePKoIPeJB9GC55572Gi5GCKq6swtAg0eV+wLuRzoniRug1u/va2o3/ughieQayorZKISUiwp3+5l3F6LoU9jCLdaEpOOwEYeJKq+Iwgy4hNL9/KiTC752h1k8JnGbC+Pc/ae9/OcxiiHqUjdUaQeiY3ZfBUomrEnUCXYyUndQU5med/nXvVUH+e5zLzZCHaWZmZjkBd73PbnXJk3/VcchfygQJfDAaiH5dnmxmEyZx0z0B5n1A+a3v/fTaTnOFO4U9Xa7YIF7wm+t7gTRoTuheYLdxP1qpmpGm3WxDTKtCBAMMOrCSToYDP8dzWBQgYdvDvuGSW/UB9BJ+y/PnJuLgYOlF6sExN9wPoVK2AjbUFA+8yuwT29HVGUGtin/OIW/uGzFtj4SEQ/jT3ME2yikk8KqdgIfC2z/K3Ho0IRJ8hCPUlgKP3brkwl3ae0+xoi4hrWAmzDReNwhZqhYzBrSV+gdo9yS6cIvYY/cFnnXn69apIjy32k/tH07sCjYIgI7EAyfsvKY9oGYNTsj33PzDLcH/KYIluJlp5BQF8ndF+FrNHUVne9Dm6bXT1mOpTkFLA4zlBq9Soz1j0Uua/EVgC/n7a+8DFlPDyZFk+JnaaxI53moEBYn1xNLlZlvD1DcC+d03X4cCKOWw11ej2rb6AU3yiiuuQkZaOKkypO6HmBaIZWSAlvlkTsMSgoenhrEyN2dhl56fb8=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM5PR0402MB2785.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(6512007)(66476007)(31696002)(86362001)(66556008)(8676002)(8936002)(4326008)(66946007)(53546011)(6506007)(508600001)(186003)(36756003)(2616005)(6486002)(2906002)(31686004)(4744005)(38100700002)(54906003)(110136005)(316002)(5660300002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Uks2VWhJMmV1WndkZ0ZsQlI5dUFUN0VmTGZYYjNvQ1IxVFlGdTBHRDBBekY0?=
+ =?utf-8?B?cERzVkh1SUE3ZHdyMGt5Zzh5citvRXlGQTZGOWlXVjRSRVp2RGt0QmZ6RUZz?=
+ =?utf-8?B?d2N5cnhCMUhqUmZxdFo4c2RtVGh0b01jUnRtUkZtOVk5T3JvSE9GSU52eWti?=
+ =?utf-8?B?OFphK2NjV0pxTllkR1UraFNRMEZUWUFpbWUybkF3Uit6WGk2SThmK1dHcFV1?=
+ =?utf-8?B?VzJXTnpIa3ZzaHI0Wm5yYytqZkM2OWJCSDRSckxLSjYxRWtOMU1EUnBHTTFK?=
+ =?utf-8?B?VnpoTE5uSzVST2oyWm5HQXFzUWhJQTRQYmhYZFNqS25VMTY0MDY1ZlRrU0ln?=
+ =?utf-8?B?N3BTQ09JdjByRGVRRFVYUk51UTVTMnhzaElCK0dIZ3VwRm1USjlzZHVjT3Nv?=
+ =?utf-8?B?aDlTYVJRK0tyU3hyNXNDQXhGakFZZFJzM3RmK05EcnBUR3BxVTAzZGhoNjg5?=
+ =?utf-8?B?RnFtRE9rNllBRmVaeDQ5ZmkyaXhPR2JOZWhkbFFZWkNOVVk3NHZmL0l0RDV1?=
+ =?utf-8?B?akcyUlNxdU1IYnhNQVNmS3lRRFMyM3dSdWE0Mk1lQjVIQks2TU9teFpZd3c0?=
+ =?utf-8?B?OHZhc29adlRmczRyaW9RU3FVTzBwSnJhOTQzbko2ZFRMQkdsRjVqOGdQMmRh?=
+ =?utf-8?B?MGtGRUNiaVpsWCt5WFkyRDlXS21XQUxBQmJTbG00MStnbURaL3hmMVZnSU1C?=
+ =?utf-8?B?aFpRVUhhd25oZC9Tb1RDNjFFcWRlMlh0OGpmSEVDWEVpdGlmc0ZYb1RDZUN0?=
+ =?utf-8?B?Mm81Ykp2WFV6UnJ2Y2kxUjk0QldjWStzd2NZM1BBRlR0MENXMnNydmhRVkNu?=
+ =?utf-8?B?WHVUZDJLSVU4ZmQ0bnRVMTRzc1VMWSs2QldNZ040WDFUYVk1UUk0VmVOdmp1?=
+ =?utf-8?B?TEpJdUlWMjZxZlhDRlFENmJRdnF6cnBheEtzMEx3MjVaZ0NlVUVVNkFPeFpt?=
+ =?utf-8?B?dmR0OElMbHlETkRLVXVlREdIL29VVkFwQXJWQXpva2gzUGFGOWw1KzAzcXNq?=
+ =?utf-8?B?UnJkQzBkRjdGMUdpdDBxOWRUL2gxem1MT0hCRnhEcnpuck00N3JEcFNEVUZl?=
+ =?utf-8?B?U1c2aUtweVZLR1pBQWpMcHltam9mS1p6ZFVWbERQUkdlcHFZbFJzazg5M01N?=
+ =?utf-8?B?bEpZR2dJNUNpRVlMNnYyMGFuckNGem5UVnZZN3RiL1p2VFNybXBZdWJ1Nm9z?=
+ =?utf-8?B?QUYyS2dFVXhxWlBLZXFBZy9WYXdXQmNFNkhSV1poeFVMS2tJTHdxRU5EbGl5?=
+ =?utf-8?B?SXNvVDY2WFFOeXZENWg2UnAwUythTi9jRkFYSGdvdXFyaFpEZm1wcTlaVFVz?=
+ =?utf-8?B?NDBjM1dlbzh1emNmZFB3dThiT25JMVBqOGl6Nm50dDhIYXA4WXpqN2Rod3pn?=
+ =?utf-8?B?MzFCaVJIYmdxS2YvdVRicGQrdGdhN05UQm9iSVNCUUxEVDZnWWdFWGE0aVFp?=
+ =?utf-8?B?eFpXZGFDblY1UVl1cDJGdVNOd2w1Z3FtZEE0V3Q4MEV2dmdncnZyeVN0cGpp?=
+ =?utf-8?B?RndhSGxXZzFUVEp1MHRnbWlnTkhWemE4bVVRUkRMK3poZS8rWEJGRmttSm5C?=
+ =?utf-8?B?MGllc0FxRVhnSlpNaysydTZDUi9xeUxBR1ZBQy8zU1F2eXJPZ05xSkpjNTZZ?=
+ =?utf-8?B?cEIzSXk2T0ZFclMyT1Q2NTNjZURyNEFzeTA0Mzcvcjg3dVAyUEc2dlA3Mk16?=
+ =?utf-8?B?RWVURnJTdTRFZXc2ekRVOEJpbG10YmdSOGtxUkFlZGFaNDJZaWxHVGVYMWlw?=
+ =?utf-8?B?N0pKRnM1YkJwN1hUQkdDVEEweGROeFBVNlhDR2gyV1ljYk1pdjRxd1F2ZEpE?=
+ =?utf-8?B?UkM5TmdJRzlRRXRlVjdoS1BlRmdsd3ozUk43d3d2L3h0bGM3S29kcCt4VVdG?=
+ =?utf-8?B?TjJMcUFlMVk2dVVmL1gzVElBaldlZkhPalVOc0hCaDFsdjRhQXRhcGlpajlu?=
+ =?utf-8?B?UTVNQTRMakNxMkREV2NkWGJ4YkZoRTBXOFJxWEtSUGZMSmZlMVdmRHhFZ3FV?=
+ =?utf-8?B?NWczWFNsQUVySmI1eGRwN0Zqd1pQb2pTa2FmVnhSUWZPWmMwWUl2aTVTUHlK?=
+ =?utf-8?B?Q3BFakVEN3dUYmRYQXFGVlpQbWxjUHFwUlZsanZXdGJUelRIWDVpcFJOOUN2?=
+ =?utf-8?B?Z0poOUMzWWdadVBZTkIvZklxUlN0bERKdy9LS2RxSTNuUjJuY2MzUE04ajhO?=
+ =?utf-8?B?ekZwZnBFRXUyQk1mMkhNSG5OL2lKN1A1N2FCNkE3NWJ1ZVFLeHVIWDZGeURk?=
+ =?utf-8?B?Q0FRQ2ZOeTNtR0laM1U4MjJUb2E2Z1lOUGI5cDRNL3E4ZmpKSmZtSzd3L3Fm?=
+ =?utf-8?B?OHJIRjgzZ3B0OGQxajVuckozeFhSdE1SY2grMk4zd2xWMnNMckhKOWV0Y0Va?=
+ =?utf-8?Q?xoH/gbDSVQAvJ5NnOEJjDY9lYaAfd6poDsHZLe4E42V4Y?=
+X-MS-Exchange-AntiSpam-MessageData-1: PFyZQ7c8AC6BDQ==
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8b1d12dd-71cf-4b6c-b547-08da32697ddd
+X-MS-Exchange-CrossTenant-AuthSource: AM5PR0402MB2785.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 09:43:09.2389
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 2xRMt84WMwHZsPAs6x0oZ/jrkJmyuZzrrAfKGvcXzof/urWdzJoMwC1Lgr4zy62HmGdhB5cSpV5CN3lxzIbi2Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8288
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for Microchip OTP controller available on SAMA7G5. The OTPC
-controls the access to a non-volatile memory. The memory behind OTPC is
-organized into packets, packets are composed by a fixed length header
-(4 bytes long) and a variable length payload (payload length is available
-in the header). When software request the data at an offset in memory
-the OTPC will return (via header + data registers) the whole packet that
-has a word at that offset. For a packet in OTP memory like below:
 
-offset  OTP Memory layout
 
-         .           .
-         .    ...    .
-         .           .
-0x0E     +-----------+	<--- packet X
-         | header  X |
-0x12     +-----------+
-         | payload X |
-0x16     |           |
-         |           |
-0x1A     |           |
-         +-----------+
-         .           .
-         .    ...    .
-         .           .
+On 10/05/22 09:39, Stephen Rothwell wrote:
+> Hi all,
+> 
+> Today's linux-next merge of the folio tree got a conflict in:
+> 
+>   fs/btrfs/send.c
+> 
+> between commit:
+> 
+>   d1a1a97304b4 ("btrfs: send: keep the current inode open while processing it")
+> 
+> from the btrfs tree and commit:
+> 
+>   2ebdd1df3166 ("mm/readahead: Convert page_cache_async_readahead to take a folio")
+> 
+> from the folio tree.
+> 
+> I fixed it up (I think - see below) and can carry the fix as
 
-if user requests data at address 0x16 the data started at 0x0E will be
-returned by controller. User will be able to fetch the whole packet
-starting at 0x0E (or parts of the packet) via proper registers. The same
-packet will be returned if software request the data at offset 0x0E or
-0x12 or 0x1A.
+Looks correct to me.
+Thanks.
 
-The OTP will be populated by Microchip with at least 2 packets first one
-being boot configuration packet and the 2nd one being temperature
-calibration packet. The packet order will be preserved b/w different chip
-revisions but the packet sizes may change.
-
-For the above reasons and to keep the same software able to work on all
-chip variants the read function of the driver is working with a packet
-id instead of an offset in OTP memory.
-
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
----
- MAINTAINERS                    |   8 +
- drivers/nvmem/Kconfig          |   7 +
- drivers/nvmem/Makefile         |   2 +
- drivers/nvmem/microchip-otpc.c | 288 +++++++++++++++++++++++++++++++++
- 4 files changed, 305 insertions(+)
- create mode 100644 drivers/nvmem/microchip-otpc.c
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 1bf57fd937b5..f4b646a801ff 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12953,6 +12953,14 @@ S:	Supported
- F:	Documentation/devicetree/bindings/mtd/atmel-nand.txt
- F:	drivers/mtd/nand/raw/atmel/*
- 
-+MICROCHIP OTPC DRIVER
-+M:	Claudiu Beznea <claudiu.beznea@microchip.com>
-+L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
-+S:	Supported
-+F:	Documentation/devicetree/bindings/nvmem/microchip-otpc.yaml
-+F:	drivers/nvmem/microchip-otpc.c
-+F:	dt-bindings/nvmem/microchip,otpc.h
-+
- MICROCHIP PWM DRIVER
- M:	Claudiu Beznea <claudiu.beznea@microchip.com>
- L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
-diff --git a/drivers/nvmem/Kconfig b/drivers/nvmem/Kconfig
-index 967d0084800e..d72d879a6d34 100644
---- a/drivers/nvmem/Kconfig
-+++ b/drivers/nvmem/Kconfig
-@@ -107,6 +107,13 @@ config MTK_EFUSE
- 	  This driver can also be built as a module. If so, the module
- 	  will be called efuse-mtk.
- 
-+config MICROCHIP_OTPC
-+	tristate "Microchip OTPC support"
-+	depends on ARCH_AT91 || COMPILE_TEST
-+	help
-+	  This driver enable the OTP controller available on Microchip SAMA7G5
-+	  SoCs. It controlls the access to the OTP memory connected to it.
-+
- config NVMEM_NINTENDO_OTP
- 	tristate "Nintendo Wii and Wii U OTP Support"
- 	depends on WII || COMPILE_TEST
-diff --git a/drivers/nvmem/Makefile b/drivers/nvmem/Makefile
-index 00e136a0a123..c710b64f9fe4 100644
---- a/drivers/nvmem/Makefile
-+++ b/drivers/nvmem/Makefile
-@@ -67,3 +67,5 @@ obj-$(CONFIG_NVMEM_SUNPLUS_OCOTP)	+= nvmem_sunplus_ocotp.o
- nvmem_sunplus_ocotp-y		:= sunplus-ocotp.o
- obj-$(CONFIG_NVMEM_APPLE_EFUSES)	+= nvmem-apple-efuses.o
- nvmem-apple-efuses-y 		:= apple-efuses.o
-+obj-$(CONFIG_MICROCHIP_OTPC)	+= nvmem-microchip-otpc.o
-+nvmem-microchip-otpc-y		:= microchip-otpc.o
-diff --git a/drivers/nvmem/microchip-otpc.c b/drivers/nvmem/microchip-otpc.c
-new file mode 100644
-index 000000000000..5c5ac1bca074
---- /dev/null
-+++ b/drivers/nvmem/microchip-otpc.c
-@@ -0,0 +1,288 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * OTP Memory controller
-+ *
-+ * Copyright (C) 2022 Microchip Technology Inc. and its subsidiaries
-+ *
-+ * Author: Claudiu Beznea <claudiu.beznea@microchip.com>
-+ */
-+
-+#include <linux/bitfield.h>
-+#include <linux/iopoll.h>
-+#include <linux/module.h>
-+#include <linux/nvmem-provider.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+
-+#define MCHP_OTPC_CR			(0x0)
-+#define MCHP_OTPC_CR_READ		BIT(6)
-+#define MCHP_OTPC_MR			(0x4)
-+#define MCHP_OTPC_MR_ADDR		GENMASK(31, 16)
-+#define MCHP_OTPC_AR			(0x8)
-+#define MCHP_OTPC_SR			(0xc)
-+#define MCHP_OTPC_SR_READ		BIT(6)
-+#define MCHP_OTPC_HR			(0x20)
-+#define MCHP_OTPC_HR_SIZE		GENMASK(15, 8)
-+#define MCHP_OTPC_DR			(0x24)
-+
-+#define MCHP_OTPC_NAME			"mchp-otpc"
-+#define MCHP_OTPC_SIZE			(11 * 1024)
-+
-+/**
-+ * struct mchp_otpc - OTPC private data structure
-+ * @base: base address
-+ * @dev: struct device pointer
-+ * @packets: list of packets in OTP memory
-+ * @npackets: number of packets in OTP memory
-+ */
-+struct mchp_otpc {
-+	void __iomem *base;
-+	struct device *dev;
-+	struct list_head packets;
-+	u32 npackets;
-+};
-+
-+/**
-+ * struct mchp_otpc_packet - OTPC packet data structure
-+ * @list: list head
-+ * @id: packet ID
-+ * @offset: packet offset (in words) in OTP memory
-+ */
-+struct mchp_otpc_packet {
-+	struct list_head list;
-+	u32 id;
-+	u32 offset;
-+};
-+
-+static struct mchp_otpc_packet *mchp_otpc_id_to_packet(struct mchp_otpc *otpc,
-+						       u32 id)
-+{
-+	struct mchp_otpc_packet *packet;
-+
-+	if (id >= otpc->npackets)
-+		return NULL;
-+
-+	list_for_each_entry(packet, &otpc->packets, list) {
-+		if (packet->id == id)
-+			return packet;
-+	}
-+
-+	return NULL;
-+}
-+
-+static int mchp_otpc_prepare_read(struct mchp_otpc *otpc,
-+				  unsigned int offset)
-+{
-+	u32 tmp;
-+
-+	/* Set address. */
-+	tmp = readl_relaxed(otpc->base + MCHP_OTPC_MR);
-+	tmp &= ~MCHP_OTPC_MR_ADDR;
-+	tmp |= FIELD_PREP(MCHP_OTPC_MR_ADDR, offset);
-+	writel_relaxed(tmp, otpc->base + MCHP_OTPC_MR);
-+
-+	/* Set read. */
-+	tmp = readl_relaxed(otpc->base + MCHP_OTPC_CR);
-+	tmp |= MCHP_OTPC_CR_READ;
-+	writel_relaxed(tmp, otpc->base + MCHP_OTPC_CR);
-+
-+	/* Wait for packet to be transferred into temporary buffers. */
-+	return read_poll_timeout(readl_relaxed, tmp, !(tmp & MCHP_OTPC_SR_READ),
-+				 10000, 2000, false, otpc->base + MCHP_OTPC_SR);
-+}
-+
-+/*
-+ * OTPC memory is organized into packets. Each packets contains a header and
-+ * a payload. Header is 4 bytes long and contains the size of the payload.
-+ * Payload size varies. The memory footprint is something as follows:
-+ *
-+ * Memory offset  Memory footprint     Packet ID
-+ * -------------  ----------------     ---------
-+ *
-+ * 0x0            +------------+   <-- packet 0
-+ *                | header  0  |
-+ * 0x4            +------------+
-+ *                | payload 0  |
-+ *                .            .
-+ *                .    ...     .
-+ *                .            .
-+ * offset1        +------------+   <-- packet 1
-+ *                | header  1  |
-+ * offset1 + 0x4  +------------+
-+ *                | payload 1  |
-+ *                .            .
-+ *                .    ...     .
-+ *                .            .
-+ * offset2        +------------+   <-- packet 2
-+ *                .            .
-+ *                .    ...     .
-+ *                .            .
-+ * offsetN        +------------+   <-- packet N
-+ *                | header  N  |
-+ * offsetN + 0x4  +------------+
-+ *                | payload N  |
-+ *                .            .
-+ *                .    ...     .
-+ *                .            .
-+ *                +------------+
-+ *
-+ * where offset1, offset2, offsetN depends on the size of payload 0, payload 1,
-+ * payload N-1.
-+ *
-+ * The access to memory is done on a per packet basis: the control registers
-+ * need to be updated with an offset address (within a packet range) and the
-+ * data registers will be update by controller with information contained by
-+ * that packet. E.g. if control registers are updated with any address within
-+ * the range [offset1, offset2) the data registers are updated by controller
-+ * with packet 1. Header data is accessible though MCHP_OTPC_HR register.
-+ * Payload data is accessible though MCHP_OTPC_DR and MCHP_OTPC_AR registers.
-+ * There is no direct mapping b/w the offset requested by software and the
-+ * offset returned by hardware.
-+ *
-+ * For this, the read function will return the first requested bytes in the
-+ * packet. The user will have to be aware of the memory footprint before doing
-+ * the read request.
-+ */
-+static int mchp_otpc_read(void *priv, unsigned int off, void *val,
-+			  size_t bytes)
-+{
-+	struct mchp_otpc *otpc = priv;
-+	struct mchp_otpc_packet *packet;
-+	u32 *buf = val;
-+	u32 offset;
-+	size_t len = 0;
-+	int ret, payload_size;
-+
-+	/*
-+	 * We reach this point with off being multiple of stride = 4 to
-+	 * be able to cross the subsystem. Inside the driver we use continuous
-+	 * unsigned integer numbers for packet id, thus devide off by 4
-+	 * before passing it to mchp_otpc_id_to_packet().
-+	 */
-+	packet = mchp_otpc_id_to_packet(otpc, off / 4);
-+	if (!packet)
-+		return -EINVAL;
-+	offset = packet->offset;
-+
-+	while (len < bytes) {
-+		ret = mchp_otpc_prepare_read(otpc, offset);
-+		if (ret)
-+			return ret;
-+
-+		/* Read and save header content. */
-+		*buf++ = readl_relaxed(otpc->base + MCHP_OTPC_HR);
-+		len += sizeof(*buf);
-+		offset++;
-+		if (len >= bytes)
-+			break;
-+
-+		/* Read and save payload content. */
-+		payload_size = FIELD_GET(MCHP_OTPC_HR_SIZE, *(buf - 1));
-+		writel_relaxed(0UL, otpc->base + MCHP_OTPC_AR);
-+		do {
-+			*buf++ = readl_relaxed(otpc->base + MCHP_OTPC_DR);
-+			len += sizeof(*buf);
-+			offset++;
-+			payload_size--;
-+		} while (payload_size >= 0 && len < bytes);
-+	}
-+
-+	return 0;
-+}
-+
-+static int mchp_otpc_init_packets_list(struct mchp_otpc *otpc, u32 *size)
-+{
-+	struct mchp_otpc_packet *packet;
-+	u32 word, word_pos = 0, id = 0, npackets = 0, payload_size;
-+	int ret;
-+
-+	INIT_LIST_HEAD(&otpc->packets);
-+	*size = 0;
-+
-+	while (*size < MCHP_OTPC_SIZE) {
-+		ret = mchp_otpc_prepare_read(otpc, word_pos);
-+		if (ret)
-+			return ret;
-+
-+		word = readl_relaxed(otpc->base + MCHP_OTPC_HR);
-+		payload_size = FIELD_GET(MCHP_OTPC_HR_SIZE, word);
-+		if (!payload_size)
-+			break;
-+
-+		packet = devm_kzalloc(otpc->dev, sizeof(*packet), GFP_KERNEL);
-+		if (!packet)
-+			return -ENOMEM;
-+
-+		packet->id = id++;
-+		packet->offset = word_pos;
-+		INIT_LIST_HEAD(&packet->list);
-+		list_add_tail(&packet->list, &otpc->packets);
-+
-+		/* Count size by adding header and paload sizes. */
-+		*size += 4 * (payload_size + 1);
-+		/* Next word: this packet (header, payload) position + 1. */
-+		word_pos += payload_size + 2;
-+
-+		npackets++;
-+	}
-+
-+	otpc->npackets = npackets;
-+
-+	return 0;
-+}
-+
-+static struct nvmem_config mchp_nvmem_config = {
-+	.name = MCHP_OTPC_NAME,
-+	.type = NVMEM_TYPE_OTP,
-+	.read_only = true,
-+	.word_size = 4,
-+	.stride = 4,
-+	.reg_read = mchp_otpc_read,
-+};
-+
-+static int mchp_otpc_probe(struct platform_device *pdev)
-+{
-+	struct nvmem_device *nvmem;
-+	struct mchp_otpc *otpc;
-+	u32 size;
-+	int ret;
-+
-+	otpc = devm_kzalloc(&pdev->dev, sizeof(*otpc), GFP_KERNEL);
-+	if (!otpc)
-+		return -ENOMEM;
-+
-+	otpc->base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(otpc->base))
-+		return PTR_ERR(otpc->base);
-+
-+	otpc->dev = &pdev->dev;
-+	ret = mchp_otpc_init_packets_list(otpc, &size);
-+	if (ret)
-+		return ret;
-+
-+	mchp_nvmem_config.dev = otpc->dev;
-+	mchp_nvmem_config.size = size;
-+	mchp_nvmem_config.priv = otpc;
-+	nvmem = devm_nvmem_register(&pdev->dev, &mchp_nvmem_config);
-+
-+	return PTR_ERR_OR_ZERO(nvmem);
-+}
-+
-+static const struct of_device_id mchp_otpc_ids[] = {
-+	{ .compatible = "microchip,sama7g5-otpc", },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, mchp_otpc_ids);
-+
-+static struct platform_driver mchp_otpc_driver = {
-+	.probe = mchp_otpc_probe,
-+	.driver = {
-+		.name = MCHP_OTPC_NAME,
-+		.of_match_table = of_match_ptr(mchp_otpc_ids),
-+	},
-+};
-+module_platform_driver(mchp_otpc_driver);
-+
-+MODULE_AUTHOR("Claudiu Beznea <claudiu.beznea@microchip.com>");
-+MODULE_DESCRIPTION("Microchip SAMA7G5 OTPC driver");
-+MODULE_LICENSE("GPL");
--- 
-2.34.1
+> necessary. This is now fixed as far as linux-next is concerned, but any
+> non trivial conflicts should be mentioned to your upstream maintainer
+> when your tree is submitted for merging.  You may also want to consider
+> cooperating with the maintainer of the conflicting tree to minimise any
+> particularly complex conflicts.
+> 
 
