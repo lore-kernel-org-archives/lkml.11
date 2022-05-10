@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8407BC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:58:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07E72C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:59:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242721AbiEJOCv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:02:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44228 "EHLO
+        id S232613AbiEJODE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:03:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244674AbiEJNh4 (ORCPT
+        with ESMTP id S244532AbiEJNhs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:37:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70A19517DE;
-        Tue, 10 May 2022 06:26:06 -0700 (PDT)
+        Tue, 10 May 2022 09:37:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80B2EB7F3;
+        Tue, 10 May 2022 06:25:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 40722B81DAB;
-        Tue, 10 May 2022 13:26:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D263C385A6;
-        Tue, 10 May 2022 13:26:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 193626170D;
+        Tue, 10 May 2022 13:25:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25939C385C2;
+        Tue, 10 May 2022 13:25:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189163;
-        bh=BEL/QK5o7Uyv5QUi+azeEgIO671K4UQlx+HYxKtUE/8=;
+        s=korg; t=1652189150;
+        bh=+s4ngMBxOytcXovP8uK7iv8qXRfC12Uas4BGp8mGNzo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mtaBTK6F4lz8dyUMk4g4lT+gMSp6yXw7Je55w8bwMypGgo3XBGIvd4RdLcKIJT1Hj
-         ICaFFieewJiWYciNXFHJzPksbS0wr2s2SYojwCqdRbKon9mQmOl4ypajLn+U+IuSy7
-         y06yRxKwQgVPcT3qMH36d5ZRmDdxTI1lm+jwqrrw=
+        b=T2HJx0xX9egFxW9YnCqESd3/G06r9CbPZLQFIUwt10UT5/X8je7L5FqpDR4A6cmnG
+         Fp+B+9tcROPMkyomCkMcALPkU6gBXE36SDoE3jjIcJqL9ObZwwfT9rLsCEza7iLZA2
+         xn2FSHsDz4/mb87LnguID1ZlGU8fZ9uquRLa4cLA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 5.10 33/70] NFC: netlink: fix sleep in atomic bug when firmware download timeout
-Date:   Tue, 10 May 2022 15:07:52 +0200
-Message-Id: <20220510130733.836404045@linuxfoundation.org>
+        stable@vger.kernel.org, Kyle Huey <me@kylehuey.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.10 08/70] KVM: x86/svm: Account for family 17h event renumberings in amd_pmc_perf_hw_id
+Date:   Tue, 10 May 2022 15:07:27 +0200
+Message-Id: <20220510130733.107273459@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
 References: <20220510130732.861729621@linuxfoundation.org>
@@ -49,65 +48,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Kyle Huey <me@kylehuey.com>
 
-commit 4071bf121d59944d5cd2238de0642f3d7995a997 upstream.
+commit 5eb849322d7f7ae9d5c587c7bc3b4f7c6872cd2f upstream.
 
-There are sleep in atomic bug that could cause kernel panic during
-firmware download process. The root cause is that nlmsg_new with
-GFP_KERNEL parameter is called in fw_dnld_timeout which is a timer
-handler. The call trace is shown below:
+Zen renumbered some of the performance counters that correspond to the
+well known events in perf_hw_id. This code in KVM was never updated for
+that, so guest that attempt to use counters on Zen that correspond to the
+pre-Zen perf_hw_id values will silently receive the wrong values.
 
-BUG: sleeping function called from invalid context at include/linux/sched/mm.h:265
-Call Trace:
-kmem_cache_alloc_node
-__alloc_skb
-nfc_genl_fw_download_done
-call_timer_fn
-__run_timers.part.0
-run_timer_softirq
-__do_softirq
-...
+This has been observed in the wild with rr[0] when running in Zen 3
+guests. rr uses the retired conditional branch counter 00d1 which is
+incorrectly recognized by KVM as PERF_COUNT_HW_STALLED_CYCLES_BACKEND.
 
-The nlmsg_new with GFP_KERNEL parameter may sleep during memory
-allocation process, and the timer handler is run as the result of
-a "software interrupt" that should not call any other function
-that could sleep.
+[0] https://rr-project.org/
 
-This patch changes allocation mode of netlink message from GFP_KERNEL
-to GFP_ATOMIC in order to prevent sleep in atomic bug. The GFP_ATOMIC
-flag makes memory allocation operation could be used in atomic context.
-
-Fixes: 9674da8759df ("NFC: Add firmware upload netlink command")
-Fixes: 9ea7187c53f6 ("NFC: netlink: Rename CMD_FW_UPLOAD to CMD_FW_DOWNLOAD")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220504055847.38026-1-duoming@zju.edu.cn
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Kyle Huey <me@kylehuey.com>
+Message-Id: <20220503050136.86298-1-khuey@kylehuey.com>
+Cc: stable@vger.kernel.org
+[Check guest family, not host. - Paolo]
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/nfc/netlink.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/x86/kvm/svm/pmu.c |   28 +++++++++++++++++++++++++---
+ 1 file changed, 25 insertions(+), 3 deletions(-)
 
---- a/net/nfc/netlink.c
-+++ b/net/nfc/netlink.c
-@@ -1244,7 +1244,7 @@ int nfc_genl_fw_download_done(struct nfc
- 	struct sk_buff *msg;
- 	void *hdr;
+--- a/arch/x86/kvm/svm/pmu.c
++++ b/arch/x86/kvm/svm/pmu.c
+@@ -44,6 +44,22 @@ static struct kvm_event_hw_type_mapping
+ 	[7] = { 0xd1, 0x00, PERF_COUNT_HW_STALLED_CYCLES_BACKEND },
+ };
  
--	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
-+	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_ATOMIC);
- 	if (!msg)
- 		return -ENOMEM;
++/* duplicated from amd_f17h_perfmon_event_map. */
++static struct kvm_event_hw_type_mapping amd_f17h_event_mapping[] = {
++	[0] = { 0x76, 0x00, PERF_COUNT_HW_CPU_CYCLES },
++	[1] = { 0xc0, 0x00, PERF_COUNT_HW_INSTRUCTIONS },
++	[2] = { 0x60, 0xff, PERF_COUNT_HW_CACHE_REFERENCES },
++	[3] = { 0x64, 0x09, PERF_COUNT_HW_CACHE_MISSES },
++	[4] = { 0xc2, 0x00, PERF_COUNT_HW_BRANCH_INSTRUCTIONS },
++	[5] = { 0xc3, 0x00, PERF_COUNT_HW_BRANCH_MISSES },
++	[6] = { 0x87, 0x02, PERF_COUNT_HW_STALLED_CYCLES_FRONTEND },
++	[7] = { 0x87, 0x01, PERF_COUNT_HW_STALLED_CYCLES_BACKEND },
++};
++
++/* amd_pmc_perf_hw_id depends on these being the same size */
++static_assert(ARRAY_SIZE(amd_event_mapping) ==
++	     ARRAY_SIZE(amd_f17h_event_mapping));
++
+ static unsigned int get_msr_base(struct kvm_pmu *pmu, enum pmu_type type)
+ {
+ 	struct kvm_vcpu *vcpu = pmu_to_vcpu(pmu);
+@@ -128,19 +144,25 @@ static inline struct kvm_pmc *get_gp_pmc
  
-@@ -1260,7 +1260,7 @@ int nfc_genl_fw_download_done(struct nfc
+ static unsigned int amd_pmc_perf_hw_id(struct kvm_pmc *pmc)
+ {
++	struct kvm_event_hw_type_mapping *event_mapping;
+ 	u8 event_select = pmc->eventsel & ARCH_PERFMON_EVENTSEL_EVENT;
+ 	u8 unit_mask = (pmc->eventsel & ARCH_PERFMON_EVENTSEL_UMASK) >> 8;
+ 	int i;
  
- 	genlmsg_end(msg, hdr);
++	if (guest_cpuid_family(pmc->vcpu) >= 0x17)
++		event_mapping = amd_f17h_event_mapping;
++	else
++		event_mapping = amd_event_mapping;
++
+ 	for (i = 0; i < ARRAY_SIZE(amd_event_mapping); i++)
+-		if (amd_event_mapping[i].eventsel == event_select
+-		    && amd_event_mapping[i].unit_mask == unit_mask)
++		if (event_mapping[i].eventsel == event_select
++		    && event_mapping[i].unit_mask == unit_mask)
+ 			break;
  
--	genlmsg_multicast(&nfc_genl_family, msg, 0, 0, GFP_KERNEL);
-+	genlmsg_multicast(&nfc_genl_family, msg, 0, 0, GFP_ATOMIC);
+ 	if (i == ARRAY_SIZE(amd_event_mapping))
+ 		return PERF_COUNT_HW_MAX;
  
- 	return 0;
+-	return amd_event_mapping[i].event_type;
++	return event_mapping[i].event_type;
+ }
  
+ /* return PERF_COUNT_HW_MAX as AMD doesn't have fixed events */
 
 
