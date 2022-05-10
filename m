@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A9CAC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:23:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC79AC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:23:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243190AbiEJN02 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:26:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59628 "EHLO
+        id S243147AbiEJN0E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:26:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243560AbiEJNWE (ORCPT
+        with ESMTP id S243510AbiEJNWA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:22:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ECCA53A44;
-        Tue, 10 May 2022 06:16:20 -0700 (PDT)
+        Tue, 10 May 2022 09:22:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29C91517CB;
+        Tue, 10 May 2022 06:16:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47C65B81DA3;
-        Tue, 10 May 2022 13:16:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DCD2C385A6;
-        Tue, 10 May 2022 13:16:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C5D16166C;
+        Tue, 10 May 2022 13:16:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C827C385A6;
+        Tue, 10 May 2022 13:16:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188576;
-        bh=JJe8sEvxS5e9xUkxokihEGFI8ATuPtWVWFYdW0GQdmI=;
+        s=korg; t=1652188572;
+        bh=SkicZJaon+6r860YY3xSembF7T/c32xtoZ769rYVxNU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tMRrb0d1sEUFRA2c4bvzVkRGuxfwxmAiFSHYXdoy+YR+LOHTTBmgJGMPgrJ7Twxuo
-         vPJEEjpx+/GG1lk0Pf4XWRQZ6dOUvnX/NF+9qkWrMZ4icaTZqp9D0fcF6dhO2XrVic
-         jd0+YVmK9+Ilu9WCEl+6bT4g6428c/UMQwIpfykU=
+        b=ZWVuQKDwkLH8lU3MYgqYcKyxir/ixrVwmA7hE65AD90U3Ov3/nNDyAFQVGu8bHn0Q
+         6CrN4NKMEIvVNIctgjULRSoY6nDmNuU79ptOLGqjSLPtDksrmtEvWfq5PrBxcJJMR8
+         O2Ju7/hzXQKxvBVn3bn3Ce1+p3OQ2RkFIv7eT4dM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 4.14 52/78] tty: n_gsm: fix incorrect UA handling
-Date:   Tue, 10 May 2022 15:07:38 +0200
-Message-Id: <20220510130734.079029094@linuxfoundation.org>
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 34/78] pinctrl: pistachio: fix use of irq_of_parse_and_map()
+Date:   Tue, 10 May 2022 15:07:20 +0200
+Message-Id: <20220510130733.545079332@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
 References: <20220510130732.522479698@linuxfoundation.org>
@@ -47,38 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-commit ff9166c623704337bd6fe66fce2838d9768a6634 upstream.
+[ Upstream commit 0c9843a74a85224a89daa81fa66891dae2f930e1 ]
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.4.4.2 states that any received unnumbered
-acknowledgment (UA) with its poll/final (PF) bit set to 0 shall be
-discarded. Currently, all UA frame are handled in the same way regardless
-of the PF bit. This does not comply with the standard.
-Remove the UA case in gsm_queue() to process only UA frames with PF bit set
-to 1 to abide the standard.
+The irq_of_parse_and_map() function returns 0 on failure, and does not
+return an negative value.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220414094225.4527-20-daniel.starke@siemens.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: cefc03e5995e ("pinctrl: Add Pistachio SoC pin control driver")
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Link: https://lore.kernel.org/r/20220424031430.3170759-1-lv.ruyi@zte.com.cn
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c |    1 -
- 1 file changed, 1 deletion(-)
+ drivers/pinctrl/pinctrl-pistachio.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1825,7 +1825,6 @@ static void gsm_queue(struct gsm_mux *gs
- 		gsm_response(gsm, address, UA);
- 		gsm_dlci_close(dlci);
- 		break;
--	case UA:
- 	case UA|PF:
- 		if (cr == 0 || dlci == NULL)
- 			break;
+diff --git a/drivers/pinctrl/pinctrl-pistachio.c b/drivers/pinctrl/pinctrl-pistachio.c
+index b2b7e238bda9..fc8c57527fb7 100644
+--- a/drivers/pinctrl/pinctrl-pistachio.c
++++ b/drivers/pinctrl/pinctrl-pistachio.c
+@@ -1374,10 +1374,10 @@ static int pistachio_gpio_register(struct pistachio_pinctrl *pctl)
+ 		}
+ 
+ 		irq = irq_of_parse_and_map(child, 0);
+-		if (irq < 0) {
+-			dev_err(pctl->dev, "No IRQ for bank %u: %d\n", i, irq);
++		if (!irq) {
++			dev_err(pctl->dev, "No IRQ for bank %u\n", i);
+ 			of_node_put(child);
+-			ret = irq;
++			ret = -EINVAL;
+ 			goto err;
+ 		}
+ 
+-- 
+2.35.1
+
 
 
