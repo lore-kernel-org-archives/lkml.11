@@ -2,100 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D300DC388F3
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:48:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EECBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:48:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241152AbiEJNwi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:52:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44224 "EHLO
+        id S243389AbiEJNwp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:52:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243328AbiEJNfi (ORCPT
+        with ESMTP id S243730AbiEJNgF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:35:38 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5D50C2BFBDA
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 06:24:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652189090;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qrQk331dY+acOKtsHio4tuTM5tl4Z2AS4qgsAPiJY2U=;
-        b=ZMYUhcFxH76k9VKPpFikqzFnp14g0x0uRua7+Ua9L+euwb+gKfZTtwWXzG/Hqs3EFSvpQ6
-        Da6ACRYguzluNX2Tgyx7G8tp2fJ+pRlklrnZyNlPQix8/zS2rG3t7A3ehsBgFY97+bd3Rw
-        HDS9DW5WxYWvuAzBi+8xrqBG2BJZ0i4=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-380-XFKYWjobP5SVRh-tdpdSeA-1; Tue, 10 May 2022 09:24:49 -0400
-X-MC-Unique: XFKYWjobP5SVRh-tdpdSeA-1
-Received: by mail-wr1-f71.google.com with SMTP id s16-20020adfeb10000000b0020cc4e5e683so2729990wrn.6
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 06:24:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=qrQk331dY+acOKtsHio4tuTM5tl4Z2AS4qgsAPiJY2U=;
-        b=iHfhcvUsTYVPmMjBb5Nl1ZGhzIOV42NKCRevAk6B/CgcGncamejQf1jfMG1KBSYFpu
-         3bD3JsOXWdI6k6oKzj3jmMSz1OLxsz7TApN3JXKJy7nsj6LDrobV81bcfjuSF1TBKWcF
-         mboBBhhkwU/lhaQMRcfld+rDxg/Ia72vikUkn8kuD0TiU0LXSZnO6/qbxjHLsyc5kgLJ
-         d3ta2JKsxh2B/fdZobhf6CutW0FWuywI2NyGX7IYo4FKxkGKupMBtTWsZ/3OinCj3auK
-         igGY00EsRxvq/O3cC3aYaJwsFKD/Ik3cfXQztJ80YchBe/ljib7mr75APvBjuQ2OQzFj
-         Ztxg==
-X-Gm-Message-State: AOAM530mQbdx47oJT8rUDijeKbCdle5QtMnsDxnMA1pg6ZiwQ7TAzsQd
-        ybAcBg542XGwq9HW8kCNH9/OISEjrvrjtQpn6jt1Xt1TL0X46ur5CJhtyQotO4YIsafuZOHw8QO
-        6UiQkHGQx5wUtxaNXtciXG6Ie
-X-Received: by 2002:a7b:c341:0:b0:37b:c619:c9f4 with SMTP id l1-20020a7bc341000000b0037bc619c9f4mr52516wmj.38.1652189088026;
-        Tue, 10 May 2022 06:24:48 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxqwwogMAcS1Mjth3MHCVBlRUf2i94V/nGy/gavPvqLn2BGjAVyi0GQ29U+7t2tPijI+iv5XA==
-X-Received: by 2002:a7b:c341:0:b0:37b:c619:c9f4 with SMTP id l1-20020a7bc341000000b0037bc619c9f4mr52495wmj.38.1652189087788;
-        Tue, 10 May 2022 06:24:47 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-113-89.dyn.eolo.it. [146.241.113.89])
-        by smtp.gmail.com with ESMTPSA id z11-20020a5d654b000000b0020c6b78eb5asm13892257wrv.68.2022.05.10.06.24.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 06:24:47 -0700 (PDT)
-Message-ID: <19e704ace63483a765a3298610218c5d110bb0e4.camel@redhat.com>
-Subject: Re: [PATCH] net: macb: Increment rx bd head after allocating skb
- and buffer
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Harini Katakam <harini.katakam@xilinx.com>,
-        nicolas.ferre@microchip.com, davem@davemloft.net,
-        claudiu.beznea@microchip.com, kuba@kernel.org, dumazet@google.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        michal.simek@xilinx.com, harinikatakamlinux@gmail.com,
-        radhey.shyam.pandey@xilinx.com
-Date:   Tue, 10 May 2022 15:24:45 +0200
-In-Reply-To: <20220509121958.3976-1-harini.katakam@xilinx.com>
-References: <20220509121958.3976-1-harini.katakam@xilinx.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Tue, 10 May 2022 09:36:05 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 989DE2609D0;
+        Tue, 10 May 2022 06:25:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5AE8CCE1EF3;
+        Tue, 10 May 2022 13:25:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DA9BC385A6;
+        Tue, 10 May 2022 13:24:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652189098;
+        bh=AL52ttcBAs7NqVJFaNwvadAqz1DHpx4qIemg1e63Ats=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=nTK7KQRhQrzcGEp4dq08c6GhlL8YT9Dg/baQPWDx34myAkuLb+iiDLUf88/6l+lkF
+         0pWdruXktT2ouE1FZBAX95193JkKqBHCeg4uKDPRJ7n6w3tb4lcMewnjUcjZ/GQIIH
+         Y6yANcURAbaj1rYo+rtp3Q6RFgDmViOHUs1QF/Bo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Chengfeng Ye <cyeaa@connect.ust.hk>,
+        Takashi Sakamoto <o-takashi@sakamocchi.jp>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.10 12/70] firewire: fix potential uaf in outbound_phy_packet_callback()
+Date:   Tue, 10 May 2022 15:07:31 +0200
+Message-Id: <20220510130733.228165921@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
+References: <20220510130732.861729621@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+From: Chengfeng Ye <cyeaa@connect.ust.hk>
 
-On Mon, 2022-05-09 at 17:49 +0530, Harini Katakam wrote:
-> In gem_rx_refill rx_prepared_head is incremented at the beginning of
-> the while loop preparing the skb and data buffers. If the skb or data
-> buffer allocation fails, this BD will be unusable BDs until the head
-> loops back to the same BD (and obviously buffer allocation succeeds).
-> In the unlikely event that there's a string of allocation failures,
-> there will be an equal number of unusable BDs and an inconsistent RX
-> BD chain. Hence increment the head at the end of the while loop to be
-> clean.
-> 
-> Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
-> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+commit b7c81f80246fac44077166f3e07103affe6db8ff upstream.
 
-This looks like targeting the "net" tree, please repost adding a
-suitable Fixes tag.
+&e->event and e point to the same address, and &e->event could
+be freed in queue_event. So there is a potential uaf issue if
+we dereference e after calling queue_event(). Fix this by adding
+a temporary variable to maintain e->client in advance, this can
+avoid the potential uaf issue.
 
-Thanks,
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Chengfeng Ye <cyeaa@connect.ust.hk>
+Signed-off-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
+Link: https://lore.kernel.org/r/20220409041243.603210-2-o-takashi@sakamocchi.jp
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/firewire/core-cdev.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Paolo
+--- a/drivers/firewire/core-cdev.c
++++ b/drivers/firewire/core-cdev.c
+@@ -1480,6 +1480,7 @@ static void outbound_phy_packet_callback
+ {
+ 	struct outbound_phy_packet_event *e =
+ 		container_of(packet, struct outbound_phy_packet_event, p);
++	struct client *e_client;
+ 
+ 	switch (status) {
+ 	/* expected: */
+@@ -1496,9 +1497,10 @@ static void outbound_phy_packet_callback
+ 	}
+ 	e->phy_packet.data[0] = packet->timestamp;
+ 
++	e_client = e->client;
+ 	queue_event(e->client, &e->event, &e->phy_packet,
+ 		    sizeof(e->phy_packet) + e->phy_packet.length, NULL, 0);
+-	client_put(e->client);
++	client_put(e_client);
+ }
+ 
+ static int ioctl_send_phy_packet(struct client *client, union ioctl_arg *arg)
+
 
