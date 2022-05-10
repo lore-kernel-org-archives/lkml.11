@@ -2,90 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51030C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:48:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39B7FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:48:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243149AbiEJOwc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:52:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46858 "EHLO
+        id S243858AbiEJOwn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:52:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345189AbiEJOvH (ORCPT
+        with ESMTP id S1345246AbiEJOvK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:51:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC59F6FD1B
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:11:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1153560C6B
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 14:11:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7391C385C2;
-        Tue, 10 May 2022 14:11:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652191890;
-        bh=k3aDsiEt3We5CETf9vWvSB7Ro1g28Lp3PICM7pFJakk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=aMVyGRNDuUxZt3GikLsYZIZZEdIc0KdfT/7OgZjnwt7f7uVcDuzpyRlSAvFrr0r6v
-         dFMep80g9lCRy5imsRbXL3Z+Bn/P7nSaU5ZZbuJJzkpahmtw6xQ3vdjAxSfBSA7wss
-         EX+KfKQVbaKN+xIES7Fu71/5n/a+Ib9dNnrPtInK1IVm1uxI/SIVOH/TfSGrwXCguW
-         lO6Ki/XlCk/KGKKYrc9iE7KHqQhVNZif4AXWenb1p/H+721j+b/X7vSaZucc3BZD0K
-         qaMkFCAyyQQb2TvSqmhY6yZZSOcDQ3PkHZOXTNovfYltX/YM/ENYsRJMjBIuGmOJCy
-         B+XUIk/343+MQ==
-Date:   Tue, 10 May 2022 15:11:24 +0100
-From:   Will Deacon <will@kernel.org>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     "Verdun, Jean-Marie" <verdun@hpe.com>,
-        "Hawkins, Nick" <nick.hawkins@hpe.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Joel Stanley <joel@jms.id.au>
-Subject: Re: [PATCH v1] ARM: A9: Add ARM ERRATA 764319 workaround
-Message-ID: <20220510141124.GB28104@willie-the-truck>
-References: <20220506192957.24889-1-nick.hawkins@hpe.com>
- <CAK8P3a045Di_zRomezeah0ZoSGPw0Z6YoYkZtoxx1qOXAtKbbw@mail.gmail.com>
- <7C103AEB-3111-4AE6-9645-CF590388A879@hpe.com>
- <CAK8P3a0OS+4XTG9VmfPwbuQoT+_G5-fSatbJ0g8Y7Y+O6-3YLQ@mail.gmail.com>
+        Tue, 10 May 2022 10:51:10 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9574D2631E2;
+        Tue, 10 May 2022 07:11:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=vlPcmXA97Qhtkz3pBw6LdXf1X8P0UYvVzj4VthO5jgc=; b=e9qBavzt7iSXqotIL+kEfOWSDC
+        iVRppT3Hb/vZk3YrAi/b/1Sks4coJ4CDDP+7PsBf/3PYaPFt1gdo8rsOdKqYQ7smquEWj28eStWqL
+        CRF+oqCbuJG6ZM1a8GSMIH+b891MTAxbko/s3bV28TSILNPx0vJS6lKq9Hi1OrpvIOMJ2yAsDH+AE
+        5UZLLIZnAX0XkUOFElR9JGQkkK04aCtF/juYrAyo+JJs0W0WZech05pCgMVZEF/gDbG3lXHdR+nlg
+        gc7p3pNqQj2cprKtyF3OhhaP7dxC5PNGfWWqohU3giKekM5UQ60wlcwHLGqdoJfnT4tcYUBBcGgto
+        etn8qzNQ==;
+Received: from [177.183.162.244] (helo=[192.168.0.5])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1noQa0-000AUZ-9j; Tue, 10 May 2022 16:11:12 +0200
+Message-ID: <58837e3d-0e2a-42ac-f198-9fe7be7aa823@igalia.com>
+Date:   Tue, 10 May 2022 11:10:40 -0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAK8P3a0OS+4XTG9VmfPwbuQoT+_G5-fSatbJ0g8Y7Y+O6-3YLQ@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 08/30] powerpc/setup: Refactor/untangle panic notifiers
+Content-Language: en-US
+To:     Michael Ellerman <mpe@ellerman.id.au>,
+        Hari Bathini <hbathini@linux.ibm.com>
+Cc:     linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        pmladek@suse.com, kexec@lists.infradead.org, bhe@redhat.com,
+        linux-leds@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
+        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
+        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
+        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
+        halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
+        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
+        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Paul Mackerras <paulus@samba.org>, akpm@linux-foundation.org
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-9-gpiccoli@igalia.com>
+ <3c34d8e2-6f84-933f-a4ed-338cd300d6b0@linux.ibm.com>
+ <f9c3de3c-1709-a1aa-2ece-c9fbfd5e6d6a@igalia.com>
+ <87fslh8pe3.fsf@mpe.ellerman.id.au>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <87fslh8pe3.fsf@mpe.ellerman.id.au>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 03:01:26PM +0200, Arnd Bergmann wrote:
-> On Tue, May 10, 2022 at 1:53 PM Verdun, Jean-Marie <verdun@hpe.com> wrote:
-> >
-> > Hi Arnd,
-> >
-> > >    Hi Nick,
-> >
-> > >    This seems a bit more complex than necessary. Can't you just use a custom
-> > >    inline asm with an ex_table entry to catch the fault? Have a look at
-> > >    __get_user_asm() for an example.
-> > >
-> > >           Arnd
-> >
-> > We got inspired from debug_reg_hook within the same source file
-> >( ./arch/arm/kernel/hw_breakpoint.c ). We chose that path to keep coherency
-> > within the source code. We can implement the same fix by using an ex_table
-> > entry, but this will create two different ways at catching unknown instruction
-> > within the same source file. Will that be ok ?
+On 10/05/2022 10:53, Michael Ellerman wrote:
+> "Guilherme G. Piccoli" <gpiccoli@igalia.com> writes:
+>> On 05/05/2022 15:55, Hari Bathini wrote:
+>>> [...] 
+>>> The change looks good. I have tested it on an LPAR (ppc64).
+>>>
+>>> Reviewed-by: Hari Bathini <hbathini@linux.ibm.com>
+>>>
+>>
+>> Hi Michael. do you think it's possible to add this one to powerpc/next
+>> (or something like that), or do you prefer a V2 with his tag?
 > 
-> I got a little lost trying to find where the breakpoint instruction comes
-> from that gets trapped here, but I would guess that they had to do this
-> using an undef_hook because the ex_table approach does not work
-> there for some reason.
+> Ah sorry, I assumed it was going in as part of the whole series. I guess
+> I misread the cover letter.
 > 
-> I would still pick the ex_table method here if that works.
+> So you want me to take this patch on its own via the powerpc tree?
+> 
+> cheers
 
-IIRC, the ex_table handlers are called only for data aborts and are intended
-to be used to handle cases where we take a fault on a memory access (e.g.
-translation fault). In this case, we're taking an undefined instruction
-exception on a cp14 access and so the undef_hook is the right thing to use.
+Hi Michael, thanks for the prompt response!
 
-Will
+You didn't misread, that was the plan heh
+But some maintainers start to take patches and merge in their trees, and
+in the end, it seems to make sense - almost half of this series are
+fixes or clean-ups, that are not really necessary to get merged altogether.
+
+So, if you can take this one, I'd appreciate - it'll make V2 a bit
+smaller =)
+
+Cheers,
+
+
+Guilherme
