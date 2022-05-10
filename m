@@ -2,288 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED672C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 09:27:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E346C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 09:28:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238756AbiEJJbl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 05:31:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50646 "EHLO
+        id S238777AbiEJJca (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 05:32:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238744AbiEJJbh (ORCPT
+        with ESMTP id S235229AbiEJJcY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 05:31:37 -0400
-Received: from outbound-smtp30.blacknight.com (outbound-smtp30.blacknight.com [81.17.249.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08DE728C9D6
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 02:27:37 -0700 (PDT)
-Received: from mail.blacknight.com (pemlinmail05.blacknight.ie [81.17.254.26])
-        by outbound-smtp30.blacknight.com (Postfix) with ESMTPS id 657F9BACEE
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 10:27:36 +0100 (IST)
-Received: (qmail 8533 invoked from network); 10 May 2022 09:27:36 -0000
-Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.198.246])
-  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 10 May 2022 09:27:36 -0000
-Date:   Tue, 10 May 2022 10:27:33 +0100
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Minchan Kim <minchan@kernel.org>
-Cc:     Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>
-Subject: Re: [RFC PATCH 0/6] Drain remote per-cpu directly v2
-Message-ID: <20220510092733.GE3441@techsingularity.net>
-References: <20220509130805.20335-1-mgorman@techsingularity.net>
- <Ynk6O4WAut0Ejl7Z@google.com>
+        Tue, 10 May 2022 05:32:24 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A966028C9D3
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 02:28:25 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id qe3-20020a17090b4f8300b001dc24e4da73so1371014pjb.1
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 02:28:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=z3lYLkGJEXnAUi0c+xoObDyUdD6BSjxjjdIs4qDVH9c=;
+        b=T4dSTnw/ZVibhtlFufil1OlNvDOmLFga7jJrDf6lwuWfmFfttDkMsEWCS8LI8fVRaa
+         GAgX6IGokf40id9lHothsH+/GGYoXq89N4TtpWXrnG4ACpv5PBRVTkRIGhfrgFKDblC8
+         h7C/F4qZJRc6MzQhU58jTZ8qI0Uszo080M+TczJngTfERbz9ss6xjD8/a4DqtIYwaUaA
+         V1/VhNPvfzVLwMQ/5Gj1zwjN4ZIQ5dEEKUIiobc85rZMp8vRgvlEz+6hS8aJ4Qlhpo3X
+         X/7q5e+fEFWUf5kX9bqrXwhWpCxbsc/aEIcBkwjnE30myDbjIE30cEa0jFFaPrkjJ3fi
+         UJfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=z3lYLkGJEXnAUi0c+xoObDyUdD6BSjxjjdIs4qDVH9c=;
+        b=qb9Nb5nSt6lLiBwSjma2F85IZNmhaZZNyzZm7fE7cZtkeFS10Krxq8Nw1QCOYdLbex
+         WCK8S0jakt0/7yJz4YJqWJYJyg42iJmfmKFSEnG1homHdk4Ua/brWQit8XVPGEXUSU2V
+         mZ7T7nzhomYLDnBNtwjLKyonxNwVnUcETR/MM6+UrKZLJKYFVmdz33C/kfaOXAmI6pTM
+         IK7s7YmZMEa10ZJOYWNlHbSs3AMkx2xTUrvNEO8WUY3I0IH3RRUTL+CMHcLfxclX6apR
+         Ae0wxhIacMvY7cFAePHxBsiXvtiq74r0aDLYKSNYd3MOrLjtLACxQqKaAeBLfnHDS+yf
+         dYRQ==
+X-Gm-Message-State: AOAM533BiYMTO/C91QLsK4QL27+l64cjcSKlpDvl6HDWM11oEIcJh3m6
+        tMNPM1m5uPdJufTururLTwDNzA==
+X-Google-Smtp-Source: ABdhPJyJh7XBDpHQBR733lWsZngmSm7+5DfzAPB2gKzKihOiyOd5b9+fjtXzaVEnT5anC0+3Z5v97A==
+X-Received: by 2002:a17:902:cec4:b0:15e:cff6:676 with SMTP id d4-20020a170902cec400b0015ecff60676mr19946880plg.2.1652174905212;
+        Tue, 10 May 2022 02:28:25 -0700 (PDT)
+Received: from localhost ([122.162.234.2])
+        by smtp.gmail.com with ESMTPSA id 2-20020a621702000000b0050dc76281f6sm10128012pfx.208.2022.05.10.02.28.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 02:28:24 -0700 (PDT)
+Date:   Tue, 10 May 2022 14:58:22 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Jiabing Wan <wanjiabing@vivo.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Jia-Wei Chang <jia-wei.chang@mediatek.com>,
+        "Andrew-sh.Cheng" <andrew-sh.cheng@mediatek.com>,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH v2] cpufreq: mediatek: Fix potential deadlock problem in
+ mtk_cpufreq_set_target
+Message-ID: <20220510092822.j3z6bydurg7x5bu4@vireshk-i7>
+References: <20220510090531.12438-1-wanjiabing@vivo.com>
+ <20220510091212.olrvvjlx4jtm7zw2@vireshk-i7>
+ <49566544-e8f2-ef38-288e-fcd276d87d3b@vivo.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <Ynk6O4WAut0Ejl7Z@google.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <49566544-e8f2-ef38-288e-fcd276d87d3b@vivo.com>
+User-Agent: NeoMutt/20180716-391-311a52
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 08:58:51AM -0700, Minchan Kim wrote:
-> On Mon, May 09, 2022 at 02:07:59PM +0100, Mel Gorman wrote:
-> > Changelog since v1
-> > o Fix unsafe RT locking scheme
-> > o Use spin_trylock on UP PREEMPT_RT
-> 
-> Mel,
+On 10-05-22, 17:23, Jiabing Wan wrote:
 > 
 > 
-> Is this only change from previous last version which has some
-> delta you fixed based on Vlastimil and me?
+> On 2022/5/10 17:12, Viresh Kumar wrote:
+> > On 10-05-22, 17:05, Wan Jiabing wrote:
+> > > Fix following coccichek error:
+> > > ./drivers/cpufreq/mediatek-cpufreq.c:199:2-8: preceding lock on line
+> > > ./drivers/cpufreq/mediatek-cpufreq.c:208:2-8: preceding lock on line
+> > > 
+> > > mutex_lock is acquired but not released before return.
+> > > Use 'goto out' to help releasing the mutex_lock.
+> > > 
+> > > Fixes: c210063b40ac ("cpufreq: mediatek: Add opp notification support")
+> > > Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+> > You should have added the review tag you received.
+> > 
+> > Applied. Thanks.
 > 
+> Oh, yes.  I would add the "Reviewed-by:" tag only if someone sends
+> this tag to me.
 
-Full diff is below although it can also be generated by
-comparing the mm-pcpdrain-v1r8..mm-pcpdrain-v2r1 branches in
-https://git.kernel.org/pub/scm/linux/kernel/git/mel/linux.git/
+Didn't you get this ?
 
-> And is it still RFC?
-> 
+https://lore.kernel.org/linux-mediatek/304e7eefbb57e9c938737b64fbb515201c7944b8.camel@mediatek.com/
 
-It's still RFC because it's a different approach to Nicolas' series and
-I want at least his Acked-by before taking the RFC label out and sending
-it to Andrew.
-
-> Do you have some benchmark data?
-> 
-
-Yes, but as reclaim is not fundamentally altered the main difference
-in behavious is that work is done inline instead of being deferred to a
-workqueue. That means in some cases, system CPU usage of a task will be
-higher because it's paying the cost directly.
-
-The workloads I used just hit reclaim directly to make sure it's
-functionally not broken. There is no change in page aging decisions,
-only timing of drains. I didn't check interference of a heavy workload
-interfering with a CPU-bound workload running on NOHZ CPUs as I assumed
-both you and Nicolas had a test case ready to use.
-
-The main one I paid interest to was a fault latency benchmark in
-the presense of heavy reclaim called stutterp. It simulates a simple
-workload. One part uses a lot of anonymous memory, a second measures mmap
-latency and a third copies a large file.  The primary metric is checking
-for mmap latency. It was originally put together to debug interactivity
-issues on a desktop in the presense of heavy IO where the desktop
-applications were being pushed to backing storage.
-
-stutterp
-                              5.18.0-rc1             5.18.0-rc1
-                                 vanilla       mm-pcpdrain-v2r1
-1st-qrtle mmap-4      15.9557 (   0.00%)     15.4045 (   3.45%)
-1st-qrtle mmap-6      10.8025 (   0.00%)     11.1204 (  -2.94%)
-1st-qrtle mmap-8      16.9338 (   0.00%)     17.0595 (  -0.74%)
-1st-qrtle mmap-12     41.4746 (   0.00%)      9.4003 (  77.33%)
-1st-qrtle mmap-18     47.7123 (   0.00%)    100.0275 (-109.65%)
-1st-qrtle mmap-24     17.7098 (   0.00%)     16.9633 (   4.22%)
-1st-qrtle mmap-30     69.2565 (   0.00%)     38.2205 (  44.81%)
-1st-qrtle mmap-32     49.1295 (   0.00%)     46.8819 (   4.57%)
-3rd-qrtle mmap-4      18.4706 (   0.00%)     17.4799 (   5.36%)
-3rd-qrtle mmap-6      11.4526 (   0.00%)     11.5567 (  -0.91%)
-3rd-qrtle mmap-8      19.5903 (   0.00%)     19.0046 (   2.99%)
-3rd-qrtle mmap-12     50.3095 (   0.00%)     25.3254 (  49.66%)
-3rd-qrtle mmap-18     67.3319 (   0.00%)    147.6404 (-119.27%)
-3rd-qrtle mmap-24     41.3779 (   0.00%)     84.4035 (-103.98%)
-3rd-qrtle mmap-30    127.1375 (   0.00%)    148.8884 ( -17.11%)
-3rd-qrtle mmap-32     79.7423 (   0.00%)    182.3042 (-128.62%)
-Max-99    mmap-4      46.9123 (   0.00%)     49.7731 (  -6.10%)
-Max-99    mmap-6      42.5414 (   0.00%)     16.6173 (  60.94%)
-Max-99    mmap-8      43.1237 (   0.00%)     23.3478 (  45.86%)
-Max-99    mmap-12     62.8025 (   0.00%)   1947.3862 (-3000.81%)
-Max-99    mmap-18  27936.8695 (   0.00%)    232.7122 (  99.17%)
-Max-99    mmap-24 204543.9436 (   0.00%)   5805.2478 (  97.16%)
-Max-99    mmap-30   2350.0289 (   0.00%)  10300.6344 (-338.32%)
-Max-99    mmap-32  56164.2271 (   0.00%)   7789.7526 (  86.13%)
-Max       mmap-4     840.3468 (   0.00%)   1137.4462 ( -35.35%)
-Max       mmap-6  255233.3996 (   0.00%)  91304.0952 (  64.23%)
-Max       mmap-8  210910.6497 (   0.00%) 117931.0796 (  44.08%)
-Max       mmap-12 108268.9537 (   0.00%) 319971.6910 (-195.53%)
-Max       mmap-18 608805.3195 (   0.00%) 197483.2205 (  67.56%)
-Max       mmap-24 327697.5605 (   0.00%) 382842.5356 ( -16.83%)
-Max       mmap-30 688684.5335 (   0.00%) 669992.7705 (   2.71%)
-Max       mmap-32 396842.0114 (   0.00%) 415978.2539 (  -4.82%)
-
-                  5.18.0-rc1  5.18.0-rc1
-                     vanillamm-pcpdrain-v2r1
-Duration User        1438.08     1637.21
-Duration System     12267.41    10307.96
-Duration Elapsed     3929.70     3443.53
-
-
-It's a mixed bag but this workload is always a mixed bag and it's stressing
-reclaim.  At some points, latencies are worse, in others better. Overall,
-it completed faster and this was on a 1-socket machine.
-
-On a 2-socket machine, the overall completions times were worse
-
-                  5.18.0-rc1  5.18.0-rc1
-                     vanillamm-pcpdrain-v2r1
-Duration User        3713.75     2899.90
-Duration System    303507.56   378909.94
-Duration Elapsed    15444.59    19067.40
-
-In general this type of workload is variable given the nature of what it
-does and can give different results on each execution. When originally
-designed, it was to deal with stalls lasting several seconds to reduce
-them to the sub-millisecond range.
-
-The intent of the series is switching out-of-line work to in-line so
-what it should be measuring is interference effects and not straight-line
-performance and I haven't written a specific test case yet. When writing
-the series initially, it was to investigate if the PCP could be lockless
-and failing that, if disabling IRQs could be avoided in the common case.
-It just turned out that part of that made remote draining possible and
-I focused closer on that because it's more important.
-
-> I'd like to give Acked-by/Tested-by(even though there are a few
-> more places to align with new fields name in 1/6)
-
-Which ones are of concern?
-
-Some of the page->lru references I left alone in the init paths simply
-because in those contexts, the page wasn't on a buddy or PCP list. In
-free_unref_page_list the page is not on the LRU, it's just been isolated
-from the LRU. In alloc_pages_bulk, it's not on a buddy, pcp or LRU list
-and is just a list placeholder so I left it alone. In
-free_tail_pages_check the context was a page that was likely previously
-on a LRU.
-
-> since I have
-> tested these patchset in my workload and didn't spot any other
-> problems.
-> 
-
-Can you describe this workload, is it available anywhere and does it
-require Android to execute?
-
-If you have positive results, it would be appreciated if you could post
-them or just note in a Tested-by/Acked-by that it had a measurable impact
-on the reclaim/cma path.
-
-> I really support this patch to be merged since the pcp draining
-> using workqueue is really harmful in the reclaim/cma path of
-> Android workload which has a variety of process priority control
-> and be stuck on the pcp draining.
-> 
-
-Diff between v1 and v2
-
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 17d11eb0413e..4ac39d30ec8f 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -132,8 +132,11 @@ static DEFINE_PER_CPU(struct pagesets, pagesets) __maybe_unused = {
- 	.lock = INIT_LOCAL_LOCK(lock),
- };
- 
--#ifdef CONFIG_SMP
--/* On SMP, spin_trylock is sufficient protection */
-+#if defined(CONFIG_SMP) || defined(CONFIG_PREEMPT_RT)
-+/*
-+ * On SMP, spin_trylock is sufficient protection.
-+ * On PREEMPT_RT, spin_trylock is equivalent on both SMP and UP.
-+ */
- #define pcp_trylock_prepare(flags)	do { } while (0)
- #define pcp_trylock_finish(flag)	do { } while (0)
- #else
-@@ -3091,14 +3094,14 @@ void drain_zone_pages(struct zone *zone, struct per_cpu_pages *pcp)
- 	if (to_drain > 0) {
- 		unsigned long flags;
- 
--		/* free_pcppages_bulk expects IRQs disabled for zone->lock */
--		local_irq_save(flags);
--
--		spin_lock(&pcp->lock);
-+		/*
-+		 * free_pcppages_bulk expects IRQs disabled for zone->lock
-+		 * so even though pcp->lock is not intended to be IRQ-safe,
-+		 * it's needed in this context.
-+		 */
-+		spin_lock_irqsave(&pcp->lock, flags);
- 		free_pcppages_bulk(zone, to_drain, pcp, 0);
--		spin_unlock(&pcp->lock);
--
--		local_irq_restore(flags);
-+		spin_unlock_irqrestore(&pcp->lock, flags);
- 	}
- }
- #endif
-@@ -3114,14 +3117,10 @@ static void drain_pages_zone(unsigned int cpu, struct zone *zone)
- 	if (pcp->count) {
- 		unsigned long flags;
- 
--		/* free_pcppages_bulk expects IRQs disabled for zone->lock */
--		local_irq_save(flags);
--
--		spin_lock(&pcp->lock);
-+		/* See drain_zone_pages on why this is disabling IRQs */
-+		spin_lock_irqsave(&pcp->lock, flags);
- 		free_pcppages_bulk(zone, pcp->count, pcp, 0);
--		spin_unlock(&pcp->lock);
--
--		local_irq_restore(flags);
-+		spin_unlock_irqrestore(&pcp->lock, flags);
- 	}
- }
- 
-@@ -3480,6 +3479,13 @@ void free_unref_page_list(struct list_head *list)
- 		}
- 	}
- 
-+	/*
-+	 * Preparation could have drained the list due to failing to prepare
-+	 * or all pages are being isolated.
-+	 */
-+	if (list_empty(list))
-+		return;
-+
- 	VM_BUG_ON(in_hardirq());
- 
- 	local_lock_irqsave(&pagesets.lock, flags);
-@@ -3515,6 +3521,9 @@ void free_unref_page_list(struct list_head *list)
- 		 * allocator directly. This is expensive as the zone lock will
- 		 * be acquired multiple times but if a drain is in progress
- 		 * then an expensive operation is already taking place.
-+		 *
-+		 * TODO: Always false at the moment due to local_lock_irqsave
-+		 *       and is preparation for converting to local_lock.
- 		 */
- 		if (unlikely(!free_unref_page_commit(page, migratetype, 0, true)))
- 			free_one_page(page_zone(page), page, page_to_pfn(page), 0, migratetype, FPI_NONE);
-@@ -3717,9 +3726,7 @@ struct page *__rmqueue_pcplist(struct zone *zone, unsigned int order,
- 	 * IRQ re-entrancy. If pcp->lock cannot be acquired, the caller
- 	 * uses rmqueue_buddy.
- 	 *
--	 * TODO: Convert local_lock_irqsave to local_lock. Care
--	 * 	 is needed as the type of local_lock would need a
--	 * 	 PREEMPT_RT version due to threaded IRQs.
-+	 * TODO: Convert local_lock_irqsave to local_lock.
- 	 */
- 	if (unlikely(!locked)) {
- 		pcp_trylock_prepare(UP_flags);
+Rex, are you subscribed to LKML ? You can't send an email there without
+subscription. I don't see this email on LKML lore.
 
 -- 
-Mel Gorman
-SUSE Labs
+viresh
