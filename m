@@ -2,158 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9BE5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 07:33:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0672BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 07:33:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237490AbiEJHg7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 03:36:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50152 "EHLO
+        id S238557AbiEJHhJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 03:37:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239935AbiEJHRB (ORCPT
+        with ESMTP id S238134AbiEJHFj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 03:17:01 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2081.outbound.protection.outlook.com [40.107.223.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A4C12992C1;
-        Tue, 10 May 2022 00:13:02 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Sv1u73YkXZCcBcoN6kpODUFjt+8CJwk7RBXSVcmVzmK4gmBCniXFFC24f0hr0sH63bQ6ZXYz/jJFCVJrwDkdnnKcbz9zk8eKan91zir/JqP4IyCVlEBvXEI9LZZn2uEZV/3rfQZRREZmV4XC8RBC8gWP6WJTNxCr6XKlts97+VKXPE/RkLtjsHAp56zrRLtBmIaJzn/Zu7vW3cPm62qa0eChGVtBiMo1Iav4Q8lEe+A1rpPyDwKsAasMPKdNa2m+7SL+lDSVpBEixTWtD+5IjWUt7d227ptB8Cs8bW4UYtgPO9Hdpkt2+THIirzez46Unz7pk4+I9iPmP28/Jk+iEQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FaQH7QRYWl2wFH8wt8vJHFxGGvL41jH70IW0jz0D7K8=;
- b=IKmv4LZrNIIbB3+kojLMOO3zgVl640IelMVbO1G96obatiTHXFFrbYE2UiDYR3+QWdfxgeys6jryTIQDZPyKwjv8rBMHCVNke9CEL+Eff4s4VVUY37+QZupvfqQof5QKi9LNkXmHWKY7/sQ7KD1EUHAGlw5xOkJ64BPc+oBCvHtRv5zHKxuOCFCmzp6bJb/8XVabri5jNfEBU0xc85EJsRrccEbYkDfOTZKB7CqlieJQg6suk5pqIJyFIjMwIPFqpeV4fqbTfY1olfg1u8cczn9aQfHBRGUENK9gWQbzcys97haC+IeQsIWuaUjwEMOedRmeUW6/jHd72tzoFYknyg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=kernel.org smtp.mailfrom=xilinx.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
+        Tue, 10 May 2022 03:05:39 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A47A52D1FF;
+        Tue, 10 May 2022 00:01:42 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id d22so15934405plr.9;
+        Tue, 10 May 2022 00:01:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FaQH7QRYWl2wFH8wt8vJHFxGGvL41jH70IW0jz0D7K8=;
- b=Z4peX8/d+tQrws//vEUXYvA1Q9tgJ8t8OpOh0O2J5ze9j2lzB+QmFOOrERdKQh/EheSMAV0dKTMaqsbvzsVVNZIi3sUqPeL7d2LJEyL6AqdSJywQXSVsqXrIDffILhftNua/7rk9HNG2AdzVue0Cc7x9XiwgT+FxsppLpx5HWe4=
-Received: from BN9PR03CA0910.namprd03.prod.outlook.com (2603:10b6:408:107::15)
- by PH7PR02MB9025.namprd02.prod.outlook.com (2603:10b6:510:1f7::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.21; Tue, 10 May
- 2022 07:13:00 +0000
-Received: from BN1NAM02FT033.eop-nam02.prod.protection.outlook.com
- (2603:10b6:408:107:cafe::1d) by BN9PR03CA0910.outlook.office365.com
- (2603:10b6:408:107::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.20 via Frontend
- Transport; Tue, 10 May 2022 07:13:00 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com;
-Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
- BN1NAM02FT033.mail.protection.outlook.com (10.13.3.186) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5227.15 via Frontend Transport; Tue, 10 May 2022 07:13:00 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Tue, 10 May 2022 00:12:58 -0700
-Received: from smtp.xilinx.com (172.19.127.95) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Tue, 10 May 2022 00:12:58 -0700
-Envelope-to: git@xilinx.com,
- vkoul@kernel.org,
- dmaengine@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Received: from [172.23.64.6] (port=41365 helo=xhdvnc106.xilinx.com)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <radhey.shyam.pandey@xilinx.com>)
-        id 1noK3G-000Cbp-Ex; Tue, 10 May 2022 00:12:58 -0700
-Received: by xhdvnc106.xilinx.com (Postfix, from userid 13245)
-        id 9290F604A0; Tue, 10 May 2022 12:42:44 +0530 (IST)
-From:   Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-To:     <vkoul@kernel.org>
-CC:     <michal.simek@xilinx.com>, <dmaengine@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <git@xilinx.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Subject: [PATCH 1/3] dmaengine: zynqmp_dma: In struct zynqmp_dma_chan fix desc_size data type
-Date:   Tue, 10 May 2022 12:42:40 +0530
-Message-ID: <1652166762-18317-2-git-send-email-radhey.shyam.pandey@xilinx.com>
-X-Mailer: git-send-email 2.1.1
-In-Reply-To: <1652166762-18317-1-git-send-email-radhey.shyam.pandey@xilinx.com>
-References: <1652166762-18317-1-git-send-email-radhey.shyam.pandey@xilinx.com>
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2bJfSI26+416H0cEFrU+Zj4BNqCl1B3sTgbKXFNXPmU=;
+        b=pH2kT7ap04SLVR0W2AufymCpw+0zDuir2vcSkD2zlgTbXoFv0I+hvEUmzHBhC0yVbP
+         bdCggCJk5d0N5vDSecMBSjkZmXMh/23fwOUvUlkEe7O11UP0qAlo6ZwGAYPdqiccZCZk
+         MGRU/GGJvh6X7CKhSQ7cG/RkMGSktmXYIVGWNr2sP9FU233uyKPK30EOLEa0t9T4c7XZ
+         2KLXjuqccEWbyT7XS0np1ZM/Xaz/3UuYYyKrhkUO4/pCVpHhenPI3VAlx5enizuLYPiZ
+         T00J+LS3BZpJ0jIiGwN9p8SXonfgYg74PtzMDhkkCIca+QBS3SWW9aZyn0e1s8J4gUu5
+         ckvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2bJfSI26+416H0cEFrU+Zj4BNqCl1B3sTgbKXFNXPmU=;
+        b=SZHNhBspEU0szhnnGwN5IZz7K/nwgJE+63NCZuCwkeNzYOQ7Ew+NYQ98xTFQsiIzWY
+         OSOHSs98TnfxxVjUj6gwqlD6vmN8TPJZwS9b4faO/5mV1v3eTZ8Ydj6IQnvwMIRTHjii
+         /MwKhg5WCgb/3OTAvDtyickVbvBVVBptdlN2+rk02HU6tBEGxnZqIvEesrsCXyfD07t6
+         42EnTWLtI0yR4a6Ad5auISE3Xb++qH6gAQcjhAB5BHpFAiUwJQBsSQgPykdVIahDJgzM
+         lTZeOg6yHWGNg5SMLAe+2sGw09erMGwwYNq/7IMeBk+4gqdxZsBCmYDnYvCKc2p2Ti6J
+         cAew==
+X-Gm-Message-State: AOAM530XBhliuUs7fra5X2etVETK16e1bqYXMZiXSi4g9CsyxO3wePb4
+        SPka+7e6U17yzQB43HmKCxyQj1KLvp77sIkU7H4=
+X-Google-Smtp-Source: ABdhPJyDmgLmJ+UkJgAmBSmdDMtmzjuyKFW/3yG342AEob6jkHlqPUT3Il3Ejn0ZEYkPLKl3+UiO/aPNPRmvT8azFCs=
+X-Received: by 2002:a17:902:6f16:b0:15e:f719:34ec with SMTP id
+ w22-20020a1709026f1600b0015ef71934ecmr15720145plk.166.1652166102198; Tue, 10
+ May 2022 00:01:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 636ce9bc-52e1-4608-3d9e-08da32548463
-X-MS-TrafficTypeDiagnostic: PH7PR02MB9025:EE_
-X-Microsoft-Antispam-PRVS: <PH7PR02MB9025153997634EC036F519A6C7C99@PH7PR02MB9025.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ZY1egh/UQcz72mYYvNgvJnQIyc/ZYN4kCkiCtwZmmBJaMDrlk6Kxo5Ri6dCmhtQBb7mwAWwkhYtqB1sKcmDEQ7iUPyR9w3W9Kc3ejqoLrgvLyxI/rf0C83toXUAjvtAwM0LOsKDyjY3zj0uNnsiMposTxG1GfjNN9a040Flir1PZgmlFI6ZJeUp4VC4tPZip9qPtIxhlKuDwh9JdqkqZWnv1xVEhA/21GA6ZkPp8ejhEdn0k+V//iI7+NSQUot1EoM8xEWgCWw82gwhYl0OdFOpSImHnMr1kev1qDXcOzVGySEFUxEW6tK/qfY0gk8iN4lLLkigKEGhW7E7SyW38ZtkcsZGsg8jKR9Z4vW3WmLVjAbZ/m2QzLeGhZksUSuCOmSlHXYDRfhG3G88Vb/ZJvWmJVibAwvIEphhmijWvDTDP+Sz/TIRB2nJk69qTmGmNbc6TdCde2Ro2OvlFM0EbO/7niIFyyJvXQ+9Uddkvh7iSan1zfX0dEG28kK4ggBONBbh8E2QwvxnyKibl4y3eS9FtxS/tTJ+kaVr5h9GdAEomJXl3aFwoEvKqyqffUXz+GnaOmbANzVhC266fewAidqlIN/fmfEH2cQq28b1VhDXQ9C25ofloxTBaS8Usfe3jaTozQXqYgdSqjRj1ZVKMr/yRnjeU2IKyj0RG7U2LiriXpGg3yQTckiTAGyuU3eNjCsZ54p6XyHsGN/HPUKKScg==
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(2616005)(107886003)(40460700003)(26005)(6266002)(36860700001)(70586007)(54906003)(42186006)(70206006)(8676002)(4326008)(426003)(186003)(47076005)(336012)(36756003)(316002)(6916009)(82310400005)(2906002)(6666004)(7636003)(83380400001)(356005)(508600001)(5660300002)(8936002)(102446001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 07:13:00.4678
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 636ce9bc-52e1-4608-3d9e-08da32548463
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN1NAM02FT033.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR02MB9025
+References: <20220509134629.440965-1-Qing-wu.Li@leica-geosystems.com.cn> <20220509134629.440965-5-Qing-wu.Li@leica-geosystems.com.cn>
+In-Reply-To: <20220509134629.440965-5-Qing-wu.Li@leica-geosystems.com.cn>
+From:   Alexandru Ardelean <ardeleanalex@gmail.com>
+Date:   Tue, 10 May 2022 10:01:31 +0300
+Message-ID: <CA+U=Dsp_vvANuXUwjKC-6g8daBOCFargRZ0r=AbkCwG9KifgHA@mail.gmail.com>
+Subject: Re: [PATCH V1 4/5] iio: accel: bmi088: Make it possible to config scales.
+To:     LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        mchehab+huawei@kernel.org, linux-iio <linux-iio@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In zynqmp_dma_alloc/free_chan_resources functions there is a
-potential overflow in the below expressions.
+On Mon, May 9, 2022 at 4:46 PM LI Qingwu
+<Qing-wu.Li@leica-geosystems.com.cn> wrote:
+>
+> All the sensors can set the scales by writing the range register 0x41,
+> The current driver has no interface to configure it.
+> The commit adds the interface for config the scales.
 
-dma_alloc_coherent(chan->dev, (2 * chan->desc_size *
-		   ZYNQMP_DMA_NUM_DESCS),
-		   &chan->desc_pool_p, GFP_KERNEL);
+With the warnings fixed:
 
-dma_free_coherent(chan->dev,(2 * ZYNQMP_DMA_DESC_SIZE(chan) *
-                 ZYNQMP_DMA_NUM_DESCS),
-                chan->desc_pool_v, chan->desc_pool_p);
 
-The arguments desc_size and ZYNQMP_DMA_NUM_DESCS were 32 bit. Though
-this overflow condition is not observed but it is a potential problem
-in the case of 32-bit multiplication. Hence fix it by changing the
-desc_size data type to size_t.
+Reviewed-by: Alexandru Ardelean <ardeleanalex@gmail.com>
 
-In addition to coverity fix it also reuse ZYNQMP_DMA_DESC_SIZE macro in
-dma_alloc_coherent API argument.
 
-Addresses-Coverity: Event overflow_before_widen.
-Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
----
- drivers/dma/xilinx/zynqmp_dma.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/dma/xilinx/zynqmp_dma.c b/drivers/dma/xilinx/zynqmp_dma.c
-index 7aa63b652027..3ffa7f37c701 100644
---- a/drivers/dma/xilinx/zynqmp_dma.c
-+++ b/drivers/dma/xilinx/zynqmp_dma.c
-@@ -229,7 +229,7 @@ struct zynqmp_dma_chan {
- 	bool is_dmacoherent;
- 	struct tasklet_struct tasklet;
- 	bool idle;
--	u32 desc_size;
-+	size_t desc_size;
- 	bool err;
- 	u32 bus_width;
- 	u32 src_burst_len;
-@@ -486,7 +486,8 @@ static int zynqmp_dma_alloc_chan_resources(struct dma_chan *dchan)
- 	}
- 
- 	chan->desc_pool_v = dma_alloc_coherent(chan->dev,
--					       (2 * chan->desc_size * ZYNQMP_DMA_NUM_DESCS),
-+					       (2 * ZYNQMP_DMA_DESC_SIZE(chan) *
-+					       ZYNQMP_DMA_NUM_DESCS),
- 					       &chan->desc_pool_p, GFP_KERNEL);
- 	if (!chan->desc_pool_v)
- 		return -ENOMEM;
--- 
-2.25.1
-
+>
+> Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+> ---
+>  drivers/iio/accel/bmi088-accel-core.c | 32 +++++++++++++++++++++++++++
+>  1 file changed, 32 insertions(+)
+>
+> diff --git a/drivers/iio/accel/bmi088-accel-core.c b/drivers/iio/accel/bmi088-accel-core.c
+> index 44cbe098c093..7c78cfb321ee 100644
+> --- a/drivers/iio/accel/bmi088-accel-core.c
+> +++ b/drivers/iio/accel/bmi088-accel-core.c
+> @@ -237,6 +237,23 @@ static int bmi088_accel_set_sample_freq(struct bmi088_accel_data *data, int val)
+>                                   BMI088_ACCEL_MODE_ODR_MASK, regval);
+>  }
+>
+> +static int bmi088_accel_set_scale(struct bmi088_accel_data *data, int val, int val2)
+> +{
+> +       unsigned int i;
+> +       int ret;
+> +       int reg;
+> +
+> +       for (i = 0; i < 4; i++)
+> +               if (val == data->chip_info->scale_table[i][0] &&
+> +                   val2 == data->chip_info->scale_table[i][1])
+> +                       break;
+> +
+> +       if (i >= 4)
+> +               return -EINVAL;
+> +
+> +       return regmap_write(data->regmap, BMI088_ACCEL_REG_ACC_RANGE, i);
+> +}
+> +
+>  static int bmi088_accel_get_temp(struct bmi088_accel_data *data, int *val)
+>  {
+>         int ret;
+> @@ -368,7 +385,13 @@ static int bmi088_accel_read_avail(struct iio_dev *indio_dev,
+>                              const int **vals, int *type, int *length,
+>                              long mask)
+>  {
+> +       struct bmi088_accel_data *data = iio_priv(indio_dev);
+>         switch (mask) {
+> +       case IIO_CHAN_INFO_SCALE:
+> +               *vals = (const int *)data->chip_info->scale_table;
+> +               *length = 8;
+> +               *type = IIO_VAL_INT_PLUS_MICRO;
+> +               return IIO_AVAIL_LIST;
+>         case IIO_CHAN_INFO_SAMP_FREQ:
+>                 *type = IIO_VAL_INT_PLUS_MICRO;
+>                 *vals = bmi088_sample_freqs;
+> @@ -388,6 +411,14 @@ static int bmi088_accel_write_raw(struct iio_dev *indio_dev,
+>         int ret;
+>
+>         switch (mask) {
+> +       case IIO_CHAN_INFO_SCALE:
+> +               ret = pm_runtime_resume_and_get(dev);
+> +               if (ret)
+> +                       return ret;
+> +               ret = bmi088_accel_set_scale(data, val, val2);
+> +               pm_runtime_mark_last_busy(dev);
+> +               pm_runtime_put_autosuspend(dev);
+> +               return ret;
+>         case IIO_CHAN_INFO_SAMP_FREQ:
+>                 ret = pm_runtime_resume_and_get(dev);
+>                 if (ret)
+> @@ -410,6 +441,7 @@ static int bmi088_accel_write_raw(struct iio_dev *indio_dev,
+>         .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) | \
+>                                 BIT(IIO_CHAN_INFO_SAMP_FREQ), \
+>         .info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
+> +                               BIT(IIO_CHAN_INFO_SCALE ), \
+>         .scan_index = AXIS_##_axis, \
+>  }
+>
+> --
+> 2.25.1
+>
