@@ -2,115 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA2BBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:50:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4188C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:50:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346544AbiEJPym (ORCPT
+        id S1346536AbiEJPyt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:54:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33072 "EHLO
+        Tue, 10 May 2022 11:54:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346813AbiEJPv1 (ORCPT
+        with ESMTP id S1346847AbiEJPv3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:51:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FDF248306;
-        Tue, 10 May 2022 08:46:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EE285614AF;
-        Tue, 10 May 2022 15:46:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DA81C385A6;
-        Tue, 10 May 2022 15:46:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652197562;
-        bh=oT8WAKXs8AAjuEpWukOHcm1sT3N4y4mKYyxOnqq/xs4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MbNmaiQNzXn4pIt4WSEdsgDzX9L94Y0MRZz1av3XCs6WMx7BEmtd8EHPAE83nLTOi
-         1tCklBmhbp6MSq92ugGrXSyqEjVWKJeNkF+NNWD+/CX1/5UeVgF05ez5g72oc4B2Vv
-         s2xgxlQxPQx/izNlScv4k/flyt9+vic8aCe/HdtYjL0bvwT38NDICrThj6sUxnPy5a
-         udf5d6UUT9lFsjapmloBHo+KMQ59oJeB7PgYCl73CrXI3yGMEIVgmaNXzXom7xxd1C
-         OalsqGpR6lCjdyg50IVv57rypZD1pE0suy6dZ8o6v13pgeaGYEhaf4wY3RHt9r2KN7
-         769HL3F+yHKtA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shravya Kumbham <shravya.kumbham@xilinx.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, michal.simek@xilinx.com,
-        yuehaibing@huawei.com, linmq006@gmail.com, trix@redhat.com,
-        prabhakar.mahadev-lad.rj@bp.renesas.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.4 6/8] net: emaclite: Don't advertise 1000BASE-T and do auto negotiation
-Date:   Tue, 10 May 2022 11:45:34 -0400
-Message-Id: <20220510154536.154070-6-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220510154536.154070-1-sashal@kernel.org>
-References: <20220510154536.154070-1-sashal@kernel.org>
+        Tue, 10 May 2022 11:51:29 -0400
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83B974ECFB
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:46:07 -0700 (PDT)
+Received: by mail-io1-xd2a.google.com with SMTP id e15so18963723iob.3
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:46:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Kyl/wivTrFtPE41gkY/L5cOUv62hj2SZY3x+GcpTBNg=;
+        b=ca3YiJYkxZX7krw3V695xqWag5GOtKgTt5fmu92BI88s8OOCL7Loe/wVCLlcMB39BE
+         LHdzbYTq/QhReb+zXLjqTIVHKtnGmNf6Gz1koJ7VcP1CeVF+N3zb/CDXDlSldcHRsTdO
+         vZHFU5pSEbwoyG3LN4OQo+N9+KLXs2qcNtJeg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Kyl/wivTrFtPE41gkY/L5cOUv62hj2SZY3x+GcpTBNg=;
+        b=JJe6e0ZPkdBTJQsYkXcu4jzr1WvvBOfQ/wlTp+tEbny9+vhvwOahtXmGn7jPzf5SLW
+         Y7SzhMKES6W4HzbQbK5gyO/gO5CTdU4StbausXnXycfhG3cMmzV4M4G6s8KioQXE12ty
+         38cM6CucA6fUHG9I25KostlwM1kf+IZL36lm6jk3xMLgryn0m0B+uuuG2mFvPcjZGPve
+         P+7dDTucb+UegdFIimO4rmZm/pvcPkWjD1ZIQUq2+knqIMXJdP0HlbvKOijEtYFar8UX
+         dwLrG11qkaezl65EkCpYrzRWzSiT3ZnNB/jQXEbXwNsmgPTKeQRvwwDvEOSIKuEKEXIB
+         Kj7Q==
+X-Gm-Message-State: AOAM531N0BgKPf6dEb6dpuC3HUMjcWxJPirrrxPCM156pTOAjHHrfMYX
+        vivRDQZXkreMsQPVm7cV5V/Yow==
+X-Google-Smtp-Source: ABdhPJwqQ5V3k73w7aeJhYBKjEM71dQ/SINE7A8esskHt5ZTj6KvE99TN85ULCDZUoO+8WrRJnVmSQ==
+X-Received: by 2002:a02:8605:0:b0:32b:1dd7:fc31 with SMTP id e5-20020a028605000000b0032b1dd7fc31mr9692144jai.174.1652197566839;
+        Tue, 10 May 2022 08:46:06 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id d6-20020a05663802a600b0032b3a78177csm4436324jaq.64.2022.05.10.08.46.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 May 2022 08:46:06 -0700 (PDT)
+Subject: Re: [PATCH 2/3] mm: drop oom code from exit_mmap
+To:     Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org
+Cc:     mhocko@suse.com, rientjes@google.com, willy@infradead.org,
+        hannes@cmpxchg.org, guro@fb.com, minchan@kernel.org,
+        kirill@shutemov.name, aarcange@redhat.com, brauner@kernel.org,
+        hch@infradead.org, oleg@redhat.com, david@redhat.com,
+        jannh@google.com, shakeelb@google.com, peterx@redhat.com,
+        jhubbard@nvidia.com, shuah@kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kselftest@vger.kernel.org, kernel-team@android.com,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220510030014.3842475-1-surenb@google.com>
+ <20220510030014.3842475-2-surenb@google.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <3e847a15-e8c0-41fd-9518-2ae3d4a39092@linuxfoundation.org>
+Date:   Tue, 10 May 2022 09:46:05 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220510030014.3842475-2-surenb@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shravya Kumbham <shravya.kumbham@xilinx.com>
+On 5/9/22 9:00 PM, Suren Baghdasaryan wrote:
+> With the oom-killer being able to operate on locked pages, exit_mmap
+> does not need to ensure that oom_reap_task_mm is done before it can
+> proceed. Instead it can rely on mmap_lock write lock to prevent
+> oom-killer from operating on the vma tree while it's freeing page
+> tables. exit_mmap can hold mmap_lock read lock when unmapping vmas
+> and then take mmap_lock write lock before freeing page tables.
+> 
+> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> ---
+>   include/linux/oom.h |  2 --
+>   mm/mmap.c           | 25 ++++++-------------------
+>   mm/oom_kill.c       |  2 +-
+>   3 files changed, 7 insertions(+), 22 deletions(-)
+> 
 
-[ Upstream commit b800528b97d0adc3a5ba42d78a8b0d3f07a31f44 ]
+How does this improve the test? Include the information on why this
+change is needed as opposed describing what this does?
 
-In xemaclite_open() function we are setting the max speed of
-emaclite to 100Mb using phy_set_max_speed() function so,
-there is no need to write the advertising registers to stop
-giga-bit speed and the phy_start() function starts the
-auto-negotiation so, there is no need to handle it separately
-using advertising registers. Remove the phy_read and phy_write
-of advertising registers in xemaclite_open() function.
-
-Signed-off-by: Shravya Kumbham <shravya.kumbham@xilinx.com>
-Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/xilinx/xilinx_emaclite.c | 15 ---------------
- 1 file changed, 15 deletions(-)
-
-diff --git a/drivers/net/ethernet/xilinx/xilinx_emaclite.c b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-index 63a2d1bcccfb..5fae598c4f76 100644
---- a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-@@ -923,8 +923,6 @@ static int xemaclite_open(struct net_device *dev)
- 	xemaclite_disable_interrupts(lp);
- 
- 	if (lp->phy_node) {
--		u32 bmcr;
--
- 		lp->phy_dev = of_phy_connect(lp->ndev, lp->phy_node,
- 					     xemaclite_adjust_link, 0,
- 					     PHY_INTERFACE_MODE_MII);
-@@ -935,19 +933,6 @@ static int xemaclite_open(struct net_device *dev)
- 
- 		/* EmacLite doesn't support giga-bit speeds */
- 		phy_set_max_speed(lp->phy_dev, SPEED_100);
--
--		/* Don't advertise 1000BASE-T Full/Half duplex speeds */
--		phy_write(lp->phy_dev, MII_CTRL1000, 0);
--
--		/* Advertise only 10 and 100mbps full/half duplex speeds */
--		phy_write(lp->phy_dev, MII_ADVERTISE, ADVERTISE_ALL |
--			  ADVERTISE_CSMA);
--
--		/* Restart auto negotiation */
--		bmcr = phy_read(lp->phy_dev, MII_BMCR);
--		bmcr |= (BMCR_ANENABLE | BMCR_ANRESTART);
--		phy_write(lp->phy_dev, MII_BMCR, bmcr);
--
- 		phy_start(lp->phy_dev);
- 	}
- 
--- 
-2.35.1
-
+thanks,
+-- Shuah
