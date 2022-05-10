@@ -2,92 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D118C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:46:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01C28C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:48:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344607AbiEJOuk (ORCPT
+        id S1345009AbiEJOwL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:50:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47640 "EHLO
+        Tue, 10 May 2022 10:52:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345073AbiEJOuG (ORCPT
+        with ESMTP id S1345221AbiEJOvI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:50:06 -0400
-Received: from mail.hallyn.com (mail.hallyn.com [178.63.66.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84D06309346;
-        Tue, 10 May 2022 07:10:27 -0700 (PDT)
-Received: by mail.hallyn.com (Postfix, from userid 1001)
-        id 4C681890; Tue, 10 May 2022 09:10:25 -0500 (CDT)
-Date:   Tue, 10 May 2022 09:10:25 -0500
-From:   "Serge E. Hallyn" <serge@hallyn.com>
-To:     Christian Brauner <brauner@kernel.org>
-Cc:     "Serge E. Hallyn" <serge@hallyn.com>,
-        Stefan Berger <stefanb@linux.ibm.com>,
-        linux-integrity@vger.kernel.org, zohar@linux.ibm.com,
-        christian.brauner@ubuntu.com, containers@lists.linux.dev,
-        dmitry.kasatkin@gmail.com, ebiederm@xmission.com,
-        krzysztof.struczynski@huawei.com, roberto.sassu@huawei.com,
-        mpeters@redhat.com, lhinds@redhat.com, lsturman@redhat.com,
-        puiterwi@redhat.com, jejb@linux.ibm.com, jamjoom@us.ibm.com,
-        linux-kernel@vger.kernel.org, paul@paul-moore.com, rgb@redhat.com,
-        linux-security-module@vger.kernel.org, jmorris@namei.org,
-        jpenumak@redhat.com, John Johansen <john.johansen@canonical.com>,
-        Matthew Garrett <mjg59@srcf.ucam.org>,
-        Micah Morton <mortonm@chromium.org>,
-        Kentaro Takeda <takedakn@nttdata.co.jp>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Subject: Re: [PATCH v12 01/26] securityfs: rework dentry creation
-Message-ID: <20220510141025.GA7290@mail.hallyn.com>
-References: <20220420140633.753772-1-stefanb@linux.ibm.com>
- <20220420140633.753772-2-stefanb@linux.ibm.com>
- <20220509195414.GA30894@mail.hallyn.com>
- <20220510102525.hlt2rm3k3hg5r6gg@wittgenstein>
+        Tue, 10 May 2022 10:51:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 95B012631EC
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:11:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652191896;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rtq28CnPqdWCcQU57wEB4HrePwIAG8WJOylvl7UVi70=;
+        b=LF3q84Crg/53eR2LwSlS5BZjpbCBFLYvuNtonGn/Bz1mW+HVx87XVxRvoIuMRVwMOrPp+2
+        zVYb5AezQKQ3gOJmXbdVfJTUUC/T/dCbVyTG6uEJJ6Qki6igFAf/aCR2V7cam47W/WCYxi
+        BjjCzNgSv9P/hl6MA6P11npJVbYGgIs=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-371-raQYS_JPNre-oUAAvyhb7w-1; Tue, 10 May 2022 10:11:30 -0400
+X-MC-Unique: raQYS_JPNre-oUAAvyhb7w-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6DE863833286;
+        Tue, 10 May 2022 14:11:29 +0000 (UTC)
+Received: from dhcp-27-174.brq.redhat.com (unknown [10.40.192.98])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 8C11BC28106;
+        Tue, 10 May 2022 14:11:24 +0000 (UTC)
+Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
+        oleg@redhat.com; Tue, 10 May 2022 16:11:26 +0200 (CEST)
+Date:   Tue, 10 May 2022 16:11:21 +0200
+From:   Oleg Nesterov <oleg@redhat.com>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
+        Will Deacon <will@kernel.org>, tj@kernel.org,
+        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        linux-xtensa@linux-xtensa.org, Jann Horn <jannh@google.com>,
+        Kees Cook <keescook@chromium.org>, linux-ia64@vger.kernel.org
+Subject: Re: [PATCH v4 0/12] ptrace: cleaning up ptrace_stop
+Message-ID: <20220510141119.GA23277@redhat.com>
+References: <20220421150248.667412396@infradead.org>
+ <20220421150654.817117821@infradead.org>
+ <87czhap9dy.fsf@email.froward.int.ebiederm.org>
+ <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
+ <87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>
+ <87k0b0apne.fsf_-_@email.froward.int.ebiederm.org>
+ <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220510102525.hlt2rm3k3hg5r6gg@wittgenstein>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 12:25:25PM +0200, Christian Brauner wrote:
-> On Mon, May 09, 2022 at 02:54:14PM -0500, Serge Hallyn wrote:
-> > On Wed, Apr 20, 2022 at 10:06:08AM -0400, Stefan Berger wrote:
-> > > From: Christian Brauner <brauner@kernel.org>
-> > > 
-> > > When securityfs creates a new file or directory via
-> > > securityfs_create_dentry() it will take an additional reference on the
-> > > newly created dentry after it has attached the new inode to the new
-> > > dentry and added it to the hashqueues.
-> > > If we contrast this with debugfs which has the same underlying logic as
-> > > securityfs. It uses a similar pairing as securityfs. Where securityfs
-> > > has the securityfs_create_dentry() and securityfs_remove() pairing,
-> > > debugfs has the __debugfs_create_file() and debugfs_remove() pairing.
-> > > 
-> > > In contrast to securityfs, debugfs doesn't take an additional reference
-> > > on the newly created dentry in __debugfs_create_file() which would need
-> > > to be put in debugfs_remove().
-> > > 
-> > > The additional dget() isn't a problem per se. In the current
-> > > implementation of securityfs each created dentry pins the filesystem via
-> > 
-> > Is 'via' an extra word here or is there a missing word?
-> > 
-> > I'll delay the rest of my response as the missing word may answer my
-> > remaining question :)
-> 
-> It can be both. It should either be removed or it should be followed by
-> "securityfs_create_dentry()". securityfs_create_dentry() takes two
-> references one in lookup_one_len() and another one explicitly via
-> dget(). The latter one isn't needed. Some of that has been covered in an
-> earlier thread:
-> https://lore.kernel.org/lkml/20220105101815.ldsm4s5yx7pmuiil@wittgenstein
+On 05/05, Eric W. Biederman wrote:
+>
+> Eric W. Biederman (11):
+>       signal: Rename send_signal send_signal_locked
+>       signal: Replace __group_send_sig_info with send_signal_locked
+>       ptrace/um: Replace PT_DTRACE with TIF_SINGLESTEP
+>       ptrace/xtensa: Replace PT_SINGLESTEP with TIF_SINGLESTEP
+>       ptrace: Remove arch_ptrace_attach
+>       signal: Use lockdep_assert_held instead of assert_spin_locked
+>       ptrace: Reimplement PTRACE_KILL by always sending SIGKILL
+>       ptrace: Document that wait_task_inactive can't fail
+>       ptrace: Admit ptrace_stop can generate spuriuos SIGTRAPs
+>       ptrace: Don't change __state
+>       ptrace: Always take siglock in ptrace_resume
+>
+> Peter Zijlstra (1):
+>       sched,signal,ptrace: Rework TASK_TRACED, TASK_STOPPED state
 
-Yes, I saw that two references were being taken.  And near as I can tell,
-the second one was never being dropped.  So if you tell me that before this
-patch the dentries are never freed, then I'm happy.  Otherwise, I'm
-bothered the fact that no matching dput is being deleted in the code (to
-match the extra dget being removed).  So where is the code where the final
-dput was happening, and is it the d_delete() you're adding which is making
-it so that that dput won't be called now?
+OK, lgtm.
+
+Reviewed-by: Oleg Nesterov <oleg@redhat.com>
+
+
+I still dislike you removed TASK_WAKEKILL from TASK_TRACED, but I can't
+find a good argument against it ;) and yes, this is subjective.
+
+Oleg.
+
