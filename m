@@ -2,151 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F11E7C3A5A3
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:48:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D300DC388F3
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:48:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237466AbiEJNw3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:52:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48830 "EHLO
+        id S241152AbiEJNwi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:52:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243590AbiEJNf1 (ORCPT
+        with ESMTP id S243328AbiEJNfi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:35:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE0582BFBD7;
-        Tue, 10 May 2022 06:24:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E231617AE;
-        Tue, 10 May 2022 13:24:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59A30C385A6;
-        Tue, 10 May 2022 13:24:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189089;
-        bh=RIK5MElVo47bD1tsF8v3qbeY9yUwA6PQltPBj+Q7u+4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xcVsiYk7IV2cMYFdDwaxwOVJjgimUPlocmYwwFmzvipSRP7pcWzdFrd25IyFM/jaU
-         B2Wn1CCxHPkWL+7G939u1GrMyUxM9suw2jZv7svZSeOmzIgd+W1sy+3Niyy4qpX9RY
-         6odGxn0WlAsS9dha+pjjVLfuIi48FKguDIGs/Wn8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        =?UTF-8?q?Philippe=20Mathieu-Daud=C3=A9?= <f4bug@amsat.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Subject: [PATCH 5.10 01/70] MIPS: Fix CP0 counter erratum detection for R4k CPUs
-Date:   Tue, 10 May 2022 15:07:20 +0200
-Message-Id: <20220510130732.906253467@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
-References: <20220510130732.861729621@linuxfoundation.org>
-User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
+        Tue, 10 May 2022 09:35:38 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5D50C2BFBDA
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 06:24:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652189090;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qrQk331dY+acOKtsHio4tuTM5tl4Z2AS4qgsAPiJY2U=;
+        b=ZMYUhcFxH76k9VKPpFikqzFnp14g0x0uRua7+Ua9L+euwb+gKfZTtwWXzG/Hqs3EFSvpQ6
+        Da6ACRYguzluNX2Tgyx7G8tp2fJ+pRlklrnZyNlPQix8/zS2rG3t7A3ehsBgFY97+bd3Rw
+        HDS9DW5WxYWvuAzBi+8xrqBG2BJZ0i4=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-380-XFKYWjobP5SVRh-tdpdSeA-1; Tue, 10 May 2022 09:24:49 -0400
+X-MC-Unique: XFKYWjobP5SVRh-tdpdSeA-1
+Received: by mail-wr1-f71.google.com with SMTP id s16-20020adfeb10000000b0020cc4e5e683so2729990wrn.6
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 06:24:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=qrQk331dY+acOKtsHio4tuTM5tl4Z2AS4qgsAPiJY2U=;
+        b=iHfhcvUsTYVPmMjBb5Nl1ZGhzIOV42NKCRevAk6B/CgcGncamejQf1jfMG1KBSYFpu
+         3bD3JsOXWdI6k6oKzj3jmMSz1OLxsz7TApN3JXKJy7nsj6LDrobV81bcfjuSF1TBKWcF
+         mboBBhhkwU/lhaQMRcfld+rDxg/Ia72vikUkn8kuD0TiU0LXSZnO6/qbxjHLsyc5kgLJ
+         d3ta2JKsxh2B/fdZobhf6CutW0FWuywI2NyGX7IYo4FKxkGKupMBtTWsZ/3OinCj3auK
+         igGY00EsRxvq/O3cC3aYaJwsFKD/Ik3cfXQztJ80YchBe/ljib7mr75APvBjuQ2OQzFj
+         Ztxg==
+X-Gm-Message-State: AOAM530mQbdx47oJT8rUDijeKbCdle5QtMnsDxnMA1pg6ZiwQ7TAzsQd
+        ybAcBg542XGwq9HW8kCNH9/OISEjrvrjtQpn6jt1Xt1TL0X46ur5CJhtyQotO4YIsafuZOHw8QO
+        6UiQkHGQx5wUtxaNXtciXG6Ie
+X-Received: by 2002:a7b:c341:0:b0:37b:c619:c9f4 with SMTP id l1-20020a7bc341000000b0037bc619c9f4mr52516wmj.38.1652189088026;
+        Tue, 10 May 2022 06:24:48 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxqwwogMAcS1Mjth3MHCVBlRUf2i94V/nGy/gavPvqLn2BGjAVyi0GQ29U+7t2tPijI+iv5XA==
+X-Received: by 2002:a7b:c341:0:b0:37b:c619:c9f4 with SMTP id l1-20020a7bc341000000b0037bc619c9f4mr52495wmj.38.1652189087788;
+        Tue, 10 May 2022 06:24:47 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-113-89.dyn.eolo.it. [146.241.113.89])
+        by smtp.gmail.com with ESMTPSA id z11-20020a5d654b000000b0020c6b78eb5asm13892257wrv.68.2022.05.10.06.24.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 06:24:47 -0700 (PDT)
+Message-ID: <19e704ace63483a765a3298610218c5d110bb0e4.camel@redhat.com>
+Subject: Re: [PATCH] net: macb: Increment rx bd head after allocating skb
+ and buffer
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Harini Katakam <harini.katakam@xilinx.com>,
+        nicolas.ferre@microchip.com, davem@davemloft.net,
+        claudiu.beznea@microchip.com, kuba@kernel.org, dumazet@google.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        michal.simek@xilinx.com, harinikatakamlinux@gmail.com,
+        radhey.shyam.pandey@xilinx.com
+Date:   Tue, 10 May 2022 15:24:45 +0200
+In-Reply-To: <20220509121958.3976-1-harini.katakam@xilinx.com>
+References: <20220509121958.3976-1-harini.katakam@xilinx.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej W. Rozycki <macro@orcam.me.uk>
+Hello,
 
-commit f0a6c68f69981214cb7858738dd2bc81475111f7 upstream.
+On Mon, 2022-05-09 at 17:49 +0530, Harini Katakam wrote:
+> In gem_rx_refill rx_prepared_head is incremented at the beginning of
+> the while loop preparing the skb and data buffers. If the skb or data
+> buffer allocation fails, this BD will be unusable BDs until the head
+> loops back to the same BD (and obviously buffer allocation succeeds).
+> In the unlikely event that there's a string of allocation failures,
+> there will be an equal number of unusable BDs and an inconsistent RX
+> BD chain. Hence increment the head at the end of the while loop to be
+> clean.
+> 
+> Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
+> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
 
-Fix the discrepancy between the two places we check for the CP0 counter
-erratum in along with the incorrect comparison of the R4400 revision
-number against 0x30 which matches none and consistently consider all
-R4000 and R4400 processors affected, as documented in processor errata
-publications[1][2][3], following the mapping between CP0 PRId register
-values and processor models:
+This looks like targeting the "net" tree, please repost adding a
+suitable Fixes tag.
 
-  PRId   |  Processor Model
----------+--------------------
-00000422 | R4000 Revision 2.2
-00000430 | R4000 Revision 3.0
-00000440 | R4400 Revision 1.0
-00000450 | R4400 Revision 2.0
-00000460 | R4400 Revision 3.0
+Thanks,
 
-No other revision of either processor has ever been spotted.
-
-Contrary to what has been stated in commit ce202cbb9e0b ("[MIPS] Assume
-R4000/R4400 newer than 3.0 don't have the mfc0 count bug") marking the
-CP0 counter as buggy does not preclude it from being used as either a
-clock event or a clock source device.  It just cannot be used as both at
-a time, because in that case clock event interrupts will be occasionally
-lost, and the use as a clock event device takes precedence.
-
-Compare against 0x4ff in `can_use_mips_counter' so that a single machine
-instruction is produced.
-
-
-[1] "MIPS R4000PC/SC Errata, Processor Revision 2.2 and 3.0", MIPS
-    Technologies Inc., May 10, 1994, Erratum 53, p.13
-
-[2] "MIPS R4400PC/SC Errata, Processor Revision 1.0", MIPS Technologies
-    Inc., February 9, 1994, Erratum 21, p.4
-
-[3] "MIPS R4400PC/SC Errata, Processor Revision 2.0 & 3.0", MIPS
-    Technologies Inc., January 24, 1995, Erratum 14, p.3
-
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Fixes: ce202cbb9e0b ("[MIPS] Assume R4000/R4400 newer than 3.0 don't have the mfc0 count bug")
-Cc: stable@vger.kernel.org # v2.6.24+
-Reviewed-by: Philippe Mathieu-Daudé <f4bug@amsat.org>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/mips/include/asm/timex.h |    8 ++++----
- arch/mips/kernel/time.c       |   11 +++--------
- 2 files changed, 7 insertions(+), 12 deletions(-)
-
---- a/arch/mips/include/asm/timex.h
-+++ b/arch/mips/include/asm/timex.h
-@@ -40,9 +40,9 @@
- typedef unsigned int cycles_t;
- 
- /*
-- * On R4000/R4400 before version 5.0 an erratum exists such that if the
-- * cycle counter is read in the exact moment that it is matching the
-- * compare register, no interrupt will be generated.
-+ * On R4000/R4400 an erratum exists such that if the cycle counter is
-+ * read in the exact moment that it is matching the compare register,
-+ * no interrupt will be generated.
-  *
-  * There is a suggested workaround and also the erratum can't strike if
-  * the compare interrupt isn't being used as the clock source device.
-@@ -63,7 +63,7 @@ static inline int can_use_mips_counter(u
- 	if (!__builtin_constant_p(cpu_has_counter))
- 		asm volatile("" : "=m" (cpu_data[0].options));
- 	if (likely(cpu_has_counter &&
--		   prid >= (PRID_IMP_R4000 | PRID_REV_ENCODE_44(5, 0))))
-+		   prid > (PRID_IMP_R4000 | PRID_REV_ENCODE_44(15, 15))))
- 		return 1;
- 	else
- 		return 0;
---- a/arch/mips/kernel/time.c
-+++ b/arch/mips/kernel/time.c
-@@ -141,15 +141,10 @@ static __init int cpu_has_mfc0_count_bug
- 	case CPU_R4400MC:
- 		/*
- 		 * The published errata for the R4400 up to 3.0 say the CPU
--		 * has the mfc0 from count bug.
-+		 * has the mfc0 from count bug.  This seems the last version
-+		 * produced.
- 		 */
--		if ((current_cpu_data.processor_id & 0xff) <= 0x30)
--			return 1;
--
--		/*
--		 * we assume newer revisions are ok
--		 */
--		return 0;
-+		return 1;
- 	}
- 
- 	return 0;
-
+Paolo
 
