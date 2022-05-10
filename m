@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6B17C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:04:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02D7CC43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:04:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343772AbiEJOHN (ORCPT
+        id S1344089AbiEJOH3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:07:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47270 "EHLO
+        Tue, 10 May 2022 10:07:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244124AbiEJNgv (ORCPT
+        with ESMTP id S244235AbiEJNph (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:36:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 725452D9ED5;
-        Tue, 10 May 2022 06:25:24 -0700 (PDT)
+        Tue, 10 May 2022 09:45:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CBC6F137A;
+        Tue, 10 May 2022 06:31:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AF4C61767;
-        Tue, 10 May 2022 13:25:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46789C385A6;
-        Tue, 10 May 2022 13:25:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C893CB81DB1;
+        Tue, 10 May 2022 13:31:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30541C385C2;
+        Tue, 10 May 2022 13:31:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189113;
-        bh=2HnKUKKeygCNULEDLTGebDWd/Upf5P086EXE4P6TmGo=;
+        s=korg; t=1652189476;
+        bh=Jc1hw+gqix56pSd24P6pHffkRwHVTZeWougTj51oJt0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UMefxCXfdDoy5SVdDHbjuAoiuhMmrzbtXUM9YtSn05LjfItGsXbcr0Ylrq9GsG1D4
-         nmK8PNqAIxcNsjuY+R0YNKKN9IxnqjwwuOQFnRoPa+bDJq4nOkEtYllTxcrvj0k3rQ
-         JjVdmguSrFo280CPgZ8iUEy8+R7VYC2CvyuIYBzw=
+        b=k4dy3gd6zvnXd04A7g+l5w002Ta2+b7mFPpTRK3ZOHQEVBZNaNnaF6LRfGlYjhs+o
+         9R/C1oc4SDcfFOlOOyolW8n/at4eIfEBo8v6TpCbiWuF14N25AhJBScFbAmnEoBfk6
+         AvvfKyyWH4NX34QzaHbdYOc0rElMe8MJzLHSSPm0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-Subject: [PATCH 5.10 17/70] ASoC: da7219: Fix change notifications for tone generator frequency
-Date:   Tue, 10 May 2022 15:07:36 +0200
-Message-Id: <20220510130733.370742040@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 063/135] net: stmmac: dwmac-sun8i: add missing of_node_put() in sun8i_dwmac_register_mdio_mux()
+Date:   Tue, 10 May 2022 15:07:25 +0200
+Message-Id: <20220510130742.215168169@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
-References: <20220510130732.861729621@linuxfoundation.org>
+In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
+References: <20220510130740.392653815@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,58 +50,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-commit 08ef48404965cfef99343d6bbbcf75b88c74aa0e upstream.
+commit 1a15267b7be77e0792cf0c7b36ca65c8eb2df0d8 upstream.
 
-The tone generator frequency control just returns 0 on successful write,
-not a boolean value indicating if there was a change or not.  Compare
-what was written with the value that was there previously so that
-notifications are generated appropriately when the value changes.
+The node pointer returned by of_get_child_by_name() with refcount incremented,
+so add of_node_put() after using it.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Reviewed-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220420133437.569229-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 634db83b8265 ("net: stmmac: dwmac-sun8i: Handle integrated/external MDIOs")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220428095716.540452-1-yangyingliang@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/da7219.c |   14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/sound/soc/codecs/da7219.c
-+++ b/sound/soc/codecs/da7219.c
-@@ -446,7 +446,7 @@ static int da7219_tonegen_freq_put(struc
- 	struct soc_mixer_control *mixer_ctrl =
- 		(struct soc_mixer_control *) kcontrol->private_value;
- 	unsigned int reg = mixer_ctrl->reg;
--	__le16 val;
-+	__le16 val_new, val_old;
- 	int ret;
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+@@ -916,6 +916,7 @@ static int sun8i_dwmac_register_mdio_mux
  
- 	/*
-@@ -454,13 +454,19 @@ static int da7219_tonegen_freq_put(struc
- 	 * Therefore we need to convert to little endian here to align with
- 	 * HW registers.
- 	 */
--	val = cpu_to_le16(ucontrol->value.integer.value[0]);
-+	val_new = cpu_to_le16(ucontrol->value.integer.value[0]);
- 
- 	mutex_lock(&da7219->ctrl_lock);
--	ret = regmap_raw_write(da7219->regmap, reg, &val, sizeof(val));
-+	ret = regmap_raw_read(da7219->regmap, reg, &val_old, sizeof(val_old));
-+	if (ret == 0 && (val_old != val_new))
-+		ret = regmap_raw_write(da7219->regmap, reg,
-+				&val_new, sizeof(val_new));
- 	mutex_unlock(&da7219->ctrl_lock);
- 
--	return ret;
-+	if (ret < 0)
-+		return ret;
-+
-+	return val_old != val_new;
+ 	ret = mdio_mux_init(priv->device, mdio_mux, mdio_mux_syscon_switch_fn,
+ 			    &gmac->mux_handle, priv, priv->mii);
++	of_node_put(mdio_mux);
+ 	return ret;
  }
- 
  
 
 
