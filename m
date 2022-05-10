@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDB71C35296
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:23:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B6B3C4707A
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:23:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344529AbiEJO06 (ORCPT
+        id S1344959AbiEJO1c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:26:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45308 "EHLO
+        Tue, 10 May 2022 10:27:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244609AbiEJNz7 (ORCPT
+        with ESMTP id S245136AbiEJN5P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:55:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93BE83F892;
-        Tue, 10 May 2022 06:38:39 -0700 (PDT)
+        Tue, 10 May 2022 09:57:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A972CAAA9;
+        Tue, 10 May 2022 06:38:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 27323615E9;
-        Tue, 10 May 2022 13:38:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 203F9C385D4;
-        Tue, 10 May 2022 13:38:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E875618A6;
+        Tue, 10 May 2022 13:38:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52D3BC385A6;
+        Tue, 10 May 2022 13:38:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189917;
-        bh=BLhaYnSDWTmnxGZlLocs5B2+vyy327FfiGc2UyQUzZc=;
+        s=korg; t=1652189929;
+        bh=hyKNgmokdkIhVY6XJwyLC5CSdldQB2W5tsQhWiXwlRc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DbYJwSl38SknuIwzYral34U0ruJbuEUtVKS/tcjTMVWfosYplvq6tWCgx4r/VqUu6
-         JKiasACzNbfT2bT0ADHo4ZkxqpefP7FGcM6I7vciXBeEIeCj74HobDRsQlpV0AithE
-         6Odpv0llX94nGsClQWT8oQbJBmAJ9KqDcYDSzzO0=
+        b=N4Qaebymms1fdMw06JEwaCXFnPHhDngm3Dw1m+dkecj70GF+OSb3EyK0CF7Bv0FDx
+         ID0ULX2T6KJYrj/aZwOgBSIOwWWf2MVoMR/p7/PcFLnVCJ/AG3sXt8XefN5JSEAWLF
+         TQlmCzZTDK/5WT+5MVkCTqv+m7eidZKw1nM+4eO4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jan=20H=C3=B6ppner?= <hoeppner@linux.ibm.com>,
-        Stefan Haberland <sth@linux.ibm.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.17 043/140] s390/dasd: Fix read for ESE with blksize < 4k
-Date:   Tue, 10 May 2022 15:07:13 +0200
-Message-Id: <20220510130742.851866478@linuxfoundation.org>
+        stable@vger.kernel.org, Vlad Buslov <vladbu@nvidia.com>,
+        Maor Dickman <maord@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH 5.17 073/140] net/mlx5e: Lag, Fix fib_info pointer assignment
+Date:   Tue, 10 May 2022 15:07:43 +0200
+Message-Id: <20220510130743.704855403@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -51,60 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Höppner <hoeppner@linux.ibm.com>
+From: Vlad Buslov <vladbu@nvidia.com>
 
-commit cd68c48ea15c85f1577a442dc4c285e112ff1b37 upstream.
+commit a6589155ec9847918e00e7279b8aa6d4c272bea7 upstream.
 
-When reading unformatted tracks on ESE devices, the corresponding memory
-areas are simply set to zero for each segment. This is done incorrectly
-for blocksizes < 4096.
+Referenced change incorrectly sets single path fib_info even when LAG is
+not active. Fix it by moving call to mlx5_lag_fib_set() into conditional
+that verifies LAG state.
 
-There are two problems. First, the increment of dst is done using the
-counter of the loop (off), which is increased by blksize every
-iteration. This leads to a much bigger increment for dst as actually
-intended. Second, the increment of dst is done before the memory area
-is set to 0, skipping a significant amount of bytes of memory.
-
-This leads to illegal overwriting of memory and ultimately to a kernel
-panic.
-
-This is not a problem with 4k blocksize because
-blk_queue_max_segment_size is set to PAGE_SIZE, always resulting in a
-single iteration for the inner segment loop (bv.bv_len == blksize). The
-incorrectly used 'off' value to increment dst is 0 and the correct
-memory area is used.
-
-In order to fix this for blksize < 4k, increment dst correctly using the
-blksize and only do it at the end of the loop.
-
-Fixes: 5e2b17e712cf ("s390/dasd: Add dynamic formatting support for ESE volumes")
-Cc: stable@vger.kernel.org # v5.3+
-Signed-off-by: Jan Höppner <hoeppner@linux.ibm.com>
-Reviewed-by: Stefan Haberland <sth@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220505141733.1989450-4-sth@linux.ibm.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: ad11c4f1d8fd ("net/mlx5e: Lag, Only handle events from highest priority multipath entry")
+Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
+Reviewed-by: Maor Dickman <maord@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/s390/block/dasd_eckd.c |    7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/s390/block/dasd_eckd.c
-+++ b/drivers/s390/block/dasd_eckd.c
-@@ -3285,12 +3285,11 @@ static int dasd_eckd_ese_read(struct das
- 				cqr->proc_bytes = blk_count * blksize;
- 				return 0;
- 			}
--			if (dst && !skip_block) {
--				dst += off;
-+			if (dst && !skip_block)
- 				memset(dst, 0, blksize);
--			} else {
-+			else
- 				skip_block--;
--			}
-+			dst += blksize;
- 			blk_count++;
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c
+@@ -149,9 +149,9 @@ static void mlx5_lag_fib_route_event(str
+ 
+ 			i++;
+ 			mlx5_lag_set_port_affinity(ldev, i);
++			mlx5_lag_fib_set(mp, fi);
  		}
+ 
+-		mlx5_lag_fib_set(mp, fi);
+ 		return;
  	}
+ 
 
 
