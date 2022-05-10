@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A1CBC38A2B
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1334C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245715AbiEJN6k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:58:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56608 "EHLO
+        id S245571AbiEJN6K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:58:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245201AbiEJNii (ORCPT
+        with ESMTP id S245190AbiEJNih (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:38:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E2E7DF5F;
-        Tue, 10 May 2022 06:28:45 -0700 (PDT)
+        Tue, 10 May 2022 09:38:37 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B1CD54;
+        Tue, 10 May 2022 06:28:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 249F0B81DA2;
-        Tue, 10 May 2022 13:28:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79D23C385C6;
-        Tue, 10 May 2022 13:28:42 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 80F3FCE1EE2;
+        Tue, 10 May 2022 13:28:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 862FFC385C2;
+        Tue, 10 May 2022 13:28:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189322;
-        bh=ighqq+8BTA6i60Rh16ci84mBTU+PHJGizR7t8a8h21o=;
+        s=korg; t=1652189310;
+        bh=v7Yqa6zur4G9nPPs/iLeF0a/0w7hCDhIoRVk6yIDzJs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gv0ANQXoEqGTUJeppdWf7GMxaG3t5FpHUZaCDnQdD3n50aZdGXFeuzWnaxTrecRtP
-         U10fLuFI5hVmjuMJQKoKtxjgnbkdcBZ8hj9c5jtv/lKmSIB4kUO0LrOylzCRbF2wBs
-         2WjDa13bnGEdlcSI8qF7UeYy2AySUD74ciGJsG04=
+        b=TSa3soPkG0/lRM7DQrq9dzjEfQlQj91xHoRZBdwZy0RDTK90go3JcGxnpG8bztieL
+         C+3uggVBGvOsmv2SJn+b+wijIZXUdXqsEp4c6ZJiymyyJIeEgfHxb81P30d/xpoQPM
+         Sd4vJcBZURfunTJAv2sZlHjNflWDpRCZFEJTZFB8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.15 014/135] drm/amdgpu: do not use passthrough mode in Xen dom0
-Date:   Tue, 10 May 2022 15:06:36 +0200
-Message-Id: <20220510130740.808126555@linuxfoundation.org>
+        stable@vger.kernel.org, Kyle Huey <me@kylehuey.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.15 010/135] KVM: x86/svm: Account for family 17h event renumberings in amd_pmc_perf_hw_id
+Date:   Tue, 10 May 2022 15:06:32 +0200
+Message-Id: <20220510130740.692228214@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -50,51 +48,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+From: Kyle Huey <me@kylehuey.com>
 
-commit 19965d8259fdabc6806da92adda49684f5bcbec5 upstream.
+commit 5eb849322d7f7ae9d5c587c7bc3b4f7c6872cd2f upstream.
 
-While technically Xen dom0 is a virtual machine too, it does have
-access to most of the hardware so it doesn't need to be considered a
-"passthrough". Commit b818a5d37454 ("drm/amdgpu/gmc: use PCI BARs for
-APUs in passthrough") changed how FB is accessed based on passthrough
-mode. This breaks amdgpu in Xen dom0 with message like this:
+Zen renumbered some of the performance counters that correspond to the
+well known events in perf_hw_id. This code in KVM was never updated for
+that, so guest that attempt to use counters on Zen that correspond to the
+pre-Zen perf_hw_id values will silently receive the wrong values.
 
-    [drm:dc_dmub_srv_wait_idle [amdgpu]] *ERROR* Error waiting for DMUB idle: status=3
+This has been observed in the wild with rr[0] when running in Zen 3
+guests. rr uses the retired conditional branch counter 00d1 which is
+incorrectly recognized by KVM as PERF_COUNT_HW_STALLED_CYCLES_BACKEND.
 
-While the reason for this failure is unclear, the passthrough mode is
-not really necessary in Xen dom0 anyway. So, to unbreak booting affected
-kernels, disable passthrough mode in this case.
+[0] https://rr-project.org/
 
-Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1985
-Fixes: b818a5d37454 ("drm/amdgpu/gmc: use PCI BARs for APUs in passthrough")
-Signed-off-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Kyle Huey <me@kylehuey.com>
+Message-Id: <20220503050136.86298-1-khuey@kylehuey.com>
 Cc: stable@vger.kernel.org
+[Check guest family, not host. - Paolo]
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_virt.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/x86/kvm/svm/pmu.c |   28 +++++++++++++++++++++++++---
+ 1 file changed, 25 insertions(+), 3 deletions(-)
 
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_virt.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_virt.c
-@@ -24,6 +24,7 @@
- #include <linux/module.h>
+--- a/arch/x86/kvm/svm/pmu.c
++++ b/arch/x86/kvm/svm/pmu.c
+@@ -44,6 +44,22 @@ static struct kvm_event_hw_type_mapping
+ 	[7] = { 0xd1, 0x00, PERF_COUNT_HW_STALLED_CYCLES_BACKEND },
+ };
  
- #include <drm/drm_drv.h>
-+#include <xen/xen.h>
++/* duplicated from amd_f17h_perfmon_event_map. */
++static struct kvm_event_hw_type_mapping amd_f17h_event_mapping[] = {
++	[0] = { 0x76, 0x00, PERF_COUNT_HW_CPU_CYCLES },
++	[1] = { 0xc0, 0x00, PERF_COUNT_HW_INSTRUCTIONS },
++	[2] = { 0x60, 0xff, PERF_COUNT_HW_CACHE_REFERENCES },
++	[3] = { 0x64, 0x09, PERF_COUNT_HW_CACHE_MISSES },
++	[4] = { 0xc2, 0x00, PERF_COUNT_HW_BRANCH_INSTRUCTIONS },
++	[5] = { 0xc3, 0x00, PERF_COUNT_HW_BRANCH_MISSES },
++	[6] = { 0x87, 0x02, PERF_COUNT_HW_STALLED_CYCLES_FRONTEND },
++	[7] = { 0x87, 0x01, PERF_COUNT_HW_STALLED_CYCLES_BACKEND },
++};
++
++/* amd_pmc_perf_hw_id depends on these being the same size */
++static_assert(ARRAY_SIZE(amd_event_mapping) ==
++	     ARRAY_SIZE(amd_f17h_event_mapping));
++
+ static unsigned int get_msr_base(struct kvm_pmu *pmu, enum pmu_type type)
+ {
+ 	struct kvm_vcpu *vcpu = pmu_to_vcpu(pmu);
+@@ -136,19 +152,25 @@ static inline struct kvm_pmc *get_gp_pmc
  
- #include "amdgpu.h"
- #include "amdgpu_ras.h"
-@@ -694,7 +695,8 @@ void amdgpu_detect_virtualization(struct
- 		adev->virt.caps |= AMDGPU_SRIOV_CAPS_ENABLE_IOV;
+ static unsigned int amd_pmc_perf_hw_id(struct kvm_pmc *pmc)
+ {
++	struct kvm_event_hw_type_mapping *event_mapping;
+ 	u8 event_select = pmc->eventsel & ARCH_PERFMON_EVENTSEL_EVENT;
+ 	u8 unit_mask = (pmc->eventsel & ARCH_PERFMON_EVENTSEL_UMASK) >> 8;
+ 	int i;
  
- 	if (!reg) {
--		if (is_virtual_machine())	/* passthrough mode exclus sriov mod */
-+		/* passthrough mode exclus sriov mod */
-+		if (is_virtual_machine() && !xen_initial_domain())
- 			adev->virt.caps |= AMDGPU_PASSTHROUGH_MODE;
- 	}
++	if (guest_cpuid_family(pmc->vcpu) >= 0x17)
++		event_mapping = amd_f17h_event_mapping;
++	else
++		event_mapping = amd_event_mapping;
++
+ 	for (i = 0; i < ARRAY_SIZE(amd_event_mapping); i++)
+-		if (amd_event_mapping[i].eventsel == event_select
+-		    && amd_event_mapping[i].unit_mask == unit_mask)
++		if (event_mapping[i].eventsel == event_select
++		    && event_mapping[i].unit_mask == unit_mask)
+ 			break;
  
+ 	if (i == ARRAY_SIZE(amd_event_mapping))
+ 		return PERF_COUNT_HW_MAX;
+ 
+-	return amd_event_mapping[i].event_type;
++	return event_mapping[i].event_type;
+ }
+ 
+ /* return PERF_COUNT_HW_MAX as AMD doesn't have fixed events */
 
 
