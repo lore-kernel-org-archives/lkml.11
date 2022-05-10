@@ -2,128 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C96C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 09:45:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCF4BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 09:45:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239164AbiEJJtK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 05:49:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35024 "EHLO
+        id S239158AbiEJJti (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 05:49:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239144AbiEJJtF (ORCPT
+        with ESMTP id S239132AbiEJJtg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 05:49:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AF56429BC4E
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 02:44:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652175893;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZIkeEVePGlxbsvPHtH0nGpkFA24GFXTnSwZmVR9DJTA=;
-        b=BAz7ESpRC1SkfNTEMmArFCea1FqNrrrJHoFawvbIyzz6S9MS5huvdWQPagmFeh1qrWxQcp
-        JcnVgT3DZIN5HQfPya7xt4ZtdGOGlSBqZrELI3Q+Ph848Rpq1cGJGvkmzfp6XIujcSYZ+q
-        ZPjjLFIEZ+qzYQXBNp/KtyyfTTDFgUE=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-332-5f1ERtYMOgCcI16wAh_7dA-1; Tue, 10 May 2022 05:44:52 -0400
-X-MC-Unique: 5f1ERtYMOgCcI16wAh_7dA-1
-Received: by mail-wm1-f72.google.com with SMTP id n26-20020a1c721a000000b003941ea1ced7so570789wmc.7
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 02:44:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ZIkeEVePGlxbsvPHtH0nGpkFA24GFXTnSwZmVR9DJTA=;
-        b=AyRaB5IGbC5Ezp2ERZumluEArSQxyAeRBTuAWLEOCsyFjUwRflUz70iHW7ajbebP5v
-         xwLssFhrfbJCn8g15riD1+0gdM3r30FYMW7tKkt4OPoCg5IuMNBxJA2HNRa4AeCxu+QC
-         sT3v8hagh8yk5fUFBBtydboMJ+/3IrIooLkG2wpSn3E8CIhK7PTmS94619sFL7A0xthR
-         +axN3nlXWN/9/kPiCLcP9FgRveX2T4omvHtJAyNoWnZglHAw+ibRXnb0tiwMVj/mS4LH
-         MWkeb26pDZpH7RpuLhOdZ8gSFYaFnAhJaHNA+WBTLAq0cVVnbm/iOvQvtwz60euW0yso
-         pAiA==
-X-Gm-Message-State: AOAM532+KdYdkXGIgtsCnMpsgGUBIZpNF7QpB+k5F0n5BNqQZ7ChW+aV
-        RZG+V8nXMZpLvIPOr7gu3sqQSfhpCQPi33hSw4Wjy81HziuqrtihXhJoEheNqCPnhrhlxS3ksXz
-        X1yamuIkwNRZWfe7UMWMBomX8
-X-Received: by 2002:a1c:3587:0:b0:381:50ff:cbd with SMTP id c129-20020a1c3587000000b0038150ff0cbdmr27255204wma.140.1652175890833;
-        Tue, 10 May 2022 02:44:50 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwqZdOByE2SRyxmDOrncLZ/RO7E0TZVermOqH+9uwM0OqnYhPpwaZ5UwYEr+j+uTXKTM8aeLw==
-X-Received: by 2002:a1c:3587:0:b0:381:50ff:cbd with SMTP id c129-20020a1c3587000000b0038150ff0cbdmr27255188wma.140.1652175890613;
-        Tue, 10 May 2022 02:44:50 -0700 (PDT)
-Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id p6-20020a05600c358600b0039429bfebeasm6470780wmq.2.2022.05.10.02.44.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 May 2022 02:44:50 -0700 (PDT)
-Message-ID: <c148afe9-f10a-8751-d761-2480c05a137a@redhat.com>
-Date:   Tue, 10 May 2022 11:44:49 +0200
+        Tue, 10 May 2022 05:49:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A424B24F2B;
+        Tue, 10 May 2022 02:45:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4592C615F6;
+        Tue, 10 May 2022 09:45:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F5FCC385C9;
+        Tue, 10 May 2022 09:45:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652175938;
+        bh=9H7ysJz1vVhOl+TV+4Tl6mkvRpk278sDTvbAtJBV2PU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=aHeL4smZjkVsPmMX5DELT9/H1TKlCLGOU2VioqwmG65chqG0QmjODQKoVcSvejKi3
+         K9o6p7Hco/5r85DpZx60cia+QCaOYaclimYC96A7onLGzEOg6FJhSp00bJ83B0hl7Y
+         wr30xVBToZdNNKz2UNfV9faYzQluC3nb8Am3H1p/q7SD9GqhpmD4NpaytY05m2lDeO
+         8lgz4XxFtBsnNVxBFZW+ddJW4SAqPswrt4+W1MB6nDta0DQqtkQW+wtjfV2uRyLARX
+         IPTjbpil7xjwbvxf1ofPdId3vCfw7QTKNqJOLCAgXg7A3wacY1M0bt8J+1WX6iFQIh
+         gVxIghiwxHrxw==
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>, linux-kernel@vger.kernel.org,
+        linux-trace-devel@vger.kernel.org
+Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Clark Williams <williams@redhat.com>
+Subject: [PATCH 2/3] tracing/timerlat: Print stacktrace in the IRQ handler if needed
+Date:   Tue, 10 May 2022 11:45:24 +0200
+Message-Id: <fd04530ce98ae9270e41bb124ee5bf67b05ecfed.1652175637.git.bristot@kernel.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <2c2d9a56c0886c8402ba320de32856cbbb10c2bb.1652175637.git.bristot@kernel.org>
+References: <2c2d9a56c0886c8402ba320de32856cbbb10c2bb.1652175637.git.bristot@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v3 1/4] fbdev: Prevent possible use-after-free in
- fb_release()
-Content-Language: en-US
-To:     Thomas Zimmermann <tzimmermann@suse.de>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
-        linux-fbdev@vger.kernel.org, Helge Deller <deller@gmx.de>,
-        dri-devel@lists.freedesktop.org,
-        Daniel Vetter <daniel.vetter@intel.com>
-References: <20220505215947.364694-1-javierm@redhat.com>
- <20220505220413.365977-1-javierm@redhat.com>
- <753d0350-42dc-389b-b10b-4533ddcf32ac@intel.com>
- <1f788b8f-0bea-1818-349e-b1bc907bf251@redhat.com>
- <a339df59-9e00-c7cb-e33d-2ac626443639@intel.com>
- <3b7fe4fe-fdec-cef2-4e0e-309d9dc4a8af@redhat.com>
- <b5ab1c49-04e7-36c3-677d-2989b79e50ca@suse.de>
- <2bf27b09-0896-1849-254f-d5b19abdc892@redhat.com>
- <fc3e8a40-664f-07ae-7474-c0412a1ab1b5@intel.com>
- <1c36d431-d5c0-7278-c9e0-61867e9dc174@redhat.com>
- <79aaea41-5dab-f896-ab3d-d6bc9a5de615@suse.de>
- <2d8d8583-3a39-b826-dd83-ba5bc4c5b082@redhat.com>
- <7ffd92d7-9c07-fa9c-dc95-9e82719fd237@suse.de>
- <71ebd5f7-64d0-510a-6f1b-29921fca19fa@suse.de>
- <35ffd96d-3cbe-12dd-c1ea-878299ec173c@redhat.com>
- <23ae6eaa-c281-9fc1-2c64-dd953ad2f5f1@suse.de>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <23ae6eaa-c281-9fc1-2c64-dd953ad2f5f1@suse.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/10/22 11:39, Thomas Zimmermann wrote:
+If print_stack and stop_tracing_us are set, and stop_tracing_us is hit
+with latency higher than or equal to print_stack, print the
+stack at the IRQ handler as it is useful to define the root cause for
+the IRQ latency.
 
-[snip]
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+---
+ Documentation/trace/timerlat-tracer.rst |  5 +++--
+ kernel/trace/trace_osnoise.c            | 13 +++++++++++++
+ 2 files changed, 16 insertions(+), 2 deletions(-)
 
->>
->> 3) Set .fb_destroy to drm_fbdev_fb_destroy() if isn't set by drivers when
->>     they call drm_fb_helper_initial_config() or drm_fb_helper_fill_info().
->>
->> I'm leaning towards option (3). Then the fb_info release will be automatic
->> whether drivers are using the generic setup or a custom one.
-> 
-> IMHO this would just be another glitch to paper over all the broken 
-> code. And if you follow through drm_fbdev_fb_helper(), [1] it'll call 
-> _fini at some point and probably blow up in some other way. Instances of 
-> struct fb_ops are also usually const.
-> 
-> The only reliable way AFAICT is to do what generic fbdev does: use 
-> unregister_framebuffer and do the software cleanup somewhere within 
-> fb_destroy. And then fix all drivers to use that pattern.
-> 
-
-Right. We can't really abstract this away from drivers that are not
-using the generic fbdev helpers. So then they will have to provide
-their own .fb_destroy() callback and do the cleanup.
-
+diff --git a/Documentation/trace/timerlat-tracer.rst b/Documentation/trace/timerlat-tracer.rst
+index 64d1fe6e9b93..d643c95c01eb 100644
+--- a/Documentation/trace/timerlat-tracer.rst
++++ b/Documentation/trace/timerlat-tracer.rst
+@@ -74,8 +74,9 @@ directory. The timerlat configs are:
+  - stop_tracing_total_us: stop the system tracing if a
+    timer latency at the *thread* context is higher than the configured
+    value happens. Writing 0 disables this option.
+- - print_stack: save the stack of the IRQ occurrence, and print
+-   it after the *thread context* event".
++ - print_stack: save the stack of the IRQ occurrence. The stack is printed
++   after the *thread context* event, or at the IRQ handler if *stop_tracing_us*
++   is hit.
+ 
+ timerlat and osnoise
+ ----------------------------
+diff --git a/kernel/trace/trace_osnoise.c b/kernel/trace/trace_osnoise.c
+index 6494ca27ea6f..9b204ee3c6f5 100644
+--- a/kernel/trace/trace_osnoise.c
++++ b/kernel/trace/trace_osnoise.c
+@@ -1580,6 +1580,19 @@ static enum hrtimer_restart timerlat_irq(struct hrtimer *timer)
+ 
+ 	if (osnoise_data.stop_tracing) {
+ 		if (time_to_us(diff) >= osnoise_data.stop_tracing) {
++
++			/*
++			 * At this point, if stop_tracing is set and <= print_stack,
++			 * print_stack is set and would be printed in the thread handler.
++			 *
++			 * Thus, print the stack trace as it is helpful to define the
++			 * root cause of an IRQ latency.
++			 */
++			if (osnoise_data.stop_tracing <= osnoise_data.print_stack) {
++				timerlat_save_stack(0);
++				timerlat_dump_stack(time_to_us(diff));
++			}
++
+ 			osnoise_stop_tracing();
+ 			notify_new_max_latency(diff);
+ 		}
 -- 
-Best regards,
-
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
+2.32.0
 
