@@ -2,201 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9A7FC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:19:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D401C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:19:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242803AbiEJNXC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:23:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45976 "EHLO
+        id S242734AbiEJNXJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:23:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242867AbiEJNVI (ORCPT
+        with ESMTP id S242889AbiEJNVI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:21:08 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E73C2BEF8B;
-        Tue, 10 May 2022 06:13:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1EC0CCE1EE3;
-        Tue, 10 May 2022 13:13:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 284EFC385A6;
-        Tue, 10 May 2022 13:13:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188432;
-        bh=hyjdVlUADfBosYVg3PHJ4AVknv0gLsZpFlspOO+hNtY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O5kZz9Ez73Z5lq+XnRBiR9lhgF8i29CtWH/YSmkJ63tEKj0fffRrE7ptKvfB9wod9
-         MP4bcdhYvw2Y514MUWdqilL3rFnePTJt71Qv1hr4J9w4+60H9vjLHXY53UbJv22PGd
-         bazTsLyiZg0MZWtAEQlSO96GMZygXgQ9X9ciu+zI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Christensen <drc@linux.vnet.ibm.com>,
-        Manish Chopra <manishc@marvell.com>,
-        Ariel Elior <aelior@marvell.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 32/66] bnx2x: fix napi API usage sequence
-Date:   Tue, 10 May 2022 15:07:22 +0200
-Message-Id: <20220510130730.708432233@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130729.762341544@linuxfoundation.org>
-References: <20220510130729.762341544@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A47292BF33D
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 06:14:05 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 74D191042;
+        Tue, 10 May 2022 06:14:05 -0700 (PDT)
+Received: from FVFF77S0Q05N (unknown [10.57.1.67])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0BA333F73D;
+        Tue, 10 May 2022 06:14:03 -0700 (PDT)
+Date:   Tue, 10 May 2022 14:13:58 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Alexander Popov <alex.popov@linux.com>
+Cc:     linux-arm-kernel@lists.infradead.org, akpm@linux-foundation.org,
+        catalin.marinas@arm.com, keescook@chromium.org,
+        linux-kernel@vger.kernel.org, luto@kernel.org, will@kernel.org
+Subject: Re: [PATCH v2 07/13] stackleak: rework poison scanning
+Message-ID: <YnplFtdEr8dBOvZU@FVFF77S0Q05N>
+References: <20220427173128.2603085-1-mark.rutland@arm.com>
+ <20220427173128.2603085-8-mark.rutland@arm.com>
+ <268ea8f7-472b-f1d4-6b8b-0c8fefccc0fa@linux.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <268ea8f7-472b-f1d4-6b8b-0c8fefccc0fa@linux.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manish Chopra <manishc@marvell.com>
+On Mon, May 09, 2022 at 04:51:35PM +0300, Alexander Popov wrote:
+> Hello Mark!
+> 
+> On 27.04.2022 20:31, Mark Rutland wrote:
+> > Currently we over-estimate the region of stack which must be erased.
+> > 
+> > To determine the region to be erased, we scan downards for a contiguous
+> > block of poison values (or the low bound of the stack). There are a few
+> > minor problems with this today:
+> > 
+> > * When we find a block of poison values, we include this block within
+> >    the region to erase.
+> > 
+> >    As this is included within the region to erase, this causes us to
+> >    redundantly overwrite 'STACKLEAK_SEARCH_DEPTH' (128) bytes with
+> >    poison.
+> 
+> Right, this can be improved.
+> 
+> > * As the loop condition checks 'poison_count <= depth', it will run an
+> >    additional iteration after finding the contiguous block of poison,
+> >    decrementing 'erase_low' once more than necessary.
+> 
+> Actually, I think the current code is correct.
+> 
+> I'm intentionally searching one poison value more than
+> STACKLEAK_SEARCH_DEPTH to avoid the corner case. See the BUILD_BUG_ON
+> assertion in stackleak_track_stack() that describes it:
+> 
+> /*
+>  * Having CONFIG_STACKLEAK_TRACK_MIN_SIZE larger than
+>  * STACKLEAK_SEARCH_DEPTH makes the poison search in
+>  * stackleak_erase() unreliable. Let's prevent that.
+>  */
+> BUILD_BUG_ON(CONFIG_STACKLEAK_TRACK_MIN_SIZE > STACKLEAK_SEARCH_DEPTH);
 
-[ Upstream commit af68656d66eda219b7f55ce8313a1da0312c79e1 ]
+I had read that, but as written that doesn't imply that it's necessary to scan
+one more element than STACKLEAK_SEARCH_DEPTH, nor why. I'm more than happy to
+change the logic, but I think we need a very clear explanation as to why we
+need to scan the specific number of bytes we scan, and we should account for
+that *within* STACKLEAK_SEARCH_DEPTH for clarity.
 
-While handling PCI errors (AER flow) driver tries to
-disable NAPI [napi_disable()] after NAPI is deleted
-[__netif_napi_del()] which causes unexpected system
-hang/crash.
+> >    As this is included within the region to erase, this causes us to
+> >    redundantly overwrite an additional unsigned long with poison.
+> > 
+> > * As we always decrement 'erase_low' after checking an element on the
+> >    stack, we always include the element below this within the region to
+> >    erase.
+> > 
+> >    As this is included within the region to erase, this causes us to
+> >    redundantly overwrite an additional unsigned long with poison.
+> > 
+> >    Note that this is not a functional problem. As the loop condition
+> >    checks 'erase_low > task_stack_low', we'll never clobber the
+> >    STACK_END_MAGIC. As we always decrement 'erase_low' after this, we'll
+> >    never fail to erase the element immediately above the STACK_END_MAGIC.
+> 
+> Right, I don't see any bug in the current erasing code.
+> 
+> When I wrote the current code, I carefully checked all the corner cases. For
+> example, on the first stack erasing, the STACK_END_MAGIC was not
+> overwritten, but the memory next to it was erased. Same for the beginning of
+> the stack: I carefully checked that no unpoisoned bytes were left on the
+> thread stack.
+> 
+> > In total, this can cause us to erase `128 + 2 * sizeof(unsigned long)`
+> > bytes more than necessary, which is unfortunate.
+> > 
+> > This patch reworks the logic to find the address immediately above the
+> > poisoned region, by finding the lowest non-poisoned address. This is
+> > factored into a stackleak_find_top_of_poison() helper both for clarity
+> > and so that this can be shared with the LKDTM test in subsequent
+> > patches.
+> 
+> You know, I wrote stackleak_erase() in very plain C. I wanted a compiler to
+> generate assembly that is very close to the original asm version. I worried
+> that compilers might do weird stuff with the local variables and the stack
+> pointer.
+> 
+> So I checked stackleak for gcc versions 4.8, 5, 6, 7, 8, 9, and 10 on
+> x86_64, i386 and arm64. This is my project that helped with this work:
+> https://github.com/a13xp0p0v/kernel-build-containers
 
-System message log shows the following:
-=======================================
-[ 3222.537510] EEH: Detected PCI bus error on PHB#384-PE#800000 [ 3222.537511] EEH: This PCI device has failed 2 times in the last hour and will be permanently disabled after 5 failures.
-[ 3222.537512] EEH: Notify device drivers to shutdown [ 3222.537513] EEH: Beginning: 'error_detected(IO frozen)'
-[ 3222.537514] EEH: PE#800000 (PCI 0384:80:00.0): Invoking
-bnx2x->error_detected(IO frozen)
-[ 3222.537516] bnx2x: [bnx2x_io_error_detected:14236(eth14)]IO error detected [ 3222.537650] EEH: PE#800000 (PCI 0384:80:00.0): bnx2x driver reports:
-'need reset'
-[ 3222.537651] EEH: PE#800000 (PCI 0384:80:00.1): Invoking
-bnx2x->error_detected(IO frozen)
-[ 3222.537651] bnx2x: [bnx2x_io_error_detected:14236(eth13)]IO error detected [ 3222.537729] EEH: PE#800000 (PCI 0384:80:00.1): bnx2x driver reports:
-'need reset'
-[ 3222.537729] EEH: Finished:'error_detected(IO frozen)' with aggregate recovery state:'need reset'
-[ 3222.537890] EEH: Collect temporary log [ 3222.583481] EEH: of node=0384:80:00.0 [ 3222.583519] EEH: PCI device/vendor: 168e14e4 [ 3222.583557] EEH: PCI cmd/status register: 00100140 [ 3222.583557] EEH: PCI-E capabilities and status follow:
-[ 3222.583744] EEH: PCI-E 00: 00020010 012c8da2 00095d5e 00455c82 [ 3222.583892] EEH: PCI-E 10: 10820000 00000000 00000000 00000000 [ 3222.583893] EEH: PCI-E 20: 00000000 [ 3222.583893] EEH: PCI-E AER capability register set follows:
-[ 3222.584079] EEH: PCI-E AER 00: 13c10001 00000000 00000000 00062030 [ 3222.584230] EEH: PCI-E AER 10: 00002000 000031c0 000001e0 00000000 [ 3222.584378] EEH: PCI-E AER 20: 00000000 00000000 00000000 00000000 [ 3222.584416] EEH: PCI-E AER 30: 00000000 00000000 [ 3222.584416] EEH: of node=0384:80:00.1 [ 3222.584454] EEH: PCI device/vendor: 168e14e4 [ 3222.584491] EEH: PCI cmd/status register: 00100140 [ 3222.584492] EEH: PCI-E capabilities and status follow:
-[ 3222.584677] EEH: PCI-E 00: 00020010 012c8da2 00095d5e 00455c82 [ 3222.584825] EEH: PCI-E 10: 10820000 00000000 00000000 00000000 [ 3222.584826] EEH: PCI-E 20: 00000000 [ 3222.584826] EEH: PCI-E AER capability register set follows:
-[ 3222.585011] EEH: PCI-E AER 00: 13c10001 00000000 00000000 00062030 [ 3222.585160] EEH: PCI-E AER 10: 00002000 000031c0 000001e0 00000000 [ 3222.585309] EEH: PCI-E AER 20: 00000000 00000000 00000000 00000000 [ 3222.585347] EEH: PCI-E AER 30: 00000000 00000000 [ 3222.586872] RTAS: event: 5, Type: Platform Error (224), Severity: 2 [ 3222.586873] EEH: Reset without hotplug activity [ 3224.762767] EEH: Beginning: 'slot_reset'
-[ 3224.762770] EEH: PE#800000 (PCI 0384:80:00.0): Invoking
-bnx2x->slot_reset()
-[ 3224.762771] bnx2x: [bnx2x_io_slot_reset:14271(eth14)]IO slot reset initializing...
-[ 3224.762887] bnx2x 0384:80:00.0: enabling device (0140 -> 0142) [ 3224.768157] bnx2x: [bnx2x_io_slot_reset:14287(eth14)]IO slot reset
---> driver unload
+I've used the kernel.org cross toolchains, as published at:
 
-Uninterruptible tasks
-=====================
-crash> ps | grep UN
-     213      2  11  c000000004c89e00  UN   0.0       0      0  [eehd]
-     215      2   0  c000000004c80000  UN   0.0       0      0
-[kworker/0:2]
-    2196      1  28  c000000004504f00  UN   0.1   15936  11136  wickedd
-    4287      1   9  c00000020d076800  UN   0.0    4032   3008  agetty
-    4289      1  20  c00000020d056680  UN   0.0    7232   3840  agetty
-   32423      2  26  c00000020038c580  UN   0.0       0      0
-[kworker/26:3]
-   32871   4241  27  c0000002609ddd00  UN   0.1   18624  11648  sshd
-   32920  10130  16  c00000027284a100  UN   0.1   48512  12608  sendmail
-   33092  32987   0  c000000205218b00  UN   0.1   48512  12608  sendmail
-   33154   4567  16  c000000260e51780  UN   0.1   48832  12864  pickup
-   33209   4241  36  c000000270cb6500  UN   0.1   18624  11712  sshd
-   33473  33283   0  c000000205211480  UN   0.1   48512  12672  sendmail
-   33531   4241  37  c00000023c902780  UN   0.1   18624  11648  sshd
+  https://mirrors.edge.kernel.org/pub/tools/crosstool/
 
-EEH handler hung while bnx2x sleeping and holding RTNL lock
-===========================================================
-crash> bt 213
-PID: 213    TASK: c000000004c89e00  CPU: 11  COMMAND: "eehd"
-  #0 [c000000004d477e0] __schedule at c000000000c70808
-  #1 [c000000004d478b0] schedule at c000000000c70ee0
-  #2 [c000000004d478e0] schedule_timeout at c000000000c76dec
-  #3 [c000000004d479c0] msleep at c0000000002120cc
-  #4 [c000000004d479f0] napi_disable at c000000000a06448
-                                        ^^^^^^^^^^^^^^^^
-  #5 [c000000004d47a30] bnx2x_netif_stop at c0080000018dba94 [bnx2x]
-  #6 [c000000004d47a60] bnx2x_io_slot_reset at c0080000018a551c [bnx2x]
-  #7 [c000000004d47b20] eeh_report_reset at c00000000004c9bc
-  #8 [c000000004d47b90] eeh_pe_report at c00000000004d1a8
-  #9 [c000000004d47c40] eeh_handle_normal_event at c00000000004da64
+> Mark, in this patch series you use many local variables and helper functions.
+> Honestly, this worries me. For example, compilers can (and usually do)
+> ignore the presence of the 'inline' specifier for the purpose of
+> optimization.
 
-And the sleeping source code
-============================
-crash> dis -ls c000000000a06448
-FILE: ../net/core/dev.c
-LINE: 6702
+I've deliberately used `__always_inline` rather than regular `inline` to
+prevent code being placed out-of-line. As mentioned in oether replies it has a
+stronger semantic.
 
-   6697  {
-   6698          might_sleep();
-   6699          set_bit(NAPI_STATE_DISABLE, &n->state);
-   6700
-   6701          while (test_and_set_bit(NAPI_STATE_SCHED, &n->state))
-* 6702                  msleep(1);
-   6703          while (test_and_set_bit(NAPI_STATE_NPSVC, &n->state))
-   6704                  msleep(1);
-   6705
-   6706          hrtimer_cancel(&n->timer);
-   6707
-   6708          clear_bit(NAPI_STATE_DISABLE, &n->state);
-   6709  }
+Thanks,
+Mark.
 
-EEH calls into bnx2x twice based on the system log above, first through
-bnx2x_io_error_detected() and then bnx2x_io_slot_reset(), and executes
-the following call chains:
-
-bnx2x_io_error_detected()
-  +-> bnx2x_eeh_nic_unload()
-       +-> bnx2x_del_all_napi()
-            +-> __netif_napi_del()
-
-bnx2x_io_slot_reset()
-  +-> bnx2x_netif_stop()
-       +-> bnx2x_napi_disable()
-            +->napi_disable()
-
-Fix this by correcting the sequence of NAPI APIs usage,
-that is delete the NAPI after disabling it.
-
-Fixes: 7fa6f34081f1 ("bnx2x: AER revised")
-Reported-by: David Christensen <drc@linux.vnet.ibm.com>
-Tested-by: David Christensen <drc@linux.vnet.ibm.com>
-Signed-off-by: Manish Chopra <manishc@marvell.com>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
-Link: https://lore.kernel.org/r/20220426153913.6966-1-manishc@marvell.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-index 8d17d464c067..398928642a97 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-@@ -14314,10 +14314,6 @@ static int bnx2x_eeh_nic_unload(struct bnx2x *bp)
- 
- 	/* Stop Tx */
- 	bnx2x_tx_disable(bp);
--	/* Delete all NAPI objects */
--	bnx2x_del_all_napi(bp);
--	if (CNIC_LOADED(bp))
--		bnx2x_del_all_napi_cnic(bp);
- 	netdev_reset_tc(bp->dev);
- 
- 	del_timer_sync(&bp->timer);
-@@ -14422,6 +14418,11 @@ static pci_ers_result_t bnx2x_io_slot_reset(struct pci_dev *pdev)
- 		bnx2x_drain_tx_queues(bp);
- 		bnx2x_send_unload_req(bp, UNLOAD_RECOVERY);
- 		bnx2x_netif_stop(bp, 1);
-+		bnx2x_del_all_napi(bp);
-+
-+		if (CNIC_LOADED(bp))
-+			bnx2x_del_all_napi_cnic(bp);
-+
- 		bnx2x_free_irq(bp);
- 
- 		/* Report UNLOAD_DONE to MCP */
--- 
-2.35.1
-
-
-
+> 
+> Thanks!
+> 
+> > Signed-off-by: Mark Rutland <mark.rutland@arm.com>
+> > Cc: Alexander Popov <alex.popov@linux.com>
+> > Cc: Andrew Morton <akpm@linux-foundation.org>
+> > Cc: Andy Lutomirski <luto@kernel.org>
+> > Cc: Kees Cook <keescook@chromium.org>
+> > ---
+> >   include/linux/stackleak.h | 26 ++++++++++++++++++++++++++
+> >   kernel/stackleak.c        | 18 ++++--------------
+> >   2 files changed, 30 insertions(+), 14 deletions(-)
+> > 
+> > diff --git a/include/linux/stackleak.h b/include/linux/stackleak.h
+> > index 467661aeb4136..c36e7a3b45e7e 100644
+> > --- a/include/linux/stackleak.h
+> > +++ b/include/linux/stackleak.h
+> > @@ -42,6 +42,32 @@ stackleak_task_high_bound(const struct task_struct *tsk)
+> >   	return (unsigned long)task_pt_regs(tsk);
+> >   }
+> > +/*
+> > + * Find the address immediately above the poisoned region of the stack, where
+> > + * that region falls between 'low' (inclusive) and 'high' (exclusive).
+> > + */
+> > +static __always_inline unsigned long
+> > +stackleak_find_top_of_poison(const unsigned long low, const unsigned long high)
+> > +{
+> > +	const unsigned int depth = STACKLEAK_SEARCH_DEPTH / sizeof(unsigned long);
+> > +	unsigned int poison_count = 0;
+> > +	unsigned long poison_high = high;
+> > +	unsigned long sp = high;
+> > +
+> > +	while (sp > low && poison_count < depth) {
+> > +		sp -= sizeof(unsigned long);
+> > +
+> > +		if (*(unsigned long *)sp == STACKLEAK_POISON) {
+> > +			poison_count++;
+> > +		} else {
+> > +			poison_count = 0;
+> > +			poison_high = sp;
+> > +		}
+> > +	}
+> > +
+> > +	return poison_high;
+> > +}
+> > +
+> >   static inline void stackleak_task_init(struct task_struct *t)
+> >   {
+> >   	t->lowest_stack = stackleak_task_low_bound(t);
+> > diff --git a/kernel/stackleak.c b/kernel/stackleak.c
+> > index ba346d46218f5..afd54b8e10b83 100644
+> > --- a/kernel/stackleak.c
+> > +++ b/kernel/stackleak.c
+> > @@ -74,20 +74,10 @@ static __always_inline void __stackleak_erase(void)
+> >   {
+> >   	const unsigned long task_stack_low = stackleak_task_low_bound(current);
+> >   	const unsigned long task_stack_high = stackleak_task_high_bound(current);
+> > -	unsigned long erase_low = current->lowest_stack;
+> > -	unsigned long erase_high;
+> > -	unsigned int poison_count = 0;
+> > -	const unsigned int depth = STACKLEAK_SEARCH_DEPTH / sizeof(unsigned long);
+> > -
+> > -	/* Search for the poison value in the kernel stack */
+> > -	while (erase_low > task_stack_low && poison_count <= depth) {
+> > -		if (*(unsigned long *)erase_low == STACKLEAK_POISON)
+> > -			poison_count++;
+> > -		else
+> > -			poison_count = 0;
+> > -
+> > -		erase_low -= sizeof(unsigned long);
+> > -	}
+> > +	unsigned long erase_low, erase_high;
+> > +
+> > +	erase_low = stackleak_find_top_of_poison(task_stack_low,
+> > +						 current->lowest_stack);
+> >   #ifdef CONFIG_STACKLEAK_METRICS
+> >   	current->prev_lowest_stack = erase_low;
+> 
