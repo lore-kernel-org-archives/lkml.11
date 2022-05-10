@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76E24C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:21:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A3AFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:21:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245472AbiEJOZh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:25:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52712 "EHLO
+        id S1343783AbiEJOZm (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:25:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243906AbiEJNwx (ORCPT
+        with ESMTP id S244205AbiEJNwx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:52:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC9692992DB;
-        Tue, 10 May 2022 06:38:16 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 002736C0DD;
+        Tue, 10 May 2022 06:38:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DA726188F;
-        Tue, 10 May 2022 13:38:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80C80C385C2;
-        Tue, 10 May 2022 13:38:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E1239B81DB3;
+        Tue, 10 May 2022 13:37:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4825CC385C6;
+        Tue, 10 May 2022 13:37:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189896;
-        bh=ZHYzabtid5rGR1vUHabUw8fvas6K2SQA2jyLWJ7U7ig=;
+        s=korg; t=1652189870;
+        bh=zlEMjjuzr3mcxVhnutTM6/09TaldW+hL/6Nh9t7O0Zk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GE4nzintz7gPBbsJ2NP1BRXy3lrgubtVllmi1FWmZGtVPctYtvTLJ1a0jM//PBGtD
-         p90dR/OnQrCdi0VkPuZZZJTPYB6wK95M/IJZHCqu+bSm4zT58kpWDzA+Totsoj0Src
-         iK480xRRG5Cjt9UBDxET/XacsVnFkABDsfIJ9jyI=
+        b=axOW4MCfOow57M4lgEo+SwzK19qsF/43NZd8x1sB82LLQGf8ViKwvIQVtSvlv4APt
+         aEBHIXsbTDC/UKJSS72BrKtgNvLVDaVw/sfpuINiENbWae6Q+/2sxbm9bsLzV5vEIT
+         O4unf5XyaKHC9FqkW5uqs6sCJy2gz/unVfCG92xY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Moshe Tal <moshet@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.17 063/140] net/mlx5e: Fix trust state reset in reload
-Date:   Tue, 10 May 2022 15:07:33 +0200
-Message-Id: <20220510130743.421684759@linuxfoundation.org>
+        stable@vger.kernel.org, Adam Wujek <dev_public@wujek.eu>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 5.17 056/140] hwmon: (pmbus) disable PEC if not enabled
+Date:   Tue, 10 May 2022 15:07:26 +0200
+Message-Id: <20220510130743.221225564@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -48,44 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Moshe Tal <moshet@nvidia.com>
+From: Adam Wujek <dev_public@wujek.eu>
 
-commit b781bff882d16175277ca129c382886cb4c74a2c upstream.
+commit 75d2b2b06bd8407d03a3f126bc8b95eb356906c7 upstream.
 
-Setting dscp2prio during the driver reload can cause dcb ieee app list to
-be not empty after the reload finish and as a result to a conflict between
-the priority trust state reported by the app and the state in the device
-register.
+Explicitly disable PEC when the client does not support it.
+The problematic scenario is the following. A device with enabled PEC
+support is up and running and a kernel driver is loaded.
+Then the driver is unloaded (or device unbound), the HW device
+is reconfigured externally (e.g. by i2cset) to advertise itself as not
+supporting PEC. Without a new code, at the second load of the driver
+(or bind) the "flags" variable is not updated to avoid PEC usage. As a
+consequence the further communication with the device is done with
+the PEC enabled, which is wrong and may fail.
 
-Reset the dcb ieee app list on initialization in case this is
-conflicting with the register status.
+The implementation first disable the I2C_CLIENT_PEC flag, then the old
+code enable it if needed.
 
-Fixes: 2a5e7a1344f4 ("net/mlx5e: Add dcbnl dscp to priority support")
-Signed-off-by: Moshe Tal <moshet@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Fixes: 4e5418f787ec ("hwmon: (pmbus_core) Check adapter PEC support")
+Signed-off-by: Adam Wujek <dev_public@wujek.eu>
+Link: https://lore.kernel.org/r/20220420145059.431061-1-dev_public@wujek.eu
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_dcbnl.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/hwmon/pmbus/pmbus_core.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_dcbnl.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_dcbnl.c
-@@ -1198,6 +1198,16 @@ static int mlx5e_trust_initialize(struct
- 	if (err)
- 		return err;
+--- a/drivers/hwmon/pmbus/pmbus_core.c
++++ b/drivers/hwmon/pmbus/pmbus_core.c
+@@ -2326,6 +2326,9 @@ static int pmbus_init_common(struct i2c_
+ 		data->has_status_word = true;
+ 	}
  
-+	if (priv->dcbx_dp.trust_state == MLX5_QPTS_TRUST_PCP && priv->dcbx.dscp_app_cnt) {
-+		/*
-+		 * Align the driver state with the register state.
-+		 * Temporary state change is required to enable the app list reset.
-+		 */
-+		priv->dcbx_dp.trust_state = MLX5_QPTS_TRUST_DSCP;
-+		mlx5e_dcbnl_delete_app(priv);
-+		priv->dcbx_dp.trust_state = MLX5_QPTS_TRUST_PCP;
-+	}
++	/* Make sure PEC is disabled, will be enabled later if needed */
++	client->flags &= ~I2C_CLIENT_PEC;
 +
- 	mlx5e_params_calc_trust_tx_min_inline_mode(priv->mdev, &priv->channels.params,
- 						   priv->dcbx_dp.trust_state);
- 
+ 	/* Enable PEC if the controller and bus supports it */
+ 	if (!(data->flags & PMBUS_NO_CAPABILITY)) {
+ 		ret = i2c_smbus_read_byte_data(client, PMBUS_CAPABILITY);
 
 
