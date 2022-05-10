@@ -2,106 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D210C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:17:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F899C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:17:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237720AbiEJQVM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 12:21:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60584 "EHLO
+        id S1347211AbiEJQVV (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 12:21:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347191AbiEJQUx (ORCPT
+        with ESMTP id S1347189AbiEJQVR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 12:20:53 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F23006B00D;
-        Tue, 10 May 2022 09:16:54 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id e2so24513017wrh.7;
-        Tue, 10 May 2022 09:16:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jr74PyVWD1/63U5wp0lr9an8U2SlYbja1K4X3Dr9fys=;
-        b=IgcA7J7Jc9zsBzAOhysXl1fXR61GQn8h7+YdC9OPT2G9+lE/W7ZBjdq1k4tXjMOzg9
-         a8Bes1nCJs+0aPsq3i5m0iPc8rhlaIDKbdObNi3oOeg0HcL60MLEgCN6fQnq4P6YHDrJ
-         kLWWGzAh0AGqfDbREsb3dRZf/4UpucvW6AHvZcV8zI/G0BEQPBkd3icGz2/N0dpFb7cF
-         odl/uuqP9Kl2ggkmemp6PJSje+gMxX/GiDjs3H9BNxUwrwL0C6+GwQWiE2AZR0ovMq8x
-         NL/eKUzc9Nrjld8KkJZ5ZdLs0CqbNeRTvUa1nhG9yrZsKRulMo2yLSOwguf1myPnzBtP
-         A47Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jr74PyVWD1/63U5wp0lr9an8U2SlYbja1K4X3Dr9fys=;
-        b=Cg2/n8DzpldUugqfAFiHpY3BQH37DiM3qy8JPykYb/JA//apK6nU0gqdeQkKANTvwf
-         L94TjwKpMzN+3WuYRm4ulL2vrwK3p8/1hkiD+M4iovGmzjNyvhT95Z2IJmA5kWCNgAww
-         vfKOXETszZiK2y4LcGrM4jioOvWpl9VVuVEDAKKDwzkdLhRRNkiCGP+Al9aNlKtkrVWf
-         DcTMzfdk6nE4z3DVKHZ0OTPL+ppDVvh81WqBW8UwP3Ef6KQ47hgT4QjH9Pnp0r3Qdn/S
-         tiwirmNtIaJUin0pKFyH+V/8uPmlhploIro4ziTRyip7GA+CxBLFejTzJ7NN27PfugVz
-         btYw==
-X-Gm-Message-State: AOAM531Svb0J1nPK8Z2jl+GCeoOQAFTsLXSkFyXEcIs36mxp7tKjvV9r
-        5akykVoiSqznUQ7e7REjjT4=
-X-Google-Smtp-Source: ABdhPJwbe9yD9HIi2JdlrOrApRC25IDTLiNLpBXgkqAdLbkF28y22Aa6nOfVTo/1FE8z4RnPa0BAYg==
-X-Received: by 2002:adf:f0cb:0:b0:20a:ef39:d42b with SMTP id x11-20020adff0cb000000b0020aef39d42bmr19894165wro.8.1652199413461;
-        Tue, 10 May 2022 09:16:53 -0700 (PDT)
-Received: from vmu1804.lan ([2a06:a003:501a:a7ce::887])
-        by smtp.googlemail.com with ESMTPSA id h9-20020a5d4309000000b0020c5253d8f0sm14634833wrq.60.2022.05.10.09.16.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 09:16:53 -0700 (PDT)
-From:   Mikhail Zhilkin <csharper2005@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mtd@lists.infradead.org, Karim <Karimdplay@gmail.com>,
-        M <x1@disroot.org>, Mikhail Zhilkin <csharper2005@gmail.com>
-Subject: [PATCH v4 0/3] Add support for Sercomm partitions
-Date:   Tue, 10 May 2022 16:16:41 +0000
-Message-Id: <20220510161641.20655-1-csharper2005@gmail.com>
+        Tue, 10 May 2022 12:21:17 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09CBE28B85A
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 09:17:19 -0700 (PDT)
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24A5TVpe021012;
+        Tue, 10 May 2022 11:17:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=PODMain02222019;
+ bh=zXofkY1bd3XtG154r7H2+Sqnxy0DHw+79gdGYM1CoL8=;
+ b=BJ1IDdv+25911XUZUZVcM8S3KMrQHBK+C6OnpU+dlcsAONI5D2yfYapVUc+x8xKet5HF
+ 8Nm0AQ3/xE55kku8CxO1cAmqZ3xV0GRc0BA0lu0+4tD7Xzd2Urn4hKKV8sjS8Ywecznr
+ VJCgu8a6E7hanZwOx3uI1DHovrB0YffW84JOaqUCK6gu7ArWc76+dvsnOcacYqTO0frc
+ eE89DTQ/xQvuiNftyVXQjZn/1crXyC4nVCy9AW+JTmU315S7bNDFTRv/Ieo4ahK94yqp
+ 5KEuEadPVqiP9BupfFIrcuKp4IRbWGOhCcllvujec+deFYm+N6FDLVwCQU4ZZ1ouhqv+ zw== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3fwn6nvk88-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 10 May 2022 11:17:07 -0500
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 10 May
+ 2022 17:17:06 +0100
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
+ Transport; Tue, 10 May 2022 17:17:06 +0100
+Received: from sbinding-cirrus-dsktp.ad.cirrus.com (unknown [198.90.238.24])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 2DA6E475;
+        Tue, 10 May 2022 16:17:06 +0000 (UTC)
+From:   Stefan Binding <sbinding@opensource.cirrus.com>
+To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+CC:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
+        <patches@opensource.cirrus.com>,
+        Stefan Binding <sbinding@opensource.cirrus.com>
+Subject: [PATCH v1 0/3] ALSA: hda/cs8409: Add support for Odin Laptop Variants
+Date:   Tue, 10 May 2022 17:16:58 +0100
+Message-ID: <20220510161701.851260-1-sbinding@opensource.cirrus.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: GOqpgBxOq3tQq_4_EliPVL75yfgzbnSF
+X-Proofpoint-GUID: GOqpgBxOq3tQq_4_EliPVL75yfgzbnSF
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series add support for Sercomm mtd partition table parser. It's
-used in some Beeline, Netgear and Sercomm routers. The Sercomm partition
-map table contains real partition offsets, which may differ from device to
-device depending on the number and location of bad blocks on NAND.
+Add support for new Odin Laptop Variants into CS8409 HDA Driver.
 
-Changes since:
-v3:
- - Fix commit message of the first patch
- - Add Reviewed-by to the second patch
+Since these laptops require Speaker Playback Switch, support must be added into
+CS8409 HDA driver. Since CS8409 does not have amplifier parameters for the NID
+associated with the speaker, the HDA driver does not add the switch
+automatically, so the driver needs to add this support manually.
 
-v2:
- - Fix mistakes in dt-binding
- - Add patch for new vendor prefix
- - Add vendor prefix to scpart-id property
+Stefan Binding (3):
+  ALSA: hda/cs8409: Support new Odin Variants
+  ALSA: hda/cs8409: Add Speaker Playback Switch for Cyborg
+  ALSA: hda/cs8409: Add Speaker Playback Switch for Warlock
 
-v1:
- - Add dt-binding in a separate patch
- - Remove redundant braces and logical NOT operator
- - Define pr_fmt
- - Replace kcalloc by kzalloc
- - Use of_get_child_count() and alloc big enough array before the
-   for_each_child_of_node()
-
-Mikhail Zhilkin (3):
-  dt-bindings: Add Sercomm (Suzhou) Corporation vendor prefix
-  dt-bindings: mtd: partitions: Extend fixed-partitions binding
-  mtd: parsers: add support for Sercomm partitions
-
- .../mtd/partitions/fixed-partitions.yaml      |  55 +++-
- .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
- drivers/mtd/parsers/Kconfig                   |   9 +
- drivers/mtd/parsers/Makefile                  |   1 +
- drivers/mtd/parsers/scpart.c                  | 240 ++++++++++++++++++
- 5 files changed, 305 insertions(+), 2 deletions(-)
- create mode 100644 drivers/mtd/parsers/scpart.c
+ sound/pci/hda/patch_cs8409-tables.c | 19 +++++++
+ sound/pci/hda/patch_cs8409.c        | 85 ++++++++++++++++++++++++-----
+ sound/pci/hda/patch_cs8409.h        |  5 ++
+ 3 files changed, 95 insertions(+), 14 deletions(-)
 
 -- 
 2.25.1
