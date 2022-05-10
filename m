@@ -2,103 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46898C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37F91C43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:33:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344962AbiEJOgm (ORCPT
+        id S1344938AbiEJOgi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:36:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41530 "EHLO
+        Tue, 10 May 2022 10:36:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343678AbiEJOHK (ORCPT
+        with ESMTP id S244787AbiEJOJo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:07:10 -0400
+        Tue, 10 May 2022 10:09:44 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C5A71FD1C4;
-        Tue, 10 May 2022 06:41:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7B5860BBD
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 06:45:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0D556B81DC3;
-        Tue, 10 May 2022 13:41:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DB91C385C2;
-        Tue, 10 May 2022 13:41:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652190071;
-        bh=SMMW/xa9C8D5vurAKOeqVtrr7C7izTSMHjwXwWpZJXA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X/pgOuM2qenkiJ7dOkGNFmgqklTnTBPzTAr7p4Hgg1Je+rRw91IAWe1qhwnsjccow
-         aoXvBqfQlFrOHix1drMq/vloCX1S0X4zQVaOCQEIeTbwdCYgqvj7e7Z7eeazscbXqF
-         LKPo+kxAPQBItmIODU0Ym0AHQFTIgsBtGjF3Mozw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aili Yao <yaoaili@kingsoft.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 118/140] KVM: LAPIC: Enable timer posted-interrupt only when mwait/hlt is advertised
-Date:   Tue, 10 May 2022 15:08:28 +0200
-Message-Id: <20220510130744.978253870@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
-References: <20220510130741.600270947@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id 29B45B81DCF
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 13:45:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B141C2BBE4;
+        Tue, 10 May 2022 13:45:01 +0000 (UTC)
+Date:   Tue, 10 May 2022 09:44:59 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     kernel test robot <lkp@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: Re: include/trace/stages/init.h:2:23: warning:
+ 'str__irq_vectors__trace_system_name' defined but not used
+Message-ID: <20220510094459.5a462ad8@gandalf.local.home>
+In-Reply-To: <202205100202.Ag0S76wP-lkp@intel.com>
+References: <202205100202.Ag0S76wP-lkp@intel.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wanpeng Li <wanpengli@tencent.com>
+On Tue, 10 May 2022 02:08:23 +0800
+kernel test robot <lkp@intel.com> wrote:
 
-[ Upstream commit 1714a4eb6fb0cb79f182873cd011a8ed60ac65e8 ]
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> head:   9be9ed2612b5aedb52a2c240edb1630b6b743cb6
+> commit: af6b9668e85ffd1502aada8036ccbf4dbd481708 tracing: Move the defines to create TRACE_EVENTS into their own files
+> date:   8 weeks ago
+> config: i386-randconfig-s002-20220509 (https://download.01.org/0day-ci/archive/20220510/202205100202.Ag0S76wP-lkp@intel.com/config)
+> compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+> reproduce:
+>         # apt-get install sparse
+>         # sparse version: v0.6.4-dirty
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=af6b9668e85ffd1502aada8036ccbf4dbd481708
+>         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+>         git fetch --no-tags linus master
+>         git checkout af6b9668e85ffd1502aada8036ccbf4dbd481708
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash arch/x86/kernel/
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All warnings (new ones prefixed by >>):
+> 
+>    In file included from include/trace/trace_events.h:27,
+>                     from include/trace/define_trace.h:102,
+>                     from arch/x86/include/asm/trace/irq_vectors.h:383,
+>                     from arch/x86/kernel/irq.c:27:
 
-As commit 0c5f81dad46 ("KVM: LAPIC: Inject timer interrupt via posted
-interrupt") mentioned that the host admin should well tune the guest
-setup, so that vCPUs are placed on isolated pCPUs, and with several pCPUs
-surplus for *busy* housekeeping.  In this setup, it is preferrable to
-disable mwait/hlt/pause vmexits to keep the vCPUs in non-root mode.
+Hmm, when I do:
 
-However, if only some guests isolated and others not, they would not
-have any benefit from posted timer interrupts, and at the same time lose
-VMX preemption timer fast paths because kvm_can_post_timer_interrupt()
-returns true and therefore forces kvm_can_use_hv_timer() to false.
+	$ make arch/x86/kernel/irq.i
+	$ astyle arch/x86/kernel/irq.i
+	$ grep str__irq_irq_vectors__trace_system_name
 
-By guaranteeing that posted-interrupt timer is only used if MWAIT or
-HLT are done without vmexit, KVM can make a better choice and use the
-VMX preemption timer and the corresponding fast paths.
+  static const char str__irq_vectors__trace_system_name[] = "irq_vectors";
+  static struct trace_event_class __attribute__((__used__)) __attribute__((__section__(".ref.data"))) event_class_x86_irq_vector = { .system = str__irq_vectors__trace_system_name, .fields_array = trace_event_fields_x86_irq_vector, .fields = { &(event_class_x86_irq_vector.fields),  &(event_class_x86_irq_vector.fields) }, .raw_init = trace_event_raw_init, .probe = trace_event_raw_event_x86_irq_vector, .reg = trace_event_reg, .perf_probe = perf_trace_x86_irq_vector, };
+   static struct trace_event_class __attribute__((__used__)) __attribute__((__section__(".ref.data"))) event_class_vector_config = { .system = str__irq_vectors__trace_system_name, .fields_array = trace_event_fields_vector_config, .fields = { &(event_class_vector_config.fields), &(event_class_vector_config.fields) }, .raw_init = trace_event_raw_init, .probe = trace_event_raw_event_vector_config, .reg = trace_event_reg, .perf_probe = perf_trace_vector_config, };;
+[..]
 
-Reported-by: Aili Yao <yaoaili@kingsoft.com>
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-Cc: Aili Yao <yaoaili@kingsoft.com>
-Cc: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
-Message-Id: <1643112538-36743-1-git-send-email-wanpengli@tencent.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/x86/kvm/lapic.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+How is it not used?
 
-diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-index 6b6f9359d29e..970d5c740b00 100644
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -113,7 +113,8 @@ static inline u32 kvm_x2apic_id(struct kvm_lapic *apic)
- 
- static bool kvm_can_post_timer_interrupt(struct kvm_vcpu *vcpu)
- {
--	return pi_inject_timer && kvm_vcpu_apicv_active(vcpu);
-+	return pi_inject_timer && kvm_vcpu_apicv_active(vcpu) &&
-+		(kvm_mwait_in_guest(vcpu->kvm) || kvm_hlt_in_guest(vcpu->kvm));
- }
- 
- bool kvm_can_use_hv_timer(struct kvm_vcpu *vcpu)
--- 
-2.35.1
+-- Steve
 
 
+> >> include/trace/stages/init.h:2:23: warning: 'str__irq_vectors__trace_system_name' defined but not used [-Wunused-const-variable=]  
+>        2 | #define __app__(x, y) str__##x##y
+>          |                       ^~~~~
+>    include/trace/stages/init.h:3:21: note: in expansion of macro '__app__'
+>        3 | #define __app(x, y) __app__(x, y)
+>          |                     ^~~~~~~
+>    include/trace/stages/init.h:5:29: note: in expansion of macro '__app'
+>        5 | #define TRACE_SYSTEM_STRING __app(TRACE_SYSTEM_VAR,__trace_system_name)
+>          |                             ^~~~~
+>    include/trace/stages/init.h:8:27: note: in expansion of macro 'TRACE_SYSTEM_STRING'
+>        8 |         static const char TRACE_SYSTEM_STRING[] =       \
+>          |                           ^~~~~~~~~~~~~~~~~~~
+>    include/trace/stages/init.h:11:1: note: in expansion of macro 'TRACE_MAKE_SYSTEM_STR'
+>       11 | TRACE_MAKE_SYSTEM_STR();
+>          | ^~~~~~~~~~~~~~~~~~~~~
+> 
+> 
+> vim +/str__irq_vectors__trace_system_name +2 include/trace/stages/init.h
+> 
+>    > 2	#define __app__(x, y) str__##x##y  
+>      3	#define __app(x, y) __app__(x, y)
+>      4	
+> 
 
