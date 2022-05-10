@@ -2,126 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87B36C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:51:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65B7EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:52:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241249AbiEJLzq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 07:55:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44184 "EHLO
+        id S241254AbiEJL4w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 07:56:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235005AbiEJLzj (ORCPT
+        with ESMTP id S230463AbiEJL4u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 07:55:39 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E7EE26FA54
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 04:51:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652183502; x=1683719502;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=B9dvgBmCF5L3kTd7CYqO7etly7B/b4QuOSBtMc3H03Q=;
-  b=JGn/lF8srZwmgtaQD/Y4yE9HvjacuSycSNwcyQbQFl8/d/5a1DQEDmN9
-   k1bUMHpke/jpw4tKrmiXwqn7zszlas/ye/qxvzjeJJ0FVS9/05w+4ZeWM
-   /riSCGFC29e+HJcQw3WyKXb314Qx46Q9z4aKVY9mNjMp7BKf4g6D/lQf0
-   IAhc3t5PELEq+w+55wgZnItU4WBRhKKL3hEUELewShztmayFMJ0tzYdqa
-   R5qogP/byP6tXVhCUEbeoZMyDcD3erkCr357FUHQVt2TaA34dOrXQ+J/q
-   NUFIVX3tJ4dAE4E3rg7904F3qxDxTAj454cXWRO/Ym6hi2NXDRXY3DU5R
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="249879040"
-X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
-   d="scan'208";a="249879040"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 04:51:33 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
-   d="scan'208";a="669843159"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 10 May 2022 04:51:31 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1noOOp-000Hpq-9O;
-        Tue, 10 May 2022 11:51:31 +0000
-Date:   Tue, 10 May 2022 19:50:29 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Guixin Liu <kanie@linux.alibaba.com>, gregkh@linuxfoundation.org
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] uio: Replace mutex info_lock with percpu_ref
-Message-ID: <202205101914.ZJmSORCV-lkp@intel.com>
-References: <1652161831-77791-1-git-send-email-kanie@linux.alibaba.com>
+        Tue, 10 May 2022 07:56:50 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46AFB26FA62;
+        Tue, 10 May 2022 04:52:53 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id t11-20020a17090ad50b00b001d95bf21996so1831266pju.2;
+        Tue, 10 May 2022 04:52:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=A0FdGVbgNiT4qf9UfDKCilymbnIPA66uo0bOacpn5kc=;
+        b=TrL7vgw9hX+FCcAXW++0XCOVJrf3QJUaGJVBqbSUUAypLKKmpB4cuOYtIBhwBMrido
+         OqyotI4LcRe4dMJ+sEuBiPjcoy6u9Gm8LaTMLc4E7CDUGb0NEMsgjYvEUgg7m8U3u0eG
+         uNqKuhwvdn/9hCqYeSgtXmc1eW1Sa1IgzmrTCEpa+QNwe72//BvLag9bFRowZv0amPW+
+         K0zp2D7YNGKRETl1r4545b2dw6ApogYm0APyDJ6wyU5HizQF3DIMoqbhuBwQs7H9835o
+         9Pk6qqzXIs+ZUWEJuKxUj0q5OpeKBpKG9AfN10aApJkGDNEWGTwjKMkXfgA78Uj/xo3I
+         DvJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=A0FdGVbgNiT4qf9UfDKCilymbnIPA66uo0bOacpn5kc=;
+        b=V+GbZHTeeuHbhVw0gO7v3wf+caGlLjNp1VYCicnDxhanmyXF5u5lk95mA4lEr2kMkU
+         TtuV6XvyLxjJV1FELbbuOwoy7poEyMMsox8IRA3z32pEoCYcdNEzIVCyn462t2J4RFwF
+         7kXG5KdNO0IhbJnI/KzJzlv3GN4bDhUki364afp4sPjjlS05LCvcjMgmGu7hiEnhe4R8
+         K3v3YZIdLWw3zpkJ5W28VNFQUnYS56PchGPYB7+hpwnjN7Lgj5oJzl4OX3LwcOYsJtyb
+         7tvRTzOqcbrQql3mXmUTsPlLHD+Zk0dR6DN1E8YpqBfsLLASQqrhbwBCEnyJbBhEizQ7
+         YLUA==
+X-Gm-Message-State: AOAM532BITCDh1ovltHuuaQuJKJmYrFb33BPZ8oeddvgqP6BcOq41AWC
+        unWH819BJRMAAi6rUaO9nB4=
+X-Google-Smtp-Source: ABdhPJzpCGfzQ/16cQjuL/Vez63BhmyceYNV0JvhPj7xnj3Zr9CcnvI0VZftKedC7iCHhww0lp68Kw==
+X-Received: by 2002:a17:902:f24c:b0:15c:b564:e4cc with SMTP id j12-20020a170902f24c00b0015cb564e4ccmr20122350plc.137.1652183572783;
+        Tue, 10 May 2022 04:52:52 -0700 (PDT)
+Received: from localhost ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id g1-20020a170902e38100b0015e8d4eb1c8sm1828887ple.18.2022.05.10.04.52.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 04:52:52 -0700 (PDT)
+Message-ID: <627a5214.1c69fb81.1b7fb.47be@mx.google.com>
+X-Google-Original-Message-ID: <20220510115251.GA1357518@cgel.zte@gmail.com>
+Date:   Tue, 10 May 2022 11:52:51 +0000
+From:   CGEL <cgel.zte@gmail.com>
+To:     Michal Hocko <mhocko@suse.com>
+Cc:     akpm@linux-foundation.org, hannes@cmpxchg.org, willy@infradead.org,
+        shy828301@gmail.com, roman.gushchin@linux.dev, shakeelb@google.com,
+        linmiaohe@huawei.com, william.kucharski@oracle.com,
+        peterx@redhat.com, hughd@google.com, vbabka@suse.cz,
+        songmuchun@bytedance.com, surenb@google.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        cgroups@vger.kernel.org, Yang Yang <yang.yang29@zte.com.cn>
+Subject: Re: [PATCH] mm/memcg: support control THP behaviour in cgroup
+References: <20220505033814.103256-1-xu.xin16@zte.com.cn>
+ <YnUlntNFR4zeD+qa@dhcp22.suse.cz>
+ <6275d3e7.1c69fb81.1d62.4504@mx.google.com>
+ <YnjmPAToTR0C5o8x@dhcp22.suse.cz>
+ <6278fa75.1c69fb81.9c598.f794@mx.google.com>
+ <Ynj/l+pyFJxKfcbQ@dhcp22.suse.cz>
+ <6279c354.1c69fb81.7f6c1.15e0@mx.google.com>
+ <Yno3pNQOn1lAMPnu@dhcp22.suse.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1652161831-77791-1-git-send-email-kanie@linux.alibaba.com>
+In-Reply-To: <Yno3pNQOn1lAMPnu@dhcp22.suse.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Guixin,
+On Tue, May 10, 2022 at 12:00:04PM +0200, Michal Hocko wrote:
+> On Tue 10-05-22 01:43:38, CGEL wrote:
+> > On Mon, May 09, 2022 at 01:48:39PM +0200, Michal Hocko wrote:
+> > > On Mon 09-05-22 11:26:43, CGEL wrote:
+> > > > On Mon, May 09, 2022 at 12:00:28PM +0200, Michal Hocko wrote:
+> > > > > On Sat 07-05-22 02:05:25, CGEL wrote:
+> > > > > [...]
+> > > > > > If there are many containers to run on one host, and some of them have high
+> > > > > > performance requirements, administrator could turn on thp for them:
+> > > > > > # docker run -it --thp-enabled=always
+> > > > > > Then all the processes in those containers will always use thp.
+> > > > > > While other containers turn off thp by:
+> > > > > > # docker run -it --thp-enabled=never
+> > > > > 
+> > > > > I do not know. The THP config space is already too confusing and complex
+> > > > > and this just adds on top. E.g. is the behavior of the knob
+> > > > > hierarchical? What is the policy if parent memcg says madivise while
+> > > > > child says always? How does the per-application configuration aligns
+> > > > > with all that (e.g. memcg policy madivise but application says never via
+> > > > > prctl while still uses some madvised - e.g. via library).
+> > > > >
+> > > > 
+> > > > The cgroup THP behavior is align to host and totally independent just likes
+> > > > /sys/fs/cgroup/memory.swappiness. That means if one cgroup config 'always'
+> > > > for thp, it has no matter with host or other cgroup. This make it simple for
+> > > > user to understand or control.
+> > > 
+> > > All controls in cgroup v2 should be hierarchical. This is really
+> > > required for a proper delegation semantic.
+> > >
+> > 
+> > Could we align to the semantic of /sys/fs/cgroup/memory.swappiness?
+> > Some distributions like Ubuntu is still using cgroup v1.
+> 
+> cgroup v1 interface is mostly frozen. All new features are added to the
+> v2 interface.
+>
 
-Thank you for the patch! Perhaps something to improve:
+So what about we add this interface to cgroup v2?
 
-[auto build test WARNING on char-misc/char-misc-testing]
-[also build test WARNING on linux/master linus/master v5.18-rc6]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> > > > If memcg policy madivise but application says never, just like host, the result
+> > > > is no THP for that application.
+> > > > 
+> > > > > > By doing this we could promote important containers's performance with less
+> > > > > > footprint of thp.
+> > > > > 
+> > > > > Do we really want to provide something like THP based QoS? To me it
+> > > > > sounds like a bad idea and if the justification is "it might be useful"
+> > > > > then I would say no. So you really need to come with a very good usecase
+> > > > > to promote this further.
+> > > > 
+> > > > At least on some 5G(communication technology) machine, it's useful to provide
+> > > > THP based QoS. Those 5G machine use micro-service software architecture, in
+> > > > other words one service application runs in one container.
+> > > 
+> > > I am not really sure I understand. If this is one application per
+> > > container (cgroup) then why do you really need per-group setting?
+> > > Does the application is a set of different processes which are only very
+> > > loosely tight?
+> > > 
+> > For micro-service architecture, the application in one container is not a
+> > set of loosely tight processes, it's aim at provide one certain service,
+> > so different containers means different service, and different service
+> > has different QoS demand. 
+> 
+> OK, if they are tightly coupled you could apply the same THP policy by
+> an existing prctl interface. Why is that not feasible. As you are noting
+> below...
+> 
+> >     5.containers usually managed by compose software, which treats container as
+> > base management unit;
+> 
+> ..so the compose software can easily start up the workload by using prctl
+> to disable THP for whatever workloads it is not suitable for.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Guixin-Liu/uio-Replace-mutex-info_lock-with-percpu_ref/20220510-135202
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git 33a1c6618677fe33f8e84cb7bedc45abbce89a50
-config: s390-randconfig-s031-20220509 (https://download.01.org/0day-ci/archive/20220510/202205101914.ZJmSORCV-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 11.3.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/intel-lab-lkp/linux/commit/4d3e70c70de7bcf57d176790db79b8cbee990171
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Guixin-Liu/uio-Replace-mutex-info_lock-with-percpu_ref/20220510-135202
-        git checkout 4d3e70c70de7bcf57d176790db79b8cbee990171
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=s390 SHELL=/bin/bash
+prctl(PR_SET_THP_DISABLE..) can not be elegance to support the semantic we
+need. If only some containers needs THP, other containers and host do not need
+THP. We must set host THP to always first, and call prctl() to close THP for
+host tasks and other containers one by one, in this process some tasks that
+start before we call prctl() may already use THP with no need. 
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+And compose's semantic treats container as base unit to manage not tasks. See:
+https://docs.docker.com/compose/
 
+If we treat container as lightweight virtual machine things may become clearer:
+this virtual machine has it's own THP policy being set just likes
+/sys/kernel/mm/transparent_hugepage/enabled in host, it has nothing to do
+with host or other virtual machine.
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/uio/uio.c:564:24: sparse: sparse: incorrect type in return expression (different base types) @@     expected restricted __poll_t @@     got int @@
-   drivers/uio/uio.c:564:24: sparse:     expected restricted __poll_t
-   drivers/uio/uio.c:564:24: sparse:     got int
-   drivers/uio/uio.c:567:21: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __poll_t [usertype] ret @@     got int @@
-   drivers/uio/uio.c:567:21: sparse:     expected restricted __poll_t [usertype] ret
-   drivers/uio/uio.c:567:21: sparse:     got int
-
-vim +564 drivers/uio/uio.c
-
-   556	
-   557	static __poll_t uio_poll(struct file *filep, poll_table *wait)
-   558	{
-   559		struct uio_listener *listener = filep->private_data;
-   560		struct uio_device *idev = listener->dev;
-   561		__poll_t ret = 0;
-   562	
-   563		if (!percpu_ref_tryget_live(&idev->info_ref))
- > 564			return -EIO;
-   565	
-   566		if (!idev->info || !idev->info->irq)
-   567			ret = -EIO;
-   568		percpu_ref_put(&idev->info_ref);
-   569	
-   570		if (ret)
-   571			return ret;
-   572	
-   573		poll_wait(filep, &idev->wait, wait);
-   574		if (listener->event_count != atomic_read(&idev->event))
-   575			return EPOLLIN | EPOLLRDNORM;
-   576		return 0;
-   577	}
-   578	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> -- 
+> Michal Hocko
+> SUSE Labs
