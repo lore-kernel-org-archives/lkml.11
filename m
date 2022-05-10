@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A818C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:20:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56D6EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:22:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347311AbiEJQYh (ORCPT
+        id S1347365AbiEJQ0k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 12:24:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48258 "EHLO
+        Tue, 10 May 2022 12:26:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347283AbiEJQYd (ORCPT
+        with ESMTP id S1347373AbiEJQ0R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 12:24:33 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF6512A18A9;
-        Tue, 10 May 2022 09:20:35 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id gj17-20020a17090b109100b001d8b390f77bso2435476pjb.1;
-        Tue, 10 May 2022 09:20:35 -0700 (PDT)
+        Tue, 10 May 2022 12:26:17 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7255A2CE0F;
+        Tue, 10 May 2022 09:22:20 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id p12so15376351pfn.0;
+        Tue, 10 May 2022 09:22:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=JTDKW3zTfzDJsAmgC+ubkiJdvpO7xvaogb5PEtcI/Jc=;
-        b=LOK1arc2RFcfBI6fm5RGbi46GsRR5joJ0e3/aIjav2lWiOnkhhZ6n+dno1JPuGPz24
-         IxPOIkDKxCnYTp1S+9XxjBoEKxq4iNoy35eaqJhifoc3+A5z707ZYh0Y/DrCvoCpstxE
-         JUPYa48ANPzeqM1ANxUsy2mbYy3CFrC8QDVrj02RpGcRptjg4Q4wy9uIsZMd7cGdgOpT
-         VTql6ZLws8REu3gDWu7KuidiPsJXNOoiVgEVnepRZa8jzcqp/TgQtpN7QEump6vlBLMW
-         fcjkRV4MD5Fe35nM7ffdsx0LDJmeRpx6O9o3kmDMpR5zuIbPjKKO+cbCsyr2nbzsn1RU
-         yUiw==
+        bh=wDcu7cYJsfVy9NZ2SD6dApJl14bL51Onqrh/Ptthpp4=;
+        b=KtpfJ91v3P2mWa1pFoDdeyhatEDDR/W5ra/i0ENEI9u5JfpBbEkgMnILHew3y5n8XW
+         wmkWwbqSITv+DZL2stLCETXImSeJre2g0PBrO7m2kJpjJDZM/cHKcTeiJQ535cuvnSts
+         yeSr4PtvCDcBzSClfw158sUHyEy4/S5kOIv6TfLK1rgt0U9aXCcTn67a63fuJFoZRp7U
+         DN8TvroE7haUpGanCpuCr0XGI4sZpRZuhUjGo4jsnsCalulYj8DjCvSGGRaUllRC0UMd
+         XGDP9zXqOOaZ70DiBJSusiz3le6VuryU4WTES6Qe78jTddIPl8rPtyuU0yLNDW/GY5e1
+         fAYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=JTDKW3zTfzDJsAmgC+ubkiJdvpO7xvaogb5PEtcI/Jc=;
-        b=HmaRK/biZn0bkP0Gfjt9RuJvSrYfWcb6dZuE+GSExFvMqFVQe+a4jdkiGOWiSrivxi
-         k+dRxagFvk5VUJKawfkGOPlz8yb2e0dVRm97TJHwJlVdWuiEEldwb6ebanCwJAEQ+J/H
-         Xt5zIgiISBaUv8JonLb2SbaP658qM0/8XfRkqGNUAUYpbxBUaz3Mux2asVUdT5rYR5EE
-         LHevaxT17wJaroI6ml3qNKVEkwhyyJpAbGbqns70qF1PJ8cM/Hqzy4LgHbvqxyrERw0O
-         ZxiqrtayHdqI4JtY3/M4Jm8NSfFKF343vBnEqK6pxhjjuUSxeZ3esGY9BLs9Gb0/Xc+Q
-         RplQ==
-X-Gm-Message-State: AOAM531eC2EwIvIEIVM8kFMqwkxI//BTMYUpWxActgnPAMvTETVu8Efa
-        KBwJeUjSKIg441EHJKBbk6U=
-X-Google-Smtp-Source: ABdhPJxGOIa07E4HYCiT2rECsBBRxdIB1gn1xzzk6Oc4sJL38iLR1SHF0i06C4ndD4tuFNsrLdYT8Q==
-X-Received: by 2002:a17:90b:3445:b0:1d6:91a5:29fe with SMTP id lj5-20020a17090b344500b001d691a529femr729842pjb.138.1652199635172;
-        Tue, 10 May 2022 09:20:35 -0700 (PDT)
+        bh=wDcu7cYJsfVy9NZ2SD6dApJl14bL51Onqrh/Ptthpp4=;
+        b=equs28Q6AyBAhBKK9R8HQMS1Nzc+JL34wWXUkaNONUFmWKLX346j0wJiKmZKcUClEs
+         gJY1Tk1keKxaypNnNrbsOS3xQlkZwUPoBqJ8DYHqv90fUxUJ3zRdtESh9e6tVW83V88E
+         87G+bwQx+J+3oqVcqtSYXw4gTaTOlOhHylZgtaMAX51xLnDESZTVVm2l1iBMW2yIEoC7
+         z5Xw5yYZ9YIpmEnRGd0b5iy5en3fP0vr7Dt0oo6oW7ibyZ3SL3PzORza2rIDtUrq7aF2
+         Q/3y6cdmhdEhtetmE+aJvQx9DhfSmT4d6NTJmxXVkQdcvnGlL1s6JFYrGuIlw9i8/Get
+         E5CA==
+X-Gm-Message-State: AOAM532FBGuX53SayymfyaiJUhsVNU1UL/Ba3lI65bvBSRw7SoJPUMXs
+        rWGXQC/dCvnfisady+fq4xg=
+X-Google-Smtp-Source: ABdhPJznDioIYRZQ6kHDdNYT91FyrGUHdUILDV/CzrKwzLNPJTKRVK/u+ya1aX7C4x75oENByjA8Ww==
+X-Received: by 2002:a63:a18:0:b0:3c6:12b1:a8d0 with SMTP id 24-20020a630a18000000b003c612b1a8d0mr17519099pgk.534.1652199739898;
+        Tue, 10 May 2022 09:22:19 -0700 (PDT)
 Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id g8-20020aa78748000000b0050dc762817bsm10795496pfo.85.2022.05.10.09.20.28
+        by smtp.googlemail.com with ESMTPSA id bb10-20020a170902bc8a00b0015e8d4eb1f9sm2274457plb.67.2022.05.10.09.22.13
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 May 2022 09:20:34 -0700 (PDT)
-Message-ID: <130a1b01-5777-c8b4-ca0f-0342c502a97a@gmail.com>
-Date:   Tue, 10 May 2022 09:20:26 -0700
+        Tue, 10 May 2022 09:22:19 -0700 (PDT)
+Message-ID: <67a3c327-80c7-bdb2-1add-89e5a3dc781f@gmail.com>
+Date:   Tue, 10 May 2022 09:22:11 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: Re: [PATCH net-next v4 02/12] net: dsa: add Renesas RZ/N1 switch tag
- driver
+Subject: Re: [PATCH net-next v4 12/12] MAINTAINERS: add Renesas RZ/N1 switch
+ related driver entry
 Content-Language: en-US
 To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
         Andrew Lunn <andrew@lunn.ch>,
@@ -81,18 +81,18 @@ Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
 References: <20220509131900.7840-1-clement.leger@bootlin.com>
- <20220509131900.7840-3-clement.leger@bootlin.com>
+ <20220509131900.7840-13-clement.leger@bootlin.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220509131900.7840-3-clement.leger@bootlin.com>
+In-Reply-To: <20220509131900.7840-13-clement.leger@bootlin.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/9/22 06:18, Clément Léger wrote:
-> The switch that is present on the Renesas RZ/N1 SoC uses a specific
-> VLAN value followed by 6 bytes which contains forwarding configuration.
+On 5/9/22 06:19, Clément Léger wrote:
+> After contributing the drivers, volunteer for maintenance and add
+> myself as the maintainer for Renesas RZ/N1 switch related drivers.
 > 
 > Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 
