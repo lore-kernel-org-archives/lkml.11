@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C7EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:20:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1DC6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:20:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243395AbiEJOYK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:24:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40046 "EHLO
+        id S1343994AbiEJOYQ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:24:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244928AbiEJNvc (ORCPT
+        with ESMTP id S244890AbiEJNv2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:51:32 -0400
+        Tue, 10 May 2022 09:51:28 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72F36299573;
-        Tue, 10 May 2022 06:38:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E08F2992DF;
+        Tue, 10 May 2022 06:38:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 18F5C618C8;
-        Tue, 10 May 2022 13:37:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BCB7C385C2;
-        Tue, 10 May 2022 13:37:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1068C618BB;
+        Tue, 10 May 2022 13:37:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C284C385C9;
+        Tue, 10 May 2022 13:37:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189867;
-        bh=kbIMyA20MLb5r88e4+yEMtTP3fJ10IDe37wFkR1I50g=;
+        s=korg; t=1652189848;
+        bh=ECmiXNGYewi08JxQt1hFdaf6p24m2pojk7/YQtqMICE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uOAPBJGWNK/Fqf7Z8H83PVGRCc3096YZ/C1YWQuUxBF7E5K4HoHkV8c1hQpRWAGqJ
-         +n4c9D3OsPSnF/ETF2jKy7DV0hTJEQ0VpPk8HEGHZc4EIJ9wd3ugzKGj/HVv35sORr
-         tEEnoSniqD2pnycKboPNqUOz8xvEhDtWQ5ViGPxM=
+        b=C5JgzXpfBCfgBvvTkBvZZSdHBYORGb+qW6Rqo7i34CodqoNKAed8Nhop4dshYZ0fq
+         aPDeDFL/jp73+AUnCfM+U/EiJgTep2cs2NHiVAWH++lCWWnSiZ7vSUXE+wRk6hbC8U
+         7lAQA8NmoSjuTP2kQH/pMgKoYBDYSPXqaiPngdhs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Armin Wolf <W_Armin@gmx.de>, Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH 5.17 055/140] hwmon: (adt7470) Fix warning on module removal
-Date:   Tue, 10 May 2022 15:07:25 +0200
-Message-Id: <20220510130743.193221985@linuxfoundation.org>
+        stable@vger.kernel.org, Stefan Haberland <sth@linux.ibm.com>,
+        Jan Hoeppner <hoeppner@linux.ibm.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.17 041/140] s390/dasd: fix data corruption for ESE devices
+Date:   Tue, 10 May 2022 15:07:11 +0200
+Message-Id: <20220510130742.793578666@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -48,57 +50,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Armin Wolf <W_Armin@gmx.de>
+From: Stefan Haberland <sth@linux.ibm.com>
 
-commit 7b2666ce445c700b8dcee994da44ddcf050a0842 upstream.
+commit 5b53a405e4658580e1faf7c217db3f55a21ba849 upstream.
 
-When removing the adt7470 module, a warning might be printed:
+For ESE devices we get an error when accessing an unformatted track.
+The handling of this error will return zero data for read requests and
+format the track on demand before writing to it. To do this the code needs
+to distinguish between read and write requests. This is done with data from
+the blocklayer request. A pointer to the blocklayer request is stored in
+the CQR.
 
-do not call blocking ops when !TASK_RUNNING; state=1
-set at [<ffffffffa006052b>] adt7470_update_thread+0x7b/0x130 [adt7470]
+If there is an error on the device an ERP request is built to do error
+recovery. While the ERP request is mostly a copy of the original CQR the
+pointer to the blocklayer request is not copied to not accidentally pass
+it back to the blocklayer without cleanup.
 
-This happens because adt7470_update_thread() can leave the kthread in
-TASK_INTERRUPTIBLE state when the kthread is being stopped before
-the call of set_current_state(). Since kthread_exit() might sleep in
-exit_signals(), the warning is printed.
-Fix that by using schedule_timeout_interruptible() and removing
-the call of set_current_state().
-This causes TASK_INTERRUPTIBLE to be set after kthread_should_stop()
-which might cause the kthread to exit.
+This leads to the error that during ESE handling after an ERP request was
+built it is not possible to determine the IO direction. This leads to the
+formatting of a track for read requests which might in turn lead to data
+corruption.
 
-Reported-by: Zheyu Ma <zheyuma97@gmail.com>
-Fixes: 93cacfd41f82 (hwmon: (adt7470) Allow faster removal)
-Signed-off-by: Armin Wolf <W_Armin@gmx.de>
-Tested-by: Zheyu Ma <zheyuma97@gmail.com>
-Link: https://lore.kernel.org/r/20220407101312.13331-1-W_Armin@gmx.de
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Fixes: 5e2b17e712cf ("s390/dasd: Add dynamic formatting support for ESE volumes")
+Cc: stable@vger.kernel.org # 5.3+
+Signed-off-by: Stefan Haberland <sth@linux.ibm.com>
+Reviewed-by: Jan Hoeppner <hoeppner@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220505141733.1989450-2-sth@linux.ibm.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hwmon/adt7470.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/s390/block/dasd.c      |    8 +++++++-
+ drivers/s390/block/dasd_eckd.c |    2 +-
+ drivers/s390/block/dasd_int.h  |   12 ++++++++++++
+ 3 files changed, 20 insertions(+), 2 deletions(-)
 
---- a/drivers/hwmon/adt7470.c
-+++ b/drivers/hwmon/adt7470.c
-@@ -19,6 +19,7 @@
- #include <linux/log2.h>
- #include <linux/kthread.h>
- #include <linux/regmap.h>
-+#include <linux/sched.h>
- #include <linux/slab.h>
- #include <linux/util_macros.h>
+--- a/drivers/s390/block/dasd.c
++++ b/drivers/s390/block/dasd.c
+@@ -1639,6 +1639,7 @@ void dasd_int_handler(struct ccw_device
+ 	unsigned long now;
+ 	int nrf_suppressed = 0;
+ 	int fp_suppressed = 0;
++	struct request *req;
+ 	u8 *sense = NULL;
+ 	int expires;
  
-@@ -294,11 +295,10 @@ static int adt7470_update_thread(void *p
- 		adt7470_read_temperatures(data);
- 		mutex_unlock(&data->lock);
- 
--		set_current_state(TASK_INTERRUPTIBLE);
- 		if (kthread_should_stop())
- 			break;
- 
--		schedule_timeout(msecs_to_jiffies(data->auto_update_interval));
-+		schedule_timeout_interruptible(msecs_to_jiffies(data->auto_update_interval));
+@@ -1739,7 +1740,12 @@ void dasd_int_handler(struct ccw_device
  	}
  
+ 	if (dasd_ese_needs_format(cqr->block, irb)) {
+-		if (rq_data_dir((struct request *)cqr->callback_data) == READ) {
++		req = dasd_get_callback_data(cqr);
++		if (!req) {
++			cqr->status = DASD_CQR_ERROR;
++			return;
++		}
++		if (rq_data_dir(req) == READ) {
+ 			device->discipline->ese_read(cqr, irb);
+ 			cqr->status = DASD_CQR_SUCCESS;
+ 			cqr->stopclk = now;
+--- a/drivers/s390/block/dasd_eckd.c
++++ b/drivers/s390/block/dasd_eckd.c
+@@ -3145,7 +3145,7 @@ dasd_eckd_ese_format(struct dasd_device
+ 	sector_t curr_trk;
+ 	int rc;
+ 
+-	req = cqr->callback_data;
++	req = dasd_get_callback_data(cqr);
+ 	block = cqr->block;
+ 	base = block->base;
+ 	private = base->private;
+--- a/drivers/s390/block/dasd_int.h
++++ b/drivers/s390/block/dasd_int.h
+@@ -757,6 +757,18 @@ dasd_check_blocksize(int bsize)
  	return 0;
+ }
+ 
++/*
++ * return the callback data of the original request in case there are
++ * ERP requests build on top of it
++ */
++static inline void *dasd_get_callback_data(struct dasd_ccw_req *cqr)
++{
++	while (cqr->refers)
++		cqr = cqr->refers;
++
++	return cqr->callback_data;
++}
++
+ /* externals in dasd.c */
+ #define DASD_PROFILE_OFF	 0
+ #define DASD_PROFILE_ON 	 1
 
 
