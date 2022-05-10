@@ -2,201 +2,274 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0128C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:18:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD067C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:19:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347279AbiEJQWu (ORCPT
+        id S1347280AbiEJQXY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 12:22:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40336 "EHLO
+        Tue, 10 May 2022 12:23:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345738AbiEJQWq (ORCPT
+        with ESMTP id S237590AbiEJQXW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 12:22:46 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6B401D3D61
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 09:18:44 -0700 (PDT)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24AFlv8H022574;
-        Tue, 10 May 2022 16:18:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=tVjNF2y/cwsX4ImxQwph9xXBTReZnFo7CCDwfmQ2a3c=;
- b=zO6IeIfVvjX6tTVM7+pS5+1nqQJCSl612akMFJNRo0+oPbYZznNQOs+7ApT2T5M0ix2w
- 1C5Uyl6a9Kia0lB94w90/Vv6OSugB81Ya/xEPIeOqtvVcNsjtbd3Wd4ViZRGq9aCeZT5
- yTKzREQ59Aou+22ry+ySME6Fa391LE7NiXh190MEocw61DQRiECAdvQBEXX3fd+Z0x3I
- M8C22xJkW+2t2kdhR2pRdh9CHsdok1gQ62HsEE9gq+mYP24IpAvjQOtenyaltueaHMn9
- ZyE14uD17bF81KtiI42oE+p3EYb/fjrHjsKesxDD1TIZ1YLrj57rwPlBFAWpsqa4m9fE hg== 
-Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3fwhatf8j9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 10 May 2022 16:18:40 +0000
-Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 24AG1d57039998;
-        Tue, 10 May 2022 16:18:40 GMT
-Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2168.outbound.protection.outlook.com [104.47.58.168])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3fwf737x5y-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 10 May 2022 16:18:40 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hkzorPzI4dZeVytR/RjtyYt4H7iEcgOPkw8N07AnS6oSh/CuxSd60TodyoFvUfEin/fhH23GCStYgWhSTy/jomJws2oYDa/+yCBCNgglVetJNeTvnqwuQmvO0DULAWQgGpn+BCUQAMfpOFECHU2x4yG4IOv3FlKJSrQyV9Y1Lo25D7pj+ATxdFb0btaDSuQa6KL/J/bmFdrSfZeUWb0NU7wAfUCse/KAF5BBr1eLMUOC/w5Qjfq513gmrhNbUbx7yjTvDW78vtcLQThekbEfvJeJ08iIhRyRb8tSiXjmZNrh6jhE/fWFlVjLIQ+JvP2ZCcR5x6TjcMt7suvZ8vd46Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tVjNF2y/cwsX4ImxQwph9xXBTReZnFo7CCDwfmQ2a3c=;
- b=leFSmLoUeOcgCbSl2uc9LboBiztt8YIW+rxM+1TwwbjWyeD+LuLin776My148/eb3ibyITQh6P5DQEPVSFqawqisrZlYnIXCvq0THc0oo10rnDgl3XLEixJLjQmhS+L3HTT11xgJ2fQKXq3RtDGlfCkUunNDjXUlpzapqW0ZZuPAdiA9/9l+cEgarauSu7K+cN2j8mT9zHBlrH3fEM49/1oBC4gkv+U2wjBkOUwaMDsLjGLBdu+iO3qsq1iBcR9kextvG6vcehHIUpcG3efPRp5jwzLoheaOlSfF0TE/qITuY7kdG4ORawRiQHCUS9+gRFPOcF2f6MJbrQstk5adMA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Tue, 10 May 2022 12:23:22 -0400
+Received: from mail-vs1-xe33.google.com (mail-vs1-xe33.google.com [IPv6:2607:f8b0:4864:20::e33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A66F12A18B4
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 09:19:23 -0700 (PDT)
+Received: by mail-vs1-xe33.google.com with SMTP id z144so17397038vsz.13
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 09:19:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tVjNF2y/cwsX4ImxQwph9xXBTReZnFo7CCDwfmQ2a3c=;
- b=QzhQYAi1SSnhkd+pw9CQi0J+AaMaerY/DXCmCupS00LHSJIXj2cIjWXVRFrNMwK/J2YWiPf3oRvcliOodJdSvJ1yoEiszOFsUozUWMlTkO5NAO2h/0m935ZyLCdyFoFOBPsMomsTrPOIsHBaY3/c1RQH5lunV6rChCIVMuVEZP0=
-Received: from BYAPR10MB3287.namprd10.prod.outlook.com (2603:10b6:a03:15c::11)
- by DS7PR10MB5295.namprd10.prod.outlook.com (2603:10b6:5:3a9::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.20; Tue, 10 May
- 2022 16:18:38 +0000
-Received: from BYAPR10MB3287.namprd10.prod.outlook.com
- ([fe80::c89:e3f5:ea4a:8d30]) by BYAPR10MB3287.namprd10.prod.outlook.com
- ([fe80::c89:e3f5:ea4a:8d30%2]) with mapi id 15.20.5227.023; Tue, 10 May 2022
- 16:18:38 +0000
-Message-ID: <e5820cda-ce5c-9b15-8822-7a6b858f806e@oracle.com>
-Date:   Tue, 10 May 2022 09:18:34 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v5 1/3] vdpa: Fix error logic in vdpa_nl_cmd_dev_get_doit
-Content-Language: en-US
-To:     Eli Cohen <elic@nvidia.com>, mst@redhat.com, jasowang@redhat.com
-Cc:     virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-References: <20220510112734.205669-1-elic@nvidia.com>
- <20220510112734.205669-2-elic@nvidia.com>
-From:   Si-Wei Liu <si-wei.liu@oracle.com>
-Organization: Oracle Corporation
-In-Reply-To: <20220510112734.205669-2-elic@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BY5PR13CA0026.namprd13.prod.outlook.com
- (2603:10b6:a03:180::39) To BYAPR10MB3287.namprd10.prod.outlook.com
- (2603:10b6:a03:15c::11)
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DUU7BBSpAi75FzYjPIRUNtb4vWMrTsil53ADDK8Ozvc=;
+        b=sicCIWwa9VQNueMk8/LCZqkZmIw71qQG5IRakl2R+yJFNrC9p6S+K4ETCHz+ciYf54
+         UjjK7/O28jYobFRYyBZ4zUXATiQ5EbAJ7kCULUsluvWghtpcrJD1qICvpEqC8FViKL9p
+         JwDqSPDfJ0dcORH40xtlFwz3TGf/KgLiWxuzKNvn7zec5vkPYLEX2wW0zurpj8outqTi
+         IuY9Nd2JxZ1PTUI2584pDO7oWGU4sbafzyUb1K/qzEu2p4WFB1TxmQFuLLy7eFFiKBsP
+         mt6vtxBulyEP6GutcOj6iVbCagrVjDug5Z5HL4jXH1jECH5QAedr9LOpU5mTI80eBAw/
+         BjIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DUU7BBSpAi75FzYjPIRUNtb4vWMrTsil53ADDK8Ozvc=;
+        b=QmEU9UZJ/cIDOBfGug1vsWDUMnqD2cx+2AGzk+9E979Ha0V45jGuV+O3U0l+ZpqgxY
+         v0oMmCwlDdbMBQTFjbB3VrqkLYf/dlEFEz8IvOz4M+pAhG96VPURfNtEZejEETHDrGAD
+         SEEvV5gzv89p6SnieTNK7PgclYwRZILevokf6f3X4OlKZWGhywdjoOjsonYeG+JfxiHk
+         sdVTizlHHO1iyEvHdJks0dmkHVkeIrh4xchl0RuHhHa13Jflkj86Wx77GOBK/h46n6Lq
+         xCoCqbquTD65kmyk1OxbOoevPPkp3D/oIY78kPNfmjCU/fFY2zTRM6cvmfXYuafcoJNt
+         Xr3A==
+X-Gm-Message-State: AOAM532wmN01jpb54FEbWX4jvq9JTbsgNUPVa2Q6NZzjILKGxnCnDZhv
+        wStuElkoWfzqN602m3W0YmlxB2GxtH/BKimdZsBX3ebmEHQ=
+X-Google-Smtp-Source: ABdhPJxYGXqzoGfsm6fVvjk8Jqv9hXRCQ8Bm4LZE3lu8s09VgBPo17/jY5vhbrsxp+SakcuZaggmwtTmLaGGM+h/Qrs=
+X-Received: by 2002:a05:6102:2929:b0:32d:6662:72e2 with SMTP id
+ cz41-20020a056102292900b0032d666272e2mr12026358vsb.56.1652199560469; Tue, 10
+ May 2022 09:19:20 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 16e57441-6f8a-48f1-db21-08da32a0bd56
-X-MS-TrafficTypeDiagnostic: DS7PR10MB5295:EE_
-X-Microsoft-Antispam-PRVS: <DS7PR10MB52954B01F239225C5615AB0BB1C99@DS7PR10MB5295.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: SP8yenelMQcvXPNKyeCJI6fjT2FIMD1DCIu+ofSaa9t10rVefqToLgfuFojCG+eJqPDoizp+ptzJ6i6TDCixGz0Y3rzfkJx5O20yWyo8kh120x7zQ9VqwUsD65IBtwWtdu/iatDXPsA+u6+YzYO7pAgHZDrtlA3wAxSyJx+GzMyV05BMhuOLmNdnnv+R8NzHVtxXhC5m+C96Y1gSyoFA6PuDC6qsnGJVmfIEypPzbl6GLZUCwSHr5wtDM+M6RdUXq9u6RTFwX+xRtPNNPnaW7/M2Snrr4tSPD/mz/L/5fysgCW36LQLaVyfvRooYaeUq5oErovzS7CEx0mRGgQW0wQ3Sf2jzGfx4ZTDnau+MT0KogZrtVnoFv/NgS/IxyHVpOHqf4W6+00jGUDlTXwI9/UG9xVuIhzr4dk2dSHaA2zy+dF1p6tscyLotmhWFpZRceVtYq9vfPk4y/pwBIiHU0Lc/Tf3ZilmJxePEpxLyRoeDiRUhXkWrekWzUeKzBa7E+PoWglgfTu0GrPyV8mkr4WQspiLBTP5zF1G+RacA5xEBt4CQDl/6SmqRhggJRppSwA8fcEc3wys0Yw9swUBD7HkHqSU1GPthSIERV0oKfHITxbmS8sEdIssopKTtvMO/+BpqqzuNTBSPg/q+g5t1oENuwpH0PIrbzJzpT3OYtyuuRRRYs1bopkDtU9ygsCqq90AZGZI4bEm35VY9U2rejwLk+ob+qvd7Wo/Xp4+Pnjo=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR10MB3287.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(36916002)(36756003)(6506007)(6666004)(2906002)(6512007)(4326008)(8676002)(8936002)(86362001)(5660300002)(26005)(53546011)(66556008)(66476007)(2616005)(66946007)(31686004)(31696002)(6486002)(508600001)(38100700002)(316002)(186003)(83380400001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bS91MGVCQlFqTVhBdHdlU0pDLzN0RUhYR1MvenFuR0ZFTWgzRmxNTGNSOXhI?=
- =?utf-8?B?L21kR3p1d2tUQmk3bXJlWmxnL2xMMnFjdG1IOUpxNlV4dlB1dkN2OXZDbjRy?=
- =?utf-8?B?QXhSc0JBVlhaTjFSVCtsQ2h5Mm9hUlFYaXpWczVFSmU5aUVQWk5QeEJjMjdD?=
- =?utf-8?B?ZmJiQ1REcG52Ti9scFB5U21JcU9mKzdLRnNJb0U2ekRlRU9MSzBpenliQk5Q?=
- =?utf-8?B?aHNudXU5N2NXSVZWbDJER21xWUVxdHN0N3N6Ym1vNG9SQmpveDhXK2RpKzNP?=
- =?utf-8?B?UnBoQ2NKZTl3TjBlL21xbVZaWkhvQXhxL2t5SGxnWUxyR1dpa3VOanBFNE1N?=
- =?utf-8?B?R29nME5UdklORWhnaGsrNXUxZi9OTnRsdVZKcjFWUHJJeTg4cU52N0xXdFJZ?=
- =?utf-8?B?NCtjYWhVSTFkT29lZldHeElGd2t6dVBmMVVXUjRHVkNleUJ0QXdkZHR1dlFn?=
- =?utf-8?B?UTRuOE9tazFiajNaOUE3ZkFTZXc1b0pRZXhwRXNLOFJGb0QwOFRNaFFHdzly?=
- =?utf-8?B?ald5N0pEdzZqbk1UWnBzdkFUUisyZVdmTVVHUXZMOVFLQnNMcVg2WWlLc3dR?=
- =?utf-8?B?ZjNtSm5lMEErSHJSYjBmRlN5cGNURGtMWkIzcUgxb1c2TFZXVmZ2QktNL3Ns?=
- =?utf-8?B?K0phd1RzNEJLRXVCdnhjQWFGVlk2OS8vVElLRHVJaXREU0pWZ2ZOUFF4WkZ1?=
- =?utf-8?B?QTAvNTBDZ0RkbFUwQzRnWnpXQjlLNmdKL2VNbURNTWtqYjhjNG9iQ2YvdFNP?=
- =?utf-8?B?QmtBaUZuQ2RJbmdpZDVMNmI4Ym1DbkVaWWdBa2pOb242YStzY1g2VzBRdFIy?=
- =?utf-8?B?S1VTRXFUTVdMeUJzNkpQSWp3MVd4YUFtcHg5bzhKUklFVUNSUXRtRyszdTV3?=
- =?utf-8?B?aHFoN1JYd2pxeGxuQU9OTDRJK0ZaNlBuVWl6NElZdHN1VUE3TEZ6dDYxMS9Q?=
- =?utf-8?B?UGZPRjlZdnhwWUZKbEJvNnNWNDMrUTZTSG4wbCtxbkV2VDNkNkFPb0VFMjkw?=
- =?utf-8?B?aGNpSDZwcUxCTVVSMHgxd3pNb1JwTkVoQXJoZEYvZlRuSG5ubnBNZDRnWEFx?=
- =?utf-8?B?dG04NUlWbjh3MDlZUnQzVFZOV0EvUndpMHVKQzVBMFVxVFhXWU83TForOW5B?=
- =?utf-8?B?MENySHFaUmhFWUwxbG5UN3A0MU9GSnAzeHZKSUQzYS9yODFaV2g5TXB0aFRa?=
- =?utf-8?B?NVIyQW9WYmgrRENRSGFXV0F4V3NPUmxZYVpxdGkvY2E5eFZuQjRKQ0pxV2FY?=
- =?utf-8?B?cmJXelNKcVdYU2lIMVR5NVMxUHNJK09jMEgvcHkyWVZ5T1VPWGEwUElnYXo3?=
- =?utf-8?B?MU85MUErWmY0V3kxZDRsV1B5a05HWnVaS3Y5SnE4SnY2Mkc1bmxQblJjakFS?=
- =?utf-8?B?Y2NubnFDSXNCdyt0ZXhyWG5YNDRMMExlRW1jbnBrMXhlKzBDc0dxUWs0VWI0?=
- =?utf-8?B?OUZ6UGVSSCt5M0FXY25DTE5oc2dmMWE3Ujd3RFpxOThraWZVQUpyTHErRjJ6?=
- =?utf-8?B?U1o1a1VvazZpRWRLZTZGTnlOM0MvMUcrbFN1cWxvY21HOCtPRnlIT2xhSWRN?=
- =?utf-8?B?ZFQ3Q0I2bWZsVC8vcFM1SlNnd3VxNGhWZnBCMTVUVjRzb0Y1a0M1RC9MY3c0?=
- =?utf-8?B?aUxGaHljUWUvZ1BHU0ZWSFBYWG9YSG1oeFpKcG84NjIxbkNvQ2gyVWJpK3Vk?=
- =?utf-8?B?L1NwSWhFK0laUi93NFBVQi9jZHFBKzRzMkpraWh5SzM2YjJscjJTRXducU1y?=
- =?utf-8?B?S0g1TitPSysveGcyWllab0VmVlh4Q25yMThvQnljRjhBSERUU1NRZWh4OWpM?=
- =?utf-8?B?Ynp5REVJbUlJZVQwa0hld2VYZlhxY2NtZEM4U1VDNFNVMHc1TGNPWUxWRjF0?=
- =?utf-8?B?Yk1lTVd5cG9nTUpZRGV3YmR5akJvdHhOM21lcWdaS2JsMHZhS2dnNVFkMjZZ?=
- =?utf-8?B?NXJvQlZPcGhScHYvSW9aTEFyV2JHRXpuZjJ4ejNyWU0ra2pReURhSWZzNUpF?=
- =?utf-8?B?U2YyWXR6TjliQnNSRm8zckVndWpsd1F1c3IzSWhMSDd2aTMyZm5KNGVUd0Jm?=
- =?utf-8?B?bEhIclk3VTdIOEM2alJDR3ZOb0podkJVTm01Y211cllsNHZzUkpVQ0lBOFFO?=
- =?utf-8?B?Ly82TDl1akczeGticDhVcE85L2VUd3lmZnhnOVl0STRHeUtuZUVaS3JleW9l?=
- =?utf-8?B?UzhGaThUS3FicEI2MldaVWMxSC8yRXJqVHQ2NGFsTG9VblZROWg2ZzJ5MlNu?=
- =?utf-8?B?Nlh1T2tEczQ2dkRtR2tmcUk4cnpWVy9HSU0yZWcwMUtLSmdDTXE3anloczJ3?=
- =?utf-8?B?WjdsQ2s5SE9EWnpMdHRMc3V0ZlRhQ3FMUlZxVDdQUFE1Z01Vc3NzUT09?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 16e57441-6f8a-48f1-db21-08da32a0bd56
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR10MB3287.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 16:18:38.0338
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: A1ZmqvLHTIrY7s3yc61XDnaEyICWqU6YphGerHmHAmWIiomtrh8dXO+9WFQFumqThFQeWivWwlR9cOXmJnhulA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR10MB5295
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.858
- definitions=2022-05-10_04:2022-05-09,2022-05-10 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 malwarescore=0
- suspectscore=0 phishscore=0 spamscore=0 bulkscore=0 mlxscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205100071
-X-Proofpoint-GUID: VO_hO3bpv_Y8zNHRxvXP-nnW_CotslvU
-X-Proofpoint-ORIG-GUID: VO_hO3bpv_Y8zNHRxvXP-nnW_CotslvU
+References: <20220506122601.367589-1-adrian.hunter@intel.com>
+ <20220506122601.367589-14-adrian.hunter@intel.com> <CAP-5=fV3SWDb8uTsUmdkweRrO9t9OZXzP=9GWqKxTYn0bdfriw@mail.gmail.com>
+ <078c3b3a-9976-9ee4-0cd2-11ff6599dbd2@intel.com> <CAP-5=fWWHeFN1UeyFU=HS39kQNXHcu74JTdOmw0Nar_ztFG-uw@mail.gmail.com>
+ <0cde1030-e9e5-8688-d98d-6f5f8b2cde27@intel.com>
+In-Reply-To: <0cde1030-e9e5-8688-d98d-6f5f8b2cde27@intel.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Tue, 10 May 2022 09:19:08 -0700
+Message-ID: <CAP-5=fXMstJCbAkj-xCpNOKUKJvm-jK-toKOyU8Ys+RM8zbcrQ@mail.gmail.com>
+Subject: Re: [PATCH V2 13/23] perf evlist: Add evlist__add_dummy_on_all_cpus()
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Leo Yan <leo.yan@linaro.org>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 5/10/2022 4:27 AM, Eli Cohen wrote:
-> In vdpa_nl_cmd_dev_get_doit(), if the call to genlmsg_reply() fails we
-> must not call nlmsg_free() since this is done inside genlmsg_reply().
+On Tue, May 10, 2022 at 7:55 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
 >
-> Fix it.
+> On 6/05/22 18:35, Ian Rogers wrote:
+> > On Fri, May 6, 2022 at 8:08 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
+> >>
+> >> On 6/05/22 16:47, Ian Rogers wrote:
+> >>> On Fri, May 6, 2022 at 5:26 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
+> >>>>
+> >>>> Add evlist__add_dummy_on_all_cpus() to enable creating a system-wide dummy
+> >>>> event that sets up the system-wide maps before map propagation.
+> >>>>
+> >>>> For convenience, add evlist__add_aux_dummy() so that the logic can be used
+> >>>> whether or not the event needs to be system-wide.
+> >>>>
+> >>>> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+> >>>> ---
+> >>>>  tools/perf/util/evlist.c | 40 ++++++++++++++++++++++++++++++++++++++++
+> >>>>  tools/perf/util/evlist.h |  5 +++++
+> >>>>  2 files changed, 45 insertions(+)
+> >>>>
+> >>>> diff --git a/tools/perf/util/evlist.c b/tools/perf/util/evlist.c
+> >>>> index 78c47cbafbc2..c16bd4836314 100644
+> >>>> --- a/tools/perf/util/evlist.c
+> >>>> +++ b/tools/perf/util/evlist.c
+> >>>> @@ -264,6 +264,46 @@ int evlist__add_dummy(struct evlist *evlist)
+> >>>>         return 0;
+> >>>>  }
+> >>>>
+> >>>> +static void evlist__add_on_all_cpus(struct evlist *evlist, struct evsel *evsel)
+> >>>> +{
+> >>>> +       evsel->core.system_wide = true;
+> >>>> +
+> >>>> +       /* All CPUs */
+> >>>> +       perf_cpu_map__put(evsel->core.own_cpus);
+> >>>> +       evsel->core.own_cpus = perf_cpu_map__new(NULL);
+> >>>> +       perf_cpu_map__put(evsel->core.cpus);
+> >>>> +       evsel->core.cpus = perf_cpu_map__get(evsel->core.own_cpus);
+> >>>> +
+> >>>> +       /* No threads */
+> >>>> +       perf_thread_map__put(evsel->core.threads);
+> >>>> +       evsel->core.threads = perf_thread_map__new_dummy();
+> >>>> +
+> >>>> +       evlist__add(evlist, evsel);
+> >>>> +}
+> >>>> +
+> >>>> +struct evsel *evlist__add_aux_dummy(struct evlist *evlist, bool system_wide)
+> >>>> +{
+> >>>> +       struct evsel *evsel = evlist__dummy_event(evlist);
+> >>>> +
+> >>>> +       if (!evsel)
+> >>>> +               return NULL;
+> >>>> +
+> >>>> +       evsel->core.attr.exclude_kernel = 1;
+> >>>> +       evsel->core.attr.exclude_guest = 1;
+> >>>> +       evsel->core.attr.exclude_hv = 1;
+> >>>> +       evsel->core.attr.freq = 0;
+> >>>> +       evsel->core.attr.sample_period = 1;
+> >>>> +       evsel->no_aux_samples = true;
+> >>>> +       evsel->name = strdup("dummy:u");
+> >>>> +
+> >>>> +       if (system_wide)
+> >>>> +               evlist__add_on_all_cpus(evlist, evsel);
+> >>>> +       else
+> >>>> +               evlist__add(evlist, evsel);
+> >>>> +
+> >>>> +       return evsel;
+> >>>> +}
+> >>>> +
+> >>>>  static int evlist__add_attrs(struct evlist *evlist, struct perf_event_attr *attrs, size_t nr_attrs)
+> >>>>  {
+> >>>>         struct evsel *evsel, *n;
+> >>>> diff --git a/tools/perf/util/evlist.h b/tools/perf/util/evlist.h
+> >>>> index 4062f5aebfc1..1bde9ccf4e7d 100644
+> >>>> --- a/tools/perf/util/evlist.h
+> >>>> +++ b/tools/perf/util/evlist.h
+> >>>> @@ -114,6 +114,11 @@ int arch_evlist__add_default_attrs(struct evlist *evlist);
+> >>>>  struct evsel *arch_evlist__leader(struct list_head *list);
+> >>>>
+> >>>>  int evlist__add_dummy(struct evlist *evlist);
+> >>>> +struct evsel *evlist__add_aux_dummy(struct evlist *evlist, bool system_wide);
+> >>>> +static inline struct evsel *evlist__add_dummy_on_all_cpus(struct evlist *evlist)
+> >>>
+> >>> Sorry to be a language lawyer. What I hope to clean up with CPU maps is that:
+> >>>
+> >>> empty == dummy == any CPU
+> >>> https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/tools/lib/perf/cpumap.c?h=perf/core#n279
+> >>>
+> >>> Given every CPU map should be empty or contain any CPU then it seems
+> >>> they all meet the definition of empty - so something is wrong.
+> >>
+> >> Nothing is wrong.  I am not against clarifying things, but stop assuming
+> >> natural language has to mean anything exactly.  That is what computer
+> >> languages are for.
+> >>
+> >> Sometimes more abstract language is used, precisely to stop people
+> >> making assumptions about the details.
+> >>
+> >>>
+> >>> The cpu map here is explicitly opened so that it gets all online CPUs:
+> >>> https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/tools/lib/perf/cpumap.c?h=perf/core#n174
+> >>>
+> >>> From:
+> >>> https://github.com/torvalds/linux/blob/master/Documentation/admin-guide/cputopology.rst
+> >>> there are example topologies like:
+> >>> kernel_max: 31
+> >>>    offline: 2,4-31,32-63
+> >>>     online: 0-1,3
+> >>>   possible: 0-31
+> >>>    present: 0-31
+> >>>
+> >>> all_cpus could mean the union of offline and online CPUs, possible
+> >>> CPUs or present CPUs. You are saying that in the perf code all_cpus
+> >>> should be the same as all online cpus as only those CPUs are valid
+> >>> with perf_event_open. That's true but offline CPUs can be made online.
+> >>> If that happens here then the dummy events will have a CPU map that
+> >>> rather than being for all CPUs will be for all online CPUs at the
+> >>> point it was opened. Having online in the function name I think
+> >>> captures the time dependent nature of this - but if you think that's
+> >>> too much could we add a comment?
+> >>
+> >> If you ask me it does the exact opposite.  The function of the code
+> >> is to put the event on all CPUS without having to know the details
+> >> of: well actually perf doesn't automagically retain or restore events
+> >> across enabling or disabling CPUs so in fact we deal only in online
+> >> CPUs.
+> >
+> > But 'any CPU' (-1) could map to an offline CPU brought online. Calling
+> > this function twice could also result in this behavior. Via the
+> > topology documentation we have language to describe exactly the
+> > scenario that's happening and I'd prefer not to muddy that by making
+> > all and online synonyms.
 >
-> Fixes: bc0d90ee021f ("vdpa: Enable user to query vdpa device info")
-> Acked-by: Jason Wang <jasowang@redhat.com>
-> Signed-off-by: Eli Cohen <elic@nvidia.com>
-Reviewed-by: Si-Wei Liu <si-wei.liu@oracle.com>
-> ---
->   drivers/vdpa/vdpa.c | 13 +++++++++----
->   1 file changed, 9 insertions(+), 4 deletions(-)
+> In this case the caller wants all CPUs, not online CPUs.  The detail
+> that we can't trace offline CPUs that become online is not relevant
+> to the caller.  Why would the caller call a function limited to online
+> CPUs when that is not what the caller wants.
 >
-> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
-> index 2b75c00b1005..fac89a0d8178 100644
-> --- a/drivers/vdpa/vdpa.c
-> +++ b/drivers/vdpa/vdpa.c
-> @@ -756,14 +756,19 @@ static int vdpa_nl_cmd_dev_get_doit(struct sk_buff *skb, struct genl_info *info)
->   		goto mdev_err;
->   	}
->   	err = vdpa_dev_fill(vdev, msg, info->snd_portid, info->snd_seq, 0, info->extack);
-> -	if (!err)
-> -		err = genlmsg_reply(msg, info);
-> +	if (err)
-> +		goto mdev_err;
-> +
-> +	err = genlmsg_reply(msg, info);
-> +	put_device(dev);
-> +	mutex_unlock(&vdpa_dev_mutex);
-> +	return err;
-> +
->   mdev_err:
->   	put_device(dev);
->   err:
->   	mutex_unlock(&vdpa_dev_mutex);
-> -	if (err)
-> -		nlmsg_free(msg);
-> +	nlmsg_free(msg);
->   	return err;
->   }
->   
+> >
+> >>> too much could we add a comment? I'm trying to avoid a situation, like
+> >>> with the CPU map code, where all and online are interchangeable
+> >>> leading to the code being unnecessarily confusing unless you read
+> >>> every line.
+> >>
+> >> It is normal to have to read the details of code, and, in my
+> >> experience at least, normal for the code not to work exactly the
+> >> way I'd imagined.
+> >
+> > :-) The problem is that we all need to work with abstractions at some
+> > point, abstraction is pretty much the whole point of computer science.
+> > We need to fix CPU maps empty function, it is just a fundamental level
+> > of contradiction. As with the CPU map index being often mistaken for
+> > the CPU leading to bugs and crashes, I suspect remedying empty will
+> > fix existing and future bugs. With function naming the point is to be
+> > short and succinct, but also to be intention revealing for the sake of
+> > abstraction. Yes you need to read the code, but as with CPU map empty
+> > even that isn't enough and trying to infer behavior from usage can be
+> > a long and painful process.
+>
+> You seem to be insisting that the function be named for its
+> implementation (i.e. offline CPUs are not supported) not its
+> purpose (trace system wide).
+>
+> I can only suggest we go back to the original name, because the
+> function has *nothing* to do with whether or not perf supports
+> tracing per-cpu contexts on offline CPUs that become online.
 
+Hi Adrian,
+
+Do you understand my concern for 'all' and 'online' not being synonyms
+for each other? When I read 'all' I assume online + offline, this
+function is explicitly just online and it didn't seem like a big ask
+to have that in the function name. My hope is to have intention
+revealing function names rather than to have to plod through code when
+things don't work as intended. In any case, I already said that a
+comment will suffice that in this context 'all' == 'online'. I'm keen
+to land this patch series as we clearly need to fix what is meant by
+'empty' that is true for:
+truly empty: {}
+dummy/any: {-1}
+dummy/any merged: {-1,0,1,2,3}
+ie empty can mean any CPU, actual CPUs or none. I know I'm adopting
+the role of language lawyer in doing this but honestly we need this
+fixed, and my hope is with tests on it.
+
+Thanks,
+Ian
+
+> >
+> > Thanks,
+> > Ian
+> >
+> >>>
+> >>> Thanks,
+> >>> Ian
+> >>>
+> >>>> +{
+> >>>> +       return evlist__add_aux_dummy(evlist, true);
+> >>>> +}
+> >>>>
+> >>>>  int evlist__add_sb_event(struct evlist *evlist, struct perf_event_attr *attr,
+> >>>>                          evsel__sb_cb_t cb, void *data);
+> >>>> --
+> >>>> 2.25.1
+> >>>>
+> >>
+>
