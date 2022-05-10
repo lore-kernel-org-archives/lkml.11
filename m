@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A420C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:58:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8775BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:58:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347051AbiEJQCW (ORCPT
+        id S1346886AbiEJQCh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 12:02:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59704 "EHLO
+        Tue, 10 May 2022 12:02:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346707AbiEJPxp (ORCPT
+        with ESMTP id S1346675AbiEJPxE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:53:45 -0400
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C487F972AA
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:48:37 -0700 (PDT)
-Received: by mail-qv1-xf2c.google.com with SMTP id n10so3453364qvi.5
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:48:37 -0700 (PDT)
+        Tue, 10 May 2022 11:53:04 -0400
+Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7458B532DA
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:48:33 -0700 (PDT)
+Received: by mail-qv1-xf32.google.com with SMTP id h13so12911960qvh.0
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:48:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=5nIvN5jHmvL0M7rHAiydx+MWBBo1BQ8EVOcMzgPyHJc=;
-        b=j+jYLe396oClyr5IHojQ3d3KU6CeFejzRlvRHDs9Ld9I/vVTSMS/OCJJ3NgIEdFwM4
-         qlzj1QWuhz3Htg3OAhvNBNTX+bUfe0zlzVmt5DPIOXzEl/0D4ZjxedPdj6XgnJtA4C3B
-         UbjsIgCaJNia8fULd3Sp3pc6Kxe/xk36JvDQzR+DZVncMyp8aT9nFrZPOvkRr+sm2B1p
-         /3u957lpabocPIUdjjWz2kFKSkxylMGytjRrUyhMStAst040927tIJNsghiGfYjkPZuE
-         7kDnn3cwlxqrT/G+cXepRjcT+H44svQFZtMX1ljteWIRgaYPTqnmYdw/h8zbuXMcL0lt
-         RKrA==
+        bh=bur4fxX/BrvprtCkzJ/rZNHI8r/mAEcHC8jDO+mfnuQ=;
+        b=e7ZZlkybHOWLJx+oXUj0vXRSFyZd8IYa9ACjNcnatMK/JMp+ySDRPjT8uYOTAK8/7w
+         lqdT156i0/jzgVElyb+JwrSMtOu7v0GL3YWJ/fVSU5cW3QFxtamzQa9GVDD0UzcDykJY
+         FIc14I3NO0kojfKSu1255m+u3SDIOzbm4qF54SSdjoTRnnHt3C6qwPArhu3xwKIqccDG
+         XQa+XqwN+qG41jvzVVIwOo5+4AHBpRv6jNutI5YRL/nE25gadkwFtzGt8sn4oazHvIiW
+         bplPPpKcV5366Bm++v20GW3o574omfVzA9MtlUOaq+E/lSmy9fxyNUvfA2K0bbH3mLIq
+         3/6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=5nIvN5jHmvL0M7rHAiydx+MWBBo1BQ8EVOcMzgPyHJc=;
-        b=phGnTiaXjXIbpc+tRtEOaOhXCojI+4+9U/h383hCB8720iXHLLi1Z+Sk6em5hrhxJd
-         IHzomvP4/sZMzFkI6Gh6dluOvBUUNC9nYUyBtggLLfctmi0uoSRbt9iI8nWa5fWAUT3V
-         JRi1nrbe/e77bFxSPgLRHODGDXOisSi+/OIVI4J+o60v0BeRCH+5fEe0DizbXdts94zT
-         B/W86XkAKqp1obqxNEIFVcnG9JNI/Fmp5t8SDpLwfXP3C3SG9HBUClzOzwXvWCwVqcMp
-         +fFcXimk94NgR0UKG1SW310TCXTo60GgxzaqCFMIe3xrge/WJFQcyyZKS+BPb6wllgME
-         UjoA==
-X-Gm-Message-State: AOAM5314zMLA75oNAdY03AwN+O99K4Qf5Rl3YfVVMr+u8KXJNRCcSEf3
-        0vJDUEd6skqgU3+x5LWwGgc=
-X-Google-Smtp-Source: ABdhPJw8iCNDbTjDVJIhcwYTc0zGu0KHeiFsS7FlFbhAt6h15Suwh8rvq3HB2CClhGBjxk0axAjAZQ==
-X-Received: by 2002:a05:6214:1844:b0:456:4f8f:7369 with SMTP id d4-20020a056214184400b004564f8f7369mr18301205qvy.107.1652197716406;
-        Tue, 10 May 2022 08:48:36 -0700 (PDT)
+        bh=bur4fxX/BrvprtCkzJ/rZNHI8r/mAEcHC8jDO+mfnuQ=;
+        b=PlxTk68XAEXlbvtv6hWiXsWwkQHcUJ4gV8HxZyGd14OQfxRs49C12Z/ISKn3qQ6pU9
+         1WslQQ/Y0XLjqzPVXSCi2hO11DtGk/uhJ3LRXxinqnkrslQN6aiD2dWC6caPTZlxYfwV
+         1dl3cynVrf7b0mP24vmqGxy/WdjRKMrk/tU5kFdtai0F6R9K1YjAp3pmeowgW/HnHSa6
+         +pYlp2qpZvFUgwmee72FKWH12cFlXtIlwcNE32Vd+vWgZizd2XVsF9pC9Q44iN+w8HyS
+         vwAWX8nBIWWh5t9F4YJ+obm3lT8ZeuN6EmC/lximiaGNB6pnWu2XeWg2buhDde73nyUM
+         /QMQ==
+X-Gm-Message-State: AOAM531EEfoAwCyBeEvrPb2t7k3PctYicoCi/QRh6E6AAX+YMoqNKWZC
+        my2+g3FVY+NR2nNJ+508OFo=
+X-Google-Smtp-Source: ABdhPJwQdNePPFuFx14UNaElb8MMSTHODZBDKbBYDNtA5BGS6X1s0xUxFjgIKXYwJ3SqCHWVDWzl6g==
+X-Received: by 2002:a0c:8001:0:b0:45a:a28a:99ef with SMTP id 1-20020a0c8001000000b0045aa28a99efmr18155233qva.99.1652197699995;
+        Tue, 10 May 2022 08:48:19 -0700 (PDT)
 Received: from localhost ([98.242.65.84])
-        by smtp.gmail.com with ESMTPSA id n2-20020a05622a11c200b002f3dc9ebb4bsm3969501qtk.65.2022.05.10.08.48.35
+        by smtp.gmail.com with ESMTPSA id m19-20020ac84453000000b002f39b99f674sm9248352qtn.14.2022.05.10.08.48.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 08:48:36 -0700 (PDT)
+        Tue, 10 May 2022 08:48:19 -0700 (PDT)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         David Laight <David.Laight@ACULAB.COM>,
@@ -62,11 +62,18 @@ To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         Matti Vaittinen <Matti.Vaittinen@fi.rohmeurope.com>,
         linux-kernel@vger.kernel.org
-Cc:     Yury Norov <yury.norov@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: [PATCH 22/22] clockevents: use cpumask_weight_eq() in tick_cleanup_dead_cpu()
-Date:   Tue, 10 May 2022 08:47:50 -0700
-Message-Id: <20220510154750.212913-23-yury.norov@gmail.com>
+Cc:     Yury Norov <yury.norov@gmail.com>, Ben Segall <bsegall@google.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Mel Gorman <mgorman@suse.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Valentin Schneider <vschneid@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>
+Subject: [PATCH 19/22] sched/core: replace cpumask_weight() with cpumask_weight_eq() where appropriate
+Date:   Tue, 10 May 2022 08:47:47 -0700
+Message-Id: <20220510154750.212913-20-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220510154750.212913-1-yury.norov@gmail.com>
 References: <20220510154750.212913-1-yury.norov@gmail.com>
@@ -76,29 +83,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace cpumask_weight() with cpumask_weight_eq(..., 1) because the it may
-return earlier.
+cpumask_weight_eq() is better than cpumask_weight() because it may
+return earlier depending on condition.
 
-CC: Thomas Gleixner <tglx@linutronix.de>
+CC: Ben Segall <bsegall@google.com>
+CC: Daniel Bristot de Oliveira <bristot@redhat.com>
+CC: Dietmar Eggemann <dietmar.eggemann@arm.com>
+CC: Ingo Molnar <mingo@redhat.com>
+CC: Juri Lelli <juri.lelli@redhat.com>
+CC: Mel Gorman <mgorman@suse.de>
+CC: Peter Zijlstra <peterz@infradead.org>
+CC: Steven Rostedt <rostedt@goodmis.org>
+CC: Valentin Schneider <vschneid@redhat.com>
+CC: Vincent Guittot <vincent.guittot@linaro.org>
 CC: linux-kernel@vger.kernel.org
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- kernel/time/clockevents.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/sched/core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/time/clockevents.c b/kernel/time/clockevents.c
-index 5d85014d59b5..fa651263650f 100644
---- a/kernel/time/clockevents.c
-+++ b/kernel/time/clockevents.c
-@@ -648,7 +648,7 @@ void tick_cleanup_dead_cpu(int cpu)
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 07b8f35cbe36..6bbd5e880984 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -9234,7 +9234,7 @@ int sched_cpu_activate(unsigned int cpu)
+ 	/*
+ 	 * When going up, increment the number of cores with SMT present.
  	 */
- 	list_for_each_entry_safe(dev, tmp, &clockevent_devices, list) {
- 		if (cpumask_test_cpu(cpu, dev->cpumask) &&
--		    cpumask_weight(dev->cpumask) == 1 &&
-+		    cpumask_weight_eq(dev->cpumask, 1) &&
- 		    !tick_is_broadcast_device(dev)) {
- 			BUG_ON(!clockevent_state_detached(dev));
- 			list_del(&dev->list);
+-	if (cpumask_weight(cpu_smt_mask(cpu)) == 2)
++	if (cpumask_weight_eq(cpu_smt_mask(cpu), 2))
+ 		static_branch_inc_cpuslocked(&sched_smt_present);
+ #endif
+ 	set_cpu_active(cpu, true);
+@@ -9310,7 +9310,7 @@ int sched_cpu_deactivate(unsigned int cpu)
+ 	/*
+ 	 * When going down, decrement the number of cores with SMT present.
+ 	 */
+-	if (cpumask_weight(cpu_smt_mask(cpu)) == 2)
++	if (cpumask_weight_eq(cpu_smt_mask(cpu), 2))
+ 		static_branch_dec_cpuslocked(&sched_smt_present);
+ 
+ 	sched_core_cpu_deactivate(cpu);
 -- 
 2.32.0
 
