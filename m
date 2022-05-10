@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 330C6C38A02
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:44:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E83AC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:45:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245631AbiEJNsC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:48:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44988 "EHLO
+        id S1343497AbiEJNsJ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:48:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243895AbiEJNcU (ORCPT
+        with ESMTP id S243887AbiEJNcT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:32:20 -0400
+        Tue, 10 May 2022 09:32:19 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0B4217DDE5;
-        Tue, 10 May 2022 06:23:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B3D753A76;
+        Tue, 10 May 2022 06:23:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C0116170D;
-        Tue, 10 May 2022 13:23:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F062C385A6;
-        Tue, 10 May 2022 13:23:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2450B60C1C;
+        Tue, 10 May 2022 13:23:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 325EDC385C2;
+        Tue, 10 May 2022 13:23:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189005;
-        bh=r5sYN3Ve8fxr1EeToSe7lqlaLLlbjVcQXAz6ebv863E=;
+        s=korg; t=1652188987;
+        bh=2JXNi0h472IJAvsy7Wy/uC8BoxOskO922ur9hp3xCw8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c0yqUvXk6Y7bcm97E9gjmwRKU8P8CEVNcSBTFwOR7JE+moiZmLppapEbm7WtsJ/3n
-         zcOKKnbyWo4AcYQuzo7Y+LgCG5aBFKKw0asS9P+fJvejQYNIn54gk6JZm9BkcDa6q5
-         jGCZn+b0Pu8knzjQJTOcpAmAqBzUnFBuVsaadNr8=
+        b=QfZiei5JK5T44iZdIub3Me3G5RTAmbN9YRTYajfFs9I0g1nQ9ElOc50f3LBMhOYIz
+         eYkLfi0df6owdJC65Yg4Qzrs2QG+qa6bQFsUSD9FbcBBdOzeQNtd7Rw+hF3X2eAjRN
+         NN3KJWxHuo7X7RNQ5DvXiHjl0ye8jrt7rJXsQfdI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.4 32/52] btrfs: always log symlinks in full mode
-Date:   Tue, 10 May 2022 15:08:01 +0200
-Message-Id: <20220510130730.792504982@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.4 27/52] net: stmmac: dwmac-sun8i: add missing of_node_put() in sun8i_dwmac_register_mdio_mux()
+Date:   Tue, 10 May 2022 15:07:56 +0200
+Message-Id: <20220510130730.647034264@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.852544477@linuxfoundation.org>
 References: <20220510130729.852544477@linuxfoundation.org>
@@ -48,89 +50,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-commit d0e64a981fd841cb0f28fcd6afcac55e6f1e6994 upstream.
+commit 1a15267b7be77e0792cf0c7b36ca65c8eb2df0d8 upstream.
 
-On Linux, empty symlinks are invalid, and attempting to create one with
-the system call symlink(2) results in an -ENOENT error and this is
-explicitly documented in the man page.
+The node pointer returned by of_get_child_by_name() with refcount incremented,
+so add of_node_put() after using it.
 
-If we rename a symlink that was created in the current transaction and its
-parent directory was logged before, we actually end up logging the symlink
-without logging its content, which is stored in an inline extent. That
-means that after a power failure we can end up with an empty symlink,
-having no content and an i_size of 0 bytes.
-
-It can be easily reproduced like this:
-
-  $ mkfs.btrfs -f /dev/sdc
-  $ mount /dev/sdc /mnt
-
-  $ mkdir /mnt/testdir
-  $ sync
-
-  # Create a file inside the directory and fsync the directory.
-  $ touch /mnt/testdir/foo
-  $ xfs_io -c "fsync" /mnt/testdir
-
-  # Create a symlink inside the directory and then rename the symlink.
-  $ ln -s /mnt/testdir/foo /mnt/testdir/bar
-  $ mv /mnt/testdir/bar /mnt/testdir/baz
-
-  # Now fsync again the directory, this persist the log tree.
-  $ xfs_io -c "fsync" /mnt/testdir
-
-  <power failure>
-
-  $ mount /dev/sdc /mnt
-  $ stat -c %s /mnt/testdir/baz
-  0
-  $ readlink /mnt/testdir/baz
-  $
-
-Fix this by always logging symlinks in full mode (LOG_INODE_ALL), so that
-their content is also logged.
-
-A test case for fstests will follow.
-
-CC: stable@vger.kernel.org # 4.9+
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: 634db83b8265 ("net: stmmac: dwmac-sun8i: Handle integrated/external MDIOs")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220428095716.540452-1-yangyingliang@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/tree-log.c |   14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/fs/btrfs/tree-log.c
-+++ b/fs/btrfs/tree-log.c
-@@ -5295,6 +5295,18 @@ static int btrfs_log_inode(struct btrfs_
- 	}
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+@@ -879,6 +879,7 @@ static int sun8i_dwmac_register_mdio_mux
  
- 	/*
-+	 * For symlinks, we must always log their content, which is stored in an
-+	 * inline extent, otherwise we could end up with an empty symlink after
-+	 * log replay, which is invalid on linux (symlink(2) returns -ENOENT if
-+	 * one attempts to create an empty symlink).
-+	 * We don't need to worry about flushing delalloc, because when we create
-+	 * the inline extent when the symlink is created (we never have delalloc
-+	 * for symlinks).
-+	 */
-+	if (S_ISLNK(inode->vfs_inode.i_mode))
-+		inode_only = LOG_INODE_ALL;
-+
-+	/*
- 	 * a brute force approach to making sure we get the most uptodate
- 	 * copies of everything.
- 	 */
-@@ -5707,7 +5719,7 @@ process_leaf:
- 			}
+ 	ret = mdio_mux_init(priv->device, mdio_mux, mdio_mux_syscon_switch_fn,
+ 			    &gmac->mux_handle, priv, priv->mii);
++	of_node_put(mdio_mux);
+ 	return ret;
+ }
  
- 			ctx->log_new_dentries = false;
--			if (type == BTRFS_FT_DIR || type == BTRFS_FT_SYMLINK)
-+			if (type == BTRFS_FT_DIR)
- 				log_mode = LOG_INODE_ALL;
- 			ret = btrfs_log_inode(trans, root, BTRFS_I(di_inode),
- 					      log_mode, 0, LLONG_MAX, ctx);
 
 
