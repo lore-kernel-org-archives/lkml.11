@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89DA5C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C128AC38A06
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:35:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244616AbiEJNhx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:37:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49302 "EHLO
+        id S244777AbiEJNiD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:38:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243711AbiEJN1S (ORCPT
+        with ESMTP id S243667AbiEJN1P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:27:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 567D62B9CAA;
-        Tue, 10 May 2022 06:20:23 -0700 (PDT)
+        Tue, 10 May 2022 09:27:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF393239DB6;
+        Tue, 10 May 2022 06:20:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B0AF61574;
-        Tue, 10 May 2022 13:20:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22E8CC385A6;
-        Tue, 10 May 2022 13:20:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 40FE8B81CF8;
+        Tue, 10 May 2022 13:20:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9344AC385A6;
+        Tue, 10 May 2022 13:20:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188822;
-        bh=sez7NumXTVra4gd9RtME3YPtIGK5USefbtel839FBvQ=;
+        s=korg; t=1652188814;
+        bh=yu9sE/T90FsB+AVfl0at0UisupwhGrSZoDwZSWb/y0g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CuF8fLxJ9s9+I5PJ7S5o5/EwiYL9KPK6q+15Jv9sMc8u1VhtY3tFfJWkOp2atXZ0k
-         2OlZYIW6V/c4cQnEnDVQMyWdnLcm7SqEJbZ+2TlcmU2Dnlc2umv2JS8yyPJ5jAwC55
-         dRhjRyuJx/Jr1SdScwOazIZJqL4j+JtaJlsrAsRA=
+        b=xO1DxS/wzSzvOmnjBbDivZBAbS9+UdD7PysHoxE9CDoPek0REG9Kr5kGGh5A/ILdz
+         ANaSCglxN/PtVlpXfAjHsVRxdRHbivlA9g1jWwMebcKTMCIdUoW6Kr6I+vPlvmItx3
+         7U4lHwNLMEkwzKLS/RsTabORltt86NCT4Ajo+Pf8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 4.19 56/88] tty: n_gsm: fix incorrect UA handling
-Date:   Tue, 10 May 2022 15:07:41 +0200
-Message-Id: <20220510130735.370979256@linuxfoundation.org>
+Subject: [PATCH 4.19 53/88] tty: n_gsm: fix missing explicit ldisc flush
+Date:   Tue, 10 May 2022 15:07:38 +0200
+Message-Id: <20220510130735.286583909@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 References: <20220510130733.735278074@linuxfoundation.org>
@@ -49,36 +49,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-commit ff9166c623704337bd6fe66fce2838d9768a6634 upstream.
+commit 17eac652028501df7ea296b1d9b9c134db262b7d upstream.
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.4.4.2 states that any received unnumbered
-acknowledgment (UA) with its poll/final (PF) bit set to 0 shall be
-discarded. Currently, all UA frame are handled in the same way regardless
-of the PF bit. This does not comply with the standard.
-Remove the UA case in gsm_queue() to process only UA frames with PF bit set
-to 1 to abide the standard.
+In gsm_cleanup_mux() the muxer is closed down and all queues are removed.
+However, removing the queues is done without explicit control of the
+underlying buffers. Flush those before freeing up our queues to ensure
+that all outgoing queues are cleared consistently. Otherwise, a new mux
+connection establishment attempt may time out while the underlying tty is
+still busy sending out the remaining data from the previous connection.
 
 Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 Cc: stable@vger.kernel.org
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220414094225.4527-20-daniel.starke@siemens.com
+Link: https://lore.kernel.org/r/20220414094225.4527-10-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_gsm.c |    1 -
- 1 file changed, 1 deletion(-)
+ drivers/tty/n_gsm.c |    1 +
+ 1 file changed, 1 insertion(+)
 
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -1811,7 +1811,6 @@ static void gsm_queue(struct gsm_mux *gs
- 		gsm_response(gsm, address, UA);
- 		gsm_dlci_close(dlci);
- 		break;
--	case UA:
- 	case UA|PF:
- 		if (cr == 0 || dlci == NULL)
- 			break;
+@@ -2099,6 +2099,7 @@ static void gsm_cleanup_mux(struct gsm_m
+ 			gsm_dlci_release(gsm->dlci[i]);
+ 	mutex_unlock(&gsm->mutex);
+ 	/* Now wipe the queues */
++	tty_ldisc_flush(gsm->tty);
+ 	list_for_each_entry_safe(txq, ntxq, &gsm->tx_list, list)
+ 		kfree(txq);
+ 	INIT_LIST_HEAD(&gsm->tx_list);
 
 
