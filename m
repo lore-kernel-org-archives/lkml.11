@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08CC0C38A02
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:24:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEDABC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:24:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243031AbiEJN2L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:28:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37728 "EHLO
+        id S243086AbiEJN2Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:28:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243037AbiEJNVV (ORCPT
+        with ESMTP id S243069AbiEJNVX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:21:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 415D853B6C;
-        Tue, 10 May 2022 06:14:40 -0700 (PDT)
+        Tue, 10 May 2022 09:21:23 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40AE547ACC;
+        Tue, 10 May 2022 06:14:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 25FD6615FA;
-        Tue, 10 May 2022 13:14:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38C68C385A6;
-        Tue, 10 May 2022 13:14:39 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 47608CE1EE2;
+        Tue, 10 May 2022 13:14:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E762C385C2;
+        Tue, 10 May 2022 13:14:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188479;
-        bh=R5zxNH/6ea6tY49yUZgBAJKjIXrIpEJh7MaPAFq5tNc=;
+        s=korg; t=1652188476;
+        bh=3RK9xplvXFsEAKF5zctZjPsYO9ZyP3rOjYPdHd2dmZc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZZXvfXqqpo+bKnfFBpnKbiemNlUO3xylD1GTDta4y+7OuqKYCJswY9KrNr/Z2lKUI
-         Pi7lbBeFIetezGeJSaa15anxoWfM6LuMAFviyYu7zoWb2X0Iqaniuga/gfsKI9A2Ey
-         Z+tm/C40j3RY2irDmzfaB/vDSbasTReiXsRa5ehc=
+        b=0uL73WDExHRnoe/Wk7d1yX6K7HRgPs59kOJxH7uJNSvQNm4WOlLuXonjhtbcoFQYp
+         hn0Etd5Ubol1/zp5b6w5dPe4J2/VviP8dhR1yAsR6ZOlVthJ3/X4MBDQDyPVx45En9
+         sanQzQP+OAn56qlnb8LuFbnTxMcad76/I/rwZ8yk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH 4.14 21/78] serial: 8250: Also set sticky MCR bits in console restoration
-Date:   Tue, 10 May 2022 15:07:07 +0200
-Message-Id: <20220510130733.157855699@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Vijayavardhan Vennapusa <vvreddy@codeaurora.org>,
+        Dan Vacura <w36195@motorola.com>, stable <stable@kernel.org>
+Subject: [PATCH 4.14 20/78] usb: gadget: configfs: clear deactivation flag in configfs_composite_unbind()
+Date:   Tue, 10 May 2022 15:07:06 +0200
+Message-Id: <20220510130733.128584169@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
 References: <20220510130732.522479698@linuxfoundation.org>
@@ -48,36 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej W. Rozycki <macro@orcam.me.uk>
+From: Vijayavardhan Vennapusa <vvreddy@codeaurora.org>
 
-commit 6e6eebdf5e2455f089ccd000754a0deaeb79af82 upstream.
+commit bf95c4d4630c7a2c16e7b424fdea5177d9ce0864 upstream.
 
-Sticky MCR bits are lost in console restoration if console suspending
-has been disabled.  This currently affects the AFE bit, which works in
-combination with RTS which we set, so we want to make sure the UART
-retains control of its FIFO where previously requested.  Also specific
-drivers may need other bits in the future.
+If any function like UVC is deactivating gadget as part of composition
+switch which results in not calling pullup enablement, it is not getting
+enabled after switch to new composition due to this deactivation flag
+not cleared. This results in USB enumeration not happening after switch
+to new USB composition. Hence clear deactivation flag inside gadget
+structure in configfs_composite_unbind() before switch to new USB
+composition.
 
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Fixes: 4516d50aabed ("serial: 8250: Use canary to restart console after suspend")
-Cc: stable@vger.kernel.org # v4.0+
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Link: https://lore.kernel.org/r/alpine.DEB.2.21.2204181518490.9383@angie.orcam.me.uk
+Signed-off-by: Vijayavardhan Vennapusa <vvreddy@codeaurora.org>
+Signed-off-by: Dan Vacura <w36195@motorola.com>
+Cc: stable <stable@kernel.org>
+Link: https://lore.kernel.org/r/20220413211038.72797-1-w36195@motorola.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/8250/8250_port.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/gadget/configfs.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -3240,7 +3240,7 @@ static void serial8250_console_restore(s
- 
- 	serial8250_set_divisor(port, baud, quot, frac);
- 	serial_port_out(port, UART_LCR, up->lcr);
--	serial8250_out_MCR(up, UART_MCR_DTR | UART_MCR_RTS);
-+	serial8250_out_MCR(up, up->mcr | UART_MCR_DTR | UART_MCR_RTS);
+--- a/drivers/usb/gadget/configfs.c
++++ b/drivers/usb/gadget/configfs.c
+@@ -1411,6 +1411,8 @@ static void configfs_composite_unbind(st
+ 	usb_ep_autoconfig_reset(cdev->gadget);
+ 	spin_lock_irqsave(&gi->spinlock, flags);
+ 	cdev->gadget = NULL;
++	cdev->deactivations = 0;
++	gadget->deactivated = false;
+ 	set_gadget_data(gadget, NULL);
+ 	spin_unlock_irqrestore(&gi->spinlock, flags);
  }
- 
- /*
 
 
