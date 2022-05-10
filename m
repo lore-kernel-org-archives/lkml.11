@@ -2,101 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A33EBC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:41:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 854E7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:41:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243536AbiEJOpW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:45:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54402 "EHLO
+        id S243734AbiEJOpe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:45:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242593AbiEJOoi (ORCPT
+        with ESMTP id S1344591AbiEJOog (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:44:38 -0400
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B007140863;
-        Tue, 10 May 2022 07:03:49 -0700 (PDT)
-Received: by mail-oi1-x234.google.com with SMTP id v65so18606115oig.10;
-        Tue, 10 May 2022 07:03:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=U1JMRWz4tHJAu3Gv+myx1Xb+EidiUMO/E1TJfGfSyqA=;
-        b=Z1alJz5Sa7M5Uqz0J+gVmyo+d8QpIIxRXvp4bs6UAiRyQNwddoDzf9GerSP/xf9R81
-         9nXWtFW2oU1UHvitqd0y0OI28JCh2XxMvJN74DlzRAXdtswGGjC39l901et4CPZZwYut
-         Q4UCbX/8nLwSg1EdrdulygB04m2aRymqfBf80ipzz4i51mlsW8QivF7C8haypo2K2YB5
-         X1nD/KIlLXTcbZdGjkQR+y7mlzpqKeM+Gq0sdYbN/Nsk0SD4HuuAc/baRI1sKMtURPjD
-         v+H28kCiK4+l1IkNT6rVB8Ay+xSscmlHnM8MpFEuKq3Txj2KsbX0CTVOUa+gzUpOER0v
-         Bm0w==
+        Tue, 10 May 2022 10:44:36 -0400
+Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 584141D813F;
+        Tue, 10 May 2022 07:02:45 -0700 (PDT)
+Received: by mail-qt1-f172.google.com with SMTP id h3so13557165qtn.4;
+        Tue, 10 May 2022 07:02:45 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=U1JMRWz4tHJAu3Gv+myx1Xb+EidiUMO/E1TJfGfSyqA=;
-        b=v2awaO2iZIO5zjeRfdxY5xgNjDm+j9yypc/FnWtD/mgThi6AUqlb9wgsu1mRUEsVI9
-         b5FHfwkUxXwNRX878sGCCwt1jd/HqvcpJzoH8UGAwa+C2jsChuYSjs3vSg08ZU8FpxhN
-         opfKal650Bq3zTg0LfR4PHh3ZNefEKyhe4LZA/pHKaE/bEEXIAf/8Eu19HVY+jTqmxN+
-         n8U3G7/q8xqIbnZQVR7EzlCG4oB8zg4SV8D9irui5KIFcZvl/2q704Ud9SLOJbgSp5Fa
-         /TpCcEq5WOYYpLbkXh6+7tfgwgF4oHJgBQgJSDhcxE++zmhcK0DTjMfHGMUTJ5iz1wz6
-         Cxrw==
-X-Gm-Message-State: AOAM533HlPF7MHWcf4/zKi35CLxiuk0duQHzNwvV8ZNrVoKWHvZN6sDk
-        JeX4UUK0OEIOaYIi1b4zXzvEkK0+cpR9Jg==
-X-Google-Smtp-Source: ABdhPJxclQOGuqU3UJlaoL7qGT9UC/IzL0vensrE4bo1vFuZbVt/+Tt8eDidFC3p8hOnhvN7OUDDhQ==
-X-Received: by 2002:a05:6808:219b:b0:326:6a98:468d with SMTP id be27-20020a056808219b00b003266a98468dmr133193oib.32.1652191428830;
-        Tue, 10 May 2022 07:03:48 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id j28-20020a056830241c00b0060603221264sm5680108ots.52.2022.05.10.07.03.44
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Eo4bvoP53C2MoW6V75kNM+g38FmbVeaQf6g2Gfg1ZIw=;
+        b=w9HN3UC6in9VO+I9lJ2TZ4RNLV7Qh2vqRUn9l6ZOU9Suj7HfwDxbslU91D2aGo/sNA
+         qBMW+/2kCEHO3avNzENtmJcm1+Sb4W/pQanR102Sdtfbna2pxoX/ISv4Ug0154IYq4Nj
+         Eg5iXxgcBGlL4NAbengjSzlUBxBltwmCOSdTJP6Y6uI64krdC9WgYLWhbQJrRl9GX3Rl
+         teWcgEYZvZMLudq7pR/Be11TveT/5iZGC0ggjVJKfU7NwSxZRe+RECfmUoKHsgVtL9dg
+         zFopbTek21PurBvLgN6ubMjLe3QCE2ihQqwNT9v2IQYmapCkDvNe76gcVg+ecdRH4DWV
+         WFlQ==
+X-Gm-Message-State: AOAM533di2dewDb5fyUXsEYfYFtmu79usIGIyBA4L1Sm7GHiR05KwaFP
+        0mL5LUyKtYRVzZNj0aYtRj7eZ+IVSLO+FA==
+X-Google-Smtp-Source: ABdhPJwhZWgXKzEZNlxRqwe1qWNt5FrI4bOzM8l7JcsE4GLFOcxOk1BC1zHhNZldQ7CbmAAKW+QBmw==
+X-Received: by 2002:a05:622a:c4:b0:2f3:e383:7386 with SMTP id p4-20020a05622a00c400b002f3e3837386mr3255652qtw.521.1652191364329;
+        Tue, 10 May 2022 07:02:44 -0700 (PDT)
+Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com. [209.85.219.175])
+        by smtp.gmail.com with ESMTPSA id j11-20020a05620a288b00b0069fcebf9c0asm9386809qkp.37.2022.05.10.07.02.43
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 May 2022 07:03:47 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <69d1a3be-1a39-6c92-0db7-7318033e9a52@roeck-us.net>
-Date:   Tue, 10 May 2022 07:03:42 -0700
+        Tue, 10 May 2022 07:02:43 -0700 (PDT)
+Received: by mail-yb1-f175.google.com with SMTP id r1so4180428ybo.7;
+        Tue, 10 May 2022 07:02:43 -0700 (PDT)
+X-Received: by 2002:a05:6902:905:b0:64a:2089:f487 with SMTP id
+ bu5-20020a056902090500b0064a2089f487mr18143399ybb.202.1652191363172; Tue, 10
+ May 2022 07:02:43 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: linux-next: build warning after merge of the hwmon-staging tree
-Content-Language: en-US
-To:     Zev Weiss <zev@bewilderbeest.net>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-References: <20220510201104.06eead74@canb.auug.org.au>
- <YnpCqh9+koMal9sD@hatter.bewilderbeest.net>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <YnpCqh9+koMal9sD@hatter.bewilderbeest.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220505193143.31826-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20220505193143.31826-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20220505193143.31826-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 10 May 2022 16:02:31 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdX0egGvyu94-=tJdvW0=q6Y==ZNkexCJpnmrNJezuiqDw@mail.gmail.com>
+Message-ID: <CAMuHMdX0egGvyu94-=tJdvW0=q6Y==ZNkexCJpnmrNJezuiqDw@mail.gmail.com>
+Subject: Re: [RFC PATCH 1/4] dt-bindings: clock: r9a07g043-cpg: Add Renesas
+ RZ/Five CPG Clock and Reset Definitions
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/10/22 03:47, Zev Weiss wrote:
-> On Tue, May 10, 2022 at 03:11:04AM PDT, Stephen Rothwell wrote:
->> Hi all,
->>
->> After merging the hwmon-staging tree, today's linux-next build (powerpc
->> allyesconfig) produced this warning:
->>
->> WARNING: unmet direct dependencies detected for SENSORS_NCT6775
->>    Depends on [n]: HWMON [=y] && !PPC [=y] && (ACPI_WMI [=n] || ACPI_WMI [=n]=n)
->>    Selected by [y]:
->>    - SENSORS_NCT6775_I2C [=y] && HWMON [=y] && I2C [=y]
->>
->> Probably introduced by commit
->>
->>    58f1d9ebfce6 ("hwmon: (nct6775) Add i2c driver")
->>
-> 
-> Ah -- yes, thanks.  The Kconfig symbols in that patch series underwent
-> some changes between revisions during review and I missed a couple of
-> places that should have been updated.  I believe the patch below should
-> fix it.
-> 
+Hi Prabhakar,
 
-I squashed the patch below into the patch introducing the i2c driver
-to avoid later bisect issues.
+Thanks for your patch!
 
-Thanks,
-Guenter
+On Thu, May 5, 2022 at 9:32 PM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> Renesas RZ/Five SoC has almost the same clock structure compared to the
+> Renesas RZ/G2UL SoC, re-use the r9a07g043-cpg.h header file and just
+> ammend the RZ/Five CPG clock and reset definitions.
+
+amend
+
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+
+> --- a/include/dt-bindings/clock/r9a07g043-cpg.h
+> +++ b/include/dt-bindings/clock/r9a07g043-cpg.h
+> @@ -108,6 +108,15 @@
+>  #define R9A07G043_ADC_ADCLK            76
+>  #define R9A07G043_ADC_PCLK             77
+>  #define R9A07G043_TSU_PCLK             78
+> +#define R9A07G043_NCEPLDM_DM_CLK       79      /* RZ/Five Only */
+
+While NCEPLDM_DM_CLK is listed in the clock list spreadsheet, its
+control bit is not documented.
+
+> +#define R9A07G043_NCEPLDM_ACLK         80      /* RZ/Five Only */
+> +#define R9A07G043_NCEPLDM_TCK          81      /* RZ/Five Only */
+
+While NCEPLDM_TCK is listed in the clock list spreadsheet, its
+control bit is not documented.
+
+The rest LGTM, so with the above clarified
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
