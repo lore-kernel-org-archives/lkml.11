@@ -2,178 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE7ADC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 17:21:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B441FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 17:22:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347942AbiEJRZa (ORCPT
+        id S1347963AbiEJR0Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 13:25:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44954 "EHLO
+        Tue, 10 May 2022 13:26:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347945AbiEJRZX (ORCPT
+        with ESMTP id S1347945AbiEJRZx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 13:25:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A90B046175
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 10:21:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652203284;
+        Tue, 10 May 2022 13:25:53 -0400
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33B7F4BFDD
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 10:21:53 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1652203311;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=sAYwIoDrNnaHcJ/cmYSGgWvyKcfiytUv7ZdRENAaBLg=;
-        b=BFM8iQzSuQrfrdMjXbvBXSs03IK5SFoldQvB3KuHMkam2TPh8glHNRcN4yFCOc630kLL4C
-        bolWFgj3uPbNzUgB1qM9su42IzVmgO8CXWmoW+8zQMWfjffjDo+6hDixQoJMSlRuxDFh1s
-        +srTn10/rO+2IUZ+qgEEeHE8bTQkG3g=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-308-dY3izJB7MpS-ZZXkWcqPPw-1; Tue, 10 May 2022 13:21:23 -0400
-X-MC-Unique: dY3izJB7MpS-ZZXkWcqPPw-1
-Received: by mail-wm1-f69.google.com with SMTP id m26-20020a7bcb9a000000b0039455e871b6so1046046wmi.8
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 10:21:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=sAYwIoDrNnaHcJ/cmYSGgWvyKcfiytUv7ZdRENAaBLg=;
-        b=FpLLBn89pPDBbbbx5G8DzENE0YMS0wQL4LFrxSHAN/9RwlQ04GLxfSv8xcMdZPnq4R
-         HJLC+0Nxv08pYiuDA4ZyNlu7F46TzNQx4VID4AJdclyDY3fq1qkL7ybC8V5yQ5yI5Z86
-         f584rgyaP+GnLo+i4YgpizSn0KHTuXcWunPjaoEG8+aLbO61ShksgiMluxiKwqC/+ZYb
-         4+iJYbQKIZvZJPFI1YtDUSCNi8R+uhyMKRVprR/fc7RY8LZtNH2so6eCcUBYW8nmxnNh
-         4fysDTLfGYPJ61bkq3yFLqiElB6060D5xU1MI9w4Dz8zXpFKXg1miYy0JS6h3++EBBWw
-         jo4w==
-X-Gm-Message-State: AOAM531HxDOHP5LihQ59Bdg8/GRcwnn5u6ibupi6g1oTTgj04KIjRqh1
-        Chb/ven02GL+onUQEsiZu3ZTWyy/WDaqO9/kNHgGcRq8oNkHraaN4oZ9uQXwxnhI50RPsZP3hg1
-        ncbfIUvJpZCORxGZBALZzNZc0
-X-Received: by 2002:a7b:c350:0:b0:38c:6d3c:6c8 with SMTP id l16-20020a7bc350000000b0038c6d3c06c8mr984718wmj.45.1652203279958;
-        Tue, 10 May 2022 10:21:19 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzAmo0K9QeW/yb3yXjxsgFnbwtW1gimimSuvt8ieLJhcHqq2VC/KNZkuC9hI0Pyj5EsRuTwHg==
-X-Received: by 2002:a7b:c350:0:b0:38c:6d3c:6c8 with SMTP id l16-20020a7bc350000000b0038c6d3c06c8mr984687wmj.45.1652203279619;
-        Tue, 10 May 2022 10:21:19 -0700 (PDT)
-Received: from vschneid.remote.csb ([185.11.37.247])
-        by smtp.gmail.com with ESMTPSA id f21-20020a7bcd15000000b003942a244f3dsm2991557wmj.22.2022.05.10.10.21.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 10:21:19 -0700 (PDT)
-From:   Valentin Schneider <vschneid@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Yury Norov <yury.norov@gmail.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Joe Perches <joe@perches.com>,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        =?utf-8?Q?Micha=C5=82_Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Nicolas Palix <nicolas.palix@imag.fr>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Matti Vaittinen <Matti.Vaittinen@fi.rohmeurope.com>,
-        linux-kernel@vger.kernel.org, Ben Segall <bsegall@google.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>
-Subject: Re: [PATCH 17/22] sched/core: fix opencoded cpumask_any_but()
-In-Reply-To: <20220510163707.GO76023@worktop.programming.kicks-ass.net>
-References: <20220510154750.212913-1-yury.norov@gmail.com>
- <20220510154750.212913-18-yury.norov@gmail.com>
- <20220510163707.GO76023@worktop.programming.kicks-ass.net>
-Date:   Tue, 10 May 2022 18:21:18 +0100
-Message-ID: <xhsmhv8ud1ey9.mognet@vschneid.remote.csb>
+        bh=nXXfBfocIvVCxUKFufjfWD4rJkOLYYU+cQFGctoe54A=;
+        b=FdizoY0LCoq1BA0QIiMaATdRTJf6QV69KAbmCUAi5rwcAsfU4houuSh07x67Fc3BJTg5O7
+        RwAShEqN5ot8Q/NYw+xvmhaQLO8rxlccKsTWPDLlVvBPD6TSkcbY+eSw8jdjWNEKCskMmK
+        R9mxodwEUcX/r0jJtkucH8zZ1ndtVo4=
+From:   andrey.konovalov@linux.dev
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
+        Marco Elver <elver@google.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        kasan-dev@googlegroups.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Andrey Konovalov <andreyknvl@google.com>
+Subject: [PATCH v2 2/3] kasan: move boot parameters section in documentation
+Date:   Tue, 10 May 2022 19:21:47 +0200
+Message-Id: <870628e1293b4f44edf7cbcb92374ff9eb7503d7.1652203271.git.andreyknvl@google.com>
+In-Reply-To: <896b2d914d6b50d677fd7b38f76967cc705c01ba.1652203271.git.andreyknvl@google.com>
+References: <896b2d914d6b50d677fd7b38f76967cc705c01ba.1652203271.git.andreyknvl@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/05/22 18:37, Peter Zijlstra wrote:
-> On Tue, May 10, 2022 at 08:47:45AM -0700, Yury Norov wrote:
->> sched_core_cpu_starting() and sched_core_cpu_deactivate() implement
->> opencoded cpumask_any_but(). Fix it.
->>
->> CC: Ben Segall <bsegall@google.com>
->> CC: Daniel Bristot de Oliveira <bristot@redhat.com>
->> CC: Dietmar Eggemann <dietmar.eggemann@arm.com>
->> CC: Ingo Molnar <mingo@redhat.com>
->> CC: Juri Lelli <juri.lelli@redhat.com>
->> CC: Mel Gorman <mgorman@suse.de>
->> CC: Peter Zijlstra <peterz@infradead.org>
->> CC: Steven Rostedt <rostedt@goodmis.org>
->> CC: Valentin Schneider <vschneid@redhat.com>
->> CC: Vincent Guittot <vincent.guittot@linaro.org>
->> CC: linux-kernel@vger.kernel.org
->> Signed-off-by: Yury Norov <yury.norov@gmail.com>
->> ---
->>  kernel/sched/core.c | 33 +++++++++++++--------------------
->>  1 file changed, 13 insertions(+), 20 deletions(-)
->>
->> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
->> index f5ebc392493d..9700001948d0 100644
->> --- a/kernel/sched/core.c
->> +++ b/kernel/sched/core.c
->> @@ -6125,7 +6125,7 @@ static void queue_core_balance(struct rq *rq)
->>  static void sched_core_cpu_starting(unsigned int cpu)
->>  {
->>      const struct cpumask *smt_mask = cpu_smt_mask(cpu);
->> -	struct rq *rq = cpu_rq(cpu), *core_rq = NULL;
->> +	struct rq *rq = cpu_rq(cpu), *core_rq;
->>      unsigned long flags;
->>      int t;
->>
->> @@ -6138,19 +6138,16 @@ static void sched_core_cpu_starting(unsigned int cpu)
->>              goto unlock;
->>
->>      /* find the leader */
->> -	for_each_cpu(t, smt_mask) {
->> -		if (t == cpu)
->> -			continue;
->> -		rq = cpu_rq(t);
->> -		if (rq->core == rq) {
->> -			core_rq = rq;
->> -			break;
->> -		}
->> -	}
->> +	t = cpumask_any_but(smt_mask, cpu);
->> +	if (t >= nr_cpu_ids)
->> +		goto unlock;
->>
->> -	if (WARN_ON_ONCE(!core_rq)) /* whoopsie */
->> +	rq = cpu_rq(t);
->> +	if (WARN_ON_ONCE(rq->core != rq)) /* whoopsie */
->>              goto unlock;
->>
->> +	core_rq = rq;
->> +
->>      /* install and validate core_rq */
->>      for_each_cpu(t, smt_mask) {
->>              rq = cpu_rq(t);
->
-> I don't think this is equivalent. Imagine SMT4, with:
->
->   rqN->core_rq = rq0
->
-> Now, further suppose smt0-2 are online and we're about to online smt3.
-> Then t above is free to be smt2, which then results in insta triggering:
->
-> +	if (WARN_ON_ONCE(rq->core != rq)) /* whoopsie */
->
-> You seem to have lost how the first loop searches for rq->core.
->
+From: Andrey Konovalov <andreyknvl@google.com>
 
-cpumask_any() is actually cpumask_first(), so t should be smt0 in that
-case. However, if for some reason rq->core isn't the first online CPU in
-smt_mask \ {cpu} (which I think can happen if you offline smt0-1 then
-re-online smt0), then yes that splats.
+Move the "Boot parameters" section in KASAN documentation next to the
+section that describes KASAN build options.
 
-> Please, be more careful. Also, all of this is super cold path don't
-> bother with optimizations. Much of the patches you have in this series
-> fall under that.
+No content changes.
 
-I tend to agree, I do like the cpumask_weight_eq() stuff because it's a low
-hanging fruit and can even be autopatched with coccinelle, but the
-open-coded stuff in cold paths isn't as relevant (nor as obvious as it may
-look :)).
+Reviewed-by: Marco Elver <elver@google.com>
+Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+---
+ Documentation/dev-tools/kasan.rst | 82 +++++++++++++++----------------
+ 1 file changed, 41 insertions(+), 41 deletions(-)
+
+diff --git a/Documentation/dev-tools/kasan.rst b/Documentation/dev-tools/kasan.rst
+index 2ed0b77d1db6..1772fd457fed 100644
+--- a/Documentation/dev-tools/kasan.rst
++++ b/Documentation/dev-tools/kasan.rst
+@@ -94,6 +94,47 @@ To include alloc and free stack traces of affected slab objects into reports,
+ enable ``CONFIG_STACKTRACE``. To include alloc and free stack traces of affected
+ physical pages, enable ``CONFIG_PAGE_OWNER`` and boot with ``page_owner=on``.
+ 
++Boot parameters
++~~~~~~~~~~~~~~~
++
++KASAN is affected by the generic ``panic_on_warn`` command line parameter.
++When it is enabled, KASAN panics the kernel after printing a bug report.
++
++By default, KASAN prints a bug report only for the first invalid memory access.
++With ``kasan_multi_shot``, KASAN prints a report on every invalid access. This
++effectively disables ``panic_on_warn`` for KASAN reports.
++
++Alternatively, independent of ``panic_on_warn``, the ``kasan.fault=`` boot
++parameter can be used to control panic and reporting behaviour:
++
++- ``kasan.fault=report`` or ``=panic`` controls whether to only print a KASAN
++  report or also panic the kernel (default: ``report``). The panic happens even
++  if ``kasan_multi_shot`` is enabled.
++
++Hardware Tag-Based KASAN mode (see the section about various modes below) is
++intended for use in production as a security mitigation. Therefore, it supports
++additional boot parameters that allow disabling KASAN or controlling features:
++
++- ``kasan=off`` or ``=on`` controls whether KASAN is enabled (default: ``on``).
++
++- ``kasan.mode=sync``, ``=async`` or ``=asymm`` controls whether KASAN
++  is configured in synchronous, asynchronous or asymmetric mode of
++  execution (default: ``sync``).
++  Synchronous mode: a bad access is detected immediately when a tag
++  check fault occurs.
++  Asynchronous mode: a bad access detection is delayed. When a tag check
++  fault occurs, the information is stored in hardware (in the TFSR_EL1
++  register for arm64). The kernel periodically checks the hardware and
++  only reports tag faults during these checks.
++  Asymmetric mode: a bad access is detected synchronously on reads and
++  asynchronously on writes.
++
++- ``kasan.vmalloc=off`` or ``=on`` disables or enables tagging of vmalloc
++  allocations (default: ``on``).
++
++- ``kasan.stacktrace=off`` or ``=on`` disables or enables alloc and free stack
++  traces collection (default: ``on``).
++
+ Error reports
+ ~~~~~~~~~~~~~
+ 
+@@ -208,47 +249,6 @@ traces point to places in code that interacted with the object but that are not
+ directly present in the bad access stack trace. Currently, this includes
+ call_rcu() and workqueue queuing.
+ 
+-Boot parameters
+-~~~~~~~~~~~~~~~
+-
+-KASAN is affected by the generic ``panic_on_warn`` command line parameter.
+-When it is enabled, KASAN panics the kernel after printing a bug report.
+-
+-By default, KASAN prints a bug report only for the first invalid memory access.
+-With ``kasan_multi_shot``, KASAN prints a report on every invalid access. This
+-effectively disables ``panic_on_warn`` for KASAN reports.
+-
+-Alternatively, independent of ``panic_on_warn``, the ``kasan.fault=`` boot
+-parameter can be used to control panic and reporting behaviour:
+-
+-- ``kasan.fault=report`` or ``=panic`` controls whether to only print a KASAN
+-  report or also panic the kernel (default: ``report``). The panic happens even
+-  if ``kasan_multi_shot`` is enabled.
+-
+-Hardware Tag-Based KASAN mode (see the section about various modes below) is
+-intended for use in production as a security mitigation. Therefore, it supports
+-additional boot parameters that allow disabling KASAN or controlling features:
+-
+-- ``kasan=off`` or ``=on`` controls whether KASAN is enabled (default: ``on``).
+-
+-- ``kasan.mode=sync``, ``=async`` or ``=asymm`` controls whether KASAN
+-  is configured in synchronous, asynchronous or asymmetric mode of
+-  execution (default: ``sync``).
+-  Synchronous mode: a bad access is detected immediately when a tag
+-  check fault occurs.
+-  Asynchronous mode: a bad access detection is delayed. When a tag check
+-  fault occurs, the information is stored in hardware (in the TFSR_EL1
+-  register for arm64). The kernel periodically checks the hardware and
+-  only reports tag faults during these checks.
+-  Asymmetric mode: a bad access is detected synchronously on reads and
+-  asynchronously on writes.
+-
+-- ``kasan.vmalloc=off`` or ``=on`` disables or enables tagging of vmalloc
+-  allocations (default: ``on``).
+-
+-- ``kasan.stacktrace=off`` or ``=on`` disables or enables alloc and free stack
+-  traces collection (default: ``on``).
+-
+ Implementation details
+ ----------------------
+ 
+-- 
+2.25.1
 
