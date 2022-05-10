@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A752C352A7
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD029C4707A
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:38:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243873AbiEJNlU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:41:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50084 "EHLO
+        id S244069AbiEJNlY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:41:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243899AbiEJN1f (ORCPT
+        with ESMTP id S243898AbiEJN1f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:27:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6665C2C255E;
-        Tue, 10 May 2022 06:20:46 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AAE92C182B;
+        Tue, 10 May 2022 06:20:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ABA3F616D0;
-        Tue, 10 May 2022 13:20:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B11E4C385A6;
-        Tue, 10 May 2022 13:20:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5C5EDB81CF8;
+        Tue, 10 May 2022 13:20:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9276C385C2;
+        Tue, 10 May 2022 13:20:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188845;
-        bh=/A+a3bk4xx74A+u/WRwLO3Lza7C3KHpa+IWrB4azzCQ=;
+        s=korg; t=1652188842;
+        bh=uWNfTbyVD20wguGhW1RfOtpw8PG/VpQ0yqM5YEg8S1A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OZHvBT5q1gNF9/e32nL+auABysYIyCY0/gJ1d9DUmkrVit2YZrUsFA85rz/ebJ0Me
-         td48BdLq36Diff6cLt2UY9k1EYG2XPc3/PKBvOw32U39s1HrneFuXhq0U+7bbIu8cz
-         nhn5BxeruIFGkXOS3CClEBkq0jmXJJswIMp+1lKM=
+        b=YX+Bg6y0QSCZcQ62oORtesNgHwqaCTCQeIvbAf+yddqdc4bYfLD/MDszME8d4AjrQ
+         G5B+tvZByLqhdmytEwkHaP7ptLuz9BKAQK7Fo4Jog8exH5f21lN2PGc4kDYYMlMwwU
+         lUux9pGUprTh+EJlya7WDX3kvoEikQao4ZKFElz4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Max Krummenacher <max.krummenacher@toradex.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 24/88] ARM: dts: imx6qdl-apalis: Fix sgtl5000 detection issue
-Date:   Tue, 10 May 2022 15:07:09 +0200
-Message-Id: <20220510130734.447917545@linuxfoundation.org>
+        stable@vger.kernel.org, "wanghai (M)" <wanghai38@huawei.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>
+Subject: [PATCH 4.19 62/88] Revert "SUNRPC: attempt AF_LOCAL connect on setup"
+Date:   Tue, 10 May 2022 15:07:47 +0200
+Message-Id: <20220510130735.542425319@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 References: <20220510130733.735278074@linuxfoundation.org>
@@ -51,71 +48,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@gmail.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit fa51e1dc4b91375bc18349663a52395ad585bd3c ]
+commit a3d0562d4dc039bca39445e1cddde7951662e17d upstream.
 
-On a custom carrier board with a i.MX6Q Apalis SoM, the sgtl5000 codec
-on the SoM is often not detected and the following error message is
-seen when the sgtl5000 driver tries to read the ID register:
+This reverts commit 7073ea8799a8cf73db60270986f14e4aae20fa80.
 
-sgtl5000 1-000a: Error reading chip id -6
+We must not try to connect the socket while the transport is under
+construction, because the mechanisms to safely tear it down are not in
+place. As the code stands, we end up leaking the sockets on a connection
+error.
 
-The reason for the error is that the MCLK clock is not provided
-early enough.
-
-Fix the problem by describing the MCLK pinctrl inside the codec
-node instead of placing it inside the audmux pinctrl group.
-
-With this change applied the sgtl5000 is always detected on every boot.
-
-Fixes: 693e3ffaae5a ("ARM: dts: imx6: Add support for Toradex Apalis iMX6Q/D SoM")
-Signed-off-by: Fabio Estevam <festevam@gmail.com>
-Reviewed-by: Tim Harvey <tharvey@gateworks.com>
-Acked-by: Max Krummenacher <max.krummenacher@toradex.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: wanghai (M) <wanghai38@huawei.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/imx6qdl-apalis.dtsi | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ net/sunrpc/xprtsock.c |    3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6qdl-apalis.dtsi b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-index 05f07ea3e8c8..ed783c91b002 100644
---- a/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
-@@ -313,6 +313,8 @@ vgen6_reg: vgen6 {
- 	codec: sgtl5000@a {
- 		compatible = "fsl,sgtl5000";
- 		reg = <0x0a>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_sgtl5000>;
- 		clocks = <&clks IMX6QDL_CLK_CKO>;
- 		VDDA-supply = <&reg_module_3v3_audio>;
- 		VDDIO-supply = <&reg_module_3v3>;
-@@ -540,8 +542,6 @@ MX6QDL_PAD_DISP0_DAT20__AUD4_TXC	0x130b0
- 			MX6QDL_PAD_DISP0_DAT21__AUD4_TXD	0x130b0
- 			MX6QDL_PAD_DISP0_DAT22__AUD4_TXFS	0x130b0
- 			MX6QDL_PAD_DISP0_DAT23__AUD4_RXD	0x130b0
--			/* SGTL5000 sys_mclk */
--			MX6QDL_PAD_GPIO_5__CCM_CLKO1		0x130b0
- 		>;
- 	};
- 
-@@ -807,6 +807,12 @@ MX6QDL_PAD_NANDF_CS1__GPIO6_IO14 0x000b0
- 		>;
- 	};
- 
-+	pinctrl_sgtl5000: sgtl5000grp {
-+		fsl,pins = <
-+			MX6QDL_PAD_GPIO_5__CCM_CLKO1	0x130b0
-+		>;
-+	};
-+
- 	pinctrl_spdif: spdifgrp {
- 		fsl,pins = <
- 			MX6QDL_PAD_GPIO_16__SPDIF_IN  0x1b0b0
--- 
-2.35.1
-
+--- a/net/sunrpc/xprtsock.c
++++ b/net/sunrpc/xprtsock.c
+@@ -2974,9 +2974,6 @@ static struct rpc_xprt *xs_setup_local(s
+ 		}
+ 		xprt_set_bound(xprt);
+ 		xs_format_peer_addresses(xprt, "local", RPCBIND_NETID_LOCAL);
+-		ret = ERR_PTR(xs_local_setup_socket(transport));
+-		if (ret)
+-			goto out_err;
+ 		break;
+ 	default:
+ 		ret = ERR_PTR(-EAFNOSUPPORT);
 
 
