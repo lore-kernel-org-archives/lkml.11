@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A254CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:14:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB255C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:14:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242422AbiEJNSP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:18:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36228 "EHLO
+        id S242448AbiEJNSU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:18:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241535AbiEJNQT (ORCPT
+        with ESMTP id S242346AbiEJNQT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:16:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8FF73EF23;
-        Tue, 10 May 2022 06:12:14 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25BA0433B5;
+        Tue, 10 May 2022 06:12:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DA6B615F8;
-        Tue, 10 May 2022 13:12:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69F1BC385A6;
-        Tue, 10 May 2022 13:12:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 93B7D612E4;
+        Tue, 10 May 2022 13:12:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EC53C385C2;
+        Tue, 10 May 2022 13:12:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188325;
-        bh=5JcHX9Wa3Mes2Izs1ipgsGcdg9EM9TbFHe/TyofPpc8=;
+        s=korg; t=1652188323;
+        bh=ZFKz7D5VMBgdP5HYgXbth0GjUNlu9Z2TL8vZsHJON3Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C3TBl+jvjbqOv5mwMuT7X1b5Pu0g//OQJmYLEpZlcr+A3dAf4G0U0/NrQ0EZAkwU9
-         22w+xzTB2zOD4eOxOZMBIUQ4g+EuLtZRh3X25hUn7GJzJu1cIn/FZnN6k9yV0NhzpT
-         3OP7p8PUlMma3LjwvOpe9ssxiX/HM52DWSM9Ggk0=
+        b=uieG78kWd0BTfu4oKUBXz+K82UTaPMjXLMo6Eia8Hfn5qNfW0eAHDqSu2Gl6VTFIB
+         MkVXz9iUNy40N/+qhCmygD0Tgot5vrinTWfK8aP5zbkSum4BwV4XDgElcrb6RTbR44
+         LxtuBhx7D9vB+BLH3D49pNoxc3WezfT1edOqyrI4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 4.9 37/66] tty: n_gsm: fix malformed counter for out of frame data
-Date:   Tue, 10 May 2022 15:07:27 +0200
-Message-Id: <20220510130730.857381555@linuxfoundation.org>
+Subject: [PATCH 4.9 36/66] tty: n_gsm: fix wrong signal octet encoding in convergence layer type 2
+Date:   Tue, 10 May 2022 15:07:26 +0200
+Message-Id: <20220510130730.828522012@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.762341544@linuxfoundation.org>
 References: <20220510130729.762341544@linuxfoundation.org>
@@ -49,33 +49,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-commit a24b4b2f660b7ddf3f484b37600bba382cb28a9d upstream.
+commit 06d5afd4d640eea67f5623e76cd5fc03359b7f3c upstream.
 
-The gsm_mux field 'malformed' represents the number of malformed frames
-received. However, gsm1_receive() also increases this counter for any out
-of frame byte.
-Fix this by ignoring out of frame data for the malformed counter.
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.5.2 describes that the signal octet in
+convergence layer type 2 can be either one or two bytes. The length is
+encoded in the EA bit. This is set 1 for the last byte in the sequence.
+gsmtty_modem_update() handles this correctly but gsm_dlci_data_output()
+fails to set EA to 1. There is no case in which we encode two signal octets
+as there is no case in which we send out a break signal.
+Therefore, always set the EA bit to 1 for the signal octet to fix this.
 
 Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 Cc: stable@vger.kernel.org
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220414094225.4527-7-daniel.starke@siemens.com
+Link: https://lore.kernel.org/r/20220414094225.4527-5-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_gsm.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/tty/n_gsm.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -1977,7 +1977,8 @@ static void gsm1_receive(struct gsm_mux
+@@ -839,7 +839,7 @@ static int gsm_dlci_data_output(struct g
+ 			break;
+ 		case 2:	/* Unstructed with modem bits.
+ 		Always one byte as we never send inline break data */
+-			*dp++ = gsm_encode_modem(dlci);
++			*dp++ = (gsm_encode_modem(dlci) << 1) | EA;
+ 			break;
  		}
- 		/* Any partial frame was a runt so go back to start */
- 		if (gsm->state != GSM_START) {
--			gsm->malformed++;
-+			if (gsm->state != GSM_SEARCH)
-+				gsm->malformed++;
- 			gsm->state = GSM_START;
- 		}
- 		/* A SOF in GSM_START means we are still reading idling or
+ 		WARN_ON(kfifo_out_locked(dlci->fifo, dp , len, &dlci->lock) != len);
 
 
