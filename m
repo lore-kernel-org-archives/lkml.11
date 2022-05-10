@@ -2,113 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF406C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 22:30:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08542C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 22:33:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236843AbiEJWae (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 18:30:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52612 "EHLO
+        id S235171AbiEJWdV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 18:33:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236823AbiEJWaX (ORCPT
+        with ESMTP id S229655AbiEJWdP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 18:30:23 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 989A6663E2;
-        Tue, 10 May 2022 15:30:21 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id n18so118489plg.5;
-        Tue, 10 May 2022 15:30:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=v+XYD3B1CD7fnVkuXZZiJ8ZtuhmQGqA4o7hHZkBxvWY=;
-        b=CsXF6CSIhEicYVpGrqK3J2sVIvDxYHv2oJWh66KWMXpSJNNi/o8w370qrW0HbfDFBn
-         n6kWy7CfiS70LZHznsyRsmHs1fjdFaBVPjlWz8s9JDRsAapt/RXArPBvsCZh8LFxgARd
-         es5EyD+9JZsPh27gwCbXyVZJvVdqpCr+/Z10J95jL47uQ02nz0Amx8oj4WyTw8G5TpZF
-         jjPp0UZw4P2E2dm/00ADq1pIEoNHNA+CCayx5i2oKvUrNc80Sb8xS5rXBlWfBkgu6aSB
-         JXZplPlkON7oToCHoG0GvEDknP1mSm2IreD1sy4NHpiJg1jVAh7o4GQIO0sTb/u2+6Z4
-         dVEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=v+XYD3B1CD7fnVkuXZZiJ8ZtuhmQGqA4o7hHZkBxvWY=;
-        b=nS3h045pEpjCd7D2gQ++E7LzHgUq7iPi4C7+ZtzV7h8zF+Ks4j+sdX1NgASG9ool66
-         T4gOoZSq1Ytjkfyp0xlGeshn4oB4Vyl7wNG4sK+umc2n1Ug3y/mH02O1L7fNgIL/gY4j
-         8UXWYW4gmnbJr+Pt0kTfV09lWaRk7030wWXL5qyzFUCNbXdILUYofeD5v8IQ4i6DDq6h
-         KY37e8kg4Kpod47aQ9dqxM+mtUElkuJsAU753tVv0yWIkhBaTM/Q7PMFVD5xzOGZ1P6O
-         8wbrNlAG3nzfSHtH98A3tHVHdsGv+/0qbppLxFvWNEq1MVrNIGBLnpTcYbduFj/MSSyv
-         Aj6Q==
-X-Gm-Message-State: AOAM530BTGdD5hHB53iGXYfCzdXCvoo71sknCnBULlBDhGMYwgy8wD1K
-        r98W2RdecJ5O/FvZeikbopsKiBp3wiRi025oJMc=
-X-Google-Smtp-Source: ABdhPJyW+3P2fiBcYuqtH2NIJob0aLq7yef+zcXGA1qS8NXwcCDxzFNmPqxro0CArW/2gU2n59aka7BMIReyiLAXsGo=
-X-Received: by 2002:a17:90b:33c6:b0:1dc:ba92:41bb with SMTP id
- lk6-20020a17090b33c600b001dcba9241bbmr2013273pjb.26.1652221821087; Tue, 10
- May 2022 15:30:21 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220506142148.GA24802@asgard.redhat.com> <CAADnVQKNkEX-caBjozegRaOb67g1HNOHn1e-enRk_s-7Gtt=gg@mail.gmail.com>
- <20220510184155.GA8295@asgard.redhat.com>
-In-Reply-To: <20220510184155.GA8295@asgard.redhat.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 10 May 2022 15:30:10 -0700
-Message-ID: <CAADnVQ+2gwhcMht4PuDnDOFKY68Wsq8QFz4Y69NBX_TLaSexQQ@mail.gmail.com>
-Subject: Re: [PATCH bpf] bpf_trace: bail out from bpf_kprobe_multi_link_attach
- when in compat
-To:     Eugene Syromiatnikov <esyr@redhat.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Tue, 10 May 2022 18:33:15 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF9E84EA1F;
+        Tue, 10 May 2022 15:33:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 069E3CE219B;
+        Tue, 10 May 2022 22:33:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FEC7C385CF;
+        Tue, 10 May 2022 22:33:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1652221991;
+        bh=Tzq7VNaVPQXxpvql7IaoDCyYDmuSsgNyVGmkPX2RJ7w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=v5RZnXheSCYFCzYz3mgAiLJH4DWdS/L/4HSZhIYwLXypN6KDuZWwT3uElrJ/g4rW+
+         YMl4VdGIZbxFUMA6NC772rIi3S8Ld+o8mVBY4p9PPzXLNDBnxCf7iZF9gToWZKlMNP
+         p3YalQlKSdJUacXzpni+tx9w6xP4k8Dn3GuYtRKc=
+Date:   Tue, 10 May 2022 15:33:09 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        David Laight <David.Laight@ACULAB.COM>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Joe Perches <joe@perches.com>,
+        Julia Lawall <Julia.Lawall@inria.fr>,
+        =?UTF-8?Q?Micha=C5=82_Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Nicolas Palix <nicolas.palix@imag.fr>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Matti Vaittinen <Matti.Vaittinen@fi.rohmeurope.com>,
+        linux-kernel@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Valentin Schneider <vschneid@redhat.com>,
+        linux-ia64@vger.kernel.org
+Subject: Re: [PATCH 12/22] ia64: cleanup remove_siblinginfo()
+Message-Id: <20220510153309.b721988023b4d0e1e727f0cb@linux-foundation.org>
+In-Reply-To: <20220510154750.212913-13-yury.norov@gmail.com>
+References: <20220510154750.212913-1-yury.norov@gmail.com>
+        <20220510154750.212913-13-yury.norov@gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 11:42 AM Eugene Syromiatnikov <esyr@redhat.com> wro=
-te:
->
-> On Tue, May 10, 2022 at 11:10:35AM -0700, Alexei Starovoitov wrote:
-> > On Fri, May 6, 2022 at 7:22 AM Eugene Syromiatnikov <esyr@redhat.com> w=
-rote:
-> > >
-> > > Since bpf_kprobe_multi_link_attach doesn't support 32-bit kernels
-> > > for whatever reason,
-> >
-> > Jiri,
-> > why did you add this restriction?
-> >
-> > > having it enabled for compat processes on 64-bit
-> > > kernels makes even less sense due to discrepances in the type sizes
-> > > that it does not handle.
-> >
-> > I don't follow this logic.
-> > bpf progs are always 64-bit. Even when user space is 32-bit.
-> > Jiri's check is for the kernel.
->
-> The interface as defined (and implemented in libbpf) expects arrays of us=
-erspace
-> pointers to be passed (for example, syms points to an array of userspace
-> pointers=E2=80=94character strings; same goes for addrs, but with generic=
- userspace
-> pointers) without regard to possible difference in the pointer size in ca=
-se
-> of compat userspace.
+On Tue, 10 May 2022 08:47:40 -0700 Yury Norov <yury.norov@gmail.com> wrote:
 
-I see. So kprobe_multi.syms and kprobe_multi.addrs will be 'long'
-and 32-bit user space will have an issue with the 64-bit kernel.
-Let's fix it properly.
-We can remove sizeof(u64) !=3D sizeof(void *) and keep libbpf as-is
-by keeping syms and addrs 'long' in uapi.
-As far as I can see 32-bit user space on a 32-bit kernel
-should work with existing code.
-in_compat_syscall() can be used to extend addrs/syms.
+> remove_siblinginfo() initialises variable 'last', but never uses it.
+> Drop unneeded code.
+
+ack.  I'll assume you'll be merging this up.
