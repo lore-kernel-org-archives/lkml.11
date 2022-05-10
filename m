@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 934A0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:14:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C58B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:15:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343511AbiEJOSv (ORCPT
+        id S1343537AbiEJOTA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:18:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49554 "EHLO
+        Tue, 10 May 2022 10:19:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243929AbiEJNtj (ORCPT
+        with ESMTP id S1343560AbiEJNsO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:49:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5231173545;
-        Tue, 10 May 2022 06:37:20 -0700 (PDT)
+        Tue, 10 May 2022 09:48:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CB582B1652;
+        Tue, 10 May 2022 06:36:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E8E56165A;
-        Tue, 10 May 2022 13:37:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35100C385A6;
-        Tue, 10 May 2022 13:37:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A7FC8B81DB0;
+        Tue, 10 May 2022 13:36:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FE0EC385A6;
+        Tue, 10 May 2022 13:36:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189839;
-        bh=w+Kw4J0CMmrFlakmfpDRYw/x/FqYF8EYu1XkJTfL0So=;
+        s=korg; t=1652189765;
+        bh=bZJsAhefE7TmQsxHE4HZUSdcOMaxLZwLBWLG/XeVUpY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1+1mUcGfwyJSHtBFxqmo1TAYx30rt9dJjsQFr/2+qtYb8HdkwEZP8lyQ0ErshN/fk
-         8uA5nJ1QW0a7xePbOkakT/OLzaq1WNCiWbvWA4IGFszB6napSlKorRkeiaLPVZgKq0
-         q9OkNz+Q/omJfFGRzyrrc1IySNNubBJN/D6qjvwY=
+        b=BF1kO9crXbGvl9Nk3ZPRuL+AxAAbWTjLbrQhDqD7mUHDEXRMxZ4LM1lZC9SSIdUY/
+         qXIe1RMC32h6g7jQxHyOPuHcLPa4s+HGu6J+cMCwT3AvJCzV6u9nC8GNX5WwnjaY/K
+         X8cot39tk23BCEY3+JVUOM1vQaXi8FXr4AwMXjJc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zihao Wang <wzhd@ustc.edu>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.17 008/140] ALSA: hda/realtek: Add quirk for Yoga Duet 7 13ITL6 speakers
-Date:   Tue, 10 May 2022 15:06:38 +0200
-Message-Id: <20220510130741.845344616@linuxfoundation.org>
+        stable@vger.kernel.org, Zev Weiss <zev@bewilderbeest.net>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 5.17 021/140] hwmon: (pmbus) delta-ahe50dc-fan: work around hardware quirk
+Date:   Tue, 10 May 2022 15:06:51 +0200
+Message-Id: <20220510130742.216781277@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -49,32 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zihao Wang <wzhd@ustc.edu>
+From: Zev Weiss <zev@bewilderbeest.net>
 
-commit 3b79954fd00d540677c97a560622b73f3a1f4e28 upstream.
+commit 08da09f028043fed9653331ae75bc310411f72e6 upstream.
 
-Lenovo Yoga Duet 7 13ITL6 has Realtek ALC287 and built-in
-speakers do not work out of the box. The fix developed for
-Yoga 7i 14ITL5 also enables speaker output for this model.
+CLEAR_FAULTS commands can apparently sometimes trigger catastrophic
+power output glitches on the ahe-50dc, so block them from being sent
+at all.
 
-Signed-off-by: Zihao Wang <wzhd@ustc.edu>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220424084120.74125-1-wzhd@ustc.edu
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220427035109.3819-1-zev@bewilderbeest.net
+Fixes: d387d88ed045 ("hwmon: (pmbus) Add Delta AHE-50DC fan control module driver")
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/hwmon/pmbus/delta-ahe50dc-fan.c |   16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -9191,6 +9191,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x17aa, 0x3813, "Legion 7i 15IMHG05", ALC287_FIXUP_LEGION_15IMHG05_SPEAKERS),
- 	SND_PCI_QUIRK(0x17aa, 0x3818, "Lenovo C940", ALC298_FIXUP_LENOVO_SPK_VOLUME),
- 	SND_PCI_QUIRK(0x17aa, 0x3819, "Lenovo 13s Gen2 ITL", ALC287_FIXUP_13S_GEN2_SPEAKERS),
-+	SND_PCI_QUIRK(0x17aa, 0x3820, "Yoga Duet 7 13ITL6", ALC287_FIXUP_YOGA7_14ITL_SPEAKERS),
- 	SND_PCI_QUIRK(0x17aa, 0x3824, "Legion Y9000X 2020", ALC285_FIXUP_LEGION_Y9000X_SPEAKERS),
- 	SND_PCI_QUIRK(0x17aa, 0x3827, "Ideapad S740", ALC285_FIXUP_IDEAPAD_S740_COEF),
- 	SND_PCI_QUIRK(0x17aa, 0x3834, "Lenovo IdeaPad Slim 9i 14ITL5", ALC287_FIXUP_YOGA7_14ITL_SPEAKERS),
+--- a/drivers/hwmon/pmbus/delta-ahe50dc-fan.c
++++ b/drivers/hwmon/pmbus/delta-ahe50dc-fan.c
+@@ -14,6 +14,21 @@
+ 
+ #define AHE50DC_PMBUS_READ_TEMP4 0xd0
+ 
++static int ahe50dc_fan_write_byte(struct i2c_client *client, int page, u8 value)
++{
++	/*
++	 * The CLEAR_FAULTS operation seems to sometimes (unpredictably, perhaps
++	 * 5% of the time or so) trigger a problematic phenomenon in which the
++	 * fan speeds surge momentarily and at least some (perhaps all?) of the
++	 * system's power outputs experience a glitch.
++	 *
++	 * However, according to Delta it should be OK to simply not send any
++	 * CLEAR_FAULTS commands (the device doesn't seem to be capable of
++	 * reporting any faults anyway), so just blackhole them unconditionally.
++	 */
++	return value == PMBUS_CLEAR_FAULTS ? -EOPNOTSUPP : -ENODATA;
++}
++
+ static int ahe50dc_fan_read_word_data(struct i2c_client *client, int page, int phase, int reg)
+ {
+ 	/* temp1 in (virtual) page 1 is remapped to mfr-specific temp4 */
+@@ -68,6 +83,7 @@ static struct pmbus_driver_info ahe50dc_
+ 		PMBUS_HAVE_VIN | PMBUS_HAVE_FAN12 | PMBUS_HAVE_FAN34 |
+ 		PMBUS_HAVE_STATUS_FAN12 | PMBUS_HAVE_STATUS_FAN34 | PMBUS_PAGE_VIRTUAL,
+ 	.func[1] = PMBUS_HAVE_TEMP | PMBUS_PAGE_VIRTUAL,
++	.write_byte = ahe50dc_fan_write_byte,
+ 	.read_word_data = ahe50dc_fan_read_word_data,
+ };
+ 
 
 
