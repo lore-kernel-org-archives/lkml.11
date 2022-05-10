@@ -2,83 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 117EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 07:34:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DC8BC43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 07:35:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237595AbiEJHie (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 03:38:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49756 "EHLO
+        id S236635AbiEJHiz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 03:38:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240961AbiEJH0X (ORCPT
+        with ESMTP id S240717AbiEJHXZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 03:26:23 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0081439833;
-        Tue, 10 May 2022 00:22:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=FceqXWmZ8bGiO02Mvg6pdY1ldbGSoSPohpsyX45vO1Q=; b=PTQeh3EJrJwHtiCSpNamFAZgC6
-        83sJi4KjX/0Gvl/8L8xcZ8gPFuwQRjdsPc1Td9wEgHybaAKZfVyRIQV7n2Wz4Gz+qtVKxNJPyM+dI
-        tuOLvFSK5ZDxokgb9UtY7RG6kwhhfSQlLUaSTWj9mtK1nt4YvV1PkVE9cBdcYzv0BMreiPS8cO3xi
-        Imj2ANqt5qo9i6W8ossHkyJa1r3qNBIepPVby+8iBsdLgZ23LRYSHDQY7ps9kfdBuIndzRC3tujJ7
-        7ENOzxSVrnsLe7CIztnla2DICFiuG7w/9P2MBHZNOUMc8x+Y7iT4+vFHv9xOGSmdUJo0+ljY3sKvf
-        Xj27w8gQ==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1noKCB-000Kdp-AF; Tue, 10 May 2022 07:22:11 +0000
-Date:   Tue, 10 May 2022 00:22:11 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Frank Rowand <frowand.list@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Pantelis Antoniou <pantelis.antoniou@konsulko.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        Thomas Petazzoni <thomas.petazonni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>
-Subject: Re: [PATCH 0/3] add dynamic PCI device of_node creation for overlay
-Message-ID: <YnoSowR8qbrYc6DL@infradead.org>
-References: <20220427094502.456111-1-clement.leger@bootlin.com>
- <96db62bb-18be-f44a-6f53-05b22319f23a@gmail.com>
- <20220509141634.16158c38@xps-bootlin>
- <f9b0cbf1-dde2-ff97-cca0-5d2895734f91@gmail.com>
- <20220509180917.0f0ae851@xps-bootlin>
- <YnlIs312R4Temgu3@smile.fi.intel.com>
- <b476913d-896d-309c-f304-3ab37b81b4a9@gmail.com>
- <CAHp75VedNAG4EqPkCp-mCSUNJiKPNgaJEtsHQkWimyaYh0Nueg@mail.gmail.com>
+        Tue, 10 May 2022 03:23:25 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D7BE2A2F64
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 00:19:28 -0700 (PDT)
+Received: from mail-yb1-f176.google.com ([209.85.219.176]) by
+ mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1McGtA-1oMZVK2YCi-00chkz for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022
+ 09:19:26 +0200
+Received: by mail-yb1-f176.google.com with SMTP id y76so29117775ybe.1
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 00:19:26 -0700 (PDT)
+X-Gm-Message-State: AOAM531j0TDz7FVCWWMghVhjpobxBI/x0N+Xl6GODTtAMJQusGvNRxwd
+        PpBe2xWc87asteU8ab0MN1nEGXjI9Rixj+XAmQU=
+X-Google-Smtp-Source: ABdhPJza4f0QhmQzTg58jggkDu1vDGQMJs7cvbYtkMs5nxfP9mAAZBo3PvjTDeok3vcEVeaushFvqJrbb0bhcjB/e7w=
+X-Received: by 2002:a25:cdc7:0:b0:648:f57d:c0ed with SMTP id
+ d190-20020a25cdc7000000b00648f57dc0edmr16568783ybf.480.1652167165347; Tue, 10
+ May 2022 00:19:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHp75VedNAG4EqPkCp-mCSUNJiKPNgaJEtsHQkWimyaYh0Nueg@mail.gmail.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+References: <20220506192957.24889-1-nick.hawkins@hpe.com>
+In-Reply-To: <20220506192957.24889-1-nick.hawkins@hpe.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Tue, 10 May 2022 09:19:08 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a045Di_zRomezeah0ZoSGPw0Z6YoYkZtoxx1qOXAtKbbw@mail.gmail.com>
+Message-ID: <CAK8P3a045Di_zRomezeah0ZoSGPw0Z6YoYkZtoxx1qOXAtKbbw@mail.gmail.com>
+Subject: Re: [PATCH v1] ARM: A9: Add ARM ERRATA 764319 workaround
+To:     "Hawkins, Nick" <nick.hawkins@hpe.com>
+Cc:     "Verdun, Jean-Marie" <verdun@hpe.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Joel Stanley <joel@jms.id.au>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:OkaZ/VeV6oj2o7zYpYg+2p7jXbvXRdKVjj3PfMMgohbSezc6Aqh
+ sAMcd4xoSGQgXzflOuB4GGUAtOG60Qwcpn8r1shyNLsWoGxPXm3k7u0T2lwNjtPY4nJqIFL
+ 9vdBeNIm4CseBNIZ/SqUc654B+MwyFWDUNalAaoUlcLeGU8GBM1GUVSXs5qLT1qV5/Tv/aD
+ 6AYebLwxlrSJMfxVrMXvw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:erJObXgwuAs=:io1B8OlgqAF6c4V6ewAwoG
+ tYlywWWdHDzV0ue9VkUO1a8heDv1Q8sELy2ehKAS0tvFjVAcqE8kFcJu/5X/hRACCh4yxDLkf
+ ZiMNWpChTYCqcwZTxki6aEAw3VZzfUvfiPUHMipDsz1nlwFAfY5tMT61j8B9bOmX3iCn/Nlo2
+ bF/kAvla3AT00FhOrrYi3XUHf2KKwbQ1XedDdxk1xpRXKR06b176YBSUmMSJpOKaVdPby7jkZ
+ z+dNbe4Jh/akUI5fxNBei4RNjxsbjGsQHDTNuj0rVmI/I89bl5iZP2lqiJECj/faa8gE9H/+P
+ GtCDb/iXHYUtqvu79cKV3bwDfaaAqKKfM96mbSIN+8H0P53CJm3e3Do2AeoShEms/TGyU8VDZ
+ yq4kmAkgj83SYNdKnHnUmxT+E28fgroj2YyA9hjIja+mXsVKFx50hm90ERJsHu2493MfoMh+R
+ OdEZDknykQSzM4sdJYzLFi3G7wy0FUmGdiVURqskwZx/KuTaWjn5pV7yAUyYjAzB2py6D7ymt
+ CBGT5oOMiGSDd4gZhDfORgLQxaIANE0620Mb1BMNn2Rv+W0SVKzplbt1cP8V3LW0BbfgPsQDV
+ DszzOns0CyhEt4HXspl+F6O4JOOmS1m6LT98ILQsOSk1KV0aXBkG/sNHNwS/6Aem6dt/CFXWw
+ Sjq8D7nRbajI9c7WMJJdsRPoVLFSx1gp9lxXXeVTDD3GBSSuP3zx9CTiJbHeizf6lef2Lbs+b
+ uloj5kDXJoJHUazdjdHVCSFMgJUYvtFv5k7tpp1zxL1Dh35D22wZzn5HawFz/MG+nPGRC/qtP
+ bJtimYtqrot7m8Ci6qLFWV/hEEbljdi4zjLyMp5wxoKEjJxN6U=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 10:40:12PM +0200, Andy Shevchenko wrote:
-> > hotpluggable card?  Do the systems that you anticipate plugging the
-> > card into support hotplug?
-> 
-> Any PCIe card is potentially hotpluggable (seems nobody actually cares
-> in 90%+ drivers in the Linux kernel). But what I have heard in a
-> thread (not this one IIRC) is that the card may have pluggable modules
-> and it would be nice to change configuration and notify OS somehow. I
-> might be mistaken if it's the case here or not.
+On Fri, May 6, 2022 at 9:29 PM <nick.hawkins@hpe.com> wrote:
+>
+> From: Nick Hawkins <nick.hawkins@hpe.com>
+>
+> Enable the workaround for the 764319 Cortex A-9 erratum.
+> CP14 read accesses to the DBGPRSR and DBGOSLSR registers generate an
+> unexpected Undefined Instruction exception when the DBGSWENABLE external
+> pin is set to 0, even when the CP14 accesses are performed from a
+> privileged mode. The work around catches the exception in a way
+> the kernel does not stop execution with the use of undef_hook. This
+> has been found to effect the HPE GXP SoC.
+>
+> Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
+> ---
+>  arch/arm/Kconfig                | 11 +++++++++++
+>  arch/arm/kernel/hw_breakpoint.c | 26 ++++++++++++++++++++++++++
+>  2 files changed, 37 insertions(+)
+>
+> diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+> index 13f77eec7c40..6944adfb0fae 100644
+> --- a/arch/arm/Kconfig
+> +++ b/arch/arm/Kconfig
+> @@ -974,6 +974,17 @@ config ARM_ERRATA_764369
+>           relevant cache maintenance functions and sets a specific bit
+>           in the diagnostic control register of the SCU.
+>
+> +config ARM_ERRATA_764319
+> +       bool "ARM errata: Read to DBGPRSR and DBGOSLSR may generate Undefined instruction"
+> +       depends on CPU_V7
+> +       help
+> +         This option enables the workaround for the 764319 Cortex A-9 erratum.
+> +         CP14 read accesses to the DBGPRSR and DBGOSLSR registers generate an
+> +         unexpected Undefined Instruction exception when the DBGSWENABLE
+> +         external pin is set to 0, even when the CP14 accesses are performed
+> +         from a privileged mode. This work around catches the exception in a
+> +         way the kernel does not stop execution.
+> +
+>  config ARM_ERRATA_775420
+>         bool "ARM errata: A data cache maintenance operation which aborts, might lead to deadlock"
+>         depends on CPU_V7
+> diff --git a/arch/arm/kernel/hw_breakpoint.c b/arch/arm/kernel/hw_breakpoint.c
+> index b1423fb130ea..c41a8436a796 100644
+> --- a/arch/arm/kernel/hw_breakpoint.c
+> +++ b/arch/arm/kernel/hw_breakpoint.c
+> @@ -941,6 +941,23 @@ static int hw_breakpoint_pending(unsigned long addr, unsigned int fsr,
+>         return ret;
+>  }
+>
+> +#ifdef CONFIG_ARM_ERRATA_764319
+> +int oslsr_fault;
+> +
+> +static int debug_oslsr_trap(struct pt_regs *regs, unsigned int instr)
+> +{
+> +       oslsr_fault = 1;
+> +       instruction_pointer(regs) += 4;
+> +       return 0;
+> +}
+> +
+> +static struct undef_hook debug_oslsr_hook = {
+> +       .instr_mask  = 0xffffffff,
+> +       .instr_val = 0xee115e91,
+> +       .fn = debug_oslsr_trap,
+> +};
+> +#endif
+> +
 
-Well.  M.2 for example is not hotpluggable, as are soldered on BGA
-devices or a lot of not quite PCIe devices that actually sit on CPUs
-or shipset components.  But for all but the last category an upstream
-bridge could still be hot plugged, so not supporting it in drivers is
-indeed generally speaking a bad idea.
+Hi Nick,
+
+This seems a bit more complex than necessary. Can't you just use a custom
+inline asm with an ex_table entry to catch the fault? Have a look at
+__get_user_asm() for an example.
+
+       Arnd
