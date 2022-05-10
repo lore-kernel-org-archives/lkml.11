@@ -2,230 +2,333 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17832C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 23:57:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41BAAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 23:57:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237000AbiEJX5k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 19:57:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44748 "EHLO
+        id S238997AbiEJX5o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 19:57:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236711AbiEJX5K (ORCPT
+        with ESMTP id S238757AbiEJX5K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 19:57:10 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 226FFB2E;
-        Tue, 10 May 2022 16:57:07 -0700 (PDT)
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24ANL9Rt030213;
-        Tue, 10 May 2022 16:57:07 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=OeH7cdhm5xo2GGUXXPYVmpsG4mhfNqOB8lblirUqHCI=;
- b=iiPy/EsMx8TXgf5tSr1UwBL3RzGGcjrN0esE3lq8uJzGwpydr1e4B6BivVy/2Z489VtG
- tsg6mqtUOvSflTZUF61W1AyLIBltZksyD6vaaOTtvrfNhAHsvkfV5ak3YNKP6JrrIpFF
- Mr0iEO9FadhKsMeP8lqWSQCZMTjuZs6WINA= 
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2046.outbound.protection.outlook.com [104.47.66.46])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3fyx2n1r2c-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 10 May 2022 16:57:06 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=foVCvN6K7L1LaxcCW9goA68dbG4Wru4jLCRndG9Iay/0eR40W97/y2/Z5mC3al+VrM7hz9dZHNJ/iPqVcCdSl6920bsuErjV+Ktz0pLQOZJmSb/7zCJbIjD7IOlkjYU5F+9+w7Ki+2ZSxtz534KlpX1xQr31zg2GzuwoU4aWM61c4N5+yGTU+PcvuHy77PhmGPUoPWL0B9nGjwfb/JobzbktNqaRm6m6BFPFHjoMIJAtsu5TEqDY7DKlYnGc3X49grzs00kSnID2MeAUTlx+4xHDHUWolOn/2oWCwauRvHal94HeD6HES3zuBSfqK4dGtpPUNxwSSXa0zd22FQ6naA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OeH7cdhm5xo2GGUXXPYVmpsG4mhfNqOB8lblirUqHCI=;
- b=QBz1LzaQbre4C0c8N3D15Ch1LEwFNnKFLZMLK5KAD9lEo1LXLvvYPYunq8Bouikp/5eVeAtlkzRXpfiO+hR1+IH7YIv/haLYl+uE7WCpXMZKvZ1mWY3zgGwm8bMPYpTd9igI5weZKSGB3+f4sou/LOMCea+Q2oxMtlzXq41ymOPd1nGLBW2FSB/Vu46/n15PEYl0XYfFsHskBCmg4uM+rv9H3Lw3VQ9pkqdVdYyy6ZookTaK/oUAeBb6JdifK1cRYZblR4Jshz3xtEavsZQMOEOH9Y3Bs4YbEQbzX2j05+mhOU16UFyRIzlCM3TGGK2GUpVnL83m+00F0yZGC0iuIw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SA1PR15MB5109.namprd15.prod.outlook.com (2603:10b6:806:1dc::10)
- by SN6PR1501MB2192.namprd15.prod.outlook.com (2603:10b6:805:12::32) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23; Tue, 10 May
- 2022 23:57:04 +0000
-Received: from SA1PR15MB5109.namprd15.prod.outlook.com
- ([fe80::3061:40ff:2ad:33aa]) by SA1PR15MB5109.namprd15.prod.outlook.com
- ([fe80::3061:40ff:2ad:33aa%4]) with mapi id 15.20.5227.023; Tue, 10 May 2022
- 23:57:04 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Josh Poimboeuf <jpoimboe@kernel.org>
-CC:     Rik van Riel <riel@fb.com>, "song@kernel.org" <song@kernel.org>,
-        "joe.lawrence@redhat.com" <joe.lawrence@redhat.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "vincent.guittot@linaro.org" <vincent.guittot@linaro.org>,
-        "pmladek@suse.com" <pmladek@suse.com>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "jpoimboe@redhat.com" <jpoimboe@redhat.com>
-Subject: Re: [RFC] sched,livepatch: call klp_try_switch_task in __cond_resched
-Thread-Topic: [RFC] sched,livepatch: call klp_try_switch_task in
- __cond_resched
-Thread-Index: AQHYYjpsu2JIKZQIXUOp7t0Qujiczq0WqGoAgAAU/gCAAQUkgIAAXf2AgAAkx4CAAAZjAIAADJUAgAAUwACAAAnWgIAAEcOAgAA3ZACAAA7PAA==
-Date:   Tue, 10 May 2022 23:57:04 +0000
-Message-ID: <D298A3F1-43A5-4FD5-B198-906364BF4B79@fb.com>
-References: <YnkuFrm1YR46OFx/@alley>
- <9C7DF147-5112-42E7-9F7C-7159EFDFB766@fb.com> <YnoawYtoCSvrK7lb@alley>
- <3a9bfb4a52b715bd8739d8834409c9549ec7f22f.camel@fb.com>
- <YnqIcw+dYsWz/w7g@alley>
- <6bf85ff908377508a5f5bcc7c4e75d598b96f388.camel@fb.com>
- <20220510165244.ikfh64ertnvodxb4@treble>
- <1bd15361edfd4db9fc9271d35e7bbe5edad1b87a.camel@fb.com>
- <20220510184213.l3gjweeleyg7obca@treble>
- <47440502-930F-4CBD-B859-3AC9BBFF8FC6@fb.com>
- <20220510230402.e5ymkwt45sg7bd35@treble>
-In-Reply-To: <20220510230402.e5ymkwt45sg7bd35@treble>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3696.80.82.1.1)
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5bf80ef8-88cf-4a63-65bf-08da32e0c875
-x-ms-traffictypediagnostic: SN6PR1501MB2192:EE_
-x-microsoft-antispam-prvs: <SN6PR1501MB2192AEFEC69DF3A36AAEE730B3C99@SN6PR1501MB2192.namprd15.prod.outlook.com>
-x-fb-source: Internal
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: d4PL/0KAmDc9YQa+ZU/BnXOmfaPZ0G2ki7fi9Q1QI1f0Mxi3MKjHkcPf3gWuxm+J0imExYouhsw/MCsXG9iwXOGAq9b/86WqwoPAP1ytwTHejZi2fl3oRWfg6p8MyHfNbuCwKbIXJGdXh+2FATTmMuiPjATCDYeuc2yxX0GniN8QBCvNBfH0cqcKQPCB1n6G6XxjWNj01IAcba/VT4lGS03+RiNoFrYi5eURiqJl2f3u8YRxRcJ4BJKQ2U2fLGjviK+mHjC9SgrNob/mZxtHGaMJKRlqGqLq0NXVWQScJowx2z0C7TF9SEtJFBUZVuwl9e43f9Kyjr0ZTvGtBkuVGQfrMIjN2dJD88cBzu612dbhfUemnVNnNhCkjeWTIHx/eCNi9v0YSj2yooMW4NZOadga0QLTPgiYA2mDRZ6TvBPzwaIcoUZfHf8hboIqfIJTsrZTjTwwWINjfCAii/GLxYBYdFjMPUa1BhtYoBKT+lmzmwEnRSCVLOmLfMdh3BtLbKeViSYSJ0ql+zeQG5fxlTb2oPEFKw3/qJbruk6SePCZSKiuN1OXbG0n2/kU83/28lV7tfPjKs+BJsl1O627RrVkAUh/vkLLUlUFYkUsc/yr4zWGoY5ZPjxP1T1Pqx2SomaSTmvYFwaSIXNZZtlWxeZ1w5Kz+FRuRdG8P7s+Ih6evhMaQzbLvXU+vsuKf43TX4eJ4+3I6Bo+MlU0O4GNvHC0NFy/yVfml12h0l95Hx7ADLj1WSkZ+rLOvS4XzBYO
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5109.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(7416002)(2906002)(36756003)(122000001)(8936002)(38070700005)(38100700002)(5660300002)(186003)(83380400001)(4326008)(33656002)(508600001)(66476007)(66946007)(91956017)(76116006)(2616005)(66446008)(64756008)(66556008)(8676002)(54906003)(316002)(53546011)(6916009)(6506007)(6512007)(6486002)(86362001)(71200400001)(45980500001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?YnpDVUJlNXdIS25IMXVRRFpRZXJqazBtUjBxWkVSWE5LSEdqdEl1T2tzSUM4?=
- =?utf-8?B?S1hCYnVhVTQ3bmlvTDl5UU1jbEVwOEdGUXUwMC9YbzBid2R6MWNsUExjbk1r?=
- =?utf-8?B?OE96MlQ4WFZreTFtMGhwWkt1d0R0Ui82d2k2OUMwQ0pnTkVJd2p0QkJwWUZ1?=
- =?utf-8?B?OWIxQytOZ1c0SnM3bHZwRVlnT0pMMXZ6RUdoR20wWTN5QVRVZndCZ29ld3lh?=
- =?utf-8?B?TXVhMzIvR2hFNlNPTTFTRFBRNEMra0o3a3o2dDlDMTNxOWY2ZU4yNFZFT0M4?=
- =?utf-8?B?V0Z6UkZGbm5MeXpJTEd3YkFpMEFhSmEweHNzcFF6NzdmWVR5eGFEeVFnL2tC?=
- =?utf-8?B?eUVRNkJ2VDR2OE84S0JPTGVLck9ZK05WM3N0VEtFME9qMWpZTmRUUWNPNDlY?=
- =?utf-8?B?VnVpRXRTdTJFR0FWeUcvMklTbDZEdlA4THg5bEpkVXlSVXRjRUtBaEpMM09k?=
- =?utf-8?B?ejhJR1BEcmtBdkZKVDM4eGxmNTJsRnlwQ2FqTFNyNitoSXpncHVHaEIza29G?=
- =?utf-8?B?N2luN0FhU3hDTHZOVUFYZGdIWDh0Wmh6cHIrWHNVRVJZTE8rZWVyOTJ4Nkkw?=
- =?utf-8?B?U1djUllZcmh1bXlWU0kxTlFyNExDU29hL3lIMTIyZzdjK2tESTFMM21UR0ZX?=
- =?utf-8?B?RVB4clQwNnViSWpxUDdia1pHTzNoMEtkYTd4cUlheVd3eS96OWZ6Z0Fiei9T?=
- =?utf-8?B?bWt3NlNRbTBEZFY5TU9nRnJEcm5aZzdZZ0FvSXJScGJ3NWRCNDVKdW15L1dO?=
- =?utf-8?B?dnRkNUlCem5yVFYxdUFldHRST3pSMFMySzdTNVRNbVhtNzVPUSticlJPRmcr?=
- =?utf-8?B?eWQwU3hsZ09oRFFiSldJVXZUVi9tWitRdG5hNWNGcEZkWUxGc1o2d3JuaGlp?=
- =?utf-8?B?YUl1cHNwQzNzWGJCeWRSM2ZPZGl6alF6a2c5SXdxVVErTjZ5ZnRyVTBrNEZz?=
- =?utf-8?B?R2ZObm4vZldBdEY0TW5BczJ6K3VsMmdMZXg0OVpMYi9lL3M5RzR1OGx5NHBy?=
- =?utf-8?B?anlvS1owZ3EyK21yaG01N3ArNTY5RFVoZGZiWjVZbVBVV05DSU9CTEllazZQ?=
- =?utf-8?B?NnpDZGFHUDlyTlRHQ3ZqeWxNRDJiR2E1b1NqTnJDZnhYN0dpa01qWXdLU1NM?=
- =?utf-8?B?anRwUU5RMTBRb0huajNsS2dJUFR6VjRlTXhjUGlHZUdCQTJSZW9uVm1oRFkr?=
- =?utf-8?B?TkprbExiSmY4UXM0bTFXUzRYRmplc1gyZUpwTldrU3YwcGZ2a01oS1VhaDdN?=
- =?utf-8?B?TUZ6TUJaMEl0a3pqTldVRVNzSk04bVpVd3JuQkZiYkIzakg5YmU3dmVZUTlZ?=
- =?utf-8?B?aGxEZnNMcFpUMHJIMEJwck5yVnIwYkQzWUxFSjBWZzkwY0Q2NHRXdzB2SGV6?=
- =?utf-8?B?Q2UzR1NNZkowRWVucjg5blpCVXRDVWxObUNsYndyRWNaNnhES05oN21YTWJp?=
- =?utf-8?B?cmtKK21CZUR2MjQ5UThCc0lBbXB6RlNSQnhxZlhVWFdVaG9EVVVyVllpYjJk?=
- =?utf-8?B?WXVQMjNpV1JVTWFNeTJzVUlRcC9SNGZDOTJoWDlzdkNock9xOGJLVlp5endo?=
- =?utf-8?B?TkNiSGVyQTVSVkdtQVpNOWN0REZveFA4Tk5jNmRXajV6U2NJVG8wb1NBSFR0?=
- =?utf-8?B?cU9ENlpldGNaY3RsRVJOQmswZUF1a2VpYlJxVUV0T3B2Z3QzQmhWMERsb2NE?=
- =?utf-8?B?MUFtcGdEdE5HT1RldEZ5cVFjTnFGMmszWmpibkcrdGlOZ25OTHE4b3UwTVRE?=
- =?utf-8?B?TllGWXNoRzFPRjVvWGZlZjVZOXFSN3VsNFNpY1dTR0s4MXNJczZ5U3hKa1di?=
- =?utf-8?B?c01CMEc2R09iZ1JsNzlxNlZZcndUMGRnd2NuUFVsYmt6UU1JQmttQUFVcnJG?=
- =?utf-8?B?TE0rU1l5V2t1cytQd3JQbUVCLzV2VEs0QWQ5TnkzQ2ZMTm13cHZpY2k0Szd6?=
- =?utf-8?B?ODVaZ3FmTXV4Q1dQOGduczljaUhOSW52a042VUdXaG85eisxcXkzdW1MQmha?=
- =?utf-8?B?aTdxUmoyemZLUWtJYUxoWWlwb0JuU1FtM2FsQkhGcnFBZ1BRZXQ5VXVmbXpS?=
- =?utf-8?B?WEwxbmNVckQ3T0hhRmpNRjhIbGpJdFRLWEhydXBualh2NWYwZ0I1RFE1WVMx?=
- =?utf-8?B?QlJObTBNQVQ3Y0dzNG8rbGhJaEwranpRcUQxK0FBU1BpNU8ySmd6czNZQm5q?=
- =?utf-8?B?RmRzMXZ3Z3RlNDNYN0NxbEozUjgxS285dGdCa1dYSE1JbWZ4VmY0WXA3bW1r?=
- =?utf-8?B?YUdSQzJBcktQRTVETkgwSFhNQ1VsTU9za290aXZXSjFFY1FRYVl0RzBkKy8w?=
- =?utf-8?B?cmJneElzUi9pc3loT2kyM2x4WlZNa1lEeGhCTVpMRGxEUi8vaVIzZXBQUkJH?=
- =?utf-8?Q?OSq0c7hJpPLT7SOlL80MYX+xC/k/L5vxzgr4k?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <867E0CAD670EB54781925508CBFAA7D9@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5109.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5bf80ef8-88cf-4a63-65bf-08da32e0c875
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 May 2022 23:57:04.3391
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 6wu/QRjyB2LElVC4VdQQqubwBHYOK+iLRK/H9ySrzTPKqPuCG1JWiazEOG4jubSLyAdGMr+UG0SpTJHsNETl7A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR1501MB2192
-X-Proofpoint-GUID: 7lLH4MPUA7P7RuafTQKz9nUXg3QYwYcH
-X-Proofpoint-ORIG-GUID: 7lLH4MPUA7P7RuafTQKz9nUXg3QYwYcH
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-10_07,2022-05-10_01,2022-02-23_01
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23A9B208215
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 16:57:07 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id d134-20020a25e68c000000b006483b1adcc3so403737ybh.11
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 16:57:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc:content-transfer-encoding;
+        bh=v8gt6xjWudwEV2qln2N7SwuUJc9JxxsnlnvbLCYxUc0=;
+        b=loPY8BnZXxZrmNCWwTUfS3qnOnH67SZdt82uLV668C+yIIJpUM1rapWhZgScGIl9UE
+         JFdoQvmgq7+PYtQoNo7Xt49JaVYYmqeh2y94j0P91OEseICBN/VZcZdJ3lAn7XpCBFZ3
+         ZAVIHeyQUE+wezChaUS94nW2/UcpI4NzobrLV1STkXosAruMEI00Fa/sE0BRXri67Gz2
+         q05IqbfZP5GchqKe/UA5reCqq9DB1Z8ctk9/fnRwNjkinW13EkBWelw/KRjhayVVXg4q
+         Q+RrUAtEcwIKZeShieINdDTV4tIt2WaYR50DZuhNAsEvXdGj1OBBCwLDh1FP0SxBPBN8
+         7Qmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc:content-transfer-encoding;
+        bh=v8gt6xjWudwEV2qln2N7SwuUJc9JxxsnlnvbLCYxUc0=;
+        b=YP6eG1TsyPtndiu87xQYqx0Q6YtKjKTSAWQ3YMKxBQ2OYfNIcED9COhFbKToWxPAD/
+         Z/7w8y4GDsebvW66P2fcMlQ9s60jknP/uMe3j0WKx0cbPR0Fyq3K+BjkyPFSSDx4RfNX
+         c0tkaEMpBjsMxC4p3E1abQIGtcySnCZCdh0MyA9CBJRI4pOvwg6dRIaYdU6l9k0CNrLs
+         DuZu3Jl2IANEB1msRMuaBgdJW3maS0HswBGWqpaylMlga9wVSCWT6P6XA6UwX+Ucaw5G
+         maXpoZiQBrFYZX/Ltn/jliE7uZP5gsCMEdkEuiD8yt6SONC4Ek4bxAXSyeF5CrLu0pg3
+         O+sw==
+X-Gm-Message-State: AOAM530++nPFaNR0LcW/K+SNm8fZMMiJq6IA4oE5HHQlnTN89iXDx9V1
+        xpdPInXy8az4kC+a1SqOobgCaipVjgSJ+l0=
+X-Google-Smtp-Source: ABdhPJxuMd23Slzk/nX5zXAwKMfpsaSnwA9y71fBu5xFnMi06zJ5/oaDRiKKaGgRjX9ctDMnyPrityYdWY9YepQ=
+X-Received: from tj.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:53a])
+ (user=tjmercier job=sendgmr) by 2002:a5b:8cb:0:b0:645:d65f:dcdd with SMTP id
+ w11-20020a5b08cb000000b00645d65fdcddmr19840185ybq.233.1652227027524; Tue, 10
+ May 2022 16:57:07 -0700 (PDT)
+Date:   Tue, 10 May 2022 23:56:48 +0000
+In-Reply-To: <20220510235653.933868-1-tjmercier@google.com>
+Message-Id: <20220510235653.933868-5-tjmercier@google.com>
+Mime-Version: 1.0
+References: <20220510235653.933868-1-tjmercier@google.com>
+X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
+Subject: [PATCH v7 4/6] dmabuf: Add gpu cgroup charge transfer function
+From:   "T.J. Mercier" <tjmercier@google.com>
+To:     tjmercier@google.com, Sumit Semwal <sumit.semwal@linaro.org>,
+        "=?UTF-8?q?Christian=20K=C3=B6nig?=" <christian.koenig@amd.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>
+Cc:     daniel@ffwll.ch, hridya@google.com, jstultz@google.com,
+        tkjos@android.com, cmllamas@google.com, surenb@google.com,
+        kaleshsingh@google.com, Kenny.Ho@amd.com, mkoutny@suse.com,
+        skhan@linuxfoundation.org, kernel-team@android.com,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
+        cgroups@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DQoNCj4gT24gTWF5IDEwLCAyMDIyLCBhdCA0OjA0IFBNLCBKb3NoIFBvaW1ib2V1ZiA8anBvaW1i
-b2VAa2VybmVsLm9yZz4gd3JvdGU6DQo+IA0KPiBPbiBUdWUsIE1heSAxMCwgMjAyMiBhdCAwNzo0
-NTo0OVBNICswMDAwLCBTb25nIExpdSB3cm90ZToNCj4+Pj4gQSBLTFAgdHJhbnNpdGlvbiBwcmVl
-bXB0IG5vdGlmaWVyIHdvdWxkIGhlbHAgdGhvc2UNCj4+Pj4ga2VybmVsIHRocmVhZHMgdHJhbnNp
-dGlvbiB0byB0aGUgbmV3IEtMUCB2ZXJzaW9uIGF0DQo+Pj4+IGFueSB0aW1lIHRoZXkgcmVzY2hl
-ZHVsZS4NCj4+PiANCj4+PiAuLi4gdW5sZXNzIGNvbmRfcmVzY2hlZCgpIGlzIGEgbm8tb3AgZHVl
-IHRvIENPTkZJR19QUkVFTVBUPw0KPj4gDQo+PiBCYXNlZCBvbiBteSB1bmRlcnN0YW5kaW5nIChh
-bmQgYSBmZXcgb3RoZXIgZm9sa3Mgd2UgY2hhdHRlZCB3aXRoKSwNCj4+IGEga2VybmVsIHRocmVh
-ZCBjYW4gbGVnYWxseSBydW4gZm9yIGV4dGVuZGVkIHRpbWUsIGFzIGxvbmcgYXMgaXQgDQo+PiBj
-YWxscyBjb25kX3Jlc2NoZWQoKSBhdCBhIHJlYXNvbmFibGUgZnJlcXVlbmN5LiBUaGVyZWZvcmUs
-IEkgDQo+PiB0aGluayB3ZSBzaG91bGQgYmUgYWJsZSB0byBwYXRjaCBzdWNoIHRocmVhZCBlYXNp
-bHksIHVubGVzcyBpdCANCj4+IGNhbGxzIGNvbmRfcmVzY2hlZCgpIHdpdGggYmVpbmctcGF0Y2hl
-ZCBmdW5jdGlvbiBpbiB0aGUgc3RhY2ssIA0KPj4gb2YgY291cnNlLg0KPiANCj4gQnV0IGFnYWlu
-LCB3aXRoIENPTkZJR19QUkVFTVBULCB0aGF0IGRvZXNuJ3Qgd29yay4NCj4gDQo+PiBPVE9ILCBQ
-ZXRyJ3MgbWluZHNldCBvZiBhbGxvd2luZyBtYW55IG1pbnV0ZXMgZm9yIHRoZSBwYXRjaCANCj4+
-IHRyYW5zaXRpb24gaXMgbmV3IHRvIG1lLiBJIG5lZWQgdG8gdGhpbmsgbW9yZSBhYm91dCBpdC4g
-DQo+PiBKb3NoLCB3aGF04oCZcyB5b3Ugb3BpbmlvbiBvbiB0aGlzPyBJSVVDLCBrcGF0Y2ggaXMg
-ZGVzaWduZWQgdG8gDQo+PiBvbmx5IHdhaXQgdXAgdG8gNjAgc2Vjb25kcyAobm8gb3B0aW9uIHRv
-IG92ZXJ3cml0ZSB0aGUgdGltZSkuIA0KPiANCj4gSSB3b3VsZG4ndCBiZSBuZWNlc3NhcmlseSBv
-cHBvc2VkIHRvIGNoYW5naW5nIHRoZSBrcGF0Y2ggdGltZW91dCB0bw0KPiBzb21ldGhpbmcgYmln
-Z2VyLCBvciBlbGltaW5hdGluZyBpdCBhbHRvZ2V0aGVyIGluIGZhdm9yIG9mIGEgV0FSTigpDQo+
-IGFmdGVyIHggbWludXRlcy4NCj4gDQo+Pj4+IEhvdyBtdWNoIGl0IHdpbGwgaGVscCBpcyBoYXJk
-IHRvIHByZWRpY3QsIGJ1dCBJIHNob3VsZA0KPj4+PiBiZSBhYmxlIHRvIGdldCByZXN1bHRzIGZy
-b20gYSBmYWlybHkgbGFyZ2Ugc2FtcGxlIHNpemUNCj4+Pj4gb2Ygc3lzdGVtcyB3aXRoaW4gYSBm
-ZXcgd2Vla3MgOikNCj4+PiANCj4+PiBBcyBQZXRlciBzYWlkLCBrZWVwIGluIG1pbmQgdGhhdCB3
-ZSB3aWxsIG5lZWQgdG8gZml4IG90aGVyIGNhc2VzIGJleW9uZA0KPj4+IEZhY2Vib29rLCBpLmUu
-LCBDT05GSUdfUFJFRU1QVCBjb21iaW5lZCB3aXRoIG5vbi14ODYgYXJjaGVzIHdoaWNoIGRvbid0
-DQo+Pj4gaGF2ZSBPUkMgc28gdGhleSBjYW4ndCByZWxpYWJseSB1bndpbmQgZnJvbSBhbiBJUlEu
-DQo+PiANCj4+IEkgdGhpbmsgbGl2ZXBhdGNoIHRyYW5zaXRpb24gbWF5IGZhaWwgaW4gZGlmZmVy
-ZW50IGNhc2VzLCBhbmQgd2UNCj4+IGRvbid0IG5lZWQgdG8gYWRkcmVzcyBhbGwgb2YgdGhlbSBp
-biBvbmUgc2hvb3QuIEZpeGluZyBzb21lIGNhc2VzDQo+PiBpcyBhbiBpbXByb3ZlbWVudCBhcyBs
-b25nIGFzIHdlIGRvbid0IHNsb3cgZG93biBvdGhlciBjYXNlcy4gSSANCj4+IHVuZGVyc3RhbmQg
-dGhhdCBhZGRpbmcgdGlueSBvdmVyaGVhZCB0byBfX2NvbmRfcmVzY2hlZCgpIG1heSBlbmQgDQo+
-PiB1cCBhcyBhIHZpc2libGUgcmVncmVzc2lvbi4gQnV0IG1heWJlIGFkZGluZyBpdCB0byANCj4+
-IHByZWVtcHRfc2NoZWR1bGVfY29tbW9uKCkgaXMgbGlnaHQgZW5vdWdoPw0KPj4gDQo+PiBEaWQg
-SSBtaXNzL21pc3VuZGVyc3RhbmQgc29tZXRoaW5nPw0KPiANCj4gSWYgaXQncyBhIHJlYWwgYnVn
-LCB3ZSBzaG91bGQgZml4IGl0IGV2ZXJ5d2hlcmUsIG5vdCBqdXN0IGZvciBGYWNlYm9vay4NCj4g
-T3RoZXJ3aXNlIENPTkZJR19QUkVFTVBUIGFuZC9vciBub24teDg2IGFyY2hlcyBiZWNvbWUgc2Vj
-b25kLWNsYXNzDQo+IGNpdGl6ZW5zLg0KDQpJIHRoaW5rICJpcyBpdCBhIHJlYWwgYnVnPyIgaXMg
-dGhlIHRvcCBxdWVzdGlvbiBmb3IgbWUuIFNvIG1heWJlIHdlIA0Kc2hvdWxkIHRha2UgYSBzdGVw
-IGJhY2suDQoNClRoZSBiZWhhdmlvciB3ZSBzZWUgaXM6IEEgYnVzeSBrZXJuZWwgdGhyZWFkIGJs
-b2NrcyBrbHAgdHJhbnNpdGlvbiANCmZvciBtb3JlIHRoYW4gYSBtaW51dGUuIEJ1dCB0aGUgdHJh
-bnNpdGlvbiBldmVudHVhbGx5IHN1Y2NlZWRlZCBhZnRlciANCjwgMTAgcmV0cmllcyBvbiBtb3N0
-IHN5c3RlbXMuIFRoZSBrZXJuZWwgdGhyZWFkIGlzIHdlbGwtYmVoYXZlZCwgYXMgDQppdCBjYWxs
-cyBjb25kX3Jlc2NoZWQoKSBhdCBhIHJlYXNvbmFibGUgZnJlcXVlbmN5LCBzbyB0aGlzIGlzIG5v
-dCBhIA0KZGVhZGxvY2suIA0KDQpJZiBJIHVuZGVyc3RhbmQgUGV0ciBjb3JyZWN0bHksIHRoaXMg
-YmVoYXZpb3IgaXMgZXhwZWN0ZWQsIGFuZCB0aHVzIA0KaXMgbm90IGEgYnVnIG9yIGlzc3VlIGZv
-ciB0aGUgbGl2ZXBhdGNoIHN1YnN5c3RlbS4gVGhpcyBpcyBkaWZmZXJlbnQNCnRvIG91ciBvcmln
-aW5hbCBleHBlY3RhdGlvbiwgYnV0IGlmIHRoaXMgaXMgd2hhdCB3ZSBhZ3JlZSBvbiwgd2UgDQp3
-aWxsIGxvb2sgaW50byB3YXlzIHRvIGluY29ycG9yYXRlIGxvbmcgd2FpdCB0aW1lIGZvciBwYXRj
-aCANCnRyYW5zaXRpb24gaW4gb3VyIGF1dG9tYXRpb25zLiANCg0KT1RPSCwgaWYgd2UgdGhpbmsg
-dGhpcyBpcyBhIHN1Ym9wdGltYWwgYmVoYXZpb3IgKG5vdCBuZWNlc3NhcmlseSBhIA0KYnVnLCBJ
-SVVDKSwgd2Ugc2hvdWxkIGNvbnNpZGVyIGltcHJvdmUgaXQuIEkgcGVyc29uYWxseSBkb27igJl0
-IHRoaW5rIA0Kc2hpcHBpbmcgYW4gaW1wcm92ZW1lbnQgdG8gb25lIGNvbmZpZ3VyYXRpb24gbWFr
-ZXMgb3RoZXIgY29uZmlndXJhdGlvbnMNCnNlY29uZC1jbGFzcyBjaXRpemVucy4gQW5kLCBpdCBp
-cyBwb3NzaWJsZSBQUkVFTVBUIGtlcm5lbCBkb2VzIE5PVA0KZXZlbiBoYXZlIHN1Y2ggc3Vib3B0
-aW1hbCBiZWhhdmlvciwgcmlnaHQ/IChJIHJlYWxseSBkb24ndCBrbm93LikNCg0KU28sIGlmIHdl
-IGNvbWUgYmFjayB0byB0aGUgc2FtZSBxdWVzdGlvbjogaXMgdGhpcyBhIGJ1ZyAob3IgYSBzdWJv
-cHRpbWFsDQpiZWhhdmlvciB0aGF0IHdvcnRoIGZpeGluZyk/IElmIHNvLCB3ZSBhcmUgb3BlbiB0
-byBhbnkgc29sdXRpb24gdGhhdCANCndvdWxkIGFsc28gaGVscCBQUkVFTVBUIGFuZC9vciBub24t
-eDg2IGFyY2hlcy4gDQoNCkxhc3RseSwgbWF5YmUgYSByZWFsbHkgbmFpdmUgcXVlc3Rpb246IGRv
-ZXMgdGhlIGZvbGxvd2luZyBhbHNvIGhlbHBzDQpQUkVFTVBUPXkgY29uZmlndXJhdGlvbnM/DQoN
-ClRoYW5rcywNClNvbmcNCg0KZGlmZiAtLWdpdCBjL2tlcm5lbC9zY2hlZC9jb3JlLmMgdy9rZXJu
-ZWwvc2NoZWQvY29yZS5jDQppbmRleCBhNzMwMmI3YjY1ZjIuLmNjOWIxYzljMDJiYSAxMDA2NDQN
-Ci0tLSBjL2tlcm5lbC9zY2hlZC9jb3JlLmMNCisrKyB3L2tlcm5lbC9zY2hlZC9jb3JlLmMNCkBA
-IC01MjI2LDYgKzUyMjYsOSBAQCB2b2lkIF9fc2NoZWQgc2NoZWR1bGVfcHJlZW1wdF9kaXNhYmxl
-ZCh2b2lkKQ0KDQogc3RhdGljIHZvaWQgX19zY2hlZCBub3RyYWNlIHByZWVtcHRfc2NoZWR1bGVf
-Y29tbW9uKHZvaWQpDQogew0KKyAgICAgICBpZiAodW5saWtlbHkoa2xwX3BhdGNoX3BlbmRpbmco
-Y3VycmVudCkpKQ0KKyAgICAgICAgICAgICAgIGtscF90cnlfc3dpdGNoX3Rhc2soY3VycmVudCk7
-DQorDQogICAgICAgIGRvIHsNCiAgICAgICAgICAgICAgICAvKg0KICAgICAgICAgICAgICAgICAq
-IEJlY2F1c2UgdGhlIGZ1bmN0aW9uIHRyYWNlciBjYW4gdHJhY2UgcHJlZW1wdF9jb3VudF9zdWIo
-KQ==
+The dma_buf_transfer_charge function provides a way for processes to
+transfer charge of a buffer to a different process. This is essential
+for the cases where a central allocator process does allocations for
+various subsystems, hands over the fd to the client who requested the
+memory and drops all references to the allocated memory.
+
+Originally-by: Hridya Valsaraju <hridya@google.com>
+Signed-off-by: T.J. Mercier <tjmercier@google.com>
+
+---
+v5 changes
+Fix commit message which still contained the old name for
+dma_buf_transfer_charge per Michal Koutn=C3=BD.
+
+Modify the dma_buf_transfer_charge API to accept a task_struct instead
+of a gpucg. This avoids requiring the caller to manage the refcount
+of the gpucg upon failure and confusing ownership transfer logic.
+
+v4 changes
+Adjust ordering of charge/uncharge during transfer to avoid potentially
+hitting cgroup limit per Michal Koutn=C3=BD.
+
+v3 changes
+Use more common dual author commit message format per John Stultz.
+
+v2 changes
+Move dma-buf cgroup charge transfer from a dma_buf_op defined by every
+heap to a single dma-buf function for all heaps per Daniel Vetter and
+Christian K=C3=B6nig.
+---
+ drivers/dma-buf/dma-buf.c  | 57 ++++++++++++++++++++++++++++++++++++++
+ include/linux/cgroup_gpu.h | 24 ++++++++++++++++
+ include/linux/dma-buf.h    |  6 ++++
+ kernel/cgroup/gpu.c        | 51 ++++++++++++++++++++++++++++++++++
+ 4 files changed, 138 insertions(+)
+
+diff --git a/drivers/dma-buf/dma-buf.c b/drivers/dma-buf/dma-buf.c
+index bc89c44bd9b9..f3fb844925e2 100644
+--- a/drivers/dma-buf/dma-buf.c
++++ b/drivers/dma-buf/dma-buf.c
+@@ -1341,6 +1341,63 @@ void dma_buf_vunmap(struct dma_buf *dmabuf, struct i=
+osys_map *map)
+ }
+ EXPORT_SYMBOL_NS_GPL(dma_buf_vunmap, DMA_BUF);
+=20
++/**
++ * dma_buf_transfer_charge - Change the GPU cgroup to which the provided d=
+ma_buf is charged.
++ * @dmabuf:	[in]	buffer whose charge will be migrated to a different GPU c=
+group
++ * @target:	[in]	the task_struct of the destination process for the GPU cg=
+roup charge
++ *
++ * Only tasks that belong to the same cgroup the buffer is currently charg=
+ed to
++ * may call this function, otherwise it will return -EPERM.
++ *
++ * Returns 0 on success, or a negative errno code otherwise.
++ */
++int dma_buf_transfer_charge(struct dma_buf *dmabuf, struct task_struct *ta=
+rget)
++{
++	struct gpucg *current_gpucg, *target_gpucg, *to_release;
++	int ret;
++
++	if (!dmabuf->gpucg || !dmabuf->gpucg_bucket) {
++		/* This dmabuf is not tracked under GPU cgroup accounting */
++		return 0;
++	}
++
++	current_gpucg =3D gpucg_get(current);
++	target_gpucg =3D gpucg_get(target);
++	to_release =3D target_gpucg;
++
++	/* If the source and destination cgroups are the same, don't do anything.=
+ */
++	if (current_gpucg =3D=3D target_gpucg) {
++		ret =3D 0;
++		goto skip_transfer;
++	}
++
++	/*
++	 * Verify that the cgroup of the process requesting the transfer
++	 * is the same as the one the buffer is currently charged to.
++	 */
++	mutex_lock(&dmabuf->lock);
++	if (current_gpucg !=3D dmabuf->gpucg) {
++		ret =3D -EPERM;
++		goto err;
++	}
++
++	ret =3D gpucg_transfer_charge(
++		dmabuf->gpucg, target_gpucg, dmabuf->gpucg_bucket, dmabuf->size);
++	if (ret)
++		goto err;
++
++	to_release =3D dmabuf->gpucg;
++	dmabuf->gpucg =3D target_gpucg;
++
++err:
++	mutex_unlock(&dmabuf->lock);
++skip_transfer:
++	gpucg_put(current_gpucg);
++	gpucg_put(to_release);
++	return ret;
++}
++EXPORT_SYMBOL_NS_GPL(dma_buf_transfer_charge, DMA_BUF);
++
+ #ifdef CONFIG_DEBUG_FS
+ static int dma_buf_debug_show(struct seq_file *s, void *unused)
+ {
+diff --git a/include/linux/cgroup_gpu.h b/include/linux/cgroup_gpu.h
+index cb228a16aa1f..7eb68f1507fb 100644
+--- a/include/linux/cgroup_gpu.h
++++ b/include/linux/cgroup_gpu.h
+@@ -75,6 +75,22 @@ int gpucg_charge(struct gpucg *gpucg, struct gpucg_bucke=
+t *bucket, u64 size);
+  */
+ void gpucg_uncharge(struct gpucg *gpucg, struct gpucg_bucket *bucket, u64 =
+size);
+=20
++/**
++ * gpucg_transfer_charge - Transfer a GPU charge from one cgroup to anothe=
+r.
++ *
++ * @source:	[in]	The GPU cgroup the charge will be transferred from.
++ * @dest:	[in]	The GPU cgroup the charge will be transferred to.
++ * @bucket:	[in]	The GPU cgroup bucket corresponding to the charge.
++ * @size:	[in]	The size of the memory in bytes.
++ *                      This size will be rounded up to the nearest page s=
+ize.
++ *
++ * Returns 0 on success, or a negative errno code otherwise.
++ */
++int gpucg_transfer_charge(struct gpucg *source,
++			  struct gpucg *dest,
++			  struct gpucg_bucket *bucket,
++			  u64 size);
++
+ /**
+  * gpucg_register_bucket - Registers a bucket for memory accounting using =
+the GPU cgroup controller.
+  *
+@@ -117,6 +133,14 @@ static inline void gpucg_uncharge(struct gpucg *gpucg,
+ 				  struct gpucg_bucket *bucket,
+ 				  u64 size) {}
+=20
++static inline int gpucg_transfer_charge(struct gpucg *source,
++					struct gpucg *dest,
++					struct gpucg_bucket *bucket,
++					u64 size)
++{
++	return 0;
++}
++
+ static inline struct gpucg_bucket *gpucg_register_bucket(const char *name)=
+ {}
+ #endif /* CONFIG_CGROUP_GPU */
+ #endif /* _CGROUP_GPU_H */
+diff --git a/include/linux/dma-buf.h b/include/linux/dma-buf.h
+index 8e7c55c830b3..438ad8577b76 100644
+--- a/include/linux/dma-buf.h
++++ b/include/linux/dma-buf.h
+@@ -18,6 +18,7 @@
+ #include <linux/file.h>
+ #include <linux/err.h>
+ #include <linux/scatterlist.h>
++#include <linux/sched.h>
+ #include <linux/list.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/fs.h>
+@@ -650,9 +651,14 @@ void dma_buf_vunmap(struct dma_buf *dmabuf, struct ios=
+ys_map *map);
+ void dma_buf_exp_info_set_gpucg(struct dma_buf_export_info *exp_info,
+ 				struct gpucg *gpucg,
+ 				struct gpucg_bucket *gpucg_bucket);
++
++int dma_buf_transfer_charge(struct dma_buf *dmabuf, struct task_struct *ta=
+rget);
+ #else/* CONFIG_CGROUP_GPU */
+ static inline void dma_buf_exp_info_set_gpucg(struct dma_buf_export_info *=
+exp_info,
+ 					      struct gpucg *gpucg,
+ 					      struct gpucg_bucket *gpucg_bucket) {}
++
++static inline int dma_buf_transfer_charge(struct dma_buf *dmabuf, struct t=
+ask_struct *target)
++{ return 0; }
+ #endif /* CONFIG_CGROUP_GPU */
+ #endif /* __DMA_BUF_H__ */
+diff --git a/kernel/cgroup/gpu.c b/kernel/cgroup/gpu.c
+index ad16ea15d427..038ea873a9d3 100644
+--- a/kernel/cgroup/gpu.c
++++ b/kernel/cgroup/gpu.c
+@@ -274,6 +274,57 @@ void gpucg_uncharge(struct gpucg *gpucg, struct gpucg_=
+bucket *bucket, u64 size)
+ 	css_put(&gpucg->css);
+ }
+=20
++int gpucg_transfer_charge(struct gpucg *source,
++			  struct gpucg *dest,
++			  struct gpucg_bucket *bucket,
++			  u64 size)
++{
++	struct page_counter *counter;
++	u64 nr_pages;
++	struct gpucg_resource_pool *rp_source, *rp_dest;
++	int ret =3D 0;
++
++	nr_pages =3D PAGE_ALIGN(size) >> PAGE_SHIFT;
++
++	mutex_lock(&gpucg_mutex);
++	rp_source =3D cg_rpool_find_locked(source, bucket);
++	if (unlikely(!rp_source)) {
++		ret =3D -ENOENT;
++		goto exit_early;
++	}
++
++	rp_dest =3D cg_rpool_get_locked(dest, bucket);
++	if (IS_ERR(rp_dest)) {
++		ret =3D PTR_ERR(rp_dest);
++		goto exit_early;
++	}
++
++	/*
++	 * First uncharge from the pool it's currently charged to. This ordering =
+avoids double
++	 * charging while the transfer is in progress, which could cause us to hi=
+t a limit.
++	 * If the try_charge fails for this transfer, we need to be able to rever=
+se this uncharge,
++	 * so we continue to hold the gpucg_mutex here.
++	 */
++	page_counter_uncharge(&rp_source->total, nr_pages);
++	css_put(&source->css);
++
++	/* Now attempt the new charge */
++	if (page_counter_try_charge(&rp_dest->total, nr_pages, &counter)) {
++		css_get(&dest->css);
++	} else {
++		/*
++		 * The new charge failed, so reverse the uncharge from above. This shoul=
+d always
++		 * succeed since charges on source are blocked by gpucg_mutex.
++		 */
++		WARN_ON(!page_counter_try_charge(&rp_source->total, nr_pages, &counter))=
+;
++		css_get(&source->css);
++		ret =3D -ENOMEM;
++	}
++exit_early:
++	mutex_unlock(&gpucg_mutex);
++	return ret;
++}
++
+ struct gpucg_bucket *gpucg_register_bucket(const char *name)
+ {
+ 	struct gpucg_bucket *bucket, *b;
+--=20
+2.36.0.512.ge40c2bad7a-goog
+
