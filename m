@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBDC6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:13:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 099F3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:13:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245579AbiEJORW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:17:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47216 "EHLO
+        id S245601AbiEJORa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:17:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244902AbiEJNrF (ORCPT
+        with ESMTP id S244896AbiEJNrF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:47:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89E4F1D8640;
-        Tue, 10 May 2022 06:32:32 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A4BF1C9AC7;
+        Tue, 10 May 2022 06:32:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AB23617F5;
-        Tue, 10 May 2022 13:32:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24C60C385C2;
-        Tue, 10 May 2022 13:32:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 19868615C8;
+        Tue, 10 May 2022 13:32:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 111B0C385C2;
+        Tue, 10 May 2022 13:32:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189551;
-        bh=AXVlMqWVh31M/5HakdprczmpNhoKSmd7rznleQMc9Hc=;
+        s=korg; t=1652189548;
+        bh=jFNsAr8q+Gwibdcr8AbpN4HVIGa3UxHaF27fE5URDyM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gCUPV+UNvT36wM0FfcxHtw5qrIXR4p+VNSOogc2JtvczbUgjcU8RIF9wlaxw9Cgp7
-         MpyxJUlZHSR5CtAxCIAr0A3QgoUhyGwrJh1w2vmkjKgD7JjhA5C6RCj6IqG6otgnlO
-         a5ZhXXZ0V6k/wEo8GTmsZ25MERRX3tPhGe0Dnugk=
+        b=Uw09+/XpGcwIe34y9MoqNDEYykZ9NBQ5UqTyfrVdntZIiZAQxzLaM4AKlBrFB1MCV
+         M7ctzXxpiHAl630Obuy8/yQ9O3tYcmZydNL7gJa7fIoI6RjG5vMSR77h1BxWhN39K5
+         Na8DBKG9K7cJZ3dfOYloRk2zwh8lpFA0Vz284U9w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Joerg Roedel <jroedel@suse.de>
-Subject: [PATCH 5.15 046/135] iommu/vt-d: Drop stop marker messages
-Date:   Tue, 10 May 2022 15:07:08 +0200
-Message-Id: <20220510130741.719786279@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Rander Wang <rander.wang@intel.com>,
+        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.15 045/135] ASoC: soc-ops: fix error handling
+Date:   Tue, 10 May 2022 15:07:07 +0200
+Message-Id: <20220510130741.690464759@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -50,45 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lu Baolu <baolu.lu@linux.intel.com>
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-commit da8669ff41fa31573375c9a4180f5c080677204b upstream.
+commit eb5773201b1c5d603424bd21f161c8c2d1075b42 upstream.
 
-The page fault handling framework in the IOMMU core explicitly states
-that it doesn't handle PCI PASID Stop Marker and the IOMMU drivers must
-discard them before reporting faults. This handles Stop Marker messages
-in prq_event_thread() before reporting events to the core.
+cppcheck throws the following warning:
 
-The VT-d driver explicitly drains the pending page requests when a CPU
-page table (represented by a mm struct) is unbound from a PASID according
-to the procedures defined in the VT-d spec. The Stop Marker messages do
-not need a response. Hence, it is safe to drop the Stop Marker messages
-silently if any of them is found in the page request queue.
+sound/soc/soc-ops.c:461:8: style: Variable 'ret' is assigned a value
+that is never used. [unreadVariable]
+   ret = err;
+       ^
 
-Fixes: d5b9e4bfe0d88 ("iommu/vt-d: Report prq to io-pgfault framework")
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Link: https://lore.kernel.org/r/20220421113558.3504874-1-baolu.lu@linux.intel.com
-Link: https://lore.kernel.org/r/20220423082330.3897867-2-baolu.lu@linux.intel.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+This seems to be a missing change in the return value.
+
+Fixes: 7f3d90a351968 ("ASoC: ops: Fix stereo change notifications in snd_soc_put_volsw_sx()")
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Reviewed-by: Rander Wang <rander.wang@intel.com>
+Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://lore.kernel.org/r/20220421162328.302017-1-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iommu/intel/svm.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ sound/soc/soc-ops.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -978,6 +978,10 @@ bad_req:
- 			goto bad_req;
+--- a/sound/soc/soc-ops.c
++++ b/sound/soc/soc-ops.c
+@@ -461,7 +461,7 @@ int snd_soc_put_volsw_sx(struct snd_kcon
+ 			ret = err;
  		}
+ 	}
+-	return err;
++	return ret;
+ }
+ EXPORT_SYMBOL_GPL(snd_soc_put_volsw_sx);
  
-+		/* Drop Stop Marker message. No need for a response. */
-+		if (unlikely(req->lpig && !req->rd_req && !req->wr_req))
-+			goto prq_advance;
-+
- 		if (!svm || svm->pasid != req->pasid) {
- 			/*
- 			 * It can't go away, because the driver is not permitted
 
 
