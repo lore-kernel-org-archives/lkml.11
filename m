@@ -2,199 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52507C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:47:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BB1BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:49:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241231AbiEJLvU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 07:51:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53934 "EHLO
+        id S241229AbiEJLxS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 07:53:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241237AbiEJLvC (ORCPT
+        with ESMTP id S233105AbiEJLxP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 07:51:02 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BAB0229FCE
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 04:47:05 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id kq17so32390697ejb.4
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 04:47:04 -0700 (PDT)
+        Tue, 10 May 2022 07:53:15 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31A2D25D110;
+        Tue, 10 May 2022 04:49:18 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id m12so2769359plb.4;
+        Tue, 10 May 2022 04:49:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=mIOxc2Hr0TwMKC4GyCG7ad4BrNm8On4BnelZfSZoMY8=;
-        b=Cq0YVifZjAg/L4a+qlOkNkDWcHo+balp673bgz2Xzq8NYuyUWd4UIlNecRZHOmOZtL
-         WITd7u5+Q3fwt/lMny//WQLUUvidBhKfkO/Jl2oNOUFBqFEwcFcey9lf7Y1aelLuySDz
-         FKzgrBUKgHOFhkT5RWUHKLhJIy72//L2kETTY=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=82IWfN3DJGbMvK2+4fI3Xh7XLeQQn1ow6dAglNayAwg=;
+        b=Pf+rwq1rUZIBQn0eFIdRJcsu1xPsB1/4WueqbikzakgqBAivKEZJejMSWB5khdKck4
+         L4Y24o0Pg/+QwXMMXPgws+H4J/qJUm9Yg4F97pb4NibGStRCUgCI6ARijpZ70R/lUWhD
+         Eux7y5xFOloevXcSJ0Ne99pjaVxX/Nv3ETwdWXmEk4URpDON4P5uze4i1pPm6wa2O4mR
+         XdVpSNkL+HA/Jqv+w2b/nl4VXUo3/gFtWr/DEYAMq8o4mFJSriSM0MDnBLOajj/cSX+Y
+         38JZpXSdt7Nd5opgGljqBvyUmlseDZbrSiyVcbN9Ry9BOg+Mh7ljI+K4DNrHVrxhTBP8
+         J4Qg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=mIOxc2Hr0TwMKC4GyCG7ad4BrNm8On4BnelZfSZoMY8=;
-        b=m+c5gomGNatNKLxQj/PA8TBCdMkyGWDxoDgCuc/LJmpnvHowwMPB6r3o/UefNXMymR
-         ja+JwtWP8OJtnLka1FGGeKTtc3FNTskJgzK0cCTMJgFTBDkow57ZJTUOumbfZRtuDwRt
-         yYtzsi8+/nsRFaxif/AGIaa4Zyg9onk1K3FHz0reDLUpnNCqpCHq4rA5hSzHPxqWDQPs
-         Bj4w6fytQyLixUPhGO6ZkSw9EBBXU3E3CRuuysbTFpGYSGHX2KfyQijU5U8PF8r0ypjs
-         J5wkD3iQ2JL397ACMEFI8Z7NXYAGxBEeKQOiJWZX4uHLqx4i2Ks29OVPSr0jh9L9cu2L
-         zR3Q==
-X-Gm-Message-State: AOAM533cWYFbfyc8P+MyWjqkCdw1QXVIwm0ECDVk+EFUAg/FJn28CBOr
-        e6hd/NuCjhkzeJBhZSeC1o+ucQ==
-X-Google-Smtp-Source: ABdhPJwH5mhjRvh6ubT75T74jcRYxHqZKy0ovowvflSqOUgy8E1RfmWmmzchzDbkunBXYV3eG+hSPw==
-X-Received: by 2002:a17:906:d554:b0:6f5:2242:a499 with SMTP id cr20-20020a170906d55400b006f52242a499mr18119410ejc.488.1652183223425;
-        Tue, 10 May 2022 04:47:03 -0700 (PDT)
-Received: from cloudflare.com (79.184.139.106.ipv4.supernova.orange.pl. [79.184.139.106])
-        by smtp.gmail.com with ESMTPSA id lr9-20020a170906fb8900b006f3ef214dd9sm5997773ejb.63.2022.05.10.04.47.02
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=82IWfN3DJGbMvK2+4fI3Xh7XLeQQn1ow6dAglNayAwg=;
+        b=QHW0CqF6k9v5EPVE+EC3hcC/eon8bZFccqGZHTbtvv5JHFCkI/m9kOHnpWyP31x41u
+         sNAruyhdmbIEJ1CfrajbeFFL4l+ctkYcUEf3LHIljhDefw+LPLog55qTU8t0v0iXqze3
+         QbJWKzKoDyoXKgFAB1U1ZqzJihn6TXkDdYHS6JPLYmIB2dAh448qS9Px3zR25IhwYDFn
+         dYHTnnRAbuZ10QFNuOiqCkbwy/DqOxSesvj6F+zzjaC8M86nnsxJ4WIgIJIDeyuCDUxj
+         UbeMRT98MBXnJmBAmnY4PaEuTF6s7UCDXTYQvW3WALwNtFhVv8eGFPctToq+Uaf+aILY
+         pKjw==
+X-Gm-Message-State: AOAM530lgn8N4NUe7rupcgg3Jy4egqirrZZe2lwRjBvQaVbtbGjN1nhw
+        v5m1tlBxmJDJFtLcyybk3g==
+X-Google-Smtp-Source: ABdhPJzZ/q+Y5wsV2WhUkaAfZuYQU04VlorbapxLQbgGpJxgSaWNny5cBeJfTb8zzS0PcimXckkNJw==
+X-Received: by 2002:a17:90b:3a8b:b0:1dc:4eb4:1f2a with SMTP id om11-20020a17090b3a8b00b001dc4eb41f2amr31406683pjb.50.1652183357655;
+        Tue, 10 May 2022 04:49:17 -0700 (PDT)
+Received: from localhost.localdomain ([144.202.91.207])
+        by smtp.gmail.com with ESMTPSA id q10-20020a170902daca00b0015e8d4eb1besm1931516plx.8.2022.05.10.04.49.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 04:47:02 -0700 (PDT)
-References: <20220424154028.1698685-1-xukuohai@huawei.com>
- <20220424154028.1698685-5-xukuohai@huawei.com>
-User-agent: mu4e 1.6.10; emacs 27.2
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Xu Kuohai <xukuohai@huawei.com>
-Cc:     bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        hpa@zytor.com, Shuah Khan <shuah@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Daniel Kiss <daniel.kiss@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Mark Brown <broonie@kernel.org>,
-        Delyan Kratunov <delyank@fb.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Subject: Re: [PATCH bpf-next v3 4/7] bpf, arm64: Impelment
- bpf_arch_text_poke() for arm64
-Date:   Tue, 10 May 2022 13:45:38 +0200
-In-reply-to: <20220424154028.1698685-5-xukuohai@huawei.com>
-Message-ID: <87ee11obih.fsf@cloudflare.com>
+        Tue, 10 May 2022 04:49:17 -0700 (PDT)
+From:   Zheyu Ma <zheyuma97@gmail.com>
+To:     ribalda@kernel.org, mchehab@kernel.org
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Zheyu Ma <zheyuma97@gmail.com>
+Subject: [PATCH] media: imx214: Fix the error handling in imx214_probe()
+Date:   Tue, 10 May 2022 19:48:52 +0800
+Message-Id: <20220510114852.1719018-1-zheyuma97@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 24, 2022 at 11:40 AM -04, Xu Kuohai wrote:
-> Impelment bpf_arch_text_poke() for arm64, so bpf trampoline code can use
-> it to replace nop with jump, or replace jump with nop.
->
-> Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
-> Acked-by: Song Liu <songliubraving@fb.com>
-> ---
->  arch/arm64/net/bpf_jit_comp.c | 63 +++++++++++++++++++++++++++++++++++
->  1 file changed, 63 insertions(+)
->
-> diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
-> index 8ab4035dea27..3f9bdfec54c4 100644
-> --- a/arch/arm64/net/bpf_jit_comp.c
-> +++ b/arch/arm64/net/bpf_jit_comp.c
-> @@ -9,6 +9,7 @@
->  
->  #include <linux/bitfield.h>
->  #include <linux/bpf.h>
-> +#include <linux/memory.h>
->  #include <linux/filter.h>
->  #include <linux/printk.h>
->  #include <linux/slab.h>
-> @@ -18,6 +19,7 @@
->  #include <asm/cacheflush.h>
->  #include <asm/debug-monitors.h>
->  #include <asm/insn.h>
-> +#include <asm/patching.h>
->  #include <asm/set_memory.h>
->  
->  #include "bpf_jit.h"
-> @@ -1529,3 +1531,64 @@ void bpf_jit_free_exec(void *addr)
->  {
->  	return vfree(addr);
->  }
-> +
-> +static int gen_branch_or_nop(enum aarch64_insn_branch_type type, void *ip,
-> +			     void *addr, u32 *insn)
-> +{
-> +	if (!addr)
-> +		*insn = aarch64_insn_gen_nop();
-> +	else
-> +		*insn = aarch64_insn_gen_branch_imm((unsigned long)ip,
-> +						    (unsigned long)addr,
-> +						    type);
-> +
-> +	return *insn != AARCH64_BREAK_FAULT ? 0 : -EFAULT;
-> +}
-> +
-> +int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type poke_type,
-> +		       void *old_addr, void *new_addr)
-> +{
-> +	int ret;
-> +	u32 old_insn;
-> +	u32 new_insn;
-> +	u32 replaced;
-> +	enum aarch64_insn_branch_type branch_type;
-> +
-> +	if (!is_bpf_text_address((long)ip))
-> +		/* Only poking bpf text is supported. Since kernel function
-> +		 * entry is set up by ftrace, we reply on ftrace to poke kernel
-> +		 * functions. For kernel funcitons, bpf_arch_text_poke() is only
+The driver should disable regulators when fails to probe.
 
-Nit: s/funcitons/functions/
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+---
+ drivers/media/i2c/imx214.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> +		 * called after a failed poke with ftrace. In this case, there
-> +		 * is probably something wrong with fentry, so there is nothing
-> +		 * we can do here. See register_fentry, unregister_fentry and
-> +		 * modify_fentry for details.
-> +		 */
-> +		return -EINVAL;
-> +
-> +	if (poke_type == BPF_MOD_CALL)
-> +		branch_type = AARCH64_INSN_BRANCH_LINK;
-> +	else
-> +		branch_type = AARCH64_INSN_BRANCH_NOLINK;
-> +
-> +	if (gen_branch_or_nop(branch_type, ip, old_addr, &old_insn) < 0)
-> +		return -EFAULT;
-> +
-> +	if (gen_branch_or_nop(branch_type, ip, new_addr, &new_insn) < 0)
-> +		return -EFAULT;
-> +
-> +	mutex_lock(&text_mutex);
-> +	if (aarch64_insn_read(ip, &replaced)) {
-> +		ret = -EFAULT;
-> +		goto out;
-> +	}
-> +
-> +	if (replaced != old_insn) {
-> +		ret = -EFAULT;
-> +		goto out;
-> +	}
-> +
-> +	ret = aarch64_insn_patch_text_nosync((void *)ip, new_insn);
-
-Nit: No need for the explicit cast to void *. Type already matches.
-
-> +out:
-> +	mutex_unlock(&text_mutex);
-> +	return ret;
-> +}
+diff --git a/drivers/media/i2c/imx214.c b/drivers/media/i2c/imx214.c
+index 83c1737abeec..61eeaefd4298 100644
+--- a/drivers/media/i2c/imx214.c
++++ b/drivers/media/i2c/imx214.c
+@@ -1076,6 +1076,7 @@ static int imx214_probe(struct i2c_client *client)
+ 	mutex_destroy(&imx214->mutex);
+ 	v4l2_ctrl_handler_free(&imx214->ctrls);
+ 	pm_runtime_disable(imx214->dev);
++	regulator_bulk_disable(IMX214_NUM_SUPPLIES, imx214->supplies);
+ 
+ 	return ret;
+ }
+-- 
+2.25.1
 
