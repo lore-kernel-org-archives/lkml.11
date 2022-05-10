@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD2ECC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:25:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2E8AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:25:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343984AbiEJO3Z (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:29:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36368 "EHLO
+        id S245345AbiEJO3b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:29:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245169AbiEJN77 (ORCPT
+        with ESMTP id S244252AbiEJOAI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:59:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BA84D80A8;
-        Tue, 10 May 2022 06:39:43 -0700 (PDT)
+        Tue, 10 May 2022 10:00:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADDA02DE585;
+        Tue, 10 May 2022 06:39:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5E6DDB81D7A;
-        Tue, 10 May 2022 13:39:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B14FDC385A6;
-        Tue, 10 May 2022 13:39:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F367961950;
+        Tue, 10 May 2022 13:39:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5CF7C385C2;
+        Tue, 10 May 2022 13:39:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189981;
-        bh=XvdFnLpnH8rg/tJlNoJuTp1Us8A3o+r1OR7Q0sYWAhU=;
+        s=korg; t=1652189990;
+        bh=VPmGLYyoid+7Hr0o4liQyLBaeJin3XuWlLByWtnfuCo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rljiqVCgc0y6zTEXz0eBB5qOuhzOrOhQAASWSpgZqZ0vUVP7xkeuF1TwoT8mcfz1s
-         DEzcNlTOSxQJbUK9eDPTs64pG/kc8kGtaaIRRLu9/iedO99TFnV23Pojl0keLL7rUi
-         kJANpO6CNEt8IX1abDTf47kyRfeqt33MpQ5oIn9E=
+        b=B84EGzG5iUUR5+SWN8kD3XgdjxZrqUB1vCIQ8kBqVzoqszAwDINqrf71VrWWV28Kl
+         mGI4iXzN69rr9/Kwks2yRj6F5mSm+g8/+QhU16Vza2M1py6F3T9ghcb1Zza9kRS6Bf
+         iZkoYlNVb7ECLKzXfdtApW/z9Lv/jpDPnJNh3cF4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Jerome Brunet <jbrunet@baylibre.com>
-Subject: [PATCH 5.17 040/140] ASoC: meson: Fix event generation for AUI CODEC mux
-Date:   Tue, 10 May 2022 15:07:10 +0200
-Message-Id: <20220510130742.764997731@linuxfoundation.org>
+        stable@vger.kernel.org, Qiao Ma <mqaio@linux.alibaba.com>,
+        Xunlei Pang <xlpang@linux.alibaba.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.17 094/140] hinic: fix bug of wq out of bound access
+Date:   Tue, 10 May 2022 15:08:04 +0200
+Message-Id: <20220510130744.296900716@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -49,35 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Qiao Ma <mqaio@linux.alibaba.com>
 
-commit fce49921a22262736cdc3cc74fa67915b75e9363 upstream.
+commit 52b2abef450a78e25d485ac61e32f4ce86a87701 upstream.
 
-The AIU CODEC has a custom put() operation which returns 0 when the value
-of the mux changes, meaning that events are not generated for userspace.
-Change to return 1 in this case, the function returns early in the case
-where there is no change.
+If wq has only one page, we need to check wqe rolling over page by
+compare end_idx and curr_idx, and then copy wqe to shadow wqe to
+avoid out of bound access.
+This work has been done in hinic_get_wqe, but missed for hinic_read_wqe.
+This patch fixes it, and removes unnecessary MASKED_WQE_IDX().
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Reviewed-by: Jerome Brunet <jbrunet@baylibre.com>
-Link: https://lore.kernel.org/r/20220421123803.292063-3-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Cc: stable@vger.kernel.org
+Fixes: 7dd29ee12865 ("hinic: add sriov feature support")
+Signed-off-by: Qiao Ma <mqaio@linux.alibaba.com>
+Reviewed-by: Xunlei Pang <xlpang@linux.alibaba.com>
+Link: https://lore.kernel.org/r/282817b0e1ae2e28fdf3ed8271a04e77f57bf42e.1651148587.git.mqaio@linux.alibaba.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/meson/aiu-codec-ctrl.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/sound/soc/meson/aiu-codec-ctrl.c
-+++ b/sound/soc/meson/aiu-codec-ctrl.c
-@@ -57,7 +57,7 @@ static int aiu_codec_ctrl_mux_put_enum(s
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c
+@@ -771,7 +771,7 @@ struct hinic_hw_wqe *hinic_get_wqe(struc
+ 	/* If we only have one page, still need to get shadown wqe when
+ 	 * wqe rolling-over page
+ 	 */
+-	if (curr_pg != end_pg || MASKED_WQE_IDX(wq, end_prod_idx) < *prod_idx) {
++	if (curr_pg != end_pg || end_prod_idx < *prod_idx) {
+ 		void *shadow_addr = &wq->shadow_wqe[curr_pg * wq->max_wqe_size];
  
- 	snd_soc_dapm_mux_update_power(dapm, kcontrol, mux, e, NULL);
+ 		copy_wqe_to_shadow(wq, shadow_addr, num_wqebbs, *prod_idx);
+@@ -841,7 +841,10 @@ struct hinic_hw_wqe *hinic_read_wqe(stru
  
--	return 0;
-+	return 1;
- }
+ 	*cons_idx = curr_cons_idx;
  
- static SOC_ENUM_SINGLE_DECL(aiu_hdmi_ctrl_mux_enum, AIU_HDMI_CLK_DATA_CTRL,
+-	if (curr_pg != end_pg) {
++	/* If we only have one page, still need to get shadown wqe when
++	 * wqe rolling-over page
++	 */
++	if (curr_pg != end_pg || end_cons_idx < curr_cons_idx) {
+ 		void *shadow_addr = &wq->shadow_wqe[curr_pg * wq->max_wqe_size];
+ 
+ 		copy_wqe_to_shadow(wq, shadow_addr, num_wqebbs, *cons_idx);
 
 
