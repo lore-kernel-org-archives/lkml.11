@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04C35C38A2D
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:45:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94708C38A05
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:45:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343978AbiEJNsq (ORCPT
+        id S1343592AbiEJNsQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:48:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56592 "EHLO
+        Tue, 10 May 2022 09:48:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243844AbiEJNcS (ORCPT
+        with ESMTP id S243888AbiEJNcT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:32:18 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFD502D2E3F;
-        Tue, 10 May 2022 06:22:36 -0700 (PDT)
+        Tue, 10 May 2022 09:32:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7739316D48F;
+        Tue, 10 May 2022 06:23:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 61A30CE1EED;
-        Tue, 10 May 2022 13:22:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 764E3C385C2;
-        Tue, 10 May 2022 13:22:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2885AB81D7A;
+        Tue, 10 May 2022 13:23:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CC7BC385C2;
+        Tue, 10 May 2022 13:23:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188953;
-        bh=2mI/zjP+CAsjMl5kh45R2T1s5t3QVcMCqLJriNcVJ8w=;
+        s=korg; t=1652188990;
+        bh=WWcJJPaW4s0frkbSK/ZxJ/KyPtXnNk7ZjXtjDnn1RI4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TSVJWKtMJlidNMN+Z5oMC+h0uPzt5bRBAA5mT+vPIq/kxuET6TxHj9texg6yhPJJA
-         4QijNiSp5Vh2U+Ih0ND+aMptvrRwsecGpezfuBiMv76TNS0GR+vGAv1sr+xtNawRBV
-         G3Ah+qDmHUxy6juR/zBFG1LOo7gZynaIZvyQN2a4=
+        b=v8xzD2cI22VIfrjnr5F+wp3f0pEbiSlqsxBVHQuztb8Bl43heAcpa5alMqErEHeKt
+         p5r3PfiG5bGdInS6mZG/TRau++J8FW09YaE05Pn42JccPzsW3kB3Erb9Y1BUlF4cM6
+         aZWIppBKkmnRS+cJXeTahEQP9zvnodbi6RfrVCCk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Jan=20H=C3=B6ppner?= <hoeppner@linux.ibm.com>,
-        Stefan Haberland <sth@linux.ibm.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.4 16/52] s390/dasd: Fix read for ESE with blksize < 4k
-Date:   Tue, 10 May 2022 15:07:45 +0200
-Message-Id: <20220510130730.332743043@linuxfoundation.org>
+        Shravya Kumbham <shravya.kumbham@xilinx.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH 5.4 28/52] net: emaclite: Add error handling for of_address_to_resource()
+Date:   Tue, 10 May 2022 15:07:57 +0200
+Message-Id: <20220510130730.677804403@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.852544477@linuxfoundation.org>
 References: <20220510130729.852544477@linuxfoundation.org>
@@ -51,60 +51,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Höppner <hoeppner@linux.ibm.com>
+From: Shravya Kumbham <shravya.kumbham@xilinx.com>
 
-commit cd68c48ea15c85f1577a442dc4c285e112ff1b37 upstream.
+commit 7a6bc33ab54923d325d9a1747ec9652c4361ebd1 upstream.
 
-When reading unformatted tracks on ESE devices, the corresponding memory
-areas are simply set to zero for each segment. This is done incorrectly
-for blocksizes < 4096.
+check the return value of of_address_to_resource() and also add
+missing of_node_put() for np and npp nodes.
 
-There are two problems. First, the increment of dst is done using the
-counter of the loop (off), which is increased by blksize every
-iteration. This leads to a much bigger increment for dst as actually
-intended. Second, the increment of dst is done before the memory area
-is set to 0, skipping a significant amount of bytes of memory.
-
-This leads to illegal overwriting of memory and ultimately to a kernel
-panic.
-
-This is not a problem with 4k blocksize because
-blk_queue_max_segment_size is set to PAGE_SIZE, always resulting in a
-single iteration for the inner segment loop (bv.bv_len == blksize). The
-incorrectly used 'off' value to increment dst is 0 and the correct
-memory area is used.
-
-In order to fix this for blksize < 4k, increment dst correctly using the
-blksize and only do it at the end of the loop.
-
-Fixes: 5e2b17e712cf ("s390/dasd: Add dynamic formatting support for ESE volumes")
-Cc: stable@vger.kernel.org # v5.3+
-Signed-off-by: Jan Höppner <hoeppner@linux.ibm.com>
-Reviewed-by: Stefan Haberland <sth@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220505141733.1989450-4-sth@linux.ibm.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: e0a3bc65448c ("net: emaclite: Support multiple phys connected to one MDIO bus")
+Addresses-Coverity: Event check_return value.
+Signed-off-by: Shravya Kumbham <shravya.kumbham@xilinx.com>
+Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/s390/block/dasd_eckd.c |    7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/xilinx/xilinx_emaclite.c |   15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
---- a/drivers/s390/block/dasd_eckd.c
-+++ b/drivers/s390/block/dasd_eckd.c
-@@ -3228,12 +3228,11 @@ static int dasd_eckd_ese_read(struct das
- 				cqr->proc_bytes = blk_count * blksize;
- 				return 0;
- 			}
--			if (dst && !skip_block) {
--				dst += off;
-+			if (dst && !skip_block)
- 				memset(dst, 0, blksize);
--			} else {
-+			else
- 				skip_block--;
--			}
-+			dst += blksize;
- 			blk_count++;
- 		}
+--- a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
++++ b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
+@@ -820,10 +820,10 @@ static int xemaclite_mdio_write(struct m
+ static int xemaclite_mdio_setup(struct net_local *lp, struct device *dev)
+ {
+ 	struct mii_bus *bus;
+-	int rc;
+ 	struct resource res;
+ 	struct device_node *np = of_get_parent(lp->phy_node);
+ 	struct device_node *npp;
++	int rc, ret;
+ 
+ 	/* Don't register the MDIO bus if the phy_node or its parent node
+ 	 * can't be found.
+@@ -833,8 +833,14 @@ static int xemaclite_mdio_setup(struct n
+ 		return -ENODEV;
  	}
+ 	npp = of_get_parent(np);
+-
+-	of_address_to_resource(npp, 0, &res);
++	ret = of_address_to_resource(npp, 0, &res);
++	of_node_put(npp);
++	if (ret) {
++		dev_err(dev, "%s resource error!\n",
++			dev->of_node->full_name);
++		of_node_put(np);
++		return ret;
++	}
+ 	if (lp->ndev->mem_start != res.start) {
+ 		struct phy_device *phydev;
+ 		phydev = of_phy_find_device(lp->phy_node);
+@@ -843,6 +849,7 @@ static int xemaclite_mdio_setup(struct n
+ 				 "MDIO of the phy is not registered yet\n");
+ 		else
+ 			put_device(&phydev->mdio.dev);
++		of_node_put(np);
+ 		return 0;
+ 	}
+ 
+@@ -855,6 +862,7 @@ static int xemaclite_mdio_setup(struct n
+ 	bus = mdiobus_alloc();
+ 	if (!bus) {
+ 		dev_err(dev, "Failed to allocate mdiobus\n");
++		of_node_put(np);
+ 		return -ENOMEM;
+ 	}
+ 
+@@ -867,6 +875,7 @@ static int xemaclite_mdio_setup(struct n
+ 	bus->parent = dev;
+ 
+ 	rc = of_mdiobus_register(bus, np);
++	of_node_put(np);
+ 	if (rc) {
+ 		dev_err(dev, "Failed to register mdio bus.\n");
+ 		goto err_register;
 
 
