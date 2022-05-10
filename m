@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60B1FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:50:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87518C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:51:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244391AbiEJNyw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:54:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49106 "EHLO
+        id S244409AbiEJNzC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:55:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244534AbiEJNhs (ORCPT
+        with ESMTP id S244583AbiEJNhv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:37:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05A391129;
-        Tue, 10 May 2022 06:25:52 -0700 (PDT)
+        Tue, 10 May 2022 09:37:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FA9C4E38F;
+        Tue, 10 May 2022 06:25:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BEEB7B81DA9;
-        Tue, 10 May 2022 13:25:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DCB5C385A6;
-        Tue, 10 May 2022 13:25:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB746B81DA0;
+        Tue, 10 May 2022 13:25:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 165EFC385C2;
+        Tue, 10 May 2022 13:25:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189147;
-        bh=oXK+xeO7TyS/609kqkxla+MZL2jQ1JRBvy7n7RIohAA=;
+        s=korg; t=1652189153;
+        bh=tVb7z9u2sLIB2f6SBSfo+pEfL244KEv53cuYpUEUuUI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AC+orTsLxEnGuGHyA8ONJWgMRzmeD3nnJhj0x3eq1l5mqzc3Q5bJGkrbGc/CNQsxJ
-         qG7dTk28yg2ZIBnpAD7Abb14L0pVLkjcGggBOH0H+WfmZ5aDYY8xpHPywaQLEC9G63
-         mCafKJV7ZJeibQFcJ0/3CSwpyiGbHic7gkXdaNwE=
+        b=bbCycOoVxLFp67Y/Riay8+Rex1MrExak8+mUiDcXaoaoVnPsxX/Tb/M/d1Hj4LauI
+         byPQrU11RfaLwqPPtuqlUZE0Svl8d0G8j7zAaBQrbaS2kjrerd579IrU+Cttrb3GLe
+         prQ3JOqNgFJLIhjktkNFrLvWA4IwCuoH1sXpg/co=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrei Lalaev <andrei.lalaev@emlid.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>
-Subject: [PATCH 5.10 07/70] gpiolib: of: fix bounds check for gpio-reserved-ranges
-Date:   Tue, 10 May 2022 15:07:26 +0200
-Message-Id: <20220510130733.079273199@linuxfoundation.org>
+        stable@vger.kernel.org, David Stevens <stevensd@chromium.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <jroedel@suse.de>
+Subject: [PATCH 5.10 09/70] iommu/vt-d: Calculate mask for non-aligned flushes
+Date:   Tue, 10 May 2022 15:07:28 +0200
+Message-Id: <20220510130733.137603691@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
 References: <20220510130732.861729621@linuxfoundation.org>
@@ -50,47 +50,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrei Lalaev <andrei.lalaev@emlid.com>
+From: David Stevens <stevensd@chromium.org>
 
-commit e75f88efac05bf4e107e4171d8db6d8c3937252d upstream.
+commit 59bf3557cf2f8a469a554aea1e3d2c8e72a579f7 upstream.
 
-Gpiolib interprets the elements of "gpio-reserved-ranges" as "start,size"
-because it clears "size" bits starting from the "start" bit in the according
-bitmap. So it has to use "greater" instead of "greater or equal" when performs
-bounds check to make sure that GPIOs are in the available range.
-Previous implementation skipped ranges that include the last GPIO in
-the range.
+Calculate the appropriate mask for non-size-aligned page selective
+invalidation. Since psi uses the mask value to mask out the lower order
+bits of the target address, properly flushing the iotlb requires using a
+mask value such that [pfn, pfn+pages) all lie within the flushed
+size-aligned region.  This is not normally an issue because iova.c
+always allocates iovas that are aligned to their size. However, iovas
+which come from other sources (e.g. userspace via VFIO) may not be
+aligned.
 
-I wrote the mail to the maintainers
-(https://lore.kernel.org/linux-gpio/20220412115554.159435-1-andrei.lalaev@emlid.com/T/#u)
-of the questioned DTSes (because I couldn't understand how the maintainers
-interpreted this property), but I haven't received a response.
-Since the questioned DTSes use "gpio-reserved-ranges = <0 4>"
-(i.e., the beginning of the range), this patch doesn't affect these DTSes at all.
-TBH this patch doesn't break any existing DTSes because none of them
-reserve gpios at the end of range.
+To properly flush the IOTLB, both the start and end pfns need to be
+equal after applying the mask. That means that the most efficient mask
+to use is the index of the lowest bit that is equal where all higher
+bits are also equal. For example, if pfn=0x17f and pages=3, then
+end_pfn=0x181, so the smallest mask we can use is 8. Any differences
+above the highest bit of pages are due to carrying, so by xnor'ing pfn
+and end_pfn and then masking out the lower order bits based on pages, we
+get 0xffffff00, where the first set bit is the mask we want to use.
 
-Fixes: 726cb3ba4969 ("gpiolib: Support 'gpio-reserved-ranges' property")
-Signed-off-by: Andrei Lalaev <andrei.lalaev@emlid.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: 6fe1010d6d9c ("vfio/type1: DMA unmap chunking")
 Cc: stable@vger.kernel.org
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Signed-off-by: David Stevens <stevensd@chromium.org>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Link: https://lore.kernel.org/r/20220401022430.1262215-1-stevensd@google.com
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Link: https://lore.kernel.org/r/20220410013533.3959168-2-baolu.lu@linux.intel.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpio/gpiolib-of.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/intel/iommu.c |   27 ++++++++++++++++++++++++---
+ 1 file changed, 24 insertions(+), 3 deletions(-)
 
---- a/drivers/gpio/gpiolib-of.c
-+++ b/drivers/gpio/gpiolib-of.c
-@@ -912,7 +912,7 @@ static void of_gpiochip_init_valid_mask(
- 					   i, &start);
- 		of_property_read_u32_index(np, "gpio-reserved-ranges",
- 					   i + 1, &count);
--		if (start >= chip->ngpio || start + count >= chip->ngpio)
-+		if (start >= chip->ngpio || start + count > chip->ngpio)
- 			continue;
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1626,7 +1626,8 @@ static void iommu_flush_iotlb_psi(struct
+ 				  unsigned long pfn, unsigned int pages,
+ 				  int ih, int map)
+ {
+-	unsigned int mask = ilog2(__roundup_pow_of_two(pages));
++	unsigned int aligned_pages = __roundup_pow_of_two(pages);
++	unsigned int mask = ilog2(aligned_pages);
+ 	uint64_t addr = (uint64_t)pfn << VTD_PAGE_SHIFT;
+ 	u16 did = domain->iommu_did[iommu->seq_id];
  
- 		bitmap_clear(chip->valid_mask, start, count);
+@@ -1638,10 +1639,30 @@ static void iommu_flush_iotlb_psi(struct
+ 	if (domain_use_first_level(domain)) {
+ 		domain_flush_piotlb(iommu, domain, addr, pages, ih);
+ 	} else {
++		unsigned long bitmask = aligned_pages - 1;
++
++		/*
++		 * PSI masks the low order bits of the base address. If the
++		 * address isn't aligned to the mask, then compute a mask value
++		 * needed to ensure the target range is flushed.
++		 */
++		if (unlikely(bitmask & pfn)) {
++			unsigned long end_pfn = pfn + pages - 1, shared_bits;
++
++			/*
++			 * Since end_pfn <= pfn + bitmask, the only way bits
++			 * higher than bitmask can differ in pfn and end_pfn is
++			 * by carrying. This means after masking out bitmask,
++			 * high bits starting with the first set bit in
++			 * shared_bits are all equal in both pfn and end_pfn.
++			 */
++			shared_bits = ~(pfn ^ end_pfn) & ~bitmask;
++			mask = shared_bits ? __ffs(shared_bits) : BITS_PER_LONG;
++		}
++
+ 		/*
+ 		 * Fallback to domain selective flush if no PSI support or
+-		 * the size is too big. PSI requires page size to be 2 ^ x,
+-		 * and the base address is naturally aligned to the size.
++		 * the size is too big.
+ 		 */
+ 		if (!cap_pgsel_inv(iommu->cap) ||
+ 		    mask > cap_max_amask_val(iommu->cap))
 
 
