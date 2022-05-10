@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D228FC38A04
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AC90C352A7
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:35:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244397AbiEJNhd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:37:33 -0400
+        id S244269AbiEJNhP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:37:15 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243524AbiEJN06 (ORCPT
+        with ESMTP id S243417AbiEJN0t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:26:58 -0400
+        Tue, 10 May 2022 09:26:49 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48CA32380E0;
-        Tue, 10 May 2022 06:19:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D310F23724F;
+        Tue, 10 May 2022 06:19:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D1E366165A;
-        Tue, 10 May 2022 13:19:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC73AC385C2;
-        Tue, 10 May 2022 13:19:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04F1961574;
+        Tue, 10 May 2022 13:19:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14E61C385A6;
+        Tue, 10 May 2022 13:19:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188794;
-        bh=V8YUgaezTT2Bmh9ZPpBjU6t2I/wCUUmu7gMVP/8UlnY=;
+        s=korg; t=1652188780;
+        bh=0XaKIhdZ38kf61J/XaHOpjL547BhcB38ZZHehKt22HY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CZ59v9n+Q1ufUVs6CEMwlhvr/NL5XfZHpmW12JQ1Mu5FFkz6ylESIj4JS80ZaVNQi
-         veSFXXb0CHKNbG2Uuvi6bgMTx/opTc4VfhvaXGn/b5b83/Ou4SNEWsyV57rAZa9Pmg
-         y71nuJS3ERs7TDEwQp0RsEjm2HjxPa/h0P77VOeo=
+        b=HcCzfEmAMdH8uDGprWEh6u9jPAPxSrpwjGbWJvguGI1kzVliR25GbNRf87sFTp+Ei
+         mJBYms1oKcTfJYs4wxb+oPJSwQWZ5AdWdAKIz2xoZjAgrsci4baHdAr7hi7EkABaMv
+         J5KbUXUWwAwztSpk/hYZsoUJfPuikg+tm+kRMnuo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, David Christensen <drc@linux.vnet.ibm.com>,
+        Manish Chopra <manishc@marvell.com>,
+        Ariel Elior <aelior@marvell.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 47/88] drivers: net: hippi: Fix deadlock in rr_close()
-Date:   Tue, 10 May 2022 15:07:32 +0200
-Message-Id: <20220510130735.116361087@linuxfoundation.org>
+Subject: [PATCH 4.19 42/88] bnx2x: fix napi API usage sequence
+Date:   Tue, 10 May 2022 15:07:27 +0200
+Message-Id: <20220510130734.971131687@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 References: <20220510130733.735278074@linuxfoundation.org>
@@ -49,51 +51,150 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Manish Chopra <manishc@marvell.com>
 
-[ Upstream commit bc6de2878429e85c1f1afaa566f7b5abb2243eef ]
+[ Upstream commit af68656d66eda219b7f55ce8313a1da0312c79e1 ]
 
-There is a deadlock in rr_close(), which is shown below:
+While handling PCI errors (AER flow) driver tries to
+disable NAPI [napi_disable()] after NAPI is deleted
+[__netif_napi_del()] which causes unexpected system
+hang/crash.
 
-   (Thread 1)                |      (Thread 2)
-                             | rr_open()
-rr_close()                   |  add_timer()
- spin_lock_irqsave() //(1)   |  (wait a time)
- ...                         | rr_timer()
- del_timer_sync()            |  spin_lock_irqsave() //(2)
- (wait timer to stop)        |  ...
+System message log shows the following:
+=======================================
+[ 3222.537510] EEH: Detected PCI bus error on PHB#384-PE#800000 [ 3222.537511] EEH: This PCI device has failed 2 times in the last hour and will be permanently disabled after 5 failures.
+[ 3222.537512] EEH: Notify device drivers to shutdown [ 3222.537513] EEH: Beginning: 'error_detected(IO frozen)'
+[ 3222.537514] EEH: PE#800000 (PCI 0384:80:00.0): Invoking
+bnx2x->error_detected(IO frozen)
+[ 3222.537516] bnx2x: [bnx2x_io_error_detected:14236(eth14)]IO error detected [ 3222.537650] EEH: PE#800000 (PCI 0384:80:00.0): bnx2x driver reports:
+'need reset'
+[ 3222.537651] EEH: PE#800000 (PCI 0384:80:00.1): Invoking
+bnx2x->error_detected(IO frozen)
+[ 3222.537651] bnx2x: [bnx2x_io_error_detected:14236(eth13)]IO error detected [ 3222.537729] EEH: PE#800000 (PCI 0384:80:00.1): bnx2x driver reports:
+'need reset'
+[ 3222.537729] EEH: Finished:'error_detected(IO frozen)' with aggregate recovery state:'need reset'
+[ 3222.537890] EEH: Collect temporary log [ 3222.583481] EEH: of node=0384:80:00.0 [ 3222.583519] EEH: PCI device/vendor: 168e14e4 [ 3222.583557] EEH: PCI cmd/status register: 00100140 [ 3222.583557] EEH: PCI-E capabilities and status follow:
+[ 3222.583744] EEH: PCI-E 00: 00020010 012c8da2 00095d5e 00455c82 [ 3222.583892] EEH: PCI-E 10: 10820000 00000000 00000000 00000000 [ 3222.583893] EEH: PCI-E 20: 00000000 [ 3222.583893] EEH: PCI-E AER capability register set follows:
+[ 3222.584079] EEH: PCI-E AER 00: 13c10001 00000000 00000000 00062030 [ 3222.584230] EEH: PCI-E AER 10: 00002000 000031c0 000001e0 00000000 [ 3222.584378] EEH: PCI-E AER 20: 00000000 00000000 00000000 00000000 [ 3222.584416] EEH: PCI-E AER 30: 00000000 00000000 [ 3222.584416] EEH: of node=0384:80:00.1 [ 3222.584454] EEH: PCI device/vendor: 168e14e4 [ 3222.584491] EEH: PCI cmd/status register: 00100140 [ 3222.584492] EEH: PCI-E capabilities and status follow:
+[ 3222.584677] EEH: PCI-E 00: 00020010 012c8da2 00095d5e 00455c82 [ 3222.584825] EEH: PCI-E 10: 10820000 00000000 00000000 00000000 [ 3222.584826] EEH: PCI-E 20: 00000000 [ 3222.584826] EEH: PCI-E AER capability register set follows:
+[ 3222.585011] EEH: PCI-E AER 00: 13c10001 00000000 00000000 00062030 [ 3222.585160] EEH: PCI-E AER 10: 00002000 000031c0 000001e0 00000000 [ 3222.585309] EEH: PCI-E AER 20: 00000000 00000000 00000000 00000000 [ 3222.585347] EEH: PCI-E AER 30: 00000000 00000000 [ 3222.586872] RTAS: event: 5, Type: Platform Error (224), Severity: 2 [ 3222.586873] EEH: Reset without hotplug activity [ 3224.762767] EEH: Beginning: 'slot_reset'
+[ 3224.762770] EEH: PE#800000 (PCI 0384:80:00.0): Invoking
+bnx2x->slot_reset()
+[ 3224.762771] bnx2x: [bnx2x_io_slot_reset:14271(eth14)]IO slot reset initializing...
+[ 3224.762887] bnx2x 0384:80:00.0: enabling device (0140 -> 0142) [ 3224.768157] bnx2x: [bnx2x_io_slot_reset:14287(eth14)]IO slot reset
+--> driver unload
 
-We hold rrpriv->lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need rrpriv->lock in position (2) of thread 2.
-As a result, rr_close() will block forever.
+Uninterruptible tasks
+=====================
+crash> ps | grep UN
+     213      2  11  c000000004c89e00  UN   0.0       0      0  [eehd]
+     215      2   0  c000000004c80000  UN   0.0       0      0
+[kworker/0:2]
+    2196      1  28  c000000004504f00  UN   0.1   15936  11136  wickedd
+    4287      1   9  c00000020d076800  UN   0.0    4032   3008  agetty
+    4289      1  20  c00000020d056680  UN   0.0    7232   3840  agetty
+   32423      2  26  c00000020038c580  UN   0.0       0      0
+[kworker/26:3]
+   32871   4241  27  c0000002609ddd00  UN   0.1   18624  11648  sshd
+   32920  10130  16  c00000027284a100  UN   0.1   48512  12608  sendmail
+   33092  32987   0  c000000205218b00  UN   0.1   48512  12608  sendmail
+   33154   4567  16  c000000260e51780  UN   0.1   48832  12864  pickup
+   33209   4241  36  c000000270cb6500  UN   0.1   18624  11712  sshd
+   33473  33283   0  c000000205211480  UN   0.1   48512  12672  sendmail
+   33531   4241  37  c00000023c902780  UN   0.1   18624  11648  sshd
 
-This patch extracts del_timer_sync() from the protection of
-spin_lock_irqsave(), which could let timer handler to obtain
-the needed lock.
+EEH handler hung while bnx2x sleeping and holding RTNL lock
+===========================================================
+crash> bt 213
+PID: 213    TASK: c000000004c89e00  CPU: 11  COMMAND: "eehd"
+  #0 [c000000004d477e0] __schedule at c000000000c70808
+  #1 [c000000004d478b0] schedule at c000000000c70ee0
+  #2 [c000000004d478e0] schedule_timeout at c000000000c76dec
+  #3 [c000000004d479c0] msleep at c0000000002120cc
+  #4 [c000000004d479f0] napi_disable at c000000000a06448
+                                        ^^^^^^^^^^^^^^^^
+  #5 [c000000004d47a30] bnx2x_netif_stop at c0080000018dba94 [bnx2x]
+  #6 [c000000004d47a60] bnx2x_io_slot_reset at c0080000018a551c [bnx2x]
+  #7 [c000000004d47b20] eeh_report_reset at c00000000004c9bc
+  #8 [c000000004d47b90] eeh_pe_report at c00000000004d1a8
+  #9 [c000000004d47c40] eeh_handle_normal_event at c00000000004da64
 
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417125519.82618-1-duoming@zju.edu.cn
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+And the sleeping source code
+============================
+crash> dis -ls c000000000a06448
+FILE: ../net/core/dev.c
+LINE: 6702
+
+   6697  {
+   6698          might_sleep();
+   6699          set_bit(NAPI_STATE_DISABLE, &n->state);
+   6700
+   6701          while (test_and_set_bit(NAPI_STATE_SCHED, &n->state))
+* 6702                  msleep(1);
+   6703          while (test_and_set_bit(NAPI_STATE_NPSVC, &n->state))
+   6704                  msleep(1);
+   6705
+   6706          hrtimer_cancel(&n->timer);
+   6707
+   6708          clear_bit(NAPI_STATE_DISABLE, &n->state);
+   6709  }
+
+EEH calls into bnx2x twice based on the system log above, first through
+bnx2x_io_error_detected() and then bnx2x_io_slot_reset(), and executes
+the following call chains:
+
+bnx2x_io_error_detected()
+  +-> bnx2x_eeh_nic_unload()
+       +-> bnx2x_del_all_napi()
+            +-> __netif_napi_del()
+
+bnx2x_io_slot_reset()
+  +-> bnx2x_netif_stop()
+       +-> bnx2x_napi_disable()
+            +->napi_disable()
+
+Fix this by correcting the sequence of NAPI APIs usage,
+that is delete the NAPI after disabling it.
+
+Fixes: 7fa6f34081f1 ("bnx2x: AER revised")
+Reported-by: David Christensen <drc@linux.vnet.ibm.com>
+Tested-by: David Christensen <drc@linux.vnet.ibm.com>
+Signed-off-by: Manish Chopra <manishc@marvell.com>
+Signed-off-by: Ariel Elior <aelior@marvell.com>
+Link: https://lore.kernel.org/r/20220426153913.6966-1-manishc@marvell.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/hippi/rrunner.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/hippi/rrunner.c b/drivers/net/hippi/rrunner.c
-index 2a8c33abb363..a24c55a6c79a 100644
---- a/drivers/net/hippi/rrunner.c
-+++ b/drivers/net/hippi/rrunner.c
-@@ -1352,7 +1352,9 @@ static int rr_close(struct net_device *dev)
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+index df4f77ad95c4..91ddde4d647c 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+@@ -14297,10 +14297,6 @@ static int bnx2x_eeh_nic_unload(struct bnx2x *bp)
  
- 	rrpriv->fw_running = 0;
+ 	/* Stop Tx */
+ 	bnx2x_tx_disable(bp);
+-	/* Delete all NAPI objects */
+-	bnx2x_del_all_napi(bp);
+-	if (CNIC_LOADED(bp))
+-		bnx2x_del_all_napi_cnic(bp);
+ 	netdev_reset_tc(bp->dev);
  
-+	spin_unlock_irqrestore(&rrpriv->lock, flags);
- 	del_timer_sync(&rrpriv->timer);
-+	spin_lock_irqsave(&rrpriv->lock, flags);
+ 	del_timer_sync(&bp->timer);
+@@ -14405,6 +14401,11 @@ static pci_ers_result_t bnx2x_io_slot_reset(struct pci_dev *pdev)
+ 		bnx2x_drain_tx_queues(bp);
+ 		bnx2x_send_unload_req(bp, UNLOAD_RECOVERY);
+ 		bnx2x_netif_stop(bp, 1);
++		bnx2x_del_all_napi(bp);
++
++		if (CNIC_LOADED(bp))
++			bnx2x_del_all_napi_cnic(bp);
++
+ 		bnx2x_free_irq(bp);
  
- 	writel(0, &regs->TxPi);
- 	writel(0, &regs->IpRxPi);
+ 		/* Report UNLOAD_DONE to MCP */
 -- 
 2.35.1
 
