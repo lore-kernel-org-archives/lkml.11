@@ -2,145 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC2E2C35296
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:18:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 975DDC38A02
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:18:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344497AbiEJOWU (ORCPT
+        id S1344670AbiEJOWs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:22:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53460 "EHLO
+        Tue, 10 May 2022 10:22:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244889AbiEJNrF (ORCPT
+        with ESMTP id S245033AbiEJNrM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:47:05 -0400
-Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C6371B7919;
-        Tue, 10 May 2022 06:32:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.de; i=@amazon.de; q=dns/txt; s=amazon201209;
-  t=1652189545; x=1683725545;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=fXdsCza0w8qNDoFrKMYkMnUAwI+hskYjRxqBpTNbyyY=;
-  b=ahlRwYuHU4WP3up2fdh8EsagZSL8tfe2pTSabU0GkKpURLZO1B1es/vP
-   peYdJlSm2iWxMvjf30dhQjMBTAx20abiAzK4BTxU8xr/1uYPgwvwpHvvl
-   fD6wvxO1nIt0I3Xp07ea69IrnJESgbOWt64RwZtYP7J6xJCNGQnOth8Iz
-   g=;
-X-IronPort-AV: E=Sophos;i="5.91,214,1647302400"; 
-   d="scan'208";a="87035422"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-b27d4a00.us-east-1.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 10 May 2022 13:31:25 +0000
-Received: from EX13D08EUB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1a-b27d4a00.us-east-1.amazon.com (Postfix) with ESMTPS id 236BC81236;
-        Tue, 10 May 2022 13:31:15 +0000 (UTC)
-Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
- EX13D08EUB001.ant.amazon.com (10.43.166.236) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Tue, 10 May 2022 13:31:14 +0000
-Received: from dev-dsk-mheyne-1b-c1524648.eu-west-1.amazon.com (10.15.60.66)
- by mail-relay.amazon.com (10.43.60.234) with Microsoft SMTP Server id
- 15.0.1497.32 via Frontend Transport; Tue, 10 May 2022 13:31:14 +0000
-Received: by dev-dsk-mheyne-1b-c1524648.eu-west-1.amazon.com (Postfix, from userid 5466572)
-        id E83F641131; Tue, 10 May 2022 13:31:13 +0000 (UTC)
-From:   Maximilian Heyne <mheyne@amazon.de>
-CC:     Masami Hiramatsu <mhiramat@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juergen Gross <jgross@suse.com>, <x86@kernel.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Andrew Cooper <andrew.cooper3@citrix.com>,
-        Borislav Petkov <bp@alien8.de>,
-        <xen-devel@lists.xenproject.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Maximilian Heyne <mheyne@amazon.de>, <stable@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        =?UTF-8?q?Radim=20Kr=C4=8Dm=C3=A1=C5=99?= <rkrcmar@redhat.com>,
-        Sean Christopherson <sean.j.christopherson@intel.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>
-Subject: [PATCH 4/4] x86: kprobes: Prohibit probing on instruction which has emulate prefix
-Date:   Tue, 10 May 2022 13:30:33 +0000
-Message-ID: <20220510133036.46767-5-mheyne@amazon.de>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220510133036.46767-1-mheyne@amazon.de>
-References: <20220510133036.46767-1-mheyne@amazon.de>
+        Tue, 10 May 2022 09:47:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B039C2633;
+        Tue, 10 May 2022 06:33:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 617FCB81D24;
+        Tue, 10 May 2022 13:33:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3F86C385C6;
+        Tue, 10 May 2022 13:33:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652189632;
+        bh=q7VXmzmCTnXk6dewQj7E69HCTNiEo7OF7vJ9agZMF8w=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=dAUTBJjlW7vGSGHEiy3ef7SoW3n+esBFi2DLeWl+y7cRPRovr+15/eVOMuyPyBqss
+         Mk1aYViIlVfZqtHVnCj7KnSVPmFYkdtsoSWxZ4aHtb/YwM2DOiNQiMjFT/FRoi2vBO
+         +3T+Tb6A5/AjWDk0CNgvknIa19jiTBUUfH28yfiU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, pali@kernel.org,
+        =?UTF-8?q?Marek=20Beh=FAn?= <kabel@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: [PATCH 5.15 112/135] PCI: aardvark: Mask all interrupts when unbinding driver
+Date:   Tue, 10 May 2022 15:08:14 +0200
+Message-Id: <20220510130743.617499148@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
+References: <20220510130740.392653815@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masami Hiramatsu <mhiramat@kernel.org>
+From: Pali Rohár <pali@kernel.org>
 
-commit 004e8dce9c5595697951f7cd0e9f66b35c92265e upstream
+commit 13bcdf07cb2ecff5d45d2c141df2539b15211448 upstream.
 
-Prohibit probing on instruction which has XEN_EMULATE_PREFIX
-or KVM's emulate prefix. Since that prefix is a marker for Xen
-and KVM, if we modify the marker by kprobe's int3, that doesn't
-work as expected.
+Ensure that no interrupt can be triggered after driver unbind.
 
-Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: Juergen Gross <jgross@suse.com>
-Cc: x86@kernel.org
-Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Stefano Stabellini <sstabellini@kernel.org>
-Cc: Andrew Cooper <andrew.cooper3@citrix.com>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: xen-devel@lists.xenproject.org
-Cc: Randy Dunlap <rdunlap@infradead.org>
-Cc: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lkml.kernel.org/r/156777566048.25081.6296162369492175325.stgit@devnote2
-Signed-off-by: Maximilian Heyne <mheyne@amazon.de>
-Cc: stable@vger.kernel.org # 5.4.x
+Link: https://lore.kernel.org/r/20211130172913.9727-8-kabel@kernel.org
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/kprobes/core.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/pci/controller/pci-aardvark.c |   21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-diff --git a/arch/x86/kernel/kprobes/core.c b/arch/x86/kernel/kprobes/core.c
-index c205d77d57da..3700dc94847c 100644
---- a/arch/x86/kernel/kprobes/core.c
-+++ b/arch/x86/kernel/kprobes/core.c
-@@ -358,6 +358,10 @@ int __copy_instruction(u8 *dest, u8 *src, u8 *real, struct insn *insn)
- 	kernel_insn_init(insn, dest, MAX_INSN_SIZE);
- 	insn_get_length(insn);
+--- a/drivers/pci/controller/pci-aardvark.c
++++ b/drivers/pci/controller/pci-aardvark.c
+@@ -1693,6 +1693,27 @@ static int advk_pcie_remove(struct platf
+ 	val &= ~(PCI_COMMAND_IO | PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
+ 	advk_writel(pcie, val, PCIE_CORE_CMD_STATUS_REG);
  
-+	/* We can not probe force emulate prefixed instruction */
-+	if (insn_has_emulate_prefix(insn))
-+		return 0;
++	/* Disable MSI */
++	val = advk_readl(pcie, PCIE_CORE_CTRL2_REG);
++	val &= ~PCIE_CORE_CTRL2_MSI_ENABLE;
++	advk_writel(pcie, val, PCIE_CORE_CTRL2_REG);
 +
- 	/* Another subsystem puts a breakpoint, failed to recover */
- 	if (insn->opcode.bytes[0] == BREAKPOINT_INSTRUCTION)
- 		return 0;
--- 
-2.32.0
-
-
-
-
-Amazon Development Center Germany GmbH
-Krausenstr. 38
-10117 Berlin
-Geschaeftsfuehrung: Christian Schlaeger, Jonathan Weiss
-Eingetragen am Amtsgericht Charlottenburg unter HRB 149173 B
-Sitz: Berlin
-Ust-ID: DE 289 237 879
-
++	/* Clear MSI address */
++	advk_writel(pcie, 0, PCIE_MSI_ADDR_LOW_REG);
++	advk_writel(pcie, 0, PCIE_MSI_ADDR_HIGH_REG);
++
++	/* Mask all interrupts */
++	advk_writel(pcie, PCIE_MSI_ALL_MASK, PCIE_MSI_MASK_REG);
++	advk_writel(pcie, PCIE_ISR0_ALL_MASK, PCIE_ISR0_MASK_REG);
++	advk_writel(pcie, PCIE_ISR1_ALL_MASK, PCIE_ISR1_MASK_REG);
++	advk_writel(pcie, PCIE_IRQ_ALL_MASK, HOST_CTRL_INT_MASK_REG);
++
++	/* Clear all interrupts */
++	advk_writel(pcie, PCIE_MSI_ALL_MASK, PCIE_MSI_STATUS_REG);
++	advk_writel(pcie, PCIE_ISR0_ALL_MASK, PCIE_ISR0_REG);
++	advk_writel(pcie, PCIE_ISR1_ALL_MASK, PCIE_ISR1_REG);
++	advk_writel(pcie, PCIE_IRQ_ALL_MASK, HOST_CTRL_INT_STATUS_REG);
++
+ 	/* Remove IRQ domains */
+ 	advk_pcie_remove_msi_irq_domain(pcie);
+ 	advk_pcie_remove_irq_domain(pcie);
 
 
