@@ -2,95 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92A8BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:59:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E399C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:00:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242383AbiEJODl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:03:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56518 "EHLO
+        id S243096AbiEJODw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:03:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244554AbiEJNl7 (ORCPT
+        with ESMTP id S244615AbiEJNmC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:41:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 823B72C8BF9;
-        Tue, 10 May 2022 06:30:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 58EEA61841;
-        Tue, 10 May 2022 13:30:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 613CAC385A6;
-        Tue, 10 May 2022 13:30:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189411;
-        bh=oXK+xeO7TyS/609kqkxla+MZL2jQ1JRBvy7n7RIohAA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o5QFqvlTI7Dfl4aDsKOjFsIClyGyLPOWD7arpc7GMOksC4HfDNUVXFbYKwSihWUoc
-         0eYdVLrB7rpslTt+HhNSgC3129AE3LWjrny/N4cxfC8gbpk/Yg0pMVRz416L9R60eQ
-         rvogbTfbiJSIKNEzAxZrlQ5StR59giiK/68iB/hs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrei Lalaev <andrei.lalaev@emlid.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>
-Subject: [PATCH 5.15 008/135] gpiolib: of: fix bounds check for gpio-reserved-ranges
-Date:   Tue, 10 May 2022 15:06:30 +0200
-Message-Id: <20220510130740.635765669@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
-References: <20220510130740.392653815@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 10 May 2022 09:42:02 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F6962CE21B
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 06:30:20 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id dk23so32976957ejb.8
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 06:30:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=EYtYwlz2KPXmVu+njbcewGhC8fMqY+Dy5OCbzouBYQo=;
+        b=XFUvOxgiQR78YUbV8REgK2ViRkKX7EkAyva7X50Xa6UHoA2pLqEhgl+Ynmz6Tfs4qb
+         HWg8aiTvL4kJ4qTzR+sNRQ81J8qANDBoncI0vy+viOXojJzRNFVPYlk6CiOPpq4ytdQF
+         RqYsJjgbUbry87AasVKZ56V00bYF+Ng47N1ra0iu68fcQPAJM4pTzzP3Kz0JYX3T0Mu6
+         eE/JQ+h4kvRxp8u94q77tQlzKsEebcYIm2oidjYM29Bb0N9vuf0s2oPGa6RuCv2+iiq0
+         EMwAb8f5af1DHTWsghLWc75BF8J6luPYlrO1PMkfmHGvIUqRsjSrwYX0qjkQmAI4H5NX
+         qN3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=EYtYwlz2KPXmVu+njbcewGhC8fMqY+Dy5OCbzouBYQo=;
+        b=Nwm7MEPNAs8UiV75PJQqU4cKAALza4T5p/0n0bWltYvKTBsKyYizVbG22Ovwk1Enfa
+         5+iDAiXt9o1V/ww4uglVWWPe5/K7XdXjnLfGZKw/ehJMvq7OiVlKAss0WvChPUFcHuJV
+         UW3BmKAkLr9pwRAr1S0tbidCnk+ynv2EIZE3SYCGxXi2mru+TeDHZcE2nCJKx8QrEklN
+         m7KALlyWcyWNrMO0iv1DcI/CfHObhY5QdOxZ2yd6UXesRI50WjqCp0zSEZ3zi8uwjn1V
+         DK9XNVK3+pMUljWBberAMjsFFCOkByDFfgIMPY12ouoYSBUXdNDEDl9ePiz6QK48hVGT
+         qwdw==
+X-Gm-Message-State: AOAM533YWe0Yvv+nTQU6DzBs0pqoMPF9TxxjmW6eHBaBA7GIlOPHUooO
+        mvPCpvCIbG3nXAvFBsDNWQOHQQ==
+X-Google-Smtp-Source: ABdhPJz51i+DK9WKBMW2jvke8/AQ9bcDkq6DkUeG6a37vidtAoW3AWZAjecAM/UEy4O6QPtfASKGIQ==
+X-Received: by 2002:a17:907:80c8:b0:6f4:3177:a0c9 with SMTP id io8-20020a17090780c800b006f43177a0c9mr20879712ejc.188.1652189416932;
+        Tue, 10 May 2022 06:30:16 -0700 (PDT)
+Received: from [192.168.0.252] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id yl26-20020a17090693fa00b006f3ef214de2sm6121263ejb.72.2022.05.10.06.30.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 May 2022 06:30:16 -0700 (PDT)
+Message-ID: <8f814e9f-2060-7361-8d36-4a34f2aece1a@linaro.org>
+Date:   Tue, 10 May 2022 15:30:15 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v3 1/4] media: dt-bindings: ov5675: document YAML binding
+Content-Language: en-US
+To:     Quentin Schulz <foss+kernel@0leil.net>
+Cc:     shawnx.tu@intel.com, mchehab@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-media@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Quentin Schulz <quentin.schulz@theobroma-systems.com>
+References: <20220509143226.531117-1-foss+kernel@0leil.net>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220509143226.531117-1-foss+kernel@0leil.net>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrei Lalaev <andrei.lalaev@emlid.com>
-
-commit e75f88efac05bf4e107e4171d8db6d8c3937252d upstream.
-
-Gpiolib interprets the elements of "gpio-reserved-ranges" as "start,size"
-because it clears "size" bits starting from the "start" bit in the according
-bitmap. So it has to use "greater" instead of "greater or equal" when performs
-bounds check to make sure that GPIOs are in the available range.
-Previous implementation skipped ranges that include the last GPIO in
-the range.
-
-I wrote the mail to the maintainers
-(https://lore.kernel.org/linux-gpio/20220412115554.159435-1-andrei.lalaev@emlid.com/T/#u)
-of the questioned DTSes (because I couldn't understand how the maintainers
-interpreted this property), but I haven't received a response.
-Since the questioned DTSes use "gpio-reserved-ranges = <0 4>"
-(i.e., the beginning of the range), this patch doesn't affect these DTSes at all.
-TBH this patch doesn't break any existing DTSes because none of them
-reserve gpios at the end of range.
-
-Fixes: 726cb3ba4969 ("gpiolib: Support 'gpio-reserved-ranges' property")
-Signed-off-by: Andrei Lalaev <andrei.lalaev@emlid.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Cc: stable@vger.kernel.org
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/gpio/gpiolib-of.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- a/drivers/gpio/gpiolib-of.c
-+++ b/drivers/gpio/gpiolib-of.c
-@@ -912,7 +912,7 @@ static void of_gpiochip_init_valid_mask(
- 					   i, &start);
- 		of_property_read_u32_index(np, "gpio-reserved-ranges",
- 					   i + 1, &count);
--		if (start >= chip->ngpio || start + count >= chip->ngpio)
-+		if (start >= chip->ngpio || start + count > chip->ngpio)
- 			continue;
- 
- 		bitmap_clear(chip->valid_mask, start, count);
+On 09/05/2022 16:32, Quentin Schulz wrote:
+> From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+> 
+> This patch adds documentation of device tree in YAML schema for the
+> OV5675 CMOS image sensor from Omnivision.
+> 
+> Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
 
 
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
+Best regards,
+Krzysztof
