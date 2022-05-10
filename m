@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87518C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:51:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A64AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:51:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244409AbiEJNzC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:55:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56376 "EHLO
+        id S237903AbiEJNzJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:55:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244583AbiEJNhv (ORCPT
+        with ESMTP id S244625AbiEJNhx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:37:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FA9C4E38F;
-        Tue, 10 May 2022 06:25:56 -0700 (PDT)
+        Tue, 10 May 2022 09:37:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CFCA4706D;
+        Tue, 10 May 2022 06:26:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AB746B81DA0;
-        Tue, 10 May 2022 13:25:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 165EFC385C2;
-        Tue, 10 May 2022 13:25:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2B117B81DA8;
+        Tue, 10 May 2022 13:26:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E29AC385A6;
+        Tue, 10 May 2022 13:25:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189153;
-        bh=tVb7z9u2sLIB2f6SBSfo+pEfL244KEv53cuYpUEUuUI=;
+        s=korg; t=1652189159;
+        bh=2mI/zjP+CAsjMl5kh45R2T1s5t3QVcMCqLJriNcVJ8w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bbCycOoVxLFp67Y/Riay8+Rex1MrExak8+mUiDcXaoaoVnPsxX/Tb/M/d1Hj4LauI
-         byPQrU11RfaLwqPPtuqlUZE0Svl8d0G8j7zAaBQrbaS2kjrerd579IrU+Cttrb3GLe
-         prQ3JOqNgFJLIhjktkNFrLvWA4IwCuoH1sXpg/co=
+        b=McPIDPp/U00cl1YajAVmGx9exALUeV7hiEPRnfkJETwv6Q5WFdH51LkCbNJ0fBb+H
+         2lJrjzBKnBF8zz6+EDGllKtvFOU9TJIYcAzXT4PWiN5Wc2NBCx8Ce2s/WN5sgYXigj
+         iNBVbT2SZsslDBAZWoIEZB0+FO4s8ETs/BuUp40w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Stevens <stevensd@chromium.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Joerg Roedel <jroedel@suse.de>
-Subject: [PATCH 5.10 09/70] iommu/vt-d: Calculate mask for non-aligned flushes
-Date:   Tue, 10 May 2022 15:07:28 +0200
-Message-Id: <20220510130733.137603691@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jan=20H=C3=B6ppner?= <hoeppner@linux.ibm.com>,
+        Stefan Haberland <sth@linux.ibm.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.10 24/70] s390/dasd: Fix read for ESE with blksize < 4k
+Date:   Tue, 10 May 2022 15:07:43 +0200
+Message-Id: <20220510130733.575368874@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
 References: <20220510130732.861729621@linuxfoundation.org>
@@ -50,85 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Stevens <stevensd@chromium.org>
+From: Jan Höppner <hoeppner@linux.ibm.com>
 
-commit 59bf3557cf2f8a469a554aea1e3d2c8e72a579f7 upstream.
+commit cd68c48ea15c85f1577a442dc4c285e112ff1b37 upstream.
 
-Calculate the appropriate mask for non-size-aligned page selective
-invalidation. Since psi uses the mask value to mask out the lower order
-bits of the target address, properly flushing the iotlb requires using a
-mask value such that [pfn, pfn+pages) all lie within the flushed
-size-aligned region.  This is not normally an issue because iova.c
-always allocates iovas that are aligned to their size. However, iovas
-which come from other sources (e.g. userspace via VFIO) may not be
-aligned.
+When reading unformatted tracks on ESE devices, the corresponding memory
+areas are simply set to zero for each segment. This is done incorrectly
+for blocksizes < 4096.
 
-To properly flush the IOTLB, both the start and end pfns need to be
-equal after applying the mask. That means that the most efficient mask
-to use is the index of the lowest bit that is equal where all higher
-bits are also equal. For example, if pfn=0x17f and pages=3, then
-end_pfn=0x181, so the smallest mask we can use is 8. Any differences
-above the highest bit of pages are due to carrying, so by xnor'ing pfn
-and end_pfn and then masking out the lower order bits based on pages, we
-get 0xffffff00, where the first set bit is the mask we want to use.
+There are two problems. First, the increment of dst is done using the
+counter of the loop (off), which is increased by blksize every
+iteration. This leads to a much bigger increment for dst as actually
+intended. Second, the increment of dst is done before the memory area
+is set to 0, skipping a significant amount of bytes of memory.
 
-Fixes: 6fe1010d6d9c ("vfio/type1: DMA unmap chunking")
-Cc: stable@vger.kernel.org
-Signed-off-by: David Stevens <stevensd@chromium.org>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Link: https://lore.kernel.org/r/20220401022430.1262215-1-stevensd@google.com
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Link: https://lore.kernel.org/r/20220410013533.3959168-2-baolu.lu@linux.intel.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+This leads to illegal overwriting of memory and ultimately to a kernel
+panic.
+
+This is not a problem with 4k blocksize because
+blk_queue_max_segment_size is set to PAGE_SIZE, always resulting in a
+single iteration for the inner segment loop (bv.bv_len == blksize). The
+incorrectly used 'off' value to increment dst is 0 and the correct
+memory area is used.
+
+In order to fix this for blksize < 4k, increment dst correctly using the
+blksize and only do it at the end of the loop.
+
+Fixes: 5e2b17e712cf ("s390/dasd: Add dynamic formatting support for ESE volumes")
+Cc: stable@vger.kernel.org # v5.3+
+Signed-off-by: Jan Höppner <hoeppner@linux.ibm.com>
+Reviewed-by: Stefan Haberland <sth@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220505141733.1989450-4-sth@linux.ibm.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iommu/intel/iommu.c |   27 ++++++++++++++++++++++++---
- 1 file changed, 24 insertions(+), 3 deletions(-)
+ drivers/s390/block/dasd_eckd.c |    7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -1626,7 +1626,8 @@ static void iommu_flush_iotlb_psi(struct
- 				  unsigned long pfn, unsigned int pages,
- 				  int ih, int map)
- {
--	unsigned int mask = ilog2(__roundup_pow_of_two(pages));
-+	unsigned int aligned_pages = __roundup_pow_of_two(pages);
-+	unsigned int mask = ilog2(aligned_pages);
- 	uint64_t addr = (uint64_t)pfn << VTD_PAGE_SHIFT;
- 	u16 did = domain->iommu_did[iommu->seq_id];
- 
-@@ -1638,10 +1639,30 @@ static void iommu_flush_iotlb_psi(struct
- 	if (domain_use_first_level(domain)) {
- 		domain_flush_piotlb(iommu, domain, addr, pages, ih);
- 	} else {
-+		unsigned long bitmask = aligned_pages - 1;
-+
-+		/*
-+		 * PSI masks the low order bits of the base address. If the
-+		 * address isn't aligned to the mask, then compute a mask value
-+		 * needed to ensure the target range is flushed.
-+		 */
-+		if (unlikely(bitmask & pfn)) {
-+			unsigned long end_pfn = pfn + pages - 1, shared_bits;
-+
-+			/*
-+			 * Since end_pfn <= pfn + bitmask, the only way bits
-+			 * higher than bitmask can differ in pfn and end_pfn is
-+			 * by carrying. This means after masking out bitmask,
-+			 * high bits starting with the first set bit in
-+			 * shared_bits are all equal in both pfn and end_pfn.
-+			 */
-+			shared_bits = ~(pfn ^ end_pfn) & ~bitmask;
-+			mask = shared_bits ? __ffs(shared_bits) : BITS_PER_LONG;
-+		}
-+
- 		/*
- 		 * Fallback to domain selective flush if no PSI support or
--		 * the size is too big. PSI requires page size to be 2 ^ x,
--		 * and the base address is naturally aligned to the size.
-+		 * the size is too big.
- 		 */
- 		if (!cap_pgsel_inv(iommu->cap) ||
- 		    mask > cap_max_amask_val(iommu->cap))
+--- a/drivers/s390/block/dasd_eckd.c
++++ b/drivers/s390/block/dasd_eckd.c
+@@ -3228,12 +3228,11 @@ static int dasd_eckd_ese_read(struct das
+ 				cqr->proc_bytes = blk_count * blksize;
+ 				return 0;
+ 			}
+-			if (dst && !skip_block) {
+-				dst += off;
++			if (dst && !skip_block)
+ 				memset(dst, 0, blksize);
+-			} else {
++			else
+ 				skip_block--;
+-			}
++			dst += blksize;
+ 			blk_count++;
+ 		}
+ 	}
 
 
