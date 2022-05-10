@@ -2,264 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC00CC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 10:50:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3BACC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 10:50:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240297AbiEJKyH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 06:54:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36076 "EHLO
+        id S240378AbiEJKyN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 06:54:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240157AbiEJKwm (ORCPT
+        with ESMTP id S240121AbiEJKwx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 06:52:42 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B852628F1EF
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 03:48:42 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id n10so4452811pjh.5
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 03:48:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=wistron-corp-partner-google-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bam77pW4WQ0BjM14bDRbAzEv9hcIsmwj3Yj+IFh8xIE=;
-        b=ZPJGsNyKRAOZbvpKi9FIImkEHmnu+lLPrjrKvHNuFoO+q3sE+uOS2y6ZgeheRIOv3b
-         RKd2ns5C8BZO/HEYGt2TCwkgIj7IKrngYAknECuZ8vvFKjcbM50OGCo4rnpkXa2Zi3w2
-         jElI7Z5/dCIG/2CTi31hYbpP5HKW++iWRn9PKgxwQ2xcNKJFCvTnvmVoeKOgZHuIRvZ1
-         XQ6H7G3NMdRWu7OkVL42neCrXqcIMxyYu1ZWMnMp2Tc5ny3VCod7bfFRmwbmP5uZGRXx
-         EpVOzSFMcGEe0c14WcjIvbqBvE9iS8vfqWj5ys+H5l3ktyPh32r4ETh9bT2Hgf7QCMRy
-         bRLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bam77pW4WQ0BjM14bDRbAzEv9hcIsmwj3Yj+IFh8xIE=;
-        b=0WhBkFjrt9ANnzHCsuE2qU81Uxs8AN0OCL8YjdxUVCbRj0yPL3P1sotpzUSbf+ROB2
-         pQh1zvpdpxTMxL1EINvW+S7ulbeukxXYljr4ynlETu9QLTsXS9PDxmjmVFUOZT4weQiI
-         3PFZO6q3o+v2nRCTaJWK04iQsgoBKIEhLvPfFiWBnaEsihAr4kltsbtoK+7+Zdea+X7Z
-         qdPIy4DpPICbUTD2PpBeUK0ZYp90p/YunkQ7+Y9prjEe+6UvpuUV3OWVxVuMNuzNUx1O
-         mnOWxpmUK6ovTd1oLEK/X6K3z4TiLPr560c5Lh3MASHFnaITQuQpBI2dthTWyw2+aLCc
-         kwNg==
-X-Gm-Message-State: AOAM533S1MaLR37DmqBHiVQYRLrScnAwGLQeb66L3Pz6tFxUk7Kaqf9p
-        bBjr+tSdyRr9+JwRdybv9gbHxA==
-X-Google-Smtp-Source: ABdhPJztJqTzISk4eY1BjsrTXTuUHRQ204kQt7PPOb8vACKLz1xdoGao5WkwswUO1kvtMFYZRp7vAQ==
-X-Received: by 2002:a17:903:290:b0:15c:1c87:e66c with SMTP id j16-20020a170903029000b0015c1c87e66cmr20352223plr.61.1652179722170;
-        Tue, 10 May 2022 03:48:42 -0700 (PDT)
-Received: from localhost.localdomain ([2402:7500:477:8ff1:8756:be0d:f5eb:1876])
-        by smtp.gmail.com with ESMTPSA id p10-20020a17090a930a00b001cd4989ff65sm1506878pjo.44.2022.05.10.03.48.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 03:48:41 -0700 (PDT)
-From:   Terry Chen <terry_chen@wistron.corp-partner.google.com>
-To:     alsa-devel@alsa-project.org
-Cc:     cezary.rojewski@intel.com, pierre-louis.bossart@linux.intel.com,
-        liam.r.girdwood@linux.intel.com, yang.jie@linux.intel.com,
-        broonie@kernel.org, perex@perex.cz, tiwai@suse.com,
-        brent.lu@intel.com, cujomalainey@chromium.org,
-        seanpaul@chromium.org, terry_chen@wistron.corp-partner.google.com,
-        casey.g.bowman@intel.com,
-        mark_hsieh@wistron.corp-partner.google.com,
-        vamshi.krishna.gopal@intel.com, mac.chiang@intel.com,
-        kai.vehmanen@linux.intel.com, linux-kernel@vger.kernel.org
-Subject: [PATCH] [v2] ASoC: Intel: sof_cs42l42: adding support for ADL configuration and BT offload audio
-Date:   Tue, 10 May 2022 18:48:29 +0800
-Message-Id: <20220510104829.1466968-1-terry_chen@wistron.corp-partner.google.com>
+        Tue, 10 May 2022 06:52:53 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 883E328FE8C;
+        Tue, 10 May 2022 03:48:54 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 140A313D5;
+        Tue, 10 May 2022 03:48:54 -0700 (PDT)
+Received: from hype-n1-sdp.warwick.arm.com (hype-n1-sdp.warwick.arm.com [10.32.33.46])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 9C4143F66F;
+        Tue, 10 May 2022 03:48:51 -0700 (PDT)
+From:   Nick Forrington <nick.forrington@arm.com>
+To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        acme@kernel.org
+Cc:     Nick Forrington <nick.forrington@arm.com>,
+        John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        James Clark <james.clark@arm.com>,
+        Andrew Kilroy <andrew.kilroy@arm.com>
+Subject: [PATCH 02/20] perf vendors events arm64: Arm Cortex-A7
+Date:   Tue, 10 May 2022 11:47:40 +0100
+Message-Id: <20220510104758.64677-3-nick.forrington@arm.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220510104758.64677-1-nick.forrington@arm.com>
+References: <20220510104758.64677-1-nick.forrington@arm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To be able to do  driver data for adl_mx98360a_cs4242 which supports
-two max98360a speaker amplifiers on SSP1 and cs42l42 headphone codec
-on SSP0 running on ADL platform. Also add the capability to machine driver
-of creating DAI Link for BT offload. Although BT offload always uses SSP2
-port but we reserve the flexibility to assign the port number in macro.
+Add PMU events for Arm Cortex-A7
+Update mapfile.csv
 
-Signed-off-by: Terry Chen <terry_chen@wistron.corp-partner.google.com>
+Event data based on:
+https://github.com/ARM-software/data/tree/master/pmu/cortex-a7.json
+
+which is based on PMU event descriptions from the Arm Cortex-A7 Technical
+Reference Manual.
+
+Mapping data (for mapfile.csv) based on:
+https://github.com/ARM-software/data/blob/master/cpus.json
+
+which is based on Main ID Register (MIDR) information found in the Arm
+Technical Reference Manuals for individual CPUs.
+
+Signed-off-by: Nick Forrington <nick.forrington@arm.com>
 ---
- sound/soc/intel/boards/sof_cs42l42.c          | 88 ++++++++++++++++++-
- .../intel/common/soc-acpi-intel-adl-match.c   |  8 ++
- 2 files changed, 92 insertions(+), 4 deletions(-)
+ .../arch/arm64/arm/cortex-a7/branch.json      |  8 +++++
+ .../arch/arm64/arm/cortex-a7/bus.json         | 17 ++++++++++
+ .../arch/arm64/arm/cortex-a7/cache.json       | 32 +++++++++++++++++++
+ .../arch/arm64/arm/cortex-a7/exception.json   | 11 +++++++
+ .../arch/arm64/arm/cortex-a7/instruction.json | 29 +++++++++++++++++
+ .../arch/arm64/arm/cortex-a7/memory.json      |  8 +++++
+ tools/perf/pmu-events/arch/arm64/mapfile.csv  |  1 +
+ 7 files changed, 106 insertions(+)
+ create mode 100644 tools/perf/pmu-events/arch/arm64/arm/cortex-a7/branch.json
+ create mode 100644 tools/perf/pmu-events/arch/arm64/arm/cortex-a7/bus.json
+ create mode 100644 tools/perf/pmu-events/arch/arm64/arm/cortex-a7/cache.json
+ create mode 100644 tools/perf/pmu-events/arch/arm64/arm/cortex-a7/exception.json
+ create mode 100644 tools/perf/pmu-events/arch/arm64/arm/cortex-a7/instruction.json
+ create mode 100644 tools/perf/pmu-events/arch/arm64/arm/cortex-a7/memory.json
 
-diff --git a/sound/soc/intel/boards/sof_cs42l42.c b/sound/soc/intel/boards/sof_cs42l42.c
-index ce78c18798876..4ac4f51c7c115 100644
---- a/sound/soc/intel/boards/sof_cs42l42.c
-+++ b/sound/soc/intel/boards/sof_cs42l42.c
-@@ -41,8 +41,13 @@
- #define SOF_CS42L42_DAILINK_MASK		(GENMASK(24, 10))
- #define SOF_CS42L42_DAILINK(link1, link2, link3, link4, link5) \
- 	((((link1) | ((link2) << 3) | ((link3) << 6) | ((link4) << 9) | ((link5) << 12)) << SOF_CS42L42_DAILINK_SHIFT) & SOF_CS42L42_DAILINK_MASK)
--#define SOF_MAX98357A_SPEAKER_AMP_PRESENT	BIT(25)
--#define SOF_MAX98360A_SPEAKER_AMP_PRESENT	BIT(26)
-+#define SOF_BT_OFFLOAD_PRESENT			BIT(25)
-+#define SOF_CS42L42_SSP_BT_SHIFT		26
-+#define SOF_CS42L42_SSP_BT_MASK			(GENMASK(28, 26))
-+#define SOF_CS42L42_SSP_BT(quirk)	\
-+	(((quirk) << SOF_CS42L42_SSP_BT_SHIFT) & SOF_CS42L42_SSP_BT_MASK)
-+#define SOF_MAX98357A_SPEAKER_AMP_PRESENT	BIT(29)
-+#define SOF_MAX98360A_SPEAKER_AMP_PRESENT	BIT(30)
- 
- enum {
- 	LINK_NONE = 0,
-@@ -50,6 +55,7 @@ enum {
- 	LINK_SPK = 2,
- 	LINK_DMIC = 3,
- 	LINK_HDMI = 4,
-+	LINK_BT = 5,
- };
- 
- /* Default: SSP2 */
-@@ -278,6 +284,13 @@ static struct snd_soc_dai_link_component dmic_component[] = {
- 	}
- };
- 
-+static struct snd_soc_dai_link_component dummy_component[] = {
-+	{
-+		.name = "snd-soc-dummy",
-+		.dai_name = "snd-soc-dummy-dai",
-+	}
-+};
-+
- static int create_spk_amp_dai_links(struct device *dev,
- 				    struct snd_soc_dai_link *links,
- 				    struct snd_soc_dai_link_component *cpus,
-@@ -467,9 +480,52 @@ static int create_hdmi_dai_links(struct device *dev,
- 	return -ENOMEM;
- }
- 
-+static int create_bt_offload_dai_links(struct device *dev,
-+				       struct snd_soc_dai_link *links,
-+				       struct snd_soc_dai_link_component *cpus,
-+				       int *id, int ssp_bt)
-+{
-+	int ret = 0;
-+
-+	/* bt offload */
-+	if (!(sof_cs42l42_quirk & SOF_BT_OFFLOAD_PRESENT))
-+		return 0;
-+
-+	links[*id].name = devm_kasprintf(dev, GFP_KERNEL, "SSP%d-BT",
-+					 ssp_bt);
-+	if (!links[*id].name)
-+		goto devm_err;
-+
-+	links[*id].id = *id;
-+	links[*id].codecs = dummy_component;
-+	links[*id].num_codecs = ARRAY_SIZE(dummy_component);
-+	links[*id].platforms = platform_component;
-+	links[*id].num_platforms = ARRAY_SIZE(platform_component);
-+
-+	links[*id].dpcm_playback = 1;
-+	links[*id].dpcm_capture = 1;
-+	links[*id].no_pcm = 1;
-+	links[*id].cpus = &cpus[*id];
-+	links[*id].num_cpus = 1;
-+
-+	links[*id].cpus->dai_name = devm_kasprintf(dev, GFP_KERNEL,
-+						   "SSP%d Pin",
-+						   ssp_bt);
-+	if (!links[*id].cpus->dai_name)
-+		goto devm_err;
-+
-+	(*id)++;
-+
-+	return 0;
-+
-+devm_err:
-+	return ret;
-+}
-+
- static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
- 							  int ssp_codec,
- 							  int ssp_amp,
-+							  int ssp_bt,
- 							  int dmic_be_num,
- 							  int hdmi_num)
- {
-@@ -522,6 +578,14 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
- 				goto devm_err;
- 			}
- 			break;
-+		case LINK_BT:
-+			ret = create_bt_offload_dai_links(dev, links, cpus, &id, ssp_bt);
-+			if (ret < 0) {
-+				dev_err(dev, "fail to create bt offload dai links, ret %d\n",
-+					ret);
-+				goto devm_err;
-+			}
-+			break;
- 		case LINK_NONE:
- 			/* caught here if it's not used as terminator in macro */
- 		default:
-@@ -543,7 +607,7 @@ static int sof_audio_probe(struct platform_device *pdev)
- 	struct snd_soc_acpi_mach *mach;
- 	struct sof_card_private *ctx;
- 	int dmic_be_num, hdmi_num;
--	int ret, ssp_amp, ssp_codec;
-+	int ret, ssp_bt, ssp_amp, ssp_codec;
- 
- 	ctx = devm_kzalloc(&pdev->dev, sizeof(*ctx), GFP_KERNEL);
- 	if (!ctx)
-@@ -568,6 +632,9 @@ static int sof_audio_probe(struct platform_device *pdev)
- 
- 	dev_dbg(&pdev->dev, "sof_cs42l42_quirk = %lx\n", sof_cs42l42_quirk);
- 
-+	ssp_bt = (sof_cs42l42_quirk & SOF_CS42L42_SSP_BT_MASK) >>
-+			SOF_CS42L42_SSP_BT_SHIFT;
-+
- 	ssp_amp = (sof_cs42l42_quirk & SOF_CS42L42_SSP_AMP_MASK) >>
- 			SOF_CS42L42_SSP_AMP_SHIFT;
- 
-@@ -578,9 +645,11 @@ static int sof_audio_probe(struct platform_device *pdev)
- 
- 	if (sof_cs42l42_quirk & SOF_SPEAKER_AMP_PRESENT)
- 		sof_audio_card_cs42l42.num_links++;
-+	if (sof_cs42l42_quirk & SOF_BT_OFFLOAD_PRESENT)
-+		sof_audio_card_cs42l42.num_links++;
- 
- 	dai_links = sof_card_dai_links_create(&pdev->dev, ssp_codec, ssp_amp,
--					      dmic_be_num, hdmi_num);
-+					      ssp_bt, dmic_be_num, hdmi_num);
- 	if (!dai_links)
- 		return -ENOMEM;
- 
-@@ -621,6 +690,17 @@ static const struct platform_device_id board_ids[] = {
- 					SOF_CS42L42_SSP_AMP(1)) |
- 					SOF_CS42L42_DAILINK(LINK_HP, LINK_DMIC, LINK_HDMI, LINK_SPK, LINK_NONE),
- 	},
-+	{
-+		.name = "adl_mx98360a_cs4242",
-+		.driver_data = (kernel_ulong_t)(SOF_CS42L42_SSP_CODEC(0) |
-+					SOF_SPEAKER_AMP_PRESENT |
-+					SOF_MAX98360A_SPEAKER_AMP_PRESENT |
-+					SOF_CS42L42_SSP_AMP(1) |
-+					SOF_CS42L42_NUM_HDMIDEV(4) |
-+					SOF_BT_OFFLOAD_PRESENT |
-+					SOF_CS42L42_SSP_BT(2)) |
-+					SOF_CS42L42_DAILINK(LINK_HP, LINK_DMIC, LINK_HDMI, LINK_SPK, LINK_BT),
-+	},
- 	{ }
- };
- MODULE_DEVICE_TABLE(platform, board_ids);
-diff --git a/sound/soc/intel/common/soc-acpi-intel-adl-match.c b/sound/soc/intel/common/soc-acpi-intel-adl-match.c
-index 7c8cd00457f81..3f40519250a90 100644
---- a/sound/soc/intel/common/soc-acpi-intel-adl-match.c
-+++ b/sound/soc/intel/common/soc-acpi-intel-adl-match.c
-@@ -384,6 +384,14 @@ struct snd_soc_acpi_mach snd_soc_acpi_intel_adl_machines[] = {
- 		.sof_fw_filename = "sof-adl.ri",
- 		.sof_tplg_filename = "sof-adl-cs35l41.tplg",
- 	},
-+	{
-+		.id = "10134242",
-+		.drv_name = "adl_mx98360a_cs4242",
-+		.machine_quirk = snd_soc_acpi_codec_list,
-+		.quirk_data = &adl_max98360a_amp,
-+		.sof_fw_filename = "sof-adl.ri",
-+		.sof_tplg_filename = "sof-adl-max98360a-rt5682.tplg",
-+	},
- 	{},
- };
- EXPORT_SYMBOL_GPL(snd_soc_acpi_intel_adl_machines);
+diff --git a/tools/perf/pmu-events/arch/arm64/arm/cortex-a7/branch.json b/tools/perf/pmu-events/arch/arm64/arm/cortex-a7/branch.json
+new file mode 100644
+index 000000000000..79f2016c53b0
+--- /dev/null
++++ b/tools/perf/pmu-events/arch/arm64/arm/cortex-a7/branch.json
+@@ -0,0 +1,8 @@
++[
++    {
++        "ArchStdEvent": "BR_MIS_PRED"
++    },
++    {
++        "ArchStdEvent": "BR_PRED"
++    }
++]
+diff --git a/tools/perf/pmu-events/arch/arm64/arm/cortex-a7/bus.json b/tools/perf/pmu-events/arch/arm64/arm/cortex-a7/bus.json
+new file mode 100644
+index 000000000000..75d850b781ac
+--- /dev/null
++++ b/tools/perf/pmu-events/arch/arm64/arm/cortex-a7/bus.json
+@@ -0,0 +1,17 @@
++[
++    {
++        "ArchStdEvent": "CPU_CYCLES"
++    },
++    {
++        "ArchStdEvent": "BUS_ACCESS"
++    },
++    {
++        "ArchStdEvent": "BUS_CYCLES"
++    },
++    {
++        "ArchStdEvent": "BUS_ACCESS_RD"
++    },
++    {
++        "ArchStdEvent": "BUS_ACCESS_WR"
++    }
++]
+diff --git a/tools/perf/pmu-events/arch/arm64/arm/cortex-a7/cache.json b/tools/perf/pmu-events/arch/arm64/arm/cortex-a7/cache.json
+new file mode 100644
+index 000000000000..8a9a95e05c32
+--- /dev/null
++++ b/tools/perf/pmu-events/arch/arm64/arm/cortex-a7/cache.json
+@@ -0,0 +1,32 @@
++[
++    {
++        "ArchStdEvent": "L1I_CACHE_REFILL"
++    },
++    {
++        "ArchStdEvent": "L1I_TLB_REFILL"
++    },
++    {
++        "ArchStdEvent": "L1D_CACHE_REFILL"
++    },
++    {
++        "ArchStdEvent": "L1D_CACHE"
++    },
++    {
++        "ArchStdEvent": "L1D_TLB_REFILL"
++    },
++    {
++        "ArchStdEvent": "L1I_CACHE"
++    },
++    {
++        "ArchStdEvent": "L1D_CACHE_WB"
++    },
++    {
++        "ArchStdEvent": "L2D_CACHE"
++    },
++    {
++        "ArchStdEvent": "L2D_CACHE_REFILL"
++    },
++    {
++        "ArchStdEvent": "L2D_CACHE_WB"
++    }
++]
+diff --git a/tools/perf/pmu-events/arch/arm64/arm/cortex-a7/exception.json b/tools/perf/pmu-events/arch/arm64/arm/cortex-a7/exception.json
+new file mode 100644
+index 000000000000..8e6da69a1cbd
+--- /dev/null
++++ b/tools/perf/pmu-events/arch/arm64/arm/cortex-a7/exception.json
+@@ -0,0 +1,11 @@
++[
++    {
++        "ArchStdEvent": "EXC_TAKEN"
++    },
++    {
++        "ArchStdEvent": "EXC_IRQ"
++    },
++    {
++        "ArchStdEvent": "EXC_FIQ"
++    }
++]
+diff --git a/tools/perf/pmu-events/arch/arm64/arm/cortex-a7/instruction.json b/tools/perf/pmu-events/arch/arm64/arm/cortex-a7/instruction.json
+new file mode 100644
+index 000000000000..7c018f439206
+--- /dev/null
++++ b/tools/perf/pmu-events/arch/arm64/arm/cortex-a7/instruction.json
+@@ -0,0 +1,29 @@
++[
++    {
++        "ArchStdEvent": "SW_INCR"
++    },
++    {
++        "ArchStdEvent": "LD_RETIRED"
++    },
++    {
++        "ArchStdEvent": "ST_RETIRED"
++    },
++    {
++        "ArchStdEvent": "INST_RETIRED"
++    },
++    {
++        "ArchStdEvent": "EXC_RETURN"
++    },
++    {
++        "ArchStdEvent": "CID_WRITE_RETIRED"
++    },
++    {
++        "ArchStdEvent": "PC_WRITE_RETIRED"
++    },
++    {
++        "ArchStdEvent": "BR_IMMED_RETIRED"
++    },
++    {
++        "ArchStdEvent": "BR_RETURN_RETIRED"
++    }
++]
+diff --git a/tools/perf/pmu-events/arch/arm64/arm/cortex-a7/memory.json b/tools/perf/pmu-events/arch/arm64/arm/cortex-a7/memory.json
+new file mode 100644
+index 000000000000..2c319f936957
+--- /dev/null
++++ b/tools/perf/pmu-events/arch/arm64/arm/cortex-a7/memory.json
+@@ -0,0 +1,8 @@
++[
++    {
++        "ArchStdEvent": "UNALIGNED_LDST_RETIRED"
++    },
++    {
++        "ArchStdEvent": "MEM_ACCESS"
++    }
++]
+diff --git a/tools/perf/pmu-events/arch/arm64/mapfile.csv b/tools/perf/pmu-events/arch/arm64/mapfile.csv
+index 154d1fc61ee4..9d8ebe3ea6d2 100644
+--- a/tools/perf/pmu-events/arch/arm64/mapfile.csv
++++ b/tools/perf/pmu-events/arch/arm64/mapfile.csv
+@@ -13,6 +13,7 @@
+ #
+ #Family-model,Version,Filename,EventType
+ 0x00000000410fc050,v1,arm/cortex-a5,core
++0x00000000410fc070,v1,arm/cortex-a7,core
+ 0x00000000410fd030,v1,arm/cortex-a53,core
+ 0x00000000420f1000,v1,arm/cortex-a53,core
+ 0x00000000410fd070,v1,arm/cortex-a57-a72,core
 -- 
-2.31.0
+2.25.1
 
