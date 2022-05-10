@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2CBCC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:26:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35271C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:26:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344224AbiEJOaL (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:30:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42182 "EHLO
+        id S245531AbiEJOaQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:30:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242297AbiEJOAY (ORCPT
+        with ESMTP id S243931AbiEJOAp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:00:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 294E52716B;
-        Tue, 10 May 2022 06:39:54 -0700 (PDT)
+        Tue, 10 May 2022 10:00:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43FF037015;
+        Tue, 10 May 2022 06:39:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 233CC6195A;
-        Tue, 10 May 2022 13:39:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C159C385A6;
-        Tue, 10 May 2022 13:39:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BC6B5B81DB8;
+        Tue, 10 May 2022 13:39:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30088C385A6;
+        Tue, 10 May 2022 13:39:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189993;
-        bh=ClrH9r6REJMY4gRv6YNSD6cNrPGYsFLSvLtpnlQJ+58=;
+        s=korg; t=1652189996;
+        bh=P7kj9ewvd1CowtM7h8+FySFHobYb6HPBwxgsuhHBZXk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GfUh+ogYROCs+P9YUO+g8D0w3vZXlZNLZLNgE26qrQjneWVz6wlnhykABp+cYCmDX
-         dV+9MWruxmhSenhdqPML2e1KB9Afz9O5KbDGMK+y/whQYPG/MnWd3K0LDopNxQN/Ax
-         PWBNAmFtYYCgUzrxvNWQIS8hSU+te7uX1BrwmwP0=
+        b=jtKjPZeH3g3IouuNME4/as/j3AP9MNk15catm0pNZMgt6P6n2sJw5c+Xq2G8U5h5s
+         EdJLOr3B9QN9aLJQWfJsK6cqVtTCdsiVVSBJ/ixmKlr4lDWAqRrOkZ65tH2Gg26/sk
+         7MtVHiazhJPMJwYwYYJ3DV84x+2XhE0dgU3wsvIc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "wanghai (M)" <wanghai38@huawei.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 5.17 095/140] SUNRPC: Dont leak sockets in xs_local_connect()
-Date:   Tue, 10 May 2022 15:08:05 +0200
-Message-Id: <20220510130744.324350750@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.17 096/140] mld: respect RCU rules in ip6_mc_source() and ip6_mc_msfilter()
+Date:   Tue, 10 May 2022 15:08:06 +0200
+Message-Id: <20220510130744.352198061@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -49,51 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit aad41a7d7cf6c6fa804c872a2480f8e541da37cf upstream.
+commit a9384a4c1d250cb40cebf50e41459426d160b08e upstream.
 
-If there is still a closed socket associated with the transport, then we
-need to trigger an autoclose before we can set up a new connection.
+Whenever RCU protected list replaces an object,
+the pointer to the new object needs to be updated
+_before_ the call to kfree_rcu() or call_rcu()
 
-Reported-by: wanghai (M) <wanghai38@huawei.com>
-Fixes: f00432063db1 ("SUNRPC: Ensure we flush any closed sockets before xs_xprt_free()")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Also ip6_mc_msfilter() needs to update the pointer
+before releasing the mc_lock mutex.
+
+Note that linux-5.13 was supporting kfree_rcu(NULL, rcu),
+so this fix does not need the conditional test I was
+forced to use in the equivalent patch for IPv4.
+
+Fixes: 882ba1f73c06 ("mld: convert ipv6_mc_socklist->sflist to RCU")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Taehee Yoo <ap420073@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sunrpc/xprtsock.c |   11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ net/ipv6/mcast.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/net/sunrpc/xprtsock.c
-+++ b/net/sunrpc/xprtsock.c
-@@ -1967,6 +1967,9 @@ static void xs_local_connect(struct rpc_
- 	struct sock_xprt *transport = container_of(xprt, struct sock_xprt, xprt);
- 	int ret;
- 
-+	if (transport->file)
-+		goto force_disconnect;
-+
- 	if (RPC_IS_ASYNC(task)) {
- 		/*
- 		 * We want the AF_LOCAL connect to be resolved in the
-@@ -1979,11 +1982,17 @@ static void xs_local_connect(struct rpc_
- 		 */
- 		task->tk_rpc_status = -ENOTCONN;
- 		rpc_exit(task, -ENOTCONN);
--		return;
-+		goto out_wake;
+--- a/net/ipv6/mcast.c
++++ b/net/ipv6/mcast.c
+@@ -460,10 +460,10 @@ int ip6_mc_source(int add, int omode, st
+ 				newpsl->sl_addr[i] = psl->sl_addr[i];
+ 			atomic_sub(struct_size(psl, sl_addr, psl->sl_max),
+ 				   &sk->sk_omem_alloc);
+-			kfree_rcu(psl, rcu);
+ 		}
++		rcu_assign_pointer(pmc->sflist, newpsl);
++		kfree_rcu(psl, rcu);
+ 		psl = newpsl;
+-		rcu_assign_pointer(pmc->sflist, psl);
  	}
- 	ret = xs_local_setup_socket(transport);
- 	if (ret && !RPC_IS_SOFTCONN(task))
- 		msleep_interruptible(15000);
-+	return;
-+force_disconnect:
-+	xprt_force_disconnect(xprt);
-+out_wake:
-+	xprt_clear_connecting(xprt);
-+	xprt_wake_pending_tasks(xprt, -ENOTCONN);
- }
- 
- #if IS_ENABLED(CONFIG_SUNRPC_SWAP)
+ 	rv = 1;	/* > 0 for insert logic below if sl_count is 0 */
+ 	for (i = 0; i < psl->sl_count; i++) {
+@@ -565,12 +565,12 @@ int ip6_mc_msfilter(struct sock *sk, str
+ 			       psl->sl_count, psl->sl_addr, 0);
+ 		atomic_sub(struct_size(psl, sl_addr, psl->sl_max),
+ 			   &sk->sk_omem_alloc);
+-		kfree_rcu(psl, rcu);
+ 	} else {
+ 		ip6_mc_del_src(idev, group, pmc->sfmode, 0, NULL, 0);
+ 	}
+-	mutex_unlock(&idev->mc_lock);
+ 	rcu_assign_pointer(pmc->sflist, newpsl);
++	mutex_unlock(&idev->mc_lock);
++	kfree_rcu(psl, rcu);
+ 	pmc->sfmode = gsf->gf_fmode;
+ 	err = 0;
+ done:
 
 
