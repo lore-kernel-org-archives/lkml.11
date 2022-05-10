@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A56E2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:14:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 274E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:14:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242479AbiEJNSo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:18:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36170 "EHLO
+        id S242538AbiEJNSw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:18:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242334AbiEJNQT (ORCPT
+        with ESMTP id S242363AbiEJNQW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:16:19 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C551341316;
-        Tue, 10 May 2022 06:12:13 -0700 (PDT)
+        Tue, 10 May 2022 09:16:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 613633B28E;
+        Tue, 10 May 2022 06:12:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id CD5EACE1EE7;
-        Tue, 10 May 2022 13:11:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E548EC385C2;
-        Tue, 10 May 2022 13:11:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2307C615C5;
+        Tue, 10 May 2022 13:12:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15AD0C385A6;
+        Tue, 10 May 2022 13:12:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188311;
-        bh=rBjHofO1WNs/cYxljno5UdrSN3KrNADHJN7VZG+ibug=;
+        s=korg; t=1652188337;
+        bh=8JvN64c//PXkttIcM+5aexIhz/lgA8OH0a3ITB3MlFA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LsYY/uxRvuTlbNT21mpYs+bZw9b75GpXkQDm8P/SjDhkCUgsFTODUobl9UQL2GPw3
-         vXFTlofm7LhUCIQBbKi09rjFECYAshtRMwKbGPb3FE+4JzXIHC6H/wWK15a57wC74+
-         SN6zFLPGGZzOZSxAPGxqJvazrOu8kjGMmThKpwXA=
+        b=JKj4OoI9wGVD5e3KkDs2DwaGvdWVBanAZytdRtiDljrPlQs1DcHj2T9xG35beKgYr
+         g/0FrnIoqdjdtdkEWW+aiaVT8fpQ0+NgdxRx7oiG70+2zhLkGU7Y9AfDnCu3UVBwd4
+         Camb1Hgo62kbaBrmSliWdoNLnQlj5jivEL+O629Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 24/66] ARM: OMAP2+: Fix refcount leak in omap_gic_of_init
-Date:   Tue, 10 May 2022 15:07:14 +0200
-Message-Id: <20220510130730.476446114@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 4.9 41/66] tty: n_gsm: fix wrong command frame length field encoding
+Date:   Tue, 10 May 2022 15:07:31 +0200
+Message-Id: <20220510130730.972589341@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.762341544@linuxfoundation.org>
 References: <20220510130729.762341544@linuxfoundation.org>
@@ -49,42 +47,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-[ Upstream commit 0f83e6b4161617014017a694888dd8743f46f071 ]
+commit 398867f59f956985f4c324f173eff7b946e14bd8 upstream.
 
-The of_find_compatible_node() function returns a node pointer with
-refcount incremented, We should use of_node_put() on it when done
-Add the missing of_node_put() to release the refcount.
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.4.6.1 states that each command frame shall
+be made up from type, length and value. Looking for example in chapter
+5.4.6.3.5 at the description for the encoding of a flow control on command
+it becomes obvious, that the type and length field is always present
+whereas the value may be zero bytes long. The current implementation omits
+the length field if the value is not present. This is wrong.
+Correct this by always sending the length in gsm_control_transmit().
+So far only the modem status command (MSC) has included a value and encoded
+its length directly. Therefore, also change gsmtty_modem_update().
 
-Fixes: fd1c07861491 ("ARM: OMAP4: Fix the init code to have OMAP4460 errata available in DT build")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Message-Id: <20220309104302.18398-1-linmq006@gmail.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220414094225.4527-12-daniel.starke@siemens.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/mach-omap2/omap4-common.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/n_gsm.c |   23 +++++++++++------------
+ 1 file changed, 11 insertions(+), 12 deletions(-)
 
-diff --git a/arch/arm/mach-omap2/omap4-common.c b/arch/arm/mach-omap2/omap4-common.c
-index e5dcbda20129..7fff67ea7bcd 100644
---- a/arch/arm/mach-omap2/omap4-common.c
-+++ b/arch/arm/mach-omap2/omap4-common.c
-@@ -342,10 +342,12 @@ void __init omap_gic_of_init(void)
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1318,11 +1318,12 @@ static void gsm_control_response(struct
  
- 	np = of_find_compatible_node(NULL, NULL, "arm,cortex-a9-gic");
- 	gic_dist_base_addr = of_iomap(np, 0);
-+	of_node_put(np);
- 	WARN_ON(!gic_dist_base_addr);
+ static void gsm_control_transmit(struct gsm_mux *gsm, struct gsm_control *ctrl)
+ {
+-	struct gsm_msg *msg = gsm_data_alloc(gsm, 0, ctrl->len + 1, gsm->ftype);
++	struct gsm_msg *msg = gsm_data_alloc(gsm, 0, ctrl->len + 2, gsm->ftype);
+ 	if (msg == NULL)
+ 		return;
+-	msg->data[0] = (ctrl->cmd << 1) | 2 | EA;	/* command */
+-	memcpy(msg->data + 1, ctrl->data, ctrl->len);
++	msg->data[0] = (ctrl->cmd << 1) | CR | EA;	/* command */
++	msg->data[1] = (ctrl->len << 1) | EA;
++	memcpy(msg->data + 2, ctrl->data, ctrl->len);
+ 	gsm_data_queue(gsm->dlci[0], msg);
+ }
  
- 	np = of_find_compatible_node(NULL, NULL, "arm,cortex-a9-twd-timer");
- 	twd_base = of_iomap(np, 0);
-+	of_node_put(np);
- 	WARN_ON(!twd_base);
+@@ -2864,19 +2865,17 @@ static struct tty_ldisc_ops tty_ldisc_pa
  
- skip_errata_init:
--- 
-2.35.1
-
+ static int gsmtty_modem_update(struct gsm_dlci *dlci, u8 brk)
+ {
+-	u8 modembits[5];
++	u8 modembits[3];
+ 	struct gsm_control *ctrl;
+ 	int len = 2;
+ 
+-	if (brk)
++	modembits[0] = (dlci->addr << 2) | 2 | EA;  /* DLCI, Valid, EA */
++	modembits[1] = (gsm_encode_modem(dlci) << 1) | EA;
++	if (brk) {
++		modembits[2] = (brk << 4) | 2 | EA; /* Length, Break, EA */
+ 		len++;
+-
+-	modembits[0] = len << 1 | EA;		/* Data bytes */
+-	modembits[1] = dlci->addr << 2 | 3;	/* DLCI, EA, 1 */
+-	modembits[2] = gsm_encode_modem(dlci) << 1 | EA;
+-	if (brk)
+-		modembits[3] = brk << 4 | 2 | EA;	/* Valid, EA */
+-	ctrl = gsm_control_send(dlci->gsm, CMD_MSC, modembits, len + 1);
++	}
++	ctrl = gsm_control_send(dlci->gsm, CMD_MSC, modembits, len);
+ 	if (ctrl == NULL)
+ 		return -ENOMEM;
+ 	return gsm_control_wait(dlci->gsm, ctrl);
 
 
