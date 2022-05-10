@@ -2,140 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77ACAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:18:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E937C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:19:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240847AbiEJLWu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 07:22:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38226 "EHLO
+        id S240852AbiEJLXo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 07:23:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240833AbiEJLWa (ORCPT
+        with ESMTP id S240836AbiEJLXY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 07:22:30 -0400
-Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B743C1868CB;
-        Tue, 10 May 2022 04:18:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1652181513; x=1683717513;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=X4Q7oI+5uOvx0zCxStXfcdou0TUG9aiiGSJ0KXdxXIc=;
-  b=lDGi//iFUUUiO81uAhwF6jt4bN6jD/M9ipmYBilk9saNf47gSZ7vHUjU
-   QaSLRfJfIvPEcVRMDuIbCPVXHoKK3tFT48DLvFZnVX3p27XpQYmzIbdZ2
-   BkLwRR0uz1J3Ak6AhX6wVwQcbdDLcGSCcuNjqPfhkZGMi8aLCZmwN9sBf
-   g=;
-X-IronPort-AV: E=Sophos;i="5.91,214,1647302400"; 
-   d="scan'208";a="196825572"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1d-54a073b7.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-2101.iad2.amazon.com with ESMTP; 10 May 2022 11:18:21 +0000
-Received: from EX13MTAUWC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1d-54a073b7.us-east-1.amazon.com (Postfix) with ESMTPS id 7186184C0F;
-        Tue, 10 May 2022 11:18:19 +0000 (UTC)
-Received: from EX13D20UWC001.ant.amazon.com (10.43.162.244) by
- EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Tue, 10 May 2022 11:18:18 +0000
-Received: from u79c5a0a55de558.ant.amazon.com (10.43.160.178) by
- EX13D20UWC001.ant.amazon.com (10.43.162.244) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Tue, 10 May 2022 11:18:16 +0000
-From:   Alexander Graf <graf@amazon.com>
-To:     <kvm@vger.kernel.org>
-CC:     <linuxppc-dev@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Paul Mackerras <paulus@samba.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Matt Evans <matt@ozlabs.org>, <stable@vger.kernel.org>
-Subject: [PATCH v2] KVM: PPC: Book3S PR: Enable MSR_DR for switch_mmu_context()
-Date:   Tue, 10 May 2022 13:18:09 +0200
-Message-ID: <20220510111809.15987-1-graf@amazon.com>
-X-Mailer: git-send-email 2.28.0.394.ge197136389
+        Tue, 10 May 2022 07:23:24 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 264612A9764
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 04:19:27 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 24ABJ7p6045467;
+        Tue, 10 May 2022 06:19:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1652181547;
+        bh=egVFr2Lzju1msu86aPi0W2+t8awHwoi94vZ/ftvnOe0=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=cfe/J7N3ealCUTAmQ+kbBWcyJAlrDCZWQI8Xu+y8z34T4K7Brd8fSAT5IQbbP1xNz
+         QGpCJ5GkOW7cR88XZ+DclFO1+253F8JN+0R4gOr5+/ra2OSEnxJkfpHwTyQuCZSANv
+         0n8+EeY9NUyRdTknuNCLioB21Av3pvVleiGuLiEI=
+Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 24ABJ7aK067320
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 10 May 2022 06:19:07 -0500
+Received: from DLEE111.ent.ti.com (157.170.170.22) by DLEE112.ent.ti.com
+ (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 10
+ May 2022 06:19:07 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE111.ent.ti.com
+ (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 10 May 2022 06:19:07 -0500
+Received: from pratyush-4F-325.dhcp.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 24ABJ3fp127309;
+        Tue, 10 May 2022 06:19:05 -0500
+From:   Pratyush Yadav <p.yadav@ti.com>
+To:     Michael Walle <michael@walle.cc>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Richard Weinberger <richard@nod.at>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+CC:     <linux-kernel@vger.kernel.org>, <linux-mtd@lists.infradead.org>
+Subject: Re: [PATCH v3 1/2] mtd: spi-nor: export spi_nor_hwcaps_pp2cmd()
+Date:   Tue, 10 May 2022 16:49:01 +0530
+Message-ID: <165218141900.322959.8359522970509700885.b4-ty@ti.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220429102018.2361038-1-michael@walle.cc>
+References: <20220429102018.2361038-1-michael@walle.cc>
 MIME-Version: 1.0
-X-Originating-IP: [10.43.160.178]
-X-ClientProxiedBy: EX13D16UWC003.ant.amazon.com (10.43.162.15) To
- EX13D20UWC001.ant.amazon.com (10.43.162.244)
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 863771a28e27 ("powerpc/32s: Convert switch_mmu_context() to C")
-moved the switch_mmu_context() to C. While in principle a good idea, it
-meant that the function now uses the stack. The stack is not accessible
-from real mode though.
+On Fri, 29 Apr 2022 12:20:17 +0200, Michael Walle wrote:
+> The function will also be used by the debugfs module.
+> 
+> 
 
-So to keep calling the function, let's turn on MSR_DR while we call it.
-That way, all pointer references to the stack are handled virtually.
+Applied to https://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git spi-nor/next, thanks!
+[1/2] mtd: spi-nor: export spi_nor_hwcaps_pp2cmd()
+      https://git.kernel.org/mtd/c/d92e0dbc6a
+[2/2] mtd: spi-nor: expose internal parameters via debugfs
+      https://git.kernel.org/mtd/c/0257be79fc
 
-In addition, make sure to save/restore r12 in an SPRG, as it may get
-clobbered by the C function.
-
-Reported-by: Matt Evans <matt@ozlabs.org>
-Fixes: 863771a28e27 ("powerpc/32s: Convert switch_mmu_context() to C")
-Signed-off-by: Alexander Graf <graf@amazon.com>
-Cc: stable@vger.kernel.org # v5.14+
-
----
-
-v1 -> v2:
-
-  - Save and restore R12, so that we don't touch volatile registers
-    while calling into C.
----
- arch/powerpc/kvm/book3s_32_sr.S | 26 +++++++++++++++++++++-----
- 1 file changed, 21 insertions(+), 5 deletions(-)
-
-diff --git a/arch/powerpc/kvm/book3s_32_sr.S b/arch/powerpc/kvm/book3s_32_sr.S
-index e3ab9df6cf19..1ce13e3ab072 100644
---- a/arch/powerpc/kvm/book3s_32_sr.S
-+++ b/arch/powerpc/kvm/book3s_32_sr.S
-@@ -122,11 +122,27 @@
- 
- 	/* 0x0 - 0xb */
- 
--	/* 'current->mm' needs to be in r4 */
--	tophys(r4, r2)
--	lwz	r4, MM(r4)
--	tophys(r4, r4)
--	/* This only clobbers r0, r3, r4 and r5 */
-+	/* switch_mmu_context() clobbers r12, rescue it */
-+	SET_SCRATCH0(r12)
-+
-+	/* switch_mmu_context() needs paging, let's enable it */
-+	mfmsr   r9
-+	ori     r11, r9, MSR_DR
-+	mtmsr   r11
-+	sync
-+
-+	/* Calling switch_mmu_context(<inv>, current->mm, <inv>); */
-+	lwz	r4, MM(r2)
- 	bl	switch_mmu_context
- 
-+	/* Disable paging again */
-+	mfmsr   r9
-+	li      r6, MSR_DR
-+	andc    r9, r9, r6
-+	mtmsr	r9
-+	sync
-+
-+	/* restore r12 */
-+	GET_SCRATCH0(r12)
-+
- .endm
--- 
-2.28.0.394.ge197136389
-
-
-
-
-Amazon Development Center Germany GmbH
-Krausenstr. 38
-10117 Berlin
-Geschaeftsfuehrung: Christian Schlaeger, Jonathan Weiss
-Eingetragen am Amtsgericht Charlottenburg unter HRB 149173 B
-Sitz: Berlin
-Ust-ID: DE 289 237 879
-
-
+--
+Regards,
+Pratyush Yadav
+Texas Instruments Inc.
 
