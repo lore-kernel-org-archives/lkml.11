@@ -2,110 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C33CFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 06:32:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFB07C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 06:40:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237175AbiEJGgl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 02:36:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51900 "EHLO
+        id S237181AbiEJGoM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 02:44:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237145AbiEJGgi (ORCPT
+        with ESMTP id S232116AbiEJGoJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 02:36:38 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D7D2300FE;
-        Mon,  9 May 2022 23:32:40 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Ky7SG0p7RzGpfb;
-        Tue, 10 May 2022 14:29:50 +0800 (CST)
-Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 10 May 2022 14:32:06 +0800
-Received: from [127.0.0.1] (10.67.108.67) by dggpemm500013.china.huawei.com
- (7.185.36.172) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 10 May
- 2022 14:32:06 +0800
-Message-ID: <f52be1d0-dbfe-2177-8a4c-1d4e1470d908@huawei.com>
-Date:   Tue, 10 May 2022 14:32:03 +0800
+        Tue, 10 May 2022 02:44:09 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD97321935A
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 23:40:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652164812; x=1683700812;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=nYSTBbKJ5UwtwVRbrqVsql8056l5ynL+ozUldG6Uhgg=;
+  b=YSPLQ6qVWesUgWUf7+nIvPbVk87PEhFf8JotBcZ9EBT7ZS4u9U1ca2tv
+   +MO7pvTIOHMtVuh1TsIO/u/wm5MC+qsiRpwRNiPRZ8zmRhY+ijJYNWX/R
+   DMMHslqp5cVwBdKXJHa6kCeC6mUwCGSX2e8IonoFQuDV8ud0BA5/VBg/p
+   Dw2p24O2jNYKsmEPO6GxzUq2qEnyWrSp175FpCBTJ0gzYNWYdwfND9iTA
+   aP6JbIb2S5+V2Y9jP7GNUBMDxXJs+dhPQv7cXtDlHU1hPnh2CLcrP4hNM
+   P9NwnFF01P7bIJONvVv6YsLSgJbBzUfVWip+AcVBBPRN9qBZDSGiykfIM
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="251327923"
+X-IronPort-AV: E=Sophos;i="5.91,213,1647327600"; 
+   d="scan'208";a="251327923"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 23:40:12 -0700
+X-IronPort-AV: E=Sophos;i="5.91,213,1647327600"; 
+   d="scan'208";a="519605030"
+Received: from sijieyux-mobl3.ccr.corp.intel.com (HELO yhuang6-mobl1.ccr.corp.intel.com) ([10.254.212.195])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 23:40:08 -0700
+From:   Huang Ying <ying.huang@intel.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Mel Gorman <mgorman@techsingularity.net>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Huang Ying <ying.huang@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@suse.com>,
+        Rik van Riel <riel@surriel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Yang Shi <shy828301@gmail.com>, Zi Yan <ziy@nvidia.com>,
+        Wei Xu <weixugc@google.com>, osalvador <osalvador@suse.de>,
+        Shakeel Butt <shakeelb@google.com>,
+        Zhong Jiang <zhongjiang-ali@linux.alibaba.com>
+Subject: [PATCH -V2 0/3 RESEND] memory tiering: hot page selection
+Date:   Tue, 10 May 2022 14:39:55 +0800
+Message-Id: <20220510063958.86985-1-ying.huang@intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 5.10 v3] locking/csd_lock: fix csdlock_debug cause arm64
- boot panic
-Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-arch@vger.kernel.org>, <stable@vger.kernel.org>,
-        <peterz@infradead.org>, <tglx@linutronix.de>, <namit@vmware.com>,
-        <gor@linux.ibm.com>, <rdunlap@infradead.org>, <sashal@kernel.org>
-References: <20220507084510.14761-1-chenzhongjin@huawei.com>
- <YnZAO+3Rhj0gwq38@kroah.com>
- <e8715911-f835-059d-27f8-cc5f5ad30a07@huawei.com>
- <YnjpljvWncezV0G0@kroah.com>
-From:   Chen Zhongjin <chenzhongjin@huawei.com>
-In-Reply-To: <YnjpljvWncezV0G0@kroah.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.108.67]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500013.china.huawei.com (7.185.36.172)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+To optimize page placement in a memory tiering system with NUMA
+balancing, the hot pages in the slow memory node need to be
+identified.  Essentially, the original NUMA balancing implementation
+selects the mostly recently accessed (MRU) pages to promote.  But this
+isn't a perfect algorithm to identify the hot pages.  Because the
+pages with quite low access frequency may be accessed eventually given
+the NUMA balancing page table scanning period could be quite long
+(e.g. 60 seconds).  So in this patchset, we implement a new hot page
+identification algorithm based on the latency between NUMA balancing
+page table scanning and hint page fault.  Which is a kind of mostly
+frequently accessed (MFU) algorithm.
 
+In NUMA balancing memory tiering mode, if there are hot pages in slow
+memory node and cold pages in fast memory node, we need to
+promote/demote hot/cold pages between the fast and cold memory nodes.
 
-On 2022/5/9 18:14, Greg KH wrote:
-> 
-> A: http://en.wikipedia.org/wiki/Top_post
-> Q: Were do I find info about this thing called top-posting?
-> A: Because it messes up the order in which people normally read text.
-> Q: Why is top-posting such a bad thing?
-> A: Top-posting.
-> Q: What is the most annoying thing in e-mail?
-> 
-> A: No.
-> Q: Should I include quotations after my reply?
-> 
-> http://daringfireball.net/2007/07/on_top
+A choice is to promote/demote as fast as possible.  But the CPU cycles
+and memory bandwidth consumed by the high promoting/demoting
+throughput will hurt the latency of some workload because of accessing
+inflating and slow memory bandwidth contention.
 
-Sorry for this. Thanks so much you point it out before I make more mistakes.
+A way to resolve this issue is to restrict the max promoting/demoting
+throughput.  It will take longer to finish the promoting/demoting.
+But the workload latency will be better.  This is implemented in this
+patchset as the page promotion rate limit mechanism.
 
-> 
-> On Mon, May 09, 2022 at 11:14:12AM +0800, Chen Zhongjin wrote:
->> Hi Greg,
->>
->> Since the patch:
->> https://lore.kernel.org/all/20210420093559.23168-1-catalin.marinas@arm.com/
->> has forced CONFIG_SPARSEMEM_VMEMMAP=y from 5.12, it's not necessary to include
->> this patch on master.
->>
->> However this problem still exist on 5.10 stable, so either we can backport the
->> above patch to 5.10, or independently apply mine.
->>
->> I'm not sure if backporting one exist patch is better, but that patch only
->> changed configs without any fix for old builds.
->>
->> If you have any advice please tell me.
-> 
-> If you want to include a patch in the stable tree that is NOT in Linus's
-> tree, then you need to document it very very well as to why this is not
-> the case.
-> 
-> If backporting the above commit is better, I would much rather do that,
-> please ask the maintainers and developers of it if they will do that.
+The promotion hot threshold is workload and system configuration
+dependent.  So in this patchset, a method to adjust the hot threshold
+automatically is implemented.  The basic idea is to control the number
+of the candidate promotion pages to match the promotion rate limit.
 
-I'll try to send this patch to master because I found it is broken on ppc64 for
-this problem as well. Also I'll add CC to stable so after it is accepted by
-master we can backport it to stable.
+We used the pmbench memory accessing benchmark tested the patchset on
+a 2-socket server system with DRAM and PMEM installed.  The test
+results are as follows,
 
-Thanks!
+		pmbench score		promote rate
+		 (accesses/s)			MB/s
+		-------------		------------
+base		  146887704.1		       725.6
+hot selection     165695601.2		       544.0
+rate limit	  162814569.8		       165.2
+auto adjustment	  170495294.0                  136.9
 
-> thanks,
-> 
-> greg k-h
-> .
+From the results above,
 
+With hot page selection patch [1/3], the pmbench score increases about
+12.8%, and promote rate (overhead) decreases about 25.0%, compared with
+base kernel.
+
+With rate limit patch [2/3], pmbench score decreases about 1.7%, and
+promote rate decreases about 69.6%, compared with hot page selection
+patch.
+
+With threshold auto adjustment patch [3/3], pmbench score increases
+about 4.7%, and promote rate decrease about 17.1%, compared with rate
+limit patch.
+
+Changelog:
+
+v2:
+
+- Added ABI document for promote rate limit per Andrew's comments.  Thanks!
+
+- Added function comments when necessary per Andrew's comments.
+
+- Address other comments from Andrew Morton.
+
+Best Regards,
+Huang, Ying
