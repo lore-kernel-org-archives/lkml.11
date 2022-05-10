@@ -2,496 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DD31C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 19:30:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18D49C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 19:34:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237676AbiEJTa1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 15:30:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46632 "EHLO
+        id S230458AbiEJTeg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 15:34:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233405AbiEJTaF (ORCPT
+        with ESMTP id S229509AbiEJTee (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 15:30:05 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 375DE2A28CA
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 12:30:01 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id y41so10935156pfw.12
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 12:30:01 -0700 (PDT)
+        Tue, 10 May 2022 15:34:34 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56ED9170F1B;
+        Tue, 10 May 2022 12:34:33 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id i17so17644392pla.10;
+        Tue, 10 May 2022 12:34:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=hX2NewzlW7IU1O5s8q9Vhm6e+LNQcR0Drq+oVtmujQU=;
-        b=cj32nqZSsJRGZh1wN1Z0n+mCsrWiCEunfbj6m1gbZ+O3gP/NW4fhcWh972e3YkO6pS
-         syBNPR/Wbq3utSCiOclZrKRHvGbfxe39vkPbHnQVat1S+YZA7ciMzLkVIa7ewTNm79pN
-         4epvL3QwK+82kBQPHssVGnKxl/e0JxpVziSA8=
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bQthYIwGazUHXvJP4lOeiwCuBM9QlZF5ToR+SlrapXg=;
+        b=WKDEchBVC4Mp134gTUdZstuBf95M4RJvGSkZViPHvH1YSJM33gQRVZWZL9HZNWW223
+         Qgy84a9u4AjEUm9YrMVUW9UNx0E2sQYgIN0MYN+gOf1caJZneovM75xCXkgevzWeAsSs
+         fM6pqvNvNTmffmbhpx9GcAic/N3JOAqSHe9kcVUGE4Hq0Zaxgnv8Fjt1Naee4CaKnfjj
+         RCinT3zwa59llD67qILIX1cl1IPfp6fk0aGqq7nXOd/ahyrQ90DNGCjyCv6aprfqu2uC
+         vgmyE+UAa2PzfG4jdNqQlPInnL6EHMiLb94OdoFMMrvQT9Bx1Ici0tfDSEEqtb0cASaT
+         F32Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=hX2NewzlW7IU1O5s8q9Vhm6e+LNQcR0Drq+oVtmujQU=;
-        b=A+DrUNXLXzLyNGdF2/Utu/BQ4qZG9c+Tc6oSWSJN6hG5Zo0COYjtM7rqECdYurbOkB
-         Prnk9mGP2n811MmuP+mrJdwWMs0BVQjDV0kOcNXWydriWkOjtiR5jUnon4p/dJ60d7TX
-         LGbNitFbmLBLvev225JjMOsBDtcH8/rCgrDEl8b8yuB0rTuuDocQCrLB2N8K3c0RbdPT
-         Pk1q61eqOfHXgGIyya7fL3KQdjxFsSyULEByD+bq/6cF4XyuOi5kYAZ7lmhqLjwxSo3o
-         lfXHVhSXbIf2hQpz+HGyMqbBXbr4SBVNRVAjmkOkd1VSf5NdeixYFBEIEb6sUXS13b/D
-         heNQ==
-X-Gm-Message-State: AOAM530CySQuKl+aVRyKh2p3MZvAl1Pj0P0Z6bB0NbwNP+NpEj593ZYa
-        ruJ7I87Fge1KhymNVQo1Y1+pOw==
-X-Google-Smtp-Source: ABdhPJz8IHQupfUCCUpYD9mi5YoUF5MFYXxWAhPrYc7w6E3mBHGt1ig81P6c4QGtDV7+7YE6qx0CJw==
-X-Received: by 2002:a63:90c7:0:b0:3c6:2bba:a5c0 with SMTP id a190-20020a6390c7000000b003c62bbaa5c0mr18409517pge.3.1652211000500;
-        Tue, 10 May 2022 12:30:00 -0700 (PDT)
-Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:6f08:624c:c762:d238])
-        by smtp.gmail.com with ESMTPSA id s43-20020a056a001c6b00b0050dc762819dsm10786989pfw.119.2022.05.10.12.29.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 12:30:00 -0700 (PDT)
-From:   Douglas Anderson <dianders@chromium.org>
-To:     dri-devel@lists.freedesktop.org
-Cc:     Hsin-Yi Wang <hsinyi@chromium.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Philip Chen <philipchen@chromium.org>,
-        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        freedreno@lists.freedesktop.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        linux-arm-msm@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Lyude Paul <lyude@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 2/4] drm/dp: Add callbacks to make using DP AUX bus properly easier
-Date:   Tue, 10 May 2022 12:29:42 -0700
-Message-Id: <20220510122726.v3.2.I4182ae27e00792842cb86f1433990a0ef9c0a073@changeid>
-X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
-In-Reply-To: <20220510192944.2408515-1-dianders@chromium.org>
-References: <20220510192944.2408515-1-dianders@chromium.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bQthYIwGazUHXvJP4lOeiwCuBM9QlZF5ToR+SlrapXg=;
+        b=Z3LBxwjPm1DgHRvRAJEDrtaGv1FFpRZJW3EkLwV07SNsCD3QRQqgSLe31zPorEFDsU
+         F84TwMZtDu6GlmgI7JvQtkc0iMAKQuPyjDwdkv4OlMYP9qwj7xH5pywgw7HzJOnWFPyr
+         4rsXo7MNhHL4+D3xQh6X59Ams8fNTG6TDtHGTvMJCS67NYj8EtIMKCucgCD7x7plHgj+
+         lvWKGQdHvYTUfj2NPSuoLLjQ+HBBNtdS5so4vND9V04zCchpFC8eK/yAQxurUMuVAzlD
+         F9T44OYRgCEGXWd2s0ZIduft2v5LJXfQCfTUj0GctkqWvkWPbGMY7mxKIMb/jVCnjm5W
+         7F5A==
+X-Gm-Message-State: AOAM533t00+8j/HtBPDG/qPgkbqyGnNIu4jBmWsmozA9R4lglPAboDSG
+        vTJHlm0HQctAOtJnvY5JaW5v2+QMge93v9IzTjQ=
+X-Google-Smtp-Source: ABdhPJxUFMq+haarYgwZ66z+ncVF/vfNC4KlopREAV3XXY82SC6n/r928x8vXvUee+OfLRX/rpcr31r0SvO93QHc4MI=
+X-Received: by 2002:a17:902:d552:b0:15e:e759:cd38 with SMTP id
+ z18-20020a170902d55200b0015ee759cd38mr22134697plf.87.1652211272813; Tue, 10
+ May 2022 12:34:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220505033814.103256-1-xu.xin16@zte.com.cn> <YnUlntNFR4zeD+qa@dhcp22.suse.cz>
+ <6275d3e7.1c69fb81.1d62.4504@mx.google.com> <YnjmPAToTR0C5o8x@dhcp22.suse.cz>
+ <6278fa75.1c69fb81.9c598.f794@mx.google.com> <Ynj/l+pyFJxKfcbQ@dhcp22.suse.cz>
+ <6279c354.1c69fb81.7f6c1.15e0@mx.google.com>
+In-Reply-To: <6279c354.1c69fb81.7f6c1.15e0@mx.google.com>
+From:   Yang Shi <shy828301@gmail.com>
+Date:   Tue, 10 May 2022 12:34:20 -0700
+Message-ID: <CAHbLzkqztB+NXVcxtd7bVo7onH6AcMJ3JWCAHHqH3OAdbZsMOQ@mail.gmail.com>
+Subject: Re: [PATCH] mm/memcg: support control THP behaviour in cgroup
+To:     CGEL <cgel.zte@gmail.com>
+Cc:     Michal Hocko <mhocko@suse.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Shakeel Butt <shakeelb@google.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        William Kucharski <william.kucharski@oracle.com>,
+        Peter Xu <peterx@redhat.com>, Hugh Dickins <hughd@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Cgroups <cgroups@vger.kernel.org>,
+        Yang Yang <yang.yang29@zte.com.cn>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As talked about in this patch in the kerneldoc of
-of_dp_aux_populate_ep_device() and also in the past in commit
-a1e3667a9835 ("drm/bridge: ti-sn65dsi86: Promote the AUX channel to
-its own sub-dev"), it can be difficult for eDP controller drivers to
-know when the panel has finished probing when they're using
-of_dp_aux_populate_ep_devices().
+On Mon, May 9, 2022 at 6:43 PM CGEL <cgel.zte@gmail.com> wrote:
+>
+> On Mon, May 09, 2022 at 01:48:39PM +0200, Michal Hocko wrote:
+> > On Mon 09-05-22 11:26:43, CGEL wrote:
+> > > On Mon, May 09, 2022 at 12:00:28PM +0200, Michal Hocko wrote:
+> > > > On Sat 07-05-22 02:05:25, CGEL wrote:
+> > > > [...]
+> > > > > If there are many containers to run on one host, and some of them have high
+> > > > > performance requirements, administrator could turn on thp for them:
+> > > > > # docker run -it --thp-enabled=always
+> > > > > Then all the processes in those containers will always use thp.
+> > > > > While other containers turn off thp by:
+> > > > > # docker run -it --thp-enabled=never
+> > > >
+> > > > I do not know. The THP config space is already too confusing and complex
+> > > > and this just adds on top. E.g. is the behavior of the knob
+> > > > hierarchical? What is the policy if parent memcg says madivise while
+> > > > child says always? How does the per-application configuration aligns
+> > > > with all that (e.g. memcg policy madivise but application says never via
+> > > > prctl while still uses some madvised - e.g. via library).
+> > > >
+> > >
+> > > The cgroup THP behavior is align to host and totally independent just likes
+> > > /sys/fs/cgroup/memory.swappiness. That means if one cgroup config 'always'
+> > > for thp, it has no matter with host or other cgroup. This make it simple for
+> > > user to understand or control.
+> >
+> > All controls in cgroup v2 should be hierarchical. This is really
+> > required for a proper delegation semantic.
+> >
+>
+> Could we align to the semantic of /sys/fs/cgroup/memory.swappiness?
+> Some distributions like Ubuntu is still using cgroup v1.
 
-The ti-sn65dsi86 driver managed to solve this because it was already
-broken up into a bunch of sub-drivers. That means we could solve the
-problem there by adding a new sub-driver to get the panel. We could
-use the traditional -EPROBE_DEFER retry mechansim to handle the case
-where the panel hadn't probed yet.
+Other than enable flag, how would you handle the defrag flag
+hierarchically? It is much more complicated.
 
-In parade-ps8640 we didn't really solve this. The code just expects
-the panel to be ready right away. While reviewing the code originally
-I had managed to convince myself it was fine to just expect the panel
-right away, but additional testing has shown that not to be the
-case. We could fix parade-ps8640 like we did ti-sn65dsi86 but it's
-pretty cumbersome (since we're not already broken into multiple
-drivers) and requires a bunch of boilerplate code.
+>
+> > > If memcg policy madivise but application says never, just like host, the result
+> > > is no THP for that application.
+> > >
+> > > > > By doing this we could promote important containers's performance with less
+> > > > > footprint of thp.
+> > > >
+> > > > Do we really want to provide something like THP based QoS? To me it
+> > > > sounds like a bad idea and if the justification is "it might be useful"
+> > > > then I would say no. So you really need to come with a very good usecase
+> > > > to promote this further.
+> > >
+> > > At least on some 5G(communication technology) machine, it's useful to provide
+> > > THP based QoS. Those 5G machine use micro-service software architecture, in
+> > > other words one service application runs in one container.
+> >
+> > I am not really sure I understand. If this is one application per
+> > container (cgroup) then why do you really need per-group setting?
+> > Does the application is a set of different processes which are only very
+> > loosely tight?
+> >
+> For micro-service architecture, the application in one container is not a
+> set of loosely tight processes, it's aim at provide one certain service,
+> so different containers means different service, and different service
+> has different QoS demand.
+>
+> The reason why we need per-group(per-container) setting is because most
+> container are managed by compose software, the compose software provide
+> UI to decide how to run a container(likes setting swappiness value). For
+> example the docker compose:
+> https://docs.docker.com/compose/#compose-v2-and-the-new-docker-compose-command
+>
+> To make it clearer, I try to make a summary for why container needs this patch:
+>     1.one machine can run different containers;
+>     2.for some scenario, container runs only one service inside(can be only one
+> application);
+>     3.different containers provide different services, different services have
+> different QoS demands;
+>     4.THP has big influence on QoS. It's fast for memory access, but eat more
+> memory;
 
-After discussion [1] it seems like the best solution for most people
-is:
-- Accept that there's always at most one device that will probe as a
-  result of the DP AUX bus (it may have sub-devices, but there will be
-  one device _directly_ probed).
-- When that device finishes probing, we can just have a call back.
+I have been involved in this kind of topic discussion offline a couple
+of times. But TBH I don't see how you could achieve QoS by this flag.
+THP allocation is *NOT* guaranteed. And the overhead may be quite
+high. It depends on how fragmented the system is.
 
-This patch implements that idea. We'll now take a callback as an
-argument to the populate function. To make this easier to land in
-pieces, we'll make wrappers for the old functions. The functions with
-the new name (which make it clear that we only have one child) will
-take the callback and the functions with the old name will temporarily
-wrap.
-
-[1] https://lore.kernel.org/r/CAD=FV=Ur3afHhsXe7a3baWEnD=MFKFeKRbhFU+bt3P67G0MVzQ@mail.gmail.com
-
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
----
-
-Changes in v3:
-- Don't call done_probing() if there are no children; return -ENODEV.
-- Split out EXPORT_SYMBOL and kerneldoc fixes to its own patch.
-- Used Dmitry's proposed name: of_dp_aux_populate_bus()
-
-Changes in v2:
-- Change to assume exactly one device.
-- Have a probe callback instead of an extra sub device.
-
- drivers/gpu/drm/display/drm_dp_aux_bus.c | 209 +++++++++++++++--------
- include/drm/display/drm_dp_aux_bus.h     |  34 +++-
- 2 files changed, 168 insertions(+), 75 deletions(-)
-
-diff --git a/drivers/gpu/drm/display/drm_dp_aux_bus.c b/drivers/gpu/drm/display/drm_dp_aux_bus.c
-index 552f949cff59..f5741b45ca07 100644
---- a/drivers/gpu/drm/display/drm_dp_aux_bus.c
-+++ b/drivers/gpu/drm/display/drm_dp_aux_bus.c
-@@ -3,10 +3,10 @@
-  * Copyright 2021 Google Inc.
-  *
-  * The DP AUX bus is used for devices that are connected over a DisplayPort
-- * AUX bus. The devices on the far side of the bus are referred to as
-- * endpoints in this code.
-+ * AUX bus. The device on the far side of the bus is referred to as an
-+ * endpoint in this code.
-  *
-- * Commonly there is only one device connected to the DP AUX bus: a panel.
-+ * There is only one device connected to the DP AUX bus: an eDP panel.
-  * Though historically panels (even DP panels) have been modeled as simple
-  * platform devices, putting them under the DP AUX bus allows the panel driver
-  * to perform transactions on that bus.
-@@ -22,6 +22,11 @@
- #include <drm/display/drm_dp_aux_bus.h>
- #include <drm/display/drm_dp_helper.h>
- 
-+struct dp_aux_ep_device_with_data {
-+	struct dp_aux_ep_device aux_ep;
-+	int (*done_probing)(struct drm_dp_aux *aux);
-+};
-+
- /**
-  * dp_aux_ep_match() - The match function for the dp_aux_bus.
-  * @dev: The device to match.
-@@ -48,6 +53,8 @@ static int dp_aux_ep_probe(struct device *dev)
- {
- 	struct dp_aux_ep_driver *aux_ep_drv = to_dp_aux_ep_drv(dev->driver);
- 	struct dp_aux_ep_device *aux_ep = to_dp_aux_ep_dev(dev);
-+	struct dp_aux_ep_device_with_data *aux_ep_with_data =
-+		container_of(aux_ep, struct dp_aux_ep_device_with_data, aux_ep);
- 	int ret;
- 
- 	ret = dev_pm_domain_attach(dev, true);
-@@ -56,7 +63,32 @@ static int dp_aux_ep_probe(struct device *dev)
- 
- 	ret = aux_ep_drv->probe(aux_ep);
- 	if (ret)
--		dev_pm_domain_detach(dev, true);
-+		goto err_attached;
-+
-+	if (aux_ep_with_data->done_probing) {
-+		ret = aux_ep_with_data->done_probing(aux_ep->aux);
-+		if (ret) {
-+			/*
-+			 * The done_probing() callback should not return
-+			 * -EPROBE_DEFER to us. If it does, we treat it as an
-+			 * error. Passing it on as-is would cause the _panel_
-+			 * to defer.
-+			 */
-+			if (ret == -EPROBE_DEFER) {
-+				dev_err(dev,
-+					"DP AUX done_probing() can't defer\n");
-+				ret = -EINVAL;
-+			}
-+			goto err_probed;
-+		}
-+	}
-+
-+	return 0;
-+err_probed:
-+	if (aux_ep_drv->remove)
-+		aux_ep_drv->remove(aux_ep);
-+err_attached:
-+	dev_pm_domain_detach(dev, true);
- 
- 	return ret;
- }
-@@ -122,7 +154,11 @@ ATTRIBUTE_GROUPS(dp_aux_ep_dev);
-  */
- static void dp_aux_ep_dev_release(struct device *dev)
- {
--	kfree(to_dp_aux_ep_dev(dev));
-+	struct dp_aux_ep_device *aux_ep = to_dp_aux_ep_dev(dev);
-+	struct dp_aux_ep_device_with_data *aux_ep_with_data =
-+		container_of(aux_ep, struct dp_aux_ep_device_with_data, aux_ep);
-+
-+	kfree(aux_ep_with_data);
- }
- 
- static struct device_type dp_aux_device_type_type = {
-@@ -136,12 +172,14 @@ static struct device_type dp_aux_device_type_type = {
-  * @dev: The device to destroy.
-  * @data: Not used
-  *
-- * This is just used as a callback by of_dp_aux_depopulate_ep_devices() and
-+ * This is just used as a callback by of_dp_aux_depopulate_bus() and
-  * is called for _all_ of the child devices of the device providing the AUX bus.
-  * We'll only act on those that are of type "dp_aux_bus_type".
-  *
-- * This function is effectively an inverse of what's in the loop
-- * in of_dp_aux_populate_ep_devices().
-+ * This function is effectively an inverse of what's in
-+ * of_dp_aux_populate_bus(). NOTE: since we only populate one child
-+ * then it's expected that only one device will match all the "if" tests in
-+ * this function and get to the device_unregister().
-  *
-  * Return: 0 if no error or negative error code.
-  */
-@@ -164,123 +202,150 @@ static int of_dp_aux_ep_destroy(struct device *dev, void *data)
- }
- 
- /**
-- * of_dp_aux_depopulate_ep_devices() - Undo of_dp_aux_populate_ep_devices
-- * @aux: The AUX channel whose devices we want to depopulate
-+ * of_dp_aux_depopulate_bus() - Undo of_dp_aux_populate_bus
-+ * @aux: The AUX channel whose device we want to depopulate
-  *
-- * This will destroy all devices that were created
-- * by of_dp_aux_populate_ep_devices().
-+ * This will destroy the device that was created
-+ * by of_dp_aux_populate_bus().
-  */
--void of_dp_aux_depopulate_ep_devices(struct drm_dp_aux *aux)
-+void of_dp_aux_depopulate_bus(struct drm_dp_aux *aux)
- {
- 	device_for_each_child_reverse(aux->dev, NULL, of_dp_aux_ep_destroy);
- }
--EXPORT_SYMBOL_GPL(of_dp_aux_depopulate_ep_devices);
-+EXPORT_SYMBOL_GPL(of_dp_aux_depopulate_bus);
- 
- /**
-- * of_dp_aux_populate_ep_devices() - Populate the endpoint devices on the DP AUX
-- * @aux: The AUX channel whose devices we want to populate. It is required that
-+ * of_dp_aux_populate_bus() - Populate the endpoint device on the DP AUX
-+ * @aux: The AUX channel whose device we want to populate. It is required that
-  *       drm_dp_aux_init() has already been called for this AUX channel.
-+ * @done_probing: Callback functions to call after EP device finishes probing.
-+ *                Will not be called if there are no EP devices and this
-+ *                function will return -ENODEV.
-  *
-- * This will populate all the devices under the "aux-bus" node of the device
-- * providing the AUX channel (AKA aux->dev).
-+ * This will populate the device (expected to be an eDP panel) under the
-+ * "aux-bus" node of the device providing the AUX channel (AKA aux->dev).
-  *
-  * When this function finishes, it is _possible_ (but not guaranteed) that
-- * our sub-devices will have finished probing. It should be noted that if our
-- * sub-devices return -EPROBE_DEFER that we will not return any error codes
-- * ourselves but our sub-devices will _not_ have actually probed successfully
-- * yet. There may be other cases (maybe added in the future?) where sub-devices
-- * won't have been probed yet when this function returns, so it's best not to
-- * rely on that.
-+ * our sub-device will have finished probing. It should be noted that if our
-+ * sub-device returns -EPROBE_DEFER or is probing asynchronously for some
-+ * reason that we will not return any error codes ourselves but our
-+ * sub-device will _not_ have actually probed successfully yet.
-+ *
-+ * In many cases it's important for the caller of this function to be notified
-+ * when our sub device finishes probing. Our sub device is expected to be an
-+ * eDP panel and the caller is expected to be an eDP controller. The eDP
-+ * controller needs to be able to get a reference to the panel when it finishes
-+ * probing. For this reason the caller can pass in a function pointer that
-+ * will be called when our sub-device finishes probing.
-  *
-  * If this function succeeds you should later make sure you call
-- * of_dp_aux_depopulate_ep_devices() to undo it, or just use the devm version
-+ * of_dp_aux_depopulate_bus() to undo it, or just use the devm version
-  * of this function.
-  *
-- * Return: 0 if no error or negative error code.
-+ * Return: 0 if no error or negative error code; returns -ENODEV if there are
-+ *         no children. The done_probing() function won't be called in that
-+ *         case.
-  */
--int of_dp_aux_populate_ep_devices(struct drm_dp_aux *aux)
-+int of_dp_aux_populate_bus(struct drm_dp_aux *aux,
-+			   int (*done_probing)(struct drm_dp_aux *aux))
- {
--	struct device_node *bus, *np;
-+	struct device_node *bus = NULL, *np = NULL;
- 	struct dp_aux_ep_device *aux_ep;
-+	struct dp_aux_ep_device_with_data *aux_ep_with_data;
- 	int ret;
- 
- 	/* drm_dp_aux_init() should have been called already; warn if not */
- 	WARN_ON_ONCE(!aux->ddc.algo);
- 
- 	if (!aux->dev->of_node)
--		return 0;
--
-+		return -ENODEV;
- 	bus = of_get_child_by_name(aux->dev->of_node, "aux-bus");
- 	if (!bus)
--		return 0;
-+		return -ENODEV;
- 
--	for_each_available_child_of_node(bus, np) {
--		if (of_node_test_and_set_flag(np, OF_POPULATED))
--			continue;
-+	np = of_get_next_available_child(bus, NULL);
-+	of_node_put(bus);
-+	if (!np)
-+		return -ENODEV;
- 
--		aux_ep = kzalloc(sizeof(*aux_ep), GFP_KERNEL);
--		if (!aux_ep)
--			continue;
--		aux_ep->aux = aux;
-+	if (of_node_test_and_set_flag(np, OF_POPULATED)) {
-+		dev_err(aux->dev, "DP AUX EP device already populated\n");
-+		ret = -EINVAL;
-+		goto err_did_get_np;
-+	}
- 
--		aux_ep->dev.parent = aux->dev;
--		aux_ep->dev.bus = &dp_aux_bus_type;
--		aux_ep->dev.type = &dp_aux_device_type_type;
--		aux_ep->dev.of_node = of_node_get(np);
--		dev_set_name(&aux_ep->dev, "aux-%s", dev_name(aux->dev));
-+	aux_ep_with_data = kzalloc(sizeof(*aux_ep_with_data), GFP_KERNEL);
-+	if (!aux_ep_with_data) {
-+		ret = -ENOMEM;
-+		goto err_did_set_populated;
-+	}
- 
--		ret = device_register(&aux_ep->dev);
--		if (ret) {
--			dev_err(aux->dev, "Failed to create AUX EP for %pOF: %d\n", np, ret);
--			of_node_clear_flag(np, OF_POPULATED);
--			of_node_put(np);
-+	aux_ep_with_data->done_probing = done_probing;
- 
--			/*
--			 * As per docs of device_register(), call this instead
--			 * of kfree() directly for error cases.
--			 */
--			put_device(&aux_ep->dev);
-+	aux_ep = &aux_ep_with_data->aux_ep;
-+	aux_ep->aux = aux;
-+	aux_ep->dev.parent = aux->dev;
-+	aux_ep->dev.bus = &dp_aux_bus_type;
-+	aux_ep->dev.type = &dp_aux_device_type_type;
-+	aux_ep->dev.of_node = of_node_get(np);
-+	dev_set_name(&aux_ep->dev, "aux-%s", dev_name(aux->dev));
- 
--			/*
--			 * Following in the footsteps of of_i2c_register_devices(),
--			 * we won't fail the whole function here--we'll just
--			 * continue registering any other devices we find.
--			 */
--		}
--	}
-+	ret = device_register(&aux_ep->dev);
-+	if (ret) {
-+		dev_err(aux->dev, "Failed to create AUX EP for %pOF: %d\n", np, ret);
- 
--	of_node_put(bus);
-+		/*
-+		 * As per docs of device_register(), call this instead
-+		 * of kfree() directly for error cases.
-+		 */
-+		put_device(&aux_ep->dev);
-+
-+		goto err_did_set_populated;
-+	}
- 
- 	return 0;
-+
-+err_did_set_populated:
-+	of_node_clear_flag(np, OF_POPULATED);
-+
-+err_did_get_np:
-+	of_node_put(np);
-+
-+	return ret;
- }
--EXPORT_SYMBOL_GPL(of_dp_aux_populate_ep_devices);
-+EXPORT_SYMBOL_GPL(of_dp_aux_populate_bus);
- 
--static void of_dp_aux_depopulate_ep_devices_void(void *data)
-+static void of_dp_aux_depopulate_bus_void(void *data)
- {
--	of_dp_aux_depopulate_ep_devices(data);
-+	of_dp_aux_depopulate_bus(data);
- }
- 
- /**
-- * devm_of_dp_aux_populate_ep_devices() - devm wrapper for of_dp_aux_populate_ep_devices()
-- * @aux: The AUX channel whose devices we want to populate
-+ * devm_of_dp_aux_populate_bus() - devm wrapper for of_dp_aux_populate_bus()
-+ * @aux: The AUX channel whose device we want to populate
-+ * @done_probing: Callback functions to call after EP device finishes probing.
-+ *                Will not be called if there are no EP devices and this
-+ *                function will return -ENODEV.
-  *
-  * Handles freeing w/ devm on the device "aux->dev".
-  *
-- * Return: 0 if no error or negative error code.
-+ * Return: 0 if no error or negative error code; returns -ENODEV if there are
-+ *         no children. The done_probing() function won't be called in that
-+ *         case.
-  */
--int devm_of_dp_aux_populate_ep_devices(struct drm_dp_aux *aux)
-+int devm_of_dp_aux_populate_bus(struct drm_dp_aux *aux,
-+				int (*done_probing)(struct drm_dp_aux *aux))
- {
- 	int ret;
- 
--	ret = of_dp_aux_populate_ep_devices(aux);
-+	ret = of_dp_aux_populate_bus(aux, done_probing);
- 	if (ret)
- 		return ret;
- 
- 	return devm_add_action_or_reset(aux->dev,
--					of_dp_aux_depopulate_ep_devices_void,
--					aux);
-+					of_dp_aux_depopulate_bus_void, aux);
- }
--EXPORT_SYMBOL_GPL(devm_of_dp_aux_populate_ep_devices);
-+EXPORT_SYMBOL_GPL(devm_of_dp_aux_populate_bus);
- 
- int __dp_aux_dp_driver_register(struct dp_aux_ep_driver *drv, struct module *owner)
- {
-diff --git a/include/drm/display/drm_dp_aux_bus.h b/include/drm/display/drm_dp_aux_bus.h
-index 4f19b20b1dd6..8a0a486383c5 100644
---- a/include/drm/display/drm_dp_aux_bus.h
-+++ b/include/drm/display/drm_dp_aux_bus.h
-@@ -44,9 +44,37 @@ static inline struct dp_aux_ep_driver *to_dp_aux_ep_drv(struct device_driver *dr
- 	return container_of(drv, struct dp_aux_ep_driver, driver);
- }
- 
--int of_dp_aux_populate_ep_devices(struct drm_dp_aux *aux);
--void of_dp_aux_depopulate_ep_devices(struct drm_dp_aux *aux);
--int devm_of_dp_aux_populate_ep_devices(struct drm_dp_aux *aux);
-+int of_dp_aux_populate_bus(struct drm_dp_aux *aux,
-+			   int (*done_probing)(struct drm_dp_aux *aux));
-+void of_dp_aux_depopulate_bus(struct drm_dp_aux *aux);
-+int devm_of_dp_aux_populate_bus(struct drm_dp_aux *aux,
-+				int (*done_probing)(struct drm_dp_aux *aux));
-+
-+/* Deprecated versions of the above functions. To be removed when no callers. */
-+static inline int of_dp_aux_populate_ep_devices(struct drm_dp_aux *aux)
-+{
-+	int ret;
-+
-+	ret = of_dp_aux_populate_bus(aux, NULL);
-+
-+	/* New API returns -ENODEV for no child case; adapt to old assumption */
-+	return (ret != -ENODEV) ? ret : 0;
-+}
-+
-+static inline int devm_of_dp_aux_populate_ep_devices(struct drm_dp_aux *aux)
-+{
-+	int ret;
-+
-+	ret = devm_of_dp_aux_populate_bus(aux, NULL);
-+
-+	/* New API returns -ENODEV for no child case; adapt to old assumption */
-+	return (ret != -ENODEV) ? ret : 0;
-+}
-+
-+static inline void of_dp_aux_depopulate_ep_devices(struct drm_dp_aux *aux)
-+{
-+	of_dp_aux_depopulate_bus(aux);
-+}
- 
- #define dp_aux_dp_driver_register(aux_ep_drv) \
- 	__dp_aux_dp_driver_register(aux_ep_drv, THIS_MODULE)
--- 
-2.36.0.550.gb090851708-goog
-
+>     5.containers usually managed by compose software, which treats container as
+> base management unit;
+>     6.this patch provide cgroup THP controller, which can be a method to adjust
+> container memory QoS.
+>
+> > > Container becomes
+> > > the suitable management unit but not the whole host. And some performance
+> > > sensitive containers desiderate THP to provide low latency communication.
+> > > But if we use THP with 'always', it will consume more memory(on our machine
+> > > that is about 10% of total memory). And unnecessary huge pages will increase
+> > > memory pressure, add latency for minor pages faults, and add overhead when
+> > > splitting huge pages or coalescing normal sized pages into huge pages.
+> >
+> > It is still not really clear to me how do you achieve that the whole
+> > workload in the said container has the same THP requirements.
+> > --
+> > Michal Hocko
+> > SUSE Labs
