@@ -2,103 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01C28C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:48:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C25E4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:48:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345009AbiEJOwL (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:52:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34404 "EHLO
+        id S239493AbiEJOwY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:52:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345221AbiEJOvI (ORCPT
+        with ESMTP id S1345434AbiEJOvV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:51:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 95B012631EC
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:11:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652191896;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=rtq28CnPqdWCcQU57wEB4HrePwIAG8WJOylvl7UVi70=;
-        b=LF3q84Crg/53eR2LwSlS5BZjpbCBFLYvuNtonGn/Bz1mW+HVx87XVxRvoIuMRVwMOrPp+2
-        zVYb5AezQKQ3gOJmXbdVfJTUUC/T/dCbVyTG6uEJJ6Qki6igFAf/aCR2V7cam47W/WCYxi
-        BjjCzNgSv9P/hl6MA6P11npJVbYGgIs=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-371-raQYS_JPNre-oUAAvyhb7w-1; Tue, 10 May 2022 10:11:30 -0400
-X-MC-Unique: raQYS_JPNre-oUAAvyhb7w-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6DE863833286;
-        Tue, 10 May 2022 14:11:29 +0000 (UTC)
-Received: from dhcp-27-174.brq.redhat.com (unknown [10.40.192.98])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 8C11BC28106;
-        Tue, 10 May 2022 14:11:24 +0000 (UTC)
-Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
-        oleg@redhat.com; Tue, 10 May 2022 16:11:26 +0200 (CEST)
-Date:   Tue, 10 May 2022 16:11:21 +0200
-From:   Oleg Nesterov <oleg@redhat.com>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
-        Will Deacon <will@kernel.org>, tj@kernel.org,
-        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Jann Horn <jannh@google.com>,
-        Kees Cook <keescook@chromium.org>, linux-ia64@vger.kernel.org
-Subject: Re: [PATCH v4 0/12] ptrace: cleaning up ptrace_stop
-Message-ID: <20220510141119.GA23277@redhat.com>
-References: <20220421150248.667412396@infradead.org>
- <20220421150654.817117821@infradead.org>
- <87czhap9dy.fsf@email.froward.int.ebiederm.org>
- <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
- <87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>
- <87k0b0apne.fsf_-_@email.froward.int.ebiederm.org>
- <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
+        Tue, 10 May 2022 10:51:21 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 35D20267091;
+        Tue, 10 May 2022 07:12:17 -0700 (PDT)
+Received: from pwmachine.localnet (154.pool92-186-13.dynamic.orange.es [92.186.13.154])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 98D7C20DED47;
+        Tue, 10 May 2022 07:12:05 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 98D7C20DED47
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1652191929;
+        bh=SMXRjgASxoY9GANcr+RrOLPmCsV3l+6OdEbY8o5d4Y0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=P/umbaWjpofQ6mQCCPA8N0L2yqe2CopqIn/eA+AtE38GGYUb5NNJGPC3It4bPFOHP
+         ri2QItOL4uMuhiPwcHtz2dNHE2g2+C7ePm/PvHMlOnhTB8vOQBUBTG0fFHKSXx6V5g
+         ZUA1qzPjqM1HMWfqk3fUJVY03fO965VV9fWaSUmQ=
+From:   Francis Laniel <flaniel@linux.microsoft.com>
+To:     Will Deacon <will@kernel.org>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-trace-devel@vger.kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Mark Brown <broonie@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Kees Cook <keescook@chromium.org>,
+        Daniel Kiss <daniel.kiss@arm.com>, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v1 1/1] arm64: Forget syscall if different from execve*()
+Date:   Tue, 10 May 2022 15:12:02 +0100
+Message-ID: <8061631.T7Z3S40VBb@pwmachine>
+Organization: Microsoft
+In-Reply-To: <20220510140333.GA28104@willie-the-truck>
+References: <20220509151958.441240-1-flaniel@linux.microsoft.com> <2826417.e9J7NaK4W3@pwmachine> <20220510140333.GA28104@willie-the-truck>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/05, Eric W. Biederman wrote:
->
-> Eric W. Biederman (11):
->       signal: Rename send_signal send_signal_locked
->       signal: Replace __group_send_sig_info with send_signal_locked
->       ptrace/um: Replace PT_DTRACE with TIF_SINGLESTEP
->       ptrace/xtensa: Replace PT_SINGLESTEP with TIF_SINGLESTEP
->       ptrace: Remove arch_ptrace_attach
->       signal: Use lockdep_assert_held instead of assert_spin_locked
->       ptrace: Reimplement PTRACE_KILL by always sending SIGKILL
->       ptrace: Document that wait_task_inactive can't fail
->       ptrace: Admit ptrace_stop can generate spuriuos SIGTRAPs
->       ptrace: Don't change __state
->       ptrace: Always take siglock in ptrace_resume
->
-> Peter Zijlstra (1):
->       sched,signal,ptrace: Rework TASK_TRACED, TASK_STOPPED state
+Le mardi 10 mai 2022, 15:03:33 BST Will Deacon a =E9crit :
+> On Tue, May 10, 2022 at 03:00:11PM +0100, Francis Laniel wrote:
+> > Le mardi 10 mai 2022, 11:59:48 BST Will Deacon a =E9crit :
+> > > On Mon, May 09, 2022 at 04:19:57PM +0100, Francis Laniel wrote:
+> > > > diff --git a/arch/arm64/include/asm/processor.h
+> > > > b/arch/arm64/include/asm/processor.h index 73e38d9a540c..e12ceb363d=
+6a
+> > > > 100644
+> > > > --- a/arch/arm64/include/asm/processor.h
+> > > > +++ b/arch/arm64/include/asm/processor.h
+> > > > @@ -34,6 +34,8 @@
+> > > >=20
+> > > >  #include <vdso/processor.h>
+> > > >=20
+> > > > +#include <asm-generic/unistd.h>
+> > > > +
+> > > >=20
+> > > >  #include <asm/alternative.h>
+> > > >  #include <asm/cpufeature.h>
+> > > >  #include <asm/hw_breakpoint.h>
+> > > >=20
+> > > > @@ -250,8 +252,12 @@ void tls_preserve_current_state(void);
+> > > >=20
+> > > >  static inline void start_thread_common(struct pt_regs *regs, unsig=
+ned
+> > > >  long pc) {
+> > > >=20
+> > > > +	s32 previous_syscall =3D regs->syscallno;
+> > > >=20
+> > > >  	memset(regs, 0, sizeof(*regs));
+> > > >=20
+> > > > -	forget_syscall(regs);
+> > > > +	if (previous_syscall =3D=3D __NR_execve || previous_syscall =3D=3D
+> > > > __NR_execveat)
+> > > > +		regs->syscallno =3D previous_syscall;
+> > > > +	else
+> > > > +		forget_syscall(regs);
+> > >=20
+> > > Hmm, this really looks like a bodge and it doesn't handle the compat
+> > > case
+> > > either.
+> > >=20
+> > > How do other architectures handle this?
+> >=20
+> > My understanding of others architectures is quite limited, but here are=
+ my
+> > findings and understanding of some of them:
+> > * arm (32 bits) EABI: start_thread() sets r7 to previous r7 for ELF FDP=
+IC=20
+> > and to 0 for other binfmts [1].
+> > * arm (32 bits) OABI: syscall number is set to -1 if
+> > ptrace_report_syscall_entry() failed [2].
+> > * mips: start_thread() does not modify current_thread_info->syscall whi=
+ch
+> > is taken directly from v0 [3, 4].
+> > * riscv: start_thread() does not modify a7 [5].
+> > * x86_64: start_thread_common() does not touch orig_ax which seems to
+> > contain the syscall number [6].
+>=20
+> Hmm, so the million dollar question is why on Earth we have that
+> forget_syscall() call to start with. Amusingly I've, err, forgotten;
+> forget_forget_syscall() perhaps?
 
-OK, lgtm.
+I think this is maybe tied to this comment [1]:
+The de-facto standard way to skip a system call using ptrace=20
+is to set the system call to -1 (NO_SYSCALL)
 
-Reviewed-by: Oleg Nesterov <oleg@redhat.com>
+But I will let the original author explain as his/her explaination will be=
+=20
+better than mine.
 
+> Catalin? It's been there since day one afaict.
+>=20
+> Will
 
-I still dislike you removed TASK_WAKEKILL from TASK_TRACED, but I can't
-find a good argument against it ;) and yes, this is subjective.
+=2D--
+[1] https://elixir.bootlin.com/linux/v5.18-rc6/source/arch/arm64/kernel/
+syscall.c#L121
 
-Oleg.
 
