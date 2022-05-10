@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 035B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:06:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 018A9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:06:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245493AbiEJOK3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:10:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47036 "EHLO
+        id S245556AbiEJOKf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:10:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244977AbiEJNrK (ORCPT
+        with ESMTP id S244981AbiEJNrK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:47:10 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47ACD2380E9;
-        Tue, 10 May 2022 06:33:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2345C2380EF;
+        Tue, 10 May 2022 06:33:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DA9226188A;
-        Tue, 10 May 2022 13:33:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0610C385C2;
-        Tue, 10 May 2022 13:33:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B42DF6188A;
+        Tue, 10 May 2022 13:33:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4477C385A6;
+        Tue, 10 May 2022 13:33:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189589;
-        bh=RrY/267cCvZ+Zw6/oIJgYru9TUR3Qifk5FHKotJx9AQ=;
+        s=korg; t=1652189592;
+        bh=Z0xWQbgeZcOMALo5oszoheDr4ixi8SXV4KCqIovGVEI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xQP7gr2VxCVOLZdYNXvinIbdhuL7E5XUAekHoUtc1PPBZKMqT5NhFF5fhQinCgBDB
-         PVijrBIO4NZbk9f8P3EhM+AdrZepMK/ynbP8JMDdFgkqYDSlc2bzfpt6y+ZFq0elzG
-         MxHgG3y2IQaAiOs5eD4q8pT55sPoau2Ce21HOIow=
+        b=sjMDT3eLcDYhvvNoP83By5GqKE2dfrFxBLTgvr0qpYGLetqBcBGb5ngWFcGgKTEDJ
+         5afq7QnE541HCUAjbh6vZYpgzlHglDwNdNv4TJhI7iV3AjDlCZA6DE0QcS+PQPH9PO
+         5HGECirpnRsL9Oy2ukxVNOh9a9stkT8z0+jKQWgg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Sidhartha Kumar <sidhartha.kumar@oracle.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 100/135] selftest/vm: verify mmap addr in mremap_test
-Date:   Tue, 10 May 2022 15:08:02 +0200
-Message-Id: <20220510130743.277550432@linuxfoundation.org>
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Evan Quan <evan.quan@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        "Limonciello, Mario" <Mario.Limonciello@amd.com>
+Subject: [PATCH 5.15 083/135] drm/amdgpu: explicitly check for s0ix when evicting resources
+Date:   Tue, 10 May 2022 15:07:45 +0200
+Message-Id: <20220510130742.793338598@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -52,73 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sidhartha Kumar <sidhartha.kumar@oracle.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-[ Upstream commit 9c85a9bae267f6b5e5e374d0d023bbbe9db096d3 ]
+commit e53d9665ab003df0ece8f869fcd3c2bbbecf7190 upstream.
 
-Avoid calling mmap with requested addresses that are less than the
-system's mmap_min_addr.  When run as root, mmap returns EACCES when
-trying to map addresses < mmap_min_addr.  This is not one of the error
-codes for the condition to retry the mmap in the test.
+This codepath should be running in both s0ix and s3, but only does
+currently because s3 and s0ix are both set in the s0ix case.
 
-Rather than arbitrarily retrying on EACCES, don't attempt an mmap until
-addr > vm.mmap_min_addr.
-
-Add a munmap call after an alignment check as the mappings are retained
-after the retry and can reach the vm.max_map_count sysctl.
-
-Link: https://lkml.kernel.org/r/20220420215721.4868-1-sidhartha.kumar@oracle.com
-Signed-off-by: Sidhartha Kumar <sidhartha.kumar@oracle.com>
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Acked-by: Evan Quan <evan.quan@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: "Limonciello, Mario" <Mario.Limonciello@amd.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/vm/mremap_test.c | 29 ++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_device.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/vm/mremap_test.c b/tools/testing/selftests/vm/mremap_test.c
-index e3ce33a9954e..efcbf537b3d5 100644
---- a/tools/testing/selftests/vm/mremap_test.c
-+++ b/tools/testing/selftests/vm/mremap_test.c
-@@ -66,6 +66,35 @@ enum {
- 	.expect_failure = should_fail				\
- }
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+@@ -3939,8 +3939,8 @@ void amdgpu_device_fini_sw(struct amdgpu
+  */
+ static void amdgpu_device_evict_resources(struct amdgpu_device *adev)
+ {
+-	/* No need to evict vram on APUs for suspend to ram */
+-	if (adev->in_s3 && (adev->flags & AMD_IS_APU))
++	/* No need to evict vram on APUs for suspend to ram or s2idle */
++	if ((adev->in_s3 || adev->in_s0ix) && (adev->flags & AMD_IS_APU))
+ 		return;
  
-+/* Returns mmap_min_addr sysctl tunable from procfs */
-+static unsigned long long get_mmap_min_addr(void)
-+{
-+	FILE *fp;
-+	int n_matched;
-+	static unsigned long long addr;
-+
-+	if (addr)
-+		return addr;
-+
-+	fp = fopen("/proc/sys/vm/mmap_min_addr", "r");
-+	if (fp == NULL) {
-+		ksft_print_msg("Failed to open /proc/sys/vm/mmap_min_addr: %s\n",
-+			strerror(errno));
-+		exit(KSFT_SKIP);
-+	}
-+
-+	n_matched = fscanf(fp, "%llu", &addr);
-+	if (n_matched != 1) {
-+		ksft_print_msg("Failed to read /proc/sys/vm/mmap_min_addr: %s\n",
-+			strerror(errno));
-+		fclose(fp);
-+		exit(KSFT_SKIP);
-+	}
-+
-+	fclose(fp);
-+	return addr;
-+}
-+
- /*
-  * Returns false if the requested remap region overlaps with an
-  * existing mapping (e.g text, stack) else returns true.
--- 
-2.35.1
-
+ 	if (amdgpu_ttm_evict_resources(adev, TTM_PL_VRAM))
 
 
