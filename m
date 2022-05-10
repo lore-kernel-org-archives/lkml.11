@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AE71C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29469C41535
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245075AbiEJN5I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:57:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48412 "EHLO
+        id S245106AbiEJN5N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:57:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245132AbiEJNid (ORCPT
+        with ESMTP id S245118AbiEJNic (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:38:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 358DF24641E;
-        Tue, 10 May 2022 06:27:17 -0700 (PDT)
+        Tue, 10 May 2022 09:38:32 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CC46245611;
+        Tue, 10 May 2022 06:27:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C5BD260C1C;
-        Tue, 10 May 2022 13:27:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2AB8C385C2;
-        Tue, 10 May 2022 13:27:15 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E0F57CE1EDE;
+        Tue, 10 May 2022 13:27:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE414C385C6;
+        Tue, 10 May 2022 13:27:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189236;
-        bh=+/EhKZa3yEyfTWZOBmz0ERD1LfPtR3Iv1x4ZFPnLAPQ=;
+        s=korg; t=1652189227;
+        bh=IWBx+5sO3Vp2iBsahPhayhdg6TUAZM8E8BQ3PDzgWgI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ql9zqslUmRXTKxP7M+0x7Dl2Xc0YxhMEKIyovckFY2yTH6oamVNy+9UTDbXKp0Iqz
-         cAnpOb6/BATeE+0WNkiKwhnEtR82Yq64Fe9WZqWvF9MBaop+avDgce2s2EB/ubS8e1
-         4YLeEFGTTERvpbUrfhSREhVlzxdkkxg2ExuPWFNo=
+        b=o1j2iIujho08PF6DqqogWkkKeGYkFitKx+FgCxlo5ZtYvIR6FBP3tPU/QMUj3UXGt
+         IIcvv7dCVU2s+Uoo960eXhCp3voMAXvjInZVmMy74oKydzesRBu9HagFeBj5/VH4D2
+         pS6j8GYhxSOHh4oWs6iuLBpG3ZTo66zSapvPSztI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 55/70] smsc911x: allow using IRQ0
-Date:   Tue, 10 May 2022 15:08:14 +0200
-Message-Id: <20220510130734.476379981@linuxfoundation.org>
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Andreas Larsson <andreas@gaisler.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.10 26/70] can: grcan: grcan_close(): fix deadlock
+Date:   Tue, 10 May 2022 15:07:45 +0200
+Message-Id: <20220510130733.634427211@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
 References: <20220510130732.861729621@linuxfoundation.org>
@@ -48,42 +49,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Shtylyov <s.shtylyov@omp.ru>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-commit 5ef9b803a4af0f5e42012176889b40bb2a978b18 upstream.
+commit 47f070a63e735bcc8d481de31be1b5a1aa62b31c upstream.
 
-The AlphaProject AP-SH4A-3A/AP-SH4AD-0A SH boards use IRQ0 for their SMSC
-LAN911x Ethernet chip, so the networking on them must have been broken by
-commit 965b2aa78fbc ("net/smsc911x: fix irq resource allocation failure")
-which filtered out 0 as well as the negative error codes -- it was kinda
-correct at the time, as platform_get_irq() could return 0 on of_irq_get()
-failure and on the actual 0 in an IRQ resource.  This issue was fixed by
-me (back in 2016!), so we should be able to fix this driver to allow IRQ0
-usage again...
+There are deadlocks caused by del_timer_sync(&priv->hang_timer) and
+del_timer_sync(&priv->rr_timer) in grcan_close(), one of the deadlocks
+are shown below:
 
-When merging this to the stable kernels, make sure you also merge commit
-e330b9a6bb35 ("platform: don't return 0 from platform_get_irq[_byname]()
-on error") -- that's my fix to platform_get_irq() for the DT platforms...
+   (Thread 1)              |      (Thread 2)
+                           | grcan_reset_timer()
+grcan_close()              |  mod_timer()
+ spin_lock_irqsave() //(1) |  (wait a time)
+ ...                       | grcan_initiate_running_reset()
+ del_timer_sync()          |  spin_lock_irqsave() //(2)
+ (wait timer to stop)      |  ...
 
-Fixes: 965b2aa78fbc ("net/smsc911x: fix irq resource allocation failure")
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Link: https://lore.kernel.org/r/656036e4-6387-38df-b8a7-6ba683b16e63@omp.ru
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+We hold priv->lock in position (1) of thread 1 and use
+del_timer_sync() to wait timer to stop, but timer handler also need
+priv->lock in position (2) of thread 2. As a result, grcan_close()
+will block forever.
+
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irqsave(), which could let timer handler to obtain the
+needed lock.
+
+Link: https://lore.kernel.org/all/20220425042400.66517-1-duoming@zju.edu.cn
+Fixes: 6cec9b07fe6a ("can: grcan: Add device driver for GRCAN and GRHCAN cores")
+Cc: stable@vger.kernel.org
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Reviewed-by: Andreas Larsson <andreas@gaisler.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/smsc/smsc911x.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/can/grcan.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/net/ethernet/smsc/smsc911x.c
-+++ b/drivers/net/ethernet/smsc/smsc911x.c
-@@ -2422,7 +2422,7 @@ static int smsc911x_drv_probe(struct pla
- 	if (irq == -EPROBE_DEFER) {
- 		retval = -EPROBE_DEFER;
- 		goto out_0;
--	} else if (irq <= 0) {
-+	} else if (irq < 0) {
- 		pr_warn("Could not allocate irq resource\n");
- 		retval = -ENODEV;
- 		goto out_0;
+--- a/drivers/net/can/grcan.c
++++ b/drivers/net/can/grcan.c
+@@ -1113,8 +1113,10 @@ static int grcan_close(struct net_device
+ 
+ 	priv->closing = true;
+ 	if (priv->need_txbug_workaround) {
++		spin_unlock_irqrestore(&priv->lock, flags);
+ 		del_timer_sync(&priv->hang_timer);
+ 		del_timer_sync(&priv->rr_timer);
++		spin_lock_irqsave(&priv->lock, flags);
+ 	}
+ 	netif_stop_queue(dev);
+ 	grcan_stop_hardware(dev);
 
 
