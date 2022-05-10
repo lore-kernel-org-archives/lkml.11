@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7123C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:25:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B16C1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:25:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344084AbiEJO3r (ORCPT
+        id S1344298AbiEJO3y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:29:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48528 "EHLO
+        Tue, 10 May 2022 10:29:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245149AbiEJOCK (ORCPT
+        with ESMTP id S245265AbiEJOCa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:02:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 590F22DFF45;
-        Tue, 10 May 2022 06:40:14 -0700 (PDT)
+        Tue, 10 May 2022 10:02:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 770F42DFF76;
+        Tue, 10 May 2022 06:40:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F0FA2B81D24;
-        Tue, 10 May 2022 13:40:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53A67C385A6;
-        Tue, 10 May 2022 13:40:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A2C9E615E9;
+        Tue, 10 May 2022 13:40:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D564C385C2;
+        Tue, 10 May 2022 13:40:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652190011;
-        bh=5FHKqCevaZ4Z6CAFDYNCySqWPWHqfsu1Z0kLppqCT9g=;
+        s=korg; t=1652190022;
+        bh=v8RaXUtD6njGuFuuRQkVhVW728t3ISO9QZLNr80xESY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cddB+MWVm1qFeXQHy8NKx1LrhOz3zg8QYVFl3BWFQ8rGjaqv6D1dwa4woOf0kjkn9
-         AEKKULVvFycjoo67qiGcYFDGphw0FhGRYioj4d0aJMOGXuXj0Nlrm9cBdp2RGmwS63
-         zO/sG1CpPAjy8AjqLDNGxqIuYTDX8asyHw+lbSi0=
+        b=nesNDICu8m3XRYnKah1euslSynhkqlo1d4U5p5LcjNgxOhYhYWGw2IEHAm3qnIRC2
+         SmZbcSDehKtoDC0UPTNNrS8JglrJf30ktFmW8V5PUQZXHFBid3BGp2wp5Dp0+aCa0B
+         chWBUQPpE2xr8IpYzDl+beB7yHXxVvSquKKUEBZU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Andy Gospodarek <andrew.gospodarek@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.17 101/140] bnxt_en: Fix unnecessary dropping of RX packets
-Date:   Tue, 10 May 2022 15:08:11 +0200
-Message-Id: <20220510130744.493573240@linuxfoundation.org>
+Subject: [PATCH 5.17 103/140] smsc911x: allow using IRQ0
+Date:   Tue, 10 May 2022 15:08:13 +0200
+Message-Id: <20220510130744.549849537@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -51,44 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Chan <michael.chan@broadcom.com>
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-commit 195af57914d15229186658ed26dab24b9ada4122 upstream.
+commit 5ef9b803a4af0f5e42012176889b40bb2a978b18 upstream.
 
-In bnxt_poll_p5(), we first check cpr->has_more_work.  If it is true,
-we are in NAPI polling mode and we will call __bnxt_poll_cqs() to
-continue polling.  It is possible to exhanust the budget again when
-__bnxt_poll_cqs() returns.
+The AlphaProject AP-SH4A-3A/AP-SH4AD-0A SH boards use IRQ0 for their SMSC
+LAN911x Ethernet chip, so the networking on them must have been broken by
+commit 965b2aa78fbc ("net/smsc911x: fix irq resource allocation failure")
+which filtered out 0 as well as the negative error codes -- it was kinda
+correct at the time, as platform_get_irq() could return 0 on of_irq_get()
+failure and on the actual 0 in an IRQ resource.  This issue was fixed by
+me (back in 2016!), so we should be able to fix this driver to allow IRQ0
+usage again...
 
-We then enter the main while loop to check for new entries in the NQ.
-If we had previously exhausted the NAPI budget, we may call
-__bnxt_poll_work() to process an RX entry with zero budget.  This will
-cause packets to be dropped unnecessarily, thinking that we are in the
-netpoll path.  Fix it by breaking out of the while loop if we need
-to process an RX NQ entry with no budget left.  We will then exit
-NAPI and stay in polling mode.
+When merging this to the stable kernels, make sure you also merge commit
+e330b9a6bb35 ("platform: don't return 0 from platform_get_irq[_byname]()
+on error") -- that's my fix to platform_get_irq() for the DT platforms...
 
-Fixes: 389a877a3b20 ("bnxt_en: Process the NQ under NAPI continuous polling.")
-Reviewed-by: Andy Gospodarek <andrew.gospodarek@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Fixes: 965b2aa78fbc ("net/smsc911x: fix irq resource allocation failure")
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Link: https://lore.kernel.org/r/656036e4-6387-38df-b8a7-6ba683b16e63@omp.ru
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/smsc/smsc911x.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -2678,6 +2678,10 @@ static int bnxt_poll_p5(struct napi_stru
- 			u32 idx = le32_to_cpu(nqcmp->cq_handle_low);
- 			struct bnxt_cp_ring_info *cpr2;
- 
-+			/* No more budget for RX work */
-+			if (budget && work_done >= budget && idx == BNXT_RX_HDL)
-+				break;
-+
- 			cpr2 = cpr->cp_ring_arr[idx];
- 			work_done += __bnxt_poll_work(bp, cpr2,
- 						      budget - work_done);
+--- a/drivers/net/ethernet/smsc/smsc911x.c
++++ b/drivers/net/ethernet/smsc/smsc911x.c
+@@ -2431,7 +2431,7 @@ static int smsc911x_drv_probe(struct pla
+ 	if (irq == -EPROBE_DEFER) {
+ 		retval = -EPROBE_DEFER;
+ 		goto out_0;
+-	} else if (irq <= 0) {
++	} else if (irq < 0) {
+ 		pr_warn("Could not allocate irq resource\n");
+ 		retval = -ENODEV;
+ 		goto out_0;
 
 
