@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA46CC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:09:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB4EDC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:09:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343725AbiEJOLI (ORCPT
+        id S1343853AbiEJOLV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:11:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51266 "EHLO
+        Tue, 10 May 2022 10:11:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245048AbiEJNrN (ORCPT
+        with ESMTP id S245031AbiEJNrM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:47:13 -0400
+        Tue, 10 May 2022 09:47:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A58BF4AE3C;
-        Tue, 10 May 2022 06:34:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0816162208;
+        Tue, 10 May 2022 06:33:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 41228615C8;
-        Tue, 10 May 2022 13:34:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DF9CC385C2;
-        Tue, 10 May 2022 13:34:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9436B615C8;
+        Tue, 10 May 2022 13:33:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E4ACC385A6;
+        Tue, 10 May 2022 13:33:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189660;
-        bh=otcH+6sO+IxaIG0a9dFoxjZ2jbpyQeB2t/jagiK3euc=;
+        s=korg; t=1652189629;
+        bh=GaadsnEVgOBwmSGgZMElmngR/kp17Tr9tsbHmaKPN6I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eVzM3XOXP6lkej+8D6Nz2fYp8MFve+CyYWnx8EuEcESZPuNvxFtGZg3oi646bQj5U
-         nosbun9Mk+i4y652OTEIg3OA5lxo2xaEoIzh3npmttC2AvpQFwtpj+Ho/As9dUi+/k
-         DMXLPYHisxFwo5yMOapr22VcrvRTavtINh2R/zQA=
+        b=QXXobOMDEMzlA72i9xJp+JvuCdbvgrh3GPH5vKA2NdScQJCGPL1FcUZqmxy+rRx+6
+         sDAzZB346zs+tbkX7gUUuvAMy4QFYXgAKQ6y8OExBEgz5lT2IUmJRz1U1LI+uC3hHa
+         vd+BDGr18/+aKDUs81TDXnmj8vjyAUMEE0yyRpFk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        "Limonciello, Mario" <Mario.Limonciello@amd.com>
-Subject: [PATCH 5.15 085/135] drm/amdgpu: Ensure HDA function is suspended before ASIC reset
-Date:   Tue, 10 May 2022 15:07:47 +0200
-Message-Id: <20220510130742.850433789@linuxfoundation.org>
+        stable@vger.kernel.org, pali@kernel.org,
+        =?UTF-8?q?Marek=20Beh=FAn?= <kabel@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: [PATCH 5.15 111/135] PCI: aardvark: Disable bus mastering when unbinding driver
+Date:   Tue, 10 May 2022 15:08:13 +0200
+Message-Id: <20220510130743.589769176@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -51,77 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+From: Pali Rohár <pali@kernel.org>
 
-commit 887f75cfd0da44c19dda93b2ff9e70ca8792cdc1 upstream.
+commit a46f2f6dd4093438d9615dfbf5c0fea2a9835dba upstream.
 
-DP/HDMI audio on AMD PRO VII stops working after S3:
-[  149.450391] amdgpu 0000:63:00.0: amdgpu: MODE1 reset
-[  149.450395] amdgpu 0000:63:00.0: amdgpu: GPU mode1 reset
-[  149.450494] amdgpu 0000:63:00.0: amdgpu: GPU psp mode1 reset
-[  149.983693] snd_hda_intel 0000:63:00.1: refused to change power state from D0 to D3hot
-[  150.003439] amdgpu 0000:63:00.0: refused to change power state from D0 to D3hot
-...
-[  155.432975] snd_hda_intel 0000:63:00.1: CORB reset timeout#2, CORBRP = 65535
+Ensure that after driver unbind PCIe cards are not able to forward
+memory and I/O requests in the upstream direction.
 
-The offending commit is daf8de0874ab5b ("drm/amdgpu: always reset the asic in
-suspend (v2)"). Commit 34452ac3038a7 ("drm/amdgpu: don't use BACO for
-reset in S3 ") doesn't help, so the issue is something different.
-
-Assuming that to make HDA resume to D0 fully realized, it needs to be
-successfully put to D3 first. And this guesswork proves working, by
-moving amdgpu_asic_reset() to noirq callback, so it's called after HDA
-function is in D3.
-
-Fixes: daf8de0874ab5b ("drm/amdgpu: always reset the asic in suspend (v2)")
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
-Cc: "Limonciello, Mario" <Mario.Limonciello@amd.com>
+Link: https://lore.kernel.org/r/20211130172913.9727-7-kabel@kernel.org
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Signed-off-by: Marek Behún <kabel@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c |   18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ drivers/pci/controller/pci-aardvark.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-@@ -2246,18 +2246,23 @@ static int amdgpu_pmops_suspend(struct d
+--- a/drivers/pci/controller/pci-aardvark.c
++++ b/drivers/pci/controller/pci-aardvark.c
+@@ -1679,6 +1679,7 @@ static int advk_pcie_remove(struct platf
  {
- 	struct drm_device *drm_dev = dev_get_drvdata(dev);
- 	struct amdgpu_device *adev = drm_to_adev(drm_dev);
--	int r;
+ 	struct advk_pcie *pcie = platform_get_drvdata(pdev);
+ 	struct pci_host_bridge *bridge = pci_host_bridge_from_priv(pcie);
++	u32 val;
+ 	int i;
  
- 	if (amdgpu_acpi_is_s0ix_active(adev))
- 		adev->in_s0ix = true;
- 	else
- 		adev->in_s3 = true;
--	r = amdgpu_device_suspend(drm_dev, true);
--	if (r)
--		return r;
-+	return amdgpu_device_suspend(drm_dev, true);
-+}
-+
-+static int amdgpu_pmops_suspend_noirq(struct device *dev)
-+{
-+	struct drm_device *drm_dev = dev_get_drvdata(dev);
-+	struct amdgpu_device *adev = drm_to_adev(drm_dev);
-+
- 	if (!adev->in_s0ix)
--		r = amdgpu_asic_reset(adev);
--	return r;
-+		return amdgpu_asic_reset(adev);
-+
-+	return 0;
- }
+ 	/* Remove PCI bus with all devices */
+@@ -1687,6 +1688,11 @@ static int advk_pcie_remove(struct platf
+ 	pci_remove_root_bus(bridge->bus);
+ 	pci_unlock_rescan_remove();
  
- static int amdgpu_pmops_resume(struct device *dev)
-@@ -2494,6 +2499,7 @@ static const struct dev_pm_ops amdgpu_pm
- 	.prepare = amdgpu_pmops_prepare,
- 	.complete = amdgpu_pmops_complete,
- 	.suspend = amdgpu_pmops_suspend,
-+	.suspend_noirq = amdgpu_pmops_suspend_noirq,
- 	.resume = amdgpu_pmops_resume,
- 	.freeze = amdgpu_pmops_freeze,
- 	.thaw = amdgpu_pmops_thaw,
++	/* Disable Root Bridge I/O space, memory space and bus mastering */
++	val = advk_readl(pcie, PCIE_CORE_CMD_STATUS_REG);
++	val &= ~(PCI_COMMAND_IO | PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
++	advk_writel(pcie, val, PCIE_CORE_CMD_STATUS_REG);
++
+ 	/* Remove IRQ domains */
+ 	advk_pcie_remove_msi_irq_domain(pcie);
+ 	advk_pcie_remove_irq_domain(pcie);
 
 
