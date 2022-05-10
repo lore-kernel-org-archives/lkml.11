@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9302EC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4CE1C41535
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:28:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243652AbiEJNby (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:31:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45564 "EHLO
+        id S243686AbiEJNcB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:32:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242707AbiEJNUl (ORCPT
+        with ESMTP id S242701AbiEJNUk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:20:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8332E2B94ED;
-        Tue, 10 May 2022 06:13:38 -0700 (PDT)
+        Tue, 10 May 2022 09:20:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C83042B94CF;
+        Tue, 10 May 2022 06:13:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8318E615DD;
-        Tue, 10 May 2022 13:13:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EA7CC385A6;
-        Tue, 10 May 2022 13:13:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EFF7BB81D0D;
+        Tue, 10 May 2022 13:13:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6241CC385C2;
+        Tue, 10 May 2022 13:13:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188418;
-        bh=M8IicdsUnZg8vfnppCcQYQR4NgT/lEnuhCttCqnkMSs=;
+        s=korg; t=1652188411;
+        bh=1MpbEk9aUP9EbkLor1Hxs1N3aNJR5oZ48rXD3vovWNg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AoeAX0PVYBWrPwqpmS/iNSm8mB/huDkdHUFWkW1B9ClizDEIVKrvN2JkV6dcr7hAR
-         CoKuBWjfkSDuBL0gTJW1p71xApN+yGbjQ/HG+s1bTMM6zgnreCx+FvX/Dsrjcyn+XA
-         zD3wQI0JV6ERc2NudgqDcg3aMDrhQt0nrJ0Cv27c=
+        b=Ty/qleBJ7MMnEmC/ApSJd7x0xFZ+fuOZZ7xFaKPzfyBW5C5TyRjLhfgIVJKEyf16G
+         kLISuTWIZqFNfJ5SrMuqVcJ1zhvw2pc6cqvB+BL00O4e9RKIZJZO3XY/GxPdMg7bAQ
+         XR4ak3t3Ii9MJR3+alhYTa0mQf/Jlwu+YoQz3IiM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiazi Li <lijiazi@xiaomi.com>,
-        Mike Snitzer <snitzer@redhat.com>,
-        Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 4.9 65/66] dm: fix mempool NULL pointer race when completing IO
-Date:   Tue, 10 May 2022 15:07:55 +0200
-Message-Id: <20220510130731.673926877@linuxfoundation.org>
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Subject: [PATCH 4.9 63/66] net: sched: prevent UAF on tc_ctl_tfilter when temporarily dropping rtnl_lock
+Date:   Tue, 10 May 2022 15:07:53 +0200
+Message-Id: <20220510130731.612169691@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.762341544@linuxfoundation.org>
 References: <20220510130729.762341544@linuxfoundation.org>
@@ -50,143 +47,152 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiazi Li <jqqlijiazi@gmail.com>
+From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 
-commit d208b89401e073de986dc891037c5a668f5d5d95 upstream.
+When dropping the rtnl_lock for looking up for a module, the device may be
+removed, releasing the qdisc and class memory. Right after trying to load
+the module, cl_ops->put is called, leading to a potential use-after-free.
 
-dm_io_dec_pending() calls end_io_acct() first and will then dec md
-in-flight pending count. But if a task is swapping DM table at same
-time this can result in a crash due to mempool->elements being NULL:
+Though commit e368fdb61d8e ("net: sched: use Qdisc rcu API instead of
+relying on rtnl lock") fixes this, it involves a lot of refactoring of the
+net/sched/ code, complicating its backport.
 
-task1                             task2
-do_resume
- ->do_suspend
-  ->dm_wait_for_completion
-                                  bio_endio
-				   ->clone_endio
-				    ->dm_io_dec_pending
-				     ->end_io_acct
-				      ->wakeup task1
- ->dm_swap_table
-  ->__bind
-   ->__bind_mempools
-    ->bioset_exit
-     ->mempool_exit
-                                     ->free_io
+This fix calls cl_ops->put before dropping rtnl_lock as it will be called
+either way, and zeroes it out so it won't be called again on the exit path.
 
-[ 67.330330] Unable to handle kernel NULL pointer dereference at
-virtual address 0000000000000000
-......
-[ 67.330494] pstate: 80400085 (Nzcv daIf +PAN -UAO)
-[ 67.330510] pc : mempool_free+0x70/0xa0
-[ 67.330515] lr : mempool_free+0x4c/0xa0
-[ 67.330520] sp : ffffff8008013b20
-[ 67.330524] x29: ffffff8008013b20 x28: 0000000000000004
-[ 67.330530] x27: ffffffa8c2ff40a0 x26: 00000000ffff1cc8
-[ 67.330535] x25: 0000000000000000 x24: ffffffdada34c800
-[ 67.330541] x23: 0000000000000000 x22: ffffffdada34c800
-[ 67.330547] x21: 00000000ffff1cc8 x20: ffffffd9a1304d80
-[ 67.330552] x19: ffffffdada34c970 x18: 000000b312625d9c
-[ 67.330558] x17: 00000000002dcfbf x16: 00000000000006dd
-[ 67.330563] x15: 000000000093b41e x14: 0000000000000010
-[ 67.330569] x13: 0000000000007f7a x12: 0000000034155555
-[ 67.330574] x11: 0000000000000001 x10: 0000000000000001
-[ 67.330579] x9 : 0000000000000000 x8 : 0000000000000000
-[ 67.330585] x7 : 0000000000000000 x6 : ffffff80148b5c1a
-[ 67.330590] x5 : ffffff8008013ae0 x4 : 0000000000000001
-[ 67.330596] x3 : ffffff80080139c8 x2 : ffffff801083bab8
-[ 67.330601] x1 : 0000000000000000 x0 : ffffffdada34c970
-[ 67.330609] Call trace:
-[ 67.330616] mempool_free+0x70/0xa0
-[ 67.330627] bio_put+0xf8/0x110
-[ 67.330638] dec_pending+0x13c/0x230
-[ 67.330644] clone_endio+0x90/0x180
-[ 67.330649] bio_endio+0x198/0x1b8
-[ 67.330655] dec_pending+0x190/0x230
-[ 67.330660] clone_endio+0x90/0x180
-[ 67.330665] bio_endio+0x198/0x1b8
-[ 67.330673] blk_update_request+0x214/0x428
-[ 67.330683] scsi_end_request+0x2c/0x300
-[ 67.330688] scsi_io_completion+0xa0/0x710
-[ 67.330695] scsi_finish_command+0xd8/0x110
-[ 67.330700] scsi_softirq_done+0x114/0x148
-[ 67.330708] blk_done_softirq+0x74/0xd0
-[ 67.330716] __do_softirq+0x18c/0x374
-[ 67.330724] irq_exit+0xb4/0xb8
-[ 67.330732] __handle_domain_irq+0x84/0xc0
-[ 67.330737] gic_handle_irq+0x148/0x1b0
-[ 67.330744] el1_irq+0xe8/0x190
-[ 67.330753] lpm_cpuidle_enter+0x4f8/0x538
-[ 67.330759] cpuidle_enter_state+0x1fc/0x398
-[ 67.330764] cpuidle_enter+0x18/0x20
-[ 67.330772] do_idle+0x1b4/0x290
-[ 67.330778] cpu_startup_entry+0x20/0x28
-[ 67.330786] secondary_start_kernel+0x160/0x170
+This has been shown to stop the following KASAN report with the reproducer:
 
-Fix this by:
-1) Establishing pointers to 'struct dm_io' members in
-dm_io_dec_pending() so that they may be passed into end_io_acct()
-_after_ free_io() is called.
-2) Moving end_io_acct() after free_io().
+[  256.609111] ==================================================================
+[  256.609585] BUG: KASAN: use-after-free in cbq_put+0x20/0xd0 at addr ffff880021daaba0
+[  256.610078] Read of size 4 by task total_cbq/11184
+[  256.610380] CPU: 0 PID: 11184 Comm: total_cbq Not tainted 4.9.311 #78
+[  256.610778]  ffff8800215875a8 ffffffff96e18735 ffff880024803080 ffff880021daaa80
+[  256.611274]  ffff8800215875d0 ffffffff96334841 ffffed00043b5574 ffffed00043b5574
+[  256.611768]  ffff880024803080 ffff880021587658 ffffffff96334af8 0000000000000000
+[  256.612186] Call Trace:
+[  256.612344]  [<ffffffff96e18735>] dump_stack+0x6d/0x8b
+[  256.612632]  [<ffffffff96334841>] kasan_object_err+0x21/0x70
+[  256.612973]  [<ffffffff96334af8>] kasan_report.part.1+0x218/0x4f0
+[  256.613349]  [<ffffffff96c5a2e0>] ? cbq_put+0x20/0xd0
+[  256.613634]  [<ffffffff96333cd6>] ? kasan_unpoison_shadow+0x36/0x50
+[  256.613993]  [<ffffffff96335105>] kasan_report+0x25/0x30
+[  256.614288]  [<ffffffff96333701>] __asan_load4+0x61/0x80
+[  256.614580]  [<ffffffff96c5a2e0>] cbq_put+0x20/0xd0
+[  256.614862]  [<ffffffff96c53184>] tc_ctl_tfilter+0x4f4/0xb80
+[  256.615151]  [<ffffffff96c52c90>] ? tfilter_notify+0x140/0x140
+[  256.615478]  [<ffffffff960056ef>] ? do_syscall_64+0xef/0x190
+[  256.615799]  [<ffffffff96e28a8e>] ? entry_SYSCALL_64_after_swapgs+0x58/0xc6
+[  256.616190]  [<ffffffff96bce3f6>] ? sock_sendmsg+0x76/0x80
+[  256.616484]  [<ffffffff96bce53f>] ? sock_write_iter+0x13f/0x1f0
+[  256.616833]  [<ffffffff96367b02>] ? __vfs_write+0x262/0x3c0
+[  256.617152]  [<ffffffff96369dc9>] ? vfs_write+0xf9/0x260
+[  256.617451]  [<ffffffff9636c009>] ? SyS_write+0xc9/0x1b0
+[  256.617754]  [<ffffffff960decda>] ? ns_capable_common+0x5a/0xa0
+[  256.618067]  [<ffffffff960ded33>] ? ns_capable+0x13/0x20
+[  256.618334]  [<ffffffff96c9125d>] ? __netlink_ns_capable+0x6d/0x80
+[  256.618666]  [<ffffffff96c2750f>] rtnetlink_rcv_msg+0x1af/0x410
+[  256.618969]  [<ffffffff96c90d6b>] ? netlink_compare+0x5b/0x70
+[  256.619295]  [<ffffffff96c27360>] ? rtnl_newlink+0xc60/0xc60
+[  256.619587]  [<ffffffff96c94214>] ? __netlink_lookup+0x1a4/0x240
+[  256.619885]  [<ffffffff96c94070>] ? netlink_broadcast+0x20/0x20
+[  256.620179]  [<ffffffff96c97815>] netlink_rcv_skb+0x155/0x190
+[  256.620463]  [<ffffffff96c27360>] ? rtnl_newlink+0xc60/0xc60
+[  256.620748]  [<ffffffff96c1e758>] rtnetlink_rcv+0x28/0x30
+[  256.621015]  [<ffffffff96c96d11>] netlink_unicast+0x2f1/0x3b0
+[  256.621354]  [<ffffffff96c96a20>] ? netlink_attachskb+0x340/0x340
+[  256.621765]  [<ffffffff96c9733e>] netlink_sendmsg+0x56e/0x6f0
+[  256.622181]  [<ffffffff96c96dd0>] ? netlink_unicast+0x3b0/0x3b0
+[  256.622578]  [<ffffffff96c96dd0>] ? netlink_unicast+0x3b0/0x3b0
+[  256.622893]  [<ffffffff96bce3f6>] sock_sendmsg+0x76/0x80
+[  256.623157]  [<ffffffff96bce53f>] sock_write_iter+0x13f/0x1f0
+[  256.623440]  [<ffffffff96bce400>] ? sock_sendmsg+0x80/0x80
+[  256.623729]  [<ffffffff966a8032>] ? iov_iter_init+0x82/0xc0
+[  256.624006]  [<ffffffff96367b02>] __vfs_write+0x262/0x3c0
+[  256.624274]  [<ffffffff963678a0>] ? default_llseek+0x120/0x120
+[  256.624566]  [<ffffffff965e8c02>] ? common_file_perm+0x92/0x170
+[  256.624925]  [<ffffffff96369a58>] ? rw_verify_area+0x78/0x140
+[  256.625277]  [<ffffffff96369dc9>] vfs_write+0xf9/0x260
+[  256.625593]  [<ffffffff9636c009>] SyS_write+0xc9/0x1b0
+[  256.625891]  [<ffffffff9636bf40>] ? SyS_read+0x1b0/0x1b0
+[  256.626154]  [<ffffffff9636bf40>] ? SyS_read+0x1b0/0x1b0
+[  256.626422]  [<ffffffff960056ef>] do_syscall_64+0xef/0x190
+[  256.626697]  [<ffffffff96e28a8e>] entry_SYSCALL_64_after_swapgs+0x58/0xc6
+[  256.627033] Object at ffff880021daaa80, in cache kmalloc-512 size: 512
+[  256.627415] Allocated:
+[  256.627563] PID = 164
+[  256.627711]  save_stack_trace+0x1b/0x20
+[  256.627947]  save_stack+0x46/0xd0
+[  256.628151]  kasan_kmalloc+0xad/0xe0
+[  256.628362]  kmem_cache_alloc_trace+0xe8/0x1e0
+[  256.628637]  cbq_change_class+0x8b6/0xde0
+[  256.628896]  tc_ctl_tclass+0x56a/0x5b0
+[  256.629129]  rtnetlink_rcv_msg+0x1af/0x410
+[  256.629380]  netlink_rcv_skb+0x155/0x190
+[  256.629621]  rtnetlink_rcv+0x28/0x30
+[  256.629840]  netlink_unicast+0x2f1/0x3b0
+[  256.630066]  netlink_sendmsg+0x56e/0x6f0
+[  256.630263]  sock_sendmsg+0x76/0x80
+[  256.630456]  sock_write_iter+0x13f/0x1f0
+[  256.630698]  __vfs_write+0x262/0x3c0
+[  256.630918]  vfs_write+0xf9/0x260
+[  256.631123]  SyS_write+0xc9/0x1b0
+[  256.631327]  do_syscall_64+0xef/0x190
+[  256.631553]  entry_SYSCALL_64_after_swapgs+0x58/0xc6
+[  256.631827] Freed:
+[  256.631931] PID = 164
+[  256.632048]  save_stack_trace+0x1b/0x20
+[  256.632241]  save_stack+0x46/0xd0
+[  256.632408]  kasan_slab_free+0x71/0xb0
+[  256.632597]  kfree+0x8c/0x1a0
+[  256.632751]  cbq_destroy_class+0x85/0xa0
+[  256.632948]  cbq_destroy+0xfa/0x120
+[  256.633125]  qdisc_destroy+0xa1/0x140
+[  256.633309]  dev_shutdown+0x12d/0x190
+[  256.633497]  rollback_registered_many+0x43c/0x5b0
+[  256.633753]  unregister_netdevice_many+0x2c/0x130
+[  256.634041]  rtnl_delete_link+0xb3/0x100
+[  256.634283]  rtnl_dellink+0x19c/0x360
+[  256.634509]  rtnetlink_rcv_msg+0x1af/0x410
+[  256.634760]  netlink_rcv_skb+0x155/0x190
+[  256.635001]  rtnetlink_rcv+0x28/0x30
+[  256.635221]  netlink_unicast+0x2f1/0x3b0
+[  256.635463]  netlink_sendmsg+0x56e/0x6f0
+[  256.635700]  sock_sendmsg+0x76/0x80
+[  256.635915]  sock_write_iter+0x13f/0x1f0
+[  256.636156]  __vfs_write+0x262/0x3c0
+[  256.636376]  vfs_write+0xf9/0x260
+[  256.636580]  SyS_write+0xc9/0x1b0
+[  256.636787]  do_syscall_64+0xef/0x190
+[  256.637013]  entry_SYSCALL_64_after_swapgs+0x58/0xc6
+[  256.637316] Memory state around the buggy address:
+[  256.637610]  ffff880021daaa80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[  256.638047]  ffff880021daab00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[  256.638487] >ffff880021daab80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[  256.638924]                                ^
+[  256.639186]  ffff880021daac00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[  256.639624]  ffff880021daac80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Jiazi Li <lijiazi@xiaomi.com>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Reviewed-by: Mike Snitzer <snitzer@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 ---
- drivers/md/dm.c |   17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+ net/sched/cls_api.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/md/dm.c
-+++ b/drivers/md/dm.c
-@@ -524,20 +524,19 @@ static void start_io_acct(struct dm_io *
- 				    false, 0, &io->stats_aux);
- }
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -268,10 +268,13 @@ replay:
+ 		err = -ENOENT;
+ 		tp_ops = tcf_proto_lookup_ops(tca[TCA_KIND]);
+ 		if (tp_ops == NULL) {
+-#ifdef CONFIG_MODULES
+ 			struct nlattr *kind = tca[TCA_KIND];
+ 			char name[IFNAMSIZ];
  
--static void end_io_acct(struct dm_io *io)
-+static void end_io_acct(struct mapped_device *md, struct bio *bio,
-+			unsigned long start_time, struct dm_stats_aux *stats_aux)
- {
--	struct mapped_device *md = io->md;
--	struct bio *bio = io->bio;
--	unsigned long duration = jiffies - io->start_time;
-+	unsigned long duration = jiffies - start_time;
- 	int pending;
- 	int rw = bio_data_dir(bio);
- 
--	generic_end_io_acct(rw, &dm_disk(md)->part0, io->start_time);
-+	generic_end_io_acct(rw, &dm_disk(md)->part0, start_time);
- 
- 	if (unlikely(dm_stats_used(&md->stats)))
- 		dm_stats_account_io(&md->stats, bio_data_dir(bio),
- 				    bio->bi_iter.bi_sector, bio_sectors(bio),
--				    true, duration, &io->stats_aux);
-+				    true, duration, stats_aux);
- 
- 	/*
- 	 * After this is decremented the bio must not be touched if it is
-@@ -768,6 +767,8 @@ static void dec_pending(struct dm_io *io
- 	int io_error;
- 	struct bio *bio;
- 	struct mapped_device *md = io->md;
-+	unsigned long start_time = 0;
-+	struct dm_stats_aux stats_aux;
- 
- 	/* Push-back supersedes any I/O errors */
- 	if (unlikely(error)) {
-@@ -793,8 +794,10 @@ static void dec_pending(struct dm_io *io
- 
- 		io_error = io->error;
- 		bio = io->bio;
--		end_io_acct(io);
-+		start_time = io->start_time;
-+		stats_aux = io->stats_aux;
- 		free_io(md, io);
-+		end_io_acct(md, bio, start_time, &stats_aux);
- 
- 		if (io_error == DM_ENDIO_REQUEUE)
- 			return;
++			if (cl)
++				cops->put(q, cl);
++			cl = 0;
++#ifdef CONFIG_MODULES
+ 			if (kind != NULL &&
+ 			    nla_strlcpy(name, kind, IFNAMSIZ) < IFNAMSIZ) {
+ 				rtnl_unlock();
 
 
