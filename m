@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AF5CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:15:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15573C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:15:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245665AbiEJOT3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:19:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45616 "EHLO
+        id S1343665AbiEJOTf (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:19:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245666AbiEJNsE (ORCPT
+        with ESMTP id S245640AbiEJNsD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:48:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C715456200;
-        Tue, 10 May 2022 06:36:24 -0700 (PDT)
+        Tue, 10 May 2022 09:48:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7638A2A4A2A;
+        Tue, 10 May 2022 06:36:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C3D5618B4;
-        Tue, 10 May 2022 13:36:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79F32C385A6;
-        Tue, 10 May 2022 13:36:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1C171B81D24;
+        Tue, 10 May 2022 13:35:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47C63C385C6;
+        Tue, 10 May 2022 13:35:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189784;
-        bh=US8X43Rh5j+4y6FKP6v9+3eLwbnOi3Z71ZpJneSh7n4=;
+        s=korg; t=1652189753;
+        bh=foCo7PopsDchRyH92JkUdq6PVpTO4BUCYNX3XbjiTWc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qcaJK3sGpqepjTuZOMkAIVz02W+spYFzQqPJPQ9cSXwB/2pV92ePZE4F+dKXnZfXE
-         2Ls0mLeOjPQ1kuoK7uysQZHErO6QmtS1G159fSKsBP9YUpweL+kwPekfBwU9dzNsJB
-         2BRV2Gmg05Th3OYbRym/HM47rA79TKu+NPrxzECU=
+        b=qf/x1olCH/4BJbjLZqgU5pruvrfc1gn9m+P7kbRiFCQMUg6vwIw5qrw+dMc+nGAhx
+         g0+h+Gr64D5oWO4z6hu/Eu7RP+knIgLAJBxs3fRsPpruv+8BUAsjOx9Mbdk9Ix5bSP
+         W1ec/YVRt1mHK9srtmwfs+I3MM7wMEuKAK1wYtvo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
-        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
-        Wong Vee Khee <vee.khee.wong@linux.intel.com>,
-        Tan Tee Min <tee.min.tan@linux.intel.com>,
-        "David S. Miller" <davem@davemloft.net>, Ong@vger.kernel.org
-Subject: [PATCH 5.17 027/140] net: stmmac: disable Split Header (SPH) for Intel platforms
-Date:   Tue, 10 May 2022 15:06:57 +0200
-Message-Id: <20220510130742.389045834@linuxfoundation.org>
+        stable@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.17 018/140] drm/amd/display: Avoid reading audio pattern past AUDIO_CHANNELS_COUNT
+Date:   Tue, 10 May 2022 15:06:48 +0200
+Message-Id: <20220510130742.129557402@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -52,65 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tan Tee Min <tee.min.tan@linux.intel.com>
+From: Harry Wentland <harry.wentland@amd.com>
 
-commit 47f753c1108e287edb3e27fad8a7511a9d55578e upstream.
+commit 3dfe85fa87b2a26bdbd292b66653bba065cf9941 upstream.
 
-Based on DesignWare Ethernet QoS datasheet, we are seeing the limitation
-of Split Header (SPH) feature is not supported for Ipv4 fragmented packet.
-This SPH limitation will cause ping failure when the packets size exceed
-the MTU size. For example, the issue happens once the basic ping packet
-size is larger than the configured MTU size and the data is lost inside
-the fragmented packet, replaced by zeros/corrupted values, and leads to
-ping fail.
+A faulty receiver might report an erroneous channel count. We
+should guard against reading beyond AUDIO_CHANNELS_COUNT as
+that would overflow the dpcd_pattern_period array.
 
-So, disable the Split Header for Intel platforms.
-
-v2: Add fixes tag in commit message.
-
-Fixes: 67afd6d1cfdf("net: stmmac: Add Split Header support and enable it in XGMAC cores")
-Cc: <stable@vger.kernel.org> # 5.10.x
-Suggested-by: Ong, Boon Leong <boon.leong.ong@intel.com>
-Signed-off-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
-Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
-Signed-off-by: Tan Tee Min <tee.min.tan@linux.intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Harry Wentland <harry.wentland@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c |    1 +
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |    2 +-
- include/linux/stmmac.h                            |    1 +
- 3 files changed, 3 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -454,6 +454,7 @@ static int intel_mgbe_common_data(struct
- 	plat->has_gmac4 = 1;
- 	plat->force_sf_dma_mode = 0;
- 	plat->tso_en = 1;
-+	plat->sph_disable = 1;
+--- a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
+@@ -4634,7 +4634,7 @@ static void dp_test_get_audio_test_data(
+ 		&dpcd_pattern_type.value,
+ 		sizeof(dpcd_pattern_type));
  
- 	/* Multiplying factor to the clk_eee_i clock time
- 	 * period to make it closer to 100 ns. This value
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -7077,7 +7077,7 @@ int stmmac_dvr_probe(struct device *devi
- 		dev_info(priv->device, "TSO feature enabled\n");
- 	}
+-	channel_count = dpcd_test_mode.bits.channel_count + 1;
++	channel_count = min(dpcd_test_mode.bits.channel_count + 1, AUDIO_CHANNELS_COUNT);
  
--	if (priv->dma_cap.sphen) {
-+	if (priv->dma_cap.sphen && !priv->plat->sph_disable) {
- 		ndev->hw_features |= NETIF_F_GRO;
- 		priv->sph_cap = true;
- 		priv->sph = priv->sph_cap;
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -270,5 +270,6 @@ struct plat_stmmacenet_data {
- 	int msi_rx_base_vec;
- 	int msi_tx_base_vec;
- 	bool use_phy_wol;
-+	bool sph_disable;
- };
- #endif
+ 	// read pattern periods for requested channels when sawTooth pattern is requested
+ 	if (dpcd_pattern_type.value == AUDIO_TEST_PATTERN_SAWTOOTH ||
 
 
