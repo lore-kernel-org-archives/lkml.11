@@ -2,87 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51FE7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 07:35:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31ADDC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 07:36:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235195AbiEJHju (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 03:39:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38528 "EHLO
+        id S232058AbiEJHkD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 03:40:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238166AbiEJHFu (ORCPT
+        with ESMTP id S241123AbiEJH2R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 03:05:50 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0C354C781
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 00:01:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=85t7aYjeyWnH4beg74cgdp5nu+h6AOQI65xsJkLJM3c=; b=qhOda218/0ojztTiUUOZC+HaTa
-        iDYh1V5D3ZOa/qLdZJfSMv+UUAdH6cX38aBTptOztKolbz0uylbIm56mL8E0aFxIzkFy7AD45a29v
-        j8cOnWPnQl/TxAkwmf4hWdKsAZ/KDtop1E/T9DlrtTRL57L0C7C0NdGIdHR/2QDAJzk+dwXTGRqtO
-        0HsPglcLLJRKq8i6khxyVFB9DlZO8/Yj7woqQz225gwqKdIXo2qUqTG922oRvtSz/tQVTxlKTu2nE
-        AD3Q2gzOOQgx7DB5WQ8kP4j6xyYtZ/A9lpHMNgC7we7lsPGc9elxiZyi/fanPjkgEvCGlTUW6Htga
-        //8xY+pA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1noJs3-00ClRd-D6; Tue, 10 May 2022 07:01:23 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id C5974981010; Tue, 10 May 2022 09:01:22 +0200 (CEST)
-Date:   Tue, 10 May 2022 09:01:22 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Qais Yousef <qais.yousef@arm.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Delyan Kratunov <delyank@fb.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        "bigeasy@linutronix.de" <bigeasy@linutronix.de>,
-        "dietmar.eggemann@arm.com" <dietmar.eggemann@arm.com>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>,
-        "vincent.guittot@linaro.org" <vincent.guittot@linaro.org>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "mingo@kernel.org" <mingo@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "Kenta.Tada@sony.com" <Kenta.Tada@sony.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "bristot@redhat.com" <bristot@redhat.com>,
-        "ebiederm@xmission.com" <ebiederm@xmission.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "legion@kernel.org" <legion@kernel.org>,
-        "adharmap@quicinc.com" <adharmap@quicinc.com>,
-        "valentin.schneider@arm.com" <valentin.schneider@arm.com>,
-        "ed.tsai@mediatek.com" <ed.tsai@mediatek.com>,
-        "juri.lelli@redhat.com" <juri.lelli@redhat.com>
-Subject: Re: [PATCH] sched/tracing: append prev_state to tp args instead
-Message-ID: <20220510070122.GJ76023@worktop.programming.kicks-ass.net>
-References: <20220422110903.GW2731@worktop.programming.kicks-ass.net>
- <056e9bb0d0e3fc20572d42db7386face1d0665d6.camel@fb.com>
- <CAADnVQKsah4aka-LJ+X+5XHHESKbbw36D8fXTLqcYp2io3PN_w@mail.gmail.com>
- <YmflVPQlwpiBuxRc@hirez.programming.kicks-ass.net>
- <20220426140959.op6u5m7id57aq7yc@wubuntu>
- <CAEf4BzaoL5HVc8U16kz7m--RiPhBwuLt8ZGZppwfxV85AXXrcw@mail.gmail.com>
- <20220427103458.ecnqtaj3af63625h@wubuntu>
- <CAEf4BzYc3f2-9hvuGL_mTO8qNxZjdQn8AabEb-N6Q7XjmEQQ1A@mail.gmail.com>
- <20220428100235.sqoxunbylqk2surk@wubuntu>
- <CAEf4BzaEo+dxSRJZHQiXYrj-a3_B-eODZUxGh3HrnPjquMYFXQ@mail.gmail.com>
+        Tue, 10 May 2022 03:28:17 -0400
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB0EB1F63B7;
+        Tue, 10 May 2022 00:24:17 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 505051C000A;
+        Tue, 10 May 2022 07:24:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1652167456;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+GKGEOMV8HdvRtCTi7Q1ZSPYbY21Obt2PJMYQBlni4g=;
+        b=bhhu1IcacSZrxL8ddeSJT6p7EYsCv0sPfh5KN6uv0Ab+Bya349FAyQE7V/xbeYGFTDBJ+1
+        f09y1FQ7SreSrhRVS5hV2mH/cPOo6CO/nx8oKC//l24s9vIdqRe0I8uITZUOTekJvTZ97d
+        SuZnRowWLWuVwoIrEOD4oZ0nJ2isKLtzBkaHWi6o6iD/MXevcZeSAg1qsMax8jW7Prnjtm
+        8GSrbbqxQLqKbzXhsw7TCmRYN6qltcTPWpU+2oHgdHX9Dbpl/tnGCq7bhaWImOFCYgZXEP
+        UGS+bOKGyI4tvhGKW7fVnKOfMbugNW7ia5g1Dx+piTpjTm305dkAD0JWmIQkUA==
+Date:   Tue, 10 May 2022 09:24:10 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v4 04/12] net: pcs: add Renesas MII converter
+ driver
+Message-ID: <20220510092410.1c1f5eaa@xps-bootlin>
+In-Reply-To: <Ynl3jpuJFqXLscvE@shell.armlinux.org.uk>
+References: <20220509131900.7840-1-clement.leger@bootlin.com>
+        <20220509131900.7840-5-clement.leger@bootlin.com>
+        <Ynl3jpuJFqXLscvE@shell.armlinux.org.uk>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzaEo+dxSRJZHQiXYrj-a3_B-eODZUxGh3HrnPjquMYFXQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 12:32:31PM -0700, Andrii Nakryiko wrote:
-> So can this patch be applied, please, or it's a hard no?
+Le Mon, 9 May 2022 21:20:30 +0100,
+"Russell King (Oracle)" <linux@armlinux.org.uk> a =C3=A9crit :
 
-Sorry; I got distracted with other work. I'll grudingly apply the patch.
+> Hi,
+>=20
+> On Mon, May 09, 2022 at 03:18:52PM +0200, Cl=C3=A9ment L=C3=A9ger wrote:
+> > +#define MIIC_PRCMD			0x0
+> > +#define MIIC_ESID_CODE			0x4
+> > +
+> > +#define MIIC_MODCTRL			0x20
+> > +#define MIIC_MODCTRL_SW_MODE		GENMASK(4, 0)
+> > +
+> > +#define MIIC_CONVCTRL(port)		(0x100 + (port) * 4)
+> > +
+> > +#define MIIC_CONVCTRL_CONV_SPEED	GENMASK(1, 0)
+> > +#define CONV_MODE_10MBPS		0
+> > +#define CONV_MODE_100MBPS		BIT(0)
+> > +#define CONV_MODE_1000MBPS		BIT(1) =20
+>=20
+> I think this is an inappropriate use of the BIT() macro. BIT() should
+> be used for single bit rather than for field values.
+>=20
+> You seem to have a two bit field in bits 1 and 0 of a register, which
+> has the values of:
+> 0 - 10MBPS
+> 1 - 100MBPS
+> 2 - 1GBPS
+>=20
+> I'd guess 3 is listed as "undefined", "do not use" or something
+> similar?
 
-Thanks!
+You are right, this is actually values rather than individual bits.
+
+>=20
+> > +
+> > +#define MIIC_CONVCTRL_CONV_MODE		GENMASK(3, 2)
+> > +#define CONV_MODE_MII			0
+> > +#define CONV_MODE_RMII			BIT(0)
+> > +#define CONV_MODE_RGMII			BIT(1) =20
+>=20
+> This looks similar. a 2-bit field in bits 3 and 2 taking values:
+> 0 - MII
+> 1 - RMII
+> 2 - RGMII
+>=20
+> ...
+>=20
+> > +static int miic_config(struct phylink_pcs *pcs, unsigned int mode,
+> > +		       phy_interface_t interface,
+> > +		       const unsigned long *advertising, bool
+> > permit) +{
+> > +	u32 speed =3D CONV_MODE_10MBPS, conv_mode =3D CONV_MODE_MII,
+> > val;
+> > +	struct miic_port *miic_port =3D
+> > phylink_pcs_to_miic_port(pcs);
+> > +	struct miic *miic =3D miic_port->miic;
+> > +	int port =3D miic_port->port;
+> > +
+> > +	switch (interface) {
+> > +	case PHY_INTERFACE_MODE_RMII:
+> > +		conv_mode =3D CONV_MODE_RMII;
+> > +		speed =3D CONV_MODE_100MBPS;
+> > +		break;
+> > +	case PHY_INTERFACE_MODE_RGMII:
+> > +		conv_mode =3D CONV_MODE_RGMII;
+> > +		speed =3D CONV_MODE_1000MBPS;
+> > +		break;
+> > +	case PHY_INTERFACE_MODE_MII: =20
+>=20
+> I'm not sure why you need to initialise "speed" and "conv_mode" above
+> when you could set them here.
+
+It only seemed to me that 0 value was the default init one but I'll
+move that in that case.
+
+>=20
+> Thanks.=20
+>=20
+
