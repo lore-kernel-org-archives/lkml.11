@@ -2,70 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B8CCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:31:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74A50C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:31:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345656AbiEJPfO (ORCPT
+        id S1345637AbiEJPfV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:35:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47452 "EHLO
+        Tue, 10 May 2022 11:35:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345768AbiEJPee (ORCPT
+        with ESMTP id S1345763AbiEJPeg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:34:34 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48C90BA997;
-        Tue, 10 May 2022 08:29:44 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id F34F21F424D6
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1652196583;
-        bh=uJRHaCeOEBQcOZ0I5YodDyMVQnV4u4MF2nMkQyoDrmg=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=b8jMcQgCtA/xqIWPX4KqwUbHiEE9vt7wnr/RsMKkR7UGTITO5Lb7eQC4g0FIndVoP
-         /gDyg3b66kVa77mYqnjFbNWKhWp0QtsnCp7lW3N4h1dvwRrWGeDfrxy4Lx3gTX0xwp
-         cQEhX1tqiHZtyHdMIMWY0iYfKUOBTOCwRh/re781GYdsQB0HMb5/sIdEwqFkV8Sy2L
-         2nStvk0DaQEoXJaUcFu5sdxaMXH286Hh+Jdqxaf/evE3/WtS1tP4+h9FACEEvJbuok
-         C/HcYwGTqC6C3JQIir1vk4K/xQ48bpETkXImRkvKLC/jbrhHSUtO5Ga3WNRrnhDkjB
-         GFDwJp+nDwB4w==
-Message-ID: <63169e65-cbfa-d495-754f-023dc8befa42@collabora.com>
-Date:   Tue, 10 May 2022 17:29:40 +0200
+        Tue, 10 May 2022 11:34:36 -0400
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E06F52F8
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:29:48 -0700 (PDT)
+Received: by mail-qk1-x733.google.com with SMTP id n8so12993971qke.11
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:29:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FOe0QpIsq707T7oDbRf/pCSk/0RB38He1yJY5ChwDp8=;
+        b=aIpZsyJf5arHu4Vr+y4gUngRQHnYs8ayU/4r6iHRz9x7KLZYtVJa7rzJAZVGmnN4Z3
+         fYqgefyNWghW0QllgfeEfAYaJuJVbjjrbIfAvLTM4KICsEiX8VT2m1BDJ8eqgfANQddd
+         1SS/KGzOfRACH29I2AkLAFUy9+7ibARRraCxVzuWayfHm0AhiyPNOL5p7+fFQSkziMaw
+         BZjovDcs3K6cvmWvNL+GRHlhtldCWF65/b1GyAeIX0vlNUFoIWQUAfKs9JOeCPMCv7SX
+         fy8df3gGpt6SG3JJ1yFO8DlhdGXLeMqt/Rawi0Dv+Z0qXe4nlEgaBobxeUeHzK86LEh/
+         NJoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FOe0QpIsq707T7oDbRf/pCSk/0RB38He1yJY5ChwDp8=;
+        b=wuYQWmjui3f54kOqXgXAppJeS4JHgpDEXj94MJ/DdQ9KnhmoRUUUIHLH41ATNRh6+i
+         ZM6wmgML71BdTXfsNR3bXfX6XjgOQvmhQGWMQ4a6rGWGA5BJEfnPDe4iVF7YNQCKhN/4
+         5u49wt4RStSaU6pzsFEuCLNsZGn+ORq3UlCSDXutBq7b2Fn4AAEkIOTzHeEwuj8hcm69
+         eGZZQ3M7KuEnvIwjnzdbzYdUR22BXwqdQJondfCgY+1retQ0eSyQFvl6eW8s//MtS8Jx
+         Ikp1h4JMzHMx5NsgE4h2P9Ue8xzBr+LjTC7OWzFEB4/Bkqf5UdRCmgZWvz4Cj26bcbls
+         ln+Q==
+X-Gm-Message-State: AOAM531KDvhuKwpLFnYxz2/0tktf2GIbe8576AjB+gFzKbxUldQJvxl0
+        blxoz5yInLFoI3ookZGNSe3PnA==
+X-Google-Smtp-Source: ABdhPJz7P4w38kJJscJ6fsGKxsfaMwr8NNE5cJTqRO1jGuOjYPzOH30aSGiRTwfV4Gye4m4oDorByg==
+X-Received: by 2002:a05:620a:cd7:b0:69f:b1a7:d1eb with SMTP id b23-20020a05620a0cd700b0069fb1a7d1ebmr15562058qkj.5.1652196588031;
+        Tue, 10 May 2022 08:29:48 -0700 (PDT)
+Received: from localhost (cpe-98-15-154-102.hvc.res.rr.com. [98.15.154.102])
+        by smtp.gmail.com with ESMTPSA id l1-20020ae9f001000000b0069fd35d2abcsm8811440qkg.112.2022.05.10.08.29.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 08:29:47 -0700 (PDT)
+From:   Johannes Weiner <hannes@cmpxchg.org>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Seth Jennings <sjenning@redhat.com>,
+        Dan Streetman <ddstreet@ieee.org>,
+        Minchan Kim <minchan@kernel.org>, linux-mm@kvack.org,
+        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-team@fb.com
+Subject: [PATCH v2 0/6] zswap: accounting & cgroup control
+Date:   Tue, 10 May 2022 11:28:41 -0400
+Message-Id: <20220510152847.230957-1-hannes@cmpxchg.org>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] Revert "serial: 8250_mtk: Make sure to select the right
- FEATURE_SEL"
-Content-Language: en-US
-To:     Mark Brown <broonie@kernel.org>
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        matthias.bgg@gmail.com, zhiyong.tao@mediatek.com,
-        colin.king@intel.com, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        wenst@chromium.org
-References: <20220510122620.150342-1-angelogioacchino.delregno@collabora.com>
- <YnpeYGbo7JJK0lDk@sirena.org.uk>
- <b13b019f-f766-60df-3764-d375f64ea7d3@collabora.com>
- <YnphFjs4E4EYafT4@sirena.org.uk>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <YnphFjs4E4EYafT4@sirena.org.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 10/05/22 14:56, Mark Brown ha scritto:
-> On Tue, May 10, 2022 at 02:46:28PM +0200, AngeloGioacchino Del Regno wrote:
-> 
->> Sorry for missing this tag, and also I'm sorry for the noise.
-> 
-> Hey, if nobody broke anything all this testing stuff wouldn't be worth
-> it!
+Changelog
+
+- Refresh and update meminfo documentation (Andrew)
+- Discussions around stat sharing opportunities with zram. But agreed
+  that zswap is a cache and zram a backend that could theoretically be
+  stacked, so they need to be understandable separately. (Minchan)
+
+Overview
+
+Zswap can consume nearly a quarter of RAM in the default
+configuration, yet it's neither listed in /proc/meminfo, nor is it
+accounted and manageable on a per-cgroup basis.
+
+This makes reasoning about the memory situation on a host in general
+rather difficult. On shared/cgrouped hosts, the consequences are
+worse. First, workloads can escape memory containment and cause
+resource priority inversions: a lo-pri group can fill the global zswap
+pool and force a hi-pri group out to disk. Second, not all workloads
+benefit from zswap equally. Some even suffer when memory contents
+compress poorly, and are better off going to disk swap directly. On a
+host with mixed workloads, it's currently not possible to enable zswap
+for one workload but not for the other.
+
+This series implements the missing global accounting as well as cgroup
+tracking & control for zswap backing memory:
+
+- Patch 1 refreshes the very out-of-date meminfo documentation in
+  Documentation/filesystems/proc.rst.
+
+- Patches 2-4 clean up related and adjacent options in Kconfig. Not
+  actual dependencies, just things I noticed during development.
+
+- Patch 5 adds meminfo and vmstat coverage for zswap consumption and
+  activity.
+
+- Patch 6 implements per-cgroup tracking & control of zswap memory.
+
+Based on v5.18-rc4-mmots-2022-04-26-19-34-5-g5e1fdb02de7a.
+
+ Documentation/admin-guide/cgroup-v2.rst |  21 ++
+ Documentation/filesystems/proc.rst      | 161 +++++----
+ drivers/block/zram/Kconfig              |   3 +-
+ fs/proc/meminfo.c                       |   7 +
+ include/linux/memcontrol.h              |  54 +++
+ include/linux/swap.h                    |   5 +
+ include/linux/vm_event_item.h           |   4 +
+ init/Kconfig                            | 123 -------
+ mm/Kconfig                              | 523 +++++++++++++++++++-----------
+ mm/memcontrol.c                         | 196 ++++++++++-
+ mm/vmstat.c                             |   4 +
+ mm/zswap.c                              |  50 ++-
+ 12 files changed, 753 insertions(+), 398 deletions(-)
 
 
-Haha! That's true :-)
-
-Thank you!
