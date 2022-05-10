@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B755BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:14:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A254CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:14:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242381AbiEJNSI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:18:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36172 "EHLO
+        id S242422AbiEJNSP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:18:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242328AbiEJNQT (ORCPT
+        with ESMTP id S241535AbiEJNQT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:16:19 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C56C24132B;
-        Tue, 10 May 2022 06:12:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8FF73EF23;
+        Tue, 10 May 2022 06:12:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C4435615F4;
-        Tue, 10 May 2022 13:11:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEF6DC385C2;
-        Tue, 10 May 2022 13:11:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DA6B615F8;
+        Tue, 10 May 2022 13:12:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69F1BC385A6;
+        Tue, 10 May 2022 13:12:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188317;
-        bh=zlgTwDPqMHGwCom7yT3bg2E8DypAoRsb8SCA47wPt4w=;
+        s=korg; t=1652188325;
+        bh=5JcHX9Wa3Mes2Izs1ipgsGcdg9EM9TbFHe/TyofPpc8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WwRFkwKtdKfveyy1CuXRQsp2AYgv4POCkOydJpCF8SJVEhTpU+USTdw7X9rkvXxaS
-         Yco7JA0dBKWPXwfjdQ/HbFZrNwHx38KyR5PZDykrEtm42rqHV0bXZafsXeTbMVAS4x
-         1qe5eLotuCuE1y5C9tofGTla9g9pn7bF5G/DZXjI=
+        b=C3TBl+jvjbqOv5mwMuT7X1b5Pu0g//OQJmYLEpZlcr+A3dAf4G0U0/NrQ0EZAkwU9
+         22w+xzTB2zOD4eOxOZMBIUQ4g+EuLtZRh3X25hUn7GJzJu1cIn/FZnN6k9yV0NhzpT
+         3OP7p8PUlMma3LjwvOpe9ssxiX/HM52DWSM9Ggk0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 34/66] drivers: net: hippi: Fix deadlock in rr_close()
-Date:   Tue, 10 May 2022 15:07:24 +0200
-Message-Id: <20220510130730.764886380@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 4.9 37/66] tty: n_gsm: fix malformed counter for out of frame data
+Date:   Tue, 10 May 2022 15:07:27 +0200
+Message-Id: <20220510130730.857381555@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.762341544@linuxfoundation.org>
 References: <20220510130729.762341544@linuxfoundation.org>
@@ -49,53 +47,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-[ Upstream commit bc6de2878429e85c1f1afaa566f7b5abb2243eef ]
+commit a24b4b2f660b7ddf3f484b37600bba382cb28a9d upstream.
 
-There is a deadlock in rr_close(), which is shown below:
+The gsm_mux field 'malformed' represents the number of malformed frames
+received. However, gsm1_receive() also increases this counter for any out
+of frame byte.
+Fix this by ignoring out of frame data for the malformed counter.
 
-   (Thread 1)                |      (Thread 2)
-                             | rr_open()
-rr_close()                   |  add_timer()
- spin_lock_irqsave() //(1)   |  (wait a time)
- ...                         | rr_timer()
- del_timer_sync()            |  spin_lock_irqsave() //(2)
- (wait timer to stop)        |  ...
-
-We hold rrpriv->lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need rrpriv->lock in position (2) of thread 2.
-As a result, rr_close() will block forever.
-
-This patch extracts del_timer_sync() from the protection of
-spin_lock_irqsave(), which could let timer handler to obtain
-the needed lock.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417125519.82618-1-duoming@zju.edu.cn
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220414094225.4527-7-daniel.starke@siemens.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/hippi/rrunner.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/n_gsm.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/hippi/rrunner.c b/drivers/net/hippi/rrunner.c
-index 6f3519123eb6..0e1a422d9567 100644
---- a/drivers/net/hippi/rrunner.c
-+++ b/drivers/net/hippi/rrunner.c
-@@ -1354,7 +1354,9 @@ static int rr_close(struct net_device *dev)
- 
- 	rrpriv->fw_running = 0;
- 
-+	spin_unlock_irqrestore(&rrpriv->lock, flags);
- 	del_timer_sync(&rrpriv->timer);
-+	spin_lock_irqsave(&rrpriv->lock, flags);
- 
- 	writel(0, &regs->TxPi);
- 	writel(0, &regs->IpRxPi);
--- 
-2.35.1
-
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1977,7 +1977,8 @@ static void gsm1_receive(struct gsm_mux
+ 		}
+ 		/* Any partial frame was a runt so go back to start */
+ 		if (gsm->state != GSM_START) {
+-			gsm->malformed++;
++			if (gsm->state != GSM_SEARCH)
++				gsm->malformed++;
+ 			gsm->state = GSM_START;
+ 		}
+ 		/* A SOF in GSM_START means we are still reading idling or
 
 
