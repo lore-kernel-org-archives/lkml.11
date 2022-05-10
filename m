@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAA0BC4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:28:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25AD8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:28:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344675AbiEJObf (ORCPT
+        id S1344788AbiEJObx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:31:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49800 "EHLO
+        Tue, 10 May 2022 10:31:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244622AbiEJOEp (ORCPT
+        with ESMTP id S244963AbiEJOFz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:04:45 -0400
+        Tue, 10 May 2022 10:05:55 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFBF7980A0;
-        Tue, 10 May 2022 06:40:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6365A2E1DEA;
+        Tue, 10 May 2022 06:40:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 77CFBB81038;
-        Tue, 10 May 2022 13:40:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7D83C385A6;
-        Tue, 10 May 2022 13:40:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6C76AB81DC2;
+        Tue, 10 May 2022 13:40:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95511C385C2;
+        Tue, 10 May 2022 13:40:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652190041;
-        bh=JLqwSEOcIWigLI0SHDOYihooy4qv25j0tvogRuqMs6s=;
+        s=korg; t=1652190053;
+        bh=Jc1hw+gqix56pSd24P6pHffkRwHVTZeWougTj51oJt0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UE8JDWbGJJ8vpHBk74xaTUIlbk4faL+d+xNcFzevtaz3cT7dUQBMWdWiSZcKnAumv
-         7lymna1gxr5GTSh7gSLYPRglSTML5Jt7A9re2Q+SHri7MuoXp3hjAXlkBu2//XN7Fa
-         2RB5jH7avqGg/s+VE4qZT1dgUf4FF7yZ15QN472o=
+        b=VO7UZ5EPsZiLTzUAnh0+04UW3PFm3lksemLl/1HEjGxDYIJ6ezP79LyT9OVlGjXPM
+         3o9G4luK1TSwUqUo99kTfHfDQOhna94p/ChCP37lous0wsPEDjsLdn70J6ebzV95el
+         ChDUhqV0tcoTrEqWqr+wyqXzVABLwwodwKwAMG58=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
-        Junxiao Chang <junxiao.chang@intel.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 109/140] fbdev: Make fb_release() return -ENODEV if fbdev was unregistered
-Date:   Tue, 10 May 2022 15:08:19 +0200
-Message-Id: <20220510130744.720335167@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.17 086/140] net: stmmac: dwmac-sun8i: add missing of_node_put() in sun8i_dwmac_register_mdio_mux()
+Date:   Tue, 10 May 2022 15:07:56 +0200
+Message-Id: <20220510130744.069999230@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -52,53 +50,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Javier Martinez Canillas <javierm@redhat.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit aafa025c76dcc7d1a8c8f0bdefcbe4eb480b2f6a ]
+commit 1a15267b7be77e0792cf0c7b36ca65c8eb2df0d8 upstream.
 
-A reference to the framebuffer device struct fb_info is stored in the file
-private data, but this reference could no longer be valid and must not be
-accessed directly. Instead, the file_fb_info() accessor function must be
-used since it does sanity checking to make sure that the fb_info is valid.
+The node pointer returned by of_get_child_by_name() with refcount incremented,
+so add of_node_put() after using it.
 
-This can happen for example if the registered framebuffer device is for a
-driver that just uses a framebuffer provided by the system firmware. In
-that case, the fbdev core would unregister the framebuffer device when a
-real video driver is probed and ask to remove conflicting framebuffers.
-
-The bug has been present for a long time but commit 27599aacbaef ("fbdev:
-Hot-unplug firmware fb devices on forced removal") unmasked it since the
-fbdev core started unregistering the framebuffers' devices associated.
-
-Fixes: 27599aacbaef ("fbdev: Hot-unplug firmware fb devices on forced removal")
-Reported-by: Maxime Ripard <maxime@cerno.tech>
-Reported-by: Junxiao Chang <junxiao.chang@intel.com>
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220502135014.377945-1-javierm@redhat.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 634db83b8265 ("net: stmmac: dwmac-sun8i: Handle integrated/external MDIOs")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220428095716.540452-1-yangyingliang@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/core/fbmem.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/video/fbdev/core/fbmem.c b/drivers/video/fbdev/core/fbmem.c
-index 00f0f282e7a1..10a9369c9dea 100644
---- a/drivers/video/fbdev/core/fbmem.c
-+++ b/drivers/video/fbdev/core/fbmem.c
-@@ -1438,7 +1438,10 @@ fb_release(struct inode *inode, struct file *file)
- __acquires(&info->lock)
- __releases(&info->lock)
- {
--	struct fb_info * const info = file->private_data;
-+	struct fb_info * const info = file_fb_info(file);
-+
-+	if (!info)
-+		return -ENODEV;
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+@@ -916,6 +916,7 @@ static int sun8i_dwmac_register_mdio_mux
  
- 	lock_fb_info(info);
- 	if (info->fbops->fb_release)
--- 
-2.35.1
-
+ 	ret = mdio_mux_init(priv->device, mdio_mux, mdio_mux_syscon_switch_fn,
+ 			    &gmac->mux_handle, priv, priv->mii);
++	of_node_put(mdio_mux);
+ 	return ret;
+ }
+ 
 
 
