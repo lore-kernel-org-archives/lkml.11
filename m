@@ -2,107 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11E66C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:25:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60A98C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:25:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242948AbiEJN3e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:29:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58124 "EHLO
+        id S243255AbiEJN3l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:29:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242878AbiEJNWj (ORCPT
+        with ESMTP id S242964AbiEJNWq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:22:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A4381A29DE;
-        Tue, 10 May 2022 06:16:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EC42EB81D7A;
-        Tue, 10 May 2022 13:16:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 590ECC385C6;
-        Tue, 10 May 2022 13:16:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188602;
-        bh=7ni6v9EcwTeRnymZXJCe2F2vv9mVcGy9VAalwjR/0ls=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G9itMwvt8im3pN8BvabH2mjS981tB854PiDgRejri6Vj+hj8HX5mXLGkhUrU1Dlpo
-         TYbFzre/5E+s3cnWuFDqs3Cg+nQ7HhlPFwpJLfyZMnHWASC4uGjMN81wsO81Wuro19
-         xSNFUBAceeaQZXjRUKjWs0A6wEL+Dt3jh6qcXJ3g=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>
-Subject: [PATCH 4.14 61/78] ASoC: wm8958: Fix change notifications for DSP controls
-Date:   Tue, 10 May 2022 15:07:47 +0200
-Message-Id: <20220510130734.338358207@linuxfoundation.org>
+        Tue, 10 May 2022 09:22:46 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E22171A90DB;
+        Tue, 10 May 2022 06:17:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1652188620; x=1683724620;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=8pp90tvf8kTP0zWhyfPDbb/zxfLJMKZ53ILcrsvHuto=;
+  b=HeP2VqwUlh1WZpJDAKL4lIzcejYDPwSN/ELGD1RwvP/ZAmWTFtUnSmcJ
+   JUjQQSCQ2DlbMCYchglOHqZouX+Vl3GQAilgkYbk8puCVr1XIVdgom4ZJ
+   E8f6jq00I3A8ws8YLKkEUCU4OWEwgE+qzBmbwCRFm6i7fU2ziNc1E8GlO
+   nur7byJkEjt28jcy+8GCiW0H2VpcOURo3xSFCTyhlPc14VfQINrH6W4bL
+   BVw1DlPQaYrenYA0LxyGTLObUO/I3dXK8/yer0Ow3ncL4NgcC42rM9zSk
+   8Xx7RMgr8MxqQz3838czQxyNoNO/3VINDWIpJjn8x5wzbYrHgBeKEJ0eV
+   w==;
+X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
+   d="scan'208";a="172695912"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 May 2022 06:16:45 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 10 May 2022 06:16:45 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Tue, 10 May 2022 06:16:43 -0700
+From:   Conor Dooley <conor.dooley@microchip.com>
+To:     <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>
+CC:     <daire.mcnamara@microchip.com>, <lewis.hanly@microchip.com>,
+        <conor.dooley@microchip.com>, <linux-kernel@vger.kernel.org>,
+        <linux-rtc@vger.kernel.org>, <linux-riscv@lists.infradead.org>
+Subject: [PATCH v2 2/2] MAINTAINERS: add PolarFire SoC's RTC
+Date:   Tue, 10 May 2022 14:21:17 +0100
+Message-ID: <20220510132116.506572-3-conor.dooley@microchip.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
-References: <20220510130732.522479698@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220510132116.506572-1-conor.dooley@microchip.com>
+References: <20220510132116.506572-1-conor.dooley@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+Add an entry for PolarFire SoC's RTC drver to the existing support
+for PolarFire SoC.
 
-commit b4f5c6b2e52b27462c0599e64e96e53b58438de1 upstream.
-
-The WM8958 DSP controls all return 0 on successful write, not a boolean
-value indicating if the write changed the value of the control. Fix this
-by returning 1 after a change, there is already a check at the start of
-each put() that skips the function in the case that there is no change.
-
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220416125408.197440-1-broonie@kernel.org
-Cc: stable@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 ---
- sound/soc/codecs/wm8958-dsp2.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/sound/soc/codecs/wm8958-dsp2.c
-+++ b/sound/soc/codecs/wm8958-dsp2.c
-@@ -533,7 +533,7 @@ static int wm8958_mbc_put(struct snd_kco
+diff --git a/MAINTAINERS b/MAINTAINERS
+index e8c52d0192a6..625d735f6a24 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -16952,6 +16952,7 @@ L:	linux-riscv@lists.infradead.org
+ S:	Supported
+ F:	arch/riscv/boot/dts/microchip/
+ F:	drivers/mailbox/mailbox-mpfs.c
++F:	drivers/rtc/rtc-mpfs.c
+ F:	drivers/soc/microchip/
+ F:	include/soc/microchip/mpfs.h
  
- 	wm8958_dsp_apply(codec, mbc, wm8994->mbc_ena[mbc]);
- 
--	return 0;
-+	return 1;
- }
- 
- #define WM8958_MBC_SWITCH(xname, xval) {\
-@@ -659,7 +659,7 @@ static int wm8958_vss_put(struct snd_kco
- 
- 	wm8958_dsp_apply(codec, vss, wm8994->vss_ena[vss]);
- 
--	return 0;
-+	return 1;
- }
- 
- 
-@@ -733,7 +733,7 @@ static int wm8958_hpf_put(struct snd_kco
- 
- 	wm8958_dsp_apply(codec, hpf % 3, ucontrol->value.integer.value[0]);
- 
--	return 0;
-+	return 1;
- }
- 
- #define WM8958_HPF_SWITCH(xname, xval) {\
-@@ -827,7 +827,7 @@ static int wm8958_enh_eq_put(struct snd_
- 
- 	wm8958_dsp_apply(codec, eq, ucontrol->value.integer.value[0]);
- 
--	return 0;
-+	return 1;
- }
- 
- #define WM8958_ENH_EQ_SWITCH(xname, xval) {\
-
+-- 
+2.36.1
 
