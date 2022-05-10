@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96E75C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7085C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244580AbiEJNzz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:55:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39300 "EHLO
+        id S244668AbiEJN4L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:56:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244855AbiEJNiI (ORCPT
+        with ESMTP id S244927AbiEJNiQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:38:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEAA26D4CA;
-        Tue, 10 May 2022 06:26:33 -0700 (PDT)
+        Tue, 10 May 2022 09:38:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D20B1737B1;
+        Tue, 10 May 2022 06:26:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AD8B1B81DA9;
-        Tue, 10 May 2022 13:26:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14E0EC385C2;
-        Tue, 10 May 2022 13:26:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 08D4F6170D;
+        Tue, 10 May 2022 13:26:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AA80C385CB;
+        Tue, 10 May 2022 13:26:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189190;
-        bh=/pxfULk7hU6DIw/b2kQ1JQq9ZuRhMqqC4/KdmYm/oPU=;
+        s=korg; t=1652189199;
+        bh=D8r2jFoTEUVlsyCv66uIxzQz4KMltHDjNuYGVD5H6EE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XTk1P73H93NTPxeMP9J+s/XTaBniYChls2kWi9pe3FiRSAet9PpvMmh2LSREjft7w
-         WYjKdAy6JRxjUXisEt+RalD59NmWVvmSCkoxzxlotFYb5fLooqdSdUafMEnFe90VVw
-         AsQkUcgMwA+rjwY6mQGuEvVjH/JgUDUNRyCvhqe0=
+        b=gld/VLoWvEY26mu/aoeFOsiyl4oTLHHRN4/zwHm1H6N2dTP93fCMavxUq6s0fcKPy
+         vw2NXWkUv+x2TuO+oqr10es0AY5cc9owj4mjjy58nwJuIBBllZ4dBt/Qq1Y3sovNi8
+         H94O1C+4qWaoqGJ7QUC0DNbUlXIfnSfIteHMgBCs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
-        Kees Cook <keescook@chromium.org>
-Subject: [PATCH 5.10 42/70] selftests/seccomp: Dont call read() on TTY from background pgrp
-Date:   Tue, 10 May 2022 15:08:01 +0200
-Message-Id: <20220510130734.091625379@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>
+Subject: [PATCH 5.10 44/70] NFSv4: Dont invalidate inode attributes on delegation return
+Date:   Tue, 10 May 2022 15:08:03 +0200
+Message-Id: <20220510130734.150568877@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
 References: <20220510130732.861729621@linuxfoundation.org>
@@ -48,73 +48,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jann Horn <jannh@google.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit 2bfed7d2ffa5d86c462d3e2067f2832eaf8c04c7 upstream.
+commit 00c94ebec5925593c0377b941289224469e72ac7 upstream.
 
-Since commit 92d25637a3a4 ("kselftest: signal all child processes"), tests
-are executed in background process groups. This means that trying to read
-from stdin now throws SIGTTIN when stdin is a TTY, which breaks some
-seccomp selftests that try to use read(0, NULL, 0) as a dummy syscall.
+There is no need to declare attributes such as the ctime, mtime and
+block size invalid when we're just returning a delegation, so it is
+inappropriate to call nfs_post_op_update_inode_force_wcc().
+Instead, just call nfs_refresh_inode() after faking up the change
+attribute. We know that the GETATTR op occurs before the DELEGRETURN, so
+we are safe when doing this.
 
-The simplest way to fix that is probably to just use -1 instead of 0 as
-the dummy read()'s FD.
-
-Fixes: 92d25637a3a4 ("kselftest: signal all child processes")
-Signed-off-by: Jann Horn <jannh@google.com>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220319010011.1374622-1-jannh@google.com
+Fixes: 0bc2c9b4dca9 ("NFSv4: Don't discard the attributes returned by asynchronous DELEGRETURN")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/seccomp/seccomp_bpf.c |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ fs/nfs/nfs4proc.c |   12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
---- a/tools/testing/selftests/seccomp/seccomp_bpf.c
-+++ b/tools/testing/selftests/seccomp/seccomp_bpf.c
-@@ -951,7 +951,7 @@ TEST(ERRNO_valid)
- 	ASSERT_EQ(0, ret);
- 
- 	EXPECT_EQ(parent, syscall(__NR_getppid));
--	EXPECT_EQ(-1, read(0, NULL, 0));
-+	EXPECT_EQ(-1, read(-1, NULL, 0));
- 	EXPECT_EQ(E2BIG, errno);
+--- a/fs/nfs/nfs4proc.c
++++ b/fs/nfs/nfs4proc.c
+@@ -369,6 +369,14 @@ static void nfs4_setup_readdir(u64 cooki
+ 	kunmap_atomic(start);
  }
  
-@@ -970,7 +970,7 @@ TEST(ERRNO_zero)
- 
- 	EXPECT_EQ(parent, syscall(__NR_getppid));
- 	/* "errno" of 0 is ok. */
--	EXPECT_EQ(0, read(0, NULL, 0));
-+	EXPECT_EQ(0, read(-1, NULL, 0));
- }
- 
- /*
-@@ -991,7 +991,7 @@ TEST(ERRNO_capped)
- 	ASSERT_EQ(0, ret);
- 
- 	EXPECT_EQ(parent, syscall(__NR_getppid));
--	EXPECT_EQ(-1, read(0, NULL, 0));
-+	EXPECT_EQ(-1, read(-1, NULL, 0));
- 	EXPECT_EQ(4095, errno);
- }
- 
-@@ -1022,7 +1022,7 @@ TEST(ERRNO_order)
- 	ASSERT_EQ(0, ret);
- 
- 	EXPECT_EQ(parent, syscall(__NR_getppid));
--	EXPECT_EQ(-1, read(0, NULL, 0));
-+	EXPECT_EQ(-1, read(-1, NULL, 0));
- 	EXPECT_EQ(12, errno);
- }
- 
-@@ -2575,7 +2575,7 @@ void *tsync_sibling(void *data)
- 	ret = prctl(PR_GET_NO_NEW_PRIVS, 0, 0, 0, 0);
- 	if (!ret)
- 		return (void *)SIBLING_EXIT_NEWPRIVS;
--	read(0, NULL, 0);
-+	read(-1, NULL, 0);
- 	return (void *)SIBLING_EXIT_UNKILLED;
- }
- 
++static void nfs4_fattr_set_prechange(struct nfs_fattr *fattr, u64 version)
++{
++	if (!(fattr->valid & NFS_ATTR_FATTR_PRECHANGE)) {
++		fattr->pre_change_attr = version;
++		fattr->valid |= NFS_ATTR_FATTR_PRECHANGE;
++	}
++}
++
+ static void nfs4_test_and_free_stateid(struct nfs_server *server,
+ 		nfs4_stateid *stateid,
+ 		const struct cred *cred)
+@@ -6464,7 +6472,9 @@ static void nfs4_delegreturn_release(voi
+ 		pnfs_roc_release(&data->lr.arg, &data->lr.res,
+ 				 data->res.lr_ret);
+ 	if (inode) {
+-		nfs_post_op_update_inode_force_wcc(inode, &data->fattr);
++		nfs4_fattr_set_prechange(&data->fattr,
++					 inode_peek_iversion_raw(inode));
++		nfs_refresh_inode(inode, &data->fattr);
+ 		nfs_iput_and_deactive(inode);
+ 	}
+ 	kfree(calldata);
 
 
