@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32DF0C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:24:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21AB1C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:24:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344141AbiEJO15 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:27:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46938 "EHLO
+        id S245384AbiEJO2I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:28:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245361AbiEJN5f (ORCPT
+        with ESMTP id S245402AbiEJN5g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:57:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF1C8FD41;
-        Tue, 10 May 2022 06:39:11 -0700 (PDT)
+        Tue, 10 May 2022 09:57:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F635BA9B6;
+        Tue, 10 May 2022 06:39:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F3373B81D24;
-        Tue, 10 May 2022 13:39:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27AF7C385A6;
-        Tue, 10 May 2022 13:39:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E20CE615E9;
+        Tue, 10 May 2022 13:39:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8F3FC385A6;
+        Tue, 10 May 2022 13:39:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189948;
-        bh=KROBn0sVKqejLhXC5hNUtuLqTsLA0EpNTTg+h0Jc3Nc=;
+        s=korg; t=1652189958;
+        bh=+mJTXgsOIxd3Wmqr468P9HZLAksdzKwrV1S7ZpA+WV8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TFEy2P+nLad7HdDsyo9zq70Qo/+orj97S/1ltdL7L2oM0dkBW8xFt7EvuOr0UP+ph
-         JScF+fPyMbf0bnoK3Ag39FPWFwW0EXAu0c43Jf8HZQeeiy8cFji/9wmnWgpdeXHqEh
-         Rnk5LcPMYTXlNrr4BHYlKGXxDakNSSQJt4BtKy+A=
+        b=y8rZlnkQv+5NWqtxBs8Fb1iT7ET6ymVhAxjuxYeteeQYEbNmrTeqKsg1IeLR1LDE9
+         0aZ+eYP1zC1obOlnaQaHwoVQhT+I3XleQC/dPQZVh6NaqzBmA9kfPIXRz37XN2QFJj
+         o9rkEvGpRZ3fB7+DO3hh/ZT5+XkdvUMrzKkGISqM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Cheng Xu <chengyou@linux.alibaba.com>,
+        stable@vger.kernel.org, Shiraz Saleem <shiraz.saleem@intel.com>,
         Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.17 079/140] RDMA/siw: Fix a condition race issue in MPA request processing
-Date:   Tue, 10 May 2022 15:07:49 +0200
-Message-Id: <20220510130743.873150359@linuxfoundation.org>
+Subject: [PATCH 5.17 081/140] RDMA/irdma: Reduce iWARP QP destroy time
+Date:   Tue, 10 May 2022 15:07:51 +0200
+Message-Id: <20220510130743.929800313@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -51,66 +48,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cheng Xu <chengyou@linux.alibaba.com>
+From: Shiraz Saleem <shiraz.saleem@intel.com>
 
-commit ef91271c65c12d36e4c2b61c61d4849fb6d11aa0 upstream.
+commit 2df6d895907b2f5dfbc558cbff7801bba82cb3cc upstream.
 
-The calling of siw_cm_upcall and detaching new_cep with its listen_cep
-should be atomistic semantics. Otherwise siw_reject may be called in a
-temporary state, e,g, siw_cm_upcall is called but the new_cep->listen_cep
-has not being cleared.
+QP destroy is synchronous and waits for its refcnt to be decremented in
+irdma_cm_node_free_cb (for iWARP) which fires after the RCU grace period
+elapses.
 
-This fixes a WARN:
+Applications running a large number of connections are exposed to high
+wait times on destroy QP for events like SIGABORT.
 
-  WARNING: CPU: 7 PID: 201 at drivers/infiniband/sw/siw/siw_cm.c:255 siw_cep_put+0x125/0x130 [siw]
-  CPU: 2 PID: 201 Comm: kworker/u16:22 Kdump: loaded Tainted: G            E     5.17.0-rc7 #1
-  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
-  Workqueue: iw_cm_wq cm_work_handler [iw_cm]
-  RIP: 0010:siw_cep_put+0x125/0x130 [siw]
-  Call Trace:
-   <TASK>
-   siw_reject+0xac/0x180 [siw]
-   iw_cm_reject+0x68/0xc0 [iw_cm]
-   cm_work_handler+0x59d/0xe20 [iw_cm]
-   process_one_work+0x1e2/0x3b0
-   worker_thread+0x50/0x3a0
-   ? rescuer_thread+0x390/0x390
-   kthread+0xe5/0x110
-   ? kthread_complete_and_exit+0x20/0x20
-   ret_from_fork+0x1f/0x30
-   </TASK>
+The long pole for this wait time is the firing of the call_rcu callback
+during a CM node destroy which can be slow. It holds the QP reference
+count and blocks the destroy QP from completing.
 
-Fixes: 6c52fdc244b5 ("rdma/siw: connection management")
-Link: https://lore.kernel.org/r/d528d83466c44687f3872eadcb8c184528b2e2d4.1650526554.git.chengyou@linux.alibaba.com
-Reported-by: Luis Chamberlain <mcgrof@kernel.org>
-Reviewed-by: Bernard Metzler <bmt@zurich.ibm.com>
-Signed-off-by: Cheng Xu <chengyou@linux.alibaba.com>
+call_rcu only needs to make sure that list walkers have a reference to the
+cm_node object before freeing it and thus need to wait for grace period
+elapse. The rest of the connection teardown in irdma_cm_node_free_cb is
+moved out of the grace period wait in irdma_destroy_connection. Also,
+replace call_rcu with a simple kfree_rcu as it just needs to do a kfree on
+the cm_node
+
+Fixes: 146b9756f14c ("RDMA/irdma: Add connection manager")
+Link: https://lore.kernel.org/r/20220425181703.1634-3-shiraz.saleem@intel.com
+Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/sw/siw/siw_cm.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/infiniband/hw/irdma/cm.c |   10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
---- a/drivers/infiniband/sw/siw/siw_cm.c
-+++ b/drivers/infiniband/sw/siw/siw_cm.c
-@@ -968,14 +968,15 @@ static void siw_accept_newconn(struct si
+--- a/drivers/infiniband/hw/irdma/cm.c
++++ b/drivers/infiniband/hw/irdma/cm.c
+@@ -2305,10 +2305,8 @@ err:
+ 	return NULL;
+ }
  
- 		siw_cep_set_inuse(new_cep);
- 		rv = siw_proc_mpareq(new_cep);
--		siw_cep_set_free(new_cep);
--
- 		if (rv != -EAGAIN) {
- 			siw_cep_put(cep);
- 			new_cep->listen_cep = NULL;
--			if (rv)
-+			if (rv) {
-+				siw_cep_set_free(new_cep);
- 				goto error;
-+			}
- 		}
-+		siw_cep_set_free(new_cep);
+-static void irdma_cm_node_free_cb(struct rcu_head *rcu_head)
++static void irdma_destroy_connection(struct irdma_cm_node *cm_node)
+ {
+-	struct irdma_cm_node *cm_node =
+-			    container_of(rcu_head, struct irdma_cm_node, rcu_head);
+ 	struct irdma_cm_core *cm_core = cm_node->cm_core;
+ 	struct irdma_qp *iwqp;
+ 	struct irdma_cm_info nfo;
+@@ -2356,7 +2354,6 @@ static void irdma_cm_node_free_cb(struct
  	}
- 	return;
  
+ 	cm_core->cm_free_ah(cm_node);
+-	kfree(cm_node);
+ }
+ 
+ /**
+@@ -2384,8 +2381,9 @@ void irdma_rem_ref_cm_node(struct irdma_
+ 
+ 	spin_unlock_irqrestore(&cm_core->ht_lock, flags);
+ 
+-	/* wait for all list walkers to exit their grace period */
+-	call_rcu(&cm_node->rcu_head, irdma_cm_node_free_cb);
++	irdma_destroy_connection(cm_node);
++
++	kfree_rcu(cm_node, rcu_head);
+ }
+ 
+ /**
 
 
