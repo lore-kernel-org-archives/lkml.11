@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0C25C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:26:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8175DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:26:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243245AbiEJNaM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:30:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60930 "EHLO
+        id S243322AbiEJNaT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:30:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243742AbiEJNWW (ORCPT
+        with ESMTP id S243716AbiEJNWU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:22:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A28D113F93D;
-        Tue, 10 May 2022 06:16:46 -0700 (PDT)
+        Tue, 10 May 2022 09:22:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 985C7134E15;
+        Tue, 10 May 2022 06:16:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 56F9D61574;
-        Tue, 10 May 2022 13:16:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CD78C385A6;
-        Tue, 10 May 2022 13:16:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 534C7616D0;
+        Tue, 10 May 2022 13:16:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FB45C385D8;
+        Tue, 10 May 2022 13:16:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188605;
-        bh=Aguhp1BFM4cMbxLn8rL9GAdEBOd9nfdi2j6i0pTxaxk=;
+        s=korg; t=1652188584;
+        bh=aVuH+MV+446GnglHFZUuaSvVDT1o8j9Oc6/CrUI0p00=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KXeYDqHuTmue6lROai3I/48qXWVZzGKhLP5JdCt3FkTNg8RmLwgXtz7tlqIuGoI5I
-         iYcTAs3gQ1jzPkoEzsV9WKD5tpLI+DuY99zyWIQnnSOaswWo8R5HzzsTQO/WCgUCjS
-         v+8VdcC90JMnFb9P7wC1Uqwze2EdW15PcWK0j9fg=
+        b=bPTfDkyB6UWziItKV/7mqtlfaDhp1xAtBoKRq5d8Iq+tTtkIMK5GlnfySe+0fKkpY
+         0l6kxW4NxDVnhN87T2PFJfpDfCSUmm+nc04zFrF7WC8gEb/TjKutQun/7oeFmLeKUM
+         Dq+RuuU/HSm5Z5wIUYq1YFRjLnFfx83U4ZmI170U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peilin Ye <peilin.ye@bytedance.com>,
-        William Tu <u9012063@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 35/78] ip_gre: Make o_seqno start from 0 in native mode
-Date:   Tue, 10 May 2022 15:07:21 +0200
-Message-Id: <20220510130733.574189963@linuxfoundation.org>
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
+Subject: [PATCH 4.14 55/78] parisc: Merge model and model name into one line in /proc/cpuinfo
+Date:   Tue, 10 May 2022 15:07:41 +0200
+Message-Id: <20220510130734.167169023@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
 References: <20220510130732.522479698@linuxfoundation.org>
@@ -50,51 +47,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+From: Helge Deller <deller@gmx.de>
 
-[ Upstream commit ff827beb706ed719c766acf36449801ded0c17fc ]
+commit 5b89966bc96a06f6ad65f64ae4b0461918fcc9d3 upstream.
 
-For GRE and GRETAP devices, currently o_seqno starts from 1 in native
-mode.  According to RFC 2890 2.2., "The first datagram is sent with a
-sequence number of 0."  Fix it.
+The Linux tool "lscpu" shows the double amount of CPUs if we have
+"model" and "model name" in two different lines in /proc/cpuinfo.
+This change combines the model and the model name into one line.
 
-It is worth mentioning that o_seqno already starts from 0 in collect_md
-mode, see gre_fb_xmit(), where tunnel->o_seqno is passed to
-gre_build_header() before getting incremented.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
-Acked-by: William Tu <u9012063@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Cc: stable@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/ip_gre.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ arch/parisc/kernel/processor.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
-index 1a4d89f8361c..d916accd9783 100644
---- a/net/ipv4/ip_gre.c
-+++ b/net/ipv4/ip_gre.c
-@@ -429,14 +429,12 @@ static void __gre_xmit(struct sk_buff *skb, struct net_device *dev,
- 		       __be16 proto)
- {
- 	struct ip_tunnel *tunnel = netdev_priv(dev);
--
--	if (tunnel->parms.o_flags & TUNNEL_SEQ)
--		tunnel->o_seqno++;
-+	__be16 flags = tunnel->parms.o_flags;
+--- a/arch/parisc/kernel/processor.c
++++ b/arch/parisc/kernel/processor.c
+@@ -408,8 +408,7 @@ show_cpuinfo (struct seq_file *m, void *
+ 		}
+ 		seq_printf(m, " (0x%02lx)\n", boot_cpu_data.pdc.capabilities);
  
- 	/* Push GRE header. */
- 	gre_build_header(skb, tunnel->tun_hlen,
--			 tunnel->parms.o_flags, proto, tunnel->parms.o_key,
--			 htonl(tunnel->o_seqno));
-+			 flags, proto, tunnel->parms.o_key,
-+			 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++) : 0);
- 
- 	ip_tunnel_xmit(skb, dev, tnl_params, tnl_params->protocol);
- }
--- 
-2.35.1
-
+-		seq_printf(m, "model\t\t: %s\n"
+-				"model name\t: %s\n",
++		seq_printf(m, "model\t\t: %s - %s\n",
+ 				 boot_cpu_data.pdc.sys_model_name,
+ 				 cpuinfo->dev ?
+ 				 cpuinfo->dev->name : "Unknown");
 
 
