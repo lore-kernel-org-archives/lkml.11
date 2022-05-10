@@ -2,105 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A5B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:28:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8472CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:28:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241021AbiEJLc2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 07:32:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44854 "EHLO
+        id S239511AbiEJLcn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 07:32:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241018AbiEJLcI (ORCPT
+        with ESMTP id S238682AbiEJLck (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 07:32:08 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 333A224F0CC
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 04:28:07 -0700 (PDT)
-Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1noO1z-0003eV-DR; Tue, 10 May 2022 13:27:55 +0200
-Message-ID: <ff841fdc-4db7-7a3d-8caf-d0cddd0dfa31@leemhuis.info>
-Date:   Tue, 10 May 2022 13:27:54 +0200
+        Tue, 10 May 2022 07:32:40 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 606F524DC00;
+        Tue, 10 May 2022 04:28:43 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id F13281F8B5;
+        Tue, 10 May 2022 11:28:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1652182121; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=o3MNMfYAzBmcTCGWbN4PU5xoySsicFXm7oS2gQCk3PM=;
+        b=1dFLSVWLYnS0PIpslKIMUpWl8LjaxLlNBHKDubjTk6onQXqgZH5a0/Z5GeUA3bHMl8xojF
+        d9I2UmLnaMPoeviFv4q5kPwkzmfxbbIfOpRLTioqMuHT+8nuHt6Jhrv8iNqwa5qzA89XAj
+        Lg9iWgj57Z6kYOgecr0iyuShQgkv9lc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1652182121;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=o3MNMfYAzBmcTCGWbN4PU5xoySsicFXm7oS2gQCk3PM=;
+        b=kkU6z+n9RITqF8SMik6rIWdkljq8WB0PgIdPVNvAnPTw2Fs3gxyM+0MeKmAS3lsuTGxcti
+        p/8yZNfoWEFHk2AA==
+Received: from quack3.suse.cz (unknown [10.163.28.18])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id DFDB72C141;
+        Tue, 10 May 2022 11:28:41 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 8BAB1A062A; Tue, 10 May 2022 13:28:38 +0200 (CEST)
+Date:   Tue, 10 May 2022 13:28:38 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     butt3rflyh4ck <butterflyhuangxx@gmail.com>
+Cc:     jack@suse.com, LKML <linux-kernel@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org
+Subject: Re: A slab-out-of-bounds Write when invoke udf_write_fi via ioctl
+Message-ID: <20220510112838.zfx2sxyoh4ewmjxr@quack3.lan>
+References: <CAFcO6XNpj6e+OGba30usr_miODhbhmqk7vh3ymU+NLoe2HBqFA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-From:   Thorsten Leemhuis <linux@leemhuis.info>
-Subject: Link: tag and links to submission and reports (was: Re: [GIT pull]
- core/urgent for v5.18-rc6)
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Zhangfei Gao <zhangfei.gao@foxmail.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>,
-        Dave Hansen <dave.hansen@intel.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        the arch/x86 maintainers <x86@kernel.org>
-References: <165201148069.536527.1960632033331546251.tglx@xen13>
- <CAHk-=wjMmSZzMJ3Xnskdg4+GGz=5p5p+GSYyFBTh0f-DgvdBWg@mail.gmail.com>
-Content-Language: en-US
-In-Reply-To: <CAHk-=wjMmSZzMJ3Xnskdg4+GGz=5p5p+GSYyFBTh0f-DgvdBWg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;linux@leemhuis.info;1652182088;cbc44195;
-X-HE-SMSGID: 1noO1z-0003eV-DR
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFcO6XNpj6e+OGba30usr_miODhbhmqk7vh3ymU+NLoe2HBqFA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08.05.22 20:00, Linus Torvalds wrote:
-> On Sun, May 8, 2022 at 5:05 AM Thomas Gleixner <tglx@linutronix.de> wrote:
->>
->> A single bugfix for the PASID management code, which freed the PASID too
->> early. The PASID needs to be tied to the mm lifetime, not to the address
->> space lifetime.
+On Tue 10-05-22 15:14:42, butt3rflyh4ck wrote:
+> Hi, if mounts a malicious udf image,  there is a slab out of bounds
+> write  bug when a user invokes udf_write_fi via ioctl.
+> I have reproduced it in the latest kernel.
 > 
-> So I have to once more complain about the -tip tree "Link:" usage.
+> ##smaple analyse
+> the function call chains:
+> do_sys_open
+>     --->do_sys_openat2
+>        --->do_filp_open
+>           --->path_openat
+>               --->open_last_lookups
+>                  --->lookup_open
+>                      --->udf_add_nondir
+>                         --->udf_add_entry
+> 
+> There would traverse to get a `fi` in the function udf_add_entry.
+> ```
+> if (dinfo->i_alloc_type == ICBTAG_FLAG_AD_IN_ICB) {   [1]
+>          block = dinfo->i_location.logicalBlockNum;
+>          fi = (struct fileIdentDesc *)
+>            (dinfo->i_data + fibh->soffset -
+>              udf_ext0_offset(dir) +
+>               dinfo->i_lenEAttr);
+>              [2]
+> } else {
+>           block = eloc.logicalBlockNum +
+>               ((elen - 1) >>
+>             dir->i_sb->s_blocksize_bits);
+>             fi = (struct fileIdentDesc *)
+>                  (fibh->sbh->b_data + fibh->soffset);
+> }
+> ```
+> [1] if dinfo->i_alloc_type is ICBTAG_FLAG_AD_IN_ICB, [2] it  would
+> calculate an offset as `fi`,
+> through the debugger, the `fi` is as below:
+> ```
+>  p/x *(struct fileIdentDesc*)fi
+> $24 = {
+>   descTag = {
+>     tagIdent = 0x2f70,
+>     descVersion = 0xea55,
+>     tagChecksum = 0xcd,
+>     reserved = 0x66,
+>     tagSerialNum = 0x511f,
+>     descCRC = 0x5a9c,
+>     descCRCLength = 0x5142,
+>     tagLocation = 0x373ce06a
+>   },
+>   fileVersionNum = 0x3139,
+>   fileCharacteristics = 0xf6,
+>   lengthFileIdent = 0x7e,
+>   icb = {
+>     extLength = 0x6059792,
+>     extLocation = {
+>       logicalBlockNum = 0x73886466,
+>       partitionReferenceNum = 0x7cc6
+>     },
+>     impUse = {0x3c, 0xcc, 0x4a, 0xed, 0xdc, 0xfb}
+>   },
+>   lengthOfImpUse = 0x1a6a,
+>   impUse = 0xffff888019ca716a
+> }
+> ```
+> These data are wrong and all data are part of  udf image mounted.
+> Then next it would invoke function udf_write_fi to write fileident into `fi`.
+> ```
+> if (fileident) {
+>       if (adinicb || (offset + lfi < 0)) {
+>           memcpy(udf_get_fi_ident(sfi), fileident, lfi);   [3]
+> } else if (offset >= 0) {
+>           memcpy(fibh->ebh->b_data + offset, fileident, lfi);
+> } else {
+>           memcpy(udf_get_fi_ident(sfi), fileident, -offset);
+>           memcpy(fibh->ebh->b_data, fileident - offset,
+>                   lfi + offset);
+>        }
+> }
+> ```
+> The fileident was controlled by user. `sfi` is `fi`, the memcpy
+> function is called to copy the data, so an out-of-bounds write occurs
 
-Many thx for reminding people about the tag.  FWIW, that's a problem in
-a lot or subsystems and makes my regression tracking efforts hard, as my
-tracking bot relies on the 'Link:' tag. If it's missing I thus have to
-manually search if patches were posted or committed to fix a regression,
-which makes the tracking hard and annoying. :-/
+Thanks for report and the analysis. This is indeed a serious bug. I'll send
+a fix shortly.
 
-> Again, the commit has a link to the patch *submission*, which is
-> almost entirely useless. There's no link to the actual problem the
-> patch fixes.
-
-It seems quite a few developers are under the impressions that "Link:"
-is just for the patch submission and not to be used for other things.
-That's why some people invented other tags. I see "BugLink" quite often
-these days, but there are also other tags in use (some drm people used
-"References:" for a while).
-
-Do we care? Should we try to clean this up while making things a bit
-more straight forward at the same time by making it more obvious what a
-link is actually about? I once suggested we use something like
-* "Submitted:" or "Posted:" for the patch submission
-* "Reported:" or "BugLink:" for any reports that lead to the
-
-That would leave "Link:" ambiguous and usable for anything else (and b4
-likely could be fixed easily to set a different tag; but sure, there
-would be a transition period).
-
-But there was not much feedback on the idea. Do you think I should pick
-up this again? Or is this something I should bring up during this years
-kernel summit?
-
-> [...]
-> Put another way: I can see that
->     Reported-by: Zhangfei Gao <zhangfei.gao@foxmail.com>
-
-With a "Reported:" tag like mentioned above we could stop using
-"Reported-by:" if we wanted to reduce the overhead (or make it
-optional). But OTOH I guess it's a bad idea, as having this in there
-will motivate some people to submit reports. And is good for stats reg.
-syzbot and 0-day (but I guess those could be generated from proper
-links, too).
-
-BTW: Documentation/process/5.Posting.rst states '''Be careful in the
-addition of tags to your patches: only Cc: is appropriate for addition
-without the explicit permission of the person named.''' Is that actually
-true? A lot of people seem to set "Reported-by:" without getting
-explicit permission. If that is fine I'd prepare a patch to fix the docs.
-
-Ciao, Thorsten
+								Honza
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
