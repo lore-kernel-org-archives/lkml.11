@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4362AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:14:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2300C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:14:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245675AbiEJOSX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:18:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40916 "EHLO
+        id S245692AbiEJOSc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:18:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343721AbiEJNsX (ORCPT
+        with ESMTP id S1343950AbiEJNso (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:48:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31CE26B011;
-        Tue, 10 May 2022 06:36:47 -0700 (PDT)
+        Tue, 10 May 2022 09:48:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4531C6CF7E;
+        Tue, 10 May 2022 06:37:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 057E6B81DB5;
-        Tue, 10 May 2022 13:36:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B6A8C385CB;
-        Tue, 10 May 2022 13:36:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D32761889;
+        Tue, 10 May 2022 13:36:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E56FC385A6;
+        Tue, 10 May 2022 13:36:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189780;
-        bh=WtU2MifjE7WdVm6QX8N19707fXD4NfeoLMb7jSc2l6A=;
+        s=korg; t=1652189799;
+        bh=06T+wi3k7GR9wZRnA1KB+vc7h+zs5j00p6E81Cpo/YM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i+WUk3avrMtkK0BvgMlnBLE72gM1N/GjMLxxkVEFFUJhVjcRoSYx9rZoB75psJR5a
-         DFJ2bOZyTeEyIYDCDGUk37kOB7qdsOwX5RaJAjqjWE4S02K/8YC35XnzEjPm9ah+kJ
-         zNpSlZ8h8DQJVP7vf0s7Y/P9LGHxjwatXGWpxMTQ=
+        b=Z3+atyteHyDFCe6tUCT7dKhcoYsy2lgbPEC6BIailMfmC+rQlSxeji2dCkgce08sW
+         BN1loa7R/yPJM0l41dxyxs7GkrrY2ZKAPDNNw+2SYd3TNwVliU8Nwb8t83SwI1TWAP
+         fmukdr3vzE3ntoHW1JA1ziqSWX/osTKkr1y0vjIM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
-        Takashi Sakamoto <o-takashi@sakamocchi.jp>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.17 026/140] firewire: core: extend card->lock in fw_core_handle_bus_reset
-Date:   Tue, 10 May 2022 15:06:56 +0200
-Message-Id: <20220510130742.360046251@linuxfoundation.org>
+        stable@vger.kernel.org, Nikolay Borisov <nborisov@suse.com>,
+        Chung-Chiang Cheng <cccheng@synology.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.17 031/140] btrfs: export a helper for compression hard check
+Date:   Tue, 10 May 2022 15:07:01 +0200
+Message-Id: <20220510130742.505080142@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -49,91 +49,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Chung-Chiang Cheng <cccheng@synology.com>
 
-commit a7ecbe92b9243edbe94772f6f2c854e4142a3345 upstream.
+commit e6f9d69648029e48b8f97db09368d419b5e2614a upstream.
 
-card->local_node and card->bm_retries are both always accessed under
-card->lock.
-fw_core_handle_bus_reset has a check whose condition depends on
-card->local_node and whose body writes to card->bm_retries.
-Both of these accesses are not under card->lock. Move the lock acquiring
-of card->lock to before this check such that these accesses do happen
-when card->lock is held.
-fw_destroy_nodes is called inside the check.
-Since fw_destroy_nodes already acquires card->lock inside its function
-body, move this out to the callsites of fw_destroy_nodes.
-Also add a comment to indicate which locking is necessary when calling
-fw_destroy_nodes.
+inode_can_compress will be used outside of inode.c to check the
+availability of setting compression flag by xattr. This patch moves
+this function as an internal helper and renames it to
+btrfs_inode_can_compress.
 
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Signed-off-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
-Link: https://lore.kernel.org/r/20220409041243.603210-4-o-takashi@sakamocchi.jp
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Reviewed-by: Nikolay Borisov <nborisov@suse.com>
+Signed-off-by: Chung-Chiang Cheng <cccheng@synology.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/firewire/core-card.c     |    3 +++
- drivers/firewire/core-topology.c |    9 +++------
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ fs/btrfs/btrfs_inode.h |   11 +++++++++++
+ fs/btrfs/inode.c       |   15 ++-------------
+ 2 files changed, 13 insertions(+), 13 deletions(-)
 
---- a/drivers/firewire/core-card.c
-+++ b/drivers/firewire/core-card.c
-@@ -668,6 +668,7 @@ EXPORT_SYMBOL_GPL(fw_card_release);
- void fw_core_remove_card(struct fw_card *card)
- {
- 	struct fw_card_driver dummy_driver = dummy_driver_template;
-+	unsigned long flags;
- 
- 	card->driver->update_phy_reg(card, 4,
- 				     PHY_LINK_ACTIVE | PHY_CONTENDER, 0);
-@@ -682,7 +683,9 @@ void fw_core_remove_card(struct fw_card
- 	dummy_driver.stop_iso		= card->driver->stop_iso;
- 	card->driver = &dummy_driver;
- 
-+	spin_lock_irqsave(&card->lock, flags);
- 	fw_destroy_nodes(card);
-+	spin_unlock_irqrestore(&card->lock, flags);
- 
- 	/* Wait for all users, especially device workqueue jobs, to finish. */
- 	fw_card_put(card);
---- a/drivers/firewire/core-topology.c
-+++ b/drivers/firewire/core-topology.c
-@@ -375,16 +375,13 @@ static void report_found_node(struct fw_
- 	card->bm_retries = 0;
+--- a/fs/btrfs/btrfs_inode.h
++++ b/fs/btrfs/btrfs_inode.h
+@@ -346,6 +346,17 @@ static inline bool btrfs_inode_in_log(st
+ 	return ret;
  }
  
-+/* Must be called with card->lock held */
- void fw_destroy_nodes(struct fw_card *card)
- {
--	unsigned long flags;
--
--	spin_lock_irqsave(&card->lock, flags);
- 	card->color++;
- 	if (card->local_node != NULL)
- 		for_each_fw_node(card, card->local_node, report_lost_node);
- 	card->local_node = NULL;
--	spin_unlock_irqrestore(&card->lock, flags);
- }
- 
- static void move_tree(struct fw_node *node0, struct fw_node *node1, int port)
-@@ -510,6 +507,8 @@ void fw_core_handle_bus_reset(struct fw_
- 	struct fw_node *local_node;
- 	unsigned long flags;
- 
-+	spin_lock_irqsave(&card->lock, flags);
++/*
++ * Check if the inode has flags compatible with compression
++ */
++static inline bool btrfs_inode_can_compress(const struct btrfs_inode *inode)
++{
++	if (inode->flags & BTRFS_INODE_NODATACOW ||
++	    inode->flags & BTRFS_INODE_NODATASUM)
++		return false;
++	return true;
++}
 +
- 	/*
- 	 * If the selfID buffer is not the immediate successor of the
- 	 * previously processed one, we cannot reliably compare the
-@@ -521,8 +520,6 @@ void fw_core_handle_bus_reset(struct fw_
- 		card->bm_retries = 0;
- 	}
+ struct btrfs_dio_private {
+ 	struct inode *inode;
  
--	spin_lock_irqsave(&card->lock, flags);
+--- a/fs/btrfs/inode.c
++++ b/fs/btrfs/inode.c
+@@ -486,17 +486,6 @@ static noinline int add_async_extent(str
+ }
+ 
+ /*
+- * Check if the inode has flags compatible with compression
+- */
+-static inline bool inode_can_compress(struct btrfs_inode *inode)
+-{
+-	if (inode->flags & BTRFS_INODE_NODATACOW ||
+-	    inode->flags & BTRFS_INODE_NODATASUM)
+-		return false;
+-	return true;
+-}
 -
- 	card->broadcast_channel_allocated = card->broadcast_channel_auto_allocated;
- 	card->node_id = node_id;
- 	/*
+-/*
+  * Check if the inode needs to be submitted to compression, based on mount
+  * options, defragmentation, properties or heuristics.
+  */
+@@ -505,7 +494,7 @@ static inline int inode_need_compress(st
+ {
+ 	struct btrfs_fs_info *fs_info = inode->root->fs_info;
+ 
+-	if (!inode_can_compress(inode)) {
++	if (!btrfs_inode_can_compress(inode)) {
+ 		WARN(IS_ENABLED(CONFIG_BTRFS_DEBUG),
+ 			KERN_ERR "BTRFS: unexpected compression for ino %llu\n",
+ 			btrfs_ino(inode));
+@@ -2015,7 +2004,7 @@ int btrfs_run_delalloc_range(struct btrf
+ 		       (zoned && btrfs_is_data_reloc_root(inode->root)));
+ 		ret = run_delalloc_nocow(inode, locked_page, start, end,
+ 					 page_started, nr_written);
+-	} else if (!inode_can_compress(inode) ||
++	} else if (!btrfs_inode_can_compress(inode) ||
+ 		   !inode_need_compress(inode, start, end)) {
+ 		if (zoned)
+ 			ret = run_delalloc_zoned(inode, locked_page, start, end,
 
 
