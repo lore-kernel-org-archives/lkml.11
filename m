@@ -2,198 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88866C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:25:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F23CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:25:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240903AbiEJL26 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 07:28:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34698 "EHLO
+        id S240915AbiEJL3c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 07:29:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232048AbiEJL2y (ORCPT
+        with ESMTP id S232048AbiEJL30 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 07:28:54 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1A091B4358
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 04:24:56 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id 125-20020a1c0283000000b003946c466c17so1161674wmc.4
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 04:24:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=conchuod.ie; s=google;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :references:content-language:in-reply-to:content-transfer-encoding;
-        bh=Q9ZRcghSC4Zvb59xWNLpgwQRMRVcmsJ18TNHtRXVuxo=;
-        b=Z8rrIL6/GXzsZMveC2UvwKakgRmDeIw1l90/SleuXTMgs2cSdCxz/gmmODmAv6sEH2
-         h5XIM3/YspFdyoTA0JemciadBa44j3VSGsGllMClineyi7qIFswlQwNAJGfiQd0fUkxm
-         JW66RrO1CCZMUOpvT7wgXBu5XGD8ySg9oIGHC8a2gCLcoqbqw80PAeySedyai8xjaUsv
-         17pQzZ6ahOXkqC0oGwYOtcTjzC8nSyfqjAPMXhzXgy9SJnG4Im7QxKiaRR/7utl42tYA
-         x8ePtZRcgzb8SbMPv4rCE27OwGcwXqrVcPx6VWF9f5I27j6FL+PA+t74BY6wYzapSXgC
-         Q5Dw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:references:content-language:in-reply-to
-         :content-transfer-encoding;
-        bh=Q9ZRcghSC4Zvb59xWNLpgwQRMRVcmsJ18TNHtRXVuxo=;
-        b=Iavs/DNxiEc69SWT6NlGfxPavwxv9GDuGkk31CDDF8CH/eqR8g6GF5+K5Ij/e6U8Lk
-         UEPpWhYiAdtl/L17BH4Tgr7NOBPLCfGAmpM4lE8t7e3yDCpu65cb/jfLo769d5KSG5kU
-         m2m1qqbhfyyZU0C7obYrMN2N+R6XTaUgMMeSwQBXOaXQ0MWF2exLQIEz/gkBfFxFPq0I
-         LVvpzHayv6cngN9CpHCW4P6MsTlsqEayY6OnHkWQHgRaXH2t1WSt0p9NRVz2Zm/bNkPC
-         DbQYX1eSUIdFvJHCnxFAgFBuecwiThJmwhSY8gVfEmp6F4n6X/k+gpSEkUNDBQnbmsjS
-         otog==
-X-Gm-Message-State: AOAM530G3CnaRZttc86SPBpunjkmCLGdmUGq7fat2OB66UxCpoYFhBn/
-        2vSmI4TAUT/oti7PtYfcoiTFFt1VlOgIZ9V7
-X-Google-Smtp-Source: ABdhPJzHodgmub9AKZbEZJmNj8kVL+mO6/cqFeW/NflOzT4A4EkxOlFoqbMN5nCm3xonWyHTJZpAmA==
-X-Received: by 2002:a7b:c76e:0:b0:394:8be3:a83c with SMTP id x14-20020a7bc76e000000b003948be3a83cmr12055521wmk.41.1652181895085;
-        Tue, 10 May 2022 04:24:55 -0700 (PDT)
-Received: from [10.205.160.53] ([95.83.233.54])
-        by smtp.gmail.com with ESMTPSA id i6-20020a05600c354600b003942a244f33sm2404493wmq.12.2022.05.10.04.24.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 May 2022 04:24:54 -0700 (PDT)
-Message-ID: <4b752147-1a09-a4af-bc5d-3b132b84ef49@conchuod.ie>
-Date:   Tue, 10 May 2022 12:29:54 +0100
+        Tue, 10 May 2022 07:29:26 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5BE32ABBF4;
+        Tue, 10 May 2022 04:25:27 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KyG1H5NYYz4xLb;
+        Tue, 10 May 2022 21:25:23 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1652181924;
+        bh=tgR0lFQ0BgKgUqHLZLyO6KOe2YNHiBdhu+ndRrBc6s8=;
+        h=Date:From:To:Cc:Subject:From;
+        b=QDJqwowGRc2JMd3prm99LSdL/7+8G+oxe+syd+oriTNNeT5QGudHNJjA92JFmzZKO
+         +e8X+dVB9N4TOtTJhgESZF79c6lK1QsHHyrElDeI/gDbMdgaf6Tc2GotrVNoIAFxFV
+         5TikKU2QQHVFBHt59S2ABf5BP4prCSP9upHikbOHOyAZdxFDiEw6J+b8pUlBlXfqWH
+         xHmmPsGPZNa12ziRlt0pYTd8v2Pyqq7PbDb1QN5dZtkXkpH44NYENDpI9fxbnf6Em1
+         ELqJ66SxJGs24wpRCWxZEJK0KCxCFnjkhuGF8sxqVFwCyqq8n3WBGlv2iTxEUqJRGk
+         yzNJo+4XxhQyA==
+Date:   Tue, 10 May 2022 21:25:21 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     "Liam R. Howlett" <Liam.Howlett@Oracle.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the mm tree
+Message-ID: <20220510212521.1b3ad15c@canb.auug.org.au>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-From:   Conor Dooley <mail@conchuod.ie>
-Subject: Re: [PATCH v11 2/3] fpga: microchip-spi: add Microchip MPF FPGA
- manager
-To:     Ivan Bornyakov <i.bornyakov@metrotek.ru>,
-        Conor.Dooley@microchip.com
-Cc:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
-        trix@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        system@metrotek.ru
-References: <20220507074304.11144-1-i.bornyakov@metrotek.ru>
- <20220507074304.11144-3-i.bornyakov@metrotek.ru>
- <bd5cb37b-ee56-f6d5-2d98-c08566b60728@microchip.com>
- <20220509171621.zk4owxwlngxjodgz@x260>
- <da1e5125-de6b-11a8-a52d-7e6e5f45ab70@conchuod.ie>
-Content-Language: en-US
-In-Reply-To: <da1e5125-de6b-11a8-a52d-7e6e5f45ab70@conchuod.ie>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/WxQ44rXNvsL8FSuhLUW1=IA";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09/05/2022 19:56, Conor Dooley wrote:
-> On 09/05/2022 18:16, Ivan Bornyakov wrote:
->> On Mon, May 09, 2022 at 11:41:18AM +0000, Conor.Dooley@microchip.com wrote:
->>> Hey Ivan, one comment below.
->>> Thanks,
->>> Conor.
->>>
->>> On 07/05/2022 08:43, Ivan Bornyakov wrote:
->>>> ... snip ...
->>>> +static int mpf_read_status(struct spi_device *spi)
->>>> +{
->>>> +       u8 status, status_command = MPF_SPI_READ_STATUS;
->>>> +       struct spi_transfer xfer = {
->>>> +               .tx_buf = &status_command,
->>>> +               .rx_buf = &status,
->>>> +               .len = 1,
->>>> +       };
->>>> +       int ret = spi_sync_transfer(spi, &xfer, 1);
->>>> +
->>>> +       if ((status & MPF_STATUS_SPI_VIOLATION) ||
->>>> +           (status & MPF_STATUS_SPI_ERROR))
->>>> +               ret = -EIO;
->>>> +
->>>> +       return ret ? : status;
->>>> +}
->>>> +
->>>> ... snip ...
->>>> +
->>>> +static int poll_status_not_busy(struct spi_device *spi, u8 mask)
->>>> +{
->>>> +       int status, timeout = MPF_STATUS_POLL_TIMEOUT;
->>>> +
->>>> +       while (timeout--) {
->>>> +               status = mpf_read_status(spi);
->>>> +               if (status < 0 ||
->>>> +                   (!(status & MPF_STATUS_BUSY) && (!mask || (status & mask))))
->>>> +                       return status;
->>>> +
->>>> +               usleep_range(1000, 2000);
->>>> +       }
->>>> +
->>>> +       return -EBUSY;
->>>> +}
->>>
->>> Is there a reason you changed this from the snippet you sent me
->>> in the responses to version 8:
->>> static int poll_status_not_busy(struct spi_device *spi, u8 mask)
->>> {
->>> 	u8 status, status_command = MPF_SPI_READ_STATUS;
->>> 	int ret, timeout = MPF_STATUS_POLL_TIMEOUT;
->>> 	struct spi_transfer xfer = {
->>> 		.tx_buf = &status_command,
->>> 		.rx_buf = &status,
->>> 		.len = 1,
->>> 	};
->>>
->>> 	while (timeout--) {
->>> 		ret = spi_sync_transfer(spi, &xfer, 1);
->>> 		if (ret < 0)
->>> 			return ret;
->>>
->>> 		if (!(status & MPF_STATUS_BUSY) && (!mask || (status & mask)))
->>> 			return status;
->>>
->>> 		usleep_range(1000, 2000);
->>> 	}
->>>
->>> 	return -EBUSY;
->>> }
->>>
->>> With the current version, I hit the "Failed to write bitstream
->>> frame" check in mpf_ops_write at random points in the transfer.
->>> Replacing poll_status_not_busy with the above allows it to run
->>> to completion.
->>
->> In my eyes they are equivalent, aren't they?
->>
-> 
-> I was in a bit of a rush today & didn't have time to do proper
-> debugging, I'll put some debug code in tomorrow and try to find
-> exactly what is different between the two.
-> 
-> Off the top of my head, since I don't have a board on me to test,
-> the only difference I can see is that with the snippet you only
-> checked if spi_sync_transfer was negative whereas now you check
-> if it has a value at all w/ that ternary operator.
-> 
-> But even that seems like it *shouldn't* be the problem, since ret
-> should contain -errno or zero, right?
-> Either way, I will do some digging tomorrow.
+--Sig_/WxQ44rXNvsL8FSuhLUW1=IA
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-I put a printk("status %x, ret %d", status, ret); into the failure
-path of mpf_read_status() & it looks like a status 0xA is being
-returned - error & ready? That seems like a very odd combo to be
-getting back out of it. It shouldn't be dodgy driver/connection
-either, b/c that's what I see if I connect my protocol analyser:
-https://i.imgur.com/VbjgfCk.png
+Hi all,
 
-That's mosi (hex), ss, sclk, mosi, miso (hex), miso in descending
-order.
+After merging the mm tree, today's linux-next build (powerpc allyesconfig)
+failed like this:
 
-I think what was happening was with the snippet you returned one
-of the following: -EBUSY, ret (aka -errno) or status. Since status
-is positive, the checks in mpf_spi_write.*() saw nothing wrong at
-all and programming continued despite there being a problem.
+In file included from mm/damon/vaddr.c:703:
+mm/damon/vaddr-test.h: In function '__link_vmas':
+mm/damon/vaddr-test.h:29:17: error: implicit declaration of function 'vma_m=
+as_store'; did you mean 'mas_store'? [-Werror=3Dimplicit-function-declarati=
+on]
+   29 |                 vma_mas_store(&vmas[i], &mas);
+      |                 ^~~~~~~~~~~~~
+      |                 mas_store
 
-The new version fixes this by returning -EIO rather than status from
-poll_status_not_busy().
+Caused by commit
 
-I wish I had a socketable PolarFire so I could investigate further,
-but this looks like it might a be hardware issue somewhere on my
-end?
+  59904daa2b0c ("damon: convert __damon_va_three_regions to use the VMA ite=
+rator")
 
-So ye, sorry for the noise and carry on! I'll try tofind what is to
-blame for it.
+I have merged the mm-stable, mm-nonmm-stable and mm trees from
+next-20220509 for today.
 
-Thanks,
-Conor.
+--=20
+Cheers,
+Stephen Rothwell
 
+--Sig_/WxQ44rXNvsL8FSuhLUW1=IA
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJ6S6EACgkQAVBC80lX
+0Gwu/Af9HkPo04wgf1lCzFbAR3WkNTI070UydK74M65cgXEcOsBb0zWVc7J/MgC2
+C/46d4YpbuJgUtXRIHSufLSMxIgy4nwkVGz+4oo92ahf95wrsjkXYUDmi5Pwnf2D
+fjlu9mhTHxN8ZpIJc1yRU7O+az758Ot+kKqfTzCSuT3mt6skJI1ScfD/BJ4cw+T6
+qFAysAHOAASjsvcFKR/rD5+YCs53Ve0Sth7QJ4t4+LlEEbmMJAc+YkYzYDsyKfw3
+yzBmS7ihvMorznSu7iy/b2HUl6a45gU3YQwyeTXVehGniQcDoymPA948Qr0KSXdi
+8SCallWdR4xQ8QJmPugHBipLBYfhgQ==
+=Io4O
+-----END PGP SIGNATURE-----
+
+--Sig_/WxQ44rXNvsL8FSuhLUW1=IA--
