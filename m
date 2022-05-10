@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 405A4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:45:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 670ACC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:45:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346298AbiEJPtC (ORCPT
+        id S1346353AbiEJPtM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:49:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60208 "EHLO
+        Tue, 10 May 2022 11:49:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346200AbiEJPsI (ORCPT
+        with ESMTP id S1346175AbiEJPr7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:48:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D10927EBA0;
-        Tue, 10 May 2022 08:44:00 -0700 (PDT)
+        Tue, 10 May 2022 11:47:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0201E27BC5B;
+        Tue, 10 May 2022 08:43:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E63561329;
-        Tue, 10 May 2022 15:43:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AD84C385CA;
-        Tue, 10 May 2022 15:43:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 64A34614C0;
+        Tue, 10 May 2022 15:43:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFFC4C385C2;
+        Tue, 10 May 2022 15:43:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652197439;
-        bh=b0MSQg/xz/grIABZ0lxzMrKqf4HNvVAqziQ+8pd1GZA=;
+        s=k20201202; t=1652197432;
+        bh=z1xGkviBQ2FOGy3TPlU9X8IBjkMBTFmQhrxx6TChBBM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uAROzsk7xYn7c3gBbPk3cYrzH0Qf1zO5goFhM3hWA6QwQejYDiCO7FQdEwzns82eV
-         clpem7tCCOAHP0oIAM+a81cm/TUpZ0ZdsYHpyHehjayUomaOZAcNdCaWEm9CYO9edF
-         YR5oO1ccyJ1z5fWmyPNJm4IlZUgaMe/Pz4OPrzmQH9bbRgS9vCT3LZEN7Jx1Tb5sVP
-         UeikHmBUU03HVN5VxtNx5Tpqg6KZyTOD2pY+T4gRRnq+5IsQvGPHU0lL9H6aZUEBFq
-         C/0/T7MR0zIQSYpGOQaseoxEcwWTjRiZBtg5hPqOr0/aElB3VHRW6pNZo9lZ7ksw3q
-         31qOhbp5ItfoQ==
+        b=fvq6lj3aITJ/bdqJLFJPeAf0VghjPjujvfcBZcDSMN1wpQpEm8U18zkGiFiOwfD4d
+         bTvdinsimeb0mlhmKMAY+ZRN60zqn2NaQXJVmbyjHDfUO38ggan4WLHBufKXnmffQL
+         NBxFYK87qseHJCAm4QPcSwOkqpYMWemu+mYxACq7ruWd6vswOblNB0tl13gdeUpE+3
+         eiN/zPsUmSeg13Gb7+VEgTYHntRsSukpC/T4Jh0J7gWhKa3RIZ8euStFHBfNNwNGJE
+         S9GFLcZqlxuJb+AdkznBoiAFf9Yxu+ly6QlD8PEcPN60D99VqsmDzP0XtHMsWPrAeK
+         z8whzuVuMcgzw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sven Schnelle <svens@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>, gor@linux.ibm.com,
-        agordeev@linux.ibm.com, linux-s390@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 08/21] s390: disable -Warray-bounds
-Date:   Tue, 10 May 2022 11:43:27 -0400
-Message-Id: <20220510154340.153400-8-sashal@kernel.org>
+Cc:     Mark Brown <broonie@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        pierre-louis.bossart@linux.intel.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.17 05/21] ASoC: max98090: Reject invalid values in custom control put()
+Date:   Tue, 10 May 2022 11:43:24 -0400
+Message-Id: <20220510154340.153400-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220510154340.153400-1-sashal@kernel.org>
 References: <20220510154340.153400-1-sashal@kernel.org>
@@ -53,52 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Schnelle <svens@linux.ibm.com>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit 8b202ee218395319aec1ef44f72043e1fbaccdd6 ]
+[ Upstream commit 2fbe467bcbfc760a08f08475eea6bbd4c2874319 ]
 
-gcc-12 shows a lot of array bound warnings on s390. This is caused
-by the S390_lowcore macro which uses a hardcoded address of 0.
+The max98090 driver has a custom put function for some controls which can
+only be updated in certain circumstances which makes no effort to validate
+that input is suitable for the control, allowing out of spec values to be
+written to the hardware and presented to userspace. Fix this by returning
+an error when invalid values are written.
 
-Wrapping that with absolute_pointer() works, but gcc no longer knows
-that a 12 bit displacement is sufficient to access lowcore. So it
-emits instructions like 'lghi %r1,0; l %rx,xxx(%r1)' instead of a
-single load/store instruction. As s390 stores variables often
-read/written in lowcore, this is considered problematic. Therefore
-disable -Warray-bounds on s390 for gcc-12 for the time being, until
-there is a better solution.
-
-Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
-Link: https://lore.kernel.org/r/yt9dzgkelelc.fsf@linux.ibm.com
-Link: https://lore.kernel.org/r/20220422134308.1613610-1-svens@linux.ibm.com
-Link: https://lore.kernel.org/r/20220425121742.3222133-1-svens@linux.ibm.com
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220420193454.2647908-1-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/Makefile | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ sound/soc/codecs/max98090.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/s390/Makefile b/arch/s390/Makefile
-index 609e3697324b..6e42252214dd 100644
---- a/arch/s390/Makefile
-+++ b/arch/s390/Makefile
-@@ -30,6 +30,16 @@ KBUILD_CFLAGS_DECOMPRESSOR += -fno-stack-protector
- KBUILD_CFLAGS_DECOMPRESSOR += $(call cc-disable-warning, address-of-packed-member)
- KBUILD_CFLAGS_DECOMPRESSOR += $(if $(CONFIG_DEBUG_INFO),-g)
- KBUILD_CFLAGS_DECOMPRESSOR += $(if $(CONFIG_DEBUG_INFO_DWARF4), $(call cc-option, -gdwarf-4,))
+diff --git a/sound/soc/codecs/max98090.c b/sound/soc/codecs/max98090.c
+index b45ec35cd63c..6d9261346842 100644
+--- a/sound/soc/codecs/max98090.c
++++ b/sound/soc/codecs/max98090.c
+@@ -413,6 +413,9 @@ static int max98090_put_enab_tlv(struct snd_kcontrol *kcontrol,
+ 
+ 	val = (val >> mc->shift) & mask;
+ 
++	if (sel < 0 || sel > mc->max)
++		return -EINVAL;
 +
-+ifdef CONFIG_CC_IS_GCC
-+	ifeq ($(call cc-ifversion, -ge, 1200, y), y)
-+		ifeq ($(call cc-ifversion, -lt, 1300, y), y)
-+			KBUILD_CFLAGS += $(call cc-disable-warning, array-bounds)
-+			KBUILD_CFLAGS_DECOMPRESSOR += $(call cc-disable-warning, array-bounds)
-+		endif
-+	endif
-+endif
-+
- UTS_MACHINE	:= s390x
- STACK_SIZE	:= $(if $(CONFIG_KASAN),65536,16384)
- CHECKFLAGS	+= -D__s390__ -D__s390x__
+ 	*select = sel;
+ 
+ 	/* Setting a volume is only valid if it is already On */
 -- 
 2.35.1
 
