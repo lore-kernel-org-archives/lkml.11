@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3F7FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:23:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF311C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:23:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344255AbiEJO0C (ORCPT
+        id S1344291AbiEJO0K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:26:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40044 "EHLO
+        Tue, 10 May 2022 10:26:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244286AbiEJNwy (ORCPT
+        with ESMTP id S244341AbiEJNwy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:52:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01A246C0F4;
-        Tue, 10 May 2022 06:38:18 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04F7E7A81D;
+        Tue, 10 May 2022 06:38:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91098B81DB2;
-        Tue, 10 May 2022 13:37:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1261C385C2;
-        Tue, 10 May 2022 13:37:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B85A1618A6;
+        Tue, 10 May 2022 13:38:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AACDFC385A6;
+        Tue, 10 May 2022 13:38:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189861;
-        bh=jFjwf+37Eb9UmLxCksgbMDhGLmrjgVyM4X2iBi+3J54=;
+        s=korg; t=1652189899;
+        bh=x9FNJaZ9Ldy9h7nrfhuU9gWW1aSmkPn7QTppmhyRPL4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hth/wUcKhjtpZu0NGSzFQkQOO0I3ca6nbpalDEMbHYXIA7ZDXLIg0t3QGEalsDC6w
-         YuVo6h6tMP8pxdFD/Tq8jNfcC8vxqBgkiWbt4raPsVQAk0kJ4TxasE2AZAyqkpupA2
-         fwc0dFBZSoMFJ+vck3WIOyLOsy2hl13Ki3l5C3k4=
+        b=JbbQLtL+puFbR//Ar306y/JHVBoRJtQjcq94EnvGzyPsYKt8SHsmxkNbWGbYtme1h
+         XA8PU3RRCOInw0xHA1ZFH6JYNMGLTE2wyoOrMVBT7My2bHfWMearQlPxjmpfFp7oY0
+         YcGsCyXST1bIG4fpGTS82q66uj9vlqOjK5R/fK5Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>
-Subject: [PATCH 5.17 053/140] gpio: visconti: Fix fwnode of GPIO IRQ
-Date:   Tue, 10 May 2022 15:07:23 +0200
-Message-Id: <20220510130743.137492573@linuxfoundation.org>
+        stable@vger.kernel.org, Aya Levin <ayal@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH 5.17 064/140] net/mlx5: Fix slab-out-of-bounds while reading resource dump menu
+Date:   Tue, 10 May 2022 15:07:34 +0200
+Message-Id: <20220510130743.449998596@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -51,57 +50,146 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+From: Aya Levin <ayal@nvidia.com>
 
-commit 171865dab096da1ab980a32eeea5d1b88cd7bc50 upstream.
+commit 7ba2d9d8de96696c1451fee1b01da11f45bdc2b9 upstream.
 
-The fwnode of GPIO IRQ must be set to its own fwnode, not the fwnode of the
-parent IRQ. Therefore, this sets own fwnode instead of the parent IRQ fwnode to
-GPIO IRQ's.
+Resource dump menu may span over more than a single page, support it.
+Otherwise, menu read may result in a memory access violation: reading
+outside of the allocated page.
+Note that page format of the first menu page contains menu headers while
+the proceeding menu pages contain only records.
 
-Fixes: 2ad74f40dacc ("gpio: visconti: Add Toshiba Visconti GPIO support")
-Signed-off-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+The KASAN logs are as follows:
+BUG: KASAN: slab-out-of-bounds in strcmp+0x9b/0xb0
+Read of size 1 at addr ffff88812b2e1fd0 by task systemd-udevd/496
+
+CPU: 5 PID: 496 Comm: systemd-udevd Tainted: G    B  5.16.0_for_upstream_debug_2022_01_10_23_12 #1
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x57/0x7d
+ print_address_description.constprop.0+0x1f/0x140
+ ? strcmp+0x9b/0xb0
+ ? strcmp+0x9b/0xb0
+ kasan_report.cold+0x83/0xdf
+ ? strcmp+0x9b/0xb0
+ strcmp+0x9b/0xb0
+ mlx5_rsc_dump_init+0x4ab/0x780 [mlx5_core]
+ ? mlx5_rsc_dump_destroy+0x80/0x80 [mlx5_core]
+ ? lockdep_hardirqs_on_prepare+0x286/0x400
+ ? raw_spin_unlock_irqrestore+0x47/0x50
+ ? aomic_notifier_chain_register+0x32/0x40
+ mlx5_load+0x104/0x2e0 [mlx5_core]
+ mlx5_init_one+0x41b/0x610 [mlx5_core]
+ ....
+The buggy address belongs to the object at ffff88812b2e0000
+ which belongs to the cache kmalloc-4k of size 4096
+The buggy address is located 4048 bytes to the right of
+ 4096-byte region [ffff88812b2e0000, ffff88812b2e1000)
+The buggy address belongs to the page:
+page:000000009d69807a refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff88812b2e6000 pfn:0x12b2e0
+head:000000009d69807a order:3 compound_mapcount:0 compound_pincount:0
+flags: 0x8000000000010200(slab|head|zone=2)
+raw: 8000000000010200 0000000000000000 dead000000000001 ffff888100043040
+raw: ffff88812b2e6000 0000000080040000 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff88812b2e1e80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff88812b2e1f00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>ffff88812b2e1f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+                                                 ^
+ ffff88812b2e2000: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff88812b2e2080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
+
+Fixes: 12206b17235a ("net/mlx5: Add support for resource dump")
+Signed-off-by: Aya Levin <ayal@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpio/gpio-visconti.c |    7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.c |   31 ++++++++++++----
+ 1 file changed, 25 insertions(+), 6 deletions(-)
 
---- a/drivers/gpio/gpio-visconti.c
-+++ b/drivers/gpio/gpio-visconti.c
-@@ -130,7 +130,6 @@ static int visconti_gpio_probe(struct pl
- 	struct gpio_irq_chip *girq;
- 	struct irq_domain *parent;
- 	struct device_node *irq_parent;
--	struct fwnode_handle *fwnode;
- 	int ret;
+--- a/drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.c
+@@ -31,6 +31,7 @@ static const char *const mlx5_rsc_sgmt_n
+ struct mlx5_rsc_dump {
+ 	u32 pdn;
+ 	u32 mkey;
++	u32 number_of_menu_items;
+ 	u16 fw_segment_type[MLX5_SGMT_TYPE_NUM];
+ };
  
- 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-@@ -150,14 +149,12 @@ static int visconti_gpio_probe(struct pl
+@@ -50,21 +51,37 @@ static int mlx5_rsc_dump_sgmt_get_by_nam
+ 	return -EINVAL;
+ }
+ 
+-static void mlx5_rsc_dump_read_menu_sgmt(struct mlx5_rsc_dump *rsc_dump, struct page *page)
++#define MLX5_RSC_DUMP_MENU_HEADER_SIZE (MLX5_ST_SZ_BYTES(resource_dump_info_segment) + \
++					MLX5_ST_SZ_BYTES(resource_dump_command_segment) + \
++					MLX5_ST_SZ_BYTES(resource_dump_menu_segment))
++
++static int mlx5_rsc_dump_read_menu_sgmt(struct mlx5_rsc_dump *rsc_dump, struct page *page,
++					int read_size, int start_idx)
+ {
+ 	void *data = page_address(page);
+ 	enum mlx5_sgmt_type sgmt_idx;
+ 	int num_of_items;
+ 	char *sgmt_name;
+ 	void *member;
++	int size = 0;
+ 	void *menu;
+ 	int i;
+ 
+-	menu = MLX5_ADDR_OF(menu_resource_dump_response, data, menu);
+-	num_of_items = MLX5_GET(resource_dump_menu_segment, menu, num_of_records);
++	if (!start_idx) {
++		menu = MLX5_ADDR_OF(menu_resource_dump_response, data, menu);
++		rsc_dump->number_of_menu_items = MLX5_GET(resource_dump_menu_segment, menu,
++							  num_of_records);
++		size = MLX5_RSC_DUMP_MENU_HEADER_SIZE;
++		data += size;
++	}
++	num_of_items = rsc_dump->number_of_menu_items;
++
++	for (i = 0; start_idx + i < num_of_items; i++) {
++		size += MLX5_ST_SZ_BYTES(resource_dump_menu_record);
++		if (size >= read_size)
++			return start_idx + i;
+ 
+-	for (i = 0; i < num_of_items; i++) {
+-		member = MLX5_ADDR_OF(resource_dump_menu_segment, menu, record[i]);
++		member = data + MLX5_ST_SZ_BYTES(resource_dump_menu_record) * i;
+ 		sgmt_name =  MLX5_ADDR_OF(resource_dump_menu_record, member, segment_name);
+ 		sgmt_idx = mlx5_rsc_dump_sgmt_get_by_name(sgmt_name);
+ 		if (sgmt_idx == -EINVAL)
+@@ -72,6 +89,7 @@ static void mlx5_rsc_dump_read_menu_sgmt
+ 		rsc_dump->fw_segment_type[sgmt_idx] = MLX5_GET(resource_dump_menu_record,
+ 							       member, segment_type);
  	}
++	return 0;
+ }
  
- 	parent = irq_find_host(irq_parent);
-+	of_node_put(irq_parent);
- 	if (!parent) {
- 		dev_err(dev, "No IRQ parent domain\n");
- 		return -ENODEV;
- 	}
+ static int mlx5_rsc_dump_trigger(struct mlx5_core_dev *dev, struct mlx5_rsc_dump_cmd *cmd,
+@@ -168,6 +186,7 @@ static int mlx5_rsc_dump_menu(struct mlx
+ 	struct mlx5_rsc_dump_cmd *cmd = NULL;
+ 	struct mlx5_rsc_key key = {};
+ 	struct page *page;
++	int start_idx = 0;
+ 	int size;
+ 	int err;
  
--	fwnode = of_node_to_fwnode(irq_parent);
--	of_node_put(irq_parent);
--
- 	ret = bgpio_init(&priv->gpio_chip, dev, 4,
- 			 priv->base + GPIO_IDATA,
- 			 priv->base + GPIO_OSET,
-@@ -180,7 +177,7 @@ static int visconti_gpio_probe(struct pl
+@@ -189,7 +208,7 @@ static int mlx5_rsc_dump_menu(struct mlx
+ 		if (err < 0)
+ 			goto destroy_cmd;
  
- 	girq = &priv->gpio_chip.irq;
- 	girq->chip = irq_chip;
--	girq->fwnode = fwnode;
-+	girq->fwnode = of_node_to_fwnode(dev->of_node);
- 	girq->parent_domain = parent;
- 	girq->child_to_parent_hwirq = visconti_gpio_child_to_parent_hwirq;
- 	girq->populate_parent_alloc_arg = visconti_gpio_populate_parent_fwspec;
+-		mlx5_rsc_dump_read_menu_sgmt(dev->rsc_dump, page);
++		start_idx = mlx5_rsc_dump_read_menu_sgmt(dev->rsc_dump, page, size, start_idx);
+ 
+ 	} while (err > 0);
+ 
 
 
