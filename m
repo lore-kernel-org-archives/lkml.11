@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD04AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:24:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 114DBC43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:24:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344667AbiEJO1E (ORCPT
+        id S1343974AbiEJO1x (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:27:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46102 "EHLO
+        Tue, 10 May 2022 10:27:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244730AbiEJN4W (ORCPT
+        with ESMTP id S245281AbiEJN5Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:56:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6F4429BC53;
-        Tue, 10 May 2022 06:38:41 -0700 (PDT)
+        Tue, 10 May 2022 09:57:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14CBF2CCD09;
+        Tue, 10 May 2022 06:39:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 034B8617E4;
-        Tue, 10 May 2022 13:38:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C1C4C385A6;
-        Tue, 10 May 2022 13:38:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF9DCB81DC2;
+        Tue, 10 May 2022 13:39:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD1A6C385C2;
+        Tue, 10 May 2022 13:39:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189920;
-        bh=JdwPYYeWhgloCEDNw4IAQ8boW9KZ6wt72JaKCJLWB+M=;
+        s=korg; t=1652189942;
+        bh=ja0ijxZvm9OzHxdtl9DZF2+y3dpt4d6NdYljy+53o+U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JlT0ev1QISLs7KLlV+OpE64Y/i76XjSZHFaxV7zax7Hxp0omyf5ser4iGaaaLGRzn
-         mIV8I2oGn4KPJKdRZpRIhRl3szCfvbMUzfD//Df0l2rpURl+YFJCuap453jU8xC3tx
-         V9DurjZlcTAZlfKsQHuYVTURRYDtoFrcWdPA+1BQ=
+        b=lWbEHJ03GTOzja3lGEZSz2lkJq34tDHCpAR27U+q9jtcPIOPdYytgS36CNF+0OdCK
+         do5A1ZkQOTXp8urPKlB0kV/TVdh002WPi8yEYE+/UeHe1/ReVxW3XADSHgnpA/zwB5
+         YJYJ2LjV5BRP54myWh4PbArg1ZEMM9n44UXgnsgw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Moshe Shemesh <moshe@nvidia.com>,
-        Maher Sanalla <msanalla@nvidia.com>,
-        Shay Drory <shayd@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.17 070/140] net/mlx5: Avoid double clear or set of sync reset requested
-Date:   Tue, 10 May 2022 15:07:40 +0200
-Message-Id: <20220510130743.620635514@linuxfoundation.org>
+        stable@vger.kernel.org, Hui Wang <hui.wang@canonical.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.17 077/140] ALSA: hda/realtek: Fix mute led issue on thinkpad with cs35l41 s-codec
+Date:   Tue, 10 May 2022 15:07:47 +0200
+Message-Id: <20220510130743.816837722@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -51,103 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Moshe Shemesh <moshe@nvidia.com>
+From: Hui Wang <hui.wang@canonical.com>
 
-commit fc3d3db07b35885f238e1fa06b9f04a8fa7a62d0 upstream.
+commit a6ac60b36dade525c13c5bb0838589619533efb7 upstream.
 
-Double clear of reset requested state can lead to NULL pointer as it
-will try to delete the timer twice. This can happen for example on a
-race between abort from FW and pci error or reset. Avoid such case using
-test_and_clear_bit() to verify only one time reset requested state clear
-flow. Similarly use test_and_set_bit() to verify only one time reset
-requested state set flow.
+The quirk ALC287_FIXUP_CS35L41_I2C_2 needs to chain the quirk
+ALC269_FIXUP_THINKPAD_ACPI, otherwise the mute led will not work if a
+thinkpad machine applies that quirk.
 
-Fixes: 7dd6df329d4c ("net/mlx5: Handle sync reset abort event")
-Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
-Reviewed-by: Maher Sanalla <msanalla@nvidia.com>
-Reviewed-by: Shay Drory <shayd@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+And it will be safe if non-thinkpad machines apply that quirk since
+hda_fixup_thinkpad_acpi() will check and return in this case.
+
+Fixes: ae7abe36e352e ("ALSA: hda/realtek: Add CS35L41 support for Thinkpad laptops")
+Signed-off-by: Hui Wang <hui.wang@canonical.com>
+Link: https://lore.kernel.org/r/20220422073937.10073-1-hui.wang@canonical.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c |   28 ++++++++++++++-------
- 1 file changed, 19 insertions(+), 9 deletions(-)
+ sound/pci/hda/patch_realtek.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-@@ -135,14 +135,19 @@ static void mlx5_stop_sync_reset_poll(st
- 	del_timer_sync(&fw_reset->timer);
- }
- 
--static void mlx5_sync_reset_clear_reset_requested(struct mlx5_core_dev *dev, bool poll_health)
-+static int mlx5_sync_reset_clear_reset_requested(struct mlx5_core_dev *dev, bool poll_health)
- {
- 	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
- 
-+	if (!test_and_clear_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags)) {
-+		mlx5_core_warn(dev, "Reset request was already cleared\n");
-+		return -EALREADY;
-+	}
-+
- 	mlx5_stop_sync_reset_poll(dev);
--	clear_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags);
- 	if (poll_health)
- 		mlx5_start_health_poll(dev);
-+	return 0;
- }
- 
- #define MLX5_RESET_POLL_INTERVAL	(HZ / 10)
-@@ -186,13 +191,17 @@ static int mlx5_fw_reset_set_reset_sync_
- 	return mlx5_reg_mfrl_set(dev, MLX5_MFRL_REG_RESET_LEVEL3, 0, 2, false);
- }
- 
--static void mlx5_sync_reset_set_reset_requested(struct mlx5_core_dev *dev)
-+static int mlx5_sync_reset_set_reset_requested(struct mlx5_core_dev *dev)
- {
- 	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
- 
-+	if (test_and_set_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags)) {
-+		mlx5_core_warn(dev, "Reset request was already set\n");
-+		return -EALREADY;
-+	}
- 	mlx5_stop_health_poll(dev, true);
--	set_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags);
- 	mlx5_start_sync_reset_poll(dev);
-+	return 0;
- }
- 
- static void mlx5_fw_live_patch_event(struct work_struct *work)
-@@ -221,7 +230,9 @@ static void mlx5_sync_reset_request_even
- 			       err ? "Failed" : "Sent");
- 		return;
- 	}
--	mlx5_sync_reset_set_reset_requested(dev);
-+	if (mlx5_sync_reset_set_reset_requested(dev))
-+		return;
-+
- 	err = mlx5_fw_reset_set_reset_sync_ack(dev);
- 	if (err)
- 		mlx5_core_warn(dev, "PCI Sync FW Update Reset Ack Failed. Error code: %d\n", err);
-@@ -319,7 +330,8 @@ static void mlx5_sync_reset_now_event(st
- 	struct mlx5_core_dev *dev = fw_reset->dev;
- 	int err;
- 
--	mlx5_sync_reset_clear_reset_requested(dev, false);
-+	if (mlx5_sync_reset_clear_reset_requested(dev, false))
-+		return;
- 
- 	mlx5_core_warn(dev, "Sync Reset now. Device is going to reset.\n");
- 
-@@ -348,10 +360,8 @@ static void mlx5_sync_reset_abort_event(
- 						      reset_abort_work);
- 	struct mlx5_core_dev *dev = fw_reset->dev;
- 
--	if (!test_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags))
-+	if (mlx5_sync_reset_clear_reset_requested(dev, true))
- 		return;
--
--	mlx5_sync_reset_clear_reset_requested(dev, true);
- 	mlx5_core_warn(dev, "PCI Sync FW Update Reset Aborted.\n");
- }
- 
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -8759,6 +8759,8 @@ static const struct hda_fixup alc269_fix
+ 	[ALC287_FIXUP_CS35L41_I2C_2] = {
+ 		.type = HDA_FIXUP_FUNC,
+ 		.v.func = cs35l41_fixup_i2c_two,
++		.chained = true,
++		.chain_id = ALC269_FIXUP_THINKPAD_ACPI,
+ 	},
+ 	[ALC285_FIXUP_HP_SPEAKERS_MICMUTE_LED] = {
+ 		.type = HDA_FIXUP_VERBS,
 
 
