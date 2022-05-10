@@ -2,97 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BB98C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15097C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 07:31:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237525AbiEJHe7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 03:34:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54080 "EHLO
+        id S241627AbiEJHex (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 03:34:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237654AbiEJHCF (ORCPT
+        with ESMTP id S240965AbiEJH0Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 03:02:05 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 654F67485B
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 23:58:08 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Ky84M29fVzhZ3M;
-        Tue, 10 May 2022 14:57:39 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 10 May 2022 14:58:05 +0800
-Subject: Re: [PATCH v3 1/3] mm/swapfile: unuse_pte can map random data if swap
- read fails
-To:     =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
-        <naoya.horiguchi@nec.com>
-CC:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "willy@infradead.org" <willy@infradead.org>,
-        "vbabka@suse.cz" <vbabka@suse.cz>,
-        "dhowells@redhat.com" <dhowells@redhat.com>,
-        "neilb@suse.de" <neilb@suse.de>,
-        "david@redhat.com" <david@redhat.com>,
-        "apopple@nvidia.com" <apopple@nvidia.com>,
-        "surenb@google.com" <surenb@google.com>,
-        "minchan@kernel.org" <minchan@kernel.org>,
-        "peterx@redhat.com" <peterx@redhat.com>,
-        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220424091105.48374-1-linmiaohe@huawei.com>
- <20220424091105.48374-2-linmiaohe@huawei.com>
- <20220510061712.GA162496@hori.linux.bs1.fc.nec.co.jp>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <2a95aebe-3a00-4699-12d4-fc5d934dde2c@huawei.com>
-Date:   Tue, 10 May 2022 14:58:05 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Tue, 10 May 2022 03:26:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E55363A5D7;
+        Tue, 10 May 2022 00:22:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5E0D2B81A0A;
+        Tue, 10 May 2022 07:22:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2F7AC385A6;
+        Tue, 10 May 2022 07:22:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652167343;
+        bh=7K3MJOtEcuHFbzjGMBK9G/czvkGrWXEYQvzkmmVBkhQ=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=kZWStkvFA8dnpda13YuPiWGK0wi+F3QMo+0rLC4WwxoXWbBokY9OOoBlHQk5hoX6H
+         9Ev58O9/bLrAXY12Cp+Zy0Fqxwhr2JFzkFkd5C4K2WzSiLpUWI5R7c+l9FTvQ1V3BN
+         W74dn3lvc5yAgBieYb9QwIO9r0d4vlpc/L/qbIs0KkAVctuDVdMQGa1unzI3GJHOAU
+         hOJfC70rggZj7Q+1r3OGZaEVGpb+4eUjFQoTmZzwymFGdocaVeuXngtRtXylCyBLkq
+         AQfI43pXdyN4PA1DaXOCo/EBp9j7xa0gMelyDi7lLpS6lbBwHob9TKQ1gDQxT7wt/g
+         z79lkfNH5V6BA==
+Message-ID: <20fd1a74-c0f5-d8e9-4903-b74c185d5aa3@kernel.org>
+Date:   Tue, 10 May 2022 10:22:18 +0300
 MIME-Version: 1.0
-In-Reply-To: <20220510061712.GA162496@hori.linux.bs1.fc.nec.co.jp>
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] memory: OMAP_GPMC should depend on ARCH_OMAP2PLUS ||
+ ARCH_K3
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Tony Lindgren <tony@atomide.com>, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <2b7d411b4a7913335082c858cb0d63b9e4bf7c5b.1652103920.git.geert+renesas@glider.be>
+From:   Roger Quadros <rogerq@kernel.org>
+In-Reply-To: <2b7d411b4a7913335082c858cb0d63b9e4bf7c5b.1652103920.git.geert+renesas@glider.be>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/10 14:17, HORIGUCHI NAOYA(堀口 直也) wrote:
-> On Sun, Apr 24, 2022 at 05:11:03PM +0800, Miaohe Lin wrote:
->> There is a bug in unuse_pte(): when swap page happens to be unreadable,
->> page filled with random data is mapped into user address space.  In case
->> of error, a special swap entry indicating swap read fails is set to the
->> page table.  So the swapcache page can be freed and the user won't end up
->> with a permanently mounted swap because a sector is bad.  And if the page
->> is accessed later, the user process will be killed so that corrupted data
->> is never consumed.  On the other hand, if the page is never accessed, the
->> user won't even notice it.
->>
->> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
->> Acked-by: David Hildenbrand <david@redhat.com>
+Hi Geert,
+
+On 09/05/2022 16:48, Geert Uytterhoeven wrote:
+> The Texas Instruments OMAP General Purpose Memory Controller (GPMC) is
+> only present on TI OMAP2/3/4/5, AM33xx, AM43x, DRA7xx, TI81xx, and K3
+> SoCs.  Hence add a dependency on ARCH_OMAP2PLUS || ARCH_K3, to prevent
+> asking the user about this driver when configuring a kernel without
+> OMAP2+ or K3 SoC family support.
 > 
-> When I reproduced the issue (generated read error with dm-dust), I saw
-> infinite loop in the while loop in shmem_unuse_inode() (and this happens
-> even with this patch). I confirmed that shmem_swapin_page() returns -EIO,
-> but shmem_unuse_swap_entries() does not return the error to the callers,
-> so the while loop in shmem_unuse_inode() seems not break.
+> Fixes: be34f45f0d4aa91c ("memory: omap-gpmc: Make OMAP_GPMC config visible and selectable")
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+>  drivers/memory/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
 > 
+> diff --git a/drivers/memory/Kconfig b/drivers/memory/Kconfig
+> index b7800b37af78a996..f00757912e2e4c1e 100644
+> --- a/drivers/memory/Kconfig
+> +++ b/drivers/memory/Kconfig
+> @@ -105,6 +105,7 @@ config TI_EMIF
+>  config OMAP_GPMC
+>  	tristate "Texas Instruments OMAP SoC GPMC driver"
+>  	depends on OF_ADDRESS
+> +	depends on ARCH_OMAP2PLUS || ARCH_K3 || COMPILE_TEST
+>  	select GPIOLIB
+>  	help
+>  	  This driver is for the General Purpose Memory Controller (GPMC)
 
-Many thanks for your report! I didn't test the shmem case because I saw -EIO
-is returned. So I just focus on the normal page case. Sorry about it. :(
+Is there any possibility that CONFIG_IRQ_DOMAIN is not set while both
+OF_ADDRESS and COMPILE_TEST are set?
 
-> So maybe you need more code around shmem_unuse_inode() to handle the error?
+That particular case will lead to build failures.
 
-I will try to reproduce it and come up a fixup patch asap! And if you like, you
-can kindly solve this issue too. ;)
+e.g.
+https://krzk.eu/#/builders/63/builds/162
 
-Thanks a lot!
-
-> 
-> Thanks,
-> Naoya Horiguchi
-> 
-
+cheers,
+-roger
