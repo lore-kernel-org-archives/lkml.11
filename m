@@ -2,151 +2,383 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6967DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:39:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6659DC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:40:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241911AbiEJMnm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 08:43:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58092 "EHLO
+        id S232935AbiEJMoo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 08:44:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241909AbiEJMni (ORCPT
+        with ESMTP id S234396AbiEJMol (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 08:43:38 -0400
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80040.outbound.protection.outlook.com [40.107.8.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 234AF2B2762;
-        Tue, 10 May 2022 05:39:32 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=P6OpEwkXMrUJxkEV6RfvunDEeUH68Bs9NpKjQX4CF2mI6rKEW0dXMIwkNPRlsxBUH6zfNbzwUrGkHDu1+BjHaH2bBLTa/sLS+PdZNfOaV9WJrvmRbCMv6/03J5ktlPaG2G9WN/s6p5WP2XMfILCVjkC8lbf7Gd49GWhMD1dwQui+R0VfGysBdLfiDPBCCOt7oZSJZQ8pdDY51xicK2XACP1eHoqHHoJQ9agJEpt5JbVnDhJ5NRIw1hJnKdBPybfBQiSYgCfF3TJN18zhv8dCPPOPjuJB/Ewa+O9MQKeReUoAjvNE0pVQx5m039BTm99m0VL06oBuiiBXCaVLkIFCvQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=oeZHd6gAGQXBin3WoV3PxnViKEVNdTe2/MpTBxxr77w=;
- b=KkW5k/TvPAmXDe/pjchq236gwP4V+ELu10VXwwtraJ6UMfnTEQsv8Bv/rYBjRorxYwHglOHmbfqCIVHYqLIIyMiAXzD8a9izYcTo9kv/nhjXdXH2x9xRjm9lOTzK/gY1SzfzjuMi9BLso2PiFsJR3/V5L3Y470a+nUOfLKAYwsPQAROrWVzLREDzegxF/cRzcUV1p1GA3A9vIb4bqp5yAoMv4B4bU6np3GxTE5iCh0YoBIERs9FaXGfZyWj2q5+kpYFLS0g8sXrLdVxyGhm1i/aFzdveTjKFJ04nnW9MoQVdFBcSBtqBYgClxv1TY9+NJcCpyC/mGd5Wfjme0bczhQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oeZHd6gAGQXBin3WoV3PxnViKEVNdTe2/MpTBxxr77w=;
- b=iBjcGuYje4JZ13gPDLo66HeQF6VkdIUMYkKfWG7znfxEuI+VK36J1ly97+xgpgc5O34S/aDKVp0iDyN3kY7Ti5K+X7qvdp+kHmd3VcCKSkj0kAfCtBxaFde5qq8Pf0piebT8dcRm19Tw+PXrrMA5/XIu4/G9tMEcAWFuf4+J3hg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from PA4PR04MB9416.eurprd04.prod.outlook.com (2603:10a6:102:2ab::21)
- by AM9PR04MB8937.eurprd04.prod.outlook.com (2603:10a6:20b:408::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23; Tue, 10 May
- 2022 12:39:25 +0000
-Received: from PA4PR04MB9416.eurprd04.prod.outlook.com
- ([fe80::c9b8:325d:8250:4fed]) by PA4PR04MB9416.eurprd04.prod.outlook.com
- ([fe80::c9b8:325d:8250:4fed%4]) with mapi id 15.20.5227.023; Tue, 10 May 2022
- 12:39:25 +0000
-From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de
-Cc:     kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, Peng Fan <peng.fan@nxp.com>,
-        Dong Aisheng <aisheng.dong@nxp.com>
-Subject: [PATCH V6 4/4] arm64: defconfig: enable i.MX93 clk & pinctrl
-Date:   Tue, 10 May 2022 20:40:50 +0800
-Message-Id: <20220510124050.398891-5-peng.fan@oss.nxp.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220510124050.398891-1-peng.fan@oss.nxp.com>
-References: <20220510124050.398891-1-peng.fan@oss.nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR02CA0029.apcprd02.prod.outlook.com
- (2603:1096:3:18::17) To PA4PR04MB9416.eurprd04.prod.outlook.com
- (2603:10a6:102:2ab::21)
+        Tue, 10 May 2022 08:44:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8C24A1B6;
+        Tue, 10 May 2022 05:40:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7E737B816D7;
+        Tue, 10 May 2022 12:40:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D5DFC385C6;
+        Tue, 10 May 2022 12:40:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652186440;
+        bh=gGvr9LHnIcbe0Z23rcxM31MADJek3ZUcHE/AkZpInyw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Z/PAkLS3lPd7N/E902GoF5hX767FGZm+cFWbaEb63+P924fXdPTZwZ9Y+UghNfKXS
+         djtw5LvknHJerFqLWhvucfdqI7PCQeeQ/4vXijwEquUMC+19OfkVGwhxOIt/A0WzNO
+         Jbkhq0BAjpkE2256lFl/ximviiBFZYSjDzClK6X8/YjOfmUhk683aBQlYf4b6lzz1x
+         D4AnoZePSAqwLDIWugS39bV6sbtjSyTcizf1qAvvPCpFL3uZHCep4b8jB5bgjTiaZ2
+         sx1KfcdUEFFBxY7Wc5HOunPjVSE139t8AwV5Gn2VhcVjh5iETjkUbSShlBENRw//ME
+         R9PBcue0LRz5A==
+Date:   Tue, 10 May 2022 14:40:33 +0200
+From:   Christian Brauner <brauner@kernel.org>
+To:     Dave Chinner <david@fromorbit.com>
+Cc:     Miklos Szeredi <miklos@szeredi.hu>, linux-fsdevel@vger.kernel.org,
+        Theodore Ts'o <tytso@mit.edu>, Karel Zak <kzak@redhat.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org,
+        Linux API <linux-api@vger.kernel.org>,
+        linux-man <linux-man@vger.kernel.org>,
+        LSM <linux-security-module@vger.kernel.org>,
+        Ian Kent <raven@themaw.net>,
+        David Howells <dhowells@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christian Brauner <christian@brauner.io>,
+        Amir Goldstein <amir73il@gmail.com>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>
+Subject: Re: [RFC PATCH] getting misc stats/attributes via xattr API
+Message-ID: <20220510124033.lobf33hxey4quza3@wittgenstein>
+References: <YnEeuw6fd1A8usjj@miu.piliscsaba.redhat.com>
+ <20220509124815.vb7d2xj5idhb2wq6@wittgenstein>
+ <20220510005533.GA2306852@dread.disaster.area>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4cde25bb-6cdd-4036-af65-08da32821dde
-X-MS-TrafficTypeDiagnostic: AM9PR04MB8937:EE_
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-Microsoft-Antispam-PRVS: <AM9PR04MB893723D0291172D09F72F9BDC9C99@AM9PR04MB8937.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: iyqTj5RKn9ChXvB44S/85t5qn0+rEqIjxgNzymn0VECGNbCcW824hNhHPDM0Gd2glqAXihnG+EBlGUHSomm+Ttankc8n92A8qglbnmr0/xk5qz6/veXfJAJF1a8pN9E9vkF7uFJ1LdSalBcLlBYiC59AMgaa+Fd/6CFfTznpj7B4B206MLJ37KBWpVd6B8aqYSxAhdBMPzfKEMrwwxuBJAjG+0F3hPSo4qxoTiLm5GaeRNfajZYJZNnOeMv3f4/W4gEicuFSfwAdzomcKUJ3ERw7PFqRiBvh+cpk+ICc2dfd9zy+HnLTrFNPExlzERYUo4MNTySowY/GISym+a0XOCYJ/aLwAGVNqWl8jjm5XUBMf6Rm3dZZz8Am8Xge1e3x6vn60oSJEAahK46vNWWYYcu4fbUVC87CR0N2j63TxMtQnEmlt+XwQjKajGwMKR0kIBTjLLuk+z67HKA41RgI+a0pdgdfD4s2kFUJDvNAv2EW0BaahnO1q27Yahy4tue+DvLsIBq0HkpAnoC1jLSdXpACa2D5Fn6FoH7h59MQsIGhr/7Z77JDVzzx4iuKEQVbCaFrt26iV2IkkRNXfnERhjT01KQy2woT1434L1RCcmJuZxmH79jq9/3Z6MpKIYeKtdpvY70f/27GVsoEfC4x8jnJ9Yv95ZQ+k48L5xiChiNV0c3CCQrGbmipB/mVUjF9DF4iUZirlN6tI9+fC4JR3w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA4PR04MB9416.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8936002)(4744005)(2906002)(38100700002)(38350700002)(5660300002)(6506007)(1076003)(4326008)(186003)(508600001)(66556008)(66946007)(2616005)(8676002)(66476007)(316002)(54906003)(52116002)(6512007)(26005)(86362001)(6666004)(6486002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?N3r4GL1vZ1Fm3Sy7QZybDpXOE7+Yvm66tCwBXrA3P9eAC4C+52AVyatHsVqk?=
- =?us-ascii?Q?3Zfp32eRtjjnBEXwhh5shxzQmQ1myZh4qsRdxvLweuhnPwtgv3koxBBPptXc?=
- =?us-ascii?Q?K/G4XeM9mQ7HI+2+flgjOS/oGtIW5rknB8qDHJMPnR9hZr0/f1weX1qxNrT9?=
- =?us-ascii?Q?Ij7j1NU10GjrI+nhNeXYqoHExdtFoVA+Y/XdhEdQvgVsRWmtYBhoxEfTKwIC?=
- =?us-ascii?Q?X3kG+lYhDCFdMKlPN8IDdlyERXH7sR8Ck2gBd4S6OfLP8vn73hCiFlbSPPws?=
- =?us-ascii?Q?seo9qNaYfRADbZw2KQb4ZLStk2XPYUfvQsWCbKrxfvrndCT5ytmZi4bTLkVE?=
- =?us-ascii?Q?O5ETANRcKRs3vX4ZL0KLJsuSfY07zGjhQl4kE406efVWPmVPtVNjIjvL3z1z?=
- =?us-ascii?Q?Lj8ANN+wcWCilJR5dtNcw65Rdvcevvlxvu9xvM3iDYiE5EsKIbkYf/eUPTcm?=
- =?us-ascii?Q?t15lZhAAGWDfmXS6g8Bpzjr13sgyGoOX/sMCSuGU/+W0CxcnpQIsNcFnvcqj?=
- =?us-ascii?Q?nzyyI73WMRDh4HoTk8/7Pi3RjbQ80xwVTEpvDpuCv56tGSfEDxEVvkT4bBol?=
- =?us-ascii?Q?WstAqwvHaWrC7/+6sTayOf7jDSFNB59ozvglDsPW+SQ8VgplQs9I1RLroWwX?=
- =?us-ascii?Q?HxhIx0FqV9z3l7W0bXO/MaWGebSl+OEYtMYPcYdN1D8b/Q5Y75XgfZ0mYOQc?=
- =?us-ascii?Q?vL9LlfCgdZR+fOGJFR6Qc2gneVVvTIe0dEk7qzqwUiedJVgvZSEat4O8nf6c?=
- =?us-ascii?Q?KbQrBlzBFI7HgzkfF4CEwimJWYFW9jaVlkyAEYqJk33/Us/PhW9/kdkdgTXO?=
- =?us-ascii?Q?+UA7/IKLsCRPFIC1Hop3ir70nwfs6latIKdEge3iD3aTNDl3nlmNQcYI6Vu7?=
- =?us-ascii?Q?IsFzDs28OBKyjgBEKii4dNuLVcfYkhI31xg/1Yn4nvVfKQIWpZkTKTNNeGCq?=
- =?us-ascii?Q?JNQtO+GN8v02uKHhRjagP5g9LOEhGLb21PhwrIUyVVHINvwKbaG6maZKI+oN?=
- =?us-ascii?Q?3GRJRCez0Yqix6nn//pLcMvK01sZlQmBcjw/4xPDRZ6j2hN65wh40xuLjW2m?=
- =?us-ascii?Q?CQVzF58BDPbxZi0bLv8gt192JRS7heOGIV0Djzmd4AoF5YM+wUy5RsUKGQ7+?=
- =?us-ascii?Q?0n0dbyNTQaegoHY55W95nYuyWMUtXnxEEVVV+DTLqvdXBnHrKZQ/J91pWGQ5?=
- =?us-ascii?Q?KAf09uMtPqqyddYZtdUwET/ikcjbSZbcQAml0UWdHysSBWEjCn29rtgarIYW?=
- =?us-ascii?Q?CAKOjHTxFPG29G6VFfic42xChVuHssO5+R5Zpyoqb4kCcSd/c2hVIPf+/Oj5?=
- =?us-ascii?Q?/z0KSshay7Lpc8zlhyrA2ZbwX693teyR5w778/S5eBNHksLh5DGSzX4LILuS?=
- =?us-ascii?Q?ahSE7liv9ytzM26IGF+cd0h+HLlA9ZemMs3sUbSdSxT3UKx0t2eWxegKwPOF?=
- =?us-ascii?Q?8CGNeofw9QlUCs9wYiQJMlUAGW4zi5xIx1jDC4k3DJZ2wtdWtokTMsfHIhfq?=
- =?us-ascii?Q?hDreg0Cb6GTKchIc/p0n4FZ/D6il+O5nr8S2e8mpRmWG6i/MrJq4Cdyfe+u/?=
- =?us-ascii?Q?g86ysy2CXfvRAXrecH7W+ROfNQEDk9U0rjhwkecHWbvVWoZjsTdXX71IPNBw?=
- =?us-ascii?Q?vF2fhYLo3fUKIq4eL92JkhwyEwQ8g/uiVrq5H6WkSMEaM3BaTCuZyEse4Jgk?=
- =?us-ascii?Q?0JeuTPquRvSRn8JCRlWs5aBZVWWdspNUf9zs+Gf1umQXpulawDJyDEwidZji?=
- =?us-ascii?Q?H9rDeAyJyw=3D=3D?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4cde25bb-6cdd-4036-af65-08da32821dde
-X-MS-Exchange-CrossTenant-AuthSource: PA4PR04MB9416.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 12:39:25.7585
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XFgj6uX+h1aBv0Q0ClpviRCIOgn0altxTV+h1Uk8TMeL6d/P/tKj6MkE6x85g/V1Ffvaj9WEe2pvDrsLcPWM7Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8937
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220510005533.GA2306852@dread.disaster.area>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Fan <peng.fan@nxp.com>
+On Tue, May 10, 2022 at 10:55:33AM +1000, Dave Chinner wrote:
+> On Mon, May 09, 2022 at 02:48:15PM +0200, Christian Brauner wrote:
+> > On Tue, May 03, 2022 at 02:23:23PM +0200, Miklos Szeredi wrote:
+> > > This is a simplification of the getvalues(2) prototype and moving it to the
+> > > getxattr(2) interface, as suggested by Dave.
+> > > 
+> > > The patch itself just adds the possibility to retrieve a single line of
+> > > /proc/$$/mountinfo (which was the basic requirement from which the fsinfo
+> > > patchset grew out of).
+> > > 
+> > > But this should be able to serve Amir's per-sb iostats, as well as a host of
+> > > other cases where some statistic needs to be retrieved from some object.  Note:
+> > > a filesystem object often represents other kinds of objects (such as processes
+> > > in /proc) so this is not limited to fs attributes.
+> > > 
+> > > This also opens up the interface to setting attributes via setxattr(2).
+> > > 
+> > > After some pondering I made the namespace so:
+> > > 
+> > > : - root
+> > > bar - an attribute
+> > > foo: - a folder (can contain attributes and/or folders)
+> > > 
+> > > The contents of a folder is represented by a null separated list of names.
+> > > 
+> > > Examples:
+> > > 
+> > > $ getfattr -etext -n ":" .
+> > > # file: .
+> > > :="mnt:\000mntns:"
+> > > 
+> > > $ getfattr -etext -n ":mnt:" .
+> > > # file: .
+> > > :mnt:="info"
+> > > 
+> > > $ getfattr -etext -n ":mnt:info" .
+> > > # file: .
+> > > :mnt:info="21 1 254:0 / / rw,relatime - ext4 /dev/root rw\012"
+> > 
+> > Hey Miklos,
+> > 
+> > One comment about this. We really need to have this interface support
+> > giving us mount options like "relatime" back in numeric form (I assume
+> > this will be possible.). It is royally annoying having to maintain a
+> > mapping table in userspace just to do:
+> > 
+> > relatime -> MS_RELATIME/MOUNT_ATTR_RELATIME
+> > ro	 -> MS_RDONLY/MOUNT_ATTR_RDONLY
+> 
+> You're asking for a complete change of output information there.
+> This has nothing to do with the mechanism for extracting key/value
+> information from the kernel.
+> 
+> i.e. we need to separate demands for "data I want" from "mechanism
+> to extract data".
+> 
+> > > $ getfattr -etext -n ":mntns:" .
+> > > # file: .
+> > > :mntns:="21:\00022:\00024:\00025:\00023:\00026:\00027:\00028:\00029:\00030:\00031:"
+> > > 
+> > > $ getfattr -etext -n ":mntns:28:" .
+> > > # file: .
+> > > :mntns:28:="info"
+> > > 
+> > > Comments?
+> > 
+> > I'm not a fan of text-based APIs and I'm particularly not a fan of the
+> > xattr APIs. But at this point I'm ready to compromise on a lot as long
+> > as it gets us values out of the kernel in some way. :)
+> > 
+> > I had to use xattrs extensively in various low-level userspace projects
+> > and they continue to be a source of races and memory bugs.
+> > 
+> > A few initial questions:
+> > 
+> > * The xattr APIs often require the caller to do sm like (copying some go
+> >   code quickly as I have that lying around):
+> > 
+> > 	for _, x := range split {
+> > 		xattr := string(x)
+> > 		// Call Getxattr() twice: First, to determine the size of the
+> > 		// buffer we need to allocate to store the extended attributes,
+> > 		// second, to actually store the extended attributes in the
+> > 		// buffer. Also, check if the size of the extended attribute
+> > 		// hasn't increased between the two calls.
+> > 		pre, err = unix.Getxattr(path, xattr, nil)
+> > 		if err != nil || pre < 0 {
+> > 			return nil, err
+> > 		}
+> > 
+> > 		dest = make([]byte, pre)
+> > 		post := 0
+> > 		if pre > 0 {
+> > 			post, err = unix.Getxattr(path, xattr, dest)
+> > 			if err != nil || post < 0 {
+> > 				return nil, err
+> > 			}
+> > 		}
+> > 
+> > 		if post > pre {
+> > 			return nil, fmt.Errorf("Extended attribute '%s' size increased from %d to %d during retrieval", xattr, pre, post)
+> > 		}
+> > 
+> > 		xattrs[xattr] = string(dest)
+> > 	}
+> > 
+> >   This pattern of requesting the size first by passing empty arguments,
+> >   then allocating the buffer and then passing down that buffer to
+> >   retrieve that value is really annoying to use and error prone (I do
+> >   of course understand why it exists.).
+> 
+> You're doing it wrong.
+> 
+> When you have an attr extraction loop like this, you allocate a
+> single 64kB buffer for the value, adn then call getattr() with the
+> buffer and a length of 64kB. Then the call returns both the value
+> length and the value in one syscall, and then the application can
+> allocate+copy into an exact sized buffer if it needs to.
+> 
+> Then you use the same 64kB buffer for the next getxattr() call.
+> 
+> I first saw this pattern in code written in the mid 1990s for
+> Irix, and for basic listxattr/getxattr operations to find and
+> retrieve key/value pairs this is much more efficient than the above.
 
-Enable i.MX93 clk and pinctrl driver for booting the system
+Right, but this example is in a garbage collected language where this
+level of fine-grained memory management is rarely used or encouraged.
+But the point is taken.
 
-Reviewed-by: Dong Aisheng <aisheng.dong@nxp.com>
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
----
- arch/arm64/configs/defconfig | 2 ++
- 1 file changed, 2 insertions(+)
+> 
+> The real problem is that the linux listxattr() syscall only returns
+> names. It's a shit API design at best, especially the part where it
+> cannot iterate over a list larger than a single buffer. If you've
+> got millions of xattrs, listxattr is fucking useless. The man page
+> is actively harmful - that's where everyone learns the double
+> getxattr anit-pattern you've described above.
+> 
+> 
+> With that in mind, go look at XFS_IOC_ATTRLIST_BY_HANDLE that I've
+> mentioned in previous discussions this topic.  Each attr entry
+> returned is one of these:
+> 
+> struct xfs_attrlist_ent {       /* data from attr_list() */
+> 	__u32   a_valuelen;     /* number bytes in value of attr */
+> 	char    a_name[1];      /* attr name (NULL terminated) */
+> };
+> 
+> It really needs a namelen to make parsing of the output buffer
+> simpler, but this is the model we should be following - listing
+> xattrs is no different from listing directory entries. Indeed,
+> a directory entries is basically just a name/value pair - the name
+> of the dirent and the inode number it points to is the value.
+> 
+> Further to that point, the control structure for
+> XFS_IOC_ATTRLIST_BY_HANDLE has a cursor value that works the same
+> way as readdir cookies do. Hence when iterating over xattrs that
+> require multiple syscalls to retrieve, the cursor allows the next
+> list syscall to start off listing exactly where the previous syscall
+> finished.
+> 
+> IOWs, what Linux really needs is a listxattr2() syscall that works
+> the same way that getdents/XFS_IOC_ATTRLIST_BY_HANDLE work. With the
+> list function returning value sizes and being able to iterate
+> effectively, every problem that listxattr() causes goes away.
 
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index e0aa3a924eb7..148cebd0224a 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -520,6 +520,7 @@ CONFIG_PINCTRL_IMX8QM=y
- CONFIG_PINCTRL_IMX8QXP=y
- CONFIG_PINCTRL_IMX8DXL=y
- CONFIG_PINCTRL_IMX8ULP=y
-+CONFIG_PINCTRL_IMX93=y
- CONFIG_PINCTRL_MSM=y
- CONFIG_PINCTRL_IPQ8074=y
- CONFIG_PINCTRL_IPQ6018=y
-@@ -1006,6 +1007,7 @@ CONFIG_CLK_IMX8MP=y
- CONFIG_CLK_IMX8MQ=y
- CONFIG_CLK_IMX8QXP=y
- CONFIG_CLK_IMX8ULP=y
-+CONFIG_CLK_IMX93=y
- CONFIG_TI_SCI_CLK=y
- CONFIG_COMMON_CLK_QCOM=y
- CONFIG_QCOM_A53PLL=y
--- 
-2.25.1
+That's an interesting proposal...
 
+> 
+> And while we are at it, we need to consider a xattr2() syscall to
+> replace getxattr/setxattr. The model for that is
+> XFS_IOC_ATTRMULTI_BY_HANDLE, which allows operations to be performed
+> on mulitple xattrs in a single syscall. e.g. we can do a bulk get,
+> set and remove operation across multiple xattrs - we can even mix
+> and match get/set/remove operations on different xattrs in a single
+> call.
+
+Yeah, that would've come in handy in various codepaths I've seen.
+
+> 
+> > * Would it be possible to support binary output with this interface?
+> 
+> The xattr API already supports binary names and values. The only
+> exception is you can't put NULLs in names because APIs use that as a
+> name terminator. if listxattr2() returns a namelen in it's
+> structure, then we could allow fully binary names, too (XFS already
+> fully supports this internally!). In the current API, values are
+> always determined by length, not null termiantions, so they are
+> also already fully binary capable.
+
+Yeah, I'm aware of that. I want to know whether we might be amenable to
+support this for retrieving structs from mountinfo.
+
+> 
+> >   I really think users would love to have an interfact where they can
+> >   get a struct with binary info back.
+> 
+> No. Not for kernel informational interfaces. We have ioctls and
+
+That feels like semantics. statx is in all sensible readings of the
+words a kernel informational interface.
+
+> syscalls for defining structured binary interfaces that pass
+> non-trivial objects. xattrs are no the place for this - they are
+> key/value object stores like sysfs is supposed to be, so I really
+> don't think we should support encoded binary data in xattrs under
+> this special mount namespace...
+
+I do agree on that point but as I mentioned in my reply to Miklos (hard
+to keep track of all ends in this discussion...) if we are fine with
+adding some way - in the form of a system call - to retrieve basic mount
+information with some of the properties I listed in the other reply, I'm
+content.
+
+I'm really looking at this from the perspective of someone who uses
+these interfaces regularly in userspace and a text-based interface for
+very basic information such as detailed information about a mount is
+cumbersome. I know people like to "counter" with "parsing strings is
+easy" but it remains a giant pain for userspace; at least for basic
+info.
+
+If it's about really specialist deatiled information then sure; go text
+based or any other way to retrieve that info.
+
+> 
+> Solving the "retreive multiple values per syscall" problem is what
+> the bulk get interface (XFS_IOC_ATTRMULTI_BY_HANDLE) is for.
+> 
+> >   Callers like systemd will have to parse text and will end up
+> >   converting everything from text into binary anyway; especially for
+> >   mount information. So giving them an option for this out of the box
+> >   would be quite good.
+> 
+> That boat sailed years ago. You're making the same arguments about
+> binary extraction interfaces being way more efficient than ascii
+> based value-per-file interfaces like proc/sysfs that were made back
+> in the early 2000s. That boat has long sailed - while the current
+> method is somewhat inefficient, it certainly hasn't had all the
+> problems that maintaining binary interfaces over decades has had....
+> 
+> Much as it pains me to say it (because I came to Linux from an OS
+> that exported huge amounts of custom binary structures from the
+> kernel), having all the export interfaces dump human readable
+> information has proved far more flexible and usable than interfaces
+> that required binary parsers to dump information before it could be
+> used on the command line or in scripting languages....
+
+I'm really not trying to make far-reaching historical and future claims
+about OS interface design. I'm simply asking for a way to retrieve basic
+information about e.g. mounts in the form of a struct; statx for mounts.
+
+I feel this is quickly turning into a discussion about how we should in
+general design OS interfaces while that is really not at stake here.
+Linux is a mix of so many different interfaces - for better or worse -
+that any decision we take has no claim on codifying how we should do new
+interfaces. That is indeed a ship that has sailed long ago.
+
+> 
+> > * If we decide to go forward with this interface - and I think I
+> >   mentioned this in the lsfmm session - could we please at least add a
+> >   new system call? It really feels wrong to retrieve mount and other
+> >   information through the xattr interfaces. They aren't really xattrs.
+> 
+> We are trying to expose structured key-value information. That's
+> exactly what the xattr API was orginally created to cater for...
+> 
+> >   Imho, xattrs are a bit like a wonky version of streams already (One of
+> >   the reasons I find them quite unpleasant.). Making mount and other
+> >   information retrievable directly through the getxattr() interface will
+> >   turn them into a full-on streams implementation imho. I'd prefer not
+> >   to do that (Which is another reason I'd prefer at least a separate
+> >   system call.).
+> 
+> And that's a total misunderstanding of what xattrs are.
+> 
+> Alternate data streams are just {file,offset} based data streams
+> accessed via ithe same read/write() mechanisms as the primary data
+> stream.
+
+That's why I said "wonky". But I'm not going to argue this point. I
+think you by necessity have wider historical context on these things
+that I lack. But I don't find it unreasonable to also see them as an
+additional information channel.
+
+Sure, they are a generic key=value store for anything _in principle_. In
+practice however xattrs are very much perceived and used as information
+storage on files, a metadata side-channel if you will.
+
+All I'm claiming here is that it will confuse the living hell out of
+users if the getxattr() api suddenly is used not to just set and get
+information associated with inodes but to also provides filesystem or
+mount information.
+
+That's a totally a totally differnet type of information. Sure, it may
+fit well in the key=value scheme because the xattr key=value _interface_
+is generic but that's a very technical argument.
+
+I'm looking at this from the experience of a user of the API for a
+moment and in code they'd do in one place:
+
+getxattr('/super/special/binary', "security.capability", ...);
+
+and then in another place they do:
+
+getxattr('/path/to/some/mount', "mntns:info", ...);
+
+that is just flatout confusing.
+
+> 
+> Xattrs provide an *atomic key-value object store API*, not an offset
+> based data stream API. They are completely different beasts,
+> intended for completely different purposes. ADS are redundant when you
+> have directories and files, whilst an atomic key-value store is
+> something completely different.
+> 
+> You do realise we have an independent, scalable, ACID compliant
+> key-value object store in every inode in an XFS filesystem, right?
+
+So far this was a really mail with good background information but I'm
+struggling to make sense of what that last sentence is trying to tell
+me. :)
