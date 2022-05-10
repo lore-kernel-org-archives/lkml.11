@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C194C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:16:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7D0CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:16:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344045AbiEJOUn (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:20:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44428 "EHLO
+        id S242788AbiEJOUu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:20:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245041AbiEJNrN (ORCPT
+        with ESMTP id S245044AbiEJNrN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:47:13 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 519577658;
-        Tue, 10 May 2022 06:34:05 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D259B120A3;
+        Tue, 10 May 2022 06:34:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C2F3DCE1E67;
-        Tue, 10 May 2022 13:34:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99DBDC385A6;
-        Tue, 10 May 2022 13:34:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 96EF6B81DA8;
+        Tue, 10 May 2022 13:34:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1759EC385C2;
+        Tue, 10 May 2022 13:34:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189642;
-        bh=IOMGjic0Y5MCySd6f210PJpYaIrCb0vu1Km2VJOHEZ4=;
+        s=korg; t=1652189651;
+        bh=wll0cJ1ahHvP9gMDkiUTO7YI5zBwB6BsN+qEMF3iJkU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mS4WstrVFv3qxxZHYNkcK9nbdpaH/yZyLnecDXaNB6zlsj282AmQjK+ngg9/HEhUK
-         AEakTtIYKHSpcEs78nhS0Tl8woG+ALJvoblBzeev3tpRUA2qmX1QKniyYkc97+t5nP
-         WnXb6A8a8KWgqBqt/W72Kdbo1Osf9AkSrWTXrz7w=
+        b=cUiSq2qHNLzm+RTcnUo/UksDYzqvIsWcZMJP4LoelPHFreELF9RhWLhbv8/lWfE1v
+         dyPn/uFJ6U2GnzQu2c45DKfc9OXK5USKLfTTdyg0mhmYLdYiAFb84RMaqB3FwQqSLa
+         tK/mU2pjy4b2NtcwtUq4B4DjiVuWdKqX5RWn5Rvo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, pali@kernel.org,
         =?UTF-8?q?Marek=20Beh=FAn?= <kabel@kernel.org>,
         Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH 5.15 115/135] PCI: aardvark: Disable link training when unbinding driver
-Date:   Tue, 10 May 2022 15:08:17 +0200
-Message-Id: <20220510130743.700907942@linuxfoundation.org>
+Subject: [PATCH 5.15 118/135] PCI: aardvark: Rewrite IRQ code to chained IRQ handler
+Date:   Tue, 10 May 2022 15:08:20 +0200
+Message-Id: <20220510130743.784430674@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -52,35 +51,128 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Pali Rohár <pali@kernel.org>
 
-commit 759dec2e3dfdbd261c41d2279f04f2351c971a49 upstream.
+commit 1571d67dc190e50c6c56e8f88cdc39f7cc53166e upstream.
 
-Disable link training circuit in driver unbind sequence. We want to
-leave link training in the same state as it was before the driver was
-probed.
+Rewrite the code to use irq_set_chained_handler_and_data() handler with
+chained_irq_enter() and chained_irq_exit() processing instead of using
+devm_request_irq().
 
-Link: https://lore.kernel.org/r/20211130172913.9727-11-kabel@kernel.org
+advk_pcie_irq_handler() reads IRQ status bits and calls other functions
+based on which bits are set. These functions then read its own IRQ status
+bits and calls other aardvark functions based on these bits. Finally
+generic_handle_domain_irq() with translated linux IRQ numbers are called.
+
+Link: https://lore.kernel.org/r/20220110015018.26359-5-kabel@kernel.org
 Signed-off-by: Pali Rohár <pali@kernel.org>
 Signed-off-by: Marek Behún <kabel@kernel.org>
 Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 Signed-off-by: Marek Behún <kabel@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/pci-aardvark.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/pci/controller/pci-aardvark.c |   48 ++++++++++++++++++----------------
+ 1 file changed, 26 insertions(+), 22 deletions(-)
 
 --- a/drivers/pci/controller/pci-aardvark.c
 +++ b/drivers/pci/controller/pci-aardvark.c
-@@ -1725,6 +1725,11 @@ static int advk_pcie_remove(struct platf
- 	if (pcie->reset_gpio)
- 		gpiod_set_value_cansleep(pcie->reset_gpio, 1);
+@@ -268,6 +268,7 @@ struct advk_pcie {
+ 		u32 actions;
+ 	} wins[OB_WIN_COUNT];
+ 	u8 wins_count;
++	int irq;
+ 	struct irq_domain *irq_domain;
+ 	struct irq_chip irq_chip;
+ 	raw_spinlock_t irq_lock;
+@@ -1432,21 +1433,26 @@ static void advk_pcie_handle_int(struct
+ 	}
+ }
  
-+	/* Disable link training */
-+	val = advk_readl(pcie, PCIE_CORE_CTRL0_REG);
-+	val &= ~LINK_TRAINING_EN;
-+	advk_writel(pcie, val, PCIE_CORE_CTRL0_REG);
+-static irqreturn_t advk_pcie_irq_handler(int irq, void *arg)
++static void advk_pcie_irq_handler(struct irq_desc *desc)
+ {
+-	struct advk_pcie *pcie = arg;
+-	u32 status;
++	struct advk_pcie *pcie = irq_desc_get_handler_data(desc);
++	struct irq_chip *chip = irq_desc_get_chip(desc);
++	u32 val, mask, status;
+ 
+-	status = advk_readl(pcie, HOST_CTRL_INT_STATUS_REG);
+-	if (!(status & PCIE_IRQ_CORE_INT))
+-		return IRQ_NONE;
++	chained_irq_enter(chip, desc);
+ 
+-	advk_pcie_handle_int(pcie);
++	val = advk_readl(pcie, HOST_CTRL_INT_STATUS_REG);
++	mask = advk_readl(pcie, HOST_CTRL_INT_MASK_REG);
++	status = val & ((~mask) & PCIE_IRQ_ALL_MASK);
+ 
+-	/* Clear interrupt */
+-	advk_writel(pcie, PCIE_IRQ_CORE_INT, HOST_CTRL_INT_STATUS_REG);
++	if (status & PCIE_IRQ_CORE_INT) {
++		advk_pcie_handle_int(pcie);
+ 
+-	return IRQ_HANDLED;
++		/* Clear interrupt */
++		advk_writel(pcie, PCIE_IRQ_CORE_INT, HOST_CTRL_INT_STATUS_REG);
++	}
 +
- 	/* Disable outbound address windows mapping */
- 	for (i = 0; i < OB_WIN_COUNT; i++)
- 		advk_pcie_disable_ob_win(pcie, i);
++	chained_irq_exit(chip, desc);
+ }
+ 
+ static void __maybe_unused advk_pcie_disable_phy(struct advk_pcie *pcie)
+@@ -1513,7 +1519,7 @@ static int advk_pcie_probe(struct platfo
+ 	struct advk_pcie *pcie;
+ 	struct pci_host_bridge *bridge;
+ 	struct resource_entry *entry;
+-	int ret, irq;
++	int ret;
+ 
+ 	bridge = devm_pci_alloc_host_bridge(dev, sizeof(struct advk_pcie));
+ 	if (!bridge)
+@@ -1599,17 +1605,9 @@ static int advk_pcie_probe(struct platfo
+ 	if (IS_ERR(pcie->base))
+ 		return PTR_ERR(pcie->base);
+ 
+-	irq = platform_get_irq(pdev, 0);
+-	if (irq < 0)
+-		return irq;
+-
+-	ret = devm_request_irq(dev, irq, advk_pcie_irq_handler,
+-			       IRQF_SHARED | IRQF_NO_THREAD, "advk-pcie",
+-			       pcie);
+-	if (ret) {
+-		dev_err(dev, "Failed to register interrupt\n");
+-		return ret;
+-	}
++	pcie->irq = platform_get_irq(pdev, 0);
++	if (pcie->irq < 0)
++		return pcie->irq;
+ 
+ 	pcie->reset_gpio = devm_gpiod_get_from_of_node(dev, dev->of_node,
+ 						       "reset-gpios", 0,
+@@ -1658,11 +1656,14 @@ static int advk_pcie_probe(struct platfo
+ 		return ret;
+ 	}
+ 
++	irq_set_chained_handler_and_data(pcie->irq, advk_pcie_irq_handler, pcie);
++
+ 	bridge->sysdata = pcie;
+ 	bridge->ops = &advk_pcie_ops;
+ 
+ 	ret = pci_host_probe(bridge);
+ 	if (ret < 0) {
++		irq_set_chained_handler_and_data(pcie->irq, NULL, NULL);
+ 		advk_pcie_remove_msi_irq_domain(pcie);
+ 		advk_pcie_remove_irq_domain(pcie);
+ 		return ret;
+@@ -1710,6 +1711,9 @@ static int advk_pcie_remove(struct platf
+ 	advk_writel(pcie, PCIE_ISR1_ALL_MASK, PCIE_ISR1_REG);
+ 	advk_writel(pcie, PCIE_IRQ_ALL_MASK, HOST_CTRL_INT_STATUS_REG);
+ 
++	/* Remove IRQ handler */
++	irq_set_chained_handler_and_data(pcie->irq, NULL, NULL);
++
+ 	/* Remove IRQ domains */
+ 	advk_pcie_remove_msi_irq_domain(pcie);
+ 	advk_pcie_remove_irq_domain(pcie);
 
 
