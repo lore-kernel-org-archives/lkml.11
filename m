@@ -2,40 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 068B7C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:38:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A752C352A7
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:38:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243778AbiEJNlN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:41:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50556 "EHLO
+        id S243873AbiEJNlU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:41:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243693AbiEJN1R (ORCPT
+        with ESMTP id S243899AbiEJN1f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:27:17 -0400
+        Tue, 10 May 2022 09:27:35 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A082E25D111;
-        Tue, 10 May 2022 06:20:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6665C2C255E;
+        Tue, 10 May 2022 06:20:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 39B786165A;
-        Tue, 10 May 2022 13:20:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48DFCC385A6;
-        Tue, 10 May 2022 13:20:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ABA3F616D0;
+        Tue, 10 May 2022 13:20:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B11E4C385A6;
+        Tue, 10 May 2022 13:20:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188819;
-        bh=sN5HR7f9AJoRolKAArwQTOKUueVNLwfQy/wUH8Trtu8=;
+        s=korg; t=1652188845;
+        bh=/A+a3bk4xx74A+u/WRwLO3Lza7C3KHpa+IWrB4azzCQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1u+t7QMRhMxyIBZmSzfUqsMQV2i2rlwSHHVXEkXrCsP/Uhs7EPnByEOjcvDbSm2CX
-         +DVbQDyW1tDIYCmjSTEU5Mpv7Q6NAqUyql1FBc6faXubkySVFbMlUnHz5IxnLYD6wf
-         VVt1SGUM6088/ib4NpgZb81bLPnrGr5uONE4Hs2w=
+        b=OZHvBT5q1gNF9/e32nL+auABysYIyCY0/gJ1d9DUmkrVit2YZrUsFA85rz/ebJ0Me
+         td48BdLq36Diff6cLt2UY9k1EYG2XPc3/PKBvOw32U39s1HrneFuXhq0U+7bbIu8cz
+         nhn5BxeruIFGkXOS3CClEBkq0jmXJJswIMp+1lKM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 4.19 55/88] tty: n_gsm: fix wrong command frame length field encoding
-Date:   Tue, 10 May 2022 15:07:40 +0200
-Message-Id: <20220510130735.343311933@linuxfoundation.org>
+        stable@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Max Krummenacher <max.krummenacher@toradex.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 24/88] ARM: dts: imx6qdl-apalis: Fix sgtl5000 detection issue
+Date:   Tue, 10 May 2022 15:07:09 +0200
+Message-Id: <20220510130734.447917545@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 References: <20220510130733.735278074@linuxfoundation.org>
@@ -47,76 +51,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Fabio Estevam <festevam@gmail.com>
 
-commit 398867f59f956985f4c324f173eff7b946e14bd8 upstream.
+[ Upstream commit fa51e1dc4b91375bc18349663a52395ad585bd3c ]
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.4.6.1 states that each command frame shall
-be made up from type, length and value. Looking for example in chapter
-5.4.6.3.5 at the description for the encoding of a flow control on command
-it becomes obvious, that the type and length field is always present
-whereas the value may be zero bytes long. The current implementation omits
-the length field if the value is not present. This is wrong.
-Correct this by always sending the length in gsm_control_transmit().
-So far only the modem status command (MSC) has included a value and encoded
-its length directly. Therefore, also change gsmtty_modem_update().
+On a custom carrier board with a i.MX6Q Apalis SoM, the sgtl5000 codec
+on the SoM is often not detected and the following error message is
+seen when the sgtl5000 driver tries to read the ID register:
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220414094225.4527-12-daniel.starke@siemens.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+sgtl5000 1-000a: Error reading chip id -6
+
+The reason for the error is that the MCLK clock is not provided
+early enough.
+
+Fix the problem by describing the MCLK pinctrl inside the codec
+node instead of placing it inside the audmux pinctrl group.
+
+With this change applied the sgtl5000 is always detected on every boot.
+
+Fixes: 693e3ffaae5a ("ARM: dts: imx6: Add support for Toradex Apalis iMX6Q/D SoM")
+Signed-off-by: Fabio Estevam <festevam@gmail.com>
+Reviewed-by: Tim Harvey <tharvey@gateworks.com>
+Acked-by: Max Krummenacher <max.krummenacher@toradex.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c |   23 +++++++++++------------
- 1 file changed, 11 insertions(+), 12 deletions(-)
+ arch/arm/boot/dts/imx6qdl-apalis.dtsi | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1302,11 +1302,12 @@ static void gsm_control_response(struct
+diff --git a/arch/arm/boot/dts/imx6qdl-apalis.dtsi b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
+index 05f07ea3e8c8..ed783c91b002 100644
+--- a/arch/arm/boot/dts/imx6qdl-apalis.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
+@@ -313,6 +313,8 @@ vgen6_reg: vgen6 {
+ 	codec: sgtl5000@a {
+ 		compatible = "fsl,sgtl5000";
+ 		reg = <0x0a>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_sgtl5000>;
+ 		clocks = <&clks IMX6QDL_CLK_CKO>;
+ 		VDDA-supply = <&reg_module_3v3_audio>;
+ 		VDDIO-supply = <&reg_module_3v3>;
+@@ -540,8 +542,6 @@ MX6QDL_PAD_DISP0_DAT20__AUD4_TXC	0x130b0
+ 			MX6QDL_PAD_DISP0_DAT21__AUD4_TXD	0x130b0
+ 			MX6QDL_PAD_DISP0_DAT22__AUD4_TXFS	0x130b0
+ 			MX6QDL_PAD_DISP0_DAT23__AUD4_RXD	0x130b0
+-			/* SGTL5000 sys_mclk */
+-			MX6QDL_PAD_GPIO_5__CCM_CLKO1		0x130b0
+ 		>;
+ 	};
  
- static void gsm_control_transmit(struct gsm_mux *gsm, struct gsm_control *ctrl)
- {
--	struct gsm_msg *msg = gsm_data_alloc(gsm, 0, ctrl->len + 1, gsm->ftype);
-+	struct gsm_msg *msg = gsm_data_alloc(gsm, 0, ctrl->len + 2, gsm->ftype);
- 	if (msg == NULL)
- 		return;
--	msg->data[0] = (ctrl->cmd << 1) | 2 | EA;	/* command */
--	memcpy(msg->data + 1, ctrl->data, ctrl->len);
-+	msg->data[0] = (ctrl->cmd << 1) | CR | EA;	/* command */
-+	msg->data[1] = (ctrl->len << 1) | EA;
-+	memcpy(msg->data + 2, ctrl->data, ctrl->len);
- 	gsm_data_queue(gsm->dlci[0], msg);
- }
+@@ -807,6 +807,12 @@ MX6QDL_PAD_NANDF_CS1__GPIO6_IO14 0x000b0
+ 		>;
+ 	};
  
-@@ -2860,19 +2861,17 @@ static struct tty_ldisc_ops tty_ldisc_pa
- 
- static int gsmtty_modem_update(struct gsm_dlci *dlci, u8 brk)
- {
--	u8 modembits[5];
-+	u8 modembits[3];
- 	struct gsm_control *ctrl;
- 	int len = 2;
- 
--	if (brk)
-+	modembits[0] = (dlci->addr << 2) | 2 | EA;  /* DLCI, Valid, EA */
-+	modembits[1] = (gsm_encode_modem(dlci) << 1) | EA;
-+	if (brk) {
-+		modembits[2] = (brk << 4) | 2 | EA; /* Length, Break, EA */
- 		len++;
--
--	modembits[0] = len << 1 | EA;		/* Data bytes */
--	modembits[1] = dlci->addr << 2 | 3;	/* DLCI, EA, 1 */
--	modembits[2] = gsm_encode_modem(dlci) << 1 | EA;
--	if (brk)
--		modembits[3] = brk << 4 | 2 | EA;	/* Valid, EA */
--	ctrl = gsm_control_send(dlci->gsm, CMD_MSC, modembits, len + 1);
-+	}
-+	ctrl = gsm_control_send(dlci->gsm, CMD_MSC, modembits, len);
- 	if (ctrl == NULL)
- 		return -ENOMEM;
- 	return gsm_control_wait(dlci->gsm, ctrl);
++	pinctrl_sgtl5000: sgtl5000grp {
++		fsl,pins = <
++			MX6QDL_PAD_GPIO_5__CCM_CLKO1	0x130b0
++		>;
++	};
++
+ 	pinctrl_spdif: spdifgrp {
+ 		fsl,pins = <
+ 			MX6QDL_PAD_GPIO_16__SPDIF_IN  0x1b0b0
+-- 
+2.35.1
+
 
 
