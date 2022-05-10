@@ -2,196 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD0B8C43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:13:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26809C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:13:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343813AbiEJOQ2 (ORCPT
+        id S1343993AbiEJOQw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:16:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45574 "EHLO
+        Tue, 10 May 2022 10:16:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343711AbiEJNsW (ORCPT
+        with ESMTP id S1343892AbiEJNsl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:48:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A56772D9EFA;
-        Tue, 10 May 2022 06:36:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 10 May 2022 09:48:41 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4DAF6CF4E;
+        Tue, 10 May 2022 06:37:00 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 9D9371F8BB;
+        Tue, 10 May 2022 13:36:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1652189796; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=p4sKAZLovajkwQg62mRgYfSfMqbrhePxszIN411IYQg=;
+        b=tovm3tZ+1QWr/SxV5JtdrWCNJ7FQX0r5/3bS75ATrIpgw5RXo0a2u28xBsFvvpqOMkw7UT
+        +TrRpOhjh0GVX+9CJ46QGv+Xzz2tg2x+Ugu5wzM0kN6Q/YM7fsthLicCDxDtyAZjvpX6VN
+        1SJ6PdLrZJwEQhuF+4IMU3OxodHogj8=
+Received: from suse.cz (unknown [10.100.201.86])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E966618CF;
-        Tue, 10 May 2022 13:36:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33039C385C2;
-        Tue, 10 May 2022 13:36:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189805;
-        bh=7EOlkagCuaSCpsJRB/bfcScFi2TgH0RRwlzbd6ObCfE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SH/4e6y/z52RDM+H9Q5YNYT4b+dDWDILmQ1dIdlGcX4oIqS8wxJUcmwUnAyHDEsPg
-         HJX4lzPkHHkoqwg9zwexfZUIpOz/y29GI55kaOCHylxEBAPbz/7F2Ow5F83/cBHkld
-         6vyxM3C1CALFM21/hCtqXXzoUAf0wNdWwlTOQMpo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.17 033/140] btrfs: skip compression property for anything other than files and dirs
-Date:   Tue, 10 May 2022 15:07:03 +0200
-Message-Id: <20220510130742.563550943@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
-References: <20220510130741.600270947@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by relay2.suse.de (Postfix) with ESMTPS id CDCAB2C141;
+        Tue, 10 May 2022 13:36:35 +0000 (UTC)
+Date:   Tue, 10 May 2022 15:36:34 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     CGEL <cgel.zte@gmail.com>
+Cc:     akpm@linux-foundation.org, hannes@cmpxchg.org, willy@infradead.org,
+        shy828301@gmail.com, roman.gushchin@linux.dev, shakeelb@google.com,
+        linmiaohe@huawei.com, william.kucharski@oracle.com,
+        peterx@redhat.com, hughd@google.com, vbabka@suse.cz,
+        songmuchun@bytedance.com, surenb@google.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        cgroups@vger.kernel.org, Yang Yang <yang.yang29@zte.com.cn>
+Subject: Re: [PATCH] mm/memcg: support control THP behaviour in cgroup
+Message-ID: <YnpqYte2jLdcBiPg@dhcp22.suse.cz>
+References: <20220505033814.103256-1-xu.xin16@zte.com.cn>
+ <YnUlntNFR4zeD+qa@dhcp22.suse.cz>
+ <6275d3e7.1c69fb81.1d62.4504@mx.google.com>
+ <YnjmPAToTR0C5o8x@dhcp22.suse.cz>
+ <6278fa75.1c69fb81.9c598.f794@mx.google.com>
+ <Ynj/l+pyFJxKfcbQ@dhcp22.suse.cz>
+ <6279c354.1c69fb81.7f6c1.15e0@mx.google.com>
+ <Yno3pNQOn1lAMPnu@dhcp22.suse.cz>
+ <627a5214.1c69fb81.1b7fb.47be@mx.google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <627a5214.1c69fb81.1b7fb.47be@mx.google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+On Tue 10-05-22 11:52:51, CGEL wrote:
+> On Tue, May 10, 2022 at 12:00:04PM +0200, Michal Hocko wrote:
+> > On Tue 10-05-22 01:43:38, CGEL wrote:
+> > > On Mon, May 09, 2022 at 01:48:39PM +0200, Michal Hocko wrote:
+> > > > On Mon 09-05-22 11:26:43, CGEL wrote:
+> > > > > On Mon, May 09, 2022 at 12:00:28PM +0200, Michal Hocko wrote:
+> > > > > > On Sat 07-05-22 02:05:25, CGEL wrote:
+> > > > > > [...]
+> > > > > > > If there are many containers to run on one host, and some of them have high
+> > > > > > > performance requirements, administrator could turn on thp for them:
+> > > > > > > # docker run -it --thp-enabled=always
+> > > > > > > Then all the processes in those containers will always use thp.
+> > > > > > > While other containers turn off thp by:
+> > > > > > > # docker run -it --thp-enabled=never
+> > > > > > 
+> > > > > > I do not know. The THP config space is already too confusing and complex
+> > > > > > and this just adds on top. E.g. is the behavior of the knob
+> > > > > > hierarchical? What is the policy if parent memcg says madivise while
+> > > > > > child says always? How does the per-application configuration aligns
+> > > > > > with all that (e.g. memcg policy madivise but application says never via
+> > > > > > prctl while still uses some madvised - e.g. via library).
+> > > > > >
+> > > > > 
+> > > > > The cgroup THP behavior is align to host and totally independent just likes
+> > > > > /sys/fs/cgroup/memory.swappiness. That means if one cgroup config 'always'
+> > > > > for thp, it has no matter with host or other cgroup. This make it simple for
+> > > > > user to understand or control.
+> > > > 
+> > > > All controls in cgroup v2 should be hierarchical. This is really
+> > > > required for a proper delegation semantic.
+> > > >
+> > > 
+> > > Could we align to the semantic of /sys/fs/cgroup/memory.swappiness?
+> > > Some distributions like Ubuntu is still using cgroup v1.
+> > 
+> > cgroup v1 interface is mostly frozen. All new features are added to the
+> > v2 interface.
+> >
+> 
+> So what about we add this interface to cgroup v2?
 
-commit 4b73c55fdebd8939f0f6000921075f7f6fa41397 upstream.
+Can you come up with a sane hierarchical behavior?
 
-The compression property only has effect on regular files and directories
-(so that it's propagated to files and subdirectories created inside a
-directory). For any other inode type (symlink, fifo, device, socket),
-it's pointless to set the compression property because it does nothing
-and ends up unnecessarily wasting leaf space due to the pointless xattr
-(75 or 76 bytes, depending on the compression value). Symlinks in
-particular are very common (for example, I have almost 10k symlinks under
-/etc, /usr and /var alone) and therefore it's worth to avoid wasting
-leaf space with the compression xattr.
+[...]
+> > > For micro-service architecture, the application in one container is not a
+> > > set of loosely tight processes, it's aim at provide one certain service,
+> > > so different containers means different service, and different service
+> > > has different QoS demand. 
+> > 
+> > OK, if they are tightly coupled you could apply the same THP policy by
+> > an existing prctl interface. Why is that not feasible. As you are noting
+> > below...
+> > 
+> > >     5.containers usually managed by compose software, which treats container as
+> > > base management unit;
+> > 
+> > ..so the compose software can easily start up the workload by using prctl
+> > to disable THP for whatever workloads it is not suitable for.
+> 
+> prctl(PR_SET_THP_DISABLE..) can not be elegance to support the semantic we
+> need. If only some containers needs THP, other containers and host do not need
+> THP. We must set host THP to always first, and call prctl() to close THP for
+> host tasks and other containers one by one,
 
-For example, the compression property can end up on a symlink or character
-device implicitly, through inheritance from a parent directory
+It might not be the most elegant solution but it should work.
+Maintaining user interfaces for ever has some cost and the THP
+configuration space is quite large already. So I would rather not add
+more complication in unless that is absolutely necessary.
 
-  $ mkdir /mnt/testdir
-  $ btrfs property set /mnt/testdir compression lzo
+> in this process some tasks that start before we call prctl() may
+> already use THP with no need.
 
-  $ ln -s yadayada /mnt/testdir/lnk
-  $ mknod /mnt/testdir/dev c 0 0
+As long as all those processes have a common ancestor I do not see how
+that would be possible.
 
-Or explicitly like this:
-
-  $ ln -s yadayda /mnt/lnk
-  $ setfattr -h -n btrfs.compression -v lzo /mnt/lnk
-
-So skip the compression property on inodes that are neither a regular
-file nor a directory.
-
-CC: stable@vger.kernel.org # 5.4+
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- fs/btrfs/props.c |   43 +++++++++++++++++++++++++++++++++++++++++++
- fs/btrfs/props.h |    1 +
- fs/btrfs/xattr.c |    3 +++
- 3 files changed, 47 insertions(+)
-
---- a/fs/btrfs/props.c
-+++ b/fs/btrfs/props.c
-@@ -21,6 +21,7 @@ struct prop_handler {
- 			size_t len);
- 	int (*apply)(struct inode *inode, const char *value, size_t len);
- 	const char *(*extract)(struct inode *inode);
-+	bool (*ignore)(const struct btrfs_inode *inode);
- 	int inheritable;
- };
- 
-@@ -74,6 +75,28 @@ int btrfs_validate_prop(const struct btr
- 	return handler->validate(inode, value, value_len);
- }
- 
-+/*
-+ * Check if a property should be ignored (not set) for an inode.
-+ *
-+ * @inode:     The target inode.
-+ * @name:      The property's name.
-+ *
-+ * The caller must be sure the given property name is valid, for example by
-+ * having previously called btrfs_validate_prop().
-+ *
-+ * Returns:    true if the property should be ignored for the given inode
-+ *             false if the property must not be ignored for the given inode
-+ */
-+bool btrfs_ignore_prop(const struct btrfs_inode *inode, const char *name)
-+{
-+	const struct prop_handler *handler;
-+
-+	handler = find_prop_handler(name, NULL);
-+	ASSERT(handler != NULL);
-+
-+	return handler->ignore(inode);
-+}
-+
- int btrfs_set_prop(struct btrfs_trans_handle *trans, struct inode *inode,
- 		   const char *name, const char *value, size_t value_len,
- 		   int flags)
-@@ -316,6 +339,22 @@ static int prop_compression_apply(struct
- 	return 0;
- }
- 
-+static bool prop_compression_ignore(const struct btrfs_inode *inode)
-+{
-+	/*
-+	 * Compression only has effect for regular files, and for directories
-+	 * we set it just to propagate it to new files created inside them.
-+	 * Everything else (symlinks, devices, sockets, fifos) is pointless as
-+	 * it will do nothing, so don't waste metadata space on a compression
-+	 * xattr for anything that is neither a file nor a directory.
-+	 */
-+	if (!S_ISREG(inode->vfs_inode.i_mode) &&
-+	    !S_ISDIR(inode->vfs_inode.i_mode))
-+		return true;
-+
-+	return false;
-+}
-+
- static const char *prop_compression_extract(struct inode *inode)
- {
- 	switch (BTRFS_I(inode)->prop_compress) {
-@@ -336,6 +375,7 @@ static struct prop_handler prop_handlers
- 		.validate = prop_compression_validate,
- 		.apply = prop_compression_apply,
- 		.extract = prop_compression_extract,
-+		.ignore = prop_compression_ignore,
- 		.inheritable = 1
- 	},
- };
-@@ -362,6 +402,9 @@ static int inherit_props(struct btrfs_tr
- 		if (!h->inheritable)
- 			continue;
- 
-+		if (h->ignore(BTRFS_I(inode)))
-+			continue;
-+
- 		value = h->extract(parent);
- 		if (!value)
- 			continue;
---- a/fs/btrfs/props.h
-+++ b/fs/btrfs/props.h
-@@ -15,6 +15,7 @@ int btrfs_set_prop(struct btrfs_trans_ha
- 		   int flags);
- int btrfs_validate_prop(const struct btrfs_inode *inode, const char *name,
- 			const char *value, size_t value_len);
-+bool btrfs_ignore_prop(const struct btrfs_inode *inode, const char *name);
- 
- int btrfs_load_inode_props(struct inode *inode, struct btrfs_path *path);
- 
---- a/fs/btrfs/xattr.c
-+++ b/fs/btrfs/xattr.c
-@@ -408,6 +408,9 @@ static int btrfs_xattr_handler_set_prop(
- 	if (ret)
- 		return ret;
- 
-+	if (btrfs_ignore_prop(BTRFS_I(inode), name))
-+		return 0;
-+
- 	trans = btrfs_start_transaction(root, 2);
- 	if (IS_ERR(trans))
- 		return PTR_ERR(trans);
-
-
+-- 
+Michal Hocko
+SUSE Labs
