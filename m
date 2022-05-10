@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD8A0C352A7
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:40:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 960DFC388F3
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:40:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243705AbiEJNmh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:42:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58678 "EHLO
+        id S243852AbiEJNmv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:42:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243122AbiEJN2b (ORCPT
+        with ESMTP id S243286AbiEJN3M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:28:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBAED2528B;
-        Tue, 10 May 2022 06:20:54 -0700 (PDT)
+        Tue, 10 May 2022 09:29:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7611B473BB;
+        Tue, 10 May 2022 06:21:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EACC5616D0;
-        Tue, 10 May 2022 13:20:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 078CBC385C2;
-        Tue, 10 May 2022 13:20:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC42461663;
+        Tue, 10 May 2022 13:21:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3851C385C6;
+        Tue, 10 May 2022 13:21:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188853;
-        bh=TrEdLr6RrI2ecmeFH2LJ1ZCxHozPoF75vuqC83vbSXg=;
+        s=korg; t=1652188870;
+        bh=tbJHvViQzV/JozlxA+VMglRr0mAAIM8Pbgmf2vmtYEw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yj6R58hsLUT2Po8b8oyfEw4jldaJLvYIXX5AtOBF9dBfKWbYEU2EUlA/tWc49slS1
-         UJFgZWRc+JzKmTM01nCXQC7TutdQaD/QaI9TIu/brmGU1hm/CE+o6e1uQzIcMcJk91
-         e5UP4FMFeach8jjT0HxqlZ4p7LtllbyIYIIP1dpQ=
+        b=p+JSGbbqqQVYRwzNMaCNiPCqwBdiiFd56+MncwVxVwmz3cbSUPYwQ0qOLyoCcAMQB
+         ahN1Ef+Kd7vH6LSzMeGyqjaBb/TULKJzKFTxnjKdRIWpLr7rnB9Y97nvgo0mWQLhwG
+         ivPjOsakJactlgjpi0aOw5JUBfdzKpSZN8hCfVl8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 27/88] ARM: OMAP2+: Fix refcount leak in omap_gic_of_init
-Date:   Tue, 10 May 2022 15:07:12 +0200
-Message-Id: <20220510130734.535705606@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.19 75/88] net: stmmac: dwmac-sun8i: add missing of_node_put() in sun8i_dwmac_register_mdio_mux()
+Date:   Tue, 10 May 2022 15:08:00 +0200
+Message-Id: <20220510130735.909264374@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 References: <20220510130733.735278074@linuxfoundation.org>
@@ -49,42 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 0f83e6b4161617014017a694888dd8743f46f071 ]
+commit 1a15267b7be77e0792cf0c7b36ca65c8eb2df0d8 upstream.
 
-The of_find_compatible_node() function returns a node pointer with
-refcount incremented, We should use of_node_put() on it when done
-Add the missing of_node_put() to release the refcount.
+The node pointer returned by of_get_child_by_name() with refcount incremented,
+so add of_node_put() after using it.
 
-Fixes: fd1c07861491 ("ARM: OMAP4: Fix the init code to have OMAP4460 errata available in DT build")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Message-Id: <20220309104302.18398-1-linmq006@gmail.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 634db83b8265 ("net: stmmac: dwmac-sun8i: Handle integrated/external MDIOs")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220428095716.540452-1-yangyingliang@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/mach-omap2/omap4-common.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/mach-omap2/omap4-common.c b/arch/arm/mach-omap2/omap4-common.c
-index 7074cfd1ff41..79a1e4c51e3d 100644
---- a/arch/arm/mach-omap2/omap4-common.c
-+++ b/arch/arm/mach-omap2/omap4-common.c
-@@ -318,10 +318,12 @@ void __init omap_gic_of_init(void)
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+@@ -873,6 +873,7 @@ static int sun8i_dwmac_register_mdio_mux
  
- 	np = of_find_compatible_node(NULL, NULL, "arm,cortex-a9-gic");
- 	gic_dist_base_addr = of_iomap(np, 0);
-+	of_node_put(np);
- 	WARN_ON(!gic_dist_base_addr);
+ 	ret = mdio_mux_init(priv->device, mdio_mux, mdio_mux_syscon_switch_fn,
+ 			    &gmac->mux_handle, priv, priv->mii);
++	of_node_put(mdio_mux);
+ 	return ret;
+ }
  
- 	np = of_find_compatible_node(NULL, NULL, "arm,cortex-a9-twd-timer");
- 	twd_base = of_iomap(np, 0);
-+	of_node_put(np);
- 	WARN_ON(!twd_base);
- 
- skip_errata_init:
--- 
-2.35.1
-
 
 
