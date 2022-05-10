@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1DC6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:20:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6351CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:20:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343994AbiEJOYQ (ORCPT
+        id S1343579AbiEJOYW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:24:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39690 "EHLO
+        Tue, 10 May 2022 10:24:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244890AbiEJNv2 (ORCPT
+        with ESMTP id S244563AbiEJNuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:51:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E08F2992DF;
-        Tue, 10 May 2022 06:38:01 -0700 (PDT)
+        Tue, 10 May 2022 09:50:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1016D296BE5;
+        Tue, 10 May 2022 06:37:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1068C618BB;
-        Tue, 10 May 2022 13:37:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C284C385C9;
-        Tue, 10 May 2022 13:37:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 308A2B81DA2;
+        Tue, 10 May 2022 13:36:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9937CC385C2;
+        Tue, 10 May 2022 13:36:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189848;
-        bh=ECmiXNGYewi08JxQt1hFdaf6p24m2pojk7/YQtqMICE=;
+        s=korg; t=1652189815;
+        bh=qZfQrZp8pLBCTKq6lhsb6lISQ6IGdkGbv/mKIdtS2W8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C5JgzXpfBCfgBvvTkBvZZSdHBYORGb+qW6Rqo7i34CodqoNKAed8Nhop4dshYZ0fq
-         aPDeDFL/jp73+AUnCfM+U/EiJgTep2cs2NHiVAWH++lCWWnSiZ7vSUXE+wRk6hbC8U
-         7lAQA8NmoSjuTP2kQH/pMgKoYBDYSPXqaiPngdhs=
+        b=02m076KelgR5BaPjjpGlYBSmYIUm3zkwAziR1/mMTMkOuqYhFID/5Ynbi7XlS3nA4
+         vYUBw6owbFqhRVWvOHLAoSN8EJ23xtupg+EDbdHht5jY66eV2UaZBDOZ1I+2xv4+G4
+         78qvw/BWbJle7NI3/zviF1+cgKMrIDmGkkQ0hpJM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Haberland <sth@linux.ibm.com>,
-        Jan Hoeppner <hoeppner@linux.ibm.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.17 041/140] s390/dasd: fix data corruption for ESE devices
-Date:   Tue, 10 May 2022 15:07:11 +0200
-Message-Id: <20220510130742.793578666@linuxfoundation.org>
+        stable@vger.kernel.org, ChiYuan Huang <cy_huang@richtek.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.17 036/140] ASoC: rt9120: Correct the reg 0x09 size to one byte
+Date:   Tue, 10 May 2022 15:07:06 +0200
+Message-Id: <20220510130742.650010284@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -50,95 +49,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Haberland <sth@linux.ibm.com>
+From: ChiYuan Huang <cy_huang@richtek.com>
 
-commit 5b53a405e4658580e1faf7c217db3f55a21ba849 upstream.
+commit 87c18514bb8477563a61f50b4285da156296edc4 upstream.
 
-For ESE devices we get an error when accessing an unformatted track.
-The handling of this error will return zero data for read requests and
-format the track on demand before writing to it. To do this the code needs
-to distinguish between read and write requests. This is done with data from
-the blocklayer request. A pointer to the blocklayer request is stored in
-the CQR.
+Correct the reg 0x09 size to one byte.
 
-If there is an error on the device an ERP request is built to do error
-recovery. While the ERP request is mostly a copy of the original CQR the
-pointer to the blocklayer request is not copied to not accidentally pass
-it back to the blocklayer without cleanup.
-
-This leads to the error that during ESE handling after an ERP request was
-built it is not possible to determine the IO direction. This leads to the
-formatting of a track for read requests which might in turn lead to data
-corruption.
-
-Fixes: 5e2b17e712cf ("s390/dasd: Add dynamic formatting support for ESE volumes")
-Cc: stable@vger.kernel.org # 5.3+
-Signed-off-by: Stefan Haberland <sth@linux.ibm.com>
-Reviewed-by: Jan Hoeppner <hoeppner@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220505141733.1989450-2-sth@linux.ibm.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/1650608810-3829-1-git-send-email-u0084500@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/s390/block/dasd.c      |    8 +++++++-
- drivers/s390/block/dasd_eckd.c |    2 +-
- drivers/s390/block/dasd_int.h  |   12 ++++++++++++
- 3 files changed, 20 insertions(+), 2 deletions(-)
+ sound/soc/codecs/rt9120.c |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/drivers/s390/block/dasd.c
-+++ b/drivers/s390/block/dasd.c
-@@ -1639,6 +1639,7 @@ void dasd_int_handler(struct ccw_device
- 	unsigned long now;
- 	int nrf_suppressed = 0;
- 	int fp_suppressed = 0;
-+	struct request *req;
- 	u8 *sense = NULL;
- 	int expires;
- 
-@@ -1739,7 +1740,12 @@ void dasd_int_handler(struct ccw_device
- 	}
- 
- 	if (dasd_ese_needs_format(cqr->block, irb)) {
--		if (rq_data_dir((struct request *)cqr->callback_data) == READ) {
-+		req = dasd_get_callback_data(cqr);
-+		if (!req) {
-+			cqr->status = DASD_CQR_ERROR;
-+			return;
-+		}
-+		if (rq_data_dir(req) == READ) {
- 			device->discipline->ese_read(cqr, irb);
- 			cqr->status = DASD_CQR_SUCCESS;
- 			cqr->stopclk = now;
---- a/drivers/s390/block/dasd_eckd.c
-+++ b/drivers/s390/block/dasd_eckd.c
-@@ -3145,7 +3145,7 @@ dasd_eckd_ese_format(struct dasd_device
- 	sector_t curr_trk;
- 	int rc;
- 
--	req = cqr->callback_data;
-+	req = dasd_get_callback_data(cqr);
- 	block = cqr->block;
- 	base = block->base;
- 	private = base->private;
---- a/drivers/s390/block/dasd_int.h
-+++ b/drivers/s390/block/dasd_int.h
-@@ -757,6 +757,18 @@ dasd_check_blocksize(int bsize)
- 	return 0;
- }
- 
-+/*
-+ * return the callback data of the original request in case there are
-+ * ERP requests build on top of it
-+ */
-+static inline void *dasd_get_callback_data(struct dasd_ccw_req *cqr)
-+{
-+	while (cqr->refers)
-+		cqr = cqr->refers;
-+
-+	return cqr->callback_data;
-+}
-+
- /* externals in dasd.c */
- #define DASD_PROFILE_OFF	 0
- #define DASD_PROFILE_ON 	 1
+--- a/sound/soc/codecs/rt9120.c
++++ b/sound/soc/codecs/rt9120.c
+@@ -341,7 +341,6 @@ static int rt9120_get_reg_size(unsigned
+ {
+ 	switch (reg) {
+ 	case 0x00:
+-	case 0x09:
+ 	case 0x20 ... 0x27:
+ 		return 2;
+ 	case 0x30 ... 0x3D:
 
 
