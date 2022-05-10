@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BC70C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B43CC4167E
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244972AbiEJN47 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:56:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45160 "EHLO
+        id S245023AbiEJN5E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:57:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245049AbiEJNi1 (ORCPT
+        with ESMTP id S245122AbiEJNid (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:38:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FBF57F23F;
-        Tue, 10 May 2022 06:26:58 -0700 (PDT)
+        Tue, 10 May 2022 09:38:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31F84245795;
+        Tue, 10 May 2022 06:27:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EE7561768;
-        Tue, 10 May 2022 13:26:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F1D2C385A6;
-        Tue, 10 May 2022 13:26:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B4304B81DA2;
+        Tue, 10 May 2022 13:27:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05924C385C2;
+        Tue, 10 May 2022 13:27:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189217;
-        bh=VPmGLYyoid+7Hr0o4liQyLBaeJin3XuWlLByWtnfuCo=;
+        s=korg; t=1652189230;
+        bh=3HnBQ7RhhvY/fdtAei+Bol5vyNmEEQsKf84c57Q1evE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hToUCWcjfllfiSV64+ehj9WEvv5kJipfGrpdjdwticKuXzT9TSQIRAH8aNhbcRSWi
-         fsGJvyifC0IppSw3LtxAjvoqfB8eT9lCqhbsrOQWjmcbpY1/8cyjEyfAK9pp6sLkuG
-         i4j3odVyme1HzCMQfznkfd8hG34UKzP7AmB+n6tM=
+        b=lT8MaNmPRWSqtFr4gX9tfvmriOGqFt4WfFCzW00oPBGfzH2RLRCi9+f66YE2/6xiL
+         YszKSHph94dRNSJyfELV5t1uS8QZJtRVi3BxMFg7aDSGfp3qUxB4raCcwV6VA8sVJ0
+         oz1qpN02JwBvOuwlq1eFQwZ4o9TrFZNzq20H8oRQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qiao Ma <mqaio@linux.alibaba.com>,
-        Xunlei Pang <xlpang@linux.alibaba.com>,
+        stable@vger.kernel.org,
+        Andy Gospodarek <andrew.gospodarek@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 50/70] hinic: fix bug of wq out of bound access
-Date:   Tue, 10 May 2022 15:08:09 +0200
-Message-Id: <20220510130734.326693325@linuxfoundation.org>
+Subject: [PATCH 5.10 53/70] bnxt_en: Fix unnecessary dropping of RX packets
+Date:   Tue, 10 May 2022 15:08:12 +0200
+Message-Id: <20220510130734.414249197@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
 References: <20220510130732.861729621@linuxfoundation.org>
@@ -49,48 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qiao Ma <mqaio@linux.alibaba.com>
+From: Michael Chan <michael.chan@broadcom.com>
 
-commit 52b2abef450a78e25d485ac61e32f4ce86a87701 upstream.
+commit 195af57914d15229186658ed26dab24b9ada4122 upstream.
 
-If wq has only one page, we need to check wqe rolling over page by
-compare end_idx and curr_idx, and then copy wqe to shadow wqe to
-avoid out of bound access.
-This work has been done in hinic_get_wqe, but missed for hinic_read_wqe.
-This patch fixes it, and removes unnecessary MASKED_WQE_IDX().
+In bnxt_poll_p5(), we first check cpr->has_more_work.  If it is true,
+we are in NAPI polling mode and we will call __bnxt_poll_cqs() to
+continue polling.  It is possible to exhanust the budget again when
+__bnxt_poll_cqs() returns.
 
-Fixes: 7dd29ee12865 ("hinic: add sriov feature support")
-Signed-off-by: Qiao Ma <mqaio@linux.alibaba.com>
-Reviewed-by: Xunlei Pang <xlpang@linux.alibaba.com>
-Link: https://lore.kernel.org/r/282817b0e1ae2e28fdf3ed8271a04e77f57bf42e.1651148587.git.mqaio@linux.alibaba.com
+We then enter the main while loop to check for new entries in the NQ.
+If we had previously exhausted the NAPI budget, we may call
+__bnxt_poll_work() to process an RX entry with zero budget.  This will
+cause packets to be dropped unnecessarily, thinking that we are in the
+netpoll path.  Fix it by breaking out of the while loop if we need
+to process an RX NQ entry with no budget left.  We will then exit
+NAPI and stay in polling mode.
+
+Fixes: 389a877a3b20 ("bnxt_en: Process the NQ under NAPI continuous polling.")
+Reviewed-by: Andy Gospodarek <andrew.gospodarek@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c
-@@ -771,7 +771,7 @@ struct hinic_hw_wqe *hinic_get_wqe(struc
- 	/* If we only have one page, still need to get shadown wqe when
- 	 * wqe rolling-over page
- 	 */
--	if (curr_pg != end_pg || MASKED_WQE_IDX(wq, end_prod_idx) < *prod_idx) {
-+	if (curr_pg != end_pg || end_prod_idx < *prod_idx) {
- 		void *shadow_addr = &wq->shadow_wqe[curr_pg * wq->max_wqe_size];
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -2575,6 +2575,10 @@ static int bnxt_poll_p5(struct napi_stru
+ 			u32 idx = le32_to_cpu(nqcmp->cq_handle_low);
+ 			struct bnxt_cp_ring_info *cpr2;
  
- 		copy_wqe_to_shadow(wq, shadow_addr, num_wqebbs, *prod_idx);
-@@ -841,7 +841,10 @@ struct hinic_hw_wqe *hinic_read_wqe(stru
- 
- 	*cons_idx = curr_cons_idx;
- 
--	if (curr_pg != end_pg) {
-+	/* If we only have one page, still need to get shadown wqe when
-+	 * wqe rolling-over page
-+	 */
-+	if (curr_pg != end_pg || end_cons_idx < curr_cons_idx) {
- 		void *shadow_addr = &wq->shadow_wqe[curr_pg * wq->max_wqe_size];
- 
- 		copy_wqe_to_shadow(wq, shadow_addr, num_wqebbs, *cons_idx);
++			/* No more budget for RX work */
++			if (budget && work_done >= budget && idx == BNXT_RX_HDL)
++				break;
++
+ 			cpr2 = cpr->cp_ring_arr[idx];
+ 			work_done += __bnxt_poll_work(bp, cpr2,
+ 						      budget - work_done);
 
 
