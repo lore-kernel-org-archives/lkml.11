@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD600C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:01:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28965C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:01:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244688AbiEJOEq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:04:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46960 "EHLO
+        id S244155AbiEJOE4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:04:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244823AbiEJNmK (ORCPT
+        with ESMTP id S244543AbiEJNl7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:42:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60265819A3;
-        Tue, 10 May 2022 06:30:36 -0700 (PDT)
+        Tue, 10 May 2022 09:41:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 579122C7A6B;
+        Tue, 10 May 2022 06:30:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 54E4E615C8;
-        Tue, 10 May 2022 13:30:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 648A2C385A6;
-        Tue, 10 May 2022 13:30:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5AE6F6181B;
+        Tue, 10 May 2022 13:30:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 640E2C385A6;
+        Tue, 10 May 2022 13:30:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189414;
-        bh=EjlviHrtXJMXgN9I+g+CCb6AQ//L9SQBZ6ZMZ93GDJM=;
+        s=korg; t=1652189408;
+        bh=L8p46TrX6saOs61n+6wrRr0KRxECWGPqTfJYH1OrAT0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0yqeC3/NvkcvKpdcUlH2avbpTOenDOwItHq8uep/MJJVHw6im8zQYS1OaEpw3sB63
-         7jeA6YoXVr6EHqqgjzZpzycT8r0e9e7j4MMRQVL2q6JWAFALSCByJFwlm0vGpXxSrh
-         uwQmU0R7B2VYwYMsAq/+nEZrxhXBe8RJAPK1eT7M=
+        b=yh5rsPaSdIBdkzP2UnuxQC1DmKm2QWzF/jSe1bdaneiO5Rt+rJ5rn/AXpOxn6ivA9
+         CbkYPmR04U4BvCBzzX+6JUXf0scMdRrwwtiy//cpIxAIm9mInbdv1J09EV+cB0ek2S
+         PEZ9D2fSWt8vcTVQBu7vXEflOzWXhT1cvpaZyLv8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.15 009/135] x86/fpu: Prevent FPU state corruption
-Date:   Tue, 10 May 2022 15:06:31 +0200
-Message-Id: <20220510130740.664230646@linuxfoundation.org>
+        stable@vger.kernel.org, Shawn Lin <shawn.lin@rock-chips.com>,
+        Luca Weiss <luca@z3ntu.xyz>,
+        Brian Norris <briannorris@chromium.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH 5.15 007/135] mmc: core: Set HS clock speed before sending HS CMD13
+Date:   Tue, 10 May 2022 15:06:29 +0200
+Message-Id: <20220510130740.607788689@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -49,140 +50,131 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Gleixner <tglx@linutronix.de>
+From: Brian Norris <briannorris@chromium.org>
 
-commit 59f5ede3bc0f00eb856425f636dab0c10feb06d8 upstream.
+commit 4bc31edebde51fcf8ad0794763b8679a7ecb5ec0 upstream.
 
-The FPU usage related to task FPU management is either protected by
-disabling interrupts (switch_to, return to user) or via fpregs_lock() which
-is a wrapper around local_bh_disable(). When kernel code wants to use the
-FPU then it has to check whether it is possible by calling irq_fpu_usable().
+Way back in commit 4f25580fb84d ("mmc: core: changes frequency to
+hs_max_dtr when selecting hs400es"), Rockchip engineers noticed that
+some eMMC don't respond to SEND_STATUS commands very reliably if they're
+still running at a low initial frequency. As mentioned in that commit,
+JESD84-B51 P49 suggests a sequence in which the host:
+1. sets HS_TIMING
+2. bumps the clock ("<= 52 MHz")
+3. sends further commands
 
-But the condition in irq_fpu_usable() is wrong. It allows FPU to be used
-when:
+It doesn't exactly require that we don't use a lower-than-52MHz
+frequency, but in practice, these eMMC don't like it.
 
-   !in_interrupt() || interrupted_user_mode() || interrupted_kernel_fpu_idle()
+The aforementioned commit tried to get that right for HS400ES, although
+it's unclear whether this ever truly worked as committed into mainline,
+as other changes/refactoring adjusted the sequence in conflicting ways:
 
-The latter is checking whether some other context already uses FPU in the
-kernel, but if that's not the case then it allows FPU to be used
-unconditionally even if the calling context interrupted a fpregs_lock()
-critical region. If that happens then the FPU state of the interrupted
-context becomes corrupted.
+08573eaf1a70 ("mmc: mmc: do not use CMD13 to get status after speed mode
+switch")
 
-Allow in kernel FPU usage only when no other context has in kernel FPU
-usage and either the calling context is not hard interrupt context or the
-hard interrupt did not interrupt a local bottomhalf disabled region.
+53e60650f74e ("mmc: core: Allow CMD13 polling when switching to HS mode
+for mmc")
 
-It's hard to find a proper Fixes tag as the condition was broken in one way
-or the other for a very long time and the eager/lazy FPU changes caused a
-lot of churn. Picked something remotely connected from the history.
+In any case, today we do step 3 before step 2. Let's fix that, and also
+apply the same logic to HS200/400, where this eMMC has problems too.
 
-This survived undetected for quite some time as FPU usage in interrupt
-context is rare, but the recent changes to the random code unearthed it at
-least on a kernel which had FPU debugging enabled. There is probably a
-higher rate of silent corruption as not all issues can be detected by the
-FPU debugging code. This will be addressed in a subsequent change.
+Resolves errors like this seen when booting some RK3399 Gru/Scarlet
+systems:
 
-Fixes: 5d2bd7009f30 ("x86, fpu: decouple non-lazy/eager fpu restore from xsave")
-Reported-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Tested-by: Filipe Manana <fdmanana@suse.com>
-Reviewed-by: Borislav Petkov <bp@suse.de>
+[    2.058881] mmc1: CQHCI version 5.10
+[    2.097545] mmc1: SDHCI controller on fe330000.mmc [fe330000.mmc] using ADMA
+[    2.209804] mmc1: mmc_select_hs400es failed, error -84
+[    2.215597] mmc1: error -84 whilst initialising MMC card
+[    2.417514] mmc1: mmc_select_hs400es failed, error -110
+[    2.423373] mmc1: error -110 whilst initialising MMC card
+[    2.605052] mmc1: mmc_select_hs400es failed, error -110
+[    2.617944] mmc1: error -110 whilst initialising MMC card
+[    2.835884] mmc1: mmc_select_hs400es failed, error -110
+[    2.841751] mmc1: error -110 whilst initialising MMC card
+
+Ealier versions of this patch bumped to 200MHz/HS200 speeds too early,
+which caused issues on, e.g., qcom-msm8974-fairphone-fp2. (Thanks for
+the report Luca!) After a second look, it appears that aligns with
+JESD84 / page 45 / table 28, so we need to keep to lower (HS / 52 MHz)
+rates first.
+
+Fixes: 08573eaf1a70 ("mmc: mmc: do not use CMD13 to get status after speed mode switch")
+Fixes: 53e60650f74e ("mmc: core: Allow CMD13 polling when switching to HS mode for mmc")
+Fixes: 4f25580fb84d ("mmc: core: changes frequency to hs_max_dtr when selecting hs400es")
+Cc: Shawn Lin <shawn.lin@rock-chips.com>
+Link: https://lore.kernel.org/linux-mmc/11962455.O9o76ZdvQC@g550jk/
+Reported-by: Luca Weiss <luca@z3ntu.xyz>
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Tested-by: Luca Weiss <luca@z3ntu.xyz>
 Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220501193102.588689270@linutronix.de
+Link: https://lore.kernel.org/r/20220422100824.v4.1.I484f4ee35609f78b932bd50feed639c29e64997e@changeid
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/fpu/core.c |   67 +++++++++++++++++----------------------------
- 1 file changed, 26 insertions(+), 41 deletions(-)
+ drivers/mmc/core/mmc.c |   23 +++++++++++++++++++----
+ 1 file changed, 19 insertions(+), 4 deletions(-)
 
---- a/arch/x86/kernel/fpu/core.c
-+++ b/arch/x86/kernel/fpu/core.c
-@@ -25,17 +25,7 @@
-  */
- union fpregs_state init_fpstate __ro_after_init;
+--- a/drivers/mmc/core/mmc.c
++++ b/drivers/mmc/core/mmc.c
+@@ -1381,13 +1381,17 @@ static int mmc_select_hs400es(struct mmc
+ 		goto out_err;
+ 	}
  
--/*
-- * Track whether the kernel is using the FPU state
-- * currently.
-- *
-- * This flag is used:
-- *
-- *   - by IRQ context code to potentially use the FPU
-- *     if it's unused.
-- *
-- *   - to debug kernel_fpu_begin()/end() correctness
-- */
-+/* Track in-kernel FPU usage */
- static DEFINE_PER_CPU(bool, in_kernel_fpu);
++	/*
++	 * Bump to HS timing and frequency. Some cards don't handle
++	 * SEND_STATUS reliably at the initial frequency.
++	 */
+ 	mmc_set_timing(host, MMC_TIMING_MMC_HS);
++	mmc_set_bus_speed(card);
++
+ 	err = mmc_switch_status(card, true);
+ 	if (err)
+ 		goto out_err;
  
- /*
-@@ -43,42 +33,37 @@ static DEFINE_PER_CPU(bool, in_kernel_fp
-  */
- DEFINE_PER_CPU(struct fpu *, fpu_fpregs_owner_ctx);
- 
--static bool kernel_fpu_disabled(void)
--{
--	return this_cpu_read(in_kernel_fpu);
--}
+-	mmc_set_clock(host, card->ext_csd.hs_max_dtr);
 -
--static bool interrupted_kernel_fpu_idle(void)
--{
--	return !kernel_fpu_disabled();
--}
--
--/*
-- * Were we in user mode (or vm86 mode) when we were
-- * interrupted?
-- *
-- * Doing kernel_fpu_begin/end() is ok if we are running
-- * in an interrupt context from user mode - we'll just
-- * save the FPU state as required.
-- */
--static bool interrupted_user_mode(void)
--{
--	struct pt_regs *regs = get_irq_regs();
--	return regs && user_mode(regs);
--}
--
- /*
-  * Can we use the FPU in kernel mode with the
-  * whole "kernel_fpu_begin/end()" sequence?
-- *
-- * It's always ok in process context (ie "not interrupt")
-- * but it is sometimes ok even from an irq.
-  */
- bool irq_fpu_usable(void)
+ 	/* Switch card to DDR with strobe bit */
+ 	val = EXT_CSD_DDR_BUS_WIDTH_8 | EXT_CSD_BUS_WIDTH_STROBE;
+ 	err = mmc_switch(card, EXT_CSD_CMD_SET_NORMAL,
+@@ -1445,7 +1449,7 @@ out_err:
+ static int mmc_select_hs200(struct mmc_card *card)
  {
--	return !in_interrupt() ||
--		interrupted_user_mode() ||
--		interrupted_kernel_fpu_idle();
-+	if (WARN_ON_ONCE(in_nmi()))
-+		return false;
-+
-+	/* In kernel FPU usage already active? */
-+	if (this_cpu_read(in_kernel_fpu))
-+		return false;
-+
-+	/*
-+	 * When not in NMI or hard interrupt context, FPU can be used in:
-+	 *
-+	 * - Task context except from within fpregs_lock()'ed critical
-+	 *   regions.
-+	 *
-+	 * - Soft interrupt processing context which cannot happen
-+	 *   while in a fpregs_lock()'ed critical region.
-+	 */
-+	if (!in_hardirq())
-+		return true;
-+
-+	/*
-+	 * In hard interrupt context it's safe when soft interrupts
-+	 * are enabled, which means the interrupt did not hit in
-+	 * a fpregs_lock()'ed critical region.
-+	 */
-+	return !softirq_count();
- }
- EXPORT_SYMBOL(irq_fpu_usable);
+ 	struct mmc_host *host = card->host;
+-	unsigned int old_timing, old_signal_voltage;
++	unsigned int old_timing, old_signal_voltage, old_clock;
+ 	int err = -EINVAL;
+ 	u8 val;
  
+@@ -1476,8 +1480,17 @@ static int mmc_select_hs200(struct mmc_c
+ 				   false, true, MMC_CMD_RETRIES);
+ 		if (err)
+ 			goto err;
++
++		/*
++		 * Bump to HS timing and frequency. Some cards don't handle
++		 * SEND_STATUS reliably at the initial frequency.
++		 * NB: We can't move to full (HS200) speeds until after we've
++		 * successfully switched over.
++		 */
+ 		old_timing = host->ios.timing;
++		old_clock = host->ios.clock;
+ 		mmc_set_timing(host, MMC_TIMING_MMC_HS200);
++		mmc_set_clock(card->host, card->ext_csd.hs_max_dtr);
+ 
+ 		/*
+ 		 * For HS200, CRC errors are not a reliable way to know the
+@@ -1490,8 +1503,10 @@ static int mmc_select_hs200(struct mmc_c
+ 		 * mmc_select_timing() assumes timing has not changed if
+ 		 * it is a switch error.
+ 		 */
+-		if (err == -EBADMSG)
++		if (err == -EBADMSG) {
++			mmc_set_clock(host, old_clock);
+ 			mmc_set_timing(host, old_timing);
++		}
+ 	}
+ err:
+ 	if (err) {
 
 
