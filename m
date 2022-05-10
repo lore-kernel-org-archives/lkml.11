@@ -2,155 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 461C6C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:06:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3856FC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:07:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240652AbiEJLKs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 07:10:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51692 "EHLO
+        id S239859AbiEJLLh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 07:11:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233297AbiEJLKp (ORCPT
+        with ESMTP id S240804AbiEJLLd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 07:10:45 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97F7753B43;
-        Tue, 10 May 2022 04:06:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1652180808; x=1683716808;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=WZ+KihdBIA9Ny1u9rrgyetEqOc7+kDgs+95xTy1MvPg=;
-  b=y2PWjp6czOQYvcVnuPUKbMtyEdeeuPzgJ1VTf9OcWyWbpXIUugbEw9xF
-   3pSbPZ/gFm8hD9nniFOZcInZc8MB3aF6avNELqsV4Tcrl8QwsSo7XEBj2
-   j1dDUq3TtNSU1ji6lj1Q0C8MztEQT8HAtNfzW7QYu7pS0YZbCtMQizdyF
-   Y=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 10 May 2022 04:06:48 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 04:06:47 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 10 May 2022 04:06:47 -0700
-Received: from [10.79.43.230] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 10 May
- 2022 04:06:39 -0700
-Subject: Re: [PATCH v2 1/2] dt-bindings: remoteproc: qcom: Add SC7280 MSS
- bindings
-To:     Matthias Kaehlcke <mka@chromium.org>, Rob Herring <robh@kernel.org>
-CC:     <swboyd@chromium.org>, <linux-remoteproc@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <bjorn.andersson@linaro.org>,
-        <robh+dt@kernel.org>, <mathieu.poirier@linaro.org>,
-        <krzysztof.kozlowski@canonical.com>, <agross@kernel.org>,
-        <dianders@chromium.org>, <ohad@wizery.com>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <evgreen@chromium.org>
-References: <1652082798-5855-1-git-send-email-quic_sibis@quicinc.com>
- <1652082798-5855-2-git-send-email-quic_sibis@quicinc.com>
- <1652098858.589911.3576234.nullmailer@robh.at.kernel.org>
- <YnlpU+sCfO86+qc2@google.com>
-From:   Sibi Sankar <quic_sibis@quicinc.com>
-Message-ID: <765e57e3-a780-3553-62b6-b8713a21c0d8@quicinc.com>
-Date:   Tue, 10 May 2022 16:36:34 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-MIME-Version: 1.0
-In-Reply-To: <YnlpU+sCfO86+qc2@google.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+        Tue, 10 May 2022 07:11:33 -0400
+Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 546E9106365;
+        Tue, 10 May 2022 04:07:36 -0700 (PDT)
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
+        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
+        id 1noNi1-00BzVg-AK; Tue, 10 May 2022 21:07:18 +1000
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Tue, 10 May 2022 19:07:17 +0800
+From:   "Herbert Xu" <herbert@gondor.apana.org.au>
+Date:   Tue, 10 May 2022 19:07:17 +0800
+Subject: [RFC PATCH 5/7] crypto: skcipher - Add ctx helpers with DMA alignment
+References: <YnpGnsr4k7yVUR54@gondor.apana.org.au>
+To:     Catalin Marinas <catalin.marinas@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
+Message-Id: <E1noNi1-00BzVg-AK@fornost.hmeau.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey Matthias,
-Thanks for taking time to review the series.
+This patch adds helpers to access the skcipher context structure and
+request context structure with an added alignment for DMA access.
 
-I'll re-order the clock names in the bindings and fix the pdc_sync typo
-in the next re-spin. The interconnects missing warnings should go away
-since patch 2 adds it.
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+---
 
--Sibi
+ include/crypto/internal/skcipher.h |   28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-On 5/10/22 12:49 AM, Matthias Kaehlcke wrote:
-> On Mon, May 09, 2022 at 07:20:58AM -0500, Rob Herring wrote:
->> On Mon, 09 May 2022 13:23:17 +0530, Sibi Sankar wrote:
->>> Add MSS PIL loading bindings for SC7280 SoCs.
->>>
->>> Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
->>> ---
->>>   .../bindings/remoteproc/qcom,sc7280-mss-pil.yaml   | 261 +++++++++++++++++++++
->>>   1 file changed, 261 insertions(+)
->>>   create mode 100644 Documentation/devicetree/bindings/remoteproc/qcom,sc7280-mss-pil.yaml
->>>
->>
->> Running 'make dtbs_check' with the schema in this patch gives the
->> following warnings. Consider if they are expected or the schema is
->> incorrect. These may not be new warnings.
->>
->> Note that it is not yet a requirement to have 0 warnings for dtbs_check.
->> This will change in the future.
->>
->> Full log is available here: https://patchwork.ozlabs.org/patch/
-> 
-> The culprit is this snippet in arch/arm64/boot/dts/qcom/sc7280-chrome-common.dtsi:
-> 
-> /* Modem setup is different on Chrome setups than typical Qualcomm setup */
-> &remoteproc_mpss {
-> 	status = "okay";
-> 	compatible = "qcom,sc7280-mss-pil";
-> 	iommus = <&apps_smmu 0x124 0x0>, <&apps_smmu 0x488 0x7>;
-> 	memory-region = <&mba_mem>, <&mpss_mem>;
-> };
-> 
-> The original compatible string from sc7280.dtsi is 'qcom,sc7280-mpss-pas'.
-> 
->> remoteproc@4080000: clock-names:1: 'snoc_axi' was expected
->> 	arch/arm64/boot/dts/qcom/sc7280-crd.dtb
->> 	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r0.dtb
->> 	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dtb
->> 	arch/arm64/boot/dts/qcom/sc7280-idp2.dtb
->> 	arch/arm64/boot/dts/qcom/sc7280-idp.dtb
->>
->> remoteproc@4080000: clock-names:2: 'offline' was expected
->> 	arch/arm64/boot/dts/qcom/sc7280-crd.dtb
->> 	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r0.dtb
->> 	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dtb
->> 	arch/arm64/boot/dts/qcom/sc7280-idp2.dtb
->> 	arch/arm64/boot/dts/qcom/sc7280-idp.dtb
-> 
-> The fix probably consists in adding overrides for 'clocks' and
-> 'clock-names' to the extension in sc7280-chrome-common.dtsi, unless
-> we add a dedicated 'qcom,sc7280-mss-pil' node to sc7280.dtsi. This
-> can be done once the binding landed.
-> 
->> remoteproc@4080000: 'interconnects' is a required property
->> 	arch/arm64/boot/dts/qcom/sc7280-crd.dtb
->> 	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r0.dtb
->> 	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dtb
->> 	arch/arm64/boot/dts/qcom/sc7280-idp2.dtb
->> 	arch/arm64/boot/dts/qcom/sc7280-idp.dtb
-> 
-> This can be fixed by adding an 'interconnects' to either the
-> extension in sc7280-chrome-common.dtsi, or the original node if
-> 'qcom,sc7280-mpss-pas' uses the same interconnect.
-> 
->> remoteproc@4080000: reset-names:1: 'pdc_sync' was expected
->> 	arch/arm64/boot/dts/qcom/sc7280-crd.dtb
->> 	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r0.dtb
->> 	arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dtb
->> 	arch/arm64/boot/dts/qcom/sc7280-idp2.dtb
->> 	arch/arm64/boot/dts/qcom/sc7280-idp.dtb
->>
-> 
-> This could be fixed by aligning the reset names of the
-> 'qcom,sc7280-mpss-pas' and 'qcom,sc7280-mss-pil' bindings.
-> The reset is called 'pdc_reset' for 'mpss-pas', and 'pdc_sync'
-> for 'mpss-pil'.
-> 
+diff --git a/include/crypto/internal/skcipher.h b/include/crypto/internal/skcipher.h
+index a2339f80a6159..719822e42dc46 100644
+--- a/include/crypto/internal/skcipher.h
++++ b/include/crypto/internal/skcipher.h
+@@ -122,6 +122,15 @@ static inline void crypto_skcipher_set_reqsize(
+ 	skcipher->reqsize = reqsize;
+ }
+ 
++static inline void crypto_skcipher_set_reqsize_dma(
++	struct crypto_skcipher *skcipher, unsigned int reqsize)
++{
++#ifdef ARCH_DMA_MINALIGN
++	reqsize += ARCH_DMA_MINALIGN & ~(crypto_tfm_ctx_alignment() - 1);
++#endif
++	skcipher->reqsize = reqsize;
++}
++
+ int crypto_register_skcipher(struct skcipher_alg *alg);
+ void crypto_unregister_skcipher(struct skcipher_alg *alg);
+ int crypto_register_skciphers(struct skcipher_alg *algs, int count);
+@@ -151,11 +160,30 @@ static inline void *crypto_skcipher_ctx(struct crypto_skcipher *tfm)
+ 	return crypto_tfm_ctx(&tfm->base);
+ }
+ 
++static inline void *crypto_skcipher_ctx_dma(struct crypto_skcipher *tfm)
++{
++	return crypto_tfm_ctx_dma(&tfm->base);
++}
++
+ static inline void *skcipher_request_ctx(struct skcipher_request *req)
+ {
+ 	return req->__ctx;
+ }
+ 
++static inline void *skcipher_request_ctx_dma(struct skcipher_request *req)
++{
++	unsigned int align = 1;
++
++#ifdef ARCH_DMA_MINALIGN
++	align = ARCH_DMA_MINALIGN;
++#endif
++
++	if (align <= crypto_tfm_ctx_alignment())
++		align = 1;
++
++	return PTR_ALIGN(skcipher_request_ctx(req), align);
++}
++
+ static inline u32 skcipher_request_flags(struct skcipher_request *req)
+ {
+ 	return req->base.flags;
