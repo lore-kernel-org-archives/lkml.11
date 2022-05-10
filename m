@@ -2,159 +2,358 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2F30C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:43:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C70DEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:44:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347586AbiEJQrX (ORCPT
+        id S1345307AbiEJQsM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 12:47:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51272 "EHLO
+        Tue, 10 May 2022 12:48:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347610AbiEJQrO (ORCPT
+        with ESMTP id S1347617AbiEJQsG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 12:47:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E45B62CC8;
-        Tue, 10 May 2022 09:43:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FDD26183D;
-        Tue, 10 May 2022 16:43:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3C14C385A6;
-        Tue, 10 May 2022 16:43:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652200991;
-        bh=Osg1O0gfa6ZkJPjBpOrkM1rXaweWgHooysorOXbKftU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=SG253suakgSw/EN+cXtrkyjj6aWCkxwrbCbP7C0HSUz/KfL9A6Vx4aeAY6gHLL/zK
-         Ig/jhuTc7srNJMuXg8I3xGqrmiHxoSwZQiu5XNG+vcxoeaNuD8SwYUmAwdpg2PvtsX
-         MpPy2zHkZCbErrHZecpOuX2nCTX41ds2hoJA0idx7X7ROHLRuS93+5p7XfBG9vBJBD
-         +vkSNa3ypaT5L6QmF6BfBVCSIK9q3bhncdsZ5Yu4H/cJ+Yulisq7PiKnwg/z/cBrCR
-         mVqqxmHRCgXEPo2OqbB+8jN15fPu9j2moaT3HEQDubZBxY0v4EEMpEQZCjIxPT4y4b
-         YYOf7ALzDkFLw==
-Date:   Tue, 10 May 2022 11:43:05 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Mohamed Khalfella <mkhalfella@purestorage.com>
-Cc:     stable@vger.kernel.org, Meeta Saggi <msaggi@purestorage.com>,
-        Eric Badger <ebadger@purestorage.com>,
-        Russell Currey <ruscur@russell.cc>,
-        Oliver O'Halloran <oohall@gmail.com>,
-        Rajat Jain <rajatja@google.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "open list:PCI ENHANCED ERROR HANDLING (EEH) FOR POWERPC" 
-        <linuxppc-dev@lists.ozlabs.org>,
-        "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] PCI/AER: Iterate over error counters instead of error
- strings
-Message-ID: <20220510164305.GA678149@bhelgaas>
+        Tue, 10 May 2022 12:48:06 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28DCA1F1C8D
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 09:44:07 -0700 (PDT)
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24AFMNA8004391;
+        Tue, 10 May 2022 18:43:57 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=igsvIQJj5aVKxBJlXrl6+kR6fXPifKzeu+1UwrP9zdU=;
+ b=rXtNkzCKQU7TLdk9NtHaf4bTC23wioWBVbSWccr2AjIwpCzCGCluLIkNgmkCIJyM34Kh
+ 9b6cO3UIDtrizs0wORYt4HXpvl1cSEzllf3w4DoRa7Y49DSIATLqCdHBVBls0BixmYcq
+ 1uEmmXhORCIfbqhQip4JYeAxyYAPaBPNPZc3mWcAlG4wvylOr9bbmQ/8voctPZFgr5wj
+ wkLV56i9r155JTvq+4Sy8zxVu1ca85+En0+auws4CW4ufLDXOuJx5Ib2gDbcyzX0crFq
+ 3vQM1vTcWIdl1vdPRV5hVthJec3rzCGPIofCplpdhxUEVPhdtkBMjwisVoRsB3Z2hkQP Cw== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3fwfngkx8k-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 10 May 2022 18:43:57 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 608DC10002A;
+        Tue, 10 May 2022 18:43:56 +0200 (CEST)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 58DE7231530;
+        Tue, 10 May 2022 18:43:56 +0200 (CEST)
+Received: from localhost (10.75.127.51) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Tue, 10 May 2022 18:43:55
+ +0200
+From:   Antonio Borneo <antonio.borneo@foss.st.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>
+CC:     Antonio Borneo <antonio.borneo@foss.st.com>,
+        Ludovic Barre <ludovic.barre@foss.st.com>,
+        Loic Pallardy <loic.pallardy@foss.st.com>,
+        Pascal Paillet <p.paillet@foss.st.com>
+Subject: [PATCH 6/7] irqchip/stm32-exti: read event trigger type from event_trg register
+Date:   Tue, 10 May 2022 18:41:22 +0200
+Message-ID: <20220510164123.557921-6-antonio.borneo@foss.st.com>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220510164123.557921-1-antonio.borneo@foss.st.com>
+References: <20220510164123.557921-1-antonio.borneo@foss.st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220509181441.31884-1-mkhalfella@purestorage.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.51]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-10_04,2022-05-10_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[+cc Rajat]
+The flag reporting whether an event is 'direct' or 'configurable'
+is available in the read-only registers EVENT_TRG.
 
-On Mon, May 09, 2022 at 06:14:41PM +0000, Mohamed Khalfella wrote:
-> PCI AER stats counters sysfs attributes need to iterate over
-> stats counters instead of stats names. 
+Drop this redundant information from the struct stm32_desc_irq and
+use the proper bit from EVENT_TRG register.
 
-Thanks for catching this; it definitely looks like a real issue!  I
-guess you're probably seeing junk in the sysfs files?
+Signed-off-by: Antonio Borneo <antonio.borneo@foss.st.com>
+---
+ drivers/irqchip/irq-stm32-exti.c | 180 ++++++++++++++++---------------
+ 1 file changed, 96 insertions(+), 84 deletions(-)
 
-It would be helpful to reviewers if this said *why* we need to iterate
-over the counters instead of the names.  I think the problem is that
-the current code reads past the end of the stats counters.
+diff --git a/drivers/irqchip/irq-stm32-exti.c b/drivers/irqchip/irq-stm32-exti.c
+index 509a4a96a99b..2e00e78bf61e 100644
+--- a/drivers/irqchip/irq-stm32-exti.c
++++ b/drivers/irqchip/irq-stm32-exti.c
+@@ -34,6 +34,7 @@ struct stm32_exti_bank {
+ 	u32 swier_ofst;
+ 	u32 rpr_ofst;
+ 	u32 fpr_ofst;
++	u32 trg_ofst;
+ };
+ 
+ #define UNDEF_REG ~0
+@@ -41,7 +42,6 @@ struct stm32_exti_bank {
+ struct stm32_desc_irq {
+ 	u32 exti;
+ 	u32 irq_parent;
+-	struct irq_chip *chip;
+ };
+ 
+ struct stm32_exti_drv_data {
+@@ -78,6 +78,7 @@ static const struct stm32_exti_bank stm32f4xx_exti_b1 = {
+ 	.swier_ofst	= 0x10,
+ 	.rpr_ofst	= 0x14,
+ 	.fpr_ofst	= UNDEF_REG,
++	.trg_ofst	= UNDEF_REG,
+ };
+ 
+ static const struct stm32_exti_bank *stm32f4xx_exti_banks[] = {
+@@ -97,6 +98,7 @@ static const struct stm32_exti_bank stm32h7xx_exti_b1 = {
+ 	.swier_ofst	= 0x08,
+ 	.rpr_ofst	= 0x88,
+ 	.fpr_ofst	= UNDEF_REG,
++	.trg_ofst	= UNDEF_REG,
+ };
+ 
+ static const struct stm32_exti_bank stm32h7xx_exti_b2 = {
+@@ -107,6 +109,7 @@ static const struct stm32_exti_bank stm32h7xx_exti_b2 = {
+ 	.swier_ofst	= 0x28,
+ 	.rpr_ofst	= 0x98,
+ 	.fpr_ofst	= UNDEF_REG,
++	.trg_ofst	= UNDEF_REG,
+ };
+ 
+ static const struct stm32_exti_bank stm32h7xx_exti_b3 = {
+@@ -117,6 +120,7 @@ static const struct stm32_exti_bank stm32h7xx_exti_b3 = {
+ 	.swier_ofst	= 0x48,
+ 	.rpr_ofst	= 0xA8,
+ 	.fpr_ofst	= UNDEF_REG,
++	.trg_ofst	= UNDEF_REG,
+ };
+ 
+ static const struct stm32_exti_bank *stm32h7xx_exti_banks[] = {
+@@ -137,6 +141,7 @@ static const struct stm32_exti_bank stm32mp1_exti_b1 = {
+ 	.swier_ofst	= 0x08,
+ 	.rpr_ofst	= 0x0C,
+ 	.fpr_ofst	= 0x10,
++	.trg_ofst	= 0x3EC,
+ };
+ 
+ static const struct stm32_exti_bank stm32mp1_exti_b2 = {
+@@ -146,6 +151,7 @@ static const struct stm32_exti_bank stm32mp1_exti_b2 = {
+ 	.swier_ofst	= 0x28,
+ 	.rpr_ofst	= 0x2C,
+ 	.fpr_ofst	= 0x30,
++	.trg_ofst	= 0x3E8,
+ };
+ 
+ static const struct stm32_exti_bank stm32mp1_exti_b3 = {
+@@ -155,6 +161,7 @@ static const struct stm32_exti_bank stm32mp1_exti_b3 = {
+ 	.swier_ofst	= 0x48,
+ 	.rpr_ofst	= 0x4C,
+ 	.fpr_ofst	= 0x50,
++	.trg_ofst	= 0x3E4,
+ };
+ 
+ static const struct stm32_exti_bank *stm32mp1_exti_banks[] = {
+@@ -167,90 +174,90 @@ static struct irq_chip stm32_exti_h_chip;
+ static struct irq_chip stm32_exti_h_chip_direct;
+ 
+ static const struct stm32_desc_irq stm32mp1_desc_irq[] = {
+-	{ .exti = 0, .irq_parent = 6, .chip = &stm32_exti_h_chip },
+-	{ .exti = 1, .irq_parent = 7, .chip = &stm32_exti_h_chip },
+-	{ .exti = 2, .irq_parent = 8, .chip = &stm32_exti_h_chip },
+-	{ .exti = 3, .irq_parent = 9, .chip = &stm32_exti_h_chip },
+-	{ .exti = 4, .irq_parent = 10, .chip = &stm32_exti_h_chip },
+-	{ .exti = 5, .irq_parent = 23, .chip = &stm32_exti_h_chip },
+-	{ .exti = 6, .irq_parent = 64, .chip = &stm32_exti_h_chip },
+-	{ .exti = 7, .irq_parent = 65, .chip = &stm32_exti_h_chip },
+-	{ .exti = 8, .irq_parent = 66, .chip = &stm32_exti_h_chip },
+-	{ .exti = 9, .irq_parent = 67, .chip = &stm32_exti_h_chip },
+-	{ .exti = 10, .irq_parent = 40, .chip = &stm32_exti_h_chip },
+-	{ .exti = 11, .irq_parent = 42, .chip = &stm32_exti_h_chip },
+-	{ .exti = 12, .irq_parent = 76, .chip = &stm32_exti_h_chip },
+-	{ .exti = 13, .irq_parent = 77, .chip = &stm32_exti_h_chip },
+-	{ .exti = 14, .irq_parent = 121, .chip = &stm32_exti_h_chip },
+-	{ .exti = 15, .irq_parent = 127, .chip = &stm32_exti_h_chip },
+-	{ .exti = 16, .irq_parent = 1, .chip = &stm32_exti_h_chip },
+-	{ .exti = 19, .irq_parent = 3, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 21, .irq_parent = 31, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 22, .irq_parent = 33, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 23, .irq_parent = 72, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 24, .irq_parent = 95, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 25, .irq_parent = 107, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 26, .irq_parent = 37, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 27, .irq_parent = 38, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 28, .irq_parent = 39, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 29, .irq_parent = 71, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 30, .irq_parent = 52, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 31, .irq_parent = 53, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 32, .irq_parent = 82, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 33, .irq_parent = 83, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 47, .irq_parent = 93, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 48, .irq_parent = 138, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 50, .irq_parent = 139, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 52, .irq_parent = 140, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 53, .irq_parent = 141, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 54, .irq_parent = 135, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 61, .irq_parent = 100, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 65, .irq_parent = 144, .chip = &stm32_exti_h_chip },
+-	{ .exti = 68, .irq_parent = 143, .chip = &stm32_exti_h_chip },
+-	{ .exti = 70, .irq_parent = 62, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 73, .irq_parent = 129, .chip = &stm32_exti_h_chip },
++	{ .exti = 0, .irq_parent = 6 },
++	{ .exti = 1, .irq_parent = 7 },
++	{ .exti = 2, .irq_parent = 8 },
++	{ .exti = 3, .irq_parent = 9 },
++	{ .exti = 4, .irq_parent = 10 },
++	{ .exti = 5, .irq_parent = 23 },
++	{ .exti = 6, .irq_parent = 64 },
++	{ .exti = 7, .irq_parent = 65 },
++	{ .exti = 8, .irq_parent = 66 },
++	{ .exti = 9, .irq_parent = 67 },
++	{ .exti = 10, .irq_parent = 40 },
++	{ .exti = 11, .irq_parent = 42 },
++	{ .exti = 12, .irq_parent = 76 },
++	{ .exti = 13, .irq_parent = 77 },
++	{ .exti = 14, .irq_parent = 121 },
++	{ .exti = 15, .irq_parent = 127 },
++	{ .exti = 16, .irq_parent = 1 },
++	{ .exti = 19, .irq_parent = 3 },
++	{ .exti = 21, .irq_parent = 31 },
++	{ .exti = 22, .irq_parent = 33 },
++	{ .exti = 23, .irq_parent = 72 },
++	{ .exti = 24, .irq_parent = 95 },
++	{ .exti = 25, .irq_parent = 107 },
++	{ .exti = 26, .irq_parent = 37 },
++	{ .exti = 27, .irq_parent = 38 },
++	{ .exti = 28, .irq_parent = 39 },
++	{ .exti = 29, .irq_parent = 71 },
++	{ .exti = 30, .irq_parent = 52 },
++	{ .exti = 31, .irq_parent = 53 },
++	{ .exti = 32, .irq_parent = 82 },
++	{ .exti = 33, .irq_parent = 83 },
++	{ .exti = 47, .irq_parent = 93 },
++	{ .exti = 48, .irq_parent = 138 },
++	{ .exti = 50, .irq_parent = 139 },
++	{ .exti = 52, .irq_parent = 140 },
++	{ .exti = 53, .irq_parent = 141 },
++	{ .exti = 54, .irq_parent = 135 },
++	{ .exti = 61, .irq_parent = 100 },
++	{ .exti = 65, .irq_parent = 144 },
++	{ .exti = 68, .irq_parent = 143 },
++	{ .exti = 70, .irq_parent = 62 },
++	{ .exti = 73, .irq_parent = 129 },
+ };
+ 
+ static const struct stm32_desc_irq stm32mp13_desc_irq[] = {
+-	{ .exti = 0, .irq_parent = 6, .chip = &stm32_exti_h_chip },
+-	{ .exti = 1, .irq_parent = 7, .chip = &stm32_exti_h_chip },
+-	{ .exti = 2, .irq_parent = 8, .chip = &stm32_exti_h_chip },
+-	{ .exti = 3, .irq_parent = 9, .chip = &stm32_exti_h_chip },
+-	{ .exti = 4, .irq_parent = 10, .chip = &stm32_exti_h_chip },
+-	{ .exti = 5, .irq_parent = 24, .chip = &stm32_exti_h_chip },
+-	{ .exti = 6, .irq_parent = 65, .chip = &stm32_exti_h_chip },
+-	{ .exti = 7, .irq_parent = 66, .chip = &stm32_exti_h_chip },
+-	{ .exti = 8, .irq_parent = 67, .chip = &stm32_exti_h_chip },
+-	{ .exti = 9, .irq_parent = 68, .chip = &stm32_exti_h_chip },
+-	{ .exti = 10, .irq_parent = 41, .chip = &stm32_exti_h_chip },
+-	{ .exti = 11, .irq_parent = 43, .chip = &stm32_exti_h_chip },
+-	{ .exti = 12, .irq_parent = 77, .chip = &stm32_exti_h_chip },
+-	{ .exti = 13, .irq_parent = 78, .chip = &stm32_exti_h_chip },
+-	{ .exti = 14, .irq_parent = 106, .chip = &stm32_exti_h_chip },
+-	{ .exti = 15, .irq_parent = 109, .chip = &stm32_exti_h_chip },
+-	{ .exti = 16, .irq_parent = 1, .chip = &stm32_exti_h_chip },
+-	{ .exti = 19, .irq_parent = 3, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 21, .irq_parent = 32, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 22, .irq_parent = 34, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 23, .irq_parent = 73, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 24, .irq_parent = 93, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 25, .irq_parent = 114, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 26, .irq_parent = 38, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 27, .irq_parent = 39, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 28, .irq_parent = 40, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 29, .irq_parent = 72, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 30, .irq_parent = 53, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 31, .irq_parent = 54, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 32, .irq_parent = 83, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 33, .irq_parent = 84, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 44, .irq_parent = 96, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 47, .irq_parent = 92, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 48, .irq_parent = 116, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 50, .irq_parent = 117, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 52, .irq_parent = 118, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 53, .irq_parent = 119, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 68, .irq_parent = 63, .chip = &stm32_exti_h_chip_direct },
+-	{ .exti = 70, .irq_parent = 98, .chip = &stm32_exti_h_chip_direct },
++	{ .exti = 0, .irq_parent = 6 },
++	{ .exti = 1, .irq_parent = 7 },
++	{ .exti = 2, .irq_parent = 8 },
++	{ .exti = 3, .irq_parent = 9 },
++	{ .exti = 4, .irq_parent = 10 },
++	{ .exti = 5, .irq_parent = 24 },
++	{ .exti = 6, .irq_parent = 65 },
++	{ .exti = 7, .irq_parent = 66 },
++	{ .exti = 8, .irq_parent = 67 },
++	{ .exti = 9, .irq_parent = 68 },
++	{ .exti = 10, .irq_parent = 41 },
++	{ .exti = 11, .irq_parent = 43 },
++	{ .exti = 12, .irq_parent = 77 },
++	{ .exti = 13, .irq_parent = 78 },
++	{ .exti = 14, .irq_parent = 106 },
++	{ .exti = 15, .irq_parent = 109 },
++	{ .exti = 16, .irq_parent = 1 },
++	{ .exti = 19, .irq_parent = 3 },
++	{ .exti = 21, .irq_parent = 32 },
++	{ .exti = 22, .irq_parent = 34 },
++	{ .exti = 23, .irq_parent = 73 },
++	{ .exti = 24, .irq_parent = 93 },
++	{ .exti = 25, .irq_parent = 114 },
++	{ .exti = 26, .irq_parent = 38 },
++	{ .exti = 27, .irq_parent = 39 },
++	{ .exti = 28, .irq_parent = 40 },
++	{ .exti = 29, .irq_parent = 72 },
++	{ .exti = 30, .irq_parent = 53 },
++	{ .exti = 31, .irq_parent = 54 },
++	{ .exti = 32, .irq_parent = 83 },
++	{ .exti = 33, .irq_parent = 84 },
++	{ .exti = 44, .irq_parent = 96 },
++	{ .exti = 47, .irq_parent = 92 },
++	{ .exti = 48, .irq_parent = 116 },
++	{ .exti = 50, .irq_parent = 117 },
++	{ .exti = 52, .irq_parent = 118 },
++	{ .exti = 53, .irq_parent = 119 },
++	{ .exti = 68, .irq_parent = 63 },
++	{ .exti = 70, .irq_parent = 98 },
+ };
+ 
+ static const struct stm32_exti_drv_data stm32mp1_drv_data = {
+@@ -722,6 +729,8 @@ static int stm32_exti_h_domain_alloc(struct irq_domain *dm,
+ 	struct irq_fwspec p_fwspec;
+ 	irq_hw_number_t hwirq;
+ 	int bank;
++	u32 event_trg;
++	struct irq_chip *chip;
+ 
+ 	hwirq = fwspec->param[0];
+ 	if (hwirq >= host_data->drv_data->bank_nr * IRQS_PER_BANK)
+@@ -735,8 +744,11 @@ static int stm32_exti_h_domain_alloc(struct irq_domain *dm,
+ 	if (!desc)
+ 		return -EINVAL;
+ 
+-	irq_domain_set_hwirq_and_chip(dm, virq, hwirq, desc->chip,
+-				      chip_data);
++	event_trg = readl_relaxed(host_data->base + chip_data->reg_bank->trg_ofst);
++	chip = (event_trg & BIT(hwirq % IRQS_PER_BANK)) ?
++	       &stm32_exti_h_chip : &stm32_exti_h_chip_direct;
++
++	irq_domain_set_hwirq_and_chip(dm, virq, hwirq, chip, chip_data);
+ 	if (desc->irq_parent) {
+ 		p_fwspec.fwnode = dm->parent->fwnode;
+ 		p_fwspec.param_count = 3;
+-- 
+2.36.0
 
-There are parallel arrays here:
-
-  #define AER_MAX_TYPEOF_COR_ERRS         16
-  #define AER_MAX_TYPEOF_UNCOR_ERRS       27
-
-  aer_correctable_error_string[32]                               # 32
-  pdev->aer_stats->dev_cor_errs[AER_MAX_TYPEOF_COR_ERRS]         # 16
-  aer_uncorrectable_error_string[32]                             # 32
-  pdev->aer_stats->dev_fatal_errs[AER_MAX_TYPEOF_UNCOR_ERRS]     # 27
-  pdev->aer_stats->dev_nonfatal_errs[AER_MAX_TYPEOF_UNCOR_ERRS]  # 27
-
-And here's the current use of them:
-
-  #define aer_stats_dev_attr(..., stats_array, strings_array, ...)
-    for (i = 0; i < ARRAY_SIZE(strings_array); i++) {
-      if (strings_array[i])
-	sysfs_emit_at(..., strings_array[i], stats[i]);          (1)
-      else if (stats[i])
-	sysfs_emit_at(..., stats[i]);                            (2)
-
-  aer_stats_dev_attr(..., dev_cor_errs, aer_correctable_error_string,
-  aer_stats_dev_attr(..., dev_fatal_errs, aer_uncorrectable_error_string,
-  aer_stats_dev_attr(..., dev_nonfatal_errs, aer_uncorrectable_error_string,
-
-The current loop iterates over 0..31, which is safe at (1) because the
-non-NULL strings are at aer_correctable_error_string[0..15] and
-aer_uncorrectable_error_string[0..26].
-
-But it is unsafe at (2) because it references dev_cor_errs[16..31],
-dev_fatal_errs[27..31], and dev_nonfatal_errs[27..31], which are past
-the end of the arrays.
-
-> Also, added a build time check to make sure all counters have
-> entries in strings array.
->
-> Fixes: 0678e3109a3c ("PCI/AER: Simplify __aer_print_error()")
-
-Yep, I blew it there.  Rajat did it correctly when he added this with
-81aa5206f9a7 ("PCI/AER: Add sysfs attributes to provide AER stats and
-breakdown"), and I broke it by extending the string arrays to 32
-entries.
-
-> Cc: stable@vger.kernel.org
-> Reported-by: Meeta Saggi <msaggi@purestorage.com>
-> Signed-off-by: Mohamed Khalfella <mkhalfella@purestorage.com>
-> Reviewed-by: Meeta Saggi <msaggi@purestorage.com>
-> Reviewed-by: Eric Badger <ebadger@purestorage.com>
-> ---
->  drivers/pci/pcie/aer.c | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/pci/pcie/aer.c b/drivers/pci/pcie/aer.c
-> index 9fa1f97e5b27..ce99a6d44786 100644
-> --- a/drivers/pci/pcie/aer.c
-> +++ b/drivers/pci/pcie/aer.c
-> @@ -533,7 +533,7 @@ static const char *aer_agent_string[] = {
->  	u64 *stats = pdev->aer_stats->stats_array;			\
->  	size_t len = 0;							\
->  									\
-> -	for (i = 0; i < ARRAY_SIZE(strings_array); i++) {		\
-> +	for (i = 0; i < ARRAY_SIZE(pdev->aer_stats->stats_array); i++) {\
->  		if (strings_array[i])					\
->  			len += sysfs_emit_at(buf, len, "%s %llu\n",	\
->  					     strings_array[i],		\
-
-I think maybe we should populate the currently NULL entries in the
-string[] arrays and simplify the code here, e.g.,
-
-  static const char *aer_correctable_error_string[] = {
-        "RxErr",                        /* Bit Position 0       */
-        "dev_cor_errs_bit[1]",
-	...
-
-  if (stats[i])
-    len += sysfs_emit_at(buf, len, "%s %llu\n", strings_array[i], stats[i]);
-
-It's a little more data space, but easier to verify.
-
-> @@ -1342,6 +1342,11 @@ static int aer_probe(struct pcie_device *dev)
->  	struct device *device = &dev->device;
->  	struct pci_dev *port = dev->port;
->  
-> +	BUILD_BUG_ON(ARRAY_SIZE(aer_correctable_error_string) <
-> +		     AER_MAX_TYPEOF_COR_ERRS);
-> +	BUILD_BUG_ON(ARRAY_SIZE(aer_uncorrectable_error_string) <
-> +		     AER_MAX_TYPEOF_UNCOR_ERRS);
-
-And make these check for "!=" instead of "<".
