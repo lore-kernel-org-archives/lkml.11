@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBE22C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:00:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE09FC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:00:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242795AbiEJOED (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:04:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47144 "EHLO
+        id S242277AbiEJOEL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:04:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244614AbiEJNmC (ORCPT
+        with ESMTP id S244687AbiEJNmF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:42:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 341EA2CCD16;
-        Tue, 10 May 2022 06:30:18 -0700 (PDT)
+        Tue, 10 May 2022 09:42:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6926663E3;
+        Tue, 10 May 2022 06:30:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2C252B81DA0;
-        Tue, 10 May 2022 13:29:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E3FAC385D8;
-        Tue, 10 May 2022 13:29:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 56ED861763;
+        Tue, 10 May 2022 13:30:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D193C385A6;
+        Tue, 10 May 2022 13:30:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189396;
-        bh=sYcx22CNtW7hSY2tI7NBOUw3XnIwaKgfLUJasIi6tks=;
+        s=korg; t=1652189423;
+        bh=Y5enQchBqWtPw3dWMTz3w6z5H0ksi/HU71mEpy8zCqA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ykz2cUcu90pKcArr8GDvsCanf9Xq2jIQPXhUJ5uTtzotfxEbFhTbWr3wnf4KjJaw7
-         nknrHY1ElYdKR0VFJ2CbOIC9edjYgTYgxlD3aIIS7sEuN7eAd4x2Lo1Jf39ucW9U+0
-         v0Eqbm9IcpaPO7vMptHWzu0Rhb5WR5vIz2SmamHE=
+        b=oj8NDw556+FfubpMIcTwT6U0t7dE4Ub+3LORegS/xVpMueWTUg07t53D4np+HeFea
+         g17cp5j9cJSM4l0bWOsUtHjHzZ4rGk7GCrZUDEDMxvpQzb7FL8sQDKHJicVQj0TGqV
+         2uEoSSmOoXbz/SUtp86z2eibCNTHqbB4zOIrLE2w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andreas Larsson <andreas@gaisler.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.15 036/135] can: grcan: only use the NAPI poll budget for RX
-Date:   Tue, 10 May 2022 15:06:58 +0200
-Message-Id: <20220510130741.439388975@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Sven Peter <sven@svenpeter.dev>, Joerg Roedel <jroedel@suse.de>
+Subject: [PATCH 5.15 047/135] iommu/dart: check return value after calling platform_get_resource()
+Date:   Tue, 10 May 2022 15:07:09 +0200
+Message-Id: <20220510130741.748749921@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -48,87 +48,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andreas Larsson <andreas@gaisler.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-commit 2873d4d52f7c52d60b316ba6c47bd7122b5a9861 upstream.
+commit a15932f4377062364d22096afe25bc579134a1c3 upstream.
 
-The previous split budget between TX and RX made it return not using
-the entire budget but at the same time not having calling called
-napi_complete. This sometimes led to the poll to not be called, and at
-the same time having TX and RX interrupts disabled resulting in the
-driver getting stuck.
+It will cause null-ptr-deref in resource_size(), if platform_get_resource()
+returns NULL, move calling resource_size() after devm_ioremap_resource() that
+will check 'res' to avoid null-ptr-deref.
+And use devm_platform_get_and_ioremap_resource() to simplify code.
 
-Fixes: 6cec9b07fe6a ("can: grcan: Add device driver for GRCAN and GRHCAN cores")
-Link: https://lore.kernel.org/all/20220429084656.29788-4-andreas@gaisler.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Andreas Larsson <andreas@gaisler.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: 46d1fb072e76 ("iommu/dart: Add DART iommu driver")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reviewed-by: Sven Peter <sven@svenpeter.dev>
+Link: https://lore.kernel.org/r/20220425090826.2532165-1-yangyingliang@huawei.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/grcan.c |   22 +++++++---------------
- 1 file changed, 7 insertions(+), 15 deletions(-)
+ drivers/iommu/apple-dart.c |    9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
---- a/drivers/net/can/grcan.c
-+++ b/drivers/net/can/grcan.c
-@@ -1137,7 +1137,7 @@ static int grcan_close(struct net_device
- 	return 0;
- }
+--- a/drivers/iommu/apple-dart.c
++++ b/drivers/iommu/apple-dart.c
+@@ -832,16 +832,15 @@ static int apple_dart_probe(struct platf
+ 	dart->dev = dev;
+ 	spin_lock_init(&dart->lock);
  
--static int grcan_transmit_catch_up(struct net_device *dev, int budget)
-+static void grcan_transmit_catch_up(struct net_device *dev)
- {
- 	struct grcan_priv *priv = netdev_priv(dev);
- 	unsigned long flags;
-@@ -1145,7 +1145,7 @@ static int grcan_transmit_catch_up(struc
- 
- 	spin_lock_irqsave(&priv->lock, flags);
- 
--	work_done = catch_up_echo_skb(dev, budget, true);
-+	work_done = catch_up_echo_skb(dev, -1, true);
- 	if (work_done) {
- 		if (!priv->resetting && !priv->closing &&
- 		    !(priv->can.ctrlmode & CAN_CTRLMODE_LISTENONLY))
-@@ -1159,8 +1159,6 @@ static int grcan_transmit_catch_up(struc
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	dart->regs = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
++	if (IS_ERR(dart->regs))
++		return PTR_ERR(dart->regs);
++
+ 	if (resource_size(res) < 0x4000) {
+ 		dev_err(dev, "MMIO region too small (%pr)\n", res);
+ 		return -EINVAL;
  	}
  
- 	spin_unlock_irqrestore(&priv->lock, flags);
+-	dart->regs = devm_ioremap_resource(dev, res);
+-	if (IS_ERR(dart->regs))
+-		return PTR_ERR(dart->regs);
 -
--	return work_done;
- }
- 
- static int grcan_receive(struct net_device *dev, int budget)
-@@ -1242,19 +1240,13 @@ static int grcan_poll(struct napi_struct
- 	struct net_device *dev = priv->dev;
- 	struct grcan_registers __iomem *regs = priv->regs;
- 	unsigned long flags;
--	int tx_work_done, rx_work_done;
--	int rx_budget = budget / 2;
--	int tx_budget = budget - rx_budget;
-+	int work_done;
- 
--	/* Half of the budget for receiving messages */
--	rx_work_done = grcan_receive(dev, rx_budget);
-+	work_done = grcan_receive(dev, budget);
- 
--	/* Half of the budget for transmitting messages as that can trigger echo
--	 * frames being received
--	 */
--	tx_work_done = grcan_transmit_catch_up(dev, tx_budget);
-+	grcan_transmit_catch_up(dev);
- 
--	if (rx_work_done < rx_budget && tx_work_done < tx_budget) {
-+	if (work_done < budget) {
- 		napi_complete(napi);
- 
- 		/* Guarantee no interference with a running reset that otherwise
-@@ -1271,7 +1263,7 @@ static int grcan_poll(struct napi_struct
- 		spin_unlock_irqrestore(&priv->lock, flags);
- 	}
- 
--	return rx_work_done + tx_work_done;
-+	return work_done;
- }
- 
- /* Work tx bug by waiting while for the risky situation to clear. If that fails,
+ 	dart->irq = platform_get_irq(pdev, 0);
+ 	if (dart->irq < 0)
+ 		return -ENODEV;
 
 
