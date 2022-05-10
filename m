@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46997C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ABE8C35296
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:58:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347514AbiEJQBq (ORCPT
+        id S1347635AbiEJQB4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 12:01:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59526 "EHLO
+        Tue, 10 May 2022 12:01:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347263AbiEJPwL (ORCPT
+        with ESMTP id S1347256AbiEJPwK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:52:11 -0400
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76B5527CF4
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:48:14 -0700 (PDT)
-Received: by mail-qt1-x82e.google.com with SMTP id h3so13813820qtn.4
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:48:14 -0700 (PDT)
+        Tue, 10 May 2022 11:52:10 -0400
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D192714B;
+        Tue, 10 May 2022 08:48:11 -0700 (PDT)
+Received: by mail-qt1-x831.google.com with SMTP id t11so13819459qto.11;
+        Tue, 10 May 2022 08:48:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=T2IJO+Pa5M9voLAKUXr0ktIZBj7JUQbqvUsJEPx3GJM=;
-        b=c3IN7lMAFbv4sEP6laSQRowTvSX+G5HVSYHppf0FixY2y1TOg935HHtOG7mdR4VDoe
-         LQ69xKtAOxfnp4jdc3DXQEgPRlFnpm00mdslKhj6m28OSLFLu9jG5au941IQtcxYX9TQ
-         LhiZpqUmNAvT00BdJohSd3u1bbdaE5Qh+pz80eMMUhg7p6IuxcdGsDdMY3jG2dRCpBRt
-         up0C87zFbVNdmfiE5nx6LZJOpflQEsJdkh86x0JFWLqfBZTWAa3OYqW+AanRLvD2B0BC
-         5N6Hb4J4B1CLqpldSIQVLKJNnVaehyw4jy1VsGrSBIyXrUm1jSbs+db1MZSetK+1f9zS
-         A30w==
+        bh=CjDUHdg8cFM7kS83KS618TD4uElmyA10hO9dwUkMOD8=;
+        b=kDJXbyhvj9QHNsY+CIMDYKuJitt2teWm52OsKOARN0n+1y8rud7V9QCrw+t5SilKMW
+         GiOGonHD5UEWBztXu0e0Aq9uO8CwbFcQWvj3h+50zrc48Nk7ZmHaeUd02+YNlyyiAgHI
+         93xyHdhWG2wY+nmXl3uAODcwvjJBBwb2IPAeM20M5xl5n1KAOBxxjoZLAsHL4RlaFerN
+         RBGK7Av2Mm5Bt/BhTlM/4IuOY/jXEa/geNIfM3VixAJ4FMZNKLxBP2ITXgEyFRk9kYH8
+         B1fdPa1WJe4S81tVdkaotLAL1V78RY57u9MPfPHbX0Y9Jxz8Z35PlhZFzcLXoBKmfIl6
+         VmCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=T2IJO+Pa5M9voLAKUXr0ktIZBj7JUQbqvUsJEPx3GJM=;
-        b=0QH68RvxuyjdFimXMyhWDT+efAXL1dTJRpXorKAWfNq8lIg1F4AosERw6qQv8kquqW
-         NQVNn+7GVLvWoCYmJBSTLoGX1xHzlLT7vakSGxn62A6ATcDni6lIq7ffwMubwDFaMnRQ
-         zsWn0XhCgqn58GcJhE6XIUOqCTh4S2qxOzbTCvSVHLSOU/Lh2tTQukKSUxdPLEj1K2TS
-         T1lDiP+yKC0xs7FS7A6Iq+7ljVWviRfJzAT4B4juAHu8A8D4jFo2kCK4GNLyuCwNzTyB
-         pIQnDm9v6v2t8d+LdTHquNaR4EMaYEScD2EEn21q57FyiTASBSY0NrpDC37FUgXha9rT
-         pr0Q==
-X-Gm-Message-State: AOAM5338ixKM7DFcV7KSnICGae5eQnOnFHE/z7mdvPghksV5UvtkTky1
-        R/gG/43CpaXInadEpxgIcIaD05Oc09/K4g==
-X-Google-Smtp-Source: ABdhPJz52r13mAcgDBQf1ACM0hZ/J0vco7XnwEomdirN9ZWSxVJnzg675wnJR4aV7S74ZqzB7KnbjA==
-X-Received: by 2002:ac8:7fd1:0:b0:2f3:dddb:4206 with SMTP id b17-20020ac87fd1000000b002f3dddb4206mr7333570qtk.11.1652197693544;
-        Tue, 10 May 2022 08:48:13 -0700 (PDT)
+        bh=CjDUHdg8cFM7kS83KS618TD4uElmyA10hO9dwUkMOD8=;
+        b=ZwT0EYPb9LjnXtkXdFrA81/CKHeZAz8AMqUCo0f4KmOP3DN7oXIno6nXyS3TN39LSL
+         Am0e5Q+ihXyAaDjsAEZFnqCTG1A2/Cn5LGG6UkoYqhbcUhqFXO8bOuy2ejhVPegz/YMP
+         kkGyURe0X5LAGCYABIhfFYvK/gIRzo3pENAJWyPIW4y3ldS+f9cZkKNtJGM9T8O3AOMD
+         Y3gjT5rOX85oKWonMSoMX8sN+JTwtaagFKzusP81bb7bQ7SwIXMXUTLPpkYSZl6ENdHi
+         bPnPkswGxhskYmnnMEPKEsA7vbpdlTO2k5olaVqRB+zCIxLi+MLn183b/UPo4PT6LgZ9
+         4+zg==
+X-Gm-Message-State: AOAM533azuItoJHKhNZ/G0+THq3wlwoLp9ms6zvZeooNPsIH1vHPPPRj
+        pKtj1JTsGYQ2DQgM38NO7bs=
+X-Google-Smtp-Source: ABdhPJwrojQGWx5ySvoO7WtsNRq8OASz8gqW8BN6clOG1VkXmIodWaR5f99J4mVoKuQ9QKI3tDi2rg==
+X-Received: by 2002:a05:622a:342:b0:2f3:dd79:2463 with SMTP id r2-20020a05622a034200b002f3dd792463mr7817047qtw.468.1652197691097;
+        Tue, 10 May 2022 08:48:11 -0700 (PDT)
 Received: from localhost ([98.242.65.84])
-        by smtp.gmail.com with ESMTPSA id z7-20020ac875c7000000b002f39b99f6b5sm9242338qtq.79.2022.05.10.08.48.13
+        by smtp.gmail.com with ESMTPSA id x11-20020a05620a01eb00b0069fc13ce230sm2735416qkn.97.2022.05.10.08.48.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 08:48:13 -0700 (PDT)
+        Tue, 10 May 2022 08:48:10 -0700 (PDT)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         David Laight <David.Laight@ACULAB.COM>,
@@ -62,21 +62,12 @@ To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         Matti Vaittinen <Matti.Vaittinen@fi.rohmeurope.com>,
         linux-kernel@vger.kernel.org
-Cc:     Yury Norov <yury.norov@gmail.com>,
-        Balbir Singh <sblbir@amazon.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H . Peter Anvin" <hpa@zytor.com>, Huang Rui <ray.huang@amd.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Tim Chen <tim.c.chen@linux.intel.com>, x86@kernel.org
-Subject: [PATCH 14/22] x86: smp: use cpumask_weight_eq() in remove_siblinginfo
-Date:   Tue, 10 May 2022 08:47:42 -0700
-Message-Id: <20220510154750.212913-15-yury.norov@gmail.com>
+Cc:     Yury Norov <yury.norov@gmail.com>, Ingo Molnar <mingo@kernel.org>,
+        Valentin Schneider <vschneid@redhat.com>,
+        linux-ia64@vger.kernel.org
+Subject: [PATCH 12/22] ia64: cleanup remove_siblinginfo()
+Date:   Tue, 10 May 2022 08:47:40 -0700
+Message-Id: <20220510154750.212913-13-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220510154750.212913-1-yury.norov@gmail.com>
 References: <20220510154750.212913-1-yury.norov@gmail.com>
@@ -86,42 +77,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-cpumask_weight_eq() is more efficient because it may stop traversing
-cpumask depending on condition.
+remove_siblinginfo() initialises variable 'last', but never uses it.
+Drop unneeded code.
 
-CC: Balbir Singh <sblbir@amazon.com>
-CC: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-CC: Borislav Petkov <bp@alien8.de>
-CC: Dave Hansen <dave.hansen@linux.intel.com>
-CC: H. Peter Anvin <hpa@zytor.com>
-CC: Huang Rui <ray.huang@amd.com>
-CC: Ingo Molnar <mingo@redhat.com>
-CC: Paul E. McKenney <paulmck@kernel.org>
+CC: Ingo Molnar <mingo@kernel.org>
 CC: Peter Zijlstra <peterz@infradead.org>
-CC: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-CC: Sean Christopherson <seanjc@google.com>
-CC: Thomas Gleixner <tglx@linutronix.de>
-CC: Tim Chen <tim.c.chen@linux.intel.com>
-CC: x86@kernel.org
+CC: Valentin Schneider <vschneid@redhat.com>
+CC: linux-ia64@vger.kernel.org
 CC: linux-kernel@vger.kernel.org
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- arch/x86/kernel/smpboot.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/ia64/kernel/smpboot.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/arch/x86/kernel/smpboot.c b/arch/x86/kernel/smpboot.c
-index 7d948f79ef31..74ca98b3ab2a 100644
---- a/arch/x86/kernel/smpboot.c
-+++ b/arch/x86/kernel/smpboot.c
-@@ -1621,7 +1621,7 @@ static void remove_siblinginfo(int cpu)
- 
- 	for_each_cpu(sibling, topology_sibling_cpumask(cpu)) {
- 		cpumask_clear_cpu(cpu, topology_sibling_cpumask(sibling));
--		if (cpumask_weight(topology_sibling_cpumask(sibling)) == 1)
-+		if (cpumask_weight_eq(topology_sibling_cpumask(sibling), 1))
- 			cpu_data(sibling).smt_active = false;
+diff --git a/arch/ia64/kernel/smpboot.c b/arch/ia64/kernel/smpboot.c
+index d10f780c13b9..d0e935cf2093 100644
+--- a/arch/ia64/kernel/smpboot.c
++++ b/arch/ia64/kernel/smpboot.c
+@@ -576,8 +576,6 @@ clear_cpu_sibling_map(int cpu)
+ static void
+ remove_siblinginfo(int cpu)
+ {
+-	int last = 0;
+-
+ 	if (cpu_data(cpu)->threads_per_core == 1 &&
+ 	    cpu_data(cpu)->cores_per_socket == 1) {
+ 		cpumask_clear_cpu(cpu, &cpu_core_map[cpu]);
+@@ -585,8 +583,6 @@ remove_siblinginfo(int cpu)
+ 		return;
  	}
  
+-	last = (cpumask_weight(&cpu_core_map[cpu]) == 1 ? 1 : 0);
+-
+ 	/* remove it from all sibling map's */
+ 	clear_cpu_sibling_map(cpu);
+ }
 -- 
 2.32.0
 
