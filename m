@@ -2,100 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBD4CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:00:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AB74C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:00:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244297AbiEJPD5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:03:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44156 "EHLO
+        id S232876AbiEJPEO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 11:04:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345476AbiEJPDd (ORCPT
+        with ESMTP id S1345281AbiEJPDP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:03:33 -0400
-Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6F92327A00;
-        Tue, 10 May 2022 07:27:25 -0700 (PDT)
-Received: from in02.mta.xmission.com ([166.70.13.52]:42716)
-        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1noQpd-0012or-S8; Tue, 10 May 2022 08:27:21 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:37624 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1noQpc-00DmkJ-RI; Tue, 10 May 2022 08:27:21 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Oleg Nesterov <oleg@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
-        Will Deacon <will@kernel.org>, tj@kernel.org,
-        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Jann Horn <jannh@google.com>,
-        Kees Cook <keescook@chromium.org>, linux-ia64@vger.kernel.org
-References: <20220421150248.667412396@infradead.org>
-        <20220421150654.817117821@infradead.org>
-        <87czhap9dy.fsf@email.froward.int.ebiederm.org>
-        <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
-        <87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>
-        <87k0b0apne.fsf_-_@email.froward.int.ebiederm.org>
-        <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
-        <20220510141119.GA23277@redhat.com>
-Date:   Tue, 10 May 2022 09:26:36 -0500
-In-Reply-To: <20220510141119.GA23277@redhat.com> (Oleg Nesterov's message of
-        "Tue, 10 May 2022 16:11:21 +0200")
-Message-ID: <87lev9xy3n.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Tue, 10 May 2022 11:03:15 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D01981F8C4E
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:26:31 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id 15so14774213pgf.4
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:26:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=+wxOYG9ghH/9a5UJTVaKlcRNHbqfracDkNPfmduVwBo=;
+        b=k9+PjtptzZEnQKChCLzYZbzQWE1mIn4uv/pIHXhTfxtWMVh6eoOGw/gxJ18YqLkHgF
+         OcXq0HcCsygqny/0P5I3xfRlLYnC/4i1d1MdP4jQ0vEvkcxdDC5MpVNhl95F7ySjfy++
+         fLE85uau3pjLVWJphwgCt99DKyeOVnAFy6GKh9mjGuCTONQWTu12tHjPIXMl7xGxBAhk
+         eXPIDnyz5ieePPSibI/A7Froy8CR3JKh35KviAiQ2gOHcyQICY4x01MUFHy/lUZEMyLi
+         tlcuOx6E23i7gvDFTKtngwvPvWakQp29Rhr3LB+zZxrksse5AKghVr26S1IS5y73jY4U
+         FVzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=+wxOYG9ghH/9a5UJTVaKlcRNHbqfracDkNPfmduVwBo=;
+        b=VtxkF9ZNaFP9+owfnkAIj97+7ZCYADMZ45fJK9QwiC7qPJdfm4jXiQky7ncDp7Mx3n
+         hrgp3GvkI6mo3DbGTfR+gctVdKYisF/UHckfy3gKmfm6m3t4LenzufEYdI2uizJISw0g
+         5wyQF1DyA1Edm6HuN42HwBPpbTovTkiSFcmqiayLIriSkP6RnPpIObZtjsrF0ET44IJG
+         DzR9699TQDqLd0atiGRlI6lzmeOj7snUazOBU/rV+m+px79r/wqlBeb8C43+JXHHkk3B
+         6Gsao/1j/+TBvSgAuop5I2CtsbttEQu70nBKoqtSVAyry16XKP7EzxiWmwhJbQX6FT7a
+         URVQ==
+X-Gm-Message-State: AOAM532JKGgsy0PGNpuU77do7D/iyKHatdSsN4Cr/u5nkCHMeHmHP/Dr
+        BGlJsjkXOR3ZOgP5OuIQ3ybGIrxFrNA8b23H
+X-Google-Smtp-Source: ABdhPJwxuyIepWDfdgGxfWUw3KHfu67KyVM092PCotq6edwFAS2ONUMYFyz/fJPf5o8NsvRd8efdTA==
+X-Received: by 2002:a05:6a00:ac1:b0:4f1:29e4:b3a1 with SMTP id c1-20020a056a000ac100b004f129e4b3a1mr20596239pfl.63.1652192790629;
+        Tue, 10 May 2022 07:26:30 -0700 (PDT)
+Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
+        by smtp.gmail.com with ESMTPSA id x10-20020a1709028eca00b0015ea8b4b8f3sm2057568plo.263.2022.05.10.07.26.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 07:26:30 -0700 (PDT)
+Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: [PATCH 1/2] x86/asm/bitops: ffs: use __builtin_ffs to evaluate constant expressions
+Date:   Tue, 10 May 2022 23:25:49 +0900
+Message-Id: <20220510142550.1686866-2-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220510142550.1686866-1-mailhol.vincent@wanadoo.fr>
+References: <20220510142550.1686866-1-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1noQpc-00DmkJ-RI;;;mid=<87lev9xy3n.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX19KRDu+EXVWb48tgdlPoAOQU75bKyGlPTs=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH v4 0/12] ptrace: cleaning up ptrace_stop
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Oleg Nesterov <oleg@redhat.com> writes:
+For x86_64, the current ffs() implementation does not produce
+optimized code when called with a constant expression. On the
+contrary, the __builtin_ffs() function of both GCC and clang is able
+to simplify the expression into a single instruction.
 
-> On 05/05, Eric W. Biederman wrote:
->>
->> Eric W. Biederman (11):
->>       signal: Rename send_signal send_signal_locked
->>       signal: Replace __group_send_sig_info with send_signal_locked
->>       ptrace/um: Replace PT_DTRACE with TIF_SINGLESTEP
->>       ptrace/xtensa: Replace PT_SINGLESTEP with TIF_SINGLESTEP
->>       ptrace: Remove arch_ptrace_attach
->>       signal: Use lockdep_assert_held instead of assert_spin_locked
->>       ptrace: Reimplement PTRACE_KILL by always sending SIGKILL
->>       ptrace: Document that wait_task_inactive can't fail
->>       ptrace: Admit ptrace_stop can generate spuriuos SIGTRAPs
->>       ptrace: Don't change __state
->>       ptrace: Always take siglock in ptrace_resume
->>
->> Peter Zijlstra (1):
->>       sched,signal,ptrace: Rework TASK_TRACED, TASK_STOPPED state
->
-> OK, lgtm.
->
-> Reviewed-by: Oleg Nesterov <oleg@redhat.com>
->
->
-> I still dislike you removed TASK_WAKEKILL from TASK_TRACED, but I can't
-> find a good argument against it ;) and yes, this is subjective.
+* Example *
 
-Does anyone else have any comments on this patchset?
+Let's consider two dummy functions foo() and bar() as below:
 
-If not I am going to apply this to a branch and get it into linux-next.
+| #include <linux/bitops.h>
+| #define CONST 0x01000000
+|
+| unsigned int foo(void)
+| {
+| 	return ffs(CONST);
+| }
+|
+| unsigned int bar(void)
+| {
+| 	return __builtin_ffs(CONST);
+| }
 
-Eric
+GCC would produce below assembly code:
+
+| 0000000000000000 <foo>:
+|    0:	b8 ff ff ff ff       	mov    $0xffffffff,%eax
+|    5:	0f bc c7             	bsf    %edi,%eax
+|    8:	83 c0 01             	add    $0x1,%eax
+|    b:	c3                   	ret
+|    c:	0f 1f 40 00          	nopl   0x0(%rax)
+|
+| 0000000000000010 <bar>:
+|   10:	b8 19 00 00 00       	mov    $0x19,%eax
+|   15:	c3                   	ret
+
+And clang would produce:
+
+| 0000000000000000 <foo>:
+|    0:	55                   	push   %rbp
+|    1:	48 89 e5             	mov    %rsp,%rbp
+|    4:	b8 ff ff ff ff       	mov    $0xffffffff,%eax
+|    9:	0f bc 05 00 00 00 00 	bsf    0x0(%rip),%eax        # 10 <foo+0x10>
+|   10:	ff c0                	inc    %eax
+|   12:	5d                   	pop    %rbp
+|   13:	c3                   	ret
+|   14:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
+|   1b:	00 00 00
+|   1e:	66 90                	xchg   %ax,%ax
+|
+| 0000000000000020 <bar>:
+|   20:	55                   	push   %rbp
+|   21:	48 89 e5             	mov    %rsp,%rbp
+|   24:	b8 19 00 00 00       	mov    $0x19,%eax
+|   29:	5d                   	pop    %rbp
+|   2a:	c3                   	ret
+
+For both examples, we clearly see the benefit of using __builtin_ffs()
+instead of the kernel's asm implementation for constant expressions.
+
+However, for non constant expressions, the ffs() asm version of the
+kernel remains better for x86_64 because, contrary to GCC, it doesn't
+emit the CMOV assembly instruction, c.f. [1] (noticeably, clang is
+able optimize out the CMOV call).
+
+This patch uses the __builtin_constant_p() to select between the
+kernel's ffs() and the __builtin_ffs() depending on whether the
+argument is constant or not.
+
+
+As a side benefit, this patch also removes below -Wshadow warning:
+
+| ./arch/x86/include/asm/bitops.h:283:28: warning: declaration of 'ffs' shadows a built-in function [-Wshadow]
+|   283 | static __always_inline int ffs(int x)
+
+[1] commit ca3d30cc02f7 ("x86_64, asm: Optimise fls(), ffs() and fls64()")
+http://lkml.kernel.org/r/20111213145654.14362.39868.stgit@warthog.procyon.org.uk
+
+
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+---
+ arch/x86/include/asm/bitops.h | 29 +++++++++++++++++------------
+ 1 file changed, 17 insertions(+), 12 deletions(-)
+
+diff --git a/arch/x86/include/asm/bitops.h b/arch/x86/include/asm/bitops.h
+index a288ecd230ab..535a7a358c14 100644
+--- a/arch/x86/include/asm/bitops.h
++++ b/arch/x86/include/asm/bitops.h
+@@ -269,18 +269,7 @@ static __always_inline unsigned long __fls(unsigned long word)
+ #undef ADDR
+ 
+ #ifdef __KERNEL__
+-/**
+- * ffs - find first set bit in word
+- * @x: the word to search
+- *
+- * This is defined the same way as the libc and compiler builtin ffs
+- * routines, therefore differs in spirit from the other bitops.
+- *
+- * ffs(value) returns 0 if value is 0 or the position of the first
+- * set bit if value is nonzero. The first (least significant) bit
+- * is at position 1.
+- */
+-static __always_inline int ffs(int x)
++static __always_inline int __ffs_asm(int x)
+ {
+ 	int r;
+ 
+@@ -310,6 +299,22 @@ static __always_inline int ffs(int x)
+ 	return r + 1;
+ }
+ 
++/**
++ * ffs - find first set bit in word
++ * @x: the word to search
++ *
++ * This is defined the same way as the libc and compiler builtin ffs
++ * routines, therefore differs in spirit from the other bitops.
++ *
++ * ffs(value) returns 0 if value is 0 or the position of the first
++ * set bit if value is nonzero. The first (least significant) bit
++ * is at position 1.
++ */
++#define ffs(x)					\
++	 (__builtin_constant_p(x) ?		\
++	  __builtin_ffs(x) :			\
++	  __ffs_asm(x))
++
+ /**
+  * fls - find last set bit in word
+  * @x: the word to search
+-- 
+2.35.1
 
