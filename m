@@ -2,114 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98620C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 18:25:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F60DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 18:26:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348177AbiEJS33 (ORCPT
+        id S1348835AbiEJSZ6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 14:29:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39686 "EHLO
+        Tue, 10 May 2022 14:25:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236729AbiEJS3Y (ORCPT
+        with ESMTP id S245188AbiEJSZy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 14:29:24 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AD362A76B4
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 11:25:26 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id d5so24974748wrb.6
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 11:25:26 -0700 (PDT)
+        Tue, 10 May 2022 14:25:54 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED1C50E13;
+        Tue, 10 May 2022 11:25:53 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id r192so11126214pgr.6;
+        Tue, 10 May 2022 11:25:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=i/K+z4FbavDUp9taCkfXpbx13rVcW3GTSvwjLfREXAU=;
-        b=Tty5wMz7Ghu646JswlNLX+XwgMjXTrtdIAnTGLzWswd7pJqjghhee9uTTrSBkA1mS5
-         TASpWLvrSWJ0o/VmKB1zZ2EKL7bj0qTC3lvVRuamF3i9rZ6kaQX5QDmWCn9TRCB5uXkV
-         r8gOHaTXenDSj1D57niaR5CpxS9xrrcL40YA8vpjqNI+g1gL5pCdsCqYcSLce1I6fc3z
-         kWNzuDcKIBDb+SwqrxV9F0c+DchRf6wXrjkpR+hTKigiASG8TQ/T4toShl24UGOGYEeY
-         ZEnNjV6vVbfPH9Mde3cglN60wQIz6IJ5FIeBa8eN2oVUv11BpQol0cmvcrU6FhcjdmJZ
-         DX4A==
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=5sDgeD0YOOWBC8MnsZdewpm6fm+8JdOylgUar+PbYV8=;
+        b=E8vh1kibB970hzIpWVqJvrUM/XAa+WhlHnQFKxRLbh2erbItToTT6MRIvKSM0P4r2x
+         58dJE/MPLzbdvNTF/8JgkiZpQ+hkUiVXgM/IptFaGGnZoMvr+KfASvNybW4eIs7Gs2P/
+         84WqOoBsFK3g0q4ZavWX9GVFjNFZuiil5rhwquelrWdxHNCbQxcbagx4CVcyzGC0nZeY
+         N4llZYPHZytpybWUkGUmCzeUXQ8BdEzXFnUyvcg0E+uA8JZH9nCmcFl8u8et4fY4uCGb
+         ELlIp5TsPXGhKeOsZM4/YeYzYMepEc6xwCceDtSxF+OdsmYoPeboh+xZ6Kfte0dCYDN+
+         GcZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=i/K+z4FbavDUp9taCkfXpbx13rVcW3GTSvwjLfREXAU=;
-        b=5z9SmtLRslT6/RDcnMmxFZZh6SQ27vxizL0jkDGsInCXaDYycSYbfmyhyM2m6FXNyd
-         Y9FWxBXyW0TeJCv7h1FzV0+2Ni06iem3MX5nz+MECtI+drDPjeZthTYMWit4zvhq4VAn
-         9oz96Umv+tSqYXDXrOGoiW1ilXicH/Nl6tcnLVaU7q/Do2s9/Fu0gVji5e3pIXAtz3SC
-         vjtko5FaSPNwFsNdH5ifLDinEsr+z8CsgYuPW1GHmr7iPJRLsRRGr1Rob6ohcZZpwQr1
-         01RfYQ3BLiFVp/3yjS1EItZd5Xz7xv5hoMyxZfgyfagAJWsEtKzNY9G+zxraoVH6gblP
-         ePGw==
-X-Gm-Message-State: AOAM533MI/Jr+uOUFXcwfJ51Tb/bS43KQEKtyB4tRmJLbNQCUsREbLgC
-        wu13TywlrxWCqUvB4VsNbPwdAJs0EXK/Yy6yg8IP6w==
-X-Google-Smtp-Source: ABdhPJyzA6ZqMl9aS9nV7QUKqV1oRP2aghQEHWBX7a2slUyqZ51MHrel4plITu1M0/TnH8bx25zFuopsJMSrkMAFd0g=
-X-Received: by 2002:a5d:630d:0:b0:20a:e1a3:8018 with SMTP id
- i13-20020a5d630d000000b0020ae1a38018mr19695063wru.489.1652207124680; Tue, 10
- May 2022 11:25:24 -0700 (PDT)
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=5sDgeD0YOOWBC8MnsZdewpm6fm+8JdOylgUar+PbYV8=;
+        b=hyb3FxOaKIHQzX6VW4/tWEKcEWnOTFxmoYjPxMCNmMnWzijgtzX2OpZmhnVO3HfsEc
+         WgNMz7LcqMBHW2K4HnyF/1Q/avVZRqFxbv1oCSXznPYgpoYlqy0+E0B80NvpXxOcqlsG
+         E0ZsGI3Z1CiTKqd/5wyM2oV3jEE8yABU1aPARdiOFNnWJPO5bN0O0EOLcLjyurLRAxNM
+         N+Hpsrm4MvIga2o0BLflZCJgzn/usQCvyjXIQwOvkShYD2pGuFlITW0GGZpfkTvDdVy1
+         5ZtzBq7+jvvHXvC7V+RbtpQdNVvv6KhiL212yS/M+1t12EdOMOifLOMBKgSfSeB3S45Y
+         ZTBQ==
+X-Gm-Message-State: AOAM530T2QEwZFIzY2SQ9vvkdeoBpnHk8/3PLjNumJu7TSpNApAB/te+
+        FcD7+HB7pPQ91gyFdmdAdEE=
+X-Google-Smtp-Source: ABdhPJwF8XAszm3XpAppQTe+sM8gW2oXwZnzdwX0bTLVfL3aggJ71RwN/6h58iuJvmppSz4Z6M9JEg==
+X-Received: by 2002:a63:4f48:0:b0:3c6:b640:6046 with SMTP id p8-20020a634f48000000b003c6b6406046mr9396578pgl.118.1652207152804;
+        Tue, 10 May 2022 11:25:52 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::4:6c64])
+        by smtp.gmail.com with ESMTPSA id a25-20020aa780d9000000b0050dc7628182sm11266714pfn.92.2022.05.10.11.25.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 11:25:52 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Tue, 10 May 2022 08:25:50 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Chengming Zhou <zhouchengming@bytedance.com>
+Cc:     axboe@kernel.dk, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
+        songmuchun@bytedance.com
+Subject: Re: [PATCH] blk-iocost: combine local_stat and desc_stat to stat
+Message-ID: <YnquLkBZ7UxutpYq@slm.duckdns.org>
+References: <20220510034757.21761-1-zhouchengming@bytedance.com>
 MIME-Version: 1.0
-References: <20220510001807.4132027-1-yosryahmed@google.com> <20220510001807.4132027-9-yosryahmed@google.com>
-In-Reply-To: <20220510001807.4132027-9-yosryahmed@google.com>
-From:   Hao Luo <haoluo@google.com>
-Date:   Tue, 10 May 2022 11:25:13 -0700
-Message-ID: <CA+khW7i1Pcc9_bfxVhtzGQkevmodie7=M-57ScMqUyw5U=KW4A@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 8/9] bpf: Introduce cgroup iter
-To:     Yosry Ahmed <yosryahmed@google.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Tejun Heo <tj@kernel.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Michal Hocko <mhocko@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, cgroups@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220510034757.21761-1-zhouchengming@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 9, 2022 at 5:18 PM Yosry Ahmed <yosryahmed@google.com> wrote:
->
-> From: Hao Luo <haoluo@google.com>
->
-> Introduce a new type of iter prog: cgroup. Unlike other bpf_iter, this
-> iter doesn't iterate a set of kernel objects. Instead, it is supposed to
-> be parameterized by a cgroup id and prints only that cgroup. So one
-> needs to specify a target cgroup id when attaching this iter. The target
-> cgroup's state can be read out via a link of this iter.
->
-> Signed-off-by: Hao Luo <haoluo@google.com>
-> Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
-> ---
->  include/linux/bpf.h            |   2 +
->  include/uapi/linux/bpf.h       |   6 ++
->  kernel/bpf/Makefile            |   2 +-
->  kernel/bpf/cgroup_iter.c       | 148 +++++++++++++++++++++++++++++++++
->  tools/include/uapi/linux/bpf.h |   6 ++
->  5 files changed, 163 insertions(+), 1 deletion(-)
->  create mode 100644 kernel/bpf/cgroup_iter.c
->
+On Tue, May 10, 2022 at 11:47:57AM +0800, Chengming Zhou wrote:
+> When we flush usage, wait, indebt stat in iocg_flush_stat(), we use
+> local_stat and desc_stat, which has no point since the leaf iocg
+> only has local_stat and the inner iocg only has desc_stat. Also
+> we don't need to flush percpu abs_vusage for these inner iocgs.
+> 
+> This patch combine local_stat and desc_stat to stat, only flush
+> percpu abs_vusage for active leaf iocgs, then build inner walk
+> list to propagate.
+> 
+> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
 
-Thanks Yosry for posting this patch! Dear reviewers, this is v2 of the
-cgroup_iter change I sent previously at
+Acked-by: Tejun Heo <tj@kernel.org>
 
-https://lore.kernel.org/bpf/20220225234339.2386398-9-haoluo@google.com/
+Thanks.
 
-v1 - > v2:
-- Getting the cgroup's reference at the time at attaching, instead of
-at the time when iterating. (Yonghong) (context [1])
-- Remove .init_seq_private and .fini_seq_private callbacks for
-cgroup_iter. They are not needed now. (Yonghong)
-
-[1] https://lore.kernel.org/bpf/f780fc3a-dbc2-986c-d5a0-6b0ef1c4311f@fb.com/
-
-Hao
+-- 
+tejun
