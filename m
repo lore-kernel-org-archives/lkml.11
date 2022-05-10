@@ -2,173 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3E96C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 08:37:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E5BDC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 08:37:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238059AbiEJIk5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 04:40:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35318 "EHLO
+        id S238067AbiEJIlu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 04:41:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232173AbiEJIkx (ORCPT
+        with ESMTP id S232173AbiEJIlr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 04:40:53 -0400
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2076.outbound.protection.outlook.com [40.107.212.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E45B22DA32;
-        Tue, 10 May 2022 01:36:56 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Tou4MJ34YX+DNHOBOsGVTXpDmk4PFIdQGoqdDMSnGpwpQA2BL4Ng5Lrhm+6ByOW9+hhkDhSXvzIhJgHphEpvR90foUxbTjdICPeBh4e65P9M5Ww8c/CXMj/N49Rzm3bmlMLSWxm1Tb5V9OzVepCw/l2zctd9fTCq8a96AnPktxhr0b+edlvyQjc2yBIpVFh7zwhwzGEZeCmAT8OM7CNyqf/2yc5Gw4lvuGsDiXIneXtg3ET8KDuzRZ+544XEAvU/JOYHqjKT/RrfqIAKPvFQOq2gQ0fwWoWcZwf+6DCINtJUrSHKx1+yxO5aBW/xeHpqlMR/+zn1r1XjiRp/St5VlQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lmxUCVVBFAlPe2H3bATYdkx73UKJsZ08UyNfqHTfBMI=;
- b=TrPirl8PqROC0NL2TC0xPU1ZJCabCnlkT1TQUAlF4coWW9T/5K2+ozrGclUTB5Nmm/zLLCEioHNCdoT++fiBTn/g4rjijwV6nwd0gUgXkOY0b/iJms2PfTEap7oG2paKprTa//vJfYUQjEhs7Op+FEUz2NU9aLvWbJoworSRLoTHSOz1pTLLSLAMAiOWwMsyqDQUiW51RtHpENRED2oJ/CgOjIEHOl100o4Hb6HXGGwK9SgeYhma5HKJ3+SuGSomnj59zQBZ9Cjljfq/8DYC+mixX1ACMw3comMWNxQO82uufMVpEKwhBmcpOAspOI5535+yCvjEtZldmy2fVdG9lA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lmxUCVVBFAlPe2H3bATYdkx73UKJsZ08UyNfqHTfBMI=;
- b=flRuDicy3oRHKyzLugRtj4MqmKjlWr6slfyBMfJfW7rcPV7190BbMCgrg6I3yCqzGUaxv94u8m8eG20NwOV/pTyJ8oe4jEOGoSYuKy5Qouax6J3Xa3PVgJKC1Z9fkK5vmULy1unp2HFEX5UKe3dkIRMeLKB917eJdoOFGVUDTPQ=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from PH7PR12MB5712.namprd12.prod.outlook.com (2603:10b6:510:1e3::13)
- by DM6PR12MB4140.namprd12.prod.outlook.com (2603:10b6:5:221::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.21; Tue, 10 May
- 2022 08:36:50 +0000
-Received: from PH7PR12MB5712.namprd12.prod.outlook.com
- ([fe80::8d3b:6561:8563:4f1b]) by PH7PR12MB5712.namprd12.prod.outlook.com
- ([fe80::8d3b:6561:8563:4f1b%9]) with mapi id 15.20.5227.023; Tue, 10 May 2022
- 08:36:50 +0000
-Message-ID: <29103c7d-8108-cce8-8369-496a08c5c6d8@amd.com>
-Date:   Tue, 10 May 2022 14:06:35 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v4 3/7] perf/x86/amd/core: Detect PerfMonV2 support
-Content-Language: en-US
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Like Xu <like.xu.linux@gmail.com>, bp@alien8.de,
-        dave.hansen@linux.intel.com, acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, namhyung@kernel.org,
-        jolsa@kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        pbonzini@redhat.com, jmattson@google.com, eranian@google.com,
-        puwen@hygon.cn, ananth.narayan@amd.com, ravi.bangoria@amd.com,
-        santosh.shukla@amd.com,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-perf-users@vger.kernel.org, x86@kernel.org
-References: <cover.1651058600.git.sandipan.das@amd.com>
- <8d3e23760726cf6647a98999e1fcd12a37f36a42.1651058600.git.sandipan.das@amd.com>
- <78e001bd-42bd-5481-5a19-1a0bcca9a63c@gmail.com>
- <96e41431-eb80-f61d-9ab9-c76cd9b6086a@amd.com>
- <YnkTFRNpCykEndsk@hirez.programming.kicks-ass.net>
-From:   Sandipan Das <sandipan.das@amd.com>
-In-Reply-To: <YnkTFRNpCykEndsk@hirez.programming.kicks-ass.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: PN3PR01CA0103.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:9b::15) To PH7PR12MB5712.namprd12.prod.outlook.com
- (2603:10b6:510:1e3::13)
+        Tue, 10 May 2022 04:41:47 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 382252370E9;
+        Tue, 10 May 2022 01:37:51 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id D5BB61F940;
+        Tue, 10 May 2022 08:37:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1652171869; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=3xyIPOeoVElHmW8eJgZoOFzQNYtnkKUFdncoApBuweo=;
+        b=CvWntJnLRmzpWgi1q5wGaKsmfK0lX2rNbAXQkOnJHjl712eOhMgf0PSnQp8nDGBYmu+xRx
+        c95T/+ib7IGRbDPCJnVBu0yOF7g6C2nv/MziapI2iL77cgviqBDtfj3b2+S1RQjtj0kZAv
+        +N3Af4wTX0aunqwAvJdIQwhbMkTl92I=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1652171869;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=3xyIPOeoVElHmW8eJgZoOFzQNYtnkKUFdncoApBuweo=;
+        b=3bn8O+PgIfxf2p2QZQJ8a6TXCaxe5Qh69ME5LxEl9T6ZHbgvChsih5Vj5QqCDUQRLflwxL
+        EAbbRfxZo0cp3XAw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 87F2713AC1;
+        Tue, 10 May 2022 08:37:49 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 0vLfH10kemLdFwAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Tue, 10 May 2022 08:37:49 +0000
+Message-ID: <7ffd92d7-9c07-fa9c-dc95-9e82719fd237@suse.de>
+Date:   Tue, 10 May 2022 10:37:48 +0200
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fb839330-c71a-43d3-ed4b-08da32603a1a
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4140:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB4140E2F22402982ECC05BCBA8BC99@DM6PR12MB4140.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 7FfK6SJXIvZOJZhklWgiNtmAg+31etvASHUDOdjMi+wg0mJNbSmwkgXdkovjIO7iv0GaQvxfomXPU+r9qMH/2eE9hu1QqcPWwEAcJKK0L//KCOvycHVI6fbLoE1exsYbz7xwSTeqm3Js9CzRa22ZNR6rV3QR1oDsrjFUc5yTRfh1o/XGu3gChDpTQpAtejeyhHep1RexQIFhzqHuE1idnCirqN6/F9RaqBcqdbug7IpKs952XKTJ6nrpixyG/8q1xDjCX+jZVj8jn6m9hBG7+qjrZLHXJhmgl6Av3pcDTGDbrucTDsFSTf1PJJ3ALcaydZ2UtFMolHp9vxr4Yjgqtr796pVq4oLJ1Sf1iKROcdaGB4ypUhbyqFY5dmlLrve8ORAQi3bBro5I/VhcpkXNYsX5fuRD/zpwbodn0vmxjbwVl3wFEtCel5NbTbmz0tZXn2zqA2yb8yywakwyGOzG7lZhbku51BZkGnsMleK78AdjWhX2z6RYjUeFORQRyK1A/Shv26d3s+Y40XFADKcwZsFSOcwBqBEF+ocyJw+JZ/LloAO2rU3v9fuD/npopEZNKnT+11a/5UiAd5+nGNctx+Q7OTzihqAPC8gKn+wlunGAULFHDYIxGCNO/u73B97yiSCvUFkZzbmhVyKRu/391Rw1ycStx87iGokLHCgsQrFpcOoL5r2QLYabXBt67Fb/zxAwKXcHuOsiVJSyNWkRkDY+ND9oymoi+z226qM+Bws=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5712.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6666004)(36756003)(316002)(54906003)(6916009)(2616005)(31686004)(186003)(83380400001)(4326008)(8676002)(6506007)(66946007)(8936002)(31696002)(26005)(66556008)(6512007)(66476007)(38100700002)(53546011)(508600001)(2906002)(7416002)(44832011)(6486002)(5660300002)(86362001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Z2x5VEwvQmVRQzNUckNmU3crZDRnSnpadUd1QkY1a09XVXg2Q3pzVWlwNlkv?=
- =?utf-8?B?ZHN6NWRXRTQ1dDB0WXBMMVFETHE2eURPRHIzd1Z5SzN6N2xVaHVaRUpIZGRi?=
- =?utf-8?B?OTRmanpsd3dUaHBQRGJPK0VSKzFIY25pMm5sZENuNEJOSjRxMDd5K0wwMmVY?=
- =?utf-8?B?RHVSRlZzVjFRWnFjT0FLTkhkbnhVaFBBb3ZHYzdlWFljWjg4WUtKN2RKQTZn?=
- =?utf-8?B?ZkxrS3NjTUEvMlJjR1ZxMHc5RzVhYWpFN2VrT3hDb09tTjVPWTVISkZiSTgr?=
- =?utf-8?B?WHU1RVZrSWtaelYzWUN3T0hITE84alJWc21NNzlZbTB2QWIyZE5NbVl3Y1lu?=
- =?utf-8?B?amlHTXY4dW8yamRob2xOV0g2N0FkWGQ3d3dKZU1FMm9haVV1TzJvWkFSb0lB?=
- =?utf-8?B?SUt4RC85Q3E4aEZkbFhHdGlGaUJuQm1OSWoyTFpuMGRqTGtvUmZkR0JYRGZv?=
- =?utf-8?B?MUdmc2hTOWNvaEs2RzQyb1A2R2xDUFd5NHZhSEhKQnhsN0p3YzFCbys2WG41?=
- =?utf-8?B?M3hhakkyV0tOc3NxMXpjbktWY0VrZDJFVzM3UVBXRU0zUEZObnlmY3ZaYkhK?=
- =?utf-8?B?Y1RpWm8xL01oakszK0RZV1dQK2FnVzBHM2lqOWhDSzgzeitHQnc5UUs2WW5u?=
- =?utf-8?B?Z3p3dUxRb2lOMjV1SEs2ZnlvRk9FQ2czeGwvR1dzZjdOZC9mZ3d0dzJwR2h5?=
- =?utf-8?B?d2JkNVBpdVRzV2pSVnVZYml1TCtmRUZyc21iNGFFNGRNcGc5d2QwVHB5VmJY?=
- =?utf-8?B?SzUzRzV0K2pWVXFNam5IZTJJaWZDYVlTUUlOYkJ3cm8waFprWmJWY3Z6OU4z?=
- =?utf-8?B?OVFxeXVLMHN0VkhseEEwUjUxdlY0RjRIeEtkYWlZOEJrdHpPb2dHdXM5cmww?=
- =?utf-8?B?S2ZXN1EvOHVlZWlpTy9QMEFLQmFiUnFVQXNZNXVSMGRnTGd5bDk5Yk0vV1Nl?=
- =?utf-8?B?dEVja3Y3SVFQYUhtdzdBbHVJQWQ1OU5CUmZiRUJraW9iVWFYWnJYY0NoMkRp?=
- =?utf-8?B?UXZQTE5jTzJRZkxWc0Q1WTQ5M2lFTkZ5NjF2eGxMbnkyMlYraXluYzgzUm5j?=
- =?utf-8?B?RkdCeno0SXhHMHRNU0U1d05HZlozWEtIRlNPTEtPOUgrSjRWcnFZSVBmbjN2?=
- =?utf-8?B?VEV4eVdMWGRwdE0vbVI0cEI2ckU0SldpVWY0am1MeE43SXZWVnVTc0w0ZkZO?=
- =?utf-8?B?SytYWGJTVlZKaVhReGxxYU9vdCsrVFVEZEFCYWF4elpiTlVyMHpvNW5hMkxs?=
- =?utf-8?B?aEptV2ZSNHNpcHkzbzBkdTRWUmJpY29zZ2k1YWFDcWZIbkZFZ2Z2MUFwVnJj?=
- =?utf-8?B?eUJXWHZKeFNsRkNDeTZtRkVlMVBOTExla2tsc2NoSW9KaFVGVExCM0pScjlG?=
- =?utf-8?B?eTNQZEp5ZFZJa3pzR2VWR0djVzFqZkwvSjVreVlDd1RsTFZOM0NBS3NiZFBS?=
- =?utf-8?B?Vm1zV1BLeEVmdlNHYVIrcGVkcWc0bktsU29VRUhyVTE4bUs0R1lOamZObmVs?=
- =?utf-8?B?bVhDeDMyTUdxdGhPeGNveFh0Mm82cG1LNStNdnJJd3BybVJtLzBXSEdFSTZl?=
- =?utf-8?B?OGgweHpmYmpyWGk4RzZvcm53V0tSNGhrL1J0TksrVXBKeGE2WVdWempXaDVP?=
- =?utf-8?B?Q3BmS2dLbHBzd3BGTWMwY1NtbkY2bTVWWkhMNGpmc0haN0lXeDVmNjJwZ0Ji?=
- =?utf-8?B?QlhMRjNTa2d3WlhMTkZzU3RBTHN5YjVEY2VXN3dwdUp0VlJwZXdlME85LzNV?=
- =?utf-8?B?dUlCbHAzaUtycmEvZ3k3SC9vUDZLWXBHcVRnc2IydzlZY0ZCUDVOVXlydGZx?=
- =?utf-8?B?ZlFLVG0ydzFPZGZUMkJteGpTaHVBVmlrY2NqT3Z6bFlLL0xLTThPZTRLcTZC?=
- =?utf-8?B?THhHMkpGNjZOdFBKSkl4VVQ3bWVQbDNDSThjaDVObFo1T21aNFU2QXljOUht?=
- =?utf-8?B?WkhjdzVoNjY0ZDM5WGR0c1VTMnByeXdOWTFRMnUxeUEvSUQ4ZVF0S1V2VWtG?=
- =?utf-8?B?QnVBcGVhZHJZdGF0NTZ0YVZzM2xDanhxRkhsZWV1WnVBVEJZYWJLaVdQUXh5?=
- =?utf-8?B?bWprZWZpT3ppVHRTa3pkdC9VeXRpN0FoUkNOK1haMkk3WmtnQm9BYmZ5dDRV?=
- =?utf-8?B?WVdUOHB6MTUzY3kvRzliMUFmVHlVSXFGRzJzVjVBOGNWUkNVWUV0ZmpyVm5o?=
- =?utf-8?B?dnFXc0hjWGRwN0gzV044cCs2VTc4aHVvOWJBVWhEVE4yZkk1Wnl0TUQzNVd2?=
- =?utf-8?B?SVpud3haMEQ0WitDS0NOZm5hcHZsMGs2TUxZVVdyUndsY1M3a2xlNmdGdFpk?=
- =?utf-8?B?OTl3Ym5tQ3pYcEVWNHpXZ2ltazFNVWFBekJhT1I1SUQvOFRrWkdvdz09?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fb839330-c71a-43d3-ed4b-08da32603a1a
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5712.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 08:36:50.3188
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: SEDNk/mpwTP1gcyumDq7kEmuYWuhR+z+CI1ASEPNDECfnxnsOQ+oKfj0o4Ae186np9RhrkTQqPI1yvHWM3JiRA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4140
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v3 1/4] fbdev: Prevent possible use-after-free in
+ fb_release()
+Content-Language: en-US
+To:     Javier Martinez Canillas <javierm@redhat.com>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        linux-kernel@vger.kernel.org
+Cc:     linux-fbdev@vger.kernel.org,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Helge Deller <deller@gmx.de>, dri-devel@lists.freedesktop.org,
+        Daniel Vetter <daniel.vetter@intel.com>
+References: <20220505215947.364694-1-javierm@redhat.com>
+ <20220505220413.365977-1-javierm@redhat.com>
+ <753d0350-42dc-389b-b10b-4533ddcf32ac@intel.com>
+ <1f788b8f-0bea-1818-349e-b1bc907bf251@redhat.com>
+ <a339df59-9e00-c7cb-e33d-2ac626443639@intel.com>
+ <3b7fe4fe-fdec-cef2-4e0e-309d9dc4a8af@redhat.com>
+ <b5ab1c49-04e7-36c3-677d-2989b79e50ca@suse.de>
+ <2bf27b09-0896-1849-254f-d5b19abdc892@redhat.com>
+ <fc3e8a40-664f-07ae-7474-c0412a1ab1b5@intel.com>
+ <1c36d431-d5c0-7278-c9e0-61867e9dc174@redhat.com>
+ <79aaea41-5dab-f896-ab3d-d6bc9a5de615@suse.de>
+ <2d8d8583-3a39-b826-dd83-ba5bc4c5b082@redhat.com>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <2d8d8583-3a39-b826-dd83-ba5bc4c5b082@redhat.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------NlARKs14WTkoSxxCTf6M3wpd"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Peter,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------NlARKs14WTkoSxxCTf6M3wpd
+Content-Type: multipart/mixed; boundary="------------0pggphaFzbHBl5tN64yz2f2W";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: Javier Martinez Canillas <javierm@redhat.com>,
+ Andrzej Hajda <andrzej.hajda@intel.com>, linux-kernel@vger.kernel.org
+Cc: linux-fbdev@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
+ Helge Deller <deller@gmx.de>, dri-devel@lists.freedesktop.org,
+ Daniel Vetter <daniel.vetter@intel.com>
+Message-ID: <7ffd92d7-9c07-fa9c-dc95-9e82719fd237@suse.de>
+Subject: Re: [PATCH v3 1/4] fbdev: Prevent possible use-after-free in
+ fb_release()
+References: <20220505215947.364694-1-javierm@redhat.com>
+ <20220505220413.365977-1-javierm@redhat.com>
+ <753d0350-42dc-389b-b10b-4533ddcf32ac@intel.com>
+ <1f788b8f-0bea-1818-349e-b1bc907bf251@redhat.com>
+ <a339df59-9e00-c7cb-e33d-2ac626443639@intel.com>
+ <3b7fe4fe-fdec-cef2-4e0e-309d9dc4a8af@redhat.com>
+ <b5ab1c49-04e7-36c3-677d-2989b79e50ca@suse.de>
+ <2bf27b09-0896-1849-254f-d5b19abdc892@redhat.com>
+ <fc3e8a40-664f-07ae-7474-c0412a1ab1b5@intel.com>
+ <1c36d431-d5c0-7278-c9e0-61867e9dc174@redhat.com>
+ <79aaea41-5dab-f896-ab3d-d6bc9a5de615@suse.de>
+ <2d8d8583-3a39-b826-dd83-ba5bc4c5b082@redhat.com>
+In-Reply-To: <2d8d8583-3a39-b826-dd83-ba5bc4c5b082@redhat.com>
 
-On 5/9/2022 6:41 PM, Peter Zijlstra wrote:
-> On Mon, May 09, 2022 at 06:38:19PM +0530, Sandipan Das wrote:
->>
->> On 5/9/2022 6:31 PM, Like Xu wrote:
->>> On 27/4/2022 7:31 pm, Sandipan Das wrote:
->>>
->>>>       x86_pmu.num_counters    = AMD64_NUM_COUNTERS_CORE;
->>>
->>> Thus boot_cpu_has(X86_FEATURE_PERFCTR_CORE) is true.
->>>
->>>> +
->>>> +    /* Check for Performance Monitoring v2 support */
->>>> +    if (boot_cpu_has(X86_FEATURE_PERFMON_V2)) {
->>>> +        /* Update PMU version for later usage */
->>>> +        x86_pmu.version = 2;
->>>
->>> Is it safe to assume that once AMD CPU has the PERFMON_V2 (or further) bit,
->>>
->>> it must also have the PERFCTR_CORE bit set ?
->>>
->>
->> Yes, always. There won't be a case where PERFCTR_CORE is absent
->> but PERFMON_V2 is present.
-> 
-> Let me introduce you to this dodgy virt stuff :-) Best put a sanity
-> check on it.
+--------------0pggphaFzbHBl5tN64yz2f2W
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-I see that amd_core_pmu_init() returns if X86_FEATURE_PERFCTR_CORE is
-not found right after entry. Is there anywhere else that you feel should
-have an additional sanity check?
+SGkNCg0KQW0gMTAuMDUuMjIgdW0gMTA6MzAgc2NocmllYiBKYXZpZXIgTWFydGluZXogQ2Fu
+aWxsYXM6DQo+IEhlbGxvIFRob21hcywNCj4gDQo+IE9uIDUvMTAvMjIgMTA6MDQsIFRob21h
+cyBaaW1tZXJtYW5uIHdyb3RlOg0KPj4gSGkNCj4+DQo+PiBBbSAxMC4wNS4yMiB1bSAwMDo0
+MiBzY2hyaWViIEphdmllciBNYXJ0aW5leiBDYW5pbGxhczoNCj4+PiBPbiA1LzEwLzIyIDAw
+OjIyLCBBbmRyemVqIEhhamRhIHdyb3RlOg0KPj4+DQo+Pj4gW3NuaXBdDQo+Pj4NCj4+Pj4+
+ICAgICBzdGF0aWMgdm9pZCBkcm1fZmJkZXZfZmJfZGVzdHJveShzdHJ1Y3QgZmJfaW5mbyAq
+aW5mbykNCj4+Pj4+ICAgICB7DQo+Pj4+PiArICAgICAgIGlmIChpbmZvLT5jbWFwLmxlbikN
+Cj4+Pj4+ICsgICAgICAgICAgICAgICBmYl9kZWFsbG9jX2NtYXAoJmluZm8tPmNtYXApOw0K
+Pj4+Pj4gKw0KPj4+Pj4gICAgICAgICAgICBkcm1fZmJkZXZfcmVsZWFzZShpbmZvLT5wYXIp
+Ow0KPj4+Pj4gKyAgICAgICBmcmFtZWJ1ZmZlcl9yZWxlYXNlKGluZm8pOw0KPj4+Pg0KPj4+
+PiBJIHdvdWxkIHB1dCBkcm1fZmJkZXZfcmVsZWFzZSBhdCB0aGUgYmVnaW5uaW5nIC0gaXQg
+Y2FuY2VscyB3b3JrZXJzDQo+Pj4+IHdoaWNoIGNvdWxkIGV4cGVjdCBjbWFwIHRvIGJlIHN0
+aWxsIHZhbGlkLg0KPj4+Pg0KPj4+DQo+Pj4gSW5kZWVkLCB5b3UgYXJlIGNvcnJlY3QgYWdh
+aW4uIFswXSBpcyB0aGUgZmluYWwgdmVyc2lvbiBvZiB0aGUgcGF0Y2ggSSd2ZQ0KPj4+IGJ1
+dCBkb24ndCBoYXZlIGFuIGk5MTUgdGVzdCBtYWNoaW5lIHRvIGdpdmUgaXQgYSB0cnkuIEkn
+bGwgdGVzdCB0b21vcnJvdw0KPj4+IG9uIG15IHRlc3Qgc3lzdGVtcyB0byB2ZXJpZnkgdGhh
+dCBpdCBkb2Vzbid0IGNhdXNlIGFueSByZWdyZXNzaW9ucyBzaW5jZQ0KPj4+IHdpdGggb3Ro
+ZXIgRFJNIGRyaXZlcnMuDQo+Pg0KPj4gWW91IGhhdmUgdG8gZ28gdGhyb3VnaCBhbGwgRFJN
+IGRyaXZlcnMgdGhhdCBjYWxsIGRybV9mYl9oZWxwZXJfZmluaSgpDQo+PiBhbmQgbWFrZSBz
+dXJlIHRoYXQgdGhleSBmcmVlIGZiX2luZm8uIEZvciBleGFtcGxlIGFybWFkYSBhcHBlYXJz
+IHRvIGJlDQo+PiBsZWFraW5nIG5vdy4gWzFdDQo+Pg0KPiANCj4gQnV0IHNob3VsZG4ndCBm
+Yl9pbmZvIGJlIGZyZWVkIHdoZW4gdW5yZWdpc3Rlcl9mcmFtZWJ1ZmZlcigpIGlzIGNhbGxl
+ZA0KPiB0aHJvdWdoIGRybV9kZXZfdW5yZWdpc3RlcigpID8gQUZBSUNUIHRoZSBjYWxsIGNo
+YWluIGlzIHRoZSBmb2xsb3dpbmc6DQo+IA0KPiBkcm1fcHV0X2RldigpDQo+ICAgIGRybV9k
+ZXZfdW5yZWdpc3RlcigpDQo+ICAgICAgZHJtX2NsaWVudF9kZXZfdW5yZWdpc3RlcigpDQo+
+ICAgICAgICBkcm1fZmJkZXZfY2xpZW50X3VucmVnaXN0ZXIoKQ0KPiAgICAgICAgICBkcm1f
+ZmJfaGVscGVyX3VucmVnaXN0ZXJfZmJpKCkNCj4gICAgICAgICAgICB1bnJlZ2lzdGVyX2Zy
+YW1lYnVmZmVyKCkNCj4gICAgICAgICAgICAgIGRvX3VucmVnaXN0ZXJfZnJhbWVidWZmZXIo
+KQ0KPiAgICAgICAgICAgICAgICBwdXRfZmJfaW5mbygpDQo+ICAgICAgICAgICAgICAgICAg
+ZHJtX2ZiZGV2X2ZiX2Rlc3Ryb3koKQ0KPiAgICAgICAgICAgICAgICAgICAgZnJhbWVidWZm
+ZXJfcmVsZWFzZSgpDQo+IA0KPiB3aGljaCBpcyB0aGUgcmVhc29uIHdoeSBJIGJlbGlldmUg
+dGhhdCBkcm1fZmJfaGVscGVyX2ZpbmkoKSBzaG91bGQgYmUNCj4gYW4gaW50ZXJuYWwgc3Rh
+dGljIGZ1bmN0aW9uIGFuZCBvbmx5IGNhbGxlZCBmcm9tIGRybV9mYmRldl9mYl9kZXN0cm95
+KCkuDQo+IA0KPiBEcml2ZXJzIHNob3VsZG4ndCByZWFsbHkgZXhwbGljaXRseSBjYWxsIHRo
+aXMgaGVscGVyIGluIG15IG9waW5pb24uDQoNClRoYW5rcy4gIFRoYXQgbWFrZXMgc2Vuc2Uu
+DQoNCkJlc3QgcmVnYXJkcw0KVGhvbWFzDQoNCg0KPiANCg0KLS0gDQpUaG9tYXMgWmltbWVy
+bWFubg0KR3JhcGhpY3MgRHJpdmVyIERldmVsb3Blcg0KU1VTRSBTb2Z0d2FyZSBTb2x1dGlv
+bnMgR2VybWFueSBHbWJIDQpNYXhmZWxkc3RyLiA1LCA5MDQwOSBOw7xybmJlcmcsIEdlcm1h
+bnkNCihIUkIgMzY4MDksIEFHIE7DvHJuYmVyZykNCkdlc2Now6RmdHNmw7xocmVyOiBJdm8g
+VG90ZXYNCg==
 
-I also noticed a bug in the X86_FEATURE_PERFCTR_CORE feature check where
-it should have returned something like -ENODEV instead of 0. Will send
-out a fix for it.
+--------------0pggphaFzbHBl5tN64yz2f2W--
 
+--------------NlARKs14WTkoSxxCTf6M3wpd
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
 
-- Sandipan
+-----BEGIN PGP SIGNATURE-----
+
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmJ6JF0FAwAAAAAACgkQlh/E3EQov+CE
+Fw/8CYOK9HIvdYD6X/dNihbHDHDQJx7Crk+D/8vxm9ddXW/mlCtw+7PvkoUODZJIofHEOySGNeOn
+BWYbZ4JARMnQOjpa5+nPnpXYHLvkFEph3ox+l8QkrlFet6Vmu7yOHHLSnWfeYwWKKld0u+q0NSqR
+L9I0yIpZa35ZuFUvDRm8xtlG+EmdtF3mr9Nob9Q61W1R3zlcZYWEtJkv8J8uXHsR6qhcu/fX8EMv
+TsorM5iBhysd45K7EJftGyvy/5Ys3UCzqj+9DjCfvIjUokskNIJAUt+vnfWfooJTsHUUmYTffoKH
+AVN/9YbcgpWJ0g18NS6s434G4TllZr6rEMYHYqA4s43KzEX9RLFQlUHCRMcUaBbDal64ubD8yUcW
+2gtNgo2TUvH8QazIUmu3JYldt7Otr2fCIsZ6dYJo5xGsHVenURcoB4GZboJUP4FO1nETVXgcb9UV
+vZPoXnsQx4viJgR3da1nzqz8Wzjd5bYgjYoKBKK1dq45GZ7LR1S+vdYqhtQ9HiJ5zDYbSfPE9DLc
+0Y+A04aSfBu4YOlHT7Bgd429FS+S0WPpa6ImbcdbLjvK7rmPEoikOg5iVbSgn7B+e2C+zHAQayAI
+8vycTpPJ7tecYH9aEul+eSclGF/XQMoSvUpmho018w2vnM6D5nH98t/6SynbwLGFZmqdS0hGhmvh
+ETU=
+=yGVf
+-----END PGP SIGNATURE-----
+
+--------------NlARKs14WTkoSxxCTf6M3wpd--
