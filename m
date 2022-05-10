@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68720C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:24:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F1C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:25:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243227AbiEJN2y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:28:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60628 "EHLO
+        id S242444AbiEJN26 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:28:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243401AbiEJNVv (ORCPT
+        with ESMTP id S243546AbiEJNWD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:21:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 307DA4B846;
-        Tue, 10 May 2022 06:15:58 -0700 (PDT)
+        Tue, 10 May 2022 09:22:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0395750E0E;
+        Tue, 10 May 2022 06:16:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E18D615DD;
-        Tue, 10 May 2022 13:15:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 388C5C385A6;
-        Tue, 10 May 2022 13:15:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E2BA861661;
+        Tue, 10 May 2022 13:15:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA6BDC385C6;
+        Tue, 10 May 2022 13:15:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188544;
-        bh=KR943c8CFkXLKMhnK9yAbS4g5Lha2CsC/opzgmgUJ6o=;
+        s=korg; t=1652188532;
+        bh=0Zsa4+gxXS41nEdbiCUhpnQgdG82KClTrqpYIttuWFc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t1leVvz/ppVsGjIz4KVsoYjkrq2SNw74QqZwyQwGawEaHSkAzuDiV5CAbc9LiAidO
-         8isfNi0GJCPp0+VmWF+w9GQ3gEuFgA2UXUjBr+63eyimpniWRUyk/cYhzLAxD4Yk3R
-         UVKo5ELyuqq189wlMBoynbctT3MLCKkd0zKa69Ek=
+        b=zUGVeDiNKbho+Ea8Yt3Txo445gyCcPkhRN9ezYYgucgiMsilasWUjn0r9OPG6dqXu
+         iFFGpk2AGpYg3xuE8JlfM+0mcUMAaJaK1INViSM6XgKU80osfPqBN1ywGPPCNf25gJ
+         cSnMiIj3l64o+9ROfjm9V5YsEW8sEKkdtb24AS6A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaoli Feng <xifeng@redhat.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 43/78] cifs: destage any unwritten data to the server before calling copychunk_write
-Date:   Tue, 10 May 2022 15:07:29 +0200
-Message-Id: <20220510130733.809826225@linuxfoundation.org>
+        stable@vger.kernel.org, Oliver Neukum <oneukum@suse.com>
+Subject: [PATCH 4.14 09/78] USB: quirks: add STRING quirk for VCOM device
+Date:   Tue, 10 May 2022 15:06:55 +0200
+Message-Id: <20220510130732.809060787@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
 References: <20220510130732.522479698@linuxfoundation.org>
@@ -50,58 +47,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ronnie Sahlberg <lsahlber@redhat.com>
+From: Oliver Neukum <oneukum@suse.com>
 
-[ Upstream commit f5d0f921ea362636e4a2efb7c38d1ead373a8700 ]
+commit ec547af8a9ea6441864bad34172676b5652ceb96 upstream.
 
-because the copychunk_write might cover a region of the file that has not yet
-been sent to the server and thus fail.
+This has been reported to stall if queried
 
-A simple way to reproduce this is:
-truncate -s 0 /mnt/testfile; strace -f -o x -ttT xfs_io -i -f -c 'pwrite 0k 128k' -c 'fcollapse 16k 24k' /mnt/testfile
-
-the issue is that the 'pwrite 0k 128k' becomes rearranged on the wire with
-the 'fcollapse 16k 24k' due to write-back caching.
-
-fcollapse is implemented in cifs.ko as a SMB2 IOCTL(COPYCHUNK_WRITE) call
-and it will fail serverside since the file is still 0b in size serverside
-until the writes have been destaged.
-To avoid this we must ensure that we destage any unwritten data to the
-server before calling COPYCHUNK_WRITE.
-
-Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1997373
-Reported-by: Xiaoli Feng <xifeng@redhat.com>
-Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
+Link: https://lore.kernel.org/r/20220414123152.1700-1-oneukum@suse.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/cifs/smb2ops.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/usb/core/quirks.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
-index ba56c00f2650..3280a801b1d7 100644
---- a/fs/cifs/smb2ops.c
-+++ b/fs/cifs/smb2ops.c
-@@ -855,9 +855,17 @@ smb2_copychunk_range(const unsigned int xid,
- 	int chunks_copied = 0;
- 	bool chunk_sizes_updated = false;
- 	ssize_t bytes_written, total_bytes_written = 0;
-+	struct inode *inode;
+--- a/drivers/usb/core/quirks.c
++++ b/drivers/usb/core/quirks.c
+@@ -328,6 +328,9 @@ static const struct usb_device_id usb_qu
+ 	/* DJI CineSSD */
+ 	{ USB_DEVICE(0x2ca3, 0x0031), .driver_info = USB_QUIRK_NO_LPM },
  
- 	pcchunk = kmalloc(sizeof(struct copychunk_ioctl), GFP_KERNEL);
- 
-+	/*
-+	 * We need to flush all unwritten data before we can send the
-+	 * copychunk ioctl to the server.
-+	 */
-+	inode = d_inode(trgtfile->dentry);
-+	filemap_write_and_wait(inode->i_mapping);
++	/* VCOM device */
++	{ USB_DEVICE(0x4296, 0x7570), .driver_info = USB_QUIRK_CONFIG_INTF_STRINGS },
 +
- 	if (pcchunk == NULL)
- 		return -ENOMEM;
+ 	/* INTEL VALUE SSD */
+ 	{ USB_DEVICE(0x8086, 0xf1a5), .driver_info = USB_QUIRK_RESET_RESUME },
  
--- 
-2.35.1
-
 
 
