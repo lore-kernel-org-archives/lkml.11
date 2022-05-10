@@ -2,95 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B419CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 02:28:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39ED5C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 02:28:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234666AbiEJCcc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 22:32:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40028 "EHLO
+        id S234655AbiEJCcg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 22:32:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234068AbiEJCcZ (ORCPT
+        with ESMTP id S234624AbiEJCcc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 22:32:25 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34EF81A8E39
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 19:28:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652149707; x=1683685707;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=w4IbXm7Oa8+fhoEJNZICLRMnTk1Uzu3E9Gvfc4VP7e0=;
-  b=D9SjVeesGJeD8nnHgZfNF5oaOBRtcVTIEtLfghoMDWgDwowLn2Gxcx0j
-   8LAVCt6szpFjSaR/sP1RCUEYGcral4bZpkS5YTPQSuv9Eia+4XbVVYzrC
-   lAJp3FZrYhRf3hg2frKxcfMXl3ZGKCx5is8FuPD3b+wUnwvYEE+3Ka+wr
-   AdAThoGDNRbbRRnU/ntj+J3QqVAXxdXv6ODSU+Aax13aJj9zWRtVJWorG
-   XgfN0HR96rh/44SJ0L+f/I2TG9N0QYLiK/IkWG1f0iHxYhZ/hcWHoZ7pu
-   fyZwnN4oRCM9gybKPOImVkutU01J12+PEAe/ccZNpELY5ol3gGA6B2Yxs
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="268900875"
-X-IronPort-AV: E=Sophos;i="5.91,213,1647327600"; 
-   d="scan'208";a="268900875"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 19:28:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,213,1647327600"; 
-   d="scan'208";a="696860975"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 09 May 2022 19:28:24 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1noFbr-000HBm-Lh;
-        Tue, 10 May 2022 02:28:23 +0000
-Date:   Tue, 10 May 2022 10:27:37 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Claudiu Beznea <claudiu.beznea@microchip.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [linux-stable-rc:linux-5.10.y 3130/5595]
- drivers/mfd/atmel-flexcom.c:108:32: warning: 'atmel_flexcom_pm_ops' defined
- but not used
-Message-ID: <202205101006.WQSxaIjZ-lkp@intel.com>
+        Mon, 9 May 2022 22:32:32 -0400
+Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F4971ACFB6
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 19:28:36 -0700 (PDT)
+Received: by mail-qt1-x82a.google.com with SMTP id x9so12655972qts.6
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 19:28:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=W6jOMUgILshn2WYmKe1q5xPwSH19p0pv5Sgwj8YN3Ic=;
+        b=LxrccxHB5ShY+Li9AxEbs/r6b5v29JSx2sRyAbLaekDsvOtrFZRXwATgEExVDmTIea
+         saj94hqUdN3dH5a0itNV9kN4EHzc5qD97nffu8dxU/daH+GYOJwKydppWQMz3gwEeUYM
+         2vHrIsjtFj3gYr+TiURYYTO6PnUbrNiIUIUAE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=W6jOMUgILshn2WYmKe1q5xPwSH19p0pv5Sgwj8YN3Ic=;
+        b=ZTNeq9ozrWZ8Q/CKTtFmUvMSveTvFwH8qulX7Q/SA8ERgGE50r4TvucFfhDbUyIbCp
+         8zPOdqCVoQWAdr4aqHFKxP89ZoxNZ7etAIQ9AR4t28efWsrh6rnX5uQnLlFN6L8Z8tEW
+         RjhFQiY+y3UgqpNYhbpV9j9S9S2hj9UeOOO2IEXaNUhCfAxuPZKoVO2eFHG0VYZyRaam
+         k0kSJOXS9Bo1QT2FJtLQO8cJ1cjhGKQe4/Uqrdhx/nbSOSy9k+dBiZQN3WFq+1GrmBzn
+         M0tAUr+ad3f9/DO/CSa3YiIys7lbi/rWELHRcazbV1Oe2cbTBFKgVFrqzUUuOZSmSBgZ
+         EQOg==
+X-Gm-Message-State: AOAM533GMdd4HCLGitPDK3y2frIBSofdfWRhsXQh3t3vRl7VJeutpK/u
+        p07GbNZs0tIVbFMGkL3sx3GvOQ==
+X-Google-Smtp-Source: ABdhPJz3H3ybqqVT6iThgbLBPKnjqzXyFMDiP+lk/h6qcoE+DUsiQz0S7GXQaociIc3ewIBjht9/Sg==
+X-Received: by 2002:ac8:5f0c:0:b0:2f3:cbad:5024 with SMTP id x12-20020ac85f0c000000b002f3cbad5024mr16029420qta.578.1652149715111;
+        Mon, 09 May 2022 19:28:35 -0700 (PDT)
+Received: from grundler-glapstation.lan ([70.134.62.80])
+        by smtp.gmail.com with ESMTPSA id 18-20020a05620a06d200b0069fc13ce213sm7742375qky.68.2022.05.09.19.28.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 May 2022 19:28:33 -0700 (PDT)
+From:   Grant Grundler <grundler@chromium.org>
+To:     Igor Russkikh <irusskikh@marvell.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Aashay Shringarpure <aashay@google.com>,
+        Yi Chou <yich@google.com>,
+        Shervin Oloumi <enlightened@google.com>,
+        Grant Grundler <grundler@chromium.org>
+Subject: [PATCH 0/4 V2] net: atlantic: more fuzzing fixes
+Date:   Mon,  9 May 2022 19:28:22 -0700
+Message-Id: <20220510022826.2388423-1-grundler@chromium.org>
+X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
-head:   3dca4fac0d16d15d15f9fe909372b7503ed5ac73
-commit: ad52b9890b83ffa7602a23949c2cb0c0d94681e9 [3130/5595] mfd: atmel-flexcom: Use .resume_noirq
-config: i386-randconfig-m021-20220509 (https://download.01.org/0day-ci/archive/20220510/202205101006.WQSxaIjZ-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=ad52b9890b83ffa7602a23949c2cb0c0d94681e9
-        git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-        git fetch --no-tags linux-stable-rc linux-5.10.y
-        git checkout ad52b9890b83ffa7602a23949c2cb0c0d94681e9
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/mfd/
+The Chrome OS fuzzing team posted a "Fuzzing" report for atlantic driver
+in Q4 2021 using Chrome OS v5.4 kernel and "Cable Matters
+Thunderbolt 3 to 10 Gb Ethernet" (b0 version):
+    https://docs.google.com/document/d/e/2PACX-1vT4oCGNhhy_AuUqpu6NGnW0N9HF_jxf2kS7raOpOlNRqJNiTHAtjiHRthXYSeXIRTgfeVvsEt0qK9qK/pub
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+It essentially describes four problems:
+1) validate rxd_wb->next_desc_ptr before populating buff->next
+2) "frag[0] not initialized" case in aq_ring_rx_clean()
+3) limit iterations handling fragments in aq_ring_rx_clean()
+4) validate hw_head_ in hw_atl_b0_hw_ring_tx_head_update()
 
-All warnings (new ones prefixed by >>):
+(1) was fixed by Zekun Shen <bruceshenzk@gmail.com> around the same time with
+"atlantic: Fix buff_ring OOB in aq_ring_rx_clean" (SHA1 5f50153288452e10).
 
->> drivers/mfd/atmel-flexcom.c:108:32: warning: 'atmel_flexcom_pm_ops' defined but not used [-Wunused-const-variable=]
-     108 | static const struct dev_pm_ops atmel_flexcom_pm_ops = {
-         |                                ^~~~~~~~~~~~~~~~~~~~
+I've added one "clean up" contribution:
+    "net: atlantic: reduce scope of is_rsc_complete"
 
+I tested the "original" patches using chromeos-v5.4 kernel branch:
+    https://chromium-review.googlesource.com/q/hashtag:pcinet-atlantic-2022q1+(status:open%20OR%20status:merged)
 
-vim +/atmel_flexcom_pm_ops +108 drivers/mfd/atmel-flexcom.c
+I've forward ported those patches to 5.18-rc2 and compiled them but am
+unable to test them on 5.18-rc2 kernel (logistics problems).
 
-   107	
- > 108	static const struct dev_pm_ops atmel_flexcom_pm_ops = {
-   109		.resume_noirq = atmel_flexcom_resume_noirq,
-   110	};
-   111	
+Credit largely goes to ChromeOS Fuzzing team members:
+    Aashay Shringarpure, Yi Chou, Shervin Oloumi
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+V2 changes:
+o drop first patch - was already fixed upstream differently
+o reduce (4) "validate hw_head_" to simple bounds checking.
+
+ drivers/net/ethernet/aquantia/atlantic/aq_ring.c        | 17 ++++++++++-------
+ .../net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c   |  6 ++++++
+ 2 files changed, 16 insertions(+), 7 deletions(-)
+
+cheers,
+grant
