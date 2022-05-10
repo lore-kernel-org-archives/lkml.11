@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC922C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 07:33:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FA3BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 07:33:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237259AbiEJHhW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 03:37:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53632 "EHLO
+        id S237765AbiEJHhb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 03:37:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236172AbiEJHRt (ORCPT
+        with ESMTP id S241554AbiEJHda (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 03:17:49 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2047.outbound.protection.outlook.com [40.107.243.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2790B2992C3;
-        Tue, 10 May 2022 00:13:53 -0700 (PDT)
+        Tue, 10 May 2022 03:33:30 -0400
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam07on2052.outbound.protection.outlook.com [40.107.95.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28CE32A4A06;
+        Tue, 10 May 2022 00:29:33 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cx70/WcheeXf6mpJknxn5X++HT/xeRF+873UVyl6lELwbS0VcGM20lVa1DDpNUjXj4X+4lOaPDtbreVOH4Z54S3bByI1tz16AYuOf4nlL0cWjN/OGBaxlAL9ROJPA1WQko3KsvFZ2GvvInRQkKN87bA10sFhINL7gt/D+Zg7VJsQ4T46nwliH0GJLTeDPNmakeT/sq8Jp4vuorn8rgltSptik+Cn7cKB4pcCYv/t2GeEXL4tgZKO/m4A1Z/MMUu3b1tewlM4wMiZ8kakxxiXLWL23VCJJxRBQABOnJ1cInQSXQiHdxz2sYkh4U3+YVk77hCNg8Yztlfry0iQpZKTwQ==
+ b=k5eeQI8La8lmF8ix0quxfY5APQ1LZrpvHYLr/Qqi+fpyyo0Y8YeCmVR5srnYnQ5p4b/zrVU+NbOsihV/dJhSq1bC9BtyY7kke31M21TtoTCTPe9dlP1pEUcujo4Tmfnhyy7a4/30tFSs8gE/i6VFw33PBGHMZFrGsQutkrk3uhY7H4KFW6vgp1O+zxaZWdeGJ6FE+yjPLnIjKZpk7cuYobhMG+iJxBnoPO/6s9jEDUbTnhl3rgZqK1LIkXcOQvvsDzsGX6ldbjTz6UR/iOJrtmXZqERS3MBvNrlFqm+Wa9eHa0vdZVxsgF0VqRRkXBrw7yWXmqDglaOhGAe7qvpgdA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Vj6VaFGOxX2wvlNQK1WAGRfAy5glVjX2XrpAkbq0RkI=;
- b=djD/XKTVt8UkpaLirh9lxpvfNtNjbwwprSdsFaEvOcVLAhu2s33OlPeJkfBM0CWruTk9Xy6CUFy3u3KDYQralRscPDUb3nCaopUOCNIpWTv86hsXj8xGd8zUh7yBqOZRgXa/bomOVgyRlZlDQVus+8pfxNMTkn8yP/RLrv0Hibob78WvPUvuIogkEqsjLTMPVWUmvoQw4khZCugkfmlHGIr7hfu93iltmoyackygFufSnXKJ0Eq0j0995RPgizVxV6panO8B35PvPd4OK1f+7IkYr0pYCxsug1vBEzxcaRCc/4s56ufV9UaY/ey33o1Ny+2OVK74np7oTrPEj0dC0g==
+ bh=XcY8L0pdq4QgmTw+FyBYNnSV18M7DfU6uQ/WqTf51LM=;
+ b=hUP2M4WYo07p3Z2lDgbOph412wef40XUoYnKvsg9SFPDN0lhnjYc+6W+vX7ioe4OD3IDn6ynL0xXpW+1RFCC8qX9vW5c4wSTh6S3tmQHWzDkfvEUy/B1KR9GG0fE0h6NFX79ENJr6kJiFQqGiWh5SpbwYT9Lo3VGfzBiAAVVg1UUBHN9KB7Ztx3s4t8LOC0duw0q1ZulGlY8Im3DziUkfTCx1ZoQUTBCn/OyZRTA0yI5zdS0YwVPLuNveNsJC2P2F/WDFH/dZJQPhNMtGE1cG14dMUEAD0PORGnH9JZBuT9yyivFF4K/UAmqZ/I0zdc1C94aodQyvGcEtgWX7CCWhA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  149.199.62.198) smtp.rcpttodomain=kernel.org smtp.mailfrom=xilinx.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
@@ -29,115 +29,134 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Vj6VaFGOxX2wvlNQK1WAGRfAy5glVjX2XrpAkbq0RkI=;
- b=bzZTH9g/AqIGce+JP1Wvr0JZpElgQvsF3MG67jB484suqLrHCET/wXf5yLCrrvN7nXXxY0GX8bXjRf8KSAlNKBM01Cb0cTopC4PiaEmsT2C+7lyWre0cxQFI6Oqr/AYku7UnE4vrZU1BS5uKRdmsWdHlXYCACBXQRSoN/FdaDfs=
-Received: from BN0PR04CA0013.namprd04.prod.outlook.com (2603:10b6:408:ee::18)
- by BYAPR02MB5207.namprd02.prod.outlook.com (2603:10b6:a03:69::33) with
- Microsoft SMTP Server (version=TLS1_2,
+ bh=XcY8L0pdq4QgmTw+FyBYNnSV18M7DfU6uQ/WqTf51LM=;
+ b=GJhWrnnZ2Jea7gWf2fOAMZLu+jLli+zSJm0ceROl5Gqyf8LhESnwzOmfRE0wioG3QozoutdnwVEDOYaDt8B5dTANvEsvkbrVeyW04NgSBCKQp/9avc2CGj4avV0Keort2dzd3GhBWqAjA29LSToY4+09nGH0NgjCpeJLT8vpKbg=
+Received: from SN4PR0501CA0123.namprd05.prod.outlook.com
+ (2603:10b6:803:42::40) by DM8PR02MB7928.namprd02.prod.outlook.com
+ (2603:10b6:8:11::14) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.21; Tue, 10 May
- 2022 07:13:13 +0000
-Received: from BN1NAM02FT048.eop-nam02.prod.protection.outlook.com
- (2603:10b6:408:ee:cafe::6a) by BN0PR04CA0013.outlook.office365.com
- (2603:10b6:408:ee::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.21 via Frontend
- Transport; Tue, 10 May 2022 07:13:13 +0000
+ 2022 07:29:30 +0000
+Received: from SN1NAM02FT0018.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:803:42:cafe::85) by SN4PR0501CA0123.outlook.office365.com
+ (2603:10b6:803:42::40) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13 via Frontend
+ Transport; Tue, 10 May 2022 07:29:30 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
  smtp.mailfrom=xilinx.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=xilinx.com;
 Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
  149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com;
-Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
- BN1NAM02FT048.mail.protection.outlook.com (10.13.2.157) with Microsoft SMTP
+ client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ SN1NAM02FT0018.mail.protection.outlook.com (10.97.5.8) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5227.15 via Frontend Transport; Tue, 10 May 2022 07:13:13 +0000
+ 15.20.5227.15 via Frontend Transport; Tue, 10 May 2022 07:29:30 +0000
 Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Tue, 10 May 2022 00:13:11 -0700
+ 15.1.2176.14; Tue, 10 May 2022 00:29:26 -0700
 Received: from smtp.xilinx.com (172.19.127.96) by
  xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Tue, 10 May 2022 00:13:11 -0700
-Envelope-to: git@xilinx.com,
- vkoul@kernel.org,
- dmaengine@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Received: from [172.23.64.6] (port=41366 helo=xhdvnc106.xilinx.com)
+ 15.1.2176.14 via Frontend Transport; Tue, 10 May 2022 00:29:26 -0700
+Envelope-to: robh@kernel.org,
+ linux-pci@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org,
+ lorenzo.pieralisi@arm.com,
+ bhelgaas@google.com
+Received: from [10.254.241.50] (port=44464)
         by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <radhey.shyam.pandey@xilinx.com>)
-        id 1noK3T-0006sq-IL; Tue, 10 May 2022 00:13:11 -0700
-Received: by xhdvnc106.xilinx.com (Postfix, from userid 13245)
-        id 95B596106F; Tue, 10 May 2022 12:42:44 +0530 (IST)
-From:   Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-To:     <vkoul@kernel.org>
-CC:     <michal.simek@xilinx.com>, <dmaengine@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <git@xilinx.com>,
-        Shravya Kumbham <shravya.kumbham@xilinx.com>,
-        Harini Katakam <harini.katakam@xilinx.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Subject: [PATCH 2/3] dmaengine: zynqmp_dma: check dma_async_device_register return value
-Date:   Tue, 10 May 2022 12:42:41 +0530
-Message-ID: <1652166762-18317-3-git-send-email-radhey.shyam.pandey@xilinx.com>
-X-Mailer: git-send-email 2.1.1
-In-Reply-To: <1652166762-18317-1-git-send-email-radhey.shyam.pandey@xilinx.com>
-References: <1652166762-18317-1-git-send-email-radhey.shyam.pandey@xilinx.com>
+        (envelope-from <michal.simek@xilinx.com>)
+        id 1noKJC-000A04-BY; Tue, 10 May 2022 00:29:26 -0700
+Message-ID: <eea7db0b-b483-e61c-8f2d-174f2032fd51@xilinx.com>
+Date:   Tue, 10 May 2022 09:29:24 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH] dt-bindings: PCI: xilinx-cpm: Change reg property order
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>,
+        Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
+CC:     PCI <linux-pci@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+References: <20220429130221.32113-1-bharat.kumar.gogada@xilinx.com>
+ <CAL_JsqJkHRbXoHdgDYgeF5JhdPgDhjCg=W7YUmCRdBR8xSKz6A@mail.gmail.com>
+From:   Michal Simek <michal.simek@xilinx.com>
+In-Reply-To: <CAL_JsqJkHRbXoHdgDYgeF5JhdPgDhjCg=W7YUmCRdBR8xSKz6A@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 504718b8-444d-4192-3d49-08da32548be9
-X-MS-TrafficTypeDiagnostic: BYAPR02MB5207:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR02MB52079D44C6B3CB33A598EA49C7C99@BYAPR02MB5207.namprd02.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: a6546202-c8ec-4a27-0602-08da3256d279
+X-MS-TrafficTypeDiagnostic: DM8PR02MB7928:EE_
+X-Microsoft-Antispam-PRVS: <DM8PR02MB7928CE45C6A05F154341B75CC6C99@DM8PR02MB7928.namprd02.prod.outlook.com>
 X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Yfa47a92xL9hFfc4pFONUvKVRc/F1ZE8GOPpkm/twkJTvt60xti76+qaYSKMb1tVvJXpk1NIrjZjDTPHHua4474qhoZV/eJKzXNS3VIt1dr3SpkmN+FkN9SxQ5qOYkBiUjSXC3qWrkzikCl+ArPuS5fx0+Z5PjajdWinMqvazY2PIRk/ilUT1sL3rREy8a0SIV+jtvF8xelm6qC4dhvkLrSrG24EEunvyc6m+VJKd/y8RDprqgkC+iI7WSl2qrUQ/L1qwwFxfAdTcQyQVjkfCXlXRo+sAaPsBHRSh9UFVmL4jEN2o20/uIyS4SXW+kUKVq/tJjzMU/FBrsuv+wYMRLwVRQZPwDRXA/0FId4982oYNNiv7XQ14eqrSN0Svb4y1yPc9hw+le5mfrERdIrNKYojd/0c5hmA4M0deHdRC1x0/vFgPcyAj27UXaxdviguXoZrSSef8wY8YL5fvwtpQbd2d8mgVmeNVeIbellaba+jRM164HfrgQSseyHy2GHc6BCteGcPS+skRN17lk+CejoaJu49Mi/NF2XD3IEobN5VBd0DaagS+rTJlHNS4ewizWRMyv6lVUtUgmTM1aYv8onSCcNZ5T8AsQLCRHziGwpFcKKsmX8K6CQFaoEuQQz3/iELpKwCPgF8/dPJAsXIqLhB1UTjR+1HsGtPYdBld0HSoyFR17pja+0MAPbHzOPKZ0VdHXvZh5FK+kYwvXi+ow==
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(2906002)(186003)(6666004)(47076005)(336012)(426003)(508600001)(6266002)(26005)(2616005)(107886003)(40460700003)(5660300002)(8936002)(7636003)(70206006)(70586007)(36860700001)(6916009)(83380400001)(8676002)(4326008)(54906003)(82310400005)(42186006)(316002)(36756003)(356005)(102446001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: TmNqv49u85aqtFPIeSnqAaRFshR/tGQ8pMmjiLQ1Q0zMirYZOp3cx4ipRWAKM76EqAXeAtNOFuHBMct2Qf+Lsj4C55DGYIBKrYphayJcFM2OFQdbqe6pC6VTpW/ccl88lMT+8PUUuZU3rtqZDbbFNxMzv5HH1SRdS6TT9pvMO4y44IU5GwrwaLH7EE+QW+Es66tkkTv5SW0urIQw9+Eu3+iREhS1w9C1W1wHIqz8/6OgvnxfLNGiMikqfAMZoKCxZQX4V9hmA8+pVtoqSWvkY3+j9fb5LgPQWNfMgb3uZN7HYPuRP+vMZ3Fho2hJ5asibi6DEgFPyfdqZnudYV4JSwUhnuiv6dE2iO0jSs/KF8eAMsqObei31PRPMkDeJcCIVxZL3yP0yF+sj5x7eT4CBuvmjQoSoirBv84sdEt1fxihVV6aZVqw1Sz56hBY+/Vh9JWjzTYFkPMMAYC0oVdgHX6e04H2pLWEIm5V8II1zqAiG79TnxOpsvkA/JQgrTBt4jsCehsjqJp+jWPzQy4SMZIvYm/po8RXQRbHzuSiOz5Q35Wi29oJXmdi1Uf+8it30GorXJGGEbt5VfLeVgQzZNGoj+/Bw79rkP6UgptqXp7EZ/ho+dghx51FwY6tLvuNDFOKgPFb+dnZB3B0XG5xX6OWL2xDCRkTXCSf6UnJvQQkBClQDfLvKD/B7h832a+ivPNJwWULJ80iOHuhipD3mZ06nLVQ6cwH5c6mSUvR7Rwk00rYDw4QQ6cZaHCqrl+CsaDNlGMCj4DklDWU0/ULPdZ8Co1MGWVz08OHgH5yAnUzIzSRgdfnfFdoBxAv8yMM
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(31696002)(26005)(70206006)(53546011)(9786002)(4326008)(8936002)(70586007)(8676002)(44832011)(5660300002)(966005)(508600001)(7636003)(2906002)(2616005)(36860700001)(54906003)(316002)(36756003)(110136005)(82310400005)(6636002)(336012)(40460700003)(186003)(426003)(31686004)(356005)(47076005)(83380400001)(50156003)(43740500002);DIR:OUT;SFP:1101;
 X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 07:13:13.0900
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 07:29:30.5288
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 504718b8-444d-4192-3d49-08da32548be9
+X-MS-Exchange-CrossTenant-Network-Message-Id: a6546202-c8ec-4a27-0602-08da3256d279
 X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN1NAM02FT048.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0018.eop-nam02.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR02MB5207
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR02MB7928
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shravya Kumbham <shravya.kumbham@xilinx.com>
 
-Add condition to check the return value of dma_async_device_register
-and implement its error handling.
 
-Addresses-Coverity: Event check_return.
-Signed-off-by: Shravya Kumbham <shravya.kumbham@xilinx.com>
-Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
-Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
----
- drivers/dma/xilinx/zynqmp_dma.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+On 5/4/22 17:43, Rob Herring wrote:
+> On Fri, Apr 29, 2022 at 8:02 AM Bharat Kumar Gogada
+> <bharat.kumar.gogada@xilinx.com> wrote:
+>>
+>> Describe cpm reg property before cfg reg property to align with
+>> node name.
+> 
+> The order is an ABI. If breaking it is okay, explain why here.
 
-diff --git a/drivers/dma/xilinx/zynqmp_dma.c b/drivers/dma/xilinx/zynqmp_dma.c
-index 3ffa7f37c701..915dbe6275d4 100644
---- a/drivers/dma/xilinx/zynqmp_dma.c
-+++ b/drivers/dma/xilinx/zynqmp_dma.c
-@@ -1094,7 +1094,11 @@ static int zynqmp_dma_probe(struct platform_device *pdev)
- 	p->dst_addr_widths = BIT(zdev->chan->bus_width / 8);
- 	p->src_addr_widths = BIT(zdev->chan->bus_width / 8);
- 
--	dma_async_device_register(&zdev->common);
-+	ret = dma_async_device_register(&zdev->common);
-+	if (ret) {
-+		dev_err(zdev->dev, "failed to register the dma device\n");
-+		goto free_chan_resources;
-+	}
- 
- 	ret = of_dma_controller_register(pdev->dev.of_node,
- 					 of_zynqmp_dma_xlate, zdev);
--- 
-2.25.1
+I didn't push any description for versal to upstream u-boot or linux yet but 
+xilinx is using this order for years. DT binding order wasn't aligned to it.
+
+For example: (Xilinx Linux is in sync with this).
+https://github.com/Xilinx/u-boot-xlnx/blob/master/arch/arm/dts/versal.dtsi
+
+Driver itself is working with reg-names and order of regs doesn't matter. It 
+means changed order doesn't break any functionality.
+Right now reg order really matter in binding doc but would be good in these 
+examples to record that both ways are fine.
+Would it be better to describe that both ways are fine?
+
+   reg-names:
+     oneOf:
+     - items:
+       - const: cfg
+       - const: cpm_slcr
+     - items:
+       - const: cpm_slcr
+       - const: cfg
+
+
+Another small reason is that all hard IPs in Versal are normally placed below 
+4GB address range. And there are some others which also have mapping above. This 
+is one of that example and we normally aligned with 32bit address.
+
+And the biggest reason is that current node name is pcie@fca10000 which should 
+be aligned with the first register base which is before this patch 0x600000000 
+but name suggest that the first reg should be cpm_slcr instead of cfg. That's 
+why I consider this patch as a fix and the patch should contain fixed tag.
+
+Thanks,
+Michal
+
+
 
