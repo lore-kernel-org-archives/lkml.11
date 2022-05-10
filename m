@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E7E8C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:28:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2173C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:28:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243589AbiEJNbc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:31:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45972 "EHLO
+        id S243557AbiEJNbY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:31:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242720AbiEJNW1 (ORCPT
+        with ESMTP id S243691AbiEJNWT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:22:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DDE71632A7;
-        Tue, 10 May 2022 06:16:50 -0700 (PDT)
+        Tue, 10 May 2022 09:22:19 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7A2E5252B;
+        Tue, 10 May 2022 06:16:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C170FB81DA7;
-        Tue, 10 May 2022 13:16:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 166E6C385C9;
-        Tue, 10 May 2022 13:16:32 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B4587CE1EE5;
+        Tue, 10 May 2022 13:15:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1482C385C2;
+        Tue, 10 May 2022 13:15:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188593;
-        bh=lyBqSR0EnOVA8i/cJ7U1vjDXnqHAh9OtfQbsNi3k8Ys=;
+        s=korg; t=1652188557;
+        bh=W34MZk3EtXVGP67+Bx2iGoR3kmpNyZe266vZTLgpJd0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aFozMqH3v16zvI+2cPOdl8+Zk+AvZIumItKiOJ/erGYn4uqivycC/AY6g8D1pbVq2
-         4EoaZtNmG5MK20ulPjjjOLe8oQ8XVXLvQrOzj5n/B1PEMLWKmZb30w16VqgYIoTinG
-         ZeRcueKjv8RhxBxn1tc6LC4OIWyl2znJQlrKRJn0=
+        b=gSNKP9NkLS7uTzWOzJshsg7NB9hUfrGEUTPt1Urr3w1Re5Qz2Usc/QAs5eJUJcoCH
+         VsITLHVV7C+z7ygOq6qfFfEpSiyyNOgcc8XMjVfj7WI5d6DPXxPsj/7Hp5BLGxOFpw
+         wkC3QQwLHwSkPVa90ykuttQH9Uaao041tHmsn3YQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chengfeng Ye <cyeaa@connect.ust.hk>,
-        Takashi Sakamoto <o-takashi@sakamocchi.jp>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.14 58/78] firewire: fix potential uaf in outbound_phy_packet_callback()
-Date:   Tue, 10 May 2022 15:07:44 +0200
-Message-Id: <20220510130734.251438789@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 4.14 47/78] tty: n_gsm: fix malformed counter for out of frame data
+Date:   Tue, 10 May 2022 15:07:33 +0200
+Message-Id: <20220510130733.930598618@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
 References: <20220510130732.522479698@linuxfoundation.org>
@@ -49,47 +47,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengfeng Ye <cyeaa@connect.ust.hk>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-commit b7c81f80246fac44077166f3e07103affe6db8ff upstream.
+commit a24b4b2f660b7ddf3f484b37600bba382cb28a9d upstream.
 
-&e->event and e point to the same address, and &e->event could
-be freed in queue_event. So there is a potential uaf issue if
-we dereference e after calling queue_event(). Fix this by adding
-a temporary variable to maintain e->client in advance, this can
-avoid the potential uaf issue.
+The gsm_mux field 'malformed' represents the number of malformed frames
+received. However, gsm1_receive() also increases this counter for any out
+of frame byte.
+Fix this by ignoring out of frame data for the malformed counter.
 
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Chengfeng Ye <cyeaa@connect.ust.hk>
-Signed-off-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
-Link: https://lore.kernel.org/r/20220409041243.603210-2-o-takashi@sakamocchi.jp
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220414094225.4527-7-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/firewire/core-cdev.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/tty/n_gsm.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/firewire/core-cdev.c
-+++ b/drivers/firewire/core-cdev.c
-@@ -1495,6 +1495,7 @@ static void outbound_phy_packet_callback
- {
- 	struct outbound_phy_packet_event *e =
- 		container_of(packet, struct outbound_phy_packet_event, p);
-+	struct client *e_client;
- 
- 	switch (status) {
- 	/* expected: */
-@@ -1511,9 +1512,10 @@ static void outbound_phy_packet_callback
- 	}
- 	e->phy_packet.data[0] = packet->timestamp;
- 
-+	e_client = e->client;
- 	queue_event(e->client, &e->event, &e->phy_packet,
- 		    sizeof(e->phy_packet) + e->phy_packet.length, NULL, 0);
--	client_put(e->client);
-+	client_put(e_client);
- }
- 
- static int ioctl_send_phy_packet(struct client *client, union ioctl_arg *arg)
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1973,7 +1973,8 @@ static void gsm1_receive(struct gsm_mux
+ 		}
+ 		/* Any partial frame was a runt so go back to start */
+ 		if (gsm->state != GSM_START) {
+-			gsm->malformed++;
++			if (gsm->state != GSM_SEARCH)
++				gsm->malformed++;
+ 			gsm->state = GSM_START;
+ 		}
+ 		/* A SOF in GSM_START means we are still reading idling or
 
 
