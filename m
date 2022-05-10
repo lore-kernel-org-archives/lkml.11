@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62A3AC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 785D7C35296
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:35:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244171AbiEJNhE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:37:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56738 "EHLO
+        id S244186AbiEJNhK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:37:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243380AbiEJN0r (ORCPT
+        with ESMTP id S243407AbiEJN0s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:26:47 -0400
+        Tue, 10 May 2022 09:26:48 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CA71236778;
-        Tue, 10 May 2022 06:19:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 900F52370DB;
+        Tue, 10 May 2022 06:19:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2153DB81CE7;
-        Tue, 10 May 2022 13:19:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E008C385A6;
-        Tue, 10 May 2022 13:19:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0327BB81B32;
+        Tue, 10 May 2022 13:19:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56C2DC385A6;
+        Tue, 10 May 2022 13:19:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188774;
-        bh=Pp2xubEQT4JNvnI5scJ8sOgY3MIdnbd32AZs3pTl5OI=;
+        s=korg; t=1652188777;
+        bh=KhIt1aZPblghE0JCoR3FVxLjEHJIj71rGY2VyzDn0j8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=plUejHJxDG7w0xHfh1oogWrxxLMb2BjxloUtK1Z7zZfuQWglla5NZDpAqoc9X5xcx
-         8RTFIa6puJrWHUbaNRLXgrW1ycAKkevqHQy9F2MO3GiGuQILQrhxzw0Qmp+WzbFkMj
-         7UhyjKl0pMq5JP0JD0aiRjYa8DpHHNZVNGauzYy4=
+        b=keQUSDXMbKoO+6sUDVahwnYVatQpBlZ+CjzRR3XDhn882ZgdUllRTmFLi7xCfqk71
+         Wja4a0+OPfoazeK/i7ubajcpmbKtgqdy8Y2DybwcuErc/tY3F30cJiZH21OYmr7ehE
+         P4/IEjIJhFcIid7EeaOQC/+I452OSZeEEDnwIOLE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        stable@vger.kernel.org, Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 40/88] clk: sunxi: sun9i-mmc: check return value after calling platform_get_resource()
-Date:   Tue, 10 May 2022 15:07:25 +0200
-Message-Id: <20220510130734.913395260@linuxfoundation.org>
+Subject: [PATCH 4.19 41/88] net: bcmgenet: hide status block before TX timestamping
+Date:   Tue, 10 May 2022 15:07:26 +0200
+Message-Id: <20220510130734.942254644@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 References: <20220510130733.735278074@linuxfoundation.org>
@@ -50,36 +50,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Jonathan Lemon <jonathan.lemon@gmail.com>
 
-[ Upstream commit f58ca215cda1975f77b2b762903684a3c101bec9 ]
+[ Upstream commit acac0541d1d65e81e599ec399d34d184d2424401 ]
 
-It will cause null-ptr-deref if platform_get_resource() returns NULL,
-we need check the return value.
+The hardware checksum offloading requires use of a transmit
+status block inserted before the outgoing frame data, this was
+updated in '9a9ba2a4aaaa ("net: bcmgenet: always enable status blocks")'
 
-Fixes: 7a6fca879f59 ("clk: sunxi: Add driver for A80 MMC config clocks/resets")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Reviewed-by: Samuel Holland <samuel@sholland.org>
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Link: https://lore.kernel.org/r/20220421134308.2885094-1-yangyingliang@huawei.com
+However, skb_tx_timestamp() assumes that it is passed a raw frame
+and PTP parsing chokes on this status block.
+
+Fix this by calling __skb_pull(), which hides the TSB before calling
+skb_tx_timestamp(), so an outgoing PTP packet is parsed correctly.
+
+As the data in the skb has already been set up for DMA, and the
+dma_unmap_* calls use a separately stored address, there is no
+no effective change in the data transmission.
+
+Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220424165307.591145-1-jonathan.lemon@gmail.com
+Fixes: d03825fba459 ("net: bcmgenet: add skb_tx_timestamp call")
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/sunxi/clk-sun9i-mmc.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/clk/sunxi/clk-sun9i-mmc.c b/drivers/clk/sunxi/clk-sun9i-mmc.c
-index f00d8758ba24..a706ae9a010a 100644
---- a/drivers/clk/sunxi/clk-sun9i-mmc.c
-+++ b/drivers/clk/sunxi/clk-sun9i-mmc.c
-@@ -117,6 +117,8 @@ static int sun9i_a80_mmc_config_clk_probe(struct platform_device *pdev)
- 	spin_lock_init(&data->lock);
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index d4be107ea4cd..96ef2dd46c78 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -1549,6 +1549,11 @@ static struct sk_buff *bcmgenet_put_tx_csum(struct net_device *dev,
+ 	return skb;
+ }
  
- 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!r)
-+		return -EINVAL;
- 	/* one clock/reset pair per word */
- 	count = DIV_ROUND_UP((resource_size(r)), SUN9I_MMC_WIDTH);
- 	data->membase = devm_ioremap_resource(&pdev->dev, r);
++static void bcmgenet_hide_tsb(struct sk_buff *skb)
++{
++	__skb_pull(skb, sizeof(struct status_64));
++}
++
+ static netdev_tx_t bcmgenet_xmit(struct sk_buff *skb, struct net_device *dev)
+ {
+ 	struct bcmgenet_priv *priv = netdev_priv(dev);
+@@ -1657,6 +1662,8 @@ static netdev_tx_t bcmgenet_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	}
+ 
+ 	GENET_CB(skb)->last_cb = tx_cb_ptr;
++
++	bcmgenet_hide_tsb(skb);
+ 	skb_tx_timestamp(skb);
+ 
+ 	/* Decrement total BD count and advance our write pointer */
 -- 
 2.35.1
 
