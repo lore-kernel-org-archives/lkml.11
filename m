@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E9C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:30:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3492C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:30:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243502AbiEJOeW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:34:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49676 "EHLO
+        id S243509AbiEJOec (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:34:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344173AbiEJOHk (ORCPT
+        with ESMTP id S1344168AbiEJOHk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 10:07:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 204D81FE1D8;
-        Tue, 10 May 2022 06:41:57 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2124D201317;
+        Tue, 10 May 2022 06:41:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 289FE61932;
-        Tue, 10 May 2022 13:41:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17C50C385C2;
-        Tue, 10 May 2022 13:41:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E64D6615E9;
+        Tue, 10 May 2022 13:41:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 018F4C385A6;
+        Tue, 10 May 2022 13:41:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652190116;
-        bh=Wqyx8+KUJrqQW5ZQlScnzLnnSc5goRnS75MkHenOtkk=;
+        s=korg; t=1652190110;
+        bh=yoCwmthqTWLrTpChDssSy8r1GU2Q8VGPcgaoXwsiVu8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kFHCgR+ebBhA35Zwpn7cjalTHD/32cM+KXm/By09MJrFnc56YFie1HNq2FHGCEpqc
-         bwwoxd+1gImgV3G/1C0fZONHKqiuOWyCLeAok9dNhDbpTOr3gnJ0CTcMy+seb/CSdV
-         23ZgyghAPB7rlV+1Cm6ueGIxJlLd2/g4AeAn9Krw=
+        b=bslENd1HuyKKtn/XNUOE40mKJmYQLNKDGJSsOcgeBR4RKTg0t7u0EXqJqDbIGfocn
+         5PpJvlXO8ugN6HMbdndDg9hfWW9PqUgAtVTEKRCeLljeti2sfbjqD811GyyrbsUAso
+         2jVna7+/AWMVPvBGZRrCfikTFehlv1vnDbAXq3J4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 5.17 083/140] NFSv4: Dont invalidate inode attributes on delegation return
-Date:   Tue, 10 May 2022 15:07:53 +0200
-Message-Id: <20220510130743.985788053@linuxfoundation.org>
+        stable@vger.kernel.org, Carlos Llamas <cmllamas@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH 5.17 091/140] selftests/net: so_txtime: fix parsing of start time stamp on 32 bit systems
+Date:   Tue, 10 May 2022 15:08:01 +0200
+Message-Id: <20220510130744.211645827@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -48,51 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-commit 00c94ebec5925593c0377b941289224469e72ac7 upstream.
+commit 97926d5a847ca1758ad8702ce591e3b05a701e0d upstream.
 
-There is no need to declare attributes such as the ctime, mtime and
-block size invalid when we're just returning a delegation, so it is
-inappropriate to call nfs_post_op_update_inode_force_wcc().
-Instead, just call nfs_refresh_inode() after faking up the change
-attribute. We know that the GETATTR op occurs before the DELEGRETURN, so
-we are safe when doing this.
+This patch fixes the parsing of the cmd line supplied start time on 32
+bit systems. A "long" on 32 bit systems is only 32 bit wide and cannot
+hold a timestamp in nano second resolution.
 
-Fixes: 0bc2c9b4dca9 ("NFSv4: Don't discard the attributes returned by asynchronous DELEGRETURN")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Fixes: 040806343bb4 ("selftests/net: so_txtime multi-host support")
+Cc: Carlos Llamas <cmllamas@google.com>
+Cc: Willem de Bruijn <willemb@google.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Acked-by: Willem de Bruijn <willemb@google.com>
+Reviewed-by: Carlos Llamas <cmllamas@google.com>
+Link: https://lore.kernel.org/r/20220502094638.1921702-2-mkl@pengutronix.de
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/nfs4proc.c |   12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ tools/testing/selftests/net/so_txtime.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/nfs/nfs4proc.c
-+++ b/fs/nfs/nfs4proc.c
-@@ -363,6 +363,14 @@ static void nfs4_setup_readdir(u64 cooki
- 	kunmap_atomic(start);
- }
- 
-+static void nfs4_fattr_set_prechange(struct nfs_fattr *fattr, u64 version)
-+{
-+	if (!(fattr->valid & NFS_ATTR_FATTR_PRECHANGE)) {
-+		fattr->pre_change_attr = version;
-+		fattr->valid |= NFS_ATTR_FATTR_PRECHANGE;
-+	}
-+}
-+
- static void nfs4_test_and_free_stateid(struct nfs_server *server,
- 		nfs4_stateid *stateid,
- 		const struct cred *cred)
-@@ -6556,7 +6564,9 @@ static void nfs4_delegreturn_release(voi
- 		pnfs_roc_release(&data->lr.arg, &data->lr.res,
- 				 data->res.lr_ret);
- 	if (inode) {
--		nfs_post_op_update_inode_force_wcc(inode, &data->fattr);
-+		nfs4_fattr_set_prechange(&data->fattr,
-+					 inode_peek_iversion_raw(inode));
-+		nfs_refresh_inode(inode, &data->fattr);
- 		nfs_iput_and_deactive(inode);
- 	}
- 	kfree(calldata);
+--- a/tools/testing/selftests/net/so_txtime.c
++++ b/tools/testing/selftests/net/so_txtime.c
+@@ -475,7 +475,7 @@ static void parse_opts(int argc, char **
+ 			cfg_rx = true;
+ 			break;
+ 		case 't':
+-			cfg_start_time_ns = strtol(optarg, NULL, 0);
++			cfg_start_time_ns = strtoll(optarg, NULL, 0);
+ 			break;
+ 		case 'm':
+ 			cfg_mark = strtol(optarg, NULL, 0);
 
 
