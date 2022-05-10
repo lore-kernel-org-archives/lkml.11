@@ -2,106 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66C07C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 18:42:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DC29C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 18:44:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349038AbiEJSmc (ORCPT
+        id S1349045AbiEJSoX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 14:42:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41972 "EHLO
+        Tue, 10 May 2022 14:44:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243004AbiEJSmS (ORCPT
+        with ESMTP id S243632AbiEJSoS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 14:42:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA2DF268669;
-        Tue, 10 May 2022 11:42:17 -0700 (PDT)
+        Tue, 10 May 2022 14:44:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AEF62A1898
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 11:44:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81C74B81F8E;
-        Tue, 10 May 2022 18:42:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C043CC385C2;
-        Tue, 10 May 2022 18:42:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E140160F2E
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 18:44:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43472C385A6;
+        Tue, 10 May 2022 18:44:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652208135;
-        bh=v9assGn8KJvRcYSGGwT4yY/3QErO+MifFnTskNJEOJs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DOiuH0NVr/M/+D5cGKtA0J1jPwNc7Q8iGoTIHw/Md93ZJ9xbOK2Ywccrswpf+c1dl
-         eKMzThtVr/hgf5FfUOj7+nCl8EARsp8oJ+Q6SwDhDrxMyEP+r0RPy+WlaoX9t7VNOC
-         llRIBpGK6tQ1GrdjtW081wS+TpLpCLyYg/qvj4C0JAnTlwr0/QtIbSprwj7+MO4S7d
-         h6byhmIWcZdfbOZzTEESvxHVQcl9rXmuxi5hq3HkhG5oMY0/tVZWe/Uw3lcG3Tc/QG
-         TtFuJKiVDAwisMzTPzG0YlDePMN/CkoBZ8qh2L+ljj0ClNXh1RMpumcWP2GgOGWQSr
-         jpyz2ShXwNNFg==
-Date:   Tue, 10 May 2022 11:42:13 -0700
-From:   Josh Poimboeuf <jpoimboe@kernel.org>
-To:     Rik van Riel <riel@fb.com>
-Cc:     "song@kernel.org" <song@kernel.org>,
-        "joe.lawrence@redhat.com" <joe.lawrence@redhat.com>,
-        Song Liu <songliubraving@fb.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "vincent.guittot@linaro.org" <vincent.guittot@linaro.org>,
-        "pmladek@suse.com" <pmladek@suse.com>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "jpoimboe@redhat.com" <jpoimboe@redhat.com>
-Subject: Re: [RFC] sched,livepatch: call klp_try_switch_task in __cond_resched
-Message-ID: <20220510184213.l3gjweeleyg7obca@treble>
-References: <20220507174628.2086373-1-song@kernel.org>
- <YnkuFrm1YR46OFx/@alley>
- <9C7DF147-5112-42E7-9F7C-7159EFDFB766@fb.com>
- <YnoawYtoCSvrK7lb@alley>
- <3a9bfb4a52b715bd8739d8834409c9549ec7f22f.camel@fb.com>
- <YnqIcw+dYsWz/w7g@alley>
- <6bf85ff908377508a5f5bcc7c4e75d598b96f388.camel@fb.com>
- <20220510165244.ikfh64ertnvodxb4@treble>
- <1bd15361edfd4db9fc9271d35e7bbe5edad1b87a.camel@fb.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1bd15361edfd4db9fc9271d35e7bbe5edad1b87a.camel@fb.com>
+        s=k20201202; t=1652208256;
+        bh=nteh6AJ0r/mVoLGErlwN08kpu+PDPyjBwrscK6E6gMM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=c8ITZL1dSmm+7KIcn1BE2SWdv4gJmLG8b4yxs8UnXP3SxRmmJ9JRnsJbtwL3EyMkg
+         fa5VyY2+UtEZWLnnlmKodN5xfltqzKp4Cd2HOIMxY0ImV2CrpCBm0IWkwPyXxeqaKu
+         MeZy8laibpfybPOPGyyHLsAKsXzmLV9FEFogAetD6ugOzI4yVKrO7zwSoZDxVMmrah
+         pBR7974MbvYolLWeTyvL/1JH2hej+mIX2J8z7iausKwb7czjJrDS3VPlVItgicsZVj
+         846XtbM3YYldPLoAOkDe15V3LDCT+ry/jPfufEPWnMM8SL+bsXpWce7U0SMiqik3u8
+         TcaQq8tZhXrBw==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1noUqD-00AMwc-NU; Tue, 10 May 2022 19:44:13 +0100
+Date:   Tue, 10 May 2022 19:44:13 +0100
+Message-ID: <875ymd6xdu.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Antonio Borneo <antonio.borneo@foss.st.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Pascal Paillet <p.paillet@foss.st.com>,
+        Ludovic Barre <ludovic.barre@foss.st.com>,
+        Loic Pallardy <loic.pallardy@foss.st.com>
+Subject: Re: [PATCH 4/7] irqchip/stm32-exti: forward irq_request_resources to parent
+In-Reply-To: <20220510164123.557921-4-antonio.borneo@foss.st.com>
+References: <20220510164123.557921-1-antonio.borneo@foss.st.com>
+        <20220510164123.557921-4-antonio.borneo@foss.st.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: antonio.borneo@foss.st.com, tglx@linutronix.de, mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com, linux-kernel@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com, linux-arm-kernel@lists.infradead.org, p.paillet@foss.st.com, ludovic.barre@foss.st.com, loic.pallardy@foss.st.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 06:07:00PM +0000, Rik van Riel wrote:
-> On Tue, 2022-05-10 at 09:52 -0700, Josh Poimboeuf wrote:
-> > On Tue, May 10, 2022 at 04:07:42PM +0000, Rik van Riel wrote:
-> > > > 
-> > > Now I wonder if we could just hook up a preempt notifier
-> > > for kernel live patches. All the distro kernels already
-> > > need the preempt notifier for KVM, anyway...
-> > > 
-> > 
-> > I wouldn't be opposed to that, but how does it solve this problem? 
-> > If
-> > as Peter said cond_resched() can be a NOP, then preemption would have
-> > to
-> > be from an interrupt, in which case frame pointers aren't reliable.
-> > 
-> The systems where we are seeing problems do not, as far
-> as I know, throw softlockup errors, so the kworker
-> threads that fail to transition to the new KLP version
-> are sleeping and getting scheduled out at times.
+On Tue, 10 May 2022 17:41:20 +0100,
+Antonio Borneo <antonio.borneo@foss.st.com> wrote:
+> 
+> From: Pascal Paillet <p.paillet@foss.st.com>
+> 
+> Enhance stm32-exti driver to forward request_resources and
+> release_resources_parent operations to parent.
+> Do not use irq_request_resources_parent because it returns
+> an error when the parent does not implement irq_request_resources.
+> 
+> Signed-off-by: Pascal Paillet <p.paillet@foss.st.com>
+> Signed-off-by: Antonio Borneo <antonio.borneo@foss.st.com>
+> ---
+>  drivers/irqchip/irq-stm32-exti.c | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
+> 
+> diff --git a/drivers/irqchip/irq-stm32-exti.c b/drivers/irqchip/irq-stm32-exti.c
+> index c8003f4f0457..3f6d524a87fe 100644
+> --- a/drivers/irqchip/irq-stm32-exti.c
+> +++ b/drivers/irqchip/irq-stm32-exti.c
+> @@ -550,6 +550,16 @@ static void stm32_exti_h_unmask(struct irq_data *d)
+>  		irq_chip_unmask_parent(d);
+>  }
+>  
+> +static int stm32_exti_h_request_resources(struct irq_data *data)
+> +{
+> +	data = data->parent_data;
+> +
+> +	if (data->chip->irq_request_resources)
+> +		return data->chip->irq_request_resources(data);
+> +
+> +	return 0;
+> +}
 
-Are they sleeping due to an explicit call to cond_resched()?
+Why do you need to reinvent the whole thing? Why isn't it just:
 
-> A KLP transition preempt notifier would help those
-> kernel threads transition to the new KLP version at
-> any time they reschedule.
+static int stm32_exti_h_request_resources(struct irq_data *data)
+{
+	irq_chip_request_resources_parent(data);
+	return 0;
+}
 
-... unless cond_resched() is a no-op due to CONFIG_PREEMPT?
+And this really deserves a comment. I also wonder whether we should
+change this behaviour to always return 0.
 
-> How much it will help is hard to predict, but I should
-> be able to get results from a fairly large sample size
-> of systems within a few weeks :)
-
-As Peter said, keep in mind that we will need to fix other cases beyond
-Facebook, i.e., CONFIG_PREEMPT combined with non-x86 arches which don't
-have ORC so they can't reliably unwind from an IRQ.
+	M.
 
 -- 
-Josh
+Without deviation from the norm, progress is not possible.
