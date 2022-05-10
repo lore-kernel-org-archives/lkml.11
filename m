@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B584CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:03:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17F74C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:03:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245210AbiEJOGK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:06:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55152 "EHLO
+        id S245408AbiEJOGg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:06:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244676AbiEJNmE (ORCPT
+        with ESMTP id S244445AbiEJNlz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:42:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43FD72C96DE;
-        Tue, 10 May 2022 06:30:24 -0700 (PDT)
+        Tue, 10 May 2022 09:41:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C0752AC6CF;
+        Tue, 10 May 2022 06:30:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1557BB81DAF;
-        Tue, 10 May 2022 13:30:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E9E9C385C6;
-        Tue, 10 May 2022 13:30:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 760AC61765;
+        Tue, 10 May 2022 13:30:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B304C385C6;
+        Tue, 10 May 2022 13:30:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189420;
-        bh=9K72YIuqnFZ74bLMN4NZLheBjx01HBS0DoUJAc1ZgOQ=;
+        s=korg; t=1652189402;
+        bh=jw3YM3GI0MfIJHwjnsu/c/BMP3KcLxcJzJF8j/JYdbU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2muPRftN+QXRpMGJmSldKfj8MXCuXMoS/RokCZl8CMIG8zcvIsobkW2uRLofhwIek
-         X7LUE9CnlD3ssR2wgi5pTOeVndwcMviBnG+GReVOexKlUptZxyB5+xWdIZd1Ei35ai
-         U6bJ4tb4UI0Q4qmhqFcrmjjlk3Hv7pC91p6OH49Y=
+        b=pq0zmGv3G8KF9QEriN0a3e6keKJ0kUkfzZTMp9RkSA4j79nkAQMqhtR8Sl+8YeUGO
+         sUItrCAlS24BLHsRR2ZBFNWIjEnIjV3VWhZjuvaNOyQ2nnWqLVyo/eejYDS/j8J8MW
+         Tx798X6UVRhQM0ATwfnahnAPNE2j7E2Va1b02n9w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 038/135] nfc: nfcmrvl: main: reorder destructive operations in nfcmrvl_nci_unregister_dev to avoid bugs
-Date:   Tue, 10 May 2022 15:07:00 +0200
-Message-Id: <20220510130741.495515553@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH 5.15 005/135] mmc: sdhci-msm: Reset GCC_SDCC_BCR register for SDHC
+Date:   Tue, 10 May 2022 15:06:27 +0200
+Message-Id: <20220510130740.552176396@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -48,113 +52,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
 
-commit d270453a0d9ec10bb8a802a142fb1b3601a83098 upstream.
+commit 3e5a8e8494a8122fe4eb3f167662f406cab753b9 upstream.
 
-There are destructive operations such as nfcmrvl_fw_dnld_abort and
-gpio_free in nfcmrvl_nci_unregister_dev. The resources such as firmware,
-gpio and so on could be destructed while the upper layer functions such as
-nfcmrvl_fw_dnld_start and nfcmrvl_nci_recv_frame is executing, which leads
-to double-free, use-after-free and null-ptr-deref bugs.
+Reset GCC_SDCC_BCR register before every fresh initilazation. This will
+reset whole SDHC-msm controller, clears the previous power control
+states and avoids, software reset timeout issues as below.
 
-There are three situations that could lead to double-free bugs.
+[ 5.458061][ T262] mmc1: Reset 0x1 never completed.
+[ 5.462454][ T262] mmc1: sdhci: ============ SDHCI REGISTER DUMP ===========
+[ 5.469065][ T262] mmc1: sdhci: Sys addr: 0x00000000 | Version: 0x00007202
+[ 5.475688][ T262] mmc1: sdhci: Blk size: 0x00000000 | Blk cnt: 0x00000000
+[ 5.482315][ T262] mmc1: sdhci: Argument: 0x00000000 | Trn mode: 0x00000000
+[ 5.488927][ T262] mmc1: sdhci: Present: 0x01f800f0 | Host ctl: 0x00000000
+[ 5.495539][ T262] mmc1: sdhci: Power: 0x00000000 | Blk gap: 0x00000000
+[ 5.502162][ T262] mmc1: sdhci: Wake-up: 0x00000000 | Clock: 0x00000003
+[ 5.508768][ T262] mmc1: sdhci: Timeout: 0x00000000 | Int stat: 0x00000000
+[ 5.515381][ T262] mmc1: sdhci: Int enab: 0x00000000 | Sig enab: 0x00000000
+[ 5.521996][ T262] mmc1: sdhci: ACmd stat: 0x00000000 | Slot int: 0x00000000
+[ 5.528607][ T262] mmc1: sdhci: Caps: 0x362dc8b2 | Caps_1: 0x0000808f
+[ 5.535227][ T262] mmc1: sdhci: Cmd: 0x00000000 | Max curr: 0x00000000
+[ 5.541841][ T262] mmc1: sdhci: Resp[0]: 0x00000000 | Resp[1]: 0x00000000
+[ 5.548454][ T262] mmc1: sdhci: Resp[2]: 0x00000000 | Resp[3]: 0x00000000
+[ 5.555079][ T262] mmc1: sdhci: Host ctl2: 0x00000000
+[ 5.559651][ T262] mmc1: sdhci_msm: ----------- VENDOR REGISTER DUMP-----------
+[ 5.566621][ T262] mmc1: sdhci_msm: DLL sts: 0x00000000 | DLL cfg: 0x6000642c | DLL cfg2: 0x0020a000
+[ 5.575465][ T262] mmc1: sdhci_msm: DLL cfg3: 0x00000000 | DLL usr ctl: 0x00010800 | DDR cfg: 0x80040873
+[ 5.584658][ T262] mmc1: sdhci_msm: Vndr func: 0x00018a9c | Vndr func2 : 0xf88218a8 Vndr func3: 0x02626040
 
-The first situation is shown below:
-
-   (Thread 1)                 |      (Thread 2)
-nfcmrvl_fw_dnld_start         |
- ...                          |  nfcmrvl_nci_unregister_dev
- release_firmware()           |   nfcmrvl_fw_dnld_abort
-  kfree(fw) //(1)             |    fw_dnld_over
-                              |     release_firmware
-  ...                         |      kfree(fw) //(2)
-                              |     ...
-
-The second situation is shown below:
-
-   (Thread 1)                 |      (Thread 2)
-nfcmrvl_fw_dnld_start         |
- ...                          |
- mod_timer                    |
- (wait a time)                |
- fw_dnld_timeout              |  nfcmrvl_nci_unregister_dev
-   fw_dnld_over               |   nfcmrvl_fw_dnld_abort
-    release_firmware          |    fw_dnld_over
-     kfree(fw) //(1)          |     release_firmware
-     ...                      |      kfree(fw) //(2)
-
-The third situation is shown below:
-
-       (Thread 1)               |       (Thread 2)
-nfcmrvl_nci_recv_frame          |
- if(..->fw_download_in_progress)|
-  nfcmrvl_fw_dnld_recv_frame    |
-   queue_work                   |
-                                |
-fw_dnld_rx_work                 | nfcmrvl_nci_unregister_dev
- fw_dnld_over                   |  nfcmrvl_fw_dnld_abort
-  release_firmware              |   fw_dnld_over
-   kfree(fw) //(1)              |    release_firmware
-                                |     kfree(fw) //(2)
-
-The firmware struct is deallocated in position (1) and deallocated
-in position (2) again.
-
-The crash trace triggered by POC is like below:
-
-BUG: KASAN: double-free or invalid-free in fw_dnld_over
-Call Trace:
-  kfree
-  fw_dnld_over
-  nfcmrvl_nci_unregister_dev
-  nci_uart_tty_close
-  tty_ldisc_kill
-  tty_ldisc_hangup
-  __tty_hangup.part.0
-  tty_release
-  ...
-
-What's more, there are also use-after-free and null-ptr-deref bugs
-in nfcmrvl_fw_dnld_start. If we deallocate firmware struct, gpio or
-set null to the members of priv->fw_dnld in nfcmrvl_nci_unregister_dev,
-then, we dereference firmware, gpio or the members of priv->fw_dnld in
-nfcmrvl_fw_dnld_start, the UAF or NPD bugs will happen.
-
-This patch reorders destructive operations after nci_unregister_device
-in order to synchronize between cleanup routine and firmware download
-routine.
-
-The nci_unregister_device is well synchronized. If the device is
-detaching, the firmware download routine will goto error. If firmware
-download routine is executing, nci_unregister_device will wait until
-firmware download routine is finished.
-
-Fixes: 3194c6870158 ("NFC: nfcmrvl: add firmware download support")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 0eb0d9f4de34 ("mmc: sdhci-msm: Initial support for Qualcomm chipsets")
+Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
+Acked-by: Adrian Hunter <adrian.hunter@intel.com>
+Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+Tested-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/1650816153-23797-1-git-send-email-quic_c_sbhanu@quicinc.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nfc/nfcmrvl/main.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mmc/host/sdhci-msm.c |   42 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 42 insertions(+)
 
---- a/drivers/nfc/nfcmrvl/main.c
-+++ b/drivers/nfc/nfcmrvl/main.c
-@@ -183,6 +183,7 @@ void nfcmrvl_nci_unregister_dev(struct n
- {
- 	struct nci_dev *ndev = priv->ndev;
+--- a/drivers/mmc/host/sdhci-msm.c
++++ b/drivers/mmc/host/sdhci-msm.c
+@@ -17,6 +17,7 @@
+ #include <linux/regulator/consumer.h>
+ #include <linux/interconnect.h>
+ #include <linux/pinctrl/consumer.h>
++#include <linux/reset.h>
  
-+	nci_unregister_device(ndev);
- 	if (priv->ndev->nfc_dev->fw_download_in_progress)
- 		nfcmrvl_fw_dnld_abort(priv);
- 
-@@ -191,7 +192,6 @@ void nfcmrvl_nci_unregister_dev(struct n
- 	if (gpio_is_valid(priv->config.reset_n_io))
- 		gpio_free(priv->config.reset_n_io);
- 
--	nci_unregister_device(ndev);
- 	nci_free_device(ndev);
- 	kfree(priv);
+ #include "sdhci-pltfm.h"
+ #include "cqhci.h"
+@@ -2482,6 +2483,43 @@ static inline void sdhci_msm_get_of_prop
+ 	of_property_read_u32(node, "qcom,dll-config", &msm_host->dll_config);
  }
+ 
++static int sdhci_msm_gcc_reset(struct device *dev, struct sdhci_host *host)
++{
++	struct reset_control *reset;
++	int ret = 0;
++
++	reset = reset_control_get_optional_exclusive(dev, NULL);
++	if (IS_ERR(reset))
++		return dev_err_probe(dev, PTR_ERR(reset),
++				"unable to acquire core_reset\n");
++
++	if (!reset)
++		return ret;
++
++	ret = reset_control_assert(reset);
++	if (ret) {
++		reset_control_put(reset);
++		return dev_err_probe(dev, ret, "core_reset assert failed\n");
++	}
++
++	/*
++	 * The hardware requirement for delay between assert/deassert
++	 * is at least 3-4 sleep clock (32.7KHz) cycles, which comes to
++	 * ~125us (4/32768). To be on the safe side add 200us delay.
++	 */
++	usleep_range(200, 210);
++
++	ret = reset_control_deassert(reset);
++	if (ret) {
++		reset_control_put(reset);
++		return dev_err_probe(dev, ret, "core_reset deassert failed\n");
++	}
++
++	usleep_range(200, 210);
++	reset_control_put(reset);
++
++	return ret;
++}
+ 
+ static int sdhci_msm_probe(struct platform_device *pdev)
+ {
+@@ -2529,6 +2567,10 @@ static int sdhci_msm_probe(struct platfo
+ 
+ 	msm_host->saved_tuning_phase = INVALID_TUNING_PHASE;
+ 
++	ret = sdhci_msm_gcc_reset(&pdev->dev, host);
++	if (ret)
++		goto pltfm_free;
++
+ 	/* Setup SDCC bus voter clock. */
+ 	msm_host->bus_clk = devm_clk_get(&pdev->dev, "bus");
+ 	if (!IS_ERR(msm_host->bus_clk)) {
 
 
