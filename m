@@ -2,64 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8124FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 10:01:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7981FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 10:02:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239448AbiEJKFs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 06:05:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35444 "EHLO
+        id S239432AbiEJKG0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 06:06:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239433AbiEJKFj (ORCPT
+        with ESMTP id S239474AbiEJKF5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 06:05:39 -0400
-Received: from mail.meizu.com (unknown [14.29.68.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91FE18565C;
-        Tue, 10 May 2022 03:01:40 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
- (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Tue, 10 May
- 2022 18:01:39 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Tue, 10 May
- 2022 18:01:38 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     <will@kernel.org>, <peterz@infradead.org>,
-        <daniel.thompson@linaro.org>, <bristot@redhat.com>
-CC:     <linux-ia64@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Haowen Bai <baihaowen@meizu.com>
-Subject: [PATCH] ia64: mca: Drop redundant spinlock initialization
-Date:   Tue, 10 May 2022 18:01:37 +0800
-Message-ID: <1652176897-4754-1-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
+        Tue, 10 May 2022 06:05:57 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D92294FC47;
+        Tue, 10 May 2022 03:01:59 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 1A3DD2189B;
+        Tue, 10 May 2022 10:01:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1652176918; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ng1gjFMRRzUs+vuWaCnvlB9iqmrxKNbub8Jd2LzeOqw=;
+        b=uSYFiBmga/xU+3ozDfbwSTbP7EXKko/PyJOiDgz4WmRVLHLfaOQ2CavrrwE/WBr8oIKCIL
+        lpm4boXNzPdW9CNWHQqwutGQJ3+rFjSy6ifH/DYAopIER18OGb8FF6yARlcEy8Q5YAP6Av
+        DaXcFVZ/Tw7aQdxSsBvRD3ll0ZBE4iM=
+Received: from suse.cz (unknown [10.100.208.146])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 5B2CE2C142;
+        Tue, 10 May 2022 10:01:57 +0000 (UTC)
+Date:   Tue, 10 May 2022 12:01:54 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-kernel@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH next v1] serial: msm_serial: disable interrupts in
+ __msm_console_write()
+Message-ID: <Yno4Eo6ZcmQRqs1B@alley>
+References: <20220506213324.470461-1-john.ogness@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220506213324.470461-1-john.ogness@linutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-mlogbuf_rlock has declared and initialized by DEFINE_SPINLOCK,
-so we don't need to spin_lock_init again, drop it.
+On Fri 2022-05-06 23:39:24, John Ogness wrote:
+> __msm_console_write() assumes that interrupts are disabled, but
+> with threaded console printers it is possible that the write()
+> callback of the console is called with interrupts enabled.
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
----
- arch/ia64/kernel/mca.c | 1 -
- 1 file changed, 1 deletion(-)
+IMHO, it would be nice to include the lockdep splat from
+https://lore.kernel.org/r/bb5cadc3-0940-7f5c-7a1b-8120ddac9039@samsung.com
 
-diff --git a/arch/ia64/kernel/mca.c b/arch/ia64/kernel/mca.c
-index e628a88607bb..c62a66710ad6 100644
---- a/arch/ia64/kernel/mca.c
-+++ b/arch/ia64/kernel/mca.c
-@@ -290,7 +290,6 @@ static void ia64_mlogbuf_finish(int wait)
- {
- 	BREAK_LOGLEVEL(console_loglevel);
- 
--	spin_lock_init(&mlogbuf_rlock);
- 	ia64_mlogbuf_dump();
- 	printk(KERN_EMERG "mlogbuf_finish: printing switched to urgent mode, "
- 		"MCA/INIT might be dodgy or fail.\n");
--- 
-2.7.4
 
+> Explicitly disable interrupts using local_irq_save() to preserve
+> the assumed context.
+> 
+> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+
+Otherwise, it looks good to me:
+
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+
+
+>  Note: I checked the other serial drivers and this was the only
+>        one that assumed interrupts off for write().
+
+Great.
+
+Best Regards,
+Petr
+
+
+
+
+>  drivers/tty/serial/msm_serial.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+> index 23c94b927776..e676ec761f18 100644
+> --- a/drivers/tty/serial/msm_serial.c
+> +++ b/drivers/tty/serial/msm_serial.c
+> @@ -1599,6 +1599,7 @@ static inline struct uart_port *msm_get_port_from_line(unsigned int line)
+>  static void __msm_console_write(struct uart_port *port, const char *s,
+>  				unsigned int count, bool is_uartdm)
+>  {
+> +	unsigned long flags;
+>  	int i;
+>  	int num_newlines = 0;
+>  	bool replaced = false;
+> @@ -1616,6 +1617,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
+>  			num_newlines++;
+>  	count += num_newlines;
+>  
+> +	local_irq_save(flags);
+> +
+>  	if (port->sysrq)
+>  		locked = 0;
+>  	else if (oops_in_progress)
+> @@ -1661,6 +1664,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
+>  
+>  	if (locked)
+>  		spin_unlock(&port->lock);
+> +
+> +	local_irq_restore(flags);
+>  }
+>  
+>  static void msm_console_write(struct console *co, const char *s,
+> 
+> base-commit: 38a288f5941ef03752887ad86f2d85442358c99a
+> -- 
+> 2.30.2
