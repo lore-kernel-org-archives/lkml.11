@@ -2,135 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F342C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:03:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59ECFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:03:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345516AbiEJPHj (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:07:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36130 "EHLO
+        id S241436AbiEJPHq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 11:07:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346045AbiEJPGq (ORCPT
+        with ESMTP id S1346472AbiEJPH2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:06:46 -0400
-Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com [209.85.219.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B2F931937
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:33:26 -0700 (PDT)
-Received: by mail-yb1-f175.google.com with SMTP id i11so9018922ybq.9
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:33:26 -0700 (PDT)
+        Tue, 10 May 2022 11:07:28 -0400
+Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F0152C4F50
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:34:35 -0700 (PDT)
+Received: by mail-il1-x136.google.com with SMTP id n6so9567188ili.7
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:34:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=rGblXoUkUHtvTljXNDLZVxTcvx9dZj70mMSSLo73A/0=;
+        b=gRAlNipA2oxaI1fA4spq7HV83J45VpHsnLHXN/8Ma8MJZhSm/qXwpbsJMN8h0mbsxN
+         RNBl06+bi5bo2dw8/gCYStXWSyBVOixoyuUC9jVDg15R8TvoQze7x3PF6c71Vlgq1jzU
+         XRuCU3cf7Y4p/LaHyA9wNcO6Ug/GeSuh1MHnDH077LmGX8lhcVk3gUEBQvllRO1pOVd3
+         VfjlnmfuaEUbdjUBdaupw4nAjOiu6VQ04rctPlf5gwiZnUNL83cd+QGEnufl1ZfY7FeE
+         dEZlwpQw6ldVozVs5fQhVo7ixyRFLWUReeoEGJ+gJWqmykv5cQVaIDnlnQPjqheEu4JL
+         ftmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mx7jkXBBdOIkJsGSW9sVzyIselbqrtRZw2WUonRIsCM=;
-        b=sT1jp4rCdLtP0oStePP6Vp5MUtS+Y4Tuj3TUHO63hUCsDuH+LIss6UNQP5gafSuuiq
-         Qu8lzWWmSNdd7NlzTjhvZT1BBIVP9PcVG4SgL7cv+1paOq0CQDgXDlanFKHwAPtrBKzG
-         oE3NNyvrBvMJVmuXvkebo9o8XGfgxO1ltmUsWzdpe+3G96oSvNmFTmeP38TfPQylXgRY
-         wvRk9of/sf2JJNYY5TIaMP6RKBsoICO/XQOS1KPWOvTaqsxV9D/u8gahf+Q1cavWINGx
-         N+2BsI0EUObt986G3zq5vBSphgAQW8EqnaaYsWe1siGWcsv5CUI9O6x+K5pPrhpGCVrl
-         cDCw==
-X-Gm-Message-State: AOAM5339N7qnZ30Mcjs1i1WcyGZnJ3FsXA45MPXa+RWh5xsZSfVVc0bN
-        nY+luOMfVN0frVHyxC8OenJl+tH6DUrEQYZjtVCRnMv0iERgTw==
-X-Google-Smtp-Source: ABdhPJy3Uvp+D2AneUT5l7gTpn9VYrLB+IUai+5w9pwWufj0Ww56cSOPIr2Y94RdD35Oxp6LTgqxmzGrtKOiRNWq+7o=
-X-Received: by 2002:a5b:491:0:b0:64a:f42f:6973 with SMTP id
- n17-20020a5b0491000000b0064af42f6973mr6000334ybp.20.1652193205241; Tue, 10
- May 2022 07:33:25 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=rGblXoUkUHtvTljXNDLZVxTcvx9dZj70mMSSLo73A/0=;
+        b=i3l4z6UAtub5EiEwUXao3/6K9RDhSmel9E22RpFOX3ryDPi+v1cvMdykBNd8cODfaA
+         afb8+iIhk0pmlAnsWQ+oBZEsmCvgo6vMox5IDSRt1Jtrs8sgPWP1Cgl7ve5+k/MoS+L0
+         QMKbarhyMBRHVp/RfK/+6VLWKQJE9ScJj7N1NICRWZn0vV0qhW9W/2AQ+ID5vnvk5zjj
+         gZyNF4FfHatHHvE1AV3wpoZ7AtfgfBGLrwy46Am/5/PRG10H41k0RuJOeop/JLoqMf2E
+         J1+IzIzld0BF2yncN7VzcdMJU61kbXFIUn9F6bPhG6R5BppdGS3AymaMVCZi5ZsmPI0X
+         ehkg==
+X-Gm-Message-State: AOAM5327t296SGVKnNgKDC2240D80pLRe8wvWT/MJ2/KyQYwQpH+c3X/
+        09o2yz0NVKRfHbFA8DlmsK2lsK/teP5FZQ==
+X-Google-Smtp-Source: ABdhPJx+LSU3byZXjsmlDOaLGZkN952dv5wFlk+RVrffs6jor3BObJzc6TW4hH64Z4ryTFGrtGXHyA==
+X-Received: by 2002:a92:d1d1:0:b0:2cd:73a5:f0 with SMTP id u17-20020a92d1d1000000b002cd73a500f0mr9010743ilg.161.1652193274502;
+        Tue, 10 May 2022 07:34:34 -0700 (PDT)
+Received: from [192.168.1.172] ([207.135.234.126])
+        by smtp.gmail.com with ESMTPSA id c4-20020a92c8c4000000b002cd7dc16ae4sm3935720ilq.1.2022.05.10.07.34.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 May 2022 07:34:33 -0700 (PDT)
+Message-ID: <ae314168-4cb8-cdcf-1e13-2c5f30f8f96c@kernel.dk>
+Date:   Tue, 10 May 2022 08:34:32 -0600
 MIME-Version: 1.0
-References: <20220306171009.1973074-1-mailhol.vincent@wanadoo.fr>
- <20220508100907.61231-1-mailhol.vincent@wanadoo.fr> <CAK8P3a3Fw2T0WSkxv4DiTG2wGkKcs24StPx-BG_vi=ffa9OLVA@mail.gmail.com>
- <CAMZ6RqK9d0hFwYebaArKjod4LJVGQgfDygpbGdBu-4BCDUR_SA@mail.gmail.com>
- <YnhXgzhghfi17vMX@dev-arch.thelio-3990X> <CAMZ6RqL7543LFU7ywbr-FV9A3n+m7zNy-J00j=ZrNMkDonq2aw@mail.gmail.com>
- <CAKwvOdniSVMOwkBke2EcgONn_Vmv88M+B2FTYL_BKtWawCSLAw@mail.gmail.com>
- <CAMZ6Rq+q44vAeqa7HN8mfoNXzv9GndnQDm1e4_kyMXf_+oADdQ@mail.gmail.com>
- <CAKwvOdnf5f_eNz0FTiYfUf=TtEqWTZTFNN7UpmH3qCcKQGkkHg@mail.gmail.com> <CAMZ6RqLp86ca6s-dO-Zre=PzOLr6JK9qu-8uAxfMym+X0a19yQ@mail.gmail.com>
-In-Reply-To: <CAMZ6RqLp86ca6s-dO-Zre=PzOLr6JK9qu-8uAxfMym+X0a19yQ@mail.gmail.com>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Tue, 10 May 2022 23:33:13 +0900
-Message-ID: <CAMZ6RqKZOtHiQB4edYaXMUw7SMTKnvFGcisX0edx1om7NR+g7g@mail.gmail.com>
-Subject: Re: [RESEND PATCH v1] x86/build: add -fno-builtin flag to prevent shadowing
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Arnd Bergmann <arnd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        clang-built-linux <llvm@lists.linux.dev>,
-        Tom Rix <trix@redhat.com>, Kees Cook <keescook@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [RFC PATCH 0/2] sbitmap: NUMA node spreading
+Content-Language: en-US
+To:     John Garry <john.garry@huawei.com>, linux-block@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org
+References: <1652181274-136198-1-git-send-email-john.garry@huawei.com>
+ <1afd2c01-69b3-ab8f-6bfe-118e3e56001c@kernel.dk>
+ <9ede7211-ae58-5cd4-4cf6-74c1f508f1a6@huawei.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <9ede7211-ae58-5cd4-4cf6-74c1f508f1a6@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue. 10 May 2022 at 10:10, Vincent MAILHOL
-<mailhol.vincent@wanadoo.fr> wrote:
-> On Tue. 10 May 2022 at 08:26, Nick Desaulniers <ndesaulniers@google.com> wrote:
-> > On Mon, May 9, 2022 at 4:12 PM Vincent MAILHOL
-> > <mailhol.vincent@wanadoo.fr> wrote:
-> > >
-> > > Hi Nick,
-> > >
-> > > On Tue. 10 May 2022 at 04:50, Nick Desaulniers <ndesaulniers@google.com> wrote:
-> > > > On Mon, May 9, 2022 at 8:01 AM Vincent MAILHOL
-> > > > <mailhol.vincent@wanadoo.fr> wrote:
-> > > > >
-> > > > > Instead, I am thinking of just using -fno-builtin-ffs to remove
-> > > > > the annoying -Wshadow warning. Would that make more sense?
-> > > >
-> > > > Perhaps a pragma would be the best tool to silence this instance of
-> > > > -Wshadow?  I understand what GCC is trying to express, but the kernel
-> > > > does straddle a weird place between -ffreestanding and a "hosted" env.
-> > >
-> > > I was a bit reluctant to propose the use of pragma because I received
-> > > negative feedback in another patch for using the __diag_ignore()
-> > > c.f.:
-> > > https://lore.kernel.org/all/YmhZSZWg9YZZLRHA@yury-laptop/
-> > >
-> > > But the context here is a bit different, I guess. If I receive your support, I
-> > > am fully OK to silence this with some #pragma.
-> > >
-> > > The patch would look as below (I just need to test with clang
-> > > before submitting).
-> >
-> > Do you have a sense for how many other functions trigger -Wshadow?
->
-> I only witnessed such -Wshadow warnings for ffs().
->
-> > For
-> > example, one question I have is:
-> > Why does ffs() trigger this, but not any of the functions defined in
-> > lib/string.c (or declared in include/linux/string.h) which surely also
-> > shadow existing builtins?  I can't see your example being sprinkled
-> > all over include/linux/string.h as being ok.
->
-> Thanks, you are touching on a really interesting point.
->
-> After checking, the other builtin functions declare the function with
-> two leading underscores (e.g. __foo(...)) and then do:
->
-> #define foo(...) __foo(...)
->
-> Or alternatively, if using the builtin function:
->
-> #define foo(...) __builtin_foo(...)
->
-> Compilers do not trigger the -Wshadow for such patterns.
->
-> Example with memcpy():
-> https://elixir.bootlin.com/linux/latest/source/arch/x86/include/asm/string_64.h#L75
->
-> So, in light of your comment doing this would be more consistent:
->
-> #define ffs(x) _ffs(x)
+On 5/10/22 7:44 AM, John Garry wrote:
+> On 10/05/2022 13:50, Jens Axboe wrote:
+>>> fio config:
+>>> bs=4096, iodepth=128, numjobs=10, cpus_allowed_policy=split, rw=read,
+>>> ioscheduler=none
+>>>
+>>> Before:
+>>> 7130K
+>>>
+>>> After:
+>>> 7630K
+>>>
+>>> So a +7% IOPS gain.
+> 
+> Thanks for having a look.
+> 
+>> What does the comparison run on a non-NUMA non-shared queue look like?
+>> Because I bet it'd be slower.
+> 
+> I could test more to get a solid result for that.
+> 
+>>
+>> To be honest, I don't like this approach at all. It makes the normal
+>> case quite a bit slower by having an extra layer of indirection for the
+>> word, that's quite a bit of extra cost.
+> 
+> Yes, there is the extra load. I would hope that there would be a low
+> cost, but I agree that we still want to avoid it. So prob no point in
+> testing this more.
 
-I created this patch:
-https://lore.kernel.org/all/20220510142550.1686866-1-mailhol.vincent@wanadoo.fr/T/#m55da229f67d2c84470a55df32e71d8600c581024
+I don't think that's low cost at all. It's the very hot path, and you're
+now not only doing an extra load, it's a dependent load - you need to
+load both to make any progress. On top of that, it's not like it's two
+loads from the same cacheline or even page. The most important thing for
+performance these days is having good cache utilization, the patch as it
+stands very much makes that a lot worse.
 
-This solves the -Wshadow and also adds some optimizations for when
-ffs() is called with constant variables.
+Besides, for any kind of performance work like that, it's customary to
+showcase both the situation that is supposedly fixed or improved with
+the change, but also to test that it didn't regress the existing
+common/fast case.
 
+>> It doesn't seem like a good
+>> approach for the issue, as it pessimizes the normal fast case.
+>>
+>> Spreading the memory out does probably make sense, but we need to retain
+>> the fast normal case. Making sbitmap support both, selected at init
+>> time, would be far more likely to be acceptable imho.
+> 
+> I wanted to keep the code changes minimal for an initial RFC to test
+> the water.
+>
+> My original approach did not introduce the extra load for normal path
+> and had some init time selection for a normal word map vs numa word
+> map, but the code grew and became somewhat unmanageable. I'll revisit
+> it to see how to improve that.
 
-Yours sincerely,
-Vincent Mailhol
+Probably just needs some clean refactoring first, so that the actual
+change can be pretty small.
+
+-- 
+Jens Axboe
+
