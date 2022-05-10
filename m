@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2F0EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:14:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 934A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:14:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245719AbiEJOSr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:18:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45654 "EHLO
+        id S1343511AbiEJOSv (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:18:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243896AbiEJNtS (ORCPT
+        with ESMTP id S243929AbiEJNtj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:49:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82CBB6FD3D;
-        Tue, 10 May 2022 06:37:17 -0700 (PDT)
+        Tue, 10 May 2022 09:49:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5231173545;
+        Tue, 10 May 2022 06:37:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E0F1CB81DAB;
-        Tue, 10 May 2022 13:37:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05D5BC385C2;
-        Tue, 10 May 2022 13:37:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E8E56165A;
+        Tue, 10 May 2022 13:37:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35100C385A6;
+        Tue, 10 May 2022 13:37:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189827;
-        bh=RIK5MElVo47bD1tsF8v3qbeY9yUwA6PQltPBj+Q7u+4=;
+        s=korg; t=1652189839;
+        bh=w+Kw4J0CMmrFlakmfpDRYw/x/FqYF8EYu1XkJTfL0So=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SeTYsq9ooa/QinIXIJbC/MhXaLprlqzrzVnNZ6hYtBm2lb6OZ6wp0ZDATySAhdqWV
-         vi0KM2p4jHaWrsPY1RLi1fbFOrJj0jBqlEiH8nPqAqgvx7ALPyCs1SL6GHiQ0DFdsf
-         /VybVptkkbOu39YRNZNcuQn0tnKmgoa6TMwB9e6s=
+        b=1+1mUcGfwyJSHtBFxqmo1TAYx30rt9dJjsQFr/2+qtYb8HdkwEZP8lyQ0ErshN/fk
+         8uA5nJ1QW0a7xePbOkakT/OLzaq1WNCiWbvWA4IGFszB6napSlKorRkeiaLPVZgKq0
+         q9OkNz+Q/omJfFGRzyrrc1IySNNubBJN/D6qjvwY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        =?UTF-8?q?Philippe=20Mathieu-Daud=C3=A9?= <f4bug@amsat.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Subject: [PATCH 5.17 004/140] MIPS: Fix CP0 counter erratum detection for R4k CPUs
-Date:   Tue, 10 May 2022 15:06:34 +0200
-Message-Id: <20220510130741.729581715@linuxfoundation.org>
+        stable@vger.kernel.org, Zihao Wang <wzhd@ustc.edu>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.17 008/140] ALSA: hda/realtek: Add quirk for Yoga Duet 7 13ITL6 speakers
+Date:   Tue, 10 May 2022 15:06:38 +0200
+Message-Id: <20220510130741.845344616@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -49,102 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej W. Rozycki <macro@orcam.me.uk>
+From: Zihao Wang <wzhd@ustc.edu>
 
-commit f0a6c68f69981214cb7858738dd2bc81475111f7 upstream.
+commit 3b79954fd00d540677c97a560622b73f3a1f4e28 upstream.
 
-Fix the discrepancy between the two places we check for the CP0 counter
-erratum in along with the incorrect comparison of the R4400 revision
-number against 0x30 which matches none and consistently consider all
-R4000 and R4400 processors affected, as documented in processor errata
-publications[1][2][3], following the mapping between CP0 PRId register
-values and processor models:
+Lenovo Yoga Duet 7 13ITL6 has Realtek ALC287 and built-in
+speakers do not work out of the box. The fix developed for
+Yoga 7i 14ITL5 also enables speaker output for this model.
 
-  PRId   |  Processor Model
----------+--------------------
-00000422 | R4000 Revision 2.2
-00000430 | R4000 Revision 3.0
-00000440 | R4400 Revision 1.0
-00000450 | R4400 Revision 2.0
-00000460 | R4400 Revision 3.0
-
-No other revision of either processor has ever been spotted.
-
-Contrary to what has been stated in commit ce202cbb9e0b ("[MIPS] Assume
-R4000/R4400 newer than 3.0 don't have the mfc0 count bug") marking the
-CP0 counter as buggy does not preclude it from being used as either a
-clock event or a clock source device.  It just cannot be used as both at
-a time, because in that case clock event interrupts will be occasionally
-lost, and the use as a clock event device takes precedence.
-
-Compare against 0x4ff in `can_use_mips_counter' so that a single machine
-instruction is produced.
-
-
-[1] "MIPS R4000PC/SC Errata, Processor Revision 2.2 and 3.0", MIPS
-    Technologies Inc., May 10, 1994, Erratum 53, p.13
-
-[2] "MIPS R4400PC/SC Errata, Processor Revision 1.0", MIPS Technologies
-    Inc., February 9, 1994, Erratum 21, p.4
-
-[3] "MIPS R4400PC/SC Errata, Processor Revision 2.0 & 3.0", MIPS
-    Technologies Inc., January 24, 1995, Erratum 14, p.3
-
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Fixes: ce202cbb9e0b ("[MIPS] Assume R4000/R4400 newer than 3.0 don't have the mfc0 count bug")
-Cc: stable@vger.kernel.org # v2.6.24+
-Reviewed-by: Philippe Mathieu-Daudé <f4bug@amsat.org>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Zihao Wang <wzhd@ustc.edu>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220424084120.74125-1-wzhd@ustc.edu
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/mips/include/asm/timex.h |    8 ++++----
- arch/mips/kernel/time.c       |   11 +++--------
- 2 files changed, 7 insertions(+), 12 deletions(-)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/mips/include/asm/timex.h
-+++ b/arch/mips/include/asm/timex.h
-@@ -40,9 +40,9 @@
- typedef unsigned int cycles_t;
- 
- /*
-- * On R4000/R4400 before version 5.0 an erratum exists such that if the
-- * cycle counter is read in the exact moment that it is matching the
-- * compare register, no interrupt will be generated.
-+ * On R4000/R4400 an erratum exists such that if the cycle counter is
-+ * read in the exact moment that it is matching the compare register,
-+ * no interrupt will be generated.
-  *
-  * There is a suggested workaround and also the erratum can't strike if
-  * the compare interrupt isn't being used as the clock source device.
-@@ -63,7 +63,7 @@ static inline int can_use_mips_counter(u
- 	if (!__builtin_constant_p(cpu_has_counter))
- 		asm volatile("" : "=m" (cpu_data[0].options));
- 	if (likely(cpu_has_counter &&
--		   prid >= (PRID_IMP_R4000 | PRID_REV_ENCODE_44(5, 0))))
-+		   prid > (PRID_IMP_R4000 | PRID_REV_ENCODE_44(15, 15))))
- 		return 1;
- 	else
- 		return 0;
---- a/arch/mips/kernel/time.c
-+++ b/arch/mips/kernel/time.c
-@@ -141,15 +141,10 @@ static __init int cpu_has_mfc0_count_bug
- 	case CPU_R4400MC:
- 		/*
- 		 * The published errata for the R4400 up to 3.0 say the CPU
--		 * has the mfc0 from count bug.
-+		 * has the mfc0 from count bug.  This seems the last version
-+		 * produced.
- 		 */
--		if ((current_cpu_data.processor_id & 0xff) <= 0x30)
--			return 1;
--
--		/*
--		 * we assume newer revisions are ok
--		 */
--		return 0;
-+		return 1;
- 	}
- 
- 	return 0;
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -9191,6 +9191,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x17aa, 0x3813, "Legion 7i 15IMHG05", ALC287_FIXUP_LEGION_15IMHG05_SPEAKERS),
+ 	SND_PCI_QUIRK(0x17aa, 0x3818, "Lenovo C940", ALC298_FIXUP_LENOVO_SPK_VOLUME),
+ 	SND_PCI_QUIRK(0x17aa, 0x3819, "Lenovo 13s Gen2 ITL", ALC287_FIXUP_13S_GEN2_SPEAKERS),
++	SND_PCI_QUIRK(0x17aa, 0x3820, "Yoga Duet 7 13ITL6", ALC287_FIXUP_YOGA7_14ITL_SPEAKERS),
+ 	SND_PCI_QUIRK(0x17aa, 0x3824, "Legion Y9000X 2020", ALC285_FIXUP_LEGION_Y9000X_SPEAKERS),
+ 	SND_PCI_QUIRK(0x17aa, 0x3827, "Ideapad S740", ALC285_FIXUP_IDEAPAD_S740_COEF),
+ 	SND_PCI_QUIRK(0x17aa, 0x3834, "Lenovo IdeaPad Slim 9i 14ITL5", ALC287_FIXUP_YOGA7_14ITL_SPEAKERS),
 
 
