@@ -2,224 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F84EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:13:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C5EBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:13:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345442AbiEJPR0 (ORCPT
+        id S1345449AbiEJPRg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:17:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59494 "EHLO
+        Tue, 10 May 2022 11:17:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345289AbiEJPPv (ORCPT
+        with ESMTP id S1345610AbiEJPQM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:15:51 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 410018B09C
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:51:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652194268; x=1683730268;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=JXls05y2gUu5gia6y474ntis4yRroQ2OlH/j4C/LJS4=;
-  b=bH0o6kf681587jNcMCns/2iYDDpDbg/pY+/u2EvFQbFEi+/rOueOdI+k
-   ZiWf6p6vKo1/hDPd632PDidTGq1Hua1NUem2u4PwFYJNkOdANh2h7JtFS
-   /u1NDuXbA78nGLFYoxv/jS1cOCHZAQdwf8NsLdbcqlOAfgRMpf0sxCPRc
-   OPRNo3arSqkmgsIJiM/Nng6HMeQygTGFQHVMqi/Fr7HVLRRtAHvi45Pje
-   igAj5VWj4NWJkekuXH4BblL7ciLgUzhMebKXMV2yAa5+asHDamw6YUukq
-   BwaERsv+rKXo1vE0N1eezHlaLN3yowZkFCG/hS/YZmMgrKmDTC0+2DXy8
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="269332707"
-X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
-   d="scan'208";a="269332707"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 07:51:07 -0700
-X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
-   d="scan'208";a="519786590"
-Received: from agupta51-mobl.amr.corp.intel.com (HELO [10.212.253.67]) ([10.212.253.67])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 07:51:06 -0700
-Message-ID: <190c9add-7fa4-8e76-bfcb-43d30f22f8d9@linux.intel.com>
-Date:   Tue, 10 May 2022 09:40:34 -0500
+        Tue, 10 May 2022 11:16:12 -0400
+Received: from mail.hallyn.com (mail.hallyn.com [178.63.66.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97C329B1A2;
+        Tue, 10 May 2022 07:51:35 -0700 (PDT)
+Received: by mail.hallyn.com (Postfix, from userid 1001)
+        id 712D514B7; Tue, 10 May 2022 09:51:34 -0500 (CDT)
+Date:   Tue, 10 May 2022 09:51:34 -0500
+From:   "Serge E. Hallyn" <serge@hallyn.com>
+To:     Christian Brauner <brauner@kernel.org>
+Cc:     Amir Goldstein <amir73il@gmail.com>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Stefan Berger <stefanb@linux.ibm.com>,
+        linux-integrity <linux-integrity@vger.kernel.org>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        containers@lists.linux.dev,
+        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        krzysztof.struczynski@huawei.com, roberto.sassu@huawei.com,
+        mpeters@redhat.com, lhinds@redhat.com, lsturman@redhat.com,
+        puiterwi@redhat.com, jejb@linux.ibm.com, jamjoom@us.ibm.com,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Paul Moore <paul@paul-moore.com>,
+        Richard Guy Briggs <rgb@redhat.com>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        James Morris <jmorris@namei.org>, jpenumak@redhat.com,
+        John Johansen <john.johansen@canonical.com>,
+        Matthew Garrett <mjg59@srcf.ucam.org>,
+        Micah Morton <mortonm@chromium.org>,
+        Kentaro Takeda <takedakn@nttdata.co.jp>,
+        Jarkko Sakkinen <jarkko@kernel.org>
+Subject: Re: [PATCH v12 01/26] securityfs: rework dentry creation
+Message-ID: <20220510145134.GA7974@mail.hallyn.com>
+References: <20220420140633.753772-1-stefanb@linux.ibm.com>
+ <20220420140633.753772-2-stefanb@linux.ibm.com>
+ <20220509195414.GA30894@mail.hallyn.com>
+ <20220509203618.GA31408@mail.hallyn.com>
+ <CAOQ4uxjJJVRHrsiOqFokR=zFCV46U+tZJJ74cn9vriucbCHRkA@mail.gmail.com>
+ <20220510103817.jalhkw4a2oyqhxhm@wittgenstein>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.5.0
-Subject: Re: [PATCH] [v2] ASoC: Intel: sof_cs42l42: adding support for ADL
- configuration and BT offload audio
-Content-Language: en-US
-To:     Terry Chen <terry_chen@wistron.corp-partner.google.com>,
-        alsa-devel@alsa-project.org
-Cc:     cezary.rojewski@intel.com, liam.r.girdwood@linux.intel.com,
-        yang.jie@linux.intel.com, broonie@kernel.org, perex@perex.cz,
-        tiwai@suse.com, brent.lu@intel.com, cujomalainey@chromium.org,
-        seanpaul@chromium.org, casey.g.bowman@intel.com,
-        mark_hsieh@wistron.corp-partner.google.com,
-        vamshi.krishna.gopal@intel.com, mac.chiang@intel.com,
-        kai.vehmanen@linux.intel.com, linux-kernel@vger.kernel.org
-References: <20220510104829.1466968-1-terry_chen@wistron.corp-partner.google.com>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <20220510104829.1466968-1-terry_chen@wistron.corp-partner.google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220510103817.jalhkw4a2oyqhxhm@wittgenstein>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, May 10, 2022 at 12:38:17PM +0200, Christian Brauner wrote:
+> On Tue, May 10, 2022 at 11:43:13AM +0300, Amir Goldstein wrote:
+> > On Mon, May 9, 2022 at 11:36 PM Serge E. Hallyn <serge@hallyn.com> wrote:
+> > >
+> > > On Mon, May 09, 2022 at 02:54:14PM -0500, Serge E. Hallyn wrote:
+> > > > On Wed, Apr 20, 2022 at 10:06:08AM -0400, Stefan Berger wrote:
+> > > > > From: Christian Brauner <brauner@kernel.org>
+> > > > >
+> > > > > When securityfs creates a new file or directory via
+> > > > > securityfs_create_dentry() it will take an additional reference on the
+> > > > > newly created dentry after it has attached the new inode to the new
+> > > > > dentry and added it to the hashqueues.
+> > > > > If we contrast this with debugfs which has the same underlying logic as
+> > > > > securityfs. It uses a similar pairing as securityfs. Where securityfs
+> > > > > has the securityfs_create_dentry() and securityfs_remove() pairing,
+> > > > > debugfs has the __debugfs_create_file() and debugfs_remove() pairing.
+> > > > >
+> > > > > In contrast to securityfs, debugfs doesn't take an additional reference
+> > > > > on the newly created dentry in __debugfs_create_file() which would need
+> > > > > to be put in debugfs_remove().
+> > > > >
+> > > > > The additional dget() isn't a problem per se. In the current
+> > > > > implementation of securityfs each created dentry pins the filesystem via
+> > > >
+> > > > Is 'via' an extra word here or is there a missing word?
+> > > >
+> > > > I'll delay the rest of my response as the missing word may answer my
+> > > > remaining question :)
+> > > >
+> > > > > until it is removed. Since it is virtually guaranteed that there is at
+> > > > > least one user of securityfs that has created dentries the initial
+> > > > > securityfs mount cannot go away until all dentries have been removed.
+> > > > >
+> > > > > Since most of the users of the initial securityfs mount don't go away
+> > > > > until the system is shutdown the initial securityfs won't go away when
+> > > > > unmounted. Instead a mount will usually surface the same superblock as
+> > > > > before. The additional dget() doesn't matter in this scenario since it
+> > > > > is required that all dentries have been cleaned up by the respective
+> > > > > users before the superblock can be destroyed, i.e. superblock shutdown
+> > > > > is tied to the lifetime of the associated dentries.
+> > > > >
+> > > > > However, in order to support ima namespaces we need to extend securityfs
+> > > > > to support being mounted outside of the initial user namespace. For
+> > > > > namespaced users the pinning logic doesn't make sense. Whereas in the
+> > > > > initial namespace the securityfs instance and the associated data
+> > > > > structures of its users can't go away for reason explained earlier users
+> > > > > of non-initial securityfs instances do go away when the last users of
+> > > > > the namespace are gone.
+> > > > >
+> > > > > So for those users we neither want to duplicate the pinning logic nor
+> > > > > make the global securityfs instance display different information based
+> > > > > on the namespace. Both options would be really messy and hacky.
+> > > > >
+> > > > > Instead we will simply give each namespace its own securityfs instance
+> > > > > similar to how each ipc namespace has its own mqueue instance and all
+> > > > > entries in there are cleaned up on umount or when the last user of the
+> > > > > associated namespace is gone.
+> > > > >
+> > > > > This means that the superblock's lifetime isn't tied to the dentries.
+> > > > > Instead the last umount, without any fds kept open, will trigger a clean
+> > > > > shutdown. But now the additional dget() gets in the way. Instead of
+> > > > > being able to rely on the generic superblock shutdown logic we would
+> > > > > need to drop the additional dentry reference during superblock shutdown
+> > > > > for all associated users. That would force the use of a generic
+> > > > > coordination mechanism for current and future users of securityfs which
+> > > > > is unnecessary. Simply remove the additional dget() in
+> > > > > securityfs_dentry_create().
+> > > > >
+> > > > > In securityfs_remove() we will call dget() to take an additional
+> > > > > reference on the dentry about to be removed. After simple_unlink() or
+> > > > > simple_rmdir() have dropped the dentry refcount we can call d_delete()
+> > > > > which will either turn the dentry into negative dentry if our earlier
+> > > > > dget() is the only reference to the dentry, i.e. it has no other users,
+> > > > > or remove it from the hashqueues in case there are additional users.
+> > > > >
+> > 
+> > The first case (turn negative) cannot happen because the function is
+> > entered with at least 1 refcount and increments it by 1.
+> > So you can follow commit 46c46f8df9aa ("devpts_pty_kill(): don't bother
+> > with d_delete()") and use d_drop() instead.
+> > 
+> > > > > All of these changes should not have any effect on the userspace
+> > > > > semantics of the initial securityfs mount.
+> > > > >
+> > > > > Signed-off-by: Christian Brauner <brauner@kernel.org>
+> > > > > Cc: John Johansen <john.johansen@canonical.com>
+> > > > > Cc: Matthew Garrett <mjg59@srcf.ucam.org>
+> > > > > Cc: Micah Morton <mortonm@chromium.org>
+> > > > > Cc: Kentaro Takeda <takedakn@nttdata.co.jp>
+> > > > > Cc: James Morris <jmorris@namei.org>
+> > > > > Cc: Jarkko Sakkinen <jarkko@kernel.org>
+> > > > > Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+> > > > > Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
+> > > > > ---
+> > > > >  security/inode.c | 3 ++-
+> > > > >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > > > >
+> > > > > diff --git a/security/inode.c b/security/inode.c
+> > > > > index 6c326939750d..13e6780c4444 100644
+> > > > > --- a/security/inode.c
+> > > > > +++ b/security/inode.c
+> > > > > @@ -159,7 +159,6 @@ static struct dentry *securityfs_create_dentry(const char *name, umode_t mode,
+> > > > >             inode->i_fop = fops;
+> > > > >     }
+> > > > >     d_instantiate(dentry, inode);
+> > > > > -   dget(dentry);
+> > > > >     inode_unlock(dir);
+> > > > >     return dentry;
+> > > > >
+> > > > > @@ -302,10 +301,12 @@ void securityfs_remove(struct dentry *dentry)
+> > > > >     dir = d_inode(dentry->d_parent);
+> > > > >     inode_lock(dir);
+> > > > >     if (simple_positive(dentry)) {
+> > > > > +           dget(dentry);
+> > > > >             if (d_is_dir(dentry))
+> > > > >                     simple_rmdir(dir, dentry);
+> > >
+> > > Hm, so I realize your patch isn't introducing this, but is the
+> > > fact that we ignore the possible -ENOTEMPTY return value of
+> > > simple_rmdir() not a problem?
+> > 
+> > As long as we are using debugfs as a reference code, wouldn't
+> > securityfs need to use simple_recursive_removal()?
+> > Can we guaranty that modules always cleanup all entries in
+> > correct order?
+> 
+> We could but that seems like a separate cleanup patch.
 
+Yes, I'm not saying this set should fix it, just something that
+caught my eye.  Thanks.
 
-
-> +static int create_bt_offload_dai_links(struct device *dev,
-> +				       struct snd_soc_dai_link *links,
-> +				       struct snd_soc_dai_link_component *cpus,
-> +				       int *id, int ssp_bt)
-> +{
-> +	int ret = 0;
-
-this variable is not used in the rest of this function, something's not
-right here...
-
-> +	/* bt offload */
-> +	if (!(sof_cs42l42_quirk & SOF_BT_OFFLOAD_PRESENT))
-> +		return 0;
-> +
-> +	links[*id].name = devm_kasprintf(dev, GFP_KERNEL, "SSP%d-BT",
-> +					 ssp_bt);
-> +	if (!links[*id].name)
-> +		goto devm_err;
-
-is this missing ret = -ENOMEM?
-
-> +
-> +	links[*id].id = *id;
-> +	links[*id].codecs = dummy_component;
-> +	links[*id].num_codecs = ARRAY_SIZE(dummy_component);
-> +	links[*id].platforms = platform_component;
-> +	links[*id].num_platforms = ARRAY_SIZE(platform_component);
-> +
-> +	links[*id].dpcm_playback = 1;
-> +	links[*id].dpcm_capture = 1;
-> +	links[*id].no_pcm = 1;
-> +	links[*id].cpus = &cpus[*id];
-> +	links[*id].num_cpus = 1;
-> +
-> +	links[*id].cpus->dai_name = devm_kasprintf(dev, GFP_KERNEL,
-> +						   "SSP%d Pin",
-> +						   ssp_bt);
-> +	if (!links[*id].cpus->dai_name)
-> +		goto devm_err;
-
-same here, ret = -ENOMEM; ?
-
-> +
-> +	(*id)++;
-> +
-> +	return 0;
-> +
-> +devm_err:
-> +	return ret;
-
-or use what the existing code does for other links:
-
-devm_err:
-	return -ENOMEM;
-
-
-> +}
-> +
->  static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
->  							  int ssp_codec,
->  							  int ssp_amp,
-> +							  int ssp_bt,
->  							  int dmic_be_num,
->  							  int hdmi_num)
->  {
-> @@ -522,6 +578,14 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
->  				goto devm_err;
->  			}
->  			break;
-> +		case LINK_BT:
-> +			ret = create_bt_offload_dai_links(dev, links, cpus, &id, ssp_bt);
-> +			if (ret < 0) {
-> +				dev_err(dev, "fail to create bt offload dai links, ret %d\n",
-> +					ret);
-
-one line?
-
-> +				goto devm_err;
-> +			}
-> +			break;
->  		case LINK_NONE:
->  			/* caught here if it's not used as terminator in macro */
->  		default:
-> @@ -543,7 +607,7 @@ static int sof_audio_probe(struct platform_device *pdev)
->  	struct snd_soc_acpi_mach *mach;
->  	struct sof_card_private *ctx;
->  	int dmic_be_num, hdmi_num;
-> -	int ret, ssp_amp, ssp_codec;
-> +	int ret, ssp_bt, ssp_amp, ssp_codec;
->  
->  	ctx = devm_kzalloc(&pdev->dev, sizeof(*ctx), GFP_KERNEL);
->  	if (!ctx)
-> @@ -568,6 +632,9 @@ static int sof_audio_probe(struct platform_device *pdev)
->  
->  	dev_dbg(&pdev->dev, "sof_cs42l42_quirk = %lx\n", sof_cs42l42_quirk);
->  
-> +	ssp_bt = (sof_cs42l42_quirk & SOF_CS42L42_SSP_BT_MASK) >>
-> +			SOF_CS42L42_SSP_BT_SHIFT;
-> +
->  	ssp_amp = (sof_cs42l42_quirk & SOF_CS42L42_SSP_AMP_MASK) >>
->  			SOF_CS42L42_SSP_AMP_SHIFT;
->  
-> @@ -578,9 +645,11 @@ static int sof_audio_probe(struct platform_device *pdev)
->  
->  	if (sof_cs42l42_quirk & SOF_SPEAKER_AMP_PRESENT)
->  		sof_audio_card_cs42l42.num_links++;
-> +	if (sof_cs42l42_quirk & SOF_BT_OFFLOAD_PRESENT)
-> +		sof_audio_card_cs42l42.num_links++;
->  
->  	dai_links = sof_card_dai_links_create(&pdev->dev, ssp_codec, ssp_amp,
-> -					      dmic_be_num, hdmi_num);
-> +					      ssp_bt, dmic_be_num, hdmi_num);
->  	if (!dai_links)
->  		return -ENOMEM;
->  
-> @@ -621,6 +690,17 @@ static const struct platform_device_id board_ids[] = {
->  					SOF_CS42L42_SSP_AMP(1)) |
->  					SOF_CS42L42_DAILINK(LINK_HP, LINK_DMIC, LINK_HDMI, LINK_SPK, LINK_NONE),
->  	},
-> +	{
-> +		.name = "adl_mx98360a_cs4242",
-> +		.driver_data = (kernel_ulong_t)(SOF_CS42L42_SSP_CODEC(0) |
-> +					SOF_SPEAKER_AMP_PRESENT |
-> +					SOF_MAX98360A_SPEAKER_AMP_PRESENT |
-> +					SOF_CS42L42_SSP_AMP(1) |
-> +					SOF_CS42L42_NUM_HDMIDEV(4) |
-> +					SOF_BT_OFFLOAD_PRESENT |
-> +					SOF_CS42L42_SSP_BT(2)) |
-> +					SOF_CS42L42_DAILINK(LINK_HP, LINK_DMIC, LINK_HDMI, LINK_SPK, LINK_BT),
-> +	},
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(platform, board_ids);
-> diff --git a/sound/soc/intel/common/soc-acpi-intel-adl-match.c b/sound/soc/intel/common/soc-acpi-intel-adl-match.c
-> index 7c8cd00457f81..3f40519250a90 100644
-> --- a/sound/soc/intel/common/soc-acpi-intel-adl-match.c
-> +++ b/sound/soc/intel/common/soc-acpi-intel-adl-match.c
-> @@ -384,6 +384,14 @@ struct snd_soc_acpi_mach snd_soc_acpi_intel_adl_machines[] = {
->  		.sof_fw_filename = "sof-adl.ri",
->  		.sof_tplg_filename = "sof-adl-cs35l41.tplg",
->  	},
-> +	{
-> +		.id = "10134242",
-> +		.drv_name = "adl_mx98360a_cs4242",
-> +		.machine_quirk = snd_soc_acpi_codec_list,
-> +		.quirk_data = &adl_max98360a_amp,
-> +		.sof_fw_filename = "sof-adl.ri",
-
-no longer necessary, and probably will not compile. please remove this
-field.
-
-> +		.sof_tplg_filename = "sof-adl-max98360a-rt5682.tplg",
-
-Why would you refer to a topology that uses a different codec?
-
-
+> This patch became part of the series because we want non-initial ima
+> namespaces to guarantee cleanup on securityfs umount. That's different
+> for the initial securityfs mount which is alwasy going to be around. The
+> patch is intended to this a little cleaner to implement.
