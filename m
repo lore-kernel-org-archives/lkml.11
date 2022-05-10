@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45BFBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:20:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D350C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:20:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242677AbiEJNYU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:24:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45946 "EHLO
+        id S241965AbiEJNYZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:24:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243058AbiEJNVW (ORCPT
+        with ESMTP id S243114AbiEJNVf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:21:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09FD32C13C2;
-        Tue, 10 May 2022 06:14:43 -0700 (PDT)
+        Tue, 10 May 2022 09:21:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADEC42C13E3;
+        Tue, 10 May 2022 06:14:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 16C4E61668;
-        Tue, 10 May 2022 13:14:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0256FC385C2;
-        Tue, 10 May 2022 13:14:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A85A1B81CE7;
+        Tue, 10 May 2022 13:14:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 205E0C385C2;
+        Tue, 10 May 2022 13:14:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188482;
-        bh=/4tIIjSnRVWb5mqxn4GkUSAWWT+Y1OQB5JP/Vz1OeYo=;
+        s=korg; t=1652188488;
+        bh=YI5UjmM43NAUlBOvm8tcF0gqikdn9+lJvBigtD/JjAc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jENOjyM4Po7rqwxvL/8pyilayNTUKbBNnQ2V8oioxxxP3hR+aX7m6Co+BUIJQyL/N
-         l5rgfPAVyEt2/iCwqXf37INh3GbCxSN1X6S2Q8lYeBORnhIsdKFHIWzkHPr1pQi9AA
-         RzPMOy57vkgu9RQgByhzfuLWFUyuHB+IsVxXMJNw=
+        b=GR546NNqOfdGiJhovY+nHCMqRpOSlwSEnq/ts0gqn5Yf/nhAv/wRPhvjzjxxQSX3k
+         TTLWCRMimT+6jN1heBvgNls5F7IAxKWXW/ItsFI3eqiJR6JZjDz2NG6EqZI8iXy3jB
+         +/xgecUiW5koYsPD9907WMXJ2dk5wZEUhIO/JHlc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        stable <stable@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH 4.14 22/78] serial: 8250: Correct the clock for EndRun PTP/1588 PCIe device
-Date:   Tue, 10 May 2022 15:07:08 +0200
-Message-Id: <20220510130733.189588990@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 4.14 24/78] hex2bin: fix access beyond string end
+Date:   Tue, 10 May 2022 15:07:10 +0200
+Message-Id: <20220510130733.247460246@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
 References: <20220510130732.522479698@linuxfoundation.org>
@@ -49,63 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej W. Rozycki <macro@orcam.me.uk>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-commit 637674fa40059cddcc3ad2212728965072f62ea3 upstream.
+commit e4d8a29997731b3bb14059024b24df9f784288d0 upstream.
 
-The EndRun PTP/1588 dual serial port device is based on the Oxford
-Semiconductor OXPCIe952 UART device with the PCI vendor:device ID set
-for EndRun Technologies and is therefore driven by a fixed 62.5MHz clock
-input derived from the 100MHz PCI Express clock.  The clock rate is
-divided by the oversampling rate of 16 as it is supplied to the baud
-rate generator, yielding the baud base of 3906250.
+If we pass too short string to "hex2bin" (and the string size without
+the terminating NUL character is even), "hex2bin" reads one byte after
+the terminating NUL character.  This patch fixes it.
 
-Replace the incorrect baud base of 4000000 with the right value of
-3906250 then, complementing commit 6cbe45d8ac93 ("serial: 8250: Correct
-the clock for OxSemi PCIe devices").
+Note that hex_to_bin returns -1 on error and hex2bin return -EINVAL on
+error - so we can't just return the variable "hi" or "lo" on error.
+This inconsistency may be fixed in the next merge window, but for the
+purpose of fixing this bug, we just preserve the existing behavior and
+return -1 and -EINVAL.
 
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Cc: stable <stable@kernel.org>
-Fixes: 1bc8cde46a159 ("8250_pci: Added driver for Endrun Technologies PTP PCIe card.")
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Link: https://lore.kernel.org/r/alpine.DEB.2.21.2204181515270.9383@angie.orcam.me.uk
+Fixes: b78049831ffe ("lib: add error checking to hex2bin")
+Cc: stable@vger.kernel.org
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/8250/8250_pci.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ lib/hexdump.c |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -2668,7 +2668,7 @@ enum pci_board_num_t {
- 	pbn_panacom2,
- 	pbn_panacom4,
- 	pbn_plx_romulus,
--	pbn_endrun_2_4000000,
-+	pbn_endrun_2_3906250,
- 	pbn_oxsemi,
- 	pbn_oxsemi_1_4000000,
- 	pbn_oxsemi_2_4000000,
-@@ -3184,10 +3184,10 @@ static struct pciserial_board pci_boards
- 	* signal now many ports are available
- 	* 2 port 952 Uart support
- 	*/
--	[pbn_endrun_2_4000000] = {
-+	[pbn_endrun_2_3906250] = {
- 		.flags		= FL_BASE0,
- 		.num_ports	= 2,
--		.base_baud	= 4000000,
-+		.base_baud	= 3906250,
- 		.uart_offset	= 0x200,
- 		.first_offset	= 0x1000,
- 	},
-@@ -4039,7 +4039,7 @@ static const struct pci_device_id serial
- 	*/
- 	{	PCI_VENDOR_ID_ENDRUN, PCI_DEVICE_ID_ENDRUN_1588,
- 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
--		pbn_endrun_2_4000000 },
-+		pbn_endrun_2_3906250 },
- 	/*
- 	 * Quatech cards. These actually have configurable clocks but for
- 	 * now we just use the default.
+--- a/lib/hexdump.c
++++ b/lib/hexdump.c
+@@ -66,10 +66,13 @@ EXPORT_SYMBOL(hex_to_bin);
+ int hex2bin(u8 *dst, const char *src, size_t count)
+ {
+ 	while (count--) {
+-		int hi = hex_to_bin(*src++);
+-		int lo = hex_to_bin(*src++);
++		int hi, lo;
+ 
+-		if ((hi < 0) || (lo < 0))
++		hi = hex_to_bin(*src++);
++		if (unlikely(hi < 0))
++			return -EINVAL;
++		lo = hex_to_bin(*src++);
++		if (unlikely(lo < 0))
+ 			return -EINVAL;
+ 
+ 		*dst++ = (hi << 4) | lo;
 
 
