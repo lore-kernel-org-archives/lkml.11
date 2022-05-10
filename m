@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25EEFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:20:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45BFBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:20:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242016AbiEJNYO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:24:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38766 "EHLO
+        id S242677AbiEJNYU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:24:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243021AbiEJNVT (ORCPT
+        with ESMTP id S243058AbiEJNVW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:21:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 857AE3968F;
-        Tue, 10 May 2022 06:14:36 -0700 (PDT)
+        Tue, 10 May 2022 09:21:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09FD32C13C2;
+        Tue, 10 May 2022 06:14:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 227A5B81D7A;
-        Tue, 10 May 2022 13:14:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89B75C36AE3;
-        Tue, 10 May 2022 13:14:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 16C4E61668;
+        Tue, 10 May 2022 13:14:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0256FC385C2;
+        Tue, 10 May 2022 13:14:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188474;
-        bh=c1/bfUy1hCg7H/0hj5x8AM49hoYla+If72E2RyUqP9c=;
+        s=korg; t=1652188482;
+        bh=/4tIIjSnRVWb5mqxn4GkUSAWWT+Y1OQB5JP/Vz1OeYo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m/CyT2yKrcy4bjegIV+Uo/tsyDYngF0GFa2xJ+rf4HCmtrktOhIuTZ5FB/6oNXxXz
-         uVgNAOpiD9BpsMURgcyEwYzlNZ5YWYYZqsgR4t6lOcSLdyDMJaplRgSRqERNTLosFK
-         Pu+NCbcbr9IEOnhNR9Xd7GNfFR+IWNW2mRYZTWyI=
+        b=jENOjyM4Po7rqwxvL/8pyilayNTUKbBNnQ2V8oioxxxP3hR+aX7m6Co+BUIJQyL/N
+         l5rgfPAVyEt2/iCwqXf37INh3GbCxSN1X6S2Q8lYeBORnhIsdKFHIWzkHPr1pQi9AA
+         RzPMOy57vkgu9RQgByhzfuLWFUyuHB+IsVxXMJNw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 4.14 02/78] hamradio: defer 6pack kfree after unregister_netdev
-Date:   Tue, 10 May 2022 15:06:48 +0200
-Message-Id: <20220510130732.599308981@linuxfoundation.org>
+        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        stable <stable@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: [PATCH 4.14 22/78] serial: 8250: Correct the clock for EndRun PTP/1588 PCIe device
+Date:   Tue, 10 May 2022 15:07:08 +0200
+Message-Id: <20220510130733.189588990@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
 References: <20220510130732.522479698@linuxfoundation.org>
@@ -49,51 +49,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lin Ma <linma@zju.edu.cn>
+From: Maciej W. Rozycki <macro@orcam.me.uk>
 
-commit 0b9111922b1f399aba6ed1e1b8f2079c3da1aed8 upstream.
+commit 637674fa40059cddcc3ad2212728965072f62ea3 upstream.
 
-There is a possible race condition (use-after-free) like below
+The EndRun PTP/1588 dual serial port device is based on the Oxford
+Semiconductor OXPCIe952 UART device with the PCI vendor:device ID set
+for EndRun Technologies and is therefore driven by a fixed 62.5MHz clock
+input derived from the 100MHz PCI Express clock.  The clock rate is
+divided by the oversampling rate of 16 as it is supplied to the baud
+rate generator, yielding the baud base of 3906250.
 
- (USE)                       |  (FREE)
-  dev_queue_xmit             |
-   __dev_queue_xmit          |
-    __dev_xmit_skb           |
-     sch_direct_xmit         | ...
-      xmit_one               |
-       netdev_start_xmit     | tty_ldisc_kill
-        __netdev_start_xmit  |  6pack_close
-         sp_xmit             |   kfree
-          sp_encaps          |
-                             |
+Replace the incorrect baud base of 4000000 with the right value of
+3906250 then, complementing commit 6cbe45d8ac93 ("serial: 8250: Correct
+the clock for OxSemi PCIe devices").
 
-According to the patch "defer ax25 kfree after unregister_netdev", this
-patch reorder the kfree after the unregister_netdev to avoid the possible
-UAF as the unregister_netdev() is well synchronized and won't return if
-there is a running routine.
-
-Signed-off-by: Lin Ma <linma@zju.edu.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Cc: stable <stable@kernel.org>
+Fixes: 1bc8cde46a159 ("8250_pci: Added driver for Endrun Technologies PTP PCIe card.")
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/alpine.DEB.2.21.2204181515270.9383@angie.orcam.me.uk
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/hamradio/6pack.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_pci.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/net/hamradio/6pack.c
-+++ b/drivers/net/hamradio/6pack.c
-@@ -690,9 +690,11 @@ static void sixpack_close(struct tty_str
- 	del_timer_sync(&sp->tx_t);
- 	del_timer_sync(&sp->resync_t);
- 
--	/* Free all 6pack frame buffers. */
-+	/* Free all 6pack frame buffers after unreg. */
- 	kfree(sp->rbuff);
- 	kfree(sp->xbuff);
-+
-+	free_netdev(sp->dev);
- }
- 
- /* Perform I/O control on an active 6pack channel. */
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -2668,7 +2668,7 @@ enum pci_board_num_t {
+ 	pbn_panacom2,
+ 	pbn_panacom4,
+ 	pbn_plx_romulus,
+-	pbn_endrun_2_4000000,
++	pbn_endrun_2_3906250,
+ 	pbn_oxsemi,
+ 	pbn_oxsemi_1_4000000,
+ 	pbn_oxsemi_2_4000000,
+@@ -3184,10 +3184,10 @@ static struct pciserial_board pci_boards
+ 	* signal now many ports are available
+ 	* 2 port 952 Uart support
+ 	*/
+-	[pbn_endrun_2_4000000] = {
++	[pbn_endrun_2_3906250] = {
+ 		.flags		= FL_BASE0,
+ 		.num_ports	= 2,
+-		.base_baud	= 4000000,
++		.base_baud	= 3906250,
+ 		.uart_offset	= 0x200,
+ 		.first_offset	= 0x1000,
+ 	},
+@@ -4039,7 +4039,7 @@ static const struct pci_device_id serial
+ 	*/
+ 	{	PCI_VENDOR_ID_ENDRUN, PCI_DEVICE_ID_ENDRUN_1588,
+ 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+-		pbn_endrun_2_4000000 },
++		pbn_endrun_2_3906250 },
+ 	/*
+ 	 * Quatech cards. These actually have configurable clocks but for
+ 	 * now we just use the default.
 
 
