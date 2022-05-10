@@ -2,90 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FD60C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 07:43:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8618CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 07:44:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236685AbiEJHru (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 03:47:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58116 "EHLO
+        id S232661AbiEJHr5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 03:47:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237670AbiEJHqj (ORCPT
+        with ESMTP id S237723AbiEJHqm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 03:46:39 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D4272C131;
-        Tue, 10 May 2022 00:41:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1652168462; x=1683704462;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=X6Af5kddVLN1VOJpGGG6hnFDAR/ErWh2YGq4O2MBQ6I=;
-  b=zGKBwAc7h2RB6Jh4dvk6FOXHaVjTTWm1Sx5olwCgAxiRwJj9Wr17U7Gb
-   kYxPKlo1C0yEOUEaPwKVfZ8CyG/YEZKReBJUcn6un07wFNVvbk8rOKBGs
-   wwIjPkmJKzoO5jvE1DCj5NbgYL59XRRVfmIAvLqjnE7ns5x+lRGgIDD5e
-   c=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 10 May 2022 00:41:01 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 00:41:00 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 10 May 2022 00:40:59 -0700
-Received: from hyd-lnxbld559.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 10 May 2022 00:40:55 -0700
-From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
-To:     freedreno <freedreno@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        Rob Clark <robdclark@gmail.com>,
-        OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS 
-        <devicetree@vger.kernel.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     Akhil P Oommen <quic_akhilpo@quicinc.com>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Jordan Crouse <jordan@cosmicpenguin.net>,
-        Sean Paul <sean@poorly.run>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 1/2] drm/msm/a6xx: Add support for a new 7c3 sku
-Date:   Tue, 10 May 2022 13:10:44 +0530
-Message-ID: <20220510131038.1.Ibf12c1b99feecc4130f1e3130a3fc4ddd710a2e9@changeid>
-X-Mailer: git-send-email 2.7.4
+        Tue, 10 May 2022 03:46:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13328AAE01;
+        Tue, 10 May 2022 00:41:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F2CDB80A05;
+        Tue, 10 May 2022 07:41:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 995FEC385C9;
+        Tue, 10 May 2022 07:41:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652168479;
+        bh=hcJ/0scfAlen/Lzqbi68DI9xyiOaM670xSaP++6Hm9M=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=QIhApCdmXcD3OYldzlmFltueG21PlDuu4WSfn+JqN8hgTnzg8nC8G89L5BR2e52tX
+         WgpiHm/Cm3X8tybiQTeAjXWUJb71ttlb3OmxhJX8EqQcc4P8XFfHCz8wy7tBgI8FLS
+         P6BQIgbeMnvhNyKlo7Xn4mvQnKinE/kNQykqtcHGFowM83M6DiaBSZ2wzuH6bWkqLE
+         kSp6/b50yMHIdD1hk67+l1EhZksWTikLqckMnj+QYWXItOSbCLbqXqStHIbBz4hwTJ
+         r7LGmBvlV6E/2dw4w2urvENxaxucBaSdeRReFeo5p6O9Jnawnzj34yEG5sLYbfhDtW
+         ylJSd5AxBusBQ==
+Message-ID: <edee6a1e-ad72-d51d-2bda-d6f59b7d91e5@kernel.org>
+Date:   Tue, 10 May 2022 10:41:16 +0300
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] memory: OMAP_GPMC should depend on ARCH_OMAP2PLUS ||
+ ARCH_K3
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Tony Lindgren <tony@atomide.com>,
+        "open list:TI ETHERNET SWITCH DRIVER (CPSW)" 
+        <linux-omap@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <2b7d411b4a7913335082c858cb0d63b9e4bf7c5b.1652103920.git.geert+renesas@glider.be>
+ <20fd1a74-c0f5-d8e9-4903-b74c185d5aa3@kernel.org>
+ <CAMuHMdVXHSnOOnn3jchezQc+bsPYTnSPuw_rOe+pyskAVaQGnQ@mail.gmail.com>
+ <b8983ff3-7dca-0556-1bcc-05897aef212c@linaro.org>
+From:   Roger Quadros <rogerq@kernel.org>
+In-Reply-To: <b8983ff3-7dca-0556-1bcc-05897aef212c@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a new sku to the fuse map of 7c3 gpu.
 
-Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
----
 
- drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 2 ++
- 1 file changed, 2 insertions(+)
+On 10/05/2022 10:36, Krzysztof Kozlowski wrote:
+> On 10/05/2022 09:30, Geert Uytterhoeven wrote:
+>> Hi Roger,
+>>
+>> On Tue, May 10, 2022 at 9:22 AM Roger Quadros <rogerq@kernel.org> wrote:
+>>> On 09/05/2022 16:48, Geert Uytterhoeven wrote:
+>>>> The Texas Instruments OMAP General Purpose Memory Controller (GPMC) is
+>>>> only present on TI OMAP2/3/4/5, AM33xx, AM43x, DRA7xx, TI81xx, and K3
+>>>> SoCs.  Hence add a dependency on ARCH_OMAP2PLUS || ARCH_K3, to prevent
+>>>> asking the user about this driver when configuring a kernel without
+>>>> OMAP2+ or K3 SoC family support.
+>>>>
+>>>> Fixes: be34f45f0d4aa91c ("memory: omap-gpmc: Make OMAP_GPMC config visible and selectable")
+>>>> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+>>
+>>>> --- a/drivers/memory/Kconfig
+>>>> +++ b/drivers/memory/Kconfig
+>>>> @@ -105,6 +105,7 @@ config TI_EMIF
+>>>>  config OMAP_GPMC
+>>>>       tristate "Texas Instruments OMAP SoC GPMC driver"
+>>>>       depends on OF_ADDRESS
+>>>> +     depends on ARCH_OMAP2PLUS || ARCH_K3 || COMPILE_TEST
+>>>>       select GPIOLIB
+>>>>       help
+>>>>         This driver is for the General Purpose Memory Controller (GPMC)
+>>>
+>>> Is there any possibility that CONFIG_IRQ_DOMAIN is not set while both
+>>> OF_ADDRESS and COMPILE_TEST are set?
+>>>
+>>> That particular case will lead to build failures.
+>>>
+>>> e.g.
+>>> https://krzk.eu/#/builders/63/builds/162
+>>
+>> So it needs an additional dependency on IRQ_DOMAIN.
+>> That is a pre-existing problem, not caused by my patch (which adds
+>> more dependencies, and doesn't remove any).
+> 
+> Is this really a case here? The failure reported above was for earlier
+> version of Roger's patch which was changing to:
+> 	depends on OF_ADDRESS || COMPILE_TEST
+> 
+> Here, OF_ADDRESS will be always a dependency. If it builds in current
+> configuration (having only OF_ADDRESS), then adding dependencies should
+> not cause more issues.... It only restricts the config, not widens it.
+> 
+> Therefore the patch looks actually correct, but some testing would be
+> nice that we don't hit the same issues as before.
+> 
 
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-index 841e47a..61bb21d 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-@@ -1771,6 +1771,8 @@ static u32 adreno_7c3_get_speed_bin(u32 fuse)
- 		return 0;
- 	else if (fuse == 190)
- 		return 1;
-+	else if (fuse == 96)
-+		return 2;
- 
- 	return UINT_MAX;
- }
--- 
-2.7.4
+I'll take care of the tests using lkp of course ;)
 
+cheers,
+-roger
