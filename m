@@ -2,102 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BAE9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 18:28:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FD67C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 18:29:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235689AbiEJS23 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 14:28:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49218 "EHLO
+        id S1348866AbiEJS17 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 14:27:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348882AbiEJS2V (ORCPT
+        with ESMTP id S235397AbiEJS1e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 14:28:21 -0400
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6B2C33896
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 11:28:20 -0700 (PDT)
-Received: by mail-qt1-x82b.google.com with SMTP id hh4so14179300qtb.10
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 11:28:20 -0700 (PDT)
+        Tue, 10 May 2022 14:27:34 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BC7318FF29
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 11:23:34 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id z2so33052658ejj.3
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 11:23:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/xXStdS/6Ecb3QM+NfwKwg0qrP8dEo54D+TLTJCNtQU=;
-        b=oSTgF171IFOwfEXynDmFNdUOlkACxoWv+6GMKX9CSWUKgxxAGgiWWEImQB8LktpivY
-         AmRbQ3VoyHMAJoumcQJa4GQGnWzoatgBvdWKP2i9auMTZcYOQ9BIcBZzxGgjr1Rn/3OK
-         LdyM+NOco9xY7Ydsenb8gtmkmwLPh9ySNRY94=
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=I6+6daxf9DBR/wq5NboOShmKyA8J0iaTzHPVTMkgH10=;
+        b=QHCsBsCmgpbSZbkfqS1Oo1MUQeuhlP1ZsLgzzMnXdAdig3V1zAvrj5IKC7nbum8dEY
+         peXnK6zU/RodBxXQ4H3AQrDQdldz0aOJKB0erOEm9K95Tw69V2izzp5jd0jPewdxCHR+
+         ZzsEDjnTue1e20m7A4AngmpfO54XUJd2CWRSA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/xXStdS/6Ecb3QM+NfwKwg0qrP8dEo54D+TLTJCNtQU=;
-        b=Pp2xwRoHErLSIYXtK+tYBqWZ1IP10LvWCFVUS4k8pGlozptOpsxzZg0GL1t+Pmjqsg
-         fm97Y2/78hO1vf6dZaz/yvSx0sGjjkhxcL9d7B8QL3AERV2llr7hcEPfTHDAehAlAjqv
-         YYfp3Zkc5HobLGmGVH+6qR3jcUkvunOpD+T5kT1h75DsY0HjHvRCxisaVGh5FRFmu4OE
-         Z3kx3QXmEUTPuKpDXe5erQg9KfGEo4m8vhAZ1r+A8vcI257n9al2Pf6WFH6kDAHALgCU
-         8lsktXQ56caH6BZjIg6+MiDI4Ccz0CvN9uiHtJpHr5mXgSL3cVMtkDN0Y5zFAHwCUlwq
-         zKuA==
-X-Gm-Message-State: AOAM530Q5howPtkSwH/c0pJqpL5z5vcO+jvz9VohEahN3fGjveUsJ7ck
-        y7BxyhNywhzj+s+/8hhHz+OZPQ==
-X-Google-Smtp-Source: ABdhPJwh5JavPhYpKz08mTjksCjblRKzyYKZLVzoqxjqLQzYJy+qhKbbe4mJH+/vvFqtue9Asub9yQ==
-X-Received: by 2002:a05:622a:50e:b0:2f3:9a86:6e3 with SMTP id l14-20020a05622a050e00b002f39a8606e3mr21035101qtx.374.1652207299802;
-        Tue, 10 May 2022 11:28:19 -0700 (PDT)
-Received: from markyacoub.nyc.corp.google.com ([2620:0:1003:314:141d:f589:29f6:2a25])
-        by smtp.gmail.com with ESMTPSA id g25-20020a05620a109900b0069fc13ce1e3sm8815496qkk.20.2022.05.10.11.28.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 11:28:19 -0700 (PDT)
-From:   Mark Yacoub <markyacoub@chromium.org>
-Cc:     seanpaul@chromium.org, markyacoub@google.com,
-        markyacoub@chromium.org,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] drm: Add a debug message when getting a prop is missing
-Date:   Tue, 10 May 2022 14:28:03 -0400
-Message-Id: <20220510182810.1223574-1-markyacoub@chromium.org>
-X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=I6+6daxf9DBR/wq5NboOShmKyA8J0iaTzHPVTMkgH10=;
+        b=OuZRmwSp6F7OkozR+N0cwpYIQq8ZgwkcelFciMhs+kL6glMZHiHIbJF/FoZJ9NwASn
+         NbCLJ4WRi4xTmnogALxgBcmidQTpg9nncJ2RjBoiJ1H4d3+zWjw8dTi2rMZdqlDTCeTv
+         ErGSJRn7SekYP4o5k8VX8ZlPf3vAYxJGeh+X2m3osbXDJpDwQAdMXl6toGDtZXPn2eLg
+         kJQknHJYzsephcoPumhl0mmokVrYeWXdvjrf1ttFhLdym3CePQ8W5kmx1ZXWokt2RvrP
+         P8OWUqvhBSAkPZlgYcUmBAInUCxs2ICElKpi1fSd0CMJ9H5JtXWlCBJaKTKkT4MnxOWp
+         Iy3g==
+X-Gm-Message-State: AOAM532FTDfof2DuITXO6Feq+Ite+OHDjt2oFDS5vAhpIRdjDF5m1KPW
+        nA15Ud+h5ys8AMWy1haY8e6uuTvRPNPfRlnIo28=
+X-Google-Smtp-Source: ABdhPJyWM0z/rEYSjXOkTlsVLQN1kW8TrEYKpkeye7NuC6g96CCsiwZ1vIrZhttcyERMjA5KNJG3aQ==
+X-Received: by 2002:a17:907:2da9:b0:6f8:6104:659 with SMTP id gt41-20020a1709072da900b006f861040659mr15399478ejc.556.1652207008570;
+        Tue, 10 May 2022 11:23:28 -0700 (PDT)
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com. [209.85.221.52])
+        by smtp.gmail.com with ESMTPSA id p16-20020a170906615000b006f3ef214e5fsm7959ejl.197.2022.05.10.11.23.27
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 May 2022 11:23:27 -0700 (PDT)
+Received: by mail-wr1-f52.google.com with SMTP id v12so24921280wrv.10
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 11:23:27 -0700 (PDT)
+X-Received: by 2002:adf:dfc8:0:b0:20a:d256:5b5c with SMTP id
+ q8-20020adfdfc8000000b0020ad2565b5cmr19494972wrn.97.1652207007228; Tue, 10
+ May 2022 11:23:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+References: <20220510082351-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20220510082351-mutt-send-email-mst@kernel.org>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 10 May 2022 11:23:11 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjPR+bj7P1O=MAQWXp0Mx2hHuNQ1acn6gS+mRo_kbo5Lg@mail.gmail.com>
+Message-ID: <CAHk-=wjPR+bj7P1O=MAQWXp0Mx2hHuNQ1acn6gS+mRo_kbo5Lg@mail.gmail.com>
+Subject: Re: [GIT PULL] virtio: last minute fixup
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Konstantin Ryabitsev <konstantin@linuxfoundation.org>
+Cc:     KVM list <kvm@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        mie@igel.co.jp
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[Why]
-If a connector property is attached but
-drm_atomic_connector_get_property doesn't handle a case for it,
-modeteset will crash with a segfault without.
+On Tue, May 10, 2022 at 5:24 AM Michael S. Tsirkin <mst@redhat.com> wrote:
+>
+> A last minute fixup of the transitional ID numbers.
+> Important to get these right - if users start to depend on the
+> wrong ones they are very hard to fix.
 
-[How]
-Add a debug message indicating that a connector property is not handled
-when user space is trying to read it.
+Hmm. I've pulled this, but those numbers aren't exactly "new".
 
-TEST=modetest
+They've been that way since 5.14, so what makes you think people
+haven't already started depending on them?
 
-Signed-off-by: Mark Yacoub <markyacoub@chromium.org>
----
- drivers/gpu/drm/drm_atomic_uapi.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+And - once again - I want to complain about the "Link:" in that commit.
 
-diff --git a/drivers/gpu/drm/drm_atomic_uapi.c b/drivers/gpu/drm/drm_atomic_uapi.c
-index acb1ee93d206..36b0f664dd80 100644
---- a/drivers/gpu/drm/drm_atomic_uapi.c
-+++ b/drivers/gpu/drm/drm_atomic_uapi.c
-@@ -884,6 +884,12 @@ drm_atomic_connector_get_property(struct drm_connector *connector,
- 		return connector->funcs->atomic_get_property(connector,
- 				state, property, val);
- 	} else {
-+		// LOG that the kernel is missing handling this property as a case here.
-+		drm_dbg_atomic(
-+			dev,
-+			"[CONNECTOR:%d:%s] Get Property [PROP:%d:%s] is not handled\n",
-+			connector->base.id, connector->name, property->base.id,
-+			property->name);
- 		return -EINVAL;
- 	}
- 
--- 
-2.36.0.512.ge40c2bad7a-goog
+It points to a completely useless patch submission. It doesn't point
+to anything useful at all.
 
+I think it's a disease that likely comes from "b4", and people decided
+that "hey, I can use the -l parameter to add that Link: field", and it
+looks better that way.
+
+And then they add it all the time, whether it makes any sense or not.
+
+I've mainly noticed it with the -tip tree, but maybe that's just
+because I've happened to look at it.
+
+I really hate those worthless links that basically add zero actual
+information to the commit.
+
+The "Link" field is for _useful_ links. Not "let's add a link just
+because we can".
+
+                           Linus
