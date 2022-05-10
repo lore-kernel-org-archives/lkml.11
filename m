@@ -2,88 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CEC1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 08:08:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4F1CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 08:08:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237818AbiEJIMP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 04:12:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39600 "EHLO
+        id S237866AbiEJIMV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 04:12:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237893AbiEJILD (ORCPT
+        with ESMTP id S237817AbiEJIMG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 04:11:03 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23A1772207
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 01:07:01 -0700 (PDT)
-Received: from kwepemi100006.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Ky9bf1mymzhZ16;
-        Tue, 10 May 2022 16:06:22 +0800 (CST)
-Received: from kwepemm600014.china.huawei.com (7.193.23.54) by
- kwepemi100006.china.huawei.com (7.221.188.165) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 10 May 2022 16:06:59 +0800
-Received: from ubuntu1804.huawei.com (10.67.175.28) by
- kwepemm600014.china.huawei.com (7.193.23.54) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 10 May 2022 16:06:59 +0800
-From:   Yi Yang <yiyang13@huawei.com>
-To:     <chris@zankel.net>, <jcmvbkbc@gmail.com>, <viro@zeniv.linux.org.uk>
-CC:     <linux-xtensa@linux-xtensa.org>, <linux-kernel@vger.kernel.org>,
-        <axboe@kernel.dk>, <wangweiyang2@huawei.com>
-Subject: [PATCH -next] xtensa/simdisk: fix error handling in proc_read_simdisk()
-Date:   Tue, 10 May 2022 16:05:33 +0800
-Message-ID: <20220510080533.51032-1-yiyang13@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 10 May 2022 04:12:06 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D40B259FA1
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 01:08:08 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id i27so31292951ejd.9
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 01:08:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=szeredi.hu; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2QFdBMdYEEbUASs02np96D58mKsmERHZc9+DIqJWP78=;
+        b=qQi+i9ZAoniWPdwG3ylmPUcac2wf8Zd0T/w/nS4IkCX0SkHWtsVxLcPNyUCNNYVzbs
+         SKLrVJtsuHZOxJf9utf3nZ1kAxJ0Y5h6Rt6gPKKyU3j5RzI862zM7fBWXwNd3l4lr+p6
+         dD3XO8aDg4AuxFjyL4NW7QgH+gJ4zt0+d9rh8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2QFdBMdYEEbUASs02np96D58mKsmERHZc9+DIqJWP78=;
+        b=xgbFOuQtRQ0LaIHiWNxDeJejgrWhcwn/HevWm6wF5W8ocaUF4Io20CgcPYtVayw3AE
+         zSRz7dxjjqPQIYVgrWlojaFIWffapy6YKfoSKf21dkxn3cURY7AyTuhSi6V4gE4eNJSF
+         M3i4wkKvu8i5rR0L+6zq4Imi7MgAVBIEvzbwFRqQROPXGRzHLKALRbAkoppVTQshDvyb
+         /jBGzUuo6FL9eCOZvh/mgsDNWppyTosLnoOv+bnQD3Y8iqdL+0udvUoI5NhBJH1dNSUy
+         fvUz1p6vPwCaeBoKVrkrQVn+1rfyy8kyZvA6nhGiFGZjCRpDg7v9ZV3BFLUmJz77qR8y
+         wwMA==
+X-Gm-Message-State: AOAM531/eqH7kYwuuHcjhKbpyT6+WHrnnSAWFWyKckibFlOzuU/KTdV0
+        fEZm7ve2ld2d/S+KfPvfyeIq49VNzES7XU+fMJpT3A==
+X-Google-Smtp-Source: ABdhPJwEHlw4XhbiZIuNB+ukHQw6ZcScwA3a5E2Bw5WzA5tKVBIbFK+IK2Sb7JbU5SORV2GvNdQ+pEESwl6nGdb3zws=
+X-Received: by 2002:a17:906:b48:b0:6f5:132c:1a17 with SMTP id
+ v8-20020a1709060b4800b006f5132c1a17mr18555378ejg.748.1652170086987; Tue, 10
+ May 2022 01:08:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.175.28]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600014.china.huawei.com (7.193.23.54)
-X-CFilter-Loop: Reflected
+References: <YnEeuw6fd1A8usjj@miu.piliscsaba.redhat.com> <20220509124815.vb7d2xj5idhb2wq6@wittgenstein>
+ <CAJfpegveWaS5pR3O1c_7qLnaEDWwa8oi26x2v_CwDXB_sir1tg@mail.gmail.com>
+ <8ab7f51cf18ba62e3f5bfdf5d9933895413f4806.camel@themaw.net> <CAJfpegv3MCHMzur9R+K+yZC3Z_Wmbq3=pQwuQ=+kQSrihg0c9g@mail.gmail.com>
+In-Reply-To: <CAJfpegv3MCHMzur9R+K+yZC3Z_Wmbq3=pQwuQ=+kQSrihg0c9g@mail.gmail.com>
+From:   Miklos Szeredi <miklos@szeredi.hu>
+Date:   Tue, 10 May 2022 10:07:55 +0200
+Message-ID: <CAJfpegutUQOTa71NTy_iaz5Kus2ma16ALqrHtvV2+cQ0tFiaxA@mail.gmail.com>
+Subject: Re: [RFC PATCH] getting misc stats/attributes via xattr API
+To:     Ian Kent <raven@themaw.net>
+Cc:     Christian Brauner <brauner@kernel.org>,
+        linux-fsdevel@vger.kernel.org, Dave Chinner <david@fromorbit.com>,
+        "Theodore Ts'o" <tytso@mit.edu>, Karel Zak <kzak@redhat.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org,
+        Linux API <linux-api@vger.kernel.org>,
+        linux-man <linux-man@vger.kernel.org>,
+        LSM <linux-security-module@vger.kernel.org>,
+        David Howells <dhowells@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christian Brauner <christian@brauner.io>,
+        Amir Goldstein <amir73il@gmail.com>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The frist simple_read_from_buffer() will change ppos. if ppos >= 1.
-The second simple_read_from_buffer() will does not work and return 0.
+On Tue, 10 May 2022 at 10:06, Miklos Szeredi <miklos@szeredi.hu> wrote:
+>
+> On Tue, 10 May 2022 at 06:27, Ian Kent <raven@themaw.net> wrote:
+>
+> > > Was there ever a test patch for systemd using fsinfo(2)?  I think
+> > > not.
+> >
+> > Mmm ... I'm hurt you didn't pay any attention to what I did on this
+> > during the original fsinfo() discussions.
+>
+> I can't find anything related to this in my mailbox.  Maybe you
+> mentioned it at some point, but I have not been involved with the
+> actual systemd changes.  So not meant to belittle your work at all.
+>
+> > > Until systemd people start to reengineer the mount handing to allow
+> > > for retrieving a single mount instead of the complete mount table we
+> > > will never know where the performance bottleneck lies.
+> >
+> > We didn't need the systemd people to do this only review and contribute
+> > to the pr for the change and eventually merge it.
+> >
+> > What I did on this showed that using fsinfo() allone about halved the
+> > CPU overhead (from around 4 processes using about 80%) and once the
+> > mount notifications was added too it went down to well under 10% per
+> > process. The problem here was systemd is quite good at servicing events
+> > and reducing event processing overhead meant more events would then be
+> > processed. Utilizing the mount notifications queueing was the key to
+> > improving this and that was what I was about to work on at the end.
+> >
+> > But everything stopped before the work was complete.
+> >
+> > As I said above it's been a long time since I looked at the systemd
+> > work and it definitely was a WIP so "what you see is what you get"
+> > at https://github.com/raven-au/systemd/commits/. It looks like the
+> > place to look to get some idea of what was being done is branch
+> > notifications-devel or notifications-rfc-pr. Also note that this
+> > uses the libmount fsinfo() infrastrucure that was done by Karal Zak
+> > (and a tiny bit by me) at the time.
+>
+> Looks great as a first step.
+>
+> What do you mean by "Utilizing the mount notifications queueing"?
+>
+> Do you mean batching of notifications?   I think that's a very
+> important issue: processing each individual notifcation may not make
+> sense when there are lots of them.  For example, doing ceate
+> mount+remote mount in a loop a million times will result in two
 
-Fixes: a69755b18774 ("xtensa simdisk: switch to proc_create_data()")
-Signed-off-by: Yi Yang <yiyang13@huawei.com>
----
- arch/xtensa/platforms/iss/simdisk.c | 18 +++++++++++++-----
- 1 file changed, 13 insertions(+), 5 deletions(-)
+s/remote/remove/
 
-diff --git a/arch/xtensa/platforms/iss/simdisk.c b/arch/xtensa/platforms/iss/simdisk.c
-index 0f0e0724397f..618c080c388d 100644
---- a/arch/xtensa/platforms/iss/simdisk.c
-+++ b/arch/xtensa/platforms/iss/simdisk.c
-@@ -210,13 +210,21 @@ static ssize_t proc_read_simdisk(struct file *file, char __user *buf,
- {
- 	struct simdisk *dev = pde_data(file_inode(file));
- 	const char *s = dev->filename;
-+	char *temp;
-+
- 	if (s) {
-+		ssize_t len = strlen(s);
-+
-+		temp = kmalloc(len + 2, GFP_KERNEL);
-+		if (!temp)
-+			return -ENOMEM;
-+
-+		scnprintf(temp, len + 2, "%s\n", s);
- 		ssize_t n = simple_read_from_buffer(buf, size, ppos,
--							s, strlen(s));
--		if (n < 0)
--			return n;
--		buf += n;
--		size -= n;
-+							temp, strlen(temp));
-+
-+		kfree(temp);
-+		return n;
- 	}
- 	return simple_read_from_buffer(buf, size, ppos, "\n", 1);
- }
--- 
-2.17.1
-
+> million notification messages (with high likelyhood of queue
+> overflow), but in the end the mount table will end up being the
+> same...
+>
+> Thanks,
+> Miklos
