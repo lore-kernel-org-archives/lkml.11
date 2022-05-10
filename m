@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11365C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:23:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDB71C35296
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:23:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344586AbiEJO1B (ORCPT
+        id S1344529AbiEJO06 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:27:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45306 "EHLO
+        Tue, 10 May 2022 10:26:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244608AbiEJNz7 (ORCPT
+        with ESMTP id S244609AbiEJNz7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:55:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C7EB663FE;
-        Tue, 10 May 2022 06:38:37 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93BE83F892;
+        Tue, 10 May 2022 06:38:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DC85FB81DC7;
-        Tue, 10 May 2022 13:38:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41BFEC385A6;
-        Tue, 10 May 2022 13:38:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 27323615E9;
+        Tue, 10 May 2022 13:38:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 203F9C385D4;
+        Tue, 10 May 2022 13:38:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189914;
-        bh=1g6coX2ecD6ja2I4HHiOaPhcem39u5y+T3mHAMQOf/w=;
+        s=korg; t=1652189917;
+        bh=BLhaYnSDWTmnxGZlLocs5B2+vyy327FfiGc2UyQUzZc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q1iCz5Y0FgZKd/yj+yMb5uwjO2s1QEklzlmEz6MuJvCI/ydCF6feULgq8sq8eh5uS
-         tjPHZNve/z4N2sADs2kTFBCYfsSuzTW9IvJ7+ZAOUA6KeCTHS/wbre49Ir/Lr/mJhX
-         3OqAqM74aZMCm4si/SAQ1cZ3Bdr9Scjvx3IIvaZo=
+        b=DbYJwSl38SknuIwzYral34U0ruJbuEUtVKS/tcjTMVWfosYplvq6tWCgx4r/VqUu6
+         JKiasACzNbfT2bT0ADHo4ZkxqpefP7FGcM6I7vciXBeEIeCj74HobDRsQlpV0AithE
+         6Odpv0llX94nGsClQWT8oQbJBmAJ9KqDcYDSzzO0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Bloch <mbloch@nvidia.com>,
-        Maor Gottlieb <maorg@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.17 069/140] net/mlx5: Fix matching on inner TTC
-Date:   Tue, 10 May 2022 15:07:39 +0200
-Message-Id: <20220510130743.592071899@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jan=20H=C3=B6ppner?= <hoeppner@linux.ibm.com>,
+        Stefan Haberland <sth@linux.ibm.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.17 043/140] s390/dasd: Fix read for ESE with blksize < 4k
+Date:   Tue, 10 May 2022 15:07:13 +0200
+Message-Id: <20220510130742.851866478@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -50,53 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Bloch <mbloch@nvidia.com>
+From: Jan Höppner <hoeppner@linux.ibm.com>
 
-commit a042d7f5bb68c47f6e0e546ca367d14e1e4b25ba upstream.
+commit cd68c48ea15c85f1577a442dc4c285e112ff1b37 upstream.
 
-The cited commits didn't use proper matching on inner TTC
-as a result distribution of encapsulated packets wasn't symmetric
-between the physical ports.
+When reading unformatted tracks on ESE devices, the corresponding memory
+areas are simply set to zero for each segment. This is done incorrectly
+for blocksizes < 4096.
 
-Fixes: 4c71ce50d2fe ("net/mlx5: Support partial TTC rules")
-Fixes: 8e25a2bc6687 ("net/mlx5: Lag, add support to create TTC tables for LAG port selection")
-Signed-off-by: Mark Bloch <mbloch@nvidia.com>
-Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+There are two problems. First, the increment of dst is done using the
+counter of the loop (off), which is increased by blksize every
+iteration. This leads to a much bigger increment for dst as actually
+intended. Second, the increment of dst is done before the memory area
+is set to 0, skipping a significant amount of bytes of memory.
+
+This leads to illegal overwriting of memory and ultimately to a kernel
+panic.
+
+This is not a problem with 4k blocksize because
+blk_queue_max_segment_size is set to PAGE_SIZE, always resulting in a
+single iteration for the inner segment loop (bv.bv_len == blksize). The
+incorrectly used 'off' value to increment dst is 0 and the correct
+memory area is used.
+
+In order to fix this for blksize < 4k, increment dst correctly using the
+blksize and only do it at the end of the loop.
+
+Fixes: 5e2b17e712cf ("s390/dasd: Add dynamic formatting support for ESE volumes")
+Cc: stable@vger.kernel.org # v5.3+
+Signed-off-by: Jan Höppner <hoeppner@linux.ibm.com>
+Reviewed-by: Stefan Haberland <sth@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220505141733.1989450-4-sth@linux.ibm.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.c | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/lib/fs_ttc.c   | 2 ++
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ drivers/s390/block/dasd_eckd.c |    7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.c
-index a6592f9c3c05..5be322528279 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.c
-@@ -505,7 +505,7 @@ static int mlx5_lag_create_inner_ttc_table(struct mlx5_lag *ldev)
- 	struct ttc_params ttc_params = {};
- 
- 	mlx5_lag_set_inner_ttc_params(ldev, &ttc_params);
--	port_sel->inner.ttc = mlx5_create_ttc_table(dev, &ttc_params);
-+	port_sel->inner.ttc = mlx5_create_inner_ttc_table(dev, &ttc_params);
- 	if (IS_ERR(port_sel->inner.ttc))
- 		return PTR_ERR(port_sel->inner.ttc);
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_ttc.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_ttc.c
-index b63dec24747a..b78f2ba25c19 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_ttc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_ttc.c
-@@ -408,6 +408,8 @@ static int mlx5_generate_inner_ttc_table_rules(struct mlx5_core_dev *dev,
- 	for (tt = 0; tt < MLX5_NUM_TT; tt++) {
- 		struct mlx5_ttc_rule *rule = &rules[tt];
- 
-+		if (test_bit(tt, params->ignore_dests))
-+			continue;
- 		rule->rule = mlx5_generate_inner_ttc_rule(dev, ft,
- 							  &params->dests[tt],
- 							  ttc_rules[tt].etype,
--- 
-2.36.1
-
+--- a/drivers/s390/block/dasd_eckd.c
++++ b/drivers/s390/block/dasd_eckd.c
+@@ -3285,12 +3285,11 @@ static int dasd_eckd_ese_read(struct das
+ 				cqr->proc_bytes = blk_count * blksize;
+ 				return 0;
+ 			}
+-			if (dst && !skip_block) {
+-				dst += off;
++			if (dst && !skip_block)
+ 				memset(dst, 0, blksize);
+-			} else {
++			else
+ 				skip_block--;
+-			}
++			dst += blksize;
+ 			blk_count++;
+ 		}
+ 	}
 
 
