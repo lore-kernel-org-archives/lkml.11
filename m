@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00AE8C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC5ABC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:13:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343899AbiEJOQl (ORCPT
+        id S1343546AbiEJOQK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:16:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50734 "EHLO
+        Tue, 10 May 2022 10:16:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343783AbiEJNs1 (ORCPT
+        with ESMTP id S1343517AbiEJNsL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:48:27 -0400
+        Tue, 10 May 2022 09:48:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE99F6BFC2;
-        Tue, 10 May 2022 06:36:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6BF32AED8D;
+        Tue, 10 May 2022 06:36:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E5806193B;
-        Tue, 10 May 2022 13:36:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EE76C385A6;
-        Tue, 10 May 2022 13:36:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB70E618C1;
+        Tue, 10 May 2022 13:36:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0806C385C2;
+        Tue, 10 May 2022 13:36:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189811;
-        bh=2HnKUKKeygCNULEDLTGebDWd/Upf5P086EXE4P6TmGo=;
+        s=korg; t=1652189790;
+        bh=ICoUCWveMjVxL0JXl/i8DtIZOEvJ3uy+U5E1ZTjNeo4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=orVcPb7GCruTZwDd5sCW002o3SDZ5jR4xU2tiTcgNOX/baTEm5AIR8pqVGSJbPuHj
-         3f4WtSjIMfhS6A62Z5Q8YsM/rWqOA7z0ZtbESfBrMbuBLt3tmDnqSLtOyFA7hXhqBF
-         IUURQc40Jilbjk7KhoszxRXVMO22BJoxUuBpAk/g=
+        b=cTTVYKZ8lHuGqO2EBTh/OgDTbPLjDY/7r/JVwNZt1X4Qm818us/odsweZ2EngjAzZ
+         z3LmWHXJIj0l/OalpiMFmF6uKRYz7KW5WwVkLFp4/I73yVHdVKJCieJXtqSZWWICmT
+         EdGj4aGodP2FMLsKtJvjrzCdDQw1Soc5LdLKkg1I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-Subject: [PATCH 5.17 035/140] ASoC: da7219: Fix change notifications for tone generator frequency
-Date:   Tue, 10 May 2022 15:07:05 +0200
-Message-Id: <20220510130742.622953937@linuxfoundation.org>
+        stable@vger.kernel.org, Matt Corallo <blnxfsl@bluematt.me>,
+        Josef Bacik <josef@toxicpanda.com>, Qu Wenruo <wqu@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.17 029/140] btrfs: force v2 space cache usage for subpage mount
+Date:   Tue, 10 May 2022 15:06:59 +0200
+Message-Id: <20220510130742.446962329@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -49,58 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Qu Wenruo <wqu@suse.com>
 
-commit 08ef48404965cfef99343d6bbbcf75b88c74aa0e upstream.
+commit 9f73f1aef98b2fa7252c0a89be64840271ce8ea0 upstream.
 
-The tone generator frequency control just returns 0 on successful write,
-not a boolean value indicating if there was a change or not.  Compare
-what was written with the value that was there previously so that
-notifications are generated appropriately when the value changes.
+[BUG]
+For a 4K sector sized btrfs with v1 cache enabled and only mounted on
+systems with 4K page size, if it's mounted on subpage (64K page size)
+systems, it can cause the following warning on v1 space cache:
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Reviewed-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220420133437.569229-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+ BTRFS error (device dm-1): csum mismatch on free space cache
+ BTRFS warning (device dm-1): failed to load free space cache for block group 84082688, rebuilding it now
+
+Although not a big deal, as kernel can rebuild it without problem, such
+warning will bother end users, especially if they want to switch the
+same btrfs seamlessly between different page sized systems.
+
+[CAUSE]
+V1 free space cache is still using fixed PAGE_SIZE for various bitmap,
+like BITS_PER_BITMAP.
+
+Such hard-coded PAGE_SIZE usage will cause various mismatch, from v1
+cache size to checksum.
+
+Thus kernel will always reject v1 cache with a different PAGE_SIZE with
+csum mismatch.
+
+[FIX]
+Although we should fix v1 cache, it's already going to be marked
+deprecated soon.
+
+And we have v2 cache based on metadata (which is already fully subpage
+compatible), and it has almost everything superior than v1 cache.
+
+So just force subpage mount to use v2 cache on mount.
+
+Reported-by: Matt Corallo <blnxfsl@bluematt.me>
+CC: stable@vger.kernel.org # 5.15+
+Link: https://lore.kernel.org/linux-btrfs/61aa27d1-30fc-c1a9-f0f4-9df544395ec3@bluematt.me/
+Reviewed-by: Josef Bacik <josef@toxicpanda.com>
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/da7219.c |   14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ fs/btrfs/disk-io.c |   11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
---- a/sound/soc/codecs/da7219.c
-+++ b/sound/soc/codecs/da7219.c
-@@ -446,7 +446,7 @@ static int da7219_tonegen_freq_put(struc
- 	struct soc_mixer_control *mixer_ctrl =
- 		(struct soc_mixer_control *) kcontrol->private_value;
- 	unsigned int reg = mixer_ctrl->reg;
--	__le16 val;
-+	__le16 val_new, val_old;
- 	int ret;
+--- a/fs/btrfs/disk-io.c
++++ b/fs/btrfs/disk-io.c
+@@ -3569,6 +3569,17 @@ int __cold open_ctree(struct super_block
+ 	if (sectorsize < PAGE_SIZE) {
+ 		struct btrfs_subpage_info *subpage_info;
  
- 	/*
-@@ -454,13 +454,19 @@ static int da7219_tonegen_freq_put(struc
- 	 * Therefore we need to convert to little endian here to align with
- 	 * HW registers.
- 	 */
--	val = cpu_to_le16(ucontrol->value.integer.value[0]);
-+	val_new = cpu_to_le16(ucontrol->value.integer.value[0]);
- 
- 	mutex_lock(&da7219->ctrl_lock);
--	ret = regmap_raw_write(da7219->regmap, reg, &val, sizeof(val));
-+	ret = regmap_raw_read(da7219->regmap, reg, &val_old, sizeof(val_old));
-+	if (ret == 0 && (val_old != val_new))
-+		ret = regmap_raw_write(da7219->regmap, reg,
-+				&val_new, sizeof(val_new));
- 	mutex_unlock(&da7219->ctrl_lock);
- 
--	return ret;
-+	if (ret < 0)
-+		return ret;
++		/*
++		 * V1 space cache has some hardcoded PAGE_SIZE usage, and is
++		 * going to be deprecated.
++		 *
++		 * Force to use v2 cache for subpage case.
++		 */
++		btrfs_clear_opt(fs_info->mount_opt, SPACE_CACHE);
++		btrfs_set_and_info(fs_info, FREE_SPACE_TREE,
++			"forcing free space tree for sector size %u with page size %lu",
++			sectorsize, PAGE_SIZE);
 +
-+	return val_old != val_new;
- }
- 
- 
+ 		btrfs_warn(fs_info,
+ 		"read-write for sector size %u with page size %lu is experimental",
+ 			   sectorsize, PAGE_SIZE);
 
 
