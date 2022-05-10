@@ -2,245 +2,246 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 849BFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:45:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79E83C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:46:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241205AbiEJLte (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 07:49:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48684 "EHLO
+        id S241210AbiEJLuo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 07:50:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241196AbiEJLta (ORCPT
+        with ESMTP id S241206AbiEJLuj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 07:49:30 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4AEC25470E
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 04:45:32 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id dk23so32383082ejb.8
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 04:45:32 -0700 (PDT)
+        Tue, 10 May 2022 07:50:39 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4797D1FE3C0
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 04:46:42 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id g23so19656740edy.13
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 04:46:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=7CJgZK/Q3TXpdrc82+EsjW+w5ztoxNGdpsgGltu/dv8=;
-        b=M6Kk70C20E34EyBk6iNsYOcQRG7DQcgLbFdyEulG2ocYzl7J0XnWxHqsZIlR6UUzud
-         OggPoFqx5m1Honn9I0w1BZnKD7rmMc3Tfmd+LacWlFoMg4qkRs2ztQlOjdaifDQKDUFL
-         PLpQc2nzaqrCYxqW7NDsqgcBWA3RhV/Oy2qFI=
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=9fc4DPby0hC3+wp0CTHo7fj7huwHR34h2xJeQIEyKY8=;
+        b=LAg58hFgcQjOa7ynGutntPZJEMGXJv1Et0eD5ui2671PeMFEwvfqHdTYnBM6eokYMd
+         wRRV60rb7iWB+41Zdm/YyBL2KjKJ3ioaF1MQla/cPHcGqKe+DFvjBtAU1fIeRJmlaV0O
+         S1gvtmfVIXm7lA7YgPfB2iU8+O07RiPWmNR1/vx+JunEEFPKt0GmmmI0Fc1Io2IRepQ9
+         1hrwRAluEvpYkHiPmWlFDNdwrJWD2/4WE0mIi2WE1LAjY79s4sThtMu5+EhAY2XbZHUh
+         2vpYeQ9oq77QfD/mShfKO5/b9WcogCTUqzJgpkDCshB8Jpc8P2oXpSDBmaYonMxFdJ3E
+         F5Yg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=7CJgZK/Q3TXpdrc82+EsjW+w5ztoxNGdpsgGltu/dv8=;
-        b=KiVpL0hjGo7REQ2uieGLgm9WiRNxfK43tlCCUnDJZC0beauYB1yU8kYjlp3VoCsZcN
-         YC88Es027ik5xHmda8m+v5n77xHeilLmyLUMhfS7Hbeq6VSLaif2npdP0bq0mmm74qVr
-         MJRPsv4qzJ5kkJ8y4U9SLzFhNgbqT/DCjCKYgN9DTS1znsCv+A36PwG0eNidsPSjbCVh
-         8wuZcPmCdDZaOKQj1op9ndkY8kroQJiN1nCB3Uj1BOKejQwJm/J6VC127Q9/XwJ5/+x2
-         yrux8qRZpicEZxr+RUhrFA6PvauvF9ei2Y2wqnXmBGfwnwK+ACv66yzeDXzoOIO+fE8y
-         /qrw==
-X-Gm-Message-State: AOAM532deRuibyg4a7sPiTxdB6UJTbS8w5iF/I0Yp7j6ToS3+Fac38A5
-        HouWchpwI+ztiP5X9ihqQ4Hc1A==
-X-Google-Smtp-Source: ABdhPJyLAw11BXqovb/hyRd3O52ps0BA+TwNNEhz5hf8CzWAXREk2pVUIGq9fB6HrslFKPlLwZUkkw==
-X-Received: by 2002:a17:907:6d25:b0:6f4:d753:f250 with SMTP id sa37-20020a1709076d2500b006f4d753f250mr19240326ejc.580.1652183131282;
-        Tue, 10 May 2022 04:45:31 -0700 (PDT)
-Received: from cloudflare.com (79.184.139.106.ipv4.supernova.orange.pl. [79.184.139.106])
-        by smtp.gmail.com with ESMTPSA id n12-20020a1709065e0c00b006f3ef214e0bsm6127841eju.113.2022.05.10.04.45.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 04:45:30 -0700 (PDT)
-References: <20220424154028.1698685-1-xukuohai@huawei.com>
- <20220424154028.1698685-6-xukuohai@huawei.com>
-User-agent: mu4e 1.6.10; emacs 27.2
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Xu Kuohai <xukuohai@huawei.com>
-Cc:     bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        hpa@zytor.com, Shuah Khan <shuah@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Daniel Kiss <daniel.kiss@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Mark Brown <broonie@kernel.org>,
-        Delyan Kratunov <delyank@fb.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Subject: Re: [PATCH bpf-next v3 5/7] bpf, arm64: Support to poke bpf prog
-Date:   Tue, 10 May 2022 11:36:59 +0200
-In-reply-to: <20220424154028.1698685-6-xukuohai@huawei.com>
-Message-ID: <87ilqdobl1.fsf@cloudflare.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=9fc4DPby0hC3+wp0CTHo7fj7huwHR34h2xJeQIEyKY8=;
+        b=vVngJPRvytPkGqRIR8csjWjYUr/XlJuWMNbqN89CA+/EVVe07luE0rKSPL2kwipLxV
+         Gbc7emroo67CMsDZCyWZ9w5yiIiccNU8vGCv/OQ9QPjZpRlSymwQ6ph06ZOfm2bR9QVk
+         +RD0VhF8p9j16MiVcigmXMXCDym0v1pdMScAjHxPE+lHfwzJwy42Wc2w3J465QFj0oLS
+         O8PvUrrWbESpXHAjVb0PnNyngEYk7gH97jaGvCoSgHPlwVohMWa4rJopvi5LKtA6ylMR
+         YnJV5wYMrbmIexc4xFsOayoeMXbpRzq5TZqtkicVcPjVwRb2ODVZw2PBgkve97FQrfLC
+         Iwyg==
+X-Gm-Message-State: AOAM530HqP1PhXwjQ3aJTCz1eCGI654E7oHrm6AdvrZZIWixOUTyQKsF
+        5J5BZw6IoZwwWGi0WHKie8WCxw==
+X-Google-Smtp-Source: ABdhPJzXElWmmblik/m1NRxWy3j+yFO70xDN/HGVqbxKjXrf0egxTRK9s5LgEDH6z4dYkGjxH8UvPQ==
+X-Received: by 2002:a05:6402:1cc1:b0:413:2b12:fc49 with SMTP id ds1-20020a0564021cc100b004132b12fc49mr22408384edb.118.1652183200869;
+        Tue, 10 May 2022 04:46:40 -0700 (PDT)
+Received: from [192.168.0.252] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id q23-20020a1709060f9700b006f3ef214dbdsm5972294ejj.35.2022.05.10.04.46.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 May 2022 04:46:40 -0700 (PDT)
+Message-ID: <fde74400-34aa-df80-5af5-cb4ee89c8e6f@linaro.org>
+Date:   Tue, 10 May 2022 13:46:38 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 2/2] arm64: dts: marvell: add support for Methode eDPU
+Content-Language: en-US
+To:     Robert Marko <robert.marko@sartura.hr>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org, Andrew Lunn <andrew@lunn.ch>,
+        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
+        shawnguo@kernel.org, Linus Walleij <linus.walleij@linaro.org>,
+        kostap@marvell.com, devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
+        =?UTF-8?Q?Marek_Beh=c3=ban?= <marek.behun@nic.cz>
+References: <20220509110028.144226-1-robert.marko@sartura.hr>
+ <20220509110028.144226-2-robert.marko@sartura.hr>
+ <8e22cbf7-eee1-0ec7-10f9-3839ec80dfbf@linaro.org>
+ <CA+HBbNE1w5w6c8MwMuSwCFzjnyKOQ7Y0MV4bPijJW3rekWLo4w@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CA+HBbNE1w5w6c8MwMuSwCFzjnyKOQ7Y0MV4bPijJW3rekWLo4w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks for incorporating the attach to BPF progs bits into the series.
+On 10/05/2022 13:41, Robert Marko wrote:
+> On Tue, May 10, 2022 at 12:20 PM Krzysztof Kozlowski
+> <krzysztof.kozlowski@linaro.org> wrote:
+>>
+>> On 09/05/2022 13:00, Robert Marko wrote:
+>>> Methode eDPU is an Armada 3720 powered board based on the Methode uDPU.
+>>>
+>>> They feature the same CPU, RAM, and storage as well as the form factor.
+>>>
+>>> However, eDPU only has one SFP slot plus a copper G.hn port.
+>>>
+>>> In order to reduce duplication, split the uDPU DTS into a common one.
+>>>
+>>> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+>>> ---
+>>>  arch/arm64/boot/dts/marvell/Makefile          |   1 +
+>>>  .../boot/dts/marvell/armada-3720-eDPU.dts     |  14 ++
+>>>  .../boot/dts/marvell/armada-3720-uDPU.dts     | 148 +---------------
+>>>  .../boot/dts/marvell/armada-3720-uDPU.dtsi    | 163 ++++++++++++++++++
+>>>  4 files changed, 179 insertions(+), 147 deletions(-)
+>>>  create mode 100644 arch/arm64/boot/dts/marvell/armada-3720-eDPU.dts
+>>>  create mode 100644 arch/arm64/boot/dts/marvell/armada-3720-uDPU.dtsi
+>>>
+>>> diff --git a/arch/arm64/boot/dts/marvell/Makefile b/arch/arm64/boot/dts/marvell/Makefile
+>>> index 1c794cdcb8e6..104d7d7e8215 100644
+>>> --- a/arch/arm64/boot/dts/marvell/Makefile
+>>> +++ b/arch/arm64/boot/dts/marvell/Makefile
+>>> @@ -1,6 +1,7 @@
+>>>  # SPDX-License-Identifier: GPL-2.0
+>>>  # Mvebu SoC Family
+>>>  dtb-$(CONFIG_ARCH_MVEBU) += armada-3720-db.dtb
+>>> +dtb-$(CONFIG_ARCH_MVEBU) += armada-3720-eDPU.dtb
+>>>  dtb-$(CONFIG_ARCH_MVEBU) += armada-3720-espressobin.dtb
+>>>  dtb-$(CONFIG_ARCH_MVEBU) += armada-3720-espressobin-emmc.dtb
+>>>  dtb-$(CONFIG_ARCH_MVEBU) += armada-3720-espressobin-ultra.dtb
+>>> diff --git a/arch/arm64/boot/dts/marvell/armada-3720-eDPU.dts b/arch/arm64/boot/dts/marvell/armada-3720-eDPU.dts
+>>> new file mode 100644
+>>> index 000000000000..6b573a6854cc
+>>> --- /dev/null
+>>> +++ b/arch/arm64/boot/dts/marvell/armada-3720-eDPU.dts
+>>> @@ -0,0 +1,14 @@
+>>> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+>>> +
+>>> +/dts-v1/;
+>>> +
+>>> +#include "armada-3720-uDPU.dtsi"
+>>> +
+>>> +/ {
+>>> +     model = "Methode eDPU Board";
+>>> +     compatible = "methode,edpu", "marvell,armada3720";
+>>
+>> You need also bindings for the board compatible. Someone should convert
+>> the Documentation/devicetree/bindings/arm/marvell/armada-37xx.txt to YAML.
+> 
+> Ok, I can convert the SoC compatibles at least for now.
+> Any advice you can give me on how the handle the Espressobin boards
+> having multiple board-specific compatibles?
+> For example, Espressobin V7 has:
+> "globalscale,espressobin-v7", "globalscale,espressobin"
+> 
 
-I have a couple minor comments. Please see below.
+Documentation/devicetree/bindings/arm/fsl.yaml
 
-On Sun, Apr 24, 2022 at 11:40 AM -04, Xu Kuohai wrote:
-> 1. Set up the bpf prog entry in the same way as fentry to support
->    trampoline. Now bpf prog entry looks like this:
->
->    bti c        // if BTI enabled
->    mov x9, x30  // save lr
->    nop          // to be replaced with jump instruction
->    paciasp      // if PAC enabled
->
-> 2. Update bpf_arch_text_poke() to poke bpf prog. If the instruction
->    to be poked is bpf prog's first instruction, skip to the nop
->    instruction in the prog entry.
->
-> Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
-> ---
->  arch/arm64/net/bpf_jit.h      |  1 +
->  arch/arm64/net/bpf_jit_comp.c | 41 +++++++++++++++++++++++++++--------
->  2 files changed, 33 insertions(+), 9 deletions(-)
->
-> diff --git a/arch/arm64/net/bpf_jit.h b/arch/arm64/net/bpf_jit.h
-> index 194c95ccc1cf..1c4b0075a3e2 100644
-> --- a/arch/arm64/net/bpf_jit.h
-> +++ b/arch/arm64/net/bpf_jit.h
-> @@ -270,6 +270,7 @@
->  #define A64_BTI_C  A64_HINT(AARCH64_INSN_HINT_BTIC)
->  #define A64_BTI_J  A64_HINT(AARCH64_INSN_HINT_BTIJ)
->  #define A64_BTI_JC A64_HINT(AARCH64_INSN_HINT_BTIJC)
-> +#define A64_NOP    A64_HINT(AARCH64_INSN_HINT_NOP)
->  
->  /* DMB */
->  #define A64_DMB_ISH aarch64_insn_gen_dmb(AARCH64_INSN_MB_ISH)
-> diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
-> index 3f9bdfec54c4..293bdefc5d0c 100644
-> --- a/arch/arm64/net/bpf_jit_comp.c
-> +++ b/arch/arm64/net/bpf_jit_comp.c
-> @@ -237,14 +237,23 @@ static bool is_lsi_offset(int offset, int scale)
->  	return true;
->  }
->  
-> -/* Tail call offset to jump into */
-> -#if IS_ENABLED(CONFIG_ARM64_BTI_KERNEL) || \
-> -	IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL)
-> -#define PROLOGUE_OFFSET 9
-> +#if IS_ENABLED(CONFIG_ARM64_BTI_KERNEL)
-> +#define BTI_INSNS	1
-> +#else
-> +#define BTI_INSNS	0
-> +#endif
-> +
-> +#if IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL)
-> +#define PAC_INSNS	1
->  #else
-> -#define PROLOGUE_OFFSET 8
-> +#define PAC_INSNS	0
->  #endif
+>>
+>>> +};
+>>> +> +  sfp_eth1: sfp-eth1 {
+>>
+>> Generic node names, please.
+> 
+> Can you give me an example of what would be appropriate here because the SFP
+> bindings example utilizes the same naming scheme as used here?
 
-Above can be folded into:
+"sfp" if you have only one sfp node.
 
-#define BTI_INSNS (IS_ENABLED(CONFIG_ARM64_BTI_KERNEL) ? 1 : 0)
-#define PAC_INSNS (IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL) ? 1 : 0)
+> 
+>>
+>>> +             compatible = "sff,sfp";
+>>> +             i2c-bus = <&i2c1>;
+>>> +             los-gpio = <&gpiosb 7 GPIO_ACTIVE_HIGH>;
+>>> +             mod-def0-gpio = <&gpiosb 8 GPIO_ACTIVE_LOW>;
+>>> +             tx-disable-gpio = <&gpiosb 9 GPIO_ACTIVE_HIGH>;
+>>> +             tx-fault-gpio = <&gpiosb 10 GPIO_ACTIVE_HIGH>;
+>>> +             maximum-power-milliwatt = <3000>;
+>>> +     };
+>>> +};
+>>> +
+>>> +&sdhci0 {
+>>> +     status = "okay";
+>>> +     bus-width = <8>;
+>>> +     mmc-ddr-1_8v;
+>>> +     mmc-hs400-1_8v;
+>>> +     marvell,pad-type = "fixed-1-8v";
+>>> +     non-removable;
+>>> +     no-sd;
+>>> +     no-sdio;
+>>> +};
+>>> +
+>>> +&spi0 {
+>>> +     status = "okay";
+>>> +     pinctrl-names = "default";
+>>> +     pinctrl-0 = <&spi_quad_pins>;
+>>> +
+>>> +     spi-flash@0 {
+>>
+>> Run dtbs_check and fix the errors.
+> 
+> Ok, will split the DTSI and eDPU commits and fixup nodes in between.
+>>
+>>> +             compatible = "jedec,spi-nor";
+>>> +             reg = <0>;
+>>> +             spi-max-frequency = <54000000>;
+>>> +
+>>> +             partitions {
+>>> +                     compatible = "fixed-partitions";
+>>> +                     #address-cells = <1>;
+>>> +                     #size-cells = <1>;
+>>> +                     /* only bootloader is located on the SPI */
+>>> +                     partition@0 {
+>>> +                             label = "firmware";
+>>> +                             reg = <0x0 0x180000>;
+>>> +                     };
+>>> +
+>>> +                     partition@180000 {
+>>> +                             label = "u-boot-env";
+>>> +                             reg = <0x180000 0x10000>;
+>>> +                     };
+>>> +             };
+>>> +     };
+>>> +};
+>>> +
+>>> +&pinctrl_nb {
+>>> +     i2c2_recovery_pins: i2c2-recovery-pins {
+>>> +             groups = "i2c2";
+>>> +             function = "gpio";
+>>> +     };
+>>> +};
+>>> +
+>>> +&i2c1 {
+>>> +     status = "okay";
+>>> +     pinctrl-names = "default", "recovery";
+>>> +     pinctrl-0 = <&i2c2_pins>;
+>>> +     pinctrl-1 = <&i2c2_recovery_pins>;
+>>> +     /delete-property/mrvl,i2c-fast-mode;
+>>> +     scl-gpios = <&gpionb 2 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+>>> +     sda-gpios = <&gpionb 3 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+>>> +
+>>> +     nct375@48 {
+>>
+>> Generic node names, representing class of a device.
+> Ok, will rename in v2.
+>>
+>>> +             status = "okay";
+>>
+>> OK status is by default, why do you need it? Also, it goes as last property.
+> 
+> It's not needed, I have not changed any nodes, they are just
+> copy/paste during the DTS split.
+> Will drop it in v2.
+> 
 
->  
-> +/* Tail call offset to jump into */
-> +#define PROLOGUE_OFFSET	(BTI_INSNS + 2 + PAC_INSNS + 8)
-> +/* Offset of nop instruction in bpf prog entry to be poked */
-> +#define POKE_OFFSET	(BTI_INSNS + 1)
-> +
->  static int build_prologue(struct jit_ctx *ctx, bool ebpf_from_cbpf)
->  {
->  	const struct bpf_prog *prog = ctx->prog;
-> @@ -281,12 +290,15 @@ static int build_prologue(struct jit_ctx *ctx, bool ebpf_from_cbpf)
->  	 *
->  	 */
->  
-> +	if (IS_ENABLED(CONFIG_ARM64_BTI_KERNEL))
-> +		emit(A64_BTI_C, ctx);
+Hm, but the node names were different in original DTS, so this is not a
+simple split. In such case better to correct coding styles in one patch
+(node names, status etc) and then perform the split. The split should
+create the same output DTB, which is not the case here.
 
-I'm no arm64 expert, but this looks like a fix for BTI.
-
-Currently we never emit BTI because ARM64_BTI_KERNEL depends on
-ARM64_PTR_AUTH_KERNEL, while BTI must be the first instruction for the
-jump target [1]. Am I following correctly?
-
-[1] https://lwn.net/Articles/804982/
-
-> +
-> +	emit(A64_MOV(1, A64_R(9), A64_LR), ctx);
-> +	emit(A64_NOP, ctx);
-> +
->  	/* Sign lr */
->  	if (IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL))
->  		emit(A64_PACIASP, ctx);
-> -	/* BTI landing pad */
-> -	else if (IS_ENABLED(CONFIG_ARM64_BTI_KERNEL))
-> -		emit(A64_BTI_C, ctx);
->  
->  	/* Save FP and LR registers to stay align with ARM64 AAPCS */
->  	emit(A64_PUSH(A64_FP, A64_LR, A64_SP), ctx);
-> @@ -1552,9 +1564,11 @@ int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type poke_type,
->  	u32 old_insn;
->  	u32 new_insn;
->  	u32 replaced;
-> +	unsigned long offset = ~0UL;
->  	enum aarch64_insn_branch_type branch_type;
-> +	char namebuf[KSYM_NAME_LEN];
->  
-> -	if (!is_bpf_text_address((long)ip))
-> +	if (!__bpf_address_lookup((unsigned long)ip, NULL, &offset, namebuf))
->  		/* Only poking bpf text is supported. Since kernel function
->  		 * entry is set up by ftrace, we reply on ftrace to poke kernel
->  		 * functions. For kernel funcitons, bpf_arch_text_poke() is only
-> @@ -1565,6 +1579,15 @@ int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type poke_type,
->  		 */
->  		return -EINVAL;
->  
-> +	/* bpf entry */
-> +	if (offset == 0UL)
-> +		/* skip to the nop instruction in bpf prog entry:
-> +		 * bti c	// if BTI enabled
-> +		 * mov x9, x30
-> +		 * nop
-> +		 */
-> +		ip = (u32 *)ip + POKE_OFFSET;
-
-This is very much personal preference, however, I find the use pointer
-arithmetic too clever here. Would go for a more verbose:
-
-        offset = POKE_OFFSET * AARCH64_INSN_SIZE;          
-        ip = (void *)((unsigned long)ip + offset);
-
-> +
->  	if (poke_type == BPF_MOD_CALL)
->  		branch_type = AARCH64_INSN_BRANCH_LINK;
->  	else
-
-I think it'd make more sense to merge this patch with patch 4 (the
-preceding one).
-
-Initial implementation of of bpf_arch_text_poke() from patch 4 is not
-fully functional, as it will always fail for bpf_arch_text_poke(ip,
-BPF_MOD_CALL, ...) calls. At least, I find it a bit confusing.
-
-Otherwise than that:
-
-Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
+Best regards,
+Krzysztof
