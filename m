@@ -2,48 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C2BDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:48:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E48A1C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:49:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346641AbiEJPwu (ORCPT
+        id S1346639AbiEJPw5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:52:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60134 "EHLO
+        Tue, 10 May 2022 11:52:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346351AbiEJPsu (ORCPT
+        with ESMTP id S1346468AbiEJPue (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:48:50 -0400
+        Tue, 10 May 2022 11:50:34 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE052282475;
-        Tue, 10 May 2022 08:44:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5259A289BCC;
+        Tue, 10 May 2022 08:45:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 52C82B81DF7;
-        Tue, 10 May 2022 15:44:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F672C385C9;
-        Tue, 10 May 2022 15:44:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 81E73B81DF9;
+        Tue, 10 May 2022 15:44:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0334C385CC;
+        Tue, 10 May 2022 15:44:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652197472;
-        bh=jJ8F2I33zEvYSjUKYSt6FyML3kRHaXmOLK3o8UC1Emg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=O97xID795sBZKN33oyOTedM0fWmpvIH8NNeChpE60gP/GeM3WYUH4OYo3VfGfNbJy
-         btAiEITna9Brg+ZQkzbNq2UZuWJJOqMJYswCBUMkxzT8zylAa9qgVzvOHjMM+Pt5qp
-         twSH/3rtrZXsyn1boizDxOgsE6IKJFVEZgJyunn//ZMQLeMe+QkuMTOxwaps9cueO1
-         eSQYOB/7lJ71mJe+9HPGQVa3qft/QHHlW8BqwFOUN/J4eh42l8JWdngaq4c00X15fL
-         owO0sls5gshSH6ohG3wRCgCrPGZAqgadrX4PyDM+kgx0qp1+VA0MN2X9CJNsYwvc2v
-         V453UON8RhN4w==
+        s=k20201202; t=1652197498;
+        bh=HDvTOfzkdRxHd6HWC3WkqsEF8BETWp49rWnYi3S1Hlw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=djCQe0vq0nYy/T1A3/BQlsZBLRaC4osWUyRNmbEz1HnnryE6fHkPnqv3d8wT2UWeN
+         ojIShLiQBrp480AKGkbZZ8yALH9PdKUw/jELvKeDNXEuij2/UO7uoE5c2H1BUPJuZF
+         nTpB26JgYqp9RG2q1Rdaix6xLIbzPP7PpyTiNulUzkB4dZXXWiCSW5GgiLkUEPiJok
+         Jm1tRPD/lBJqW1UsC5/9Woonc1kSPDYtgP6GJZcJK9Dx7FFLR4lx4+YL4j2hbRRvgk
+         YT+OMZbtcL0HxGJMS6hjmDE5Weeo8szXmFjFHkHYfkfdBwDqsUF8+7+AaRdyQgt7l7
+         3Rqefs3+jrNdg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>,
-        Ji-Ze Hong <hpeter+linux_kernel@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>, jdelvare@suse.com,
-        linux-hwmon@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 01/19] hwmon: (f71882fg) Fix negative temperature
-Date:   Tue, 10 May 2022 11:44:11 -0400
-Message-Id: <20220510154429.153677-1-sashal@kernel.org>
+Cc:     Willy Tarreau <w@1wt.eu>, "Jason A . Donenfeld" <Jason@zx2c4.com>,
+        Moshe Kol <moshe.kol@mail.huji.ac.il>,
+        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
+        Amit Klein <aksecurity@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 13/19] tcp: use different parts of the port_offset for index and offset
+Date:   Tue, 10 May 2022 11:44:23 -0400
+Message-Id: <20220510154429.153677-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220510154429.153677-1-sashal@kernel.org>
+References: <20220510154429.153677-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,44 +58,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
+From: Willy Tarreau <w@1wt.eu>
 
-[ Upstream commit 4aaaaf0f279836f06d3b9d0ffeec7a1e1a04ceef ]
+[ Upstream commit 9e9b70ae923baf2b5e8a0ea4fd0c8451801ac526 ]
 
-All temperature of Fintek superio hwmonitor that using 1-byte reg will use
-2's complement.
+Amit Klein suggests that we use different parts of port_offset for the
+table's index and the port offset so that there is no direct relation
+between them.
 
-In show_temp()
-	temp = data->temp[nr] * 1000;
-
-When data->temp[nr] read as 255, it indicate -1C, but this code will report
-255C to userspace. It'll be ok when change to:
-	temp = ((s8)data->temp[nr]) * 1000;
-
-Signed-off-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
-Link: https://lore.kernel.org/r/20220418090706.6339-1-hpeter+linux_kernel@gmail.com
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Cc: Jason A. Donenfeld <Jason@zx2c4.com>
+Cc: Moshe Kol <moshe.kol@mail.huji.ac.il>
+Cc: Yossi Gilad <yossi.gilad@mail.huji.ac.il>
+Cc: Amit Klein <aksecurity@gmail.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwmon/f71882fg.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/ipv4/inet_hashtables.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/hwmon/f71882fg.c b/drivers/hwmon/f71882fg.c
-index 4dec793fd07d..94b35723ee7a 100644
---- a/drivers/hwmon/f71882fg.c
-+++ b/drivers/hwmon/f71882fg.c
-@@ -1577,8 +1577,9 @@ static ssize_t show_temp(struct device *dev, struct device_attribute *devattr,
- 		temp *= 125;
- 		if (sign)
- 			temp -= 128000;
--	} else
--		temp = data->temp[nr] * 1000;
-+	} else {
-+		temp = ((s8)data->temp[nr]) * 1000;
-+	}
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index 606a4220ebb9..81a33af8393d 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -777,7 +777,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+ 	net_get_random_once(table_perturb, sizeof(table_perturb));
+ 	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
  
- 	return sprintf(buf, "%d\n", temp);
- }
+-	offset = READ_ONCE(table_perturb[index]) + port_offset;
++	offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32);
+ 	offset %= remaining;
+ 
+ 	/* In first pass we try ports of @low parity.
 -- 
 2.35.1
 
