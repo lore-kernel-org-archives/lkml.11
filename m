@@ -2,84 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B65A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 03:01:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 959DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 03:02:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235109AbiEJDFq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 23:05:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38914 "EHLO
+        id S235114AbiEJDGo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 23:06:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233964AbiEJDFo (ORCPT
+        with ESMTP id S232093AbiEJDGi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 23:05:44 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ACD15D646;
-        Mon,  9 May 2022 20:01:48 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Ky2pq4v43zfbTr;
-        Tue, 10 May 2022 11:00:35 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 10 May 2022 11:01:46 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 10 May
- 2022 11:01:45 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <netdev@vger.kernel.org>
-CC:     <peppe.cavallaro@st.com>, <alexandre.torgue@foss.st.com>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>
-Subject: [PATCH v2] net: stmmac: fix missing pci_disable_device() on error in stmmac_pci_probe()
-Date:   Tue, 10 May 2022 11:13:16 +0800
-Message-ID: <20220510031316.1780409-1-yangyingliang@huawei.com>
+        Mon, 9 May 2022 23:06:38 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8477142801
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 20:02:40 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id bo5so13818562pfb.4
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 20:02:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ordBIaEUDLbti7M0xUa/AbdDrMXvFisQMIa5b0nyI3I=;
+        b=DuWbjHWH3zDh8VikdxPnwiPGg6TwxdZyLCFrVU3bCWShI/vVWoH3t/IKHDdGl3QsDi
+         +WTAP/Q7WX3/v0sne4CbgMbz1TZiaKRfDFVKVOFyJ5pELCuNkEHE03Yhjjt5NfDbI/J2
+         5maIHgMsZKu4TaiI4mJnT2hIiPC3t9w/tW/fuM/4ctbNJt6/gYSm7xci0rBXsK6fhvRs
+         GbBgmTKrKr5+h52ibuSVdHoORJ+hKEddLKWDmfUc4CKxdi1gDDHxxkIHyN4dV4QzCPg0
+         AxVdXJGlPabyvMji2fSL1LuIq17dYgrmcvKA5v0b3kTlXQonJbdJJoD/8CgBkxLMaIQG
+         TWIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ordBIaEUDLbti7M0xUa/AbdDrMXvFisQMIa5b0nyI3I=;
+        b=gWpcOMgTW+dKCyVoP3S7OVJIIlyYbqZSwF4vO40MKdiZWeX4dgO3RbUaOnf+Ls1yzM
+         Ak4KaXu/flV5UbH8+QL67cDDZGAr9HfdysC04i7SfFBWJzvoJHEBuZ5CWStU+6N61VhM
+         hMShJagbEaSXuRCDq82QHohFw3kb/D7R4ta9X6sWOJ95OJSm9Awd1ZYCD29hu+9j/osy
+         3roFGVGgxxCJjBdZApuz8NYT1PpyXcyZAaBx9OKaJZOfekhup7zB4a5OAkB6kJQIQzCi
+         dPYmLsJEOlaHKoNnnHV3TWNpUF+9Quon/0pcjYLiDJAsuUWNjvvL4qm2nuHs0k8buCWn
+         yyyg==
+X-Gm-Message-State: AOAM531V+qfeUZHeVQzW8ibOHjg0v3t6v/5/eAE6jnHFW9UUYVcc4j17
+        0wJHhA/QSs1lt7LRuRRNDv4=
+X-Google-Smtp-Source: ABdhPJxv5QBHUc16y6nkqTIz5HpFvRimP/3zk5T67xIEr3orr6iUbtHCEzOLwvvTxydhqRXilQxejw==
+X-Received: by 2002:a63:1a5c:0:b0:3c1:9a7c:3739 with SMTP id a28-20020a631a5c000000b003c19a7c3739mr15432124pgm.272.1652151759652;
+        Mon, 09 May 2022 20:02:39 -0700 (PDT)
+Received: from lxb-server.lan ([2403:18c0:2:4f4:216:3cff:feba:eec])
+        by smtp.gmail.com with ESMTPSA id l6-20020a170903120600b0015e8d4eb291sm617622plh.219.2022.05.09.20.02.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 May 2022 20:02:39 -0700 (PDT)
+From:   Yunhao Tian <t123yh.xyz@gmail.com>
+To:     =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>
+Cc:     Yunhao Tian <t123yh.xyz@gmail.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Lechner <david@lechnology.com>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] drm/mipi-dbi: align max_chunk to 2 in spi_transfer
+Date:   Tue, 10 May 2022 11:02:19 +0800
+Message-Id: <20220510030219.2486687-1-t123yh.xyz@gmail.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Switch to using pcim_enable_device() to avoid missing pci_disable_device().
+In __spi_validate, there's a validation that no partial transfers
+are accepted (xfer->len % w_size must be zero). When
+max_chunk is not a multiple of bpw (e.g. max_chunk = 65535,
+bpw = 16), the transfer will be rejected.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
-  v2: switch to using pcim_enable_device()
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+This patch aligns max_chunk to 2 bytes (the maximum value of bpw is 16),
+so that no partial transfer will occur.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-index fcf17d8a0494..644bb54f5f02 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-@@ -181,7 +181,7 @@ static int stmmac_pci_probe(struct pci_dev *pdev,
- 		return -ENOMEM;
+Fixes: d23d4d4dac01 ("drm/tinydrm: Move tinydrm_spi_transfer()")
+
+Signed-off-by: Yunhao Tian <t123yh.xyz@gmail.com>
+---
+ drivers/gpu/drm/drm_mipi_dbi.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/gpu/drm/drm_mipi_dbi.c b/drivers/gpu/drm/drm_mipi_dbi.c
+index 71b646c4131f..00d470ff071d 100644
+--- a/drivers/gpu/drm/drm_mipi_dbi.c
++++ b/drivers/gpu/drm/drm_mipi_dbi.c
+@@ -1183,6 +1183,13 @@ int mipi_dbi_spi_transfer(struct spi_device *spi, u32 speed_hz,
+ 	size_t chunk;
+ 	int ret;
  
- 	/* Enable pci device */
--	ret = pci_enable_device(pdev);
-+	ret = pcim_enable_device(pdev);
- 	if (ret) {
- 		dev_err(&pdev->dev, "%s: ERROR: failed to enable device\n",
- 			__func__);
-@@ -241,8 +241,6 @@ static void stmmac_pci_remove(struct pci_dev *pdev)
- 		pcim_iounmap_regions(pdev, BIT(i));
- 		break;
- 	}
--
--	pci_disable_device(pdev);
- }
++	/* In __spi_validate, there's a validation that no partial transfers
++	 * are accepted (xfer->len % w_size must be zero).
++	 * Here we align max_chunk to multiple of 2 (16bits),
++	 * to prevent transfers from being rejected.
++	 */
++	max_chunk = ALIGN_DOWN(max_chunk, 2);
++
+ 	spi_message_init_with_transfers(&m, &tr, 1);
  
- static int __maybe_unused stmmac_pci_suspend(struct device *dev)
+ 	while (len) {
 -- 
 2.25.1
 
