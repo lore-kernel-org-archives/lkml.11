@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC8DDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:29:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D81BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:29:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244729AbiEJOd0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:33:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53542 "EHLO
+        id S1343939AbiEJOdb (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:33:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244142AbiEJOH6 (ORCPT
+        with ESMTP id S244676AbiEJOIC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:07:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD282268B6;
-        Tue, 10 May 2022 06:42:14 -0700 (PDT)
+        Tue, 10 May 2022 10:08:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D88623E360;
+        Tue, 10 May 2022 06:42:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D19DA618E6;
-        Tue, 10 May 2022 13:42:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C10B6C385A6;
-        Tue, 10 May 2022 13:42:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BE5406192C;
+        Tue, 10 May 2022 13:42:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BADCBC385A6;
+        Tue, 10 May 2022 13:42:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652190133;
-        bh=e0M+IDH0ed3gsuTENoGo0PZf/xef+c37kCmm6wGjOqQ=;
+        s=korg; t=1652190139;
+        bh=z8hq8fLZpFA7icnRzDjRC1UziW/f67KhSR5BDDrhu5M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WI7GO5AEyBoMaG3f0VfGEIQd8cxDALlAE54H5Rq2ljggAldT5nAsYqTRsLmB3ZWrB
-         ObtbHCNzFfqKU5AAIIwaRjpDc/IER6KTvIJ0djmlzuXtX9b+IInnQRaf5mcsW8uvrt
-         3ib9syl46coEJFLxMZs4XwxTYLCip4kMWDFJQxJ8=
+        b=yZG8Ubm1yrG4PH0f+NNuJ/LthgII5nQr92Tht5M5HlhEIMIJLWHcd7rBdiMti4hvy
+         YqBIe+E3PkiCvJktNBG+DE0WW5UDr3S0q0m5//9IX6DqK8XR7+5vhsr7w/iOry4foB
+         s5fe6UE7I1r7R+ydCP+z95XiEzNTfamZJhxsKN+o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, pali@kernel.org,
         =?UTF-8?q?Marek=20Beh=FAn?= <kabel@kernel.org>,
         Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH 5.17 139/140] PCI: aardvark: Drop __maybe_unused from advk_pcie_disable_phy()
-Date:   Tue, 10 May 2022 15:08:49 +0200
-Message-Id: <20220510130745.560970374@linuxfoundation.org>
+Subject: [PATCH 5.17 128/140] PCI: aardvark: Refactor unmasking summary MSI interrupt
+Date:   Tue, 10 May 2022 15:08:38 +0200
+Message-Id: <20220510130745.253980569@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -49,32 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Marek Behún" <kabel@kernel.org>
+From: Pali Rohár <pali@kernel.org>
 
-commit 0c36ab437e1d94b6628b006a1d48f05ea3b0b222 upstream.
+commit 4689c0916320f112a8a33f2689d3addc3262f02c upstream.
 
-This function is now always used in driver remove method, drop the
-__maybe_unused attribute.
+Refactor the masking of ISR0/1 Sources and unmasking of summary MSI interrupt
+so that it corresponds to the comments:
+- first mask all ISR0/1
+- then unmask all MSIs
+- then unmask summary MSI interrupt
 
-Link: https://lore.kernel.org/r/20220110015018.26359-22-kabel@kernel.org
+Link: https://lore.kernel.org/r/20220110015018.26359-10-kabel@kernel.org
+Signed-off-by: Pali Rohár <pali@kernel.org>
 Signed-off-by: Marek Behún <kabel@kernel.org>
 Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 Signed-off-by: Marek Behún <kabel@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/pci-aardvark.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pci/controller/pci-aardvark.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
 --- a/drivers/pci/controller/pci-aardvark.c
 +++ b/drivers/pci/controller/pci-aardvark.c
-@@ -1603,7 +1603,7 @@ static int advk_pcie_map_irq(const struc
- 		return of_irq_parse_and_map_pci(dev, slot, pin);
- }
+@@ -571,15 +571,17 @@ static void advk_pcie_setup_hw(struct ad
+ 	advk_writel(pcie, PCIE_IRQ_ALL_MASK, HOST_CTRL_INT_STATUS_REG);
  
--static void __maybe_unused advk_pcie_disable_phy(struct advk_pcie *pcie)
-+static void advk_pcie_disable_phy(struct advk_pcie *pcie)
- {
- 	phy_power_off(pcie->phy);
- 	phy_exit(pcie->phy);
+ 	/* Disable All ISR0/1 Sources */
+-	reg = PCIE_ISR0_ALL_MASK;
+-	reg &= ~PCIE_ISR0_MSI_INT_PENDING;
+-	advk_writel(pcie, reg, PCIE_ISR0_MASK_REG);
+-
++	advk_writel(pcie, PCIE_ISR0_ALL_MASK, PCIE_ISR0_MASK_REG);
+ 	advk_writel(pcie, PCIE_ISR1_ALL_MASK, PCIE_ISR1_MASK_REG);
+ 
+ 	/* Unmask all MSIs */
+ 	advk_writel(pcie, ~(u32)PCIE_MSI_ALL_MASK, PCIE_MSI_MASK_REG);
+ 
++	/* Unmask summary MSI interrupt */
++	reg = advk_readl(pcie, PCIE_ISR0_MASK_REG);
++	reg &= ~PCIE_ISR0_MSI_INT_PENDING;
++	advk_writel(pcie, reg, PCIE_ISR0_MASK_REG);
++
+ 	/* Enable summary interrupt for GIC SPI source */
+ 	reg = PCIE_IRQ_ALL_MASK & (~PCIE_IRQ_ENABLE_INTS_MASK);
+ 	advk_writel(pcie, reg, HOST_CTRL_INT_MASK_REG);
 
 
