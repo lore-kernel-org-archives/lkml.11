@@ -2,84 +2,310 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29289C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 04:29:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40A41C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 04:29:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236588AbiEJEdF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 00:33:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37668 "EHLO
+        id S236634AbiEJEdL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 00:33:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236656AbiEJEbf (ORCPT
+        with ESMTP id S236718AbiEJEbs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 00:31:35 -0400
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0FF43526D;
-        Mon,  9 May 2022 21:26:00 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R271e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=31;SR=0;TI=SMTPD_---0VCp29EM_1652156751;
-Received: from 30.15.214.13(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VCp29EM_1652156751)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 10 May 2022 12:25:53 +0800
-Message-ID: <0db300f4-8a91-b330-5c6f-bbc63cf2f151@linux.alibaba.com>
-Date:   Tue, 10 May 2022 12:26:32 +0800
+        Tue, 10 May 2022 00:31:48 -0400
+Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC2722555A6;
+        Mon,  9 May 2022 21:27:37 -0700 (PDT)
+Received: by mail-qv1-xf2b.google.com with SMTP id f3so7573704qvi.2;
+        Mon, 09 May 2022 21:27:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=vMpaHuuuOG4MGEWXiRfaUjNNiANU4+C8012F//qkXo8=;
+        b=VC4yVVFd/at+KN9tejUb+tTTTy3SktsyRsPMmN1Xbj4dRCy1d0ArQwTL4vrl6r4qwt
+         CVogS8g3yw3RYsC2GXSpWF4m27QOcRMgcTv73Y0G2UpLUCvdo7i6Dg3KiZsWD1TcSGR3
+         BicwMdlaVxi2OMw+EzdJg/5A+gYjQEWwut5p+K0SpMG3UOADxORAJBJXTLxgI+iO5Sgi
+         eZjTgLxzmEKb5yOH3G5IYGMGcw+mSdtlzslM2jxAYrvyH0WTMgy3KmDGqGnf2/MmV29U
+         7QnqYWAl9Crd7HZSw6ukvHvCjoYfLzqJXFAHGZqIlp1fE8KuroZyYlPQ1JwKaua3+oD7
+         yHYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=vMpaHuuuOG4MGEWXiRfaUjNNiANU4+C8012F//qkXo8=;
+        b=Qh4Nb6plr2Wcq3ICcKJ5YJ5iCj3NmlIK/kyGWi9zDAamrgGQrEQuntwxfKZF7ZkBSK
+         7U2RAtzHQzA/4t9OYNm2fBM8wXocFyokum6G6LZBmjw2LUgTzuOxZjYa/9Bc/SSGVJ9E
+         xbrCdkoBFiwUG6rhZ3lnKgyfxz6q9CzH3vePnnKTS0VU0EXJK+vQUmBx0DzxSQuZxgP/
+         csH51+pJ2sfVVUU0HrX6P02KgXVES16VWuQh/a8JbWfYwwo6U+Bl0KMrJ4UD0pYKAXE1
+         ZshylpVGIX+XWJr/9f++ako4KBIpjyUCUbZMlixFFxT1P9boCcy8pPlNJVm7LppPh3eP
+         rjsg==
+X-Gm-Message-State: AOAM530DoV0HR6N7OxYxEQjvBGqShijiieIMmCMaIdcm5AROn79w+75i
+        hRNFcqTOQZ2fqmo3rgdRkTb+XVu1lM/ehgRcmTM=
+X-Google-Smtp-Source: ABdhPJwO7MdX2N+BxIvvqfhmxboqfMxlBiZaJL3wP1cEl/CpufKLHoQMnnY4JeZx47aYXO2bdL5yKMHOwUpp65u4jnw=
+X-Received: by 2002:a05:6214:3017:b0:45a:6c33:2ae9 with SMTP id
+ ke23-20020a056214301700b0045a6c332ae9mr16619988qvb.108.1652156856955; Mon, 09
+ May 2022 21:27:36 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v3 0/3] Fix CONT-PTE/PMD size hugetlb issue when unmapping
- or migrating
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     mike.kravetz@oracle.com, catalin.marinas@arm.com, will@kernel.org,
-        songmuchun@bytedance.com, tsbogend@alpha.franken.de,
-        James.Bottomley@HansenPartnership.com, deller@gmx.de,
-        mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
-        hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
-        borntraeger@linux.ibm.com, svens@linux.ibm.com,
-        ysato@users.osdn.me, dalias@libc.org, davem@davemloft.net,
-        arnd@arndb.de, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-ia64@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
-        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-mm@kvack.org
-References: <cover.1652147571.git.baolin.wang@linux.alibaba.com>
- <20220509210404.6a43aff15d0d6b3af0741001@linux-foundation.org>
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-In-Reply-To: <20220509210404.6a43aff15d0d6b3af0741001@linux-foundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220425125546.4129-1-johnson.wang@mediatek.com>
+ <20220425125546.4129-2-johnson.wang@mediatek.com> <94efefab-918d-2367-4b74-076dd6f23936@gmail.com>
+ <e8124721a4ecd591ffea2c4d70853c1f89c83975.camel@mediatek.com>
+In-Reply-To: <e8124721a4ecd591ffea2c4d70853c1f89c83975.camel@mediatek.com>
+Reply-To: cwchoi00@gmail.com
+From:   Chanwoo Choi <cwchoi00@gmail.com>
+Date:   Tue, 10 May 2022 13:27:00 +0900
+Message-ID: <CAGTfZH1dipThTeaZiD1JucYYQB+M19wVrhRy0aCC+7TydNFXjQ@mail.gmail.com>
+Subject: Re: [PATCH v3 1/2] dt-bindings: interconnect: Add MediaTek CCI dt-bindings
+To:     Johnson Wang <johnson.wang@mediatek.com>
+Cc:     Chanwoo Choi <cw00.choi@samsung.com>, krzk+dt@kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Kevin Hilman <khilman@kernel.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        linux-mediatek@lists.infradead.org, jia-wei.chang@mediatek.com,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, May 10, 2022 at 11:59 AM Johnson Wang <johnson.wang@mediatek.com> wrote:
+>
+> Hi Chanwoo,
+>
+> On Mon, 2022-05-09 at 21:09 +0900, Chanwoo Choi wrote:
+> > Hi,
+> >
+> > On 22. 4. 25. 21:55, Johnson Wang wrote:
+> > > Add devicetree binding of MediaTek CCI on MT8183 and MT8186.
+> > >
+> > > Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
+> > > Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
+> > > ---
+> > >   .../bindings/interconnect/mediatek,cci.yaml   | 139
+> > > ++++++++++++++++++
+> > >   1 file changed, 139 insertions(+)
+> > >   create mode 100644
+> > > Documentation/devicetree/bindings/interconnect/mediatek,cci.yaml
+> > >
+> > > diff --git
+> > > a/Documentation/devicetree/bindings/interconnect/mediatek,cci.yaml
+> > > b/Documentation/devicetree/bindings/interconnect/mediatek,cci.yaml
+> > > new file mode 100644
+> > > index 000000000000..e5221e17d11b
+> > > --- /dev/null
+> > > +++
+> > > b/Documentation/devicetree/bindings/interconnect/mediatek,cci.yaml
+> > > @@ -0,0 +1,139 @@
+> > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > > +%YAML 1.2
+> > > +---
+> > > +$id:
+> > > https://urldefense.com/v3/__http://devicetree.org/schemas/interconnect/mediatek,cci.yaml*__;Iw!!CTRNKA9wMg0ARbw!z6ogArqzuIzPR3TYO1aW-Z-scpuZJxIriWMofdfnvrKTXAYBBLZeitAPIKyZayMYZGsR$
+> > >
+> > > +$schema:
+> > > https://urldefense.com/v3/__http://devicetree.org/meta-schemas/core.yaml*__;Iw!!CTRNKA9wMg0ARbw!z6ogArqzuIzPR3TYO1aW-Z-scpuZJxIriWMofdfnvrKTXAYBBLZeitAPIKyZa9f2pALd$
+> > >
+> > > +
+> > > +title: MediaTek Cache Coherent Interconnect (CCI) frequency and
+> > > voltage scaling
+> > > +
+> > > +maintainers:
+> > > +  - Jia-Wei Chang <jia-wei.chang@mediatek.com>
+> >
+> > Why did you add your author information?
+> > Please add your author information.
+>
+> Sorry, I don't really understand what you mean.
+> Could you please explain your advice again?
+>
+> The author of this driver is 'Jia-Wei Chang'.
+> We have added author information to the driver code and this binding
+> document as above.
+
+Firstly, sorry for the confusion.
+
+I have discussed this patch with you. I think that you (Johnson Wang)
+should be added to 'maintainers' of this binding document as following:
+
++maintainers:
++  - Jia-Wei Chang <jia-wei.chang@mediatek.com>
++  - Johnson Wang <johnson.wang@mediatek.com>
+
+>
+> >
+> > And add this dt-binding information to MAINTAINERS
+> > as following: because I cannot catch the later patch
+> > of modification.
+> >
+> > cwchoi00@chanwoo:~/kernel/linux.chanwoo$ d
+> > diff --git a/MAINTAINERS b/MAINTAINERS
+> > index edc96cdb85e8..a11e9c1947b7 100644
+> > --- a/MAINTAINERS
+> > +++ b/MAINTAINERS
+> > @@ -5698,6 +5698,7 @@ L:        linux-pm@vger.kernel.org
+> >   S:     Maintained
+> >   T:     git
+> > git://git.kernel.org/pub/scm/linux/kernel/git/chanwoo/linux.git
+> >   F:     Documentation/devicetree/bindings/devfreq/
+> > +F:     Documentation/devicetree/bindings/interconnect/mediatek,cci.y
+> > aml
+> >   F:     drivers/devfreq/
+> >   F:     include/linux/devfreq.h
+> >   F:     include/trace/events/devfreq.h
+> >
+>
+> I will add it in the next version.
+>
+> BRs,
+> Johnson Wang
+> >
+> > > +
+> > > +description: |
+> > > +  MediaTek Cache Coherent Interconnect (CCI) is a hardware engine
+> > > used by
+> > > +  MT8183 and MT8186 SoCs to scale the frequency and adjust the
+> > > voltage in
+> > > +  hardware. It can also optimize the voltage to reduce the power
+> > > consumption.
+> > > +
+> > > +properties:
+> > > +  compatible:
+> > > +    enum:
+> > > +      - mediatek,mt8183-cci
+> > > +      - mediatek,mt8186-cci
+> > > +
+> > > +  clocks:
+> > > +    items:
+> > > +      - description:
+> > > +          The multiplexer for clock input of CPU cluster.
+> > > +      - description:
+> > > +          A parent of "cpu" clock which is used as an intermediate
+> > > clock source
+> > > +          when the original CPU is under transition and not stable
+> > > yet.
+> > > +
+> > > +  clock-names:
+> > > +    items:
+> > > +      - const: cci
+> > > +      - const: intermediate
+> > > +
+> > > +  operating-points-v2: true
+> > > +  opp-table: true
+> > > +
+> > > +  proc-supply:
+> > > +    description:
+> > > +      Phandle of the regulator for CCI that provides the supply
+> > > voltage.
+> > > +
+> > > +  sram-supply:
+> > > +    description:
+> > > +      Phandle of the regulator for sram of CCI that provides the
+> > > supply
+> > > +      voltage. When it presents, the cci devfreq driver needs to
+> > > do
+> > > +      "voltage tracking" to step by step scale up/down Vproc and
+> > > Vsram to fit
+> > > +      SoC specific needs. When absent, the voltage scaling flow is
+> > > handled by
+> > > +      hardware, hence no software "voltage tracking" is needed.
+> > > +
+> > > +required:
+> > > +  - compatible
+> > > +  - clocks
+> > > +  - clock-names
+> > > +  - operating-points-v2
+> > > +  - proc-supply
+> > > +
+> > > +additionalProperties: false
+> > > +
+> > > +examples:
+> > > +  - |
+> > > +    #include <dt-bindings/clock/mt8183-clk.h>
+> > > +    cci: cci {
+> > > +        compatible = "mediatek,mt8183-cci";
+> > > +        clocks = <&mcucfg CLK_MCU_BUS_SEL>,
+> > > +                 <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
+> > > +        clock-names = "cci", "intermediate";
+> > > +        operating-points-v2 = <&cci_opp>;
+> > > +        proc-supply = <&mt6358_vproc12_reg>;
+> > > +    };
+> > > +
+> > > +    cci_opp: opp-table-cci {
+> > > +        compatible = "operating-points-v2";
+> > > +        opp-shared;
+> > > +        opp2_00: opp-273000000 {
+> > > +            opp-hz = /bits/ 64 <273000000>;
+> > > +            opp-microvolt = <650000>;
+> > > +        };
+> > > +        opp2_01: opp-338000000 {
+> > > +            opp-hz = /bits/ 64 <338000000>;
+> > > +            opp-microvolt = <687500>;
+> > > +        };
+> > > +        opp2_02: opp-403000000 {
+> > > +            opp-hz = /bits/ 64 <403000000>;
+> > > +            opp-microvolt = <718750>;
+> > > +        };
+> > > +        opp2_03: opp-463000000 {
+> > > +            opp-hz = /bits/ 64 <463000000>;
+> > > +            opp-microvolt = <756250>;
+> > > +        };
+> > > +        opp2_04: opp-546000000 {
+> > > +            opp-hz = /bits/ 64 <546000000>;
+> > > +            opp-microvolt = <800000>;
+> > > +        };
+> > > +        opp2_05: opp-624000000 {
+> > > +            opp-hz = /bits/ 64 <624000000>;
+> > > +            opp-microvolt = <818750>;
+> > > +        };
+> > > +        opp2_06: opp-689000000 {
+> > > +            opp-hz = /bits/ 64 <689000000>;
+> > > +            opp-microvolt = <850000>;
+> > > +        };
+> > > +        opp2_07: opp-767000000 {
+> > > +            opp-hz = /bits/ 64 <767000000>;
+> > > +            opp-microvolt = <868750>;
+> > > +        };
+> > > +        opp2_08: opp-845000000 {
+> > > +            opp-hz = /bits/ 64 <845000000>;
+> > > +            opp-microvolt = <893750>;
+> > > +        };
+> > > +        opp2_09: opp-871000000 {
+> > > +            opp-hz = /bits/ 64 <871000000>;
+> > > +            opp-microvolt = <906250>;
+> > > +        };
+> > > +        opp2_10: opp-923000000 {
+> > > +            opp-hz = /bits/ 64 <923000000>;
+> > > +            opp-microvolt = <931250>;
+> > > +        };
+> > > +        opp2_11: opp-962000000 {
+> > > +            opp-hz = /bits/ 64 <962000000>;
+> > > +            opp-microvolt = <943750>;
+> > > +        };
+> > > +        opp2_12: opp-1027000000 {
+> > > +            opp-hz = /bits/ 64 <1027000000>;
+> > > +            opp-microvolt = <975000>;
+> > > +        };
+> > > +        opp2_13: opp-1092000000 {
+> > > +            opp-hz = /bits/ 64 <1092000000>;
+> > > +            opp-microvolt = <1000000>;
+> > > +        };
+> > > +        opp2_14: opp-1144000000 {
+> > > +            opp-hz = /bits/ 64 <1144000000>;
+> > > +            opp-microvolt = <1025000>;
+> > > +        };
+> > > +        opp2_15: opp-1196000000 {
+> > > +            opp-hz = /bits/ 64 <1196000000>;
+> > > +            opp-microvolt = <1050000>;
+> > > +        };
+> > > +    };
+> >
+> >
+>
 
 
-On 5/10/2022 12:04 PM, Andrew Morton wrote:
-> On Tue, 10 May 2022 11:45:57 +0800 Baolin Wang <baolin.wang@linux.alibaba.com> wrote:
-> 
->> Hi,
->>
->> Now migrating a hugetlb page or unmapping a poisoned hugetlb page, we'll
->> use ptep_clear_flush() and set_pte_at() to nuke the page table entry
->> and remap it, and this is incorrect for CONT-PTE or CONT-PMD size hugetlb
->> page,
-> 
-> It would be helpful to describe why it's wrong.  Something like "should
-> use huge_ptep_clear_flush() and huge_ptep_clear_flush() for this
-> purpose"?
-
-Sorry for the confusing description. I described the problem explicitly 
-in each patch's commit message.
-
-https://lore.kernel.org/all/ea5abf529f0997b5430961012bfda6166c1efc8c.1652147571.git.baolin.wang@linux.alibaba.com/
-https://lore.kernel.org/all/730ea4b6d292f32fb10b7a4e87dad49b0eb30474.1652147571.git.baolin.wang@linux.alibaba.com/
-
-> 
->> which will cause potential data consistent issue. This patch set
->> will change to use hugetlb related APIs to fix this issue, please find
->> details in each patch. Thanks.
-> 
-> Is a cc:stable needed here?  And are we able to identify a target for a
-> Fixes: tag?
-
-I think need a cc:stable tag, however I am not sure the target fixes 
-tag, since we should trace back to the introduction of CONT-PTE/PMD 
-hugetlb? 66b3923a1a0f ("arm64: hugetlb: add support for PTE contiguous bit")
+-- 
+Best Regards,
+Chanwoo Choi
