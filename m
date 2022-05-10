@@ -2,71 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75999C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:36:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A50D2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:37:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241827AbiEJMkS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 08:40:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43392 "EHLO
+        id S241864AbiEJMl3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 08:41:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241447AbiEJMkP (ORCPT
+        with ESMTP id S241881AbiEJMl0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 08:40:15 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AAFD1A4749
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 05:36:17 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KyHZW5WFyzhYty;
-        Tue, 10 May 2022 20:35:47 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 10 May 2022 20:36:15 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 10 May
- 2022 20:36:14 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <alsa-devel@alsa-project.org>
-CC:     <krzysztof.kozlowski@linaro.org>, <s.nawrocki@samsung.com>,
-        <lgirdwood@gmail.com>, <broonie@kernel.org>
-Subject: [PATCH -next] ASoC: samsung: spdif: remove unnecessary check of mem_res
-Date:   Tue, 10 May 2022 20:47:49 +0800
-Message-ID: <20220510124749.2663874-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 10 May 2022 08:41:26 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0A941E123B;
+        Tue, 10 May 2022 05:37:28 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id n10so32656659ejk.5;
+        Tue, 10 May 2022 05:37:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=cosidqETohHtF0bI5X8WaN3KLjN3jNK+X2ZAPFOKt/o=;
+        b=q4WK37dxm2Rg4AHUGk7Wi4kVtwYOHay21u/XuI4XfzNMEyT71Bvff7CmdlnIImsooi
+         L9KZIsHxZVuWcbld60k2dRE1nqPdvX9iUDQ/esPVHs7fcjwcgF7tkxvdGJpoR7XYudXS
+         muSWsZuXTbqKGCFiSWFmdAHNrCg+ULsFjyrHjBA46B/e3zy9cUsu67O3uGCKSvgG133o
+         4hrnYv3h1uEIGEvcaT4O2aifRc6c/kxWAjp3TYhEdZLe/7JVVeLFsV+lyb3uIBNdTlUH
+         0kc5vhNXi72hrStZ8d+wUYkAQooUtteY91qjzO6B48GYNOdakRtplEzhT6qK2XZcu76a
+         nlLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=cosidqETohHtF0bI5X8WaN3KLjN3jNK+X2ZAPFOKt/o=;
+        b=On5feP6X8k8BvKNcBy6Ld9fFhkOG1BGTamqu1S1w0MRPKGfgP1yjvT+Kv9Mj+9t0Nu
+         SU5JffuxOUpNFkzYwOocx7Do91bHsiKG0DmsEL4RBuwgK5EkIvORpdUCgbWCP7Pty/b5
+         g22tTm/5stQAS7I5QV1TF9wsVROfnuwj4QXOgvlPagNm6Blpy4uJAekOvv1CykIddDcB
+         nTLfCP0Q1Oqau81tdJVUeAOgH9Dir0eQF6E5vgrYKor5vc63wCIMs8qWJwxh3OLzY44f
+         XW6F5hbCEJb7ouD4LP5t7n940Y9OdOQlHg95eY1F6G8YcdR5DTg0AmTyrT+GBlunV/XV
+         2ANw==
+X-Gm-Message-State: AOAM531/WgVpUGAzAm1Qydmhk5uT3jhsTFTXnu71zlXNsfSNT58yZPQl
+        LlOOlj42uaj+OEOjUfNsc/8=
+X-Google-Smtp-Source: ABdhPJyvR8it5vxFmmtJtLeJIPRxLec58Z+2m8Tzbxt3mXDU6pHSDFlsyogmrno+6KSTWUzIH/zjyA==
+X-Received: by 2002:a17:906:3ce9:b0:6ef:a8aa:ab46 with SMTP id d9-20020a1709063ce900b006efa8aaab46mr19291235ejh.579.1652186247272;
+        Tue, 10 May 2022 05:37:27 -0700 (PDT)
+Received: from skbuf ([188.25.160.86])
+        by smtp.gmail.com with ESMTPSA id e15-20020a50e44f000000b0042617ba63c7sm7576578edm.81.2022.05.10.05.37.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 05:37:26 -0700 (PDT)
+Date:   Tue, 10 May 2022 15:37:24 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Felix Fietkau <nbd@nbd.name>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: dsa: tag_mtk: add padding for tx packets
+Message-ID: <20220510123724.i2xqepc56z4eouh2@skbuf>
+References: <20220510094014.68440-1-nbd@nbd.name>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220510094014.68440-1-nbd@nbd.name>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The resource is checked in probe function, so there is
-no need do this check in remove function.
+On Tue, May 10, 2022 at 11:40:13AM +0200, Felix Fietkau wrote:
+> Padding for transmitted packets needs to account for the special tag.
+> With not enough padding, garbage bytes are inserted by the switch at the
+> end of small packets.
 
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- sound/soc/samsung/spdif.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+I don't think padding bytes are guaranteed to be zeroes. Aren't they
+discarded? What is the issue?
 
-diff --git a/sound/soc/samsung/spdif.c b/sound/soc/samsung/spdif.c
-index 226c359892e9..47b6d19e43ff 100644
---- a/sound/soc/samsung/spdif.c
-+++ b/sound/soc/samsung/spdif.c
-@@ -467,8 +467,7 @@ static int spdif_remove(struct platform_device *pdev)
- 	iounmap(spdif->regs);
- 
- 	mem_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	if (mem_res)
--		release_mem_region(mem_res->start, resource_size(mem_res));
-+	release_mem_region(mem_res->start, resource_size(mem_res));
- 
- 	clk_disable_unprepare(spdif->sclk);
- 	clk_disable_unprepare(spdif->pclk);
--- 
-2.25.1
-
+> 
+> Fixes: 5cd8985a1909 ("net-next: dsa: add Mediatek tag RX/TX handler")
+> Signed-off-by: Felix Fietkau <nbd@nbd.name>
+> ---
+>  net/dsa/tag_mtk.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/net/dsa/tag_mtk.c b/net/dsa/tag_mtk.c
+> index 415d8ece242a..1d1f9dbd9e93 100644
+> --- a/net/dsa/tag_mtk.c
+> +++ b/net/dsa/tag_mtk.c
+> @@ -25,6 +25,14 @@ static struct sk_buff *mtk_tag_xmit(struct sk_buff *skb,
+>  	u8 xmit_tpid;
+>  	u8 *mtk_tag;
+>  
+> +	/* The Ethernet switch we are interfaced with needs packets to be at
+> +	 * least 64 bytes (including FCS) otherwise their padding might be
+> +	 * corrupted. With tags enabled, we need to make sure that packets are
+> +	 * at least 68 bytes (including FCS and tag).
+> +	 */
+> +	if (__skb_put_padto(skb, ETH_ZLEN + MTK_HDR_LEN, false))
+> +		return NULL;
+> +
+>  	/* Build the special tag after the MAC Source Address. If VLAN header
+>  	 * is present, it's required that VLAN header and special tag is
+>  	 * being combined. Only in this way we can allow the switch can parse
+> -- 
+> 2.36.1
+> 
