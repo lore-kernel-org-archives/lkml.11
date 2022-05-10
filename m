@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA597C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:49:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37271C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:49:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244307AbiEJNxQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:53:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55734 "EHLO
+        id S242408AbiEJNxY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:53:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243839AbiEJNgT (ORCPT
+        with ESMTP id S243879AbiEJNgb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:36:19 -0400
+        Tue, 10 May 2022 09:36:31 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6509D2D4B6A;
-        Tue, 10 May 2022 06:25:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6133231503;
+        Tue, 10 May 2022 06:25:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EF11FB81DA5;
-        Tue, 10 May 2022 13:25:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64455C385A6;
-        Tue, 10 May 2022 13:25:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2B16AB81DA8;
+        Tue, 10 May 2022 13:25:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7804CC385A6;
+        Tue, 10 May 2022 13:25:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189110;
-        bh=m/KzUjZoMTgCKajKGydd3BJwee1yg8hQHP/84Xq6VcI=;
+        s=korg; t=1652189102;
+        bh=3H1BjRzDHUjxEnk9QTEfAYQL8EISB2HXM59jjO3NEzo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vRqZj3tuW8Xr25Awk66tKLUkMFw2E2XMGFxBHAhmyKbIwvG5GnTk3btcz8Y30oxP2
-         bvgKtwyBhXuJZMSmOcz/2JCfjTL9RGN+mlbYn4PTGD82CHHTicR7mvZ3VRrokbJdn5
-         pA8O7ZJvTRvz8ZMlG1GlPKPzC4zzSypcZxQ4U6tY=
+        b=yc/eP0yG1244TeEf3++20i0xxGTUMqBJS1Hueu3Iu9PRs/DvAMuc6qnFrxbnqXZF4
+         jnz3fY+GXtmxHd/aXy33CVwKmz/w+hAHAKzFKzGi8X6qXj5jjc/+fgmPstyc5cboBa
+         RqqyMGjJwo08mJvbCmfR9+8jqxKFqtFrFhvRyTrI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Pfaff <tpfaff@pcs.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>
-Subject: [PATCH 5.10 16/70] genirq: Synchronize interrupt thread startup
-Date:   Tue, 10 May 2022 15:07:35 +0200
-Message-Id: <20220510130733.342313374@linuxfoundation.org>
+        stable@vger.kernel.org, Jakob Koschel <jakobkoschel@gmail.com>,
+        Takashi Sakamoto <o-takashi@sakamocchi.jp>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.10 13/70] firewire: remove check of list iterator against head past the loop body
+Date:   Tue, 10 May 2022 15:07:32 +0200
+Message-Id: <20220510130733.257449241@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
 References: <20220510130732.861729621@linuxfoundation.org>
@@ -49,173 +49,140 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Pfaff <tpfaff@pcs.com>
+From: Jakob Koschel <jakobkoschel@gmail.com>
 
-commit 8707898e22fd665bc1d7b18b809be4b56ce25bdd upstream.
+commit 9423973869bd4632ffe669f950510c49296656e0 upstream.
 
-A kernel hang can be observed when running setserial in a loop on a kernel
-with force threaded interrupts. The sequence of events is:
+When list_for_each_entry() completes the iteration over the whole list
+without breaking the loop, the iterator value will be a bogus pointer
+computed based on the head element.
 
-   setserial
-     open("/dev/ttyXXX")
-       request_irq()
-     do_stuff()
-      -> serial interrupt
-         -> wake(irq_thread)
-	      desc->threads_active++;
-     close()
-       free_irq()
-         kthread_stop(irq_thread)
-     synchronize_irq() <- hangs because desc->threads_active != 0
+While it is safe to use the pointer to determine if it was computed
+based on the head element, either with list_entry_is_head() or
+&pos->member == head, using the iterator variable after the loop should
+be avoided.
 
-The thread is created in request_irq() and woken up, but does not get on a
-CPU to reach the actual thread function, which would handle the pending
-wake-up. kthread_stop() sets the should stop condition which makes the
-thread immediately exit, which in turn leaves the stale threads_active
-count around.
+In preparation to limit the scope of a list iterator to the list
+traversal loop, use a dedicated pointer to point to the found element [1].
 
-This problem was introduced with commit 519cc8652b3a, which addressed a
-interrupt sharing issue in the PCIe code.
-
-Before that commit free_irq() invoked synchronize_irq(), which waits for
-the hard interrupt handler and also for associated threads to complete.
-
-To address the PCIe issue synchronize_irq() was replaced with
-__synchronize_hardirq(), which only waits for the hard interrupt handler to
-complete, but not for threaded handlers.
-
-This was done under the assumption, that the interrupt thread already
-reached the thread function and waits for a wake-up, which is guaranteed to
-be handled before acting on the stop condition. The problematic case, that
-the thread would not reach the thread function, was obviously overlooked.
-
-Make sure that the interrupt thread is really started and reaches
-thread_fn() before returning from __setup_irq().
-
-This utilizes the existing wait queue in the interrupt descriptor. The
-wait queue is unused for non-shared interrupts. For shared interrupts the
-usage might cause a spurious wake-up of a waiter in synchronize_irq() or the
-completion of a threaded handler might cause a spurious wake-up of the
-waiter for the ready flag. Both are harmless and have no functional impact.
-
-[ tglx: Amended changelog ]
-
-Fixes: 519cc8652b3a ("genirq: Synchronize only with single thread on free_irq()")
-Signed-off-by: Thomas Pfaff <tpfaff@pcs.com>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Reviewed-by: Marc Zyngier <maz@kernel.org>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/552fe7b4-9224-b183-bb87-a8f36d335690@pcs.com
+Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+Signed-off-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
+Link: https://lore.kernel.org/r/20220409041243.603210-3-o-takashi@sakamocchi.jp
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/irq/internals.h |    2 ++
- kernel/irq/irqdesc.c   |    2 ++
- kernel/irq/manage.c    |   39 +++++++++++++++++++++++++++++----------
- 3 files changed, 33 insertions(+), 10 deletions(-)
+ drivers/firewire/core-transaction.c |   30 ++++++++++++++++--------------
+ drivers/firewire/sbp2.c             |   13 +++++++------
+ 2 files changed, 23 insertions(+), 20 deletions(-)
 
---- a/kernel/irq/internals.h
-+++ b/kernel/irq/internals.h
-@@ -29,12 +29,14 @@ extern struct irqaction chained_action;
-  * IRQTF_WARNED    - warning "IRQ_WAKE_THREAD w/o thread_fn" has been printed
-  * IRQTF_AFFINITY  - irq thread is requested to adjust affinity
-  * IRQTF_FORCED_THREAD  - irq action is force threaded
-+ * IRQTF_READY     - signals that irq thread is ready
-  */
- enum {
- 	IRQTF_RUNTHREAD,
- 	IRQTF_WARNED,
- 	IRQTF_AFFINITY,
- 	IRQTF_FORCED_THREAD,
-+	IRQTF_READY,
- };
+--- a/drivers/firewire/core-transaction.c
++++ b/drivers/firewire/core-transaction.c
+@@ -73,24 +73,25 @@ static int try_cancel_split_timeout(stru
+ static int close_transaction(struct fw_transaction *transaction,
+ 			     struct fw_card *card, int rcode)
+ {
+-	struct fw_transaction *t;
++	struct fw_transaction *t = NULL, *iter;
+ 	unsigned long flags;
  
- /*
---- a/kernel/irq/irqdesc.c
-+++ b/kernel/irq/irqdesc.c
-@@ -405,6 +405,7 @@ static struct irq_desc *alloc_desc(int i
- 	lockdep_set_class(&desc->lock, &irq_desc_lock_class);
- 	mutex_init(&desc->request_mutex);
- 	init_rcu_head(&desc->rcu);
-+	init_waitqueue_head(&desc->wait_for_threads);
- 
- 	desc_set_defaults(irq, desc, node, affinity, owner);
- 	irqd_set(&desc->irq_data, flags);
-@@ -573,6 +574,7 @@ int __init early_irq_init(void)
- 		raw_spin_lock_init(&desc[i].lock);
- 		lockdep_set_class(&desc[i].lock, &irq_desc_lock_class);
- 		mutex_init(&desc[i].request_mutex);
-+		init_waitqueue_head(&desc[i].wait_for_threads);
- 		desc_set_defaults(i, &desc[i], node, NULL, NULL);
+ 	spin_lock_irqsave(&card->lock, flags);
+-	list_for_each_entry(t, &card->transaction_list, link) {
+-		if (t == transaction) {
+-			if (!try_cancel_split_timeout(t)) {
++	list_for_each_entry(iter, &card->transaction_list, link) {
++		if (iter == transaction) {
++			if (!try_cancel_split_timeout(iter)) {
+ 				spin_unlock_irqrestore(&card->lock, flags);
+ 				goto timed_out;
+ 			}
+-			list_del_init(&t->link);
+-			card->tlabel_mask &= ~(1ULL << t->tlabel);
++			list_del_init(&iter->link);
++			card->tlabel_mask &= ~(1ULL << iter->tlabel);
++			t = iter;
+ 			break;
+ 		}
  	}
- 	return arch_early_irq_init();
---- a/kernel/irq/manage.c
-+++ b/kernel/irq/manage.c
-@@ -1149,6 +1149,31 @@ static void irq_wake_secondary(struct ir
- }
+ 	spin_unlock_irqrestore(&card->lock, flags);
  
- /*
-+ * Internal function to notify that a interrupt thread is ready.
-+ */
-+static void irq_thread_set_ready(struct irq_desc *desc,
-+				 struct irqaction *action)
-+{
-+	set_bit(IRQTF_READY, &action->thread_flags);
-+	wake_up(&desc->wait_for_threads);
-+}
-+
-+/*
-+ * Internal function to wake up a interrupt thread and wait until it is
-+ * ready.
-+ */
-+static void wake_up_and_wait_for_irq_thread_ready(struct irq_desc *desc,
-+						  struct irqaction *action)
-+{
-+	if (!action || !action->thread)
-+		return;
-+
-+	wake_up_process(action->thread);
-+	wait_event(desc->wait_for_threads,
-+		   test_bit(IRQTF_READY, &action->thread_flags));
-+}
-+
-+/*
-  * Interrupt handler thread
-  */
- static int irq_thread(void *data)
-@@ -1159,6 +1184,8 @@ static int irq_thread(void *data)
- 	irqreturn_t (*handler_fn)(struct irq_desc *desc,
- 			struct irqaction *action);
- 
-+	irq_thread_set_ready(desc, action);
-+
- 	if (force_irqthreads && test_bit(IRQTF_FORCED_THREAD,
- 					&action->thread_flags))
- 		handler_fn = irq_forced_thread_fn;
-@@ -1583,8 +1610,6 @@ __setup_irq(unsigned int irq, struct irq
+-	if (&t->link != &card->transaction_list) {
++	if (t) {
+ 		t->callback(card, rcode, NULL, 0, t->callback_data);
+ 		return 0;
  	}
+@@ -935,7 +936,7 @@ EXPORT_SYMBOL(fw_core_handle_request);
  
- 	if (!shared) {
--		init_waitqueue_head(&desc->wait_for_threads);
--
- 		/* Setup the type (level, edge polarity) if configured: */
- 		if (new->flags & IRQF_TRIGGER_MASK) {
- 			ret = __irq_set_trigger(desc,
-@@ -1674,14 +1699,8 @@ __setup_irq(unsigned int irq, struct irq
+ void fw_core_handle_response(struct fw_card *card, struct fw_packet *p)
+ {
+-	struct fw_transaction *t;
++	struct fw_transaction *t = NULL, *iter;
+ 	unsigned long flags;
+ 	u32 *data;
+ 	size_t data_length;
+@@ -947,20 +948,21 @@ void fw_core_handle_response(struct fw_c
+ 	rcode	= HEADER_GET_RCODE(p->header[1]);
  
- 	irq_setup_timings(desc, new);
+ 	spin_lock_irqsave(&card->lock, flags);
+-	list_for_each_entry(t, &card->transaction_list, link) {
+-		if (t->node_id == source && t->tlabel == tlabel) {
+-			if (!try_cancel_split_timeout(t)) {
++	list_for_each_entry(iter, &card->transaction_list, link) {
++		if (iter->node_id == source && iter->tlabel == tlabel) {
++			if (!try_cancel_split_timeout(iter)) {
+ 				spin_unlock_irqrestore(&card->lock, flags);
+ 				goto timed_out;
+ 			}
+-			list_del_init(&t->link);
+-			card->tlabel_mask &= ~(1ULL << t->tlabel);
++			list_del_init(&iter->link);
++			card->tlabel_mask &= ~(1ULL << iter->tlabel);
++			t = iter;
+ 			break;
+ 		}
+ 	}
+ 	spin_unlock_irqrestore(&card->lock, flags);
  
--	/*
--	 * Strictly no need to wake it up, but hung_task complains
--	 * when no hard interrupt wakes the thread up.
--	 */
--	if (new->thread)
--		wake_up_process(new->thread);
--	if (new->secondary)
--		wake_up_process(new->secondary->thread);
-+	wake_up_and_wait_for_irq_thread_ready(desc, new);
-+	wake_up_and_wait_for_irq_thread_ready(desc, new->secondary);
+-	if (&t->link == &card->transaction_list) {
++	if (!t) {
+  timed_out:
+ 		fw_notice(card, "unsolicited response (source %x, tlabel %x)\n",
+ 			  source, tlabel);
+--- a/drivers/firewire/sbp2.c
++++ b/drivers/firewire/sbp2.c
+@@ -408,7 +408,7 @@ static void sbp2_status_write(struct fw_
+ 			      void *payload, size_t length, void *callback_data)
+ {
+ 	struct sbp2_logical_unit *lu = callback_data;
+-	struct sbp2_orb *orb;
++	struct sbp2_orb *orb = NULL, *iter;
+ 	struct sbp2_status status;
+ 	unsigned long flags;
  
- 	register_irq_proc(irq, desc);
- 	new->dir = NULL;
+@@ -433,17 +433,18 @@ static void sbp2_status_write(struct fw_
+ 
+ 	/* Lookup the orb corresponding to this status write. */
+ 	spin_lock_irqsave(&lu->tgt->lock, flags);
+-	list_for_each_entry(orb, &lu->orb_list, link) {
++	list_for_each_entry(iter, &lu->orb_list, link) {
+ 		if (STATUS_GET_ORB_HIGH(status) == 0 &&
+-		    STATUS_GET_ORB_LOW(status) == orb->request_bus) {
+-			orb->rcode = RCODE_COMPLETE;
+-			list_del(&orb->link);
++		    STATUS_GET_ORB_LOW(status) == iter->request_bus) {
++			iter->rcode = RCODE_COMPLETE;
++			list_del(&iter->link);
++			orb = iter;
+ 			break;
+ 		}
+ 	}
+ 	spin_unlock_irqrestore(&lu->tgt->lock, flags);
+ 
+-	if (&orb->link != &lu->orb_list) {
++	if (orb) {
+ 		orb->callback(orb, &status);
+ 		kref_put(&orb->kref, free_orb); /* orb callback reference */
+ 	} else {
 
 
