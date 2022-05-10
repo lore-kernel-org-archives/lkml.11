@@ -2,128 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A89BC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F82DC41535
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:04:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344267AbiEJOHs (ORCPT
+        id S1344318AbiEJOHu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:07:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42152 "EHLO
+        Tue, 10 May 2022 10:07:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244239AbiEJNpi (ORCPT
+        with ESMTP id S244601AbiEJNqw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:45:38 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A5629137C;
-        Tue, 10 May 2022 06:31:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id DBD75CE1EDE;
-        Tue, 10 May 2022 13:30:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3DD3C385C2;
-        Tue, 10 May 2022 13:30:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189458;
-        bh=vmU4qBASEUpfgc/BCPgOm30brd4+MRNEFxdubd5lS4s=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ls0fT2i50tvpTM4eQQ9yyI/HSSOWj4P14i2NpwM+9ASMIgQLmKsPBbTwZOuCGt05l
-         sANAlHEKeO1IHdCdNtvtM00iVK3/YtUyhSu7Af0f2fyptyEROhdQ0GQRkInZ71bk1S
-         eE5xUA3v7BiFAoTFZj9GRjjZ22LBx+AkTy2ilG8E=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Tatyana Nikolova <tatyana.e.nikolova@intel.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.15 057/135] RDMA/irdma: Flush iWARP QP if modified to ERR from RTR state
-Date:   Tue, 10 May 2022 15:07:19 +0200
-Message-Id: <20220510130742.041305605@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
-References: <20220510130740.392653815@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 10 May 2022 09:46:52 -0400
+Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 691A613B8CD;
+        Tue, 10 May 2022 06:31:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.de; i=@amazon.de; q=dns/txt; s=amazon201209;
+  t=1652189503; x=1683725503;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=TwU6CtF1V9/2Y57AY/B4As4rfmtIlL8LhHI2uYJkLIs=;
+  b=OYoLAdBzkTYHiCkvWlZUsU0y2qV5R8iDsLqtqbbOtgBqTj5UuS9BaX8D
+   891shD4v9kcElO6bJ2olRWHQYHG5DcHt83FJCFqwwy/wVLXLTgaNtzsSG
+   cC1RmTK6zm8Vr0KkCMA5144OxhTFKrvOfawxGXegiNwCPWxihqPco/+oS
+   I=;
+X-IronPort-AV: E=Sophos;i="5.91,214,1647302400"; 
+   d="scan'208";a="193949634"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1e-b69ea591.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-33001.sea14.amazon.com with ESMTP; 10 May 2022 13:31:18 +0000
+Received: from EX13D08EUB004.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-iad-1e-b69ea591.us-east-1.amazon.com (Postfix) with ESMTPS id EE987C040C;
+        Tue, 10 May 2022 13:31:08 +0000 (UTC)
+Received: from EX13MTAUWC001.ant.amazon.com (10.43.162.135) by
+ EX13D08EUB004.ant.amazon.com (10.43.166.158) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.32; Tue, 10 May 2022 13:31:06 +0000
+Received: from dev-dsk-mheyne-1b-c1524648.eu-west-1.amazon.com (10.15.60.66)
+ by mail-relay.amazon.com (10.43.162.232) with Microsoft SMTP Server id
+ 15.0.1497.32 via Frontend Transport; Tue, 10 May 2022 13:31:05 +0000
+Received: by dev-dsk-mheyne-1b-c1524648.eu-west-1.amazon.com (Postfix, from userid 5466572)
+        id 2BD5441131; Tue, 10 May 2022 13:31:05 +0000 (UTC)
+From:   Maximilian Heyne <mheyne@amazon.de>
+CC:     Masami Hiramatsu <mhiramat@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juergen Gross <jgross@suse.com>, <x86@kernel.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Andrew Cooper <andrew.cooper3@citrix.com>,
+        Borislav Petkov <bp@alien8.de>,
+        <xen-devel@lists.xenproject.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Maximilian Heyne <mheyne@amazon.de>, <stable@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        =?UTF-8?q?Radim=20Kr=C4=8Dm=C3=A1=C5=99?= <rkrcmar@redhat.com>,
+        Sean Christopherson <sean.j.christopherson@intel.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>
+Subject: [PATCH 1/4] x86/asm: Allow to pass macros to __ASM_FORM()
+Date:   Tue, 10 May 2022 13:30:30 +0000
+Message-ID: <20220510133036.46767-2-mheyne@amazon.de>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220510133036.46767-1-mheyne@amazon.de>
+References: <20220510133036.46767-1-mheyne@amazon.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tatyana Nikolova <tatyana.e.nikolova@intel.com>
+From: Masami Hiramatsu <mhiramat@kernel.org>
 
-commit 7b8943b821bafab492f43aafbd006b57c6b65845 upstream.
+commit f7919fd943abf0c77aed4441ea9897a323d132f5 upstream
 
-When connection establishment fails in iWARP mode, an app can drain the
-QPs and hang because flush isn't issued when the QP is modified from RTR
-state to error. Issue a flush in this case using function
-irdma_cm_disconn().
+Use __stringify() at __ASM_FORM() so that user can pass
+code including macros to __ASM_FORM().
 
-Update irdma_cm_disconn() to do flush when cm_id is NULL, which is the
-case when the QP is in RTR state and there is an error in the connection
-establishment.
-
-Fixes: b48c24c2d710 ("RDMA/irdma: Implement device supported verb APIs")
-Link: https://lore.kernel.org/r/20220425181703.1634-2-shiraz.saleem@intel.com
-Signed-off-by: Tatyana Nikolova <tatyana.e.nikolova@intel.com>
-Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Cc: Juergen Gross <jgross@suse.com>
+Cc: x86@kernel.org
+Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Stefano Stabellini <sstabellini@kernel.org>
+Cc: Andrew Cooper <andrew.cooper3@citrix.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: xen-devel@lists.xenproject.org
+Cc: Randy Dunlap <rdunlap@infradead.org>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Link: https://lkml.kernel.org/r/156777562873.25081.2288083344657460959.stgit@devnote2
+Signed-off-by: Maximilian Heyne <mheyne@amazon.de>
+Cc: stable@vger.kernel.org # 5.4.x
 ---
- drivers/infiniband/hw/irdma/cm.c    |   16 +++++-----------
- drivers/infiniband/hw/irdma/verbs.c |    4 ++--
- 2 files changed, 7 insertions(+), 13 deletions(-)
+ arch/x86/include/asm/asm.h | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
---- a/drivers/infiniband/hw/irdma/cm.c
-+++ b/drivers/infiniband/hw/irdma/cm.c
-@@ -3465,12 +3465,6 @@ static void irdma_cm_disconn_true(struct
- 	}
+diff --git a/arch/x86/include/asm/asm.h b/arch/x86/include/asm/asm.h
+index 3ff577c0b102..1b563f9167ea 100644
+--- a/arch/x86/include/asm/asm.h
++++ b/arch/x86/include/asm/asm.h
+@@ -7,9 +7,11 @@
+ # define __ASM_FORM_RAW(x)     x
+ # define __ASM_FORM_COMMA(x) x,
+ #else
+-# define __ASM_FORM(x)	" " #x " "
+-# define __ASM_FORM_RAW(x)     #x
+-# define __ASM_FORM_COMMA(x) " " #x ","
++#include <linux/stringify.h>
++
++# define __ASM_FORM(x)	" " __stringify(x) " "
++# define __ASM_FORM_RAW(x)     __stringify(x)
++# define __ASM_FORM_COMMA(x) " " __stringify(x) ","
+ #endif
  
- 	cm_id = iwqp->cm_id;
--	/* make sure we havent already closed this connection */
--	if (!cm_id) {
--		spin_unlock_irqrestore(&iwqp->lock, flags);
--		return;
--	}
--
- 	original_hw_tcp_state = iwqp->hw_tcp_state;
- 	original_ibqp_state = iwqp->ibqp_state;
- 	last_ae = iwqp->last_aeq;
-@@ -3492,11 +3486,11 @@ static void irdma_cm_disconn_true(struct
- 			disconn_status = -ECONNRESET;
- 	}
- 
--	if ((original_hw_tcp_state == IRDMA_TCP_STATE_CLOSED ||
--	     original_hw_tcp_state == IRDMA_TCP_STATE_TIME_WAIT ||
--	     last_ae == IRDMA_AE_RDMAP_ROE_BAD_LLP_CLOSE ||
--	     last_ae == IRDMA_AE_BAD_CLOSE ||
--	     last_ae == IRDMA_AE_LLP_CONNECTION_RESET || iwdev->rf->reset)) {
-+	if (original_hw_tcp_state == IRDMA_TCP_STATE_CLOSED ||
-+	    original_hw_tcp_state == IRDMA_TCP_STATE_TIME_WAIT ||
-+	    last_ae == IRDMA_AE_RDMAP_ROE_BAD_LLP_CLOSE ||
-+	    last_ae == IRDMA_AE_BAD_CLOSE ||
-+	    last_ae == IRDMA_AE_LLP_CONNECTION_RESET || iwdev->rf->reset || !cm_id) {
- 		issue_close = 1;
- 		iwqp->cm_id = NULL;
- 		qp->term_flags = 0;
---- a/drivers/infiniband/hw/irdma/verbs.c
-+++ b/drivers/infiniband/hw/irdma/verbs.c
-@@ -1617,13 +1617,13 @@ int irdma_modify_qp(struct ib_qp *ibqp,
- 
- 	if (issue_modify_qp && iwqp->ibqp_state > IB_QPS_RTS) {
- 		if (dont_wait) {
--			if (iwqp->cm_id && iwqp->hw_tcp_state) {
-+			if (iwqp->hw_tcp_state) {
- 				spin_lock_irqsave(&iwqp->lock, flags);
- 				iwqp->hw_tcp_state = IRDMA_TCP_STATE_CLOSED;
- 				iwqp->last_aeq = IRDMA_AE_RESET_SENT;
- 				spin_unlock_irqrestore(&iwqp->lock, flags);
--				irdma_cm_disconn(iwqp);
- 			}
-+			irdma_cm_disconn(iwqp);
- 		} else {
- 			int close_timer_started;
- 
+ #ifndef __x86_64__
+-- 
+2.32.0
+
+
+
+
+Amazon Development Center Germany GmbH
+Krausenstr. 38
+10117 Berlin
+Geschaeftsfuehrung: Christian Schlaeger, Jonathan Weiss
+Eingetragen am Amtsgericht Charlottenburg unter HRB 149173 B
+Sitz: Berlin
+Ust-ID: DE 289 237 879
+
 
 
