@@ -2,102 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92FDCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:44:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF7EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:44:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241176AbiEJLsG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 07:48:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47740 "EHLO
+        id S241181AbiEJLso (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 07:48:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236537AbiEJLsE (ORCPT
+        with ESMTP id S236537AbiEJLsk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 07:48:04 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53DEE2044D3
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 04:44:07 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1652183045;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Js8RDp7iMnj24JVY5ETKpHQgMOnO+QR2UvUOw/t3NVI=;
-        b=iiIyquw+8QYZcovxorjqRFjfwhtMfLsHJEqe7bb762UGT/v/l/uDU2MlyH5t4U6gak6twB
-        cCyHPEaUDEHU0enPu0J4DBw0J15rjARHL269aYiMpCupYu3BwyjP2tKIEcoTzzuFT76fSs
-        Z0yC68PLfuFj70wdQZ68UUH/P13qMaOf9EUpMqUg6EgaWEupFN2HWfhg6OWSZyr0hg/ZGt
-        Qzi4v4cd/H7wytmGiF+HHWJ9XcNU3cDxrdhX3LKr8Dq8hqBErcTwz/b/6JL8w7xTiMyZdu
-        TWiYR1JW/491ynSImOymZIIK8iEtjvf2oz1jdx2qz/HmDYNZXQ9LjnzhjQSgpg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1652183045;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Js8RDp7iMnj24JVY5ETKpHQgMOnO+QR2UvUOw/t3NVI=;
-        b=wrd2WsMhhsrFIarhn4h+pO3O6mNNt4p+QTgQfzqOJMhou7WWpPXvvVvQJWm3tmm+PLi6JN
-        3qRFd4zzo70zIfDQ==
-To:     Nicholas Piggin <npiggin@gmail.com>,
-        Ricardo Neri <ricardo.neri-calderon@linux.intel.com>,
-        x86@kernel.org
-Cc:     Andi Kleen <ak@linux.intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Stephane Eranian <eranian@google.com>,
-        iommu@lists.linux-foundation.org, Joerg Roedel <joro@8bytes.org>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
-        Ricardo Neri <ricardo.neri@intel.com>,
-        Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>,
-        Tony Luck <tony.luck@intel.com>
-Subject: Re: [PATCH v6 28/29] x86/tsc: Restart NMI watchdog after refining
- tsc_khz
-In-Reply-To: <1652180070.1r874kr0tg.astroid@bobo.none>
-References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
- <20220506000008.30892-29-ricardo.neri-calderon@linux.intel.com>
- <1652180070.1r874kr0tg.astroid@bobo.none>
-Date:   Tue, 10 May 2022 13:44:05 +0200
-Message-ID: <87ilqdpq7u.ffs@tglx>
+        Tue, 10 May 2022 07:48:40 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 11144250E8A;
+        Tue, 10 May 2022 04:44:42 -0700 (PDT)
+Received: from localhost.localdomain (unknown [10.2.9.158])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9AxutgpUHpiPAkQAA--.54769S2;
+        Tue, 10 May 2022 19:44:41 +0800 (CST)
+From:   Mao Bibo <maobibo@loongson.cn>
+To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] MIPS: smp: optimization for flush_tlb_mm when exiting
+Date:   Tue, 10 May 2022 19:44:41 +0800
+Message-Id: <20220510114441.2959886-1-maobibo@loongson.cn>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: AQAAf9AxutgpUHpiPAkQAA--.54769S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7XryDWFyDur17Ww17Cw1Dtrb_yoWkXFXEyw
+        sIgwn5Gryrtw1Iv3yxWr4fWF909wsY9F1v9r9Fgr9Iy3s8tr1UZaykur97XrZ5XrZYvFZ5
+        Jr9xJryUAay2qjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbxkYjsxI4VWkKwAYFVCjjxCrM7AC8VAFwI0_Jr0_Gr1l1xkIjI8I
+        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
+        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW8JVW5JwA2z4x0Y4vE2Ix0
+        cI8IcVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4
+        A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IE
+        w4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_JF0_Jw1lYx0Ex4A2jsIE14v26r1j6r4UMc
+        vjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwCY02Avz4vE-syl42xK82IYc2Ij
+        64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1l4IxYO2xFxVAFwI0_Jrv_JF1lx2IqxVAqx4
+        xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1Y6r17
+        MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I
+        0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVW3JVWrJr1lIxAIcVC2z280aVAFwI0_
+        Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7IU5
+        B8BUUUUUU==
+X-CM-SenderInfo: xpdruxter6z05rqj20fqof0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10 2022 at 21:16, Nicholas Piggin wrote:
-> Excerpts from Ricardo Neri's message of May 6, 2022 10:00 am:
->> +	/*
->> +	 * If in use, the HPET hardlockup detector relies on tsc_khz.
->> +	 * Reconfigure it to make use of the refined tsc_khz.
->> +	 */
->> +	lockup_detector_reconfigure();
->
-> I don't know if the API is conceptually good.
->
-> You change something that the lockup detector is currently using, 
-> *while* the detector is running asynchronously, and then reconfigure
-> it. What happens in the window? If this code is only used for small
-> adjustments maybe it does not really matter but in principle it's
-> a bad API to export.
->
-> lockup_detector_reconfigure as an internal API is okay because it
-> reconfigures things while the watchdog is stopped [actually that
-> looks untrue for soft dog which uses watchdog_thresh in
-> is_softlockup(), but that should be fixed].
->
-> You're the arch so you're allowed to stop the watchdog and configure
-> it, e.g., hardlockup_detector_perf_stop() is called in arch/.
->
-> So you want to disable HPET watchdog if it was enabled, then update
-> wherever you're using tsc_khz, then re-enable.
+When process exits or execute new binary, it will call function
+exit_mmap with old mm, there is such function call trace:
+  exit_mmap(struct mm_struct *mm)
+      --> tlb_finish_mmu(&tlb, 0, -1)
+         --> arch_tlb_finish_mmu(tlb, start, end, force)
+	    --> tlb_flush_mmu(tlb);
+               --> tlb_flush(struct mmu_gather *tlb)
+                  --> flush_tlb_mm(tlb->mm)
 
-The real question is whether making this refined tsc_khz value
-immediately effective matters at all. IMO, it does not because up to
-that point the watchdog was happily using the coarse calibrated value
-and the whole use TSC to assess whether the HPET fired mechanism is just
-a guestimate anyway. So what's the point of trying to guess 'more
-correct'.
+It is not necessary to flush tlb since oldmm is not used anymore
+by the process, there is similar operations on IA64/ARM64 etc,
+this patch adds such optimization on MIPS.
 
-Thanks,
+Signed-off-by: Mao Bibo <maobibo@loongson.cn>
+---
+ arch/mips/kernel/smp.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-        tglx
+diff --git a/arch/mips/kernel/smp.c b/arch/mips/kernel/smp.c
+index 1986d1309410..1d93b85271ba 100644
+--- a/arch/mips/kernel/smp.c
++++ b/arch/mips/kernel/smp.c
+@@ -518,6 +518,12 @@ static inline void smp_on_each_tlb(void (*func) (void *info), void *info)
+ 
+ void flush_tlb_mm(struct mm_struct *mm)
+ {
++	if (!mm)
++		return;
++
++	if (atomic_read(&mm->mm_users) == 0)
++		return;		/* happens as a result of exit_mmap() */
++
+ 	preempt_disable();
+ 
+ 	if (cpu_has_mmid) {
+-- 
+2.27.0
 
