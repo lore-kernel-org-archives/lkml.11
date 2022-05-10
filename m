@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66F09C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2A25C4707A
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:44:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244816AbiEJNrB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:47:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39928 "EHLO
+        id S245198AbiEJNr3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:47:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243905AbiEJNcU (ORCPT
+        with ESMTP id S244073AbiEJNce (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:32:20 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F73185C81;
-        Tue, 10 May 2022 06:23:34 -0700 (PDT)
+        Tue, 10 May 2022 09:32:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DB112317D8;
+        Tue, 10 May 2022 06:24:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 05241CE1EED;
-        Tue, 10 May 2022 13:23:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1906CC385A6;
-        Tue, 10 May 2022 13:23:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EFDD6B81D7A;
+        Tue, 10 May 2022 13:24:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59F3BC385A6;
+        Tue, 10 May 2022 13:24:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189011;
-        bh=x1FETPDPkJpjC9YoWTr5LayCUINKYrtnh9VD5X3xMck=;
+        s=korg; t=1652189040;
+        bh=3H1BjRzDHUjxEnk9QTEfAYQL8EISB2HXM59jjO3NEzo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KUZgqiqoPt+QZLu7a9TMadVrq50tJT4Z11FCIDiUNujeTE1wrd7hkm5cExHsv+VqN
-         Jc5F17M3c49XmZ5e+sRuT3JuOAjeGrL63XkDgRPZJa9lAfwP/Tq2MVofYc45XAbyp9
-         we946+GsK/zor7svAh1Y+kuh0dQxxtDUSkcnm0jI=
+        b=Keugl/jL5S1LiWQ+MzVvJTWYpBdbp9DRTSiTaUpqlxN/SlH0MxieSkuIfsvAtu4R2
+         B/P+9P2tHLFBv8szsos7O44sVQdNMB9Ut6OfN5diHyc5yAMl4wK+8a3mcWIUFGJ3Ut
+         +8867JN39w5e2ldrVmaL67UMkwVB6SxCwymQwPbs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Kuehling <Felix.Kuehling@amd.com>,
-        Philip Yang <philip.yang@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 5.4 34/52] drm/amdkfd: Use drm_priv to pass VM from KFD to amdgpu
-Date:   Tue, 10 May 2022 15:08:03 +0200
-Message-Id: <20220510130730.850542876@linuxfoundation.org>
+        stable@vger.kernel.org, Jakob Koschel <jakobkoschel@gmail.com>,
+        Takashi Sakamoto <o-takashi@sakamocchi.jp>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.4 07/52] firewire: remove check of list iterator against head past the loop body
+Date:   Tue, 10 May 2022 15:07:36 +0200
+Message-Id: <20220510130730.072415907@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.852544477@linuxfoundation.org>
 References: <20220510130729.852544477@linuxfoundation.org>
@@ -50,45 +49,140 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Kuehling <Felix.Kuehling@amd.com>
+From: Jakob Koschel <jakobkoschel@gmail.com>
 
-commit b40a6ab2cf9213923bf8e821ce7fa7f6a0a26990 upstream.
+commit 9423973869bd4632ffe669f950510c49296656e0 upstream.
 
-amdgpu_amdkfd_gpuvm_alloc_memory_of_gpu needs the drm_priv to allow mmap
-to access the BO through the corresponding file descriptor. The VM can
-also be extracted from drm_priv, so drm_priv can replace the vm parameter
-in the kfd2kgd interface.
+When list_for_each_entry() completes the iteration over the whole list
+without breaking the loop, the iterator value will be a bogus pointer
+computed based on the head element.
 
-Signed-off-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Reviewed-by: Philip Yang <philip.yang@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-[This is a partial cherry-pick of the upstream commit.]
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
+While it is safe to use the pointer to determine if it was computed
+based on the head element, either with list_entry_is_head() or
+&pos->member == head, using the iterator variable after the loop should
+be avoided.
+
+In preparation to limit the scope of a list iterator to the list
+traversal loop, use a dedicated pointer to point to the found element [1].
+
+Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+Signed-off-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
+Link: https://lore.kernel.org/r/20220409041243.603210-3-o-takashi@sakamocchi.jp
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c |   10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/firewire/core-transaction.c |   30 ++++++++++++++++--------------
+ drivers/firewire/sbp2.c             |   13 +++++++------
+ 2 files changed, 23 insertions(+), 20 deletions(-)
 
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
-@@ -951,11 +951,15 @@ int amdgpu_amdkfd_gpuvm_acquire_process_
- 					   struct dma_fence **ef)
+--- a/drivers/firewire/core-transaction.c
++++ b/drivers/firewire/core-transaction.c
+@@ -73,24 +73,25 @@ static int try_cancel_split_timeout(stru
+ static int close_transaction(struct fw_transaction *transaction,
+ 			     struct fw_card *card, int rcode)
  {
- 	struct amdgpu_device *adev = get_amdgpu_device(kgd);
--	struct drm_file *drm_priv = filp->private_data;
--	struct amdgpu_fpriv *drv_priv = drm_priv->driver_priv;
--	struct amdgpu_vm *avm = &drv_priv->vm;
-+	struct amdgpu_fpriv *drv_priv;
-+	struct amdgpu_vm *avm;
- 	int ret;
+-	struct fw_transaction *t;
++	struct fw_transaction *t = NULL, *iter;
+ 	unsigned long flags;
  
-+	ret = amdgpu_file_to_fpriv(filp, &drv_priv);
-+	if (ret)
-+		return ret;
-+	avm = &drv_priv->vm;
-+
- 	/* Already a compute VM? */
- 	if (avm->process_info)
- 		return -EINVAL;
+ 	spin_lock_irqsave(&card->lock, flags);
+-	list_for_each_entry(t, &card->transaction_list, link) {
+-		if (t == transaction) {
+-			if (!try_cancel_split_timeout(t)) {
++	list_for_each_entry(iter, &card->transaction_list, link) {
++		if (iter == transaction) {
++			if (!try_cancel_split_timeout(iter)) {
+ 				spin_unlock_irqrestore(&card->lock, flags);
+ 				goto timed_out;
+ 			}
+-			list_del_init(&t->link);
+-			card->tlabel_mask &= ~(1ULL << t->tlabel);
++			list_del_init(&iter->link);
++			card->tlabel_mask &= ~(1ULL << iter->tlabel);
++			t = iter;
+ 			break;
+ 		}
+ 	}
+ 	spin_unlock_irqrestore(&card->lock, flags);
+ 
+-	if (&t->link != &card->transaction_list) {
++	if (t) {
+ 		t->callback(card, rcode, NULL, 0, t->callback_data);
+ 		return 0;
+ 	}
+@@ -935,7 +936,7 @@ EXPORT_SYMBOL(fw_core_handle_request);
+ 
+ void fw_core_handle_response(struct fw_card *card, struct fw_packet *p)
+ {
+-	struct fw_transaction *t;
++	struct fw_transaction *t = NULL, *iter;
+ 	unsigned long flags;
+ 	u32 *data;
+ 	size_t data_length;
+@@ -947,20 +948,21 @@ void fw_core_handle_response(struct fw_c
+ 	rcode	= HEADER_GET_RCODE(p->header[1]);
+ 
+ 	spin_lock_irqsave(&card->lock, flags);
+-	list_for_each_entry(t, &card->transaction_list, link) {
+-		if (t->node_id == source && t->tlabel == tlabel) {
+-			if (!try_cancel_split_timeout(t)) {
++	list_for_each_entry(iter, &card->transaction_list, link) {
++		if (iter->node_id == source && iter->tlabel == tlabel) {
++			if (!try_cancel_split_timeout(iter)) {
+ 				spin_unlock_irqrestore(&card->lock, flags);
+ 				goto timed_out;
+ 			}
+-			list_del_init(&t->link);
+-			card->tlabel_mask &= ~(1ULL << t->tlabel);
++			list_del_init(&iter->link);
++			card->tlabel_mask &= ~(1ULL << iter->tlabel);
++			t = iter;
+ 			break;
+ 		}
+ 	}
+ 	spin_unlock_irqrestore(&card->lock, flags);
+ 
+-	if (&t->link == &card->transaction_list) {
++	if (!t) {
+  timed_out:
+ 		fw_notice(card, "unsolicited response (source %x, tlabel %x)\n",
+ 			  source, tlabel);
+--- a/drivers/firewire/sbp2.c
++++ b/drivers/firewire/sbp2.c
+@@ -408,7 +408,7 @@ static void sbp2_status_write(struct fw_
+ 			      void *payload, size_t length, void *callback_data)
+ {
+ 	struct sbp2_logical_unit *lu = callback_data;
+-	struct sbp2_orb *orb;
++	struct sbp2_orb *orb = NULL, *iter;
+ 	struct sbp2_status status;
+ 	unsigned long flags;
+ 
+@@ -433,17 +433,18 @@ static void sbp2_status_write(struct fw_
+ 
+ 	/* Lookup the orb corresponding to this status write. */
+ 	spin_lock_irqsave(&lu->tgt->lock, flags);
+-	list_for_each_entry(orb, &lu->orb_list, link) {
++	list_for_each_entry(iter, &lu->orb_list, link) {
+ 		if (STATUS_GET_ORB_HIGH(status) == 0 &&
+-		    STATUS_GET_ORB_LOW(status) == orb->request_bus) {
+-			orb->rcode = RCODE_COMPLETE;
+-			list_del(&orb->link);
++		    STATUS_GET_ORB_LOW(status) == iter->request_bus) {
++			iter->rcode = RCODE_COMPLETE;
++			list_del(&iter->link);
++			orb = iter;
+ 			break;
+ 		}
+ 	}
+ 	spin_unlock_irqrestore(&lu->tgt->lock, flags);
+ 
+-	if (&orb->link != &lu->orb_list) {
++	if (orb) {
+ 		orb->callback(orb, &status);
+ 		kref_put(&orb->kref, free_orb); /* orb callback reference */
+ 	} else {
 
 
