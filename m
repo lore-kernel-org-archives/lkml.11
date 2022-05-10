@@ -2,52 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24099C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:31:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEBDDC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:31:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238821AbiEJPf1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:35:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50868 "EHLO
+        id S1345863AbiEJPfe (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 11:35:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345657AbiEJPe4 (ORCPT
+        with ESMTP id S1345751AbiEJPfB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:34:56 -0400
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9B431B5F99
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:29:52 -0700 (PDT)
-Received: by mail-qk1-x735.google.com with SMTP id bs17so3884244qkb.0
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:29:52 -0700 (PDT)
+        Tue, 10 May 2022 11:35:01 -0400
+Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A21CE16
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:29:54 -0700 (PDT)
+Received: by mail-qk1-x730.google.com with SMTP id b20so13450904qkc.6
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:29:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=K/0K4rhg5IgvB73PlrQVfwuUAVK4bF/MkHixi5HKK+E=;
-        b=VU3G42LM6GQSKPRLdq2wDwTSfsCAR4h5NtSWhMysl5lJ3rbnoS/+KajK3QjVZnbVQt
-         1xcSGdO/UN+CtgU0RyHzuKflPL82PF1CxFZ9oj+JDjBDK9YHQ7ROjfP2Ff3vBs/6zhFX
-         9KKUx0bQQSG1uBjYRId9JQsjMX1yfFoBuppAlQjC71wScaQUBkOemAYUtK4sWjknHDLu
-         pw5Xs/vTJjzl1ZWxugyXAJLsemhaPnhC2QRD69KhzwF9PAp3497jewWM1TUnHoE4Fxxm
-         nmBcsJ71EnK7ERpsTP8yiQl/MG/d79jEjNhWlS6nurB3R5NKV4FtkYAGk4H7Aa3fi3rz
-         vs9w==
+        bh=1yG/TJhB6zlP07vbHCoo0HduI7PCeWdcxAz4SbIPm6g=;
+        b=hYXYP5PLEeo7CWqbg91X9DjtuKyxX3nuIcfj1DY2YZFuCI5Tv7eKMNmOdMMJBXnitY
+         InB3K9/dKqFuwniT0XOjIT8ag03Bi2rdY0zELe1bydaRxxCmhT5XBDYhHcRATBD0gTW9
+         82aWLEwfg8Rw3dU355CL5bO+YfQfs0siYNI5qgEYs3DiW5le4KD1r+E/pLdI+7Ysl3NX
+         0REqoFrifGI+iD/68c+EE7P0/2RWWWJzWXsGiUSDNvbEyYx99U1dh6t/ArTtwqqdkTKl
+         nLctnuV1D650TjZnkMxYRIpcGyxQF52r3Op/D0hEAL6Mwq+g+TIr02XEcBr+6zgtYOd6
+         InYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=K/0K4rhg5IgvB73PlrQVfwuUAVK4bF/MkHixi5HKK+E=;
-        b=ppUQNF+MQtJugehQOGixJoGEyvByypxQuUIY70BbWy2moJgQvP5JK9Q/AiCOZuViW3
-         uA+8thJSF08p2fr8XK/Df7SIo5fX5Y3HVslNLQQGephRqJDWA2yhqzhpllgO+21YMMjB
-         GcG/t+ylMhJST1w8dgZqq3GXocc1aCcPy8JlvFMGxVHm458TNRG8wDpPS7GkQ66xMjR0
-         RYkak1WSrUOT/n0JioSrDZX1u386Wn2hC8zav4dQHZy1GjLqqalTb0DjjGydHzRx7Sra
-         JyoCTtW1MKNDJMFK/tLuwqPTK+7ldl3P8opvatI5JPC1qzbvW0miYBwPScrdA22vzrMl
-         qSEw==
-X-Gm-Message-State: AOAM533G9VB0kg9mnNnXkNKX52MmOBWdILkZpz0Sqrvt4qdZlFiZugOT
-        AC9RdAqs4q8qJ8dzRc548mikng==
-X-Google-Smtp-Source: ABdhPJy01TdpcfvESVhAc3HT/G4ZznTYC0lXYBBXCMWPk9i7OyWIM3L3QKzXDMGoY4tvwBpfDA6r7g==
-X-Received: by 2002:a05:620a:4403:b0:6a0:5093:1742 with SMTP id v3-20020a05620a440300b006a050931742mr13296400qkp.691.1652196591706;
-        Tue, 10 May 2022 08:29:51 -0700 (PDT)
+        bh=1yG/TJhB6zlP07vbHCoo0HduI7PCeWdcxAz4SbIPm6g=;
+        b=dFsZXAsedm0l0dvsXOrS92PgY6grwscF08G42e0KFmLJgSQYV0i1H9MQGf29lAK1N+
+         5cx64wCxyPz1Lxj/9YXF+EIolCzWHr71AQU6urLKqW1Tr7/KXIyR3XzUEJXQCgmROZgv
+         zkHIeq4YRP1Apaj7+l6o4IHFFJFOvDemD9i82D/aTjBPz8g09y1Yj5ni6jMO9GZTrVXv
+         l6xH15Q/meYcoHaO8iubAJhO+4k/mzuRF9TCd2GHmLKcIqE/ZRqNWYZAnH8UCwQwZskc
+         1e5nFRCWFgMy53+v5Rsdho52zguaS/QXrBPYQZj8Y2ZjkeQu/7IaDqbLeuHLhSsq59zd
+         CaTg==
+X-Gm-Message-State: AOAM532JKhsyyH6rj38MsDcDtVyX7BiORvtLtCysBwuKo3n0Wihd7saO
+        UkS0n+ULOeoTeV3cjMbebt41Tg==
+X-Google-Smtp-Source: ABdhPJyucBzn1eWtc39b2AFRaNrcSbuHwWk1zc2HHoamdwqK54Qc28s2rG3nKGAsvZFUY7B0kFb9UQ==
+X-Received: by 2002:a37:a887:0:b0:69f:ba47:1212 with SMTP id r129-20020a37a887000000b0069fba471212mr16022649qke.206.1652196594096;
+        Tue, 10 May 2022 08:29:54 -0700 (PDT)
 Received: from localhost (cpe-98-15-154-102.hvc.res.rr.com. [98.15.154.102])
-        by smtp.gmail.com with ESMTPSA id u67-20020a376046000000b0069fc13ce244sm9048290qkb.117.2022.05.10.08.29.51
+        by smtp.gmail.com with ESMTPSA id r189-20020a37a8c6000000b0069c72b41b59sm8688118qke.2.2022.05.10.08.29.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 08:29:51 -0700 (PDT)
+        Tue, 10 May 2022 08:29:53 -0700 (PDT)
 From:   Johannes Weiner <hannes@cmpxchg.org>
 To:     Andrew Morton <akpm@linux-foundation.org>
 Cc:     Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
@@ -57,9 +58,9 @@ Cc:     Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
         Minchan Kim <minchan@kernel.org>, linux-mm@kvack.org,
         cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
         kernel-team@fb.com
-Subject: [PATCH v2 3/6] mm: Kconfig: group swap, slab, hotplug and thp options into submenus
-Date:   Tue, 10 May 2022 11:28:44 -0400
-Message-Id: <20220510152847.230957-4-hannes@cmpxchg.org>
+Subject: [PATCH v2 5/6] mm: zswap: add basic meminfo and vmstat coverage
+Date:   Tue, 10 May 2022 11:28:46 -0400
+Message-Id: <20220510152847.230957-6-hannes@cmpxchg.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220510152847.230957-1-hannes@cmpxchg.org>
 References: <20220510152847.230957-1-hannes@cmpxchg.org>
@@ -69,532 +70,170 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are several clusters of related config options spread throughout
-the mostly flat MM submenu. Group them together and put specialization
-options into further subdirectories to make the MM submenu a bit more
-organized and easier to navigate.
+Currently it requires poking at debugfs to figure out the size and
+population of the zswap cache on a host. There are no counters for
+reads and writes against the cache. As a result, it's difficult to
+understand zswap behavior on production systems.
+
+Print zswap memory consumption and how many pages are zswapped out in
+/proc/meminfo. Count zswapouts and zswapins in /proc/vmstat.
 
 Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
 ---
- mm/Kconfig | 429 +++++++++++++++++++++++++++--------------------------
- 1 file changed, 221 insertions(+), 208 deletions(-)
+ Documentation/filesystems/proc.rst |  6 ++++++
+ fs/proc/meminfo.c                  |  7 +++++++
+ include/linux/swap.h               |  5 +++++
+ include/linux/vm_event_item.h      |  4 ++++
+ mm/vmstat.c                        |  4 ++++
+ mm/zswap.c                         | 13 ++++++-------
+ 6 files changed, 32 insertions(+), 7 deletions(-)
 
-diff --git a/mm/Kconfig b/mm/Kconfig
-index 675a6be43739..2c5935a28edf 100644
---- a/mm/Kconfig
-+++ b/mm/Kconfig
-@@ -9,7 +9,7 @@ menu "Memory Management options"
- config ARCH_NO_SWAP
- 	bool
+diff --git a/Documentation/filesystems/proc.rst b/Documentation/filesystems/proc.rst
+index 736ed384750c..8b5a94cfa722 100644
+--- a/Documentation/filesystems/proc.rst
++++ b/Documentation/filesystems/proc.rst
+@@ -964,6 +964,8 @@ Example output. You may not have all of these fields.
+     Mlocked:               0 kB
+     SwapTotal:             0 kB
+     SwapFree:              0 kB
++    Zswap:              1904 kB
++    Zswapped:           7792 kB
+     Dirty:                12 kB
+     Writeback:             0 kB
+     AnonPages:       4654780 kB
+@@ -1055,6 +1057,10 @@ SwapTotal
+ SwapFree
+               Memory which has been evicted from RAM, and is temporarily
+               on the disk
++Zswap
++              Memory consumed by the zswap backend (compressed size)
++Zswapped
++              Amount of anonymous memory stored in zswap (original size)
+ Dirty
+               Memory which is waiting to get written back to the disk
+ Writeback
+diff --git a/fs/proc/meminfo.c b/fs/proc/meminfo.c
+index 6fa761c9cc78..6e89f0e2fd20 100644
+--- a/fs/proc/meminfo.c
++++ b/fs/proc/meminfo.c
+@@ -86,6 +86,13 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
  
--config SWAP
-+menuconfig SWAP
- 	bool "Support for paging of anonymous memory (swap)"
- 	depends on MMU && BLOCK && !ARCH_NO_SWAP
- 	default y
-@@ -19,6 +19,191 @@ config SWAP
- 	  used to provide more virtual memory than the actual RAM present
- 	  in your computer.  If unsure say Y.
+ 	show_val_kb(m, "SwapTotal:      ", i.totalswap);
+ 	show_val_kb(m, "SwapFree:       ", i.freeswap);
++#ifdef CONFIG_ZSWAP
++	seq_printf(m,  "Zswap:          %8lu kB\n",
++		   (unsigned long)(zswap_pool_total_size >> 10));
++	seq_printf(m,  "Zswapped:       %8lu kB\n",
++		   (unsigned long)atomic_read(&zswap_stored_pages) <<
++		   (PAGE_SHIFT - 10));
++#endif
+ 	show_val_kb(m, "Dirty:          ",
+ 		    global_node_page_state(NR_FILE_DIRTY));
+ 	show_val_kb(m, "Writeback:      ",
+diff --git a/include/linux/swap.h b/include/linux/swap.h
+index b82c196d8867..07074afa79a7 100644
+--- a/include/linux/swap.h
++++ b/include/linux/swap.h
+@@ -632,6 +632,11 @@ static inline int mem_cgroup_swappiness(struct mem_cgroup *mem)
+ }
+ #endif
  
-+config ZSWAP
-+	bool "Compressed cache for swap pages (EXPERIMENTAL)"
-+	depends on SWAP && CRYPTO=y
-+	select FRONTSWAP
-+	select ZPOOL
-+	help
-+	  A lightweight compressed cache for swap pages.  It takes
-+	  pages that are in the process of being swapped out and attempts to
-+	  compress them into a dynamically allocated RAM-based memory pool.
-+	  This can result in a significant I/O reduction on swap device and,
-+	  in the case where decompressing from RAM is faster that swap device
-+	  reads, can also improve workload performance.
++#ifdef CONFIG_ZSWAP
++extern u64 zswap_pool_total_size;
++extern atomic_t zswap_stored_pages;
++#endif
 +
-+	  This is marked experimental because it is a new feature (as of
-+	  v3.11) that interacts heavily with memory reclaim.  While these
-+	  interactions don't cause any known issues on simple memory setups,
-+	  they have not be fully explored on the large set of potential
-+	  configurations and workloads that exist.
-+
-+choice
-+	prompt "Compressed cache for swap pages default compressor"
-+	depends on ZSWAP
-+	default ZSWAP_COMPRESSOR_DEFAULT_LZO
-+	help
-+	  Selects the default compression algorithm for the compressed cache
-+	  for swap pages.
-+
-+	  For an overview what kind of performance can be expected from
-+	  a particular compression algorithm please refer to the benchmarks
-+	  available at the following LWN page:
-+	  https://lwn.net/Articles/751795/
-+
-+	  If in doubt, select 'LZO'.
-+
-+	  The selection made here can be overridden by using the kernel
-+	  command line 'zswap.compressor=' option.
-+
-+config ZSWAP_COMPRESSOR_DEFAULT_DEFLATE
-+	bool "Deflate"
-+	select CRYPTO_DEFLATE
-+	help
-+	  Use the Deflate algorithm as the default compression algorithm.
-+
-+config ZSWAP_COMPRESSOR_DEFAULT_LZO
-+	bool "LZO"
-+	select CRYPTO_LZO
-+	help
-+	  Use the LZO algorithm as the default compression algorithm.
-+
-+config ZSWAP_COMPRESSOR_DEFAULT_842
-+	bool "842"
-+	select CRYPTO_842
-+	help
-+	  Use the 842 algorithm as the default compression algorithm.
-+
-+config ZSWAP_COMPRESSOR_DEFAULT_LZ4
-+	bool "LZ4"
-+	select CRYPTO_LZ4
-+	help
-+	  Use the LZ4 algorithm as the default compression algorithm.
-+
-+config ZSWAP_COMPRESSOR_DEFAULT_LZ4HC
-+	bool "LZ4HC"
-+	select CRYPTO_LZ4HC
-+	help
-+	  Use the LZ4HC algorithm as the default compression algorithm.
-+
-+config ZSWAP_COMPRESSOR_DEFAULT_ZSTD
-+	bool "zstd"
-+	select CRYPTO_ZSTD
-+	help
-+	  Use the zstd algorithm as the default compression algorithm.
-+endchoice
-+
-+config ZSWAP_COMPRESSOR_DEFAULT
-+       string
-+       depends on ZSWAP
-+       default "deflate" if ZSWAP_COMPRESSOR_DEFAULT_DEFLATE
-+       default "lzo" if ZSWAP_COMPRESSOR_DEFAULT_LZO
-+       default "842" if ZSWAP_COMPRESSOR_DEFAULT_842
-+       default "lz4" if ZSWAP_COMPRESSOR_DEFAULT_LZ4
-+       default "lz4hc" if ZSWAP_COMPRESSOR_DEFAULT_LZ4HC
-+       default "zstd" if ZSWAP_COMPRESSOR_DEFAULT_ZSTD
-+       default ""
-+
-+choice
-+	prompt "Compressed cache for swap pages default allocator"
-+	depends on ZSWAP
-+	default ZSWAP_ZPOOL_DEFAULT_ZBUD
-+	help
-+	  Selects the default allocator for the compressed cache for
-+	  swap pages.
-+	  The default is 'zbud' for compatibility, however please do
-+	  read the description of each of the allocators below before
-+	  making a right choice.
-+
-+	  The selection made here can be overridden by using the kernel
-+	  command line 'zswap.zpool=' option.
-+
-+config ZSWAP_ZPOOL_DEFAULT_ZBUD
-+	bool "zbud"
-+	select ZBUD
-+	help
-+	  Use the zbud allocator as the default allocator.
-+
-+config ZSWAP_ZPOOL_DEFAULT_Z3FOLD
-+	bool "z3fold"
-+	select Z3FOLD
-+	help
-+	  Use the z3fold allocator as the default allocator.
-+
-+config ZSWAP_ZPOOL_DEFAULT_ZSMALLOC
-+	bool "zsmalloc"
-+	select ZSMALLOC
-+	help
-+	  Use the zsmalloc allocator as the default allocator.
-+endchoice
-+
-+config ZSWAP_ZPOOL_DEFAULT
-+       string
-+       depends on ZSWAP
-+       default "zbud" if ZSWAP_ZPOOL_DEFAULT_ZBUD
-+       default "z3fold" if ZSWAP_ZPOOL_DEFAULT_Z3FOLD
-+       default "zsmalloc" if ZSWAP_ZPOOL_DEFAULT_ZSMALLOC
-+       default ""
-+
-+config ZSWAP_DEFAULT_ON
-+	bool "Enable the compressed cache for swap pages by default"
-+	depends on ZSWAP
-+	help
-+	  If selected, the compressed cache for swap pages will be enabled
-+	  at boot, otherwise it will be disabled.
-+
-+	  The selection made here can be overridden by using the kernel
-+	  command line 'zswap.enabled=' option.
-+
-+config ZPOOL
-+	tristate "Common API for compressed memory storage"
-+	depends on ZSWAP
-+	help
-+	  Compressed memory storage API.  This allows using either zbud or
-+	  zsmalloc.
-+
-+config ZBUD
-+	tristate "Low (Up to 2x) density storage for compressed pages"
-+	depends on ZPOOL
-+	help
-+	  A special purpose allocator for storing compressed pages.
-+	  It is designed to store up to two compressed pages per physical
-+	  page.  While this design limits storage density, it has simple and
-+	  deterministic reclaim properties that make it preferable to a higher
-+	  density approach when reclaim will be used.
-+
-+config Z3FOLD
-+	tristate "Up to 3x density storage for compressed pages"
-+	depends on ZPOOL
-+	help
-+	  A special purpose allocator for storing compressed pages.
-+	  It is designed to store up to three compressed pages per physical
-+	  page. It is a ZBUD derivative so the simplicity and determinism are
-+	  still there.
-+
-+config ZSMALLOC
-+	tristate "Memory allocator for compressed pages"
-+	depends on MMU
-+	help
-+	  zsmalloc is a slab-based memory allocator designed to store
-+	  compressed RAM pages.  zsmalloc uses virtual memory mapping
-+	  in order to reduce fragmentation.  However, this results in a
-+	  non-standard allocator interface where a handle, not a pointer, is
-+	  returned by an alloc().  This handle must be mapped in order to
-+	  access the allocated space.
-+
-+config ZSMALLOC_STAT
-+	bool "Export zsmalloc statistics"
-+	depends on ZSMALLOC
-+	select DEBUG_FS
-+	help
-+	  This option enables code in the zsmalloc to collect various
-+	  statistics about what's happening in zsmalloc and exports that
-+	  information to userspace via debugfs.
-+	  If unsure, say N.
-+
-+menu "SLAB allocator options"
-+
- choice
- 	prompt "Choose SLAB allocator"
- 	default SLUB
-@@ -90,6 +275,19 @@ config SLAB_FREELIST_HARDENED
- 	  sanity-checking than others. This option is most effective with
- 	  CONFIG_SLUB.
+ #if defined(CONFIG_SWAP) && defined(CONFIG_MEMCG) && defined(CONFIG_BLK_CGROUP)
+ extern void __cgroup_throttle_swaprate(struct page *page, gfp_t gfp_mask);
+ static inline  void cgroup_throttle_swaprate(struct page *page, gfp_t gfp_mask)
+diff --git a/include/linux/vm_event_item.h b/include/linux/vm_event_item.h
+index 5e80138ce624..1ce8fadb2b1c 100644
+--- a/include/linux/vm_event_item.h
++++ b/include/linux/vm_event_item.h
+@@ -132,6 +132,10 @@ enum vm_event_item { PGPGIN, PGPGOUT, PSWPIN, PSWPOUT,
+ #ifdef CONFIG_KSM
+ 		COW_KSM,
+ #endif
++#ifdef CONFIG_ZSWAP
++		ZSWPIN,
++		ZSWPOUT,
++#endif
+ #ifdef CONFIG_X86
+ 		DIRECT_MAP_LEVEL2_SPLIT,
+ 		DIRECT_MAP_LEVEL3_SPLIT,
+diff --git a/mm/vmstat.c b/mm/vmstat.c
+index 4a2aa2fa88db..da7e389cf33c 100644
+--- a/mm/vmstat.c
++++ b/mm/vmstat.c
+@@ -1392,6 +1392,10 @@ const char * const vmstat_text[] = {
+ #ifdef CONFIG_KSM
+ 	"cow_ksm",
+ #endif
++#ifdef CONFIG_ZSWAP
++	"zswpin",
++	"zswpout",
++#endif
+ #ifdef CONFIG_X86
+ 	"direct_map_level2_splits",
+ 	"direct_map_level3_splits",
+diff --git a/mm/zswap.c b/mm/zswap.c
+index 2c5db4cbedea..e3c16a70f533 100644
+--- a/mm/zswap.c
++++ b/mm/zswap.c
+@@ -42,9 +42,9 @@
+ * statistics
+ **********************************/
+ /* Total bytes used by the compressed storage */
+-static u64 zswap_pool_total_size;
++u64 zswap_pool_total_size;
+ /* The number of compressed pages currently stored in zswap */
+-static atomic_t zswap_stored_pages = ATOMIC_INIT(0);
++atomic_t zswap_stored_pages = ATOMIC_INIT(0);
+ /* The number of same-value filled pages currently stored in zswap */
+ static atomic_t zswap_same_filled_pages = ATOMIC_INIT(0);
  
-+config SLUB_CPU_PARTIAL
-+	default y
-+	depends on SLUB && SMP
-+	bool "SLUB per cpu partial cache"
-+	help
-+	  Per cpu partial caches accelerate objects allocation and freeing
-+	  that is local to a processor at the price of more indeterminism
-+	  in the latency of the free. On overflow these caches will be cleared
-+	  which requires the taking of locks that may cause latency spikes.
-+	  Typically one would choose no for a realtime system.
-+
-+endmenu # SLAB allocator options
-+
- config SHUFFLE_PAGE_ALLOCATOR
- 	bool "Page allocator randomization"
- 	default SLAB_FREELIST_RANDOM && ACPI_NUMA
-@@ -114,17 +312,6 @@ config SHUFFLE_PAGE_ALLOCATOR
+@@ -1243,6 +1243,7 @@ static int zswap_frontswap_store(unsigned type, pgoff_t offset,
+ 	/* update stats */
+ 	atomic_inc(&zswap_stored_pages);
+ 	zswap_update_total_size();
++	count_vm_event(ZSWPOUT);
  
- 	  Say Y if unsure.
+ 	return 0;
  
--config SLUB_CPU_PARTIAL
--	default y
--	depends on SLUB && SMP
--	bool "SLUB per cpu partial cache"
--	help
--	  Per cpu partial caches accelerate objects allocation and freeing
--	  that is local to a processor at the price of more indeterminism
--	  in the latency of the free. On overflow these caches will be cleared
--	  which requires the taking of locks that may cause latency spikes.
--	  Typically one would choose no for a realtime system.
--
- config SELECT_MEMORY_MODEL
- 	def_bool y
- 	depends on ARCH_SELECT_MEMORY_MODEL
-@@ -250,14 +437,16 @@ config ARCH_ENABLE_MEMORY_HOTPLUG
- 	bool
+@@ -1285,11 +1286,10 @@ static int zswap_frontswap_load(unsigned type, pgoff_t offset,
+ 		zswap_fill_page(dst, entry->value);
+ 		kunmap_atomic(dst);
+ 		ret = 0;
+-		goto freeentry;
++		goto stats;
+ 	}
  
- # eventually, we can have this option just 'select SPARSEMEM'
--config MEMORY_HOTPLUG
--	bool "Allow for memory hot-add"
-+menuconfig MEMORY_HOTPLUG
-+	bool "Memory hotplug"
- 	select MEMORY_ISOLATION
- 	depends on SPARSEMEM
- 	depends on ARCH_ENABLE_MEMORY_HOTPLUG
- 	depends on 64BIT
- 	select NUMA_KEEP_MEMINFO if NUMA
+ 	if (!zpool_can_sleep_mapped(entry->pool->zpool)) {
+-
+ 		tmp = kmalloc(entry->length, GFP_ATOMIC);
+ 		if (!tmp) {
+ 			ret = -ENOMEM;
+@@ -1304,10 +1304,8 @@ static int zswap_frontswap_load(unsigned type, pgoff_t offset,
+ 		src += sizeof(struct zswap_header);
  
-+if MEMORY_HOTPLUG
-+
- config MEMORY_HOTPLUG_DEFAULT_ONLINE
- 	bool "Online the newly added memory blocks by default"
- 	depends on MEMORY_HOTPLUG
-@@ -287,6 +476,8 @@ config MHP_MEMMAP_ON_MEMORY
- 	depends on MEMORY_HOTPLUG && SPARSEMEM_VMEMMAP
- 	depends on ARCH_MHP_MEMMAP_ON_MEMORY_ENABLE
+ 	if (!zpool_can_sleep_mapped(entry->pool->zpool)) {
+-
+ 		memcpy(tmp, src, entry->length);
+ 		src = tmp;
+-
+ 		zpool_unmap_handle(entry->pool->zpool, entry->handle);
+ 	}
  
-+endif # MEMORY_HOTPLUG
-+
- # Heavily threaded applications may benefit from splitting the mm-wide
- # page_table_lock, so that faults on different parts of the user address
- # space can be handled with less contention: split it at this NR_CPUS.
-@@ -501,7 +692,7 @@ config NOMMU_INITIAL_TRIM_EXCESS
+@@ -1326,7 +1324,8 @@ static int zswap_frontswap_load(unsigned type, pgoff_t offset,
+ 		kfree(tmp);
  
- 	  See Documentation/admin-guide/mm/nommu-mmap.rst for more information.
- 
--config TRANSPARENT_HUGEPAGE
-+menuconfig TRANSPARENT_HUGEPAGE
- 	bool "Transparent Hugepage Support"
- 	depends on HAVE_ARCH_TRANSPARENT_HUGEPAGE && !PREEMPT_RT
- 	select COMPACTION
-@@ -516,6 +707,8 @@ config TRANSPARENT_HUGEPAGE
- 
- 	  If memory constrained on embedded, you may want to say N.
- 
-+if TRANSPARENT_HUGEPAGE
-+
- choice
- 	prompt "Transparent Hugepage Support sysfs defaults"
- 	depends on TRANSPARENT_HUGEPAGE
-@@ -556,6 +749,19 @@ config THP_SWAP
- 
- 	  For selection by architectures with reasonable THP sizes.
- 
-+config READ_ONLY_THP_FOR_FS
-+	bool "Read-only THP for filesystems (EXPERIMENTAL)"
-+	depends on TRANSPARENT_HUGEPAGE && SHMEM
-+
-+	help
-+	  Allow khugepaged to put read-only file-backed pages in THP.
-+
-+	  This is marked experimental because it is a new feature. Write
-+	  support of file THPs will be developed in the next few release
-+	  cycles.
-+
-+endif # TRANSPARENT_HUGEPAGE
-+
- #
- # UP and nommu archs use km based percpu allocator
- #
-@@ -640,188 +846,6 @@ config MEM_SOFT_DIRTY
- 
- 	  See Documentation/admin-guide/mm/soft-dirty.rst for more details.
- 
--config ZSWAP
--	bool "Compressed cache for swap pages (EXPERIMENTAL)"
--	depends on SWAP && CRYPTO=y
--	select FRONTSWAP
--	select ZPOOL
--	help
--	  A lightweight compressed cache for swap pages.  It takes
--	  pages that are in the process of being swapped out and attempts to
--	  compress them into a dynamically allocated RAM-based memory pool.
--	  This can result in a significant I/O reduction on swap device and,
--	  in the case where decompressing from RAM is faster that swap device
--	  reads, can also improve workload performance.
+ 	BUG_ON(ret);
 -
--	  This is marked experimental because it is a new feature (as of
--	  v3.11) that interacts heavily with memory reclaim.  While these
--	  interactions don't cause any known issues on simple memory setups,
--	  they have not be fully explored on the large set of potential
--	  configurations and workloads that exist.
--
--choice
--	prompt "Compressed cache for swap pages default compressor"
--	depends on ZSWAP
--	default ZSWAP_COMPRESSOR_DEFAULT_LZO
--	help
--	  Selects the default compression algorithm for the compressed cache
--	  for swap pages.
--
--	  For an overview what kind of performance can be expected from
--	  a particular compression algorithm please refer to the benchmarks
--	  available at the following LWN page:
--	  https://lwn.net/Articles/751795/
--
--	  If in doubt, select 'LZO'.
--
--	  The selection made here can be overridden by using the kernel
--	  command line 'zswap.compressor=' option.
--
--config ZSWAP_COMPRESSOR_DEFAULT_DEFLATE
--	bool "Deflate"
--	select CRYPTO_DEFLATE
--	help
--	  Use the Deflate algorithm as the default compression algorithm.
--
--config ZSWAP_COMPRESSOR_DEFAULT_LZO
--	bool "LZO"
--	select CRYPTO_LZO
--	help
--	  Use the LZO algorithm as the default compression algorithm.
--
--config ZSWAP_COMPRESSOR_DEFAULT_842
--	bool "842"
--	select CRYPTO_842
--	help
--	  Use the 842 algorithm as the default compression algorithm.
--
--config ZSWAP_COMPRESSOR_DEFAULT_LZ4
--	bool "LZ4"
--	select CRYPTO_LZ4
--	help
--	  Use the LZ4 algorithm as the default compression algorithm.
--
--config ZSWAP_COMPRESSOR_DEFAULT_LZ4HC
--	bool "LZ4HC"
--	select CRYPTO_LZ4HC
--	help
--	  Use the LZ4HC algorithm as the default compression algorithm.
--
--config ZSWAP_COMPRESSOR_DEFAULT_ZSTD
--	bool "zstd"
--	select CRYPTO_ZSTD
--	help
--	  Use the zstd algorithm as the default compression algorithm.
--endchoice
--
--config ZSWAP_COMPRESSOR_DEFAULT
--       string
--       depends on ZSWAP
--       default "deflate" if ZSWAP_COMPRESSOR_DEFAULT_DEFLATE
--       default "lzo" if ZSWAP_COMPRESSOR_DEFAULT_LZO
--       default "842" if ZSWAP_COMPRESSOR_DEFAULT_842
--       default "lz4" if ZSWAP_COMPRESSOR_DEFAULT_LZ4
--       default "lz4hc" if ZSWAP_COMPRESSOR_DEFAULT_LZ4HC
--       default "zstd" if ZSWAP_COMPRESSOR_DEFAULT_ZSTD
--       default ""
--
--choice
--	prompt "Compressed cache for swap pages default allocator"
--	depends on ZSWAP
--	default ZSWAP_ZPOOL_DEFAULT_ZBUD
--	help
--	  Selects the default allocator for the compressed cache for
--	  swap pages.
--	  The default is 'zbud' for compatibility, however please do
--	  read the description of each of the allocators below before
--	  making a right choice.
--
--	  The selection made here can be overridden by using the kernel
--	  command line 'zswap.zpool=' option.
--
--config ZSWAP_ZPOOL_DEFAULT_ZBUD
--	bool "zbud"
--	select ZBUD
--	help
--	  Use the zbud allocator as the default allocator.
--
--config ZSWAP_ZPOOL_DEFAULT_Z3FOLD
--	bool "z3fold"
--	select Z3FOLD
--	help
--	  Use the z3fold allocator as the default allocator.
--
--config ZSWAP_ZPOOL_DEFAULT_ZSMALLOC
--	bool "zsmalloc"
--	select ZSMALLOC
--	help
--	  Use the zsmalloc allocator as the default allocator.
--endchoice
--
--config ZSWAP_ZPOOL_DEFAULT
--       string
--       depends on ZSWAP
--       default "zbud" if ZSWAP_ZPOOL_DEFAULT_ZBUD
--       default "z3fold" if ZSWAP_ZPOOL_DEFAULT_Z3FOLD
--       default "zsmalloc" if ZSWAP_ZPOOL_DEFAULT_ZSMALLOC
--       default ""
--
--config ZSWAP_DEFAULT_ON
--	bool "Enable the compressed cache for swap pages by default"
--	depends on ZSWAP
--	help
--	  If selected, the compressed cache for swap pages will be enabled
--	  at boot, otherwise it will be disabled.
--
--	  The selection made here can be overridden by using the kernel
--	  command line 'zswap.enabled=' option.
--
--config ZPOOL
--	tristate "Common API for compressed memory storage"
--	help
--	  Compressed memory storage API.  This allows using either zbud or
--	  zsmalloc.
--
--config ZBUD
--	tristate "Low (Up to 2x) density storage for compressed pages"
--	depends on ZPOOL
--	help
--	  A special purpose allocator for storing compressed pages.
--	  It is designed to store up to two compressed pages per physical
--	  page.  While this design limits storage density, it has simple and
--	  deterministic reclaim properties that make it preferable to a higher
--	  density approach when reclaim will be used.
--
--config Z3FOLD
--	tristate "Up to 3x density storage for compressed pages"
--	depends on ZPOOL
--	help
--	  A special purpose allocator for storing compressed pages.
--	  It is designed to store up to three compressed pages per physical
--	  page. It is a ZBUD derivative so the simplicity and determinism are
--	  still there.
--
--config ZSMALLOC
--	tristate "Memory allocator for compressed pages"
--	depends on MMU
--	help
--	  zsmalloc is a slab-based memory allocator designed to store
--	  compressed RAM pages.  zsmalloc uses virtual memory mapping
--	  in order to reduce fragmentation.  However, this results in a
--	  non-standard allocator interface where a handle, not a pointer, is
--	  returned by an alloc().  This handle must be mapped in order to
--	  access the allocated space.
--
--config ZSMALLOC_STAT
--	bool "Export zsmalloc statistics"
--	depends on ZSMALLOC
--	select DEBUG_FS
--	help
--	  This option enables code in the zsmalloc to collect various
--	  statistics about what's happening in zsmalloc and exports that
--	  information to userspace via debugfs.
--	  If unsure, say N.
--
- config GENERIC_EARLY_IOREMAP
- 	bool
- 
-@@ -978,17 +1002,6 @@ comment "GUP_TEST needs to have DEBUG_FS enabled"
- config GUP_GET_PTE_LOW_HIGH
- 	bool
- 
--config READ_ONLY_THP_FOR_FS
--	bool "Read-only THP for filesystems (EXPERIMENTAL)"
--	depends on TRANSPARENT_HUGEPAGE && SHMEM
--
--	help
--	  Allow khugepaged to put read-only file-backed pages in THP.
--
--	  This is marked experimental because it is a new feature. Write
--	  support of file THPs will be developed in the next few release
--	  cycles.
--
- config ARCH_HAS_PTE_SPECIAL
- 	bool
- 
++stats:
++	count_vm_event(ZSWPIN);
+ freeentry:
+ 	spin_lock(&tree->lock);
+ 	zswap_entry_put(tree, entry);
 -- 
 2.35.3
 
