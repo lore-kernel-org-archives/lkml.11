@@ -2,103 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87F2AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 18:26:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 620C4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 18:26:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348858AbiEJS0E (ORCPT
+        id S1348865AbiEJS0R (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 14:26:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40932 "EHLO
+        Tue, 10 May 2022 14:26:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348849AbiEJSZ5 (ORCPT
+        with ESMTP id S1348880AbiEJS0K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 14:25:57 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1856F5373E
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 11:25:54 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id e24so24981727wrc.9
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 11:25:54 -0700 (PDT)
+        Tue, 10 May 2022 14:26:10 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 136CAB36C6;
+        Tue, 10 May 2022 11:26:06 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id c1-20020a17090a558100b001dca2694f23so2869389pji.3;
+        Tue, 10 May 2022 11:26:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yHb/t4sJWtaUrfKkQwH3/sfbd07PYe3PiYuK/lpKKSM=;
-        b=XF0oB5IuvA6vJGEyZOrGfxGamHtbVLL4rlc9UC4pYza1Scg0lYG1lQjzP2+uF4mYKg
-         k5SqANXoXiMKqwfOjo/kCTJ1wE2u5Oh0t5b3zwwBN12RRjqZg2eGmMtC3vO29ME5jttc
-         u8/DTuiEBDHhQ3IT3Tvh+OgaSJhVvk4AxYOiHIHpE+HqpB/QvLCevvw26Hs3WYNOUuT8
-         UOHVIWJy37iQItWWuiSHZ2v0tMF5ao8PrVU9FwmB+Edemgi4WxwESF85LNNfolrVn0C0
-         BS5Fyo4ODK6JUclQ/DNpWR7V60B/ysAFObHrRLJmgpUAivLmKv3mmULFcV+xH5hnIiyS
-         zx2g==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=XRI/42wOvBZ/8slI1s6G+ZLQFaSjtz9xMU2JmEe+gxo=;
+        b=qhd2Bkeump+a0C7whAKFe//Lz9r35AcFJL8ma0XBcX1FiVT4HUBQA8VgwCIo+b+ZMF
+         09i4AmcHcrUJFVZv5uSKS3+vd9i6ufcqvRUlSemUa8LyqFd+Vd9aspNDf9w0K7a4w1ft
+         jWZe9qvgj0SlYul5BPeww6u8Gen3zdhZiu76xxC8Sh05pC7+aB+2+xhBnkU1S+O2R72E
+         qpue51cuGQ6iylpsIYGtFX8ozFomY4dFKKyxLiVZv+o6ifZV+vIqWS6QAF7Oy7FxJ/3M
+         CkvyRGeP85ES8/cHifln6E72BuyMU5IJzPYQSNHeb8m8TmE5ZwOz8QM8DPYDmpmY+XY1
+         5YdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yHb/t4sJWtaUrfKkQwH3/sfbd07PYe3PiYuK/lpKKSM=;
-        b=vh8TN5hXqFM1kUi//qqXfhbV7CYMBm/fsKpR+ZrbUuA/sFG+EykUtyaD1T/Lq47yaM
-         TJrP7Ku1Y40HWajUQOTmocg3+2Y8NibOKz3camy0NvoEVjjxybyduf/PvbqBfZ46/x6W
-         sIwi80Z7s3dLdi1eBGbKEpDL68BEceDoHXSnkSdfk2b/K9iOGOHhyUVotvJJm0bjj8uS
-         w+3pYCZ4WzwHms4ov46tiwdCoLvdLvcYs0musMcAjviCCiRUFIFL32MeElJOqmUZJDbH
-         wYi36FHh/PnG7RCmCVb5HAbem+xmp8bNXdkc9qEcP9Dvfdy9ucmPVcsmfPQzeCK0WlJF
-         RXXQ==
-X-Gm-Message-State: AOAM533KVk97r7jbaamleshdykamotBlvDZxEbZMjd+7EDRjYjjQj1pX
-        a+QBJH96BcTVOakSOqkCC1tNCfdcn108y+HSAU8Ayg==
-X-Google-Smtp-Source: ABdhPJwgIj7vziuYge7EQKcTCuMZUyByhn/rKEmnyQnFeLeWkydhYLQUs4H82FaqklGewSSKA0AQYRbJD/88/K0apEs=
-X-Received: by 2002:a5d:564c:0:b0:20a:d53c:70e3 with SMTP id
- j12-20020a5d564c000000b0020ad53c70e3mr20132500wrw.0.1652207152934; Tue, 10
- May 2022 11:25:52 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=XRI/42wOvBZ/8slI1s6G+ZLQFaSjtz9xMU2JmEe+gxo=;
+        b=HYkdBRiagzwt/UtqDDgMaf2xNOV5Nz/TzT05bFvCn3g4TKYUn1f4eLBEFlsc8XssEt
+         LTI5ezOKCiBTYs1DApd9f/BQcLZ0LGqUU44TjMipoYlG7ZsNXEJjKQ3tZWmc/OPzM7Hf
+         g0Itc2vHKy2uwgv/gjcA4ZivYdRt7p/Q0yS9cNVRY8SfiSbVCdulvLmyLAzedmZ8jnmJ
+         coGQHW8LngXeV2j+JIaj80bSOiFMH2z3+pquNhcI6lF6m1xfEjqt0+mWhVdsfoGrtJML
+         CPhnQO8xdpf7GcVMSeHn6xiUjweYha7HeL60mC9PuWAKDhx+AEVY0jMft7KwdsfN/Tiq
+         wUng==
+X-Gm-Message-State: AOAM530z1iFrKiBSho8+gWrs1YaI/K9j5nybW74akqGm+QoqQN5gxSAR
+        9fSIHrJ2v8lqgl2+k3gPpDk=
+X-Google-Smtp-Source: ABdhPJxzCs+nSIvWELTAlR92PRL0K8C35jw8R3nR4VmaCcznF0ET3gGDDq+EGPWwqyImBNp36f9sLw==
+X-Received: by 2002:a17:90a:b78d:b0:1d9:4f4f:bc2a with SMTP id m13-20020a17090ab78d00b001d94f4fbc2amr1151292pjr.155.1652207165523;
+        Tue, 10 May 2022 11:26:05 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id o8-20020a17090a168800b001da3780bfd3sm137366pja.0.2022.05.10.11.26.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 May 2022 11:26:04 -0700 (PDT)
+Message-ID: <5b56cbaf-0482-f235-1806-60a58038c7c3@gmail.com>
+Date:   Tue, 10 May 2022 11:26:01 -0700
 MIME-Version: 1.0
-References: <20220510001807.4132027-1-yosryahmed@google.com> <20220510001807.4132027-8-yosryahmed@google.com>
-In-Reply-To: <20220510001807.4132027-8-yosryahmed@google.com>
-From:   Hao Luo <haoluo@google.com>
-Date:   Tue, 10 May 2022 11:25:42 -0700
-Message-ID: <CA+khW7hbHEEv9JsSCRj5ko=rA2ZorimkpyCCKD=7usv+fTfMNg@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 7/9] cgroup: Add cgroup_put() in
- !CONFIG_CGROUPS case
-To:     Yosry Ahmed <yosryahmed@google.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Tejun Heo <tj@kernel.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Michal Hocko <mhocko@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, cgroups@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [patch 01/10] clocksource/drivers/bcm_kona: Convert to SPDX
+ identifier
+Content-Language: en-US
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        LKML <linux-kernel@vger.kernel.org>
+Cc:     linux-spdx@vger.kernel.org,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Broadcom Kernel Team <bcm-kernel-feedback-list@broadcom.com>
+References: <20220510171003.952873904@linutronix.de>
+ <20220510171254.404209482@linutronix.de>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220510171254.404209482@linutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 9, 2022 at 5:18 PM Yosry Ahmed <yosryahmed@google.com> wrote:
->
-> From: Hao Luo <haoluo@google.com>
->
-> There is already a cgroup_get_from_id() in the !CONFIG_CGROUPS case,
-> let's have a matching cgroup_put() in !CONFIG_CGROUPS too.
->
-> Signed-off-by: Hao Luo <haoluo@google.com>
-> Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
-> ---
->  include/linux/cgroup.h | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/include/linux/cgroup.h b/include/linux/cgroup.h
-> index 5408c74d5c44..4f1d8febb9fd 100644
-> --- a/include/linux/cgroup.h
-> +++ b/include/linux/cgroup.h
-[...]
-> +
-> +static inline struct cgroup *cgroup_put(void)
-> +{}
+On 5/10/22 10:24, Thomas Gleixner wrote:
+> The license information clearly states GPL version 2 only. The extra text
+> which excludes warranties is a transcript of the corresponding GPLv2 clause
+> 11, which is explicitely referenced for details.
+> 
+> So the SPDX identifier covers it completely.
+> 
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
+> Cc: Florian Fainelli <f.fainelli@gmail.com>
+> Cc: Ray Jui <rjui@broadcom.com>
+> Cc: Scott Branden <sbranden@broadcom.com>
+> Cc: Broadcom Kernel Team <bcm-kernel-feedback-list@broadcom.com>
+> Cc: linux-spdx@vger.kernel.org
 
-Sorry Yosry, the return type and parameter type are mixed up. I will
-fix it and send you an updated version.
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
