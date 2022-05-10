@@ -2,243 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEA32C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:18:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8310C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:18:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347267AbiEJQWI (ORCPT
+        id S1347263AbiEJQWo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 12:22:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36332 "EHLO
+        Tue, 10 May 2022 12:22:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238097AbiEJQVu (ORCPT
+        with ESMTP id S243801AbiEJQWj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 12:21:50 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62BE7291E7C
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 09:17:52 -0700 (PDT)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24A5TVpg021012;
-        Tue, 10 May 2022 11:17:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=PODMain02222019;
- bh=nrGmf72PUMvWhBwg/KmhLmnE44YnGnwysukUNCGsDJ8=;
- b=QuFbHVYaIR3oebw39Hz2rxfsRHykhbyQBlCIkUj6BRhtHLyQXsFkhtAlzTj8UABIN5Tx
- KtYDDSPOpVoLifyLhKG3lOcOaIdzq5evAPSiYmWSO9m5H05LSkeM4CzubtYWFooiAHVG
- gLO1rPkdy/3wUMD43/3RQWcfAmBJn8zqcB5455BFJ2xI38HueEPD41zRe4jm1OLE7u9u
- 4hFafamjgVGCcSfTzoz/CnT8G7Jdtvv0qlgo9yKBZdsev5jsHDgdHth8fZC0pIvafPZe
- PRdLoFdILRQgatb9E2avRSBoVbNuySj1RNuQPSTWzGkBE1XI7/PxQxXubYImsJXoM8Xi Tw== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3fwn6nvk88-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 10 May 2022 11:17:08 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 10 May
- 2022 17:17:07 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Tue, 10 May 2022 17:17:07 +0100
-Received: from sbinding-cirrus-dsktp.ad.cirrus.com (unknown [198.90.238.24])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id C9491475;
-        Tue, 10 May 2022 16:17:06 +0000 (UTC)
-From:   Stefan Binding <sbinding@opensource.cirrus.com>
-To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
-CC:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
-        <patches@opensource.cirrus.com>,
-        Stefan Binding <sbinding@opensource.cirrus.com>
-Subject: [PATCH v1 2/3] ALSA: hda/cs8409: Add Speaker Playback Switch for Cyborg
-Date:   Tue, 10 May 2022 17:17:00 +0100
-Message-ID: <20220510161701.851260-3-sbinding@opensource.cirrus.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220510161701.851260-1-sbinding@opensource.cirrus.com>
-References: <20220510161701.851260-1-sbinding@opensource.cirrus.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: 7s0dOMeRLauZMyKRs4YJNDSCKzZvKS-L
-X-Proofpoint-GUID: 7s0dOMeRLauZMyKRs4YJNDSCKzZvKS-L
-X-Proofpoint-Spam-Reason: safe
+        Tue, 10 May 2022 12:22:39 -0400
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB142A18A0;
+        Tue, 10 May 2022 09:18:40 -0700 (PDT)
+Received: by mail-qt1-x835.google.com with SMTP id o11so13877078qtp.13;
+        Tue, 10 May 2022 09:18:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:in-reply-to:subject:to:cc
+         :content-transfer-encoding;
+        bh=WZFJVSLYEsdaFnH3dpu2L483nVqAlbLk7pa0X9x1/2Y=;
+        b=NcxlizgewyzMW/58LRCivKGuJpjWOAqVBBvWSQy4tP8WohfKpk0UxHJE59eAkNciWc
+         2jcq/wkF2e44aVKlFwTlf8iUp4hDe1LrZ4Cu6zItStxGwNmpbrbZiMztkh6kpVt95GhG
+         Se13pWxZwHJDpkWr6d6WcM7GzbjnqXUA0BLrutP4MS2kc/66zFCSQtVNMBa21aNykvKG
+         jDUyIV1JqyZtmQCTa51kOQXRxlJaoXwHGuGiG/VgHETrgVdGyRJ93lQ/4TBJvaRF70If
+         4FSCS+kNN61oyhuXMoV8BGwl/jf0R5lc8c3pNE6gO/3SEy9089iilaa6wcZLwIcf+MmO
+         jj+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:in-reply-to:subject:to:cc
+         :content-transfer-encoding;
+        bh=WZFJVSLYEsdaFnH3dpu2L483nVqAlbLk7pa0X9x1/2Y=;
+        b=iXHLKwi9Fh4jih3aSqi2NaNHkWbBD/NpMp6Ud6bCHUOR2Mv7TqSY2Vxgw/jeo5Q1mn
+         7C6psdguTLT07HDxsyASqo9u1C+UNweTJoDj4VEL71+mAG1qpntTCx87dYM5SwGM+kC4
+         Ob0Vwo/4IdijOBamp5C+43Oy4mWe0WONEdqb5w8NW/+yP0QUTTQgnLIgBwaCpsEbFug9
+         Bq3kXD3HdCirY44crfF2LMdVrfKHOpDF1S2jv95bd9sbMyZ5c0AexahxHkRI2+OFWTLJ
+         MBuEtPQWKRU3f3WXoEFjdZtYn7RrTib3cpg8xy/XEhGh3Uy+7Kkc7sbDqq+V2coDJv7W
+         pZ0g==
+X-Gm-Message-State: AOAM530xJsnyhgvHTefOTflO7N694bODlN8vCS3Ke2/dgijIKYnPn4M9
+        fa+wZu1ETH+8Aaw2XJ1K+rBvOyko4suktpMrLB8=
+X-Google-Smtp-Source: ABdhPJy7s9JXYUqzGD/yM4HzMBZVXLf/mZabqM8GB6lgrZioJDd2Zz6j24qMIdlkI9/oqwXVXxACyg==
+X-Received: by 2002:ac8:7d13:0:b0:2f3:b53c:a691 with SMTP id g19-20020ac87d13000000b002f3b53ca691mr20461179qtb.525.1652199519433;
+        Tue, 10 May 2022 09:18:39 -0700 (PDT)
+Received: from cl-arch-kdev (cl-arch-kdev.xen.prgmr.com. [2605:2700:0:2:a800:ff:fed6:fc0d])
+        by smtp.gmail.com with ESMTPSA id x14-20020ac8538e000000b002f3bbad9e37sm9326364qtp.91.2022.05.10.09.18.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 09:18:39 -0700 (PDT)
+Message-ID: <627a905f.1c69fb81.eb942.e552@mx.google.com>
+Date:   Tue, 10 May 2022 09:18:39 -0700 (PDT)
+X-Google-Original-Date: Tue, 10 May 2022 16:18:36 GMT
+From:   Fox Chen <foxhlchen@gmail.com>
+In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
+Subject: RE: [PATCH 5.15 000/135] 5.15.39-rc1 review
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
+        Fox Chen <foxhlchen@gmail.com>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for a Speaker Playback Switch, which disables
-the Amp connected to cs8409. The Switch is not added
-automatically because cs8409 does not have an output amp
-for the speaker NID.
+On Tue, 10 May 2022 15:06:22 +0200, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+> This is the start of the stable review cycle for the 5.15.39 release.
+> There are 135 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Thu, 12 May 2022 13:07:16 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.39-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
----
- sound/pci/hda/patch_cs8409.c | 72 ++++++++++++++++++++++++++++++------
- sound/pci/hda/patch_cs8409.h |  3 ++
- 2 files changed, 64 insertions(+), 11 deletions(-)
-
-diff --git a/sound/pci/hda/patch_cs8409.c b/sound/pci/hda/patch_cs8409.c
-index c4d21569cc7d..f682769667e3 100644
---- a/sound/pci/hda/patch_cs8409.c
-+++ b/sound/pci/hda/patch_cs8409.c
-@@ -419,6 +419,39 @@ static void cs8409_fix_caps(struct hda_codec *codec, unsigned int nid)
- 	snd_hda_override_wcaps(codec, nid, (get_wcaps(codec, nid) | AC_WCAP_UNSOL_CAP));
- }
- 
-+static int cs8409_spk_sw_gpio_get(struct snd_kcontrol *kcontrol,
-+				 struct snd_ctl_elem_value *ucontrol)
-+{
-+	struct hda_codec *codec = snd_kcontrol_chip(kcontrol);
-+	struct cs8409_spec *spec = codec->spec;
-+
-+	ucontrol->value.integer.value[0] = !!(spec->gpio_data & spec->speaker_pdn_gpio);
-+	return 0;
-+}
-+
-+static int cs8409_spk_sw_gpio_put(struct snd_kcontrol *kcontrol,
-+				 struct snd_ctl_elem_value *ucontrol)
-+{
-+	struct hda_codec *codec = snd_kcontrol_chip(kcontrol);
-+	struct cs8409_spec *spec = codec->spec;
-+	unsigned int gpio_data;
-+
-+	gpio_data = (spec->gpio_data & ~spec->speaker_pdn_gpio) |
-+		(ucontrol->value.integer.value[0] ? spec->speaker_pdn_gpio : 0);
-+	if (gpio_data == spec->gpio_data)
-+		return 0;
-+	spec->gpio_data = gpio_data;
-+	snd_hda_codec_write(codec, CS8409_PIN_AFG, 0, AC_VERB_SET_GPIO_DATA, spec->gpio_data);
-+	return 1;
-+}
-+
-+static const struct snd_kcontrol_new cs8409_spk_sw_ctrl = {
-+	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
-+	.info = snd_ctl_boolean_mono_info,
-+	.get = cs8409_spk_sw_gpio_get,
-+	.put = cs8409_spk_sw_gpio_put,
-+};
-+
- /******************************************************************************
-  *                        CS42L42 Specific Functions
-  ******************************************************************************/
-@@ -836,7 +869,7 @@ static int cs42l42_jack_unsol_event(struct sub_codec *cs42l42)
- static void cs42l42_resume(struct sub_codec *cs42l42)
- {
- 	struct hda_codec *codec = cs42l42->codec;
--	unsigned int gpio_data;
-+	struct cs8409_spec *spec = codec->spec;
- 	struct cs8409_i2c_param irq_regs[] = {
- 		{ CS42L42_CODEC_STATUS, 0x00 },
- 		{ CS42L42_DET_INT_STATUS1, 0x00 },
-@@ -846,9 +879,9 @@ static void cs42l42_resume(struct sub_codec *cs42l42)
- 	int fsv_old, fsv_new;
- 
- 	/* Bring CS42L42 out of Reset */
--	gpio_data = snd_hda_codec_read(codec, CS8409_PIN_AFG, 0, AC_VERB_GET_GPIO_DATA, 0);
--	gpio_data |= cs42l42->reset_gpio;
--	snd_hda_codec_write(codec, CS8409_PIN_AFG, 0, AC_VERB_SET_GPIO_DATA, gpio_data);
-+	spec->gpio_data = snd_hda_codec_read(codec, CS8409_PIN_AFG, 0, AC_VERB_GET_GPIO_DATA, 0);
-+	spec->gpio_data |= cs42l42->reset_gpio;
-+	snd_hda_codec_write(codec, CS8409_PIN_AFG, 0, AC_VERB_SET_GPIO_DATA, spec->gpio_data);
- 	usleep_range(10000, 15000);
- 
- 	cs42l42->suspended = 0;
-@@ -880,7 +913,7 @@ static void cs42l42_resume(struct sub_codec *cs42l42)
- static void cs42l42_suspend(struct sub_codec *cs42l42)
- {
- 	struct hda_codec *codec = cs42l42->codec;
--	unsigned int gpio_data;
-+	struct cs8409_spec *spec = codec->spec;
- 	int reg_cdc_status = 0;
- 	const struct cs8409_i2c_param cs42l42_pwr_down_seq[] = {
- 		{ CS42L42_DAC_CTL2, 0x02 },
-@@ -911,9 +944,9 @@ static void cs42l42_suspend(struct sub_codec *cs42l42)
- 	cs42l42->mic_jack_in = 0;
- 
- 	/* Put CS42L42 into Reset */
--	gpio_data = snd_hda_codec_read(codec, CS8409_PIN_AFG, 0, AC_VERB_GET_GPIO_DATA, 0);
--	gpio_data &= ~cs42l42->reset_gpio;
--	snd_hda_codec_write(codec, CS8409_PIN_AFG, 0, AC_VERB_SET_GPIO_DATA, gpio_data);
-+	spec->gpio_data = snd_hda_codec_read(codec, CS8409_PIN_AFG, 0, AC_VERB_GET_GPIO_DATA, 0);
-+	spec->gpio_data &= ~cs42l42->reset_gpio;
-+	snd_hda_codec_write(codec, CS8409_PIN_AFG, 0, AC_VERB_SET_GPIO_DATA, spec->gpio_data);
- }
- #endif
- 
-@@ -1106,6 +1139,8 @@ void cs8409_cs42l42_fixups(struct hda_codec *codec, const struct hda_fixup *fix,
- 		spec->gen.no_primary_hp = 1;
- 		spec->gen.suppress_vmaster = 1;
- 
-+		spec->speaker_pdn_gpio = 0;
-+
- 		/* GPIO 5 out, 3,4 in */
- 		spec->gpio_dir = spec->scodecs[CS8409_CODEC0]->reset_gpio;
- 		spec->gpio_data = 0;
-@@ -1117,21 +1152,33 @@ void cs8409_cs42l42_fixups(struct hda_codec *codec, const struct hda_fixup *fix,
- 		cs8409_fix_caps(codec, CS8409_CS42L42_HP_PIN_NID);
- 		cs8409_fix_caps(codec, CS8409_CS42L42_AMIC_PIN_NID);
- 
--		/* Set HSBIAS_SENSE_EN and Full Scale volume for some variants. */
-+		spec->scodecs[CS8409_CODEC0]->hsbias_hiz = 0x0020;
-+
- 		switch (codec->fixup_id) {
-+		case CS8409_CYBORG:
-+			spec->scodecs[CS8409_CODEC0]->full_scale_vol =
-+				CS42L42_FULL_SCALE_VOL_MINUS6DB;
-+			spec->speaker_pdn_gpio = CS8409_CYBORG_SPEAKER_PDN;
-+			break;
- 		case CS8409_ODIN:
-+			spec->scodecs[CS8409_CODEC0]->full_scale_vol = CS42L42_FULL_SCALE_VOL_0DB;
-+			spec->speaker_pdn_gpio = CS8409_CYBORG_SPEAKER_PDN;
-+			break;
- 		case CS8409_WARLOCK_MLK:
- 		case CS8409_WARLOCK_MLK_DUAL_MIC:
--			spec->scodecs[CS8409_CODEC0]->hsbias_hiz = 0x0020;
- 			spec->scodecs[CS8409_CODEC0]->full_scale_vol = CS42L42_FULL_SCALE_VOL_0DB;
- 			break;
- 		default:
--			spec->scodecs[CS8409_CODEC0]->hsbias_hiz = 0x0020;
- 			spec->scodecs[CS8409_CODEC0]->full_scale_vol =
- 				CS42L42_FULL_SCALE_VOL_MINUS6DB;
- 			break;
- 		}
- 
-+		if (spec->speaker_pdn_gpio > 0) {
-+			spec->gpio_dir |= spec->speaker_pdn_gpio;
-+			spec->gpio_data |= spec->speaker_pdn_gpio;
-+		}
-+
- 		break;
- 	case HDA_FIXUP_ACT_PROBE:
- 		/* Fix Sample Rate to 48kHz */
-@@ -1148,6 +1195,9 @@ void cs8409_cs42l42_fixups(struct hda_codec *codec, const struct hda_fixup *fix,
- 				&cs42l42_dac_volume_mixer);
- 		snd_hda_gen_add_kctl(&spec->gen, "Mic Capture Volume",
- 				&cs42l42_adc_volume_mixer);
-+		if (spec->speaker_pdn_gpio > 0)
-+			snd_hda_gen_add_kctl(&spec->gen, "Speaker Playback Switch",
-+					     &cs8409_spk_sw_ctrl);
- 		/* Disable Unsolicited Response during boot */
- 		cs8409_enable_ur(codec, 0);
- 		snd_hda_codec_set_name(codec, "CS8409/CS42L42");
-diff --git a/sound/pci/hda/patch_cs8409.h b/sound/pci/hda/patch_cs8409.h
-index 9852dc4234b4..630a7a2de51f 100644
---- a/sound/pci/hda/patch_cs8409.h
-+++ b/sound/pci/hda/patch_cs8409.h
-@@ -238,6 +238,7 @@ enum cs8409_coefficient_index_registers {
- #define CS42L42_I2C_ADDR			(0x48 << 1)
- #define CS8409_CS42L42_RESET			GENMASK(5, 5) /* CS8409_GPIO5 */
- #define CS8409_CS42L42_INT			GENMASK(4, 4) /* CS8409_GPIO4 */
-+#define CS8409_CYBORG_SPEAKER_PDN		GENMASK(2, 2) /* CS8409_GPIO2 */
- #define CS8409_CS42L42_HP_PIN_NID		CS8409_PIN_ASP1_TRANSMITTER_A
- #define CS8409_CS42L42_SPK_PIN_NID		CS8409_PIN_ASP2_TRANSMITTER_A
- #define CS8409_CS42L42_AMIC_PIN_NID		CS8409_PIN_ASP1_RECEIVER_A
-@@ -326,6 +327,8 @@ struct cs8409_spec {
- 	unsigned int gpio_dir;
- 	unsigned int gpio_data;
- 
-+	int speaker_pdn_gpio;
-+
- 	struct mutex i2c_mux;
- 	unsigned int i2c_clck_enabled;
- 	unsigned int dev_addr;
--- 
-2.25.1
+5.15.39-rc1 Successfully Compiled and booted on my Raspberry PI 4b (8g) (bcm2711)
+                
+Tested-by: Fox Chen <foxhlchen@gmail.com>
 
