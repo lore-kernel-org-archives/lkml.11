@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FC73C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:25:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD2ECC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:25:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344385AbiEJO3R (ORCPT
+        id S1343984AbiEJO3Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:29:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44198 "EHLO
+        Tue, 10 May 2022 10:29:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245177AbiEJN77 (ORCPT
+        with ESMTP id S245169AbiEJN77 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:59:59 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EABE7D80B6;
-        Tue, 10 May 2022 06:39:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BA84D80A8;
+        Tue, 10 May 2022 06:39:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6FA83B81DC2;
-        Tue, 10 May 2022 13:39:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5C66C385C2;
-        Tue, 10 May 2022 13:39:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5E6DDB81D7A;
+        Tue, 10 May 2022 13:39:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B14FDC385A6;
+        Tue, 10 May 2022 13:39:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189984;
-        bh=P3SVQNOO3B7N/QZLCcWPzgOahP2/LyoDyJ/f3OPaNKs=;
+        s=korg; t=1652189981;
+        bh=XvdFnLpnH8rg/tJlNoJuTp1Us8A3o+r1OR7Q0sYWAhU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uC4PtlPVj4QyvDETPKifX85FTa2NH7ErvFWSIuOy3WBF+NGHwER358DoxcKZZm+di
-         7XCl07GZOft2L3KksaKrpDpZHBaWL49Ptt2wtpNK7PCo2cyoLRU7XuOK+n9S9nk7Hq
-         v4la2gK1JMc8hjFWEwOyoGctzg2BMUZ77SgHhsXA=
+        b=rljiqVCgc0y6zTEXz0eBB5qOuhzOrOhQAASWSpgZqZ0vUVP7xkeuF1TwoT8mcfz1s
+         DEzcNlTOSxQJbUK9eDPTs64pG/kc8kGtaaIRRLu9/iedO99TFnV23Pojl0keLL7rUi
+         kJANpO6CNEt8IX1abDTf47kyRfeqt33MpQ5oIn9E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.17 084/140] net: ethernet: mediatek: add missing of_node_put() in mtk_sgmii_init()
-Date:   Tue, 10 May 2022 15:07:54 +0200
-Message-Id: <20220510130744.013145208@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Jerome Brunet <jbrunet@baylibre.com>
+Subject: [PATCH 5.17 040/140] ASoC: meson: Fix event generation for AUI CODEC mux
+Date:   Tue, 10 May 2022 15:07:10 +0200
+Message-Id: <20220510130742.764997731@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -49,31 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Mark Brown <broonie@kernel.org>
 
-commit ff5265d45345d01fefc98fcb9ae891b59633c919 upstream.
+commit fce49921a22262736cdc3cc74fa67915b75e9363 upstream.
 
-The node pointer returned by of_parse_phandle() with refcount incremented,
-so add of_node_put() after using it in mtk_sgmii_init().
+The AIU CODEC has a custom put() operation which returns 0 when the value
+of the mux changes, meaning that events are not generated for userspace.
+Change to return 1 in this case, the function returns early in the case
+where there is no change.
 
-Fixes: 9ffee4a8276c ("net: ethernet: mediatek: Extend SGMII related functions")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220428062543.64883-1-yangyingliang@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Reviewed-by: Jerome Brunet <jbrunet@baylibre.com>
+Link: https://lore.kernel.org/r/20220421123803.292063-3-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mediatek/mtk_sgmii.c |    1 +
- 1 file changed, 1 insertion(+)
+ sound/soc/meson/aiu-codec-ctrl.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/mediatek/mtk_sgmii.c
-+++ b/drivers/net/ethernet/mediatek/mtk_sgmii.c
-@@ -26,6 +26,7 @@ int mtk_sgmii_init(struct mtk_sgmii *ss,
- 			break;
+--- a/sound/soc/meson/aiu-codec-ctrl.c
++++ b/sound/soc/meson/aiu-codec-ctrl.c
+@@ -57,7 +57,7 @@ static int aiu_codec_ctrl_mux_put_enum(s
  
- 		ss->regmap[i] = syscon_node_to_regmap(np);
-+		of_node_put(np);
- 		if (IS_ERR(ss->regmap[i]))
- 			return PTR_ERR(ss->regmap[i]);
- 	}
+ 	snd_soc_dapm_mux_update_power(dapm, kcontrol, mux, e, NULL);
+ 
+-	return 0;
++	return 1;
+ }
+ 
+ static SOC_ENUM_SINGLE_DECL(aiu_hdmi_ctrl_mux_enum, AIU_HDMI_CLK_DATA_CTRL,
 
 
