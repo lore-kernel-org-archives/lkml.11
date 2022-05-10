@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3B3CC4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:35:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 865EFC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:35:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243445AbiEJNjc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:39:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60626 "EHLO
+        id S243563AbiEJNjg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:39:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242801AbiEJNYs (ORCPT
+        with ESMTP id S242769AbiEJNYq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:24:48 -0400
+        Tue, 10 May 2022 09:24:46 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B78371CEECA;
-        Tue, 10 May 2022 06:17:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDB601D5268;
+        Tue, 10 May 2022 06:17:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39CA2B81D7A;
-        Tue, 10 May 2022 13:17:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E5D3C385C6;
-        Tue, 10 May 2022 13:17:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2AC9CB81CE7;
+        Tue, 10 May 2022 13:17:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77EBBC385C9;
+        Tue, 10 May 2022 13:17:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188651;
-        bh=tvW45ZDWTzMoKTEwlh7llbdaNSi7QjPG7Pnc2jayG/I=;
+        s=korg; t=1652188647;
+        bh=nkxvK/LmljPa2TgaOh3D/laoycyV7JXVdk9NozXoCvo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v3RqefWvNkR/5kOuOvBDFhW4dr/O267BieL1WRORPKLjPqxT4/lgzTessa3UTcIIL
-         FO4h2CyprdM6K2rW99JFNc9UX6LJ8HMS07VVNJLZpAKYNfxbxwujHI8gDuRcZACNcq
-         wrgCxFp2VZI00a221XVWT9cx1lKyRnPLb1mU87MQ=
+        b=YpbozLKwRFQXJu3YQF0Hx6YRGzGzVC9WuOPwtTjIF9SQtIpSjqF3nx0T0gfw6pk+b
+         RG2/n3uCAz8crCiJrfnrym584xiVtcfow0FjIJ6gQpx02hxBR85KXOXBzbxNE20ux9
+         T4SKBitKCWkajpOSlSbsbE6xJs2e3C9fQ622hVHs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiazi Li <lijiazi@xiaomi.com>,
-        Mike Snitzer <snitzer@redhat.com>,
-        Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 4.14 75/78] dm: fix mempool NULL pointer race when completing IO
-Date:   Tue, 10 May 2022 15:08:01 +0200
-Message-Id: <20220510130734.749365802@linuxfoundation.org>
+        stable@vger.kernel.org, Johannes Nixdorf <j.nixdorf@avm.de>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.14 74/78] net: ipv6: ensure we call ipv6_mc_down() at most once
+Date:   Tue, 10 May 2022 15:08:00 +0200
+Message-Id: <20220510130734.719777234@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
 References: <20220510130732.522479698@linuxfoundation.org>
@@ -50,143 +48,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiazi Li <jqqlijiazi@gmail.com>
+From: j.nixdorf@avm.de <j.nixdorf@avm.de>
 
-commit d208b89401e073de986dc891037c5a668f5d5d95 upstream.
+commit 9995b408f17ff8c7f11bc725c8aa225ba3a63b1c upstream.
 
-dm_io_dec_pending() calls end_io_acct() first and will then dec md
-in-flight pending count. But if a task is swapping DM table at same
-time this can result in a crash due to mempool->elements being NULL:
+There are two reasons for addrconf_notify() to be called with NETDEV_DOWN:
+either the network device is actually going down, or IPv6 was disabled
+on the interface.
 
-task1                             task2
-do_resume
- ->do_suspend
-  ->dm_wait_for_completion
-                                  bio_endio
-				   ->clone_endio
-				    ->dm_io_dec_pending
-				     ->end_io_acct
-				      ->wakeup task1
- ->dm_swap_table
-  ->__bind
-   ->__bind_mempools
-    ->bioset_exit
-     ->mempool_exit
-                                     ->free_io
+If either of them stays down while the other is toggled, we repeatedly
+call the code for NETDEV_DOWN, including ipv6_mc_down(), while never
+calling the corresponding ipv6_mc_up() in between. This will cause a
+new entry in idev->mc_tomb to be allocated for each multicast group
+the interface is subscribed to, which in turn leaks one struct ifmcaddr6
+per nontrivial multicast group the interface is subscribed to.
 
-[ 67.330330] Unable to handle kernel NULL pointer dereference at
-virtual address 0000000000000000
-......
-[ 67.330494] pstate: 80400085 (Nzcv daIf +PAN -UAO)
-[ 67.330510] pc : mempool_free+0x70/0xa0
-[ 67.330515] lr : mempool_free+0x4c/0xa0
-[ 67.330520] sp : ffffff8008013b20
-[ 67.330524] x29: ffffff8008013b20 x28: 0000000000000004
-[ 67.330530] x27: ffffffa8c2ff40a0 x26: 00000000ffff1cc8
-[ 67.330535] x25: 0000000000000000 x24: ffffffdada34c800
-[ 67.330541] x23: 0000000000000000 x22: ffffffdada34c800
-[ 67.330547] x21: 00000000ffff1cc8 x20: ffffffd9a1304d80
-[ 67.330552] x19: ffffffdada34c970 x18: 000000b312625d9c
-[ 67.330558] x17: 00000000002dcfbf x16: 00000000000006dd
-[ 67.330563] x15: 000000000093b41e x14: 0000000000000010
-[ 67.330569] x13: 0000000000007f7a x12: 0000000034155555
-[ 67.330574] x11: 0000000000000001 x10: 0000000000000001
-[ 67.330579] x9 : 0000000000000000 x8 : 0000000000000000
-[ 67.330585] x7 : 0000000000000000 x6 : ffffff80148b5c1a
-[ 67.330590] x5 : ffffff8008013ae0 x4 : 0000000000000001
-[ 67.330596] x3 : ffffff80080139c8 x2 : ffffff801083bab8
-[ 67.330601] x1 : 0000000000000000 x0 : ffffffdada34c970
-[ 67.330609] Call trace:
-[ 67.330616] mempool_free+0x70/0xa0
-[ 67.330627] bio_put+0xf8/0x110
-[ 67.330638] dec_pending+0x13c/0x230
-[ 67.330644] clone_endio+0x90/0x180
-[ 67.330649] bio_endio+0x198/0x1b8
-[ 67.330655] dec_pending+0x190/0x230
-[ 67.330660] clone_endio+0x90/0x180
-[ 67.330665] bio_endio+0x198/0x1b8
-[ 67.330673] blk_update_request+0x214/0x428
-[ 67.330683] scsi_end_request+0x2c/0x300
-[ 67.330688] scsi_io_completion+0xa0/0x710
-[ 67.330695] scsi_finish_command+0xd8/0x110
-[ 67.330700] scsi_softirq_done+0x114/0x148
-[ 67.330708] blk_done_softirq+0x74/0xd0
-[ 67.330716] __do_softirq+0x18c/0x374
-[ 67.330724] irq_exit+0xb4/0xb8
-[ 67.330732] __handle_domain_irq+0x84/0xc0
-[ 67.330737] gic_handle_irq+0x148/0x1b0
-[ 67.330744] el1_irq+0xe8/0x190
-[ 67.330753] lpm_cpuidle_enter+0x4f8/0x538
-[ 67.330759] cpuidle_enter_state+0x1fc/0x398
-[ 67.330764] cpuidle_enter+0x18/0x20
-[ 67.330772] do_idle+0x1b4/0x290
-[ 67.330778] cpu_startup_entry+0x20/0x28
-[ 67.330786] secondary_start_kernel+0x160/0x170
+The following reproducer will leak at least $n objects:
 
-Fix this by:
-1) Establishing pointers to 'struct dm_io' members in
-dm_io_dec_pending() so that they may be passed into end_io_acct()
-_after_ free_io() is called.
-2) Moving end_io_acct() after free_io().
+ip addr add ff2e::4242/32 dev eth0 autojoin
+sysctl -w net.ipv6.conf.eth0.disable_ipv6=1
+for i in $(seq 1 $n); do
+	ip link set up eth0; ip link set down eth0
+done
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Jiazi Li <lijiazi@xiaomi.com>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Reviewed-by: Mike Snitzer <snitzer@kernel.org>
+Joining groups with IPV6_ADD_MEMBERSHIP (unprivileged) or setting the
+sysctl net.ipv6.conf.eth0.forwarding to 1 (=> subscribing to ff02::2)
+can also be used to create a nontrivial idev->mc_list, which will the
+leak objects with the right up-down-sequence.
+
+Based on both sources for NETDEV_DOWN events the interface IPv6 state
+should be considered:
+
+ - not ready if the network interface is not ready OR IPv6 is disabled
+   for it
+ - ready if the network interface is ready AND IPv6 is enabled for it
+
+The functions ipv6_mc_up() and ipv6_down() should only be run when this
+state changes.
+
+Implement this by remembering when the IPv6 state is ready, and only
+run ipv6_mc_down() if it actually changed from ready to not ready.
+
+The other direction (not ready -> ready) already works correctly, as:
+
+ - the interface notification triggered codepath for NETDEV_UP /
+   NETDEV_CHANGE returns early if ipv6 is disabled, and
+ - the disable_ipv6=0 triggered codepath skips fully initializing the
+   interface as long as addrconf_link_ready(dev) returns false
+ - calling ipv6_mc_up() repeatedly does not leak anything
+
+Fixes: 3ce62a84d53c ("ipv6: exit early in addrconf_notify() if IPv6 is disabled")
+Signed-off-by: Johannes Nixdorf <j.nixdorf@avm.de>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+[jnixdorf: context updated for bpo to v4.9/v4.14]
+Signed-off-by: Johannes Nixdorf <j.nixdorf@avm.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm.c |   17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+ net/ipv6/addrconf.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/drivers/md/dm.c
-+++ b/drivers/md/dm.c
-@@ -528,20 +528,19 @@ static void start_io_acct(struct dm_io *
- 				    false, 0, &io->stats_aux);
- }
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -3580,6 +3580,7 @@ static int addrconf_ifdown(struct net_de
+ 	struct list_head del_list;
+ 	int _keep_addr;
+ 	bool keep_addr;
++	bool was_ready;
+ 	int state, i;
  
--static void end_io_acct(struct dm_io *io)
-+static void end_io_acct(struct mapped_device *md, struct bio *bio,
-+			unsigned long start_time, struct dm_stats_aux *stats_aux)
- {
--	struct mapped_device *md = io->md;
--	struct bio *bio = io->bio;
--	unsigned long duration = jiffies - io->start_time;
-+	unsigned long duration = jiffies - start_time;
- 	int pending;
- 	int rw = bio_data_dir(bio);
+ 	ASSERT_RTNL();
+@@ -3643,7 +3644,10 @@ restart:
  
--	generic_end_io_acct(md->queue, rw, &dm_disk(md)->part0, io->start_time);
-+	generic_end_io_acct(md->queue, rw, &dm_disk(md)->part0, start_time);
+ 	addrconf_del_rs_timer(idev);
  
- 	if (unlikely(dm_stats_used(&md->stats)))
- 		dm_stats_account_io(&md->stats, bio_data_dir(bio),
- 				    bio->bi_iter.bi_sector, bio_sectors(bio),
--				    true, duration, &io->stats_aux);
-+				    true, duration, stats_aux);
+-	/* Step 2: clear flags for stateless addrconf */
++	/* Step 2: clear flags for stateless addrconf, repeated down
++	 *         detection
++	 */
++	was_ready = idev->if_flags & IF_READY;
+ 	if (!how)
+ 		idev->if_flags &= ~(IF_RS_SENT|IF_RA_RCVD|IF_READY);
  
- 	/*
- 	 * After this is decremented the bio must not be touched if it is
-@@ -775,6 +774,8 @@ static void dec_pending(struct dm_io *io
- 	blk_status_t io_error;
- 	struct bio *bio;
- 	struct mapped_device *md = io->md;
-+	unsigned long start_time = 0;
-+	struct dm_stats_aux stats_aux;
+@@ -3730,7 +3734,7 @@ restart:
+ 	if (how) {
+ 		ipv6_ac_destroy_dev(idev);
+ 		ipv6_mc_destroy_dev(idev);
+-	} else {
++	} else if (was_ready) {
+ 		ipv6_mc_down(idev);
+ 	}
  
- 	/* Push-back supersedes any I/O errors */
- 	if (unlikely(error)) {
-@@ -801,8 +802,10 @@ static void dec_pending(struct dm_io *io
- 
- 		io_error = io->status;
- 		bio = io->bio;
--		end_io_acct(io);
-+		start_time = io->start_time;
-+		stats_aux = io->stats_aux;
- 		free_io(md, io);
-+		end_io_acct(md, bio, start_time, &stats_aux);
- 
- 		if (io_error == BLK_STS_DM_REQUEUE)
- 			return;
 
 
