@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D004AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:29:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB377C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:30:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243423AbiEJNdu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:33:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60154 "EHLO
+        id S238056AbiEJNdx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:33:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242944AbiEJNZT (ORCPT
+        with ESMTP id S242895AbiEJNZQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:25:19 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D865F229069;
-        Tue, 10 May 2022 06:18:27 -0700 (PDT)
+        Tue, 10 May 2022 09:25:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39748369F7;
+        Tue, 10 May 2022 06:17:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 48310CE1E73;
-        Tue, 10 May 2022 13:18:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53E60C385A6;
-        Tue, 10 May 2022 13:18:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C987B61532;
+        Tue, 10 May 2022 13:17:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C40D7C385C2;
+        Tue, 10 May 2022 13:17:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188704;
-        bh=KuEDchK1xt4RAfy8GkCUQ79VgEtPAkixDOkJZp07Tyg=;
+        s=korg; t=1652188678;
+        bh=uxmI1h5GXmIVI9bUbztyAkNTD9CthJs/xPqH/27qeR8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tBIfxceSxuOzdvp+qrKyCxIq7fUJOSgW/qcB3f4fmI6bT9+FSCKWzkZwgmWRr8PMv
-         OAyPRTv4+QH1q32TIJ00CsmAZUBpcLdjz1sT9cGRIDRtlMxXGgSWvUp7pu0301RTZe
-         nI+S2xCI0LuAKcybNBqekOKyURy62jy+i6yxILyY=
+        b=J95VxAbe0b6rk4oW5vlu06uwiQQmZItEtggUaWnmK6raOUxXrxKMIIyKPWpprkNf6
+         AvMLF3uaVuNfda8zCqvLx+g8i6uHBb8j8aqRbSVliPDn8Sp6CRAh6oIJ7UczxYS+aJ
+         jOWC7ckgN6XMTLseO1phH7TWR5jCXHB8g9Tn0TMU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Johan Hovold <johan@kernel.org>
-Subject: [PATCH 4.19 17/88] serial: imx: fix overrun interrupts in DMA mode
-Date:   Tue, 10 May 2022 15:07:02 +0200
-Message-Id: <20220510130734.246749915@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Mike Snitzer <snitzer@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>
+Subject: [PATCH 4.14 76/78] dm: interlock pending dm_io and dm_wait_for_bios_completion
+Date:   Tue, 10 May 2022 15:08:02 +0200
+Message-Id: <20220510130734.778375785@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
-References: <20220510130733.735278074@linuxfoundation.org>
+In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
+References: <20220510130732.522479698@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,42 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Mike Snitzer <snitzer@redhat.com>
 
-commit 3ee82c6e41f3d2212647ce0bc5a05a0f69097824 upstream.
+commit 9f6dc633761006f974701d4c88da71ab68670749 upstream.
 
-Commit 76821e222c18 ("serial: imx: ensure that RX irqs are off if RX is
-off") accidentally enabled overrun interrupts unconditionally when
-deferring DMA enable until after the receiver has been enabled during
-startup.
+Commit d208b89401e0 ("dm: fix mempool NULL pointer race when
+completing IO") didn't go far enough.
 
-Fix this by using the DMA-initialised instead of DMA-enabled flag to
-determine whether overrun interrupts should be enabled.
+When bio_end_io_acct ends the count of in-flight I/Os may reach zero
+and the DM device may be suspended. There is a possibility that the
+suspend races with dm_stats_account_io.
 
-Note that overrun interrupts are already accounted for in
-imx_uart_clear_rx_errors() when using DMA since commit 41d98b5da92f
-("serial: imx-serial - update RX error counters when DMA is used").
+Fix this by adding percpu "pending_io" counters to track outstanding
+dm_io. Move kicking of suspend queue to dm_io_dec_pending(). Also,
+rename md_in_flight_bios() to dm_in_flight_bios() and update it to
+iterate all pending_io counters.
 
-Fixes: 76821e222c18 ("serial: imx: ensure that RX irqs are off if RX is off")
-Cc: stable@vger.kernel.org      # 4.17
-Cc: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Link: https://lore.kernel.org/r/20220411081957.7846-1-johan@kernel.org
+Fixes: d208b89401e0 ("dm: fix mempool NULL pointer race when completing IO")
+Cc: stable@vger.kernel.org
+Co-developed-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@redhat.com>
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Reviewed-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/imx.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/md/dm.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -1369,7 +1369,7 @@ static int imx_uart_startup(struct uart_
- 	imx_uart_writel(sport, ucr1, UCR1);
+--- a/drivers/md/dm.c
++++ b/drivers/md/dm.c
+@@ -2230,6 +2230,8 @@ static int dm_wait_for_completion(struct
+ 	}
+ 	finish_wait(&md->wait, &wait);
  
- 	ucr4 = imx_uart_readl(sport, UCR4) & ~UCR4_OREN;
--	if (!sport->dma_is_enabled)
-+	if (!dma_is_inited)
- 		ucr4 |= UCR4_OREN;
- 	imx_uart_writel(sport, ucr4, UCR4);
++	smp_rmb(); /* paired with atomic_dec_return in end_io_acct */
++
+ 	return r;
+ }
  
 
 
