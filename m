@@ -2,106 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2241C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:33:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46898C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:33:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344871AbiEJOgY (ORCPT
+        id S1344962AbiEJOgm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:36:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41528 "EHLO
+        Tue, 10 May 2022 10:36:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343872AbiEJOHR (ORCPT
+        with ESMTP id S1343678AbiEJOHK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:07:17 -0400
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C0E31157F7;
-        Tue, 10 May 2022 06:41:19 -0700 (PDT)
-Received: by mail-wr1-f48.google.com with SMTP id b19so23867014wrh.11;
-        Tue, 10 May 2022 06:41:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ETH0SXQwXqTw7S/Rt3mpUjs/svhKnIJybMWlENZs/nk=;
-        b=W/aTyxriX/AFi1WA1W/ReMB7iksCkA8NLGBwdaBf+72UciSNQvK1W2XOesDUt7lQcF
-         pALoanvrfBLaDgBMNs+um+z9TQzUgIuUNodOvsToU45SRyiWtcglZMiCuqySECo+Ztif
-         glZzYVTxzZDTz95HlFhnGSwR18jVRL79PeNp9HV1Oh3j3QYv9nk1MCxpI//RsNdgtTCN
-         r9K3i5mXjq/TIuGDOjappSM610R3RoIKaFIh6S51xF1Xf3ejcEmzgIC5BJ2EIAO2AtbP
-         6a/Us2gUkIaUQSdgP9tWiUS+uWZnHnh5YIjRwQvjkB90WWibhir2pULHDEGOGblygnGB
-         nyqg==
-X-Gm-Message-State: AOAM531Mqa8/Sm6N2IiIFuq0jrvlJQahJyVC/kg81JML5E9csfIXc79O
-        8fPEtM0Z0BQd5vEZe7gCXm5e4Ws4tN9JFhMtf3M=
-X-Google-Smtp-Source: ABdhPJzra9WRGXGAomB0wHN9mnXi2nAqWwwlTmykLLgn0+W9K0qUWbej5QepKdDxwpiRha8RA3ftHLjtNChLpUbS7As=
-X-Received: by 2002:adf:d213:0:b0:20a:d703:154f with SMTP id
- j19-20020adfd213000000b0020ad703154fmr19112799wrh.604.1652190078045; Tue, 10
- May 2022 06:41:18 -0700 (PDT)
+        Tue, 10 May 2022 10:07:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C5A71FD1C4;
+        Tue, 10 May 2022 06:41:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0D556B81DC3;
+        Tue, 10 May 2022 13:41:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DB91C385C2;
+        Tue, 10 May 2022 13:41:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652190071;
+        bh=SMMW/xa9C8D5vurAKOeqVtrr7C7izTSMHjwXwWpZJXA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=X/pgOuM2qenkiJ7dOkGNFmgqklTnTBPzTAr7p4Hgg1Je+rRw91IAWe1qhwnsjccow
+         aoXvBqfQlFrOHix1drMq/vloCX1S0X4zQVaOCQEIeTbwdCYgqvj7e7Z7eeazscbXqF
+         LKPo+kxAPQBItmIODU0Ym0AHQFTIgsBtGjF3Mozw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Aili Yao <yaoaili@kingsoft.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 118/140] KVM: LAPIC: Enable timer posted-interrupt only when mwait/hlt is advertised
+Date:   Tue, 10 May 2022 15:08:28 +0200
+Message-Id: <20220510130744.978253870@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
+References: <20220510130741.600270947@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220509121513.30549-1-harini.katakam@xilinx.com> <21ee77073341cd2b5e0109be5da61d8e981ea50d.camel@redhat.com>
-In-Reply-To: <21ee77073341cd2b5e0109be5da61d8e981ea50d.camel@redhat.com>
-From:   Harini Katakam <harinik@xilinx.com>
-Date:   Tue, 10 May 2022 19:11:06 +0530
-Message-ID: <CAFcVECKRpfuaJiBU8bXveHh3ukzgkSh6Q2s0WhRA0RoT+jSg4Q@mail.gmail.com>
-Subject: Re: [PATCH] net: macb: Disable macb pad and fcs for fragmented packets
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Harini Katakam <harini.katakam@xilinx.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        David Miller <davem@davemloft.net>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Jakub Kicinski <kuba@kernel.org>, dumazet@google.com,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Paolo,
+From: Wanpeng Li <wanpengli@tencent.com>
 
-On Tue, May 10, 2022 at 6:48 PM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> On Mon, 2022-05-09 at 17:45 +0530, Harini Katakam wrote:
-> > data_len in skbuff represents bytes resident in fragment lists or
-> > unmapped page buffers. For such packets, when data_len is non-zero,
-> > skb_put cannot be used - this will throw a kernel bug. Hence do not
-> > use macb_pad_and_fcs for such fragments.
-> >
-> > Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
-> > Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-> > Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
->
-> This looks like a fix suitable for the net tree. Please add a relevant
-> 'Fixes' tag.
->
-> > ---
-> >  drivers/net/ethernet/cadence/macb_main.c | 7 +++++--
-> >  1 file changed, 5 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-> > index 6434e74c04f1..0b03305ad6a0 100644
-> > --- a/drivers/net/ethernet/cadence/macb_main.c
-> > +++ b/drivers/net/ethernet/cadence/macb_main.c
-> > @@ -1995,7 +1995,8 @@ static unsigned int macb_tx_map(struct macb *bp,
-> >                       ctrl |= MACB_BF(TX_LSO, lso_ctrl);
-> >                       ctrl |= MACB_BF(TX_TCP_SEQ_SRC, seq_ctrl);
-> >                       if ((bp->dev->features & NETIF_F_HW_CSUM) &&
-> > -                         skb->ip_summed != CHECKSUM_PARTIAL && !lso_ctrl)
-> > +                         skb->ip_summed != CHECKSUM_PARTIAL && !lso_ctrl &&
-> > +                         (skb->data_len == 0))
-> >                               ctrl |= MACB_BIT(TX_NOCRC);
-> >               } else
-> >                       /* Only set MSS/MFS on payload descriptors
->
-> This chunk looks unrelated to the commit message ?!? only the next one
-> looks relevant.
+[ Upstream commit 1714a4eb6fb0cb79f182873cd011a8ed60ac65e8 ]
 
-Thanks for the review. This code is related to the commit message.
-macb_pad_and_fcs is performed on the same packets on which
-TX_NOCRC is set (instruct HW not to perform CRC and perform
-CRC in SW). This is the patch which added both:
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/drivers/net/ethernet/cadence?id=653e92a9175ea7ed67efe209c725222051a3713d
-I'll mention the same in Fixes tag and also add Claudiu's review tag.
+As commit 0c5f81dad46 ("KVM: LAPIC: Inject timer interrupt via posted
+interrupt") mentioned that the host admin should well tune the guest
+setup, so that vCPUs are placed on isolated pCPUs, and with several pCPUs
+surplus for *busy* housekeeping.  In this setup, it is preferrable to
+disable mwait/hlt/pause vmexits to keep the vCPUs in non-root mode.
 
-Regards,
-Harini
+However, if only some guests isolated and others not, they would not
+have any benefit from posted timer interrupts, and at the same time lose
+VMX preemption timer fast paths because kvm_can_post_timer_interrupt()
+returns true and therefore forces kvm_can_use_hv_timer() to false.
+
+By guaranteeing that posted-interrupt timer is only used if MWAIT or
+HLT are done without vmexit, KVM can make a better choice and use the
+VMX preemption timer and the corresponding fast paths.
+
+Reported-by: Aili Yao <yaoaili@kingsoft.com>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Cc: Aili Yao <yaoaili@kingsoft.com>
+Cc: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
+Message-Id: <1643112538-36743-1-git-send-email-wanpengli@tencent.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/x86/kvm/lapic.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+index 6b6f9359d29e..970d5c740b00 100644
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -113,7 +113,8 @@ static inline u32 kvm_x2apic_id(struct kvm_lapic *apic)
+ 
+ static bool kvm_can_post_timer_interrupt(struct kvm_vcpu *vcpu)
+ {
+-	return pi_inject_timer && kvm_vcpu_apicv_active(vcpu);
++	return pi_inject_timer && kvm_vcpu_apicv_active(vcpu) &&
++		(kvm_mwait_in_guest(vcpu->kvm) || kvm_hlt_in_guest(vcpu->kvm));
+ }
+ 
+ bool kvm_can_use_hv_timer(struct kvm_vcpu *vcpu)
+-- 
+2.35.1
+
+
+
