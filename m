@@ -2,84 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26D4DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 17:28:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18C16C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 17:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244939AbiEJRcN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 13:32:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43994 "EHLO
+        id S1348201AbiEJRd3 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 13:33:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348164AbiEJRcD (ORCPT
+        with ESMTP id S1348141AbiEJRdQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 13:32:03 -0400
+        Tue, 10 May 2022 13:33:16 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08CD0562F1;
-        Tue, 10 May 2022 10:28:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08D27291E5D;
+        Tue, 10 May 2022 10:29:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=d0Hkb5yZv7o4mCTLzbNDo3V6J+B8rXkEK/qUdzCIUvU=; b=sSmG2Em/o9PHLyGs3CU8EHL1le
-        va/zjEt7uHgZDCI8Jcw4lpvtP1nouOoYImMG13FquRDBTriyrbZ0Jt4Khx2pxDgMYdldGF2m4cjUt
-        q87VA94xPPWTxCiRWkpqdcA0iki/Dz4zqUnckQQCwl9mJSbD13KXx5JO5+c4oAuD8NStmvr5NxvQ6
-        x3ax+vazK252pxNktD7OjuiLgct+FJCyF+bWOliC28CNaxgWs2fC6VRCb3e51MMvoTnlIMn77Ve6l
-        niXMPMVYD+Lf2YuCsISQ2c1oOPezW1oVAHF5W11W5YzB4Lw97jh87hzJTVZp2zZPU6lppDM/LparT
-        2U+a/MfQ==;
+        bh=sQO7/niJrUBpu2+Gosv4JX0Ptlav7tay6E7B6qWXJJ0=; b=LTeIHcyvwxvrhORF5SZATmiJTQ
+        hiuhAdAES7FIwDE5pAwAOC66j4wE5PN3KVTFNseRxc5Qmgi5SvJQcJ3RjeFEIDWMCWv7h/n7uULvv
+        9mV7UCFbOtR7/WL4acpMn48WAEFO57TQqNRxU/HUq9beB+xlSnP6IKbOt43yeHYMyJz17T1KxsiG+
+        ZQ7nj952v/31JPYo5kwGrOFHqfglAKrnCeXFx4+W8kH9e4jtKmcsODfkUfzkMe6bi0ZtzrGZ1/h2+
+        wqtUF6KaDeXDV5xJlYrSs6tqCoCmJZOr1OxjntYVbykL9qXuEfkuzs5J+HIRoP6Mx5pAtsCma8rPo
+        poabCTNQ==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1noTe9-004fCw-9d; Tue, 10 May 2022 17:27:41 +0000
-Date:   Tue, 10 May 2022 18:27:41 +0100
+        id 1noTfh-004fLH-Es; Tue, 10 May 2022 17:29:17 +0000
+Date:   Tue, 10 May 2022 18:29:17 +0100
 From:   Matthew Wilcox <willy@infradead.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Du Cheng <ducheng2@gmail.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        William Kucharski <william.kucharski@oracle.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Nathan Chancellor <nathan@kernel.org>, netdev@vger.kernel.org,
-        linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [PATCH] niu: Add "overloaded" struct page union member
-Message-ID: <YnqgjVoMDu5v9PNG@casper.infradead.org>
-References: <20220509222334.3544344-1-keescook@chromium.org>
- <YnoT+cBTNnPzzg8H@infradead.org>
- <202205100849.58D2C81@keescook>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        "Darrick J . Wong" <djwong@kernel.org>,
+        Brian Foster <bfoster@redhat.com>, axboe@kernel.dk,
+        linux-block@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.17 20/21] block: Do not call folio_next() on an
+ unreferenced folio
+Message-ID: <Ynqg7RRxiFIKrDqX@casper.infradead.org>
+References: <20220510154340.153400-1-sashal@kernel.org>
+ <20220510154340.153400-20-sashal@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202205100849.58D2C81@keescook>
+In-Reply-To: <20220510154340.153400-20-sashal@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 08:50:47AM -0700, Kees Cook wrote:
-> On Tue, May 10, 2022 at 12:27:53AM -0700, Christoph Hellwig wrote:
-> > On Mon, May 09, 2022 at 03:23:33PM -0700, Kees Cook wrote:
-> > > The randstruct GCC plugin gets upset when it sees struct addresspace
-> > > (which is randomized) being assigned to a struct page (which is not
-> > > randomized):
-> > 
-> > Well, the right fix here is to remove this abuse from the driver, not
-> > to legitimize it as part of a "driver" patch touching a core mm header
+On Tue, May 10, 2022 at 11:43:39AM -0400, Sasha Levin wrote:
+> From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 > 
-> Right, I didn't expect anyone to like the new "overloaded" member.
-> Mainly I'd just like to understand how niu _should_ be fixed. Is using
-> the "private" member the correct thing here?
+> [ Upstream commit 170f37d6aa6ad4582eefd7459015de79e244536e ]
 
-Well ... no.  We're not entirely set up yet to go to the good answer
-that means we don't have to touch this driver again, and yet we're also
-in a situation where we'll need to touch this driver at some point in
-order to get rid of the way it abuses struct page before we can get to
-our good place.
-
-The eventual good answer is that we declare a driver-private memdesc
-variant that has a ->link, ->base ->refcount and ->pfn (maybe it has more
-than that; I'd have to really understand this driver to be completely
-certain about what it needs).  Or perhaps there's a better way to handle
-driver-allocated memory for this kind of networking card that this driver
-should be converted to use.
-
-I haven't looked into this case deeply enough to have strong thoughts
-about how we should handle it, both now and in the glorious future.
+ACK the backport of this patch.  The problem is latent in earlier
+kernels, but there's no need to leave the trap lying around.
