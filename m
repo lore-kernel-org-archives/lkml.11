@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1334C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E87BFC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245571AbiEJN6K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:58:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49462 "EHLO
+        id S245672AbiEJN6f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:58:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245190AbiEJNih (ORCPT
+        with ESMTP id S245202AbiEJNii (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:38:37 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B1CD54;
-        Tue, 10 May 2022 06:28:33 -0700 (PDT)
+        Tue, 10 May 2022 09:38:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9F092980A;
+        Tue, 10 May 2022 06:28:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 80F3FCE1EE2;
-        Tue, 10 May 2022 13:28:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 862FFC385C2;
-        Tue, 10 May 2022 13:28:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 644EB60C1C;
+        Tue, 10 May 2022 13:28:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70378C385A6;
+        Tue, 10 May 2022 13:28:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189310;
-        bh=v7Yqa6zur4G9nPPs/iLeF0a/0w7hCDhIoRVk6yIDzJs=;
+        s=korg; t=1652189325;
+        bh=iGVnxWxoOhBcJQqdzfpfv49ak3HYriGUEF0owT0UMQs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TSa3soPkG0/lRM7DQrq9dzjEfQlQj91xHoRZBdwZy0RDTK90go3JcGxnpG8bztieL
-         C+3uggVBGvOsmv2SJn+b+wijIZXUdXqsEp4c6ZJiymyyJIeEgfHxb81P30d/xpoQPM
-         Sd4vJcBZURfunTJAv2sZlHjNflWDpRCZFEJTZFB8=
+        b=h+mGm2KvLp20rrWfzZ0I0nYZ5E/bv0/uLRjYcuyyFAuKcfFQdpxImTAAShFHkkAHN
+         Ipik3pswvOdPvtZ2UIGjuxpMRSlgnKTTl8v/9xBwusTNK5Sa/d4nzK0B1vW+HY1Mx4
+         fuI/DgVrPXVJVY+a1rt/4e+EuYHBbrhkZKU3sr6k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kyle Huey <me@kylehuey.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.15 010/135] KVM: x86/svm: Account for family 17h event renumberings in amd_pmc_perf_hw_id
-Date:   Tue, 10 May 2022 15:06:32 +0200
-Message-Id: <20220510130740.692228214@linuxfoundation.org>
+        stable@vger.kernel.org, Nick Kossifidis <mick@ics.forth.gr>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.15 015/135] RISC-V: relocate DTB if its outside memory region
+Date:   Tue, 10 May 2022 15:06:37 +0200
+Message-Id: <20220510130740.836495192@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -48,84 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kyle Huey <me@kylehuey.com>
+From: Nick Kossifidis <mick@ics.forth.gr>
 
-commit 5eb849322d7f7ae9d5c587c7bc3b4f7c6872cd2f upstream.
+commit c6fe81191bd74f7e6ae9ce96a4837df9485f3ab8 upstream.
 
-Zen renumbered some of the performance counters that correspond to the
-well known events in perf_hw_id. This code in KVM was never updated for
-that, so guest that attempt to use counters on Zen that correspond to the
-pre-Zen perf_hw_id values will silently receive the wrong values.
+In case the DTB provided by the bootloader/BootROM is before the kernel
+image or outside /memory, we won't be able to access it through the
+linear mapping, and get a segfault on setup_arch(). Currently OpenSBI
+relocates DTB but that's not always the case (e.g. if FW_JUMP_FDT_ADDR
+is not specified), and it's also not the most portable approach since
+the default FW_JUMP_FDT_ADDR of the generic platform relocates the DTB
+at a specific offset that may not be available. To avoid this situation
+copy DTB so that it's visible through the linear mapping.
 
-This has been observed in the wild with rr[0] when running in Zen 3
-guests. rr uses the retired conditional branch counter 00d1 which is
-incorrectly recognized by KVM as PERF_COUNT_HW_STALLED_CYCLES_BACKEND.
-
-[0] https://rr-project.org/
-
-Signed-off-by: Kyle Huey <me@kylehuey.com>
-Message-Id: <20220503050136.86298-1-khuey@kylehuey.com>
+Signed-off-by: Nick Kossifidis <mick@ics.forth.gr>
+Link: https://lore.kernel.org/r/20220322132839.3653682-1-mick@ics.forth.gr
+Tested-by: Conor Dooley <conor.dooley@microchip.com>
+Fixes: f105aa940e78 ("riscv: add BUILTIN_DTB support for MMU-enabled targets")
 Cc: stable@vger.kernel.org
-[Check guest family, not host. - Paolo]
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/svm/pmu.c |   28 +++++++++++++++++++++++++---
- 1 file changed, 25 insertions(+), 3 deletions(-)
+ arch/riscv/mm/init.c |   21 +++++++++++++++++++--
+ 1 file changed, 19 insertions(+), 2 deletions(-)
 
---- a/arch/x86/kvm/svm/pmu.c
-+++ b/arch/x86/kvm/svm/pmu.c
-@@ -44,6 +44,22 @@ static struct kvm_event_hw_type_mapping
- 	[7] = { 0xd1, 0x00, PERF_COUNT_HW_STALLED_CYCLES_BACKEND },
- };
- 
-+/* duplicated from amd_f17h_perfmon_event_map. */
-+static struct kvm_event_hw_type_mapping amd_f17h_event_mapping[] = {
-+	[0] = { 0x76, 0x00, PERF_COUNT_HW_CPU_CYCLES },
-+	[1] = { 0xc0, 0x00, PERF_COUNT_HW_INSTRUCTIONS },
-+	[2] = { 0x60, 0xff, PERF_COUNT_HW_CACHE_REFERENCES },
-+	[3] = { 0x64, 0x09, PERF_COUNT_HW_CACHE_MISSES },
-+	[4] = { 0xc2, 0x00, PERF_COUNT_HW_BRANCH_INSTRUCTIONS },
-+	[5] = { 0xc3, 0x00, PERF_COUNT_HW_BRANCH_MISSES },
-+	[6] = { 0x87, 0x02, PERF_COUNT_HW_STALLED_CYCLES_FRONTEND },
-+	[7] = { 0x87, 0x01, PERF_COUNT_HW_STALLED_CYCLES_BACKEND },
-+};
+--- a/arch/riscv/mm/init.c
++++ b/arch/riscv/mm/init.c
+@@ -218,8 +218,25 @@ static void __init setup_bootmem(void)
+ 	 * early_init_fdt_reserve_self() since __pa() does
+ 	 * not work for DTB pointers that are fixmap addresses
+ 	 */
+-	if (!IS_ENABLED(CONFIG_BUILTIN_DTB))
+-		memblock_reserve(dtb_early_pa, fdt_totalsize(dtb_early_va));
++	if (!IS_ENABLED(CONFIG_BUILTIN_DTB)) {
++		/*
++		 * In case the DTB is not located in a memory region we won't
++		 * be able to locate it later on via the linear mapping and
++		 * get a segfault when accessing it via __va(dtb_early_pa).
++		 * To avoid this situation copy DTB to a memory region.
++		 * Note that memblock_phys_alloc will also reserve DTB region.
++		 */
++		if (!memblock_is_memory(dtb_early_pa)) {
++			size_t fdt_size = fdt_totalsize(dtb_early_va);
++			phys_addr_t new_dtb_early_pa = memblock_phys_alloc(fdt_size, PAGE_SIZE);
++			void *new_dtb_early_va = early_memremap(new_dtb_early_pa, fdt_size);
 +
-+/* amd_pmc_perf_hw_id depends on these being the same size */
-+static_assert(ARRAY_SIZE(amd_event_mapping) ==
-+	     ARRAY_SIZE(amd_f17h_event_mapping));
-+
- static unsigned int get_msr_base(struct kvm_pmu *pmu, enum pmu_type type)
- {
- 	struct kvm_vcpu *vcpu = pmu_to_vcpu(pmu);
-@@ -136,19 +152,25 @@ static inline struct kvm_pmc *get_gp_pmc
++			memcpy(new_dtb_early_va, dtb_early_va, fdt_size);
++			early_memunmap(new_dtb_early_va, fdt_size);
++			_dtb_early_pa = new_dtb_early_pa;
++		} else
++			memblock_reserve(dtb_early_pa, fdt_totalsize(dtb_early_va));
++	}
  
- static unsigned int amd_pmc_perf_hw_id(struct kvm_pmc *pmc)
- {
-+	struct kvm_event_hw_type_mapping *event_mapping;
- 	u8 event_select = pmc->eventsel & ARCH_PERFMON_EVENTSEL_EVENT;
- 	u8 unit_mask = (pmc->eventsel & ARCH_PERFMON_EVENTSEL_UMASK) >> 8;
- 	int i;
- 
-+	if (guest_cpuid_family(pmc->vcpu) >= 0x17)
-+		event_mapping = amd_f17h_event_mapping;
-+	else
-+		event_mapping = amd_event_mapping;
-+
- 	for (i = 0; i < ARRAY_SIZE(amd_event_mapping); i++)
--		if (amd_event_mapping[i].eventsel == event_select
--		    && amd_event_mapping[i].unit_mask == unit_mask)
-+		if (event_mapping[i].eventsel == event_select
-+		    && event_mapping[i].unit_mask == unit_mask)
- 			break;
- 
- 	if (i == ARRAY_SIZE(amd_event_mapping))
- 		return PERF_COUNT_HW_MAX;
- 
--	return amd_event_mapping[i].event_type;
-+	return event_mapping[i].event_type;
- }
- 
- /* return PERF_COUNT_HW_MAX as AMD doesn't have fixed events */
+ 	early_init_fdt_scan_reserved_mem();
+ 	dma_contiguous_reserve(dma32_phys_limit);
 
 
