@@ -2,96 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDBD4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:31:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 408E5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:31:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344438AbiEJOfK (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:35:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33838 "EHLO
+        id S242717AbiEJOfR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:35:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245481AbiEJOJ1 (ORCPT
+        with ESMTP id S244822AbiEJOJ1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 10:09:27 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C76D326EC;
-        Tue, 10 May 2022 06:44:39 -0700 (PDT)
-Received: from fraeml713-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KyK2d3mmXz67xBy;
-        Tue, 10 May 2022 21:41:45 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml713-chm.china.huawei.com (10.206.15.32) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 10 May 2022 15:44:36 +0200
-Received: from [10.47.91.186] (10.47.91.186) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2375.24; Tue, 10 May
- 2022 14:44:36 +0100
-Message-ID: <9ede7211-ae58-5cd4-4cf6-74c1f508f1a6@huawei.com>
-Date:   Tue, 10 May 2022 14:44:50 +0100
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F794120A3
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 06:44:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652190244; x=1683726244;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=FkqIWOn01JAdtmaPe+QtKrSJzpCaZU32POU9YFGl9Go=;
+  b=KbJEHrj61aOkSOlox54UEIXS4n3gXfTJTTJAFYGb4SWXYBJ3UZEy5gpx
+   jzFUD5vsQdaMM9ClIj8KCfByCJ1V1kYzO/3HUt829rkyU+MGM88XchwHr
+   rA/QlOIQmsijipqudcfF9qmRgZIfsbTbjY4txYbsr9uQvxKGnOYfvkC5A
+   O6V3rfLY1O4nQljoFIg3/hYXenT95ETUioyGJmyAq38XfQoLvR/Y/bVoE
+   saULeiZf7lqKRpaTePx+Py9Eq66+fNKUla5X6hFZsue8Z7ecfd6BD27Ni
+   wnfoiQ3bkzBp9mlBvSxJHHT/2kfsum7V6gKNzc0RZ095Z02lRTOnZONTU
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="268215350"
+X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
+   d="scan'208";a="268215350"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 06:43:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
+   d="scan'208";a="623466839"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 10 May 2022 06:43:50 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1noQ9V-000HxO-G3;
+        Tue, 10 May 2022 13:43:49 +0000
+Date:   Tue, 10 May 2022 21:43:37 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Yi Yang <yiyang13@huawei.com>, chris@zankel.net,
+        jcmvbkbc@gmail.com, viro@zeniv.linux.org.uk
+Cc:     kbuild-all@lists.01.org, linux-xtensa@linux-xtensa.org,
+        linux-kernel@vger.kernel.org, axboe@kernel.dk,
+        wangweiyang2@huawei.com
+Subject: Re: [PATCH -next] xtensa/simdisk: fix error handling in
+ proc_read_simdisk()
+Message-ID: <202205102144.vmTlPCDp-lkp@intel.com>
+References: <20220510080533.51032-1-yiyang13@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-From:   John Garry <john.garry@huawei.com>
-Subject: Re: [RFC PATCH 0/2] sbitmap: NUMA node spreading
-To:     Jens Axboe <axboe@kernel.dk>, <linux-block@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <linux-scsi@vger.kernel.org>
-References: <1652181274-136198-1-git-send-email-john.garry@huawei.com>
- <1afd2c01-69b3-ab8f-6bfe-118e3e56001c@kernel.dk>
-In-Reply-To: <1afd2c01-69b3-ab8f-6bfe-118e3e56001c@kernel.dk>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.91.186]
-X-ClientProxiedBy: lhreml705-chm.china.huawei.com (10.201.108.54) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220510080533.51032-1-yiyang13@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/05/2022 13:50, Jens Axboe wrote:
->> fio config:
->> bs=4096, iodepth=128, numjobs=10, cpus_allowed_policy=split, rw=read,
->> ioscheduler=none
->>
->> Before:
->> 7130K
->>
->> After:
->> 7630K
->>
->> So a +7% IOPS gain.
+Hi Yi,
 
-Thanks for having a look.
+Thank you for the patch! Perhaps something to improve:
 
-> What does the comparison run on a non-NUMA non-shared queue look like?
-> Because I bet it'd be slower.
+[auto build test WARNING on next-20220509]
 
-I could test more to get a solid result for that.
+url:    https://github.com/intel-lab-lkp/linux/commits/Yi-Yang/xtensa-simdisk-fix-error-handling-in-proc_read_simdisk/20220510-161001
+base:    ab38272e99730375c5db3db1c4cebf691a0550ab
+config: xtensa-allyesconfig (https://download.01.org/0day-ci/archive/20220510/202205102144.vmTlPCDp-lkp@intel.com/config)
+compiler: xtensa-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/62cd9e58ed970829827bd2bfb24f2515a08fd921
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Yi-Yang/xtensa-simdisk-fix-error-handling-in-proc_read_simdisk/20220510-161001
+        git checkout 62cd9e58ed970829827bd2bfb24f2515a08fd921
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=xtensa SHELL=/bin/bash arch/xtensa/
 
-> 
-> To be honest, I don't like this approach at all. It makes the normal
-> case quite a bit slower by having an extra layer of indirection for the
-> word, that's quite a bit of extra cost.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Yes, there is the extra load. I would hope that there would be a low 
-cost, but I agree that we still want to avoid it. So prob no point in 
-testing this more.
+All warnings (new ones prefixed by >>):
 
-> It doesn't seem like a good
-> approach for the issue, as it pessimizes the normal fast case.
-> 
-> Spreading the memory out does probably make sense, but we need to retain
-> the fast normal case. Making sbitmap support both, selected at init
-> time, would be far more likely to be acceptable imho.
+   arch/xtensa/platforms/iss/simdisk.c: In function 'proc_read_simdisk':
+>> arch/xtensa/platforms/iss/simdisk.c:223:17: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+     223 |                 ssize_t n = simple_read_from_buffer(buf, size, ppos,
+         |                 ^~~~~~~
 
-I wanted to keep the code changes minimal for an initial RFC to test the 
-water.
 
-My original approach did not introduce the extra load for normal path 
-and had some init time selection for a normal word map vs numa word map, 
-but the code grew and became somewhat unmanageable. I'll revisit it to 
-see how to improve that.
+vim +223 arch/xtensa/platforms/iss/simdisk.c
 
-Cheers,
-john
+b6c7e873daf765 Victor Prupis      2008-05-19  207  
+a69755b187749e Al Viro            2013-03-31  208  static ssize_t proc_read_simdisk(struct file *file, char __user *buf,
+a69755b187749e Al Viro            2013-03-31  209  			size_t size, loff_t *ppos)
+b6c7e873daf765 Victor Prupis      2008-05-19  210  {
+359745d78351c6 Muchun Song        2022-01-21  211  	struct simdisk *dev = pde_data(file_inode(file));
+0757f6159f13dc Geert Uytterhoeven 2013-05-09  212  	const char *s = dev->filename;
+62cd9e58ed9708 Yi Yang            2022-05-10  213  	char *temp;
+62cd9e58ed9708 Yi Yang            2022-05-10  214  
+a69755b187749e Al Viro            2013-03-31  215  	if (s) {
+62cd9e58ed9708 Yi Yang            2022-05-10  216  		ssize_t len = strlen(s);
+62cd9e58ed9708 Yi Yang            2022-05-10  217  
+62cd9e58ed9708 Yi Yang            2022-05-10  218  		temp = kmalloc(len + 2, GFP_KERNEL);
+62cd9e58ed9708 Yi Yang            2022-05-10  219  		if (!temp)
+62cd9e58ed9708 Yi Yang            2022-05-10  220  			return -ENOMEM;
+62cd9e58ed9708 Yi Yang            2022-05-10  221  
+62cd9e58ed9708 Yi Yang            2022-05-10  222  		scnprintf(temp, len + 2, "%s\n", s);
+a69755b187749e Al Viro            2013-03-31 @223  		ssize_t n = simple_read_from_buffer(buf, size, ppos,
+62cd9e58ed9708 Yi Yang            2022-05-10  224  							temp, strlen(temp));
+62cd9e58ed9708 Yi Yang            2022-05-10  225  
+62cd9e58ed9708 Yi Yang            2022-05-10  226  		kfree(temp);
+a69755b187749e Al Viro            2013-03-31  227  		return n;
+a69755b187749e Al Viro            2013-03-31  228  	}
+a69755b187749e Al Viro            2013-03-31  229  	return simple_read_from_buffer(buf, size, ppos, "\n", 1);
+b6c7e873daf765 Victor Prupis      2008-05-19  230  }
+b6c7e873daf765 Victor Prupis      2008-05-19  231  
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
