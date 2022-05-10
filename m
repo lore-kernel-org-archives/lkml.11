@@ -2,87 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF8C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:34:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D282C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:34:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347476AbiEJQid (ORCPT
+        id S1347501AbiEJQir (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 12:38:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48328 "EHLO
+        Tue, 10 May 2022 12:38:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347479AbiEJQi2 (ORCPT
+        with ESMTP id S244941AbiEJQim (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 12:38:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B64452A4A0A;
-        Tue, 10 May 2022 09:34:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7BBA2B81E1F;
-        Tue, 10 May 2022 16:34:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7204C385C2;
-        Tue, 10 May 2022 16:34:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652200467;
-        bh=VODkbTVf3Dt1eFAC0XK/q51ZYmsgxWsx2okbVq533/I=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=FMONo6rKpM/kM/FTdTbOVzHXvhfPaCSQuBlJA6PJDkdaTs5h3XnyCI+NkpUOL5Bcf
-         6vqZbmrkamiTOK2a+wLItHL4hdgi34UVt8c7bxF07yVlQe73/VZJFHq3nYCdf3Ju5J
-         5LC6RZ5TcfWOu5qonumaSY+ck3IYMAClNwk6WOSgjjVDcZFCtnE1IMB1vn0Xd319kv
-         Dzl9BdvB8Ix8x70doQsw4iwzE25cfc0Ryh6fqclmmTXCvHLzLwM6Yn7xwusH41eZSx
-         wbHpHgWkZ8pQxys3c+v7ecTUqDzx4Nhevx3x9Qu7esxtmxW+zOV932j/ciFsM5aIAb
-         fBbUbrKzCu7rw==
-Content-Type: text/plain; charset="utf-8"
+        Tue, 10 May 2022 12:38:42 -0400
+X-Greylist: delayed 557 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 10 May 2022 09:34:43 PDT
+Received: from mailgw.felk.cvut.cz (mailgw.felk.cvut.cz [147.32.82.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 891E02A3752;
+        Tue, 10 May 2022 09:34:43 -0700 (PDT)
+Received: from mailgw.felk.cvut.cz (localhost.localdomain [127.0.0.1])
+        by mailgw.felk.cvut.cz (Proxmox) with ESMTP id 4F8D8303260B;
+        Tue, 10 May 2022 18:25:24 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        cmp.felk.cvut.cz; h=cc:cc:content-transfer-encoding:content-type
+        :content-type:date:from:from:in-reply-to:message-id:mime-version
+        :references:reply-to:subject:subject:to:to; s=felkmail; bh=GUwmb
+        8WUz+d8rIT5s68PdvGp8OiPvyQgMToZHWTShs8=; b=anjgfRPvazXbKAMxUXKa7
+        fY6juY58etYD/ZiNtJmBdIBIdGc4KaooWeuPCcPz51tSx6dqctHVf106A4I7RPMb
+        1TEgzTFo4U/YVOyaWGs39x4NKRCTRkfoMTSOob95cXLgg+ZbOjzvnS0am3VPvL6T
+        c1bqktoZkeemT60Xy0O8S57CRqB4GFw8LJxevnYiLXmj6qnAQpwq+aMn4CZOiqQz
+        8yHC/4abCXhKR2UqR6AX8wewcPtF6LYTERJLnWiVZpqUuC4VP5MyMMNBmwPokEcO
+        SUnGfniSF6vixheoxKvEoyvX/y0yfVi5y+mNdp/NDeZWEBQxDJYejAZ7/IxUs79Z
+        g==
+Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
+        by mailgw.felk.cvut.cz (Proxmox) with ESMTPS id 77C823032609;
+        Tue, 10 May 2022 18:25:23 +0200 (CEST)
+Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
+        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 24AGPNgM025943;
+        Tue, 10 May 2022 18:25:23 +0200
+Received: (from pisa@localhost)
+        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 24AGPM8X025942;
+        Tue, 10 May 2022 18:25:22 +0200
+X-Authentication-Warning: haar.felk.cvut.cz: pisa set sender to pisa@cmp.felk.cvut.cz using -f
+From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
+To:     Akira Yokosawa <akiyks@gmail.com>
+Subject: Re: [PATCH net-next] docs: ctucanfd: Use 'kernel-figure' directive instead of 'figure'
+Date:   Tue, 10 May 2022 18:25:15 +0200
+User-Agent: KMail/1.9.10
+Cc:     "Marc Kleine-Budde" <mkl@pengutronix.de>,
+        Martin Jerabek <martin.jerabek01@gmail.com>,
+        Ondrej Ille <ondrej.ille@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <05d491d4-c498-9bab-7085-9c892b636d68@gmail.com>
+In-Reply-To: <05d491d4-c498-9bab-7085-9c892b636d68@gmail.com>
+X-KMail-QuotePrefix: > 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] ath11k: remove redundant assignment to variables vht_mcs
- and
- he_mcs
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20220507184155.26939-1-colin.i.king@gmail.com>
-References: <20220507184155.26939-1-colin.i.king@gmail.com>
-To:     Colin Ian King <colin.i.king@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <165220046267.6768.5493678781221358887.kvalo@kernel.org>
-Date:   Tue, 10 May 2022 16:34:24 +0000 (UTC)
+Content-Type: Text/Plain;
+  charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Message-Id: <202205101825.15126.pisa@cmp.felk.cvut.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Colin Ian King <colin.i.king@gmail.com> wrote:
+Hello Akira,
 
-> The variables vht_mcs and he_mcs are being initialized in the
-> start of for-loops however they are re-assigned new values in
-> the loop and not used outside the loop. The initializations
-> are redundant and can be removed.
-> 
-> Cleans up clang scan warnings:
-> 
-> warning: Although the value stored to 'vht_mcs' is used in the
-> enclosing expression, the value is never actually read from
-> 'vht_mcs' [deadcode.DeadStores]
-> 
-> warning: Although the value stored to 'he_mcs' is used in the
-> enclosing expression, the value is never actually read from
-> 'he_mcs' [deadcode.DeadStores]
-> 
-> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+On Tuesday 10 of May 2022 11:34:37 Akira Yokosawa wrote:
+> Two issues were observed in the ReST doc added by commit c3a0addefbde
+> ("docs: ctucanfd: CTU CAN FD open-source IP core documentation.").
 
-Patch applied to ath-next branch of ath.git, thanks.
+Thanks for the fix
 
-25c321e8534e ath11k: remove redundant assignment to variables vht_mcs and he_mcs
+> The plain "figure" directive broke "make pdfdocs" due to a missing=20
+> PDF figure.  For conversion of SVG -> PDF to work, the "kernel-figure"
+> directive, which is an extension for kernel documentations, should
+> be used instead.
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220507184155.26939-1-colin.i.king@gmail.com/
+I have not noticed that there is kernel-figure
+option. We have setup own Sphinx 1.4.9 based build for driver
+documentation out of the tree compilation, I am not sure if that
+would work with this option but if not we keep this version
+modified. There are required modification for sources location anyway...
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+https://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/doc/linux_driver/build/ct=
+ucanfd-driver.html
+
+> The directive of "code:: raw" causes a warning from both
+> "make htmldocs" and "make pdfdocs", which reads:
+>
+>     [...]/can/ctu/ctucanfd-driver.rst:75: WARNING: Pygments lexer name
+>     'raw' is not known
+
+Strange I have not seen any warning when building htmldocs
+in my actual linux kernel tree. I have cleaned docs to be warnings
+free, but it is possible that I have another tools versions.
+
+Anyway thanks for cleanup.
+
+> A plain literal-block marker should suffice where no syntax
+> highlighting is intended.
+>
+> Fix the issues by using suitable directive and marker.
+>
+> Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
+> Fixes: c3a0addefbde ("docs: ctucanfd: CTU CAN FD open-source IP core
+> documentation.") Cc: Pavel Pisa <pisa@cmp.felk.cvut.cz>
+> Cc: Martin Jerabek <martin.jerabek01@gmail.com>
+> Cc: Ondrej Ille <ondrej.ille@gmail.com>
+> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+
+Acked-by: Pavel Pisa <pisa@cmp.felk.cvut.cz>
+
+> ---
+>  .../networking/device_drivers/can/ctu/ctucanfd-driver.rst     | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git
+> a/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst
+> b/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst ind=
+ex
+> 2fde5551e756..40c92ea272af 100644
+> --- a/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst
+> +++ b/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst
+> @@ -72,7 +72,7 @@ it is reachable (on which bus it resides) and its
+> configuration =E2=80=93 registers address, interrupts and so on. An examp=
+le of such
+> a device tree is given in .
+>
+> -.. code:: raw
+> +::
+>
+>             / {
+>                 /* ... */
+> @@ -451,7 +451,7 @@ the FIFO is maintained, together with priority
+> rotation, is depicted in
+>
+>
+>
+> -.. figure:: fsm_txt_buffer_user.svg
+> +.. kernel-figure:: fsm_txt_buffer_user.svg
+>
+>     TX Buffer states with possible transitions
+
 
