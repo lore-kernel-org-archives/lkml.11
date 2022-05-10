@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42422C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 18:06:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11F68C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 18:07:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348470AbiEJSKG (ORCPT
+        id S1348490AbiEJSLD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 14:10:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43646 "EHLO
+        Tue, 10 May 2022 14:11:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234017AbiEJSKE (ORCPT
+        with ESMTP id S1348483AbiEJSLB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 14:10:04 -0400
+        Tue, 10 May 2022 14:11:01 -0400
 Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFEC71F68E1;
-        Tue, 10 May 2022 11:06:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D421F28985;
+        Tue, 10 May 2022 11:07:01 -0700 (PDT)
 Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 630881C0B92; Tue, 10 May 2022 20:06:02 +0200 (CEST)
-Date:   Tue, 10 May 2022 20:06:00 +0200
+        id 9BEAF1C0B95; Tue, 10 May 2022 20:07:00 +0200 (CEST)
+Date:   Tue, 10 May 2022 20:07:00 +0200
 From:   Pavel Machek <pavel@denx.de>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
@@ -27,55 +27,56 @@ Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
         lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
         f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
         slade@sladewatkins.com
-Subject: Re: [PATCH 5.10 00/70] 5.10.115-rc1 review
-Message-ID: <20220510180600.GA22713@amd>
-References: <20220510130732.861729621@linuxfoundation.org>
+Subject: Re: [PATCH 4.19 00/88] 4.19.242-rc1 review
+Message-ID: <20220510180659.GB22713@amd>
+References: <20220510130733.735278074@linuxfoundation.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="k+w/mQv8wyuph6w0"
+        protocol="application/pgp-signature"; boundary="5/uDoXvLw7AC5HRs"
 Content-Disposition: inline
-In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
+In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 User-Agent: Mutt/1.5.23 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---k+w/mQv8wyuph6w0
+--5/uDoXvLw7AC5HRs
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
 Hi!
 
-> This is the start of the stable review cycle for the 5.10.115 release.
-> There are 70 patches in this series, all will be posted as a response
+> This is the start of the stable review cycle for the 4.19.242 release.
+> There are 88 patches in this series, all will be posted as a response
 > to this one.  If anyone has any issues with these being applied, please
 > let me know.
 
 CIP testing did not find any problems here:
 
 https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/tree/linux-=
-5.10.y
+4.19.y
 
 Tested-by: Pavel Machek (CIP) <pavel@denx.de>
 
 Best regards,
                                                                 Pavel
+							=09
 --=20
 DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
 HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
 
---k+w/mQv8wyuph6w0
+--5/uDoXvLw7AC5HRs
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iEYEARECAAYFAmJ6qYgACgkQMOfwapXb+vL3RQCfbhzu/EMFwkncY7MD9/6okMbS
-ABoAn1EJ8dh+W3MLTbZXcyXhsffao+wb
-=1IR3
+iEYEARECAAYFAmJ6qcMACgkQMOfwapXb+vICiQCeMUkRIoOzdPwo2fhvz9ZV26Rh
+FBcAn1w3WSpcE6/rNIkHtiUSJP/InFm0
+=Juv9
 -----END PGP SIGNATURE-----
 
---k+w/mQv8wyuph6w0--
+--5/uDoXvLw7AC5HRs--
