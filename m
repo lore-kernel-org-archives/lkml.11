@@ -2,119 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 755AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 18:58:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C779C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 18:59:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343911AbiEJS6n (ORCPT
+        id S1345854AbiEJS72 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 14:58:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43696 "EHLO
+        Tue, 10 May 2022 14:59:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237248AbiEJS6i (ORCPT
+        with ESMTP id S232821AbiEJS7Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 14:58:38 -0400
-X-Greylist: delayed 400 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 10 May 2022 11:58:38 PDT
-Received: from salsa.cs.uic.edu (salsa.cs.uic.edu [131.193.32.108])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 09A5C34BA9
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 11:58:37 -0700 (PDT)
-Received: (qmail 26755 invoked by uid 1010); 10 May 2022 18:51:55 -0000
-Received: from unknown (unknown)
-  by unknown with QMTP; 10 May 2022 18:51:55 -0000
-Received: (qmail 80608 invoked by uid 1000); 10 May 2022 18:51:23 -0000
-Message-ID: <20220510185123.80607.qmail@cr.yp.to>
-Mail-Followup-To: Jason@zx2c4.com,
-  dodis@cs.nyu.edu,
-  tytso@mit.edu,
-  nadiah@cs.ucsd.edu,
-  noahsd@gmail.com,
-  tessaro@cs.washington.edu,
-  torvalds@linux-foundation.org,
-  jeanphilippe.aumasson@gmail.com,
-  jann@thejh.net,
-  keescook@chromium.org,
-  gregkh@linuxfoundation.org,
-  peter@cryptojedi.org,
-  linux-crypto@vger.kernel.org,
-  linux-kernel@vger.kernel.org
-Automatic-Legal-Notices: See https://cr.yp.to/mailcopyright.html.
-Date:   Tue, 10 May 2022 20:51:23 +0200
-From:   "D. J. Bernstein" <djb@math.uic.edu>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Yevgeniy Dodis <dodis@cs.nyu.edu>, tytso <tytso@mit.edu>,
-        Nadia Heninger <nadiah@cs.ucsd.edu>,
-        Noah Stephens-Dawidowitz <noahsd@gmail.com>,
-        Stefano Tessaro <tessaro@cs.washington.edu>,
-        torvalds@linux-foundation.org, jeanphilippe.aumasson@gmail.com,
-        jann@thejh.net, keescook@chromium.org, gregkh@linuxfoundation.org,
-        Peter Schwabe <peter@cryptojedi.org>,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: is "premature next" a real world rng concern, or just an
- academic exercise?
-References: <YmlMGx6+uigkGiZ0@zx2c4.com>
- <Ym3ZM1P+uYYABtRm@mit.edu>
- <Ym5sICj5iBMn2w/E@zx2c4.com>
- <CAMvzKsiA52Si=PzOJXYwGSA1WUz-1S0A8cpgRJWDzpMkfFbX+Q@mail.gmail.com>
- <CAMvzKsiMY_+8HZqeFqD3tR65a3-JB0LG=+0jBBy1zF4GanrsGA@mail.gmail.com>
- <YnqDC25iR8mcL3XB@zx2c4.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="qId8Ue31mwkR5Glx"
-Content-Disposition: inline
+        Tue, 10 May 2022 14:59:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77AFA54BE5
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 11:59:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 15ED161117
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 18:59:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2103CC385C2;
+        Tue, 10 May 2022 18:59:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1652209163;
+        bh=ajpLuMXrPrNofjFAsynlZdqAggkQqVZljm1Ud2j7xMI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Wwx1rD46KZaErYa7By9rx5yDPlei1DEANzUTbLv1OZyvear0dGSPX2BAUnJPlCwVe
+         +xXi7JGGDUHdv06EPlpIskQ/VHDKMCTDa7WvE+kqk2Le6Pp6G28tqJlxb66xGccjlo
+         BYyk0KWR9PjjeooUxIKADMnzYh6Ws0PTkX0XFp6c=
+Date:   Tue, 10 May 2022 11:59:22 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Qi Zheng <zhengqi.arch@bytedance.com>
+Cc:     akinobu.mita@gmail.com, vbabka@suse.cz, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, rostedt@goodmis.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH 1/2] mm: fix missing handler for __GFP_NOWARN
+Message-Id: <20220510115922.350a496ca8b91686c1758282@linux-foundation.org>
+In-Reply-To: <20220510113809.80626-1-zhengqi.arch@bytedance.com>
+References: <20220510113809.80626-1-zhengqi.arch@bytedance.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, 10 May 2022 19:38:08 +0800 Qi Zheng <zhengqi.arch@bytedance.com> wrote:
 
---qId8Ue31mwkR5Glx
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> We expect no warnings to be issued when we specify __GFP_NOWARN, but
+> currently in paths like alloc_pages() and kmalloc(), there are still
+> some warnings printed, fix it.
 
-Jason A. Donenfeld writes:
-> Right, VMs are super problematic, but for that, there's now this
-> "vmgenid" driver, where the hypervisor actually gives a 128-bit seed to
-> guests when they're resumed, so that we can immediately reseed, which
-> should pretty comprehensively handle that situation.
+Looks sane to me.
 
-Hmmm. If an application initializes its own RNG state from /dev/urandom,
-and is then cloned, and then generates an ECDSA nonce from the RNG
-state, and then uses this nonce to sign a message that's different
-across the clones, how is disaster averted?
+> --- a/mm/internal.h
+> +++ b/mm/internal.h
+> @@ -35,6 +35,17 @@ struct folio_batch;
+>  /* Do not use these with a slab allocator */
+>  #define GFP_SLAB_BUG_MASK (__GFP_DMA32|__GFP_HIGHMEM|~__GFP_BITS_MASK)
+>  
+> +#define WARN_ON_ONCE_GFP(cond, gfp)	({				\
+> +	static bool __section(".data.once") __warned;			\
+> +	int __ret_warn_once = !!(cond);					\
+> +									\
+> +	if (unlikely(!(gfp & __GFP_NOWARN) && __ret_warn_once && !__warned)) { \
+> +		__warned = true;					\
+> +		WARN_ON(1);						\
+> +	}								\
+> +	unlikely(__ret_warn_once);					\
+> +})
 
-Given the goal of sending money to cryptographers, I'm pretty sure we
-want the answer to be a security-audit nightmare, so let me suggest the
-following idea. There's SIGWINCH to notify processes about window-size
-changes, so there should also be a signal for RNG changes, which should
-be called SIGRINCH, and there should be a different mechanism to address
-RNG output cloning inside the kernel, and there should be endless papers
-on Grinch Attacks, including papers that sort of prove security against
-Grinch Attacks, and deployment of software that's sort of protected
-against Grinch Attacks, and fear of the bad PR from abandoning anything
-labeled as protection, because, hey, _maybe_ the protection accomplishes
-something, and it's not as if anyone is going to be blamed for whatever
-damage is caused by the systems-level effect of the added complexity.
+I don't think WARN_ON_ONCE_GFP is a good name for this.  But
+WARN_ON_ONCE_IF_NOT_GFP_NOWARN is too long :(
 
----D. J. Bernstein
+WARN_ON_ONCE_NOWARN might be better.  No strong opinion here, really.
 
-P.S. Yes, yes, I know the name "Grinch Attack" has been used before.
+> @@ -4902,8 +4906,8 @@ __alloc_pages_slowpath(gfp_t gfp_mask, unsigned int order,
+>  	 * We also sanity check to catch abuse of atomic reserves being used by
+>  	 * callers that are not in atomic context.
+>  	 */
+> -	if (WARN_ON_ONCE((gfp_mask & (__GFP_ATOMIC|__GFP_DIRECT_RECLAIM)) ==
+> -				(__GFP_ATOMIC|__GFP_DIRECT_RECLAIM)))
+> +	if (WARN_ON_ONCE_GFP((gfp_mask & (__GFP_ATOMIC|__GFP_DIRECT_RECLAIM)) ==
+> +				(__GFP_ATOMIC|__GFP_DIRECT_RECLAIM), gfp_mask))
+>  		gfp_mask &= ~__GFP_ATOMIC;
+>  
+>  retry_cpuset:
 
---qId8Ue31mwkR5Glx
-Content-Type: application/pgp-signature; name="signature.asc"
+I dropped this hunk - Neil's "mm: discard __GFP_ATOMIC"
+(https://lkml.kernel.org/r/163712397076.13692.4727608274002939094@noble.neil.brown.name)
+deleted this code.
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEE3QolqQXydru4e4ITsMANTjsOVFkFAmJ6tCsACgkQsMANTjsO
-VFk8WBAAzyMKEWbIPxsLZOwf6gPOb+FqsG2NNiI/RzpnGOWlnohjbpo+2r2pOpD/
-dPBsToDrAuBs1ypA2rrcdbQ40gepN6vUJwK4TBVvBn1h3UM2hRrJ7JFA8mlA9RpT
-1R8KXXnCbkhV92p6Y1YOzPP1mynkZ5XVhE87/03rJ3T0Sole8qv25tn75XZvKY6U
-p4HiYl7mbZuQ84OgUCmp7bYC7nKCKzgAb3nNXZCTotv7ecZGQgnlGC+ClOZz6+TB
-KwcDw9cF2LfJvP5qvNGmkVtMEtWEvPzmBMp6MCXJytBJ15vXaM0B5M0NDwbpM2I9
-FtsH1/yzbnGQs2slSERlDv5PhrMjroydwC07YpRKMKY59uITV7tf8Q/2gcK5+C7z
-zPOkbKvXkjas+cqM4wjXDt/cOyBiUkW9RzMXG7ODldkh8oI8D30qyUOl8+IqxF6h
-d5SL9mJ7RLQ3LumSiat/B2HbHlODU4CJqubidyFgYvdGOyXhOOsTpfImNMuJoP5x
-zapVfrONCJ5497AZY24mr4rWI/Vp+pcge9lVxQjBnAPJrQx32SsL6szWKUkLL9lc
-H9jDaxcoJSjMR7GdBmgCEvVFHmFpLszoE4Cg/XPswQdYzjHikO9k41Ni2ge7jKf0
-Mf2OP2wpKIpFxL/N+xdpEWFuywJt+bMnQXsChAIM8530UgDYjGs=
-=AY+X
------END PGP SIGNATURE-----
-
---qId8Ue31mwkR5Glx--
