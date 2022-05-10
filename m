@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69E3DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:41:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A280BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:41:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240829AbiEJNpk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:45:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56850 "EHLO
+        id S236710AbiEJNpr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:45:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243861AbiEJNcT (ORCPT
+        with ESMTP id S243843AbiEJNcS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:32:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4058E54FB3;
-        Tue, 10 May 2022 06:22:46 -0700 (PDT)
+        Tue, 10 May 2022 09:32:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 759BB2D3D48;
+        Tue, 10 May 2022 06:22:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D1F7A6170D;
-        Tue, 10 May 2022 13:22:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E24C2C385C2;
-        Tue, 10 May 2022 13:22:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 238A1B81D7A;
+        Tue, 10 May 2022 13:22:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41FAEC385A6;
+        Tue, 10 May 2022 13:22:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188965;
-        bh=NZhQevZcqdnSmjHIeiRhCKNQNiuW3X6d3Bp6k7e4zGc=;
+        s=korg; t=1652188956;
+        bh=VZBU5EK9WYoEOxgUclrIhEfeEZZe27R3K4dFXcHEnvk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qU4ujZiip+CJy28JjNIlNs8xp8Va5fW/NaVdfkvAGbRHcjUdkBa2EuvYcCDoseGhM
-         tGjvTR0jFPfIrGdL8oJAPFrre5I2AVUPO3rrIExXkjJD6m7RrMMJxgcZXvGRfhXmxI
-         rSzYRVsGCW6zpHCbNJQQpDB7fcSvgpQq+jiNEyUo=
+        b=WmiGA77j4/8DnlGNp/8+B6XDxagFjKRAUmGOj2z+ES9+D82G4BCYcZP3v7Xtj+AWc
+         zjTozKnl0gZ/4Ve+MT/3qDocQoHARtqwTNHRN9cHFu7CgMuPWLhczzLJYdn1MZgyJH
+         e0nuzxv5omdSCuOZoaS8RmUy9i1JpDkYNIB15RNo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.4 02/52] parisc: Merge model and model name into one line in /proc/cpuinfo
-Date:   Tue, 10 May 2022 15:07:31 +0200
-Message-Id: <20220510130729.927786022@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jan=20H=C3=B6ppner?= <hoeppner@linux.ibm.com>,
+        Stefan Haberland <sth@linux.ibm.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.4 17/52] s390/dasd: Fix read inconsistency for ESE DASD devices
+Date:   Tue, 10 May 2022 15:07:46 +0200
+Message-Id: <20220510130730.361096600@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.852544477@linuxfoundation.org>
 References: <20220510130729.852544477@linuxfoundation.org>
@@ -47,32 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Jan Höppner <hoeppner@linux.ibm.com>
 
-commit 5b89966bc96a06f6ad65f64ae4b0461918fcc9d3 upstream.
+commit b9c10f68e23c13f56685559a0d6fdaca9f838324 upstream.
 
-The Linux tool "lscpu" shows the double amount of CPUs if we have
-"model" and "model name" in two different lines in /proc/cpuinfo.
-This change combines the model and the model name into one line.
+Read requests that return with NRF error are partially completed in
+dasd_eckd_ese_read(). The function keeps track of the amount of
+processed bytes and the driver will eventually return this information
+back to the block layer for further processing via __dasd_cleanup_cqr()
+when the request is in the final stage of processing (from the driver's
+perspective).
 
-Signed-off-by: Helge Deller <deller@gmx.de>
-Cc: stable@vger.kernel.org
+For this, blk_update_request() is used which requires the number of
+bytes to complete the request. As per documentation the nr_bytes
+parameter is described as follows:
+   "number of bytes to complete for @req".
+
+This was mistakenly interpreted as "number of bytes _left_ for @req"
+leading to new requests with incorrect data length. The consequence are
+inconsistent and completely wrong read requests as data from random
+memory areas are read back.
+
+Fix this by correctly specifying the amount of bytes that should be used
+to complete the request.
+
+Fixes: 5e6bdd37c552 ("s390/dasd: fix data corruption for thin provisioned devices")
+Cc: stable@vger.kernel.org # 5.3+
+Signed-off-by: Jan Höppner <hoeppner@linux.ibm.com>
+Reviewed-by: Stefan Haberland <sth@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220505141733.1989450-5-sth@linux.ibm.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/parisc/kernel/processor.c |    3 +--
+ drivers/s390/block/dasd.c |    3 +--
  1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/arch/parisc/kernel/processor.c
-+++ b/arch/parisc/kernel/processor.c
-@@ -419,8 +419,7 @@ show_cpuinfo (struct seq_file *m, void *
- 		}
- 		seq_printf(m, " (0x%02lx)\n", boot_cpu_data.pdc.capabilities);
- 
--		seq_printf(m, "model\t\t: %s\n"
--				"model name\t: %s\n",
-+		seq_printf(m, "model\t\t: %s - %s\n",
- 				 boot_cpu_data.pdc.sys_model_name,
- 				 cpuinfo->dev ?
- 				 cpuinfo->dev->name : "Unknown");
+--- a/drivers/s390/block/dasd.c
++++ b/drivers/s390/block/dasd.c
+@@ -2812,8 +2812,7 @@ static void __dasd_cleanup_cqr(struct da
+ 		 * complete a request partially.
+ 		 */
+ 		if (proc_bytes) {
+-			blk_update_request(req, BLK_STS_OK,
+-					   blk_rq_bytes(req) - proc_bytes);
++			blk_update_request(req, BLK_STS_OK, proc_bytes);
+ 			blk_mq_requeue_request(req, true);
+ 		} else {
+ 			blk_mq_complete_request(req);
 
 
