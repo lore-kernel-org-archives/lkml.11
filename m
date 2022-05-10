@@ -2,88 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D619CC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:58:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 064D3C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:58:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347259AbiEJQBd (ORCPT
+        id S1347322AbiEJQBg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 12:01:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35406 "EHLO
+        Tue, 10 May 2022 12:01:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346972AbiEJPvr (ORCPT
+        with ESMTP id S1346250AbiEJPwR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:51:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 731D6E7317;
-        Tue, 10 May 2022 08:46:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E7ED6B81DF7;
-        Tue, 10 May 2022 15:46:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF227C385C9;
-        Tue, 10 May 2022 15:46:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652197582;
-        bh=sitUM+pO5GY8EG+P/wbijhz0f+x6injN+PYj6XrcbLo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OfSawul0q7dT3oUX0YKR3Wb/0F+oSUeQbVoeyMypL2zIqShjD/AEiO2wWz9SXfwCL
-         /uPIBdNJP9LeqgHicF2VEGMC625WFIJxmvFAJkJItAAt9x9kaIJAWg8XPLamBsBL3k
-         Z0JRGt60L5UX+za57U0jI6Xow1FwBBTFov5z1WH805CHD6kHk+jXcGOWYC/vgAGATE
-         k3M2Tr+2/655hrdvsm81ZnzRwYSXDo3AI93LLz1wznnj2Tp0/hsOPJOpRDSMwBKijl
-         1pLM1llSTMCVt5EDUixDRmFhn7qchC/CEUm4nEpDBJ2ChSFriSP1JX7XnH1p1wjuWI
-         DoAqGK9DP/Qyg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mark Brown <broonie@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        pierre-louis.bossart@linux.intel.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 4.19 2/6] ASoC: max98090: Reject invalid values in custom control put()
-Date:   Tue, 10 May 2022 11:46:10 -0400
-Message-Id: <20220510154614.154187-2-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220510154614.154187-1-sashal@kernel.org>
-References: <20220510154614.154187-1-sashal@kernel.org>
+        Tue, 10 May 2022 11:52:17 -0400
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 890252CC94
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:48:19 -0700 (PDT)
+Received: by mail-qt1-x834.google.com with SMTP id p4so13818002qtq.12
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:48:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=bRZCptIM03juaQv67hbbg4JReeAbmT3D5f9cphqNW9A=;
+        b=FEVX6hWuLn7gTdB8Ry8/1gWnCWSO+tOkXnA4I3M29xUL2FIgRHi1ILsobsRmN+EpZs
+         aJH3WxU0uKmKDheSwl2lRSJE/3sDCZJ4nttB8pgAs/Jb0gVUKEMRWbmgN22YlLJyAhO/
+         MR3DDWLJLejOAErjVdhHpMLI0ZE2IfCrl0kvgfpceVOdesnEQR3haqdchVZb3vXFvGTi
+         A9Eff4upsFZrO/ORpwjECQ15qnwpy5an9lFA0Dta3brrC0DNBcFh9UA8fiQoS/huVUpJ
+         Xb3JDk0nFnbWoRKp4O8h//ZwQT3H7sVnUe6PHMYnDuzpCQoye+G+yIvGR28Qs81aHwLn
+         vIsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=bRZCptIM03juaQv67hbbg4JReeAbmT3D5f9cphqNW9A=;
+        b=Jkut5vv5z6zX9te8Ow+/xdxxLL2FPfVysijKszlK4t5UPBkpwkPRA7iMZORRSslNYS
+         M0DFD3KAQi1VSLe5/hBtqvBxjBjeQpsuXVUlhEgo+R6oPTGWNS4L2th6upTb3jY4duRg
+         slE/Wfk5bxbpJaEeHbJQ8RK0Nb9UxX70QXBJ333w0/NwW1yiNJt7sRTfoitaj4QIrT7Q
+         1z2h2AAfUPXZXv4s7m7QnM8H3RjedGKkQHchWkTHBfoSEYXPP5Rg3D1LB9Pl3jGsFeOo
+         bQ/hEM1z5cU8MuVsOWDLr8dgzLGwqc5XnlTFP5eCS4FSUo1pcWJqnBTTn3Y6SooK0qGt
+         PSEA==
+X-Gm-Message-State: AOAM530SG65W3gOinoQjM2EuKJo+GQ53YS6HtA4QemWuhSvfEBOZDEhd
+        kO4dKVH5DoHhwlF/a0sOZ1g=
+X-Google-Smtp-Source: ABdhPJxOyrqz39sJo5kShX2mHmWAGuRDJv6Z8jgBVfVRbzekEbV4JEux0WZeo9gXBj1oPecD4VRcuw==
+X-Received: by 2002:a05:622a:143:b0:2e0:b7c8:3057 with SMTP id v3-20020a05622a014300b002e0b7c83057mr20386773qtw.179.1652197698712;
+        Tue, 10 May 2022 08:48:18 -0700 (PDT)
+Received: from localhost ([98.242.65.84])
+        by smtp.gmail.com with ESMTPSA id h4-20020ac87764000000b002f39b99f6a2sm9129878qtu.60.2022.05.10.08.48.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 08:48:18 -0700 (PDT)
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        David Laight <David.Laight@ACULAB.COM>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Joe Perches <joe@perches.com>,
+        Julia Lawall <Julia.Lawall@inria.fr>,
+        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Nicolas Palix <nicolas.palix@imag.fr>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Matti Vaittinen <Matti.Vaittinen@fi.rohmeurope.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Yury Norov <yury.norov@gmail.com>, Ben Segall <bsegall@google.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Mel Gorman <mgorman@suse.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Valentin Schneider <vschneid@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>
+Subject: [PATCH 18/22] sched/core: remove unneeded cpumask_weight() in sched_core_cpu_{starting,deactivate}
+Date:   Tue, 10 May 2022 08:47:46 -0700
+Message-Id: <20220510154750.212913-19-yury.norov@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220510154750.212913-1-yury.norov@gmail.com>
+References: <20220510154750.212913-1-yury.norov@gmail.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+The following cpumask_any_but() implicitly calculates if number of smt cpus
+is equal to 1, therefore we can drop the code that does it explicitly.
 
-[ Upstream commit 2fbe467bcbfc760a08f08475eea6bbd4c2874319 ]
-
-The max98090 driver has a custom put function for some controls which can
-only be updated in certain circumstances which makes no effort to validate
-that input is suitable for the control, allowing out of spec values to be
-written to the hardware and presented to userspace. Fix this by returning
-an error when invalid values are written.
-
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20220420193454.2647908-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+CC: Ben Segall <bsegall@google.com>
+CC: Daniel Bristot de Oliveira <bristot@redhat.com>
+CC: Dietmar Eggemann <dietmar.eggemann@arm.com>
+CC: Ingo Molnar <mingo@redhat.com>
+CC: Juri Lelli <juri.lelli@redhat.com>
+CC: Mel Gorman <mgorman@suse.de>
+CC: Peter Zijlstra <peterz@infradead.org>
+CC: Steven Rostedt <rostedt@goodmis.org>
+CC: Valentin Schneider <vschneid@redhat.com>
+CC: Vincent Guittot <vincent.guittot@linaro.org>
+CC: linux-kernel@vger.kernel.org
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- sound/soc/codecs/max98090.c | 3 +++
- 1 file changed, 3 insertions(+)
+This is RFC because it drops WARN_ON_ONCE(rq->core != rq). If this warinig
+is important, I'll rework the patch.
 
-diff --git a/sound/soc/codecs/max98090.c b/sound/soc/codecs/max98090.c
-index a5b0c40ee545..6e5a4e757bf1 100644
---- a/sound/soc/codecs/max98090.c
-+++ b/sound/soc/codecs/max98090.c
-@@ -419,6 +419,9 @@ static int max98090_put_enab_tlv(struct snd_kcontrol *kcontrol,
+ kernel/sched/core.c | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 9700001948d0..07b8f35cbe36 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -6133,12 +6133,10 @@ static void sched_core_cpu_starting(unsigned int cpu)
  
- 	val = (val >> mc->shift) & mask;
+ 	WARN_ON_ONCE(rq->core != rq);
  
-+	if (sel < 0 || sel > mc->max)
-+		return -EINVAL;
+-	/* if we're the first, we'll be our own leader */
+-	if (cpumask_weight(smt_mask) == 1)
+-		goto unlock;
+-
+ 	/* find the leader */
+ 	t = cpumask_any_but(smt_mask, cpu);
 +
- 	*select = sel;
++	/* if we're the first, we'll be our own leader */
+ 	if (t >= nr_cpu_ids)
+ 		goto unlock;
  
- 	/* Setting a volume is only valid if it is already On */
+@@ -6171,18 +6169,14 @@ static void sched_core_cpu_deactivate(unsigned int cpu)
+ 
+ 	sched_core_lock(cpu, &flags);
+ 
+-	/* if we're the last man standing, nothing to do */
+-	if (cpumask_weight(smt_mask) == 1) {
+-		WARN_ON_ONCE(rq->core != rq);
+-		goto unlock;
+-	}
+-
+ 	/* if we're not the leader, nothing to do */
+ 	if (rq->core != rq)
+ 		goto unlock;
+ 
+ 	/* find a new leader */
+ 	t = cpumask_any_but(smt_mask, cpu);
++
++	/* if we're the last man standing, nothing to do */
+ 	if (t >= nr_cpu_ids)
+ 		goto unlock;
+ 
 -- 
-2.35.1
+2.32.0
 
