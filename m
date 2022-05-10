@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E8C5C35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD5ABC352A7
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:44:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244933AbiEJNrH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:47:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56846 "EHLO
+        id S245104AbiEJNrX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:47:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244096AbiEJNcg (ORCPT
+        with ESMTP id S243933AbiEJNcW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:32:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEC802317FD;
-        Tue, 10 May 2022 06:24:06 -0700 (PDT)
+        Tue, 10 May 2022 09:32:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C50919FB1A;
+        Tue, 10 May 2022 06:23:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0E968B81DA8;
-        Tue, 10 May 2022 13:24:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DD73C385A6;
-        Tue, 10 May 2022 13:24:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AC7AC6170D;
+        Tue, 10 May 2022 13:23:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AACB9C385A6;
+        Tue, 10 May 2022 13:23:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189043;
-        bh=Ug3tQ3QO9GG6qpH5Bj4AlY9aW8ATwK3bWbZmf6APSNs=;
+        s=korg; t=1652189032;
+        bh=2kP0nBChukhPRmIYqoOARegqxQkdDopPMuLmHoxJaWI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SpmtRNrOXE0wJHG1WK6xeBDAlMLOZ6W8HuxU/c+B8/RvW7oAB/kxHoOZnyRk+Mmcm
-         FgLUDmdWO6Dg1Qx5a4t5j/Oi2t5ubfU8rIxFyt98OYVsV0HV1zqehWw7sipbhVDkIM
-         GzJcutaT/HjKzHLT9+JOcjm3zeyWnT2gamMhqBFA=
+        b=D9+iNOzBb+xXhW0uj24endkr5isqlN81l436GEB3hssWYGrWnhsBL73M1uCQz4fcq
+         ZZGqIAuvAUpjBdrqe2NOskIFQdFJpanLLJ+VcsViyjzTG16XzUkdDDcQhcsApbgcPt
+         cgDD2uhZddefTmDQyirwTRPNYHA6vWQEw8MShMKA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
-        Takashi Sakamoto <o-takashi@sakamocchi.jp>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.4 08/52] firewire: core: extend card->lock in fw_core_handle_bus_reset
-Date:   Tue, 10 May 2022 15:07:37 +0200
-Message-Id: <20220510130730.100518116@linuxfoundation.org>
+        stable@vger.kernel.org, Haimin Zhang <tcs.kernel@gmail.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
+        Nobel Barakat <nobelbarakat@google.com>
+Subject: [PATCH 5.4 40/52] block-map: add __GFP_ZERO flag for alloc_page in function bio_copy_kern
+Date:   Tue, 10 May 2022 15:08:09 +0200
+Message-Id: <20220510130731.025055387@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.852544477@linuxfoundation.org>
 References: <20220510130729.852544477@linuxfoundation.org>
@@ -49,91 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Haimin Zhang <tcs.kernel@gmail.com>
 
-commit a7ecbe92b9243edbe94772f6f2c854e4142a3345 upstream.
+commit cc8f7fe1f5eab010191aa4570f27641876fa1267 upstream.
 
-card->local_node and card->bm_retries are both always accessed under
-card->lock.
-fw_core_handle_bus_reset has a check whose condition depends on
-card->local_node and whose body writes to card->bm_retries.
-Both of these accesses are not under card->lock. Move the lock acquiring
-of card->lock to before this check such that these accesses do happen
-when card->lock is held.
-fw_destroy_nodes is called inside the check.
-Since fw_destroy_nodes already acquires card->lock inside its function
-body, move this out to the callsites of fw_destroy_nodes.
-Also add a comment to indicate which locking is necessary when calling
-fw_destroy_nodes.
+Add __GFP_ZERO flag for alloc_page in function bio_copy_kern to initialize
+the buffer of a bio.
 
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Signed-off-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
-Link: https://lore.kernel.org/r/20220409041243.603210-4-o-takashi@sakamocchi.jp
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Haimin Zhang <tcs.kernel@gmail.com>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220216084038.15635-1-tcs.kernel@gmail.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+[nobelbarakat: Backported to 5.4: Manually added __GFP_ZERO flag]
+Signed-off-by: Nobel Barakat <nobelbarakat@google.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/firewire/core-card.c     |    3 +++
- drivers/firewire/core-topology.c |    9 +++------
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ block/bio.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/firewire/core-card.c
-+++ b/drivers/firewire/core-card.c
-@@ -668,6 +668,7 @@ EXPORT_SYMBOL_GPL(fw_card_release);
- void fw_core_remove_card(struct fw_card *card)
- {
- 	struct fw_card_driver dummy_driver = dummy_driver_template;
-+	unsigned long flags;
+--- a/block/bio.c
++++ b/block/bio.c
+@@ -1627,7 +1627,7 @@ struct bio *bio_copy_kern(struct request
+ 		if (bytes > len)
+ 			bytes = len;
  
- 	card->driver->update_phy_reg(card, 4,
- 				     PHY_LINK_ACTIVE | PHY_CONTENDER, 0);
-@@ -682,7 +683,9 @@ void fw_core_remove_card(struct fw_card
- 	dummy_driver.stop_iso		= card->driver->stop_iso;
- 	card->driver = &dummy_driver;
+-		page = alloc_page(q->bounce_gfp | gfp_mask);
++		page = alloc_page(q->bounce_gfp | __GFP_ZERO | gfp_mask);
+ 		if (!page)
+ 			goto cleanup;
  
-+	spin_lock_irqsave(&card->lock, flags);
- 	fw_destroy_nodes(card);
-+	spin_unlock_irqrestore(&card->lock, flags);
- 
- 	/* Wait for all users, especially device workqueue jobs, to finish. */
- 	fw_card_put(card);
---- a/drivers/firewire/core-topology.c
-+++ b/drivers/firewire/core-topology.c
-@@ -374,16 +374,13 @@ static void report_found_node(struct fw_
- 	card->bm_retries = 0;
- }
- 
-+/* Must be called with card->lock held */
- void fw_destroy_nodes(struct fw_card *card)
- {
--	unsigned long flags;
--
--	spin_lock_irqsave(&card->lock, flags);
- 	card->color++;
- 	if (card->local_node != NULL)
- 		for_each_fw_node(card, card->local_node, report_lost_node);
- 	card->local_node = NULL;
--	spin_unlock_irqrestore(&card->lock, flags);
- }
- 
- static void move_tree(struct fw_node *node0, struct fw_node *node1, int port)
-@@ -509,6 +506,8 @@ void fw_core_handle_bus_reset(struct fw_
- 	struct fw_node *local_node;
- 	unsigned long flags;
- 
-+	spin_lock_irqsave(&card->lock, flags);
-+
- 	/*
- 	 * If the selfID buffer is not the immediate successor of the
- 	 * previously processed one, we cannot reliably compare the
-@@ -520,8 +519,6 @@ void fw_core_handle_bus_reset(struct fw_
- 		card->bm_retries = 0;
- 	}
- 
--	spin_lock_irqsave(&card->lock, flags);
--
- 	card->broadcast_channel_allocated = card->broadcast_channel_auto_allocated;
- 	card->node_id = node_id;
- 	/*
 
 
