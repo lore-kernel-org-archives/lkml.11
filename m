@@ -2,178 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93452C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2241C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:33:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344821AbiEJOgS (ORCPT
+        id S1344871AbiEJOgY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:36:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43068 "EHLO
+        Tue, 10 May 2022 10:36:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344000AbiEJOHY (ORCPT
+        with ESMTP id S1343872AbiEJOHR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:07:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 977AD1CA376;
-        Tue, 10 May 2022 06:41:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1C22FB81DB8;
-        Tue, 10 May 2022 13:41:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DC83C385C2;
-        Tue, 10 May 2022 13:41:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652190090;
-        bh=FLgtJUbGL0X+qvUfKTXsZR0t1iFK8DTcc860Ca4tz0c=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DFJ3R8DUxfJwFHXc4YFd50g6oOTQheZCXMm9u5bENLoHNkO7g08RXTJwpGc13bYAy
-         8ur3qKGw4ScLVyB3SrH/XUVWFxQJ1CbjfhH2rOm76YzihCRzd8M3MiKKPhNLOXAJKh
-         Xl7qvvJ0HBXvruJbfEA0FLEIHzE6vZsiBryDs1/k=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, pali@kernel.org,
-        =?UTF-8?q?Marek=20Beh=FAn?= <kabel@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH 5.17 123/140] PCI: aardvark: Rewrite IRQ code to chained IRQ handler
-Date:   Tue, 10 May 2022 15:08:33 +0200
-Message-Id: <20220510130745.116249013@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
-References: <20220510130741.600270947@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 10 May 2022 10:07:17 -0400
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C0E31157F7;
+        Tue, 10 May 2022 06:41:19 -0700 (PDT)
+Received: by mail-wr1-f48.google.com with SMTP id b19so23867014wrh.11;
+        Tue, 10 May 2022 06:41:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ETH0SXQwXqTw7S/Rt3mpUjs/svhKnIJybMWlENZs/nk=;
+        b=W/aTyxriX/AFi1WA1W/ReMB7iksCkA8NLGBwdaBf+72UciSNQvK1W2XOesDUt7lQcF
+         pALoanvrfBLaDgBMNs+um+z9TQzUgIuUNodOvsToU45SRyiWtcglZMiCuqySECo+Ztif
+         glZzYVTxzZDTz95HlFhnGSwR18jVRL79PeNp9HV1Oh3j3QYv9nk1MCxpI//RsNdgtTCN
+         r9K3i5mXjq/TIuGDOjappSM610R3RoIKaFIh6S51xF1Xf3ejcEmzgIC5BJ2EIAO2AtbP
+         6a/Us2gUkIaUQSdgP9tWiUS+uWZnHnh5YIjRwQvjkB90WWibhir2pULHDEGOGblygnGB
+         nyqg==
+X-Gm-Message-State: AOAM531Mqa8/Sm6N2IiIFuq0jrvlJQahJyVC/kg81JML5E9csfIXc79O
+        8fPEtM0Z0BQd5vEZe7gCXm5e4Ws4tN9JFhMtf3M=
+X-Google-Smtp-Source: ABdhPJzra9WRGXGAomB0wHN9mnXi2nAqWwwlTmykLLgn0+W9K0qUWbej5QepKdDxwpiRha8RA3ftHLjtNChLpUbS7As=
+X-Received: by 2002:adf:d213:0:b0:20a:d703:154f with SMTP id
+ j19-20020adfd213000000b0020ad703154fmr19112799wrh.604.1652190078045; Tue, 10
+ May 2022 06:41:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220509121513.30549-1-harini.katakam@xilinx.com> <21ee77073341cd2b5e0109be5da61d8e981ea50d.camel@redhat.com>
+In-Reply-To: <21ee77073341cd2b5e0109be5da61d8e981ea50d.camel@redhat.com>
+From:   Harini Katakam <harinik@xilinx.com>
+Date:   Tue, 10 May 2022 19:11:06 +0530
+Message-ID: <CAFcVECKRpfuaJiBU8bXveHh3ukzgkSh6Q2s0WhRA0RoT+jSg4Q@mail.gmail.com>
+Subject: Re: [PATCH] net: macb: Disable macb pad and fcs for fragmented packets
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Harini Katakam <harini.katakam@xilinx.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        David Miller <davem@davemloft.net>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Jakub Kicinski <kuba@kernel.org>, dumazet@google.com,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+Hi Paolo,
 
-commit 1571d67dc190e50c6c56e8f88cdc39f7cc53166e upstream.
+On Tue, May 10, 2022 at 6:48 PM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> On Mon, 2022-05-09 at 17:45 +0530, Harini Katakam wrote:
+> > data_len in skbuff represents bytes resident in fragment lists or
+> > unmapped page buffers. For such packets, when data_len is non-zero,
+> > skb_put cannot be used - this will throw a kernel bug. Hence do not
+> > use macb_pad_and_fcs for such fragments.
+> >
+> > Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
+> > Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+> > Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+>
+> This looks like a fix suitable for the net tree. Please add a relevant
+> 'Fixes' tag.
+>
+> > ---
+> >  drivers/net/ethernet/cadence/macb_main.c | 7 +++++--
+> >  1 file changed, 5 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+> > index 6434e74c04f1..0b03305ad6a0 100644
+> > --- a/drivers/net/ethernet/cadence/macb_main.c
+> > +++ b/drivers/net/ethernet/cadence/macb_main.c
+> > @@ -1995,7 +1995,8 @@ static unsigned int macb_tx_map(struct macb *bp,
+> >                       ctrl |= MACB_BF(TX_LSO, lso_ctrl);
+> >                       ctrl |= MACB_BF(TX_TCP_SEQ_SRC, seq_ctrl);
+> >                       if ((bp->dev->features & NETIF_F_HW_CSUM) &&
+> > -                         skb->ip_summed != CHECKSUM_PARTIAL && !lso_ctrl)
+> > +                         skb->ip_summed != CHECKSUM_PARTIAL && !lso_ctrl &&
+> > +                         (skb->data_len == 0))
+> >                               ctrl |= MACB_BIT(TX_NOCRC);
+> >               } else
+> >                       /* Only set MSS/MFS on payload descriptors
+>
+> This chunk looks unrelated to the commit message ?!? only the next one
+> looks relevant.
 
-Rewrite the code to use irq_set_chained_handler_and_data() handler with
-chained_irq_enter() and chained_irq_exit() processing instead of using
-devm_request_irq().
+Thanks for the review. This code is related to the commit message.
+macb_pad_and_fcs is performed on the same packets on which
+TX_NOCRC is set (instruct HW not to perform CRC and perform
+CRC in SW). This is the patch which added both:
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/drivers/net/ethernet/cadence?id=653e92a9175ea7ed67efe209c725222051a3713d
+I'll mention the same in Fixes tag and also add Claudiu's review tag.
 
-advk_pcie_irq_handler() reads IRQ status bits and calls other functions
-based on which bits are set. These functions then read its own IRQ status
-bits and calls other aardvark functions based on these bits. Finally
-generic_handle_domain_irq() with translated linux IRQ numbers are called.
-
-Link: https://lore.kernel.org/r/20220110015018.26359-5-kabel@kernel.org
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Marek Behún <kabel@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Signed-off-by: Marek Behún <kabel@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/pci/controller/pci-aardvark.c |   48 ++++++++++++++++++----------------
- 1 file changed, 26 insertions(+), 22 deletions(-)
-
---- a/drivers/pci/controller/pci-aardvark.c
-+++ b/drivers/pci/controller/pci-aardvark.c
-@@ -268,6 +268,7 @@ struct advk_pcie {
- 		u32 actions;
- 	} wins[OB_WIN_COUNT];
- 	u8 wins_count;
-+	int irq;
- 	struct irq_domain *irq_domain;
- 	struct irq_chip irq_chip;
- 	raw_spinlock_t irq_lock;
-@@ -1430,21 +1431,26 @@ static void advk_pcie_handle_int(struct
- 	}
- }
- 
--static irqreturn_t advk_pcie_irq_handler(int irq, void *arg)
-+static void advk_pcie_irq_handler(struct irq_desc *desc)
- {
--	struct advk_pcie *pcie = arg;
--	u32 status;
-+	struct advk_pcie *pcie = irq_desc_get_handler_data(desc);
-+	struct irq_chip *chip = irq_desc_get_chip(desc);
-+	u32 val, mask, status;
- 
--	status = advk_readl(pcie, HOST_CTRL_INT_STATUS_REG);
--	if (!(status & PCIE_IRQ_CORE_INT))
--		return IRQ_NONE;
-+	chained_irq_enter(chip, desc);
- 
--	advk_pcie_handle_int(pcie);
-+	val = advk_readl(pcie, HOST_CTRL_INT_STATUS_REG);
-+	mask = advk_readl(pcie, HOST_CTRL_INT_MASK_REG);
-+	status = val & ((~mask) & PCIE_IRQ_ALL_MASK);
- 
--	/* Clear interrupt */
--	advk_writel(pcie, PCIE_IRQ_CORE_INT, HOST_CTRL_INT_STATUS_REG);
-+	if (status & PCIE_IRQ_CORE_INT) {
-+		advk_pcie_handle_int(pcie);
- 
--	return IRQ_HANDLED;
-+		/* Clear interrupt */
-+		advk_writel(pcie, PCIE_IRQ_CORE_INT, HOST_CTRL_INT_STATUS_REG);
-+	}
-+
-+	chained_irq_exit(chip, desc);
- }
- 
- static void __maybe_unused advk_pcie_disable_phy(struct advk_pcie *pcie)
-@@ -1511,7 +1517,7 @@ static int advk_pcie_probe(struct platfo
- 	struct advk_pcie *pcie;
- 	struct pci_host_bridge *bridge;
- 	struct resource_entry *entry;
--	int ret, irq;
-+	int ret;
- 
- 	bridge = devm_pci_alloc_host_bridge(dev, sizeof(struct advk_pcie));
- 	if (!bridge)
-@@ -1597,17 +1603,9 @@ static int advk_pcie_probe(struct platfo
- 	if (IS_ERR(pcie->base))
- 		return PTR_ERR(pcie->base);
- 
--	irq = platform_get_irq(pdev, 0);
--	if (irq < 0)
--		return irq;
--
--	ret = devm_request_irq(dev, irq, advk_pcie_irq_handler,
--			       IRQF_SHARED | IRQF_NO_THREAD, "advk-pcie",
--			       pcie);
--	if (ret) {
--		dev_err(dev, "Failed to register interrupt\n");
--		return ret;
--	}
-+	pcie->irq = platform_get_irq(pdev, 0);
-+	if (pcie->irq < 0)
-+		return pcie->irq;
- 
- 	pcie->reset_gpio = devm_gpiod_get_from_of_node(dev, dev->of_node,
- 						       "reset-gpios", 0,
-@@ -1656,11 +1654,14 @@ static int advk_pcie_probe(struct platfo
- 		return ret;
- 	}
- 
-+	irq_set_chained_handler_and_data(pcie->irq, advk_pcie_irq_handler, pcie);
-+
- 	bridge->sysdata = pcie;
- 	bridge->ops = &advk_pcie_ops;
- 
- 	ret = pci_host_probe(bridge);
- 	if (ret < 0) {
-+		irq_set_chained_handler_and_data(pcie->irq, NULL, NULL);
- 		advk_pcie_remove_msi_irq_domain(pcie);
- 		advk_pcie_remove_irq_domain(pcie);
- 		return ret;
-@@ -1708,6 +1709,9 @@ static int advk_pcie_remove(struct platf
- 	advk_writel(pcie, PCIE_ISR1_ALL_MASK, PCIE_ISR1_REG);
- 	advk_writel(pcie, PCIE_IRQ_ALL_MASK, HOST_CTRL_INT_STATUS_REG);
- 
-+	/* Remove IRQ handler */
-+	irq_set_chained_handler_and_data(pcie->irq, NULL, NULL);
-+
- 	/* Remove IRQ domains */
- 	advk_pcie_remove_msi_irq_domain(pcie);
- 	advk_pcie_remove_irq_domain(pcie);
-
-
+Regards,
+Harini
