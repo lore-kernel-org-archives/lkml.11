@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4890C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:51:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96E75C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244569AbiEJNzo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:55:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56262 "EHLO
+        id S244580AbiEJNzz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:55:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244767AbiEJNiC (ORCPT
+        with ESMTP id S244855AbiEJNiI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:38:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E00DE5838D;
-        Tue, 10 May 2022 06:26:19 -0700 (PDT)
+        Tue, 10 May 2022 09:38:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEAA26D4CA;
+        Tue, 10 May 2022 06:26:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 730C2B81DA8;
-        Tue, 10 May 2022 13:26:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C91E5C385C6;
-        Tue, 10 May 2022 13:26:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD8B1B81DA9;
+        Tue, 10 May 2022 13:26:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14E0EC385C2;
+        Tue, 10 May 2022 13:26:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189178;
-        bh=Q7tCidXFNBg5wGReamRFoXUum6q7cRGXz98pfpLdfkk=;
+        s=korg; t=1652189190;
+        bh=/pxfULk7hU6DIw/b2kQ1JQq9ZuRhMqqC4/KdmYm/oPU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b8kgaD5BUlRTrd82qnwJjidqNEbSCCgYKnRhrE8Nw6EDQveFECfsd0YPSFsYMQjJF
-         sQhuSBF8otPg5VpKeznAeF+ReVekZ2FZIx9chiRn6Rr26SJDlw/sXs3eHCKvCG/utF
-         Sqa+OhA0O9G3qbxI/50Mj/KN4m69TOufgHQtcm30=
+        b=XTk1P73H93NTPxeMP9J+s/XTaBniYChls2kWi9pe3FiRSAet9PpvMmh2LSREjft7w
+         WYjKdAy6JRxjUXisEt+RalD59NmWVvmSCkoxzxlotFYb5fLooqdSdUafMEnFe90VVw
+         AsQkUcgMwA+rjwY6mQGuEvVjH/JgUDUNRyCvhqe0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vlad Buslov <vladbu@nvidia.com>,
-        Maor Dickman <maord@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.10 38/70] net/mlx5e: Dont match double-vlan packets if cvlan is not set
-Date:   Tue, 10 May 2022 15:07:57 +0200
-Message-Id: <20220510130733.979174634@linuxfoundation.org>
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Kees Cook <keescook@chromium.org>
+Subject: [PATCH 5.10 42/70] selftests/seccomp: Dont call read() on TTY from background pgrp
+Date:   Tue, 10 May 2022 15:08:01 +0200
+Message-Id: <20220510130734.091625379@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
 References: <20220510130732.861729621@linuxfoundation.org>
@@ -49,44 +48,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vlad Buslov <vladbu@nvidia.com>
+From: Jann Horn <jannh@google.com>
 
-commit ada09af92e621ab500dd80a16d1d0299a18a1180 upstream.
+commit 2bfed7d2ffa5d86c462d3e2067f2832eaf8c04c7 upstream.
 
-Currently, match VLAN rule also matches packets that have multiple VLAN
-headers. This behavior is similar to buggy flower classifier behavior that
-has recently been fixed. Fix the issue by matching on
-outer_second_cvlan_tag with value 0 which will cause the HW to verify the
-packet doesn't contain second vlan header.
+Since commit 92d25637a3a4 ("kselftest: signal all child processes"), tests
+are executed in background process groups. This means that trying to read
+from stdin now throws SIGTTIN when stdin is a TTY, which breaks some
+seccomp selftests that try to use read(0, NULL, 0) as a dummy syscall.
 
-Fixes: 699e96ddf47f ("net/mlx5e: Support offloading tc double vlan headers match")
-Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
-Reviewed-by: Maor Dickman <maord@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+The simplest way to fix that is probably to just use -1 instead of 0 as
+the dummy read()'s FD.
+
+Fixes: 92d25637a3a4 ("kselftest: signal all child processes")
+Signed-off-by: Jann Horn <jannh@google.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20220319010011.1374622-1-jannh@google.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c |   11 +++++++++++
- 1 file changed, 11 insertions(+)
+ tools/testing/selftests/seccomp/seccomp_bpf.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -2396,6 +2396,17 @@ static int __parse_cls_flower(struct mlx
- 				 match.key->vlan_priority);
+--- a/tools/testing/selftests/seccomp/seccomp_bpf.c
++++ b/tools/testing/selftests/seccomp/seccomp_bpf.c
+@@ -951,7 +951,7 @@ TEST(ERRNO_valid)
+ 	ASSERT_EQ(0, ret);
  
- 			*match_level = MLX5_MATCH_L2;
-+
-+			if (!flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_CVLAN) &&
-+			    match.mask->vlan_eth_type &&
-+			    MLX5_CAP_FLOWTABLE_TYPE(priv->mdev,
-+						    ft_field_support.outer_second_vid,
-+						    fs_type)) {
-+				MLX5_SET(fte_match_set_misc, misc_c,
-+					 outer_second_cvlan_tag, 1);
-+				spec->match_criteria_enable |=
-+					MLX5_MATCH_MISC_PARAMETERS;
-+			}
- 		}
- 	} else if (*match_level != MLX5_MATCH_NONE) {
- 		/* cvlan_tag enabled in match criteria and
+ 	EXPECT_EQ(parent, syscall(__NR_getppid));
+-	EXPECT_EQ(-1, read(0, NULL, 0));
++	EXPECT_EQ(-1, read(-1, NULL, 0));
+ 	EXPECT_EQ(E2BIG, errno);
+ }
+ 
+@@ -970,7 +970,7 @@ TEST(ERRNO_zero)
+ 
+ 	EXPECT_EQ(parent, syscall(__NR_getppid));
+ 	/* "errno" of 0 is ok. */
+-	EXPECT_EQ(0, read(0, NULL, 0));
++	EXPECT_EQ(0, read(-1, NULL, 0));
+ }
+ 
+ /*
+@@ -991,7 +991,7 @@ TEST(ERRNO_capped)
+ 	ASSERT_EQ(0, ret);
+ 
+ 	EXPECT_EQ(parent, syscall(__NR_getppid));
+-	EXPECT_EQ(-1, read(0, NULL, 0));
++	EXPECT_EQ(-1, read(-1, NULL, 0));
+ 	EXPECT_EQ(4095, errno);
+ }
+ 
+@@ -1022,7 +1022,7 @@ TEST(ERRNO_order)
+ 	ASSERT_EQ(0, ret);
+ 
+ 	EXPECT_EQ(parent, syscall(__NR_getppid));
+-	EXPECT_EQ(-1, read(0, NULL, 0));
++	EXPECT_EQ(-1, read(-1, NULL, 0));
+ 	EXPECT_EQ(12, errno);
+ }
+ 
+@@ -2575,7 +2575,7 @@ void *tsync_sibling(void *data)
+ 	ret = prctl(PR_GET_NO_NEW_PRIVS, 0, 0, 0, 0);
+ 	if (!ret)
+ 		return (void *)SIBLING_EXIT_NEWPRIVS;
+-	read(0, NULL, 0);
++	read(-1, NULL, 0);
+ 	return (void *)SIBLING_EXIT_UNKILLED;
+ }
+ 
 
 
