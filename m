@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A8C1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:13:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78549C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:13:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242453AbiEJORo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:17:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42256 "EHLO
+        id S1343501AbiEJORw (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:17:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244898AbiEJNrF (ORCPT
+        with ESMTP id S244997AbiEJNrK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:47:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E4751BADF3;
-        Tue, 10 May 2022 06:32:26 -0700 (PDT)
+        Tue, 10 May 2022 09:47:10 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63BA0366BF;
+        Tue, 10 May 2022 06:33:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2955361889;
-        Tue, 10 May 2022 13:32:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B8E8C385A6;
-        Tue, 10 May 2022 13:32:24 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A1249CE1EED;
+        Tue, 10 May 2022 13:33:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADFCAC385A6;
+        Tue, 10 May 2022 13:33:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189545;
-        bh=Mam2S/II9ark330tQJUdusEO1O9sMlGXgfWcVO8cxqY=;
+        s=korg; t=1652189595;
+        bh=VYx/Qn1xfl7ARAKdkKF03gmmvh4hIEeI/UBBC2WRzgg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MimjHKqCjco1dWFLhS5BeoGS8D9R8tfvygB2nIhe7/9j1DfXeSadfWhMyRgyVKaB0
-         ch9GH1yL2wlfI3CFlpvSSsEqiAN+jlVqYfGwVdYKPZfnQ/KZIcCu1laJP/QHu5RSLA
-         YoD/US6cBzgGM8Lcl8bR6wOEfiXy02T9GtA84GFo=
+        b=Uvj67X8ds7cZz88YjXPmXtUJIRCNMJJVlS+kqS1/u5G99jwkwF9yS2Vlx63X5m0B5
+         mUPaeJ+RjIKfiRb84G2dfF0fS9AdIVeJFG6cVGMzxmcvljoBWwYWv82dHGPfTUXIYT
+         W/zuOoiEVZyUWqMb6NWCZNRjPjRiAoEZ8c/4AsPQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sascha Hauer <sha@pengutronix.de>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.15 044/135] ASoC: dmaengine: Restore NULL prepare_slave_config() callback
-Date:   Tue, 10 May 2022 15:07:06 +0200
-Message-Id: <20220510130741.662590218@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sidhartha Kumar <sidhartha.kumar@oracle.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 101/135] selftest/vm: verify remap destination address in mremap_test
+Date:   Tue, 10 May 2022 15:08:03 +0200
+Message-Id: <20220510130743.305503241@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -49,49 +53,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+From: Sidhartha Kumar <sidhartha.kumar@oracle.com>
 
-commit 660564fc9a92a893a14f255be434f7ea0b967901 upstream.
+[ Upstream commit 18d609daa546c919fd36b62a7b510c18de4b4af8 ]
 
-As pointed out by Sascha Hauer, this patch changes:
-if (pmc->config && !pcm->config->prepare_slave_config)
-        <do nothing>
-to:
-if (pmc->config && !pcm->config->prepare_slave_config)
-        snd_dmaengine_pcm_prepare_slave_config()
+Because mremap does not have a MAP_FIXED_NOREPLACE flag, it can destroy
+existing mappings.  This causes a segfault when regions such as text are
+remapped and the permissions are changed.
 
-This breaks the drivers that do not need a call to
-dmaengine_slave_config(). Drivers that still need to call
-snd_dmaengine_pcm_prepare_slave_config(), but have a NULL
-pcm->config->prepare_slave_config should use
-snd_dmaengine_pcm_prepare_slave_config() as their prepare_slave_config
-callback.
+Verify the requested mremap destination address does not overlap any
+existing mappings by using mmap's MAP_FIXED_NOREPLACE flag.  Keep
+incrementing the destination address until a valid mapping is found or
+fail the current test once the max address is reached.
 
-Fixes: 9a1e13440a4f ("ASoC: dmaengine: do not use a NULL prepare_slave_config() callback")
-Reported-by: Sascha Hauer <sha@pengutronix.de>
-Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-Link: https://lore.kernel.org/r/20220421125403.2180824-1-codrin.ciubotariu@microchip.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lkml.kernel.org/r/20220420215721.4868-2-sidhartha.kumar@oracle.com
+Signed-off-by: Sidhartha Kumar <sidhartha.kumar@oracle.com>
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/soc-generic-dmaengine-pcm.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ tools/testing/selftests/vm/mremap_test.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
---- a/sound/soc/soc-generic-dmaengine-pcm.c
-+++ b/sound/soc/soc-generic-dmaengine-pcm.c
-@@ -82,10 +82,10 @@ static int dmaengine_pcm_hw_params(struc
+diff --git a/tools/testing/selftests/vm/mremap_test.c b/tools/testing/selftests/vm/mremap_test.c
+index efcbf537b3d5..8f4dbbd60c09 100644
+--- a/tools/testing/selftests/vm/mremap_test.c
++++ b/tools/testing/selftests/vm/mremap_test.c
+@@ -66,6 +66,30 @@ enum {
+ 	.expect_failure = should_fail				\
+ }
  
- 	memset(&slave_config, 0, sizeof(slave_config));
- 
--	if (pcm->config && pcm->config->prepare_slave_config)
--		prepare_slave_config = pcm->config->prepare_slave_config;
--	else
-+	if (!pcm->config)
- 		prepare_slave_config = snd_dmaengine_pcm_prepare_slave_config;
-+	else
-+		prepare_slave_config = pcm->config->prepare_slave_config;
- 
- 	if (prepare_slave_config) {
- 		int ret = prepare_slave_config(substream, params, &slave_config);
++/*
++ * Returns false if the requested remap region overlaps with an
++ * existing mapping (e.g text, stack) else returns true.
++ */
++static bool is_remap_region_valid(void *addr, unsigned long long size)
++{
++	void *remap_addr = NULL;
++	bool ret = true;
++
++	/* Use MAP_FIXED_NOREPLACE flag to ensure region is not mapped */
++	remap_addr = mmap(addr, size, PROT_READ | PROT_WRITE,
++					 MAP_FIXED_NOREPLACE | MAP_ANONYMOUS | MAP_SHARED,
++					 -1, 0);
++
++	if (remap_addr == MAP_FAILED) {
++		if (errno == EEXIST)
++			ret = false;
++	} else {
++		munmap(remap_addr, size);
++	}
++
++	return ret;
++}
++
+ /* Returns mmap_min_addr sysctl tunable from procfs */
+ static unsigned long long get_mmap_min_addr(void)
+ {
+-- 
+2.35.1
+
 
 
