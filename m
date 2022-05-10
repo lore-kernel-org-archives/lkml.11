@@ -2,92 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A43BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 10:08:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B38BAC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 10:10:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239585AbiEJKMv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 06:12:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33802 "EHLO
+        id S239586AbiEJKON (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 06:14:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229956AbiEJKMl (ORCPT
+        with ESMTP id S229956AbiEJKOL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 06:12:41 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF250185C85;
-        Tue, 10 May 2022 03:08:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652177325; x=1683713325;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=FEwpRe0W3NxiPGNEO5T4Th0jnvzANcK4YMMXxjuh76U=;
-  b=kdq2FPsxM+RaYtG5iEDFtNXz54S01iJiIlrCh1nBn0X12zn5Um5blB/K
-   Ic1xOCJvVhPdUNf/cPTfplnHCQaD1mQtzURC44mAO6VTt9MI8en/GIwx0
-   NxB/DQNMKTNvgL/ZAHy11T5AksMUI94w5hs0uDMrW/Dsb10EhVfH7LNSt
-   TcNMuEmWtkfc7C6G3Bahh5PRVBIU5yugpJigRqbLYPO5dKi5+XTcTNjW+
-   lHDz2gy34PV2cejasf5fNQxr4/499MllCGtrH7WngPOO3dogbPIJzhq+A
-   sgzQy+Pjm/FQvyHZD9JGfttZ6cZhRfPD3gx20zrNCG9AsGadJjoBNbaY3
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="269464879"
-X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
-   d="scan'208";a="269464879"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 03:08:35 -0700
-X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
-   d="scan'208";a="570605764"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 03:08:29 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1noMn3-00EI7L-0j;
-        Tue, 10 May 2022 13:08:25 +0300
-Date:   Tue, 10 May 2022 13:08:24 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Tyrone Ting <warp5tw@gmail.com>
-Cc:     avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
-        venture@google.com, yuenn@google.com, benjaminfair@google.com,
-        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
-        wsa@kernel.org, jarkko.nikula@linux.intel.com,
-        semen.protsenko@linaro.org, sven@svenpeter.dev, jie.deng@intel.com,
-        jsd@semihalf.com, lukas.bulwahn@gmail.com, olof@lixom.net,
-        arnd@arndb.de, tali.perry@nuvoton.com, Avi.Fishman@nuvoton.com,
-        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
-        kfting@nuvoton.com, openbmc@lists.ozlabs.org,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/9] i2c: npcm: Change the way of getting GCR regmap
-Message-ID: <Yno5mJMi/3dZyjNz@smile.fi.intel.com>
-References: <20220510091654.8498-1-warp5tw@gmail.com>
- <20220510091654.8498-3-warp5tw@gmail.com>
+        Tue, 10 May 2022 06:14:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CED102AACE2;
+        Tue, 10 May 2022 03:10:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8A7DCB81CA7;
+        Tue, 10 May 2022 10:10:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4A1F7C385C9;
+        Tue, 10 May 2022 10:10:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652177412;
+        bh=MnaoeGPz7Fq2odEZkhukT5d1h8HFw1tYwdSDDAv0T7s=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=OMouXlySYEfnIqHyGLcom88RQP+8TUtqR3KeltArziPJPFhn7guAdtq+JU/7XzFfc
+         d4r6WdYrY3h0cvh2ZDMT6a019xEo+SuN/TwyJG6zV6Cd1N4RFQ7alqi0xiOA203SqA
+         RxYg7pVRJ6GzgbfzuNmgGPMhcLCXcG+nZHsHkWvCNWP7umVUvzMYbZp2F6CARH7llH
+         YbHlsTy7JVOExCJ9RwWon9TaO/aYqnJJ0O5GOKovvn1lhAtLosyU0ZnhbQWCe5F2A5
+         q66VsG+0VqFlhLx875Gy58+1J7KJBxgUZJdzpOoH7X352mI32ahDWCyfHjCiYeODhf
+         sPJ+vkBNZFdBA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2DFD6F03876;
+        Tue, 10 May 2022 10:10:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220510091654.8498-3-warp5tw@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] x25: remove redundant pointer dev
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165217741218.27960.5224636019366457113.git-patchwork-notify@kernel.org>
+Date:   Tue, 10 May 2022 10:10:12 +0000
+References: <20220508214500.60446-1-colin.i.king@gmail.com>
+In-Reply-To: <20220508214500.60446-1-colin.i.king@gmail.com>
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     ms@dev.tdt.de, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-x25@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 05:16:47PM +0800, Tyrone Ting wrote:
-> From: Tali Perry <tali.perry1@gmail.com>
+Hello:
+
+This patch was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
+
+On Sun,  8 May 2022 22:45:00 +0100 you wrote:
+> Pointer dev is being assigned a value that is never used, the assignment
+> and the variable are redundant and can be removed. Also replace null check
+> with the preferred !ptr idiom.
 > 
-> Change the way of getting NPCM system manager reigster (GCR)
-> and still maintain the old mechanism as a fallback if getting
-> nuvoton,sys-mgr fails while working with the legacy devicetree
-> file.
+> Cleans up clang scan warning:
+> net/x25/x25_proc.c:94:26: warning: Although the value stored to 'dev' is
+> used in the enclosing expression, the value is never actually read
+> from 'dev' [deadcode.DeadStores]
+> 
+> [...]
 
-...
+Here is the summary with links:
+  - x25: remove redundant pointer dev
+    https://git.kernel.org/netdev/net-next/c/ecd17a87eb78
 
-> @@ -2236,6 +2236,7 @@ static int npcm_i2c_probe_bus(struct platform_device *pdev)
->  	static struct regmap *clk_regmap;
->  	int irq;
->  	int ret;
-> +	struct device_node *np = pdev->dev.of_node;
-
-Can we keep "longer line first" order?
-
+You are awesome, thank you!
 -- 
-With Best Regards,
-Andy Shevchenko
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
