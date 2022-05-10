@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC79AC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:23:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6974BC4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:23:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243147AbiEJN0E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:26:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45998 "EHLO
+        id S243207AbiEJN0c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:26:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243510AbiEJNWA (ORCPT
+        with ESMTP id S243578AbiEJNWM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:22:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29C91517CB;
-        Tue, 10 May 2022 06:16:14 -0700 (PDT)
+        Tue, 10 May 2022 09:22:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D66056768;
+        Tue, 10 May 2022 06:16:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C5D16166C;
-        Tue, 10 May 2022 13:16:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C827C385A6;
-        Tue, 10 May 2022 13:16:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B109EB81D7A;
+        Tue, 10 May 2022 13:15:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAE53C385A6;
+        Tue, 10 May 2022 13:15:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188572;
-        bh=SkicZJaon+6r860YY3xSembF7T/c32xtoZ769rYVxNU=;
+        s=korg; t=1652188547;
+        bh=O726eevFd4aa9bv4B67BLbuQbMjvTTVMMcyh219BVxE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZWVuQKDwkLH8lU3MYgqYcKyxir/ixrVwmA7hE65AD90U3Ov3/nNDyAFQVGu8bHn0Q
-         6CrN4NKMEIvVNIctgjULRSoY6nDmNuU79ptOLGqjSLPtDksrmtEvWfq5PrBxcJJMR8
-         O2Ju7/hzXQKxvBVn3bn3Ce1+p3OQ2RkFIv7eT4dM=
+        b=U2mq2JCWT2frtWWGagREk2iw4pUIKH2aU4bKe8zeJHn2R5PGdaAIMFbnGOpv926YK
+         NIXYegdV1KwjDuB0mLF8QkXUTkYOYqAIU6Fz4Ux/rt/VeRK74YJPAHZNOpIACEZRsc
+         lbsLZtMpEYenSPP11F7ZQ545kSARO5DDiFyiefzs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 34/78] pinctrl: pistachio: fix use of irq_of_parse_and_map()
-Date:   Tue, 10 May 2022 15:07:20 +0200
-Message-Id: <20220510130733.545079332@linuxfoundation.org>
+Subject: [PATCH 4.14 44/78] drivers: net: hippi: Fix deadlock in rr_close()
+Date:   Tue, 10 May 2022 15:07:30 +0200
+Message-Id: <20220510130733.839982828@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
 References: <20220510130732.522479698@linuxfoundation.org>
@@ -50,41 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 0c9843a74a85224a89daa81fa66891dae2f930e1 ]
+[ Upstream commit bc6de2878429e85c1f1afaa566f7b5abb2243eef ]
 
-The irq_of_parse_and_map() function returns 0 on failure, and does not
-return an negative value.
+There is a deadlock in rr_close(), which is shown below:
 
-Fixes: cefc03e5995e ("pinctrl: Add Pistachio SoC pin control driver")
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Link: https://lore.kernel.org/r/20220424031430.3170759-1-lv.ruyi@zte.com.cn
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+   (Thread 1)                |      (Thread 2)
+                             | rr_open()
+rr_close()                   |  add_timer()
+ spin_lock_irqsave() //(1)   |  (wait a time)
+ ...                         | rr_timer()
+ del_timer_sync()            |  spin_lock_irqsave() //(2)
+ (wait timer to stop)        |  ...
+
+We hold rrpriv->lock in position (1) of thread 1 and
+use del_timer_sync() to wait timer to stop, but timer handler
+also need rrpriv->lock in position (2) of thread 2.
+As a result, rr_close() will block forever.
+
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irqsave(), which could let timer handler to obtain
+the needed lock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417125519.82618-1-duoming@zju.edu.cn
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/pinctrl-pistachio.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/hippi/rrunner.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/pinctrl/pinctrl-pistachio.c b/drivers/pinctrl/pinctrl-pistachio.c
-index b2b7e238bda9..fc8c57527fb7 100644
---- a/drivers/pinctrl/pinctrl-pistachio.c
-+++ b/drivers/pinctrl/pinctrl-pistachio.c
-@@ -1374,10 +1374,10 @@ static int pistachio_gpio_register(struct pistachio_pinctrl *pctl)
- 		}
+diff --git a/drivers/net/hippi/rrunner.c b/drivers/net/hippi/rrunner.c
+index 40ef4aeb0ef0..3a73ac03fb2b 100644
+--- a/drivers/net/hippi/rrunner.c
++++ b/drivers/net/hippi/rrunner.c
+@@ -1354,7 +1354,9 @@ static int rr_close(struct net_device *dev)
  
- 		irq = irq_of_parse_and_map(child, 0);
--		if (irq < 0) {
--			dev_err(pctl->dev, "No IRQ for bank %u: %d\n", i, irq);
-+		if (!irq) {
-+			dev_err(pctl->dev, "No IRQ for bank %u\n", i);
- 			of_node_put(child);
--			ret = irq;
-+			ret = -EINVAL;
- 			goto err;
- 		}
+ 	rrpriv->fw_running = 0;
  
++	spin_unlock_irqrestore(&rrpriv->lock, flags);
+ 	del_timer_sync(&rrpriv->timer);
++	spin_lock_irqsave(&rrpriv->lock, flags);
+ 
+ 	writel(0, &regs->TxPi);
+ 	writel(0, &regs->IpRxPi);
 -- 
 2.35.1
 
