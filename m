@@ -2,89 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27391C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:33:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1E32C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:33:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243121AbiEJOhl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:37:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53776 "EHLO
+        id S1344567AbiEJOhu (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:37:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239470AbiEJOeN (ORCPT
+        with ESMTP id S1344626AbiEJOfJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:34:13 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A16792F29D2
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 06:53:16 -0700 (PDT)
-Received: from kwepemi100012.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KyKDf49VnzGpdw;
-        Tue, 10 May 2022 21:50:26 +0800 (CST)
-Received: from kwepemm600005.china.huawei.com (7.193.23.191) by
- kwepemi100012.china.huawei.com (7.221.188.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 10 May 2022 21:53:14 +0800
-Received: from ubuntu1804.huawei.com (10.67.175.30) by
- kwepemm600005.china.huawei.com (7.193.23.191) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 10 May 2022 21:53:13 +0800
-From:   Hui Tang <tanghui20@huawei.com>
-To:     <emma@anholt.net>
-CC:     <mripard@kernel.org>, <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <p.zabel@pengutronix.de>, <dri-devel@lists.freedesktop.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next] drm/vc4: hdmi: Fix build error for implicit function declaration
-Date:   Tue, 10 May 2022 21:51:48 +0800
-Message-ID: <20220510135148.247719-1-tanghui20@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 10 May 2022 10:35:09 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C44F72DD793;
+        Tue, 10 May 2022 06:54:12 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KyKJp4qqdz4yTd;
+        Tue, 10 May 2022 23:54:02 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1652190848;
+        bh=RKiZUE5HvPhTVnUibJtmltdG/qpHsl+mSP0bgs2lHhQ=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=Z05kSyfn/tRZEkMC+xx0iIJQ7Am+MQO7HLgvv0mZSHOcfpqTom2o/uwqzS0x8Mf2S
+         +MV9rZ+Fzf71f3gh47v8ZN6FuQpE+0hL2e6Ug+4kF9Y6fEpYke0W/joqSUA70Lwp5I
+         4Ppma9tFa9PkRNG20BN4X8MRlMpJ63sRO/S19u9v0FZlEHa4Js3eqk1sS3wGAa85dR
+         +Jh96R1o2OAtJhZFfuVMo1EZ8CMSa8mkEAFP0AyoLzOV+kygqKbLAfKRxs3fKgbcsD
+         1Vaxn4RMiVSaImYmC7RQ1ktIs3LG4P5Jb+tgoFnzybYroBhkWvfkc77elbZWKz1nx/
+         2xhke52QkhhQQ==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        Hari Bathini <hbathini@linux.ibm.com>
+Cc:     linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        pmladek@suse.com, kexec@lists.infradead.org, bhe@redhat.com,
+        linux-leds@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
+        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
+        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
+        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
+        halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
+        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
+        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Paul Mackerras <paulus@samba.org>, akpm@linux-foundation.org
+Subject: Re: [PATCH 08/30] powerpc/setup: Refactor/untangle panic notifiers
+In-Reply-To: <f9c3de3c-1709-a1aa-2ece-c9fbfd5e6d6a@igalia.com>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-9-gpiccoli@igalia.com>
+ <3c34d8e2-6f84-933f-a4ed-338cd300d6b0@linux.ibm.com>
+ <f9c3de3c-1709-a1aa-2ece-c9fbfd5e6d6a@igalia.com>
+Date:   Tue, 10 May 2022 23:53:56 +1000
+Message-ID: <87fslh8pe3.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.175.30]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600005.china.huawei.com (7.193.23.191)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-drivers/gpu/drm/vc4/vc4_hdmi.c: In function ‘vc4_hdmi_connector_detect’:
-drivers/gpu/drm/vc4/vc4_hdmi.c:228:7: error: implicit declaration of function ‘gpiod_get_value_cansleep’; did you mean ‘gpio_get_value_cansleep’? [-Werror=implicit-function-declaration]
-   if (gpiod_get_value_cansleep(vc4_hdmi->hpd_gpio))
-       ^~~~~~~~~~~~~~~~~~~~~~~~
-       gpio_get_value_cansleep
-  CC [M]  drivers/gpu/drm/vc4/vc4_validate.o
-  CC [M]  drivers/gpu/drm/vc4/vc4_v3d.o
-  CC [M]  drivers/gpu/drm/vc4/vc4_validate_shaders.o
-  CC [M]  drivers/gpu/drm/vc4/vc4_debugfs.o
-drivers/gpu/drm/vc4/vc4_hdmi.c: In function ‘vc4_hdmi_bind’:
-drivers/gpu/drm/vc4/vc4_hdmi.c:2883:23: error: implicit declaration of function ‘devm_gpiod_get_optional’; did you mean ‘devm_clk_get_optional’? [-Werror=implicit-function-declaration]
-  vc4_hdmi->hpd_gpio = devm_gpiod_get_optional(dev, "hpd", GPIOD_IN);
-                       ^~~~~~~~~~~~~~~~~~~~~~~
-                       devm_clk_get_optional
-drivers/gpu/drm/vc4/vc4_hdmi.c:2883:59: error: ‘GPIOD_IN’ undeclared (first use in this function); did you mean ‘GPIOF_IN’?
-  vc4_hdmi->hpd_gpio = devm_gpiod_get_optional(dev, "hpd", GPIOD_IN);
-                                                           ^~~~~~~~
-                                                           GPIOF_IN
-drivers/gpu/drm/vc4/vc4_hdmi.c:2883:59: note: each undeclared identifier is reported only once for each function it appears in
-cc1: all warnings being treated as errors
+"Guilherme G. Piccoli" <gpiccoli@igalia.com> writes:
+> On 05/05/2022 15:55, Hari Bathini wrote:
+>> [...] 
+>> The change looks good. I have tested it on an LPAR (ppc64).
+>> 
+>> Reviewed-by: Hari Bathini <hbathini@linux.ibm.com>
+>> 
+>
+> Hi Michael. do you think it's possible to add this one to powerpc/next
+> (or something like that), or do you prefer a V2 with his tag?
 
-Fixes: 6800234ceee0 ("drm/vc4: hdmi: Convert to gpiod")
-Signed-off-by: Hui Tang <tanghui20@huawei.com>
----
- drivers/gpu/drm/vc4/vc4_hdmi.c | 1 +
- 1 file changed, 1 insertion(+)
+Ah sorry, I assumed it was going in as part of the whole series. I guess
+I misread the cover letter.
 
-diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
-index 6aadb65eb640..823d812f4982 100644
---- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -38,6 +38,7 @@
- #include <drm/drm_simple_kms_helper.h>
- #include <linux/clk.h>
- #include <linux/component.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/i2c.h>
- #include <linux/of_address.h>
- #include <linux/of_gpio.h>
--- 
-2.17.1
+So you want me to take this patch on its own via the powerpc tree?
 
+cheers
