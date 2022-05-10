@@ -2,147 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8472CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:28:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27591C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:30:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239511AbiEJLcn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 07:32:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47592 "EHLO
+        id S241011AbiEJLej (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 07:34:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238682AbiEJLck (ORCPT
+        with ESMTP id S233550AbiEJLec (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 07:32:40 -0400
+        Tue, 10 May 2022 07:34:32 -0400
 Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 606F524DC00;
-        Tue, 10 May 2022 04:28:43 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id F13281F8B5;
-        Tue, 10 May 2022 11:28:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1652182121; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D545324EA08;
+        Tue, 10 May 2022 04:30:34 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 921C61F8B4;
+        Tue, 10 May 2022 11:30:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1652182233; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=o3MNMfYAzBmcTCGWbN4PU5xoySsicFXm7oS2gQCk3PM=;
-        b=1dFLSVWLYnS0PIpslKIMUpWl8LjaxLlNBHKDubjTk6onQXqgZH5a0/Z5GeUA3bHMl8xojF
-        d9I2UmLnaMPoeviFv4q5kPwkzmfxbbIfOpRLTioqMuHT+8nuHt6Jhrv8iNqwa5qzA89XAj
-        Lg9iWgj57Z6kYOgecr0iyuShQgkv9lc=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1652182121;
+        bh=MBjlQI2uyibVlu7+Ejq7Z4/K5FS1DpSVUvjHPHaboy4=;
+        b=Ex7tvOdMwC9HCxyktFuFnlGrHLjZ6vCkmEwN8xHkuNT59UdjniLk0s8XPUYPw2fEwohYhm
+        DJyQhr5kfvEPDdW25tT5/mcCa02KeFf+1Lrq6ieRGWA3HGexK+pbbDk/PrPSNcnIK+VkwF
+        XsxlcV0DVrTq35vWPRuY/jNHEqlkvCE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1652182233;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=o3MNMfYAzBmcTCGWbN4PU5xoySsicFXm7oS2gQCk3PM=;
-        b=kkU6z+n9RITqF8SMik6rIWdkljq8WB0PgIdPVNvAnPTw2Fs3gxyM+0MeKmAS3lsuTGxcti
-        p/8yZNfoWEFHk2AA==
-Received: from quack3.suse.cz (unknown [10.163.28.18])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        bh=MBjlQI2uyibVlu7+Ejq7Z4/K5FS1DpSVUvjHPHaboy4=;
+        b=wPe4gt5+vEYMpulFqg+80Bd2RNGxgVr2pSTrhDPX1imYT2oAyEUjMK6YnPjmmQLmSXhYoL
+        gNs3gzmxIVqJcXCA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id DFDB72C141;
-        Tue, 10 May 2022 11:28:41 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id 8BAB1A062A; Tue, 10 May 2022 13:28:38 +0200 (CEST)
-Date:   Tue, 10 May 2022 13:28:38 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     butt3rflyh4ck <butterflyhuangxx@gmail.com>
-Cc:     jack@suse.com, LKML <linux-kernel@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org
-Subject: Re: A slab-out-of-bounds Write when invoke udf_write_fi via ioctl
-Message-ID: <20220510112838.zfx2sxyoh4ewmjxr@quack3.lan>
-References: <CAFcO6XNpj6e+OGba30usr_miODhbhmqk7vh3ymU+NLoe2HBqFA@mail.gmail.com>
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 82FAD13AA5;
+        Tue, 10 May 2022 11:30:33 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 9fz5H9lMemLTawAAMHmgww
+        (envelope-from <dwagner@suse.de>); Tue, 10 May 2022 11:30:33 +0000
+Date:   Tue, 10 May 2022 13:30:33 +0200
+From:   Daniel Wagner <dwagner@suse.de>
+To:     Daniel Bristot de Oliveira <bristot@kernel.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        linux-trace-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        John Kacur <jkacur@redhat.com>, Tao Zhou <tao.zhou@linux.dev>
+Subject: Re: [PATCH V3] rtla: Remove procps-ng dependency
+Message-ID: <20220510113033.auxhunymxbhioi4z@carbon.lan>
+References: <553032a74ccdb1e6ae4dda543b7c4430ce8fae1a.1652176288.git.bristot@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAFcO6XNpj6e+OGba30usr_miODhbhmqk7vh3ymU+NLoe2HBqFA@mail.gmail.com>
+In-Reply-To: <553032a74ccdb1e6ae4dda543b7c4430ce8fae1a.1652176288.git.bristot@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 10-05-22 15:14:42, butt3rflyh4ck wrote:
-> Hi, if mounts a malicious udf image,  there is a slab out of bounds
-> write  bug when a user invokes udf_write_fi via ioctl.
-> I have reproduced it in the latest kernel.
-> 
-> ##smaple analyse
-> the function call chains:
-> do_sys_open
->     --->do_sys_openat2
->        --->do_filp_open
->           --->path_openat
->               --->open_last_lookups
->                  --->lookup_open
->                      --->udf_add_nondir
->                         --->udf_add_entry
-> 
-> There would traverse to get a `fi` in the function udf_add_entry.
-> ```
-> if (dinfo->i_alloc_type == ICBTAG_FLAG_AD_IN_ICB) {   [1]
->          block = dinfo->i_location.logicalBlockNum;
->          fi = (struct fileIdentDesc *)
->            (dinfo->i_data + fibh->soffset -
->              udf_ext0_offset(dir) +
->               dinfo->i_lenEAttr);
->              [2]
-> } else {
->           block = eloc.logicalBlockNum +
->               ((elen - 1) >>
->             dir->i_sb->s_blocksize_bits);
->             fi = (struct fileIdentDesc *)
->                  (fibh->sbh->b_data + fibh->soffset);
-> }
-> ```
-> [1] if dinfo->i_alloc_type is ICBTAG_FLAG_AD_IN_ICB, [2] it  would
-> calculate an offset as `fi`,
-> through the debugger, the `fi` is as below:
-> ```
->  p/x *(struct fileIdentDesc*)fi
-> $24 = {
->   descTag = {
->     tagIdent = 0x2f70,
->     descVersion = 0xea55,
->     tagChecksum = 0xcd,
->     reserved = 0x66,
->     tagSerialNum = 0x511f,
->     descCRC = 0x5a9c,
->     descCRCLength = 0x5142,
->     tagLocation = 0x373ce06a
->   },
->   fileVersionNum = 0x3139,
->   fileCharacteristics = 0xf6,
->   lengthFileIdent = 0x7e,
->   icb = {
->     extLength = 0x6059792,
->     extLocation = {
->       logicalBlockNum = 0x73886466,
->       partitionReferenceNum = 0x7cc6
->     },
->     impUse = {0x3c, 0xcc, 0x4a, 0xed, 0xdc, 0xfb}
->   },
->   lengthOfImpUse = 0x1a6a,
->   impUse = 0xffff888019ca716a
-> }
-> ```
-> These data are wrong and all data are part of  udf image mounted.
-> Then next it would invoke function udf_write_fi to write fileident into `fi`.
-> ```
-> if (fileident) {
->       if (adinicb || (offset + lfi < 0)) {
->           memcpy(udf_get_fi_ident(sfi), fileident, lfi);   [3]
-> } else if (offset >= 0) {
->           memcpy(fibh->ebh->b_data + offset, fileident, lfi);
-> } else {
->           memcpy(udf_get_fi_ident(sfi), fileident, -offset);
->           memcpy(fibh->ebh->b_data, fileident - offset,
->                   lfi + offset);
->        }
-> }
-> ```
-> The fileident was controlled by user. `sfi` is `fi`, the memcpy
-> function is called to copy the data, so an out-of-bounds write occurs
+On Tue, May 10, 2022 at 11:57:04AM +0200, Daniel Bristot de Oliveira wrote:
+> +static int procfs_is_workload_pid(const char *comm_prefix, struct dirent *proc_entry)
+> +{
+> +	char buffer[MAX_PATH];
+> +	int comm_fd, retval;
+> +	char *t_name;
+> +
+> +	if (proc_entry->d_type != DT_DIR)
+> +		return 0;
+> +
+> +	if (*proc_entry->d_name == '.')
+> +		return 0;
+> +
+> +	/* check if the string is a pid */
+> +	for (t_name = proc_entry->d_name; t_name; t_name++) {
+> +		if (!isdigit(*t_name))
+> +			break;
+> +	}
+> +
+> +	if (*t_name != '\0')
+> +		return 0;
+> +
+> +	snprintf(buffer, MAX_PATH, "/proc/%s/comm", proc_entry->d_name);
+> +	comm_fd = open(buffer, O_RDONLY);
+> +	if (comm_fd < 0)
+> +		return 0;
+> +
+> +	memset(buffer, 0, MAX_PATH);
+> +	retval = read(comm_fd, buffer, MAX_PATH);
+> +
+> +	close(comm_fd);
+> +
+> +	if (retval <= 0)
+> +		return 0;
+> +
+> +	retval = strncmp(comm_prefix, buffer, strlen(comm_prefix));
+> +	if (retval)
+> +		return 0;
+> +
+> +	/* comm already have \n */
+> +	debug_msg("Found workload pid:%s comm:%s", proc_entry->d_name, buffer);
+> +
+> +	return 1;
+> +}
+> +
+> +/*
+> + * set_comm_sched_attr - set sched params to threads starting with char *comm_prefix
+> + *
+> + * This function uses /procfs to list the currently running threads and then set the
+> + * sched_attr *attr to the threads that start with char *comm_prefix. It is
+>   * mainly used to set the priority to the kernel threads created by the
+>   * tracers.
+>   */
+> -int set_comm_sched_attr(const char *comm, struct sched_attr *attr)
+> +int set_comm_sched_attr(const char *comm_prefix, struct sched_attr *attr)
+>  {
+> -	int flags = PROC_FILLCOM | PROC_FILLSTAT;
+> -	PROCTAB *ptp;
+> -	proc_t task;
+> +	struct dirent *proc_entry;
+> +	DIR *procfs;
+>  	int retval;
+>  
+> -	ptp = openproc(flags);
+> -	if (!ptp) {
+> -		err_msg("error openproc()\n");
+> -		return -ENOENT;
+> +	if (strlen(comm_prefix) >= MAX_PATH) {
+> +		err_msg("Command prefix is too long: %d < strlen(%s)\n",
+> +			MAX_PATH, comm_prefix);
+> +		exit(EINVAL);
+>  	}
+>  
+> -	memset(&task, 0, sizeof(task));
+> +	procfs = opendir("/proc");
 
-Thanks for report and the analysis. This is indeed a serious bug. I'll send
-a fix shortly.
+Maybe you want to check if procfs is a valid handle before using it.
 
-								Honza
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+> +
+> +	while ((proc_entry = readdir(procfs))) {
+>  
+> -	while (readproc(ptp, &task)) {
+> -		retval = strncmp(comm, task.cmd, strlen(comm));
+> -		if (retval)
+> +		retval = procfs_is_workload_pid(comm_prefix, proc_entry);
+> +		if (!retval)
+>  			continue;
+> -		retval = __set_sched_attr(task.tid, attr);
+> -		if (retval)
+> +
+> +		/* procfs_is_workload_pid confirmed it is a pid */
+> +		retval = __set_sched_attr(atoi(proc_entry->d_name), attr);
+> +		if (retval) {
+> +			err_msg("Error setting sched attributes for pid:%s\n", proc_entry->d_name);
+>  			goto out_err;
+> -	}
+> +		}
+>  
+> -	closeproc(ptp);
+> +		debug_msg("Set sched attributes for pid:%s\n", proc_entry->d_name);
+> +	}
+>  	return 0;
+>  
+>  out_err:
+> -	closeproc(ptp);
+> +	closedir(procfs);
+>  	return 1;
+>  }
+>  
+> diff --git a/tools/tracing/rtla/src/utils.h b/tools/tracing/rtla/src/utils.h
+> index fa08e374870a..5571afd3b549 100644
+> --- a/tools/tracing/rtla/src/utils.h
+> +++ b/tools/tracing/rtla/src/utils.h
+> @@ -6,6 +6,7 @@
+>   * '18446744073709551615\0'
+>   */
+>  #define BUFF_U64_STR_SIZE	24
+> +#define MAX_PATH		1024
+
+linux/limits.h defined MAX_PATH as well, though as 4096. Maybe use that
+definition? If you want to make it dynamic you could use fpathconf(fd,
+_PC_PATH_MAX) but one could argue that is over engineering :)
+
+Thanks for the fix. Anyway just nitpicking.
+
+Reviewed-by: Daniel Wagner <dwagner@suse.de>
