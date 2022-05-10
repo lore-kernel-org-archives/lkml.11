@@ -2,91 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F6BFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:25:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29B50C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:26:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241684AbiEJM3W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 08:29:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34692 "EHLO
+        id S241695AbiEJMaO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 08:30:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237699AbiEJM3U (ORCPT
+        with ESMTP id S241318AbiEJMaI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 08:29:20 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A232224685;
-        Tue, 10 May 2022 05:25:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=0SOHdnZm/qIXaafuGPsWb+8y+0cZMBYOdPMCj5bdxFs=; b=ssUW9aQmsIjXI3QzluEQbxRQ+M
-        cC6kGQGCJDuXvSHWxXW8y1iNfTI+j8Pr2dCPhNVjmV4BapCvHOFAt32KVk6l1fFnJGmLp22dM2BFj
-        8xqPnxzRt9SBMspCfijipgoFeOVo7+KZNQoQVXdxHYgyfhW0FWgkssAKHOFIPiBlpPGQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1noOvO-0028E6-3y; Tue, 10 May 2022 14:25:10 +0200
-Date:   Tue, 10 May 2022 14:25:10 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Wan Jiabing <wanjiabing@vivo.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Antoine Tenart <atenart@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kael_w@yeah.net
-Subject: Re: [PATCH net] net: phy: mscc: Add error check when __phy_read()
- failed
-Message-ID: <YnpZphRYEZJm/9D6@lunn.ch>
-References: <20220510035458.9804-1-wanjiabing@vivo.com>
+        Tue, 10 May 2022 08:30:08 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FF9116D4BC;
+        Tue, 10 May 2022 05:26:08 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KyHMJ38cxz4xXS;
+        Tue, 10 May 2022 22:26:04 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1652185564;
+        bh=xFfKRkicEM6exIkb81xPoFhftB5Z/tdYHdSeBEndofw=;
+        h=Date:From:To:Cc:Subject:From;
+        b=od9YBjg5qYWzXZGUTgNUeqqookvMyd5Rs9zDevTmNJqf4+a9mKCd1gEcdLwUXU/dm
+         c9Ee6RQX7AM8YhRlKoZqFLHcAfsIWHL3pEw+ZEFYBHdPpMCAuFHFiDqmtfgVb+VgUU
+         eL/BrZbXLSXGn+TOPeWFpCOlhI+9xN4TOI+fqtJi88qU8dg89TItmVq1DYY1YsH5dd
+         6gpg7iboY0B4ZImLOs7MIZygWluc1dqPG/fGKKyO22vgQOOxIaVn3Qf/odbK1iolux
+         ufHgC47Gy7BMnXbr/svrdlEfzdMzlc4eOJTEjvgc8YRFSf90IRsnY/aUx2QEIbOJOR
+         sLwr/A4l2aqZQ==
+Date:   Tue, 10 May 2022 22:26:03 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Zev Weiss <zev@bewilderbeest.net>,
+        Denis Pauk <pauk.denis@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the hwmon-staging tree
+Message-ID: <20220510222603.0d675ce2@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220510035458.9804-1-wanjiabing@vivo.com>
+Content-Type: multipart/signed; boundary="Sig_/LZSeDj+9=VIS2/G0KGzZcCM";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 11:54:56AM +0800, Wan Jiabing wrote:
-> Calling __phy_read() might return a negative error code. Use 'int'
-> to declare variables which call __phy_read() and also add error check
-> for them.
+--Sig_/LZSeDj+9=VIS2/G0KGzZcCM
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-It would be good to add a comment here:
+Hi all,
 
-The numerous callers of vsc8584_macsec_phy_read() don't expect it to
-fail. So don't return the error code from __phy_read(), but also don't
-return random values if it does fail.
+After merging the hwmon-staging tree, today's linux-next build (powerpc
+allyesconfig) failed like this:
 
-The commit message should try to answer any questions to reviewer
-has. And when i first looked at the change, i thought this is wrong,
-the error code is thrown away. But then i remembers our discussion. So
-it is good to mention that in the commit message.
+ld: drivers/hwmon/nct6775-platform.o: in function `.nct6775_wmi_reg_write':
+nct6775-platform.c:(.text.nct6775_wmi_reg_write+0x38): undefined reference =
+to `.nct6775_reg_is_word_sized'
+ld: drivers/hwmon/nct6775-platform.o: in function `.nct6775_wmi_reg_read':
+nct6775-platform.c:(.text.nct6775_wmi_reg_read+0x38): undefined reference t=
+o `.nct6775_reg_is_word_sized'
+ld: drivers/hwmon/nct6775-platform.o: in function `.nct6775_resume':
+nct6775-platform.c:(.text.nct6775_resume+0x61c): undefined reference to `.n=
+ct6775_reg_is_word_sized'
+ld: drivers/hwmon/nct6775-platform.o: in function `.nct6775_platform_probe':
+nct6775-platform.c:(.text.nct6775_platform_probe+0x14c): undefined referenc=
+e to `.nct6775_probe'
+ld: drivers/hwmon/nct6775-platform.o: in function `.nct6775_reg_read':
+nct6775-platform.c:(.text.nct6775_reg_read+0x5c): undefined reference to `.=
+nct6775_reg_is_word_sized'
+ld: drivers/hwmon/nct6775-platform.o: in function `.nct6775_reg_write':
+nct6775-platform.c:(.text.nct6775_reg_write+0x5c): undefined reference to `=
+.nct6775_reg_is_word_sized'
+ld: drivers/hwmon/nct6775-platform.o:(.data.rel.sensor_dev_attr_beep_enable=
++0x28): undefined reference to `nct6775_show_beep'
+ld: drivers/hwmon/nct6775-platform.o:(.data.rel.sensor_dev_attr_beep_enable=
++0x30): undefined reference to `nct6775_store_beep'
+ld: drivers/hwmon/nct6775-platform.o:(.data.rel.sensor_dev_attr_intrusion0_=
+alarm+0x28): undefined reference to `nct6775_show_alarm'
+ld: drivers/hwmon/nct6775-platform.o:(.data.rel.sensor_dev_attr_intrusion0_=
+beep+0x28): undefined reference to `nct6775_show_beep'
+ld: drivers/hwmon/nct6775-platform.o:(.data.rel.sensor_dev_attr_intrusion0_=
+beep+0x30): undefined reference to `nct6775_store_beep'
+ld: drivers/hwmon/nct6775-platform.o:(.data.rel.sensor_dev_attr_intrusion1_=
+alarm+0x28): undefined reference to `nct6775_show_alarm'
+ld: drivers/hwmon/nct6775-platform.o:(.data.rel.sensor_dev_attr_intrusion1_=
+beep+0x28): undefined reference to `nct6775_show_beep'
+ld: drivers/hwmon/nct6775-platform.o:(.data.rel.sensor_dev_attr_intrusion1_=
+beep+0x30): undefined reference to `nct6775_store_beep'
+ld: drivers/hwmon/nct6775-i2c.o: in function `.nct6775_i2c_read':
+nct6775-i2c.c:(.text.nct6775_i2c_read+0x108): undefined reference to `.nct6=
+775_reg_is_word_sized'
+ld: drivers/hwmon/nct6775-i2c.o: in function `.nct6775_i2c_probe':
+nct6775-i2c.c:(.text.nct6775_i2c_probe+0x134): undefined reference to `.nct=
+6775_probe'
 
-> Fixes: fa164e40c53b ("net: phy: mscc: split the driver into separate files")
-> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
-> ---
->  drivers/net/phy/mscc/mscc_macsec.c | 11 ++++++++---
->  1 file changed, 8 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/phy/mscc/mscc_macsec.c b/drivers/net/phy/mscc/mscc_macsec.c
-> index b7b2521c73fb..8a63e32fafa0 100644
-> --- a/drivers/net/phy/mscc/mscc_macsec.c
-> +++ b/drivers/net/phy/mscc/mscc_macsec.c
-> @@ -22,9 +22,9 @@
->  static u32 vsc8584_macsec_phy_read(struct phy_device *phydev,
->  				   enum macsec_bank bank, u32 reg)
->  {
-> -	u32 val, val_l = 0, val_h = 0;
->  	unsigned long deadline;
-> -	int rc;
-> +	int rc, val, val_l, val_h;
-> +	u32 ret = 0;
+Probably caused by commit
 
-Networking code uses "reverse christmas tree", meaning these lines
-should be sorted, longest first, shortest last. So deadline needs to
-come after val_h.
+  a2105efee6e7 ("hwmon: (nct6775) Split core and platform driver")
 
-     Andrew
+I have reverted that commit for today - and the following commits
+
+  4dcbcf34a249 ("hwmon: (nct6775) add ASUS PRO H410T / PRIME H410M-R / ROG =
+X570-E GAMING WIFI II")
+  58f1d9ebfce6 ("hwmon: (nct6775) Add i2c driver")
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/LZSeDj+9=VIS2/G0KGzZcCM
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJ6WdsACgkQAVBC80lX
+0Gxnbgf8DeH4ri0xSEjzqTkdAlLkOJTKpmQKtA8693I0kY8sYxTVbWBqqkwRotPl
+fZmotek3SavgJRo/3a6csiCZmXcaVrXD2JvktRO69Vm3W1GaVx8JJYLp7lp+SoOe
+WWRL9dPX5907KXILDZ1uJ0nG7JXybF/qp84OHK5XUNKxDt0v8hLfpz0ZABjk6ffp
+vuuGkP69ectDffz5St0r2uNM+Qs40JeNwNvReVZPnLEY2VxEcKDjLy5SxhXyVO5u
+e7W4gxVZtqQ7zJbDKZAaS+e0FoTagYwVE8W0/d3xEAiKVHUGNj8q1GvErcojBEje
+zdCNgeaDZnmN+01Ju9wTqBabxwIVsA==
+=M9LF
+-----END PGP SIGNATURE-----
+
+--Sig_/LZSeDj+9=VIS2/G0KGzZcCM--
