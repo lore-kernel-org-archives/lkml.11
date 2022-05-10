@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF8F8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:15:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E837AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:15:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242627AbiEJNTf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:19:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38328 "EHLO
+        id S242632AbiEJNTj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:19:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242528AbiEJNQp (ORCPT
+        with ESMTP id S242396AbiEJNPx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:16:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78CCF3BA65;
-        Tue, 10 May 2022 06:12:39 -0700 (PDT)
+        Tue, 10 May 2022 09:15:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67D5A48E40;
+        Tue, 10 May 2022 06:11:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D6DE612E4;
-        Tue, 10 May 2022 13:12:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34F28C385A6;
-        Tue, 10 May 2022 13:12:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0378361532;
+        Tue, 10 May 2022 13:11:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FB76C385A6;
+        Tue, 10 May 2022 13:11:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188358;
-        bh=Bn5ILpV3s+Rbw2XFY28VLlaXni3LCUf0kZlkGm9EbU8=;
+        s=korg; t=1652188291;
+        bh=q+s6FJfbA7d6EcGsRe441ZZ2FTLTaNIUc3UIe2otjyk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OkUOCBKpOintcRowpd6oVdcBY4jt6PacninEUopc5+0s2EMjOzXJGHBPOBUSvKMRc
-         nKhkg43K27QBsmIYRDlt8tOAOp3S7P2VSL+6xz42aOrGN8zltUbb0YndgVvXVkZ9tA
-         t1Lqc9ujxIQ9oo0Jr6pUdJYVr/aNAW//Qj099X38=
+        b=hjkgiv0H8CRQQie/S6VS6QjL/YYVlx41kvS4gTf43jOGHSOvsAOIDRKxYn7sRDlEa
+         izMEj7tlHTAFpm4xIb4e74OalYQbfcMRELeJTkcaydGGj5h4vjJ445yJuuSgtl6rbk
+         n3jOzBTC2Xba49RNLg5Wb7qNiyS4zY6sjKCbZjPo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chengfeng Ye <cyeaa@connect.ust.hk>,
-        Takashi Sakamoto <o-takashi@sakamocchi.jp>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.9 47/66] firewire: fix potential uaf in outbound_phy_packet_callback()
-Date:   Tue, 10 May 2022 15:07:37 +0200
-Message-Id: <20220510130731.146172938@linuxfoundation.org>
+        stable@vger.kernel.org, Oliver Neukum <oneukum@suse.com>
+Subject: [PATCH 4.9 04/66] USB: quirks: add a Realtek card reader
+Date:   Tue, 10 May 2022 15:06:54 +0200
+Message-Id: <20220510130729.891962151@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.762341544@linuxfoundation.org>
 References: <20220510130729.762341544@linuxfoundation.org>
@@ -49,47 +47,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengfeng Ye <cyeaa@connect.ust.hk>
+From: Oliver Neukum <oneukum@suse.com>
 
-commit b7c81f80246fac44077166f3e07103affe6db8ff upstream.
+commit 2a7ccf6bb6f147f64c025ad68f4255d8e1e0ce6d upstream.
 
-&e->event and e point to the same address, and &e->event could
-be freed in queue_event. So there is a potential uaf issue if
-we dereference e after calling queue_event(). Fix this by adding
-a temporary variable to maintain e->client in advance, this can
-avoid the potential uaf issue.
+This device is reported to stall when enummerated.
 
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Chengfeng Ye <cyeaa@connect.ust.hk>
-Signed-off-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
-Link: https://lore.kernel.org/r/20220409041243.603210-2-o-takashi@sakamocchi.jp
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
+Link: https://lore.kernel.org/r/20220414110209.30924-1-oneukum@suse.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/firewire/core-cdev.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/usb/core/quirks.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/firewire/core-cdev.c
-+++ b/drivers/firewire/core-cdev.c
-@@ -1496,6 +1496,7 @@ static void outbound_phy_packet_callback
- {
- 	struct outbound_phy_packet_event *e =
- 		container_of(packet, struct outbound_phy_packet_event, p);
-+	struct client *e_client;
+--- a/drivers/usb/core/quirks.c
++++ b/drivers/usb/core/quirks.c
+@@ -243,6 +243,9 @@ static const struct usb_device_id usb_qu
+ 	{ USB_DEVICE(0x0b05, 0x17e0), .driver_info =
+ 			USB_QUIRK_IGNORE_REMOTE_WAKEUP },
  
- 	switch (status) {
- 	/* expected: */
-@@ -1512,9 +1513,10 @@ static void outbound_phy_packet_callback
- 	}
- 	e->phy_packet.data[0] = packet->timestamp;
- 
-+	e_client = e->client;
- 	queue_event(e->client, &e->event, &e->phy_packet,
- 		    sizeof(e->phy_packet) + e->phy_packet.length, NULL, 0);
--	client_put(e->client);
-+	client_put(e_client);
- }
- 
- static int ioctl_send_phy_packet(struct client *client, union ioctl_arg *arg)
++	/* Realtek Semiconductor Corp. Mass Storage Device (Multicard Reader)*/
++	{ USB_DEVICE(0x0bda, 0x0151), .driver_info = USB_QUIRK_CONFIG_INTF_STRINGS },
++
+ 	/* Realtek hub in Dell WD19 (Type-C) */
+ 	{ USB_DEVICE(0x0bda, 0x0487), .driver_info = USB_QUIRK_NO_LPM },
+ 	{ USB_DEVICE(0x0bda, 0x5487), .driver_info = USB_QUIRK_RESET_RESUME },
 
 
