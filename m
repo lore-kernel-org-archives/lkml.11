@@ -2,97 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 339EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 23:10:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 612ADC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 23:12:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232405AbiEJXKf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 19:10:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56406 "EHLO
+        id S237895AbiEJXMT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 19:12:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232375AbiEJXKR (ORCPT
+        with ESMTP id S236445AbiEJXMQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 19:10:17 -0400
-Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [202.36.163.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E186294486
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 16:10:13 -0700 (PDT)
-Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 25D9F2C012A;
-        Tue, 10 May 2022 23:10:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1652224210;
-        bh=PdPm6LJTDTCiiS+YcsT3r34uGQiAI04kijhj/3xrI3k=;
-        h=From:To:Cc:Subject:Date:From;
-        b=NFK4AiDg4zLiDuSId6+Od0mL5vIx32aQdaExPbKhDdowKKbNw1ZTD/J27jbG2q+in
-         JEEFisWXRJPJ6N7Im6OwZMgcLrooo1o1OLgF0vc0xo7XqpEHqTfnigRdKMLeVl4XIk
-         UfLnfnokvpHUS+Dqm2BJwcaZlCJ7EBUBNdDy2xNojdGsKA3metLX74azOaUdVVyO/q
-         UTgSKrjGSduGYDaK7Sopqy5QLcLQsv+ppyOElqW8pjeogXNsZJfE54FyFMZF+o3tx5
-         vO68Mu52b7Xvih+vodzgOtpatHyprBYOktJjaG8UIap/UlTBXfRAPWF3Tdv9QJDvlB
-         TsUG9gdfqVWbg==
-Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
-        id <B627af0d10000>; Wed, 11 May 2022 11:10:09 +1200
-Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.30])
-        by pat.atlnz.lc (Postfix) with ESMTP id C6A5F13EE40;
-        Wed, 11 May 2022 11:10:09 +1200 (NZST)
-Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
-        id C18F92A00D3; Wed, 11 May 2022 11:10:09 +1200 (NZST)
-From:   Chris Packham <chris.packham@alliedtelesis.co.nz>
-To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        catalin.marinas@arm.com, will@kernel.org, andrew@lunn.ch,
-        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
-        kostap@marvell.com, robert.marko@sartura.hr
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>
-Subject: [PATCH v6 0/3] arm64: mvebu: Support for Marvell 98DX2530 (and variants)
-Date:   Wed, 11 May 2022 11:09:59 +1200
-Message-Id: <20220510231002.1160798-1-chris.packham@alliedtelesis.co.nz>
-X-Mailer: git-send-email 2.36.0
+        Tue, 10 May 2022 19:12:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3C7C527C5;
+        Tue, 10 May 2022 16:12:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4085961902;
+        Tue, 10 May 2022 23:12:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20430C385CE;
+        Tue, 10 May 2022 23:12:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652224334;
+        bh=3xtgrnNf+mLrclHKUYUOhlm/8Xu2QGyjyfrnDwPEHJs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UOJoJTYCPkAeHaWwcjtqgY0OX6vUf+2XHG2nYIVBgUZqTg0Dnk9gZIGUxhqzJxFMo
+         0EE0L0jL1tZgj6i86ceoADGL04HCmoPk90df8w1S761Z2RiEhe/oXnucGPNWcJVtgW
+         6aswNu1XP76OeScFduW8O/edeDbI1Ae7sJKXTIUYVAFjrUAAsv/aEXekP985Cb6niM
+         nSMgeyeAfOglyVkbje4r+vX86BYJ6Mmnt3fTD0xO7lHnTP1ZIV2V/A3bQmNS5878rt
+         3IBpOfQrVxweTVVA3+So5uKYLNztkdouEuhugKizkfUBd2aFfpYhl5H5rQyiGvDjU8
+         mO9YFAfQjXQqg==
+Date:   Tue, 10 May 2022 16:12:12 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
+        KVM list <kvm@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        mie@igel.co.jp
+Subject: Re: [GIT PULL] virtio: last minute fixup
+Message-ID: <YnrxTMVRtDnGA/EK@dev-arch.thelio-3990X>
+References: <20220510082351-mutt-send-email-mst@kernel.org>
+ <CAHk-=wjPR+bj7P1O=MAQWXp0Mx2hHuNQ1acn6gS+mRo_kbo5Lg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-SEG-SpamProfiler-Analysis: v=2.3 cv=C7GXNjH+ c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=oZkIemNP1mAA:10 a=1gLZ1RiacOvl1JNmVH8A:9
-X-SEG-SpamProfiler-Score: 0
-x-atlnz-ls: pat
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wjPR+bj7P1O=MAQWXp0Mx2hHuNQ1acn6gS+mRo_kbo5Lg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series adds support for the Marvell 98DX2530 SoC which is the Contro=
-l and
-Management CPU integrated into the AlleyCat5/AlleyCat5X series of Marvell
-switches.
+On Tue, May 10, 2022 at 11:23:11AM -0700, Linus Torvalds wrote:
+> On Tue, May 10, 2022 at 5:24 AM Michael S. Tsirkin <mst@redhat.com> wrote:
+> >
+> > A last minute fixup of the transitional ID numbers.
+> > Important to get these right - if users start to depend on the
+> > wrong ones they are very hard to fix.
+> 
+> Hmm. I've pulled this, but those numbers aren't exactly "new".
+> 
+> They've been that way since 5.14, so what makes you think people
+> haven't already started depending on them?
+> 
+> And - once again - I want to complain about the "Link:" in that commit.
+> 
+> It points to a completely useless patch submission. It doesn't point
+> to anything useful at all.
+> 
+> I think it's a disease that likely comes from "b4", and people decided
+> that "hey, I can use the -l parameter to add that Link: field", and it
+> looks better that way.
+> 
+> And then they add it all the time, whether it makes any sense or not.
+> 
+> I've mainly noticed it with the -tip tree, but maybe that's just
+> because I've happened to look at it.
+> 
+> I really hate those worthless links that basically add zero actual
+> information to the commit.
+> 
+> The "Link" field is for _useful_ links. Not "let's add a link just
+> because we can".
 
-The CPU core is an ARM Cortex-A55 with neon, simd and crypto extensions.
+For what it's worth, as someone who is frequently tracking down and
+reporting issues, a link to the mailing list post in the commit message
+makes it much easier to get these reports into the right hands, as the
+original posting is going to have all relevant parties in one location
+and it will usually have all the context necessary to triage the
+problem. While lore.kernel.org has made it much easier to find patch
+postings with the "all" list and the search syntax that public-inbox
+offers, it is simpler to just import the thread with 'b4 mbox' using the
+link directly.
 
-This is fairly similar to the Armada-3700 SoC so most of the required
-peripherals are already supported. This series adds a devicetree and pinc=
-trl
-driver for the SoC and the RD-AC5X-32G16HVG6HLG reference board.
+However, I do agree that it should be easier for people to tell whether
+or not the link is additional context or information or just a link to
+the original patch posting on the mailing list. Perhaps there should be
+a new tag like "Archived-at:", "Posted-at:", or "Submitted-at:" that
+makes this clearer?
 
-The pinctrl changes from v4 have been picked up and are in linux-next so =
-I
-haven't included them in this round. That leaves just the dts files and a=
- minor
-Kconfig update for arm64.
-
-Chris Packham (3):
-  dt-bindings: marvell: Document the AC5/AC5X compatibles
-  arm64: dts: marvell: Add Armada 98DX2530 SoC and RD-AC5X board
-  arm64: marvell: enable the 98DX2530 pinctrl driver
-
- .../bindings/arm/marvell/armada-98dx2530.yaml |  27 ++
- arch/arm64/Kconfig.platforms                  |   2 +
- arch/arm64/boot/dts/marvell/Makefile          |   1 +
- .../boot/dts/marvell/armada-98dx2530.dtsi     | 313 ++++++++++++++++++
- arch/arm64/boot/dts/marvell/rd-ac5x.dts       |  90 +++++
- 5 files changed, 433 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/arm/marvell/armada-=
-98dx2530.yaml
- create mode 100644 arch/arm64/boot/dts/marvell/armada-98dx2530.dtsi
- create mode 100644 arch/arm64/boot/dts/marvell/rd-ac5x.dts
-
---=20
-2.36.0
-
+Cheers,
+Nathan
