@@ -2,103 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A2F3C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:05:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95615C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:05:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345348AbiEJPJ3 (ORCPT
+        id S1345560AbiEJPJu convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:09:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36106 "EHLO
+        Tue, 10 May 2022 11:09:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345617AbiEJPIv (ORCPT
+        with ESMTP id S1345886AbiEJPGf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:08:51 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC4CE64CC
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:39:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652193561; x=1683729561;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=ddsexfesqVNdGpsCecUl34q/BH165I6eLFsFrzxutNg=;
-  b=JMOjsN4NNa9LcLnMVux0pKEAVpayu7gdYXWF9H1oS3ylPQdLYPocJ/kH
-   +hHlYOzSDzirmEAJbm6cdbg6JQM+crQiSXHHYrgRTsiQVPl/ttu9u8xm9
-   hNEtsIuqmlkXEXAQdBYixZfqSNs23VQ+DmXyuaDGqZKsjmt2ArQh6FmUK
-   zHgCGhB3JhVnixLXA67aUKF4cWR5Zzoah8ou8UflH6u4JgRk3xGpbYuLd
-   m6XUEfDlzn00duQGq1UxT9ytwJVZkqJuTBzI6adnotsgXOSwQujSIhfEp
-   qPf31t1QgWJOruul7CvQrw5svFnBt14PM8Uhl40tmRAaPhQEavHo4mEDx
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="269329552"
-X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
-   d="scan'208";a="269329552"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 07:39:20 -0700
-X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
-   d="scan'208";a="541803920"
-Received: from mnazari-mobl.amr.corp.intel.com (HELO [10.209.1.152]) ([10.209.1.152])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 07:39:19 -0700
-Message-ID: <8c2735ac-0335-6e2a-8341-8266d5d13c30@intel.com>
-Date:   Tue, 10 May 2022 07:39:30 -0700
+        Tue, 10 May 2022 11:06:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA4492944BC
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:32:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 38A90B81DC3
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 14:31:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12C07C385C2;
+        Tue, 10 May 2022 14:31:53 +0000 (UTC)
+Date:   Tue, 10 May 2022 10:31:52 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Qais Yousef <qais.yousef@arm.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Delyan Kratunov <delyank@fb.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        "bigeasy@linutronix.de" <bigeasy@linutronix.de>,
+        "dietmar.eggemann@arm.com" <dietmar.eggemann@arm.com>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>,
+        "vincent.guittot@linaro.org" <vincent.guittot@linaro.org>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "mingo@kernel.org" <mingo@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "rdunlap@infradead.org" <rdunlap@infradead.org>,
+        "Kenta.Tada@sony.com" <Kenta.Tada@sony.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "bristot@redhat.com" <bristot@redhat.com>,
+        "ebiederm@xmission.com" <ebiederm@xmission.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "legion@kernel.org" <legion@kernel.org>,
+        "adharmap@quicinc.com" <adharmap@quicinc.com>,
+        "valentin.schneider@arm.com" <valentin.schneider@arm.com>,
+        "ed.tsai@mediatek.com" <ed.tsai@mediatek.com>,
+        "juri.lelli@redhat.com" <juri.lelli@redhat.com>
+Subject: Re: [PATCH] sched/tracing: append prev_state to tp args instead
+Message-ID: <20220510103152.68b8b66d@gandalf.local.home>
+In-Reply-To: <20220510082940.GA100765@worktop.programming.kicks-ass.net>
+References: <056e9bb0d0e3fc20572d42db7386face1d0665d6.camel@fb.com>
+        <CAADnVQKsah4aka-LJ+X+5XHHESKbbw36D8fXTLqcYp2io3PN_w@mail.gmail.com>
+        <YmflVPQlwpiBuxRc@hirez.programming.kicks-ass.net>
+        <20220426140959.op6u5m7id57aq7yc@wubuntu>
+        <CAEf4BzaoL5HVc8U16kz7m--RiPhBwuLt8ZGZppwfxV85AXXrcw@mail.gmail.com>
+        <20220427103458.ecnqtaj3af63625h@wubuntu>
+        <CAEf4BzYc3f2-9hvuGL_mTO8qNxZjdQn8AabEb-N6Q7XjmEQQ1A@mail.gmail.com>
+        <20220428100235.sqoxunbylqk2surk@wubuntu>
+        <CAEf4BzaEo+dxSRJZHQiXYrj-a3_B-eODZUxGh3HrnPjquMYFXQ@mail.gmail.com>
+        <20220510070122.GJ76023@worktop.programming.kicks-ass.net>
+        <20220510082940.GA100765@worktop.programming.kicks-ass.net>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] x86/mm/cpa: set PAGE_KERNEL in __set_pages_p()
-Content-Language: en-US
-To:     Tom Lendacky <thomas.lendacky@amd.com>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Cc:     Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        linux-kernel@vger.kernel.org
-References: <20220506051940.156952-1-42.hyeyoo@gmail.com>
- <56f89895-601e-44c9-bda4-5fae6782e27e@amd.com> <YnpTHMvOO/pLJQ+l@hyeyoo>
- <5fe161cb-6c55-6c4d-c208-16c77e115d3f@amd.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <5fe161cb-6c55-6c4d-c208-16c77e115d3f@amd.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/10/22 06:35, Tom Lendacky wrote:
-> I'm wondering if adding a specific helper that takes a boolean to
-> indicate whether to set the global flag would be best. I'll let some of
-> the MM maintainers comment about that.
+On Tue, 10 May 2022 10:29:40 +0200
+Peter Zijlstra <peterz@infradead.org> wrote:
 
-First of all, I'm not positive that _PAGE_BIT_PROTNONE is ever used for
-kernel mappings.  This would all get a lot easier if we decided that
-_PAGE_BIT_PROTNONE is only for userspace mappings and we don't have to
-worry about it when _PAGE_USER is clear.
-
-Second, the number of places that do these
-__set_pages_p()/__set_pages_np() pairs is pretty limited.  Some of them
-are *quite* unambiguous over whether they are dealing with the direct map:
-
-> int set_direct_map_invalid_noflush(struct page *page)
-> {
->         return __set_pages_np(page, 1);
-> }
+> On Tue, May 10, 2022 at 09:01:22AM +0200, Peter Zijlstra wrote:
+> > On Mon, May 09, 2022 at 12:32:31PM -0700, Andrii Nakryiko wrote:  
+> > > So can this patch be applied, please, or it's a hard no?  
+> > 
+> > Sorry; I got distracted with other work. I'll grudingly apply the patch.  
 > 
-> int set_direct_map_default_noflush(struct page *page)
-> {
->         return __set_pages_p(page, 1);
-> }
+>   gcc-11-i386-allmodconfig [15:35]  FAILED
+>   | In file included from ../include/trace/define_custom_trace.h:55,
+>   |                  from ../samples/trace_events/trace_custom_sched.h:96,
+>   |                  from ../samples/trace_events/trace_custom_sched.c:24:
+>   | ../samples/trace_events/./trace_custom_sched.h: In function ‘ftrace_test_custom_probe_sched_switch’:
+>   | ../include/trace/trace_custom_events.h:178:42: error: passing argument 1 of ‘check_trace_callback_type_sched_switch’ from incompatible pointer type [-Werror=incompatible-pointer-types]
+>   |   178 |         check_trace_callback_type_##call(trace_custom_event_raw_event_##template); \
+>   |       |                                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>   |       |                                          |
+>   |       |                                          void (*)(void *, bool,  unsigned int,  struct task_struct *, struct task_struct *) {aka void (*)(void *, _Bool,  unsigned int,  struct task_struct *, struct task_struct *)}
+>   | ../include/trace/trace_custom_events.h:34:9: note: in expansion of macro ‘DEFINE_CUSTOM_EVENT’
+>   |    34 |         DEFINE_CUSTOM_EVENT(name, name, PARAMS(proto), PARAMS(args));
 
-which would make it patently obvious whether __set_pages_p() should
-restore the global bit.  That would have been a problem in the "old" PTI
-days where _some_ of the direct map was exposed to Meltdown.  I don't
-think we have any of those mappings left, though.  They're all aliases
-like text and cpu_entry_area.
 
-It would be nice if someone could look into unraveling
-_PAGE_BIT_PROTNONE.  We could even probably move it to another bit for
-kernel mappings if we actually need it (I'm not convinced we do).
+Yes, the custom tracepoint sample code uses the sched_switch tracepoint as
+an example. That sample code needs to be updated:
+
+In samples/trace_events/trace_custom_sched.h:
+
+TRACE_CUSTOM_EVENT(sched_switch,
+
+        /*
+         * The TP_PROTO() and TP_ARGS must match the trace event
+         * that the custom event is using.
+         */
+        TP_PROTO(bool preempt,
+                 unsigned int prev_state,
+                 struct task_struct *prev,
+                 struct task_struct *next),
+
+        TP_ARGS(preempt, prev_state, prev, next),
+
+
+
+The arguments need to be updated.
+
+-- Steve
