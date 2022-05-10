@@ -2,109 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8B3CC41535
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:18:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BA8BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:18:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347245AbiEJQV6 (ORCPT
+        id S1347210AbiEJQWE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 12:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36122 "EHLO
+        Tue, 10 May 2022 12:22:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347194AbiEJQVr (ORCPT
+        with ESMTP id S1347193AbiEJQVr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 12:21:47 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE7A528F1D3
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 09:17:49 -0700 (PDT)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24A5TVph021012;
-        Tue, 10 May 2022 11:17:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=PODMain02222019;
- bh=MAF4HrjBnpXjwWhSzT2Z6EFEzR5KeFyp/09dN8HFm18=;
- b=lujU0anKAJesYNHZ4SGqbWzKAImsZeHwIZNEJjlKEUyBRDKztCxzTwOy7wtUy2gIAEq4
- 96ze3xk8zfxCJG4UpWY4fDinoCcDQ5y2Z9XuGFnydqctRgGwICB2nrVVoBbCaajNYkKI
- gI53ijTdfZGHfkX7OAzWTrsfJwRdY3mSduYO8icbO73yYxt49hf+LPWR73Nt0OtLzHHH
- +Q3Z2mgRTQlEABDGJrIh+ODbpSlOZMLlssecjxwyOpHlUIEkTR7yI4Ne038tzIOgHvzM
- HZ/ujx24eh26fEBoXnusJEdiGYQHwdMavTHu8wNSmz2uQOWVfZUhryfdSdtfUStMgl+P kA== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3fwn6nvk88-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 10 May 2022 11:17:09 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 10 May
- 2022 17:17:07 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Tue, 10 May 2022 17:17:07 +0100
-Received: from sbinding-cirrus-dsktp.ad.cirrus.com (unknown [198.90.238.24])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 1E42AB10;
-        Tue, 10 May 2022 16:17:07 +0000 (UTC)
-From:   Stefan Binding <sbinding@opensource.cirrus.com>
-To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
-CC:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
-        <patches@opensource.cirrus.com>,
-        Stefan Binding <sbinding@opensource.cirrus.com>
-Subject: [PATCH v1 3/3] ALSA: hda/cs8409: Add Speaker Playback Switch for Warlock
-Date:   Tue, 10 May 2022 17:17:01 +0100
-Message-ID: <20220510161701.851260-4-sbinding@opensource.cirrus.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220510161701.851260-1-sbinding@opensource.cirrus.com>
-References: <20220510161701.851260-1-sbinding@opensource.cirrus.com>
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C21D428ED28;
+        Tue, 10 May 2022 09:17:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=DG+kC/U+ySej5D6tfV4OCa8YH0d8ESpuNC4bFJt4RU8=; b=C2KkFYKUIxmXZpa9w2+Tc0j2Ea
+        RFFr76ch465vsOUiMZW1uqZNDnhRYy0QqpFeaougTFG9GOX2EvcKO8NnFtvJdvaTDSvmTGm5I6bLE
+        gx/SYLZAEuVfjx7NJeu1tB8cieKdzixVjql/phg2ZRqRsu9xZgqdP1nbzw6Nv7UUXN3Dua0weQYl6
+        +N3ACyNpHY020LPMtgokauBK3/rzBv0qIzP0VJEueNDPsJdk0Noe60ugWXyfyRTapgsSXBPVXAg4/
+        oobDhrEfQYteiYAwrodL1TGkVGLJREzPqDYfYYN3sh0JBT6vnlq6trf1vxZCJI19NPJiA+YiSFKJe
+        qkMs6K7A==;
+Received: from [177.183.162.244] (helo=[192.168.0.5])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1noSY8-0008UD-Jz; Tue, 10 May 2022 18:17:24 +0200
+Message-ID: <244a412c-4589-28d1-bb77-d3648d4f0b12@igalia.com>
+Date:   Tue, 10 May 2022 13:16:54 -0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: 8FixfZNXj90yNy0dxbUA2yYotHVd0tk1
-X-Proofpoint-GUID: 8FixfZNXj90yNy0dxbUA2yYotHVd0tk1
-X-Proofpoint-Spam-Reason: safe
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 14/30] panic: Properly identify the panic event to the
+ notifiers' callbacks
+Content-Language: en-US
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     akpm@linux-foundation.org, bhe@redhat.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
+        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
+        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
+        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
+        halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
+        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
+        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-15-gpiccoli@igalia.com> <YnqBsXBImU64PAOL@alley>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <YnqBsXBImU64PAOL@alley>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for a Speaker Playback Switch, which disables
-the Amp connected to cs8409. The Switch is not added
-automatically because cs8409 does not have an output amp
-for the speaker NID.
+On 10/05/2022 12:16, Petr Mladek wrote:
+> [...]
+> Hmm, this looks like a hack. PANIC_UNUSED will never be used.
+> All notifiers will be always called with PANIC_NOTIFIER.
+> 
+> The @val parameter is normally used when the same notifier_list
+> is used in different situations.
+> 
+> But you are going to use it when the same notifier is used
+> in more lists. This is normally distinguished by the @nh
+> (atomic_notifier_head) parameter.
+> 
+> IMHO, it is a bad idea. First, it would confuse people because
+> it does not follow the original design of the parameters.
+> Second, the related code must be touched anyway when
+> the notifier is moved into another list so it does not
+> help much.
+> 
+> Or do I miss anything, please?
+> 
+> Best Regards,
+> Petr
 
-Note: This switch uses a different GPIO to Cyborg/Odin variants
+Hi Petr, thanks for the review.
 
-Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
----
- sound/pci/hda/patch_cs8409.c | 2 ++
- sound/pci/hda/patch_cs8409.h | 1 +
- 2 files changed, 3 insertions(+)
+I'm not strong attached to this patch, so we could drop it and refactor
+the code of next patches to use the @nh as identification - but
+personally, I feel this parameter could be used to identify the list
+that called such function, in other words, what is the event that
+triggered the callback. Some notifiers are even declared with this
+parameter called "ev", like the event that triggers the notifier.
 
-diff --git a/sound/pci/hda/patch_cs8409.c b/sound/pci/hda/patch_cs8409.c
-index f682769667e3..95b33a983e9e 100644
---- a/sound/pci/hda/patch_cs8409.c
-+++ b/sound/pci/hda/patch_cs8409.c
-@@ -1167,10 +1167,12 @@ void cs8409_cs42l42_fixups(struct hda_codec *codec, const struct hda_fixup *fix,
- 		case CS8409_WARLOCK_MLK:
- 		case CS8409_WARLOCK_MLK_DUAL_MIC:
- 			spec->scodecs[CS8409_CODEC0]->full_scale_vol = CS42L42_FULL_SCALE_VOL_0DB;
-+			spec->speaker_pdn_gpio = CS8409_WARLOCK_SPEAKER_PDN;
- 			break;
- 		default:
- 			spec->scodecs[CS8409_CODEC0]->full_scale_vol =
- 				CS42L42_FULL_SCALE_VOL_MINUS6DB;
-+			spec->speaker_pdn_gpio = CS8409_WARLOCK_SPEAKER_PDN;
- 			break;
- 		}
- 
-diff --git a/sound/pci/hda/patch_cs8409.h b/sound/pci/hda/patch_cs8409.h
-index 630a7a2de51f..260388a6256c 100644
---- a/sound/pci/hda/patch_cs8409.h
-+++ b/sound/pci/hda/patch_cs8409.h
-@@ -239,6 +239,7 @@ enum cs8409_coefficient_index_registers {
- #define CS8409_CS42L42_RESET			GENMASK(5, 5) /* CS8409_GPIO5 */
- #define CS8409_CS42L42_INT			GENMASK(4, 4) /* CS8409_GPIO4 */
- #define CS8409_CYBORG_SPEAKER_PDN		GENMASK(2, 2) /* CS8409_GPIO2 */
-+#define CS8409_WARLOCK_SPEAKER_PDN		GENMASK(1, 1) /* CS8409_GPIO1 */
- #define CS8409_CS42L42_HP_PIN_NID		CS8409_PIN_ASP1_TRANSMITTER_A
- #define CS8409_CS42L42_SPK_PIN_NID		CS8409_PIN_ASP2_TRANSMITTER_A
- #define CS8409_CS42L42_AMIC_PIN_NID		CS8409_PIN_ASP1_RECEIVER_A
--- 
-2.25.1
 
+You mentioned 2 cases:
+
+(a) Same notifier_list used in different situations;
+
+(b) Same *notifier callback* used in different lists;
+
+Mine is case (b), right? Can you show me an example of case (a)? You can
+see in the following patches (or grep the kernel) that people are using
+this identification parameter to determine which kind of OOPS trigger
+the callback to condition the execution of the function to specific
+cases. IIUIC, this is more or less what I'm doing, but extending the
+idea for panic notifiers.
+
+Again, as a personal preference, it makes sense to me using id's VS
+comparing pointers to differentiate events/callers.
+
+Cheers,
+
+
+Guilherme
