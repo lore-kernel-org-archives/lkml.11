@@ -2,70 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73DF5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 18:29:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57A9EC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 18:30:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348822AbiEJS2N (ORCPT
+        id S1348892AbiEJSap (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 14:28:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33040 "EHLO
+        Tue, 10 May 2022 14:30:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349045AbiEJS1U (ORCPT
+        with ESMTP id S1348854AbiEJSao (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 14:27:20 -0400
-Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB0F414CB68;
-        Tue, 10 May 2022 11:23:21 -0700 (PDT)
-Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-ed9ac77cbbso14881fac.1;
-        Tue, 10 May 2022 11:23:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=j6VUj9Lojhw3KHnOTn3bbGkCrGpPROOfMwN16uub3uA=;
-        b=fYXOE74xEJwI3g61z2Z96/F8SG9Y4J9X3dAkF2y0Y8G7ccZd7ZjbiqCnvn46qo6Xen
-         zUrQR/PAD5qBWdFuykJ9nVRie7cAJYRkJGCfdzmHSmA1Di6a0LEY/OrnMuwoys12+T0J
-         s0/LNBfQ23+Z9nG01JZVk3oJ5jZBqAISzB8X/VID3sy8ZG59du6FuQAP+MIksz+bpqEQ
-         TGv11iCEnokHLsjNuG0ygBo8oMRIAVUtyUe1OKF8rWI3BIQYK42s6FG/sCYdieVDJ5b1
-         SwwZhgSEqCFQuDenpeN+fQ3zGFIHzyI0V6hGZbdycCoKaUQJbmaZ9BuqXhRyk1HR69jH
-         43hw==
-X-Gm-Message-State: AOAM530fvr0V8cjm9APgbtiZG7p45ox2jrAmMLJ94fL95qdpekDJS9sK
-        GgBAZiSJi1TjAICSDdtttZPil76BpQ==
-X-Google-Smtp-Source: ABdhPJwI6HZZicgtT7n4tnN+YTEXRTNNsEMQBJKkWbmNeJZz/g6ItcbzCpRTBS5ZEPqb8fgrNUKVSw==
-X-Received: by 2002:a05:6871:887:b0:ed:4b3b:2bc4 with SMTP id r7-20020a056871088700b000ed4b3b2bc4mr790934oaq.278.1652207001018;
-        Tue, 10 May 2022 11:23:21 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id m13-20020a9d400d000000b006060322126bsm5874079ote.59.2022.05.10.11.23.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 11:23:20 -0700 (PDT)
-Received: (nullmailer pid 2333804 invoked by uid 1000);
-        Tue, 10 May 2022 18:23:19 -0000
-Date:   Tue, 10 May 2022 13:23:19 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc:     Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Subject: Re: [PATCH] dt-bindings: clock: stm32mp1: adapt example for
- "st,stm32mp1-rcc-secure"
-Message-ID: <YnqtlwXwKgrvngGf@robh.at.kernel.org>
-References: <20220509134658.16267-1-alexandre.torgue@foss.st.com>
+        Tue, 10 May 2022 14:30:44 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75E44E3C;
+        Tue, 10 May 2022 11:30:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652207443; x=1683743443;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=AtK4Vp+vfjns4zq9RBk33s4OL+pZBv+NmUoteuD0PHI=;
+  b=NMv+QOkFfbIowWQnlXmjlOWTPViXrO65rglfkzitURnS0s3O6wshjop3
+   yWPhw94DdPjgudGzZeDAfz9SNXlAnMEsQDpqtl5MN3Fjhagy06RqSZ5zi
+   U5FdYPrwb3Ni6J2l80ewEW1Ss3Va94KFOsJRWEl/iXEwUuxit60FRY2Iz
+   uFlKUaNUCxpfrJwd8oFP9xANmPU0wS1mg33idtnwIxdUcb8zHuBEx0uoC
+   4KBVCmrMv/EAvGpCdG77zds1iO9dsF8c63OnBI/kNcac60OREyB5ElWeb
+   SZ+ImrvRSco1seG3sTAvvrYl7X63iIMJdPsaRyRvg+1HdZ4MX8Nxy3oBV
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="249998287"
+X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
+   d="scan'208";a="249998287"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 11:30:43 -0700
+X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
+   d="scan'208";a="738839901"
+Received: from rhweight-wrk1.ra.intel.com ([137.102.106.43])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 11:30:42 -0700
+From:   matthew.gerlach@linux.intel.com
+To:     dinguyen@kernel.org, robh+dt@kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     Matthew Gerlach <matthew.gerlach@linux.intel.com>
+Subject: [PATCH v5 0/3] Add device tree for Intel n6000
+Date:   Tue, 10 May 2022 11:30:38 -0700
+Message-Id: <20220510183041.876583-1-matthew.gerlach@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220509134658.16267-1-alexandre.torgue@foss.st.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 03:46:58PM +0200, Alexandre Torgue wrote:
-> For "st,stm32mp1-rcc-secure" schema, clocks and clock-names entries are now
-> required properties.
-> 
-> Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
+From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
 
-Assuming this works in arm-soc tree,
+This patch set adds a device tree for the Hard Processor System (HPS)
+on an Agilex based Intel n6000 board.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Patch 1 defines the device tree binding for the HPS Copy Engine IP
+used to copy a bootable image from host memory to HPS DDR.
+
+Patch 2 defines the binding for the Intel n6000 board itself.
+
+Patch 3 adds the device tree for the n6000 board.
+
+Changelog v4 -> v5:
+  - add tags from Krzysztof Kozlowski
+
+Changelog v3 -> v4:
+  - move binding yaml from soc to soc/intel
+
+Changelog v2 -> v3:
+  - remove unused label
+  - move from misc to soc
+  - remove 0x from #address-cells/#size-cells values
+  - change hps_cp_eng@0 to dma-controller@0
+  - remote inaccurate 'items:' tag
+  - added Acked-by
+  - add unit number to memory node
+  - remove spi node with unaccepted compatible value
+
+Changelog v1 -> v2:
+  - add dt binding for copy enging
+  - add dt binding for n6000 board
+  - fix copy engine node name
+  - fix compatible field for copy engine
+  - remove redundant status field
+  - add compatibility field for the board
+  - fix SPDX
+  - fix how osc1 clock frequency is set
+
+Matthew Gerlach (3):
+  dt-bindings: soc: add bindings for Intel HPS Copy Engine
+  dt-bindings: intel: add binding for Intel n6000
+  arm64: dts: intel: add device tree for n6000
+
+ .../bindings/arm/intel,socfpga.yaml           |  1 +
+ .../soc/intel/intel,hps-copy-engine.yaml      | 51 ++++++++++++++
+ arch/arm64/boot/dts/intel/Makefile            |  3 +-
+ .../boot/dts/intel/socfpga_agilex_n6000.dts   | 66 +++++++++++++++++++
+ 4 files changed, 120 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/soc/intel/intel,hps-copy-engine.yaml
+ create mode 100644 arch/arm64/boot/dts/intel/socfpga_agilex_n6000.dts
+
+-- 
+2.25.1
+
