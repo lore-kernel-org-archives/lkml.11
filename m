@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E87BFC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D06FC38A2D
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245672AbiEJN6f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:58:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55144 "EHLO
+        id S245732AbiEJN6o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:58:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245202AbiEJNii (ORCPT
+        with ESMTP id S245197AbiEJNii (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:38:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9F092980A;
-        Tue, 10 May 2022 06:28:46 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB1BDDECC;
+        Tue, 10 May 2022 06:28:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 644EB60C1C;
-        Tue, 10 May 2022 13:28:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70378C385A6;
-        Tue, 10 May 2022 13:28:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5595360B12;
+        Tue, 10 May 2022 13:28:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54B9AC385C2;
+        Tue, 10 May 2022 13:28:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189325;
-        bh=iGVnxWxoOhBcJQqdzfpfv49ak3HYriGUEF0owT0UMQs=;
+        s=korg; t=1652189319;
+        bh=QjF3jReUNDcYQveU7Tauj4YfmC8J+BQBTJfIbX5n0ME=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h+mGm2KvLp20rrWfzZ0I0nYZ5E/bv0/uLRjYcuyyFAuKcfFQdpxImTAAShFHkkAHN
-         Ipik3pswvOdPvtZ2UIGjuxpMRSlgnKTTl8v/9xBwusTNK5Sa/d4nzK0B1vW+HY1Mx4
-         fuI/DgVrPXVJVY+a1rt/4e+EuYHBbrhkZKU3sr6k=
+        b=DHWLK4VHiahUEYTMKMDtsGQkA6i0R4uQr1rL477vsqXf+HUkYi7CyCbnRxpN5iqUn
+         3hp9oMhvOvTWqtE13j9AWO2bgyBYHyL/e6qiPLqFsajKwIzxjXVIZ7UBPfB12HtG3y
+         Ondz4tQe8wMC7CNfGdSf45OM2oJzohPtlosg0OWY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nick Kossifidis <mick@ics.forth.gr>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.15 015/135] RISC-V: relocate DTB if its outside memory region
-Date:   Tue, 10 May 2022 15:06:37 +0200
-Message-Id: <20220510130740.836495192@linuxfoundation.org>
+        stable@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.15 013/135] drm/amd/display: Avoid reading audio pattern past AUDIO_CHANNELS_COUNT
+Date:   Tue, 10 May 2022 15:06:35 +0200
+Message-Id: <20220510130740.778835335@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -49,59 +48,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nick Kossifidis <mick@ics.forth.gr>
+From: Harry Wentland <harry.wentland@amd.com>
 
-commit c6fe81191bd74f7e6ae9ce96a4837df9485f3ab8 upstream.
+commit 3dfe85fa87b2a26bdbd292b66653bba065cf9941 upstream.
 
-In case the DTB provided by the bootloader/BootROM is before the kernel
-image or outside /memory, we won't be able to access it through the
-linear mapping, and get a segfault on setup_arch(). Currently OpenSBI
-relocates DTB but that's not always the case (e.g. if FW_JUMP_FDT_ADDR
-is not specified), and it's also not the most portable approach since
-the default FW_JUMP_FDT_ADDR of the generic platform relocates the DTB
-at a specific offset that may not be available. To avoid this situation
-copy DTB so that it's visible through the linear mapping.
+A faulty receiver might report an erroneous channel count. We
+should guard against reading beyond AUDIO_CHANNELS_COUNT as
+that would overflow the dpcd_pattern_period array.
 
-Signed-off-by: Nick Kossifidis <mick@ics.forth.gr>
-Link: https://lore.kernel.org/r/20220322132839.3653682-1-mick@ics.forth.gr
-Tested-by: Conor Dooley <conor.dooley@microchip.com>
-Fixes: f105aa940e78 ("riscv: add BUILTIN_DTB support for MMU-enabled targets")
+Signed-off-by: Harry Wentland <harry.wentland@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/mm/init.c |   21 +++++++++++++++++++--
- 1 file changed, 19 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/riscv/mm/init.c
-+++ b/arch/riscv/mm/init.c
-@@ -218,8 +218,25 @@ static void __init setup_bootmem(void)
- 	 * early_init_fdt_reserve_self() since __pa() does
- 	 * not work for DTB pointers that are fixmap addresses
- 	 */
--	if (!IS_ENABLED(CONFIG_BUILTIN_DTB))
--		memblock_reserve(dtb_early_pa, fdt_totalsize(dtb_early_va));
-+	if (!IS_ENABLED(CONFIG_BUILTIN_DTB)) {
-+		/*
-+		 * In case the DTB is not located in a memory region we won't
-+		 * be able to locate it later on via the linear mapping and
-+		 * get a segfault when accessing it via __va(dtb_early_pa).
-+		 * To avoid this situation copy DTB to a memory region.
-+		 * Note that memblock_phys_alloc will also reserve DTB region.
-+		 */
-+		if (!memblock_is_memory(dtb_early_pa)) {
-+			size_t fdt_size = fdt_totalsize(dtb_early_va);
-+			phys_addr_t new_dtb_early_pa = memblock_phys_alloc(fdt_size, PAGE_SIZE);
-+			void *new_dtb_early_va = early_memremap(new_dtb_early_pa, fdt_size);
-+
-+			memcpy(new_dtb_early_va, dtb_early_va, fdt_size);
-+			early_memunmap(new_dtb_early_va, fdt_size);
-+			_dtb_early_pa = new_dtb_early_pa;
-+		} else
-+			memblock_reserve(dtb_early_pa, fdt_totalsize(dtb_early_va));
-+	}
+--- a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
+@@ -3118,7 +3118,7 @@ static void dp_test_get_audio_test_data(
+ 		&dpcd_pattern_type.value,
+ 		sizeof(dpcd_pattern_type));
  
- 	early_init_fdt_scan_reserved_mem();
- 	dma_contiguous_reserve(dma32_phys_limit);
+-	channel_count = dpcd_test_mode.bits.channel_count + 1;
++	channel_count = min(dpcd_test_mode.bits.channel_count + 1, AUDIO_CHANNELS_COUNT);
+ 
+ 	// read pattern periods for requested channels when sawTooth pattern is requested
+ 	if (dpcd_pattern_type.value == AUDIO_TEST_PATTERN_SAWTOOTH ||
 
 
