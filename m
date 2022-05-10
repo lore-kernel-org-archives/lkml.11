@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD29BC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFE8AC43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:24:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243124AbiEJNZ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:25:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60798 "EHLO
+        id S243135AbiEJN0A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:26:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243343AbiEJNVs (ORCPT
+        with ESMTP id S243506AbiEJNWA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:21:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C5E8369F7;
-        Tue, 10 May 2022 06:15:49 -0700 (PDT)
+        Tue, 10 May 2022 09:22:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612424F9C2;
+        Tue, 10 May 2022 06:16:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8072CB81CE7;
-        Tue, 10 May 2022 13:15:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7F96C385C6;
-        Tue, 10 May 2022 13:15:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 627D461574;
+        Tue, 10 May 2022 13:16:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53B2FC385A6;
+        Tue, 10 May 2022 13:16:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188519;
-        bh=oc6DGHxk7tBm4fTtD+Nku+wgVy/bLOm9h6z8z3yKvNM=;
+        s=korg; t=1652188569;
+        bh=jNZnxmiMZ53JTlAIFKpA7EvVzwcYlv69uGX2/qyvw2I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mD15IfMlaAXfSVfiVF0ONId0jwZEBAp+Fhdx68+ys1OTIG09dA804XaxaHbFAtuRW
-         rvlplY2h9JQJB/tsNOsUJ1Wr14X1So2QqA7FZ1RoQGijYIuoYxgADVodUVlCWFya6m
-         bu5FsT4JUXkZKIxTqfaPjFxm1rEwR8gVSipZrY/0=
+        b=jEzj8B1jVtrw3O+LCz0fAbVc2Kxlm0cQNFOPk3QXrYRE8QEIKXqnUXxbY3abPdmCu
+         AOj+zv2Ar4VZz1yEE5Tkd+sYBKxOWWnhf24d5xX6YACb+InldMxApT2TRvoGShhWRC
+         NBmLyTxzhP65RotybjGzhhPAEgwkWBZ/ckS5UgIA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 05/78] Revert "net: ethernet: stmmac: fix altr_tse_pcs function when using a fixed-link"
-Date:   Tue, 10 May 2022 15:06:51 +0200
-Message-Id: <20220510130732.686866474@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 4.14 51/78] tty: n_gsm: fix wrong command frame length field encoding
+Date:   Tue, 10 May 2022 15:07:37 +0200
+Message-Id: <20220510130734.048919100@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
 References: <20220510130732.522479698@linuxfoundation.org>
@@ -50,103 +47,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit 75e105d068cb98e43a6bb6b196fc006da52f9ee5 which is
-commit a6aaa00324240967272b451bfa772547bd576ee6 upstream.
+From: Daniel Starke <daniel.starke@siemens.com>
 
-Pavel reports that it causes boot issues, so revert it for now.
+commit 398867f59f956985f4c324f173eff7b946e14bd8 upstream.
 
-Link: https://lore.kernel.org/r/20220429074341.GB1423@amd
-Reported-by: Pavel Machek <pavel@denx.de>
-Cc: Dinh Nguyen <dinguyen@kernel.org>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Sasha Levin <sashal@kernel.org>
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.4.6.1 states that each command frame shall
+be made up from type, length and value. Looking for example in chapter
+5.4.6.3.5 at the description for the encoding of a flow control on command
+it becomes obvious, that the type and length field is always present
+whereas the value may be zero bytes long. The current implementation omits
+the length field if the value is not present. This is wrong.
+Correct this by always sending the length in gsm_control_transmit().
+So far only the modem status command (MSC) has included a value and encoded
+its length directly. Therefore, also change gsmtty_modem_update().
+
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220414094225.4527-12-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c  |    8 ++++++++
- drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h  |    4 ----
- drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c |   13 ++++++++-----
- 3 files changed, 16 insertions(+), 9 deletions(-)
+ drivers/tty/n_gsm.c |   23 +++++++++++------------
+ 1 file changed, 11 insertions(+), 12 deletions(-)
 
---- a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c
-@@ -68,6 +68,10 @@
- #define TSE_PCS_USE_SGMII_ENA				BIT(0)
- #define TSE_PCS_IF_USE_SGMII				0x03
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1314,11 +1314,12 @@ static void gsm_control_response(struct
  
-+#define SGMII_ADAPTER_CTRL_REG				0x00
-+#define SGMII_ADAPTER_DISABLE				0x0001
-+#define SGMII_ADAPTER_ENABLE				0x0000
-+
- #define AUTONEGO_LINK_TIMER				20
- 
- static int tse_pcs_reset(void __iomem *base, struct tse_pcs *pcs)
-@@ -211,8 +215,12 @@ void tse_pcs_fix_mac_speed(struct tse_pc
- 			   unsigned int speed)
+ static void gsm_control_transmit(struct gsm_mux *gsm, struct gsm_control *ctrl)
  {
- 	void __iomem *tse_pcs_base = pcs->tse_pcs_base;
-+	void __iomem *sgmii_adapter_base = pcs->sgmii_adapter_base;
- 	u32 val;
- 
-+	writew(SGMII_ADAPTER_ENABLE,
-+	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
-+
- 	pcs->autoneg = phy_dev->autoneg;
- 
- 	if (phy_dev->autoneg == AUTONEG_ENABLE) {
---- a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h
-@@ -21,10 +21,6 @@
- #include <linux/phy.h>
- #include <linux/timer.h>
- 
--#define SGMII_ADAPTER_CTRL_REG		0x00
--#define SGMII_ADAPTER_ENABLE		0x0000
--#define SGMII_ADAPTER_DISABLE		0x0001
--
- struct tse_pcs {
- 	struct device *dev;
- 	void __iomem *tse_pcs_base;
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-@@ -29,6 +29,9 @@
- 
- #include "altr_tse_pcs.h"
- 
-+#define SGMII_ADAPTER_CTRL_REG                          0x00
-+#define SGMII_ADAPTER_DISABLE                           0x0001
-+
- #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_GMII_MII 0x0
- #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RGMII 0x1
- #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RMII 0x2
-@@ -62,14 +65,16 @@ static void socfpga_dwmac_fix_mac_speed(
- {
- 	struct socfpga_dwmac *dwmac = (struct socfpga_dwmac *)priv;
- 	void __iomem *splitter_base = dwmac->splitter_base;
-+	void __iomem *tse_pcs_base = dwmac->pcs.tse_pcs_base;
- 	void __iomem *sgmii_adapter_base = dwmac->pcs.sgmii_adapter_base;
- 	struct device *dev = dwmac->dev;
- 	struct net_device *ndev = dev_get_drvdata(dev);
- 	struct phy_device *phy_dev = ndev->phydev;
- 	u32 val;
- 
--	writew(SGMII_ADAPTER_DISABLE,
--	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
-+	if ((tse_pcs_base) && (sgmii_adapter_base))
-+		writew(SGMII_ADAPTER_DISABLE,
-+		       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
- 
- 	if (splitter_base) {
- 		val = readl(splitter_base + EMAC_SPLITTER_CTRL_REG);
-@@ -91,9 +96,7 @@ static void socfpga_dwmac_fix_mac_speed(
- 		writel(val, splitter_base + EMAC_SPLITTER_CTRL_REG);
- 	}
- 
--	writew(SGMII_ADAPTER_ENABLE,
--	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
--	if (phy_dev)
-+	if (tse_pcs_base && sgmii_adapter_base)
- 		tse_pcs_fix_mac_speed(&dwmac->pcs, phy_dev, speed);
+-	struct gsm_msg *msg = gsm_data_alloc(gsm, 0, ctrl->len + 1, gsm->ftype);
++	struct gsm_msg *msg = gsm_data_alloc(gsm, 0, ctrl->len + 2, gsm->ftype);
+ 	if (msg == NULL)
+ 		return;
+-	msg->data[0] = (ctrl->cmd << 1) | 2 | EA;	/* command */
+-	memcpy(msg->data + 1, ctrl->data, ctrl->len);
++	msg->data[0] = (ctrl->cmd << 1) | CR | EA;	/* command */
++	msg->data[1] = (ctrl->len << 1) | EA;
++	memcpy(msg->data + 2, ctrl->data, ctrl->len);
+ 	gsm_data_queue(gsm->dlci[0], msg);
  }
  
+@@ -2874,19 +2875,17 @@ static struct tty_ldisc_ops tty_ldisc_pa
+ 
+ static int gsmtty_modem_update(struct gsm_dlci *dlci, u8 brk)
+ {
+-	u8 modembits[5];
++	u8 modembits[3];
+ 	struct gsm_control *ctrl;
+ 	int len = 2;
+ 
+-	if (brk)
++	modembits[0] = (dlci->addr << 2) | 2 | EA;  /* DLCI, Valid, EA */
++	modembits[1] = (gsm_encode_modem(dlci) << 1) | EA;
++	if (brk) {
++		modembits[2] = (brk << 4) | 2 | EA; /* Length, Break, EA */
+ 		len++;
+-
+-	modembits[0] = len << 1 | EA;		/* Data bytes */
+-	modembits[1] = dlci->addr << 2 | 3;	/* DLCI, EA, 1 */
+-	modembits[2] = gsm_encode_modem(dlci) << 1 | EA;
+-	if (brk)
+-		modembits[3] = brk << 4 | 2 | EA;	/* Valid, EA */
+-	ctrl = gsm_control_send(dlci->gsm, CMD_MSC, modembits, len + 1);
++	}
++	ctrl = gsm_control_send(dlci->gsm, CMD_MSC, modembits, len);
+ 	if (ctrl == NULL)
+ 		return -ENOMEM;
+ 	return gsm_control_wait(dlci->gsm, ctrl);
 
 
