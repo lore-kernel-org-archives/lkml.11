@@ -2,82 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7A96C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:54:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ECB9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:54:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238867AbiEJO6P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:58:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45604 "EHLO
+        id S243603AbiEJO6s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:58:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345510AbiEJO40 (ORCPT
+        with ESMTP id S1345121AbiEJO6M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:56:26 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 062A22802C9;
-        Tue, 10 May 2022 07:17:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652192241; x=1683728241;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=BOBfGKDZ3o7R/t5ac+GRsDT4rIxltWL77PvfKQdlDpU=;
-  b=XkLpqGwBjcwKRip86uS2RJHVd0OlIcdkPyvsMA3mxdXNFO/F0Dn/IjR9
-   PpavgYnjtWO3aFm9W+CjklGrZOG0NkBSThq0aq/Tx6UDTM/IDyYVg1oyP
-   5IFUZcxBw2A02rR/K72XZlRsFMExiXcsfk4YuKg6eQtRxXin6xgnI/a4o
-   ds2Hdb8QW2Nro3SN+9ayPkyvDA38nCEWMOnInDSx2okHWDfw2S8ptFbXB
-   dZ01i/wNIhCUEjWj0GCNpie7SwydS465mPGCYLGNvNMu/O+Wn0KzZqMDS
-   GaM9O6Sp3Jv84e18JLqrKA1MzuB2eEmC8ITtaYjRmukHqybpbHmo7QRPl
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="269049136"
-X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
-   d="scan'208";a="269049136"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 07:17:04 -0700
-X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
-   d="scan'208";a="813993242"
-Received: from rhweight-wrk1.ra.intel.com ([137.102.106.43])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 07:17:03 -0700
-Date:   Tue, 10 May 2022 07:16:56 -0700 (PDT)
-From:   matthew.gerlach@linux.intel.com
-X-X-Sender: mgerlach@rhweight-WRK1
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-cc:     dinguyen@kernel.org, robh+dt@kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        krzysztof.kozlowski+dt@linaro.org
-Subject: Re: [PATCH v4 1/3] dt-bindings: soc: add bindings for Intel HPS Copy
- Engine
-In-Reply-To: <e14122b9-cd7a-b2a9-93a5-cde6139969c1@linaro.org>
-Message-ID: <alpine.DEB.2.22.394.2205100715570.612063@rhweight-WRK1>
-References: <20220508142624.491045-1-matthew.gerlach@linux.intel.com> <20220508142624.491045-2-matthew.gerlach@linux.intel.com> <e14122b9-cd7a-b2a9-93a5-cde6139969c1@linaro.org>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        Tue, 10 May 2022 10:58:12 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8CB82A76B4;
+        Tue, 10 May 2022 07:19:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 33131CE1F30;
+        Tue, 10 May 2022 14:19:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82064C385C2;
+        Tue, 10 May 2022 14:19:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652192379;
+        bh=4obB5yZPo6qtD+4LbLaRZZjIPI7HGIIXta3dnnaLaA4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tJYOp3WJgQmgO//N8yYXAhgWomyLHhhikZ1zpaco+76CnmhwQ2xvz4LT0+nSITpvZ
+         5ZBckNEnTZcrp3OiIKkg538FXEOuqVsJoFaEIG4yX1QqftrV1nEv5s//qnEcgnOBV7
+         Xi+Hhc+7dBhwMKhWVMESKPBan0XlbG8NibNM2MAsnSOfzO3dD72z3E2/mCVvTwLSSM
+         feq24xy/OFc4xbakrYzNLbeV1EuNcwqpyV6evlI9Nwv2lcCa/FqbDJvsyqehQYOp9e
+         4ikYSS3PUdtH39aCqR0FWk3JIVSdwhophVEVBcX7DigC8UBChyCZwXC681AF+yMnhm
+         je4agOQF7a5Gw==
+Date:   Tue, 10 May 2022 16:19:32 +0200
+From:   Christian Brauner <brauner@kernel.org>
+To:     Miklos Szeredi <miklos@szeredi.hu>
+Cc:     linux-fsdevel@vger.kernel.org, Dave Chinner <david@fromorbit.com>,
+        Theodore Ts'o <tytso@mit.edu>, Karel Zak <kzak@redhat.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org,
+        Linux API <linux-api@vger.kernel.org>,
+        linux-man <linux-man@vger.kernel.org>,
+        LSM <linux-security-module@vger.kernel.org>,
+        Ian Kent <raven@themaw.net>,
+        David Howells <dhowells@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christian Brauner <christian@brauner.io>,
+        Amir Goldstein <amir73il@gmail.com>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>
+Subject: Re: [RFC PATCH] getting misc stats/attributes via xattr API
+Message-ID: <20220510141932.lth3bryefbl6ykny@wittgenstein>
+References: <YnEeuw6fd1A8usjj@miu.piliscsaba.redhat.com>
+ <20220509124815.vb7d2xj5idhb2wq6@wittgenstein>
+ <CAJfpegveWaS5pR3O1c_7qLnaEDWwa8oi26x2v_CwDXB_sir1tg@mail.gmail.com>
+ <20220510115316.acr6gl5ayqszada6@wittgenstein>
+ <CAJfpegtVgyumJiFM_ujjuRTjg07vwOd4h9AT+mbh+n1Qn-LqqA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAJfpegtVgyumJiFM_ujjuRTjg07vwOd4h9AT+mbh+n1Qn-LqqA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, May 10, 2022 at 03:15:05PM +0200, Miklos Szeredi wrote:
+> On Tue, 10 May 2022 at 13:53, Christian Brauner <brauner@kernel.org> wrote:
+> 
+> > > What exactly are the attributes that systemd requires?
+> >
+> > We keep a repo with ideas for (kernel) extensions - we should probably
+> > publish that somewhere - but the list we used for a prototype roughly
+> > contains:
+> >
+> > * mount flags MOUNT_ATTR_RDONLY etc.
+> > * time flags MOUNT_ATTR_RELATIME etc. (could probably be combined with
+> >   mount flags. We missed the opportunity to make them proper enums
+> >   separate from other mount flags imho.)
+> > * propagation "flags" (MS_SHARED)
+> > * peer group
+> > * mnt_id of the mount
+> > * mnt_id of the mount's parent
+> > * owning userns
+> 
+> Sounds good thus far.   And hey, we don't even need a new syscall:
+> statx(2) could handle these fine.
+> 
+> > There's a bit more advanced stuff systemd would really want but which I
+> > think is misplaced in a mountinfo system call including:
+> > * list of primary and auxiliary block device major/minor
+> 
+> It's when you need to return variable size arrays or list of strings
+> that the statx kind of interface falls down.
+> 
+> For that a hierarchical namespace is a much better choice, as it can
+> represent arbitrary levels of arrays, while doing that with a
+> specialized syscall is going to be cumbersome.
+> 
+> > I just have a really hard time understanding how this belongs into the
+> > (f)getxattr() system call family and why it would be a big deal to just
+> > make this a separate system call.
+> 
+> Fragmenting syntactically equivalent interfaces is bad, unifying them
 
-
-On Mon, 9 May 2022, Krzysztof Kozlowski wrote:
-
-> On 08/05/2022 16:26, matthew.gerlach@linux.intel.com wrote:
->> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
->>
->> Add device tree bindings documentation for the Intel Hard
->> Processor System (HPS) Copy Engine.
->>
->> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
->
->
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-Hi Krzysztof,
-
-Thank you for the review.  I will add your tag and submit a v5 patchset.
-
-Matthew
->
->
-> Best regards,
-> Krzysztof
->
+Fwiw, turning this around: unifying semantically distinct interfaces
+because of syntactical similarities is bad. Moving them into a
+syntactically equivalent system call that expresses the difference in
+semantics in its name is good.
