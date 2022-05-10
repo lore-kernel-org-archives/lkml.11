@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AD1CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:40:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A211C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:41:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243953AbiEJNot (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:44:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57472 "EHLO
+        id S243975AbiEJNo5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:44:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243668AbiEJNbz (ORCPT
+        with ESMTP id S243742AbiEJNcM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:31:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FDE52CC131;
-        Tue, 10 May 2022 06:21:52 -0700 (PDT)
+        Tue, 10 May 2022 09:32:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F072E2CDEE4;
+        Tue, 10 May 2022 06:21:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1E0860C1C;
-        Tue, 10 May 2022 13:21:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7500C385C2;
-        Tue, 10 May 2022 13:21:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E6388B81D7A;
+        Tue, 10 May 2022 13:21:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47F0EC385A6;
+        Tue, 10 May 2022 13:21:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188909;
-        bh=09iYEBo61QGv2MPZ1PJgYqKZ2Yf52Nz+eYKGn4iEPOY=;
+        s=korg; t=1652188914;
+        bh=A5Gm8vv4Lg2LnbsRDQ1x/R93fKZb81xT8n6buhK6Sjg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xgtVKjR9WTsvRyjQoCG3Q/JXbr5ProvjQd//jHT5C0mhl6wrJVrSxzBFS20rPNg64
-         ocDtunPz+WxTe07QGETL3pTVe/I2/LXdA4WkowTwOdBiTF++sHwa3nWkqDk27AWWNk
-         /5akQDVb1YyNPhUBl5Wv+oDH06S2CgpzzLsz6hqA=
+        b=SUcVYG6Mp+m8JqTeU0vZCeQaXC63D/9G8iWhbezfKlmR0yCmfaiKH8qcvWx7kGeck
+         74Ne+gSat05dG92ZRlU2HLv4urh5V+GlzQfX3WNk2GzaculCAstjRzRoCbP65euEKI
+         pXvbVf7Y+qW94qC8LfH85blcne3Fi7w9intFkqFw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ricky Wu <ricky_wu@realtek.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Christian Loehle <cloehle@hyperstone.com>
-Subject: [PATCH 4.19 88/88] mmc: rtsx: add 74 Clocks in power on flow
-Date:   Tue, 10 May 2022 15:08:13 +0200
-Message-Id: <20220510130736.285970056@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>
+Subject: [PATCH 4.19 67/88] ASoC: wm8958: Fix change notifications for DSP controls
+Date:   Tue, 10 May 2022 15:07:52 +0200
+Message-Id: <20220510130735.683650758@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 References: <20220510130733.735278074@linuxfoundation.org>
@@ -49,114 +48,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ricky WU <ricky_wu@realtek.com>
+From: Mark Brown <broonie@kernel.org>
 
-commit 1f311c94aabdb419c28e3147bcc8ab89269f1a7e upstream.
+commit b4f5c6b2e52b27462c0599e64e96e53b58438de1 upstream.
 
-SD spec definition:
-"Host provides at least 74 Clocks before issuing first command"
-After 1ms for the voltage stable then start issuing the Clock signals
+The WM8958 DSP controls all return 0 on successful write, not a boolean
+value indicating if the write changed the value of the control. Fix this
+by returning 1 after a change, there is already a check at the start of
+each put() that skips the function in the case that there is no change.
 
-if POWER STATE is
-MMC_POWER_OFF to MMC_POWER_UP to issue Clock signal to card
-MMC_POWER_UP to MMC_POWER_ON to stop issuing signal to card
-
-Signed-off-by: Ricky Wu <ricky_wu@realtek.com>
-Link: https://lore.kernel.org/r/1badf10aba764191a1a752edcbf90389@realtek.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Christian Loehle <cloehle@hyperstone.com>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220416125408.197440-1-broonie@kernel.org
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/host/rtsx_pci_sdmmc.c |   31 +++++++++++++++++++++----------
- 1 file changed, 21 insertions(+), 10 deletions(-)
+ sound/soc/codecs/wm8958-dsp2.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/mmc/host/rtsx_pci_sdmmc.c
-+++ b/drivers/mmc/host/rtsx_pci_sdmmc.c
-@@ -49,10 +49,7 @@ struct realtek_pci_sdmmc {
- 	bool			double_clk;
- 	bool			eject;
- 	bool			initial_mode;
--	int			power_state;
--#define SDMMC_POWER_ON		1
--#define SDMMC_POWER_OFF		0
--
-+	int			prev_power_state;
- 	int			sg_count;
- 	s32			cookie;
- 	int			cookie_sg_count;
-@@ -914,14 +911,21 @@ static int sd_set_bus_width(struct realt
- 	return err;
+--- a/sound/soc/codecs/wm8958-dsp2.c
++++ b/sound/soc/codecs/wm8958-dsp2.c
+@@ -537,7 +537,7 @@ static int wm8958_mbc_put(struct snd_kco
+ 
+ 	wm8958_dsp_apply(component, mbc, wm8994->mbc_ena[mbc]);
+ 
+-	return 0;
++	return 1;
  }
  
--static int sd_power_on(struct realtek_pci_sdmmc *host)
-+static int sd_power_on(struct realtek_pci_sdmmc *host, unsigned char power_mode)
- {
- 	struct rtsx_pcr *pcr = host->pcr;
- 	int err;
+ #define WM8958_MBC_SWITCH(xname, xval) {\
+@@ -663,7 +663,7 @@ static int wm8958_vss_put(struct snd_kco
  
--	if (host->power_state == SDMMC_POWER_ON)
-+	if (host->prev_power_state == MMC_POWER_ON)
- 		return 0;
+ 	wm8958_dsp_apply(component, vss, wm8994->vss_ena[vss]);
  
-+	if (host->prev_power_state == MMC_POWER_UP) {
-+		rtsx_pci_write_register(pcr, SD_BUS_STAT, SD_CLK_TOGGLE_EN, 0);
-+		goto finish;
-+	}
-+
-+	msleep(100);
-+
- 	rtsx_pci_init_cmd(pcr);
- 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, CARD_SELECT, 0x07, SD_MOD_SEL);
- 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, CARD_SHARE_MODE,
-@@ -940,11 +944,17 @@ static int sd_power_on(struct realtek_pc
- 	if (err < 0)
- 		return err;
- 
-+	mdelay(1);
-+
- 	err = rtsx_pci_write_register(pcr, CARD_OE, SD_OUTPUT_EN, SD_OUTPUT_EN);
- 	if (err < 0)
- 		return err;
- 
--	host->power_state = SDMMC_POWER_ON;
-+	/* send at least 74 clocks */
-+	rtsx_pci_write_register(pcr, SD_BUS_STAT, SD_CLK_TOGGLE_EN, SD_CLK_TOGGLE_EN);
-+
-+finish:
-+	host->prev_power_state = power_mode;
- 	return 0;
+-	return 0;
++	return 1;
  }
  
-@@ -953,7 +963,7 @@ static int sd_power_off(struct realtek_p
- 	struct rtsx_pcr *pcr = host->pcr;
- 	int err;
  
--	host->power_state = SDMMC_POWER_OFF;
-+	host->prev_power_state = MMC_POWER_OFF;
+@@ -737,7 +737,7 @@ static int wm8958_hpf_put(struct snd_kco
  
- 	rtsx_pci_init_cmd(pcr);
+ 	wm8958_dsp_apply(component, hpf % 3, ucontrol->value.integer.value[0]);
  
-@@ -979,7 +989,7 @@ static int sd_set_power_mode(struct real
- 	if (power_mode == MMC_POWER_OFF)
- 		err = sd_power_off(host);
- 	else
--		err = sd_power_on(host);
-+		err = sd_power_on(host, power_mode);
- 
- 	return err;
+-	return 0;
++	return 1;
  }
-@@ -1414,10 +1424,11 @@ static int rtsx_pci_sdmmc_drv_probe(stru
  
- 	host = mmc_priv(mmc);
- 	host->pcr = pcr;
-+	mmc->ios.power_delay_ms = 5;
- 	host->mmc = mmc;
- 	host->pdev = pdev;
- 	host->cookie = -1;
--	host->power_state = SDMMC_POWER_OFF;
-+	host->prev_power_state = MMC_POWER_OFF;
- 	INIT_WORK(&host->work, sd_request);
- 	platform_set_drvdata(pdev, host);
- 	pcr->slots[RTSX_SD_CARD].p_dev = pdev;
+ #define WM8958_HPF_SWITCH(xname, xval) {\
+@@ -831,7 +831,7 @@ static int wm8958_enh_eq_put(struct snd_
+ 
+ 	wm8958_dsp_apply(component, eq, ucontrol->value.integer.value[0]);
+ 
+-	return 0;
++	return 1;
+ }
+ 
+ #define WM8958_ENH_EQ_SWITCH(xname, xval) {\
 
 
