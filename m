@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCFF0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:10:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 455EAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:10:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241480AbiEJONu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:13:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56474 "EHLO
+        id S245055AbiEJOOB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:14:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245063AbiEJNrS (ORCPT
+        with ESMTP id S245047AbiEJNrN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:47:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09B607220B;
-        Tue, 10 May 2022 06:34:46 -0700 (PDT)
+        Tue, 10 May 2022 09:47:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F383443D2;
+        Tue, 10 May 2022 06:34:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9973F615C8;
-        Tue, 10 May 2022 13:34:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9879CC385A6;
-        Tue, 10 May 2022 13:34:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C283DB81DA2;
+        Tue, 10 May 2022 13:34:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FC7CC385A6;
+        Tue, 10 May 2022 13:34:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189685;
-        bh=DNG9C7+Qa51fqG64wTwqhp5rcMmVo5CUMuLkbK0luMI=;
+        s=korg; t=1652189657;
+        bh=jFnAKTcpZKMOoreHyThA4h5lT/C6YV3XwTgRFXYjlzc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hApJIODp3hWTQQdYhKUHwS+XE/3WnwqKK4ko0UydeC3CrueIwYzxzB4Pil+pijyyE
-         Yv3UAbQze9HC7npPOgVkYyMvWMlwq2jyuwhgU/ESJPFKoV9H/Nh9H4ZK5+hYeU/9A6
-         Oky4D5AOzgVaoIy2GzSqVBaatRHGhZ2e50QfaYFs=
+        b=QZnyJH92HWkG65qYPBis6NcWy8XGo+AqYD+P/K4V0FjbaL8WPylE/BE4alsu8WgOQ
+         9QffPeaMrl/babuceg9lG6EMrjrOgcjqDHvRK9RVU/rhrloIk+WUS7Kc+7e2yRaEnF
+         rcK10/n0ZM5qRTadJN7h0urS97Yv9puljza81nQA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vlad Buslov <vladbu@nvidia.com>,
-        Maor Dickman <maord@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 090/135] net/mlx5e: Lag, Fix use-after-free in fib event handler
-Date:   Tue, 10 May 2022 15:07:52 +0200
-Message-Id: <20220510130742.992705980@linuxfoundation.org>
+        stable@vger.kernel.org, pali@kernel.org,
+        =?UTF-8?q?Marek=20Beh=FAn?= <kabel@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: [PATCH 5.15 120/135] PCI: aardvark: Make MSI irq_chip structures static driver structures
+Date:   Tue, 10 May 2022 15:08:22 +0200
+Message-Id: <20220510130743.840323275@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -51,247 +49,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vlad Buslov <vladbu@nvidia.com>
+From: "Marek Behún" <kabel@kernel.org>
 
-[ Upstream commit 27b0420fd959e38e3500e60b637d39dfab065645 ]
+commit c3cb8e51839adc0aaef478c47665443d02f5aa07 upstream.
 
-Recent commit that modified fib route event handler to handle events
-according to their priority introduced use-after-free[0] in mp->mfi pointer
-usage. The pointer now is not just cached in order to be compared to
-following fib_info instances, but is also dereferenced to obtain
-fib_priority. However, since mlx5 lag code doesn't hold the reference to
-fin_info during whole mp->mfi lifetime, it could be used after fib_info
-instance has already been freed be kernel infrastructure code.
+In [1] it was agreed that we should use struct irq_chip as a global
+static struct in the driver. Even though the structure currently
+contains a dynamic member (parent_device), In [2] the plans to kill it
+and make the structure completely static were set out.
 
-Don't ever dereference mp->mfi pointer. Refactor it to be 'const void*'
-type and cache fib_info priority in dedicated integer. Group
-fib_info-related data into dedicated 'fib' structure that will be further
-extended by following patches in the series.
+Convert Aardvark's priv->msi_bottom_irq_chip and priv->msi_irq_chip to
+static driver structure.
 
-[0]:
+[1] https://lore.kernel.org/linux-pci/877dbcvngf.wl-maz@kernel.org/
+[2] https://lore.kernel.org/linux-pci/874k6gvkhz.wl-maz@kernel.org/
 
-[  203.588029] ==================================================================
-[  203.590161] BUG: KASAN: use-after-free in mlx5_lag_fib_update+0xabd/0xd60 [mlx5_core]
-[  203.592386] Read of size 4 at addr ffff888144df2050 by task kworker/u20:4/138
-
-[  203.594766] CPU: 3 PID: 138 Comm: kworker/u20:4 Tainted: G    B             5.17.0-rc7+ #6
-[  203.596751] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
-[  203.598813] Workqueue: mlx5_lag_mp mlx5_lag_fib_update [mlx5_core]
-[  203.600053] Call Trace:
-[  203.600608]  <TASK>
-[  203.601110]  dump_stack_lvl+0x48/0x5e
-[  203.601860]  print_address_description.constprop.0+0x1f/0x160
-[  203.602950]  ? mlx5_lag_fib_update+0xabd/0xd60 [mlx5_core]
-[  203.604073]  ? mlx5_lag_fib_update+0xabd/0xd60 [mlx5_core]
-[  203.605177]  kasan_report.cold+0x83/0xdf
-[  203.605969]  ? mlx5_lag_fib_update+0xabd/0xd60 [mlx5_core]
-[  203.607102]  mlx5_lag_fib_update+0xabd/0xd60 [mlx5_core]
-[  203.608199]  ? mlx5_lag_init_fib_work+0x1c0/0x1c0 [mlx5_core]
-[  203.609382]  ? read_word_at_a_time+0xe/0x20
-[  203.610463]  ? strscpy+0xa0/0x2a0
-[  203.611463]  process_one_work+0x722/0x1270
-[  203.612344]  worker_thread+0x540/0x11e0
-[  203.613136]  ? rescuer_thread+0xd50/0xd50
-[  203.613949]  kthread+0x26e/0x300
-[  203.614627]  ? kthread_complete_and_exit+0x20/0x20
-[  203.615542]  ret_from_fork+0x1f/0x30
-[  203.616273]  </TASK>
-
-[  203.617174] Allocated by task 3746:
-[  203.617874]  kasan_save_stack+0x1e/0x40
-[  203.618644]  __kasan_kmalloc+0x81/0xa0
-[  203.619394]  fib_create_info+0xb41/0x3c50
-[  203.620213]  fib_table_insert+0x190/0x1ff0
-[  203.621020]  fib_magic.isra.0+0x246/0x2e0
-[  203.621803]  fib_add_ifaddr+0x19f/0x670
-[  203.622563]  fib_inetaddr_event+0x13f/0x270
-[  203.623377]  blocking_notifier_call_chain+0xd4/0x130
-[  203.624355]  __inet_insert_ifa+0x641/0xb20
-[  203.625185]  inet_rtm_newaddr+0xc3d/0x16a0
-[  203.626009]  rtnetlink_rcv_msg+0x309/0x880
-[  203.626826]  netlink_rcv_skb+0x11d/0x340
-[  203.627626]  netlink_unicast+0x4cc/0x790
-[  203.628430]  netlink_sendmsg+0x762/0xc00
-[  203.629230]  sock_sendmsg+0xb2/0xe0
-[  203.629955]  ____sys_sendmsg+0x58a/0x770
-[  203.630756]  ___sys_sendmsg+0xd8/0x160
-[  203.631523]  __sys_sendmsg+0xb7/0x140
-[  203.632294]  do_syscall_64+0x35/0x80
-[  203.633045]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-[  203.634427] Freed by task 0:
-[  203.635063]  kasan_save_stack+0x1e/0x40
-[  203.635844]  kasan_set_track+0x21/0x30
-[  203.636618]  kasan_set_free_info+0x20/0x30
-[  203.637450]  __kasan_slab_free+0xfc/0x140
-[  203.638271]  kfree+0x94/0x3b0
-[  203.638903]  rcu_core+0x5e4/0x1990
-[  203.639640]  __do_softirq+0x1ba/0x5d3
-
-[  203.640828] Last potentially related work creation:
-[  203.641785]  kasan_save_stack+0x1e/0x40
-[  203.642571]  __kasan_record_aux_stack+0x9f/0xb0
-[  203.643478]  call_rcu+0x88/0x9c0
-[  203.644178]  fib_release_info+0x539/0x750
-[  203.644997]  fib_table_delete+0x659/0xb80
-[  203.645809]  fib_magic.isra.0+0x1a3/0x2e0
-[  203.646617]  fib_del_ifaddr+0x93f/0x1300
-[  203.647415]  fib_inetaddr_event+0x9f/0x270
-[  203.648251]  blocking_notifier_call_chain+0xd4/0x130
-[  203.649225]  __inet_del_ifa+0x474/0xc10
-[  203.650016]  devinet_ioctl+0x781/0x17f0
-[  203.650788]  inet_ioctl+0x1ad/0x290
-[  203.651533]  sock_do_ioctl+0xce/0x1c0
-[  203.652315]  sock_ioctl+0x27b/0x4f0
-[  203.653058]  __x64_sys_ioctl+0x124/0x190
-[  203.653850]  do_syscall_64+0x35/0x80
-[  203.654608]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-[  203.666952] The buggy address belongs to the object at ffff888144df2000
-                which belongs to the cache kmalloc-256 of size 256
-[  203.669250] The buggy address is located 80 bytes inside of
-                256-byte region [ffff888144df2000, ffff888144df2100)
-[  203.671332] The buggy address belongs to the page:
-[  203.672273] page:00000000bf6c9314 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x144df0
-[  203.674009] head:00000000bf6c9314 order:2 compound_mapcount:0 compound_pincount:0
-[  203.675422] flags: 0x2ffff800010200(slab|head|node=0|zone=2|lastcpupid=0x1ffff)
-[  203.676819] raw: 002ffff800010200 0000000000000000 dead000000000122 ffff888100042b40
-[  203.678384] raw: 0000000000000000 0000000080200020 00000001ffffffff 0000000000000000
-[  203.679928] page dumped because: kasan: bad access detected
-
-[  203.681455] Memory state around the buggy address:
-[  203.682421]  ffff888144df1f00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[  203.683863]  ffff888144df1f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[  203.685310] >ffff888144df2000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[  203.686701]                                                  ^
-[  203.687820]  ffff888144df2080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[  203.689226]  ffff888144df2100: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[  203.690620] ==================================================================
-
-Fixes: ad11c4f1d8fd ("net/mlx5e: Lag, Only handle events from highest priority multipath entry")
-Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
-Reviewed-by: Maor Dickman <maord@nvidia.com>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220110015018.26359-7-kabel@kernel.org
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../net/ethernet/mellanox/mlx5/core/lag_mp.c  | 26 ++++++++++++-------
- .../net/ethernet/mellanox/mlx5/core/lag_mp.h  |  5 +++-
- 2 files changed, 20 insertions(+), 11 deletions(-)
+ drivers/pci/controller/pci-aardvark.c |   26 ++++++++++++--------------
+ 1 file changed, 12 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-index cb0a48d374a3..8d278c45e7cc 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-@@ -100,6 +100,12 @@ static void mlx5_lag_fib_event_flush(struct notifier_block *nb)
- 	flush_workqueue(mp->wq);
+--- a/drivers/pci/controller/pci-aardvark.c
++++ b/drivers/pci/controller/pci-aardvark.c
+@@ -274,8 +274,6 @@ struct advk_pcie {
+ 	raw_spinlock_t irq_lock;
+ 	struct irq_domain *msi_domain;
+ 	struct irq_domain *msi_inner_domain;
+-	struct irq_chip msi_bottom_irq_chip;
+-	struct irq_chip msi_irq_chip;
+ 	struct msi_domain_info msi_domain_info;
+ 	DECLARE_BITMAP(msi_used, MSI_IRQ_NUM);
+ 	struct mutex msi_used_lock;
+@@ -1194,6 +1192,12 @@ static int advk_msi_set_affinity(struct
+ 	return -EINVAL;
  }
  
-+static void mlx5_lag_fib_set(struct lag_mp *mp, struct fib_info *fi)
-+{
-+	mp->fib.mfi = fi;
-+	mp->fib.priority = fi->fib_priority;
-+}
++static struct irq_chip advk_msi_bottom_irq_chip = {
++	.name			= "MSI",
++	.irq_compose_msi_msg	= advk_msi_irq_compose_msi_msg,
++	.irq_set_affinity	= advk_msi_set_affinity,
++};
 +
- struct mlx5_fib_event_work {
- 	struct work_struct work;
- 	struct mlx5_lag *ldev;
-@@ -121,13 +127,13 @@ static void mlx5_lag_fib_route_event(struct mlx5_lag *ldev,
- 	/* Handle delete event */
- 	if (event == FIB_EVENT_ENTRY_DEL) {
- 		/* stop track */
--		if (mp->mfi == fi)
--			mp->mfi = NULL;
-+		if (mp->fib.mfi == fi)
-+			mp->fib.mfi = NULL;
- 		return;
- 	}
+ static int advk_msi_irq_domain_alloc(struct irq_domain *domain,
+ 				     unsigned int virq,
+ 				     unsigned int nr_irqs, void *args)
+@@ -1210,7 +1214,7 @@ static int advk_msi_irq_domain_alloc(str
  
- 	/* Handle multipath entry with lower priority value */
--	if (mp->mfi && mp->mfi != fi && fi->fib_priority >= mp->mfi->fib_priority)
-+	if (mp->fib.mfi && mp->fib.mfi != fi && fi->fib_priority >= mp->fib.priority)
- 		return;
+ 	for (i = 0; i < nr_irqs; i++)
+ 		irq_domain_set_info(domain, virq + i, hwirq + i,
+-				    &pcie->msi_bottom_irq_chip,
++				    &advk_msi_bottom_irq_chip,
+ 				    domain->host_data, handle_simple_irq,
+ 				    NULL, NULL);
  
- 	/* Handle add/replace event */
-@@ -145,7 +151,7 @@ static void mlx5_lag_fib_route_event(struct mlx5_lag *ldev,
- 			mlx5_lag_set_port_affinity(ldev, i);
- 		}
- 
--		mp->mfi = fi;
-+		mlx5_lag_fib_set(mp, fi);
- 		return;
- 	}
- 
-@@ -165,7 +171,7 @@ static void mlx5_lag_fib_route_event(struct mlx5_lag *ldev,
- 	}
- 
- 	/* First time we see multipath route */
--	if (!mp->mfi && !__mlx5_lag_is_active(ldev)) {
-+	if (!mp->fib.mfi && !__mlx5_lag_is_active(ldev)) {
- 		struct lag_tracker tracker;
- 
- 		tracker = ldev->tracker;
-@@ -173,7 +179,7 @@ static void mlx5_lag_fib_route_event(struct mlx5_lag *ldev,
- 	}
- 
- 	mlx5_lag_set_port_affinity(ldev, MLX5_LAG_NORMAL_AFFINITY);
--	mp->mfi = fi;
-+	mlx5_lag_fib_set(mp, fi);
- }
- 
- static void mlx5_lag_fib_nexthop_event(struct mlx5_lag *ldev,
-@@ -184,7 +190,7 @@ static void mlx5_lag_fib_nexthop_event(struct mlx5_lag *ldev,
- 	struct lag_mp *mp = &ldev->lag_mp;
- 
- 	/* Check the nh event is related to the route */
--	if (!mp->mfi || mp->mfi != fi)
-+	if (!mp->fib.mfi || mp->fib.mfi != fi)
- 		return;
- 
- 	/* nh added/removed */
-@@ -313,7 +319,7 @@ void mlx5_lag_mp_reset(struct mlx5_lag *ldev)
- 	/* Clear mfi, as it might become stale when a route delete event
- 	 * has been missed, see mlx5_lag_fib_route_event().
- 	 */
--	ldev->lag_mp.mfi = NULL;
-+	ldev->lag_mp.fib.mfi = NULL;
- }
- 
- int mlx5_lag_mp_init(struct mlx5_lag *ldev)
-@@ -324,7 +330,7 @@ int mlx5_lag_mp_init(struct mlx5_lag *ldev)
- 	/* always clear mfi, as it might become stale when a route delete event
- 	 * has been missed
- 	 */
--	mp->mfi = NULL;
-+	mp->fib.mfi = NULL;
- 
- 	if (mp->fib_nb.notifier_call)
- 		return 0;
-@@ -354,5 +360,5 @@ void mlx5_lag_mp_cleanup(struct mlx5_lag *ldev)
- 	unregister_fib_notifier(&init_net, &mp->fib_nb);
- 	destroy_workqueue(mp->wq);
- 	mp->fib_nb.notifier_call = NULL;
--	mp->mfi = NULL;
-+	mp->fib.mfi = NULL;
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.h b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.h
-index dea199e79bed..e8380eb0dd6a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.h
-@@ -15,7 +15,10 @@ enum mlx5_lag_port_affinity {
- 
- struct lag_mp {
- 	struct notifier_block     fib_nb;
--	struct fib_info           *mfi; /* used in tracking fib events */
-+	struct {
-+		const void        *mfi; /* used in tracking fib events */
-+		u32               priority;
-+	} fib;
- 	struct workqueue_struct   *wq;
+@@ -1280,29 +1284,23 @@ static const struct irq_domain_ops advk_
+ 	.xlate = irq_domain_xlate_onecell,
  };
  
--- 
-2.35.1
-
++static struct irq_chip advk_msi_irq_chip = {
++	.name = "advk-MSI",
++};
++
+ static int advk_pcie_init_msi_irq_domain(struct advk_pcie *pcie)
+ {
+ 	struct device *dev = &pcie->pdev->dev;
+ 	struct device_node *node = dev->of_node;
+-	struct irq_chip *bottom_ic, *msi_ic;
+ 	struct msi_domain_info *msi_di;
+ 	phys_addr_t msi_msg_phys;
+ 
+ 	mutex_init(&pcie->msi_used_lock);
+ 
+-	bottom_ic = &pcie->msi_bottom_irq_chip;
+-
+-	bottom_ic->name = "MSI";
+-	bottom_ic->irq_compose_msi_msg = advk_msi_irq_compose_msi_msg;
+-	bottom_ic->irq_set_affinity = advk_msi_set_affinity;
+-
+-	msi_ic = &pcie->msi_irq_chip;
+-	msi_ic->name = "advk-MSI";
+-
+ 	msi_di = &pcie->msi_domain_info;
+ 	msi_di->flags = MSI_FLAG_USE_DEF_DOM_OPS | MSI_FLAG_USE_DEF_CHIP_OPS |
+ 		MSI_FLAG_MULTI_PCI_MSI;
+-	msi_di->chip = msi_ic;
++	msi_di->chip = &advk_msi_irq_chip;
+ 
+ 	msi_msg_phys = virt_to_phys(&pcie->msi_msg);
+ 
 
 
