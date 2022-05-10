@@ -2,50 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AEC5C43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:23:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97C69C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:24:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243175AbiEJN0V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:26:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45948 "EHLO
+        id S242873AbiEJNZt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:25:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243563AbiEJNWE (ORCPT
+        with ESMTP id S243450AbiEJNVz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:22:04 -0400
+        Tue, 10 May 2022 09:21:55 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21AD852530;
-        Tue, 10 May 2022 06:16:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52CB84EF58;
+        Tue, 10 May 2022 06:16:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 61129615DD;
-        Tue, 10 May 2022 13:16:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46067C385C2;
-        Tue, 10 May 2022 13:16:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3EBCD61663;
+        Tue, 10 May 2022 13:16:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FF8AC385A6;
+        Tue, 10 May 2022 13:16:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188578;
-        bh=NI3jWGh0Qcgl5TwhM/Wovh4SvdT7Ryx5lfnD/o7tqM0=;
+        s=korg; t=1652188566;
+        bh=rrHsYt9Qs4PHF/mVTk+Pvgt2CBMycA8rpv2zIgNl2mE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SDqhUEr/oQnDm5DaF5bGz7DGmNKODtQrM3uZUcZslQLL/rwEchuRykshZ9cKNkNQM
-         osRn17TUjJsHPtu8eifKN/saxCHRAOuLqoarP2s88Fui5GoPLHPwaU8akzihes20un
-         1++speVEOW6xLjtlTISmZPqHSfiT9nUUag/G5440=
+        b=Q0IdvtVW/PJG73rDMFMm6yzY2BFe5mpsJr4cKeY5I2IAleDCaO/S+M7iOHG3U7obe
+         bNHDKpA4/nlKfxWjiyg5M+rzIVVdhrZ4H2KhbTnXF7FT1sYsS9fuFo0MsFiPlBgn3f
+         UbS9l5ZQrkptZqt/Zv9RTTwCz1/sdUopSi2/Vkm0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Hillf Danton <hdanton@sina.com>,
-        syzbot+0dc4444774d419e916c8@syzkaller.appspotmail.com,
-        Emil Velikov <emil.velikov@collabora.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sean Paul <seanpaul@chromium.org>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Eric Anholt <eric@anholt.net>, Sam Ravnborg <sam@ravnborg.org>,
-        Rob Clark <robdclark@chromium.org>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 4.14 53/78] drm/vgem: Close use-after-free race in vgem_gem_create
-Date:   Tue, 10 May 2022 15:07:39 +0200
-Message-Id: <20220510130734.108704531@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 4.14 50/78] tty: n_gsm: fix wrong command retry handling
+Date:   Tue, 10 May 2022 15:07:36 +0200
+Message-Id: <20220510130734.019028524@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
 References: <20220510130732.522479698@linuxfoundation.org>
@@ -57,74 +47,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Vetter <daniel.vetter@ffwll.ch>
+From: Daniel Starke <daniel.starke@siemens.com>
 
-commit 4b848f20eda5974020f043ca14bacf7a7e634fc8 upstream.
+commit d0bcdffcad5a22f202e3bf37190c0dd8c080ea92 upstream.
 
-There's two references floating around here (for the object reference,
-not the handle_count reference, that's a different thing):
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.7.3 states that the valid range for the
+maximum number of retransmissions (N2) is from 0 to 255 (both including).
+gsm_config() fails to limit this range correctly. Furthermore,
+gsm_control_retransmit() handles this number incorrectly by performing
+N2 - 1 retransmission attempts. Setting N2 to zero results in more than 255
+retransmission attempts.
+Fix the range check in gsm_config() and the value handling in
+gsm_control_send() and gsm_control_retransmit() to comply with 3GPP 27.010.
 
-- The temporary reference held by vgem_gem_create, acquired by
-  creating the object and released by calling
-  drm_gem_object_put_unlocked.
-
-- The reference held by the object handle, created by
-  drm_gem_handle_create. This one generally outlives the function,
-  except if a 2nd thread races with a GEM_CLOSE ioctl call.
-
-So usually everything is correct, except in that race case, where the
-access to gem_object->size could be looking at freed data already.
-Which again isn't a real problem (userspace shot its feet off already
-with the race, we could return garbage), but maybe someone can exploit
-this as an information leak.
-
-Cc: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: Hillf Danton <hdanton@sina.com>
-Reported-by: syzbot+0dc4444774d419e916c8@syzkaller.appspotmail.com
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 Cc: stable@vger.kernel.org
-Cc: Emil Velikov <emil.velikov@collabora.com>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc: Sean Paul <seanpaul@chromium.org>
-Cc: Chris Wilson <chris@chris-wilson.co.uk>
-Cc: Eric Anholt <eric@anholt.net>
-Cc: Sam Ravnborg <sam@ravnborg.org>
-Cc: Rob Clark <robdclark@chromium.org>
-Reviewed-by: Chris Wilson <chris@chris-wilson.co.uk>
-Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20200202132133.1891846-1-daniel.vetter@ffwll.ch
-[OP: backport to 4.19: adjusted DRM_DEBUG() -> DRM_DEBUG_DRIVER()]
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220414094225.4527-11-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
 ---
- drivers/gpu/drm/vgem/vgem_drv.c |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/tty/n_gsm.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/gpu/drm/vgem/vgem_drv.c
-+++ b/drivers/gpu/drm/vgem/vgem_drv.c
-@@ -190,9 +190,10 @@ static struct drm_gem_object *vgem_gem_c
- 		return ERR_CAST(obj);
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1341,7 +1341,6 @@ static void gsm_control_retransmit(unsig
+ 	spin_lock_irqsave(&gsm->control_lock, flags);
+ 	ctrl = gsm->pending_cmd;
+ 	if (ctrl) {
+-		gsm->cretries--;
+ 		if (gsm->cretries == 0) {
+ 			gsm->pending_cmd = NULL;
+ 			ctrl->error = -ETIMEDOUT;
+@@ -1350,6 +1349,7 @@ static void gsm_control_retransmit(unsig
+ 			wake_up(&gsm->event);
+ 			return;
+ 		}
++		gsm->cretries--;
+ 		gsm_control_transmit(gsm, ctrl);
+ 		mod_timer(&gsm->t2_timer, jiffies + gsm->t2 * HZ / 100);
+ 	}
+@@ -1390,7 +1390,7 @@ retry:
  
- 	ret = drm_gem_handle_create(file, &obj->base, handle);
--	drm_gem_object_put_unlocked(&obj->base);
--	if (ret)
-+	if (ret) {
-+		drm_gem_object_put_unlocked(&obj->base);
- 		return ERR_PTR(ret);
-+	}
+ 	/* If DLCI0 is in ADM mode skip retries, it won't respond */
+ 	if (gsm->dlci[0]->mode == DLCI_MODE_ADM)
+-		gsm->cretries = 1;
++		gsm->cretries = 0;
+ 	else
+ 		gsm->cretries = gsm->n2;
  
- 	return &obj->base;
- }
-@@ -215,7 +216,9 @@ static int vgem_gem_dumb_create(struct d
- 	args->size = gem_object->size;
- 	args->pitch = pitch;
- 
--	DRM_DEBUG_DRIVER("Created object of size %lld\n", size);
-+	drm_gem_object_put_unlocked(gem_object);
-+
-+	DRM_DEBUG_DRIVER("Created object of size %llu\n", args->size);
- 
- 	return 0;
- }
+@@ -2531,7 +2531,7 @@ static int gsmld_config(struct tty_struc
+ 	/* Check the MRU/MTU range looks sane */
+ 	if (c->mru > MAX_MRU || c->mtu > MAX_MTU || c->mru < 8 || c->mtu < 8)
+ 		return -EINVAL;
+-	if (c->n2 < 3)
++	if (c->n2 > 255)
+ 		return -EINVAL;
+ 	if (c->encapsulation > 1)	/* Basic, advanced, no I */
+ 		return -EINVAL;
 
 
