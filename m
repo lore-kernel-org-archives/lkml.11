@@ -2,301 +2,383 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8690C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:43:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21EA0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:43:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346099AbiEJPqz (ORCPT
+        id S1346101AbiEJPre (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:46:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54536 "EHLO
+        Tue, 10 May 2022 11:47:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346064AbiEJPqt (ORCPT
+        with ESMTP id S1346107AbiEJPra (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:46:49 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23C8F19CEFD;
-        Tue, 10 May 2022 08:42:51 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id gh6so33858978ejb.0;
-        Tue, 10 May 2022 08:42:51 -0700 (PDT)
+        Tue, 10 May 2022 11:47:30 -0400
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C355269EE5
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:43:32 -0700 (PDT)
+Received: by mail-io1-xd2e.google.com with SMTP id r27so18955931iot.1
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:43:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dQ0+6v8bHjTUTjElyyWFtr2lf/WyO0yS6F3CevCrSmc=;
-        b=EkjIls8qsRq9Vn9NcdYCpdijVFhXQv2un3GCY4tlm6XVTQ69iEl9RxlMVUOcrOCvXq
-         HwbXu4lSnlMq+Hq4QIDB4Uhuddkh86ehRnA9wN/0Vysct9qXlV79cGw1lW8lxu2+Mr+g
-         BXL0iM2nLiulKVtITVHWK7IlxRD52HlDUgp2d4mNBv88Z5GLG3IX0ROov512nEQ1zvY3
-         DxGHOEzErNYLjLnTW9Pzv7tkLQQ3VpHXMeRR8vZNt9guu184KaQKrFOgmg5vrHx4c5e4
-         H96HAshZYc+htQqUHJp2UOAQX8FSOCVssjEVh+BlAStQ1KjaLWKibqlpwywChN67eDzY
-         VBsQ==
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=X7HPPummtVT1Cpry90v/glBuyXh4uT47kyH0y1UUgaY=;
+        b=Uc7pkau17EpYJQhbTAIrqfH1vsSsm9BU5xXIoSfOd+odUD5uLfxvMbeckrt1do7sgf
+         hgtf9g0Stj+DxnPYF1j0fTWtnBjXms9b8D2wBzRo68PJUWd8lWEBlfMpcf7z0JKSpTQT
+         sJlr9MvJ+uK8n/qePydSHov2/4p3MDPX8KFfs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=dQ0+6v8bHjTUTjElyyWFtr2lf/WyO0yS6F3CevCrSmc=;
-        b=JPgzq13ULlkdX5Z1k1b73Wjv7r1hqdPgQVztxIScYdquBjhP5pXCtuEGeGeOP4Hmxx
-         DMKSCwXi94vs8TWiRcFJPG5ZOBa+ij58WTyvEHJAgh7/lPNDxLdQxzFvHdHcgx2lGXlH
-         Ul3q3RbOisrICvtrQjpzpkyNloxlSbqk9fALUEI8ZbAtw0Xw/sZFqDar5OFOz31m3SLF
-         /MRHS2WZdmbDLx4aiVATFcihvRRCVSnvAbv293U1sKeygIaC2rpWYba7CuSL068XYUVy
-         v3rewV3PMCfHKdpLv8t5aUiL+OGgK+30a91ovNnFlZ4kag8rtm6AESQDOwRKC3VwlH6Q
-         s9qQ==
-X-Gm-Message-State: AOAM533SvBOBs1ae0d4Xhjg97+oHgIm/JAaA1e6b6QYsI224icg9DG4w
-        ZD5rMAHwgFv2OOZRTW43AEU=
-X-Google-Smtp-Source: ABdhPJzWvX36nvQ6TusoV6gk/r7xovWkyRVupVGUQ+Y6yL4JdHtQhyz6hPre1H+W0c+8V61exG67tg==
-X-Received: by 2002:a17:906:3c09:b0:6f3:9aff:e1a0 with SMTP id h9-20020a1709063c0900b006f39affe1a0mr20309485ejg.453.1652197369588;
-        Tue, 10 May 2022 08:42:49 -0700 (PDT)
-Received: from localhost.localdomain (93-103-18-160.static.t-2.net. [93.103.18.160])
-        by smtp.gmail.com with ESMTPSA id hx11-20020a170906846b00b006f3ef214e44sm6305097ejc.170.2022.05.10.08.42.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 08:42:49 -0700 (PDT)
-From:   Uros Bizjak <ubizjak@gmail.com>
-To:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     Uros Bizjak <ubizjak@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Marco Elver <elver@google.com>
-Subject: [PATCH] locking/atomic/x86: Introduce try_cmpxchg64
-Date:   Tue, 10 May 2022 17:42:17 +0200
-Message-Id: <20220510154217.5216-1-ubizjak@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        bh=X7HPPummtVT1Cpry90v/glBuyXh4uT47kyH0y1UUgaY=;
+        b=kIJfN3OKxwzQxw8Fyi8cxDdxhvgBD5zFqhZ6577PFH89o1Dn6HoJUlEOpUkKXjM7ts
+         Zd7BkOFqRNcOapS7bDd3ATN4cMeWonqVeI/ti0HbSW7El+RtCN07tJhvsFF5+66wDxEp
+         h/lmW9FSFpYFn4c7nukiw97jeRAn4yWKFdyXa6nff1L9+c9IEijAcvy7MnUWIlLu6BPy
+         awsK5GjZMgQ7DDDke02Qw49chFZqmVKp4BZrqt5SYHUessdIt96B+y6kHLbT+pmsub2p
+         hrWqEB7/zJa612OBJmIj/u5fGU7x4xG7+IBna9t3TMQfg+E3d7jO4/YtFkS2XDPhZxdb
+         Cqpg==
+X-Gm-Message-State: AOAM532CzDEAiEXQJ6FLGDHjQIcA7HNSEcDz/BjVbMNROZA7CJbRi0Dl
+        JwxWumk0ErPuMu67DNZiB1Ru630g4dxeCw==
+X-Google-Smtp-Source: ABdhPJylSpHzUSDTC4Rxwdlw3wUpVna0DXNxoiRAgXeke4nsyFa6/Po/Dx3GI9Cfe2SXWYKqXHpHIA==
+X-Received: by 2002:a05:6638:37a8:b0:32b:5d5c:7f9d with SMTP id w40-20020a05663837a800b0032b5d5c7f9dmr10371462jal.3.1652197409849;
+        Tue, 10 May 2022 08:43:29 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id q19-20020a02c8d3000000b0032b3a781744sm4453024jao.8.2022.05.10.08.43.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 May 2022 08:43:29 -0700 (PDT)
+Subject: Re: [PATCH 1/3] selftests: vm: add process_mrelease tests
+To:     Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org
+Cc:     mhocko@suse.com, rientjes@google.com, willy@infradead.org,
+        hannes@cmpxchg.org, guro@fb.com, minchan@kernel.org,
+        kirill@shutemov.name, aarcange@redhat.com, brauner@kernel.org,
+        hch@infradead.org, oleg@redhat.com, david@redhat.com,
+        jannh@google.com, shakeelb@google.com, peterx@redhat.com,
+        jhubbard@nvidia.com, shuah@kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kselftest@vger.kernel.org, kernel-team@android.com,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220510030014.3842475-1-surenb@google.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <04858a5d-98c8-69be-025f-214e4b10d502@linuxfoundation.org>
+Date:   Tue, 10 May 2022 09:43:28 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220510030014.3842475-1-surenb@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds try_cmpxchg64 to improve code around cmpxchg8b.  While
-the resulting code improvements on x86_64 are minor (a compare and a move saved),
-the improvements on x86_32 are quite noticeable. The code improves from:
+On 5/9/22 9:00 PM, Suren Baghdasaryan wrote:
+> Introduce process_mrelease syscall sanity tests. They include tests of
+> invalid pidfd and flags inputs, attempting to call process_mrelease
+> with a live process and a valid usage of process_mrelease. Because
+> process_mrelease has to be used against a process with a pending SIGKILL,
+> it's possible that the process exits before process_mrelease gets called.
+> In such cases we retry the test with a victim that allocates twice more
+> memory up to 1GB. This would require the victim process to spend more
+> time during exit and process_mrelease has a better chance of catching
+> the process before it exits.
+> 
 
-  84:    89 74 24 30              mov    %esi,0x30(%esp)
-  88:    89 fe                    mov    %edi,%esi
-  8a:    0f b7 0c 02              movzwl (%edx,%eax,1),%ecx
-  8e:    c1 e1 08                 shl    $0x8,%ecx
-  91:    0f b7 c9                 movzwl %cx,%ecx
-  94:    89 4c 24 34              mov    %ecx,0x34(%esp)
-  98:    8b 96 24 1e 00 00        mov    0x1e24(%esi),%edx
-  9e:    8b 86 20 1e 00 00        mov    0x1e20(%esi),%eax
-  a4:    8b 5c 24 34              mov    0x34(%esp),%ebx
-  a8:    8b 7c 24 30              mov    0x30(%esp),%edi
-  ac:    89 44 24 38              mov    %eax,0x38(%esp)
-  b0:    0f b6 44 24 38           movzbl 0x38(%esp),%eax
-  b5:    8b 4c 24 38              mov    0x38(%esp),%ecx
-  b9:    89 54 24 3c              mov    %edx,0x3c(%esp)
-  bd:    83 e0 fd                 and    $0xfffffffd,%eax
-  c0:    89 5c 24 64              mov    %ebx,0x64(%esp)
-  c4:    8b 54 24 3c              mov    0x3c(%esp),%edx
-  c8:    89 4c 24 60              mov    %ecx,0x60(%esp)
-  cc:    8b 4c 24 34              mov    0x34(%esp),%ecx
-  d0:    88 44 24 60              mov    %al,0x60(%esp)
-  d4:    8b 44 24 38              mov    0x38(%esp),%eax
-  d8:    c6 44 24 62 f2           movb   $0xf2,0x62(%esp)
-  dd:    8b 5c 24 60              mov    0x60(%esp),%ebx
-  e1:    f0 0f c7 0f              lock cmpxchg8b (%edi)
-  e5:    89 d1                    mov    %edx,%ecx
-  e7:    8b 54 24 3c              mov    0x3c(%esp),%edx
-  eb:    33 44 24 38              xor    0x38(%esp),%eax
-  ef:    31 ca                    xor    %ecx,%edx
-  f1:    09 c2                    or     %eax,%edx
-  f3:    75 a3                    jne    98 <t+0x98>
++1 on Mike's comments on improving the change log. List what is getting
+tested as opposed to describing the test code.
 
-to:
+> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> ---
+>   tools/testing/selftests/vm/Makefile        |   1 +
+>   tools/testing/selftests/vm/mrelease_test.c | 176 +++++++++++++++++++++
+>   tools/testing/selftests/vm/run_vmtests.sh  |  16 ++
+>   3 files changed, 193 insertions(+)
+>   create mode 100644 tools/testing/selftests/vm/mrelease_test.c
 
-  84:    0f b7 0c 02              movzwl (%edx,%eax,1),%ecx
-  88:    c1 e1 08                 shl    $0x8,%ecx
-  8b:    0f b7 c9                 movzwl %cx,%ecx
-  8e:    8b 86 20 1e 00 00        mov    0x1e20(%esi),%eax
-  94:    8b 96 24 1e 00 00        mov    0x1e24(%esi),%edx
-  9a:    89 4c 24 64              mov    %ecx,0x64(%esp)
-  9e:    89 c3                    mov    %eax,%ebx
-  a0:    89 44 24 60              mov    %eax,0x60(%esp)
-  a4:    83 e3 fd                 and    $0xfffffffd,%ebx
-  a7:    c6 44 24 62 f2           movb   $0xf2,0x62(%esp)
-  ac:    88 5c 24 60              mov    %bl,0x60(%esp)
-  b0:    8b 5c 24 60              mov    0x60(%esp),%ebx
-  b4:    f0 0f c7 0f              lock cmpxchg8b (%edi)
-  b8:    75 d4                    jne    8e <t+0x8e>
+Please update .gitignore with the new executable.
 
-The implementation extends the implementation of existing cmpxchg64.
+> 
+> diff --git a/tools/testing/selftests/vm/Makefile b/tools/testing/selftests/vm/Makefile
+> index 04a49e876a46..733fccbff0ef 100644
+> --- a/tools/testing/selftests/vm/Makefile
+> +++ b/tools/testing/selftests/vm/Makefile
+> @@ -43,6 +43,7 @@ TEST_GEN_FILES += map_populate
+>   TEST_GEN_FILES += memfd_secret
+>   TEST_GEN_FILES += mlock-random-test
+>   TEST_GEN_FILES += mlock2-tests
+> +TEST_GEN_FILES += mrelease_test
+>   TEST_GEN_FILES += mremap_dontunmap
+>   TEST_GEN_FILES += mremap_test
+>   TEST_GEN_FILES += on-fault-limit
+> diff --git a/tools/testing/selftests/vm/mrelease_test.c b/tools/testing/selftests/vm/mrelease_test.c
+> new file mode 100644
+> index 000000000000..a61061bf8433
+> --- /dev/null
+> +++ b/tools/testing/selftests/vm/mrelease_test.c
+> @@ -0,0 +1,176 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright 2022 Google LLC
+> + */
+> +#define _GNU_SOURCE
+> +#include <errno.h>
+> +#include <stdio.h>
+> +#include <stdlib.h>
+> +#include <sys/wait.h>
+> +#include <unistd.h>
+> +
+> +#include "util.h"
+> +
+> +static inline int pidfd_open(pid_t pid, unsigned int flags)
+> +{
+> +#ifdef __NR_pidfd_open
+> +	return syscall(__NR_pidfd_open, pid, flags);
+> +#else
+> +	errno = ENOSYS;
 
-Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: "H. Peter Anvin" <hpa@zytor.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Boqun Feng <boqun.feng@gmail.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: "Paul E. McKenney" <paulmck@kernel.org>
-Cc: Marco Elver <elver@google.com>
----
- arch/x86/include/asm/cmpxchg_32.h          | 43 ++++++++++++++++++++++
- arch/x86/include/asm/cmpxchg_64.h          |  6 +++
- include/linux/atomic/atomic-instrumented.h | 40 +++++++++++++++++++-
- scripts/atomic/gen-atomic-instrumented.sh  |  2 +-
- 4 files changed, 89 insertions(+), 2 deletions(-)
+This isn't an error - this would be skip because this syscall
+isn't supported.
 
-diff --git a/arch/x86/include/asm/cmpxchg_32.h b/arch/x86/include/asm/cmpxchg_32.h
-index 0a7fe0321613..e874ff7f7529 100644
---- a/arch/x86/include/asm/cmpxchg_32.h
-+++ b/arch/x86/include/asm/cmpxchg_32.h
-@@ -42,6 +42,9 @@ static inline void set_64bit(volatile u64 *ptr, u64 value)
- #define arch_cmpxchg64_local(ptr, o, n)					\
- 	((__typeof__(*(ptr)))__cmpxchg64_local((ptr), (unsigned long long)(o), \
- 					       (unsigned long long)(n)))
-+#define arch_try_cmpxchg64(ptr, po, n)					\
-+	((__typeof__(*(ptr)))__try_cmpxchg64((ptr), (unsigned long long *)(po), \
-+					     (unsigned long long)(n)))
- #endif
- 
- static inline u64 __cmpxchg64(volatile u64 *ptr, u64 old, u64 new)
-@@ -70,6 +73,25 @@ static inline u64 __cmpxchg64_local(volatile u64 *ptr, u64 old, u64 new)
- 	return prev;
- }
- 
-+static inline bool __try_cmpxchg64(volatile u64 *ptr, u64 *pold, u64 new)
-+{
-+	bool success;
-+	u64 prev;
-+	asm volatile(LOCK_PREFIX "cmpxchg8b %2"
-+		     CC_SET(z)
-+		     : CC_OUT(z) (success),
-+		       "=A" (prev),
-+		       "+m" (*ptr)
-+		     : "b" ((u32)new),
-+		       "c" ((u32)(new >> 32)),
-+		       "1" (*pold)
-+		     : "memory");
-+
-+	if (unlikely(!success))
-+		*pold = prev;
-+	return success;
-+}
-+
- #ifndef CONFIG_X86_CMPXCHG64
- /*
-  * Building a kernel capable running on 80386 and 80486. It may be necessary
-@@ -108,6 +130,27 @@ static inline u64 __cmpxchg64_local(volatile u64 *ptr, u64 old, u64 new)
- 		       : "memory");				\
- 	__ret; })
- 
-+#define arch_try_cmpxchg64(ptr, po, n)				\
-+({								\
-+	bool success;						\
-+	__typeof__(*(ptr)) __prev;				\
-+	__typeof__(ptr) _old = (__typeof__(ptr))(po);		\
-+	__typeof__(*(ptr)) __old = *_old;			\
-+	__typeof__(*(ptr)) __new = (n);				\
-+	alternative_io(LOCK_PREFIX_HERE				\
-+			"call cmpxchg8b_emu",			\
-+			"lock; cmpxchg8b (%%esi)" ,		\
-+		       X86_FEATURE_CX8,				\
-+		       "=A" (__prev),				\
-+		       "S" ((ptr)), "0" (__old),		\
-+		       "b" ((unsigned int)__new),		\
-+		       "c" ((unsigned int)(__new>>32))		\
-+		       : "memory");				\
-+	success = (__prev == __old);				\
-+	if (unlikely(!success))					\
-+		*_old = __prev;					\
-+	likely(success);					\
-+})
- #endif
- 
- #define system_has_cmpxchg_double() boot_cpu_has(X86_FEATURE_CX8)
-diff --git a/arch/x86/include/asm/cmpxchg_64.h b/arch/x86/include/asm/cmpxchg_64.h
-index 072e5459fe2f..250187ac8248 100644
---- a/arch/x86/include/asm/cmpxchg_64.h
-+++ b/arch/x86/include/asm/cmpxchg_64.h
-@@ -19,6 +19,12 @@ static inline void set_64bit(volatile u64 *ptr, u64 val)
- 	arch_cmpxchg_local((ptr), (o), (n));				\
- })
- 
-+#define arch_try_cmpxchg64(ptr, po, n)					\
-+({									\
-+	BUILD_BUG_ON(sizeof(*(ptr)) != 8);				\
-+	arch_try_cmpxchg((ptr), (po), (n));				\
-+})
-+
- #define system_has_cmpxchg_double() boot_cpu_has(X86_FEATURE_CX16)
- 
- #endif /* _ASM_X86_CMPXCHG_64_H */
-diff --git a/include/linux/atomic/atomic-instrumented.h b/include/linux/atomic/atomic-instrumented.h
-index 5d69b143c28e..7a139ec030b0 100644
---- a/include/linux/atomic/atomic-instrumented.h
-+++ b/include/linux/atomic/atomic-instrumented.h
-@@ -2006,6 +2006,44 @@ atomic_long_dec_if_positive(atomic_long_t *v)
- 	arch_try_cmpxchg_relaxed(__ai_ptr, __ai_oldp, __VA_ARGS__); \
- })
- 
-+#define try_cmpxchg64(ptr, oldp, ...) \
-+({ \
-+	typeof(ptr) __ai_ptr = (ptr); \
-+	typeof(oldp) __ai_oldp = (oldp); \
-+	kcsan_mb(); \
-+	instrument_atomic_write(__ai_ptr, sizeof(*__ai_ptr)); \
-+	instrument_atomic_write(__ai_oldp, sizeof(*__ai_oldp)); \
-+	arch_try_cmpxchg64(__ai_ptr, __ai_oldp, __VA_ARGS__); \
-+})
-+
-+#define try_cmpxchg64_acquire(ptr, oldp, ...) \
-+({ \
-+	typeof(ptr) __ai_ptr = (ptr); \
-+	typeof(oldp) __ai_oldp = (oldp); \
-+	instrument_atomic_write(__ai_ptr, sizeof(*__ai_ptr)); \
-+	instrument_atomic_write(__ai_oldp, sizeof(*__ai_oldp)); \
-+	arch_try_cmpxchg64_acquire(__ai_ptr, __ai_oldp, __VA_ARGS__); \
-+})
-+
-+#define try_cmpxchg64_release(ptr, oldp, ...) \
-+({ \
-+	typeof(ptr) __ai_ptr = (ptr); \
-+	typeof(oldp) __ai_oldp = (oldp); \
-+	kcsan_release(); \
-+	instrument_atomic_write(__ai_ptr, sizeof(*__ai_ptr)); \
-+	instrument_atomic_write(__ai_oldp, sizeof(*__ai_oldp)); \
-+	arch_try_cmpxchg64_release(__ai_ptr, __ai_oldp, __VA_ARGS__); \
-+})
-+
-+#define try_cmpxchg64_relaxed(ptr, oldp, ...) \
-+({ \
-+	typeof(ptr) __ai_ptr = (ptr); \
-+	typeof(oldp) __ai_oldp = (oldp); \
-+	instrument_atomic_write(__ai_ptr, sizeof(*__ai_ptr)); \
-+	instrument_atomic_write(__ai_oldp, sizeof(*__ai_oldp)); \
-+	arch_try_cmpxchg64_relaxed(__ai_ptr, __ai_oldp, __VA_ARGS__); \
-+})
-+
- #define cmpxchg_local(ptr, ...) \
- ({ \
- 	typeof(ptr) __ai_ptr = (ptr); \
-@@ -2045,4 +2083,4 @@ atomic_long_dec_if_positive(atomic_long_t *v)
- })
- 
- #endif /* _LINUX_ATOMIC_INSTRUMENTED_H */
--// 87c974b93032afd42143613434d1a7788fa598f9
-+// 764f741eb77a7ad565dc8d99ce2837d5542e8aee
-diff --git a/scripts/atomic/gen-atomic-instrumented.sh b/scripts/atomic/gen-atomic-instrumented.sh
-index 68f902731d01..77c06526a574 100755
---- a/scripts/atomic/gen-atomic-instrumented.sh
-+++ b/scripts/atomic/gen-atomic-instrumented.sh
-@@ -166,7 +166,7 @@ grep '^[a-z]' "$1" | while read name meta args; do
- done
- 
- 
--for xchg in "xchg" "cmpxchg" "cmpxchg64" "try_cmpxchg"; do
-+for xchg in "xchg" "cmpxchg" "cmpxchg64" "try_cmpxchg" "try_cmpxchg64"; do
- 	for order in "" "_acquire" "_release" "_relaxed"; do
- 		gen_xchg "${xchg}" "${order}" ""
- 		printf "\n"
--- 
-2.35.1
+> +	return -1;
+> +#endif
 
+Key off of syscall return instead of these ifdefs - same comment
+on all of the ifdefs
+
+> +}
+> +
+
+I am not seeing any reason for breaking this code up have a separate
+routine for pidfd_open().
+
+> +static inline int process_mrelease(int pidfd, unsigned int flags)
+> +{
+> +#ifdef __NR_process_mrelease
+> +	return syscall(__NR_process_mrelease, pidfd, flags);
+> +#else
+> +	errno = ENOSYS;
+> +	return -1;
+> +#endif> +}
+> +
+
+Same comments on ifdefs and skips here as well.
+
+> +static void write_fault_pages(char *addr, unsigned long nr_pages)
+> +{
+> +	unsigned long i;
+> +
+> +	for (i = 0; i < nr_pages; i++)
+> +		*((unsigned long *)(addr + (i * PAGE_SIZE))) = i;
+> +}
+> +
+> +static int alloc_noexit(unsigned long nr_pages, int pipefd)
+> +{
+> +	int ppid = getppid();
+> +	void *buf;
+> +
+> +	buf = mmap(NULL, nr_pages * PAGE_SIZE, PROT_READ | PROT_WRITE,
+> +		   MAP_PRIVATE | MAP_ANON, 0, 0);
+> +	if (buf == MAP_FAILED) {
+> +		perror("mmap");
+
+A bit more descriptive message what the test would do will be helpful.
+Also consider if this should be a skip or fail for the test.
+
+> +		return 1;
+> +	}
+> +
+> +	write_fault_pages((char *)buf, nr_pages);
+> +
+> +	/* Signal the parent that the child is ready */
+> +	if (write(pipefd, "", 1) < 0) {
+> +		perror("write");
+> +		return 1;
+> +	}
+> +
+> +	/* Wait to be killed (when reparenting happens) */
+> +	while (getppid() == ppid)
+> +		sleep(1);
+> +
+
+What happens if reparenting doesn't happen? Will this loop for ever?
+This test could hang?
+
+> +	munmap(buf, nr_pages * PAGE_SIZE);
+> +
+> +	return 0;
+> +}
+> +
+> +
+> +#define MB(x) (x << 20)
+> +#define MAX_SIZE_MB 1024
+> +
+> +int main(void)
+> +{
+> +	int res;
+> +	int pipefd[2], pidfd;
+> +	pid_t pid;
+> +	char byte;
+> +	size_t size;
+> +	int negative_tests_done = 0;
+> +
+> +	/* Test a wrong pidfd */
+> +	if (!process_mrelease(-1, 0) || errno != EBADF) {
+> +		perror("process_mrelease with wring pidfd");
+
+Incorrect spelling "wring/wrong"
+
+> +		exit(1);
+> +	}
+> +
+> +	/*
+> +	 * Start the test with 1MB allocation and double every time
+> +	 * process_mrelease fails
+> +	 */
+> +	for (size = 1; size <= MAX_SIZE_MB; size *= 2) {
+> +		/*
+> +		 * Pipe for the child to signal when it's done allocating
+> +		 * memory
+> +		 */
+> +		if (pipe(pipefd)) {
+> +			perror("pipe");
+> +			exit(1);
+> +		}
+> +		pid = fork();
+> +		if (pid < 0) {
+> +			perror("fork");
+
+Close the pipe?
+
+> +			exit(1);
+> +		}
+> +
+> +		if (pid == 0) {
+> +			close(pipefd[0]);
+> +			res = alloc_noexit(MB(size) / PAGE_SIZE, pipefd[1]);
+> +			close(pipefd[1]);
+> +			exit(res);
+> +		}
+> +
+> +		close(pipefd[1]);
+> +		/* Block until the child is ready */
+> +		res = read(pipefd[0], &byte, 1);
+> +		close(pipefd[0]);
+> +		if (res < 0) {
+> +			perror("read");
+> +			exit(1);
+> +		}
+> +
+> +		pidfd = pidfd_open(pid, 0);
+> +		if (pidfd < 0) {
+> +			perror("pidfd_open");
+> +			exit(1);
+> +		}
+> +
+
+The code is very hard to read. Add comments to indicate parent and child
+paths clearly so reviewers can follow the logic and be able to do effective
+review.
+
+> +		/* Run negative tests which require a valid child only once */
+> +		if (!negative_tests_done) {
+> +			/* Test invalid flags */
+> +			if (!process_mrelease(pidfd, (unsigned int)-1) ||
+> +			    errno != EINVAL) {
+> +				perror("process_mrelease with wrong flags");
+> +				exit(1);
+
+So is this an expected fail or a test fail?
+
+> +			}
+> +			/* Test reapling while process is still alive */
+> +			if (!process_mrelease(pidfd, 0) ||
+> +			    errno != EINVAL) {
+> +				perror("process_mrelease on a live process");
+
+So is this an expected fail or a test fail?
+
+> +				exit(1);
+> +			}
+> +			negative_tests_done = 1;
+> +		}
+
+Now the above negative_tests_done block could be in a separate function ---
+All the others aren't really needed. It will be good for abstraction and
+readability.
+
+> +
+> +		if (kill(pid, SIGKILL)) {
+> +			perror("kill");
+
+Include test results in the change log - so we can see the test report.
+
+> +			exit(1);
+> +		}
+> +
+> +		if (!process_mrelease(pidfd, 0)) {
+> +			/* Terminate the test once process_mrelease succeeds */
+> +			return 0;
+> +		}
+> +
+> +		/*
+> +		 * Ignore the failure if the child exited before mrelease got
+> +		 * called, increase allocation size and retry the test
+> +		 */
+
+Add more info. on why allocating more memory helps.
+
+> +		if (errno != ESRCH) {
+> +			perror("process_mrelease");
+> +			exit(1);
+> +		}
+> +
+> +		if (waitpid(pid, NULL, 0) < 0) {
+> +			perror("waitpid");
+> +			exit(1);
+> +		}
+> +		close(pidfd);
+> +	}
+> +
+> +	printf("All process_mrelease attempts failed!\n");
+> +	exit(1);
+> +}
+> diff --git a/tools/testing/selftests/vm/run_vmtests.sh b/tools/testing/selftests/vm/run_vmtests.sh
+> index 352ba00cf26b..1986162fea39 100755
+> --- a/tools/testing/selftests/vm/run_vmtests.sh
+> +++ b/tools/testing/selftests/vm/run_vmtests.sh
+> @@ -287,6 +287,22 @@ else
+>   	echo "[PASS]"
+>   fi
+>   
+> +echo "---------------------"
+> +echo "running mrelease_test"
+> +echo "---------------------"
+> +./mrelease_test
+> +ret_val=$?
+> +
+> +if [ $ret_val -eq 0 ]; then
+> +	echo "[PASS]"
+> +elif [ $ret_val -eq $ksft_skip ]; then
+> +	 echo "[SKIP]"
+> +	 exitcode=$ksft_skip
+> +else
+> +	echo "[FAIL]"
+> +	exitcode=1
+> +fi
+> +
+>   echo "-------------------"
+>   echo "running mremap_test"
+>   echo "-------------------"
+> 
+
+In general, the code flow is hard to read to make sure resources
+are released e.g: pipefd in all the error paths. The code is broken
+up into smaller chunks where it isn't needed in some cases and left
+as a large block when it could benefit from abstraction e.g: negative
+test block.
+
+Please make changes and send v2.
+
+thanks,
+-- Shuah
