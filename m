@@ -2,108 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C931C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:51:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2680FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:54:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346817AbiEJPzt (ORCPT
+        id S1346828AbiEJPz6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:55:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33304 "EHLO
+        Tue, 10 May 2022 11:55:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347210AbiEJPwF (ORCPT
+        with ESMTP id S1347211AbiEJPwF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 11:52:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C09F26CC6D;
-        Tue, 10 May 2022 08:47:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BE8B61426;
-        Tue, 10 May 2022 15:47:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 930CDC385CA;
-        Tue, 10 May 2022 15:47:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652197644;
-        bh=VkPH2GOgvW0jX6lgRUV/1Nazd4OVVZfSwSr6lOBKaK0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k8NLdEb2E0vcTYvsF06xL3UVwBgm3KZzsHeviUijVncaqO8IgG7fS6dTQb/FC6o9f
-         DVPi8hh9RnBsmpznGQ348ShOA75/hm0Bel4HSSfsW/ai61K2ZJqiB2B1PnOA4d7dM/
-         CeTczPFV4wP6Jv7z37E14o3KVGRAbw7PuM8CcfK6N/RtuijO6d1IkYgHwPd2x8fcMk
-         hNY8Ue2Pq5fjEEMqdkhNKAmwY8YuV+RCfGnbwWKh8ykWAAxObxrM/z4twSlEOwPhR2
-         +fFwPwyQqab0hObEPGzozQz3/AobyB0Awekj+5ikoTsRL4vCwX/w4dNV0bDO5uWYu0
-         MVkuY0qRV+/lQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mark Brown <broonie@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 4.9 4/4] ASoC: ops: Validate input values in snd_soc_put_volsw_range()
-Date:   Tue, 10 May 2022 11:47:03 -0400
-Message-Id: <20220510154704.154362-4-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220510154704.154362-1-sashal@kernel.org>
-References: <20220510154704.154362-1-sashal@kernel.org>
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB75227D01B
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:47:26 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id gh6so33885395ejb.0
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:47:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=szeredi.hu; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TDgGs9CgwXyWbub9AhjowkEjkVJeBjS3w2UHtPu470w=;
+        b=BWf3C8d4lnfR8oyZMmiSG29J+xMF4byi5shsnljwByLz3ZI+tA9YQmsP2wO3AXfCLN
+         2FwC+K5kV6TSxgVYPDqMHoowvhwbnvoTOQ40tdtYAFdfGW4iBRWmqdfMI9myYUzSRZju
+         K90x6QomLH3PQ8C+QlMs9A5PkLTsIFFI8EnHU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TDgGs9CgwXyWbub9AhjowkEjkVJeBjS3w2UHtPu470w=;
+        b=eImXkGAfY/DLB2WG9NSXMuimNRVfmQuTkcUeWfOYq/TnmFmE40r/E38ozgWRx9jT2j
+         srFrtmE0qfHCojxOlAsoj/Y/od0JAtcYpU0GBz1KNR6BIFVnYQgngeUZVjKPZYS6XqYY
+         nHua+6UYJdv16NFNKt2Geb1gvtSTLx/YB69iMtOScme3qT5FFHaasJkHjF25ZKREd71k
+         1RkaeeAYw+82fhMdT/cglcxnudEix6rc41onynwYq3wND2i0dzdWK4v65nGXMg3vFnUf
+         kiltDSWVDWAzTmccNLvzu2a73Uz2M4sSUWKoU4m9KHN1GNnF8K+rHkUcNTf5ercTH1pc
+         HnbQ==
+X-Gm-Message-State: AOAM5319rQAm/jo93XDaPFWW+QkJBOW9m51hGjsKxL0R9Rv+CZl+fI1t
+        ZHFU7Td8QSPzCaxbe/2nCK2twZqzJ+2sWdJgKu+XHQ==
+X-Google-Smtp-Source: ABdhPJzA7XHkejv97/hBJ9ZeMnnM4WnEpIKq8Sfb7wU3wAiKmqThY4v+xIYCWjHTNRv4d3NHKBoE4Y0+Flk5e1rLhis=
+X-Received: by 2002:a17:906:9749:b0:6f5:6cd:5bd9 with SMTP id
+ o9-20020a170906974900b006f506cd5bd9mr20675818ejy.523.1652197645318; Tue, 10
+ May 2022 08:47:25 -0700 (PDT)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <YnEeuw6fd1A8usjj@miu.piliscsaba.redhat.com> <20220509124815.vb7d2xj5idhb2wq6@wittgenstein>
+ <CAJfpegveWaS5pR3O1c_7qLnaEDWwa8oi26x2v_CwDXB_sir1tg@mail.gmail.com>
+ <20220510115316.acr6gl5ayqszada6@wittgenstein> <CAJfpegtVgyumJiFM_ujjuRTjg07vwOd4h9AT+mbh+n1Qn-LqqA@mail.gmail.com>
+ <20220510141932.lth3bryefbl6ykny@wittgenstein> <CAJfpegt94fP-_eDAk=_C=24ahCtjQ4vhh8Xg+SrZbwPHs1waLA@mail.gmail.com>
+ <20220510153050.cgbt3wezbvf2jfnb@wittgenstein>
+In-Reply-To: <20220510153050.cgbt3wezbvf2jfnb@wittgenstein>
+From:   Miklos Szeredi <miklos@szeredi.hu>
+Date:   Tue, 10 May 2022 17:47:13 +0200
+Message-ID: <CAJfpegu8d2VQ+WjfmUJ6g7YBPJsYUABt0jG5ByVh-dMt_waV8A@mail.gmail.com>
+Subject: Re: [RFC PATCH] getting misc stats/attributes via xattr API
+To:     Christian Brauner <brauner@kernel.org>
+Cc:     linux-fsdevel@vger.kernel.org, Dave Chinner <david@fromorbit.com>,
+        "Theodore Ts'o" <tytso@mit.edu>, Karel Zak <kzak@redhat.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org,
+        Linux API <linux-api@vger.kernel.org>,
+        linux-man <linux-man@vger.kernel.org>,
+        LSM <linux-security-module@vger.kernel.org>,
+        Ian Kent <raven@themaw.net>,
+        David Howells <dhowells@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christian Brauner <christian@brauner.io>,
+        Amir Goldstein <amir73il@gmail.com>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+On Tue, 10 May 2022 at 17:30, Christian Brauner <brauner@kernel.org> wrote:
 
-[ Upstream commit aa22125c57f9e577f0a667e4fa07fc3fa8ca1e60 ]
+> But now we're in the process of extending the *xattr() calls to operate
+> on mounts and filesystems so an additional getfsattr() (or another name)
+> is not fragmentation imho. And I definitely don't think this would
+> qualify as "crazy".
 
-Check that values written via snd_soc_put_volsw_range() are
-within the range advertised by the control, ensuring that we
-don't write out of spec values to the hardware.
+In that spirit st_dev does not belong in struct stat, because that is
+the property of the block device, not the inode.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20220423131239.3375261-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/soc/soc-ops.c | 18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
+But I feel we are going round in circles, lets please not get hung up
+on this issue.  Linus will have the final word on which variant (if
+either) is going to go in.
 
-diff --git a/sound/soc/soc-ops.c b/sound/soc/soc-ops.c
-index 74968ddee49f..90ba5521c189 100644
---- a/sound/soc/soc-ops.c
-+++ b/sound/soc/soc-ops.c
-@@ -528,7 +528,15 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
- 	unsigned int mask = (1 << fls(max)) - 1;
- 	unsigned int invert = mc->invert;
- 	unsigned int val, val_mask;
--	int err, ret;
-+	int err, ret, tmp;
-+
-+	tmp = ucontrol->value.integer.value[0];
-+	if (tmp < 0)
-+		return -EINVAL;
-+	if (mc->platform_max && tmp > mc->platform_max)
-+		return -EINVAL;
-+	if (tmp > mc->max - mc->min + 1)
-+		return -EINVAL;
- 
- 	if (invert)
- 		val = (max - ucontrol->value.integer.value[0]) & mask;
-@@ -543,6 +551,14 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
- 	ret = err;
- 
- 	if (snd_soc_volsw_is_stereo(mc)) {
-+		tmp = ucontrol->value.integer.value[1];
-+		if (tmp < 0)
-+			return -EINVAL;
-+		if (mc->platform_max && tmp > mc->platform_max)
-+			return -EINVAL;
-+		if (tmp > mc->max - mc->min + 1)
-+			return -EINVAL;
-+
- 		if (invert)
- 			val = (max - ucontrol->value.integer.value[1]) & mask;
- 		else
--- 
-2.35.1
-
+Thanks,
+Miklos
