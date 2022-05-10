@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25A45C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:26:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C86DAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:26:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243306AbiEJNac (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:30:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45998 "EHLO
+        id S243343AbiEJNah (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:30:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243106AbiEJNW5 (ORCPT
+        with ESMTP id S243104AbiEJNWz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:22:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33F4553A76;
-        Tue, 10 May 2022 06:17:17 -0700 (PDT)
+        Tue, 10 May 2022 09:22:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAB7B1B1844;
+        Tue, 10 May 2022 06:17:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EEE3BB81DA4;
-        Tue, 10 May 2022 13:17:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24D73C385C6;
-        Tue, 10 May 2022 13:17:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CD536B81DA0;
+        Tue, 10 May 2022 13:17:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28E03C385C2;
+        Tue, 10 May 2022 13:17:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188629;
-        bh=PpHB42D2WhzR1hdSa3ILbnlTtl5eQexm51QPCFTqxsg=;
+        s=korg; t=1652188626;
+        bh=6TDfajJ8pBMh+JcLy099ip64RR+pHVaqJxecjE9Erfk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cMSn5tESh7Lmo5WWSamzIqIijcZr5nuU9+Kt+WK9tuf0+4sVKdcttPsEw6NDmMHP5
-         bmDWp5js6Vd7yQsK9i0yL9W5lZp+n6MYYVO5UQwHt9EXVRXw/ESvPuholaeuRS1IuC
-         PQx+RrYssTdk/FNs3XN8KKRTrJCqZu/dzJBSKDnQ=
+        b=oc6aaJWka96HAvjG6Qu/8EPCrlPllO5wZ5EqWVPJp0EGR5uUJNueAerEbxBv2us0m
+         L9SyeQgH6pgeZ9KVD9C38bSM91qKAvMiuErDzhMc6YQUNWIuUHQUPOKsf/1chDfazH
+         fTYkuW7ZK7pvxeHbNbedoEFRp9Vhm28TjQwCWy5o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Shravya Kumbham <shravya.kumbham@xilinx.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 4.14 69/78] net: emaclite: Add error handling for of_address_to_resource()
-Date:   Tue, 10 May 2022 15:07:55 +0200
-Message-Id: <20220510130734.573146434@linuxfoundation.org>
+        stable@vger.kernel.org, Sascha Hauer <sha@pengutronix.de>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 4.14 68/78] ASoC: dmaengine: Restore NULL prepare_slave_config() callback
+Date:   Tue, 10 May 2022 15:07:54 +0200
+Message-Id: <20220510130734.543705295@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
 References: <20220510130732.522479698@linuxfoundation.org>
@@ -50,77 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shravya Kumbham <shravya.kumbham@xilinx.com>
+From: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
 
-commit 7a6bc33ab54923d325d9a1747ec9652c4361ebd1 upstream.
+commit 660564fc9a92a893a14f255be434f7ea0b967901 upstream.
 
-check the return value of of_address_to_resource() and also add
-missing of_node_put() for np and npp nodes.
+As pointed out by Sascha Hauer, this patch changes:
+if (pmc->config && !pcm->config->prepare_slave_config)
+        <do nothing>
+to:
+if (pmc->config && !pcm->config->prepare_slave_config)
+        snd_dmaengine_pcm_prepare_slave_config()
 
-Fixes: e0a3bc65448c ("net: emaclite: Support multiple phys connected to one MDIO bus")
-Addresses-Coverity: Event check_return value.
-Signed-off-by: Shravya Kumbham <shravya.kumbham@xilinx.com>
-Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+This breaks the drivers that do not need a call to
+dmaengine_slave_config(). Drivers that still need to call
+snd_dmaengine_pcm_prepare_slave_config(), but have a NULL
+pcm->config->prepare_slave_config should use
+snd_dmaengine_pcm_prepare_slave_config() as their prepare_slave_config
+callback.
+
+Fixes: 9a1e13440a4f ("ASoC: dmaengine: do not use a NULL prepare_slave_config() callback")
+Reported-by: Sascha Hauer <sha@pengutronix.de>
+Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Link: https://lore.kernel.org/r/20220421125403.2180824-1-codrin.ciubotariu@microchip.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/xilinx/xilinx_emaclite.c |   15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ sound/soc/soc-generic-dmaengine-pcm.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-@@ -817,10 +817,10 @@ static int xemaclite_mdio_write(struct m
- static int xemaclite_mdio_setup(struct net_local *lp, struct device *dev)
- {
- 	struct mii_bus *bus;
--	int rc;
- 	struct resource res;
- 	struct device_node *np = of_get_parent(lp->phy_node);
- 	struct device_node *npp;
-+	int rc, ret;
+--- a/sound/soc/soc-generic-dmaengine-pcm.c
++++ b/sound/soc/soc-generic-dmaengine-pcm.c
+@@ -98,10 +98,10 @@ static int dmaengine_pcm_hw_params(struc
  
- 	/* Don't register the MDIO bus if the phy_node or its parent node
- 	 * can't be found.
-@@ -830,8 +830,14 @@ static int xemaclite_mdio_setup(struct n
- 		return -ENODEV;
- 	}
- 	npp = of_get_parent(np);
--
--	of_address_to_resource(npp, 0, &res);
-+	ret = of_address_to_resource(npp, 0, &res);
-+	of_node_put(npp);
-+	if (ret) {
-+		dev_err(dev, "%s resource error!\n",
-+			dev->of_node->full_name);
-+		of_node_put(np);
-+		return ret;
-+	}
- 	if (lp->ndev->mem_start != res.start) {
- 		struct phy_device *phydev;
- 		phydev = of_phy_find_device(lp->phy_node);
-@@ -840,6 +846,7 @@ static int xemaclite_mdio_setup(struct n
- 				 "MDIO of the phy is not registered yet\n");
- 		else
- 			put_device(&phydev->mdio.dev);
-+		of_node_put(np);
- 		return 0;
- 	}
+ 	memset(&slave_config, 0, sizeof(slave_config));
  
-@@ -852,6 +859,7 @@ static int xemaclite_mdio_setup(struct n
- 	bus = mdiobus_alloc();
- 	if (!bus) {
- 		dev_err(dev, "Failed to allocate mdiobus\n");
-+		of_node_put(np);
- 		return -ENOMEM;
- 	}
+-	if (pcm->config && pcm->config->prepare_slave_config)
+-		prepare_slave_config = pcm->config->prepare_slave_config;
+-	else
++	if (!pcm->config)
+ 		prepare_slave_config = snd_dmaengine_pcm_prepare_slave_config;
++	else
++		prepare_slave_config = pcm->config->prepare_slave_config;
  
-@@ -866,6 +874,7 @@ static int xemaclite_mdio_setup(struct n
- 	lp->mii_bus = bus;
- 
- 	rc = of_mdiobus_register(bus, np);
-+	of_node_put(np);
- 	if (rc) {
- 		dev_err(dev, "Failed to register mdio bus.\n");
- 		goto err_register;
+ 	if (prepare_slave_config) {
+ 		ret = prepare_slave_config(substream, params, &slave_config);
 
 
