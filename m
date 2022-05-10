@@ -2,119 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 031B1C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:32:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39C6DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:35:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243269AbiEJNf5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:35:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50084 "EHLO
+        id S243714AbiEJNgE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:36:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243035AbiEJNZ1 (ORCPT
+        with ESMTP id S243095AbiEJNZa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:25:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D09B22EA77;
-        Tue, 10 May 2022 06:18:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F58A61665;
-        Tue, 10 May 2022 13:18:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90118C385C2;
-        Tue, 10 May 2022 13:18:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188717;
-        bh=ICZctLIchoodJ3+Rypdhc4DMeoSUKHvRYT1hN6mKWPc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lKnkS9yX1GJdxJ3HeW2S4RWkttNcy+nrM/P06vUdu17iJuHhI5Z7d+iAAMdI3HPHz
-         5FkPbAXVFol+l+sOQJraJvTkEApfzCVJDKiPW0esp9fXYhOmZoTThXezjX6JoWd7VX
-         uj/l5oLxdrNkt52ioZif3LyalsyXbbnL3lYaQ3rg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 4.19 04/88] USB: serial: whiteheat: fix heap overflow in WHITEHEAT_GET_DTR_RTS
-Date:   Tue, 10 May 2022 15:06:49 +0200
-Message-Id: <20220510130733.867169924@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
-References: <20220510130733.735278074@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 10 May 2022 09:25:30 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1327197F66
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 06:18:53 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id z19so19976978edx.9
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 06:18:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=szeredi.hu; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bQPxzjuthC5W7FG0xtvK97qut8WhgOZVs5QGqQcukzE=;
+        b=Ib9QQhXrM+AZHVuN39H0Gj+04jz1DkFcq6dfa7Ts+bfu4GOpgy7EP6e6+/Bu+c3z2N
+         ENIb0CkTl5epcS7kuHzNgbY6Ckx3XymenJ9LEcP3JjqiswNfAYZSUESSCTojwaYl0Ys8
+         Wby5SNlVrBFWql2lFfQTzdFuqaK5lVdg5fmGk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bQPxzjuthC5W7FG0xtvK97qut8WhgOZVs5QGqQcukzE=;
+        b=WOqC8auErpCAgK/SLj4tLXCKBikW7jcingNuoEzquqj93uuPQsBqqgAvjYZzaMSLoh
+         42YXJ6LItCJ0FRXon7Uhpw36cWhkmnZDaeD56JQ/ZIT6pOTzaiMxVumUSk0hWJ0iPyug
+         RoPMUV/9d2NiS2L2a7rKPPHuFyL2lPi2g5Dc6LSBcjoZ3D42Lvkg64U3Ixam8npXy/TQ
+         f3IRyTWfOHjkjIOLx2tdfAqLGJbLceuVg+TW3GVjCUPs9uaNqvYH0iZBpi7G+wbwT0Uo
+         RTCS1wBRExNGyi8p7anA6Ynp2zwwZJsiBQnU+AcQuhKuEnt/RLNWFSpPZIPtfVFm8uEG
+         boNw==
+X-Gm-Message-State: AOAM531C8yQCfUvg0atVwZ0LbNzFH/S538EEcqj8TFblZIV1Q0ytoLxn
+        R68trcyHcfjOtaV1vEFOJVi3FeZYAirkBkXKKsmArA==
+X-Google-Smtp-Source: ABdhPJwczgUPDxe7i5EFoi7djB0qfa6gmDtEieMpp4Tpi/GlN71wFMNkosjsi+Nmytcb6euO0hRwtO0GNWPw30McobE=
+X-Received: by 2002:a05:6402:f08:b0:428:53c1:a867 with SMTP id
+ i8-20020a0564020f0800b0042853c1a867mr23374997eda.224.1652188732583; Tue, 10
+ May 2022 06:18:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <YnEeuw6fd1A8usjj@miu.piliscsaba.redhat.com> <20220509124815.vb7d2xj5idhb2wq6@wittgenstein>
+ <CAJfpegveWaS5pR3O1c_7qLnaEDWwa8oi26x2v_CwDXB_sir1tg@mail.gmail.com>
+ <20220510115316.acr6gl5ayqszada6@wittgenstein> <CAJfpegtVgyumJiFM_ujjuRTjg07vwOd4h9AT+mbh+n1Qn-LqqA@mail.gmail.com>
+In-Reply-To: <CAJfpegtVgyumJiFM_ujjuRTjg07vwOd4h9AT+mbh+n1Qn-LqqA@mail.gmail.com>
+From:   Miklos Szeredi <miklos@szeredi.hu>
+Date:   Tue, 10 May 2022 15:18:40 +0200
+Message-ID: <CAJfpegvBoYABebN2GD=ecu4gUsPZgiTksK6S8d3MA-1r1NgmMA@mail.gmail.com>
+Subject: Re: [RFC PATCH] getting misc stats/attributes via xattr API
+To:     Christian Brauner <brauner@kernel.org>
+Cc:     linux-fsdevel@vger.kernel.org, Dave Chinner <david@fromorbit.com>,
+        "Theodore Ts'o" <tytso@mit.edu>, Karel Zak <kzak@redhat.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org,
+        Linux API <linux-api@vger.kernel.org>,
+        linux-man <linux-man@vger.kernel.org>,
+        LSM <linux-security-module@vger.kernel.org>,
+        Ian Kent <raven@themaw.net>,
+        David Howells <dhowells@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christian Brauner <christian@brauner.io>,
+        Amir Goldstein <amir73il@gmail.com>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+On Tue, 10 May 2022 at 15:15, Miklos Szeredi <miklos@szeredi.hu> wrote:
+>
+> On Tue, 10 May 2022 at 13:53, Christian Brauner <brauner@kernel.org> wrote:
+>
+> > > What exactly are the attributes that systemd requires?
+> >
+> > We keep a repo with ideas for (kernel) extensions - we should probably
+> > publish that somewhere - but the list we used for a prototype roughly
+> > contains:
+> >
+> > * mount flags MOUNT_ATTR_RDONLY etc.
+> > * time flags MOUNT_ATTR_RELATIME etc. (could probably be combined with
+> >   mount flags. We missed the opportunity to make them proper enums
+> >   separate from other mount flags imho.)
+> > * propagation "flags" (MS_SHARED)
+> > * peer group
+> > * mnt_id of the mount
+> > * mnt_id of the mount's parent
+> > * owning userns
+>
+> Sounds good thus far.   And hey, we don't even need a new syscall:
+> statx(2) could handle these fine.
 
-commit e23e50e7acc8d8f16498e9c129db33e6a00e80eb upstream.
+Oh, we need this indexed with a mount id, which statx can't do.  So
+indeed, a new syscall may be the best choice.
 
-The sizeof(struct whitehat_dr_info) can be 4 bytes under CONFIG_AEABI=n
-due to "-mabi=apcs-gnu", even though it has a single u8:
-
-whiteheat_private {
-        __u8                       mcr;                  /*     0     1 */
-
-        /* size: 4, cachelines: 1, members: 1 */
-        /* padding: 3 */
-        /* last cacheline: 4 bytes */
-};
-
-The result is technically harmless, as both the source and the
-destinations are currently the same allocation size (4 bytes) and don't
-use their padding, but if anything were to ever be added after the
-"mcr" member in "struct whiteheat_private", it would be overwritten. The
-structs both have a single u8 "mcr" member, but are 4 bytes in padded
-size. The memcpy() destination was explicitly targeting the u8 member
-(size 1) with the length of the whole structure (size 4), triggering
-the memcpy buffer overflow warning:
-
-In file included from include/linux/string.h:253,
-                 from include/linux/bitmap.h:11,
-                 from include/linux/cpumask.h:12,
-                 from include/linux/smp.h:13,
-                 from include/linux/lockdep.h:14,
-                 from include/linux/spinlock.h:62,
-                 from include/linux/mmzone.h:8,
-                 from include/linux/gfp.h:6,
-                 from include/linux/slab.h:15,
-                 from drivers/usb/serial/whiteheat.c:17:
-In function 'fortify_memcpy_chk',
-    inlined from 'firm_send_command' at drivers/usb/serial/whiteheat.c:587:4:
-include/linux/fortify-string.h:328:25: warning: call to '__write_overflow_field' declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()? [-Wattribute-warning]
-  328 |                         __write_overflow_field(p_size_field, size);
-      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Instead, just assign the one byte directly.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Link: https://lore.kernel.org/lkml/202204142318.vDqjjSFn-lkp@intel.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220421001234.2421107-1-keescook@chromium.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/usb/serial/whiteheat.c |    5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
---- a/drivers/usb/serial/whiteheat.c
-+++ b/drivers/usb/serial/whiteheat.c
-@@ -611,9 +611,8 @@ static int firm_send_command(struct usb_
- 		switch (command) {
- 		case WHITEHEAT_GET_DTR_RTS:
- 			info = usb_get_serial_port_data(port);
--			memcpy(&info->mcr, command_info->result_buffer,
--					sizeof(struct whiteheat_dr_info));
--				break;
-+			info->mcr = command_info->result_buffer[0];
-+			break;
- 		}
- 	}
- exit:
-
-
+Thanks,
+Miklos
