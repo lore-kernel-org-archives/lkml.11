@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A9BFC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48EE0C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:35:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243657AbiEJNgB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:36:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58404 "EHLO
+        id S243825AbiEJNgN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:36:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243066AbiEJNZa (ORCPT
+        with ESMTP id S243101AbiEJNZa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:25:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0870122B75;
-        Tue, 10 May 2022 06:18:42 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43E1619B3A7;
+        Tue, 10 May 2022 06:19:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65659B81CE7;
-        Tue, 10 May 2022 13:18:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C92D7C385C9;
-        Tue, 10 May 2022 13:18:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D52D36166B;
+        Tue, 10 May 2022 13:19:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6047C385C6;
+        Tue, 10 May 2022 13:19:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188720;
-        bh=MgNU/KErX9XYknk3zj2PDYvQIh2K7GS2hYAzr7pzkmM=;
+        s=korg; t=1652188741;
+        bh=VgK2SZSnyS3vDtBzW3c4OMgMyv8VJ77CYuAJhZfeGm8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hj4fZ9dM96UfskoHgAHIORalMAxGCNs0v/SnlJBM8eRFX/QSsvcGPkXPfektFTE2R
-         QisDi9On1DQInoTr3Q1pxhgSsrvQmJ4sO42DTpalZabmYGnlljqXASvK8+LVtN0uiL
-         U8fHN9wb9XPsUbC3727qyhL5AV9xnPNqpa57hy4k=
+        b=XqtVG4mJopkoSBMaR45zj93Dfu8nda6JdvtshS7TTPutMfcaZtkgjSzeJxaslOjQO
+         YkLn/C1wSU3oKyq3wwnFDeTpLY8Vgod+JS6hF2G7+ooHJL3LfmhFK5aPANw0p26YNS
+         TGqgjQ2l3D2RdvJT3t5xUWMCOV0tkwdZy8TuY1/Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bruno Thomsen <bruno.thomsen@gmail.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 4.19 05/88] USB: serial: cp210x: add PIDs for Kamstrup USB Meter Reader
-Date:   Tue, 10 May 2022 15:06:50 +0200
-Message-Id: <20220510130733.896688603@linuxfoundation.org>
+        stable@vger.kernel.org, Adam Ford <aford173@gmail.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 29/88] ARM: dts: logicpd-som-lv: Fix wrong pinmuxing on OMAP35
+Date:   Tue, 10 May 2022 15:07:14 +0200
+Message-Id: <20220510130734.593321993@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 References: <20220510130733.735278074@linuxfoundation.org>
@@ -48,38 +49,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bruno Thomsen <bruno.thomsen@gmail.com>
+From: Adam Ford <aford173@gmail.com>
 
-commit 35a923a0b329c343e9e81d79518e2937eba06fcd upstream.
+[ Upstream commit 46ff3df87215ff42c0cd2c4bdb7d74540384a69c ]
 
-Wireless reading of water and heat meters using 868 MHz wM-Bus mode C1.
+The pinout of the OMAP35 and DM37 variants of the SOM-LV are the
+same, but the macros which define the pinmuxing are different
+between OMAP3530 and DM3730.  The pinmuxing was correct for
+for the DM3730, but wrong for the OMAP3530.  Since the boot loader
+was correctly pin-muxing the pins, this was not obvious. As the
+bootloader not guaranteed to pinmux all the pins any more, this
+causes an issue, so the pinmux needs to be moved from a common
+file to their respective board files.
 
-The two different product IDs allow detection of dongle antenna
-solution:
-- Internal antenna
-- External antenna using SMA connector
-
-https://www.kamstrup.com/en-en/water-solutions/water-meter-reading/usb-meter-reader
-
-Signed-off-by: Bruno Thomsen <bruno.thomsen@gmail.com>
-Link: https://lore.kernel.org/r/20220414081202.5591-1-bruno.thomsen@gmail.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: f8a2e3ff7103 ("ARM: dts: Add minimal support for LogicPD OMAP35xx SOM-LV devkit")
+Signed-off-by: Adam Ford <aford173@gmail.com>
+Message-Id: <20220303171818.11060-1-aford173@gmail.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/serial/cp210x.c |    2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm/boot/dts/logicpd-som-lv-35xx-devkit.dts | 15 +++++++++++++++
+ arch/arm/boot/dts/logicpd-som-lv-37xx-devkit.dts | 15 +++++++++++++++
+ arch/arm/boot/dts/logicpd-som-lv.dtsi            | 15 ---------------
+ 3 files changed, 30 insertions(+), 15 deletions(-)
 
---- a/drivers/usb/serial/cp210x.c
-+++ b/drivers/usb/serial/cp210x.c
-@@ -195,6 +195,8 @@ static const struct usb_device_id id_tab
- 	{ USB_DEVICE(0x16DC, 0x0015) }, /* W-IE-NE-R Plein & Baus GmbH CML Control, Monitoring and Data Logger */
- 	{ USB_DEVICE(0x17A8, 0x0001) }, /* Kamstrup Optical Eye/3-wire */
- 	{ USB_DEVICE(0x17A8, 0x0005) }, /* Kamstrup M-Bus Master MultiPort 250D */
-+	{ USB_DEVICE(0x17A8, 0x0101) }, /* Kamstrup 868 MHz wM-Bus C-Mode Meter Reader (Int Ant) */
-+	{ USB_DEVICE(0x17A8, 0x0102) }, /* Kamstrup 868 MHz wM-Bus C-Mode Meter Reader (Ext Ant) */
- 	{ USB_DEVICE(0x17F4, 0xAAAA) }, /* Wavesense Jazz blood glucose meter */
- 	{ USB_DEVICE(0x1843, 0x0200) }, /* Vaisala USB Instrument Cable */
- 	{ USB_DEVICE(0x18EF, 0xE00F) }, /* ELV USB-I2C-Interface */
+diff --git a/arch/arm/boot/dts/logicpd-som-lv-35xx-devkit.dts b/arch/arm/boot/dts/logicpd-som-lv-35xx-devkit.dts
+index 32d0dc371fc3..4cd72b5e612b 100644
+--- a/arch/arm/boot/dts/logicpd-som-lv-35xx-devkit.dts
++++ b/arch/arm/boot/dts/logicpd-som-lv-35xx-devkit.dts
+@@ -15,3 +15,18 @@ / {
+ 	model = "LogicPD Zoom OMAP35xx SOM-LV Development Kit";
+ 	compatible = "logicpd,dm3730-som-lv-devkit", "ti,omap3";
+ };
++
++&omap3_pmx_core2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&hsusb2_2_pins>;
++	hsusb2_2_pins: pinmux_hsusb2_2_pins {
++		pinctrl-single,pins = <
++			OMAP3430_CORE2_IOPAD(0x25f0, PIN_OUTPUT | MUX_MODE3)            /* etk_d10.hsusb2_clk */
++			OMAP3430_CORE2_IOPAD(0x25f2, PIN_OUTPUT | MUX_MODE3)            /* etk_d11.hsusb2_stp */
++			OMAP3430_CORE2_IOPAD(0x25f4, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d12.hsusb2_dir */
++			OMAP3430_CORE2_IOPAD(0x25f6, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d13.hsusb2_nxt */
++			OMAP3430_CORE2_IOPAD(0x25f8, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d14.hsusb2_data0 */
++			OMAP3430_CORE2_IOPAD(0x25fa, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d15.hsusb2_data1 */
++		>;
++	};
++};
+diff --git a/arch/arm/boot/dts/logicpd-som-lv-37xx-devkit.dts b/arch/arm/boot/dts/logicpd-som-lv-37xx-devkit.dts
+index 24283739526c..2aca9111c699 100644
+--- a/arch/arm/boot/dts/logicpd-som-lv-37xx-devkit.dts
++++ b/arch/arm/boot/dts/logicpd-som-lv-37xx-devkit.dts
+@@ -15,3 +15,18 @@ / {
+ 	model = "LogicPD Zoom DM3730 SOM-LV Development Kit";
+ 	compatible = "logicpd,dm3730-som-lv-devkit", "ti,omap3630", "ti,omap3";
+ };
++
++&omap3_pmx_core2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&hsusb2_2_pins>;
++	hsusb2_2_pins: pinmux_hsusb2_2_pins {
++		pinctrl-single,pins = <
++			OMAP3630_CORE2_IOPAD(0x25f0, PIN_OUTPUT | MUX_MODE3)            /* etk_d10.hsusb2_clk */
++			OMAP3630_CORE2_IOPAD(0x25f2, PIN_OUTPUT | MUX_MODE3)            /* etk_d11.hsusb2_stp */
++			OMAP3630_CORE2_IOPAD(0x25f4, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d12.hsusb2_dir */
++			OMAP3630_CORE2_IOPAD(0x25f6, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d13.hsusb2_nxt */
++			OMAP3630_CORE2_IOPAD(0x25f8, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d14.hsusb2_data0 */
++			OMAP3630_CORE2_IOPAD(0x25fa, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d15.hsusb2_data1 */
++		>;
++	};
++};
+diff --git a/arch/arm/boot/dts/logicpd-som-lv.dtsi b/arch/arm/boot/dts/logicpd-som-lv.dtsi
+index c5d54c4d3747..499eea86e102 100644
+--- a/arch/arm/boot/dts/logicpd-som-lv.dtsi
++++ b/arch/arm/boot/dts/logicpd-som-lv.dtsi
+@@ -269,21 +269,6 @@ OMAP3_WKUP_IOPAD(0x2a0c, PIN_OUTPUT | MUX_MODE4)	/* sys_boot1.gpio_3 */
+ 	};
+ };
+ 
+-&omap3_pmx_core2 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&hsusb2_2_pins>;
+-	hsusb2_2_pins: pinmux_hsusb2_2_pins {
+-		pinctrl-single,pins = <
+-			OMAP3630_CORE2_IOPAD(0x25f0, PIN_OUTPUT | MUX_MODE3)            /* etk_d10.hsusb2_clk */
+-			OMAP3630_CORE2_IOPAD(0x25f2, PIN_OUTPUT | MUX_MODE3)            /* etk_d11.hsusb2_stp */
+-			OMAP3630_CORE2_IOPAD(0x25f4, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d12.hsusb2_dir */
+-			OMAP3630_CORE2_IOPAD(0x25f6, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d13.hsusb2_nxt */
+-			OMAP3630_CORE2_IOPAD(0x25f8, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d14.hsusb2_data0 */
+-			OMAP3630_CORE2_IOPAD(0x25fa, PIN_INPUT_PULLDOWN | MUX_MODE3)    /* etk_d15.hsusb2_data1 */
+-		>;
+-	};
+-};
+-
+ &uart2 {
+ 	interrupts-extended = <&intc 73 &omap3_pmx_core OMAP3_UART2_RX>;
+ 	pinctrl-names = "default";
+-- 
+2.35.1
+
 
 
