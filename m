@@ -2,88 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02557C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:26:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A48BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:27:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241798AbiEJMal (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 08:30:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39302 "EHLO
+        id S241811AbiEJMbW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 08:31:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241776AbiEJMaf (ORCPT
+        with ESMTP id S241908AbiEJMbL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 08:30:35 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C71B42A1FDE;
-        Tue, 10 May 2022 05:26:37 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 2DE551F414F8
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1652185587;
-        bh=BQiR+KethrLXSU5KRNxuCKrRdMtiP4LV9NgZmry1IWE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=UK52OjymyXQ50bxoRn93D0H1e5AAiwKBVZ3CH5REP+WHLsQfiDY1Cr1yf+HvPeHme
-         xZs2t6DYTdc3jgYH+FKahT6uhO30jn8605JcDiT78hETmnKriBbjXpWna273HPekNa
-         3NxX6Mea2XVUY8lJuTYAwpUQ2Y7veS4HTV+o8C3VpP2BC0h0xA87aA4mvIuGyBDcpx
-         0r5fF2hUoWTUn3mg/y/8/qefUvhl4Y4CF+jvWRmMk6BCO2HEq0LriJjOGz/KOextMH
-         521oSnKXv/Vh1rF0+pDIoUoIaNZTke5cikYs+Fz752WOlD/EP6gTDj5EXPMFiTJMBZ
-         eY171MRqval0Q==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     gregkh@linuxfoundation.org
-Cc:     jirislaby@kernel.org, matthias.bgg@gmail.com,
-        angelogioacchino.delregno@collabora.com, zhiyong.tao@mediatek.com,
-        colin.king@intel.com, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        wenst@chromium.org, broonie@kernel.org
-Subject: [PATCH] Revert "serial: 8250_mtk: Make sure to select the right FEATURE_SEL"
-Date:   Tue, 10 May 2022 14:26:20 +0200
-Message-Id: <20220510122620.150342-1-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 10 May 2022 08:31:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC83B2A1FDE;
+        Tue, 10 May 2022 05:27:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 499F460BCC;
+        Tue, 10 May 2022 12:27:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CC7CC385C2;
+        Tue, 10 May 2022 12:27:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652185632;
+        bh=SeZYGVo+C/Ti73sLThBUppeds9nAxA0/otvgvdLHc5I=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HizxagiGVF4VCmSTPu9ZyBCa8JnenDjBuqn44iirNuSEakoHnpf0fs+qbLNZtXZYK
+         OJ9FC0GNdSvxg0fDiWvI8unNvti0owq3m3TvXqkfRfXGPjtwjHEOHa7cWWXgQR8laq
+         hlfFxPoaUKtKSHFFDBJfKycbxXmV1hab2ATi/T9pbtLuOJgNFHOncaYhm0bNaOXFdi
+         IrH0AZjFaDIxCHVdTTHCUFNx6etz2RPDBHne8D5r5WlX+aQvMV8mdg51Wrdh7pi6di
+         IVbkLtY/cRb42vOkyJrPSE6tLTp5yeHjREPTBtqZe52/Fwis8fdZBkw3+0AUPo28vQ
+         9DNScoGC/n48g==
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Christoph Hellwig <hch@lst.de>
+Subject: [PATCHv6 bpf-next 4/5] bpf: Resolve symbols with ftrace_lookup_symbols for kprobe multi link
+Date:   Tue, 10 May 2022 14:26:15 +0200
+Message-Id: <20220510122616.2652285-5-jolsa@kernel.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220510122616.2652285-1-jolsa@kernel.org>
+References: <20220510122616.2652285-1-jolsa@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It was found that some MediaTek SoCs are incompatible with this
-change. Also, this register was mistakenly understood as it was
-related to the 16550A register layout selection but, at least
-on some IPs, if not all, it's related to something else unknown.
+Using kallsyms_lookup_names function to speed up symbols lookup in
+kprobe multi link attachment and replacing with it the current
+kprobe_multi_resolve_syms function.
 
-This reverts commit 6f81fdded0d024c7d4084d434764f30bca1cd6b1.
+This speeds up bpftrace kprobe attachment:
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+  # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
+  ...
+  6.5681 +- 0.0225 seconds time elapsed  ( +-  0.34% )
+
+After:
+
+  # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
+  ...
+  0.5661 +- 0.0275 seconds time elapsed  ( +-  4.85% )
+
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- drivers/tty/serial/8250/8250_mtk.c | 7 -------
- 1 file changed, 7 deletions(-)
+ kernel/trace/bpf_trace.c | 112 +++++++++++++++++++++++----------------
+ 1 file changed, 66 insertions(+), 46 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-index 21053db93ff1..54051ec7b499 100644
---- a/drivers/tty/serial/8250/8250_mtk.c
-+++ b/drivers/tty/serial/8250/8250_mtk.c
-@@ -54,9 +54,6 @@
- #define MTK_UART_TX_TRIGGER	1
- #define MTK_UART_RX_TRIGGER	MTK_UART_RX_SIZE
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index f15b826f9899..7fd11c17558d 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -2229,6 +2229,59 @@ struct bpf_kprobe_multi_run_ctx {
+ 	unsigned long entry_ip;
+ };
  
--#define MTK_UART_FEATURE_SEL	39	/* Feature Selection register */
--#define MTK_UART_FEAT_NEWRMAP	BIT(0)	/* Use new register map */
++struct user_syms {
++	const char **syms;
++	char *buf;
++};
++
++static int copy_user_syms(struct user_syms *us, unsigned long __user *usyms, u32 cnt)
++{
++	unsigned long __user usymbol;
++	const char **syms = NULL;
++	char *buf = NULL, *p;
++	int err = -ENOMEM;
++	unsigned int i;
++
++	syms = kvmalloc(cnt * sizeof(*syms), GFP_KERNEL);
++	if (!syms)
++		goto error;
++
++	buf = kvmalloc(cnt * KSYM_NAME_LEN, GFP_KERNEL);
++	if (!buf)
++		goto error;
++
++	for (p = buf, i = 0; i < cnt; i++) {
++		if (__get_user(usymbol, usyms + i)) {
++			err = -EFAULT;
++			goto error;
++		}
++		err = strncpy_from_user(p, (const char __user *) usymbol, KSYM_NAME_LEN);
++		if (err == KSYM_NAME_LEN)
++			err = -E2BIG;
++		if (err < 0)
++			goto error;
++		syms[i] = p;
++		p += err + 1;
++	}
++
++	us->syms = syms;
++	us->buf = buf;
++	return 0;
++
++error:
++	if (err) {
++		kvfree(syms);
++		kvfree(buf);
++	}
++	return err;
++}
++
++static void free_user_syms(struct user_syms *us)
++{
++	kvfree(us->syms);
++	kvfree(us->buf);
++}
++
+ static void bpf_kprobe_multi_link_release(struct bpf_link *link)
+ {
+ 	struct bpf_kprobe_multi_link *kmulti_link;
+@@ -2349,53 +2402,12 @@ kprobe_multi_link_handler(struct fprobe *fp, unsigned long entry_ip,
+ 	kprobe_multi_link_prog_run(link, entry_ip, regs);
+ }
+ 
+-static int
+-kprobe_multi_resolve_syms(const void __user *usyms, u32 cnt,
+-			  unsigned long *addrs)
++static int symbols_cmp(const void *a, const void *b)
+ {
+-	unsigned long addr, size;
+-	const char __user **syms;
+-	int err = -ENOMEM;
+-	unsigned int i;
+-	char *func;
 -
- #define MTK_UART_XON1		40	/* I/O: Xon character 1 */
- #define MTK_UART_XOFF1		42	/* I/O: Xoff character 1 */
+-	size = cnt * sizeof(*syms);
+-	syms = kvzalloc(size, GFP_KERNEL);
+-	if (!syms)
+-		return -ENOMEM;
++	const char **str_a = (const char **) a;
++	const char **str_b = (const char **) b;
  
-@@ -575,10 +572,6 @@ static int mtk8250_probe(struct platform_device *pdev)
- 		uart.dma = data->dma;
- #endif
- 
--	/* Set AP UART new register map */
--	writel(MTK_UART_FEAT_NEWRMAP, uart.port.membase +
--	       (MTK_UART_FEATURE_SEL << uart.port.regshift));
+-	func = kmalloc(KSYM_NAME_LEN, GFP_KERNEL);
+-	if (!func)
+-		goto error;
 -
- 	/* Disable Rate Fix function */
- 	writel(0x0, uart.port.membase +
- 			(MTK_UART_RATE_FIX << uart.port.regshift));
+-	if (copy_from_user(syms, usyms, size)) {
+-		err = -EFAULT;
+-		goto error;
+-	}
+-
+-	for (i = 0; i < cnt; i++) {
+-		err = strncpy_from_user(func, syms[i], KSYM_NAME_LEN);
+-		if (err == KSYM_NAME_LEN)
+-			err = -E2BIG;
+-		if (err < 0)
+-			goto error;
+-		err = -EINVAL;
+-		addr = kallsyms_lookup_name(func);
+-		if (!addr)
+-			goto error;
+-		if (!kallsyms_lookup_size_offset(addr, &size, NULL))
+-			goto error;
+-		addr = ftrace_location_range(addr, addr + size - 1);
+-		if (!addr)
+-			goto error;
+-		addrs[i] = addr;
+-	}
+-
+-	err = 0;
+-error:
+-	kvfree(syms);
+-	kfree(func);
+-	return err;
++	return strcmp(*str_a, *str_b);
+ }
+ 
+ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
+@@ -2441,7 +2453,15 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
+ 			goto error;
+ 		}
+ 	} else {
+-		err = kprobe_multi_resolve_syms(usyms, cnt, addrs);
++		struct user_syms us;
++
++		err = copy_user_syms(&us, usyms, cnt);
++		if (err)
++			goto error;
++
++		sort(us.syms, cnt, sizeof(*us.syms), symbols_cmp, NULL);
++		err = ftrace_lookup_symbols(us.syms, cnt, addrs);
++		free_user_syms(&us);
+ 		if (err)
+ 			goto error;
+ 	}
 -- 
-2.35.1
+2.35.3
 
