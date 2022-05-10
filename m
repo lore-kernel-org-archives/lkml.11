@@ -2,96 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9F4CC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:23:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88866C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:25:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240968AbiEJL1i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 07:27:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57894 "EHLO
+        id S240903AbiEJL26 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 07:28:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232767AbiEJL1g (ORCPT
+        with ESMTP id S232048AbiEJL2y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 07:27:36 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E8B02ABBF4;
-        Tue, 10 May 2022 04:23:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9384ECE1E1A;
-        Tue, 10 May 2022 11:23:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01FE9C385C2;
-        Tue, 10 May 2022 11:23:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652181816;
-        bh=5ZJgn0Zghtzaiu2qbpmdNbr1rwDe/IiPV/mYtoG6HA4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OW/Ke/sgpzuHPUyRzpms1qOc2XLOIcXoZcZbY2dWEX8ECxIpYNcCh6v/5omvQpb97
-         sTdKM2jeHUVartD2XdpvYbOW29XN4joTf1kTBYQIwsr3upSynALi/l82MXrk2Yalgb
-         pIu4qYrAobipn8F2FA8Rsshm9vtlEbFtJ/ul6SeMd9GlWlaKJcgLK5hDR96vVtm2Bs
-         ivKOZ8fI7xV55CEsvMJ4uymfOqK4k3+G17XSVvfVSNyxzVJFvzxs1jEdNgWQDS+OBg
-         SWx3hHs7uf6wtz9fPqHZL6oZ9L9FI7ooPrULOYtT4DLftRW1+/zeAvWR/xCrfmDEa+
-         e5n5OMiBvmIIg==
-Date:   Tue, 10 May 2022 12:23:27 +0100
-From:   Will Deacon <will@kernel.org>
-To:     Yicong Yang <yangyicong@hisilicon.com>
-Cc:     gregkh@linuxfoundation.org, helgaas@kernel.org,
-        alexander.shishkin@linux.intel.com, lorenzo.pieralisi@arm.com,
-        mark.rutland@arm.com, mathieu.poirier@linaro.org,
-        suzuki.poulose@arm.com, mike.leach@linaro.org, leo.yan@linaro.org,
-        jonathan.cameron@huawei.com, daniel.thompson@linaro.org,
-        joro@8bytes.org, john.garry@huawei.com,
-        shameerali.kolothum.thodi@huawei.com, robin.murphy@arm.com,
-        peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        coresight@lists.linaro.org, linux-pci@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, iommu@lists.linux-foundation.org,
-        prime.zeng@huawei.com, liuqi115@huawei.com,
-        zhangshaokun@hisilicon.com, linuxarm@huawei.com
-Subject: Re: [PATCH v7 1/7] iommu/arm-smmu-v3: Make default domain type of
- HiSilicon PTT device to identity
-Message-ID: <20220510112326.GA27790@willie-the-truck>
-References: <20220407125841.3678-1-yangyicong@hisilicon.com>
- <20220407125841.3678-2-yangyicong@hisilicon.com>
+        Tue, 10 May 2022 07:28:54 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1A091B4358
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 04:24:56 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id 125-20020a1c0283000000b003946c466c17so1161674wmc.4
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 04:24:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=conchuod.ie; s=google;
+        h=message-id:date:mime-version:user-agent:from:subject:to:cc
+         :references:content-language:in-reply-to:content-transfer-encoding;
+        bh=Q9ZRcghSC4Zvb59xWNLpgwQRMRVcmsJ18TNHtRXVuxo=;
+        b=Z8rrIL6/GXzsZMveC2UvwKakgRmDeIw1l90/SleuXTMgs2cSdCxz/gmmODmAv6sEH2
+         h5XIM3/YspFdyoTA0JemciadBa44j3VSGsGllMClineyi7qIFswlQwNAJGfiQd0fUkxm
+         JW66RrO1CCZMUOpvT7wgXBu5XGD8ySg9oIGHC8a2gCLcoqbqw80PAeySedyai8xjaUsv
+         17pQzZ6ahOXkqC0oGwYOtcTjzC8nSyfqjAPMXhzXgy9SJnG4Im7QxKiaRR/7utl42tYA
+         x8ePtZRcgzb8SbMPv4rCE27OwGcwXqrVcPx6VWF9f5I27j6FL+PA+t74BY6wYzapSXgC
+         Q5Dw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
+         :subject:to:cc:references:content-language:in-reply-to
+         :content-transfer-encoding;
+        bh=Q9ZRcghSC4Zvb59xWNLpgwQRMRVcmsJ18TNHtRXVuxo=;
+        b=Iavs/DNxiEc69SWT6NlGfxPavwxv9GDuGkk31CDDF8CH/eqR8g6GF5+K5Ij/e6U8Lk
+         UEPpWhYiAdtl/L17BH4Tgr7NOBPLCfGAmpM4lE8t7e3yDCpu65cb/jfLo769d5KSG5kU
+         m2m1qqbhfyyZU0C7obYrMN2N+R6XTaUgMMeSwQBXOaXQ0MWF2exLQIEz/gkBfFxFPq0I
+         LVvpzHayv6cngN9CpHCW4P6MsTlsqEayY6OnHkWQHgRaXH2t1WSt0p9NRVz2Zm/bNkPC
+         DbQYX1eSUIdFvJHCnxFAgFBuecwiThJmwhSY8gVfEmp6F4n6X/k+gpSEkUNDBQnbmsjS
+         otog==
+X-Gm-Message-State: AOAM530G3CnaRZttc86SPBpunjkmCLGdmUGq7fat2OB66UxCpoYFhBn/
+        2vSmI4TAUT/oti7PtYfcoiTFFt1VlOgIZ9V7
+X-Google-Smtp-Source: ABdhPJzHodgmub9AKZbEZJmNj8kVL+mO6/cqFeW/NflOzT4A4EkxOlFoqbMN5nCm3xonWyHTJZpAmA==
+X-Received: by 2002:a7b:c76e:0:b0:394:8be3:a83c with SMTP id x14-20020a7bc76e000000b003948be3a83cmr12055521wmk.41.1652181895085;
+        Tue, 10 May 2022 04:24:55 -0700 (PDT)
+Received: from [10.205.160.53] ([95.83.233.54])
+        by smtp.gmail.com with ESMTPSA id i6-20020a05600c354600b003942a244f33sm2404493wmq.12.2022.05.10.04.24.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 May 2022 04:24:54 -0700 (PDT)
+Message-ID: <4b752147-1a09-a4af-bc5d-3b132b84ef49@conchuod.ie>
+Date:   Tue, 10 May 2022 12:29:54 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220407125841.3678-2-yangyicong@hisilicon.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+From:   Conor Dooley <mail@conchuod.ie>
+Subject: Re: [PATCH v11 2/3] fpga: microchip-spi: add Microchip MPF FPGA
+ manager
+To:     Ivan Bornyakov <i.bornyakov@metrotek.ru>,
+        Conor.Dooley@microchip.com
+Cc:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
+        trix@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        system@metrotek.ru
+References: <20220507074304.11144-1-i.bornyakov@metrotek.ru>
+ <20220507074304.11144-3-i.bornyakov@metrotek.ru>
+ <bd5cb37b-ee56-f6d5-2d98-c08566b60728@microchip.com>
+ <20220509171621.zk4owxwlngxjodgz@x260>
+ <da1e5125-de6b-11a8-a52d-7e6e5f45ab70@conchuod.ie>
+Content-Language: en-US
+In-Reply-To: <da1e5125-de6b-11a8-a52d-7e6e5f45ab70@conchuod.ie>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 08:58:35PM +0800, Yicong Yang wrote:
-> The DMA operations of HiSilicon PTT device can only work properly with
-> identical mappings. So add a quirk for the device to force the domain
-> as passthrough.
+On 09/05/2022 19:56, Conor Dooley wrote:
+> On 09/05/2022 18:16, Ivan Bornyakov wrote:
+>> On Mon, May 09, 2022 at 11:41:18AM +0000, Conor.Dooley@microchip.com wrote:
+>>> Hey Ivan, one comment below.
+>>> Thanks,
+>>> Conor.
+>>>
+>>> On 07/05/2022 08:43, Ivan Bornyakov wrote:
+>>>> ... snip ...
+>>>> +static int mpf_read_status(struct spi_device *spi)
+>>>> +{
+>>>> +       u8 status, status_command = MPF_SPI_READ_STATUS;
+>>>> +       struct spi_transfer xfer = {
+>>>> +               .tx_buf = &status_command,
+>>>> +               .rx_buf = &status,
+>>>> +               .len = 1,
+>>>> +       };
+>>>> +       int ret = spi_sync_transfer(spi, &xfer, 1);
+>>>> +
+>>>> +       if ((status & MPF_STATUS_SPI_VIOLATION) ||
+>>>> +           (status & MPF_STATUS_SPI_ERROR))
+>>>> +               ret = -EIO;
+>>>> +
+>>>> +       return ret ? : status;
+>>>> +}
+>>>> +
+>>>> ... snip ...
+>>>> +
+>>>> +static int poll_status_not_busy(struct spi_device *spi, u8 mask)
+>>>> +{
+>>>> +       int status, timeout = MPF_STATUS_POLL_TIMEOUT;
+>>>> +
+>>>> +       while (timeout--) {
+>>>> +               status = mpf_read_status(spi);
+>>>> +               if (status < 0 ||
+>>>> +                   (!(status & MPF_STATUS_BUSY) && (!mask || (status & mask))))
+>>>> +                       return status;
+>>>> +
+>>>> +               usleep_range(1000, 2000);
+>>>> +       }
+>>>> +
+>>>> +       return -EBUSY;
+>>>> +}
+>>>
+>>> Is there a reason you changed this from the snippet you sent me
+>>> in the responses to version 8:
+>>> static int poll_status_not_busy(struct spi_device *spi, u8 mask)
+>>> {
+>>> 	u8 status, status_command = MPF_SPI_READ_STATUS;
+>>> 	int ret, timeout = MPF_STATUS_POLL_TIMEOUT;
+>>> 	struct spi_transfer xfer = {
+>>> 		.tx_buf = &status_command,
+>>> 		.rx_buf = &status,
+>>> 		.len = 1,
+>>> 	};
+>>>
+>>> 	while (timeout--) {
+>>> 		ret = spi_sync_transfer(spi, &xfer, 1);
+>>> 		if (ret < 0)
+>>> 			return ret;
+>>>
+>>> 		if (!(status & MPF_STATUS_BUSY) && (!mask || (status & mask)))
+>>> 			return status;
+>>>
+>>> 		usleep_range(1000, 2000);
+>>> 	}
+>>>
+>>> 	return -EBUSY;
+>>> }
+>>>
+>>> With the current version, I hit the "Failed to write bitstream
+>>> frame" check in mpf_ops_write at random points in the transfer.
+>>> Replacing poll_status_not_busy with the above allows it to run
+>>> to completion.
+>>
+>> In my eyes they are equivalent, aren't they?
+>>
 > 
-> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 16 ++++++++++++++++
->  1 file changed, 16 insertions(+)
+> I was in a bit of a rush today & didn't have time to do proper
+> debugging, I'll put some debug code in tomorrow and try to find
+> exactly what is different between the two.
+> 
+> Off the top of my head, since I don't have a board on me to test,
+> the only difference I can see is that with the snippet you only
+> checked if spi_sync_transfer was negative whereas now you check
+> if it has a value at all w/ that ternary operator.
+> 
+> But even that seems like it *shouldn't* be the problem, since ret
+> should contain -errno or zero, right?
+> Either way, I will do some digging tomorrow.
 
-I still don't like this being part of the SMMU driver, but given that
-(a) Robin doesn't seem to agree with the objection and (b) you've been
-refreshing the patch series:
+I put a printk("status %x, ret %d", status, ret); into the failure
+path of mpf_read_status() & it looks like a status 0xA is being
+returned - error & ready? That seems like a very odd combo to be
+getting back out of it. It shouldn't be dodgy driver/connection
+either, b/c that's what I see if I connect my protocol analyser:
+https://i.imgur.com/VbjgfCk.png
 
-Acked-by: Will Deacon <will@kernel.org>
+That's mosi (hex), ss, sclk, mosi, miso (hex), miso in descending
+order.
 
-If you do respin, then:
+I think what was happening was with the snippet you returned one
+of the following: -EBUSY, ret (aka -errno) or status. Since status
+is positive, the checks in mpf_spi_write.*() saw nothing wrong at
+all and programming continued despite there being a problem.
 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 627a3ed5ee8f..5ec15ae2a9b1 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -2839,6 +2839,21 @@ static int arm_smmu_dev_disable_feature(struct device *dev,
->  	}
->  }
+The new version fixes this by returning -EIO rather than status from
+poll_status_not_busy().
 
-It might be worth adding a brief comment here to explain what this device is
-and why it needs an identity mapping.
+I wish I had a socketable PolarFire so I could investigate further,
+but this looks like it might a be hardware issue somewhere on my
+end?
 
-> +#define IS_HISI_PTT_DEVICE(pdev)	((pdev)->vendor == PCI_VENDOR_ID_HUAWEI && \
-> +					 (pdev)->device == 0xa12e)
+So ye, sorry for the noise and carry on! I'll try tofind what is to
+blame for it.
 
-Will
+Thanks,
+Conor.
+
+
