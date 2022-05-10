@@ -2,120 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 885B3C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:05:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31497C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:05:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347041AbiEJQJG (ORCPT
+        id S1347083AbiEJQJJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 12:09:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47818 "EHLO
+        Tue, 10 May 2022 12:09:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347092AbiEJQF5 (ORCPT
+        with ESMTP id S1348496AbiEJQIa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 12:05:57 -0400
-Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F0AE60DBE;
-        Tue, 10 May 2022 08:58:27 -0700 (PDT)
-Received: by mail-qv1-xf2d.google.com with SMTP id f3so8584360qvi.2;
-        Tue, 10 May 2022 08:58:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zYeXIFwGiTGro2v4wofWCP3x3yzwe1mbrvTcoIvl73I=;
-        b=Y0UK2ZT1mss57lmKDIxKL9SOGd3b5Eo9D4CMwvWBhqJyBfYNkcPA3ujTBXvuxrNbMt
-         OHpZgN7qjIJAkRWDp2Sx2hBLVentL669y4N/u7Ozs/6DVFRpJzok3LkAEtVvi8Zt3ecX
-         f0YIWuiAGOf9fnwQOKKt/FWxyZPrRqXHWXpGEQWU0niapvFMjOxI+lApp/ePgT+txVme
-         2pktdWLQjJhBIkshQKowjn5xEb+IzT83jGrYzoPu+kV5z0kFu6loiTWemlmXrln3+ccp
-         Ka+M7x3RunfTrqOVSkosoTLZj8gnOOPhSDdAFrIwUiGFQgmZis9v4ZUP99gqR9lbbmnx
-         jbHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zYeXIFwGiTGro2v4wofWCP3x3yzwe1mbrvTcoIvl73I=;
-        b=01Y8wor2iQ0DxolUqY0/nBbBm8n/DPn2y+Nt4p481FGj50FMsI8LnRCWWsK6ZLaJBX
-         zIFV3pUXbjcu+Uwjf3aTWO+PPZqAXx5ptwCkJd1DNbAa9cRTPd6Hw7+53XWF7aNq4FhW
-         v7rlcdR0x2APHMlBeT6zo6+6b50dD0CB0njjHVlutVDyNdjdQdJ9fB7CnK/s25qNuxPD
-         ZJtQ2zS5QywB3p1+mmk88jeUCmYI4PDdxj69IRwu3xbb1uIwipPYXYL8CJFCZ5d4Senq
-         4A27SBaMuBZw6IqBp3mE+OFw4cYi77zG8AFBArYOgxDY9Al7Fu2qp1PkW+JNOHQ5Q6Ul
-         j4pw==
-X-Gm-Message-State: AOAM5330Ho70KDHLWziaEwOYgzOj4JQ+TrOIRKHtzErQq8GtZYhAcrjw
-        nvMQj0ZFqlmSQJpFtewUbh4ooJ2KLpzYPn/ivNg=
-X-Google-Smtp-Source: ABdhPJxk+ozZLx9K+xUPrC/224lGhrrXO3Lwd9Dnf/AVoIFQ8a9K7dsFoSV3sXUhBKLlMnpf3UDsav4JXMrcfI3UtyY=
-X-Received: by 2002:a05:6214:d8d:b0:45a:fbe2:e7c with SMTP id
- e13-20020a0562140d8d00b0045afbe20e7cmr13813421qve.48.1652198306484; Tue, 10
- May 2022 08:58:26 -0700 (PDT)
+        Tue, 10 May 2022 12:08:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAA81994DA
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 09:01:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5100560C2E
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 16:01:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EC2AC385A6;
+        Tue, 10 May 2022 16:01:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652198471;
+        bh=8R7QdAS1HkPD/ObWmH1HXiPVeYzqdGBRiK33o/ZU5GQ=;
+        h=Date:From:To:Cc:Subject:From;
+        b=W7y4X9dw1SUbI/nc2u7Y9qeXUtoC/3Nid+dZQ2mRtGYVCq9EGtR9LrpPq/8Kigs+f
+         W2qIOf9HwGBKJhpsHxyh57wHT4jWXpHOza9yy78a9p5d+gKATS/5s4NuhJkpmT6HeF
+         mdJnStqeNYGrGrhw+GxbHG4ExkvTxZ6bxX+HwNO7r+emR1iCVhO8PYoPtU47RZTSZu
+         ELPbwdJ8rW3bzCc9/Ieni0nKZ9hZtDr2raFTrrKYDJBmx6GJQT984s1Jz9kSv5LETH
+         MuMw9Wv8CQokRnzPmY4WE5jo316Y1Kg8kGkUr+RYIZ0LM50bjRPHNaGq+f3AirZT5x
+         v51+dhoEhe+8A==
+Date:   Tue, 10 May 2022 17:01:06 +0100
+From:   Will Deacon <will@kernel.org>
+To:     joro@8bytes.org
+Cc:     iommu@lists.linux-foundation.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        robin.murphy@arm.com, kernel-team@android.com
+Subject: [GIT PULL] iommu/arm-smmu: Updates for 5.19
+Message-ID: <20220510160106.GA28351@willie-the-truck>
 MIME-Version: 1.0
-References: <20220503195605.4015616-1-robimarko@gmail.com> <20220503195605.4015616-2-robimarko@gmail.com>
- <YnLdTIKx80wszbj7@robh.at.kernel.org> <CAOX2RU5RMra4zj-jWZFH_fev-EavsnLnjob0z4FsaYnn8cs5gg@mail.gmail.com>
- <YnmDyDKhMlUkwJJY@robh.at.kernel.org>
-In-Reply-To: <YnmDyDKhMlUkwJJY@robh.at.kernel.org>
-From:   Robert Marko <robimarko@gmail.com>
-Date:   Tue, 10 May 2022 17:58:15 +0200
-Message-ID: <CAOX2RU5ZGPcH+3LspX=CPNXO+SEAHS+QqQY_+0Jh-MEzsjD4Xw@mail.gmail.com>
-Subject: Re: [PATCH v2 2/6] dt-bindings: clock: Add support for IPQ8074 APSS
- clock controller
-To:     Rob Herring <robh@kernel.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        krzysztof.kozlowski+dt@linaro.org,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Devicetree List <devicetree@vger.kernel.org>,
-        linux-clk@vger.kernel.org, dmitry.baryshkov@linaro.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 9 May 2022 at 23:12, Rob Herring <robh@kernel.org> wrote:
->
-> On Wed, May 04, 2022 at 10:45:22PM +0200, Robert Marko wrote:
-> > On Wed, 4 May 2022 at 22:08, Rob Herring <robh@kernel.org> wrote:
-> > >
-> > > On Tue, May 03, 2022 at 09:56:01PM +0200, Robert Marko wrote:
-> > > > Add dt-binding for the IPQ8074 APSS clock controller which provides
-> > > > clocks to the CPU cores.
-> > > >
-> > > > Signed-off-by: Robert Marko <robimarko@gmail.com>
-> > > > ---
-> > > > Changes in v2:
-> > > > * Correct subject
-> > > > ---
-> > > >  include/dt-bindings/clock/qcom,apss-ipq8074.h | 14 ++++++++++++++
-> > > >  1 file changed, 14 insertions(+)
-> > > >  create mode 100644 include/dt-bindings/clock/qcom,apss-ipq8074.h
-> > > >
-> > > > diff --git a/include/dt-bindings/clock/qcom,apss-ipq8074.h b/include/dt-bindings/clock/qcom,apss-ipq8074.h
-> > > > new file mode 100644
-> > > > index 000000000000..df07766b0146
-> > > > --- /dev/null
-> > > > +++ b/include/dt-bindings/clock/qcom,apss-ipq8074.h
-> > > > @@ -0,0 +1,14 @@
-> > > > +/* SPDX-License-Identifier: GPL-2.0 */
-> > >
-> > > Dual license please.
-> >
-> > Hi Rob,
-> > Krzysztof asked about this in v1, I have derived this off IPQ6018
-> > binding which is marked GPL-2.0.
-> > So, I was not sure if it was appropriate to mark it as GPL/BSD dual license.
-> > If you say that its not an issue to dual-license, I will gladly do it.
->
-> Technically, you should maintain it, but I don't think 2 defines is
-> really enough to represent copyrightable work (but IANAL). I also know
-> that QCom prefers the DT stuff to be dual licensed because they've
-> raised the issue with me.
+Hi Joerg,
 
-If that is the case, then I will dual-license it and send in v4 as I
-am waiting for
-the code portion to get some comments before resending.
+Please pull these Arm SMMU updates for 5.19. The bulk of it is just adding
+new device-tree compatible strings for the existing drivers, but there
+are some non-critical fixes in here as well. Please see the tag for more
+details.
 
-Regards,
-Robert
->
-> Rob
+I used the previous fixes pull as a base for this so that you shouldn't
+run into any conflicts with upstream.
+
+Cheers,
+
+Will
+
+--->8
+
+The following changes since commit 4a25f2ea0e030b2fc852c4059a50181bfc5b2f57:
+
+  iommu: arm-smmu: disable large page mappings for Nvidia arm-smmu (2022-04-22 11:21:30 +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git tags/arm-smmu-updates
+
+for you to fetch changes up to 628bf55b620497a105f4963ee8fb84769f7e6bb4:
+
+  iommu/arm-smmu: Force identity domains for legacy binding (2022-05-10 12:01:31 +0100)
+
+----------------------------------------------------------------
+Arm SMMU updates for 5.19
+
+- Add new Qualcomm device-tree compatible strings
+
+- Add new Nvidia device-tree compatible string for Tegra234
+
+- Fix UAF in SMMUv3 shared virtual addressing code
+
+- Force identity-mapped domains for users of ye olde SMMU legacy binding
+
+- Minor cleanups
+
+----------------------------------------------------------------
+Bjorn Andersson (2):
+      dt-bindings: arm-smmu: Add compatible for Qualcomm SC8280XP
+      iommu/arm-smmu-qcom: Add SC8280XP support
+
+Jean-Philippe Brucker (1):
+      iommu/arm-smmu-v3-sva: Fix mm use-after-free
+
+Robin Murphy (1):
+      iommu/arm-smmu: Force identity domains for legacy binding
+
+Rohit Agarwal (1):
+      dt-bindings: arm-smmu: Add binding for SDX65 SMMU
+
+Thierry Reding (3):
+      dt-bindings: arm-smmu: Document nvidia,memory-controller property
+      dt-bindings: arm-smmu: Add compatible for Tegra234 SOC
+      iommu/arm-smmu: Support Tegra234 SMMU
+
+Yang Yingliang (2):
+      iommu/arm-smmu: fix possible null-ptr-deref in arm_smmu_device_probe()
+      iommu/arm-smmu-v3: check return value after calling platform_get_resource()
+
+ .../devicetree/bindings/iommu/arm,smmu.yaml        | 25 ++++++++++++++++++++--
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c    | 13 +++++++++--
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c        |  2 ++
+ drivers/iommu/arm/arm-smmu/arm-smmu-impl.c         |  3 ++-
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c         |  1 +
+ drivers/iommu/arm/arm-smmu/arm-smmu.c              |  8 ++++---
+ 6 files changed, 44 insertions(+), 8 deletions(-)
