@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D869BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:56:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F866C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:56:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346701AbiEJQAW (ORCPT
+        id S1346884AbiEJQA1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 12:00:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33076 "EHLO
+        Tue, 10 May 2022 12:00:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347244AbiEJPwI (ORCPT
+        with ESMTP id S1347248AbiEJPwI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 11:52:08 -0400
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58F8F1C924;
-        Tue, 10 May 2022 08:48:02 -0700 (PDT)
-Received: by mail-qt1-x82a.google.com with SMTP id x22so13822868qto.2;
-        Tue, 10 May 2022 08:48:02 -0700 (PDT)
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D78D022BD2
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:48:04 -0700 (PDT)
+Received: by mail-qv1-xf29.google.com with SMTP id l1so10505527qvh.1
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:48:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=4h/3sgiwZZAh9sVqTF8TpILnTbNrmnSNrow0mo4Rdcc=;
-        b=nJkTTrZSgx/CxVZqlMx3R99vSMQL//nFGa0hZ07IqiBvDSeqXSh9woBb7OJS56Cgai
-         0Eczz7GiCbLotCzZ0RoAwk+04UmWVPqefXwHcWCtVHfsoYKir1gUkz5PcvJDzZPWYQ75
-         URMLPjFUroRtaY2wPU9e49KSkKK2clyA5OTfTPRmfC3LA7D5bBVwUwv6tWChLYpP5q4b
-         YliYKg8zx9K6d2Adk173DWMSF7K6ESmJdunxWxXgdW2HhDVTAcgzgFAfINNDUzoIKXXd
-         lGkUlRAVou6efYVNj35qLHlyuwca4XCM01AFtngv6grLtyX/iW52ydqcsC8bm+QKi7Sq
-         0urg==
+        bh=ORTCHnAqwd1LkHDszTdi37+rhpmYONfb9qJXBfSDiuE=;
+        b=VDtJj557CbGsgXZsBMLxRRgOXF/lbKagIedVBBN0YtWpbB6czJI1IrMb5JZnoOoMEV
+         96iOstUXRGYkyl1xhR4EMVx7Zr7r47XBfXtPF4F/ZyJLVUHzRLa+oQg6l6R6LlryjySa
+         pdHPvQc0iwk7GJcjgmjGDYCAIWGwuq6YBl5smqEla/pnpIeIXEwEaEuY8beHVu6hk33C
+         01X3PALm+xlI5IqjCND5OqedHUWaTJaFIddfQjjcwNTFowF5CFfHjv91aRZDJgmTB4qv
+         QQ149aM2bfBzEmIP/ZD/ycouypZrrNENYWHDzYfDBZQizUuvOz5EYuMDvouepRw6KX5j
+         feLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=4h/3sgiwZZAh9sVqTF8TpILnTbNrmnSNrow0mo4Rdcc=;
-        b=l83P71Whvn/JgaMEcnYfNYMxDEL50qE+Ys7rvvh6UwpxG2Y15Kb7h/avTwFhJCgK1F
-         9G1Ca7F9hx1UxAWw6h7donXrCuSDMkJVY4oTVWXMuS06jTQRTSiy9NDQ4KBS9Wpx+feU
-         YouAqp2KnjF7UF4MUExJrkpHTPFI/Wc/RDuBBJmSj8STIfzvDfFtPjxv4ysPB3+F/dVZ
-         Z1JfGC4eTTqtAqwZNfJUl9TL5y52LQ8Wyo/3ob8fQ/39r+mh7CIM1xgnPhD9kC6vi+lK
-         5WIyvzMLPavR1/Jz+qYbv+wsn3TnHSHw6BSuJLXZmtmK2WfxU/S+zgzA7z3/jkQX7a/Y
-         ySPQ==
-X-Gm-Message-State: AOAM533UUWEg41uKTc9TDCnzHCEHzi4+u1tNgpa7cpEv8nx+OPsxHqj2
-        dmlZ+rsUCEupG206X8vIjvg=
-X-Google-Smtp-Source: ABdhPJyRxWRJRs5edGWoSur4H0QL70ANK42gtong6CQMuKkJqvRPmtDL3Ea8w/9GEy/oZ2btzNbyrw==
-X-Received: by 2002:ac8:5ad4:0:b0:2f3:e0fb:df1c with SMTP id d20-20020ac85ad4000000b002f3e0fbdf1cmr6254624qtd.267.1652197681464;
-        Tue, 10 May 2022 08:48:01 -0700 (PDT)
+        bh=ORTCHnAqwd1LkHDszTdi37+rhpmYONfb9qJXBfSDiuE=;
+        b=twG92nV93xWdWE2C5meXGCq5EAGygW1Zvld5xJHXGd8RxeIZ6OY0XxNf/6R7I6i4Ga
+         1KDDgliWQHVQQa/g5MTe5dFIVdYuSPkbmWrt9h1ztuff0dm34TKKpo/f+y3BpUFNtaov
+         qAhYdCGgH/jIBfVB6ORCqowjbw3yqmkU4FnDjqW5z8KN7LKBDAuNZ3nGIdycV8uV08SA
+         EMm3DVPDoP+sDTha2AmoE4TJq/H5OkmUuo1XzOYNFVcwkY9LCSZg816VKEd7sima/8D5
+         1jbt5krucxxXJbmS31ab2DGUeUruVvwRw70U/bys6Z7/UAwWmaFkOZ6Hq0V3gTbdvha7
+         Kl1g==
+X-Gm-Message-State: AOAM531MSTnxPI0A1+tLLp+8X95HID2hNdij3e8NNRpCKJyk0gpiSyw/
+        9UZnvKjjGeuUxgshCttXFvs=
+X-Google-Smtp-Source: ABdhPJxGRjjQ+MXFnzoRE+rNBKwoGD3RJH05Q4YwDoHlhkbkt7OiNafsGZymV0A4ejSRRqqOTgNYew==
+X-Received: by 2002:a05:6214:d87:b0:45a:bb62:fa24 with SMTP id e7-20020a0562140d8700b0045abb62fa24mr18061167qve.71.1652197683948;
+        Tue, 10 May 2022 08:48:03 -0700 (PDT)
 Received: from localhost ([98.242.65.84])
-        by smtp.gmail.com with ESMTPSA id o2-20020ac841c2000000b002f39b99f691sm9288209qtm.43.2022.05.10.08.48.01
+        by smtp.gmail.com with ESMTPSA id c1-20020ac853c1000000b002f39b99f693sm9671775qtq.45.2022.05.10.08.48.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 08:48:01 -0700 (PDT)
+        Tue, 10 May 2022 08:48:03 -0700 (PDT)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         David Laight <David.Laight@ACULAB.COM>,
@@ -63,91 +63,98 @@ To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Matti Vaittinen <Matti.Vaittinen@fi.rohmeurope.com>,
         linux-kernel@vger.kernel.org
 Cc:     Yury Norov <yury.norov@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jerin Jacob <jerinj@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        hariprasad <hkelam@marvell.com>, netdev@vger.kernel.org
-Subject: [PATCH 06/22] octeontx2: use bitmap_empty() instead of bitmap_weight()
-Date:   Tue, 10 May 2022 08:47:34 -0700
-Message-Id: <20220510154750.212913-7-yury.norov@gmail.com>
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Chris Zankel <chris@zankel.net>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        linux-xtensa@linux-xtensa.org
+Subject: [PATCH 08/22] bitops: introduce MANY_BITS() macro
+Date:   Tue, 10 May 2022 08:47:36 -0700
+Message-Id: <20220510154750.212913-9-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220510154750.212913-1-yury.norov@gmail.com>
 References: <20220510154750.212913-1-yury.norov@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-bitmap_empty() is better than bitmap_weight() because it may return
-earlier, and improves on readability.
+arch/xtensa/kernel/traps.c and include/linux/log2.h define very similar
+functions with different behaviour. XTENSA defines IS_POW2(), and
+log2.h defines is_power_of_2(). The difference is that IS_POW2()
+considers 0 as power of 2, while is_power_of_2() - does not.
 
-CC: David S. Miller <davem@davemloft.net>
-CC: Eric Dumazet <edumazet@google.com>
-CC: Geetha sowjanya <gakula@marvell.com>
-CC: Jakub Kicinski <kuba@kernel.org>
-CC: Jerin Jacob <jerinj@marvell.com>
-CC: Linu Cherian <lcherian@marvell.com>
-CC: Paolo Abeni <pabeni@redhat.com>
-CC: Subbaraya Sundeep <sbhatta@marvell.com>
-CC: Sunil Goutham <sgoutham@marvell.com>
-CC: hariprasad <hkelam@marvell.com>
-CC: netdev@vger.kernel.org
+This discrepancy may confuse reader. From mathematical point of view,
+0 is not a power of 2. So let's introduce macro MANY_BITS(), which
+returns true if 2 or more bits are set in a number (which is what
+XTENSA actually needs), and use it in is_power_of_2().
+
+CC: Alexei Starovoitov <ast@kernel.org>
+CC: Andrew Morton <akpm@linux-foundation.org>
+CC: Chris Zankel <chris@zankel.net>
+CC: Christophe Leroy <christophe.leroy@csgroup.eu>
+CC: Eric W. Biederman <ebiederm@xmission.com>
+CC: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+CC: Max Filippov <jcmvbkbc@gmail.com>
+CC: Toke Høiland-Jørgensen <toke@redhat.com>
+CC: linux-xtensa@linux-xtensa.org
 CC: linux-kernel@vger.kernel.org
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/cgx.c | 6 +++---
- drivers/net/ethernet/marvell/octeontx2/af/rpm.c | 2 +-
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ arch/xtensa/kernel/traps.c | 5 +----
+ include/linux/bitops.h     | 3 +++
+ include/linux/log2.h       | 2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-index 25491edc35ce..921bf9cb707b 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-@@ -615,7 +615,7 @@ void cgx_lmac_enadis_rx_pause_fwding(void *cgxd, int lmac_id, bool enable)
- 		return;
+diff --git a/arch/xtensa/kernel/traps.c b/arch/xtensa/kernel/traps.c
+index 138a86fbe9d7..040ec38bfce2 100644
+--- a/arch/xtensa/kernel/traps.c
++++ b/arch/xtensa/kernel/traps.c
+@@ -203,10 +203,7 @@ static void do_multihit(struct pt_regs *regs)
  
- 	/* Pause frames are not enabled just return */
--	if (!bitmap_weight(lmac->rx_fc_pfvf_bmap.bmap, lmac->rx_fc_pfvf_bmap.max))
-+	if (bitmap_empty(lmac->rx_fc_pfvf_bmap.bmap, lmac->rx_fc_pfvf_bmap.max))
- 		return;
+ #if XTENSA_FAKE_NMI
  
- 	cgx_lmac_get_pause_frm_status(cgx, lmac_id, &rx_pause, &tx_pause);
-@@ -870,13 +870,13 @@ int verify_lmac_fc_cfg(void *cgxd, int lmac_id, u8 tx_pause, u8 rx_pause,
- 		set_bit(pfvf_idx, lmac->tx_fc_pfvf_bmap.bmap);
+-#define IS_POW2(v) (((v) & ((v) - 1)) == 0)
+-
+-#if !(PROFILING_INTLEVEL == XCHAL_EXCM_LEVEL && \
+-      IS_POW2(XTENSA_INTLEVEL_MASK(PROFILING_INTLEVEL)))
++#if (MANY_BITS(XTENSA_INTLEVEL_MASK(PROFILING_INTLEVEL)) || PROFILING_INTLEVEL != XCHAL_EXCM_LEVEL)
+ #warning "Fake NMI is requested for PMM, but there are other IRQs at or above its level."
+ #warning "Fake NMI will be used, but there will be a bugcheck if one of those IRQs fire."
  
- 	/* check if other pfvfs are using flow control */
--	if (!rx_pause && bitmap_weight(lmac->rx_fc_pfvf_bmap.bmap, lmac->rx_fc_pfvf_bmap.max)) {
-+	if (!rx_pause && !bitmap_empty(lmac->rx_fc_pfvf_bmap.bmap, lmac->rx_fc_pfvf_bmap.max)) {
- 		dev_warn(&cgx->pdev->dev,
- 			 "Receive Flow control disable not permitted as its used by other PFVFs\n");
- 		return -EPERM;
- 	}
+diff --git a/include/linux/bitops.h b/include/linux/bitops.h
+index 7aaed501f768..96bc6a2552d6 100644
+--- a/include/linux/bitops.h
++++ b/include/linux/bitops.h
+@@ -21,6 +21,9 @@
+ #define BITS_TO_U32(nr)		__KERNEL_DIV_ROUND_UP(nr, BITS_PER_TYPE(u32))
+ #define BITS_TO_BYTES(nr)	__KERNEL_DIV_ROUND_UP(nr, BITS_PER_TYPE(char))
  
--	if (!tx_pause && bitmap_weight(lmac->tx_fc_pfvf_bmap.bmap, lmac->tx_fc_pfvf_bmap.max)) {
-+	if (!tx_pause && !bitmap_empty(lmac->tx_fc_pfvf_bmap.bmap, lmac->tx_fc_pfvf_bmap.max)) {
- 		dev_warn(&cgx->pdev->dev,
- 			 "Transmit Flow control disable not permitted as its used by other PFVFs\n");
- 		return -EPERM;
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-index 47e83d7a5804..f2c866825c81 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-@@ -109,7 +109,7 @@ void rpm_lmac_enadis_rx_pause_fwding(void *rpmd, int lmac_id, bool enable)
- 		return;
++/* Return: nonzero if 2 or more bits are set */
++#define MANY_BITS(n)		((n) & ((n) - 1))
++
+ extern unsigned int __sw_hweight8(unsigned int w);
+ extern unsigned int __sw_hweight16(unsigned int w);
+ extern unsigned int __sw_hweight32(unsigned int w);
+diff --git a/include/linux/log2.h b/include/linux/log2.h
+index 9f30d087a128..335b9dbd302d 100644
+--- a/include/linux/log2.h
++++ b/include/linux/log2.h
+@@ -44,7 +44,7 @@ int __ilog2_u64(u64 n)
+ static inline __attribute__((const))
+ bool is_power_of_2(unsigned long n)
+ {
+-	return (n != 0 && ((n & (n - 1)) == 0));
++	return n != 0 && !MANY_BITS(n);
+ }
  
- 	/* Pause frames are not enabled just return */
--	if (!bitmap_weight(lmac->rx_fc_pfvf_bmap.bmap, lmac->rx_fc_pfvf_bmap.max))
-+	if (bitmap_empty(lmac->rx_fc_pfvf_bmap.bmap, lmac->rx_fc_pfvf_bmap.max))
- 		return;
- 
- 	if (enable) {
+ /**
 -- 
 2.32.0
 
