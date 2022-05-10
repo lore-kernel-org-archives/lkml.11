@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CC9CC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:48:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F017C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:49:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244220AbiEJNwx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:52:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49466 "EHLO
+        id S239892AbiEJNxG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:53:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243822AbiEJNgM (ORCPT
+        with ESMTP id S243799AbiEJNgI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:36:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6218539B83;
-        Tue, 10 May 2022 06:25:12 -0700 (PDT)
+        Tue, 10 May 2022 09:36:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 649052D4B64;
+        Tue, 10 May 2022 06:25:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9592B61765;
-        Tue, 10 May 2022 13:25:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86E49C385A6;
-        Tue, 10 May 2022 13:25:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4679DB81DAB;
+        Tue, 10 May 2022 13:25:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FC2BC385A6;
+        Tue, 10 May 2022 13:25:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189108;
-        bh=+Oi6KKHNjdO5u5QuK+P3rCqkmTPpCAXvw+YXjytcrj8=;
+        s=korg; t=1652189105;
+        bh=Ug3tQ3QO9GG6qpH5Bj4AlY9aW8ATwK3bWbZmf6APSNs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k+PHqAIY79u+Hs+fhr+CCe5EAZO1R12U1j9dzde4rDg1GKd4NwKp2chwWM9nhEfWd
-         GXn7m/Bn8oQ7eLIJ9RhDRRpZmnQOLCmp8lnJOeySnyFWNEv/6A1uQxDX3lVrU63aJA
-         12bhNPv+aiX5wubO7E00igKZTnppJRoc8zsKvnxw=
+        b=z1YKrKLZLFSV0EYWwYQmWGh8I2ytZPgFfhQ2nkjoRXMid3NKs5xuW+iBI9C6ynpvm
+         xa91gihxzORapvgDftU/kl1raZq11Ljc2YeX61oPPMPieRMy0EOFBotawFss+1S91+
+         Glxr52q8G/hwzeOfKbERbn8hWj5Wmmf2kUcudonw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
-        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
-        Wong Vee Khee <vee.khee.wong@linux.intel.com>,
-        Tan Tee Min <tee.min.tan@linux.intel.com>,
-        "David S. Miller" <davem@davemloft.net>, Ong@vger.kernel.org
-Subject: [PATCH 5.10 15/70] net: stmmac: disable Split Header (SPH) for Intel platforms
-Date:   Tue, 10 May 2022 15:07:34 +0200
-Message-Id: <20220510130733.313519300@linuxfoundation.org>
+        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
+        Takashi Sakamoto <o-takashi@sakamocchi.jp>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.10 14/70] firewire: core: extend card->lock in fw_core_handle_bus_reset
+Date:   Tue, 10 May 2022 15:07:33 +0200
+Message-Id: <20220510130733.285085693@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
 References: <20220510130732.861729621@linuxfoundation.org>
@@ -52,65 +49,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tan Tee Min <tee.min.tan@linux.intel.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-commit 47f753c1108e287edb3e27fad8a7511a9d55578e upstream.
+commit a7ecbe92b9243edbe94772f6f2c854e4142a3345 upstream.
 
-Based on DesignWare Ethernet QoS datasheet, we are seeing the limitation
-of Split Header (SPH) feature is not supported for Ipv4 fragmented packet.
-This SPH limitation will cause ping failure when the packets size exceed
-the MTU size. For example, the issue happens once the basic ping packet
-size is larger than the configured MTU size and the data is lost inside
-the fragmented packet, replaced by zeros/corrupted values, and leads to
-ping fail.
+card->local_node and card->bm_retries are both always accessed under
+card->lock.
+fw_core_handle_bus_reset has a check whose condition depends on
+card->local_node and whose body writes to card->bm_retries.
+Both of these accesses are not under card->lock. Move the lock acquiring
+of card->lock to before this check such that these accesses do happen
+when card->lock is held.
+fw_destroy_nodes is called inside the check.
+Since fw_destroy_nodes already acquires card->lock inside its function
+body, move this out to the callsites of fw_destroy_nodes.
+Also add a comment to indicate which locking is necessary when calling
+fw_destroy_nodes.
 
-So, disable the Split Header for Intel platforms.
-
-v2: Add fixes tag in commit message.
-
-Fixes: 67afd6d1cfdf("net: stmmac: Add Split Header support and enable it in XGMAC cores")
-Cc: <stable@vger.kernel.org> # 5.10.x
-Suggested-by: Ong, Boon Leong <boon.leong.ong@intel.com>
-Signed-off-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
-Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
-Signed-off-by: Tan Tee Min <tee.min.tan@linux.intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Signed-off-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
+Link: https://lore.kernel.org/r/20220409041243.603210-4-o-takashi@sakamocchi.jp
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c |    1 +
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |    2 +-
- include/linux/stmmac.h                            |    1 +
- 3 files changed, 3 insertions(+), 1 deletion(-)
+ drivers/firewire/core-card.c     |    3 +++
+ drivers/firewire/core-topology.c |    9 +++------
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -243,6 +243,7 @@ static int intel_mgbe_common_data(struct
- 	plat->has_gmac4 = 1;
- 	plat->force_sf_dma_mode = 0;
- 	plat->tso_en = 1;
-+	plat->sph_disable = 1;
+--- a/drivers/firewire/core-card.c
++++ b/drivers/firewire/core-card.c
+@@ -668,6 +668,7 @@ EXPORT_SYMBOL_GPL(fw_card_release);
+ void fw_core_remove_card(struct fw_card *card)
+ {
+ 	struct fw_card_driver dummy_driver = dummy_driver_template;
++	unsigned long flags;
  
- 	plat->rx_sched_algorithm = MTL_RX_ALGORITHM_SP;
+ 	card->driver->update_phy_reg(card, 4,
+ 				     PHY_LINK_ACTIVE | PHY_CONTENDER, 0);
+@@ -682,7 +683,9 @@ void fw_core_remove_card(struct fw_card
+ 	dummy_driver.stop_iso		= card->driver->stop_iso;
+ 	card->driver = &dummy_driver;
  
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -5046,7 +5046,7 @@ int stmmac_dvr_probe(struct device *devi
- 		dev_info(priv->device, "TSO feature enabled\n");
++	spin_lock_irqsave(&card->lock, flags);
+ 	fw_destroy_nodes(card);
++	spin_unlock_irqrestore(&card->lock, flags);
+ 
+ 	/* Wait for all users, especially device workqueue jobs, to finish. */
+ 	fw_card_put(card);
+--- a/drivers/firewire/core-topology.c
++++ b/drivers/firewire/core-topology.c
+@@ -374,16 +374,13 @@ static void report_found_node(struct fw_
+ 	card->bm_retries = 0;
+ }
+ 
++/* Must be called with card->lock held */
+ void fw_destroy_nodes(struct fw_card *card)
+ {
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(&card->lock, flags);
+ 	card->color++;
+ 	if (card->local_node != NULL)
+ 		for_each_fw_node(card, card->local_node, report_lost_node);
+ 	card->local_node = NULL;
+-	spin_unlock_irqrestore(&card->lock, flags);
+ }
+ 
+ static void move_tree(struct fw_node *node0, struct fw_node *node1, int port)
+@@ -509,6 +506,8 @@ void fw_core_handle_bus_reset(struct fw_
+ 	struct fw_node *local_node;
+ 	unsigned long flags;
+ 
++	spin_lock_irqsave(&card->lock, flags);
++
+ 	/*
+ 	 * If the selfID buffer is not the immediate successor of the
+ 	 * previously processed one, we cannot reliably compare the
+@@ -520,8 +519,6 @@ void fw_core_handle_bus_reset(struct fw_
+ 		card->bm_retries = 0;
  	}
  
--	if (priv->dma_cap.sphen) {
-+	if (priv->dma_cap.sphen && !priv->plat->sph_disable) {
- 		ndev->hw_features |= NETIF_F_GRO;
- 		priv->sph = true;
- 		dev_info(priv->device, "SPH feature enabled\n");
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -203,5 +203,6 @@ struct plat_stmmacenet_data {
- 	bool vlan_fail_q_en;
- 	u8 vlan_fail_q;
- 	unsigned int eee_usecs_rate;
-+	bool sph_disable;
- };
- #endif
+-	spin_lock_irqsave(&card->lock, flags);
+-
+ 	card->broadcast_channel_allocated = card->broadcast_channel_auto_allocated;
+ 	card->node_id = node_id;
+ 	/*
 
 
