@@ -2,369 +2,454 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6690C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:30:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FAFEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:30:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347376AbiEJQeI (ORCPT
+        id S1347416AbiEJQeQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 12:34:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52966 "EHLO
+        Tue, 10 May 2022 12:34:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347413AbiEJQdV (ORCPT
+        with ESMTP id S1347390AbiEJQdz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 12:33:21 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11612201F0B
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 09:29:04 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id b19so24557726wrh.11
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 09:29:03 -0700 (PDT)
+        Tue, 10 May 2022 12:33:55 -0400
+Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27912201E9B
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 09:29:57 -0700 (PDT)
+Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-2f7c424c66cso186332347b3.1
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 09:29:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=3XVNWTw//x2P33682v6NyS3MKzAVxlenoKtyup9T5mU=;
-        b=KQEFBD6h/2K08A1SA37c7PyrjJuSV5KTGE+BASQ4M1USvyhFBBeiWIXOI3DzZEE27J
-         AUT1f0wRh+QfeqGh2zY24jEFJv4eSsqtBqfk+xvZ7GxJ3j0GSAjSVLhA2T2ZwPz32yz4
-         B0/0h/t7vZiyPtXQgLyB0TcgwycLD3mMVmwG/jdGQb34I8X2deFwq+JoGDp4PX1lNyRR
-         g2ZQqNVxQTj0tRPRD/0amR48tjGdWRI1Y4pPs+le93k7k6RgsV0/u7JyMvWV0m6GlDFc
-         Zz7nvaAcQ3gvim2XAzceHhsI3EyueAMXwvo6uklK3bZiHMtDpga1sXqY0ML8ccHtQTBU
-         aIFA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aJloidsDMSjNdKsdQ92Ek2s3Nok5OpSiV08K1fKvW/c=;
+        b=dU8YCmE+vqGPx/am1Kbhb9tc3zBmcw0d6Vl3xCJQ6q+au/WHtm2SixK2VdNAhZDCEH
+         /3EaF/lU92QNqIrwbdEOI6NG50SdQzrrY6kY4aSqX+I9/Ndw5WSQSwB2xa2bOSQQbVDC
+         y0R48jDMPXhfouEBqvaAntHHhRrjdm7QBgU4Cu6bhDfJkDcB5yM5OlrDvK4xYA+6Ym6F
+         m/jvJf6l0ThPiDaUQxeHTovxDgTN9RUsYZl51ogcZCtbKDMEQv76UxfSiJw+tSyZEcXg
+         CfnLQXxhv091UsiouGWzA1JQol1NdpmLtNM9cRAI4JZug617Pn7TIlZVdJp0H1DcgLvu
+         mJfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=3XVNWTw//x2P33682v6NyS3MKzAVxlenoKtyup9T5mU=;
-        b=UWTG6vN1Lt2mxv8DcSZNTSe4WFVzoS4AZf01dbkYBPLki+HUC47E61GUipOn7M4H9A
-         gYXiIlBh6oRRSS61lZSGWCji1FboAJlwI+Z0W+We+17p3KQ0a1pnuxQvto8deecrqFSD
-         pZTvMokQ9KrDKzLSJ5KhVG+lMeeFm6Oht9kDIf8TCyHIH/qESImtaoHD08oymgOejrOc
-         p1ftMMr/Opz0FseW7d52oTOhlf3SukYu57t22RE16LMNff6KYNmZlTFysFchgwqBXV7f
-         ga4LdX8tv+lvCRurb4e2xil/aRxDtL3VZVriOtbQ9i0WtJ4i/FGRLs3Q/gQWkngGQ2ff
-         SXnA==
-X-Gm-Message-State: AOAM531HJOioiu+kcKuiYrGu5cZe24D3xV5CuDar66xhqfZFqT1o7fVU
-        yd3UcELWDlWoLuZTgKlxIqM=
-X-Google-Smtp-Source: ABdhPJyI0E2SLxIB75cDEQnsj2weBY7mp03iqZlhsa1AFk7p/HK9fphoC0dBbGnI9kTWrE+wHNlGOg==
-X-Received: by 2002:adf:d1ea:0:b0:20c:505e:babc with SMTP id g10-20020adfd1ea000000b0020c505ebabcmr19224148wrd.562.1652200142595;
-        Tue, 10 May 2022 09:29:02 -0700 (PDT)
-Received: from vmu1804.lan ([104.28.230.247])
-        by smtp.googlemail.com with ESMTPSA id e22-20020a05600c4e5600b003942a244f2csm3205947wmq.5.2022.05.10.09.28.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 09:29:02 -0700 (PDT)
-From:   Mikhail Zhilkin <csharper2005@gmail.com>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>
-Cc:     Mikhail Zhilkin <csharper2005@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        NOGUCHI Hiroshi <drvlabo@gmail.com>,
-        INAGAKI Hiroshi <musashino.open@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org,
-        Karim <Karimdplay@gmail.com>, M <x1@disroot.org>
-Subject: [PATCH v4 3/3] mtd: parsers: add support for Sercomm partitions
-Date:   Tue, 10 May 2022 16:26:55 +0000
-Message-Id: <20220510162655.21011-1-csharper2005@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220510161641.20655-1-csharper2005@gmail.com>
-References: <20220510161641.20655-1-csharper2005@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aJloidsDMSjNdKsdQ92Ek2s3Nok5OpSiV08K1fKvW/c=;
+        b=V2Nb08egdmhk5Jc+8YMWzXW3TdOYICNkGsXbSbpA5WJKQeaLfj4c4p82Y5AmoiH9Vg
+         U/GC2sKkErAyW8XYzaCyRX90QRSoOX34f/NY5O5Nr3FaB2tSJNDECqp2Qzu6GpAqbyuC
+         ZliJlNNMh1fN/zr/6+SyJk2rbHpIMHsu1M0y17+HC0RDAU+GDDVGcxxRvnFhpr1658Jz
+         uOI24AS31xMV2M+80exurQE7VMnMvZ/t66SPUWvogGvUGuVbYWSuV0BfwuLT9Sll0rDU
+         LiV7dKxcde2tAz10VnXBzTePLShxiyZFc85cWc1sxQMY6pjjvtbJmPQqR3+t/6COd3Qa
+         +ccA==
+X-Gm-Message-State: AOAM533J+dO6iQgyweNlRDpZI5PCL1+CD4S+AMxwc/Pd6cVqD2QXMxVM
+        uynG6fMC8ro2pmy7ErF2k7T48Bk+OdS2WL0Ziskc1g==
+X-Google-Smtp-Source: ABdhPJx5rcdrZIFfWZmVEv8aWH6L4r9FXVQPuw/X4O4oc/sxy7PZ3H8d/XVNdGArXpAoEgYI+ADW7h6XzKubzLkfI7s=
+X-Received: by 2002:a0d:d543:0:b0:2f7:e554:68c with SMTP id
+ x64-20020a0dd543000000b002f7e554068cmr21157189ywd.380.1652200195972; Tue, 10
+ May 2022 09:29:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220510030014.3842475-1-surenb@google.com> <04858a5d-98c8-69be-025f-214e4b10d502@linuxfoundation.org>
+In-Reply-To: <04858a5d-98c8-69be-025f-214e4b10d502@linuxfoundation.org>
+From:   Suren Baghdasaryan <surenb@google.com>
+Date:   Tue, 10 May 2022 09:29:44 -0700
+Message-ID: <CAJuCfpEAqEEf-SCi87-VZrFYcoPff8Gkda5uF8fYRyKQo_vkjw@mail.gmail.com>
+Subject: Re: [PATCH 1/3] selftests: vm: add process_mrelease tests
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@suse.com>,
+        David Rientjes <rientjes@google.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Roman Gushchin <guro@fb.com>, Minchan Kim <minchan@kernel.org>,
+        "Kirill A. Shutemov" <kirill@shutemov.name>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Oleg Nesterov <oleg@redhat.com>,
+        David Hildenbrand <david@redhat.com>,
+        Jann Horn <jannh@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Peter Xu <peterx@redhat.com>,
+        John Hubbard <jhubbard@nvidia.com>, shuah@kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-mm <linux-mm@kvack.org>, linux-kselftest@vger.kernel.org,
+        kernel-team <kernel-team@android.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds an MTD partition parser for the Sercomm partition table that
-is used in some Beeline, Netgear and Sercomm routers.
+On Tue, May 10, 2022 at 8:43 AM Shuah Khan <skhan@linuxfoundation.org> wrote:
+>
+> On 5/9/22 9:00 PM, Suren Baghdasaryan wrote:
+> > Introduce process_mrelease syscall sanity tests. They include tests of
+> > invalid pidfd and flags inputs, attempting to call process_mrelease
+> > with a live process and a valid usage of process_mrelease. Because
+> > process_mrelease has to be used against a process with a pending SIGKILL,
+> > it's possible that the process exits before process_mrelease gets called.
+> > In such cases we retry the test with a victim that allocates twice more
+> > memory up to 1GB. This would require the victim process to spend more
+> > time during exit and process_mrelease has a better chance of catching
+> > the process before it exits.
+> >
+>
+> +1 on Mike's comments on improving the change log. List what is getting
+> tested as opposed to describing the test code.
 
-The Sercomm partition map table contains real partition offsets, which
-may differ from device to device depending on the number and location of
-bad blocks on NAND.
+I'll try to improve the description but IMHO it does describe what
+it's testing - the process_mrelease syscall with valid and invalid
+inputs. I could omit the implementation details if that helps.
 
-This is essentially the same code as proposed by NOGUCHI Hiroshi:
-Link: https://github.com/openwrt/openwrt/pull/1318#issuecomment-420607394
+>
+> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> > ---
+> >   tools/testing/selftests/vm/Makefile        |   1 +
+> >   tools/testing/selftests/vm/mrelease_test.c | 176 +++++++++++++++++++++
+> >   tools/testing/selftests/vm/run_vmtests.sh  |  16 ++
+> >   3 files changed, 193 insertions(+)
+> >   create mode 100644 tools/testing/selftests/vm/mrelease_test.c
+>
+> Please update .gitignore with the new executable.
 
-Signed-off-by: NOGUCHI Hiroshi <drvlabo@gmail.com>
-Signed-off-by: Mikhail Zhilkin <csharper2005@gmail.com>
----
- drivers/mtd/parsers/Kconfig  |   9 ++
- drivers/mtd/parsers/Makefile |   1 +
- drivers/mtd/parsers/scpart.c | 240 +++++++++++++++++++++++++++++++++++
- 3 files changed, 250 insertions(+)
- create mode 100644 drivers/mtd/parsers/scpart.c
+Ack.
 
-diff --git a/drivers/mtd/parsers/Kconfig b/drivers/mtd/parsers/Kconfig
-index 23763d16e4f9..851f4670d89b 100644
---- a/drivers/mtd/parsers/Kconfig
-+++ b/drivers/mtd/parsers/Kconfig
-@@ -186,3 +186,12 @@ config MTD_QCOMSMEM_PARTS
- 	help
- 	  This provides support for parsing partitions from Shared Memory (SMEM)
- 	  for NAND and SPI flash on Qualcomm platforms.
-+
-+config MTD_SERCOMM_PARTS
-+	tristate "Sercomm partition table parser"
-+	depends on MTD
-+	help
-+	  This provides partitions table parser for devices with Sercomm
-+	  partition map. This partition table contains real partition
-+	  offsets, which may differ from device to device depending on the
-+	  number and location of bad blocks on NAND.
-diff --git a/drivers/mtd/parsers/Makefile b/drivers/mtd/parsers/Makefile
-index 2e98aa048278..2fcf0ab9e7da 100644
---- a/drivers/mtd/parsers/Makefile
-+++ b/drivers/mtd/parsers/Makefile
-@@ -10,6 +10,7 @@ ofpart-$(CONFIG_MTD_OF_PARTS_LINKSYS_NS)+= ofpart_linksys_ns.o
- obj-$(CONFIG_MTD_PARSER_IMAGETAG)	+= parser_imagetag.o
- obj-$(CONFIG_MTD_AFS_PARTS)		+= afs.o
- obj-$(CONFIG_MTD_PARSER_TRX)		+= parser_trx.o
-+obj-$(CONFIG_MTD_SERCOMM_PARTS)		+= scpart.o
- obj-$(CONFIG_MTD_SHARPSL_PARTS)		+= sharpslpart.o
- obj-$(CONFIG_MTD_REDBOOT_PARTS)		+= redboot.o
- obj-$(CONFIG_MTD_QCOMSMEM_PARTS)	+= qcomsmempart.o
-diff --git a/drivers/mtd/parsers/scpart.c b/drivers/mtd/parsers/scpart.c
-new file mode 100644
-index 000000000000..d7bb736c9f2a
---- /dev/null
-+++ b/drivers/mtd/parsers/scpart.c
-@@ -0,0 +1,240 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ *    drivers/mtd/scpart.c: Sercomm Partition Parser
-+ *
-+ *    Copyright (C) 2018 NOGUCHI Hiroshi
-+ *    Copyright (C) 2022 Mikhail Zhilkin
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/slab.h>
-+#include <linux/mtd/mtd.h>
-+#include <linux/mtd/partitions.h>
-+#include <linux/module.h>
-+
-+#define	MOD_NAME	"scpart"
-+
-+#ifdef pr_fmt
-+#undef pr_fmt
-+#endif
-+
-+#define pr_fmt(fmt) MOD_NAME ": " fmt
-+
-+static const char sc_part_magic[] = {
-+	'S', 'C', 'F', 'L', 'M', 'A', 'P', 'O', 'K', '\0',
-+};
-+#define	PART_MAGIC_LEN	sizeof(sc_part_magic)
-+
-+/* assumes that all fields are set by CPU native endian */
-+struct sc_part_desc {
-+	uint32_t	part_id;
-+	uint32_t	part_offs;
-+	uint32_t	part_bytes;
-+};
-+#define	ID_ALREADY_FOUND	0xFFFFFFFFUL
-+
-+#define	MAP_OFFS_IN_BLK	0x800
-+
-+#define	MAP_MIRROR_NUM	2
-+
-+static int scpart_desc_is_valid(struct sc_part_desc *pdesc)
-+{
-+	return ((pdesc->part_id != 0xFFFFFFFFUL) &&
-+		(pdesc->part_offs != 0xFFFFFFFFUL) &&
-+		(pdesc->part_bytes != 0xFFFFFFFFUL));
-+}
-+
-+static int scpart_scan_partmap(struct mtd_info *master, loff_t partmap_offs,
-+			       struct sc_part_desc **ppdesc)
-+{
-+	uint8_t *buf;
-+	loff_t offs;
-+	size_t retlen;
-+	struct sc_part_desc *pdesc = NULL;
-+	struct sc_part_desc *tmpdesc;
-+	int cnt = 0;
-+	int res2;
-+	int res = 0;
-+
-+	buf = kzalloc(master->erasesize, GFP_KERNEL);
-+	if (!buf) {
-+		res = -ENOMEM;
-+		goto out;
-+	}
-+
-+	res2 = mtd_read(master, partmap_offs, master->erasesize, &retlen, buf);
-+	if (res2 || retlen != master->erasesize) {
-+		res = -EIO;
-+		goto free;
-+	}
-+
-+	offs = MAP_OFFS_IN_BLK;
-+	while (offs < (master->erasesize - sizeof(*tmpdesc))) {
-+		tmpdesc = (struct sc_part_desc *)&(buf[offs]);
-+		if (!scpart_desc_is_valid(tmpdesc))
-+			break;
-+		cnt++;
-+		offs += sizeof(*tmpdesc);
-+	}
-+
-+	if (cnt > 0) {
-+		int bytes = cnt * sizeof(*pdesc);
-+
-+		pdesc = kcalloc(cnt, sizeof(*pdesc), GFP_KERNEL);
-+		if (!pdesc) {
-+			res = -ENOMEM;
-+			goto free;
-+		}
-+		memcpy(pdesc, &(buf[MAP_OFFS_IN_BLK]), bytes);
-+
-+		*ppdesc = pdesc;
-+		res = cnt;
-+	}
-+
-+free:
-+	kfree(buf);
-+
-+out:
-+	return res;
-+}
-+
-+static int scpart_find_partmap(struct mtd_info *master,
-+			       struct sc_part_desc **ppdesc)
-+{
-+	loff_t offs;
-+	uint8_t rdbuf[PART_MAGIC_LEN];
-+	size_t retlen;
-+	int magic_found = 0;
-+	int res2;
-+	int res = 0;
-+
-+	offs = 0;
-+	while ((magic_found < MAP_MIRROR_NUM) &&
-+			(offs < master->size) && !mtd_block_isbad(master, offs)) {
-+		res2 = mtd_read(master, offs, PART_MAGIC_LEN, &retlen, rdbuf);
-+		if (res2 || (retlen != PART_MAGIC_LEN)) {
-+			res = -EIO;
-+			goto out;
-+		}
-+		if (!memcmp(rdbuf, sc_part_magic, PART_MAGIC_LEN)) {
-+			pr_debug("Signature found at 0x%llx\n", offs);
-+			magic_found++;
-+			res = scpart_scan_partmap(master, offs, ppdesc);
-+			if (res > 0)
-+				goto out;
-+		}
-+		offs += master->erasesize;
-+	}
-+
-+out:
-+	if (res > 0)
-+		pr_info("Valid 'SC PART MAP' (%d partitions) found at 0x%llx\n", res, offs);
-+	else
-+		pr_info("No valid 'SC PART MAP' was found\n");
-+
-+	return res;
-+}
-+
-+static int scpart_parse(struct mtd_info *master,
-+			const struct mtd_partition **pparts,
-+			struct mtd_part_parser_data *data)
-+{
-+	struct sc_part_desc *scpart_map = NULL;
-+	struct mtd_partition *parts = NULL;
-+	struct device_node *mtd_node;
-+	struct device_node *ofpart_node;
-+	struct device_node *pp;
-+	const char *partname;
-+	int nr_scparts;
-+	int nr_parts = 0;
-+	int n;
-+	int res = 0;
-+
-+	mtd_node = mtd_get_of_node(master);
-+	if (!mtd_node)
-+		goto out;
-+
-+	ofpart_node = of_get_child_by_name(mtd_node, "partitions");
-+	if (!ofpart_node)
-+		goto out;
-+
-+	nr_scparts = scpart_find_partmap(master, &scpart_map);
-+	if (nr_scparts <= 0) {
-+		res = nr_scparts;
-+		goto free;
-+	}
-+
-+	parts = kcalloc(of_get_child_count(ofpart_node), sizeof(*parts),
-+		GFP_KERNEL);
-+	if (!parts) {
-+		res = -ENOMEM;
-+		goto out;
-+	}
-+
-+	for_each_child_of_node(ofpart_node, pp) {
-+		u32 scpart_id;
-+
-+		if (of_property_read_u32(pp, "sercomm,scpart-id", &scpart_id))
-+			continue;
-+
-+		for (n = 0 ; n < nr_scparts ; n++)
-+			if ((scpart_map[n].part_id != ID_ALREADY_FOUND) &&
-+					(scpart_id == scpart_map[n].part_id))
-+				break;
-+		if (n >= nr_scparts)
-+			/* not match */
-+			continue;
-+
-+		/* add the partition found in OF into MTD partition array */
-+		parts[nr_parts].offset = scpart_map[n].part_offs;
-+		parts[nr_parts].size = scpart_map[n].part_bytes;
-+		parts[nr_parts].of_node = pp;
-+
-+		if (!of_property_read_string(pp, "label", &partname))
-+			parts[nr_parts].name = partname;
-+		if (of_property_read_bool(pp, "read-only"))
-+			parts[nr_parts].mask_flags |= MTD_WRITEABLE;
-+		if (of_property_read_bool(pp, "lock"))
-+			parts[nr_parts].mask_flags |= MTD_POWERUP_LOCK;
-+
-+		/* mark as 'done' */
-+		scpart_map[n].part_id = ID_ALREADY_FOUND;
-+
-+		nr_parts++;
-+	}
-+
-+	if (nr_parts > 0) {
-+		*pparts = parts;
-+		res = nr_parts;
-+	} else
-+		pr_info("No partition in OF matches partition ID with 'SC PART MAP'.\n");
-+
-+	of_node_put(pp);
-+
-+free:
-+	kfree(scpart_map);
-+	if (res <= 0)
-+		kfree(parts);
-+
-+out:
-+	return res;
-+}
-+
-+static const struct of_device_id scpart_parser_of_match_table[] = {
-+	{ .compatible = "sercomm,sc-partitions" },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, scpart_parser_of_match_table);
-+
-+static struct mtd_part_parser scpart_parser = {
-+	.parse_fn = scpart_parse,
-+	.name = "scpart",
-+	.of_match_table = scpart_parser_of_match_table,
-+};
-+module_mtd_part_parser(scpart_parser);
-+
-+/* mtd parsers will request the module by parser name */
-+MODULE_ALIAS("scpart");
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("NOGUCHI Hiroshi <drvlabo@gmail.com>");
-+MODULE_DESCRIPTION("Sercomm partition parser");
--- 
-2.25.1
+>
+> >
+> > diff --git a/tools/testing/selftests/vm/Makefile b/tools/testing/selftests/vm/Makefile
+> > index 04a49e876a46..733fccbff0ef 100644
+> > --- a/tools/testing/selftests/vm/Makefile
+> > +++ b/tools/testing/selftests/vm/Makefile
+> > @@ -43,6 +43,7 @@ TEST_GEN_FILES += map_populate
+> >   TEST_GEN_FILES += memfd_secret
+> >   TEST_GEN_FILES += mlock-random-test
+> >   TEST_GEN_FILES += mlock2-tests
+> > +TEST_GEN_FILES += mrelease_test
+> >   TEST_GEN_FILES += mremap_dontunmap
+> >   TEST_GEN_FILES += mremap_test
+> >   TEST_GEN_FILES += on-fault-limit
+> > diff --git a/tools/testing/selftests/vm/mrelease_test.c b/tools/testing/selftests/vm/mrelease_test.c
+> > new file mode 100644
+> > index 000000000000..a61061bf8433
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/vm/mrelease_test.c
+> > @@ -0,0 +1,176 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +/*
+> > + * Copyright 2022 Google LLC
+> > + */
+> > +#define _GNU_SOURCE
+> > +#include <errno.h>
+> > +#include <stdio.h>
+> > +#include <stdlib.h>
+> > +#include <sys/wait.h>
+> > +#include <unistd.h>
+> > +
+> > +#include "util.h"
+> > +
+> > +static inline int pidfd_open(pid_t pid, unsigned int flags)
+> > +{
+> > +#ifdef __NR_pidfd_open
+> > +     return syscall(__NR_pidfd_open, pid, flags);
+> > +#else
+> > +     errno = ENOSYS;
+>
+> This isn't an error - this would be skip because this syscall
+> isn't supported.
 
+Ack.
+
+>
+> > +     return -1;
+> > +#endif
+>
+> Key off of syscall return instead of these ifdefs - same comment
+> on all of the ifdefs
+
+Ack. I was using some other test as an example but I guess that was
+not a good model.
+
+>
+> > +}
+> > +
+>
+> I am not seeing any reason for breaking this code up have a separate
+> routine for pidfd_open().
+
+I'm a bit unclear what you mean. Do you mean that userspace headers
+should already define pidfd_open() and I don't need to define it?
+
+>
+> > +static inline int process_mrelease(int pidfd, unsigned int flags)
+> > +{
+> > +#ifdef __NR_process_mrelease
+> > +     return syscall(__NR_process_mrelease, pidfd, flags);
+> > +#else
+> > +     errno = ENOSYS;
+> > +     return -1;
+> > +#endif> +}
+> > +
+>
+> Same comments on ifdefs and skips here as well.
+
+Ack.
+
+>
+> > +static void write_fault_pages(char *addr, unsigned long nr_pages)
+> > +{
+> > +     unsigned long i;
+> > +
+> > +     for (i = 0; i < nr_pages; i++)
+> > +             *((unsigned long *)(addr + (i * PAGE_SIZE))) = i;
+> > +}
+> > +
+> > +static int alloc_noexit(unsigned long nr_pages, int pipefd)
+> > +{
+> > +     int ppid = getppid();
+> > +     void *buf;
+> > +
+> > +     buf = mmap(NULL, nr_pages * PAGE_SIZE, PROT_READ | PROT_WRITE,
+> > +                MAP_PRIVATE | MAP_ANON, 0, 0);
+> > +     if (buf == MAP_FAILED) {
+> > +             perror("mmap");
+>
+> A bit more descriptive message what the test would do will be helpful.
+> Also consider if this should be a skip or fail for the test.
+
+I guess the question is whether an OOM condition should be considered
+a test failure? I guess we could skip since the test is specifically
+for process_mrelease.
+
+>
+> > +             return 1;
+> > +     }
+> > +
+> > +     write_fault_pages((char *)buf, nr_pages);
+> > +
+> > +     /* Signal the parent that the child is ready */
+> > +     if (write(pipefd, "", 1) < 0) {
+> > +             perror("write");
+> > +             return 1;
+> > +     }
+> > +
+> > +     /* Wait to be killed (when reparenting happens) */
+> > +     while (getppid() == ppid)
+> > +             sleep(1);
+> > +
+>
+> What happens if reparenting doesn't happen? Will this loop for ever?
+> This test could hang?
+
+Technically that should not happen because we kill the child and after
+that it has to reparent but to be safe I'll add a timeout to prevent
+an infinite loop.
+
+>
+> > +     munmap(buf, nr_pages * PAGE_SIZE);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +
+> > +#define MB(x) (x << 20)
+> > +#define MAX_SIZE_MB 1024
+> > +
+> > +int main(void)
+> > +{
+> > +     int res;
+> > +     int pipefd[2], pidfd;
+> > +     pid_t pid;
+> > +     char byte;
+> > +     size_t size;
+> > +     int negative_tests_done = 0;
+> > +
+> > +     /* Test a wrong pidfd */
+> > +     if (!process_mrelease(-1, 0) || errno != EBADF) {
+> > +             perror("process_mrelease with wring pidfd");
+>
+> Incorrect spelling "wring/wrong"
+
+Ack.
+
+>
+> > +             exit(1);
+> > +     }
+> > +
+> > +     /*
+> > +      * Start the test with 1MB allocation and double every time
+> > +      * process_mrelease fails
+> > +      */
+> > +     for (size = 1; size <= MAX_SIZE_MB; size *= 2) {
+> > +             /*
+> > +              * Pipe for the child to signal when it's done allocating
+> > +              * memory
+> > +              */
+> > +             if (pipe(pipefd)) {
+> > +                     perror("pipe");
+> > +                     exit(1);
+> > +             }
+> > +             pid = fork();
+> > +             if (pid < 0) {
+> > +                     perror("fork");
+>
+> Close the pipe?
+
+Ack.
+Although I though all FDs are closed implicitly when the process exits
+(which is the case in here).
+
+>
+> > +                     exit(1);
+> > +             }
+> > +
+> > +             if (pid == 0) {
+> > +                     close(pipefd[0]);
+> > +                     res = alloc_noexit(MB(size) / PAGE_SIZE, pipefd[1]);
+> > +                     close(pipefd[1]);
+> > +                     exit(res);
+> > +             }
+> > +
+> > +             close(pipefd[1]);
+> > +             /* Block until the child is ready */
+> > +             res = read(pipefd[0], &byte, 1);
+> > +             close(pipefd[0]);
+> > +             if (res < 0) {
+> > +                     perror("read");
+> > +                     exit(1);
+> > +             }
+> > +
+> > +             pidfd = pidfd_open(pid, 0);
+> > +             if (pidfd < 0) {
+> > +                     perror("pidfd_open");
+> > +                     exit(1);
+> > +             }
+> > +
+>
+> The code is very hard to read. Add comments to indicate parent and child
+> paths clearly so reviewers can follow the logic and be able to do effective
+> review.
+
+Ack.
+
+>
+> > +             /* Run negative tests which require a valid child only once */
+> > +             if (!negative_tests_done) {
+> > +                     /* Test invalid flags */
+> > +                     if (!process_mrelease(pidfd, (unsigned int)-1) ||
+> > +                         errno != EINVAL) {
+> > +                             perror("process_mrelease with wrong flags");
+> > +                             exit(1);
+>
+> So is this an expected fail or a test fail?
+
+We expect it to fail with EINVAL. We fail the test if the call
+succeeds or fails for any other reason.
+
+>
+> > +                     }
+> > +                     /* Test reapling while process is still alive */
+> > +                     if (!process_mrelease(pidfd, 0) ||
+> > +                         errno != EINVAL) {
+> > +                             perror("process_mrelease on a live process");
+>
+> So is this an expected fail or a test fail?
+
+Expected to fail with EINVAL.
+
+>
+> > +                             exit(1);
+> > +                     }
+> > +                     negative_tests_done = 1;
+> > +             }
+>
+> Now the above negative_tests_done block could be in a separate function ---
+> All the others aren't really needed. It will be good for abstraction and
+> readability.
+
+I'll separate them into a stand-alone function.
+
+>
+> > +
+> > +             if (kill(pid, SIGKILL)) {
+> > +                     perror("kill");
+>
+> Include test results in the change log - so we can see the test report.
+
+Ack. Although the test does not print any results on success, it just
+succeeds or fails with an error description. I'll add outputs for both
+cases.
+
+>
+> > +                     exit(1);
+> > +             }
+> > +
+> > +             if (!process_mrelease(pidfd, 0)) {
+> > +                     /* Terminate the test once process_mrelease succeeds */
+> > +                     return 0;
+> > +             }
+> > +
+> > +             /*
+> > +              * Ignore the failure if the child exited before mrelease got
+> > +              * called, increase allocation size and retry the test
+> > +              */
+>
+> Add more info. on why allocating more memory helps.
+
+Ack.
+
+>
+> > +             if (errno != ESRCH) {
+> > +                     perror("process_mrelease");
+> > +                     exit(1);
+> > +             }
+> > +
+> > +             if (waitpid(pid, NULL, 0) < 0) {
+> > +                     perror("waitpid");
+> > +                     exit(1);
+> > +             }
+> > +             close(pidfd);
+> > +     }
+> > +
+> > +     printf("All process_mrelease attempts failed!\n");
+> > +     exit(1);
+> > +}
+> > diff --git a/tools/testing/selftests/vm/run_vmtests.sh b/tools/testing/selftests/vm/run_vmtests.sh
+> > index 352ba00cf26b..1986162fea39 100755
+> > --- a/tools/testing/selftests/vm/run_vmtests.sh
+> > +++ b/tools/testing/selftests/vm/run_vmtests.sh
+> > @@ -287,6 +287,22 @@ else
+> >       echo "[PASS]"
+> >   fi
+> >
+> > +echo "---------------------"
+> > +echo "running mrelease_test"
+> > +echo "---------------------"
+> > +./mrelease_test
+> > +ret_val=$?
+> > +
+> > +if [ $ret_val -eq 0 ]; then
+> > +     echo "[PASS]"
+> > +elif [ $ret_val -eq $ksft_skip ]; then
+> > +      echo "[SKIP]"
+> > +      exitcode=$ksft_skip
+> > +else
+> > +     echo "[FAIL]"
+> > +     exitcode=1
+> > +fi
+> > +
+> >   echo "-------------------"
+> >   echo "running mremap_test"
+> >   echo "-------------------"
+> >
+>
+> In general, the code flow is hard to read to make sure resources
+> are released e.g: pipefd in all the error paths. The code is broken
+> up into smaller chunks where it isn't needed in some cases and left
+> as a large block when it could benefit from abstraction e.g: negative
+> test block.
+>
+> Please make changes and send v2.
+
+Will try to refactor it for a better readability. Thanks for the review!
+
+>
+> thanks,
+> -- Shuah
