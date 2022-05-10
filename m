@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08E44C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:00:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 370A3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:00:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242908AbiEJOEQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:04:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56332 "EHLO
+        id S233131AbiEJOEY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:04:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244714AbiEJNmG (ORCPT
+        with ESMTP id S243516AbiEJNje (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:42:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7288663F9;
-        Tue, 10 May 2022 06:30:26 -0700 (PDT)
+        Tue, 10 May 2022 09:39:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF9D5291E7D;
+        Tue, 10 May 2022 06:29:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3B3B6B81DA2;
-        Tue, 10 May 2022 13:30:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78299C385A6;
-        Tue, 10 May 2022 13:30:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D10B615C8;
+        Tue, 10 May 2022 13:29:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ABCCC385A6;
+        Tue, 10 May 2022 13:29:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189405;
-        bh=AJ+gO/EpsEuTOmdauQVf2kJ+REMEPZB2E5c3urtWcxU=;
+        s=korg; t=1652189368;
+        bh=ISMfMhtXfu2Pk7+NSCCly6n7NsxSXlWEoWIa/Hw3yS4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DomvtButiSt6zqKeVQ6aeISmnATtSfN8H98cc/nEleVXYi6hBv6Yosk2HNB61ea7X
-         G5p0xOFzUtAJF+C05YSYw6Ddfu7+u8+1wl6r4w0IE1Y6bhtsnBxeUfz5RM2ipbWAA0
-         NWbU7b0T7XkEmQOET2HU87OcT53cTvGBvYsZo764=
+        b=QcKI5b89IQvVynUKFwpcFWo+IwtPKsUWbEul+icsRmdqJ3jIHde5R1YnXsVXgQtw3
+         HLhNrKx3YL/EnBu5suMZ1/V9uwiy/nSl3Ur+wE3DXaX+ATd4ps6oIE7ltCpCm+0f6I
+         3pS868r9Z+u+0tqDEWIxNYsFkua0AIOpVS4MQbGM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Samuel Holland <samuel@sholland.org>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.15 006/135] mmc: sunxi-mmc: Fix DMA descriptors allocated above 32 bits
-Date:   Tue, 10 May 2022 15:06:28 +0200
-Message-Id: <20220510130740.579919388@linuxfoundation.org>
+        stable@vger.kernel.org, Stefan Haberland <sth@linux.ibm.com>,
+        Jan Hoeppner <hoeppner@linux.ibm.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 028/135] s390/dasd: fix data corruption for ESE devices
+Date:   Tue, 10 May 2022 15:06:50 +0200
+Message-Id: <20220510130741.207089029@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -50,40 +49,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Samuel Holland <samuel@sholland.org>
+From: Stefan Haberland <sth@linux.ibm.com>
 
-commit e9f3fb523dbf476dc86beea23f5b5ca8f9687c93 upstream.
+commit 5b53a405e4658580e1faf7c217db3f55a21ba849 upstream.
 
-Newer variants of the MMC controller support a 34-bit physical address
-space by using word addresses instead of byte addresses. However, the
-code truncates the DMA descriptor address to 32 bits before applying the
-shift. This breaks DMA for descriptors allocated above the 32-bit limit.
+For ESE devices we get an error when accessing an unformatted track.
+The handling of this error will return zero data for read requests and
+format the track on demand before writing to it. To do this the code needs
+to distinguish between read and write requests. This is done with data from
+the blocklayer request. A pointer to the blocklayer request is stored in
+the CQR.
 
-Fixes: 3536b82e5853 ("mmc: sunxi: add support for A100 mmc controller")
-Signed-off-by: Samuel Holland <samuel@sholland.org>
-Reviewed-by: Andre Przywara <andre.przywara@arm.com>
-Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220424231751.32053-1-samuel@sholland.org
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+If there is an error on the device an ERP request is built to do error
+recovery. While the ERP request is mostly a copy of the original CQR the
+pointer to the blocklayer request is not copied to not accidentally pass
+it back to the blocklayer without cleanup.
+
+This leads to the error that during ESE handling after an ERP request was
+built it is not possible to determine the IO direction. This leads to the
+formatting of a track for read requests which might in turn lead to data
+corruption.
+
+Fixes: 5e2b17e712cf ("s390/dasd: Add dynamic formatting support for ESE volumes")
+Cc: stable@vger.kernel.org # 5.3+
+Signed-off-by: Stefan Haberland <sth@linux.ibm.com>
+Reviewed-by: Jan Hoeppner <hoeppner@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220505141733.1989450-2-sth@linux.ibm.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/host/sunxi-mmc.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/s390/block/dasd.c      |    8 +++++++-
+ drivers/s390/block/dasd_eckd.c |    2 +-
+ drivers/s390/block/dasd_int.h  |   12 ++++++++++++
+ 3 files changed, 20 insertions(+), 2 deletions(-)
 
---- a/drivers/mmc/host/sunxi-mmc.c
-+++ b/drivers/mmc/host/sunxi-mmc.c
-@@ -377,8 +377,9 @@ static void sunxi_mmc_init_idma_des(stru
- 		pdes[i].buf_addr_ptr1 =
- 			cpu_to_le32(sg_dma_address(&data->sg[i]) >>
- 				    host->cfg->idma_des_shift);
--		pdes[i].buf_addr_ptr2 = cpu_to_le32((u32)next_desc >>
--						    host->cfg->idma_des_shift);
-+		pdes[i].buf_addr_ptr2 =
-+			cpu_to_le32(next_desc >>
-+				    host->cfg->idma_des_shift);
+--- a/drivers/s390/block/dasd.c
++++ b/drivers/s390/block/dasd.c
+@@ -1639,6 +1639,7 @@ void dasd_int_handler(struct ccw_device
+ 	unsigned long now;
+ 	int nrf_suppressed = 0;
+ 	int fp_suppressed = 0;
++	struct request *req;
+ 	u8 *sense = NULL;
+ 	int expires;
+ 
+@@ -1739,7 +1740,12 @@ void dasd_int_handler(struct ccw_device
  	}
  
- 	pdes[0].config |= cpu_to_le32(SDXC_IDMAC_DES0_FD);
+ 	if (dasd_ese_needs_format(cqr->block, irb)) {
+-		if (rq_data_dir((struct request *)cqr->callback_data) == READ) {
++		req = dasd_get_callback_data(cqr);
++		if (!req) {
++			cqr->status = DASD_CQR_ERROR;
++			return;
++		}
++		if (rq_data_dir(req) == READ) {
+ 			device->discipline->ese_read(cqr, irb);
+ 			cqr->status = DASD_CQR_SUCCESS;
+ 			cqr->stopclk = now;
+--- a/drivers/s390/block/dasd_eckd.c
++++ b/drivers/s390/block/dasd_eckd.c
+@@ -3157,7 +3157,7 @@ dasd_eckd_ese_format(struct dasd_device
+ 	sector_t curr_trk;
+ 	int rc;
+ 
+-	req = cqr->callback_data;
++	req = dasd_get_callback_data(cqr);
+ 	block = cqr->block;
+ 	base = block->base;
+ 	private = base->private;
+--- a/drivers/s390/block/dasd_int.h
++++ b/drivers/s390/block/dasd_int.h
+@@ -757,6 +757,18 @@ dasd_check_blocksize(int bsize)
+ 	return 0;
+ }
+ 
++/*
++ * return the callback data of the original request in case there are
++ * ERP requests build on top of it
++ */
++static inline void *dasd_get_callback_data(struct dasd_ccw_req *cqr)
++{
++	while (cqr->refers)
++		cqr = cqr->refers;
++
++	return cqr->callback_data;
++}
++
+ /* externals in dasd.c */
+ #define DASD_PROFILE_OFF	 0
+ #define DASD_PROFILE_ON 	 1
 
 
