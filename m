@@ -2,98 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D17DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 08:08:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CEC1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 08:08:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237816AbiEJIMF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 04:12:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37790 "EHLO
+        id S237818AbiEJIMP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 04:12:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237864AbiEJIK6 (ORCPT
+        with ESMTP id S237893AbiEJILD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 04:10:58 -0400
-Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB41D249887;
-        Tue, 10 May 2022 01:06:55 -0700 (PDT)
-Received: by mail-qk1-f178.google.com with SMTP id c1so12653151qkf.13;
-        Tue, 10 May 2022 01:06:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hrwbYVMfyZKLGnIKNlCKVv1V4tt6GbLeMklP2rm/UpI=;
-        b=AIIBiz8JIbGH3wqpbmLY7XDGxWc1SqAQjR9yr4t4biow36QLK4mlREUTIgv6BjeOkA
-         FRaxl0/POIYsFS5yjVIexPOXnC9J1v0HufivUS0HP+wCgE3TWybjMECOXgPTKzpVf2U1
-         XYdjHJV7qTieJBmbhN3O1QaLwhEksN/ld3admgYb8uqd3z0gj0CKqi+LcSDDSgzamZ/G
-         /jtraUwroTcZlzAP4749Hf6DxMF6P6bH4IgnX/5zeFRNMHQ463HTPbIPuVHooFmz/Ih8
-         fr5EaWwPmcs8HSN0+vW9e0QgizV/WFNDeTaMR3UUksR+JXJ199hqO8xYBfiDzTXAZ/RE
-         /WdQ==
-X-Gm-Message-State: AOAM533d2oFlXLoS88SlxUKZCpuggGf+LiF7sN/BCS6hatc1j4lgJyIE
-        ZGqjU7fEaZyPxyaMbPtuNRwZphYyY9U2rw==
-X-Google-Smtp-Source: ABdhPJwJ3QMqzoGF9MAZVYiv3WWBcfzCUMMBdpPiK/nuc3ZWk95NUngNO6kSTuualJOYf2aq593OPQ==
-X-Received: by 2002:a05:620a:4150:b0:6a0:81cc:7e78 with SMTP id k16-20020a05620a415000b006a081cc7e78mr6851089qko.98.1652170014518;
-        Tue, 10 May 2022 01:06:54 -0700 (PDT)
-Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com. [209.85.128.175])
-        by smtp.gmail.com with ESMTPSA id q71-20020a37a74a000000b0069fcc501851sm8175683qke.78.2022.05.10.01.06.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 May 2022 01:06:54 -0700 (PDT)
-Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-2ec42eae76bso170522147b3.10;
-        Tue, 10 May 2022 01:06:53 -0700 (PDT)
-X-Received: by 2002:a81:234b:0:b0:2f8:4082:bbd3 with SMTP id
- j72-20020a81234b000000b002f84082bbd3mr18054436ywj.47.1652170013606; Tue, 10
- May 2022 01:06:53 -0700 (PDT)
+        Tue, 10 May 2022 04:11:03 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23A1772207
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 01:07:01 -0700 (PDT)
+Received: from kwepemi100006.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Ky9bf1mymzhZ16;
+        Tue, 10 May 2022 16:06:22 +0800 (CST)
+Received: from kwepemm600014.china.huawei.com (7.193.23.54) by
+ kwepemi100006.china.huawei.com (7.221.188.165) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 10 May 2022 16:06:59 +0800
+Received: from ubuntu1804.huawei.com (10.67.175.28) by
+ kwepemm600014.china.huawei.com (7.193.23.54) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 10 May 2022 16:06:59 +0800
+From:   Yi Yang <yiyang13@huawei.com>
+To:     <chris@zankel.net>, <jcmvbkbc@gmail.com>, <viro@zeniv.linux.org.uk>
+CC:     <linux-xtensa@linux-xtensa.org>, <linux-kernel@vger.kernel.org>,
+        <axboe@kernel.dk>, <wangweiyang2@huawei.com>
+Subject: [PATCH -next] xtensa/simdisk: fix error handling in proc_read_simdisk()
+Date:   Tue, 10 May 2022 16:05:33 +0800
+Message-ID: <20220510080533.51032-1-yiyang13@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <2b7d411b4a7913335082c858cb0d63b9e4bf7c5b.1652103920.git.geert+renesas@glider.be>
- <20fd1a74-c0f5-d8e9-4903-b74c185d5aa3@kernel.org> <CAMuHMdVXHSnOOnn3jchezQc+bsPYTnSPuw_rOe+pyskAVaQGnQ@mail.gmail.com>
- <22ed864d-8d71-7042-4d55-2b0b65d4d281@kernel.org>
-In-Reply-To: <22ed864d-8d71-7042-4d55-2b0b65d4d281@kernel.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 10 May 2022 10:06:42 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVFHeJvXAfb-Q1WGvDEuKTeVx-3fmmPu18Ci2yoNinMuA@mail.gmail.com>
-Message-ID: <CAMuHMdVFHeJvXAfb-Q1WGvDEuKTeVx-3fmmPu18Ci2yoNinMuA@mail.gmail.com>
-Subject: Re: [PATCH] memory: OMAP_GPMC should depend on ARCH_OMAP2PLUS || ARCH_K3
-To:     Roger Quadros <rogerq@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Tony Lindgren <tony@atomide.com>,
-        "open list:TI ETHERNET SWITCH DRIVER (CPSW)" 
-        <linux-omap@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.67.175.28]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600014.china.huawei.com (7.193.23.54)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Roger,
+The frist simple_read_from_buffer() will change ppos. if ppos >= 1.
+The second simple_read_from_buffer() will does not work and return 0.
 
-On Tue, May 10, 2022 at 9:40 AM Roger Quadros <rogerq@kernel.org> wrote:
-> On 10/05/2022 10:30, Geert Uytterhoeven wrote:
-> > On Tue, May 10, 2022 at 9:22 AM Roger Quadros <rogerq@kernel.org> wrote:
-> >> On 09/05/2022 16:48, Geert Uytterhoeven wrote:
-> >>> The Texas Instruments OMAP General Purpose Memory Controller (GPMC) is
-> >>> only present on TI OMAP2/3/4/5, AM33xx, AM43x, DRA7xx, TI81xx, and K3
-> >>> SoCs.  Hence add a dependency on ARCH_OMAP2PLUS || ARCH_K3, to prevent
-> >>> asking the user about this driver when configuring a kernel without
-> >>> OMAP2+ or K3 SoC family support.
-> >>>
-> >>> Fixes: be34f45f0d4aa91c ("memory: omap-gpmc: Make OMAP_GPMC config visible and selectable")
-> >>> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Fixes: a69755b18774 ("xtensa simdisk: switch to proc_create_data()")
+Signed-off-by: Yi Yang <yiyang13@huawei.com>
+---
+ arch/xtensa/platforms/iss/simdisk.c | 18 +++++++++++++-----
+ 1 file changed, 13 insertions(+), 5 deletions(-)
 
-> Could you please also add ARCH_KEYSTONE in the 'depends on' list
-> as some SoCs in that architecture do have the GPMC block.
+diff --git a/arch/xtensa/platforms/iss/simdisk.c b/arch/xtensa/platforms/iss/simdisk.c
+index 0f0e0724397f..618c080c388d 100644
+--- a/arch/xtensa/platforms/iss/simdisk.c
++++ b/arch/xtensa/platforms/iss/simdisk.c
+@@ -210,13 +210,21 @@ static ssize_t proc_read_simdisk(struct file *file, char __user *buf,
+ {
+ 	struct simdisk *dev = pde_data(file_inode(file));
+ 	const char *s = dev->filename;
++	char *temp;
++
+ 	if (s) {
++		ssize_t len = strlen(s);
++
++		temp = kmalloc(len + 2, GFP_KERNEL);
++		if (!temp)
++			return -ENOMEM;
++
++		scnprintf(temp, len + 2, "%s\n", s);
+ 		ssize_t n = simple_read_from_buffer(buf, size, ppos,
+-							s, strlen(s));
+-		if (n < 0)
+-			return n;
+-		buf += n;
+-		size -= n;
++							temp, strlen(temp));
++
++		kfree(temp);
++		return n;
+ 	}
+ 	return simple_read_from_buffer(buf, size, ppos, "\n", 1);
+ }
+-- 
+2.17.1
 
-Are you sure? AFAICS, none of the Keystone DTS files have device
-nodes that are compatible with the match list in the omap-gpmc driver.
-
-Or perhaps the GPMC support still has to be added to the Keystone
-DTS files (and or driver)?
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
