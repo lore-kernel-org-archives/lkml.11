@@ -2,169 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5E55C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 18:24:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98620C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 18:25:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349029AbiEJS1L (ORCPT
+        id S1348177AbiEJS33 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 14:27:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57688 "EHLO
+        Tue, 10 May 2022 14:29:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348902AbiEJS0X (ORCPT
+        with ESMTP id S236729AbiEJS3Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 14:26:23 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A635950B08;
-        Tue, 10 May 2022 11:22:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652206944; x=1683742944;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=sSmQP3uhDLR96PsowzYCDVSU0HDCkoGesSibvvpbnN8=;
-  b=hz0+L91/mag6bEQ396ibYjw9w3L+XLhS5Ne60aDeMfb+gdqGDlDUCdWQ
-   0HWhUkTz2Is6DPzbp0C3AP0oOpQruqbZsAIIgYhXIKPj6gG/NUYTNCZI1
-   1xSR3uvLaVfnpighI5jru4L85pLjSvDs/NEl35zaW6Xfca686dhE7YDCK
-   0VvIQDBGNxOZuHfaG0RA+A93KkNcTFhzfOh4zWh+s8HV3E7+B++xNmXiD
-   icm0BCzOohcW/DFKgMJfHN/ltEG/ikpLu2P/wSoQFz3QFhmawWci04cQI
-   5a4cqgczArUHsNTSZDlO7pZZu1K9w/gmc1RfNUwuiwxCtlQveD4nV9RhG
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="355891446"
-X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
-   d="scan'208";a="355891446"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 11:22:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
-   d="scan'208";a="636072237"
-Received: from spandruv-desk.jf.intel.com ([10.54.75.8])
-  by fmsmga004.fm.intel.com with ESMTP; 10 May 2022 11:22:24 -0700
-From:   Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To:     rafael@kernel.org, daniel.lezcano@linaro.org, amitk@kernel.org,
-        rui.zhang@intel.com
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        stable@vger.kernel.org
-Subject: [UPDATE][PATCH] thermal: int340x: Mode setting with new OS handshake
-Date:   Tue, 10 May 2022 11:22:21 -0700
-Message-Id: <20220510182221.3990256-1-srinivas.pandruvada@linux.intel.com>
-X-Mailer: git-send-email 2.31.1
+        Tue, 10 May 2022 14:29:24 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AD362A76B4
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 11:25:26 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id d5so24974748wrb.6
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 11:25:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=i/K+z4FbavDUp9taCkfXpbx13rVcW3GTSvwjLfREXAU=;
+        b=Tty5wMz7Ghu646JswlNLX+XwgMjXTrtdIAnTGLzWswd7pJqjghhee9uTTrSBkA1mS5
+         TASpWLvrSWJ0o/VmKB1zZ2EKL7bj0qTC3lvVRuamF3i9rZ6kaQX5QDmWCn9TRCB5uXkV
+         r8gOHaTXenDSj1D57niaR5CpxS9xrrcL40YA8vpjqNI+g1gL5pCdsCqYcSLce1I6fc3z
+         kWNzuDcKIBDb+SwqrxV9F0c+DchRf6wXrjkpR+hTKigiASG8TQ/T4toShl24UGOGYEeY
+         ZEnNjV6vVbfPH9Mde3cglN60wQIz6IJ5FIeBa8eN2oVUv11BpQol0cmvcrU6FhcjdmJZ
+         DX4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=i/K+z4FbavDUp9taCkfXpbx13rVcW3GTSvwjLfREXAU=;
+        b=5z9SmtLRslT6/RDcnMmxFZZh6SQ27vxizL0jkDGsInCXaDYycSYbfmyhyM2m6FXNyd
+         Y9FWxBXyW0TeJCv7h1FzV0+2Ni06iem3MX5nz+MECtI+drDPjeZthTYMWit4zvhq4VAn
+         9oz96Umv+tSqYXDXrOGoiW1ilXicH/Nl6tcnLVaU7q/Do2s9/Fu0gVji5e3pIXAtz3SC
+         vjtko5FaSPNwFsNdH5ifLDinEsr+z8CsgYuPW1GHmr7iPJRLsRRGr1Rob6ohcZZpwQr1
+         01RfYQ3BLiFVp/3yjS1EItZd5Xz7xv5hoMyxZfgyfagAJWsEtKzNY9G+zxraoVH6gblP
+         ePGw==
+X-Gm-Message-State: AOAM533MI/Jr+uOUFXcwfJ51Tb/bS43KQEKtyB4tRmJLbNQCUsREbLgC
+        wu13TywlrxWCqUvB4VsNbPwdAJs0EXK/Yy6yg8IP6w==
+X-Google-Smtp-Source: ABdhPJyzA6ZqMl9aS9nV7QUKqV1oRP2aghQEHWBX7a2slUyqZ51MHrel4plITu1M0/TnH8bx25zFuopsJMSrkMAFd0g=
+X-Received: by 2002:a5d:630d:0:b0:20a:e1a3:8018 with SMTP id
+ i13-20020a5d630d000000b0020ae1a38018mr19695063wru.489.1652207124680; Tue, 10
+ May 2022 11:25:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220510001807.4132027-1-yosryahmed@google.com> <20220510001807.4132027-9-yosryahmed@google.com>
+In-Reply-To: <20220510001807.4132027-9-yosryahmed@google.com>
+From:   Hao Luo <haoluo@google.com>
+Date:   Tue, 10 May 2022 11:25:13 -0700
+Message-ID: <CA+khW7i1Pcc9_bfxVhtzGQkevmodie7=M-57ScMqUyw5U=KW4A@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next 8/9] bpf: Introduce cgroup iter
+To:     Yosry Ahmed <yosryahmed@google.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Tejun Heo <tj@kernel.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Michal Hocko <mhocko@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, cgroups@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With the new OS handshake introduced with the commit: "c7ff29763989
-("thermal: int340x: Update OS policy capability handshake")",
-thermal zone mode "enabled" doesn't work in the same way as the legacy
-handshake. The mode "enabled" fails with -EINVAL using new handshake.
+On Mon, May 9, 2022 at 5:18 PM Yosry Ahmed <yosryahmed@google.com> wrote:
+>
+> From: Hao Luo <haoluo@google.com>
+>
+> Introduce a new type of iter prog: cgroup. Unlike other bpf_iter, this
+> iter doesn't iterate a set of kernel objects. Instead, it is supposed to
+> be parameterized by a cgroup id and prints only that cgroup. So one
+> needs to specify a target cgroup id when attaching this iter. The target
+> cgroup's state can be read out via a link of this iter.
+>
+> Signed-off-by: Hao Luo <haoluo@google.com>
+> Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
+> ---
+>  include/linux/bpf.h            |   2 +
+>  include/uapi/linux/bpf.h       |   6 ++
+>  kernel/bpf/Makefile            |   2 +-
+>  kernel/bpf/cgroup_iter.c       | 148 +++++++++++++++++++++++++++++++++
+>  tools/include/uapi/linux/bpf.h |   6 ++
+>  5 files changed, 163 insertions(+), 1 deletion(-)
+>  create mode 100644 kernel/bpf/cgroup_iter.c
+>
 
-To address this issue, when the new OS UUID mask is set:
-- When mode is "enabled", return 0 as the firmware already has the
-latest policy mask.
-- When mode is "disabled", update the firmware with UUID mask of zero.
-In this way firmware can take control of the thermal control. Also
-reset the OS UUID mask. This allows user space to update with new
-set of policies.
+Thanks Yosry for posting this patch! Dear reviewers, this is v2 of the
+cgroup_iter change I sent previously at
 
-Fixes: c7ff29763989 ("thermal: int340x: Update OS policy capability handshake")
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: stable@vger.kernel.org
----
-update:
-Added Fixes tag
+https://lore.kernel.org/bpf/20220225234339.2386398-9-haoluo@google.com/
 
- .../intel/int340x_thermal/int3400_thermal.c   | 48 ++++++++++++-------
- 1 file changed, 32 insertions(+), 16 deletions(-)
+v1 - > v2:
+- Getting the cgroup's reference at the time at attaching, instead of
+at the time when iterating. (Yonghong) (context [1])
+- Remove .init_seq_private and .fini_seq_private callbacks for
+cgroup_iter. They are not needed now. (Yonghong)
 
-diff --git a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-index d97f496bab9b..1061728ad5a9 100644
---- a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-+++ b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-@@ -194,12 +194,31 @@ static int int3400_thermal_run_osc(acpi_handle handle, char *uuid_str, int *enab
- 	return result;
- }
- 
-+static int set_os_uuid_mask(struct int3400_thermal_priv *priv, u32 mask)
-+{
-+	int cap = 0;
-+
-+	/*
-+	 * Capability bits:
-+	 * Bit 0: set to 1 to indicate DPTF is active
-+	 * Bi1 1: set to 1 to active cooling is supported by user space daemon
-+	 * Bit 2: set to 1 to passive cooling is supported by user space daemon
-+	 * Bit 3: set to 1 to critical trip is handled by user space daemon
-+	 */
-+	if (mask)
-+		cap = ((priv->os_uuid_mask << 1) | 0x01);
-+
-+	return int3400_thermal_run_osc(priv->adev->handle,
-+				       "b23ba85d-c8b7-3542-88de-8de2ffcfd698",
-+				       &cap);
-+}
-+
- static ssize_t current_uuid_store(struct device *dev,
- 				  struct device_attribute *attr,
- 				  const char *buf, size_t count)
- {
- 	struct int3400_thermal_priv *priv = dev_get_drvdata(dev);
--	int i;
-+	int ret, i;
- 
- 	for (i = 0; i < INT3400_THERMAL_MAXIMUM_UUID; ++i) {
- 		if (!strncmp(buf, int3400_thermal_uuids[i],
-@@ -231,19 +250,7 @@ static ssize_t current_uuid_store(struct device *dev,
- 	}
- 
- 	if (priv->os_uuid_mask) {
--		int cap, ret;
--
--		/*
--		 * Capability bits:
--		 * Bit 0: set to 1 to indicate DPTF is active
--		 * Bi1 1: set to 1 to active cooling is supported by user space daemon
--		 * Bit 2: set to 1 to passive cooling is supported by user space daemon
--		 * Bit 3: set to 1 to critical trip is handled by user space daemon
--		 */
--		cap = ((priv->os_uuid_mask << 1) | 0x01);
--		ret = int3400_thermal_run_osc(priv->adev->handle,
--					      "b23ba85d-c8b7-3542-88de-8de2ffcfd698",
--					      &cap);
-+		ret = set_os_uuid_mask(priv, priv->os_uuid_mask);
- 		if (ret)
- 			return ret;
- 	}
-@@ -469,17 +476,26 @@ static int int3400_thermal_change_mode(struct thermal_zone_device *thermal,
- 	if (mode != thermal->mode) {
- 		int enabled;
- 
-+		enabled = (mode == THERMAL_DEVICE_ENABLED);
-+
-+		if (priv->os_uuid_mask) {
-+			if (!enabled) {
-+				priv->os_uuid_mask = 0;
-+				result = set_os_uuid_mask(priv, priv->os_uuid_mask);
-+			}
-+			goto eval_odvp;
-+		}
-+
- 		if (priv->current_uuid_index < 0 ||
- 		    priv->current_uuid_index >= INT3400_THERMAL_MAXIMUM_UUID)
- 			return -EINVAL;
- 
--		enabled = (mode == THERMAL_DEVICE_ENABLED);
- 		result = int3400_thermal_run_osc(priv->adev->handle,
- 						 int3400_thermal_uuids[priv->current_uuid_index],
- 						 &enabled);
- 	}
- 
--
-+eval_odvp:
- 	evaluate_odvp(priv);
- 
- 	return result;
--- 
-2.31.1
+[1] https://lore.kernel.org/bpf/f780fc3a-dbc2-986c-d5a0-6b0ef1c4311f@fb.com/
 
+Hao
