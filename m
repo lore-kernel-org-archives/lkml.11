@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCE52C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4863C43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:13:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343642AbiEJOQS (ORCPT
+        id S1343874AbiEJOQd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:16:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50626 "EHLO
+        Tue, 10 May 2022 10:16:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343661AbiEJNsU (ORCPT
+        with ESMTP id S1343757AbiEJNsY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:48:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7C4E2B0330;
-        Tue, 10 May 2022 06:36:44 -0700 (PDT)
+        Tue, 10 May 2022 09:48:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B4836B641;
+        Tue, 10 May 2022 06:36:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 44820618CC;
-        Tue, 10 May 2022 13:36:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C7F7C385C2;
-        Tue, 10 May 2022 13:36:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E6CE9B81D24;
+        Tue, 10 May 2022 13:36:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EAE8C385C9;
+        Tue, 10 May 2022 13:36:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189802;
-        bh=bgz/2X6IG8w921/J81l1uzDT8qcoLY0061kOj25IVSA=;
+        s=korg; t=1652189808;
+        bh=9xEVtLV5Lt1Wu95ByQYAXxRUTJvXj47o6TKf+HyKhmU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rfZYkbOr3aeC92coeC6CJKSooa75ey1GlM8F9XCPJLHI2IterQ4vUiuJFuciUA1Xr
-         cIaKl2kuvDpPX1VPnw2+COvUTexVzYBA+UIJFSy40XscmW0gaPGkr8XjrqtJNUfFHx
-         Ys7stk7+RGySewiiVYPJ+Rb8S1a3oLd486OE1Q3o=
+        b=q15uhl5jkzQnXEu+WNNVzaLqigeCRMs7tABGM/cZGgVQSelE2HGD2Tw22QgGRLWwx
+         zQf/B714BwTKnqmtBBD6QpTNq8w35KJrNTcKBQ5w7q+lRdhuR0/ExxUa03zdzxlWO9
+         D71OkIRaO/p2hxQxdtYv8yDcKxgG1JvWPSlSvfm8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jayce Lin <jaycelin@synology.com>,
-        Filipe Manana <fdmanana@suse.com>,
-        Chung-Chiang Cheng <cccheng@synology.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.17 032/140] btrfs: do not allow compression on nodatacow files
-Date:   Tue, 10 May 2022 15:07:02 +0200
-Message-Id: <20220510130742.533607158@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Pfaff <tpfaff@pcs.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>
+Subject: [PATCH 5.17 034/140] genirq: Synchronize interrupt thread startup
+Date:   Tue, 10 May 2022 15:07:04 +0200
+Message-Id: <20220510130742.592721474@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -51,130 +50,173 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chung-Chiang Cheng <cccheng@synology.com>
+From: Thomas Pfaff <tpfaff@pcs.com>
 
-commit 0e852ab8974cd2b5946766b2d9baf82c78ace03d upstream.
+commit 8707898e22fd665bc1d7b18b809be4b56ce25bdd upstream.
 
-Compression and nodatacow are mutually exclusive. A similar issue was
-fixed by commit f37c563bab429 ("btrfs: add missing check for nocow and
-compression inode flags"). Besides ioctl, there is another way to
-enable/disable/reset compression directly via xattr. The following
-steps will result in a invalid combination.
+A kernel hang can be observed when running setserial in a loop on a kernel
+with force threaded interrupts. The sequence of events is:
 
-  $ touch bar
-  $ chattr +C bar
-  $ lsattr bar
-  ---------------C-- bar
-  $ setfattr -n btrfs.compression -v zstd bar
-  $ lsattr bar
-  --------c------C-- bar
+   setserial
+     open("/dev/ttyXXX")
+       request_irq()
+     do_stuff()
+      -> serial interrupt
+         -> wake(irq_thread)
+	      desc->threads_active++;
+     close()
+       free_irq()
+         kthread_stop(irq_thread)
+     synchronize_irq() <- hangs because desc->threads_active != 0
 
-To align with the logic in check_fsflags, nocompress will also be
-unacceptable after this patch, to prevent mix any compression-related
-options with nodatacow.
+The thread is created in request_irq() and woken up, but does not get on a
+CPU to reach the actual thread function, which would handle the pending
+wake-up. kthread_stop() sets the should stop condition which makes the
+thread immediately exit, which in turn leaves the stale threads_active
+count around.
 
-  $ touch bar
-  $ chattr +C bar
-  $ lsattr bar
-  ---------------C-- bar
-  $ setfattr -n btrfs.compression -v zstd bar
-  setfattr: bar: Invalid argument
-  $ setfattr -n btrfs.compression -v no bar
-  setfattr: bar: Invalid argument
+This problem was introduced with commit 519cc8652b3a, which addressed a
+interrupt sharing issue in the PCIe code.
 
-When both compression and nodatacow are enabled, then
-btrfs_run_delalloc_range prefers nodatacow and no compression happens.
+Before that commit free_irq() invoked synchronize_irq(), which waits for
+the hard interrupt handler and also for associated threads to complete.
 
-Reported-by: Jayce Lin <jaycelin@synology.com>
-CC: stable@vger.kernel.org # 5.10.x: e6f9d6964802: btrfs: export a helper for compression hard check
-CC: stable@vger.kernel.org # 5.10.x
-Reviewed-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: Chung-Chiang Cheng <cccheng@synology.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+To address the PCIe issue synchronize_irq() was replaced with
+__synchronize_hardirq(), which only waits for the hard interrupt handler to
+complete, but not for threaded handlers.
+
+This was done under the assumption, that the interrupt thread already
+reached the thread function and waits for a wake-up, which is guaranteed to
+be handled before acting on the stop condition. The problematic case, that
+the thread would not reach the thread function, was obviously overlooked.
+
+Make sure that the interrupt thread is really started and reaches
+thread_fn() before returning from __setup_irq().
+
+This utilizes the existing wait queue in the interrupt descriptor. The
+wait queue is unused for non-shared interrupts. For shared interrupts the
+usage might cause a spurious wake-up of a waiter in synchronize_irq() or the
+completion of a threaded handler might cause a spurious wake-up of the
+waiter for the ready flag. Both are harmless and have no functional impact.
+
+[ tglx: Amended changelog ]
+
+Fixes: 519cc8652b3a ("genirq: Synchronize only with single thread on free_irq()")
+Signed-off-by: Thomas Pfaff <tpfaff@pcs.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Marc Zyngier <maz@kernel.org>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/552fe7b4-9224-b183-bb87-a8f36d335690@pcs.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/props.c |   16 +++++++++++-----
- fs/btrfs/props.h |    3 ++-
- fs/btrfs/xattr.c |    2 +-
- 3 files changed, 14 insertions(+), 7 deletions(-)
+ kernel/irq/internals.h |    2 ++
+ kernel/irq/irqdesc.c   |    2 ++
+ kernel/irq/manage.c    |   39 +++++++++++++++++++++++++++++----------
+ 3 files changed, 33 insertions(+), 10 deletions(-)
 
---- a/fs/btrfs/props.c
-+++ b/fs/btrfs/props.c
-@@ -17,7 +17,8 @@ static DEFINE_HASHTABLE(prop_handlers_ht
- struct prop_handler {
- 	struct hlist_node node;
- 	const char *xattr_name;
--	int (*validate)(const char *value, size_t len);
-+	int (*validate)(const struct btrfs_inode *inode, const char *value,
-+			size_t len);
- 	int (*apply)(struct inode *inode, const char *value, size_t len);
- 	const char *(*extract)(struct inode *inode);
- 	int inheritable;
-@@ -55,7 +56,8 @@ find_prop_handler(const char *name,
- 	return NULL;
+--- a/kernel/irq/internals.h
++++ b/kernel/irq/internals.h
+@@ -29,12 +29,14 @@ extern struct irqaction chained_action;
+  * IRQTF_WARNED    - warning "IRQ_WAKE_THREAD w/o thread_fn" has been printed
+  * IRQTF_AFFINITY  - irq thread is requested to adjust affinity
+  * IRQTF_FORCED_THREAD  - irq action is force threaded
++ * IRQTF_READY     - signals that irq thread is ready
+  */
+ enum {
+ 	IRQTF_RUNTHREAD,
+ 	IRQTF_WARNED,
+ 	IRQTF_AFFINITY,
+ 	IRQTF_FORCED_THREAD,
++	IRQTF_READY,
+ };
+ 
+ /*
+--- a/kernel/irq/irqdesc.c
++++ b/kernel/irq/irqdesc.c
+@@ -407,6 +407,7 @@ static struct irq_desc *alloc_desc(int i
+ 	lockdep_set_class(&desc->lock, &irq_desc_lock_class);
+ 	mutex_init(&desc->request_mutex);
+ 	init_rcu_head(&desc->rcu);
++	init_waitqueue_head(&desc->wait_for_threads);
+ 
+ 	desc_set_defaults(irq, desc, node, affinity, owner);
+ 	irqd_set(&desc->irq_data, flags);
+@@ -575,6 +576,7 @@ int __init early_irq_init(void)
+ 		raw_spin_lock_init(&desc[i].lock);
+ 		lockdep_set_class(&desc[i].lock, &irq_desc_lock_class);
+ 		mutex_init(&desc[i].request_mutex);
++		init_waitqueue_head(&desc[i].wait_for_threads);
+ 		desc_set_defaults(i, &desc[i], node, NULL, NULL);
+ 	}
+ 	return arch_early_irq_init();
+--- a/kernel/irq/manage.c
++++ b/kernel/irq/manage.c
+@@ -1249,6 +1249,31 @@ static void irq_wake_secondary(struct ir
  }
  
--int btrfs_validate_prop(const char *name, const char *value, size_t value_len)
-+int btrfs_validate_prop(const struct btrfs_inode *inode, const char *name,
-+			const char *value, size_t value_len)
- {
- 	const struct prop_handler *handler;
- 
-@@ -69,7 +71,7 @@ int btrfs_validate_prop(const char *name
- 	if (value_len == 0)
- 		return 0;
- 
--	return handler->validate(value, value_len);
-+	return handler->validate(inode, value, value_len);
- }
- 
- int btrfs_set_prop(struct btrfs_trans_handle *trans, struct inode *inode,
-@@ -252,8 +254,12 @@ int btrfs_load_inode_props(struct inode
- 	return ret;
- }
- 
--static int prop_compression_validate(const char *value, size_t len)
-+static int prop_compression_validate(const struct btrfs_inode *inode,
-+				     const char *value, size_t len)
- {
-+	if (!btrfs_inode_can_compress(inode))
-+		return -EINVAL;
+ /*
++ * Internal function to notify that a interrupt thread is ready.
++ */
++static void irq_thread_set_ready(struct irq_desc *desc,
++				 struct irqaction *action)
++{
++	set_bit(IRQTF_READY, &action->thread_flags);
++	wake_up(&desc->wait_for_threads);
++}
 +
- 	if (!value)
- 		return 0;
++/*
++ * Internal function to wake up a interrupt thread and wait until it is
++ * ready.
++ */
++static void wake_up_and_wait_for_irq_thread_ready(struct irq_desc *desc,
++						  struct irqaction *action)
++{
++	if (!action || !action->thread)
++		return;
++
++	wake_up_process(action->thread);
++	wait_event(desc->wait_for_threads,
++		   test_bit(IRQTF_READY, &action->thread_flags));
++}
++
++/*
+  * Interrupt handler thread
+  */
+ static int irq_thread(void *data)
+@@ -1259,6 +1284,8 @@ static int irq_thread(void *data)
+ 	irqreturn_t (*handler_fn)(struct irq_desc *desc,
+ 			struct irqaction *action);
  
-@@ -364,7 +370,7 @@ static int inherit_props(struct btrfs_tr
- 		 * This is not strictly necessary as the property should be
- 		 * valid, but in case it isn't, don't propagate it further.
- 		 */
--		ret = h->validate(value, strlen(value));
-+		ret = h->validate(BTRFS_I(inode), value, strlen(value));
- 		if (ret)
- 			continue;
++	irq_thread_set_ready(desc, action);
++
+ 	sched_set_fifo(current);
  
---- a/fs/btrfs/props.h
-+++ b/fs/btrfs/props.h
-@@ -13,7 +13,8 @@ void __init btrfs_props_init(void);
- int btrfs_set_prop(struct btrfs_trans_handle *trans, struct inode *inode,
- 		   const char *name, const char *value, size_t value_len,
- 		   int flags);
--int btrfs_validate_prop(const char *name, const char *value, size_t value_len);
-+int btrfs_validate_prop(const struct btrfs_inode *inode, const char *name,
-+			const char *value, size_t value_len);
+ 	if (force_irqthreads() && test_bit(IRQTF_FORCED_THREAD,
+@@ -1683,8 +1710,6 @@ __setup_irq(unsigned int irq, struct irq
+ 	}
  
- int btrfs_load_inode_props(struct inode *inode, struct btrfs_path *path);
+ 	if (!shared) {
+-		init_waitqueue_head(&desc->wait_for_threads);
+-
+ 		/* Setup the type (level, edge polarity) if configured: */
+ 		if (new->flags & IRQF_TRIGGER_MASK) {
+ 			ret = __irq_set_trigger(desc,
+@@ -1780,14 +1805,8 @@ __setup_irq(unsigned int irq, struct irq
  
---- a/fs/btrfs/xattr.c
-+++ b/fs/btrfs/xattr.c
-@@ -404,7 +404,7 @@ static int btrfs_xattr_handler_set_prop(
- 	struct btrfs_root *root = BTRFS_I(inode)->root;
+ 	irq_setup_timings(desc, new);
  
- 	name = xattr_full_name(handler, name);
--	ret = btrfs_validate_prop(name, value, size);
-+	ret = btrfs_validate_prop(BTRFS_I(inode), name, value, size);
- 	if (ret)
- 		return ret;
+-	/*
+-	 * Strictly no need to wake it up, but hung_task complains
+-	 * when no hard interrupt wakes the thread up.
+-	 */
+-	if (new->thread)
+-		wake_up_process(new->thread);
+-	if (new->secondary)
+-		wake_up_process(new->secondary->thread);
++	wake_up_and_wait_for_irq_thread_ready(desc, new);
++	wake_up_and_wait_for_irq_thread_ready(desc, new->secondary);
  
+ 	register_irq_proc(irq, desc);
+ 	new->dir = NULL;
 
 
