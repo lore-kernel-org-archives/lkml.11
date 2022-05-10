@@ -2,134 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED65BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 03:38:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90D3BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 03:38:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234272AbiEJDmY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 23:42:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38670 "EHLO
+        id S235728AbiEJDmf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 23:42:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235709AbiEJDkh (ORCPT
+        with ESMTP id S235636AbiEJDkh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 9 May 2022 23:40:37 -0400
-Received: from wout2-smtp.messagingengine.com (wout2-smtp.messagingengine.com [64.147.123.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2FFE2016C7;
-        Mon,  9 May 2022 20:34:54 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id 5917D3200976;
-        Mon,  9 May 2022 23:34:52 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Mon, 09 May 2022 23:34:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=themaw.net; h=cc
-        :cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm3; t=1652153691; x=
-        1652240091; bh=Wf4+GirlHr8odLVWkz1C4aI3GGmAypu/lVakO44m7ok=; b=K
-        d6w/Ky9g1ONou+rs8boNzVnFBHtYNFA1WbynVGD24JKcYKLWqLU6/jX/6JNP7rak
-        PHLtOTz43QnIoy5mF8GRfgKHt+ESvwLJW13bIwbI7ikNVBPAlj4zg6JAzwUnNFPN
-        jGn5u15qQuWJM4OPcfg2QGSuBdFKbuBk4yAelyVa6gcBpJM3twzbBseiBTAy4Dcs
-        /kfW5db8YGVUfH/Li6584SZtEKKusdFuj0ZHDQTyXmOLcxj3w8qshaXGb9E9LdrC
-        RCqb2sorM7VVhmpc4aSR1kGSolhW1dU3MoAm4IL5wnrVXTA63daH729Y3LfVseIo
-        FRbmIkOl+MldRigeH5ybQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; t=1652153691; x=1652240091; bh=Wf4+GirlHr8od
-        LVWkz1C4aI3GGmAypu/lVakO44m7ok=; b=z4cDqglDdqc/osHgQ2M74yL21q/ld
-        on9l+ORXm2aR824S7xOaod5uSPAVxA5Aejyxb4Sf2cvRQuzghCC/TdyWxCFeeewX
-        /A0f22gQbVUlyu2/fEFWAGb6aXHaXu9M+uPFDkXsn4UBgFWNjYpuaeYjuQUO/hpx
-        HR217Tpo2MtH4wzCJMYaPWK5Ku8OtXiYDmq/nW7f5UMwFYwxZ9y4X+a9kxEczDHi
-        KqWv5mS8iuL9A6ieNtYMLCqQYR9UVkMM0mg5DMWL/ocJ11sni2H/RUXdVBJCUtD6
-        J7UZXsSTYbm7oLgZlQIVY39m0lyXOScdGjABK0D2Nk7rEpblfpf3/BI3w==
-X-ME-Sender: <xms:W915YiXgOfRlxtp1jBt-bKBEGGNlhEe7beM7JojMZmEJ71Rg1ns1BA>
-    <xme:W915YunJF_w0NYU0VqbbHadSvl-Pk4zNQ-Q-7xzjOGHxgwGiFfG8rzQcFSTWysIOY
-    QXxh9umjVir>
-X-ME-Received: <xmr:W915YmamtN3erdOvVnkmGCn6Gy-cy5252odPqGY0x5VVJexN_Z-rVOmTc0xWbl2Xxjc6V3bel9I2NiQQ69b1On3VHK1QzITp51yO_Tx4S73jrCvJcxSe>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrgedtgdejvdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefkuffhvfevffgjfhgtfggggfesthejredttderjeenucfhrhhomhepkfgrnhcu
-    mfgvnhhtuceorhgrvhgvnhesthhhvghmrgifrdhnvghtqeenucggtffrrghtthgvrhhnpe
-    dviefhveeifeevfedutdffkeeigedukeehvefgteeileeitdehgffggfffveejteenucev
-    lhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehrrghvvghnse
-    hthhgvmhgrfidrnhgvth
-X-ME-Proxy: <xmx:W915YpXpVdJCHMQJ77WMVun5-1I0IPPIXrZGxhduGFwCax5-nPHDhg>
-    <xmx:W915YskWEIYjktriuuuklFjPrdw8zSMuiO1kDkdsEpMZJkEmRy19Hg>
-    <xmx:W915YuflhFnjCnToJ7cyd3nhc0gd5WlgLUJTYfKotRzK0xKk2QZYAw>
-    <xmx:W915Ygl0Jc82FSJuDZwWuy-mCkfNI7bvcGv92xu6y1wanURsXE5jrA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 9 May 2022 23:34:45 -0400 (EDT)
-Message-ID: <4a712f3618835ac9ba0db8d26630f8edf209a193.camel@themaw.net>
-Subject: Re: [RFC PATCH] getting misc stats/attributes via xattr API
-From:   Ian Kent <raven@themaw.net>
-To:     Vivek Goyal <vgoyal@redhat.com>,
-        Christian Brauner <brauner@kernel.org>
-Cc:     Amir Goldstein <amir73il@gmail.com>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Dave Chinner <david@fromorbit.com>,
-        Theodore Ts'o <tytso@mit.edu>, Karel Zak <kzak@redhat.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Linux API <linux-api@vger.kernel.org>,
-        linux-man <linux-man@vger.kernel.org>,
-        LSM <linux-security-module@vger.kernel.org>,
-        David Howells <dhowells@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Christian Brauner <christian@brauner.io>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>
-Date:   Tue, 10 May 2022 11:34:39 +0800
-In-Reply-To: <YnmK0VJhQ4sf8AMI@redhat.com>
-References: <YnEeuw6fd1A8usjj@miu.piliscsaba.redhat.com>
-         <20220509124815.vb7d2xj5idhb2wq6@wittgenstein>
-         <CAOQ4uxgCSJ2rpJkPy1FkP__7zhaVXO5dnZQXSzvk=fReaZH7Aw@mail.gmail.com>
-         <20220509150856.cfsxn5t2tvev2njx@wittgenstein>
-         <YnmK0VJhQ4sf8AMI@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4425017CC9E;
+        Mon,  9 May 2022 20:35:10 -0700 (PDT)
+Received: from linux.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Axythn3XliaKoPAA--.50059S4;
+        Tue, 10 May 2022 11:35:05 +0800 (CST)
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+To:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Xuefeng Li <lixuefeng@loongson.cn>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH bpf-next v2 2/2] bpf: Print some info if disable bpf_jit_enable failed
+Date:   Tue, 10 May 2022 11:35:03 +0800
+Message-Id: <1652153703-22729-3-git-send-email-yangtiezhu@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+In-Reply-To: <1652153703-22729-1-git-send-email-yangtiezhu@loongson.cn>
+References: <1652153703-22729-1-git-send-email-yangtiezhu@loongson.cn>
+X-CM-TRANSID: AQAAf9Axythn3XliaKoPAA--.50059S4
+X-Coremail-Antispam: 1UD129KBjvJXoWxJrW7KF43Cw4UAF45CryrCrg_yoW8XrWfpr
+        48Jr92krZ0q34xG39rAFnIqr13trWDXF17Cr97Ca1av3WDZr9rJrs5KryUKanF9rWqga43
+        Zr4IyF9rCaykK37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUPE14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jryl82xGYIkIc2
+        x26xkF7I0E14v26r4j6ryUM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
+        Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j6F4UJw
+        A2z4x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I8E87Iv6xkF7I0E14v26F4UJVW0
+        owAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7
+        IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4U
+        M4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628vn2
+        kIc2xKxwCY02Avz4vE14v_Gr4l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_
+        Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17
+        CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0
+        I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I
+        8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73
+        UjIFyTuYvjfUbyxRDUUUU
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-05-09 at 17:42 -0400, Vivek Goyal wrote:
-> On Mon, May 09, 2022 at 05:08:56PM +0200, Christian Brauner wrote:
-> 
-> [..]
-> > Having "xattr" in the system call name is just confusing. These are
-> > fundamentally not "real" xattrs and we shouldn't mix semantics.
-> > There
-> > should be a clear distinction between traditional xattrs and this
-> > vfs
-> > and potentially fs information providing interface.
-> > 
-> > Just thinking about what the manpage would look like. We would need
-> > to
-> > add a paragraph to xattr(7) explaining that in addition to the
-> > system.*,
-> > security.*, user.* and other namespaces we now also have a set of
-> > namespaces that function as ways to get information about mounts or
-> > other things instead of information attached to specific inodes.
-> > 
-> > That's super random imho. If I were to be presented with this
-> > manpage
-> > I'd wonder if someone was too lazy to add a proper new system call
-> > with
-> > it's own semantics for this and just stuffed it into an existing
-> > API
-> > because it provided matching system call arguments. We can add a
-> > new
-> > system call. It's not that we're running out of them.
-> 
-> FWIW, I also felt that using xattr API to get some sort of mount info
-> felt
-> very non-intutive.
+A user told me that bpf_jit_enable can be disabled on one system, but he
+failed to disable bpf_jit_enable on the other system:
 
-Yeah, people looking for this function simply wouldn't know to
-look here ...
+  # echo 0 > /proc/sys/net/core/bpf_jit_enable
+  bash: echo: write error: Invalid argument
 
-Ian
+No useful info is available through the dmesg log, a quick analysis shows
+that the issue is related with CONFIG_BPF_JIT_ALWAYS_ON.
+
+When CONFIG_BPF_JIT_ALWAYS_ON is enabled, bpf_jit_enable is permanently set
+to 1 and setting any other value than that will return failure.
+
+It is better to print some info to tell the user if disable bpf_jit_enable
+failed.
+
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+---
+ net/core/sysctl_net_core.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
+index cf00dd7..ca4527f 100644
+--- a/net/core/sysctl_net_core.c
++++ b/net/core/sysctl_net_core.c
+@@ -266,6 +266,8 @@ static int proc_dointvec_minmax_bpf_enable(struct ctl_table *table, int write,
+ 					   loff_t *ppos)
+ {
+ 	int ret, jit_enable = *(int *)table->data;
++	int min = *(int *)table->extra1;
++	int max = *(int *)table->extra2;
+ 	struct ctl_table tmp = *table;
+ 
+ 	if (write && !capable(CAP_SYS_ADMIN))
+@@ -283,6 +285,10 @@ static int proc_dointvec_minmax_bpf_enable(struct ctl_table *table, int write,
+ 			ret = -EPERM;
+ 		}
+ 	}
++
++	if (write && ret && min == max)
++		pr_info_once("CONFIG_BPF_JIT_ALWAYS_ON is enabled, bpf_jit_enable is permanently set to 1.\n");
++
+ 	return ret;
+ }
+ 
+-- 
+2.1.0
+
