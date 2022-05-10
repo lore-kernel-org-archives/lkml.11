@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 111D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:05:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31E59C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:05:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244641AbiEJOJH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:09:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53272 "EHLO
+        id S243636AbiEJOJY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:09:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244872AbiEJNrE (ORCPT
+        with ESMTP id S244932AbiEJNrH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:47:04 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE681B090B;
-        Tue, 10 May 2022 06:32:19 -0700 (PDT)
+        Tue, 10 May 2022 09:47:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A62A820F4EB;
+        Tue, 10 May 2022 06:32:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E5012CE1EF0;
-        Tue, 10 May 2022 13:32:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3322C385C6;
-        Tue, 10 May 2022 13:32:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CAC561763;
+        Tue, 10 May 2022 13:32:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9C89C385C6;
+        Tue, 10 May 2022 13:32:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189536;
-        bh=qwSQxW4053RPG9LwGxHuLd7tkBgQhDyBH+bD/XchwME=;
+        s=korg; t=1652189564;
+        bh=jBq/EknjBntilCntOj42EHjlRuD4uZ+6hFXb03kR5Rw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j75TrZCSP9UI0QUb08CaX/lPx7fqh+AALvRVuuvNnmYSwqRt7Z8ZQuq4noQ0nthQS
-         uv/jTwRKJ6dSCN8Lzot7yh0J1IAxoQiwbXcldpP/trJzdhPyA89FKVucniGlCA+s+U
-         4vmbx22pe7nliWADDIjHknBrPVsUgbGCCPMH519I=
+        b=hYzQA1Muuq2n1pupq925hTy3jan/qBOKEq/a5ANdDjU01fTNtqGD0eU57DSBj63nH
+         8IMg+1bzoaX0t9Q7w2d9WwSs9z2fvZQPAWQMI5vYVBlybExtVs3O0pKGPr/nACOJUv
+         1ZjuGpExDnVLKiZyzAJ4841+dhgaGr3EZPLyR+gM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matt Corallo <blnxfsl@bluematt.me>,
-        Josef Bacik <josef@toxicpanda.com>, Qu Wenruo <wqu@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.15 080/135] btrfs: force v2 space cache usage for subpage mount
-Date:   Tue, 10 May 2022 15:07:42 +0200
-Message-Id: <20220510130742.705596847@linuxfoundation.org>
+        stable@vger.kernel.org, Vlad Buslov <vladbu@nvidia.com>,
+        Maor Dickman <maord@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 092/135] net/mlx5e: Lag, Dont skip fib events on current dst
+Date:   Tue, 10 May 2022 15:07:54 +0200
+Message-Id: <20220510130743.050495077@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -49,71 +50,114 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+From: Vlad Buslov <vladbu@nvidia.com>
 
-commit 9f73f1aef98b2fa7252c0a89be64840271ce8ea0 upstream.
+[ Upstream commit 4a2a664ed87962c4ddb806a84b5c9634820bcf55 ]
 
-[BUG]
-For a 4K sector sized btrfs with v1 cache enabled and only mounted on
-systems with 4K page size, if it's mounted on subpage (64K page size)
-systems, it can cause the following warning on v1 space cache:
+Referenced change added check to skip updating fib when new fib instance
+has same or lower priority. However, new fib instance can be an update on
+same dst address as existing one even though the structure is another
+instance that has different address. Ignoring events on such instances
+causes multipath LAG state to not be correctly updated.
 
- BTRFS error (device dm-1): csum mismatch on free space cache
- BTRFS warning (device dm-1): failed to load free space cache for block group 84082688, rebuilding it now
+Track 'dst' and 'dst_len' fields of fib event fib_entry_notifier_info
+structure and don't skip events that have the same value of that fields.
 
-Although not a big deal, as kernel can rebuild it without problem, such
-warning will bother end users, especially if they want to switch the
-same btrfs seamlessly between different page sized systems.
-
-[CAUSE]
-V1 free space cache is still using fixed PAGE_SIZE for various bitmap,
-like BITS_PER_BITMAP.
-
-Such hard-coded PAGE_SIZE usage will cause various mismatch, from v1
-cache size to checksum.
-
-Thus kernel will always reject v1 cache with a different PAGE_SIZE with
-csum mismatch.
-
-[FIX]
-Although we should fix v1 cache, it's already going to be marked
-deprecated soon.
-
-And we have v2 cache based on metadata (which is already fully subpage
-compatible), and it has almost everything superior than v1 cache.
-
-So just force subpage mount to use v2 cache on mount.
-
-Reported-by: Matt Corallo <blnxfsl@bluematt.me>
-CC: stable@vger.kernel.org # 5.15+
-Link: https://lore.kernel.org/linux-btrfs/61aa27d1-30fc-c1a9-f0f4-9df544395ec3@bluematt.me/
-Reviewed-by: Josef Bacik <josef@toxicpanda.com>
-Signed-off-by: Qu Wenruo <wqu@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: ad11c4f1d8fd ("net/mlx5e: Lag, Only handle events from highest priority multipath entry")
+Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
+Reviewed-by: Maor Dickman <maord@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/disk-io.c |   11 +++++++++++
- 1 file changed, 11 insertions(+)
+ .../net/ethernet/mellanox/mlx5/core/lag_mp.c  | 20 +++++++++++--------
+ .../net/ethernet/mellanox/mlx5/core/lag_mp.h  |  2 ++
+ 2 files changed, 14 insertions(+), 8 deletions(-)
 
---- a/fs/btrfs/disk-io.c
-+++ b/fs/btrfs/disk-io.c
-@@ -3415,6 +3415,17 @@ int __cold open_ctree(struct super_block
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
+index 9d50b9c2db5e..81786a9a424c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
+@@ -100,10 +100,12 @@ static void mlx5_lag_fib_event_flush(struct notifier_block *nb)
+ 	flush_workqueue(mp->wq);
+ }
+ 
+-static void mlx5_lag_fib_set(struct lag_mp *mp, struct fib_info *fi)
++static void mlx5_lag_fib_set(struct lag_mp *mp, struct fib_info *fi, u32 dst, int dst_len)
+ {
+ 	mp->fib.mfi = fi;
+ 	mp->fib.priority = fi->fib_priority;
++	mp->fib.dst = dst;
++	mp->fib.dst_len = dst_len;
+ }
+ 
+ struct mlx5_fib_event_work {
+@@ -116,10 +118,10 @@ struct mlx5_fib_event_work {
+ 	};
+ };
+ 
+-static void mlx5_lag_fib_route_event(struct mlx5_lag *ldev,
+-				     unsigned long event,
+-				     struct fib_info *fi)
++static void mlx5_lag_fib_route_event(struct mlx5_lag *ldev, unsigned long event,
++				     struct fib_entry_notifier_info *fen_info)
+ {
++	struct fib_info *fi = fen_info->fi;
+ 	struct lag_mp *mp = &ldev->lag_mp;
+ 	struct fib_nh *fib_nh0, *fib_nh1;
+ 	unsigned int nhs;
+@@ -133,7 +135,9 @@ static void mlx5_lag_fib_route_event(struct mlx5_lag *ldev,
  	}
  
- 	if (sectorsize != PAGE_SIZE) {
-+		/*
-+		 * V1 space cache has some hardcoded PAGE_SIZE usage, and is
-+		 * going to be deprecated.
-+		 *
-+		 * Force to use v2 cache for subpage case.
-+		 */
-+		btrfs_clear_opt(fs_info->mount_opt, SPACE_CACHE);
-+		btrfs_set_and_info(fs_info, FREE_SPACE_TREE,
-+			"forcing free space tree for sector size %u with page size %lu",
-+			sectorsize, PAGE_SIZE);
-+
- 		btrfs_warn(fs_info,
- 		"read-write for sector size %u with page size %lu is experimental",
- 			   sectorsize, PAGE_SIZE);
+ 	/* Handle multipath entry with lower priority value */
+-	if (mp->fib.mfi && mp->fib.mfi != fi && fi->fib_priority >= mp->fib.priority)
++	if (mp->fib.mfi && mp->fib.mfi != fi &&
++	    (mp->fib.dst != fen_info->dst || mp->fib.dst_len != fen_info->dst_len) &&
++	    fi->fib_priority >= mp->fib.priority)
+ 		return;
+ 
+ 	/* Handle add/replace event */
+@@ -149,7 +153,7 @@ static void mlx5_lag_fib_route_event(struct mlx5_lag *ldev,
+ 
+ 			i++;
+ 			mlx5_lag_set_port_affinity(ldev, i);
+-			mlx5_lag_fib_set(mp, fi);
++			mlx5_lag_fib_set(mp, fi, fen_info->dst, fen_info->dst_len);
+ 		}
+ 
+ 		return;
+@@ -179,7 +183,7 @@ static void mlx5_lag_fib_route_event(struct mlx5_lag *ldev,
+ 	}
+ 
+ 	mlx5_lag_set_port_affinity(ldev, MLX5_LAG_NORMAL_AFFINITY);
+-	mlx5_lag_fib_set(mp, fi);
++	mlx5_lag_fib_set(mp, fi, fen_info->dst, fen_info->dst_len);
+ }
+ 
+ static void mlx5_lag_fib_nexthop_event(struct mlx5_lag *ldev,
+@@ -220,7 +224,7 @@ static void mlx5_lag_fib_update(struct work_struct *work)
+ 	case FIB_EVENT_ENTRY_REPLACE:
+ 	case FIB_EVENT_ENTRY_DEL:
+ 		mlx5_lag_fib_route_event(ldev, fib_work->event,
+-					 fib_work->fen_info.fi);
++					 &fib_work->fen_info);
+ 		fib_info_put(fib_work->fen_info.fi);
+ 		break;
+ 	case FIB_EVENT_NH_ADD:
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.h b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.h
+index e8380eb0dd6a..b3a7f18b9e30 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.h
+@@ -18,6 +18,8 @@ struct lag_mp {
+ 	struct {
+ 		const void        *mfi; /* used in tracking fib events */
+ 		u32               priority;
++		u32               dst;
++		int               dst_len;
+ 	} fib;
+ 	struct workqueue_struct   *wq;
+ };
+-- 
+2.35.1
+
 
 
