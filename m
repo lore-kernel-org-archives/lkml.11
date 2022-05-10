@@ -2,130 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89EFCC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 07:44:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A109C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 07:44:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237222AbiEJHsG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 03:48:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38552 "EHLO
+        id S236341AbiEJHsT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 03:48:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237952AbiEJHrF (ORCPT
+        with ESMTP id S235464AbiEJHpw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 03:47:05 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C16A1E732D
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 00:43:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652168587; x=1683704587;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=SHaG7t37QKOZYLf/zhZyr1RLSxEVuMN/GSFyutKANt0=;
-  b=b80YXAKsCQTIHqthPwITHj0HdYYlCzd6TmWmRS94qdy2Z68voKQQRnfJ
-   YKFrTZi+6oywmXwCfldHSkvvdzzipKIWe1YmLrl2SMrC6WO6dnJ8hojnU
-   6qhd+uN8MMsJEuEae1kaBpN1RoAYEP01xSnpBdo/5ZUw66czp4PHHIm1S
-   R7ATCQm5iNigGRw2bi5XySZzIbDPkZvx8B8IUy3v//fNd5OkHcgWHcTxv
-   qm2LT4Oxv2ajaoKvLLFRiQOXwDRtPxdJx6hq4QVBFhBET9sJwnsPcJNWD
-   cFWLjVymkvfLUjEMnOO+Thf+7ffnXTl70vFwmXbzwiArDrqgWi5JQgx/6
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="249196276"
-X-IronPort-AV: E=Sophos;i="5.91,213,1647327600"; 
-   d="scan'208";a="249196276"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 00:43:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,213,1647327600"; 
-   d="scan'208";a="602346135"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 10 May 2022 00:43:02 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1noKWM-000HUc-4m;
-        Tue, 10 May 2022 07:43:02 +0000
-Date:   Tue, 10 May 2022 15:42:37 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Jason Ekstrand <jason@jlekstrand.net>,
-        Sean Paul <seanpaul@chromium.org>,
-        =?iso-8859-1?Q?St=E9phane?= Marchesin <marcheu@chromium.org>,
-        "Kristian H. Kristensen" <hoegsberg@chromium.org>
-Subject: [jsarha:topic/cros-sof-v4.19 1074/6555]
- drivers/gpu/drm/drm_syncobj.c:125:6: warning: no previous prototype for
- function 'drm_syncobj_add_callback'
-Message-ID: <202205101535.GWoZC8wP-lkp@intel.com>
+        Tue, 10 May 2022 03:45:52 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5942CF29D9
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 00:37:00 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id g23so18930233edy.13
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 00:37:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=6RZWCbAFEodD2+2XSMEoagvUogOze2cw3QzyxFw/BDQ=;
+        b=tgeEd74zRUA5aO1Do8LwMzp/J1ozn+9YH1LrXvTSv/C+z7ex3kM0d2ODIFPoyr17PP
+         nrH1NlExLYf0J6IkMJUpZzAXHDjo3dbx2UIzk3LVeQxQUiLKXnBmD24avQgq7JIUpUNv
+         BvQASI3UfasFBVTdby7HX4OHej8bHtsCSM0BxXvZsmj6d008CgdRuHFVAh2yqvIoOsnz
+         Q+Y2qy0IokBsZRt75QRHC/eb84dCwkozQd1A9z3ZjPOxDw86e8NyvVmr2f/tkvTOKyyC
+         nLQw9fD75PV/1fIdAgXHIJ5xinRE5+m4Mm10+dc29VSAuRdTXGA9cap1t7tqu9j61Mgm
+         5TqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=6RZWCbAFEodD2+2XSMEoagvUogOze2cw3QzyxFw/BDQ=;
+        b=MtIIXdNqbNso9fD3IGFz2G0RVOaOPKR8p2APfCjlCk0MACctW2hmYstMI5c2QAEw8M
+         2pe1jUxtBRTW4P03bc703vjDTMIGVhXi1brLyxHneQmfg9wYVzYEBwdhPI0bzbrIRUji
+         HEpw5MofS3+SuC9FKaBMguBD54b8/ifX7w8nE1J+ffQ21bHFndHjIxCAZZ6CW0EqMfQj
+         MxR6LniH5+m0FaJrW3SMoVooI+h929B+7E6gxnfpK5Bwcl1Cu5gJfWI5B8SEUZls5CUP
+         8TWoN/hZjYLOwjnoQxg3jfxaebfY6ZaBJGtiWPETR1uDQzTRo8ZEPpMJC5LmBa+ComQq
+         kd8g==
+X-Gm-Message-State: AOAM531doquib3gXAGW0jzlRgkX2Hl75Mqp6M3qCTKdkAHpRmLeJqUIH
+        htdxBJjIP28ERMpP1Q17ZhMwobAMsdq1wuw1
+X-Google-Smtp-Source: ABdhPJxyax1mRAPGS5sipxq+bFV0bICt1+ObVB9C2oSv1/7OuFLXOtOyvd1HWcYDvgkfQYZMYcAY8g==
+X-Received: by 2002:a05:6402:4301:b0:427:c8e4:4acd with SMTP id m1-20020a056402430100b00427c8e44acdmr21961658edc.230.1652168218886;
+        Tue, 10 May 2022 00:36:58 -0700 (PDT)
+Received: from [192.168.0.250] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id hx15-20020a170906846f00b006f3ef214e4csm5964412ejc.178.2022.05.10.00.36.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 May 2022 00:36:58 -0700 (PDT)
+Message-ID: <b8983ff3-7dca-0556-1bcc-05897aef212c@linaro.org>
+Date:   Tue, 10 May 2022 09:36:57 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] memory: OMAP_GPMC should depend on ARCH_OMAP2PLUS ||
+ ARCH_K3
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Roger Quadros <rogerq@kernel.org>
+Cc:     Tony Lindgren <tony@atomide.com>,
+        "open list:TI ETHERNET SWITCH DRIVER (CPSW)" 
+        <linux-omap@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <2b7d411b4a7913335082c858cb0d63b9e4bf7c5b.1652103920.git.geert+renesas@glider.be>
+ <20fd1a74-c0f5-d8e9-4903-b74c185d5aa3@kernel.org>
+ <CAMuHMdVXHSnOOnn3jchezQc+bsPYTnSPuw_rOe+pyskAVaQGnQ@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAMuHMdVXHSnOOnn3jchezQc+bsPYTnSPuw_rOe+pyskAVaQGnQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/jsarha/linux topic/cros-sof-v4.19
-head:   d7a3e91d8d16d1ef8653deec5a1fffc4de034a0c
-commit: 8e82fa1ed837aefa829a82894a950e7abc393536 [1074/6555] UPSTREAM: drm/syncobj: Drop add/remove_callback from driver interface
-config: x86_64-randconfig-a003-20220509 (https://download.01.org/0day-ci/archive/20220510/202205101535.GWoZC8wP-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 18dd123c56754edf62c7042dcf23185c3727610f)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/jsarha/linux/commit/8e82fa1ed837aefa829a82894a950e7abc393536
-        git remote add jsarha https://github.com/jsarha/linux
-        git fetch --no-tags jsarha topic/cros-sof-v4.19
-        git checkout 8e82fa1ed837aefa829a82894a950e7abc393536
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/gpu/drm/
+On 10/05/2022 09:30, Geert Uytterhoeven wrote:
+> Hi Roger,
+> 
+> On Tue, May 10, 2022 at 9:22 AM Roger Quadros <rogerq@kernel.org> wrote:
+>> On 09/05/2022 16:48, Geert Uytterhoeven wrote:
+>>> The Texas Instruments OMAP General Purpose Memory Controller (GPMC) is
+>>> only present on TI OMAP2/3/4/5, AM33xx, AM43x, DRA7xx, TI81xx, and K3
+>>> SoCs.  Hence add a dependency on ARCH_OMAP2PLUS || ARCH_K3, to prevent
+>>> asking the user about this driver when configuring a kernel without
+>>> OMAP2+ or K3 SoC family support.
+>>>
+>>> Fixes: be34f45f0d4aa91c ("memory: omap-gpmc: Make OMAP_GPMC config visible and selectable")
+>>> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> 
+>>> --- a/drivers/memory/Kconfig
+>>> +++ b/drivers/memory/Kconfig
+>>> @@ -105,6 +105,7 @@ config TI_EMIF
+>>>  config OMAP_GPMC
+>>>       tristate "Texas Instruments OMAP SoC GPMC driver"
+>>>       depends on OF_ADDRESS
+>>> +     depends on ARCH_OMAP2PLUS || ARCH_K3 || COMPILE_TEST
+>>>       select GPIOLIB
+>>>       help
+>>>         This driver is for the General Purpose Memory Controller (GPMC)
+>>
+>> Is there any possibility that CONFIG_IRQ_DOMAIN is not set while both
+>> OF_ADDRESS and COMPILE_TEST are set?
+>>
+>> That particular case will lead to build failures.
+>>
+>> e.g.
+>> https://krzk.eu/#/builders/63/builds/162
+> 
+> So it needs an additional dependency on IRQ_DOMAIN.
+> That is a pre-existing problem, not caused by my patch (which adds
+> more dependencies, and doesn't remove any).
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Is this really a case here? The failure reported above was for earlier
+version of Roger's patch which was changing to:
+	depends on OF_ADDRESS || COMPILE_TEST
 
-All warnings (new ones prefixed by >>):
+Here, OF_ADDRESS will be always a dependency. If it builds in current
+configuration (having only OF_ADDRESS), then adding dependencies should
+not cause more issues.... It only restricts the config, not widens it.
 
->> drivers/gpu/drm/drm_syncobj.c:125:6: warning: no previous prototype for function 'drm_syncobj_add_callback' [-Wmissing-prototypes]
-   void drm_syncobj_add_callback(struct drm_syncobj *syncobj,
-        ^
-   drivers/gpu/drm/drm_syncobj.c:125:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void drm_syncobj_add_callback(struct drm_syncobj *syncobj,
-   ^
-   static 
->> drivers/gpu/drm/drm_syncobj.c:134:6: warning: no previous prototype for function 'drm_syncobj_remove_callback' [-Wmissing-prototypes]
-   void drm_syncobj_remove_callback(struct drm_syncobj *syncobj,
-        ^
-   drivers/gpu/drm/drm_syncobj.c:134:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void drm_syncobj_remove_callback(struct drm_syncobj *syncobj,
-   ^
-   static 
-   2 warnings generated.
+Therefore the patch looks actually correct, but some testing would be
+nice that we don't hit the same issues as before.
 
-
-vim +/drm_syncobj_add_callback +125 drivers/gpu/drm/drm_syncobj.c
-
-e7aca5031a2fb5 Jason Ekstrand 2017-08-25  124  
-9c19fb10a5893d Jason Ekstrand 2017-08-28 @125  void drm_syncobj_add_callback(struct drm_syncobj *syncobj,
-9c19fb10a5893d Jason Ekstrand 2017-08-28  126  			      struct drm_syncobj_cb *cb,
-9c19fb10a5893d Jason Ekstrand 2017-08-28  127  			      drm_syncobj_func_t func)
-9c19fb10a5893d Jason Ekstrand 2017-08-28  128  {
-9c19fb10a5893d Jason Ekstrand 2017-08-28  129  	spin_lock(&syncobj->lock);
-9c19fb10a5893d Jason Ekstrand 2017-08-28  130  	drm_syncobj_add_callback_locked(syncobj, cb, func);
-9c19fb10a5893d Jason Ekstrand 2017-08-28  131  	spin_unlock(&syncobj->lock);
-9c19fb10a5893d Jason Ekstrand 2017-08-28  132  }
-9c19fb10a5893d Jason Ekstrand 2017-08-28  133  
-9c19fb10a5893d Jason Ekstrand 2017-08-28 @134  void drm_syncobj_remove_callback(struct drm_syncobj *syncobj,
-9c19fb10a5893d Jason Ekstrand 2017-08-28  135  				 struct drm_syncobj_cb *cb)
-9c19fb10a5893d Jason Ekstrand 2017-08-28  136  {
-9c19fb10a5893d Jason Ekstrand 2017-08-28  137  	spin_lock(&syncobj->lock);
-9c19fb10a5893d Jason Ekstrand 2017-08-28  138  	list_del_init(&cb->node);
-9c19fb10a5893d Jason Ekstrand 2017-08-28  139  	spin_unlock(&syncobj->lock);
-9c19fb10a5893d Jason Ekstrand 2017-08-28  140  }
-9c19fb10a5893d Jason Ekstrand 2017-08-28  141  
-
-:::::: The code at line 125 was first introduced by commit
-:::::: 9c19fb10a5893d6501df4d0fb93d954d5fc1d91b drm/syncobj: Add a callback mechanism for replace_fence (v3)
-
-:::::: TO: Jason Ekstrand <jason@jlekstrand.net>
-:::::: CC: Dave Airlie <airlied@redhat.com>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Best regards,
+Krzysztof
