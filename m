@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7434C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:19:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED427C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:19:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343871AbiEJOXs (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:23:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44252 "EHLO
+        id S245432AbiEJOXv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:23:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245437AbiEJNwZ (ORCPT
+        with ESMTP id S240679AbiEJNwg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:52:25 -0400
+        Tue, 10 May 2022 09:52:36 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7E6629B032;
-        Tue, 10 May 2022 06:38:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7299B29B807;
+        Tue, 10 May 2022 06:38:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 32990615F2;
-        Tue, 10 May 2022 13:38:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2986BC385A6;
-        Tue, 10 May 2022 13:37:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 31A486193C;
+        Tue, 10 May 2022 13:38:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41E8DC385A6;
+        Tue, 10 May 2022 13:38:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189880;
-        bh=rmlvZpm17lfrqvAW3UoK8aNjej5R95tUNQtmlikoKOI=;
+        s=korg; t=1652189889;
+        bh=JAHRXEIWY8lxKD+wFjsb89waQRDNc35/078AmjBzWLA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c0tGFpsft4zz7tEf3WjhT/nG/ix6rraN/ymA3fnyO0NRXSRfDo/HRMOMRcQ33/r6v
-         ym0kBLelZTzCt9Dl90YKjv8sjTqxS0wW04OJYFKw7W1KHT6KQR6Q+JqJtdTqB0gSTK
-         nhfu3auBd8AJMddnp6ikN5i8Xpcc7juQ6p90bLc0=
+        b=jUZOg+bQFcqeiIAYTu8E4uPiewTXrZtuUPB9d3ZP4JLPEiS4Ob/HkJJ9HC5gkqrhn
+         soHBrGrfFzv1e/ZZ3rRUa4YJNuUs562WwOo93EvMSPzpJ+rRJvusf7V5XJfgNfgSh2
+         1pmM0iRtXVG/D1LMl+BGWk60xYLX74ugsj23/sUs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dmitry Shmidt <dimitrysh@google.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.17 059/140] ASoC: meson: axg-card: Fix nonatomic links
-Date:   Tue, 10 May 2022 15:07:29 +0200
-Message-Id: <20220510130743.307108990@linuxfoundation.org>
+        stable@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Joerg Roedel <jroedel@suse.de>
+Subject: [PATCH 5.17 061/140] iommu/vt-d: Drop stop marker messages
+Date:   Tue, 10 May 2022 15:07:31 +0200
+Message-Id: <20220510130743.363788473@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -51,57 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Neil Armstrong <narmstrong@baylibre.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
 
-commit 0c9b152c72e53016e96593bdbb8cffe2176694b9 upstream.
+commit da8669ff41fa31573375c9a4180f5c080677204b upstream.
 
-This commit e138233e56e9829e65b6293887063a1a3ccb2d68 causes the
-following system crash when using audio on G12A/G12B & SM1 systems:
+The page fault handling framework in the IOMMU core explicitly states
+that it doesn't handle PCI PASID Stop Marker and the IOMMU drivers must
+discard them before reporting faults. This handles Stop Marker messages
+in prq_event_thread() before reporting events to the core.
 
- BUG: sleeping function called from invalid context at kernel/locking/mutex.c:282
-  in_atomic(): 1, irqs_disabled(): 128, non_block: 0, pid: 0, name: swapper/0
- preempt_count: 10001, expected: 0
- RCU nest depth: 0, expected: 0
- Preemption disabled at:
- schedule_preempt_disabled+0x20/0x2c
+The VT-d driver explicitly drains the pending page requests when a CPU
+page table (represented by a mm struct) is unbound from a PASID according
+to the procedures defined in the VT-d spec. The Stop Marker messages do
+not need a response. Hence, it is safe to drop the Stop Marker messages
+silently if any of them is found in the page request queue.
 
- mutex_lock+0x24/0x60
- _snd_pcm_stream_lock_irqsave+0x20/0x3c
- snd_pcm_period_elapsed+0x24/0xa4
- axg_fifo_pcm_irq_block+0x64/0xdc
- __handle_irq_event_percpu+0x104/0x264
- handle_irq_event+0x48/0xb4
- ...
- start_kernel+0x3f0/0x484
- __primary_switched+0xc0/0xc8
-
-Revert this commit until the crash is fixed.
-
-Fixes: e138233e56e9829e65b6 ("ASoC: meson: axg-card: make links nonatomic")
-Reported-by: Dmitry Shmidt <dimitrysh@google.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Acked-by: Jerome Brunet <jbrunet@baylibre.com>
-Link: https://lore.kernel.org/r/20220421155725.2589089-2-narmstrong@baylibre.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: d5b9e4bfe0d88 ("iommu/vt-d: Report prq to io-pgfault framework")
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Link: https://lore.kernel.org/r/20220421113558.3504874-1-baolu.lu@linux.intel.com
+Link: https://lore.kernel.org/r/20220423082330.3897867-2-baolu.lu@linux.intel.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/meson/axg-card.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/iommu/intel/svm.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/sound/soc/meson/axg-card.c b/sound/soc/meson/axg-card.c
-index cbbaa55d92a6..2b77010c2c5c 100644
---- a/sound/soc/meson/axg-card.c
-+++ b/sound/soc/meson/axg-card.c
-@@ -320,7 +320,6 @@ static int axg_card_add_link(struct snd_soc_card *card, struct device_node *np,
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -956,6 +956,10 @@ bad_req:
+ 			goto bad_req;
+ 		}
  
- 	dai_link->cpus = cpu;
- 	dai_link->num_cpus = 1;
--	dai_link->nonatomic = true;
- 
- 	ret = meson_card_parse_dai(card, np, &dai_link->cpus->of_node,
- 				   &dai_link->cpus->dai_name);
--- 
-2.36.1
-
++		/* Drop Stop Marker message. No need for a response. */
++		if (unlikely(req->lpig && !req->rd_req && !req->wr_req))
++			goto prq_advance;
++
+ 		if (!svm || svm->pasid != req->pasid) {
+ 			/*
+ 			 * It can't go away, because the driver is not permitted
 
 
