@@ -2,315 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FC86C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 09:34:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A5D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 09:34:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238914AbiEJJh7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 05:37:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50622 "EHLO
+        id S238920AbiEJJim (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 05:38:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238778AbiEJJhz (ORCPT
+        with ESMTP id S235891AbiEJJij (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 05:37:55 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7536628F7D9;
-        Tue, 10 May 2022 02:33:58 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id ks9so25309051ejb.2;
-        Tue, 10 May 2022 02:33:57 -0700 (PDT)
+        Tue, 10 May 2022 05:38:39 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 940B128F7D9;
+        Tue, 10 May 2022 02:34:42 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id d22so16227150plr.9;
+        Tue, 10 May 2022 02:34:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NAwbEC4wzGeiHM+S/1u+kwGWnI+5JuwTP+pjO73dBAo=;
-        b=p6gYd+2SfPJEv/0eDykmObWhP5R0Oa5G8I1HeJXOxDjPZxBVgGLBp0IkNwJNjeUcXW
-         blODB5FDbkg/+fyfAbtVb9qRSOSroLyU0jITU5BgN5pqRT4u7PxEZIBiTP6U34hrW04l
-         0nXKnk1gmGpO3NJHH0OFIviPjAU0w/05kRcZuZT8FdR5XmO5D4bIYyGyANk6jrMO1yl9
-         VyRhMC6jD0AXb21Qsx/fQduAUI0cUS1qKAV1jW5GhSPfYjVLsM/T6bqL9i4Aly2yqABW
-         PGRt3HEQX/NjtcruVWo/qtX0BoteejiCfjCmJEGzitVrlPPx3MyNRtPrLU6bn60i/QWl
-         VKQQ==
+        h=message-id:date:mime-version:user-agent:content-language:to:cc:from
+         :subject:content-transfer-encoding;
+        bh=qaDh4Ckz8QrCcHoQ04UJEqXA1un3Pk43mgbPkIGVN1I=;
+        b=KVEJAoTst/XMBdGnBfrFVplKvsiqSzit2RwnZ7YD0A3CpnQAafw/CLzObaclOYYcMR
+         VY0VtGrEwffts3ooJ/aWd6Y3OiGHrKNnA+2TQfO5EbQLI2np25d2zdp36orDc7NCaDsy
+         p7hnQ50UM/95iDTalSnkgGuGu31IAPd7odOCq8d2mz8IrW8+zS8ruIQw9H9NfmfdQOd1
+         mKVOLdEvvAGLEyVhv1dAmbEwLRVfIT4MrEqmuQo8ozINm3iLE/uyN/W9dPE/FgQfpUfe
+         pwXBYLO6p0XZrZ1+YZ6eGPqe1BsvHXXZPfIveHzDLlu+kC0RzTHrJNVb8894S6f+c5oe
+         sfcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NAwbEC4wzGeiHM+S/1u+kwGWnI+5JuwTP+pjO73dBAo=;
-        b=mFgM+49fybTPJRhPcI+XOXTzgLHxp1xRnFAyfXIBpNYT1EJ7jQPoHU9YKglNFAwR/0
-         oR5ANSbmlssze5owcQdhFIQIkO1I8McklpV+nTbTdQPGirvuRwRKy0ym7uXEiJC2cmy8
-         nMdpPUuWXOhj2+ZqqoS6KpBmDF0cp55rHn/Cvgaf84Em/u9f7B4/XgEm5nggZ05pPwqW
-         SyKy+Clbrz+8geZIGzWG/fm3lazej8WBqGlYZmAdxLtR6gywJXLIgWWO8YWOQz4Oq2Gj
-         yOJcehSkASGeP+BquKnxZLpqjz7qaQRGcfAq0f5/WDiXQIFNPhblQosFeyIDw8DPj7Oj
-         3vRA==
-X-Gm-Message-State: AOAM533PjN0aXhyvIevKusatl2+lj1ccCC9jNw0+7xoOuYNzxLBgkhBh
-        3N3Fpgh4g2VnmF7A5WO52P37hDKJk+PDqpDjbfI=
-X-Google-Smtp-Source: ABdhPJw/AvobqN/Ev8vcO4HJVN+jByJDjFJCVqMuTZRITKINfAdGiNbO3Wd3t9RvUEupzEZH4eCa6CZu7gTqoRbfB2E=
-X-Received: by 2002:a17:907:628e:b0:6d9:c6fa:6168 with SMTP id
- nd14-20020a170907628e00b006d9c6fa6168mr18469874ejc.132.1652175236457; Tue, 10
- May 2022 02:33:56 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:from:subject:content-transfer-encoding;
+        bh=qaDh4Ckz8QrCcHoQ04UJEqXA1un3Pk43mgbPkIGVN1I=;
+        b=6CIzvJzjXsjt/Tm5xisYKaZszkWE6lMZh9YuJYSBUxhBBW3oova3K3r5lnIJR5fDD/
+         v35Ka9mnU7ceW3t7IbNjwAaSYS4qAO5bRaL5pjO47+mUFi34I8tdUud2DVSOtSzEDnEt
+         XZZIuTIG/L9z1BfxL0PP8R3aFFhH2VmlzbhN0Synyw1QVEW3hHjQJbSrx7Rv/DeOw0xf
+         tPWTK4MdMG7uYm+ezRp+aMnt/OcqeuUEDDP1hg8zz++Ezvug3E7zYb7ICHiJv4pPiMFk
+         z5rnl5ASH3tilRJ38cul+a+rMnkE9/a1FWlpQDYFd/B/emCo5MfIdTgqvVx1D3E0meWQ
+         ckeg==
+X-Gm-Message-State: AOAM530WcDYwrhJmMKoXdB0Bi07ZH7krjhx4+QbevR+eFS50eafesf0G
+        Xv7+ArbbbYKVSUGm4lk0I/4E+9BRIQOMIw==
+X-Google-Smtp-Source: ABdhPJy/YUSbDEPTeKe1+Vh8Kbzycu5xwlQFcScA9EB0LpH/f0Zgcz/Kilxl0fL/79wxmIjbIQMvJg==
+X-Received: by 2002:a17:902:d510:b0:15e:afc4:85a0 with SMTP id b16-20020a170902d51000b0015eafc485a0mr19918712plg.64.1652175282090;
+        Tue, 10 May 2022 02:34:42 -0700 (PDT)
+Received: from [192.168.11.5] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
+        by smtp.gmail.com with ESMTPSA id i8-20020aa796e8000000b0050dc762812bsm10176399pfq.5.2022.05.10.02.34.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 May 2022 02:34:41 -0700 (PDT)
+Message-ID: <05d491d4-c498-9bab-7085-9c892b636d68@gmail.com>
+Date:   Tue, 10 May 2022 18:34:37 +0900
 MIME-Version: 1.0
-References: <YnoJ0k6eIUiwjXSZ@debian-BULLSEYE-live-builder-AMD64>
-In-Reply-To: <YnoJ0k6eIUiwjXSZ@debian-BULLSEYE-live-builder-AMD64>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 10 May 2022 11:33:19 +0200
-Message-ID: <CAHp75Vd574LCnEq-KX=WHnnDyrjZgGu6W9wNEbnw79FBpyx=Lw@mail.gmail.com>
-Subject: Re: [PATCH RESEND v11] platform/chrome: Add ChromeOS ACPI device driver
-To:     Muhammad Usama Anjum <usama.anjum@collabora.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Enric Balletbo i Serra <eballetbo@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Collabora Kernel ML <kernel@collabora.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Dmitry Torokhov <dtor@chromium.org>,
-        Gwendal Grignou <gwendal@chromium.org>, vbendeb@chromium.org,
-        Andy Shevchenko <andy@infradead.org>,
-        Ayman Bagabas <ayman.bagabas@gmail.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        =?UTF-8?Q?Bla=C5=BE_Hrastnik?= <blaz@mxxn.io>,
-        Darren Hart <dvhart@infradead.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Jeremy Soller <jeremy@system76.com>,
-        Mattias Jacobsson <2pi@mok.nu>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Rajat Jain <rajatja@google.com>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Platform Driver <platform-driver-x86@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        chrome-platform@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Content-Language: en-US
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Pavel Pisa <pisa@cmp.felk.cvut.cz>
+Cc:     Martin Jerabek <martin.jerabek01@gmail.com>,
+        Ondrej Ille <ondrej.ille@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+From:   Akira Yokosawa <akiyks@gmail.com>
+Subject: [PATCH net-next] docs: ctucanfd: Use 'kernel-figure' directive
+ instead of 'figure'
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 8:44 AM Muhammad Usama Anjum
-<usama.anjum@collabora.com> wrote:
->
-> From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
->
-> The x86 Chromebooks have the ChromeOS ACPI device. This driver attaches
-> to the ChromeOS ACPI device and exports the values reported by ACPI in a
-> sysfs directory. This data isn't present in ACPI tables when read
-> through ACPI tools, hence a driver is needed to do it. The driver gets
-> data from firmware using the ACPI component of the kernel. The ACPI values
-> are presented in string form (numbers as decimal values) or binary
-> blobs, and can be accessed as the contents of the appropriate read only
-> files in the standard ACPI device's sysfs directory tree. This data is
-> consumed by the ChromeOS user space.
+Two issues were observed in the ReST doc added by commit c3a0addefbde
+("docs: ctucanfd: CTU CAN FD open-source IP core documentation.").
 
-> Cc: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-> Cc: Hans de Goede <hdegoede@redhat.com>
+The plain "figure" directive broke "make pdfdocs" due to a missing
+PDF figure.  For conversion of SVG -> PDF to work, the "kernel-figure"
+directive, which is an extension for kernel documentations, should
+be used instead.
 
-You can use --cc parameter to `git send-email` instead of putting
-these lines in the commit message.
+The directive of "code:: raw" causes a warning from both
+"make htmldocs" and "make pdfdocs", which reads:
 
-...
+    [...]/can/ctu/ctucanfd-driver.rst:75: WARNING: Pygments lexer name
+    'raw' is not known
 
-> +#define DEV_ATTR(_var, _name)                                  \
-> +       static struct device_attribute dev_attr_##_var =        \
-> +               __ATTR(_name, 0444, chromeos_first_level_attr_show, NULL);
-> +
+A plain literal-block marker should suffice where no syntax
+highlighting is intended.
 
-Why not ATTR_RO()?
+Fix the issues by using suitable directive and marker.
 
-...
+Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
+Fixes: c3a0addefbde ("docs: ctucanfd: CTU CAN FD open-source IP core docu=
+mentation.")
+Cc: Pavel Pisa <pisa@cmp.felk.cvut.cz>
+Cc: Martin Jerabek <martin.jerabek01@gmail.com>
+Cc: Ondrej Ille <ondrej.ille@gmail.com>
+Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+---
+ .../networking/device_drivers/can/ctu/ctucanfd-driver.rst     | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> +#define GPIO_ATTR_GROUP(_group, _name, _num)                                           \
-> +       static umode_t attr_is_visible_gpio_##_num(struct kobject *kobj,                \
-> +                                                  struct attribute *attr, int n)       \
-> +       {                                                                               \
-> +               if (_num < chromeos_acpi_gpio_groups)                                   \
-> +                       return attr->mode;                                              \
+diff --git a/Documentation/networking/device_drivers/can/ctu/ctucanfd-dri=
+ver.rst b/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver=
+=2Erst
+index 2fde5551e756..40c92ea272af 100644
+--- a/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst=
 
-> +               else                                                                    \
++++ b/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst=
 
-Redundant.
+@@ -72,7 +72,7 @@ it is reachable (on which bus it resides) and its confi=
+guration =E2=80=93
+ registers address, interrupts and so on. An example of such a device
+ tree is given in .
+=20
+-.. code:: raw
++::
+=20
+            / {
+                /* ... */
+@@ -451,7 +451,7 @@ the FIFO is maintained, together with priority rotati=
+on, is depicted in
+=20
+ |
+=20
+-.. figure:: fsm_txt_buffer_user.svg
++.. kernel-figure:: fsm_txt_buffer_user.svg
+=20
+    TX Buffer states with possible transitions
+=20
+--=20
+2.25.1
 
-> +                       return 0;                                                       \
-> +       }                                                                               \
-> +       static ssize_t chromeos_attr_show_gpio_##_num(struct device *dev,               \
-> +                                                     struct device_attribute *attr,    \
-> +                                                     char *buf)                        \
-> +       {                                                                               \
-> +               char name[ACPI_ATTR_NAME_LEN + 1];                                      \
-> +               int ret, num;                                                           \
-> +                                                                                       \
-> +               ret = parse_attr_name(attr->attr.name, name, &num);                     \
-> +               if (ret)                                                                \
-> +                       return ret;                                                     \
-
-> +               ret = chromeos_acpi_evaluate_method(dev, _num, num, name, buf);         \
-> +               if (ret < 0)                                                            \
-> +                       ret = 0;                                                        \
-
-Below I saw the same code, why is the error ignored?
-
-> +               return ret;                                                             \
-> +       }                                                                               \
-> +       static struct device_attribute dev_attr_0_##_group =                            \
-> +               __ATTR(GPIO.0, 0444, chromeos_attr_show_gpio_##_num, NULL);             \
-> +       static struct device_attribute dev_attr_1_##_group =                            \
-> +               __ATTR(GPIO.1, 0444, chromeos_attr_show_gpio_##_num, NULL);             \
-> +       static struct device_attribute dev_attr_2_##_group =                            \
-> +               __ATTR(GPIO.2, 0444, chromeos_attr_show_gpio_##_num, NULL);             \
-> +       static struct device_attribute dev_attr_3_##_group =                            \
-> +               __ATTR(GPIO.3, 0444, chromeos_attr_show_gpio_##_num, NULL);             \
-> +                                                                                       \
-> +       static struct attribute *attrs_##_group[] = {                                   \
-> +               &dev_attr_0_##_group.attr,                                              \
-> +               &dev_attr_1_##_group.attr,                                              \
-> +               &dev_attr_2_##_group.attr,                                              \
-> +               &dev_attr_3_##_group.attr,                                              \
-> +               NULL                                                                    \
-> +       };                                                                              \
-> +       static const struct attribute_group attr_group_##_group = {                     \
-> +               .name = _name,                                                          \
-> +               .is_visible = attr_is_visible_gpio_##_num,                              \
-
-> +               .attrs = attrs_##_group                                                 \
-
-Keep a comma here.
-
-> +       };
-
-> +               // select sub element inside this package
-
-Seems you have different comment styles over the same file. Please,
-use /* ... */ here which seems what you wanted.
-
-...
-
-> +static int parse_attr_name(const char *name, char *attr_name, int *attr_num)
-> +{
-> +       int ret = 0;
-> +
-> +       strscpy(attr_name, name, ACPI_ATTR_NAME_LEN + 1);
-> +
-> +       if (strlen(name) > ACPI_ATTR_NAME_LEN)
-
-This seems strange, esp. taking into account that strscpy() returns that.
-
-int ret;
-
-ret = strscpy(...);
-if (ret == -E2BIG)
-  return kstrtoint(...);
-
-return 0;
-
-> +               ret = kstrtoint(&name[ACPI_ATTR_NAME_LEN + 1], 0, attr_num);
-> +
-> +       return ret;
-> +}
-
-...
-
-> +static ssize_t chromeos_first_level_attr_show(struct device *dev,
-> +                                 struct device_attribute *attr,
-> +                                 char *buf)
-> +{
-> +       char attr_name[ACPI_ATTR_NAME_LEN + 1];
-> +       int ret, attr_num = 0;
-> +
-> +       ret = parse_attr_name(attr->attr.name, attr_name, &attr_num);
-> +       if (ret)
-> +               return 0;
-
-> +       ret = chromeos_acpi_evaluate_method(dev, attr_num, 0, attr_name, buf);
-> +       if (ret < 0)
-> +               ret = 0;
-
-Why is the error not reported?
-
-> +       return ret;
-> +}
-
-...
-
-> +static unsigned int get_gpio_pkg_num(struct device *dev)
-> +{
-> +       struct acpi_buffer output = { ACPI_ALLOCATE_BUFFER, NULL };
-> +       acpi_status status;
-> +       unsigned int count = 0;
-> +       char *name = "GPIO";
-> +
-> +       status = acpi_evaluate_object(ACPI_HANDLE(dev), name, NULL, &output);
-> +       if (ACPI_FAILURE(status)) {
-> +               dev_err(dev, "failed to retrieve %s. %s\n", name, acpi_format_exception(status));
-> +               return count;
-> +       }
-> +
-> +       if (((union acpi_object *)output.pointer)->type == ACPI_TYPE_PACKAGE)
-> +               count = ((union acpi_object *)output.pointer)->package.count;
-
-Instead of doing ugly castings here, just use a temporary variable of
-the correct type.
-
-> +       kfree(output.pointer);
-> +       return count;
-> +}
-
-...
-
-> +/* Every platform can have different number of GPIO attribute groups.
-
-a different
-
-> + * Define upper limit groups. At run time, the platform decides to show
-> + * the present number of groups only, others are hidden.
-> + */
-
-Comment style, see below.
-
-...
-
-> +static int chromeos_acpi_device_probe(struct platform_device *pdev)
-> +{
-> +       chromeos_acpi_gpio_groups = get_gpio_pkg_num(&pdev->dev);
-
-> +       /* If platform has more GPIO attribute groups than the number of
-
-If the platform
-
-> +        * groups this driver supports, give out a warning message.
-> +        */
-
-/*
- * This style is for network subsystem, we use
- * this one.
- */
-
-> +       if (chromeos_acpi_gpio_groups > (ARRAY_SIZE(chromeos_acpi_all_groups) - 2))
-> +               dev_warn(&(pdev->dev), "Only %u GPIO attr groups supported by the driver out of total %u.\n",
-
-In both lines too many parentheses.
-
-> +                        (unsigned int)(ARRAY_SIZE(chromeos_acpi_all_groups) - 2),
-
-Oh la la, instead of doing ugly castings, use proper specifiers, i.e. %zu.
-
-> +                        chromeos_acpi_gpio_groups);
-> +       return 0;
-> +}
-
-...
-
-> +static struct platform_driver chromeos_acpi_device_driver = {
-> +       .probe = chromeos_acpi_device_probe,
-> +       .driver = {
-> +               .name = KBUILD_MODNAME,
-> +               .dev_groups = chromeos_acpi_all_groups,
-
-> +               .acpi_match_table = ACPI_PTR(chromeos_device_ids)
-
-ACPI_PTR in most cases is not only useless, but might give a compiler warning.
-
-> +       }
-> +};
-
---
-With Best Regards,
-Andy Shevchenko
