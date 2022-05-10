@@ -2,87 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 410C3C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 09:44:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C96C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 09:45:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230074AbiEJJst (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 05:48:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34914 "EHLO
+        id S239164AbiEJJtK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 05:49:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239138AbiEJJsk (ORCPT
+        with ESMTP id S239144AbiEJJtF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 05:48:40 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3638429B818
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 02:44:44 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1186C1063;
-        Tue, 10 May 2022 02:44:44 -0700 (PDT)
-Received: from FVFF77S0Q05N (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1C2B43F66F;
-        Tue, 10 May 2022 02:44:42 -0700 (PDT)
-Date:   Tue, 10 May 2022 10:43:51 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     "Paul E. McKenney" <paulmck@kernel.org>, jolsa@redhat.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: Folllowing up on LSF/MM RCU/idle discussion
-Message-ID: <Ynoz13QUEAA2en0f@FVFF77S0Q05N>
-References: <20220509155633.GA93071@paulmck-ThinkPad-P17-Gen-1>
- <20220510065457.GI76023@worktop.programming.kicks-ass.net>
+        Tue, 10 May 2022 05:49:05 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AF56429BC4E
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 02:44:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652175893;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZIkeEVePGlxbsvPHtH0nGpkFA24GFXTnSwZmVR9DJTA=;
+        b=BAz7ESpRC1SkfNTEMmArFCea1FqNrrrJHoFawvbIyzz6S9MS5huvdWQPagmFeh1qrWxQcp
+        JcnVgT3DZIN5HQfPya7xt4ZtdGOGlSBqZrELI3Q+Ph848Rpq1cGJGvkmzfp6XIujcSYZ+q
+        ZPjjLFIEZ+qzYQXBNp/KtyyfTTDFgUE=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-332-5f1ERtYMOgCcI16wAh_7dA-1; Tue, 10 May 2022 05:44:52 -0400
+X-MC-Unique: 5f1ERtYMOgCcI16wAh_7dA-1
+Received: by mail-wm1-f72.google.com with SMTP id n26-20020a1c721a000000b003941ea1ced7so570789wmc.7
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 02:44:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ZIkeEVePGlxbsvPHtH0nGpkFA24GFXTnSwZmVR9DJTA=;
+        b=AyRaB5IGbC5Ezp2ERZumluEArSQxyAeRBTuAWLEOCsyFjUwRflUz70iHW7ajbebP5v
+         xwLssFhrfbJCn8g15riD1+0gdM3r30FYMW7tKkt4OPoCg5IuMNBxJA2HNRa4AeCxu+QC
+         sT3v8hagh8yk5fUFBBtydboMJ+/3IrIooLkG2wpSn3E8CIhK7PTmS94619sFL7A0xthR
+         +axN3nlXWN/9/kPiCLcP9FgRveX2T4omvHtJAyNoWnZglHAw+ibRXnb0tiwMVj/mS4LH
+         MWkeb26pDZpH7RpuLhOdZ8gSFYaFnAhJaHNA+WBTLAq0cVVnbm/iOvQvtwz60euW0yso
+         pAiA==
+X-Gm-Message-State: AOAM532+KdYdkXGIgtsCnMpsgGUBIZpNF7QpB+k5F0n5BNqQZ7ChW+aV
+        RZG+V8nXMZpLvIPOr7gu3sqQSfhpCQPi33hSw4Wjy81HziuqrtihXhJoEheNqCPnhrhlxS3ksXz
+        X1yamuIkwNRZWfe7UMWMBomX8
+X-Received: by 2002:a1c:3587:0:b0:381:50ff:cbd with SMTP id c129-20020a1c3587000000b0038150ff0cbdmr27255204wma.140.1652175890833;
+        Tue, 10 May 2022 02:44:50 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwqZdOByE2SRyxmDOrncLZ/RO7E0TZVermOqH+9uwM0OqnYhPpwaZ5UwYEr+j+uTXKTM8aeLw==
+X-Received: by 2002:a1c:3587:0:b0:381:50ff:cbd with SMTP id c129-20020a1c3587000000b0038150ff0cbdmr27255188wma.140.1652175890613;
+        Tue, 10 May 2022 02:44:50 -0700 (PDT)
+Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id p6-20020a05600c358600b0039429bfebeasm6470780wmq.2.2022.05.10.02.44.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 May 2022 02:44:50 -0700 (PDT)
+Message-ID: <c148afe9-f10a-8751-d761-2480c05a137a@redhat.com>
+Date:   Tue, 10 May 2022 11:44:49 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220510065457.GI76023@worktop.programming.kicks-ass.net>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v3 1/4] fbdev: Prevent possible use-after-free in
+ fb_release()
+Content-Language: en-US
+To:     Thomas Zimmermann <tzimmermann@suse.de>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        linux-fbdev@vger.kernel.org, Helge Deller <deller@gmx.de>,
+        dri-devel@lists.freedesktop.org,
+        Daniel Vetter <daniel.vetter@intel.com>
+References: <20220505215947.364694-1-javierm@redhat.com>
+ <20220505220413.365977-1-javierm@redhat.com>
+ <753d0350-42dc-389b-b10b-4533ddcf32ac@intel.com>
+ <1f788b8f-0bea-1818-349e-b1bc907bf251@redhat.com>
+ <a339df59-9e00-c7cb-e33d-2ac626443639@intel.com>
+ <3b7fe4fe-fdec-cef2-4e0e-309d9dc4a8af@redhat.com>
+ <b5ab1c49-04e7-36c3-677d-2989b79e50ca@suse.de>
+ <2bf27b09-0896-1849-254f-d5b19abdc892@redhat.com>
+ <fc3e8a40-664f-07ae-7474-c0412a1ab1b5@intel.com>
+ <1c36d431-d5c0-7278-c9e0-61867e9dc174@redhat.com>
+ <79aaea41-5dab-f896-ab3d-d6bc9a5de615@suse.de>
+ <2d8d8583-3a39-b826-dd83-ba5bc4c5b082@redhat.com>
+ <7ffd92d7-9c07-fa9c-dc95-9e82719fd237@suse.de>
+ <71ebd5f7-64d0-510a-6f1b-29921fca19fa@suse.de>
+ <35ffd96d-3cbe-12dd-c1ea-878299ec173c@redhat.com>
+ <23ae6eaa-c281-9fc1-2c64-dd953ad2f5f1@suse.de>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <23ae6eaa-c281-9fc1-2c64-dd953ad2f5f1@suse.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 08:54:57AM +0200, Peter Zijlstra wrote:
-> On Mon, May 09, 2022 at 08:56:33AM -0700, Paul E. McKenney wrote:
-> > Hello, Jiri!
-> > 
-> > It was good chatting with you last week, and I hope that travels went
-> > well!
-> > 
-> > Just wanted to follow up on the non-noinstr code between the call
-> > to rcu_idle_enter() and rcu_idle_exit().  Although the most correct
-> > approach is to never have non-noinstr code in arch_cpu_idle(), for all I
-> > know there might well be architectures for which this is not feasible.
-> > If so, one workaround would be to supply a flag set by each arch (or
-> > subarch) that says that rcu_idle_enter() and rcu_idle_exit() are invoked
-> > within arch_cpu_idle().
-> > 
-> > CCing Peter, who just might have an opinion on this.  ;-)
+On 5/10/22 11:39, Thomas Zimmermann wrote:
+
+[snip]
+
+>>
+>> 3) Set .fb_destroy to drm_fbdev_fb_destroy() if isn't set by drivers when
+>>     they call drm_fb_helper_initial_config() or drm_fb_helper_fill_info().
+>>
+>> I'm leaning towards option (3). Then the fb_info release will be automatic
+>> whether drivers are using the generic setup or a custom one.
 > 
-> Definitely have an opinion; just lack the tools to enforce these rules.
-> I cleaned up the worst of it for x86 but it's a shit-show for most
-> others. ARM in particular has some 'issues'.
-
-Probably worth pointing out that arch_cpu_idle() is the simple case (and I
-fixed that for arm64 to be correct for RCU and noinstr). I think the same
-applies for most architectures.
-
-The real beast is the cpuidle framework, which is what I think you're referring
-to below, and IIRC that does the rcu_idle_enter() ... rcu_idle_exit() itself?
-Maybe that was just for suspend.
-
-I have no strong feeling about where we call rcu_idle_{enter,exit}() for
-arch_cpu_idle() specifically, but I think that case is generally simple enough
-that it doesn't really matter?
-
-For the cpuidle framework, punting this into the driver such that it can be
-done at the last possible moment around entry/exit to a HW idle state does feel
-like it's going to be more robust, even if that means altering all those
-drivers.
-
-Thanks,
-Mark.
-
-> But yeah, noinstr only when you do rcu_idle_enter.
+> IMHO this would just be another glitch to paper over all the broken 
+> code. And if you follow through drm_fbdev_fb_helper(), [1] it'll call 
+> _fini at some point and probably blow up in some other way. Instances of 
+> struct fb_ops are also usually const.
 > 
-> The problem with validating all this is that cpuidle is a rats nest of
-> indirect calls; in order to validate the noinstr'ness of something like
-> that we need compiler support for pointer address spaces such that we
-> can stick pointers to noinstr functions in a different address space and
-> get complaints etc..
+> The only reliable way AFAICT is to do what generic fbdev does: use 
+> unregister_framebuffer and do the software cleanup somewhere within 
+> fb_destroy. And then fix all drivers to use that pattern.
+> 
+
+Right. We can't really abstract this away from drivers that are not
+using the generic fbdev helpers. So then they will have to provide
+their own .fb_destroy() callback and do the cleanup.
+
+-- 
+Best regards,
+
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
+
