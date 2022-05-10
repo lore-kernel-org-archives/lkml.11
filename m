@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BA07C38A2E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F212C47086
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:48:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245290AbiEJNwI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:52:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41174 "EHLO
+        id S245254AbiEJNwE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:52:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243553AbiEJNfX (ORCPT
+        with ESMTP id S243525AbiEJNfU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:35:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C75332BA992;
-        Tue, 10 May 2022 06:24:44 -0700 (PDT)
+        Tue, 10 May 2022 09:35:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 205EF280E23;
+        Tue, 10 May 2022 06:24:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5152E60B12;
-        Tue, 10 May 2022 13:24:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45AC0C385C2;
-        Tue, 10 May 2022 13:24:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B7F39B81DB1;
+        Tue, 10 May 2022 13:24:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08DE7C385A6;
+        Tue, 10 May 2022 13:24:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189083;
-        bh=sJxeO9sMJFI1xBoVwUlNtKWuNrKbanphGiKBiRHFciE=;
+        s=korg; t=1652189077;
+        bh=pc6KO7/vcYWVE9CsLStUKDQpkgmnyFphNl+dTSBsdYw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cb6R3buZSd2bhWPP8mI5GFUyYXNXfjAHW1+GpGFCyvbLwZhNy9rTPoI9YdJfwnjs/
-         VuQ38kzEqbOzHxxZz+prj4nfaTY7b+VS71D6QimY8t8dp+jDIOJ0G/vPxtT2wbwrdW
-         Gu9JQ8j7k1NwH1W10vnYC+D5u5OI9DVdKvQx9Rfc=
+        b=w7qNMnKA8wcXDsEiaQKWaSlMvthQvWKmbfVPD/ufpxYnkldw56/IByoQtlFU1mnTn
+         shSI3ZyA0Q1kjL3ldsm69p/d/lRMBDNA8tf7o9bIBEHZgKGLzYZgaQeY6KZ3Ag2heG
+         FpX2qQ9kHUBwrFZigFx4+9UEq2gPiOwT+mMO1EXU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH 5.4 50/52] PCI: aardvark: Clear all MSIs at setup
-Date:   Tue, 10 May 2022 15:08:19 +0200
-Message-Id: <20220510130731.315446427@linuxfoundation.org>
+        stable@vger.kernel.org, Jiazi Li <lijiazi@xiaomi.com>,
+        Mike Snitzer <snitzer@redhat.com>,
+        Mikulas Patocka <mpatocka@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>
+Subject: [PATCH 5.4 48/52] dm: fix mempool NULL pointer race when completing IO
+Date:   Tue, 10 May 2022 15:08:17 +0200
+Message-Id: <20220510130731.259334459@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.852544477@linuxfoundation.org>
 References: <20220510130729.852544477@linuxfoundation.org>
@@ -50,61 +50,142 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Jiazi Li <jqqlijiazi@gmail.com>
 
-commit 7d8dc1f7cd007a7ce94c5b4c20d63a8b8d6d7751 upstream.
+commit d208b89401e073de986dc891037c5a668f5d5d95 upstream.
 
-We already clear all the other interrupts (ISR0, ISR1, HOST_CTRL_INT).
+dm_io_dec_pending() calls end_io_acct() first and will then dec md
+in-flight pending count. But if a task is swapping DM table at same
+time this can result in a crash due to mempool->elements being NULL:
 
-Define a new macro PCIE_MSI_ALL_MASK and do the same clearing for MSIs,
-to ensure that we don't start receiving spurious interrupts.
+task1                             task2
+do_resume
+ ->do_suspend
+  ->dm_wait_for_completion
+                                  bio_endio
+				   ->clone_endio
+				    ->dm_io_dec_pending
+				     ->end_io_acct
+				      ->wakeup task1
+ ->dm_swap_table
+  ->__bind
+   ->__bind_mempools
+    ->bioset_exit
+     ->mempool_exit
+                                     ->free_io
 
-Use this new mask in advk_pcie_handle_msi();
+[ 67.330330] Unable to handle kernel NULL pointer dereference at
+virtual address 0000000000000000
+......
+[ 67.330494] pstate: 80400085 (Nzcv daIf +PAN -UAO)
+[ 67.330510] pc : mempool_free+0x70/0xa0
+[ 67.330515] lr : mempool_free+0x4c/0xa0
+[ 67.330520] sp : ffffff8008013b20
+[ 67.330524] x29: ffffff8008013b20 x28: 0000000000000004
+[ 67.330530] x27: ffffffa8c2ff40a0 x26: 00000000ffff1cc8
+[ 67.330535] x25: 0000000000000000 x24: ffffffdada34c800
+[ 67.330541] x23: 0000000000000000 x22: ffffffdada34c800
+[ 67.330547] x21: 00000000ffff1cc8 x20: ffffffd9a1304d80
+[ 67.330552] x19: ffffffdada34c970 x18: 000000b312625d9c
+[ 67.330558] x17: 00000000002dcfbf x16: 00000000000006dd
+[ 67.330563] x15: 000000000093b41e x14: 0000000000000010
+[ 67.330569] x13: 0000000000007f7a x12: 0000000034155555
+[ 67.330574] x11: 0000000000000001 x10: 0000000000000001
+[ 67.330579] x9 : 0000000000000000 x8 : 0000000000000000
+[ 67.330585] x7 : 0000000000000000 x6 : ffffff80148b5c1a
+[ 67.330590] x5 : ffffff8008013ae0 x4 : 0000000000000001
+[ 67.330596] x3 : ffffff80080139c8 x2 : ffffff801083bab8
+[ 67.330601] x1 : 0000000000000000 x0 : ffffffdada34c970
+[ 67.330609] Call trace:
+[ 67.330616] mempool_free+0x70/0xa0
+[ 67.330627] bio_put+0xf8/0x110
+[ 67.330638] dec_pending+0x13c/0x230
+[ 67.330644] clone_endio+0x90/0x180
+[ 67.330649] bio_endio+0x198/0x1b8
+[ 67.330655] dec_pending+0x190/0x230
+[ 67.330660] clone_endio+0x90/0x180
+[ 67.330665] bio_endio+0x198/0x1b8
+[ 67.330673] blk_update_request+0x214/0x428
+[ 67.330683] scsi_end_request+0x2c/0x300
+[ 67.330688] scsi_io_completion+0xa0/0x710
+[ 67.330695] scsi_finish_command+0xd8/0x110
+[ 67.330700] scsi_softirq_done+0x114/0x148
+[ 67.330708] blk_done_softirq+0x74/0xd0
+[ 67.330716] __do_softirq+0x18c/0x374
+[ 67.330724] irq_exit+0xb4/0xb8
+[ 67.330732] __handle_domain_irq+0x84/0xc0
+[ 67.330737] gic_handle_irq+0x148/0x1b0
+[ 67.330744] el1_irq+0xe8/0x190
+[ 67.330753] lpm_cpuidle_enter+0x4f8/0x538
+[ 67.330759] cpuidle_enter_state+0x1fc/0x398
+[ 67.330764] cpuidle_enter+0x18/0x20
+[ 67.330772] do_idle+0x1b4/0x290
+[ 67.330778] cpu_startup_entry+0x20/0x28
+[ 67.330786] secondary_start_kernel+0x160/0x170
 
-Link: https://lore.kernel.org/r/20211130172913.9727-5-kabel@kernel.org
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Marek Behún <kabel@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Fix this by:
+1) Establishing pointers to 'struct dm_io' members in
+dm_io_dec_pending() so that they may be passed into end_io_acct()
+_after_ free_io() is called.
+2) Moving end_io_acct() after free_io().
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Jiazi Li <lijiazi@xiaomi.com>
+Signed-off-by: Mike Snitzer <snitzer@redhat.com>
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Reviewed-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/pci-aardvark.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/md/dm.c |   17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
 
---- a/drivers/pci/controller/pci-aardvark.c
-+++ b/drivers/pci/controller/pci-aardvark.c
-@@ -108,6 +108,7 @@
- #define PCIE_MSI_ADDR_HIGH_REG			(CONTROL_BASE_ADDR + 0x54)
- #define PCIE_MSI_STATUS_REG			(CONTROL_BASE_ADDR + 0x58)
- #define PCIE_MSI_MASK_REG			(CONTROL_BASE_ADDR + 0x5C)
-+#define     PCIE_MSI_ALL_MASK			GENMASK(31, 0)
- #define PCIE_MSI_PAYLOAD_REG			(CONTROL_BASE_ADDR + 0x9C)
- #define     PCIE_MSI_DATA_MASK			GENMASK(15, 0)
+--- a/drivers/md/dm.c
++++ b/drivers/md/dm.c
+@@ -676,19 +676,18 @@ static void start_io_acct(struct dm_io *
+ 				    false, 0, &io->stats_aux);
+ }
  
-@@ -561,6 +562,7 @@ static void advk_pcie_setup_hw(struct ad
- 	advk_writel(pcie, reg, PCIE_CORE_CTRL2_REG);
+-static void end_io_acct(struct dm_io *io)
++static void end_io_acct(struct mapped_device *md, struct bio *bio,
++			unsigned long start_time, struct dm_stats_aux *stats_aux)
+ {
+-	struct mapped_device *md = io->md;
+-	struct bio *bio = io->orig_bio;
+-	unsigned long duration = jiffies - io->start_time;
++	unsigned long duration = jiffies - start_time;
  
- 	/* Clear all interrupts */
-+	advk_writel(pcie, PCIE_MSI_ALL_MASK, PCIE_MSI_STATUS_REG);
- 	advk_writel(pcie, PCIE_ISR0_ALL_MASK, PCIE_ISR0_REG);
- 	advk_writel(pcie, PCIE_ISR1_ALL_MASK, PCIE_ISR1_REG);
- 	advk_writel(pcie, PCIE_IRQ_ALL_MASK, HOST_CTRL_INT_STATUS_REG);
-@@ -573,7 +575,7 @@ static void advk_pcie_setup_hw(struct ad
- 	advk_writel(pcie, PCIE_ISR1_ALL_MASK, PCIE_ISR1_MASK_REG);
+ 	generic_end_io_acct(md->queue, bio_op(bio), &dm_disk(md)->part0,
+-			    io->start_time);
++			    start_time);
  
- 	/* Unmask all MSIs */
--	advk_writel(pcie, 0, PCIE_MSI_MASK_REG);
-+	advk_writel(pcie, ~(u32)PCIE_MSI_ALL_MASK, PCIE_MSI_MASK_REG);
+ 	if (unlikely(dm_stats_used(&md->stats)))
+ 		dm_stats_account_io(&md->stats, bio_data_dir(bio),
+ 				    bio->bi_iter.bi_sector, bio_sectors(bio),
+-				    true, duration, &io->stats_aux);
++				    true, duration, stats_aux);
  
- 	/* Enable summary interrupt for GIC SPI source */
- 	reg = PCIE_IRQ_ALL_MASK & (~PCIE_IRQ_ENABLE_INTS_MASK);
-@@ -1374,7 +1376,7 @@ static void advk_pcie_handle_msi(struct
+ 	/* nudge anyone waiting on suspend queue */
+ 	if (unlikely(wq_has_sleeper(&md->wait)))
+@@ -909,6 +908,8 @@ static void dec_pending(struct dm_io *io
+ 	blk_status_t io_error;
+ 	struct bio *bio;
+ 	struct mapped_device *md = io->md;
++	unsigned long start_time = 0;
++	struct dm_stats_aux stats_aux;
  
- 	msi_mask = advk_readl(pcie, PCIE_MSI_MASK_REG);
- 	msi_val = advk_readl(pcie, PCIE_MSI_STATUS_REG);
--	msi_status = msi_val & ~msi_mask;
-+	msi_status = msi_val & ((~msi_mask) & PCIE_MSI_ALL_MASK);
+ 	/* Push-back supersedes any I/O errors */
+ 	if (unlikely(error)) {
+@@ -935,8 +936,10 @@ static void dec_pending(struct dm_io *io
  
- 	for (msi_idx = 0; msi_idx < MSI_IRQ_NUM; msi_idx++) {
- 		if (!(BIT(msi_idx) & msi_status))
+ 		io_error = io->status;
+ 		bio = io->orig_bio;
+-		end_io_acct(io);
++		start_time = io->start_time;
++		stats_aux = io->stats_aux;
+ 		free_io(md, io);
++		end_io_acct(md, bio, start_time, &stats_aux);
+ 
+ 		if (io_error == BLK_STS_DM_REQUEUE)
+ 			return;
 
 
