@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D204C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:14:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2F0EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:14:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245101AbiEJOSk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:18:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45648 "EHLO
+        id S245719AbiEJOSr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:18:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343638AbiEJNsT (ORCPT
+        with ESMTP id S243896AbiEJNtS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:48:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2F5A2B52F7;
-        Tue, 10 May 2022 06:36:40 -0700 (PDT)
+        Tue, 10 May 2022 09:49:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82CBB6FD3D;
+        Tue, 10 May 2022 06:37:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F3851B81DB7;
-        Tue, 10 May 2022 13:36:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DB9EC385C9;
-        Tue, 10 May 2022 13:36:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E0F1CB81DAB;
+        Tue, 10 May 2022 13:37:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05D5BC385C2;
+        Tue, 10 May 2022 13:37:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189771;
-        bh=FQdv7igAHs4SnnQcV16g0/g66iR1BYYDbYDRj5V0wak=;
+        s=korg; t=1652189827;
+        bh=RIK5MElVo47bD1tsF8v3qbeY9yUwA6PQltPBj+Q7u+4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MbWb39/RETnPe9s6KjGs8LmD3lmKQk4g2GO1jsc5oqdqZg+h/bGQ3GmFinbpcHzjz
-         C2dzOCAvx5yxADeNQZLkB/Z9le2SJkBj88YgEG2oYSXuIeEQM0ZJ8pUXos6OiPWAYa
-         5Ov9PS+IPxlcUqipaLYPKNXG5Hmfe0PWQT644shA=
+        b=SeTYsq9ooa/QinIXIJbC/MhXaLprlqzrzVnNZ6hYtBm2lb6OZ6wp0ZDATySAhdqWV
+         vi0KM2p4jHaWrsPY1RLi1fbFOrJj0jBqlEiH8nPqAqgvx7ALPyCs1SL6GHiQ0DFdsf
+         /VybVptkkbOu39YRNZNcuQn0tnKmgoa6TMwB9e6s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: [PATCH 5.17 023/140] timekeeping: Mark NMI safe time accessors as notrace
-Date:   Tue, 10 May 2022 15:06:53 +0200
-Message-Id: <20220510130742.274036138@linuxfoundation.org>
+        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        =?UTF-8?q?Philippe=20Mathieu-Daud=C3=A9?= <f4bug@amsat.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Subject: [PATCH 5.17 004/140] MIPS: Fix CP0 counter erratum detection for R4k CPUs
+Date:   Tue, 10 May 2022 15:06:34 +0200
+Message-Id: <20220510130741.729581715@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -49,45 +49,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kurt Kanzenbach <kurt@linutronix.de>
+From: Maciej W. Rozycki <macro@orcam.me.uk>
 
-commit 2c33d775ef4c25c0e1e1cc0fd5496d02f76bfa20 upstream.
+commit f0a6c68f69981214cb7858738dd2bc81475111f7 upstream.
 
-Mark the CLOCK_MONOTONIC fast time accessors as notrace. These functions are
-used in tracing to retrieve timestamps, so they should not recurse.
+Fix the discrepancy between the two places we check for the CP0 counter
+erratum in along with the incorrect comparison of the R4400 revision
+number against 0x30 which matches none and consistently consider all
+R4000 and R4400 processors affected, as documented in processor errata
+publications[1][2][3], following the mapping between CP0 PRId register
+values and processor models:
 
-Fixes: 4498e7467e9e ("time: Parametrize all tk_fast_mono users")
-Fixes: f09cb9a1808e ("time: Introduce tk_fast_raw")
-Reported-by: Steven Rostedt <rostedt@goodmis.org>
-Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220426175338.3807ca4f@gandalf.local.home/
-Link: https://lore.kernel.org/r/20220428062432.61063-1-kurt@linutronix.de
+  PRId   |  Processor Model
+---------+--------------------
+00000422 | R4000 Revision 2.2
+00000430 | R4000 Revision 3.0
+00000440 | R4400 Revision 1.0
+00000450 | R4400 Revision 2.0
+00000460 | R4400 Revision 3.0
+
+No other revision of either processor has ever been spotted.
+
+Contrary to what has been stated in commit ce202cbb9e0b ("[MIPS] Assume
+R4000/R4400 newer than 3.0 don't have the mfc0 count bug") marking the
+CP0 counter as buggy does not preclude it from being used as either a
+clock event or a clock source device.  It just cannot be used as both at
+a time, because in that case clock event interrupts will be occasionally
+lost, and the use as a clock event device takes precedence.
+
+Compare against 0x4ff in `can_use_mips_counter' so that a single machine
+instruction is produced.
+
+
+[1] "MIPS R4000PC/SC Errata, Processor Revision 2.2 and 3.0", MIPS
+    Technologies Inc., May 10, 1994, Erratum 53, p.13
+
+[2] "MIPS R4400PC/SC Errata, Processor Revision 1.0", MIPS Technologies
+    Inc., February 9, 1994, Erratum 21, p.4
+
+[3] "MIPS R4400PC/SC Errata, Processor Revision 2.0 & 3.0", MIPS
+    Technologies Inc., January 24, 1995, Erratum 14, p.3
+
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Fixes: ce202cbb9e0b ("[MIPS] Assume R4000/R4400 newer than 3.0 don't have the mfc0 count bug")
+Cc: stable@vger.kernel.org # v2.6.24+
+Reviewed-by: Philippe Mathieu-Daudé <f4bug@amsat.org>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/time/timekeeping.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/mips/include/asm/timex.h |    8 ++++----
+ arch/mips/kernel/time.c       |   11 +++--------
+ 2 files changed, 7 insertions(+), 12 deletions(-)
 
---- a/kernel/time/timekeeping.c
-+++ b/kernel/time/timekeeping.c
-@@ -482,7 +482,7 @@ static __always_inline u64 __ktime_get_f
-  * of the following timestamps. Callers need to be aware of that and
-  * deal with it.
-  */
--u64 ktime_get_mono_fast_ns(void)
-+u64 notrace ktime_get_mono_fast_ns(void)
- {
- 	return __ktime_get_fast_ns(&tk_fast_mono);
- }
-@@ -494,7 +494,7 @@ EXPORT_SYMBOL_GPL(ktime_get_mono_fast_ns
-  * Contrary to ktime_get_mono_fast_ns() this is always correct because the
-  * conversion factor is not affected by NTP/PTP correction.
-  */
--u64 ktime_get_raw_fast_ns(void)
-+u64 notrace ktime_get_raw_fast_ns(void)
- {
- 	return __ktime_get_fast_ns(&tk_fast_raw);
- }
+--- a/arch/mips/include/asm/timex.h
++++ b/arch/mips/include/asm/timex.h
+@@ -40,9 +40,9 @@
+ typedef unsigned int cycles_t;
+ 
+ /*
+- * On R4000/R4400 before version 5.0 an erratum exists such that if the
+- * cycle counter is read in the exact moment that it is matching the
+- * compare register, no interrupt will be generated.
++ * On R4000/R4400 an erratum exists such that if the cycle counter is
++ * read in the exact moment that it is matching the compare register,
++ * no interrupt will be generated.
+  *
+  * There is a suggested workaround and also the erratum can't strike if
+  * the compare interrupt isn't being used as the clock source device.
+@@ -63,7 +63,7 @@ static inline int can_use_mips_counter(u
+ 	if (!__builtin_constant_p(cpu_has_counter))
+ 		asm volatile("" : "=m" (cpu_data[0].options));
+ 	if (likely(cpu_has_counter &&
+-		   prid >= (PRID_IMP_R4000 | PRID_REV_ENCODE_44(5, 0))))
++		   prid > (PRID_IMP_R4000 | PRID_REV_ENCODE_44(15, 15))))
+ 		return 1;
+ 	else
+ 		return 0;
+--- a/arch/mips/kernel/time.c
++++ b/arch/mips/kernel/time.c
+@@ -141,15 +141,10 @@ static __init int cpu_has_mfc0_count_bug
+ 	case CPU_R4400MC:
+ 		/*
+ 		 * The published errata for the R4400 up to 3.0 say the CPU
+-		 * has the mfc0 from count bug.
++		 * has the mfc0 from count bug.  This seems the last version
++		 * produced.
+ 		 */
+-		if ((current_cpu_data.processor_id & 0xff) <= 0x30)
+-			return 1;
+-
+-		/*
+-		 * we assume newer revisions are ok
+-		 */
+-		return 0;
++		return 1;
+ 	}
+ 
+ 	return 0;
 
 
