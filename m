@@ -2,91 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9196C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 09:37:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71401C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 09:37:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239009AbiEJJla (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 05:41:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58568 "EHLO
+        id S239025AbiEJJli (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 05:41:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239073AbiEJJlO (ORCPT
+        with ESMTP id S238987AbiEJJlX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 05:41:14 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D811620F4E;
-        Tue, 10 May 2022 02:37:17 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id fv2so15397268pjb.4;
-        Tue, 10 May 2022 02:37:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=uUIt+ivBmGmxU82/HcgxdoaGxLo7vfsl5XOdCNfMIQ8=;
-        b=mXgWRkS0jU51KYzSUCk/8Lxz9pt6VdPKou/GQAi5u3W5uh9QAqwP/qn49MYGU43od/
-         9ycoaeYHrJGZSWB1w8fHjRWMYMuCz42VlhJsCKJVmMllBfu5xUeF0o5cXqan5e+Sr3p2
-         GSc8qps5cucM93HcU9Sd8sO2bXLNM25PSHExPPywAMjt2GVOCbXFtCAsqngf1umnnS2U
-         M1M9CUb8k3nQPQ9ouuo3yJYcI4dMuX3jqEe1TBjJTt7zFRhCIdeq+AMbQcFbz1uYt2Wa
-         nekvxe7DpM3UjgZ4/fQn/Nf4TzLqeqn6EluUVxPTBc1BmoUCr8ID/Y40yvlYmx9CuHma
-         bD3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=uUIt+ivBmGmxU82/HcgxdoaGxLo7vfsl5XOdCNfMIQ8=;
-        b=xkaoEgZTOJEyWsbhT8HgowefbPoeBVpH/eV8bs1rGCC0GJOICYd9iPWAU7HowDyQPB
-         VwNmBX0n1n/8A0jk8Q1g2eYTIQdJBP5Fiu16KpTiSAuFTsSLrbVT6vabsSQckl9usATZ
-         ALYFY9nlhxOHTv+faLpte5bZe17NdhS0ihikyd0OcdtvGzpZCWntfTVEL2xKTSYFMbMB
-         5pfr61Mv4IwavpY41oiRQdorm39Y27J1JQh9NF/HXLxuttU4CWazoeqofOyfuqQULsoG
-         obkBlnYHwCPbIa0iTIBRJl/aTpk//CkEqbZF+IHSAlKAPJ8yVw+Zijw4f0ubM279zUyj
-         Amsw==
-X-Gm-Message-State: AOAM530m94uGoY9VKuqZigDL4U0waBu+SSov3i7GMBRyV+5y0JC+G1pK
-        hcloQC/GvqxqH1QaBXW09yYKJqv4cTQ=
-X-Google-Smtp-Source: ABdhPJx4cjc5Ezad0mYSp88exyBHf1qWdOWH8dm86BR3UaVATW707uineEYaHBA8CGxVkKEft8R/2w==
-X-Received: by 2002:a17:902:d551:b0:15e:c50f:41b5 with SMTP id z17-20020a170902d55100b0015ec50f41b5mr19953248plf.98.1652175437088;
-        Tue, 10 May 2022 02:37:17 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.81])
-        by smtp.googlemail.com with ESMTPSA id e14-20020a6558ce000000b003c14af50639sm10130936pgu.81.2022.05.10.02.37.14
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 10 May 2022 02:37:16 -0700 (PDT)
-From:   Wanpeng Li <kernellwp@gmail.com>
-X-Google-Original-From: Wanpeng Li <wanpengli@tencent.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH] KVM: LAPIC: Disarm LAPIC timer includes pending timer around TSC deadline switch
-Date:   Tue, 10 May 2022 02:36:26 -0700
-Message-Id: <1652175386-31587-1-git-send-email-wanpengli@tencent.com>
-X-Mailer: git-send-email 2.7.4
+        Tue, 10 May 2022 05:41:23 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCF24F31;
+        Tue, 10 May 2022 02:37:25 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 88E461F896;
+        Tue, 10 May 2022 09:37:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1652175444; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qcfAdFbkeA1g2Kl2Spj7OETJ7n3bgekm6dIioojJcl8=;
+        b=V54Hntelf6pY6fAx/5lPsUuPLcR7TM2P2PkyAjxf5AXhodVs+nRJMTrUKMY87vv/V9LRqO
+        YWVj+YsmEOYLsr92BgVlFds/ZEIaxMM1YHwFuffoAmYhI9n6UEn611z7FxRtmK/9jtdLtE
+        mrJ5wsKIErdVYKKUNV0X0INQoCXRwro=
+Received: from suse.cz (unknown [10.100.208.146])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id BA5C72C141;
+        Tue, 10 May 2022 09:37:23 +0000 (UTC)
+Date:   Tue, 10 May 2022 11:37:23 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Neil Armstrong <narmstrong@baylibre.com>
+Cc:     John Ogness <john.ogness@linutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org,
+        Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH v1] serial: meson: acquire port->lock in startup()
+Message-ID: <YnoyU3fydh46e2Sc@alley>
+References: <20220508103547.626355-1-john.ogness@linutronix.de>
+ <cf593ff3-bf57-ccd3-9a25-b28cc604d6f4@baylibre.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cf593ff3-bf57-ccd3-9a25-b28cc604d6f4@baylibre.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wanpeng Li <wanpengli@tencent.com>
+On Mon 2022-05-09 09:36:40, Neil Armstrong wrote:
+> On 08/05/2022 12:35, John Ogness wrote:
+> > The uart_ops startup() callback is called without interrupts
+> > disabled and without port->lock locked, relatively late during the
+> > boot process (from the call path of console_on_rootfs()). If the
+> > device is a console, it was already previously registered and could
+> > be actively printing messages.
+> > 
+> > Since the startup() callback is reading/writing registers used by
+> > the console write() callback (AML_UART_CONTROL), its access must
+> > be synchronized using the port->lock. Currently it is not.
+> > 
+> > The startup() callback is the only function that explicitly enables
+> > interrupts. Without the synchronization, it is possible that
+> > interrupts become accidentally permanently disabled.
+> > 
+> > CPU0                           CPU1
+> > meson_serial_console_write     meson_uart_startup
+> > --------------------------     ------------------
+> > spin_lock(port->lock)
+> > val = readl(AML_UART_CONTROL)
+> > uart_console_write()
+> >                                 writel(INT_EN, AML_UART_CONTROL)
+> > writel(val, AML_UART_CONTROL)
+> > spin_unlock(port->lock)
+> > 
+> > Add port->lock synchronization to meson_uart_startup() to avoid
+> > racing with meson_serial_console_write().
+> > 
+> > Also add detailed comments to meson_uart_reset() explaining why it
+> > is *not* using port->lock synchronization.
+> > 
+> > Link: https://lore.kernel.org/lkml/2a82eae7-a256-f70c-fd82-4e510750906e@samsung.com
+> > Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> > Signed-off-by: John Ogness <john.ogness@linutronix.de>
+> > Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> > ---
+> >   drivers/tty/serial/meson_uart.c | 13 +++++++++++++
+> >   1 file changed, 13 insertions(+)
+> > 
+> > diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+> > index 2bf1c57e0981..39021dac09cc 100644
+> > --- a/drivers/tty/serial/meson_uart.c
+> > +++ b/drivers/tty/serial/meson_uart.c
+> > @@ -253,6 +253,14 @@ static const char *meson_uart_type(struct uart_port *port)
+> >   	return (port->type == PORT_MESON) ? "meson_uart" : NULL;
+> >   }
+> > +/*
+> > + * This function is called only from probe() using a temporary io mapping
+> > + * in order to perform a reset before setting up the device. Since the
+> > + * temporarily mapped region was successfully requested, there can be no
+> > + * console on this port at this time. Hence it is not necessary for this
+> > + * function to acquire the port->lock. (Since there is no console on this
+> > + * port at this time, the port->lock is not initialized yet.)
+> > + */
+> >   static void meson_uart_reset(struct uart_port *port)
+> >   {
+> >   	u32 val;
+> > @@ -267,9 +275,12 @@ static void meson_uart_reset(struct uart_port *port)
+> >   static int meson_uart_startup(struct uart_port *port)
+> >   {
+> > +	unsigned long flags;
+> >   	u32 val;
+> >   	int ret = 0;
+> > +	spin_lock_irqsave(&port->lock, flags);
+> > +
+> >   	val = readl(port->membase + AML_UART_CONTROL);
+> >   	val |= AML_UART_CLEAR_ERR;
+> >   	writel(val, port->membase + AML_UART_CONTROL);
+> > @@ -285,6 +296,8 @@ static int meson_uart_startup(struct uart_port *port)
+> >   	val = (AML_UART_RECV_IRQ(1) | AML_UART_XMIT_IRQ(port->fifosize / 2));
+> >   	writel(val, port->membase + AML_UART_MISC);
+> > +	spin_unlock_irqrestore(&port->lock, flags);
+> > +
+> >   	ret = request_irq(port->irq, meson_uart_interrupt, 0,
+> >   			  port->name, port);
+> > 
+> > base-commit: 672c0c5173427e6b3e2a9bbb7be51ceeec78093a
+> 
+> Thanks for fixing this, it may also fix an uart apparent lockup I encountered
+> several time while developing on the platform, but the target was still alive
+> so it matches.
+> 
+> So I'll add:
+> Fixes: ff7693d079e5 ("ARM: meson: serial: add MesonX SoC on-chip uart driver")
+> 
+> and
+> 
+> Acked-by: Neil Armstrong <narmstrong@baylibre.com>
 
-The timer is disarmed when switching between TSC deadline and other modes, 
-however, the pending timer is still in-flight, so let's accurately set 
-everything to a disarmed state.
+Neil, may I assume that you are going to queue this fix for 5.19, please?
 
-Fixes: 4427593258 (KVM: x86: thoroughly disarm LAPIC timer around TSC deadline switch)
-Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
----
- arch/x86/kvm/lapic.c | 1 +
- 1 file changed, 1 insertion(+)
+Feel free to add:
 
-diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-index 66b0eb0bda94..0274d17d91c2 100644
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -1562,6 +1562,7 @@ static void apic_update_lvtt(struct kvm_lapic *apic)
- 			kvm_lapic_set_reg(apic, APIC_TMICT, 0);
- 			apic->lapic_timer.period = 0;
- 			apic->lapic_timer.tscdeadline = 0;
-+			atomic_set(&apic->lapic_timer.pending, 0);
- 		}
- 		apic->lapic_timer.timer_mode = timer_mode;
- 		limit_periodic_timer_frequency(apic);
--- 
-2.25.1
+Reviewed-by: Petr Mladek <pmladek@suse.com>
 
+Best Regards,
+Petr
