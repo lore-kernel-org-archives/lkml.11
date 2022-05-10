@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E6D4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:10:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37F33C43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:10:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245132AbiEJOOH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:14:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56324 "EHLO
+        id S245015AbiEJOOM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:14:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245051AbiEJNrO (ORCPT
+        with ESMTP id S245074AbiEJNrV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:47:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2D1753721;
-        Tue, 10 May 2022 06:34:27 -0700 (PDT)
+        Tue, 10 May 2022 09:47:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 767ECAAE04;
+        Tue, 10 May 2022 06:34:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7ECC4615C8;
-        Tue, 10 May 2022 13:34:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76C54C385C2;
-        Tue, 10 May 2022 13:34:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2D248B81DA2;
+        Tue, 10 May 2022 13:34:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C2FFC385C2;
+        Tue, 10 May 2022 13:34:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189666;
-        bh=lWDqtZn1zApgd4b8DIxAbib9ISctmXC4BxgeLLwc1Gs=;
+        s=korg; t=1652189693;
+        bh=UmASr+hISXnks5NrTZwJxMMFLlbH+sNHHGWZkhNaW6s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U0QBxRGetMsmycg8cYZjD3hIkoTvXFk/o43IszBsm9TS2noBiIoSHWW3MxOcgE/nE
-         ZjXbjXXma8pC9+9dWvB4o5k8Y8G6QdUv9FK9TD8zCWmxBGSdS3aox57Pc3F/eQjyAW
-         7IDHIZx4x2y2NMNcuiqESwpfpPytZvPeRhqSIHRM=
+        b=b1YprPar1HfVJGJjLbY2KBr7KepWbSUvyrPM+NpQbovKD3DhaLj20ofgT3jemEvj/
+         N8wZZgj3P9+QFTkb2Jedp1kCBb0HfcoF+jXeOUY4hrvZjPGv8tUz8BKkk8Sg945eu+
+         KKmBDwPDrIadIAY4tni8KHcAd83tzn2Uq9HGYiRA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, pali@kernel.org,
         =?UTF-8?q?Marek=20Beh=FAn?= <kabel@kernel.org>,
         Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH 5.15 122/135] PCI: aardvark: Use dev_fwnode() instead of of_node_to_fwnode(dev->of_node)
-Date:   Tue, 10 May 2022 15:08:24 +0200
-Message-Id: <20220510130743.895929647@linuxfoundation.org>
+Subject: [PATCH 5.15 134/135] PCI: aardvark: Drop __maybe_unused from advk_pcie_disable_phy()
+Date:   Tue, 10 May 2022 15:08:36 +0200
+Message-Id: <20220510130744.239141261@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -51,42 +51,30 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Marek Behún" <kabel@kernel.org>
 
-commit 222af78532fa299cd9b1008e49c347b7f5a45c17 upstream.
+commit 0c36ab437e1d94b6628b006a1d48f05ea3b0b222 upstream.
 
-Use simple
-  dev_fwnode(dev)
-instead of
-  struct device_node *node = dev->of_node;
-  of_node_to_fwnode(node)
-especially since the node variable is not used elsewhere in the function.
+This function is now always used in driver remove method, drop the
+__maybe_unused attribute.
 
-Link: https://lore.kernel.org/r/20220110015018.26359-9-kabel@kernel.org
+Link: https://lore.kernel.org/r/20220110015018.26359-22-kabel@kernel.org
 Signed-off-by: Marek Behún <kabel@kernel.org>
 Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 Signed-off-by: Marek Behún <kabel@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/pci-aardvark.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/pci/controller/pci-aardvark.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 --- a/drivers/pci/controller/pci-aardvark.c
 +++ b/drivers/pci/controller/pci-aardvark.c
-@@ -1296,7 +1296,6 @@ static struct msi_domain_info advk_msi_d
- static int advk_pcie_init_msi_irq_domain(struct advk_pcie *pcie)
+@@ -1605,7 +1605,7 @@ static int advk_pcie_map_irq(const struc
+ 		return of_irq_parse_and_map_pci(dev, slot, pin);
+ }
+ 
+-static void __maybe_unused advk_pcie_disable_phy(struct advk_pcie *pcie)
++static void advk_pcie_disable_phy(struct advk_pcie *pcie)
  {
- 	struct device *dev = &pcie->pdev->dev;
--	struct device_node *node = dev->of_node;
- 	phys_addr_t msi_msg_phys;
- 
- 	mutex_init(&pcie->msi_used_lock);
-@@ -1315,7 +1314,7 @@ static int advk_pcie_init_msi_irq_domain
- 		return -ENOMEM;
- 
- 	pcie->msi_domain =
--		pci_msi_create_irq_domain(of_node_to_fwnode(node),
-+		pci_msi_create_irq_domain(dev_fwnode(dev),
- 					  &advk_msi_domain_info,
- 					  pcie->msi_inner_domain);
- 	if (!pcie->msi_domain) {
+ 	phy_power_off(pcie->phy);
+ 	phy_exit(pcie->phy);
 
 
