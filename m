@@ -2,144 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E96EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 23:26:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57AF0C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 23:27:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237976AbiEJX03 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 19:26:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51790 "EHLO
+        id S238077AbiEJX1O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 19:27:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238085AbiEJX0D (ORCPT
+        with ESMTP id S237993AbiEJX1J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 19:26:03 -0400
-Received: from mail104.syd.optusnet.com.au (mail104.syd.optusnet.com.au [211.29.132.246])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 721B13BBC5;
-        Tue, 10 May 2022 16:25:57 -0700 (PDT)
-Received: from dread.disaster.area (pa49-181-2-147.pa.nsw.optusnet.com.au [49.181.2.147])
-        by mail104.syd.optusnet.com.au (Postfix) with ESMTPS id CD42653469D;
-        Wed, 11 May 2022 09:25:54 +1000 (AEST)
-Received: from dave by dread.disaster.area with local (Exim 4.92.3)
-        (envelope-from <david@fromorbit.com>)
-        id 1noZEm-00ATWh-9C; Wed, 11 May 2022 09:25:52 +1000
-Date:   Wed, 11 May 2022 09:25:52 +1000
-From:   Dave Chinner <david@fromorbit.com>
-To:     Karel Zak <kzak@redhat.com>
-Cc:     Christian Brauner <brauner@kernel.org>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        linux-fsdevel@vger.kernel.org, Theodore Ts'o <tytso@mit.edu>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org,
-        Linux API <linux-api@vger.kernel.org>,
-        linux-man <linux-man@vger.kernel.org>,
-        LSM <linux-security-module@vger.kernel.org>,
-        Ian Kent <raven@themaw.net>,
-        David Howells <dhowells@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Christian Brauner <christian@brauner.io>,
-        Amir Goldstein <amir73il@gmail.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>
-Subject: Re: [RFC PATCH] getting misc stats/attributes via xattr API
-Message-ID: <20220510232552.GD2306852@dread.disaster.area>
-References: <YnEeuw6fd1A8usjj@miu.piliscsaba.redhat.com>
- <20220509124815.vb7d2xj5idhb2wq6@wittgenstein>
- <20220510123512.h6jjqgowex6gnjh5@ws.net.home>
+        Tue, 10 May 2022 19:27:09 -0400
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ECE4340F9;
+        Tue, 10 May 2022 16:27:08 -0700 (PDT)
+Received: by mail-qt1-x82f.google.com with SMTP id p4so539978qtq.12;
+        Tue, 10 May 2022 16:27:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=RxqE5ZJWuzRnOKii1KyY4gqmrmpnlt//j5R303qeipM=;
+        b=KH33irEqLvUWALSUZFHF9bWSTnxx+Mrv458SV9MPHb64vxmRcUYD6tlPk4cHEO85Is
+         3XyrWcEEG1IHlF3hszvonfGXocIOokZXJ/uaMKrJaJC2jXNtAq2LdEOjDNpu4vnkqF8x
+         Bu+dMRCij/GS6GaOgrp6kOUdCN6C4Ia7Fxdnx1rQ4MrOdoVs3vtfxd8BR+YNW3pMxkfj
+         UJiOlXeH6j+HC24getmLeJ0x8gcXce40unAAdwjzFI6u5sQIHxj+AyclnhZKRkY7+GVx
+         ymOg/wR82FkDdzfWaEHrm2ns51X92tCD+zSprB4swzOAbO7YCDBZRtObaaHDuW1x4a6m
+         G2xw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=RxqE5ZJWuzRnOKii1KyY4gqmrmpnlt//j5R303qeipM=;
+        b=UZP+KExPg4Pi+uSUhLiO+tPzKYD0Nqn0YYvOpv4XY8plNwCc7WWJP2P22qoQUfH8+y
+         fVpRyBRU5O9l50wxF3RQCfdioOtoHuCShm2d+If8GH47gz4rYndSPJd9SF2k0hGgHkjW
+         ERJnbEaISLL29DsaR3brD996MBRvbeVn8jx/qHgYyAd6UkjhAl45FMXUosC1dP+DOkKa
+         +nUbYrM9U04rEN6Fq9BEWjzpSucjLc35zowg7f/n7ngBqqQT6BxpJSwPABsd4uZEOjDW
+         tpiYDIMjdK3YPursAi8w5snShpTlty3viIOmiFAQzN32YIW9B0OVrurNSX39z8PNIjII
+         fixw==
+X-Gm-Message-State: AOAM531+eUUbqTVkdCFGeF70r8b8din5Y0MEGz/7SvNPJcG1CakGxuNF
+        j6qM1WROxXOhm5ySYF27MxxZNt/F+g==
+X-Google-Smtp-Source: ABdhPJxgDV7qCRup0DaOlqWibc0Iavyobr4jEzrOaIuzZ+nbAc/aQDkROUeW2jgxBWp2OqIprLSXSg==
+X-Received: by 2002:ac8:5745:0:b0:2f3:e231:bc12 with SMTP id 5-20020ac85745000000b002f3e231bc12mr5893406qtx.291.1652225227371;
+        Tue, 10 May 2022 16:27:07 -0700 (PDT)
+Received: from bytedance (ec2-52-72-174-210.compute-1.amazonaws.com. [52.72.174.210])
+        by smtp.gmail.com with ESMTPSA id z21-20020ac87115000000b002f39b99f6adsm188086qto.71.2022.05.10.16.27.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 16:27:06 -0700 (PDT)
+Date:   Tue, 10 May 2022 16:27:02 -0700
+From:   Peilin Ye <yepeilin.cs@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Peilin Ye <peilin.ye@bytedance.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>
+Subject: Re: [PATCH RFC v1 net-next 0/4] net: Qdisc backpressure
+ infrastructure
+Message-ID: <20220510232702.GA11259@bytedance>
+References: <cover.1651800598.git.peilin.ye@bytedance.com>
+ <2dbd5e38-b748-0c16-5b8b-b32bc0cc43b0@gmail.com>
+ <20220510230347.GA11152@bytedance>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220510123512.h6jjqgowex6gnjh5@ws.net.home>
-X-Optus-CM-Score: 0
-X-Optus-CM-Analysis: v=2.4 cv=e9dl9Yl/ c=1 sm=1 tr=0 ts=627af484
-        a=ivVLWpVy4j68lT4lJFbQgw==:117 a=ivVLWpVy4j68lT4lJFbQgw==:17
-        a=kj9zAlcOel0A:10 a=oZkIemNP1mAA:10 a=7-415B0cAAAA:8
-        a=k7MNvsyqWiSqLKXAZKIA:9 a=CjuIK1q_8ugA:10 a=biEYGPWJfzWAr4FL6Ov7:22
+In-Reply-To: <20220510230347.GA11152@bytedance>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 02:35:12PM +0200, Karel Zak wrote:
-> On Mon, May 09, 2022 at 02:48:15PM +0200, Christian Brauner wrote:
-> > One comment about this. We really need to have this interface support
-> > giving us mount options like "relatime" back in numeric form (I assume
-> > this will be possible.). It is royally annoying having to maintain a
-> > mapping table in userspace just to do:
-> > 
-> > relatime -> MS_RELATIME/MOUNT_ATTR_RELATIME
-> > ro	 -> MS_RDONLY/MOUNT_ATTR_RDONLY
-> > 
-> > A library shouldn't be required to use this interface. Conservative
-> > low-level software that keeps its shared library dependencies minimal
-> > will need to be able to use that interface without having to go to an
-> > external library that transforms text-based output to binary form (Which
-> > I'm very sure will need to happen if we go with a text-based
-> > interface.).
-> 
-> Sounds like David's fsinfo() :-)
-> 
-> We need an interface where the kernel returns a consistent mount table    
-> entry (more syscalls to get more key=value could be a way how to get
-> inconsistent data).                                              
-> 
-> IMHO all the attempts to make a trivial interface will be unsuccessful
-> because the mount table is complex (tree) and mixes strings, paths,
-> and flags. We will always end with a complex interface or complex
-> strings (like the last xatts attempt). There is no 3rd path to go ...
-> 
-> The best would be simplified fsinfo() where userspace defines
-> a request (wanted "keys"), and the kernel fills a buffer with data
-> separated by some header metadata struct. In this case, the kernel can
-> return strings and structs with binary data.  
-> 
-> 
-> I'd love something like:
-> 
-> ssize_t sz;
-> fsinfo_query query[] = {
->     { .request = FSINFO_MOUNT_PATH },
->     { .request = FSINFO_PROPAGATION },
->     { .request = FSINFO_CHILDREN_IDS },
-> };
-> 
-> sz = fsinfo(dfd, "", AT_EMPTY_PATH,
->                 &query, ARRAY_SIZE(query),
->                 buf, sizeof(buf));
-> 
-> for (p = buf; p < buf + sz; ) {
-> {
->     fsinfo_entry *e = (struct fsinfo_entry) p;
->     char *data = p + sizeof(struct fsinfo_entry);
-> 
->     switch(e->request) {
->     case FSINFO_MOUNT_PATH:
->         printf("mountpoint %s\n", data);
->         break;
->     case FSINFO_PROPAGATION:
->         printf("propagation %x\n", (uintptr_t) data);
->         break;
->     case FSINFO_CHILDREN_IDS:
->         fsinfo_child *x = (fsinfo_child *) data;
->         for (i = 0; i < e->count; i++) {
->             printf("child: %d\n", x[i].mnt_id);
->         }
->         break;
->     ...
->     }
-> 
->     p += sizeof(struct fsinfo_entry) + e->len;
-> }
+On Tue, May 10, 2022 at 04:03:47PM -0700, Peilin Ye wrote:
+> This RFC does not cover EDT though, since it does not use Qdisc watchdog
+> or friends.
 
-That's pretty much what a multi-xattr get operation looks like.
-It's a bit more more intricate in the setup of the request/return
-buffer, but otherwise the structure of the code is the same.
+Sorry, there is a call to qdisc_watchdog_schedule_range_ns() in
+sch_fq.c.  I will learn more about how sch_fq is implemented.
 
-I just don't see why we need special purpose interfaces like this
-for key/value information when small tweaks to the existing
-generic key/value interfaces can provide exactly the same
-functionality....
+Thanks,
+Peilin Ye
 
-Cheers,
-
-Dave.
--- 
-Dave Chinner
-david@fromorbit.com
