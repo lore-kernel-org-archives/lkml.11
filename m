@@ -2,121 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31497C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:05:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDB3EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:05:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347083AbiEJQJJ (ORCPT
+        id S1347031AbiEJQJP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 12:09:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37432 "EHLO
+        Tue, 10 May 2022 12:09:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348496AbiEJQIa (ORCPT
+        with ESMTP id S1348705AbiEJQIo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 12:08:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAA81994DA
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 09:01:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5100560C2E
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 16:01:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EC2AC385A6;
-        Tue, 10 May 2022 16:01:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652198471;
-        bh=8R7QdAS1HkPD/ObWmH1HXiPVeYzqdGBRiK33o/ZU5GQ=;
-        h=Date:From:To:Cc:Subject:From;
-        b=W7y4X9dw1SUbI/nc2u7Y9qeXUtoC/3Nid+dZQ2mRtGYVCq9EGtR9LrpPq/8Kigs+f
-         W2qIOf9HwGBKJhpsHxyh57wHT4jWXpHOza9yy78a9p5d+gKATS/5s4NuhJkpmT6HeF
-         mdJnStqeNYGrGrhw+GxbHG4ExkvTxZ6bxX+HwNO7r+emR1iCVhO8PYoPtU47RZTSZu
-         ELPbwdJ8rW3bzCc9/Ieni0nKZ9hZtDr2raFTrrKYDJBmx6GJQT984s1Jz9kSv5LETH
-         MuMw9Wv8CQokRnzPmY4WE5jo316Y1Kg8kGkUr+RYIZ0LM50bjRPHNaGq+f3AirZT5x
-         v51+dhoEhe+8A==
-Date:   Tue, 10 May 2022 17:01:06 +0100
-From:   Will Deacon <will@kernel.org>
-To:     joro@8bytes.org
-Cc:     iommu@lists.linux-foundation.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        robin.murphy@arm.com, kernel-team@android.com
-Subject: [GIT PULL] iommu/arm-smmu: Updates for 5.19
-Message-ID: <20220510160106.GA28351@willie-the-truck>
+        Tue, 10 May 2022 12:08:44 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 410F2C5E74;
+        Tue, 10 May 2022 09:04:46 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id g23so20579005edy.13;
+        Tue, 10 May 2022 09:04:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=NHtZM18t8DQNsNApHyAs0/7e3iISzkrkeTn6Pi0Mn0o=;
+        b=BXwAnvdFPsC4hny0qi1pNI1khkfE+C3JlNrJR4CxOlZf3wRiqJo5+WQifmmkuPgXzI
+         ZYRZ7nh9HFeiE6vCKsQvA57CmmXQ4HV893XMTNfBGxFU/HCnNm6gYcGG4jUIEqGTe/dg
+         7C/wfM31sZxYbavGx8UtjaaXqsMAMVEBGNAfSfpdvPPo+/O5GenlOulyEw++6YVWr/w6
+         XAeeDVj/1rgFdGGVodi9pJ18wjAuFP/6DDIqukjVtaDY+Y3RjubRAs2vp2zcwoZm6h6N
+         mISoU9g0wEh4xFvVpWNqZQRrRgsheT6tqLIUy+bKn9zMbSgyy7leQRkrLHcuojp3Pv7n
+         OhpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=NHtZM18t8DQNsNApHyAs0/7e3iISzkrkeTn6Pi0Mn0o=;
+        b=KyAUd3EFxXk1uZwReYkcsDKxWXSdhOugmzcM728huar3Q2wy6OX5R//WJP8E1NcVSm
+         7k+ivXtjwh57cQf7tONb0x7dEO5zuAkg/RQsjTFlzUZ3nidesVbbn10vfp7y7hnCtY5B
+         yprv3K5wkfelrXQsdgzrZEG3sd6ZTSuJhk9hvFl4K3NkHZeT54fUB5zErROfPSNOD3J2
+         UGF4ScyfGW/71bQWc+hdvk1ZccymbtlRy4zQZbT8G+K5Oc1QfaWa2VcdPk11VMWvsM+3
+         ucL0fMtPN9FKRnzmMNfH42xmH7TJ7DcLhWJBVEu0UhoyZpYBy3xQL38ohc1+DZ4OayvV
+         xSQA==
+X-Gm-Message-State: AOAM532cV9XciFYXCGhBuIACySQyeZyeQk4RZI4100zESfiqZRX5KsyX
+        esTMMXtQRecc7TBoQsNfbPg=
+X-Google-Smtp-Source: ABdhPJykNMZNjzYKtX/dEYFt3Qt4Q3WG5F+Xgk9V2ZLgrQhURA3fIgTfuUpvx5C7D1kLq+dOh6EQMA==
+X-Received: by 2002:aa7:ca0d:0:b0:428:90ee:322c with SMTP id y13-20020aa7ca0d000000b0042890ee322cmr14647593eds.100.1652198684791;
+        Tue, 10 May 2022 09:04:44 -0700 (PDT)
+Received: from localhost.localdomain (89-38-99-188.hosted-by-worldstream.net. [89.38.99.188])
+        by smtp.gmail.com with ESMTPSA id l21-20020a1709062a9500b006f506ed0b42sm5772791eje.48.2022.05.10.09.04.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 09:04:44 -0700 (PDT)
+From:   Yassine Oudjana <yassine.oudjana@gmail.com>
+X-Google-Original-From: Yassine Oudjana <y.oudjana@protonmail.com>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Loic Poulain <loic.poulain@linaro.org>
+Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Martin Botka <martin.botka@somainline.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        Yassine Oudjana <yassine.oudjana@gmail.com>
+Subject: [PATCH v2 3/3] arm64: dts: qcom: msm8996: Add support for the CBF clock
+Date:   Tue, 10 May 2022 20:02:12 +0400
+Message-Id: <20220510160212.812696-1-y.oudjana@protonmail.com>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220510155744.812471-1-y.oudjana@protonmail.com>
+References: <20220510155744.812471-1-y.oudjana@protonmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Joerg,
+From: Konrad Dybcio <konrad.dybcio@somainline.org>
 
-Please pull these Arm SMMU updates for 5.19. The bulk of it is just adding
-new device-tree compatible strings for the existing drivers, but there
-are some non-critical fixes in here as well. Please see the tag for more
-details.
+Add the CBF PLL register to the kryocc node and assign a frequency
+to the clock.
 
-I used the previous fixes pull as a base for this so that you shouldn't
-run into any conflicts with upstream.
+This makes sure the core cluster interconnect is running at a decent
+speed, so that it's no longer a pain to use the device with all cores
+enabled.
 
-Cheers,
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Signed-off-by: Yassine Oudjana <yassine.oudjana@gmail.com>
+---
+ arch/arm64/boot/dts/qcom/msm8996.dtsi | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Will
+diff --git a/arch/arm64/boot/dts/qcom/msm8996.dtsi b/arch/arm64/boot/dts/qcom/msm8996.dtsi
+index 205af7b479a8..51ae3cbe75d3 100644
+--- a/arch/arm64/boot/dts/qcom/msm8996.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8996.dtsi
+@@ -2698,7 +2698,10 @@ apss_merge_funnel_out: endpoint {
+ 
+ 		kryocc: clock-controller@6400000 {
+ 			compatible = "qcom,msm8996-apcc";
+-			reg = <0x06400000 0x90000>;
++			reg = <0x06400000 0x90000>, <0x09a11000 0x10000>;
++
++			assigned-clocks = <&kryocc 2>;
++			assigned-clock-rates = <1382400000>;
+ 
+ 			clock-names = "xo";
+ 			clocks = <&rpmcc RPM_SMD_BB_CLK1>;
+-- 
+2.36.0
 
---->8
-
-The following changes since commit 4a25f2ea0e030b2fc852c4059a50181bfc5b2f57:
-
-  iommu: arm-smmu: disable large page mappings for Nvidia arm-smmu (2022-04-22 11:21:30 +0100)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git tags/arm-smmu-updates
-
-for you to fetch changes up to 628bf55b620497a105f4963ee8fb84769f7e6bb4:
-
-  iommu/arm-smmu: Force identity domains for legacy binding (2022-05-10 12:01:31 +0100)
-
-----------------------------------------------------------------
-Arm SMMU updates for 5.19
-
-- Add new Qualcomm device-tree compatible strings
-
-- Add new Nvidia device-tree compatible string for Tegra234
-
-- Fix UAF in SMMUv3 shared virtual addressing code
-
-- Force identity-mapped domains for users of ye olde SMMU legacy binding
-
-- Minor cleanups
-
-----------------------------------------------------------------
-Bjorn Andersson (2):
-      dt-bindings: arm-smmu: Add compatible for Qualcomm SC8280XP
-      iommu/arm-smmu-qcom: Add SC8280XP support
-
-Jean-Philippe Brucker (1):
-      iommu/arm-smmu-v3-sva: Fix mm use-after-free
-
-Robin Murphy (1):
-      iommu/arm-smmu: Force identity domains for legacy binding
-
-Rohit Agarwal (1):
-      dt-bindings: arm-smmu: Add binding for SDX65 SMMU
-
-Thierry Reding (3):
-      dt-bindings: arm-smmu: Document nvidia,memory-controller property
-      dt-bindings: arm-smmu: Add compatible for Tegra234 SOC
-      iommu/arm-smmu: Support Tegra234 SMMU
-
-Yang Yingliang (2):
-      iommu/arm-smmu: fix possible null-ptr-deref in arm_smmu_device_probe()
-      iommu/arm-smmu-v3: check return value after calling platform_get_resource()
-
- .../devicetree/bindings/iommu/arm,smmu.yaml        | 25 ++++++++++++++++++++--
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c    | 13 +++++++++--
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c        |  2 ++
- drivers/iommu/arm/arm-smmu/arm-smmu-impl.c         |  3 ++-
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c         |  1 +
- drivers/iommu/arm/arm-smmu/arm-smmu.c              |  8 ++++---
- 6 files changed, 44 insertions(+), 8 deletions(-)
