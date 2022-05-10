@@ -2,50 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE3CAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:36:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAF76C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:37:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241599AbiEJNkn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:40:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56730 "EHLO
+        id S235295AbiEJNk5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:40:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243768AbiEJN1X (ORCPT
+        with ESMTP id S243795AbiEJN11 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:27:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 497D92BD217;
-        Tue, 10 May 2022 06:20:28 -0700 (PDT)
+        Tue, 10 May 2022 09:27:27 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 397E32BF338;
+        Tue, 10 May 2022 06:20:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 78A21B81CF8;
-        Tue, 10 May 2022 13:20:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4504C385C2;
-        Tue, 10 May 2022 13:20:24 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A908DCE1EA8;
+        Tue, 10 May 2022 13:20:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3F68C385C2;
+        Tue, 10 May 2022 13:20:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188825;
-        bh=dnjGH4X54RaK+1LVipStRQRfJJyRB8ZUDUbQ9R3Sj8s=;
+        s=korg; t=1652188828;
+        bh=PRKpjmAziyif22JPjrTY50Wia+ji3fC+UzeKpw1I3yc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v0cP42nx9jKGt3J4IraM3AlwY+QuQ73heQZnHVckZz7UZqq8gArcGE8iF3DoLpg5H
-         e43wm3GMyTVrkq6l4QsiYjPPu+BSjCCMTyXIhUTsfJbpEG14x4ULTVkMyVGVd2n3hj
-         7fLICB44fEiKggrACBU9muuWLKze9TutSfZFeQk0=
+        b=GnO0SsFlpCg5EYAGwgEg6lzF8vMYLc18Pfuz29VRJkKXFLOVCAVMYrkZkISIwiDdJ
+         ndUR0CSfLGifZDdUI+bHvj2Oxkh+hOpFyA3JAjdivRC1v5BfhfqZjqnnmlcWHkT2MH
+         HL5oJW/GPGTnq/8kAQlj5iAg2HkFFEfPGkAvra+A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Hillf Danton <hdanton@sina.com>,
-        syzbot+0dc4444774d419e916c8@syzkaller.appspotmail.com,
-        Emil Velikov <emil.velikov@collabora.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sean Paul <seanpaul@chromium.org>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Eric Anholt <eric@anholt.net>, Sam Ravnborg <sam@ravnborg.org>,
-        Rob Clark <robdclark@chromium.org>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 4.19 57/88] drm/vgem: Close use-after-free race in vgem_gem_create
-Date:   Tue, 10 May 2022 15:07:42 +0200
-Message-Id: <20220510130735.399310423@linuxfoundation.org>
+        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        =?UTF-8?q?Philippe=20Mathieu-Daud=C3=A9?= <f4bug@amsat.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Subject: [PATCH 4.19 58/88] MIPS: Fix CP0 counter erratum detection for R4k CPUs
+Date:   Tue, 10 May 2022 15:07:43 +0200
+Message-Id: <20220510130735.427780069@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 References: <20220510130733.735278074@linuxfoundation.org>
@@ -57,74 +49,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Vetter <daniel.vetter@ffwll.ch>
+From: Maciej W. Rozycki <macro@orcam.me.uk>
 
-commit 4b848f20eda5974020f043ca14bacf7a7e634fc8 upstream.
+commit f0a6c68f69981214cb7858738dd2bc81475111f7 upstream.
 
-There's two references floating around here (for the object reference,
-not the handle_count reference, that's a different thing):
+Fix the discrepancy between the two places we check for the CP0 counter
+erratum in along with the incorrect comparison of the R4400 revision
+number against 0x30 which matches none and consistently consider all
+R4000 and R4400 processors affected, as documented in processor errata
+publications[1][2][3], following the mapping between CP0 PRId register
+values and processor models:
 
-- The temporary reference held by vgem_gem_create, acquired by
-  creating the object and released by calling
-  drm_gem_object_put_unlocked.
+  PRId   |  Processor Model
+---------+--------------------
+00000422 | R4000 Revision 2.2
+00000430 | R4000 Revision 3.0
+00000440 | R4400 Revision 1.0
+00000450 | R4400 Revision 2.0
+00000460 | R4400 Revision 3.0
 
-- The reference held by the object handle, created by
-  drm_gem_handle_create. This one generally outlives the function,
-  except if a 2nd thread races with a GEM_CLOSE ioctl call.
+No other revision of either processor has ever been spotted.
 
-So usually everything is correct, except in that race case, where the
-access to gem_object->size could be looking at freed data already.
-Which again isn't a real problem (userspace shot its feet off already
-with the race, we could return garbage), but maybe someone can exploit
-this as an information leak.
+Contrary to what has been stated in commit ce202cbb9e0b ("[MIPS] Assume
+R4000/R4400 newer than 3.0 don't have the mfc0 count bug") marking the
+CP0 counter as buggy does not preclude it from being used as either a
+clock event or a clock source device.  It just cannot be used as both at
+a time, because in that case clock event interrupts will be occasionally
+lost, and the use as a clock event device takes precedence.
 
-Cc: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: Hillf Danton <hdanton@sina.com>
-Reported-by: syzbot+0dc4444774d419e916c8@syzkaller.appspotmail.com
-Cc: stable@vger.kernel.org
-Cc: Emil Velikov <emil.velikov@collabora.com>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc: Sean Paul <seanpaul@chromium.org>
-Cc: Chris Wilson <chris@chris-wilson.co.uk>
-Cc: Eric Anholt <eric@anholt.net>
-Cc: Sam Ravnborg <sam@ravnborg.org>
-Cc: Rob Clark <robdclark@chromium.org>
-Reviewed-by: Chris Wilson <chris@chris-wilson.co.uk>
-Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20200202132133.1891846-1-daniel.vetter@ffwll.ch
-[OP: backport to 4.19: adjusted DRM_DEBUG() -> DRM_DEBUG_DRIVER()]
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Compare against 0x4ff in `can_use_mips_counter' so that a single machine
+instruction is produced.
+
+
+[1] "MIPS R4000PC/SC Errata, Processor Revision 2.2 and 3.0", MIPS
+    Technologies Inc., May 10, 1994, Erratum 53, p.13
+
+[2] "MIPS R4400PC/SC Errata, Processor Revision 1.0", MIPS Technologies
+    Inc., February 9, 1994, Erratum 21, p.4
+
+[3] "MIPS R4400PC/SC Errata, Processor Revision 2.0 & 3.0", MIPS
+    Technologies Inc., January 24, 1995, Erratum 14, p.3
+
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Fixes: ce202cbb9e0b ("[MIPS] Assume R4000/R4400 newer than 3.0 don't have the mfc0 count bug")
+Cc: stable@vger.kernel.org # v2.6.24+
+Reviewed-by: Philippe Mathieu-Daudé <f4bug@amsat.org>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
 ---
- drivers/gpu/drm/vgem/vgem_drv.c |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ arch/mips/include/asm/timex.h |    8 ++++----
+ arch/mips/kernel/time.c       |   11 +++--------
+ 2 files changed, 7 insertions(+), 12 deletions(-)
 
---- a/drivers/gpu/drm/vgem/vgem_drv.c
-+++ b/drivers/gpu/drm/vgem/vgem_drv.c
-@@ -189,9 +189,10 @@ static struct drm_gem_object *vgem_gem_c
- 		return ERR_CAST(obj);
+--- a/arch/mips/include/asm/timex.h
++++ b/arch/mips/include/asm/timex.h
+@@ -40,9 +40,9 @@
+ typedef unsigned int cycles_t;
  
- 	ret = drm_gem_handle_create(file, &obj->base, handle);
--	drm_gem_object_put_unlocked(&obj->base);
--	if (ret)
-+	if (ret) {
-+		drm_gem_object_put_unlocked(&obj->base);
- 		return ERR_PTR(ret);
-+	}
- 
- 	return &obj->base;
- }
-@@ -214,7 +215,9 @@ static int vgem_gem_dumb_create(struct d
- 	args->size = gem_object->size;
- 	args->pitch = pitch;
- 
--	DRM_DEBUG_DRIVER("Created object of size %lld\n", size);
-+	drm_gem_object_put_unlocked(gem_object);
-+
-+	DRM_DEBUG_DRIVER("Created object of size %llu\n", args->size);
+ /*
+- * On R4000/R4400 before version 5.0 an erratum exists such that if the
+- * cycle counter is read in the exact moment that it is matching the
+- * compare register, no interrupt will be generated.
++ * On R4000/R4400 an erratum exists such that if the cycle counter is
++ * read in the exact moment that it is matching the compare register,
++ * no interrupt will be generated.
+  *
+  * There is a suggested workaround and also the erratum can't strike if
+  * the compare interrupt isn't being used as the clock source device.
+@@ -63,7 +63,7 @@ static inline int can_use_mips_counter(u
+ 	if (!__builtin_constant_p(cpu_has_counter))
+ 		asm volatile("" : "=m" (cpu_data[0].options));
+ 	if (likely(cpu_has_counter &&
+-		   prid >= (PRID_IMP_R4000 | PRID_REV_ENCODE_44(5, 0))))
++		   prid > (PRID_IMP_R4000 | PRID_REV_ENCODE_44(15, 15))))
+ 		return 1;
+ 	else
+ 		return 0;
+--- a/arch/mips/kernel/time.c
++++ b/arch/mips/kernel/time.c
+@@ -140,15 +140,10 @@ static __init int cpu_has_mfc0_count_bug
+ 	case CPU_R4400MC:
+ 		/*
+ 		 * The published errata for the R4400 up to 3.0 say the CPU
+-		 * has the mfc0 from count bug.
++		 * has the mfc0 from count bug.  This seems the last version
++		 * produced.
+ 		 */
+-		if ((current_cpu_data.processor_id & 0xff) <= 0x30)
+-			return 1;
+-
+-		/*
+-		 * we assume newer revisions are ok
+-		 */
+-		return 0;
++		return 1;
+ 	}
  
  	return 0;
- }
 
 
