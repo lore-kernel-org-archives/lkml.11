@@ -2,149 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C4F0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:49:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8756C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:50:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241239AbiEJLxZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 07:53:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36288 "EHLO
+        id S240955AbiEJLyg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 07:54:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233105AbiEJLxX (ORCPT
+        with ESMTP id S235005AbiEJLye (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 07:53:23 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3DB825E79C;
-        Tue, 10 May 2022 04:49:26 -0700 (PDT)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24AAfEGR011022;
-        Tue, 10 May 2022 11:49:26 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=ARFuf21vSRs3SqQwRlCsfgFUIcJIjrwmZkD6ORueLl8=;
- b=TI8JJuG+TEz4MdFaLVhPHZXlgMR/+YzoOOiPzu6pyVdX+/fP1CO4Zq8phXlwie0VZksN
- x1gWDj93RSQqZiBZWMpFYIiYLnEe4I2baO4HRtkz3Jgd9tnSBmemof0w3Sp/rBq5EpPe
- 12t6SC5FF1+namgvEsfhi7iWnSZNhK2W9/h3DC9gb4gS2ZCDpyrNFVJmuEp54xYTQcB+
- z6pQJvbLH3CHK+L5tWRAiPtK0cmANQn3uFkn6e0r20+t5fBYPjDWwwn7aUcTzHOCIMD5
- DJq0fT9/dhVvs+MmpG2U5xl3KS5u4hy8OW5y4dgmQJbWCsSXZISjhsgrerGHNzoOsb+a Dg== 
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fyncetet2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 10 May 2022 11:49:25 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24ABnJkQ013231;
-        Tue, 10 May 2022 11:49:24 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma03ams.nl.ibm.com with ESMTP id 3fwgd8v0gn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 10 May 2022 11:49:23 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24ABnLvG49217806
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 10 May 2022 11:49:21 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9163611C04A;
-        Tue, 10 May 2022 11:49:21 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0362011C04C;
-        Tue, 10 May 2022 11:49:20 +0000 (GMT)
-Received: from li-bb2b2a4c-3307-11b2-a85c-8fa5c3a69313.ibm.com (unknown [9.43.111.129])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Tue, 10 May 2022 11:49:19 +0000 (GMT)
-Date:   Tue, 10 May 2022 17:19:16 +0530
-From:   Ojaswin Mujoo <ojaswin@linux.ibm.com>
-To:     fstests@vger.kernel.org, riteshh@linux.ibm.com,
-        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] common/rc: Modify _require_batched_discard to improve
- test coverage
-Message-ID: <YnpRPGBhFqFyPMUg@li-bb2b2a4c-3307-11b2-a85c-8fa5c3a69313.ibm.com>
-References: <20220401055713.634842-1-ojaswin@linux.ibm.com>
- <20220510063223.dogoows5t7cxpnul@zlang-mailbox>
+        Tue, 10 May 2022 07:54:34 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07B2726C4D6
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 04:50:38 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id iq10so15680495pjb.0
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 04:50:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=mmuW88WgZV9+fZNJabDzsnK7aFDoJVdbS9AW+G9qV58=;
+        b=POMGLdtRO5N+iPukUjeIb86hhrsrXVU/CT4e7ZA+elPTZp/Or/8RqRYku9FBmtrZRt
+         WCUE9z8PPrqj8a1vchOWbcBLO2yFelIIdo1mAi8stjcFsb0PjBq6iGnk6K6L6jg4x9bg
+         G1qzRuEymGuJZOXgvzGiydQOIroskPV1Ahw6yTvgtk+Tm/2o7weReumWqWquoPWfuv0x
+         wEwkA7ZcOnDtrdtWlJoPYUk6BZCI/nkxl1HQnWk0IVQkPSbbC7lY4VRG8orEjeoijs7g
+         mtxKBKel5urYk748o7cXJtsGhHYKzJPQhbGKIkHEa1mX/gspQNHiXlBZ9MizD79EDb6A
+         Q7Xg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=mmuW88WgZV9+fZNJabDzsnK7aFDoJVdbS9AW+G9qV58=;
+        b=rj6JeJufxVsEziTkfvHIbpMa+oEk8m+2knl+NoRTTTsvlP9mTfknDA7KzmasweqVPP
+         8ITp88josa9TmIbsXHNU9+d8qJi5oT21B6PR29JqL+79CWx2PQmGNnURimM7/jU/IdvD
+         Sr4vO2pWPqRUa+74O7W+Rz1nkf28QeNJhd2lIrS5dF8hNJMseE1LrMJCPfL0grlYuX6R
+         sVYdSjsjQAmIkc5s06uPr0xWUbqmow1GSnDNqWHnSdE29cFDvuZSj9VEorcHXedI5uNJ
+         E2M8o/CQOL+2USIt9sJ5JcTk93KbjK0Waps0bbYCceeCb8Q/8Aay9abQ4AJF2Jm83giq
+         LVkw==
+X-Gm-Message-State: AOAM532V2DVDQJQf8P9zSztiT31/F7FZOdMoLfuMjFdeKGKCIdXgb43W
+        /fSnnoQzWyRm+4W5Qnjfqn8=
+X-Google-Smtp-Source: ABdhPJzNCzJ5RkULDKP7UvyWW0jsnhuTMsdy/RJYUKYTN8r322DAkITG2to8yEJt0NwdIsPQxJh6Ag==
+X-Received: by 2002:a17:90a:5b09:b0:1cd:b3d3:a3f3 with SMTP id o9-20020a17090a5b0900b001cdb3d3a3f3mr23286982pji.9.1652183437537;
+        Tue, 10 May 2022 04:50:37 -0700 (PDT)
+Received: from hyeyoo ([114.29.24.243])
+        by smtp.gmail.com with ESMTPSA id x13-20020aa78f0d000000b0050dc762819csm10480840pfr.118.2022.05.10.04.50.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 04:50:37 -0700 (PDT)
+Date:   Tue, 10 May 2022 20:50:29 +0900
+From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
+Cc:     "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "Lutomirski, Andy" <luto@kernel.org>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "Tianyu.Lan@microsoft.com" <Tianyu.Lan@microsoft.com>,
+        "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
+        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+        "brijesh.singh@amd.com" <brijesh.singh@amd.com>
+Subject: Re: [PATCH] x86/mm/cpa: set PAGE_KERNEL in __set_pages_p()
+Message-ID: <YnpRhT68kwaMBEHF@hyeyoo>
+References: <20220506051940.156952-1-42.hyeyoo@gmail.com>
+ <2cd129af8d66fc4bffcb124a3675bffbf1becd85.camel@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220510063223.dogoows5t7cxpnul@zlang-mailbox>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: xx6_o-zgZKMJI-XrxxxF8-Z8Yod7k9DZ
-X-Proofpoint-ORIG-GUID: xx6_o-zgZKMJI-XrxxxF8-Z8Yod7k9DZ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-10_01,2022-05-10_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 suspectscore=0
- clxscore=1015 impostorscore=0 mlxlogscore=897 malwarescore=0 spamscore=0
- lowpriorityscore=0 bulkscore=0 mlxscore=0 adultscore=0 priorityscore=1501
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2205100052
+In-Reply-To: <2cd129af8d66fc4bffcb124a3675bffbf1becd85.camel@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Zorro,
+On Tue, May 10, 2022 at 12:47:11AM +0000, Edgecombe, Rick P wrote:
+> On Fri, 2022-05-06 at 14:19 +0900, Hyeonggon Yoo wrote:
+> > __set_pages_np() not only clears _PAGE_PRESENT and _PAGE_RW, but also
+> > clears _PAGE_GLOBAL to avoid confusing _PAGE_GLOBAL as _PAGE_PROTNONE
+> > when the PTE is not present.
+> > 
+> > Common usage for __set_pages_p() is to call it after
+> > __set_pages_np().
+> > Therefore calling __set_pages_p() after __set_pages_np() clears
+> > _PAGE_GLOBAL, making it unable to globally shared in TLB.
+> > 
+> > As they are called by set_direct_map_{invalid,default}_noflush(),
+> > pages in direct map cannot be globally shared in TLB after being used
+> > by
+> > vmalloc, secretmem, and hibernation.
+> > 
+> > So set PAGE_KERNEL isntead of __pgprot(_PAGE_PRESENT | _PAGE_RW) in
+> > __set_pages_p().
+> 
+> Nice find. I think we can't always set PAGE_KERNEL also because of the
+> PTI code. It sometimes wants the direct map to be non global.
+>
 
-Thanks for the review.
+Thanks for review!
 
-On Tue, May 10, 2022 at 02:32:23PM +0800, Zorro Lang wrote:
-> On Fri, Apr 01, 2022 at 11:27:13AM +0530, Ojaswin Mujoo wrote:
-> > A recent ext4 patch discussed [1] that some devices (eg LVMs) can
-> > have a discard granularity as big as 42MB which makes it larger
-> > than the group size of ext4 FS with 1k BS. This causes the FITRIM
-> > IOCTL to fail on filesystems like ext4.
-> > 
-> > This case was not correctly handle by "_require_batched_discard" as
-> > it incorrectly interpreted the FITRIM failure as fs not supporting
-> > the IOCTL. This caused the tests like generic/260 to incorectly
-> > report "not run" instead of "failed" in case of large discard
-> > granularity.
-> > 
-> > Fix "_require_batched_discard" to use a more accurate method
-> > to determine if discard is supported.
-> > 
-> > [1] commit 173b6e383d2
-> >     ext4: avoid trim error on fs with small groups
-> > 
-> > Signed-off-by: Ojaswin Mujoo <ojaswin@linux.ibm.com>
-> > ---
-> >  common/rc | 8 +++++++-
-> >  1 file changed, 7 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/common/rc b/common/rc
-> > index e2d3d72a..97386342 100644
-> > --- a/common/rc
-> > +++ b/common/rc
-> > @@ -3858,7 +3858,13 @@ _require_batched_discard()
-> >  		exit 1
-> >  	fi
-> >  	_require_fstrim
-> > -	$FSTRIM_PROG $1 > /dev/null 2>&1 || _notrun "FITRIM not supported on $1"
-> > +
-> > +	$FSTRIM_PROG $1 2>&1 | grep -q "not supported"
-> > +	RET=$?
-> 
-> Better to use global variable carefully in common functions, if it's not
-> necessary, I'd recommend using "local ret" at here.
-Sure, I'll make the change.
+IIUC __pgprot_mask() already clears _PAGE_GLOBAL from PAGE_KERNEL
+when PTI is used.
 
-> 
-> From my experience, the *quiet (-q)* grep does "exit_on_match" directly,
-> it won't wait the write process, if the write process is still writing but
-> the grep has exited, then it'll cause broken pipe, and the write process
-> exit with failure.
-> 
-> It doesn't always happend, it depends. So I'd like to use "${PIPESTATUS[1]}"
-> or write it as 'grep -q "not supported" <($FSTRIM_PROG $1 2>&1)', to make sure
-> we just care about the "grep" result.
-Ah makes sense, will make this change as well.
+#define __pgprot_mask(x)        __pgprot((x) & __default_kernel_pte_mask)
+#define PAGE_KERNEL             __pgprot_mask(__PAGE_KERNEL | _ENC)
 
-Regards,
-Ojaswin
-> 
-> > +	if [ "$RET" = "0" ]
-> > +	then
-> > +		_notrun "FITRIM not supported on $1"
-> > +	fi
-> >  }
-> >  
-> >  _require_dumpe2fs()
-> > -- 
-> > 2.27.0
-> > 
-> 
+But yeah, it seems PAGE_KERNEL is too much for this.
+
+> Maybe something like this?
+> (_PAGE_PRESENT | _PAGE_RW | _PAGE_GLOBAL) & __default_kernel_pte_mask
+>
+
+What about __pgprot_mask(_PAGE_PRESENT | _PAGE_RW | _PAGE_GLOBAL)?
+
+> That would add back in a little of the "default global" behavior that
+> was removed in d1440b2, but I think it should be ok because it is
+> limited to the direct map. 
+
+> Otherwise, I wonder if the existing global
+> clearing logic is really needed.
+
+I think it's still needed. pte_present() returning true due to _PAGE_PROTNONE
+after __set_pages_np() simply doesn't make sense. No?
+
+-- 
+Thanks,
+Hyeonggon
