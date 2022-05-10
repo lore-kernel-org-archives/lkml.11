@@ -2,45 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA981C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:49:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60635C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:49:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346484AbiEJPxq (ORCPT
+        id S1346585AbiEJPxu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:53:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34692 "EHLO
+        Tue, 10 May 2022 11:53:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346585AbiEJPvH (ORCPT
+        with ESMTP id S1346648AbiEJPvQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:51:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B8A228C9C1;
-        Tue, 10 May 2022 08:45:22 -0700 (PDT)
+        Tue, 10 May 2022 11:51:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 561AB28D4E1;
+        Tue, 10 May 2022 08:45:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DEE8615AE;
-        Tue, 10 May 2022 15:45:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E91BC385C2;
-        Tue, 10 May 2022 15:45:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B7CFFB81D0D;
+        Tue, 10 May 2022 15:45:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC4ADC385A6;
+        Tue, 10 May 2022 15:45:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652197522;
-        bh=LPgWGFYVUKI8AXYB5cCTq9m4J4dr8kWxnRp48zoc8a8=;
+        s=k20201202; t=1652197527;
+        bh=4IYxJ6CPgg/V9tO8g9viSi66zx65sRyQ0HAkWF2gGN8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V8wFL7sYDxLYFFm7fC08c3gYhDolGkZc6MiXCngpA2HNZV7CjWvFOvT+sJHhn+kVO
-         N7LWtALQF/UWhOkDuYhi7QRQNM6iQGYf9XBaeElnHCIG62p8jbO8VtDmQjplSaJfqm
-         tkLv6g0/PnXiyYFfHLTH6DQbWhkzVxwFPIwDk+dArdOUJo6YuT81A3oF/I97WMHAMX
-         Ll8LHM9JZtQeYW2hEUA4XDk6+UG2HBC1NavkhjXx/LWW+YwzHxRXwxTQ6vxDGMxmMP
-         0gbZV2rCcdLEYJEKg2uNd7wJIAeAgEe6pkSUQhgZo/xeMjFwsNpKvlyQtpaSGBl2QX
-         yVc4p4zaZSy0g==
+        b=tkdMGS3kK23l3eKlkgcFK3RRl7VxntRFPo4d2WQyW2ujBmu2d77huBqVXRNUQgCxo
+         hHJ1juGFNw/htyeopIpickvxrNaAcPXmX8swfXSDx43CEHVAvbY4HZvMZga4ejqhEW
+         iuq2SUq0/7AA8eR58altCpc8nzAakMy1F50TMX0vVwCAZA0isxbwE8/0HGZAtdAg5m
+         XfUZu89DnRNmeS8UWjckztW/KYl7efOdA+D6McqOSoDqRkjahpBt5CC8DHW9OUHi7A
+         wmpKYi5moQshWFTuk9RiJil5MgOhuKhv/efq1CxWw83QR+7+GERw0DypV3A5FsOozn
+         xxamTQCoKP4SA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mark Brown <broonie@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.10 4/9] ASoC: ops: Validate input values in snd_soc_put_volsw_range()
-Date:   Tue, 10 May 2022 11:45:07 -0400
-Message-Id: <20220510154512.153945-4-sashal@kernel.org>
+Cc:     Shravya Kumbham <shravya.kumbham@xilinx.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, michal.simek@xilinx.com,
+        yuehaibing@huawei.com, arnd@arndb.de, trix@redhat.com,
+        linmq006@gmail.com, prabhakar.mahadev-lad.rj@bp.renesas.com,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 6/9] net: emaclite: Don't advertise 1000BASE-T and do auto negotiation
+Date:   Tue, 10 May 2022 11:45:09 -0400
+Message-Id: <20220510154512.153945-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220510154512.153945-1-sashal@kernel.org>
 References: <20220510154512.153945-1-sashal@kernel.org>
@@ -52,58 +57,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Shravya Kumbham <shravya.kumbham@xilinx.com>
 
-[ Upstream commit aa22125c57f9e577f0a667e4fa07fc3fa8ca1e60 ]
+[ Upstream commit b800528b97d0adc3a5ba42d78a8b0d3f07a31f44 ]
 
-Check that values written via snd_soc_put_volsw_range() are
-within the range advertised by the control, ensuring that we
-don't write out of spec values to the hardware.
+In xemaclite_open() function we are setting the max speed of
+emaclite to 100Mb using phy_set_max_speed() function so,
+there is no need to write the advertising registers to stop
+giga-bit speed and the phy_start() function starts the
+auto-negotiation so, there is no need to handle it separately
+using advertising registers. Remove the phy_read and phy_write
+of advertising registers in xemaclite_open() function.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20220423131239.3375261-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Shravya Kumbham <shravya.kumbham@xilinx.com>
+Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/soc-ops.c | 18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/xilinx/xilinx_emaclite.c | 15 ---------------
+ 1 file changed, 15 deletions(-)
 
-diff --git a/sound/soc/soc-ops.c b/sound/soc/soc-ops.c
-index 2bc9fa6a34b8..15bfcdbdfaa4 100644
---- a/sound/soc/soc-ops.c
-+++ b/sound/soc/soc-ops.c
-@@ -510,7 +510,15 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
- 	unsigned int mask = (1 << fls(max)) - 1;
- 	unsigned int invert = mc->invert;
- 	unsigned int val, val_mask;
--	int err, ret;
-+	int err, ret, tmp;
-+
-+	tmp = ucontrol->value.integer.value[0];
-+	if (tmp < 0)
-+		return -EINVAL;
-+	if (mc->platform_max && tmp > mc->platform_max)
-+		return -EINVAL;
-+	if (tmp > mc->max - mc->min + 1)
-+		return -EINVAL;
+diff --git a/drivers/net/ethernet/xilinx/xilinx_emaclite.c b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
+index 4bd44fbc6ecf..cc0335fceec5 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
++++ b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
+@@ -923,8 +923,6 @@ static int xemaclite_open(struct net_device *dev)
+ 	xemaclite_disable_interrupts(lp);
  
- 	if (invert)
- 		val = (max - ucontrol->value.integer.value[0]) & mask;
-@@ -525,6 +533,14 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
- 	ret = err;
+ 	if (lp->phy_node) {
+-		u32 bmcr;
+-
+ 		lp->phy_dev = of_phy_connect(lp->ndev, lp->phy_node,
+ 					     xemaclite_adjust_link, 0,
+ 					     PHY_INTERFACE_MODE_MII);
+@@ -935,19 +933,6 @@ static int xemaclite_open(struct net_device *dev)
  
- 	if (snd_soc_volsw_is_stereo(mc)) {
-+		tmp = ucontrol->value.integer.value[1];
-+		if (tmp < 0)
-+			return -EINVAL;
-+		if (mc->platform_max && tmp > mc->platform_max)
-+			return -EINVAL;
-+		if (tmp > mc->max - mc->min + 1)
-+			return -EINVAL;
-+
- 		if (invert)
- 			val = (max - ucontrol->value.integer.value[1]) & mask;
- 		else
+ 		/* EmacLite doesn't support giga-bit speeds */
+ 		phy_set_max_speed(lp->phy_dev, SPEED_100);
+-
+-		/* Don't advertise 1000BASE-T Full/Half duplex speeds */
+-		phy_write(lp->phy_dev, MII_CTRL1000, 0);
+-
+-		/* Advertise only 10 and 100mbps full/half duplex speeds */
+-		phy_write(lp->phy_dev, MII_ADVERTISE, ADVERTISE_ALL |
+-			  ADVERTISE_CSMA);
+-
+-		/* Restart auto negotiation */
+-		bmcr = phy_read(lp->phy_dev, MII_BMCR);
+-		bmcr |= (BMCR_ANENABLE | BMCR_ANRESTART);
+-		phy_write(lp->phy_dev, MII_BMCR, bmcr);
+-
+ 		phy_start(lp->phy_dev);
+ 	}
+ 
 -- 
 2.35.1
 
