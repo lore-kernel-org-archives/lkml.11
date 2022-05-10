@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 827D8C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFC13C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:09:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343910AbiEJOL3 (ORCPT
+        id S1344039AbiEJOLm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:11:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45614 "EHLO
+        Tue, 10 May 2022 10:11:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245054AbiEJNrO (ORCPT
+        with ESMTP id S245052AbiEJNrO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:47:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8433B583A6;
-        Tue, 10 May 2022 06:34:32 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E42CA5B3F4;
+        Tue, 10 May 2022 06:34:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2F525B81D24;
-        Tue, 10 May 2022 13:34:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99B66C385A6;
-        Tue, 10 May 2022 13:34:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8320F6165A;
+        Tue, 10 May 2022 13:34:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85E53C385C2;
+        Tue, 10 May 2022 13:34:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189670;
-        bh=z8hq8fLZpFA7icnRzDjRC1UziW/f67KhSR5BDDrhu5M=;
+        s=korg; t=1652189673;
+        bh=rahknHBdjH4CipcDdIevuxQSjmiTkFWBaiwIaya1CfQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yz5FBQcYpbW45z66hhDVcJC61Na6gZhI9IO823K8NuZmReu5itcySd3Z9hT1qWiQV
-         hdbKmAvrB0HU7kRBJ3ftae3EssAijcsodDsSh1FIU9tpnGk5KNn+ciSVgUKA3SmDIf
-         929G7XkmUVu6B2GSX5M3s6qvSjSBZ4lG38BPNcfM=
+        b=TAu2wsERomYiU9/cLKQJXTrhfhWf0D751lVQivkGm8fovvViZdBvV4iwzjvzavf/j
+         mi8FEEof6wWQ20ZqwQucWhZwK8DGrvGrLybeNJngCHPAN9BwmNVyT38+9sM+G2K7HI
+         Dv3BiI4dtNp6LCDih0Jn7WPpx8X3ycPnTxaIb1Ss=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, pali@kernel.org,
-        =?UTF-8?q?Marek=20Beh=FAn?= <kabel@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH 5.15 123/135] PCI: aardvark: Refactor unmasking summary MSI interrupt
-Date:   Tue, 10 May 2022 15:08:25 +0200
-Message-Id: <20220510130743.926053291@linuxfoundation.org>
+        stable@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 086/135] gpio: mvebu: drop pwm base assignment
+Date:   Tue, 10 May 2022 15:07:48 +0200
+Message-Id: <20220510130742.878194301@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -50,49 +53,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Baruch Siach <baruch@tkos.co.il>
 
-commit 4689c0916320f112a8a33f2689d3addc3262f02c upstream.
+[ Upstream commit e5f6e5d554ac274f9c8ba60078103d0425b93c19 ]
 
-Refactor the masking of ISR0/1 Sources and unmasking of summary MSI interrupt
-so that it corresponds to the comments:
-- first mask all ISR0/1
-- then unmask all MSIs
-- then unmask summary MSI interrupt
+pwmchip_add() unconditionally assigns the base ID dynamically. Commit
+f9a8ee8c8bcd1 ("pwm: Always allocate PWM chip base ID dynamically")
+dropped all base assignment from drivers under drivers/pwm/. It missed
+this driver. Fix that.
 
-Link: https://lore.kernel.org/r/20220110015018.26359-10-kabel@kernel.org
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Marek Behún <kabel@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Signed-off-by: Marek Behún <kabel@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: f9a8ee8c8bcd1 ("pwm: Always allocate PWM chip base ID dynamically")
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+Reviewed-by: Uwe Kleine-KÃ¶nig <u.kleine-koenig@pengutronix.de>
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pci-aardvark.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/gpio/gpio-mvebu.c | 7 -------
+ 1 file changed, 7 deletions(-)
 
---- a/drivers/pci/controller/pci-aardvark.c
-+++ b/drivers/pci/controller/pci-aardvark.c
-@@ -571,15 +571,17 @@ static void advk_pcie_setup_hw(struct ad
- 	advk_writel(pcie, PCIE_IRQ_ALL_MASK, HOST_CTRL_INT_STATUS_REG);
+diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
+index 8f429d9f3661..ad8822da7c27 100644
+--- a/drivers/gpio/gpio-mvebu.c
++++ b/drivers/gpio/gpio-mvebu.c
+@@ -871,13 +871,6 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
+ 	mvpwm->chip.dev = dev;
+ 	mvpwm->chip.ops = &mvebu_pwm_ops;
+ 	mvpwm->chip.npwm = mvchip->chip.ngpio;
+-	/*
+-	 * There may already be some PWM allocated, so we can't force
+-	 * mvpwm->chip.base to a fixed point like mvchip->chip.base.
+-	 * So, we let pwmchip_add() do the numbering and take the next free
+-	 * region.
+-	 */
+-	mvpwm->chip.base = -1;
  
- 	/* Disable All ISR0/1 Sources */
--	reg = PCIE_ISR0_ALL_MASK;
--	reg &= ~PCIE_ISR0_MSI_INT_PENDING;
--	advk_writel(pcie, reg, PCIE_ISR0_MASK_REG);
--
-+	advk_writel(pcie, PCIE_ISR0_ALL_MASK, PCIE_ISR0_MASK_REG);
- 	advk_writel(pcie, PCIE_ISR1_ALL_MASK, PCIE_ISR1_MASK_REG);
+ 	spin_lock_init(&mvpwm->lock);
  
- 	/* Unmask all MSIs */
- 	advk_writel(pcie, ~(u32)PCIE_MSI_ALL_MASK, PCIE_MSI_MASK_REG);
- 
-+	/* Unmask summary MSI interrupt */
-+	reg = advk_readl(pcie, PCIE_ISR0_MASK_REG);
-+	reg &= ~PCIE_ISR0_MSI_INT_PENDING;
-+	advk_writel(pcie, reg, PCIE_ISR0_MASK_REG);
-+
- 	/* Enable summary interrupt for GIC SPI source */
- 	reg = PCIE_IRQ_ALL_MASK & (~PCIE_IRQ_ENABLE_INTS_MASK);
- 	advk_writel(pcie, reg, HOST_CTRL_INT_MASK_REG);
+-- 
+2.35.1
+
 
 
