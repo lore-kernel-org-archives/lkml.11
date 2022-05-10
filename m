@@ -2,333 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41BAAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 23:57:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79017C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 23:57:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238997AbiEJX5o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 19:57:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44756 "EHLO
+        id S232584AbiEJX5z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 19:57:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238757AbiEJX5K (ORCPT
+        with ESMTP id S238804AbiEJX5V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 19:57:10 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23A9B208215
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 16:57:07 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id d134-20020a25e68c000000b006483b1adcc3so403737ybh.11
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 16:57:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc:content-transfer-encoding;
-        bh=v8gt6xjWudwEV2qln2N7SwuUJc9JxxsnlnvbLCYxUc0=;
-        b=loPY8BnZXxZrmNCWwTUfS3qnOnH67SZdt82uLV668C+yIIJpUM1rapWhZgScGIl9UE
-         JFdoQvmgq7+PYtQoNo7Xt49JaVYYmqeh2y94j0P91OEseICBN/VZcZdJ3lAn7XpCBFZ3
-         ZAVIHeyQUE+wezChaUS94nW2/UcpI4NzobrLV1STkXosAruMEI00Fa/sE0BRXri67Gz2
-         q05IqbfZP5GchqKe/UA5reCqq9DB1Z8ctk9/fnRwNjkinW13EkBWelw/KRjhayVVXg4q
-         Q+RrUAtEcwIKZeShieINdDTV4tIt2WaYR50DZuhNAsEvXdGj1OBBCwLDh1FP0SxBPBN8
-         7Qmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc:content-transfer-encoding;
-        bh=v8gt6xjWudwEV2qln2N7SwuUJc9JxxsnlnvbLCYxUc0=;
-        b=YP6eG1TsyPtndiu87xQYqx0Q6YtKjKTSAWQ3YMKxBQ2OYfNIcED9COhFbKToWxPAD/
-         Z/7w8y4GDsebvW66P2fcMlQ9s60jknP/uMe3j0WKx0cbPR0Fyq3K+BjkyPFSSDx4RfNX
-         c0tkaEMpBjsMxC4p3E1abQIGtcySnCZCdh0MyA9CBJRI4pOvwg6dRIaYdU6l9k0CNrLs
-         DuZu3Jl2IANEB1msRMuaBgdJW3maS0HswBGWqpaylMlga9wVSCWT6P6XA6UwX+Ucaw5G
-         maXpoZiQBrFYZX/Ltn/jliE7uZP5gsCMEdkEuiD8yt6SONC4Ek4bxAXSyeF5CrLu0pg3
-         O+sw==
-X-Gm-Message-State: AOAM530++nPFaNR0LcW/K+SNm8fZMMiJq6IA4oE5HHQlnTN89iXDx9V1
-        xpdPInXy8az4kC+a1SqOobgCaipVjgSJ+l0=
-X-Google-Smtp-Source: ABdhPJxuMd23Slzk/nX5zXAwKMfpsaSnwA9y71fBu5xFnMi06zJ5/oaDRiKKaGgRjX9ctDMnyPrityYdWY9YepQ=
-X-Received: from tj.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:53a])
- (user=tjmercier job=sendgmr) by 2002:a5b:8cb:0:b0:645:d65f:dcdd with SMTP id
- w11-20020a5b08cb000000b00645d65fdcddmr19840185ybq.233.1652227027524; Tue, 10
- May 2022 16:57:07 -0700 (PDT)
-Date:   Tue, 10 May 2022 23:56:48 +0000
-In-Reply-To: <20220510235653.933868-1-tjmercier@google.com>
-Message-Id: <20220510235653.933868-5-tjmercier@google.com>
-Mime-Version: 1.0
-References: <20220510235653.933868-1-tjmercier@google.com>
-X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
-Subject: [PATCH v7 4/6] dmabuf: Add gpu cgroup charge transfer function
-From:   "T.J. Mercier" <tjmercier@google.com>
-To:     tjmercier@google.com, Sumit Semwal <sumit.semwal@linaro.org>,
-        "=?UTF-8?q?Christian=20K=C3=B6nig?=" <christian.koenig@amd.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>
-Cc:     daniel@ffwll.ch, hridya@google.com, jstultz@google.com,
-        tkjos@android.com, cmllamas@google.com, surenb@google.com,
-        kaleshsingh@google.com, Kenny.Ho@amd.com, mkoutny@suse.com,
-        skhan@linuxfoundation.org, kernel-team@android.com,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
-        cgroups@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Tue, 10 May 2022 19:57:21 -0400
+Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECB8920CD85;
+        Tue, 10 May 2022 16:57:13 -0700 (PDT)
+Received: from pps.filterd (m0150241.ppops.net [127.0.0.1])
+        by mx0a-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24AJCgRn000770;
+        Tue, 10 May 2022 23:56:51 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pps0720;
+ bh=5dnbBcVaBA2OnGXLeSQOEKrnQfR7UA4ltPmYEKJQDAw=;
+ b=Bzxmg1v4a+hP3Q8daMHgxlQXjxi128RynADu+Whs6Yd52RxeQDBk36KNM1BX9pyp9mDu
+ vWrB/IIIQL3RvT23oZyxUA4E7xnK8oelUCGRqPrScZCKMuS+Dp85l6FxBVKZFc4cpsc5
+ wH/o+SsnaZLTXezROSgsGoJHwGov/yWF6L3uP4PH7wo5F+nT88spaZn+Ie49yfZPgaaz
+ C4BBBxsGGc5OgiG6/oejs+ako+dP2nTLkD1+2U7GbY+CsDlcBpqH3KwAyBNLzRluZXT8
+ 4hjUfMNMAUZMEX7u6wSFfG9cwge5Tam3KAWszmd0jxTuP5jeMesaty8gGlN6qtRzHCTM Ug== 
+Received: from p1lg14879.it.hpe.com (p1lg14879.it.hpe.com [16.230.97.200])
+        by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3fysjcvgq9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 10 May 2022 23:56:50 +0000
+Received: from p1wg14926.americas.hpqcorp.net (unknown [10.119.18.115])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by p1lg14879.it.hpe.com (Postfix) with ESMTPS id A39A913095;
+        Tue, 10 May 2022 23:56:49 +0000 (UTC)
+Received: from p1wg14926.americas.hpqcorp.net (10.119.18.115) by
+ p1wg14926.americas.hpqcorp.net (10.119.18.115) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Tue, 10 May 2022 11:56:44 -1200
+Received: from p1wg14921.americas.hpqcorp.net (16.230.19.124) by
+ p1wg14926.americas.hpqcorp.net (10.119.18.115) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15
+ via Frontend Transport; Tue, 10 May 2022 11:56:44 -1200
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (192.58.206.38)
+ by edge.it.hpe.com (16.230.19.124) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Tue, 10 May 2022 11:56:44 -1200
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GBa66zRIO03dKzj87ZuLdrDRshGyRiU2L+z3INUJy7ISalmbH4ZZSY34evmCCO/LNk5ZlZNDGP5fxc4fu6qGSyL9rX34mWbBQbOKZN9+5TbSMfvFv4uH6qqn/kMh+RnUTerlMt7A2m0ZAXu9cBhT+BcdjnkLsUIPfdQa/KdoQ2ctumLpSOj7i3Pwy4UerACIloxrU7yMaKUQwf7Zk3SpZ7Z3DjxXNRQEvvg7+GNHtsQFczO/RvtuLZUhG34KpDLyIxbODG5JHLgr3DlypAWH43cULRCLrlX8UAZd2Z+UIGg7Kl1NGbxTPJEAb5RXkyMDwtkP5on80qSOw5+n06R7qg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=5dnbBcVaBA2OnGXLeSQOEKrnQfR7UA4ltPmYEKJQDAw=;
+ b=J93kNnStGbFAn2BweiUhD77/MUlGfI8H2lIJ7A32hHQYXth2yWoFfmSCI+JYVwQsKwFUQyPuye9WBwteDR1wE/UBte3umv6k7sv74FWnWHdnsWct/K5mHFBuA5SOgUdQCeVUZN9VDB/UJ6dBpo7re0uHitL7Dks2pyeVBsECMoGYHvg61LGH1mqrV/07KRbNxr/D+XExsFW+cwshEXrQl7ceYHVseT0psG/DTbSh3gxngHXzU/Zp2LwNLL0jEgaveUKKkyOvBS2hOt7JkZX8zsqX+QNVj7rhVci3rV65w9KIXN2DyZ4oUpzU7Xi6uMzLPzBOn24MYMcZCS0QrztF9Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=hpe.com; dmarc=pass action=none header.from=hpe.com; dkim=pass
+ header.d=hpe.com; arc=none
+Received: from PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM (2603:10b6:510:172::21)
+ by DM4PR84MB1495.NAMPRD84.PROD.OUTLOOK.COM (2603:10b6:8:4a::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23; Tue, 10 May
+ 2022 23:56:43 +0000
+Received: from PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM
+ ([fe80::6055:1602:5a0a:1562]) by PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM
+ ([fe80::6055:1602:5a0a:1562%7]) with mapi id 15.20.5250.013; Tue, 10 May 2022
+ 23:56:43 +0000
+From:   "Hawkins, Nick" <nick.hawkins@hpe.com>
+To:     Guenter Roeck <linux@roeck-us.net>,
+        "Verdun, Jean-Marie" <verdun@hpe.com>,
+        "joel@jms.id.au" <joel@jms.id.au>, "arnd@arndb.de" <arnd@arndb.de>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC:     Wim Van Sebroeck <wim@linux-watchdog.org>,
+        "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>
+Subject: RE: [PATCH v7 3/8] watchdog: hpe-wdt: Introduce HPE GXP Watchdog
+Thread-Topic: [PATCH v7 3/8] watchdog: hpe-wdt: Introduce HPE GXP Watchdog
+Thread-Index: AQHYYX1Tz9XRkKUMa0OtTpJ2y5sfnK0YiuaAgABDz7A=
+Date:   Tue, 10 May 2022 23:56:42 +0000
+Message-ID: <PH0PR84MB171853A2C23FBD4BC9EA568D88C99@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
+References: <20220506191339.78617-1-nick.hawkins@hpe.com>
+ <20220506191339.78617-3-nick.hawkins@hpe.com>
+ <8b706f6d-5022-d3a8-3a0f-7b5fc6310308@roeck-us.net>
+In-Reply-To: <8b706f6d-5022-d3a8-3a0f-7b5fc6310308@roeck-us.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 845e04f4-dbab-4abb-a4dc-08da32e0bbaf
+x-ms-traffictypediagnostic: DM4PR84MB1495:EE_
+x-microsoft-antispam-prvs: <DM4PR84MB1495A3D9322970B18437B7CE88C99@DM4PR84MB1495.NAMPRD84.PROD.OUTLOOK.COM>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: vcS1HS9GIEPG6guyEVfI+SrLIbyzgv7BO6dd3xBZlfJB0QNrFYIMWzd6wTi3pVp6PH3QRy1ClXPo4Kz7zXwBAlp5eU8lxfJEqGMnV5vfpqX8GT8kF7yd0n7KOXZnm3YaE2Ib/NURugBamzopr22sJ3hKD6nkl2HNPE0o4CBaVFtZDWOCSwiTqaFKWBgxjuaGC4GGHQ8Oy6+Kk+FOOQoxqebdiMIY1Q41xja/LObD6YWn2wJpqnNkZZaRe5lu3W28PTbfIJ7ZnTNPAxrzP5Vvp24bhdMKVXU8jshYPh6+w2qn089636NeCa1/81wJm7t6h3s5ISCefnu+XW4mjNcIQeOQU9Zu4KLANB3BwS+degk1EiSOktHb7KNVlkm5qLOpdr3XUv2sUVn2fjRHIsZj7fotsCvYsQEwCa3TZa9FY/iLDT31aMr07s1FMfJcd+4HzJRPj3qLRLCIMsapEuhZi3fRiW/iE01JDS1FJNw3gCW7doU9esIr0HQv7RZfVrl3cub6fuZycueX/aYN3hvSDVOSDc2g+PSiBHYadEJD/tc1s1GF1dqe9fp9dX9QSkbEDF2lgaCusS56gJUX1NiXXrCIfLEVfOOvc5MQAyb0tOgmy4eaXmWyApe+b/ZUP92hUh+ODCfD5KW6XiePy1aLjSrNuJLlB2O9gZW87aiac/SObSiPzd+hA1qhC5AKA4XYwgnrUqHyKfVRfb1OZ90lAA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(366004)(64756008)(53546011)(55236004)(5660300002)(6506007)(83380400001)(26005)(66476007)(9686003)(66946007)(76116006)(4744005)(4326008)(66446008)(8676002)(2906002)(8936002)(66556008)(33656002)(7696005)(186003)(52536014)(508600001)(71200400001)(55016003)(38070700005)(38100700002)(86362001)(122000001)(110136005)(54906003)(316002)(82960400001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?ZmErdHNmMDJ3YXV3Q0FESm9IYUkwd2R2cFM2ZG9KUkxyMWh5RmwyVWxoR2xm?=
+ =?utf-8?B?WmEwQnQvUEYycm1CQzVaemN4Ni9aUVd0cld1R2VXZjVSa1BiVFZIdkcyVlFu?=
+ =?utf-8?B?NG9GMnNaS2RVTkFudUQ1OTZncWdGaThSMmw3MGRLdTdLRktkYzBveThpNlQx?=
+ =?utf-8?B?a3lXN0N3SXk4Zi81YURZVnRGSmMrcEFodHhzc2xuSFlUOS9hUUE1aS9pS2Q4?=
+ =?utf-8?B?azk2d2F5bFRhRnoyMHowbkVzVEpmQzRSVTdzeDN2RXoweWZjYjd5K2lKMzFr?=
+ =?utf-8?B?bHg4cTdYRzVLblErUitGTUtvempoUXErelhFU2dUWFA0dk5lNGYwZXNKNzJR?=
+ =?utf-8?B?SUtSejRXTWI1cmQ2OG0vZEU2TjE2S2prTWtibTdJQythMzIzd2FtN2xWekJV?=
+ =?utf-8?B?cE9tVjZVeFNhb1ZIZkIyNEtnOENUbkdTakpjQUZ2VjVjbUxOMWZYay9ja1pw?=
+ =?utf-8?B?R2JHeVVGczA2NlN0UHNpcWl1cTEwOTd4NXQ2TnNKZGRQR29LY2llNHl5Y25o?=
+ =?utf-8?B?ZkVPV09iUXdCMWZaUE9Ld2MwbW9hTEdLeVc3dTJ2RktSL3pjQkRXeEVTcGtZ?=
+ =?utf-8?B?cnIvUGxKaG9MM0ZtWEEyRUFiMkdXTmE0SHBlcVIyZk9ZenpNS1FsL00yUnM2?=
+ =?utf-8?B?bi9wVzZaZWV1OE5JNDdsa3BUTWdWK214dVUvSjIwTkUxNlZlK1d6YVRaZ0JF?=
+ =?utf-8?B?NTN2cmRsNDFiUXJ6SUJabCswTW4vTnFaVEpwKzJSYmMraWlyUUwwc3BPdkJi?=
+ =?utf-8?B?Wm5zdi9GOEFibERIYWoxcEt5WHdwdEcyRG4zNjlyY1RvRHJnUGJERnhDTytn?=
+ =?utf-8?B?dC9iNGdTYUF4MGFaTEk2c0d4NEZDS2xySXdUTkNNOEZVc1B5RXVLUjlZaUtS?=
+ =?utf-8?B?eFJWVkFvNkFTeWdRQ2pMVGdSYXRpeTBvTU91VVB0SjdUODFJb2JKelBDNlJE?=
+ =?utf-8?B?Y0xpc1BGc0s0ZkpsM21sSWgzS3ZITk5IQ2pTcVN4clJHS0o2YjJvT2QyRDhY?=
+ =?utf-8?B?ekd3eDlUSm15ZmErTE0vUTBIZlFNNDVNVWF1V2habG9lNEoxUmI3Z01INlda?=
+ =?utf-8?B?WW96MWpUU3lKSGZpYTk4bFFvSS9KUkpyY2ZmcTdGUDNlTklxV21lTVBGRnJ6?=
+ =?utf-8?B?SnVsSXlMR1dqL2N2a2F6bXZDa3F5T2plMEh0VE44WHRMRlYxSEg1ZW81SzFU?=
+ =?utf-8?B?S09ONGZVd3o1UnZNR3R0UFlLaU9oODR6UmUxaE9LQ01mUWltWXVTOFRYZTJL?=
+ =?utf-8?B?bUYwL3Q0dDhieVZFS0EreEpGV09xM0lwWlpWb2VUZnRkaU85K2F3TXhvZ3JI?=
+ =?utf-8?B?NkFpY05WczRSd1lYeTYxaHcrNlV2dnF6TWo5eUxWL1JkeWFxUWFBcjhTZ0FU?=
+ =?utf-8?B?a0RTTTVjWnpuNldhSnl1NEkrTlFZc2JFZDZsckF3eVEreVpKWWVpayt4TkRh?=
+ =?utf-8?B?cGpIOE5rd0todW9IVEoyTWVOWjR1YVQ5bWhKd01FRU1FMC9JWW8vSkVNd0ky?=
+ =?utf-8?B?eUJsZVBuNU9vekIzeEx0Z2IzOGt3ZXlINUhjL1FtdVEycW5McVhkdjdkTmRH?=
+ =?utf-8?B?d0FMd2M3SW5DZkpZN3YwQmlhREs5QWRsVGhWZDMwL0dDbENVYXcyYkh6OWpM?=
+ =?utf-8?B?RHh1My9KdTd0TUhOZGFPTm1TRlNTM2hBRWNLWnYvUktVQXUrbTFMbDZlZzlM?=
+ =?utf-8?B?a041RU5DUVpOa3czdnJuNy92UDZGYU1GOWxWaTFCY0M1cEorY2JCZHM1c0Ir?=
+ =?utf-8?B?MjFvamRoQ1pHZTh2ZjNGWEM1eGhtZVpxdlYzYkZVd3BmanIram1IdnRyUFF6?=
+ =?utf-8?B?dzZyV1JrRVV4OXFOb1B0QnUvU2VxaXhqMWswY3hWUXB1YkJpOHQ3Z3RSL3hT?=
+ =?utf-8?B?K2tCMkdrZEZwN0dQZE9pWXZWakVrN1NkM2JYQ3JSdU42eHk3bFVBdm9YR21H?=
+ =?utf-8?B?cnRYZUd5c3VIaWZsek03a1lnaktoWGlIWHEvK0YrTWU1SThwdHJNZ3R5TWxw?=
+ =?utf-8?B?MnhkSHdkRjROeEorWlU5OTd6WUtLNjk4U1ZJTjFPVGtTOVpROEdwQ1FOMmhL?=
+ =?utf-8?B?SmcwWXprNVd3SEFnSGZZVkZ4eFc0UlZjWnlvVEQ1ZmtIck5hMDBHemF1MFVL?=
+ =?utf-8?B?c05jelZCVUhzbnJadENxUGNqZVJJK21ZUEdnaUZOM1ByRk9vbW9ES3Zjamdr?=
+ =?utf-8?B?M0srM3dZaGlvR2ZuSnVjR2QyL2RacC9XTXlER0tPaFR3bXYyK3JrcTMwRDdB?=
+ =?utf-8?B?SXVtck9SZ05CQ1ZMRWxxM3dHdXBIVUdpZmNTN0U5SlRJRFF5Rmw5aTVwVGZp?=
+ =?utf-8?B?dXFVWE42bjlMTDN3UXplT3p5WE1kYlRHVUttL3FCbXNYV29Qd3FkUT09?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 845e04f4-dbab-4abb-a4dc-08da32e0bbaf
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 May 2022 23:56:42.8947
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 105b2061-b669-4b31-92ac-24d304d195dc
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 7dbWQPWPE6o+a3Nf6BbZxkl7bqbMiKVDmJ43/7w/dWTJueJGOgMy84hogfUzfxLqt9+K37Hgr8759nI2+OMu/w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR84MB1495
+X-OriginatorOrg: hpe.com
+X-Proofpoint-GUID: 3OHSwl320WQ-A6T_LsPZAZrz06NRy1Jv
+X-Proofpoint-ORIG-GUID: 3OHSwl320WQ-A6T_LsPZAZrz06NRy1Jv
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-10_07,2022-05-10_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 clxscore=1015
+ malwarescore=0 phishscore=0 mlxscore=0 mlxlogscore=710 suspectscore=0
+ priorityscore=1501 lowpriorityscore=0 impostorscore=0 spamscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205100099
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The dma_buf_transfer_charge function provides a way for processes to
-transfer charge of a buffer to a different process. This is essential
-for the cases where a central allocator process does allocations for
-various subsystems, hands over the fd to the client who requested the
-memory and drops all references to the allocated memory.
-
-Originally-by: Hridya Valsaraju <hridya@google.com>
-Signed-off-by: T.J. Mercier <tjmercier@google.com>
-
----
-v5 changes
-Fix commit message which still contained the old name for
-dma_buf_transfer_charge per Michal Koutn=C3=BD.
-
-Modify the dma_buf_transfer_charge API to accept a task_struct instead
-of a gpucg. This avoids requiring the caller to manage the refcount
-of the gpucg upon failure and confusing ownership transfer logic.
-
-v4 changes
-Adjust ordering of charge/uncharge during transfer to avoid potentially
-hitting cgroup limit per Michal Koutn=C3=BD.
-
-v3 changes
-Use more common dual author commit message format per John Stultz.
-
-v2 changes
-Move dma-buf cgroup charge transfer from a dma_buf_op defined by every
-heap to a single dma-buf function for all heaps per Daniel Vetter and
-Christian K=C3=B6nig.
----
- drivers/dma-buf/dma-buf.c  | 57 ++++++++++++++++++++++++++++++++++++++
- include/linux/cgroup_gpu.h | 24 ++++++++++++++++
- include/linux/dma-buf.h    |  6 ++++
- kernel/cgroup/gpu.c        | 51 ++++++++++++++++++++++++++++++++++
- 4 files changed, 138 insertions(+)
-
-diff --git a/drivers/dma-buf/dma-buf.c b/drivers/dma-buf/dma-buf.c
-index bc89c44bd9b9..f3fb844925e2 100644
---- a/drivers/dma-buf/dma-buf.c
-+++ b/drivers/dma-buf/dma-buf.c
-@@ -1341,6 +1341,63 @@ void dma_buf_vunmap(struct dma_buf *dmabuf, struct i=
-osys_map *map)
- }
- EXPORT_SYMBOL_NS_GPL(dma_buf_vunmap, DMA_BUF);
-=20
-+/**
-+ * dma_buf_transfer_charge - Change the GPU cgroup to which the provided d=
-ma_buf is charged.
-+ * @dmabuf:	[in]	buffer whose charge will be migrated to a different GPU c=
-group
-+ * @target:	[in]	the task_struct of the destination process for the GPU cg=
-roup charge
-+ *
-+ * Only tasks that belong to the same cgroup the buffer is currently charg=
-ed to
-+ * may call this function, otherwise it will return -EPERM.
-+ *
-+ * Returns 0 on success, or a negative errno code otherwise.
-+ */
-+int dma_buf_transfer_charge(struct dma_buf *dmabuf, struct task_struct *ta=
-rget)
-+{
-+	struct gpucg *current_gpucg, *target_gpucg, *to_release;
-+	int ret;
-+
-+	if (!dmabuf->gpucg || !dmabuf->gpucg_bucket) {
-+		/* This dmabuf is not tracked under GPU cgroup accounting */
-+		return 0;
-+	}
-+
-+	current_gpucg =3D gpucg_get(current);
-+	target_gpucg =3D gpucg_get(target);
-+	to_release =3D target_gpucg;
-+
-+	/* If the source and destination cgroups are the same, don't do anything.=
- */
-+	if (current_gpucg =3D=3D target_gpucg) {
-+		ret =3D 0;
-+		goto skip_transfer;
-+	}
-+
-+	/*
-+	 * Verify that the cgroup of the process requesting the transfer
-+	 * is the same as the one the buffer is currently charged to.
-+	 */
-+	mutex_lock(&dmabuf->lock);
-+	if (current_gpucg !=3D dmabuf->gpucg) {
-+		ret =3D -EPERM;
-+		goto err;
-+	}
-+
-+	ret =3D gpucg_transfer_charge(
-+		dmabuf->gpucg, target_gpucg, dmabuf->gpucg_bucket, dmabuf->size);
-+	if (ret)
-+		goto err;
-+
-+	to_release =3D dmabuf->gpucg;
-+	dmabuf->gpucg =3D target_gpucg;
-+
-+err:
-+	mutex_unlock(&dmabuf->lock);
-+skip_transfer:
-+	gpucg_put(current_gpucg);
-+	gpucg_put(to_release);
-+	return ret;
-+}
-+EXPORT_SYMBOL_NS_GPL(dma_buf_transfer_charge, DMA_BUF);
-+
- #ifdef CONFIG_DEBUG_FS
- static int dma_buf_debug_show(struct seq_file *s, void *unused)
- {
-diff --git a/include/linux/cgroup_gpu.h b/include/linux/cgroup_gpu.h
-index cb228a16aa1f..7eb68f1507fb 100644
---- a/include/linux/cgroup_gpu.h
-+++ b/include/linux/cgroup_gpu.h
-@@ -75,6 +75,22 @@ int gpucg_charge(struct gpucg *gpucg, struct gpucg_bucke=
-t *bucket, u64 size);
-  */
- void gpucg_uncharge(struct gpucg *gpucg, struct gpucg_bucket *bucket, u64 =
-size);
-=20
-+/**
-+ * gpucg_transfer_charge - Transfer a GPU charge from one cgroup to anothe=
-r.
-+ *
-+ * @source:	[in]	The GPU cgroup the charge will be transferred from.
-+ * @dest:	[in]	The GPU cgroup the charge will be transferred to.
-+ * @bucket:	[in]	The GPU cgroup bucket corresponding to the charge.
-+ * @size:	[in]	The size of the memory in bytes.
-+ *                      This size will be rounded up to the nearest page s=
-ize.
-+ *
-+ * Returns 0 on success, or a negative errno code otherwise.
-+ */
-+int gpucg_transfer_charge(struct gpucg *source,
-+			  struct gpucg *dest,
-+			  struct gpucg_bucket *bucket,
-+			  u64 size);
-+
- /**
-  * gpucg_register_bucket - Registers a bucket for memory accounting using =
-the GPU cgroup controller.
-  *
-@@ -117,6 +133,14 @@ static inline void gpucg_uncharge(struct gpucg *gpucg,
- 				  struct gpucg_bucket *bucket,
- 				  u64 size) {}
-=20
-+static inline int gpucg_transfer_charge(struct gpucg *source,
-+					struct gpucg *dest,
-+					struct gpucg_bucket *bucket,
-+					u64 size)
-+{
-+	return 0;
-+}
-+
- static inline struct gpucg_bucket *gpucg_register_bucket(const char *name)=
- {}
- #endif /* CONFIG_CGROUP_GPU */
- #endif /* _CGROUP_GPU_H */
-diff --git a/include/linux/dma-buf.h b/include/linux/dma-buf.h
-index 8e7c55c830b3..438ad8577b76 100644
---- a/include/linux/dma-buf.h
-+++ b/include/linux/dma-buf.h
-@@ -18,6 +18,7 @@
- #include <linux/file.h>
- #include <linux/err.h>
- #include <linux/scatterlist.h>
-+#include <linux/sched.h>
- #include <linux/list.h>
- #include <linux/dma-mapping.h>
- #include <linux/fs.h>
-@@ -650,9 +651,14 @@ void dma_buf_vunmap(struct dma_buf *dmabuf, struct ios=
-ys_map *map);
- void dma_buf_exp_info_set_gpucg(struct dma_buf_export_info *exp_info,
- 				struct gpucg *gpucg,
- 				struct gpucg_bucket *gpucg_bucket);
-+
-+int dma_buf_transfer_charge(struct dma_buf *dmabuf, struct task_struct *ta=
-rget);
- #else/* CONFIG_CGROUP_GPU */
- static inline void dma_buf_exp_info_set_gpucg(struct dma_buf_export_info *=
-exp_info,
- 					      struct gpucg *gpucg,
- 					      struct gpucg_bucket *gpucg_bucket) {}
-+
-+static inline int dma_buf_transfer_charge(struct dma_buf *dmabuf, struct t=
-ask_struct *target)
-+{ return 0; }
- #endif /* CONFIG_CGROUP_GPU */
- #endif /* __DMA_BUF_H__ */
-diff --git a/kernel/cgroup/gpu.c b/kernel/cgroup/gpu.c
-index ad16ea15d427..038ea873a9d3 100644
---- a/kernel/cgroup/gpu.c
-+++ b/kernel/cgroup/gpu.c
-@@ -274,6 +274,57 @@ void gpucg_uncharge(struct gpucg *gpucg, struct gpucg_=
-bucket *bucket, u64 size)
- 	css_put(&gpucg->css);
- }
-=20
-+int gpucg_transfer_charge(struct gpucg *source,
-+			  struct gpucg *dest,
-+			  struct gpucg_bucket *bucket,
-+			  u64 size)
-+{
-+	struct page_counter *counter;
-+	u64 nr_pages;
-+	struct gpucg_resource_pool *rp_source, *rp_dest;
-+	int ret =3D 0;
-+
-+	nr_pages =3D PAGE_ALIGN(size) >> PAGE_SHIFT;
-+
-+	mutex_lock(&gpucg_mutex);
-+	rp_source =3D cg_rpool_find_locked(source, bucket);
-+	if (unlikely(!rp_source)) {
-+		ret =3D -ENOENT;
-+		goto exit_early;
-+	}
-+
-+	rp_dest =3D cg_rpool_get_locked(dest, bucket);
-+	if (IS_ERR(rp_dest)) {
-+		ret =3D PTR_ERR(rp_dest);
-+		goto exit_early;
-+	}
-+
-+	/*
-+	 * First uncharge from the pool it's currently charged to. This ordering =
-avoids double
-+	 * charging while the transfer is in progress, which could cause us to hi=
-t a limit.
-+	 * If the try_charge fails for this transfer, we need to be able to rever=
-se this uncharge,
-+	 * so we continue to hold the gpucg_mutex here.
-+	 */
-+	page_counter_uncharge(&rp_source->total, nr_pages);
-+	css_put(&source->css);
-+
-+	/* Now attempt the new charge */
-+	if (page_counter_try_charge(&rp_dest->total, nr_pages, &counter)) {
-+		css_get(&dest->css);
-+	} else {
-+		/*
-+		 * The new charge failed, so reverse the uncharge from above. This shoul=
-d always
-+		 * succeed since charges on source are blocked by gpucg_mutex.
-+		 */
-+		WARN_ON(!page_counter_try_charge(&rp_source->total, nr_pages, &counter))=
-;
-+		css_get(&source->css);
-+		ret =3D -ENOMEM;
-+	}
-+exit_early:
-+	mutex_unlock(&gpucg_mutex);
-+	return ret;
-+}
-+
- struct gpucg_bucket *gpucg_register_bucket(const char *name)
- {
- 	struct gpucg_bucket *bucket, *b;
---=20
-2.36.0.512.ge40c2bad7a-goog
-
+T24gNS82LzIyIDEyOjEzLCBuaWNrLmhhd2tpbnNAaHBlLmNvbSB3cm90ZToNCj4gRnJvbTogTmlj
+ayBIYXdraW5zIDxuaWNrLmhhd2tpbnNAaHBlLmNvbT4NCj4gDQo+ICsJLyogVGhlIHJlZ2lzdGVy
+IGFyZWEgd2hlcmUgdGhlIHRpbWVyIGFuZCB3YXRjaGRvZyByZXNpZGUgaXMgZGlzYXJyYW5nZWQu
+DQo+ICsJICogSGVuY2UgbWFwcGluZyBpbmRpdmlkdWFsIHJlZ2lzdGVyIGJsb2NrcyBmb3IgdGhl
+IHRpbWVyIGFuZCB3YXRjaGRvZw0KPiArCSAqIGlzIG5vdCByZWNvbW1lbmRlZCBhcyB0aGV5IHdv
+dWxkIGhhdmUgYWNjZXNzIHRvIGVhY2ggb3RoZXJzDQo+ICsJICogcmVnaXN0ZXJzLiBCYXNlZCBv
+biBmZWVkYmFjayB0aGUgd2F0Y2hkb2cgaXMgbm8gbG9uZ2VyIHBhcnQgb2YgdGhlDQo+ICsJICog
+ZGV2aWNlIHRyZWUgZmlsZSBhbmQgdGhlIHRpbWVyIGRyaXZlciBub3cgY3JlYXRlcyB0aGUgd2F0
+Y2hkb2cgYXMgYQ0KPiArCSAqIGNoaWxkIGRldmljZS4gRHVyaW5nIHRoZSB3YXRjaGRvZ3MgY3Jl
+YXRpb24sIHRoZSB0aW1lciBkcml2ZXIgcGFzc2VzDQo+ICsJICogdGhlIGJhc2UgYWRkcmVzcyB0
+byB0aGUgd2F0Y2hkb2cgb3ZlciB0aGUgcHJpdmF0ZSBpbnRlcmZhY2UuDQo+ICsJICovDQoNCi8q
+DQogICogUGxlYXNlIHVzZSBzdGFuZGFyZCBtdWx0aS1saW5lIGNvbW1lbnRzIGluIHRoZSB3YXRj
+aGRvZyBzdWJzeXN0ZW0uDQogICovDQoNCkhpIEd1ZW50ZXIsDQoNClRoYW5rIHlvdSBmb3IgdGhl
+IGZlZWRiYWNrLiBJIHdpbGwgZml4IHRoaXMgd2l0aCBhIHY4IHZlcnNpb24gb2YgdGhlIHBhdGNo
+c2V0Lg0KDQotTmljaw0K
