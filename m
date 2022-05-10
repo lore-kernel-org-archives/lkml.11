@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72781C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C14EC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:44:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244321AbiEJNqN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:46:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46982 "EHLO
+        id S244340AbiEJNqS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:46:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243877AbiEJNcT (ORCPT
+        with ESMTP id S243886AbiEJNcT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:32:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9152214CA0C;
-        Tue, 10 May 2022 06:23:04 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDCDC1632BB;
+        Tue, 10 May 2022 06:23:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 512F6B81DA5;
-        Tue, 10 May 2022 13:23:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90AD0C385C2;
-        Tue, 10 May 2022 13:23:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6ABCF6176A;
+        Tue, 10 May 2022 13:23:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78E94C385A6;
+        Tue, 10 May 2022 13:23:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188982;
-        bh=RRkK3PGwP3zmeyLRDB3rhf1tmnLcW9G0dse4hLzQCwk=;
+        s=korg; t=1652188984;
+        bh=P3SVQNOO3B7N/QZLCcWPzgOahP2/LyoDyJ/f3OPaNKs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ixYxJPfZXKh1jy7Tf8w3NCwNdccH70HVCZXoZiCMupN597yodOHZU9kc+z+hT1zVD
-         X+Tl6K6HL4X9DkyO4e5ADr6+1xrGPf3QWA2eIXP7p3n/ne1eAxBHas2oP2BgF6UKuy
-         MMn3gR46fGbhsdzLDac7iq9JOgPXOxuyaswSS1gM=
+        b=RdcIbnK7E1tnG8F9i0zthFxgIkmMffJwG6zJj2amahw9YQrTSzsQ5wf3q686lGS0h
+         HDAsTFLnplPR8cyMqlIFuo+dPkLYYgmhn+UgCDfVpk+3YHNiITZDbxLq3pFHwKd9PZ
+         hklwMN3R+PATjz1V3iA488r6EOcWcyfJLA/FsFQ8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Cheng Xu <chengyou@linux.alibaba.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.4 25/52] RDMA/siw: Fix a condition race issue in MPA request processing
-Date:   Tue, 10 May 2022 15:07:54 +0200
-Message-Id: <20220510130730.589217408@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.4 26/52] net: ethernet: mediatek: add missing of_node_put() in mtk_sgmii_init()
+Date:   Tue, 10 May 2022 15:07:55 +0200
+Message-Id: <20220510130730.618995915@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.852544477@linuxfoundation.org>
 References: <20220510130729.852544477@linuxfoundation.org>
@@ -50,66 +48,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cheng Xu <chengyou@linux.alibaba.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-commit ef91271c65c12d36e4c2b61c61d4849fb6d11aa0 upstream.
+commit ff5265d45345d01fefc98fcb9ae891b59633c919 upstream.
 
-The calling of siw_cm_upcall and detaching new_cep with its listen_cep
-should be atomistic semantics. Otherwise siw_reject may be called in a
-temporary state, e,g, siw_cm_upcall is called but the new_cep->listen_cep
-has not being cleared.
+The node pointer returned by of_parse_phandle() with refcount incremented,
+so add of_node_put() after using it in mtk_sgmii_init().
 
-This fixes a WARN:
-
-  WARNING: CPU: 7 PID: 201 at drivers/infiniband/sw/siw/siw_cm.c:255 siw_cep_put+0x125/0x130 [siw]
-  CPU: 2 PID: 201 Comm: kworker/u16:22 Kdump: loaded Tainted: G            E     5.17.0-rc7 #1
-  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
-  Workqueue: iw_cm_wq cm_work_handler [iw_cm]
-  RIP: 0010:siw_cep_put+0x125/0x130 [siw]
-  Call Trace:
-   <TASK>
-   siw_reject+0xac/0x180 [siw]
-   iw_cm_reject+0x68/0xc0 [iw_cm]
-   cm_work_handler+0x59d/0xe20 [iw_cm]
-   process_one_work+0x1e2/0x3b0
-   worker_thread+0x50/0x3a0
-   ? rescuer_thread+0x390/0x390
-   kthread+0xe5/0x110
-   ? kthread_complete_and_exit+0x20/0x20
-   ret_from_fork+0x1f/0x30
-   </TASK>
-
-Fixes: 6c52fdc244b5 ("rdma/siw: connection management")
-Link: https://lore.kernel.org/r/d528d83466c44687f3872eadcb8c184528b2e2d4.1650526554.git.chengyou@linux.alibaba.com
-Reported-by: Luis Chamberlain <mcgrof@kernel.org>
-Reviewed-by: Bernard Metzler <bmt@zurich.ibm.com>
-Signed-off-by: Cheng Xu <chengyou@linux.alibaba.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Fixes: 9ffee4a8276c ("net: ethernet: mediatek: Extend SGMII related functions")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220428062543.64883-1-yangyingliang@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/sw/siw/siw_cm.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mediatek/mtk_sgmii.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/infiniband/sw/siw/siw_cm.c
-+++ b/drivers/infiniband/sw/siw/siw_cm.c
-@@ -976,14 +976,15 @@ static void siw_accept_newconn(struct si
+--- a/drivers/net/ethernet/mediatek/mtk_sgmii.c
++++ b/drivers/net/ethernet/mediatek/mtk_sgmii.c
+@@ -26,6 +26,7 @@ int mtk_sgmii_init(struct mtk_sgmii *ss,
+ 			break;
  
- 		siw_cep_set_inuse(new_cep);
- 		rv = siw_proc_mpareq(new_cep);
--		siw_cep_set_free(new_cep);
--
- 		if (rv != -EAGAIN) {
- 			siw_cep_put(cep);
- 			new_cep->listen_cep = NULL;
--			if (rv)
-+			if (rv) {
-+				siw_cep_set_free(new_cep);
- 				goto error;
-+			}
- 		}
-+		siw_cep_set_free(new_cep);
+ 		ss->regmap[i] = syscon_node_to_regmap(np);
++		of_node_put(np);
+ 		if (IS_ERR(ss->regmap[i]))
+ 			return PTR_ERR(ss->regmap[i]);
  	}
- 	return;
- 
 
 
