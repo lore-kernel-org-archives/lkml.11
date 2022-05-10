@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBDB4C352AA
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:24:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D6EAC38A04
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:24:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244018AbiEJN1v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:27:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45964 "EHLO
+        id S244037AbiEJN1z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:27:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242950AbiEJNVM (ORCPT
+        with ESMTP id S243005AbiEJNVQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:21:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36DA82C07FD;
-        Tue, 10 May 2022 06:14:18 -0700 (PDT)
+        Tue, 10 May 2022 09:21:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EFDA3B57E;
+        Tue, 10 May 2022 06:14:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DC191B81DA2;
-        Tue, 10 May 2022 13:14:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35D7AC385A6;
-        Tue, 10 May 2022 13:14:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7682961668;
+        Tue, 10 May 2022 13:14:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E771C385A6;
+        Tue, 10 May 2022 13:14:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188455;
-        bh=rv5YClglW/BeeR7VokaDgRvc3nal0GlKMs5Rdx/I3YE=;
+        s=korg; t=1652188470;
+        bh=23NIjSuIAxDr+YqpEEABu2BsmOfakhswdhx5AG3Xwb4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eeUYb86foMmTbeXxkUytl3ZppB7ApYITngdUmJh1arYHVecWAJqVH4oByA0hivrnP
-         KhnMmoB1bqJrVOaYVOOcN7EC0OtorKr1+6dSutAinvd2rtyzcq9Sx23TG6R6OxkKRd
-         qvRGVQtGZunjbqSEBKaESpsRIo6BkwwSAjHPEToc=
+        b=hyLyhsUpsftI9CHkDq3Oi9zPqVRdvwUfvGyQo1mS4anVbscY2YGGFB5m7/XkrZW5S
+         ddrY9CaOeSSNyJN1GlZs4PtKJFe6ek65hqBrKuwFM7oE+x4hJMW7RtD4S1DabID5Gs
+         rv766kD1uP0HPDFzfnv4/bT6sf2wZzep081zVneU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Henry Lin <henryl@nvidia.com>,
-        Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: [PATCH 4.14 14/78] xhci: stop polling roothubs after shutdown
-Date:   Tue, 10 May 2022 15:07:00 +0200
-Message-Id: <20220510130732.955604657@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Vacura <w36195@motorola.com>
+Subject: [PATCH 4.14 19/78] usb: gadget: uvc: Fix crash when encoding data for usb request
+Date:   Tue, 10 May 2022 15:07:05 +0200
+Message-Id: <20220510130733.099465057@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
 References: <20220510130732.522479698@linuxfoundation.org>
@@ -48,49 +47,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Henry Lin <henryl@nvidia.com>
+From: Dan Vacura <w36195@motorola.com>
 
-commit dc92944a014cd6a6f6c94299aaa36164dd2c238a upstream.
+commit 71d471e3faf90c9674cadc7605ac719e82cb7fac upstream.
 
-While rebooting, XHCI controller and its bus device will be shut down
-in order by .shutdown callback. Stopping roothubs polling in
-xhci_shutdown() can prevent XHCI driver from accessing port status
-after its bus device shutdown.
+During the uvcg_video_pump() process, if an error occurs and
+uvcg_queue_cancel() is called, the buffer queue will be cleared out, but
+the current marker (queue->buf_used) of the active buffer (no longer
+active) is not reset. On the next iteration of uvcg_video_pump() the
+stale buf_used count will be used and the logic of min((unsigned
+int)len, buf->bytesused - queue->buf_used) may incorrectly calculate a
+nbytes size, causing an invalid memory access.
 
-Take PCIe XHCI controller as example, if XHCI driver doesn't stop roothubs
-polling, XHCI driver may access PCIe BAR register for port status after
-parent PCIe root port driver is shutdown and cause PCIe bus error.
+[80802.185460][  T315] configfs-gadget gadget: uvc: VS request completed
+with status -18.
+[80802.185519][  T315] configfs-gadget gadget: uvc: VS request completed
+with status -18.
+...
+uvcg_queue_cancel() is called and the queue is cleared out, but the
+marker queue->buf_used is not reset.
+...
+[80802.262328][ T8682] Unable to handle kernel paging request at virtual
+address ffffffc03af9f000
+...
+...
+[80802.263138][ T8682] Call trace:
+[80802.263146][ T8682]  __memcpy+0x12c/0x180
+[80802.263155][ T8682]  uvcg_video_pump+0xcc/0x1e0
+[80802.263165][ T8682]  process_one_work+0x2cc/0x568
+[80802.263173][ T8682]  worker_thread+0x28c/0x518
+[80802.263181][ T8682]  kthread+0x160/0x170
+[80802.263188][ T8682]  ret_from_fork+0x10/0x18
+[80802.263198][ T8682] Code: a8c12829 a88130cb a8c130
 
-[check shared hcd exist before stopping its roothub polling -Mathias]
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Henry Lin <henryl@nvidia.com>
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Link: https://lore.kernel.org/r/20220408134823.2527272-3-mathias.nyman@linux.intel.com
+Fixes: d692522577c0 ("usb: gadget/uvc: Port UVC webcam gadget to use videobuf2 framework")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Dan Vacura <w36195@motorola.com>
+Link: https://lore.kernel.org/r/20220331184024.23918-1-w36195@motorola.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/host/xhci.c |   11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/usb/gadget/function/uvc_queue.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/usb/host/xhci.c
-+++ b/drivers/usb/host/xhci.c
-@@ -724,6 +724,17 @@ void xhci_shutdown(struct usb_hcd *hcd)
- 	if (xhci->quirks & XHCI_SPURIOUS_REBOOT)
- 		usb_disable_xhci_ports(to_pci_dev(hcd->self.sysdev));
- 
-+	/* Don't poll the roothubs after shutdown. */
-+	xhci_dbg(xhci, "%s: stopping usb%d port polling.\n",
-+			__func__, hcd->self.busnum);
-+	clear_bit(HCD_FLAG_POLL_RH, &hcd->flags);
-+	del_timer_sync(&hcd->rh_timer);
+--- a/drivers/usb/gadget/function/uvc_queue.c
++++ b/drivers/usb/gadget/function/uvc_queue.c
+@@ -246,6 +246,8 @@ void uvcg_queue_cancel(struct uvc_video_
+ 		buf->state = UVC_BUF_STATE_ERROR;
+ 		vb2_buffer_done(&buf->buf.vb2_buf, VB2_BUF_STATE_ERROR);
+ 	}
++	queue->buf_used = 0;
 +
-+	if (xhci->shared_hcd) {
-+		clear_bit(HCD_FLAG_POLL_RH, &xhci->shared_hcd->flags);
-+		del_timer_sync(&xhci->shared_hcd->rh_timer);
-+	}
-+
- 	spin_lock_irq(&xhci->lock);
- 	xhci_halt(xhci);
- 	/* Workaround for spurious wakeups at shutdown with HSW */
+ 	/* This must be protected by the irqlock spinlock to avoid race
+ 	 * conditions between uvc_queue_buffer and the disconnection event that
+ 	 * could result in an interruptible wait in uvc_dequeue_buffer. Do not
 
 
