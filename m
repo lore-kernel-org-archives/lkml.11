@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D6EAC38A04
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 016FBC38A2B
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:24:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244037AbiEJN1z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:27:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38562 "EHLO
+        id S243005AbiEJN16 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:27:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243005AbiEJNVQ (ORCPT
+        with ESMTP id S242809AbiEJNVD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:21:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EFDA3B57E;
-        Tue, 10 May 2022 06:14:32 -0700 (PDT)
+        Tue, 10 May 2022 09:21:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F2D22BAE6D;
+        Tue, 10 May 2022 06:13:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7682961668;
-        Tue, 10 May 2022 13:14:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E771C385A6;
-        Tue, 10 May 2022 13:14:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C5254B81CE7;
+        Tue, 10 May 2022 13:13:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24AAAC385A6;
+        Tue, 10 May 2022 13:13:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188470;
-        bh=23NIjSuIAxDr+YqpEEABu2BsmOfakhswdhx5AG3Xwb4=;
+        s=korg; t=1652188429;
+        bh=MKudbu7vHv3XJ8MbvM3xZDs4i7yKHou2tCtg+kv73Gc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hyLyhsUpsftI9CHkDq3Oi9zPqVRdvwUfvGyQo1mS4anVbscY2YGGFB5m7/XkrZW5S
-         ddrY9CaOeSSNyJN1GlZs4PtKJFe6ek65hqBrKuwFM7oE+x4hJMW7RtD4S1DabID5Gs
-         rv766kD1uP0HPDFzfnv4/bT6sf2wZzep081zVneU=
+        b=WLxXs2SbKJHRWhr3pgJmM7Ji48XnkAQdPXe17c45sg7gPTx3jNWhvPIZG+nkUoIht
+         nwnlEyAC/t2HVPGdSWSrSbFNCQPugbo71XeUhLQARL92wvJOO6qhY2jmGrpOidhnL+
+         iSHLdkD68a7rv7Z+Tkx/1vkqHpl6S6oJXEp4lzrc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Vacura <w36195@motorola.com>
-Subject: [PATCH 4.14 19/78] usb: gadget: uvc: Fix crash when encoding data for usb request
-Date:   Tue, 10 May 2022 15:07:05 +0200
-Message-Id: <20220510130733.099465057@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 31/66] clk: sunxi: sun9i-mmc: check return value after calling platform_get_resource()
+Date:   Tue, 10 May 2022 15:07:21 +0200
+Message-Id: <20220510130730.679342061@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
-References: <20220510130732.522479698@linuxfoundation.org>
+In-Reply-To: <20220510130729.762341544@linuxfoundation.org>
+References: <20220510130729.762341544@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,58 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Vacura <w36195@motorola.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-commit 71d471e3faf90c9674cadc7605ac719e82cb7fac upstream.
+[ Upstream commit f58ca215cda1975f77b2b762903684a3c101bec9 ]
 
-During the uvcg_video_pump() process, if an error occurs and
-uvcg_queue_cancel() is called, the buffer queue will be cleared out, but
-the current marker (queue->buf_used) of the active buffer (no longer
-active) is not reset. On the next iteration of uvcg_video_pump() the
-stale buf_used count will be used and the logic of min((unsigned
-int)len, buf->bytesused - queue->buf_used) may incorrectly calculate a
-nbytes size, causing an invalid memory access.
+It will cause null-ptr-deref if platform_get_resource() returns NULL,
+we need check the return value.
 
-[80802.185460][  T315] configfs-gadget gadget: uvc: VS request completed
-with status -18.
-[80802.185519][  T315] configfs-gadget gadget: uvc: VS request completed
-with status -18.
-...
-uvcg_queue_cancel() is called and the queue is cleared out, but the
-marker queue->buf_used is not reset.
-...
-[80802.262328][ T8682] Unable to handle kernel paging request at virtual
-address ffffffc03af9f000
-...
-...
-[80802.263138][ T8682] Call trace:
-[80802.263146][ T8682]  __memcpy+0x12c/0x180
-[80802.263155][ T8682]  uvcg_video_pump+0xcc/0x1e0
-[80802.263165][ T8682]  process_one_work+0x2cc/0x568
-[80802.263173][ T8682]  worker_thread+0x28c/0x518
-[80802.263181][ T8682]  kthread+0x160/0x170
-[80802.263188][ T8682]  ret_from_fork+0x10/0x18
-[80802.263198][ T8682] Code: a8c12829 a88130cb a8c130
-
-Fixes: d692522577c0 ("usb: gadget/uvc: Port UVC webcam gadget to use videobuf2 framework")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Dan Vacura <w36195@motorola.com>
-Link: https://lore.kernel.org/r/20220331184024.23918-1-w36195@motorola.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 7a6fca879f59 ("clk: sunxi: Add driver for A80 MMC config clocks/resets")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reviewed-by: Samuel Holland <samuel@sholland.org>
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Link: https://lore.kernel.org/r/20220421134308.2885094-1-yangyingliang@huawei.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/function/uvc_queue.c |    2 ++
+ drivers/clk/sunxi/clk-sun9i-mmc.c | 2 ++
  1 file changed, 2 insertions(+)
 
---- a/drivers/usb/gadget/function/uvc_queue.c
-+++ b/drivers/usb/gadget/function/uvc_queue.c
-@@ -246,6 +246,8 @@ void uvcg_queue_cancel(struct uvc_video_
- 		buf->state = UVC_BUF_STATE_ERROR;
- 		vb2_buffer_done(&buf->buf.vb2_buf, VB2_BUF_STATE_ERROR);
- 	}
-+	queue->buf_used = 0;
-+
- 	/* This must be protected by the irqlock spinlock to avoid race
- 	 * conditions between uvc_queue_buffer and the disconnection event that
- 	 * could result in an interruptible wait in uvc_dequeue_buffer. Do not
+diff --git a/drivers/clk/sunxi/clk-sun9i-mmc.c b/drivers/clk/sunxi/clk-sun9i-mmc.c
+index f69f9e8c6f38..7e9d1624032f 100644
+--- a/drivers/clk/sunxi/clk-sun9i-mmc.c
++++ b/drivers/clk/sunxi/clk-sun9i-mmc.c
+@@ -117,6 +117,8 @@ static int sun9i_a80_mmc_config_clk_probe(struct platform_device *pdev)
+ 	spin_lock_init(&data->lock);
+ 
+ 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!r)
++		return -EINVAL;
+ 	/* one clock/reset pair per word */
+ 	count = DIV_ROUND_UP((resource_size(r)), SUN9I_MMC_WIDTH);
+ 	data->membase = devm_ioremap_resource(&pdev->dev, r);
+-- 
+2.35.1
+
 
 
