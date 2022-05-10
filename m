@@ -2,82 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA0B4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:19:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A679C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:20:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240861AbiEJLXx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 07:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42476 "EHLO
+        id S240884AbiEJLYK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 07:24:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240853AbiEJLX1 (ORCPT
+        with ESMTP id S240892AbiEJLYB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 07:23:27 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24AF32AACC8
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 04:19:29 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 24ABJBo1125790;
-        Tue, 10 May 2022 06:19:11 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1652181551;
-        bh=OeAyXVccjY3hm+MWAfdIaWBN7g5ZIOZUI4gJYrjNDbg=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=pyu8URTAdstc87XBeUdr6md9Ycr3d07FXPTmt2VvvnABQ2ek0qUXC5MRCzAiAdkyJ
-         3WKr8rJ9Xbb7RCBIXXLqbUCgJySLdjKFbjkZsDNd8xg8VmfJaLlBux4pZ0IhR63eu5
-         xoOoMYTNWou/XS9jhtX13/Yfrx12FI3CbXILemDc=
-Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 24ABJB0A094124
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 10 May 2022 06:19:11 -0500
-Received: from DFLE114.ent.ti.com (10.64.6.35) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 10
- May 2022 06:19:11 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 10 May 2022 06:19:11 -0500
-Received: from pratyush-4F-325.dhcp.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 24ABJ3fq127309;
-        Tue, 10 May 2022 06:19:07 -0500
-From:   Pratyush Yadav <p.yadav@ti.com>
-To:     <richard@nod.at>, Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>,
-        <vigneshr@ti.com>, <miquel.raynal@bootlin.com>, <michael@walle.cc>,
-        <tudor.ambarus@microchip.com>
-CC:     <quic_asutoshd@quicinc.com>, <linux-mtd@lists.infradead.org>,
-        <quic_sartgarg@quicinc.com>, <quic_rampraka@quicinc.com>,
-        <quic_nitirawa@quicinc.com>, <quic_pragalla@quicinc.com>,
-        <linux-kernel@vger.kernel.org>, <quic_sayalil@quicinc.com>
-Subject: Re: [PATCH V9] mtd: spi-nor: winbond: add support for W25Q512NW-IM
-Date:   Tue, 10 May 2022 16:49:02 +0530
-Message-ID: <165218141900.322959.6753840624278997521.b4-ty@ti.com>
+        Tue, 10 May 2022 07:24:01 -0400
+Received: from smtp2.infineon.com (smtp2.infineon.com [IPv6:2a00:18f0:1e00:4::4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A31C1868CB;
+        Tue, 10 May 2022 04:20:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=infineon.com; i=@infineon.com; q=dns/txt; s=IFXMAIL;
+  t=1652181603; x=1683717603;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=jSzBja/18U0bgtuUTZtzvvQV6oPRcRl5G5R14KGtuhg=;
+  b=Lazj3NP43+1oVQdKC8jrD7zh298PkoaKAugxCureygvdggLdRXKDbMz+
+   RS1NiUZdiK9XSTlsSVK9D88VYh7sIIUIZOkQH7ep5d30hlFP5XV65sNeD
+   idemTFFcFCU+7gsYleoUaRCEZ1bANOQ/Rpxcl917g46x/4qCXjpfh6qEz
+   U=;
+X-SBRS: None
+X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="176812916"
+X-IronPort-AV: E=Sophos;i="5.91,214,1647298800"; 
+   d="scan'208";a="176812916"
+Received: from unknown (HELO mucxv002.muc.infineon.com) ([172.23.11.17])
+  by smtp2.infineon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 13:20:01 +0200
+Received: from MUCSE819.infineon.com (MUCSE819.infineon.com [172.23.29.45])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mucxv002.muc.infineon.com (Postfix) with ESMTPS;
+        Tue, 10 May 2022 13:20:01 +0200 (CEST)
+Received: from ISCN5CG1067W80.muc.infineon.com (172.23.8.247) by
+ MUCSE819.infineon.com (172.23.29.45) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 10 May 2022 13:20:00 +0200
+From:   Johannes Holland <johannes.holland@infineon.com>
+To:     <jarkko@kernel.org>, <linux-integrity@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <peterhuewe@gmx.de>, <jgg@ziepe.ca>,
+        Johannes Holland <johannes.holland@infineon.com>
+Subject: [PATCH] tpm: increase timeout for kselftests
+Date:   Tue, 10 May 2022 13:16:08 +0200
+Message-ID: <20220510111607.22984-1-johannes.holland@infineon.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <1651234239-32217-1-git-send-email-quic_c_sbhanu@quicinc.com>
-References: <1651234239-32217-1-git-send-email-quic_c_sbhanu@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain
+X-Originating-IP: [172.23.8.247]
+X-ClientProxiedBy: MUCSE803.infineon.com (172.23.29.29) To
+ MUCSE819.infineon.com (172.23.29.45)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 29 Apr 2022 17:40:39 +0530, Shaik Sajida Bhanu wrote:
-> Add support for winbond W25Q512NW-IM chip.
-> 
-> Below are the tests done:
-> 
-> 1. Verified flashing binary image on spi card using flashrom tool.
-> 2. Verified OTP support, below are the test results:
-> 
-> [...]
+Due to CreatePrimary commands which need to create RSA keys of
+increasing size, the timeout value need to be raised, as well.
+Default is 300s.
 
-Applied to https://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git spi-nor/next, thanks!
-[1/1] mtd: spi-nor: winbond: add support for W25Q512NW-IM
-      https://git.kernel.org/mtd/c/89051ff5dd
+Signed-off-by: Johannes Holland <johannes.holland@infineon.com>
+---
+A timeout of anything below 600s still lead to occasional timeouts for
+me. Therefore, I propose 600s as a new value. 
 
---
-Regards,
-Pratyush Yadav
-Texas Instruments Inc.
+ tools/testing/selftests/tpm2/settings | 2 ++
+ 1 file changed, 2 insertions(+)
+ create mode 100644 tools/testing/selftests/tpm2/settings
+
+diff --git a/tools/testing/selftests/tpm2/settings b/tools/testing/selftests/tpm2/settings
+new file mode 100644
+index 000000000000..919bc3803f03
+--- /dev/null
++++ b/tools/testing/selftests/tpm2/settings
+@@ -0,0 +1,2 @@
++timeout=600
++
+-- 
+2.34.1
 
