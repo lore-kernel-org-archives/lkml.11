@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 960DFC388F3
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCED3C38A04
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:40:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243852AbiEJNmv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:42:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50506 "EHLO
+        id S244012AbiEJNnJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:43:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243286AbiEJN3M (ORCPT
+        with ESMTP id S243266AbiEJN3I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:29:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7611B473BB;
-        Tue, 10 May 2022 06:21:10 -0700 (PDT)
+        Tue, 10 May 2022 09:29:08 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7508F3DDDE;
+        Tue, 10 May 2022 06:21:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC42461663;
-        Tue, 10 May 2022 13:21:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3851C385C6;
-        Tue, 10 May 2022 13:21:09 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 99913CE1E73;
+        Tue, 10 May 2022 13:21:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1AAEC385A6;
+        Tue, 10 May 2022 13:20:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188870;
-        bh=tbJHvViQzV/JozlxA+VMglRr0mAAIM8Pbgmf2vmtYEw=;
+        s=korg; t=1652188859;
+        bh=ljAp3L6ejEaut1G2rpqxIWAvHX0+PXzJjFMUlc6tosM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p+JSGbbqqQVYRwzNMaCNiPCqwBdiiFd56+MncwVxVwmz3cbSUPYwQ0qOLyoCcAMQB
-         ahN1Ef+Kd7vH6LSzMeGyqjaBb/TULKJzKFTxnjKdRIWpLr7rnB9Y97nvgo0mWQLhwG
-         ivPjOsakJactlgjpi0aOw5JUBfdzKpSZN8hCfVl8=
+        b=UwXLN54YyTLnu9H/7L5EAO09cfGNCBzKh0Xtr7jW3ngDv/gEqVhs5rVIsW7hHM4IE
+         eaoYdEq/sgLkKpHLal+lhXJmBSbIUfnzYlr37HVbVhsmqwrGX+tXNupK34Tu0L5L05
+         rjEnjEjTj2hbQAt0En1kChnFBTLLmNU1/soKfwjo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.19 75/88] net: stmmac: dwmac-sun8i: add missing of_node_put() in sun8i_dwmac_register_mdio_mux()
-Date:   Tue, 10 May 2022 15:08:00 +0200
-Message-Id: <20220510130735.909264374@linuxfoundation.org>
+        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        stable <stable@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: [PATCH 4.19 19/88] serial: 8250: Correct the clock for EndRun PTP/1588 PCIe device
+Date:   Tue, 10 May 2022 15:07:04 +0200
+Message-Id: <20220510130734.306546556@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 References: <20220510130733.735278074@linuxfoundation.org>
@@ -49,32 +49,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Maciej W. Rozycki <macro@orcam.me.uk>
 
-commit 1a15267b7be77e0792cf0c7b36ca65c8eb2df0d8 upstream.
+commit 637674fa40059cddcc3ad2212728965072f62ea3 upstream.
 
-The node pointer returned by of_get_child_by_name() with refcount incremented,
-so add of_node_put() after using it.
+The EndRun PTP/1588 dual serial port device is based on the Oxford
+Semiconductor OXPCIe952 UART device with the PCI vendor:device ID set
+for EndRun Technologies and is therefore driven by a fixed 62.5MHz clock
+input derived from the 100MHz PCI Express clock.  The clock rate is
+divided by the oversampling rate of 16 as it is supplied to the baud
+rate generator, yielding the baud base of 3906250.
 
-Fixes: 634db83b8265 ("net: stmmac: dwmac-sun8i: Handle integrated/external MDIOs")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220428095716.540452-1-yangyingliang@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Replace the incorrect baud base of 4000000 with the right value of
+3906250 then, complementing commit 6cbe45d8ac93 ("serial: 8250: Correct
+the clock for OxSemi PCIe devices").
+
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Cc: stable <stable@kernel.org>
+Fixes: 1bc8cde46a159 ("8250_pci: Added driver for Endrun Technologies PTP PCIe card.")
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/alpine.DEB.2.21.2204181515270.9383@angie.orcam.me.uk
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/serial/8250/8250_pci.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-@@ -873,6 +873,7 @@ static int sun8i_dwmac_register_mdio_mux
- 
- 	ret = mdio_mux_init(priv->device, mdio_mux, mdio_mux_syscon_switch_fn,
- 			    &gmac->mux_handle, priv, priv->mii);
-+	of_node_put(mdio_mux);
- 	return ret;
- }
- 
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -2656,7 +2656,7 @@ enum pci_board_num_t {
+ 	pbn_panacom2,
+ 	pbn_panacom4,
+ 	pbn_plx_romulus,
+-	pbn_endrun_2_4000000,
++	pbn_endrun_2_3906250,
+ 	pbn_oxsemi,
+ 	pbn_oxsemi_1_4000000,
+ 	pbn_oxsemi_2_4000000,
+@@ -3172,10 +3172,10 @@ static struct pciserial_board pci_boards
+ 	* signal now many ports are available
+ 	* 2 port 952 Uart support
+ 	*/
+-	[pbn_endrun_2_4000000] = {
++	[pbn_endrun_2_3906250] = {
+ 		.flags		= FL_BASE0,
+ 		.num_ports	= 2,
+-		.base_baud	= 4000000,
++		.base_baud	= 3906250,
+ 		.uart_offset	= 0x200,
+ 		.first_offset	= 0x1000,
+ 	},
+@@ -4028,7 +4028,7 @@ static const struct pci_device_id serial
+ 	*/
+ 	{	PCI_VENDOR_ID_ENDRUN, PCI_DEVICE_ID_ENDRUN_1588,
+ 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+-		pbn_endrun_2_4000000 },
++		pbn_endrun_2_3906250 },
+ 	/*
+ 	 * Quatech cards. These actually have configurable clocks but for
+ 	 * now we just use the default.
 
 
