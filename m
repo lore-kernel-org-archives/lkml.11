@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C86DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:26:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FCA9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:26:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243343AbiEJNah (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:30:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45964 "EHLO
+        id S243240AbiEJNap (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:30:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243104AbiEJNWz (ORCPT
+        with ESMTP id S243103AbiEJNWz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:22:55 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAB7B1B1844;
-        Tue, 10 May 2022 06:17:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F871C197D;
+        Tue, 10 May 2022 06:17:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CD536B81DA0;
-        Tue, 10 May 2022 13:17:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28E03C385C2;
-        Tue, 10 May 2022 13:17:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AAC8EB81DA5;
+        Tue, 10 May 2022 13:17:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 262DFC385C2;
+        Tue, 10 May 2022 13:17:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188626;
-        bh=6TDfajJ8pBMh+JcLy099ip64RR+pHVaqJxecjE9Erfk=;
+        s=korg; t=1652188632;
+        bh=xaxQ4D3S8c6xBDzlo5MOyl9OyEkK2VqCkaI1Jbqa9UA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oc6aaJWka96HAvjG6Qu/8EPCrlPllO5wZ5EqWVPJp0EGR5uUJNueAerEbxBv2us0m
-         L9SyeQgH6pgeZ9KVD9C38bSM91qKAvMiuErDzhMc6YQUNWIuUHQUPOKsf/1chDfazH
-         fTYkuW7ZK7pvxeHbNbedoEFRp9Vhm28TjQwCWy5o=
+        b=I2I3/f5jVeG82yCPlJR8dgtJo5/MiPRaSG6rWUJOPp2RdjMi4oe5f/xnWGzUVeJ9l
+         WnkGeXnPERYe7uAtvpuNxrS8syqVnx/Ic5+zS8AsPbWHJ06TjOCFYO/zYKjCSWzRWX
+         P5uyBsV3NIEz8P9mk2Ug/zTopRpFtfHQ6tAfnerE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sascha Hauer <sha@pengutronix.de>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 4.14 68/78] ASoC: dmaengine: Restore NULL prepare_slave_config() callback
-Date:   Tue, 10 May 2022 15:07:54 +0200
-Message-Id: <20220510130734.543705295@linuxfoundation.org>
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.14 70/78] smsc911x: allow using IRQ0
+Date:   Tue, 10 May 2022 15:07:56 +0200
+Message-Id: <20220510130734.601834439@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
 References: <20220510130732.522479698@linuxfoundation.org>
@@ -49,49 +48,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-commit 660564fc9a92a893a14f255be434f7ea0b967901 upstream.
+commit 5ef9b803a4af0f5e42012176889b40bb2a978b18 upstream.
 
-As pointed out by Sascha Hauer, this patch changes:
-if (pmc->config && !pcm->config->prepare_slave_config)
-        <do nothing>
-to:
-if (pmc->config && !pcm->config->prepare_slave_config)
-        snd_dmaengine_pcm_prepare_slave_config()
+The AlphaProject AP-SH4A-3A/AP-SH4AD-0A SH boards use IRQ0 for their SMSC
+LAN911x Ethernet chip, so the networking on them must have been broken by
+commit 965b2aa78fbc ("net/smsc911x: fix irq resource allocation failure")
+which filtered out 0 as well as the negative error codes -- it was kinda
+correct at the time, as platform_get_irq() could return 0 on of_irq_get()
+failure and on the actual 0 in an IRQ resource.  This issue was fixed by
+me (back in 2016!), so we should be able to fix this driver to allow IRQ0
+usage again...
 
-This breaks the drivers that do not need a call to
-dmaengine_slave_config(). Drivers that still need to call
-snd_dmaengine_pcm_prepare_slave_config(), but have a NULL
-pcm->config->prepare_slave_config should use
-snd_dmaengine_pcm_prepare_slave_config() as their prepare_slave_config
-callback.
+When merging this to the stable kernels, make sure you also merge commit
+e330b9a6bb35 ("platform: don't return 0 from platform_get_irq[_byname]()
+on error") -- that's my fix to platform_get_irq() for the DT platforms...
 
-Fixes: 9a1e13440a4f ("ASoC: dmaengine: do not use a NULL prepare_slave_config() callback")
-Reported-by: Sascha Hauer <sha@pengutronix.de>
-Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-Link: https://lore.kernel.org/r/20220421125403.2180824-1-codrin.ciubotariu@microchip.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 965b2aa78fbc ("net/smsc911x: fix irq resource allocation failure")
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Link: https://lore.kernel.org/r/656036e4-6387-38df-b8a7-6ba683b16e63@omp.ru
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/soc-generic-dmaengine-pcm.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/smsc/smsc911x.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/sound/soc/soc-generic-dmaengine-pcm.c
-+++ b/sound/soc/soc-generic-dmaengine-pcm.c
-@@ -98,10 +98,10 @@ static int dmaengine_pcm_hw_params(struc
- 
- 	memset(&slave_config, 0, sizeof(slave_config));
- 
--	if (pcm->config && pcm->config->prepare_slave_config)
--		prepare_slave_config = pcm->config->prepare_slave_config;
--	else
-+	if (!pcm->config)
- 		prepare_slave_config = snd_dmaengine_pcm_prepare_slave_config;
-+	else
-+		prepare_slave_config = pcm->config->prepare_slave_config;
- 
- 	if (prepare_slave_config) {
- 		ret = prepare_slave_config(substream, params, &slave_config);
+--- a/drivers/net/ethernet/smsc/smsc911x.c
++++ b/drivers/net/ethernet/smsc/smsc911x.c
+@@ -2446,7 +2446,7 @@ static int smsc911x_drv_probe(struct pla
+ 	if (irq == -EPROBE_DEFER) {
+ 		retval = -EPROBE_DEFER;
+ 		goto out_0;
+-	} else if (irq <= 0) {
++	} else if (irq < 0) {
+ 		pr_warn("Could not allocate irq resource\n");
+ 		retval = -ENODEV;
+ 		goto out_0;
 
 
