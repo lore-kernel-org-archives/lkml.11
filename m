@@ -2,108 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8ED7C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 09:48:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7DF6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 09:48:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239250AbiEJJv4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 05:51:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45112 "EHLO
+        id S239270AbiEJJwI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 05:52:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239222AbiEJJvx (ORCPT
+        with ESMTP id S239222AbiEJJwE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 05:51:53 -0400
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA25B237B86;
-        Tue, 10 May 2022 02:47:56 -0700 (PDT)
-Received: (Authenticated sender: jacopo@jmondi.org)
-        by mail.gandi.net (Postfix) with ESMTPSA id F02761C0003;
-        Tue, 10 May 2022 09:47:52 +0000 (UTC)
-Date:   Tue, 10 May 2022 11:47:51 +0200
-From:   Jacopo Mondi <jacopo@jmondi.org>
-To:     Quentin Schulz <foss+kernel@0leil.net>
-Cc:     shawnx.tu@intel.com, mchehab@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-media@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Quentin Schulz <quentin.schulz@theobroma-systems.com>
-Subject: Re: [PATCH v3 3/4] media: i2c: ov5675: parse and register V4L2
- device tree properties
-Message-ID: <20220510094751.b6xbevurqhezpsnd@uno.localdomain>
-References: <20220509143226.531117-1-foss+kernel@0leil.net>
- <20220509143226.531117-3-foss+kernel@0leil.net>
+        Tue, 10 May 2022 05:52:04 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7ADE237BA6;
+        Tue, 10 May 2022 02:48:07 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KyCrH2ZdKzhZ60;
+        Tue, 10 May 2022 17:47:27 +0800 (CST)
+Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 10 May 2022 17:48:04 +0800
+Received: from ubuntu1804.huawei.com (10.67.175.36) by
+ dggpemm500013.china.huawei.com (7.185.36.172) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 10 May 2022 17:48:03 +0800
+From:   Chen Zhongjin <chenzhongjin@huawei.com>
+To:     <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-arch@vger.kernel.org>, <linuxppc-dev@lists.ozlabs.org>,
+        <stable@vger.kernel.org>
+CC:     <peterz@infradead.org>, <tglx@linutronix.de>, <namit@vmware.com>,
+        <gor@linux.ibm.com>, <rdunlap@infradead.org>, <paulmck@kernel.org>,
+        <mingo@kernel.org>, <jgross@suse.com>,
+        <gregkh@linuxfoundation.org>, <mpe@ellerman.id.au>,
+        <chenzhongjin@huawei.com>
+Subject: [PATCH v4] locking/csd_lock: change csdlock_debug from early_param to __setup
+Date:   Tue, 10 May 2022 17:46:39 +0800
+Message-ID: <20220510094639.106661-1-chenzhongjin@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220509143226.531117-3-foss+kernel@0leil.net>
+Content-Type: text/plain
+X-Originating-IP: [10.67.175.36]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500013.china.huawei.com (7.185.36.172)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Quentin,
+csdlock_debug uses early_param and static_branch_enable() to enable
+csd_lock_wait feature, which triggers a panic on arm64 with config:
+CONFIG_SPARSEMEM=y
+CONFIG_SPARSEMEM_VMEMMAP=n
 
-On Mon, May 09, 2022 at 04:32:25PM +0200, Quentin Schulz wrote:
-> From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
->
-> Parse V4L2 device tree properties and register controls for them.
->
-> Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
-> ---
->  drivers/media/i2c/ov5675.c | 18 +++++++++++++++++-
->  1 file changed, 17 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/media/i2c/ov5675.c b/drivers/media/i2c/ov5675.c
-> index cee380196774..5544e1ae444e 100644
-> --- a/drivers/media/i2c/ov5675.c
-> +++ b/drivers/media/i2c/ov5675.c
-> @@ -779,12 +779,14 @@ static const struct v4l2_ctrl_ops ov5675_ctrl_ops = {
->
->  static int ov5675_init_controls(struct ov5675 *ov5675)
->  {
-> +	struct i2c_client *client = v4l2_get_subdevdata(&ov5675->sd);
->  	struct v4l2_ctrl_handler *ctrl_hdlr;
-> +	struct v4l2_fwnode_device_properties props;
+With CONFIG_SPARSEMEM_VMEMMAP=n, __nr_to_section is called in
+static_key_enable() and returns NULL which makes NULL dereference
+because mem_section is initialized in sparse_init() which is later
+than parse_early_param() stage.
 
-You could move the line up and maintain the (in)famous
-reverse-xmas-tree ordering in variable declaration.
+For powerpc this is also broken, because early_param stage is
+earlier than jump_label_init() so static_key_enable won't work.
+powerpc throws an warning: "static key 'xxx' used before call
+to jump_label_init()".
 
-Nit apart, looks good
-Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
+Thus, early_param is too early for csd_lock_wait to run
+static_branch_enable(), so changes it to __setup to fix these.
 
-Thanks
-  j
+Fixes: 8d0968cc6b8f ("locking/csd_lock: Add boot parameter for controlling CSD lock debugging")
+Cc: stable@vger.kernel.org
+Reported-by: Chen jingwen <chenjingwen6@huawei.com>
+Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
+---
+Change v3 -> v4:
+Fix title and description because this fix is also applied
+to powerpc.
+For more detailed arm64 bug report see:
+https://lore.kernel.org/linux-arm-kernel/e8715911-f835-059d-27f8-cc5f5ad30a07@huawei.com/t/
 
->  	s64 exposure_max, h_blank;
->  	int ret;
->
->  	ctrl_hdlr = &ov5675->ctrl_handler;
-> -	ret = v4l2_ctrl_handler_init(ctrl_hdlr, 8);
-> +	ret = v4l2_ctrl_handler_init(ctrl_hdlr, 10);
->  	if (ret)
->  		return ret;
->
-> @@ -838,9 +840,23 @@ static int ov5675_init_controls(struct ov5675 *ov5675)
->  	if (ctrl_hdlr->error)
->  		return ctrl_hdlr->error;
->
-> +	ret = v4l2_fwnode_device_parse(&client->dev, &props);
-> +	if (ret)
-> +		goto error;
-> +
-> +	ret = v4l2_ctrl_new_fwnode_properties(ctrl_hdlr, &ov5675_ctrl_ops,
-> +					      &props);
-> +	if (ret)
-> +		goto error;
-> +
->  	ov5675->sd.ctrl_handler = ctrl_hdlr;
->
->  	return 0;
-> +
-> +error:
-> +	v4l2_ctrl_handler_free(ctrl_hdlr);
-> +
-> +	return ret;
->  }
->
->  static void ov5675_update_pad_format(const struct ov5675_mode *mode,
-> --
-> 2.35.3
->
+Change v2 -> v3:
+Add module name in title
+
+Change v1 -> v2:
+Fix return 1 for __setup
+---
+ kernel/smp.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/smp.c b/kernel/smp.c
+index 65a630f62363..381eb15cd28f 100644
+--- a/kernel/smp.c
++++ b/kernel/smp.c
+@@ -174,9 +174,9 @@ static int __init csdlock_debug(char *str)
+ 	if (val)
+ 		static_branch_enable(&csdlock_debug_enabled);
+ 
+-	return 0;
++	return 1;
+ }
+-early_param("csdlock_debug", csdlock_debug);
++__setup("csdlock_debug=", csdlock_debug);
+ 
+ static DEFINE_PER_CPU(call_single_data_t *, cur_csd);
+ static DEFINE_PER_CPU(smp_call_func_t, cur_csd_func);
+-- 
+2.17.1
+
