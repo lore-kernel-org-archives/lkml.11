@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28965C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:01:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47227C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:01:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244155AbiEJOE4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:04:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47278 "EHLO
+        id S244537AbiEJOFF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:05:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244543AbiEJNl7 (ORCPT
+        with ESMTP id S237155AbiEJNmd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:41:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 579122C7A6B;
-        Tue, 10 May 2022 06:30:13 -0700 (PDT)
+        Tue, 10 May 2022 09:42:33 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 837282AC56;
+        Tue, 10 May 2022 06:30:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5AE6F6181B;
-        Tue, 10 May 2022 13:30:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 640E2C385A6;
-        Tue, 10 May 2022 13:30:08 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 51133CE1EE2;
+        Tue, 10 May 2022 13:30:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 633FCC385A6;
+        Tue, 10 May 2022 13:30:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189408;
-        bh=L8p46TrX6saOs61n+6wrRr0KRxECWGPqTfJYH1OrAT0=;
+        s=korg; t=1652189442;
+        bh=jM41X8xSEpy3J9hlpygsg9SJe+WGApjUCWGFi3pw+j8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yh5rsPaSdIBdkzP2UnuxQC1DmKm2QWzF/jSe1bdaneiO5Rt+rJ5rn/AXpOxn6ivA9
-         CbkYPmR04U4BvCBzzX+6JUXf0scMdRrwwtiy//cpIxAIm9mInbdv1J09EV+cB0ek2S
-         PEZ9D2fSWt8vcTVQBu7vXEflOzWXhT1cvpaZyLv8=
+        b=zKat5v57Y9LwY+SpdOHR/owd2wbKMWYVNTUXGvZ+2Pb59J6fW+U6BPqZQYAJ/lUiD
+         uUjF1COCRMQLpZycAR13FKVl2mSoGKZb7wYMGtB0b3GMC618tX5C26KhsXuYEPKfQA
+         Mvxz1VyfeXL13FyvsCFvs1wOaHL3tc+s4I5UvYJ0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shawn Lin <shawn.lin@rock-chips.com>,
-        Luca Weiss <luca@z3ntu.xyz>,
-        Brian Norris <briannorris@chromium.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.15 007/135] mmc: core: Set HS clock speed before sending HS CMD13
-Date:   Tue, 10 May 2022 15:06:29 +0200
-Message-Id: <20220510130740.607788689@linuxfoundation.org>
+        stable@vger.kernel.org, Moshe Shemesh <moshe@nvidia.com>,
+        Maher Sanalla <msanalla@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH 5.15 053/135] net/mlx5: Fix deadlock in sync reset flow
+Date:   Tue, 10 May 2022 15:07:15 +0200
+Message-Id: <20220510130741.925693143@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -50,131 +49,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Norris <briannorris@chromium.org>
+From: Moshe Shemesh <moshe@nvidia.com>
 
-commit 4bc31edebde51fcf8ad0794763b8679a7ecb5ec0 upstream.
+commit cb7786a76ea39f394f0a059787fe24fa8e340fb6 upstream.
 
-Way back in commit 4f25580fb84d ("mmc: core: changes frequency to
-hs_max_dtr when selecting hs400es"), Rockchip engineers noticed that
-some eMMC don't respond to SEND_STATUS commands very reliably if they're
-still running at a low initial frequency. As mentioned in that commit,
-JESD84-B51 P49 suggests a sequence in which the host:
-1. sets HS_TIMING
-2. bumps the clock ("<= 52 MHz")
-3. sends further commands
+The sync reset flow can lead to the following deadlock when
+poll_sync_reset() is called by timer softirq and waiting on
+del_timer_sync() for the same timer. Fix that by moving the part of the
+flow that waits for the timer to reset_reload_work.
 
-It doesn't exactly require that we don't use a lower-than-52MHz
-frequency, but in practice, these eMMC don't like it.
+It fixes the following kernel Trace:
+RIP: 0010:del_timer_sync+0x32/0x40
+...
+Call Trace:
+ <IRQ>
+ mlx5_sync_reset_clear_reset_requested+0x26/0x50 [mlx5_core]
+ poll_sync_reset.cold+0x36/0x52 [mlx5_core]
+ call_timer_fn+0x32/0x130
+ __run_timers.part.0+0x180/0x280
+ ? tick_sched_handle+0x33/0x60
+ ? tick_sched_timer+0x3d/0x80
+ ? ktime_get+0x3e/0xa0
+ run_timer_softirq+0x2a/0x50
+ __do_softirq+0xe1/0x2d6
+ ? hrtimer_interrupt+0x136/0x220
+ irq_exit+0xae/0xb0
+ smp_apic_timer_interrupt+0x7b/0x140
+ apic_timer_interrupt+0xf/0x20
+ </IRQ>
 
-The aforementioned commit tried to get that right for HS400ES, although
-it's unclear whether this ever truly worked as committed into mainline,
-as other changes/refactoring adjusted the sequence in conflicting ways:
-
-08573eaf1a70 ("mmc: mmc: do not use CMD13 to get status after speed mode
-switch")
-
-53e60650f74e ("mmc: core: Allow CMD13 polling when switching to HS mode
-for mmc")
-
-In any case, today we do step 3 before step 2. Let's fix that, and also
-apply the same logic to HS200/400, where this eMMC has problems too.
-
-Resolves errors like this seen when booting some RK3399 Gru/Scarlet
-systems:
-
-[    2.058881] mmc1: CQHCI version 5.10
-[    2.097545] mmc1: SDHCI controller on fe330000.mmc [fe330000.mmc] using ADMA
-[    2.209804] mmc1: mmc_select_hs400es failed, error -84
-[    2.215597] mmc1: error -84 whilst initialising MMC card
-[    2.417514] mmc1: mmc_select_hs400es failed, error -110
-[    2.423373] mmc1: error -110 whilst initialising MMC card
-[    2.605052] mmc1: mmc_select_hs400es failed, error -110
-[    2.617944] mmc1: error -110 whilst initialising MMC card
-[    2.835884] mmc1: mmc_select_hs400es failed, error -110
-[    2.841751] mmc1: error -110 whilst initialising MMC card
-
-Ealier versions of this patch bumped to 200MHz/HS200 speeds too early,
-which caused issues on, e.g., qcom-msm8974-fairphone-fp2. (Thanks for
-the report Luca!) After a second look, it appears that aligns with
-JESD84 / page 45 / table 28, so we need to keep to lower (HS / 52 MHz)
-rates first.
-
-Fixes: 08573eaf1a70 ("mmc: mmc: do not use CMD13 to get status after speed mode switch")
-Fixes: 53e60650f74e ("mmc: core: Allow CMD13 polling when switching to HS mode for mmc")
-Fixes: 4f25580fb84d ("mmc: core: changes frequency to hs_max_dtr when selecting hs400es")
-Cc: Shawn Lin <shawn.lin@rock-chips.com>
-Link: https://lore.kernel.org/linux-mmc/11962455.O9o76ZdvQC@g550jk/
-Reported-by: Luca Weiss <luca@z3ntu.xyz>
-Signed-off-by: Brian Norris <briannorris@chromium.org>
-Tested-by: Luca Weiss <luca@z3ntu.xyz>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220422100824.v4.1.I484f4ee35609f78b932bd50feed639c29e64997e@changeid
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Fixes: 3c5193a87b0f ("net/mlx5: Use del_timer_sync in fw reset flow of halting poll")
+Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
+Reviewed-by: Maher Sanalla <msanalla@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/core/mmc.c |   23 +++++++++++++++++++----
- 1 file changed, 19 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c |   34 ++++++++++-----------
+ 1 file changed, 17 insertions(+), 17 deletions(-)
 
---- a/drivers/mmc/core/mmc.c
-+++ b/drivers/mmc/core/mmc.c
-@@ -1381,13 +1381,17 @@ static int mmc_select_hs400es(struct mmc
- 		goto out_err;
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+@@ -111,22 +111,6 @@ static void mlx5_fw_reset_complete_reloa
  	}
+ }
  
-+	/*
-+	 * Bump to HS timing and frequency. Some cards don't handle
-+	 * SEND_STATUS reliably at the initial frequency.
-+	 */
- 	mmc_set_timing(host, MMC_TIMING_MMC_HS);
-+	mmc_set_bus_speed(card);
-+
- 	err = mmc_switch_status(card, true);
- 	if (err)
- 		goto out_err;
- 
--	mmc_set_clock(host, card->ext_csd.hs_max_dtr);
+-static void mlx5_sync_reset_reload_work(struct work_struct *work)
+-{
+-	struct mlx5_fw_reset *fw_reset = container_of(work, struct mlx5_fw_reset,
+-						      reset_reload_work);
+-	struct mlx5_core_dev *dev = fw_reset->dev;
+-	int err;
 -
- 	/* Switch card to DDR with strobe bit */
- 	val = EXT_CSD_DDR_BUS_WIDTH_8 | EXT_CSD_BUS_WIDTH_STROBE;
- 	err = mmc_switch(card, EXT_CSD_CMD_SET_NORMAL,
-@@ -1445,7 +1449,7 @@ out_err:
- static int mmc_select_hs200(struct mmc_card *card)
+-	mlx5_enter_error_state(dev, true);
+-	mlx5_unload_one(dev);
+-	err = mlx5_health_wait_pci_up(dev);
+-	if (err)
+-		mlx5_core_err(dev, "reset reload flow aborted, PCI reads still not working\n");
+-	fw_reset->ret = err;
+-	mlx5_fw_reset_complete_reload(dev);
+-}
+-
+ static void mlx5_stop_sync_reset_poll(struct mlx5_core_dev *dev)
  {
- 	struct mmc_host *host = card->host;
--	unsigned int old_timing, old_signal_voltage;
-+	unsigned int old_timing, old_signal_voltage, old_clock;
- 	int err = -EINVAL;
- 	u8 val;
+ 	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
+@@ -149,6 +133,23 @@ static int mlx5_sync_reset_clear_reset_r
+ 	return 0;
+ }
  
-@@ -1476,8 +1480,17 @@ static int mmc_select_hs200(struct mmc_c
- 				   false, true, MMC_CMD_RETRIES);
- 		if (err)
- 			goto err;
++static void mlx5_sync_reset_reload_work(struct work_struct *work)
++{
++	struct mlx5_fw_reset *fw_reset = container_of(work, struct mlx5_fw_reset,
++						      reset_reload_work);
++	struct mlx5_core_dev *dev = fw_reset->dev;
++	int err;
 +
-+		/*
-+		 * Bump to HS timing and frequency. Some cards don't handle
-+		 * SEND_STATUS reliably at the initial frequency.
-+		 * NB: We can't move to full (HS200) speeds until after we've
-+		 * successfully switched over.
-+		 */
- 		old_timing = host->ios.timing;
-+		old_clock = host->ios.clock;
- 		mmc_set_timing(host, MMC_TIMING_MMC_HS200);
-+		mmc_set_clock(card->host, card->ext_csd.hs_max_dtr);
++	mlx5_sync_reset_clear_reset_requested(dev, false);
++	mlx5_enter_error_state(dev, true);
++	mlx5_unload_one(dev);
++	err = mlx5_health_wait_pci_up(dev);
++	if (err)
++		mlx5_core_err(dev, "reset reload flow aborted, PCI reads still not working\n");
++	fw_reset->ret = err;
++	mlx5_fw_reset_complete_reload(dev);
++}
++
+ #define MLX5_RESET_POLL_INTERVAL	(HZ / 10)
+ static void poll_sync_reset(struct timer_list *t)
+ {
+@@ -163,7 +164,6 @@ static void poll_sync_reset(struct timer
  
- 		/*
- 		 * For HS200, CRC errors are not a reliable way to know the
-@@ -1490,8 +1503,10 @@ static int mmc_select_hs200(struct mmc_c
- 		 * mmc_select_timing() assumes timing has not changed if
- 		 * it is a switch error.
- 		 */
--		if (err == -EBADMSG)
-+		if (err == -EBADMSG) {
-+			mmc_set_clock(host, old_clock);
- 			mmc_set_timing(host, old_timing);
-+		}
+ 	if (fatal_error) {
+ 		mlx5_core_warn(dev, "Got Device Reset\n");
+-		mlx5_sync_reset_clear_reset_requested(dev, false);
+ 		queue_work(fw_reset->wq, &fw_reset->reset_reload_work);
+ 		return;
  	}
- err:
- 	if (err) {
 
 
