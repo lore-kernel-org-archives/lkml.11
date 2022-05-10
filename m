@@ -2,44 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E4C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:31:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 790BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:31:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243400AbiEJNfI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:35:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49302 "EHLO
+        id S241616AbiEJNfS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:35:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242910AbiEJNZQ (ORCPT
+        with ESMTP id S242922AbiEJNZQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:25:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA3784EA3E;
-        Tue, 10 May 2022 06:18:04 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7458E5EBF6;
+        Tue, 10 May 2022 06:18:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8372561661;
-        Tue, 10 May 2022 13:18:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86DC4C385C6;
-        Tue, 10 May 2022 13:18:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2F6EBB81CE7;
+        Tue, 10 May 2022 13:18:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78BF8C385C2;
+        Tue, 10 May 2022 13:18:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188683;
-        bh=LlaNvZNC6zMQ2YYn7Jimy2RhtIUwN/GT9NAOZ5adIg8=;
+        s=korg; t=1652188701;
+        bh=5DaDxR42mwGSr1uVDRE0OYynjZnYKWwQ0Cz0LyU4kj8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OrlYIN9EZU5fud9CsrLxlldCb8RrgthmD4zIvY/8AaSy4BmJERlEY5047BtiQJK3O
-         luXpBNs0/BmNMpVJ2z7vDLAZRloFCLznZkosmGYCEa7W4FX2Gxsa1DgF3mCmJ4L3bz
-         F38nUWfA/0XdonQ3jGhfjQzAjGG5EqZ6rb2WvAko=
+        b=ajEPrs5R6QczeNACTMc+XWS+AyXsU1gWmlDZJ+v9Jplwk9f20IpUN4XZkgKWpn+Sw
+         LbDU+8K/Apt8GXm4hxvOiNLu//iNYXZeOHHnjo6iMmavF791pQlWsu6XJuhEo8W7fQ
+         Z/26byzUYdDD3HgCDKXf8TYGvhpVFIoShQLvUOJo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 4.19 10/88] iio: dac: ad5446: Fix read_raw not returning set value
-Date:   Tue, 10 May 2022 15:06:55 +0200
-Message-Id: <20220510130734.044592292@linuxfoundation.org>
+        stable@vger.kernel.org, Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Subject: [PATCH 4.19 16/88] usb: dwc3: gadget: Return proper request status
+Date:   Tue, 10 May 2022 15:07:01 +0200
+Message-Id: <20220510130734.217598344@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 References: <20220510130733.735278074@linuxfoundation.org>
@@ -51,33 +47,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Hennerich <michael.hennerich@analog.com>
+From: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
 
-commit 89a01cd688d3c0ac983ef0b0e5f40018ab768317 upstream.
+commit c7428dbddcf4ea1919e1c8e15f715b94ca359268 upstream.
 
-read_raw should return the un-scaled value.
+If the user sets the usb_request's no_interrupt, then there will be no
+completion event for the request. Currently the driver incorrectly uses
+the event status of a different request to report the status for a
+request with no_interrupt. The dwc3 driver needs to check the TRB status
+associated with the request when reporting its status.
 
-Fixes: 5e06bdfb46e8b ("staging:iio:dac:ad5446: Return cached value for 'raw' attribute")
-Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Reviewed-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220406105620.1171340-1-michael.hennerich@analog.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Note: this is only applicable to missed_isoc TRB completion status, but
+the other status are also listed for completeness/documentation.
+
+Fixes: 6d8a019614f3 ("usb: dwc3: gadget: check for Missed Isoc from event status")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Link: https://lore.kernel.org/r/db2c80108286cfd108adb05bad52138b78d7c3a7.1650673655.git.Thinh.Nguyen@synopsys.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/dac/ad5446.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/dwc3/gadget.c |   31 ++++++++++++++++++++++++++++++-
+ 1 file changed, 30 insertions(+), 1 deletion(-)
 
---- a/drivers/iio/dac/ad5446.c
-+++ b/drivers/iio/dac/ad5446.c
-@@ -171,7 +171,7 @@ static int ad5446_read_raw(struct iio_de
+--- a/drivers/usb/dwc3/gadget.c
++++ b/drivers/usb/dwc3/gadget.c
+@@ -2415,6 +2415,7 @@ static int dwc3_gadget_ep_cleanup_comple
+ 		const struct dwc3_event_depevt *event,
+ 		struct dwc3_request *req, int status)
+ {
++	int request_status;
+ 	int ret;
  
- 	switch (m) {
- 	case IIO_CHAN_INFO_RAW:
--		*val = st->cached_val;
-+		*val = st->cached_val >> chan->scan_type.shift;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
- 		*val = st->vref_mv;
+ 	if (req->request.num_mapped_sgs)
+@@ -2444,7 +2445,35 @@ static int dwc3_gadget_ep_cleanup_comple
+ 		req->needs_extra_trb = false;
+ 	}
+ 
+-	dwc3_gadget_giveback(dep, req, status);
++	/*
++	 * The event status only reflects the status of the TRB with IOC set.
++	 * For the requests that don't set interrupt on completion, the driver
++	 * needs to check and return the status of the completed TRBs associated
++	 * with the request. Use the status of the last TRB of the request.
++	 */
++	if (req->request.no_interrupt) {
++		struct dwc3_trb *trb;
++
++		trb = dwc3_ep_prev_trb(dep, dep->trb_dequeue);
++		switch (DWC3_TRB_SIZE_TRBSTS(trb->size)) {
++		case DWC3_TRBSTS_MISSED_ISOC:
++			/* Isoc endpoint only */
++			request_status = -EXDEV;
++			break;
++		case DWC3_TRB_STS_XFER_IN_PROG:
++			/* Applicable when End Transfer with ForceRM=0 */
++		case DWC3_TRBSTS_SETUP_PENDING:
++			/* Control endpoint only */
++		case DWC3_TRBSTS_OK:
++		default:
++			request_status = 0;
++			break;
++		}
++	} else {
++		request_status = status;
++	}
++
++	dwc3_gadget_giveback(dep, req, request_status);
+ 
+ out:
+ 	return ret;
 
 
