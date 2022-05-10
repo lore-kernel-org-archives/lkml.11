@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC039C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBFA6C43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:58:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245171AbiEJOBg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:01:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49462 "EHLO
+        id S245279AbiEJOBl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:01:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245283AbiEJNin (ORCPT
+        with ESMTP id S245400AbiEJNiy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:38:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D95C01BDD82;
-        Tue, 10 May 2022 06:29:02 -0700 (PDT)
+        Tue, 10 May 2022 09:38:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E95D2370D9;
+        Tue, 10 May 2022 06:29:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8BFE96181B;
-        Tue, 10 May 2022 13:29:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92FF1C385A6;
-        Tue, 10 May 2022 13:29:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 749BEB81D24;
+        Tue, 10 May 2022 13:29:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2C4DC385A6;
+        Tue, 10 May 2022 13:29:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189341;
-        bh=WTnl3+B6yRLPj0eRn2sUYYRUVNpckkYKXc79sNWkQus=;
+        s=korg; t=1652189353;
+        bh=2HnKUKKeygCNULEDLTGebDWd/Upf5P086EXE4P6TmGo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HSiH6g61twcZhKHVXqargXzm2ERzXALZD8orSb/JImYyE5sVC3zZE3f0Ce/90E9jY
-         bUbbu5w9iLa0J7SW+unTHjdaZbk8uQgLU2+/a1UMW3eXWyb+8gaeJ2NIssuR0gA937
-         abs4zhtcBDHF3+xGCpSKX4+GlyUU+OvmWLwLXpQs=
+        b=1/d+WXD5ALDuQQU6jkj3nGYcgQJpthKxof8zksSeU2S+vr6MxVwklzyyGqDK0L9u1
+         guexn+g86CorGeohL9GbA3PI7bmnoKuLKZRTxwBQghjrCjCN6xhzuRXigGa1U3Y7F+
+         8mwV/zk8L2MtRfFhaGB4nJjh4gl6jYlM8pVC0eps=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.15 002/135] parisc: Merge model and model name into one line in /proc/cpuinfo
-Date:   Tue, 10 May 2022 15:06:24 +0200
-Message-Id: <20220510130740.467396313@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+Subject: [PATCH 5.15 023/135] ASoC: da7219: Fix change notifications for tone generator frequency
+Date:   Tue, 10 May 2022 15:06:45 +0200
+Message-Id: <20220510130741.066622053@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -47,32 +48,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Mark Brown <broonie@kernel.org>
 
-commit 5b89966bc96a06f6ad65f64ae4b0461918fcc9d3 upstream.
+commit 08ef48404965cfef99343d6bbbcf75b88c74aa0e upstream.
 
-The Linux tool "lscpu" shows the double amount of CPUs if we have
-"model" and "model name" in two different lines in /proc/cpuinfo.
-This change combines the model and the model name into one line.
+The tone generator frequency control just returns 0 on successful write,
+not a boolean value indicating if there was a change or not.  Compare
+what was written with the value that was there previously so that
+notifications are generated appropriately when the value changes.
 
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Reviewed-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
 Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220420133437.569229-1-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/parisc/kernel/processor.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ sound/soc/codecs/da7219.c |   14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
---- a/arch/parisc/kernel/processor.c
-+++ b/arch/parisc/kernel/processor.c
-@@ -418,8 +418,7 @@ show_cpuinfo (struct seq_file *m, void *
- 		}
- 		seq_printf(m, " (0x%02lx)\n", boot_cpu_data.pdc.capabilities);
+--- a/sound/soc/codecs/da7219.c
++++ b/sound/soc/codecs/da7219.c
+@@ -446,7 +446,7 @@ static int da7219_tonegen_freq_put(struc
+ 	struct soc_mixer_control *mixer_ctrl =
+ 		(struct soc_mixer_control *) kcontrol->private_value;
+ 	unsigned int reg = mixer_ctrl->reg;
+-	__le16 val;
++	__le16 val_new, val_old;
+ 	int ret;
  
--		seq_printf(m, "model\t\t: %s\n"
--				"model name\t: %s\n",
-+		seq_printf(m, "model\t\t: %s - %s\n",
- 				 boot_cpu_data.pdc.sys_model_name,
- 				 cpuinfo->dev ?
- 				 cpuinfo->dev->name : "Unknown");
+ 	/*
+@@ -454,13 +454,19 @@ static int da7219_tonegen_freq_put(struc
+ 	 * Therefore we need to convert to little endian here to align with
+ 	 * HW registers.
+ 	 */
+-	val = cpu_to_le16(ucontrol->value.integer.value[0]);
++	val_new = cpu_to_le16(ucontrol->value.integer.value[0]);
+ 
+ 	mutex_lock(&da7219->ctrl_lock);
+-	ret = regmap_raw_write(da7219->regmap, reg, &val, sizeof(val));
++	ret = regmap_raw_read(da7219->regmap, reg, &val_old, sizeof(val_old));
++	if (ret == 0 && (val_old != val_new))
++		ret = regmap_raw_write(da7219->regmap, reg,
++				&val_new, sizeof(val_new));
+ 	mutex_unlock(&da7219->ctrl_lock);
+ 
+-	return ret;
++	if (ret < 0)
++		return ret;
++
++	return val_old != val_new;
+ }
+ 
+ 
 
 
