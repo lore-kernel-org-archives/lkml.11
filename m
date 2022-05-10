@@ -2,79 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC869C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:14:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A318C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:15:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241595AbiEJMSs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 08:18:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48710 "EHLO
+        id S241614AbiEJMTY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 08:19:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241612AbiEJMSo (ORCPT
+        with ESMTP id S239373AbiEJMTV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 08:18:44 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E655B2498BF;
-        Tue, 10 May 2022 05:14:46 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id g20so19749561edw.6;
-        Tue, 10 May 2022 05:14:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=l/br5lVoJr5JONPYw1u2TkkXlTjPZRXlvdDqOy09iwI=;
-        b=FjagvNXwCbQMkr00LSuq5wEwkPbbZaJXOlTX3CESKiHhORbnsjJpqJdCQKfImkBgoW
-         THSuME8zouCe9kcMvi/fOKDuhiBzdtoIrfvQ9HdUo+iAXIc9J8Zbsqme+oqWRx/vxMom
-         aPp7kYBEkZ4kd6rVxaQ/xY+puVba/kL3CRalqh0YJ3xqS2PXw2Lxl38cdwMHwPREkAOf
-         BSYOYzS7BM+5YVgMxAysX479oT0kdnV+s34Tcsnsr2/O7m+PUH3ilTwd4nxP+Djl49HW
-         feTXM8W/yStz0TnUIZuzZJ5X0V/hK4FBTr2AFudpHSLmeoP3hD836jGPi9Uk/RE8Ywuj
-         oiyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=l/br5lVoJr5JONPYw1u2TkkXlTjPZRXlvdDqOy09iwI=;
-        b=BR3PU5pJFlTwd9Wfj+BSaVC+hno1t6fS1h4NVU6hscM/QfHNPI1zm6FUcdkGFEfxNn
-         qEWkKu+r0lyCTGZowBXLwBO/ZN4P7cVSadlBVdkIuRBFmNvnVZ2sC4dCw069x4ixhoJB
-         uo/nJs+vYU5ovIH7Wrr6P5XlRlxMIh34Ox4gTrkXwYKySQ6oCbMzgd2nA4Qk3p99aJz0
-         2veoeZ/hYF1I1m9dto0oyeSoqWFm5Nj4PF/tmVGxfVREsyZJ2JSdtWfHHYr++apCfbuH
-         KHS1vIxW1g55Y+ARQnDSJ7GIijA2LKokEG7nuMAg/LgmjmtSphP7t4utHDn0Rz7PUwIb
-         gb3g==
-X-Gm-Message-State: AOAM533zt0ByogtdLFvYVG3F6qcKVWsObGKaOxttlA8A3uu4KYR4XMQ0
-        VKQjRqHz48Op84Yml7yJH+CuMZcvzC0nvcDfAD+A6izU82f71A==
-X-Google-Smtp-Source: ABdhPJzmmtgyTQaBfS7rRY2Ew1pDYRTrRHGjAEEWeZnbUpnkC4lag67F/yWbMmdN7dUiDkJ7FiLSj5qxLld/7cITLos=
-X-Received: by 2002:a05:6402:2999:b0:428:bb4d:6cea with SMTP id
- eq25-20020a056402299900b00428bb4d6ceamr958123edb.29.1652184885345; Tue, 10
- May 2022 05:14:45 -0700 (PDT)
+        Tue, 10 May 2022 08:19:21 -0400
+Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8561E2498BC;
+        Tue, 10 May 2022 05:15:24 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id A67173200974;
+        Tue, 10 May 2022 08:15:20 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Tue, 10 May 2022 08:15:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; h=
+        cc:cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm2; t=1652184920; x=
+        1652271320; bh=achtEq3Cjhbongjo3uD3uyw7O+KFl9lQyt1JsKzzN88=; b=r
+        7RvBjWT2rLKDHkgw3b/hLu48nmCJjXdaUeTXT10M4FXaGTH3Q9XaraDGukECmtzr
+        Qr7kHqX+lxkTPYUoJ9qT6j7DJ1BHvih/Goss4lrMs8Gz8VU+vW1/Hgl6ZpegcJME
+        uv4WAbv8RlybSwcNreZtrmh4vs5d78viUhzmzG8ajuEWzNWhORD6GBPqOuhGuDih
+        qszKB4jBSwFP8i6CFjFt7kZ874SLQBqKOzIdTUgH7kFZhNRjd6MbFG/NTa775T6X
+        myRhMQD/7Sxh2f47b1wJw6Vr/ADBALL+35S9A+74Wpyw6vn8lHyRj9dHGMG/fUUo
+        p8mT40ag/ea2Efc0dLlBQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; t=1652184920; x=1652271320; bh=achtEq3Cjhbon
+        gjo3uD3uyw7O+KFl9lQyt1JsKzzN88=; b=zeTgWOxUR22vwa7ctidfg86lI0BDa
+        O500IUA3WuzpV8qXvoh4dxqvdJLKT9FIDtt2q5BIkLq2stngz6zihM0lazY7ORmX
+        bVszK/D6IL6JxA6nyp/DjmitRuZeBshvhkULSc2/19DwYPzDzwieGAcSl7eKSKma
+        xhv6UZsvlEPOLY8Rtd7Kdae3heI7kdwyPLUQOwI8YrB+vczkJ7AgwWJhLsfBpibk
+        G+zLL9d1StKaB3KVQlhgh+/Q3Bp9HtS//1RVL0lGb+HmBMTtDmQm/9MjD3ei8l8p
+        J3Y30Nzy3GP/n6vCPh1bwh4OLm5mUA9cLC6gdN9SySzPbXRw9t6TcE+Ow==
+X-ME-Sender: <xms:V1d6YiGPA2aL9IrydBC-vVK62kv3mMCGZSImj8G4L_lkus_iBphqeg>
+    <xme:V1d6YjWzfXqqX_iJfm1FzP9hw56mS5HH0Or51ixSSPCaJkGkiiOWgLvV0C6AY9qDS
+    fedStZoojYeOYtbk38>
+X-ME-Received: <xmr:V1d6YsJDwzhjkKKQCZdXJp4x7FoEf7n3WljBJAC3xl10WhvPP5bnLzLqSTRMDNM>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrgedugdeghecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefkffggfgfuvfevfhfhjggtgfesthekredttdefjeenucfhrhhomheplfhirgig
+    uhhnucgjrghnghcuoehjihgrgihunhdrhigrnhhgsehflhihghhorghtrdgtohhmqeenuc
+    ggtffrrghtthgvrhhnpeduhfekvedvtdeukeeffefgteelgfeugeeuledttdeijeegieeh
+    vefghefgvdefgeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
+    hrohhmpehjihgrgihunhdrhigrnhhgsehflhihghhorghtrdgtohhm
+X-ME-Proxy: <xmx:V1d6YsGRv5Fivm4p8AY0TK4e2V9KV-AEOpvNF2-LR7nIPfQvPQ1T0g>
+    <xmx:V1d6YoU5tCPDP285gee4ErT-UGcGiIuktU8-LiwgwaRt_WDTFMzsFg>
+    <xmx:V1d6YvOX7Pz8prr9gr1r0H2NE0cB0y5DfPqJY3xV8MezUo-X8Jog-g>
+    <xmx:WFd6YmwH4J7ecfXEDHLs4jLBcikDzBX43G6sR7NDyvLnfcnkJatWVw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 10 May 2022 08:15:18 -0400 (EDT)
+Message-ID: <21bb46ea-6a36-b426-2ca9-4471af5879a1@flygoat.com>
+Date:   Tue, 10 May 2022 13:15:17 +0100
 MIME-Version: 1.0
-References: <20220510105222.1352180-1-chi.minghao@zte.com.cn>
-In-Reply-To: <20220510105222.1352180-1-chi.minghao@zte.com.cn>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 10 May 2022 14:14:08 +0200
-Message-ID: <CAHp75VfzbWAS6phV3eB7ehe50NrXitkuS54sYjdVK-OqqYVieA@mail.gmail.com>
-Subject: Re: [PATCH] toshiba_acpi: use kobj_to_dev()
-To:     cgel.zte@gmail.com
-Cc:     Azael Avalos <coproscefalo@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Platform Driver <platform-driver-x86@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH] irqchip/loongson-liointc: 4 cores correspond to different
+ interrupt status registers
+Content-Language: en-GB
+To:     Haoran Jiang <jianghaoran@kylinos.cn>, chenhuacai@kernel.org
+Cc:     tglx@linutronix.de, maz@kernel.org, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220510055303.1907165-1-jianghaoran@kylinos.cn>
+From:   Jiaxun Yang <jiaxun.yang@flygoat.com>
+In-Reply-To: <20220510055303.1907165-1-jianghaoran@kylinos.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 1:58 PM <cgel.zte@gmail.com> wrote:
+
+
+在 2022/5/10 6:53, Haoran Jiang 写道:
+> According to the loongson cpu manual,different cpu cores
+> correspond to different interrupt status registers
+NAK!
+
+It is intentional to do so.
+
+The per-core ISR register is broken on 3B1500. So we use general ISR 
+register here.
+The per-core variable is left for LS2K.
+
+Thanks
+- Jiaxun
 >
-> From: Minghao Chi <chi.minghao@zte.com.cn>
+> Signed-off-by: Haoran Jiang <jianghaoran@kylinos.cn>
+> ---
+>   drivers/irqchip/irq-loongson-liointc.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> Use kobj_to_dev() instead of open-coding it.
+> diff --git a/drivers/irqchip/irq-loongson-liointc.c b/drivers/irqchip/irq-loongson-liointc.c
+> index 649c58391618..f4e015b50af0 100644
+> --- a/drivers/irqchip/irq-loongson-liointc.c
+> +++ b/drivers/irqchip/irq-loongson-liointc.c
+> @@ -195,7 +195,7 @@ static int __init liointc_of_init(struct device_node *node,
+>   		}
+>   
+>   		for (i = 0; i < LIOINTC_NUM_CORES; i++)
+> -			priv->core_isr[i] = base + LIOINTC_REG_INTC_STATUS;
+> +			priv->core_isr[i] = base + LIOINTC_REG_INTC_STATUS + i*8;
+>   	}
+>   
+>   	for (i = 0; i < LIOINTC_NUM_PARENT; i++) {
 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-
-Same comment as per your other patch.
-
--- 
-With Best Regards,
-Andy Shevchenko
