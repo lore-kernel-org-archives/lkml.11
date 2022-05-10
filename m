@@ -2,138 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FAF1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:00:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A07EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:00:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346709AbiEJQED (ORCPT
+        id S1346953AbiEJQEI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 12:04:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57454 "EHLO
+        Tue, 10 May 2022 12:04:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347557AbiEJQBs (ORCPT
+        with ESMTP id S1347592AbiEJQBu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 12:01:48 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0641B2A249
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:55:40 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id x18so17120946plg.6
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:55:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=uzcCgVmhU+wESri3om0ZJezhJTbuZg70xEa5Aqfd+Kk=;
-        b=j/4xO85+1iXeH6xPw7ga+S3tLZMTM08tKdS6+/P2WQoPLZQM3bma31auNvCGgMI7Ar
-         XO54JRbZ5BtLRTQg9/0nD+wbZZ/55C/zxqc/YAIJJJTmE7iJm3kNHNbP9yBeloVN8Zry
-         uc/GfhYhqfU6uvbPNHL1W6I3MnTtamWPUcml19joeVb3pcEE9qHUkwkGiymZbtR/EUbw
-         7zM3U6UcRRiqqxkbrNMb0yPIE4AZfU+p+ZP8jTC6T8+mEeCfPiKx59vtN21407Yfg/el
-         O70YHEfHrJATZ8c9AdE6A5yPOFTwxIhhzAxHsq3X0laMczaHf3YHRcMS0o6j/IYotzTh
-         prfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=uzcCgVmhU+wESri3om0ZJezhJTbuZg70xEa5Aqfd+Kk=;
-        b=rqrRN1kbPdkKnKSSz7pUipGFKOR8Qg7bINsrA+rksQ4IsfSFF+hd49/8fmleY8VFbZ
-         8VnYk9p7kowJYJrR17O1MoXlZYe0FC6MS2xM2l+8Yv9tWt0m0CGhYm6DA5+BLeL0B8Yo
-         1i3BRx5I0xbDra8WeH3nTCIDfSnlPj+3lLeo4EA8NP3KF1esXxoiyq59hpgzN9gLfDS5
-         hQloxSXoilBmeKyfcUMDv67qdX7sBJdGNjHn2zvLdbOnFkJvC+4Idm5+ledlSkUH36qr
-         9x0hvuBIcbLop5CRMHhb2gm/C8oJ35AHIjT2s4Fc+07aUWmfdJ+q/eDRSXGHt3TqlJA2
-         KXeA==
-X-Gm-Message-State: AOAM5321LT6USUPsdO0NkNdkr7tHC5IFnXRKBozst7Lqz0clhXLuzUQO
-        /e+fZa6uwfSRrsM0qrHBFAB5eA==
-X-Google-Smtp-Source: ABdhPJzDPZtZKtrakyoFjvKdG06+B3/wtrOXa/yfusBAvuf8/HUplk+3U/L9l/GLUCHmXlz3bAN82w==
-X-Received: by 2002:a17:90b:1e04:b0:1dc:9252:efbc with SMTP id pg4-20020a17090b1e0400b001dc9252efbcmr621215pjb.39.1652198139513;
-        Tue, 10 May 2022 08:55:39 -0700 (PDT)
-Received: from localhost ([139.177.225.234])
-        by smtp.gmail.com with ESMTPSA id x62-20020a623141000000b0050dc762819fsm10934700pfx.121.2022.05.10.08.55.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 08:55:39 -0700 (PDT)
-Date:   Tue, 10 May 2022 23:55:36 +0800
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     Baolin Wang <baolin.wang@linux.alibaba.com>
-Cc:     catalin.marinas@arm.com, will@kernel.org, mike.kravetz@oracle.com,
-        akpm@linux-foundation.org, willy@infradead.org,
-        anshuman.khandual@arm.com, christophe.leroy@csgroup.eu,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [PATCH 1/2] arm64/hugetlb: Use ptep_get() to get the pte value
- of a huge page
-Message-ID: <YnqK+Hah0wzMvT1p@FVFYT0MHHV2J.usts.net>
-References: <cover.1652180088.git.baolin.wang@linux.alibaba.com>
- <6aabddaf4cae5ae2205c3a7df9b9e15dbd61b641.1652180088.git.baolin.wang@linux.alibaba.com>
+        Tue, 10 May 2022 12:01:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C161C580E2
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:55:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 60E5CB81DB5
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 15:55:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04B99C385C2;
+        Tue, 10 May 2022 15:55:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652198154;
+        bh=eDC3cwakUOMwoxGXClABJcgAE7WUGToWsV0/PUUq8m4=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=GFNqjuLYwC3csX7gEbjwy54bYIq94tGU7O/8RHCZVdS/bNiRdpAXQGO1zQHQdAF8r
+         uSrmjq0im1ImqaHNSV3A8bi6XGOSNO4sv71IIgY4QiHV+xkgYj3ZZIg/pekeZKmQln
+         TjNYdis8DbTNrRju16oKfV76o69ARH2cFztGVyFeELlQFX/ufxIM3z0WppbSFS31ea
+         MQd1nvnv99oT+akrHNj42quOAef46epuDjdwGGfdAExiGaVVB18KHEgVCUd5munuxp
+         jxdIhuQJAYwPRZwTfhsp/nwPnOdZofvRiy9HilOhwcyH31fBDn+0jp4ZdrJg2NeaK4
+         YMXMWwAnwSEFg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 9CA605C0602; Tue, 10 May 2022 08:55:53 -0700 (PDT)
+Date:   Tue, 10 May 2022 08:55:53 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>, jolsa@redhat.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: Folllowing up on LSF/MM RCU/idle discussion
+Message-ID: <20220510155553.GU1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220509155633.GA93071@paulmck-ThinkPad-P17-Gen-1>
+ <20220510065457.GI76023@worktop.programming.kicks-ass.net>
+ <Ynoz13QUEAA2en0f@FVFF77S0Q05N>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <6aabddaf4cae5ae2205c3a7df9b9e15dbd61b641.1652180088.git.baolin.wang@linux.alibaba.com>
+In-Reply-To: <Ynoz13QUEAA2en0f@FVFF77S0Q05N>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 07:12:52PM +0800, Baolin Wang wrote:
-> The original huge_ptep_get() on ARM64 is just a wrapper of ptep_get(),
-> which will not take into account any contig-PTEs dirty and access bits.
-> Meanwhile we will implement a new ARM64-specific huge_ptep_get()
-> interface in following patch, which will take into account any contig-PTEs
-> dirty and access bits and only be allowed to pass the head pte of
-> a contig-PTE/PMD size page.
-
-IIUC, the huge_ptep_get() you have implemented in patch 2 could
-handle non-head pte. It'll return the original pte without potential
-AD bit. I admit it is more efficeent to use ptep_get() directly,
-but the judgement here should be updated.
-
-With this update.
-
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
-
-Thanks.
- 
-> Thus change to use ptep_get() to get the pte value of a huge page as
-> a preparation.
+On Tue, May 10, 2022 at 10:43:51AM +0100, Mark Rutland wrote:
+> On Tue, May 10, 2022 at 08:54:57AM +0200, Peter Zijlstra wrote:
+> > On Mon, May 09, 2022 at 08:56:33AM -0700, Paul E. McKenney wrote:
+> > > Hello, Jiri!
+> > > 
+> > > It was good chatting with you last week, and I hope that travels went
+> > > well!
+> > > 
+> > > Just wanted to follow up on the non-noinstr code between the call
+> > > to rcu_idle_enter() and rcu_idle_exit().  Although the most correct
+> > > approach is to never have non-noinstr code in arch_cpu_idle(), for all I
+> > > know there might well be architectures for which this is not feasible.
+> > > If so, one workaround would be to supply a flag set by each arch (or
+> > > subarch) that says that rcu_idle_enter() and rcu_idle_exit() are invoked
+> > > within arch_cpu_idle().
+> > > 
+> > > CCing Peter, who just might have an opinion on this.  ;-)
+> > 
+> > Definitely have an opinion; just lack the tools to enforce these rules.
+> > I cleaned up the worst of it for x86 but it's a shit-show for most
+> > others. ARM in particular has some 'issues'.
 > 
-> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-> ---
->  arch/arm64/mm/hugetlbpage.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
+> Probably worth pointing out that arch_cpu_idle() is the simple case (and I
+> fixed that for arm64 to be correct for RCU and noinstr). I think the same
+> applies for most architectures.
 > 
-> diff --git a/arch/arm64/mm/hugetlbpage.c b/arch/arm64/mm/hugetlbpage.c
-> index ca8e65c..be5e2f3 100644
-> --- a/arch/arm64/mm/hugetlbpage.c
-> +++ b/arch/arm64/mm/hugetlbpage.c
-> @@ -172,7 +172,7 @@ static pte_t get_clear_flush(struct mm_struct *mm,
->  			     unsigned long pgsize,
->  			     unsigned long ncontig)
->  {
-> -	pte_t orig_pte = huge_ptep_get(ptep);
-> +	pte_t orig_pte = ptep_get(ptep);
->  	bool valid = pte_valid(orig_pte);
->  	unsigned long i, saddr = addr;
->  
-> @@ -385,7 +385,7 @@ pte_t huge_ptep_get_and_clear(struct mm_struct *mm,
->  {
->  	int ncontig;
->  	size_t pgsize;
-> -	pte_t orig_pte = huge_ptep_get(ptep);
-> +	pte_t orig_pte = ptep_get(ptep);
->  
->  	if (!pte_cont(orig_pte))
->  		return ptep_get_and_clear(mm, addr, ptep);
-> @@ -408,11 +408,11 @@ static int __cont_access_flags_changed(pte_t *ptep, pte_t pte, int ncontig)
->  {
->  	int i;
->  
-> -	if (pte_write(pte) != pte_write(huge_ptep_get(ptep)))
-> +	if (pte_write(pte) != pte_write(ptep_get(ptep)))
->  		return 1;
->  
->  	for (i = 0; i < ncontig; i++) {
-> -		pte_t orig_pte = huge_ptep_get(ptep + i);
-> +		pte_t orig_pte = ptep_get(ptep + i);
->  
->  		if (pte_dirty(pte) != pte_dirty(orig_pte))
->  			return 1;
-> -- 
-> 1.8.3.1
+> The real beast is the cpuidle framework, which is what I think you're referring
+> to below, and IIRC that does the rcu_idle_enter() ... rcu_idle_exit() itself?
+> Maybe that was just for suspend.
 > 
+> I have no strong feeling about where we call rcu_idle_{enter,exit}() for
+> arch_cpu_idle() specifically, but I think that case is generally simple enough
+> that it doesn't really matter?
 > 
+> For the cpuidle framework, punting this into the driver such that it can be
+> done at the last possible moment around entry/exit to a HW idle state does feel
+> like it's going to be more robust, even if that means altering all those
+> drivers.
+
+There does seem to be some ability to select where the rcu_idle_enter()
+and rcu_idle_exit() are executed using CPUIDLE_FLAG_RCU_IDLE.
+So depending on exactly which configuration Jiri is running, maybe there
+is already a straightforward fix.
+
+However, default_idle_call() invokes rcu_idle_enter() and rcu_idle_exit()
+unconditionally, perhaps because it is not considered to be part of
+cpuidle.
+
+							Thanx, Paul
+
+> Thanks,
+> Mark.
+> 
+> > But yeah, noinstr only when you do rcu_idle_enter.
+> > 
+> > The problem with validating all this is that cpuidle is a rats nest of
+> > indirect calls; in order to validate the noinstr'ness of something like
+> > that we need compiler support for pointer address spaces such that we
+> > can stick pointers to noinstr functions in a different address space and
+> > get complaints etc..
