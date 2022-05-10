@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71A65C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:19:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 662CDC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:19:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244999AbiEJOW4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:22:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52476 "EHLO
+        id S245019AbiEJOXC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:23:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244958AbiEJNrJ (ORCPT
+        with ESMTP id S244656AbiEJNqy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:47:09 -0400
+        Tue, 10 May 2022 09:46:54 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F2752317D7;
-        Tue, 10 May 2022 06:33:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B336F16ABE2;
+        Tue, 10 May 2022 06:31:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A314E615C8;
-        Tue, 10 May 2022 13:33:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A2CFC385A6;
-        Tue, 10 May 2022 13:32:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5EFFC6188A;
+        Tue, 10 May 2022 13:31:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E269C385C6;
+        Tue, 10 May 2022 13:31:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189580;
-        bh=qotNt6/xEPZX16CKagFcCW/pd3anehroTyUMB8vdWR0=;
+        s=korg; t=1652189507;
+        bh=SPKHJzcgJ56VPE5cKV3jdHlDmRXxnFUXxwWYSwBiLF0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L0V7Up6+YARDe1ULmVCkJ5+K4EHqaZHHo1WtkaNmipkKcqGBCw4IHYhHefs8stBtb
-         IBYniSuwAckqcuJrWtPkLwRhir/9XYkiznL2Hgn9gL0Cw++xmoXWC84sIo9j2wDtYv
-         OLiridm3I7gT13iFEuBUdbWVw02+0+eQeVWqZ4Kg=
+        b=Lk7fScRz7OLQIMOFiljw+WqAZ/nH4ZdxumD+KaIptsX4nup497HKAjZROtMDPj8y6
+         pNFLWLsvoD0U1GgvQRu/AYvom+HB9a5dJVURNmLZLsUO3X1UOHPCiKqEoFQxZQPJ24
+         i6Z2wp7INUs8XbwCRF7maLi+vLjaTaos4SmoBH24=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chao Gao <chao.gao@intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 097/135] KVM: x86: Do not change ICR on write to APIC_SELF_IPI
-Date:   Tue, 10 May 2022 15:07:59 +0200
-Message-Id: <20220510130743.191446128@linuxfoundation.org>
+        stable@vger.kernel.org, Qiao Ma <mqaio@linux.alibaba.com>,
+        Xunlei Pang <xlpang@linux.alibaba.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 072/135] hinic: fix bug of wq out of bound access
+Date:   Tue, 10 May 2022 15:07:34 +0200
+Message-Id: <20220510130742.478072326@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -50,43 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Bonzini <pbonzini@redhat.com>
+From: Qiao Ma <mqaio@linux.alibaba.com>
 
-[ Upstream commit d22a81b304a27fca6124174a8e842e826c193466 ]
+commit 52b2abef450a78e25d485ac61e32f4ce86a87701 upstream.
 
-Emulating writes to SELF_IPI with a write to ICR has an unwanted side effect:
-the value of ICR in vAPIC page gets changed.  The lists SELF_IPI as write-only,
-with no associated MMIO offset, so any write should have no visible side
-effect in the vAPIC page.
+If wq has only one page, we need to check wqe rolling over page by
+compare end_idx and curr_idx, and then copy wqe to shadow wqe to
+avoid out of bound access.
+This work has been done in hinic_get_wqe, but missed for hinic_read_wqe.
+This patch fixes it, and removes unnecessary MASKED_WQE_IDX().
 
-Reported-by: Chao Gao <chao.gao@intel.com>
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 7dd29ee12865 ("hinic: add sriov feature support")
+Signed-off-by: Qiao Ma <mqaio@linux.alibaba.com>
+Reviewed-by: Xunlei Pang <xlpang@linux.alibaba.com>
+Link: https://lore.kernel.org/r/282817b0e1ae2e28fdf3ed8271a04e77f57bf42e.1651148587.git.mqaio@linux.alibaba.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/lapic.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-index 4d92fb4fdf69..83d1743a1dd0 100644
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -2125,10 +2125,9 @@ int kvm_lapic_reg_write(struct kvm_lapic *apic, u32 reg, u32 val)
- 		break;
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c
+@@ -772,7 +772,7 @@ struct hinic_hw_wqe *hinic_get_wqe(struc
+ 	/* If we only have one page, still need to get shadown wqe when
+ 	 * wqe rolling-over page
+ 	 */
+-	if (curr_pg != end_pg || MASKED_WQE_IDX(wq, end_prod_idx) < *prod_idx) {
++	if (curr_pg != end_pg || end_prod_idx < *prod_idx) {
+ 		void *shadow_addr = &wq->shadow_wqe[curr_pg * wq->max_wqe_size];
  
- 	case APIC_SELF_IPI:
--		if (apic_x2apic_mode(apic)) {
--			kvm_lapic_reg_write(apic, APIC_ICR,
--					    APIC_DEST_SELF | (val & APIC_VECTOR_MASK));
--		} else
-+		if (apic_x2apic_mode(apic))
-+			kvm_apic_send_ipi(apic, APIC_DEST_SELF | (val & APIC_VECTOR_MASK), 0);
-+		else
- 			ret = 1;
- 		break;
- 	default:
--- 
-2.35.1
-
+ 		copy_wqe_to_shadow(wq, shadow_addr, num_wqebbs, *prod_idx);
+@@ -842,7 +842,10 @@ struct hinic_hw_wqe *hinic_read_wqe(stru
+ 
+ 	*cons_idx = curr_cons_idx;
+ 
+-	if (curr_pg != end_pg) {
++	/* If we only have one page, still need to get shadown wqe when
++	 * wqe rolling-over page
++	 */
++	if (curr_pg != end_pg || end_cons_idx < curr_cons_idx) {
+ 		void *shadow_addr = &wq->shadow_wqe[curr_pg * wq->max_wqe_size];
+ 
+ 		copy_wqe_to_shadow(wq, shadow_addr, num_wqebbs, *cons_idx);
 
 
