@@ -2,139 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BDB2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 05:53:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9963C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 05:54:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232850AbiEJF5G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 01:57:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33170 "EHLO
+        id S236888AbiEJF6Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 01:58:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233119AbiEJF5C (ORCPT
+        with ESMTP id S233186AbiEJF5s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 01:57:02 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2D6C119227
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 22:53:04 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id j6so14056249pfe.13
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 22:53:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:to:cc:references
-         :from:in-reply-to:content-transfer-encoding;
-        bh=hFPZlOrD/A5L9itirMqY09jIldfwhWlMFZ4kJKsxVqI=;
-        b=8VkXDXhovv95HK+Lp425GS8WIyMwtuBDJ+VdAgoNHyV0gKw4uSSV+n6SQ911T2Lwjq
-         v+kAkSwuVo/yFISElEEM4BLaVA8gahkAsfSm/Douq1zdhCnZ/HYvXaoDdbITN9phcREs
-         FbjsH4vIX0Hzp8FsQoE3UoHsckt00UnMA+R05y/zdOXNcfKtAyKG5BLnizlzvXi0NlMu
-         S9dx/TgBeLbJjnc9Ql6dBI7qQRvKmAjSNx0glxly1PzZer2lkouxXcOvAQVshiPCuHWa
-         mSIJGc6B/zZFKh2RlZu/5UAxGPdFWhCbXOSYXf/L5x7AYNsLQg3BObhWT6IdMUZR2TWi
-         ii9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :to:cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=hFPZlOrD/A5L9itirMqY09jIldfwhWlMFZ4kJKsxVqI=;
-        b=NQVnuUohI8U+BOWDFsZS+U+pdH0Z5nA51AbDNqYCfiaqva7MfI5bzUDHW6g09E1IOo
-         vprtxTKZ6NU469rxj+YXlhPrCjMtklh2vrc/goMZwDyNG7tBCkimrOmpKcFizbGZIUnh
-         h7/kWADnoMAHHK3qSPKsskM80m9Bhc3a1wLowa5eGllwXvOeqB84qcdWJWK+y9tbXYnY
-         oADhN4+M8z5eYctYEWhxlmOF/kgxcjv78yVWahcNqXswqF0lybA0PrtzQvFtWaz0TpQo
-         D5SVAk+G4adgDZ+xjyOpAmv8/cna1AR+w+UdA9L3eEOljsFR2SeYG/uJuy57AvItOk/1
-         2KXw==
-X-Gm-Message-State: AOAM533TRbQAktMfC/A98bxbNQuOxawzc9cwapfp1LqxW79E9ufsL9q8
-        TXn4FIVhZhMjQA02Q6rhI2LXxA==
-X-Google-Smtp-Source: ABdhPJwleNG9ZC/Ct3KgCrLH5h08X2vnPz/6kODQpudSZUdjtVYZupevJjEuqDQeUvUfKRcdm7Woog==
-X-Received: by 2002:a63:1a01:0:b0:3c2:1974:1686 with SMTP id a1-20020a631a01000000b003c219741686mr15736997pga.595.1652161984312;
-        Mon, 09 May 2022 22:53:04 -0700 (PDT)
-Received: from [10.86.119.184] ([139.177.225.231])
-        by smtp.gmail.com with ESMTPSA id h27-20020a056a00001b00b0050dc76281d7sm9960882pfk.177.2022.05.09.22.52.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 22:53:03 -0700 (PDT)
-Message-ID: <e003aa4e-0837-b819-390e-72da65e50c67@bytedance.com>
-Date:   Tue, 10 May 2022 13:52:52 +0800
+        Tue, 10 May 2022 01:57:48 -0400
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BBC5224A6D;
+        Mon,  9 May 2022 22:53:49 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id CBB235C006F;
+        Tue, 10 May 2022 01:53:45 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Tue, 10 May 2022 01:53:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        joshtriplett.org; h=cc:cc:content-transfer-encoding:content-type
+        :date:date:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to;
+         s=fm3; t=1652162025; x=1652248425; bh=UqqeRMS++PzTUoENYIQlHrxmX
+        YanHi9usrhTSkqWRBY=; b=Fu5cIkJEtzgBvV4/XqoZGzxI90Syy2eSStFQG1Bmq
+        Qzq44qis4oBKK2+44MGfoT6zBG6iuJojCb9ybGYa/X0Fd7wSElE4XRd10wKPRs7e
+        hgcvXNoNSmtzgJKAfbBtMElDOT90E7i8ZaxIBTB0BJ1p1OxaWTGpWnyoXfWfdoig
+        v5JwOom18HqfihBQaBs07kKWXJsqznNkms+5qGr7lnnjt0Rv4WKqZY1ALCPE3qI/
+        yGXKoUuwtYgsNnGnUAMtKLOleMEPe5UeKpffnO6dIWL591ktA3+OlrdTuJhZXp0m
+        k+3mPuIPvMCyuv1IQYUQVqTlz2httcefLpnfpFxWDGPcQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; t=1652162025; x=1652248425; bh=UqqeRMS++PzTU
+        oENYIQlHrxmXYanHi9usrhTSkqWRBY=; b=UNhVoXCIlaYSssxxJzv6+gTP356lr
+        Csm5VdK7uurne8gjADzemSPIgvtaCwsX1FnCjOEp9wJJ01+pvQTyzw6swj9hBm5e
+        cy5Wag2OIi7CDRmQiZloVmbYMGYbyGI4ybtqBdLjiw7P52vN2ceC4IIoNfEox06K
+        AhtG2y/AP8xJ5eceuv8OMO5mXYknc5JH/reD5GY/jIbO6SXIChJNM4hnszow95Mu
+        A3es01Y1zA/qbaWa+fJ3s7YGEp8fsRi6u0PRpyQE13rLgKNQchtx8P51KqXV+mfc
+        n01FF91bK6IShsyjj6LUjWwc9svBLo7MoM7Vao+pwMnW47TmZyS9aZDNw==
+X-ME-Sender: <xms:6P15YkrgxmXL_bXGwWaviRm6XMrjlcrEGve3UktMb3qDyOWmAUlQQA>
+    <xme:6P15YqoXXjsH1mhaSUmAo7NmhlzgdAZdWW6iTxC68WM-y23AT6nuBQxIN87lVOYC0
+    o26TOUlt7PVw-D5QP8>
+X-ME-Received: <xmr:6P15YpMnawRru0JeWelMLekRPpbjZr4ov6wddhSKU6xp3Qq0HZi6f7hdVP4>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrgedtgddutddvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggugfgjsehtkeertddttdejnecuhfhrohhmpeflohhs
+    hhcuvfhrihhplhgvthhtuceojhhoshhhsehjohhshhhtrhhiphhlvghtthdrohhrgheqne
+    cuggftrfgrthhtvghrnhepgeeihfevvdeklefggfejjeeugfduudeggffhjeehkeegheel
+    tddujeffjeekheefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilh
+    hfrhhomhepjhhoshhhsehjohhshhhtrhhiphhlvghtthdrohhrgh
+X-ME-Proxy: <xmx:6P15Yr5XlWFiPj7CElVzyH11o3VZ_PStgxAdue3cQ9JFb6bMNDIQBg>
+    <xmx:6P15Yj7U1pxqEu9m3udW9TVyeeMicQbdOEYiPoTkPJHdB-P4BtAR-A>
+    <xmx:6P15YriuNrhSSJ4-FJxKRUHsGVzrMhlxgebD2OHXvogbusUlZ4rP8w>
+    <xmx:6f15YjpPFIJVuv2qe1NIoT3pZ-4kd4TVf1sNI3LTismj8jORQoLtJg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 10 May 2022 01:53:42 -0400 (EDT)
+Date:   Mon, 9 May 2022 22:53:41 -0700
+From:   Josh Triplett <josh@joshtriplett.org>
+To:     Gaelan Steele <gbs@canishe.com>
+Cc:     Jonathan Corbet <corbet@lwn.net>, Miguel Ojeda <ojeda@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Finn Behrens <me@kloenk.de>,
+        Adam Bratschi-Kaye <ark.email@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sven Van Asbroeck <thesven73@gmail.com>,
+        Wu XiangCheng <bobwxc@email.cn>, Gary Guo <gary@garyguo.net>,
+        Boris-Chengbiao Zhou <bobo1239@web.de>,
+        Yuki Okushi <jtitor@2k36.org>, Wei Liu <wei.liu@kernel.org>,
+        Daniel Xu <dxu@dxuuu.xyz>, Julian Merkle <me@jvmerkle.de>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-doc@vger.kernel.org, linux-kbuild@vger.kernel.org
+Subject: Re: [PATCH v6 18/23] docs: add Rust documentation
+Message-ID: <Ynn95Sv91TzD4HdT@localhost>
+References: <20220507052451.12890-1-ojeda@kernel.org>
+ <20220507052451.12890-19-ojeda@kernel.org>
+ <875ymecp6f.fsf@meer.lwn.net>
+ <0716311E-FD5A-489A-A17D-C427C1A0EE4E@canishe.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.3.2
-Subject: Re: [External] Re: [PATCH bpf-next] bpf: add
- bpf_map_lookup_percpu_elem for percpu map
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Yosry Ahmed <yosryahmed@google.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joanne Koong <joannekoong@fb.com>,
-        Geliang Tang <geliang.tang@suse.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Xiongchun Duan <duanxiongchun@bytedance.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Dongdong Wang <wangdongdong.6@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Chengming Zhou <zhouchengming@bytedance.com>
-References: <20220507024840.42662-1-zhoufeng.zf@bytedance.com>
- <CAEf4BzZD5q2j229_gL_nDFse2v=k2Ea0nfguH+sOA2O1Nm5sQw@mail.gmail.com>
- <CAJD7tkbd8qA-4goUCVW6Tf0xGpj2OSBXncpWhrWFn5y010oBMw@mail.gmail.com>
- <d20aef2a-273a-3183-0923-bde9657d4418@bytedance.com>
- <CAADnVQL+Vq5y47J++VCppti1728w3U0maxg9d4SqAtArY+h1yg@mail.gmail.com>
-From:   Feng Zhou <zhoufeng.zf@bytedance.com>
-In-Reply-To: <CAADnVQL+Vq5y47J++VCppti1728w3U0maxg9d4SqAtArY+h1yg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <0716311E-FD5A-489A-A17D-C427C1A0EE4E@canishe.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-在 2022/5/10 上午11:15, Alexei Starovoitov 写道:
-> On Mon, May 9, 2022 at 7:41 PM Feng Zhou <zhoufeng.zf@bytedance.com> wrote:
->> 在 2022/5/10 上午9:04, Yosry Ahmed 写道:
->>> On Mon, May 9, 2022 at 5:34 PM Andrii Nakryiko
->>> <andrii.nakryiko@gmail.com> wrote:
->>>> On Fri, May 6, 2022 at 7:49 PM Feng zhou <zhoufeng.zf@bytedance.com> wrote:
->>>>> From: Feng Zhou <zhoufeng.zf@bytedance.com>
->>>>>
->>>>> Trace some functions, such as enqueue_task_fair, need to access the
->>>>> corresponding cpu, not the current cpu, and bpf_map_lookup_elem percpu map
->>>>> cannot do it. So add bpf_map_lookup_percpu_elem to accomplish it for
->>>>> percpu_array_map, percpu_hash_map, lru_percpu_hash_map.
->>>>>
->>>>> The implementation method is relatively simple, refer to the implementation
->>>>> method of map_lookup_elem of percpu map, increase the parameters of cpu, and
->>>>> obtain it according to the specified cpu.
->>>>>
->>>> I don't think it's safe in general to access per-cpu data from another
->>>> CPU. I'd suggest just having either a ARRAY_OF_MAPS or adding CPU ID
->>>> as part of the key, if you need such a custom access pattern.
->>> I actually just sent an RFC patch series containing a similar patch
->>> for the exact same purpose. There are instances in the kernel where
->>> per-cpu data is accessed from other cpus (e.g.
->>> mem_cgroup_css_rstat_flush()). I believe, like any other variable,
->>> percpu data can be safe or not safe to access, based on the access
->>> pattern. It is up to the user to coordinate accesses to the variable.
->>>
->>> For example, in my use case, one of the accessors only reads percpu
->>> values of different cpus, so it should be safe. If a user accesses
->>> percpu data of another cpu without guaranteeing safety, they corrupt
->>> their own data. I understand that the main purpose of percpu data is
->>> lockless (and therefore fast) access, but in some use cases the user
->>> may be able to safely (and locklessly) access the data concurrently.
->>>
->> Regarding data security, I think users need to consider before using it,
->> such
->> as hook enqueue_task_fair, the function itself takes the rq lock of the
->> corresponding cpu, there is no problem, and the kernel only provides a
->> method,
->> like bpf_per_cpu_ptr and bpf_this_cpu_ptr, data security needs to be
->> guaranteed
->> by users in different scenarios, such as using bpf_spin_lock.
-> Right. The new helper looks useful and is safe.
-> Please add a selftest and respin.
+On Mon, May 09, 2022 at 08:14:54PM -0700, Gaelan Steele wrote:
+> 
+> 
+> > On May 9, 2022, at 3:32 PM, Jonathan Corbet <corbet@lwn.net> wrote:
+> > 
+> >> +It is convenient to instruct editors/IDEs to format while typing,
+> >> +when saving or at commit time. However, if for some reason reformatting
+> >> +the entire kernel Rust sources is needed at some point, the following can be
+> >> +run::
+> >> +
+> >> +	make LLVM=1 rustfmt
+> > 
+> > I will ask whether we want this, though. Why would anybody want to
+> > mass-reformat the entire body of kernel code? This seems like something
+> > that would generate an endless stream of "helpful" patches and a lot of
+> > churn.
+> 
+> That would only happen if the code diverged from rustfmt’s output in the
+> first place. Generally, in Rust projects, the source tree is always kept
+> formatted with rustfmt - so running `make LLVM=1 rustfmt` would only
+> ever touch code that you’d just changed. 
 
-
-Ok, will do. Thanks.
-
-
+Exactly. This is convenient for the same reason doing a project-wide
+`cargo fmt` is useful in Rust projects: you can do all your editing,
+then format your code before committing.
