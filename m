@@ -2,195 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E1FCC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:45:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 849BFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:45:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240445AbiEJLt0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 07:49:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48574 "EHLO
+        id S241205AbiEJLte (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 07:49:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229513AbiEJLtU (ORCPT
+        with ESMTP id S241196AbiEJLta (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 07:49:20 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15E01250E8A
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 04:45:23 -0700 (PDT)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24A9rflE020277;
-        Tue, 10 May 2022 11:44:34 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : in-reply-to : references : date : message-id : mime-version :
- content-type; s=pp1; bh=ReniqVyCnhJn7wI9OZvI2+w7Me/H8Qb7gm1e+jK9Hlo=;
- b=Kmx3bh/+xyjstY2E8FGwTU/p4WO9QDy5vvpqJhTl1eRlKUJ8GvBrjUi1YdyzoH3UziBs
- b8U13IQilJ3KEl3A9wsQdpeusz+1gqxsUArSAwoJ0wPqd9LpYUgVDPQ4O0cRHCO5WiIQ
- RbR75SWQwCx5TdyxX0329nxntt1Vkeu6/Y9Qm2Z5b8YAP8785U/FxE8u72zvxuY/GFuv
- wb5a1SVc6/iwhL3YMlWj5zzKWeKhOtjAn1VYswxSgLkXQzpPwdQbKuHQ8wTOPDGqnCus
- ptLUrmhxcbk3aB/JnTmst6+wEF0WU6cyovZ9MlEI6gi1EgBWnUtcbisM1L8vioFVVpXb zg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fyntr21ah-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 10 May 2022 11:44:34 +0000
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24ABaG86024772;
-        Tue, 10 May 2022 11:44:33 GMT
-Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fyntr21a8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 10 May 2022 11:44:33 +0000
-Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
-        by ppma01wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24ABd2YG021735;
-        Tue, 10 May 2022 11:44:32 GMT
-Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
-        by ppma01wdc.us.ibm.com with ESMTP id 3fwgd94p4n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 10 May 2022 11:44:32 +0000
-Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
-        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24ABiVMI43123122
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 10 May 2022 11:44:32 GMT
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D62B311206F;
-        Tue, 10 May 2022 11:44:31 +0000 (GMT)
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E46E611206E;
-        Tue, 10 May 2022 11:44:25 +0000 (GMT)
-Received: from skywalker.linux.ibm.com (unknown [9.43.24.223])
-        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
-        Tue, 10 May 2022 11:44:25 +0000 (GMT)
-X-Mailer: emacs 29.0.50 (via feedmail 11-beta-1 I)
-From:   "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-To:     Wei Xu <weixugc@google.com>,
-        Hesham Almatary <hesham.almatary@huawei.com>
-Cc:     Yang Shi <shy828301@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Huang Ying <ying.huang@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Linux MM <linux-mm@kvack.org>,
-        Greg Thelen <gthelen@google.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Alistair Popple <apopple@nvidia.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Michal Hocko <mhocko@kernel.org>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Tim Chen <tim.c.chen@linux.intel.com>
-Subject: Re: RFC: Memory Tiering Kernel Interfaces
-In-Reply-To: <CAAPL-u-2njgxtfSsRe8LM14W-k982hEObg6y+rYWmK-G=X4f9g@mail.gmail.com>
-References: <CAAPL-u9sVx94ACSuCVN8V0tKp+AMxiY89cro0japtyB=xNfNBw@mail.gmail.com>
- <CAHbLzkq1YXXLMiREpGnzhJjPssu4WpSsnkTmrLJ=hAEhZVUr9w@mail.gmail.com>
- <CAAPL-u-r2Pc_MaHQmKKNH_icAa_fH1COWb5qSPpr8xffREQ_cQ@mail.gmail.com>
- <CAHbLzkrit3SDQUWPQ_RtTO_xFqxoqR9LpY=72afERapUgkjxZg@mail.gmail.com>
- <1642ab64-7957-e1e6-71c5-ceab9c23bf41@huawei.com>
- <CAAPL-u-2njgxtfSsRe8LM14W-k982hEObg6y+rYWmK-G=X4f9g@mail.gmail.com>
-Date:   Tue, 10 May 2022 17:14:23 +0530
-Message-ID: <87czglhaso.fsf@linux.ibm.com>
+        Tue, 10 May 2022 07:49:30 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4AEC25470E
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 04:45:32 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id dk23so32383082ejb.8
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 04:45:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version;
+        bh=7CJgZK/Q3TXpdrc82+EsjW+w5ztoxNGdpsgGltu/dv8=;
+        b=M6Kk70C20E34EyBk6iNsYOcQRG7DQcgLbFdyEulG2ocYzl7J0XnWxHqsZIlR6UUzud
+         OggPoFqx5m1Honn9I0w1BZnKD7rmMc3Tfmd+LacWlFoMg4qkRs2ztQlOjdaifDQKDUFL
+         PLpQc2nzaqrCYxqW7NDsqgcBWA3RhV/Oy2qFI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
+         :in-reply-to:message-id:mime-version;
+        bh=7CJgZK/Q3TXpdrc82+EsjW+w5ztoxNGdpsgGltu/dv8=;
+        b=KiVpL0hjGo7REQ2uieGLgm9WiRNxfK43tlCCUnDJZC0beauYB1yU8kYjlp3VoCsZcN
+         YC88Es027ik5xHmda8m+v5n77xHeilLmyLUMhfS7Hbeq6VSLaif2npdP0bq0mmm74qVr
+         MJRPsv4qzJ5kkJ8y4U9SLzFhNgbqT/DCjCKYgN9DTS1znsCv+A36PwG0eNidsPSjbCVh
+         8wuZcPmCdDZaOKQj1op9ndkY8kroQJiN1nCB3Uj1BOKejQwJm/J6VC127Q9/XwJ5/+x2
+         yrux8qRZpicEZxr+RUhrFA6PvauvF9ei2Y2wqnXmBGfwnwK+ACv66yzeDXzoOIO+fE8y
+         /qrw==
+X-Gm-Message-State: AOAM532deRuibyg4a7sPiTxdB6UJTbS8w5iF/I0Yp7j6ToS3+Fac38A5
+        HouWchpwI+ztiP5X9ihqQ4Hc1A==
+X-Google-Smtp-Source: ABdhPJyLAw11BXqovb/hyRd3O52ps0BA+TwNNEhz5hf8CzWAXREk2pVUIGq9fB6HrslFKPlLwZUkkw==
+X-Received: by 2002:a17:907:6d25:b0:6f4:d753:f250 with SMTP id sa37-20020a1709076d2500b006f4d753f250mr19240326ejc.580.1652183131282;
+        Tue, 10 May 2022 04:45:31 -0700 (PDT)
+Received: from cloudflare.com (79.184.139.106.ipv4.supernova.orange.pl. [79.184.139.106])
+        by smtp.gmail.com with ESMTPSA id n12-20020a1709065e0c00b006f3ef214e0bsm6127841eju.113.2022.05.10.04.45.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 04:45:30 -0700 (PDT)
+References: <20220424154028.1698685-1-xukuohai@huawei.com>
+ <20220424154028.1698685-6-xukuohai@huawei.com>
+User-agent: mu4e 1.6.10; emacs 27.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Xu Kuohai <xukuohai@huawei.com>
+Cc:     bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        hpa@zytor.com, Shuah Khan <shuah@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Daniel Kiss <daniel.kiss@arm.com>,
+        Steven Price <steven.price@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Mark Brown <broonie@kernel.org>,
+        Delyan Kratunov <delyank@fb.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Subject: Re: [PATCH bpf-next v3 5/7] bpf, arm64: Support to poke bpf prog
+Date:   Tue, 10 May 2022 11:36:59 +0200
+In-reply-to: <20220424154028.1698685-6-xukuohai@huawei.com>
+Message-ID: <87ilqdobl1.fsf@cloudflare.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: bek01YQ49-3UB6_ZnGUq1pS4eIW5Itxc
-X-Proofpoint-GUID: AcUw790ebGa3rwHCy75kjNo1vItqIsot
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-10_01,2022-05-10_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
- malwarescore=0 lowpriorityscore=0 priorityscore=1501 suspectscore=0
- bulkscore=0 adultscore=0 mlxscore=0 spamscore=0 phishscore=0
- impostorscore=0 clxscore=1011 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2202240000 definitions=main-2205100052
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Wei Xu <weixugc@google.com> writes:
+Thanks for incorporating the attach to BPF progs bits into the series.
 
-> On Mon, May 9, 2022 at 7:32 AM Hesham Almatary
-> <hesham.almatary@huawei.com> wrote:
->>
+I have a couple minor comments. Please see below.
 
-....
-
-> > nearest lower tier before demoting to lower lower tiers.
->> There might still be simple cases/topologies where we might want to "skip"
->> the very next lower tier. For example, assume we have a 3 tiered memory
->> system as follows:
->>
->> node 0 has a CPU and DDR memory in tier 0, node 1 has GPU and DDR memory
->> in tier 0,
->> node 2 has NVMM memory in tier 1, node 3 has some sort of bigger memory
->> (could be a bigger DDR or something) in tier 2. The distances are as
->> follows:
->>
->> --------------          --------------
->> |   Node 0   |          |   Node 1   |
->> |  -------   |          |  -------   |
->> | |  DDR  |  |          | |  DDR  |  |
->> |  -------   |          |  -------   |
->> |            |          |            |
->> --------------          --------------
->>         | 20               | 120    |
->>         v                  v        |
->> ----------------------------       |
->> | Node 2     PMEM          |       | 100
->> ----------------------------       |
->>         | 100                       |
->>         v                           v
->> --------------------------------------
->> | Node 3    Large mem                |
->> --------------------------------------
->>
->> node distances:
->> node   0    1    2    3
->>     0  10   20   20  120
->>     1  20   10  120  100
->>     2  20  120   10  100
->>     3  120 100  100   10
->>
->> /sys/devices/system/node/memory_tiers
->> 0-1
->> 2
->> 3
->>
->> N_TOPTIER_MEMORY: 0-1
->>
->>
->> In this case, we want to be able to "skip" the demotion path from Node 1
->> to Node 2,
->>
->> and make demotion go directely to Node 3 as it is closer, distance wise.
->> How can
->>
->> we accommodate this scenario (or at least not rule it out as future
->> work) with the current RFC?
+On Sun, Apr 24, 2022 at 11:40 AM -04, Xu Kuohai wrote:
+> 1. Set up the bpf prog entry in the same way as fentry to support
+>    trampoline. Now bpf prog entry looks like this:
 >
-> This is an interesting example.  I think one way to support this is to
-> allow all the lower tier nodes to be the demotion targets of a node in
-> the higher tier.  We can then use the allocation fallback order to
-> select the best demotion target.
+>    bti c        // if BTI enabled
+>    mov x9, x30  // save lr
+>    nop          // to be replaced with jump instruction
+>    paciasp      // if PAC enabled
 >
-> For this example, we will have the demotion targets of each node as:
+> 2. Update bpf_arch_text_poke() to poke bpf prog. If the instruction
+>    to be poked is bpf prog's first instruction, skip to the nop
+>    instruction in the prog entry.
 >
-> node 0: allowed=2-3, order (based on allocation fallback order): 2, 3
-> node 1: allowed=2-3, order (based on allocation fallback order): 3, 2
-> node 2: allowed = 3, order (based on allocation fallback order): 3
-> node 3: allowed = empty
+> Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
+> ---
+>  arch/arm64/net/bpf_jit.h      |  1 +
+>  arch/arm64/net/bpf_jit_comp.c | 41 +++++++++++++++++++++++++++--------
+>  2 files changed, 33 insertions(+), 9 deletions(-)
 >
-> What do you think?
->
+> diff --git a/arch/arm64/net/bpf_jit.h b/arch/arm64/net/bpf_jit.h
+> index 194c95ccc1cf..1c4b0075a3e2 100644
+> --- a/arch/arm64/net/bpf_jit.h
+> +++ b/arch/arm64/net/bpf_jit.h
+> @@ -270,6 +270,7 @@
+>  #define A64_BTI_C  A64_HINT(AARCH64_INSN_HINT_BTIC)
+>  #define A64_BTI_J  A64_HINT(AARCH64_INSN_HINT_BTIJ)
+>  #define A64_BTI_JC A64_HINT(AARCH64_INSN_HINT_BTIJC)
+> +#define A64_NOP    A64_HINT(AARCH64_INSN_HINT_NOP)
+>  
+>  /* DMB */
+>  #define A64_DMB_ISH aarch64_insn_gen_dmb(AARCH64_INSN_MB_ISH)
+> diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
+> index 3f9bdfec54c4..293bdefc5d0c 100644
+> --- a/arch/arm64/net/bpf_jit_comp.c
+> +++ b/arch/arm64/net/bpf_jit_comp.c
+> @@ -237,14 +237,23 @@ static bool is_lsi_offset(int offset, int scale)
+>  	return true;
+>  }
+>  
+> -/* Tail call offset to jump into */
+> -#if IS_ENABLED(CONFIG_ARM64_BTI_KERNEL) || \
+> -	IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL)
+> -#define PROLOGUE_OFFSET 9
+> +#if IS_ENABLED(CONFIG_ARM64_BTI_KERNEL)
+> +#define BTI_INSNS	1
+> +#else
+> +#define BTI_INSNS	0
+> +#endif
+> +
+> +#if IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL)
+> +#define PAC_INSNS	1
+>  #else
+> -#define PROLOGUE_OFFSET 8
+> +#define PAC_INSNS	0
+>  #endif
 
-Can we simplify this further with
+Above can be folded into:
 
-tier 0 - > empty (no HBM/GPU)
-tier 1 ->  Node0, Node1
-tier 2 ->  Node2, Node3
+#define BTI_INSNS (IS_ENABLED(CONFIG_ARM64_BTI_KERNEL) ? 1 : 0)
+#define PAC_INSNS (IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL) ? 1 : 0)
 
-Hence
+>  
+> +/* Tail call offset to jump into */
+> +#define PROLOGUE_OFFSET	(BTI_INSNS + 2 + PAC_INSNS + 8)
+> +/* Offset of nop instruction in bpf prog entry to be poked */
+> +#define POKE_OFFSET	(BTI_INSNS + 1)
+> +
+>  static int build_prologue(struct jit_ctx *ctx, bool ebpf_from_cbpf)
+>  {
+>  	const struct bpf_prog *prog = ctx->prog;
+> @@ -281,12 +290,15 @@ static int build_prologue(struct jit_ctx *ctx, bool ebpf_from_cbpf)
+>  	 *
+>  	 */
+>  
+> +	if (IS_ENABLED(CONFIG_ARM64_BTI_KERNEL))
+> +		emit(A64_BTI_C, ctx);
 
- node 0: allowed=2-3, order (based on allocation fallback order): 2, 3
- node 1: allowed=2-3, order (based on allocation fallback order): 3, 2
- node 2: allowed = empty
- node 3: allowed = empty
+I'm no arm64 expert, but this looks like a fix for BTI.
 
--aneesh
+Currently we never emit BTI because ARM64_BTI_KERNEL depends on
+ARM64_PTR_AUTH_KERNEL, while BTI must be the first instruction for the
+jump target [1]. Am I following correctly?
+
+[1] https://lwn.net/Articles/804982/
+
+> +
+> +	emit(A64_MOV(1, A64_R(9), A64_LR), ctx);
+> +	emit(A64_NOP, ctx);
+> +
+>  	/* Sign lr */
+>  	if (IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL))
+>  		emit(A64_PACIASP, ctx);
+> -	/* BTI landing pad */
+> -	else if (IS_ENABLED(CONFIG_ARM64_BTI_KERNEL))
+> -		emit(A64_BTI_C, ctx);
+>  
+>  	/* Save FP and LR registers to stay align with ARM64 AAPCS */
+>  	emit(A64_PUSH(A64_FP, A64_LR, A64_SP), ctx);
+> @@ -1552,9 +1564,11 @@ int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type poke_type,
+>  	u32 old_insn;
+>  	u32 new_insn;
+>  	u32 replaced;
+> +	unsigned long offset = ~0UL;
+>  	enum aarch64_insn_branch_type branch_type;
+> +	char namebuf[KSYM_NAME_LEN];
+>  
+> -	if (!is_bpf_text_address((long)ip))
+> +	if (!__bpf_address_lookup((unsigned long)ip, NULL, &offset, namebuf))
+>  		/* Only poking bpf text is supported. Since kernel function
+>  		 * entry is set up by ftrace, we reply on ftrace to poke kernel
+>  		 * functions. For kernel funcitons, bpf_arch_text_poke() is only
+> @@ -1565,6 +1579,15 @@ int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type poke_type,
+>  		 */
+>  		return -EINVAL;
+>  
+> +	/* bpf entry */
+> +	if (offset == 0UL)
+> +		/* skip to the nop instruction in bpf prog entry:
+> +		 * bti c	// if BTI enabled
+> +		 * mov x9, x30
+> +		 * nop
+> +		 */
+> +		ip = (u32 *)ip + POKE_OFFSET;
+
+This is very much personal preference, however, I find the use pointer
+arithmetic too clever here. Would go for a more verbose:
+
+        offset = POKE_OFFSET * AARCH64_INSN_SIZE;          
+        ip = (void *)((unsigned long)ip + offset);
+
+> +
+>  	if (poke_type == BPF_MOD_CALL)
+>  		branch_type = AARCH64_INSN_BRANCH_LINK;
+>  	else
+
+I think it'd make more sense to merge this patch with patch 4 (the
+preceding one).
+
+Initial implementation of of bpf_arch_text_poke() from patch 4 is not
+fully functional, as it will always fail for bpf_arch_text_poke(ip,
+BPF_MOD_CALL, ...) calls. At least, I find it a bit confusing.
+
+Otherwise than that:
+
+Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
