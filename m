@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F283CC4707E
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:40:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F0C2C47084
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:40:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244080AbiEJNnN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:43:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50554 "EHLO
+        id S243410AbiEJNoA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:44:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243287AbiEJN3M (ORCPT
+        with ESMTP id S243392AbiEJNao (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:29:12 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C777F4664D;
-        Tue, 10 May 2022 06:21:09 -0700 (PDT)
+        Tue, 10 May 2022 09:30:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A968222B38D;
+        Tue, 10 May 2022 06:21:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5C4B9CE1EA8;
-        Tue, 10 May 2022 13:21:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7568CC385A6;
-        Tue, 10 May 2022 13:21:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2EE96B81B32;
+        Tue, 10 May 2022 13:21:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A071C385A6;
+        Tue, 10 May 2022 13:21:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188861;
-        bh=0w0xQr+Pu/llxYWRbwOnMuOVCGxAkws6yzESbdnf+gk=;
+        s=korg; t=1652188892;
+        bh=gdUdKjW7XpBqC98ng8uSCII3uv6RmKTxh7z3nkYusHc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=of5ANiW1CWbqaIzBaJd1m0qdv8e39gX28djZO4uf3RpeMw1VtSWz8HYwjxv6RkjBD
-         x55u5kvNH6ycZGucOvttL3xhzK4qjso6clohVP2YEMFCF0x5b/GQG4/zodLOKbEQQV
-         eo/AUxNEEydaC7mn35XXSBc58ZwmnIy2C/7JtZzU=
+        b=Kf2OqDRi1ZyNtutywswqP3Y4TRXStAVrVhgq+YppDBvAEXoLL/ZQTvTVV1+kPItgu
+         hEdFbhxnN+JCxrM3KEBFzfWm6lRBfBEWVhpoohx699aMgu1bBCxU6bUA5fXp6UiAm3
+         sX3KlqCF6nw/dlg4pJp/YBXtuYdg8nQOJwNEN0P0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakob Koschel <jakobkoschel@gmail.com>,
+        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
         Takashi Sakamoto <o-takashi@sakamocchi.jp>,
         Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.19 64/88] firewire: remove check of list iterator against head past the loop body
-Date:   Tue, 10 May 2022 15:07:49 +0200
-Message-Id: <20220510130735.599440441@linuxfoundation.org>
+Subject: [PATCH 4.19 65/88] firewire: core: extend card->lock in fw_core_handle_bus_reset
+Date:   Tue, 10 May 2022 15:07:50 +0200
+Message-Id: <20220510130735.627286891@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 References: <20220510130733.735278074@linuxfoundation.org>
@@ -49,140 +49,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakob Koschel <jakobkoschel@gmail.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-commit 9423973869bd4632ffe669f950510c49296656e0 upstream.
+commit a7ecbe92b9243edbe94772f6f2c854e4142a3345 upstream.
 
-When list_for_each_entry() completes the iteration over the whole list
-without breaking the loop, the iterator value will be a bogus pointer
-computed based on the head element.
+card->local_node and card->bm_retries are both always accessed under
+card->lock.
+fw_core_handle_bus_reset has a check whose condition depends on
+card->local_node and whose body writes to card->bm_retries.
+Both of these accesses are not under card->lock. Move the lock acquiring
+of card->lock to before this check such that these accesses do happen
+when card->lock is held.
+fw_destroy_nodes is called inside the check.
+Since fw_destroy_nodes already acquires card->lock inside its function
+body, move this out to the callsites of fw_destroy_nodes.
+Also add a comment to indicate which locking is necessary when calling
+fw_destroy_nodes.
 
-While it is safe to use the pointer to determine if it was computed
-based on the head element, either with list_entry_is_head() or
-&pos->member == head, using the iterator variable after the loop should
-be avoided.
-
-In preparation to limit the scope of a list iterator to the list
-traversal loop, use a dedicated pointer to point to the found element [1].
-
-Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
 Cc: <stable@vger.kernel.org>
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
 Signed-off-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
-Link: https://lore.kernel.org/r/20220409041243.603210-3-o-takashi@sakamocchi.jp
+Link: https://lore.kernel.org/r/20220409041243.603210-4-o-takashi@sakamocchi.jp
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/firewire/core-transaction.c |   30 ++++++++++++++++--------------
- drivers/firewire/sbp2.c             |   13 +++++++------
- 2 files changed, 23 insertions(+), 20 deletions(-)
+ drivers/firewire/core-card.c     |    3 +++
+ drivers/firewire/core-topology.c |    9 +++------
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
---- a/drivers/firewire/core-transaction.c
-+++ b/drivers/firewire/core-transaction.c
-@@ -86,24 +86,25 @@ static int try_cancel_split_timeout(stru
- static int close_transaction(struct fw_transaction *transaction,
- 			     struct fw_card *card, int rcode)
+--- a/drivers/firewire/core-card.c
++++ b/drivers/firewire/core-card.c
+@@ -681,6 +681,7 @@ EXPORT_SYMBOL_GPL(fw_card_release);
+ void fw_core_remove_card(struct fw_card *card)
  {
--	struct fw_transaction *t;
-+	struct fw_transaction *t = NULL, *iter;
+ 	struct fw_card_driver dummy_driver = dummy_driver_template;
++	unsigned long flags;
+ 
+ 	card->driver->update_phy_reg(card, 4,
+ 				     PHY_LINK_ACTIVE | PHY_CONTENDER, 0);
+@@ -695,7 +696,9 @@ void fw_core_remove_card(struct fw_card
+ 	dummy_driver.stop_iso		= card->driver->stop_iso;
+ 	card->driver = &dummy_driver;
+ 
++	spin_lock_irqsave(&card->lock, flags);
+ 	fw_destroy_nodes(card);
++	spin_unlock_irqrestore(&card->lock, flags);
+ 
+ 	/* Wait for all users, especially device workqueue jobs, to finish. */
+ 	fw_card_put(card);
+--- a/drivers/firewire/core-topology.c
++++ b/drivers/firewire/core-topology.c
+@@ -386,16 +386,13 @@ static void report_found_node(struct fw_
+ 	card->bm_retries = 0;
+ }
+ 
++/* Must be called with card->lock held */
+ void fw_destroy_nodes(struct fw_card *card)
+ {
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(&card->lock, flags);
+ 	card->color++;
+ 	if (card->local_node != NULL)
+ 		for_each_fw_node(card, card->local_node, report_lost_node);
+ 	card->local_node = NULL;
+-	spin_unlock_irqrestore(&card->lock, flags);
+ }
+ 
+ static void move_tree(struct fw_node *node0, struct fw_node *node1, int port)
+@@ -521,6 +518,8 @@ void fw_core_handle_bus_reset(struct fw_
+ 	struct fw_node *local_node;
  	unsigned long flags;
  
- 	spin_lock_irqsave(&card->lock, flags);
--	list_for_each_entry(t, &card->transaction_list, link) {
--		if (t == transaction) {
--			if (!try_cancel_split_timeout(t)) {
-+	list_for_each_entry(iter, &card->transaction_list, link) {
-+		if (iter == transaction) {
-+			if (!try_cancel_split_timeout(iter)) {
- 				spin_unlock_irqrestore(&card->lock, flags);
- 				goto timed_out;
- 			}
--			list_del_init(&t->link);
--			card->tlabel_mask &= ~(1ULL << t->tlabel);
-+			list_del_init(&iter->link);
-+			card->tlabel_mask &= ~(1ULL << iter->tlabel);
-+			t = iter;
- 			break;
- 		}
++	spin_lock_irqsave(&card->lock, flags);
++
+ 	/*
+ 	 * If the selfID buffer is not the immediate successor of the
+ 	 * previously processed one, we cannot reliably compare the
+@@ -532,8 +531,6 @@ void fw_core_handle_bus_reset(struct fw_
+ 		card->bm_retries = 0;
  	}
- 	spin_unlock_irqrestore(&card->lock, flags);
  
--	if (&t->link != &card->transaction_list) {
-+	if (t) {
- 		t->callback(card, rcode, NULL, 0, t->callback_data);
- 		return 0;
- 	}
-@@ -938,7 +939,7 @@ EXPORT_SYMBOL(fw_core_handle_request);
- 
- void fw_core_handle_response(struct fw_card *card, struct fw_packet *p)
- {
--	struct fw_transaction *t;
-+	struct fw_transaction *t = NULL, *iter;
- 	unsigned long flags;
- 	u32 *data;
- 	size_t data_length;
-@@ -950,20 +951,21 @@ void fw_core_handle_response(struct fw_c
- 	rcode	= HEADER_GET_RCODE(p->header[1]);
- 
- 	spin_lock_irqsave(&card->lock, flags);
--	list_for_each_entry(t, &card->transaction_list, link) {
--		if (t->node_id == source && t->tlabel == tlabel) {
--			if (!try_cancel_split_timeout(t)) {
-+	list_for_each_entry(iter, &card->transaction_list, link) {
-+		if (iter->node_id == source && iter->tlabel == tlabel) {
-+			if (!try_cancel_split_timeout(iter)) {
- 				spin_unlock_irqrestore(&card->lock, flags);
- 				goto timed_out;
- 			}
--			list_del_init(&t->link);
--			card->tlabel_mask &= ~(1ULL << t->tlabel);
-+			list_del_init(&iter->link);
-+			card->tlabel_mask &= ~(1ULL << iter->tlabel);
-+			t = iter;
- 			break;
- 		}
- 	}
- 	spin_unlock_irqrestore(&card->lock, flags);
- 
--	if (&t->link == &card->transaction_list) {
-+	if (!t) {
-  timed_out:
- 		fw_notice(card, "unsolicited response (source %x, tlabel %x)\n",
- 			  source, tlabel);
---- a/drivers/firewire/sbp2.c
-+++ b/drivers/firewire/sbp2.c
-@@ -421,7 +421,7 @@ static void sbp2_status_write(struct fw_
- 			      void *payload, size_t length, void *callback_data)
- {
- 	struct sbp2_logical_unit *lu = callback_data;
--	struct sbp2_orb *orb;
-+	struct sbp2_orb *orb = NULL, *iter;
- 	struct sbp2_status status;
- 	unsigned long flags;
- 
-@@ -446,17 +446,18 @@ static void sbp2_status_write(struct fw_
- 
- 	/* Lookup the orb corresponding to this status write. */
- 	spin_lock_irqsave(&lu->tgt->lock, flags);
--	list_for_each_entry(orb, &lu->orb_list, link) {
-+	list_for_each_entry(iter, &lu->orb_list, link) {
- 		if (STATUS_GET_ORB_HIGH(status) == 0 &&
--		    STATUS_GET_ORB_LOW(status) == orb->request_bus) {
--			orb->rcode = RCODE_COMPLETE;
--			list_del(&orb->link);
-+		    STATUS_GET_ORB_LOW(status) == iter->request_bus) {
-+			iter->rcode = RCODE_COMPLETE;
-+			list_del(&iter->link);
-+			orb = iter;
- 			break;
- 		}
- 	}
- 	spin_unlock_irqrestore(&lu->tgt->lock, flags);
- 
--	if (&orb->link != &lu->orb_list) {
-+	if (orb) {
- 		orb->callback(orb, &status);
- 		kref_put(&orb->kref, free_orb); /* orb callback reference */
- 	} else {
+-	spin_lock_irqsave(&card->lock, flags);
+-
+ 	card->broadcast_channel_allocated = card->broadcast_channel_auto_allocated;
+ 	card->node_id = node_id;
+ 	/*
 
 
