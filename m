@@ -2,50 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16394C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:16:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E985C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:16:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343940AbiEJOTy (ORCPT
+        id S1343950AbiEJOT7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:19:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47388 "EHLO
+        Tue, 10 May 2022 10:19:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245173AbiEJNr2 (ORCPT
+        with ESMTP id S245144AbiEJNr0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:47:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F5022C07F0;
-        Tue, 10 May 2022 06:35:30 -0700 (PDT)
+        Tue, 10 May 2022 09:47:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 560CB2C13CB;
+        Tue, 10 May 2022 06:35:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D02D36182F;
-        Tue, 10 May 2022 13:35:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9DEEC385A6;
-        Tue, 10 May 2022 13:35:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D7172618A0;
+        Tue, 10 May 2022 13:35:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D84E9C385A6;
+        Tue, 10 May 2022 13:35:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189729;
-        bh=jw3YM3GI0MfIJHwjnsu/c/BMP3KcLxcJzJF8j/JYdbU=;
+        s=korg; t=1652189726;
+        bh=/avtzuZvfnMi1NnIu7uKKrjB03sJRY+GFZrwoZkIdA4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q4hNdW56wz5WMiNYgztFEEg1e/uiyQf+mJOvu/S8zrxd9EdS6LY7845P0Pry3Rs4T
-         8kwD+S3C9etWmr9VLJ85ST4WHlH5R7jdLL51hwN3r9H3kdCUDkgNT1XaelX9NfE8Ne
-         NLDzX0aGdoJ1j9PhJkTAY7eOTA3tgNrn+mMw+T+4=
+        b=1+3Bcslfp2vl5Ycev8DQ5k/6ogIVZdy33DMSHSGOHwsXOamhkfhWvy3TdRLKbbC6E
+         1d0WPvWqYVeYK3qvTo5TCnQs7wci2gSKKWOvmfyaCeYBKrSU+X06ea2VwVuL/60XFH
+         O2mV2dbLrqCYHpdMkrImzuAdaCmvIaehSvjnJgpQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.17 010/140] mmc: sdhci-msm: Reset GCC_SDCC_BCR register for SDHC
-Date:   Tue, 10 May 2022 15:06:40 +0200
-Message-Id: <20220510130741.901886911@linuxfoundation.org>
+        stable@vger.kernel.org, Ondrej Mosnacek <omosnace@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Subject: [PATCH 5.17 001/140] pci_irq_vector() cant be used in atomic context any longer. This conflicts with the usage of this function in nic_mbx_intr_handler(). =?UTF-8?q?age=20of=20this=20function=20in=20nic=5Fmbx=5Fintr=5Fhandler().?=
+Date:   Tue, 10 May 2022 15:06:31 +0200
+Message-Id: <20220510130741.644300046@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -53,112 +55,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
+From: Thomas Gleixner <tglx@linutronix.de>
 
-commit 3e5a8e8494a8122fe4eb3f167662f406cab753b9 upstream.
+commit 6b292a04c694573a302686323fe15b1c7e673e5b upstream.
 
-Reset GCC_SDCC_BCR register before every fresh initilazation. This will
-reset whole SDHC-msm controller, clears the previous power control
-states and avoids, software reset timeout issues as below.
+Cache the Linux interrupt numbers in struct nicpf and use that cache in the
+interrupt handler to select the mailbox.
 
-[ 5.458061][ T262] mmc1: Reset 0x1 never completed.
-[ 5.462454][ T262] mmc1: sdhci: ============ SDHCI REGISTER DUMP ===========
-[ 5.469065][ T262] mmc1: sdhci: Sys addr: 0x00000000 | Version: 0x00007202
-[ 5.475688][ T262] mmc1: sdhci: Blk size: 0x00000000 | Blk cnt: 0x00000000
-[ 5.482315][ T262] mmc1: sdhci: Argument: 0x00000000 | Trn mode: 0x00000000
-[ 5.488927][ T262] mmc1: sdhci: Present: 0x01f800f0 | Host ctl: 0x00000000
-[ 5.495539][ T262] mmc1: sdhci: Power: 0x00000000 | Blk gap: 0x00000000
-[ 5.502162][ T262] mmc1: sdhci: Wake-up: 0x00000000 | Clock: 0x00000003
-[ 5.508768][ T262] mmc1: sdhci: Timeout: 0x00000000 | Int stat: 0x00000000
-[ 5.515381][ T262] mmc1: sdhci: Int enab: 0x00000000 | Sig enab: 0x00000000
-[ 5.521996][ T262] mmc1: sdhci: ACmd stat: 0x00000000 | Slot int: 0x00000000
-[ 5.528607][ T262] mmc1: sdhci: Caps: 0x362dc8b2 | Caps_1: 0x0000808f
-[ 5.535227][ T262] mmc1: sdhci: Cmd: 0x00000000 | Max curr: 0x00000000
-[ 5.541841][ T262] mmc1: sdhci: Resp[0]: 0x00000000 | Resp[1]: 0x00000000
-[ 5.548454][ T262] mmc1: sdhci: Resp[2]: 0x00000000 | Resp[3]: 0x00000000
-[ 5.555079][ T262] mmc1: sdhci: Host ctl2: 0x00000000
-[ 5.559651][ T262] mmc1: sdhci_msm: ----------- VENDOR REGISTER DUMP-----------
-[ 5.566621][ T262] mmc1: sdhci_msm: DLL sts: 0x00000000 | DLL cfg: 0x6000642c | DLL cfg2: 0x0020a000
-[ 5.575465][ T262] mmc1: sdhci_msm: DLL cfg3: 0x00000000 | DLL usr ctl: 0x00010800 | DDR cfg: 0x80040873
-[ 5.584658][ T262] mmc1: sdhci_msm: Vndr func: 0x00018a9c | Vndr func2 : 0xf88218a8 Vndr func3: 0x02626040
-
-Fixes: 0eb0d9f4de34 ("mmc: sdhci-msm: Initial support for Qualcomm chipsets")
-Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
-Acked-by: Adrian Hunter <adrian.hunter@intel.com>
-Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
-Tested-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Fixes: 495c66aca3da ("genirq/msi: Convert to new functions")
+Reported-by: Ondrej Mosnacek <omosnace@redhat.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Sunil Goutham <sgoutham@marvell.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: netdev@vger.kernel.org
 Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/1650816153-23797-1-git-send-email-quic_c_sbhanu@quicinc.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Link: https://bugzilla.redhat.com/show_bug.cgi?id=2041772
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/host/sdhci-msm.c |   42 ++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 42 insertions(+)
+ drivers/net/ethernet/cavium/thunder/nic_main.c |   16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
---- a/drivers/mmc/host/sdhci-msm.c
-+++ b/drivers/mmc/host/sdhci-msm.c
-@@ -17,6 +17,7 @@
- #include <linux/regulator/consumer.h>
- #include <linux/interconnect.h>
- #include <linux/pinctrl/consumer.h>
-+#include <linux/reset.h>
+--- a/drivers/net/ethernet/cavium/thunder/nic_main.c
++++ b/drivers/net/ethernet/cavium/thunder/nic_main.c
+@@ -59,7 +59,7 @@ struct nicpf {
  
- #include "sdhci-pltfm.h"
- #include "cqhci.h"
-@@ -2482,6 +2483,43 @@ static inline void sdhci_msm_get_of_prop
- 	of_property_read_u32(node, "qcom,dll-config", &msm_host->dll_config);
+ 	/* MSI-X */
+ 	u8			num_vec;
+-	bool			irq_allocated[NIC_PF_MSIX_VECTORS];
++	unsigned int		irq_allocated[NIC_PF_MSIX_VECTORS];
+ 	char			irq_name[NIC_PF_MSIX_VECTORS][20];
+ };
+ 
+@@ -1150,7 +1150,7 @@ static irqreturn_t nic_mbx_intr_handler(
+ 	u64 intr;
+ 	u8  vf;
+ 
+-	if (irq == pci_irq_vector(nic->pdev, NIC_PF_INTR_ID_MBOX0))
++	if (irq == nic->irq_allocated[NIC_PF_INTR_ID_MBOX0])
+ 		mbx = 0;
+ 	else
+ 		mbx = 1;
+@@ -1176,14 +1176,14 @@ static void nic_free_all_interrupts(stru
+ 
+ 	for (irq = 0; irq < nic->num_vec; irq++) {
+ 		if (nic->irq_allocated[irq])
+-			free_irq(pci_irq_vector(nic->pdev, irq), nic);
+-		nic->irq_allocated[irq] = false;
++			free_irq(nic->irq_allocated[irq], nic);
++		nic->irq_allocated[irq] = 0;
+ 	}
  }
  
-+static int sdhci_msm_gcc_reset(struct device *dev, struct sdhci_host *host)
-+{
-+	struct reset_control *reset;
-+	int ret = 0;
-+
-+	reset = reset_control_get_optional_exclusive(dev, NULL);
-+	if (IS_ERR(reset))
-+		return dev_err_probe(dev, PTR_ERR(reset),
-+				"unable to acquire core_reset\n");
-+
-+	if (!reset)
-+		return ret;
-+
-+	ret = reset_control_assert(reset);
-+	if (ret) {
-+		reset_control_put(reset);
-+		return dev_err_probe(dev, ret, "core_reset assert failed\n");
-+	}
-+
-+	/*
-+	 * The hardware requirement for delay between assert/deassert
-+	 * is at least 3-4 sleep clock (32.7KHz) cycles, which comes to
-+	 * ~125us (4/32768). To be on the safe side add 200us delay.
-+	 */
-+	usleep_range(200, 210);
-+
-+	ret = reset_control_deassert(reset);
-+	if (ret) {
-+		reset_control_put(reset);
-+		return dev_err_probe(dev, ret, "core_reset deassert failed\n");
-+	}
-+
-+	usleep_range(200, 210);
-+	reset_control_put(reset);
-+
-+	return ret;
-+}
- 
- static int sdhci_msm_probe(struct platform_device *pdev)
+ static int nic_register_interrupts(struct nicpf *nic)
  {
-@@ -2529,6 +2567,10 @@ static int sdhci_msm_probe(struct platfo
+-	int i, ret;
++	int i, ret, irq;
+ 	nic->num_vec = pci_msix_vec_count(nic->pdev);
  
- 	msm_host->saved_tuning_phase = INVALID_TUNING_PHASE;
+ 	/* Enable MSI-X */
+@@ -1201,13 +1201,13 @@ static int nic_register_interrupts(struc
+ 		sprintf(nic->irq_name[i],
+ 			"NICPF Mbox%d", (i - NIC_PF_INTR_ID_MBOX0));
  
-+	ret = sdhci_msm_gcc_reset(&pdev->dev, host);
-+	if (ret)
-+		goto pltfm_free;
-+
- 	/* Setup SDCC bus voter clock. */
- 	msm_host->bus_clk = devm_clk_get(&pdev->dev, "bus");
- 	if (!IS_ERR(msm_host->bus_clk)) {
+-		ret = request_irq(pci_irq_vector(nic->pdev, i),
+-				  nic_mbx_intr_handler, 0,
++		irq = pci_irq_vector(nic->pdev, i);
++		ret = request_irq(irq, nic_mbx_intr_handler, 0,
+ 				  nic->irq_name[i], nic);
+ 		if (ret)
+ 			goto fail;
+ 
+-		nic->irq_allocated[i] = true;
++		nic->irq_allocated[i] = irq;
+ 	}
+ 
+ 	/* Enable mailbox interrupt */
 
 
