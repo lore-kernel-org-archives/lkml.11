@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B2F7C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:38:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39347C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:38:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243746AbiEJNlE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:41:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50072 "EHLO
+        id S237883AbiEJNmm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:42:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243792AbiEJN11 (ORCPT
+        with ESMTP id S239589AbiEJN3F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:27:27 -0400
+        Tue, 10 May 2022 09:29:05 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3F592BFBD2;
-        Tue, 10 May 2022 06:20:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07B5D366BF;
+        Tue, 10 May 2022 06:20:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 69891616D0;
-        Tue, 10 May 2022 13:20:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 692BAC385C2;
-        Tue, 10 May 2022 13:20:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CCEF61663;
+        Tue, 10 May 2022 13:20:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC30FC385A6;
+        Tue, 10 May 2022 13:20:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188830;
-        bh=shvRf/SMuN2C4qkWzfKRtwCcm8FwCj/TkpyfwJJHOXE=;
+        s=korg; t=1652188856;
+        bh=laynf76DuemHAcHFOzu1PPKqPkAK/Zd29BLiX/RFYHQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K7/1MzhBWasnG0x0neMk/JjVomEb3rB51EEpTGNxDIRUKn3mLQg0x2ubdBUrJd8lg
-         1HTtC3yJ+wvEEbyXDjxO0JXoeEYnfTmMUwnjx//p0QAHtvYmOSXzrdtLgPAmEZOYip
-         0AVGvhK7au0C9OuLWSUuImVvSvX+Ai7G3OTFeSdc=
+        b=028mdfjE39TYjHl6BBc4uGaS+RRrgBwuVtPgVqLvi61vSDBxcYnW81pmjO+4oGqW+
+         Kw8x2NL7TeVMrMDMAeOwvj4tXxBNTJ3ACTkkI/zLYOMApHRst7eI6PhnDAsid6xLg9
+         g3cznQHdwxMHk+zS2B6bjlC/Yl3lOGZqWpnlVq80=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Chen <peter.chen@kernel.org>,
-        Weitao Wang <WeitaoWang-oc@zhaoxin.com>,
-        Mathias Nyman <mathias.nyman@linux.intel.com>,
+        stable@vger.kernel.org, "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Tony Lindgren <tony@atomide.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 23/88] USB: Fix xhci event ring dequeue pointer ERDP update issue
-Date:   Tue, 10 May 2022 15:07:08 +0200
-Message-Id: <20220510130734.420598020@linuxfoundation.org>
+Subject: [PATCH 4.19 28/88] ARM: dts: Fix mmc order for omap3-gta04
+Date:   Tue, 10 May 2022 15:07:13 +0200
+Message-Id: <20220510130734.564462760@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 References: <20220510130733.735278074@linuxfoundation.org>
@@ -50,63 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
+From: H. Nikolaus Schaller <hns@goldelico.com>
 
-[ Upstream commit e91ac20889d1a26d077cc511365cd7ff4346a6f3 ]
+[ Upstream commit 09269dd050094593fc747f2a5853d189fefcb6b5 ]
 
-In some situations software handles TRB events slower than adding TRBs.
-If the number of TRB events to be processed in a given interrupt is exactly
-the same as the event ring size 256, then the local variable
-"event_ring_deq" that holds the initial dequeue position is equal to
-software_dequeue after handling all 256 interrupts.
+Commit a1ebdb374199 ("ARM: dts: Fix swapped mmc order for omap3")
+introduces general mmc aliases. Let's tailor them to the need
+of the GTA04 board which does not make use of mmc2 and mmc3 interfaces.
 
-It will cause driver to not update ERDP to hardware,
-
-Software dequeue pointer is out of sync with ERDP on interrupt exit.
-On the next interrupt, the event ring may full but driver will not
-update ERDP as software_dequeue is equal to ERDP.
-
-[  536.377115] xhci_hcd 0000:00:12.0: ERROR unknown event type 37
-[  566.933173] sd 8:0:0:0: [sdb] tag#27 uas_eh_abort_handler 0 uas-tag 7 inflight: CMD OUT
-[  566.933181] sd 8:0:0:0: [sdb] tag#27 CDB: Write(10) 2a 00 17 71 e6 78 00 00 08 00
-[  572.041186] xhci_hcd On some situataions,the0000:00:12.0: xHCI host not responding to stop endpoint command.
-[  572.057193] xhci_hcd 0000:00:12.0: Host halt failed, -110
-[  572.057196] xhci_hcd 0000:00:12.0: xHCI host controller not responding, assume dead
-[  572.057236] sd 8:0:0:0: [sdb] tag#26 uas_eh_abort_handler 0 uas-tag 6 inflight: CMD
-[  572.057240] sd 8:0:0:0: [sdb] tag#26 CDB: Write(10) 2a 00 38 eb cc d8 00 00 08 00
-[  572.057244] sd 8:0:0:0: [sdb] tag#25 uas_eh_abort_handler 0 uas-tag 5 inflight: CMD
-
-Hardware ERDP is updated mid event handling if there are more than 128
-events in an interrupt (half of ring size).
-Fix this by updating the software local variable at the same time as
-hardware ERDP.
-
-[commit message rewording -Mathias]
-
-Fixes: dc0ffbea5729 ("usb: host: xhci: update event ring dequeue pointer on purpose")
-Reviewed-by: Peter Chen <peter.chen@kernel.org>
-Signed-off-by: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Link: https://lore.kernel.org/r/20220408134823.2527272-2-mathias.nyman@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: a1ebdb374199 ("ARM: dts: Fix swapped mmc order for omap3")
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+Message-Id: <dc9173ee3d391d9e92b7ab8ed4f84b29f0a21c83.1646744420.git.hns@goldelico.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/xhci-ring.c | 2 ++
+ arch/arm/boot/dts/omap3-gta04.dtsi | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/drivers/usb/host/xhci-ring.c b/drivers/usb/host/xhci-ring.c
-index f5bd91752f2d..e18b675fb7af 100644
---- a/drivers/usb/host/xhci-ring.c
-+++ b/drivers/usb/host/xhci-ring.c
-@@ -2848,6 +2848,8 @@ irqreturn_t xhci_irq(struct usb_hcd *hcd)
- 		if (event_loop++ < TRBS_PER_SEGMENT / 2)
- 			continue;
- 		xhci_update_erst_dequeue(xhci, event_ring_deq);
-+		event_ring_deq = xhci->event_ring->dequeue;
-+
- 		event_loop = 0;
- 	}
+diff --git a/arch/arm/boot/dts/omap3-gta04.dtsi b/arch/arm/boot/dts/omap3-gta04.dtsi
+index a5aed92ab54b..820bdd5326ab 100644
+--- a/arch/arm/boot/dts/omap3-gta04.dtsi
++++ b/arch/arm/boot/dts/omap3-gta04.dtsi
+@@ -29,6 +29,8 @@ memory@80000000 {
+ 	aliases {
+ 		display0 = &lcd;
+ 		display1 = &tv0;
++		/delete-property/ mmc2;
++		/delete-property/ mmc3;
+ 	};
  
+ 	/* fixed 26MHz oscillator */
 -- 
 2.35.1
 
