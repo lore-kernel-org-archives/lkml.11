@@ -2,190 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6790BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 10:26:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74D7FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 10:27:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239812AbiEJKah (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 06:30:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37044 "EHLO
+        id S239826AbiEJKbY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 06:31:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237501AbiEJKae (ORCPT
+        with ESMTP id S239673AbiEJKbU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 06:30:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47DCB1E250C;
-        Tue, 10 May 2022 03:26:37 -0700 (PDT)
+        Tue, 10 May 2022 06:31:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 585F61E3EFC
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 03:27:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D569561717;
-        Tue, 10 May 2022 10:26:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54F86C385C6;
-        Tue, 10 May 2022 10:26:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1BDA7B81CAA
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 10:27:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB895C385A6;
+        Tue, 10 May 2022 10:27:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652178396;
-        bh=F7UCs6MY2v5gEg3OOGEyNsq6zFa48822pWX1xYsPpAk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KE55aPGkw7dfdqaaR2oZ817K6C3dkPClEwJ3JeUvvOJmWZX4gCeduI9qV8eRTpXol
-         KXG8kx/AHmcxSmbMjABfiauAOzG7NrBLtGGa4vidbKdX7yQJV49RY1KC479Jfg8rQW
-         uxW1XxT4Ib8cyv18w/VrY48xQGyN3PtIYFhoFUUWHnN9WfJztQ8pnnJE6YEh2Y6c44
-         jmxpXtKftWBsRTttyP+5qbCAge1vSDjFgHok7Z61R0emmGbtcKc3352ffBsfQzQHps
-         72WHQlOYZ0PTdkHFjvE47D3nGDHy4wFV0oNoqe4kydgYEBTVkIuermvbJaTYYNGBKh
-         /9Dk6cl+oMRVQ==
-Date:   Tue, 10 May 2022 12:26:27 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     "Serge E. Hallyn" <serge@hallyn.com>
-Cc:     Stefan Berger <stefanb@linux.ibm.com>,
-        linux-integrity@vger.kernel.org, zohar@linux.ibm.com,
-        christian.brauner@ubuntu.com, containers@lists.linux.dev,
-        dmitry.kasatkin@gmail.com, ebiederm@xmission.com,
-        krzysztof.struczynski@huawei.com, roberto.sassu@huawei.com,
-        mpeters@redhat.com, lhinds@redhat.com, lsturman@redhat.com,
-        puiterwi@redhat.com, jejb@linux.ibm.com, jamjoom@us.ibm.com,
-        linux-kernel@vger.kernel.org, paul@paul-moore.com, rgb@redhat.com,
-        linux-security-module@vger.kernel.org, jmorris@namei.org,
-        jpenumak@redhat.com, John Johansen <john.johansen@canonical.com>,
-        Matthew Garrett <mjg59@srcf.ucam.org>,
-        Micah Morton <mortonm@chromium.org>,
-        Kentaro Takeda <takedakn@nttdata.co.jp>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Subject: Re: [PATCH v12 01/26] securityfs: rework dentry creation
-Message-ID: <20220510102627.t7tzxkuigt7w7fyw@wittgenstein>
-References: <20220420140633.753772-1-stefanb@linux.ibm.com>
- <20220420140633.753772-2-stefanb@linux.ibm.com>
- <20220509195414.GA30894@mail.hallyn.com>
- <20220509203618.GA31408@mail.hallyn.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220509203618.GA31408@mail.hallyn.com>
+        s=k20201202; t=1652178439;
+        bh=DpulMq7NLXNXeyCY5VjzmNzXxDP77EwqYOXUI+qi1hg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ogb8WjIvnhj/dPk7gypMy5omoJJwrF9bfL+wgnkJq485qyDA86EqWlIn69FYZdUqk
+         wuh/gIKHbHpC3cy8at/Rn1L36Bctmb4UqsFsquEGuMkwlV/0jVpw+xwW241apzcyni
+         mRWUQrEiCiJVtfRrPbArJcxt6s79ed2Y/uoMxui6q3p5ygZDlmXB72dSVGr6X10DBV
+         c2YVIgZ9/Y/mpgGBBCK1ctcpc0YwOuDBzfKiP8bRakJzd6j0YjEALmnbUvvJINeny6
+         xdoZORcBIkYyjYPWBJNG5ZBPC5zlLJ+0F4LY31Iy5+MGHvWiBWk4xV7zr0A3SZ9lG2
+         uGeDjOXfsREqA==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1noN5J-00ACxh-Fm; Tue, 10 May 2022 11:27:17 +0100
+Date:   Tue, 10 May 2022 11:27:17 +0100
+Message-ID: <87a6bp7ke2.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Samuel Holland <samuel@sholland.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Guo Ren <guoren@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Wei Xu <xuwei5@hisilicon.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org
+Subject: Re: [PATCH 5/5] irqchip/sifive-plic: Separate the enable and mask operations
+In-Reply-To: <20220509034333.60017-6-samuel@sholland.org>
+References: <20220509034333.60017-1-samuel@sholland.org>
+        <20220509034333.60017-6-samuel@sholland.org>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: samuel@sholland.org, tglx@linutronix.de, palmer@dabbelt.com, paul.walmsley@sifive.com, aou@eecs.berkeley.edu, f.fainelli@gmail.com, guoren@kernel.org, linus.walleij@linaro.org, mark.rutland@arm.com, linux@armlinux.org.uk, xuwei5@hisilicon.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 03:36:18PM -0500, Serge Hallyn wrote:
-> On Mon, May 09, 2022 at 02:54:14PM -0500, Serge E. Hallyn wrote:
-> > On Wed, Apr 20, 2022 at 10:06:08AM -0400, Stefan Berger wrote:
-> > > From: Christian Brauner <brauner@kernel.org>
-> > > 
-> > > When securityfs creates a new file or directory via
-> > > securityfs_create_dentry() it will take an additional reference on the
-> > > newly created dentry after it has attached the new inode to the new
-> > > dentry and added it to the hashqueues.
-> > > If we contrast this with debugfs which has the same underlying logic as
-> > > securityfs. It uses a similar pairing as securityfs. Where securityfs
-> > > has the securityfs_create_dentry() and securityfs_remove() pairing,
-> > > debugfs has the __debugfs_create_file() and debugfs_remove() pairing.
-> > > 
-> > > In contrast to securityfs, debugfs doesn't take an additional reference
-> > > on the newly created dentry in __debugfs_create_file() which would need
-> > > to be put in debugfs_remove().
-> > > 
-> > > The additional dget() isn't a problem per se. In the current
-> > > implementation of securityfs each created dentry pins the filesystem via
-> > 
-> > Is 'via' an extra word here or is there a missing word?
-> > 
-> > I'll delay the rest of my response as the missing word may answer my
-> > remaining question :)
-> > 
-> > > until it is removed. Since it is virtually guaranteed that there is at
-> > > least one user of securityfs that has created dentries the initial
-> > > securityfs mount cannot go away until all dentries have been removed.
-> > > 
-> > > Since most of the users of the initial securityfs mount don't go away
-> > > until the system is shutdown the initial securityfs won't go away when
-> > > unmounted. Instead a mount will usually surface the same superblock as
-> > > before. The additional dget() doesn't matter in this scenario since it
-> > > is required that all dentries have been cleaned up by the respective
-> > > users before the superblock can be destroyed, i.e. superblock shutdown
-> > > is tied to the lifetime of the associated dentries.
-> > > 
-> > > However, in order to support ima namespaces we need to extend securityfs
-> > > to support being mounted outside of the initial user namespace. For
-> > > namespaced users the pinning logic doesn't make sense. Whereas in the
-> > > initial namespace the securityfs instance and the associated data
-> > > structures of its users can't go away for reason explained earlier users
-> > > of non-initial securityfs instances do go away when the last users of
-> > > the namespace are gone.
-> > > 
-> > > So for those users we neither want to duplicate the pinning logic nor
-> > > make the global securityfs instance display different information based
-> > > on the namespace. Both options would be really messy and hacky.
-> > > 
-> > > Instead we will simply give each namespace its own securityfs instance
-> > > similar to how each ipc namespace has its own mqueue instance and all
-> > > entries in there are cleaned up on umount or when the last user of the
-> > > associated namespace is gone.
-> > > 
-> > > This means that the superblock's lifetime isn't tied to the dentries.
-> > > Instead the last umount, without any fds kept open, will trigger a clean
-> > > shutdown. But now the additional dget() gets in the way. Instead of
-> > > being able to rely on the generic superblock shutdown logic we would
-> > > need to drop the additional dentry reference during superblock shutdown
-> > > for all associated users. That would force the use of a generic
-> > > coordination mechanism for current and future users of securityfs which
-> > > is unnecessary. Simply remove the additional dget() in
-> > > securityfs_dentry_create().
-> > > 
-> > > In securityfs_remove() we will call dget() to take an additional
-> > > reference on the dentry about to be removed. After simple_unlink() or
-> > > simple_rmdir() have dropped the dentry refcount we can call d_delete()
-> > > which will either turn the dentry into negative dentry if our earlier
-> > > dget() is the only reference to the dentry, i.e. it has no other users,
-> > > or remove it from the hashqueues in case there are additional users.
-> > > 
-> > > All of these changes should not have any effect on the userspace
-> > > semantics of the initial securityfs mount.
-> > > 
-> > > Signed-off-by: Christian Brauner <brauner@kernel.org>
-> > > Cc: John Johansen <john.johansen@canonical.com>
-> > > Cc: Matthew Garrett <mjg59@srcf.ucam.org>
-> > > Cc: Micah Morton <mortonm@chromium.org>
-> > > Cc: Kentaro Takeda <takedakn@nttdata.co.jp>
-> > > Cc: James Morris <jmorris@namei.org>
-> > > Cc: Jarkko Sakkinen <jarkko@kernel.org>
-> > > Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
-> > > Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
-> > > ---
-> > >  security/inode.c | 3 ++-
-> > >  1 file changed, 2 insertions(+), 1 deletion(-)
-> > > 
-> > > diff --git a/security/inode.c b/security/inode.c
-> > > index 6c326939750d..13e6780c4444 100644
-> > > --- a/security/inode.c
-> > > +++ b/security/inode.c
-> > > @@ -159,7 +159,6 @@ static struct dentry *securityfs_create_dentry(const char *name, umode_t mode,
-> > >  		inode->i_fop = fops;
-> > >  	}
-> > >  	d_instantiate(dentry, inode);
-> > > -	dget(dentry);
-> > >  	inode_unlock(dir);
-> > >  	return dentry;
-> > >  
-> > > @@ -302,10 +301,12 @@ void securityfs_remove(struct dentry *dentry)
-> > >  	dir = d_inode(dentry->d_parent);
-> > >  	inode_lock(dir);
-> > >  	if (simple_positive(dentry)) {
-> > > +		dget(dentry);
-> > >  		if (d_is_dir(dentry))
-> > >  			simple_rmdir(dir, dentry);
+On Mon, 09 May 2022 04:43:33 +0100,
+Samuel Holland <samuel@sholland.org> wrote:
 > 
-> Hm, so I realize your patch isn't introducing this, but is the
-> fact that we ignore the possible -ENOTEMPTY return value of
-> simple_rmdir() not a problem?
+> The PLIC has two per-IRQ checks before sending an IRQ to a hart context.
+> First, it checks that the IRQ's priority is nonzero. Then, it checks
+> that the enable bit is set for that combination of IRQ and context.
 > 
-> > >  		else
-> > >  			simple_unlink(dir, dentry);
-> > > +		d_delete(dentry);
+> Currently, the PLIC driver sets both the priority value and the enable
+> bit in its (un)mask operations. However, modifying the enable bit is
+> problematic for two reasons:
+>   1) The enable bits are packed, so changes are not atomic and require
+>      taking a spinlock.
+>   2) The following requirememnt from the PLIC spec, which explains the
+>      racy (un)mask operations in plic_irq_eoi():
 > 
-> I'm mostly trying to convince myself that the fact that there is not
-> a matching dput being removed (to match the dget being removed above)
-> is ok.  I do think it is, but that belief seems to dictate that right
-> now dentries must never be being released.
+>        If the completion ID does not match an interrupt source
+>        that is currently enabled for the target, the completion
+>        is silently ignored.
 > 
-> Otherwise, it seems like there must be cases where the next dput could
-> be called on a dentry that has been freed.
+> Both of these problems are solved by using the priority value to mask
+> IRQs. Each IRQ has a separate priority register, so writing the priority
+> value is atomic. And since the enable bit remains set while an IRQ is
+> masked, the EOI operation works normally. The enable bits are still used
+> to control the IRQ's affinity.
 
-I think that's answered by Amir in the next mail already. So I'm
-skipping to that part of the thread.
+This is pretty neat.
+
+My only concern is around whether implementations do when changing
+priority of enabled interrupts. The PLIC architecture is conveniently
+silent on the subject, but that's certainly something that can result
+in total crap with the ARM GICs, for example, because an
+implementation is free to apply this priority change on an already
+pending interrupt, or not. But the kernel really wants the interrupt
+to be masked once it tells the HW to do so.
+
+Could anyone please check the RTL for some common implementations?
+
+A way to avoid the above trouble (should it exist) would be to
+disable the interrupt when changing the priority, and then reenable
+it. You'd still get the simpler EOI, which is what you really want.
+
+Thanks,
+
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
