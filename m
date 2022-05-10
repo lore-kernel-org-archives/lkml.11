@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08A25C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 182B4C43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:44:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244417AbiEJNqe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:46:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48756 "EHLO
+        id S244434AbiEJNqp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:46:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243896AbiEJNcU (ORCPT
+        with ESMTP id S243923AbiEJNcV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:32:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB5D17DDDA;
-        Tue, 10 May 2022 06:23:25 -0700 (PDT)
+        Tue, 10 May 2022 09:32:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40D051994A0;
+        Tue, 10 May 2022 06:23:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5CD03B81DA5;
-        Tue, 10 May 2022 13:23:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0F5EC385C2;
-        Tue, 10 May 2022 13:23:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D293960C1C;
+        Tue, 10 May 2022 13:23:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E547CC385C2;
+        Tue, 10 May 2022 13:23:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189003;
-        bh=Z2pZtBar+OQYj0jU1RiRltmhY7KwuBZhswUXMFNU2Ak=;
+        s=korg; t=1652189020;
+        bh=Q2Wg0f11Q6IIlcPJ/b7UtaXwtP9iKWdEGB/4BG3k6bo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vizXUPIY92p2np+RFS9bFrdWOAmkWBqG0C3AQTgM7OEHHqBAlggEvb4AzI66GyoNg
-         6e4YtwZssCDmSEYJ/gsis2cDPT5Z6vDERqU60bgAzuq8bm/Z+t3JFD5fZtIrIIAMe0
-         llh9OqwoAaFi18VD1qpc7Jop/snEGeBZTNtB+5nE=
+        b=TvC1qpoDgLJ1LoR2VKnJoMsoqlIE6BHd04PUXFg+rNJqlBCEKg7u3XmrsOKLlQhMK
+         4i3qaJYHAjiS4aGUlnuRCH1YCSJ5MyZgTwe7TTKfFNDC/XxY+iuV+1kGp63jJR+1RC
+         Iqe7RezwR0wlCK9B6UEwnuRnuw5hR69/vNS+AfgY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 31/52] smsc911x: allow using IRQ0
-Date:   Tue, 10 May 2022 15:08:00 +0200
-Message-Id: <20220510130730.763739609@linuxfoundation.org>
+        stable@vger.kernel.org, Marcelo Tosatti <mtosatti@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 37/52] x86/kvm: Preserve BSP MSR_KVM_POLL_CONTROL across suspend/resume
+Date:   Tue, 10 May 2022 15:08:06 +0200
+Message-Id: <20220510130730.936138964@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.852544477@linuxfoundation.org>
 References: <20220510130729.852544477@linuxfoundation.org>
@@ -48,42 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Shtylyov <s.shtylyov@omp.ru>
+From: Wanpeng Li <wanpengli@tencent.com>
 
-commit 5ef9b803a4af0f5e42012176889b40bb2a978b18 upstream.
+[ Upstream commit 0361bdfddca20c8855ea3bdbbbc9c999912b10ff ]
 
-The AlphaProject AP-SH4A-3A/AP-SH4AD-0A SH boards use IRQ0 for their SMSC
-LAN911x Ethernet chip, so the networking on them must have been broken by
-commit 965b2aa78fbc ("net/smsc911x: fix irq resource allocation failure")
-which filtered out 0 as well as the negative error codes -- it was kinda
-correct at the time, as platform_get_irq() could return 0 on of_irq_get()
-failure and on the actual 0 in an IRQ resource.  This issue was fixed by
-me (back in 2016!), so we should be able to fix this driver to allow IRQ0
-usage again...
+MSR_KVM_POLL_CONTROL is cleared on reset, thus reverting guests to
+host-side polling after suspend/resume.  Non-bootstrap CPUs are
+restored correctly by the haltpoll driver because they are hot-unplugged
+during suspend and hot-plugged during resume; however, the BSP
+is not hotpluggable and remains in host-sde polling mode after
+the guest resume.  The makes the guest pay for the cost of vmexits
+every time the guest enters idle.
 
-When merging this to the stable kernels, make sure you also merge commit
-e330b9a6bb35 ("platform: don't return 0 from platform_get_irq[_byname]()
-on error") -- that's my fix to platform_get_irq() for the DT platforms...
+Fix it by recording BSP's haltpoll state and resuming it during guest
+resume.
 
-Fixes: 965b2aa78fbc ("net/smsc911x: fix irq resource allocation failure")
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Link: https://lore.kernel.org/r/656036e4-6387-38df-b8a7-6ba683b16e63@omp.ru
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Marcelo Tosatti <mtosatti@redhat.com>
+Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
+Message-Id: <1650267752-46796-1-git-send-email-wanpengli@tencent.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/smsc/smsc911x.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kernel/kvm.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
---- a/drivers/net/ethernet/smsc/smsc911x.c
-+++ b/drivers/net/ethernet/smsc/smsc911x.c
-@@ -2433,7 +2433,7 @@ static int smsc911x_drv_probe(struct pla
- 	if (irq == -EPROBE_DEFER) {
- 		retval = -EPROBE_DEFER;
- 		goto out_0;
--	} else if (irq <= 0) {
-+	} else if (irq < 0) {
- 		pr_warn("Could not allocate irq resource\n");
- 		retval = -ENODEV;
- 		goto out_0;
+diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
+index 408b51aba293..f582dda8dd34 100644
+--- a/arch/x86/kernel/kvm.c
++++ b/arch/x86/kernel/kvm.c
+@@ -59,6 +59,7 @@ static DEFINE_PER_CPU_DECRYPTED(struct kvm_vcpu_pv_apf_data, apf_reason) __align
+ DEFINE_PER_CPU_DECRYPTED(struct kvm_steal_time, steal_time) __aligned(64) __visible;
+ static int has_steal_clock = 0;
+ 
++static int has_guest_poll = 0;
+ /*
+  * No need for any "IO delay" on KVM
+  */
+@@ -584,14 +585,26 @@ static int kvm_cpu_down_prepare(unsigned int cpu)
+ 
+ static int kvm_suspend(void)
+ {
++	u64 val = 0;
++
+ 	kvm_guest_cpu_offline(false);
+ 
++#ifdef CONFIG_ARCH_CPUIDLE_HALTPOLL
++	if (kvm_para_has_feature(KVM_FEATURE_POLL_CONTROL))
++		rdmsrl(MSR_KVM_POLL_CONTROL, val);
++	has_guest_poll = !(val & 1);
++#endif
+ 	return 0;
+ }
+ 
+ static void kvm_resume(void)
+ {
+ 	kvm_cpu_online(raw_smp_processor_id());
++
++#ifdef CONFIG_ARCH_CPUIDLE_HALTPOLL
++	if (kvm_para_has_feature(KVM_FEATURE_POLL_CONTROL) && has_guest_poll)
++		wrmsrl(MSR_KVM_POLL_CONTROL, 0);
++#endif
+ }
+ 
+ static struct syscore_ops kvm_syscore_ops = {
+-- 
+2.35.1
+
 
 
