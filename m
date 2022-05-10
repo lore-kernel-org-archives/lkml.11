@@ -2,244 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A5B0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:22:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9F4CC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:23:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240987AbiEJL0d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 07:26:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52756 "EHLO
+        id S240968AbiEJL1i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 07:27:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241016AbiEJL01 (ORCPT
+        with ESMTP id S232767AbiEJL1g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 07:26:27 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CC4882A3740
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 04:22:29 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A16D811FB;
-        Tue, 10 May 2022 04:22:29 -0700 (PDT)
-Received: from FVFF77S0Q05N (unknown [10.57.1.67])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3CD5F3F66F;
-        Tue, 10 May 2022 04:22:28 -0700 (PDT)
-Date:   Tue, 10 May 2022 12:22:18 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Alexander Popov <alex.popov@linux.com>
-Cc:     linux-arm-kernel@lists.infradead.org, akpm@linux-foundation.org,
-        catalin.marinas@arm.com, keescook@chromium.org,
-        linux-kernel@vger.kernel.org, luto@kernel.org, will@kernel.org
-Subject: Re: [PATCH v2 06/13] stackleak: rework stack high bound handling
-Message-ID: <YnpK6ju2FkzagbPY@FVFF77S0Q05N>
-References: <20220427173128.2603085-1-mark.rutland@arm.com>
- <20220427173128.2603085-7-mark.rutland@arm.com>
- <ff36f701-6950-b923-c4f5-d6182bdc7534@linux.com>
+        Tue, 10 May 2022 07:27:36 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E8B02ABBF4;
+        Tue, 10 May 2022 04:23:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9384ECE1E1A;
+        Tue, 10 May 2022 11:23:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01FE9C385C2;
+        Tue, 10 May 2022 11:23:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652181816;
+        bh=5ZJgn0Zghtzaiu2qbpmdNbr1rwDe/IiPV/mYtoG6HA4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OW/Ke/sgpzuHPUyRzpms1qOc2XLOIcXoZcZbY2dWEX8ECxIpYNcCh6v/5omvQpb97
+         sTdKM2jeHUVartD2XdpvYbOW29XN4joTf1kTBYQIwsr3upSynALi/l82MXrk2Yalgb
+         pIu4qYrAobipn8F2FA8Rsshm9vtlEbFtJ/ul6SeMd9GlWlaKJcgLK5hDR96vVtm2Bs
+         ivKOZ8fI7xV55CEsvMJ4uymfOqK4k3+G17XSVvfVSNyxzVJFvzxs1jEdNgWQDS+OBg
+         SWx3hHs7uf6wtz9fPqHZL6oZ9L9FI7ooPrULOYtT4DLftRW1+/zeAvWR/xCrfmDEa+
+         e5n5OMiBvmIIg==
+Date:   Tue, 10 May 2022 12:23:27 +0100
+From:   Will Deacon <will@kernel.org>
+To:     Yicong Yang <yangyicong@hisilicon.com>
+Cc:     gregkh@linuxfoundation.org, helgaas@kernel.org,
+        alexander.shishkin@linux.intel.com, lorenzo.pieralisi@arm.com,
+        mark.rutland@arm.com, mathieu.poirier@linaro.org,
+        suzuki.poulose@arm.com, mike.leach@linaro.org, leo.yan@linaro.org,
+        jonathan.cameron@huawei.com, daniel.thompson@linaro.org,
+        joro@8bytes.org, john.garry@huawei.com,
+        shameerali.kolothum.thodi@huawei.com, robin.murphy@arm.com,
+        peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        coresight@lists.linaro.org, linux-pci@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, iommu@lists.linux-foundation.org,
+        prime.zeng@huawei.com, liuqi115@huawei.com,
+        zhangshaokun@hisilicon.com, linuxarm@huawei.com
+Subject: Re: [PATCH v7 1/7] iommu/arm-smmu-v3: Make default domain type of
+ HiSilicon PTT device to identity
+Message-ID: <20220510112326.GA27790@willie-the-truck>
+References: <20220407125841.3678-1-yangyicong@hisilicon.com>
+ <20220407125841.3678-2-yangyicong@hisilicon.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ff36f701-6950-b923-c4f5-d6182bdc7534@linux.com>
+In-Reply-To: <20220407125841.3678-2-yangyicong@hisilicon.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 12:27:22AM +0300, Alexander Popov wrote:
-> On 27.04.2022 20:31, Mark Rutland wrote:
-> > Prior to returning to userpace, we reset current->lowest_stack to a
-> > reasonable high bound. Currently we do this by subtracting the arbitrary
-> > value `THREAD_SIZE/64` from the top of the stack, for reasons lost to
-> > history.
-> > 
-> > Looking at configurations today:
-> > 
-> > * On i386 where THREAD_SIZE is 8K, the bound will be 128 bytes. The
-> >    pt_regs at the top of the stack is 68 bytes (with 0 to 16 bytes of
-> >    padding above), and so this covers an additional portion of 44 to 60
-> >    bytes.
-> > 
-> > * On x86_64 where THREAD_SIZE is at least 16K (up to 32K with KASAN) the
-> >    bound will be at least 256 bytes (up to 512 with KASAN). The pt_regs
-> >    at the top of the stack is 168 bytes, and so this cover an additional
-> >    88 bytes of stack (up to 344 with KASAN).
-> > 
-> > * On arm64 where THREAD_SIZE is at least 16K (up to 64K with 64K pages
-> >    and VMAP_STACK), the bound will be at least 256 bytes (up to 1024 with
-> >    KASAN). The pt_regs at the top of the stack is 336 bytes, so this can
-> >    fall within the pt_regs, or can cover an additional 688 bytes of
-> >    stack.
-> > 
-> > Clearly the `THREAD_SIZE/64` value doesn't make much sense -- in the
-> > worst case, this will cause more than 600 bytes of stack to be erased
-> > for every syscall, even if actual stack usage were substantially
-> > smaller.
-> > 
-> > This patches makes this slightly less nonsensical by consistently
-> > resetting current->lowest_stack to the base of the task pt_regs. For
-> > clarity and for consistency with the handling of the low bound, the
-> > generation of the high bound is split into a helper with commentary
-> > explaining why.
-> > 
-> > Since the pt_regs at the top of the stack will be clobbered upon the
-> > next exception entry, we don't need to poison these at exception exit.
-> > By using task_pt_regs() as the high stack boundary instead of
-> > current_top_of_stack() we avoid some redundant poisoning, and the
-> > compiler can share the address generation between the poisoning and
-> > restting of `current->lowest_stack`, making the generated code more
-> > optimal.
-> > 
-> > It's not clear to me whether the existing `THREAD_SIZE/64` offset was a
-> > dodgy heuristic to skip the pt_regs, or whether it was attempting to
-> > minimize the number of times stackleak_check_stack() would have to
-> > update `current->lowest_stack` when stack usage was shallow at the cost
-> > of unconditionally poisoning a small portion of the stack for every exit
-> > to userspace.
+On Thu, Apr 07, 2022 at 08:58:35PM +0800, Yicong Yang wrote:
+> The DMA operations of HiSilicon PTT device can only work properly with
+> identical mappings. So add a quirk for the device to force the domain
+> as passthrough.
 > 
-> I inherited this 'THREAD_SIZE/64' logic is from the original grsecurity patch.
-> As I mentioned, originally this was written in asm.
-> 
-> For x86_64:
-> 	mov	TASK_thread_sp0(%r11), %rdi
-> 	sub	$256, %rdi
-> 	mov	%rdi, TASK_lowest_stack(%r11)
-> 
-> For x86_32:
-> 	mov TASK_thread_sp0(%ebp), %edi
-> 	sub $128, %edi
-> 	mov %edi, TASK_lowest_stack(%ebp)
-> 
-> 256 bytes for x86_64 and 128 bytes for x86_32 are exactly THREAD_SIZE/64.
+> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
 
-To check my understanding, did you come up with the `THREAD_SIZE/64`
-calculation from reverse-engineering the assembly?
+I still don't like this being part of the SMMU driver, but given that
+(a) Robin doesn't seem to agree with the objection and (b) you've been
+refreshing the patch series:
 
-I strongly suspect that has nothing to do with THEAD_SIZE, and was trying to
-fall just below the task's pt_regs (and maybe some unconditional stack usage
-just below that).
+Acked-by: Will Deacon <will@kernel.org>
 
-> I think this value was chosen as optimal for minimizing poison scanning.
-> It's possible that stackleak_track_stack() is not called during the syscall
-> because all the called functions have small stack frames.
+If you do respin, then:
 
-I can believe that, but given the clearing cost appears to dominate the
-scanning cost, I suspect we can live with making this precisely the bottom of
-the pt_regs.
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 627a3ed5ee8f..5ec15ae2a9b1 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2839,6 +2839,21 @@ static int arm_smmu_dev_disable_feature(struct device *dev,
+>  	}
+>  }
 
-> > For now I've simply removed the offset, and if we need/want to minimize
-> > updates for shallow stack usage it should be easy to add a better
-> > heuristic atop, with appropriate commentary so we know what's going on.
-> 
-> I like your idea to erase the thread stack up to pt_regs if we call the
-> stackleak erasing from the trampoline stack.
-> 
-> But here I don't understand where task_pt_regs() points to...
+It might be worth adding a brief comment here to explain what this device is
+and why it needs an identity mapping.
 
-As mentioned in the commit message, there's a struct pt_regs at the top of each
-task stack (created at exception entry, and consumed by exception return),
-which contains the user register state. On arm64 and x86_64, that's *right* at
-the top of the stack, but on i386 there can be some padding above that.
-task_pt_regs(tsk) points at the base of that pt_regs.
+> +#define IS_HISI_PTT_DEVICE(pdev)	((pdev)->vendor == PCI_VENDOR_ID_HUAWEI && \
+> +					 (pdev)->device == 0xa12e)
 
-That looks something like the following (with increasing addresses going
-upwards):
-
-  ----------------   <--- task_stack_page(tsk) + THREAD_SIZE
-  (optional padding)
-  ----------------   <--- task_top_of_stack(tsk) // x86 only
-      /\
-      ||
-      || pt_regs
-      ||
-      \/
-  ----------------   <--- task_pt_regs(tsk)
-      /\
-      ||
-      ||
-      ||
-      || Usable task stack
-      ||
-      ||
-      ||
-      \/ 
-  ----------------
-  STACK_END_MAGIC
-  ----------------   <--- task_stack_page(tsk)
-
-Thanks,
-Mark.
-
-> > Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-> > Cc: Alexander Popov <alex.popov@linux.com>
-> > Cc: Andrew Morton <akpm@linux-foundation.org>
-> > Cc: Andy Lutomirski <luto@kernel.org>
-> > Cc: Kees Cook <keescook@chromium.org>
-> > ---
-> >   include/linux/stackleak.h | 14 ++++++++++++++
-> >   kernel/stackleak.c        | 19 ++++++++++++++-----
-> >   2 files changed, 28 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/include/linux/stackleak.h b/include/linux/stackleak.h
-> > index 67430faa5c518..467661aeb4136 100644
-> > --- a/include/linux/stackleak.h
-> > +++ b/include/linux/stackleak.h
-> > @@ -28,6 +28,20 @@ stackleak_task_low_bound(const struct task_struct *tsk)
-> >   	return (unsigned long)end_of_stack(tsk) + sizeof(unsigned long);
-> >   }
-> > +/*
-> > + * The address immediately after the highest address on tsk's stack which we
-> > + * can plausibly erase.
-> > + */
-> > +static __always_inline unsigned long
-> > +stackleak_task_high_bound(const struct task_struct *tsk)
-> > +{
-> > +	/*
-> > +	 * The task's pt_regs lives at the top of the task stack and will be
-> > +	 * overwritten by exception entry, so there's no need to erase them.
-> > +	 */
-> > +	return (unsigned long)task_pt_regs(tsk);
-> > +}
-> > +
-> >   static inline void stackleak_task_init(struct task_struct *t)
-> >   {
-> >   	t->lowest_stack = stackleak_task_low_bound(t);
-> > diff --git a/kernel/stackleak.c b/kernel/stackleak.c
-> > index d5f684dc0a2d9..ba346d46218f5 100644
-> > --- a/kernel/stackleak.c
-> > +++ b/kernel/stackleak.c
-> > @@ -73,6 +73,7 @@ late_initcall(stackleak_sysctls_init);
-> >   static __always_inline void __stackleak_erase(void)
-> >   {
-> >   	const unsigned long task_stack_low = stackleak_task_low_bound(current);
-> > +	const unsigned long task_stack_high = stackleak_task_high_bound(current);
-> >   	unsigned long erase_low = current->lowest_stack;
-> >   	unsigned long erase_high;
-> >   	unsigned int poison_count = 0;
-> > @@ -93,14 +94,22 @@ static __always_inline void __stackleak_erase(void)
-> >   #endif
-> >   	/*
-> > -	 * Now write the poison value to the kernel stack between 'erase_low'
-> > -	 * and 'erase_high'. We assume that the stack pointer doesn't change
-> > -	 * when we write poison.
-> > +	 * Write poison to the task's stack between 'erase_low' and
-> > +	 * 'erase_high'.
-> > +	 *
-> > +	 * If we're running on a different stack (e.g. an entry trampoline
-> > +	 * stack) we can erase everything below the pt_regs at the top of the
-> > +	 * task stack.
-> > +	 *
-> > +	 * If we're running on the task stack itself, we must not clobber any
-> > +	 * stack used by this function and its caller. We assume that this
-> > +	 * function has a fixed-size stack frame, and the current stack pointer
-> > +	 * doesn't change while we write poison.
-> >   	 */
-> >   	if (on_thread_stack())
-> >   		erase_high = current_stack_pointer;
-> >   	else
-> > -		erase_high = current_top_of_stack();
-> > +		erase_high = task_stack_high;
-> >   	while (erase_low < erase_high) {
-> >   		*(unsigned long *)erase_low = STACKLEAK_POISON;
-> > @@ -108,7 +117,7 @@ static __always_inline void __stackleak_erase(void)
-> >   	}
-> >   	/* Reset the 'lowest_stack' value for the next syscall */
-> > -	current->lowest_stack = current_top_of_stack() - THREAD_SIZE/64;
-> > +	current->lowest_stack = task_stack_high;
-> >   }
-> >   asmlinkage void noinstr stackleak_erase(void)
-> 
+Will
