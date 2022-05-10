@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCA88C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:30:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E9C3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:30:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343998AbiEJOeL (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:34:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42868 "EHLO
+        id S243502AbiEJOeW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:34:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344174AbiEJOHk (ORCPT
+        with ESMTP id S1344173AbiEJOHk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 10:07:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2020B1FE1C6;
-        Tue, 10 May 2022 06:41:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 204D81FE1D8;
+        Tue, 10 May 2022 06:41:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EE81D615C8;
-        Tue, 10 May 2022 13:41:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E11A9C385C2;
-        Tue, 10 May 2022 13:41:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 289FE61932;
+        Tue, 10 May 2022 13:41:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17C50C385C2;
+        Tue, 10 May 2022 13:41:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652190113;
-        bh=9CSoLroFbSTvPx0vay7I1wRnNOPAKHtc8NonX8gn7hQ=;
+        s=korg; t=1652190116;
+        bh=Wqyx8+KUJrqQW5ZQlScnzLnnSc5goRnS75MkHenOtkk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pGOWAS1RvGwMy7rYvCztDhV+4zkQCgjPyXkdrVUE/m96C0E2Vod9sNrk7l+HE6Thi
-         G/lCamInBdgmrlNW2T69UOab/G1ZzblDLiVS5D0cKot6pHehriwe8P3gxMWzT103Em
-         PYi3zic45Opp1M6b7GQlMOv5l9RcD+tTPoushoa8=
+        b=kFHCgR+ebBhA35Zwpn7cjalTHD/32cM+KXm/By09MJrFnc56YFie1HNq2FHGCEpqc
+         bwwoxd+1gImgV3G/1C0fZONHKqiuOWyCLeAok9dNhDbpTOr3gnJ0CTcMy+seb/CSdV
+         23ZgyghAPB7rlV+1Cm6ueGIxJlLd2/g4AeAn9Krw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Carlos Llamas <cmllamas@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 5.17 092/140] selftests/net: so_txtime: usage(): fix documentation of default clock
-Date:   Tue, 10 May 2022 15:08:02 +0200
-Message-Id: <20220510130744.239554837@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>
+Subject: [PATCH 5.17 083/140] NFSv4: Dont invalidate inode attributes on delegation return
+Date:   Tue, 10 May 2022 15:07:53 +0200
+Message-Id: <20220510130743.985788053@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -51,40 +48,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Kleine-Budde <mkl@pengutronix.de>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit f5c2174a3775491e890ce285df52f5715fbef875 upstream.
+commit 00c94ebec5925593c0377b941289224469e72ac7 upstream.
 
-The program uses CLOCK_TAI as default clock since it was added to the
-Linux repo. In commit:
-| 040806343bb4 ("selftests/net: so_txtime multi-host support")
-a help text stating the wrong default clock was added.
+There is no need to declare attributes such as the ctime, mtime and
+block size invalid when we're just returning a delegation, so it is
+inappropriate to call nfs_post_op_update_inode_force_wcc().
+Instead, just call nfs_refresh_inode() after faking up the change
+attribute. We know that the GETATTR op occurs before the DELEGRETURN, so
+we are safe when doing this.
 
-This patch fixes the help text.
-
-Fixes: 040806343bb4 ("selftests/net: so_txtime multi-host support")
-Cc: Carlos Llamas <cmllamas@google.com>
-Cc: Willem de Bruijn <willemb@google.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Acked-by: Willem de Bruijn <willemb@google.com>
-Reviewed-by: Carlos Llamas <cmllamas@google.com>
-Link: https://lore.kernel.org/r/20220502094638.1921702-3-mkl@pengutronix.de
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: 0bc2c9b4dca9 ("NFSv4: Don't discard the attributes returned by asynchronous DELEGRETURN")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/net/so_txtime.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/nfs/nfs4proc.c |   12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
---- a/tools/testing/selftests/net/so_txtime.c
-+++ b/tools/testing/selftests/net/so_txtime.c
-@@ -421,7 +421,7 @@ static void usage(const char *progname)
- 			"Options:\n"
- 			"  -4            only IPv4\n"
- 			"  -6            only IPv6\n"
--			"  -c <clock>    monotonic (default) or tai\n"
-+			"  -c <clock>    monotonic or tai (default)\n"
- 			"  -D <addr>     destination IP address (server)\n"
- 			"  -S <addr>     source IP address (client)\n"
- 			"  -r            run rx mode\n"
+--- a/fs/nfs/nfs4proc.c
++++ b/fs/nfs/nfs4proc.c
+@@ -363,6 +363,14 @@ static void nfs4_setup_readdir(u64 cooki
+ 	kunmap_atomic(start);
+ }
+ 
++static void nfs4_fattr_set_prechange(struct nfs_fattr *fattr, u64 version)
++{
++	if (!(fattr->valid & NFS_ATTR_FATTR_PRECHANGE)) {
++		fattr->pre_change_attr = version;
++		fattr->valid |= NFS_ATTR_FATTR_PRECHANGE;
++	}
++}
++
+ static void nfs4_test_and_free_stateid(struct nfs_server *server,
+ 		nfs4_stateid *stateid,
+ 		const struct cred *cred)
+@@ -6556,7 +6564,9 @@ static void nfs4_delegreturn_release(voi
+ 		pnfs_roc_release(&data->lr.arg, &data->lr.res,
+ 				 data->res.lr_ret);
+ 	if (inode) {
+-		nfs_post_op_update_inode_force_wcc(inode, &data->fattr);
++		nfs4_fattr_set_prechange(&data->fattr,
++					 inode_peek_iversion_raw(inode));
++		nfs_refresh_inode(inode, &data->fattr);
+ 		nfs_iput_and_deactive(inode);
+ 	}
+ 	kfree(calldata);
 
 
