@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2325C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:19:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36E43C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:19:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238435AbiEJNXm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:23:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45946 "EHLO
+        id S243051AbiEJNXq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:23:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242967AbiEJNVN (ORCPT
+        with ESMTP id S242972AbiEJNVO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:21:13 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5071B2C0D14;
-        Tue, 10 May 2022 06:14:21 -0700 (PDT)
+        Tue, 10 May 2022 09:21:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4C332C0D1D;
+        Tue, 10 May 2022 06:14:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E293BCE1EE4;
-        Tue, 10 May 2022 13:14:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF482C385C2;
-        Tue, 10 May 2022 13:14:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 697E461574;
+        Tue, 10 May 2022 13:14:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B600C385C6;
+        Tue, 10 May 2022 13:14:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188458;
-        bh=ycpbxAto+dh1Mn2Va8iL5uowbHR53RqJ38c0L1VvIxE=;
+        s=korg; t=1652188464;
+        bh=Za0+Kg0GzcGKimpUtf0svjSHqpztZKZgkSCW3XGCFmU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vOaJqKiVs9XXV1xPFuubvronSFj0Isp3p3ROLc1iw71oEyrLPC6vPN3fvHt7PJpb2
-         8bybJsykTUVfxuyrawjFpLZVEl0SnC64hwlDKz3BjppRRY/R8lfKKe20pMFRbm5aq5
-         8USUbwb6jaVFM7mzDOGHVa6Xt9ca3YrlkODLiKHg=
+        b=z1H3dvzvr0plHbXvGQoBUxBCrdxWBJSz+Plt5F7k4dPCn8MftXQHSVM+WoQaTkW/1
+         j2sChWl1VdV/rlgdl3DPa2pFkBVx/kqZ0xbOG5A+xqtfHAA8A0EfD2NUVe/3c4e9Q3
+         kGEfoR52+JypcWkJ3k7najC+ZUwMbDbKHOrHwPeo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zizhuang Deng <sunsetdzz@gmail.com>,
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
         Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 4.14 15/78] iio: dac: ad5592r: Fix the missing return value.
-Date:   Tue, 10 May 2022 15:07:01 +0200
-Message-Id: <20220510130732.984949266@linuxfoundation.org>
+Subject: [PATCH 4.14 17/78] iio: magnetometer: ak8975: Fix the error handling in ak8975_power_on()
+Date:   Tue, 10 May 2022 15:07:03 +0200
+Message-Id: <20220510130733.042088677@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
 References: <20220510130732.522479698@linuxfoundation.org>
@@ -49,34 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zizhuang Deng <sunsetdzz@gmail.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-commit b55b38f7cc12da3b9ef36e7a3b7f8f96737df4d5 upstream.
+commit 3a26787dacf04257a68b16315c984eb2c340bc5e upstream.
 
-The third call to `fwnode_property_read_u32` did not record
-the return value, resulting in `channel_offstate` possibly
-being assigned the wrong value.
+When the driver fails to enable the regulator 'vid', we will get the
+following splat:
 
-Fixes: 56ca9db862bf ("iio: dac: Add support for the AD5592R/AD5593R ADCs/DACs")
-Signed-off-by: Zizhuang Deng <sunsetdzz@gmail.com>
-Link: https://lore.kernel.org/r/20220310125450.4164164-1-sunsetdzz@gmail.com
+[   79.955610] WARNING: CPU: 5 PID: 441 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
+[   79.959641] RIP: 0010:_regulator_put+0x3ec/0x4e0
+[   79.967570] Call Trace:
+[   79.967773]  <TASK>
+[   79.967951]  regulator_put+0x1f/0x30
+[   79.968254]  devres_release_group+0x319/0x3d0
+[   79.968608]  i2c_device_probe+0x766/0x940
+
+Fix this by disabling the 'vdd' regulator when failing to enable 'vid'
+regulator.
+
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Link: https://lore.kernel.org/r/20220409034849.3717231-2-zheyuma97@gmail.com
 Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/dac/ad5592r-base.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/magnetometer/ak8975.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/iio/dac/ad5592r-base.c
-+++ b/drivers/iio/dac/ad5592r-base.c
-@@ -532,7 +532,7 @@ static int ad5592r_alloc_channels(struct
- 		if (!ret)
- 			st->channel_modes[reg] = tmp;
- 
--		fwnode_property_read_u32(child, "adi,off-state", &tmp);
-+		ret = fwnode_property_read_u32(child, "adi,off-state", &tmp);
- 		if (!ret)
- 			st->channel_offstate[reg] = tmp;
+--- a/drivers/iio/magnetometer/ak8975.c
++++ b/drivers/iio/magnetometer/ak8975.c
+@@ -404,6 +404,7 @@ static int ak8975_power_on(const struct
+ 	if (ret) {
+ 		dev_warn(&data->client->dev,
+ 			 "Failed to enable specified Vid supply\n");
++		regulator_disable(data->vdd);
+ 		return ret;
  	}
+ 	/*
 
 
