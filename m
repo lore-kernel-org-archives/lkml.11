@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BFBFC4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61A97C38A2C
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:38:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244150AbiEJNle (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:41:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57270 "EHLO
+        id S244208AbiEJNlm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:41:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243561AbiEJN1A (ORCPT
+        with ESMTP id S243536AbiEJN07 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:27:00 -0400
+        Tue, 10 May 2022 09:26:59 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF85F23886F;
-        Tue, 10 May 2022 06:20:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E93022380E1;
+        Tue, 10 May 2022 06:19:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 55381616D0;
-        Tue, 10 May 2022 13:20:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 622B9C385CD;
-        Tue, 10 May 2022 13:19:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 851D161532;
+        Tue, 10 May 2022 13:19:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97BF7C385C9;
+        Tue, 10 May 2022 13:19:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188799;
-        bh=zWF1IvJ/JqDFFxzMfKbdnAuJ8RlHsywurthgCDlnSU4=;
+        s=korg; t=1652188797;
+        bh=+IHCmlfZLlbxV1NwVzghPxvmkXQ1TyiCwy+ytS5Gm3s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L6BAKxqUURjclWGw+kk4K+/5pcaMlrfSWjzQd6AzVk3K9/yIEAxik5HrJVYetXmF4
-         ki8YuVHraIGJ8B7DMH5r8q0gNTE1h9PKidgUEISJaY0f8nor4HklOLzetw9bqrUb1y
-         BIm7VVCXx89azVw/4HXa1AUdAzDUbB/NMvS7Tmz0=
+        b=lWNq+C1eJj0yeCkjilNDMJlsKwcBubLm83SFnlotyjimn/WzX3ZW2oOA28INqS7CH
+         Az6CYpQ99yUqspHJYI0D9ikJmJeyu+pCYM4JWFccT9UKClv7eP2KRft3dUnQl3+/cS
+         APFVctVfBxhJpxL7o5UcNQU3ROX/EDeoZ9CXen1M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chuanhong Guo <gch981213@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 22/88] mtd: rawnand: fix ecc parameters for mt7622
-Date:   Tue, 10 May 2022 15:07:07 +0200
-Message-Id: <20220510130734.392563510@linuxfoundation.org>
+        stable@vger.kernel.org, "Kyle D. Pelton" <kyle.d.pelton@intel.com>,
+        Borislav Petkov <bp@suse.de>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Subject: [PATCH 4.19 48/88] x86/cpu: Load microcode during restore_processor_state()
+Date:   Tue, 10 May 2022 15:07:33 +0200
+Message-Id: <20220510130735.145025332@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 References: <20220510130733.735278074@linuxfoundation.org>
@@ -49,99 +49,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuanhong Guo <gch981213@gmail.com>
+From: Borislav Petkov <bp@suse.de>
 
-[ Upstream commit 9fe4e0d3cbfe90152137963cc024ecb63db6e8e6 ]
+commit f9e14dbbd454581061c736bf70bf5cbb15ac927c upstream.
 
-According to the datasheet, mt7622 only has 5 ECC capabilities instead
-of 7, and the decoding error register is arranged  as follows:
-+------+---------+---------+---------+---------+
-| Bits |  19:15  |  14:10  |   9:5   |   4:0   |
-+------+---------+---------+---------+---------+
-| Name | ERRNUM3 | ERRNUM2 | ERRNUM1 | ERRNUM0 |
-+------+---------+---------+---------+---------+
-This means err_mask should be 0x1f instead of 0x3f and the number of
-bits shifted in mtk_ecc_get_stats should be 5 instead of 8.
+When resuming from system sleep state, restore_processor_state()
+restores the boot CPU MSRs. These MSRs could be emulated by microcode.
+If microcode is not loaded yet, writing to emulated MSRs leads to
+unchecked MSR access error:
 
-This commit introduces err_shift for the difference in this register
-and fix other existing parameters.
+  ...
+  PM: Calling lapic_suspend+0x0/0x210
+  unchecked MSR access error: WRMSR to 0x10f (tried to write 0x0...0) at rIP: ... (native_write_msr)
+  Call Trace:
+    <TASK>
+    ? restore_processor_state
+    x86_acpi_suspend_lowlevel
+    acpi_suspend_enter
+    suspend_devices_and_enter
+    pm_suspend.cold
+    state_store
+    kobj_attr_store
+    sysfs_kf_write
+    kernfs_fop_write_iter
+    new_sync_write
+    vfs_write
+    ksys_write
+    __x64_sys_write
+    do_syscall_64
+    entry_SYSCALL_64_after_hwframe
+   RIP: 0033:0x7fda13c260a7
 
-Public MT7622 reference manual can be found on [0] and the info this
-commit is based on is from page 656 and page 660.
+To ensure microcode emulated MSRs are available for restoration, load
+the microcode on the boot CPU before restoring these MSRs.
 
-[0]: https://wiki.banana-pi.org/Banana_Pi_BPI-R64#Documents
+  [ Pawan: write commit message and productize it. ]
 
-Fixes: 98dea8d71931 ("mtd: nand: mtk: Support MT7622 NAND flash controller.")
-Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220402160315.919094-1-gch981213@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: e2a1256b17b1 ("x86/speculation: Restore speculation related MSRs during S3 resume")
+Reported-by: Kyle D. Pelton <kyle.d.pelton@intel.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Tested-by: Kyle D. Pelton <kyle.d.pelton@intel.com>
+Cc: stable@vger.kernel.org
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215841
+Link: https://lore.kernel.org/r/4350dfbf785cd482d3fafa72b2b49c83102df3ce.1650386317.git.pawan.kumar.gupta@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mtd/nand/raw/mtk_ecc.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ arch/x86/include/asm/microcode.h     |    2 ++
+ arch/x86/kernel/cpu/microcode/core.c |    6 +++---
+ arch/x86/power/cpu.c                 |    8 ++++++++
+ 3 files changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/mtd/nand/raw/mtk_ecc.c b/drivers/mtd/nand/raw/mtk_ecc.c
-index 6432bd70c3b3..9e4a78a80802 100644
---- a/drivers/mtd/nand/raw/mtk_ecc.c
-+++ b/drivers/mtd/nand/raw/mtk_ecc.c
-@@ -51,6 +51,7 @@
- 
- struct mtk_ecc_caps {
- 	u32 err_mask;
-+	u32 err_shift;
- 	const u8 *ecc_strength;
- 	const u32 *ecc_regs;
- 	u8 num_ecc_strength;
-@@ -84,7 +85,7 @@ static const u8 ecc_strength_mt2712[] = {
+--- a/arch/x86/include/asm/microcode.h
++++ b/arch/x86/include/asm/microcode.h
+@@ -133,11 +133,13 @@ extern void load_ucode_ap(void);
+ void reload_early_microcode(void);
+ extern bool get_builtin_firmware(struct cpio_data *cd, const char *name);
+ extern bool initrd_gone;
++void microcode_bsp_resume(void);
+ #else
+ static inline int __init microcode_init(void)			{ return 0; };
+ static inline void __init load_ucode_bsp(void)			{ }
+ static inline void load_ucode_ap(void)				{ }
+ static inline void reload_early_microcode(void)			{ }
++static inline void microcode_bsp_resume(void)			{ }
+ static inline bool
+ get_builtin_firmware(struct cpio_data *cd, const char *name)	{ return false; }
+ #endif
+--- a/arch/x86/kernel/cpu/microcode/core.c
++++ b/arch/x86/kernel/cpu/microcode/core.c
+@@ -773,9 +773,9 @@ static struct subsys_interface mc_cpu_in
  };
  
- static const u8 ecc_strength_mt7622[] = {
--	4, 6, 8, 10, 12, 14, 16
-+	4, 6, 8, 10, 12
+ /**
+- * mc_bp_resume - Update boot CPU microcode during resume.
++ * microcode_bsp_resume - Update boot CPU microcode during resume.
+  */
+-static void mc_bp_resume(void)
++void microcode_bsp_resume(void)
+ {
+ 	int cpu = smp_processor_id();
+ 	struct ucode_cpu_info *uci = ucode_cpu_info + cpu;
+@@ -787,7 +787,7 @@ static void mc_bp_resume(void)
+ }
+ 
+ static struct syscore_ops mc_syscore_ops = {
+-	.resume			= mc_bp_resume,
++	.resume			= microcode_bsp_resume,
  };
  
- enum mtk_ecc_regs {
-@@ -229,7 +230,7 @@ void mtk_ecc_get_stats(struct mtk_ecc *ecc, struct mtk_ecc_stats *stats,
- 	for (i = 0; i < sectors; i++) {
- 		offset = (i >> 2) << 2;
- 		err = readl(ecc->regs + ECC_DECENUM0 + offset);
--		err = err >> ((i % 4) * 8);
-+		err = err >> ((i % 4) * ecc->caps->err_shift);
- 		err &= ecc->caps->err_mask;
- 		if (err == ecc->caps->err_mask) {
- 			/* uncorrectable errors */
-@@ -453,6 +454,7 @@ EXPORT_SYMBOL(mtk_ecc_get_parity_bits);
+ static int mc_cpu_starting(unsigned int cpu)
+--- a/arch/x86/power/cpu.c
++++ b/arch/x86/power/cpu.c
+@@ -26,6 +26,7 @@
+ #include <asm/cpu.h>
+ #include <asm/mmu_context.h>
+ #include <asm/cpu_device_id.h>
++#include <asm/microcode.h>
  
- static const struct mtk_ecc_caps mtk_ecc_caps_mt2701 = {
- 	.err_mask = 0x3f,
-+	.err_shift = 8,
- 	.ecc_strength = ecc_strength_mt2701,
- 	.ecc_regs = mt2701_ecc_regs,
- 	.num_ecc_strength = 20,
-@@ -463,6 +465,7 @@ static const struct mtk_ecc_caps mtk_ecc_caps_mt2701 = {
+ #ifdef CONFIG_X86_32
+ __visible unsigned long saved_context_ebx;
+@@ -268,6 +269,13 @@ static void notrace __restore_processor_
+ 	x86_platform.restore_sched_clock_state();
+ 	mtrr_bp_restore();
+ 	perf_restore_debug_store();
++
++	microcode_bsp_resume();
++
++	/*
++	 * This needs to happen after the microcode has been updated upon resume
++	 * because some of the MSRs are "emulated" in microcode.
++	 */
+ 	msr_restore_context(ctxt);
+ }
  
- static const struct mtk_ecc_caps mtk_ecc_caps_mt2712 = {
- 	.err_mask = 0x7f,
-+	.err_shift = 8,
- 	.ecc_strength = ecc_strength_mt2712,
- 	.ecc_regs = mt2712_ecc_regs,
- 	.num_ecc_strength = 23,
-@@ -472,10 +475,11 @@ static const struct mtk_ecc_caps mtk_ecc_caps_mt2712 = {
- };
- 
- static const struct mtk_ecc_caps mtk_ecc_caps_mt7622 = {
--	.err_mask = 0x3f,
-+	.err_mask = 0x1f,
-+	.err_shift = 5,
- 	.ecc_strength = ecc_strength_mt7622,
- 	.ecc_regs = mt7622_ecc_regs,
--	.num_ecc_strength = 7,
-+	.num_ecc_strength = 5,
- 	.ecc_mode_shift = 4,
- 	.parity_bits = 13,
- 	.pg_irq_sel = 0,
--- 
-2.35.1
-
 
 
