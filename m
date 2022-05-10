@@ -2,116 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1876C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:31:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 031B1C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:32:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241026AbiEJNfv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:35:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50074 "EHLO
+        id S243269AbiEJNf5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:35:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243036AbiEJNZ1 (ORCPT
+        with ESMTP id S243035AbiEJNZ1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:25:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7F3E722EA63
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 06:18:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652188716;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=sHy0F7ac22uwKEpSKuZcvo5GcFLWTTOIEdgJB67ZhmA=;
-        b=QHwd05NJ7mXnRXGDaIgyrVpxkOrrPrEJFcO/gonXlxP3h0zcbhY3qL0FpMVVVv80Iq1DTS
-        kAQWWctPpFapEnllCMWEoEhKE3ZDUCkeB+dv5NC3p55e13UcsX+lTY4lklFfTvPptjcIRJ
-        +vWtd/9Et+Yf+fGCRCqbvdrf2+P06p8=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-631-82-I38puMuyShLbuglGmaw-1; Tue, 10 May 2022 09:18:35 -0400
-X-MC-Unique: 82-I38puMuyShLbuglGmaw-1
-Received: by mail-wm1-f72.google.com with SMTP id g3-20020a7bc4c3000000b0039409519611so5260029wmk.9
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 06:18:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=sHy0F7ac22uwKEpSKuZcvo5GcFLWTTOIEdgJB67ZhmA=;
-        b=WKp/UMukfJUQtrJHdEJ+P/V95M0r9UpMCTerbnwBGA/dzW2nb91x2QVrWoUzPjS/CM
-         L1sKEqoZbvnF/0YkX+XkwgrGCJ9zTTMa2VarJwHDxsVjGOUAhaXEjZ6TFoN8a07p34H9
-         4kSEiX7Jy4IUaJpGrlIHGDcMH1MshSYrDi8alm6/wh6nt79trmH+tz9ZDKFdYl1feLcg
-         bqrKJJli1wHsNnEblXtXBN52LyLUjwqAek1W66GfqOsmkSpwlFHpDW03Oada3W5Vbmlh
-         CJRyLPOJ2u1iaz6dVE9NOLtqXwLo+KUsNcnkwDJhTncniYP/lyd80CXW6u/2U6b5r9TG
-         nGUg==
-X-Gm-Message-State: AOAM533RPUsrSEhAnHTJBwHJSWc0C1P3/M4qKI1FwRX9teLlz8ocdq41
-        /zAXsqcsjZx9b6FZxST8M1VGpvDroKmqg6uVitqChaArMZsDAQy+tYx41NeXkMr9Pk8G1gzQkOZ
-        7IgY31sACrxDovMSQrXrfFRdg
-X-Received: by 2002:a05:600c:5105:b0:394:7d22:aa93 with SMTP id o5-20020a05600c510500b003947d22aa93mr19997762wms.107.1652188714168;
-        Tue, 10 May 2022 06:18:34 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzJhqj/rclE960FiMWEPu/ABEdzf1gL2hi5Dp98G//UB2PCflcGTO2OPYlMduSsRS0sioEd9g==
-X-Received: by 2002:a05:600c:5105:b0:394:7d22:aa93 with SMTP id o5-20020a05600c510500b003947d22aa93mr19997736wms.107.1652188713913;
-        Tue, 10 May 2022 06:18:33 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-113-89.dyn.eolo.it. [146.241.113.89])
-        by smtp.gmail.com with ESMTPSA id c2-20020a5d5282000000b0020c5253d8e0sm14119404wrv.44.2022.05.10.06.18.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 06:18:33 -0700 (PDT)
-Message-ID: <21ee77073341cd2b5e0109be5da61d8e981ea50d.camel@redhat.com>
-Subject: Re: [PATCH] net: macb: Disable macb pad and fcs for fragmented
- packets
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Harini Katakam <harini.katakam@xilinx.com>,
-        nicolas.ferre@microchip.com, davem@davemloft.net,
-        claudiu.beznea@microchip.com, kuba@kernel.org, dumazet@google.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        michal.simek@xilinx.com, harinikatakamlinux@gmail.com,
-        radhey.shyam.pandey@xilinx.com
-Date:   Tue, 10 May 2022 15:18:32 +0200
-In-Reply-To: <20220509121513.30549-1-harini.katakam@xilinx.com>
-References: <20220509121513.30549-1-harini.katakam@xilinx.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D09B22EA77;
+        Tue, 10 May 2022 06:18:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F58A61665;
+        Tue, 10 May 2022 13:18:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90118C385C2;
+        Tue, 10 May 2022 13:18:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652188717;
+        bh=ICZctLIchoodJ3+Rypdhc4DMeoSUKHvRYT1hN6mKWPc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=lKnkS9yX1GJdxJ3HeW2S4RWkttNcy+nrM/P06vUdu17iJuHhI5Z7d+iAAMdI3HPHz
+         5FkPbAXVFol+l+sOQJraJvTkEApfzCVJDKiPW0esp9fXYhOmZoTThXezjX6JoWd7VX
+         uj/l5oLxdrNkt52ioZif3LyalsyXbbnL3lYaQ3rg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 4.19 04/88] USB: serial: whiteheat: fix heap overflow in WHITEHEAT_GET_DTR_RTS
+Date:   Tue, 10 May 2022 15:06:49 +0200
+Message-Id: <20220510130733.867169924@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
+References: <20220510130733.735278074@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-05-09 at 17:45 +0530, Harini Katakam wrote:
-> data_len in skbuff represents bytes resident in fragment lists or
-> unmapped page buffers. For such packets, when data_len is non-zero,
-> skb_put cannot be used - this will throw a kernel bug. Hence do not
-> use macb_pad_and_fcs for such fragments.
-> 
-> Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
-> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+From: Kees Cook <keescook@chromium.org>
 
-This looks like a fix suitable for the net tree. Please add a relevant
-'Fixes' tag.
+commit e23e50e7acc8d8f16498e9c129db33e6a00e80eb upstream.
 
-> ---
->  drivers/net/ethernet/cadence/macb_main.c | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-> index 6434e74c04f1..0b03305ad6a0 100644
-> --- a/drivers/net/ethernet/cadence/macb_main.c
-> +++ b/drivers/net/ethernet/cadence/macb_main.c
-> @@ -1995,7 +1995,8 @@ static unsigned int macb_tx_map(struct macb *bp,
->  			ctrl |= MACB_BF(TX_LSO, lso_ctrl);
->  			ctrl |= MACB_BF(TX_TCP_SEQ_SRC, seq_ctrl);
->  			if ((bp->dev->features & NETIF_F_HW_CSUM) &&
-> -			    skb->ip_summed != CHECKSUM_PARTIAL && !lso_ctrl)
-> +			    skb->ip_summed != CHECKSUM_PARTIAL && !lso_ctrl &&
-> +			    (skb->data_len == 0))
->  				ctrl |= MACB_BIT(TX_NOCRC);
->  		} else
->  			/* Only set MSS/MFS on payload descriptors
+The sizeof(struct whitehat_dr_info) can be 4 bytes under CONFIG_AEABI=n
+due to "-mabi=apcs-gnu", even though it has a single u8:
 
-This chunk looks unrelated to the commit message ?!? only the next one
-looks relevant.
+whiteheat_private {
+        __u8                       mcr;                  /*     0     1 */
 
-Thanks.
+        /* size: 4, cachelines: 1, members: 1 */
+        /* padding: 3 */
+        /* last cacheline: 4 bytes */
+};
 
-Paolo
+The result is technically harmless, as both the source and the
+destinations are currently the same allocation size (4 bytes) and don't
+use their padding, but if anything were to ever be added after the
+"mcr" member in "struct whiteheat_private", it would be overwritten. The
+structs both have a single u8 "mcr" member, but are 4 bytes in padded
+size. The memcpy() destination was explicitly targeting the u8 member
+(size 1) with the length of the whole structure (size 4), triggering
+the memcpy buffer overflow warning:
+
+In file included from include/linux/string.h:253,
+                 from include/linux/bitmap.h:11,
+                 from include/linux/cpumask.h:12,
+                 from include/linux/smp.h:13,
+                 from include/linux/lockdep.h:14,
+                 from include/linux/spinlock.h:62,
+                 from include/linux/mmzone.h:8,
+                 from include/linux/gfp.h:6,
+                 from include/linux/slab.h:15,
+                 from drivers/usb/serial/whiteheat.c:17:
+In function 'fortify_memcpy_chk',
+    inlined from 'firm_send_command' at drivers/usb/serial/whiteheat.c:587:4:
+include/linux/fortify-string.h:328:25: warning: call to '__write_overflow_field' declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()? [-Wattribute-warning]
+  328 |                         __write_overflow_field(p_size_field, size);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Instead, just assign the one byte directly.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Link: https://lore.kernel.org/lkml/202204142318.vDqjjSFn-lkp@intel.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20220421001234.2421107-1-keescook@chromium.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/usb/serial/whiteheat.c |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+--- a/drivers/usb/serial/whiteheat.c
++++ b/drivers/usb/serial/whiteheat.c
+@@ -611,9 +611,8 @@ static int firm_send_command(struct usb_
+ 		switch (command) {
+ 		case WHITEHEAT_GET_DTR_RTS:
+ 			info = usb_get_serial_port_data(port);
+-			memcpy(&info->mcr, command_info->result_buffer,
+-					sizeof(struct whiteheat_dr_info));
+-				break;
++			info->mcr = command_info->result_buffer[0];
++			break;
+ 		}
+ 	}
+ exit:
+
 
