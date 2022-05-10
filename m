@@ -2,130 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 967D5C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA3B9C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 03:38:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235546AbiEJDkv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 23:40:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37176 "EHLO
+        id S235775AbiEJDlT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 23:41:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235451AbiEJDkW (ORCPT
+        with ESMTP id S235699AbiEJDlG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 23:40:22 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9634E2016C1
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 20:34:30 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id q4so12747664plr.11
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 20:34:30 -0700 (PDT)
+        Mon, 9 May 2022 23:41:06 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D533656C;
+        Mon,  9 May 2022 20:37:10 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id gj17-20020a17090b109100b001d8b390f77bso975663pjb.1;
+        Mon, 09 May 2022 20:37:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=CZ1QdS/D3rgCmw+Zycki6j1IWtRyZB2FiDM7FD6ZGy4=;
-        b=lMmmY4nLRQd8BsH/lO2MBfdzCuU6S7jC3MHaOmd6hr7SwHTC8Rfu4Waack75xECioc
-         1x49pTXz65EykrxjojpOYVDP9ZMpzMyeMpMW6LVEWwkonJ0F9Hrucxz3L6ASZX+h6BEH
-         tsvs1YWPvK/FmEK7WUT6g0j4J8v5LP3OAtWs1RJv64+1RHhWDEj31Ood/o6kV1xsTMo4
-         2z7hra6JfFy+OCvRUavVFd8Y4kqLWSka8wUK1BFh1mQpJyairE+KriSEhlYKn5BbmBz+
-         7HT/c2a9wwaLr3j175eLkn1SYrYiYCsjFLaxWtxtm4s2BugCD1JTYW3ShtAGfpnIk+/W
-         B59Q==
+        h=subject:to:references:cc:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding;
+        bh=Tuw5rwdDw674mRKOWTVNmxFb45NMy2jQBbhpZfnBSUw=;
+        b=YiFnFgxquAvcN9oAz4bKdkvIgiIB+a2cUP7hrsWWe9xQIDFp1zXiH07J5MVLpOKV/F
+         4/25W0/6ytNqxy3QYpPHcfhrYm8fbk4jtIa38qc/7YG8XgaO4w9kFZwmTxTO9O1aNc4v
+         EjGHqCZP6qg/s3Q+L/Yg4wze1XawIv1A28OydYVAtQr4qhhFmYw36rs67e3HT6AezUaN
+         uXXBqjOWSVnAUwgw6WjU0gW10lKfbhbF4aKFF5V4l5B3bvRlljJy1/KRTxsxlZ12Jw3x
+         C1qi6IhGu1Xg/QbTVzm+dPbsqsEow9KliIFgFZbD8z4XZKUQRxNzL5phc0oFNwUvTM49
+         WVVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=CZ1QdS/D3rgCmw+Zycki6j1IWtRyZB2FiDM7FD6ZGy4=;
-        b=XqOVht9Iui07hNu/rzub1mtHROBSNoZ1ZGPFvxBgFY7TuSZ4zFIqdE2niCMdn7OUeJ
-         6wKrWUkaDwiUmXVVd5vFUtpAyZIftB/Vz6tvjXdLmrkxY4jwZ/0MGtjKCoiPxnjAwp9r
-         N8HWhhl+Prb8Dfj6+CTR+/bUbKxp7zh6SkeMr2laLGRUEUO/0K9lEakc/inzCdNgbysC
-         jT9uY5FHQDmCR74OJJy+c7Koi0BHvpXJCqeM5S6WZhBJYI2XG2sw6ecej+lJTY4v8gqv
-         tPTTGtsCgtugOYoJ9e2LeaHHnugTd0PGQF6wO9sPknZQXnms6lsRxK9lLS3KGGFfP4YG
-         uEmQ==
-X-Gm-Message-State: AOAM532QLmMIqdJSIOk39Z1qvUxldj0sAdBz1UCofJOiqwg2Rm2bkOfX
-        vjGEBmBSzsBw1rNEOj9M1+4=
-X-Google-Smtp-Source: ABdhPJzBCOnWl+Fsjf8SC5B2ZH/hGKxtSSQwNDu2PN16mLJrvUj16WliQAJPgU/0i3PAKBpFzCvzRg==
-X-Received: by 2002:a17:90a:f310:b0:1db:effb:a614 with SMTP id ca16-20020a17090af31000b001dbeffba614mr29401587pjb.233.1652153670101;
-        Mon, 09 May 2022 20:34:30 -0700 (PDT)
-Received: from localhost ([152.70.90.187])
-        by smtp.gmail.com with ESMTPSA id c4-20020a170903234400b0015e8d4eb283sm664755plh.205.2022.05.09.20.34.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 20:34:29 -0700 (PDT)
-Date:   Tue, 10 May 2022 11:34:25 +0800
-From:   Wang Cheng <wanngchenng@gmail.com>
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     dan.carpenter@oracle.com, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/3] staging: rtl8712: fix uninit-value in usb_read8()
- and friends
-Message-ID: <20220510033425.6uzanqtejdlmtwl2@ppc.localdomain>
-References: <cover.1651833575.git.wanngchenng@gmail.com>
- <b9b7a6ee02c02aa28054f5cf16129977775f3cd9.1651833575.git.wanngchenng@gmail.com>
- <dba1acfa-1e82-7b6b-928a-beff18c51f5b@gmail.com>
+        h=x-gm-message-state:subject:to:references:cc:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
+        bh=Tuw5rwdDw674mRKOWTVNmxFb45NMy2jQBbhpZfnBSUw=;
+        b=FGHc/vxmnBRetQTaaDV+EgAqfYzLs2v5THw/iGbJbSTE60GnMOR9GIgnZT7u1MDGxU
+         jOjqcxqb8nifPLuPFqO2Gcd0bRlct29mqkaGRlyf5F9jkiVmz7p8IUvbl5MkunHWGgYv
+         kBqfYOOVrNKd5zrmPb2hSjetgN6AFR6hp+DU9n4dJ5NzjOeoLSgtEhyCIBdOPOU8PjE/
+         h1uPDG+f62hmf1K76vlj2o2JSVE/e6xKzdkhFlsTW3mBVBGwzh2HaNUJU+L38oQzd5S3
+         Kck00fNpuBeHJ6J3M1JRTDFt0nxVATS+Ce6wF952QBUAb8POEDekHroM98ymIg3PeEeV
+         1B/w==
+X-Gm-Message-State: AOAM533/Kfy4zAUVPuN2CseE4jtoDvKz420LEQZV9JQODFSWv0ZA5mni
+        3x+S0dSuDH+UubhkUhIk7ZniX40gwjQ=
+X-Google-Smtp-Source: ABdhPJwK/iXQY2YYJRwx8AcP5nD0enihRlu5tvzOsqIZ7H1RA2DlLUk7LB1M8Zr7G0Yu4mvm8wVUFw==
+X-Received: by 2002:a17:90a:1f4f:b0:1d8:23d9:de1e with SMTP id y15-20020a17090a1f4f00b001d823d9de1emr21105172pjy.42.1652153829547;
+        Mon, 09 May 2022 20:37:09 -0700 (PDT)
+Received: from [10.1.1.24] (222-155-0-244-adsl.sparkbb.co.nz. [222.155.0.244])
+        by smtp.gmail.com with ESMTPSA id c5-20020a170903234500b0015e8d4eb1f6sm708896plh.64.2022.05.09.20.37.05
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 09 May 2022 20:37:08 -0700 (PDT)
+Subject: Re: linux-next: manual merge of the m68knommu tree with the m68k tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Greg Ungerer <gerg@linux-m68k.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+References: <20220510094442.26826532@canb.auug.org.au>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+From:   Michael Schmitz <schmitzmic@gmail.com>
+Message-ID: <7bcb1248-7329-9aee-5d81-7e846cd1e461@gmail.com>
+Date:   Tue, 10 May 2022 15:37:03 +1200
+User-Agent: Mozilla/5.0 (X11; Linux ppc; rv:45.0) Gecko/20100101
+ Icedove/45.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <dba1acfa-1e82-7b6b-928a-beff18c51f5b@gmail.com>
+In-Reply-To: <20220510094442.26826532@canb.auug.org.au>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/05/06 03:12PM, Pavel Skripkin wrote:
-> Hi Wang,
-> 
-> On 5/6/22 14:59, Wang Cheng wrote:
-> > Reported-and-tested-by: syzbot+6f5ecd144854c0d8580b@syzkaller.appspotmail.com
-> > Signed-off-by: Wang Cheng <wanngchenng@gmail.com>
-> > ---
-> >   drivers/staging/rtl8712/usb_ops.c | 27 ++++++++++++++++++---------
-> >   1 file changed, 18 insertions(+), 9 deletions(-)
-> > 
-> > diff --git a/drivers/staging/rtl8712/usb_ops.c b/drivers/staging/rtl8712/usb_ops.c
-> > index e64845e6adf3..af9966d03979 100644
-> > --- a/drivers/staging/rtl8712/usb_ops.c
-> > +++ b/drivers/staging/rtl8712/usb_ops.c
-> > @@ -29,7 +29,8 @@ static u8 usb_read8(struct intf_hdl *intfhdl, u32 addr)
-> >   	u16 wvalue;
-> >   	u16 index;
-> >   	u16 len;
-> > -	__le32 data;
-> > +	int status;
-> > +	__le32 data = 0;
-> >   	struct intf_priv *intfpriv = intfhdl->pintfpriv;
-> >   	request = 0x05;
-> > @@ -37,8 +38,10 @@ static u8 usb_read8(struct intf_hdl *intfhdl, u32 addr)
-> >   	index = 0;
-> >   	wvalue = (u16)(addr & 0x0000ffff);
-> >   	len = 1;
-> > -	r8712_usbctrl_vendorreq(intfpriv, request, wvalue, index, &data, len,
-> > -				requesttype);
-> > +	status = r8712_usbctrl_vendorreq(intfpriv, request, wvalue, index,
-> > +					 &data, len, requesttype);
-> > +	if (status < 0)
-> > +		return 0;
-> 
-> Wait, but what about partial reads? I see that r8712_usbctrl_vendorreq()
-> uses `usb_control_msg()` which can read less data than was requested.
-> 
-> So here you are just hiding these error by zeroing data
-> 
-> >   	return (u8)(le32_to_cpu(data) & 0x0ff);
-> >   }
-> 
-> And as i said in previous email: caller can't see an error.
-> 
-> Imagine caller waits for some register to become 0. Caller sees that
-> usb_read8() returned 0. Is it an error? Is register really become 0?
-> 
-> 
-> Generic read API prototype looks like following:
-> 
-> int read_something(struct my_cool_dev *dev, void *data, size_t size);
-> 
-> and it returns 0 on success and -errno on failure and data returned via
-> passed pointer. So, if API returned an error caller should not touch @data,
-> since likely it's uninitialized
+Hi Stephen,
 
-Thank you for your remind, sorry I didnt understand your previous reply
-about "register and 0" that you explain very clearly above. I am thinking
-about it standing on that the return type of usb_read8() is u8.
+apologies on my part - I had thought that I had copied in Greg on my 
+patch series. And I evidently missed that his ELF patch would have 
+clashed with mine.
 
-thanks,
-- w
+Geert and Greg coordinate well as a rule, and both patches had been seen 
+on the linux-m68k mailing list (just too far apart to jog my memory).
+
+Won't happen again this decade (I hope).
+
+Cheers,
+
+	Michael
+
+
+Am 10.05.2022 um 11:44 schrieb Stephen Rothwell:
+> Hi all,
+>
+> Today's linux-next merge of the m68knommu tree got a conflict in:
+>
+>   arch/m68k/kernel/ptrace.c
+>
+> between commit:
+>
+>   c862fe70b023 ("m68k: Wire up syscall_trace_enter/leave for m68k")
+>
+> from the m68k tree and commit:
+>
+>   0d91043d8bdf ("m68knommu: implement minimal regset support")
+>
+> from the m68knommu tree.
+>
+> I fixed it up (see below) and can carry the fix as necessary. This
+> is now fixed as far as linux-next is concerned, but any non trivial
+> conflicts should be mentioned to your upstream maintainer when your tree
+> is submitted for merging.  You may also want to consider cooperating
+> with the maintainer of the conflicting tree to minimise any particularly
+> complex conflicts.
+>
