@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ED8FC38A2B
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:40:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F283CC4707E
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:40:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243997AbiEJNnw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:43:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40106 "EHLO
+        id S244080AbiEJNnN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:43:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243378AbiEJNam (ORCPT
+        with ESMTP id S243287AbiEJN3M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:30:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 750812C511A;
-        Tue, 10 May 2022 06:21:27 -0700 (PDT)
+        Tue, 10 May 2022 09:29:12 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C777F4664D;
+        Tue, 10 May 2022 06:21:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1555F616D0;
-        Tue, 10 May 2022 13:21:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2103AC385A6;
-        Tue, 10 May 2022 13:21:25 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5C4B9CE1EA8;
+        Tue, 10 May 2022 13:21:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7568CC385A6;
+        Tue, 10 May 2022 13:21:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188886;
-        bh=NmlfjBAVVEP/vw+cxYqZN4npXt02El+JYjH9uacL4go=;
+        s=korg; t=1652188861;
+        bh=0w0xQr+Pu/llxYWRbwOnMuOVCGxAkws6yzESbdnf+gk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DQCh7XtIEUUU3dr4s85wAprRgDQqiIQ69jkKAiucbhSIPYiU6QM8MeP2GRWVqOOqT
-         weD2q6Pz5cB+ah6nxohD3QiA0ciGNJBr6piuZjlDxmWDPc7440d7JbLb+qOXeKpUmN
-         66B5h0eG9do6ErMVA5LmiwrBUtM+9IoimhWqek3k=
+        b=of5ANiW1CWbqaIzBaJd1m0qdv8e39gX28djZO4uf3RpeMw1VtSWz8HYwjxv6RkjBD
+         x55u5kvNH6ycZGucOvttL3xhzK4qjso6clohVP2YEMFCF0x5b/GQG4/zodLOKbEQQV
+         eo/AUxNEEydaC7mn35XXSBc58ZwmnIy2C/7JtZzU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vasant Hegde <vasant.hegde@amd.com>,
-        Sandipan Das <sandipan.das@amd.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 81/88] kvm: x86/cpuid: Only provide CPUID leaf 0xA if host has architectural PMU
-Date:   Tue, 10 May 2022 15:08:06 +0200
-Message-Id: <20220510130736.084725368@linuxfoundation.org>
+        stable@vger.kernel.org, Jakob Koschel <jakobkoschel@gmail.com>,
+        Takashi Sakamoto <o-takashi@sakamocchi.jp>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 4.19 64/88] firewire: remove check of list iterator against head past the loop body
+Date:   Tue, 10 May 2022 15:07:49 +0200
+Message-Id: <20220510130735.599440441@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 References: <20220510130733.735278074@linuxfoundation.org>
@@ -50,53 +49,140 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sandipan Das <sandipan.das@amd.com>
+From: Jakob Koschel <jakobkoschel@gmail.com>
 
-[ Upstream commit 5a1bde46f98b893cda6122b00e94c0c40a6ead3c ]
+commit 9423973869bd4632ffe669f950510c49296656e0 upstream.
 
-On some x86 processors, CPUID leaf 0xA provides information
-on Architectural Performance Monitoring features. It
-advertises a PMU version which Qemu uses to determine the
-availability of additional MSRs to manage the PMCs.
+When list_for_each_entry() completes the iteration over the whole list
+without breaking the loop, the iterator value will be a bogus pointer
+computed based on the head element.
 
-Upon receiving a KVM_GET_SUPPORTED_CPUID ioctl request for
-the same, the kernel constructs return values based on the
-x86_pmu_capability irrespective of the vendor.
+While it is safe to use the pointer to determine if it was computed
+based on the head element, either with list_entry_is_head() or
+&pos->member == head, using the iterator variable after the loop should
+be avoided.
 
-This leaf and the additional MSRs are not supported on AMD
-and Hygon processors. If AMD PerfMonV2 is detected, the PMU
-version is set to 2 and guest startup breaks because of an
-attempt to access a non-existent MSR. Return zeros to avoid
-this.
+In preparation to limit the scope of a list iterator to the list
+traversal loop, use a dedicated pointer to point to the found element [1].
 
-Fixes: a6c06ed1a60a ("KVM: Expose the architectural performance monitoring CPUID leaf")
-Reported-by: Vasant Hegde <vasant.hegde@amd.com>
-Signed-off-by: Sandipan Das <sandipan.das@amd.com>
-Message-Id: <3fef83d9c2b2f7516e8ff50d60851f29a4bcb716.1651058600.git.sandipan.das@amd.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+Signed-off-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
+Link: https://lore.kernel.org/r/20220409041243.603210-3-o-takashi@sakamocchi.jp
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/cpuid.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/firewire/core-transaction.c |   30 ++++++++++++++++--------------
+ drivers/firewire/sbp2.c             |   13 +++++++------
+ 2 files changed, 23 insertions(+), 20 deletions(-)
 
-diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-index 097eef712cdc..0489ffc3dfe5 100644
---- a/arch/x86/kvm/cpuid.c
-+++ b/arch/x86/kvm/cpuid.c
-@@ -532,6 +532,11 @@ static inline int __do_cpuid_ent(struct kvm_cpuid_entry2 *entry, u32 function,
- 		union cpuid10_eax eax;
- 		union cpuid10_edx edx;
+--- a/drivers/firewire/core-transaction.c
++++ b/drivers/firewire/core-transaction.c
+@@ -86,24 +86,25 @@ static int try_cancel_split_timeout(stru
+ static int close_transaction(struct fw_transaction *transaction,
+ 			     struct fw_card *card, int rcode)
+ {
+-	struct fw_transaction *t;
++	struct fw_transaction *t = NULL, *iter;
+ 	unsigned long flags;
  
-+		if (!static_cpu_has(X86_FEATURE_ARCH_PERFMON)) {
-+			entry->eax = entry->ebx = entry->ecx = entry->edx = 0;
-+			break;
-+		}
-+
- 		perf_get_x86_pmu_capability(&cap);
+ 	spin_lock_irqsave(&card->lock, flags);
+-	list_for_each_entry(t, &card->transaction_list, link) {
+-		if (t == transaction) {
+-			if (!try_cancel_split_timeout(t)) {
++	list_for_each_entry(iter, &card->transaction_list, link) {
++		if (iter == transaction) {
++			if (!try_cancel_split_timeout(iter)) {
+ 				spin_unlock_irqrestore(&card->lock, flags);
+ 				goto timed_out;
+ 			}
+-			list_del_init(&t->link);
+-			card->tlabel_mask &= ~(1ULL << t->tlabel);
++			list_del_init(&iter->link);
++			card->tlabel_mask &= ~(1ULL << iter->tlabel);
++			t = iter;
+ 			break;
+ 		}
+ 	}
+ 	spin_unlock_irqrestore(&card->lock, flags);
  
- 		/*
--- 
-2.35.1
-
+-	if (&t->link != &card->transaction_list) {
++	if (t) {
+ 		t->callback(card, rcode, NULL, 0, t->callback_data);
+ 		return 0;
+ 	}
+@@ -938,7 +939,7 @@ EXPORT_SYMBOL(fw_core_handle_request);
+ 
+ void fw_core_handle_response(struct fw_card *card, struct fw_packet *p)
+ {
+-	struct fw_transaction *t;
++	struct fw_transaction *t = NULL, *iter;
+ 	unsigned long flags;
+ 	u32 *data;
+ 	size_t data_length;
+@@ -950,20 +951,21 @@ void fw_core_handle_response(struct fw_c
+ 	rcode	= HEADER_GET_RCODE(p->header[1]);
+ 
+ 	spin_lock_irqsave(&card->lock, flags);
+-	list_for_each_entry(t, &card->transaction_list, link) {
+-		if (t->node_id == source && t->tlabel == tlabel) {
+-			if (!try_cancel_split_timeout(t)) {
++	list_for_each_entry(iter, &card->transaction_list, link) {
++		if (iter->node_id == source && iter->tlabel == tlabel) {
++			if (!try_cancel_split_timeout(iter)) {
+ 				spin_unlock_irqrestore(&card->lock, flags);
+ 				goto timed_out;
+ 			}
+-			list_del_init(&t->link);
+-			card->tlabel_mask &= ~(1ULL << t->tlabel);
++			list_del_init(&iter->link);
++			card->tlabel_mask &= ~(1ULL << iter->tlabel);
++			t = iter;
+ 			break;
+ 		}
+ 	}
+ 	spin_unlock_irqrestore(&card->lock, flags);
+ 
+-	if (&t->link == &card->transaction_list) {
++	if (!t) {
+  timed_out:
+ 		fw_notice(card, "unsolicited response (source %x, tlabel %x)\n",
+ 			  source, tlabel);
+--- a/drivers/firewire/sbp2.c
++++ b/drivers/firewire/sbp2.c
+@@ -421,7 +421,7 @@ static void sbp2_status_write(struct fw_
+ 			      void *payload, size_t length, void *callback_data)
+ {
+ 	struct sbp2_logical_unit *lu = callback_data;
+-	struct sbp2_orb *orb;
++	struct sbp2_orb *orb = NULL, *iter;
+ 	struct sbp2_status status;
+ 	unsigned long flags;
+ 
+@@ -446,17 +446,18 @@ static void sbp2_status_write(struct fw_
+ 
+ 	/* Lookup the orb corresponding to this status write. */
+ 	spin_lock_irqsave(&lu->tgt->lock, flags);
+-	list_for_each_entry(orb, &lu->orb_list, link) {
++	list_for_each_entry(iter, &lu->orb_list, link) {
+ 		if (STATUS_GET_ORB_HIGH(status) == 0 &&
+-		    STATUS_GET_ORB_LOW(status) == orb->request_bus) {
+-			orb->rcode = RCODE_COMPLETE;
+-			list_del(&orb->link);
++		    STATUS_GET_ORB_LOW(status) == iter->request_bus) {
++			iter->rcode = RCODE_COMPLETE;
++			list_del(&iter->link);
++			orb = iter;
+ 			break;
+ 		}
+ 	}
+ 	spin_unlock_irqrestore(&lu->tgt->lock, flags);
+ 
+-	if (&orb->link != &lu->orb_list) {
++	if (orb) {
+ 		orb->callback(orb, &status);
+ 		kref_put(&orb->kref, free_orb); /* orb callback reference */
+ 	} else {
 
 
