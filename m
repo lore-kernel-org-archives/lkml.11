@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 018A9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:06:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16910C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:09:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245556AbiEJOKf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:10:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53220 "EHLO
+        id S244543AbiEJOKs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:10:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244981AbiEJNrK (ORCPT
+        with ESMTP id S245016AbiEJNrL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:47:10 -0400
+        Tue, 10 May 2022 09:47:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2345C2380EF;
-        Tue, 10 May 2022 06:33:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9A9F62200;
+        Tue, 10 May 2022 06:33:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B42DF6188A;
-        Tue, 10 May 2022 13:33:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4477C385A6;
-        Tue, 10 May 2022 13:33:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C4C5615C8;
+        Tue, 10 May 2022 13:33:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BD2BC385C2;
+        Tue, 10 May 2022 13:33:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189592;
-        bh=Z0xWQbgeZcOMALo5oszoheDr4ixi8SXV4KCqIovGVEI=;
+        s=korg; t=1652189613;
+        bh=SYhf9Y/s6CCh/yxYZDBxoiBR/iAMVK98G+WsVzlPuas=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sjMDT3eLcDYhvvNoP83By5GqKE2dfrFxBLTgvr0qpYGLetqBcBGb5ngWFcGgKTEDJ
-         5afq7QnE541HCUAjbh6vZYpgzlHglDwNdNv4TJhI7iV3AjDlCZA6DE0QcS+PQPH9PO
-         5HGECirpnRsL9Oy2ukxVNOh9a9stkT8z0+jKQWgg=
+        b=KHbGoRrLZyC0KhuB4adk0so1/PIei1CCTx7+TlLKlvJAxGGAkJVsxsh6NZn4eJ3qN
+         7AaOOvzHRtyzFuv3B+LS66oV9YarZDSPJdWy/eRksAR2GhAlrfI93sQNAv6hwQYhCZ
+         qeRz+0vpkyCOr1Os/KSQCSl14FsGdGd3Dsm9q5XA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Evan Quan <evan.quan@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        "Limonciello, Mario" <Mario.Limonciello@amd.com>
-Subject: [PATCH 5.15 083/135] drm/amdgpu: explicitly check for s0ix when evicting resources
-Date:   Tue, 10 May 2022 15:07:45 +0200
-Message-Id: <20220510130742.793338598@linuxfoundation.org>
+        stable@vger.kernel.org, pali@kernel.org,
+        =?UTF-8?q?Marek=20Beh=FAn?= <kabel@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: [PATCH 5.15 107/135] PCI: pci-bridge-emul: Add definitions for missing capabilities registers
+Date:   Tue, 10 May 2022 15:08:09 +0200
+Message-Id: <20220510130743.476584426@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -51,34 +49,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+From: Pali Rohár <pali@kernel.org>
 
-commit e53d9665ab003df0ece8f869fcd3c2bbbecf7190 upstream.
+commit 8ea673a8b30b4a32516b8adabb15e2a68ff02ec8 upstream.
 
-This codepath should be running in both s0ix and s3, but only does
-currently because s3 and s0ix are both set in the s0ix case.
+pci-bridge-emul driver already allocates buffer for capabilities up to the
+PCI_EXP_SLTSTA2 register, but does not define bit access behavior for these
+registers. Add these missing definitions.
 
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Acked-by: Evan Quan <evan.quan@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: "Limonciello, Mario" <Mario.Limonciello@amd.com>
+Link: https://lore.kernel.org/r/20211130172913.9727-3-kabel@kernel.org
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Signed-off-by: Marek Behún <kabel@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_device.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/pci/pci-bridge-emul.c |   43 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 43 insertions(+)
 
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-@@ -3939,8 +3939,8 @@ void amdgpu_device_fini_sw(struct amdgpu
-  */
- static void amdgpu_device_evict_resources(struct amdgpu_device *adev)
- {
--	/* No need to evict vram on APUs for suspend to ram */
--	if (adev->in_s3 && (adev->flags & AMD_IS_APU))
-+	/* No need to evict vram on APUs for suspend to ram or s2idle */
-+	if ((adev->in_s3 || adev->in_s0ix) && (adev->flags & AMD_IS_APU))
- 		return;
+--- a/drivers/pci/pci-bridge-emul.c
++++ b/drivers/pci/pci-bridge-emul.c
+@@ -270,6 +270,49 @@ struct pci_bridge_reg_behavior pcie_cap_
+ 		.ro = GENMASK(15, 0) | PCI_EXP_RTSTA_PENDING,
+ 		.w1c = PCI_EXP_RTSTA_PME,
+ 	},
++
++	[PCI_EXP_DEVCAP2 / 4] = {
++		/*
++		 * Device capabilities 2 register has reserved bits [30:27].
++		 * Also bits [26:24] are reserved for non-upstream ports.
++		 */
++		.ro = BIT(31) | GENMASK(23, 0),
++	},
++
++	[PCI_EXP_DEVCTL2 / 4] = {
++		/*
++		 * Device control 2 register is RW. Bit 11 is reserved for
++		 * non-upstream ports.
++		 *
++		 * Device status 2 register is reserved.
++		 */
++		.rw = GENMASK(15, 12) | GENMASK(10, 0),
++	},
++
++	[PCI_EXP_LNKCAP2 / 4] = {
++		/* Link capabilities 2 register has reserved bits [30:25] and 0. */
++		.ro = BIT(31) | GENMASK(24, 1),
++	},
++
++	[PCI_EXP_LNKCTL2 / 4] = {
++		/*
++		 * Link control 2 register is RW.
++		 *
++		 * Link status 2 register has bits 5, 15 W1C;
++		 * bits 10, 11 reserved and others are RO.
++		 */
++		.rw = GENMASK(15, 0),
++		.w1c = (BIT(15) | BIT(5)) << 16,
++		.ro = (GENMASK(14, 12) | GENMASK(9, 6) | GENMASK(4, 0)) << 16,
++	},
++
++	[PCI_EXP_SLTCAP2 / 4] = {
++		/* Slot capabilities 2 register is reserved. */
++	},
++
++	[PCI_EXP_SLTCTL2 / 4] = {
++		/* Both Slot control 2 and Slot status 2 registers are reserved. */
++	},
+ };
  
- 	if (amdgpu_ttm_evict_resources(adev, TTM_PL_VRAM))
+ /*
 
 
