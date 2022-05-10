@@ -2,129 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D483C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 00:34:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5323AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 00:34:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233821AbiEJAiI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 20:38:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34848 "EHLO
+        id S233808AbiEJAi3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 20:38:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233751AbiEJAiE (ORCPT
+        with ESMTP id S233751AbiEJAi0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 20:38:04 -0400
-Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEBED2AF612;
-        Mon,  9 May 2022 17:33:57 -0700 (PDT)
-Received: from pps.filterd (m0150242.ppops.net [127.0.0.1])
-        by mx0a-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 249MLQAk006420;
-        Tue, 10 May 2022 00:33:42 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=date : from : to : cc :
- subject : message-id : reply-to : references : content-type : in-reply-to
- : mime-version; s=pps0720;
- bh=ioAI3ToVnDGORtMvoHII/m9QFAic51VEYz4dbe8gUHc=;
- b=lEMqnmW0mWVPZI1FXuZldSthA/vjIf8ft5gM9O3OgxAj57WYtgcTnLPWToHp98iNXlNY
- 74wveliv/IdNfp0XKdJ+zrRmHaaLu22AzmntW4h8RQQRRqL5rS1EwEoTR4wzhwmjwzMO
- Wad1RRLTgjndDOm1W4SOWIc/ScS3JA8QrfT7St1bTAhaXBTxvbUQcR+HXDXvjm7cjw7S
- E7pOY1iQWC13I9lMwka1XRz6jlliXjn4n1eI5wrR0B44bdPFlEEansU8uVQPDXHpBjKG
- 79NSteey1JTfy0dnpq1uOSCDWlK8RQWAJCLCCOYNvFOWiRUfyBpz+GJwKfojIEqnVmd2 eA== 
-Received: from g2t2353.austin.hpe.com (g2t2353.austin.hpe.com [15.233.44.26])
-        by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3fy4m1vvv7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 10 May 2022 00:33:42 +0000
-Received: from g2t2360.austin.hpecorp.net (g2t2360.austin.hpecorp.net [16.196.225.135])
-        by g2t2353.austin.hpe.com (Postfix) with ESMTP id D2A7565;
-        Tue, 10 May 2022 00:33:40 +0000 (UTC)
-Received: from perchik.americas.hpqcorp.net (perchik.americas.hpqcorp.net [10.33.142.136])
-        by g2t2360.austin.hpecorp.net (Postfix) with ESMTP id 1758237;
-        Tue, 10 May 2022 00:33:39 +0000 (UTC)
-Date:   Mon, 9 May 2022 18:33:39 -0600
-From:   Jerry Hoemann <jerry.hoemann@hpe.com>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Mario Limonciello <mario.limonciello@amd.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        "open list:WATCHDOG DEVICE DRIVERS" <linux-watchdog@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>, ionut_n2001@yahoo.com
-Subject: Re: [PATCH] Watchdog: sp5100_tco: Lower verbosity of disabled
- watchdog hardware
-Message-ID: <20220510003339.GA2788@perchik.americas.hpqcorp.net>
-Reply-To: Jerry.Hoemann@hpe.com
-References: <20220509163304.86-1-mario.limonciello@amd.com>
- <b394bfcf-9f0d-b27c-5bc0-3d628de98755@roeck-us.net>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b394bfcf-9f0d-b27c-5bc0-3d628de98755@roeck-us.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Proofpoint-GUID: 8U-LK90bxCsYOwvnoRYgccXxVQrLoaPI
-X-Proofpoint-ORIG-GUID: 8U-LK90bxCsYOwvnoRYgccXxVQrLoaPI
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Mon, 9 May 2022 20:38:26 -0400
+Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 114F42AC6FD;
+        Mon,  9 May 2022 17:34:31 -0700 (PDT)
+Received: by mail-il1-x12e.google.com with SMTP id b5so10413034ile.0;
+        Mon, 09 May 2022 17:34:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4karCgB0MC1BnR8W1B+6xeveKW1nLUhu/KIW4e11r7E=;
+        b=gPV/WNtmjhKATU3NOJJ2pJw0iSift/HVTYr5YFJsS1JUov3T3P2sugNCw4ICoi2aNI
+         DN+uDBJG7kkKevRYgmg0JQ/nZIy3pnAhVVdsTOD9BWnVU1xH5Ixx4fwIM61GxmRKmKjL
+         nBTx2psO/Mytl/Lx70vvQozaObWeysSydsSWlDGnlF6X4mw4JLrZvYcIRrBk0PvzQ5Lz
+         pp7oNz4kWk1X6Lvyl9yPJBIE6Pzussr/T8e/CgwZFGRVcrEgBbK01QRaAN336Wkhr3Vv
+         gRSZV3tAx8vrptWz++Iwlyv1KsvlnpmCtj31YZ3N+YYP0dAvAlZ+IXRbWWKBGW7WnHNF
+         +jQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4karCgB0MC1BnR8W1B+6xeveKW1nLUhu/KIW4e11r7E=;
+        b=NPbxDXGMJEO7lrhPJGmy/qU4XF5IPwxMKXb3Fwk3zZPtjaEPcnnxm7hBGRVWAM5wwZ
+         fe4lhQDBf/ID7gWuAdOKxbby8jqKynS4xj8yBPtYTIqDTtTgP3FqmUuOTaIXPCLw56Po
+         2KMlA/lQRuX/9GYrSo1uP7fzz5z6NTdtpNpYYKIfoKcHiLkNDm40cdnbAU2pnrUGyCFv
+         TmXAo6g/tmdKEqwyU9ZzTJb/RPQJoZGPGM0keD7GBax+6Ks0QBDSRX+scXV7UwJwK6DT
+         36VUADX7DW7DNzGYuQHWIoAB3bMQIG38aeamW8xhMWJw4997ue604Eut+mZ2aPWLTZ/u
+         x80Q==
+X-Gm-Message-State: AOAM533SLKYZznHDdQKyS7sFWtgQc8I+E49sbDgxLr9eIwkMn5Dh7roo
+        L+hIKwutuhAgG12CGNgq0trfBdveah+voK94wD0=
+X-Google-Smtp-Source: ABdhPJyXKMB/dcO/qmS2dmo6ODOVuO8sotAH8x77Z6eURlzacTOTt1pw+DNbYYdrMF9bz0dTDEjhqn+xEl0aV8YssTk=
+X-Received: by 2002:a05:6e02:1d8d:b0:2cf:2112:2267 with SMTP id
+ h13-20020a056e021d8d00b002cf21122267mr7869217ila.239.1652142870407; Mon, 09
+ May 2022 17:34:30 -0700 (PDT)
 MIME-Version: 1.0
-X-HPE-SCL: -1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-09_06,2022-05-09_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 adultscore=0
- lowpriorityscore=0 phishscore=0 suspectscore=0 spamscore=0 clxscore=1011
- malwarescore=0 mlxscore=0 priorityscore=1501 mlxlogscore=999 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2205100000
+References: <20220507024840.42662-1-zhoufeng.zf@bytedance.com>
+In-Reply-To: <20220507024840.42662-1-zhoufeng.zf@bytedance.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 9 May 2022 17:34:19 -0700
+Message-ID: <CAEf4BzZD5q2j229_gL_nDFse2v=k2Ea0nfguH+sOA2O1Nm5sQw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: add bpf_map_lookup_percpu_elem for percpu map
+To:     Feng zhou <zhoufeng.zf@bytedance.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joanne Koong <joannekoong@fb.com>,
+        Geliang Tang <geliang.tang@suse.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        duanxiongchun@bytedance.com,
+        Muchun Song <songmuchun@bytedance.com>,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        zhouchengming@bytedance.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 03:55:54PM -0700, Guenter Roeck wrote:
-> On 5/9/22 09:33, Mario Limonciello wrote:
-> > If watchdog hardware has been disabled, currently the kernel driver
-> > will show at err level during probe:
-> > 
-> > "Watchdog hardware is disabled"
-> > 
-> > This is unnecessarily verbose as there is already a -ENODEV returned.
-> > Lower the level to debug.
-> 
-> Is it ? Without this message, a user may try to load the driver,
-> get an error message, and have no idea why the driver was not
-> enabled even though the hardware exists. If anything , -ENODEV
-> is less than perfect. Unfortunately there does not seem to be
-> a better error code, or at least I don't see one.
-> 
-> Guenter
+On Fri, May 6, 2022 at 7:49 PM Feng zhou <zhoufeng.zf@bytedance.com> wrote:
+>
+> From: Feng Zhou <zhoufeng.zf@bytedance.com>
+>
+> Trace some functions, such as enqueue_task_fair, need to access the
+> corresponding cpu, not the current cpu, and bpf_map_lookup_elem percpu map
+> cannot do it. So add bpf_map_lookup_percpu_elem to accomplish it for
+> percpu_array_map, percpu_hash_map, lru_percpu_hash_map.
+>
+> The implementation method is relatively simple, refer to the implementation
+> method of map_lookup_elem of percpu map, increase the parameters of cpu, and
+> obtain it according to the specified cpu.
+>
 
-Coincidentally, I was looking at this code on Friday.
+I don't think it's safe in general to access per-cpu data from another
+CPU. I'd suggest just having either a ARRAY_OF_MAPS or adding CPU ID
+as part of the key, if you need such a custom access pattern.
 
-Some HPE Proliant servers are disabling the AMD WDT in BIOS.  However,
-sp5100_tco was still getting configured.  It was the lack of
-"Watchdog hardware is disabled" message that helped clue us into
-what was going on (Linux is enabling the WDT anyway.)
+> Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
+> ---
+>  include/linux/bpf.h            |  2 ++
+>  include/uapi/linux/bpf.h       |  9 +++++++++
+>  kernel/bpf/arraymap.c          | 15 +++++++++++++++
+>  kernel/bpf/core.c              |  1 +
+>  kernel/bpf/hashtab.c           | 32 ++++++++++++++++++++++++++++++++
+>  kernel/bpf/helpers.c           | 18 ++++++++++++++++++
+>  kernel/bpf/verifier.c          | 17 +++++++++++++++--
+>  kernel/trace/bpf_trace.c       |  2 ++
+>  tools/include/uapi/linux/bpf.h |  9 +++++++++
+>  9 files changed, 103 insertions(+), 2 deletions(-)
+>
 
-So, I liked that this message exists.
-
-I'll send an RFC patch for this other issue as it orthogonal.
-But just wanted to point out the message is useful.
-
-
-> 
-> > 
-> > Reported-by: ionut_n2001@yahoo.com
-> > Link: https://bugzilla.kernel.org/show_bug.cgi?id=215762
-> > Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-> > ---
-> >   drivers/watchdog/sp5100_tco.c | 2 +-
-> >   1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/watchdog/sp5100_tco.c b/drivers/watchdog/sp5100_tco.c
-> > index 86ffb58fbc85..e51ecbd5c8b7 100644
-> > --- a/drivers/watchdog/sp5100_tco.c
-> > +++ b/drivers/watchdog/sp5100_tco.c
-> > @@ -286,7 +286,7 @@ static int sp5100_tco_timer_init(struct sp5100_tco *tco)
-> >   	val = readl(SP5100_WDT_CONTROL(tco->tcobase));
-> >   	if (val & SP5100_WDT_DISABLED) {
-> > -		dev_err(dev, "Watchdog hardware is disabled\n");
-> > +		dev_dbg(dev, "Watchdog hardware is disabled\n");
-> >   		return -ENODEV;
-> >   	}
-
--- 
-
------------------------------------------------------------------------------
-Jerry Hoemann                  Software Engineer   Hewlett Packard Enterprise
------------------------------------------------------------------------------
+[...]
