@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3141DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:27:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDF98C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:27:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241831AbiEJMbb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 08:31:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42302 "EHLO
+        id S241818AbiEJMbl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 08:31:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241841AbiEJMbF (ORCPT
+        with ESMTP id S241815AbiEJMbY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 08:31:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDDCF2A8075;
-        Tue, 10 May 2022 05:26:50 -0700 (PDT)
+        Tue, 10 May 2022 08:31:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB8A12A3760;
+        Tue, 10 May 2022 05:27:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9DE95B81D0D;
-        Tue, 10 May 2022 12:26:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 896A7C385C6;
-        Tue, 10 May 2022 12:26:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 87C6BB81BD8;
+        Tue, 10 May 2022 12:27:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FCC6C385A6;
+        Tue, 10 May 2022 12:27:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652185608;
-        bh=4tSnxtGwl/IrBm/BYNkLwz3pYQwniu4SdQTWFo0rExw=;
+        s=k20201202; t=1652185644;
+        bh=IXtTKnWWf2sdyXq5urSn2z0rdlL4RzojJ6aPpiupcEo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uPNMTCMGcljqb7HB4LPEc2IIMbzfT1qXxnU8fXrsQlfZu/zT2KLQb9CtsyLGY5tM6
-         oGkxGCZjZeeJFldGgXkAlrID/yOa0Wq6toOldYTht82VtatOMAtqJ3jUU9bDgKBc7v
-         aHTCMYi3MqrbTV4we+HnVQM/FQF0hxlCvQA7E+knnp0QEixfkfnSAalQSeheQjPpXb
-         w1Qp1Rdm+vCQvv5bwttK/qRC4PDqZST6IDezPvVB373lzH9L6GAglux+ZBp8nGJsa4
-         ockb9OCx8Qfj5f5hSGq4569R526eskCgkJ5E/6p1tgL7rxrSWj8bFYAtEN4hgsXAB8
-         Q2QlN+y4uonRA==
+        b=PlHI/DvKS1DWL3xxCC8D5d/KL4LNAmZOE+DVdtJtTpzZLfteuyd7TQF1jr/7eI0sX
+         HJEZxb2e3mHyFBSdb6HZqpWMNOYXC3h27MMrO9jPrmZK99+wFy6Aj195TQyVsuV9me
+         N2UFG0r7AMCrNzRc7NzarPYRy2nx1wiQBNltEkVI/4wpW1RY1MgB0TOwiuNJn7tcHJ
+         u+epSnvJYYawDjBEIvAU4UEuJKibVAhqNWqFE1Yfu1MIsEwxch7+z5ep/vrfIT4nPa
+         BOAeZaXF/E2g0gTDfTow2ZMl5TXYtHPqk1CmbLGTfWDrXozF4Q/1WYwx+USnehJYiT
+         kq0vTo1b2QBYg==
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -45,9 +45,9 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         KP Singh <kpsingh@chromium.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         Christoph Hellwig <hch@lst.de>
-Subject: [PATCHv6 bpf-next 2/5] ftrace: Add ftrace_lookup_symbols function
-Date:   Tue, 10 May 2022 14:26:13 +0200
-Message-Id: <20220510122616.2652285-3-jolsa@kernel.org>
+Subject: [PATCHv6 bpf-next 5/5] selftests/bpf: Add attach bench test
+Date:   Tue, 10 May 2022 14:26:16 +0200
+Message-Id: <20220510122616.2652285-6-jolsa@kernel.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220510122616.2652285-1-jolsa@kernel.org>
 References: <20220510122616.2652285-1-jolsa@kernel.org>
@@ -57,137 +57,206 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adding ftrace_lookup_symbols function that resolves array of symbols
-with single pass over kallsyms.
+Adding test that reads all functions from ftrace available_filter_functions
+file and attach them all through kprobe_multi API.
 
-The user provides array of string pointers with count and pointer to
-allocated array for resolved values.
+It also prints stats info with -v option, like on my setup:
 
-  int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt,
-                            unsigned long *addrs)
+  test_bench_attach: found 48712 functions
+  test_bench_attach: attached in   1.069s
+  test_bench_attach: detached in   0.373s
 
-It iterates all kallsyms symbols and tries to loop up each in provided
-symbols array with bsearch. The symbols array needs to be sorted by
-name for this reason.
-
-We also check each symbol to pass ftrace_location, because this API
-will be used for fprobe symbols resolving.
-
-Suggested-by: Andrii Nakryiko <andrii@kernel.org>
 Acked-by: Andrii Nakryiko <andrii@kernel.org>
-Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- include/linux/ftrace.h |  6 ++++
- kernel/kallsyms.c      |  1 +
- kernel/trace/ftrace.c  | 62 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 69 insertions(+)
+ .../bpf/prog_tests/kprobe_multi_test.c        | 143 ++++++++++++++++++
+ .../selftests/bpf/progs/kprobe_multi_empty.c  |  12 ++
+ 2 files changed, 155 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
 
-diff --git a/include/linux/ftrace.h b/include/linux/ftrace.h
-index 4816b7e11047..820500430eae 100644
---- a/include/linux/ftrace.h
-+++ b/include/linux/ftrace.h
-@@ -303,6 +303,8 @@ int unregister_ftrace_function(struct ftrace_ops *ops);
- extern void ftrace_stub(unsigned long a0, unsigned long a1,
- 			struct ftrace_ops *op, struct ftrace_regs *fregs);
+diff --git a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
+index c56db65d4c15..816eacededd1 100644
+--- a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
++++ b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
+@@ -2,6 +2,9 @@
+ #include <test_progs.h>
+ #include "kprobe_multi.skel.h"
+ #include "trace_helpers.h"
++#include "kprobe_multi_empty.skel.h"
++#include "bpf/libbpf_internal.h"
++#include "bpf/hashmap.h"
  
-+
-+int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt, unsigned long *addrs);
- #else /* !CONFIG_FUNCTION_TRACER */
- /*
-  * (un)register_ftrace_function must be a macro since the ops parameter
-@@ -313,6 +315,10 @@ extern void ftrace_stub(unsigned long a0, unsigned long a1,
- static inline void ftrace_kill(void) { }
- static inline void ftrace_free_init_mem(void) { }
- static inline void ftrace_free_mem(struct module *mod, void *start, void *end) { }
-+static inline int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt, unsigned long *addrs)
-+{
-+	return -EOPNOTSUPP;
-+}
- #endif /* CONFIG_FUNCTION_TRACER */
- 
- struct ftrace_func_entry {
-diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
-index fdfd308bebc4..fbdf8d3279ac 100644
---- a/kernel/kallsyms.c
-+++ b/kernel/kallsyms.c
-@@ -29,6 +29,7 @@
- #include <linux/compiler.h>
- #include <linux/module.h>
- #include <linux/kernel.h>
-+#include <linux/bsearch.h>
- 
- /*
-  * These will be re-linked against their real values
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index 4f1d2f5e7263..07d87c7a525d 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -7964,3 +7964,65 @@ ftrace_enable_sysctl(struct ctl_table *table, int write,
- 	mutex_unlock(&ftrace_lock);
- 	return ret;
+ static void kprobe_multi_test_run(struct kprobe_multi *skel, bool test_return)
+ {
+@@ -301,6 +304,144 @@ static void test_attach_api_fails(void)
+ 	kprobe_multi__destroy(skel);
  }
-+
-+static int symbols_cmp(const void *a, const void *b)
+ 
++static inline __u64 get_time_ns(void)
 +{
-+	const char **str_a = (const char **) a;
-+	const char **str_b = (const char **) b;
++	struct timespec t;
 +
-+	return strcmp(*str_a, *str_b);
++	clock_gettime(CLOCK_MONOTONIC, &t);
++	return (__u64) t.tv_sec * 1000000000 + t.tv_nsec;
 +}
 +
-+struct kallsyms_data {
-+	unsigned long *addrs;
-+	const char **syms;
-+	size_t cnt;
-+	size_t found;
-+};
-+
-+static int kallsyms_callback(void *data, const char *name,
-+			     struct module *mod, unsigned long addr)
++static size_t symbol_hash(const void *key, void *ctx __maybe_unused)
 +{
-+	struct kallsyms_data *args = data;
-+
-+	if (!bsearch(&name, args->syms, args->cnt, sizeof(*args->syms), symbols_cmp))
-+		return 0;
-+
-+	addr = ftrace_location(addr);
-+	if (!addr)
-+		return 0;
-+
-+	args->addrs[args->found++] = addr;
-+	return args->found == args->cnt ? 1 : 0;
++	return str_hash((const char *) key);
 +}
 +
-+/**
-+ * ftrace_lookup_symbols - Lookup addresses for array of symbols
-+ *
-+ * @sorted_syms: array of symbols pointers symbols to resolve,
-+ * must be alphabetically sorted
-+ * @cnt: number of symbols/addresses in @syms/@addrs arrays
-+ * @addrs: array for storing resulting addresses
-+ *
-+ * This function looks up addresses for array of symbols provided in
-+ * @syms array (must be alphabetically sorted) and stores them in
-+ * @addrs array, which needs to be big enough to store at least @cnt
-+ * addresses.
-+ *
-+ * This function returns 0 if all provided symbols are found,
-+ * -ESRCH otherwise.
-+ */
-+int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt, unsigned long *addrs)
++static bool symbol_equal(const void *key1, const void *key2, void *ctx __maybe_unused)
 +{
-+	struct kallsyms_data args;
++	return strcmp((const char *) key1, (const char *) key2) == 0;
++}
++
++static int get_syms(char ***symsp, size_t *cntp)
++{
++	size_t cap = 0, cnt = 0, i;
++	char *name, **syms = NULL;
++	struct hashmap *map;
++	char buf[256];
++	FILE *f;
 +	int err;
 +
-+	args.addrs = addrs;
-+	args.syms = sorted_syms;
-+	args.cnt = cnt;
-+	args.found = 0;
-+	err = kallsyms_on_each_symbol(kallsyms_callback, &args);
-+	if (err < 0)
-+		return err;
-+	return args.found == args.cnt ? 0 : -ESRCH;
++	/*
++	 * The available_filter_functions contains many duplicates,
++	 * but other than that all symbols are usable in kprobe multi
++	 * interface.
++	 * Filtering out duplicates by using hashmap__add, which won't
++	 * add existing entry.
++	 */
++	f = fopen("/sys/kernel/debug/tracing/available_filter_functions", "r");
++	if (!f)
++		return -EINVAL;
++
++	map = hashmap__new(symbol_hash, symbol_equal, NULL);
++	if (IS_ERR(map))
++		goto error;
++
++	while (fgets(buf, sizeof(buf), f)) {
++		/* skip modules */
++		if (strchr(buf, '['))
++			continue;
++		if (sscanf(buf, "%ms$*[^\n]\n", &name) != 1)
++			continue;
++		/*
++		 * We attach to almost all kernel functions and some of them
++		 * will cause 'suspicious RCU usage' when fprobe is attached
++		 * to them. Filter out the current culprits - arch_cpu_idle
++		 * and rcu_* functions.
++		 */
++		if (!strcmp(name, "arch_cpu_idle"))
++			continue;
++		if (!strncmp(name, "rcu_", 4))
++			continue;
++		err = hashmap__add(map, name, NULL);
++		if (err) {
++			free(name);
++			if (err == -EEXIST)
++				continue;
++			goto error;
++		}
++		err = libbpf_ensure_mem((void **) &syms, &cap,
++					sizeof(*syms), cnt + 1);
++		if (err) {
++			free(name);
++			goto error;
++		}
++		syms[cnt] = name;
++		cnt++;
++	}
++
++	*symsp = syms;
++	*cntp = cnt;
++
++error:
++	fclose(f);
++	hashmap__free(map);
++	if (err) {
++		for (i = 0; i < cnt; i++)
++			free(syms[cnt]);
++		free(syms);
++	}
++	return err;
++}
++
++static void test_bench_attach(void)
++{
++	LIBBPF_OPTS(bpf_kprobe_multi_opts, opts);
++	struct kprobe_multi_empty *skel = NULL;
++	long attach_start_ns, attach_end_ns;
++	long detach_start_ns, detach_end_ns;
++	double attach_delta, detach_delta;
++	struct bpf_link *link = NULL;
++	char **syms = NULL;
++	size_t cnt, i;
++
++	if (!ASSERT_OK(get_syms(&syms, &cnt), "get_syms"))
++		return;
++
++	skel = kprobe_multi_empty__open_and_load();
++	if (!ASSERT_OK_PTR(skel, "kprobe_multi_empty__open_and_load"))
++		goto cleanup;
++
++	opts.syms = (const char **) syms;
++	opts.cnt = cnt;
++
++	attach_start_ns = get_time_ns();
++	link = bpf_program__attach_kprobe_multi_opts(skel->progs.test_kprobe_empty,
++						     NULL, &opts);
++	attach_end_ns = get_time_ns();
++
++	if (!ASSERT_OK_PTR(link, "bpf_program__attach_kprobe_multi_opts"))
++		goto cleanup;
++
++	detach_start_ns = get_time_ns();
++	bpf_link__destroy(link);
++	detach_end_ns = get_time_ns();
++
++	attach_delta = (attach_end_ns - attach_start_ns) / 1000000000.0;
++	detach_delta = (detach_end_ns - detach_start_ns) / 1000000000.0;
++
++	printf("%s: found %lu functions\n", __func__, cnt);
++	printf("%s: attached in %7.3lfs\n", __func__, attach_delta);
++	printf("%s: detached in %7.3lfs\n", __func__, detach_delta);
++
++cleanup:
++	kprobe_multi_empty__destroy(skel);
++	if (syms) {
++		for (i = 0; i < cnt; i++)
++			free(syms[i]);
++		free(syms);
++	}
++}
++
+ void test_kprobe_multi_test(void)
+ {
+ 	if (!ASSERT_OK(load_kallsyms(), "load_kallsyms"))
+@@ -320,4 +461,6 @@ void test_kprobe_multi_test(void)
+ 		test_attach_api_syms();
+ 	if (test__start_subtest("attach_api_fails"))
+ 		test_attach_api_fails();
++	if (test__start_subtest("bench_attach"))
++		test_bench_attach();
+ }
+diff --git a/tools/testing/selftests/bpf/progs/kprobe_multi_empty.c b/tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
+new file mode 100644
+index 000000000000..e76e499aca39
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
+@@ -0,0 +1,12 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <linux/bpf.h>
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_tracing.h>
++
++char _license[] SEC("license") = "GPL";
++
++SEC("kprobe.multi/")
++int test_kprobe_empty(struct pt_regs *ctx)
++{
++	return 0;
 +}
 -- 
 2.35.3
