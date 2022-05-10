@@ -2,169 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BACC5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 03:19:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B82B0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 03:21:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235310AbiEJDWv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 23:22:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40068 "EHLO
+        id S235282AbiEJDZb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 23:25:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231778AbiEJDW2 (ORCPT
+        with ESMTP id S232678AbiEJDZ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 23:22:28 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 700926D850
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 20:18:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652152712; x=1683688712;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=OYaAN5a3Kfmzv5oJlrWJDy/JU2MFH7fgQw9HBiFSkPU=;
-  b=GRYqxZlGcXTYLWIPQVAEBP+KDk0m0Z6HeIf0tHSYoLy0gUClAeMypEtC
-   7nrHwF2yoXXh1vEjO0ARdiErSpYrN613jFDkdUaenbR1k+CxjPpQBJYRs
-   tSnLIBKZltOJ07u0nZoXfa4sy3Bpjk6JcysCaI4ea3MAeYa2ujqDENEV8
-   DzeIVQxSPKL4836kPNpf4OepWVrxyz7E3N56/cADLxN7gfc9pn1EfbJMN
-   70PjU4KYqpdEEj0PRYzHEL32s3Zc4y2im+gLi4M9n2D7I8e0PPEHSatPz
-   FD71XsIfEupFo8dda6VatLya5VLMLAwmgl5oaK2w+DSp1oLM+tQyRJXXH
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="268909761"
-X-IronPort-AV: E=Sophos;i="5.91,213,1647327600"; 
-   d="scan'208";a="268909761"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 20:18:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,213,1647327600"; 
-   d="scan'208";a="696885038"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 09 May 2022 20:18:30 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1noGOL-000HEg-LP;
-        Tue, 10 May 2022 03:18:29 +0000
-Date:   Tue, 10 May 2022 11:18:27 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Liam R. Howlett" <Liam.Howlett@oracle.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: [akpm-mm:mm-unstable 223/289] mm/nommu.c:579:9: error: implicit
- declaration of function 'vma_mas_store'; did you mean 'mas_store'?
-Message-ID: <202205101156.5sB7PhaF-lkp@intel.com>
+        Mon, 9 May 2022 23:25:28 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A440B252BC;
+        Mon,  9 May 2022 20:21:30 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id i19so30306418eja.11;
+        Mon, 09 May 2022 20:21:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=W6hg8xZDlvVbV0yxBFJp6M3i2By/uzGhIKuyQsM88v4=;
+        b=P+wESGRbK7UrpgEo0WHOiYGsdzWzZ8+u3MZXUDBD4YdLv0BOKi/E+XbjkFcw6DoRaN
+         LenQnO42u8tz5dMfezSlUYh7mWdgCucKAr1fPOYcuPBvBQp4xQiCsNPZyCL+LxgPhrrf
+         veBicKCnUjsb4wSJjmvW+1gbMijZcgobY0wy5gqSBHsLiZJi6QFk1owyvBeCAcSL1S36
+         TVJ3B318oVs8ampqE+l+C6rWHg8nWxfmg8BhUGb6gqo2W498Bo+vfxGsE9pOMhyvAc8X
+         MwQJyuatuyH/Pe7rZDYhDlFYKFbSvx3LU4SUdCXn4Q7gK0ZFCplpHbfthTj3SECxSJFR
+         snqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=W6hg8xZDlvVbV0yxBFJp6M3i2By/uzGhIKuyQsM88v4=;
+        b=t5X6kE/0bh7zr9jDchgv9KeXZ1S7hhqCsY2HH4/tb2AAgp1NWS1ck6U9bdiWsq/5Qi
+         uGw3+RGssfmSH+qRDTLucuSRceXcnuNzpntZKFwydKqdnb1veq9WKL0ge2XPy1AsYhYX
+         sPNFOkD8XZ6H/PVv9TywjAqfHJoG2MN14QCEAev0JBUV1JNiOTRi5Zz1PZgJvsUwiUUC
+         R+x37qFWxFVhi4kNmzWjzdILmhFyydGJDO4OR/2iv9NPPM5fB9wRJRfm770/4u0shKqQ
+         8TH4chTmnnhzKi+UnWkyfKvEwq5VOG18yrUy7jvCbiwR4rV+wuZTZjFGb6F5SxZUZueP
+         +cVA==
+X-Gm-Message-State: AOAM530a4vLvckO1awVyLE6lstKNE6cP1iSNzurLGQNBBOqyCC+DP9J/
+        10fDxR3Ml9hIllIoM8zSMHBeEbCHo8/LsElyHFeuJJrD1D6m1A==
+X-Google-Smtp-Source: ABdhPJwIr5oMdwzvHgt4e/5Aa9fSbNcXke+HDO7hTgH8FBfuwfgQdcUn+FngDnm8/mfyzKtDJRcj1i6vBDj5PVGLXSU=
+X-Received: by 2002:a17:906:3144:b0:6ce:de5d:5e3b with SMTP id
+ e4-20020a170906314400b006cede5d5e3bmr17816104eje.689.1652152889158; Mon, 09
+ May 2022 20:21:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220509122213.19508-1-imagedong@tencent.com> <cb8eaad0-83c5-a150-d830-e078682ba18b@ssi.bg>
+In-Reply-To: <cb8eaad0-83c5-a150-d830-e078682ba18b@ssi.bg>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Tue, 10 May 2022 11:21:17 +0800
+Message-ID: <CADxym3bgR9xfHgoAwWeEQvLUnwrUxee3gK4SkRqcS+TmmfWUGw@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: ipvs: random start for RR scheduler
+To:     Julian Anastasov <ja@ssi.bg>
+Cc:     Simon Horman <horms@verge.net.au>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        netdev <netdev@vger.kernel.org>, lvs-devel@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        netfilter-devel@vger.kernel.org,
+        Menglong Dong <imagedong@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-unstable
-head:   2a9491e94405acaf36dbb0a2fee06a42630f263d
-commit: 9d00916d98443bef124029e1df960a91579c406b [223/289] mm: remove rb tree.
-config: sh-buildonly-randconfig-r003-20220509 (https://download.01.org/0day-ci/archive/20220510/202205101156.5sB7PhaF-lkp@intel.com/config)
-compiler: sh4-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git/commit/?id=9d00916d98443bef124029e1df960a91579c406b
-        git remote add akpm-mm https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git
-        git fetch --no-tags akpm-mm mm-unstable
-        git checkout 9d00916d98443bef124029e1df960a91579c406b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=sh SHELL=/bin/bash
+On Tue, May 10, 2022 at 2:17 AM Julian Anastasov <ja@ssi.bg> wrote:
+>
+>
+>         Hello,
+>
+> On Mon, 9 May 2022, menglong8.dong@gmail.com wrote:
+>
+> > From: Menglong Dong <imagedong@tencent.com>
+> >
+> > For now, the start of the RR scheduler is in the order of dest
+> > service added, it will result in imbalance if the load balance
+>
+>         ...order of added destinations,...
+>
+> > is done in client side and long connect is used.
+>
+>         ..."long connections are used". Is this a case where
+> small number of connections are used? And the two connections
+> relatively overload the real servers?
+>
+> > For example, we have client1, client2, ..., client5 and real service
+> > service1, service2, service3. All clients have the same ipvs config,
+> > and each of them will create 2 long TCP connect to the virtual
+> > service. Therefore, all the clients will connect to service1 and
+> > service2, leaving service3 free.
+>
+>         You mean, there are many IPVS directors with same
+> config and each director gets 2 connections? Third connection
+> will get real server #3, right ? Also, are the clients local
+> to the director?
+>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Sorry to have missed your message here. Yeah, this is what I mean.
+And in my case, the directors are local the to client, and each client
+only have 2 connections. If the 3th connection happens, it will get #3
+real server. And all directors connected to #1 and #2 real servers,
+resulting in overload.
 
-All errors (new ones prefixed by >>):
-
-   mm/nommu.c: In function 'add_vma_to_mm':
->> mm/nommu.c:579:9: error: implicit declaration of function 'vma_mas_store'; did you mean 'mas_store'? [-Werror=implicit-function-declaration]
-     579 |         vma_mas_store(vma, &mas);
-         |         ^~~~~~~~~~~~~
-         |         mas_store
-   mm/nommu.c: In function 'delete_vma_from_mm':
->> mm/nommu.c:615:9: error: implicit declaration of function 'vma_mas_remove' [-Werror=implicit-function-declaration]
-     615 |         vma_mas_remove(vma, &mas);
-         |         ^~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
-
-
-vim +579 mm/nommu.c
-
-   547	
-   548	/*
-   549	 * add a VMA into a process's mm_struct in the appropriate place in the list
-   550	 * and tree and add to the address space's page tree also if not an anonymous
-   551	 * page
-   552	 * - should be called with mm->mmap_lock held writelocked
-   553	 */
-   554	static void add_vma_to_mm(struct mm_struct *mm, struct vm_area_struct *vma)
-   555	{
-   556		struct address_space *mapping;
-   557		struct vm_area_struct *prev;
-   558		MA_STATE(mas, &mm->mm_mt, vma->vm_start, vma->vm_end);
-   559	
-   560		BUG_ON(!vma->vm_region);
-   561	
-   562		mm->map_count++;
-   563		vma->vm_mm = mm;
-   564	
-   565		/* add the VMA to the mapping */
-   566		if (vma->vm_file) {
-   567			mapping = vma->vm_file->f_mapping;
-   568	
-   569			i_mmap_lock_write(mapping);
-   570			flush_dcache_mmap_lock(mapping);
-   571			vma_interval_tree_insert(vma, &mapping->i_mmap);
-   572			flush_dcache_mmap_unlock(mapping);
-   573			i_mmap_unlock_write(mapping);
-   574		}
-   575	
-   576		prev = mas_prev(&mas, 0);
-   577		mas_reset(&mas);
-   578		/* add the VMA to the tree */
- > 579		vma_mas_store(vma, &mas);
-   580		__vma_link_list(mm, vma, prev);
-   581	}
-   582	
-   583	/*
-   584	 * delete a VMA from its owning mm_struct and address space
-   585	 */
-   586	static void delete_vma_from_mm(struct vm_area_struct *vma)
-   587	{
-   588		int i;
-   589		struct address_space *mapping;
-   590		struct mm_struct *mm = vma->vm_mm;
-   591		struct task_struct *curr = current;
-   592		MA_STATE(mas, &vma->vm_mm->mm_mt, 0, 0);
-   593	
-   594		mm->map_count--;
-   595		for (i = 0; i < VMACACHE_SIZE; i++) {
-   596			/* if the vma is cached, invalidate the entire cache */
-   597			if (curr->vmacache.vmas[i] == vma) {
-   598				vmacache_invalidate(mm);
-   599				break;
-   600			}
-   601		}
-   602	
-   603		/* remove the VMA from the mapping */
-   604		if (vma->vm_file) {
-   605			mapping = vma->vm_file->f_mapping;
-   606	
-   607			i_mmap_lock_write(mapping);
-   608			flush_dcache_mmap_lock(mapping);
-   609			vma_interval_tree_remove(vma, &mapping->i_mmap);
-   610			flush_dcache_mmap_unlock(mapping);
-   611			i_mmap_unlock_write(mapping);
-   612		}
-   613	
-   614		/* remove from the MM's tree and list */
- > 615		vma_mas_remove(vma, &mas);
-   616		__vma_unlink_list(mm, vma);
-   617	}
-   618	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> > Fix this by randomize the start of dest service to RR scheduler when
+>
+>         ..."randomizing the starting destination when"
+>
+> > IP_VS_SVC_F_SCHED_RR_RANDOM is set.
+> >
+> > Signed-off-by: Menglong Dong <imagedong@tencent.com>
+> > ---
+> >  include/uapi/linux/ip_vs.h    |  2 ++
+> >  net/netfilter/ipvs/ip_vs_rr.c | 25 ++++++++++++++++++++++++-
+> >  2 files changed, 26 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/include/uapi/linux/ip_vs.h b/include/uapi/linux/ip_vs.h
+> > index 4102ddcb4e14..7f74bafd3211 100644
+> > --- a/include/uapi/linux/ip_vs.h
+> > +++ b/include/uapi/linux/ip_vs.h
+> > @@ -28,6 +28,8 @@
+> >  #define IP_VS_SVC_F_SCHED_SH_FALLBACK        IP_VS_SVC_F_SCHED1 /* SH fallback */
+> >  #define IP_VS_SVC_F_SCHED_SH_PORT    IP_VS_SVC_F_SCHED2 /* SH use port */
+> >
+> > +#define IP_VS_SVC_F_SCHED_RR_RANDOM  IP_VS_SVC_F_SCHED1 /* random start */
+> > +
+> >  /*
+> >   *      Destination Server Flags
+> >   */
+> > diff --git a/net/netfilter/ipvs/ip_vs_rr.c b/net/netfilter/ipvs/ip_vs_rr.c
+> > index 38495c6f6c7c..e309d97bdd08 100644
+> > --- a/net/netfilter/ipvs/ip_vs_rr.c
+> > +++ b/net/netfilter/ipvs/ip_vs_rr.c
+> > @@ -22,13 +22,36 @@
+> >
+> >  #include <net/ip_vs.h>
+> >
+> > +static void ip_vs_rr_random_start(struct ip_vs_service *svc)
+> > +{
+> > +     struct list_head *cur;
+> > +     u32 start;
+> > +
+> > +     if (!(svc->flags | IP_VS_SVC_F_SCHED_RR_RANDOM) ||
+>
+>         | -> &
+>
+> > +         svc->num_dests <= 1)
+> > +             return;
+> > +
+> > +     spin_lock_bh(&svc->sched_lock);
+> > +     start = get_random_u32() % svc->num_dests;
+>
+>         May be prandom is more appropriate for non-crypto purposes.
+> Also, not sure if it is a good idea to limit the number of steps,
+> eg. to 128...
+>
+>         start = prandom_u32_max(min(svc->num_dests, 128U));
+>
+>         or just use
+>
+>         start = prandom_u32_max(svc->num_dests);
+>
+>         Also, this line can be before the spin_lock_bh.
+>
+> > +     cur = &svc->destinations;
+>
+>         cur = svc->sched_data;
+>
+>         ... and to start from current svc->sched_data because
+> we are called for every added dest. Better to jump 0..127 steps
+> ahead, to avoid delay with long lists?
+>
+> > +     while (start--)
+> > +             cur = cur->next;
+> > +     svc->sched_data = cur;
+> > +     spin_unlock_bh(&svc->sched_lock);
+> > +}
+> >
+> >  static int ip_vs_rr_init_svc(struct ip_vs_service *svc)
+> >  {
+> >       svc->sched_data = &svc->destinations;
+> > +     ip_vs_rr_random_start(svc);
+> >       return 0;
+> >  }
+> >
+> > +static int ip_vs_rr_add_dest(struct ip_vs_service *svc, struct ip_vs_dest *dest)
+> > +{
+> > +     ip_vs_rr_random_start(svc);
+> > +     return 0;
+> > +}
+> >
+> >  static int ip_vs_rr_del_dest(struct ip_vs_service *svc, struct ip_vs_dest *dest)
+> >  {
+> > @@ -104,7 +127,7 @@ static struct ip_vs_scheduler ip_vs_rr_scheduler = {
+> >       .module =               THIS_MODULE,
+> >       .n_list =               LIST_HEAD_INIT(ip_vs_rr_scheduler.n_list),
+> >       .init_service =         ip_vs_rr_init_svc,
+> > -     .add_dest =             NULL,
+> > +     .add_dest =             ip_vs_rr_add_dest,
+> >       .del_dest =             ip_vs_rr_del_dest,
+> >       .schedule =             ip_vs_rr_schedule,
+> >  };
+> > --
+> > 2.36.0
+>
+> Regards
+>
+> --
+> Julian Anastasov <ja@ssi.bg>
+>
