@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E06B6C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDEA4C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:24:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245134AbiEJO1s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:27:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46720 "EHLO
+        id S244244AbiEJO1k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:27:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245278AbiEJN5Y (ORCPT
+        with ESMTP id S245224AbiEJN5S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:57:24 -0400
+        Tue, 10 May 2022 09:57:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 701F32D4B56;
-        Tue, 10 May 2022 06:39:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 625FF2CDEEE;
+        Tue, 10 May 2022 06:39:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 09148615E9;
-        Tue, 10 May 2022 13:39:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F22EBC385A6;
-        Tue, 10 May 2022 13:39:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AE792618A6;
+        Tue, 10 May 2022 13:38:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8DF6C385A6;
+        Tue, 10 May 2022 13:38:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189945;
-        bh=H80LzjsCwwDuMoTh8aPlJp2dEdjqVJunQqjAV47P7vE=;
+        s=korg; t=1652189939;
+        bh=k0EV5QDhIv6NUYclbw0DwTvNWUIi+LTqKXOQFZpnxhI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ayohSOjUylXRgcTXmXLE1jrt+OORp/WrBZQpMXCYup2wirN0NzbCJAnIGXedMeF1d
-         WmsMVxKPrmgi2v4uyaUkOGY6e1K7QRxfqFHZznuzXl3yLdPA89p1cOYpTjIpYhbPJ4
-         Ma/6jBbS46EzY+Zz/ElaSnBaC3GzIDVJlXprRW8Q=
+        b=uD6uBTJgdBtYIQPx1LPAOQaYzIOoljk5tvjIla71HMSJMEJq9DMCI9K84syN42h1l
+         UQoQdA/kxwmaviMWLZ6U/WA3src5IpYTRWuwSr7pRcOzTTV+395hrHVmgY/CLEAv18
+         NkvGlw1SAihk2d3rtUf7hMK5xydz2kGwahplRb70=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 5.17 078/140] SUNRPC release the transport of a relocated task with an assigned transport
-Date:   Tue, 10 May 2022 15:07:48 +0200
-Message-Id: <20220510130743.844609243@linuxfoundation.org>
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Kees Cook <keescook@chromium.org>
+Subject: [PATCH 5.17 076/140] selftests/seccomp: Dont call read() on TTY from background pgrp
+Date:   Tue, 10 May 2022 15:07:46 +0200
+Message-Id: <20220510130743.788485575@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -48,39 +48,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Olga Kornievskaia <kolga@netapp.com>
+From: Jann Horn <jannh@google.com>
 
-commit e13433b4416fa31a24e621cbbbb39227a3d651dd upstream.
+commit 2bfed7d2ffa5d86c462d3e2067f2832eaf8c04c7 upstream.
 
-A relocated task must release its previous transport.
+Since commit 92d25637a3a4 ("kselftest: signal all child processes"), tests
+are executed in background process groups. This means that trying to read
+from stdin now throws SIGTTIN when stdin is a TTY, which breaks some
+seccomp selftests that try to use read(0, NULL, 0) as a dummy syscall.
 
-Fixes: 82ee41b85cef1 ("SUNRPC don't resend a task on an offlined transport")
-Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+The simplest way to fix that is probably to just use -1 instead of 0 as
+the dummy read()'s FD.
+
+Fixes: 92d25637a3a4 ("kselftest: signal all child processes")
+Signed-off-by: Jann Horn <jannh@google.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20220319010011.1374622-1-jannh@google.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sunrpc/clnt.c |   11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ tools/testing/selftests/seccomp/seccomp_bpf.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
---- a/net/sunrpc/clnt.c
-+++ b/net/sunrpc/clnt.c
-@@ -1065,10 +1065,13 @@ rpc_task_get_next_xprt(struct rpc_clnt *
- static
- void rpc_task_set_transport(struct rpc_task *task, struct rpc_clnt *clnt)
- {
--	if (task->tk_xprt &&
--			!(test_bit(XPRT_OFFLINE, &task->tk_xprt->state) &&
--                        (task->tk_flags & RPC_TASK_MOVEABLE)))
--		return;
-+	if (task->tk_xprt) {
-+		if (!(test_bit(XPRT_OFFLINE, &task->tk_xprt->state) &&
-+		      (task->tk_flags & RPC_TASK_MOVEABLE)))
-+			return;
-+		xprt_release(task);
-+		xprt_put(task->tk_xprt);
-+	}
- 	if (task->tk_flags & RPC_TASK_NO_ROUND_ROBIN)
- 		task->tk_xprt = rpc_task_get_first_xprt(clnt);
- 	else
+--- a/tools/testing/selftests/seccomp/seccomp_bpf.c
++++ b/tools/testing/selftests/seccomp/seccomp_bpf.c
+@@ -955,7 +955,7 @@ TEST(ERRNO_valid)
+ 	ASSERT_EQ(0, ret);
+ 
+ 	EXPECT_EQ(parent, syscall(__NR_getppid));
+-	EXPECT_EQ(-1, read(0, NULL, 0));
++	EXPECT_EQ(-1, read(-1, NULL, 0));
+ 	EXPECT_EQ(E2BIG, errno);
+ }
+ 
+@@ -974,7 +974,7 @@ TEST(ERRNO_zero)
+ 
+ 	EXPECT_EQ(parent, syscall(__NR_getppid));
+ 	/* "errno" of 0 is ok. */
+-	EXPECT_EQ(0, read(0, NULL, 0));
++	EXPECT_EQ(0, read(-1, NULL, 0));
+ }
+ 
+ /*
+@@ -995,7 +995,7 @@ TEST(ERRNO_capped)
+ 	ASSERT_EQ(0, ret);
+ 
+ 	EXPECT_EQ(parent, syscall(__NR_getppid));
+-	EXPECT_EQ(-1, read(0, NULL, 0));
++	EXPECT_EQ(-1, read(-1, NULL, 0));
+ 	EXPECT_EQ(4095, errno);
+ }
+ 
+@@ -1026,7 +1026,7 @@ TEST(ERRNO_order)
+ 	ASSERT_EQ(0, ret);
+ 
+ 	EXPECT_EQ(parent, syscall(__NR_getppid));
+-	EXPECT_EQ(-1, read(0, NULL, 0));
++	EXPECT_EQ(-1, read(-1, NULL, 0));
+ 	EXPECT_EQ(12, errno);
+ }
+ 
+@@ -2623,7 +2623,7 @@ void *tsync_sibling(void *data)
+ 	ret = prctl(PR_GET_NO_NEW_PRIVS, 0, 0, 0, 0);
+ 	if (!ret)
+ 		return (void *)SIBLING_EXIT_NEWPRIVS;
+-	read(0, NULL, 0);
++	read(-1, NULL, 0);
+ 	return (void *)SIBLING_EXIT_UNKILLED;
+ }
+ 
 
 
