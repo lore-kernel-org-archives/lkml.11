@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09475C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:39:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7D14C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:40:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243558AbiEJNno (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:43:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57710 "EHLO
+        id S243081AbiEJNmQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:42:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243379AbiEJNam (ORCPT
+        with ESMTP id S243973AbiEJN1p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:30:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 933F722A8BB;
-        Tue, 10 May 2022 06:21:31 -0700 (PDT)
+        Tue, 10 May 2022 09:27:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A040A17058;
+        Tue, 10 May 2022 06:20:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80365B81D9A;
-        Tue, 10 May 2022 13:21:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0AF5C385A6;
-        Tue, 10 May 2022 13:21:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C5EF61768;
+        Tue, 10 May 2022 13:20:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EFD6C385A6;
+        Tue, 10 May 2022 13:20:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188889;
-        bh=vZukyU5lrQVD+Yudd7+ZS40qi3G/anqiDPUAELIdM3A=;
+        s=korg; t=1652188850;
+        bh=yLrBDSoik5lYxYHt4/zuvrMAWSDosPSALRSAGfIGK3E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2Iyb8/ZFtd21ScSVaCa8sb3Y3DdlAZ5+CUUcqE0QDSmZ2XjDgFcEJpFvRuwomfexI
-         Kn9LfmHRIjDG89vS/DShasT4Wg5G0/bNaBdpBn6R9fUTutVDILvoFx6ZpcuR4evxK1
-         aYrHx9eSz7bnWk1k7nUHWR2IT/KsJGP7kRGnPoh0=
+        b=HBzuHFFxnik+6LPJJJ5lERA9vl94FwetTD+La0dFRt9b9arwBntn7YsUAy/4QEbi3
+         u1HMaUEgr3JdOW19uRaQVkumD6XqPvC29rmgF5hxR6PBo0K0+RHdcgyPmQZu1P8M4e
+         F9/EyVH96KhGe5wRe1uXVdMAvFmltxfQX7t78pDQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ivan Babrou <ivan@cloudflare.com>,
-        Minchan Kim <minchan@kernel.org>,
-        Nitin Gupta <ngupta@vflare.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        David Hildenbrand <david@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.19 82/88] mm: fix unexpected zeroed page mapping with zram swap
-Date:   Tue, 10 May 2022 15:08:07 +0200
-Message-Id: <20220510130736.113648841@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 26/88] phy: samsung: exynos5250-sata: fix missing device put in probe error paths
+Date:   Tue, 10 May 2022 15:07:11 +0200
+Message-Id: <20220510130734.506299687@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 References: <20220510130733.735278074@linuxfoundation.org>
@@ -54,157 +50,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minchan Kim <minchan@kernel.org>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-commit e914d8f00391520ecc4495dd0ca0124538ab7119 upstream.
+[ Upstream commit 5c8402c4db45dd55c2c93c8d730f5dfa7c78a702 ]
 
-Two processes under CLONE_VM cloning, user process can be corrupted by
-seeing zeroed page unexpectedly.
+The actions of of_find_i2c_device_by_node() in probe function should be
+reversed in error paths by putting the reference to obtained device.
 
-      CPU A                        CPU B
-
-  do_swap_page                do_swap_page
-  SWP_SYNCHRONOUS_IO path     SWP_SYNCHRONOUS_IO path
-  swap_readpage valid data
-    swap_slot_free_notify
-      delete zram entry
-                              swap_readpage zeroed(invalid) data
-                              pte_lock
-                              map the *zero data* to userspace
-                              pte_unlock
-  pte_lock
-  if (!pte_same)
-    goto out_nomap;
-  pte_unlock
-  return and next refault will
-  read zeroed data
-
-The swap_slot_free_notify is bogus for CLONE_VM case since it doesn't
-increase the refcount of swap slot at copy_mm so it couldn't catch up
-whether it's safe or not to discard data from backing device.  In the
-case, only the lock it could rely on to synchronize swap slot freeing is
-page table lock.  Thus, this patch gets rid of the swap_slot_free_notify
-function.  With this patch, CPU A will see correct data.
-
-      CPU A                        CPU B
-
-  do_swap_page                do_swap_page
-  SWP_SYNCHRONOUS_IO path     SWP_SYNCHRONOUS_IO path
-                              swap_readpage original data
-                              pte_lock
-                              map the original data
-                              swap_free
-                                swap_range_free
-                                  bd_disk->fops->swap_slot_free_notify
-  swap_readpage read zeroed data
-                              pte_unlock
-  pte_lock
-  if (!pte_same)
-    goto out_nomap;
-  pte_unlock
-  return
-  on next refault will see mapped data by CPU B
-
-The concern of the patch would increase memory consumption since it
-could keep wasted memory with compressed form in zram as well as
-uncompressed form in address space.  However, most of cases of zram uses
-no readahead and do_swap_page is followed by swap_free so it will free
-the compressed form from in zram quickly.
-
-Link: https://lkml.kernel.org/r/YjTVVxIAsnKAXjTd@google.com
-Fixes: 0bcac06f27d7 ("mm, swap: skip swapcache for swapin of synchronous device")
-Reported-by: Ivan Babrou <ivan@cloudflare.com>
-Tested-by: Ivan Babrou <ivan@cloudflare.com>
-Signed-off-by: Minchan Kim <minchan@kernel.org>
-Cc: Nitin Gupta <ngupta@vflare.org>
-Cc: Sergey Senozhatsky <senozhatsky@chromium.org>
-Cc: Jens Axboe <axboe@kernel.dk>
-Cc: David Hildenbrand <david@redhat.com>
-Cc: <stable@vger.kernel.org>	[4.14+]
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: bcff4cba41bc ("PHY: Exynos: Add Exynos5250 SATA PHY driver")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
+Link: https://lore.kernel.org/r/20220407091857.230386-2-krzysztof.kozlowski@linaro.org
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/page_io.c |   55 -------------------------------------------------------
- 1 file changed, 55 deletions(-)
+ drivers/phy/samsung/phy-exynos5250-sata.c | 20 ++++++++++++++------
+ 1 file changed, 14 insertions(+), 6 deletions(-)
 
---- a/mm/page_io.c
-+++ b/mm/page_io.c
-@@ -71,55 +71,6 @@ void end_swap_bio_write(struct bio *bio)
- 	bio_put(bio);
+diff --git a/drivers/phy/samsung/phy-exynos5250-sata.c b/drivers/phy/samsung/phy-exynos5250-sata.c
+index 7960c69d09a6..2c39d2fd3cd8 100644
+--- a/drivers/phy/samsung/phy-exynos5250-sata.c
++++ b/drivers/phy/samsung/phy-exynos5250-sata.c
+@@ -202,20 +202,21 @@ static int exynos_sata_phy_probe(struct platform_device *pdev)
+ 	sata_phy->phyclk = devm_clk_get(dev, "sata_phyctrl");
+ 	if (IS_ERR(sata_phy->phyclk)) {
+ 		dev_err(dev, "failed to get clk for PHY\n");
+-		return PTR_ERR(sata_phy->phyclk);
++		ret = PTR_ERR(sata_phy->phyclk);
++		goto put_dev;
+ 	}
+ 
+ 	ret = clk_prepare_enable(sata_phy->phyclk);
+ 	if (ret < 0) {
+ 		dev_err(dev, "failed to enable source clk\n");
+-		return ret;
++		goto put_dev;
+ 	}
+ 
+ 	sata_phy->phy = devm_phy_create(dev, NULL, &exynos_sata_phy_ops);
+ 	if (IS_ERR(sata_phy->phy)) {
+-		clk_disable_unprepare(sata_phy->phyclk);
+ 		dev_err(dev, "failed to create PHY\n");
+-		return PTR_ERR(sata_phy->phy);
++		ret = PTR_ERR(sata_phy->phy);
++		goto clk_disable;
+ 	}
+ 
+ 	phy_set_drvdata(sata_phy->phy, sata_phy);
+@@ -223,11 +224,18 @@ static int exynos_sata_phy_probe(struct platform_device *pdev)
+ 	phy_provider = devm_of_phy_provider_register(dev,
+ 					of_phy_simple_xlate);
+ 	if (IS_ERR(phy_provider)) {
+-		clk_disable_unprepare(sata_phy->phyclk);
+-		return PTR_ERR(phy_provider);
++		ret = PTR_ERR(phy_provider);
++		goto clk_disable;
+ 	}
+ 
+ 	return 0;
++
++clk_disable:
++	clk_disable_unprepare(sata_phy->phyclk);
++put_dev:
++	put_device(&sata_phy->client->dev);
++
++	return ret;
  }
  
--static void swap_slot_free_notify(struct page *page)
--{
--	struct swap_info_struct *sis;
--	struct gendisk *disk;
--	swp_entry_t entry;
--
--	/*
--	 * There is no guarantee that the page is in swap cache - the software
--	 * suspend code (at least) uses end_swap_bio_read() against a non-
--	 * swapcache page.  So we must check PG_swapcache before proceeding with
--	 * this optimization.
--	 */
--	if (unlikely(!PageSwapCache(page)))
--		return;
--
--	sis = page_swap_info(page);
--	if (!(sis->flags & SWP_BLKDEV))
--		return;
--
--	/*
--	 * The swap subsystem performs lazy swap slot freeing,
--	 * expecting that the page will be swapped out again.
--	 * So we can avoid an unnecessary write if the page
--	 * isn't redirtied.
--	 * This is good for real swap storage because we can
--	 * reduce unnecessary I/O and enhance wear-leveling
--	 * if an SSD is used as the as swap device.
--	 * But if in-memory swap device (eg zram) is used,
--	 * this causes a duplicated copy between uncompressed
--	 * data in VM-owned memory and compressed data in
--	 * zram-owned memory.  So let's free zram-owned memory
--	 * and make the VM-owned decompressed page *dirty*,
--	 * so the page should be swapped out somewhere again if
--	 * we again wish to reclaim it.
--	 */
--	disk = sis->bdev->bd_disk;
--	entry.val = page_private(page);
--	if (disk->fops->swap_slot_free_notify &&
--			__swap_count(sis, entry) == 1) {
--		unsigned long offset;
--
--		offset = swp_offset(entry);
--
--		SetPageDirty(page);
--		disk->fops->swap_slot_free_notify(sis->bdev,
--				offset);
--	}
--}
--
- static void end_swap_bio_read(struct bio *bio)
- {
- 	struct page *page = bio_first_page_all(bio);
-@@ -135,7 +86,6 @@ static void end_swap_bio_read(struct bio
- 	}
- 
- 	SetPageUptodate(page);
--	swap_slot_free_notify(page);
- out:
- 	unlock_page(page);
- 	WRITE_ONCE(bio->bi_private, NULL);
-@@ -373,11 +323,6 @@ int swap_readpage(struct page *page, boo
- 
- 	ret = bdev_read_page(sis->bdev, map_swap_page(page, &sis->bdev), page);
- 	if (!ret) {
--		if (trylock_page(page)) {
--			swap_slot_free_notify(page);
--			unlock_page(page);
--		}
--
- 		count_vm_event(PSWPIN);
- 		return 0;
- 	}
+ static const struct of_device_id exynos_sata_phy_of_match[] = {
+-- 
+2.35.1
+
 
 
