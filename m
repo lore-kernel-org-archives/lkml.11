@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A280BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:41:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C64B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:42:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236710AbiEJNpr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:45:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56590 "EHLO
+        id S244277AbiEJNp5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:45:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243843AbiEJNcS (ORCPT
+        with ESMTP id S243890AbiEJNcU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:32:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 759BB2D3D48;
-        Tue, 10 May 2022 06:22:39 -0700 (PDT)
+        Tue, 10 May 2022 09:32:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94DE1177898;
+        Tue, 10 May 2022 06:23:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 238A1B81D7A;
-        Tue, 10 May 2022 13:22:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41FAEC385A6;
-        Tue, 10 May 2022 13:22:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F45561769;
+        Tue, 10 May 2022 13:23:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15824C385C2;
+        Tue, 10 May 2022 13:23:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188956;
-        bh=VZBU5EK9WYoEOxgUclrIhEfeEZZe27R3K4dFXcHEnvk=;
+        s=korg; t=1652188994;
+        bh=FxIhdZqIw91pbHMbO5gwTOdjHrJnWK2rh0Rb9gXuISc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WmiGA77j4/8DnlGNp/8+B6XDxagFjKRAUmGOj2z+ES9+D82G4BCYcZP3v7Xtj+AWc
-         zjTozKnl0gZ/4Ve+MT/3qDocQoHARtqwTNHRN9cHFu7CgMuPWLhczzLJYdn1MZgyJH
-         e0nuzxv5omdSCuOZoaS8RmUy9i1JpDkYNIB15RNo=
+        b=dU1HsL/zdxZNvVWTQWHejnYRbr5fB30XZnubBqzWVrGh2dOz2BGGSUULUiqTJQQpZ
+         8p/dxjgQHr/k0CiPR2h+lpp5FHcB4qmbkUuKozwGWBGAQD1DCfR9ZcLYu03+15QxvK
+         PQoauegljEkJjZnS0JC+xyZzff1torP3CEfMLSSQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jan=20H=C3=B6ppner?= <hoeppner@linux.ibm.com>,
-        Stefan Haberland <sth@linux.ibm.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.4 17/52] s390/dasd: Fix read inconsistency for ESE DASD devices
-Date:   Tue, 10 May 2022 15:07:46 +0200
-Message-Id: <20220510130730.361096600@linuxfoundation.org>
+        stable@vger.kernel.org, Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH 5.4 29/52] selftests: mirror_gre_bridge_1q: Avoid changing PVID while interface is operational
+Date:   Tue, 10 May 2022 15:07:58 +0200
+Message-Id: <20220510130730.706939275@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.852544477@linuxfoundation.org>
 References: <20220510130729.852544477@linuxfoundation.org>
@@ -50,52 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Höppner <hoeppner@linux.ibm.com>
+From: Ido Schimmel <idosch@nvidia.com>
 
-commit b9c10f68e23c13f56685559a0d6fdaca9f838324 upstream.
+commit 3122257c02afd9f199a8fc84ae981e1fc4958532 upstream.
 
-Read requests that return with NRF error are partially completed in
-dasd_eckd_ese_read(). The function keeps track of the amount of
-processed bytes and the driver will eventually return this information
-back to the block layer for further processing via __dasd_cleanup_cqr()
-when the request is in the final stage of processing (from the driver's
-perspective).
+In emulated environments, the bridge ports enslaved to br1 get a carrier
+before changing br1's PVID. This means that by the time the PVID is
+changed, br1 is already operational and configured with an IPv6
+link-local address.
 
-For this, blk_update_request() is used which requires the number of
-bytes to complete the request. As per documentation the nr_bytes
-parameter is described as follows:
-   "number of bytes to complete for @req".
+When the test is run with netdevs registered by mlxsw, changing the PVID
+is vetoed, as changing the VID associated with an existing L3 interface
+is forbidden. This restriction is similar to the 8021q driver's
+restriction of changing the VID of an existing interface.
 
-This was mistakenly interpreted as "number of bytes _left_ for @req"
-leading to new requests with incorrect data length. The consequence are
-inconsistent and completely wrong read requests as data from random
-memory areas are read back.
+Fix this by taking br1 down and bringing it back up when it is fully
+configured.
 
-Fix this by correctly specifying the amount of bytes that should be used
-to complete the request.
+With this fix, the test reliably passes on top of both the SW and HW
+data paths (emulated or not).
 
-Fixes: 5e6bdd37c552 ("s390/dasd: fix data corruption for thin provisioned devices")
-Cc: stable@vger.kernel.org # 5.3+
-Signed-off-by: Jan Höppner <hoeppner@linux.ibm.com>
-Reviewed-by: Stefan Haberland <sth@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220505141733.1989450-5-sth@linux.ibm.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 239e754af854 ("selftests: forwarding: Test mirror-to-gretap w/ UL 802.1q")
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Petr Machata <petrm@nvidia.com>
+Link: https://lore.kernel.org/r/20220502084507.364774-1-idosch@nvidia.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/s390/block/dasd.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ tools/testing/selftests/net/forwarding/mirror_gre_bridge_1q.sh |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/s390/block/dasd.c
-+++ b/drivers/s390/block/dasd.c
-@@ -2812,8 +2812,7 @@ static void __dasd_cleanup_cqr(struct da
- 		 * complete a request partially.
- 		 */
- 		if (proc_bytes) {
--			blk_update_request(req, BLK_STS_OK,
--					   blk_rq_bytes(req) - proc_bytes);
-+			blk_update_request(req, BLK_STS_OK, proc_bytes);
- 			blk_mq_requeue_request(req, true);
- 		} else {
- 			blk_mq_complete_request(req);
+--- a/tools/testing/selftests/net/forwarding/mirror_gre_bridge_1q.sh
++++ b/tools/testing/selftests/net/forwarding/mirror_gre_bridge_1q.sh
+@@ -61,9 +61,12 @@ setup_prepare()
+ 
+ 	vrf_prepare
+ 	mirror_gre_topo_create
++	# Avoid changing br1's PVID while it is operational as a L3 interface.
++	ip link set dev br1 down
+ 
+ 	ip link set dev $swp3 master br1
+ 	bridge vlan add dev br1 vid 555 pvid untagged self
++	ip link set dev br1 up
+ 	ip address add dev br1 192.0.2.129/28
+ 	ip address add dev br1 2001:db8:2::1/64
+ 
 
 
