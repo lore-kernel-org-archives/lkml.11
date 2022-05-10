@@ -2,60 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38788C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 03:22:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF496C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 03:23:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235311AbiEJD0E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 23:26:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51428 "EHLO
+        id S235314AbiEJD1O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 23:27:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235331AbiEJDZz (ORCPT
+        with ESMTP id S230317AbiEJD1L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 23:25:55 -0400
-Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3C013B54B;
-        Mon,  9 May 2022 20:21:56 -0700 (PDT)
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
-        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1noGR9-00BsaV-Qa; Tue, 10 May 2022 13:21:25 +1000
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Tue, 10 May 2022 11:21:24 +0800
-Date:   Tue, 10 May 2022 11:21:24 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        linux-crypto@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Breno =?iso-8859-1?Q?Leit=E3o?= <leitao@debian.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nayna Jain <nayna@linux.ibm.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Paulo Flabiano Smorigo <pfsmorigo@gmail.com>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH] crypto: vmx - Fix build error
-Message-ID: <YnnaNATPjAtDREub@gondor.apana.org.au>
-References: <20220507052244.1426765-1-masahiroy@kernel.org>
+        Mon, 9 May 2022 23:27:11 -0400
+X-Greylist: delayed 166 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 09 May 2022 20:23:13 PDT
+Received: from p3plwbeout23-04.prod.phx3.secureserver.net (p3plsmtp23-04-2.prod.phx3.secureserver.net [68.178.252.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B537F3B54B
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 20:23:13 -0700 (PDT)
+Received: from mailex.mailcore.me ([94.136.40.141])
+        by :WBEOUT: with ESMTP
+        id oGQBnPPDPXwYxoGQCnr98K; Mon, 09 May 2022 20:20:24 -0700
+X-CMAE-Analysis: v=2.4 cv=N9vsq0xB c=1 sm=1 tr=0 ts=6279d9f8
+ a=bheWAUFm1xGnSTQFbH9Kqg==:117 a=84ok6UeoqCVsigPHarzEiQ==:17
+ a=ggZhUymU-5wA:10 a=IkcTkHD0fZMA:10 a=oZkIemNP1mAA:10
+ a=m0AoEl9UtWfG1dJMmG4A:9 a=QEXdDO2ut3YA:10
+X-SECURESERVER-ACCT: phillip@squashfs.org.uk  
+X-SID:  oGQBnPPDPXwYx
+Received: from 82-69-79-175.dsl.in-addr.zen.co.uk ([82.69.79.175] helo=[192.168.178.33])
+        by smtp03.mailcore.me with esmtpa (Exim 4.94.2)
+        (envelope-from <phillip@squashfs.org.uk>)
+        id 1noGQB-0003JY-7R; Tue, 10 May 2022 04:20:23 +0100
+Message-ID: <1dff431e-f51d-edb0-5abc-353ceeef50ed@squashfs.org.uk>
+Date:   Tue, 10 May 2022 04:20:18 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220507052244.1426765-1-masahiroy@kernel.org>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: squashfs performance regression and readahea
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Xiongwei Song <sxwjean@gmail.com>,
+        Zheng Liang <zhengliang6@huawei.com>,
+        Zhang Yi <yi.zhang@huawei.com>, Hou Tao <houtao1@huawei.com>,
+        Miao Xie <miaoxie@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        "Song, Xiongwei" <Xiongwei.Song@windriver.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "squashfs-devel@lists.sourceforge.net" 
+        <squashfs-devel@lists.sourceforge.net>,
+        open list <linux-kernel@vger.kernel.org>
+References: <PH0PR11MB519282C2834C7BB7B5431F34ECC79@PH0PR11MB5192.namprd11.prod.outlook.com>
+ <Ynfzh2ifG85MZEoN@casper.infradead.org>
+ <CAJMQK-jNYoJVqsri4REV=E3bG8AS7T82HrVSAUPzbUiWask01A@mail.gmail.com>
+ <CAJMQK-i3OQxcG7=LzTG4k70BP0j6PstWw0C45xcEi6iVLn_2ag@mail.gmail.com>
+ <CAEVVKH-m+3+xJMbM1vRM3d=AaPSv2xg4Qx8_WPw_29JByONS8A@mail.gmail.com>
+ <YnkVaGB74xqWJqdG@casper.infradead.org>
+ <13af40a9-6b60-6875-8326-0827e34182d5@squashfs.org.uk>
+ <YnnPYD+VtQB6hlnL@casper.infradead.org>
+From:   Phillip Lougher <phillip@squashfs.org.uk>
+In-Reply-To: <YnnPYD+VtQB6hlnL@casper.infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Mailcore-Auth: 439999529
+X-Mailcore-Domain: 1394945
+X-123-reg-Authenticated:  phillip@squashfs.org.uk  
+X-Originating-IP: 82.69.79.175
+X-CMAE-Envelope: MS4xfE4OojHQqKeUWqDeUgXnELl39/Zvj8pNo3AAivap8TE3326ePWGy3LQRV90EjUwMMsjNDuG+CkILOJQ/UR0bt7sMNhOlHJXjZDU0pWgMBVncYEi5+59N
+ 9QbT5u8ofvg+CB5HoKcp/kGfM1yMJBAWNbrCDpv6S4mwvNa/kAvVbe81l4n01i8NcvmDm4ra+K5TUslGG6NuDvFx5cWQYaVchNs=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 07, 2022 at 02:22:43PM +0900, Masahiro Yamada wrote:
-> When I refactored this Makefile, I accidentally changed the CONFIG
-> option.
+On 10/05/2022 03:35, Matthew Wilcox wrote:
+> On Tue, May 10, 2022 at 02:11:41AM +0100, Phillip Lougher wrote:
+>> On 09/05/2022 14:21, Matthew Wilcox wrote:
+>>> On Mon, May 09, 2022 at 08:43:45PM +0800, Xiongwei Song wrote:
+>>>> Hi Hsin-Yi and Matthew,
+>>>>
+>>>> With the patch from the attachment on linux 5.10, ran the command as I
+>>>> mentioned earlier,
+>>>> got the results below:
+>>>> 1:40.65 (1m + 40.65s)
+>>>> 1:10.12
+>>>> 1:11.10
+>>>> 1:11.47
+>>>> 1:11.59
+>>>> 1:11.94
+>>>> 1:11.86
+>>>> 1:12.04
+>>>> 1:12.21
+>>>> 1:12.06
+>>>>
+>>>> The performance has improved obviously, but compared to linux 4.18, the
+>>>> performance is not so good.
+>>>>
+>>>> Moreover, I wanted to test on linux 5.18. But I think I should revert
+>>>> 9eec1d897139 ("squashfs: provide backing_dev_info in order to disable
+>>>> read-ahead"),
+>>>> right?  Otherwise, the patch doesn't work?
+>>>
+>>> I've never seen patch 9eec1d897139 before.  If you're going to point
+>>> out bugs in my code, at least have the decency to cc me on it.  It
+>>> should never have gone in, and should be reverted so the problem can
+>>> be fixed properly.
+>>
+>> You are not in charge of what patches goes into Squashfs, that is my
+>> perogative as maintainer of Squashfs.
 > 
-> Fixes: b52455a73db9 ("crypto: vmx - Align the short log with Makefile cleanups")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
+> I think you mean 'prerogative'.  And, no, your filesystem is not your
+> little fiefdom, it's part of a collaborative effort.
 > 
->  drivers/crypto/vmx/Makefile | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Patch applied.  Thanks.
--- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+This isn't a spelling contest, and if that's the best you can do you
+have already failed.
+
+Be carefull here also, I have been maintainer of Squashfs for 20 years,
+and was kernel maintainer for both Ubuntu and Redhat for 10 years, and
+so I am experienced member of the community.
+
+You reply is bordering on offensive and arrogant, especially considering
+it is unwarranted.  I did not set out to offend you, and I don't
+appreciate it.
+
+About 8 years ago I decided to refrain from active involvement in the
+kernel community, because I decided the level of discourse was
+disgusting, and I had enough of it.
+
+I poped up now to defend my approval of the Huawei patch.  I am *quite*
+happy not to have any more involvement until necessary.
+
+So having said what I want to say, I will leave it at that. You have
+just proved why I have minimised my involvement.
+
+No doubt you'll throw your toys out the pram, but, I'm no
+longer listening so don't bother.
+
+
+>> That patch (by Huawei) fixes the performance regression in Squashfs
+>> by disabling readahead, and it is good workaround until something
+>> better.
+> 
+> You *didn't even report the problem to me*.  How can it be fixed if I'm
+> not aware of it?
+> 
+
+There was a email discussion last year, which I responded to, and got
+ignored.  I will find it out tomorrow, perhaps.  But I will probably
+not bother, because life is too short.
+
+Cheers
+
+Phillip
