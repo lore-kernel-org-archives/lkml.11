@@ -2,140 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26809C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 170C1C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:13:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343993AbiEJOQw (ORCPT
+        id S1343951AbiEJOQq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:16:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47176 "EHLO
+        Tue, 10 May 2022 10:16:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343892AbiEJNsl (ORCPT
+        with ESMTP id S1343903AbiEJNsm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:48:41 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4DAF6CF4E;
-        Tue, 10 May 2022 06:37:00 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 9D9371F8BB;
-        Tue, 10 May 2022 13:36:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1652189796; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=p4sKAZLovajkwQg62mRgYfSfMqbrhePxszIN411IYQg=;
-        b=tovm3tZ+1QWr/SxV5JtdrWCNJ7FQX0r5/3bS75ATrIpgw5RXo0a2u28xBsFvvpqOMkw7UT
-        +TrRpOhjh0GVX+9CJ46QGv+Xzz2tg2x+Ugu5wzM0kN6Q/YM7fsthLicCDxDtyAZjvpX6VN
-        1SJ6PdLrZJwEQhuF+4IMU3OxodHogj8=
-Received: from suse.cz (unknown [10.100.201.86])
+        Tue, 10 May 2022 09:48:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 875E76CF55;
+        Tue, 10 May 2022 06:37:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id CDCAB2C141;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3803E6165A;
+        Tue, 10 May 2022 13:36:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBE31C385C2;
         Tue, 10 May 2022 13:36:35 +0000 (UTC)
-Date:   Tue, 10 May 2022 15:36:34 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     CGEL <cgel.zte@gmail.com>
-Cc:     akpm@linux-foundation.org, hannes@cmpxchg.org, willy@infradead.org,
-        shy828301@gmail.com, roman.gushchin@linux.dev, shakeelb@google.com,
-        linmiaohe@huawei.com, william.kucharski@oracle.com,
-        peterx@redhat.com, hughd@google.com, vbabka@suse.cz,
-        songmuchun@bytedance.com, surenb@google.com,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        cgroups@vger.kernel.org, Yang Yang <yang.yang29@zte.com.cn>
-Subject: Re: [PATCH] mm/memcg: support control THP behaviour in cgroup
-Message-ID: <YnpqYte2jLdcBiPg@dhcp22.suse.cz>
-References: <20220505033814.103256-1-xu.xin16@zte.com.cn>
- <YnUlntNFR4zeD+qa@dhcp22.suse.cz>
- <6275d3e7.1c69fb81.1d62.4504@mx.google.com>
- <YnjmPAToTR0C5o8x@dhcp22.suse.cz>
- <6278fa75.1c69fb81.9c598.f794@mx.google.com>
- <Ynj/l+pyFJxKfcbQ@dhcp22.suse.cz>
- <6279c354.1c69fb81.7f6c1.15e0@mx.google.com>
- <Yno3pNQOn1lAMPnu@dhcp22.suse.cz>
- <627a5214.1c69fb81.1b7fb.47be@mx.google.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652189796;
+        bh=XQ0h2uHZUhjeoY/xJUSScnleGdGqjSR97mfvJn+xSR4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=CUCPoUfLtz8nZhWa3JqE2/4SbARubXa6/zZCXkS3cFYq5dR7IUNTS9ZWWEAncAEC4
+         GyPq6tqw1D8dlH+Xhpc/wfHtvyA7tGQ7jEKw/QYPqacSH+Q4oPqKWsmCO5+pLhw67j
+         iRH+sBTXAba2/w+9F6pFClJ94+mO2iJ3cHvcp5Gw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
+        Anand Jain <anand.jain@oracle.com>,
+        Filipe Manana <fdmanana@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.17 030/140] btrfs: do not BUG_ON() on failure to update inode when setting xattr
+Date:   Tue, 10 May 2022 15:07:00 +0200
+Message-Id: <20220510130742.476046800@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
+References: <20220510130741.600270947@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <627a5214.1c69fb81.1b7fb.47be@mx.google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 10-05-22 11:52:51, CGEL wrote:
-> On Tue, May 10, 2022 at 12:00:04PM +0200, Michal Hocko wrote:
-> > On Tue 10-05-22 01:43:38, CGEL wrote:
-> > > On Mon, May 09, 2022 at 01:48:39PM +0200, Michal Hocko wrote:
-> > > > On Mon 09-05-22 11:26:43, CGEL wrote:
-> > > > > On Mon, May 09, 2022 at 12:00:28PM +0200, Michal Hocko wrote:
-> > > > > > On Sat 07-05-22 02:05:25, CGEL wrote:
-> > > > > > [...]
-> > > > > > > If there are many containers to run on one host, and some of them have high
-> > > > > > > performance requirements, administrator could turn on thp for them:
-> > > > > > > # docker run -it --thp-enabled=always
-> > > > > > > Then all the processes in those containers will always use thp.
-> > > > > > > While other containers turn off thp by:
-> > > > > > > # docker run -it --thp-enabled=never
-> > > > > > 
-> > > > > > I do not know. The THP config space is already too confusing and complex
-> > > > > > and this just adds on top. E.g. is the behavior of the knob
-> > > > > > hierarchical? What is the policy if parent memcg says madivise while
-> > > > > > child says always? How does the per-application configuration aligns
-> > > > > > with all that (e.g. memcg policy madivise but application says never via
-> > > > > > prctl while still uses some madvised - e.g. via library).
-> > > > > >
-> > > > > 
-> > > > > The cgroup THP behavior is align to host and totally independent just likes
-> > > > > /sys/fs/cgroup/memory.swappiness. That means if one cgroup config 'always'
-> > > > > for thp, it has no matter with host or other cgroup. This make it simple for
-> > > > > user to understand or control.
-> > > > 
-> > > > All controls in cgroup v2 should be hierarchical. This is really
-> > > > required for a proper delegation semantic.
-> > > >
-> > > 
-> > > Could we align to the semantic of /sys/fs/cgroup/memory.swappiness?
-> > > Some distributions like Ubuntu is still using cgroup v1.
-> > 
-> > cgroup v1 interface is mostly frozen. All new features are added to the
-> > v2 interface.
-> >
-> 
-> So what about we add this interface to cgroup v2?
+From: Filipe Manana <fdmanana@suse.com>
 
-Can you come up with a sane hierarchical behavior?
+commit 193b4e83986d7ee6caa8ceefb5ee9f58240fbee0 upstream.
 
-[...]
-> > > For micro-service architecture, the application in one container is not a
-> > > set of loosely tight processes, it's aim at provide one certain service,
-> > > so different containers means different service, and different service
-> > > has different QoS demand. 
-> > 
-> > OK, if they are tightly coupled you could apply the same THP policy by
-> > an existing prctl interface. Why is that not feasible. As you are noting
-> > below...
-> > 
-> > >     5.containers usually managed by compose software, which treats container as
-> > > base management unit;
-> > 
-> > ..so the compose software can easily start up the workload by using prctl
-> > to disable THP for whatever workloads it is not suitable for.
-> 
-> prctl(PR_SET_THP_DISABLE..) can not be elegance to support the semantic we
-> need. If only some containers needs THP, other containers and host do not need
-> THP. We must set host THP to always first, and call prctl() to close THP for
-> host tasks and other containers one by one,
+We are doing a BUG_ON() if we fail to update an inode after setting (or
+clearing) a xattr, but there's really no reason to not instead simply
+abort the transaction and return the error to the caller. This should be
+a rare error because we have previously reserved enough metadata space to
+update the inode and the delayed inode should have already been setup, so
+an -ENOSPC or -ENOMEM, which are the possible errors, are very unlikely to
+happen.
 
-It might not be the most elegant solution but it should work.
-Maintaining user interfaces for ever has some cost and the THP
-configuration space is quite large already. So I would rather not add
-more complication in unless that is absolutely necessary.
+So replace the BUG_ON()s with a transaction abort.
 
-> in this process some tasks that start before we call prctl() may
-> already use THP with no need.
+CC: stable@vger.kernel.org # 4.9+
+Reviewed-by: Qu Wenruo <wqu@suse.com>
+Reviewed-by: Anand Jain <anand.jain@oracle.com>
+Signed-off-by: Filipe Manana <fdmanana@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/btrfs/xattr.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-As long as all those processes have a common ancestor I do not see how
-that would be possible.
+--- a/fs/btrfs/xattr.c
++++ b/fs/btrfs/xattr.c
+@@ -262,7 +262,8 @@ int btrfs_setxattr_trans(struct inode *i
+ 	inode_inc_iversion(inode);
+ 	inode->i_ctime = current_time(inode);
+ 	ret = btrfs_update_inode(trans, root, BTRFS_I(inode));
+-	BUG_ON(ret);
++	if (ret)
++		btrfs_abort_transaction(trans, ret);
+ out:
+ 	if (start_trans)
+ 		btrfs_end_transaction(trans);
+@@ -416,7 +417,8 @@ static int btrfs_xattr_handler_set_prop(
+ 		inode_inc_iversion(inode);
+ 		inode->i_ctime = current_time(inode);
+ 		ret = btrfs_update_inode(trans, root, BTRFS_I(inode));
+-		BUG_ON(ret);
++		if (ret)
++			btrfs_abort_transaction(trans, ret);
+ 	}
+ 
+ 	btrfs_end_transaction(trans);
 
--- 
-Michal Hocko
-SUSE Labs
+
