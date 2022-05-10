@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 429A8C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11C73C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:23:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344369AbiEJO0b (ORCPT
+        id S1344324AbiEJO0T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:26:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39630 "EHLO
+        Tue, 10 May 2022 10:26:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243919AbiEJNwx (ORCPT
+        with ESMTP id S244350AbiEJNwy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:52:53 -0400
+        Tue, 10 May 2022 09:52:54 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D29706C0D0;
-        Tue, 10 May 2022 06:38:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABCCD7A80C;
+        Tue, 10 May 2022 06:38:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CB38615E9;
-        Tue, 10 May 2022 13:37:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7C61C385A6;
-        Tue, 10 May 2022 13:37:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 51C44615C8;
+        Tue, 10 May 2022 13:38:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54BA8C385C6;
+        Tue, 10 May 2022 13:38:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189858;
-        bh=BEL/QK5o7Uyv5QUi+azeEgIO671K4UQlx+HYxKtUE/8=;
+        s=korg; t=1652189883;
+        bh=1Cs4CGR/T9aWauJL6iNFtwdxt8Jg/kB7NldSroRV47k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nzIP0O5utaP2SNA0m63pxgLNYwLNiCfA3Q5Sjd60BHwOOUrGnODU8eLWYhta+l3zX
-         RZBLSqJusZV2aHqvts/ozhSHHf2OBkIXJ+6+jesabWZvej1Hh/Go0YQDzVRt5RIje6
-         RiWLr4GyKI/BqVWNPMONdyYrk5sjbFvvfye7y3Sw=
+        b=PCYo8yz5KE09ntmr3Jef+1UKr/IPN4WNM7RXt7IH0F2xdSmQuUauN8b23fdsPkMJl
+         dAZtaEYCjVcfTXHrYQ2WyhKNjM7w1yxodhMzc3JlS/tEIPHHoUd3oC95iX0xYUcD4M
+         OtPjAaSJYrcmKl2BusKr6mmJrIhBkPV1TmoRHtZE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 5.17 052/140] NFC: netlink: fix sleep in atomic bug when firmware download timeout
-Date:   Tue, 10 May 2022 15:07:22 +0200
-Message-Id: <20220510130743.109408814@linuxfoundation.org>
+        stable@vger.kernel.org, Stefan Haberland <sth@linux.ibm.com>,
+        Jan Hoeppner <hoeppner@linux.ibm.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.17 042/140] s390/dasd: prevent double format of tracks for ESE devices
+Date:   Tue, 10 May 2022 15:07:12 +0200
+Message-Id: <20220510130742.823129293@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -50,65 +50,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Stefan Haberland <sth@linux.ibm.com>
 
-commit 4071bf121d59944d5cd2238de0642f3d7995a997 upstream.
+commit 71f3871657370dbbaf942a1c758f64e49a36c70f upstream.
 
-There are sleep in atomic bug that could cause kernel panic during
-firmware download process. The root cause is that nlmsg_new with
-GFP_KERNEL parameter is called in fw_dnld_timeout which is a timer
-handler. The call trace is shown below:
+For ESE devices we get an error for write operations on an unformatted
+track. Afterwards the track will be formatted and the IO operation
+restarted.
+When using alias devices a track might be accessed by multiple requests
+simultaneously and there is a race window that a track gets formatted
+twice resulting in data loss.
 
-BUG: sleeping function called from invalid context at include/linux/sched/mm.h:265
-Call Trace:
-kmem_cache_alloc_node
-__alloc_skb
-nfc_genl_fw_download_done
-call_timer_fn
-__run_timers.part.0
-run_timer_softirq
-__do_softirq
-...
+Prevent this by remembering the amount of formatted tracks when starting
+a request and comparing this number before actually formatting a track
+on the fly. If the number has changed there is a chance that the current
+track was finally formatted in between. As a result do not format the
+track and restart the current IO to check.
 
-The nlmsg_new with GFP_KERNEL parameter may sleep during memory
-allocation process, and the timer handler is run as the result of
-a "software interrupt" that should not call any other function
-that could sleep.
+The number of formatted tracks does not match the overall number of
+formatted tracks on the device and it might wrap around but this is no
+problem. It is only needed to recognize that a track has been formatted at
+all in between.
 
-This patch changes allocation mode of netlink message from GFP_KERNEL
-to GFP_ATOMIC in order to prevent sleep in atomic bug. The GFP_ATOMIC
-flag makes memory allocation operation could be used in atomic context.
-
-Fixes: 9674da8759df ("NFC: Add firmware upload netlink command")
-Fixes: 9ea7187c53f6 ("NFC: netlink: Rename CMD_FW_UPLOAD to CMD_FW_DOWNLOAD")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220504055847.38026-1-duoming@zju.edu.cn
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: 5e2b17e712cf ("s390/dasd: Add dynamic formatting support for ESE volumes")
+Cc: stable@vger.kernel.org # 5.3+
+Signed-off-by: Stefan Haberland <sth@linux.ibm.com>
+Reviewed-by: Jan Hoeppner <hoeppner@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220505141733.1989450-3-sth@linux.ibm.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/nfc/netlink.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/s390/block/dasd.c      |    7 +++++++
+ drivers/s390/block/dasd_eckd.c |   19 +++++++++++++++++--
+ drivers/s390/block/dasd_int.h  |    2 ++
+ 3 files changed, 26 insertions(+), 2 deletions(-)
 
---- a/net/nfc/netlink.c
-+++ b/net/nfc/netlink.c
-@@ -1244,7 +1244,7 @@ int nfc_genl_fw_download_done(struct nfc
- 	struct sk_buff *msg;
- 	void *hdr;
+--- a/drivers/s390/block/dasd.c
++++ b/drivers/s390/block/dasd.c
+@@ -1422,6 +1422,13 @@ int dasd_start_IO(struct dasd_ccw_req *c
+ 		if (!cqr->lpm)
+ 			cqr->lpm = dasd_path_get_opm(device);
+ 	}
++	/*
++	 * remember the amount of formatted tracks to prevent double format on
++	 * ESE devices
++	 */
++	if (cqr->block)
++		cqr->trkcount = atomic_read(&cqr->block->trkcount);
++
+ 	if (cqr->cpmode == 1) {
+ 		rc = ccw_device_tm_start(device->cdev, cqr->cpaddr,
+ 					 (long) cqr, cqr->lpm);
+--- a/drivers/s390/block/dasd_eckd.c
++++ b/drivers/s390/block/dasd_eckd.c
+@@ -3083,13 +3083,24 @@ static int dasd_eckd_format_device(struc
+ }
  
--	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
-+	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_ATOMIC);
- 	if (!msg)
- 		return -ENOMEM;
+ static bool test_and_set_format_track(struct dasd_format_entry *to_format,
+-				      struct dasd_block *block)
++				      struct dasd_ccw_req *cqr)
+ {
++	struct dasd_block *block = cqr->block;
+ 	struct dasd_format_entry *format;
+ 	unsigned long flags;
+ 	bool rc = false;
  
-@@ -1260,7 +1260,7 @@ int nfc_genl_fw_download_done(struct nfc
+ 	spin_lock_irqsave(&block->format_lock, flags);
++	if (cqr->trkcount != atomic_read(&block->trkcount)) {
++		/*
++		 * The number of formatted tracks has changed after request
++		 * start and we can not tell if the current track was involved.
++		 * To avoid data corruption treat it as if the current track is
++		 * involved
++		 */
++		rc = true;
++		goto out;
++	}
+ 	list_for_each_entry(format, &block->format_list, list) {
+ 		if (format->track == to_format->track) {
+ 			rc = true;
+@@ -3109,6 +3120,7 @@ static void clear_format_track(struct da
+ 	unsigned long flags;
  
- 	genlmsg_end(msg, hdr);
+ 	spin_lock_irqsave(&block->format_lock, flags);
++	atomic_inc(&block->trkcount);
+ 	list_del_init(&format->list);
+ 	spin_unlock_irqrestore(&block->format_lock, flags);
+ }
+@@ -3170,8 +3182,11 @@ dasd_eckd_ese_format(struct dasd_device
+ 	}
+ 	format->track = curr_trk;
+ 	/* test if track is already in formatting by another thread */
+-	if (test_and_set_format_track(format, block))
++	if (test_and_set_format_track(format, cqr)) {
++		/* this is no real error so do not count down retries */
++		cqr->retries++;
+ 		return ERR_PTR(-EEXIST);
++	}
  
--	genlmsg_multicast(&nfc_genl_family, msg, 0, 0, GFP_KERNEL);
-+	genlmsg_multicast(&nfc_genl_family, msg, 0, 0, GFP_ATOMIC);
+ 	fdata.start_unit = curr_trk;
+ 	fdata.stop_unit = curr_trk;
+--- a/drivers/s390/block/dasd_int.h
++++ b/drivers/s390/block/dasd_int.h
+@@ -188,6 +188,7 @@ struct dasd_ccw_req {
+ 	void (*callback)(struct dasd_ccw_req *, void *data);
+ 	void *callback_data;
+ 	unsigned int proc_bytes;	/* bytes for partial completion */
++	unsigned int trkcount;		/* count formatted tracks */
+ };
  
- 	return 0;
+ /*
+@@ -611,6 +612,7 @@ struct dasd_block {
  
+ 	struct list_head format_list;
+ 	spinlock_t format_lock;
++	atomic_t trkcount;
+ };
+ 
+ struct dasd_attention_data {
 
 
