@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE3B7C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:44:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADF0CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:44:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346292AbiEJPsS (ORCPT
+        id S1346211AbiEJPsa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:48:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60080 "EHLO
+        Tue, 10 May 2022 11:48:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346155AbiEJPsI (ORCPT
+        with ESMTP id S1346190AbiEJPsL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:48:08 -0400
+        Tue, 10 May 2022 11:48:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EBF427E6BF;
-        Tue, 10 May 2022 08:43:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E14D2802C4;
+        Tue, 10 May 2022 08:44:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C4D26138B;
-        Tue, 10 May 2022 15:43:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4D3BC385A6;
-        Tue, 10 May 2022 15:43:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FD9461329;
+        Tue, 10 May 2022 15:44:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C307C385C2;
+        Tue, 10 May 2022 15:44:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652197437;
-        bh=hlYpLAwnpuspZLHZID1YZoo1uAKZ6b1lpZu1fE96oRU=;
+        s=k20201202; t=1652197441;
+        bh=yH5M1c0ldN5R+FkK/zu3biDlTtfEvvdoiBULCRmiLhA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=np5kd40bzi+lacF04abNEe4EbxMlc6AlrBfthNbZzvPaC5oc8Ev37KjQKvjlZpkrY
-         +2yFs2nnznBlk3rikP3dd2obnyZTrtwwaVU4WW4ngmdZxHlc8CrdOeuYR0NA+0cXD8
-         5yzjeuL7/nHgytXQEgehBNWpcaplW03T85z/VImPUgocL5yE8ZBDxJzmdQ67Zb5+mP
-         THXVnnWfjipqj106mSeHcV7ZjoN7rR9Bykv51i2aq+8aaNTflq2UJo37bt4m7+uCRx
-         C/mKGEsDib1N6tI6OFC2IvDBG5yd40P92OoiSxHRa+beRgvzpibJG8wqUA+CsCEiwp
-         56qvkecIO4JKw==
+        b=fkoQ5I6F9BF5mV19aHe3/YQ4iYqZTHaCQXSKYsZk8cLxEpRKL1XCieZ9icBO9RYee
+         sawe9fWx9vFYD4DNM+058n6JEMvl/9waAfg1/n/WQC2roAIqVoX8rIlcVTZoMSZ2zA
+         GKw/51cAgZ7wZ3FHTZsarc32WlKW0tZuJhSwo51af6l0RfzlA22QWJi3bvfoat/8it
+         Ji6BMKSpYhOdZv5+zGS8JiqDpixXqlU7sGtLO4uyPWrJkwOnqW0n4G139Gl4Mxbcce
+         W8xcL+MvtgOZ/BuG9kNcVNoxtFitboOdFYeUvN/FeKNmXAlyygQdTCgNvmn2jxNotY
+         Dm0+4pSW0VNJQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mark Brown <broonie@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.17 07/21] ASoC: ops: Validate input values in snd_soc_put_volsw_range()
-Date:   Tue, 10 May 2022 11:43:26 -0400
-Message-Id: <20220510154340.153400-7-sashal@kernel.org>
+Cc:     Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
+        io-uring@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 10/21] io_uring: assign non-fixed early for async work
+Date:   Tue, 10 May 2022 11:43:29 -0400
+Message-Id: <20220510154340.153400-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220510154340.153400-1-sashal@kernel.org>
 References: <20220510154340.153400-1-sashal@kernel.org>
@@ -52,58 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Jens Axboe <axboe@kernel.dk>
 
-[ Upstream commit aa22125c57f9e577f0a667e4fa07fc3fa8ca1e60 ]
+[ Upstream commit a196c78b5443fc61af2c0490213b9d125482cbd1 ]
 
-Check that values written via snd_soc_put_volsw_range() are
-within the range advertised by the control, ensuring that we
-don't write out of spec values to the hardware.
+We defer file assignment to ensure that fixed files work with links
+between a direct accept/open and the links that follow it. But this has
+the side effect that normal file assignment is then not complete by the
+time that request submission has been done.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20220423131239.3375261-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+For deferred execution, if the file is a regular file, assign it when
+we do the async prep anyway.
+
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/soc-ops.c | 18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
+ fs/io_uring.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/soc-ops.c b/sound/soc/soc-ops.c
-index a0ca58ba1627..884c8fd48dab 100644
---- a/sound/soc/soc-ops.c
-+++ b/sound/soc/soc-ops.c
-@@ -519,7 +519,15 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
- 	unsigned int mask = (1 << fls(max)) - 1;
- 	unsigned int invert = mc->invert;
- 	unsigned int val, val_mask;
--	int err, ret;
-+	int err, ret, tmp;
-+
-+	tmp = ucontrol->value.integer.value[0];
-+	if (tmp < 0)
-+		return -EINVAL;
-+	if (mc->platform_max && tmp > mc->platform_max)
-+		return -EINVAL;
-+	if (tmp > mc->max - mc->min + 1)
-+		return -EINVAL;
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 87df37912055..a0680046ff3c 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -6572,7 +6572,12 @@ static int io_req_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
  
- 	if (invert)
- 		val = (max - ucontrol->value.integer.value[0]) & mask;
-@@ -534,6 +542,14 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
- 	ret = err;
- 
- 	if (snd_soc_volsw_is_stereo(mc)) {
-+		tmp = ucontrol->value.integer.value[1];
-+		if (tmp < 0)
-+			return -EINVAL;
-+		if (mc->platform_max && tmp > mc->platform_max)
-+			return -EINVAL;
-+		if (tmp > mc->max - mc->min + 1)
-+			return -EINVAL;
+ static int io_req_prep_async(struct io_kiocb *req)
+ {
+-	if (!io_op_defs[req->opcode].needs_async_setup)
++	const struct io_op_def *def = &io_op_defs[req->opcode];
 +
- 		if (invert)
- 			val = (max - ucontrol->value.integer.value[1]) & mask;
- 		else
++	/* assign early for deferred execution for non-fixed file */
++	if (def->needs_file && !(req->flags & REQ_F_FIXED_FILE))
++		req->file = io_file_get_normal(req, req->fd);
++	if (!def->needs_async_setup)
+ 		return 0;
+ 	if (WARN_ON_ONCE(req_has_async_data(req)))
+ 		return -EFAULT;
 -- 
 2.35.1
 
