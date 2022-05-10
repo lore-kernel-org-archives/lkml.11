@@ -2,115 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55573C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:48:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0FBFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:48:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346526AbiEJPvC (ORCPT
+        id S1346329AbiEJPwR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:51:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33072 "EHLO
+        Tue, 10 May 2022 11:52:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346425AbiEJPu1 (ORCPT
+        with ESMTP id S243874AbiEJPu2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:50:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BCCE285EEC;
-        Tue, 10 May 2022 08:44:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 10 May 2022 11:50:28 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E84952802F8;
+        Tue, 10 May 2022 08:44:53 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 553A21F8B2;
+        Tue, 10 May 2022 15:44:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1652197492; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=D94f5ARMrLCZ+JVe2Vf8yz6MNGDaxHLJphnyqhro/vw=;
+        b=frs11VzdorCMe355yWFZX7IzHbf0FqqKt4GDqUp4yd+GG3ZxRqJqI0bRQ2j5JBYCyo1TWN
+        uzeDxE6LKWQWUzyo3c8EUfW44e2c3+xK4sx4B1gh7YfWz9vGPC0O3NIDA4sY66p9omkVxG
+        oQQjVjdEmvhL35mery3MjEHAMym3QWg=
+Received: from suse.cz (unknown [10.100.208.146])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D4DB614A6;
-        Tue, 10 May 2022 15:44:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 200B6C385C9;
-        Tue, 10 May 2022 15:44:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652197490;
-        bh=vZdRIDVqM66QB63azHQopN9rJHE8RLDYHyQI+u2FgXo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E1C1xN80cnu+ny3l4cIcd9DD7VkCJmFtG/1D2dQwYFLSE7sVFEAwXftvQMwJNhMiI
-         rVcgnObECAky99QtW5BYMbZRvTHTgb3tFJ2JMS8Pmr7JBO1uy3dcyFBK3624hd+v7o
-         bWyO4J4NeJSU0XT6RdjKDiacUy0bN0QXF44vgOBoXRAs29itFMdLGxHk4bYgyCxXQg
-         bzihH7dOb3H1SDEs2u8ct4o4Do1SANUt7eZiKNLYmfc3uoT6d6p7Zs0dSJAzZ8daYm
-         uLtskxdsaPB3/7Z14dq5tCHvg/GAMTbgMymw4cE0qL22KMv0mwZAheCYVosQ3FNWr6
-         xT3ES86DgoN8g==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shravya Kumbham <shravya.kumbham@xilinx.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, michal.simek@xilinx.com,
-        linmq006@gmail.com, yuehaibing@huawei.com, trix@redhat.com,
-        prabhakar.mahadev-lad.rj@bp.renesas.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 10/19] net: emaclite: Don't advertise 1000BASE-T and do auto negotiation
-Date:   Tue, 10 May 2022 11:44:20 -0400
-Message-Id: <20220510154429.153677-10-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220510154429.153677-1-sashal@kernel.org>
-References: <20220510154429.153677-1-sashal@kernel.org>
+        by relay2.suse.de (Postfix) with ESMTPS id 355482C141;
+        Tue, 10 May 2022 15:44:52 +0000 (UTC)
+Date:   Tue, 10 May 2022 17:44:51 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Rik van Riel <riel@fb.com>
+Cc:     Song Liu <songliubraving@fb.com>,
+        "joe.lawrence@redhat.com" <joe.lawrence@redhat.com>,
+        "song@kernel.org" <song@kernel.org>,
+        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "vincent.guittot@linaro.org" <vincent.guittot@linaro.org>,
+        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [RFC] sched,livepatch: call klp_try_switch_task in __cond_resched
+Message-ID: <YnqIcw+dYsWz/w7g@alley>
+References: <20220507174628.2086373-1-song@kernel.org>
+ <YnkuFrm1YR46OFx/@alley>
+ <9C7DF147-5112-42E7-9F7C-7159EFDFB766@fb.com>
+ <YnoawYtoCSvrK7lb@alley>
+ <3a9bfb4a52b715bd8739d8834409c9549ec7f22f.camel@fb.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <3a9bfb4a52b715bd8739d8834409c9549ec7f22f.camel@fb.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shravya Kumbham <shravya.kumbham@xilinx.com>
+On Tue 2022-05-10 13:33:13, Rik van Riel wrote:
+> On Tue, 2022-05-10 at 09:56 +0200, Petr Mladek wrote:
+> > 
+> > IMHO, the problem is that klp_transition_work_fn() tries the
+> > transition "only" once per second, see
+> > 
+> > void klp_try_complete_transition(void)
+> > {
+> > [...]
+> >                 schedule_delayed_work(&klp_transition_work,
+> >                                       round_jiffies_relative(HZ));
+> > [...]
+> > }
+> > 
+> > It means that there are "only" 60 attempts to migrate the busy
+> > process.
+> > It fails when the process is in the running state or sleeping in a
+> > livepatched function. There is a _non-zero_ chance of a bad luck.
+> > 
+> 
+> We are definitely hitting that non-zero chance :)
+> 
+> > Anyway, the limit 60s looks like a bad idea to me. It is too low.
+> 
+> That has its own issues, though. System management software
+> tracks whether kpatch succeeds, and a run of the system
+> management software will not complete until all of the commands
+> it has run have completed.
+> 
+> One reason for this is that allowing system management software
+> to just fork more and more things that might potentially get
+> stuck is that you never want your system management software
+> to come even close to resembling a fork bomb :)
+> 
+> Rollout of the next config change to a system should not be
+> blocked on KLP completion.
 
-[ Upstream commit b800528b97d0adc3a5ba42d78a8b0d3f07a31f44 ]
+Makes sense.
 
-In xemaclite_open() function we are setting the max speed of
-emaclite to 100Mb using phy_set_max_speed() function so,
-there is no need to write the advertising registers to stop
-giga-bit speed and the phy_start() function starts the
-auto-negotiation so, there is no need to handle it separately
-using advertising registers. Remove the phy_read and phy_write
-of advertising registers in xemaclite_open() function.
+> I think the best approach for us might be to just track what
+> is causing the transition failures, and send in trivial patches
+> to make the outer loop in such kernel threads do the same KLP
+> transition the idle task already does.
 
-Signed-off-by: Shravya Kumbham <shravya.kumbham@xilinx.com>
-Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/xilinx/xilinx_emaclite.c | 15 ---------------
- 1 file changed, 15 deletions(-)
+I am afraid that is a way to hell. We might end up in doing
+really crazy things if we want to complete the transition
+in one minute.
 
-diff --git a/drivers/net/ethernet/xilinx/xilinx_emaclite.c b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-index 5524ac4fae80..cc15d4c53a12 100644
---- a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-@@ -925,8 +925,6 @@ static int xemaclite_open(struct net_device *dev)
- 	xemaclite_disable_interrupts(lp);
- 
- 	if (lp->phy_node) {
--		u32 bmcr;
--
- 		lp->phy_dev = of_phy_connect(lp->ndev, lp->phy_node,
- 					     xemaclite_adjust_link, 0,
- 					     PHY_INTERFACE_MODE_MII);
-@@ -937,19 +935,6 @@ static int xemaclite_open(struct net_device *dev)
- 
- 		/* EmacLite doesn't support giga-bit speeds */
- 		phy_set_max_speed(lp->phy_dev, SPEED_100);
--
--		/* Don't advertise 1000BASE-T Full/Half duplex speeds */
--		phy_write(lp->phy_dev, MII_CTRL1000, 0);
--
--		/* Advertise only 10 and 100mbps full/half duplex speeds */
--		phy_write(lp->phy_dev, MII_ADVERTISE, ADVERTISE_ALL |
--			  ADVERTISE_CSMA);
--
--		/* Restart auto negotiation */
--		bmcr = phy_read(lp->phy_dev, MII_BMCR);
--		bmcr |= (BMCR_ANENABLE | BMCR_ANRESTART);
--		phy_write(lp->phy_dev, MII_BMCR, bmcr);
--
- 		phy_start(lp->phy_dev);
- 	}
- 
--- 
-2.35.1
+The great thing about the current approach is that it tries
+to livepatch the system without too much disruption. The
+more we try to speed up the transition the more we might
+disrupt the system. Not to say about the code complexity
+and potential bugs.
 
+IMHO a better approach is to fix your management system.
+The task is done when the livepatch module is loaded.
+
+If you want to know that there is some problem. Then the
+livepatch code might write some warning when the transition
+has not finished within some reasonable time frame
+(1 hour or so). It might be monitored the same way
+as the messages from various watchdogs, ...
+
+Best Regards,
+Petr
