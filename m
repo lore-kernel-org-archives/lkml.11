@@ -2,128 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0FBFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:48:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B669C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:48:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346329AbiEJPwR (ORCPT
+        id S1346471AbiEJPw1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:52:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33292 "EHLO
+        Tue, 10 May 2022 11:52:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243874AbiEJPu2 (ORCPT
+        with ESMTP id S1346201AbiEJPuX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:50:28 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E84952802F8;
-        Tue, 10 May 2022 08:44:53 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 553A21F8B2;
-        Tue, 10 May 2022 15:44:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1652197492; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=D94f5ARMrLCZ+JVe2Vf8yz6MNGDaxHLJphnyqhro/vw=;
-        b=frs11VzdorCMe355yWFZX7IzHbf0FqqKt4GDqUp4yd+GG3ZxRqJqI0bRQ2j5JBYCyo1TWN
-        uzeDxE6LKWQWUzyo3c8EUfW44e2c3+xK4sx4B1gh7YfWz9vGPC0O3NIDA4sY66p9omkVxG
-        oQQjVjdEmvhL35mery3MjEHAMym3QWg=
-Received: from suse.cz (unknown [10.100.208.146])
+        Tue, 10 May 2022 11:50:23 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AEC4285AF5;
+        Tue, 10 May 2022 08:44:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 355482C141;
-        Tue, 10 May 2022 15:44:52 +0000 (UTC)
-Date:   Tue, 10 May 2022 17:44:51 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Rik van Riel <riel@fb.com>
-Cc:     Song Liu <songliubraving@fb.com>,
-        "joe.lawrence@redhat.com" <joe.lawrence@redhat.com>,
-        "song@kernel.org" <song@kernel.org>,
-        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "vincent.guittot@linaro.org" <vincent.guittot@linaro.org>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [RFC] sched,livepatch: call klp_try_switch_task in __cond_resched
-Message-ID: <YnqIcw+dYsWz/w7g@alley>
-References: <20220507174628.2086373-1-song@kernel.org>
- <YnkuFrm1YR46OFx/@alley>
- <9C7DF147-5112-42E7-9F7C-7159EFDFB766@fb.com>
- <YnoawYtoCSvrK7lb@alley>
- <3a9bfb4a52b715bd8739d8834409c9549ec7f22f.camel@fb.com>
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9B680CE1F2B;
+        Tue, 10 May 2022 15:44:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 233C1C385C2;
+        Tue, 10 May 2022 15:44:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652197481;
+        bh=B5Qp5P8UuaKwEKNG8kBzepvyoMKD3BUNxBcVLn2VzAU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ica+WZkUbpbB2mLITZdSwDC++lRUyLkQGjKcHM206D/LH/WSMFrvXIlCLiuerLPtO
+         JzUolHTDhAxIa5jnp1mxhPSn4Md4LtzPRCuASGjqYhj7LUUSBj13T/6Hnibd1O9p8g
+         y4ifGWmax5c3ReS8icuIbAiDZfsimOinU1d0LZWeBQaNNpC2L9cYtsUGC+m3MBCoR4
+         OJHMNGnyAbOkcgAjaFAuwVgFmBcJw+2unIEX+mTh7PfAHLCYkHyVasWkO2v9n9BARf
+         4VN5fl2bVH8yGhT7iM/6/59hJBnOZDyUBilkIhrkc+f01rH1P5WXIg6nusNho1ZBTH
+         TL0frcCPFNPqg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Mark Brown <broonie@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        pierre-louis.bossart@linux.intel.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.15 05/19] ASoC: max98090: Generate notifications on changes for custom control
+Date:   Tue, 10 May 2022 11:44:15 -0400
+Message-Id: <20220510154429.153677-5-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220510154429.153677-1-sashal@kernel.org>
+References: <20220510154429.153677-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <3a9bfb4a52b715bd8739d8834409c9549ec7f22f.camel@fb.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 2022-05-10 13:33:13, Rik van Riel wrote:
-> On Tue, 2022-05-10 at 09:56 +0200, Petr Mladek wrote:
-> > 
-> > IMHO, the problem is that klp_transition_work_fn() tries the
-> > transition "only" once per second, see
-> > 
-> > void klp_try_complete_transition(void)
-> > {
-> > [...]
-> >                 schedule_delayed_work(&klp_transition_work,
-> >                                       round_jiffies_relative(HZ));
-> > [...]
-> > }
-> > 
-> > It means that there are "only" 60 attempts to migrate the busy
-> > process.
-> > It fails when the process is in the running state or sleeping in a
-> > livepatched function. There is a _non-zero_ chance of a bad luck.
-> > 
-> 
-> We are definitely hitting that non-zero chance :)
-> 
-> > Anyway, the limit 60s looks like a bad idea to me. It is too low.
-> 
-> That has its own issues, though. System management software
-> tracks whether kpatch succeeds, and a run of the system
-> management software will not complete until all of the commands
-> it has run have completed.
-> 
-> One reason for this is that allowing system management software
-> to just fork more and more things that might potentially get
-> stuck is that you never want your system management software
-> to come even close to resembling a fork bomb :)
-> 
-> Rollout of the next config change to a system should not be
-> blocked on KLP completion.
+From: Mark Brown <broonie@kernel.org>
 
-Makes sense.
+[ Upstream commit 13fcf676d9e102594effc686d98521ff5c90b925 ]
 
-> I think the best approach for us might be to just track what
-> is causing the transition failures, and send in trivial patches
-> to make the outer loop in such kernel threads do the same KLP
-> transition the idle task already does.
+The max98090 driver has some custom controls which share a put() function
+which returns 0 unconditionally, meaning that events are not generated
+when the value changes. Fix that.
 
-I am afraid that is a way to hell. We might end up in doing
-really crazy things if we want to complete the transition
-in one minute.
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220420193454.2647908-2-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ sound/soc/codecs/max98090.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The great thing about the current approach is that it tries
-to livepatch the system without too much disruption. The
-more we try to speed up the transition the more we might
-disrupt the system. Not to say about the code complexity
-and potential bugs.
+diff --git a/sound/soc/codecs/max98090.c b/sound/soc/codecs/max98090.c
+index 6d9261346842..62b41ca050a2 100644
+--- a/sound/soc/codecs/max98090.c
++++ b/sound/soc/codecs/max98090.c
+@@ -430,7 +430,7 @@ static int max98090_put_enab_tlv(struct snd_kcontrol *kcontrol,
+ 		mask << mc->shift,
+ 		sel << mc->shift);
+ 
+-	return 0;
++	return *select != val;
+ }
+ 
+ static const char *max98090_perf_pwr_text[] =
+-- 
+2.35.1
 
-IMHO a better approach is to fix your management system.
-The task is done when the livepatch module is loaded.
-
-If you want to know that there is some problem. Then the
-livepatch code might write some warning when the transition
-has not finished within some reasonable time frame
-(1 hour or so). It might be monitored the same way
-as the messages from various watchdogs, ...
-
-Best Regards,
-Petr
