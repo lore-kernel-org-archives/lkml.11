@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79DA4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:20:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7DC4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:20:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240679AbiEJOYa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:24:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47036 "EHLO
+        id S1343589AbiEJOYk (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:24:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244588AbiEJNqw (ORCPT
+        with ESMTP id S243724AbiEJNww (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:46:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB5142F02B;
-        Tue, 10 May 2022 06:31:44 -0700 (PDT)
+        Tue, 10 May 2022 09:52:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 454A4663FD;
+        Tue, 10 May 2022 06:38:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 285C3617F5;
-        Tue, 10 May 2022 13:31:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A368C385C6;
-        Tue, 10 May 2022 13:31:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E437BB81DA8;
+        Tue, 10 May 2022 13:37:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B6BBC385C2;
+        Tue, 10 May 2022 13:37:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189498;
-        bh=9CSoLroFbSTvPx0vay7I1wRnNOPAKHtc8NonX8gn7hQ=;
+        s=korg; t=1652189836;
+        bh=WTnl3+B6yRLPj0eRn2sUYYRUVNpckkYKXc79sNWkQus=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JOl2800hP5u9q+Ul+32poFop2XMDG9iASKvZqYm4oDp3oM1GTtZrkQRqLDmeQWAFE
-         OAoGKfxPaTai+fxTp2Jn+T/eNd7BJ4DUAqxX5gHmuA64F69Mq99IZWYxgxBFMUQcCh
-         ylBVyTDDiL32KVIu9G6bwZNxeTDg1sCx0mEMKcqs=
+        b=WTgooY4m3Ik/m0UMCHM/36ffJDtHZG9jdlu8Knqqpqp7JegKHBO3A89O09uUUUKhq
+         WpWK+iX4JNkZfGOCs0l7jLKrnWi4E71nupoL7we+LM1zaCwDMG1woo12ELlMO1iA/o
+         12XjPWTi5NiRBEg0+4E/SRsIplZVko6U8/gHE4NY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Carlos Llamas <cmllamas@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 5.15 069/135] selftests/net: so_txtime: usage(): fix documentation of default clock
-Date:   Tue, 10 May 2022 15:07:31 +0200
-Message-Id: <20220510130742.391269927@linuxfoundation.org>
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.17 007/140] parisc: Merge model and model name into one line in /proc/cpuinfo
+Date:   Tue, 10 May 2022 15:06:37 +0200
+Message-Id: <20220510130741.817380046@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
-References: <20220510130740.392653815@linuxfoundation.org>
+In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
+References: <20220510130741.600270947@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,40 +48,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Kleine-Budde <mkl@pengutronix.de>
+From: Helge Deller <deller@gmx.de>
 
-commit f5c2174a3775491e890ce285df52f5715fbef875 upstream.
+commit 5b89966bc96a06f6ad65f64ae4b0461918fcc9d3 upstream.
 
-The program uses CLOCK_TAI as default clock since it was added to the
-Linux repo. In commit:
-| 040806343bb4 ("selftests/net: so_txtime multi-host support")
-a help text stating the wrong default clock was added.
+The Linux tool "lscpu" shows the double amount of CPUs if we have
+"model" and "model name" in two different lines in /proc/cpuinfo.
+This change combines the model and the model name into one line.
 
-This patch fixes the help text.
-
-Fixes: 040806343bb4 ("selftests/net: so_txtime multi-host support")
-Cc: Carlos Llamas <cmllamas@google.com>
-Cc: Willem de Bruijn <willemb@google.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Acked-by: Willem de Bruijn <willemb@google.com>
-Reviewed-by: Carlos Llamas <cmllamas@google.com>
-Link: https://lore.kernel.org/r/20220502094638.1921702-3-mkl@pengutronix.de
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/net/so_txtime.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/parisc/kernel/processor.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/tools/testing/selftests/net/so_txtime.c
-+++ b/tools/testing/selftests/net/so_txtime.c
-@@ -421,7 +421,7 @@ static void usage(const char *progname)
- 			"Options:\n"
- 			"  -4            only IPv4\n"
- 			"  -6            only IPv6\n"
--			"  -c <clock>    monotonic (default) or tai\n"
-+			"  -c <clock>    monotonic or tai (default)\n"
- 			"  -D <addr>     destination IP address (server)\n"
- 			"  -S <addr>     source IP address (client)\n"
- 			"  -r            run rx mode\n"
+--- a/arch/parisc/kernel/processor.c
++++ b/arch/parisc/kernel/processor.c
+@@ -418,8 +418,7 @@ show_cpuinfo (struct seq_file *m, void *
+ 		}
+ 		seq_printf(m, " (0x%02lx)\n", boot_cpu_data.pdc.capabilities);
+ 
+-		seq_printf(m, "model\t\t: %s\n"
+-				"model name\t: %s\n",
++		seq_printf(m, "model\t\t: %s - %s\n",
+ 				 boot_cpu_data.pdc.sys_model_name,
+ 				 cpuinfo->dev ?
+ 				 cpuinfo->dev->name : "Unknown");
 
 
