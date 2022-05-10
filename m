@@ -2,116 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ABE8C35296
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:58:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47800C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:58:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347635AbiEJQB4 (ORCPT
+        id S1346522AbiEJQCB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 12:01:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60640 "EHLO
+        Tue, 10 May 2022 12:02:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347256AbiEJPwK (ORCPT
+        with ESMTP id S1346933AbiEJPvp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:52:10 -0400
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D192714B;
-        Tue, 10 May 2022 08:48:11 -0700 (PDT)
-Received: by mail-qt1-x831.google.com with SMTP id t11so13819459qto.11;
-        Tue, 10 May 2022 08:48:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=CjDUHdg8cFM7kS83KS618TD4uElmyA10hO9dwUkMOD8=;
-        b=kDJXbyhvj9QHNsY+CIMDYKuJitt2teWm52OsKOARN0n+1y8rud7V9QCrw+t5SilKMW
-         GiOGonHD5UEWBztXu0e0Aq9uO8CwbFcQWvj3h+50zrc48Nk7ZmHaeUd02+YNlyyiAgHI
-         93xyHdhWG2wY+nmXl3uAODcwvjJBBwb2IPAeM20M5xl5n1KAOBxxjoZLAsHL4RlaFerN
-         RBGK7Av2Mm5Bt/BhTlM/4IuOY/jXEa/geNIfM3VixAJ4FMZNKLxBP2ITXgEyFRk9kYH8
-         B1fdPa1WJe4S81tVdkaotLAL1V78RY57u9MPfPHbX0Y9Jxz8Z35PlhZFzcLXoBKmfIl6
-         VmCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=CjDUHdg8cFM7kS83KS618TD4uElmyA10hO9dwUkMOD8=;
-        b=ZwT0EYPb9LjnXtkXdFrA81/CKHeZAz8AMqUCo0f4KmOP3DN7oXIno6nXyS3TN39LSL
-         Am0e5Q+ihXyAaDjsAEZFnqCTG1A2/Cn5LGG6UkoYqhbcUhqFXO8bOuy2ejhVPegz/YMP
-         kkGyURe0X5LAGCYABIhfFYvK/gIRzo3pENAJWyPIW4y3ldS+f9cZkKNtJGM9T8O3AOMD
-         Y3gjT5rOX85oKWonMSoMX8sN+JTwtaagFKzusP81bb7bQ7SwIXMXUTLPpkYSZl6ENdHi
-         bPnPkswGxhskYmnnMEPKEsA7vbpdlTO2k5olaVqRB+zCIxLi+MLn183b/UPo4PT6LgZ9
-         4+zg==
-X-Gm-Message-State: AOAM533azuItoJHKhNZ/G0+THq3wlwoLp9ms6zvZeooNPsIH1vHPPPRj
-        pKtj1JTsGYQ2DQgM38NO7bs=
-X-Google-Smtp-Source: ABdhPJwrojQGWx5ySvoO7WtsNRq8OASz8gqW8BN6clOG1VkXmIodWaR5f99J4mVoKuQ9QKI3tDi2rg==
-X-Received: by 2002:a05:622a:342:b0:2f3:dd79:2463 with SMTP id r2-20020a05622a034200b002f3dd792463mr7817047qtw.468.1652197691097;
-        Tue, 10 May 2022 08:48:11 -0700 (PDT)
-Received: from localhost ([98.242.65.84])
-        by smtp.gmail.com with ESMTPSA id x11-20020a05620a01eb00b0069fc13ce230sm2735416qkn.97.2022.05.10.08.48.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 08:48:10 -0700 (PDT)
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Joe Perches <joe@perches.com>,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Nicolas Palix <nicolas.palix@imag.fr>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Matti Vaittinen <Matti.Vaittinen@fi.rohmeurope.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Yury Norov <yury.norov@gmail.com>, Ingo Molnar <mingo@kernel.org>,
-        Valentin Schneider <vschneid@redhat.com>,
-        linux-ia64@vger.kernel.org
-Subject: [PATCH 12/22] ia64: cleanup remove_siblinginfo()
-Date:   Tue, 10 May 2022 08:47:40 -0700
-Message-Id: <20220510154750.212913-13-yury.norov@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220510154750.212913-1-yury.norov@gmail.com>
-References: <20220510154750.212913-1-yury.norov@gmail.com>
+        Tue, 10 May 2022 11:51:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 626BD62BE5;
+        Tue, 10 May 2022 08:46:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AD98161373;
+        Tue, 10 May 2022 15:46:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DF5FC385C9;
+        Tue, 10 May 2022 15:46:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652197573;
+        bh=21bwpjNudExl89E+GWay/earnO1hhomI8Dv+7vwzFGE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=nlPITQTXIBFL3WQdkOw5g8It6pvqP4pu03cmobfFQ7DDOM0F9+/V9fmtx2sqEL5mb
+         9dXK3XcWurCon0AfNP1ClK7uPGnRQHv/yggW46N44EQ746UScW1kuxTtSF20t97NHE
+         rJxA4Qu/9cgZjpuc30cJWNSFvDB+HoJ1g6pq3e2lxvv+3q1jKPW3yKTstZdHAsAXXu
+         pVnMGG8EY5tS7l0oV92SP5FvV9SJNoZawU4NXuHnGxm8KTZlERRPRPpWJNNCWX3+CJ
+         UMrYTRx0U4GaGvj1ZUxjRjsieaG9kmR5fODCB66fLyhiCOMkFw/4+S9xnWlJPD2r+Y
+         PR+eNYsnVM4Bg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        James.Bottomley@HansenPartnership.com, dave.anglin@bell.net,
+        linux-parisc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 8/8] Revert "parisc: Fix patch code locking and flushing"
+Date:   Tue, 10 May 2022 11:45:36 -0400
+Message-Id: <20220510154536.154070-8-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220510154536.154070-1-sashal@kernel.org>
+References: <20220510154536.154070-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-remove_siblinginfo() initialises variable 'last', but never uses it.
-Drop unneeded code.
+From: Helge Deller <deller@gmx.de>
 
-CC: Ingo Molnar <mingo@kernel.org>
-CC: Peter Zijlstra <peterz@infradead.org>
-CC: Valentin Schneider <vschneid@redhat.com>
-CC: linux-ia64@vger.kernel.org
-CC: linux-kernel@vger.kernel.org
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
+[ Upstream commit 6c800d7f55fcd78e17deae5ae4374d8e73482c13 ]
+
+This reverts commit a9fe7fa7d874a536e0540469f314772c054a0323.
+
+Leads to segfaults on 32bit kernel.
+
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/ia64/kernel/smpboot.c | 4 ----
- 1 file changed, 4 deletions(-)
+ arch/parisc/kernel/patch.c | 25 ++++++++++++++-----------
+ 1 file changed, 14 insertions(+), 11 deletions(-)
 
-diff --git a/arch/ia64/kernel/smpboot.c b/arch/ia64/kernel/smpboot.c
-index d10f780c13b9..d0e935cf2093 100644
---- a/arch/ia64/kernel/smpboot.c
-+++ b/arch/ia64/kernel/smpboot.c
-@@ -576,8 +576,6 @@ clear_cpu_sibling_map(int cpu)
- static void
- remove_siblinginfo(int cpu)
+diff --git a/arch/parisc/kernel/patch.c b/arch/parisc/kernel/patch.c
+index e59574f65e64..80a0ab372802 100644
+--- a/arch/parisc/kernel/patch.c
++++ b/arch/parisc/kernel/patch.c
+@@ -40,7 +40,10 @@ static void __kprobes *patch_map(void *addr, int fixmap, unsigned long *flags,
+ 
+ 	*need_unmap = 1;
+ 	set_fixmap(fixmap, page_to_phys(page));
+-	raw_spin_lock_irqsave(&patch_lock, *flags);
++	if (flags)
++		raw_spin_lock_irqsave(&patch_lock, *flags);
++	else
++		__acquire(&patch_lock);
+ 
+ 	return (void *) (__fix_to_virt(fixmap) + (uintaddr & ~PAGE_MASK));
+ }
+@@ -49,7 +52,10 @@ static void __kprobes patch_unmap(int fixmap, unsigned long *flags)
  {
--	int last = 0;
--
- 	if (cpu_data(cpu)->threads_per_core == 1 &&
- 	    cpu_data(cpu)->cores_per_socket == 1) {
- 		cpumask_clear_cpu(cpu, &cpu_core_map[cpu]);
-@@ -585,8 +583,6 @@ remove_siblinginfo(int cpu)
- 		return;
+ 	clear_fixmap(fixmap);
+ 
+-	raw_spin_unlock_irqrestore(&patch_lock, *flags);
++	if (flags)
++		raw_spin_unlock_irqrestore(&patch_lock, *flags);
++	else
++		__release(&patch_lock);
+ }
+ 
+ void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
+@@ -61,9 +67,8 @@ void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
+ 	int mapped;
+ 
+ 	/* Make sure we don't have any aliases in cache */
+-	flush_kernel_dcache_range_asm(start, end);
+-	flush_kernel_icache_range_asm(start, end);
+-	flush_tlb_kernel_range(start, end);
++	flush_kernel_vmap_range(addr, len);
++	flush_icache_range(start, end);
+ 
+ 	p = fixmap = patch_map(addr, FIX_TEXT_POKE0, &flags, &mapped);
+ 
+@@ -76,10 +81,8 @@ void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
+ 			 * We're crossing a page boundary, so
+ 			 * need to remap
+ 			 */
+-			flush_kernel_dcache_range_asm((unsigned long)fixmap,
+-						      (unsigned long)p);
+-			flush_tlb_kernel_range((unsigned long)fixmap,
+-					       (unsigned long)p);
++			flush_kernel_vmap_range((void *)fixmap,
++						(p-fixmap) * sizeof(*p));
+ 			if (mapped)
+ 				patch_unmap(FIX_TEXT_POKE0, &flags);
+ 			p = fixmap = patch_map(addr, FIX_TEXT_POKE0, &flags,
+@@ -87,10 +90,10 @@ void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
+ 		}
  	}
  
--	last = (cpumask_weight(&cpu_core_map[cpu]) == 1 ? 1 : 0);
--
- 	/* remove it from all sibling map's */
- 	clear_cpu_sibling_map(cpu);
+-	flush_kernel_dcache_range_asm((unsigned long)fixmap, (unsigned long)p);
+-	flush_tlb_kernel_range((unsigned long)fixmap, (unsigned long)p);
++	flush_kernel_vmap_range((void *)fixmap, (p-fixmap) * sizeof(*p));
+ 	if (mapped)
+ 		patch_unmap(FIX_TEXT_POKE0, &flags);
++	flush_icache_range(start, end);
  }
+ 
+ void __kprobes __patch_text(void *addr, u32 insn)
 -- 
-2.32.0
+2.35.1
 
