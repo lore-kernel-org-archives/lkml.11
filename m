@@ -2,123 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A413C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:26:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02557C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:26:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241791AbiEJMah (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 08:30:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39220 "EHLO
+        id S241798AbiEJMal (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 08:30:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241315AbiEJMae (ORCPT
+        with ESMTP id S241776AbiEJMaf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 08:30:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 091B32A3BCC;
-        Tue, 10 May 2022 05:26:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6ADA360BC7;
-        Tue, 10 May 2022 12:26:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4299C385D1;
-        Tue, 10 May 2022 12:26:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652185595;
-        bh=o6pr4aEKnsuBWeR6c+TMqGIX3kzbG/HCwBHVhWAiShk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AMe/u5kBsK4EBGCkAW7+zHByhyYMrGWf/Ay65sArsNnhPnyNFrBKBqchudJXyp9GT
-         /0z5oAXpD1jvUyhdc+QFGutH+0jLPLld8rg57L2epSB8269F0UexyPuvFogy+DwDWG
-         Olez/OuFc83MrkeKhx9ynX4N+N9jUjfUJWy8zMQAWphdsBb5rwINUvTCYjDbL8dVTd
-         s1xmrOcAOVhfpCUvGTvR109NCDlVkD2KrggPaD66HP93WV0RuOpZjEUIGaN7bSzi7X
-         7rcqqsIf0L5+S4nIgvWm2SSn8zyAzfiVxSvpL9oboEL6+6VF3CPT1yJoZA79wMZ7lH
-         EPQfCtpCNYkag==
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Christoph Hellwig <hch@lst.de>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: [PATCHv6 bpf-next 1/5] kallsyms: Make kallsyms_on_each_symbol generally available
-Date:   Tue, 10 May 2022 14:26:12 +0200
-Message-Id: <20220510122616.2652285-2-jolsa@kernel.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220510122616.2652285-1-jolsa@kernel.org>
-References: <20220510122616.2652285-1-jolsa@kernel.org>
+        Tue, 10 May 2022 08:30:35 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C71B42A1FDE;
+        Tue, 10 May 2022 05:26:37 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 2DE551F414F8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1652185587;
+        bh=BQiR+KethrLXSU5KRNxuCKrRdMtiP4LV9NgZmry1IWE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=UK52OjymyXQ50bxoRn93D0H1e5AAiwKBVZ3CH5REP+WHLsQfiDY1Cr1yf+HvPeHme
+         xZs2t6DYTdc3jgYH+FKahT6uhO30jn8605JcDiT78hETmnKriBbjXpWna273HPekNa
+         3NxX6Mea2XVUY8lJuTYAwpUQ2Y7veS4HTV+o8C3VpP2BC0h0xA87aA4mvIuGyBDcpx
+         0r5fF2hUoWTUn3mg/y/8/qefUvhl4Y4CF+jvWRmMk6BCO2HEq0LriJjOGz/KOextMH
+         521oSnKXv/Vh1rF0+pDIoUoIaNZTke5cikYs+Fz752WOlD/EP6gTDj5EXPMFiTJMBZ
+         eY171MRqval0Q==
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+To:     gregkh@linuxfoundation.org
+Cc:     jirislaby@kernel.org, matthias.bgg@gmail.com,
+        angelogioacchino.delregno@collabora.com, zhiyong.tao@mediatek.com,
+        colin.king@intel.com, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        wenst@chromium.org, broonie@kernel.org
+Subject: [PATCH] Revert "serial: 8250_mtk: Make sure to select the right FEATURE_SEL"
+Date:   Tue, 10 May 2022 14:26:20 +0200
+Message-Id: <20220510122620.150342-1-angelogioacchino.delregno@collabora.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Making kallsyms_on_each_symbol generally available, so it can be
-used outside CONFIG_LIVEPATCH option in following changes.
+It was found that some MediaTek SoCs are incompatible with this
+change. Also, this register was mistakenly understood as it was
+related to the 16550A register layout selection but, at least
+on some IPs, if not all, it's related to something else unknown.
 
-Rather than adding another ifdef option let's make the function
-generally available (when CONFIG_KALLSYMS option is defined).
+This reverts commit 6f81fdded0d024c7d4084d434764f30bca1cd6b1.
 
-Cc: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- include/linux/kallsyms.h | 7 ++++++-
- kernel/kallsyms.c        | 2 --
- 2 files changed, 6 insertions(+), 3 deletions(-)
+ drivers/tty/serial/8250/8250_mtk.c | 7 -------
+ 1 file changed, 7 deletions(-)
 
-diff --git a/include/linux/kallsyms.h b/include/linux/kallsyms.h
-index ce1bd2fbf23e..ad39636e0c3f 100644
---- a/include/linux/kallsyms.h
-+++ b/include/linux/kallsyms.h
-@@ -65,11 +65,11 @@ static inline void *dereference_symbol_descriptor(void *ptr)
- 	return ptr;
- }
+diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
+index 21053db93ff1..54051ec7b499 100644
+--- a/drivers/tty/serial/8250/8250_mtk.c
++++ b/drivers/tty/serial/8250/8250_mtk.c
+@@ -54,9 +54,6 @@
+ #define MTK_UART_TX_TRIGGER	1
+ #define MTK_UART_RX_TRIGGER	MTK_UART_RX_SIZE
  
-+#ifdef CONFIG_KALLSYMS
- int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *,
- 				      unsigned long),
- 			    void *data);
+-#define MTK_UART_FEATURE_SEL	39	/* Feature Selection register */
+-#define MTK_UART_FEAT_NEWRMAP	BIT(0)	/* Use new register map */
+-
+ #define MTK_UART_XON1		40	/* I/O: Xon character 1 */
+ #define MTK_UART_XOFF1		42	/* I/O: Xoff character 1 */
  
--#ifdef CONFIG_KALLSYMS
- /* Lookup the address for a symbol. Returns 0 if not found. */
- unsigned long kallsyms_lookup_name(const char *name);
+@@ -575,10 +572,6 @@ static int mtk8250_probe(struct platform_device *pdev)
+ 		uart.dma = data->dma;
+ #endif
  
-@@ -163,6 +163,11 @@ static inline bool kallsyms_show_value(const struct cred *cred)
- 	return false;
- }
- 
-+static inline int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *,
-+					  unsigned long), void *data)
-+{
-+	return -EOPNOTSUPP;
-+}
- #endif /*CONFIG_KALLSYMS*/
- 
- static inline void print_ip_sym(const char *loglvl, unsigned long ip)
-diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
-index 79f2eb617a62..fdfd308bebc4 100644
---- a/kernel/kallsyms.c
-+++ b/kernel/kallsyms.c
-@@ -228,7 +228,6 @@ unsigned long kallsyms_lookup_name(const char *name)
- 	return module_kallsyms_lookup_name(name);
- }
- 
--#ifdef CONFIG_LIVEPATCH
- /*
-  * Iterate over all symbols in vmlinux.  For symbols from modules use
-  * module_kallsyms_on_each_symbol instead.
-@@ -251,7 +250,6 @@ int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *,
- 	}
- 	return 0;
- }
--#endif /* CONFIG_LIVEPATCH */
- 
- static unsigned long get_symbol_pos(unsigned long addr,
- 				    unsigned long *symbolsize,
+-	/* Set AP UART new register map */
+-	writel(MTK_UART_FEAT_NEWRMAP, uart.port.membase +
+-	       (MTK_UART_FEATURE_SEL << uart.port.regshift));
+-
+ 	/* Disable Rate Fix function */
+ 	writel(0x0, uart.port.membase +
+ 			(MTK_UART_RATE_FIX << uart.port.regshift));
 -- 
-2.35.3
+2.35.1
 
