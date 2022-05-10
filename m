@@ -2,146 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D282C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:34:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29EAEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 16:35:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347501AbiEJQir (ORCPT
+        id S1347493AbiEJQjX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 12:38:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49238 "EHLO
+        Tue, 10 May 2022 12:39:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244941AbiEJQim (ORCPT
+        with ESMTP id S244332AbiEJQjV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 12:38:42 -0400
-X-Greylist: delayed 557 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 10 May 2022 09:34:43 PDT
-Received: from mailgw.felk.cvut.cz (mailgw.felk.cvut.cz [147.32.82.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 891E02A3752;
-        Tue, 10 May 2022 09:34:43 -0700 (PDT)
-Received: from mailgw.felk.cvut.cz (localhost.localdomain [127.0.0.1])
-        by mailgw.felk.cvut.cz (Proxmox) with ESMTP id 4F8D8303260B;
-        Tue, 10 May 2022 18:25:24 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        cmp.felk.cvut.cz; h=cc:cc:content-transfer-encoding:content-type
-        :content-type:date:from:from:in-reply-to:message-id:mime-version
-        :references:reply-to:subject:subject:to:to; s=felkmail; bh=GUwmb
-        8WUz+d8rIT5s68PdvGp8OiPvyQgMToZHWTShs8=; b=anjgfRPvazXbKAMxUXKa7
-        fY6juY58etYD/ZiNtJmBdIBIdGc4KaooWeuPCcPz51tSx6dqctHVf106A4I7RPMb
-        1TEgzTFo4U/YVOyaWGs39x4NKRCTRkfoMTSOob95cXLgg+ZbOjzvnS0am3VPvL6T
-        c1bqktoZkeemT60Xy0O8S57CRqB4GFw8LJxevnYiLXmj6qnAQpwq+aMn4CZOiqQz
-        8yHC/4abCXhKR2UqR6AX8wewcPtF6LYTERJLnWiVZpqUuC4VP5MyMMNBmwPokEcO
-        SUnGfniSF6vixheoxKvEoyvX/y0yfVi5y+mNdp/NDeZWEBQxDJYejAZ7/IxUs79Z
-        g==
-Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
-        by mailgw.felk.cvut.cz (Proxmox) with ESMTPS id 77C823032609;
-        Tue, 10 May 2022 18:25:23 +0200 (CEST)
-Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
-        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 24AGPNgM025943;
-        Tue, 10 May 2022 18:25:23 +0200
-Received: (from pisa@localhost)
-        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 24AGPM8X025942;
-        Tue, 10 May 2022 18:25:22 +0200
-X-Authentication-Warning: haar.felk.cvut.cz: pisa set sender to pisa@cmp.felk.cvut.cz using -f
-From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
-To:     Akira Yokosawa <akiyks@gmail.com>
-Subject: Re: [PATCH net-next] docs: ctucanfd: Use 'kernel-figure' directive instead of 'figure'
-Date:   Tue, 10 May 2022 18:25:15 +0200
-User-Agent: KMail/1.9.10
-Cc:     "Marc Kleine-Budde" <mkl@pengutronix.de>,
-        Martin Jerabek <martin.jerabek01@gmail.com>,
-        Ondrej Ille <ondrej.ille@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <05d491d4-c498-9bab-7085-9c892b636d68@gmail.com>
-In-Reply-To: <05d491d4-c498-9bab-7085-9c892b636d68@gmail.com>
-X-KMail-QuotePrefix: > 
+        Tue, 10 May 2022 12:39:21 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D5352A4A14
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 09:35:21 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id i38so31662848ybj.13
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 09:35:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PHyk6KxcWFuGsfBMCjMvRxqt94J8O6q+Cwc7jfhdMJk=;
+        b=La2oft9h//4R7NqvABzmLzI24UNpXxonVaHdkSWY3twz6H0Y9sPpY85ie6wF+7yAer
+         el6asuMYV9LYEDtIHuNlUjqpPhdUe4BY7enwH08fIwoE+8ta5ybTub7FzYKweCdK92pe
+         iCK+SwuUga7+6KC/E8MDCPWI9ZsIBwZg1F1VIBWRCBEYpdAQEPwXieo5JlZvfz4OjrGq
+         1/oys/C9twZpgnzlmD3QA7rKVETM+O4aWxKK50mwnTb+6qDnUm2jqDoIdEoxYbxv4MIO
+         BQRCLGMjiT4wjyUshj2uFRw4PeH1iDXnVhXJTcIyvRHWWqYd/xykqO86bbSV8COo2rwn
+         J3kQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PHyk6KxcWFuGsfBMCjMvRxqt94J8O6q+Cwc7jfhdMJk=;
+        b=jXCqRzgjw0o1kT58mAPTqZjzY5CQpeiJHPREzqLTJFOS3ecqDYPWHERsdCBKjQPH2p
+         3fzgfyC3slpH3jNfmGPsEyp9CWruG9AOOZxX3qKGwaqE7TNr4EcarwLhSrk+vR+fDr9E
+         eMRNvFJMfr3zsSYCG/uW7k/UD+/HZuksCKZ6dyx0lJnNw3BXibPw8MhGZ88ESzETQ0xL
+         Vc24dmBukGxP1vuv8101Jg6C+v4va6Xke7XmCSH0Kmx3zFiu3aSuxIRl30uihThnJC1O
+         ooYSvxAXUvxUQcTJQp7pzKYSRxWZdy0HfL7ekJCFb+gSvJjxCCJf0Dm/yxrWwrgHEqzl
+         zlbg==
+X-Gm-Message-State: AOAM530ygYWKHmTZPphWsYFeJ9RiioLX2C5/EJXngBlOAo5AguvCiQe/
+        /lafNmA9tpvefbnshKOr3+HRmFfK5YdQ5Gh2TXKhXA==
+X-Google-Smtp-Source: ABdhPJzj9Ho7O1Hcx2a5+H/jratEJHay76ufapGe+gaVObbXYcEszYLH+XiZziFHLLNdOO3QjGUeT5y2pZslUkhvPxM=
+X-Received: by 2002:a25:d55:0:b0:648:7008:61e0 with SMTP id
+ 82-20020a250d55000000b00648700861e0mr18392484ybn.282.1652200520221; Tue, 10
+ May 2022 09:35:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Message-Id: <202205101825.15126.pisa@cmp.felk.cvut.cz>
+References: <20220510030014.3842475-1-surenb@google.com> <20220510030014.3842475-2-surenb@google.com>
+ <3e847a15-e8c0-41fd-9518-2ae3d4a39092@linuxfoundation.org>
+In-Reply-To: <3e847a15-e8c0-41fd-9518-2ae3d4a39092@linuxfoundation.org>
+From:   Suren Baghdasaryan <surenb@google.com>
+Date:   Tue, 10 May 2022 09:35:09 -0700
+Message-ID: <CAJuCfpHBURZCSq_bLpL5qsssUd1qEMK76K-5MwrdQvdW-pzaUg@mail.gmail.com>
+Subject: Re: [PATCH 2/3] mm: drop oom code from exit_mmap
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@suse.com>,
+        David Rientjes <rientjes@google.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Roman Gushchin <guro@fb.com>, Minchan Kim <minchan@kernel.org>,
+        "Kirill A. Shutemov" <kirill@shutemov.name>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Oleg Nesterov <oleg@redhat.com>,
+        David Hildenbrand <david@redhat.com>,
+        Jann Horn <jannh@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Peter Xu <peterx@redhat.com>,
+        John Hubbard <jhubbard@nvidia.com>, shuah@kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-mm <linux-mm@kvack.org>, linux-kselftest@vger.kernel.org,
+        kernel-team <kernel-team@android.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Akira,
-
-On Tuesday 10 of May 2022 11:34:37 Akira Yokosawa wrote:
-> Two issues were observed in the ReST doc added by commit c3a0addefbde
-> ("docs: ctucanfd: CTU CAN FD open-source IP core documentation.").
-
-Thanks for the fix
-
-> The plain "figure" directive broke "make pdfdocs" due to a missing=20
-> PDF figure.  For conversion of SVG -> PDF to work, the "kernel-figure"
-> directive, which is an extension for kernel documentations, should
-> be used instead.
-
-I have not noticed that there is kernel-figure
-option. We have setup own Sphinx 1.4.9 based build for driver
-documentation out of the tree compilation, I am not sure if that
-would work with this option but if not we keep this version
-modified. There are required modification for sources location anyway...
-
-https://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/doc/linux_driver/build/ct=
-ucanfd-driver.html
-
-> The directive of "code:: raw" causes a warning from both
-> "make htmldocs" and "make pdfdocs", which reads:
+On Tue, May 10, 2022 at 8:46 AM Shuah Khan <skhan@linuxfoundation.org> wrote:
 >
->     [...]/can/ctu/ctucanfd-driver.rst:75: WARNING: Pygments lexer name
->     'raw' is not known
+> On 5/9/22 9:00 PM, Suren Baghdasaryan wrote:
+> > With the oom-killer being able to operate on locked pages, exit_mmap
+> > does not need to ensure that oom_reap_task_mm is done before it can
+> > proceed. Instead it can rely on mmap_lock write lock to prevent
+> > oom-killer from operating on the vma tree while it's freeing page
+> > tables. exit_mmap can hold mmap_lock read lock when unmapping vmas
+> > and then take mmap_lock write lock before freeing page tables.
+> >
+> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> > ---
+> >   include/linux/oom.h |  2 --
+> >   mm/mmap.c           | 25 ++++++-------------------
+> >   mm/oom_kill.c       |  2 +-
+> >   3 files changed, 7 insertions(+), 22 deletions(-)
+> >
+>
+> How does this improve the test? Include the information on why this
+> change is needed as opposed describing what this does?
 
-Strange I have not seen any warning when building htmldocs
-in my actual linux kernel tree. I have cleaned docs to be warnings
-free, but it is possible that I have another tools versions.
+It doesn't improve the test. I used the test to verify this change and
+wanted to keep them together so that others have an easy way to
+exercise the same code path. That's the only relation between the test
+and this cleanup. I'll split them into separate patchsets to avoid
+further confusion.
 
-Anyway thanks for cleanup.
-
-> A plain literal-block marker should suffice where no syntax
-> highlighting is intended.
 >
-> Fix the issues by using suitable directive and marker.
->
-> Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
-> Fixes: c3a0addefbde ("docs: ctucanfd: CTU CAN FD open-source IP core
-> documentation.") Cc: Pavel Pisa <pisa@cmp.felk.cvut.cz>
-> Cc: Martin Jerabek <martin.jerabek01@gmail.com>
-> Cc: Ondrej Ille <ondrej.ille@gmail.com>
-> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
-
-Acked-by: Pavel Pisa <pisa@cmp.felk.cvut.cz>
-
-> ---
->  .../networking/device_drivers/can/ctu/ctucanfd-driver.rst     | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git
-> a/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst
-> b/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst ind=
-ex
-> 2fde5551e756..40c92ea272af 100644
-> --- a/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst
-> +++ b/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst
-> @@ -72,7 +72,7 @@ it is reachable (on which bus it resides) and its
-> configuration =E2=80=93 registers address, interrupts and so on. An examp=
-le of such
-> a device tree is given in .
->
-> -.. code:: raw
-> +::
->
->             / {
->                 /* ... */
-> @@ -451,7 +451,7 @@ the FIFO is maintained, together with priority
-> rotation, is depicted in
->
->
->
-> -.. figure:: fsm_txt_buffer_user.svg
-> +.. kernel-figure:: fsm_txt_buffer_user.svg
->
->     TX Buffer states with possible transitions
-
-
+> thanks,
+> -- Shuah
