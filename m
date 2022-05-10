@@ -2,173 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B6D9C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:08:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A0C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:08:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345512AbiEJPMV (ORCPT
+        id S1345404AbiEJPM1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:12:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50244 "EHLO
+        Tue, 10 May 2022 11:12:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346097AbiEJPLu (ORCPT
+        with ESMTP id S1346080AbiEJPLt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:11:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B99072A18A4;
-        Tue, 10 May 2022 07:45:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2A781B81DB5;
-        Tue, 10 May 2022 14:45:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEDB6C385C9;
-        Tue, 10 May 2022 14:45:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652193901;
-        bh=FigDUgbnzGZnaUshxGGnPmztjq2HwG7NbActxSZrPfw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=VLCIXi7fuXLQhi/lZX7peub4KDAYbkC5t3ITAGtli7uY52BeAkRiBNNCMludeKthz
-         /P1GSVNtfZd93JBoFbCNXSN3UOTTvCNPzgprUH5eVZHhWJwjno8fncPaEbvEYdaBH2
-         7h60GofoYkK/cmXi2N3oJN9pIZQeLw1a6NTqoHDVo2JWZYPId0bFq7lh3IsYgw1UrX
-         psJpeY2EWwBvpzMPZbL6+bI8a3+6jyspqx3jRaBjR+dn9f2ZtwmYtIlC0ND6NcdUyf
-         q8CRnG17lUuJKvdkZjs3i8z2A4bNh5vwHEmF1ScqL/M25Go4n/scNPWpq5xHMfKgcT
-         dVI99c2Fpj7AQ==
-Date:   Tue, 10 May 2022 09:54:15 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
+        Tue, 10 May 2022 11:11:49 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92A8125BA46
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:44:59 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id x88so4521105pjj.1
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:44:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=J+j65+g15fCsV+Woqx6SguatojsTFMU+fypv/4RCtgE=;
+        b=UTKi9sbH4ZRyjDc/7lHYfVs9p+QExxFt9/+sbFXNine0VCZsiYBonNCzQr9PVXDNu9
+         QWx7xX/dW3O0HVOK8KbAOsU0vj7r1WZj64aBaM42JQrWhvHplMFMlet/XWgeCe+fBX1M
+         5/obDfisv/+8zQrzGAaXXgJovXZmvJPru63YyrKVxAY/He8u9DhzcDaIfLqwezGoPfCs
+         Mt1bVCF6ZEdokq17J2DgC5oXLJTxjhB6jqeQ4DlifycFKhjIQ/WvF6CK0l2BQKFhniHg
+         KnklIDO0Qq3yf1Y46nZtjYBZ9wcmnYlIZO62+aWAcG+vWvJbv9+tNUccgFmHuE7mM/hB
+         pWow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=J+j65+g15fCsV+Woqx6SguatojsTFMU+fypv/4RCtgE=;
+        b=W3KBHT54SsNKPQTL5762lgULicn9vaZftaHddHi/eY/uKj1AKMdhUMvOzPMzb1LFUe
+         O5w/ZIXDAXzXz9msBVSj1a+7UGAIMQ5SqeMs76RRGdjprIKrFTGpVvCsxVX3Hqozgia2
+         PrP4qu2fwqmmgRcQEffQTkQbP69HUuRhedq2tYURzd1kCxdmo6oLNmZ0UmMMH0hmwaDc
+         WogNEi6f6Zq3rqr60MYONDQlk1lSi+ZiR9d0aCaQU15p+bKZhNaRVkGKFiB/AmHyoHeq
+         As2oGejjwU4EpEuXJU9m3DV/3NFEJQZ/z1HoS4lFtI4U8foHQHqg5Y73r1Os346F4JqC
+         Hmzg==
+X-Gm-Message-State: AOAM533ZSSxcd/fpia4mDR2ojlBmOYR1jHMoZv0C7WeniuN6U4UdeO7A
+        c5BZ2dy5faxCx8PrkgkewixgNg==
+X-Google-Smtp-Source: ABdhPJzNdRCklFLDmwhjIZK4nIKrvpEW7TlAilVB41p7zRwaLd6gMiqaPsg66tubxXerZRc5n5Z5XA==
+X-Received: by 2002:a17:903:2312:b0:15e:a6c8:a313 with SMTP id d18-20020a170903231200b0015ea6c8a313mr20952499plh.122.1652193898495;
+        Tue, 10 May 2022 07:44:58 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id k22-20020a170902761600b0015e8d4eb1d4sm2181590pll.30.2022.05.10.07.44.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 07:44:57 -0700 (PDT)
+Date:   Tue, 10 May 2022 14:44:54 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Jon Kohler <jon@nutanix.com>, Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
         Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH v2][next] x86/mm/pgtable: Fix -Wstringop-overflow warnings
-Message-ID: <20220510145415.GA8111@embeddedor>
-References: <20220509194541.GA91598@embeddedor>
- <202205091251.5703DE2@keescook>
- <20220509205056.GA109715@embeddedor>
- <202205091351.6E0BA523@keescook>
- <20220510141202.GA6878@embeddedor>
+        Balbir Singh <sblbir@amazon.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Waiman Long <longman@redhat.com>
+Subject: Re: [PATCH v3] x86/speculation, KVM: only IBPB for
+ switch_mm_always_ibpb on vCPU load
+Message-ID: <Ynp6ZoQUwtlWPI0Z@google.com>
+References: <645E4ED5-F6EE-4F8F-A990-81F19ED82BFA@nutanix.com>
+ <Ymw9UZDpXym2vXJs@zn.tnic>
+ <YmxKqpWFvdUv+GwJ@google.com>
+ <YmxRnwSUBIkOIjLA@zn.tnic>
+ <Ymxf2Jnmz5y4CHFN@google.com>
+ <YmxlHBsxcIy8uYaB@zn.tnic>
+ <YmxzdAbzJkvjXSAU@google.com>
+ <Ym0GcKhPZxkcMCYp@zn.tnic>
+ <4E46337F-79CB-4ADA-B8C0-009E7500EDF8@nutanix.com>
+ <Ym1fGZIs6K7T6h3n@zn.tnic>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220510141202.GA6878@embeddedor>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <Ym1fGZIs6K7T6h3n@zn.tnic>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 09:12:02AM -0500, Gustavo A. R. Silva wrote:
-> > > > > --- a/arch/x86/mm/pgtable.c
-> > > > > +++ b/arch/x86/mm/pgtable.c
-> > > > > @@ -434,14 +434,18 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
-> > > > >  
-> > > > >  	mm->pgd = pgd;
-> > > > >  
-> > > > > -	if (preallocate_pmds(mm, pmds, PREALLOCATED_PMDS) != 0)
-> > > > > -		goto out_free_pgd;
-> > > > > +	if (MAX_PREALLOCATED_PMDS != 0 && MAX_PREALLOCATED_USER_PMDS != 0) {
-> > > > > +		if (preallocate_pmds(mm, pmds, PREALLOCATED_PMDS) != 0)
-> > > > > +			goto out_free_pgd;
-> > > > >  
-> > > > > -	if (preallocate_pmds(mm, u_pmds, PREALLOCATED_USER_PMDS) != 0)
-> > > > > -		goto out_free_pmds;
-> > > > > +		if (preallocate_pmds(mm, u_pmds, PREALLOCATED_USER_PMDS) != 0)
-> > > > > +			goto out_free_pmds;
-> > > > >  
-> > > > > -	if (paravirt_pgd_alloc(mm) != 0)
-> > > > > -		goto out_free_user_pmds;
-> > > > > +		if (paravirt_pgd_alloc(mm) != 0)
-> > > > > +			goto out_free_user_pmds;
-> > > > > +	} else {
-> > > > > +		goto out_free_pgd;
-> > > > 
-> > > > The "all 0" case shouldn't be a failure mode; it should just skip the
-> > > > preallocate_pmds() calls.
-> > > 
-> > > Do you mean something like this:
-> > > 
-> > > diff --git a/arch/x86/mm/pgtable.c b/arch/x86/mm/pgtable.c
-> > > index f16059e9a85e..4dae168408f1 100644
-> > > --- a/arch/x86/mm/pgtable.c
-> > > +++ b/arch/x86/mm/pgtable.c
-> > > @@ -434,11 +434,13 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
-> > > 
-> > >         mm->pgd = pgd;
-> > > 
-> > > -       if (preallocate_pmds(mm, pmds, PREALLOCATED_PMDS) != 0)
-> > > -               goto out_free_pgd;
-> > > +       if (MAX_PREALLOCATED_PMDS != 0 && MAX_PREALLOCATED_USER_PMDS != 0) {
-> > > +               if (preallocate_pmds(mm, pmds, PREALLOCATED_PMDS) != 0)
-> > > +                       goto out_free_pgd;
-> > > 
-> > > -       if (preallocate_pmds(mm, u_pmds, PREALLOCATED_USER_PMDS) != 0)
-> > > -               goto out_free_pmds;
-> > > +               if (preallocate_pmds(mm, u_pmds, PREALLOCATED_USER_PMDS) != 0)
-> > > +                       goto out_free_pmds;
-> > > +       }
-> > > 
-> > >         if (paravirt_pgd_alloc(mm) != 0)
-> > >                 goto out_free_user_pmds;
-> > > 
-> > > It seems that the above is not enough, because we have the same issue
-> > > when calling pgd_prepopulate_pmd(), pgd_prepopulate_user_pmd() and
-> > > free_pmds():
-> > > 
-> > >   CC      arch/x86/mm/pgtable.o
-> > > arch/x86/mm/pgtable.c: In function 'pgd_alloc':
-> > > arch/x86/mm/pgtable.c:464:9: warning: 'free_pmds' accessing 8 bytes in a region of size 0 [-Wstringop-overflow=]
-> > >   464 |         free_pmds(mm, u_pmds, PREALLOCATED_USER_PMDS);
-> > >       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+On Sat, Apr 30, 2022, Borislav Petkov wrote:
+> On Sat, Apr 30, 2022 at 02:50:35PM +0000, Jon Kohler wrote:
+> > This is 100% a fair ask, I appreciate the diligence, as we’ve all been there
+> > on the ‘other side’ of changes to complex areas and spend hours digging on
+> > git history, LKML threads, SDM/APM, and other sources trying to derive
+> > why the heck something is the way it is.
+> 
+> Yap, that's basically proving my point and why I want stuff to be
+> properly documented so that the question "why was it done this way" can
+> always be answered satisfactorily.
+> 
+> > AFAIK, the KVM IBPB is avoided when switching in between vCPUs
+> > belonging to the same vmcs/vmcb (i.e. the same guest), e.g. you could 
+> > have one VM highly oversubscribed to the host and you wouldn’t see
+> > either the KVM IBPB or the switch_mm IBPB. All good. 
 > > 
-> > Ugh. Perhaps just marking both preallocate_pmds() and free_pmds() as
-> > inline is enough to let the compiler "see" everything correctly?
+> > Reference vmx_vcpu_load_vmcs() and svm_vcpu_load() and the 
+> > conditionals prior to the barrier.
 > 
-> It doesn't seem to work... however, the following piece of code implies
-> that pmds and u_pmds should be first preallocated through preallocate_pmds(),
-> which cannot happen if (MAX_PREALLOCATED_PMDS != 0 && MAX_PREALLOCATED_USER_PMDS != 0)
+> So this is where something's still missing.
+> 
+> > However, the pain ramps up when you have a bunch of separate guests,
+> > especially with a small amount of vCPUs per guest, so the switching is more
+> > likely to be in between completely separate guests.
+> 
+> If the guests are completely separate, then it should fall into the
+> switch_mm() case.
+> 
+> Unless it has something to do with, as I looked at the SVM side of
+> things, the VMCBs:
+> 
+> 	if (sd->current_vmcb != svm->vmcb) {
+> 
+> So it is not only different guests but also within the same guest and
+> when the VMCB of the vCPU is not the current one.
 
-I wanted to say: which cannot happen if MAX_PREALLOCATED_PMDS == 0 && MAX_PREALLOCATED_USER_PMDS == 0
+Yep.
 
-> 
-> 448         /*
-> 449          * Make sure that pre-populating the pmds is atomic with
-> 450          * respect to anything walking the pgd_list, so that they
-> 451          * never see a partially populated pgd.
-> 452          */
-> 453         spin_lock(&pgd_lock);
-> 454
-> 455         pgd_ctor(mm, pgd);
-> 456         pgd_prepopulate_pmd(mm, pgd, pmds);
-> 457         pgd_prepopulate_user_pmd(mm, pgd, u_pmds);
-> 458
-> 459         spin_unlock(&pgd_lock);
-> 460
-> 461         return pgd;
-> 
-> So, my question here is why do you think the "all 0" case should only skip the
-> preallocate_pmds() calls and not the pgd_prepopulate_pmd() calls too?
-> 
-> > 
-> > Otherwise, they'll likely each need the same check that was added to
-> > pgd_prepopulate_pmd() ages ago for a similar situation...
-> 
-> uhm... that doesn't seem to have an impact nowadays, or at least now
-> Wstringop-overflow sees the problem first, because now the issue is
-> detected at the moment of passing the arguments to the the function
-> and not when actually executing the function?
-> 
-> otherwise, I think we wouldn't see this error:
-> 
-> arch/x86/mm/pgtable.c:454:9: warning: 'pgd_prepopulate_pmd' accessing 8 bytes in a region of size 0 [-Wstringop-overflow=]
->   454 |         pgd_prepopulate_pmd(mm, pgd, pmds);
->       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> arch/x86/mm/pgtable.c:454:9: note: referencing argument 3 of type 'pmd_t *[0]'
-> arch/x86/mm/pgtable.c:296:13: note: in a call to function 'pgd_prepopulate_pmd'
->   296 | static void pgd_prepopulate_pmd(struct mm_struct *mm, pgd_t *pgd, pmd_t *pmds[])
->       |             ^~~~~~~~~~~~~~~~~~~
-> 
+> But then if VMCB of the vCPU is not the current, per-CPU VMCB, then that
+> CPU ran another guest so in order for that other guest to attack the
+> current guest, then its branch pred should be flushed.
 
-Thanks
---
-Gustavo
+That CPU ran a different _vCPU_, whether or not it ran a different guest, i.e. a
+different security domain, is unknown.
+
+> But I'm likely missing a virt aspect here so I'd let Sean explain what
+> the rules are...
+
+I don't think you're missing anything.  I think the original 15d45071523d ("KVM/x86:
+Add IBPB support") was simply wrong.
+
+As I see it:
+
+  1. If the vCPUs belong to the same VM, they are in the same security domain and
+     do not need an IPBP.
+
+  2. If the vCPUs belong to different VMs, and each VM is in its own mm_struct,
+     defer to switch_mm_irqs_off() to handle IBPB as an mm switch is guaranteed to
+     occur prior to loading a vCPU belonging to a different VMs.
+ 
+  3. If the vCPUs belong to different VMs, but multiple VMs share an mm_struct,
+     then the security benefits of an IBPB when switching vCPUs are dubious, at best.
+
+If we only consider #1 and #2, then KVM doesn't need an IBPB, period.
+
+#3 is the only one that's a grey area.  I have no objection to omitting IBPB entirely
+even in that case, because none of us can identify any tangible value in doing so.
