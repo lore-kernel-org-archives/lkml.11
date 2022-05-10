@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DBB3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:05:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 111D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:05:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242515AbiEJOI6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:08:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51296 "EHLO
+        id S244641AbiEJOJH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:09:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244819AbiEJNrB (ORCPT
+        with ESMTP id S244872AbiEJNrE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:47:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 721BC237D5;
-        Tue, 10 May 2022 06:32:08 -0700 (PDT)
+        Tue, 10 May 2022 09:47:04 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE681B090B;
+        Tue, 10 May 2022 06:32:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A6AB61768;
-        Tue, 10 May 2022 13:32:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 159FEC385C9;
-        Tue, 10 May 2022 13:32:06 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E5012CE1EF0;
+        Tue, 10 May 2022 13:32:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3322C385C6;
+        Tue, 10 May 2022 13:32:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189527;
-        bh=MBaLoHneMCmPtHljIqvgGk48FZvuHrUTqGR15C6G604=;
+        s=korg; t=1652189536;
+        bh=qwSQxW4053RPG9LwGxHuLd7tkBgQhDyBH+bD/XchwME=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ypb4zSihbQ09qYTgNiavm5sVhPxvYvqBz/u9lbRpxZDO6nMhd8bv3NdCJixK5Xx37
-         vZ4DyMOhI8L+d4sCXnU+r8jD34KoXsAMQgOaJfinbLSnEX1joOmbkeL2yJ8v2GWubs
-         ysca7L1olyY8OFR0z6V8iWHylRUn6LC1Ii88BEH8=
+        b=j75TrZCSP9UI0QUb08CaX/lPx7fqh+AALvRVuuvNnmYSwqRt7Z8ZQuq4noQ0nthQS
+         uv/jTwRKJ6dSCN8Lzot7yh0J1IAxoQiwbXcldpP/trJzdhPyA89FKVucniGlCA+s+U
+         4vmbx22pe7nliWADDIjHknBrPVsUgbGCCPMH519I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Andy Gospodarek <andrew.gospodarek@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 077/135] bnxt_en: Fix unnecessary dropping of RX packets
-Date:   Tue, 10 May 2022 15:07:39 +0200
-Message-Id: <20220510130742.620644065@linuxfoundation.org>
+        stable@vger.kernel.org, Matt Corallo <blnxfsl@bluematt.me>,
+        Josef Bacik <josef@toxicpanda.com>, Qu Wenruo <wqu@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.15 080/135] btrfs: force v2 space cache usage for subpage mount
+Date:   Tue, 10 May 2022 15:07:42 +0200
+Message-Id: <20220510130742.705596847@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -50,44 +49,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Chan <michael.chan@broadcom.com>
+From: Qu Wenruo <wqu@suse.com>
 
-commit 195af57914d15229186658ed26dab24b9ada4122 upstream.
+commit 9f73f1aef98b2fa7252c0a89be64840271ce8ea0 upstream.
 
-In bnxt_poll_p5(), we first check cpr->has_more_work.  If it is true,
-we are in NAPI polling mode and we will call __bnxt_poll_cqs() to
-continue polling.  It is possible to exhanust the budget again when
-__bnxt_poll_cqs() returns.
+[BUG]
+For a 4K sector sized btrfs with v1 cache enabled and only mounted on
+systems with 4K page size, if it's mounted on subpage (64K page size)
+systems, it can cause the following warning on v1 space cache:
 
-We then enter the main while loop to check for new entries in the NQ.
-If we had previously exhausted the NAPI budget, we may call
-__bnxt_poll_work() to process an RX entry with zero budget.  This will
-cause packets to be dropped unnecessarily, thinking that we are in the
-netpoll path.  Fix it by breaking out of the while loop if we need
-to process an RX NQ entry with no budget left.  We will then exit
-NAPI and stay in polling mode.
+ BTRFS error (device dm-1): csum mismatch on free space cache
+ BTRFS warning (device dm-1): failed to load free space cache for block group 84082688, rebuilding it now
 
-Fixes: 389a877a3b20 ("bnxt_en: Process the NQ under NAPI continuous polling.")
-Reviewed-by: Andy Gospodarek <andrew.gospodarek@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Although not a big deal, as kernel can rebuild it without problem, such
+warning will bother end users, especially if they want to switch the
+same btrfs seamlessly between different page sized systems.
+
+[CAUSE]
+V1 free space cache is still using fixed PAGE_SIZE for various bitmap,
+like BITS_PER_BITMAP.
+
+Such hard-coded PAGE_SIZE usage will cause various mismatch, from v1
+cache size to checksum.
+
+Thus kernel will always reject v1 cache with a different PAGE_SIZE with
+csum mismatch.
+
+[FIX]
+Although we should fix v1 cache, it's already going to be marked
+deprecated soon.
+
+And we have v2 cache based on metadata (which is already fully subpage
+compatible), and it has almost everything superior than v1 cache.
+
+So just force subpage mount to use v2 cache on mount.
+
+Reported-by: Matt Corallo <blnxfsl@bluematt.me>
+CC: stable@vger.kernel.org # 5.15+
+Link: https://lore.kernel.org/linux-btrfs/61aa27d1-30fc-c1a9-f0f4-9df544395ec3@bluematt.me/
+Reviewed-by: Josef Bacik <josef@toxicpanda.com>
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ fs/btrfs/disk-io.c |   11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -2699,6 +2699,10 @@ static int bnxt_poll_p5(struct napi_stru
- 			u32 idx = le32_to_cpu(nqcmp->cq_handle_low);
- 			struct bnxt_cp_ring_info *cpr2;
+--- a/fs/btrfs/disk-io.c
++++ b/fs/btrfs/disk-io.c
+@@ -3415,6 +3415,17 @@ int __cold open_ctree(struct super_block
+ 	}
  
-+			/* No more budget for RX work */
-+			if (budget && work_done >= budget && idx == BNXT_RX_HDL)
-+				break;
+ 	if (sectorsize != PAGE_SIZE) {
++		/*
++		 * V1 space cache has some hardcoded PAGE_SIZE usage, and is
++		 * going to be deprecated.
++		 *
++		 * Force to use v2 cache for subpage case.
++		 */
++		btrfs_clear_opt(fs_info->mount_opt, SPACE_CACHE);
++		btrfs_set_and_info(fs_info, FREE_SPACE_TREE,
++			"forcing free space tree for sector size %u with page size %lu",
++			sectorsize, PAGE_SIZE);
 +
- 			cpr2 = cpr->cp_ring_arr[idx];
- 			work_done += __bnxt_poll_work(bp, cpr2,
- 						      budget - work_done);
+ 		btrfs_warn(fs_info,
+ 		"read-write for sector size %u with page size %lu is experimental",
+ 			   sectorsize, PAGE_SIZE);
 
 
