@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 781D9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:13:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBDC6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:13:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245559AbiEJORR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:17:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52476 "EHLO
+        id S245579AbiEJORW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:17:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244836AbiEJNrC (ORCPT
+        with ESMTP id S244902AbiEJNrF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:47:02 -0400
+        Tue, 10 May 2022 09:47:05 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7510419CB79;
-        Tue, 10 May 2022 06:32:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89E4F1D8640;
+        Tue, 10 May 2022 06:32:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 027E660B12;
-        Tue, 10 May 2022 13:32:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1C7CC385A6;
-        Tue, 10 May 2022 13:32:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AB23617F5;
+        Tue, 10 May 2022 13:32:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24C60C385C2;
+        Tue, 10 May 2022 13:32:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189530;
-        bh=YmCIwfczu1mXcczkqwoETbSEQm5ZZgmkMLoLZWVLehw=;
+        s=korg; t=1652189551;
+        bh=AXVlMqWVh31M/5HakdprczmpNhoKSmd7rznleQMc9Hc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fG9OX/rQeiKa5SjDBLN2NPABn3errfa+LYoElo8X9tbElnIvRVzmOamuvCrrQP8cu
-         8QfG0yEC7rnt6Em6+ujHeKo4DVOtb0hdylbmhlitmDTTLO5mommJ6C35gVkNYc8HKX
-         3bltjTl6akoq4lUCL8/DnR1XXYyzuPprBAhPas9Q=
+        b=gCUPV+UNvT36wM0FfcxHtw5qrIXR4p+VNSOogc2JtvczbUgjcU8RIF9wlaxw9Cgp7
+         MpyxJUlZHSR5CtAxCIAr0A3QgoUhyGwrJh1w2vmkjKgD7JjhA5C6RCj6IqG6otgnlO
+         a5ZhXXZ0V6k/wEo8GTmsZ25MERRX3tPhGe0Dnugk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 078/135] selftests: ocelot: tc_flower_chains: specify conform-exceed action for policer
-Date:   Tue, 10 May 2022 15:07:40 +0200
-Message-Id: <20220510130742.648476715@linuxfoundation.org>
+        stable@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Joerg Roedel <jroedel@suse.de>
+Subject: [PATCH 5.15 046/135] iommu/vt-d: Drop stop marker messages
+Date:   Tue, 10 May 2022 15:07:08 +0200
+Message-Id: <20220510130741.719786279@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -49,44 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
 
-commit 5a7c5f70c743c6cf32b44b05bd6b19d4ad82f49d upstream.
+commit da8669ff41fa31573375c9a4180f5c080677204b upstream.
 
-As discussed here with Ido Schimmel:
-https://patchwork.kernel.org/project/netdevbpf/patch/20220224102908.5255-2-jianbol@nvidia.com/
+The page fault handling framework in the IOMMU core explicitly states
+that it doesn't handle PCI PASID Stop Marker and the IOMMU drivers must
+discard them before reporting faults. This handles Stop Marker messages
+in prq_event_thread() before reporting events to the core.
 
-the default conform-exceed action is "reclassify", for a reason we don't
-really understand.
+The VT-d driver explicitly drains the pending page requests when a CPU
+page table (represented by a mm struct) is unbound from a PASID according
+to the procedures defined in the VT-d spec. The Stop Marker messages do
+not need a response. Hence, it is safe to drop the Stop Marker messages
+silently if any of them is found in the page request queue.
 
-The point is that hardware can't offload that police action, so not
-specifying "conform-exceed" was always wrong, even though the command
-used to work in hardware (but not in software) until the kernel started
-adding validation for it.
-
-Fix the command used by the selftest by making the policer drop on
-exceed, and pass the packet to the next action (goto) on conform.
-
-Fixes: 8cd6b020b644 ("selftests: ocelot: add some example VCAP IS1, IS2 and ES0 tc offloads")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-Link: https://lore.kernel.org/r/20220503121428.842906-1-vladimir.oltean@nxp.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: d5b9e4bfe0d88 ("iommu/vt-d: Report prq to io-pgfault framework")
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Link: https://lore.kernel.org/r/20220421113558.3504874-1-baolu.lu@linux.intel.com
+Link: https://lore.kernel.org/r/20220423082330.3897867-2-baolu.lu@linux.intel.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/drivers/net/ocelot/tc_flower_chains.sh |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/intel/svm.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/tools/testing/selftests/drivers/net/ocelot/tc_flower_chains.sh
-+++ b/tools/testing/selftests/drivers/net/ocelot/tc_flower_chains.sh
-@@ -185,7 +185,7 @@ setup_prepare()
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -978,6 +978,10 @@ bad_req:
+ 			goto bad_req;
+ 		}
  
- 	tc filter add dev $eth0 ingress chain $(IS2 0 0) pref 1 \
- 		protocol ipv4 flower skip_sw ip_proto udp dst_port 5201 \
--		action police rate 50mbit burst 64k \
-+		action police rate 50mbit burst 64k conform-exceed drop/pipe \
- 		action goto chain $(IS2 1 0)
- }
- 
++		/* Drop Stop Marker message. No need for a response. */
++		if (unlikely(req->lpig && !req->rd_req && !req->wr_req))
++			goto prq_advance;
++
+ 		if (!svm || svm->pasid != req->pasid) {
+ 			/*
+ 			 * It can't go away, because the driver is not permitted
 
 
