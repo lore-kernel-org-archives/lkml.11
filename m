@@ -2,74 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A476EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 07:32:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91854C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 07:32:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237762AbiEJHfy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 03:35:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46416 "EHLO
+        id S237980AbiEJHgQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 03:36:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238509AbiEJHH5 (ORCPT
+        with ESMTP id S239174AbiEJHMQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 03:07:57 -0400
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 951211D8135
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 00:04:00 -0700 (PDT)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id B31E468AFE; Tue, 10 May 2022 09:03:56 +0200 (CEST)
-Date:   Tue, 10 May 2022 09:03:56 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Thomas =?iso-8859-1?Q?Wei=DFschuh?= <linux@weissschuh.net>
-Cc:     Christoph Hellwig <hch@lst.de>, Keith Busch <kbusch@kernel.org>,
-        Jens Axboe <axboe@fb.com>, Sagi Grimberg <sagi@grimberg.me>,
-        linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org
-Subject: Re: [PATCH] nvme-pci: fix host memory buffer allocation size
-Message-ID: <20220510070356.GA11660@lst.de>
-References: <20220428101922.14216-1-linux@weissschuh.net> <20220428143603.GA20460@lst.de> <5060d75e-46c0-4d29-a334-62c7e9714fa7@t-8ch.de> <20220428150644.GA22685@lst.de> <676c02ef-4bbc-43f3-b3e6-27a7d353f974@t-8ch.de>
+        Tue, 10 May 2022 03:12:16 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11BC52AC6FB;
+        Tue, 10 May 2022 00:08:18 -0700 (PDT)
+Received: from mail-yb1-f177.google.com ([209.85.219.177]) by
+ mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1N1fag-1nv9Y11NdY-0123Gc; Tue, 10 May 2022 09:08:17 +0200
+Received: by mail-yb1-f177.google.com with SMTP id j2so29119964ybu.0;
+        Tue, 10 May 2022 00:08:16 -0700 (PDT)
+X-Gm-Message-State: AOAM532ylf6yHyeBsJKvV2LztCvkyKV3YsOQ/ShOQjJ+2PKvWx0qITuv
+        AtiMAxGtKE6mNvFuap/IqIOv5kbWyIJCIBu96xg=
+X-Google-Smtp-Source: ABdhPJxWna6rlyrTKaLzkGLXfLQ5G36EvqX7iK3snQCVCxZJEjl921KjovbWJOm/HvkmjLf51wP/GU+2IK3ZKdNeooU=
+X-Received: by 2002:a25:31c2:0:b0:641:660f:230f with SMTP id
+ x185-20020a2531c2000000b00641660f230fmr16728943ybx.472.1652166495925; Tue, 10
+ May 2022 00:08:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <676c02ef-4bbc-43f3-b3e6-27a7d353f974@t-8ch.de>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+References: <20220510032558.10304-1-ychuang3@nuvoton.com>
+In-Reply-To: <20220510032558.10304-1-ychuang3@nuvoton.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Tue, 10 May 2022 09:07:59 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1k8y8U99bBmqBYE1vYAc0q-UeaM0oLP4tTHZCpyYNOgA@mail.gmail.com>
+Message-ID: <CAK8P3a1k8y8U99bBmqBYE1vYAc0q-UeaM0oLP4tTHZCpyYNOgA@mail.gmail.com>
+Subject: Re: [PATCH V4 0/5] Add initial support for MA35D1 SoC
+To:     Jacky Huang <ychuang3@nuvoton.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        ychuang570808@gmail.com, Rob Herring <robh+dt@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, SoC Team <soc@kernel.org>,
+        cfli0@nuvoton.com
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:AfVDd0F7X2lkWYQBHKX3m/O5w1goVick1k2D/8QnsT2lZ76G6rl
+ c3bztW6lGea6meDExjBavSFzRcQX7NRekcihf7PsWDQi6g6xi9iZf/zGBYbsXaHAX9kCWjp
+ nTMOuSvUNCXgevEVk/lqVo+pLyGNzPVrt/fUILdJKjce1hjWZAtVsGriulv6A9yHmSr2HwA
+ R9NqvJ7kDrrNhmEWx/pRw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:soJ1UPUwGqA=:GOvMO455rTUxZPmYL0g3tt
+ LKyZGFkdmK5Sy1bnjjo9B63HACyIlqGTIAcJ/g30MTl4adxNla4I55dywaLYW88cFNSluuLoA
+ QAsgabz6a+Nkd/3HDRSRM1+Kv5JFDrput7MlWrPTG1tAYOwvenyjfZKt5s1H8CH4c0EKa9RuT
+ EoBHQY8bx5VQcDofv3jg7bxihEzZr0GIKbZZ5lpyu38BWRrCyjik0rzFi0dSSEsLAWbeY9yxa
+ 1f7GUdAXo2h1604T2x++NXrcVAShyDUT8KH5FyZm9fktRZIw/c3W9k+6jM2AIscm/UmcKKsiP
+ tF6+6Pgv5nYLOtTSjYvUHYa8XIarT/6rmy0WE3VHzVUAj/O9awxgAkNqFtudMMX1xiGWs/b5e
+ ymy00fMwtMxi2qn0KdlU5I3AWbKl3WvxsE4DAOd5IetvFOqiC9hCjst7cbeQuu1htws1dBRZc
+ TWSW1kGbkM60MQOQGF2QMRgz/MOkhSwtcxf9erYpua8ylyVSkIMfX1H0S/iUC0PPrG1P1X5eY
+ PdMgR8SVZd8MgHUZKwLzCArcq3LTxTQOYe8cxxfozfW6o7ylkkTvCE88xlwVAvCisu7aBC11F
+ 8Ec9uXq+P+/gIprYA1yZUOgkVX2xLcyjGRPcGw5TXU+nVDNiq3PLjpvdHDKhWZOqw/6m/Zgig
+ TKit7PqakpFD49yDtjLrjA6GfcaoPLOr+ngjLNq3+JvmKblBTZyGWUJCEPYw4Ta9lx33SmVOd
+ 4b93vLfGpXXZoep9YGCuru5c1ebS56oEdZBSkNr6oO6OSwTMgSI2MljGwqrFQFecTSrVmqo6Q
+ rW45qrfMoc/CYG6Msf8EjMQaYKGykRbX3dN2pnfDQG2l/snbdk=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 06:09:11PM +0200, Thomas Weißschuh wrote:
-> > > On my hardware we start with a chunk_size of 4MiB and just allocate
-> > > 8 (hmmaxd) * 4 = 32 MiB which is worse than 1 * 200MiB.
-> > 
-> > And that is because the hardware only has a limited set of descriptors.
-> 
-> Wouldn't it make more sense then to allocate as much memory as possible for
-> each descriptor that is available?
-> 
-> The comment in nvme_alloc_host_mem() tries to "start big".
-> But it actually starts with at most 4MiB.
+On Tue, May 10, 2022 at 5:25 AM Jacky Huang <ychuang3@nuvoton.com> wrote:
+>
+> This patch series adds initial support for Nuvoton MA35D1 SoC,
+> include initial dts and clock controller binding.
+>
 
-Compared to what other operating systems offer, that is quite large.
+This looks fine in principle, but we are getting close to the merge window and
+should finalize this quickly to make it into v5.19. I see that you don't have a
+console device, as commented in the .dts patch. Normally I prefer merging
+platforms only when there is at least rudimentary support for booting into
+an initramfs with a serial console, but this is a flexible rule.
 
-> And on devices that have hmminds > 4MiB the loop condition will never succeed
-> at all and HMB will not be used.
-> My fairly boring hardware already is at a hmminds of 3.3MiB.
-> 
-> > Is there any real problem you are fixing with this?  Do you actually
-> > see a performance difference on a relevant workload?
-> 
-> I don't have a concrete problem or performance issue.
-> During some debugging I stumbled in my kernel logs upon
-> "nvme nvme0: allocated 32 MiB host memory buffer"
-> and investigated why it was so low.
+As with the changelog text for the .dts file, please explain in the [PATCH 0/5]
+cover letter what the status is.
 
-Until recently we could not even support these large sizes at all on
-typical x86 configs.  With my fairly recent change to allow vmap
-remapped iommu allocations on x86 we can do that now.  But if we
-unconditionally enabled it I'd be a little worried about using too
-much memory very easily.
+Regarding continued maintainership, we should discuss how you plan to
+maintain this platform. In particular, there should be an entry in the
+MAINTAINERS
+file for the platform, either pointing to yourself, or adding it to the  NPCM or
+WPCM450 entries if this chip is in the same family. Is this also a BMC
+implementation, or is it something different?
 
-We could look into removing the min with
-PAGE_SIZE * MAX_ORDER_NR_PAGES to try to do larger segments for
-"segment challenged" controllers now that it could work on a lot
-of iommu enabled setups.  But I'd rather have a very good reason for
-that.
+       Arnd
