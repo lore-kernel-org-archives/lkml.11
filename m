@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC5ABC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD0B8C43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:13:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343546AbiEJOQK (ORCPT
+        id S1343813AbiEJOQ2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:16:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49704 "EHLO
+        Tue, 10 May 2022 10:16:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343517AbiEJNsL (ORCPT
+        with ESMTP id S1343711AbiEJNsW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:48:11 -0400
+        Tue, 10 May 2022 09:48:22 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6BF32AED8D;
-        Tue, 10 May 2022 06:36:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A56772D9EFA;
+        Tue, 10 May 2022 06:36:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AB70E618C1;
-        Tue, 10 May 2022 13:36:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0806C385C2;
-        Tue, 10 May 2022 13:36:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E966618CF;
+        Tue, 10 May 2022 13:36:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33039C385C2;
+        Tue, 10 May 2022 13:36:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189790;
-        bh=ICoUCWveMjVxL0JXl/i8DtIZOEvJ3uy+U5E1ZTjNeo4=;
+        s=korg; t=1652189805;
+        bh=7EOlkagCuaSCpsJRB/bfcScFi2TgH0RRwlzbd6ObCfE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cTTVYKZ8lHuGqO2EBTh/OgDTbPLjDY/7r/JVwNZt1X4Qm818us/odsweZ2EngjAzZ
-         z3LmWHXJIj0l/OalpiMFmF6uKRYz7KW5WwVkLFp4/I73yVHdVKJCieJXtqSZWWICmT
-         EdGj4aGodP2FMLsKtJvjrzCdDQw1Soc5LdLKkg1I=
+        b=SH/4e6y/z52RDM+H9Q5YNYT4b+dDWDILmQ1dIdlGcX4oIqS8wxJUcmwUnAyHDEsPg
+         HJX4lzPkHHkoqwg9zwexfZUIpOz/y29GI55kaOCHylxEBAPbz/7F2Ow5F83/cBHkld
+         6vyxM3C1CALFM21/hCtqXXzoUAf0wNdWwlTOQMpo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matt Corallo <blnxfsl@bluematt.me>,
-        Josef Bacik <josef@toxicpanda.com>, Qu Wenruo <wqu@suse.com>,
+        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
         David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.17 029/140] btrfs: force v2 space cache usage for subpage mount
-Date:   Tue, 10 May 2022 15:06:59 +0200
-Message-Id: <20220510130742.446962329@linuxfoundation.org>
+Subject: [PATCH 5.17 033/140] btrfs: skip compression property for anything other than files and dirs
+Date:   Tue, 10 May 2022 15:07:03 +0200
+Message-Id: <20220510130742.563550943@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -50,71 +49,149 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+From: Filipe Manana <fdmanana@suse.com>
 
-commit 9f73f1aef98b2fa7252c0a89be64840271ce8ea0 upstream.
+commit 4b73c55fdebd8939f0f6000921075f7f6fa41397 upstream.
 
-[BUG]
-For a 4K sector sized btrfs with v1 cache enabled and only mounted on
-systems with 4K page size, if it's mounted on subpage (64K page size)
-systems, it can cause the following warning on v1 space cache:
+The compression property only has effect on regular files and directories
+(so that it's propagated to files and subdirectories created inside a
+directory). For any other inode type (symlink, fifo, device, socket),
+it's pointless to set the compression property because it does nothing
+and ends up unnecessarily wasting leaf space due to the pointless xattr
+(75 or 76 bytes, depending on the compression value). Symlinks in
+particular are very common (for example, I have almost 10k symlinks under
+/etc, /usr and /var alone) and therefore it's worth to avoid wasting
+leaf space with the compression xattr.
 
- BTRFS error (device dm-1): csum mismatch on free space cache
- BTRFS warning (device dm-1): failed to load free space cache for block group 84082688, rebuilding it now
+For example, the compression property can end up on a symlink or character
+device implicitly, through inheritance from a parent directory
 
-Although not a big deal, as kernel can rebuild it without problem, such
-warning will bother end users, especially if they want to switch the
-same btrfs seamlessly between different page sized systems.
+  $ mkdir /mnt/testdir
+  $ btrfs property set /mnt/testdir compression lzo
 
-[CAUSE]
-V1 free space cache is still using fixed PAGE_SIZE for various bitmap,
-like BITS_PER_BITMAP.
+  $ ln -s yadayada /mnt/testdir/lnk
+  $ mknod /mnt/testdir/dev c 0 0
 
-Such hard-coded PAGE_SIZE usage will cause various mismatch, from v1
-cache size to checksum.
+Or explicitly like this:
 
-Thus kernel will always reject v1 cache with a different PAGE_SIZE with
-csum mismatch.
+  $ ln -s yadayda /mnt/lnk
+  $ setfattr -h -n btrfs.compression -v lzo /mnt/lnk
 
-[FIX]
-Although we should fix v1 cache, it's already going to be marked
-deprecated soon.
+So skip the compression property on inodes that are neither a regular
+file nor a directory.
 
-And we have v2 cache based on metadata (which is already fully subpage
-compatible), and it has almost everything superior than v1 cache.
-
-So just force subpage mount to use v2 cache on mount.
-
-Reported-by: Matt Corallo <blnxfsl@bluematt.me>
-CC: stable@vger.kernel.org # 5.15+
-Link: https://lore.kernel.org/linux-btrfs/61aa27d1-30fc-c1a9-f0f4-9df544395ec3@bluematt.me/
-Reviewed-by: Josef Bacik <josef@toxicpanda.com>
-Signed-off-by: Qu Wenruo <wqu@suse.com>
+CC: stable@vger.kernel.org # 5.4+
+Signed-off-by: Filipe Manana <fdmanana@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
 Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/disk-io.c |   11 +++++++++++
- 1 file changed, 11 insertions(+)
+ fs/btrfs/props.c |   43 +++++++++++++++++++++++++++++++++++++++++++
+ fs/btrfs/props.h |    1 +
+ fs/btrfs/xattr.c |    3 +++
+ 3 files changed, 47 insertions(+)
 
---- a/fs/btrfs/disk-io.c
-+++ b/fs/btrfs/disk-io.c
-@@ -3569,6 +3569,17 @@ int __cold open_ctree(struct super_block
- 	if (sectorsize < PAGE_SIZE) {
- 		struct btrfs_subpage_info *subpage_info;
+--- a/fs/btrfs/props.c
++++ b/fs/btrfs/props.c
+@@ -21,6 +21,7 @@ struct prop_handler {
+ 			size_t len);
+ 	int (*apply)(struct inode *inode, const char *value, size_t len);
+ 	const char *(*extract)(struct inode *inode);
++	bool (*ignore)(const struct btrfs_inode *inode);
+ 	int inheritable;
+ };
  
-+		/*
-+		 * V1 space cache has some hardcoded PAGE_SIZE usage, and is
-+		 * going to be deprecated.
-+		 *
-+		 * Force to use v2 cache for subpage case.
-+		 */
-+		btrfs_clear_opt(fs_info->mount_opt, SPACE_CACHE);
-+		btrfs_set_and_info(fs_info, FREE_SPACE_TREE,
-+			"forcing free space tree for sector size %u with page size %lu",
-+			sectorsize, PAGE_SIZE);
+@@ -74,6 +75,28 @@ int btrfs_validate_prop(const struct btr
+ 	return handler->validate(inode, value, value_len);
+ }
+ 
++/*
++ * Check if a property should be ignored (not set) for an inode.
++ *
++ * @inode:     The target inode.
++ * @name:      The property's name.
++ *
++ * The caller must be sure the given property name is valid, for example by
++ * having previously called btrfs_validate_prop().
++ *
++ * Returns:    true if the property should be ignored for the given inode
++ *             false if the property must not be ignored for the given inode
++ */
++bool btrfs_ignore_prop(const struct btrfs_inode *inode, const char *name)
++{
++	const struct prop_handler *handler;
 +
- 		btrfs_warn(fs_info,
- 		"read-write for sector size %u with page size %lu is experimental",
- 			   sectorsize, PAGE_SIZE);
++	handler = find_prop_handler(name, NULL);
++	ASSERT(handler != NULL);
++
++	return handler->ignore(inode);
++}
++
+ int btrfs_set_prop(struct btrfs_trans_handle *trans, struct inode *inode,
+ 		   const char *name, const char *value, size_t value_len,
+ 		   int flags)
+@@ -316,6 +339,22 @@ static int prop_compression_apply(struct
+ 	return 0;
+ }
+ 
++static bool prop_compression_ignore(const struct btrfs_inode *inode)
++{
++	/*
++	 * Compression only has effect for regular files, and for directories
++	 * we set it just to propagate it to new files created inside them.
++	 * Everything else (symlinks, devices, sockets, fifos) is pointless as
++	 * it will do nothing, so don't waste metadata space on a compression
++	 * xattr for anything that is neither a file nor a directory.
++	 */
++	if (!S_ISREG(inode->vfs_inode.i_mode) &&
++	    !S_ISDIR(inode->vfs_inode.i_mode))
++		return true;
++
++	return false;
++}
++
+ static const char *prop_compression_extract(struct inode *inode)
+ {
+ 	switch (BTRFS_I(inode)->prop_compress) {
+@@ -336,6 +375,7 @@ static struct prop_handler prop_handlers
+ 		.validate = prop_compression_validate,
+ 		.apply = prop_compression_apply,
+ 		.extract = prop_compression_extract,
++		.ignore = prop_compression_ignore,
+ 		.inheritable = 1
+ 	},
+ };
+@@ -362,6 +402,9 @@ static int inherit_props(struct btrfs_tr
+ 		if (!h->inheritable)
+ 			continue;
+ 
++		if (h->ignore(BTRFS_I(inode)))
++			continue;
++
+ 		value = h->extract(parent);
+ 		if (!value)
+ 			continue;
+--- a/fs/btrfs/props.h
++++ b/fs/btrfs/props.h
+@@ -15,6 +15,7 @@ int btrfs_set_prop(struct btrfs_trans_ha
+ 		   int flags);
+ int btrfs_validate_prop(const struct btrfs_inode *inode, const char *name,
+ 			const char *value, size_t value_len);
++bool btrfs_ignore_prop(const struct btrfs_inode *inode, const char *name);
+ 
+ int btrfs_load_inode_props(struct inode *inode, struct btrfs_path *path);
+ 
+--- a/fs/btrfs/xattr.c
++++ b/fs/btrfs/xattr.c
+@@ -408,6 +408,9 @@ static int btrfs_xattr_handler_set_prop(
+ 	if (ret)
+ 		return ret;
+ 
++	if (btrfs_ignore_prop(BTRFS_I(inode), name))
++		return 0;
++
+ 	trans = btrfs_start_transaction(root, 2);
+ 	if (IS_ERR(trans))
+ 		return PTR_ERR(trans);
 
 
