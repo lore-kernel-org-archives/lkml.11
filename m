@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DCECC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64932C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:18:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344322AbiEJOVs (ORCPT
+        id S1344346AbiEJOVy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:21:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47178 "EHLO
+        Tue, 10 May 2022 10:21:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245009AbiEJNrL (ORCPT
+        with ESMTP id S244998AbiEJNrK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:47:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF7D2380F7;
-        Tue, 10 May 2022 06:33:31 -0700 (PDT)
+        Tue, 10 May 2022 09:47:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE5E039833;
+        Tue, 10 May 2022 06:33:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 467756188A;
-        Tue, 10 May 2022 13:33:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AFC2C385C2;
-        Tue, 10 May 2022 13:33:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7268EB81D24;
+        Tue, 10 May 2022 13:33:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDF72C385A6;
+        Tue, 10 May 2022 13:33:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189610;
-        bh=n1KCDh4LONfKCtHsaCx9VaPa6rdpnvpNzEZKw6ZLikY=;
+        s=korg; t=1652189601;
+        bh=ZPX7+Rri4XQY1fUgTPvv/Qn+qiJcSUxHBUSmocYYkfo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zXyMIHKf/IF0HSnOhrCSp3oVJ9mIlDXXizhL7RIvEiN+bsgBzpz2pZlI7h8gyQhCj
-         KjV2WgcGYuVAj7FtlL1RhvtDpCBBPyyZ3VSo+rRCIEUN+bZ1sEZjZZrrqpSxxRZblN
-         D3Z/yp0+uZ5Xa+DOduQvKXccQaJz9ax3yRovM9ek=
+        b=FUSLljfkT954RTbOkZ+y3+BLCFVT9EGUDKoGJEoH4VZ0B88QygQaQOCPwKinYHF5i
+         fMHIC71T9IWNDkYsVlLB1nPyslOH9irwa3zW/NiIx4BREcqf/3lMvfSPG9fhKmIC5Y
+         qmPIdbxVM5xW/IV/KLEQbxrLveBzvQtjE0Kh1EVA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, pali@kernel.org,
-        =?UTF-8?q?Marek=20Beh=FAn?= <kabel@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH 5.15 106/135] PCI: pci-bridge-emul: Add description for class_revision field
-Date:   Tue, 10 May 2022 15:08:08 +0200
-Message-Id: <20220510130743.448324699@linuxfoundation.org>
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>,
+        John David Anglin <dave.anglin@bell.net>
+Subject: [PATCH 5.15 103/135] Revert "parisc: Mark sched_clock unstable only if clocks are not syncronized"
+Date:   Tue, 10 May 2022 15:08:05 +0200
+Message-Id: <20220510130743.362197225@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -50,46 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Helge Deller <deller@gmx.de>
 
-commit 9319230ac147067652b58fe849ffe0ceec098665 upstream.
+commit 7962c0896429af2a0e00ec6bc15d992536453b2d upstream.
 
-The current assignment to the class_revision member
+This reverts commit d97180ad68bdb7ee10f327205a649bc2f558741d.
 
-  class_revision |= cpu_to_le32(PCI_CLASS_BRIDGE_PCI << 16);
+It triggers RCU stalls at boot with a 32-bit kernel.
 
-can make the reader think that class is at high 16 bits of the member and
-revision at low 16 bits.
-
-In reality, class is at high 24 bits, but the class for PCI Bridge Normal
-Decode is PCI_CLASS_BRIDGE_PCI << 8.
-
-Change the assignment and add a comment to make this clearer.
-
-Link: https://lore.kernel.org/r/20211130172913.9727-2-kabel@kernel.org
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Marek Behún <kabel@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Noticed-by: John David Anglin <dave.anglin@bell.net>
+Cc: stable@vger.kernel.org # v5.15+
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/pci-bridge-emul.c |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ arch/parisc/kernel/setup.c |    2 ++
+ arch/parisc/kernel/time.c  |    6 +-----
+ 2 files changed, 3 insertions(+), 5 deletions(-)
 
---- a/drivers/pci/pci-bridge-emul.c
-+++ b/drivers/pci/pci-bridge-emul.c
-@@ -284,7 +284,11 @@ int pci_bridge_emul_init(struct pci_brid
- {
- 	BUILD_BUG_ON(sizeof(bridge->conf) != PCI_BRIDGE_CONF_END);
+--- a/arch/parisc/kernel/setup.c
++++ b/arch/parisc/kernel/setup.c
+@@ -150,6 +150,8 @@ void __init setup_arch(char **cmdline_p)
+ #ifdef CONFIG_PA11
+ 	dma_ops_init();
+ #endif
++
++	clear_sched_clock_stable();
+ }
  
--	bridge->conf.class_revision |= cpu_to_le32(PCI_CLASS_BRIDGE_PCI << 16);
-+	/*
-+	 * class_revision: Class is high 24 bits and revision is low 8 bit of this member,
-+	 * while class for PCI Bridge Normal Decode has the 24-bit value: PCI_CLASS_BRIDGE_PCI << 8
-+	 */
-+	bridge->conf.class_revision |= cpu_to_le32((PCI_CLASS_BRIDGE_PCI << 8) << 8);
- 	bridge->conf.header_type = PCI_HEADER_TYPE_BRIDGE;
- 	bridge->conf.cache_line_size = 0x10;
- 	bridge->conf.status = cpu_to_le16(PCI_STATUS_CAP_LIST);
+ /*
+--- a/arch/parisc/kernel/time.c
++++ b/arch/parisc/kernel/time.c
+@@ -249,13 +249,9 @@ void __init time_init(void)
+ static int __init init_cr16_clocksource(void)
+ {
+ 	/*
+-	 * The cr16 interval timers are not syncronized across CPUs, even if
+-	 * they share the same socket.
++	 * The cr16 interval timers are not synchronized across CPUs.
+ 	 */
+ 	if (num_online_cpus() > 1 && !running_on_qemu) {
+-		/* mark sched_clock unstable */
+-		clear_sched_clock_stable();
+-
+ 		clocksource_cr16.name = "cr16_unstable";
+ 		clocksource_cr16.flags = CLOCK_SOURCE_UNSTABLE;
+ 		clocksource_cr16.rating = 0;
 
 
