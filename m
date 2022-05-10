@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 662CDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:19:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59575C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:19:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245019AbiEJOXC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:23:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53500 "EHLO
+        id S1343869AbiEJOXJ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:23:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244656AbiEJNqy (ORCPT
+        with ESMTP id S244557AbiEJNu4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:46:54 -0400
+        Tue, 10 May 2022 09:50:56 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B336F16ABE2;
-        Tue, 10 May 2022 06:31:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04BD9296BC5;
+        Tue, 10 May 2022 06:37:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5EFFC6188A;
-        Tue, 10 May 2022 13:31:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E269C385C6;
-        Tue, 10 May 2022 13:31:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DAC50618A6;
+        Tue, 10 May 2022 13:37:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C78C9C385C6;
+        Tue, 10 May 2022 13:37:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189507;
-        bh=SPKHJzcgJ56VPE5cKV3jdHlDmRXxnFUXxwWYSwBiLF0=;
+        s=korg; t=1652189874;
+        bh=WXSNMrp0qzPhfuD6Y3qb5bOnrpSU5f7R2X8o0aXPoxw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lk7fScRz7OLQIMOFiljw+WqAZ/nH4ZdxumD+KaIptsX4nup497HKAjZROtMDPj8y6
-         pNFLWLsvoD0U1GgvQRu/AYvom+HB9a5dJVURNmLZLsUO3X1UOHPCiKqEoFQxZQPJ24
-         i6Z2wp7INUs8XbwCRF7maLi+vLjaTaos4SmoBH24=
+        b=tc66fhK74t5rbgHR4BVGN3n8LG0yIPeqt2xkTnsJM14/RLAi+9L7ZpdIe6EgElstf
+         3WgSFly38O74KuwZJ79sM2Y1DiZo6xaQCw+IlS7/vCv3/FipWP8S6qbLF3KlO/wMws
+         +S7yyhdSFeOMcfE9JOcebRp389VfJQKjyV3waXPA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qiao Ma <mqaio@linux.alibaba.com>,
-        Xunlei Pang <xlpang@linux.alibaba.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 072/135] hinic: fix bug of wq out of bound access
-Date:   Tue, 10 May 2022 15:07:34 +0200
-Message-Id: <20220510130742.478072326@linuxfoundation.org>
+        stable@vger.kernel.org, Sascha Hauer <sha@pengutronix.de>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.17 057/140] ASoC: dmaengine: Restore NULL prepare_slave_config() callback
+Date:   Tue, 10 May 2022 15:07:27 +0200
+Message-Id: <20220510130743.249571831@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
-References: <20220510130740.392653815@linuxfoundation.org>
+In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
+References: <20220510130741.600270947@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,48 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qiao Ma <mqaio@linux.alibaba.com>
+From: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
 
-commit 52b2abef450a78e25d485ac61e32f4ce86a87701 upstream.
+commit 660564fc9a92a893a14f255be434f7ea0b967901 upstream.
 
-If wq has only one page, we need to check wqe rolling over page by
-compare end_idx and curr_idx, and then copy wqe to shadow wqe to
-avoid out of bound access.
-This work has been done in hinic_get_wqe, but missed for hinic_read_wqe.
-This patch fixes it, and removes unnecessary MASKED_WQE_IDX().
+As pointed out by Sascha Hauer, this patch changes:
+if (pmc->config && !pcm->config->prepare_slave_config)
+        <do nothing>
+to:
+if (pmc->config && !pcm->config->prepare_slave_config)
+        snd_dmaengine_pcm_prepare_slave_config()
 
-Fixes: 7dd29ee12865 ("hinic: add sriov feature support")
-Signed-off-by: Qiao Ma <mqaio@linux.alibaba.com>
-Reviewed-by: Xunlei Pang <xlpang@linux.alibaba.com>
-Link: https://lore.kernel.org/r/282817b0e1ae2e28fdf3ed8271a04e77f57bf42e.1651148587.git.mqaio@linux.alibaba.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+This breaks the drivers that do not need a call to
+dmaengine_slave_config(). Drivers that still need to call
+snd_dmaengine_pcm_prepare_slave_config(), but have a NULL
+pcm->config->prepare_slave_config should use
+snd_dmaengine_pcm_prepare_slave_config() as their prepare_slave_config
+callback.
+
+Fixes: 9a1e13440a4f ("ASoC: dmaengine: do not use a NULL prepare_slave_config() callback")
+Reported-by: Sascha Hauer <sha@pengutronix.de>
+Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Link: https://lore.kernel.org/r/20220421125403.2180824-1-codrin.ciubotariu@microchip.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ sound/soc/soc-generic-dmaengine-pcm.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c
-@@ -772,7 +772,7 @@ struct hinic_hw_wqe *hinic_get_wqe(struc
- 	/* If we only have one page, still need to get shadown wqe when
- 	 * wqe rolling-over page
- 	 */
--	if (curr_pg != end_pg || MASKED_WQE_IDX(wq, end_prod_idx) < *prod_idx) {
-+	if (curr_pg != end_pg || end_prod_idx < *prod_idx) {
- 		void *shadow_addr = &wq->shadow_wqe[curr_pg * wq->max_wqe_size];
+--- a/sound/soc/soc-generic-dmaengine-pcm.c
++++ b/sound/soc/soc-generic-dmaengine-pcm.c
+@@ -86,10 +86,10 @@ static int dmaengine_pcm_hw_params(struc
  
- 		copy_wqe_to_shadow(wq, shadow_addr, num_wqebbs, *prod_idx);
-@@ -842,7 +842,10 @@ struct hinic_hw_wqe *hinic_read_wqe(stru
+ 	memset(&slave_config, 0, sizeof(slave_config));
  
- 	*cons_idx = curr_cons_idx;
+-	if (pcm->config && pcm->config->prepare_slave_config)
+-		prepare_slave_config = pcm->config->prepare_slave_config;
+-	else
++	if (!pcm->config)
+ 		prepare_slave_config = snd_dmaengine_pcm_prepare_slave_config;
++	else
++		prepare_slave_config = pcm->config->prepare_slave_config;
  
--	if (curr_pg != end_pg) {
-+	/* If we only have one page, still need to get shadown wqe when
-+	 * wqe rolling-over page
-+	 */
-+	if (curr_pg != end_pg || end_cons_idx < curr_cons_idx) {
- 		void *shadow_addr = &wq->shadow_wqe[curr_pg * wq->max_wqe_size];
- 
- 		copy_wqe_to_shadow(wq, shadow_addr, num_wqebbs, *cons_idx);
+ 	if (prepare_slave_config) {
+ 		int ret = prepare_slave_config(substream, params, &slave_config);
 
 
