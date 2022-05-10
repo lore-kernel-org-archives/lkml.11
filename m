@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBEEAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:24:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99BBEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:24:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237996AbiEJN2j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:28:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45968 "EHLO
+        id S243144AbiEJN2q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:28:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243231AbiEJNVk (ORCPT
+        with ESMTP id S243230AbiEJNVk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:21:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A16DF2C3345;
-        Tue, 10 May 2022 06:15:22 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A7B62C13E8;
+        Tue, 10 May 2022 06:15:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 90E66B81DA6;
-        Tue, 10 May 2022 13:15:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC2EEC385A6;
-        Tue, 10 May 2022 13:15:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A42EB81DAD;
+        Tue, 10 May 2022 13:15:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12861C385C9;
+        Tue, 10 May 2022 13:15:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188504;
-        bh=rBjHofO1WNs/cYxljno5UdrSN3KrNADHJN7VZG+ibug=;
+        s=korg; t=1652188513;
+        bh=MuIvfaTM07t+T9RBGkEc4AaN7NAIGZmeD96/gTWB/1E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RAHxRnG4wkEDLVkRZwvDGbtqyTol01tUXpRAq45vnLqH8ZzwHtrJKjmOhIkOc3RBa
-         JrLbFEM/oaOzjZXY96MLOVOiBU7sRPLBehPGqKKDPd6gCODv2KAtwxdOhR3slB2QTT
-         nGD5veBV7ijpYt14uKYHePOW2YG7BlfFz5dpd7IU=
+        b=LxheHAH5OvLh5grDvSURsNXmd1UHsw586bmqKiyDt6f/H4hfBJBHt4HhKiV9Og+Zz
+         7bwoAWYcH+Y3T7EI/E+AmDtWdIZ2fTmvnvKJq3DGUwo5mOMVNUAgw4k/KmU/WAuZoz
+         VWTEQdZQNZ9NzxTLxCvw2NzwXX0L6uHh22BR/6t8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
+        stable@vger.kernel.org, Pengcheng Yang <yangpc@wangsu.com>,
+        Julian Anastasov <ja@ssi.bg>,
+        Simon Horman <horms@verge.net.au>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 29/78] ARM: OMAP2+: Fix refcount leak in omap_gic_of_init
-Date:   Tue, 10 May 2022 15:07:15 +0200
-Message-Id: <20220510130733.398424783@linuxfoundation.org>
+Subject: [PATCH 4.14 31/78] ipvs: correctly print the memory size of ip_vs_conn_tab
+Date:   Tue, 10 May 2022 15:07:17 +0200
+Message-Id: <20220510130733.457399420@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
 References: <20220510130732.522479698@linuxfoundation.org>
@@ -49,40 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Pengcheng Yang <yangpc@wangsu.com>
 
-[ Upstream commit 0f83e6b4161617014017a694888dd8743f46f071 ]
+[ Upstream commit eba1a872cb73314280d5448d934935b23e30b7ca ]
 
-The of_find_compatible_node() function returns a node pointer with
-refcount incremented, We should use of_node_put() on it when done
-Add the missing of_node_put() to release the refcount.
+The memory size of ip_vs_conn_tab changed after we use hlist
+instead of list.
 
-Fixes: fd1c07861491 ("ARM: OMAP4: Fix the init code to have OMAP4460 errata available in DT build")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Message-Id: <20220309104302.18398-1-linmq006@gmail.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
+Fixes: 731109e78415 ("ipvs: use hlist instead of list")
+Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
+Acked-by: Julian Anastasov <ja@ssi.bg>
+Acked-by: Simon Horman <horms@verge.net.au>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-omap2/omap4-common.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/netfilter/ipvs/ip_vs_conn.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/mach-omap2/omap4-common.c b/arch/arm/mach-omap2/omap4-common.c
-index e5dcbda20129..7fff67ea7bcd 100644
---- a/arch/arm/mach-omap2/omap4-common.c
-+++ b/arch/arm/mach-omap2/omap4-common.c
-@@ -342,10 +342,12 @@ void __init omap_gic_of_init(void)
+diff --git a/net/netfilter/ipvs/ip_vs_conn.c b/net/netfilter/ipvs/ip_vs_conn.c
+index 620c865c230b..1ecce76bc266 100644
+--- a/net/netfilter/ipvs/ip_vs_conn.c
++++ b/net/netfilter/ipvs/ip_vs_conn.c
+@@ -1432,7 +1432,7 @@ int __init ip_vs_conn_init(void)
+ 	pr_info("Connection hash table configured "
+ 		"(size=%d, memory=%ldKbytes)\n",
+ 		ip_vs_conn_tab_size,
+-		(long)(ip_vs_conn_tab_size*sizeof(struct list_head))/1024);
++		(long)(ip_vs_conn_tab_size*sizeof(*ip_vs_conn_tab))/1024);
+ 	IP_VS_DBG(0, "Each connection entry needs %zd bytes at least\n",
+ 		  sizeof(struct ip_vs_conn));
  
- 	np = of_find_compatible_node(NULL, NULL, "arm,cortex-a9-gic");
- 	gic_dist_base_addr = of_iomap(np, 0);
-+	of_node_put(np);
- 	WARN_ON(!gic_dist_base_addr);
- 
- 	np = of_find_compatible_node(NULL, NULL, "arm,cortex-a9-twd-timer");
- 	twd_base = of_iomap(np, 0);
-+	of_node_put(np);
- 	WARN_ON(!twd_base);
- 
- skip_errata_init:
 -- 
 2.35.1
 
