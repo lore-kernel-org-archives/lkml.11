@@ -2,50 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53EE0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:44:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCC85C43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:44:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346216AbiEJPsd (ORCPT
+        id S1346194AbiEJPsl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:48:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60552 "EHLO
+        Tue, 10 May 2022 11:48:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346226AbiEJPsL (ORCPT
+        with ESMTP id S1346174AbiEJPsO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:48:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07C51280E18;
-        Tue, 10 May 2022 08:44:07 -0700 (PDT)
+        Tue, 10 May 2022 11:48:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07C152734D3;
+        Tue, 10 May 2022 08:44:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 01810614A9;
-        Tue, 10 May 2022 15:44:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAC0DC385C2;
-        Tue, 10 May 2022 15:44:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6243D614A9;
+        Tue, 10 May 2022 15:44:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B40AC385C9;
+        Tue, 10 May 2022 15:44:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652197446;
-        bh=DNkhD6VTUM7fXUikvAIycfwNIqFBbm8FeVeT6ISDgZs=;
+        s=k20201202; t=1652197451;
+        bh=I7fFtDTNT19Q0vnW9LieIV7IFg1MDaf2fd/dTIAvN+s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B9D5dHX0uglBH69wzaeBFTkj7Gt6xla+ijzRrG9SB1sDS/HbQBf6sVMrY8PpETEmV
-         3J6cgizqEjYSbiNvBFHlBd2iQ8J1nHK7FyPfF3xaZ2p299mkwox327KpkYpUtBlHM8
-         A+x824I4XUFwO9T5fcWALRCPoEDJF8mlYT1uZp6tabsKUaa/6iUu7Ph+gx0umS1aHa
-         ARM10QgnVrCD2I55BjE9IhnzhOjAFSRS/VHGS1upG4e4xEgyn3VrQaT2Iln7mQ1VPf
-         128lBH+w7hh7Dea9X8I3sGSQTIauVYJO/TDeSPoB8TB8CuJ3rlk19hlqU/vf+QmkdG
-         4bUCNZqLpT1Pw==
+        b=WaiuiiSG5fOPyP0VrrHYQoGfbC/vT9DPsmFZQOgqLjqfRJ0Wv5dJ34LdfE72kHube
+         HCzKju3U0C9tPte8qZ2yQe3FgWYrjzbbR/PRv+XyJeOcZYlGnz/44+ET1e6I4HGRlE
+         pzyuhsRR7KX8CAZ6sts4xxSewC0xdgHbFQyFq1qB14J/If4/U4UNLHGKqZPsyPnnFu
+         6ATjCV6++amiTllimkdZQGeMYRYLfWKfMbdz1DFlFf7a7lL8od3xgiYwoD00MhQwSf
+         2fB34QbShJWx/vWXt9bQID3dllQt02a3xu3hgHGExYfa1NexUM0PbGzI1h7sq6Ed6G
+         eP6K+bWD1WGTg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shravya Kumbham <shravya.kumbham@xilinx.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
+Cc:     Willy Tarreau <w@1wt.eu>, "Jason A . Donenfeld" <Jason@zx2c4.com>,
+        Moshe Kol <moshe.kol@mail.huji.ac.il>,
+        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
+        Amit Klein <aksecurity@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, michal.simek@xilinx.com,
-        arnd@arndb.de, yuehaibing@huawei.com,
-        prabhakar.mahadev-lad.rj@bp.renesas.com, linmq006@gmail.com,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.17 11/21] net: emaclite: Don't advertise 1000BASE-T and do auto negotiation
-Date:   Tue, 10 May 2022 11:43:30 -0400
-Message-Id: <20220510154340.153400-11-sashal@kernel.org>
+        pabeni@redhat.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 13/21] secure_seq: use the 64 bits of the siphash for port offset calculation
+Date:   Tue, 10 May 2022 11:43:32 -0400
+Message-Id: <20220510154340.153400-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220510154340.153400-1-sashal@kernel.org>
 References: <20220510154340.153400-1-sashal@kernel.org>
@@ -57,60 +58,148 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shravya Kumbham <shravya.kumbham@xilinx.com>
+From: Willy Tarreau <w@1wt.eu>
 
-[ Upstream commit b800528b97d0adc3a5ba42d78a8b0d3f07a31f44 ]
+[ Upstream commit b2d057560b8107c633b39aabe517ff9d93f285e3 ]
 
-In xemaclite_open() function we are setting the max speed of
-emaclite to 100Mb using phy_set_max_speed() function so,
-there is no need to write the advertising registers to stop
-giga-bit speed and the phy_start() function starts the
-auto-negotiation so, there is no need to handle it separately
-using advertising registers. Remove the phy_read and phy_write
-of advertising registers in xemaclite_open() function.
+SipHash replaced MD5 in secure_ipv{4,6}_port_ephemeral() via commit
+7cd23e5300c1 ("secure_seq: use SipHash in place of MD5"), but the output
+remained truncated to 32-bit only. In order to exploit more bits from the
+hash, let's make the functions return the full 64-bit of siphash_3u32().
+We also make sure the port offset calculation in __inet_hash_connect()
+remains done on 32-bit to avoid the need for div_u64_rem() and an extra
+cost on 32-bit systems.
 
-Signed-off-by: Shravya Kumbham <shravya.kumbham@xilinx.com>
-Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Cc: Jason A. Donenfeld <Jason@zx2c4.com>
+Cc: Moshe Kol <moshe.kol@mail.huji.ac.il>
+Cc: Yossi Gilad <yossi.gilad@mail.huji.ac.il>
+Cc: Amit Klein <aksecurity@gmail.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/xilinx/xilinx_emaclite.c | 15 ---------------
- 1 file changed, 15 deletions(-)
+ include/net/inet_hashtables.h |  2 +-
+ include/net/secure_seq.h      |  4 ++--
+ net/core/secure_seq.c         |  4 ++--
+ net/ipv4/inet_hashtables.c    | 10 ++++++----
+ net/ipv6/inet6_hashtables.c   |  4 ++--
+ 5 files changed, 13 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/xilinx/xilinx_emaclite.c b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-index 77fa2cb03aca..29e942cd3c44 100644
---- a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-@@ -926,8 +926,6 @@ static int xemaclite_open(struct net_device *dev)
- 	xemaclite_disable_interrupts(lp);
+diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
+index f72ec113ae56..98e1ec1a14f0 100644
+--- a/include/net/inet_hashtables.h
++++ b/include/net/inet_hashtables.h
+@@ -425,7 +425,7 @@ static inline void sk_rcv_saddr_set(struct sock *sk, __be32 addr)
+ }
  
- 	if (lp->phy_node) {
--		u32 bmcr;
--
- 		lp->phy_dev = of_phy_connect(lp->ndev, lp->phy_node,
- 					     xemaclite_adjust_link, 0,
- 					     PHY_INTERFACE_MODE_MII);
-@@ -938,19 +936,6 @@ static int xemaclite_open(struct net_device *dev)
+ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+-			struct sock *sk, u32 port_offset,
++			struct sock *sk, u64 port_offset,
+ 			int (*check_established)(struct inet_timewait_death_row *,
+ 						 struct sock *, __u16,
+ 						 struct inet_timewait_sock **));
+diff --git a/include/net/secure_seq.h b/include/net/secure_seq.h
+index d7d2495f83c2..dac91aa38c5a 100644
+--- a/include/net/secure_seq.h
++++ b/include/net/secure_seq.h
+@@ -4,8 +4,8 @@
  
- 		/* EmacLite doesn't support giga-bit speeds */
- 		phy_set_max_speed(lp->phy_dev, SPEED_100);
--
--		/* Don't advertise 1000BASE-T Full/Half duplex speeds */
--		phy_write(lp->phy_dev, MII_CTRL1000, 0);
--
--		/* Advertise only 10 and 100mbps full/half duplex speeds */
--		phy_write(lp->phy_dev, MII_ADVERTISE, ADVERTISE_ALL |
--			  ADVERTISE_CSMA);
--
--		/* Restart auto negotiation */
--		bmcr = phy_read(lp->phy_dev, MII_BMCR);
--		bmcr |= (BMCR_ANENABLE | BMCR_ANRESTART);
--		phy_write(lp->phy_dev, MII_BMCR, bmcr);
--
- 		phy_start(lp->phy_dev);
- 	}
+ #include <linux/types.h>
  
+-u32 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport);
+-u32 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
++u64 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport);
++u64 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
+ 			       __be16 dport);
+ u32 secure_tcp_seq(__be32 saddr, __be32 daddr,
+ 		   __be16 sport, __be16 dport);
+diff --git a/net/core/secure_seq.c b/net/core/secure_seq.c
+index 9b8443774449..55aa5cc258e3 100644
+--- a/net/core/secure_seq.c
++++ b/net/core/secure_seq.c
+@@ -94,7 +94,7 @@ u32 secure_tcpv6_seq(const __be32 *saddr, const __be32 *daddr,
+ }
+ EXPORT_SYMBOL(secure_tcpv6_seq);
+ 
+-u32 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
++u64 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
+ 			       __be16 dport)
+ {
+ 	const struct {
+@@ -142,7 +142,7 @@ u32 secure_tcp_seq(__be32 saddr, __be32 daddr,
+ }
+ EXPORT_SYMBOL_GPL(secure_tcp_seq);
+ 
+-u32 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport)
++u64 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport)
+ {
+ 	net_secret_init();
+ 	return siphash_3u32((__force u32)saddr, (__force u32)daddr,
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index 17440840a791..9d24d9319f3d 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -504,7 +504,7 @@ static int __inet_check_established(struct inet_timewait_death_row *death_row,
+ 	return -EADDRNOTAVAIL;
+ }
+ 
+-static u32 inet_sk_port_offset(const struct sock *sk)
++static u64 inet_sk_port_offset(const struct sock *sk)
+ {
+ 	const struct inet_sock *inet = inet_sk(sk);
+ 
+@@ -734,7 +734,7 @@ EXPORT_SYMBOL_GPL(inet_unhash);
+ static u32 table_perturb[1 << INET_TABLE_PERTURB_SHIFT];
+ 
+ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+-		struct sock *sk, u32 port_offset,
++		struct sock *sk, u64 port_offset,
+ 		int (*check_established)(struct inet_timewait_death_row *,
+ 			struct sock *, __u16, struct inet_timewait_sock **))
+ {
+@@ -777,7 +777,9 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+ 	net_get_random_once(table_perturb, sizeof(table_perturb));
+ 	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
+ 
+-	offset = (READ_ONCE(table_perturb[index]) + port_offset) % remaining;
++	offset = READ_ONCE(table_perturb[index]) + port_offset;
++	offset %= remaining;
++
+ 	/* In first pass we try ports of @low parity.
+ 	 * inet_csk_get_port() does the opposite choice.
+ 	 */
+@@ -859,7 +861,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+ int inet_hash_connect(struct inet_timewait_death_row *death_row,
+ 		      struct sock *sk)
+ {
+-	u32 port_offset = 0;
++	u64 port_offset = 0;
+ 
+ 	if (!inet_sk(sk)->inet_num)
+ 		port_offset = inet_sk_port_offset(sk);
+diff --git a/net/ipv6/inet6_hashtables.c b/net/ipv6/inet6_hashtables.c
+index 4740afecf7c6..32ccac10bd62 100644
+--- a/net/ipv6/inet6_hashtables.c
++++ b/net/ipv6/inet6_hashtables.c
+@@ -308,7 +308,7 @@ static int __inet6_check_established(struct inet_timewait_death_row *death_row,
+ 	return -EADDRNOTAVAIL;
+ }
+ 
+-static u32 inet6_sk_port_offset(const struct sock *sk)
++static u64 inet6_sk_port_offset(const struct sock *sk)
+ {
+ 	const struct inet_sock *inet = inet_sk(sk);
+ 
+@@ -320,7 +320,7 @@ static u32 inet6_sk_port_offset(const struct sock *sk)
+ int inet6_hash_connect(struct inet_timewait_death_row *death_row,
+ 		       struct sock *sk)
+ {
+-	u32 port_offset = 0;
++	u64 port_offset = 0;
+ 
+ 	if (!inet_sk(sk)->inet_num)
+ 		port_offset = inet6_sk_port_offset(sk);
 -- 
 2.35.1
 
