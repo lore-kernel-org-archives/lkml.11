@@ -2,92 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87616C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4626C35296
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:33:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345044AbiEJOg5 (ORCPT
+        id S1345086AbiEJOhD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:36:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43284 "EHLO
+        Tue, 10 May 2022 10:37:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343553AbiEJOHI (ORCPT
+        with ESMTP id S1344228AbiEJOVY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:07:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F306920791E;
-        Tue, 10 May 2022 06:41:09 -0700 (PDT)
+        Tue, 10 May 2022 10:21:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15DFD254711
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 06:48:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF936B81DA0;
-        Tue, 10 May 2022 13:41:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4610EC385A6;
-        Tue, 10 May 2022 13:41:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652190065;
-        bh=84Cf+kNuFriqtENNa1ezqce+lu2J/desx9OHStUV0J4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HrI50niXBIv5+GldavaT87HYTmlwvZBvTBdYT6zhtQp+wJ1kj20jgCv+RL61ivnsP
-         ijpNfJUxTvqIBbb+Y4yCGIAij4Lj2N5s0lNPMr1JoByXNHOTgazyfrrUvyGX1xU8Z6
-         ZTOf78fNr5zqt+s85e84myhtuLqNCrvLBh44ll08=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chao Gao <chao.gao@intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 116/140] KVM: x86: Do not change ICR on write to APIC_SELF_IPI
-Date:   Tue, 10 May 2022 15:08:26 +0200
-Message-Id: <20220510130744.922507518@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
-References: <20220510130741.600270947@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C610619B0
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 13:48:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96D37C385A6;
+        Tue, 10 May 2022 13:48:15 +0000 (UTC)
+Date:   Tue, 10 May 2022 09:48:14 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     kernel test robot <lkp@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: Re: include/trace/stages/init.h:2:23: warning:
+ 'str__irq_vectors__trace_system_name' defined but not used
+Message-ID: <20220510094814.7d917f10@gandalf.local.home>
+In-Reply-To: <20220510094459.5a462ad8@gandalf.local.home>
+References: <202205100202.Ag0S76wP-lkp@intel.com>
+        <20220510094459.5a462ad8@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Bonzini <pbonzini@redhat.com>
+On Tue, 10 May 2022 09:44:59 -0400
+Steven Rostedt <rostedt@goodmis.org> wrote:
 
-[ Upstream commit d22a81b304a27fca6124174a8e842e826c193466 ]
+> Hmm, when I do:
+> 
+> 	$ make arch/x86/kernel/irq.i
+> 	$ astyle arch/x86/kernel/irq.i
+> 	$ grep str__irq_irq_vectors__trace_system_name
+> 
+>   static const char str__irq_vectors__trace_system_name[] = "irq_vectors";
+>   static struct trace_event_class __attribute__((__used__)) __attribute__((__section__(".ref.data"))) event_class_x86_irq_vector = { .system = str__irq_vectors__trace_system_name, .fields_array = trace_event_fields_x86_irq_vector, .fields = { &(event_class_x86_irq_vector.fields),  &(event_class_x86_irq_vector.fields) }, .raw_init = trace_event_raw_init, .probe = trace_event_raw_event_x86_irq_vector, .reg = trace_event_reg, .perf_probe = perf_trace_x86_irq_vector, };
 
-Emulating writes to SELF_IPI with a write to ICR has an unwanted side effect:
-the value of ICR in vAPIC page gets changed.  The lists SELF_IPI as write-only,
-with no associated MMIO offset, so any write should have no visible side
-effect in the vAPIC page.
+Or is it because it is used only in initdata?
 
-Reported-by: Chao Gao <chao.gao@intel.com>
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/x86/kvm/lapic.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+I guess I can check if it is referenced afterward anywhere, and set it to
+initdata as well, if that's the case.
 
-diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-index 2a10d0033c96..6b6f9359d29e 100644
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -2125,10 +2125,9 @@ int kvm_lapic_reg_write(struct kvm_lapic *apic, u32 reg, u32 val)
- 		break;
- 
- 	case APIC_SELF_IPI:
--		if (apic_x2apic_mode(apic)) {
--			kvm_lapic_reg_write(apic, APIC_ICR,
--					    APIC_DEST_SELF | (val & APIC_VECTOR_MASK));
--		} else
-+		if (apic_x2apic_mode(apic))
-+			kvm_apic_send_ipi(apic, APIC_DEST_SELF | (val & APIC_VECTOR_MASK), 0);
-+		else
- 			ret = 1;
- 		break;
- 	default:
--- 
-2.35.1
-
-
-
+-- Steve
