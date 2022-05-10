@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF311C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:23:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C121C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:23:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344291AbiEJO0K (ORCPT
+        id S1344386AbiEJO0f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:26:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44212 "EHLO
+        Tue, 10 May 2022 10:26:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244341AbiEJNwy (ORCPT
+        with ESMTP id S244367AbiEJNxy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:52:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04F7E7A81D;
-        Tue, 10 May 2022 06:38:19 -0700 (PDT)
+        Tue, 10 May 2022 09:53:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2655829B83F;
+        Tue, 10 May 2022 06:38:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B85A1618A6;
-        Tue, 10 May 2022 13:38:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AACDFC385A6;
-        Tue, 10 May 2022 13:38:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E4B826188F;
+        Tue, 10 May 2022 13:38:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7917C385A6;
+        Tue, 10 May 2022 13:38:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189899;
-        bh=x9FNJaZ9Ldy9h7nrfhuU9gWW1aSmkPn7QTppmhyRPL4=;
+        s=korg; t=1652189902;
+        bh=C2v2vHSQbWR7p6v8H7wLTi3ABqS6AIycrKUhuDO3oM0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JbbQLtL+puFbR//Ar306y/JHVBoRJtQjcq94EnvGzyPsYKt8SHsmxkNbWGbYtme1h
-         XA8PU3RRCOInw0xHA1ZFH6JYNMGLTE2wyoOrMVBT7My2bHfWMearQlPxjmpfFp7oY0
-         YcGsCyXST1bIG4fpGTS82q66uj9vlqOjK5R/fK5Q=
+        b=hMqd14sL1OkGpcjxxT0aquCaQAGpssjqKQ3WeXmp23FvfUJK01ZkKX7yIXW/ulE84
+         VTkggQn0VGbNKlOlrSBDITisT5IKRKSVjSm9XAw7FOUA0waa9pQewb6jqLL+xoKoW1
+         WXBfGOE6PidT2EWLoZjzQpVBXaSAsjdbhiRQ64RQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aya Levin <ayal@nvidia.com>,
-        Moshe Shemesh <moshe@nvidia.com>,
+        stable@vger.kernel.org, Ariel Levkovich <lariel@nvidia.com>,
+        Maor Dickman <maord@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.17 064/140] net/mlx5: Fix slab-out-of-bounds while reading resource dump menu
-Date:   Tue, 10 May 2022 15:07:34 +0200
-Message-Id: <20220510130743.449998596@linuxfoundation.org>
+Subject: [PATCH 5.17 065/140] net/mlx5e: Fix wrong source vport matching on tunnel rule
+Date:   Tue, 10 May 2022 15:07:35 +0200
+Message-Id: <20220510130743.477938626@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -50,146 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aya Levin <ayal@nvidia.com>
+From: Ariel Levkovich <lariel@nvidia.com>
 
-commit 7ba2d9d8de96696c1451fee1b01da11f45bdc2b9 upstream.
+commit cb0d54cbf94866b48a73e10a73a55655f808cc7c upstream.
 
-Resource dump menu may span over more than a single page, support it.
-Otherwise, menu read may result in a memory access violation: reading
-outside of the allocated page.
-Note that page format of the first menu page contains menu headers while
-the proceeding menu pages contain only records.
+When OVS internal port is the vtep device, the first decap
+rule is matching on the internal port's vport metadata value
+and then changes the metadata to be the uplink's value.
 
-The KASAN logs are as follows:
-BUG: KASAN: slab-out-of-bounds in strcmp+0x9b/0xb0
-Read of size 1 at addr ffff88812b2e1fd0 by task systemd-udevd/496
+Therefore, following rules on the tunnel, in chain > 0, should
+avoid matching on internal port metadata and use the uplink
+vport metadata instead.
 
-CPU: 5 PID: 496 Comm: systemd-udevd Tainted: G    B  5.16.0_for_upstream_debug_2022_01_10_23_12 #1
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0x57/0x7d
- print_address_description.constprop.0+0x1f/0x140
- ? strcmp+0x9b/0xb0
- ? strcmp+0x9b/0xb0
- kasan_report.cold+0x83/0xdf
- ? strcmp+0x9b/0xb0
- strcmp+0x9b/0xb0
- mlx5_rsc_dump_init+0x4ab/0x780 [mlx5_core]
- ? mlx5_rsc_dump_destroy+0x80/0x80 [mlx5_core]
- ? lockdep_hardirqs_on_prepare+0x286/0x400
- ? raw_spin_unlock_irqrestore+0x47/0x50
- ? aomic_notifier_chain_register+0x32/0x40
- mlx5_load+0x104/0x2e0 [mlx5_core]
- mlx5_init_one+0x41b/0x610 [mlx5_core]
- ....
-The buggy address belongs to the object at ffff88812b2e0000
- which belongs to the cache kmalloc-4k of size 4096
-The buggy address is located 4048 bytes to the right of
- 4096-byte region [ffff88812b2e0000, ffff88812b2e1000)
-The buggy address belongs to the page:
-page:000000009d69807a refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff88812b2e6000 pfn:0x12b2e0
-head:000000009d69807a order:3 compound_mapcount:0 compound_pincount:0
-flags: 0x8000000000010200(slab|head|zone=2)
-raw: 8000000000010200 0000000000000000 dead000000000001 ffff888100043040
-raw: ffff88812b2e6000 0000000080040000 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
+Select the uplink's metadata value for the source vport match
+in case the rule is in chain greater than zero, even if the tunnel
+route device is internal port.
 
-Memory state around the buggy address:
- ffff88812b2e1e80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff88812b2e1f00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->ffff88812b2e1f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-                                                 ^
- ffff88812b2e2000: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff88812b2e2080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
-
-Fixes: 12206b17235a ("net/mlx5: Add support for resource dump")
-Signed-off-by: Aya Levin <ayal@nvidia.com>
-Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+Fixes: 166f431ec6be ("net/mlx5e: Add indirect tc offload of ovs internal port")
+Signed-off-by: Ariel Levkovich <lariel@nvidia.com>
+Reviewed-by: Maor Dickman <maord@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.c |   31 ++++++++++++----
- 1 file changed, 25 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/diag/rsc_dump.c
-@@ -31,6 +31,7 @@ static const char *const mlx5_rsc_sgmt_n
- struct mlx5_rsc_dump {
- 	u32 pdn;
- 	u32 mkey;
-+	u32 number_of_menu_items;
- 	u16 fw_segment_type[MLX5_SGMT_TYPE_NUM];
- };
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index 3f63df127091..3b151332e2f8 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -139,7 +139,7 @@ mlx5_eswitch_set_rule_source_port(struct mlx5_eswitch *esw,
+ 		if (mlx5_esw_indir_table_decap_vport(attr))
+ 			vport = mlx5_esw_indir_table_decap_vport(attr);
  
-@@ -50,21 +51,37 @@ static int mlx5_rsc_dump_sgmt_get_by_nam
- 	return -EINVAL;
- }
- 
--static void mlx5_rsc_dump_read_menu_sgmt(struct mlx5_rsc_dump *rsc_dump, struct page *page)
-+#define MLX5_RSC_DUMP_MENU_HEADER_SIZE (MLX5_ST_SZ_BYTES(resource_dump_info_segment) + \
-+					MLX5_ST_SZ_BYTES(resource_dump_command_segment) + \
-+					MLX5_ST_SZ_BYTES(resource_dump_menu_segment))
-+
-+static int mlx5_rsc_dump_read_menu_sgmt(struct mlx5_rsc_dump *rsc_dump, struct page *page,
-+					int read_size, int start_idx)
- {
- 	void *data = page_address(page);
- 	enum mlx5_sgmt_type sgmt_idx;
- 	int num_of_items;
- 	char *sgmt_name;
- 	void *member;
-+	int size = 0;
- 	void *menu;
- 	int i;
- 
--	menu = MLX5_ADDR_OF(menu_resource_dump_response, data, menu);
--	num_of_items = MLX5_GET(resource_dump_menu_segment, menu, num_of_records);
-+	if (!start_idx) {
-+		menu = MLX5_ADDR_OF(menu_resource_dump_response, data, menu);
-+		rsc_dump->number_of_menu_items = MLX5_GET(resource_dump_menu_segment, menu,
-+							  num_of_records);
-+		size = MLX5_RSC_DUMP_MENU_HEADER_SIZE;
-+		data += size;
-+	}
-+	num_of_items = rsc_dump->number_of_menu_items;
-+
-+	for (i = 0; start_idx + i < num_of_items; i++) {
-+		size += MLX5_ST_SZ_BYTES(resource_dump_menu_record);
-+		if (size >= read_size)
-+			return start_idx + i;
- 
--	for (i = 0; i < num_of_items; i++) {
--		member = MLX5_ADDR_OF(resource_dump_menu_segment, menu, record[i]);
-+		member = data + MLX5_ST_SZ_BYTES(resource_dump_menu_record) * i;
- 		sgmt_name =  MLX5_ADDR_OF(resource_dump_menu_record, member, segment_name);
- 		sgmt_idx = mlx5_rsc_dump_sgmt_get_by_name(sgmt_name);
- 		if (sgmt_idx == -EINVAL)
-@@ -72,6 +89,7 @@ static void mlx5_rsc_dump_read_menu_sgmt
- 		rsc_dump->fw_segment_type[sgmt_idx] = MLX5_GET(resource_dump_menu_record,
- 							       member, segment_type);
- 	}
-+	return 0;
- }
- 
- static int mlx5_rsc_dump_trigger(struct mlx5_core_dev *dev, struct mlx5_rsc_dump_cmd *cmd,
-@@ -168,6 +186,7 @@ static int mlx5_rsc_dump_menu(struct mlx
- 	struct mlx5_rsc_dump_cmd *cmd = NULL;
- 	struct mlx5_rsc_key key = {};
- 	struct page *page;
-+	int start_idx = 0;
- 	int size;
- 	int err;
- 
-@@ -189,7 +208,7 @@ static int mlx5_rsc_dump_menu(struct mlx
- 		if (err < 0)
- 			goto destroy_cmd;
- 
--		mlx5_rsc_dump_read_menu_sgmt(dev->rsc_dump, page);
-+		start_idx = mlx5_rsc_dump_read_menu_sgmt(dev->rsc_dump, page, size, start_idx);
- 
- 	} while (err > 0);
- 
+-		if (esw_attr->int_port)
++		if (attr && !attr->chain && esw_attr->int_port)
+ 			metadata =
+ 				mlx5e_tc_int_port_get_metadata_for_match(esw_attr->int_port);
+ 		else
+-- 
+2.36.1
+
 
 
