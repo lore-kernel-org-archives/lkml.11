@@ -2,168 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC81DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:59:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31C37C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:59:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345519AbiEJQD0 (ORCPT
+        id S1346849AbiEJQDe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 12:03:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53430 "EHLO
+        Tue, 10 May 2022 12:03:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347325AbiEJP50 (ORCPT
+        with ESMTP id S1347876AbiEJP6K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:57:26 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2570929B00D;
-        Tue, 10 May 2022 08:50:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1652197774;
-        bh=jGOBs/UK7Wuf/73tooLnJSTteyWCS+jQ2JdfAa53BZI=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=SdjJ4H/hJFvsqer19yer80ICiNhhCDbdTsDks2vnoGsKMVxZVXjkkon/tGAF5ukI/
-         O8LTiTB3OJtp/rSsNweIyO5iOTsdftAVGS35+88JwBJplDqm6PqXL5e827QoLXGECj
-         3YdLvr27CnJbFce0zk1hc4P/Jq8GDZla1mg42xdY=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.182.129]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1Mk0NU-1oCXSv3qKO-00kPE5; Tue, 10
- May 2022 17:49:33 +0200
-Message-ID: <37d6bcac-bca4-06a6-ecab-bf83bd3468cd@gmx.de>
-Date:   Tue, 10 May 2022 17:49:31 +0200
+        Tue, 10 May 2022 11:58:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1BC462CF2;
+        Tue, 10 May 2022 08:51:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EA0161373;
+        Tue, 10 May 2022 15:51:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88345C385A6;
+        Tue, 10 May 2022 15:51:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652197876;
+        bh=6JxcE5t9KXVE8fMNIQQ+vlROON2kYoaeG2ur0y4wic8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=akwaLFkg0R/3GizbON24I88jiLQHcxNG8NGP6pKgKS5C20Khy1Y7xZNOmJ1vAelWH
+         rklD2/xr0jvYdgTPQ+bgI54Yis5lQ6qpm8zKgAAGNREmUk4dP47T37AtmFAVt+9ZLn
+         7ybau9gnxTutbjks0xu5bdYaLWBF0fhuuYhnHQ/NGnWoLHD6xpBik/lQlltS3OxC8m
+         5DPiB0+mHyrLbixkwNyrsKK7V/DIGaYhx8ekCyDDC39Oq0NGXSFIMw4oGVoLfqe1Ad
+         SQJXjYjCBSBCP0Tfxpj4Wnb/XvmucYWbOg/cO1t+HaI8YoTDuVXsRzdCbUGDmZqWDy
+         MHmI9I4lAIjAA==
+Date:   Tue, 10 May 2022 17:51:07 +0200
+From:   Christian Brauner <brauner@kernel.org>
+To:     "Serge E. Hallyn" <serge@hallyn.com>
+Cc:     Stefan Berger <stefanb@linux.ibm.com>,
+        linux-integrity@vger.kernel.org, zohar@linux.ibm.com,
+        christian.brauner@ubuntu.com, containers@lists.linux.dev,
+        dmitry.kasatkin@gmail.com, ebiederm@xmission.com,
+        krzysztof.struczynski@huawei.com, roberto.sassu@huawei.com,
+        mpeters@redhat.com, lhinds@redhat.com, lsturman@redhat.com,
+        puiterwi@redhat.com, jejb@linux.ibm.com, jamjoom@us.ibm.com,
+        linux-kernel@vger.kernel.org, paul@paul-moore.com, rgb@redhat.com,
+        linux-security-module@vger.kernel.org, jmorris@namei.org,
+        jpenumak@redhat.com, John Johansen <john.johansen@canonical.com>,
+        Matthew Garrett <mjg59@srcf.ucam.org>,
+        Micah Morton <mortonm@chromium.org>,
+        Kentaro Takeda <takedakn@nttdata.co.jp>,
+        Jarkko Sakkinen <jarkko@kernel.org>
+Subject: Re: [PATCH v12 01/26] securityfs: rework dentry creation
+Message-ID: <20220510155107.srxifzuqfstvet2f@wittgenstein>
+References: <20220420140633.753772-1-stefanb@linux.ibm.com>
+ <20220420140633.753772-2-stefanb@linux.ibm.com>
+ <20220509195414.GA30894@mail.hallyn.com>
+ <20220510102525.hlt2rm3k3hg5r6gg@wittgenstein>
+ <20220510141025.GA7290@mail.hallyn.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH AUTOSEL 5.17 21/21] Revert "parisc: Fix patch code locking
- and flushing"
-Content-Language: en-US
-To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Cc:     James.Bottomley@HansenPartnership.com, dave.anglin@bell.net,
-        linux-parisc@vger.kernel.org
-References: <20220510154340.153400-1-sashal@kernel.org>
- <20220510154340.153400-21-sashal@kernel.org>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <20220510154340.153400-21-sashal@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:DbkjErZqGYtxT2MmD6i3Zo6PUeOP1VMhIDXgUqyYizJoykpfmQ4
- d2PxGyVXkrbmeEuymU2QPyskc5EsBVI7MeBlBQBVkDgucQnJu5w+ByFqoMenT19x4Z0YCpd
- OfQeGDM6kmQ0jvI/CATPhcvwNeKrSEFjsj125OFeILAzrfAGKUs9niKtkB0HtgqKRhVoY0v
- gaKiTPZvm8dsvPtaC7pSA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Hs2MDU1jC1A=:8TpJZn618p2URZBBZ9GZ/g
- 8sQFXgdgmx521RiPGsCqPLNYXbqtqbFrh1Ds0deT6pAn7dl6LrMZ/cwYWQgpfmrUHU0op2HqZ
- OgIDWnMlV8baftwQZ+FuV88EoThjuEJQ5ZPpkHq3KIcJ1JbwUo1MmsaVOmQpwj1hIyEHW7s4U
- 08btqIwgIrWXhP1c+KKFeszp8UxF9iEr7dGKQnPQJyGFtaauoAnmY2u8ZUdeXENto4Z5PxdQN
- wetQ3RiIBl9HB9V9MjOhe3d58xfwUSRlj6EiobtZ6hhwwuHrQ2uyyZIlvp6socqmI/xvMfd6o
- sFzHTXsW8Ix338wk+SwOpGug4xdnnjeqaONcpMS2w7/bLdY+RIr2peqTottdfetQKbSEx3OK3
- +p9p1ITLV5X3WFTfuCkUP8V+meIpP3nog1EMvb2DIFbdUpDm+R5EkerzVTz+t14pno/qVIcTD
- Qs/eVPiItldLEdJtXkiqV+VpyYIONR8M2/jbVuzsdXGOLSzjhE6dyxDO6AaXuYJMjYIN3j7si
- fryb1efui2cI1c/K9w2rkQB+EacYPpo1YektXXkjWgAs1rRgWLIroNfyRzeHAQ6gu0WiH9eff
- rQfxQs67ihrhjKqfk7A7ZhUflwDJU7MiIZFOppgmcyouhwmGqV9RjDkJwHCcX/Swz42CT5SsR
- HnXBC3yDBptgSsjfJgXy6HhlQo9Pockzz9RgVqsiZaLJ0C7LCs/ku933i0KSP4PCg+LElF1xa
- fOKJw2MPteHAcNwDzpJItf8na/RvxEEckkdwaBof97pAIgeaeqMQXKcKHdszo2kfs0l4fkaGL
- yEI1k7o5xniG+e8Q4gpNPbjB6X4/8+coz55asevkNul71VyOINJLTsCwBUnV5FuxyqhPNmfrl
- +A7O5jaqD5xIR8rTx/zxI3cM6TnHW/YJQ8UooFFfgXlyGCDcqrnAzirP8xbRFCG0v2Eh1xILC
- yuvHYDKXOu6UMsqrvkYEZ5TSYG+N5cJB786ogXXNo797oRHWknErpRq/eCLktsdmP2/Dl/9DN
- oN1CNs78dmI4qSn0PqX5QNcFvb1JhJ9TZvLHpGFzXZee3uy94YeJYPa0XuyS1Qs4JRx88/fRc
- tq4XMWG9h3GUII=
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220510141025.GA7290@mail.hallyn.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Sascha,
+On Tue, May 10, 2022 at 09:10:25AM -0500, Serge Hallyn wrote:
+> On Tue, May 10, 2022 at 12:25:25PM +0200, Christian Brauner wrote:
+> > On Mon, May 09, 2022 at 02:54:14PM -0500, Serge Hallyn wrote:
+> > > On Wed, Apr 20, 2022 at 10:06:08AM -0400, Stefan Berger wrote:
+> > > > From: Christian Brauner <brauner@kernel.org>
+> > > > 
+> > > > When securityfs creates a new file or directory via
+> > > > securityfs_create_dentry() it will take an additional reference on the
+> > > > newly created dentry after it has attached the new inode to the new
+> > > > dentry and added it to the hashqueues.
+> > > > If we contrast this with debugfs which has the same underlying logic as
+> > > > securityfs. It uses a similar pairing as securityfs. Where securityfs
+> > > > has the securityfs_create_dentry() and securityfs_remove() pairing,
+> > > > debugfs has the __debugfs_create_file() and debugfs_remove() pairing.
+> > > > 
+> > > > In contrast to securityfs, debugfs doesn't take an additional reference
+> > > > on the newly created dentry in __debugfs_create_file() which would need
+> > > > to be put in debugfs_remove().
+> > > > 
+> > > > The additional dget() isn't a problem per se. In the current
+> > > > implementation of securityfs each created dentry pins the filesystem via
+> > > 
+> > > Is 'via' an extra word here or is there a missing word?
+> > > 
+> > > I'll delay the rest of my response as the missing word may answer my
+> > > remaining question :)
+> > 
+> > It can be both. It should either be removed or it should be followed by
+> > "securityfs_create_dentry()". securityfs_create_dentry() takes two
+> > references one in lookup_one_len() and another one explicitly via
+> > dget(). The latter one isn't needed. Some of that has been covered in an
+> > earlier thread:
+> > https://lore.kernel.org/lkml/20220105101815.ldsm4s5yx7pmuiil@wittgenstein
+> 
+> Yes, I saw that two references were being taken.  And near as I can tell,
+> the second one was never being dropped.  So if you tell me that before this
+> patch the dentries are never freed, then I'm happy.  Otherwise, I'm
+> bothered the fact that no matching dput is being deleted in the code (to
+> match the extra dget being removed).  So where is the code where the final
+> dput was happening, and is it the d_delete() you're adding which is making
+> it so that that dput won't be called now?
 
-please drop this patch from all your stable-series queues....
-It shouldn't be backported.
+* So consider mounting securityfs _without this patch applied_:
 
-Thanks,
-Helge
+  mount -t securityfs /sfs
+  
+  and assume we only have a single user that creates a file "foo" via
+  
+  securityfs_create_file()
+  {
+  	lookup_one_len();	// first dget()
+  	dget();			// second dget()
+  }
+  
+  now assume that user at some point calls
+  
+  void securityfs_remove()
+  {
+  	if (d_is_dir(dentry))
+  		simple_rmdir(dir, dentry);	// first dput()
+  	else
+  		simple_unlink(dir, dentry);	// first dput()
+  	dput(dentry);				// second dput()
+  }
 
-On 5/10/22 17:43, Sasha Levin wrote:
-> From: Helge Deller <deller@gmx.de>
->
-> [ Upstream commit 6c800d7f55fcd78e17deae5ae4374d8e73482c13 ]
->
-> This reverts commit a9fe7fa7d874a536e0540469f314772c054a0323.
->
-> Leads to segfaults on 32bit kernel.
->
-> Signed-off-by: Helge Deller <deller@gmx.de>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->  arch/parisc/kernel/patch.c | 25 ++++++++++++++-----------
->  1 file changed, 14 insertions(+), 11 deletions(-)
->
-> diff --git a/arch/parisc/kernel/patch.c b/arch/parisc/kernel/patch.c
-> index e59574f65e64..80a0ab372802 100644
-> --- a/arch/parisc/kernel/patch.c
-> +++ b/arch/parisc/kernel/patch.c
-> @@ -40,7 +40,10 @@ static void __kprobes *patch_map(void *addr, int fixm=
-ap, unsigned long *flags,
->
->  	*need_unmap =3D 1;
->  	set_fixmap(fixmap, page_to_phys(page));
-> -	raw_spin_lock_irqsave(&patch_lock, *flags);
-> +	if (flags)
-> +		raw_spin_lock_irqsave(&patch_lock, *flags);
-> +	else
-> +		__acquire(&patch_lock);
->
->  	return (void *) (__fix_to_virt(fixmap) + (uintaddr & ~PAGE_MASK));
->  }
-> @@ -49,7 +52,10 @@ static void __kprobes patch_unmap(int fixmap, unsigne=
-d long *flags)
->  {
->  	clear_fixmap(fixmap);
->
-> -	raw_spin_unlock_irqrestore(&patch_lock, *flags);
-> +	if (flags)
-> +		raw_spin_unlock_irqrestore(&patch_lock, *flags);
-> +	else
-> +		__release(&patch_lock);
->  }
->
->  void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned in=
-t len)
-> @@ -61,9 +67,8 @@ void __kprobes __patch_text_multiple(void *addr, u32 *=
-insn, unsigned int len)
->  	int mapped;
->
->  	/* Make sure we don't have any aliases in cache */
-> -	flush_kernel_dcache_range_asm(start, end);
-> -	flush_kernel_icache_range_asm(start, end);
-> -	flush_tlb_kernel_range(start, end);
-> +	flush_kernel_vmap_range(addr, len);
-> +	flush_icache_range(start, end);
->
->  	p =3D fixmap =3D patch_map(addr, FIX_TEXT_POKE0, &flags, &mapped);
->
-> @@ -76,10 +81,8 @@ void __kprobes __patch_text_multiple(void *addr, u32 =
-*insn, unsigned int len)
->  			 * We're crossing a page boundary, so
->  			 * need to remap
->  			 */
-> -			flush_kernel_dcache_range_asm((unsigned long)fixmap,
-> -						      (unsigned long)p);
-> -			flush_tlb_kernel_range((unsigned long)fixmap,
-> -					       (unsigned long)p);
-> +			flush_kernel_vmap_range((void *)fixmap,
-> +						(p-fixmap) * sizeof(*p));
->  			if (mapped)
->  				patch_unmap(FIX_TEXT_POKE0, &flags);
->  			p =3D fixmap =3D patch_map(addr, FIX_TEXT_POKE0, &flags,
-> @@ -87,10 +90,10 @@ void __kprobes __patch_text_multiple(void *addr, u32=
- *insn, unsigned int len)
->  		}
->  	}
->
-> -	flush_kernel_dcache_range_asm((unsigned long)fixmap, (unsigned long)p)=
-;
-> -	flush_tlb_kernel_range((unsigned long)fixmap, (unsigned long)p);
-> +	flush_kernel_vmap_range((void *)fixmap, (p-fixmap) * sizeof(*p));
->  	if (mapped)
->  		patch_unmap(FIX_TEXT_POKE0, &flags);
-> +	flush_icache_range(start, end);
->  }
->
->  void __kprobes __patch_text(void *addr, u32 insn)
+* Now consider mounting securityfs _with this patch applied_:
 
+  securityfs_create_file()
+  {
+  	lookup_one_len();	// first dget()
+  }
+  
+  void securityfs_remove()
+  {
+  	dget();					// second dget() 
+  	if (d_is_dir(dentry))
+  		simple_rmdir(dir, dentry);	// first dput()
+  	else
+  		simple_unlink(dir, dentry);	// first dput()
+  	dput(dentry);				// second dput()
+  }
