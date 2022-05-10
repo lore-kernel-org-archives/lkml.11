@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B16C1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:25:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3122C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:26:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344298AbiEJO3y (ORCPT
+        id S1344169AbiEJO37 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:29:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46840 "EHLO
+        Tue, 10 May 2022 10:29:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245265AbiEJOCa (ORCPT
+        with ESMTP id S245161AbiEJOC3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:02:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 770F42DFF76;
-        Tue, 10 May 2022 06:40:23 -0700 (PDT)
+        Tue, 10 May 2022 10:02:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C87E52DFF6C;
+        Tue, 10 May 2022 06:40:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A2C9E615E9;
-        Tue, 10 May 2022 13:40:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D564C385C2;
-        Tue, 10 May 2022 13:40:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 294F4B81D7A;
+        Tue, 10 May 2022 13:40:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92960C385C2;
+        Tue, 10 May 2022 13:40:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652190022;
-        bh=v8RaXUtD6njGuFuuRQkVhVW728t3ISO9QZLNr80xESY=;
+        s=korg; t=1652190019;
+        bh=+CdKEBrJOZ14N3GaTYo8fVIQEL64bR5Zsspbwf4pWUE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nesNDICu8m3XRYnKah1euslSynhkqlo1d4U5p5LcjNgxOhYhYWGw2IEHAm3qnIRC2
-         SmZbcSDehKtoDC0UPTNNrS8JglrJf30ktFmW8V5PUQZXHFBid3BGp2wp5Dp0+aCa0B
-         chWBUQPpE2xr8IpYzDl+beB7yHXxVvSquKKUEBZU=
+        b=YU58wQ+TpkcuSpBBIy9s50BMYym3e0BKVM6s6TQkmyon0OFl2yPRgMyMzpIppD3Un
+         aSB8div0HppwMniOJu/Vg8+SCbVB5z+Dq6fUFF81K+qrpj2Fk5/CjYgumA5752LUc0
+         ozRRrn56kcagaGa9eI/gaR11amBSyu0z9wfWw+cI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.17 103/140] smsc911x: allow using IRQ0
-Date:   Tue, 10 May 2022 15:08:13 +0200
-Message-Id: <20220510130744.549849537@linuxfoundation.org>
+Subject: [PATCH 5.17 085/140] net: dsa: mt7530: add missing of_node_put() in mt7530_setup()
+Date:   Tue, 10 May 2022 15:07:55 +0200
+Message-Id: <20220510130744.041391285@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -49,42 +50,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Shtylyov <s.shtylyov@omp.ru>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-commit 5ef9b803a4af0f5e42012176889b40bb2a978b18 upstream.
+commit a9e9b091a1c14ecd8bd9d3214a62142a1786fe30 upstream.
 
-The AlphaProject AP-SH4A-3A/AP-SH4AD-0A SH boards use IRQ0 for their SMSC
-LAN911x Ethernet chip, so the networking on them must have been broken by
-commit 965b2aa78fbc ("net/smsc911x: fix irq resource allocation failure")
-which filtered out 0 as well as the negative error codes -- it was kinda
-correct at the time, as platform_get_irq() could return 0 on of_irq_get()
-failure and on the actual 0 in an IRQ resource.  This issue was fixed by
-me (back in 2016!), so we should be able to fix this driver to allow IRQ0
-usage again...
+Add of_node_put() if of_get_phy_mode() fails in mt7530_setup()
 
-When merging this to the stable kernels, make sure you also merge commit
-e330b9a6bb35 ("platform: don't return 0 from platform_get_irq[_byname]()
-on error") -- that's my fix to platform_get_irq() for the DT platforms...
-
-Fixes: 965b2aa78fbc ("net/smsc911x: fix irq resource allocation failure")
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Link: https://lore.kernel.org/r/656036e4-6387-38df-b8a7-6ba683b16e63@omp.ru
+Fixes: 0c65b2b90d13 ("net: of_get_phy_mode: Change API to solve int/unit warnings")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220428095317.538829-1-yangyingliang@huawei.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/smsc/smsc911x.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/mt7530.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/net/ethernet/smsc/smsc911x.c
-+++ b/drivers/net/ethernet/smsc/smsc911x.c
-@@ -2431,7 +2431,7 @@ static int smsc911x_drv_probe(struct pla
- 	if (irq == -EPROBE_DEFER) {
- 		retval = -EPROBE_DEFER;
- 		goto out_0;
--	} else if (irq <= 0) {
-+	} else if (irq < 0) {
- 		pr_warn("Could not allocate irq resource\n");
- 		retval = -ENODEV;
- 		goto out_0;
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -2224,6 +2224,7 @@ mt7530_setup(struct dsa_switch *ds)
+ 				ret = of_get_phy_mode(mac_np, &interface);
+ 				if (ret && ret != -ENODEV) {
+ 					of_node_put(mac_np);
++					of_node_put(phy_node);
+ 					return ret;
+ 				}
+ 				id = of_mdio_parse_addr(ds->dev, phy_node);
 
 
