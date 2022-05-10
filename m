@@ -2,221 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E691AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 17:43:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82BD7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 17:44:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346581AbiEJRrp (ORCPT
+        id S1348373AbiEJRsr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 13:47:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54452 "EHLO
+        Tue, 10 May 2022 13:48:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241938AbiEJRrm (ORCPT
+        with ESMTP id S241938AbiEJRso (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 13:47:42 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 478A6267C0C;
-        Tue, 10 May 2022 10:43:44 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id EA9DF1F8C6;
-        Tue, 10 May 2022 17:43:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1652204622; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        Tue, 10 May 2022 13:48:44 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C65B22C13FE
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 10:44:46 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1652204685;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=u1whn4lbU6iVVflTZcVGrO43VdILAmiKvJmX0VyooKo=;
-        b=MGKHbxCeHphlHKb4O8pw0mUgVlGBvE/udt9yYT5XSXjFAViZaUhM99PfoAdSQqPaGswXyF
-        Y5tmVVRjt3whErQQNDqDMNCmjEYAHz7dQPvG3ur4lGFo6+2ZZSaXikho387KG2m1BDY84b
-        aY1Pxop+HSelwIr3m8X26Ice7l9tYKI=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id A60C913AC1;
-        Tue, 10 May 2022 17:43:42 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id rf3CJk6kemLFIgAAMHmgww
-        (envelope-from <mkoutny@suse.com>); Tue, 10 May 2022 17:43:42 +0000
-Date:   Tue, 10 May 2022 19:43:41 +0200
-From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        David Vernet <void@manifault.com>, tj@kernel.org,
-        roman.gushchin@linux.dev, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, cgroups@vger.kernel.org, mhocko@kernel.org,
-        shakeelb@google.com, kernel-team@fb.com,
-        Richard Palethorpe <rpalethorpe@suse.com>,
-        Chris Down <chris@chrisdown.name>
-Subject: Re: [PATCH v2 2/5] cgroup: Account for memory_recursiveprot in
- test_memcg_low()
-Message-ID: <20220510174341.GC24172@blackbody.suse.cz>
-References: <20220423155619.3669555-1-void@manifault.com>
- <20220423155619.3669555-3-void@manifault.com>
- <20220427140928.GD9823@blackbody.suse.cz>
- <20220429010333.5rt2jwpiumnbuapf@dev0025.ash9.facebook.com>
- <20220429092620.GA23621@blackbody.suse.cz>
- <20220506164015.fsdsuv226nhllos5@dev0025.ash9.facebook.com>
- <Ynkum8DeJIAtGi9y@cmpxchg.org>
- <20220509174424.e43e695ffe0f7333c187fba8@linux-foundation.org>
+        bh=b/Hc0xBzi9qcoaDWgLQZwP9MQj6a0ovFYtpu2lUE0Gw=;
+        b=cS0Hlic5blpLSoLhRbBtJdl5r7NhbsODIbqoMKIhLPZ+kV7RuNf6ZdEBHbMPBK39iSnuyy
+        wO8Rxg++6CiQj3QEWJZLQc4C4TSlAmK1ctisxztbmh5SArIgHSoQs5ELWVts2Z1YJ54YaT
+        AEUneTp0oTeeN0sGIOaePILTXFUIJNWT5q8b3ZxXAvAJcKw3GvzfONrKHX4n7GNs3HFXWL
+        RMICnaQ8x4hZ8fTd1MNSK1FRf730XUgo1qo6tmEoYZd6k3mdHEEWnrA//MH4+BL4zGQkw1
+        VqYlQtzPv4ttp8o65d/7p3cWwaSWj/OFpeocMcnxu3GuNq856cgac8F6/1MiHQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1652204685;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=b/Hc0xBzi9qcoaDWgLQZwP9MQj6a0ovFYtpu2lUE0Gw=;
+        b=J3+PlA10UEeWYsIFweAxknRwtegIrA2o2Ut3PPPgLSNJLhK8R1oFxMDL4BfMcrbtKSNTtw
+        PGGLUXeO/uZqERCw==
+To:     Thomas Pfaff <tpfaff@pcs.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] tty: Remove pointless synchronize_irq() in
+ uart_port_shutdown()
+In-Reply-To: <4fe2d4a1-fc6a-c7fa-d884-5ebd01bebd3@pcs.com>
+References: <4fe2d4a1-fc6a-c7fa-d884-5ebd01bebd3@pcs.com>
+Date:   Tue, 10 May 2022 19:44:44 +0200
+Message-ID: <87czglp9ir.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220509174424.e43e695ffe0f7333c187fba8@linux-foundation.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello all.
+On Tue, May 10 2022 at 15:54, Thomas Pfaff wrote:
+> From: Thomas Pfaff <tpfaff@pcs.com>
+>
+> Calling synchronize_irq() after free_irq() is pointless, the context to
+> the irq is already lost.
+> It was noticed while creating the bugfix "genirq: Synchronize interrupt 
+> thread startup".
+>
+> Signed-off-by: Thomas Pfaff <tpfaff@pcs.com>
 
-On Mon, May 09, 2022 at 05:44:24PM -0700, Andrew Morton <akpm@linux-foundation.org> wrote:
-> So I think we're OK with [2/5] now.  Unless there be objections, I'll
-> be looking to get this series into mm-stable later this week.
-
-I'm sorry, I think the current form of the test reveals an unexpected
-behavior of reclaim and silencing the test is not the way to go.
-Although, I may be convinced that my understanding is wrong.
-
-
-On Mon, May 09, 2022 at 11:09:15AM -0400, Johannes Weiner <hannes@cmpxchg.org> wrote:
-> My understanding of the issue you're raising, Michal, is that
-> protected siblings start with current > low, then get reclaimed
-> slightly too much and end up with current < low. This results in a
-> tiny bit of float that then gets assigned to the low=0 sibling; 
-
-Up until here, we're on the same page.
-
-> when that sibling gets reclaimed regardless, it sees a low event.
-> Correct me if I missed a detail or nuance here.
-
-Here, I'd like to stress that the event itself is just a messenger (whom
-my original RFC patch attempted to get rid of). The problem is that if
-the sibling with recursive protection is active enough to claim it, it's
-effectively stolen from the passive sibling. See the comparison of
-'precious' vs 'victim' in [1].
-
-> But unused float going to siblings is intentional. This is documented
-> in point 3 in the comment above effective_protection(): if you use
-> less than you're legitimately claiming, the float goes to your
-> siblings.
-
-The problem is how the unused protection came to be (voluntarily not
-consumed vs reclaimed).
-
-> So the problem doesn't seem to be with low accounting and
-> event generation, but rather it's simply overreclaim.
-
-Exactly.
-
-> It's conceivable to make reclaim more precise and then tighten up the
-> test. But right now, David's patch looks correct to me.
-
-The obvious fix is at the end of this message, it resolves the case I
-posted earlier (with memory_recursiveprot), however, it "breaks"
-memory.events:low accounting inside recursive children, hence I'm not
-considering it finished. (I may elaborate on the breaking case if
-interested, I also need to look more into that myself).
-
-
-On Fri, May 06, 2022 at 09:40:15AM -0700, David Vernet <void@manifault.com> wrote:
-> If you look at how much memory A/B/E gets at the end of the reclaim,
-> it's still far less than 1MB (though should it be 0?).
-
-This selftest has two ±equal workloads in siblings, however, if their
-activity varies, it can end up even opposite (the example [1]).
-
-> This definitely sounds to me like a useful testcase to add, and I'm
-> happy to do so in a follow-on patch. If we added this, do you think
-> we need to keep the check for memory.low events for the memory.low ==
-> 0 child in the overcommit testcase?
-
-I think it's still useful, to check the behavior when inherited vs
-explicit siblings coexist under protected parent.
-Actually, the second case of all siblings having the inherited
-(implicit) protection is also interesting (it seems that's that I'm
-seeing in my tests with the attached patch).
-
-+Cc: Chris, who reasoned about the SWAP_CLUSTER_MAX rounding vs too high
-priority (too low numerically IIUC) [2].
-
-Michal
-
-[1] https://lore.kernel.org/r/20220325103118.GC2828@blackbody.suse.cz/
-[2] https://lore.kernel.org/all/20190128214213.GB15349@chrisdown.name/
-
---- 8< ---
-From e18caf7a5a1b0f39185fbdc11e4034def42cde88 Mon Sep 17 00:00:00 2001
-From: =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>
-Date: Tue, 10 May 2022 18:48:31 +0200
-Subject: [RFC PATCH] mm: memcg: Do not overreclaim SWAP_CLUSTER_MAX from
- protected memcg
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-
-This was observed with memcontrol selftest/new LTP test but can be also
-reproduced in simplified setup of two siblings:
-
-	`parent .low=50M
-	  ` s1	.low=50M  .current=50M+ε
-	  ` s2  .low=0M   .current=50M
-
-The expectation is that s2/memory.events:low will be zero under outer
-reclaimer since no protection should be given to cgroup s2 (even with
-memory_recursiveprot).
-
-However, this does not happen. The apparent reason is that when s1 is
-considered for (proportional) reclaim the scanned proportion is rounded
-up to SWAP_CLUSTER_MAX and slightly over-proportional amount is
-reclaimed. Consequently, when the effective low value of s2 is
-calculated, it observes unclaimed parent's protection from s1
-(ε-SWAP_CLUSTER_MAX in theory) and effectively appropriates it.
-
-What is worse, when the sibling s2 has more (memory) greedy workload, it
-can repeatedly "steal" the protection from s1 and the distribution ends
-up with s1 mostly reclaimed despite explicit prioritization over s2.
-
-Simply fix it by _not_ rounding up to SWAP_CLUSTER_MAX. This would have
-saved us ~5 levels of reclaim priority. I.e. we may be reclaiming from
-protected memcgs at relatively low priority _without_ counting any
-memory.events:low (due to overreclaim). Now, if the moderated scan is
-not enough, we must bring priority to zero to open protected reserves.
-And that's correct, we want to be explicit when reclaiming those.
-
-
-Fixes: 8a931f801340 ("mm: memcontrol: recursive memory.low protection")
-Fixes: 9783aa9917f8 ("mm, memcg: proportional memory.{low,min} reclaim")
-Reported-by: Richard Palethorpe <rpalethorpe@suse.com>
-Link: https://lore.kernel.org/all/20220321101429.3703-1-rpalethorpe@suse.com/
-Signed-off-by: Michal Koutný <mkoutny@suse.com>
----
- mm/vmscan.c | 7 -------
- 1 file changed, 7 deletions(-)
-
-diff --git a/mm/vmscan.c b/mm/vmscan.c
-index 1678802e03e7..cd760842b9ad 100644
---- a/mm/vmscan.c
-+++ b/mm/vmscan.c
-@@ -2798,13 +2798,6 @@ static void get_scan_count(struct lruvec *lruvec, struct scan_control *sc,
- 
- 			scan = lruvec_size - lruvec_size * protection /
- 				(cgroup_size + 1);
--
--			/*
--			 * Minimally target SWAP_CLUSTER_MAX pages to keep
--			 * reclaim moving forwards, avoiding decrementing
--			 * sc->priority further than desirable.
--			 */
--			scan = max(scan, SWAP_CLUSTER_MAX);
- 		} else {
- 			scan = lruvec_size;
- 		}
--- 
-2.35.3
-
-
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
