@@ -2,192 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56358C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 06:57:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9AD9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 07:31:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237459AbiEJHBC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 03:01:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49300 "EHLO
+        id S237444AbiEJHeh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 03:34:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237417AbiEJHAr (ORCPT
+        with ESMTP id S239436AbiEJHN5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 03:00:47 -0400
-Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 532787485B;
-        Mon,  9 May 2022 23:56:48 -0700 (PDT)
-Received: from mail-pj1-f46.google.com (mail-pj1-f46.google.com [209.85.216.46]) (authenticated)
-        by conssluserg-03.nifty.com with ESMTP id 24A6uWPt006909;
-        Tue, 10 May 2022 15:56:33 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 24A6uWPt006909
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1652165793;
-        bh=fEURvXR77OoRUwAby4ssOCC2y+9cYzZS2BTBBdHY5s4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=wCwaSRXELTeXaq2guIuReTuZg7U66E7IGNEBvRfkfezGlyZXsSMCiDdUr9QEJxarS
-         XrfMKl2ilUNX5U21uZSXL6zLwnIp0vZsPMbwwzeaW+huMjJN0lDJ6x9fPRe4b3ioLX
-         d1CWYofvXhCGeTNOH4b2zCthanuoTTMVhHVGhU/G+RblgSvtBBoQY1q8W0F5FwtyK8
-         pFbA+pcE2bpadKfX8PQAdO+AHk9AEs+Qvcqfz+EpBxXnZR+DExiobCnjj/rrTS0tnx
-         CZPaFmdEMVXzwdp/7Jw3Kyv3btpFQ7MhJ18jWwmea1L+fCMHlCb2QwIfpTWtpSAEz9
-         0NOjUjI1wdR0w==
-X-Nifty-SrcIP: [209.85.216.46]
-Received: by mail-pj1-f46.google.com with SMTP id iq10so15115325pjb.0;
-        Mon, 09 May 2022 23:56:33 -0700 (PDT)
-X-Gm-Message-State: AOAM530Yx4NqOCrZWxlmZ6whAaURMPWAefNzWF9V/GNdyNORuj3wUXlF
-        /LFU6ldwJ4z2CmT+9xRoarpYmzRcrA+ynNgI9jQ=
-X-Google-Smtp-Source: ABdhPJyEgi0eqH+b8oqMunpHr855g62eqCOt9y9rnuZ3PqXxdNPec+4B1Ab1EtAdW8GXjXd92AJ/4rFTNMbUFO627GA=
-X-Received: by 2002:a17:90a:e7cd:b0:1dc:74eb:7526 with SMTP id
- kb13-20020a17090ae7cd00b001dc74eb7526mr21753943pjb.144.1652165792292; Mon, 09
- May 2022 23:56:32 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220508190631.2386038-1-masahiroy@kernel.org>
- <CAK7LNAQtedww_RiemfTV7Ls=M01iKJhY14G3TiuAg=C3bvJjww@mail.gmail.com> <YnmSCNDBlMMJCbjj@dev-arch.thelio-3990X>
-In-Reply-To: <YnmSCNDBlMMJCbjj@dev-arch.thelio-3990X>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Tue, 10 May 2022 15:55:21 +0900
-X-Gmail-Original-Message-ID: <CAK7LNATkm+GzqNLgpbh4F+M=U8LU48p2NH9MyqeO6uA_KYJFaQ@mail.gmail.com>
-Message-ID: <CAK7LNATkm+GzqNLgpbh4F+M=U8LU48p2NH9MyqeO6uA_KYJFaQ@mail.gmail.com>
-Subject: Re: [PATCH v4 00/14] kbuild: yet another series of cleanups (modpost,
- LTO, MODULE_REL_CRCS, export.h)
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nicolas Schier <nicolas@fjasle.eu>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-modules <linux-modules@vger.kernel.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Sami Tolvanen <samitolvanen@google.com>
+        Tue, 10 May 2022 03:13:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3A1642AC6FC
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 00:09:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652166598;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=znTslfdmFvdK3fxVyAt5nB+yfBihwlJfOKZNpeLAkaM=;
+        b=LLjq1Hf2eiiYb/iPsFf6ljr3J5N/43oFEXS8XhfiNJ8IvS678lWYCIBWn0nfjmogdPAzs4
+        fqp3EjvSL6t4LTztzaGi6RA5j6FuCVc0qZ5CJMqlUmO+ogWeNqtePWitI4mm3TbbQ4gqbS
+        yO2Sol5kZtvf7kq+zhA/A1L4wnKMHjM=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-654-wwdszn9eMhSYCdfuBbqqvQ-1; Tue, 10 May 2022 03:09:57 -0400
+X-MC-Unique: wwdszn9eMhSYCdfuBbqqvQ-1
+Received: by mail-wm1-f71.google.com with SMTP id v124-20020a1cac82000000b003948b870a8dso849980wme.2
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 00:09:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=znTslfdmFvdK3fxVyAt5nB+yfBihwlJfOKZNpeLAkaM=;
+        b=cJjTKi06mjkT9cRZE9hX1RejpRj9fxu6nobq+CWLA9dOfJun0Yf+OAyZpA9WqKWD2x
+         eusC/vQohYeOHSEifzmj0D9g5pt3rUB925tWy1cLpZ4LDlFFfQnO5ldCOdXrNj1Zawkm
+         TUQ+lzGfC/otW6iyXl4cCYBuMSaB4nYwoRc/vHeJSo7KFofYDTRFWGzGl7v6qOr3IwVc
+         IE1JTyQ3OLJgpQNn9EbAivK+Zq4bx4hkEBFIkYRfq2t+TRNdWqx0CVbbEBWJ49tSRMJc
+         hC6khFERf8xMDSF7r0r+drscs+kLDUq8bfzrVQ+5/Ow5Btsop31ZBZmTWKBITLJ68er6
+         10Kg==
+X-Gm-Message-State: AOAM5332gOQlN+W0skh1SOJ9v2ldkKNQb06RFMRiByrEslA+eJhsjscA
+        nBV2ptcviRXxma+Jtx887s7xvo1EWYaBeb85caodxHtp7fBAm3+MMHUyf5xV5FtlNyWJ+NGbVff
+        NBJcET7PiAuj2jFihifw+exia
+X-Received: by 2002:a05:600c:4f8f:b0:394:85c3:cf9 with SMTP id n15-20020a05600c4f8f00b0039485c30cf9mr13602836wmq.125.1652166595703;
+        Tue, 10 May 2022 00:09:55 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzBNeLQtsWHQ6Ur1dLDNXNzr8t3qbTWrEf7RLMNxCLHn50u1qdG8vUEnpZmbA2YPRNSHQpTxA==
+X-Received: by 2002:a05:600c:4f8f:b0:394:85c3:cf9 with SMTP id n15-20020a05600c4f8f00b0039485c30cf9mr13602816wmq.125.1652166595305;
+        Tue, 10 May 2022 00:09:55 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-113-89.dyn.eolo.it. [146.241.113.89])
+        by smtp.gmail.com with ESMTPSA id j23-20020a05600c1c1700b003942a244f40sm1659279wms.25.2022.05.10.00.09.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 00:09:54 -0700 (PDT)
+Message-ID: <0b66ddcc8428231632e7e1050045b2c282dc92d7.camel@redhat.com>
+Subject: Re: [PATCH net v2] net: macsec: retrieve the XPN attributes before
+ offloading
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Carlos Fernandez <carlos.escuin@gmail.com>,
+        carlos.fernandez@technica-engineering.de, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Tue, 10 May 2022 09:09:53 +0200
+In-Reply-To: <20220506105540.9868-1-carlos.fernandez@technica-engineering.de>
+References: <20220506105540.9868-1-carlos.fernandez@technica-engineering.de>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 7:13 AM Nathan Chancellor <nathan@kernel.org> wrote:
->
-> On Mon, May 09, 2022 at 01:24:33PM +0900, Masahiro Yamada wrote:
-> > On Mon, May 9, 2022 at 4:09 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
-> > >
-> > > This is the third batch of cleanups in this development cycle.
-> > >
-> > > Major changes in v4:
-> > >  - Move static EXPORT_SYMBOL check to a script
-> > >  - Some refactoring
-> > >
-> > > Major changes in v3:
-> > >
-> > >  - Generate symbol CRCs as C code, and remove CONFIG_MODULE_REL_CRCS.
-> > >
-> > > Major changes in v2:
-> > >
-> > >  - V1 did not work with CONFIG_MODULE_REL_CRCS.
-> > >    I fixed this for v2.
-> > >
-> > >  - Reflect some review comments in v1
-> > >
-> > >  - Refactor the code more
-> > >
-> > >  - Avoid too long argument error
-> >
-> > This series is available at
-> > git://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git
-> > lto-cleanup-v4
->
-> Hi Masahiro,
->
-> I checked this out and went to run it through my QEMU tests but I see
-> two new errors.
->
-> Failure #1:
->
-> In file included from scripts/mod/section-check.c:3:
-> scripts/mod/modpost.h:15:10: fatal error: 'elfconfig.h' file not found
-> #include "elfconfig.h"
->          ^~~~~~~~~~~~~
-> 1 error generated.
->
-> I was able to get past that with
->
-> diff --git a/scripts/mod/Makefile b/scripts/mod/Makefile
-> index ca739c6c68a1..c33b83bfbcad 100644
-> --- a/scripts/mod/Makefile
-> +++ b/scripts/mod/Makefile
-> @@ -16,7 +16,7 @@ targets += $(devicetable-offsets-file) devicetable-offsets.s
->
->  # dependencies on generated files need to be listed explicitly
->
-> -$(obj)/modpost.o $(obj)/file2alias.o $(obj)/sumversion.o: $(obj)/elfconfig.h
-> +$(obj)/modpost.o $(obj)/file2alias.o $(obj)/sumversion.o $(obj)/section-check.o: $(obj)/elfconfig.h
->  $(obj)/file2alias.o: $(obj)/$(devicetable-offsets-file)
->
+Hello,
 
-Thanks for testing.
+On Fri, 2022-05-06 at 12:55 +0200, Carlos Fernandez wrote:
+> When MACsec offloading is used with XPN, before mdo_add_rxsa
+> and mdo_add_txsa functions are called, the key salt is not
+> copied to the macsec context struct. Offloaded phys will need
+> this data when performing offloading.
+> 
+> Fix by copying salt and id to context struct before calling the
+> offloading functions.
+> 
+> Fixes: 48ef50fa866a ("macsec: Netlink support of XPN cipher suites")
+> 
+> Signed-off-by: Carlos Fernandez <carlos.fernandez@technica-engineering.de>
 
+I'm sorry for nit-picking, but you must avoid empty lines between the
+the 'Fixes' and the 'Signed-off-by' tags (or any other tag).
 
-I will slightly refactor the code as follows.
+Additionnaly you should include a summary of the changes WRT the
+previous patch version, see e.g. commit cec16052d5a7.
 
+The patch contents looks good, but it's better if you address the
+above, thanks!
 
+Paolo
 
-
-@@ -16,7 +16,7 @@ targets += $(devicetable-offsets-file) devicetable-offsets.s
-
- # dependencies on generated files need to be listed explicitly
-
--$(obj)/modpost.o $(obj)/file2alias.o $(obj)/sumversion.o: $(obj)/elfconfig.h
-+$(addprefix $(obj)/, $(modpost-objs)): $(obj)/elfconfig.h
-
- $(obj)/file2alias.o: $(obj)/$(devicetable-offsets-file)
-
- quiet_cmd_elfconfig = MKELF   $@
-
-
-
-
-
-
-
-
->  quiet_cmd_elfconfig = MKELF   $@
->
-> Failure #2:
->
->   GEN     .version
->   CHK     include/generated/compile.h
->   GEN     .tmp_initcalls.lds
->   LTO     vmlinux.o
->   OBJTOOL vmlinux.o
->   MODPOST vmlinux.symvers
->   MODINFO modules.builtin.modinfo
->   GEN     modules.builtin
->   LD      .tmp_vmlinux.btf
-> ld.lld: error: cannot open .vmlinux.export.o: No such file or directory
->   BTF     .btf.vmlinux.bin.o
-> pahole: .tmp_vmlinux.btf: No such file or directory
->   CC      .vmlinux.export.c
->   LD      .tmp_vmlinux.kallsyms1
-> ld.lld: error: .btf.vmlinux.bin.o: unknown file type
-> make[1]: *** [Makefile:1159: vmlinux] Error 1
->
-> I was not really able to see what is going wrong here. Attached is the
-> configuration that I ran into this with. If you need any other
-> information, please let me know!
-
-Ah, OK.
-This is because .vmlinux.export.o is compiled after gen_btf.
-
-I will swap the order in v5.
-
-
-
-
-
-> Cheers,
-> Nathan
-
-
-
---
-Best Regards
-Masahiro Yamada
