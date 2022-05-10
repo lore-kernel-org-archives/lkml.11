@@ -2,45 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 670ACC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:45:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89FB2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:45:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346353AbiEJPtM (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:49:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59524 "EHLO
+        id S237218AbiEJPtQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 11:49:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346175AbiEJPr7 (ORCPT
+        with ESMTP id S1346278AbiEJPsP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:47:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0201E27BC5B;
-        Tue, 10 May 2022 08:43:53 -0700 (PDT)
+        Tue, 10 May 2022 11:48:15 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDBFDB4;
+        Tue, 10 May 2022 08:44:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 64A34614C0;
-        Tue, 10 May 2022 15:43:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFFC4C385C2;
-        Tue, 10 May 2022 15:43:51 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 527ACCE1F3A;
+        Tue, 10 May 2022 15:44:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AD77C385CC;
+        Tue, 10 May 2022 15:44:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652197432;
-        bh=z1xGkviBQ2FOGy3TPlU9X8IBjkMBTFmQhrxx6TChBBM=;
+        s=k20201202; t=1652197453;
+        bh=U2F4MNu14K9ar6PkUlBK9hCvtcnVPeCtfUn2rI1S2SQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fvq6lj3aITJ/bdqJLFJPeAf0VghjPjujvfcBZcDSMN1wpQpEm8U18zkGiFiOwfD4d
-         bTvdinsimeb0mlhmKMAY+ZRN60zqn2NaQXJVmbyjHDfUO38ggan4WLHBufKXnmffQL
-         NBxFYK87qseHJCAm4QPcSwOkqpYMWemu+mYxACq7ruWd6vswOblNB0tl13gdeUpE+3
-         eiN/zPsUmSeg13Gb7+VEgTYHntRsSukpC/T4Jh0J7gWhKa3RIZ8euStFHBfNNwNGJE
-         S9GFLcZqlxuJb+AdkznBoiAFf9Yxu+ly6QlD8PEcPN60D99VqsmDzP0XtHMsWPrAeK
-         z8whzuVuMcgzw==
+        b=bTthjueGUx1BW3Z/OefKQ6dj7rEpLicsqwJS2Ai7lngPTNpHZyc7l6/pwix5CL7/n
+         dDefVdEW+BSjt9+e+yeVC619FnLqLRBA1LAuXkguxcXiu39yh48H/dYP9wqVRRA/Fu
+         J1KmQLC/XKws+J8RpHpqvSjdG/LYA62CHwg2l55gDWY4raV/E7cZgq2FTEPNtxOFM4
+         bgPPZMX8wOmCySnUG06lpa49FLKV/aZEMbDijt+Fk7YtY4vFfYK+VlZ8Wd5kkEosxq
+         GR0wUDxmU26GF3c5MeGZhJFPpzHPHlAWYCbSW4zyTdXPROm6t63eoV7ZbATZhmhKwm
+         LrisrOf9kkW9A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mark Brown <broonie@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        pierre-louis.bossart@linux.intel.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.17 05/21] ASoC: max98090: Reject invalid values in custom control put()
-Date:   Tue, 10 May 2022 11:43:24 -0400
-Message-Id: <20220510154340.153400-5-sashal@kernel.org>
+Cc:     Willy Tarreau <w@1wt.eu>, "Jason A . Donenfeld" <Jason@zx2c4.com>,
+        Moshe Kol <moshe.kol@mail.huji.ac.il>,
+        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
+        Amit Klein <aksecurity@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 14/21] tcp: use different parts of the port_offset for index and offset
+Date:   Tue, 10 May 2022 11:43:33 -0400
+Message-Id: <20220510154340.153400-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220510154340.153400-1-sashal@kernel.org>
 References: <20220510154340.153400-1-sashal@kernel.org>
@@ -52,38 +57,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Willy Tarreau <w@1wt.eu>
 
-[ Upstream commit 2fbe467bcbfc760a08f08475eea6bbd4c2874319 ]
+[ Upstream commit 9e9b70ae923baf2b5e8a0ea4fd0c8451801ac526 ]
 
-The max98090 driver has a custom put function for some controls which can
-only be updated in certain circumstances which makes no effort to validate
-that input is suitable for the control, allowing out of spec values to be
-written to the hardware and presented to userspace. Fix this by returning
-an error when invalid values are written.
+Amit Klein suggests that we use different parts of port_offset for the
+table's index and the port offset so that there is no direct relation
+between them.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20220420193454.2647908-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Cc: Jason A. Donenfeld <Jason@zx2c4.com>
+Cc: Moshe Kol <moshe.kol@mail.huji.ac.il>
+Cc: Yossi Gilad <yossi.gilad@mail.huji.ac.il>
+Cc: Amit Klein <aksecurity@gmail.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/max98090.c | 3 +++
- 1 file changed, 3 insertions(+)
+ net/ipv4/inet_hashtables.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/max98090.c b/sound/soc/codecs/max98090.c
-index b45ec35cd63c..6d9261346842 100644
---- a/sound/soc/codecs/max98090.c
-+++ b/sound/soc/codecs/max98090.c
-@@ -413,6 +413,9 @@ static int max98090_put_enab_tlv(struct snd_kcontrol *kcontrol,
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index 9d24d9319f3d..29c701cd8312 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -777,7 +777,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+ 	net_get_random_once(table_perturb, sizeof(table_perturb));
+ 	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
  
- 	val = (val >> mc->shift) & mask;
+-	offset = READ_ONCE(table_perturb[index]) + port_offset;
++	offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32);
+ 	offset %= remaining;
  
-+	if (sel < 0 || sel > mc->max)
-+		return -EINVAL;
-+
- 	*select = sel;
- 
- 	/* Setting a volume is only valid if it is already On */
+ 	/* In first pass we try ports of @low parity.
 -- 
 2.35.1
 
