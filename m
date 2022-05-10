@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3461FC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56628C41535
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:58:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347455AbiEJQBn (ORCPT
+        id S1347575AbiEJQBt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 12:01:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52140 "EHLO
+        Tue, 10 May 2022 12:01:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346208AbiEJPwQ (ORCPT
+        with ESMTP id S1347267AbiEJPwN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:52:16 -0400
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D1F42AE1B
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:48:18 -0700 (PDT)
-Received: by mail-qk1-x72c.google.com with SMTP id m1so6260426qkn.10
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:48:18 -0700 (PDT)
+        Tue, 10 May 2022 11:52:13 -0400
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3D8B27FE4;
+        Tue, 10 May 2022 08:48:15 -0700 (PDT)
+Received: by mail-qt1-x82b.google.com with SMTP id fu47so13827619qtb.5;
+        Tue, 10 May 2022 08:48:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ya/vdwdChlS+tAL1BwfCVBl0QMpJDdlIuc7UFyY3mko=;
-        b=TlCC1FHeS9Vp7sRgrVJU6EDQc+dQs1Lvm3qZXexX4iAcPaDkDWQ4a3FtR2FSWjCDIm
-         5YVZRmJaG/Nv41leZxxgqULfaZjhMneVrYRPDAkl2sQdsbEftNGM3AIaROuL5Wdafn4I
-         WZ9o/4T5VzWixRbR4gMP2ZMrm82bLeKSpwEzYh5OZl3AqH1LBA9Ou/BSEu6wvNfNicV4
-         4AOy9kIJ0/chNSK9noA79+b8sn4qeKt9zB2fXS/yGVQbG5SwYaIGpIjhqL75kqKtCQmB
-         nOt/qBhGRKoO7S+PwiR4VDign1xYc5MjlGOGQuYnyRdLFh1ReKHE+wcJbHEVRHZGAJod
-         +YXg==
+        bh=Yb/F6YFHx8jMmT8NzFo+iYOEgGU08YViXeElbI3tjgc=;
+        b=MMnXS3xA1tmydR2qCDMamehnHI5FTZPQnT0YdSBT4isID4m9dejiQqAVaASciKXh2t
+         uNvjLP9M1SpNR4L9suFWs2GB3zj0kW6tIw+HGOGD0qgwx94I6AWsORwzqjwEJ0Yw8Lon
+         SHAjLcmqVRiNW8qsl5AfmJNSQJxIMdeX/5OhcZCWobvLe1G4TOlSiS1f4gQUkC3AyewE
+         s/5zKTm6e85HXpPxzZGWWHF7kuC8kNjOOFMOLzuI6valozkPvbjyLJR/echRLonbSXes
+         Vef44tpvYg2wXOOhFuE8RU0X4TxNWG/udFq3Emz7Cl/FRJe4tXgux0zhuZj3kBgh3jZD
+         9N3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ya/vdwdChlS+tAL1BwfCVBl0QMpJDdlIuc7UFyY3mko=;
-        b=KCtnbeOpSoFJYQXP3Ph/nkm+mU/kbhLPuGsXXHFk6ZMaerJ65nZHfXv+GQoTqi+RKj
-         g8a88uXv5pSWbWlu5XydTkZPfrjEE8DGgrnfpTHL+N1PcX8YKnl65JhLx5GqCppoajQj
-         Fbe0pkmhy7EgzAXcYS4hC/Ra+aVdxE6CECCGypMWe3ojzqeStKeUTxvQNhndnn4DIDtV
-         +omGNF92SE23YZSmAxWv002mKvQ0qkCBYDckxblIpL05CeCCFzXsP3KiNs0y07ulagVS
-         nlDovqMEjltToDRG7x2C05hOfe7c2P1OF818V2f9ai3XwPALv7ECMxhkjpiSXIcaXeIM
-         oZ7g==
-X-Gm-Message-State: AOAM5323TMjoe7s5uKFOQoA/Oe32s+U4wrY8Vk2I3IFbvODboHKHMuVV
-        ajBMS6fsLHxRX0Viely1qdk=
-X-Google-Smtp-Source: ABdhPJzj4In6E2K7mgcFdSROB32xJL8d3sEtetPOgoESLE4arPsqpmo93DwWFWTuroO0mHGo22+zOg==
-X-Received: by 2002:a05:620a:1036:b0:69f:d57d:8136 with SMTP id a22-20020a05620a103600b0069fd57d8136mr15808970qkk.671.1652197697353;
-        Tue, 10 May 2022 08:48:17 -0700 (PDT)
+        bh=Yb/F6YFHx8jMmT8NzFo+iYOEgGU08YViXeElbI3tjgc=;
+        b=76KRrIAfArRUp4oHOH+q8Q1eCGeF4C0taImlIGbukwMIGyjKwxuWpkklPgrT/kuhc5
+         yJPlwBiUUp3BfXD23HIutJPzok2gMTbXuAj4TuMCfatte54JKnaTs071rCvslAIwfiXs
+         GjRWKXwZFo9LmnbeHU8EjetkITZw7XCvp42ZLbB3JLqyzZzL1+DB9cnrgumfFfx3XEFu
+         81YqUvKwGGgrNZyCzo6JE1EVaALx3h+bAiMXJl4CHM1eEt9COp5aKE8QD4F5RSCIpWXf
+         x+OskF7rVUhA5bp/XIPd8YDkylrloaraa3kfMW70URozjbjLZN88Y0WDdn4hP1GoV2s2
+         ZjHQ==
+X-Gm-Message-State: AOAM530b7Dwz3XLIq9adoT9BAqCT1884OEYOjet/Y45Lk+w3lWs23hnH
+        poNcC8IgoVBlCZE81XbzsAg=
+X-Google-Smtp-Source: ABdhPJwV70hoAcYnRzaFrPNRGD//htdKIyrvhMG9B5O5rgnhDgAUf7COuLmQzmUbet3XQOUvrJCg2A==
+X-Received: by 2002:a05:622a:93:b0:2f3:c4ef:6c71 with SMTP id o19-20020a05622a009300b002f3c4ef6c71mr19568082qtw.505.1652197694757;
+        Tue, 10 May 2022 08:48:14 -0700 (PDT)
 Received: from localhost ([98.242.65.84])
-        by smtp.gmail.com with ESMTPSA id f3-20020ac84643000000b002f39b99f671sm9418292qto.11.2022.05.10.08.48.16
+        by smtp.gmail.com with ESMTPSA id c2-20020ac80542000000b002f39b99f67bsm9312717qth.21.2022.05.10.08.48.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 08:48:17 -0700 (PDT)
+        Tue, 10 May 2022 08:48:14 -0700 (PDT)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         David Laight <David.Laight@ACULAB.COM>,
@@ -62,18 +62,17 @@ To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         Matti Vaittinen <Matti.Vaittinen@fi.rohmeurope.com>,
         linux-kernel@vger.kernel.org
-Cc:     Yury Norov <yury.norov@gmail.com>, Ben Segall <bsegall@google.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>
-Subject: [PATCH 17/22] sched/core: fix opencoded cpumask_any_but()
-Date:   Tue, 10 May 2022 08:47:45 -0700
-Message-Id: <20220510154750.212913-18-yury.norov@gmail.com>
+Cc:     Yury Norov <yury.norov@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: [PATCH 15/22] net/mlx5: use cpumask_weight_gt() in irq_pool_request_irq()
+Date:   Tue, 10 May 2022 08:47:43 -0700
+Message-Id: <20220510154750.212913-16-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220510154750.212913-1-yury.norov@gmail.com>
 References: <20220510154750.212913-1-yury.norov@gmail.com>
@@ -83,95 +82,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-sched_core_cpu_starting() and sched_core_cpu_deactivate() implement
-opencoded cpumask_any_but(). Fix it.
+cpumask_weight_gt() is more efficient because it may stop traversing
+cpumask depending on condition.
 
-CC: Ben Segall <bsegall@google.com>
-CC: Daniel Bristot de Oliveira <bristot@redhat.com>
-CC: Dietmar Eggemann <dietmar.eggemann@arm.com>
-CC: Ingo Molnar <mingo@redhat.com>
-CC: Juri Lelli <juri.lelli@redhat.com>
-CC: Mel Gorman <mgorman@suse.de>
-CC: Peter Zijlstra <peterz@infradead.org>
-CC: Steven Rostedt <rostedt@goodmis.org>
-CC: Valentin Schneider <vschneid@redhat.com>
-CC: Vincent Guittot <vincent.guittot@linaro.org>
+CC: David S. Miller <davem@davemloft.net>
+CC: Eric Dumazet <edumazet@google.com>
+CC: Jakub Kicinski <kuba@kernel.org>
+CC: Leon Romanovsky <leon@kernel.org>
+CC: Paolo Abeni <pabeni@redhat.com>
+CC: Saeed Mahameed <saeedm@nvidia.com>
+CC: netdev@vger.kernel.org
+CC: linux-rdma@vger.kernel.org
 CC: linux-kernel@vger.kernel.org
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- kernel/sched/core.c | 33 +++++++++++++--------------------
- 1 file changed, 13 insertions(+), 20 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/irq_affinity.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index f5ebc392493d..9700001948d0 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -6125,7 +6125,7 @@ static void queue_core_balance(struct rq *rq)
- static void sched_core_cpu_starting(unsigned int cpu)
- {
- 	const struct cpumask *smt_mask = cpu_smt_mask(cpu);
--	struct rq *rq = cpu_rq(cpu), *core_rq = NULL;
-+	struct rq *rq = cpu_rq(cpu), *core_rq;
- 	unsigned long flags;
- 	int t;
- 
-@@ -6138,19 +6138,16 @@ static void sched_core_cpu_starting(unsigned int cpu)
- 		goto unlock;
- 
- 	/* find the leader */
--	for_each_cpu(t, smt_mask) {
--		if (t == cpu)
--			continue;
--		rq = cpu_rq(t);
--		if (rq->core == rq) {
--			core_rq = rq;
--			break;
--		}
--	}
-+	t = cpumask_any_but(smt_mask, cpu);
-+	if (t >= nr_cpu_ids)
-+		goto unlock;
- 
--	if (WARN_ON_ONCE(!core_rq)) /* whoopsie */
-+	rq = cpu_rq(t);
-+	if (WARN_ON_ONCE(rq->core != rq)) /* whoopsie */
- 		goto unlock;
- 
-+	core_rq = rq;
-+
- 	/* install and validate core_rq */
- 	for_each_cpu(t, smt_mask) {
- 		rq = cpu_rq(t);
-@@ -6168,7 +6165,7 @@ static void sched_core_cpu_starting(unsigned int cpu)
- static void sched_core_cpu_deactivate(unsigned int cpu)
- {
- 	const struct cpumask *smt_mask = cpu_smt_mask(cpu);
--	struct rq *rq = cpu_rq(cpu), *core_rq = NULL;
-+	struct rq *rq = cpu_rq(cpu), *core_rq;
- 	unsigned long flags;
- 	int t;
- 
-@@ -6185,16 +6182,12 @@ static void sched_core_cpu_deactivate(unsigned int cpu)
- 		goto unlock;
- 
- 	/* find a new leader */
--	for_each_cpu(t, smt_mask) {
--		if (t == cpu)
--			continue;
--		core_rq = cpu_rq(t);
--		break;
--	}
--
--	if (WARN_ON_ONCE(!core_rq)) /* impossible */
-+	t = cpumask_any_but(smt_mask, cpu);
-+	if (t >= nr_cpu_ids)
- 		goto unlock;
- 
-+	core_rq = cpu_rq(t);
-+
- 	/* copy the shared state to the new leader */
- 	core_rq->core_task_seq             = rq->core_task_seq;
- 	core_rq->core_pick_seq             = rq->core_pick_seq;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/irq_affinity.c b/drivers/net/ethernet/mellanox/mlx5/core/irq_affinity.c
+index 380a208ab137..d57f804ee934 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/irq_affinity.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/irq_affinity.c
+@@ -58,7 +58,7 @@ irq_pool_request_irq(struct mlx5_irq_pool *pool, const struct cpumask *req_mask)
+ 	if (err)
+ 		return ERR_PTR(err);
+ 	if (pool->irqs_per_cpu) {
+-		if (cpumask_weight(req_mask) > 1)
++		if (cpumask_weight_gt(req_mask, 1))
+ 			/* if req_mask contain more then one CPU, set the least loadad CPU
+ 			 * of req_mask
+ 			 */
 -- 
 2.32.0
 
