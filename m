@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E186C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:41:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CCECC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:41:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244170AbiEJNpW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:45:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48820 "EHLO
+        id S244203AbiEJNpc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:45:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243781AbiEJNcO (ORCPT
+        with ESMTP id S243818AbiEJNcQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:32:14 -0400
+        Tue, 10 May 2022 09:32:16 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50B652CF2A5;
-        Tue, 10 May 2022 06:22:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 786662D2E02;
+        Tue, 10 May 2022 06:22:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1151DB81DA6;
-        Tue, 10 May 2022 13:22:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 677F6C385A6;
-        Tue, 10 May 2022 13:22:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3459DB81CF8;
+        Tue, 10 May 2022 13:22:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 811ACC385A6;
+        Tue, 10 May 2022 13:22:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188925;
-        bh=tUBIoF9N6X0NiJbBCmDtbiWMfzpX2+Dhrt4Z/jqBemM=;
+        s=korg; t=1652188942;
+        bh=w7U8svRk1JfUkchQaCDCtA9dK4VSObB14lfzw5EPepk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uFXi+tnl5mOV/uP2yeRlbQkNL3HvIK2c0ilH/W0uuB7c8bx5dqGEvdPyYGZrg7APc
-         dVKe+zQuLdmXbuPrnXNaYYHlQyQXJ2dH/rMM+CVJmGAhOk9VZmhQiWD+bg7guBDqN/
-         2ffXZMpmtb1BNmtvT+tVmOiatHuPHHrBTfjLu/Mw=
+        b=FetLhAt+5FU6GxEUir/4QYhVZvPTMh1EGErZF9TDWJUwcatqdA/88RGqLCzOUNITN
+         UL3Ouoj5QLCkMjCK3SwS43ee+S8Xlj4QC2S1GGo94TzFcoTAIphOplb8J1O55LpzRd
+         GtxoIPHfDA6I+3TEJ+MIetDChXNa6U403A8lG6eQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.19 71/88] nfc: nfcmrvl: main: reorder destructive operations in nfcmrvl_nci_unregister_dev to avoid bugs
-Date:   Tue, 10 May 2022 15:07:56 +0200
-Message-Id: <20220510130735.795322640@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>
+Subject: [PATCH 5.4 12/52] ASoC: wm8958: Fix change notifications for DSP controls
+Date:   Tue, 10 May 2022 15:07:41 +0200
+Message-Id: <20220510130730.217832806@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
-References: <20220510130733.735278074@linuxfoundation.org>
+In-Reply-To: <20220510130729.852544477@linuxfoundation.org>
+References: <20220510130729.852544477@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,113 +48,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Mark Brown <broonie@kernel.org>
 
-commit d270453a0d9ec10bb8a802a142fb1b3601a83098 upstream.
+commit b4f5c6b2e52b27462c0599e64e96e53b58438de1 upstream.
 
-There are destructive operations such as nfcmrvl_fw_dnld_abort and
-gpio_free in nfcmrvl_nci_unregister_dev. The resources such as firmware,
-gpio and so on could be destructed while the upper layer functions such as
-nfcmrvl_fw_dnld_start and nfcmrvl_nci_recv_frame is executing, which leads
-to double-free, use-after-free and null-ptr-deref bugs.
+The WM8958 DSP controls all return 0 on successful write, not a boolean
+value indicating if the write changed the value of the control. Fix this
+by returning 1 after a change, there is already a check at the start of
+each put() that skips the function in the case that there is no change.
 
-There are three situations that could lead to double-free bugs.
-
-The first situation is shown below:
-
-   (Thread 1)                 |      (Thread 2)
-nfcmrvl_fw_dnld_start         |
- ...                          |  nfcmrvl_nci_unregister_dev
- release_firmware()           |   nfcmrvl_fw_dnld_abort
-  kfree(fw) //(1)             |    fw_dnld_over
-                              |     release_firmware
-  ...                         |      kfree(fw) //(2)
-                              |     ...
-
-The second situation is shown below:
-
-   (Thread 1)                 |      (Thread 2)
-nfcmrvl_fw_dnld_start         |
- ...                          |
- mod_timer                    |
- (wait a time)                |
- fw_dnld_timeout              |  nfcmrvl_nci_unregister_dev
-   fw_dnld_over               |   nfcmrvl_fw_dnld_abort
-    release_firmware          |    fw_dnld_over
-     kfree(fw) //(1)          |     release_firmware
-     ...                      |      kfree(fw) //(2)
-
-The third situation is shown below:
-
-       (Thread 1)               |       (Thread 2)
-nfcmrvl_nci_recv_frame          |
- if(..->fw_download_in_progress)|
-  nfcmrvl_fw_dnld_recv_frame    |
-   queue_work                   |
-                                |
-fw_dnld_rx_work                 | nfcmrvl_nci_unregister_dev
- fw_dnld_over                   |  nfcmrvl_fw_dnld_abort
-  release_firmware              |   fw_dnld_over
-   kfree(fw) //(1)              |    release_firmware
-                                |     kfree(fw) //(2)
-
-The firmware struct is deallocated in position (1) and deallocated
-in position (2) again.
-
-The crash trace triggered by POC is like below:
-
-BUG: KASAN: double-free or invalid-free in fw_dnld_over
-Call Trace:
-  kfree
-  fw_dnld_over
-  nfcmrvl_nci_unregister_dev
-  nci_uart_tty_close
-  tty_ldisc_kill
-  tty_ldisc_hangup
-  __tty_hangup.part.0
-  tty_release
-  ...
-
-What's more, there are also use-after-free and null-ptr-deref bugs
-in nfcmrvl_fw_dnld_start. If we deallocate firmware struct, gpio or
-set null to the members of priv->fw_dnld in nfcmrvl_nci_unregister_dev,
-then, we dereference firmware, gpio or the members of priv->fw_dnld in
-nfcmrvl_fw_dnld_start, the UAF or NPD bugs will happen.
-
-This patch reorders destructive operations after nci_unregister_device
-in order to synchronize between cleanup routine and firmware download
-routine.
-
-The nci_unregister_device is well synchronized. If the device is
-detaching, the firmware download routine will goto error. If firmware
-download routine is executing, nci_unregister_device will wait until
-firmware download routine is finished.
-
-Fixes: 3194c6870158 ("NFC: nfcmrvl: add firmware download support")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220416125408.197440-1-broonie@kernel.org
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nfc/nfcmrvl/main.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/codecs/wm8958-dsp2.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/nfc/nfcmrvl/main.c
-+++ b/drivers/nfc/nfcmrvl/main.c
-@@ -194,6 +194,7 @@ void nfcmrvl_nci_unregister_dev(struct n
- {
- 	struct nci_dev *ndev = priv->ndev;
+--- a/sound/soc/codecs/wm8958-dsp2.c
++++ b/sound/soc/codecs/wm8958-dsp2.c
+@@ -534,7 +534,7 @@ static int wm8958_mbc_put(struct snd_kco
  
-+	nci_unregister_device(ndev);
- 	if (priv->ndev->nfc_dev->fw_download_in_progress)
- 		nfcmrvl_fw_dnld_abort(priv);
+ 	wm8958_dsp_apply(component, mbc, wm8994->mbc_ena[mbc]);
  
-@@ -202,7 +203,6 @@ void nfcmrvl_nci_unregister_dev(struct n
- 	if (gpio_is_valid(priv->config.reset_n_io))
- 		gpio_free(priv->config.reset_n_io);
- 
--	nci_unregister_device(ndev);
- 	nci_free_device(ndev);
- 	kfree(priv);
+-	return 0;
++	return 1;
  }
+ 
+ #define WM8958_MBC_SWITCH(xname, xval) {\
+@@ -660,7 +660,7 @@ static int wm8958_vss_put(struct snd_kco
+ 
+ 	wm8958_dsp_apply(component, vss, wm8994->vss_ena[vss]);
+ 
+-	return 0;
++	return 1;
+ }
+ 
+ 
+@@ -734,7 +734,7 @@ static int wm8958_hpf_put(struct snd_kco
+ 
+ 	wm8958_dsp_apply(component, hpf % 3, ucontrol->value.integer.value[0]);
+ 
+-	return 0;
++	return 1;
+ }
+ 
+ #define WM8958_HPF_SWITCH(xname, xval) {\
+@@ -828,7 +828,7 @@ static int wm8958_enh_eq_put(struct snd_
+ 
+ 	wm8958_dsp_apply(component, eq, ucontrol->value.integer.value[0]);
+ 
+-	return 0;
++	return 1;
+ }
+ 
+ #define WM8958_ENH_EQ_SWITCH(xname, xval) {\
 
 
