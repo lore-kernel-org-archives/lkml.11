@@ -2,105 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA1A6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:57:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61D0DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:57:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345288AbiEJPBr (ORCPT
+        id S1345381AbiEJPBw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:01:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39202 "EHLO
+        Tue, 10 May 2022 11:01:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344890AbiEJPAj (ORCPT
+        with ESMTP id S1345495AbiEJPBN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:00:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7ACDB6B7C2
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:23:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652192607;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+S573656I/Ry3IV8BOR6MdvvHexB5xLndPCMThW4Hec=;
-        b=DLB/SsUAQhxtPUmJkvigSLu8qBbDbSzIlV3/lDmm2aBbkvS5R4OSUxQWgj/Im5d6G34swJ
-        qjt1FswvJiXBWXV/UWoDjuUkZ16H0bWCWK21tQZva1nzf3CmP2U5RZAJJ+FqlzIv6YfUTf
-        /ElIi/FQsG8qRcTyJxcpHvmWItY69Sg=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-592-e3vPlTW5NMShYGiJsluNNQ-1; Tue, 10 May 2022 10:23:24 -0400
-X-MC-Unique: e3vPlTW5NMShYGiJsluNNQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 10 May 2022 11:01:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3097A2BE532;
+        Tue, 10 May 2022 07:24:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2C58C3831C4C;
-        Tue, 10 May 2022 14:23:23 +0000 (UTC)
-Received: from dhcp-27-174.brq.redhat.com (unknown [10.40.192.98])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 10F38403D165;
-        Tue, 10 May 2022 14:23:18 +0000 (UTC)
-Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
-        oleg@redhat.com; Tue, 10 May 2022 16:23:22 +0200 (CEST)
-Date:   Tue, 10 May 2022 16:23:18 +0200
-From:   Oleg Nesterov <oleg@redhat.com>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
-        Will Deacon <will@kernel.org>, tj@kernel.org,
-        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org
-Subject: Re: [PATCH v4 10/12] ptrace: Don't change __state
-Message-ID: <20220510142202.GB23277@redhat.com>
-References: <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
- <20220505182645.497868-10-ebiederm@xmission.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F170A6178F;
+        Tue, 10 May 2022 14:24:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D559C385A6;
+        Tue, 10 May 2022 14:24:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652192657;
+        bh=Pc46AuG13t873MQN9JMMXmwCqYFzgX3gktX+Clx2xJ0=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=SgRYJI5+Fy88ZZRFej4EMh0HZBYJwKDdgfnTD7JllCWtmfJG++8Qg6D1kkBXms5Dr
+         HCzm1pcepruOinNgMjLnEkqvH03MHvjRYds9S63IhpB6BopivPO9A9ZCu+j0h4DidW
+         pMohA3xAwQTj9WL+tuvKJp6uaASmRDEF+vOfJ1yla+KV68bzlcbz5LYfLtHrh+b7u+
+         vE35wr2N1sSiYYi3wWerICw5+fmA52qHEJ7YQhSvv2aoqaHbZxclXpLgPd83JytVqf
+         DkHBTNBCPiu1qdWhark0xD/yvhCQFh/gXKmQI0ejvkE4bHb2H1MRvSwIjw40Elrpst
+         i0WCtlJdzdoJQ==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id E425A5C0602; Tue, 10 May 2022 07:24:16 -0700 (PDT)
+Date:   Tue, 10 May 2022 07:24:16 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Uladzislau Rezki <urezki@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Alison Chaiken <achaiken@aurora.tech>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        LKML <linux-kernel@vger.kernel.org>, RCU <rcu@vger.kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <neeraj.iitr10@gmail.com>,
+        Oleksiy Avramchenko <oleksiy.avramchenko@sony.com>
+Subject: Re: [PATCH] rcu/nocb: Add an option to ON/OFF an offloading from RT
+ context
+Message-ID: <20220510142416.GR1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220507223247.GK1790663@paulmck-ThinkPad-P17-Gen-1>
+ <CAEXW_YSyYRSRQwfMTJU1dowMaxrj6Daa17-BMx4syoPV05bZFg@mail.gmail.com>
+ <20220508213222.GL1790663@paulmck-ThinkPad-P17-Gen-1>
+ <CAEXW_YQ9t8gxp9cKCpba+e4NZ6ohPr8jHxJYuqRBFRtvSDa0Lw@mail.gmail.com>
+ <20220509033740.GM1790663@paulmck-ThinkPad-P17-Gen-1>
+ <CAEXW_YSbWetMt2_-m4G9Nt5S8ybATihB+5FMJMMo3jKDG4pPjg@mail.gmail.com>
+ <20220509181417.GO1790663@paulmck-ThinkPad-P17-Gen-1>
+ <YnldSkaWu40cVimj@pc638.lan>
+ <20220509183934.GQ1790663@paulmck-ThinkPad-P17-Gen-1>
+ <20220510100946.5fdff700@gandalf.local.home>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220505182645.497868-10-ebiederm@xmission.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+In-Reply-To: <20220510100946.5fdff700@gandalf.local.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/05, Eric W. Biederman wrote:
->
->  static void ptrace_unfreeze_traced(struct task_struct *task)
->  {
-> -	if (READ_ONCE(task->__state) != __TASK_TRACED)
-> -		return;
-> -
-> -	WARN_ON(!task->ptrace || task->parent != current);
-> +	unsigned long flags;
->  
->  	/*
-> -	 * PTRACE_LISTEN can allow ptrace_trap_notify to wake us up remotely.
-> -	 * Recheck state under the lock to close this race.
-> +	 * The child may be awake and may have cleared
-> +	 * JOBCTL_PTRACE_FROZEN (see ptrace_resume).  The child will
-> +	 * not set JOBCTL_PTRACE_FROZEN or enter __TASK_TRACED anew.
->  	 */
-> -	spin_lock_irq(&task->sighand->siglock);
-> -	if (READ_ONCE(task->__state) == __TASK_TRACED) {
-> +	if (lock_task_sighand(task, &flags)) {
+On Tue, May 10, 2022 at 10:09:46AM -0400, Steven Rostedt wrote:
+> On Mon, 9 May 2022 11:39:34 -0700
+> "Paul E. McKenney" <paulmck@kernel.org> wrote:
+> 
+> > This allows your current RCU_NOCB_CPU_CB_BOOST with something like
+> > this in place of the "default n":
+> > 
+> > 	default y if PREEMPT_RT
+> > 	default n if !PREEMPT_RT
+> 
+> BTW, I don't think you need the !PREEMPT_RT, because all configs are
+> 'n' by  default. That is:
+> 
+> 	default y if PREEMPT_RT
+> 
+> should be good enough.
 
-But I still think that a lockless
+Good point, thank you!
 
-	if (!(task->jobctl & JOBCTL_PTRACE_FROZEN))
-		return;
+That said, there is a lot of "default n" in a lot of Kconfig files.
+And I am OK making this explicit.  So Uladzislau's choice.  ;-)
 
-check at the start of ptrace_unfreeze_traced() makes sense to avoid
-lock_task_sighand() if possible.
-
-And ptrace_resume() can probably clear JOBCTL_PTRACE_FROZEN along with
-JOBCTL_TRACED to make this optimization work better. The same for
-ptrace_signal_wake_up().
-
-Oleg.
-
+							Thanx, Paul
