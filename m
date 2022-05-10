@@ -2,27 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ABFCC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:53:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06D5FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:53:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345314AbiEJO53 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:57:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49514 "EHLO
+        id S240366AbiEJO5h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:57:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345566AbiEJO4m (ORCPT
+        with ESMTP id S1345563AbiEJO4m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 10:56:42 -0400
-Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-eopbgr10107.outbound.protection.outlook.com [40.107.1.107])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B069824F217;
-        Tue, 10 May 2022 07:18:03 -0700 (PDT)
+Received: from EUR03-VE1-obe.outbound.protection.outlook.com (mail-eopbgr50131.outbound.protection.outlook.com [40.107.5.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5AAD24EA1D;
+        Tue, 10 May 2022 07:17:59 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AYHwaJTEOFWk0bUhwQH8yt6XYS97wi7ORm6pI2MO1UTgkq1HHta4iiks3n7W4nY2sGhdFO6lCXaCAgnLw6P6wx55xL+6wfZJZe2BYYvD/epHBF9tiPHsQK5LjmRaa9qEqlXfwrMkMuyxvBBNcMJkEHU95+dpAD81/+oxGfa168avWu47DikoohjtUe0TgDB8EFtSmAHkFTGkIbUnx8TEq9eV7IlaEiGtzFbOVD/trdzpqVZZCiHQkaTmZ0PFqAoCSRUmS0GuztMgZQdeIq7CkomcnfY71Ln//32bwOtW2EUfEAEGoUsGeTAXWHNlR4jP7Beg2sCUv7Ukyrm8b1UTMQ==
+ b=BJv7MgTsQPsDgjgZKF/ZLwpJ3P/mdDgP6E5FRXotI8ESDA8G1rT8WfJ9J3vvgiN8yL0SgC2hNHO2CD1un4SV24YbL9dNpHK0KrGziWlgQg8s9oG3NEHN6RSrzR4WJOfPncemJUo/8Mfoh1YJ5nxJKVA0Mdjjurt6eOVj0pSzEF0pI6a3cnHlJ9NRdvul/PvEhfsCDHY7+dQqv9hgANyARA5Uj66QmUPGhxW1/xAA+gpVz+Bex9IM7v5m8vN3taJyyFF21v8nRKz8s+XTiwqE7lxY3jpO9oMXWxzaPQ/ZkMrUxsE6LabRoJ+JsgUZlgcjxNaixPW1Dc6bjxNv5pw80A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pJDzayEN0JebeyElP0WpVK+TgjcJr8C8bCFTilKbOec=;
- b=lyhn8XXwb6LHu0Q/wmtW39WsEEcdKmWAB/g5sTGYTfNAfvhHnWUg2R2q9aWCM+3V6A4YHSC+LzDeBX4/FJKiZwdUAjpT0tK0CjXBN4QVnoMolsp57fRdXBrA3BkJSuhvAn9pfKcBYoQFc2ite6i25Oizpvu7weUQTFHGiff+qWYHHCym5vTwK/6bdUaHfPA0CH9L2A9Raf4cdhLzpWCCLQgB0KCSr6j71zYHT3kFDkZfiagUELQKn9HlS70GqpkHIDylAdJNpqlJZXTE8j/lt/bj/w1KMLZxSCiVfG41bxc1xrOCb4s/gytS7PFh7+5w7mDHiHhHU7xaXY6V9R6h6Q==
+ bh=AdlnJKotzwLcTK+w90fDGpieY/qimhwVO2XrhgD2/cA=;
+ b=SBaakzde4JXhMNj4SGXnOLG++hUXPxy9JKiOXdVhnmQMEXK0ZT1ozbM9fW+PcumO1iOXcDtSjjBCrbNcIri3yaRRZHGOyPJHtmUGoF3CfJ+Km0QgFibZ3i2yI+/zFjQYOYsAwOHGcwCfzNCYzSIniL2KI6A51kVMoCqnC89bR5TD05MoNJAs97BRlP+E58MB0Vo3/vMkKstT0DvbvMpBQYKKviGByfO2BFqUKCnGYEm/xhZ2lgqPzS9SrF6M1h9sQy/Y8ae2MA6UeBUhEEuZEtY0iRtEl0NUrrBFSzDb74bPORpZRdfDErXrGOjBDspfF5UDtzK7XB90vnMs1ru7Tg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  193.8.40.94) smtp.rcpttodomain=kernel.org
  smtp.mailfrom=leica-geosystems.com.cn; dmarc=pass (p=quarantine sp=quarantine
@@ -31,18 +30,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=leica-geosystems.com.cn; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pJDzayEN0JebeyElP0WpVK+TgjcJr8C8bCFTilKbOec=;
- b=mB4yPJcQntO8OfCEAvaV+Cw1KyfP6b8Hobab2lyM+Zq1Mua/JRmZDGUqeHn/U+lAE0xwUD/DsscORMAKTuD6jhs3TxuJi1M0dl/PI0R2U/Ft93CmEJo20YZrkBSf9ApBXpan/cw7NIeiusXB6hz2lmsjigzQ2aB0iEu+bvjZbNk=
-Received: from AS9PR06CA0339.eurprd06.prod.outlook.com (2603:10a6:20b:466::31)
- by AM5PR0601MB2386.eurprd06.prod.outlook.com (2603:10a6:203:7a::9) with
+ bh=AdlnJKotzwLcTK+w90fDGpieY/qimhwVO2XrhgD2/cA=;
+ b=hXhOtBT9UbhAq8lZGY41q9e11krBS+ItTKLW1x16zjOyv07QRAufWCDxno23lVBeNLbwAHkKJI8lTbPXG/d5xzfr1jZl+9yD4uR/UyHfvUzOfz3V7HNcPJBD0708raS1rMNTtWECNHmQuRtmEytYbBwYmO6utcf3mvpk3J/w7kM=
+Received: from AS9PR06CA0341.eurprd06.prod.outlook.com (2603:10a6:20b:466::14)
+ by AM0PR06MB6337.eurprd06.prod.outlook.com (2603:10a6:208:174::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.22; Tue, 10 May
- 2022 14:18:00 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.21; Tue, 10 May
+ 2022 14:17:57 +0000
 Received: from VE1EUR02FT083.eop-EUR02.prod.protection.outlook.com
- (2603:10a6:20b:466:cafe::ce) by AS9PR06CA0339.outlook.office365.com
- (2603:10a6:20b:466::31) with Microsoft SMTP Server (version=TLS1_2,
+ (2603:10a6:20b:466:cafe::7) by AS9PR06CA0341.outlook.office365.com
+ (2603:10a6:20b:466::14) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.20 via Frontend
- Transport; Tue, 10 May 2022 14:18:00 +0000
+ Transport; Tue, 10 May 2022 14:17:57 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 193.8.40.94)
  smtp.mailfrom=leica-geosystems.com.cn; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=leica-geosystems.com.cn;
@@ -52,16 +51,16 @@ Received-SPF: Pass (protection.outlook.com: domain of leica-geosystems.com.cn
 Received: from aherlnxbspsrv01.lgs-net.com (193.8.40.94) by
  VE1EUR02FT083.mail.protection.outlook.com (10.152.13.186) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5227.15 via Frontend Transport; Tue, 10 May 2022 14:18:00 +0000
+ 15.20.5227.15 via Frontend Transport; Tue, 10 May 2022 14:17:56 +0000
 From:   LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
 To:     jic23@kernel.org, lars@metafoo.de, mchehab+huawei@kernel.org,
         ardeleanalex@gmail.com, linux-iio@vger.kernel.org,
         linux-kernel@vger.kernel.org, Qing-wu.Li@leica-geosystems.com.cn,
         robh+dt@kernel.org, mike.looijmans@topic.nl,
         devicetree@vger.kernel.org
-Subject: [PATCH V2 6/6] dt-bindings: iio: accel: Add bmi085 and bmi090l bindings
-Date:   Tue, 10 May 2022 14:17:53 +0000
-Message-Id: <20220510141753.3878390-7-Qing-wu.Li@leica-geosystems.com.cn>
+Subject: [PATCH V2 1/6] iio: accel: bmi088: Modified the scale calculate
+Date:   Tue, 10 May 2022 14:17:48 +0000
+Message-Id: <20220510141753.3878390-2-Qing-wu.Li@leica-geosystems.com.cn>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220510141753.3878390-1-Qing-wu.Li@leica-geosystems.com.cn>
 References: <20220510141753.3878390-1-Qing-wu.Li@leica-geosystems.com.cn>
@@ -70,49 +69,88 @@ Content-Transfer-Encoding: 8bit
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
 Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: c88501dd-c103-476e-2722-08da328fe395
-X-MS-TrafficTypeDiagnostic: AM5PR0601MB2386:EE_
-X-Microsoft-Antispam-PRVS: <AM5PR0601MB2386AB6D6D72020CF309FD9CD7C99@AM5PR0601MB2386.eurprd06.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 1c10b9ae-9c40-45d0-e3dc-08da328fe183
+X-MS-TrafficTypeDiagnostic: AM0PR06MB6337:EE_
+X-Microsoft-Antispam-PRVS: <AM0PR06MB6337FACB102CEBD01D24CDE9D7C99@AM0PR06MB6337.eurprd06.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VZxzpk4d7jDE7nr61ZgsPGIy8tZQj80p5q33WZjzZhBKA0FNanFmOUxasCTW8ZtWJFkdTBPIbIgbPbck4YfwWoL38klwLKSdP1n3gq5rKW/7JBcZpAIX9kCJ1ImbP910VhNyjyU+vji37XB9haq6VBYiGGFm262+HDlVqz4ZNVeFGQrYGl1hsXOWWd6x5yP5vq85jQonLlh/bX5xZdVYlgCKYInPYtFyHNocDUNtZLneEBM+7U/UEERx/ACQ7Vhv/ytILyApFU1t78w/7A1xRLjGBOF5s/04SRSEMwPmQ8Rcjp+XOG1gR71iNMkXj8NE4+gHJUGlaGx5cVLW8IMdV0JefOgDpU9UPXsRtKwR6lrpxax4ICV9W7YET1NhHWSsn0rkMivsM+cYOjREz6o7p59a7eIM4vShNG1wE8J4SJTIJT0+VpVBZncL8Cby1LWo6HGMLR/3E+012WJ1IbB4XTYvawCNYJHU4GwsnHzind8BorSWe/YfyylKQeWnKhL/ZxyWBF9G+vur7ysEXbIhVstjgDM1JiWx2Y7i4BUnf4ZQm2VQDBZktR9iIrLtJXJyyQYNIAz+9f/7UXpbQARxfIrwkL2EEnhqilYsXuSp5ywDf206HfAOcCg/4e5up8dFJ2xkyAkV5JyPfl/5hEsaDomfDkvgCA10Omic+4WmuwpOWrGxOZo6qvgU/pPZJg+I1CLAp1mT+DWgCzgFiD0xZA==
-X-Forefront-Antispam-Report: CIP:193.8.40.94;CTRY:CH;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:aherlnxbspsrv01.lgs-net.com;PTR:ahersrvdom50.leica-geosystems.com;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(1076003)(86362001)(8676002)(70586007)(8936002)(70206006)(36736006)(2616005)(316002)(356005)(6506007)(921005)(26005)(6512007)(956004)(6666004)(81166007)(508600001)(40460700003)(2906002)(47076005)(36756003)(336012)(118246002)(82310400005)(36860700001)(186003)(5660300002)(4744005)(6486002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: txXvBx4SlAMRMOnoQ5VEG1yAGBqfK5HGglmIl0axVAUaZpTSqbop6aEDDAgsgyCXFnk9gXdbTz1cjW6DlF77q88rW0HuVraL5Q+m+SX7rQHpmQDcNesdSNJjekMraNFRELBHilL//Rt4SrtweLRzA332SHFhEFBlv0eHu2oT1xtFV+6yKc82XrKke71VQ+tkfIBvNDLHievwTpMYUbwZ4/0bWa39dpCju+WxqWT/pEhPxwLqTSTh0XU+hSOM9qyWvdBELWtnE/9SwNTdToH99LjtDtxRNcXc9ko3TiBaC/1TEX+W1HjqmrVfnynJGhq73rJAVTPlZi8EOHIgKAtQfM7xMA3pUZYGjlK6I3u/ILW4xI2NAXkXuk+d0BrHvLu92H3vYQo6udIHzn0HDSNn17JCwwCvysM7u46TU7UQX/exfgCAVxNLJKm8otfqS+iUg0Qd7zcKWvZvyCs80GTnbC1B2s6TYop7ImkSTFJXXUaayCoRwlX0I66wlN7eItOonjrV7WQHigMzJy6uyt/vF59brWh4w15zsBXFmRy1DjVsSgPgJa8wHJgra+qujGuCOFI5HzK3dBf6XjbubkZPzrzbgTRSFDxpsyMNwhIhISZp9jOi7pIB61Zy4ygs5ftSqQCt52R0GnZhbOvyta/836JbYccQVekgq+kLXi2QL7fj6e0a48NZPpKdakaf4SGsbTBf7GJCs1iHR1RNX3fsWA==
+X-Forefront-Antispam-Report: CIP:193.8.40.94;CTRY:CH;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:aherlnxbspsrv01.lgs-net.com;PTR:ahersrvdom50.leica-geosystems.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(26005)(81166007)(8676002)(86362001)(6512007)(36860700001)(956004)(2616005)(6506007)(118246002)(6666004)(2906002)(356005)(6486002)(921005)(83380400001)(316002)(1076003)(8936002)(508600001)(40460700003)(5660300002)(36736006)(186003)(36756003)(82310400005)(70206006)(70586007)(47076005)(336012);DIR:OUT;SFP:1102;
 X-OriginatorOrg: leica-geosystems.com.cn
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 14:18:00.3917
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 14:17:56.9232
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c88501dd-c103-476e-2722-08da328fe395
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1c10b9ae-9c40-45d0-e3dc-08da328fe183
 X-MS-Exchange-CrossTenant-Id: 1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a;Ip=[193.8.40.94];Helo=[aherlnxbspsrv01.lgs-net.com]
 X-MS-Exchange-CrossTenant-AuthSource: VE1EUR02FT083.eop-EUR02.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM5PR0601MB2386
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR06MB6337
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adds the device-tree bindings for the Bosch
-BMI085 and BMI090L IMU, the accelerometer part.
+The units after application of scale are 100*m/s^2,
+The scale calculation is only for the device
+with the range of 3, 6, 12, and 24g,
+but some other chips have a range of 2, 4, 6, and 8g.
+
+Modified the formula to a scale list.
+The scales in the list are calculated by 1/sensitivity*9.8.
+The new units after the application of scale are m/s^2.
 
 Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
 ---
- Documentation/devicetree/bindings/iio/accel/bosch,bmi088.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iio/accel/bmi088-accel-core.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/accel/bosch,bmi088.yaml b/Documentation/devicetree/bindings/iio/accel/bosch,bmi088.yaml
-index 911a1ae9c83f..4290f5f88a8f 100644
---- a/Documentation/devicetree/bindings/iio/accel/bosch,bmi088.yaml
-+++ b/Documentation/devicetree/bindings/iio/accel/bosch,bmi088.yaml
-@@ -18,6 +18,8 @@ properties:
-   compatible:
-     enum:
-       - bosch,bmi088-accel
-+      - bosch,bmi085-accel
-+      - bosch,bmi090l-accel
+diff --git a/drivers/iio/accel/bmi088-accel-core.c b/drivers/iio/accel/bmi088-accel-core.c
+index a06dae5c971d..9300313b63cb 100644
+--- a/drivers/iio/accel/bmi088-accel-core.c
++++ b/drivers/iio/accel/bmi088-accel-core.c
+@@ -119,6 +119,7 @@ struct bmi088_accel_chip_info {
+ 	u8 chip_id;
+ 	const struct iio_chan_spec *channels;
+ 	int num_channels;
++	const int scale_table[4][2];
+ };
  
-   reg:
-     maxItems: 1
+ struct bmi088_accel_data {
+@@ -280,6 +281,7 @@ static int bmi088_accel_read_raw(struct iio_dev *indio_dev,
+ 	struct bmi088_accel_data *data = iio_priv(indio_dev);
+ 	struct device *dev = regmap_get_device(data->regmap);
+ 	int ret;
++	int reg;
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+@@ -330,13 +332,12 @@ static int bmi088_accel_read_raw(struct iio_dev *indio_dev,
+ 				return ret;
+ 
+ 			ret = regmap_read(data->regmap,
+-					  BMI088_ACCEL_REG_ACC_RANGE, val);
++					  BMI088_ACCEL_REG_ACC_RANGE, &reg);
+ 			if (ret)
+ 				goto out_read_raw_pm_put;
+-
+-			*val2 = 15 - (*val & 0x3);
+-			*val = 3 * 980;
+-			ret = IIO_VAL_FRACTIONAL_LOG2;
++			*val = data->chip_info->scale_table[reg&0x03][0];
++			*val2 = data->chip_info->scale_table[reg&0x03][1];
++			ret = IIO_VAL_INT_PLUS_MICRO;
+ 
+ 			goto out_read_raw_pm_put;
+ 		default:
+@@ -432,6 +433,7 @@ static const struct bmi088_accel_chip_info bmi088_accel_chip_info_tbl[] = {
+ 		.chip_id = 0x1E,
+ 		.channels = bmi088_accel_channels,
+ 		.num_channels = ARRAY_SIZE(bmi088_accel_channels),
++		.scale_table = {{0, 897}, {0, 1795}, {0, 3590}, {0, 7179}},
+ 	},
+ };
+ 
 -- 
 2.25.1
 
