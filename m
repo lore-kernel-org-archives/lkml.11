@@ -2,145 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35DAFC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:37:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E3ECC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:38:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241863AbiEJMlw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 08:41:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50150 "EHLO
+        id S241537AbiEJMmE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 08:42:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241324AbiEJMlu (ORCPT
+        with ESMTP id S241865AbiEJMl7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 08:41:50 -0400
-Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9DAD24D617;
-        Tue, 10 May 2022 05:37:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1652186272; x=1683722272;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=bE2GOy6zlpqOoRX6zYpnJAL0E/MfIkSIFEmV3eldp8g=;
-  b=eZbJJjnPf6mf8cQPPkSwCsrsHttF36WPxATA9Rgy4PKtFqz4DvZNjcrj
-   ZcF9W/w8xmnRx7JUbBopLe4/drCddYwdFFivNf1kM9h+2BhYlRhOf/MwZ
-   ycMfRQ7db25xPCphERUda9wL7i472SsiTXZjGtZNyVGuTe8uiIRg3JsoS
-   A=;
-X-IronPort-AV: E=Sophos;i="5.91,214,1647302400"; 
-   d="scan'208";a="1014326555"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2a-e6c05252.us-west-2.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-9103.sea19.amazon.com with ESMTP; 10 May 2022 12:37:27 +0000
-Received: from EX13MTAUWC001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2a-e6c05252.us-west-2.amazon.com (Postfix) with ESMTPS id 0A4E441CEE;
-        Tue, 10 May 2022 12:37:27 +0000 (UTC)
-Received: from EX13D20UWC001.ant.amazon.com (10.43.162.244) by
- EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Tue, 10 May 2022 12:37:26 +0000
-Received: from u79c5a0a55de558.ant.amazon.com (10.43.162.96) by
- EX13D20UWC001.ant.amazon.com (10.43.162.244) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Tue, 10 May 2022 12:37:24 +0000
-From:   Alexander Graf <graf@amazon.com>
-To:     <kvm@vger.kernel.org>
-CC:     <linuxppc-dev@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Paul Mackerras <paulus@samba.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Matt Evans <matt@ozlabs.org>, <stable@vger.kernel.org>
-Subject: [PATCH v3] KVM: PPC: Book3S PR: Enable MSR_DR for switch_mmu_context()
-Date:   Tue, 10 May 2022 14:37:17 +0200
-Message-ID: <20220510123717.24508-1-graf@amazon.com>
-X-Mailer: git-send-email 2.28.0.394.ge197136389
+        Tue, 10 May 2022 08:41:59 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38109252DCF;
+        Tue, 10 May 2022 05:38:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=L6IMO5LGjDZtfxTxahYjYfLwAJox1qHstZ/tNceRD6k=; b=vxIttA9LVr8/mhICmGcN18z2qt
+        0nsKNihJNly8ercr0LQDyfPRiNnWlmvxpeO6wZS0fdKfVe8OQeds7xi1iByv5x0VcgJT9pSwjbQrN
+        MxmzOMqiaXAsaoyZ6sjuOhU0nGHVlk4bpv3WvVw5Dz1AKLlm/X81+meWvGrhJQg5upNI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1noP7X-0028N4-R8; Tue, 10 May 2022 14:37:43 +0200
+Date:   Tue, 10 May 2022 14:37:43 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Chris Packham <Chris.Packham@alliedtelesis.co.nz>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "gregory.clement@bootlin.com" <gregory.clement@bootlin.com>,
+        "sebastian.hesselbarth@gmail.com" <sebastian.hesselbarth@gmail.com>,
+        "kostap@marvell.com" <kostap@marvell.com>,
+        "robert.marko@sartura.hr" <robert.marko@sartura.hr>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v5 1/2] arm64: dts: marvell: Add Armada 98DX2530 SoC and
+ RD-AC5X board
+Message-ID: <Ynpclx4z5z1Emx+b@lunn.ch>
+References: <20220504044624.951841-1-chris.packham@alliedtelesis.co.nz>
+ <20220504044624.951841-2-chris.packham@alliedtelesis.co.nz>
+ <dcc80690-c159-99f8-4686-536b9e87eb69@linaro.org>
+ <6770d320-b998-0c9d-3824-0d429834b289@alliedtelesis.co.nz>
+ <3498643b-cb2e-5685-65e0-7efe1113783f@linaro.org>
 MIME-Version: 1.0
-X-Originating-IP: [10.43.162.96]
-X-ClientProxiedBy: EX13D03UWC002.ant.amazon.com (10.43.162.160) To
- EX13D20UWC001.ant.amazon.com (10.43.162.244)
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3498643b-cb2e-5685-65e0-7efe1113783f@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 863771a28e27 ("powerpc/32s: Convert switch_mmu_context() to C")
-moved the switch_mmu_context() to C. While in principle a good idea, it
-meant that the function now uses the stack. The stack is not accessible
-from real mode though.
+On Tue, May 10, 2022 at 09:08:08AM +0200, Krzysztof Kozlowski wrote:
+> On 10/05/2022 06:14, Chris Packham wrote:
+> > 
+> > Based on the information I have (which isn't much) there is a ref_clk 
+> > input that is connected to a 25MHz oscillator and then I'm assuming 
+> > these are all generated from that with various dividers. 25MHz is the 
+> > only documented option.
+> > 
+> > There doesn't appear to be any documented register where I can read out 
+> > the divider ratios. It might be nice I could have the fixed osc node and 
+> > have these 3 clocks derived with fixed divisors but I don't see any what 
+> > of achieving that.
+> 
+> 
+> OK, but where are the dividers? The ref_clk is outside of SoC, so should
+> be defined in board DTS (at least its rate). If the rest is in the SoC,
+> they are usually part of clock controller, because usually they belong
+> to some power domain or have some clock gating.
 
-So to keep calling the function, let's turn on MSR_DR while we call it.
-That way, all pointer references to the stack are handled virtually.
+25MHz is a 'magic value' in Ethernet, nearly everything is based
+around it. And remember this SoC is basically an Ethernet switch with
+a small CPU glued on one side. If you gated clocks derived from the
+25MHz reference clock, probably part of your Ethernet switch stops
+working, which is the whole point of this SoC. So i doubt there are
+gates on the derived clocks. If there is any gating and power domains,
+it is generally at a different level. You can power down individual
+ports of the Ethernet switch. But generally, there is one bit in a
+register somewhere to do that, and you don't have direct control over
+clocks and regulators etc.
 
-In addition, make sure to save/restore r12 on the stack, as it may get
-clobbered by the C function.
-
-Reported-by: Matt Evans <matt@ozlabs.org>
-Fixes: 863771a28e27 ("powerpc/32s: Convert switch_mmu_context() to C")
-Signed-off-by: Alexander Graf <graf@amazon.com>
-Cc: stable@vger.kernel.org # v5.14+
-
----
-
-v1 -> v2:
-
-  - Save and restore R12, so that we don't touch volatile registers
-    while calling into C.
-
-v2 -> v3:
-
-  - Save and restore R12 on the stack. SPRGs may be clobbered by
-    page faults.
----
- arch/powerpc/kvm/book3s_32_sr.S | 26 +++++++++++++++++++++-----
- 1 file changed, 21 insertions(+), 5 deletions(-)
-
-diff --git a/arch/powerpc/kvm/book3s_32_sr.S b/arch/powerpc/kvm/book3s_32_sr.S
-index e3ab9df6cf19..6cfcd20d4668 100644
---- a/arch/powerpc/kvm/book3s_32_sr.S
-+++ b/arch/powerpc/kvm/book3s_32_sr.S
-@@ -122,11 +122,27 @@
- 
- 	/* 0x0 - 0xb */
- 
--	/* 'current->mm' needs to be in r4 */
--	tophys(r4, r2)
--	lwz	r4, MM(r4)
--	tophys(r4, r4)
--	/* This only clobbers r0, r3, r4 and r5 */
-+	/* switch_mmu_context() needs paging, let's enable it */
-+	mfmsr   r9
-+	ori     r11, r9, MSR_DR
-+	mtmsr   r11
-+	sync
-+
-+	/* switch_mmu_context() clobbers r12, rescue it */
-+	SAVE_GPR(12, r1)
-+
-+	/* Calling switch_mmu_context(<inv>, current->mm, <inv>); */
-+	lwz	r4, MM(r2)
- 	bl	switch_mmu_context
- 
-+	/* restore r12 */
-+	REST_GPR(12, r1)
-+
-+	/* Disable paging again */
-+	mfmsr   r9
-+	li      r6, MSR_DR
-+	andc    r9, r9, r6
-+	mtmsr	r9
-+	sync
-+
- .endm
--- 
-2.28.0.394.ge197136389
-
-
-
-
-Amazon Development Center Germany GmbH
-Krausenstr. 38
-10117 Berlin
-Geschaeftsfuehrung: Christian Schlaeger, Jonathan Weiss
-Eingetragen am Amtsgericht Charlottenburg unter HRB 149173 B
-Sitz: Berlin
-Ust-ID: DE 289 237 879
-
-
-
+       Andrew
