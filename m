@@ -2,108 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7DF6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 09:48:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85BF8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 09:48:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239270AbiEJJwI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 05:52:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46208 "EHLO
+        id S239055AbiEJJwg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 05:52:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239222AbiEJJwE (ORCPT
+        with ESMTP id S239222AbiEJJwd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 05:52:04 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7ADE237BA6;
-        Tue, 10 May 2022 02:48:07 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KyCrH2ZdKzhZ60;
-        Tue, 10 May 2022 17:47:27 +0800 (CST)
-Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 10 May 2022 17:48:04 +0800
-Received: from ubuntu1804.huawei.com (10.67.175.36) by
- dggpemm500013.china.huawei.com (7.185.36.172) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 10 May 2022 17:48:03 +0800
-From:   Chen Zhongjin <chenzhongjin@huawei.com>
-To:     <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-arch@vger.kernel.org>, <linuxppc-dev@lists.ozlabs.org>,
-        <stable@vger.kernel.org>
-CC:     <peterz@infradead.org>, <tglx@linutronix.de>, <namit@vmware.com>,
-        <gor@linux.ibm.com>, <rdunlap@infradead.org>, <paulmck@kernel.org>,
-        <mingo@kernel.org>, <jgross@suse.com>,
-        <gregkh@linuxfoundation.org>, <mpe@ellerman.id.au>,
-        <chenzhongjin@huawei.com>
-Subject: [PATCH v4] locking/csd_lock: change csdlock_debug from early_param to __setup
-Date:   Tue, 10 May 2022 17:46:39 +0800
-Message-ID: <20220510094639.106661-1-chenzhongjin@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 10 May 2022 05:52:33 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA81238D6E;
+        Tue, 10 May 2022 02:48:36 -0700 (PDT)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KyCs31yzDzhZ2n;
+        Tue, 10 May 2022 17:48:07 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
+ (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 10 May
+ 2022 17:48:34 +0800
+From:   Ye Bin <yebin10@huawei.com>
+To:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
+        <linux-ext4@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <jack@suse.cz>,
+        Ye Bin <yebin10@huawei.com>
+Subject: [PATCH -next v2] ext4: fix bug_on in ext4_writepages
+Date:   Tue, 10 May 2022 18:02:28 +0800
+Message-ID: <20220510100228.1172227-1-yebin10@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.175.36]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500013.china.huawei.com (7.185.36.172)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500010.china.huawei.com (7.192.105.118)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-csdlock_debug uses early_param and static_branch_enable() to enable
-csd_lock_wait feature, which triggers a panic on arm64 with config:
-CONFIG_SPARSEMEM=y
-CONFIG_SPARSEMEM_VMEMMAP=n
+we got issue as follows:
+EXT4-fs error (device loop0): ext4_mb_generate_buddy:1141: group 0, block bitmap and bg descriptor inconsistent: 25 vs 31513 free cls
+------------[ cut here ]------------
+kernel BUG at fs/ext4/inode.c:2708!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
+CPU: 2 PID: 2147 Comm: rep Not tainted 5.18.0-rc2-next-20220413+ #155
+RIP: 0010:ext4_writepages+0x1977/0x1c10
+RSP: 0018:ffff88811d3e7880 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 0000000000000001 RCX: ffff88811c098000
+RDX: 0000000000000000 RSI: ffff88811c098000 RDI: 0000000000000002
+RBP: ffff888128140f50 R08: ffffffffb1ff6387 R09: 0000000000000000
+R10: 0000000000000007 R11: ffffed10250281ea R12: 0000000000000001
+R13: 00000000000000a4 R14: ffff88811d3e7bb8 R15: ffff888128141028
+FS:  00007f443aed9740(0000) GS:ffff8883aef00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020007200 CR3: 000000011c2a4000 CR4: 00000000000006e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ do_writepages+0x130/0x3a0
+ filemap_fdatawrite_wbc+0x83/0xa0
+ filemap_flush+0xab/0xe0
+ ext4_alloc_da_blocks+0x51/0x120
+ __ext4_ioctl+0x1534/0x3210
+ __x64_sys_ioctl+0x12c/0x170
+ do_syscall_64+0x3b/0x90
 
-With CONFIG_SPARSEMEM_VMEMMAP=n, __nr_to_section is called in
-static_key_enable() and returns NULL which makes NULL dereference
-because mem_section is initialized in sparse_init() which is later
-than parse_early_param() stage.
+It may happen as follows:
+1. write inline_data inode
+vfs_write
+  new_sync_write
+    ext4_file_write_iter
+      ext4_buffered_write_iter
+        generic_perform_write
+          ext4_da_write_begin
+            ext4_da_write_inline_data_begin -> If inline data size too
+            small will allocate block to write, then mapping will has
+            dirty page
+                ext4_da_convert_inline_data_to_extent ->clear EXT4_STATE_MAY_INLINE_DATA
+2. fallocate
+do_vfs_ioctl
+  ioctl_preallocate
+    vfs_fallocate
+      ext4_fallocate
+        ext4_convert_inline_data
+          ext4_convert_inline_data_nolock
+            ext4_map_blocks -> fail will goto restore data
+            ext4_restore_inline_data
+              ext4_create_inline_data
+              ext4_write_inline_data
+              ext4_set_inode_state -> set inode EXT4_STATE_MAY_INLINE_DATA
+3. writepages
+__ext4_ioctl
+  ext4_alloc_da_blocks
+    filemap_flush
+      filemap_fdatawrite_wbc
+        do_writepages
+          ext4_writepages
+            if (ext4_has_inline_data(inode))
+              BUG_ON(ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA))
 
-For powerpc this is also broken, because early_param stage is
-earlier than jump_label_init() so static_key_enable won't work.
-powerpc throws an warning: "static key 'xxx' used before call
-to jump_label_init()".
+The root cause of this issue is we destory inline data until call ext4_writepages
+under delay allocation mode. But there maybe already covert from inline to extent.
+To solved this issue, we call filemap_flush firstly.
 
-Thus, early_param is too early for csd_lock_wait to run
-static_branch_enable(), so changes it to __setup to fix these.
-
-Fixes: 8d0968cc6b8f ("locking/csd_lock: Add boot parameter for controlling CSD lock debugging")
-Cc: stable@vger.kernel.org
-Reported-by: Chen jingwen <chenjingwen6@huawei.com>
-Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
+Signed-off-by: Ye Bin <yebin10@huawei.com>
 ---
-Change v3 -> v4:
-Fix title and description because this fix is also applied
-to powerpc.
-For more detailed arm64 bug report see:
-https://lore.kernel.org/linux-arm-kernel/e8715911-f835-059d-27f8-cc5f5ad30a07@huawei.com/t/
+ fs/ext4/inline.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-Change v2 -> v3:
-Add module name in title
-
-Change v1 -> v2:
-Fix return 1 for __setup
----
- kernel/smp.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/kernel/smp.c b/kernel/smp.c
-index 65a630f62363..381eb15cd28f 100644
---- a/kernel/smp.c
-+++ b/kernel/smp.c
-@@ -174,9 +174,9 @@ static int __init csdlock_debug(char *str)
- 	if (val)
- 		static_branch_enable(&csdlock_debug_enabled);
+diff --git a/fs/ext4/inline.c b/fs/ext4/inline.c
+index 6d253edebf9f..130ed5d83734 100644
+--- a/fs/ext4/inline.c
++++ b/fs/ext4/inline.c
+@@ -2002,6 +2002,14 @@ int ext4_convert_inline_data(struct inode *inode)
+ 	if (!ext4_has_inline_data(inode)) {
+ 		ext4_clear_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
+ 		return 0;
++	} else if (test_opt(inode->i_sb, DELALLOC) && !S_ISDIR(inode->i_mode)) {
++		error = filemap_flush(inode->i_mapping);
++		if (error)
++			return error;
++		if (!ext4_has_inline_data(inode)) {
++			ext4_clear_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
++			return 0;
++		}
+ 	}
  
--	return 0;
-+	return 1;
- }
--early_param("csdlock_debug", csdlock_debug);
-+__setup("csdlock_debug=", csdlock_debug);
- 
- static DEFINE_PER_CPU(call_single_data_t *, cur_csd);
- static DEFINE_PER_CPU(smp_call_func_t, cur_csd_func);
+ 	needed_blocks = ext4_writepage_trans_blocks(inode);
 -- 
-2.17.1
+2.31.1
 
