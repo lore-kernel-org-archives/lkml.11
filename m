@@ -2,88 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FCECC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:17:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCEBCC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:17:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241702AbiEJMVQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 08:21:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56242 "EHLO
+        id S241299AbiEJMVk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 08:21:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241629AbiEJMU4 (ORCPT
+        with ESMTP id S238990AbiEJMVg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 08:20:56 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57BF8F6891;
-        Tue, 10 May 2022 05:16:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1652185019; x=1683721019;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=JJaaWuWc8sV2e51bEleyOQg6zUB2DlPf9YjM1Nke9to=;
-  b=OA1GhaYqHFPwcNkqHyp/vz55cymG5OaITuzPr2HsYsyltsGb0GBZyM1l
-   AfLl4fWe3SiHd6CBBN6SPJ/8i2aiO5a/Em9TBHV8woGHflsstrj5B8+fO
-   AlaTTli7lp4zVAgvicLGXa6UA113DL2RhNQwvi/eIv+p08JPncawsL7dE
-   g=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 10 May 2022 05:16:59 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 05:16:58 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 10 May 2022 05:16:58 -0700
-Received: from [10.216.42.221] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 10 May
- 2022 05:16:54 -0700
-Message-ID: <cf3a80e3-301d-7c61-54ab-d63fd355dd48@quicinc.com>
-Date:   Tue, 10 May 2022 17:46:50 +0530
+        Tue, 10 May 2022 08:21:36 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 883AAF68BC
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 05:17:37 -0700 (PDT)
+Received: from kwepemi100004.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KyH6J0BxJzGpfZ;
+        Tue, 10 May 2022 20:14:48 +0800 (CST)
+Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
+ kwepemi100004.china.huawei.com (7.221.188.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 10 May 2022 20:17:35 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600013.china.huawei.com
+ (7.193.23.68) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 10 May
+ 2022 20:17:34 +0800
+From:   Zhihao Cheng <chengzhihao1@huawei.com>
+To:     <richard@nod.at>, <miquel.raynal@bootlin.com>, <vigneshr@ti.com>,
+        <mcoquelin.stm32@gmail.com>, <kirill.shutemov@linux.intel.com>,
+        <s.hauer@pengutronix.de>, <gregkh@linuxfoundation.org>,
+        <arne.edholm@axis.com>
+CC:     <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <chengzhihao1@huawei.com>, <yukuai3@huawei.com>
+Subject: [PATCH v3 0/3] Fix high cpu usage of ubi_bgt thread and an uaf problem
+Date:   Tue, 10 May 2022 20:31:23 +0800
+Message-ID: <20220510123126.1820335-1-chengzhihao1@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] dmabuf: ensure unique directory name for dmabuf stats
-Content-Language: en-US
-To:     =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
-        Greg KH <gregkh@linuxfoundation.org>
-CC:     <sumit.semwal@linaro.org>, <daniel.vetter@ffwll.ch>,
-        <tjmercier@google.com>, <linux-media@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>,
-        <linaro-mm-sig@lists.linaro.org>, <linux-kernel@vger.kernel.org>
-References: <1652178212-22383-1-git-send-email-quic_charante@quicinc.com>
- <YnpF1XP1tH83uBlM@kroah.com> <039e1acc-8688-2e06-1b2a-1acbe813b91e@amd.com>
-From:   Charan Teja Kalla <quic_charante@quicinc.com>
-In-Reply-To: <039e1acc-8688-2e06-1b2a-1acbe813b91e@amd.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600013.china.huawei.com (7.193.23.68)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks Christian for the inputs!!
+v1->v2:
+  Update fm pool filling strategy, consider reserve enough free count
+  for fastmap non anchor pebs while filling fm_wl_pool.
+  Remove 'fm_next_anchor' and check 'fm_anchor' during wear leveling.
+  Check wl_pool for free peb before wear leveling.
+v2->v3:
+  1. Don't reserve beb_revd_pebs while filling fm pool.
+  2. Fix an uaf in ubi_create_volume()'s error handling path.
 
-On 5/10/2022 5:05 PM, Christian König wrote:
-> 
->> And what's to keep the seconds field from also being the same?
-> 
-> Well exporting two DMA-bufs with the same ino in the same nanosecond
-> should be basically impossible, but I would rather opt for using a 64bit
-> atomic in that function.
-> 
-> This should be 100% UAPI compatible and even if we manage to create one
-> buffer ever ns we need ~500years to wrap around.
+Zhihao Cheng (3):
+  ubi: fastmap: Fix high cpu usage of ubi_bgt by making sure wl_pool not
+    empty
+  ubi: fastmap: Check wl_pool for free peb before wear leveling
+  ubi: ubi_create_volume: Fix use-after-free when volume creation failed
 
-I see that the inode->i_ctime->tv_sec is already defined as
-64bit(time64_t tv_sec), hence used it. This way we don't need extra
-static atomic_t variable just to get a unique name.
+ drivers/mtd/ubi/fastmap-wl.c | 121 ++++++++++++++++++++++++++++-------
+ drivers/mtd/ubi/fastmap.c    |  11 ----
+ drivers/mtd/ubi/ubi.h        |   4 +-
+ drivers/mtd/ubi/vmt.c        |   1 -
+ drivers/mtd/ubi/wl.c         |  33 ++++++----
+ drivers/mtd/ubi/wl.h         |   2 +
+ 6 files changed, 123 insertions(+), 49 deletions(-)
 
-Just pasting excerpt from the reply posted to Greg about why this secs
-will always be a unique: with secs field added, to get the same
-inode-secs string, the uint should overflow in the same second which is
-impossible.
+-- 
+2.31.1
 
-Let me know If you still opt for atomic variable only.
