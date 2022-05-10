@@ -2,126 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55AFBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:28:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83D8BC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241874AbiEJMcE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 08:32:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42492 "EHLO
+        id S241457AbiEJMda (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 08:33:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241889AbiEJMbJ (ORCPT
+        with ESMTP id S238445AbiEJMd2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 08:31:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 826FE2B52CB;
-        Tue, 10 May 2022 05:27:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B29A60C52;
-        Tue, 10 May 2022 12:27:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17923C385C2;
-        Tue, 10 May 2022 12:26:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652185620;
-        bh=pSjwjxMQ0Xqxg/DyGW31H8wuzBaHCcrF1uhKi6HzOQE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GBTDNT2eENPnjoiPrBKgL7K+DJzPVKFFVBUaSWivU7jsvEz3DwIQKy+ZfiaJUuJ8J
-         9w04UXPhvw1eaGfQue85hU08Wmou4fDRsK/BQsiE+gTu0nv9RwDPI6tnCKULdugoWK
-         KVVK83/rrdq93zxaZ5uuV9Pn48c/8nzy9+BI6N0XiEABe2tVrJGFKbS23SofSwHb7t
-         haXzFui5SrxK1Rzlx+FCspRPf9oNovhxpg0tOAhPw9lLQM5qKHyJKzO6jCY8WAIzwd
-         gkVhLTE+/sf8VCr93SVNjioDE9+rka9tuuBrxJIbDl4ZiBmhKdleeXDkhgQT1G8Ggj
-         PKyIdx/QDmuuQ==
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Christoph Hellwig <hch@lst.de>
-Subject: [PATCHv6 bpf-next 3/5] fprobe: Resolve symbols with ftrace_lookup_symbols
-Date:   Tue, 10 May 2022 14:26:14 +0200
-Message-Id: <20220510122616.2652285-4-jolsa@kernel.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220510122616.2652285-1-jolsa@kernel.org>
-References: <20220510122616.2652285-1-jolsa@kernel.org>
+        Tue, 10 May 2022 08:33:28 -0400
+Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDFBA2A3760;
+        Tue, 10 May 2022 05:29:30 -0700 (PDT)
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 5E9151C0B95; Tue, 10 May 2022 14:29:28 +0200 (CEST)
+Date:   Tue, 10 May 2022 14:29:27 +0200
+From:   Pavel Machek <pavel@ucw.cz>
+To:     Evan Green <evgreen@chromium.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Matthew Garrett <mgarrett@aurora.tech>,
+        Daniil Lunev <dlunev@google.com>, zohar@linux.ibm.com,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        linux-integrity@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        rjw@rjwysocki.net, Gwendal Grignou <gwendal@chromium.org>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Len Brown <len.brown@intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Subject: Re: [PATCH 08/10] PM: hibernate: Mix user key in encrypted hibernate
+Message-ID: <20220510122927.GA19328@amd>
+References: <20220504232102.469959-1-evgreen@chromium.org>
+ <20220504161439.8.I87952411cf83f2199ff7a4cc8c828d357b8c8ce3@changeid>
+ <20220506160820.GB1060@bug>
+ <CAE=gft4nE6nYx9gRZuSL1v=8CjGsdtmx+GxPjmdD_hwJs5j-tw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="sdtB3X0nJg68CQEu"
+Content-Disposition: inline
+In-Reply-To: <CAE=gft4nE6nYx9gRZuSL1v=8CjGsdtmx+GxPjmdD_hwJs5j-tw@mail.gmail.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Using ftrace_lookup_symbols to speed up symbols lookup
-in register_fprobe_syms API.
 
-Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
----
- kernel/trace/fprobe.c | 32 ++++++++++++--------------------
- 1 file changed, 12 insertions(+), 20 deletions(-)
+--sdtB3X0nJg68CQEu
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/kernel/trace/fprobe.c b/kernel/trace/fprobe.c
-index 89d9f994ebb0..aac63ca9c3d1 100644
---- a/kernel/trace/fprobe.c
-+++ b/kernel/trace/fprobe.c
-@@ -85,39 +85,31 @@ static void fprobe_exit_handler(struct rethook_node *rh, void *data,
- }
- NOKPROBE_SYMBOL(fprobe_exit_handler);
- 
-+static int symbols_cmp(const void *a, const void *b)
-+{
-+	const char **str_a = (const char **) a;
-+	const char **str_b = (const char **) b;
-+
-+	return strcmp(*str_a, *str_b);
-+}
-+
- /* Convert ftrace location address from symbols */
- static unsigned long *get_ftrace_locations(const char **syms, int num)
- {
--	unsigned long addr, size;
- 	unsigned long *addrs;
--	int i;
- 
- 	/* Convert symbols to symbol address */
- 	addrs = kcalloc(num, sizeof(*addrs), GFP_KERNEL);
- 	if (!addrs)
- 		return ERR_PTR(-ENOMEM);
- 
--	for (i = 0; i < num; i++) {
--		addr = kallsyms_lookup_name(syms[i]);
--		if (!addr)	/* Maybe wrong symbol */
--			goto error;
--
--		/* Convert symbol address to ftrace location. */
--		if (!kallsyms_lookup_size_offset(addr, &size, NULL) || !size)
--			goto error;
-+	/* ftrace_lookup_symbols expects sorted symbols */
-+	sort(syms, num, sizeof(*syms), symbols_cmp, NULL);
- 
--		addr = ftrace_location_range(addr, addr + size - 1);
--		if (!addr) /* No dynamic ftrace there. */
--			goto error;
-+	if (!ftrace_lookup_symbols(syms, num, addrs))
-+		return addrs;
- 
--		addrs[i] = addr;
--	}
--
--	return addrs;
--
--error:
- 	kfree(addrs);
--
- 	return ERR_PTR(-ENOENT);
- }
- 
--- 
-2.35.3
+Hi!
 
+> > > One annoyance of the "preloading" scheme is that hibernate image memo=
+ry
+> > > is effectively double-allocated: first by the usermode process pulling
+> > > encrypted contents off of disk and holding it, and second by the kern=
+el
+> > > in its giant allocation in prepare_image(). An interesting future
+> > > optimization would be to allow the kernel to accept and store encrypt=
+ed
+> > > page data before the user key is available. This would remove the
+> > > double allocation problem, as usermode could push the encrypted pages
+> > > loaded from disk immediately without storing them. The kernel could d=
+efer
+> > > decryption of the data until the user key is available, while still
+> > > knowing the correct page locations to store the encrypted data in.
+> >
+> > Um. Dunno. Won't you run out of memory? Hibernation images can be quite=
+ big...
+> >
+>=20
+> As you know, with the way the snapshot mechanism works, a hibernation
+> image can be at most 50% of RAM. If the system was using more than
+
+There used to be 50% of RAM limit, but it was removed.
+
+Best regards,
+								Pavel
+							=09
+--=20
+People of Russia, stop Putin before his war on Ukraine escalates.
+
+--sdtB3X0nJg68CQEu
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAmJ6WqcACgkQMOfwapXb+vKwggCfU6LTG5MoZ6aeMEdfwivj1685
+yUIAnR0jzeK1d2wmq0UYRYOrpRjaWwNn
+=UpfY
+-----END PGP SIGNATURE-----
+
+--sdtB3X0nJg68CQEu--
