@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C11CC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BC70C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244931AbiEJN4y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:56:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39300 "EHLO
+        id S244972AbiEJN47 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:56:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245038AbiEJNi0 (ORCPT
+        with ESMTP id S245049AbiEJNi1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:38:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27CC1E732B;
-        Tue, 10 May 2022 06:26:57 -0700 (PDT)
+        Tue, 10 May 2022 09:38:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FBF57F23F;
+        Tue, 10 May 2022 06:26:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7CD9B81DA8;
-        Tue, 10 May 2022 13:26:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0608DC385C2;
-        Tue, 10 May 2022 13:26:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EE7561768;
+        Tue, 10 May 2022 13:26:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F1D2C385A6;
+        Tue, 10 May 2022 13:26:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189214;
-        bh=WWcJJPaW4s0frkbSK/ZxJ/KyPtXnNk7ZjXtjDnn1RI4=;
+        s=korg; t=1652189217;
+        bh=VPmGLYyoid+7Hr0o4liQyLBaeJin3XuWlLByWtnfuCo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fcszAvgINAMno2mS12MMLuKS8rdDngvKAHPXNmDzma3x3MB9X/LzXaYRaI/NzFGC5
-         Qi66mLKZ4B0lUaGsNRnX3b1CpIy7flaUwAJ4WjqN4WOp7kbEqa9WtRPgpcHQSeFEtd
-         XFF/biLrcDejFrYcU6wDeJ6bx4rckVqAUgz6QT/s=
+        b=hToUCWcjfllfiSV64+ehj9WEvv5kJipfGrpdjdwticKuXzT9TSQIRAH8aNhbcRSWi
+         fsGJvyifC0IppSw3LtxAjvoqfB8eT9lCqhbsrOQWjmcbpY1/8cyjEyfAK9pp6sLkuG
+         i4j3odVyme1HzCMQfznkfd8hG34UKzP7AmB+n6tM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Shravya Kumbham <shravya.kumbham@xilinx.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 5.10 49/70] net: emaclite: Add error handling for of_address_to_resource()
-Date:   Tue, 10 May 2022 15:08:08 +0200
-Message-Id: <20220510130734.297937581@linuxfoundation.org>
+        stable@vger.kernel.org, Qiao Ma <mqaio@linux.alibaba.com>,
+        Xunlei Pang <xlpang@linux.alibaba.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.10 50/70] hinic: fix bug of wq out of bound access
+Date:   Tue, 10 May 2022 15:08:09 +0200
+Message-Id: <20220510130734.326693325@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
 References: <20220510130732.861729621@linuxfoundation.org>
@@ -50,77 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shravya Kumbham <shravya.kumbham@xilinx.com>
+From: Qiao Ma <mqaio@linux.alibaba.com>
 
-commit 7a6bc33ab54923d325d9a1747ec9652c4361ebd1 upstream.
+commit 52b2abef450a78e25d485ac61e32f4ce86a87701 upstream.
 
-check the return value of of_address_to_resource() and also add
-missing of_node_put() for np and npp nodes.
+If wq has only one page, we need to check wqe rolling over page by
+compare end_idx and curr_idx, and then copy wqe to shadow wqe to
+avoid out of bound access.
+This work has been done in hinic_get_wqe, but missed for hinic_read_wqe.
+This patch fixes it, and removes unnecessary MASKED_WQE_IDX().
 
-Fixes: e0a3bc65448c ("net: emaclite: Support multiple phys connected to one MDIO bus")
-Addresses-Coverity: Event check_return value.
-Signed-off-by: Shravya Kumbham <shravya.kumbham@xilinx.com>
-Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: 7dd29ee12865 ("hinic: add sriov feature support")
+Signed-off-by: Qiao Ma <mqaio@linux.alibaba.com>
+Reviewed-by: Xunlei Pang <xlpang@linux.alibaba.com>
+Link: https://lore.kernel.org/r/282817b0e1ae2e28fdf3ed8271a04e77f57bf42e.1651148587.git.mqaio@linux.alibaba.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/xilinx/xilinx_emaclite.c |   15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-@@ -820,10 +820,10 @@ static int xemaclite_mdio_write(struct m
- static int xemaclite_mdio_setup(struct net_local *lp, struct device *dev)
- {
- 	struct mii_bus *bus;
--	int rc;
- 	struct resource res;
- 	struct device_node *np = of_get_parent(lp->phy_node);
- 	struct device_node *npp;
-+	int rc, ret;
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c
+@@ -771,7 +771,7 @@ struct hinic_hw_wqe *hinic_get_wqe(struc
+ 	/* If we only have one page, still need to get shadown wqe when
+ 	 * wqe rolling-over page
+ 	 */
+-	if (curr_pg != end_pg || MASKED_WQE_IDX(wq, end_prod_idx) < *prod_idx) {
++	if (curr_pg != end_pg || end_prod_idx < *prod_idx) {
+ 		void *shadow_addr = &wq->shadow_wqe[curr_pg * wq->max_wqe_size];
  
- 	/* Don't register the MDIO bus if the phy_node or its parent node
- 	 * can't be found.
-@@ -833,8 +833,14 @@ static int xemaclite_mdio_setup(struct n
- 		return -ENODEV;
- 	}
- 	npp = of_get_parent(np);
--
--	of_address_to_resource(npp, 0, &res);
-+	ret = of_address_to_resource(npp, 0, &res);
-+	of_node_put(npp);
-+	if (ret) {
-+		dev_err(dev, "%s resource error!\n",
-+			dev->of_node->full_name);
-+		of_node_put(np);
-+		return ret;
-+	}
- 	if (lp->ndev->mem_start != res.start) {
- 		struct phy_device *phydev;
- 		phydev = of_phy_find_device(lp->phy_node);
-@@ -843,6 +849,7 @@ static int xemaclite_mdio_setup(struct n
- 				 "MDIO of the phy is not registered yet\n");
- 		else
- 			put_device(&phydev->mdio.dev);
-+		of_node_put(np);
- 		return 0;
- 	}
+ 		copy_wqe_to_shadow(wq, shadow_addr, num_wqebbs, *prod_idx);
+@@ -841,7 +841,10 @@ struct hinic_hw_wqe *hinic_read_wqe(stru
  
-@@ -855,6 +862,7 @@ static int xemaclite_mdio_setup(struct n
- 	bus = mdiobus_alloc();
- 	if (!bus) {
- 		dev_err(dev, "Failed to allocate mdiobus\n");
-+		of_node_put(np);
- 		return -ENOMEM;
- 	}
+ 	*cons_idx = curr_cons_idx;
  
-@@ -867,6 +875,7 @@ static int xemaclite_mdio_setup(struct n
- 	bus->parent = dev;
+-	if (curr_pg != end_pg) {
++	/* If we only have one page, still need to get shadown wqe when
++	 * wqe rolling-over page
++	 */
++	if (curr_pg != end_pg || end_cons_idx < curr_cons_idx) {
+ 		void *shadow_addr = &wq->shadow_wqe[curr_pg * wq->max_wqe_size];
  
- 	rc = of_mdiobus_register(bus, np);
-+	of_node_put(np);
- 	if (rc) {
- 		dev_err(dev, "Failed to register mdio bus.\n");
- 		goto err_register;
+ 		copy_wqe_to_shadow(wq, shadow_addr, num_wqebbs, *cons_idx);
 
 
