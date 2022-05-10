@@ -2,193 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ECB6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:20:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1676C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:21:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242812AbiEJNYs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:24:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45984 "EHLO
+        id S242837AbiEJNZC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:25:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243232AbiEJNVk (ORCPT
+        with ESMTP id S243241AbiEJNVl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:21:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92F3C2C2572;
-        Tue, 10 May 2022 06:15:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F3245615DD;
-        Tue, 10 May 2022 13:15:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10232C385C2;
-        Tue, 10 May 2022 13:15:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188516;
-        bh=m2ASRB4GczbfdDdQ1RmKGS9fhnmfR0jNT5aBSJnnqzA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kSUEhTUxqzyRmCVubK72GxjxJ0d1kMnAKn3iK3Vy1Y0sbauYVUAiGruEKPlNRYHFp
-         Siaq079YI6kGdcHPpHZt6d3eYF/wWnr2ZPsbG9oo39OtyUpKqNqddbAEJtf6EDVuxu
-         Lm/TK531XfSlXR0z475UvJ2Gaz+rNLRZglfXmL60=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Robert Kolchmeyer <rkolchmeyer@google.com>
-Subject: [PATCH 4.14 04/78] net/sched: cls_u32: fix netns refcount changes in u32_change()
-Date:   Tue, 10 May 2022 15:06:50 +0200
-Message-Id: <20220510130732.657790863@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
-References: <20220510130732.522479698@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 10 May 2022 09:21:41 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EAD65B3DB
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 06:15:22 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id g23so19955818edy.13
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 06:15:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=szeredi.hu; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cEMXxfbHgL5k8G+nQx9Id44d10sZKLXr0DUGje9AXRs=;
+        b=ANNKvFreFEu9sBWYzQhnMMLOHwEQYbyIk1iuCaMTgX4k9jEZW/e7PzAnlL8A7orHrh
+         RGh9btUIUpjvRB4tNDpYgwJlTjOL5w6g2oROzijDZBuwqgiqXjt3dJQfSWysmAukJE3W
+         6fviCca3i7WKiW/KEEtORZFD0aDK8BvFwa/DY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cEMXxfbHgL5k8G+nQx9Id44d10sZKLXr0DUGje9AXRs=;
+        b=rUhYwmFc/+RKI1sMdTIkZLCmG47lKq4r1uixaGyfFPuIByWUllrgD7eQbXm+65jC92
+         ixSc38uCmv+0UoHH2b6a9WRhoOzIGLOW3f4pG8nboPd09tCReWLBe3ETBKk9xN+Ce/fH
+         xz7WkZ2TS1pVlWgYm8P7sGWVVktuwHaafkNAucBS3gvnkjQx/nwjqB1CbwSrlq3YK8XJ
+         sfZFVD1ZHnCJTHuMVOqb2sbvp/MecBJdCQ9oW7b5vfZuediUcxW5XQf4E5P48yoJ8ow0
+         jcf2ex8AcOZnxAHJKf42Kc7FPBpfVN02HXrC8QgSQrm3ngtT9rZDutX+WKJM1SoIppYI
+         ++4Q==
+X-Gm-Message-State: AOAM532htQtqUx/Lvv6cCwRKvnrufJY7F/izU7xAncROwwJGG7YE3bMl
+        pm59DVY5enDgaCSR3QSL/9lYtYIJToSV/G9Jk0/zXA==
+X-Google-Smtp-Source: ABdhPJy1yn2joxH0jRtB4tUrT8rXWVf3r823UovFXFhuulv4RgusZBMQed96S+gfdxujGTV1zzS0kjw+DY7epPFTe4Y=
+X-Received: by 2002:a05:6402:50d1:b0:428:1473:d173 with SMTP id
+ h17-20020a05640250d100b004281473d173mr22738467edb.37.1652188517024; Tue, 10
+ May 2022 06:15:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <YnEeuw6fd1A8usjj@miu.piliscsaba.redhat.com> <20220509124815.vb7d2xj5idhb2wq6@wittgenstein>
+ <CAJfpegveWaS5pR3O1c_7qLnaEDWwa8oi26x2v_CwDXB_sir1tg@mail.gmail.com> <20220510115316.acr6gl5ayqszada6@wittgenstein>
+In-Reply-To: <20220510115316.acr6gl5ayqszada6@wittgenstein>
+From:   Miklos Szeredi <miklos@szeredi.hu>
+Date:   Tue, 10 May 2022 15:15:05 +0200
+Message-ID: <CAJfpegtVgyumJiFM_ujjuRTjg07vwOd4h9AT+mbh+n1Qn-LqqA@mail.gmail.com>
+Subject: Re: [RFC PATCH] getting misc stats/attributes via xattr API
+To:     Christian Brauner <brauner@kernel.org>
+Cc:     linux-fsdevel@vger.kernel.org, Dave Chinner <david@fromorbit.com>,
+        "Theodore Ts'o" <tytso@mit.edu>, Karel Zak <kzak@redhat.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org,
+        Linux API <linux-api@vger.kernel.org>,
+        linux-man <linux-man@vger.kernel.org>,
+        LSM <linux-security-module@vger.kernel.org>,
+        Ian Kent <raven@themaw.net>,
+        David Howells <dhowells@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christian Brauner <christian@brauner.io>,
+        Amir Goldstein <amir73il@gmail.com>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Tue, 10 May 2022 at 13:53, Christian Brauner <brauner@kernel.org> wrote:
 
-commit 3db09e762dc79584a69c10d74a6b98f89a9979f8 upstream.
+> > What exactly are the attributes that systemd requires?
+>
+> We keep a repo with ideas for (kernel) extensions - we should probably
+> publish that somewhere - but the list we used for a prototype roughly
+> contains:
+>
+> * mount flags MOUNT_ATTR_RDONLY etc.
+> * time flags MOUNT_ATTR_RELATIME etc. (could probably be combined with
+>   mount flags. We missed the opportunity to make them proper enums
+>   separate from other mount flags imho.)
+> * propagation "flags" (MS_SHARED)
+> * peer group
+> * mnt_id of the mount
+> * mnt_id of the mount's parent
+> * owning userns
 
-We are now able to detect extra put_net() at the moment
-they happen, instead of much later in correct code paths.
+Sounds good thus far.   And hey, we don't even need a new syscall:
+statx(2) could handle these fine.
 
-u32_init_knode() / tcf_exts_init() populates the ->exts.net
-pointer, but as mentioned in tcf_exts_init(),
-the refcount on netns has not been elevated yet.
+> There's a bit more advanced stuff systemd would really want but which I
+> think is misplaced in a mountinfo system call including:
+> * list of primary and auxiliary block device major/minor
 
-The refcount is taken only once tcf_exts_get_net()
-is called.
+It's when you need to return variable size arrays or list of strings
+that the statx kind of interface falls down.
 
-So the two u32_destroy_key() calls from u32_change()
-are attempting to release an invalid reference on the netns.
+For that a hierarchical namespace is a much better choice, as it can
+represent arbitrary levels of arrays, while doing that with a
+specialized syscall is going to be cumbersome.
 
-syzbot report:
+> I just have a really hard time understanding how this belongs into the
+> (f)getxattr() system call family and why it would be a big deal to just
+> make this a separate system call.
 
-refcount_t: decrement hit 0; leaking memory.
-WARNING: CPU: 0 PID: 21708 at lib/refcount.c:31 refcount_warn_saturate+0xbf/0x1e0 lib/refcount.c:31
-Modules linked in:
-CPU: 0 PID: 21708 Comm: syz-executor.5 Not tainted 5.18.0-rc2-next-20220412-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:refcount_warn_saturate+0xbf/0x1e0 lib/refcount.c:31
-Code: 1d 14 b6 b2 09 31 ff 89 de e8 6d e9 89 fd 84 db 75 e0 e8 84 e5 89 fd 48 c7 c7 40 aa 26 8a c6 05 f4 b5 b2 09 01 e8 e5 81 2e 05 <0f> 0b eb c4 e8 68 e5 89 fd 0f b6 1d e3 b5 b2 09 31 ff 89 de e8 38
-RSP: 0018:ffffc900051af1b0 EFLAGS: 00010286
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 0000000000040000 RSI: ffffffff8160a0c8 RDI: fffff52000a35e28
-RBP: 0000000000000004 R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff81604a9e R11: 0000000000000000 R12: 1ffff92000a35e3b
-R13: 00000000ffffffef R14: ffff8880211a0194 R15: ffff8880577d0a00
-FS:  00007f25d183e700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f19c859c028 CR3: 0000000051009000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- __refcount_dec include/linux/refcount.h:344 [inline]
- refcount_dec include/linux/refcount.h:359 [inline]
- ref_tracker_free+0x535/0x6b0 lib/ref_tracker.c:118
- netns_tracker_free include/net/net_namespace.h:327 [inline]
- put_net_track include/net/net_namespace.h:341 [inline]
- tcf_exts_put_net include/net/pkt_cls.h:255 [inline]
- u32_destroy_key.isra.0+0xa7/0x2b0 net/sched/cls_u32.c:394
- u32_change+0xe01/0x3140 net/sched/cls_u32.c:909
- tc_new_tfilter+0x98d/0x2200 net/sched/cls_api.c:2148
- rtnetlink_rcv_msg+0x80d/0xb80 net/core/rtnetlink.c:6016
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2495
- netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
- netlink_unicast+0x543/0x7f0 net/netlink/af_netlink.c:1345
- netlink_sendmsg+0x904/0xe00 net/netlink/af_netlink.c:1921
- sock_sendmsg_nosec net/socket.c:705 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:725
- ____sys_sendmsg+0x6e2/0x800 net/socket.c:2413
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2467
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2496
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f25d0689049
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f25d183e168 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007f25d079c030 RCX: 00007f25d0689049
-RDX: 0000000000000000 RSI: 0000000020000340 RDI: 0000000000000005
-RBP: 00007f25d06e308d R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007ffd0b752e3f R14: 00007f25d183e300 R15: 0000000000022000
- </TASK>
+Fragmenting syntactically equivalent interfaces is bad, unifying them
+is good.  Dave's example of adding a new syscall for retrieving
+multiple xattrs  is a prime example.
 
-Fixes: 35c55fc156d8 ("cls_u32: use tcf_exts_get_net() before call_rcu()")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Cc: Cong Wang <xiyou.wangcong@gmail.com>
-Cc: Jiri Pirko <jiri@resnulli.us>
-Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-[rkolchmeyer: Backported to 4.14: adjusted u32_destroy_key() signature]
-Signed-off-by: Robert Kolchmeyer <rkolchmeyer@google.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- net/sched/cls_u32.c |   18 +++++++++++-------
- 1 file changed, 11 insertions(+), 7 deletions(-)
-
---- a/net/sched/cls_u32.c
-+++ b/net/sched/cls_u32.c
-@@ -395,15 +395,20 @@ static int u32_init(struct tcf_proto *tp
- 	return 0;
- }
- 
--static int u32_destroy_key(struct tcf_proto *tp, struct tc_u_knode *n,
--			   bool free_pf)
-+static void __u32_destroy_key(struct tc_u_knode *n)
- {
- 	struct tc_u_hnode *ht = rtnl_dereference(n->ht_down);
- 
- 	tcf_exts_destroy(&n->exts);
--	tcf_exts_put_net(&n->exts);
- 	if (ht && --ht->refcnt == 0)
- 		kfree(ht);
-+	kfree(n);
-+}
-+
-+static void u32_destroy_key(struct tcf_proto *tp, struct tc_u_knode *n,
-+			   bool free_pf)
-+{
-+	tcf_exts_put_net(&n->exts);
- #ifdef CONFIG_CLS_U32_PERF
- 	if (free_pf)
- 		free_percpu(n->pf);
-@@ -412,8 +417,7 @@ static int u32_destroy_key(struct tcf_pr
- 	if (free_pf)
- 		free_percpu(n->pcpu_success);
- #endif
--	kfree(n);
--	return 0;
-+	__u32_destroy_key(n);
- }
- 
- /* u32_delete_key_rcu should be called when free'ing a copied
-@@ -942,13 +946,13 @@ static int u32_change(struct net *net, s
- 				    tca[TCA_RATE], ovr);
- 
- 		if (err) {
--			u32_destroy_key(tp, new, false);
-+			__u32_destroy_key(new);
- 			return err;
- 		}
- 
- 		err = u32_replace_hw_knode(tp, new, flags);
- 		if (err) {
--			u32_destroy_key(tp, new, false);
-+			__u32_destroy_key(new);
- 			return err;
- 		}
- 
-
-
+Thanks,
+Miklos
