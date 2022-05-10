@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86D39C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A9BFC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:35:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243962AbiEJNgg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:36:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44372 "EHLO
+        id S243657AbiEJNgB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:36:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243118AbiEJNZa (ORCPT
+        with ESMTP id S243066AbiEJNZa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:25:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CD8018C048;
-        Tue, 10 May 2022 06:19:05 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0870122B75;
+        Tue, 10 May 2022 06:18:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F96D615F8;
-        Tue, 10 May 2022 13:19:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 918F9C385A6;
-        Tue, 10 May 2022 13:19:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65659B81CE7;
+        Tue, 10 May 2022 13:18:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C92D7C385C9;
+        Tue, 10 May 2022 13:18:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188743;
-        bh=W7ZK7KD0miQc+0GIjSeypunCKQIaBHTvFxVnApOunKs=;
+        s=korg; t=1652188720;
+        bh=MgNU/KErX9XYknk3zj2PDYvQIh2K7GS2hYAzr7pzkmM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YapPu2c1KsWvG28HY0dMOK8UVKcVzrrA3PW4H90CxOD8ic0hUOxn2ZCjFR8hRsNxn
-         o7odThb9wlBG6JgCnWropnK/7cPO3egODV2mUgBYC02NpfQhMqkjDD9X4PcWxFlkLh
-         2z1f7Jf6OsEgz/MRMBx1t2Quzc9fY92VbQjr9s1E=
+        b=Hj4fZ9dM96UfskoHgAHIORalMAxGCNs0v/SnlJBM8eRFX/QSsvcGPkXPfektFTE2R
+         QisDi9On1DQInoTr3Q1pxhgSsrvQmJ4sO42DTpalZabmYGnlljqXASvK8+LVtN0uiL
+         U8fHN9wb9XPsUbC3727qyhL5AV9xnPNqpa57hy4k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pengcheng Yang <yangpc@wangsu.com>,
-        Julian Anastasov <ja@ssi.bg>,
-        Simon Horman <horms@verge.net.au>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 30/88] ipvs: correctly print the memory size of ip_vs_conn_tab
-Date:   Tue, 10 May 2022 15:07:15 +0200
-Message-Id: <20220510130734.622178686@linuxfoundation.org>
+        stable@vger.kernel.org, Bruno Thomsen <bruno.thomsen@gmail.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 4.19 05/88] USB: serial: cp210x: add PIDs for Kamstrup USB Meter Reader
+Date:   Tue, 10 May 2022 15:06:50 +0200
+Message-Id: <20220510130733.896688603@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 References: <20220510130733.735278074@linuxfoundation.org>
@@ -51,38 +48,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pengcheng Yang <yangpc@wangsu.com>
+From: Bruno Thomsen <bruno.thomsen@gmail.com>
 
-[ Upstream commit eba1a872cb73314280d5448d934935b23e30b7ca ]
+commit 35a923a0b329c343e9e81d79518e2937eba06fcd upstream.
 
-The memory size of ip_vs_conn_tab changed after we use hlist
-instead of list.
+Wireless reading of water and heat meters using 868 MHz wM-Bus mode C1.
 
-Fixes: 731109e78415 ("ipvs: use hlist instead of list")
-Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
-Acked-by: Julian Anastasov <ja@ssi.bg>
-Acked-by: Simon Horman <horms@verge.net.au>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The two different product IDs allow detection of dongle antenna
+solution:
+- Internal antenna
+- External antenna using SMA connector
+
+https://www.kamstrup.com/en-en/water-solutions/water-meter-reading/usb-meter-reader
+
+Signed-off-by: Bruno Thomsen <bruno.thomsen@gmail.com>
+Link: https://lore.kernel.org/r/20220414081202.5591-1-bruno.thomsen@gmail.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/ipvs/ip_vs_conn.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/serial/cp210x.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/netfilter/ipvs/ip_vs_conn.c b/net/netfilter/ipvs/ip_vs_conn.c
-index 2780a847701e..95c35aa639ec 100644
---- a/net/netfilter/ipvs/ip_vs_conn.c
-+++ b/net/netfilter/ipvs/ip_vs_conn.c
-@@ -1426,7 +1426,7 @@ int __init ip_vs_conn_init(void)
- 	pr_info("Connection hash table configured "
- 		"(size=%d, memory=%ldKbytes)\n",
- 		ip_vs_conn_tab_size,
--		(long)(ip_vs_conn_tab_size*sizeof(struct list_head))/1024);
-+		(long)(ip_vs_conn_tab_size*sizeof(*ip_vs_conn_tab))/1024);
- 	IP_VS_DBG(0, "Each connection entry needs %zd bytes at least\n",
- 		  sizeof(struct ip_vs_conn));
- 
--- 
-2.35.1
-
+--- a/drivers/usb/serial/cp210x.c
++++ b/drivers/usb/serial/cp210x.c
+@@ -195,6 +195,8 @@ static const struct usb_device_id id_tab
+ 	{ USB_DEVICE(0x16DC, 0x0015) }, /* W-IE-NE-R Plein & Baus GmbH CML Control, Monitoring and Data Logger */
+ 	{ USB_DEVICE(0x17A8, 0x0001) }, /* Kamstrup Optical Eye/3-wire */
+ 	{ USB_DEVICE(0x17A8, 0x0005) }, /* Kamstrup M-Bus Master MultiPort 250D */
++	{ USB_DEVICE(0x17A8, 0x0101) }, /* Kamstrup 868 MHz wM-Bus C-Mode Meter Reader (Int Ant) */
++	{ USB_DEVICE(0x17A8, 0x0102) }, /* Kamstrup 868 MHz wM-Bus C-Mode Meter Reader (Ext Ant) */
+ 	{ USB_DEVICE(0x17F4, 0xAAAA) }, /* Wavesense Jazz blood glucose meter */
+ 	{ USB_DEVICE(0x1843, 0x0200) }, /* Vaisala USB Instrument Cable */
+ 	{ USB_DEVICE(0x18EF, 0xE00F) }, /* ELV USB-I2C-Interface */
 
 
