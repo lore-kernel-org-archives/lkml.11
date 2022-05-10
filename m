@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D350C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:20:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A940FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:20:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241965AbiEJNYZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:24:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59628 "EHLO
+        id S242712AbiEJNYe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:24:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243114AbiEJNVf (ORCPT
+        with ESMTP id S243144AbiEJNVg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:21:35 -0400
+        Tue, 10 May 2022 09:21:36 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADEC42C13E3;
-        Tue, 10 May 2022 06:14:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E7992C1807;
+        Tue, 10 May 2022 06:14:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A85A1B81CE7;
-        Tue, 10 May 2022 13:14:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 205E0C385C2;
-        Tue, 10 May 2022 13:14:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F06DFB81DA0;
+        Tue, 10 May 2022 13:14:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31E3DC385C2;
+        Tue, 10 May 2022 13:14:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188488;
-        bh=YI5UjmM43NAUlBOvm8tcF0gqikdn9+lJvBigtD/JjAc=;
+        s=korg; t=1652188491;
+        bh=bbuB3klp7gBXlXc0HvRVG1HXiaFEo6yFGRcr8AS1H2s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GR546NNqOfdGiJhovY+nHCMqRpOSlwSEnq/ts0gqn5Yf/nhAv/wRPhvjzjxxQSX3k
-         TTLWCRMimT+6jN1heBvgNls5F7IAxKWXW/ItsFI3eqiJR6JZjDz2NG6EqZI8iXy3jB
-         +/xgecUiW5koYsPD9907WMXJ2dk5wZEUhIO/JHlc=
+        b=jpu7+xTzQxq6gSwltFljRhsNBkbJuZl9rGLCAOtnBCDdPe7pVm90KOQgKtRnEOEDm
+         thtgJdRkj2UmHjmgToqN6W7jzHg+p4qsMeD9mI4MNLGx1d3J0BPV3rhntpM8QBFhbz
+         h75baZ+WHE79Apo8a23UvczNjx08pLizJe84JGtQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.14 24/78] hex2bin: fix access beyond string end
-Date:   Tue, 10 May 2022 15:07:10 +0200
-Message-Id: <20220510130733.247460246@linuxfoundation.org>
+        stable@vger.kernel.org, Peter Chen <peter.chen@kernel.org>,
+        Weitao Wang <WeitaoWang-oc@zhaoxin.com>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 25/78] USB: Fix xhci event ring dequeue pointer ERDP update issue
+Date:   Tue, 10 May 2022 15:07:11 +0200
+Message-Id: <20220510130733.276202420@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
 References: <20220510130732.522479698@linuxfoundation.org>
@@ -49,48 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
 
-commit e4d8a29997731b3bb14059024b24df9f784288d0 upstream.
+[ Upstream commit e91ac20889d1a26d077cc511365cd7ff4346a6f3 ]
 
-If we pass too short string to "hex2bin" (and the string size without
-the terminating NUL character is even), "hex2bin" reads one byte after
-the terminating NUL character.  This patch fixes it.
+In some situations software handles TRB events slower than adding TRBs.
+If the number of TRB events to be processed in a given interrupt is exactly
+the same as the event ring size 256, then the local variable
+"event_ring_deq" that holds the initial dequeue position is equal to
+software_dequeue after handling all 256 interrupts.
 
-Note that hex_to_bin returns -1 on error and hex2bin return -EINVAL on
-error - so we can't just return the variable "hi" or "lo" on error.
-This inconsistency may be fixed in the next merge window, but for the
-purpose of fixing this bug, we just preserve the existing behavior and
-return -1 and -EINVAL.
+It will cause driver to not update ERDP to hardware,
 
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Fixes: b78049831ffe ("lib: add error checking to hex2bin")
-Cc: stable@vger.kernel.org
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Software dequeue pointer is out of sync with ERDP on interrupt exit.
+On the next interrupt, the event ring may full but driver will not
+update ERDP as software_dequeue is equal to ERDP.
+
+[  536.377115] xhci_hcd 0000:00:12.0: ERROR unknown event type 37
+[  566.933173] sd 8:0:0:0: [sdb] tag#27 uas_eh_abort_handler 0 uas-tag 7 inflight: CMD OUT
+[  566.933181] sd 8:0:0:0: [sdb] tag#27 CDB: Write(10) 2a 00 17 71 e6 78 00 00 08 00
+[  572.041186] xhci_hcd On some situataions,the0000:00:12.0: xHCI host not responding to stop endpoint command.
+[  572.057193] xhci_hcd 0000:00:12.0: Host halt failed, -110
+[  572.057196] xhci_hcd 0000:00:12.0: xHCI host controller not responding, assume dead
+[  572.057236] sd 8:0:0:0: [sdb] tag#26 uas_eh_abort_handler 0 uas-tag 6 inflight: CMD
+[  572.057240] sd 8:0:0:0: [sdb] tag#26 CDB: Write(10) 2a 00 38 eb cc d8 00 00 08 00
+[  572.057244] sd 8:0:0:0: [sdb] tag#25 uas_eh_abort_handler 0 uas-tag 5 inflight: CMD
+
+Hardware ERDP is updated mid event handling if there are more than 128
+events in an interrupt (half of ring size).
+Fix this by updating the software local variable at the same time as
+hardware ERDP.
+
+[commit message rewording -Mathias]
+
+Fixes: dc0ffbea5729 ("usb: host: xhci: update event ring dequeue pointer on purpose")
+Reviewed-by: Peter Chen <peter.chen@kernel.org>
+Signed-off-by: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Link: https://lore.kernel.org/r/20220408134823.2527272-2-mathias.nyman@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/hexdump.c |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/usb/host/xhci-ring.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/lib/hexdump.c
-+++ b/lib/hexdump.c
-@@ -66,10 +66,13 @@ EXPORT_SYMBOL(hex_to_bin);
- int hex2bin(u8 *dst, const char *src, size_t count)
- {
- 	while (count--) {
--		int hi = hex_to_bin(*src++);
--		int lo = hex_to_bin(*src++);
-+		int hi, lo;
+diff --git a/drivers/usb/host/xhci-ring.c b/drivers/usb/host/xhci-ring.c
+index 681d5bb99d99..9f49649f1df5 100644
+--- a/drivers/usb/host/xhci-ring.c
++++ b/drivers/usb/host/xhci-ring.c
+@@ -2921,6 +2921,8 @@ irqreturn_t xhci_irq(struct usb_hcd *hcd)
+ 		if (event_loop++ < TRBS_PER_SEGMENT / 2)
+ 			continue;
+ 		xhci_update_erst_dequeue(xhci, event_ring_deq);
++		event_ring_deq = xhci->event_ring->dequeue;
++
+ 		event_loop = 0;
+ 	}
  
--		if ((hi < 0) || (lo < 0))
-+		hi = hex_to_bin(*src++);
-+		if (unlikely(hi < 0))
-+			return -EINVAL;
-+		lo = hex_to_bin(*src++);
-+		if (unlikely(lo < 0))
- 			return -EINVAL;
- 
- 		*dst++ = (hi << 4) | lo;
+-- 
+2.35.1
+
 
 
