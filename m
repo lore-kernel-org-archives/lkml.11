@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F9E4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:11:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47631C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:11:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242299AbiEJNPU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:15:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58440 "EHLO
+        id S242317AbiEJNP2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:15:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242279AbiEJNO4 (ORCPT
+        with ESMTP id S242257AbiEJNPG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:14:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1211A39B8C;
-        Tue, 10 May 2022 06:10:59 -0700 (PDT)
+        Tue, 10 May 2022 09:15:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173793968F;
+        Tue, 10 May 2022 06:11:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A3F62612E4;
-        Tue, 10 May 2022 13:10:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99E35C385C2;
-        Tue, 10 May 2022 13:10:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6539B615DD;
+        Tue, 10 May 2022 13:11:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76E29C385C6;
+        Tue, 10 May 2022 13:11:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188258;
-        bh=hnQrCi18EPXnNAEpTvcEcN8OpIE6HhfqnRYesWkdhVE=;
+        s=korg; t=1652188260;
+        bh=23NIjSuIAxDr+YqpEEABu2BsmOfakhswdhx5AG3Xwb4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BOsvCImA0BTyja897BPuf/ruCyajaEe42bHjDtIQ4HGiqlSY5g+4nF69k4C84H+Et
-         0zhvGojwKB/E8eXnoNDvzj4RFWOIqANqbTQes6MM5f1EiOlOc7hRQ533gRPa/e5C37
-         9NTWyn4P0EiH8YPCKQu8BlJonaUNgNaMl0S/7Db8=
+        b=oUbYpZeJIW/d6hDLfAbwrq9ecQWrLx8H0dAmQOwhHAEGmCjGMLNpGcDU0OKaPSuz+
+         NK0bVi6/THICHkpuJY+9KTnRkOEWXJYMQb6G/TmdDUqexhfMRpbEFGjbO31CNf+yHi
+         8LcbPPYL8f4toR1/BRkdPuBCxDZfWDiz0EMwxDSg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        Hangyu Hua <hbh25y@gmail.com>
-Subject: [PATCH 4.9 14/66] usb: misc: fix improper handling of refcount in uss720_probe()
-Date:   Tue, 10 May 2022 15:07:04 +0200
-Message-Id: <20220510130730.185569358@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Vacura <w36195@motorola.com>
+Subject: [PATCH 4.9 15/66] usb: gadget: uvc: Fix crash when encoding data for usb request
+Date:   Tue, 10 May 2022 15:07:05 +0200
+Message-Id: <20220510130730.213554487@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.762341544@linuxfoundation.org>
 References: <20220510130729.762341544@linuxfoundation.org>
@@ -49,52 +47,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Dan Vacura <w36195@motorola.com>
 
-commit 0a96fa640dc928da9eaa46a22c46521b037b78ad upstream.
+commit 71d471e3faf90c9674cadc7605ac719e82cb7fac upstream.
 
-usb_put_dev shouldn't be called when uss720_probe succeeds because of
-priv->usbdev. At the same time, priv->usbdev shouldn't be set to NULL
-before destroy_priv in uss720_disconnect because usb_put_dev is in
-destroy_priv.
+During the uvcg_video_pump() process, if an error occurs and
+uvcg_queue_cancel() is called, the buffer queue will be cleared out, but
+the current marker (queue->buf_used) of the active buffer (no longer
+active) is not reset. On the next iteration of uvcg_video_pump() the
+stale buf_used count will be used and the logic of min((unsigned
+int)len, buf->bytesused - queue->buf_used) may incorrectly calculate a
+nbytes size, causing an invalid memory access.
 
-Fix this by moving priv->usbdev = NULL after usb_put_dev.
+[80802.185460][  T315] configfs-gadget gadget: uvc: VS request completed
+with status -18.
+[80802.185519][  T315] configfs-gadget gadget: uvc: VS request completed
+with status -18.
+...
+uvcg_queue_cancel() is called and the queue is cleared out, but the
+marker queue->buf_used is not reset.
+...
+[80802.262328][ T8682] Unable to handle kernel paging request at virtual
+address ffffffc03af9f000
+...
+...
+[80802.263138][ T8682] Call trace:
+[80802.263146][ T8682]  __memcpy+0x12c/0x180
+[80802.263155][ T8682]  uvcg_video_pump+0xcc/0x1e0
+[80802.263165][ T8682]  process_one_work+0x2cc/0x568
+[80802.263173][ T8682]  worker_thread+0x28c/0x518
+[80802.263181][ T8682]  kthread+0x160/0x170
+[80802.263188][ T8682]  ret_from_fork+0x10/0x18
+[80802.263198][ T8682] Code: a8c12829 a88130cb a8c130
 
-Fixes: dcb4b8ad6a44 ("misc/uss720: fix memory leak in uss720_probe")
-Cc: stable <stable@kernel.org>
-Reviewed-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Link: https://lore.kernel.org/r/20220407024001.11761-1-hbh25y@gmail.com
+Fixes: d692522577c0 ("usb: gadget/uvc: Port UVC webcam gadget to use videobuf2 framework")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Dan Vacura <w36195@motorola.com>
+Link: https://lore.kernel.org/r/20220331184024.23918-1-w36195@motorola.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/misc/uss720.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/usb/gadget/function/uvc_queue.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/usb/misc/uss720.c
-+++ b/drivers/usb/misc/uss720.c
-@@ -87,6 +87,7 @@ static void destroy_priv(struct kref *kr
- 
- 	dev_dbg(&priv->usbdev->dev, "destroying priv datastructure\n");
- 	usb_put_dev(priv->usbdev);
-+	priv->usbdev = NULL;
- 	kfree(priv);
- }
- 
-@@ -750,7 +751,6 @@ static int uss720_probe(struct usb_inter
- 	parport_announce_port(pp);
- 
- 	usb_set_intfdata(intf, pp);
--	usb_put_dev(usbdev);
- 	return 0;
- 
- probe_abort:
-@@ -770,7 +770,6 @@ static void uss720_disconnect(struct usb
- 	if (pp) {
- 		priv = pp->private_data;
- 		usbdev = priv->usbdev;
--		priv->usbdev = NULL;
- 		priv->pp = NULL;
- 		dev_dbg(&intf->dev, "parport_remove_port\n");
- 		parport_remove_port(pp);
+--- a/drivers/usb/gadget/function/uvc_queue.c
++++ b/drivers/usb/gadget/function/uvc_queue.c
+@@ -246,6 +246,8 @@ void uvcg_queue_cancel(struct uvc_video_
+ 		buf->state = UVC_BUF_STATE_ERROR;
+ 		vb2_buffer_done(&buf->buf.vb2_buf, VB2_BUF_STATE_ERROR);
+ 	}
++	queue->buf_used = 0;
++
+ 	/* This must be protected by the irqlock spinlock to avoid race
+ 	 * conditions between uvc_queue_buffer and the disconnection event that
+ 	 * could result in an interruptible wait in uvc_dequeue_buffer. Do not
 
 
