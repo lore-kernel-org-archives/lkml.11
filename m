@@ -2,50 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86504C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:49:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1C6FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:49:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346323AbiEJPxT (ORCPT
+        id S1346414AbiEJPxY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:53:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60022 "EHLO
+        Tue, 10 May 2022 11:53:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346412AbiEJPu7 (ORCPT
+        with ESMTP id S1346496AbiEJPvA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:50:59 -0400
+        Tue, 10 May 2022 11:51:00 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60D5628B681;
-        Tue, 10 May 2022 08:45:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 015B228B696;
+        Tue, 10 May 2022 08:45:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D253E615AE;
-        Tue, 10 May 2022 15:45:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAA5FC385CC;
-        Tue, 10 May 2022 15:45:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BE27614E8;
+        Tue, 10 May 2022 15:45:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4D06C385CB;
+        Tue, 10 May 2022 15:45:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652197507;
-        bh=bDtPcSboLQbfZJjHkkp3qfo4UrMu5pxU6qaeAryw3ss=;
+        s=k20201202; t=1652197511;
+        bh=21bwpjNudExl89E+GWay/earnO1hhomI8Dv+7vwzFGE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZJDyUfqoWD1TXBb75z8uUTZQGADEyY/Vm2k6OGvvd//tn2b9I7QPMLYWW+GeHIKR1
-         5zujT3Xr4LyToLWecJpb/96xHeg9iJi+Ek/6cig/y6FoPROB2s4nixYO8Zr6GyUcEX
-         EtImhPOc/G/31ksO46J2Lvc2FxBMR7fAMAdEfqmbbFLNXrWEW9mKbdXpzjKcyQ2iTA
-         k8bQ4Io8HRn5Uo/2WtLO4vUUtYJ1jYK1w1KMiD6ndg5IH15bTtR5289gjA2HD3E9qP
-         gvBPp7qma2A0hThfDDKyuKJWXyEFgNIKCfXYmQLGZyXTGvgKU+iGA8FXEJMJJDVNXh
-         A20c9jGfasV8g==
+        b=aGQHn3PhinxxrPmgBQONV3sx1z3It5AS/LMDw1STNIOxOdPZsfkjPwl1PLYfD6FQ5
+         YxxuQuYrGf4hB/2kt5d86kcYdUvFynlzR+T919Iw91s1lapqvBxYHstDALK4jugub9
+         E6Y0XDtTMWrcs5HeA3Ny2AWveiC8jUqp+nxK7Q26BMpgL78z/cK/6IlffyXiU8E+yF
+         Vc1c8YaFrNrsty9Kmy/oD5WI4b7g0wt8GVTsWpL6KHrrLbyq3hPBoLkqkoTRBkagYW
+         VBU2fUUVmmKqNZ6jZj4lpmVOfUrM8Yy8YwYyPWytr63lkYPx+CGN1ZyGay5/UTPhDT
+         WTM5XcLyyGZrA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Willy Tarreau <w@1wt.eu>, Moshe Kol <moshe.kol@mail.huji.ac.il>,
-        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
-        Amit Klein <aksecurity@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 17/19] tcp: increase source port perturb table to 2^16
-Date:   Tue, 10 May 2022 11:44:27 -0400
-Message-Id: <20220510154429.153677-17-sashal@kernel.org>
+Cc:     Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        James.Bottomley@HansenPartnership.com, dave.anglin@bell.net,
+        linux-parisc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 19/19] Revert "parisc: Fix patch code locking and flushing"
+Date:   Tue, 10 May 2022 11:44:29 -0400
+Message-Id: <20220510154429.153677-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220510154429.153677-1-sashal@kernel.org>
 References: <20220510154429.153677-1-sashal@kernel.org>
@@ -57,62 +52,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Willy Tarreau <w@1wt.eu>
+From: Helge Deller <deller@gmx.de>
 
-[ Upstream commit 4c2c8f03a5ab7cb04ec64724d7d176d00bcc91e5 ]
+[ Upstream commit 6c800d7f55fcd78e17deae5ae4374d8e73482c13 ]
 
-Moshe Kol, Amit Klein, and Yossi Gilad reported being able to accurately
-identify a client by forcing it to emit only 40 times more connections
-than there are entries in the table_perturb[] table. The previous two
-improvements consisting in resalting the secret every 10s and adding
-randomness to each port selection only slightly improved the situation,
-and the current value of 2^8 was too small as it's not very difficult
-to make a client emit 10k connections in less than 10 seconds.
+This reverts commit a9fe7fa7d874a536e0540469f314772c054a0323.
 
-Thus we're increasing the perturb table from 2^8 to 2^16 so that the
-same precision now requires 2.6M connections, which is more difficult in
-this time frame and harder to hide as a background activity. The impact
-is that the table now uses 256 kB instead of 1 kB, which could mostly
-affect devices making frequent outgoing connections. However such
-components usually target a small set of destinations (load balancers,
-database clients, perf assessment tools), and in practice only a few
-entries will be visited, like before.
+Leads to segfaults on 32bit kernel.
 
-A live test at 1 million connections per second showed no performance
-difference from the previous value.
-
-Reported-by: Moshe Kol <moshe.kol@mail.huji.ac.il>
-Reported-by: Yossi Gilad <yossi.gilad@mail.huji.ac.il>
-Reported-by: Amit Klein <aksecurity@gmail.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/inet_hashtables.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ arch/parisc/kernel/patch.c | 25 ++++++++++++++-----------
+ 1 file changed, 14 insertions(+), 11 deletions(-)
 
-diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index 763395e30c77..f76e4ac1ba3a 100644
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -726,11 +726,12 @@ EXPORT_SYMBOL_GPL(inet_unhash);
-  * Note that we use 32bit integers (vs RFC 'short integers')
-  * because 2^16 is not a multiple of num_ephemeral and this
-  * property might be used by clever attacker.
-- * RFC claims using TABLE_LENGTH=10 buckets gives an improvement,
-- * we use 256 instead to really give more isolation and
-- * privacy, this only consumes 1 KB of kernel memory.
-+ * RFC claims using TABLE_LENGTH=10 buckets gives an improvement, though
-+ * attacks were since demonstrated, thus we use 65536 instead to really
-+ * give more isolation and privacy, at the expense of 256kB of kernel
-+ * memory.
-  */
--#define INET_TABLE_PERTURB_SHIFT 8
-+#define INET_TABLE_PERTURB_SHIFT 16
- #define INET_TABLE_PERTURB_SIZE (1 << INET_TABLE_PERTURB_SHIFT)
- static u32 *table_perturb;
+diff --git a/arch/parisc/kernel/patch.c b/arch/parisc/kernel/patch.c
+index e59574f65e64..80a0ab372802 100644
+--- a/arch/parisc/kernel/patch.c
++++ b/arch/parisc/kernel/patch.c
+@@ -40,7 +40,10 @@ static void __kprobes *patch_map(void *addr, int fixmap, unsigned long *flags,
  
+ 	*need_unmap = 1;
+ 	set_fixmap(fixmap, page_to_phys(page));
+-	raw_spin_lock_irqsave(&patch_lock, *flags);
++	if (flags)
++		raw_spin_lock_irqsave(&patch_lock, *flags);
++	else
++		__acquire(&patch_lock);
+ 
+ 	return (void *) (__fix_to_virt(fixmap) + (uintaddr & ~PAGE_MASK));
+ }
+@@ -49,7 +52,10 @@ static void __kprobes patch_unmap(int fixmap, unsigned long *flags)
+ {
+ 	clear_fixmap(fixmap);
+ 
+-	raw_spin_unlock_irqrestore(&patch_lock, *flags);
++	if (flags)
++		raw_spin_unlock_irqrestore(&patch_lock, *flags);
++	else
++		__release(&patch_lock);
+ }
+ 
+ void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
+@@ -61,9 +67,8 @@ void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
+ 	int mapped;
+ 
+ 	/* Make sure we don't have any aliases in cache */
+-	flush_kernel_dcache_range_asm(start, end);
+-	flush_kernel_icache_range_asm(start, end);
+-	flush_tlb_kernel_range(start, end);
++	flush_kernel_vmap_range(addr, len);
++	flush_icache_range(start, end);
+ 
+ 	p = fixmap = patch_map(addr, FIX_TEXT_POKE0, &flags, &mapped);
+ 
+@@ -76,10 +81,8 @@ void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
+ 			 * We're crossing a page boundary, so
+ 			 * need to remap
+ 			 */
+-			flush_kernel_dcache_range_asm((unsigned long)fixmap,
+-						      (unsigned long)p);
+-			flush_tlb_kernel_range((unsigned long)fixmap,
+-					       (unsigned long)p);
++			flush_kernel_vmap_range((void *)fixmap,
++						(p-fixmap) * sizeof(*p));
+ 			if (mapped)
+ 				patch_unmap(FIX_TEXT_POKE0, &flags);
+ 			p = fixmap = patch_map(addr, FIX_TEXT_POKE0, &flags,
+@@ -87,10 +90,10 @@ void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
+ 		}
+ 	}
+ 
+-	flush_kernel_dcache_range_asm((unsigned long)fixmap, (unsigned long)p);
+-	flush_tlb_kernel_range((unsigned long)fixmap, (unsigned long)p);
++	flush_kernel_vmap_range((void *)fixmap, (p-fixmap) * sizeof(*p));
+ 	if (mapped)
+ 		patch_unmap(FIX_TEXT_POKE0, &flags);
++	flush_icache_range(start, end);
+ }
+ 
+ void __kprobes __patch_text(void *addr, u32 insn)
 -- 
 2.35.1
 
