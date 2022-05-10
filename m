@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE1C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:15:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F3ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:15:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242604AbiEJNTN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:19:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35740 "EHLO
+        id S242502AbiEJNTY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:19:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242414AbiEJNQg (ORCPT
+        with ESMTP id S242498AbiEJNQn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:16:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 385503EBB9;
-        Tue, 10 May 2022 06:12:23 -0700 (PDT)
+        Tue, 10 May 2022 09:16:43 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE643496B3;
+        Tue, 10 May 2022 06:12:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B2220B81DA1;
-        Tue, 10 May 2022 13:12:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2785AC385C2;
-        Tue, 10 May 2022 13:12:19 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 93CFBCE1EE2;
+        Tue, 10 May 2022 13:12:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98CD6C385A6;
+        Tue, 10 May 2022 13:12:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188340;
-        bh=3OFM0X4WoAOflt0Pp2URYa5Mf5EyB4TJoJUaxx8rens=;
+        s=korg; t=1652188350;
+        bh=NHaV4yuE/2PD3w4mbg06eoAygsYUC7lzoD4CfDzjT74=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aYHWPRhSMFZ/nhtc7jyuL0axCAhur46DYkHKSg3AG0eaIRXoQrS1PmHeFFlzJaIef
-         CECZ835MvfM159/y506hdmT+s2rF0j5nOvwJKUESUxipJ1KlVZwJIXFANG1AWTudlg
-         nnKhi6UzrbnuRR2LVEnIRn92Mdccl6i/ymei8i1E=
+        b=Ae/lXk5JUOyy15WErMvHuUpai5EpPoVqqYaSKU45Q8lWvcUVUN08TOSEatG/k3oZM
+         pXlLQX2JVUQvGxSNKUTykUECCzuaHvPZVStaRq7dzDzmlIENYIlTQFPg9Xl9IFzHX+
+         TPiWsHWc5TuyFJNPpnNLsSrk+/szQTQEMnT09Gmo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 4.9 42/66] tty: n_gsm: fix incorrect UA handling
-Date:   Tue, 10 May 2022 15:07:32 +0200
-Message-Id: <20220510130731.001332204@linuxfoundation.org>
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
+Subject: [PATCH 4.9 44/66] parisc: Merge model and model name into one line in /proc/cpuinfo
+Date:   Tue, 10 May 2022 15:07:34 +0200
+Message-Id: <20220510130731.059057471@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.762341544@linuxfoundation.org>
 References: <20220510130729.762341544@linuxfoundation.org>
@@ -47,38 +47,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Helge Deller <deller@gmx.de>
 
-commit ff9166c623704337bd6fe66fce2838d9768a6634 upstream.
+commit 5b89966bc96a06f6ad65f64ae4b0461918fcc9d3 upstream.
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.4.4.2 states that any received unnumbered
-acknowledgment (UA) with its poll/final (PF) bit set to 0 shall be
-discarded. Currently, all UA frame are handled in the same way regardless
-of the PF bit. This does not comply with the standard.
-Remove the UA case in gsm_queue() to process only UA frames with PF bit set
-to 1 to abide the standard.
+The Linux tool "lscpu" shows the double amount of CPUs if we have
+"model" and "model name" in two different lines in /proc/cpuinfo.
+This change combines the model and the model name into one line.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Signed-off-by: Helge Deller <deller@gmx.de>
 Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220414094225.4527-20-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_gsm.c |    1 -
- 1 file changed, 1 deletion(-)
+ arch/parisc/kernel/processor.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1829,7 +1829,6 @@ static void gsm_queue(struct gsm_mux *gs
- 		gsm_response(gsm, address, UA);
- 		gsm_dlci_close(dlci);
- 		break;
--	case UA:
- 	case UA|PF:
- 		if (cr == 0 || dlci == NULL)
- 			break;
+--- a/arch/parisc/kernel/processor.c
++++ b/arch/parisc/kernel/processor.c
+@@ -390,8 +390,7 @@ show_cpuinfo (struct seq_file *m, void *
+ 		}
+ 		seq_printf(m, " (0x%02lx)\n", boot_cpu_data.pdc.capabilities);
+ 
+-		seq_printf(m, "model\t\t: %s\n"
+-				"model name\t: %s\n",
++		seq_printf(m, "model\t\t: %s - %s\n",
+ 				 boot_cpu_data.pdc.sys_model_name,
+ 				 cpuinfo->dev ?
+ 				 cpuinfo->dev->name : "Unknown");
 
 
