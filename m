@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87E02C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9249C43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:10:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343582AbiEJOK7 (ORCPT
+        id S1343830AbiEJOLQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:10:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51268 "EHLO
+        Tue, 10 May 2022 10:11:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245045AbiEJNrN (ORCPT
+        with ESMTP id S245030AbiEJNrM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:47:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81A432F38D;
-        Tue, 10 May 2022 06:34:15 -0700 (PDT)
+        Tue, 10 May 2022 09:47:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4311C62206;
+        Tue, 10 May 2022 06:33:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AE64615C8;
-        Tue, 10 May 2022 13:34:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1066EC385A6;
-        Tue, 10 May 2022 13:34:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F36C9B81D24;
+        Tue, 10 May 2022 13:33:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47290C385A6;
+        Tue, 10 May 2022 13:33:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189654;
-        bh=WppGhgcPB+6oY6QJ8p+yvs4P6oEjc6aM7RIGjBre9Pc=;
+        s=korg; t=1652189625;
+        bh=bzqli6wHMqa6fSFnhXTYiXjyfTUibBvqBc9rZjwUU/k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2k1cwXWIwixpC9nV8dLlKRIvRlglzc1+ei2RrgTaD6gsm5y8746bwdUvxjuSVsWU2
-         GfYJ5UwPk7i4OqoQmNIQF8IOjnrsSfWrrsK0Puoc4cb3r/ZG085KKLu+/RsVo3oe55
-         GqGpR94bD5U6qrn0uUpPQF4WKCs53L0GM4rD0Kq8=
+        b=TN9I64OxK0O1Gza6+51K46mKvgDfjkQpslvkMOSMTeVnvAw28hxLvXak/MAxl5zC5
+         sM6wPAsmRJIFspd2mwZLJr13djCeI352ZmwR/zJCGrIZSD/BiS29VeN4pIMDvUNiEf
+         YK9IaZx8FHsgpI0rvxBR2MwOlR1Wnp7zVC25tlsI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, pali@kernel.org,
-        =?UTF-8?q?Marek=20Beh=FAn?= <kabel@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH 5.15 119/135] PCI: aardvark: Check return value of generic_handle_domain_irq() when processing INTx IRQ
-Date:   Tue, 10 May 2022 15:08:21 +0200
-Message-Id: <20220510130743.812198606@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Evan Quan <evan.quan@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.15 084/135] drm/amdgpu: dont set s3 and s0ix at the same time
+Date:   Tue, 10 May 2022 15:07:46 +0200
+Message-Id: <20220510130742.821409946@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -50,34 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-commit 51f96e287c6f003d3bb29672811c757c5fbf0028 upstream.
+commit eac4c54bf7f17fb4681b85e5fe383b74d6261a2b upstream.
 
-It is possible that we receive spurious INTx interrupt. Check for the
-return value of generic_handle_domain_irq() when processing INTx IRQ.
+This makes it clearer which codepaths are in use specifically in
+one state or the other.
 
-Link: https://lore.kernel.org/r/20220110015018.26359-6-kabel@kernel.org
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Marek Behún <kabel@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Acked-by: Evan Quan <evan.quan@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/pci-aardvark.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/drivers/pci/controller/pci-aardvark.c
-+++ b/drivers/pci/controller/pci-aardvark.c
-@@ -1429,7 +1429,9 @@ static void advk_pcie_handle_int(struct
- 		advk_writel(pcie, PCIE_ISR1_INTX_ASSERT(i),
- 			    PCIE_ISR1_REG);
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+@@ -2250,9 +2250,9 @@ static int amdgpu_pmops_suspend(struct d
  
--		generic_handle_domain_irq(pcie->irq_domain, i);
-+		if (generic_handle_domain_irq(pcie->irq_domain, i) == -EINVAL)
-+			dev_err_ratelimited(&pcie->pdev->dev, "unexpected INT%c IRQ\n",
-+					    (char)i + 'A');
- 	}
+ 	if (amdgpu_acpi_is_s0ix_active(adev))
+ 		adev->in_s0ix = true;
+-	adev->in_s3 = true;
++	else
++		adev->in_s3 = true;
+ 	r = amdgpu_device_suspend(drm_dev, true);
+-	adev->in_s3 = false;
+ 	if (r)
+ 		return r;
+ 	if (!adev->in_s0ix)
+@@ -2269,6 +2269,8 @@ static int amdgpu_pmops_resume(struct de
+ 	r = amdgpu_device_resume(drm_dev, true);
+ 	if (amdgpu_acpi_is_s0ix_active(adev))
+ 		adev->in_s0ix = false;
++	else
++		adev->in_s3 = false;
+ 	return r;
  }
  
 
