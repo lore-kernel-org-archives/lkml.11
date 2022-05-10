@@ -2,120 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC51CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:41:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0757EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:41:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243677AbiEJOpE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:45:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46922 "EHLO
+        id S240196AbiEJOpR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:45:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344748AbiEJOoi (ORCPT
+        with ESMTP id S242929AbiEJOoi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 10:44:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CAE524641E;
-        Tue, 10 May 2022 07:03:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FCBA1900C7
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:03:48 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1849B6062B;
-        Tue, 10 May 2022 14:03:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B0D7C385C2;
-        Tue, 10 May 2022 14:03:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652191419;
-        bh=KjDXrMRIgjl9mqK+1lZepnUpO/sXpVuQ6BE0MJGcLl4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Ftzgu9vNda3LniGP6pt1aUYcmfQNMsGRCzzkPe7Ju5jVv55Vo8Km6RS6REDd052BK
-         ZPSzQRrNz/z5Du+mxpMlcqlPRTPsmXopKmmYWzaDphQboUeez0V7FKSP1JjN23tjlb
-         YbJIEKiZUVtLttBvGAarW3b+yiJOB2QP7KW1vJBiLvnWPZAb6OYhQqogyC9ukkZgj4
-         JkP8meYhGRCkL0uFRsxf0b5UAMx61qj+hYK3iSmMDh4I6KugoCSWl0zalm+qzFmdLE
-         f0pb8YOFwvDDTqVNFf219lp7UUQPvIwvUm5Y3ccEBaBLTXfjz6Lc80JiSmYd/GrMkM
-         zVa5iw1mP7J7g==
-Date:   Tue, 10 May 2022 15:03:33 +0100
-From:   Will Deacon <will@kernel.org>
-To:     Francis Laniel <flaniel@linux.microsoft.com>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        linux-trace-devel@vger.kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Mark Brown <broonie@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Kees Cook <keescook@chromium.org>,
-        Daniel Kiss <daniel.kiss@arm.com>, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v1 1/1] arm64: Forget syscall if different from
- execve*()
-Message-ID: <20220510140333.GA28104@willie-the-truck>
-References: <20220509151958.441240-1-flaniel@linux.microsoft.com>
- <20220509151958.441240-2-flaniel@linux.microsoft.com>
- <20220510105948.GB27557@willie-the-truck>
- <2826417.e9J7NaK4W3@pwmachine>
+        by ssl.serverraum.org (Postfix) with ESMTPSA id B5F9022238;
+        Tue, 10 May 2022 16:03:46 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1652191426;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RneOi143x1oW2qLY0RCSAR2GeweFwG1lLPobOCmEojI=;
+        b=vLyveiHk5oYcSMt7YvhXCKxnsHE30H+jVO8oHxHYIuDtA0HFM63hW0kfSUH7loksBbhzRM
+        FJQEdfJhIVr80sFRLMKbDKB9Ivmuq+fpc3p568wA0kfwuXVMPgbHmEWtooLo1uhGxIEi6U
+        UH6fjSq+3iO4TacK6Mq03VK9eG2JFT8=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2826417.e9J7NaK4W3@pwmachine>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Tue, 10 May 2022 16:03:46 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
+Cc:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2] mtd: spi-nor: introduce SNOR_ID3()
+In-Reply-To: <20220510140232.3519184-1-michael@walle.cc>
+References: <20220510140232.3519184-1-michael@walle.cc>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <966de7ad5f563f9a29db91c5309a71c6@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 03:00:11PM +0100, Francis Laniel wrote:
-> Le mardi 10 mai 2022, 11:59:48 BST Will Deacon a écrit :
-> > On Mon, May 09, 2022 at 04:19:57PM +0100, Francis Laniel wrote:
-> > > diff --git a/arch/arm64/include/asm/processor.h
-> > > b/arch/arm64/include/asm/processor.h index 73e38d9a540c..e12ceb363d6a
-> > > 100644
-> > > --- a/arch/arm64/include/asm/processor.h
-> > > +++ b/arch/arm64/include/asm/processor.h
-> > > @@ -34,6 +34,8 @@
-> > > 
-> > >  #include <vdso/processor.h>
-> > > 
-> > > +#include <asm-generic/unistd.h>
-> > > +
-> > > 
-> > >  #include <asm/alternative.h>
-> > >  #include <asm/cpufeature.h>
-> > >  #include <asm/hw_breakpoint.h>
-> > > 
-> > > @@ -250,8 +252,12 @@ void tls_preserve_current_state(void);
-> > > 
-> > >  static inline void start_thread_common(struct pt_regs *regs, unsigned
-> > >  long pc) {
-> > > 
-> > > +	s32 previous_syscall = regs->syscallno;
-> > > 
-> > >  	memset(regs, 0, sizeof(*regs));
-> > > 
-> > > -	forget_syscall(regs);
-> > > +	if (previous_syscall == __NR_execve || previous_syscall ==
-> > > __NR_execveat)
-> > > +		regs->syscallno = previous_syscall;
-> > > +	else
-> > > +		forget_syscall(regs);
-> > 
-> > Hmm, this really looks like a bodge and it doesn't handle the compat case
-> > either.
-> > 
-> > How do other architectures handle this?
+[proper subject]
+
+Am 2022-05-10 16:02, schrieb Michael Walle:
+> For support which rely solely on the SFDP data, all we need to know is 
+> its
+> JEDEC ID. All further information should be fetched from SFDP. For 
+> this,
+> introduce a SNOR_ID3() macro which should be used for all new flashes 
+> with
+> SFDP.
 > 
-> My understanding of others architectures is quite limited, but here are my 
-> findings and understanding of some of them:
-> * arm (32 bits) EABI: start_thread() sets r7 to previous r7 for ELF FDPIC  and 
-> to 0 for other binfmts [1].
-> * arm (32 bits) OABI: syscall number is set to -1 if 
-> ptrace_report_syscall_entry() failed [2].
-> * mips: start_thread() does not modify current_thread_info->syscall which is 
-> taken directly from v0 [3, 4].
-> * riscv: start_thread() does not modify a7 [5].
-> * x86_64: start_thread_common() does not touch orig_ax which seems to contain 
-> the syscall number [6].
-
-Hmm, so the million dollar question is why on Earth we have that
-forget_syscall() call to start with. Amusingly I've, err, forgotten;
-forget_forget_syscall() perhaps?
-
-Catalin? It's been there since day one afaict.
-
-Will
+> The dropped information are page size, number of sectors and sector 
+> size.
+> The number of sectors (together with sector size) is only used to 
+> calculate
+> the total flash size. In case of SFDP, this is read from there. The 
+> sector
+> size is also used to select a proper erase opcode. We can just keep 
+> that
+> one zero and the selection algorithm will select the same erase opcode;
+> that is the opcode for the largest erase size (which is btw rather 
+> odd..).
+> The page size is also taken from SFDP. There is one exception: older 
+> SFDP
+> tables. These doesn't contain this data. So if there will be flashes 
+> with
+> that, we should assume some sane value.
+> 
+> Shaik, could you please re-test your w25q512nwm support with this 
+> patch. I
+> read through the SFDP data and it should behave exactly the same as 
+> before.
+> 
+> Michael Walle (2):
+>   mtd: spi-nor: introduce SNOR_ID3()
+>   mtd: spi-nor: winbond: use SNOR_ID3() for w25q512nwm
+> 
+>  drivers/mtd/spi-nor/core.c    | 7 +++++--
+>  drivers/mtd/spi-nor/core.h    | 9 +++++++++
+>  drivers/mtd/spi-nor/winbond.c | 3 +--
+>  3 files changed, 15 insertions(+), 4 deletions(-)
