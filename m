@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 064D3C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24F6CC4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:58:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347322AbiEJQBg (ORCPT
+        id S1347387AbiEJQBj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 12:01:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52288 "EHLO
+        Tue, 10 May 2022 12:01:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346250AbiEJPwR (ORCPT
+        with ESMTP id S244548AbiEJPwP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:52:17 -0400
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 890252CC94
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:48:19 -0700 (PDT)
-Received: by mail-qt1-x834.google.com with SMTP id p4so13818002qtq.12
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:48:19 -0700 (PDT)
+        Tue, 10 May 2022 11:52:15 -0400
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F24E829C90
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:48:16 -0700 (PDT)
+Received: by mail-qk1-x72b.google.com with SMTP id n8so13036701qke.11
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:48:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=bRZCptIM03juaQv67hbbg4JReeAbmT3D5f9cphqNW9A=;
-        b=FEVX6hWuLn7gTdB8Ry8/1gWnCWSO+tOkXnA4I3M29xUL2FIgRHi1ILsobsRmN+EpZs
-         aJH3WxU0uKmKDheSwl2lRSJE/3sDCZJ4nttB8pgAs/Jb0gVUKEMRWbmgN22YlLJyAhO/
-         MR3DDWLJLejOAErjVdhHpMLI0ZE2IfCrl0kvgfpceVOdesnEQR3haqdchVZb3vXFvGTi
-         A9Eff4upsFZrO/ORpwjECQ15qnwpy5an9lFA0Dta3brrC0DNBcFh9UA8fiQoS/huVUpJ
-         Xb3JDk0nFnbWoRKp4O8h//ZwQT3H7sVnUe6PHMYnDuzpCQoye+G+yIvGR28Qs81aHwLn
-         vIsQ==
+        bh=9Up5mCRghdypCXqXuJXfOWXocHqkgAdBl0+nsIM6Ysk=;
+        b=JrNKu8ky7+tpeG4ipUBQNtHzamSzZvYFj1Jd6PRPJedGnMmLC/UH9a8NiwkmteVTzu
+         d/+hLjUfYQ1fZO2CZKwt/XZkYe+OEoggGwWT33OfPOWDldoSBohHekj0AgQIdS+iw6OY
+         YhFlVKAE3EhotCYNBKwmA/GbOfAY0s9EkvEfB0a886iD+j550LL5VN5ELQBxg9nXbMyY
+         +OG9Z9EcqaJedFV1SkQwScKv3AXmgaBv5M7b9o+Ej9qwE3kBiKWzxUmZqPhegRS20Qwt
+         i3b6hDk2Tlgjkjfg/HiOt/+ncui0jqfeBgr2f+UTLGe0ssXiFMyC3OwvKUlswUQlTZc6
+         L+Wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=bRZCptIM03juaQv67hbbg4JReeAbmT3D5f9cphqNW9A=;
-        b=Jkut5vv5z6zX9te8Ow+/xdxxLL2FPfVysijKszlK4t5UPBkpwkPRA7iMZORRSslNYS
-         M0DFD3KAQi1VSLe5/hBtqvBxjBjeQpsuXVUlhEgo+R6oPTGWNS4L2th6upTb3jY4duRg
-         slE/Wfk5bxbpJaEeHbJQ8RK0Nb9UxX70QXBJ333w0/NwW1yiNJt7sRTfoitaj4QIrT7Q
-         1z2h2AAfUPXZXv4s7m7QnM8H3RjedGKkQHchWkTHBfoSEYXPP5Rg3D1LB9Pl3jGsFeOo
-         bQ/hEM1z5cU8MuVsOWDLr8dgzLGwqc5XnlTFP5eCS4FSUo1pcWJqnBTTn3Y6SooK0qGt
-         PSEA==
-X-Gm-Message-State: AOAM530SG65W3gOinoQjM2EuKJo+GQ53YS6HtA4QemWuhSvfEBOZDEhd
-        kO4dKVH5DoHhwlF/a0sOZ1g=
-X-Google-Smtp-Source: ABdhPJxOyrqz39sJo5kShX2mHmWAGuRDJv6Z8jgBVfVRbzekEbV4JEux0WZeo9gXBj1oPecD4VRcuw==
-X-Received: by 2002:a05:622a:143:b0:2e0:b7c8:3057 with SMTP id v3-20020a05622a014300b002e0b7c83057mr20386773qtw.179.1652197698712;
-        Tue, 10 May 2022 08:48:18 -0700 (PDT)
+        bh=9Up5mCRghdypCXqXuJXfOWXocHqkgAdBl0+nsIM6Ysk=;
+        b=uvGaaGEsVrtgtHIEXB+J85+fdHWbihRoYE0kN7d2TEBe6Sn8dCSxxMcImVGD9w8ZH5
+         1s5pNphuiJbz2TLGMQAZzbyTGdHqFmhGm1yd7K3T+2gKhS/S3zJ3096uNi3JEO/FwqrR
+         Glxhe+vnxr1f75tw0xXac6zpnop/RwkFDuYtipms68BWuRyULJUl5ekHY06l8BZ/rXRq
+         NHTI2O7JSyMJatZjWoGm7jNO3GjK3Y36hV2JaIuLSA6KshNh0+ICVorAN39yV4AprxI9
+         nyJmkSmjRTrxR3a5pqoru4gH1//gawYjAwifLmSIqcU0EKFIe+TZp6apZW2DoViab43F
+         rWdQ==
+X-Gm-Message-State: AOAM5300LV70sbn2vgr9JB7zgHf8P1a24Doi4/dkU8hc4YDDG61h8TUC
+        XxhgZtnjukv1fGq9g9g1ta4=
+X-Google-Smtp-Source: ABdhPJxt6oOjgPrazsh7EG7WhxZdH/RZY9aRthrd5IIpfiwxm4IanfNY3MYjHZh2X3jzG1aDQuKJzA==
+X-Received: by 2002:a05:620a:270c:b0:6a0:92b9:8196 with SMTP id b12-20020a05620a270c00b006a092b98196mr7469614qkp.417.1652197696083;
+        Tue, 10 May 2022 08:48:16 -0700 (PDT)
 Received: from localhost ([98.242.65.84])
-        by smtp.gmail.com with ESMTPSA id h4-20020ac87764000000b002f39b99f6a2sm9129878qtu.60.2022.05.10.08.48.18
+        by smtp.gmail.com with ESMTPSA id h3-20020ac85483000000b002f39b99f6c7sm9105610qtq.97.2022.05.10.08.48.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 08:48:18 -0700 (PDT)
+        Tue, 10 May 2022 08:48:15 -0700 (PDT)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         David Laight <David.Laight@ACULAB.COM>,
@@ -62,18 +62,14 @@ To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         Matti Vaittinen <Matti.Vaittinen@fi.rohmeurope.com>,
         linux-kernel@vger.kernel.org
-Cc:     Yury Norov <yury.norov@gmail.com>, Ben Segall <bsegall@google.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>
-Subject: [PATCH 18/22] sched/core: remove unneeded cpumask_weight() in sched_core_cpu_{starting,deactivate}
-Date:   Tue, 10 May 2022 08:47:46 -0700
-Message-Id: <20220510154750.212913-19-yury.norov@gmail.com>
+Cc:     Yury Norov <yury.norov@gmail.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Feng Tang <feng.tang@intel.com>,
+        "H . Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org
+Subject: [PATCH 16/22] x86/tsc: use cpumask_weight_gt() in loop_timeout()
+Date:   Tue, 10 May 2022 08:47:44 -0700
+Message-Id: <20220510154750.212913-17-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220510154750.212913-1-yury.norov@gmail.com>
 References: <20220510154750.212913-1-yury.norov@gmail.com>
@@ -83,68 +79,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following cpumask_any_but() implicitly calculates if number of smt cpus
-is equal to 1, therefore we can drop the code that does it explicitly.
+cpumask_weight_gt() is more efficient because it may stop traversing
+cpumask depending on condition.
 
-CC: Ben Segall <bsegall@google.com>
-CC: Daniel Bristot de Oliveira <bristot@redhat.com>
-CC: Dietmar Eggemann <dietmar.eggemann@arm.com>
+This piece is not performance-critical, but helps keeping consistency of
+cpumask_weight() usage.
+
+CC: Borislav Petkov <bp@alien8.de>
+CC: Dave Hansen <dave.hansen@linux.intel.com>
+CC: Feng Tang <feng.tang@intel.com>
+CC: H. Peter Anvin <hpa@zytor.com>
 CC: Ingo Molnar <mingo@redhat.com>
-CC: Juri Lelli <juri.lelli@redhat.com>
-CC: Mel Gorman <mgorman@suse.de>
-CC: Peter Zijlstra <peterz@infradead.org>
-CC: Steven Rostedt <rostedt@goodmis.org>
-CC: Valentin Schneider <vschneid@redhat.com>
-CC: Vincent Guittot <vincent.guittot@linaro.org>
+CC: Thomas Gleixner <tglx@linutronix.de>
+CC: x86@kernel.org
 CC: linux-kernel@vger.kernel.org
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
-This is RFC because it drops WARN_ON_ONCE(rq->core != rq). If this warinig
-is important, I'll rework the patch.
+ arch/x86/kernel/tsc_sync.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- kernel/sched/core.c | 14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
-
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 9700001948d0..07b8f35cbe36 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -6133,12 +6133,10 @@ static void sched_core_cpu_starting(unsigned int cpu)
+diff --git a/arch/x86/kernel/tsc_sync.c b/arch/x86/kernel/tsc_sync.c
+index 9452dc9664b5..2dc80e6f0a4f 100644
+--- a/arch/x86/kernel/tsc_sync.c
++++ b/arch/x86/kernel/tsc_sync.c
+@@ -340,7 +340,7 @@ static cycles_t check_tsc_warp(unsigned int timeout)
+  */
+ static inline unsigned int loop_timeout(int cpu)
+ {
+-	return (cpumask_weight(topology_core_cpumask(cpu)) > 1) ? 2 : 20;
++	return cpumask_weight_gt(topology_core_cpumask(cpu), 1) ? 2 : 20;
+ }
  
- 	WARN_ON_ONCE(rq->core != rq);
- 
--	/* if we're the first, we'll be our own leader */
--	if (cpumask_weight(smt_mask) == 1)
--		goto unlock;
--
- 	/* find the leader */
- 	t = cpumask_any_but(smt_mask, cpu);
-+
-+	/* if we're the first, we'll be our own leader */
- 	if (t >= nr_cpu_ids)
- 		goto unlock;
- 
-@@ -6171,18 +6169,14 @@ static void sched_core_cpu_deactivate(unsigned int cpu)
- 
- 	sched_core_lock(cpu, &flags);
- 
--	/* if we're the last man standing, nothing to do */
--	if (cpumask_weight(smt_mask) == 1) {
--		WARN_ON_ONCE(rq->core != rq);
--		goto unlock;
--	}
--
- 	/* if we're not the leader, nothing to do */
- 	if (rq->core != rq)
- 		goto unlock;
- 
- 	/* find a new leader */
- 	t = cpumask_any_but(smt_mask, cpu);
-+
-+	/* if we're the last man standing, nothing to do */
- 	if (t >= nr_cpu_ids)
- 		goto unlock;
- 
+ /*
 -- 
 2.32.0
 
