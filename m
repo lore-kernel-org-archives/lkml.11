@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A2A6C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:12:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47D36C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:12:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242356AbiEJNQU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:16:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59726 "EHLO
+        id S242399AbiEJNQX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:16:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242366AbiEJNPd (ORCPT
+        with ESMTP id S242370AbiEJNPh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:15:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF2323BA65;
-        Tue, 10 May 2022 06:11:18 -0700 (PDT)
+        Tue, 10 May 2022 09:15:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E6F044A0C;
+        Tue, 10 May 2022 06:11:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 83C41B81D7A;
-        Tue, 10 May 2022 13:11:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D341EC385C2;
-        Tue, 10 May 2022 13:11:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 28519615F4;
+        Tue, 10 May 2022 13:11:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31C76C385C6;
+        Tue, 10 May 2022 13:11:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188276;
-        bh=sh06TBAH1ezWV6utqcJE5j/Qf8oUhesqUDZWGeWV1Jc=;
+        s=korg; t=1652188282;
+        bh=vnTXKHoW+s1UCoDCJYnUiMkurm5wSeldRpOsZ741LXw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wt0zqS77w+fpNJVxPW1PEk7G2qOwswmUoutYycHWx69mCGogZbat5MRCwbuwgK5QG
-         sbq65Qo3Vv0/oNji/Cb8eRvqFb1sg3ASyCgH5hDREwtTMFK05Z8myBcz0ur1AK+6rw
-         LVaRD4gMbNvYnreac1nuS0dlQwo09yguG4bOu0Uk=
+        b=2DUZ7Q7RGyiDdlgg1B1OkK7b/GX4ZidaeynLXiXZMKicS5awAJdIDQm3HMkWVCMFf
+         Nw3FfFlpzNCK+khbsrs+R1n7YSuq7AwyjBe+XC/7JB9zBLPvOhTsfzu+JvY8kV1MAC
+         Mjnl2CVHIQuOAM+wzyFxBCJ1jWCuqQfBEz2LlKMM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Max Krummenacher <max.krummenacher@toradex.com>,
+        Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 02/66] Revert "net: ethernet: stmmac: fix altr_tse_pcs function when using a fixed-link"
-Date:   Tue, 10 May 2022 15:06:52 +0200
-Message-Id: <20220510130729.835099538@linuxfoundation.org>
+Subject: [PATCH 4.9 21/66] ARM: dts: imx6qdl-apalis: Fix sgtl5000 detection issue
+Date:   Tue, 10 May 2022 15:07:11 +0200
+Message-Id: <20220510130730.383346503@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.762341544@linuxfoundation.org>
 References: <20220510130729.762341544@linuxfoundation.org>
@@ -50,103 +51,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit edba120f094394454f5b9511d04abd7e8c2c31ee which is
-commit a6aaa00324240967272b451bfa772547bd576ee6 upstream.
+From: Fabio Estevam <festevam@gmail.com>
 
-Pavel reports that it causes boot issues, so revert it for now.
+[ Upstream commit fa51e1dc4b91375bc18349663a52395ad585bd3c ]
 
-Link: https://lore.kernel.org/r/20220429074341.GB1423@amd
-Reported-by: Pavel Machek <pavel@denx.de>
-Cc: Dinh Nguyen <dinguyen@kernel.org>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Sasha Levin <sashal@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+On a custom carrier board with a i.MX6Q Apalis SoM, the sgtl5000 codec
+on the SoM is often not detected and the following error message is
+seen when the sgtl5000 driver tries to read the ID register:
+
+sgtl5000 1-000a: Error reading chip id -6
+
+The reason for the error is that the MCLK clock is not provided
+early enough.
+
+Fix the problem by describing the MCLK pinctrl inside the codec
+node instead of placing it inside the audmux pinctrl group.
+
+With this change applied the sgtl5000 is always detected on every boot.
+
+Fixes: 693e3ffaae5a ("ARM: dts: imx6: Add support for Toradex Apalis iMX6Q/D SoM")
+Signed-off-by: Fabio Estevam <festevam@gmail.com>
+Reviewed-by: Tim Harvey <tharvey@gateworks.com>
+Acked-by: Max Krummenacher <max.krummenacher@toradex.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c  |    8 ++++++++
- drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h  |    4 ----
- drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c |   13 ++++++++-----
- 3 files changed, 16 insertions(+), 9 deletions(-)
+ arch/arm/boot/dts/imx6qdl-apalis.dtsi | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c
-@@ -68,6 +68,10 @@
- #define TSE_PCS_USE_SGMII_ENA				BIT(0)
- #define TSE_PCS_IF_USE_SGMII				0x03
+diff --git a/arch/arm/boot/dts/imx6qdl-apalis.dtsi b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
+index 99e323b57261..cbe7b0dcb6eb 100644
+--- a/arch/arm/boot/dts/imx6qdl-apalis.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-apalis.dtsi
+@@ -324,6 +324,8 @@ vgen6_reg: vgen6 {
+ 	codec: sgtl5000@0a {
+ 		compatible = "fsl,sgtl5000";
+ 		reg = <0x0a>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_sgtl5000>;
+ 		clocks = <&clks IMX6QDL_CLK_CKO>;
+ 		VDDA-supply = <&reg_2p5v>;
+ 		VDDIO-supply = <&reg_3p3v>;
+@@ -550,8 +552,6 @@ MX6QDL_PAD_DISP0_DAT20__AUD4_TXC	0x130b0
+ 			MX6QDL_PAD_DISP0_DAT21__AUD4_TXD	0x130b0
+ 			MX6QDL_PAD_DISP0_DAT22__AUD4_TXFS	0x130b0
+ 			MX6QDL_PAD_DISP0_DAT23__AUD4_RXD	0x130b0
+-			/* SGTL5000 sys_mclk */
+-			MX6QDL_PAD_GPIO_5__CCM_CLKO1		0x130b0
+ 		>;
+ 	};
  
-+#define SGMII_ADAPTER_CTRL_REG				0x00
-+#define SGMII_ADAPTER_DISABLE				0x0001
-+#define SGMII_ADAPTER_ENABLE				0x0000
+@@ -812,6 +812,12 @@ MX6QDL_PAD_NANDF_CS1__GPIO6_IO14 0x000b0
+ 		>;
+ 	};
+ 
++	pinctrl_sgtl5000: sgtl5000grp {
++		fsl,pins = <
++			MX6QDL_PAD_GPIO_5__CCM_CLKO1	0x130b0
++		>;
++	};
 +
- #define AUTONEGO_LINK_TIMER				20
- 
- static int tse_pcs_reset(void __iomem *base, struct tse_pcs *pcs)
-@@ -211,8 +215,12 @@ void tse_pcs_fix_mac_speed(struct tse_pc
- 			   unsigned int speed)
- {
- 	void __iomem *tse_pcs_base = pcs->tse_pcs_base;
-+	void __iomem *sgmii_adapter_base = pcs->sgmii_adapter_base;
- 	u32 val;
- 
-+	writew(SGMII_ADAPTER_ENABLE,
-+	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
-+
- 	pcs->autoneg = phy_dev->autoneg;
- 
- 	if (phy_dev->autoneg == AUTONEG_ENABLE) {
---- a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h
-@@ -21,10 +21,6 @@
- #include <linux/phy.h>
- #include <linux/timer.h>
- 
--#define SGMII_ADAPTER_CTRL_REG		0x00
--#define SGMII_ADAPTER_ENABLE		0x0000
--#define SGMII_ADAPTER_DISABLE		0x0001
--
- struct tse_pcs {
- 	struct device *dev;
- 	void __iomem *tse_pcs_base;
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-@@ -29,6 +29,9 @@
- 
- #include "altr_tse_pcs.h"
- 
-+#define SGMII_ADAPTER_CTRL_REG                          0x00
-+#define SGMII_ADAPTER_DISABLE                           0x0001
-+
- #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_GMII_MII 0x0
- #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RGMII 0x1
- #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RMII 0x2
-@@ -62,14 +65,16 @@ static void socfpga_dwmac_fix_mac_speed(
- {
- 	struct socfpga_dwmac *dwmac = (struct socfpga_dwmac *)priv;
- 	void __iomem *splitter_base = dwmac->splitter_base;
-+	void __iomem *tse_pcs_base = dwmac->pcs.tse_pcs_base;
- 	void __iomem *sgmii_adapter_base = dwmac->pcs.sgmii_adapter_base;
- 	struct device *dev = dwmac->dev;
- 	struct net_device *ndev = dev_get_drvdata(dev);
- 	struct phy_device *phy_dev = ndev->phydev;
- 	u32 val;
- 
--	writew(SGMII_ADAPTER_DISABLE,
--	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
-+	if ((tse_pcs_base) && (sgmii_adapter_base))
-+		writew(SGMII_ADAPTER_DISABLE,
-+		       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
- 
- 	if (splitter_base) {
- 		val = readl(splitter_base + EMAC_SPLITTER_CTRL_REG);
-@@ -91,9 +96,7 @@ static void socfpga_dwmac_fix_mac_speed(
- 		writel(val, splitter_base + EMAC_SPLITTER_CTRL_REG);
- 	}
- 
--	writew(SGMII_ADAPTER_ENABLE,
--	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
--	if (phy_dev)
-+	if (tse_pcs_base && sgmii_adapter_base)
- 		tse_pcs_fix_mac_speed(&dwmac->pcs, phy_dev, speed);
- }
- 
+ 	pinctrl_spdif: spdifgrp {
+ 		fsl,pins = <
+ 			MX6QDL_PAD_GPIO_16__SPDIF_IN  0x1b0b0
+-- 
+2.35.1
+
 
 
