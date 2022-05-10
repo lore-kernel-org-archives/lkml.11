@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19657C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:24:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A136C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:24:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344234AbiEJO2P (ORCPT
+        id S1344124AbiEJO2e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:28:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48832 "EHLO
+        Tue, 10 May 2022 10:28:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245499AbiEJN55 (ORCPT
+        with ESMTP id S245376AbiEJN5f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:57:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B32BC5D99;
-        Tue, 10 May 2022 06:39:24 -0700 (PDT)
+        Tue, 10 May 2022 09:57:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA268FD69;
+        Tue, 10 May 2022 06:39:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB102B81DB8;
-        Tue, 10 May 2022 13:39:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F3E5C385C2;
-        Tue, 10 May 2022 13:39:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BFF96615C8;
+        Tue, 10 May 2022 13:39:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84271C385C6;
+        Tue, 10 May 2022 13:39:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189961;
-        bh=KZUPbZ2/lAnhpPz4LDVUkyit7YrbW8ZuGD+hJrBPgNA=;
+        s=korg; t=1652189952;
+        bh=9pxyK0GKEphEY4ydetmT/RXOXOC4/m+3r46HStjAp24=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AQCKxq9Y3MMYJLxfDl/2Q3uH+jN4nB1gbiHbAR2NZugJtBfjOFLpYRmjajgUEaZNP
-         YX1PmujYxx41bb98mCKB1WsufZZB3Dl32mv6gFkwR3fXrKr3SZEjANHq4KNMTLaqnC
-         JLb7BT3xyFn9ydDU1PHsH/rEqrPzemvuJlnka/rw=
+        b=h5uXKZ3SMw9pYR2OsCxqOzGgExYFbhC2ey5oxCa6odnuqKwGLkIirZRREgTQvPCKp
+         x1sY9fg3kMQl5MOevkL5a/ZLswwLWy1QoNLEN2jjf0ZVbV1Yg8/WrTNAd7HkzqEEQG
+         BfUtF3jFaCXI/3AVlzlmCn158sMWW3T60/daGMaA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mustafa Ismail <mustafa.ismail@intel.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.17 082/140] RDMA/irdma: Fix possible crash due to NULL netdev in notifier
-Date:   Tue, 10 May 2022 15:07:52 +0200
-Message-Id: <20220510130743.957566574@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jan=20H=C3=B6ppner?= <hoeppner@linux.ibm.com>,
+        Stefan Haberland <sth@linux.ibm.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.17 044/140] s390/dasd: Fix read inconsistency for ESE DASD devices
+Date:   Tue, 10 May 2022 15:07:14 +0200
+Message-Id: <20220510130742.881678224@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -50,68 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mustafa Ismail <mustafa.ismail@intel.com>
+From: Jan Höppner <hoeppner@linux.ibm.com>
 
-commit 1c9043ae0667a43bd87beeebbdd4bed674713629 upstream.
+commit b9c10f68e23c13f56685559a0d6fdaca9f838324 upstream.
 
-For some net events in irdma_net_event notifier, the netdev can be NULL
-which will cause a crash in rdma_vlan_dev_real_dev.  Fix this by moving
-all processing to the NETEVENT_NEIGH_UPDATE case where the netdev is
-guaranteed to not be NULL.
+Read requests that return with NRF error are partially completed in
+dasd_eckd_ese_read(). The function keeps track of the amount of
+processed bytes and the driver will eventually return this information
+back to the block layer for further processing via __dasd_cleanup_cqr()
+when the request is in the final stage of processing (from the driver's
+perspective).
 
-Fixes: 6702bc147448 ("RDMA/irdma: Fix netdev notifications for vlan's")
-Link: https://lore.kernel.org/r/20220425181703.1634-4-shiraz.saleem@intel.com
-Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
-Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+For this, blk_update_request() is used which requires the number of
+bytes to complete the request. As per documentation the nr_bytes
+parameter is described as follows:
+   "number of bytes to complete for @req".
+
+This was mistakenly interpreted as "number of bytes _left_ for @req"
+leading to new requests with incorrect data length. The consequence are
+inconsistent and completely wrong read requests as data from random
+memory areas are read back.
+
+Fix this by correctly specifying the amount of bytes that should be used
+to complete the request.
+
+Fixes: 5e6bdd37c552 ("s390/dasd: fix data corruption for thin provisioned devices")
+Cc: stable@vger.kernel.org # 5.3+
+Signed-off-by: Jan Höppner <hoeppner@linux.ibm.com>
+Reviewed-by: Stefan Haberland <sth@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220505141733.1989450-5-sth@linux.ibm.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/hw/irdma/utils.c |   21 +++++++++------------
- 1 file changed, 9 insertions(+), 12 deletions(-)
+ drivers/s390/block/dasd.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/drivers/infiniband/hw/irdma/utils.c
-+++ b/drivers/infiniband/hw/irdma/utils.c
-@@ -258,18 +258,16 @@ int irdma_net_event(struct notifier_bloc
- 	u32 local_ipaddr[4] = {};
- 	bool ipv4 = true;
- 
--	real_dev = rdma_vlan_dev_real_dev(netdev);
--	if (!real_dev)
--		real_dev = netdev;
--
--	ibdev = ib_device_get_by_netdev(real_dev, RDMA_DRIVER_IRDMA);
--	if (!ibdev)
--		return NOTIFY_DONE;
--
--	iwdev = to_iwdev(ibdev);
--
- 	switch (event) {
- 	case NETEVENT_NEIGH_UPDATE:
-+		real_dev = rdma_vlan_dev_real_dev(netdev);
-+		if (!real_dev)
-+			real_dev = netdev;
-+		ibdev = ib_device_get_by_netdev(real_dev, RDMA_DRIVER_IRDMA);
-+		if (!ibdev)
-+			return NOTIFY_DONE;
-+
-+		iwdev = to_iwdev(ibdev);
- 		p = (__be32 *)neigh->primary_key;
- 		if (neigh->tbl->family == AF_INET6) {
- 			ipv4 = false;
-@@ -290,13 +288,12 @@ int irdma_net_event(struct notifier_bloc
- 			irdma_manage_arp_cache(iwdev->rf, neigh->ha,
- 					       local_ipaddr, ipv4,
- 					       IRDMA_ARP_DELETE);
-+		ib_device_put(ibdev);
- 		break;
- 	default:
- 		break;
- 	}
- 
--	ib_device_put(ibdev);
--
- 	return NOTIFY_DONE;
- }
- 
+--- a/drivers/s390/block/dasd.c
++++ b/drivers/s390/block/dasd.c
+@@ -2778,8 +2778,7 @@ static void __dasd_cleanup_cqr(struct da
+ 		 * complete a request partially.
+ 		 */
+ 		if (proc_bytes) {
+-			blk_update_request(req, BLK_STS_OK,
+-					   blk_rq_bytes(req) - proc_bytes);
++			blk_update_request(req, BLK_STS_OK, proc_bytes);
+ 			blk_mq_requeue_request(req, true);
+ 		} else if (likely(!blk_should_fake_timeout(req->q))) {
+ 			blk_mq_complete_request(req);
 
 
