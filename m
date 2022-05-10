@@ -2,72 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 353B9C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 910FFC4167B
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:48:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244600AbiEJNvA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:51:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57064 "EHLO
+        id S244657AbiEJNvJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:51:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243437AbiEJNa4 (ORCPT
+        with ESMTP id S243336AbiEJNdM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:30:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72DBD2C7A79
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 06:21:39 -0700 (PDT)
+        Tue, 10 May 2022 09:33:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02F922380E2;
+        Tue, 10 May 2022 06:24:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 92242B81DA5
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 13:21:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDAD3C385CB
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 13:21:34 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="dcXNmMLx"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1652188893;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=h9LpMP7cxeGbwoT+ipVaVjALSaR2sJ6nkC0H4Oa3Mw0=;
-        b=dcXNmMLxnhTLkfi2DTDokR6/h/sjWXYVnDOD4siwdvURNrzhdQRgFVXM8qTWJqICLDev5K
-        n985MjDsKxaUkK5oaz6Lclymodqq8TL0M7uZdo7WwD57FsU6G5jy+CGuf9EsCrZNY0LCAX
-        ahXFYvHqHz4S4bSX5SFFyQObhZhI8tM=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 0bd28c5a (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 10 May 2022 13:21:32 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id DD0CDB81DB1;
+        Tue, 10 May 2022 13:24:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 499B3C385C9;
+        Tue, 10 May 2022 13:24:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652189056;
+        bh=p66mXbbVKTuTCV9wvWvuCcAImiMsmy9tH8s+oB4xHXE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Di9MqFst3LMVDOP/gg3pOd7KhKTklTRGFWavhGeE4QcpZZ7WLG6EYd7z9nMWMQkvJ
+         4eVVrsGHGlIw8VyOtDEEEfjIIRM6XkatoVxVmXeC/MmPJlEi9vYeNJiUtUyIAvsKg6
+         4UB5ouLoo6rsMyRPTOR7PA8LiiCf5HyDhr7zr5R8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH] random: use proper jiffies comparison macro
-Date:   Tue, 10 May 2022 15:21:20 +0200
-Message-Id: <20220510132120.102800-1-Jason@zx2c4.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: [PATCH 5.4 51/52] PCI: aardvark: Fix reading MSI interrupt number
+Date:   Tue, 10 May 2022 15:08:20 +0200
+Message-Id: <20220510130731.345785180@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220510130729.852544477@linuxfoundation.org>
+References: <20220510130729.852544477@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This expands to exactly the same code that it replaces, but makes things
-consistent by using the same macro for jiffy comparisons throughout.
+From: Pali Rohár <pali@kernel.org>
 
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+commit 805dfc18dd3d4dd97a987d4406593b5a225b1253 upstream.
+
+In advk_pcie_handle_msi() it is expected that when bit i in the W1C
+register PCIE_MSI_STATUS_REG is cleared, the PCIE_MSI_PAYLOAD_REG is
+updated to contain the MSI number corresponding to index i.
+
+Experiments show that this is not so, and instead PCIE_MSI_PAYLOAD_REG
+always contains the number of the last received MSI, overall.
+
+Do not read PCIE_MSI_PAYLOAD_REG register for determining MSI interrupt
+number. Since Aardvark already forbids more than 32 interrupts and uses
+own allocated hwirq numbers, the msi_idx already corresponds to the
+received MSI number.
+
+Link: https://lore.kernel.org/r/20220110015018.26359-3-kabel@kernel.org
+Fixes: 8c39d710363c ("PCI: aardvark: Add Aardvark PCI host controller driver")
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pci/controller/pci-aardvark.c |   10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 2f8559122dfa..b1ef334ed263 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -325,7 +325,7 @@ static bool crng_has_old_seed(void)
- 			interval = max_t(unsigned int, CRNG_RESEED_START_INTERVAL,
- 					 (unsigned int)uptime / 2 * HZ);
- 	}
--	return time_after(jiffies, READ_ONCE(base_crng.birth) + interval);
-+	return time_is_before_jiffies(READ_ONCE(base_crng.birth) + interval);
- }
+--- a/drivers/pci/controller/pci-aardvark.c
++++ b/drivers/pci/controller/pci-aardvark.c
+@@ -1372,7 +1372,7 @@ static void advk_pcie_remove_irq_domain(
+ static void advk_pcie_handle_msi(struct advk_pcie *pcie)
+ {
+ 	u32 msi_val, msi_mask, msi_status, msi_idx;
+-	u16 msi_data;
++	int virq;
  
- /*
--- 
-2.35.1
+ 	msi_mask = advk_readl(pcie, PCIE_MSI_MASK_REG);
+ 	msi_val = advk_readl(pcie, PCIE_MSI_STATUS_REG);
+@@ -1382,13 +1382,9 @@ static void advk_pcie_handle_msi(struct
+ 		if (!(BIT(msi_idx) & msi_status))
+ 			continue;
+ 
+-		/*
+-		 * msi_idx contains bits [4:0] of the msi_data and msi_data
+-		 * contains 16bit MSI interrupt number
+-		 */
+ 		advk_writel(pcie, BIT(msi_idx), PCIE_MSI_STATUS_REG);
+-		msi_data = advk_readl(pcie, PCIE_MSI_PAYLOAD_REG) & PCIE_MSI_DATA_MASK;
+-		generic_handle_irq(msi_data);
++		virq = irq_find_mapping(pcie->msi_inner_domain, msi_idx);
++		generic_handle_irq(virq);
+ 	}
+ 
+ 	advk_writel(pcie, PCIE_ISR0_MSI_INT_PENDING,
+
 
