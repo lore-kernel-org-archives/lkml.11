@@ -2,171 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 641D6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:02:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80E53C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:02:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234282AbiEJNGh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:06:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51176 "EHLO
+        id S242204AbiEJNGk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:06:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242186AbiEJNF5 (ORCPT
+        with ESMTP id S242191AbiEJNF7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:05:57 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6F7C126194A
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 06:01:59 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 47B3023A;
-        Tue, 10 May 2022 06:01:59 -0700 (PDT)
-Received: from FVFF77S0Q05N (unknown [10.57.1.67])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D27493F73D;
-        Tue, 10 May 2022 06:01:57 -0700 (PDT)
-Date:   Tue, 10 May 2022 14:01:49 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Alexander Popov <alex.popov@linux.com>
-Cc:     linux-arm-kernel@lists.infradead.org, akpm@linux-foundation.org,
-        catalin.marinas@arm.com, keescook@chromium.org,
-        linux-kernel@vger.kernel.org, luto@kernel.org, will@kernel.org
-Subject: Re: [PATCH v2 05/13] stackleak: clarify variable names
-Message-ID: <YnpiPWYqkA7RW3lm@FVFF77S0Q05N>
-References: <20220427173128.2603085-1-mark.rutland@arm.com>
- <20220427173128.2603085-6-mark.rutland@arm.com>
- <e1cf0177-40a0-ffca-6be4-57fd97860c4a@linux.com>
+        Tue, 10 May 2022 09:05:59 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9EE02618FC;
+        Tue, 10 May 2022 06:02:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=JWyep5EFfEPXN0/UUFSWkvsTwBT4W/fOxchQHhKa4RM=; b=sx6DF8PoUIO1mHu5cZY1RxwoA9
+        niB1KysO8rrmF0zp8Z8GTN/NtCj2d4QR4yv3E2E5W17RExRi8A0KAmcw+03c1G1ooU/Pm21U+zIEh
+        0zp/hEbV2HUhNtVPnHFdp5DB6IlN6W8R3VOm7oythqBX2GRaLpOj+rJPIjIYg4FRTMuO76QGoLFC6
+        YTJOWt6WzTDBhnK8IJgaIHAnWrK2atb9lCglavMKbFL3MElzKi625NHcWNdIldxGBU96c/pM4S0g8
+        wJXsSSNXtcQC2Akbyu07xQvQmC9j0tVwKiovTIAilxmwfqg23OLqdBOLywiRmkuVFih5uNhaytVXp
+        cz9YcgaQ==;
+Received: from [177.183.162.244] (helo=[192.168.0.5])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1noPUd-0004lT-6O; Tue, 10 May 2022 15:01:35 +0200
+Message-ID: <0a20dd06-f459-638e-cb4d-8255ab1a1f23@igalia.com>
+Date:   Tue, 10 May 2022 10:00:58 -0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e1cf0177-40a0-ffca-6be4-57fd97860c4a@linux.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 05/30] misc/pvpanic: Convert regular spinlock into trylock
+ on panic path
+Content-Language: en-US
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     akpm@linux-foundation.org, bhe@redhat.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
+        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
+        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
+        xen-devel@lists.xenproject.org, x86@kernel.org,
+        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
+        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
+        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
+        corbet@lwn.net, d.hatayama@jp.fujitsu.com,
+        dave.hansen@linux.intel.com, dyoung@redhat.com,
+        feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Mihai Carabas <mihai.carabas@oracle.com>,
+        Shile Zhang <shile.zhang@linux.alibaba.com>,
+        Wang ShaoBo <bobo.shaobowang@huawei.com>,
+        zhenwei pi <pizhenwei@bytedance.com>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-6-gpiccoli@igalia.com> <YnpXGOXicwdy1E6n@alley>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <YnpXGOXicwdy1E6n@alley>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 08, 2022 at 11:49:46PM +0300, Alexander Popov wrote:
-> On 27.04.2022 20:31, Mark Rutland wrote:
-> > The logic within __stackleak_erase() can be a little hard to follow, as
-> > `boundary` switches from being the low bound to the high bound mid way
-> > through the function, and `kstack_ptr` is used to represent the start of
-> > the region to erase while `boundary` represents the end of the region to
-> > erase.
-> > 
-> > Make this a little clearer by consistently using clearer variable names.
-> > The `boundary` variable is removed, the bounds of the region to erase
-> > are described by `erase_low` and `erase_high`, and bounds of the task
-> > stack are described by `task_stack_low` and `task_stck_high`.
+On 10/05/2022 09:14, Petr Mladek wrote:
+> [...]
+>> With that said, it's dangerous to use regular spinlocks in such path,
+>> as introduced by commit b3c0f8774668 ("misc/pvpanic: probe multiple instances").
+>> This patch fixes that by replacing regular spinlocks with the trylock
+>> safer approach.
 > 
-> A typo here in `task_stck_high`.
-
-Ah; whoops.
-
-> > As the same time, remove the comment above the variables, since it is
-> > unclear whether it's intended as rationale, a complaint, or a TODO, and
-> > is more confusing than helpful.
+> It seems that the lock is used just to manipulating a list. A super
+> safe solution would be to use the rcu API: rcu_add_rcu() and
+> list_del_rcu() under rcu_read_lock(). The spin lock will not be
+> needed and the list will always be valid.
 > 
-> Yes, this comment is a bit confusing :) I can elaborate.
+> The advantage would be that it will always call members that
+> were successfully added earlier. That said, I am not familiar
+> with pvpanic and am not sure if it is worth it.
 > 
-> In the original grsecurity patch, the stackleak erasing was written in asm.
-> When I adopted it and proposed for the upstream, Linus strongly opposed this.
-> So I developed stackleak erasing in C.
+>> It also fixes an old comment (about a long gone framebuffer code) and
+>> the notifier priority - we should execute hypervisor notifiers early,
+>> deferring this way the panic action to the hypervisor, as expected by
+>> the users that are setting up pvpanic.
 > 
-> And I wrote this comment to remember that having 'kstack_ptr' and 'boundary'
-> variables on the stack (which we are clearing) would not be good.
-
-Ok, so I think that falls into the "complaint" bucket I mentioned. I understand
-that we don't have any guarantee from the compiler as to how it will use the
-stack, and that's obviously a potential problem.
-
-> That was also the main reason why I reused the 'boundary' variable: I wanted
-> the compiler to allocate it in the register and I avoided creating many
-> local variables.
->
-> Mark, did your refactoring make the compiler allocate local variables on the
-> stack instead of the registers?
-
-Considering the whole series, testing with GCC 11.1.0:
-
-* On arm64:
-     before: stackleak_erase() uses 48 bytes of stack
-     after: stackleak_erase() uses 0 bytes of stack
-
-     Note: this is entirely due to patch 1; arm64 has enough GPRs that it
-     doesn't need to use the stack.
-
-* On x86_64:
-     before: stackleak_erase() uses 0 bytes of stack
-     after:  stackleak_erase() uses 0 bytes of stack
-
-* On i386
-     before: stackleak_erase() uses 8 bytes of stach
-     after:  stackleak_erase() uses 16 bytes of stack
-
-The i386 case isn't ideal, but given that those bytes will easily be used by
-the entry triage code before getting to any syscall handling, I don't believe
-that's an issue in practice.
-
-Thanks,
-Mark.
-
-> > There should be no functional change as a result of this patch.
-> > 
-> > Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-> > Cc: Alexander Popov <alex.popov@linux.com>
-> > Cc: Andrew Morton <akpm@linux-foundation.org>
-> > Cc: Andy Lutomirski <luto@kernel.org>
-> > Cc: Kees Cook <keescook@chromium.org>
-> > ---
-> >   kernel/stackleak.c | 30 ++++++++++++++----------------
-> >   1 file changed, 14 insertions(+), 16 deletions(-)
-> > 
-> > diff --git a/kernel/stackleak.c b/kernel/stackleak.c
-> > index 24b7cf01b2972..d5f684dc0a2d9 100644
-> > --- a/kernel/stackleak.c
-> > +++ b/kernel/stackleak.c
-> > @@ -73,40 +73,38 @@ late_initcall(stackleak_sysctls_init);
-> >   static __always_inline void __stackleak_erase(void)
-> >   {
-> >   	const unsigned long task_stack_low = stackleak_task_low_bound(current);
-> > -
-> > -	/* It would be nice not to have 'kstack_ptr' and 'boundary' on stack */
-> > -	unsigned long kstack_ptr = current->lowest_stack;
-> > -	unsigned long boundary = task_stack_low;
-> > +	unsigned long erase_low = current->lowest_stack;
-> > +	unsigned long erase_high;
-> >   	unsigned int poison_count = 0;
-> >   	const unsigned int depth = STACKLEAK_SEARCH_DEPTH / sizeof(unsigned long);
-> >   	/* Search for the poison value in the kernel stack */
-> > -	while (kstack_ptr > boundary && poison_count <= depth) {
-> > -		if (*(unsigned long *)kstack_ptr == STACKLEAK_POISON)
-> > +	while (erase_low > task_stack_low && poison_count <= depth) {
-> > +		if (*(unsigned long *)erase_low == STACKLEAK_POISON)
-> >   			poison_count++;
-> >   		else
-> >   			poison_count = 0;
-> > -		kstack_ptr -= sizeof(unsigned long);
-> > +		erase_low -= sizeof(unsigned long);
-> >   	}
-> >   #ifdef CONFIG_STACKLEAK_METRICS
-> > -	current->prev_lowest_stack = kstack_ptr;
-> > +	current->prev_lowest_stack = erase_low;
-> >   #endif
-> >   	/*
-> > -	 * Now write the poison value to the kernel stack. Start from
-> > -	 * 'kstack_ptr' and move up till the new 'boundary'. We assume that
-> > -	 * the stack pointer doesn't change when we write poison.
-> > +	 * Now write the poison value to the kernel stack between 'erase_low'
-> > +	 * and 'erase_high'. We assume that the stack pointer doesn't change
-> > +	 * when we write poison.
-> >   	 */
-> >   	if (on_thread_stack())
-> > -		boundary = current_stack_pointer;
-> > +		erase_high = current_stack_pointer;
-> >   	else
-> > -		boundary = current_top_of_stack();
-> > +		erase_high = current_top_of_stack();
-> > -	while (kstack_ptr < boundary) {
-> > -		*(unsigned long *)kstack_ptr = STACKLEAK_POISON;
-> > -		kstack_ptr += sizeof(unsigned long);
-> > +	while (erase_low < erase_high) {
-> > +		*(unsigned long *)erase_low = STACKLEAK_POISON;
-> > +		erase_low += sizeof(unsigned long);
-> >   	}
-> >   	/* Reset the 'lowest_stack' value for the next syscall */
+> This should be done in a separate patch. It changes the behavior.
+> Also there might be a discussion whether it really should be
+> the maximal priority.
 > 
+> Best Regards,
+> Petr
+
+Thanks for the review Petr. Patch was already merged - my goal was to be
+concise, i.e., a patch per driver / module, so the patch kinda fixes
+whatever I think is wrong with the driver with regards panic handling.
+
+Do you think it worth to remove this patch from Greg's branch just to
+split it in 2? Personally I think it's not worth, but opinions are welcome.
+
+About the RCU part, this one really could be a new patch, a good
+improvement patch - it makes sense to me, we can think about that after
+the fixes I guess.
+
+Cheers,
+
+
+Guilherme
