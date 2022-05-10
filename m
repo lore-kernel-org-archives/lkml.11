@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1A3BC38A06
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88781C47080
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245629AbiEJN6W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:58:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44154 "EHLO
+        id S1343543AbiEJN7D (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:59:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245187AbiEJNih (ORCPT
+        with ESMTP id S245177AbiEJNig (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:38:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A14D268225;
-        Tue, 10 May 2022 06:28:26 -0700 (PDT)
+        Tue, 10 May 2022 09:38:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E6FB267083;
+        Tue, 10 May 2022 06:28:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EC5E5B81D24;
-        Tue, 10 May 2022 13:28:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EA9EC385C2;
-        Tue, 10 May 2022 13:28:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0488DB81D24;
+        Tue, 10 May 2022 13:28:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BE3FC385A6;
+        Tue, 10 May 2022 13:28:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189303;
-        bh=zDJkvxq9lmwMNmmcbGkRHWFZ39NQ+cBjNZ7UY5gCF+k=;
+        s=korg; t=1652189285;
+        bh=U40yL5VS3tAeHs+of+0ROB6xVZSyJLmV9gHU9KI1aSQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LnMbGW8JVY/N2JwZ7t+8NOdXXdbn/IH1HoT7O6V/2d3c9i6U6NaObqd1noQg85Tnd
-         QDkUW/XFcME6K/dVj5sDltqYZLv1+SgQi2VE3EywnZ7fk00zkLvpDAixk/0hnJarWs
-         dx1qaY8oU8iDOnVJBLJvza039CaFaC6JvXk0ExaI=
+        b=sDjul8PiKr/yeGtxiKhcQuhBRrJpq8cIqIOZPojiixVfdmzY05tFYCez6P3Mz3UQj
+         J3mJxAuXlcJPldDMW2LlYmpOkw6n4xwY9H2AhC/Vxh9Fkaq8fJ4InufkXyFMAECRIt
+         Gxr2yQ9oEShD1CvdXHUvnS7syCIT35eTW4pDI4Rs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@redhat.com>
-Subject: [PATCH 5.10 67/70] dm: interlock pending dm_io and dm_wait_for_bios_completion
-Date:   Tue, 10 May 2022 15:08:26 +0200
-Message-Id: <20220510130734.827107199@linuxfoundation.org>
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.10 31/70] nfc: replace improper check device_is_registered() in netlink related functions
+Date:   Tue, 10 May 2022 15:07:50 +0200
+Message-Id: <20220510130733.780278076@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
 References: <20220510130732.861729621@linuxfoundation.org>
@@ -48,60 +49,172 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Snitzer <snitzer@redhat.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-commit 9f6dc633761006f974701d4c88da71ab68670749 upstream.
+commit da5c0f119203ad9728920456a0f52a6d850c01cd upstream.
 
-Commit d208b89401e0 ("dm: fix mempool NULL pointer race when
-completing IO") didn't go far enough.
+The device_is_registered() in nfc core is used to check whether
+nfc device is registered in netlink related functions such as
+nfc_fw_download(), nfc_dev_up() and so on. Although device_is_registered()
+is protected by device_lock, there is still a race condition between
+device_del() and device_is_registered(). The root cause is that
+kobject_del() in device_del() is not protected by device_lock.
 
-When bio_end_io_acct ends the count of in-flight I/Os may reach zero
-and the DM device may be suspended. There is a possibility that the
-suspend races with dm_stats_account_io.
+   (cleanup task)         |     (netlink task)
+                          |
+nfc_unregister_device     | nfc_fw_download
+ device_del               |  device_lock
+  ...                     |   if (!device_is_registered)//(1)
+  kobject_del//(2)        |   ...
+ ...                      |  device_unlock
 
-Fix this by adding percpu "pending_io" counters to track outstanding
-dm_io. Move kicking of suspend queue to dm_io_dec_pending(). Also,
-rename md_in_flight_bios() to dm_in_flight_bios() and update it to
-iterate all pending_io counters.
+The device_is_registered() returns the value of state_in_sysfs and
+the state_in_sysfs is set to zero in kobject_del(). If we pass check in
+position (1), then set zero in position (2). As a result, the check
+in position (1) is useless.
 
-Fixes: d208b89401e0 ("dm: fix mempool NULL pointer race when completing IO")
-Cc: stable@vger.kernel.org
-Co-developed-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
+This patch uses bool variable instead of device_is_registered() to judge
+whether the nfc device is registered, which is well synchronized.
+
+Fixes: 3e256b8f8dfa ("NFC: add nfc subsystem core")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ net/nfc/core.c |   29 ++++++++++++++---------------
+ 1 file changed, 14 insertions(+), 15 deletions(-)
 
---- a/drivers/md/dm.c
-+++ b/drivers/md/dm.c
-@@ -612,13 +612,15 @@ static void end_io_acct(struct mapped_de
- {
- 	unsigned long duration = jiffies - start_time;
+--- a/net/nfc/core.c
++++ b/net/nfc/core.c
+@@ -38,7 +38,7 @@ int nfc_fw_download(struct nfc_dev *dev,
  
--	bio_end_io_acct(bio, start_time);
--
- 	if (unlikely(dm_stats_used(&md->stats)))
- 		dm_stats_account_io(&md->stats, bio_data_dir(bio),
- 				    bio->bi_iter.bi_sector, bio_sectors(bio),
- 				    true, duration, stats_aux);
+ 	device_lock(&dev->dev);
  
-+	smp_wmb();
-+
-+	bio_end_io_acct(bio, start_time);
-+
- 	/* nudge anyone waiting on suspend queue */
- 	if (unlikely(wq_has_sleeper(&md->wait)))
- 		wake_up(&md->wait);
-@@ -2348,6 +2350,8 @@ static int dm_wait_for_bios_completion(s
+-	if (!device_is_registered(&dev->dev)) {
++	if (dev->shutting_down) {
+ 		rc = -ENODEV;
+ 		goto error;
  	}
- 	finish_wait(&md->wait, &wait);
+@@ -94,7 +94,7 @@ int nfc_dev_up(struct nfc_dev *dev)
  
-+	smp_rmb();
-+
- 	return r;
- }
+ 	device_lock(&dev->dev);
  
+-	if (!device_is_registered(&dev->dev)) {
++	if (dev->shutting_down) {
+ 		rc = -ENODEV;
+ 		goto error;
+ 	}
+@@ -142,7 +142,7 @@ int nfc_dev_down(struct nfc_dev *dev)
+ 
+ 	device_lock(&dev->dev);
+ 
+-	if (!device_is_registered(&dev->dev)) {
++	if (dev->shutting_down) {
+ 		rc = -ENODEV;
+ 		goto error;
+ 	}
+@@ -206,7 +206,7 @@ int nfc_start_poll(struct nfc_dev *dev,
+ 
+ 	device_lock(&dev->dev);
+ 
+-	if (!device_is_registered(&dev->dev)) {
++	if (dev->shutting_down) {
+ 		rc = -ENODEV;
+ 		goto error;
+ 	}
+@@ -245,7 +245,7 @@ int nfc_stop_poll(struct nfc_dev *dev)
+ 
+ 	device_lock(&dev->dev);
+ 
+-	if (!device_is_registered(&dev->dev)) {
++	if (dev->shutting_down) {
+ 		rc = -ENODEV;
+ 		goto error;
+ 	}
+@@ -290,7 +290,7 @@ int nfc_dep_link_up(struct nfc_dev *dev,
+ 
+ 	device_lock(&dev->dev);
+ 
+-	if (!device_is_registered(&dev->dev)) {
++	if (dev->shutting_down) {
+ 		rc = -ENODEV;
+ 		goto error;
+ 	}
+@@ -334,7 +334,7 @@ int nfc_dep_link_down(struct nfc_dev *de
+ 
+ 	device_lock(&dev->dev);
+ 
+-	if (!device_is_registered(&dev->dev)) {
++	if (dev->shutting_down) {
+ 		rc = -ENODEV;
+ 		goto error;
+ 	}
+@@ -400,7 +400,7 @@ int nfc_activate_target(struct nfc_dev *
+ 
+ 	device_lock(&dev->dev);
+ 
+-	if (!device_is_registered(&dev->dev)) {
++	if (dev->shutting_down) {
+ 		rc = -ENODEV;
+ 		goto error;
+ 	}
+@@ -446,7 +446,7 @@ int nfc_deactivate_target(struct nfc_dev
+ 
+ 	device_lock(&dev->dev);
+ 
+-	if (!device_is_registered(&dev->dev)) {
++	if (dev->shutting_down) {
+ 		rc = -ENODEV;
+ 		goto error;
+ 	}
+@@ -493,7 +493,7 @@ int nfc_data_exchange(struct nfc_dev *de
+ 
+ 	device_lock(&dev->dev);
+ 
+-	if (!device_is_registered(&dev->dev)) {
++	if (dev->shutting_down) {
+ 		rc = -ENODEV;
+ 		kfree_skb(skb);
+ 		goto error;
+@@ -550,7 +550,7 @@ int nfc_enable_se(struct nfc_dev *dev, u
+ 
+ 	device_lock(&dev->dev);
+ 
+-	if (!device_is_registered(&dev->dev)) {
++	if (dev->shutting_down) {
+ 		rc = -ENODEV;
+ 		goto error;
+ 	}
+@@ -599,7 +599,7 @@ int nfc_disable_se(struct nfc_dev *dev,
+ 
+ 	device_lock(&dev->dev);
+ 
+-	if (!device_is_registered(&dev->dev)) {
++	if (dev->shutting_down) {
+ 		rc = -ENODEV;
+ 		goto error;
+ 	}
+@@ -1126,6 +1126,7 @@ int nfc_register_device(struct nfc_dev *
+ 			dev->rfkill = NULL;
+ 		}
+ 	}
++	dev->shutting_down = false;
+ 	device_unlock(&dev->dev);
+ 
+ 	rc = nfc_genl_device_added(dev);
+@@ -1158,12 +1159,10 @@ void nfc_unregister_device(struct nfc_de
+ 		rfkill_unregister(dev->rfkill);
+ 		rfkill_destroy(dev->rfkill);
+ 	}
++	dev->shutting_down = true;
+ 	device_unlock(&dev->dev);
+ 
+ 	if (dev->ops->check_presence) {
+-		device_lock(&dev->dev);
+-		dev->shutting_down = true;
+-		device_unlock(&dev->dev);
+ 		del_timer_sync(&dev->check_pres_timer);
+ 		cancel_work_sync(&dev->check_pres_work);
+ 	}
 
 
