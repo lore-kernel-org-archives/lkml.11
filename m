@@ -2,135 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9455CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 20:44:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCFA6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 20:44:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233638AbiEJUoF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 16:44:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50818 "EHLO
+        id S235241AbiEJUoo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 16:44:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234304AbiEJUnk (ORCPT
+        with ESMTP id S237005AbiEJUo3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 16:43:40 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80D152A0A63;
-        Tue, 10 May 2022 13:43:38 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id i10so66143lfg.13;
-        Tue, 10 May 2022 13:43:38 -0700 (PDT)
+        Tue, 10 May 2022 16:44:29 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E83EA2A375A
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 13:44:24 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id i20-20020a05600c355400b0039456976dcaso1670644wmq.1
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 13:44:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=vjdss2nDLwTNuuaVgZiKsX3zSboMMew4d/2NFU3vAvY=;
-        b=dNSTjHEou78efjVQDZSF5xKhdufKPu0FPhaijaVB6PNcvXextvCJazQhEaa+Sr7dvK
-         stcTpMC0bqq7DCIIMPQJR6LUZjI4f8FVT9fajtdbdtmFC8dyVCAhKl1DnDfhJoL+6vAP
-         X8obXslZQTwoP4Fj+rKcHBa3AAMOoFL99htU7HD8cCO2/Ytx+CaZxGeBq2XH/++5jQPi
-         u964htH01eIC8ayJE8r3Abr6KHZT8zr6tjaEcdZs07yragttLOswLRPBVZcrJXk7VwE1
-         1FvvhyXt+NbmPmc+XyRraSBZHrzKuH93ZnybcxUlq0bgDO0Fb/fdgVKkbVMgcTJXv/Bk
-         AxYw==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=H+z42sapPI1YBphYIrh6dW0GFMAVRokw99cL8ZqGxg8=;
+        b=CTpiNl02mk2asLHcnBsuNAVd8tR5UxljFjwGWN7EPCdyw8jw1qTJN8Kj958PoCw+f9
+         C32LJd3iJyAPIc7JnhsDf3F+CLv0mIznaGhwzjGKAYcrkMmcqX0unecnaIRY4eg2RdS/
+         0wpRZMze08BUkQN9Kfpmmxj4PSmOnYIqgNxsMT/R3rkcd0HxVerVL26sQmKyCcoM0a/m
+         s7JJXvfYmJef+dh/gZmajmQP15BB/zKpZ1gNodzL0OvqccJTjiHJ10N8+lrMEhpadzdu
+         fFFf+dHjfdsLLT+W0V8q1dm0F4FO7Oj3L3kgVi1f9Ro2JBTKBHwIl+3Ypo+uOj1B/r4q
+         F3zQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=vjdss2nDLwTNuuaVgZiKsX3zSboMMew4d/2NFU3vAvY=;
-        b=AxjXXAhb2Bvb/QNWhRIVLmPsK80eaNs8g2pOCS7oB/Jyq2V/r9YW2KYB2FqobuK/HQ
-         IdQV/J8FflywsB2vcr8bYXqVCMjG7cuSjk8X7Nupke5fz3+U5366MUyCsdCQ6vkhAZbB
-         XV3SMNIdirrr7tNoXdE68gkzN6e3UANK+GxdUu2Uwl2+/PCQC339lIV62T9JKvNCso3m
-         nt4P9xQKRbsV5KOq5anJdkVRc7j3IJSJk1tACtloB7eQS3GKrFuaey2dvhymO8QIcMD8
-         plgOS2GhhPEcWFkSsLAUnmNx6foniUAxShbmRXR3vZVxXvARkSS9r1qQ5OKgdlXliuUT
-         u6mw==
-X-Gm-Message-State: AOAM53338BWP81anVu+qb0NCUGZRsT5LP07No81SSBBK6N8UMGJ5sMG8
-        BNbeQht8a8zqioWTxiI5VDM4Q1osdhY=
-X-Google-Smtp-Source: ABdhPJwLOJTxRIuT+ffLy8rAJ16AGYPcZ4VaS2+jMJIGEtDE+09rH7E3kdOnw1mneeYjtGnTGbjfXw==
-X-Received: by 2002:a05:6512:3390:b0:472:1a4d:ad14 with SMTP id h16-20020a056512339000b004721a4dad14mr17763054lfg.521.1652215416724;
-        Tue, 10 May 2022 13:43:36 -0700 (PDT)
-Received: from nergzd-desktop.localdomain ([194.39.226.133])
-        by smtp.gmail.com with ESMTPSA id 10-20020ac25f4a000000b0047255d210f0sm12318lfz.31.2022.05.10.13.43.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 13:43:36 -0700 (PDT)
-From:   Markuss Broks <markuss.broks@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Markuss Broks <markuss.broks@gmail.com>,
-        Song Qiang <songqiang1304521@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: [PATCH 4/5] proximity: vl53l0x: Handle the reset GPIO
-Date:   Tue, 10 May 2022 23:42:55 +0300
-Message-Id: <20220510204256.8874-5-markuss.broks@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220510204256.8874-1-markuss.broks@gmail.com>
-References: <20220510204256.8874-1-markuss.broks@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=H+z42sapPI1YBphYIrh6dW0GFMAVRokw99cL8ZqGxg8=;
+        b=05ZpI6KVPE8xPBGfhA8HUqMSAXvYpHql5vZQLn1SBEABK8WM/8TD0h6J/gZIrQ1/3c
+         htMZ2iONqwVg4DUAXD5UjzZLNBjQR0iS5iqkUaQBcrTs5k/uwZ8lUjfBZlLKG4M2d7jd
+         W4TQ/Ii6McMyQIaWKP/0zjS3AmFSJIoBnIxIxw2XRHPhZIbg2Tx4pr4cVkpiV8cdLXSS
+         aVsFpN5JWKnA7bwjRsFfBRsnLEZ7kKZRLAuQf0NdU14EnigUUx1IgIlZ0PfM6YzbjD3E
+         +DE7uh/AfSr61Hv+GG5t5kuJiXiNPtOKOBmB9OoU+Mkez8PC24RJtdOJmvHtZwQqBprr
+         Nuyw==
+X-Gm-Message-State: AOAM5307k/BWVednErWfl8JkeOmudSHjOeeoP+1SNPrEbhJoTIuJAUHU
+        G9KLcP3+DR9EBbZF4nX2PgzE8G9AMnBB2lGaojrGmQ==
+X-Google-Smtp-Source: ABdhPJwliUlItsrpLn1+I5hrd9rEc+YvxNDiJSj3yNhjvh/mpLFiO4d78N2zmuNH2esxan4r8P2KPApz87peJAW0mPs=
+X-Received: by 2002:a05:600c:4ecc:b0:394:790d:5f69 with SMTP id
+ g12-20020a05600c4ecc00b00394790d5f69mr1691105wmq.196.1652215462895; Tue, 10
+ May 2022 13:44:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220510001807.4132027-1-yosryahmed@google.com>
+ <20220510001807.4132027-2-yosryahmed@google.com> <Ynqyh+K1tMyNCTUW@slm.duckdns.org>
+ <CAJD7tkZVXJY3s2k8M4pcq+eJVD+aX=iMDiDKtdE=j0_q+UWQzA@mail.gmail.com> <YnrEDfZs1kuB1gu5@slm.duckdns.org>
+In-Reply-To: <YnrEDfZs1kuB1gu5@slm.duckdns.org>
+From:   Yosry Ahmed <yosryahmed@google.com>
+Date:   Tue, 10 May 2022 13:43:46 -0700
+Message-ID: <CAJD7tkahC1e-_K0xJMu-xXwd8WNVzYDRgJFua9=JhNRq7b+G8A@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next 1/9] bpf: introduce CGROUP_SUBSYS_RSTAT
+ program type
+To:     Tejun Heo <tj@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Michal Hocko <mhocko@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        cgroups@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Handle the GPIO connected to the XSHUT/RST_N pin of VL53L0X.
+On Tue, May 10, 2022 at 12:59 PM Tejun Heo <tj@kernel.org> wrote:
+>
+> Hello,
+>
+> On Tue, May 10, 2022 at 12:34:42PM -0700, Yosry Ahmed wrote:
+> > The rationale behind associating this work with cgroup_subsys is that
+> > usually the stats are associated with a resource (e.g. memory, cpu,
+> > etc). For example, if the memory controller is only enabled for a
+> > subtree in a big hierarchy, it would be more efficient to only run BPF
+> > rstat programs for those cgroups, not the entire hierarchy. It
+> > provides a way to control what part of the hierarchy you want to
+> > collect stats for. This is also semantically similar to the
+> > css_rstat_flush() callback.
+>
+> Hmm... one major point of rstat is not having to worry about these things
+> because we iterate what's been active rather than what exists. Now, this
+> isn't entirely true because we share the same updated list for all sources.
+> This is a trade-off which makes sense because 1. the number of cgroups to
+> iterate each cycle is generally really low anyway 2. different controllers
+> often get enabled together. If the balance tilts towards "we're walking too
+> many due to the sharing of updated list across different sources", the
+> solution would be splitting the updated list so that we make the walk finer
+> grained.
+>
+> Note that the above doesn't really affect the conceptual model. It's purely
+> an optimization decision. Tying these things to a cgroup_subsys does affect
+> the conceptual model and, in this case, the userland API for a performance
+> consideration which can be solved otherwise.
+>
+> So, let's please keep this simple and in the (unlikely) case that the
+> overhead becomes an issue, solve it from rstat operation side.
+>
+> Thanks.
 
-Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
----
- drivers/iio/proximity/vl53l0x-i2c.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+I assume if we do this optimization, and have separate updated lists
+for controllers, we will still have a "core" updated list that is not
+tied to any controller. Is this correct?
 
-diff --git a/drivers/iio/proximity/vl53l0x-i2c.c b/drivers/iio/proximity/vl53l0x-i2c.c
-index 74aeb2548ef6..47022bc1504e 100644
---- a/drivers/iio/proximity/vl53l0x-i2c.c
-+++ b/drivers/iio/proximity/vl53l0x-i2c.c
-@@ -15,6 +15,7 @@
-  */
- 
- #include <linux/delay.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/i2c.h>
- #include <linux/interrupt.h>
- #include <linux/module.h>
-@@ -43,6 +44,7 @@ struct vl53l0x_data {
- 	struct i2c_client *client;
- 	struct completion completion;
- 	struct regulator *vdd_supply;
-+	struct gpio_desc *reset_gpio;
- };
- 
- static irqreturn_t vl53l0x_handle_irq(int irq, void *priv)
-@@ -192,6 +194,8 @@ static void vl53l0x_power_off(void *_data)
- {
- 	struct vl53l0x_data *data = _data;
- 
-+	gpiod_set_value_cansleep(data->reset_gpio, 1);
-+
- 	regulator_disable(data->vdd_supply);
- }
- 
-@@ -203,6 +207,8 @@ static int vl53l0x_power_on(struct vl53l0x_data *data)
- 	if (ret)
- 		return ret;
- 
-+	gpiod_set_value_cansleep(data->reset_gpio, 0);
-+
- 	usleep_range(3200, 5000);
- 
- 	return 0;
-@@ -232,6 +238,11 @@ static int vl53l0x_probe(struct i2c_client *client)
- 		return dev_err_probe(&client->dev, PTR_ERR(data->vdd_supply),
- 				     "Unable to get VDD regulator\n");
- 
-+	data->reset_gpio = devm_gpiod_get_optional(&client->dev, "reset", GPIOD_OUT_HIGH);
-+	if (IS_ERR(data->reset_gpio))
-+		return dev_err_probe(&client->dev, PTR_ERR(data->reset_gpio),
-+				     "Cannot get reset GPIO\n");
-+
- 	error = devm_add_action_or_reset(&client->dev, vl53l0x_power_off, data);
- 	if (error)
- 		return dev_err_probe(&client->dev, error,
--- 
-2.35.1
+If yes, then we can make the interface controller-agnostic (a global
+list of BPF flushers). If we do the optimization later, we tie BPF
+stats to the "core" updated list. We can even extend the userland
+interface then to allow for controller-specific BPF stats if found
+useful.
 
+If not, and there will only be controller-specific updated lists then,
+then we might need to maintain a "core" updated list just for the sake
+of BPF programs, which I don't think would be favorable.
+
+What do you think? Either-way, I will try to document our discussion
+outcome in the commit message (and maybe the code), so that
+if-and-when this optimization is made, we can come back to it.
+
+
+>
+> --
+> tejun
