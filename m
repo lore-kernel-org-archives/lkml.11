@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 051CEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:29:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3BB3C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:29:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243368AbiEJNdQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:33:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50070 "EHLO
+        id S243376AbiEJNda (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:33:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243026AbiEJNZ1 (ORCPT
+        with ESMTP id S242989AbiEJNZU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:25:27 -0400
+        Tue, 10 May 2022 09:25:20 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55AD022EA4F;
-        Tue, 10 May 2022 06:18:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 511A122D609;
+        Tue, 10 May 2022 06:18:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 41F52B81DA2;
-        Tue, 10 May 2022 13:18:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D112C385A6;
-        Tue, 10 May 2022 13:18:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C37BCB81CE7;
+        Tue, 10 May 2022 13:18:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20DDDC385C2;
+        Tue, 10 May 2022 13:18:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188713;
-        bh=iw5r7VXYhZZ7jk1+tRISB95kKILUAHqZqpWpvMsK8Bo=;
+        s=korg; t=1652188710;
+        bh=nO0HsBH97IIxsOjMZu1jbvvi+Us0BjRufFBiwIiqmSw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cgBy18GBOS6dTW6LXCQeuWOZ9ebQ99ssSfWk0y3JXtDUkC30Nv2dK7O7eTCTVwEn6
-         4SE+5yjAKOYeeIb+CYqm+T/2CjLo9ppAo+2d/FydBgyZ+GZUIjal2SSkymkgn9xrti
-         nPTz3lRL66npkK4GiaBw3tq0lZ4+yAW/OROa6hK0=
+        b=rWrf7/dmN4Vvg53n+f+8FH6xYJICaG70AuCPicWTFXFM3FzJUW/siGffduOj6d2KS
+         HF7XDgIOhjXnxdDDVeVRdDx8Pm0K71QaBWLbLZuYfQ+bN8b3u13iZsEHN8e/zZ9ToZ
+         40FhT+yO4y50ytqeTS1irte+sNoiD/zpYylPqdM4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Oliver Neukum <oneukum@suse.com>
-Subject: [PATCH 4.19 03/88] USB: quirks: add STRING quirk for VCOM device
-Date:   Tue, 10 May 2022 15:06:48 +0200
-Message-Id: <20220510130733.838144982@linuxfoundation.org>
+Subject: [PATCH 4.19 02/88] USB: quirks: add a Realtek card reader
+Date:   Tue, 10 May 2022 15:06:47 +0200
+Message-Id: <20220510130733.808760233@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 References: <20220510130733.735278074@linuxfoundation.org>
@@ -49,13 +49,13 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Oliver Neukum <oneukum@suse.com>
 
-commit ec547af8a9ea6441864bad34172676b5652ceb96 upstream.
+commit 2a7ccf6bb6f147f64c025ad68f4255d8e1e0ce6d upstream.
 
-This has been reported to stall if queried
+This device is reported to stall when enummerated.
 
 Cc: stable <stable@vger.kernel.org>
 Signed-off-by: Oliver Neukum <oneukum@suse.com>
-Link: https://lore.kernel.org/r/20220414123152.1700-1-oneukum@suse.com
+Link: https://lore.kernel.org/r/20220414110209.30924-1-oneukum@suse.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
  drivers/usb/core/quirks.c |    3 +++
@@ -63,15 +63,15 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/drivers/usb/core/quirks.c
 +++ b/drivers/usb/core/quirks.c
-@@ -511,6 +511,9 @@ static const struct usb_device_id usb_qu
- 	/* DJI CineSSD */
- 	{ USB_DEVICE(0x2ca3, 0x0031), .driver_info = USB_QUIRK_NO_LPM },
+@@ -404,6 +404,9 @@ static const struct usb_device_id usb_qu
+ 	{ USB_DEVICE(0x0b05, 0x17e0), .driver_info =
+ 			USB_QUIRK_IGNORE_REMOTE_WAKEUP },
  
-+	/* VCOM device */
-+	{ USB_DEVICE(0x4296, 0x7570), .driver_info = USB_QUIRK_CONFIG_INTF_STRINGS },
++	/* Realtek Semiconductor Corp. Mass Storage Device (Multicard Reader)*/
++	{ USB_DEVICE(0x0bda, 0x0151), .driver_info = USB_QUIRK_CONFIG_INTF_STRINGS },
 +
- 	/* INTEL VALUE SSD */
- 	{ USB_DEVICE(0x8086, 0xf1a5), .driver_info = USB_QUIRK_RESET_RESUME },
- 
+ 	/* Realtek hub in Dell WD19 (Type-C) */
+ 	{ USB_DEVICE(0x0bda, 0x0487), .driver_info = USB_QUIRK_NO_LPM },
+ 	{ USB_DEVICE(0x0bda, 0x5487), .driver_info = USB_QUIRK_RESET_RESUME },
 
 
