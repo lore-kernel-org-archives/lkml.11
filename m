@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 187EDC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A9CAC43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:23:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243161AbiEJN0P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:26:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58124 "EHLO
+        id S243190AbiEJN02 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:26:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243565AbiEJNWE (ORCPT
+        with ESMTP id S243560AbiEJNWE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:22:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3416F53A72;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ECCA53A44;
         Tue, 10 May 2022 06:16:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C30A861532;
-        Tue, 10 May 2022 13:16:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2755C385C2;
-        Tue, 10 May 2022 13:15:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 47C65B81DA3;
+        Tue, 10 May 2022 13:16:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DCD2C385A6;
+        Tue, 10 May 2022 13:16:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188560;
-        bh=MKK5ZJ9IUYz5rN4WMjJXXQlyeAz3VtRXT4EZBFNKVVw=;
+        s=korg; t=1652188576;
+        bh=JJe8sEvxS5e9xUkxokihEGFI8ATuPtWVWFYdW0GQdmI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U/TXfjZKdPTeDjh1klSu2FubaHFKDOBUt423jdFAWZUIvJ64wmy8Cqi45thLeU0Ne
-         EReN5GzuGs36qJVB/MjX0RRWzMWjWdzWNFZI+hlIrYDJIyc6HHZkra0iKkfw1HGWL/
-         4c9ORd1pOre1VdpUHHj0igOOD2GQa3RLHB81j0w0=
+        b=tMRrb0d1sEUFRA2c4bvzVkRGuxfwxmAiFSHYXdoy+YR+LOHTTBmgJGMPgrJ7Twxuo
+         vPJEEjpx+/GG1lk0Pf4XWRQZ6dOUvnX/NF+9qkWrMZ4icaTZqp9D0fcF6dhO2XrVic
+         jd0+YVmK9+Ilu9WCEl+6bT4g6428c/UMQwIpfykU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 4.14 48/78] tty: n_gsm: fix insufficient txframe size
-Date:   Tue, 10 May 2022 15:07:34 +0200
-Message-Id: <20220510130733.959398362@linuxfoundation.org>
+Subject: [PATCH 4.14 52/78] tty: n_gsm: fix incorrect UA handling
+Date:   Tue, 10 May 2022 15:07:38 +0200
+Message-Id: <20220510130734.079029094@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
 References: <20220510130732.522479698@linuxfoundation.org>
@@ -49,50 +49,36 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-commit 535bf600de75a859698892ee873521a48d289ec1 upstream.
+commit ff9166c623704337bd6fe66fce2838d9768a6634 upstream.
 
 n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
 See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
 The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.7.2 states that the maximum frame size
-(N1) refers to the length of the information field (i.e. user payload).
-However, 'txframe' stores the whole frame including frame header, checksum
-and start/end flags. We also need to consider the byte stuffing overhead.
-Define constant for the protocol overhead and adjust the 'txframe' size
-calculation accordingly to reserve enough space for a complete mux frame
-including byte stuffing for advanced option mode. Note that no byte
-stuffing is applied to the start and end flag.
-Also use MAX_MTU instead of MAX_MRU as this buffer is used for data
-transmission.
+the newer 27.010 here. Chapter 5.4.4.2 states that any received unnumbered
+acknowledgment (UA) with its poll/final (PF) bit set to 0 shall be
+discarded. Currently, all UA frame are handled in the same way regardless
+of the PF bit. This does not comply with the standard.
+Remove the UA case in gsm_queue() to process only UA frames with PF bit set
+to 1 to abide the standard.
 
 Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 Cc: stable@vger.kernel.org
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220414094225.4527-8-daniel.starke@siemens.com
+Link: https://lore.kernel.org/r/20220414094225.4527-20-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_gsm.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/tty/n_gsm.c |    1 -
+ 1 file changed, 1 deletion(-)
 
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -84,6 +84,8 @@ module_param(debug, int, 0600);
-  */
- #define MAX_MRU 1500
- #define MAX_MTU 1500
-+/* SOF, ADDR, CTRL, LEN1, LEN2, ..., FCS, EOF */
-+#define PROT_OVERHEAD 7
- #define	GSM_NET_TX_TIMEOUT (HZ*10)
- 
- /**
-@@ -2211,7 +2213,7 @@ static struct gsm_mux *gsm_alloc_mux(voi
- 		kfree(gsm);
- 		return NULL;
- 	}
--	gsm->txframe = kmalloc(2 * MAX_MRU + 2, GFP_KERNEL);
-+	gsm->txframe = kmalloc(2 * (MAX_MTU + PROT_OVERHEAD - 1), GFP_KERNEL);
- 	if (gsm->txframe == NULL) {
- 		kfree(gsm->buf);
- 		kfree(gsm);
+@@ -1825,7 +1825,6 @@ static void gsm_queue(struct gsm_mux *gs
+ 		gsm_response(gsm, address, UA);
+ 		gsm_dlci_close(dlci);
+ 		break;
+-	case UA:
+ 	case UA|PF:
+ 		if (cr == 0 || dlci == NULL)
+ 			break;
 
 
