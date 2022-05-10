@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 925C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:55:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C38C9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:55:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346834AbiEJP6X (ORCPT
+        id S1347994AbiEJP6a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:58:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34722 "EHLO
+        Tue, 10 May 2022 11:58:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346367AbiEJPu7 (ORCPT
+        with ESMTP id S1346440AbiEJPu7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 11:50:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3BB828ABAA;
-        Tue, 10 May 2022 08:45:09 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 162CF28AB94;
+        Tue, 10 May 2022 08:45:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 80706614AF;
-        Tue, 10 May 2022 15:45:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8B63C385CB;
-        Tue, 10 May 2022 15:45:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F408FB81DB5;
+        Tue, 10 May 2022 15:45:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60530C385C2;
+        Tue, 10 May 2022 15:45:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652197508;
-        bh=2OX837V48LPWy+fohNmbgAQwoavPUJVKqMpgPMB4Acg=;
+        s=k20201202; t=1652197501;
+        bh=65xLmvZZ0eCVUyWvXja51xAuV9FPMBzUqc6VOL2ftHc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ePpNm/iiAm5IsIQnmP9iykSNAPrmCbCsv6rmrFRooSwffD3bIjErVEsfaoh3V9YIT
-         HdX7XNWBxL/cupuzxBcbMJWxs+pvyyfpSl9G31a1ce0500JgUW1+ofS6EQpmGWMAH8
-         71kRmGIl5yQDgVdsyL4kBdkymux1hGgc1SWphZApXxqTMIuzcqgPV7lpsXgWmc8+np
-         edQi7QMVINLZsb8imsPY4Mr/NW7GBwmQ4007z5tgQRudT4c8GwQFtYBI2J9WRIKEK8
-         FAhil2PhKbe+2iR8JdHveZOX3d4XsKXC+Zi8bxlZjf//HI1TyQiXgfkeVOj1p3YmKW
-         xYY4pIDtJpoJQ==
+        b=hsXbeODDX0MrPHYUmDkO7nCW/SIuUb/vjAy9Qp5gtwJI1I1PYal1NFGr3AAGwNqtV
+         MVBIolK0tSGMjQKI2hYUMjVo68fjnLS0DPGzHX7BGbJubOtqAjD4FC3kFsALi7k49S
+         IngD83GtYUZrwtgrF1e86NH4pt4KbPahhH6i/QWTBzowhwpbTVppBw5sFSs42q8Cf+
+         PO9P6Sx9XPpONoq05PY0ILGiJbgpEhtopUAoXg1qAli9qts48Jp5V6TJHqNfBrEF3l
+         oIDSxlhBQdIs2xs6Eyi5L5vrXxBx2sBWZ9M+JQjfBZk6nB3RjmAM2XcyowLwwGDddO
+         OC0nC7dKEgPCA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Willy Tarreau <w@1wt.eu>, Amit Klein <aksecurity@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Moshe Kol <moshe.kol@mail.huji.ac.il>,
+        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
+        Amit Klein <aksecurity@gmail.com>,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>, Willy Tarreau <w@1wt.eu>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 18/19] tcp: drop the hash_32() part from the index calculation
-Date:   Tue, 10 May 2022 11:44:28 -0400
-Message-Id: <20220510154429.153677-18-sashal@kernel.org>
+        pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 14/19] tcp: resalt the secret every 10 seconds
+Date:   Tue, 10 May 2022 11:44:24 -0400
+Message-Id: <20220510154429.153677-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220510154429.153677-1-sashal@kernel.org>
 References: <20220510154429.153677-1-sashal@kernel.org>
@@ -55,39 +57,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Willy Tarreau <w@1wt.eu>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit e8161345ddbb66e449abde10d2fdce93f867eba9 ]
+[ Upstream commit 4dfa9b438ee34caca4e6a4e5e961641807367f6f ]
 
-In commit 190cc82489f4 ("tcp: change source port randomizarion at
-connect() time"), the table_perturb[] array was introduced and an
-index was taken from the port_offset via hash_32(). But it turns
-out that hash_32() performs a multiplication while the input here
-comes from the output of SipHash in secure_seq, that is well
-distributed enough to avoid the need for yet another hash.
+In order to limit the ability for an observer to recognize the source
+ports sequence used to contact a set of destinations, we should
+periodically shuffle the secret. 10 seconds looks effective enough
+without causing particular issues.
 
-Suggested-by: Amit Klein <aksecurity@gmail.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Willy Tarreau <w@1wt.eu>
+Cc: Moshe Kol <moshe.kol@mail.huji.ac.il>
+Cc: Yossi Gilad <yossi.gilad@mail.huji.ac.il>
+Cc: Amit Klein <aksecurity@gmail.com>
+Cc: Jason A. Donenfeld <Jason@zx2c4.com>
+Tested-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/inet_hashtables.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/core/secure_seq.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index f76e4ac1ba3a..ee9c587031b4 100644
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -778,7 +778,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+diff --git a/net/core/secure_seq.c b/net/core/secure_seq.c
+index 444cce0184c3..7131cd1fb2ad 100644
+--- a/net/core/secure_seq.c
++++ b/net/core/secure_seq.c
+@@ -22,6 +22,8 @@
+ static siphash_key_t net_secret __read_mostly;
+ static siphash_key_t ts_secret __read_mostly;
  
- 	net_get_random_once(table_perturb,
- 			    INET_TABLE_PERTURB_SIZE * sizeof(*table_perturb));
--	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
-+	index = port_offset & (INET_TABLE_PERTURB_SIZE - 1);
- 
- 	offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32);
- 	offset %= remaining;
++#define EPHEMERAL_PORT_SHUFFLE_PERIOD (10 * HZ)
++
+ static __always_inline void net_secret_init(void)
+ {
+ 	net_get_random_once(&net_secret, sizeof(net_secret));
+@@ -100,11 +102,13 @@ u64 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
+ 	const struct {
+ 		struct in6_addr saddr;
+ 		struct in6_addr daddr;
++		unsigned int timeseed;
+ 		__be16 dport;
+ 	} __aligned(SIPHASH_ALIGNMENT) combined = {
+ 		.saddr = *(struct in6_addr *)saddr,
+ 		.daddr = *(struct in6_addr *)daddr,
+-		.dport = dport
++		.timeseed = jiffies / EPHEMERAL_PORT_SHUFFLE_PERIOD,
++		.dport = dport,
+ 	};
+ 	net_secret_init();
+ 	return siphash(&combined, offsetofend(typeof(combined), dport),
+@@ -145,8 +149,10 @@ EXPORT_SYMBOL_GPL(secure_tcp_seq);
+ u64 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport)
+ {
+ 	net_secret_init();
+-	return siphash_3u32((__force u32)saddr, (__force u32)daddr,
+-			    (__force u16)dport, &net_secret);
++	return siphash_4u32((__force u32)saddr, (__force u32)daddr,
++			    (__force u16)dport,
++			    jiffies / EPHEMERAL_PORT_SHUFFLE_PERIOD,
++			    &net_secret);
+ }
+ EXPORT_SYMBOL_GPL(secure_ipv4_port_ephemeral);
+ #endif
 -- 
 2.35.1
 
