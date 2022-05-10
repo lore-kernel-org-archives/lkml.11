@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 388E9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:11:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71478C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:11:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245266AbiEJOPP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:15:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47386 "EHLO
+        id S245427AbiEJOP0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:15:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245292AbiEJNre (ORCPT
+        with ESMTP id S245466AbiEJNro (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:47:34 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18D7C4E3BC;
-        Tue, 10 May 2022 06:35:40 -0700 (PDT)
+        Tue, 10 May 2022 09:47:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AE2E15EA57;
+        Tue, 10 May 2022 06:35:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 17414CE1EE2;
-        Tue, 10 May 2022 13:35:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28ECCC385C2;
-        Tue, 10 May 2022 13:35:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 36CEA61889;
+        Tue, 10 May 2022 13:35:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38FCBC385C9;
+        Tue, 10 May 2022 13:35:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189737;
-        bh=oXK+xeO7TyS/609kqkxla+MZL2jQ1JRBvy7n7RIohAA=;
+        s=korg; t=1652189750;
+        bh=tDDRTR4hAcafWMH1wych2cfeBCdy8kCp9bNyavD8AN0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B95FaSPXmDw/EfQ2RfrRH+fkUr+iyn/wlxrYkN+BKIduDBfVramYI3FAnWqdgCY94
-         aceCh/IiKmtJdgVnL5vrJootonoOnOaU2WdFBDu3JbCbLAwfmc7La5nkGFeZGCPdZS
-         CyQH/2MVqHPZQCLV3KnpgStGkkyhFxUFYcAbHTbI=
+        b=0ivCXU0oqG2EQ61TKl+tCqogzXw9ab/OrANjPNWq4gWpDHYUJSeuvF//MGh7DH9e5
+         ESYdpzf1hUlCag8J2Jl/gMSB0JrgskUaBVCNB6gS9w/cH9kZwDJiePVWuZJO8AEiFv
+         04/Z+GBVLzP6DuipckFQkKoGGJBS3TAS5dQoORKc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrei Lalaev <andrei.lalaev@emlid.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>
-Subject: [PATCH 5.17 013/140] gpiolib: of: fix bounds check for gpio-reserved-ranges
-Date:   Tue, 10 May 2022 15:06:43 +0200
-Message-Id: <20220510130741.986726495@linuxfoundation.org>
+        stable@vger.kernel.org, Nicolin Chen <nicolinc@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Will Deacon <will@kernel.org>
+Subject: [PATCH 5.17 017/140] iommu/arm-smmu-v3: Fix size calculation in arm_smmu_mm_invalidate_range()
+Date:   Tue, 10 May 2022 15:06:47 +0200
+Message-Id: <20220510130742.100047334@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -50,47 +51,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrei Lalaev <andrei.lalaev@emlid.com>
+From: Nicolin Chen <nicolinc@nvidia.com>
 
-commit e75f88efac05bf4e107e4171d8db6d8c3937252d upstream.
+commit 95d4782c34a60800ccf91d9f0703137d4367a2fc upstream.
 
-Gpiolib interprets the elements of "gpio-reserved-ranges" as "start,size"
-because it clears "size" bits starting from the "start" bit in the according
-bitmap. So it has to use "greater" instead of "greater or equal" when performs
-bounds check to make sure that GPIOs are in the available range.
-Previous implementation skipped ranges that include the last GPIO in
-the range.
+The arm_smmu_mm_invalidate_range function is designed to be called
+by mm core for Shared Virtual Addressing purpose between IOMMU and
+CPU MMU. However, the ways of two subsystems defining their "end"
+addresses are slightly different. IOMMU defines its "end" address
+using the last address of an address range, while mm core defines
+that using the following address of an address range:
 
-I wrote the mail to the maintainers
-(https://lore.kernel.org/linux-gpio/20220412115554.159435-1-andrei.lalaev@emlid.com/T/#u)
-of the questioned DTSes (because I couldn't understand how the maintainers
-interpreted this property), but I haven't received a response.
-Since the questioned DTSes use "gpio-reserved-ranges = <0 4>"
-(i.e., the beginning of the range), this patch doesn't affect these DTSes at all.
-TBH this patch doesn't break any existing DTSes because none of them
-reserve gpios at the end of range.
+	include/linux/mm_types.h:
+		unsigned long vm_end;
+		/* The first byte after our end address ...
 
-Fixes: 726cb3ba4969 ("gpiolib: Support 'gpio-reserved-ranges' property")
-Signed-off-by: Andrei Lalaev <andrei.lalaev@emlid.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+This mismatch resulted in an incorrect calculation for size so it
+failed to be page-size aligned. Further, it caused a dead loop at
+"while (iova < end)" check in __arm_smmu_tlb_inv_range function.
+
+This patch fixes the issue by doing the calculation correctly.
+
+Fixes: 2f7e8c553e98 ("iommu/arm-smmu-v3: Hook up ATC invalidation to mm ops")
 Cc: stable@vger.kernel.org
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Link: https://lore.kernel.org/r/20220419210158.21320-1-nicolinc@nvidia.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpio/gpiolib-of.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
---- a/drivers/gpio/gpiolib-of.c
-+++ b/drivers/gpio/gpiolib-of.c
-@@ -912,7 +912,7 @@ static void of_gpiochip_init_valid_mask(
- 					   i, &start);
- 		of_property_read_u32_index(np, "gpio-reserved-ranges",
- 					   i + 1, &count);
--		if (start >= chip->ngpio || start + count >= chip->ngpio)
-+		if (start >= chip->ngpio || start + count > chip->ngpio)
- 			continue;
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+@@ -183,7 +183,14 @@ static void arm_smmu_mm_invalidate_range
+ {
+ 	struct arm_smmu_mmu_notifier *smmu_mn = mn_to_smmu(mn);
+ 	struct arm_smmu_domain *smmu_domain = smmu_mn->domain;
+-	size_t size = end - start + 1;
++	size_t size;
++
++	/*
++	 * The mm_types defines vm_end as the first byte after the end address,
++	 * different from IOMMU subsystem using the last address of an address
++	 * range. So do a simple translation here by calculating size correctly.
++	 */
++	size = end - start;
  
- 		bitmap_clear(chip->valid_mask, start, count);
+ 	if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_BTM))
+ 		arm_smmu_tlb_inv_range_asid(start, size, smmu_mn->cd->asid,
 
 
