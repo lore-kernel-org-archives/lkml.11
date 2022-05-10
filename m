@@ -2,82 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8C04C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 19:17:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77A7BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 19:17:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245052AbiEJTRg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 15:17:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57074 "EHLO
+        id S232100AbiEJTRt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 15:17:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229607AbiEJTRe (ORCPT
+        with ESMTP id S1345849AbiEJTRo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 15:17:34 -0400
-Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com [209.85.167.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 178262608F3;
-        Tue, 10 May 2022 12:17:34 -0700 (PDT)
-Received: by mail-oi1-f179.google.com with SMTP id i66so118058oia.11;
-        Tue, 10 May 2022 12:17:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=5pt1nhkt3BTjyS+5a9vGL7dR1PanXMrncxkn2qYPM4Q=;
-        b=GJLuYIGUdVkAp/PIGIKsCYtffCF6DWq/us0w1gmJEM0NXnaLiYNB+aoIlR0j1YjHgv
-         3UAzeGUd72iiCJkzljjYl/YKWJjabzyRFGjA/JSyUJnjey1P++akECDZzp/IwCQaVzi2
-         XC9p6dK1btasRtaUVDf0RFG4UaDQ7nf5BF02t9xMJS5LUt78QpiO5Orzv7PAv2rv83ka
-         KvABWRcmUrUoxcN/0ftmH7/ZkmP7Qb5Y6tSQqWBqwsYuQlL7k8n031c4+Ff7AKPETAqF
-         WYn/pgHMBP9qTjIrH1I8MueSwxwLxLrj0cLyYi2R8woFSVVh54g3y6deWij1e874XUeo
-         YgCw==
-X-Gm-Message-State: AOAM533rADNl0FTUcYi6HNTLZFRAoLo4vGZXvp1SZfCzF4QAx9hXo8er
-        16oPKCVOoJPAnjdfirlF2A==
-X-Google-Smtp-Source: ABdhPJyG4SPRDiSI4R0cRjgdp1eWBrkuuiQkzgMZcMTEKSaJA0JscKRXgIWGTH058Z5bR3BF0RDwWg==
-X-Received: by 2002:a05:6808:f06:b0:326:fdf0:fd77 with SMTP id m6-20020a0568080f0600b00326fdf0fd77mr811761oiw.254.1652210253309;
-        Tue, 10 May 2022 12:17:33 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id o34-20020a056870912200b000ee2bb503d0sm4788848oae.50.2022.05.10.12.17.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 12:17:32 -0700 (PDT)
-Received: (nullmailer pid 2429752 invoked by uid 1000);
-        Tue, 10 May 2022 19:17:30 -0000
-Date:   Tue, 10 May 2022 14:17:30 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     matthew.gerlach@linux.intel.com
-Cc:     dinguyen@kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org
-Subject: Re: [PATCH v4 1/3] dt-bindings: soc: add bindings for Intel HPS Copy
- Engine
-Message-ID: <20220510191730.GA2427587-robh@kernel.org>
-References: <20220508142624.491045-1-matthew.gerlach@linux.intel.com>
- <20220508142624.491045-2-matthew.gerlach@linux.intel.com>
+        Tue, 10 May 2022 15:17:44 -0400
+Received: from mout01.posteo.de (mout01.posteo.de [185.67.36.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04D4F2609C0
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 12:17:41 -0700 (PDT)
+Received: from submission (posteo.de [185.67.36.169]) 
+        by mout01.posteo.de (Postfix) with ESMTPS id 0CCD124002E
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 21:17:39 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=posteo.de; s=2017;
+        t=1652210260; bh=ytrK2CBdoNyq3TQUxDwxGqNP998kUeZVBv6SkMgZ8c4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=SpSo+RIS5AqPkBnKIFrzjJFRU5pxj3UqMS5aNbCZCDfZ8/O1PugZQAiYI4JjSu52g
+         vSNJhDlT0G7EwPsvVLoqhoAg496KAdm7fDVPeeYwuQ4sJcebe9XKNvoKtmdSoy5aX+
+         JwF6Hb2X5xeMi0mqZrcKbT0aCVGUGRq2gktcAyj3+GxRIBrG4T8xZGM5nJhoe+OhjF
+         4r9O9GJWiAkgr2DfWL3TXVn060CZrDCrcmdMzFXbT5qjAFRNvhHF74dlrwMf9cDmlU
+         CfuQ2fR35AUBAA3xvdec29Rkkkm8CpvE8GDz1sjLPd7IJAFYTD7UsZ0cK+qvUTBERU
+         twvuU9VRuwzwQ==
+Received: from customer (localhost [127.0.0.1])
+        by submission (posteo.de) with ESMTPSA id 4KySV871Pqz6tnP;
+        Tue, 10 May 2022 21:17:36 +0200 (CEST)
+From:   Manuel Ullmann <labre@posteo.de>
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Manuel Ullmann <labre@posteo.de>,
+        Igor Russkikh <irusskikh@marvell.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        regressions@lists.linux.dev, davem@davemloft.net,
+        ndanilov@marvell.com, kuba@kernel.org, edumazet@google.com,
+        Jordan Leppert <jordanleppert@protonmail.com>,
+        Holger Hoffstaette <holger@applied-asynchrony.com>,
+        koo5 <kolman.jindrich@gmail.com>
+Subject: Re: [PATCH v6] net: atlantic: always deep reset on pm op, fixing up
+ my null deref regression
+References: <87bkw8dfmp.fsf@posteo.de>
+        <b140c37fe1aac315e07464dd6a2d7a8f463e6fe4.camel@redhat.com>
+Date:   Tue, 10 May 2022 19:17:56 +0000
+In-Reply-To: <b140c37fe1aac315e07464dd6a2d7a8f463e6fe4.camel@redhat.com>
+        (Paolo Abeni's message of "Tue, 10 May 2022 10:37:24 +0200")
+Message-ID: <87r151gpsr.fsf@posteo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220508142624.491045-2-matthew.gerlach@linux.intel.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 08, 2022 at 07:26:22AM -0700, matthew.gerlach@linux.intel.com wrote:
-> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-> 
-> Add device tree bindings documentation for the Intel Hard
-> Processor System (HPS) Copy Engine.
-> 
-> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-> ---
-> v4:
->   - move from soc to soc/intel/
-> 
-> v3:
->   - remove unused label
->   - move from misc to soc
->   - remove 0x from #address-cells/#size-cells values
->   - change hps_cp_eng@0 to dma-controller@0
->   - remote inaccurate 'items:' tag
-> ---
->  .../soc/intel/intel,hps-copy-engine.yaml      | 51 +++++++++++++++++++
+Paolo Abeni <pabeni@redhat.com> writes:
 
-Also, this should go under bindings/dma/
+> On Sun, 2022-05-08 at 00:36 +0000, Manuel Ullmann wrote:
+>> [...]
+>
+> For future submission, please always specify the target tree (which is
+> -net in this case). No need to resubmit: I'm applying it.
+>
+> Thanks,
+>
+> Paolo
 
->  1 file changed, 51 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/soc/intel/intel,hps-copy-engine.yaml
+Ah, okay. So next branches are reserved for new changes, while non-next
+may be targeted by fixups or at least regression fixes. I can't recall a
+definition for this in the documentation, but that might be me. I'll
+keep this in mind for the future. Thanks for applying it and bearing
+with me.
+
+Regards,
+Manuel
