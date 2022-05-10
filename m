@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77BCBC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87E02C43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:10:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245716AbiEJOKx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:10:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53500 "EHLO
+        id S1343582AbiEJOK7 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:10:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245043AbiEJNrN (ORCPT
+        with ESMTP id S245045AbiEJNrN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:47:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CCC7E080;
-        Tue, 10 May 2022 06:34:11 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81A432F38D;
+        Tue, 10 May 2022 06:34:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C43B3B81DA8;
-        Tue, 10 May 2022 13:34:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 058B1C385A6;
-        Tue, 10 May 2022 13:34:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AE64615C8;
+        Tue, 10 May 2022 13:34:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1066EC385A6;
+        Tue, 10 May 2022 13:34:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189648;
-        bh=pVaz+wkZjguHefPMnnE6xU5RTtQ+84NCQi/e2p+M3vg=;
+        s=korg; t=1652189654;
+        bh=WppGhgcPB+6oY6QJ8p+yvs4P6oEjc6aM7RIGjBre9Pc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RHPJCorqp93eQiVRGxvr/HHAhG8y+HTVG+eh2++TFlP/EpjIkpMzJK2AcN5uvk/0A
-         1lOsygwHsD2bwpGmlDUmZ0vH+eMmlaO1YQU1BMjHl2r1p0msGM6LzOm2oj0+9FhId8
-         3Q6Wp13wLdhkYEX75QwaEG/e5VLUBhdXavmxM44E=
+        b=2k1cwXWIwixpC9nV8dLlKRIvRlglzc1+ei2RrgTaD6gsm5y8746bwdUvxjuSVsWU2
+         GfYJ5UwPk7i4OqoQmNIQF8IOjnrsSfWrrsK0Puoc4cb3r/ZG085KKLu+/RsVo3oe55
+         GqGpR94bD5U6qrn0uUpPQF4WKCs53L0GM4rD0Kq8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, pali@kernel.org,
         =?UTF-8?q?Marek=20Beh=FAn?= <kabel@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH 5.15 117/135] PCI: aardvark: Replace custom PCIE_CORE_INT_* macros with PCI_INTERRUPT_*
-Date:   Tue, 10 May 2022 15:08:19 +0200
-Message-Id: <20220510130743.756175307@linuxfoundation.org>
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: [PATCH 5.15 119/135] PCI: aardvark: Check return value of generic_handle_domain_irq() when processing INTx IRQ
+Date:   Tue, 10 May 2022 15:08:21 +0200
+Message-Id: <20220510130743.812198606@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -52,43 +52,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Pali Rohár <pali@kernel.org>
 
-commit 1d86abf1f89672a70f2ab65f6000299feb1f1781 upstream.
+commit 51f96e287c6f003d3bb29672811c757c5fbf0028 upstream.
 
-Header file linux/pci.h defines enum pci_interrupt_pin with corresponding
-PCI_INTERRUPT_* values.
+It is possible that we receive spurious INTx interrupt. Check for the
+return value of generic_handle_domain_irq() when processing INTx IRQ.
 
-Link: https://lore.kernel.org/r/20220110015018.26359-2-kabel@kernel.org
+Link: https://lore.kernel.org/r/20220110015018.26359-6-kabel@kernel.org
 Signed-off-by: Pali Rohár <pali@kernel.org>
 Signed-off-by: Marek Behún <kabel@kernel.org>
 Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Reviewed-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Marek Behún <kabel@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/pci-aardvark.c |    6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ drivers/pci/controller/pci-aardvark.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 --- a/drivers/pci/controller/pci-aardvark.c
 +++ b/drivers/pci/controller/pci-aardvark.c
-@@ -38,10 +38,6 @@
- #define     PCIE_CORE_ERR_CAPCTL_ECRC_CHK_TX_EN			BIT(6)
- #define     PCIE_CORE_ERR_CAPCTL_ECRC_CHCK			BIT(7)
- #define     PCIE_CORE_ERR_CAPCTL_ECRC_CHCK_RCV			BIT(8)
--#define     PCIE_CORE_INT_A_ASSERT_ENABLE			1
--#define     PCIE_CORE_INT_B_ASSERT_ENABLE			2
--#define     PCIE_CORE_INT_C_ASSERT_ENABLE			3
--#define     PCIE_CORE_INT_D_ASSERT_ENABLE			4
- /* PIO registers base address and register offsets */
- #define PIO_BASE_ADDR				0x4000
- #define PIO_CTRL				(PIO_BASE_ADDR + 0x0)
-@@ -961,7 +957,7 @@ static int advk_sw_pci_bridge_init(struc
- 	bridge->conf.pref_mem_limit = cpu_to_le16(PCI_PREF_RANGE_TYPE_64);
+@@ -1429,7 +1429,9 @@ static void advk_pcie_handle_int(struct
+ 		advk_writel(pcie, PCIE_ISR1_INTX_ASSERT(i),
+ 			    PCIE_ISR1_REG);
  
- 	/* Support interrupt A for MSI feature */
--	bridge->conf.intpin = PCIE_CORE_INT_A_ASSERT_ENABLE;
-+	bridge->conf.intpin = PCI_INTERRUPT_INTA;
+-		generic_handle_domain_irq(pcie->irq_domain, i);
++		if (generic_handle_domain_irq(pcie->irq_domain, i) == -EINVAL)
++			dev_err_ratelimited(&pcie->pdev->dev, "unexpected INT%c IRQ\n",
++					    (char)i + 'A');
+ 	}
+ }
  
- 	/* Aardvark HW provides PCIe Capability structure in version 2 */
- 	bridge->pcie_conf.cap = cpu_to_le16(2);
 
 
