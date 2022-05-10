@@ -2,401 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12CC2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 06:23:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06319C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 06:24:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237285AbiEJG1V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 02:27:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34966 "EHLO
+        id S237258AbiEJG0A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 02:26:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237058AbiEJG1C (ORCPT
+        with ESMTP id S232406AbiEJGZX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 02:27:02 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE5744B1F7
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 23:22:13 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id c11so22244966wrn.8
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 23:22:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dvdc0yM6cPnBiwGvW8GWeZiOFv2E/kXOJ9QvUKMsgs0=;
-        b=ZhEnTOrG9nTskdTWATmoxwySk3Z8SweNw4H+Z7R7wYvsR0IcDdQ1+FX1Y2dFbG6oxC
-         QDTfomq4qbfQqYfR9hTOVnyP0od2RrLHBVW2llNsiATGRlch9/PoHr6oZZsMxRCN4jl6
-         15v1FaBWp22iGc67POdBnDMjlX70G62OAlsfv8RFsXIlDYP8EWQBM61ycpOweY9UmosU
-         /HIwYghn8RUiMXrzaflNPKMyFHCeio/0dL/OyEpt6eQQKpcfW6qsmcHOehrfg08qHrNt
-         hRFGwCMLFzmoj//CSlW9EfPwHfuXXRdEvp0EppttGRqA84+z4zh1tf4kjQ2Xf6gshM5+
-         SazA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dvdc0yM6cPnBiwGvW8GWeZiOFv2E/kXOJ9QvUKMsgs0=;
-        b=uM9cjBYgFv0BChS1MXvZMCj7Z/q8nL3bgUxoiyroD6PPUg46jtB/Ifldk4BxBLP7Aw
-         r8KcMMLNaI05YNgraax5eixCtzFd5Qw1saTfjFhvQCde2r6Z3dFd5yACiT4bYW8Q5JyA
-         CRs1iJtBq3Pj04FpEv0XqSPwmoB2m5NHLcD/waguMgIT+1Y/VGJoPdL85lnD9iZe5yd4
-         EqGRHFPG5ou6Dbxnx6sJgmXFrkDVeCdQrDQvdQGY0FfubsGOjXLhNOLEZjIL3L0SvCFp
-         dHPO8xj337Z0p9VPWlHzx/twZ2ACnLBOsJiM2EV3W7DYuQpILUV/vGDP0EqbIFsDtCTJ
-         Siyw==
-X-Gm-Message-State: AOAM533pZUajE9VKSpqr8jRyNzSbm/Vrl0oZyAtxV9h999ESrJNZbMWQ
-        9XDUVFyURMaYpyTbonWK4KHWQSk6O4FsC5kemBQXGBeOiLg=
-X-Google-Smtp-Source: ABdhPJzYZqCsHfrGxVVOEpBI62Ysdf7Ss6RBm7mA8c6RUdwDDaI1Q1s+oh/u3mt7M38+A7NojZTOrQNVNfM2VkyM5RY=
-X-Received: by 2002:a5d:4806:0:b0:20a:da03:711b with SMTP id
- l6-20020a5d4806000000b0020ada03711bmr16839042wrq.395.1652163732007; Mon, 09
- May 2022 23:22:12 -0700 (PDT)
+        Tue, 10 May 2022 02:25:23 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E31846673
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 23:21:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652163679; x=1683699679;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=60KTAdzso4Vrtd8ZqxID77V2u8yEj+ii15BiJceQGSM=;
+  b=nc6xityHnxFF+gg+KYhDH0VMMl3db4vo2rDWfwqkJ75BhXt3L+aV3Kzc
+   TKtyz3l4NWpRXnzUBr0IxE0mtMys5L2V1U0uPxPUzi0OfHTr+JjmEknOr
+   x/O1z/67B+e8kspKx2go4QO4w/s+hgfNRT31ytvzuofpxjBFEhdcyrnRM
+   4Wf0gpSXI94cEMm1RKuaNDcX3bgVcdUfxCoWwbxPNgmvgwJ7ikap0XMvD
+   jKL1Sjxx7KqetHEgH3logRuo5eTPCLADGw1DZDuA00Q0eosdg/miVoXWH
+   YkjaL7uU3ABKXhU8DVjvVVRtO8PAtDgAqcR0Dsja82u3+aJWRKBEELxc5
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="332312970"
+X-IronPort-AV: E=Sophos;i="5.91,213,1647327600"; 
+   d="scan'208";a="332312970"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 23:21:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,213,1647327600"; 
+   d="scan'208";a="552636530"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by orsmga002.jf.intel.com with ESMTP; 09 May 2022 23:21:12 -0700
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+To:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>
+Cc:     Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v6 07/12] arm-smmu-v3/sva: Add SVA domain support
+Date:   Tue, 10 May 2022 14:17:33 +0800
+Message-Id: <20220510061738.2761430-8-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220510061738.2761430-1-baolu.lu@linux.intel.com>
+References: <20220510061738.2761430-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-References: <20220509204909.2464496-1-dlatypov@google.com>
-In-Reply-To: <20220509204909.2464496-1-dlatypov@google.com>
-From:   David Gow <davidgow@google.com>
-Date:   Tue, 10 May 2022 14:22:00 +0800
-Message-ID: <CABVgOSnwFe18Em327c3bx7z0A9VfujbjdKgofoSRafFOsOjfwQ@mail.gmail.com>
-Subject: Re: [PATCH] kunit: tool: misc cleanups
-To:     Daniel Latypov <dlatypov@google.com>
-Cc:     Brendan Higgins <brendanhiggins@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        KUnit Development <kunit-dev@googlegroups.com>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 4:49 AM Daniel Latypov <dlatypov@google.com> wrote:
->
-> This primarily comes from running pylint over kunit tool code and
-> ignoring some warnings we don't care about.
-> If we ever got a fully clean setup, we could add this to run_checks.py,
-> but we're not there yet.
->
-> Fix things like
-> * Drop unused imports
-> * check `is None`, not `== None` (see PEP 8)
-> * remove redundant parens around returns
-> * remove redundant `else` / convert `elif` to `if` where appropriate
+Add support for SVA domain allocation and provide an SVA-specific
+iommu_domain_ops.
 
-Personally, I find the explicit 'elif' much more readable in most of
-these cases, but if we're annoying a linter, I guess we should change
-them...
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  6 ++
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 68 +++++++++++++++++++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  3 +
+ 3 files changed, 77 insertions(+)
 
-> * rename make_arch_qemuconfig() param to base_kunitconfig (this is the
->   name used in the subclass, and it's a better one)
-> * kunit_tool_test: check the exit code for SystemExit (could be 0)
->
-> Signed-off-by: Daniel Latypov <dlatypov@google.com>
-> ---
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index cd48590ada30..e077f21e2528 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -759,6 +759,7 @@ struct iommu_sva *arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm,
+ void arm_smmu_sva_unbind(struct iommu_sva *handle);
+ u32 arm_smmu_sva_get_pasid(struct iommu_sva *handle);
+ void arm_smmu_sva_notifier_synchronize(void);
++struct iommu_domain *arm_smmu_sva_domain_alloc(void);
+ #else /* CONFIG_ARM_SMMU_V3_SVA */
+ static inline bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
+ {
+@@ -804,5 +805,10 @@ static inline u32 arm_smmu_sva_get_pasid(struct iommu_sva *handle)
+ }
+ 
+ static inline void arm_smmu_sva_notifier_synchronize(void) {}
++
++static inline struct iommu_domain *arm_smmu_sva_domain_alloc(void)
++{
++	return NULL;
++}
+ #endif /* CONFIG_ARM_SMMU_V3_SVA */
+ #endif /* _ARM_SMMU_V3_H */
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+index c623dae1e115..9d176e836d6b 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+@@ -541,3 +541,71 @@ void arm_smmu_sva_notifier_synchronize(void)
+ 	 */
+ 	mmu_notifier_synchronize();
+ }
++
++static int arm_smmu_sva_attach_dev_pasid(struct iommu_domain *domain,
++					 struct device *dev, ioasid_t id)
++{
++	int ret = 0;
++	struct mm_struct *mm;
++	struct iommu_sva *handle;
++
++	if (domain->type != IOMMU_DOMAIN_SVA)
++		return -EINVAL;
++
++	mm = domain->mm;
++	if (WARN_ON(!mm))
++		return -ENODEV;
++
++	mutex_lock(&sva_lock);
++	handle = __arm_smmu_sva_bind(dev, mm);
++	if (IS_ERR(handle))
++		ret = PTR_ERR(handle);
++	mutex_unlock(&sva_lock);
++
++	return ret;
++}
++
++static void arm_smmu_sva_detach_dev_pasid(struct iommu_domain *domain,
++					  struct device *dev, ioasid_t id)
++{
++	struct mm_struct *mm = domain->mm;
++	struct arm_smmu_bond *bond = NULL, *t;
++	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
++
++	mutex_lock(&sva_lock);
++	list_for_each_entry(t, &master->bonds, list) {
++		if (t->mm == mm) {
++			bond = t;
++			break;
++		}
++	}
++
++	if (!WARN_ON(!bond) && refcount_dec_and_test(&bond->refs)) {
++		list_del(&bond->list);
++		arm_smmu_mmu_notifier_put(bond->smmu_mn);
++		kfree(bond);
++	}
++	mutex_unlock(&sva_lock);
++}
++
++static void arm_smmu_sva_domain_free(struct iommu_domain *domain)
++{
++	kfree(domain);
++}
++
++static const struct iommu_domain_ops arm_smmu_sva_domain_ops = {
++	.attach_dev_pasid	= arm_smmu_sva_attach_dev_pasid,
++	.detach_dev_pasid	= arm_smmu_sva_detach_dev_pasid,
++	.free			= arm_smmu_sva_domain_free,
++};
++
++struct iommu_domain *arm_smmu_sva_domain_alloc(void)
++{
++	struct iommu_domain *domain;
++
++	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
++	if (domain)
++		domain->ops = &arm_smmu_sva_domain_ops;
++
++	return domain;
++}
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index afc63fce6107..9daf3de7e539 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -1999,6 +1999,9 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+ {
+ 	struct arm_smmu_domain *smmu_domain;
+ 
++	if (type == IOMMU_DOMAIN_SVA)
++		return arm_smmu_sva_domain_alloc();
++
+ 	if (type != IOMMU_DOMAIN_UNMANAGED &&
+ 	    type != IOMMU_DOMAIN_DMA &&
+ 	    type != IOMMU_DOMAIN_DMA_FQ &&
+-- 
+2.25.1
 
-All of these changes seem correct to me, even if I'm not sure I'd
-bother with most of them if they weren't causing pylint to show
-errors.
-
-Given that apparently it does, though, I'm okay with it going through.
-(I'll just grumble quietly in my corner. :-))
-
-Reviewed-by: David Gow <davidgow@google.com>
-
--- David
-
-> Note: this patch only applies cleanly on top of https://lore.kernel.org/linux-kselftest/20220426173334.3871399-3-dlatypov@google.com
-> ---
->  tools/testing/kunit/kunit.py           |  9 +++----
->  tools/testing/kunit/kunit_config.py    | 12 ++++-----
->  tools/testing/kunit/kunit_json.py      |  5 +---
->  tools/testing/kunit/kunit_kernel.py    | 10 +++----
->  tools/testing/kunit/kunit_parser.py    | 37 ++++++++++++--------------
->  tools/testing/kunit/kunit_tool_test.py | 10 ++++---
->  tools/testing/kunit/run_checks.py      |  2 +-
->  7 files changed, 39 insertions(+), 46 deletions(-)
->
-> diff --git a/tools/testing/kunit/kunit.py b/tools/testing/kunit/kunit.py
-> index 6dc710d3996b..13bd72e47da8 100755
-> --- a/tools/testing/kunit/kunit.py
-> +++ b/tools/testing/kunit/kunit.py
-> @@ -124,7 +124,7 @@ def _list_tests(linux: kunit_kernel.LinuxSourceTree, request: KunitExecRequest)
->         lines.pop()
->
->         # Filter out any extraneous non-test output that might have gotten mixed in.
-> -       return [l for l in lines if re.match('^[^\s.]+\.[^\s.]+$', l)]
-> +       return [l for l in lines if re.match(r'^[^\s.]+\.[^\s.]+$', l)]
->
->  def _suites_from_test_list(tests: List[str]) -> List[str]:
->         """Extracts all the suites from an ordered list of tests."""
-> @@ -188,8 +188,7 @@ def exec_tests(linux: kunit_kernel.LinuxSourceTree, request: KunitExecRequest) -
->  def _map_to_overall_status(test_status: kunit_parser.TestStatus) -> KunitStatus:
->         if test_status in (kunit_parser.TestStatus.SUCCESS, kunit_parser.TestStatus.SKIPPED):
->                 return KunitStatus.SUCCESS
-> -       else:
-> -               return KunitStatus.TEST_FAILURE
-> +       return KunitStatus.TEST_FAILURE
->
->  def parse_tests(request: KunitParseRequest, metadata: kunit_json.Metadata, input_data: Iterable[str]) -> Tuple[KunitResult, kunit_parser.Test]:
->         parse_start = time.time()
-> @@ -353,7 +352,7 @@ def add_exec_opts(parser) -> None:
->                             'a non-hermetic test, one that might pass/fail based on '
->                             'what ran before it.',
->                             type=str,
-> -                           choices=['suite', 'test']),
-> +                           choices=['suite', 'test'])
->
->  def add_parse_opts(parser) -> None:
->         parser.add_argument('--raw_output', help='If set don\'t format output from kernel. '
-> @@ -497,7 +496,7 @@ def main(argv, linux=None):
->                 if result.status != KunitStatus.SUCCESS:
->                         sys.exit(1)
->         elif cli_args.subcommand == 'parse':
-> -               if cli_args.file == None:
-> +               if cli_args.file is None:
->                         sys.stdin.reconfigure(errors='backslashreplace')  # pytype: disable=attribute-error
->                         kunit_output = sys.stdin
->                 else:
-> diff --git a/tools/testing/kunit/kunit_config.py b/tools/testing/kunit/kunit_config.py
-> index ca33e4b7bcc5..75a8dc1683d4 100644
-> --- a/tools/testing/kunit/kunit_config.py
-> +++ b/tools/testing/kunit/kunit_config.py
-> @@ -20,16 +20,15 @@ class KconfigEntry:
->
->         def __str__(self) -> str:
->                 if self.value == 'n':
-> -                       return r'# CONFIG_%s is not set' % (self.name)
-> -               else:
-> -                       return r'CONFIG_%s=%s' % (self.name, self.value)
-> +                       return f'# CONFIG_{self.name} is not set'
-> +               return f'CONFIG_{self.name}={self.value}'
->
->
->  class KconfigParseError(Exception):
->         """Error parsing Kconfig defconfig or .config."""
->
->
-> -class Kconfig(object):
-> +class Kconfig:
->         """Represents defconfig or .config specified using the Kconfig language."""
->
->         def __init__(self) -> None:
-> @@ -49,7 +48,7 @@ class Kconfig(object):
->                                 if a.value == 'n':
->                                         continue
->                                 return False
-> -                       elif a.value != b:
-> +                       if a.value != b:
->                                 return False
->                 return True
->
-> @@ -91,6 +90,5 @@ def parse_from_string(blob: str) -> Kconfig:
->
->                 if line[0] == '#':
->                         continue
-> -               else:
-> -                       raise KconfigParseError('Failed to parse: ' + line)
-> +               raise KconfigParseError('Failed to parse: ' + line)
->         return kconfig
-> diff --git a/tools/testing/kunit/kunit_json.py b/tools/testing/kunit/kunit_json.py
-> index 1212423fe6bc..10ff65689dd8 100644
-> --- a/tools/testing/kunit/kunit_json.py
-> +++ b/tools/testing/kunit/kunit_json.py
-> @@ -8,12 +8,9 @@
->
->  from dataclasses import dataclass
->  import json
-> -import os
-> -
-> -import kunit_parser
-> +from typing import Any, Dict
->
->  from kunit_parser import Test, TestStatus
-> -from typing import Any, Dict
->
->  @dataclass
->  class Metadata:
-> diff --git a/tools/testing/kunit/kunit_kernel.py b/tools/testing/kunit/kunit_kernel.py
-> index 483f78e15ce9..93446a2b6414 100644
-> --- a/tools/testing/kunit/kunit_kernel.py
-> +++ b/tools/testing/kunit/kunit_kernel.py
-> @@ -37,7 +37,7 @@ class BuildError(Exception):
->         """Represents an error trying to build the Linux kernel."""
->
->
-> -class LinuxSourceTreeOperations(object):
-> +class LinuxSourceTreeOperations:
->         """An abstraction over command line operations performed on a source tree."""
->
->         def __init__(self, linux_arch: str, cross_compile: Optional[str]):
-> @@ -52,7 +52,7 @@ class LinuxSourceTreeOperations(object):
->                 except subprocess.CalledProcessError as e:
->                         raise ConfigError(e.output.decode())
->
-> -       def make_arch_qemuconfig(self, kconfig: kunit_config.Kconfig) -> None:
-> +       def make_arch_qemuconfig(self, base_kunitconfig: kunit_config.Kconfig) -> None:
->                 pass
->
->         def make_allyesconfig(self, build_dir: str, make_options) -> None:
-> @@ -180,7 +180,7 @@ def get_source_tree_ops(arch: str, cross_compile: Optional[str]) -> LinuxSourceT
->         config_path = os.path.join(QEMU_CONFIGS_DIR, arch + '.py')
->         if arch == 'um':
->                 return LinuxSourceTreeOperationsUml(cross_compile=cross_compile)
-> -       elif os.path.isfile(config_path):
-> +       if os.path.isfile(config_path):
->                 return get_source_tree_ops_from_qemu_config(config_path, cross_compile)[1]
->
->         options = [f[:-3] for f in os.listdir(QEMU_CONFIGS_DIR) if f.endswith('.py')]
-> @@ -211,7 +211,7 @@ def get_source_tree_ops_from_qemu_config(config_path: str,
->         return params.linux_arch, LinuxSourceTreeOperationsQemu(
->                         params, cross_compile=cross_compile)
->
-> -class LinuxSourceTree(object):
-> +class LinuxSourceTree:
->         """Represents a Linux kernel source tree with KUnit tests."""
->
->         def __init__(
-> @@ -366,6 +366,6 @@ class LinuxSourceTree(object):
->                         waiter.join()
->                         subprocess.call(['stty', 'sane'])
->
-> -       def signal_handler(self, sig, frame) -> None:
-> +       def signal_handler(self, unused_sig, unused_frame) -> None:
->                 logging.error('Build interruption occurred. Cleaning console.')
->                 subprocess.call(['stty', 'sane'])
-> diff --git a/tools/testing/kunit/kunit_parser.py b/tools/testing/kunit/kunit_parser.py
-> index d56d530fab24..5c90842d7017 100644
-> --- a/tools/testing/kunit/kunit_parser.py
-> +++ b/tools/testing/kunit/kunit_parser.py
-> @@ -15,10 +15,9 @@ import sys
->
->  import datetime
->  from enum import Enum, auto
-> -from functools import reduce
->  from typing import Iterable, Iterator, List, Optional, Tuple
->
-> -class Test(object):
-> +class Test:
->         """
->         A class to represent a test parsed from KTAP results. All KTAP
->         results within a test log are stored in a main Test object as
-> @@ -126,17 +125,16 @@ class TestCounts:
->                 """
->                 if self.total() == 0:
->                         return TestStatus.NO_TESTS
-> -               elif self.crashed:
-> +               if self.crashed:
->                         # Crashes should take priority.
->                         return TestStatus.TEST_CRASHED
-> -               elif self.failed:
-> +               if self.failed:
->                         return TestStatus.FAILURE
-> -               elif self.passed:
-> +               if self.passed:
->                         # No failures or crashes, looks good!
->                         return TestStatus.SUCCESS
-> -               else:
-> -                       # We have only skipped tests.
-> -                       return TestStatus.SKIPPED
-> +               # We have only skipped tests.
-> +               return TestStatus.SKIPPED
->
->         def add_status(self, status: TestStatus) -> None:
->                 """Increments the count for `status`."""
-> @@ -381,7 +379,7 @@ def peek_test_name_match(lines: LineStream, test: Test) -> bool:
->         if not match:
->                 return False
->         name = match.group(4)
-> -       return (name == test.name)
-> +       return name == test.name
->
->  def parse_test_result(lines: LineStream, test: Test,
->                         expected_num: int) -> bool:
-> @@ -553,17 +551,16 @@ def format_test_result(test: Test) -> str:
->         String containing formatted test result
->         """
->         if test.status == TestStatus.SUCCESS:
-> -               return (green('[PASSED] ') + test.name)
-> -       elif test.status == TestStatus.SKIPPED:
-> -               return (yellow('[SKIPPED] ') + test.name)
-> -       elif test.status == TestStatus.NO_TESTS:
-> -               return (yellow('[NO TESTS RUN] ') + test.name)
-> -       elif test.status == TestStatus.TEST_CRASHED:
-> -               print_log(test.log)
-> -               return (red('[CRASHED] ') + test.name)
-> -       else:
-> +               return green('[PASSED] ') + test.name
-> +       if test.status == TestStatus.SKIPPED:
-> +               return yellow('[SKIPPED] ') + test.name
-> +       if test.status == TestStatus.NO_TESTS:
-> +               return yellow('[NO TESTS RUN] ') + test.name
-> +       if test.status == TestStatus.TEST_CRASHED:
->                 print_log(test.log)
-> -               return (red('[FAILED] ') + test.name)
-> +               return red('[CRASHED] ') + test.name
-> +       print_log(test.log)
-> +       return red('[FAILED] ') + test.name
->
->  def print_test_result(test: Test) -> None:
->         """
-> @@ -607,7 +604,7 @@ def print_summary_line(test: Test) -> None:
->         """
->         if test.status == TestStatus.SUCCESS:
->                 color = green
-> -       elif test.status == TestStatus.SKIPPED or test.status == TestStatus.NO_TESTS:
-> +       elif test.status in (TestStatus.SKIPPED, TestStatus.NO_TESTS):
->                 color = yellow
->         else:
->                 color = red
-> diff --git a/tools/testing/kunit/kunit_tool_test.py b/tools/testing/kunit/kunit_tool_test.py
-> index 1200e451c418..d2ab24f736f8 100755
-> --- a/tools/testing/kunit/kunit_tool_test.py
-> +++ b/tools/testing/kunit/kunit_tool_test.py
-> @@ -251,8 +251,8 @@ class KUnitParserTest(unittest.TestCase):
->
->         def test_ignores_hyphen(self):
->                 hyphen_log = test_data_path('test_strip_hyphen.log')
-> -               file = open(hyphen_log)
-> -               result = kunit_parser.parse_run_tests(file.readlines())
-> +               with open(hyphen_log) as file:
-> +                       result = kunit_parser.parse_run_tests(file.readlines())
->
->                 # A skipped test does not fail the whole suite.
->                 self.assertEqual(
-> @@ -347,7 +347,7 @@ class LineStreamTest(unittest.TestCase):
->                 called_times = 0
->                 def generator():
->                         nonlocal called_times
-> -                       for i in range(1,5):
-> +                       for _ in range(1,5):
->                                 called_times += 1
->                                 yield called_times, str(called_times)
->
-> @@ -553,7 +553,8 @@ class KUnitMainTest(unittest.TestCase):
->         def test_exec_no_tests(self):
->                 self.linux_source_mock.run_kernel = mock.Mock(return_value=['TAP version 14', '1..0'])
->                 with self.assertRaises(SystemExit) as e:
-> -                 kunit.main(['run'], self.linux_source_mock)
-> +                       kunit.main(['run'], self.linux_source_mock)
-> +               self.assertEqual(e.exception.code, 1)
->                 self.linux_source_mock.run_kernel.assert_called_once_with(
->                         args=None, build_dir='.kunit', filter_glob='', timeout=300)
->                 self.print_mock.assert_any_call(StrContains(' 0 tests run!'))
-> @@ -588,6 +589,7 @@ class KUnitMainTest(unittest.TestCase):
->                 self.linux_source_mock.run_kernel = mock.Mock(return_value=[])
->                 with self.assertRaises(SystemExit) as e:
->                         kunit.main(['run', '--raw_output=invalid'], self.linux_source_mock)
-> +               self.assertNotEqual(e.exception.code, 0)
->
->         def test_run_raw_output_does_not_take_positional_args(self):
->                 # --raw_output is a string flag, but we don't want it to consume
-> diff --git a/tools/testing/kunit/run_checks.py b/tools/testing/kunit/run_checks.py
-> index 13d854afca9d..066e6f938f6d 100755
-> --- a/tools/testing/kunit/run_checks.py
-> +++ b/tools/testing/kunit/run_checks.py
-> @@ -14,7 +14,7 @@ import shutil
->  import subprocess
->  import sys
->  import textwrap
-> -from typing import Dict, List, Sequence, Tuple
-> +from typing import Dict, List, Sequence
->
->  ABS_TOOL_PATH = os.path.abspath(os.path.dirname(__file__))
->  TIMEOUT = datetime.timedelta(minutes=5).total_seconds()
-> --
-> 2.36.0.512.ge40c2bad7a-goog
->
