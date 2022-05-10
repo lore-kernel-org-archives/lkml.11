@@ -2,136 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85BF8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 09:48:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F7D2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 09:49:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239055AbiEJJwg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 05:52:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48706 "EHLO
+        id S239289AbiEJJxp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 05:53:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239222AbiEJJwd (ORCPT
+        with ESMTP id S239047AbiEJJxl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 05:52:33 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA81238D6E;
-        Tue, 10 May 2022 02:48:36 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KyCs31yzDzhZ2n;
-        Tue, 10 May 2022 17:48:07 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
- (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 10 May
- 2022 17:48:34 +0800
-From:   Ye Bin <yebin10@huawei.com>
-To:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
-        <linux-ext4@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <jack@suse.cz>,
-        Ye Bin <yebin10@huawei.com>
-Subject: [PATCH -next v2] ext4: fix bug_on in ext4_writepages
-Date:   Tue, 10 May 2022 18:02:28 +0800
-Message-ID: <20220510100228.1172227-1-yebin10@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Tue, 10 May 2022 05:53:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05A512A18B9;
+        Tue, 10 May 2022 02:49:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A7600B81BDA;
+        Tue, 10 May 2022 09:49:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8878C385C6;
+        Tue, 10 May 2022 09:49:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652176182;
+        bh=/gOPBTu3tvTGApNFzFvVy75YBVIr8MiZpBkvRlR3SAg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=o2f5tiyUi4srx27bB6MrXZ2j9/2vfTHsYi2d/1SpF8A7Bklyn4VHHkZAr3LjwskgY
+         UvS/vZGyFrRig4kYhW6gMzWgPNCk5EiAHqXtgYDg+NCVP+5sVb03xssrYWlBE3oT8k
+         USZJGUKmavA4bhxS56T4ippuDkLqhurpwT50/Bo0=
+Date:   Tue, 10 May 2022 11:49:39 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Neil Armstrong <narmstrong@baylibre.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org,
+        Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH v1] serial: meson: acquire port->lock in startup()
+Message-ID: <Yno1MzqCzoITbCjk@kroah.com>
+References: <20220508103547.626355-1-john.ogness@linutronix.de>
+ <cf593ff3-bf57-ccd3-9a25-b28cc604d6f4@baylibre.com>
+ <YnoyU3fydh46e2Sc@alley>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YnoyU3fydh46e2Sc@alley>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-we got issue as follows:
-EXT4-fs error (device loop0): ext4_mb_generate_buddy:1141: group 0, block bitmap and bg descriptor inconsistent: 25 vs 31513 free cls
-------------[ cut here ]------------
-kernel BUG at fs/ext4/inode.c:2708!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
-CPU: 2 PID: 2147 Comm: rep Not tainted 5.18.0-rc2-next-20220413+ #155
-RIP: 0010:ext4_writepages+0x1977/0x1c10
-RSP: 0018:ffff88811d3e7880 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: 0000000000000001 RCX: ffff88811c098000
-RDX: 0000000000000000 RSI: ffff88811c098000 RDI: 0000000000000002
-RBP: ffff888128140f50 R08: ffffffffb1ff6387 R09: 0000000000000000
-R10: 0000000000000007 R11: ffffed10250281ea R12: 0000000000000001
-R13: 00000000000000a4 R14: ffff88811d3e7bb8 R15: ffff888128141028
-FS:  00007f443aed9740(0000) GS:ffff8883aef00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020007200 CR3: 000000011c2a4000 CR4: 00000000000006e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- do_writepages+0x130/0x3a0
- filemap_fdatawrite_wbc+0x83/0xa0
- filemap_flush+0xab/0xe0
- ext4_alloc_da_blocks+0x51/0x120
- __ext4_ioctl+0x1534/0x3210
- __x64_sys_ioctl+0x12c/0x170
- do_syscall_64+0x3b/0x90
+On Tue, May 10, 2022 at 11:37:23AM +0200, Petr Mladek wrote:
+> On Mon 2022-05-09 09:36:40, Neil Armstrong wrote:
+> > On 08/05/2022 12:35, John Ogness wrote:
+> > > The uart_ops startup() callback is called without interrupts
+> > > disabled and without port->lock locked, relatively late during the
+> > > boot process (from the call path of console_on_rootfs()). If the
+> > > device is a console, it was already previously registered and could
+> > > be actively printing messages.
+> > > 
+> > > Since the startup() callback is reading/writing registers used by
+> > > the console write() callback (AML_UART_CONTROL), its access must
+> > > be synchronized using the port->lock. Currently it is not.
+> > > 
+> > > The startup() callback is the only function that explicitly enables
+> > > interrupts. Without the synchronization, it is possible that
+> > > interrupts become accidentally permanently disabled.
+> > > 
+> > > CPU0                           CPU1
+> > > meson_serial_console_write     meson_uart_startup
+> > > --------------------------     ------------------
+> > > spin_lock(port->lock)
+> > > val = readl(AML_UART_CONTROL)
+> > > uart_console_write()
+> > >                                 writel(INT_EN, AML_UART_CONTROL)
+> > > writel(val, AML_UART_CONTROL)
+> > > spin_unlock(port->lock)
+> > > 
+> > > Add port->lock synchronization to meson_uart_startup() to avoid
+> > > racing with meson_serial_console_write().
+> > > 
+> > > Also add detailed comments to meson_uart_reset() explaining why it
+> > > is *not* using port->lock synchronization.
+> > > 
+> > > Link: https://lore.kernel.org/lkml/2a82eae7-a256-f70c-fd82-4e510750906e@samsung.com
+> > > Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> > > Signed-off-by: John Ogness <john.ogness@linutronix.de>
+> > > Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> > > ---
+> > >   drivers/tty/serial/meson_uart.c | 13 +++++++++++++
+> > >   1 file changed, 13 insertions(+)
+> > > 
+> > > diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+> > > index 2bf1c57e0981..39021dac09cc 100644
+> > > --- a/drivers/tty/serial/meson_uart.c
+> > > +++ b/drivers/tty/serial/meson_uart.c
+> > > @@ -253,6 +253,14 @@ static const char *meson_uart_type(struct uart_port *port)
+> > >   	return (port->type == PORT_MESON) ? "meson_uart" : NULL;
+> > >   }
+> > > +/*
+> > > + * This function is called only from probe() using a temporary io mapping
+> > > + * in order to perform a reset before setting up the device. Since the
+> > > + * temporarily mapped region was successfully requested, there can be no
+> > > + * console on this port at this time. Hence it is not necessary for this
+> > > + * function to acquire the port->lock. (Since there is no console on this
+> > > + * port at this time, the port->lock is not initialized yet.)
+> > > + */
+> > >   static void meson_uart_reset(struct uart_port *port)
+> > >   {
+> > >   	u32 val;
+> > > @@ -267,9 +275,12 @@ static void meson_uart_reset(struct uart_port *port)
+> > >   static int meson_uart_startup(struct uart_port *port)
+> > >   {
+> > > +	unsigned long flags;
+> > >   	u32 val;
+> > >   	int ret = 0;
+> > > +	spin_lock_irqsave(&port->lock, flags);
+> > > +
+> > >   	val = readl(port->membase + AML_UART_CONTROL);
+> > >   	val |= AML_UART_CLEAR_ERR;
+> > >   	writel(val, port->membase + AML_UART_CONTROL);
+> > > @@ -285,6 +296,8 @@ static int meson_uart_startup(struct uart_port *port)
+> > >   	val = (AML_UART_RECV_IRQ(1) | AML_UART_XMIT_IRQ(port->fifosize / 2));
+> > >   	writel(val, port->membase + AML_UART_MISC);
+> > > +	spin_unlock_irqrestore(&port->lock, flags);
+> > > +
+> > >   	ret = request_irq(port->irq, meson_uart_interrupt, 0,
+> > >   			  port->name, port);
+> > > 
+> > > base-commit: 672c0c5173427e6b3e2a9bbb7be51ceeec78093a
+> > 
+> > Thanks for fixing this, it may also fix an uart apparent lockup I encountered
+> > several time while developing on the platform, but the target was still alive
+> > so it matches.
+> > 
+> > So I'll add:
+> > Fixes: ff7693d079e5 ("ARM: meson: serial: add MesonX SoC on-chip uart driver")
+> > 
+> > and
+> > 
+> > Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+> 
+> Neil, may I assume that you are going to queue this fix for 5.19, please?
 
-It may happen as follows:
-1. write inline_data inode
-vfs_write
-  new_sync_write
-    ext4_file_write_iter
-      ext4_buffered_write_iter
-        generic_perform_write
-          ext4_da_write_begin
-            ext4_da_write_inline_data_begin -> If inline data size too
-            small will allocate block to write, then mapping will has
-            dirty page
-                ext4_da_convert_inline_data_to_extent ->clear EXT4_STATE_MAY_INLINE_DATA
-2. fallocate
-do_vfs_ioctl
-  ioctl_preallocate
-    vfs_fallocate
-      ext4_fallocate
-        ext4_convert_inline_data
-          ext4_convert_inline_data_nolock
-            ext4_map_blocks -> fail will goto restore data
-            ext4_restore_inline_data
-              ext4_create_inline_data
-              ext4_write_inline_data
-              ext4_set_inode_state -> set inode EXT4_STATE_MAY_INLINE_DATA
-3. writepages
-__ext4_ioctl
-  ext4_alloc_da_blocks
-    filemap_flush
-      filemap_fdatawrite_wbc
-        do_writepages
-          ext4_writepages
-            if (ext4_has_inline_data(inode))
-              BUG_ON(ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA))
+I can take it, thanks.
 
-The root cause of this issue is we destory inline data until call ext4_writepages
-under delay allocation mode. But there maybe already covert from inline to extent.
-To solved this issue, we call filemap_flush firstly.
-
-Signed-off-by: Ye Bin <yebin10@huawei.com>
----
- fs/ext4/inline.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/fs/ext4/inline.c b/fs/ext4/inline.c
-index 6d253edebf9f..130ed5d83734 100644
---- a/fs/ext4/inline.c
-+++ b/fs/ext4/inline.c
-@@ -2002,6 +2002,14 @@ int ext4_convert_inline_data(struct inode *inode)
- 	if (!ext4_has_inline_data(inode)) {
- 		ext4_clear_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
- 		return 0;
-+	} else if (test_opt(inode->i_sb, DELALLOC) && !S_ISDIR(inode->i_mode)) {
-+		error = filemap_flush(inode->i_mapping);
-+		if (error)
-+			return error;
-+		if (!ext4_has_inline_data(inode)) {
-+			ext4_clear_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
-+			return 0;
-+		}
- 	}
- 
- 	needed_blocks = ext4_writepage_trans_blocks(inode);
--- 
-2.31.1
-
+greg k-h
