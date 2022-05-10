@@ -2,110 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0B24C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:45:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2A75C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:46:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240146AbiEJNtq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:49:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56940 "EHLO
+        id S235799AbiEJNt5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:49:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243765AbiEJNcN (ORCPT
+        with ESMTP id S243724AbiEJNcJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:32:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F59E2CE21D;
-        Tue, 10 May 2022 06:22:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5A916165A;
-        Tue, 10 May 2022 13:22:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B44F6C385C2;
-        Tue, 10 May 2022 13:21:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188920;
-        bh=iXVVI4US+Q041s1HhJh5ERMO/BF9bJSOGPx+QLMsC9s=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jdSAmKXKJ4XWRk1ViTIEDzw0bXW7ZIb27xa/+qifwA9lM8hGb+2imyKdYLbO+Z0Ld
-         4eRyKEbVdtkhonhHLIwzvDYe2K3uyAJdidEKEbh93RxQql0BeNl5NJA0gWPCA3DfK8
-         Df2DLSTskFPmZPbfYJ6oml0GcnNoR0IJ/A2kMloU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Hellstrom <daniel@gaisler.com>,
-        Andreas Larsson <andreas@gaisler.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 4.19 69/88] can: grcan: use ofdev->dev when allocating DMA memory
-Date:   Tue, 10 May 2022 15:07:54 +0200
-Message-Id: <20220510130735.739737967@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
-References: <20220510130733.735278074@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 10 May 2022 09:32:09 -0400
+Received: from mail.avm.de (mail.avm.de [IPv6:2001:bf0:244:244::94])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 102282CCD02;
+        Tue, 10 May 2022 06:21:53 -0700 (PDT)
+Received: from mail-auth.avm.de (dovecot-mx-01.avm.de [212.42.244.71])
+        by mail.avm.de (Postfix) with ESMTPS;
+        Tue, 10 May 2022 15:21:49 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=avm.de; s=mail;
+        t=1652188910; bh=ArbPQjrdfcivZcwPMW1Fg1VSNd1S7aBpYNWcRI+uFAA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XJv4OQXOv1WqA/egsRnFOJw5NUsuSb7Wze6oCS8mK/CG/c9FOuPgJze8tgpspUosO
+         efAEvCU6NslqstuPTBd0Hvj2MMcUAgkJ9Znfoa16YmrtP3xpmIwThrT53wA867ZqF2
+         QWPBXf61e/kuf2EwfUSiXk863g/MQmbNXcTYmvWQ=
+Received: from buildd.core.avm.de (buildd-sv-01.avm.de [172.16.0.225])
+        by mail-auth.avm.de (Postfix) with ESMTPA id E883281C9E;
+        Tue, 10 May 2022 15:21:48 +0200 (CEST)
+Received: by buildd.core.avm.de (Postfix, from userid 1000)
+        id DD22418149E; Tue, 10 May 2022 15:21:48 +0200 (CEST)
+Date:   Tue, 10 May 2022 15:21:48 +0200
+From:   Nicolas Schier <n.schier@avm.de>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] kbuild: factor out the common installation code into
+ scripts/install.sh
+Message-ID: <Ynpm7HS6OcpJntve@buildd.core.avm.de>
+References: <20220503024716.76666-1-masahiroy@kernel.org>
+ <Yno4m91/H65yX4T1@buildd.core.avm.de>
+ <CAK7LNASDZz4osNX3HgzrK7KVQ0C4uEGOBjbmCfTsBG25jOieXA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAK7LNASDZz4osNX3HgzrK7KVQ0C4uEGOBjbmCfTsBG25jOieXA@mail.gmail.com>
+X-purgate-ID: 149429::1652188909-0000038B-8E522ED6/0/0
+X-purgate-type: clean
+X-purgate-size: 6429
+X-purgate-Ad: Categorized by eleven eXpurgate (R) http://www.eleven.de
+X-purgate: This mail is considered clean (visit http://www.eleven.de for further information)
+X-purgate: clean
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Hellstrom <daniel@gaisler.com>
+On Tue, May 10, 2022 at 09:56:45PM +0900, Masahiro Yamada wrote:
+> On Tue, May 10, 2022 at 7:04 PM Nicolas Schier <n.schier@avm.de> wrote:
+> >
+> > On Tue,  3 May 2022 11:47 +0900 Masahiro Yamada wrote:
+> > > Many architectures have similar install.sh scripts.
+> > >
+> > > The first half is really generic; verifies that the kernel image and
+> > > System.map exist, then executes ~/bin/${INSTALLKERNEL} or
+> > > /sbin/${INSTALLKERNEL} if available.
+> > >
+> > > The second half is kind of arch-specific. It just copies the kernel image
+> > > and System.map to the destination, but the code is slightly different.
+> > >
+> > > This patch factors out the generic part into scripts/install.sh.
+> > >
+> > > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> > > ---
+> > >
+> > > Changes in v2:
+> > >   - Move the installkernel parameters to scripts/install.sh
+> > >
+> > >  Makefile                     |  3 ++-
+> > >  arch/arm/Makefile            |  4 ++--
+> > >  arch/arm/boot/install.sh     | 21 ------------------
+> > >  arch/arm64/Makefile          |  6 ++----
+> > >  arch/arm64/boot/install.sh   | 21 ------------------
+> > >  arch/ia64/Makefile           |  3 ++-
+> > >  arch/ia64/install.sh         | 10 ---------
+> > >  arch/m68k/Makefile           |  3 ++-
+> > >  arch/m68k/install.sh         | 22 -------------------
+> > >  arch/nios2/Makefile          |  3 +--
+> > >  arch/nios2/boot/install.sh   | 22 -------------------
+> > >  arch/parisc/Makefile         | 11 +++++-----
+> > >  arch/parisc/install.sh       | 28 ------------------------
+> > >  arch/powerpc/Makefile        |  3 +--
+> > >  arch/powerpc/boot/install.sh | 23 --------------------
+> > >  arch/riscv/Makefile          |  7 +++---
+> > >  arch/riscv/boot/install.sh   | 21 ------------------
+> > >  arch/s390/Makefile           |  3 +--
+> > >  arch/s390/boot/install.sh    |  6 ------
+> > >  arch/sparc/Makefile          |  3 +--
+> > >  arch/sparc/boot/install.sh   | 22 -------------------
+> > >  arch/x86/Makefile            |  3 +--
+> > >  arch/x86/boot/install.sh     | 22 -------------------
+> > >  scripts/install.sh           | 41 ++++++++++++++++++++++++++++++++++++
+> > >  24 files changed, 64 insertions(+), 247 deletions(-)
+> > >  mode change 100644 => 100755 arch/arm/boot/install.sh
+> > >  mode change 100644 => 100755 arch/arm64/boot/install.sh
+> > >  mode change 100644 => 100755 arch/ia64/install.sh
+> > >  mode change 100644 => 100755 arch/m68k/install.sh
+> > >  mode change 100644 => 100755 arch/nios2/boot/install.sh
+> > >  mode change 100644 => 100755 arch/parisc/install.sh
+> > >  mode change 100644 => 100755 arch/powerpc/boot/install.sh
+> > >  mode change 100644 => 100755 arch/riscv/boot/install.sh
+> > >  mode change 100644 => 100755 arch/s390/boot/install.sh
+> > >  mode change 100644 => 100755 arch/sparc/boot/install.sh
+> > >  mode change 100644 => 100755 arch/x86/boot/install.sh
+> > >  create mode 100755 scripts/install.sh
+> > >
+> > > diff --git a/Makefile b/Makefile
+> > > index 9a60f732bb3c..154c32af8805 100644
+> > > --- a/Makefile
+> > > +++ b/Makefile
+> > > @@ -1298,7 +1298,8 @@ scripts_unifdef: scripts_basic
+> > >  # to this Makefile to build and install external modules.
+> > >  # Cancel sub_make_done so that options such as M=, V=, etc. are parsed.
+> > >
+> > > -install: sub_make_done :=
+> > > +quiet_cmd_install = INSTALL $(INSTALL_PATH)
+> > > +      cmd_install = unset sub_make_done; $(srctree)/scripts/install.sh
+> >
+> > This is the third 'cmd_install' in the tree; might it be better to take
+> > a more unique name (e.g. cmd_installkernel) to prevent confusion?
+> 
+> If this is confusing, we can rename the ones in
+> scripts/Makefile.{modinst,headersinst}.
+> 
+> This command name matches the build target ("make install"), so
+> I believe this name is good.
+> 
+> 
+> 
+> >
+> > For me, it would have been more clear, if we'd also move the default
+> > KBUILD_IMAGE definition here (similar to the corresponding part in
+> > arch/parisc/Makefile):
+> >
+> > zinstall: KBUILD_IMAGE := $(boot)/Image.gz
+> >
+> > ($(KBUILD_IMAGE) seems not to be used anywhere else in arch/arm64/
+> > tree; but I haven't checked in depth.)
+> 
+> 
+> KBUILD_IMAGE is _indirectly_ used to specify
+> the kernel image for package builds.    [1]
+> 
+> This target returns the value IMAGE_BUILD.   [2]
+> 
+> 
+> $(KBUILD_IMAGE) is definitely used for arm64.
+> 
+> [1]: https://github.com/torvalds/linux/blob/v5.17/scripts/package/builddeb#L150
+> [2]: https://github.com/torvalds/linux/blob/v5.17/Makefile#L1943
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> > > diff --git a/arch/parisc/Makefile b/arch/parisc/Makefile
+> > > index 7583fc39ab2d..aca1710fd658 100644
+> > > --- a/arch/parisc/Makefile
+> > > +++ b/arch/parisc/Makefile
+> > > @@ -184,12 +184,11 @@ vdso_install:
+> > >       $(Q)$(MAKE) $(build)=arch/parisc/kernel/vdso $@
+> > >       $(if $(CONFIG_COMPAT_VDSO), \
+> > >               $(Q)$(MAKE) $(build)=arch/parisc/kernel/vdso32 $@)
+> > > -install:
+> > > -     $(CONFIG_SHELL) $(srctree)/arch/parisc/install.sh \
+> > > -                     $(KERNELRELEASE) vmlinux System.map "$(INSTALL_PATH)"
+> > > -zinstall:
+> > > -     $(CONFIG_SHELL) $(srctree)/arch/parisc/install.sh \
+> > > -                     $(KERNELRELEASE) vmlinuz System.map "$(INSTALL_PATH)"
+> > > +
+> > > +install: KBUILD_IMAGE := vmlinux
+> > > +zinstall: KBUILD_IMAGE := vmlinuz
+> >
+> > Does this make the KBUILD_IMAGE definition in line 19 obsolete and
+> > unused?
+> 
+> 
+> As I said above for arm64, KBUILD_IMAGE is used for package builds.
+> 
+> If you delete line 19, it will change the behavior.
+> (fall back to the global default [3])
+> 
+> 
+> [3]: https://github.com/torvalds/linux/blob/v5.17/Makefile#L1059
+> 
+> 
+> 
+> 
+> 
+> > > diff --git a/arch/powerpc/Makefile b/arch/powerpc/Makefile
+> > > index eb541e730d3c..45a9caa37b4e 100644
+> > > --- a/arch/powerpc/Makefile
+> > > +++ b/arch/powerpc/Makefile
+> > > @@ -408,8 +408,7 @@ endef
+> > >
+> > >  PHONY += install
+> > >  install:
+> >
+> > I can't find a KBUILD_IMAGE definition in arch/powerpc/Makefile.
+> > Should it be set here as a target-specific varibable, too?
+> 
+> 
+> Right, powerpc does not define KBUILD_IMAGE explicitly.
+> It falls back to [3].
+> 
 
-commit 101da4268626b00d16356a6bf284d66e44c46ff9 upstream.
+Thanks for all those illuming clarifications, I have nothing more to ask.
 
-Use the device of the device tree node should be rather than the
-device of the struct net_device when allocating DMA buffers.
-
-The driver got away with it on sparc32 until commit 53b7670e5735
-("sparc: factor the dma coherent mapping into helper") after which the
-driver oopses.
-
-Fixes: 6cec9b07fe6a ("can: grcan: Add device driver for GRCAN and GRHCAN cores")
-Link: https://lore.kernel.org/all/20220429084656.29788-2-andreas@gaisler.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Hellstrom <daniel@gaisler.com>
-Signed-off-by: Andreas Larsson <andreas@gaisler.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/can/grcan.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
---- a/drivers/net/can/grcan.c
-+++ b/drivers/net/can/grcan.c
-@@ -252,6 +252,7 @@ struct grcan_device_config {
- struct grcan_priv {
- 	struct can_priv can;	/* must be the first member */
- 	struct net_device *dev;
-+	struct device *ofdev_dev;
- 	struct napi_struct napi;
- 
- 	struct grcan_registers __iomem *regs;	/* ioremap'ed registers */
-@@ -928,7 +929,7 @@ static void grcan_free_dma_buffers(struc
- 	struct grcan_priv *priv = netdev_priv(dev);
- 	struct grcan_dma *dma = &priv->dma;
- 
--	dma_free_coherent(&dev->dev, dma->base_size, dma->base_buf,
-+	dma_free_coherent(priv->ofdev_dev, dma->base_size, dma->base_buf,
- 			  dma->base_handle);
- 	memset(dma, 0, sizeof(*dma));
- }
-@@ -953,7 +954,7 @@ static int grcan_allocate_dma_buffers(st
- 
- 	/* Extra GRCAN_BUFFER_ALIGNMENT to allow for alignment */
- 	dma->base_size = lsize + ssize + GRCAN_BUFFER_ALIGNMENT;
--	dma->base_buf = dma_alloc_coherent(&dev->dev,
-+	dma->base_buf = dma_alloc_coherent(priv->ofdev_dev,
- 					   dma->base_size,
- 					   &dma->base_handle,
- 					   GFP_KERNEL);
-@@ -1606,6 +1607,7 @@ static int grcan_setup_netdev(struct pla
- 	memcpy(&priv->config, &grcan_module_config,
- 	       sizeof(struct grcan_device_config));
- 	priv->dev = dev;
-+	priv->ofdev_dev = &ofdev->dev;
- 	priv->regs = base;
- 	priv->can.bittiming_const = &grcan_bittiming_const;
- 	priv->can.do_set_bittiming = grcan_set_bittiming;
-
-
+Reviewed-by: Nicolas Schier <n.schier@avm.de>
