@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A47DAC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC507C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:18:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344100AbiEJOVF (ORCPT
+        id S1344135AbiEJOVL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:21:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53038 "EHLO
+        Tue, 10 May 2022 10:21:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245056AbiEJNrP (ORCPT
+        with ESMTP id S245019AbiEJNrL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:47:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6B9D62228;
-        Tue, 10 May 2022 06:34:36 -0700 (PDT)
+        Tue, 10 May 2022 09:47:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C2CB62202;
+        Tue, 10 May 2022 06:33:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 82F8E615C8;
-        Tue, 10 May 2022 13:34:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 875CDC385C6;
-        Tue, 10 May 2022 13:34:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0348DB81D24;
+        Tue, 10 May 2022 13:33:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D70BC385C2;
+        Tue, 10 May 2022 13:33:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189675;
-        bh=RLyNoQNOmM9xMZnoCOq8AlJ7PyO3h9xDoQNgVeLXbmY=;
+        s=korg; t=1652189619;
+        bh=Zln97j9H1I8Z09SIbIVmdjKM1SrYl6edsUlxjnppf8g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OqpipXpTrV6A1QwkqAABhbjWGBsMxuZ/nCpu+pl3JbbixvPZphKp/b2IOCJu3Y8/S
-         a2qce5gdgBr7KqXq9nDL3pCHFH686CTOyk1F3VG3cRxbgqAaSquwsfVRCkovzVV8Hl
-         8xt+l+gtt9mMGquGP3Q4Rb0/Ft1duFagFnK/GSdM=
+        b=kMhLlMDcQFd8msCRhUa0eUV73NY32hknloZ1WZ8EHtY4rD+PxY61ZAz1eGt9nqq0x
+         Y2DHIF4dj5012wgAJWBAWtYOw7uO1DfAibI4Pv8BFuzRk2Kv/MTG+gPEltmAdkpPvD
+         77mY32w/hOMJxPSFwEcweXS0Zp51AE65AWtSXgcY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vasant Hegde <vasant.hegde@amd.com>,
-        Sandipan Das <sandipan.das@amd.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 087/135] kvm: x86/cpuid: Only provide CPUID leaf 0xA if host has architectural PMU
-Date:   Tue, 10 May 2022 15:07:49 +0200
-Message-Id: <20220510130742.906909195@linuxfoundation.org>
+        stable@vger.kernel.org, pali@kernel.org,
+        =?UTF-8?q?Marek=20Beh=FAn?= <kabel@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: [PATCH 5.15 109/135] PCI: aardvark: Clear all MSIs at setup
+Date:   Tue, 10 May 2022 15:08:11 +0200
+Message-Id: <20220510130743.532917884@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -51,53 +50,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sandipan Das <sandipan.das@amd.com>
+From: Pali Rohár <pali@kernel.org>
 
-[ Upstream commit 5a1bde46f98b893cda6122b00e94c0c40a6ead3c ]
+commit 7d8dc1f7cd007a7ce94c5b4c20d63a8b8d6d7751 upstream.
 
-On some x86 processors, CPUID leaf 0xA provides information
-on Architectural Performance Monitoring features. It
-advertises a PMU version which Qemu uses to determine the
-availability of additional MSRs to manage the PMCs.
+We already clear all the other interrupts (ISR0, ISR1, HOST_CTRL_INT).
 
-Upon receiving a KVM_GET_SUPPORTED_CPUID ioctl request for
-the same, the kernel constructs return values based on the
-x86_pmu_capability irrespective of the vendor.
+Define a new macro PCIE_MSI_ALL_MASK and do the same clearing for MSIs,
+to ensure that we don't start receiving spurious interrupts.
 
-This leaf and the additional MSRs are not supported on AMD
-and Hygon processors. If AMD PerfMonV2 is detected, the PMU
-version is set to 2 and guest startup breaks because of an
-attempt to access a non-existent MSR. Return zeros to avoid
-this.
+Use this new mask in advk_pcie_handle_msi();
 
-Fixes: a6c06ed1a60a ("KVM: Expose the architectural performance monitoring CPUID leaf")
-Reported-by: Vasant Hegde <vasant.hegde@amd.com>
-Signed-off-by: Sandipan Das <sandipan.das@amd.com>
-Message-Id: <3fef83d9c2b2f7516e8ff50d60851f29a4bcb716.1651058600.git.sandipan.das@amd.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20211130172913.9727-5-kabel@kernel.org
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/cpuid.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/pci/controller/pci-aardvark.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-index 5f1d4a5aa871..b17c9b00669e 100644
---- a/arch/x86/kvm/cpuid.c
-+++ b/arch/x86/kvm/cpuid.c
-@@ -725,6 +725,11 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
- 		union cpuid10_eax eax;
- 		union cpuid10_edx edx;
+--- a/drivers/pci/controller/pci-aardvark.c
++++ b/drivers/pci/controller/pci-aardvark.c
+@@ -115,6 +115,7 @@
+ #define PCIE_MSI_ADDR_HIGH_REG			(CONTROL_BASE_ADDR + 0x54)
+ #define PCIE_MSI_STATUS_REG			(CONTROL_BASE_ADDR + 0x58)
+ #define PCIE_MSI_MASK_REG			(CONTROL_BASE_ADDR + 0x5C)
++#define     PCIE_MSI_ALL_MASK			GENMASK(31, 0)
+ #define PCIE_MSI_PAYLOAD_REG			(CONTROL_BASE_ADDR + 0x9C)
+ #define     PCIE_MSI_DATA_MASK			GENMASK(15, 0)
  
-+		if (!static_cpu_has(X86_FEATURE_ARCH_PERFMON)) {
-+			entry->eax = entry->ebx = entry->ecx = entry->edx = 0;
-+			break;
-+		}
-+
- 		perf_get_x86_pmu_capability(&cap);
+@@ -570,6 +571,7 @@ static void advk_pcie_setup_hw(struct ad
+ 	advk_writel(pcie, reg, PCIE_CORE_CTRL2_REG);
  
- 		/*
--- 
-2.35.1
-
+ 	/* Clear all interrupts */
++	advk_writel(pcie, PCIE_MSI_ALL_MASK, PCIE_MSI_STATUS_REG);
+ 	advk_writel(pcie, PCIE_ISR0_ALL_MASK, PCIE_ISR0_REG);
+ 	advk_writel(pcie, PCIE_ISR1_ALL_MASK, PCIE_ISR1_REG);
+ 	advk_writel(pcie, PCIE_IRQ_ALL_MASK, HOST_CTRL_INT_STATUS_REG);
+@@ -582,7 +584,7 @@ static void advk_pcie_setup_hw(struct ad
+ 	advk_writel(pcie, PCIE_ISR1_ALL_MASK, PCIE_ISR1_MASK_REG);
+ 
+ 	/* Unmask all MSIs */
+-	advk_writel(pcie, 0, PCIE_MSI_MASK_REG);
++	advk_writel(pcie, ~(u32)PCIE_MSI_ALL_MASK, PCIE_MSI_MASK_REG);
+ 
+ 	/* Enable summary interrupt for GIC SPI source */
+ 	reg = PCIE_IRQ_ALL_MASK & (~PCIE_IRQ_ENABLE_INTS_MASK);
+@@ -1389,7 +1391,7 @@ static void advk_pcie_handle_msi(struct
+ 
+ 	msi_mask = advk_readl(pcie, PCIE_MSI_MASK_REG);
+ 	msi_val = advk_readl(pcie, PCIE_MSI_STATUS_REG);
+-	msi_status = msi_val & ~msi_mask;
++	msi_status = msi_val & ((~msi_mask) & PCIE_MSI_ALL_MASK);
+ 
+ 	for (msi_idx = 0; msi_idx < MSI_IRQ_NUM; msi_idx++) {
+ 		if (!(BIT(msi_idx) & msi_status))
 
 
