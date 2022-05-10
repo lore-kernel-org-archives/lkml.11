@@ -2,157 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ECF8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:15:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8949FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:15:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345402AbiEJPTZ (ORCPT
+        id S1345401AbiEJPTh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:19:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55654 "EHLO
+        Tue, 10 May 2022 11:19:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345467AbiEJPTA (ORCPT
+        with ESMTP id S242423AbiEJPTS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:19:00 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 043B41D6750
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:56:29 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BF34012FC;
-        Tue, 10 May 2022 07:56:28 -0700 (PDT)
-Received: from wubuntu (FVFF764EQ05P.cambridge.arm.com [10.1.34.46])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 30F6F3F73D;
-        Tue, 10 May 2022 07:56:27 -0700 (PDT)
-Date:   Tue, 10 May 2022 15:56:25 +0100
-From:   Qais Yousef <qais.yousef@arm.com>
-To:     Xuewen Yan <xuewen.yan94@gmail.com>
-Cc:     Xuewen Yan <xuewen.yan@unisoc.com>, dietmar.eggemann@arm.com,
-        lukasz.luba@arm.com, rafael@kernel.org, viresh.kumar@linaro.org,
-        mingo@redhat.com, peterz@infradead.org, vincent.guittot@linaro.org,
-        rostedt@goodmis.org, linux-kernel@vger.kernel.org,
-        di.shen@unisoc.com
-Subject: Re: [PATCH] sched: Take thermal pressure into account when determine
- rt fits capacity
-Message-ID: <20220510145625.t5py7atlhgojsfyf@wubuntu>
-References: <20220421161509.asz25zmh25eurgrk@airbuntu>
- <CAB8ipk_rZnwDrMaY-zJxR3pByYWD1XOP2waCgU9DZzQNpCN2zA@mail.gmail.com>
- <20220425161209.ydugtrs3b7gyy3kk@airbuntu>
- <CAB8ipk9hZXDcTV3hakRV+dE5dwKtg-Ka93WZ60ds0=4ErN1-0w@mail.gmail.com>
- <20220426092142.lppfj5eqgt3d24nb@airbuntu>
- <CAB8ipk_tM8WhZOLwURkqyi5XDSNJ=twOg1Zub=dsTB_b9N9BRg@mail.gmail.com>
- <20220427105844.otru4yohja4s23ye@wubuntu>
- <CAB8ipk-QAE2_J_kpUVRcq-4KJ0cSGc1JT2oQhdzvrjDu25HsRQ@mail.gmail.com>
- <20220503144352.lxduzhl6jq6xdhw2@airbuntu>
- <CAB8ipk--Y8HxetcmUhBmtWq6Mmd726QmDbcbibGLERJw_PUqkQ@mail.gmail.com>
+        Tue, 10 May 2022 11:19:18 -0400
+Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 058F86B7F7;
+        Tue, 10 May 2022 07:57:04 -0700 (PDT)
+Received: by mail-oi1-f170.google.com with SMTP id q10so3649167oia.9;
+        Tue, 10 May 2022 07:57:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Ap6ylfqMwi8yDjngmCG5tOOg9ip9yvHb2ovQ9serW2k=;
+        b=OAHZpNCNMld0FzItCwZfLElCHHUZdZKqhVCokAKEWCc/cz53lkjT7jNRgQAm6pgPHg
+         RCpSnuI03UhRSJLzChdJRPfZISeQsYFBVHpxLmEZp5elx3ybi1iMCPhiJnAJBXSrw0Zs
+         ToNDcBJnVL6GXsYvC9h9pjdqBsfWum6yRPYvBrUdWNeET8wVpj7ts/dqdKDbMxU6qRUi
+         roSqh4oqCK6vqKbgjMq/O+NORC9HC2xjzQa8wdGwgdixmYqKOZ0tQIkR9Dh7lSJRXc6/
+         2EHgZrdOHHQbDPSrFdCNPCWfpWi4Pkm627nZnLeTpk8oq6gAIsn3LPvhQbtKzYMuKgc0
+         i9Lg==
+X-Gm-Message-State: AOAM530CAh6/Nd9hjZVUXXGYMV2iHIrxUHrz9LTzRwRVMxlxl6qnn3Sv
+        xrdSWyRcujZQ8IBYQFsC7svhgAcvDg==
+X-Google-Smtp-Source: ABdhPJyNR1Dzo0YBqlKSswmacA759cXut1FMrzx83tJFzR+WrBQuB/xMR6Bvv+0cKGWRDkahD6/RYw==
+X-Received: by 2002:a05:6808:d54:b0:326:d355:69c0 with SMTP id w20-20020a0568080d5400b00326d35569c0mr227188oik.121.1652194623263;
+        Tue, 10 May 2022 07:57:03 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id k22-20020a4a8516000000b0035eb4e5a6b0sm2711967ooh.6.2022.05.10.07.57.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 07:57:02 -0700 (PDT)
+Received: (nullmailer pid 1994439 invoked by uid 1000);
+        Tue, 10 May 2022 14:57:02 -0000
+Date:   Tue, 10 May 2022 09:57:02 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Alexandre TORGUE <alexandre.torgue@foss.st.com>
+Cc:     linux-stm32@st-md-mailman.stormreply.com,
+        Stephen Boyd <sboyd@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Michael Turquette <mturquette@baylibre.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: clock: stm32mp1: adapt example for
+ "st,stm32mp1-rcc-secure"
+Message-ID: <Ynp9Pu+ZqjaBu8ne@robh.at.kernel.org>
+References: <20220509134658.16267-1-alexandre.torgue@foss.st.com>
+ <1652123805.754133.27398.nullmailer@robh.at.kernel.org>
+ <ddd5d5b2-32a5-6464-80a6-0054c376dd96@foss.st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAB8ipk--Y8HxetcmUhBmtWq6Mmd726QmDbcbibGLERJw_PUqkQ@mail.gmail.com>
+In-Reply-To: <ddd5d5b2-32a5-6464-80a6-0054c376dd96@foss.st.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Xuewen
-
-On 05/09/22 10:29, Xuewen Yan wrote:
-
-[...]
-
-> > diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> > index a68482d66535..44c7c2598d87 100644
-> > --- a/kernel/sched/fair.c
-> > +++ b/kernel/sched/fair.c
-> > @@ -8399,16 +8399,37 @@ static unsigned long scale_rt_capacity(int cpu)
-> >
-> >  static void update_cpu_capacity(struct sched_domain *sd, int cpu)
-> >  {
-> > +       unsigned long capacity_orig = arch_scale_cpu_capacity(cpu);
-> >         unsigned long capacity = scale_rt_capacity(cpu);
-> >         struct sched_group *sdg = sd->groups;
-> > +       struct rq *rq = cpu_rq(cpu);
-> >
-> > -       cpu_rq(cpu)->cpu_capacity_orig = arch_scale_cpu_capacity(cpu);
-> > +       rq->cpu_capacity_orig = capacity_orig;
-> >
-> >         if (!capacity)
-> >                 capacity = 1;
-> >
-> > -       cpu_rq(cpu)->cpu_capacity = capacity;
-> > -       trace_sched_cpu_capacity_tp(cpu_rq(cpu));
-> > +       rq->cpu_capacity = capacity;
-> > +       trace_sched_cpu_capacity_tp(rq);
-> > +
-> > +       if (static_branch_unlikely(&sched_asym_cpucapacity)) {
-> > +               unsigned long inv_cap = capacity_orig - thermal_load_avg(rq);
+On Tue, May 10, 2022 at 09:47:05AM +0200, Alexandre TORGUE wrote:
+> Hi Rob
 > 
-> Indeed, I prefer arch_thermal_pressure here, because the
-> thermal_load_avg would change over time,
-> but the inv_cap's update period may could not keep up with his changes.
-
-If that's what works for you, I think that's fine. Vincent, Lukasz you okay
-with that?
-
+> On 5/9/22 21:16, Rob Herring wrote:
+> > On Mon, 09 May 2022 15:46:58 +0200, Alexandre Torgue wrote:
+> > > For "st,stm32mp1-rcc-secure" schema, clocks and clock-names entries are now
+> > > required properties.
+> > > 
+> > > Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
+> > > 
+> > 
+> > My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+> > on your patch (DT_CHECKER_FLAGS is new in v5.13):
+> > 
+> > yamllint warnings/errors:
+> > 
+> > dtschema/dtc warnings/errors:
+> > Error: Documentation/devicetree/bindings/clock/st,stm32mp1-rcc.example.dts:27.33-34 syntax error
+> > FATAL ERROR: Unable to parse input tree
+> > make[1]: *** [scripts/Makefile.lib:364: Documentation/devicetree/bindings/clock/st,stm32mp1-rcc.example.dtb] Error 1
+> > make[1]: *** Waiting for unfinished jobs....
+> > make: *** [Makefile:1401: dt_binding_check] Error 2
+> > 
+> > doc reference errors (make refcheckdocs):
+> > 
+> > See https://patchwork.ozlabs.org/patch/
+> > 
+> > This check can fail if there are any dependencies. The base for a patch
+> > series is generally the most recent rc1.
+> > 
+> > If you already ran 'make dt_binding_check' and didn't see the above
+> > error(s), then make sure 'yamllint' is installed and dt-schema is up to
+> > date:
+> > 
+> > pip3 install dtschema --upgrade
+> > 
+> > Please check and re-submit.
+> > 
 > 
-> > +
-> > +               rq->cpu_capacity_inverted = 0;
-> > +
-> > +               for_each_possible_cpu(cpu) {
-> > +                       unsigned long cap = arch_scale_cpu_capacity(cpu);
-> > +
-> > +                       if (capacity_orig <= cap)
-> > +                               continue;
-> > +
-> > +                       if (cap > inv_cap) {
-> > +                               rq->cpu_capacity_inverted = inv_cap;
-> > +                               break;
-> > +                       }
-> > +               }
-> > +
-> > +       }
-> >
-> >         sdg->sgc->capacity = capacity;
-> >         sdg->sgc->min_capacity = capacity;
-> > diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-> > index 8dccb34eb190..bfe84c870bf9 100644
-> > --- a/kernel/sched/sched.h
-> > +++ b/kernel/sched/sched.h
-> > @@ -992,6 +992,7 @@ struct rq {
-> >
-> >         unsigned long           cpu_capacity;
-> >         unsigned long           cpu_capacity_orig;
-> > +       unsigned long           cpu_capacity_inverted;
-> >
-> >         struct callback_head    *balance_callback;
-> >
-> > @@ -2807,6 +2808,11 @@ static inline unsigned long capacity_orig_of(int cpu)
-> >         return cpu_rq(cpu)->cpu_capacity_orig;
-> >  }
-> >
-> > +static inline unsigned long cpu_in_capacity_inversion(int cpu)
-> > +{
-> > +       return cpu_rq(cpu)->cpu_capacity_inverted;
-> > +}
-> > +
-> >  /**
-> >   * enum cpu_util_type - CPU utilization type
-> >   * @FREQUENCY_UTIL:    Utilization used to select frequency
-> >
-> >
-> > --->8---
-> 
-> The patch is amazing for me, and the complexity is not too high. Would
-> you please push the patch?
-> I think the idea is yours, I don't want to use it as my patch v2.
+> I just updated dtschema and yamllint seems to be well installed. I don't see
+> the see above. I wrote this patch on top of my stm32-next tree. Do I have to
+> send it directly to arm-soc in order to be merged on top of my latest
+> pull-request ?
 
-I'd be happy to add a commit message so that you can include it in your v2.
+That appears to be header related AFAICT. Maybe you have header changes 
+in your tree. The issue this is fixing is in your tree, so it should be 
+applied there.
 
-First, I'd like to hear from Vincent and Lukasz they're happy with this
-approach.
-
-I've been trying to think how we can do this generically but can't find an
-alternative to the extra loop or additional fallback_cpu_mask. Maybe the mask
-is okay if we protect it with sched_asymmetric_cpucapacity static key..
-
-Thanks
-
---
-Qais Yousef
+Rob
