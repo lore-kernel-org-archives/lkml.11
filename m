@@ -2,121 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95237C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:59:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45CB6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:59:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346959AbiEJQDn (ORCPT
+        id S1346971AbiEJQDq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 12:03:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49670 "EHLO
+        Tue, 10 May 2022 12:03:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346723AbiEJP6m (ORCPT
+        with ESMTP id S1347915AbiEJP6V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:58:42 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0425113F1D7
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:51:36 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id j10-20020a17090a94ca00b001dd2131159aso2399441pjw.0
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:51:36 -0700 (PDT)
+        Tue, 10 May 2022 11:58:21 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D18746222B;
+        Tue, 10 May 2022 08:51:19 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id 129so10460923wmz.0;
+        Tue, 10 May 2022 08:51:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=PqrBku7yWCns4CXdaKkexOpRPKx78T35A2SXeO5Nj2E=;
-        b=H+qXQc4zr8F6UfoAgbi5D//b4XzaqZVmA+b7sInWlNzEN6NONMtGhp4uLT3EhXky0B
-         F2ykJK18cz68RmJacrLVeTIKJsx2twiKIDeaoobGkT13lMMLzxjonor+gFOXjuv2eiFf
-         alcejIWCmMvJy5lI8HJ2nUM36sWK7biyf10tQ=
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=U+dHyajQd3anp7nv4LUi4+uXP3c9J/d9icW+Cpa8Rx4=;
+        b=EEGksnPVQEfnXlXJ573PuMx7zIkoG9RPGI75mioecwCn0quJVydceHRLuVAPAglCDC
+         4m8XBMTqla3/duWHi1hoWgO7ryels3JZp1IUmSJRSIUW/Yc7WDbWYHp9IZlyjHWcKvtV
+         pT7XUIS3cMnbLZmq4gr0jiSri/LqRkauMyoiY6drqG+0kjSrBpoJ1VXn6QvJsPLJ2M77
+         yMvr2TPVoBgelPxURlLgtnr02zYEryA4d42mM0f59kzEQ3SVs1BcGMPiWR4j072nizW1
+         ELDOoVpHmmUEDTl4KB++D1QIA/AAcpZIa/w/CGHBOQJZN0/PSCT67OCAAkiN93xvvTqQ
+         lxYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=PqrBku7yWCns4CXdaKkexOpRPKx78T35A2SXeO5Nj2E=;
-        b=2iYsZGiPm9ndk+mhRzzX8puv8dWGOw5N1+iJWL6l3vF1WPrSXJsi9TqKlk9yj6MoRQ
-         MYVP2nIL1r37q3ggAZfWGT5l8AKeiQL3m4JdpeE8oZW2eQhrALbZ4eYjeWVjTntXCfal
-         L4rAm0elUL/RebvcML2p4B/7mF/WALAKjMrPZld43siCeDb0yP1sZhRpv7iQKcNo3TM1
-         djBwS1BfM8W5L8FIimgGLXiNEMupF2h6gbudeFHVmvwqdm4YGd2ygHShtI3EDhk2yLX6
-         nGjuhg1JSu+7SCFLh70Q5mUNo1M8Fa/FmkYOLSskHDUyPMLaqYOqhhPmxDlCmFab4NAV
-         rq6Q==
-X-Gm-Message-State: AOAM531wNmMjE4qWgf0IB9O1GTfjlHDOkjBW6mGvb3j+nRQbfmFBo+1p
-        PpsDAEMVgjqFjQ9j6UF202p78w==
-X-Google-Smtp-Source: ABdhPJybt3dgYr6zy6CHWp80A2YhHDeIy7tSmCq53SNr13/QWthE/HGjzW3UCKvVi/6K+DIgnBx5KQ==
-X-Received: by 2002:a17:902:b412:b0:15e:dc07:4c14 with SMTP id x18-20020a170902b41200b0015edc074c14mr21368892plr.99.1652197895085;
-        Tue, 10 May 2022 08:51:35 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id 67-20020a621946000000b0050dc7628190sm10963364pfz.106.2022.05.10.08.51.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 08:51:34 -0700 (PDT)
-Date:   Tue, 10 May 2022 08:51:34 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Andreas Gruenbacher <agruenba@redhat.com>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        Bob Peterson <rpeterso@redhat.com>,
-        kernel test robot <lkp@intel.com>,
-        Bill Wendling <morbo@google.com>,
-        cluster-devel <cluster-devel@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>,
-        Steven Whitehouse <swhiteho@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] gfs2: Use container_of() for gfs2_glock(aspace)
-Message-ID: <202205100851.663310B@keescook>
-References: <20220508100630.2642320-1-keescook@chromium.org>
- <YnoQmuPgK9c5V8ZC@infradead.org>
- <CAHc6FU5VfS9yNe0yH_sfOt04rvii6T_NMq7kp+32HZa5XQDtEA@mail.gmail.com>
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=U+dHyajQd3anp7nv4LUi4+uXP3c9J/d9icW+Cpa8Rx4=;
+        b=pH1UAAqtlW/MGimuVlPeT/3JjIefzJTDZ9abplYLeqcCqPVO/sUqzt7T6O6cYjYfYF
+         c8uIvO2g2v+eRzGXYXoJGeMuwt7jn7fjLSXrRaZwi45lQK5BCXT9vTECF8kcZn305s7L
+         RF0EhJ1DApae9TyKmX1X7rDCf61PXIi7c9UK+S83iEfW2A+5+8PKl71o/d5bV41JZFaJ
+         OCMRyDHyZ8XJrRa61lvjb9EQQZypf2UflXR894l9MGZly71kjAvYpnDD/aio3nnIEaZU
+         6A9CBJ6M8z66OanS6ei37NJ+KuM2FgU21RTX97T2DGMndro5MMUaL5Ah449zOQZVqtLT
+         /5wA==
+X-Gm-Message-State: AOAM531wUdbfGiN8NxJZsKTmZnxXq4APr0SseX9fvkXZaE67h008t/mR
+        hxWMoB2yeiQXAIoGCBZl7QQ=
+X-Google-Smtp-Source: ABdhPJw5U56ogAboldiGwx8gv9uCorZH3h5VqTSJ4hH1zxOniYl+KRYnnfpeHCWmokLOV7neyZx2hw==
+X-Received: by 2002:a05:600c:4f15:b0:394:8ea0:bb45 with SMTP id l21-20020a05600c4f1500b003948ea0bb45mr634056wmq.206.1652197872914;
+        Tue, 10 May 2022 08:51:12 -0700 (PDT)
+Received: from ?IPV6:2001:b07:add:ec09:c399:bc87:7b6c:fb2a? ([2001:b07:add:ec09:c399:bc87:7b6c:fb2a])
+        by smtp.googlemail.com with ESMTPSA id o6-20020adfe806000000b0020c5253d927sm13726740wrm.115.2022.05.10.08.51.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 May 2022 08:51:12 -0700 (PDT)
+Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
+Message-ID: <9f19a5eb-3eb0-58a2-e4ee-612f3298ba82@redhat.com>
+Date:   Tue, 10 May 2022 17:51:03 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHc6FU5VfS9yNe0yH_sfOt04rvii6T_NMq7kp+32HZa5XQDtEA@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v11 14/16] KVM: x86/vmx: Flip Arch LBREn bit on guest
+ state change
+Content-Language: en-US
+To:     Yang Weijiang <weijiang.yang@intel.com>, jmattson@google.com,
+        seanjc@google.com, kan.liang@linux.intel.com,
+        like.xu.linux@gmail.com, vkuznets@redhat.com, wei.w.wang@intel.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220506033305.5135-1-weijiang.yang@intel.com>
+ <20220506033305.5135-15-weijiang.yang@intel.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220506033305.5135-15-weijiang.yang@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 01:13:31PM +0200, Andreas Gruenbacher wrote:
-> Kees and Christoph,
+On 5/6/22 05:33, Yang Weijiang wrote:
+> Per spec:"IA32_LBR_CTL.LBREn is saved and cleared on #SMI, and restored
+> on RSM. On a warm reset, all LBR MSRs, including IA32_LBR_DEPTH, have their
+> values preserved. However, IA32_LBR_CTL.LBREn is cleared to 0, disabling
+> LBRs." So clear Arch LBREn bit on #SMI and restore it on RSM manully, also
+> clear the bit when guest does warm reset.
 > 
-> thanks for the patch and review.
+> Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
+> ---
+>   arch/x86/kvm/vmx/vmx.c | 4 ++++
+>   1 file changed, 4 insertions(+)
 > 
-> On Tue, May 10, 2022 at 9:29 AM Christoph Hellwig <hch@infradead.org> wrote:
-> > > +/* gfs2_glock_get(), "glock" must be first. */
-> > > +struct glock_aspace {
-> > > +     struct gfs2_glock       glock;
-> > > +     struct address_space    mapping;
-> > > +};
-> >
-> > Why does glock need to be first?  The whole point of using container_of
-> > is that we don't have to make that assumption.
-> 
-> Just needs to be cleaned up in gfs2_glock_get() and
-> gfs2_glock_dealloc() as well. I'll do that when applying the patch.
-> 
-> > >  static inline struct address_space *gfs2_glock2aspace(struct gfs2_glock *gl)
-> > >  {
-> > >       if (gl->gl_ops->go_flags & GLOF_ASPACE)
-> > > -             return (struct address_space *)(gl + 1);
-> > > +             return &(container_of(gl, struct glock_aspace, glock)->mapping);
-> >
-> > Do we even need the braces here?
-> 
-> Will use a local variable here, as suggested below.
-> 
-> > >       struct inode *inode = mapping->host;
-> > >       if (mapping->a_ops == &gfs2_meta_aops)
-> > > -             return (((struct gfs2_glock *)mapping) - 1)->gl_name.ln_sbd;
-> > > +             return container_of(mapping, struct glock_aspace, mapping)->glock.gl_name.ln_sbd;
-> >
-> > A local variable would be really nice for the reader here to decompose
-> > this a bit:
-> >
-> >                 struct glock_aspace *a =
-> >                         container_of(mapping, struct glock_aspace, mapping);
-> >
-> >                 return a->glock.gl_name.ln_sbd;
-> 
-> Yes.
+> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+> index 6d6ee9cf82f5..b38f58868905 100644
+> --- a/arch/x86/kvm/vmx/vmx.c
+> +++ b/arch/x86/kvm/vmx/vmx.c
+> @@ -4593,6 +4593,8 @@ static void vmx_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
+>   	if (!init_event) {
+>   		if (static_cpu_has(X86_FEATURE_ARCH_LBR))
+>   			vmcs_write64(GUEST_IA32_LBR_CTL, 0);
+> +	} else {
+> +		flip_arch_lbr_ctl(vcpu, false);
+>   	}
+>   }
+>   
+> @@ -7704,6 +7706,7 @@ static int vmx_enter_smm(struct kvm_vcpu *vcpu, char *smstate)
+>   	vmx->nested.smm.vmxon = vmx->nested.vmxon;
+>   	vmx->nested.vmxon = false;
+>   	vmx_clear_hlt(vcpu);
+> +	flip_arch_lbr_ctl(vcpu, false);
+>   	return 0;
+>   }
+>   
+> @@ -7725,6 +7728,7 @@ static int vmx_leave_smm(struct kvm_vcpu *vcpu, const char *smstate)
+>   		vmx->nested.nested_run_pending = 1;
+>   		vmx->nested.smm.guest_mode = false;
+>   	}
+> +	flip_arch_lbr_ctl(vcpu, true);
+>   	return 0;
+>   }
+>   
 
-Thanks! So I should leave this with you to arrange, or should I send an
-updated patch?
+This is incorrect, you hare not saving/restoring the actual value of 
+LBREn (which is "lbr_desc->event != NULL").  Therefore, a migration 
+while in SMM would lose the value of LBREn = true.
 
--- 
-Kees Cook
+Instead of using flip_arch_lbr_ctl, SMM should save the value of the MSR 
+in kvm_x86_ops->enter_smm, and restore it in kvm_x86_ops->leave_smm 
+(feel free to do it only if guest_cpuid_has(vcpu, X86_FEATURE_LM), i.e. 
+the 32-bit case can be ignored).
+
+Paolo
