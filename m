@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21590C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:14:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4362AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:14:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245647AbiEJOSG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:18:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50720 "EHLO
+        id S245675AbiEJOSX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:18:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343550AbiEJNsN (ORCPT
+        with ESMTP id S1343721AbiEJNsX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:48:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BE252B09D4;
-        Tue, 10 May 2022 06:36:35 -0700 (PDT)
+        Tue, 10 May 2022 09:48:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31CE26B011;
+        Tue, 10 May 2022 06:36:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CF46C618AF;
-        Tue, 10 May 2022 13:36:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA789C385A6;
-        Tue, 10 May 2022 13:36:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 057E6B81DB5;
+        Tue, 10 May 2022 13:36:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B6A8C385CB;
+        Tue, 10 May 2022 13:36:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189793;
-        bh=NKaUkUPhvYFyVUYBOa93qXmG/LU5ZJShTPNmiqc4ywQ=;
+        s=korg; t=1652189780;
+        bh=WtU2MifjE7WdVm6QX8N19707fXD4NfeoLMb7jSc2l6A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jHi8u8ODStqJI7WEiQGe6DMYj/xts8dYSlhIInOFmacv5gJbEDtfqkdPBk/XESWzc
-         BIQib24K+YyvzNdMgtzVli17Ya4umn7bEl/J57R6LZOOSMckKuW/iYdifs3DOTpxON
-         zDHZXOAxznFdnT35xYv6kTaezKalLjOHoEvFbi0U=
+        b=i+WUk3avrMtkK0BvgMlnBLE72gM1N/GjMLxxkVEFFUJhVjcRoSYx9rZoB75psJR5a
+         DFJ2bOZyTeEyIYDCDGUk37kOB7qdsOwX5RaJAjqjWE4S02K/8YC35XnzEjPm9ah+kJ
+         zNpSlZ8h8DQJVP7vf0s7Y/P9LGHxjwatXGWpxMTQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Wei Yongjun <weiyongjun1@huawei.com>,
-        Corey Minyard <cminyard@mvista.com>
-Subject: [PATCH 5.17 003/140] ipmi:ipmi_ipmb: Fix null-ptr-deref in ipmi_unregister_smi()
-Date:   Tue, 10 May 2022 15:06:33 +0200
-Message-Id: <20220510130741.701329627@linuxfoundation.org>
+        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
+        Takashi Sakamoto <o-takashi@sakamocchi.jp>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.17 026/140] firewire: core: extend card->lock in fw_core_handle_bus_reset
+Date:   Tue, 10 May 2022 15:06:56 +0200
+Message-Id: <20220510130742.360046251@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -49,70 +49,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corey Minyard <cminyard@mvista.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-commit 9cc3aac42566a0021e0ab7c4e9b31667ad75b1e3 upstream.
+commit a7ecbe92b9243edbe94772f6f2c854e4142a3345 upstream.
 
-KASAN report null-ptr-deref as follows:
+card->local_node and card->bm_retries are both always accessed under
+card->lock.
+fw_core_handle_bus_reset has a check whose condition depends on
+card->local_node and whose body writes to card->bm_retries.
+Both of these accesses are not under card->lock. Move the lock acquiring
+of card->lock to before this check such that these accesses do happen
+when card->lock is held.
+fw_destroy_nodes is called inside the check.
+Since fw_destroy_nodes already acquires card->lock inside its function
+body, move this out to the callsites of fw_destroy_nodes.
+Also add a comment to indicate which locking is necessary when calling
+fw_destroy_nodes.
 
-KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
-RIP: 0010:ipmi_unregister_smi+0x7d/0xd50 drivers/char/ipmi/ipmi_msghandler.c:3680
-Call Trace:
- ipmi_ipmb_remove+0x138/0x1a0 drivers/char/ipmi/ipmi_ipmb.c:443
- ipmi_ipmb_probe+0x409/0xda1 drivers/char/ipmi/ipmi_ipmb.c:548
- i2c_device_probe+0x959/0xac0 drivers/i2c/i2c-core-base.c:563
- really_probe+0x3f3/0xa70 drivers/base/dd.c:541
-
-In ipmi_ipmb_probe(), 'iidev->intf' is not set before
-ipmi_register_smi() success.  And in the error handling case,
-ipmi_ipmb_remove() is called to release resources, ipmi_unregister_smi()
-is called without check 'iidev->intf', this will cause KASAN
-null-ptr-deref issue.
-
-General kernel style is to allow NULL to be passed into unregister
-calls, so fix it that way.  This allows a NULL check to be removed in
-other code.
-
-Fixes: 57c9e3c9a374 ("ipmi:ipmi_ipmb: Unregister the SMI on remove")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Cc: stable@vger.kernel.org # v5.17+
-Cc: Wei Yongjun <weiyongjun1@huawei.com>
-Signed-off-by: Corey Minyard <cminyard@mvista.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Signed-off-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
+Link: https://lore.kernel.org/r/20220409041243.603210-4-o-takashi@sakamocchi.jp
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/ipmi/ipmi_msghandler.c |    5 ++++-
- drivers/char/ipmi/ipmi_si_intf.c    |    5 +----
- 2 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/firewire/core-card.c     |    3 +++
+ drivers/firewire/core-topology.c |    9 +++------
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
---- a/drivers/char/ipmi/ipmi_msghandler.c
-+++ b/drivers/char/ipmi/ipmi_msghandler.c
-@@ -3677,8 +3677,11 @@ static void cleanup_smi_msgs(struct ipmi
- void ipmi_unregister_smi(struct ipmi_smi *intf)
+--- a/drivers/firewire/core-card.c
++++ b/drivers/firewire/core-card.c
+@@ -668,6 +668,7 @@ EXPORT_SYMBOL_GPL(fw_card_release);
+ void fw_core_remove_card(struct fw_card *card)
  {
- 	struct ipmi_smi_watcher *w;
--	int intf_num = intf->intf_num, index;
-+	int intf_num, index;
+ 	struct fw_card_driver dummy_driver = dummy_driver_template;
++	unsigned long flags;
  
-+	if (!intf)
-+		return;
-+	intf_num = intf->intf_num;
- 	mutex_lock(&ipmi_interfaces_mutex);
- 	intf->intf_num = -1;
- 	intf->in_shutdown = true;
---- a/drivers/char/ipmi/ipmi_si_intf.c
-+++ b/drivers/char/ipmi/ipmi_si_intf.c
-@@ -2220,10 +2220,7 @@ static void cleanup_one_si(struct smi_in
- 		return;
+ 	card->driver->update_phy_reg(card, 4,
+ 				     PHY_LINK_ACTIVE | PHY_CONTENDER, 0);
+@@ -682,7 +683,9 @@ void fw_core_remove_card(struct fw_card
+ 	dummy_driver.stop_iso		= card->driver->stop_iso;
+ 	card->driver = &dummy_driver;
  
- 	list_del(&smi_info->link);
--
--	if (smi_info->intf)
--		ipmi_unregister_smi(smi_info->intf);
--
-+	ipmi_unregister_smi(smi_info->intf);
- 	kfree(smi_info);
++	spin_lock_irqsave(&card->lock, flags);
+ 	fw_destroy_nodes(card);
++	spin_unlock_irqrestore(&card->lock, flags);
+ 
+ 	/* Wait for all users, especially device workqueue jobs, to finish. */
+ 	fw_card_put(card);
+--- a/drivers/firewire/core-topology.c
++++ b/drivers/firewire/core-topology.c
+@@ -375,16 +375,13 @@ static void report_found_node(struct fw_
+ 	card->bm_retries = 0;
  }
  
++/* Must be called with card->lock held */
+ void fw_destroy_nodes(struct fw_card *card)
+ {
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(&card->lock, flags);
+ 	card->color++;
+ 	if (card->local_node != NULL)
+ 		for_each_fw_node(card, card->local_node, report_lost_node);
+ 	card->local_node = NULL;
+-	spin_unlock_irqrestore(&card->lock, flags);
+ }
+ 
+ static void move_tree(struct fw_node *node0, struct fw_node *node1, int port)
+@@ -510,6 +507,8 @@ void fw_core_handle_bus_reset(struct fw_
+ 	struct fw_node *local_node;
+ 	unsigned long flags;
+ 
++	spin_lock_irqsave(&card->lock, flags);
++
+ 	/*
+ 	 * If the selfID buffer is not the immediate successor of the
+ 	 * previously processed one, we cannot reliably compare the
+@@ -521,8 +520,6 @@ void fw_core_handle_bus_reset(struct fw_
+ 		card->bm_retries = 0;
+ 	}
+ 
+-	spin_lock_irqsave(&card->lock, flags);
+-
+ 	card->broadcast_channel_allocated = card->broadcast_channel_auto_allocated;
+ 	card->node_id = node_id;
+ 	/*
 
 
