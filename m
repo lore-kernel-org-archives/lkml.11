@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5107DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59C20C38A2E
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245589AbiEJN6P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:58:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55050 "EHLO
+        id S1343500AbiEJN6x (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:58:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245183AbiEJNih (ORCPT
+        with ESMTP id S245195AbiEJNii (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:38:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4F122670BE;
-        Tue, 10 May 2022 06:28:15 -0700 (PDT)
+        Tue, 10 May 2022 09:38:38 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D47A25FCA;
+        Tue, 10 May 2022 06:28:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 74D2360B12;
-        Tue, 10 May 2022 13:28:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 806A9C385A6;
-        Tue, 10 May 2022 13:28:14 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 55A86CE1EED;
+        Tue, 10 May 2022 13:28:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24595C385C2;
+        Tue, 10 May 2022 13:28:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189294;
-        bh=hFIuOSmorWGqU0IxMcmFpsSBqdhBQkUAzQNjyHuPQQQ=;
+        s=korg; t=1652189316;
+        bh=tDDRTR4hAcafWMH1wych2cfeBCdy8kCp9bNyavD8AN0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yuSBdQPZNVKjXMvlOmA6y+lwYEj9mUvTtLPGz74ZOKa6wWj5YZUzZ2XbB89uaqe4E
-         Ogn31zaDnTEsSjF38uuz96D9/qLGMjfmrxNzPMw3d5FGOjnZiRwKNJJHBSilb4Rmcp
-         D2cSBXnqBsyKAwy0IKjDq0w5oj4Uh9UziGve/CCg=
+        b=zJOBfdt70myElGS/zWWRj9yeY0W4geUGGMmh4GdGkP+DHUkjlpPDgt9fP8IHd+j9q
+         BjnvxIKMBKsFIhXm1zRP73eFtZkhQapDIhpOSt0nk2xRTXEaJCxuuktfy+sjaPDHf5
+         9EW1SZljY99l9BriomaIMK+wIk0JUFbWvmou9ass=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH 5.10 68/70] PCI: aardvark: Clear all MSIs at setup
-Date:   Tue, 10 May 2022 15:08:27 +0200
-Message-Id: <20220510130734.854899980@linuxfoundation.org>
+        stable@vger.kernel.org, Nicolin Chen <nicolinc@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Will Deacon <will@kernel.org>
+Subject: [PATCH 5.15 012/135] iommu/arm-smmu-v3: Fix size calculation in arm_smmu_mm_invalidate_range()
+Date:   Tue, 10 May 2022 15:06:34 +0200
+Message-Id: <20220510130740.748771520@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
-References: <20220510130732.861729621@linuxfoundation.org>
+In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
+References: <20220510130740.392653815@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,61 +52,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Nicolin Chen <nicolinc@nvidia.com>
 
-commit 7d8dc1f7cd007a7ce94c5b4c20d63a8b8d6d7751 upstream.
+commit 95d4782c34a60800ccf91d9f0703137d4367a2fc upstream.
 
-We already clear all the other interrupts (ISR0, ISR1, HOST_CTRL_INT).
+The arm_smmu_mm_invalidate_range function is designed to be called
+by mm core for Shared Virtual Addressing purpose between IOMMU and
+CPU MMU. However, the ways of two subsystems defining their "end"
+addresses are slightly different. IOMMU defines its "end" address
+using the last address of an address range, while mm core defines
+that using the following address of an address range:
 
-Define a new macro PCIE_MSI_ALL_MASK and do the same clearing for MSIs,
-to ensure that we don't start receiving spurious interrupts.
+	include/linux/mm_types.h:
+		unsigned long vm_end;
+		/* The first byte after our end address ...
 
-Use this new mask in advk_pcie_handle_msi();
+This mismatch resulted in an incorrect calculation for size so it
+failed to be page-size aligned. Further, it caused a dead loop at
+"while (iova < end)" check in __arm_smmu_tlb_inv_range function.
 
-Link: https://lore.kernel.org/r/20211130172913.9727-5-kabel@kernel.org
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Marek Behún <kabel@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+This patch fixes the issue by doing the calculation correctly.
+
+Fixes: 2f7e8c553e98 ("iommu/arm-smmu-v3: Hook up ATC invalidation to mm ops")
+Cc: stable@vger.kernel.org
+Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Link: https://lore.kernel.org/r/20220419210158.21320-1-nicolinc@nvidia.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/pci-aardvark.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
---- a/drivers/pci/controller/pci-aardvark.c
-+++ b/drivers/pci/controller/pci-aardvark.c
-@@ -114,6 +114,7 @@
- #define PCIE_MSI_ADDR_HIGH_REG			(CONTROL_BASE_ADDR + 0x54)
- #define PCIE_MSI_STATUS_REG			(CONTROL_BASE_ADDR + 0x58)
- #define PCIE_MSI_MASK_REG			(CONTROL_BASE_ADDR + 0x5C)
-+#define     PCIE_MSI_ALL_MASK			GENMASK(31, 0)
- #define PCIE_MSI_PAYLOAD_REG			(CONTROL_BASE_ADDR + 0x9C)
- #define     PCIE_MSI_DATA_MASK			GENMASK(15, 0)
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+@@ -183,7 +183,14 @@ static void arm_smmu_mm_invalidate_range
+ {
+ 	struct arm_smmu_mmu_notifier *smmu_mn = mn_to_smmu(mn);
+ 	struct arm_smmu_domain *smmu_domain = smmu_mn->domain;
+-	size_t size = end - start + 1;
++	size_t size;
++
++	/*
++	 * The mm_types defines vm_end as the first byte after the end address,
++	 * different from IOMMU subsystem using the last address of an address
++	 * range. So do a simple translation here by calculating size correctly.
++	 */
++	size = end - start;
  
-@@ -577,6 +578,7 @@ static void advk_pcie_setup_hw(struct ad
- 	advk_writel(pcie, reg, PCIE_CORE_CTRL2_REG);
- 
- 	/* Clear all interrupts */
-+	advk_writel(pcie, PCIE_MSI_ALL_MASK, PCIE_MSI_STATUS_REG);
- 	advk_writel(pcie, PCIE_ISR0_ALL_MASK, PCIE_ISR0_REG);
- 	advk_writel(pcie, PCIE_ISR1_ALL_MASK, PCIE_ISR1_REG);
- 	advk_writel(pcie, PCIE_IRQ_ALL_MASK, HOST_CTRL_INT_STATUS_REG);
-@@ -589,7 +591,7 @@ static void advk_pcie_setup_hw(struct ad
- 	advk_writel(pcie, PCIE_ISR1_ALL_MASK, PCIE_ISR1_MASK_REG);
- 
- 	/* Unmask all MSIs */
--	advk_writel(pcie, 0, PCIE_MSI_MASK_REG);
-+	advk_writel(pcie, ~(u32)PCIE_MSI_ALL_MASK, PCIE_MSI_MASK_REG);
- 
- 	/* Enable summary interrupt for GIC SPI source */
- 	reg = PCIE_IRQ_ALL_MASK & (~PCIE_IRQ_ENABLE_INTS_MASK);
-@@ -1390,7 +1392,7 @@ static void advk_pcie_handle_msi(struct
- 
- 	msi_mask = advk_readl(pcie, PCIE_MSI_MASK_REG);
- 	msi_val = advk_readl(pcie, PCIE_MSI_STATUS_REG);
--	msi_status = msi_val & ~msi_mask;
-+	msi_status = msi_val & ((~msi_mask) & PCIE_MSI_ALL_MASK);
- 
- 	for (msi_idx = 0; msi_idx < MSI_IRQ_NUM; msi_idx++) {
- 		if (!(BIT(msi_idx) & msi_status))
+ 	if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_BTM))
+ 		arm_smmu_tlb_inv_range_asid(start, size, smmu_mn->cd->asid,
 
 
