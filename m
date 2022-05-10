@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12B09C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:30:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCA88C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:30:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245625AbiEJOeG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:34:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41500 "EHLO
+        id S1343998AbiEJOeL (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:34:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244728AbiEJOIG (ORCPT
+        with ESMTP id S1344174AbiEJOHk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:08:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B4E523E28C;
-        Tue, 10 May 2022 06:42:18 -0700 (PDT)
+        Tue, 10 May 2022 10:07:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2020B1FE1C6;
+        Tue, 10 May 2022 06:41:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6D41AB81D24;
-        Tue, 10 May 2022 13:42:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA87DC385A6;
-        Tue, 10 May 2022 13:42:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE81D615C8;
+        Tue, 10 May 2022 13:41:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E11A9C385C2;
+        Tue, 10 May 2022 13:41:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652190136;
-        bh=0T9G6o0zL4mfgca2SDq0wxe6BxWXo299ohe6/PGho10=;
+        s=korg; t=1652190113;
+        bh=9CSoLroFbSTvPx0vay7I1wRnNOPAKHtc8NonX8gn7hQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zq9lgm7xBo1JA66VoiLWc5b3pBzchM5eIuQWqxPB3a9DXKn98FrBOahPrEVLkWAuw
-         3YqeqIQT2G+AV9H+SPFynj5bwte+8eofI0OPIf2oaMKEJzpBEtdFEd+oig41wgs0Zr
-         OAe0sEoBs58/dnYaRK845bwXEKC3MAbjiBKnDLfg=
+        b=pGOWAS1RvGwMy7rYvCztDhV+4zkQCgjPyXkdrVUE/m96C0E2Vod9sNrk7l+HE6Thi
+         G/lCamInBdgmrlNW2T69UOab/G1ZzblDLiVS5D0cKot6pHehriwe8P3gxMWzT103Em
+         PYi3zic45Opp1M6b7GQlMOv5l9RcD+tTPoushoa8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, pali@kernel.org,
-        =?UTF-8?q?Marek=20Beh=FAn?= <kabel@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH 5.17 140/140] PCI: aardvark: Update comment about link going down after link-up
-Date:   Tue, 10 May 2022 15:08:50 +0200
-Message-Id: <20220510130745.588250738@linuxfoundation.org>
+        stable@vger.kernel.org, Carlos Llamas <cmllamas@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH 5.17 092/140] selftests/net: so_txtime: usage(): fix documentation of default clock
+Date:   Tue, 10 May 2022 15:08:02 +0200
+Message-Id: <20220510130744.239554837@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -49,38 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Marek Behún" <kabel@kernel.org>
+From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-commit 92f4ffecc4170ce29e67a1f8d51c168c3de95fb2 upstream.
+commit f5c2174a3775491e890ce285df52f5715fbef875 upstream.
 
-Update the comment about what happens when link goes down after we have
-checked for link-up. If a PIO request is done while link-down, we have
-a serious problem.
+The program uses CLOCK_TAI as default clock since it was added to the
+Linux repo. In commit:
+| 040806343bb4 ("selftests/net: so_txtime multi-host support")
+a help text stating the wrong default clock was added.
 
-Link: https://lore.kernel.org/r/20220110015018.26359-23-kabel@kernel.org
-Signed-off-by: Marek Behún <kabel@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+This patch fixes the help text.
+
+Fixes: 040806343bb4 ("selftests/net: so_txtime multi-host support")
+Cc: Carlos Llamas <cmllamas@google.com>
+Cc: Willem de Bruijn <willemb@google.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Acked-by: Willem de Bruijn <willemb@google.com>
+Reviewed-by: Carlos Llamas <cmllamas@google.com>
+Link: https://lore.kernel.org/r/20220502094638.1921702-3-mkl@pengutronix.de
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/pci-aardvark.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ tools/testing/selftests/net/so_txtime.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/pci/controller/pci-aardvark.c
-+++ b/drivers/pci/controller/pci-aardvark.c
-@@ -998,8 +998,12 @@ static bool advk_pcie_valid_device(struc
- 		return false;
- 
- 	/*
--	 * If the link goes down after we check for link-up, nothing bad
--	 * happens but the config access times out.
-+	 * If the link goes down after we check for link-up, we have a problem:
-+	 * if a PIO request is executed while link-down, the whole controller
-+	 * gets stuck in a non-functional state, and even after link comes up
-+	 * again, PIO requests won't work anymore, and a reset of the whole PCIe
-+	 * controller is needed. Therefore we need to prevent sending PIO
-+	 * requests while the link is down.
- 	 */
- 	if (!pci_is_root_bus(bus) && !advk_pcie_link_up(pcie))
- 		return false;
+--- a/tools/testing/selftests/net/so_txtime.c
++++ b/tools/testing/selftests/net/so_txtime.c
+@@ -421,7 +421,7 @@ static void usage(const char *progname)
+ 			"Options:\n"
+ 			"  -4            only IPv4\n"
+ 			"  -6            only IPv6\n"
+-			"  -c <clock>    monotonic (default) or tai\n"
++			"  -c <clock>    monotonic or tai (default)\n"
+ 			"  -D <addr>     destination IP address (server)\n"
+ 			"  -S <addr>     source IP address (client)\n"
+ 			"  -r            run rx mode\n"
 
 
