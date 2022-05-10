@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46C7EC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 00:18:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CA05C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 00:19:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233703AbiEJAWp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 20:22:45 -0400
+        id S232908AbiEJAWy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 20:22:54 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233511AbiEJAW3 (ORCPT
+        with ESMTP id S233620AbiEJAWb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 20:22:29 -0400
+        Mon, 9 May 2022 20:22:31 -0400
 Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56DFB28C9C7
-        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 17:18:26 -0700 (PDT)
-Received: by mail-pl1-x64a.google.com with SMTP id c13-20020a170903234d00b0015eee4c8ca3so5801444plh.6
-        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 17:18:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38A3C28ED0A
+        for <linux-kernel@vger.kernel.org>; Mon,  9 May 2022 17:18:32 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id p9-20020a170902e74900b0015ef7192336so4926128plf.14
+        for <linux-kernel@vger.kernel.org>; Mon, 09 May 2022 17:18:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=jUygyQcHmQCX+4t0PO9Lj98oGxUhwQRCqcIwRtRRuu0=;
-        b=b9L6wIY6W3JHgNc21GkxYFtPGgfmo5QUJKkjlOhi4hW3quxxLCFiGsyjlcSg3mOEte
-         xmYcnYmek/bOQXhLz+sI4VQviMEA+cmcQ45gAHFT3NM89PNw3VF2taoJOECrNh688Ieh
-         XVEE6g3VTkOhPesLqypGO5fy0bGZ8/jL+ZYAYtCCGQJukNlJAI77UUs0ewH/ySwBGf6S
-         euh6YXkx+e0I2eJNJCkjlpGpu/IgzPTDz31AoWxHLCsaa08vNcDkWlzYVZ3WX+++HFY+
-         JMd+L9/ZBEFMpxJLXdRZehKNGnT/yoi38iBjacCWDEVlkD8M9h/fuKz/vEF7G+xhBP93
-         CS6w==
+        bh=2lpWRE3YG+N9rpa27nVaVWWHXRfllKAdvtsLrNhKAK8=;
+        b=E2tVTWuknXlQ+T7MTDseqm2kLasAoY5TbquTKQN6G7HFagvNqmuYGwrGCvXPasSU3N
+         X7Hfaz6BkAsSlJCS8floN1LW1Ls3ez8PP3Qk4CDVxNmG8LczACkldG8ojDGR0v0+Q7lZ
+         21MumA+UYt52X45SeiI4gFrF5deapKiOdu+hj+4jT0AI8QNFnGPAtcYnE+rE1vLh3I/p
+         DgTM+ee4LV0B+gFa0sepONWuiGDP56tlAl4OGQqNbhtSDbkgWBB0l4UraO/yy1Apvxzl
+         ZeZuNJv+q2z07LlTR07+RdQp7xf+QnHW2FhcVMIRWFBWLCQI9fLvZVExE5a870tRXnw3
+         sazg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=jUygyQcHmQCX+4t0PO9Lj98oGxUhwQRCqcIwRtRRuu0=;
-        b=Q2JMgfmPEDp6vtF//O3X40iR2TO1oIPLfvueztBQewNPS2YHPuM4Mu4aMQASxxv517
-         2p6LmzNO7GdWXAiG7PvM1WRpcIJgxm8ka6OsSKDW/xd5XEBgHcQItHvcOiHtcIXz+10y
-         T6/IPhNVZCZH+hjO4Pbgi8Ux+qnwpd4jmIPdkI3Zq4Wsa8H4L4erX4ugZ3sfne9E+Ueo
-         ovwqySweha4gEzA2XDhTRVrGrZiAKg1SF+4leVGvHL3MVy7TykCH/OVUaiSM/LTNN22o
-         XpBljxTyZox+ScPQOpDExTRoi7GkdXODyHKfHihNCYfC0AeYYO21Ie7eW0stWDBOgiEy
-         BoAA==
-X-Gm-Message-State: AOAM530POuk5CeFXRrHO9kw+nhfTLHgcK0l2flW/OeSZoSQTezqq8ACf
-        NcmgrGq2XQq5f5p4JEfDyn6bgcDDLPjUHi4Z
-X-Google-Smtp-Source: ABdhPJws2wA6fi+zGQOzH1vWd8zNdFXSGIXiWcInZijSRi9ZraL3D7PhFIBq8d5am7hWKt6LV39Xxn5hy8O21P2z
+        bh=2lpWRE3YG+N9rpa27nVaVWWHXRfllKAdvtsLrNhKAK8=;
+        b=m8GKBYhFbF53jFbSyuOx90/FBkcz7aogLy/bHaTrXXHZ1NiMeNKdHkGgBXzDH3avbX
+         +QvUjgPuy/e5Kjx1iLV1TvDiWC5NQfTlxZ/2ZH0AsAStSo60cGkNcHrg9ecmFbvQJ6IE
+         EZD0ZgZu4O9utVX7NbtYYtKrbw8pRAmoCX30j9KK/dpeYnAEp6PUYjwqvTvxcHaXb+Kl
+         12qIV13Uh6S76Rc3Mg6wRq0hEddjh6e7juZx0kDuB+VzpDz3KyN39lrZvCYioq8d+SvN
+         tptn4ZC+Z2xus9xnkYKRs+P4lpguEm3w5+NziLwDBFJ51Tit1mmOP9SIti4CkH9UzDMy
+         aSMw==
+X-Gm-Message-State: AOAM532KZou4kuqUigw5yH+BI2KHvbxSrhMeWpkutAO99Pyqy64AxDkO
+        h4SkYtIQdVo3IRGy6nYdyOaZhveB7/vDvMtG
+X-Google-Smtp-Source: ABdhPJy/UitjFbSu8JI5SJOkgoBGVuKW70iU2528pDg3GbFKneC3JYejg17wXmGVU2MICHcJbmM/y4RyYnBm86oa
 X-Received: from yosry.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:2327])
- (user=yosryahmed job=sendgmr) by 2002:a05:6a00:846:b0:50d:f02f:bb46 with SMTP
- id q6-20020a056a00084600b0050df02fbb46mr18110972pfk.74.1652141905673; Mon, 09
- May 2022 17:18:25 -0700 (PDT)
-Date:   Tue, 10 May 2022 00:18:01 +0000
+ (user=yosryahmed job=sendgmr) by 2002:a63:8ac7:0:b0:3aa:fa62:5a28 with SMTP
+ id y190-20020a638ac7000000b003aafa625a28mr15111188pgd.400.1652141912340; Mon,
+ 09 May 2022 17:18:32 -0700 (PDT)
+Date:   Tue, 10 May 2022 00:18:05 +0000
 In-Reply-To: <20220510001807.4132027-1-yosryahmed@google.com>
-Message-Id: <20220510001807.4132027-4-yosryahmed@google.com>
+Message-Id: <20220510001807.4132027-8-yosryahmed@google.com>
 Mime-Version: 1.0
 References: <20220510001807.4132027-1-yosryahmed@google.com>
 X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
-Subject: [RFC PATCH bpf-next 3/9] libbpf: Add support for rstat progs and links
+Subject: [RFC PATCH bpf-next 7/9] cgroup: Add cgroup_put() in !CONFIG_CGROUPS case
 From:   Yosry Ahmed <yosryahmed@google.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -78,124 +78,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support to attach "cgroup_subsys/rstat" programs to a subsystem by
-calling bpf_program__attach_subsys. Currently, only CGROUP_SUBSYS_RSTAT
-programs are supported for attachment to subsystems.
+From: Hao Luo <haoluo@google.com>
 
+There is already a cgroup_get_from_id() in the !CONFIG_CGROUPS case,
+let's have a matching cgroup_put() in !CONFIG_CGROUPS too.
+
+Signed-off-by: Hao Luo <haoluo@google.com>
 Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
 ---
- tools/lib/bpf/bpf.c      |  3 +++
- tools/lib/bpf/bpf.h      |  3 +++
- tools/lib/bpf/libbpf.c   | 35 +++++++++++++++++++++++++++++++++++
- tools/lib/bpf/libbpf.h   |  3 +++
- tools/lib/bpf/libbpf.map |  1 +
- 5 files changed, 45 insertions(+)
+ include/linux/cgroup.h | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
-index cf27251adb92..abfff17cfa07 100644
---- a/tools/lib/bpf/bpf.c
-+++ b/tools/lib/bpf/bpf.c
-@@ -863,6 +863,9 @@ int bpf_link_create(int prog_fd, int target_fd,
- 		if (!OPTS_ZEROED(opts, kprobe_multi))
- 			return libbpf_err(-EINVAL);
- 		break;
-+	case BPF_CGROUP_SUBSYS_RSTAT:
-+		attr.link_create.cgroup_subsys.name = ptr_to_u64(OPTS_GET(opts, cgroup_subsys.name, 0));
-+		break;
- 	default:
- 		if (!OPTS_ZEROED(opts, flags))
- 			return libbpf_err(-EINVAL);
-diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
-index f4b4afb6d4ba..384767a9ffd3 100644
---- a/tools/lib/bpf/bpf.h
-+++ b/tools/lib/bpf/bpf.h
-@@ -413,6 +413,9 @@ struct bpf_link_create_opts {
- 		struct {
- 			__u64 bpf_cookie;
- 		} perf_event;
-+		struct {
-+			const char *name;
-+		} cgroup_subsys;
- 		struct {
- 			__u32 flags;
- 			__u32 cnt;
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 809fe209cdcc..56380953df55 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -8715,6 +8715,7 @@ static const struct bpf_sec_def section_defs[] = {
- 	SEC_DEF("cgroup/setsockopt",	CGROUP_SOCKOPT, BPF_CGROUP_SETSOCKOPT, SEC_ATTACHABLE | SEC_SLOPPY_PFX),
- 	SEC_DEF("struct_ops+",		STRUCT_OPS, 0, SEC_NONE),
- 	SEC_DEF("sk_lookup",		SK_LOOKUP, BPF_SK_LOOKUP, SEC_ATTACHABLE | SEC_SLOPPY_PFX),
-+	SEC_DEF("cgroup_subsys/rstat",	CGROUP_SUBSYS_RSTAT, 0, SEC_NONE),
- };
- 
- static size_t custom_sec_def_cnt;
-@@ -10957,6 +10958,40 @@ static int attach_iter(const struct bpf_program *prog, long cookie, struct bpf_l
- 	return libbpf_get_error(*link);
- }
- 
-+struct bpf_link *bpf_program__attach_subsys(const struct bpf_program *prog,
-+					     const char *subsys_name)
-+{
-+	DECLARE_LIBBPF_OPTS(bpf_link_create_opts, lopts,
-+			    .cgroup_subsys.name = subsys_name);
-+	struct bpf_link *link = NULL;
-+	char errmsg[STRERR_BUFSIZE];
-+	int err, prog_fd, link_fd;
-+
-+	prog_fd = bpf_program__fd(prog);
-+	if (prog_fd < 0) {
-+		pr_warn("prog '%s': can't attach before loaded\n", prog->name);
-+		return libbpf_err_ptr(-EINVAL);
-+	}
-+
-+	link = calloc(1, sizeof(*link));
-+	if (!link)
-+		return libbpf_err_ptr(-ENOMEM);
-+	link->detach = &bpf_link__detach_fd;
-+
-+	link_fd = bpf_link_create(prog_fd, 0, BPF_CGROUP_SUBSYS_RSTAT, &lopts);
-+	if (link_fd < 0) {
-+		err = -errno;
-+		pr_warn("prog '%s': failed to attach: %s\n",
-+			prog->name, libbpf_strerror_r(err, errmsg,
-+						      sizeof(errmsg)));
-+		free(link);
-+		return libbpf_err_ptr(err);
-+	}
-+
-+	link->fd = link_fd;
-+	return link;
-+}
-+
- struct bpf_link *bpf_program__attach(const struct bpf_program *prog)
+diff --git a/include/linux/cgroup.h b/include/linux/cgroup.h
+index 5408c74d5c44..4f1d8febb9fd 100644
+--- a/include/linux/cgroup.h
++++ b/include/linux/cgroup.h
+@@ -759,6 +759,9 @@ static inline struct cgroup *cgroup_get_from_id(u64 id)
  {
- 	struct bpf_link *link = NULL;
-diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-index 05dde85e19a6..eddbffcd39f7 100644
---- a/tools/lib/bpf/libbpf.h
-+++ b/tools/lib/bpf/libbpf.h
-@@ -537,6 +537,9 @@ bpf_program__attach_xdp(const struct bpf_program *prog, int ifindex);
- LIBBPF_API struct bpf_link *
- bpf_program__attach_freplace(const struct bpf_program *prog,
- 			     int target_fd, const char *attach_func_name);
-+LIBBPF_API struct bpf_link *
-+bpf_program__attach_subsys(const struct bpf_program *prog,
-+			   const char *subsys_name);
+ 	return NULL;
+ }
++
++static inline struct cgroup *cgroup_put(void)
++{}
+ #endif /* !CONFIG_CGROUPS */
  
- struct bpf_map;
- 
-diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-index dd35ee58bfaa..5583a2dbfb7c 100644
---- a/tools/lib/bpf/libbpf.map
-+++ b/tools/lib/bpf/libbpf.map
-@@ -447,4 +447,5 @@ LIBBPF_0.8.0 {
- 		libbpf_register_prog_handler;
- 		libbpf_unregister_prog_handler;
- 		bpf_program__attach_kprobe_multi_opts;
-+		bpf_program__attach_subsys;
- } LIBBPF_0.7.0;
+ #ifdef CONFIG_CGROUPS
 -- 
 2.36.0.512.ge40c2bad7a-goog
 
