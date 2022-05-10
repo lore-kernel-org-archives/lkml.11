@@ -2,96 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56C41C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:35:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75999C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:36:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241690AbiEJMjl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 08:39:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41010 "EHLO
+        id S241827AbiEJMkS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 08:40:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241848AbiEJMjg (ORCPT
+        with ESMTP id S241447AbiEJMkP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 08:39:36 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9A02B1640;
-        Tue, 10 May 2022 05:35:34 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KyHZC5WCjz4xbN;
-        Tue, 10 May 2022 22:35:31 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1652186132;
-        bh=MLWzkWE0Q+XzgwkdnYJywkMBFuvMtuO7i/ibU6SGfDo=;
-        h=Date:From:To:Cc:Subject:From;
-        b=VfHL2M6dK1qr2xB7cfAHy6zIG40UaooA2Nr4BQ0zRCE0fsXdkis0XiST1KqaH1AFv
-         VCA1osVkxA8/Sp90FDIwDZPYuRIfg0VPovqHoYzRS1wrnRQdeR5ABtks+LAKFRlQB2
-         BGIJ7qhBmjNVNJZTiWnFKlUkJweE6KLz536Hr6ZET7NjiPtn0v9rRZLBXVUQw5uwgI
-         pWLyog8f/42bnA3inytUYppBdWdKCPdGyQZLpMknTHvzwnQKotsCqWrPn2g/Rj0aKo
-         wtiFnFlASvSdBkvMFQE7MQjaG4QuU+qYcLKxcb5Se6PA+8W9S/4pCSCYk6HiUctc4H
-         SeHflxOUaGlSw==
-Date:   Tue, 10 May 2022 22:35:30 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Chengming Zhou <zhouchengming@bytedance.com>,
-        Joel Savitz <jsavitz@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: manual merge of the akpm tree with the mm-hotfixes tree
-Message-ID: <20220510223530.67d9a27f@canb.auug.org.au>
+        Tue, 10 May 2022 08:40:15 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AAFD1A4749
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 05:36:17 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KyHZW5WFyzhYty;
+        Tue, 10 May 2022 20:35:47 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 10 May 2022 20:36:15 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 10 May
+ 2022 20:36:14 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <alsa-devel@alsa-project.org>
+CC:     <krzysztof.kozlowski@linaro.org>, <s.nawrocki@samsung.com>,
+        <lgirdwood@gmail.com>, <broonie@kernel.org>
+Subject: [PATCH -next] ASoC: samsung: spdif: remove unnecessary check of mem_res
+Date:   Tue, 10 May 2022 20:47:49 +0800
+Message-ID: <20220510124749.2663874-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/aVcrujEU3rvicBxN0Eaj.x3";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/aVcrujEU3rvicBxN0Eaj.x3
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+The resource is checked in probe function, so there is
+no need do this check in remove function.
 
-Hi all,
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ sound/soc/samsung/spdif.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Today's linux-next merge of the akpm tree got a conflict in:
+diff --git a/sound/soc/samsung/spdif.c b/sound/soc/samsung/spdif.c
+index 226c359892e9..47b6d19e43ff 100644
+--- a/sound/soc/samsung/spdif.c
++++ b/sound/soc/samsung/spdif.c
+@@ -467,8 +467,7 @@ static int spdif_remove(struct platform_device *pdev)
+ 	iounmap(spdif->regs);
+ 
+ 	mem_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	if (mem_res)
+-		release_mem_region(mem_res->start, resource_size(mem_res));
++	release_mem_region(mem_res->start, resource_size(mem_res));
+ 
+ 	clk_disable_unprepare(spdif->sclk);
+ 	clk_disable_unprepare(spdif->pclk);
+-- 
+2.25.1
 
-  tools/testing/selftests/vm/Makefile
-
-between commit:
-
-  e33ebf536f3e ("selftests: vm: Makefile: rename TARGETS to VMTARGETS")
-
-from the mm-hotfixes tree and patch:
-
-  "kselftest/vm: override TARGETS from arguments"
-
-from the akpm tree.
-
-I fixed it up the obvious way and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/aVcrujEU3rvicBxN0Eaj.x3
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJ6XBIACgkQAVBC80lX
-0GzvEQgAnc3P1NsJcmx90FSEyN4Bt9kdiHCK64Mrb0Q/Pw3sRdGglvI02hnvQ0mM
-fnPUuyo8yzLpUiq7T47xL4/Hsb1uQUfej4gTOnnq9rPvpOCAa9zr3UpkelKp6x96
-OYzD5hTBQNo1r8qZX/NxZkHFLRjtr4QNGHgvD4dAOt4ALpi9P4WkjF2gnnIAxw7N
-x8pJDMcqQkdkLIUtSYR2gDVXmR9uQZ8ec35xTrVa4TxCnhTjvU8s7xUXHpYzs7b6
-dVY/nsDgJotLPHqb8K6UNr5GNrRekybSXdXkVXADzDlz6dH1cWVLq/hQfrXTyU3E
-9ldmn+8Kx7SL8pBYOhhO/bYpeywFcg==
-=7Ooe
------END PGP SIGNATURE-----
-
---Sig_/aVcrujEU3rvicBxN0Eaj.x3--
