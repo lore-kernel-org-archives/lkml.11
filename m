@@ -2,91 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2680FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:54:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97ABDC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:54:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346828AbiEJPz6 (ORCPT
+        id S1346096AbiEJP6e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:55:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60798 "EHLO
+        Tue, 10 May 2022 11:58:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347211AbiEJPwF (ORCPT
+        with ESMTP id S1346622AbiEJPvK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:52:05 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB75227D01B
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:47:26 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id gh6so33885395ejb.0
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:47:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=szeredi.hu; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TDgGs9CgwXyWbub9AhjowkEjkVJeBjS3w2UHtPu470w=;
-        b=BWf3C8d4lnfR8oyZMmiSG29J+xMF4byi5shsnljwByLz3ZI+tA9YQmsP2wO3AXfCLN
-         2FwC+K5kV6TSxgVYPDqMHoowvhwbnvoTOQ40tdtYAFdfGW4iBRWmqdfMI9myYUzSRZju
-         K90x6QomLH3PQ8C+QlMs9A5PkLTsIFFI8EnHU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TDgGs9CgwXyWbub9AhjowkEjkVJeBjS3w2UHtPu470w=;
-        b=eImXkGAfY/DLB2WG9NSXMuimNRVfmQuTkcUeWfOYq/TnmFmE40r/E38ozgWRx9jT2j
-         srFrtmE0qfHCojxOlAsoj/Y/od0JAtcYpU0GBz1KNR6BIFVnYQgngeUZVjKPZYS6XqYY
-         nHua+6UYJdv16NFNKt2Geb1gvtSTLx/YB69iMtOScme3qT5FFHaasJkHjF25ZKREd71k
-         1RkaeeAYw+82fhMdT/cglcxnudEix6rc41onynwYq3wND2i0dzdWK4v65nGXMg3vFnUf
-         kiltDSWVDWAzTmccNLvzu2a73Uz2M4sSUWKoU4m9KHN1GNnF8K+rHkUcNTf5ercTH1pc
-         HnbQ==
-X-Gm-Message-State: AOAM5319rQAm/jo93XDaPFWW+QkJBOW9m51hGjsKxL0R9Rv+CZl+fI1t
-        ZHFU7Td8QSPzCaxbe/2nCK2twZqzJ+2sWdJgKu+XHQ==
-X-Google-Smtp-Source: ABdhPJzA7XHkejv97/hBJ9ZeMnnM4WnEpIKq8Sfb7wU3wAiKmqThY4v+xIYCWjHTNRv4d3NHKBoE4Y0+Flk5e1rLhis=
-X-Received: by 2002:a17:906:9749:b0:6f5:6cd:5bd9 with SMTP id
- o9-20020a170906974900b006f506cd5bd9mr20675818ejy.523.1652197645318; Tue, 10
- May 2022 08:47:25 -0700 (PDT)
+        Tue, 10 May 2022 11:51:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB28928C9FB;
+        Tue, 10 May 2022 08:45:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 81B2EB81DB5;
+        Tue, 10 May 2022 15:45:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F01AC385C9;
+        Tue, 10 May 2022 15:45:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652197523;
+        bh=bFXCMkDobMIJpG3nZxvG3YswP1Soot0guousvrJCBlo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=T3dD9QvT0jbUpNxVUfHE0ccGPoA+26Y8nlen8kEmfNmoaAqBQxylzzbxRbGmWVG3u
+         d/qJCDCrTnO9uHlBQ3abByBVbquy9hAEhFcfPdQWsIYQo84U1n5GQLWnrCfPAErGQl
+         OicQao6wHjlhXA9281NJ+bQSXQKK/5dgT2rbw2wAAnnat/tUWrnmsg84+DapHbeQHO
+         IzLh01DgdbOjE9hbfZCT/UnHMEFsPXTqQ0AMkAXDj4pj9AguEQdjAHoc+7g59KlYi5
+         wiOytRnRTRTWQIN71feGqvRn72FFPYmTHnkTufMw2riDjKi9n6Qd0H35IcInKBtwOt
+         pLrjDQIa4ZH8g==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Sven Schnelle <svens@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Sasha Levin <sashal@kernel.org>, gor@linux.ibm.com,
+        agordeev@linux.ibm.com, linux-s390@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 5/9] s390: disable -Warray-bounds
+Date:   Tue, 10 May 2022 11:45:08 -0400
+Message-Id: <20220510154512.153945-5-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220510154512.153945-1-sashal@kernel.org>
+References: <20220510154512.153945-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <YnEeuw6fd1A8usjj@miu.piliscsaba.redhat.com> <20220509124815.vb7d2xj5idhb2wq6@wittgenstein>
- <CAJfpegveWaS5pR3O1c_7qLnaEDWwa8oi26x2v_CwDXB_sir1tg@mail.gmail.com>
- <20220510115316.acr6gl5ayqszada6@wittgenstein> <CAJfpegtVgyumJiFM_ujjuRTjg07vwOd4h9AT+mbh+n1Qn-LqqA@mail.gmail.com>
- <20220510141932.lth3bryefbl6ykny@wittgenstein> <CAJfpegt94fP-_eDAk=_C=24ahCtjQ4vhh8Xg+SrZbwPHs1waLA@mail.gmail.com>
- <20220510153050.cgbt3wezbvf2jfnb@wittgenstein>
-In-Reply-To: <20220510153050.cgbt3wezbvf2jfnb@wittgenstein>
-From:   Miklos Szeredi <miklos@szeredi.hu>
-Date:   Tue, 10 May 2022 17:47:13 +0200
-Message-ID: <CAJfpegu8d2VQ+WjfmUJ6g7YBPJsYUABt0jG5ByVh-dMt_waV8A@mail.gmail.com>
-Subject: Re: [RFC PATCH] getting misc stats/attributes via xattr API
-To:     Christian Brauner <brauner@kernel.org>
-Cc:     linux-fsdevel@vger.kernel.org, Dave Chinner <david@fromorbit.com>,
-        "Theodore Ts'o" <tytso@mit.edu>, Karel Zak <kzak@redhat.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org,
-        Linux API <linux-api@vger.kernel.org>,
-        linux-man <linux-man@vger.kernel.org>,
-        LSM <linux-security-module@vger.kernel.org>,
-        Ian Kent <raven@themaw.net>,
-        David Howells <dhowells@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Christian Brauner <christian@brauner.io>,
-        Amir Goldstein <amir73il@gmail.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 10 May 2022 at 17:30, Christian Brauner <brauner@kernel.org> wrote:
+From: Sven Schnelle <svens@linux.ibm.com>
 
-> But now we're in the process of extending the *xattr() calls to operate
-> on mounts and filesystems so an additional getfsattr() (or another name)
-> is not fragmentation imho. And I definitely don't think this would
-> qualify as "crazy".
+[ Upstream commit 8b202ee218395319aec1ef44f72043e1fbaccdd6 ]
 
-In that spirit st_dev does not belong in struct stat, because that is
-the property of the block device, not the inode.
+gcc-12 shows a lot of array bound warnings on s390. This is caused
+by the S390_lowcore macro which uses a hardcoded address of 0.
 
-But I feel we are going round in circles, lets please not get hung up
-on this issue.  Linus will have the final word on which variant (if
-either) is going to go in.
+Wrapping that with absolute_pointer() works, but gcc no longer knows
+that a 12 bit displacement is sufficient to access lowcore. So it
+emits instructions like 'lghi %r1,0; l %rx,xxx(%r1)' instead of a
+single load/store instruction. As s390 stores variables often
+read/written in lowcore, this is considered problematic. Therefore
+disable -Warray-bounds on s390 for gcc-12 for the time being, until
+there is a better solution.
 
-Thanks,
-Miklos
+Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
+Link: https://lore.kernel.org/r/yt9dzgkelelc.fsf@linux.ibm.com
+Link: https://lore.kernel.org/r/20220422134308.1613610-1-svens@linux.ibm.com
+Link: https://lore.kernel.org/r/20220425121742.3222133-1-svens@linux.ibm.com
+Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/s390/Makefile | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/arch/s390/Makefile b/arch/s390/Makefile
+index 92506918da63..a8cb00f30a7c 100644
+--- a/arch/s390/Makefile
++++ b/arch/s390/Makefile
+@@ -32,6 +32,16 @@ KBUILD_CFLAGS_DECOMPRESSOR += -fno-stack-protector
+ KBUILD_CFLAGS_DECOMPRESSOR += $(call cc-disable-warning, address-of-packed-member)
+ KBUILD_CFLAGS_DECOMPRESSOR += $(if $(CONFIG_DEBUG_INFO),-g)
+ KBUILD_CFLAGS_DECOMPRESSOR += $(if $(CONFIG_DEBUG_INFO_DWARF4), $(call cc-option, -gdwarf-4,))
++
++ifdef CONFIG_CC_IS_GCC
++	ifeq ($(call cc-ifversion, -ge, 1200, y), y)
++		ifeq ($(call cc-ifversion, -lt, 1300, y), y)
++			KBUILD_CFLAGS += $(call cc-disable-warning, array-bounds)
++			KBUILD_CFLAGS_DECOMPRESSOR += $(call cc-disable-warning, array-bounds)
++		endif
++	endif
++endif
++
+ UTS_MACHINE	:= s390x
+ STACK_SIZE	:= $(if $(CONFIG_KASAN),65536,16384)
+ CHECKFLAGS	+= -D__s390__ -D__s390x__
+-- 
+2.35.1
+
