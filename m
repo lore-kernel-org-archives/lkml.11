@@ -2,111 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DF87C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 21:05:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D48EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 21:11:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231608AbiEJVF5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 17:05:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38354 "EHLO
+        id S231718AbiEJVLu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 17:11:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229529AbiEJVFw (ORCPT
+        with ESMTP id S235846AbiEJVLc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 17:05:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B96AD193CE;
-        Tue, 10 May 2022 14:05:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 88466B81D0E;
-        Tue, 10 May 2022 21:05:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9051EC385C8;
-        Tue, 10 May 2022 21:05:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1652216747;
-        bh=HK/U9ZnYCVJJhfgJnWA8+Meia8HhzwzQcw7dOhhRSYA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=BrzDyZjB5HvQ/Lev6VHmoi8QLWXi1sqqO2eCbz1H5Kb/qtiFlZDGpbFcNkpBziSTz
-         7vVlUcChs1pklgTI5UQYb7AYjsQHAMwYL2sB+rbc7eWN8ewEIN+i3NnQYGyG322tXw
-         ESstyyt9vP8bP9xx1HH3klVgQidq1/dDTNdIilH4=
-Date:   Tue, 10 May 2022 14:05:45 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Yang Shi <shy828301@gmail.com>
-Cc:     vbabka@suse.cz, kirill.shutemov@linux.intel.com,
-        linmiaohe@huawei.com, songliubraving@fb.com, riel@surriel.com,
-        willy@infradead.org, ziy@nvidia.com, tytso@mit.edu,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [v4 PATCH 6/8] mm: khugepaged: make hugepage_vma_check()
- non-static
-Message-Id: <20220510140545.5dd9d3145b53cb7e226c236a@linux-foundation.org>
-In-Reply-To: <20220510203222.24246-7-shy828301@gmail.com>
-References: <20220510203222.24246-1-shy828301@gmail.com>
-        <20220510203222.24246-7-shy828301@gmail.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Tue, 10 May 2022 17:11:32 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 869CD880D7;
+        Tue, 10 May 2022 14:11:31 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id i38so180456ybj.13;
+        Tue, 10 May 2022 14:11:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ufJz6aadSD6Cn7bOf+6vc8OgcxLYzosePvAp35V0Ho8=;
+        b=gvEbdT5lvyZ/rgG0n844WSYG4+ic6WrpFIFnAbQYna20ynqnDf7dUKDaySq7BbXAan
+         j7A6qX5KG5z6l13rt7MKCjKBNARdYGEFnBzKVSft6v63wrvYGdODY8N/SdrjHzBP3067
+         S5exFJcDqhMeUMICNlu9bLtio1euV37oH7GPmI6WZjtfV7/USw+APrflF9q4Nzy07m20
+         d5NmyXPFH4KE/4O9Y8AcRVe0LHdpk1jQcFXDtjnt/FG1y81475YkMZHkPOHUIKplzzo5
+         krUutdnfhze9nZfYZ9gte/h20k7ytTUwFYau5z+jCjyK8tAUnheL4p75fXoBrEVgtr22
+         x8pA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ufJz6aadSD6Cn7bOf+6vc8OgcxLYzosePvAp35V0Ho8=;
+        b=A/U5tiEx34NCQR7vRwc2gXgPjLRbstPuU3ruQix3nQq5TTRKrRu2tj3HdmLbOoGxdd
+         442T/UfEDMq0LLjz/p9wH4btI33RQM8eXhUl0fUTjn+J2s6MFD4KAnbUpEqwnnSiXbY4
+         wWvXE+gtRGEnK964DFRRZ8tcc7aDrilkX895T346qGnjlxIfPXN0slWaXzAQcoGjrP9j
+         EHiU33EuVIxjz2+kvdEUocXz00KALufsyvH45Tkmo4zcVaQ/xMeQMRUwSTS2eGrC+Qp5
+         wq/si3vjyw3ScnKfivo1e8bJwshg+2EMKXvD/SUIoCLer3MUwUzzIKabSLjvnIet2rMY
+         mAjw==
+X-Gm-Message-State: AOAM531pLMErRTIrMPBPjHvf4o+xXAwcJvt6b6WLhw01/wuezK2DgV71
+        3ZqZHpxHMEqoiHm5fFh4+ku7e8YF8UcbDWcEKlug71oH
+X-Google-Smtp-Source: ABdhPJzIvAovezZHnpVBEWWtPUXpgZsqqpyeKDzhMu/TUJPhbFbJizZF888IenlZeAIEtlG9TCW3MUh9VWyBqwDkreQ=
+X-Received: by 2002:a5b:64c:0:b0:64a:684a:2369 with SMTP id
+ o12-20020a5b064c000000b0064a684a2369mr20362900ybq.173.1652217090749; Tue, 10
+ May 2022 14:11:30 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220429123832.2376381-1-pgwipeout@gmail.com>
+In-Reply-To: <20220429123832.2376381-1-pgwipeout@gmail.com>
+From:   Peter Geis <pgwipeout@gmail.com>
+Date:   Tue, 10 May 2022 17:11:18 -0400
+Message-ID: <CAMdYzYrzq5C61T2NYmHr0g_P7Mm25TUfaDV3iz2LkV8-jpV4kA@mail.gmail.com>
+Subject: Re: [PATCH v9 0/5] Enable rk356x PCIe controller
+To:     "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     Heiko Stuebner <heiko@sntech.de>, Marc Zyngier <maz@kernel.org>,
+        PCI <linux-pci@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        arm-mail-list <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 10 May 2022 13:32:20 -0700 Yang Shi <shy828301@gmail.com> wrote:
-
-> The hugepage_vma_check() could be reused by khugepaged_enter() and
-> khugepaged_enter_vma_merge(), but it is static in khugepaged.c.
-> Make it non-static and declare it in khugepaged.h.
-> 
-> ..
+On Fri, Apr 29, 2022 at 8:38 AM Peter Geis <pgwipeout@gmail.com> wrote:
 >
-> @@ -508,20 +508,13 @@ void __khugepaged_enter(struct mm_struct *mm)
->  void khugepaged_enter_vma_merge(struct vm_area_struct *vma,
->  			       unsigned long vm_flags)
->  {
-> -	unsigned long hstart, hend;
-> -
-> -	/*
-> -	 * khugepaged only supports read-only files for non-shmem files.
-> -	 * khugepaged does not yet work on special mappings. And
-> -	 * file-private shmem THP is not supported.
-> -	 */
-> -	if (!hugepage_vma_check(vma, vm_flags))
-> -		return;
-> -
-> -	hstart = (vma->vm_start + ~HPAGE_PMD_MASK) & HPAGE_PMD_MASK;
-> -	hend = vma->vm_end & HPAGE_PMD_MASK;
-> -	if (hstart < hend)
-> -		khugepaged_enter(vma, vm_flags);
-> +	if (!test_bit(MMF_VM_HUGEPAGE, &vma->vm_mm->flags) &&
-> +	    khugepaged_enabled() &&
-> +	    (((vma->vm_start + ~HPAGE_PMD_MASK) & HPAGE_PMD_MASK) <
-> +	     (vma->vm_end & HPAGE_PMD_MASK))) {
+> This series enables the DesignWare based PCIe controller on the rk356x
+> series of chips. We drop the fallback to the core driver due to
+> compatibility issues. We reset the PCIe controller at driver probe to
+> prevent issues in the future when firmware / kexec leaves the controller
+> in an unknown state. We add support for legacy interrupts for cards that
+> lack MSI support (which is partially broken currently). We then add the
+> device tree nodes to enable PCIe on the Quartz64 Model A.
 
-Reviewing these bounds-checking tests is so hard :(  Can we simplify?
+Good Evening,
 
-> +		if (hugepage_vma_check(vma, vm_flags))
-> +			__khugepaged_enter(vma->vm_mm);
-> +	}
->  }
+Just a gentle ping to see if there's anything outstanding here.
 
-void khugepaged_enter_vma(struct vm_area_struct *vma,
-			  unsigned long vm_flags)
-{
-	if (test_bit(MMF_VM_HUGEPAGE, &vma->vm_mm->flags))
-		return;
-	if (!khugepaged_enabled())
-		return;
-	if (round_up(vma->vm_start, HPAGE_PMD_SIZE) >=
-			(vma->vm_end & HPAGE_PMD_MASK))
-		return;		/* vma is too small */
-	if (!hugepage_vma_check(vma, vm_flags))
-		return;
-	__khugepaged_enter(vma->vm_mm);
-}
+Very Respectfully,
+Peter Geis
 
-
-Also, it might be slightly faster to have checked MMF_VM_HUGEPAGE
-before khugepaged_enabled(), but it looks odd.  And it might be slower,
-too - more pointer chasing.
-
-I wish someone would document hugepage_vma_check().
+>
+> Patch 1 drops the snps,dw,pcie fallback from the dt-binding
+> Patch 2 resets the PCIe controller to prevent configuration bugs
+> Patch 3 adds legacy interrupt support to the driver
+> Patch 4 adds the device tree binding to the rk356x.dtsi
+> Patch 5 enables the PCIe controller on the Quartz64-A
+>
+> Changelog:
+> v9:
+> - move reset_control_assert out of rockchip_pcie_resource_get
+> - fix various formatting mistakes
+> - fix a checkpatch warning
+>
+> v8:
+> - add core reset patch
+> - simplify IRQ enable/disable functions
+> - drop spinlock
+> - only enable/disable IRQ requested
+> - only pass the IRQ register bits used to irq functions
+>
+> v7:
+> - drop assigned-clocks
+>
+> v6:
+> - fix a ranges issue
+> - point to GIC instead of ITS
+>
+> v5:
+> - fix incorrect series (apologies for the v4 spam)
+>
+> v4:
+> - drop the ITS modification, poor compatibility is better than
+>   completely broken
+>
+> v3:
+> - drop select node from dt-binding
+> - convert to for_each_set_bit
+> - convert to generic_handle_domain_irq
+> - drop unncessary dev_err
+> - reorder irq_chip items
+> - change to level_irq
+> - install the handler after initializing the domain
+>
+> v2:
+> - Define PCIE_CLIENT_INTR_STATUS_LEGACY
+> - Fix PCIE_LEGACY_INT_ENABLE to only enable the RC interrupts
+> - Add legacy interrupt enable/disable support
+>
+>
+> Peter Geis (5):
+>   dt-bindings: PCI: Remove fallback from Rockchip DesignWare binding
+>   PCI: rockchip-dwc: Reset core at driver probe
+>   PCI: rockchip-dwc: Add legacy interrupt support
+>   arm64: dts: rockchip: Add rk3568 PCIe2x1 controller
+>   arm64: dts: rockchip: Enable PCIe controller on quartz64-a
+>
+>  .../bindings/pci/rockchip-dw-pcie.yaml        |  12 +-
+>  .../boot/dts/rockchip/rk3566-quartz64-a.dts   |  34 +++++
+>  arch/arm64/boot/dts/rockchip/rk356x.dtsi      |  52 ++++++++
+>  drivers/pci/controller/dwc/pcie-dw-rockchip.c | 119 +++++++++++++++---
+>  4 files changed, 191 insertions(+), 26 deletions(-)
+>
+> --
+> 2.25.1
+>
