@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 543C9C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:12:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28D62C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:12:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242434AbiEJNQk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:16:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60822 "EHLO
+        id S242466AbiEJNQs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:16:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242315AbiEJNPt (ORCPT
+        with ESMTP id S242349AbiEJNPw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:15:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD9D048316;
-        Tue, 10 May 2022 06:11:26 -0700 (PDT)
+        Tue, 10 May 2022 09:15:52 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6374488B6;
+        Tue, 10 May 2022 06:11:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A215615F6;
-        Tue, 10 May 2022 13:11:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39B26C385C2;
-        Tue, 10 May 2022 13:11:24 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 237FACE1EE2;
+        Tue, 10 May 2022 13:11:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 306AEC385A6;
+        Tue, 10 May 2022 13:11:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188285;
-        bh=j4PcXJsjL/hECOwko18xaKCIErLy1pvHvAg5qkb9TAo=;
+        s=korg; t=1652188288;
+        bh=nbW0eEsimMVjlHNbmfDsIhmqa2VhhW8vzws7CUyZMzo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YiSve1dP3CrRseFn0LIKbgjnV+S7EZnK1pNvbPo3e5lZlrXTU3cX9V63+KLgzl7el
-         DUnBLWfoC48xrW3ZRJPdP+B4grQcEUh7WAVgkVEkYBV7gdVouh7L6ap8ntm/im3BJm
-         I3hxPOIj1h0q9X3I51ohUru1EAijWYCYY7am7zH0=
+        b=LhWFqe5N8TAi74IIKrE7SgEY3PDQRytbiOhMUrwz25qsEc6mzga2zauo4/44D0Yoz
+         EzotzOiTrHgAUzpUc8Bc+bviw7nQszen5gcIsc9ybUAxN2rO+SGpEZ8BSfKJYQyEo4
+         4aDEEVPalMppjLJRb7hfVdbdTchNULlcbA0TsyWo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 22/66] phy: samsung: Fix missing of_node_put() in exynos_sata_phy_probe
-Date:   Tue, 10 May 2022 15:07:12 +0200
-Message-Id: <20220510130730.415323343@linuxfoundation.org>
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        =?UTF-8?q?Matias=20Bj=C3=B8rling?= <mb@lightnvm.io>,
+        =?UTF-8?q?Javier=20Gonz=C3=A1lez?= <javier@javigon.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 4.9 03/66] lightnvm: disable the subsystem
+Date:   Tue, 10 May 2022 15:06:53 +0200
+Message-Id: <20220510130729.862939629@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.762341544@linuxfoundation.org>
 References: <20220510130729.762341544@linuxfoundation.org>
@@ -49,38 +50,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+In commit 9ea9b9c48387 ("remove the lightnvm subsystem") the lightnvm
+subsystem was removed as there is no hardware in the wild for it, and
+the code is known to have problems.  This should also be disabled for
+older LTS kernels as well to prevent anyone from accidentally using it.
 
-[ Upstream commit 388ec8f079f2f20d5cd183c3bc6f33cbc3ffd3ef ]
-
-The device_node pointer is returned by of_parse_phandle() with refcount
-incremented. We should use of_node_put() on it when done.
-
-Fixes: bcff4cba41bc ("PHY: Exynos: Add Exynos5250 SATA PHY driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220407091857.230386-1-krzysztof.kozlowski@linaro.org
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Matias Bjørling <mb@lightnvm.io>
+Cc: Javier González <javier@javigon.com>
+Cc: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/phy/phy-exynos5250-sata.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/lightnvm/Kconfig |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/phy/phy-exynos5250-sata.c b/drivers/phy/phy-exynos5250-sata.c
-index 60e13afcd9b8..7960c69d09a6 100644
---- a/drivers/phy/phy-exynos5250-sata.c
-+++ b/drivers/phy/phy-exynos5250-sata.c
-@@ -193,6 +193,7 @@ static int exynos_sata_phy_probe(struct platform_device *pdev)
- 		return -EINVAL;
+--- a/drivers/lightnvm/Kconfig
++++ b/drivers/lightnvm/Kconfig
+@@ -4,7 +4,7 @@
  
- 	sata_phy->client = of_find_i2c_device_by_node(node);
-+	of_node_put(node);
- 	if (!sata_phy->client)
- 		return -EPROBE_DEFER;
+ menuconfig NVM
+ 	bool "Open-Channel SSD target support"
+-	depends on BLOCK && HAS_DMA
++	depends on BLOCK && HAS_DMA && BROKEN
+ 	help
+ 	  Say Y here to get to enable Open-channel SSDs.
  
--- 
-2.35.1
-
 
 
