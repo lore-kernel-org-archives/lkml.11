@@ -2,168 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9899FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:43:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F828C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:44:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344000AbiEJOrP (ORCPT
+        id S1344288AbiEJOsE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:47:15 -0400
+        Tue, 10 May 2022 10:48:04 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244905AbiEJOrA (ORCPT
+        with ESMTP id S244505AbiEJOrn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:47:00 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A48DD2E5D15
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 07:05:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652191511; x=1683727511;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=lRtvPDQkPJW4eL1Umum1pYGlvCBfWD/ytjSTupNpkeE=;
-  b=C7BKXH6E7QYVhYAft8ACVzx7lgjgVgX1DtIBhpupo0jykCviJD6GwUFL
-   ygMZ3R8+V2CHi05QtA+uotvfNfhrKzQOHAfm0b3S+hoHW1nkf/6ZA50Tl
-   RMYNgA9HsFp2ur7WVJvFkBmOInhZnYgYLJ8LJ02NzzmXwc7TyNZodvxC9
-   RGVyd2K/LH/2AAaB1d4Ihtd7wEHEUAg7vkkJiuUUBy+SrmBf3c+bF/1jJ
-   UzAN/GOOsV3dQzZoObhIE1v4WXeEyDJNHt/EfnBAndgQRyBiGDgEuWzMJ
-   HlsxEf95tgcM21NadHYt14oH83Z+l+fUIKo06XZ36IL2AzSDvtrCVnS5X
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="329978347"
-X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
-   d="scan'208";a="329978347"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 07:04:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
-   d="scan'208";a="602483173"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 10 May 2022 07:04:56 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1noQTv-000Hys-Ht;
-        Tue, 10 May 2022 14:04:55 +0000
-Date:   Tue, 10 May 2022 22:04:06 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dan Carpenter <error27@gmail.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Chuck Lever <chuck.lever@oracle.com>
-Subject: [linux-stable-rc:linux-4.19.y 2019/2505]
- include/linux/sunrpc/xdr.h:512:17: error: comparison is always false due to
- limited range of data type
-Message-ID: <202205102104.Q6M7unWF-lkp@intel.com>
+        Tue, 10 May 2022 10:47:43 -0400
+Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEBF010788B;
+        Tue, 10 May 2022 07:06:02 -0700 (PDT)
+Received: by mail-oi1-x22b.google.com with SMTP id i66so6086211oia.11;
+        Tue, 10 May 2022 07:06:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=eleg/nqVC9IPDcWOxwJF+He5L8eoNl0EU11xDJq3nMY=;
+        b=Me0pcmytSTmx9JKHcssC0LoS4jX0maBApI3q98Nwb17mf3CsAAsntl2Yq17iZ/hHME
+         uRySjErlNqr/tBaIqyi26AGhyQalfYvxbRvZyQaxOdv3im/3UAtuB4CYzLBwQXXnl0za
+         CKe6lkXCnuIM4O0Pt0kCzaJM12D+hakE7SkqGAc1Oq8y13IOc1OafoHNIa8//0J+DdRF
+         FdJLFnOfh8UFWSKBJsvrE4Ob0ixj8r/L60NaHUqUnSweVI6PG1ic3/tdqLihy+L8IQ1I
+         DIXktpq5PXzcL8G6X9NziNdMO7Xkq1hKgqO7ci2EOUPo7iDfZHAe7iEsxHY6Q2JNK3VG
+         wKhw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=eleg/nqVC9IPDcWOxwJF+He5L8eoNl0EU11xDJq3nMY=;
+        b=q7ylqsblmGpf7fBIAH5+CsW9qOUE59psKAJH23DAyf/7sucfy8i7cP90o3ToYbCJvA
+         QhJVAOjLwyzNBK7LNk0WJFchOg/PnLnnQb9flwGllaxvCYAQoF9HUET93HMY3gIoO9yX
+         eo8PktC7tB3xbMEV3aVXjl7a7NJMzoY7n7607QTBdzIOoxsz7t2z1LrEn16flr1Qw0X0
+         jKNk8mA+mbLs/QAnRTLrWwC3+pdPE76/1XWQE+2RFnbP04vOQZISxXXnQGDBxmxA5KIV
+         LHXnp183cWPWqfFzr6yPz/hjfXRJnWv82yVBsKgAHaBL65IpdDcnhvknXhTNBJLmmx5H
+         2j0Q==
+X-Gm-Message-State: AOAM531jZCIvWRt3EufyiTOD+SjycjIqGe2pobzetmtqWaPQJt1ORr/o
+        HW0d1cnlgcbT9UvTb96Dxxk=
+X-Google-Smtp-Source: ABdhPJzXO2Z4zuueOlA/MUKFIwHtpuMgulmTw5+sB2m3ynIkNIKcY19lzmqqizXjIYboTMpC9r92lg==
+X-Received: by 2002:a05:6808:2214:b0:326:4f5b:2f3c with SMTP id bd20-20020a056808221400b003264f5b2f3cmr93107oib.229.1652191562004;
+        Tue, 10 May 2022 07:06:02 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id g15-20020a4ab80f000000b0035eb4e5a6cdsm6038190oop.35.2022.05.10.07.06.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 May 2022 07:06:01 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <8bc3bc2b-28ac-4302-a07a-6aee173108dd@roeck-us.net>
+Date:   Tue, 10 May 2022 07:05:59 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2] usb: typec: tcpci_mt6360: Update for BMC PHY setting
+Content-Language: en-US
+To:     cy_huang <u0084500@gmail.com>, heikki.krogerus@linux.intel.com,
+        gregkh@linuxfoundation.org, matthias.bgg@gmail.com
+Cc:     cy_huang@richtek.com, bryan_huang@richtek.com,
+        linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Fabien Parent <fparent@baylibre.com>
+References: <1652159580-30959-1-git-send-email-u0084500@gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <1652159580-30959-1-git-send-email-u0084500@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
-head:   e28b1117a7ab58323f40237d9f4c009836eaa517
-commit: 3a2789e8ccb4a3e2a631f6817a2d3bb98b8c4fd8 [2019/2505] NFSD: prevent integer overflow on 32 bit systems
-config: sparc-allyesconfig (https://download.01.org/0day-ci/archive/20220510/202205102104.Q6M7unWF-lkp@intel.com/config)
-compiler: sparc64-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=3a2789e8ccb4a3e2a631f6817a2d3bb98b8c4fd8
-        git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-        git fetch --no-tags linux-stable-rc linux-4.19.y
-        git checkout 3a2789e8ccb4a3e2a631f6817a2d3bb98b8c4fd8
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=sparc SHELL=/bin/bash arch/sparc/kernel/
+On 5/9/22 22:13, cy_huang wrote:
+> From: ChiYuan Huang <cy_huang@richtek.com>
+> 
+> Update MT6360 BMC PHY Tx/Rx setting for the compatibility.
+> 
+> Macpaul reported this CtoDP cable attention message cannot be received from
+> MT6360 TCPC. But actually, attention message really sent from UFP_D
+> device.
+> 
+> After RD's comment, there may be BMC PHY Tx/Rx setting causes this issue.
+> 
+> Below's the detailed TCPM log and DP attention message didn't received from 6360
+> TCPCI.
+> [ 1206.367775] Identity: 0000:0000.0000
+> [ 1206.416570] Alternate mode 0: SVID 0xff01, VDO 1: 0x00000405
+> [ 1206.447378] AMS DFP_TO_UFP_ENTER_MODE start
+> [ 1206.447383] PD TX, header: 0x1d6f
+> [ 1206.449393] PD TX complete, status: 0
+> [ 1206.454110] PD RX, header: 0x184f [1]
+> [ 1206.456867] Rx VDM cmd 0xff018144 type 1 cmd 4 len 1
+> [ 1206.456872] AMS DFP_TO_UFP_ENTER_MODE finished
+> [ 1206.456873] cc:=4
+> [ 1206.473100] AMS STRUCTURED_VDMS start
+> [ 1206.473103] PD TX, header: 0x2f6f
+> [ 1206.475397] PD TX complete, status: 0
+> [ 1206.480442] PD RX, header: 0x2a4f [1]
+> [ 1206.483145] Rx VDM cmd 0xff018150 type 1 cmd 16 len 2
+> [ 1206.483150] AMS STRUCTURED_VDMS finished
+> [ 1206.483151] cc:=4
+> [ 1206.505643] AMS STRUCTURED_VDMS start
+> [ 1206.505646] PD TX, header: 0x216f
+> [ 1206.507933] PD TX complete, status: 0
+> [ 1206.512664] PD RX, header: 0x1c4f [1]
+> [ 1206.515456] Rx VDM cmd 0xff018151 type 1 cmd 17 len 1
+> [ 1206.515460] AMS STRUCTURED_VDMS finished
+> [ 1206.515461] cc:=4
+> 
+> Fixes: e1aefcdd394fd ("usb typec: mt6360: Add support for mt6360 Type-C driver")
+> Reported-by: Macpaul Lin <macpaul.lin@mediatek.com>
+> Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+> Signed-off-by: Fabien Parent <fparent@baylibre.com>
+> Cc: stable <stable@vger.kernel.org>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
 
-All errors (new ones prefixed by >>):
+> ---
+>   drivers/usb/typec/tcpm/tcpci_mt6360.c | 26 ++++++++++++++++++++++++++
+>   1 file changed, 26 insertions(+)
+> 
+> diff --git a/drivers/usb/typec/tcpm/tcpci_mt6360.c b/drivers/usb/typec/tcpm/tcpci_mt6360.c
+> index f1bd9e0..8a952ea 100644
+> --- a/drivers/usb/typec/tcpm/tcpci_mt6360.c
+> +++ b/drivers/usb/typec/tcpm/tcpci_mt6360.c
+> @@ -15,6 +15,9 @@
+>   
+>   #include "tcpci.h"
+>   
+> +#define MT6360_REG_PHYCTRL1	0x80
+> +#define MT6360_REG_PHYCTRL3	0x82
+> +#define MT6360_REG_PHYCTRL7	0x86
+>   #define MT6360_REG_VCONNCTRL1	0x8C
+>   #define MT6360_REG_MODECTRL2	0x8F
+>   #define MT6360_REG_SWRESET	0xA0
+> @@ -22,6 +25,8 @@
+>   #define MT6360_REG_DRPCTRL1	0xA2
+>   #define MT6360_REG_DRPCTRL2	0xA3
+>   #define MT6360_REG_I2CTORST	0xBF
+> +#define MT6360_REG_PHYCTRL11	0xCA
+> +#define MT6360_REG_RXCTRL1	0xCE
+>   #define MT6360_REG_RXCTRL2	0xCF
+>   #define MT6360_REG_CTDCTRL2	0xEC
+>   
+> @@ -106,6 +111,27 @@ static int mt6360_tcpc_init(struct tcpci *tcpci, struct tcpci_data *tdata)
+>   	if (ret)
+>   		return ret;
+>   
+> +	/* BMC PHY */
+> +	ret = mt6360_tcpc_write16(regmap, MT6360_REG_PHYCTRL1, 0x3A70);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_write(regmap, MT6360_REG_PHYCTRL3,  0x82);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_write(regmap, MT6360_REG_PHYCTRL7, 0x36);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = mt6360_tcpc_write16(regmap, MT6360_REG_PHYCTRL11, 0x3C60);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_write(regmap, MT6360_REG_RXCTRL1, 0xE8);
+> +	if (ret)
+> +		return ret;
+> +
+>   	/* Set shipping mode off, AUTOIDLE on */
+>   	return regmap_write(regmap, MT6360_REG_MODECTRL2, 0x7A);
+>   }
 
-   In file included from include/linux/sunrpc/sched.h:19,
-                    from include/linux/sunrpc/auth.h:15,
-                    from include/linux/nfs_fs.h:31,
-                    from arch/sparc/kernel/sys_sparc32.c:25:
-   include/linux/sunrpc/xdr.h: In function 'xdr_stream_decode_uint32_array':
->> include/linux/sunrpc/xdr.h:512:17: error: comparison is always false due to limited range of data type [-Werror=type-limits]
-     512 |         if (len > SIZE_MAX / sizeof(*p))
-         |                 ^
-   In file included from include/linux/ethtool.h:17,
-                    from include/linux/netdevice.h:41,
-                    from include/net/sock.h:51,
-                    from include/linux/tcp.h:23,
-                    from include/linux/ipv6.h:87,
-                    from include/net/ipv6.h:16,
-                    from include/linux/sunrpc/clnt.h:28,
-                    from include/linux/nfs_fs.h:32,
-                    from arch/sparc/kernel/sys_sparc32.c:25:
-   include/linux/compat.h: In function 'put_compat_sigset':
-   include/linux/compat.h:495:58: error: this statement may fall through [-Werror=implicit-fallthrough=]
-     495 |         case 4: v.sig[7] = (set->sig[3] >> 32); v.sig[6] = set->sig[3];
-         |                                                 ~~~~~~~~~^~~~~~~~~~~~~
-   include/linux/compat.h:496:9: note: here
-     496 |         case 3: v.sig[5] = (set->sig[2] >> 32); v.sig[4] = set->sig[2];
-         |         ^~~~
-   include/linux/compat.h:496:58: error: this statement may fall through [-Werror=implicit-fallthrough=]
-     496 |         case 3: v.sig[5] = (set->sig[2] >> 32); v.sig[4] = set->sig[2];
-         |                                                 ~~~~~~~~~^~~~~~~~~~~~~
-   include/linux/compat.h:497:9: note: here
-     497 |         case 2: v.sig[3] = (set->sig[1] >> 32); v.sig[2] = set->sig[1];
-         |         ^~~~
-   include/linux/compat.h:497:58: error: this statement may fall through [-Werror=implicit-fallthrough=]
-     497 |         case 2: v.sig[3] = (set->sig[1] >> 32); v.sig[2] = set->sig[1];
-         |                                                 ~~~~~~~~~^~~~~~~~~~~~~
-   include/linux/compat.h:498:9: note: here
-     498 |         case 1: v.sig[1] = (set->sig[0] >> 32); v.sig[0] = set->sig[0];
-         |         ^~~~
-   cc1: all warnings being treated as errors
-
-
-vim +512 include/linux/sunrpc/xdr.h
-
-   490	
-   491	/**
-   492	 * xdr_stream_decode_uint32_array - Decode variable length array of integers
-   493	 * @xdr: pointer to xdr_stream
-   494	 * @array: location to store the integer array or NULL
-   495	 * @array_size: number of elements to store
-   496	 *
-   497	 * Return values:
-   498	 *   On success, returns number of elements stored in @array
-   499	 *   %-EBADMSG on XDR buffer overflow
-   500	 *   %-EMSGSIZE if the size of the array exceeds @array_size
-   501	 */
-   502	static inline ssize_t
-   503	xdr_stream_decode_uint32_array(struct xdr_stream *xdr,
-   504			__u32 *array, size_t array_size)
-   505	{
-   506		__be32 *p;
-   507		__u32 len;
-   508		ssize_t retval;
-   509	
-   510		if (unlikely(xdr_stream_decode_u32(xdr, &len) < 0))
-   511			return -EBADMSG;
- > 512		if (len > SIZE_MAX / sizeof(*p))
-   513			return -EBADMSG;
-   514		p = xdr_inline_decode(xdr, len * sizeof(*p));
-   515		if (unlikely(!p))
-   516			return -EBADMSG;
-   517		if (array == NULL)
-   518			return len;
-   519		if (len <= array_size) {
-   520			if (len < array_size)
-   521				memset(array+len, 0, (array_size-len)*sizeof(*array));
-   522			array_size = len;
-   523			retval = len;
-   524		} else
-   525			retval = -EMSGSIZE;
-   526		for (; array_size > 0; p++, array++, array_size--)
-   527			*array = be32_to_cpup(p);
-   528		return retval;
-   529	}
-   530	#endif /* __KERNEL__ */
-   531	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
