@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 201C1C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 353E0C41535
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:35:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244071AbiEJNgs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:36:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50500 "EHLO
+        id S244132AbiEJNgw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:36:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243297AbiEJN0l (ORCPT
+        with ESMTP id S243363AbiEJN0q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:26:41 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67C6B232769;
-        Tue, 10 May 2022 06:19:21 -0700 (PDT)
+        Tue, 10 May 2022 09:26:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 922EE236747;
+        Tue, 10 May 2022 06:19:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B3D63CE1E73;
-        Tue, 10 May 2022 13:19:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C558EC385C2;
-        Tue, 10 May 2022 13:19:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4F816B81B32;
+        Tue, 10 May 2022 13:19:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A97ADC385A6;
+        Tue, 10 May 2022 13:19:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188758;
-        bh=QEzRlUyLSoDv4DWhDKqvVYlRLMcPMdP6GZmiGW4LfwI=;
+        s=korg; t=1652188772;
+        bh=UIra3kRtMq6/pFL+lQMyzsAxAiUjlJL3RiOqVZl920o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ayIaR8IZ/xyMkmWz8qocvLhyPaWpptbgxqThCxPOsR01q+Tw+3WQKUXUOF7aGzuKR
-         RrXQ0zs7PAM2Nqt4MUCMqphu/qW6n8DMrKQ7Uav0rsWjvte/xnEtoeyi6bSp0LuwGQ
-         dPdCwN2XsS34rPsByT4Wock5aAe6VYXdfrfyVATk=
+        b=J2dqj57auReR9wRWIQ3jyIJU2ZvppIrw9VDUfLMyQBwl3Kjl1i4z06RB8Yj6fPXyO
+         o2IKRsoqbwKoQ4zDTcyP7UjK+mOVlP94RBeTOui0CZeWaXH+aeokBx9jDtGreYM28k
+         hHizVP3hxy/uS019lOyzaroJRWcHbVuvluDGHx9g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Samuel Holland <samuel@sholland.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 35/88] pinctrl: pistachio: fix use of irq_of_parse_and_map()
-Date:   Tue, 10 May 2022 15:07:20 +0200
-Message-Id: <20220510130734.765287522@linuxfoundation.org>
+Subject: [PATCH 4.19 39/88] bus: sunxi-rsb: Fix the return value of sunxi_rsb_device_create()
+Date:   Tue, 10 May 2022 15:07:24 +0200
+Message-Id: <20220510130734.884539587@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 References: <20220510130733.735278074@linuxfoundation.org>
@@ -50,40 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 0c9843a74a85224a89daa81fa66891dae2f930e1 ]
+[ Upstream commit fff8c10368e64e7f8960f149375c12ca5f3b30af ]
 
-The irq_of_parse_and_map() function returns 0 on failure, and does not
-return an negative value.
+This code is really spurious.
+It always returns an ERR_PTR, even when err is known to be 0 and calls
+put_device() after a successful device_register() call.
 
-Fixes: cefc03e5995e ("pinctrl: Add Pistachio SoC pin control driver")
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Link: https://lore.kernel.org/r/20220424031430.3170759-1-lv.ruyi@zte.com.cn
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+It is likely that the return statement in the normal path is missing.
+Add 'return rdev;' to fix it.
+
+Fixes: d787dcdb9c8f ("bus: sunxi-rsb: Add driver for Allwinner Reduced Serial Bus")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Reviewed-by: Samuel Holland <samuel@sholland.org>
+Tested-by: Samuel Holland <samuel@sholland.org>
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Link: https://lore.kernel.org/r/ef2b9576350bba4c8e05e669e9535e9e2a415763.1650551719.git.christophe.jaillet@wanadoo.fr
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/pinctrl-pistachio.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/bus/sunxi-rsb.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/pinctrl/pinctrl-pistachio.c b/drivers/pinctrl/pinctrl-pistachio.c
-index 0d7d379e9bb8..fb7340ad15b3 100644
---- a/drivers/pinctrl/pinctrl-pistachio.c
-+++ b/drivers/pinctrl/pinctrl-pistachio.c
-@@ -1374,10 +1374,10 @@ static int pistachio_gpio_register(struct pistachio_pinctrl *pctl)
- 		}
+diff --git a/drivers/bus/sunxi-rsb.c b/drivers/bus/sunxi-rsb.c
+index 2ca2cc56bcef..b85d013a9185 100644
+--- a/drivers/bus/sunxi-rsb.c
++++ b/drivers/bus/sunxi-rsb.c
+@@ -224,6 +224,8 @@ static struct sunxi_rsb_device *sunxi_rsb_device_create(struct sunxi_rsb *rsb,
  
- 		irq = irq_of_parse_and_map(child, 0);
--		if (irq < 0) {
--			dev_err(pctl->dev, "No IRQ for bank %u: %d\n", i, irq);
-+		if (!irq) {
-+			dev_err(pctl->dev, "No IRQ for bank %u\n", i);
- 			of_node_put(child);
--			ret = irq;
-+			ret = -EINVAL;
- 			goto err;
- 		}
+ 	dev_dbg(&rdev->dev, "device %s registered\n", dev_name(&rdev->dev));
+ 
++	return rdev;
++
+ err_device_add:
+ 	put_device(&rdev->dev);
  
 -- 
 2.35.1
