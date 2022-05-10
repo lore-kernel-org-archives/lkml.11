@@ -2,48 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90C38C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:55:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 925C3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:55:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238540AbiEJP7k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:59:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58862 "EHLO
+        id S1346834AbiEJP6X (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 11:58:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346999AbiEJPvs (ORCPT
+        with ESMTP id S1346367AbiEJPu7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:51:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 744D32311D5;
-        Tue, 10 May 2022 08:46:33 -0700 (PDT)
+        Tue, 10 May 2022 11:50:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3BB828ABAA;
+        Tue, 10 May 2022 08:45:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1159DB81D0D;
-        Tue, 10 May 2022 15:46:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3EE5C385CC;
-        Tue, 10 May 2022 15:46:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 80706614AF;
+        Tue, 10 May 2022 15:45:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8B63C385CB;
+        Tue, 10 May 2022 15:45:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652197590;
-        bh=xE9gKHyJRXSBGiBmo7TlloNcwGX7Ykc6NA1rvaKNwng=;
+        s=k20201202; t=1652197508;
+        bh=2OX837V48LPWy+fohNmbgAQwoavPUJVKqMpgPMB4Acg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bqE6IYmobqrSKMu6wldrRbcsed1tvb2X/5HcLpYtlou/aOIWvktpUljEkTvq6KgVf
-         gQzPmBxrUK3SVue3M/4+7VPmcDW2PWg7X0OFUNjyEdvZeDt5UT0dnmK+lm+OmbBiRe
-         gYb10Y9bx1DohZEFOf4T2uSrzLREXwE9xXICOvzzRlwHNjqvyqSTXMriiIK3c3r3rD
-         vcFm8BdXfLVZEtk1gTetZ+/98DV094HvRlxRNQyO2ITSkjXA01bkgbgh2nEGrUhQzQ
-         vZm4eucMWGrqDjeQM54NtDzIAncht9mZd7KT1bn0LIJYVY5Si4axt8zW5PE3SuQ+IN
-         m25Lx+WUJ2pjQ==
+        b=ePpNm/iiAm5IsIQnmP9iykSNAPrmCbCsv6rmrFRooSwffD3bIjErVEsfaoh3V9YIT
+         HdX7XNWBxL/cupuzxBcbMJWxs+pvyyfpSl9G31a1ce0500JgUW1+ofS6EQpmGWMAH8
+         71kRmGIl5yQDgVdsyL4kBdkymux1hGgc1SWphZApXxqTMIuzcqgPV7lpsXgWmc8+np
+         edQi7QMVINLZsb8imsPY4Mr/NW7GBwmQ4007z5tgQRudT4c8GwQFtYBI2J9WRIKEK8
+         FAhil2PhKbe+2iR8JdHveZOX3d4XsKXC+Zi8bxlZjf//HI1TyQiXgfkeVOj1p3YmKW
+         xYY4pIDtJpoJQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sven Schnelle <svens@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>, gor@linux.ibm.com,
-        agordeev@linux.ibm.com, linux-s390@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 5/6] s390: disable -Warray-bounds
-Date:   Tue, 10 May 2022 11:46:13 -0400
-Message-Id: <20220510154614.154187-5-sashal@kernel.org>
+Cc:     Willy Tarreau <w@1wt.eu>, Amit Klein <aksecurity@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 18/19] tcp: drop the hash_32() part from the index calculation
+Date:   Tue, 10 May 2022 11:44:28 -0400
+Message-Id: <20220510154429.153677-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220510154614.154187-1-sashal@kernel.org>
-References: <20220510154614.154187-1-sashal@kernel.org>
+In-Reply-To: <20220510154429.153677-1-sashal@kernel.org>
+References: <20220510154429.153677-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,52 +55,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Schnelle <svens@linux.ibm.com>
+From: Willy Tarreau <w@1wt.eu>
 
-[ Upstream commit 8b202ee218395319aec1ef44f72043e1fbaccdd6 ]
+[ Upstream commit e8161345ddbb66e449abde10d2fdce93f867eba9 ]
 
-gcc-12 shows a lot of array bound warnings on s390. This is caused
-by the S390_lowcore macro which uses a hardcoded address of 0.
+In commit 190cc82489f4 ("tcp: change source port randomizarion at
+connect() time"), the table_perturb[] array was introduced and an
+index was taken from the port_offset via hash_32(). But it turns
+out that hash_32() performs a multiplication while the input here
+comes from the output of SipHash in secure_seq, that is well
+distributed enough to avoid the need for yet another hash.
 
-Wrapping that with absolute_pointer() works, but gcc no longer knows
-that a 12 bit displacement is sufficient to access lowcore. So it
-emits instructions like 'lghi %r1,0; l %rx,xxx(%r1)' instead of a
-single load/store instruction. As s390 stores variables often
-read/written in lowcore, this is considered problematic. Therefore
-disable -Warray-bounds on s390 for gcc-12 for the time being, until
-there is a better solution.
-
-Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
-Link: https://lore.kernel.org/r/yt9dzgkelelc.fsf@linux.ibm.com
-Link: https://lore.kernel.org/r/20220422134308.1613610-1-svens@linux.ibm.com
-Link: https://lore.kernel.org/r/20220425121742.3222133-1-svens@linux.ibm.com
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+Suggested-by: Amit Klein <aksecurity@gmail.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/Makefile | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ net/ipv4/inet_hashtables.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/s390/Makefile b/arch/s390/Makefile
-index 9a3a698c8fca..4d0082f3de47 100644
---- a/arch/s390/Makefile
-+++ b/arch/s390/Makefile
-@@ -27,6 +27,16 @@ KBUILD_CFLAGS_DECOMPRESSOR += $(call cc-option,-ffreestanding)
- KBUILD_CFLAGS_DECOMPRESSOR += $(call cc-disable-warning, address-of-packed-member)
- KBUILD_CFLAGS_DECOMPRESSOR += $(if $(CONFIG_DEBUG_INFO),-g)
- KBUILD_CFLAGS_DECOMPRESSOR += $(if $(CONFIG_DEBUG_INFO_DWARF4), $(call cc-option, -gdwarf-4,))
-+
-+ifdef CONFIG_CC_IS_GCC
-+	ifeq ($(call cc-ifversion, -ge, 1200, y), y)
-+		ifeq ($(call cc-ifversion, -lt, 1300, y), y)
-+			KBUILD_CFLAGS += $(call cc-disable-warning, array-bounds)
-+			KBUILD_CFLAGS_DECOMPRESSOR += $(call cc-disable-warning, array-bounds)
-+		endif
-+	endif
-+endif
-+
- UTS_MACHINE	:= s390x
- STACK_SIZE	:= 16384
- CHECKFLAGS	+= -D__s390__ -D__s390x__
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index f76e4ac1ba3a..ee9c587031b4 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -778,7 +778,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+ 
+ 	net_get_random_once(table_perturb,
+ 			    INET_TABLE_PERTURB_SIZE * sizeof(*table_perturb));
+-	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
++	index = port_offset & (INET_TABLE_PERTURB_SIZE - 1);
+ 
+ 	offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32);
+ 	offset %= remaining;
 -- 
 2.35.1
 
