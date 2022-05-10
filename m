@@ -2,134 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F938C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 428FDC43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343518AbiEJN66 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:58:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48816 "EHLO
+        id S245755AbiEJN6r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:58:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245174AbiEJNig (ORCPT
+        with ESMTP id S245213AbiEJNij (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:38:36 -0400
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ED7E266CA4;
-        Tue, 10 May 2022 06:28:01 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 4626C5C010F;
-        Tue, 10 May 2022 09:27:59 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Tue, 10 May 2022 09:27:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; t=1652189279; x=1652275679; bh=V6n23Qh6v/
-        2jyzSVv1tn7FsIF7VHsBZB/caUq+pIMMg=; b=nYnGnjTuTItTYE14cgml9pWfyF
-        BSZTajAxncG0KbjQcTvr2rQTOdPLen7jZ40XG6+e2af0TMsDqzG+5xQ7GRTh2uzj
-        JFMSUEieXdFynepr4KUdUn6p2KRfMaVUap7a/MNzycoqYyZs9zHgdngdPJl8yE6x
-        RhyzsnCxy3ys3ANvQ3Q733+V1zKgVsei7xcM+XRzYvfB/XiShYFunKlXAo1tPneO
-        ofy0OX4kkB9w0s7wGYXAM0vTC+ot5kwd/lF+dRmRp2ZA11RArdO+i1w6CAXVjjNM
-        mbDi9PHQq0FCaRzGiLIlL+rNHCXhYkrFJnQIX/6HWTTGOj8QJNf5VgVpErpA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1652189279; x=
-        1652275679; bh=V6n23Qh6v/2jyzSVv1tn7FsIF7VHsBZB/caUq+pIMMg=; b=u
-        /51tmdFk5+4+4ukJvcpU7nAQP1AEn1m7Gg0Mws2lO3DsABt8RaoXLjSrkdTHrEXb
-        dut+J996Mn7gOqGUm9utPZ3LdVGhn0ZZs8PUnShhf77l+ETsqZBxjpAIZNlhC6tE
-        m6GxBiyGcK0RE09Ld/8rxtXwPlk3sYDWfYk1Au//ylFMTs1lid7aGz/3qK1g79MN
-        8e881/VH04RJcRnc5ucLPh1qXzOsf/9GuJvwYXxa0fHWV4U3/DK7JSRwBic4gLlJ
-        24MTTNGxzw1s/PwOueY3LUpB9REi1pPPt1HSoLxmOyfOJsFNUzypMjfkwQ004xPD
-        VvhQDPeX974SGUjJ686XQ==
-X-ME-Sender: <xms:Xmh6Yqr_BMNg0-l-chG3sXXrMIfgqy_4iXzBtz9KGJivQSPYUCijKw>
-    <xme:Xmh6YoqzgesNwJN_GFqrQbywJhrno4rIMjwvdeS2mO7UIUpEA8bxps5pxnDS9cCTa
-    -TVE2Fi_cdpjkiBMp4>
-X-ME-Received: <xmr:Xmh6YvPFH_S64W__4GZUMoDXFt2ERekiBzVG29-KRF2zbMYv7yRwDOJNzh4dETm9F7FL0GzPLqeLgN3dJRldF-eLvglGxElPKNykQss>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrgedugdeitdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvvefukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
-    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
-    htvghrnhepteefffefgfektdefgfeludfgtdejfeejvddttdekteeiffejvdfgheehfffh
-    vedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmh
-    grgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:Xmh6Yp4GR_jxquWbiZnqiYycMDnCL7XR4R8tHrC-jyTvQqI-A_LGrw>
-    <xmx:Xmh6Yp6JG-C-QUHGCywYJ3iZuAWEqsi2Sr9pLNIxFNzoUFZ_7VuaNA>
-    <xmx:Xmh6Ypgo7IscSJYi-xK6fi138IjgYH2CGQ6TJc8vIfQCE_Ld9tMmmw>
-    <xmx:X2h6YuEKw_S7tOfqzAZawgqvAkrGR5R4pGegipRmF-jwbzZToaSXZA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 10 May 2022 09:27:58 -0400 (EDT)
-Date:   Tue, 10 May 2022 15:27:56 +0200
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Stefan Wahren <stefan.wahren@i2se.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        bcm-kernel-feedback-list@broadcom.com, linux-clk@vger.kernel.org,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] clk: bcm2835: fix bcm2835_clock_choose_div
-Message-ID: <20220510132756.qmyjca53xu44iwn7@houat>
-References: <20220428183010.1635248-1-stefan.wahren@i2se.com>
- <20220503145804.b2xz4etzc6kpr3fk@houat>
- <ee39ddd1-bfce-012d-5e04-448d779ed995@i2se.com>
+        Tue, 10 May 2022 09:38:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2842254FB3;
+        Tue, 10 May 2022 06:28:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A351560B12;
+        Tue, 10 May 2022 13:28:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95F28C385A6;
+        Tue, 10 May 2022 13:28:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652189332;
+        bh=FQdv7igAHs4SnnQcV16g0/g66iR1BYYDbYDRj5V0wak=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uRjYLRCtHn341ef+h2LiYP+ONwKOdu0bYDMjrqwk6ezK/8iPnDSoJiYTsvBilTscA
+         FYdgdu2VvPt6cwFag474s6ZdwbfnHfQ940IslLqN8fcv4V2x7FENz/VagJBd1TH3Cc
+         B78NLnwmFTsT/mDINtAJimdqjVOohc6prQxSrFnA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH 5.15 017/135] timekeeping: Mark NMI safe time accessors as notrace
+Date:   Tue, 10 May 2022 15:06:39 +0200
+Message-Id: <20220510130740.893192806@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
+References: <20220510130740.392653815@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="iiuqzltjsvoixdta"
-Content-Disposition: inline
-In-Reply-To: <ee39ddd1-bfce-012d-5e04-448d779ed995@i2se.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Kurt Kanzenbach <kurt@linutronix.de>
 
---iiuqzltjsvoixdta
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+commit 2c33d775ef4c25c0e1e1cc0fd5496d02f76bfa20 upstream.
 
-On Sat, May 07, 2022 at 11:26:28AM +0200, Stefan Wahren wrote:
-> Am 03.05.22 um 16:58 schrieb Maxime Ripard:
-> > Hi,
-> >=20
-> > On Thu, Apr 28, 2022 at 08:30:10PM +0200, Stefan Wahren wrote:
-> > > The commit 09e3b18ca5de ("clk: bcm2835: Remove unused variable")
-> > > accidentially breaks the behavior of bcm2835_clock_choose_div() and
-> > > booting of Raspberry Pi. The removed do_div macro call had side effec=
-ts,
-> > > so we need to restore it.
-> > >=20
-> > > Fixes: 09e3b18ca5de ("clk: bcm2835: Remove unused variable")
-> > > Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-> > I only found this patch after debugging why the HDMI driver was
-> > returning -EINVAL at probe on -rc5.
-> >=20
-> > Acked-by: Maxime Ripard <maxime@cerno.tech>
-> > Tested-by: Maxime Ripard <maxime@cerno.tech>
->=20
-> Thanks,
->=20
-> does this go via clk-fixes?
+Mark the CLOCK_MONOTONIC fast time accessors as notrace. These functions are
+used in tracing to retrieve timestamps, so they should not recurse.
 
-Yep, it should.
+Fixes: 4498e7467e9e ("time: Parametrize all tk_fast_mono users")
+Fixes: f09cb9a1808e ("time: Introduce tk_fast_raw")
+Reported-by: Steven Rostedt <rostedt@goodmis.org>
+Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220426175338.3807ca4f@gandalf.local.home/
+Link: https://lore.kernel.org/r/20220428062432.61063-1-kurt@linutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ kernel/time/timekeeping.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Stephen, could we merge this?
+--- a/kernel/time/timekeeping.c
++++ b/kernel/time/timekeeping.c
+@@ -482,7 +482,7 @@ static __always_inline u64 __ktime_get_f
+  * of the following timestamps. Callers need to be aware of that and
+  * deal with it.
+  */
+-u64 ktime_get_mono_fast_ns(void)
++u64 notrace ktime_get_mono_fast_ns(void)
+ {
+ 	return __ktime_get_fast_ns(&tk_fast_mono);
+ }
+@@ -494,7 +494,7 @@ EXPORT_SYMBOL_GPL(ktime_get_mono_fast_ns
+  * Contrary to ktime_get_mono_fast_ns() this is always correct because the
+  * conversion factor is not affected by NTP/PTP correction.
+  */
+-u64 ktime_get_raw_fast_ns(void)
++u64 notrace ktime_get_raw_fast_ns(void)
+ {
+ 	return __ktime_get_fast_ns(&tk_fast_raw);
+ }
 
-Maxime
 
---iiuqzltjsvoixdta
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYnpoRgAKCRDj7w1vZxhR
-xXXWAP4unHPnJJ+pfUOyHlW0LlgxC5dGW9PKPQF5+/AGot2oNAEAgBckc8lfPpYH
-RQ67UzgFYAKV6AlepFjtnRlbxpQRJg8=
-=yS+i
------END PGP SIGNATURE-----
-
---iiuqzltjsvoixdta--
