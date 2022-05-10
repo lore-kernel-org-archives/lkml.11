@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 018CBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:26:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0BA9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:26:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245326AbiEJOai (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:30:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59808 "EHLO
+        id S1344063AbiEJOao (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:30:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245232AbiEJOBi (ORCPT
+        with ESMTP id S244806AbiEJOBW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:01:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA6032DE5AF;
-        Tue, 10 May 2022 06:40:09 -0700 (PDT)
+        Tue, 10 May 2022 10:01:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C3342DE5A3;
+        Tue, 10 May 2022 06:40:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B67C615E9;
-        Tue, 10 May 2022 13:40:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B9C2C385A6;
-        Tue, 10 May 2022 13:40:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D76C7B81D24;
+        Tue, 10 May 2022 13:40:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49AE1C36AEA;
+        Tue, 10 May 2022 13:40:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652190008;
-        bh=ua4e5e6fbblInnUUSmuoBmW26eIac4y0SgyHapvsN7g=;
+        s=korg; t=1652190005;
+        bh=XgOyfwY09cKOKNRpN4Ehrh0m6E4OuJybLh6K6uDvmp0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wi191bMv3OWoEeqJfM74LPlM0rdv7udUJo3yHVMW6lxhYFJlBATVsFJx6KBhM6/k9
-         GD+c7yqDZZ6TgezYMqdUMJgKidKrcbqhvW+G+nYrC2Gc7ixZUDUbhvk2Hp3XKL2B0M
-         pxgxtMrqsNrRAbE/NUCmi95gploNlkLAsIC9QcLI=
+        b=HFcQMLo5mC31tmslDvswKo2hAHdR887qesWIz0MTGwYlJot5LvZlv0zcwkPGYnfhC
+         kNENpWbCLDuClVxWVKrXGcrmz3cpxcVYmFPFirQfHTFpT+ApxITVLCmeO4xjHYTQei
+         vTpSGW62TdJbLYCyy+b5IifMFubEqQGgSPbpF/QI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Somnath Kotur <somnath.kotur@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.17 100/140] bnxt_en: Fix possible bnxt_open() failure caused by wrong RFS flag
-Date:   Tue, 10 May 2022 15:08:10 +0200
-Message-Id: <20220510130744.465061244@linuxfoundation.org>
+        stable@vger.kernel.org, Hector Martin <marcan@marcan.st>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH 5.17 099/140] dt-bindings: pci: apple,pcie: Drop max-link-speed from example
+Date:   Tue, 10 May 2022 15:08:09 +0200
+Message-Id: <20220510130744.437692269@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -49,76 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Somnath Kotur <somnath.kotur@broadcom.com>
+From: Hector Martin <marcan@marcan.st>
 
-commit 13ba794397e45e52893cfc21d7a69cb5f341b407 upstream.
+commit 5dc4630426511f641b7ac44fc550b8e21eafb237 upstream.
 
-bnxt_open() can fail in this code path, especially on a VF when
-it fails to reserve default rings:
+We no longer use these since 111659c2a570 (and they never worked
+anyway); drop them from the example to avoid confusion.
 
-bnxt_open()
-  __bnxt_open_nic()
-    bnxt_clear_int_mode()
-    bnxt_init_dflt_ring_mode()
-
-RX rings would be set to 0 when we hit this error path.
-
-It is possible for a subsequent bnxt_open() call to potentially succeed
-with a code path like this:
-
-bnxt_open()
-  bnxt_hwrm_if_change()
-    bnxt_fw_init_one()
-      bnxt_fw_init_one_p3()
-        bnxt_set_dflt_rfs()
-          bnxt_rfs_capable()
-            bnxt_hwrm_reserve_rings()
-
-On older chips, RFS is capable if we can reserve the number of vnics that
-is equal to RX rings + 1.  But since RX rings is still set to 0 in this
-code path, we may mistakenly think that RFS is supported for 0 RX rings.
-
-Later, when the default RX rings are reserved and we try to enable
-RFS, it would fail and cause bnxt_open() to fail unnecessarily.
-
-We fix this in 2 places.  bnxt_rfs_capable() will always return false if
-RX rings is not yet set.  bnxt_init_dflt_ring_mode() will call
-bnxt_set_dflt_rfs() which will always clear the RFS flags if RFS is not
-supported.
-
-Fixes: 20d7d1c5c9b1 ("bnxt_en: reliably allocate IRQ table on reset to avoid crash")
-Signed-off-by: Somnath Kotur <somnath.kotur@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 111659c2a570 ("arm64: dts: apple: t8103: Remove PCIe max-link-speed properties")
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Reviewed-by: Alyssa Rosenzweig <alyssa@rosenzweig.io>
+Signed-off-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/20220502091308.28233-1-marcan@marcan.st
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c |    9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ Documentation/devicetree/bindings/pci/apple,pcie.yaml | 3 ---
+ 1 file changed, 3 deletions(-)
 
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -10938,7 +10938,7 @@ static bool bnxt_rfs_capable(struct bnxt
+diff --git a/Documentation/devicetree/bindings/pci/apple,pcie.yaml b/Documentation/devicetree/bindings/pci/apple,pcie.yaml
+index 7f01e15fc81c..daf602ac0d0f 100644
+--- a/Documentation/devicetree/bindings/pci/apple,pcie.yaml
++++ b/Documentation/devicetree/bindings/pci/apple,pcie.yaml
+@@ -142,7 +142,6 @@ examples:
+           device_type = "pci";
+           reg = <0x0 0x0 0x0 0x0 0x0>;
+           reset-gpios = <&pinctrl_ap 152 0>;
+-          max-link-speed = <2>;
  
- 	if (bp->flags & BNXT_FLAG_CHIP_P5)
- 		return bnxt_rfs_supported(bp);
--	if (!(bp->flags & BNXT_FLAG_MSIX_CAP) || !bnxt_can_reserve_rings(bp))
-+	if (!(bp->flags & BNXT_FLAG_MSIX_CAP) || !bnxt_can_reserve_rings(bp) || !bp->rx_nr_rings)
- 		return false;
+           #address-cells = <3>;
+           #size-cells = <2>;
+@@ -153,7 +152,6 @@ examples:
+           device_type = "pci";
+           reg = <0x800 0x0 0x0 0x0 0x0>;
+           reset-gpios = <&pinctrl_ap 153 0>;
+-          max-link-speed = <2>;
  
- 	vnics = 1 + bp->rx_nr_rings;
-@@ -13194,10 +13194,9 @@ static int bnxt_init_dflt_ring_mode(stru
- 		goto init_dflt_ring_err;
+           #address-cells = <3>;
+           #size-cells = <2>;
+@@ -164,7 +162,6 @@ examples:
+           device_type = "pci";
+           reg = <0x1000 0x0 0x0 0x0 0x0>;
+           reset-gpios = <&pinctrl_ap 33 0>;
+-          max-link-speed = <1>;
  
- 	bp->tx_nr_rings_per_tc = bp->tx_nr_rings;
--	if (bnxt_rfs_supported(bp) && bnxt_rfs_capable(bp)) {
--		bp->flags |= BNXT_FLAG_RFS;
--		bp->dev->features |= NETIF_F_NTUPLE;
--	}
-+
-+	bnxt_set_dflt_rfs(bp);
-+
- init_dflt_ring_err:
- 	bnxt_ulp_irq_restart(bp, rc);
- 	return rc;
+           #address-cells = <3>;
+           #size-cells = <2>;
+-- 
+2.36.1
+
 
 
