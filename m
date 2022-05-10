@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE370C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:14:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58B89C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:14:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241153AbiEJNSa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:18:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36170 "EHLO
+        id S238007AbiEJNSi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:18:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242391AbiEJNQV (ORCPT
+        with ESMTP id S242386AbiEJNQV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:16:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0585B3BA50;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04CD539B84;
         Tue, 10 May 2022 06:12:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E86B3B81D7C;
-        Tue, 10 May 2022 13:12:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47E57C385A6;
-        Tue, 10 May 2022 13:12:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C260BB81D7A;
+        Tue, 10 May 2022 13:12:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34DFCC385A6;
+        Tue, 10 May 2022 13:12:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188328;
-        bh=DTYGiQibFjQbW48302hwHbwMliOqVVdWPpqKDMKBL5E=;
+        s=korg; t=1652188334;
+        bh=oNEVOACShz5Vg5qpBKriSDBye5th5s4kFjJ7D1n5L+Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JDQgQz/A675x9x60u8PmYXEeqK5qucvCjy5Mry+sCcTxWMTA9i9oUmzd+zlMHdPPS
-         mrKH/wsl6Hd1j8cs849fQwAryGSri+TKUXGUk5yZZQ/tW/JHKQn/VLQedML34PsUrA
-         WO6CdZzlmtqT2hYnARnoRMlOy2psvkjGp6oMEjMk=
+        b=UdYOzoL58QTszpDg19u3761+IpaN+pGds6zawdY6LYpnT4mvJ2T+b8WzCNYetcEZB
+         bvbtyxVW/KyOaULXaPR9kl+Wdle+e3cDV5Tc2b6nzTqzapgyn72qMMJRv+XNf78qsS
+         umlySUIqylyhCYkHxX+4H0Qmdcgb+Ah+T2aD7oBg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 4.9 38/66] tty: n_gsm: fix insufficient txframe size
-Date:   Tue, 10 May 2022 15:07:28 +0200
-Message-Id: <20220510130730.886473117@linuxfoundation.org>
+Subject: [PATCH 4.9 40/66] tty: n_gsm: fix wrong command retry handling
+Date:   Tue, 10 May 2022 15:07:30 +0200
+Message-Id: <20220510130730.943978056@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.762341544@linuxfoundation.org>
 References: <20220510130729.762341544@linuxfoundation.org>
@@ -49,50 +49,64 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-commit 535bf600de75a859698892ee873521a48d289ec1 upstream.
+commit d0bcdffcad5a22f202e3bf37190c0dd8c080ea92 upstream.
 
 n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
 See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
 The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.7.2 states that the maximum frame size
-(N1) refers to the length of the information field (i.e. user payload).
-However, 'txframe' stores the whole frame including frame header, checksum
-and start/end flags. We also need to consider the byte stuffing overhead.
-Define constant for the protocol overhead and adjust the 'txframe' size
-calculation accordingly to reserve enough space for a complete mux frame
-including byte stuffing for advanced option mode. Note that no byte
-stuffing is applied to the start and end flag.
-Also use MAX_MTU instead of MAX_MRU as this buffer is used for data
-transmission.
+the newer 27.010 here. Chapter 5.7.3 states that the valid range for the
+maximum number of retransmissions (N2) is from 0 to 255 (both including).
+gsm_config() fails to limit this range correctly. Furthermore,
+gsm_control_retransmit() handles this number incorrectly by performing
+N2 - 1 retransmission attempts. Setting N2 to zero results in more than 255
+retransmission attempts.
+Fix the range check in gsm_config() and the value handling in
+gsm_control_send() and gsm_control_retransmit() to comply with 3GPP 27.010.
 
 Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 Cc: stable@vger.kernel.org
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220414094225.4527-8-daniel.starke@siemens.com
+Link: https://lore.kernel.org/r/20220414094225.4527-11-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_gsm.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/tty/n_gsm.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -84,6 +84,8 @@ module_param(debug, int, 0600);
-  */
- #define MAX_MRU 1500
- #define MAX_MTU 1500
-+/* SOF, ADDR, CTRL, LEN1, LEN2, ..., FCS, EOF */
-+#define PROT_OVERHEAD 7
- #define	GSM_NET_TX_TIMEOUT (HZ*10)
- 
- /**
-@@ -2199,7 +2201,7 @@ static struct gsm_mux *gsm_alloc_mux(voi
- 		kfree(gsm);
- 		return NULL;
+@@ -1345,7 +1345,6 @@ static void gsm_control_retransmit(unsig
+ 	spin_lock_irqsave(&gsm->control_lock, flags);
+ 	ctrl = gsm->pending_cmd;
+ 	if (ctrl) {
+-		gsm->cretries--;
+ 		if (gsm->cretries == 0) {
+ 			gsm->pending_cmd = NULL;
+ 			ctrl->error = -ETIMEDOUT;
+@@ -1354,6 +1353,7 @@ static void gsm_control_retransmit(unsig
+ 			wake_up(&gsm->event);
+ 			return;
+ 		}
++		gsm->cretries--;
+ 		gsm_control_transmit(gsm, ctrl);
+ 		mod_timer(&gsm->t2_timer, jiffies + gsm->t2 * HZ / 100);
  	}
--	gsm->txframe = kmalloc(2 * MAX_MRU + 2, GFP_KERNEL);
-+	gsm->txframe = kmalloc(2 * (MAX_MTU + PROT_OVERHEAD - 1), GFP_KERNEL);
- 	if (gsm->txframe == NULL) {
- 		kfree(gsm->buf);
- 		kfree(gsm);
+@@ -1394,7 +1394,7 @@ retry:
+ 
+ 	/* If DLCI0 is in ADM mode skip retries, it won't respond */
+ 	if (gsm->dlci[0]->mode == DLCI_MODE_ADM)
+-		gsm->cretries = 1;
++		gsm->cretries = 0;
+ 	else
+ 		gsm->cretries = gsm->n2;
+ 
+@@ -2519,7 +2519,7 @@ static int gsmld_config(struct tty_struc
+ 	/* Check the MRU/MTU range looks sane */
+ 	if (c->mru > MAX_MRU || c->mtu > MAX_MTU || c->mru < 8 || c->mtu < 8)
+ 		return -EINVAL;
+-	if (c->n2 < 3)
++	if (c->n2 > 255)
+ 		return -EINVAL;
+ 	if (c->encapsulation > 1)	/* Basic, advanced, no I */
+ 		return -EINVAL;
 
 
