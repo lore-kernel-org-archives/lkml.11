@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E02DC4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA146C388F3
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:35:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244283AbiEJNhU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:37:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56730 "EHLO
+        id S244353AbiEJNha (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:37:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243467AbiEJN0x (ORCPT
+        with ESMTP id S243274AbiEJN0k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:26:53 -0400
+        Tue, 10 May 2022 09:26:40 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD8DD2375DE;
-        Tue, 10 May 2022 06:19:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A7E8231CB1;
+        Tue, 10 May 2022 06:19:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63EF0B81D9A;
-        Tue, 10 May 2022 13:19:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE5ABC385C2;
-        Tue, 10 May 2022 13:19:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF8B4B81D7A;
+        Tue, 10 May 2022 13:19:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 083F7C385A6;
+        Tue, 10 May 2022 13:19:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188783;
-        bh=kP8vkEbi7l6zQ+HStJBxrehrXF5ycY+sgq3il3p6mlc=;
+        s=korg; t=1652188755;
+        bh=VkjXY59wzMY0vN+1WTwZLVdRbwyG7gsNrtDViAswDNs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jWS1XHVJd8mnRji2sn0URXMDkLqsWoBNDS3jMOqJDSEbaJBIkZD63NuKdtJPDlyIH
-         +BW/a/tecjABOWmaEIouvO51YMyAXfuPlIESgEwWdL8NBoIhFgRCAXRRibfgmgRSws
-         hsc6c6ZxDOcYXlMlU9Ro7pjuyHXkOxtgf4KodzfM=
+        b=MJRxvnDyFNMraFGBgR2++JkhTbezLWjge7vRJyrLe3YdGLP8sawvwEeoF6RSM9GaQ
+         Ak6csjPOv4IzHhFvNQnVVEQK+TadUaN1qjKtKoNqUjv6P/MzidNYuh/XcqHBLodGHU
+         GXIGz4Xc/gsXmijLiLTSNALGCsfeajUqjr59Moi8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org,
+        Max Krummenacher <max.krummenacher@toradex.com>,
+        Denys Drozdov <denys.drozdov@toradex.com>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 43/88] ASoC: wm8731: Disable the regulator when probing fails
-Date:   Tue, 10 May 2022 15:07:28 +0200
-Message-Id: <20220510130734.999412295@linuxfoundation.org>
+Subject: [PATCH 4.19 34/88] ARM: dts: imx6ull-colibri: fix vqmmc regulator
+Date:   Tue, 10 May 2022 15:07:19 +0200
+Message-Id: <20220510130734.736251531@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 References: <20220510130733.735278074@linuxfoundation.org>
@@ -49,88 +52,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Max Krummenacher <max.krummenacher@toradex.com>
 
-[ Upstream commit 92ccbf17eeacf510cf1eed9c252d9332ca24f02d ]
+[ Upstream commit 45974e4276a8d6653394f66666fc57d8ffa6de9a ]
 
-When the driver fails during probing, the driver should disable the
-regulator, not just handle it in wm8731_hw_init().
+The correct spelling for the property is gpios. Otherwise, the regulator
+will neither reserve nor control any GPIOs. Thus, any SD/MMC card which
+can use UHS-I modes will fail.
 
-The following log reveals it:
-
-[   17.812483] WARNING: CPU: 1 PID: 364 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
-[   17.815958] RIP: 0010:_regulator_put+0x3ec/0x4e0
-[   17.824467] Call Trace:
-[   17.824774]  <TASK>
-[   17.825040]  regulator_bulk_free+0x82/0xe0
-[   17.825514]  devres_release_group+0x319/0x3d0
-[   17.825882]  i2c_device_probe+0x766/0x940
-[   17.829198]  i2c_register_driver+0xb5/0x130
-
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Link: https://lore.kernel.org/r/20220405121038.4094051-1-zheyuma97@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: c2e4987e0e02 ("ARM: dts: imx6ull: add Toradex Colibri iMX6ULL support")
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+Signed-off-by: Denys Drozdov <denys.drozdov@toradex.com>
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wm8731.c | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+ arch/arm/boot/dts/imx6ull-colibri.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/wm8731.c b/sound/soc/codecs/wm8731.c
-index 7c8fad865d6b..3c5c02b034a9 100644
---- a/sound/soc/codecs/wm8731.c
-+++ b/sound/soc/codecs/wm8731.c
-@@ -604,7 +604,7 @@ static int wm8731_hw_init(struct device *dev, struct wm8731_priv *wm8731)
- 	ret = wm8731_reset(wm8731->regmap);
- 	if (ret < 0) {
- 		dev_err(dev, "Failed to issue reset: %d\n", ret);
--		goto err_regulator_enable;
-+		goto err;
- 	}
+diff --git a/arch/arm/boot/dts/imx6ull-colibri.dtsi b/arch/arm/boot/dts/imx6ull-colibri.dtsi
+index 6c63a7384611..4219239f0b58 100644
+--- a/arch/arm/boot/dts/imx6ull-colibri.dtsi
++++ b/arch/arm/boot/dts/imx6ull-colibri.dtsi
+@@ -37,7 +37,7 @@ reg_module_3v3_avdd: regulator-module-3v3-avdd {
  
- 	/* Clear POWEROFF, keep everything else disabled */
-@@ -621,10 +621,7 @@ static int wm8731_hw_init(struct device *dev, struct wm8731_priv *wm8731)
- 
- 	regcache_mark_dirty(wm8731->regmap);
- 
--err_regulator_enable:
--	/* Regulators will be enabled by bias management */
--	regulator_bulk_disable(ARRAY_SIZE(wm8731->supplies), wm8731->supplies);
--
-+err:
- 	return ret;
- }
- 
-@@ -768,21 +765,27 @@ static int wm8731_i2c_probe(struct i2c_client *i2c,
- 		ret = PTR_ERR(wm8731->regmap);
- 		dev_err(&i2c->dev, "Failed to allocate register map: %d\n",
- 			ret);
--		return ret;
-+		goto err_regulator_enable;
- 	}
- 
- 	ret = wm8731_hw_init(&i2c->dev, wm8731);
- 	if (ret != 0)
--		return ret;
-+		goto err_regulator_enable;
- 
- 	ret = devm_snd_soc_register_component(&i2c->dev,
- 			&soc_component_dev_wm8731, &wm8731_dai, 1);
- 	if (ret != 0) {
- 		dev_err(&i2c->dev, "Failed to register CODEC: %d\n", ret);
--		return ret;
-+		goto err_regulator_enable;
- 	}
- 
- 	return 0;
-+
-+err_regulator_enable:
-+	/* Regulators will be enabled by bias management */
-+	regulator_bulk_disable(ARRAY_SIZE(wm8731->supplies), wm8731->supplies);
-+
-+	return ret;
- }
- 
- static int wm8731_i2c_remove(struct i2c_client *client)
+ 	reg_sd1_vmmc: regulator-sd1-vmmc {
+ 		compatible = "regulator-gpio";
+-		gpio = <&gpio5 9 GPIO_ACTIVE_HIGH>;
++		gpios = <&gpio5 9 GPIO_ACTIVE_HIGH>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&pinctrl_snvs_reg_sd>;
+ 		regulator-always-on;
 -- 
 2.35.1
 
