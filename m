@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A310CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56E54C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:56:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343573AbiEJN7K (ORCPT
+        id S1343593AbiEJN7M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:59:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48762 "EHLO
+        Tue, 10 May 2022 09:59:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245180AbiEJNih (ORCPT
+        with ESMTP id S245178AbiEJNig (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:38:37 -0400
+        Tue, 10 May 2022 09:38:36 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C718C2670B5;
-        Tue, 10 May 2022 06:28:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E63267094;
+        Tue, 10 May 2022 06:28:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 647FE60B12;
-        Tue, 10 May 2022 13:28:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71D15C385C2;
-        Tue, 10 May 2022 13:28:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 71B5960C1C;
+        Tue, 10 May 2022 13:28:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A12DC385A6;
+        Tue, 10 May 2022 13:28:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189291;
-        bh=YFMiPN3l9Oyq2ed9fTRIzlo7Xd7Djs77hjfpETWPvtk=;
+        s=korg; t=1652189288;
+        bh=tUBIoF9N6X0NiJbBCmDtbiWMfzpX2+Dhrt4Z/jqBemM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WsVQLtbbI9eDYeeldXJkXb4cpq/Kyq2gREuhsGoTN7+brvyZGiW1dr3PHCEjDxdNR
-         TGRsJ8TuAWCd2dmU6dWWI9Nlz7hI3lzWXRgd3V2uJO4So7KWSBI7yvgm5pTwj9D7VZ
-         9yVq88XEIwvcEDeJWwl7TQiu8Ywj+o8orQG89+w8=
+        b=gCHjPpUYLnpE2rzgLPPf3X5rSiH9UBS42a0euvAt62lz5sNdls7GhyrzYF4YA9kps
+         eZjMX8oaRWjK4XZbA/FBCyOfjiCHd3vpE6hvlihetpu8KLKSc9lSdzoJhdWEsWb1nG
+         cAnko05AcPyJsgq7gCN9RSpIDKlMMT8siFiTKg5w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Haberland <sth@linux.ibm.com>,
-        Jan Hoeppner <hoeppner@linux.ibm.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.10 23/70] s390/dasd: prevent double format of tracks for ESE devices
-Date:   Tue, 10 May 2022 15:07:42 +0200
-Message-Id: <20220510130733.546385272@linuxfoundation.org>
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.10 32/70] nfc: nfcmrvl: main: reorder destructive operations in nfcmrvl_nci_unregister_dev to avoid bugs
+Date:   Tue, 10 May 2022 15:07:51 +0200
+Message-Id: <20220510130733.808567174@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
 References: <20220510130732.861729621@linuxfoundation.org>
@@ -50,123 +49,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Haberland <sth@linux.ibm.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-commit 71f3871657370dbbaf942a1c758f64e49a36c70f upstream.
+commit d270453a0d9ec10bb8a802a142fb1b3601a83098 upstream.
 
-For ESE devices we get an error for write operations on an unformatted
-track. Afterwards the track will be formatted and the IO operation
-restarted.
-When using alias devices a track might be accessed by multiple requests
-simultaneously and there is a race window that a track gets formatted
-twice resulting in data loss.
+There are destructive operations such as nfcmrvl_fw_dnld_abort and
+gpio_free in nfcmrvl_nci_unregister_dev. The resources such as firmware,
+gpio and so on could be destructed while the upper layer functions such as
+nfcmrvl_fw_dnld_start and nfcmrvl_nci_recv_frame is executing, which leads
+to double-free, use-after-free and null-ptr-deref bugs.
 
-Prevent this by remembering the amount of formatted tracks when starting
-a request and comparing this number before actually formatting a track
-on the fly. If the number has changed there is a chance that the current
-track was finally formatted in between. As a result do not format the
-track and restart the current IO to check.
+There are three situations that could lead to double-free bugs.
 
-The number of formatted tracks does not match the overall number of
-formatted tracks on the device and it might wrap around but this is no
-problem. It is only needed to recognize that a track has been formatted at
-all in between.
+The first situation is shown below:
 
-Fixes: 5e2b17e712cf ("s390/dasd: Add dynamic formatting support for ESE volumes")
-Cc: stable@vger.kernel.org # 5.3+
-Signed-off-by: Stefan Haberland <sth@linux.ibm.com>
-Reviewed-by: Jan Hoeppner <hoeppner@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220505141733.1989450-3-sth@linux.ibm.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+   (Thread 1)                 |      (Thread 2)
+nfcmrvl_fw_dnld_start         |
+ ...                          |  nfcmrvl_nci_unregister_dev
+ release_firmware()           |   nfcmrvl_fw_dnld_abort
+  kfree(fw) //(1)             |    fw_dnld_over
+                              |     release_firmware
+  ...                         |      kfree(fw) //(2)
+                              |     ...
+
+The second situation is shown below:
+
+   (Thread 1)                 |      (Thread 2)
+nfcmrvl_fw_dnld_start         |
+ ...                          |
+ mod_timer                    |
+ (wait a time)                |
+ fw_dnld_timeout              |  nfcmrvl_nci_unregister_dev
+   fw_dnld_over               |   nfcmrvl_fw_dnld_abort
+    release_firmware          |    fw_dnld_over
+     kfree(fw) //(1)          |     release_firmware
+     ...                      |      kfree(fw) //(2)
+
+The third situation is shown below:
+
+       (Thread 1)               |       (Thread 2)
+nfcmrvl_nci_recv_frame          |
+ if(..->fw_download_in_progress)|
+  nfcmrvl_fw_dnld_recv_frame    |
+   queue_work                   |
+                                |
+fw_dnld_rx_work                 | nfcmrvl_nci_unregister_dev
+ fw_dnld_over                   |  nfcmrvl_fw_dnld_abort
+  release_firmware              |   fw_dnld_over
+   kfree(fw) //(1)              |    release_firmware
+                                |     kfree(fw) //(2)
+
+The firmware struct is deallocated in position (1) and deallocated
+in position (2) again.
+
+The crash trace triggered by POC is like below:
+
+BUG: KASAN: double-free or invalid-free in fw_dnld_over
+Call Trace:
+  kfree
+  fw_dnld_over
+  nfcmrvl_nci_unregister_dev
+  nci_uart_tty_close
+  tty_ldisc_kill
+  tty_ldisc_hangup
+  __tty_hangup.part.0
+  tty_release
+  ...
+
+What's more, there are also use-after-free and null-ptr-deref bugs
+in nfcmrvl_fw_dnld_start. If we deallocate firmware struct, gpio or
+set null to the members of priv->fw_dnld in nfcmrvl_nci_unregister_dev,
+then, we dereference firmware, gpio or the members of priv->fw_dnld in
+nfcmrvl_fw_dnld_start, the UAF or NPD bugs will happen.
+
+This patch reorders destructive operations after nci_unregister_device
+in order to synchronize between cleanup routine and firmware download
+routine.
+
+The nci_unregister_device is well synchronized. If the device is
+detaching, the firmware download routine will goto error. If firmware
+download routine is executing, nci_unregister_device will wait until
+firmware download routine is finished.
+
+Fixes: 3194c6870158 ("NFC: nfcmrvl: add firmware download support")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/s390/block/dasd.c      |    7 +++++++
- drivers/s390/block/dasd_eckd.c |   19 +++++++++++++++++--
- drivers/s390/block/dasd_int.h  |    2 ++
- 3 files changed, 26 insertions(+), 2 deletions(-)
+ drivers/nfc/nfcmrvl/main.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/s390/block/dasd.c
-+++ b/drivers/s390/block/dasd.c
-@@ -1462,6 +1462,13 @@ int dasd_start_IO(struct dasd_ccw_req *c
- 		if (!cqr->lpm)
- 			cqr->lpm = dasd_path_get_opm(device);
- 	}
-+	/*
-+	 * remember the amount of formatted tracks to prevent double format on
-+	 * ESE devices
-+	 */
-+	if (cqr->block)
-+		cqr->trkcount = atomic_read(&cqr->block->trkcount);
-+
- 	if (cqr->cpmode == 1) {
- 		rc = ccw_device_tm_start(device->cdev, cqr->cpaddr,
- 					 (long) cqr, cqr->lpm);
---- a/drivers/s390/block/dasd_eckd.c
-+++ b/drivers/s390/block/dasd_eckd.c
-@@ -3026,13 +3026,24 @@ static int dasd_eckd_format_device(struc
- }
- 
- static bool test_and_set_format_track(struct dasd_format_entry *to_format,
--				      struct dasd_block *block)
-+				      struct dasd_ccw_req *cqr)
+--- a/drivers/nfc/nfcmrvl/main.c
++++ b/drivers/nfc/nfcmrvl/main.c
+@@ -194,6 +194,7 @@ void nfcmrvl_nci_unregister_dev(struct n
  {
-+	struct dasd_block *block = cqr->block;
- 	struct dasd_format_entry *format;
- 	unsigned long flags;
- 	bool rc = false;
+ 	struct nci_dev *ndev = priv->ndev;
  
- 	spin_lock_irqsave(&block->format_lock, flags);
-+	if (cqr->trkcount != atomic_read(&block->trkcount)) {
-+		/*
-+		 * The number of formatted tracks has changed after request
-+		 * start and we can not tell if the current track was involved.
-+		 * To avoid data corruption treat it as if the current track is
-+		 * involved
-+		 */
-+		rc = true;
-+		goto out;
-+	}
- 	list_for_each_entry(format, &block->format_list, list) {
- 		if (format->track == to_format->track) {
- 			rc = true;
-@@ -3052,6 +3063,7 @@ static void clear_format_track(struct da
- 	unsigned long flags;
++	nci_unregister_device(ndev);
+ 	if (priv->ndev->nfc_dev->fw_download_in_progress)
+ 		nfcmrvl_fw_dnld_abort(priv);
  
- 	spin_lock_irqsave(&block->format_lock, flags);
-+	atomic_inc(&block->trkcount);
- 	list_del_init(&format->list);
- 	spin_unlock_irqrestore(&block->format_lock, flags);
+@@ -202,7 +203,6 @@ void nfcmrvl_nci_unregister_dev(struct n
+ 	if (gpio_is_valid(priv->config.reset_n_io))
+ 		gpio_free(priv->config.reset_n_io);
+ 
+-	nci_unregister_device(ndev);
+ 	nci_free_device(ndev);
+ 	kfree(priv);
  }
-@@ -3113,8 +3125,11 @@ dasd_eckd_ese_format(struct dasd_device
- 	}
- 	format->track = curr_trk;
- 	/* test if track is already in formatting by another thread */
--	if (test_and_set_format_track(format, block))
-+	if (test_and_set_format_track(format, cqr)) {
-+		/* this is no real error so do not count down retries */
-+		cqr->retries++;
- 		return ERR_PTR(-EEXIST);
-+	}
- 
- 	fdata.start_unit = curr_trk;
- 	fdata.stop_unit = curr_trk;
---- a/drivers/s390/block/dasd_int.h
-+++ b/drivers/s390/block/dasd_int.h
-@@ -188,6 +188,7 @@ struct dasd_ccw_req {
- 	void (*callback)(struct dasd_ccw_req *, void *data);
- 	void *callback_data;
- 	unsigned int proc_bytes;	/* bytes for partial completion */
-+	unsigned int trkcount;		/* count formatted tracks */
- };
- 
- /*
-@@ -575,6 +576,7 @@ struct dasd_block {
- 
- 	struct list_head format_list;
- 	spinlock_t format_lock;
-+	atomic_t trkcount;
- };
- 
- struct dasd_attention_data {
 
 
