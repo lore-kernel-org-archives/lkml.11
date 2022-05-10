@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25FDFC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88B49C388F3
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:28:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243969AbiEJNcZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:32:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60814 "EHLO
+        id S243490AbiEJNbE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:31:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242870AbiEJNXA (ORCPT
+        with ESMTP id S243270AbiEJNVo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:23:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 460C61BE94A;
-        Tue, 10 May 2022 06:17:11 -0700 (PDT)
+        Tue, 10 May 2022 09:21:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86C8B2C3354;
+        Tue, 10 May 2022 06:15:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 080B3B81DA6;
-        Tue, 10 May 2022 13:16:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6608DC385C6;
-        Tue, 10 May 2022 13:16:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C4CCB81DA5;
+        Tue, 10 May 2022 13:15:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01974C385CE;
+        Tue, 10 May 2022 13:15:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188617;
-        bh=tUBIoF9N6X0NiJbBCmDtbiWMfzpX2+Dhrt4Z/jqBemM=;
+        s=korg; t=1652188522;
+        bh=nbW0eEsimMVjlHNbmfDsIhmqa2VhhW8vzws7CUyZMzo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WrpXPFPWEh9VD5O9KfajGgWQuydzLHIb99ggk0QB+iOTU99Mp1ylPFbxPKF8aNKgb
-         A3jFfunRhmdhp4K8aUbabXJ/U/yRCce95I18GqF4EHrAdwasH34XLXprPlMXGxcJUB
-         c56oUjoLm1o8iDCgbwUQEYRqMc89PCPWoLXF6PFM=
+        b=g+fwc+glpETUpm8GfsVDak4lWMdKQB24A0FIvN+Nj+Er5pR9CZB4QUSB1JVDWV8fj
+         SfQzPYaszqRYylwHE41pto19gDrRYfgdgDFu6G1aTsifKPN5Vq21eHKMLiIFy2ZL09
+         WFelJzMTXoJzbMepQZouetuDxvkwGMwDAoNs1/Lk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.14 65/78] nfc: nfcmrvl: main: reorder destructive operations in nfcmrvl_nci_unregister_dev to avoid bugs
-Date:   Tue, 10 May 2022 15:07:51 +0200
-Message-Id: <20220510130734.455069801@linuxfoundation.org>
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        =?UTF-8?q?Matias=20Bj=C3=B8rling?= <mb@lightnvm.io>,
+        =?UTF-8?q?Javier=20Gonz=C3=A1lez?= <javier@javigon.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 4.14 06/78] lightnvm: disable the subsystem
+Date:   Tue, 10 May 2022 15:06:52 +0200
+Message-Id: <20220510130732.716003625@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
 References: <20220510130732.522479698@linuxfoundation.org>
@@ -48,113 +50,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+In commit 9ea9b9c48387 ("remove the lightnvm subsystem") the lightnvm
+subsystem was removed as there is no hardware in the wild for it, and
+the code is known to have problems.  This should also be disabled for
+older LTS kernels as well to prevent anyone from accidentally using it.
 
-commit d270453a0d9ec10bb8a802a142fb1b3601a83098 upstream.
-
-There are destructive operations such as nfcmrvl_fw_dnld_abort and
-gpio_free in nfcmrvl_nci_unregister_dev. The resources such as firmware,
-gpio and so on could be destructed while the upper layer functions such as
-nfcmrvl_fw_dnld_start and nfcmrvl_nci_recv_frame is executing, which leads
-to double-free, use-after-free and null-ptr-deref bugs.
-
-There are three situations that could lead to double-free bugs.
-
-The first situation is shown below:
-
-   (Thread 1)                 |      (Thread 2)
-nfcmrvl_fw_dnld_start         |
- ...                          |  nfcmrvl_nci_unregister_dev
- release_firmware()           |   nfcmrvl_fw_dnld_abort
-  kfree(fw) //(1)             |    fw_dnld_over
-                              |     release_firmware
-  ...                         |      kfree(fw) //(2)
-                              |     ...
-
-The second situation is shown below:
-
-   (Thread 1)                 |      (Thread 2)
-nfcmrvl_fw_dnld_start         |
- ...                          |
- mod_timer                    |
- (wait a time)                |
- fw_dnld_timeout              |  nfcmrvl_nci_unregister_dev
-   fw_dnld_over               |   nfcmrvl_fw_dnld_abort
-    release_firmware          |    fw_dnld_over
-     kfree(fw) //(1)          |     release_firmware
-     ...                      |      kfree(fw) //(2)
-
-The third situation is shown below:
-
-       (Thread 1)               |       (Thread 2)
-nfcmrvl_nci_recv_frame          |
- if(..->fw_download_in_progress)|
-  nfcmrvl_fw_dnld_recv_frame    |
-   queue_work                   |
-                                |
-fw_dnld_rx_work                 | nfcmrvl_nci_unregister_dev
- fw_dnld_over                   |  nfcmrvl_fw_dnld_abort
-  release_firmware              |   fw_dnld_over
-   kfree(fw) //(1)              |    release_firmware
-                                |     kfree(fw) //(2)
-
-The firmware struct is deallocated in position (1) and deallocated
-in position (2) again.
-
-The crash trace triggered by POC is like below:
-
-BUG: KASAN: double-free or invalid-free in fw_dnld_over
-Call Trace:
-  kfree
-  fw_dnld_over
-  nfcmrvl_nci_unregister_dev
-  nci_uart_tty_close
-  tty_ldisc_kill
-  tty_ldisc_hangup
-  __tty_hangup.part.0
-  tty_release
-  ...
-
-What's more, there are also use-after-free and null-ptr-deref bugs
-in nfcmrvl_fw_dnld_start. If we deallocate firmware struct, gpio or
-set null to the members of priv->fw_dnld in nfcmrvl_nci_unregister_dev,
-then, we dereference firmware, gpio or the members of priv->fw_dnld in
-nfcmrvl_fw_dnld_start, the UAF or NPD bugs will happen.
-
-This patch reorders destructive operations after nci_unregister_device
-in order to synchronize between cleanup routine and firmware download
-routine.
-
-The nci_unregister_device is well synchronized. If the device is
-detaching, the firmware download routine will goto error. If firmware
-download routine is executing, nci_unregister_device will wait until
-firmware download routine is finished.
-
-Fixes: 3194c6870158 ("NFC: nfcmrvl: add firmware download support")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Matias Bjørling <mb@lightnvm.io>
+Cc: Javier González <javier@javigon.com>
+Cc: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nfc/nfcmrvl/main.c |    2 +-
+ drivers/lightnvm/Kconfig |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/nfc/nfcmrvl/main.c
-+++ b/drivers/nfc/nfcmrvl/main.c
-@@ -194,6 +194,7 @@ void nfcmrvl_nci_unregister_dev(struct n
- {
- 	struct nci_dev *ndev = priv->ndev;
+--- a/drivers/lightnvm/Kconfig
++++ b/drivers/lightnvm/Kconfig
+@@ -4,7 +4,7 @@
  
-+	nci_unregister_device(ndev);
- 	if (priv->ndev->nfc_dev->fw_download_in_progress)
- 		nfcmrvl_fw_dnld_abort(priv);
+ menuconfig NVM
+ 	bool "Open-Channel SSD target support"
+-	depends on BLOCK && HAS_DMA
++	depends on BLOCK && HAS_DMA && BROKEN
+ 	help
+ 	  Say Y here to get to enable Open-channel SSDs.
  
-@@ -202,7 +203,6 @@ void nfcmrvl_nci_unregister_dev(struct n
- 	if (gpio_is_valid(priv->config.reset_n_io))
- 		gpio_free(priv->config.reset_n_io);
- 
--	nci_unregister_device(ndev);
- 	nci_free_device(ndev);
- 	kfree(priv);
- }
 
 
