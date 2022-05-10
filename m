@@ -2,109 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA3B9C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 03:38:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7310DC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 03:38:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235775AbiEJDlT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 23:41:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44830 "EHLO
+        id S235647AbiEJDmD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 23:42:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235699AbiEJDlG (ORCPT
+        with ESMTP id S235507AbiEJDkh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 23:41:06 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D533656C;
-        Mon,  9 May 2022 20:37:10 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id gj17-20020a17090b109100b001d8b390f77bso975663pjb.1;
-        Mon, 09 May 2022 20:37:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:references:cc:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=Tuw5rwdDw674mRKOWTVNmxFb45NMy2jQBbhpZfnBSUw=;
-        b=YiFnFgxquAvcN9oAz4bKdkvIgiIB+a2cUP7hrsWWe9xQIDFp1zXiH07J5MVLpOKV/F
-         4/25W0/6ytNqxy3QYpPHcfhrYm8fbk4jtIa38qc/7YG8XgaO4w9kFZwmTxTO9O1aNc4v
-         EjGHqCZP6qg/s3Q+L/Yg4wze1XawIv1A28OydYVAtQr4qhhFmYw36rs67e3HT6AezUaN
-         uXXBqjOWSVnAUwgw6WjU0gW10lKfbhbF4aKFF5V4l5B3bvRlljJy1/KRTxsxlZ12Jw3x
-         C1qi6IhGu1Xg/QbTVzm+dPbsqsEow9KliIFgFZbD8z4XZKUQRxNzL5phc0oFNwUvTM49
-         WVVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:references:cc:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
-        bh=Tuw5rwdDw674mRKOWTVNmxFb45NMy2jQBbhpZfnBSUw=;
-        b=FGHc/vxmnBRetQTaaDV+EgAqfYzLs2v5THw/iGbJbSTE60GnMOR9GIgnZT7u1MDGxU
-         jOjqcxqb8nifPLuPFqO2Gcd0bRlct29mqkaGRlyf5F9jkiVmz7p8IUvbl5MkunHWGgYv
-         kBqfYOOVrNKd5zrmPb2hSjetgN6AFR6hp+DU9n4dJ5NzjOeoLSgtEhyCIBdOPOU8PjE/
-         h1uPDG+f62hmf1K76vlj2o2JSVE/e6xKzdkhFlsTW3mBVBGwzh2HaNUJU+L38oQzd5S3
-         Kck00fNpuBeHJ6J3M1JRTDFt0nxVATS+Ce6wF952QBUAb8POEDekHroM98ymIg3PeEeV
-         1B/w==
-X-Gm-Message-State: AOAM533/Kfy4zAUVPuN2CseE4jtoDvKz420LEQZV9JQODFSWv0ZA5mni
-        3x+S0dSuDH+UubhkUhIk7ZniX40gwjQ=
-X-Google-Smtp-Source: ABdhPJwK/iXQY2YYJRwx8AcP5nD0enihRlu5tvzOsqIZ7H1RA2DlLUk7LB1M8Zr7G0Yu4mvm8wVUFw==
-X-Received: by 2002:a17:90a:1f4f:b0:1d8:23d9:de1e with SMTP id y15-20020a17090a1f4f00b001d823d9de1emr21105172pjy.42.1652153829547;
-        Mon, 09 May 2022 20:37:09 -0700 (PDT)
-Received: from [10.1.1.24] (222-155-0-244-adsl.sparkbb.co.nz. [222.155.0.244])
-        by smtp.gmail.com with ESMTPSA id c5-20020a170903234500b0015e8d4eb1f6sm708896plh.64.2022.05.09.20.37.05
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 09 May 2022 20:37:08 -0700 (PDT)
-Subject: Re: linux-next: manual merge of the m68knommu tree with the m68k tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Greg Ungerer <gerg@linux-m68k.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-References: <20220510094442.26826532@canb.auug.org.au>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-From:   Michael Schmitz <schmitzmic@gmail.com>
-Message-ID: <7bcb1248-7329-9aee-5d81-7e846cd1e461@gmail.com>
-Date:   Tue, 10 May 2022 15:37:03 +1200
-User-Agent: Mozilla/5.0 (X11; Linux ppc; rv:45.0) Gecko/20100101
- Icedove/45.4.0
-MIME-Version: 1.0
-In-Reply-To: <20220510094442.26826532@canb.auug.org.au>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
+        Mon, 9 May 2022 23:40:37 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 903C7208F6F;
+        Mon,  9 May 2022 20:35:10 -0700 (PDT)
+Received: from linux.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Axythn3XliaKoPAA--.50059S3;
+        Tue, 10 May 2022 11:35:04 +0800 (CST)
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+To:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Xuefeng Li <lixuefeng@loongson.cn>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH bpf-next v2 1/2] net: sysctl: Use SYSCTL_TWO instead of &two
+Date:   Tue, 10 May 2022 11:35:02 +0800
+Message-Id: <1652153703-22729-2-git-send-email-yangtiezhu@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+In-Reply-To: <1652153703-22729-1-git-send-email-yangtiezhu@loongson.cn>
+References: <1652153703-22729-1-git-send-email-yangtiezhu@loongson.cn>
+X-CM-TRANSID: AQAAf9Axythn3XliaKoPAA--.50059S3
+X-Coremail-Antispam: 1UD129KBjvJXoW7Zr1xtw4UXr13CrWkKw1rWFg_yoW8JFWxpr
+        n3G3yUKF98GryxAa95CFZ8Krn8Jr4DuF4UWF9FkayFka4qgr95JF1kWryjqrWUAFWjgFyx
+        XrW0yr98W3yIy3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUPE14x267AKxVW5JVWrJwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jr4l82xGYIkIc2
+        x26xkF7I0E14v26r1I6r4UM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
+        Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j6F4UJw
+        A2z4x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I8E87Iv6xkF7I0E14v26F4UJVW0
+        owAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7
+        IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4U
+        M4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628vn2
+        kIc2xKxwCY02Avz4vE14v_Gr4l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_
+        Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17
+        CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0
+        I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I
+        8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73
+        UjIFyTuYvjfUn3kuDUUUU
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Stephen,
+It is better to use SYSCTL_TWO instead of &two, and then we can
+remove the variable "two" in net/core/sysctl_net_core.c.
 
-apologies on my part - I had thought that I had copied in Greg on my 
-patch series. And I evidently missed that his ELF patch would have 
-clashed with mine.
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+---
+ net/core/sysctl_net_core.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-Geert and Greg coordinate well as a rule, and both patches had been seen 
-on the linux-m68k mailing list (just too far apart to jog my memory).
+diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
+index 8295e58..cf00dd7 100644
+--- a/net/core/sysctl_net_core.c
++++ b/net/core/sysctl_net_core.c
+@@ -25,7 +25,6 @@
+ 
+ #include "dev.h"
+ 
+-static int two = 2;
+ static int three = 3;
+ static int int_3600 = 3600;
+ static int min_sndbuf = SOCK_MIN_SNDBUF;
+@@ -390,7 +389,7 @@ static struct ctl_table net_core_table[] = {
+ 		.extra2		= SYSCTL_ONE,
+ # else
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &two,
++		.extra2		= SYSCTL_TWO,
+ # endif
+ 	},
+ # ifdef CONFIG_HAVE_EBPF_JIT
+@@ -401,7 +400,7 @@ static struct ctl_table net_core_table[] = {
+ 		.mode		= 0600,
+ 		.proc_handler	= proc_dointvec_minmax_bpf_restricted,
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &two,
++		.extra2		= SYSCTL_TWO,
+ 	},
+ 	{
+ 		.procname	= "bpf_jit_kallsyms",
+@@ -546,7 +545,7 @@ static struct ctl_table net_core_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec_minmax,
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &two,
++		.extra2		= SYSCTL_TWO,
+ 	},
+ 	{
+ 		.procname	= "devconf_inherit_init_net",
+-- 
+2.1.0
 
-Won't happen again this decade (I hope).
-
-Cheers,
-
-	Michael
-
-
-Am 10.05.2022 um 11:44 schrieb Stephen Rothwell:
-> Hi all,
->
-> Today's linux-next merge of the m68knommu tree got a conflict in:
->
->   arch/m68k/kernel/ptrace.c
->
-> between commit:
->
->   c862fe70b023 ("m68k: Wire up syscall_trace_enter/leave for m68k")
->
-> from the m68k tree and commit:
->
->   0d91043d8bdf ("m68knommu: implement minimal regset support")
->
-> from the m68knommu tree.
->
-> I fixed it up (see below) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
->
