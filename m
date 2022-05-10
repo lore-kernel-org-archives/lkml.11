@@ -2,147 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F82DC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7326C46467
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:04:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344318AbiEJOHu (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:07:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53220 "EHLO
+        id S244601AbiEJOIB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:08:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244601AbiEJNqw (ORCPT
+        with ESMTP id S244649AbiEJNqy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:46:52 -0400
-Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 691A613B8CD;
-        Tue, 10 May 2022 06:31:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.de; i=@amazon.de; q=dns/txt; s=amazon201209;
-  t=1652189503; x=1683725503;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=TwU6CtF1V9/2Y57AY/B4As4rfmtIlL8LhHI2uYJkLIs=;
-  b=OYoLAdBzkTYHiCkvWlZUsU0y2qV5R8iDsLqtqbbOtgBqTj5UuS9BaX8D
-   891shD4v9kcElO6bJ2olRWHQYHG5DcHt83FJCFqwwy/wVLXLTgaNtzsSG
-   cC1RmTK6zm8Vr0KkCMA5144OxhTFKrvOfawxGXegiNwCPWxihqPco/+oS
-   I=;
-X-IronPort-AV: E=Sophos;i="5.91,214,1647302400"; 
-   d="scan'208";a="193949634"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1e-b69ea591.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-33001.sea14.amazon.com with ESMTP; 10 May 2022 13:31:18 +0000
-Received: from EX13D08EUB004.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1e-b69ea591.us-east-1.amazon.com (Postfix) with ESMTPS id EE987C040C;
-        Tue, 10 May 2022 13:31:08 +0000 (UTC)
-Received: from EX13MTAUWC001.ant.amazon.com (10.43.162.135) by
- EX13D08EUB004.ant.amazon.com (10.43.166.158) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Tue, 10 May 2022 13:31:06 +0000
-Received: from dev-dsk-mheyne-1b-c1524648.eu-west-1.amazon.com (10.15.60.66)
- by mail-relay.amazon.com (10.43.162.232) with Microsoft SMTP Server id
- 15.0.1497.32 via Frontend Transport; Tue, 10 May 2022 13:31:05 +0000
-Received: by dev-dsk-mheyne-1b-c1524648.eu-west-1.amazon.com (Postfix, from userid 5466572)
-        id 2BD5441131; Tue, 10 May 2022 13:31:05 +0000 (UTC)
-From:   Maximilian Heyne <mheyne@amazon.de>
-CC:     Masami Hiramatsu <mhiramat@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juergen Gross <jgross@suse.com>, <x86@kernel.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Andrew Cooper <andrew.cooper3@citrix.com>,
-        Borislav Petkov <bp@alien8.de>,
-        <xen-devel@lists.xenproject.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Maximilian Heyne <mheyne@amazon.de>, <stable@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        =?UTF-8?q?Radim=20Kr=C4=8Dm=C3=A1=C5=99?= <rkrcmar@redhat.com>,
-        Sean Christopherson <sean.j.christopherson@intel.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>
-Subject: [PATCH 1/4] x86/asm: Allow to pass macros to __ASM_FORM()
-Date:   Tue, 10 May 2022 13:30:30 +0000
-Message-ID: <20220510133036.46767-2-mheyne@amazon.de>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220510133036.46767-1-mheyne@amazon.de>
-References: <20220510133036.46767-1-mheyne@amazon.de>
+        Tue, 10 May 2022 09:46:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1267A16A260;
+        Tue, 10 May 2022 06:31:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CF547B81D24;
+        Tue, 10 May 2022 13:31:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38BD1C385A6;
+        Tue, 10 May 2022 13:31:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652189504;
+        bh=HMkPzu0U3NUOKTa8txjuV7KsMyHeKV537byhEaLBu1A=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=o0jB5Bg1syNHT0gj9kJi1cjc7p82gC5cMckRpGCz2MO6sNEq10XOR+/EjxkYpBeEC
+         fLiXk3PouM5ajKP6bxb5IJTVAII1vqf8697n4EorUah2UInvzHjbtbGV7sjOsPpuMo
+         1Ju9PnCj86EU0ZjJcXUWn5+KkrfQVB0U5Dbrf3Wo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
+        Anand Jain <anand.jain@oracle.com>,
+        Filipe Manana <fdmanana@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.15 071/135] btrfs: do not BUG_ON() on failure to update inode when setting xattr
+Date:   Tue, 10 May 2022 15:07:33 +0200
+Message-Id: <20220510130742.448498897@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
+References: <20220510130740.392653815@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masami Hiramatsu <mhiramat@kernel.org>
+From: Filipe Manana <fdmanana@suse.com>
 
-commit f7919fd943abf0c77aed4441ea9897a323d132f5 upstream
+commit 193b4e83986d7ee6caa8ceefb5ee9f58240fbee0 upstream.
 
-Use __stringify() at __ASM_FORM() so that user can pass
-code including macros to __ASM_FORM().
+We are doing a BUG_ON() if we fail to update an inode after setting (or
+clearing) a xattr, but there's really no reason to not instead simply
+abort the transaction and return the error to the caller. This should be
+a rare error because we have previously reserved enough metadata space to
+update the inode and the delayed inode should have already been setup, so
+an -ENOSPC or -ENOMEM, which are the possible errors, are very unlikely to
+happen.
 
-Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: Juergen Gross <jgross@suse.com>
-Cc: x86@kernel.org
-Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Stefano Stabellini <sstabellini@kernel.org>
-Cc: Andrew Cooper <andrew.cooper3@citrix.com>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: xen-devel@lists.xenproject.org
-Cc: Randy Dunlap <rdunlap@infradead.org>
-Cc: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lkml.kernel.org/r/156777562873.25081.2288083344657460959.stgit@devnote2
-Signed-off-by: Maximilian Heyne <mheyne@amazon.de>
-Cc: stable@vger.kernel.org # 5.4.x
+So replace the BUG_ON()s with a transaction abort.
+
+CC: stable@vger.kernel.org # 4.9+
+Reviewed-by: Qu Wenruo <wqu@suse.com>
+Reviewed-by: Anand Jain <anand.jain@oracle.com>
+Signed-off-by: Filipe Manana <fdmanana@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/asm.h | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ fs/btrfs/xattr.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/include/asm/asm.h b/arch/x86/include/asm/asm.h
-index 3ff577c0b102..1b563f9167ea 100644
---- a/arch/x86/include/asm/asm.h
-+++ b/arch/x86/include/asm/asm.h
-@@ -7,9 +7,11 @@
- # define __ASM_FORM_RAW(x)     x
- # define __ASM_FORM_COMMA(x) x,
- #else
--# define __ASM_FORM(x)	" " #x " "
--# define __ASM_FORM_RAW(x)     #x
--# define __ASM_FORM_COMMA(x) " " #x ","
-+#include <linux/stringify.h>
-+
-+# define __ASM_FORM(x)	" " __stringify(x) " "
-+# define __ASM_FORM_RAW(x)     __stringify(x)
-+# define __ASM_FORM_COMMA(x) " " __stringify(x) ","
- #endif
+--- a/fs/btrfs/xattr.c
++++ b/fs/btrfs/xattr.c
+@@ -264,7 +264,8 @@ int btrfs_setxattr_trans(struct inode *i
+ 	inode_inc_iversion(inode);
+ 	inode->i_ctime = current_time(inode);
+ 	ret = btrfs_update_inode(trans, root, BTRFS_I(inode));
+-	BUG_ON(ret);
++	if (ret)
++		btrfs_abort_transaction(trans, ret);
+ out:
+ 	if (start_trans)
+ 		btrfs_end_transaction(trans);
+@@ -418,7 +419,8 @@ static int btrfs_xattr_handler_set_prop(
+ 		inode_inc_iversion(inode);
+ 		inode->i_ctime = current_time(inode);
+ 		ret = btrfs_update_inode(trans, root, BTRFS_I(inode));
+-		BUG_ON(ret);
++		if (ret)
++			btrfs_abort_transaction(trans, ret);
+ 	}
  
- #ifndef __x86_64__
--- 
-2.32.0
-
-
-
-
-Amazon Development Center Germany GmbH
-Krausenstr. 38
-10117 Berlin
-Geschaeftsfuehrung: Christian Schlaeger, Jonathan Weiss
-Eingetragen am Amtsgericht Charlottenburg unter HRB 149173 B
-Sitz: Berlin
-Ust-ID: DE 289 237 879
-
+ 	btrfs_end_transaction(trans);
 
 
