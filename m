@@ -2,76 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22DAFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:29:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED85AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:30:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345803AbiEJPde (ORCPT
+        id S1345840AbiEJPe3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:33:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48856 "EHLO
+        Tue, 10 May 2022 11:34:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345692AbiEJPdV (ORCPT
+        with ESMTP id S1345782AbiEJPdz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:33:21 -0400
-Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C32334662;
-        Tue, 10 May 2022 08:26:37 -0700 (PDT)
+        Tue, 10 May 2022 11:33:55 -0400
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D46722B13;
+        Tue, 10 May 2022 08:28:25 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id m6so18883208iob.4;
+        Tue, 10 May 2022 08:28:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1652196397;
-  x=1683732397;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=yUD3uwtewYu9aG509jJFvj6tNpbiQKxIslmOylkUtdk=;
-  b=k+juFkF1CHzm5dkkd8MSQMyMKFQWyGZoeW6s9zbpzw8A1R80zWQ9GGDU
-   eY0AlEv8itrWT3KNMTlfAKBnwO5a87BlRRZVRYMG9x2xuJsVosn2GB9EP
-   1b122qrfO4QZjx3WDAJkC8ej5a8nDx7Hqio6aZ3ljCdktUUidFaNF2rKF
-   TfADQlpUmf2KLLYuman+MlY3cRtONDOzDRWpF73AoPeVBNCdfYDXDoxeS
-   OmR4Hq0ESgfi6fOu21IPuoUH+efJhGIRRxXesDm5D37TRB1L++nHqrr3J
-   N5vMJrqQgSN1U9JT80urq2hPpGNQcwK5ZumudZonNOBHyXancaOHsl90H
-   A==;
-Date:   Tue, 10 May 2022 17:26:35 +0200
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-CC:     kernel test robot <lkp@intel.com>,
-        "vigneshr@ti.com" <vigneshr@ti.com>,
-        "richard@nod.at" <richard@nod.at>,
-        "joern@lazybastard.org" <joern@lazybastard.org>,
-        "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>,
-        kernel <kernel@axis.com>,
-        "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-        "frowand.list@gmail.com" <frowand.list@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 4/4] mtd: phram: Allow cached mappings
-Message-ID: <20220510152635.GA17605@axis.com>
-References: <20220412135302.1682890-5-vincent.whitchurch@axis.com>
- <202204131446.omJ5mC54-lkp@intel.com>
- <20220414090402.GA11067@axis.com>
- <20220425102816.54619c66@xps13>
- <20220425103015.1cc05f77@xps13>
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=/xV9jXS6t5BwMHL74xYjDUj8Vksp4bAXLh2xtDAu2Rw=;
+        b=osczqvjzu38Guh1XIF7NuRucvRqzIl+tDeQ8r2dLZnddyJnVYfwSlvnSBVB24QVcT8
+         PbRoTPBWvS0DmpY/jeaYe2MXmgqW3hUJ8ikyFyEazUpY77lWjcvsdvA9UdwDivoWRt3g
+         /h6VUpeP4V3qARNkA3genR1tcJCAsgWprsYBzfbi4JV0zFv0j2NcwqyOplzuh1V/aTm+
+         WTD+Xfx7sS1e9Rj7o3RAe5+PLbL7TYiMsH5tzsZ2JI/WtVdkRuhVKVgFQkS5QSDavMkX
+         1dM/3/sOIXcA2VmqYU5oDhnHai1nhJYJRgeqv/07tq33nmmAAYDVip0Jk2euzqZA+mqG
+         WGHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=/xV9jXS6t5BwMHL74xYjDUj8Vksp4bAXLh2xtDAu2Rw=;
+        b=vNM6Rkbx+INWT9LLZNaDaKvN4YNXETN308nzi7EiQaGxxqhjWWV/9wSTuwpN990Nmf
+         rOZt3PoOt6m64BkHjIPTbQhjOsDpDWTXbhgQWvK+y1WrOZRcidjcc8vILGcWaD3ySFRT
+         Q7DSIRXohlQ8Si1NdT0Y1q7fb9jCfP8DrLGPEoXMLv+FqgKx6epgqEFG/dhpqZP7T4uP
+         pKNUzjC4EjiSiZ3iaymlpYH48jd2fySvoD46lQrGAbZCNzoZs1QVv6GJJ5SWrNGcmzot
+         GUeiRoiF5LZykGfyziUs4ZSDuIVB9JfTP0MZr4HpR/y8Rb/2ZlREz8IDZ7kH6tt3qfyi
+         41Ag==
+X-Gm-Message-State: AOAM531yHHCvAZYFHYGa0QN3U0PSEHEpkt96vsAjLSTbbbryUTQ2EH3P
+        X2eM9jB4/lrA5us54w9CxkM=
+X-Google-Smtp-Source: ABdhPJy7ETJlguxoXdaaR5xy3MaZe01pmd1wdVqOE4gv384fyZUNMunjaypR5dyZYsPYVq5ho95AWw==
+X-Received: by 2002:a02:c887:0:b0:32a:fbd6:2e4c with SMTP id m7-20020a02c887000000b0032afbd62e4cmr10062757jao.244.1652196505047;
+        Tue, 10 May 2022 08:28:25 -0700 (PDT)
+Received: from localhost (ec2-13-59-0-164.us-east-2.compute.amazonaws.com. [13.59.0.164])
+        by smtp.gmail.com with UTF8SMTPSA id h14-20020a056e021d8e00b002cde6e3530dsm3809897ila.87.2022.05.10.08.28.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 May 2022 08:28:24 -0700 (PDT)
+From:   Schspa Shi <schspa@gmail.com>
+To:     viresh.kumar@linaro.org
+Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        rafael@kernel.org, schspa@gmail.com
+Subject: [PATCH v2] cpufreq: fix race on cpufreq online
+Date:   Tue, 10 May 2022 23:28:11 +0800
+Message-Id: <20220510152811.88071-1-schspa@gmail.com>
+X-Mailer: git-send-email 2.24.3 (Apple Git-128)
+In-Reply-To: <20220510035259.5ep52sgahd2a6rie@vireshk-i7>
+References: <20220510035259.5ep52sgahd2a6rie@vireshk-i7>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220425103015.1cc05f77@xps13>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 10:30:15AM +0200, Miquel Raynal wrote:
-> miquel.raynal@bootlin.com wrote on Mon, 25 Apr 2022 10:28:16 +0200:
-> > Looks good to me but I don't want to be the one "carrying" new compile
-> > errors so I'll drop the series for now, until you get this patch
-> > applied. Please then just resend the series with this thread mentioned
-> > and I'll take it back.
-> 
-> BTW, I'm only talking about this improvement, patches 1-3 will remain.
+When cpufreq online failed, policy->cpus are not empty while
+cpufreq sysfs file available, we may access some data freed.
 
-Thank you.  I've now refactored this patch and send it out separately as
-a v4, primarily to avoid the SH build problems (which look like they're
-going to take a while[0] to get fixed) but also to remove some code
-duplication.
+Take policy->clk as an example:
 
-[0] https://lore.kernel.org/lkml/CAMuHMdW-8HaQip+DT5W2Owq8M8kbYwHsf8_Zd-5rRfSjSjK0=g@mail.gmail.com/
+static int cpufreq_online(unsigned int cpu)
+{
+  ...
+  // policy->cpus != 0 at this time
+  down_write(&policy->rwsem);
+  ret = cpufreq_add_dev_interface(policy);
+  up_write(&policy->rwsem);
+
+  down_write(&policy->rwsem);
+  ...
+  /* cpufreq nitialization fails in some cases */
+  if (cpufreq_driver->get && has_target()) {
+    policy->cur = cpufreq_driver->get(policy->cpu);
+    if (!policy->cur) {
+      ret = -EIO;
+      pr_err("%s: ->get() failed\n", __func__);
+      goto out_destroy_policy;
+    }
+  }
+  ...
+  up_write(&policy->rwsem);
+  ...
+
+  return 0;
+
+out_destroy_policy:
+	for_each_cpu(j, policy->real_cpus)
+		remove_cpu_dev_symlink(policy, get_cpu_device(j));
+    up_write(&policy->rwsem);
+...
+out_exit_policy:
+  if (cpufreq_driver->exit)
+    cpufreq_driver->exit(policy);
+      clk_put(policy->clk);
+      // policy->clk is a wild pointer
+...
+                                    ^
+                                    |
+                            Another process access
+                            __cpufreq_get
+                              cpufreq_verify_current_freq
+                                cpufreq_generic_get
+                                  // acces wild pointer of policy->clk;
+                                    |
+                                    |
+out_offline_policy:                 |
+  cpufreq_policy_free(policy);      |
+    // deleted here, and will wait for no body reference
+    cpufreq_policy_put_kobj(policy);
+}
+
+We can fix it by clear the policy->cpus mask.
+Both show_scaling_cur_freq and show_cpuinfo_cur_freq will return an
+error by checking this mask, thus avoiding UAF.
+
+Signed-off-by: Schspa Shi <schspa@gmail.com>
+
+---
+
+Changelog:
+v1 -> v2:
+        - Fix bad critical region enlarge which causes uninitialized
+          unlock.
+---
+ drivers/cpufreq/cpufreq.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
+index 80f535cc8a75..8edfa840dd74 100644
+--- a/drivers/cpufreq/cpufreq.c
++++ b/drivers/cpufreq/cpufreq.c
+@@ -1337,12 +1337,12 @@ static int cpufreq_online(unsigned int cpu)
+ 		down_write(&policy->rwsem);
+ 		policy->cpu = cpu;
+ 		policy->governor = NULL;
+-		up_write(&policy->rwsem);
+ 	} else {
+ 		new_policy = true;
+ 		policy = cpufreq_policy_alloc(cpu);
+ 		if (!policy)
+ 			return -ENOMEM;
++		down_write(&policy->rwsem);
+ 	}
+ 
+ 	if (!new_policy && cpufreq_driver->online) {
+@@ -1533,7 +1533,7 @@ static int cpufreq_online(unsigned int cpu)
+ 	for_each_cpu(j, policy->real_cpus)
+ 		remove_cpu_dev_symlink(policy, get_cpu_device(j));
+ 
+-	up_write(&policy->rwsem);
++	cpumask_clear(policy->cpus);
+ 
+ out_offline_policy:
+ 	if (cpufreq_driver->offline)
+@@ -1542,6 +1542,7 @@ static int cpufreq_online(unsigned int cpu)
+ out_exit_policy:
+ 	if (cpufreq_driver->exit)
+ 		cpufreq_driver->exit(policy);
++	up_write(&policy->rwsem);
+ 
+ out_free_policy:
+ 	cpufreq_policy_free(policy);
+-- 
+2.24.3 (Apple Git-128)
+
