@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75EEAC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0DA2C43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:33:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344763AbiEJOgF (ORCPT
+        id S1344905AbiEJOg3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:36:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43262 "EHLO
+        Tue, 10 May 2022 10:36:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344014AbiEJOHY (ORCPT
+        with ESMTP id S1343844AbiEJOHP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:07:24 -0400
+        Tue, 10 May 2022 10:07:15 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E5971CE63B;
-        Tue, 10 May 2022 06:41:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F53142801;
+        Tue, 10 May 2022 06:41:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 066BFB81DA9;
-        Tue, 10 May 2022 13:41:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72501C385C2;
-        Tue, 10 May 2022 13:41:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 144BEB81D24;
+        Tue, 10 May 2022 13:41:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 785AFC385A6;
+        Tue, 10 May 2022 13:41:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652190093;
-        bh=rAy7K5PX37ptDgSlCdQQlpMRW+/J8KuXrUuQViM33Hc=;
+        s=korg; t=1652190077;
+        bh=mMFKM45XzYbNuQwJ0AXvnB2RbndOAu20xyyssyqRm5o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0Bw8a/bqk0reqhYhhkvmS+aT76kPHzxUpjWELPT6mI97Yx1+NSD5j0CRaGkVHAFSO
-         3WfZfcH0XdH3g49riZF0knxPEf3yZQ+9VtsGRC0Rn/d9plQqdRg40rzmvbnnV3IonZ
-         PI9Cu6GpKRsLGUe2N19gHrZPMttSKzLCjesubeFk=
+        b=wYUgyeNA146s1UkFSTLKAY90NxHDppIjRkpQrgEUU1PVWlq4YgYi4Kd66sL4nHBTq
+         6EWcXsTCsDapi9+KdOPI+iGr4vmr4pyWnj0vzCCom7/1bCv8IxkiFXSNEv0i0uDRkj
+         ouYJ2WE43O8OiTu0UmW26Qo72HKXFfWuQIYsCO7o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, pali@kernel.org,
-        =?UTF-8?q?Marek=20Beh=FAn?= <kabel@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH 5.17 124/140] PCI: aardvark: Check return value of generic_handle_domain_irq() when processing INTx IRQ
-Date:   Tue, 10 May 2022 15:08:34 +0200
-Message-Id: <20220510130745.143758047@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sidhartha Kumar <sidhartha.kumar@oracle.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 120/140] selftest/vm: verify remap destination address in mremap_test
+Date:   Tue, 10 May 2022 15:08:30 +0200
+Message-Id: <20220510130745.033154097@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -50,35 +53,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Sidhartha Kumar <sidhartha.kumar@oracle.com>
 
-commit 51f96e287c6f003d3bb29672811c757c5fbf0028 upstream.
+[ Upstream commit 18d609daa546c919fd36b62a7b510c18de4b4af8 ]
 
-It is possible that we receive spurious INTx interrupt. Check for the
-return value of generic_handle_domain_irq() when processing INTx IRQ.
+Because mremap does not have a MAP_FIXED_NOREPLACE flag, it can destroy
+existing mappings.  This causes a segfault when regions such as text are
+remapped and the permissions are changed.
 
-Link: https://lore.kernel.org/r/20220110015018.26359-6-kabel@kernel.org
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Marek Behún <kabel@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Signed-off-by: Marek Behún <kabel@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Verify the requested mremap destination address does not overlap any
+existing mappings by using mmap's MAP_FIXED_NOREPLACE flag.  Keep
+incrementing the destination address until a valid mapping is found or
+fail the current test once the max address is reached.
+
+Link: https://lkml.kernel.org/r/20220420215721.4868-2-sidhartha.kumar@oracle.com
+Signed-off-by: Sidhartha Kumar <sidhartha.kumar@oracle.com>
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pci-aardvark.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ tools/testing/selftests/vm/mremap_test.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
---- a/drivers/pci/controller/pci-aardvark.c
-+++ b/drivers/pci/controller/pci-aardvark.c
-@@ -1427,7 +1427,9 @@ static void advk_pcie_handle_int(struct
- 		advk_writel(pcie, PCIE_ISR1_INTX_ASSERT(i),
- 			    PCIE_ISR1_REG);
- 
--		generic_handle_domain_irq(pcie->irq_domain, i);
-+		if (generic_handle_domain_irq(pcie->irq_domain, i) == -EINVAL)
-+			dev_err_ratelimited(&pcie->pdev->dev, "unexpected INT%c IRQ\n",
-+					    (char)i + 'A');
- 	}
+diff --git a/tools/testing/selftests/vm/mremap_test.c b/tools/testing/selftests/vm/mremap_test.c
+index 380a4593dbd6..5ef41640d657 100644
+--- a/tools/testing/selftests/vm/mremap_test.c
++++ b/tools/testing/selftests/vm/mremap_test.c
+@@ -65,6 +65,30 @@ enum {
+ 	.expect_failure = should_fail				\
  }
  
++/*
++ * Returns false if the requested remap region overlaps with an
++ * existing mapping (e.g text, stack) else returns true.
++ */
++static bool is_remap_region_valid(void *addr, unsigned long long size)
++{
++	void *remap_addr = NULL;
++	bool ret = true;
++
++	/* Use MAP_FIXED_NOREPLACE flag to ensure region is not mapped */
++	remap_addr = mmap(addr, size, PROT_READ | PROT_WRITE,
++					 MAP_FIXED_NOREPLACE | MAP_ANONYMOUS | MAP_SHARED,
++					 -1, 0);
++
++	if (remap_addr == MAP_FAILED) {
++		if (errno == EEXIST)
++			ret = false;
++	} else {
++		munmap(remap_addr, size);
++	}
++
++	return ret;
++}
++
+ /* Returns mmap_min_addr sysctl tunable from procfs */
+ static unsigned long long get_mmap_min_addr(void)
+ {
+-- 
+2.35.1
+
 
 
