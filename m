@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98AF4C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1385C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:56:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343651AbiEJN7U (ORCPT
+        id S1343702AbiEJN7b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:59:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54786 "EHLO
+        Tue, 10 May 2022 09:59:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245232AbiEJNik (ORCPT
+        with ESMTP id S245317AbiEJNiq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:38:40 -0400
+        Tue, 10 May 2022 09:38:46 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 002561A811B;
-        Tue, 10 May 2022 06:28:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9993231C88;
+        Tue, 10 May 2022 06:29:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39989B81D24;
-        Tue, 10 May 2022 13:28:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0A68C2BBE4;
-        Tue, 10 May 2022 13:28:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3E02FB81DA2;
+        Tue, 10 May 2022 13:29:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4983C385C2;
+        Tue, 10 May 2022 13:29:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189335;
-        bh=AL52ttcBAs7NqVJFaNwvadAqz1DHpx4qIemg1e63Ats=;
+        s=korg; t=1652189344;
+        bh=WtU2MifjE7WdVm6QX8N19707fXD4NfeoLMb7jSc2l6A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xjjjSwkKIsgMke79+nrZakQttHl4yrYPApik8S+tNyziSBVZUto/y2CR6AXjMagWL
-         yCIf+urMFQH5itkogCb6jxiwp9HgRiBm3ueUG2R6L1M4gidG+zyrhx6rjO6UuD4nr3
-         l8xkQfwUhDSpjImr5aViEa1kzv3oxCtfXf+R4iHU=
+        b=jXtLlNSJVT8GoYXFpNySRWhd1WjhQJkhkppjhSzSs8sjqEQx/dHD3c3eI3XcmheO/
+         4nXVzpUvnxIdYLIZOiBRqyziw37TItfuWBOW+L6rg5bD8lpc1/uZQwq+7nYWsRv3qB
+         VFoNyUccKYh56RrYbFfdJYAzxZl0HtRjWb3TlPN8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chengfeng Ye <cyeaa@connect.ust.hk>,
+        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
         Takashi Sakamoto <o-takashi@sakamocchi.jp>,
         Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 018/135] firewire: fix potential uaf in outbound_phy_packet_callback()
-Date:   Tue, 10 May 2022 15:06:40 +0200
-Message-Id: <20220510130740.921261705@linuxfoundation.org>
+Subject: [PATCH 5.15 020/135] firewire: core: extend card->lock in fw_core_handle_bus_reset
+Date:   Tue, 10 May 2022 15:06:42 +0200
+Message-Id: <20220510130740.977690731@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -50,47 +50,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengfeng Ye <cyeaa@connect.ust.hk>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-commit b7c81f80246fac44077166f3e07103affe6db8ff upstream.
+commit a7ecbe92b9243edbe94772f6f2c854e4142a3345 upstream.
 
-&e->event and e point to the same address, and &e->event could
-be freed in queue_event. So there is a potential uaf issue if
-we dereference e after calling queue_event(). Fix this by adding
-a temporary variable to maintain e->client in advance, this can
-avoid the potential uaf issue.
+card->local_node and card->bm_retries are both always accessed under
+card->lock.
+fw_core_handle_bus_reset has a check whose condition depends on
+card->local_node and whose body writes to card->bm_retries.
+Both of these accesses are not under card->lock. Move the lock acquiring
+of card->lock to before this check such that these accesses do happen
+when card->lock is held.
+fw_destroy_nodes is called inside the check.
+Since fw_destroy_nodes already acquires card->lock inside its function
+body, move this out to the callsites of fw_destroy_nodes.
+Also add a comment to indicate which locking is necessary when calling
+fw_destroy_nodes.
 
 Cc: <stable@vger.kernel.org>
-Signed-off-by: Chengfeng Ye <cyeaa@connect.ust.hk>
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
 Signed-off-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
-Link: https://lore.kernel.org/r/20220409041243.603210-2-o-takashi@sakamocchi.jp
+Link: https://lore.kernel.org/r/20220409041243.603210-4-o-takashi@sakamocchi.jp
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/firewire/core-cdev.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/firewire/core-card.c     |    3 +++
+ drivers/firewire/core-topology.c |    9 +++------
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
---- a/drivers/firewire/core-cdev.c
-+++ b/drivers/firewire/core-cdev.c
-@@ -1480,6 +1480,7 @@ static void outbound_phy_packet_callback
+--- a/drivers/firewire/core-card.c
++++ b/drivers/firewire/core-card.c
+@@ -668,6 +668,7 @@ EXPORT_SYMBOL_GPL(fw_card_release);
+ void fw_core_remove_card(struct fw_card *card)
  {
- 	struct outbound_phy_packet_event *e =
- 		container_of(packet, struct outbound_phy_packet_event, p);
-+	struct client *e_client;
+ 	struct fw_card_driver dummy_driver = dummy_driver_template;
++	unsigned long flags;
  
- 	switch (status) {
- 	/* expected: */
-@@ -1496,9 +1497,10 @@ static void outbound_phy_packet_callback
- 	}
- 	e->phy_packet.data[0] = packet->timestamp;
+ 	card->driver->update_phy_reg(card, 4,
+ 				     PHY_LINK_ACTIVE | PHY_CONTENDER, 0);
+@@ -682,7 +683,9 @@ void fw_core_remove_card(struct fw_card
+ 	dummy_driver.stop_iso		= card->driver->stop_iso;
+ 	card->driver = &dummy_driver;
  
-+	e_client = e->client;
- 	queue_event(e->client, &e->event, &e->phy_packet,
- 		    sizeof(e->phy_packet) + e->phy_packet.length, NULL, 0);
--	client_put(e->client);
-+	client_put(e_client);
++	spin_lock_irqsave(&card->lock, flags);
+ 	fw_destroy_nodes(card);
++	spin_unlock_irqrestore(&card->lock, flags);
+ 
+ 	/* Wait for all users, especially device workqueue jobs, to finish. */
+ 	fw_card_put(card);
+--- a/drivers/firewire/core-topology.c
++++ b/drivers/firewire/core-topology.c
+@@ -375,16 +375,13 @@ static void report_found_node(struct fw_
+ 	card->bm_retries = 0;
  }
  
- static int ioctl_send_phy_packet(struct client *client, union ioctl_arg *arg)
++/* Must be called with card->lock held */
+ void fw_destroy_nodes(struct fw_card *card)
+ {
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(&card->lock, flags);
+ 	card->color++;
+ 	if (card->local_node != NULL)
+ 		for_each_fw_node(card, card->local_node, report_lost_node);
+ 	card->local_node = NULL;
+-	spin_unlock_irqrestore(&card->lock, flags);
+ }
+ 
+ static void move_tree(struct fw_node *node0, struct fw_node *node1, int port)
+@@ -510,6 +507,8 @@ void fw_core_handle_bus_reset(struct fw_
+ 	struct fw_node *local_node;
+ 	unsigned long flags;
+ 
++	spin_lock_irqsave(&card->lock, flags);
++
+ 	/*
+ 	 * If the selfID buffer is not the immediate successor of the
+ 	 * previously processed one, we cannot reliably compare the
+@@ -521,8 +520,6 @@ void fw_core_handle_bus_reset(struct fw_
+ 		card->bm_retries = 0;
+ 	}
+ 
+-	spin_lock_irqsave(&card->lock, flags);
+-
+ 	card->broadcast_channel_allocated = card->broadcast_channel_auto_allocated;
+ 	card->node_id = node_id;
+ 	/*
 
 
