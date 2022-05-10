@@ -2,82 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC852C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:25:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62404C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:25:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243305AbiEJN3S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:29:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45982 "EHLO
+        id S238146AbiEJN3b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:29:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243609AbiEJNWO (ORCPT
+        with ESMTP id S242861AbiEJNWj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:22:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4BA65FF3F;
-        Tue, 10 May 2022 06:16:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A6C461574;
-        Tue, 10 May 2022 13:16:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 377FFC385A6;
-        Tue, 10 May 2022 13:16:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188590;
-        bh=iU2kGbeV2AGXng7GTOm144m3ZrXyN2g/Z2KDXwFmdEA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YNNPGJNY0UfdJkB06sbs9yRSmKkgZj2Gfe5ckYUY2dmYkJQDAe/Mp40ptytEyd7//
-         8It9GVQZZRa2Lj2c/VMbqudjrcsLRvEZ9dXLOdhXLHICZZSsZ9Fp4sqf2y4NgRcWoI
-         IcudIzSI+l32QHBwp2Qq0vbB8FzwF3Vi+7oRytJw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "wanghai (M)" <wanghai38@huawei.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 4.14 57/78] Revert "SUNRPC: attempt AF_LOCAL connect on setup"
-Date:   Tue, 10 May 2022 15:07:43 +0200
-Message-Id: <20220510130734.222454597@linuxfoundation.org>
+        Tue, 10 May 2022 09:22:39 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 609FB185CB2;
+        Tue, 10 May 2022 06:16:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1652188614; x=1683724614;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=cJFpqELHzhKnktUrPZO/GTJ1OjcJc3cKHEtNthHeXRo=;
+  b=1Gdd+7kBjuhITj+WqxfQ43YeR3xRq7naaIosB45hIHcrXaL5qgElaPTU
+   lCpseJ3PrKfL+XjhwzQnZ/hUd47OoCNuHVipFxLWEkIUf6HkYf6Bn155l
+   ZVYg3D+mw9eF1ojb7G5skKFHvbt3BbMJjQDFVgwZGfKfToey93lOMvwJj
+   wPpdfxvzLaXZYdQP993+PGMeHrKOY/XPa5jflqLBTrPXtl6G2GzGRQ0qe
+   pFTqGByUsNe2apoRUaXecVJKqH9Mcr5G7wJRkja1L0vQqjHpwNfRlY0AJ
+   ewm/vw5dIxBWioUYSHYIvsbl8ScnqOoE6JgPxv5OKuk+MMI+Jyn7U6Oc3
+   A==;
+X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
+   d="scan'208";a="158457294"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 May 2022 06:16:41 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 10 May 2022 06:16:41 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Tue, 10 May 2022 06:16:39 -0700
+From:   Conor Dooley <conor.dooley@microchip.com>
+To:     <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>
+CC:     <daire.mcnamara@microchip.com>, <lewis.hanly@microchip.com>,
+        <conor.dooley@microchip.com>, <linux-kernel@vger.kernel.org>,
+        <linux-rtc@vger.kernel.org>, <linux-riscv@lists.infradead.org>
+Subject: [PATCH v2 0/2] rtc: microchip: Add driver for PolarFire SoC
+Date:   Tue, 10 May 2022 14:21:15 +0100
+Message-ID: <20220510132116.506572-1-conor.dooley@microchip.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
-References: <20220510130732.522479698@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+Hey all,
+This is technically a v2 of [0], although a fair bit of time has
+passed since then. In the meantime I upstreamed the dt-binding, which
+was in the v1, and this patch depends on the fixes to the dt-binding
+and device tree etc which landed in v5.18-rc5.
 
-commit a3d0562d4dc039bca39445e1cddde7951662e17d upstream.
+The driver is quite substantially rewritten from the v1, as you wanted
+it to be switched to "binary" rather than calendar mode - so hopefully I
+have satisfied your concerns with the original driver. Specifically you
+had an significant issue with the counter being reset on startup & that
+is no longer the case.
 
-This reverts commit 7073ea8799a8cf73db60270986f14e4aae20fa80.
+Thanks,
+Conor.
 
-We must not try to connect the socket while the transport is under
-construction, because the mechanisms to safely tear it down are not in
-place. As the code stands, we end up leaking the sockets on a connection
-error.
+Changes from v1:
+- remove duplicate and unused defines
+- remove oneline mpfs_rtc_set_prescaler function
+- dont unconditionally turn off the rtc in the init function
+- dont reset the rtc when init is run.
+- dont disable the alarm when we boot
+- use binary, not calendar mode
+- delete mpfs_rtc_init & set prescale in probe
+- use dev_pm_set_wake_irq rather than writing suspend/resume functions
+- delete calendar mode only register defines
+- since using binary mode, set range min to zero
+- set range max to max alarm value (is this acceptable?)
+- added a MAINTAINERS entry: when v1 was submitted there was nothing to
+  add to, but there is now.
 
-Reported-by: wanghai (M) <wanghai38@huawei.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- net/sunrpc/xprtsock.c |    3 ---
- 1 file changed, 3 deletions(-)
+[0] https://lore.kernel.org/linux-rtc/20210512111133.1650740-1-daire.mcnamara@microchip.com/
 
---- a/net/sunrpc/xprtsock.c
-+++ b/net/sunrpc/xprtsock.c
-@@ -2941,9 +2941,6 @@ static struct rpc_xprt *xs_setup_local(s
- 		}
- 		xprt_set_bound(xprt);
- 		xs_format_peer_addresses(xprt, "local", RPCBIND_NETID_LOCAL);
--		ret = ERR_PTR(xs_local_setup_socket(transport));
--		if (ret)
--			goto out_err;
- 		break;
- 	default:
- 		ret = ERR_PTR(-EAFNOSUPPORT);
 
+Conor Dooley (2):
+  rtc: Add driver for Microchip PolarFire SoC
+  MAINTAINERS: add PolarFire SoC's RTC
+
+ MAINTAINERS            |   1 +
+ drivers/rtc/Kconfig    |  10 ++
+ drivers/rtc/Makefile   |   1 +
+ drivers/rtc/rtc-mpfs.c | 328 +++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 340 insertions(+)
+ create mode 100644 drivers/rtc/rtc-mpfs.c
+
+
+base-commit: c5eb0a61238dd6faf37f58c9ce61c9980aaffd7a
+-- 
+2.36.1
 
