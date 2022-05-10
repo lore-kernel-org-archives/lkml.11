@@ -2,534 +2,252 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A29AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 19:22:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5762C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 19:24:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239148AbiEJTWw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 15:22:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46078 "EHLO
+        id S232746AbiEJTYr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 15:24:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239195AbiEJTWe (ORCPT
+        with ESMTP id S230140AbiEJTYo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 15:22:34 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F1AF7A823
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 12:22:32 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id i5so25129746wrc.13
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 12:22:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7Fl8o9vqQHXkRhUTsCQTt0ZwmTbCavxp1lBY7KQiqEg=;
-        b=pkDBIQ1JUSjCleZwrCt2twDTUFGkjIiJdVzHRqsAFXYvU6t3uG3j9YEIViHc1bLVZ0
-         xmGV58tfipuAmPW6p2t+DuGRAOG7tkEU5Qb5+9XUmjus9jZgLhdHz7IfuIC6Y86Lqsdf
-         Bl1r4bSO9g+1dm9xehEclH8k/9oVpuSpJS5mpVOuw5qvAJvkEcTWZnmDAzP7p/rRDxqG
-         i6lZZDHsR4hjFrH3O6DOSaO/MJzIt6gQAa/HgkYpXK6oJ2qcP4A0QKaEThwxiUwEspwy
-         IeasyHDjxpI1m/oCNWRrL2t1TNBBaEKzDzga5zP9tmXkf98N5lS1Uimpkgsu47CQ7zhb
-         RuPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7Fl8o9vqQHXkRhUTsCQTt0ZwmTbCavxp1lBY7KQiqEg=;
-        b=tVJEn0W1WaEO3bTITzo+gxSckDQar1JeCA7Qmx1btEIxaVa9i3UNVprz/Q0+hx2VFK
-         CAmeqI9drPyT1R+HV6xTaEsV1atdhAbP+nqTNwHCSQNvDH79UjzSPxnl3JYD1j9i5hUN
-         LqBZvdcuGchLk+vV5G+hhV5TZ38FT7F9uFSpMy4SVTer2cZbh6sqBuXAeZTSCwkNPlXI
-         Ehfg58CrjAuTg3sRvW0yLFKW2slO8fAqZyiVMEwpLPXQPCtViq5YqbT4LZrMFZn0H0EM
-         1ZZKDR+4XrbPg1tYNtDZrUhhGg9yFGhBZrBSdw4SMfqgoLdWwX6dafpjQJ3Mzz5Lus4s
-         lQjA==
-X-Gm-Message-State: AOAM5323jG84OLfWrHWkEXt2iQozh5KNwhaH8GkWN8uWCrVzUmVQ6WAk
-        HWpYeMuNR37dGdM5DJtR/vtrm29o64fnWOU3J+CQVA==
-X-Google-Smtp-Source: ABdhPJyZnQDpgfxwzi9pPMAY3OAG3r6SkU6RhijFLHdLaYzcXNiwHcp/YCCKUM0F9rdqDaQAia6Q9raCLSuhGql5zAU=
-X-Received: by 2002:a05:6000:154a:b0:20c:7e65:c79e with SMTP id
- 10-20020a056000154a00b0020c7e65c79emr19981471wry.582.1652210550757; Tue, 10
- May 2022 12:22:30 -0700 (PDT)
+        Tue, 10 May 2022 15:24:44 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B442268676;
+        Tue, 10 May 2022 12:24:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652210683; x=1683746683;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=23iCMiXe5e7MlRGiOzIxGkq98V+Wt6seKcCwq1pWTDE=;
+  b=HaqX10x6VrgHojdLHywpg6wvJX03bCGIeWEZkr5J+NHpiEmC2IBIYl4f
+   qXKUPBBdM9LQ8r13cVYwuOefi+lyG7b91AUXYTGoSCyWZEDVpo2u/aFNs
+   mSll826TVAoF9RRfcuEOZs4uaoOR+s9N0NxNy/jxqfrcgFW7YMl1FHk8x
+   3bkGctM0HPrn3R/9P76OPnYx9VWyOFlKfaIOtlo7L4pzPTMi7AbIg5PA6
+   1YMknWIba4wICEGglnSALh8na/YyvYc5wLSRIh6Vh5Y/QBM1DOXW40t8f
+   FvygL/Xwi57VeWRQwcrAIB0xbq7YJ82YMoZxxCX2q7SAsFmDN9EGp/1Xz
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="355908932"
+X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
+   d="scan'208";a="355908932"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 12:24:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
+   d="scan'208";a="711172537"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga001.fm.intel.com with ESMTP; 10 May 2022 12:24:42 -0700
+Received: from [10.252.212.108] (kliang2-MOBL.ccr.corp.intel.com [10.252.212.108])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id 67144580BE2;
+        Tue, 10 May 2022 12:24:39 -0700 (PDT)
+Message-ID: <86b7143f-b757-a2d3-b837-686b420cf3c8@linux.intel.com>
+Date:   Tue, 10 May 2022 15:24:38 -0400
 MIME-Version: 1.0
-References: <20220510001807.4132027-1-yosryahmed@google.com>
- <20220510001807.4132027-2-yosryahmed@google.com> <CAJD7tkYHGE1h2jJ7xT9CN7Bbf4+YJ86CoieAv_gmD+Ho=jNrcg@mail.gmail.com>
-In-Reply-To: <CAJD7tkYHGE1h2jJ7xT9CN7Bbf4+YJ86CoieAv_gmD+Ho=jNrcg@mail.gmail.com>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Tue, 10 May 2022 12:21:54 -0700
-Message-ID: <CAJD7tkYF8W_MaWuWJmy+g-aU=kGm5=BWyHtkV-0FmGJ7xqB=rg@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 1/9] bpf: introduce CGROUP_SUBSYS_RSTAT
- program type
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Michal Hocko <mhocko@kernel.org>
-Cc:     Stanislav Fomichev <sdf@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        cgroups@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 1/2] perf evlist: Keep topdown counters in weak group
+Content-Language: en-US
+To:     Ian Rogers <irogers@google.com>
+Cc:     Caleb Biggers <caleb.biggers@intel.com>,
+        Perry Taylor <perry.taylor@intel.com>,
+        Kshipra Bopardikar <kshipra.bopardikar@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ravi Bangoria <ravi.bangoria@amd.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Haowen Bai <baihaowen@meizu.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Madhavan Srinivasan <maddy@linux.ibm.com>,
+        Shunsuke Nakamura <nakamura.shun@fujitsu.com>,
+        Florian Fischer <florian.fischer@muhq.space>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        Stephane Eranian <eranian@google.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>
+References: <20220505043846.3165303-1-irogers@google.com>
+ <87b89e2c-da5c-52c3-40dc-448e874cb5d8@linux.intel.com>
+ <CAP-5=fVHhWu1uJHnTfFYWvM02_F-bFBZaaOYo8zPRiA=ODRxGQ@mail.gmail.com>
+ <12c03e85-cb48-d264-5f04-e9bf9faaf739@linux.intel.com>
+ <CAP-5=fW9Cp3ShO=tTQddDWXz+nrSip99HrNW7Wv5_Qsy1UT7bw@mail.gmail.com>
+ <83417b72-4872-072a-2328-a88d2bb90858@linux.intel.com>
+ <CAP-5=fXnYUnbT89q9W0Ax3d-26jbL5Mcd7O5X=JcXq9FnOUm7Q@mail.gmail.com>
+ <0c8da8b4-4f77-4329-9e63-721d05fd258d@linux.intel.com>
+ <CAP-5=fUwSkikUiLpXURYKM4FEf=0zMW9a3Q5h8=Wg08ht5KXHw@mail.gmail.com>
+From:   "Liang, Kan" <kan.liang@linux.intel.com>
+In-Reply-To: <CAP-5=fUwSkikUiLpXURYKM4FEf=0zMW9a3Q5h8=Wg08ht5KXHw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 11:07 AM Yosry Ahmed <yosryahmed@google.com> wrote:
->
-> On Mon, May 9, 2022 at 5:18 PM Yosry Ahmed <yosryahmed@google.com> wrote:
-> >
-> > This patch introduces a new bpf program type CGROUP_SUBSYS_RSTAT,
-> > with new corresponding link and attach types.
-> >
-> > The main purpose of these programs is to allow BPF programs to collect
-> > and maintain hierarchical cgroup stats easily and efficiently by making
-> > using of the rstat framework in the kernel.
-> >
-> > Those programs attach to a cgroup subsystem. They typically contain logic
-> > to aggregate per-cpu and per-cgroup stats collected by other BPF programs.
-> >
-> > Currently, only rstat flusher programs can be attached to cgroup
-> > subsystems, but this can be extended later if a use-case arises.
-> >
-> > See the selftest in the final patch for a practical example.
-> >
-> > Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
-> > ---
-> >  include/linux/bpf-cgroup-subsys.h |  30 ++++++
-> >  include/linux/bpf_types.h         |   2 +
-> >  include/linux/cgroup-defs.h       |   4 +
-> >  include/uapi/linux/bpf.h          |  12 +++
-> >  kernel/bpf/Makefile               |   1 +
-> >  kernel/bpf/cgroup_subsys.c        | 166 ++++++++++++++++++++++++++++++
-> >  kernel/bpf/syscall.c              |   6 ++
-> >  kernel/cgroup/cgroup.c            |   1 +
-> >  tools/include/uapi/linux/bpf.h    |  12 +++
-> >  9 files changed, 234 insertions(+)
-> >  create mode 100644 include/linux/bpf-cgroup-subsys.h
-> >  create mode 100644 kernel/bpf/cgroup_subsys.c
-> >
-> > diff --git a/include/linux/bpf-cgroup-subsys.h b/include/linux/bpf-cgroup-subsys.h
-> > new file mode 100644
-> > index 000000000000..4dcde06b5599
-> > --- /dev/null
-> > +++ b/include/linux/bpf-cgroup-subsys.h
-> > @@ -0,0 +1,30 @@
-> > +/* SPDX-License-Identifier: GPL-2.0 */
-> > +/*
-> > + * Copyright 2022 Google LLC.
-> > + */
-> > +#ifndef _BPF_CGROUP_SUBSYS_H_
-> > +#define _BPF_CGROUP_SUBSYS_H_
-> > +
-> > +#include <linux/bpf.h>
-> > +
-> > +struct cgroup_subsys_bpf {
-> > +       /* Head of the list of BPF rstat flushers attached to this subsystem */
-> > +       struct list_head rstat_flushers;
-> > +       spinlock_t flushers_lock;
-> > +};
-> > +
-> > +struct bpf_subsys_rstat_flusher {
-> > +       struct bpf_prog *prog;
-> > +       /* List of BPF rtstat flushers, anchored at subsys->bpf */
-> > +       struct list_head list;
-> > +};
-> > +
-> > +struct bpf_cgroup_subsys_link {
-> > +       struct bpf_link link;
-> > +       struct cgroup_subsys *ss;
-> > +};
-> > +
-> > +int cgroup_subsys_bpf_link_attach(const union bpf_attr *attr,
-> > +                                 struct bpf_prog *prog);
-> > +
->
-> In the next version I will make sure everything here is also defined
-> for when CONFIG_BPF_SYSCALL is not set, and move the structs that can
-> be moved to the cc file there.
->
-> > +#endif  // _BPF_CGROUP_SUBSYS_H_
-> > diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
-> > index 3e24ad0c4b3c..854ee958b0e4 100644
-> > --- a/include/linux/bpf_types.h
-> > +++ b/include/linux/bpf_types.h
-> > @@ -56,6 +56,8 @@ BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_SYSCTL, cg_sysctl,
-> >               struct bpf_sysctl, struct bpf_sysctl_kern)
-> >  BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_SOCKOPT, cg_sockopt,
-> >               struct bpf_sockopt, struct bpf_sockopt_kern)
-> > +BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_SUBSYS_RSTAT, cgroup_subsys_rstat,
-> > +             struct bpf_rstat_ctx, struct bpf_rstat_ctx)
-> >  #endif
-> >  #ifdef CONFIG_BPF_LIRC_MODE2
-> >  BPF_PROG_TYPE(BPF_PROG_TYPE_LIRC_MODE2, lirc_mode2,
-> > diff --git a/include/linux/cgroup-defs.h b/include/linux/cgroup-defs.h
-> > index 1bfcfb1af352..3bd6eed1fa13 100644
-> > --- a/include/linux/cgroup-defs.h
-> > +++ b/include/linux/cgroup-defs.h
-> > @@ -20,6 +20,7 @@
-> >  #include <linux/u64_stats_sync.h>
-> >  #include <linux/workqueue.h>
-> >  #include <linux/bpf-cgroup-defs.h>
-> > +#include <linux/bpf-cgroup-subsys.h>
-> >  #include <linux/psi_types.h>
-> >
-> >  #ifdef CONFIG_CGROUPS
-> > @@ -706,6 +707,9 @@ struct cgroup_subsys {
-> >          * specifies the mask of subsystems that this one depends on.
-> >          */
-> >         unsigned int depends_on;
-> > +
-> > +       /* used to store bpf programs.*/
-> > +       struct cgroup_subsys_bpf bpf;
-> >  };
-> >
-> >  extern struct percpu_rw_semaphore cgroup_threadgroup_rwsem;
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index d14b10b85e51..0f4855fa85db 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -952,6 +952,7 @@ enum bpf_prog_type {
-> >         BPF_PROG_TYPE_LSM,
-> >         BPF_PROG_TYPE_SK_LOOKUP,
-> >         BPF_PROG_TYPE_SYSCALL, /* a program that can execute syscalls */
-> > +       BPF_PROG_TYPE_CGROUP_SUBSYS_RSTAT,
-> >  };
-> >
-> >  enum bpf_attach_type {
-> > @@ -998,6 +999,7 @@ enum bpf_attach_type {
-> >         BPF_SK_REUSEPORT_SELECT_OR_MIGRATE,
-> >         BPF_PERF_EVENT,
-> >         BPF_TRACE_KPROBE_MULTI,
-> > +       BPF_CGROUP_SUBSYS_RSTAT,
-> >         __MAX_BPF_ATTACH_TYPE
-> >  };
-> >
-> > @@ -1013,6 +1015,7 @@ enum bpf_link_type {
-> >         BPF_LINK_TYPE_XDP = 6,
-> >         BPF_LINK_TYPE_PERF_EVENT = 7,
-> >         BPF_LINK_TYPE_KPROBE_MULTI = 8,
-> > +       BPF_LINK_TYPE_CGROUP_SUBSYS = 9,
-> >
-> >         MAX_BPF_LINK_TYPE,
-> >  };
-> > @@ -1482,6 +1485,9 @@ union bpf_attr {
-> >                                  */
-> >                                 __u64           bpf_cookie;
-> >                         } perf_event;
-> > +                       struct {
-> > +                               __u64           name;
-> > +                       } cgroup_subsys;
-> >                         struct {
-> >                                 __u32           flags;
-> >                                 __u32           cnt;
-> > @@ -6324,6 +6330,12 @@ struct bpf_cgroup_dev_ctx {
-> >         __u32 minor;
-> >  };
-> >
-> > +struct bpf_rstat_ctx {
-> > +       __u64 cgroup_id;
-> > +       __u64 parent_cgroup_id; /* 0 if root */
-> > +       __s32 cpu;
-> > +};
-> > +
-> >  struct bpf_raw_tracepoint_args {
-> >         __u64 args[0];
-> >  };
-> > diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
-> > index c1a9be6a4b9f..6caf4a61e543 100644
-> > --- a/kernel/bpf/Makefile
-> > +++ b/kernel/bpf/Makefile
-> > @@ -25,6 +25,7 @@ ifeq ($(CONFIG_PERF_EVENTS),y)
-> >  obj-$(CONFIG_BPF_SYSCALL) += stackmap.o
-> >  endif
-> >  obj-$(CONFIG_CGROUP_BPF) += cgroup.o
-> > +obj-$(CONFIG_CGROUP_BPF) += cgroup_subsys.o
->
-> In the next version I will replace this with:
-> ifeq ($(CONFIG_CGROUP),y)
-> obj-$(CONFIG_BPF_SYSCALL) += cgroup_subsys.o
-> endif
->
-> , as this program type doesn't attach to cgroups and does not depend
-> on CONFIG_CGROUP_BPF, only CONFIG_CGROUP and CONFIG_BPF_SYSCALL.
 
-On second thought it might be simpler and cleaner to leave this code
-under CONFIG_CGROUP_BPF.
 
->
-> >  ifeq ($(CONFIG_INET),y)
-> >  obj-$(CONFIG_BPF_SYSCALL) += reuseport_array.o
-> >  endif
-> > diff --git a/kernel/bpf/cgroup_subsys.c b/kernel/bpf/cgroup_subsys.c
-> > new file mode 100644
-> > index 000000000000..9673ce6aa84a
-> > --- /dev/null
-> > +++ b/kernel/bpf/cgroup_subsys.c
-> > @@ -0,0 +1,166 @@
-> > +// SPDX-License-Identifier: GPL-2.0-only
-> > +/*
-> > + * Functions to manage eBPF programs attached to cgroup subsystems
-> > + *
-> > + * Copyright 2022 Google LLC.
-> > + */
-> > +
-> > +#include <linux/bpf-cgroup-subsys.h>
-> > +#include <linux/filter.h>
-> > +
-> > +#include "../cgroup/cgroup-internal.h"
-> > +
-> > +
-> > +static int cgroup_subsys_bpf_attach(struct cgroup_subsys *ss, struct bpf_prog *prog)
-> > +{
-> > +       struct bpf_subsys_rstat_flusher *rstat_flusher;
-> > +
-> > +       rstat_flusher = kmalloc(sizeof(*rstat_flusher), GFP_KERNEL);
-> > +       if (!rstat_flusher)
-> > +               return -ENOMEM;
-> > +       rstat_flusher->prog = prog;
-> > +
-> > +       spin_lock(&ss->bpf.flushers_lock);
-> > +       list_add(&rstat_flusher->list, &ss->bpf.rstat_flushers);
-> > +       spin_unlock(&ss->bpf.flushers_lock);
-> > +
-> > +       return 0;
-> > +}
-> > +
-> > +static void cgroup_subsys_bpf_detach(struct cgroup_subsys *ss, struct bpf_prog *prog)
-> > +{
-> > +       struct bpf_subsys_rstat_flusher *rstat_flusher = NULL;
-> > +
-> > +       spin_lock(&ss->bpf.flushers_lock);
-> > +       list_for_each_entry(rstat_flusher, &ss->bpf.rstat_flushers, list)
-> > +               if (rstat_flusher->prog == prog)
-> > +                       break;
-> > +
-> > +       if (rstat_flusher) {
-> > +               list_del(&rstat_flusher->list);
-> > +               bpf_prog_put(rstat_flusher->prog);
-> > +               kfree(rstat_flusher);
-> > +       }
-> > +       spin_unlock(&ss->bpf.flushers_lock);
-> > +}
-> > +
-> > +static void bpf_cgroup_subsys_link_release(struct bpf_link *link)
-> > +{
-> > +       struct bpf_cgroup_subsys_link *ss_link = container_of(link,
-> > +                                                      struct bpf_cgroup_subsys_link,
-> > +                                                      link);
-> > +       if (ss_link->ss) {
-> > +               cgroup_subsys_bpf_detach(ss_link->ss, ss_link->link.prog);
-> > +               ss_link->ss = NULL;
-> > +       }
-> > +}
-> > +
-> > +static int bpf_cgroup_subsys_link_detach(struct bpf_link *link)
-> > +{
-> > +       bpf_cgroup_subsys_link_release(link);
-> > +       return 0;
-> > +}
-> > +
-> > +static void bpf_cgroup_subsys_link_dealloc(struct bpf_link *link)
-> > +{
-> > +       struct bpf_cgroup_subsys_link *ss_link = container_of(link,
-> > +                                                      struct bpf_cgroup_subsys_link,
-> > +                                                      link);
-> > +       kfree(ss_link);
-> > +}
-> > +
-> > +static const struct bpf_link_ops bpf_cgroup_subsys_link_lops = {
-> > +       .detach = bpf_cgroup_subsys_link_detach,
-> > +       .release = bpf_cgroup_subsys_link_release,
-> > +       .dealloc = bpf_cgroup_subsys_link_dealloc,
-> > +};
-> > +
-> > +int cgroup_subsys_bpf_link_attach(const union bpf_attr *attr,
-> > +                                 struct bpf_prog *prog)
-> > +{
-> > +       struct bpf_link_primer link_primer;
-> > +       struct bpf_cgroup_subsys_link *link;
-> > +       struct cgroup_subsys *ss, *attach_ss = NULL;
-> > +       const char __user *ss_name_user;
-> > +       char ss_name[MAX_CGROUP_TYPE_NAMELEN];
-> > +       int ssid, err;
-> > +
-> > +       if (attr->link_create.target_fd || attr->link_create.flags)
-> > +               return -EINVAL;
-> > +
-> > +       ss_name_user = u64_to_user_ptr(attr->link_create.cgroup_subsys.name);
-> > +       if (strncpy_from_user(ss_name, ss_name_user, sizeof(ss_name) - 1) < 0)
-> > +               return -EFAULT;
-> > +
-> > +       for_each_subsys(ss, ssid)
-> > +               if (!strcmp(ss_name, ss->name) ||
-> > +                   !strcmp(ss_name, ss->legacy_name))
-> > +                       attach_ss = ss;
-> > +
-> > +       if (!attach_ss)
-> > +               return -EINVAL;
-> > +
-> > +       link = kzalloc(sizeof(*link), GFP_USER);
-> > +       if (!link)
-> > +               return -ENOMEM;
-> > +
-> > +       bpf_link_init(&link->link, BPF_LINK_TYPE_CGROUP_SUBSYS,
-> > +                     &bpf_cgroup_subsys_link_lops,
-> > +                     prog);
-> > +       link->ss = attach_ss;
-> > +
-> > +       err = bpf_link_prime(&link->link, &link_primer);
-> > +       if (err) {
-> > +               kfree(link);
-> > +               return err;
-> > +       }
-> > +
-> > +       err = cgroup_subsys_bpf_attach(attach_ss, prog);
-> > +       if (err) {
-> > +               bpf_link_cleanup(&link_primer);
-> > +               return err;
-> > +       }
-> > +
-> > +       return bpf_link_settle(&link_primer);
-> > +}
-> > +
-> > +static const struct bpf_func_proto *
-> > +cgroup_subsys_rstat_func_proto(enum bpf_func_id func_id,
-> > +                              const struct bpf_prog *prog)
-> > +{
-> > +       return bpf_base_func_proto(func_id);
-> > +}
-> > +
-> > +static bool cgroup_subsys_rstat_is_valid_access(int off, int size,
-> > +                                          enum bpf_access_type type,
-> > +                                          const struct bpf_prog *prog,
-> > +                                          struct bpf_insn_access_aux *info)
-> > +{
-> > +       if (type == BPF_WRITE)
-> > +               return false;
-> > +
-> > +       if (off < 0 || off + size > sizeof(struct bpf_rstat_ctx))
-> > +               return false;
-> > +       /* The verifier guarantees that size > 0 */
-> > +       if (off % size != 0)
-> > +               return false;
-> > +
-> > +       switch (off) {
-> > +       case offsetof(struct bpf_rstat_ctx, cgroup_id):
-> > +               return size == sizeof(__u64);
-> > +       case offsetof(struct bpf_rstat_ctx, parent_cgroup_id):
-> > +               return size == sizeof(__u64);
-> > +       case offsetof(struct bpf_rstat_ctx, cpu):
-> > +               return size == sizeof(__s32);
-> > +       default:
-> > +               return false;
-> > +       }
-> > +}
-> > +
-> > +const struct bpf_prog_ops cgroup_subsys_rstat_prog_ops = {
-> > +};
-> > +
-> > +const struct bpf_verifier_ops cgroup_subsys_rstat_verifier_ops = {
-> > +       .get_func_proto         = cgroup_subsys_rstat_func_proto,
-> > +       .is_valid_access        = cgroup_subsys_rstat_is_valid_access,
-> > +};
-> > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> > index cdaa1152436a..48149c54d969 100644
-> > --- a/kernel/bpf/syscall.c
-> > +++ b/kernel/bpf/syscall.c
-> > @@ -3,6 +3,7 @@
-> >   */
-> >  #include <linux/bpf.h>
-> >  #include <linux/bpf-cgroup.h>
-> > +#include <linux/bpf-cgroup-subsys.h>
-> >  #include <linux/bpf_trace.h>
-> >  #include <linux/bpf_lirc.h>
-> >  #include <linux/bpf_verifier.h>
-> > @@ -3194,6 +3195,8 @@ attach_type_to_prog_type(enum bpf_attach_type attach_type)
-> >                 return BPF_PROG_TYPE_SK_LOOKUP;
-> >         case BPF_XDP:
-> >                 return BPF_PROG_TYPE_XDP;
-> > +       case BPF_CGROUP_SUBSYS_RSTAT:
-> > +               return BPF_PROG_TYPE_CGROUP_SUBSYS_RSTAT;
-> >         default:
-> >                 return BPF_PROG_TYPE_UNSPEC;
-> >         }
-> > @@ -4341,6 +4344,9 @@ static int link_create(union bpf_attr *attr, bpfptr_t uattr)
-> >                 else
-> >                         ret = bpf_kprobe_multi_link_attach(attr, prog);
-> >                 break;
-> > +       case BPF_PROG_TYPE_CGROUP_SUBSYS_RSTAT:
-> > +               ret = cgroup_subsys_bpf_link_attach(attr, prog);
-> > +               break;
-> >         default:
-> >                 ret = -EINVAL;
-> >         }
-> > diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
-> > index adb820e98f24..7b1448013009 100644
-> > --- a/kernel/cgroup/cgroup.c
-> > +++ b/kernel/cgroup/cgroup.c
-> > @@ -5745,6 +5745,7 @@ static void __init cgroup_init_subsys(struct cgroup_subsys *ss, bool early)
-> >
-> >         idr_init(&ss->css_idr);
-> >         INIT_LIST_HEAD(&ss->cfts);
-> > +       INIT_LIST_HEAD(&ss->bpf.rstat_flushers);
-> >
-> >         /* Create the root cgroup state for this subsystem */
-> >         ss->root = &cgrp_dfl_root;
-> > diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-> > index d14b10b85e51..0f4855fa85db 100644
-> > --- a/tools/include/uapi/linux/bpf.h
-> > +++ b/tools/include/uapi/linux/bpf.h
-> > @@ -952,6 +952,7 @@ enum bpf_prog_type {
-> >         BPF_PROG_TYPE_LSM,
-> >         BPF_PROG_TYPE_SK_LOOKUP,
-> >         BPF_PROG_TYPE_SYSCALL, /* a program that can execute syscalls */
-> > +       BPF_PROG_TYPE_CGROUP_SUBSYS_RSTAT,
-> >  };
-> >
-> >  enum bpf_attach_type {
-> > @@ -998,6 +999,7 @@ enum bpf_attach_type {
-> >         BPF_SK_REUSEPORT_SELECT_OR_MIGRATE,
-> >         BPF_PERF_EVENT,
-> >         BPF_TRACE_KPROBE_MULTI,
-> > +       BPF_CGROUP_SUBSYS_RSTAT,
-> >         __MAX_BPF_ATTACH_TYPE
-> >  };
-> >
-> > @@ -1013,6 +1015,7 @@ enum bpf_link_type {
-> >         BPF_LINK_TYPE_XDP = 6,
-> >         BPF_LINK_TYPE_PERF_EVENT = 7,
-> >         BPF_LINK_TYPE_KPROBE_MULTI = 8,
-> > +       BPF_LINK_TYPE_CGROUP_SUBSYS = 9,
-> >
-> >         MAX_BPF_LINK_TYPE,
-> >  };
-> > @@ -1482,6 +1485,9 @@ union bpf_attr {
-> >                                  */
-> >                                 __u64           bpf_cookie;
-> >                         } perf_event;
-> > +                       struct {
-> > +                               __u64           name;
-> > +                       } cgroup_subsys;
-> >                         struct {
-> >                                 __u32           flags;
-> >                                 __u32           cnt;
-> > @@ -6324,6 +6330,12 @@ struct bpf_cgroup_dev_ctx {
-> >         __u32 minor;
-> >  };
-> >
-> > +struct bpf_rstat_ctx {
-> > +       __u64 cgroup_id;
-> > +       __u64 parent_cgroup_id; /* 0 if root */
-> > +       __s32 cpu;
-> > +};
-> > +
-> >  struct bpf_raw_tracepoint_args {
-> >         __u64 args[0];
-> >  };
-> > --
-> > 2.36.0.512.ge40c2bad7a-goog
-> >
+On 5/10/2022 12:58 PM, Ian Rogers wrote:
+> On Mon, May 9, 2022 at 2:01 PM Liang, Kan <kan.liang@linux.intel.com> wrote:
+>>
+>> On 5/9/2022 1:28 PM, Ian Rogers wrote:
+>>> On Thu, May 5, 2022 at 12:44 PM Liang, Kan <kan.liang@linux.intel.com> wrote:
+>>>>
+>>>>
+>>>>
+>>>> On 5/5/2022 2:31 PM, Ian Rogers wrote:
+>>>>>>> So I think fixing all of these should be a follow up. I am working to
+>>>>>>> get access to an Alderlake system, could we land this first?
+>>>>>>>
+>>>>>> I think we can use pmu_name to replace the "cpu" to fix the issue for
+>>>>>> the hybrid platform. For a hybrid platform, the pmu_name is either
+>>>>>> cpu_atom or cpu_core.
+>>>>>>
+>>>>>> Besides, the topdown events may have a PMU prefix, e.g.,
+>>>>>> cpu_core/topdown-be-bound/. The strcasecmp may not work well for this case.
+>>>>>>
+>>>>>> How about the below patch?
+>>>>>> If it's OK for you, could you please merge it into your V2 patch set?
+>>>>>> I can do the test on a ADL system.
+>>>>>>
+>>>>>> diff --git a/tools/perf/arch/x86/util/evsel.c
+>>>>>> b/tools/perf/arch/x86/util/evsel.c
+>>>>>> index 40b171de2086..551ae2bab70e 100644
+>>>>>> --- a/tools/perf/arch/x86/util/evsel.c
+>>>>>> +++ b/tools/perf/arch/x86/util/evsel.c
+>>>>>> @@ -33,11 +33,12 @@ void arch_evsel__fixup_new_cycles(struct
+>>>>>> perf_event_attr *attr)
+>>>>>>
+>>>>>>      bool arch_evsel__must_be_in_group(const struct evsel *evsel)
+>>>>>>      {
+>>>>>> -       if ((evsel->pmu_name && strcmp(evsel->pmu_name, "cpu")) ||
+>>>>>> -           !pmu_have_event("cpu", "slots"))
+>>>>>> +       const char *pmu_name = evsel->pmu_name ? evsel->pmu_name : "cpu";
+>>>>>> +
+>>>>>> +       if (!pmu_have_event(pmu_name, "slots"))
+>>>>>>                    return false;
+>>>>> Hmm. The idea with this test is to see if the architecture supports
+>>>>> topdown events before going further. There's a similar test in all the
+>>>>> arch_evlist functions. I think with cpu_core this needs to become:
+>>>>>
+>>>>
+>>>> The case is a little bit different here. For the arch_evlist functions,
+>>>> the input is the evlist, not the specific evsel. So we have to check all
+>>>> the possible PMU names which are "cpu" and "cpu_core". Then we decide
+>>>> whether going further.
+>>>>
+>>>> The input of the evsel__must_be_in_group() is the evsel. The PMU name is
+>>>> stored in the evsel->pmu_name. I don't think we need to check all the
+>>>> possible PMU names. Using evsel->pmu_name should be good enough.
+>>>>
+>>>>> if (!pmu_have_event("cpu", "slots") && !pmu_have_event("cpu_core", "slots") )
+>>>>>
+>>>>> But we should add a helper function for this. It is odd to have this
+>>>>> change supporting Alderlake but the existing evlist work not. Perhaps
+>>>>> we should just wait until Zhengjun's patches land.
+>>>>
+>>>> Yes, a helper function is good for the arch_evlist functions. But I
+>>>> don't think this patch needs the helper function. Zhengjun's patches are
+>>>> to fix the other topdown issues on ADL. There is no dependency between
+>>>> this patch and zhengjun's patches.
+>>>>
+>>>> Thanks,
+>>>> Kan
+>>>
+>>> TL;DR I think we can move forward with landing these patches to fix Icelake.
+>>
+>> This patch doesn't work with the hybrid platform for sure. I can send
+>> you a fix for the hybrid part if you prefer this way? Then I guess you
+>> may append it as the patch 3 for V2.
+>>
+>> Besides the hybrid thing, the patch set also has other two issues I
+>> mentioned in the previous reply.
+>> - I don't think the strcasecmp() can handle the case like
+>> cpu/topdown-bad-spec/ or cpu/slots/. It should be an issue for both
+>> hybrid and non-hybrid platforms.
+>> - It's better not to use non-architecture events, e.g., baclears.any,
+>> ARITH.DIVIDER_ACTIVE, even in the test case. The non-architecture events
+>> may be disappear in the future platforms. If so, you have to update the
+>> test case again for the future platforms.
+>> IMHO, I don't think the patch set is ready.
+> 
+> So all the stated objections are that I'm checking cpu/slots/ for an
+> indication of topdown support and this doesn't work for hybrid?
+
+No, besides the hybrid issue, I also pointed out two non-hybrid issues 
+for the patch set.
+
+Have you tried this with the patch set on ICX?
+
+./perf stat -e 
+'{cpu/slots/,cpu/topdown-bad-spec/,cpu/topdown-be-bound/,cpu/topdown-fe-bound/,cpu/topdown-retiring/,branch-instructions,branch-misses,bus-cycles,cache-misses,cache-references,cpu-cycles,instructions,mem-loads,mem-stores,ref-cycles,cache-misses,cache-references}:W' 
+-a sleep 1
+
+I don't think it works.
+
+
+The ARITH.DIVIDER_ACTIVE is already a deprecated event in SPR.
+I don't think we want to update the test case for the platform after SPR.
+
+
+> This
+> is identical to the arch evlist code:
+> https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/tools/perf/arch/x86/util/evlist.c?h=perf/core#n10
+> both in the functions arch_evlist__add_default_attrs and
+> arch_evlist__leader (one I wrote and one I didn't). So the patch set
+> isn't ready because I haven't fixed alderlake, but alderlake already
+> isn't working? And there is no example of how to make this work for
+> alderlake. So basically your ask is that I bring up alderlake. I think
+> this is stretching things for a patch fixing icelake. The value here
+> is in fixing icelake and alderlake will have to be the next problem.
+> 
+>>>
+>>> For Alderlake/hybrid we have a problem. To determine what happens with
+>>> grouping we need to know does the CPU have topdown events? This is a
+>>> runtime question for doing perf_event_open and so an arch test and
+>>> weak symbol are appropriate. For Icelake we are determining the
+>>> presence of topdown events by looking at the special PMU cpu. For
+>>> Alderlake the same information can be found by looking at the PMUs
+>>> cpu_core and cpu_atom, but how to discover those PMU names?
+>>
+>> The PMU name can be retrieved either from the event list or perf command.
+>> For the non-hybrid, the PMU name is hard code to "cpu" for the core
+>> events. So users/event files don't need to specify the PMU name.
+>> For the hybrid platform, a PMU name is required and stored in the
+>> evsel->pmu_name. If the evsel->pmu_name is NULL, we can assume that it's
+>> a non-hybrid PMU, CPU.
+> 
+> This doesn't make sense. Hybrid implies more than 1 CPU type, how can
+> more than one be the same as 1 type to be used for the PMU? 
+
+One event can only belongs to one PMU. It's saved in the evsel->pmu_name.
+But it may be NULL on a non-hybrid machine, because there is only one 
+CPU type for a non-hybrid machine. The old code may not set the variable.
+
+> Again, you
+> are asking I make all the alderlake logic work and I think that should
+> be follow up.
+
+I didn't ask you to make all the alderlake logic work.
+
+What I asked is not to introduce more such kind problem, because we 
+already have enough to fix.
+
+I even offered you a fixed patch for the problem.
+
+https://lore.kernel.org/all/f1c212e3-c1fd-4a2d-0dfe-bc913d4f4f36@linux.intel.com/T/#m22465c6d35be59fc853a7d86f5bd6025ce7e539b
+
+
+> As shown above the arch evlist code also needs fixing as
+> follow up.
+
+Zhengjun is working on them. There is no dependency between this patch 
+and that fix. Don't worry about it.
+
+
+Thanks,
+Kan
