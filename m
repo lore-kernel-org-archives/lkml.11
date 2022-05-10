@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35DE3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:26:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2CBCC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:26:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344215AbiEJOaD (ORCPT
+        id S1344224AbiEJOaL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:30:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36906 "EHLO
+        Tue, 10 May 2022 10:30:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244605AbiEJOC1 (ORCPT
+        with ESMTP id S242297AbiEJOAY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:02:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3656E2DE5AC;
-        Tue, 10 May 2022 06:40:17 -0700 (PDT)
+        Tue, 10 May 2022 10:00:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 294E52716B;
+        Tue, 10 May 2022 06:39:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DD8F5B81DCD;
-        Tue, 10 May 2022 13:40:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CC9EC385A6;
-        Tue, 10 May 2022 13:40:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 233CC6195A;
+        Tue, 10 May 2022 13:39:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C159C385A6;
+        Tue, 10 May 2022 13:39:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652190014;
-        bh=sv2hjGyjBcuJdU2vhkrhCU7EMqqYtp/aYPxVnvsQjCE=;
+        s=korg; t=1652189993;
+        bh=ClrH9r6REJMY4gRv6YNSD6cNrPGYsFLSvLtpnlQJ+58=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eGNL870TQwHTle/l0b1c3AYZL1v8DMmOToKxCXiqQ+HZMcTZD49V2fqocwaXQxx2E
-         /SccFWWmuARrCIykD5a3OkY91YA4KjT9E8KhIItdyVXMP8frZA/BUARKHXHTMJvEda
-         jPMxS7nTFBPUJUBKIxDE9pwGgnadvhwmd9Kl6HoQ=
+        b=GfUh+ogYROCs+P9YUO+g8D0w3vZXlZNLZLNgE26qrQjneWVz6wlnhykABp+cYCmDX
+         dV+9MWruxmhSenhdqPML2e1KB9Afz9O5KbDGMK+y/whQYPG/MnWd3K0LDopNxQN/Ax
+         PWBNAmFtYYCgUzrxvNWQIS8hSU+te7uX1BrwmwP0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.17 102/140] selftests: ocelot: tc_flower_chains: specify conform-exceed action for policer
-Date:   Tue, 10 May 2022 15:08:12 +0200
-Message-Id: <20220510130744.521684188@linuxfoundation.org>
+        stable@vger.kernel.org, "wanghai (M)" <wanghai38@huawei.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>
+Subject: [PATCH 5.17 095/140] SUNRPC: Dont leak sockets in xs_local_connect()
+Date:   Tue, 10 May 2022 15:08:05 +0200
+Message-Id: <20220510130744.324350750@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -50,44 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit 5a7c5f70c743c6cf32b44b05bd6b19d4ad82f49d upstream.
+commit aad41a7d7cf6c6fa804c872a2480f8e541da37cf upstream.
 
-As discussed here with Ido Schimmel:
-https://patchwork.kernel.org/project/netdevbpf/patch/20220224102908.5255-2-jianbol@nvidia.com/
+If there is still a closed socket associated with the transport, then we
+need to trigger an autoclose before we can set up a new connection.
 
-the default conform-exceed action is "reclassify", for a reason we don't
-really understand.
-
-The point is that hardware can't offload that police action, so not
-specifying "conform-exceed" was always wrong, even though the command
-used to work in hardware (but not in software) until the kernel started
-adding validation for it.
-
-Fix the command used by the selftest by making the policer drop on
-exceed, and pass the packet to the next action (goto) on conform.
-
-Fixes: 8cd6b020b644 ("selftests: ocelot: add some example VCAP IS1, IS2 and ES0 tc offloads")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-Link: https://lore.kernel.org/r/20220503121428.842906-1-vladimir.oltean@nxp.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: wanghai (M) <wanghai38@huawei.com>
+Fixes: f00432063db1 ("SUNRPC: Ensure we flush any closed sockets before xs_xprt_free()")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/drivers/net/ocelot/tc_flower_chains.sh |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/sunrpc/xprtsock.c |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
---- a/tools/testing/selftests/drivers/net/ocelot/tc_flower_chains.sh
-+++ b/tools/testing/selftests/drivers/net/ocelot/tc_flower_chains.sh
-@@ -190,7 +190,7 @@ setup_prepare()
+--- a/net/sunrpc/xprtsock.c
++++ b/net/sunrpc/xprtsock.c
+@@ -1967,6 +1967,9 @@ static void xs_local_connect(struct rpc_
+ 	struct sock_xprt *transport = container_of(xprt, struct sock_xprt, xprt);
+ 	int ret;
  
- 	tc filter add dev $eth0 ingress chain $(IS2 0 0) pref 1 \
- 		protocol ipv4 flower skip_sw ip_proto udp dst_port 5201 \
--		action police rate 50mbit burst 64k \
-+		action police rate 50mbit burst 64k conform-exceed drop/pipe \
- 		action goto chain $(IS2 1 0)
++	if (transport->file)
++		goto force_disconnect;
++
+ 	if (RPC_IS_ASYNC(task)) {
+ 		/*
+ 		 * We want the AF_LOCAL connect to be resolved in the
+@@ -1979,11 +1982,17 @@ static void xs_local_connect(struct rpc_
+ 		 */
+ 		task->tk_rpc_status = -ENOTCONN;
+ 		rpc_exit(task, -ENOTCONN);
+-		return;
++		goto out_wake;
+ 	}
+ 	ret = xs_local_setup_socket(transport);
+ 	if (ret && !RPC_IS_SOFTCONN(task))
+ 		msleep_interruptible(15000);
++	return;
++force_disconnect:
++	xprt_force_disconnect(xprt);
++out_wake:
++	xprt_clear_connecting(xprt);
++	xprt_wake_pending_tasks(xprt, -ENOTCONN);
  }
  
+ #if IS_ENABLED(CONFIG_SUNRPC_SWAP)
 
 
