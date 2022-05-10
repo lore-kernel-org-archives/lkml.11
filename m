@@ -2,42 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6974BC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AEC5C43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:23:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243207AbiEJN0c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:26:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60652 "EHLO
+        id S243175AbiEJN0V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:26:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243578AbiEJNWM (ORCPT
+        with ESMTP id S243563AbiEJNWE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:22:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D66056768;
-        Tue, 10 May 2022 06:16:28 -0700 (PDT)
+        Tue, 10 May 2022 09:22:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21AD852530;
+        Tue, 10 May 2022 06:16:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B109EB81D7A;
-        Tue, 10 May 2022 13:15:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAE53C385A6;
-        Tue, 10 May 2022 13:15:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 61129615DD;
+        Tue, 10 May 2022 13:16:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46067C385C2;
+        Tue, 10 May 2022 13:16:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188547;
-        bh=O726eevFd4aa9bv4B67BLbuQbMjvTTVMMcyh219BVxE=;
+        s=korg; t=1652188578;
+        bh=NI3jWGh0Qcgl5TwhM/Wovh4SvdT7Ryx5lfnD/o7tqM0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U2mq2JCWT2frtWWGagREk2iw4pUIKH2aU4bKe8zeJHn2R5PGdaAIMFbnGOpv926YK
-         NIXYegdV1KwjDuB0mLF8QkXUTkYOYqAIU6Fz4Ux/rt/VeRK74YJPAHZNOpIACEZRsc
-         lbsLZtMpEYenSPP11F7ZQ545kSARO5DDiFyiefzs=
+        b=SDqhUEr/oQnDm5DaF5bGz7DGmNKODtQrM3uZUcZslQLL/rwEchuRykshZ9cKNkNQM
+         osRn17TUjJsHPtu8eifKN/saxCHRAOuLqoarP2s88Fui5GoPLHPwaU8akzihes20un
+         1++speVEOW6xLjtlTISmZPqHSfiT9nUUag/G5440=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 44/78] drivers: net: hippi: Fix deadlock in rr_close()
-Date:   Tue, 10 May 2022 15:07:30 +0200
-Message-Id: <20220510130733.839982828@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Hillf Danton <hdanton@sina.com>,
+        syzbot+0dc4444774d419e916c8@syzkaller.appspotmail.com,
+        Emil Velikov <emil.velikov@collabora.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sean Paul <seanpaul@chromium.org>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Eric Anholt <eric@anholt.net>, Sam Ravnborg <sam@ravnborg.org>,
+        Rob Clark <robdclark@chromium.org>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>
+Subject: [PATCH 4.14 53/78] drm/vgem: Close use-after-free race in vgem_gem_create
+Date:   Tue, 10 May 2022 15:07:39 +0200
+Message-Id: <20220510130734.108704531@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
 References: <20220510130732.522479698@linuxfoundation.org>
@@ -49,53 +57,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Daniel Vetter <daniel.vetter@ffwll.ch>
 
-[ Upstream commit bc6de2878429e85c1f1afaa566f7b5abb2243eef ]
+commit 4b848f20eda5974020f043ca14bacf7a7e634fc8 upstream.
 
-There is a deadlock in rr_close(), which is shown below:
+There's two references floating around here (for the object reference,
+not the handle_count reference, that's a different thing):
 
-   (Thread 1)                |      (Thread 2)
-                             | rr_open()
-rr_close()                   |  add_timer()
- spin_lock_irqsave() //(1)   |  (wait a time)
- ...                         | rr_timer()
- del_timer_sync()            |  spin_lock_irqsave() //(2)
- (wait timer to stop)        |  ...
+- The temporary reference held by vgem_gem_create, acquired by
+  creating the object and released by calling
+  drm_gem_object_put_unlocked.
 
-We hold rrpriv->lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need rrpriv->lock in position (2) of thread 2.
-As a result, rr_close() will block forever.
+- The reference held by the object handle, created by
+  drm_gem_handle_create. This one generally outlives the function,
+  except if a 2nd thread races with a GEM_CLOSE ioctl call.
 
-This patch extracts del_timer_sync() from the protection of
-spin_lock_irqsave(), which could let timer handler to obtain
-the needed lock.
+So usually everything is correct, except in that race case, where the
+access to gem_object->size could be looking at freed data already.
+Which again isn't a real problem (userspace shot its feet off already
+with the race, we could return garbage), but maybe someone can exploit
+this as an information leak.
 
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417125519.82618-1-duoming@zju.edu.cn
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: Dan Carpenter <dan.carpenter@oracle.com>
+Cc: Hillf Danton <hdanton@sina.com>
+Reported-by: syzbot+0dc4444774d419e916c8@syzkaller.appspotmail.com
+Cc: stable@vger.kernel.org
+Cc: Emil Velikov <emil.velikov@collabora.com>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Sean Paul <seanpaul@chromium.org>
+Cc: Chris Wilson <chris@chris-wilson.co.uk>
+Cc: Eric Anholt <eric@anholt.net>
+Cc: Sam Ravnborg <sam@ravnborg.org>
+Cc: Rob Clark <robdclark@chromium.org>
+Reviewed-by: Chris Wilson <chris@chris-wilson.co.uk>
+Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20200202132133.1891846-1-daniel.vetter@ffwll.ch
+[OP: backport to 4.19: adjusted DRM_DEBUG() -> DRM_DEBUG_DRIVER()]
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
 ---
- drivers/net/hippi/rrunner.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/vgem/vgem_drv.c |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/hippi/rrunner.c b/drivers/net/hippi/rrunner.c
-index 40ef4aeb0ef0..3a73ac03fb2b 100644
---- a/drivers/net/hippi/rrunner.c
-+++ b/drivers/net/hippi/rrunner.c
-@@ -1354,7 +1354,9 @@ static int rr_close(struct net_device *dev)
+--- a/drivers/gpu/drm/vgem/vgem_drv.c
++++ b/drivers/gpu/drm/vgem/vgem_drv.c
+@@ -190,9 +190,10 @@ static struct drm_gem_object *vgem_gem_c
+ 		return ERR_CAST(obj);
  
- 	rrpriv->fw_running = 0;
+ 	ret = drm_gem_handle_create(file, &obj->base, handle);
+-	drm_gem_object_put_unlocked(&obj->base);
+-	if (ret)
++	if (ret) {
++		drm_gem_object_put_unlocked(&obj->base);
+ 		return ERR_PTR(ret);
++	}
  
-+	spin_unlock_irqrestore(&rrpriv->lock, flags);
- 	del_timer_sync(&rrpriv->timer);
-+	spin_lock_irqsave(&rrpriv->lock, flags);
+ 	return &obj->base;
+ }
+@@ -215,7 +216,9 @@ static int vgem_gem_dumb_create(struct d
+ 	args->size = gem_object->size;
+ 	args->pitch = pitch;
  
- 	writel(0, &regs->TxPi);
- 	writel(0, &regs->IpRxPi);
--- 
-2.35.1
-
+-	DRM_DEBUG_DRIVER("Created object of size %lld\n", size);
++	drm_gem_object_put_unlocked(gem_object);
++
++	DRM_DEBUG_DRIVER("Created object of size %llu\n", args->size);
+ 
+ 	return 0;
+ }
 
 
