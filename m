@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02809C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:30:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EA50C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:30:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243463AbiEJNeR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:34:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60628 "EHLO
+        id S243468AbiEJNe2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:34:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241338AbiEJNZQ (ORCPT
+        with ESMTP id S242904AbiEJNZQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:25:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D515D50B1C;
-        Tue, 10 May 2022 06:18:09 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC3D11F92A4;
+        Tue, 10 May 2022 06:17:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 93920B81B32;
-        Tue, 10 May 2022 13:18:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7784C385C2;
-        Tue, 10 May 2022 13:18:06 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5C119CE1E67;
+        Tue, 10 May 2022 13:17:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CA5CC385C6;
+        Tue, 10 May 2022 13:17:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188687;
-        bh=Za0+Kg0GzcGKimpUtf0svjSHqpztZKZgkSCW3XGCFmU=;
+        s=korg; t=1652188668;
+        bh=WmU0JrNCPKKDk0egiaa5q5KGJgNq4xSZSHdSFEerGvw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rOfjn0VM8jiJaMMR1+tl6gJiFra+KcCfTfMfPRQGaBFBJIiCAlKAqu4bOar6A/0qk
-         hX8MX2HeOETGeEMa9Quqd88ovNA6GkiNKmI5lcI9EoKtLy5LtECYvV21N7zvgpT+aM
-         JZhM9zh11+vootPBdvlHYWoa5xSd7lawcbicKZlg=
+        b=PPlEnqSoMx94214zBzKEiGcNe1xIrXjL2sENyqiSpDTukNZKvzsll2yVoTDJtomDU
+         AIhmaM23wqczcV94c4SfDIvpktRa3yGhKqo6tLDtRoWxRRHgyBskUuytk2a3ETQ/Cq
+         wupYLsnsjVWMV862fSboPwwXLztSjUrFqJaJwk4k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 4.19 11/88] iio: magnetometer: ak8975: Fix the error handling in ak8975_power_on()
-Date:   Tue, 10 May 2022 15:06:56 +0200
-Message-Id: <20220510130734.077236488@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 32/78] mtd: rawnand: Fix return value check of wait_for_completion_timeout
+Date:   Tue, 10 May 2022 15:07:18 +0200
+Message-Id: <20220510130733.486432722@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
-References: <20220510130733.735278074@linuxfoundation.org>
+In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
+References: <20220510130732.522479698@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,42 +49,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 3a26787dacf04257a68b16315c984eb2c340bc5e upstream.
+[ Upstream commit 084c16ab423a8890121b902b405823bfec5b4365 ]
 
-When the driver fails to enable the regulator 'vid', we will get the
-following splat:
+wait_for_completion_timeout() returns unsigned long not int.
+It returns 0 if timed out, and positive if completed.
+The check for <= 0 is ambiguous and should be == 0 here
+indicating timeout which is the only error case.
 
-[   79.955610] WARNING: CPU: 5 PID: 441 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
-[   79.959641] RIP: 0010:_regulator_put+0x3ec/0x4e0
-[   79.967570] Call Trace:
-[   79.967773]  <TASK>
-[   79.967951]  regulator_put+0x1f/0x30
-[   79.968254]  devres_release_group+0x319/0x3d0
-[   79.968608]  i2c_device_probe+0x766/0x940
-
-Fix this by disabling the 'vdd' regulator when failing to enable 'vid'
-regulator.
-
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Link: https://lore.kernel.org/r/20220409034849.3717231-2-zheyuma97@gmail.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 83738d87e3a0 ("mtd: sh_flctl: Add DMA capabilty")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220412083435.29254-1-linmq006@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/magnetometer/ak8975.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/mtd/nand/sh_flctl.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
---- a/drivers/iio/magnetometer/ak8975.c
-+++ b/drivers/iio/magnetometer/ak8975.c
-@@ -404,6 +404,7 @@ static int ak8975_power_on(const struct
- 	if (ret) {
- 		dev_warn(&data->client->dev,
- 			 "Failed to enable specified Vid supply\n");
-+		regulator_disable(data->vdd);
- 		return ret;
+diff --git a/drivers/mtd/nand/sh_flctl.c b/drivers/mtd/nand/sh_flctl.c
+index f2ed03ee3035..eac65aff5401 100644
+--- a/drivers/mtd/nand/sh_flctl.c
++++ b/drivers/mtd/nand/sh_flctl.c
+@@ -399,7 +399,8 @@ static int flctl_dma_fifo0_transfer(struct sh_flctl *flctl, unsigned long *buf,
+ 	dma_addr_t dma_addr;
+ 	dma_cookie_t cookie;
+ 	uint32_t reg;
+-	int ret;
++	int ret = 0;
++	unsigned long time_left;
+ 
+ 	if (dir == DMA_FROM_DEVICE) {
+ 		chan = flctl->chan_fifo0_rx;
+@@ -440,13 +441,14 @@ static int flctl_dma_fifo0_transfer(struct sh_flctl *flctl, unsigned long *buf,
+ 		goto out;
  	}
- 	/*
+ 
+-	ret =
++	time_left =
+ 	wait_for_completion_timeout(&flctl->dma_complete,
+ 				msecs_to_jiffies(3000));
+ 
+-	if (ret <= 0) {
++	if (time_left == 0) {
+ 		dmaengine_terminate_all(chan);
+ 		dev_err(&flctl->pdev->dev, "wait_for_completion_timeout\n");
++		ret = -ETIMEDOUT;
+ 	}
+ 
+ out:
+@@ -456,7 +458,7 @@ static int flctl_dma_fifo0_transfer(struct sh_flctl *flctl, unsigned long *buf,
+ 
+ 	dma_unmap_single(chan->device->dev, dma_addr, len, dir);
+ 
+-	/* ret > 0 is success */
++	/* ret == 0 is success */
+ 	return ret;
+ }
+ 
+@@ -480,7 +482,7 @@ static void read_fiforeg(struct sh_flctl *flctl, int rlen, int offset)
+ 
+ 	/* initiate DMA transfer */
+ 	if (flctl->chan_fifo0_rx && rlen >= 32 &&
+-		flctl_dma_fifo0_transfer(flctl, buf, rlen, DMA_FROM_DEVICE) > 0)
++		!flctl_dma_fifo0_transfer(flctl, buf, rlen, DMA_FROM_DEVICE))
+ 			goto convert;	/* DMA success */
+ 
+ 	/* do polling transfer */
+@@ -539,7 +541,7 @@ static void write_ec_fiforeg(struct sh_flctl *flctl, int rlen,
+ 
+ 	/* initiate DMA transfer */
+ 	if (flctl->chan_fifo0_tx && rlen >= 32 &&
+-		flctl_dma_fifo0_transfer(flctl, buf, rlen, DMA_TO_DEVICE) > 0)
++		!flctl_dma_fifo0_transfer(flctl, buf, rlen, DMA_TO_DEVICE))
+ 			return;	/* DMA success */
+ 
+ 	/* do polling transfer */
+-- 
+2.35.1
+
 
 
