@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6843EC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0A7EC43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:56:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343612AbiEJN7O (ORCPT
+        id S1343669AbiEJN7X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:59:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41062 "EHLO
+        Tue, 10 May 2022 09:59:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245247AbiEJNim (ORCPT
+        with ESMTP id S245176AbiEJNig (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:38:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11D1D1A90D3;
-        Tue, 10 May 2022 06:28:59 -0700 (PDT)
+        Tue, 10 May 2022 09:38:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AECD266E1A;
+        Tue, 10 May 2022 06:28:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9531E618A6;
-        Tue, 10 May 2022 13:28:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98A05C340EC;
-        Tue, 10 May 2022 13:28:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF5E7B81DA8;
+        Tue, 10 May 2022 13:28:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 389A7C385A6;
+        Tue, 10 May 2022 13:28:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189338;
-        bh=3H1BjRzDHUjxEnk9QTEfAYQL8EISB2HXM59jjO3NEzo=;
+        s=korg; t=1652189282;
+        bh=sYcx22CNtW7hSY2tI7NBOUw3XnIwaKgfLUJasIi6tks=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xMmQAVXAXuxmHRqd8n8wNNvPOG6vJg+U7WsIS+Ddz27fIKC5sNCaNDHx4h/bUfKzy
-         /2PdDlcQp1xldj316SC7DeWcHMRA61lvjI2o4b21+wkP9H4N2bFlxcKqGxKwhz++W1
-         qvV9yWyPoPg+BQPZ2pV4I+qShaIiaPupSFB0jJSY=
+        b=vaDKLnTdkRFcbJtdi8IDBTHYsUajUM3FOGb/kboBtpO13EGryjtp5PxP9yyYQY8V0
+         ZI7CkcwD9rqP70Dwdk224gd2PgW+D9N92Drlqqx7Vj+EjzL7Av2Vo4lL3tHKXKcWBE
+         yC6JyCOynv/0q2fEC7sI23gUWJIWOrpr6BpyRm2M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakob Koschel <jakobkoschel@gmail.com>,
-        Takashi Sakamoto <o-takashi@sakamocchi.jp>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 019/135] firewire: remove check of list iterator against head past the loop body
-Date:   Tue, 10 May 2022 15:06:41 +0200
-Message-Id: <20220510130740.949360204@linuxfoundation.org>
+        stable@vger.kernel.org, Andreas Larsson <andreas@gaisler.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.10 30/70] can: grcan: only use the NAPI poll budget for RX
+Date:   Tue, 10 May 2022 15:07:49 +0200
+Message-Id: <20220510130733.750886197@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
-References: <20220510130740.392653815@linuxfoundation.org>
+In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
+References: <20220510130732.861729621@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,140 +49,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakob Koschel <jakobkoschel@gmail.com>
+From: Andreas Larsson <andreas@gaisler.com>
 
-commit 9423973869bd4632ffe669f950510c49296656e0 upstream.
+commit 2873d4d52f7c52d60b316ba6c47bd7122b5a9861 upstream.
 
-When list_for_each_entry() completes the iteration over the whole list
-without breaking the loop, the iterator value will be a bogus pointer
-computed based on the head element.
+The previous split budget between TX and RX made it return not using
+the entire budget but at the same time not having calling called
+napi_complete. This sometimes led to the poll to not be called, and at
+the same time having TX and RX interrupts disabled resulting in the
+driver getting stuck.
 
-While it is safe to use the pointer to determine if it was computed
-based on the head element, either with list_entry_is_head() or
-&pos->member == head, using the iterator variable after the loop should
-be avoided.
-
-In preparation to limit the scope of a list iterator to the list
-traversal loop, use a dedicated pointer to point to the found element [1].
-
-Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Signed-off-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
-Link: https://lore.kernel.org/r/20220409041243.603210-3-o-takashi@sakamocchi.jp
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: 6cec9b07fe6a ("can: grcan: Add device driver for GRCAN and GRHCAN cores")
+Link: https://lore.kernel.org/all/20220429084656.29788-4-andreas@gaisler.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Andreas Larsson <andreas@gaisler.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/firewire/core-transaction.c |   30 ++++++++++++++++--------------
- drivers/firewire/sbp2.c             |   13 +++++++------
- 2 files changed, 23 insertions(+), 20 deletions(-)
+ drivers/net/can/grcan.c |   22 +++++++---------------
+ 1 file changed, 7 insertions(+), 15 deletions(-)
 
---- a/drivers/firewire/core-transaction.c
-+++ b/drivers/firewire/core-transaction.c
-@@ -73,24 +73,25 @@ static int try_cancel_split_timeout(stru
- static int close_transaction(struct fw_transaction *transaction,
- 			     struct fw_card *card, int rcode)
+--- a/drivers/net/can/grcan.c
++++ b/drivers/net/can/grcan.c
+@@ -1137,7 +1137,7 @@ static int grcan_close(struct net_device
+ 	return 0;
+ }
+ 
+-static int grcan_transmit_catch_up(struct net_device *dev, int budget)
++static void grcan_transmit_catch_up(struct net_device *dev)
  {
--	struct fw_transaction *t;
-+	struct fw_transaction *t = NULL, *iter;
+ 	struct grcan_priv *priv = netdev_priv(dev);
  	unsigned long flags;
+@@ -1145,7 +1145,7 @@ static int grcan_transmit_catch_up(struc
  
- 	spin_lock_irqsave(&card->lock, flags);
--	list_for_each_entry(t, &card->transaction_list, link) {
--		if (t == transaction) {
--			if (!try_cancel_split_timeout(t)) {
-+	list_for_each_entry(iter, &card->transaction_list, link) {
-+		if (iter == transaction) {
-+			if (!try_cancel_split_timeout(iter)) {
- 				spin_unlock_irqrestore(&card->lock, flags);
- 				goto timed_out;
- 			}
--			list_del_init(&t->link);
--			card->tlabel_mask &= ~(1ULL << t->tlabel);
-+			list_del_init(&iter->link);
-+			card->tlabel_mask &= ~(1ULL << iter->tlabel);
-+			t = iter;
- 			break;
- 		}
+ 	spin_lock_irqsave(&priv->lock, flags);
+ 
+-	work_done = catch_up_echo_skb(dev, budget, true);
++	work_done = catch_up_echo_skb(dev, -1, true);
+ 	if (work_done) {
+ 		if (!priv->resetting && !priv->closing &&
+ 		    !(priv->can.ctrlmode & CAN_CTRLMODE_LISTENONLY))
+@@ -1159,8 +1159,6 @@ static int grcan_transmit_catch_up(struc
  	}
- 	spin_unlock_irqrestore(&card->lock, flags);
  
--	if (&t->link != &card->transaction_list) {
-+	if (t) {
- 		t->callback(card, rcode, NULL, 0, t->callback_data);
- 		return 0;
- 	}
-@@ -935,7 +936,7 @@ EXPORT_SYMBOL(fw_core_handle_request);
+ 	spin_unlock_irqrestore(&priv->lock, flags);
+-
+-	return work_done;
+ }
  
- void fw_core_handle_response(struct fw_card *card, struct fw_packet *p)
- {
--	struct fw_transaction *t;
-+	struct fw_transaction *t = NULL, *iter;
+ static int grcan_receive(struct net_device *dev, int budget)
+@@ -1242,19 +1240,13 @@ static int grcan_poll(struct napi_struct
+ 	struct net_device *dev = priv->dev;
+ 	struct grcan_registers __iomem *regs = priv->regs;
  	unsigned long flags;
- 	u32 *data;
- 	size_t data_length;
-@@ -947,20 +948,21 @@ void fw_core_handle_response(struct fw_c
- 	rcode	= HEADER_GET_RCODE(p->header[1]);
+-	int tx_work_done, rx_work_done;
+-	int rx_budget = budget / 2;
+-	int tx_budget = budget - rx_budget;
++	int work_done;
  
- 	spin_lock_irqsave(&card->lock, flags);
--	list_for_each_entry(t, &card->transaction_list, link) {
--		if (t->node_id == source && t->tlabel == tlabel) {
--			if (!try_cancel_split_timeout(t)) {
-+	list_for_each_entry(iter, &card->transaction_list, link) {
-+		if (iter->node_id == source && iter->tlabel == tlabel) {
-+			if (!try_cancel_split_timeout(iter)) {
- 				spin_unlock_irqrestore(&card->lock, flags);
- 				goto timed_out;
- 			}
--			list_del_init(&t->link);
--			card->tlabel_mask &= ~(1ULL << t->tlabel);
-+			list_del_init(&iter->link);
-+			card->tlabel_mask &= ~(1ULL << iter->tlabel);
-+			t = iter;
- 			break;
- 		}
+-	/* Half of the budget for receiving messages */
+-	rx_work_done = grcan_receive(dev, rx_budget);
++	work_done = grcan_receive(dev, budget);
+ 
+-	/* Half of the budget for transmitting messages as that can trigger echo
+-	 * frames being received
+-	 */
+-	tx_work_done = grcan_transmit_catch_up(dev, tx_budget);
++	grcan_transmit_catch_up(dev);
+ 
+-	if (rx_work_done < rx_budget && tx_work_done < tx_budget) {
++	if (work_done < budget) {
+ 		napi_complete(napi);
+ 
+ 		/* Guarantee no interference with a running reset that otherwise
+@@ -1271,7 +1263,7 @@ static int grcan_poll(struct napi_struct
+ 		spin_unlock_irqrestore(&priv->lock, flags);
  	}
- 	spin_unlock_irqrestore(&card->lock, flags);
  
--	if (&t->link == &card->transaction_list) {
-+	if (!t) {
-  timed_out:
- 		fw_notice(card, "unsolicited response (source %x, tlabel %x)\n",
- 			  source, tlabel);
---- a/drivers/firewire/sbp2.c
-+++ b/drivers/firewire/sbp2.c
-@@ -408,7 +408,7 @@ static void sbp2_status_write(struct fw_
- 			      void *payload, size_t length, void *callback_data)
- {
- 	struct sbp2_logical_unit *lu = callback_data;
--	struct sbp2_orb *orb;
-+	struct sbp2_orb *orb = NULL, *iter;
- 	struct sbp2_status status;
- 	unsigned long flags;
+-	return rx_work_done + tx_work_done;
++	return work_done;
+ }
  
-@@ -433,17 +433,18 @@ static void sbp2_status_write(struct fw_
- 
- 	/* Lookup the orb corresponding to this status write. */
- 	spin_lock_irqsave(&lu->tgt->lock, flags);
--	list_for_each_entry(orb, &lu->orb_list, link) {
-+	list_for_each_entry(iter, &lu->orb_list, link) {
- 		if (STATUS_GET_ORB_HIGH(status) == 0 &&
--		    STATUS_GET_ORB_LOW(status) == orb->request_bus) {
--			orb->rcode = RCODE_COMPLETE;
--			list_del(&orb->link);
-+		    STATUS_GET_ORB_LOW(status) == iter->request_bus) {
-+			iter->rcode = RCODE_COMPLETE;
-+			list_del(&iter->link);
-+			orb = iter;
- 			break;
- 		}
- 	}
- 	spin_unlock_irqrestore(&lu->tgt->lock, flags);
- 
--	if (&orb->link != &lu->orb_list) {
-+	if (orb) {
- 		orb->callback(orb, &status);
- 		kref_put(&orb->kref, free_orb); /* orb callback reference */
- 	} else {
+ /* Work tx bug by waiting while for the risky situation to clear. If that fails,
 
 
