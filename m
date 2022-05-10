@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A91CC4167D
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:45:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 403DEC47080
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:45:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243867AbiEJNsy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:48:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40240 "EHLO
+        id S1343920AbiEJNsn (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:48:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243829AbiEJNcR (ORCPT
+        with ESMTP id S243849AbiEJNcS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:32:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12C792D2E19;
-        Tue, 10 May 2022 06:22:28 -0700 (PDT)
+        Tue, 10 May 2022 09:32:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6098A22EA74;
+        Tue, 10 May 2022 06:22:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BBBC3B81CF8;
-        Tue, 10 May 2022 13:22:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37F57C385CB;
-        Tue, 10 May 2022 13:22:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F0D9F6170D;
+        Tue, 10 May 2022 13:22:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07D91C385C2;
+        Tue, 10 May 2022 13:22:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188945;
-        bh=ebxO7ea5uZ2L1ow0f2EsBUE2+tEllM6tW5beIpHMgIw=;
+        s=korg; t=1652188959;
+        bh=IWBx+5sO3Vp2iBsahPhayhdg6TUAZM8E8BQ3PDzgWgI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zYKRvNXLfgRoGoKZjKN2ebP+VjZWvb0K6l5ADwlwJkx+c6L7OgJYBuscxLzjvTkyd
-         4ndyWJqJzosyyHEbjPANgvddybXu+CkgUWP/n6PBKDXZqrYP3qbbjoR6IL5n8acVPO
-         fvEXyD2iGvUH6WdXGWsa5fwDafS1ZH/Tdi7lHUqQ=
+        b=acgM7P5couVN3WC84/PUakJt9AUYYvBpLu/U4+wCDLTTWLTnK+csVteQM7YL4YbbE
+         Y0GD9FZVjpnRJ0bnpXOnPkZTSNEPg/yhlx4tyiTMDf2huk7LfokZAklPLj9rvhDURX
+         gDDZDNSIE0VME0IitKDcQN6TdWHwGOxKFkYuV56c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Jerome Brunet <jbrunet@baylibre.com>
-Subject: [PATCH 5.4 13/52] ASoC: meson: Fix event generation for G12A tohdmi mux
-Date:   Tue, 10 May 2022 15:07:42 +0200
-Message-Id: <20220510130730.246649329@linuxfoundation.org>
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Andreas Larsson <andreas@gaisler.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.4 18/52] can: grcan: grcan_close(): fix deadlock
+Date:   Tue, 10 May 2022 15:07:47 +0200
+Message-Id: <20220510130730.389893254@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.852544477@linuxfoundation.org>
 References: <20220510130729.852544477@linuxfoundation.org>
@@ -48,35 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-commit 12131008fc13ff7f7690d170b7a8f72d24fd7d1e upstream.
+commit 47f070a63e735bcc8d481de31be1b5a1aa62b31c upstream.
 
-The G12A tohdmi has a custom put() operation which returns 0 when the value
-of the mux changes, meaning that events are not generated for userspace.
-Change to return 1 in this case, the function returns early in the case
-where there is no change.
+There are deadlocks caused by del_timer_sync(&priv->hang_timer) and
+del_timer_sync(&priv->rr_timer) in grcan_close(), one of the deadlocks
+are shown below:
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Reviewed-by: Jerome Brunet <jbrunet@baylibre.com>
-Link: https://lore.kernel.org/r/20220421123803.292063-4-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+   (Thread 1)              |      (Thread 2)
+                           | grcan_reset_timer()
+grcan_close()              |  mod_timer()
+ spin_lock_irqsave() //(1) |  (wait a time)
+ ...                       | grcan_initiate_running_reset()
+ del_timer_sync()          |  spin_lock_irqsave() //(2)
+ (wait timer to stop)      |  ...
+
+We hold priv->lock in position (1) of thread 1 and use
+del_timer_sync() to wait timer to stop, but timer handler also need
+priv->lock in position (2) of thread 2. As a result, grcan_close()
+will block forever.
+
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irqsave(), which could let timer handler to obtain the
+needed lock.
+
+Link: https://lore.kernel.org/all/20220425042400.66517-1-duoming@zju.edu.cn
+Fixes: 6cec9b07fe6a ("can: grcan: Add device driver for GRCAN and GRHCAN cores")
 Cc: stable@vger.kernel.org
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Reviewed-by: Andreas Larsson <andreas@gaisler.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/meson/g12a-tohdmitx.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/can/grcan.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/sound/soc/meson/g12a-tohdmitx.c
-+++ b/sound/soc/meson/g12a-tohdmitx.c
-@@ -127,7 +127,7 @@ static int g12a_tohdmitx_i2s_mux_put_enu
+--- a/drivers/net/can/grcan.c
++++ b/drivers/net/can/grcan.c
+@@ -1113,8 +1113,10 @@ static int grcan_close(struct net_device
  
- 	snd_soc_dapm_mux_update_power(dapm, kcontrol, mux, e, NULL);
- 
--	return 0;
-+	return 1;
- }
- 
- static const struct snd_kcontrol_new g12a_tohdmitx_i2s_mux =
+ 	priv->closing = true;
+ 	if (priv->need_txbug_workaround) {
++		spin_unlock_irqrestore(&priv->lock, flags);
+ 		del_timer_sync(&priv->hang_timer);
+ 		del_timer_sync(&priv->rr_timer);
++		spin_lock_irqsave(&priv->lock, flags);
+ 	}
+ 	netif_stop_queue(dev);
+ 	grcan_stop_hardware(dev);
 
 
