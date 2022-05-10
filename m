@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 782B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:21:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED572C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:21:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344210AbiEJOZL (ORCPT
+        id S1344220AbiEJOZX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:25:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47288 "EHLO
+        Tue, 10 May 2022 10:25:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244325AbiEJNqP (ORCPT
+        with ESMTP id S243912AbiEJNwx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:46:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25FED134E0E;
-        Tue, 10 May 2022 06:31:31 -0700 (PDT)
+        Tue, 10 May 2022 09:52:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D28C36B7F6;
+        Tue, 10 May 2022 06:38:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BD25FB81DA0;
-        Tue, 10 May 2022 13:31:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 221E9C385C6;
-        Tue, 10 May 2022 13:31:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5023BB81DA2;
+        Tue, 10 May 2022 13:38:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8867BC385C2;
+        Tue, 10 May 2022 13:38:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189473;
-        bh=u5m/vwoLt/OJvU6P75/Au/EcoodccxVtvbU6tqGmf6o=;
+        s=korg; t=1652189893;
+        bh=fD6Jlo6f0v17/XDRJr9vpfwAbCvFuWwFNPMB2SyCkc8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FP1GLFAlOcO3Og2rZyIWvFl1gG7iUlIDvc3ZnLCDBGS94tF9pzXputbZxgis7b8TS
-         0+Ofl8lFfbtvf/Y+oNqcpIuOxUMHxyPHH+YTep6lk/iXnV7lgl6/yzYjOZaeuaO4lF
-         7ud3h7AVTdoL/Yau/TrCEC4SPHZm9MNp6LYnAcuI=
+        b=LEssuADzVa9gbaK3dJoQApjUKEIPqRjVuT17l5lvkm7HRtenKec2VWdzCe5T6yS3Q
+         RD7A+uBFuXrjeGYYFAscqtSwxQrjA0Na7yP7BVVvYtwLBVLuf6e9+RhQ9ivc6s+pd8
+         u1J6kA4azTLNiJZe6M2xGB8cEXptVolLHYOCZiZs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 062/135] net: dsa: mt7530: add missing of_node_put() in mt7530_setup()
-Date:   Tue, 10 May 2022 15:07:24 +0200
-Message-Id: <20220510130742.187030660@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Sven Peter <sven@svenpeter.dev>, Joerg Roedel <jroedel@suse.de>
+Subject: [PATCH 5.17 062/140] iommu/dart: check return value after calling platform_get_resource()
+Date:   Tue, 10 May 2022 15:07:32 +0200
+Message-Id: <20220510130743.391631635@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
-References: <20220510130740.392653815@linuxfoundation.org>
+In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
+References: <20220510130741.600270947@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,29 +51,45 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Yang Yingliang <yangyingliang@huawei.com>
 
-commit a9e9b091a1c14ecd8bd9d3214a62142a1786fe30 upstream.
+commit a15932f4377062364d22096afe25bc579134a1c3 upstream.
 
-Add of_node_put() if of_get_phy_mode() fails in mt7530_setup()
+It will cause null-ptr-deref in resource_size(), if platform_get_resource()
+returns NULL, move calling resource_size() after devm_ioremap_resource() that
+will check 'res' to avoid null-ptr-deref.
+And use devm_platform_get_and_ioremap_resource() to simplify code.
 
-Fixes: 0c65b2b90d13 ("net: of_get_phy_mode: Change API to solve int/unit warnings")
-Reported-by: Hulk Robot <hulkci@huawei.com>
+Fixes: 46d1fb072e76 ("iommu/dart: Add DART iommu driver")
 Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220428095317.538829-1-yangyingliang@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: Sven Peter <sven@svenpeter.dev>
+Link: https://lore.kernel.org/r/20220425090826.2532165-1-yangyingliang@huawei.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/dsa/mt7530.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/iommu/apple-dart.c |    9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -2216,6 +2216,7 @@ mt7530_setup(struct dsa_switch *ds)
- 				ret = of_get_phy_mode(mac_np, &interface);
- 				if (ret && ret != -ENODEV) {
- 					of_node_put(mac_np);
-+					of_node_put(phy_node);
- 					return ret;
- 				}
- 				id = of_mdio_parse_addr(ds->dev, phy_node);
+--- a/drivers/iommu/apple-dart.c
++++ b/drivers/iommu/apple-dart.c
+@@ -857,16 +857,15 @@ static int apple_dart_probe(struct platf
+ 	dart->dev = dev;
+ 	spin_lock_init(&dart->lock);
+ 
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	dart->regs = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
++	if (IS_ERR(dart->regs))
++		return PTR_ERR(dart->regs);
++
+ 	if (resource_size(res) < 0x4000) {
+ 		dev_err(dev, "MMIO region too small (%pr)\n", res);
+ 		return -EINVAL;
+ 	}
+ 
+-	dart->regs = devm_ioremap_resource(dev, res);
+-	if (IS_ERR(dart->regs))
+-		return PTR_ERR(dart->regs);
+-
+ 	dart->irq = platform_get_irq(pdev, 0);
+ 	if (dart->irq < 0)
+ 		return -ENODEV;
 
 
