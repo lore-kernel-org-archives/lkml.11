@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F21DC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66F09C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:44:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244635AbiEJNqy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:46:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56342 "EHLO
+        id S244816AbiEJNrB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:47:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243919AbiEJNcV (ORCPT
+        with ESMTP id S243905AbiEJNcU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:32:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2B51D54;
-        Tue, 10 May 2022 06:23:45 -0700 (PDT)
+        Tue, 10 May 2022 09:32:20 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F73185C81;
+        Tue, 10 May 2022 06:23:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 75BBFB81D7A;
-        Tue, 10 May 2022 13:23:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBDEEC385C2;
-        Tue, 10 May 2022 13:23:42 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 05241CE1EED;
+        Tue, 10 May 2022 13:23:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1906CC385A6;
+        Tue, 10 May 2022 13:23:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189023;
-        bh=qS9yeF5Z4kqyQaN+jkF6ZO2qnwVTEewgiRMJ/qCZUY4=;
+        s=korg; t=1652189011;
+        bh=x1FETPDPkJpjC9YoWTr5LayCUINKYrtnh9VD5X3xMck=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vsuvJgX+iw44plVfiOEzFKvkjDcRTjxBPRhLoav92kG21ydBkCBmJJGWxys/BmvNb
-         KTy7Hw/dhGdqvLEmYNNEuzlFcRWrTEZpH1U2BKHBmsQWym8DLD7Ax6MEjTyLulT/JK
-         aozR6Cs+KgUR6RRcIHlmoNnNXkGrO1dY+u7J8OI0=
+        b=KUZgqiqoPt+QZLu7a9TMadVrq50tJT4Z11FCIDiUNujeTE1wrd7hkm5cExHsv+VqN
+         Jc5F17M3c49XmZ5e+sRuT3JuOAjeGrL63XkDgRPZJa9lAfwP/Tq2MVofYc45XAbyp9
+         we946+GsK/zor7svAh1Y+kuh0dQxxtDUSkcnm0jI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aili Yao <yaoaili@kingsoft.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 38/52] KVM: LAPIC: Enable timer posted-interrupt only when mwait/hlt is advertised
-Date:   Tue, 10 May 2022 15:08:07 +0200
-Message-Id: <20220510130730.967514649@linuxfoundation.org>
+        stable@vger.kernel.org, Felix Kuehling <Felix.Kuehling@amd.com>,
+        Philip Yang <philip.yang@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH 5.4 34/52] drm/amdkfd: Use drm_priv to pass VM from KFD to amdgpu
+Date:   Tue, 10 May 2022 15:08:03 +0200
+Message-Id: <20220510130730.850542876@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.852544477@linuxfoundation.org>
 References: <20220510130729.852544477@linuxfoundation.org>
@@ -51,53 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wanpeng Li <wanpengli@tencent.com>
+From: Felix Kuehling <Felix.Kuehling@amd.com>
 
-[ Upstream commit 1714a4eb6fb0cb79f182873cd011a8ed60ac65e8 ]
+commit b40a6ab2cf9213923bf8e821ce7fa7f6a0a26990 upstream.
 
-As commit 0c5f81dad46 ("KVM: LAPIC: Inject timer interrupt via posted
-interrupt") mentioned that the host admin should well tune the guest
-setup, so that vCPUs are placed on isolated pCPUs, and with several pCPUs
-surplus for *busy* housekeeping.  In this setup, it is preferrable to
-disable mwait/hlt/pause vmexits to keep the vCPUs in non-root mode.
+amdgpu_amdkfd_gpuvm_alloc_memory_of_gpu needs the drm_priv to allow mmap
+to access the BO through the corresponding file descriptor. The VM can
+also be extracted from drm_priv, so drm_priv can replace the vm parameter
+in the kfd2kgd interface.
 
-However, if only some guests isolated and others not, they would not
-have any benefit from posted timer interrupts, and at the same time lose
-VMX preemption timer fast paths because kvm_can_post_timer_interrupt()
-returns true and therefore forces kvm_can_use_hv_timer() to false.
-
-By guaranteeing that posted-interrupt timer is only used if MWAIT or
-HLT are done without vmexit, KVM can make a better choice and use the
-VMX preemption timer and the corresponding fast paths.
-
-Reported-by: Aili Yao <yaoaili@kingsoft.com>
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-Cc: Aili Yao <yaoaili@kingsoft.com>
-Cc: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
-Message-Id: <1643112538-36743-1-git-send-email-wanpengli@tencent.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Reviewed-by: Philip Yang <philip.yang@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+[This is a partial cherry-pick of the upstream commit.]
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/lapic.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c |   10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-index afe3b8e61514..3696b4de9d99 100644
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -118,7 +118,8 @@ static inline u32 kvm_x2apic_id(struct kvm_lapic *apic)
- 
- bool kvm_can_post_timer_interrupt(struct kvm_vcpu *vcpu)
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
+@@ -951,11 +951,15 @@ int amdgpu_amdkfd_gpuvm_acquire_process_
+ 					   struct dma_fence **ef)
  {
--	return pi_inject_timer && kvm_vcpu_apicv_active(vcpu);
-+	return pi_inject_timer && kvm_vcpu_apicv_active(vcpu) &&
-+		(kvm_mwait_in_guest(vcpu->kvm) || kvm_hlt_in_guest(vcpu->kvm));
- }
- EXPORT_SYMBOL_GPL(kvm_can_post_timer_interrupt);
+ 	struct amdgpu_device *adev = get_amdgpu_device(kgd);
+-	struct drm_file *drm_priv = filp->private_data;
+-	struct amdgpu_fpriv *drv_priv = drm_priv->driver_priv;
+-	struct amdgpu_vm *avm = &drv_priv->vm;
++	struct amdgpu_fpriv *drv_priv;
++	struct amdgpu_vm *avm;
+ 	int ret;
  
--- 
-2.35.1
-
++	ret = amdgpu_file_to_fpriv(filp, &drv_priv);
++	if (ret)
++		return ret;
++	avm = &drv_priv->vm;
++
+ 	/* Already a compute VM? */
+ 	if (avm->process_info)
+ 		return -EINVAL;
 
 
