@@ -2,52 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC594C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:55:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84C34C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:56:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239369AbiEJP7t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:59:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60600 "EHLO
+        id S1346883AbiEJQAH (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 12:00:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347247AbiEJPwI (ORCPT
+        with ESMTP id S1347249AbiEJPwI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 11:52:08 -0400
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9058722BC7
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:48:03 -0700 (PDT)
-Received: by mail-qt1-x831.google.com with SMTP id hh4so13812857qtb.10
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:48:03 -0700 (PDT)
+Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BEC225294;
+        Tue, 10 May 2022 08:48:10 -0700 (PDT)
+Received: by mail-qt1-x82e.google.com with SMTP id hf18so13860148qtb.0;
+        Tue, 10 May 2022 08:48:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=aKum/y+r6etzQiDAncOGvinx4476e/+0uZXTw6pzwzs=;
-        b=gW0t2QRbTyXmQvXyimlegclNnIEB2oz1Q2shjZ39XuWnPGlqj4KNZ0qpRhj0fKscpl
-         cnjA8BtdGugJAErQ/HU8DJ/dsZkwoZ7BSSgTFS3o2Ra6snQf8kalMqJV7Z1E1ACwsSWo
-         5Sddgvu0qSXC+zgKYuWGwVBlY9JUUw+ncgV1uJ1F8HQOrhbwlvwHPwsjwlDyFYZiScfv
-         mlP0EeM7Yygzq2Y6bpsLYjCliTNntkC+zkIjkyKrwaT0ca5n6C2Ay5KBcb9FBB4UlLug
-         wc8H+vo20SJrhy118uJW+/eNG6vblqSGHG2s3aAf35TrzbH+YuT1vIuMRDY0jL/jEXiX
-         T0rg==
+        bh=X3BNtoB4/F6niqoFfX4fx2Osn5fqWuTD5b1GlgfZFp8=;
+        b=EabF1/L+wbkUd27VSF3/tF7Hgi1fgBopaHKNIvv3dj7doyy+kNYd+Am9ZenQfeE7MZ
+         ez5LqgKnknGkr1X29oqKKeG5hO/HuqrPteNcfsqyla7aPBl8/XkUB4lOzZQPPxZ9ldyG
+         mQP7YlICvUFB2oeF73toiOU/LxGQFPnJbQQckBNiTyWwxgz6DQ8o3cweqAQps+n5cG5I
+         Nxy/HGqtH5Rk6LIj+b4gHe/FBUpavd3d0H2rir/Wgs1k+DoVD+5hBQ/c3R9wdySzZFHl
+         egkJYRJqH2fWH+/EPULpjEqfOGIyjVTmZUZ7eBjLK5HvO4C3OnuWrT1+Q9W/Eq3pvkT0
+         czXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=aKum/y+r6etzQiDAncOGvinx4476e/+0uZXTw6pzwzs=;
-        b=1IpSNfJLRehnkiGN7nFHiygJZcOos/XJNob9lr2xdy9NmG0bW8VEZrELOSLo8nceal
-         /oSsuS3sHPzq1srgxPoqtt1EOiOaoI8c+Pbf9M/A1Gpr/uOQtPJ9WPnCw2l0IRA+2DkC
-         ju3ZHMlB0dYEf2BSUYIHndwoK+vct83BjunVhUs0IH+xfmx9X4XyAv+T5HFHSVQnyjnt
-         wYJJBDoYb/L8L0z/iI2OIKimHbBSStzppbU6SO/TbbUAHoTpV4m44PanuDSYqZ0JHcSJ
-         dn0yBn8FahQLsnqZNfMU19kyZhhzCQZkKzu788+GY9XGxcO/ASl7toWLp8vFFZOlUZ2q
-         I9Og==
-X-Gm-Message-State: AOAM533Z9dYYaJYLG+wRpIN00ya6eD4HJZONkQhWuFn9uhMHJeuXAgBs
-        Q0GHs+tL1UOjHPkczZzKQmo=
-X-Google-Smtp-Source: ABdhPJz4ankS+cAqYT1bVrUsTcE2UHlB2KcHnUHYsVNYUl/deyqgn3ghukaHi8q8RzXf3c5GanpkYw==
-X-Received: by 2002:a05:622a:174b:b0:2f3:b473:13c6 with SMTP id l11-20020a05622a174b00b002f3b47313c6mr20251974qtk.198.1652197682702;
-        Tue, 10 May 2022 08:48:02 -0700 (PDT)
+        bh=X3BNtoB4/F6niqoFfX4fx2Osn5fqWuTD5b1GlgfZFp8=;
+        b=Bzeqr8gqp6LUW5mMG0pxczxUPSvgD9Hm6tpsr/i++wpaSGRApvKGVEDdC7uzFSwNpU
+         gziTdTjiXwX8THXjJPs/ENqwdiMaVRMUNNrypTsWoRKgwWzM4UVLR1/t+CtmpkgAyfyQ
+         rIhhw36xFKXOC71NK55CbJCNKg929DR2Q+DQsSThqB/B96B1RiRVS+YWItsT/WWwxg0s
+         YiQEOgmMMzVWJ60HQ6MuO0PxbhVar6ekygvdDCcIk6Bf0Q88qKRAzUeSpiAz3asHEiZ6
+         lcmAKatjWqtLwd/44sYlnOVpEyMYyl7ztMHR+jOZKSlPzjrHwqN+mcLnKComR1Blr1bC
+         iKsA==
+X-Gm-Message-State: AOAM532zQv2Qh4UvwO+douzBu4wP5FI/Ti1wNLr+Shvqkdqv/YmFJ4pi
+        qeFj9BVjMOq7Xn4v2jHNEZ4=
+X-Google-Smtp-Source: ABdhPJyRW2QB7yHYRodyUu35HiFlfKOXN/E+mTqJPQVZwWYac/HVRljaueGzRFfeuCppzBfOZdhAEA==
+X-Received: by 2002:a05:622a:64d:b0:2f3:e942:be29 with SMTP id a13-20020a05622a064d00b002f3e942be29mr2156043qtb.390.1652197689818;
+        Tue, 10 May 2022 08:48:09 -0700 (PDT)
 Received: from localhost ([98.242.65.84])
-        by smtp.gmail.com with ESMTPSA id b3-20020ac85403000000b002f39b99f6adsm9459897qtq.71.2022.05.10.08.48.02
+        by smtp.gmail.com with ESMTPSA id a36-20020a05620a43a400b0069fc13ce212sm8677904qkp.67.2022.05.10.08.48.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 08:48:02 -0700 (PDT)
+        Tue, 10 May 2022 08:48:09 -0700 (PDT)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         David Laight <David.Laight@ACULAB.COM>,
@@ -61,18 +62,20 @@ To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         Matti Vaittinen <Matti.Vaittinen@fi.rohmeurope.com>,
         linux-kernel@vger.kernel.org
-Cc:     Yury Norov <yury.norov@gmail.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Anup Patel <anup@brainfault.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        Jisheng Zhang <jszhang@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Tsukasa OI <research_trasio@irq.a4lg.com>,
-        linux-riscv@lists.infradead.org
-Subject: [PATCH 07/22] risc-v: replace bitmap_weight with bitmap_empty in riscv_fill_hwcap()
-Date:   Tue, 10 May 2022 08:47:35 -0700
-Message-Id: <20220510154750.212913-8-yury.norov@gmail.com>
+Cc:     Yury Norov <yury.norov@gmail.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H . Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>, kvm@vger.kernel.org,
+        x86@kernel.org
+Subject: [PATCH 11/22] KVM: x86: hyper-v: replace bitmap_weight() with hweight64()
+Date:   Tue, 10 May 2022 08:47:39 -0700
+Message-Id: <20220510154750.212913-12-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220510154750.212913-1-yury.norov@gmail.com>
 References: <20220510154750.212913-1-yury.norov@gmail.com>
@@ -82,42 +85,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-bitmap_empty() is better than bitmap_weight() because it may return
-earlier, and improves on readability.
+kvm_hv_flush_tlb() applies bitmap API to a u64 variable valid_bank_mask.
+Since valid_bank_mask has a fixed size, we can use hweight64() and avoid
+excessive bloating.
 
-CC: Albert Ou <aou@eecs.berkeley.edu>
-CC: Anup Patel <anup@brainfault.org>
-CC: Atish Patra <atishp@atishpatra.org>
-CC: Jisheng Zhang <jszhang@kernel.org>
-CC: Palmer Dabbelt <palmer@dabbelt.com>
-CC: Paul Walmsley <paul.walmsley@sifive.com>
-CC: Tsukasa OI <research_trasio@irq.a4lg.com>
-CC: linux-riscv@lists.infradead.org
+CC: Borislav Petkov <bp@alien8.de>
+CC: Dave Hansen <dave.hansen@linux.intel.com>
+CC: H. Peter Anvin <hpa@zytor.com>
+CC: Ingo Molnar <mingo@redhat.com>
+CC: Jim Mattson <jmattson@google.com>
+CC: Joerg Roedel <joro@8bytes.org>
+CC: Paolo Bonzini <pbonzini@redhat.com>
+CC: Sean Christopherson <seanjc@google.com>
+CC: Thomas Gleixner <tglx@linutronix.de>
+CC: Vitaly Kuznetsov <vkuznets@redhat.com>
+CC: Wanpeng Li <wanpengli@tencent.com>
+CC: kvm@vger.kernel.org
 CC: linux-kernel@vger.kernel.org
+CC: x86@kernel.org
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- arch/riscv/kernel/cpufeature.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ arch/x86/kvm/hyperv.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
-index 1b2d42d7f589..f0298d756f66 100644
---- a/arch/riscv/kernel/cpufeature.c
-+++ b/arch/riscv/kernel/cpufeature.c
-@@ -206,11 +206,10 @@ void __init riscv_fill_hwcap(void)
- 		else
- 			elf_hwcap = this_hwcap;
+diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
+index 41585f0edf1e..b652b856df2b 100644
+--- a/arch/x86/kvm/hyperv.c
++++ b/arch/x86/kvm/hyperv.c
+@@ -1855,7 +1855,7 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
+ 		all_cpus = flush_ex.hv_vp_set.format !=
+ 			HV_GENERIC_SET_SPARSE_4K;
  
--		if (bitmap_weight(riscv_isa, RISCV_ISA_EXT_MAX))
--			bitmap_and(riscv_isa, riscv_isa, this_isa, RISCV_ISA_EXT_MAX);
--		else
-+		if (bitmap_empty(riscv_isa, RISCV_ISA_EXT_MAX))
- 			bitmap_copy(riscv_isa, this_isa, RISCV_ISA_EXT_MAX);
--
-+		else
-+			bitmap_and(riscv_isa, riscv_isa, this_isa, RISCV_ISA_EXT_MAX);
- 	}
+-		if (hc->var_cnt != bitmap_weight((unsigned long *)&valid_bank_mask, 64))
++		if (hc->var_cnt != hweight64(valid_bank_mask))
+ 			return HV_STATUS_INVALID_HYPERCALL_INPUT;
  
- 	/* We don't support systems with F but without D, so mask those out
+ 		if (all_cpus)
+@@ -1956,7 +1956,7 @@ static u64 kvm_hv_send_ipi(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
+ 		valid_bank_mask = send_ipi_ex.vp_set.valid_bank_mask;
+ 		all_cpus = send_ipi_ex.vp_set.format == HV_GENERIC_SET_ALL;
+ 
+-		if (hc->var_cnt != bitmap_weight(&valid_bank_mask, 64))
++		if (hc->var_cnt != hweight64(valid_bank_mask))
+ 			return HV_STATUS_INVALID_HYPERCALL_INPUT;
+ 
+ 		if (all_cpus)
 -- 
 2.32.0
 
