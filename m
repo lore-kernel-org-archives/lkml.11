@@ -2,87 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53B23C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 10:55:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 939E0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 10:55:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240520AbiEJK7T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 06:59:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58774 "EHLO
+        id S238570AbiEJK70 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 06:59:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240360AbiEJK6k (ORCPT
+        with ESMTP id S240550AbiEJK6q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 06:58:40 -0400
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B327532CC;
-        Tue, 10 May 2022 03:52:09 -0700 (PDT)
-Received: by mail-wm1-f49.google.com with SMTP id bg25so9918733wmb.4;
-        Tue, 10 May 2022 03:52:09 -0700 (PDT)
+        Tue, 10 May 2022 06:58:46 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFAC369CDF
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 03:53:07 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id x18so16403867plg.6
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 03:53:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sCueAiZ8pX86I1R/1I9WgSZcskWDRYR0Da8bJxkVfcs=;
+        b=IPa6eL5aJa33heazIEv4jx+xlu5moXTQqaUnxxLpqMDpO8aGZZD8fYVApyYetHOyGg
+         Kharz/D0Y90BOeII9ErtoiT1nAzQbr+8/uZ+6IiEh9YCcWBwJ+2Bk4lCLuoJZkd/Ueu0
+         lXjBAAXZ/99vy2K6naeDpByfcz/54J8z2Tewefk6W6DpoOqXCsWEa4Hx7cVcQ1g5augC
+         n221LoIraRQuX3oIIXRi0qYNUbr/1wANb6rJLLG+0kliVfQnXIMF8LACB2MLXuVkqP0g
+         uFYLpxfj54oSbzV0x/AcbNRyjII4LdWqomR7faogAhyo2Znt0R48C59yLNK6e7PCHygm
+         2rvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=p6VCNHyiYuDbxgsrbiSQPkXEisIh4ErIQF+ClwhqALo=;
-        b=FSYwuDVlKH9wW4QkdUVsZ0vCRN5OqJ05OKq6qiTlw5fEITVE7vaWAQ5Zd7xSQ7ib6t
-         6ZsM/u1M8QUd5t6KIv7ENt6euKB6LNn3W1XU0H8uOPUNr2W65O/YZwVhoUrKlFU4jfN7
-         2Ve2hLh7SSemKUl1OZj6ltgysDlLSsjz6HXp863arbyznGxD4jNthM9+B5cGruzQ7met
-         00I2PvXeymbOPe497l+uO+8jQDlzBjbcJK7gyg+/qNLyBgHv4AcJ3o6P3vqc49yly/aR
-         bHQ6Ij+ZjNb9phSRWOW9fhPN84XS2mi4yYQSpuPriiuIaNtJmac+hbvisnXAISCWtzW4
-         SAiw==
-X-Gm-Message-State: AOAM533vH6VAlcHz6lEmoNXwmQro8TZM7XPAkJmv0QxxGDhmpQO/q4Vl
-        bzvk1RvocT1BGhIfj2vlu5c=
-X-Google-Smtp-Source: ABdhPJwuWwvFLwODMaM2OHf1KBzQlzSMCPivJS8OGOT5GoBODuzez3+oLb5dA2oywcHIXj7AVTOICQ==
-X-Received: by 2002:a05:600c:a08:b0:392:a561:9542 with SMTP id z8-20020a05600c0a0800b00392a5619542mr20338302wmp.62.1652179927424;
-        Tue, 10 May 2022 03:52:07 -0700 (PDT)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id r17-20020a05600c425100b003942a244ee2sm2304037wmm.39.2022.05.10.03.52.06
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sCueAiZ8pX86I1R/1I9WgSZcskWDRYR0Da8bJxkVfcs=;
+        b=EAXWiVhtisGG0+VZadVa8FgOKjpf89BW+RVAc93xuzSnCaBN70uuGkdbV9XzXE88aM
+         5AW4s0VxCMnfnZdMQYAVnrCOZvF2QlwmZ2uieaCwbCZHdvLkuP+s8GJcWzuEI0y3b2+R
+         QOKxI7YseQj1FIwDGTVc/gUoi6e8BLOExEa7ENhsMMZUmjWYzGtgMAbPwSZ/1rmH5AKT
+         XNEZlObqOOnP+PzNl07d4VKFX5jHNEXUEKc+RBAmFrs93G4VlWGeBX4pF5n87RFIQShu
+         eRP/CZ0lutE1YTC6XTT3+5XmfPoWPeh7cUcPtYTgh0Zm8qVPhHLI4NFT5t4+hji0pQr8
+         8B/Q==
+X-Gm-Message-State: AOAM532oBZ49TtZ58e8nRFCnMFmJNvfMe02xak3rHAArXGXCLc+uWH3Z
+        seYL5S/vlIZUcF3Ik+yy0HM=
+X-Google-Smtp-Source: ABdhPJx67ZlYTKYPHWjl22QUBHOCM+xy2RlMtychZuLoqjEZdoH+ht0H5OxHxYMrQPiy2NvxpAKV5w==
+X-Received: by 2002:a17:902:70c3:b0:15e:f8ef:67b5 with SMTP id l3-20020a17090270c300b0015ef8ef67b5mr15377289plt.115.1652179987322;
+        Tue, 10 May 2022 03:53:07 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id a3-20020a1709027d8300b0015e8d4eb2ccsm1651840plm.278.2022.05.10.03.53.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 03:52:06 -0700 (PDT)
-Date:   Tue, 10 May 2022 10:52:04 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Jeffrey Hugo <quic_jhugo@quicinc.com>
-Cc:     Dexuan Cui <decui@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>,
-        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        Jake Oshins <jakeo@microsoft.com>,
-        David Zhang <dazhan@microsoft.com>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/2] PCI: hv: Reuse existing ITRE allocation in
- compose_msi_msg()
-Message-ID: <20220510105204.t57u35y5kicniefs@liuwe-devbox-debian-v2>
-References: <1652132902-27109-1-git-send-email-quic_jhugo@quicinc.com>
- <1652132902-27109-2-git-send-email-quic_jhugo@quicinc.com>
- <BYAPR21MB1270A579B909B31FA271FC08BFC69@BYAPR21MB1270.namprd21.prod.outlook.com>
- <8372be1c-5f7d-3a0e-38fb-787b9d38fcd9@quicinc.com>
+        Tue, 10 May 2022 03:53:07 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     kbusch@kernel.org
+Cc:     axboe@fb.com, linux-nvme@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] NVMe: use kobj_to_dev()
+Date:   Tue, 10 May 2022 10:53:03 +0000
+Message-Id: <20220510105303.1352342-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8372be1c-5f7d-3a0e-38fb-787b9d38fcd9@quicinc.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 08:29:19PM -0600, Jeffrey Hugo wrote:
-> On 5/9/2022 5:13 PM, Dexuan Cui wrote:
-> > > From: Jeffrey Hugo <quic_jhugo@quicinc.com>
-> > > Sent: Monday, May 9, 2022 2:48 PM
-> > > Subject: [PATCH 1/2] PCI: hv: Reuse existing ITRE allocation in
-> > 
-> > s/ITRE/IRTE. I suppose Wei can help fix this without a v2 :-)
-> 
-> Thanks for the review.
-> 
-> I have no problem sending out a V2.  Especially since you pointed out my
-> mistakes on both patches.  I'll wait a little bit for any additional
-> feedback, and then send out a V2.
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-Yes please send out v2.
+Use kobj_to_dev() instead of open-coding it.
 
-Thanks,
-Wei.
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+---
+ drivers/nvme/host/core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index 510e3860358b..48d2bb0a4fad 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -3267,7 +3267,7 @@ static struct attribute *nvme_ns_id_attrs[] = {
+ static umode_t nvme_ns_id_attrs_are_visible(struct kobject *kobj,
+ 		struct attribute *a, int n)
+ {
+-	struct device *dev = container_of(kobj, struct device, kobj);
++	struct device *dev = kobj_to_dev(kobj);
+ 	struct nvme_ns_ids *ids = &dev_to_ns_head(dev)->ids;
+ 
+ 	if (a == &dev_attr_uuid.attr) {
+@@ -3572,7 +3572,7 @@ static struct attribute *nvme_dev_attrs[] = {
+ static umode_t nvme_dev_attrs_are_visible(struct kobject *kobj,
+ 		struct attribute *a, int n)
+ {
+-	struct device *dev = container_of(kobj, struct device, kobj);
++	struct device *dev = kobj_to_dev(kobj);
+ 	struct nvme_ctrl *ctrl = dev_get_drvdata(dev);
+ 
+ 	if (a == &dev_attr_delete_controller.attr && !ctrl->ops->delete_ctrl)
+-- 
+2.25.1
+
+
