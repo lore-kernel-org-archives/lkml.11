@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59C20C38A2E
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF540C38A05
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343500AbiEJN6x (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:58:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55148 "EHLO
+        id S245649AbiEJN6a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:58:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245195AbiEJNii (ORCPT
+        with ESMTP id S245189AbiEJNih (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:38:38 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D47A25FCA;
-        Tue, 10 May 2022 06:28:39 -0700 (PDT)
+        Tue, 10 May 2022 09:38:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6856E268223;
+        Tue, 10 May 2022 06:28:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 55A86CE1EED;
-        Tue, 10 May 2022 13:28:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24595C385C2;
-        Tue, 10 May 2022 13:28:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1B3B8B81D24;
+        Tue, 10 May 2022 13:28:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BB60C385A6;
+        Tue, 10 May 2022 13:28:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189316;
-        bh=tDDRTR4hAcafWMH1wych2cfeBCdy8kCp9bNyavD8AN0=;
+        s=korg; t=1652189300;
+        bh=/Nq8sOMYYkVW91fUqgNO+MrVS7wvcRikl8+thWTEhm4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zJOBfdt70myElGS/zWWRj9yeY0W4geUGGMmh4GdGkP+DHUkjlpPDgt9fP8IHd+j9q
-         BjnvxIKMBKsFIhXm1zRP73eFtZkhQapDIhpOSt0nk2xRTXEaJCxuuktfy+sjaPDHf5
-         9EW1SZljY99l9BriomaIMK+wIk0JUFbWvmou9ass=
+        b=zDMcKjokllCtwW+BBtVmR62bHQg0NaUQhzGlOosIyJkPbCpfuypBOGVOLk7I7C+2A
+         wHlyW3E4M9lwnTYA/zOlNWKqSw6PKSTYb8CkvekLpIsjxZ+TEfdIqmeHdTMuD7zzkm
+         8PPxaRgV5F44P82qC8ZXSiZMIrR+5NpL9vCjltx0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicolin Chen <nicolinc@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Will Deacon <will@kernel.org>
-Subject: [PATCH 5.15 012/135] iommu/arm-smmu-v3: Fix size calculation in arm_smmu_mm_invalidate_range()
-Date:   Tue, 10 May 2022 15:06:34 +0200
-Message-Id: <20220510130740.748771520@linuxfoundation.org>
+        stable@vger.kernel.org, Ricky Wu <ricky_wu@realtek.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Christian Loehle <cloehle@hyperstone.com>
+Subject: [PATCH 5.10 70/70] mmc: rtsx: add 74 Clocks in power on flow
+Date:   Tue, 10 May 2022 15:08:29 +0200
+Message-Id: <20220510130734.913421890@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
-References: <20220510130740.392653815@linuxfoundation.org>
+In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
+References: <20220510130732.861729621@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,57 +49,114 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolin Chen <nicolinc@nvidia.com>
+From: Ricky WU <ricky_wu@realtek.com>
 
-commit 95d4782c34a60800ccf91d9f0703137d4367a2fc upstream.
+commit 1f311c94aabdb419c28e3147bcc8ab89269f1a7e upstream.
 
-The arm_smmu_mm_invalidate_range function is designed to be called
-by mm core for Shared Virtual Addressing purpose between IOMMU and
-CPU MMU. However, the ways of two subsystems defining their "end"
-addresses are slightly different. IOMMU defines its "end" address
-using the last address of an address range, while mm core defines
-that using the following address of an address range:
+SD spec definition:
+"Host provides at least 74 Clocks before issuing first command"
+After 1ms for the voltage stable then start issuing the Clock signals
 
-	include/linux/mm_types.h:
-		unsigned long vm_end;
-		/* The first byte after our end address ...
+if POWER STATE is
+MMC_POWER_OFF to MMC_POWER_UP to issue Clock signal to card
+MMC_POWER_UP to MMC_POWER_ON to stop issuing signal to card
 
-This mismatch resulted in an incorrect calculation for size so it
-failed to be page-size aligned. Further, it caused a dead loop at
-"while (iova < end)" check in __arm_smmu_tlb_inv_range function.
-
-This patch fixes the issue by doing the calculation correctly.
-
-Fixes: 2f7e8c553e98 ("iommu/arm-smmu-v3: Hook up ATC invalidation to mm ops")
-Cc: stable@vger.kernel.org
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Link: https://lore.kernel.org/r/20220419210158.21320-1-nicolinc@nvidia.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Ricky Wu <ricky_wu@realtek.com>
+Link: https://lore.kernel.org/r/1badf10aba764191a1a752edcbf90389@realtek.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Christian Loehle <cloehle@hyperstone.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/mmc/host/rtsx_pci_sdmmc.c |   31 +++++++++++++++++++++----------
+ 1 file changed, 21 insertions(+), 10 deletions(-)
 
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -183,7 +183,14 @@ static void arm_smmu_mm_invalidate_range
- {
- 	struct arm_smmu_mmu_notifier *smmu_mn = mn_to_smmu(mn);
- 	struct arm_smmu_domain *smmu_domain = smmu_mn->domain;
--	size_t size = end - start + 1;
-+	size_t size;
-+
-+	/*
-+	 * The mm_types defines vm_end as the first byte after the end address,
-+	 * different from IOMMU subsystem using the last address of an address
-+	 * range. So do a simple translation here by calculating size correctly.
-+	 */
-+	size = end - start;
+--- a/drivers/mmc/host/rtsx_pci_sdmmc.c
++++ b/drivers/mmc/host/rtsx_pci_sdmmc.c
+@@ -37,10 +37,7 @@ struct realtek_pci_sdmmc {
+ 	bool			double_clk;
+ 	bool			eject;
+ 	bool			initial_mode;
+-	int			power_state;
+-#define SDMMC_POWER_ON		1
+-#define SDMMC_POWER_OFF		0
+-
++	int			prev_power_state;
+ 	int			sg_count;
+ 	s32			cookie;
+ 	int			cookie_sg_count;
+@@ -902,14 +899,21 @@ static int sd_set_bus_width(struct realt
+ 	return err;
+ }
  
- 	if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_BTM))
- 		arm_smmu_tlb_inv_range_asid(start, size, smmu_mn->cd->asid,
+-static int sd_power_on(struct realtek_pci_sdmmc *host)
++static int sd_power_on(struct realtek_pci_sdmmc *host, unsigned char power_mode)
+ {
+ 	struct rtsx_pcr *pcr = host->pcr;
+ 	int err;
+ 
+-	if (host->power_state == SDMMC_POWER_ON)
++	if (host->prev_power_state == MMC_POWER_ON)
+ 		return 0;
+ 
++	if (host->prev_power_state == MMC_POWER_UP) {
++		rtsx_pci_write_register(pcr, SD_BUS_STAT, SD_CLK_TOGGLE_EN, 0);
++		goto finish;
++	}
++
++	msleep(100);
++
+ 	rtsx_pci_init_cmd(pcr);
+ 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, CARD_SELECT, 0x07, SD_MOD_SEL);
+ 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, CARD_SHARE_MODE,
+@@ -928,11 +932,17 @@ static int sd_power_on(struct realtek_pc
+ 	if (err < 0)
+ 		return err;
+ 
++	mdelay(1);
++
+ 	err = rtsx_pci_write_register(pcr, CARD_OE, SD_OUTPUT_EN, SD_OUTPUT_EN);
+ 	if (err < 0)
+ 		return err;
+ 
+-	host->power_state = SDMMC_POWER_ON;
++	/* send at least 74 clocks */
++	rtsx_pci_write_register(pcr, SD_BUS_STAT, SD_CLK_TOGGLE_EN, SD_CLK_TOGGLE_EN);
++
++finish:
++	host->prev_power_state = power_mode;
+ 	return 0;
+ }
+ 
+@@ -941,7 +951,7 @@ static int sd_power_off(struct realtek_p
+ 	struct rtsx_pcr *pcr = host->pcr;
+ 	int err;
+ 
+-	host->power_state = SDMMC_POWER_OFF;
++	host->prev_power_state = MMC_POWER_OFF;
+ 
+ 	rtsx_pci_init_cmd(pcr);
+ 
+@@ -967,7 +977,7 @@ static int sd_set_power_mode(struct real
+ 	if (power_mode == MMC_POWER_OFF)
+ 		err = sd_power_off(host);
+ 	else
+-		err = sd_power_on(host);
++		err = sd_power_on(host, power_mode);
+ 
+ 	return err;
+ }
+@@ -1404,10 +1414,11 @@ static int rtsx_pci_sdmmc_drv_probe(stru
+ 
+ 	host = mmc_priv(mmc);
+ 	host->pcr = pcr;
++	mmc->ios.power_delay_ms = 5;
+ 	host->mmc = mmc;
+ 	host->pdev = pdev;
+ 	host->cookie = -1;
+-	host->power_state = SDMMC_POWER_OFF;
++	host->prev_power_state = MMC_POWER_OFF;
+ 	INIT_WORK(&host->work, sd_request);
+ 	platform_set_drvdata(pdev, host);
+ 	pcr->slots[RTSX_SD_CARD].p_dev = pdev;
 
 
