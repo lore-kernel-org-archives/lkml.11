@@ -2,139 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1869EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 22:21:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CBDDC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 22:23:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235463AbiEJWVU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 18:21:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47694 "EHLO
+        id S235663AbiEJWXf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 18:23:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235631AbiEJWVH (ORCPT
+        with ESMTP id S235616AbiEJWXb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 18:21:07 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C4DD60040;
-        Tue, 10 May 2022 15:21:05 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id a21so459793edb.1;
-        Tue, 10 May 2022 15:21:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=bvOJEKEeTYGez3WYVMGA06O7z2nPgT8wUayrfQSacqo=;
-        b=Xu6VPNk9lS6SHNbPoG0KD70TMmfwpkx73eO6c+4JBRTPJYX8D4zo+zfH9+NY6Ed3UW
-         feQ7pGUXMgliDUim8/ry6bDBQH13HgnwB5zLTmTDxn6MB2CLPVzIEvlNzDDnJKEYJFRn
-         s9azdkkGBys/sbeNfnasr0Pl40P3dILNYM72nI3LykjZisuEU94UHdHBt6NPvgkvVpbF
-         c3FKAe6b9DOInAxTizW8WTwmFd7/MsdB6YIVLD+J88IQ/5Qc4pvEtrnHyPEb87YIehBk
-         v0cUoaucn0wLvrNh0xdm41LmFuuOIm13760kNkl6Hvd8gdBVmd2iyeIauT/lV8fzslLh
-         djTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=bvOJEKEeTYGez3WYVMGA06O7z2nPgT8wUayrfQSacqo=;
-        b=GHcNCF6Rcb4gXOCzXKyU9RdnOStlClS9S3qC+6bjmeNBedOPvKMso+DO/gFK8ckYm9
-         B2QulL06PWvzQPWCa21JamDZJRAUw8foh6jfljBKZG5dnBXhNt6bu4ydW74h2dQh28gJ
-         kW87JSm9dOA8lJEt3cpeiVG0TkflAH9Uhcb2NeYbzAZzxv8uLeDSGS59Q+Vkh/8rLdLT
-         kwqoj/OdylH+5YPyXl6Cnvv2JOSz48+hTXuffAWpb9nhSADW37v9Dx8kgksCXhr2unnj
-         XDzwCkoFPDbnkbTH2dt2W0dZO5ccPtixa0la/Lkti90ylR+tFBXg7h75FsojZoyND5Fm
-         2glQ==
-X-Gm-Message-State: AOAM531BtlsDkRllcG0m+ZICtIhQ1/lMZKKOUIKiVf1fxkTbf+fx4i/4
-        qIamlxGIlDwNmylaimjA4zE=
-X-Google-Smtp-Source: ABdhPJw4b0VxaMRGyqDttCMe2xNkxjWyC41rv+9eFQoaX2UiZZnHkDcccfnwH7w2aY6jsjvKgmuk7w==
-X-Received: by 2002:aa7:c31a:0:b0:425:df3c:de8e with SMTP id l26-20020aa7c31a000000b00425df3cde8emr25141265edq.83.1652221263892;
-        Tue, 10 May 2022 15:21:03 -0700 (PDT)
-Received: from skbuf ([188.25.160.86])
-        by smtp.gmail.com with ESMTPSA id r9-20020aa7c149000000b0042617ba63a8sm174281edp.50.2022.05.10.15.21.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 15:21:03 -0700 (PDT)
-Date:   Wed, 11 May 2022 01:21:01 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: dsa: tag_mtk: add padding for tx packets
-Message-ID: <20220510222101.od3n7gk3cofwhbks@skbuf>
-References: <20220510094014.68440-1-nbd@nbd.name>
- <20220510123724.i2xqepc56z4eouh2@skbuf>
- <5959946d-1d34-49b9-1abe-9f9299cc194e@nbd.name>
- <20220510165233.yahsznxxb5yq6rai@skbuf>
- <bc4bde22-c2d6-1ded-884a-69465b9d1dc7@nbd.name>
+        Tue, 10 May 2022 18:23:31 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B09428ED08;
+        Tue, 10 May 2022 15:23:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652221410; x=1683757410;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=fFKXzESxvsckrnSihPh7hKxX+lZggcsIEk5hewcJB7I=;
+  b=dTMY2kSYlBH+efWkhZAXbfxpfm34C6+MLyW375b0feGhSxP30BWMC85b
+   U6EjLhjDQVnI3oEeZiKWVCsBzW10Xa/SpiWb9pVibfq6cNBRmQMp0GX1c
+   fbTvrE0FQrK7cZ7wgB5sqsOOz9Dxe2SMQ2KY1dDNrAxWaMn6c6CDYzkSb
+   ikRulYhLYB09pK06AkMhbqpUHUqPSsmmYFNYk2UafbQ2R9hvezLrx9m8g
+   Ct7k2nRK8leljYWtwh0HD5lwV+i9MCpjpeB+CjYbkQZ9dRJlQtz4vg9zW
+   Q0flAmSVk9dbylPGu6v8aPWIPSB62FTdS2Qesj/m2TdB7xPTiSF0PDiY4
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="269183447"
+X-IronPort-AV: E=Sophos;i="5.91,215,1647327600"; 
+   d="scan'208";a="269183447"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 15:23:29 -0700
+X-IronPort-AV: E=Sophos;i="5.91,215,1647327600"; 
+   d="scan'208";a="895080950"
+Received: from rhweight-wrk1.ra.intel.com ([137.102.106.43])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 15:23:29 -0700
+Date:   Tue, 10 May 2022 15:23:23 -0700 (PDT)
+From:   matthew.gerlach@linux.intel.com
+X-X-Sender: mgerlach@rhweight-WRK1
+To:     Rob Herring <robh@kernel.org>
+cc:     dinguyen@kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org
+Subject: Re: [PATCH v4 1/3] dt-bindings: soc: add bindings for Intel HPS Copy
+ Engine
+In-Reply-To: <Ynq52E93mcTXcw9H@robh.at.kernel.org>
+Message-ID: <alpine.DEB.2.22.394.2205101452530.885823@rhweight-WRK1>
+References: <20220508142624.491045-1-matthew.gerlach@linux.intel.com> <20220508142624.491045-2-matthew.gerlach@linux.intel.com> <Ynq52E93mcTXcw9H@robh.at.kernel.org>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bc4bde22-c2d6-1ded-884a-69465b9d1dc7@nbd.name>
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 12:06:25AM +0200, Felix Fietkau wrote:
+
+
+On Tue, 10 May 2022, Rob Herring wrote:
+
+> On Sun, May 08, 2022 at 07:26:22AM -0700, matthew.gerlach@linux.intel.com wrote:
+>> From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>>
+>> Add device tree bindings documentation for the Intel Hard
+>> Processor System (HPS) Copy Engine.
+>>
+>> Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>> ---
+>> v4:
+>>   - move from soc to soc/intel/
+>>
+>> v3:
+>>   - remove unused label
+>>   - move from misc to soc
+>>   - remove 0x from #address-cells/#size-cells values
+>>   - change hps_cp_eng@0 to dma-controller@0
+>>   - remote inaccurate 'items:' tag
+>> ---
+>>  .../soc/intel/intel,hps-copy-engine.yaml      | 51 +++++++++++++++++++
+>>  1 file changed, 51 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/soc/intel/intel,hps-copy-engine.yaml
+>>
+>> diff --git a/Documentation/devicetree/bindings/soc/intel/intel,hps-copy-engine.yaml b/Documentation/devicetree/bindings/soc/intel/intel,hps-copy-engine.yaml
+>> new file mode 100644
+>> index 000000000000..8634865015cd
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/soc/intel/intel,hps-copy-engine.yaml
+>> @@ -0,0 +1,51 @@
+>> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+>> +# Copyright (C) 2022, Intel Corporation
+>> +%YAML 1.2
+>> +---
+>> +$id: "http://devicetree.org/schemas/soc/intel/intel,hps-copy-engine.yaml#"
+>> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+>> +
+>> +title: Intel HPS Copy Engine
+>> +
+>> +maintainers:
+>> +  - Matthew Gerlach <matthew.gerlach@linux.intel.com>
+>> +
+>> +description: |
+>> +  The Intel Hard Processor System (HPS) Copy Engine is an IP block used to copy
+>> +  a bootable image from host memory to HPS DDR.  Additionally, there is a
+>> +  register the HPS can use to indicate the state of booting the copied image as
+>> +  well as a keep-a-live indication to the host.
+>> +
+>> +properties:
+>> +  compatible:
+>> +    const: intel,hps-copy-engine
+>> +
+>> +  '#dma-cells':
+>> +    const: 1
+>> +
+>> +  reg:
+>> +    maxItems: 1
+>> +
+>> +required:
+>> +  - compatible
+>> +  - reg
+>> +
+>> +additionalProperties: false
+>> +
+>> +examples:
+>> +  - |
+>> +    bus@80000000 {
+>> +        compatible = "simple-bus";
+>> +        reg = <0x80000000 0x60000000>,
+>> +              <0xf9000000 0x00100000>;
+>> +        reg-names = "axi_h2f", "axi_h2f_lw";
 >
-> On 10.05.22 18:52, Vladimir Oltean wrote:
-> > On Tue, May 10, 2022 at 04:52:16PM +0200, Felix Fietkau wrote:
-> > >
-> > > On 10.05.22 14:37, Vladimir Oltean wrote:
-> > > > On Tue, May 10, 2022 at 11:40:13AM +0200, Felix Fietkau wrote:
-> > > > > Padding for transmitted packets needs to account for the special tag.
-> > > > > With not enough padding, garbage bytes are inserted by the switch at the
-> > > > > end of small packets.
-> > > > > I don't think padding bytes are guaranteed to be zeroes. Aren't
-> > > they
-> > > > discarded? What is the issue?
-> > > With the broken padding, ARP requests are silently discarded on the receiver
-> > > side in my test. Adding the padding explicitly fixes the issue.
-> > >
-> > > - Felix
-> >
-> > Ok, I'm not going to complain too much about the patch, but I'm still
-> > curious where are the so-called "broken" packets discarded.
-> > I think the receiving MAC should be passing up to software a buffer
-> > without the extra padding beyond the L2 payload length (at least that's
-> > the behavior I'm familiar with).
+> A simple-bus doesn't have regs because it is simple. If you have
+> registers, then you need a specific compatible. You can have
+> 'simple-bus' as a fallback if the bus is completely setup by firmware
+> and the OS never needs to configure/manage it.
+
+The hardware I'm trying to describe above is the connection from the 
+HPS/SOC to the FPGA.  There are two ranges of physical addresses with this 
+connection referred to as the "HPS to FPGA bridge" and the "Lightweight 
+HPS to FPGA bridge".  Device tree subnodes of bus@80000000 are IP 
+blocks in the FPGA.  The IP blocks may be connected to one or both of the
+physical address ranges.  Since these physical address ranges are not registers
+of the bus@80000000, the field names, reg and reg-names, are probably 
+wrong.  Should the reg field above really be ranges?
+
 >
-> I don't know where exactly these packets are discarded.
-> After digging through the devices I used during the tests, I just found some
-> leftover pcap files that show the differences in the received packets. Since
-> the packets are bigger after my patch, I can't rule out that packet size
-> instead of the padding may have made a difference here in getting the ARP
-> requests accepted by the receiver.
+> It also looks odd that ranges only has 4K of bus space and the bus
+> registers are 1.5GB of space.
+
+The intent of the ranges field below is to show the ranges of actual 
+registers associated subnodes of bus@80000000.  This is probably incorrect 
+as well.
+
 >
-> I've extracted the ARP requests and you can find them here:
-> http://nbd.name/arp-broken.pcap
+> That's all kind of outside of the scope of this binding and you should
+> just drop that part.
 
-arp-broken.pcap was collected at the receiver MAC, right? So the packets
-actually exited the switch?
+I agree that discussion of bus@80000000 is outside the scope of this 
+binding.  I will resubmit this binding with only the dma-controller@0 node 
+as the example.
 
-> http://nbd.name/arp-working.pcap
+
 >
-> - Felix
-
-It sounds as if this is masking a problem on the receiver end, because
-not only does my enetc port receive the packet, it also replies to the
-ARP request.
-
-pc # sudo tcpreplay -i eth1 arp-broken.pcap
-root@debian:~# ip addr add 192.168.42.1/24 dev eno0
-root@debian:~# tcpdump -i eno0 -e -n --no-promiscuous-mode arp
-tcpdump: verbose output suppressed, use -v[v]... for full protocol decode
-listening on eno0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
-22:18:58.846753 f4:d4:88:5e:6f:d2 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 60: Request who-has 192.168.42.1 tell 192.168.42.173, length 46
-22:18:58.846806 00:04:9f:05:f4:ab > f4:d4:88:5e:6f:d2, ethertype ARP (0x0806), length 42: Reply 192.168.42.1 is-at 00:04:9f:05:f4:ab, length 28
-^C
-2 packets captured
-2 packets received by filter
-0 packets dropped by kernel
-
-What MAC/driver has trouble with these packets? Is there anything wrong
-in ethtool stats? Do they even reach software? You can also use
-"dropwatch -l kas" for some hints if they do.
+>> +        #address-cells = <2>;
+>> +        #size-cells = <1>;
+>> +        ranges = <0x00000000 0x00000000 0xf9000000 0x00001000>;
+>> +
+>> +        dma-controller@0 {
+>> +            compatible = "intel,hps-copy-engine";
+>> +            reg = <0x00000000 0x00000000 0x00001000>;
+>> +            #dma-cells = <1>;
+>> +        };
+>> +    };
+>> --
+>> 2.25.1
+>>
+>>
+>
