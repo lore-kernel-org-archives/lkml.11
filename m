@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EBDDC35296
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:13:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94D25C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:13:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234072AbiEJORA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:17:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51230 "EHLO
+        id S241390AbiEJORD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:17:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244546AbiEJNqu (ORCPT
+        with ESMTP id S244692AbiEJNq4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:46:50 -0400
+        Tue, 10 May 2022 09:46:56 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ADB0158FAF;
-        Tue, 10 May 2022 06:31:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5906514CB68;
+        Tue, 10 May 2022 06:31:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 665B8615C8;
-        Tue, 10 May 2022 13:31:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5731BC385A6;
-        Tue, 10 May 2022 13:31:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F1E760B12;
+        Tue, 10 May 2022 13:31:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D041C385A6;
+        Tue, 10 May 2022 13:31:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189491;
-        bh=vtwB/M6DbWEB3HCR614K+ENnJNH/T7Xx8PGNzY39/xU=;
+        s=korg; t=1652189513;
+        bh=X0ixFeNEvURfQKTkFaXnL+ELjrFBVzXxY/dWtVPiXhY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K/UGEJSLq5XyKOvDCcAdCx6CySXAeOdo01K1N6j8h3o0w5ZWHEt16CP3rZVcWutK3
-         d898JoAU8wt+J+XJwqdOKL2Pv/Ho7TwvA37e8iWhfouryzIEJUn33ksTMWRdCfaerf
-         0jxOcynbNQQsjvHF6skQMquLK6dzr+LE+SYkBxeU=
+        b=Tty34OpsNym02u0C2pmSh8lis5l/8IZ4R8gk+c98QtOJBgAuP4OUHoDdbmbjFBBWj
+         ML+KdAHwDhh1OHD0vFZ+aUJlOGGfXxfMHJB51mrl30oEcmq9s2A4aa2OIEECMnxncz
+         fJ/MXlNZOFBQKHbQEz9OGTnniwLnq0fxuRfyvT3g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Shravya Kumbham <shravya.kumbham@xilinx.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 5.15 067/135] net: emaclite: Add error handling for of_address_to_resource()
-Date:   Tue, 10 May 2022 15:07:29 +0200
-Message-Id: <20220510130742.332592037@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Dionne <marc.dionne@auristor.com>,
+        David Howells <dhowells@redhat.com>,
+        Xin Long <lucien.xin@gmail.com>,
+        Vadim Fedorenko <vfedorenko@novek.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-afs@lists.infradead.org
+Subject: [PATCH 5.15 074/135] rxrpc: Enable IPv6 checksums on transport socket
+Date:   Tue, 10 May 2022 15:07:36 +0200
+Message-Id: <20220510130742.534618150@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -50,77 +52,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shravya Kumbham <shravya.kumbham@xilinx.com>
+From: David Howells <dhowells@redhat.com>
 
-commit 7a6bc33ab54923d325d9a1747ec9652c4361ebd1 upstream.
+commit 39cb9faa5d46d0d0694f4b594ef905f517600c8e upstream.
 
-check the return value of of_address_to_resource() and also add
-missing of_node_put() for np and npp nodes.
+AF_RXRPC doesn't currently enable IPv6 UDP Tx checksums on the transport
+socket it opens and the checksums in the packets it generates end up 0.
 
-Fixes: e0a3bc65448c ("net: emaclite: Support multiple phys connected to one MDIO bus")
-Addresses-Coverity: Event check_return value.
-Signed-off-by: Shravya Kumbham <shravya.kumbham@xilinx.com>
-Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+It probably should also enable IPv6 UDP Rx checksums and IPv4 UDP
+checksums.  The latter only seem to be applied if the socket family is
+AF_INET and don't seem to apply if it's AF_INET6.  IPv4 packets from an
+IPv6 socket seem to have checksums anyway.
+
+What seems to have happened is that the inet_inv_convert_csum() call didn't
+get converted to the appropriate udp_port_cfg parameters - and
+udp_sock_create() disables checksums unless explicitly told not too.
+
+Fix this by enabling the three udp_port_cfg checksum options.
+
+Fixes: 1a9b86c9fd95 ("rxrpc: use udp tunnel APIs instead of open code in rxrpc_open_socket")
+Reported-by: Marc Dionne <marc.dionne@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Reviewed-by: Xin Long <lucien.xin@gmail.com>
+Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
+cc: Vadim Fedorenko <vfedorenko@novek.ru>
+cc: David S. Miller <davem@davemloft.net>
+cc: linux-afs@lists.infradead.org
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/xilinx/xilinx_emaclite.c |   15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ net/rxrpc/local_object.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-@@ -822,10 +822,10 @@ static int xemaclite_mdio_write(struct m
- static int xemaclite_mdio_setup(struct net_local *lp, struct device *dev)
- {
- 	struct mii_bus *bus;
--	int rc;
- 	struct resource res;
- 	struct device_node *np = of_get_parent(lp->phy_node);
- 	struct device_node *npp;
-+	int rc, ret;
+--- a/net/rxrpc/local_object.c
++++ b/net/rxrpc/local_object.c
+@@ -117,6 +117,7 @@ static int rxrpc_open_socket(struct rxrp
+ 	       local, srx->transport_type, srx->transport.family);
  
- 	/* Don't register the MDIO bus if the phy_node or its parent node
- 	 * can't be found.
-@@ -835,8 +835,14 @@ static int xemaclite_mdio_setup(struct n
- 		return -ENODEV;
+ 	udp_conf.family = srx->transport.family;
++	udp_conf.use_udp_checksums = true;
+ 	if (udp_conf.family == AF_INET) {
+ 		udp_conf.local_ip = srx->transport.sin.sin_addr;
+ 		udp_conf.local_udp_port = srx->transport.sin.sin_port;
+@@ -124,6 +125,8 @@ static int rxrpc_open_socket(struct rxrp
+ 	} else {
+ 		udp_conf.local_ip6 = srx->transport.sin6.sin6_addr;
+ 		udp_conf.local_udp_port = srx->transport.sin6.sin6_port;
++		udp_conf.use_udp6_tx_checksums = true;
++		udp_conf.use_udp6_rx_checksums = true;
+ #endif
  	}
- 	npp = of_get_parent(np);
--
--	of_address_to_resource(npp, 0, &res);
-+	ret = of_address_to_resource(npp, 0, &res);
-+	of_node_put(npp);
-+	if (ret) {
-+		dev_err(dev, "%s resource error!\n",
-+			dev->of_node->full_name);
-+		of_node_put(np);
-+		return ret;
-+	}
- 	if (lp->ndev->mem_start != res.start) {
- 		struct phy_device *phydev;
- 		phydev = of_phy_find_device(lp->phy_node);
-@@ -845,6 +851,7 @@ static int xemaclite_mdio_setup(struct n
- 				 "MDIO of the phy is not registered yet\n");
- 		else
- 			put_device(&phydev->mdio.dev);
-+		of_node_put(np);
- 		return 0;
- 	}
- 
-@@ -857,6 +864,7 @@ static int xemaclite_mdio_setup(struct n
- 	bus = mdiobus_alloc();
- 	if (!bus) {
- 		dev_err(dev, "Failed to allocate mdiobus\n");
-+		of_node_put(np);
- 		return -ENOMEM;
- 	}
- 
-@@ -869,6 +877,7 @@ static int xemaclite_mdio_setup(struct n
- 	bus->parent = dev;
- 
- 	rc = of_mdiobus_register(bus, np);
-+	of_node_put(np);
- 	if (rc) {
- 		dev_err(dev, "Failed to register mdio bus.\n");
- 		goto err_register;
+ 	ret = udp_sock_create(net, &udp_conf, &local->socket);
 
 
