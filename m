@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AF5EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 02:53:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FD84C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 02:53:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234997AbiEJC4y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 9 May 2022 22:56:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34012 "EHLO
+        id S235022AbiEJC47 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 9 May 2022 22:56:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234337AbiEJC4j (ORCPT
+        with ESMTP id S234944AbiEJC4l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 9 May 2022 22:56:39 -0400
+        Mon, 9 May 2022 22:56:41 -0400
 Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F2BF7D5CF3;
-        Mon,  9 May 2022 19:52:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 27D38AAE2F;
+        Mon,  9 May 2022 19:52:45 -0700 (PDT)
 Received: from NTHCCAS01.nuvoton.com (NTHCCAS01.nuvoton.com [10.1.8.28])
-        by maillog.nuvoton.com (Postfix) with ESMTP id 22A391C810FF;
-        Tue, 10 May 2022 10:52:43 +0800 (CST)
-Received: from NTHCML01B.nuvoton.com (10.1.8.178) by NTHCCAS01.nuvoton.com
+        by maillog.nuvoton.com (Postfix) with ESMTP id 488861C81122;
+        Tue, 10 May 2022 10:52:45 +0800 (CST)
+Received: from NTHCCAS02.nuvoton.com (10.1.9.121) by NTHCCAS01.nuvoton.com
  (10.1.8.28) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.7; Tue, 10 May
- 2022 10:52:43 +0800
-Received: from NTHCCAS04.nuvoton.com (10.1.8.29) by NTHCML01B.nuvoton.com
- (10.1.8.178) with Microsoft SMTP Server (version=TLS1_2,
+ 2022 10:52:45 +0800
+Received: from NTHCCAS04.nuvoton.com (10.1.8.29) by NTHCCAS02.nuvoton.com
+ (10.1.9.121) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Tue, 10 May
- 2022 10:52:42 +0800
+ 2022 10:52:44 +0800
 Received: from localhost.localdomain (172.19.1.47) by NTHCCAS04.nuvoton.com
  (10.1.12.25) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
- Transport; Tue, 10 May 2022 10:52:42 +0800
+ Transport; Tue, 10 May 2022 10:52:44 +0800
 From:   Jacky Huang <ychuang3@nuvoton.com>
 To:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-clk@vger.kernel.org>,
@@ -37,9 +37,9 @@ CC:     <robh+dt@kernel.org>, <sboyd@kernel.org>, <krzk+dt@kernel.org>,
         <arnd@arndb.de>, <olof@lixom.net>, <catalin.marinas@arm.com>,
         <will@kernel.org>, <soc@kernel.org>, <cfli0@nuvoton.com>,
         Jacky Huang <ychuang3@nuvoton.com>
-Subject: [PATCH 2/5] dt-bindings: clock: Document MA35D1 clock controller bindings
-Date:   Tue, 10 May 2022 10:52:11 +0800
-Message-ID: <20220510025214.5586-3-ychuang3@nuvoton.com>
+Subject: [PATCH 4/5] arm64: Kconfig: nuvoton: Introduce CONFIG_ARCH_NUVOTON
+Date:   Tue, 10 May 2022 10:52:13 +0800
+Message-ID: <20220510025214.5586-5-ychuang3@nuvoton.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220510025214.5586-1-ychuang3@nuvoton.com>
 References: <20220510025214.5586-1-ychuang3@nuvoton.com>
@@ -49,95 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add documentation to describe Nuvoton MA35D1 clock driver bindings.
+This adds a Kconfig option to toggle support for ARMv8 based
+Nuvoton SoCs.
 
 Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- .../bindings/clock/nuvoton,ma35d1-clk.yaml    | 74 +++++++++++++++++++
- 1 file changed, 74 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml
+ arch/arm64/Kconfig.platforms | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml b/Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml
-new file mode 100644
-index 000000000000..97af7947b6f7
---- /dev/null
-+++ b/Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml
-@@ -0,0 +1,74 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/clock/nuvoton,ma35d1-clk.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
+index 30b123cde02c..a6a232b9bda8 100644
+--- a/arch/arm64/Kconfig.platforms
++++ b/arch/arm64/Kconfig.platforms
+@@ -203,6 +203,16 @@ config ARCH_MXC
+ 	  This enables support for the ARMv8 based SoCs in the
+ 	  NXP i.MX family.
+ 
++config ARCH_NUVOTON
++	bool "Nuvoton Platforms"
++	select PINCTRL
++	select PM
++	select GPIOLIB
++	select SOC_BUS
++	help
++	  This enables support for the ARMv8 based Nuvoton SoCs such
++	  as MA35D1.
 +
-+title: Nuvoton MA35D1 Clock Control Module Binding
-+
-+maintainers:
-+  - Chi-Fang Li <cfli0@nuvoton.com>
-+  - Jacky Huang <ychuang3@nuvoton.com>
-+
-+description: |
-+  The MA35D1 clock controller generates clocks for the whole chip,
-+  including system clocks and all peripheral clocks.
-+
-+  See also:
-+    include/dt-bindings/clock/ma35d1-clk.h
-+
-+properties:
-+  compatible:
-+    const: nuvoton,ma35d1-clk
-+
-+  reg:
-+    maxItems: 1
-+
-+  "#clock-cells":
-+    const: 1
-+
-+  clocks:
-+    items:
-+      - description: External 24MHz crystal
-+
-+  clock-names:
-+    items:
-+      - const: hxt_24m
-+
-+  assigned-clocks:
-+    maxItems: 5
-+
-+  assigned-clock-rates:
-+    maxItems: 5
-+
-+  nuvoton,clk-pll-mode:
-+    description:
-+      A list of PLL operation mode corresponding to CAPLL, DDRPLL, APLL,
-+      EPLL, and VPLL in sequential. The operation mode value 0 is for
-+      integer mode, 1 is for fractional mode, and 2 is for spread
-+      spectrum mode.
-+    $ref: /schemas/types.yaml#/definitions/uint32-array
-+    maxItems: 5
-+    items:
-+      minimum: 0
-+      maximum: 2
-+
-+required:
-+  - compatible
-+  - reg
-+  - "#clock-cells"
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/nuvoton,ma35d1-clk.h>
-+
-+    clk: clock-controller@40460200 {
-+        compatible = "nuvoton,ma35d1-clk";
-+        reg = <0x0 0x40460200 0x0 0x100>;
-+        #clock-cells = <1>;
-+        clocks = <&hxt_24m>;
-+        clock-names = "HXT_24MHz";
-+    };
-+...
+ config ARCH_QCOM
+ 	bool "Qualcomm Platforms"
+ 	select GPIOLIB
 -- 
 2.30.2
 
