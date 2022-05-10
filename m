@@ -2,98 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83D8BC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:29:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CD19C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:34:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241457AbiEJMda (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 08:33:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51358 "EHLO
+        id S238983AbiEJMiJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 08:38:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238445AbiEJMd2 (ORCPT
+        with ESMTP id S237901AbiEJMiF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 08:33:28 -0400
-Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDFBA2A3760;
-        Tue, 10 May 2022 05:29:30 -0700 (PDT)
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 5E9151C0B95; Tue, 10 May 2022 14:29:28 +0200 (CEST)
-Date:   Tue, 10 May 2022 14:29:27 +0200
-From:   Pavel Machek <pavel@ucw.cz>
-To:     Evan Green <evgreen@chromium.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Matthew Garrett <mgarrett@aurora.tech>,
-        Daniil Lunev <dlunev@google.com>, zohar@linux.ibm.com,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        linux-integrity@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        rjw@rjwysocki.net, Gwendal Grignou <gwendal@chromium.org>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Len Brown <len.brown@intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: Re: [PATCH 08/10] PM: hibernate: Mix user key in encrypted hibernate
-Message-ID: <20220510122927.GA19328@amd>
-References: <20220504232102.469959-1-evgreen@chromium.org>
- <20220504161439.8.I87952411cf83f2199ff7a4cc8c828d357b8c8ce3@changeid>
- <20220506160820.GB1060@bug>
- <CAE=gft4nE6nYx9gRZuSL1v=8CjGsdtmx+GxPjmdD_hwJs5j-tw@mail.gmail.com>
+        Tue, 10 May 2022 08:38:05 -0400
+Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C4B02A7C3C;
+        Tue, 10 May 2022 05:34:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1652186042; x=1683722042;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=AVZzSx7m2KvPuGPmt5Zx8G5rV5fa+SEexHw6KVQP/1c=;
+  b=F3pQHXs7oWqoTIjQbuzfUu7COfBi76dXc4CSktQm8nPf3JegokRekWSs
+   7j0kt+AKClr8PRrOAzz2fYpTCPLzae+Ki8lQo2vlLBcAf3Dy2RapfeSYm
+   oFsxVJAZN9rd0xyDVX/Z72j+BMxUfKU65fplgdDeeXigZ/NQDzdZD8Q94
+   8=;
+X-IronPort-AV: E=Sophos;i="5.91,214,1647302400"; 
+   d="scan'208";a="193936383"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2b-22c2b493.us-west-2.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-33001.sea14.amazon.com with ESMTP; 10 May 2022 12:33:46 +0000
+Received: from EX13MTAUWC001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2b-22c2b493.us-west-2.amazon.com (Postfix) with ESMTPS id 37BF941C44;
+        Tue, 10 May 2022 12:33:45 +0000 (UTC)
+Received: from EX13D20UWC001.ant.amazon.com (10.43.162.244) by
+ EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.32; Tue, 10 May 2022 12:33:45 +0000
+Received: from [0.0.0.0] (10.43.161.183) by EX13D20UWC001.ant.amazon.com
+ (10.43.162.244) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Tue, 10 May
+ 2022 12:33:42 +0000
+Message-ID: <5ad0f302-c1e1-b400-c3f3-a97c1cd443e8@amazon.com>
+Date:   Tue, 10 May 2022 14:33:40 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="sdtB3X0nJg68CQEu"
-Content-Disposition: inline
-In-Reply-To: <CAE=gft4nE6nYx9gRZuSL1v=8CjGsdtmx+GxPjmdD_hwJs5j-tw@mail.gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Subject: Re: [PATCH v2] KVM: PPC: Book3S PR: Enable MSR_DR for
+ switch_mmu_context()
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>
+CC:     "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Matt Evans <matt@ozlabs.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
+References: <20220510111809.15987-1-graf@amazon.com>
+ <f7416897-2ca5-6b2f-cfd3-30d9bcc557cd@csgroup.eu>
+From:   Alexander Graf <graf@amazon.com>
+In-Reply-To: <f7416897-2ca5-6b2f-cfd3-30d9bcc557cd@csgroup.eu>
+X-Originating-IP: [10.43.161.183]
+X-ClientProxiedBy: EX13D03UWA002.ant.amazon.com (10.43.160.144) To
+ EX13D20UWC001.ant.amazon.com (10.43.162.244)
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Ck9uIDEwLjA1LjIyIDEzOjMxLCBDaHJpc3RvcGhlIExlcm95IHdyb3RlOgo+IExlIDEwLzA1LzIw
+MjIgw6AgMTM6MTgsIEFsZXhhbmRlciBHcmFmIGEgw6ljcml0IDoKPj4gQ29tbWl0IDg2Mzc3MWEy
+OGUyNyAoInBvd2VycGMvMzJzOiBDb252ZXJ0IHN3aXRjaF9tbXVfY29udGV4dCgpIHRvIEMiKQo+
+PiBtb3ZlZCB0aGUgc3dpdGNoX21tdV9jb250ZXh0KCkgdG8gQy4gV2hpbGUgaW4gcHJpbmNpcGxl
+IGEgZ29vZCBpZGVhLCBpdAo+PiBtZWFudCB0aGF0IHRoZSBmdW5jdGlvbiBub3cgdXNlcyB0aGUg
+c3RhY2suIFRoZSBzdGFjayBpcyBub3QgYWNjZXNzaWJsZQo+PiBmcm9tIHJlYWwgbW9kZSB0aG91
+Z2guCj4+Cj4+IFNvIHRvIGtlZXAgY2FsbGluZyB0aGUgZnVuY3Rpb24sIGxldCdzIHR1cm4gb24g
+TVNSX0RSIHdoaWxlIHdlIGNhbGwgaXQuCj4+IFRoYXQgd2F5LCBhbGwgcG9pbnRlciByZWZlcmVu
+Y2VzIHRvIHRoZSBzdGFjayBhcmUgaGFuZGxlZCB2aXJ0dWFsbHkuCj4gSXMgdGhlIHN5c3RlbSBy
+ZWFkeSB0byBoYW5kbGUgYSBEU0kgaW4gY2FzZSB0aGUgc3RhY2sgaXMgbm90IG1hcHBlZCA/CgoK
+QSBEU0kgaXRzZWxmIHdpbGwgYmUgYW4gaW50ZXJydXB0IGFnYWluIHdoaWNoIHdpbGwgaW4gdHVy
+biBkZXN0cm95IHRoZSAKU1BSRyB0aGF0IHdlJ3JlIHNhdmluZy4gR3Vlc3MgSSB3YXMgdHJ5aW5n
+IHRvIGJlIHRvbyBzbWFydCA6KS4gSSdsbCB1c2UgCk1hdHQncyBvcmlnaW5hbCBzdWdnZXN0aW9u
+IGFuZCBqdXN0IHB1dCBpdCBvbiB0aGUgc3RhY2suCgoKPj4gSW4gYWRkaXRpb24sIG1ha2Ugc3Vy
+ZSB0byBzYXZlL3Jlc3RvcmUgcjEyIGluIGFuIFNQUkcsIGFzIGl0IG1heSBnZXQKPj4gY2xvYmJl
+cmVkIGJ5IHRoZSBDIGZ1bmN0aW9uLgo+Pgo+PiBSZXBvcnRlZC1ieTogTWF0dCBFdmFucyA8bWF0
+dEBvemxhYnMub3JnPgo+PiBGaXhlczogODYzNzcxYTI4ZTI3ICgicG93ZXJwYy8zMnM6IENvbnZl
+cnQgc3dpdGNoX21tdV9jb250ZXh0KCkgdG8gQyIpCj4gT29wcywgc29ycnkgZm9yIHRoYXQuIEkg
+ZGlkbid0IHJlYWxpc2UgdGhhdCB0aGVyZSB3YXMgb3RoZXIgY2FsbGVycyB0bwo+IHN3aXRjaF9t
+bXVfY29udGV4dCgpIHRoYW4gc3dpdGNoX21tX2lycXNfb2ZmKCkuCgoKTm8gd29ycmllcywgdGhl
+IGNvbXBpbGVkIEMgdmVyc2lvbiBsb29rcyBhIGxvdCBuaWNlciB0aGFuIHRoZSBwcmV2aW91cyAK
+YXNtIG9uZSAtIGFuZCBpdCB3YXMgYSBnb29kIHdheSB0byBpZGVudGlmeSB3aGV0aGVyIHRoZXJl
+IHN0aWxsIGFyZSAKdXNlcnMgb2YgS1ZNIG9uIEJvb2szUyAzMmJpdCBvdXQgdGhlcmUgOikKCgpB
+bGV4CgoKCgoKQW1hem9uIERldmVsb3BtZW50IENlbnRlciBHZXJtYW55IEdtYkgKS3JhdXNlbnN0
+ci4gMzgKMTAxMTcgQmVybGluCkdlc2NoYWVmdHNmdWVocnVuZzogQ2hyaXN0aWFuIFNjaGxhZWdl
+ciwgSm9uYXRoYW4gV2Vpc3MKRWluZ2V0cmFnZW4gYW0gQW10c2dlcmljaHQgQ2hhcmxvdHRlbmJ1
+cmcgdW50ZXIgSFJCIDE0OTE3MyBCClNpdHo6IEJlcmxpbgpVc3QtSUQ6IERFIDI4OSAyMzcgODc5
+CgoK
 
---sdtB3X0nJg68CQEu
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hi!
-
-> > > One annoyance of the "preloading" scheme is that hibernate image memo=
-ry
-> > > is effectively double-allocated: first by the usermode process pulling
-> > > encrypted contents off of disk and holding it, and second by the kern=
-el
-> > > in its giant allocation in prepare_image(). An interesting future
-> > > optimization would be to allow the kernel to accept and store encrypt=
-ed
-> > > page data before the user key is available. This would remove the
-> > > double allocation problem, as usermode could push the encrypted pages
-> > > loaded from disk immediately without storing them. The kernel could d=
-efer
-> > > decryption of the data until the user key is available, while still
-> > > knowing the correct page locations to store the encrypted data in.
-> >
-> > Um. Dunno. Won't you run out of memory? Hibernation images can be quite=
- big...
-> >
->=20
-> As you know, with the way the snapshot mechanism works, a hibernation
-> image can be at most 50% of RAM. If the system was using more than
-
-There used to be 50% of RAM limit, but it was removed.
-
-Best regards,
-								Pavel
-							=09
---=20
-People of Russia, stop Putin before his war on Ukraine escalates.
-
---sdtB3X0nJg68CQEu
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAmJ6WqcACgkQMOfwapXb+vKwggCfU6LTG5MoZ6aeMEdfwivj1685
-yUIAnR0jzeK1d2wmq0UYRYOrpRjaWwNn
-=UpfY
------END PGP SIGNATURE-----
-
---sdtB3X0nJg68CQEu--
