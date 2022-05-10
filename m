@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04C90C35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45161C352A7
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:28:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243871AbiEJNcT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:32:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60506 "EHLO
+        id S244074AbiEJNce (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:32:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242920AbiEJNXV (ORCPT
+        with ESMTP id S240821AbiEJNXc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:23:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29EE71CD26B;
-        Tue, 10 May 2022 06:17:20 -0700 (PDT)
+        Tue, 10 May 2022 09:23:32 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF6FC1C15C2;
+        Tue, 10 May 2022 06:17:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 28CE9615DD;
-        Tue, 10 May 2022 13:17:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 308F3C385A6;
-        Tue, 10 May 2022 13:17:18 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 15294CE1EE5;
+        Tue, 10 May 2022 13:17:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B385C385C9;
+        Tue, 10 May 2022 13:17:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188638;
-        bh=BQFoZ5VBAeVocPILsY8HgUmVw/RANqQGMeh9+kxbws4=;
+        s=korg; t=1652188623;
+        bh=beJbuLc5DeQE1QzkilhzXFk8FrAnqajPtypHf3GrpYA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r1+1lXt0XyqhOZajeRTvpt8eeZq4940ZS5uym9IQd1fAczo3091EJjersw5I9+ljS
-         U6T0vZwm8kKDYlwlHDvw7ci0sYOVVLWoXbmHWoOp76NX3wslxSysbc+bKE+rCuFt2W
-         jKgRpFXuF7iML8ekaSYA8NOBHonHWzTfT3ucqFZs=
+        b=QG9OWtC4PDtqTE/8hOKUhRFSSyr814Camv9iA2kL2vbRU70ivOjRKLUCaXM5NvTxb
+         Y70QNvRgBCLi9pPULSlXi03G/Fy/ejIVDB42bTHPDnHtC8jQqgsJosLpVrSKMN3PJZ
+         hDRqFhnmL+ZhznA1XmY5Ukq9slV3FD/pjmG8WPxE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Doug Porter <dsp@fb.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 36/78] tcp: fix potential xmit stalls caused by TCP_NOTSENT_LOWAT
-Date:   Tue, 10 May 2022 15:07:22 +0200
-Message-Id: <20220510130733.604544525@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Armin Wolf <W_Armin@gmx.de>, Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 4.14 67/78] hwmon: (adt7470) Fix warning on module removal
+Date:   Tue, 10 May 2022 15:07:53 +0200
+Message-Id: <20220510130734.514033328@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
 References: <20220510130732.522479698@linuxfoundation.org>
@@ -52,145 +48,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Armin Wolf <W_Armin@gmx.de>
 
-[ Upstream commit 4bfe744ff1644fbc0a991a2677dc874475dd6776 ]
+commit 7b2666ce445c700b8dcee994da44ddcf050a0842 upstream.
 
-I had this bug sitting for too long in my pile, it is time to fix it.
+When removing the adt7470 module, a warning might be printed:
 
-Thanks to Doug Porter for reminding me of it!
+do not call blocking ops when !TASK_RUNNING; state=1
+set at [<ffffffffa006052b>] adt7470_update_thread+0x7b/0x130 [adt7470]
 
-We had various attempts in the past, including commit
-0cbe6a8f089e ("tcp: remove SOCK_QUEUE_SHRUNK"),
-but the issue is that TCP stack currently only generates
-EPOLLOUT from input path, when tp->snd_una has advanced
-and skb(s) cleaned from rtx queue.
+This happens because adt7470_update_thread() can leave the kthread in
+TASK_INTERRUPTIBLE state when the kthread is being stopped before
+the call of set_current_state(). Since kthread_exit() might sleep in
+exit_signals(), the warning is printed.
+Fix that by using schedule_timeout_interruptible() and removing
+the call of set_current_state().
+This causes TASK_INTERRUPTIBLE to be set after kthread_should_stop()
+which might cause the kthread to exit.
 
-If a flow has a big RTT, and/or receives SACKs, it is possible
-that the notsent part (tp->write_seq - tp->snd_nxt) reaches 0
-and no more data can be sent until tp->snd_una finally advances.
-
-What is needed is to also check if POLLOUT needs to be generated
-whenever tp->snd_nxt is advanced, from output path.
-
-This bug triggers more often after an idle period, as
-we do not receive ACK for at least one RTT. tcp_notsent_lowat
-could be a fraction of what CWND and pacing rate would allow to
-send during this RTT.
-
-In a followup patch, I will remove the bogus call
-to tcp_chrono_stop(sk, TCP_CHRONO_SNDBUF_LIMITED)
-from tcp_check_space(). Fact that we have decided to generate
-an EPOLLOUT does not mean the application has immediately
-refilled the transmit queue. This optimistic call
-might have been the reason the bug seemed not too serious.
-
-Tested:
-
-200 ms rtt, 1% packet loss, 32 MB tcp_rmem[2] and tcp_wmem[2]
-
-$ echo 500000 >/proc/sys/net/ipv4/tcp_notsent_lowat
-$ cat bench_rr.sh
-SUM=0
-for i in {1..10}
-do
- V=`netperf -H remote_host -l30 -t TCP_RR -- -r 10000000,10000 -o LOCAL_BYTES_SENT | egrep -v "MIGRATED|Bytes"`
- echo $V
- SUM=$(($SUM + $V))
-done
-echo SUM=$SUM
-
-Before patch:
-$ bench_rr.sh
-130000000
-80000000
-140000000
-140000000
-140000000
-140000000
-130000000
-40000000
-90000000
-110000000
-SUM=1140000000
-
-After patch:
-$ bench_rr.sh
-430000000
-590000000
-530000000
-450000000
-450000000
-350000000
-450000000
-490000000
-480000000
-460000000
-SUM=4680000000  # This is 410 % of the value before patch.
-
-Fixes: c9bee3b7fdec ("tcp: TCP_NOTSENT_LOWAT socket option")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: Doug Porter <dsp@fb.com>
-Cc: Soheil Hassas Yeganeh <soheil@google.com>
-Cc: Neal Cardwell <ncardwell@google.com>
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: Zheyu Ma <zheyuma97@gmail.com>
+Fixes: 93cacfd41f82 (hwmon: (adt7470) Allow faster removal)
+Signed-off-by: Armin Wolf <W_Armin@gmx.de>
+Tested-by: Zheyu Ma <zheyuma97@gmail.com>
+Link: https://lore.kernel.org/r/20220407101312.13331-1-W_Armin@gmx.de
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/tcp.h     |  1 +
- net/ipv4/tcp_input.c  | 12 +++++++++++-
- net/ipv4/tcp_output.c |  1 +
- 3 files changed, 13 insertions(+), 1 deletion(-)
+ drivers/hwmon/adt7470.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 4602959b58a1..181db7dab176 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -585,6 +585,7 @@ void tcp_synack_rtt_meas(struct sock *sk, struct request_sock *req);
- void tcp_reset(struct sock *sk);
- void tcp_skb_mark_lost_uncond_verify(struct tcp_sock *tp, struct sk_buff *skb);
- void tcp_fin(struct sock *sk);
-+void tcp_check_space(struct sock *sk);
+--- a/drivers/hwmon/adt7470.c
++++ b/drivers/hwmon/adt7470.c
+@@ -33,6 +33,7 @@
+ #include <linux/kthread.h>
+ #include <linux/slab.h>
+ #include <linux/util_macros.h>
++#include <linux/sched.h>
  
- /* tcp_timer.c */
- void tcp_init_xmit_timers(struct sock *);
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 9382caeb721a..f5cc025003cd 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -5114,7 +5114,17 @@ static void tcp_new_space(struct sock *sk)
- 	sk->sk_write_space(sk);
- }
+ /* Addresses to scan */
+ static const unsigned short normal_i2c[] = { 0x2C, 0x2E, 0x2F, I2C_CLIENT_END };
+@@ -273,11 +274,10 @@ static int adt7470_update_thread(void *p
+ 		adt7470_read_temperatures(client, data);
+ 		mutex_unlock(&data->lock);
  
--static void tcp_check_space(struct sock *sk)
-+/* Caller made space either from:
-+ * 1) Freeing skbs in rtx queues (after tp->snd_una has advanced)
-+ * 2) Sent skbs from output queue (and thus advancing tp->snd_nxt)
-+ *
-+ * We might be able to generate EPOLLOUT to the application if:
-+ * 1) Space consumed in output/rtx queues is below sk->sk_sndbuf/2
-+ * 2) notsent amount (tp->write_seq - tp->snd_nxt) became
-+ *    small enough that tcp_stream_memory_free() decides it
-+ *    is time to generate EPOLLOUT.
-+ */
-+void tcp_check_space(struct sock *sk)
- {
- 	if (sock_flag(sk, SOCK_QUEUE_SHRUNK)) {
- 		sock_reset_flag(sk, SOCK_QUEUE_SHRUNK);
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 83c0e859bb33..1a5c42c67d42 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -81,6 +81,7 @@ static void tcp_event_new_data_sent(struct sock *sk, const struct sk_buff *skb)
+-		set_current_state(TASK_INTERRUPTIBLE);
+ 		if (kthread_should_stop())
+ 			break;
  
- 	NET_ADD_STATS(sock_net(sk), LINUX_MIB_TCPORIGDATASENT,
- 		      tcp_skb_pcount(skb));
-+	tcp_check_space(sk);
- }
+-		schedule_timeout(msecs_to_jiffies(data->auto_update_interval));
++		schedule_timeout_interruptible(msecs_to_jiffies(data->auto_update_interval));
+ 	}
  
- /* SND.NXT, if window was not shrunk or the amount of shrunk was less than one
--- 
-2.35.1
-
+ 	return 0;
 
 
