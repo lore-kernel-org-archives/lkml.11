@@ -2,150 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CA7CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:59:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC81DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:59:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347112AbiEJQDV (ORCPT
+        id S1345519AbiEJQD0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 12:03:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33254 "EHLO
+        Tue, 10 May 2022 12:03:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347807AbiEJP6F (ORCPT
+        with ESMTP id S1347325AbiEJP50 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:58:05 -0400
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22673554B1
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:51:03 -0700 (PDT)
-Received: by mail-io1-xd34.google.com with SMTP id f4so18961437iov.2
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:51:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=WOUz2WsmdgX6LeN+LrF3txVAnT8hFkZ8ulMV7CFBOqM=;
-        b=XTCkuhyrI12mXoibtavSh6cqwdk4FerubUN/RyfF6NFULIGnuGEkqPOOM8I2zwQ+o0
-         Q6t7+QE88n3MP1KIW2iOswY+eCBI2ZUBLChS/bwADArGE4WFf2CAE10R0h7xDZu1KZTV
-         gm2knkXa/E9lbuTqeJjwbg1h+Du01PqftXDYQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=WOUz2WsmdgX6LeN+LrF3txVAnT8hFkZ8ulMV7CFBOqM=;
-        b=HttIj2m4TVXVINAR6kXVpXiXG4f2Kd5J0FZxf1/PMDoeu22sGhRUonFVRiJ7nS6yyF
-         lB6oa7NBVWnU8SITdX7kkHxCm3P5fXelI5UOswzVvD+m6HR5H5njTj2UVgigLNHuwDN0
-         uCyTkoAS2AMgMk3f/B4xsqYCbROS3G8W/inRqsyyrhzSkuD702HeiEHkGpxuWSi0ZOZl
-         1ofGDsukyn07sPspCrLpbkBlTs8TzuvLBUhqaoFvkFx4WlI9UA4ffldnpBTpv2C+rZaM
-         kkUvcGxF5vS+mbmUo4XsVcQx2R/klHJFlVzuN+0zDrGHxTyKWWonIjUj812yjmkeW/rQ
-         k45w==
-X-Gm-Message-State: AOAM532SmR5Zjeck6DktRwU2+cOZjOKozKGYW3sFK8STXor9bYVnHmfA
-        75v6wulbYmj/mXVmSKcbbY5k7A==
-X-Google-Smtp-Source: ABdhPJyKMFN44LVscpOAtyLyGGeKIRdp+9zY59CqwUYms2hhDMiEHT2+QMZC1z4qTekEb3cR4IgqdQ==
-X-Received: by 2002:a02:aa94:0:b0:32a:e769:af1 with SMTP id u20-20020a02aa94000000b0032ae7690af1mr9721447jai.0.1652197862793;
-        Tue, 10 May 2022 08:51:02 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id cp20-20020a056638481400b0032b75b98013sm4455954jab.148.2022.05.10.08.51.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 May 2022 08:51:02 -0700 (PDT)
-Subject: Re: [PATCH 3/3] mm: delete unused MMF_OOM_VICTIM flag
-To:     Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org
-Cc:     mhocko@suse.com, rientjes@google.com, willy@infradead.org,
-        hannes@cmpxchg.org, guro@fb.com, minchan@kernel.org,
-        kirill@shutemov.name, aarcange@redhat.com, brauner@kernel.org,
-        hch@infradead.org, oleg@redhat.com, david@redhat.com,
-        jannh@google.com, shakeelb@google.com, peterx@redhat.com,
-        jhubbard@nvidia.com, shuah@kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kselftest@vger.kernel.org, kernel-team@android.com,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220510030014.3842475-1-surenb@google.com>
- <20220510030014.3842475-3-surenb@google.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <008de890-7fe1-aeae-345e-0cd3fcd32352@linuxfoundation.org>
-Date:   Tue, 10 May 2022 09:51:01 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Tue, 10 May 2022 11:57:26 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2570929B00D;
+        Tue, 10 May 2022 08:50:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1652197774;
+        bh=jGOBs/UK7Wuf/73tooLnJSTteyWCS+jQ2JdfAa53BZI=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=SdjJ4H/hJFvsqer19yer80ICiNhhCDbdTsDks2vnoGsKMVxZVXjkkon/tGAF5ukI/
+         O8LTiTB3OJtp/rSsNweIyO5iOTsdftAVGS35+88JwBJplDqm6PqXL5e827QoLXGECj
+         3YdLvr27CnJbFce0zk1hc4P/Jq8GDZla1mg42xdY=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.182.129]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1Mk0NU-1oCXSv3qKO-00kPE5; Tue, 10
+ May 2022 17:49:33 +0200
+Message-ID: <37d6bcac-bca4-06a6-ecab-bf83bd3468cd@gmx.de>
+Date:   Tue, 10 May 2022 17:49:31 +0200
 MIME-Version: 1.0
-In-Reply-To: <20220510030014.3842475-3-surenb@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH AUTOSEL 5.17 21/21] Revert "parisc: Fix patch code locking
+ and flushing"
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Cc:     James.Bottomley@HansenPartnership.com, dave.anglin@bell.net,
+        linux-parisc@vger.kernel.org
+References: <20220510154340.153400-1-sashal@kernel.org>
+ <20220510154340.153400-21-sashal@kernel.org>
+From:   Helge Deller <deller@gmx.de>
+In-Reply-To: <20220510154340.153400-21-sashal@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:DbkjErZqGYtxT2MmD6i3Zo6PUeOP1VMhIDXgUqyYizJoykpfmQ4
+ d2PxGyVXkrbmeEuymU2QPyskc5EsBVI7MeBlBQBVkDgucQnJu5w+ByFqoMenT19x4Z0YCpd
+ OfQeGDM6kmQ0jvI/CATPhcvwNeKrSEFjsj125OFeILAzrfAGKUs9niKtkB0HtgqKRhVoY0v
+ gaKiTPZvm8dsvPtaC7pSA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Hs2MDU1jC1A=:8TpJZn618p2URZBBZ9GZ/g
+ 8sQFXgdgmx521RiPGsCqPLNYXbqtqbFrh1Ds0deT6pAn7dl6LrMZ/cwYWQgpfmrUHU0op2HqZ
+ OgIDWnMlV8baftwQZ+FuV88EoThjuEJQ5ZPpkHq3KIcJ1JbwUo1MmsaVOmQpwj1hIyEHW7s4U
+ 08btqIwgIrWXhP1c+KKFeszp8UxF9iEr7dGKQnPQJyGFtaauoAnmY2u8ZUdeXENto4Z5PxdQN
+ wetQ3RiIBl9HB9V9MjOhe3d58xfwUSRlj6EiobtZ6hhwwuHrQ2uyyZIlvp6socqmI/xvMfd6o
+ sFzHTXsW8Ix338wk+SwOpGug4xdnnjeqaONcpMS2w7/bLdY+RIr2peqTottdfetQKbSEx3OK3
+ +p9p1ITLV5X3WFTfuCkUP8V+meIpP3nog1EMvb2DIFbdUpDm+R5EkerzVTz+t14pno/qVIcTD
+ Qs/eVPiItldLEdJtXkiqV+VpyYIONR8M2/jbVuzsdXGOLSzjhE6dyxDO6AaXuYJMjYIN3j7si
+ fryb1efui2cI1c/K9w2rkQB+EacYPpo1YektXXkjWgAs1rRgWLIroNfyRzeHAQ6gu0WiH9eff
+ rQfxQs67ihrhjKqfk7A7ZhUflwDJU7MiIZFOppgmcyouhwmGqV9RjDkJwHCcX/Swz42CT5SsR
+ HnXBC3yDBptgSsjfJgXy6HhlQo9Pockzz9RgVqsiZaLJ0C7LCs/ku933i0KSP4PCg+LElF1xa
+ fOKJw2MPteHAcNwDzpJItf8na/RvxEEckkdwaBof97pAIgeaeqMQXKcKHdszo2kfs0l4fkaGL
+ yEI1k7o5xniG+e8Q4gpNPbjB6X4/8+coz55asevkNul71VyOINJLTsCwBUnV5FuxyqhPNmfrl
+ +A7O5jaqD5xIR8rTx/zxI3cM6TnHW/YJQ8UooFFfgXlyGCDcqrnAzirP8xbRFCG0v2Eh1xILC
+ yuvHYDKXOu6UMsqrvkYEZ5TSYG+N5cJB786ogXXNo797oRHWknErpRq/eCLktsdmP2/Dl/9DN
+ oN1CNs78dmI4qSn0PqX5QNcFvb1JhJ9TZvLHpGFzXZee3uy94YeJYPa0XuyS1Qs4JRx88/fRc
+ tq4XMWG9h3GUII=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/9/22 9:00 PM, Suren Baghdasaryan wrote:
-> With the last usage of MMF_OOM_VICTIM in exit_mmap gone, this flag is
-> now unused and can be removed.
-> 
-> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+Hello Sascha,
+
+please drop this patch from all your stable-series queues....
+It shouldn't be backported.
+
+Thanks,
+Helge
+
+On 5/10/22 17:43, Sasha Levin wrote:
+> From: Helge Deller <deller@gmx.de>
+>
+> [ Upstream commit 6c800d7f55fcd78e17deae5ae4374d8e73482c13 ]
+>
+> This reverts commit a9fe7fa7d874a536e0540469f314772c054a0323.
+>
+> Leads to segfaults on 32bit kernel.
+>
+> Signed-off-by: Helge Deller <deller@gmx.de>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
 > ---
->   include/linux/oom.h            | 9 ---------
->   include/linux/sched/coredump.h | 1 -
->   mm/oom_kill.c                  | 4 +---
->   3 files changed, 1 insertion(+), 13 deletions(-)
-> 
-> diff --git a/include/linux/oom.h b/include/linux/oom.h
-> index 6cdf0772dbae..25990e9d9e15 100644
-> --- a/include/linux/oom.h
-> +++ b/include/linux/oom.h
-> @@ -77,15 +77,6 @@ static inline bool tsk_is_oom_victim(struct task_struct * tsk)
->   	return tsk->signal->oom_mm;
->   }
->   
-> -/*
-> - * Use this helper if tsk->mm != mm and the victim mm needs a special
-> - * handling. This is guaranteed to stay true after once set.
-> - */
-> -static inline bool mm_is_oom_victim(struct mm_struct *mm)
-> -{
-> -	return test_bit(MMF_OOM_VICTIM, &mm->flags);
-> -}
-> -
->   /*
->    * Checks whether a page fault on the given mm is still reliable.
->    * This is no longer true if the oom reaper started to reap the
-> diff --git a/include/linux/sched/coredump.h b/include/linux/sched/coredump.h
-> index 4d9e3a656875..746f6cb07a20 100644
-> --- a/include/linux/sched/coredump.h
-> +++ b/include/linux/sched/coredump.h
-> @@ -70,7 +70,6 @@ static inline int get_dumpable(struct mm_struct *mm)
->   #define MMF_UNSTABLE		22	/* mm is unstable for copy_from_user */
->   #define MMF_HUGE_ZERO_PAGE	23      /* mm has ever used the global huge zero page */
->   #define MMF_DISABLE_THP		24	/* disable THP for all VMAs */
-> -#define MMF_OOM_VICTIM		25	/* mm is the oom victim */
->   #define MMF_OOM_REAP_QUEUED	26	/* mm was queued for oom_reaper */
->   #define MMF_MULTIPROCESS	27	/* mm is shared between processes */
->   /*
-> diff --git a/mm/oom_kill.c b/mm/oom_kill.c
-> index 36355b162727..11291b99599f 100644
-> --- a/mm/oom_kill.c
-> +++ b/mm/oom_kill.c
-> @@ -732,10 +732,8 @@ static void mark_oom_victim(struct task_struct *tsk)
->   		return;
->   
->   	/* oom_mm is bound to the signal struct life time. */
-> -	if (!cmpxchg(&tsk->signal->oom_mm, NULL, mm)) {
-> +	if (!cmpxchg(&tsk->signal->oom_mm, NULL, mm))
->   		mmgrab(tsk->signal->oom_mm);
-> -		set_bit(MMF_OOM_VICTIM, &mm->flags);
-> -	}
->   
->   	/*
->   	 * Make sure that the task is woken up from uninterruptible sleep
-> 
+>  arch/parisc/kernel/patch.c | 25 ++++++++++++++-----------
+>  1 file changed, 14 insertions(+), 11 deletions(-)
+>
+> diff --git a/arch/parisc/kernel/patch.c b/arch/parisc/kernel/patch.c
+> index e59574f65e64..80a0ab372802 100644
+> --- a/arch/parisc/kernel/patch.c
+> +++ b/arch/parisc/kernel/patch.c
+> @@ -40,7 +40,10 @@ static void __kprobes *patch_map(void *addr, int fixm=
+ap, unsigned long *flags,
+>
+>  	*need_unmap =3D 1;
+>  	set_fixmap(fixmap, page_to_phys(page));
+> -	raw_spin_lock_irqsave(&patch_lock, *flags);
+> +	if (flags)
+> +		raw_spin_lock_irqsave(&patch_lock, *flags);
+> +	else
+> +		__acquire(&patch_lock);
+>
+>  	return (void *) (__fix_to_virt(fixmap) + (uintaddr & ~PAGE_MASK));
+>  }
+> @@ -49,7 +52,10 @@ static void __kprobes patch_unmap(int fixmap, unsigne=
+d long *flags)
+>  {
+>  	clear_fixmap(fixmap);
+>
+> -	raw_spin_unlock_irqrestore(&patch_lock, *flags);
+> +	if (flags)
+> +		raw_spin_unlock_irqrestore(&patch_lock, *flags);
+> +	else
+> +		__release(&patch_lock);
+>  }
+>
+>  void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned in=
+t len)
+> @@ -61,9 +67,8 @@ void __kprobes __patch_text_multiple(void *addr, u32 *=
+insn, unsigned int len)
+>  	int mapped;
+>
+>  	/* Make sure we don't have any aliases in cache */
+> -	flush_kernel_dcache_range_asm(start, end);
+> -	flush_kernel_icache_range_asm(start, end);
+> -	flush_tlb_kernel_range(start, end);
+> +	flush_kernel_vmap_range(addr, len);
+> +	flush_icache_range(start, end);
+>
+>  	p =3D fixmap =3D patch_map(addr, FIX_TEXT_POKE0, &flags, &mapped);
+>
+> @@ -76,10 +81,8 @@ void __kprobes __patch_text_multiple(void *addr, u32 =
+*insn, unsigned int len)
+>  			 * We're crossing a page boundary, so
+>  			 * need to remap
+>  			 */
+> -			flush_kernel_dcache_range_asm((unsigned long)fixmap,
+> -						      (unsigned long)p);
+> -			flush_tlb_kernel_range((unsigned long)fixmap,
+> -					       (unsigned long)p);
+> +			flush_kernel_vmap_range((void *)fixmap,
+> +						(p-fixmap) * sizeof(*p));
+>  			if (mapped)
+>  				patch_unmap(FIX_TEXT_POKE0, &flags);
+>  			p =3D fixmap =3D patch_map(addr, FIX_TEXT_POKE0, &flags,
+> @@ -87,10 +90,10 @@ void __kprobes __patch_text_multiple(void *addr, u32=
+ *insn, unsigned int len)
+>  		}
+>  	}
+>
+> -	flush_kernel_dcache_range_asm((unsigned long)fixmap, (unsigned long)p)=
+;
+> -	flush_tlb_kernel_range((unsigned long)fixmap, (unsigned long)p);
+> +	flush_kernel_vmap_range((void *)fixmap, (p-fixmap) * sizeof(*p));
+>  	if (mapped)
+>  		patch_unmap(FIX_TEXT_POKE0, &flags);
+> +	flush_icache_range(start, end);
+>  }
+>
+>  void __kprobes __patch_text(void *addr, u32 insn)
 
-Thank you for working on the new tests and cleanups.
-
-This series needs a cover-letter that explains why this series is needed
-that includes the information from this last patch.
-
-Please send v2 with a proper cover letter starting with why this series
-is necessary. If you did that, it would have reviewers job is lot easier.
-
-Also it appears you are combining new tests with cleanup patches. I think
-patches 2/3 and 3/3 can be a separate series and the new test can be a
-separate patch.
-
-thanks,
--- Shuah
