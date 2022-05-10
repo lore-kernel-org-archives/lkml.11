@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C8F2C352AA
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE84BC4707A
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:28:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344897AbiEJOcL (ORCPT
+        id S1345144AbiEJOck (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:32:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38564 "EHLO
+        Tue, 10 May 2022 10:32:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343594AbiEJOHJ (ORCPT
+        with ESMTP id S1344069AbiEJOH1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:07:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC5221FE3C9;
-        Tue, 10 May 2022 06:41:10 -0700 (PDT)
+        Tue, 10 May 2022 10:07:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D09037CDFA;
+        Tue, 10 May 2022 06:41:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FA2161889;
-        Tue, 10 May 2022 13:41:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77074C385A6;
-        Tue, 10 May 2022 13:41:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3C52AB81DA0;
+        Tue, 10 May 2022 13:41:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7023C385C2;
+        Tue, 10 May 2022 13:41:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652190068;
-        bh=cCZFMNJ7sc4kval9MNFBp8yBF+FZbUz3Tw4iKsgYzLI=;
+        s=korg; t=1652190100;
+        bh=AAu3wZQM5TXMCSefAdcqdNYX8X6nheEiGnbu9e2bf/g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a7huvf9ZC6rHAA6ccqMBQ1gNhCVwdPO0cKSzFU2FiSAonxCcF8sIVD5t3Q9Kl7Bsa
-         h4NXgjQcCsnZVOItEgcrBp53LXOHsOViZKjSwYP8oKSgJtaN+KNT18CHEq79sxCAq7
-         1su+xgSn8MarSESq0D+JLWnu/D/iGQofBTCzl2Jg=
+        b=KG/oedabcfRWnfeIYAwEgkjGOp/46Yzo/RXSq4DVJFewy4dt38PWttp3LZ+I1zh15
+         ydlU+7fK9akGRdyQb6Jel6slVJMq5jfekq9DSAy+faJmMrP9mk6Ofqa3hVMsYJm033
+         ddhv0XXNEOo1cg13Ozo2LUn2SHU/malR4PCG/qng=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 117/140] KVM: x86/mmu: avoid NULL-pointer dereference on page freeing bugs
-Date:   Tue, 10 May 2022 15:08:27 +0200
-Message-Id: <20220510130744.950624217@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.17 088/140] net: cpsw: add missing of_node_put() in cpsw_probe_dt()
+Date:   Tue, 10 May 2022 15:07:58 +0200
+Message-Id: <20220510130744.126648305@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -50,39 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Bonzini <pbonzini@redhat.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 9191b8f0745e63edf519e4a54a4aaae1d3d46fbd ]
+commit 95098d5ac2551769807031444e55a0da5d4f0952 upstream.
 
-WARN and bail if KVM attempts to free a root that isn't backed by a shadow
-page.  KVM allocates a bare page for "special" roots, e.g. when using PAE
-paging or shadowing 2/3/4-level page tables with 4/5-level, and so root_hpa
-will be valid but won't be backed by a shadow page.  It's all too easy to
-blindly call mmu_free_root_page() on root_hpa, be nice and WARN instead of
-crashing KVM and possibly the kernel.
+'tmp_node' need be put before returning from cpsw_probe_dt(),
+so add missing of_node_put() in error path.
 
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: ed3525eda4c4 ("net: ethernet: ti: introduce cpsw switchdev based driver part 1 - dual-emac")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/mmu/mmu.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/ti/cpsw_new.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 7f009ebb319a..e7cd16e1e0a0 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -3239,6 +3239,8 @@ static void mmu_free_root_page(struct kvm *kvm, hpa_t *root_hpa,
- 		return;
+--- a/drivers/net/ethernet/ti/cpsw_new.c
++++ b/drivers/net/ethernet/ti/cpsw_new.c
+@@ -1246,8 +1246,10 @@ static int cpsw_probe_dt(struct cpsw_com
+ 	data->slave_data = devm_kcalloc(dev, CPSW_SLAVE_PORTS_NUM,
+ 					sizeof(struct cpsw_slave_data),
+ 					GFP_KERNEL);
+-	if (!data->slave_data)
++	if (!data->slave_data) {
++		of_node_put(tmp_node);
+ 		return -ENOMEM;
++	}
  
- 	sp = to_shadow_page(*root_hpa & PT64_BASE_ADDR_MASK);
-+	if (WARN_ON(!sp))
-+		return;
+ 	/* Populate all the child nodes here...
+ 	 */
+@@ -1341,6 +1343,7 @@ static int cpsw_probe_dt(struct cpsw_com
  
- 	if (is_tdp_mmu_page(sp))
- 		kvm_tdp_mmu_put_root(kvm, sp, false);
--- 
-2.35.1
-
+ err_node_put:
+ 	of_node_put(port_np);
++	of_node_put(tmp_node);
+ 	return ret;
+ }
+ 
 
 
