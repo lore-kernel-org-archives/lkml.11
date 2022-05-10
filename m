@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD029C4707A
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:38:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BFBFC4707F
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:38:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244069AbiEJNlY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:41:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50500 "EHLO
+        id S244150AbiEJNle (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:41:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243898AbiEJN1f (ORCPT
+        with ESMTP id S243561AbiEJN1A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:27:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AAE92C182B;
-        Tue, 10 May 2022 06:20:44 -0700 (PDT)
+        Tue, 10 May 2022 09:27:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF85F23886F;
+        Tue, 10 May 2022 06:20:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5C5EDB81CF8;
-        Tue, 10 May 2022 13:20:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9276C385C2;
-        Tue, 10 May 2022 13:20:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 55381616D0;
+        Tue, 10 May 2022 13:20:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 622B9C385CD;
+        Tue, 10 May 2022 13:19:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188842;
-        bh=uWNfTbyVD20wguGhW1RfOtpw8PG/VpQ0yqM5YEg8S1A=;
+        s=korg; t=1652188799;
+        bh=zWF1IvJ/JqDFFxzMfKbdnAuJ8RlHsywurthgCDlnSU4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YX+Bg6y0QSCZcQ62oORtesNgHwqaCTCQeIvbAf+yddqdc4bYfLD/MDszME8d4AjrQ
-         G5B+tvZByLqhdmytEwkHaP7ptLuz9BKAQK7Fo4Jog8exH5f21lN2PGc4kDYYMlMwwU
-         lUux9pGUprTh+EJlya7WDX3kvoEikQao4ZKFElz4=
+        b=L6BAKxqUURjclWGw+kk4K+/5pcaMlrfSWjzQd6AzVk3K9/yIEAxik5HrJVYetXmF4
+         ki8YuVHraIGJ8B7DMH5r8q0gNTE1h9PKidgUEISJaY0f8nor4HklOLzetw9bqrUb1y
+         BIm7VVCXx89azVw/4HXa1AUdAzDUbB/NMvS7Tmz0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "wanghai (M)" <wanghai38@huawei.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 4.19 62/88] Revert "SUNRPC: attempt AF_LOCAL connect on setup"
-Date:   Tue, 10 May 2022 15:07:47 +0200
-Message-Id: <20220510130735.542425319@linuxfoundation.org>
+        stable@vger.kernel.org, Chuanhong Guo <gch981213@gmail.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 22/88] mtd: rawnand: fix ecc parameters for mt7622
+Date:   Tue, 10 May 2022 15:07:07 +0200
+Message-Id: <20220510130734.392563510@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130733.735278074@linuxfoundation.org>
 References: <20220510130733.735278074@linuxfoundation.org>
@@ -48,36 +49,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Chuanhong Guo <gch981213@gmail.com>
 
-commit a3d0562d4dc039bca39445e1cddde7951662e17d upstream.
+[ Upstream commit 9fe4e0d3cbfe90152137963cc024ecb63db6e8e6 ]
 
-This reverts commit 7073ea8799a8cf73db60270986f14e4aae20fa80.
+According to the datasheet, mt7622 only has 5 ECC capabilities instead
+of 7, and the decoding error register is arranged  as follows:
++------+---------+---------+---------+---------+
+| Bits |  19:15  |  14:10  |   9:5   |   4:0   |
++------+---------+---------+---------+---------+
+| Name | ERRNUM3 | ERRNUM2 | ERRNUM1 | ERRNUM0 |
++------+---------+---------+---------+---------+
+This means err_mask should be 0x1f instead of 0x3f and the number of
+bits shifted in mtk_ecc_get_stats should be 5 instead of 8.
 
-We must not try to connect the socket while the transport is under
-construction, because the mechanisms to safely tear it down are not in
-place. As the code stands, we end up leaking the sockets on a connection
-error.
+This commit introduces err_shift for the difference in this register
+and fix other existing parameters.
 
-Reported-by: wanghai (M) <wanghai38@huawei.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Public MT7622 reference manual can be found on [0] and the info this
+commit is based on is from page 656 and page 660.
+
+[0]: https://wiki.banana-pi.org/Banana_Pi_BPI-R64#Documents
+
+Fixes: 98dea8d71931 ("mtd: nand: mtk: Support MT7622 NAND flash controller.")
+Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220402160315.919094-1-gch981213@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/xprtsock.c |    3 ---
- 1 file changed, 3 deletions(-)
+ drivers/mtd/nand/raw/mtk_ecc.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
---- a/net/sunrpc/xprtsock.c
-+++ b/net/sunrpc/xprtsock.c
-@@ -2974,9 +2974,6 @@ static struct rpc_xprt *xs_setup_local(s
- 		}
- 		xprt_set_bound(xprt);
- 		xs_format_peer_addresses(xprt, "local", RPCBIND_NETID_LOCAL);
--		ret = ERR_PTR(xs_local_setup_socket(transport));
--		if (ret)
--			goto out_err;
- 		break;
- 	default:
- 		ret = ERR_PTR(-EAFNOSUPPORT);
+diff --git a/drivers/mtd/nand/raw/mtk_ecc.c b/drivers/mtd/nand/raw/mtk_ecc.c
+index 6432bd70c3b3..9e4a78a80802 100644
+--- a/drivers/mtd/nand/raw/mtk_ecc.c
++++ b/drivers/mtd/nand/raw/mtk_ecc.c
+@@ -51,6 +51,7 @@
+ 
+ struct mtk_ecc_caps {
+ 	u32 err_mask;
++	u32 err_shift;
+ 	const u8 *ecc_strength;
+ 	const u32 *ecc_regs;
+ 	u8 num_ecc_strength;
+@@ -84,7 +85,7 @@ static const u8 ecc_strength_mt2712[] = {
+ };
+ 
+ static const u8 ecc_strength_mt7622[] = {
+-	4, 6, 8, 10, 12, 14, 16
++	4, 6, 8, 10, 12
+ };
+ 
+ enum mtk_ecc_regs {
+@@ -229,7 +230,7 @@ void mtk_ecc_get_stats(struct mtk_ecc *ecc, struct mtk_ecc_stats *stats,
+ 	for (i = 0; i < sectors; i++) {
+ 		offset = (i >> 2) << 2;
+ 		err = readl(ecc->regs + ECC_DECENUM0 + offset);
+-		err = err >> ((i % 4) * 8);
++		err = err >> ((i % 4) * ecc->caps->err_shift);
+ 		err &= ecc->caps->err_mask;
+ 		if (err == ecc->caps->err_mask) {
+ 			/* uncorrectable errors */
+@@ -453,6 +454,7 @@ EXPORT_SYMBOL(mtk_ecc_get_parity_bits);
+ 
+ static const struct mtk_ecc_caps mtk_ecc_caps_mt2701 = {
+ 	.err_mask = 0x3f,
++	.err_shift = 8,
+ 	.ecc_strength = ecc_strength_mt2701,
+ 	.ecc_regs = mt2701_ecc_regs,
+ 	.num_ecc_strength = 20,
+@@ -463,6 +465,7 @@ static const struct mtk_ecc_caps mtk_ecc_caps_mt2701 = {
+ 
+ static const struct mtk_ecc_caps mtk_ecc_caps_mt2712 = {
+ 	.err_mask = 0x7f,
++	.err_shift = 8,
+ 	.ecc_strength = ecc_strength_mt2712,
+ 	.ecc_regs = mt2712_ecc_regs,
+ 	.num_ecc_strength = 23,
+@@ -472,10 +475,11 @@ static const struct mtk_ecc_caps mtk_ecc_caps_mt2712 = {
+ };
+ 
+ static const struct mtk_ecc_caps mtk_ecc_caps_mt7622 = {
+-	.err_mask = 0x3f,
++	.err_mask = 0x1f,
++	.err_shift = 5,
+ 	.ecc_strength = ecc_strength_mt7622,
+ 	.ecc_regs = mt7622_ecc_regs,
+-	.num_ecc_strength = 7,
++	.num_ecc_strength = 5,
+ 	.ecc_mode_shift = 4,
+ 	.parity_bits = 13,
+ 	.pg_irq_sel = 0,
+-- 
+2.35.1
+
 
 
