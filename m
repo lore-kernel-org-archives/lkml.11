@@ -2,127 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9297AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:57:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38E37C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:58:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241419AbiEJMBu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 08:01:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39690 "EHLO
+        id S241385AbiEJMB5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 08:01:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241386AbiEJMB1 (ORCPT
+        with ESMTP id S241393AbiEJMBm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 08:01:27 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71B571BD712
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 04:57:25 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id x88so4129741pjj.1
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 04:57:25 -0700 (PDT)
+        Tue, 10 May 2022 08:01:42 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECB2553B64;
+        Tue, 10 May 2022 04:57:26 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id cq17-20020a17090af99100b001dc0386cd8fso1934709pjb.5;
+        Tue, 10 May 2022 04:57:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=7BPZlTHByJ08KrdS7jJrTlTcZYxY/HRw1sFuvcsMJtw=;
-        b=UWWC5Jv7k0umTf2srlPlhKqOfgbSx2z3RAvdCLw1KpRk70G1E1NwqiERUB5vm6Nub0
-         IvGhBPQr6FLjS9oai5za6N6rr3X7UHR1/ad2Z/wzGonTf0Bw7Q+xjBs4oNd3Z35HpVFW
-         QKJHRxUaJl8Gj6S4WXsHHZIRRcSRLbbjZtcyXNbOcg2dyL2vI90PXu0hWLEItjoZt0hd
-         FJv+uFSCA7ontfeayjE1CXX6tu+/p1LvcPIM+w3A/Clnz7dd6JoWiRKTWrTAJMH4YNhZ
-         oGkB/Rqs9Vy1hsd6tQFnk9jdxgYoKfte3Sd1xt9Z1OVudrKzT7+2iedhF6aWyW6NkrTU
-         RuhQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=V+ri3ZfuN8FuVbSM//0lu8Toi01vpQqcUZp67pKtVbk=;
+        b=LNtmuy58omRFRozovkqcW+xsZL6/z3+iz9w5LCVdNDQ51/haSM+16lwhxmP6rykSFE
+         KzcuAXy7KOUCxC29OU5+kHT2q6Y8vHpPgZTAo6zT5bQha4nAxfBNRxcgVWxIJq69oZ4e
+         qrXr83+xBI6KXhRF5z86ysmJrUVlfxoIp4kV3ATqjyg7wFwfEcMAy1RDCfIcqI9PrPef
+         8sFhEYmZjFZVD2NBjz01h8PGpeA5mP1zjmhdB/PiN/rbEJkFqOZFYNrGoR4m+C22E5HS
+         HzFajf/lI8AswYT5jZiekylbky4v0ajGl2WpH3gbiALlzvwe6DcF9x5qsY3DjlcdJJzn
+         MWzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=7BPZlTHByJ08KrdS7jJrTlTcZYxY/HRw1sFuvcsMJtw=;
-        b=fo4Wt33F4oXFdweRoQB7STJii2H8r+zXirUg8YFcB2e5kCNXCvpiG5NdlKX3oXPMqN
-         tNvJt8WrzXACAtmWzOrSlwNL687OHXYu3dIGUA1DYsFXpmB/oVcbaLZGIMA4d6qSZ/1S
-         MKt1y2G4It+09w+5R8nfdSL0iHlgHoc6/zIyZ/jyM8CEtaj9sfW6LGwjfDMh/Zfm+J//
-         9l1RlD0e45cbmca6S+Xb6P4yPFJ18YiLcAgDyFwUiiv5YSIiNdY8plYMgrtZF6OsthtY
-         sN1jfey69JbKEW2fo1lrVivqBL0WLsX0AGpP5V12kTC8lo87fgkC6Cy7FvbIFkZLc2QT
-         pqtA==
-X-Gm-Message-State: AOAM531wkS//Sc7tmCz+HqzYcskWfgPyZcJWh3BkismaBpyHWO1ys+n6
-        CO8WbYkzzulhST0h963p/A8=
-X-Google-Smtp-Source: ABdhPJzK1VkiphXc+HoTD+GpWQ0/A8btsdOK09KMv+Sxa9B1hdkP6x/ieyK4QCaW4Hm5lBorBuKrXQ==
-X-Received: by 2002:a17:90b:4b83:b0:1dc:5073:b704 with SMTP id lr3-20020a17090b4b8300b001dc5073b704mr23201301pjb.94.1652183844892;
-        Tue, 10 May 2022 04:57:24 -0700 (PDT)
-Received: from hyeyoo ([114.29.24.243])
-        by smtp.gmail.com with ESMTPSA id bd36-20020a056a0027a400b0050dc76281b1sm10261215pfb.139.2022.05.10.04.57.19
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=V+ri3ZfuN8FuVbSM//0lu8Toi01vpQqcUZp67pKtVbk=;
+        b=BnHQyW57CXcCM4kukHu/BkI2IpsIuJlTQl4NQYL0kHFFxmYEbWeUUQRGnVgxZ7Q48C
+         IfGzW2aPkSUWm6715cDnzc4J5JKMUWMBuEldSA36UTmHOXu9tDdMnld6MztXzSMNYRPA
+         lvfmVUW4Bn/ex2QJMPhp4+lG2yEfAbs5UwuxwdqTis0Jpyk8kkrxg6OBwSlozzx1EvPw
+         nJmF3gvmmtfF28AIWUGUeHXxrDhZN0vtEDiytjQiZKdZ0cKiskVZgQgIAPvY/U9m6qI9
+         fvYrZdKO6y2ygHEsj6r1igeY8M5XFAEQL8iU41JhZZ057+LekNmBkxJu57aewcJiFWDZ
+         hawA==
+X-Gm-Message-State: AOAM5304AwfoRjbbVzhhekT5/zeh3XQrrg6aHSbny9wepL7WDcJhMGqn
+        hE0Z45xj7N9BaT4E3tCorGA=
+X-Google-Smtp-Source: ABdhPJyIeP8oTcjQ3VMSFESdLsCog0TR/cq6n8yCgtgSImIplBUC0qVSZiWewGA3g4HwfQnLyFi06w==
+X-Received: by 2002:a17:90a:de87:b0:1d9:8264:baef with SMTP id n7-20020a17090ade8700b001d98264baefmr31351167pjv.227.1652183846333;
+        Tue, 10 May 2022 04:57:26 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.81])
+        by smtp.gmail.com with ESMTPSA id m21-20020a62a215000000b0050dc7628194sm10460463pff.110.2022.05.10.04.57.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 04:57:24 -0700 (PDT)
-Date:   Tue, 10 May 2022 20:57:16 +0900
-From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To:     Tom Lendacky <thomas.lendacky@amd.com>
-Cc:     Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Tue, 10 May 2022 04:57:26 -0700 (PDT)
+From:   Like Xu <like.xu.linux@gmail.com>
+X-Google-Original-From: Like Xu <likexu@tencent.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Jim Mattson <jmattson@google.com>, sandipan.das@amd.com,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] x86/mm/cpa: set PAGE_KERNEL in __set_pages_p()
-Message-ID: <YnpTHMvOO/pLJQ+l@hyeyoo>
-References: <20220506051940.156952-1-42.hyeyoo@gmail.com>
- <56f89895-601e-44c9-bda4-5fae6782e27e@amd.com>
+Subject: [PATCH 2/3] KVM: x86/svm/pmu: Direct access pmu->gp_counter[] to implement amd_*_to_pmc()
+Date:   Tue, 10 May 2022 19:57:17 +0800
+Message-Id: <20220510115718.93335-2-likexu@tencent.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220510115718.93335-1-likexu@tencent.com>
+References: <20220510115718.93335-1-likexu@tencent.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <56f89895-601e-44c9-bda4-5fae6782e27e@amd.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 11:06:22AM -0500, Tom Lendacky wrote:
-> On 5/6/22 00:19, Hyeonggon Yoo wrote:
-> > __set_pages_np() not only clears _PAGE_PRESENT and _PAGE_RW, but also
-> > clears _PAGE_GLOBAL to avoid confusing _PAGE_GLOBAL as _PAGE_PROTNONE
-> > when the PTE is not present.
-> > 
-> > Common usage for __set_pages_p() is to call it after __set_pages_np().
-> > Therefore calling __set_pages_p() after __set_pages_np() clears
-> > _PAGE_GLOBAL, making it unable to globally shared in TLB.
-> > 
-> > As they are called by set_direct_map_{invalid,default}_noflush(),
-> > pages in direct map cannot be globally shared in TLB after being used by
-> > vmalloc, secretmem, and hibernation.
-> > 
-> > So set PAGE_KERNEL isntead of __pgprot(_PAGE_PRESENT | _PAGE_RW) in
-> > __set_pages_p().
-> > 
-> > Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-> > ---
-> >   arch/x86/mm/pat/set_memory.c | 2 +-
-> >   1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
-> > index abf5ed76e4b7..fcb6147c4cd4 100644
-> > --- a/arch/x86/mm/pat/set_memory.c
-> > +++ b/arch/x86/mm/pat/set_memory.c
-> > @@ -2177,7 +2177,7 @@ static int __set_pages_p(struct page *page, int numpages)
-> >   	struct cpa_data cpa = { .vaddr = &tempaddr,
-> >   				.pgd = NULL,
-> >   				.numpages = numpages,
-> > -				.mask_set = __pgprot(_PAGE_PRESENT | _PAGE_RW),
-> > +				.mask_set = PAGE_KERNEL,
-> 
-> With SME/SEV, this will also (unintentionally) set the encryption bit, so I
-> don't think this is correct.
->
+From: Like Xu <likexu@tencent.com>
 
-Thank you for catching this.
-It seems PAGE_KERNEL was too much for  __set_pages_p().
+AMD only has gp counters, whose corresponding vPMCs are initialised
+and stored in pmu->gp_counter[] in order of idx, so we can access this
+array directly based on any valid pmc->idx, without any help from other
+interfaces at all. The amd_rdpmc_ecx_to_pmc() can now reuse this part
+of the code quite naturally.
 
-I think __pgprot_mask(_PAGE_KERNEL | _PAGE_RW | _PAGE_GLOBAL) would be correct.
-Thoughts?
+Opportunistically apply array_index_nospec() to reduce the attack
+surface for speculative execution.
 
-> Thanks,
-> Tom
-> 
-> >   				.mask_clr = __pgprot(0),
-> >   				.flags = 0};
+Signed-off-by: Like Xu <likexu@tencent.com>
+---
+ arch/x86/kvm/svm/pmu.c | 36 +++++++++++-------------------------
+ 1 file changed, 11 insertions(+), 25 deletions(-)
 
+diff --git a/arch/x86/kvm/svm/pmu.c b/arch/x86/kvm/svm/pmu.c
+index 68b9e22c84d2..4668baf762d2 100644
+--- a/arch/x86/kvm/svm/pmu.c
++++ b/arch/x86/kvm/svm/pmu.c
+@@ -45,6 +45,16 @@ static struct kvm_event_hw_type_mapping amd_event_mapping[] = {
+ 	[7] = { 0xd1, 0x00, PERF_COUNT_HW_STALLED_CYCLES_BACKEND },
+ };
+ 
++static struct kvm_pmc *amd_pmc_idx_to_pmc(struct kvm_pmu *pmu, int pmc_idx)
++{
++	unsigned int num_counters = pmu->nr_arch_gp_counters;
++
++	if (pmc_idx >= num_counters)
++		return NULL;
++
++	return &pmu->gp_counters[array_index_nospec(pmc_idx, num_counters)];
++}
++
+ static unsigned int get_msr_base(struct kvm_pmu *pmu, enum pmu_type type)
+ {
+ 	struct kvm_vcpu *vcpu = pmu_to_vcpu(pmu);
+@@ -164,22 +174,6 @@ static bool amd_pmc_is_enabled(struct kvm_pmc *pmc)
+ 	return true;
+ }
+ 
+-static struct kvm_pmc *amd_pmc_idx_to_pmc(struct kvm_pmu *pmu, int pmc_idx)
+-{
+-	unsigned int base = get_msr_base(pmu, PMU_TYPE_COUNTER);
+-	struct kvm_vcpu *vcpu = pmu_to_vcpu(pmu);
+-
+-	if (guest_cpuid_has(vcpu, X86_FEATURE_PERFCTR_CORE)) {
+-		/*
+-		 * The idx is contiguous. The MSRs are not. The counter MSRs
+-		 * are interleaved with the event select MSRs.
+-		 */
+-		pmc_idx *= 2;
+-	}
+-
+-	return get_gp_pmc_amd(pmu, base + pmc_idx, PMU_TYPE_COUNTER);
+-}
+-
+ static bool amd_is_valid_rdpmc_ecx(struct kvm_vcpu *vcpu, unsigned int idx)
+ {
+ 	struct kvm_pmu *pmu = vcpu_to_pmu(vcpu);
+@@ -193,15 +187,7 @@ static bool amd_is_valid_rdpmc_ecx(struct kvm_vcpu *vcpu, unsigned int idx)
+ static struct kvm_pmc *amd_rdpmc_ecx_to_pmc(struct kvm_vcpu *vcpu,
+ 	unsigned int idx, u64 *mask)
+ {
+-	struct kvm_pmu *pmu = vcpu_to_pmu(vcpu);
+-	struct kvm_pmc *counters;
+-
+-	idx &= ~(3u << 30);
+-	if (idx >= pmu->nr_arch_gp_counters)
+-		return NULL;
+-	counters = pmu->gp_counters;
+-
+-	return &counters[idx];
++	return amd_pmc_idx_to_pmc(vcpu_to_pmu(vcpu), idx & ~(3u << 30));
+ }
+ 
+ static bool amd_is_valid_msr(struct kvm_vcpu *vcpu, u32 msr)
 -- 
-Thanks,
-Hyeonggon
+2.36.1
+
