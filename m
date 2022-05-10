@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28D62C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:12:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 837CAC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:13:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242466AbiEJNQs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:16:48 -0400
+        id S242438AbiEJNQz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:16:55 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242349AbiEJNPw (ORCPT
+        with ESMTP id S242424AbiEJNP7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:15:52 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6374488B6;
-        Tue, 10 May 2022 06:11:31 -0700 (PDT)
+        Tue, 10 May 2022 09:15:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57681396A3;
+        Tue, 10 May 2022 06:11:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 237FACE1EE2;
-        Tue, 10 May 2022 13:11:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 306AEC385A6;
-        Tue, 10 May 2022 13:11:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D5A73615FE;
+        Tue, 10 May 2022 13:11:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E78FCC385D2;
+        Tue, 10 May 2022 13:11:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188288;
-        bh=nbW0eEsimMVjlHNbmfDsIhmqa2VhhW8vzws7CUyZMzo=;
+        s=korg; t=1652188297;
+        bh=4kzENMZz9lzHqiKlT2tYJDJzG0vuYCBxT1iApVxZoxQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LhWFqe5N8TAi74IIKrE7SgEY3PDQRytbiOhMUrwz25qsEc6mzga2zauo4/44D0Yoz
-         EzotzOiTrHgAUzpUc8Bc+bviw7nQszen5gcIsc9ybUAxN2rO+SGpEZ8BSfKJYQyEo4
-         4aDEEVPalMppjLJRb7hfVdbdTchNULlcbA0TsyWo=
+        b=f8xD0xUXWmGT2gfRk2Cd6A73S9zJquIf3pznva+CqlbeP5QAkZHDWQoggHw0xP9VT
+         XNtffHZbb4m0wnl/WVsei9J2qFBIK9ndjGf43cFfnhsh1XsG6arxW5rWNvJtPJX+c6
+         k1VuPp6rKXpN6YxXoL71xFiOYZ6XzpKT4WIFlUn4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        =?UTF-8?q?Matias=20Bj=C3=B8rling?= <mb@lightnvm.io>,
-        =?UTF-8?q?Javier=20Gonz=C3=A1lez?= <javier@javigon.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 4.9 03/66] lightnvm: disable the subsystem
-Date:   Tue, 10 May 2022 15:06:53 +0200
-Message-Id: <20220510130729.862939629@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 4.9 06/66] USB: serial: whiteheat: fix heap overflow in WHITEHEAT_GET_DTR_RTS
+Date:   Tue, 10 May 2022 15:06:56 +0200
+Message-Id: <20220510130729.950176234@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.762341544@linuxfoundation.org>
 References: <20220510130729.762341544@linuxfoundation.org>
@@ -50,30 +49,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In commit 9ea9b9c48387 ("remove the lightnvm subsystem") the lightnvm
-subsystem was removed as there is no hardware in the wild for it, and
-the code is known to have problems.  This should also be disabled for
-older LTS kernels as well to prevent anyone from accidentally using it.
+From: Kees Cook <keescook@chromium.org>
 
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Matias Bjørling <mb@lightnvm.io>
-Cc: Javier González <javier@javigon.com>
-Cc: Jens Axboe <axboe@kernel.dk>
+commit e23e50e7acc8d8f16498e9c129db33e6a00e80eb upstream.
+
+The sizeof(struct whitehat_dr_info) can be 4 bytes under CONFIG_AEABI=n
+due to "-mabi=apcs-gnu", even though it has a single u8:
+
+whiteheat_private {
+        __u8                       mcr;                  /*     0     1 */
+
+        /* size: 4, cachelines: 1, members: 1 */
+        /* padding: 3 */
+        /* last cacheline: 4 bytes */
+};
+
+The result is technically harmless, as both the source and the
+destinations are currently the same allocation size (4 bytes) and don't
+use their padding, but if anything were to ever be added after the
+"mcr" member in "struct whiteheat_private", it would be overwritten. The
+structs both have a single u8 "mcr" member, but are 4 bytes in padded
+size. The memcpy() destination was explicitly targeting the u8 member
+(size 1) with the length of the whole structure (size 4), triggering
+the memcpy buffer overflow warning:
+
+In file included from include/linux/string.h:253,
+                 from include/linux/bitmap.h:11,
+                 from include/linux/cpumask.h:12,
+                 from include/linux/smp.h:13,
+                 from include/linux/lockdep.h:14,
+                 from include/linux/spinlock.h:62,
+                 from include/linux/mmzone.h:8,
+                 from include/linux/gfp.h:6,
+                 from include/linux/slab.h:15,
+                 from drivers/usb/serial/whiteheat.c:17:
+In function 'fortify_memcpy_chk',
+    inlined from 'firm_send_command' at drivers/usb/serial/whiteheat.c:587:4:
+include/linux/fortify-string.h:328:25: warning: call to '__write_overflow_field' declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()? [-Wattribute-warning]
+  328 |                         __write_overflow_field(p_size_field, size);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Instead, just assign the one byte directly.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Link: https://lore.kernel.org/lkml/202204142318.vDqjjSFn-lkp@intel.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20220421001234.2421107-1-keescook@chromium.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/lightnvm/Kconfig |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/serial/whiteheat.c |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
---- a/drivers/lightnvm/Kconfig
-+++ b/drivers/lightnvm/Kconfig
-@@ -4,7 +4,7 @@
- 
- menuconfig NVM
- 	bool "Open-Channel SSD target support"
--	depends on BLOCK && HAS_DMA
-+	depends on BLOCK && HAS_DMA && BROKEN
- 	help
- 	  Say Y here to get to enable Open-channel SSDs.
- 
+--- a/drivers/usb/serial/whiteheat.c
++++ b/drivers/usb/serial/whiteheat.c
+@@ -644,9 +644,8 @@ static int firm_send_command(struct usb_
+ 		switch (command) {
+ 		case WHITEHEAT_GET_DTR_RTS:
+ 			info = usb_get_serial_port_data(port);
+-			memcpy(&info->mcr, command_info->result_buffer,
+-					sizeof(struct whiteheat_dr_info));
+-				break;
++			info->mcr = command_info->result_buffer[0];
++			break;
+ 		}
+ 	}
+ exit:
 
 
