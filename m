@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2A3FC4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:28:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C75BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:29:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242701AbiEJNcx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:32:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60154 "EHLO
+        id S241495AbiEJNdA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:33:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242991AbiEJNXn (ORCPT
+        with ESMTP id S242610AbiEJNYR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:23:43 -0400
+        Tue, 10 May 2022 09:24:17 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 112A21CD24C;
-        Tue, 10 May 2022 06:17:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3869C54682;
+        Tue, 10 May 2022 06:17:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D1496B81DA2;
-        Tue, 10 May 2022 13:17:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30418C385A6;
-        Tue, 10 May 2022 13:17:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9665B81D0D;
+        Tue, 10 May 2022 13:17:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 480B8C385C2;
+        Tue, 10 May 2022 13:17:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188635;
-        bh=CQI6WkPQGuCBQ1p6kqFgS0LIfUWapXnfnxB/65SJFDQ=;
+        s=korg; t=1652188644;
+        bh=hwo8XwOH5FAgJgZVLngvecjaImRzHhr+s7d0muU2US0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0FPf1Uvs4aubHfs01GWMsZrp1sUGYdKvF3JJJJgsh6bAzMcqd7vlovdNxcPiIXQKo
-         az1MRYF5wxxJayy1ORYuU+zdS+PW3aeYUCO3tJHePA+k2Id5DUeF53dgS6l9vBfcx5
-         DJqRkD5TysBYoJLp0ML80SVy7eYA1NpOW8JkxIZc=
+        b=CSo6ah9Z8Gy7ErJvooKELAVbAUxLxHBP6mkiawZSdhXOemdOFlF5Hm7twqYGRJ/9U
+         BSHxs3aJvnAQJPh09ewvQ6W0LVSF0RcHYxXLddIjTGmEpzcOYB8cuY0jSE4dWl2NhS
+         TozF/WwX74ayDd8Oc4ezFlpm34INgmSKAshHxG98=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 4.14 71/78] btrfs: always log symlinks in full mode
-Date:   Tue, 10 May 2022 15:07:57 +0200
-Message-Id: <20220510130734.631397637@linuxfoundation.org>
+        stable@vger.kernel.org, Vasant Hegde <vasant.hegde@amd.com>,
+        Sandipan Das <sandipan.das@amd.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 73/78] kvm: x86/cpuid: Only provide CPUID leaf 0xA if host has architectural PMU
+Date:   Tue, 10 May 2022 15:07:59 +0200
+Message-Id: <20220510130734.690549554@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
 References: <20220510130732.522479698@linuxfoundation.org>
@@ -48,89 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Sandipan Das <sandipan.das@amd.com>
 
-commit d0e64a981fd841cb0f28fcd6afcac55e6f1e6994 upstream.
+[ Upstream commit 5a1bde46f98b893cda6122b00e94c0c40a6ead3c ]
 
-On Linux, empty symlinks are invalid, and attempting to create one with
-the system call symlink(2) results in an -ENOENT error and this is
-explicitly documented in the man page.
+On some x86 processors, CPUID leaf 0xA provides information
+on Architectural Performance Monitoring features. It
+advertises a PMU version which Qemu uses to determine the
+availability of additional MSRs to manage the PMCs.
 
-If we rename a symlink that was created in the current transaction and its
-parent directory was logged before, we actually end up logging the symlink
-without logging its content, which is stored in an inline extent. That
-means that after a power failure we can end up with an empty symlink,
-having no content and an i_size of 0 bytes.
+Upon receiving a KVM_GET_SUPPORTED_CPUID ioctl request for
+the same, the kernel constructs return values based on the
+x86_pmu_capability irrespective of the vendor.
 
-It can be easily reproduced like this:
+This leaf and the additional MSRs are not supported on AMD
+and Hygon processors. If AMD PerfMonV2 is detected, the PMU
+version is set to 2 and guest startup breaks because of an
+attempt to access a non-existent MSR. Return zeros to avoid
+this.
 
-  $ mkfs.btrfs -f /dev/sdc
-  $ mount /dev/sdc /mnt
-
-  $ mkdir /mnt/testdir
-  $ sync
-
-  # Create a file inside the directory and fsync the directory.
-  $ touch /mnt/testdir/foo
-  $ xfs_io -c "fsync" /mnt/testdir
-
-  # Create a symlink inside the directory and then rename the symlink.
-  $ ln -s /mnt/testdir/foo /mnt/testdir/bar
-  $ mv /mnt/testdir/bar /mnt/testdir/baz
-
-  # Now fsync again the directory, this persist the log tree.
-  $ xfs_io -c "fsync" /mnt/testdir
-
-  <power failure>
-
-  $ mount /dev/sdc /mnt
-  $ stat -c %s /mnt/testdir/baz
-  0
-  $ readlink /mnt/testdir/baz
-  $
-
-Fix this by always logging symlinks in full mode (LOG_INODE_ALL), so that
-their content is also logged.
-
-A test case for fstests will follow.
-
-CC: stable@vger.kernel.org # 4.9+
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: a6c06ed1a60a ("KVM: Expose the architectural performance monitoring CPUID leaf")
+Reported-by: Vasant Hegde <vasant.hegde@amd.com>
+Signed-off-by: Sandipan Das <sandipan.das@amd.com>
+Message-Id: <3fef83d9c2b2f7516e8ff50d60851f29a4bcb716.1651058600.git.sandipan.das@amd.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/tree-log.c |   14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ arch/x86/kvm/cpuid.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/fs/btrfs/tree-log.c
-+++ b/fs/btrfs/tree-log.c
-@@ -4869,6 +4869,18 @@ static int btrfs_log_inode(struct btrfs_
- 	}
+diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
+index 7e1ab0e0f3f2..fd1eb8600ccf 100644
+--- a/arch/x86/kvm/cpuid.c
++++ b/arch/x86/kvm/cpuid.c
+@@ -517,6 +517,11 @@ static inline int __do_cpuid_ent(struct kvm_cpuid_entry2 *entry, u32 function,
+ 		union cpuid10_eax eax;
+ 		union cpuid10_edx edx;
  
- 	/*
-+	 * For symlinks, we must always log their content, which is stored in an
-+	 * inline extent, otherwise we could end up with an empty symlink after
-+	 * log replay, which is invalid on linux (symlink(2) returns -ENOENT if
-+	 * one attempts to create an empty symlink).
-+	 * We don't need to worry about flushing delalloc, because when we create
-+	 * the inline extent when the symlink is created (we never have delalloc
-+	 * for symlinks).
-+	 */
-+	if (S_ISLNK(inode->vfs_inode.i_mode))
-+		inode_only = LOG_INODE_ALL;
++		if (!static_cpu_has(X86_FEATURE_ARCH_PERFMON)) {
++			entry->eax = entry->ebx = entry->ecx = entry->edx = 0;
++			break;
++		}
 +
-+	/*
- 	 * a brute force approach to making sure we get the most uptodate
- 	 * copies of everything.
- 	 */
-@@ -5430,7 +5442,7 @@ process_leaf:
- 			}
+ 		perf_get_x86_pmu_capability(&cap);
  
- 			ctx->log_new_dentries = false;
--			if (type == BTRFS_FT_DIR || type == BTRFS_FT_SYMLINK)
-+			if (type == BTRFS_FT_DIR)
- 				log_mode = LOG_INODE_ALL;
- 			ret = btrfs_log_inode(trans, root, BTRFS_I(di_inode),
- 					      log_mode, 0, LLONG_MAX, ctx);
+ 		/*
+-- 
+2.35.1
+
 
 
