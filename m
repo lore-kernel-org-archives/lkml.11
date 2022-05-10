@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08A0FC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2777BC4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:03:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245359AbiEJOG1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:06:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44852 "EHLO
+        id S245461AbiEJOGk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:06:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244559AbiEJNl7 (ORCPT
+        with ESMTP id S244408AbiEJNly (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:41:59 -0400
+        Tue, 10 May 2022 09:41:54 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 832FD2C96EB;
-        Tue, 10 May 2022 06:30:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A8572A18A8;
+        Tue, 10 May 2022 06:30:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C66AFB81DAF;
-        Tue, 10 May 2022 13:29:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B672C385C2;
-        Tue, 10 May 2022 13:29:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2B656B81DA9;
+        Tue, 10 May 2022 13:29:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55D55C385A6;
+        Tue, 10 May 2022 13:29:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189387;
-        bh=ZS4YX0gYWuUArXMDi1K/gNPON1wBSM2zlX0d9VfYLWk=;
+        s=korg; t=1652189380;
+        bh=7b45LitcIjr6BPZ5gQ51jLVH7r1C99pleqPuIU4VhD4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E51FigRLhPDCUxKgVAZ2UWifyoiDptxOMCt5CG/5ngIZfoUSDK6ftZPCQp1JsDqiM
-         pIHzEK4PCvAdMgrRPUrkyzoXL/+ZIQ4T2vpYReBQ8hxfbZp4awzjJxShgtbJKMx25O
-         c/zxZ0SoFNNUboaUon/9Qitf5fcwseKIa/Nc2JAE=
+        b=zFa6WME9xDHpMfY7m5dCk1zmdgfzpxNMdFXPbK7mISsnE2mfkU2Qa6aCRHGtR8A/k
+         SAlyqmMYSY+nm4WCkAyzppKaNUa8MYxrI8/KGOtau1uOmbkYodz6dYjViGyZJYbmm2
+         vhcHPNi4HtXk+04w2wQmgqdLR3gjdvbdXqK+FKGs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.15 033/135] can: isotp: remove re-binding of bound socket
-Date:   Tue, 10 May 2022 15:06:55 +0200
-Message-Id: <20220510130741.351866672@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jan=20H=C3=B6ppner?= <hoeppner@linux.ibm.com>,
+        Stefan Haberland <sth@linux.ibm.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 031/135] s390/dasd: Fix read inconsistency for ESE DASD devices
+Date:   Tue, 10 May 2022 15:06:53 +0200
+Message-Id: <20220510130741.294562511@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -48,74 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Jan Höppner <hoeppner@linux.ibm.com>
 
-commit 72ed3ee9fa0b461ad086403a8b5336154bd82234 upstream.
+commit b9c10f68e23c13f56685559a0d6fdaca9f838324 upstream.
 
-As a carry over from the CAN_RAW socket (which allows to change the CAN
-interface while mantaining the filter setup) the re-binding of the
-CAN_ISOTP socket needs to take care about CAN ID address information and
-subscriptions. It turned out that this feature is so limited (e.g. the
-sockopts remain fix) that it finally has never been needed/used.
+Read requests that return with NRF error are partially completed in
+dasd_eckd_ese_read(). The function keeps track of the amount of
+processed bytes and the driver will eventually return this information
+back to the block layer for further processing via __dasd_cleanup_cqr()
+when the request is in the final stage of processing (from the driver's
+perspective).
 
-In opposite to the stateless CAN_RAW socket the switching of the CAN ID
-subscriptions might additionally lead to an interrupted ongoing PDU
-reception. So better remove this unneeded complexity.
+For this, blk_update_request() is used which requires the number of
+bytes to complete the request. As per documentation the nr_bytes
+parameter is described as follows:
+   "number of bytes to complete for @req".
 
-Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
-Link: https://lore.kernel.org/all/20220422082337.1676-1-socketcan@hartkopp.net
-Cc: stable@vger.kernel.org
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+This was mistakenly interpreted as "number of bytes _left_ for @req"
+leading to new requests with incorrect data length. The consequence are
+inconsistent and completely wrong read requests as data from random
+memory areas are read back.
+
+Fix this by correctly specifying the amount of bytes that should be used
+to complete the request.
+
+Fixes: 5e6bdd37c552 ("s390/dasd: fix data corruption for thin provisioned devices")
+Cc: stable@vger.kernel.org # 5.3+
+Signed-off-by: Jan Höppner <hoeppner@linux.ibm.com>
+Reviewed-by: Stefan Haberland <sth@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220505141733.1989450-5-sth@linux.ibm.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/can/isotp.c |   22 +++++-----------------
- 1 file changed, 5 insertions(+), 17 deletions(-)
+ drivers/s390/block/dasd.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -1146,6 +1146,11 @@ static int isotp_bind(struct socket *soc
- 
- 	lock_sock(sk);
- 
-+	if (so->bound) {
-+		err = -EINVAL;
-+		goto out;
-+	}
-+
- 	/* do not register frame reception for functional addressing */
- 	if (so->opt.flags & CAN_ISOTP_SF_BROADCAST)
- 		do_rx_reg = 0;
-@@ -1156,10 +1161,6 @@ static int isotp_bind(struct socket *soc
- 		goto out;
- 	}
- 
--	if (so->bound && addr->can_ifindex == so->ifindex &&
--	    rx_id == so->rxid && tx_id == so->txid)
--		goto out;
--
- 	dev = dev_get_by_index(net, addr->can_ifindex);
- 	if (!dev) {
- 		err = -ENODEV;
-@@ -1186,19 +1187,6 @@ static int isotp_bind(struct socket *soc
- 
- 	dev_put(dev);
- 
--	if (so->bound && do_rx_reg) {
--		/* unregister old filter */
--		if (so->ifindex) {
--			dev = dev_get_by_index(net, so->ifindex);
--			if (dev) {
--				can_rx_unregister(net, dev, so->rxid,
--						  SINGLE_MASK(so->rxid),
--						  isotp_rcv, sk);
--				dev_put(dev);
--			}
--		}
--	}
--
- 	/* switch to new settings */
- 	so->ifindex = ifindex;
- 	so->rxid = rx_id;
+--- a/drivers/s390/block/dasd.c
++++ b/drivers/s390/block/dasd.c
+@@ -2775,8 +2775,7 @@ static void __dasd_cleanup_cqr(struct da
+ 		 * complete a request partially.
+ 		 */
+ 		if (proc_bytes) {
+-			blk_update_request(req, BLK_STS_OK,
+-					   blk_rq_bytes(req) - proc_bytes);
++			blk_update_request(req, BLK_STS_OK, proc_bytes);
+ 			blk_mq_requeue_request(req, true);
+ 		} else if (likely(!blk_should_fake_timeout(req->q))) {
+ 			blk_mq_complete_request(req);
 
 
