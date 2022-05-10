@@ -2,169 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9C9EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:11:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C749C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:12:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241170AbiEJMPm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 08:15:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34832 "EHLO
+        id S241580AbiEJMP6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 08:15:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241614AbiEJMPf (ORCPT
+        with ESMTP id S241582AbiEJMPy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 08:15:35 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AD1648E7F
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 05:11:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652184695; x=1683720695;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=E/TFehv0OkaLWOhOeQNecvQSz23ncBE00f881JB4CQU=;
-  b=S4Mojftg3lhpT+735tsLZis7cKuHDPQTO3brz8jrUxELnx0z32Gp9drS
-   O6Dh/VmWfoJqLArlue5y5qfhQ3JL+OfbovC1tVya+UO/2YatlzNu2rI3b
-   qCXXBCO/NpnuDLHk1EQNTGoJDyOvRDvgOAE5y1QVa6xzMij5ujVKs72k1
-   hj+MswZWWhDuHsSmKaAkpxbRmNqBQvSGIwquEcUs+IZNBJY2Ig+N2Mm1F
-   cwpY2BcqN1SVLOGMLURtq8DG0sy4DTfZ+hP94PdCbjRpiRCtkc/2lqVom
-   XDcL3iAVY75Q3te59eBaKkG4psRu7YsVrT+ssFp1lnsMzySwP93JMkAjv
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="269017803"
-X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
-   d="scan'208";a="269017803"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 05:11:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,214,1647327600"; 
-   d="scan'208";a="710990070"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 10 May 2022 05:11:32 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1noOiC-000HrL-2e;
-        Tue, 10 May 2022 12:11:32 +0000
-Date:   Tue, 10 May 2022 20:11:06 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Liam R. Howlett" <Liam.Howlett@oracle.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: [akpm-mm:mm-unstable 338/431] mm/nommu.c:579:9: error: implicit
- declaration of function 'vma_mas_store'; did you mean 'mas_store'?
-Message-ID: <202205102017.SiSV7Y9l-lkp@intel.com>
+        Tue, 10 May 2022 08:15:54 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D95933A3A;
+        Tue, 10 May 2022 05:11:57 -0700 (PDT)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KyGzl38wHzGpcX;
+        Tue, 10 May 2022 20:09:07 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
+ (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 10 May
+ 2022 20:11:54 +0800
+From:   Ye Bin <yebin10@huawei.com>
+To:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
+        <linux-ext4@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <jack@suse.cz>,
+        Ye Bin <yebin10@huawei.com>
+Subject: [PATCH -next v2] ext4: fix warning in ext4_handle_inode_extension
+Date:   Tue, 10 May 2022 20:25:45 +0800
+Message-ID: <20220510122545.1770410-1-yebin10@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-unstable
-head:   584a50635cc1deee2eeab5a17dfdcf9db7add21b
-commit: a245f2ec995564195c1956813ff4fee7a894f099 [338/431] mm: remove rb tree.
-config: m68k-randconfig-r006-20220509 (https://download.01.org/0day-ci/archive/20220510/202205102017.SiSV7Y9l-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git/commit/?id=a245f2ec995564195c1956813ff4fee7a894f099
-        git remote add akpm-mm https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git
-        git fetch --no-tags akpm-mm mm-unstable
-        git checkout a245f2ec995564195c1956813ff4fee7a894f099
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash
+We got issue as follows:
+EXT4-fs error (device loop0) in ext4_reserve_inode_write:5741: Out of memory
+EXT4-fs error (device loop0): ext4_setattr:5462: inode #13: comm syz-executor.0: mark_inode_dirty error
+EXT4-fs error (device loop0) in ext4_setattr:5519: Out of memory
+EXT4-fs error (device loop0): ext4_ind_map_blocks:595: inode #13: comm syz-executor.0: Can't allocate blocks for non-extent mapped inodes with bigalloc
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 4361 at fs/ext4/file.c:301 ext4_file_write_iter+0x11c9/0x1220
+Modules linked in:
+CPU: 1 PID: 4361 Comm: syz-executor.0 Not tainted 5.10.0+ #1
+RIP: 0010:ext4_file_write_iter+0x11c9/0x1220
+RSP: 0018:ffff924d80b27c00 EFLAGS: 00010282
+RAX: ffffffff815a3379 RBX: 0000000000000000 RCX: 000000003b000000
+RDX: ffff924d81601000 RSI: 00000000000009cc RDI: 00000000000009cd
+RBP: 000000000000000d R08: ffffffffbc5a2c6b R09: 0000902e0e52a96f
+R10: ffff902e2b7c1b40 R11: ffff902e2b7c1b40 R12: 000000000000000a
+R13: 0000000000000001 R14: ffff902e0e52aa10 R15: ffffffffffffff8b
+FS:  00007f81a7f65700(0000) GS:ffff902e3bc80000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffffffff600400 CR3: 000000012db88001 CR4: 00000000003706e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ do_iter_readv_writev+0x2e5/0x360
+ do_iter_write+0x112/0x4c0
+ do_pwritev+0x1e5/0x390
+ __x64_sys_pwritev2+0x7e/0xa0
+ do_syscall_64+0x37/0x50
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Above issue may happen as follows:
+Assume
+inode.i_size=4096
+EXT4_I(inode)->i_disksize=4096
 
-All errors (new ones prefixed by >>):
+step 1: set inode->i_isize = 8192
+ext4_setattr
+  if (attr->ia_size != inode->i_size)
+    EXT4_I(inode)->i_disksize = attr->ia_size;
+    rc = ext4_mark_inode_dirty
+       ext4_reserve_inode_write
+          ext4_get_inode_loc
+            __ext4_get_inode_loc
+              sb_getblk --> return -ENOMEM
+   ...
+   if (!error)  ->will not update i_size
+     i_size_write(inode, attr->ia_size);
+Now:
+inode.i_size=4096
+EXT4_I(inode)->i_disksize=8192
 
-   mm/nommu.c: In function 'add_vma_to_mm':
->> mm/nommu.c:579:9: error: implicit declaration of function 'vma_mas_store'; did you mean 'mas_store'? [-Werror=implicit-function-declaration]
-     579 |         vma_mas_store(vma, &mas);
-         |         ^~~~~~~~~~~~~
-         |         mas_store
-   mm/nommu.c: In function 'delete_vma_from_mm':
->> mm/nommu.c:615:9: error: implicit declaration of function 'vma_mas_remove' [-Werror=implicit-function-declaration]
-     615 |         vma_mas_remove(vma, &mas);
-         |         ^~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
+step 2: Direct write 4096 bytes
+ext4_file_write_iter
+ ext4_dio_write_iter
+   iomap_dio_rw ->return error
+ if (extend)
+   ext4_handle_inode_extension
+     WARN_ON_ONCE(i_size_read(inode) < EXT4_I(inode)->i_disksize);
+->Then trigger warning.
 
+To solve above issue, when ext4_reserve_inode_write failed we abort jbd2
+instead of only record error information.
+This modification scheme is based on Jan Kara's suggestion:
+"Well, firstly, errors=continue was always the best effort. There are no
+guarantees which failures we are able to withstand and which not.
+Generally, I think we try to withstand on-disk filesystem inconsistency but
+not inconsistency coming from programming errors or other external factors
+like out-of-memory conditions. Secondly, we already do abort the journal
+when e.g. jbd2_journal_get_write_access() fails (although that generally
+means some internal inconsistency) or when say revoke handling fails to
+allocate memory for a revoke record. So it won't be a new thing. Thirdly,
+and perhaps most importantly, you have found and fixed just one fairly
+innocent problem happening due to in memory inode state getting
+inconsistent after we fail to record the inode in the journal. There are
+almost 80 callsites of ext4_mark_inode_dirty() and honestly I suspect that
+e.g. inconsistent states resulting from extent tree manipulations being
+aborted in the middle due to ext4_ext_dirty() failing due to ENOMEM will
+also trigger all sorts of "interesting" behavior. So that's why I'd rather
+abort the journal than try to continue when we almost certainly now we
+cannot."
 
-vim +579 mm/nommu.c
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+---
+ fs/ext4/inode.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-   547	
-   548	/*
-   549	 * add a VMA into a process's mm_struct in the appropriate place in the list
-   550	 * and tree and add to the address space's page tree also if not an anonymous
-   551	 * page
-   552	 * - should be called with mm->mmap_lock held writelocked
-   553	 */
-   554	static void add_vma_to_mm(struct mm_struct *mm, struct vm_area_struct *vma)
-   555	{
-   556		struct address_space *mapping;
-   557		struct vm_area_struct *prev;
-   558		MA_STATE(mas, &mm->mm_mt, vma->vm_start, vma->vm_end);
-   559	
-   560		BUG_ON(!vma->vm_region);
-   561	
-   562		mm->map_count++;
-   563		vma->vm_mm = mm;
-   564	
-   565		/* add the VMA to the mapping */
-   566		if (vma->vm_file) {
-   567			mapping = vma->vm_file->f_mapping;
-   568	
-   569			i_mmap_lock_write(mapping);
-   570			flush_dcache_mmap_lock(mapping);
-   571			vma_interval_tree_insert(vma, &mapping->i_mmap);
-   572			flush_dcache_mmap_unlock(mapping);
-   573			i_mmap_unlock_write(mapping);
-   574		}
-   575	
-   576		prev = mas_prev(&mas, 0);
-   577		mas_reset(&mas);
-   578		/* add the VMA to the tree */
- > 579		vma_mas_store(vma, &mas);
-   580		__vma_link_list(mm, vma, prev);
-   581	}
-   582	
-   583	/*
-   584	 * delete a VMA from its owning mm_struct and address space
-   585	 */
-   586	static void delete_vma_from_mm(struct vm_area_struct *vma)
-   587	{
-   588		int i;
-   589		struct address_space *mapping;
-   590		struct mm_struct *mm = vma->vm_mm;
-   591		struct task_struct *curr = current;
-   592		MA_STATE(mas, &vma->vm_mm->mm_mt, 0, 0);
-   593	
-   594		mm->map_count--;
-   595		for (i = 0; i < VMACACHE_SIZE; i++) {
-   596			/* if the vma is cached, invalidate the entire cache */
-   597			if (curr->vmacache.vmas[i] == vma) {
-   598				vmacache_invalidate(mm);
-   599				break;
-   600			}
-   601		}
-   602	
-   603		/* remove the VMA from the mapping */
-   604		if (vma->vm_file) {
-   605			mapping = vma->vm_file->f_mapping;
-   606	
-   607			i_mmap_lock_write(mapping);
-   608			flush_dcache_mmap_lock(mapping);
-   609			vma_interval_tree_remove(vma, &mapping->i_mmap);
-   610			flush_dcache_mmap_unlock(mapping);
-   611			i_mmap_unlock_write(mapping);
-   612		}
-   613	
-   614		/* remove from the MM's tree and list */
- > 615		vma_mas_remove(vma, &mas);
-   616		__vma_unlink_list(mm, vma);
-   617	}
-   618	
-
+diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+index 987ea77e672d..0a30661953ef 100644
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -5735,10 +5735,10 @@ int
+ ext4_reserve_inode_write(handle_t *handle, struct inode *inode,
+ 			 struct ext4_iloc *iloc)
+ {
+-	int err;
++	int err = -EIO;;
+ 
+ 	if (unlikely(ext4_forced_shutdown(EXT4_SB(inode->i_sb))))
+-		return -EIO;
++		goto out;
+ 
+ 	err = ext4_get_inode_loc(inode, iloc);
+ 	if (!err) {
+@@ -5750,7 +5750,9 @@ ext4_reserve_inode_write(handle_t *handle, struct inode *inode,
+ 			iloc->bh = NULL;
+ 		}
+ 	}
+-	ext4_std_error(inode->i_sb, err);
++out:
++	if (err)
++		ext4_abort(inode->i_sb, -err, "Detect reserve inode write failed");
+ 	return err;
+ }
+ 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.31.1
+
