@@ -2,81 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60449C46467
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:58:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2854C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:58:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343816AbiEJOCD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:02:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55166 "EHLO
+        id S238316AbiEJOAG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:00:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244842AbiEJNiI (ORCPT
+        with ESMTP id S244996AbiEJNiU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:38:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C863861624;
-        Tue, 10 May 2022 06:26:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C039DB81D24;
-        Tue, 10 May 2022 13:26:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E70D8C385A6;
-        Tue, 10 May 2022 13:26:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189184;
-        bh=DHz9FBVHZk9j/KZCg+ljNfPo6VkSfiVP4tnwrZI+KG0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kRkfB3VlDeUJZtf83UBqYZU/2qCgmDuINn2F65h44b8aAB1b6Rdx8FgsRK2CuU5vj
-         4wdkcDJRpdVg9UEohwzqwFTGcUri24DR8IEtURZttp2ic1nQwmrb353q0LI+sFUKVp
-         /ZhCnQHI1haMq607u2MIxa6ESmUpPKmdkPk22OTc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Zhang <markzhang@nvidia.com>,
-        Maor Gottlieb <maorg@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.10 40/70] net/mlx5e: Fix the calling of update_buffer_lossy() API
-Date:   Tue, 10 May 2022 15:07:59 +0200
-Message-Id: <20220510130734.036026407@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
-References: <20220510130732.861729621@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 10 May 2022 09:38:20 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 162877CB3F;
+        Tue, 10 May 2022 06:26:48 -0700 (PDT)
+X-UUID: 70e6850d7a3049e59b528378dcb9bfea-20220510
+X-CID-P-RULE: Spam_GS6885AD
+X-CID-O-INFO: VERSION:1.1.4,REQID:9311d884-b6ce-4cac-8643-6400c2ebcbdc,OB:0,LO
+        B:10,IP:0,URL:25,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS6885AD
+        ,ACTION:quarantine,TS:120
+X-CID-INFO: VERSION:1.1.4,REQID:9311d884-b6ce-4cac-8643-6400c2ebcbdc,OB:0,LOB:
+        10,IP:0,URL:25,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,A
+        CTION:quarantine,TS:120
+X-CID-META: VersionHash:faefae9,CLOUDID:ec71ea16-2e53-443e-b81a-655c13977218,C
+        OID:c055b30c21f2,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 70e6850d7a3049e59b528378dcb9bfea-20220510
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        (envelope-from <allen-kh.cheng@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1167358095; Tue, 10 May 2022 21:26:40 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Tue, 10 May 2022 21:26:39 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Tue, 10 May 2022 21:26:39 +0800
+From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski@canonical.com>
+CC:     Lala Lin <lala.lin@mediatek.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        "Chen-Yu Tsai" <wenst@chromium.org>,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Subject: [PATCH v4 1/3] dt-bindings: nvmem: mediatek: Convert efuse binding to YAML
+Date:   Tue, 10 May 2022 21:26:35 +0800
+Message-ID: <20220510132637.5864-2-allen-kh.cheng@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220510132637.5864-1-allen-kh.cheng@mediatek.com>
+References: <20220510132637.5864-1-allen-kh.cheng@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Zhang <markzhang@nvidia.com>
+Convert MediaTek eFuse devicetree binding to YAML.
 
-commit c4d963a588a6e7c4ef31160e80697ae8e5a47746 upstream.
-
-The arguments of update_buffer_lossy() is in a wrong order. Fix it.
-
-Fixes: 88b3d5c90e96 ("net/mlx5e: Fix port buffers cell size value")
-Signed-off-by: Mark Zhang <markzhang@nvidia.com>
-Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/port_buffer.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ .../bindings/nvmem/mediatek,efuse.yaml        | 57 +++++++++++++++++++
+ .../devicetree/bindings/nvmem/mtk-efuse.txt   | 43 --------------
+ 2 files changed, 57 insertions(+), 43 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml
+ delete mode 100644 Documentation/devicetree/bindings/nvmem/mtk-efuse.txt
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/port_buffer.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/port_buffer.c
-@@ -309,8 +309,8 @@ int mlx5e_port_manual_buffer_config(stru
- 		if (err)
- 			return err;
- 
--		err = update_buffer_lossy(max_mtu, curr_pfc_en, prio2buffer, port_buff_cell_sz,
--					  xoff, &port_buffer, &update_buffer);
-+		err = update_buffer_lossy(max_mtu, curr_pfc_en, prio2buffer, xoff,
-+					  port_buff_cell_sz, &port_buffer, &update_buffer);
- 		if (err)
- 			return err;
- 	}
-
+diff --git a/Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml b/Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml
+new file mode 100644
+index 000000000000..529f5888d93f
+--- /dev/null
++++ b/Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml
+@@ -0,0 +1,57 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/nvmem/mediatek,efuse.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: MediaTek eFuse
++
++maintainers:
++  - Lala Lin <lala.lin@mediatek.com>
++  - Allen-KH Cheng <allen-kh.cheng@mediatek.com>
++
++allOf:
++  - $ref: "nvmem.yaml#"
++
++properties:
++  compatible:
++    oneOf:
++      - enum:
++          - mediatek,mt8173-efuse
++          - mediatek,efuse
++        description:
++          Only mt8173 SoC-specific compatible with generic fallback should be
++          used
++      - items:
++          - enum:
++              - mediatek,mt7622-efuse
++              - mediatek,mt7623-efuse
++              - mediatek,mt8183-efuse
++              - mediatek,mt8192-efuse
++              - mediatek,mt8195-efuse
++              - mediatek,mt8516-efuse
++          - const: mediatek,efuse
++
++  reg:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    efuse: efuse@10206000 {
++            compatible = "mediatek,mt8173-efuse";
++            reg = <0x10206000 0x1000>;
++            #address-cells = <1>;
++            #size-cells = <1>;
++
++            /* Data cells */
++            thermal_calibration: calib@528 {
++                reg = <0x528 0xc>;
++            };
++    };
++...
+diff --git a/Documentation/devicetree/bindings/nvmem/mtk-efuse.txt b/Documentation/devicetree/bindings/nvmem/mtk-efuse.txt
+deleted file mode 100644
+index 39d529599444..000000000000
+--- a/Documentation/devicetree/bindings/nvmem/mtk-efuse.txt
++++ /dev/null
+@@ -1,43 +0,0 @@
+-= Mediatek MTK-EFUSE device tree bindings =
+-
+-This binding is intended to represent MTK-EFUSE which is found in most Mediatek SOCs.
+-
+-Required properties:
+-- compatible: should be
+-	      "mediatek,mt7622-efuse", "mediatek,efuse": for MT7622
+-	      "mediatek,mt7623-efuse", "mediatek,efuse": for MT7623
+-	      "mediatek,mt8173-efuse" or "mediatek,efuse": for MT8173
+-	      "mediatek,mt8192-efuse", "mediatek,efuse": for MT8192
+-	      "mediatek,mt8195-efuse", "mediatek,efuse": for MT8195
+-	      "mediatek,mt8516-efuse", "mediatek,efuse": for MT8516
+-- reg: Should contain registers location and length
+-- bits: contain the bits range by offset and size
+-
+-= Data cells =
+-Are child nodes of MTK-EFUSE, bindings of which as described in
+-bindings/nvmem/nvmem.txt
+-
+-Example:
+-
+-	efuse: efuse@10206000 {
+-		compatible = "mediatek,mt8173-efuse";
+-		reg	   = <0 0x10206000 0 0x1000>;
+-		#address-cells = <1>;
+-		#size-cells = <1>;
+-
+-		/* Data cells */
+-		thermal_calibration: calib@528 {
+-			reg = <0x528 0xc>;
+-		};
+-	};
+-
+-= Data consumers =
+-Are device nodes which consume nvmem data cells.
+-
+-For example:
+-
+-	thermal {
+-		...
+-		nvmem-cells = <&thermal_calibration>;
+-		nvmem-cell-names = "calibration";
+-	};
+-- 
+2.18.0
 
