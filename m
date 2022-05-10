@@ -2,79 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A51B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:56:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6ADCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:57:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241893AbiEJNAo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:00:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35912 "EHLO
+        id S242089AbiEJNBP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:01:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238317AbiEJNAm (ORCPT
+        with ESMTP id S242097AbiEJNA6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:00:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F0DEC254718
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 05:56:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652187405;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=myNvZsKAEvia2/ntJfnOeZQm6OvxNNi7OD+Wx/hlZEc=;
-        b=jHajEXFXOtWByecrVxZF4QtF5sjjYcco3I9o9gMJFXdZvG7u5XhyZt49H2lBnIiP0w0KyR
-        7Ybkb5/jxrmKEqKVk6vbIlijosLtY9MQ71vIyax5Eio9/Qnyi6AUtTMWNpE4Jr13Cvadja
-        FHG1uIfwUZNHxH6aEblI5dArVgqi98s=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-266-nY9PlIHRP8ywJLU9WHRcTA-1; Tue, 10 May 2022 08:56:41 -0400
-X-MC-Unique: nY9PlIHRP8ywJLU9WHRcTA-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 10 May 2022 09:00:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39BDC25C2B4;
+        Tue, 10 May 2022 05:57:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1764E1010362;
-        Tue, 10 May 2022 12:56:40 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.37.67])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4190A41372B;
-        Tue, 10 May 2022 12:56:37 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20220509074028.74954-7-jefflexu@linux.alibaba.com>
-References: <20220509074028.74954-7-jefflexu@linux.alibaba.com> <20220509074028.74954-1-jefflexu@linux.alibaba.com>
-To:     Jeffle Xu <jefflexu@linux.alibaba.com>
-Cc:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
-        chao@kernel.org, linux-erofs@lists.ozlabs.org,
-        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
-        willy@infradead.org, linux-fsdevel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
-        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
-        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
-        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
-        yinxin.x@bytedance.com, zhangjiachen.jaycee@bytedance.com,
-        zhujia.zj@bytedance.com
-Subject: Re: [PATCH v11 06/22] cachefiles: enable on-demand read mode
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B73D861426;
+        Tue, 10 May 2022 12:57:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA8CEC385A6;
+        Tue, 10 May 2022 12:56:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652187420;
+        bh=tvwLfOxXKndhTvGa084ydZQFrDEYjgjF9bSCciYJaJU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=e9evE9ev47KHYn/HoEss5mWYpgA/f/Cj5sEt7Ex3l3ynlfTMHncK6GHH0NydIERkD
+         bedBj+SaB+1/4BcVBkGWhL+HsxRG/eUAwz+U+ceYXtRhXU8hQGT+aq/wevqGqhWq5O
+         zephFMntRvuaGMR0xoTzGtIHT02yvKwpqytDVdpAu0jykb7nJZTECsQYK3fiygxafO
+         F4JB7xnHHTm1W/GNy7YgZV7IS1RPKoaLbfDWYRcHNZuXn2J5MqPVSeZ14OlMY92s5L
+         MzF8Wvktd6GNnzu3pT0ZNPoppVfnhuBxJCjUWs4BJbM1LrMHUimUUDFDGcPciqCDVB
+         BJGFHWsEcFXsQ==
+Date:   Tue, 10 May 2022 13:56:54 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        matthias.bgg@gmail.com, zhiyong.tao@mediatek.com,
+        colin.king@intel.com, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        wenst@chromium.org
+Subject: Re: [PATCH] Revert "serial: 8250_mtk: Make sure to select the right
+ FEATURE_SEL"
+Message-ID: <YnphFjs4E4EYafT4@sirena.org.uk>
+References: <20220510122620.150342-1-angelogioacchino.delregno@collabora.com>
+ <YnpeYGbo7JJK0lDk@sirena.org.uk>
+ <b13b019f-f766-60df-3764-d375f64ea7d3@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <3509456.1652187396.1@warthog.procyon.org.uk>
-Date:   Tue, 10 May 2022 13:56:36 +0100
-Message-ID: <3509457.1652187396@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="DWrGk7+uHbpfpcFM"
+Content-Disposition: inline
+In-Reply-To: <b13b019f-f766-60df-3764-d375f64ea7d3@collabora.com>
+X-Cookie: I've read SEVEN MILLION books!!
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jeffle Xu <jefflexu@linux.alibaba.com> wrote:
 
-> Enable on-demand read mode by adding an optional parameter to the "bind"
-> command.
-> 
-> On-demand mode will be turned on when this parameter is "ondemand", i.e.
-> "bind ondemand". Otherwise cachefiles will work in the original mode.
-> 
-> Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
+--DWrGk7+uHbpfpcFM
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Acked-by: David Howells <dhowells@redhat.com>
+On Tue, May 10, 2022 at 02:46:28PM +0200, AngeloGioacchino Del Regno wrote:
 
+> Sorry for missing this tag, and also I'm sorry for the noise.
+
+Hey, if nobody broke anything all this testing stuff wouldn't be worth
+it!
+
+--DWrGk7+uHbpfpcFM
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJ6YRUACgkQJNaLcl1U
+h9ChPAgAgjpz5OhurZbZHuhdBiMyrE29fnjE3J1/HD4uJY691mclFsX5//4n0HIb
+jASN6LgjuO5TJczCcQCXSDSx3QmKdbwDX18iU9uetLryBPQVFzJvoJsSCzR0PSba
+5e7AV9wpNsi/R26eIjjlJqDaPJKAdJu/Wb/gHh9/1VbkvD4LdczwLJ1lpNGmf7Ao
+hxRfoJ5zun+rnnwcXCeyOgcH4ihu3w4RdzrB6bp6cSRO6Pvt/lvp4X6RFHlLU/R1
+kzGHfS2je52R7tFENOvF+l4YVh/jKl7XdID1Vm4Pq2VtVA2va2zbO0FMZVno++Ig
+7wQ4RpeO8ILo9rxR3Ra+LzAMDoNgZQ==
+=VL44
+-----END PGP SIGNATURE-----
+
+--DWrGk7+uHbpfpcFM--
