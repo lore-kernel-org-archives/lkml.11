@@ -2,139 +2,2347 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DC8BC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 07:35:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB7AFC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 07:35:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236635AbiEJHiz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 03:38:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43464 "EHLO
+        id S237528AbiEJHjI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 03:39:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240717AbiEJHXZ (ORCPT
+        with ESMTP id S238262AbiEJHGd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 03:23:25 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D7BE2A2F64
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 00:19:28 -0700 (PDT)
-Received: from mail-yb1-f176.google.com ([209.85.219.176]) by
- mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1McGtA-1oMZVK2YCi-00chkz for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022
- 09:19:26 +0200
-Received: by mail-yb1-f176.google.com with SMTP id y76so29117775ybe.1
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 00:19:26 -0700 (PDT)
-X-Gm-Message-State: AOAM531j0TDz7FVCWWMghVhjpobxBI/x0N+Xl6GODTtAMJQusGvNRxwd
-        PpBe2xWc87asteU8ab0MN1nEGXjI9Rixj+XAmQU=
-X-Google-Smtp-Source: ABdhPJza4f0QhmQzTg58jggkDu1vDGQMJs7cvbYtkMs5nxfP9mAAZBo3PvjTDeok3vcEVeaushFvqJrbb0bhcjB/e7w=
-X-Received: by 2002:a25:cdc7:0:b0:648:f57d:c0ed with SMTP id
- d190-20020a25cdc7000000b00648f57dc0edmr16568783ybf.480.1652167165347; Tue, 10
- May 2022 00:19:25 -0700 (PDT)
+        Tue, 10 May 2022 03:06:33 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F5BF89CE1;
+        Tue, 10 May 2022 00:02:33 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id z2so29440243ejj.3;
+        Tue, 10 May 2022 00:02:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=D3yRURsA23rldCy7cKqza5HO0UfJZ3T9JYQ45SwmWBE=;
+        b=nrMQTsvBjoV6+o9bYtUFI/30qJcUFI5PixNgkbCJC5NXdccj+plRZS7PQY04JkA0oX
+         aw7Y6DnVfS9MWH1f+ilCyEdQgVJC05XwR8vDkuDoCATQcV85jZ0/YoOxWHqLlzCV36+M
+         hrDrTltLPDkGRBSFvLeETH5TFYVICltUONT0p7ejYvJKNQvpGBb+n3VlUhugxEOBWj20
+         6KkJFWhCWv+4LyL+yrMzZiSofq30iauiO2qqBGfFloLUOZMkBJfQTogqEMjARiK9m0jm
+         L6CFipVFTnv4IWSqOvkLyJELFVYDKO7sUZmWgD8hJkZ24oBsPAsgcq0DaPt+rCNFZxkh
+         AjFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=D3yRURsA23rldCy7cKqza5HO0UfJZ3T9JYQ45SwmWBE=;
+        b=cn/MJowDe66rj16jAE5Led44vqk3Oowipkx2Klz2RhfYGLL4KyO+B8RUF+EBf4fuQd
+         P0MFEDR78C/fE4/RuIWsoEHitMJaEl9ziAy9yX5kgZMXpHyplLfq0sUm44S/94qSYyZG
+         j8lVMkJSGftLpu/m4KtHY6SCSHsyv1kuxWuDwlBWu9P0qxfGoCuukQrz0FAjQbylg3oh
+         +yUhmeKmykKRObIYNzgk88WwjA/2ah6uKqw2VdvvBuqleMezd91mhcB0f67CxlZN1la/
+         +rmgrnIX09GuFmI0lHmW1c85xyUz+m4IrTO2dbxIG04d5aOwyPBs3BKItDR2z//ZHc4U
+         thuw==
+X-Gm-Message-State: AOAM531iq8UUJ+SvYABgGXppld4MJIUID0/kGHWPJSwnEf3DXxwjNYqu
+        aXBuCv6TvnaNm6DQvf0UMEz3BXBk6Fc=
+X-Google-Smtp-Source: ABdhPJzlZ/HLIGA5UBpdFI/YuEOIehju22Z/CdXQ0rLtFINPTYNRHfGI5CcfSQbPYbjtrkkpkBokVQ==
+X-Received: by 2002:a17:907:960d:b0:6f4:3b68:8d55 with SMTP id gb13-20020a170907960d00b006f43b688d55mr18195704ejc.105.1652166151178;
+        Tue, 10 May 2022 00:02:31 -0700 (PDT)
+Received: from cizrna.home (cst-prg-46-129.cust.vodafone.cz. [46.135.46.129])
+        by smtp.gmail.com with ESMTPSA id g11-20020a170906c18b00b006f5294986besm4391005ejz.111.2022.05.10.00.02.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 00:02:30 -0700 (PDT)
+Sender: Tomeu Vizoso <tomeu.vizoso@gmail.com>
+From:   Tomeu Vizoso <tomeu.vizoso@collabora.com>
+To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>
+Cc:     Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        freedreno@lists.freedesktop.org
+Subject: [RFC] drm/msm: Add initial ci/ subdirectory
+Date:   Tue, 10 May 2022 09:01:38 +0200
+Message-Id: <20220510070140.45407-1-tomeu.vizoso@collabora.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20220506192957.24889-1-nick.hawkins@hpe.com>
-In-Reply-To: <20220506192957.24889-1-nick.hawkins@hpe.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 10 May 2022 09:19:08 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a045Di_zRomezeah0ZoSGPw0Z6YoYkZtoxx1qOXAtKbbw@mail.gmail.com>
-Message-ID: <CAK8P3a045Di_zRomezeah0ZoSGPw0Z6YoYkZtoxx1qOXAtKbbw@mail.gmail.com>
-Subject: Re: [PATCH v1] ARM: A9: Add ARM ERRATA 764319 workaround
-To:     "Hawkins, Nick" <nick.hawkins@hpe.com>
-Cc:     "Verdun, Jean-Marie" <verdun@hpe.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Joel Stanley <joel@jms.id.au>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:OkaZ/VeV6oj2o7zYpYg+2p7jXbvXRdKVjj3PfMMgohbSezc6Aqh
- sAMcd4xoSGQgXzflOuB4GGUAtOG60Qwcpn8r1shyNLsWoGxPXm3k7u0T2lwNjtPY4nJqIFL
- 9vdBeNIm4CseBNIZ/SqUc654B+MwyFWDUNalAaoUlcLeGU8GBM1GUVSXs5qLT1qV5/Tv/aD
- 6AYebLwxlrSJMfxVrMXvw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:erJObXgwuAs=:io1B8OlgqAF6c4V6ewAwoG
- tYlywWWdHDzV0ue9VkUO1a8heDv1Q8sELy2ehKAS0tvFjVAcqE8kFcJu/5X/hRACCh4yxDLkf
- ZiMNWpChTYCqcwZTxki6aEAw3VZzfUvfiPUHMipDsz1nlwFAfY5tMT61j8B9bOmX3iCn/Nlo2
- bF/kAvla3AT00FhOrrYi3XUHf2KKwbQ1XedDdxk1xpRXKR06b176YBSUmMSJpOKaVdPby7jkZ
- z+dNbe4Jh/akUI5fxNBei4RNjxsbjGsQHDTNuj0rVmI/I89bl5iZP2lqiJECj/faa8gE9H/+P
- GtCDb/iXHYUtqvu79cKV3bwDfaaAqKKfM96mbSIN+8H0P53CJm3e3Do2AeoShEms/TGyU8VDZ
- yq4kmAkgj83SYNdKnHnUmxT+E28fgroj2YyA9hjIja+mXsVKFx50hm90ERJsHu2493MfoMh+R
- OdEZDknykQSzM4sdJYzLFi3G7wy0FUmGdiVURqskwZx/KuTaWjn5pV7yAUyYjAzB2py6D7ymt
- CBGT5oOMiGSDd4gZhDfORgLQxaIANE0620Mb1BMNn2Rv+W0SVKzplbt1cP8V3LW0BbfgPsQDV
- DszzOns0CyhEt4HXspl+F6O4JOOmS1m6LT98ILQsOSk1KV0aXBkG/sNHNwS/6Aem6dt/CFXWw
- Sjq8D7nRbajI9c7WMJJdsRPoVLFSx1gp9lxXXeVTDD3GBSSuP3zx9CTiJbHeizf6lef2Lbs+b
- uloj5kDXJoJHUazdjdHVCSFMgJUYvtFv5k7tpp1zxL1Dh35D22wZzn5HawFz/MG+nPGRC/qtP
- bJtimYtqrot7m8Ci6qLFWV/hEEbljdi4zjLyMp5wxoKEjJxN6U=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 6, 2022 at 9:29 PM <nick.hawkins@hpe.com> wrote:
->
-> From: Nick Hawkins <nick.hawkins@hpe.com>
->
-> Enable the workaround for the 764319 Cortex A-9 erratum.
-> CP14 read accesses to the DBGPRSR and DBGOSLSR registers generate an
-> unexpected Undefined Instruction exception when the DBGSWENABLE external
-> pin is set to 0, even when the CP14 accesses are performed from a
-> privileged mode. The work around catches the exception in a way
-> the kernel does not stop execution with the use of undef_hook. This
-> has been found to effect the HPE GXP SoC.
->
-> Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
-> ---
->  arch/arm/Kconfig                | 11 +++++++++++
->  arch/arm/kernel/hw_breakpoint.c | 26 ++++++++++++++++++++++++++
->  2 files changed, 37 insertions(+)
->
-> diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-> index 13f77eec7c40..6944adfb0fae 100644
-> --- a/arch/arm/Kconfig
-> +++ b/arch/arm/Kconfig
-> @@ -974,6 +974,17 @@ config ARM_ERRATA_764369
->           relevant cache maintenance functions and sets a specific bit
->           in the diagnostic control register of the SCU.
->
-> +config ARM_ERRATA_764319
-> +       bool "ARM errata: Read to DBGPRSR and DBGOSLSR may generate Undefined instruction"
-> +       depends on CPU_V7
-> +       help
-> +         This option enables the workaround for the 764319 Cortex A-9 erratum.
-> +         CP14 read accesses to the DBGPRSR and DBGOSLSR registers generate an
-> +         unexpected Undefined Instruction exception when the DBGSWENABLE
-> +         external pin is set to 0, even when the CP14 accesses are performed
-> +         from a privileged mode. This work around catches the exception in a
-> +         way the kernel does not stop execution.
-> +
->  config ARM_ERRATA_775420
->         bool "ARM errata: A data cache maintenance operation which aborts, might lead to deadlock"
->         depends on CPU_V7
-> diff --git a/arch/arm/kernel/hw_breakpoint.c b/arch/arm/kernel/hw_breakpoint.c
-> index b1423fb130ea..c41a8436a796 100644
-> --- a/arch/arm/kernel/hw_breakpoint.c
-> +++ b/arch/arm/kernel/hw_breakpoint.c
-> @@ -941,6 +941,23 @@ static int hw_breakpoint_pending(unsigned long addr, unsigned int fsr,
->         return ret;
->  }
->
-> +#ifdef CONFIG_ARM_ERRATA_764319
-> +int oslsr_fault;
-> +
-> +static int debug_oslsr_trap(struct pt_regs *regs, unsigned int instr)
-> +{
-> +       oslsr_fault = 1;
-> +       instruction_pointer(regs) += 4;
-> +       return 0;
-> +}
-> +
-> +static struct undef_hook debug_oslsr_hook = {
-> +       .instr_mask  = 0xffffffff,
-> +       .instr_val = 0xee115e91,
-> +       .fn = debug_oslsr_trap,
-> +};
-> +#endif
-> +
+And use it to store expectations about what the drm/msm driver is
+supposed to pass in the IGT test suite.
 
-Hi Nick,
+Also include a configuration file that points to the out-of-tree CI
+scripts.
 
-This seems a bit more complex than necessary. Can't you just use a custom
-inline asm with an ex_table entry to catch the fault? Have a look at
-__get_user_asm() for an example.
+By storing the test expectations along the code we can make sure both
+stay in sync with each other, and so we can know when a code change
+breaks those expectations.
 
-       Arnd
+This will allow all contributors to drm/msm to reuse the infrastructure
+already in gitlab.freedesktop.org to test the driver on several
+generations of the hardware.
+
+Signed-off-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+---
+ Documentation/gpu/msm_automated_testing.rst |  70 ++++
+ drivers/gpu/drm/msm/ci/gitlab-ci.yml        |  11 +
+ drivers/gpu/drm/msm/ci/msm.testlist         | 429 ++++++++++++++++++++
+ drivers/gpu/drm/msm/ci/msm_a360_results.txt | 421 +++++++++++++++++++
+ drivers/gpu/drm/msm/ci/msm_a530_results.txt | 421 +++++++++++++++++++
+ drivers/gpu/drm/msm/ci/msm_a618_results.txt | 422 +++++++++++++++++++
+ drivers/gpu/drm/msm/ci/msm_a630_results.txt | 422 +++++++++++++++++++
+ 7 files changed, 2196 insertions(+)
+ create mode 100644 Documentation/gpu/msm_automated_testing.rst
+ create mode 100644 drivers/gpu/drm/msm/ci/gitlab-ci.yml
+ create mode 100644 drivers/gpu/drm/msm/ci/msm.testlist
+ create mode 100644 drivers/gpu/drm/msm/ci/msm_a360_results.txt
+ create mode 100644 drivers/gpu/drm/msm/ci/msm_a530_results.txt
+ create mode 100644 drivers/gpu/drm/msm/ci/msm_a618_results.txt
+ create mode 100644 drivers/gpu/drm/msm/ci/msm_a630_results.txt
+
+diff --git a/Documentation/gpu/msm_automated_testing.rst b/Documentation/gpu/msm_automated_testing.rst
+new file mode 100644
+index 000000000000..fe59474569c2
+--- /dev/null
++++ b/Documentation/gpu/msm_automated_testing.rst
+@@ -0,0 +1,70 @@
++.. SPDX-License-Identifier: GPL-2.0+
++
++=========================================
++Automated testing of MSM DRM driver
++=========================================
++
++
++Introduction
++============
++
++Making sure that changes to a driver don't introduce regressions can be very time consuming when lots of different hardware configurations need to be tested. Moreover, it isn't practical for each person interested in this testing to have to acquire and maintain what can be a considerable amount of hardware.
++
++Also, it is desirable for developers to check for regressions in their code by themselves, instead of relying on the maintainer finding them and then reporting back.
++
++There are facilities in gitlab.freedesktop.org to automatically test Mesa that can be used as well for testing DRM drivers such as drm/msm. This document explains how people interested in testing the drm/msm driver can use this shared infrastructure to save quite some time and effort.
++
++
++Relevant files
++==============
++
++drivers/gpu/drm/msm/ci/gitlab-ci.yml
++------------------------------------
++
++Specifies the specific version of the scripts to be used. GitLab CI will use the values defined in this file to fetch the right scripts.
++
++
++drivers/gpu/drm/msm/ci/msm.testlist
++-----------------------------------
++
++Specifies the tests that the current code is expected to be able to reliably run. These tests are expected to not hang the DUT (device under testing) when running on the revision they belong to, and to give consistent results.
++
++
++drivers/gpu/drm/msm/ci/msm_*_results.txt
++----------------------------------------
++
++Specifies the expected results of running this specific kernel revision on a given hardware configuration.
++
++
++How to enable automated testing on your tree
++============================================
++
++1. Create a Linux tree in https://gitlab.freedesktop.org/ if you don't have one yet
++
++2. In your kernel repo's configuration (eg. https://gitlab.freedesktop.org/tomeu/linux/-/settings/ci_cd), change the CI/CD configuration file from .gitlab-ci.yml to drivers/gpu/drm/msm/ci/gitlab-ci.yml.
++
++3. Next time you push to this repository, you will see a CI pipeline being created (eg. https://gitlab.freedesktop.org/tomeu/linux/-/pipelines)
++
++4. The various jobs will be run and when the pipeline is finished, all jobs should be green unless a regression has been found.
++
++
++How to update test expectations
++===============================
++
++If your changes to the code fix any tests, you will have to update one or more of the files in drivers/gpu/drm/msm/ci/msm_*_results.txt, for each of the test platforms affected by the change.
++
++If you have run a pipeline and it failed because of a mismatched test result, you will have been offered a patch at the end of the run that you can apply after reviewing it.
++
++
++How to expand coverage
++======================
++
++If your code changes makes it possible to run more tests (by solving reliability issues, for example), more tests can be added to this list, and then the expected results updated with the patch file that will be printed at the end of each job.
++
++If there is a need for updating the version of IGT being used (maybe you have added more tests to it), follow the instructions at https://gitlab.freedesktop.org/gfx-ci/drm-ci/-/tree/msm#upreving-igt.
++
++
++How to test your changes to the scripts
++==========================================
++
++For testing changes to the scripts in the drm-ci repo, change the DRM_CI_PROJECT_PATH variable in drivers/gpu/drm/msm/ci/gitlab-ci.yml to match your fork of the project (eg. tomeu/drm-ci). This fork needs to be in https://gitlab.freedesktop.org/.
+\ No newline at end of file
+diff --git a/drivers/gpu/drm/msm/ci/gitlab-ci.yml b/drivers/gpu/drm/msm/ci/gitlab-ci.yml
+new file mode 100644
+index 000000000000..9b7caa7fcab2
+--- /dev/null
++++ b/drivers/gpu/drm/msm/ci/gitlab-ci.yml
+@@ -0,0 +1,11 @@
++variables:
++  # Change this to use your fork of drm-ci
++  DRM_CI_PROJECT_PATH: &drm-ci-project-path gfx-ci/drm-ci
++  DRM_CI_COMMIT_SHA: &drm-ci-commit-sha msm
++
++include:
++  - project: *drm-ci-project-path
++    ref: *drm-ci-commit-sha
++    file:
++      - '.msm-gitlab-ci.yml'
++      - '.gitlab-ci.yml'
+diff --git a/drivers/gpu/drm/msm/ci/msm.testlist b/drivers/gpu/drm/msm/ci/msm.testlist
+new file mode 100644
+index 000000000000..7c771471dfa2
+--- /dev/null
++++ b/drivers/gpu/drm/msm/ci/msm.testlist
+@@ -0,0 +1,429 @@
++# Keep alphabetically sorted by default
++
++igt@core_auth@getclient-simple
++igt@core_auth@getclient-master-drop
++igt@core_auth@basic-auth
++igt@core_auth@many-magics
++igt@core_getclient
++igt@core_getstats
++igt@core_getversion
++igt@core_setmaster_vs_auth
++igt@drm_read@invalid-buffer
++igt@drm_read@fault-buffer
++igt@drm_read@empty-block
++igt@drm_read@empty-nonblock
++igt@drm_read@short-buffer-block
++igt@drm_read@short-buffer-nonblock
++igt@drm_read@short-buffer-wakeup
++igt@kms_addfb_basic@unused-handle
++igt@kms_addfb_basic@unused-pitches
++igt@kms_addfb_basic@unused-offsets
++igt@kms_addfb_basic@unused-modifier
++igt@kms_addfb_basic@clobberred-modifier
++igt@kms_addfb_basic@invalid-smem-bo-on-discrete
++igt@kms_addfb_basic@legacy-format
++igt@kms_addfb_basic@no-handle
++igt@kms_addfb_basic@basic
++igt@kms_addfb_basic@bad-pitch-0
++igt@kms_addfb_basic@bad-pitch-32
++igt@kms_addfb_basic@bad-pitch-63
++igt@kms_addfb_basic@bad-pitch-128
++igt@kms_addfb_basic@bad-pitch-256
++igt@kms_addfb_basic@bad-pitch-1024
++igt@kms_addfb_basic@bad-pitch-999
++igt@kms_addfb_basic@bad-pitch-65536
++igt@kms_addfb_basic@size-max
++igt@kms_addfb_basic@too-wide
++igt@kms_addfb_basic@too-high
++igt@kms_addfb_basic@bo-too-small
++igt@kms_addfb_basic@small-bo
++igt@kms_addfb_basic@bo-too-small-due-to-tiling
++igt@kms_addfb_basic@addfb25-modifier-no-flag
++igt@kms_addfb_basic@addfb25-bad-modifier
++igt@kms_addfb_basic@addfb25-x-tiled-mismatch-legacy
++igt@kms_addfb_basic@addfb25-x-tiled-legacy
++igt@kms_addfb_basic@addfb25-framebuffer-vs-set-tiling
++igt@kms_addfb_basic@addfb25-y-tiled-legacy
++igt@kms_addfb_basic@addfb25-yf-tiled-legacy
++igt@kms_addfb_basic@addfb25-y-tiled-small-legacy
++igt@kms_addfb_basic@addfb25-4-tiled
++igt@kms_addfb_basic@basic-x-tiled-legacy
++igt@kms_addfb_basic@framebuffer-vs-set-tiling
++igt@kms_addfb_basic@tile-pitch-mismatch
++igt@kms_addfb_basic@basic-y-tiled-legacy
++igt@kms_addfb_basic@invalid-get-prop-any
++igt@kms_addfb_basic@invalid-get-prop
++igt@kms_addfb_basic@invalid-set-prop-any
++igt@kms_addfb_basic@invalid-set-prop
++igt@kms_addfb_basic@master-rmfb
++igt@kms_atomic@plane-overlay-legacy
++igt@kms_atomic@plane-primary-legacy
++igt@kms_atomic@plane-primary-overlay-mutable-zpos
++igt@kms_atomic@plane-immutable-zpos
++igt@kms_atomic@test-only
++igt@kms_atomic@plane-cursor-legacy
++igt@kms_atomic@plane-invalid-params
++igt@kms_atomic@plane-invalid-params-fence
++igt@kms_atomic@crtc-invalid-params
++igt@kms_atomic@crtc-invalid-params-fence
++igt@kms_atomic@atomic-invalid-params
++igt@kms_atomic@atomic_plane_damage
++igt@kms_atomic_interruptible@legacy-setmode@pipe-a-edp-1
++igt@kms_atomic_interruptible@atomic-setmode@pipe-a-edp-1
++igt@kms_atomic_interruptible@legacy-dpms@pipe-a-edp-1
++igt@kms_atomic_interruptible@legacy-pageflip@pipe-a-edp-1
++igt@kms_atomic_interruptible@legacy-cursor@pipe-a-edp-1
++igt@kms_atomic_interruptible@universal-setplane-primary@pipe-a-edp-1
++igt@kms_atomic_interruptible@universal-setplane-cursor@pipe-a-edp-1
++igt@kms_content_protection@legacy
++igt@kms_content_protection@atomic
++igt@kms_content_protection@atomic-dpms
++igt@kms_content_protection@LIC
++igt@kms_content_protection@type1
++igt@kms_content_protection@mei_interface
++igt@kms_content_protection@content_type_change
++igt@kms_content_protection@uevent
++igt@kms_content_protection@srm
++igt@kms_content_protection@dp-mst-type-0
++igt@kms_content_protection@dp-mst-lic-type-0
++igt@kms_content_protection@dp-mst-type-1
++igt@kms_content_protection@dp-mst-lic-type-1
++igt@kms_dp_aux_dev
++igt@kms_flip_event_leak
++igt@kms_getfb@getfb-handle-zero
++igt@kms_getfb@getfb-handle-valid
++igt@kms_getfb@getfb-handle-closed
++igt@kms_getfb@getfb-handle-not-fb
++igt@kms_getfb@getfb-addfb-different-handles
++igt@kms_getfb@getfb-repeated-different-handles
++igt@kms_getfb@getfb-reject-ccs
++igt@kms_getfb@getfb2-handle-zero
++igt@kms_getfb@getfb2-handle-closed
++igt@kms_getfb@getfb2-handle-not-fb
++igt@kms_getfb@getfb2-accept-ccs
++igt@kms_getfb@getfb2-into-addfb2
++igt@kms_getfb@getfb-handle-protection
++igt@kms_getfb@getfb2-handle-protection
++igt@kms_hdmi_inject@inject-4k
++igt@kms_hdmi_inject@inject-audio
++igt@kms_hdr@bpc-switch
++igt@kms_hdr@bpc-switch-dpms
++igt@kms_hdr@static-toggle
++igt@kms_hdr@static-toggle-dpms
++igt@kms_hdr@static-swap
++igt@kms_multipipe_modeset@basic-max-pipe-crc-check
++igt@kms_pipe_crc_basic@bad-source
++igt@kms_pipe_crc_basic@read-crc-pipe-a
++igt@kms_pipe_crc_basic@read-crc-pipe-a-frame-sequence
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a-frame-sequence
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-a
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-a
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-a
++igt@kms_pipe_crc_basic@read-crc-pipe-b
++igt@kms_pipe_crc_basic@read-crc-pipe-b-frame-sequence
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b-frame-sequence
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-b
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-b
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-b
++igt@kms_pipe_crc_basic@read-crc-pipe-c
++igt@kms_pipe_crc_basic@read-crc-pipe-c-frame-sequence
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c-frame-sequence
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-c
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-c
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-c
++igt@kms_pipe_crc_basic@read-crc-pipe-d
++igt@kms_pipe_crc_basic@read-crc-pipe-d-frame-sequence
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d-frame-sequence
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-d
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-d
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-d
++igt@kms_pipe_crc_basic@read-crc-pipe-e
++igt@kms_pipe_crc_basic@read-crc-pipe-e-frame-sequence
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e-frame-sequence
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-e
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-e
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-e
++igt@kms_pipe_crc_basic@read-crc-pipe-f
++igt@kms_pipe_crc_basic@read-crc-pipe-f-frame-sequence
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f-frame-sequence
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-f
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-f
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-f
++igt@kms_plane_lowres@pipe-a-tiling-none
++igt@kms_plane_lowres@pipe-a-tiling-x
++igt@kms_plane_lowres@pipe-a-tiling-y
++igt@kms_plane_lowres@pipe-a-tiling-yf
++igt@kms_plane_lowres@pipe-a-tiling-4
++igt@kms_plane_lowres@pipe-b-tiling-none
++igt@kms_plane_lowres@pipe-b-tiling-x
++igt@kms_plane_lowres@pipe-b-tiling-y
++igt@kms_plane_lowres@pipe-b-tiling-yf
++igt@kms_plane_lowres@pipe-b-tiling-4
++igt@kms_plane_lowres@pipe-c-tiling-none
++igt@kms_plane_lowres@pipe-c-tiling-x
++igt@kms_plane_lowres@pipe-c-tiling-y
++igt@kms_plane_lowres@pipe-c-tiling-yf
++igt@kms_plane_lowres@pipe-c-tiling-4
++igt@kms_plane_lowres@pipe-d-tiling-none
++igt@kms_plane_lowres@pipe-d-tiling-x
++igt@kms_plane_lowres@pipe-d-tiling-y
++igt@kms_plane_lowres@pipe-d-tiling-yf
++igt@kms_plane_lowres@pipe-d-tiling-4
++igt@kms_plane_lowres@pipe-e-tiling-none
++igt@kms_plane_lowres@pipe-e-tiling-x
++igt@kms_plane_lowres@pipe-e-tiling-y
++igt@kms_plane_lowres@pipe-e-tiling-yf
++igt@kms_plane_lowres@pipe-e-tiling-4
++igt@kms_plane_lowres@pipe-f-tiling-none
++igt@kms_plane_lowres@pipe-f-tiling-x
++igt@kms_plane_lowres@pipe-f-tiling-y
++igt@kms_plane_lowres@pipe-f-tiling-yf
++igt@kms_plane_lowres@pipe-f-tiling-4
++igt@kms_prop_blob@basic
++igt@kms_prop_blob@blob-prop-core
++igt@kms_prop_blob@blob-prop-validate
++igt@kms_prop_blob@blob-prop-lifetime
++igt@kms_prop_blob@blob-multiple
++igt@kms_prop_blob@invalid-get-prop-any
++igt@kms_prop_blob@invalid-get-prop
++igt@kms_prop_blob@invalid-set-prop-any
++igt@kms_prop_blob@invalid-set-prop
++igt@kms_rmfb@rmfb-ioctl
++igt@kms_rmfb@close-fd
++igt@kms_rotation_crc@primary-rotation-90
++igt@kms_rotation_crc@primary-rotation-180
++igt@kms_rotation_crc@primary-rotation-270
++igt@kms_rotation_crc@sprite-rotation-90
++igt@kms_rotation_crc@sprite-rotation-180
++igt@kms_rotation_crc@sprite-rotation-270
++igt@kms_rotation_crc@cursor-rotation-180
++igt@kms_rotation_crc@sprite-rotation-90-pos-100-0
++igt@kms_rotation_crc@bad-pixel-format
++igt@kms_rotation_crc@bad-tiling
++igt@kms_rotation_crc@primary-x-tiled-reflect-x-0
++igt@kms_rotation_crc@primary-x-tiled-reflect-x-180
++igt@kms_rotation_crc@primary-y-tiled-reflect-x-0
++igt@kms_rotation_crc@primary-y-tiled-reflect-x-90
++igt@kms_rotation_crc@primary-y-tiled-reflect-x-180
++igt@kms_rotation_crc@primary-y-tiled-reflect-x-270
++igt@kms_rotation_crc@primary-yf-tiled-reflect-x-0
++igt@kms_rotation_crc@primary-yf-tiled-reflect-x-90
++igt@kms_rotation_crc@primary-yf-tiled-reflect-x-180
++igt@kms_rotation_crc@primary-yf-tiled-reflect-x-270
++igt@kms_rotation_crc@primary-4-tiled-reflect-x-0
++igt@kms_rotation_crc@primary-4-tiled-reflect-x-180
++igt@kms_rotation_crc@multiplane-rotation
++igt@kms_rotation_crc@multiplane-rotation-cropping-top
++igt@kms_rotation_crc@multiplane-rotation-cropping-bottom
++igt@kms_rotation_crc@exhaust-fences
++igt@kms_selftest@all
++igt@kms_setmode@basic@pipe-a-edp-1
++igt@kms_setmode@basic@pipe-b-edp-1
++igt@kms_setmode@basic-clone-single-crtc
++igt@kms_setmode@invalid-clone-single-crtc
++igt@kms_setmode@invalid-clone-exclusive-crtc
++igt@kms_setmode@clone-exclusive-crtc
++igt@kms_setmode@invalid-clone-single-crtc-stealing
++
++# Flakes on a530 with:
++# arm-smmu b40000.iommu: Unhandled context fault: fsr=0x408, iova=0x01003000, fsynr=0x13, cbfrsynra=0x0, cb=0
++# igt@msm_mapping@ring
++
++igt@msm_mapping@sqefw
++igt@msm_mapping@shadow
++igt@msm_recovery@hangcheck
++igt@msm_recovery@gpu-fault
++igt@msm_recovery@iova-fault
++igt@msm_submit@empty-submit
++igt@msm_submit@invalid-queue-submit
++igt@msm_submit@invalid-flags-submit
++igt@msm_submit@invalid-in-fence-submit
++igt@msm_submit@invalid-duplicate-bo-submit
++igt@msm_submit@invalid-cmd-idx-submit
++igt@msm_submit@invalid-cmd-type-submit
++igt@msm_submit@valid-submit
++igt@kms_sysfs_edid_timing
++igt@kms_universal_plane@universal-plane-pipe-a-functional
++igt@kms_universal_plane@universal-plane-pipe-a-sanity
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-a
++igt@kms_universal_plane@cursor-fb-leak-pipe-a
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-a
++igt@kms_universal_plane@universal-plane-pipe-b-functional
++igt@kms_universal_plane@universal-plane-pipe-b-sanity
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-b
++igt@kms_universal_plane@cursor-fb-leak-pipe-b
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-b
++igt@kms_universal_plane@universal-plane-pipe-c-functional
++igt@kms_universal_plane@universal-plane-pipe-c-sanity
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-c
++igt@kms_universal_plane@cursor-fb-leak-pipe-c
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-c
++igt@kms_universal_plane@universal-plane-pipe-d-functional
++igt@kms_universal_plane@universal-plane-pipe-d-sanity
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-d
++igt@kms_universal_plane@cursor-fb-leak-pipe-d
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-d
++igt@kms_universal_plane@universal-plane-pipe-e-functional
++igt@kms_universal_plane@universal-plane-pipe-e-sanity
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-e
++igt@kms_universal_plane@cursor-fb-leak-pipe-e
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-e
++igt@kms_universal_plane@universal-plane-pipe-f-functional
++igt@kms_universal_plane@universal-plane-pipe-f-sanity
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-f
++igt@kms_universal_plane@cursor-fb-leak-pipe-f
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-f
++igt@kms_vblank@invalid
++igt@kms_vblank@crtc-id
++igt@kms_vblank@pipe-a-query-idle
++igt@kms_vblank@pipe-a-query-idle-hang
++igt@kms_vblank@pipe-a-query-forked
++igt@kms_vblank@pipe-a-query-forked-hang
++igt@kms_vblank@pipe-a-query-busy
++igt@kms_vblank@pipe-a-query-busy-hang
++igt@kms_vblank@pipe-a-query-forked-busy
++igt@kms_vblank@pipe-a-query-forked-busy-hang
++igt@kms_vblank@pipe-a-wait-idle
++igt@kms_vblank@pipe-a-wait-idle-hang
++igt@kms_vblank@pipe-a-wait-forked
++igt@kms_vblank@pipe-a-wait-forked-hang
++igt@kms_vblank@pipe-a-wait-busy
++igt@kms_vblank@pipe-a-wait-busy-hang
++igt@kms_vblank@pipe-a-wait-forked-busy
++igt@kms_vblank@pipe-a-wait-forked-busy-hang
++igt@kms_vblank@pipe-a-ts-continuation-idle
++igt@kms_vblank@pipe-a-ts-continuation-idle-hang
++igt@kms_vblank@pipe-a-ts-continuation-dpms-rpm
++igt@kms_vblank@pipe-a-ts-continuation-modeset
++igt@kms_vblank@pipe-a-ts-continuation-modeset-hang
++igt@kms_vblank@pipe-a-ts-continuation-modeset-rpm
++igt@kms_vblank@pipe-b-accuracy-idle
++igt@kms_vblank@pipe-b-query-idle
++igt@kms_vblank@pipe-b-query-idle-hang
++igt@kms_vblank@pipe-b-query-forked
++igt@kms_vblank@pipe-b-query-forked-hang
++igt@kms_vblank@pipe-b-query-busy
++igt@kms_vblank@pipe-b-query-busy-hang
++igt@kms_vblank@pipe-b-query-forked-busy
++igt@kms_vblank@pipe-b-query-forked-busy-hang
++igt@kms_vblank@pipe-b-wait-idle
++igt@kms_vblank@pipe-b-wait-idle-hang
++igt@kms_vblank@pipe-b-wait-forked
++igt@kms_vblank@pipe-b-wait-forked-hang
++igt@kms_vblank@pipe-b-wait-busy
++igt@kms_vblank@pipe-b-wait-busy-hang
++igt@kms_vblank@pipe-b-wait-forked-busy
++igt@kms_vblank@pipe-b-wait-forked-busy-hang
++igt@kms_vblank@pipe-b-ts-continuation-idle
++igt@kms_vblank@pipe-b-ts-continuation-idle-hang
++igt@kms_vblank@pipe-b-ts-continuation-dpms-rpm
++igt@kms_vblank@pipe-b-ts-continuation-modeset
++igt@kms_vblank@pipe-b-ts-continuation-modeset-hang
++igt@kms_vblank@pipe-b-ts-continuation-modeset-rpm
++igt@kms_vblank@pipe-c-accuracy-idle
++igt@kms_vblank@pipe-c-query-idle
++igt@kms_vblank@pipe-c-query-idle-hang
++igt@kms_vblank@pipe-c-query-forked
++igt@kms_vblank@pipe-c-query-forked-hang
++igt@kms_vblank@pipe-c-query-busy
++igt@kms_vblank@pipe-c-query-busy-hang
++igt@kms_vblank@pipe-c-query-forked-busy
++igt@kms_vblank@pipe-c-query-forked-busy-hang
++igt@kms_vblank@pipe-c-wait-idle
++igt@kms_vblank@pipe-c-wait-idle-hang
++igt@kms_vblank@pipe-c-wait-forked
++igt@kms_vblank@pipe-c-wait-forked-hang
++igt@kms_vblank@pipe-c-wait-busy
++igt@kms_vblank@pipe-c-wait-busy-hang
++igt@kms_vblank@pipe-c-wait-forked-busy
++igt@kms_vblank@pipe-c-wait-forked-busy-hang
++igt@kms_vblank@pipe-c-ts-continuation-idle
++igt@kms_vblank@pipe-c-ts-continuation-idle-hang
++igt@kms_vblank@pipe-c-ts-continuation-dpms-rpm
++igt@kms_vblank@pipe-c-ts-continuation-modeset
++igt@kms_vblank@pipe-c-ts-continuation-modeset-hang
++igt@kms_vblank@pipe-c-ts-continuation-modeset-rpm
++igt@kms_vblank@pipe-d-accuracy-idle
++igt@kms_vblank@pipe-d-query-idle
++igt@kms_vblank@pipe-d-query-idle-hang
++igt@kms_vblank@pipe-d-query-forked
++igt@kms_vblank@pipe-d-query-forked-hang
++igt@kms_vblank@pipe-d-query-busy
++igt@kms_vblank@pipe-d-query-busy-hang
++igt@kms_vblank@pipe-d-query-forked-busy
++igt@kms_vblank@pipe-d-query-forked-busy-hang
++igt@kms_vblank@pipe-d-wait-idle
++igt@kms_vblank@pipe-d-wait-idle-hang
++igt@kms_vblank@pipe-d-wait-forked
++igt@kms_vblank@pipe-d-wait-forked-hang
++igt@kms_vblank@pipe-d-wait-busy
++igt@kms_vblank@pipe-d-wait-busy-hang
++igt@kms_vblank@pipe-d-wait-forked-busy
++igt@kms_vblank@pipe-d-wait-forked-busy-hang
++igt@kms_vblank@pipe-d-ts-continuation-idle
++igt@kms_vblank@pipe-d-ts-continuation-idle-hang
++igt@kms_vblank@pipe-d-ts-continuation-dpms-rpm
++igt@kms_vblank@pipe-d-ts-continuation-modeset
++igt@kms_vblank@pipe-d-ts-continuation-modeset-hang
++igt@kms_vblank@pipe-d-ts-continuation-modeset-rpm
++igt@kms_vblank@pipe-e-accuracy-idle
++igt@kms_vblank@pipe-e-query-idle
++igt@kms_vblank@pipe-e-query-idle-hang
++igt@kms_vblank@pipe-e-query-forked
++igt@kms_vblank@pipe-e-query-forked-hang
++igt@kms_vblank@pipe-e-query-busy
++igt@kms_vblank@pipe-e-query-busy-hang
++igt@kms_vblank@pipe-e-query-forked-busy
++igt@kms_vblank@pipe-e-query-forked-busy-hang
++igt@kms_vblank@pipe-e-wait-idle
++igt@kms_vblank@pipe-e-wait-idle-hang
++igt@kms_vblank@pipe-e-wait-forked
++igt@kms_vblank@pipe-e-wait-forked-hang
++igt@kms_vblank@pipe-e-wait-busy
++igt@kms_vblank@pipe-e-wait-busy-hang
++igt@kms_vblank@pipe-e-wait-forked-busy
++igt@kms_vblank@pipe-e-wait-forked-busy-hang
++igt@kms_vblank@pipe-e-ts-continuation-idle
++igt@kms_vblank@pipe-e-ts-continuation-idle-hang
++igt@kms_vblank@pipe-e-ts-continuation-dpms-rpm
++igt@kms_vblank@pipe-e-ts-continuation-modeset
++igt@kms_vblank@pipe-e-ts-continuation-modeset-hang
++igt@kms_vblank@pipe-e-ts-continuation-modeset-rpm
++igt@kms_vblank@pipe-f-accuracy-idle
++igt@kms_vblank@pipe-f-query-idle
++igt@kms_vblank@pipe-f-query-idle-hang
++igt@kms_vblank@pipe-f-query-forked
++igt@kms_vblank@pipe-f-query-forked-hang
++igt@kms_vblank@pipe-f-query-busy
++igt@kms_vblank@pipe-f-query-busy-hang
++igt@kms_vblank@pipe-f-query-forked-busy
++igt@kms_vblank@pipe-f-query-forked-busy-hang
++igt@kms_vblank@pipe-f-wait-idle
++igt@kms_vblank@pipe-f-wait-idle-hang
++igt@kms_vblank@pipe-f-wait-forked
++igt@kms_vblank@pipe-f-wait-forked-hang
++igt@kms_vblank@pipe-f-wait-busy
++igt@kms_vblank@pipe-f-wait-busy-hang
++igt@kms_vblank@pipe-f-wait-forked-busy
++igt@kms_vblank@pipe-f-wait-forked-busy-hang
++igt@kms_vblank@pipe-f-ts-continuation-idle
++igt@kms_vblank@pipe-f-ts-continuation-idle-hang
++igt@kms_vblank@pipe-f-ts-continuation-dpms-rpm
++igt@kms_vblank@pipe-f-ts-continuation-modeset
++igt@kms_vblank@pipe-f-ts-continuation-modeset-hang
++igt@kms_vblank@pipe-f-ts-continuation-modeset-rpm
++igt@kms_vrr@flip-basic
++igt@kms_vrr@flip-dpms
++igt@kms_vrr@flipline
++igt@kms_async_flip@async-flip-with-page-flip-events
++igt@kms_async_flip@alternate-sync-async-flip
++igt@kms_async_flip@test-time-stamp
++igt@kms_async_flip@test-cursor
++igt@kms_async_flip@invalid-async-flip
++igt@kms_async_flip@crc
+diff --git a/drivers/gpu/drm/msm/ci/msm_a360_results.txt b/drivers/gpu/drm/msm/ci/msm_a360_results.txt
+new file mode 100644
+index 000000000000..fd80d2bf2bcb
+--- /dev/null
++++ b/drivers/gpu/drm/msm/ci/msm_a360_results.txt
+@@ -0,0 +1,421 @@
++igt@core_auth@getclient-simple,pass
++igt@core_auth@getclient-master-drop,pass
++igt@core_auth@basic-auth,pass
++igt@core_auth@many-magics,pass
++igt@core_getclient,pass
++igt@core_getstats,pass
++igt@core_getversion,pass
++igt@core_setmaster_vs_auth,pass
++igt@drm_read@invalid-buffer,skip
++igt@drm_read@fault-buffer,skip
++igt@drm_read@empty-block,skip
++igt@drm_read@empty-nonblock,skip
++igt@drm_read@short-buffer-block,skip
++igt@drm_read@short-buffer-nonblock,skip
++igt@drm_read@short-buffer-wakeup,skip
++igt@kms_addfb_basic@unused-handle,pass
++igt@kms_addfb_basic@unused-pitches,pass
++igt@kms_addfb_basic@unused-offsets,pass
++igt@kms_addfb_basic@unused-modifier,pass
++igt@kms_addfb_basic@clobberred-modifier,skip
++igt@kms_addfb_basic@invalid-smem-bo-on-discrete,skip
++igt@kms_addfb_basic@legacy-format,dmesg-warn
++igt@kms_addfb_basic@no-handle,pass
++igt@kms_addfb_basic@basic,pass
++igt@kms_addfb_basic@bad-pitch-0,pass
++igt@kms_addfb_basic@bad-pitch-32,pass
++igt@kms_addfb_basic@bad-pitch-63,pass
++igt@kms_addfb_basic@bad-pitch-128,pass
++igt@kms_addfb_basic@bad-pitch-256,pass
++igt@kms_addfb_basic@bad-pitch-1024,pass
++igt@kms_addfb_basic@bad-pitch-999,pass
++igt@kms_addfb_basic@bad-pitch-65536,pass
++igt@kms_addfb_basic@size-max,pass
++igt@kms_addfb_basic@too-wide,pass
++igt@kms_addfb_basic@too-high,dmesg-warn
++igt@kms_addfb_basic@bo-too-small,pass
++igt@kms_addfb_basic@small-bo,pass
++igt@kms_addfb_basic@bo-too-small-due-to-tiling,skip
++igt@kms_addfb_basic@addfb25-modifier-no-flag,pass
++igt@kms_addfb_basic@addfb25-bad-modifier,fail
++igt@kms_addfb_basic@addfb25-x-tiled-mismatch-legacy,skip
++igt@kms_addfb_basic@addfb25-x-tiled-legacy,skip
++igt@kms_addfb_basic@addfb25-framebuffer-vs-set-tiling,skip
++igt@kms_addfb_basic@addfb25-y-tiled-legacy,skip
++igt@kms_addfb_basic@addfb25-yf-tiled-legacy,skip
++igt@kms_addfb_basic@addfb25-y-tiled-small-legacy,skip
++igt@kms_addfb_basic@addfb25-4-tiled,skip
++igt@kms_addfb_basic@basic-x-tiled-legacy,skip
++igt@kms_addfb_basic@framebuffer-vs-set-tiling,skip
++igt@kms_addfb_basic@tile-pitch-mismatch,skip
++igt@kms_addfb_basic@basic-y-tiled-legacy,skip
++igt@kms_addfb_basic@invalid-get-prop-any,pass
++igt@kms_addfb_basic@invalid-get-prop,pass
++igt@kms_addfb_basic@invalid-set-prop-any,pass
++igt@kms_addfb_basic@invalid-set-prop,pass
++igt@kms_addfb_basic@master-rmfb,pass
++igt@kms_atomic@plane-overlay-legacy,skip
++igt@kms_atomic@plane-primary-legacy,skip
++igt@kms_atomic@plane-primary-overlay-mutable-zpos,skip
++igt@kms_atomic@plane-immutable-zpos,skip
++igt@kms_atomic@test-only,skip
++igt@kms_atomic@plane-cursor-legacy,skip
++igt@kms_atomic@plane-invalid-params,skip
++igt@kms_atomic@plane-invalid-params-fence,skip
++igt@kms_atomic@crtc-invalid-params,skip
++igt@kms_atomic@crtc-invalid-params-fence,skip
++igt@kms_atomic@atomic-invalid-params,skip
++igt@kms_atomic@atomic_plane_damage,skip
++igt@kms_atomic_interruptible@legacy-setmode,skip
++igt@kms_atomic_interruptible@atomic-setmode,skip
++igt@kms_atomic_interruptible@legacy-dpms,skip
++igt@kms_atomic_interruptible@legacy-pageflip,skip
++igt@kms_atomic_interruptible@legacy-cursor,skip
++igt@kms_atomic_interruptible@universal-setplane-primary,skip
++igt@kms_atomic_interruptible@universal-setplane-cursor,skip
++igt@kms_content_protection@legacy,skip
++igt@kms_content_protection@atomic,skip
++igt@kms_content_protection@atomic-dpms,skip
++igt@kms_content_protection@lic,skip
++igt@kms_content_protection@type1,skip
++igt@kms_content_protection@mei_interface,skip
++igt@kms_content_protection@content_type_change,skip
++igt@kms_content_protection@uevent,skip
++igt@kms_content_protection@srm,skip
++igt@kms_content_protection@dp-mst-type-0,skip
++igt@kms_content_protection@dp-mst-lic-type-0,skip
++igt@kms_content_protection@dp-mst-type-1,skip
++igt@kms_content_protection@dp-mst-lic-type-1,skip
++igt@kms_dp_aux_dev,skip
++igt@kms_flip_event_leak,skip
++igt@kms_getfb@getfb-handle-zero,pass
++igt@kms_getfb@getfb-handle-valid,pass
++igt@kms_getfb@getfb-handle-closed,pass
++igt@kms_getfb@getfb-handle-not-fb,pass
++igt@kms_getfb@getfb-addfb-different-handles,pass
++igt@kms_getfb@getfb-repeated-different-handles,pass
++igt@kms_getfb@getfb-reject-ccs,skip
++igt@kms_getfb@getfb2-handle-zero,pass
++igt@kms_getfb@getfb2-handle-closed,pass
++igt@kms_getfb@getfb2-handle-not-fb,pass
++igt@kms_getfb@getfb2-accept-ccs,skip
++igt@kms_getfb@getfb2-into-addfb2,pass
++igt@kms_getfb@getfb-handle-protection,pass
++igt@kms_getfb@getfb2-handle-protection,pass
++igt@kms_hdmi_inject@inject-4k,fail
++igt@kms_hdmi_inject@inject-audio,skip
++igt@kms_hdr@bpc-switch,skip
++igt@kms_hdr@bpc-switch-dpms,skip
++igt@kms_hdr@static-toggle,skip
++igt@kms_hdr@static-toggle-dpms,skip
++igt@kms_hdr@static-swap,skip
++igt@kms_multipipe_modeset@basic-max-pipe-crc-check,skip
++igt@kms_pipe_crc_basic@bad-source,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-a,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-a-frame-sequence,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a-frame-sequence,skip
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-a,skip
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-a,skip
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-a,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-b,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-b-frame-sequence,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b-frame-sequence,skip
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-b,skip
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-b,skip
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-b,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-c,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-c-frame-sequence,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c-frame-sequence,skip
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-c,skip
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-c,skip
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-c,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-d,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-d-frame-sequence,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d-frame-sequence,skip
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-d,skip
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-d,skip
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-d,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-e,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-e-frame-sequence,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e-frame-sequence,skip
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-e,skip
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-e,skip
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-e,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-f,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-f-frame-sequence,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f-frame-sequence,skip
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-f,skip
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-f,skip
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-f,skip
++igt@kms_plane_lowres@pipe-a-tiling-none,skip
++igt@kms_plane_lowres@pipe-a-tiling-x,skip
++igt@kms_plane_lowres@pipe-a-tiling-y,skip
++igt@kms_plane_lowres@pipe-a-tiling-yf,skip
++igt@kms_plane_lowres@pipe-a-tiling-4,skip
++igt@kms_plane_lowres@pipe-b-tiling-none,skip
++igt@kms_plane_lowres@pipe-b-tiling-x,skip
++igt@kms_plane_lowres@pipe-b-tiling-y,skip
++igt@kms_plane_lowres@pipe-b-tiling-yf,skip
++igt@kms_plane_lowres@pipe-b-tiling-4,skip
++igt@kms_plane_lowres@pipe-c-tiling-none,skip
++igt@kms_plane_lowres@pipe-c-tiling-x,skip
++igt@kms_plane_lowres@pipe-c-tiling-y,skip
++igt@kms_plane_lowres@pipe-c-tiling-yf,skip
++igt@kms_plane_lowres@pipe-c-tiling-4,skip
++igt@kms_plane_lowres@pipe-d-tiling-none,skip
++igt@kms_plane_lowres@pipe-d-tiling-x,skip
++igt@kms_plane_lowres@pipe-d-tiling-y,skip
++igt@kms_plane_lowres@pipe-d-tiling-yf,skip
++igt@kms_plane_lowres@pipe-d-tiling-4,skip
++igt@kms_plane_lowres@pipe-e-tiling-none,skip
++igt@kms_plane_lowres@pipe-e-tiling-x,skip
++igt@kms_plane_lowres@pipe-e-tiling-y,skip
++igt@kms_plane_lowres@pipe-e-tiling-yf,skip
++igt@kms_plane_lowres@pipe-e-tiling-4,skip
++igt@kms_plane_lowres@pipe-f-tiling-none,skip
++igt@kms_plane_lowres@pipe-f-tiling-x,skip
++igt@kms_plane_lowres@pipe-f-tiling-y,skip
++igt@kms_plane_lowres@pipe-f-tiling-yf,skip
++igt@kms_plane_lowres@pipe-f-tiling-4,skip
++igt@kms_prop_blob@basic,pass
++igt@kms_prop_blob@blob-prop-core,pass
++igt@kms_prop_blob@blob-prop-validate,pass
++igt@kms_prop_blob@blob-prop-lifetime,pass
++igt@kms_prop_blob@blob-multiple,pass
++igt@kms_prop_blob@invalid-get-prop-any,pass
++igt@kms_prop_blob@invalid-get-prop,pass
++igt@kms_prop_blob@invalid-set-prop-any,pass
++igt@kms_prop_blob@invalid-set-prop,pass
++igt@kms_rmfb@rmfb-ioctl,skip
++igt@kms_rmfb@close-fd,skip
++igt@kms_rotation_crc@primary-rotation-90,skip
++igt@kms_rotation_crc@primary-rotation-180,skip
++igt@kms_rotation_crc@primary-rotation-270,skip
++igt@kms_rotation_crc@sprite-rotation-90,skip
++igt@kms_rotation_crc@sprite-rotation-180,skip
++igt@kms_rotation_crc@sprite-rotation-270,skip
++igt@kms_rotation_crc@cursor-rotation-180,skip
++igt@kms_rotation_crc@sprite-rotation-90-pos-100-0,skip
++igt@kms_rotation_crc@bad-pixel-format,skip
++igt@kms_rotation_crc@bad-tiling,skip
++igt@kms_rotation_crc@primary-x-tiled-reflect-x-0,skip
++igt@kms_rotation_crc@primary-x-tiled-reflect-x-180,skip
++igt@kms_rotation_crc@primary-y-tiled-reflect-x-0,skip
++igt@kms_rotation_crc@primary-y-tiled-reflect-x-90,skip
++igt@kms_rotation_crc@primary-y-tiled-reflect-x-180,skip
++igt@kms_rotation_crc@primary-y-tiled-reflect-x-270,skip
++igt@kms_rotation_crc@primary-yf-tiled-reflect-x-0,skip
++igt@kms_rotation_crc@primary-yf-tiled-reflect-x-90,skip
++igt@kms_rotation_crc@primary-yf-tiled-reflect-x-180,skip
++igt@kms_rotation_crc@primary-yf-tiled-reflect-x-270,skip
++igt@kms_rotation_crc@primary-4-tiled-reflect-x-0,skip
++igt@kms_rotation_crc@primary-4-tiled-reflect-x-180,skip
++igt@kms_rotation_crc@multiplane-rotation,skip
++igt@kms_rotation_crc@multiplane-rotation-cropping-top,skip
++igt@kms_rotation_crc@multiplane-rotation-cropping-bottom,skip
++igt@kms_rotation_crc@exhaust-fences,skip
++igt@kms_selftest@all,skip
++igt@kms_setmode@basic,skip
++igt@kms_setmode@basic-clone-single-crtc,skip
++igt@kms_setmode@invalid-clone-single-crtc,skip
++igt@kms_setmode@invalid-clone-exclusive-crtc,skip
++igt@kms_setmode@clone-exclusive-crtc,skip
++igt@kms_setmode@invalid-clone-single-crtc-stealing,skip
++igt@msm_mapping@sqefw,skip
++igt@msm_mapping@shadow,skip
++igt@msm_recovery@hangcheck,skip
++igt@msm_recovery@gpu-fault,skip
++igt@msm_recovery@iova-fault,skip
++igt@msm_submit@empty-submit,pass
++igt@msm_submit@invalid-queue-submit,pass
++igt@msm_submit@invalid-flags-submit,pass
++igt@msm_submit@invalid-in-fence-submit,pass
++igt@msm_submit@invalid-duplicate-bo-submit,dmesg-warn
++igt@msm_submit@invalid-cmd-idx-submit,dmesg-warn
++igt@msm_submit@invalid-cmd-type-submit,dmesg-warn
++igt@msm_submit@valid-submit,pass
++igt@kms_sysfs_edid_timing,pass
++igt@kms_universal_plane@universal-plane-pipe-a-functional,skip
++igt@kms_universal_plane@universal-plane-pipe-a-sanity,skip
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-a,skip
++igt@kms_universal_plane@cursor-fb-leak-pipe-a,skip
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-a,skip
++igt@kms_universal_plane@universal-plane-pipe-b-functional,skip
++igt@kms_universal_plane@universal-plane-pipe-b-sanity,skip
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-b,skip
++igt@kms_universal_plane@cursor-fb-leak-pipe-b,skip
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-b,skip
++igt@kms_universal_plane@universal-plane-pipe-c-functional,skip
++igt@kms_universal_plane@universal-plane-pipe-c-sanity,skip
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-c,skip
++igt@kms_universal_plane@cursor-fb-leak-pipe-c,skip
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-c,skip
++igt@kms_universal_plane@universal-plane-pipe-d-functional,skip
++igt@kms_universal_plane@universal-plane-pipe-d-sanity,skip
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-d,skip
++igt@kms_universal_plane@cursor-fb-leak-pipe-d,skip
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-d,skip
++igt@kms_universal_plane@universal-plane-pipe-e-functional,skip
++igt@kms_universal_plane@universal-plane-pipe-e-sanity,skip
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-e,skip
++igt@kms_universal_plane@cursor-fb-leak-pipe-e,skip
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-e,skip
++igt@kms_universal_plane@universal-plane-pipe-f-functional,skip
++igt@kms_universal_plane@universal-plane-pipe-f-sanity,skip
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-f,skip
++igt@kms_universal_plane@cursor-fb-leak-pipe-f,skip
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-f,skip
++igt@kms_vblank@invalid,skip
++igt@kms_vblank@crtc-id,skip
++igt@kms_vblank@pipe-a-query-idle,skip
++igt@kms_vblank@pipe-a-query-idle-hang,skip
++igt@kms_vblank@pipe-a-query-forked,skip
++igt@kms_vblank@pipe-a-query-forked-hang,skip
++igt@kms_vblank@pipe-a-query-busy,skip
++igt@kms_vblank@pipe-a-query-busy-hang,skip
++igt@kms_vblank@pipe-a-query-forked-busy,skip
++igt@kms_vblank@pipe-a-query-forked-busy-hang,skip
++igt@kms_vblank@pipe-a-wait-idle,skip
++igt@kms_vblank@pipe-a-wait-idle-hang,skip
++igt@kms_vblank@pipe-a-wait-forked,skip
++igt@kms_vblank@pipe-a-wait-forked-hang,skip
++igt@kms_vblank@pipe-a-wait-busy,skip
++igt@kms_vblank@pipe-a-wait-busy-hang,skip
++igt@kms_vblank@pipe-a-wait-forked-busy,skip
++igt@kms_vblank@pipe-a-wait-forked-busy-hang,skip
++igt@kms_vblank@pipe-a-ts-continuation-idle,skip
++igt@kms_vblank@pipe-a-ts-continuation-idle-hang,skip
++igt@kms_vblank@pipe-a-ts-continuation-dpms-rpm,skip
++igt@kms_vblank@pipe-a-ts-continuation-modeset,skip
++igt@kms_vblank@pipe-a-ts-continuation-modeset-hang,skip
++igt@kms_vblank@pipe-a-ts-continuation-modeset-rpm,skip
++igt@kms_vblank@pipe-b-accuracy-idle,skip
++igt@kms_vblank@pipe-b-query-idle,skip
++igt@kms_vblank@pipe-b-query-idle-hang,skip
++igt@kms_vblank@pipe-b-query-forked,skip
++igt@kms_vblank@pipe-b-query-forked-hang,skip
++igt@kms_vblank@pipe-b-query-busy,skip
++igt@kms_vblank@pipe-b-query-busy-hang,skip
++igt@kms_vblank@pipe-b-query-forked-busy,skip
++igt@kms_vblank@pipe-b-query-forked-busy-hang,skip
++igt@kms_vblank@pipe-b-wait-idle,skip
++igt@kms_vblank@pipe-b-wait-idle-hang,skip
++igt@kms_vblank@pipe-b-wait-forked,skip
++igt@kms_vblank@pipe-b-wait-forked-hang,skip
++igt@kms_vblank@pipe-b-wait-busy,skip
++igt@kms_vblank@pipe-b-wait-busy-hang,skip
++igt@kms_vblank@pipe-b-wait-forked-busy,skip
++igt@kms_vblank@pipe-b-wait-forked-busy-hang,skip
++igt@kms_vblank@pipe-b-ts-continuation-idle,skip
++igt@kms_vblank@pipe-b-ts-continuation-idle-hang,skip
++igt@kms_vblank@pipe-b-ts-continuation-dpms-rpm,skip
++igt@kms_vblank@pipe-b-ts-continuation-modeset,skip
++igt@kms_vblank@pipe-b-ts-continuation-modeset-hang,skip
++igt@kms_vblank@pipe-b-ts-continuation-modeset-rpm,skip
++igt@kms_vblank@pipe-c-accuracy-idle,skip
++igt@kms_vblank@pipe-c-query-idle,skip
++igt@kms_vblank@pipe-c-query-idle-hang,skip
++igt@kms_vblank@pipe-c-query-forked,skip
++igt@kms_vblank@pipe-c-query-forked-hang,skip
++igt@kms_vblank@pipe-c-query-busy,skip
++igt@kms_vblank@pipe-c-query-busy-hang,skip
++igt@kms_vblank@pipe-c-query-forked-busy,skip
++igt@kms_vblank@pipe-c-query-forked-busy-hang,skip
++igt@kms_vblank@pipe-c-wait-idle,skip
++igt@kms_vblank@pipe-c-wait-idle-hang,skip
++igt@kms_vblank@pipe-c-wait-forked,skip
++igt@kms_vblank@pipe-c-wait-forked-hang,skip
++igt@kms_vblank@pipe-c-wait-busy,skip
++igt@kms_vblank@pipe-c-wait-busy-hang,skip
++igt@kms_vblank@pipe-c-wait-forked-busy,skip
++igt@kms_vblank@pipe-c-wait-forked-busy-hang,skip
++igt@kms_vblank@pipe-c-ts-continuation-idle,skip
++igt@kms_vblank@pipe-c-ts-continuation-idle-hang,skip
++igt@kms_vblank@pipe-c-ts-continuation-dpms-rpm,skip
++igt@kms_vblank@pipe-c-ts-continuation-modeset,skip
++igt@kms_vblank@pipe-c-ts-continuation-modeset-hang,skip
++igt@kms_vblank@pipe-c-ts-continuation-modeset-rpm,skip
++igt@kms_vblank@pipe-d-accuracy-idle,skip
++igt@kms_vblank@pipe-d-query-idle,skip
++igt@kms_vblank@pipe-d-query-idle-hang,skip
++igt@kms_vblank@pipe-d-query-forked,skip
++igt@kms_vblank@pipe-d-query-forked-hang,skip
++igt@kms_vblank@pipe-d-query-busy,skip
++igt@kms_vblank@pipe-d-query-busy-hang,skip
++igt@kms_vblank@pipe-d-query-forked-busy,skip
++igt@kms_vblank@pipe-d-query-forked-busy-hang,skip
++igt@kms_vblank@pipe-d-wait-idle,skip
++igt@kms_vblank@pipe-d-wait-idle-hang,skip
++igt@kms_vblank@pipe-d-wait-forked,skip
++igt@kms_vblank@pipe-d-wait-forked-hang,skip
++igt@kms_vblank@pipe-d-wait-busy,skip
++igt@kms_vblank@pipe-d-wait-busy-hang,skip
++igt@kms_vblank@pipe-d-wait-forked-busy,skip
++igt@kms_vblank@pipe-d-wait-forked-busy-hang,skip
++igt@kms_vblank@pipe-d-ts-continuation-idle,skip
++igt@kms_vblank@pipe-d-ts-continuation-idle-hang,skip
++igt@kms_vblank@pipe-d-ts-continuation-dpms-rpm,skip
++igt@kms_vblank@pipe-d-ts-continuation-modeset,skip
++igt@kms_vblank@pipe-d-ts-continuation-modeset-hang,skip
++igt@kms_vblank@pipe-d-ts-continuation-modeset-rpm,skip
++igt@kms_vblank@pipe-e-accuracy-idle,skip
++igt@kms_vblank@pipe-e-query-idle,skip
++igt@kms_vblank@pipe-e-query-idle-hang,skip
++igt@kms_vblank@pipe-e-query-forked,skip
++igt@kms_vblank@pipe-e-query-forked-hang,skip
++igt@kms_vblank@pipe-e-query-busy,skip
++igt@kms_vblank@pipe-e-query-busy-hang,skip
++igt@kms_vblank@pipe-e-query-forked-busy,skip
++igt@kms_vblank@pipe-e-query-forked-busy-hang,skip
++igt@kms_vblank@pipe-e-wait-idle,skip
++igt@kms_vblank@pipe-e-wait-idle-hang,skip
++igt@kms_vblank@pipe-e-wait-forked,skip
++igt@kms_vblank@pipe-e-wait-forked-hang,skip
++igt@kms_vblank@pipe-e-wait-busy,skip
++igt@kms_vblank@pipe-e-wait-busy-hang,skip
++igt@kms_vblank@pipe-e-wait-forked-busy,skip
++igt@kms_vblank@pipe-e-wait-forked-busy-hang,skip
++igt@kms_vblank@pipe-e-ts-continuation-idle,skip
++igt@kms_vblank@pipe-e-ts-continuation-idle-hang,skip
++igt@kms_vblank@pipe-e-ts-continuation-dpms-rpm,skip
++igt@kms_vblank@pipe-e-ts-continuation-modeset,skip
++igt@kms_vblank@pipe-e-ts-continuation-modeset-hang,skip
++igt@kms_vblank@pipe-e-ts-continuation-modeset-rpm,skip
++igt@kms_vblank@pipe-f-accuracy-idle,skip
++igt@kms_vblank@pipe-f-query-idle,skip
++igt@kms_vblank@pipe-f-query-idle-hang,skip
++igt@kms_vblank@pipe-f-query-forked,skip
++igt@kms_vblank@pipe-f-query-forked-hang,skip
++igt@kms_vblank@pipe-f-query-busy,skip
++igt@kms_vblank@pipe-f-query-busy-hang,skip
++igt@kms_vblank@pipe-f-query-forked-busy,skip
++igt@kms_vblank@pipe-f-query-forked-busy-hang,skip
++igt@kms_vblank@pipe-f-wait-idle,skip
++igt@kms_vblank@pipe-f-wait-idle-hang,skip
++igt@kms_vblank@pipe-f-wait-forked,skip
++igt@kms_vblank@pipe-f-wait-forked-hang,skip
++igt@kms_vblank@pipe-f-wait-busy,skip
++igt@kms_vblank@pipe-f-wait-busy-hang,skip
++igt@kms_vblank@pipe-f-wait-forked-busy,skip
++igt@kms_vblank@pipe-f-wait-forked-busy-hang,skip
++igt@kms_vblank@pipe-f-ts-continuation-idle,skip
++igt@kms_vblank@pipe-f-ts-continuation-idle-hang,skip
++igt@kms_vblank@pipe-f-ts-continuation-dpms-rpm,skip
++igt@kms_vblank@pipe-f-ts-continuation-modeset,skip
++igt@kms_vblank@pipe-f-ts-continuation-modeset-hang,skip
++igt@kms_vblank@pipe-f-ts-continuation-modeset-rpm,skip
++igt@kms_vrr@flip-basic,skip
++igt@kms_vrr@flip-dpms,skip
++igt@kms_vrr@flipline,skip
++igt@kms_async_flip@async-flip-with-page-flip-events,skip
++igt@kms_async_flip@alternate-sync-async-flip,skip
++igt@kms_async_flip@test-time-stamp,skip
++igt@kms_async_flip@test-cursor,skip
++igt@kms_async_flip@invalid-async-flip,skip
++igt@kms_async_flip@crc,skip
+diff --git a/drivers/gpu/drm/msm/ci/msm_a530_results.txt b/drivers/gpu/drm/msm/ci/msm_a530_results.txt
+new file mode 100644
+index 000000000000..d5bf402f830c
+--- /dev/null
++++ b/drivers/gpu/drm/msm/ci/msm_a530_results.txt
+@@ -0,0 +1,421 @@
++igt@core_auth@getclient-simple,pass
++igt@core_auth@getclient-master-drop,pass
++igt@core_auth@basic-auth,pass
++igt@core_auth@many-magics,pass
++igt@core_getclient,pass
++igt@core_getstats,pass
++igt@core_getversion,pass
++igt@core_setmaster_vs_auth,pass
++igt@drm_read@invalid-buffer,skip
++igt@drm_read@fault-buffer,skip
++igt@drm_read@empty-block,skip
++igt@drm_read@empty-nonblock,skip
++igt@drm_read@short-buffer-block,skip
++igt@drm_read@short-buffer-nonblock,skip
++igt@drm_read@short-buffer-wakeup,skip
++igt@kms_addfb_basic@unused-handle,pass
++igt@kms_addfb_basic@unused-pitches,pass
++igt@kms_addfb_basic@unused-offsets,pass
++igt@kms_addfb_basic@unused-modifier,pass
++igt@kms_addfb_basic@clobberred-modifier,skip
++igt@kms_addfb_basic@invalid-smem-bo-on-discrete,skip
++igt@kms_addfb_basic@legacy-format,dmesg-warn
++igt@kms_addfb_basic@no-handle,pass
++igt@kms_addfb_basic@basic,pass
++igt@kms_addfb_basic@bad-pitch-0,pass
++igt@kms_addfb_basic@bad-pitch-32,pass
++igt@kms_addfb_basic@bad-pitch-63,pass
++igt@kms_addfb_basic@bad-pitch-128,pass
++igt@kms_addfb_basic@bad-pitch-256,pass
++igt@kms_addfb_basic@bad-pitch-1024,pass
++igt@kms_addfb_basic@bad-pitch-999,pass
++igt@kms_addfb_basic@bad-pitch-65536,pass
++igt@kms_addfb_basic@size-max,pass
++igt@kms_addfb_basic@too-wide,pass
++igt@kms_addfb_basic@too-high,dmesg-warn
++igt@kms_addfb_basic@bo-too-small,pass
++igt@kms_addfb_basic@small-bo,pass
++igt@kms_addfb_basic@bo-too-small-due-to-tiling,skip
++igt@kms_addfb_basic@addfb25-modifier-no-flag,pass
++igt@kms_addfb_basic@addfb25-bad-modifier,fail
++igt@kms_addfb_basic@addfb25-x-tiled-mismatch-legacy,skip
++igt@kms_addfb_basic@addfb25-x-tiled-legacy,skip
++igt@kms_addfb_basic@addfb25-framebuffer-vs-set-tiling,skip
++igt@kms_addfb_basic@addfb25-y-tiled-legacy,skip
++igt@kms_addfb_basic@addfb25-yf-tiled-legacy,skip
++igt@kms_addfb_basic@addfb25-y-tiled-small-legacy,skip
++igt@kms_addfb_basic@addfb25-4-tiled,skip
++igt@kms_addfb_basic@basic-x-tiled-legacy,skip
++igt@kms_addfb_basic@framebuffer-vs-set-tiling,skip
++igt@kms_addfb_basic@tile-pitch-mismatch,skip
++igt@kms_addfb_basic@basic-y-tiled-legacy,skip
++igt@kms_addfb_basic@invalid-get-prop-any,pass
++igt@kms_addfb_basic@invalid-get-prop,pass
++igt@kms_addfb_basic@invalid-set-prop-any,pass
++igt@kms_addfb_basic@invalid-set-prop,pass
++igt@kms_addfb_basic@master-rmfb,pass
++igt@kms_atomic@plane-overlay-legacy,skip
++igt@kms_atomic@plane-primary-legacy,skip
++igt@kms_atomic@plane-primary-overlay-mutable-zpos,skip
++igt@kms_atomic@plane-immutable-zpos,skip
++igt@kms_atomic@test-only,skip
++igt@kms_atomic@plane-cursor-legacy,skip
++igt@kms_atomic@plane-invalid-params,skip
++igt@kms_atomic@plane-invalid-params-fence,skip
++igt@kms_atomic@crtc-invalid-params,skip
++igt@kms_atomic@crtc-invalid-params-fence,skip
++igt@kms_atomic@atomic-invalid-params,skip
++igt@kms_atomic@atomic_plane_damage,skip
++igt@kms_atomic_interruptible@legacy-setmode,skip
++igt@kms_atomic_interruptible@atomic-setmode,skip
++igt@kms_atomic_interruptible@legacy-dpms,skip
++igt@kms_atomic_interruptible@legacy-pageflip,skip
++igt@kms_atomic_interruptible@legacy-cursor,skip
++igt@kms_atomic_interruptible@universal-setplane-primary,skip
++igt@kms_atomic_interruptible@universal-setplane-cursor,skip
++igt@kms_content_protection@legacy,skip
++igt@kms_content_protection@atomic,skip
++igt@kms_content_protection@atomic-dpms,skip
++igt@kms_content_protection@lic,skip
++igt@kms_content_protection@type1,skip
++igt@kms_content_protection@mei_interface,skip
++igt@kms_content_protection@content_type_change,skip
++igt@kms_content_protection@uevent,skip
++igt@kms_content_protection@srm,skip
++igt@kms_content_protection@dp-mst-type-0,skip
++igt@kms_content_protection@dp-mst-lic-type-0,skip
++igt@kms_content_protection@dp-mst-type-1,skip
++igt@kms_content_protection@dp-mst-lic-type-1,skip
++igt@kms_dp_aux_dev,skip
++igt@kms_flip_event_leak,skip
++igt@kms_getfb@getfb-handle-zero,pass
++igt@kms_getfb@getfb-handle-valid,pass
++igt@kms_getfb@getfb-handle-closed,pass
++igt@kms_getfb@getfb-handle-not-fb,pass
++igt@kms_getfb@getfb-addfb-different-handles,pass
++igt@kms_getfb@getfb-repeated-different-handles,pass
++igt@kms_getfb@getfb-reject-ccs,skip
++igt@kms_getfb@getfb2-handle-zero,pass
++igt@kms_getfb@getfb2-handle-closed,pass
++igt@kms_getfb@getfb2-handle-not-fb,pass
++igt@kms_getfb@getfb2-accept-ccs,skip
++igt@kms_getfb@getfb2-into-addfb2,pass
++igt@kms_getfb@getfb-handle-protection,pass
++igt@kms_getfb@getfb2-handle-protection,pass
++igt@kms_hdmi_inject@inject-4k,dmesg-warn
++igt@kms_hdmi_inject@inject-audio,skip
++igt@kms_hdr@bpc-switch,skip
++igt@kms_hdr@bpc-switch-dpms,skip
++igt@kms_hdr@static-toggle,skip
++igt@kms_hdr@static-toggle-dpms,skip
++igt@kms_hdr@static-swap,skip
++igt@kms_multipipe_modeset@basic-max-pipe-crc-check,skip
++igt@kms_pipe_crc_basic@bad-source,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-a,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-a-frame-sequence,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a-frame-sequence,skip
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-a,skip
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-a,skip
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-a,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-b,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-b-frame-sequence,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b-frame-sequence,skip
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-b,skip
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-b,skip
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-b,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-c,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-c-frame-sequence,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c-frame-sequence,skip
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-c,skip
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-c,skip
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-c,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-d,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-d-frame-sequence,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d-frame-sequence,skip
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-d,skip
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-d,skip
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-d,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-e,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-e-frame-sequence,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e-frame-sequence,skip
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-e,skip
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-e,skip
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-e,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-f,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-f-frame-sequence,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f-frame-sequence,skip
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-f,skip
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-f,skip
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-f,skip
++igt@kms_plane_lowres@pipe-a-tiling-none,skip
++igt@kms_plane_lowres@pipe-a-tiling-x,skip
++igt@kms_plane_lowres@pipe-a-tiling-y,skip
++igt@kms_plane_lowres@pipe-a-tiling-yf,skip
++igt@kms_plane_lowres@pipe-a-tiling-4,skip
++igt@kms_plane_lowres@pipe-b-tiling-none,skip
++igt@kms_plane_lowres@pipe-b-tiling-x,skip
++igt@kms_plane_lowres@pipe-b-tiling-y,skip
++igt@kms_plane_lowres@pipe-b-tiling-yf,skip
++igt@kms_plane_lowres@pipe-b-tiling-4,skip
++igt@kms_plane_lowres@pipe-c-tiling-none,skip
++igt@kms_plane_lowres@pipe-c-tiling-x,skip
++igt@kms_plane_lowres@pipe-c-tiling-y,skip
++igt@kms_plane_lowres@pipe-c-tiling-yf,skip
++igt@kms_plane_lowres@pipe-c-tiling-4,skip
++igt@kms_plane_lowres@pipe-d-tiling-none,skip
++igt@kms_plane_lowres@pipe-d-tiling-x,skip
++igt@kms_plane_lowres@pipe-d-tiling-y,skip
++igt@kms_plane_lowres@pipe-d-tiling-yf,skip
++igt@kms_plane_lowres@pipe-d-tiling-4,skip
++igt@kms_plane_lowres@pipe-e-tiling-none,skip
++igt@kms_plane_lowres@pipe-e-tiling-x,skip
++igt@kms_plane_lowres@pipe-e-tiling-y,skip
++igt@kms_plane_lowres@pipe-e-tiling-yf,skip
++igt@kms_plane_lowres@pipe-e-tiling-4,skip
++igt@kms_plane_lowres@pipe-f-tiling-none,skip
++igt@kms_plane_lowres@pipe-f-tiling-x,skip
++igt@kms_plane_lowres@pipe-f-tiling-y,skip
++igt@kms_plane_lowres@pipe-f-tiling-yf,skip
++igt@kms_plane_lowres@pipe-f-tiling-4,skip
++igt@kms_prop_blob@basic,pass
++igt@kms_prop_blob@blob-prop-core,pass
++igt@kms_prop_blob@blob-prop-validate,pass
++igt@kms_prop_blob@blob-prop-lifetime,pass
++igt@kms_prop_blob@blob-multiple,pass
++igt@kms_prop_blob@invalid-get-prop-any,pass
++igt@kms_prop_blob@invalid-get-prop,pass
++igt@kms_prop_blob@invalid-set-prop-any,pass
++igt@kms_prop_blob@invalid-set-prop,pass
++igt@kms_rmfb@rmfb-ioctl,skip
++igt@kms_rmfb@close-fd,skip
++igt@kms_rotation_crc@primary-rotation-90,skip
++igt@kms_rotation_crc@primary-rotation-180,skip
++igt@kms_rotation_crc@primary-rotation-270,skip
++igt@kms_rotation_crc@sprite-rotation-90,skip
++igt@kms_rotation_crc@sprite-rotation-180,skip
++igt@kms_rotation_crc@sprite-rotation-270,skip
++igt@kms_rotation_crc@cursor-rotation-180,skip
++igt@kms_rotation_crc@sprite-rotation-90-pos-100-0,skip
++igt@kms_rotation_crc@bad-pixel-format,skip
++igt@kms_rotation_crc@bad-tiling,skip
++igt@kms_rotation_crc@primary-x-tiled-reflect-x-0,skip
++igt@kms_rotation_crc@primary-x-tiled-reflect-x-180,skip
++igt@kms_rotation_crc@primary-y-tiled-reflect-x-0,skip
++igt@kms_rotation_crc@primary-y-tiled-reflect-x-90,skip
++igt@kms_rotation_crc@primary-y-tiled-reflect-x-180,skip
++igt@kms_rotation_crc@primary-y-tiled-reflect-x-270,skip
++igt@kms_rotation_crc@primary-yf-tiled-reflect-x-0,skip
++igt@kms_rotation_crc@primary-yf-tiled-reflect-x-90,skip
++igt@kms_rotation_crc@primary-yf-tiled-reflect-x-180,skip
++igt@kms_rotation_crc@primary-yf-tiled-reflect-x-270,skip
++igt@kms_rotation_crc@primary-4-tiled-reflect-x-0,skip
++igt@kms_rotation_crc@primary-4-tiled-reflect-x-180,skip
++igt@kms_rotation_crc@multiplane-rotation,skip
++igt@kms_rotation_crc@multiplane-rotation-cropping-top,skip
++igt@kms_rotation_crc@multiplane-rotation-cropping-bottom,skip
++igt@kms_rotation_crc@exhaust-fences,skip
++igt@kms_selftest@all,skip
++igt@kms_setmode@basic,skip
++igt@kms_setmode@basic-clone-single-crtc,skip
++igt@kms_setmode@invalid-clone-single-crtc,skip
++igt@kms_setmode@invalid-clone-exclusive-crtc,skip
++igt@kms_setmode@clone-exclusive-crtc,skip
++igt@kms_setmode@invalid-clone-single-crtc-stealing,skip
++igt@msm_mapping@sqefw,skip
++igt@msm_mapping@shadow,skip
++igt@msm_recovery@hangcheck,skip
++igt@msm_recovery@gpu-fault,skip
++igt@msm_recovery@iova-fault,skip
++igt@msm_submit@empty-submit,pass
++igt@msm_submit@invalid-queue-submit,pass
++igt@msm_submit@invalid-flags-submit,pass
++igt@msm_submit@invalid-in-fence-submit,pass
++igt@msm_submit@invalid-duplicate-bo-submit,dmesg-warn
++igt@msm_submit@invalid-cmd-idx-submit,dmesg-warn
++igt@msm_submit@invalid-cmd-type-submit,dmesg-warn
++igt@msm_submit@valid-submit,pass
++igt@kms_sysfs_edid_timing,pass
++igt@kms_universal_plane@universal-plane-pipe-a-functional,skip
++igt@kms_universal_plane@universal-plane-pipe-a-sanity,skip
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-a,skip
++igt@kms_universal_plane@cursor-fb-leak-pipe-a,skip
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-a,skip
++igt@kms_universal_plane@universal-plane-pipe-b-functional,skip
++igt@kms_universal_plane@universal-plane-pipe-b-sanity,skip
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-b,skip
++igt@kms_universal_plane@cursor-fb-leak-pipe-b,skip
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-b,skip
++igt@kms_universal_plane@universal-plane-pipe-c-functional,skip
++igt@kms_universal_plane@universal-plane-pipe-c-sanity,skip
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-c,skip
++igt@kms_universal_plane@cursor-fb-leak-pipe-c,skip
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-c,skip
++igt@kms_universal_plane@universal-plane-pipe-d-functional,skip
++igt@kms_universal_plane@universal-plane-pipe-d-sanity,skip
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-d,skip
++igt@kms_universal_plane@cursor-fb-leak-pipe-d,skip
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-d,skip
++igt@kms_universal_plane@universal-plane-pipe-e-functional,skip
++igt@kms_universal_plane@universal-plane-pipe-e-sanity,skip
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-e,skip
++igt@kms_universal_plane@cursor-fb-leak-pipe-e,skip
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-e,skip
++igt@kms_universal_plane@universal-plane-pipe-f-functional,skip
++igt@kms_universal_plane@universal-plane-pipe-f-sanity,skip
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-f,skip
++igt@kms_universal_plane@cursor-fb-leak-pipe-f,skip
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-f,skip
++igt@kms_vblank@invalid,skip
++igt@kms_vblank@crtc-id,skip
++igt@kms_vblank@pipe-a-query-idle,skip
++igt@kms_vblank@pipe-a-query-idle-hang,skip
++igt@kms_vblank@pipe-a-query-forked,skip
++igt@kms_vblank@pipe-a-query-forked-hang,skip
++igt@kms_vblank@pipe-a-query-busy,skip
++igt@kms_vblank@pipe-a-query-busy-hang,skip
++igt@kms_vblank@pipe-a-query-forked-busy,skip
++igt@kms_vblank@pipe-a-query-forked-busy-hang,skip
++igt@kms_vblank@pipe-a-wait-idle,skip
++igt@kms_vblank@pipe-a-wait-idle-hang,skip
++igt@kms_vblank@pipe-a-wait-forked,skip
++igt@kms_vblank@pipe-a-wait-forked-hang,skip
++igt@kms_vblank@pipe-a-wait-busy,skip
++igt@kms_vblank@pipe-a-wait-busy-hang,skip
++igt@kms_vblank@pipe-a-wait-forked-busy,skip
++igt@kms_vblank@pipe-a-wait-forked-busy-hang,skip
++igt@kms_vblank@pipe-a-ts-continuation-idle,skip
++igt@kms_vblank@pipe-a-ts-continuation-idle-hang,skip
++igt@kms_vblank@pipe-a-ts-continuation-dpms-rpm,skip
++igt@kms_vblank@pipe-a-ts-continuation-modeset,skip
++igt@kms_vblank@pipe-a-ts-continuation-modeset-hang,skip
++igt@kms_vblank@pipe-a-ts-continuation-modeset-rpm,skip
++igt@kms_vblank@pipe-b-accuracy-idle,skip
++igt@kms_vblank@pipe-b-query-idle,skip
++igt@kms_vblank@pipe-b-query-idle-hang,skip
++igt@kms_vblank@pipe-b-query-forked,skip
++igt@kms_vblank@pipe-b-query-forked-hang,skip
++igt@kms_vblank@pipe-b-query-busy,skip
++igt@kms_vblank@pipe-b-query-busy-hang,skip
++igt@kms_vblank@pipe-b-query-forked-busy,skip
++igt@kms_vblank@pipe-b-query-forked-busy-hang,skip
++igt@kms_vblank@pipe-b-wait-idle,skip
++igt@kms_vblank@pipe-b-wait-idle-hang,skip
++igt@kms_vblank@pipe-b-wait-forked,skip
++igt@kms_vblank@pipe-b-wait-forked-hang,skip
++igt@kms_vblank@pipe-b-wait-busy,skip
++igt@kms_vblank@pipe-b-wait-busy-hang,skip
++igt@kms_vblank@pipe-b-wait-forked-busy,skip
++igt@kms_vblank@pipe-b-wait-forked-busy-hang,skip
++igt@kms_vblank@pipe-b-ts-continuation-idle,skip
++igt@kms_vblank@pipe-b-ts-continuation-idle-hang,skip
++igt@kms_vblank@pipe-b-ts-continuation-dpms-rpm,skip
++igt@kms_vblank@pipe-b-ts-continuation-modeset,skip
++igt@kms_vblank@pipe-b-ts-continuation-modeset-hang,skip
++igt@kms_vblank@pipe-b-ts-continuation-modeset-rpm,skip
++igt@kms_vblank@pipe-c-accuracy-idle,skip
++igt@kms_vblank@pipe-c-query-idle,skip
++igt@kms_vblank@pipe-c-query-idle-hang,skip
++igt@kms_vblank@pipe-c-query-forked,skip
++igt@kms_vblank@pipe-c-query-forked-hang,skip
++igt@kms_vblank@pipe-c-query-busy,skip
++igt@kms_vblank@pipe-c-query-busy-hang,skip
++igt@kms_vblank@pipe-c-query-forked-busy,skip
++igt@kms_vblank@pipe-c-query-forked-busy-hang,skip
++igt@kms_vblank@pipe-c-wait-idle,skip
++igt@kms_vblank@pipe-c-wait-idle-hang,skip
++igt@kms_vblank@pipe-c-wait-forked,skip
++igt@kms_vblank@pipe-c-wait-forked-hang,skip
++igt@kms_vblank@pipe-c-wait-busy,skip
++igt@kms_vblank@pipe-c-wait-busy-hang,skip
++igt@kms_vblank@pipe-c-wait-forked-busy,skip
++igt@kms_vblank@pipe-c-wait-forked-busy-hang,skip
++igt@kms_vblank@pipe-c-ts-continuation-idle,skip
++igt@kms_vblank@pipe-c-ts-continuation-idle-hang,skip
++igt@kms_vblank@pipe-c-ts-continuation-dpms-rpm,skip
++igt@kms_vblank@pipe-c-ts-continuation-modeset,skip
++igt@kms_vblank@pipe-c-ts-continuation-modeset-hang,skip
++igt@kms_vblank@pipe-c-ts-continuation-modeset-rpm,skip
++igt@kms_vblank@pipe-d-accuracy-idle,skip
++igt@kms_vblank@pipe-d-query-idle,skip
++igt@kms_vblank@pipe-d-query-idle-hang,skip
++igt@kms_vblank@pipe-d-query-forked,skip
++igt@kms_vblank@pipe-d-query-forked-hang,skip
++igt@kms_vblank@pipe-d-query-busy,skip
++igt@kms_vblank@pipe-d-query-busy-hang,skip
++igt@kms_vblank@pipe-d-query-forked-busy,skip
++igt@kms_vblank@pipe-d-query-forked-busy-hang,skip
++igt@kms_vblank@pipe-d-wait-idle,skip
++igt@kms_vblank@pipe-d-wait-idle-hang,skip
++igt@kms_vblank@pipe-d-wait-forked,skip
++igt@kms_vblank@pipe-d-wait-forked-hang,skip
++igt@kms_vblank@pipe-d-wait-busy,skip
++igt@kms_vblank@pipe-d-wait-busy-hang,skip
++igt@kms_vblank@pipe-d-wait-forked-busy,skip
++igt@kms_vblank@pipe-d-wait-forked-busy-hang,skip
++igt@kms_vblank@pipe-d-ts-continuation-idle,skip
++igt@kms_vblank@pipe-d-ts-continuation-idle-hang,skip
++igt@kms_vblank@pipe-d-ts-continuation-dpms-rpm,skip
++igt@kms_vblank@pipe-d-ts-continuation-modeset,skip
++igt@kms_vblank@pipe-d-ts-continuation-modeset-hang,skip
++igt@kms_vblank@pipe-d-ts-continuation-modeset-rpm,skip
++igt@kms_vblank@pipe-e-accuracy-idle,skip
++igt@kms_vblank@pipe-e-query-idle,skip
++igt@kms_vblank@pipe-e-query-idle-hang,skip
++igt@kms_vblank@pipe-e-query-forked,skip
++igt@kms_vblank@pipe-e-query-forked-hang,skip
++igt@kms_vblank@pipe-e-query-busy,skip
++igt@kms_vblank@pipe-e-query-busy-hang,skip
++igt@kms_vblank@pipe-e-query-forked-busy,skip
++igt@kms_vblank@pipe-e-query-forked-busy-hang,skip
++igt@kms_vblank@pipe-e-wait-idle,skip
++igt@kms_vblank@pipe-e-wait-idle-hang,skip
++igt@kms_vblank@pipe-e-wait-forked,skip
++igt@kms_vblank@pipe-e-wait-forked-hang,skip
++igt@kms_vblank@pipe-e-wait-busy,skip
++igt@kms_vblank@pipe-e-wait-busy-hang,skip
++igt@kms_vblank@pipe-e-wait-forked-busy,skip
++igt@kms_vblank@pipe-e-wait-forked-busy-hang,skip
++igt@kms_vblank@pipe-e-ts-continuation-idle,skip
++igt@kms_vblank@pipe-e-ts-continuation-idle-hang,skip
++igt@kms_vblank@pipe-e-ts-continuation-dpms-rpm,skip
++igt@kms_vblank@pipe-e-ts-continuation-modeset,skip
++igt@kms_vblank@pipe-e-ts-continuation-modeset-hang,skip
++igt@kms_vblank@pipe-e-ts-continuation-modeset-rpm,skip
++igt@kms_vblank@pipe-f-accuracy-idle,skip
++igt@kms_vblank@pipe-f-query-idle,skip
++igt@kms_vblank@pipe-f-query-idle-hang,skip
++igt@kms_vblank@pipe-f-query-forked,skip
++igt@kms_vblank@pipe-f-query-forked-hang,skip
++igt@kms_vblank@pipe-f-query-busy,skip
++igt@kms_vblank@pipe-f-query-busy-hang,skip
++igt@kms_vblank@pipe-f-query-forked-busy,skip
++igt@kms_vblank@pipe-f-query-forked-busy-hang,skip
++igt@kms_vblank@pipe-f-wait-idle,skip
++igt@kms_vblank@pipe-f-wait-idle-hang,skip
++igt@kms_vblank@pipe-f-wait-forked,skip
++igt@kms_vblank@pipe-f-wait-forked-hang,skip
++igt@kms_vblank@pipe-f-wait-busy,skip
++igt@kms_vblank@pipe-f-wait-busy-hang,skip
++igt@kms_vblank@pipe-f-wait-forked-busy,skip
++igt@kms_vblank@pipe-f-wait-forked-busy-hang,skip
++igt@kms_vblank@pipe-f-ts-continuation-idle,skip
++igt@kms_vblank@pipe-f-ts-continuation-idle-hang,skip
++igt@kms_vblank@pipe-f-ts-continuation-dpms-rpm,skip
++igt@kms_vblank@pipe-f-ts-continuation-modeset,skip
++igt@kms_vblank@pipe-f-ts-continuation-modeset-hang,skip
++igt@kms_vblank@pipe-f-ts-continuation-modeset-rpm,skip
++igt@kms_vrr@flip-basic,skip
++igt@kms_vrr@flip-dpms,skip
++igt@kms_vrr@flipline,skip
++igt@kms_async_flip@async-flip-with-page-flip-events,skip
++igt@kms_async_flip@alternate-sync-async-flip,skip
++igt@kms_async_flip@test-time-stamp,skip
++igt@kms_async_flip@test-cursor,skip
++igt@kms_async_flip@invalid-async-flip,skip
++igt@kms_async_flip@crc,skip
+diff --git a/drivers/gpu/drm/msm/ci/msm_a618_results.txt b/drivers/gpu/drm/msm/ci/msm_a618_results.txt
+new file mode 100644
+index 000000000000..6e42262bf61b
+--- /dev/null
++++ b/drivers/gpu/drm/msm/ci/msm_a618_results.txt
+@@ -0,0 +1,422 @@
++igt@core_auth@getclient-simple,dmesg-warn
++igt@core_auth@getclient-master-drop,pass
++igt@core_auth@basic-auth,pass
++igt@core_auth@many-magics,pass
++igt@core_getclient,pass
++igt@core_getstats,pass
++igt@core_getversion,pass
++igt@core_setmaster_vs_auth,pass
++igt@drm_read@invalid-buffer,pass
++igt@drm_read@fault-buffer,pass
++igt@drm_read@empty-block,pass
++igt@drm_read@empty-nonblock,pass
++igt@drm_read@short-buffer-block,pass
++igt@drm_read@short-buffer-nonblock,pass
++igt@drm_read@short-buffer-wakeup,pass
++igt@kms_addfb_basic@unused-handle,pass
++igt@kms_addfb_basic@unused-pitches,pass
++igt@kms_addfb_basic@unused-offsets,pass
++igt@kms_addfb_basic@unused-modifier,pass
++igt@kms_addfb_basic@clobberred-modifier,skip
++igt@kms_addfb_basic@invalid-smem-bo-on-discrete,skip
++igt@kms_addfb_basic@legacy-format,dmesg-warn
++igt@kms_addfb_basic@no-handle,pass
++igt@kms_addfb_basic@basic,pass
++igt@kms_addfb_basic@bad-pitch-0,pass
++igt@kms_addfb_basic@bad-pitch-32,pass
++igt@kms_addfb_basic@bad-pitch-63,pass
++igt@kms_addfb_basic@bad-pitch-128,pass
++igt@kms_addfb_basic@bad-pitch-256,pass
++igt@kms_addfb_basic@bad-pitch-1024,pass
++igt@kms_addfb_basic@bad-pitch-999,pass
++igt@kms_addfb_basic@bad-pitch-65536,pass
++igt@kms_addfb_basic@size-max,pass
++igt@kms_addfb_basic@too-wide,pass
++igt@kms_addfb_basic@too-high,dmesg-warn
++igt@kms_addfb_basic@bo-too-small,pass
++igt@kms_addfb_basic@small-bo,pass
++igt@kms_addfb_basic@bo-too-small-due-to-tiling,skip
++igt@kms_addfb_basic@addfb25-modifier-no-flag,pass
++igt@kms_addfb_basic@addfb25-bad-modifier,dmesg-warn
++igt@kms_addfb_basic@addfb25-x-tiled-mismatch-legacy,skip
++igt@kms_addfb_basic@addfb25-x-tiled-legacy,skip
++igt@kms_addfb_basic@addfb25-framebuffer-vs-set-tiling,skip
++igt@kms_addfb_basic@addfb25-y-tiled-legacy,skip
++igt@kms_addfb_basic@addfb25-yf-tiled-legacy,skip
++igt@kms_addfb_basic@addfb25-y-tiled-small-legacy,skip
++igt@kms_addfb_basic@addfb25-4-tiled,skip
++igt@kms_addfb_basic@basic-x-tiled-legacy,skip
++igt@kms_addfb_basic@framebuffer-vs-set-tiling,skip
++igt@kms_addfb_basic@tile-pitch-mismatch,skip
++igt@kms_addfb_basic@basic-y-tiled-legacy,skip
++igt@kms_addfb_basic@invalid-get-prop-any,pass
++igt@kms_addfb_basic@invalid-get-prop,pass
++igt@kms_addfb_basic@invalid-set-prop-any,pass
++igt@kms_addfb_basic@invalid-set-prop,pass
++igt@kms_addfb_basic@master-rmfb,pass
++igt@kms_atomic@plane-overlay-legacy,skip
++igt@kms_atomic@plane-primary-legacy,pass
++igt@kms_atomic@plane-primary-overlay-mutable-zpos,skip
++igt@kms_atomic@plane-immutable-zpos,pass
++igt@kms_atomic@test-only,pass
++igt@kms_atomic@plane-cursor-legacy,pass
++igt@kms_atomic@plane-invalid-params,pass
++igt@kms_atomic@plane-invalid-params-fence,skip
++igt@kms_atomic@crtc-invalid-params,pass
++igt@kms_atomic@crtc-invalid-params-fence,skip
++igt@kms_atomic@atomic-invalid-params,pass
++igt@kms_atomic@atomic_plane_damage,pass
++igt@kms_atomic_interruptible@legacy-setmode,skip
++igt@kms_atomic_interruptible@atomic-setmode,skip
++igt@kms_atomic_interruptible@legacy-dpms,skip
++igt@kms_atomic_interruptible@legacy-pageflip,skip
++igt@kms_atomic_interruptible@legacy-cursor,skip
++igt@kms_atomic_interruptible@universal-setplane-primary,skip
++igt@kms_atomic_interruptible@universal-setplane-cursor,skip
++igt@kms_content_protection@legacy,skip
++igt@kms_content_protection@atomic,skip
++igt@kms_content_protection@atomic-dpms,skip
++igt@kms_content_protection@lic,skip
++igt@kms_content_protection@type1,skip
++igt@kms_content_protection@mei_interface,skip
++igt@kms_content_protection@content_type_change,skip
++igt@kms_content_protection@uevent,skip
++igt@kms_content_protection@srm,skip
++igt@kms_content_protection@dp-mst-type-0,skip
++igt@kms_content_protection@dp-mst-lic-type-0,skip
++igt@kms_content_protection@dp-mst-type-1,skip
++igt@kms_content_protection@dp-mst-lic-type-1,skip
++igt@kms_dp_aux_dev,skip
++igt@kms_flip_event_leak,pass
++igt@kms_getfb@getfb-handle-zero,pass
++igt@kms_getfb@getfb-handle-valid,pass
++igt@kms_getfb@getfb-handle-closed,pass
++igt@kms_getfb@getfb-handle-not-fb,pass
++igt@kms_getfb@getfb-addfb-different-handles,pass
++igt@kms_getfb@getfb-repeated-different-handles,pass
++igt@kms_getfb@getfb-reject-ccs,skip
++igt@kms_getfb@getfb2-handle-zero,pass
++igt@kms_getfb@getfb2-handle-closed,pass
++igt@kms_getfb@getfb2-handle-not-fb,pass
++igt@kms_getfb@getfb2-accept-ccs,skip
++igt@kms_getfb@getfb2-into-addfb2,pass
++igt@kms_getfb@getfb-handle-protection,pass
++igt@kms_getfb@getfb2-handle-protection,pass
++igt@kms_hdmi_inject@inject-4k,skip
++igt@kms_hdmi_inject@inject-audio,skip
++igt@kms_hdr@bpc-switch,skip
++igt@kms_hdr@bpc-switch-dpms,skip
++igt@kms_hdr@static-toggle,skip
++igt@kms_hdr@static-toggle-dpms,skip
++igt@kms_hdr@static-swap,skip
++igt@kms_multipipe_modeset@basic-max-pipe-crc-check,skip
++igt@kms_pipe_crc_basic@bad-source,pass
++igt@kms_pipe_crc_basic@read-crc-pipe-a,pass
++igt@kms_pipe_crc_basic@read-crc-pipe-a-frame-sequence,pass
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a,pass
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a-frame-sequence,pass
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-a,pass
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-a,skip
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-a,pass
++igt@kms_pipe_crc_basic@read-crc-pipe-b,pass
++igt@kms_pipe_crc_basic@read-crc-pipe-b-frame-sequence,pass
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b,pass
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b-frame-sequence,pass
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-b,pass
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-b,skip
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-b,pass
++igt@kms_pipe_crc_basic@read-crc-pipe-c,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-c-frame-sequence,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c-frame-sequence,skip
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-c,skip
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-c,skip
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-c,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-d,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-d-frame-sequence,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d-frame-sequence,skip
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-d,skip
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-d,skip
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-d,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-e,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-e-frame-sequence,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e-frame-sequence,skip
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-e,skip
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-e,skip
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-e,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-f,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-f-frame-sequence,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f-frame-sequence,skip
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-f,skip
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-f,skip
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-f,skip
++igt@kms_plane_lowres@pipe-a-tiling-none,skip
++igt@kms_plane_lowres@pipe-a-tiling-x,skip
++igt@kms_plane_lowres@pipe-a-tiling-y,skip
++igt@kms_plane_lowres@pipe-a-tiling-yf,skip
++igt@kms_plane_lowres@pipe-a-tiling-4,skip
++igt@kms_plane_lowres@pipe-b-tiling-none,skip
++igt@kms_plane_lowres@pipe-b-tiling-x,skip
++igt@kms_plane_lowres@pipe-b-tiling-y,skip
++igt@kms_plane_lowres@pipe-b-tiling-yf,skip
++igt@kms_plane_lowres@pipe-b-tiling-4,skip
++igt@kms_plane_lowres@pipe-c-tiling-none,skip
++igt@kms_plane_lowres@pipe-c-tiling-x,skip
++igt@kms_plane_lowres@pipe-c-tiling-y,skip
++igt@kms_plane_lowres@pipe-c-tiling-yf,skip
++igt@kms_plane_lowres@pipe-c-tiling-4,skip
++igt@kms_plane_lowres@pipe-d-tiling-none,skip
++igt@kms_plane_lowres@pipe-d-tiling-x,skip
++igt@kms_plane_lowres@pipe-d-tiling-y,skip
++igt@kms_plane_lowres@pipe-d-tiling-yf,skip
++igt@kms_plane_lowres@pipe-d-tiling-4,skip
++igt@kms_plane_lowres@pipe-e-tiling-none,skip
++igt@kms_plane_lowres@pipe-e-tiling-x,skip
++igt@kms_plane_lowres@pipe-e-tiling-y,skip
++igt@kms_plane_lowres@pipe-e-tiling-yf,skip
++igt@kms_plane_lowres@pipe-e-tiling-4,skip
++igt@kms_plane_lowres@pipe-f-tiling-none,skip
++igt@kms_plane_lowres@pipe-f-tiling-x,skip
++igt@kms_plane_lowres@pipe-f-tiling-y,skip
++igt@kms_plane_lowres@pipe-f-tiling-yf,skip
++igt@kms_plane_lowres@pipe-f-tiling-4,skip
++igt@kms_prop_blob@basic,pass
++igt@kms_prop_blob@blob-prop-core,pass
++igt@kms_prop_blob@blob-prop-validate,pass
++igt@kms_prop_blob@blob-prop-lifetime,pass
++igt@kms_prop_blob@blob-multiple,pass
++igt@kms_prop_blob@invalid-get-prop-any,pass
++igt@kms_prop_blob@invalid-get-prop,pass
++igt@kms_prop_blob@invalid-set-prop-any,pass
++igt@kms_prop_blob@invalid-set-prop,pass
++igt@kms_rmfb@rmfb-ioctl,pass
++igt@kms_rmfb@close-fd,fail
++igt@kms_rotation_crc@primary-rotation-90,skip
++igt@kms_rotation_crc@primary-rotation-180,skip
++igt@kms_rotation_crc@primary-rotation-270,skip
++igt@kms_rotation_crc@sprite-rotation-90,skip
++igt@kms_rotation_crc@sprite-rotation-180,skip
++igt@kms_rotation_crc@sprite-rotation-270,skip
++igt@kms_rotation_crc@cursor-rotation-180,skip
++igt@kms_rotation_crc@sprite-rotation-90-pos-100-0,skip
++igt@kms_rotation_crc@bad-pixel-format,skip
++igt@kms_rotation_crc@bad-tiling,skip
++igt@kms_rotation_crc@primary-x-tiled-reflect-x-0,skip
++igt@kms_rotation_crc@primary-x-tiled-reflect-x-180,skip
++igt@kms_rotation_crc@primary-y-tiled-reflect-x-0,skip
++igt@kms_rotation_crc@primary-y-tiled-reflect-x-90,skip
++igt@kms_rotation_crc@primary-y-tiled-reflect-x-180,skip
++igt@kms_rotation_crc@primary-y-tiled-reflect-x-270,skip
++igt@kms_rotation_crc@primary-yf-tiled-reflect-x-0,skip
++igt@kms_rotation_crc@primary-yf-tiled-reflect-x-90,skip
++igt@kms_rotation_crc@primary-yf-tiled-reflect-x-180,skip
++igt@kms_rotation_crc@primary-yf-tiled-reflect-x-270,skip
++igt@kms_rotation_crc@primary-4-tiled-reflect-x-0,skip
++igt@kms_rotation_crc@primary-4-tiled-reflect-x-180,skip
++igt@kms_rotation_crc@multiplane-rotation,skip
++igt@kms_rotation_crc@multiplane-rotation-cropping-top,skip
++igt@kms_rotation_crc@multiplane-rotation-cropping-bottom,skip
++igt@kms_rotation_crc@exhaust-fences,skip
++igt@kms_selftest@all,skip
++igt@kms_setmode@basic@pipe-a-edp-1,pass
++igt@kms_setmode@basic@pipe-b-edp-1,pass
++igt@kms_setmode@basic-clone-single-crtc,skip
++igt@kms_setmode@invalid-clone-single-crtc,skip
++igt@kms_setmode@invalid-clone-exclusive-crtc,skip
++igt@kms_setmode@clone-exclusive-crtc,skip
++igt@kms_setmode@invalid-clone-single-crtc-stealing,skip
++igt@msm_mapping@sqefw,dmesg-fail
++igt@msm_mapping@shadow,dmesg-fail
++igt@msm_recovery@hangcheck,dmesg-warn
++igt@msm_recovery@gpu-fault,dmesg-warn
++igt@msm_recovery@iova-fault,dmesg-warn
++igt@msm_submit@empty-submit,pass
++igt@msm_submit@invalid-queue-submit,pass
++igt@msm_submit@invalid-flags-submit,pass
++igt@msm_submit@invalid-in-fence-submit,pass
++igt@msm_submit@invalid-duplicate-bo-submit,dmesg-warn
++igt@msm_submit@invalid-cmd-idx-submit,dmesg-warn
++igt@msm_submit@invalid-cmd-type-submit,dmesg-warn
++igt@msm_submit@valid-submit,pass
++igt@kms_sysfs_edid_timing,pass
++igt@kms_universal_plane@universal-plane-pipe-a-functional,skip
++igt@kms_universal_plane@universal-plane-pipe-a-sanity,skip
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-a,pass
++igt@kms_universal_plane@cursor-fb-leak-pipe-a,skip
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-a,skip
++igt@kms_universal_plane@universal-plane-pipe-b-functional,skip
++igt@kms_universal_plane@universal-plane-pipe-b-sanity,skip
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-b,fail
++igt@kms_universal_plane@cursor-fb-leak-pipe-b,skip
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-b,skip
++igt@kms_universal_plane@universal-plane-pipe-c-functional,skip
++igt@kms_universal_plane@universal-plane-pipe-c-sanity,skip
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-c,skip
++igt@kms_universal_plane@cursor-fb-leak-pipe-c,skip
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-c,skip
++igt@kms_universal_plane@universal-plane-pipe-d-functional,skip
++igt@kms_universal_plane@universal-plane-pipe-d-sanity,skip
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-d,skip
++igt@kms_universal_plane@cursor-fb-leak-pipe-d,skip
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-d,skip
++igt@kms_universal_plane@universal-plane-pipe-e-functional,skip
++igt@kms_universal_plane@universal-plane-pipe-e-sanity,skip
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-e,skip
++igt@kms_universal_plane@cursor-fb-leak-pipe-e,skip
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-e,skip
++igt@kms_universal_plane@universal-plane-pipe-f-functional,skip
++igt@kms_universal_plane@universal-plane-pipe-f-sanity,skip
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-f,skip
++igt@kms_universal_plane@cursor-fb-leak-pipe-f,skip
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-f,skip
++igt@kms_vblank@invalid,pass
++igt@kms_vblank@crtc-id,pass
++igt@kms_vblank@pipe-a-query-idle,pass
++igt@kms_vblank@pipe-a-query-idle-hang,skip
++igt@kms_vblank@pipe-a-query-forked,pass
++igt@kms_vblank@pipe-a-query-forked-hang,skip
++igt@kms_vblank@pipe-a-query-busy,pass
++igt@kms_vblank@pipe-a-query-busy-hang,skip
++igt@kms_vblank@pipe-a-query-forked-busy,pass
++igt@kms_vblank@pipe-a-query-forked-busy-hang,skip
++igt@kms_vblank@pipe-a-wait-idle,pass
++igt@kms_vblank@pipe-a-wait-idle-hang,skip
++igt@kms_vblank@pipe-a-wait-forked,pass
++igt@kms_vblank@pipe-a-wait-forked-hang,skip
++igt@kms_vblank@pipe-a-wait-busy,pass
++igt@kms_vblank@pipe-a-wait-busy-hang,skip
++igt@kms_vblank@pipe-a-wait-forked-busy,pass
++igt@kms_vblank@pipe-a-wait-forked-busy-hang,skip
++igt@kms_vblank@pipe-a-ts-continuation-idle,pass
++igt@kms_vblank@pipe-a-ts-continuation-idle-hang,skip
++igt@kms_vblank@pipe-a-ts-continuation-dpms-rpm,skip
++igt@kms_vblank@pipe-a-ts-continuation-modeset,pass
++igt@kms_vblank@pipe-a-ts-continuation-modeset-hang,skip
++igt@kms_vblank@pipe-a-ts-continuation-modeset-rpm,skip
++igt@kms_vblank@pipe-b-accuracy-idle,pass
++igt@kms_vblank@pipe-b-query-idle,pass
++igt@kms_vblank@pipe-b-query-idle-hang,skip
++igt@kms_vblank@pipe-b-query-forked,pass
++igt@kms_vblank@pipe-b-query-forked-hang,skip
++igt@kms_vblank@pipe-b-query-busy,pass
++igt@kms_vblank@pipe-b-query-busy-hang,skip
++igt@kms_vblank@pipe-b-query-forked-busy,pass
++igt@kms_vblank@pipe-b-query-forked-busy-hang,skip
++igt@kms_vblank@pipe-b-wait-idle,pass
++igt@kms_vblank@pipe-b-wait-idle-hang,skip
++igt@kms_vblank@pipe-b-wait-forked,pass
++igt@kms_vblank@pipe-b-wait-forked-hang,skip
++igt@kms_vblank@pipe-b-wait-busy,pass
++igt@kms_vblank@pipe-b-wait-busy-hang,skip
++igt@kms_vblank@pipe-b-wait-forked-busy,pass
++igt@kms_vblank@pipe-b-wait-forked-busy-hang,skip
++igt@kms_vblank@pipe-b-ts-continuation-idle,pass
++igt@kms_vblank@pipe-b-ts-continuation-idle-hang,skip
++igt@kms_vblank@pipe-b-ts-continuation-dpms-rpm,skip
++igt@kms_vblank@pipe-b-ts-continuation-modeset,pass
++igt@kms_vblank@pipe-b-ts-continuation-modeset-hang,skip
++igt@kms_vblank@pipe-b-ts-continuation-modeset-rpm,skip
++igt@kms_vblank@pipe-c-accuracy-idle,skip
++igt@kms_vblank@pipe-c-query-idle,skip
++igt@kms_vblank@pipe-c-query-idle-hang,skip
++igt@kms_vblank@pipe-c-query-forked,skip
++igt@kms_vblank@pipe-c-query-forked-hang,skip
++igt@kms_vblank@pipe-c-query-busy,skip
++igt@kms_vblank@pipe-c-query-busy-hang,skip
++igt@kms_vblank@pipe-c-query-forked-busy,skip
++igt@kms_vblank@pipe-c-query-forked-busy-hang,skip
++igt@kms_vblank@pipe-c-wait-idle,skip
++igt@kms_vblank@pipe-c-wait-idle-hang,skip
++igt@kms_vblank@pipe-c-wait-forked,skip
++igt@kms_vblank@pipe-c-wait-forked-hang,skip
++igt@kms_vblank@pipe-c-wait-busy,skip
++igt@kms_vblank@pipe-c-wait-busy-hang,skip
++igt@kms_vblank@pipe-c-wait-forked-busy,skip
++igt@kms_vblank@pipe-c-wait-forked-busy-hang,skip
++igt@kms_vblank@pipe-c-ts-continuation-idle,skip
++igt@kms_vblank@pipe-c-ts-continuation-idle-hang,skip
++igt@kms_vblank@pipe-c-ts-continuation-dpms-rpm,skip
++igt@kms_vblank@pipe-c-ts-continuation-modeset,skip
++igt@kms_vblank@pipe-c-ts-continuation-modeset-hang,skip
++igt@kms_vblank@pipe-c-ts-continuation-modeset-rpm,skip
++igt@kms_vblank@pipe-d-accuracy-idle,skip
++igt@kms_vblank@pipe-d-query-idle,skip
++igt@kms_vblank@pipe-d-query-idle-hang,skip
++igt@kms_vblank@pipe-d-query-forked,skip
++igt@kms_vblank@pipe-d-query-forked-hang,skip
++igt@kms_vblank@pipe-d-query-busy,skip
++igt@kms_vblank@pipe-d-query-busy-hang,skip
++igt@kms_vblank@pipe-d-query-forked-busy,skip
++igt@kms_vblank@pipe-d-query-forked-busy-hang,skip
++igt@kms_vblank@pipe-d-wait-idle,skip
++igt@kms_vblank@pipe-d-wait-idle-hang,skip
++igt@kms_vblank@pipe-d-wait-forked,skip
++igt@kms_vblank@pipe-d-wait-forked-hang,skip
++igt@kms_vblank@pipe-d-wait-busy,skip
++igt@kms_vblank@pipe-d-wait-busy-hang,skip
++igt@kms_vblank@pipe-d-wait-forked-busy,skip
++igt@kms_vblank@pipe-d-wait-forked-busy-hang,skip
++igt@kms_vblank@pipe-d-ts-continuation-idle,skip
++igt@kms_vblank@pipe-d-ts-continuation-idle-hang,skip
++igt@kms_vblank@pipe-d-ts-continuation-dpms-rpm,skip
++igt@kms_vblank@pipe-d-ts-continuation-modeset,skip
++igt@kms_vblank@pipe-d-ts-continuation-modeset-hang,skip
++igt@kms_vblank@pipe-d-ts-continuation-modeset-rpm,skip
++igt@kms_vblank@pipe-e-accuracy-idle,skip
++igt@kms_vblank@pipe-e-query-idle,skip
++igt@kms_vblank@pipe-e-query-idle-hang,skip
++igt@kms_vblank@pipe-e-query-forked,skip
++igt@kms_vblank@pipe-e-query-forked-hang,skip
++igt@kms_vblank@pipe-e-query-busy,skip
++igt@kms_vblank@pipe-e-query-busy-hang,skip
++igt@kms_vblank@pipe-e-query-forked-busy,skip
++igt@kms_vblank@pipe-e-query-forked-busy-hang,skip
++igt@kms_vblank@pipe-e-wait-idle,skip
++igt@kms_vblank@pipe-e-wait-idle-hang,skip
++igt@kms_vblank@pipe-e-wait-forked,skip
++igt@kms_vblank@pipe-e-wait-forked-hang,skip
++igt@kms_vblank@pipe-e-wait-busy,skip
++igt@kms_vblank@pipe-e-wait-busy-hang,skip
++igt@kms_vblank@pipe-e-wait-forked-busy,skip
++igt@kms_vblank@pipe-e-wait-forked-busy-hang,skip
++igt@kms_vblank@pipe-e-ts-continuation-idle,skip
++igt@kms_vblank@pipe-e-ts-continuation-idle-hang,skip
++igt@kms_vblank@pipe-e-ts-continuation-dpms-rpm,skip
++igt@kms_vblank@pipe-e-ts-continuation-modeset,skip
++igt@kms_vblank@pipe-e-ts-continuation-modeset-hang,skip
++igt@kms_vblank@pipe-e-ts-continuation-modeset-rpm,skip
++igt@kms_vblank@pipe-f-accuracy-idle,skip
++igt@kms_vblank@pipe-f-query-idle,skip
++igt@kms_vblank@pipe-f-query-idle-hang,skip
++igt@kms_vblank@pipe-f-query-forked,skip
++igt@kms_vblank@pipe-f-query-forked-hang,skip
++igt@kms_vblank@pipe-f-query-busy,skip
++igt@kms_vblank@pipe-f-query-busy-hang,skip
++igt@kms_vblank@pipe-f-query-forked-busy,skip
++igt@kms_vblank@pipe-f-query-forked-busy-hang,skip
++igt@kms_vblank@pipe-f-wait-idle,skip
++igt@kms_vblank@pipe-f-wait-idle-hang,skip
++igt@kms_vblank@pipe-f-wait-forked,skip
++igt@kms_vblank@pipe-f-wait-forked-hang,skip
++igt@kms_vblank@pipe-f-wait-busy,skip
++igt@kms_vblank@pipe-f-wait-busy-hang,skip
++igt@kms_vblank@pipe-f-wait-forked-busy,skip
++igt@kms_vblank@pipe-f-wait-forked-busy-hang,skip
++igt@kms_vblank@pipe-f-ts-continuation-idle,skip
++igt@kms_vblank@pipe-f-ts-continuation-idle-hang,skip
++igt@kms_vblank@pipe-f-ts-continuation-dpms-rpm,skip
++igt@kms_vblank@pipe-f-ts-continuation-modeset,skip
++igt@kms_vblank@pipe-f-ts-continuation-modeset-hang,skip
++igt@kms_vblank@pipe-f-ts-continuation-modeset-rpm,skip
++igt@kms_vrr@flip-basic,skip
++igt@kms_vrr@flip-dpms,skip
++igt@kms_vrr@flipline,skip
++igt@kms_async_flip@async-flip-with-page-flip-events,skip
++igt@kms_async_flip@alternate-sync-async-flip,skip
++igt@kms_async_flip@test-time-stamp,skip
++igt@kms_async_flip@test-cursor,skip
++igt@kms_async_flip@invalid-async-flip,skip
++igt@kms_async_flip@crc,skip
+diff --git a/drivers/gpu/drm/msm/ci/msm_a630_results.txt b/drivers/gpu/drm/msm/ci/msm_a630_results.txt
+new file mode 100644
+index 000000000000..18ebfae09f1a
+--- /dev/null
++++ b/drivers/gpu/drm/msm/ci/msm_a630_results.txt
+@@ -0,0 +1,422 @@
++igt@core_auth@getclient-simple,dmesg-warn
++igt@core_auth@getclient-master-drop,pass
++igt@core_auth@basic-auth,pass
++igt@core_auth@many-magics,pass
++igt@core_getclient,pass
++igt@core_getstats,pass
++igt@core_getversion,pass
++igt@core_setmaster_vs_auth,pass
++igt@drm_read@invalid-buffer,pass
++igt@drm_read@fault-buffer,pass
++igt@drm_read@empty-block,pass
++igt@drm_read@empty-nonblock,pass
++igt@drm_read@short-buffer-block,pass
++igt@drm_read@short-buffer-nonblock,pass
++igt@drm_read@short-buffer-wakeup,pass
++igt@kms_addfb_basic@unused-handle,pass
++igt@kms_addfb_basic@unused-pitches,pass
++igt@kms_addfb_basic@unused-offsets,pass
++igt@kms_addfb_basic@unused-modifier,pass
++igt@kms_addfb_basic@clobberred-modifier,skip
++igt@kms_addfb_basic@invalid-smem-bo-on-discrete,skip
++igt@kms_addfb_basic@legacy-format,dmesg-warn
++igt@kms_addfb_basic@no-handle,pass
++igt@kms_addfb_basic@basic,pass
++igt@kms_addfb_basic@bad-pitch-0,pass
++igt@kms_addfb_basic@bad-pitch-32,pass
++igt@kms_addfb_basic@bad-pitch-63,pass
++igt@kms_addfb_basic@bad-pitch-128,pass
++igt@kms_addfb_basic@bad-pitch-256,pass
++igt@kms_addfb_basic@bad-pitch-1024,pass
++igt@kms_addfb_basic@bad-pitch-999,pass
++igt@kms_addfb_basic@bad-pitch-65536,pass
++igt@kms_addfb_basic@size-max,pass
++igt@kms_addfb_basic@too-wide,pass
++igt@kms_addfb_basic@too-high,dmesg-warn
++igt@kms_addfb_basic@bo-too-small,pass
++igt@kms_addfb_basic@small-bo,pass
++igt@kms_addfb_basic@bo-too-small-due-to-tiling,skip
++igt@kms_addfb_basic@addfb25-modifier-no-flag,pass
++igt@kms_addfb_basic@addfb25-bad-modifier,dmesg-warn
++igt@kms_addfb_basic@addfb25-x-tiled-mismatch-legacy,skip
++igt@kms_addfb_basic@addfb25-x-tiled-legacy,skip
++igt@kms_addfb_basic@addfb25-framebuffer-vs-set-tiling,skip
++igt@kms_addfb_basic@addfb25-y-tiled-legacy,skip
++igt@kms_addfb_basic@addfb25-yf-tiled-legacy,skip
++igt@kms_addfb_basic@addfb25-y-tiled-small-legacy,skip
++igt@kms_addfb_basic@addfb25-4-tiled,skip
++igt@kms_addfb_basic@basic-x-tiled-legacy,skip
++igt@kms_addfb_basic@framebuffer-vs-set-tiling,skip
++igt@kms_addfb_basic@tile-pitch-mismatch,skip
++igt@kms_addfb_basic@basic-y-tiled-legacy,skip
++igt@kms_addfb_basic@invalid-get-prop-any,pass
++igt@kms_addfb_basic@invalid-get-prop,pass
++igt@kms_addfb_basic@invalid-set-prop-any,pass
++igt@kms_addfb_basic@invalid-set-prop,pass
++igt@kms_addfb_basic@master-rmfb,pass
++igt@kms_atomic@plane-overlay-legacy,dmesg-warn
++igt@kms_atomic@plane-primary-legacy,dmesg-warn
++igt@kms_atomic@plane-primary-overlay-mutable-zpos,dmesg-warn
++igt@kms_atomic@plane-immutable-zpos,dmesg-warn
++igt@kms_atomic@test-only,dmesg-warn
++igt@kms_atomic@plane-cursor-legacy,dmesg-warn
++igt@kms_atomic@plane-invalid-params,dmesg-warn
++igt@kms_atomic@plane-invalid-params-fence,skip
++igt@kms_atomic@crtc-invalid-params,dmesg-warn
++igt@kms_atomic@crtc-invalid-params-fence,skip
++igt@kms_atomic@atomic-invalid-params,dmesg-warn
++igt@kms_atomic@atomic_plane_damage,dmesg-warn
++igt@kms_atomic_interruptible@legacy-setmode,skip
++igt@kms_atomic_interruptible@atomic-setmode,skip
++igt@kms_atomic_interruptible@legacy-dpms,skip
++igt@kms_atomic_interruptible@legacy-pageflip,skip
++igt@kms_atomic_interruptible@legacy-cursor,skip
++igt@kms_atomic_interruptible@universal-setplane-primary,skip
++igt@kms_atomic_interruptible@universal-setplane-cursor,skip
++igt@kms_content_protection@legacy,skip
++igt@kms_content_protection@atomic,skip
++igt@kms_content_protection@atomic-dpms,skip
++igt@kms_content_protection@lic,skip
++igt@kms_content_protection@type1,skip
++igt@kms_content_protection@mei_interface,skip
++igt@kms_content_protection@content_type_change,skip
++igt@kms_content_protection@uevent,skip
++igt@kms_content_protection@srm,skip
++igt@kms_content_protection@dp-mst-type-0,skip
++igt@kms_content_protection@dp-mst-lic-type-0,skip
++igt@kms_content_protection@dp-mst-type-1,skip
++igt@kms_content_protection@dp-mst-lic-type-1,skip
++igt@kms_dp_aux_dev,skip
++igt@kms_flip_event_leak,dmesg-warn
++igt@kms_getfb@getfb-handle-zero,pass
++igt@kms_getfb@getfb-handle-valid,pass
++igt@kms_getfb@getfb-handle-closed,pass
++igt@kms_getfb@getfb-handle-not-fb,pass
++igt@kms_getfb@getfb-addfb-different-handles,pass
++igt@kms_getfb@getfb-repeated-different-handles,pass
++igt@kms_getfb@getfb-reject-ccs,skip
++igt@kms_getfb@getfb2-handle-zero,pass
++igt@kms_getfb@getfb2-handle-closed,pass
++igt@kms_getfb@getfb2-handle-not-fb,pass
++igt@kms_getfb@getfb2-accept-ccs,skip
++igt@kms_getfb@getfb2-into-addfb2,pass
++igt@kms_getfb@getfb-handle-protection,pass
++igt@kms_getfb@getfb2-handle-protection,pass
++igt@kms_hdmi_inject@inject-4k,skip
++igt@kms_hdmi_inject@inject-audio,skip
++igt@kms_hdr@bpc-switch,skip
++igt@kms_hdr@bpc-switch-dpms,skip
++igt@kms_hdr@static-toggle,skip
++igt@kms_hdr@static-toggle-dpms,skip
++igt@kms_hdr@static-swap,skip
++igt@kms_multipipe_modeset@basic-max-pipe-crc-check,pass
++igt@kms_pipe_crc_basic@bad-source,pass
++igt@kms_pipe_crc_basic@read-crc-pipe-a,pass
++igt@kms_pipe_crc_basic@read-crc-pipe-a-frame-sequence,pass
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a,pass
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a-frame-sequence,pass
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-a,dmesg-warn
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-a,skip
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-a,dmesg-warn
++igt@kms_pipe_crc_basic@read-crc-pipe-b,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-b-frame-sequence,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b-frame-sequence,skip
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-b,skip
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-b,skip
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-b,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-c,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-c-frame-sequence,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c-frame-sequence,skip
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-c,skip
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-c,skip
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-c,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-d,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-d-frame-sequence,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d-frame-sequence,skip
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-d,skip
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-d,skip
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-d,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-e,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-e-frame-sequence,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e-frame-sequence,skip
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-e,skip
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-e,skip
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-e,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-f,skip
++igt@kms_pipe_crc_basic@read-crc-pipe-f-frame-sequence,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f,skip
++igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f-frame-sequence,skip
++igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-f,skip
++igt@kms_pipe_crc_basic@hang-read-crc-pipe-f,skip
++igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-f,skip
++igt@kms_plane_lowres@pipe-a-tiling-none,skip
++igt@kms_plane_lowres@pipe-a-tiling-x,skip
++igt@kms_plane_lowres@pipe-a-tiling-y,skip
++igt@kms_plane_lowres@pipe-a-tiling-yf,skip
++igt@kms_plane_lowres@pipe-a-tiling-4,skip
++igt@kms_plane_lowres@pipe-b-tiling-none,skip
++igt@kms_plane_lowres@pipe-b-tiling-x,skip
++igt@kms_plane_lowres@pipe-b-tiling-y,skip
++igt@kms_plane_lowres@pipe-b-tiling-yf,skip
++igt@kms_plane_lowres@pipe-b-tiling-4,skip
++igt@kms_plane_lowres@pipe-c-tiling-none,skip
++igt@kms_plane_lowres@pipe-c-tiling-x,skip
++igt@kms_plane_lowres@pipe-c-tiling-y,skip
++igt@kms_plane_lowres@pipe-c-tiling-yf,skip
++igt@kms_plane_lowres@pipe-c-tiling-4,skip
++igt@kms_plane_lowres@pipe-d-tiling-none,skip
++igt@kms_plane_lowres@pipe-d-tiling-x,skip
++igt@kms_plane_lowres@pipe-d-tiling-y,skip
++igt@kms_plane_lowres@pipe-d-tiling-yf,skip
++igt@kms_plane_lowres@pipe-d-tiling-4,skip
++igt@kms_plane_lowres@pipe-e-tiling-none,skip
++igt@kms_plane_lowres@pipe-e-tiling-x,skip
++igt@kms_plane_lowres@pipe-e-tiling-y,skip
++igt@kms_plane_lowres@pipe-e-tiling-yf,skip
++igt@kms_plane_lowres@pipe-e-tiling-4,skip
++igt@kms_plane_lowres@pipe-f-tiling-none,skip
++igt@kms_plane_lowres@pipe-f-tiling-x,skip
++igt@kms_plane_lowres@pipe-f-tiling-y,skip
++igt@kms_plane_lowres@pipe-f-tiling-yf,skip
++igt@kms_plane_lowres@pipe-f-tiling-4,skip
++igt@kms_prop_blob@basic,pass
++igt@kms_prop_blob@blob-prop-core,pass
++igt@kms_prop_blob@blob-prop-validate,pass
++igt@kms_prop_blob@blob-prop-lifetime,pass
++igt@kms_prop_blob@blob-multiple,pass
++igt@kms_prop_blob@invalid-get-prop-any,pass
++igt@kms_prop_blob@invalid-get-prop,pass
++igt@kms_prop_blob@invalid-set-prop-any,pass
++igt@kms_prop_blob@invalid-set-prop,pass
++igt@kms_rmfb@rmfb-ioctl,pass
++igt@kms_rmfb@close-fd,fail
++igt@kms_rotation_crc@primary-rotation-90,skip
++igt@kms_rotation_crc@primary-rotation-180,skip
++igt@kms_rotation_crc@primary-rotation-270,skip
++igt@kms_rotation_crc@sprite-rotation-90,skip
++igt@kms_rotation_crc@sprite-rotation-180,skip
++igt@kms_rotation_crc@sprite-rotation-270,skip
++igt@kms_rotation_crc@cursor-rotation-180,skip
++igt@kms_rotation_crc@sprite-rotation-90-pos-100-0,skip
++igt@kms_rotation_crc@bad-pixel-format,skip
++igt@kms_rotation_crc@bad-tiling,skip
++igt@kms_rotation_crc@primary-x-tiled-reflect-x-0,skip
++igt@kms_rotation_crc@primary-x-tiled-reflect-x-180,skip
++igt@kms_rotation_crc@primary-y-tiled-reflect-x-0,skip
++igt@kms_rotation_crc@primary-y-tiled-reflect-x-90,skip
++igt@kms_rotation_crc@primary-y-tiled-reflect-x-180,skip
++igt@kms_rotation_crc@primary-y-tiled-reflect-x-270,skip
++igt@kms_rotation_crc@primary-yf-tiled-reflect-x-0,skip
++igt@kms_rotation_crc@primary-yf-tiled-reflect-x-90,skip
++igt@kms_rotation_crc@primary-yf-tiled-reflect-x-180,skip
++igt@kms_rotation_crc@primary-yf-tiled-reflect-x-270,skip
++igt@kms_rotation_crc@primary-4-tiled-reflect-x-0,skip
++igt@kms_rotation_crc@primary-4-tiled-reflect-x-180,skip
++igt@kms_rotation_crc@multiplane-rotation,skip
++igt@kms_rotation_crc@multiplane-rotation-cropping-top,skip
++igt@kms_rotation_crc@multiplane-rotation-cropping-bottom,skip
++igt@kms_rotation_crc@exhaust-fences,skip
++igt@kms_selftest@all,skip
++igt@kms_setmode@basic@pipe-a-edp-1,dmesg-warn
++igt@kms_setmode@basic,skip
++igt@kms_setmode@basic-clone-single-crtc,skip
++igt@kms_setmode@invalid-clone-single-crtc,skip
++igt@kms_setmode@invalid-clone-exclusive-crtc,skip
++igt@kms_setmode@clone-exclusive-crtc,skip
++igt@kms_setmode@invalid-clone-single-crtc-stealing,skip
++igt@msm_mapping@sqefw,dmesg-fail
++igt@msm_mapping@shadow,dmesg-fail
++igt@msm_recovery@hangcheck,dmesg-warn
++igt@msm_recovery@gpu-fault,dmesg-warn
++igt@msm_recovery@iova-fault,dmesg-warn
++igt@msm_submit@empty-submit,pass
++igt@msm_submit@invalid-queue-submit,pass
++igt@msm_submit@invalid-flags-submit,pass
++igt@msm_submit@invalid-in-fence-submit,pass
++igt@msm_submit@invalid-duplicate-bo-submit,dmesg-warn
++igt@msm_submit@invalid-cmd-idx-submit,dmesg-warn
++igt@msm_submit@invalid-cmd-type-submit,dmesg-warn
++igt@msm_submit@valid-submit,pass
++igt@kms_sysfs_edid_timing,pass
++igt@kms_universal_plane@universal-plane-pipe-a-functional,dmesg-fail
++igt@kms_universal_plane@universal-plane-pipe-a-sanity,skip
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-a,dmesg-warn
++igt@kms_universal_plane@cursor-fb-leak-pipe-a,skip
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-a,skip
++igt@kms_universal_plane@universal-plane-pipe-b-functional,skip
++igt@kms_universal_plane@universal-plane-pipe-b-sanity,skip
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-b,skip
++igt@kms_universal_plane@cursor-fb-leak-pipe-b,skip
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-b,skip
++igt@kms_universal_plane@universal-plane-pipe-c-functional,skip
++igt@kms_universal_plane@universal-plane-pipe-c-sanity,skip
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-c,skip
++igt@kms_universal_plane@cursor-fb-leak-pipe-c,skip
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-c,skip
++igt@kms_universal_plane@universal-plane-pipe-d-functional,skip
++igt@kms_universal_plane@universal-plane-pipe-d-sanity,skip
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-d,skip
++igt@kms_universal_plane@cursor-fb-leak-pipe-d,skip
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-d,skip
++igt@kms_universal_plane@universal-plane-pipe-e-functional,skip
++igt@kms_universal_plane@universal-plane-pipe-e-sanity,skip
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-e,skip
++igt@kms_universal_plane@cursor-fb-leak-pipe-e,skip
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-e,skip
++igt@kms_universal_plane@universal-plane-pipe-f-functional,skip
++igt@kms_universal_plane@universal-plane-pipe-f-sanity,skip
++igt@kms_universal_plane@disable-primary-vs-flip-pipe-f,skip
++igt@kms_universal_plane@cursor-fb-leak-pipe-f,skip
++igt@kms_universal_plane@universal-plane-gen9-features-pipe-f,skip
++igt@kms_vblank@invalid,dmesg-warn
++igt@kms_vblank@crtc-id,dmesg-warn
++igt@kms_vblank@pipe-a-query-idle,dmesg-warn
++igt@kms_vblank@pipe-a-query-idle-hang,skip
++igt@kms_vblank@pipe-a-query-forked,dmesg-warn
++igt@kms_vblank@pipe-a-query-forked-hang,skip
++igt@kms_vblank@pipe-a-query-busy,dmesg-warn
++igt@kms_vblank@pipe-a-query-busy-hang,skip
++igt@kms_vblank@pipe-a-query-forked-busy,dmesg-warn
++igt@kms_vblank@pipe-a-query-forked-busy-hang,skip
++igt@kms_vblank@pipe-a-wait-idle,dmesg-warn
++igt@kms_vblank@pipe-a-wait-idle-hang,skip
++igt@kms_vblank@pipe-a-wait-forked,dmesg-warn
++igt@kms_vblank@pipe-a-wait-forked-hang,skip
++igt@kms_vblank@pipe-a-wait-busy,dmesg-warn
++igt@kms_vblank@pipe-a-wait-busy-hang,skip
++igt@kms_vblank@pipe-a-wait-forked-busy,dmesg-warn
++igt@kms_vblank@pipe-a-wait-forked-busy-hang,skip
++igt@kms_vblank@pipe-a-ts-continuation-idle,dmesg-warn
++igt@kms_vblank@pipe-a-ts-continuation-idle-hang,skip
++igt@kms_vblank@pipe-a-ts-continuation-dpms-rpm,skip
++igt@kms_vblank@pipe-a-ts-continuation-modeset,dmesg-warn
++igt@kms_vblank@pipe-a-ts-continuation-modeset-hang,skip
++igt@kms_vblank@pipe-a-ts-continuation-modeset-rpm,skip
++igt@kms_vblank@pipe-b-accuracy-idle,skip
++igt@kms_vblank@pipe-b-query-idle,skip
++igt@kms_vblank@pipe-b-query-idle-hang,skip
++igt@kms_vblank@pipe-b-query-forked,skip
++igt@kms_vblank@pipe-b-query-forked-hang,skip
++igt@kms_vblank@pipe-b-query-busy,skip
++igt@kms_vblank@pipe-b-query-busy-hang,skip
++igt@kms_vblank@pipe-b-query-forked-busy,skip
++igt@kms_vblank@pipe-b-query-forked-busy-hang,skip
++igt@kms_vblank@pipe-b-wait-idle,skip
++igt@kms_vblank@pipe-b-wait-idle-hang,skip
++igt@kms_vblank@pipe-b-wait-forked,skip
++igt@kms_vblank@pipe-b-wait-forked-hang,skip
++igt@kms_vblank@pipe-b-wait-busy,skip
++igt@kms_vblank@pipe-b-wait-busy-hang,skip
++igt@kms_vblank@pipe-b-wait-forked-busy,skip
++igt@kms_vblank@pipe-b-wait-forked-busy-hang,skip
++igt@kms_vblank@pipe-b-ts-continuation-idle,skip
++igt@kms_vblank@pipe-b-ts-continuation-idle-hang,skip
++igt@kms_vblank@pipe-b-ts-continuation-dpms-rpm,skip
++igt@kms_vblank@pipe-b-ts-continuation-modeset,skip
++igt@kms_vblank@pipe-b-ts-continuation-modeset-hang,skip
++igt@kms_vblank@pipe-b-ts-continuation-modeset-rpm,skip
++igt@kms_vblank@pipe-c-accuracy-idle,skip
++igt@kms_vblank@pipe-c-query-idle,skip
++igt@kms_vblank@pipe-c-query-idle-hang,skip
++igt@kms_vblank@pipe-c-query-forked,skip
++igt@kms_vblank@pipe-c-query-forked-hang,skip
++igt@kms_vblank@pipe-c-query-busy,skip
++igt@kms_vblank@pipe-c-query-busy-hang,skip
++igt@kms_vblank@pipe-c-query-forked-busy,skip
++igt@kms_vblank@pipe-c-query-forked-busy-hang,skip
++igt@kms_vblank@pipe-c-wait-idle,skip
++igt@kms_vblank@pipe-c-wait-idle-hang,skip
++igt@kms_vblank@pipe-c-wait-forked,skip
++igt@kms_vblank@pipe-c-wait-forked-hang,skip
++igt@kms_vblank@pipe-c-wait-busy,skip
++igt@kms_vblank@pipe-c-wait-busy-hang,skip
++igt@kms_vblank@pipe-c-wait-forked-busy,skip
++igt@kms_vblank@pipe-c-wait-forked-busy-hang,skip
++igt@kms_vblank@pipe-c-ts-continuation-idle,skip
++igt@kms_vblank@pipe-c-ts-continuation-idle-hang,skip
++igt@kms_vblank@pipe-c-ts-continuation-dpms-rpm,skip
++igt@kms_vblank@pipe-c-ts-continuation-modeset,skip
++igt@kms_vblank@pipe-c-ts-continuation-modeset-hang,skip
++igt@kms_vblank@pipe-c-ts-continuation-modeset-rpm,skip
++igt@kms_vblank@pipe-d-accuracy-idle,skip
++igt@kms_vblank@pipe-d-query-idle,skip
++igt@kms_vblank@pipe-d-query-idle-hang,skip
++igt@kms_vblank@pipe-d-query-forked,skip
++igt@kms_vblank@pipe-d-query-forked-hang,skip
++igt@kms_vblank@pipe-d-query-busy,skip
++igt@kms_vblank@pipe-d-query-busy-hang,skip
++igt@kms_vblank@pipe-d-query-forked-busy,skip
++igt@kms_vblank@pipe-d-query-forked-busy-hang,skip
++igt@kms_vblank@pipe-d-wait-idle,skip
++igt@kms_vblank@pipe-d-wait-idle-hang,skip
++igt@kms_vblank@pipe-d-wait-forked,skip
++igt@kms_vblank@pipe-d-wait-forked-hang,skip
++igt@kms_vblank@pipe-d-wait-busy,skip
++igt@kms_vblank@pipe-d-wait-busy-hang,skip
++igt@kms_vblank@pipe-d-wait-forked-busy,skip
++igt@kms_vblank@pipe-d-wait-forked-busy-hang,skip
++igt@kms_vblank@pipe-d-ts-continuation-idle,skip
++igt@kms_vblank@pipe-d-ts-continuation-idle-hang,skip
++igt@kms_vblank@pipe-d-ts-continuation-dpms-rpm,skip
++igt@kms_vblank@pipe-d-ts-continuation-modeset,skip
++igt@kms_vblank@pipe-d-ts-continuation-modeset-hang,skip
++igt@kms_vblank@pipe-d-ts-continuation-modeset-rpm,skip
++igt@kms_vblank@pipe-e-accuracy-idle,skip
++igt@kms_vblank@pipe-e-query-idle,skip
++igt@kms_vblank@pipe-e-query-idle-hang,skip
++igt@kms_vblank@pipe-e-query-forked,skip
++igt@kms_vblank@pipe-e-query-forked-hang,skip
++igt@kms_vblank@pipe-e-query-busy,skip
++igt@kms_vblank@pipe-e-query-busy-hang,skip
++igt@kms_vblank@pipe-e-query-forked-busy,skip
++igt@kms_vblank@pipe-e-query-forked-busy-hang,skip
++igt@kms_vblank@pipe-e-wait-idle,skip
++igt@kms_vblank@pipe-e-wait-idle-hang,skip
++igt@kms_vblank@pipe-e-wait-forked,skip
++igt@kms_vblank@pipe-e-wait-forked-hang,skip
++igt@kms_vblank@pipe-e-wait-busy,skip
++igt@kms_vblank@pipe-e-wait-busy-hang,skip
++igt@kms_vblank@pipe-e-wait-forked-busy,skip
++igt@kms_vblank@pipe-e-wait-forked-busy-hang,skip
++igt@kms_vblank@pipe-e-ts-continuation-idle,skip
++igt@kms_vblank@pipe-e-ts-continuation-idle-hang,skip
++igt@kms_vblank@pipe-e-ts-continuation-dpms-rpm,skip
++igt@kms_vblank@pipe-e-ts-continuation-modeset,skip
++igt@kms_vblank@pipe-e-ts-continuation-modeset-hang,skip
++igt@kms_vblank@pipe-e-ts-continuation-modeset-rpm,skip
++igt@kms_vblank@pipe-f-accuracy-idle,skip
++igt@kms_vblank@pipe-f-query-idle,skip
++igt@kms_vblank@pipe-f-query-idle-hang,skip
++igt@kms_vblank@pipe-f-query-forked,skip
++igt@kms_vblank@pipe-f-query-forked-hang,skip
++igt@kms_vblank@pipe-f-query-busy,skip
++igt@kms_vblank@pipe-f-query-busy-hang,skip
++igt@kms_vblank@pipe-f-query-forked-busy,skip
++igt@kms_vblank@pipe-f-query-forked-busy-hang,skip
++igt@kms_vblank@pipe-f-wait-idle,skip
++igt@kms_vblank@pipe-f-wait-idle-hang,skip
++igt@kms_vblank@pipe-f-wait-forked,skip
++igt@kms_vblank@pipe-f-wait-forked-hang,skip
++igt@kms_vblank@pipe-f-wait-busy,skip
++igt@kms_vblank@pipe-f-wait-busy-hang,skip
++igt@kms_vblank@pipe-f-wait-forked-busy,skip
++igt@kms_vblank@pipe-f-wait-forked-busy-hang,skip
++igt@kms_vblank@pipe-f-ts-continuation-idle,skip
++igt@kms_vblank@pipe-f-ts-continuation-idle-hang,skip
++igt@kms_vblank@pipe-f-ts-continuation-dpms-rpm,skip
++igt@kms_vblank@pipe-f-ts-continuation-modeset,skip
++igt@kms_vblank@pipe-f-ts-continuation-modeset-hang,skip
++igt@kms_vblank@pipe-f-ts-continuation-modeset-rpm,skip
++igt@kms_vrr@flip-basic,skip
++igt@kms_vrr@flip-dpms,skip
++igt@kms_vrr@flipline,skip
++igt@kms_async_flip@async-flip-with-page-flip-events,skip
++igt@kms_async_flip@alternate-sync-async-flip,skip
++igt@kms_async_flip@test-time-stamp,skip
++igt@kms_async_flip@test-cursor,skip
++igt@kms_async_flip@invalid-async-flip,skip
++igt@kms_async_flip@crc,skip
+-- 
+2.31.1
+
