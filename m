@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 449D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:30:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB97AC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:30:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344523AbiEJOef (ORCPT
+        id S1344536AbiEJOek (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:34:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49800 "EHLO
+        Tue, 10 May 2022 10:34:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344052AbiEJOH0 (ORCPT
+        with ESMTP id S245006AbiEJOIb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:07:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 445A31F1C8A;
-        Tue, 10 May 2022 06:41:39 -0700 (PDT)
+        Tue, 10 May 2022 10:08:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8503F2D6266;
+        Tue, 10 May 2022 06:42:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58AA2B81DC2;
-        Tue, 10 May 2022 13:41:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A5D7C385C2;
-        Tue, 10 May 2022 13:41:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 20F0061931;
+        Tue, 10 May 2022 13:42:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10BC3C385C2;
+        Tue, 10 May 2022 13:42:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652190097;
-        bh=r/8K17A9bo5xLDkhcmBpnwDZmETJy/nscPbz87smivQ=;
+        s=korg; t=1652190145;
+        bh=hm08sIwOY/G1ROwnn1eWcLiqw/jFA/1HPuVFMAhxPhI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b/Ss0e2ZQ4WkZDKQ3e1RCzIR71/Zc4JCTLjkfNXuDgxMXxE8K3WemIzG7NaXR2/OE
-         XpXklqvRnZBlIljlgMTZpjBkfIjYRroa2xP+mp8JLTa8MPreW8ArktJeb/bvDF5XtC
-         9RbAoxqwcQKvU9W56m7IhOgfrs66pIvQ76IgGrrQ=
+        b=l3patbvyv4vMR7I7fd6dibRjdnNzYWZEGnwDf1bTcmdK3Y/j9+rF4rqFSxDOok4sV
+         VuOs3mwNty2rj4h166QJte10eLaF7OFiKuh1pfyrndOxPeBF0U73ibNLkxMnJYHkCo
+         v83/RJRUq7ZbBqGJCUTBeMU8R1mJVK3FJ0NkyhlM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, pali@kernel.org,
         =?UTF-8?q?Marek=20Beh=FAn?= <kabel@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH 5.17 125/140] PCI: aardvark: Make MSI irq_chip structures static driver structures
-Date:   Tue, 10 May 2022 15:08:35 +0200
-Message-Id: <20220510130745.170952023@linuxfoundation.org>
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Marc Zyngier <maz@kernel.org>
+Subject: [PATCH 5.17 130/140] PCI: aardvark: Fix setting MSI address
+Date:   Tue, 10 May 2022 15:08:40 +0200
+Message-Id: <20220510130745.308136932@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -50,97 +51,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Marek Behún" <kabel@kernel.org>
+From: Pali Rohár <pali@kernel.org>
 
-commit c3cb8e51839adc0aaef478c47665443d02f5aa07 upstream.
+commit 46ad3dc4171b5ee1d12267d70112563d5760210a upstream.
 
-In [1] it was agreed that we should use struct irq_chip as a global
-static struct in the driver. Even though the structure currently
-contains a dynamic member (parent_device), In [2] the plans to kill it
-and make the structure completely static were set out.
+MSI address for receiving MSI interrupts needs to be correctly set before
+enabling processing of MSI interrupts.
 
-Convert Aardvark's priv->msi_bottom_irq_chip and priv->msi_irq_chip to
-static driver structure.
+Move code for setting PCIE_MSI_ADDR_LOW_REG and PCIE_MSI_ADDR_HIGH_REG
+from advk_pcie_init_msi_irq_domain() to advk_pcie_setup_hw(), before
+enabling PCIE_CORE_CTRL2_MSI_ENABLE.
 
-[1] https://lore.kernel.org/linux-pci/877dbcvngf.wl-maz@kernel.org/
-[2] https://lore.kernel.org/linux-pci/874k6gvkhz.wl-maz@kernel.org/
+After this we can remove the now unused member msi_msg, which was used
+only for MSI doorbell address. MSI address can be any address which cannot
+be used to DMA to. So change it to the address of the main struct advk_pcie.
 
-Link: https://lore.kernel.org/r/20220110015018.26359-7-kabel@kernel.org
+Link: https://lore.kernel.org/r/20220110015018.26359-12-kabel@kernel.org
+Fixes: 8c39d710363c ("PCI: aardvark: Add Aardvark PCI host controller driver")
+Signed-off-by: Pali Rohár <pali@kernel.org>
 Signed-off-by: Marek Behún <kabel@kernel.org>
 Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Acked-by: Marc Zyngier <maz@kernel.org>
+Cc: stable@vger.kernel.org # f21a8b1b6837 ("PCI: aardvark: Move to MSI handling using generic MSI support")
 Signed-off-by: Marek Behún <kabel@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/pci-aardvark.c |   26 ++++++++++++--------------
- 1 file changed, 12 insertions(+), 14 deletions(-)
+ drivers/pci/controller/pci-aardvark.c |   21 +++++++++------------
+ 1 file changed, 9 insertions(+), 12 deletions(-)
 
 --- a/drivers/pci/controller/pci-aardvark.c
 +++ b/drivers/pci/controller/pci-aardvark.c
-@@ -274,8 +274,6 @@ struct advk_pcie {
- 	raw_spinlock_t irq_lock;
- 	struct irq_domain *msi_domain;
- 	struct irq_domain *msi_inner_domain;
--	struct irq_chip msi_bottom_irq_chip;
--	struct irq_chip msi_irq_chip;
- 	struct msi_domain_info msi_domain_info;
+@@ -277,7 +277,6 @@ struct advk_pcie {
+ 	raw_spinlock_t msi_irq_lock;
  	DECLARE_BITMAP(msi_used, MSI_IRQ_NUM);
  	struct mutex msi_used_lock;
-@@ -1192,6 +1190,12 @@ static int advk_msi_set_affinity(struct
- 	return -EINVAL;
+-	u16 msi_msg;
+ 	int link_gen;
+ 	struct pci_bridge_emul bridge;
+ 	struct gpio_desc *reset_gpio;
+@@ -472,6 +471,7 @@ static void advk_pcie_disable_ob_win(str
+ 
+ static void advk_pcie_setup_hw(struct advk_pcie *pcie)
+ {
++	phys_addr_t msi_addr;
+ 	u32 reg;
+ 	int i;
+ 
+@@ -560,6 +560,11 @@ static void advk_pcie_setup_hw(struct ad
+ 	reg |= LANE_COUNT_1;
+ 	advk_writel(pcie, reg, PCIE_CORE_CTRL0_REG);
+ 
++	/* Set MSI address */
++	msi_addr = virt_to_phys(pcie);
++	advk_writel(pcie, lower_32_bits(msi_addr), PCIE_MSI_ADDR_LOW_REG);
++	advk_writel(pcie, upper_32_bits(msi_addr), PCIE_MSI_ADDR_HIGH_REG);
++
+ 	/* Enable MSI */
+ 	reg = advk_readl(pcie, PCIE_CORE_CTRL2_REG);
+ 	reg |= PCIE_CORE_CTRL2_MSI_ENABLE;
+@@ -1177,10 +1182,10 @@ static void advk_msi_irq_compose_msi_msg
+ 					 struct msi_msg *msg)
+ {
+ 	struct advk_pcie *pcie = irq_data_get_irq_chip_data(data);
+-	phys_addr_t msi_msg = virt_to_phys(&pcie->msi_msg);
++	phys_addr_t msi_addr = virt_to_phys(pcie);
+ 
+-	msg->address_lo = lower_32_bits(msi_msg);
+-	msg->address_hi = upper_32_bits(msi_msg);
++	msg->address_lo = lower_32_bits(msi_addr);
++	msg->address_hi = upper_32_bits(msi_addr);
+ 	msg->data = data->hwirq;
  }
  
-+static struct irq_chip advk_msi_bottom_irq_chip = {
-+	.name			= "MSI",
-+	.irq_compose_msi_msg	= advk_msi_irq_compose_msi_msg,
-+	.irq_set_affinity	= advk_msi_set_affinity,
-+};
-+
- static int advk_msi_irq_domain_alloc(struct irq_domain *domain,
- 				     unsigned int virq,
- 				     unsigned int nr_irqs, void *args)
-@@ -1208,7 +1212,7 @@ static int advk_msi_irq_domain_alloc(str
- 
- 	for (i = 0; i < nr_irqs; i++)
- 		irq_domain_set_info(domain, virq + i, hwirq + i,
--				    &pcie->msi_bottom_irq_chip,
-+				    &advk_msi_bottom_irq_chip,
- 				    domain->host_data, handle_simple_irq,
- 				    NULL, NULL);
- 
-@@ -1278,29 +1282,23 @@ static const struct irq_domain_ops advk_
- 	.xlate = irq_domain_xlate_onecell,
- };
- 
-+static struct irq_chip advk_msi_irq_chip = {
-+	.name = "advk-MSI",
-+};
-+
+@@ -1339,18 +1344,10 @@ static struct msi_domain_info advk_msi_d
  static int advk_pcie_init_msi_irq_domain(struct advk_pcie *pcie)
  {
  	struct device *dev = &pcie->pdev->dev;
- 	struct device_node *node = dev->of_node;
--	struct irq_chip *bottom_ic, *msi_ic;
- 	struct msi_domain_info *msi_di;
- 	phys_addr_t msi_msg_phys;
+-	phys_addr_t msi_msg_phys;
  
+ 	raw_spin_lock_init(&pcie->msi_irq_lock);
  	mutex_init(&pcie->msi_used_lock);
  
--	bottom_ic = &pcie->msi_bottom_irq_chip;
+-	msi_msg_phys = virt_to_phys(&pcie->msi_msg);
 -
--	bottom_ic->name = "MSI";
--	bottom_ic->irq_compose_msi_msg = advk_msi_irq_compose_msi_msg;
--	bottom_ic->irq_set_affinity = advk_msi_set_affinity;
+-	advk_writel(pcie, lower_32_bits(msi_msg_phys),
+-		    PCIE_MSI_ADDR_LOW_REG);
+-	advk_writel(pcie, upper_32_bits(msi_msg_phys),
+-		    PCIE_MSI_ADDR_HIGH_REG);
 -
--	msi_ic = &pcie->msi_irq_chip;
--	msi_ic->name = "advk-MSI";
--
- 	msi_di = &pcie->msi_domain_info;
- 	msi_di->flags = MSI_FLAG_USE_DEF_DOM_OPS | MSI_FLAG_USE_DEF_CHIP_OPS |
- 		MSI_FLAG_MULTI_PCI_MSI;
--	msi_di->chip = msi_ic;
-+	msi_di->chip = &advk_msi_irq_chip;
- 
- 	msi_msg_phys = virt_to_phys(&pcie->msi_msg);
- 
+ 	pcie->msi_inner_domain =
+ 		irq_domain_add_linear(NULL, MSI_IRQ_NUM,
+ 				      &advk_msi_domain_ops, pcie);
 
 
