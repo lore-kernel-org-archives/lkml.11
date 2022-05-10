@@ -2,77 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6D4DC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14BD5C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244686AbiEJN4Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:56:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54838 "EHLO
+        id S244829AbiEJN4b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:56:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244967AbiEJNiS (ORCPT
+        with ESMTP id S244994AbiEJNiU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:38:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0965F7890D;
-        Tue, 10 May 2022 06:26:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BF2E6B81DA0;
-        Tue, 10 May 2022 13:26:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D598C385A6;
-        Tue, 10 May 2022 13:26:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189202;
-        bh=P3SVQNOO3B7N/QZLCcWPzgOahP2/LyoDyJ/f3OPaNKs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sa5V4oN6bXEMzn+MX1/7DxbY+Ssj85yLVDeozjtehHvq9LeVipm1IPKZ3a4uBJE1j
-         rymVLY5ycOji505yYlJ22uQloEoHfDvJ0w37wVpUK3E9EU7iWFsnbbVMcGgZYl4TYG
-         0ltB4CxBdXXLHy9FXh38ThtmI6wRTahhgueFxGk8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 45/70] net: ethernet: mediatek: add missing of_node_put() in mtk_sgmii_init()
-Date:   Tue, 10 May 2022 15:08:04 +0200
-Message-Id: <20220510130734.180217074@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
-References: <20220510130732.861729621@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 10 May 2022 09:38:20 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4AF978FD4;
+        Tue, 10 May 2022 06:26:46 -0700 (PDT)
+X-UUID: 1c74c865f4274979a191b4a5e158c64e-20220510
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:5085cbc3-0c16-49d5-87d2-0290c09d47af,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:faefae9,CLOUDID:45164ab3-56b5-4c9e-8d83-0070b288eb6a,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: 1c74c865f4274979a191b4a5e158c64e-20220510
+Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw01.mediatek.com
+        (envelope-from <allen-kh.cheng@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 117476740; Tue, 10 May 2022 21:26:42 +0800
+Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Tue, 10 May 2022 21:26:41 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 10 May 2022 21:26:40 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Tue, 10 May 2022 21:26:40 +0800
+From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski@canonical.com>
+CC:     Lala Lin <lala.lin@mediatek.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        "Chen-Yu Tsai" <wenst@chromium.org>,
+        Allen-kh Cheng <allen-kh.cheng@mediatek.corp-partner.google.com>,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Subject: [PATCH v4 2/3] dt-bindings: nvmem: mediatek: document deprecated efuse property
+Date:   Tue, 10 May 2022 21:26:36 +0800
+Message-ID: <20220510132637.5864-3-allen-kh.cheng@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220510132637.5864-1-allen-kh.cheng@mediatek.com>
+References: <20220510132637.5864-1-allen-kh.cheng@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Allen-kh Cheng <allen-kh.cheng@mediatek.corp-partner.google.com>
 
-commit ff5265d45345d01fefc98fcb9ae891b59633c919 upstream.
+We mark mediatek,mt8173-efuse and mediatek,efuse as deprecated to
+prevent them from being the single compatible in the future.
 
-The node pointer returned by of_parse_phandle() with refcount incremented,
-so add of_node_put() after using it in mtk_sgmii_init().
+The mediatek,efuse compatible should be used as generic fallback for
+all MediaTek chipsets.
 
-Fixes: 9ffee4a8276c ("net: ethernet: mediatek: Extend SGMII related functions")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220428062543.64883-1-yangyingliang@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
 ---
- drivers/net/ethernet/mediatek/mtk_sgmii.c |    1 +
- 1 file changed, 1 insertion(+)
+ .../devicetree/bindings/nvmem/mediatek,efuse.yaml | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
---- a/drivers/net/ethernet/mediatek/mtk_sgmii.c
-+++ b/drivers/net/ethernet/mediatek/mtk_sgmii.c
-@@ -26,6 +26,7 @@ int mtk_sgmii_init(struct mtk_sgmii *ss,
- 			break;
- 
- 		ss->regmap[i] = syscon_node_to_regmap(np);
-+		of_node_put(np);
- 		if (IS_ERR(ss->regmap[i]))
- 			return PTR_ERR(ss->regmap[i]);
- 	}
-
+diff --git a/Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml b/Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml
+index 529f5888d93f..04ecf5980b2e 100644
+--- a/Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml
++++ b/Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml
+@@ -16,16 +16,18 @@ allOf:
+ properties:
+   compatible:
+     oneOf:
+-      - enum:
+-          - mediatek,mt8173-efuse
+-          - mediatek,efuse
++      - const: mediatek,mt8173-efuse # Don't use this in new dts files
++        deprecated: true
++      - const: mediatek,efuse
++        deprecated: true
+         description:
+-          Only mt8173 SoC-specific compatible with generic fallback should be
+-          used
++          Please use mediatek,efuse as generic fallback to enable the MediaTek
++          eFuse support.
+       - items:
+           - enum:
+               - mediatek,mt7622-efuse
+               - mediatek,mt7623-efuse
++              - mediatek,mt8173-efuse
+               - mediatek,mt8183-efuse
+               - mediatek,mt8192-efuse
+               - mediatek,mt8195-efuse
+@@ -44,7 +46,8 @@ unevaluatedProperties: false
+ examples:
+   - |
+     efuse: efuse@10206000 {
+-            compatible = "mediatek,mt8173-efuse";
++            compatible = "mediatek,mt8173-efuse",
++                         "mediatek,efuse";
+             reg = <0x10206000 0x1000>;
+             #address-cells = <1>;
+             #size-cells = <1>;
+-- 
+2.18.0
 
