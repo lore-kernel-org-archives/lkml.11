@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7375C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:01:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A73CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:03:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242915AbiEJOFu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:05:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47278 "EHLO
+        id S245000AbiEJOF4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:05:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244810AbiEJNmJ (ORCPT
+        with ESMTP id S244876AbiEJNmN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:42:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AB4A81991;
-        Tue, 10 May 2022 06:30:35 -0700 (PDT)
+        Tue, 10 May 2022 09:42:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78CB4E31;
+        Tue, 10 May 2022 06:30:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B3BB461763;
-        Tue, 10 May 2022 13:30:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A94B8C385C2;
-        Tue, 10 May 2022 13:30:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C5D58B81DA8;
+        Tue, 10 May 2022 13:30:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29BFEC385C2;
+        Tue, 10 May 2022 13:30:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189433;
-        bh=bZpbnHDawu3VCWMLYiGy43zxTarsma7M7G7naDOwl/8=;
+        s=korg; t=1652189439;
+        bh=jVFazhQi8/W8+rEyYNcN7Ki5gek2t4YTsrbnXKN4TvE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SHHDj38GX4WBsxMtFT119xfrPyB2F5UwLG5fd+k+R+x/ZTrUIWNz48NPb2c84GnQr
-         3ONmIYq/UZzAWFbIJRVe73GG4jO8R/rTsARW7jsQdaJV6wfhQn4qkjq/+NF47Ik+D7
-         KsECsk1SIoypHZbRR7hCODnxBEE0iZMXH9++m1rw=
+        b=MJ+7BSKt6uG1SuWORXOhhPWmt43SjOH/EHPCzjvUmzb1wJc9wZqzO/VNAceI9GyRE
+         pB9DZTpHlYEOswby/agGQITv5gajXCaa7/pWeAxhWZOQpeZxat3/5fbJXVUztDnlXp
+         IDPMfNni5PQtuOtU8x7oNI0FoAtr6DgG16ymWFd8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oz Shlomo <ozsh@nvidia.com>,
-        Paul Blakey <paulb@nvidia.com>,
+        stable@vger.kernel.org, Moshe Shemesh <moshe@nvidia.com>,
+        Maher Sanalla <msanalla@nvidia.com>,
+        Shay Drory <shayd@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.15 050/135] net/mlx5e: CT: Fix queued up restore put() executing after relevant ft release
-Date:   Tue, 10 May 2022 15:07:12 +0200
-Message-Id: <20220510130741.835869717@linuxfoundation.org>
+Subject: [PATCH 5.15 052/135] net/mlx5: Avoid double clear or set of sync reset requested
+Date:   Tue, 10 May 2022 15:07:14 +0200
+Message-Id: <20220510130741.892975198@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -49,44 +50,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Blakey <paulb@nvidia.com>
+From: Moshe Shemesh <moshe@nvidia.com>
 
-commit b069e14fff46c8da9fcc79957f8acaa3e2dfdb6b upstream.
+commit fc3d3db07b35885f238e1fa06b9f04a8fa7a62d0 upstream.
 
-__mlx5_tc_ct_entry_put() queues release of tuple related to some ct FT,
-if that is the last reference to that tuple, the actual deletion of
-the tuple can happen after the FT is already destroyed and freed.
+Double clear of reset requested state can lead to NULL pointer as it
+will try to delete the timer twice. This can happen for example on a
+race between abort from FW and pci error or reset. Avoid such case using
+test_and_clear_bit() to verify only one time reset requested state clear
+flow. Similarly use test_and_set_bit() to verify only one time reset
+requested state set flow.
 
-Flush the used workqueue before destroying the ct FT.
-
-Fixes: a2173131526d ("net/mlx5e: CT: manage the lifetime of the ct entry object")
-Reviewed-by: Oz Shlomo <ozsh@nvidia.com>
-Signed-off-by: Paul Blakey <paulb@nvidia.com>
+Fixes: 7dd6df329d4c ("net/mlx5: Handle sync reset abort event")
+Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
+Reviewed-by: Maher Sanalla <msanalla@nvidia.com>
+Reviewed-by: Shay Drory <shayd@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c |   28 ++++++++++++++-------
+ 1 file changed, 19 insertions(+), 9 deletions(-)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-@@ -1699,6 +1699,8 @@ mlx5_tc_ct_flush_ft_entry(void *ptr, voi
- static void
- mlx5_tc_ct_del_ft_cb(struct mlx5_tc_ct_priv *ct_priv, struct mlx5_ct_ft *ft)
- {
-+	struct mlx5e_priv *priv;
-+
- 	if (!refcount_dec_and_test(&ft->refcount))
- 		return;
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+@@ -134,14 +134,19 @@ static void mlx5_stop_sync_reset_poll(st
+ 	del_timer_sync(&fw_reset->timer);
+ }
  
-@@ -1708,6 +1710,8 @@ mlx5_tc_ct_del_ft_cb(struct mlx5_tc_ct_p
- 	rhashtable_free_and_destroy(&ft->ct_entries_ht,
- 				    mlx5_tc_ct_flush_ft_entry,
- 				    ct_priv);
-+	priv = netdev_priv(ct_priv->netdev);
-+	flush_workqueue(priv->wq);
- 	mlx5_tc_ct_free_pre_ct_tables(ft);
- 	mapping_remove(ct_priv->zone_mapping, ft->zone_restore_id);
- 	kfree(ft);
+-static void mlx5_sync_reset_clear_reset_requested(struct mlx5_core_dev *dev, bool poll_health)
++static int mlx5_sync_reset_clear_reset_requested(struct mlx5_core_dev *dev, bool poll_health)
+ {
+ 	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
+ 
++	if (!test_and_clear_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags)) {
++		mlx5_core_warn(dev, "Reset request was already cleared\n");
++		return -EALREADY;
++	}
++
+ 	mlx5_stop_sync_reset_poll(dev);
+-	clear_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags);
+ 	if (poll_health)
+ 		mlx5_start_health_poll(dev);
++	return 0;
+ }
+ 
+ #define MLX5_RESET_POLL_INTERVAL	(HZ / 10)
+@@ -185,13 +190,17 @@ static int mlx5_fw_reset_set_reset_sync_
+ 	return mlx5_reg_mfrl_set(dev, MLX5_MFRL_REG_RESET_LEVEL3, 0, 2, false);
+ }
+ 
+-static void mlx5_sync_reset_set_reset_requested(struct mlx5_core_dev *dev)
++static int mlx5_sync_reset_set_reset_requested(struct mlx5_core_dev *dev)
+ {
+ 	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
+ 
++	if (test_and_set_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags)) {
++		mlx5_core_warn(dev, "Reset request was already set\n");
++		return -EALREADY;
++	}
+ 	mlx5_stop_health_poll(dev, true);
+-	set_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags);
+ 	mlx5_start_sync_reset_poll(dev);
++	return 0;
+ }
+ 
+ static void mlx5_fw_live_patch_event(struct work_struct *work)
+@@ -220,7 +229,9 @@ static void mlx5_sync_reset_request_even
+ 			       err ? "Failed" : "Sent");
+ 		return;
+ 	}
+-	mlx5_sync_reset_set_reset_requested(dev);
++	if (mlx5_sync_reset_set_reset_requested(dev))
++		return;
++
+ 	err = mlx5_fw_reset_set_reset_sync_ack(dev);
+ 	if (err)
+ 		mlx5_core_warn(dev, "PCI Sync FW Update Reset Ack Failed. Error code: %d\n", err);
+@@ -320,7 +331,8 @@ static void mlx5_sync_reset_now_event(st
+ 	struct mlx5_core_dev *dev = fw_reset->dev;
+ 	int err;
+ 
+-	mlx5_sync_reset_clear_reset_requested(dev, false);
++	if (mlx5_sync_reset_clear_reset_requested(dev, false))
++		return;
+ 
+ 	mlx5_core_warn(dev, "Sync Reset now. Device is going to reset.\n");
+ 
+@@ -349,10 +361,8 @@ static void mlx5_sync_reset_abort_event(
+ 						      reset_abort_work);
+ 	struct mlx5_core_dev *dev = fw_reset->dev;
+ 
+-	if (!test_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags))
++	if (mlx5_sync_reset_clear_reset_requested(dev, true))
+ 		return;
+-
+-	mlx5_sync_reset_clear_reset_requested(dev, true);
+ 	mlx5_core_warn(dev, "PCI Sync FW Update Reset Aborted.\n");
+ }
+ 
 
 
