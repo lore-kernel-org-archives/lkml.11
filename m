@@ -2,151 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3212C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 09:38:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3D47C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 09:39:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239080AbiEJJmc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 05:42:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35636 "EHLO
+        id S239057AbiEJJnt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 05:43:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239021AbiEJJmS (ORCPT
+        with ESMTP id S238219AbiEJJnm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 05:42:18 -0400
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2057.outbound.protection.outlook.com [40.107.20.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EDEC366B1;
-        Tue, 10 May 2022 02:38:22 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=L+2hd07rwXkk8c/ccYwuIlXYKW2geahyNkWb9WaMDYaQgcMACitCNWW/X2VPmwOHNEmwVjBWCm39WWDtmW5PCn9Z6mlcsa71rkf4BhRJVRfec7f82zvo8nCn+x7RoerCZEpE7k4KUpfB9pwnrivXDfUFTrmj6jWa0guibbTxty4ujDAMGGPpwnURCrEc5iDrAguyZZ1zw1QQ4dF1AnA8hW4YX6bOTijT/Acu3nG51ty4w5IPxAEG4zkadGkb174+VCW1oTGZ+V/ValjGC5hlWFQk4PnMfuj6RWN7ro3YkKhnGHUs+J+jHyonxtf23Km52K4aLShUfgedrNwUPtwr6w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=oeZHd6gAGQXBin3WoV3PxnViKEVNdTe2/MpTBxxr77w=;
- b=i9B+7Ul8KGFwQcs4eVj1NsDG10mtUYvcwgWH53vZQoS4E4DG7S/1SgzfjXHOxnFdu/8tAgFNRYtMgz4rt/b0A17nYo1oTujesiLlt8bVUGk8uNPMzvGJ0Cx4X8anbEd5ELDyEVYTs9n6bK1M449ItAK5rjSwX1SdNHCWtifF8bWfI2jKqmf0A3DDMUHiimV0aEK5CG+ElBQNhZqam1DV8OBn5AHfXoGJ0+OPmk2IhNqcUFthH5RZLcn+w6tTXsbRUlyisCu3xWz3VDpIz5P/t7cT19Zetz+r6klloOS6VDbF/r7PteawNveKZWgB1zcQEHEAZGV/ZJ/SsjVIAmSbdw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oeZHd6gAGQXBin3WoV3PxnViKEVNdTe2/MpTBxxr77w=;
- b=Chxx2DaaoJpbN67moAe7GQWOsrZ80mIQyoaf6E4Ed7sI7IOttx/aWJZb4sZ52qbpTbqQZiynKbYpqbHbf9lyfuEKR3QtdyAFN4rG69VwQpWwjhEfZrvmk1R9QOE3KlJsw9Mp+Bnm3Za7aGAHJDq2lcB9NeEjmD3tnZOWaGqUdEc=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
- by AM0PR04MB6980.eurprd04.prod.outlook.com (2603:10a6:208:17e::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23; Tue, 10 May
- 2022 09:38:19 +0000
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::fc66:662f:2a82:1420]) by DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::fc66:662f:2a82:1420%6]) with mapi id 15.20.5227.023; Tue, 10 May 2022
- 09:38:19 +0000
-From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de
-Cc:     kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, Peng Fan <peng.fan@nxp.com>,
-        Dong Aisheng <aisheng.dong@nxp.com>
-Subject: [PATCH V5 4/4] arm64: defconfig: enable i.MX93 clk & pinctrl
-Date:   Tue, 10 May 2022 17:39:46 +0800
-Message-Id: <20220510093946.335036-5-peng.fan@oss.nxp.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220510093946.335036-1-peng.fan@oss.nxp.com>
-References: <20220510093946.335036-1-peng.fan@oss.nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SI2PR02CA0017.apcprd02.prod.outlook.com
- (2603:1096:4:194::17) To DU0PR04MB9417.eurprd04.prod.outlook.com
- (2603:10a6:10:358::11)
+        Tue, 10 May 2022 05:43:42 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC4C36E3D;
+        Tue, 10 May 2022 02:39:39 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 735B91F45F;
+        Tue, 10 May 2022 09:39:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1652175578; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=OteHJkuIhNqIOiapSJLhMk6mw7w8TgJo/S2yjbeQnOw=;
+        b=eoZLLoSS+49GGuKDz9vaDTRzNArtoNN5yFNEsj5o1PwMEcfKJQeYA3OPJtNxjl3zSjG0Lv
+        dTcysndLw6oHjvJhlFn639xETOO54QloiFeQw9KJtLBHnTa74dKUUFShxXjFTAvAOcMvD/
+        AbTEELQqGXfe6Fm/RBYeQFM4qhPnJcE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1652175578;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=OteHJkuIhNqIOiapSJLhMk6mw7w8TgJo/S2yjbeQnOw=;
+        b=nFVRv94eH8ILY7iQiISXz3IxUobatGLQvimDnsd7gZg27xtBtaRRAehysKZdhryvJj5uA8
+        lvoW6Q5q8ExbazDQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4984213AA5;
+        Tue, 10 May 2022 09:39:38 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id hfHVENoyemK8NgAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Tue, 10 May 2022 09:39:38 +0000
+Message-ID: <23ae6eaa-c281-9fc1-2c64-dd953ad2f5f1@suse.de>
+Date:   Tue, 10 May 2022 11:39:37 +0200
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 51d869d8-11ed-4eb2-aef3-08da3268d0dd
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6980:EE_
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-Microsoft-Antispam-PRVS: <AM0PR04MB6980FE6E6B5A840DED35C207C9C99@AM0PR04MB6980.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: i1RPW41ADFk4oF5pnDXWxZ3ddJxb1eTMhQK3k9XkSPZOcf06/ZJhZiuM/0dR+cnBirqUAvHUYYMtsL8uMsZ3eLfg2sWuyj6lGZXlrDama0Piujl1yR5ryLQXtNbq6Ia0PwdNWCLBmEWR5t7QbUBJ6HugzGqEeo2sf7d1PHRTDDLETgi3gZTb+ZckCGdeUU98LhAPKaTMSMdHBaPkPlqP+kop6IMchswBqQTbuewdl13dWAgYtcae7j1e05Suj1bcDhfq129/wfxdKi//Qew5dueSqAM+ex+sHgN9lghLFBg+bIfQu18b0vxwZR9t6W0kpr7aSGZ21gn52h9wkFmu93l32cJDZsvnSfnR0c/UKT+awh2KjDuKPSZQoHQwEOPggmMtOZZFalrxpIqLKK0NKjl3/SstM1Ujmg0ToIJF8niFoVU4nHZskEtH+vXks+PIB6RDKezxUmLOibrKKWdGxNkRdGyw81yEGQIhvjmSDHONp2J1F9FK8z0NztmqWrYvtPsLHyJg1xwHuhvTj4rij8WLa/Bu0ldCefRLvZKXnkgFyzgTSoxWDp91d+UnsZoOiVYTBIC6S07YcnN9JKu7ezz//+pbaJozaWDAgH3dlQ2l6PPUr8UZ1ECZv6uXfDqqAHePV7z1FAva5ZDFGNXqs33ELsH0+INjpaU7tPqIDqvRJGTNNyl7UIWte3NQnI+8UGrfSv+HCR8oBEPFtl8KHQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(52116002)(6506007)(6666004)(38350700002)(38100700002)(508600001)(6486002)(2906002)(26005)(54906003)(8936002)(66946007)(1076003)(5660300002)(186003)(4744005)(8676002)(66476007)(4326008)(66556008)(86362001)(6512007)(316002)(2616005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SaDdRl3YNbjH56CW0+v7Nc0Xwb/QtIGqeHcJBtdztLgmFnEs5VNTyKhoejyN?=
- =?us-ascii?Q?OjzhNMhNW477g779FkLCx6jIpIOJ8Bqg6DHjX9vxkBPLCbXkR+qHQWTxkpLQ?=
- =?us-ascii?Q?xsfJSdbH1pwsivZPz786d9OTvUHRrPCq0uWF+an8Ho0b7rj/EZmFu1Fz85XF?=
- =?us-ascii?Q?SbTzSkpHeLEeaC3WsOjrivrdSuSjcb787IMEZk5Wf8qpPcstU4hkexaxPqxt?=
- =?us-ascii?Q?sVkLDzoZDO9WLOyb1rDkQShQu5RKfm6dBJV8Q3JNZxbZ/BdJh+OS7mcmHld4?=
- =?us-ascii?Q?lQ94Txag8CMxpPHYkH4jJqFMDa3TDfc0RvuCxgwUrh9Ji3oqkbw63b0j/u5p?=
- =?us-ascii?Q?WdRScxcjJJUFakYn9sVJ4yIU9ZD813EppnVMvAebise+kI9NciMbYnlA4lik?=
- =?us-ascii?Q?jJRLUxD5muc0OIvJWBRHjdPyNRx4eezYMLnzovOcg7YOJ0BUksYk8U/1zZih?=
- =?us-ascii?Q?uclzZEsZNDTGZmanyhW2s6TWbO+ss9X3v4ar+85QDiiG9R3VVYm4jj7Z33Pm?=
- =?us-ascii?Q?yWwizhFq0rPv+xGwm/25MdZOxiaiazaqixI+chLSOf2hU5x5bBWtvkq0Devc?=
- =?us-ascii?Q?nKFMnjTNpF0yT3b5zdAXduzE9KVOTauVvF7PKETkqbp2W+yXRid039Blu/al?=
- =?us-ascii?Q?X82ClhpvTxKU+cjkV5afjEPFK6tHVHz9XTEE/TmjCinWZQD4vGU0s/dpeyUb?=
- =?us-ascii?Q?VAYCIQ/hNn0CDzJH4LUYj4KZ8XUkUc7XuAtiavDxiUvU8M5jVAVA0xWcU2vY?=
- =?us-ascii?Q?HR5C7+xaN4nvE3k6455apYUvo58SeTTW9i47/XAC8OKnJtBsgwAylBwITF/K?=
- =?us-ascii?Q?HOX4c8OqVTJ4+3sB0XXr9+sDELm5RX9WsNy1bcqZJlmsk1H7pr6Rj+A+p9Zi?=
- =?us-ascii?Q?k3UG4QubYH5HHkx2d05EqENq+rstdfVUMU+jINhkSZVmNau7G8b1odrXOu6P?=
- =?us-ascii?Q?EYdSVWrfmdtPqErmJSarRT88EYiO8L+Weg2YRxaKVwgTb2LM37NCvNERbHxT?=
- =?us-ascii?Q?VoR7Ky5/U2WduZkveyqCt60r5NpMUwj0WGvvB7thpYbPIyHHn7oQ/QF27E6j?=
- =?us-ascii?Q?BMPFFKmdwAugz8PQ28EB3sQjfydDwXe2MJHt2kLWBqo35Fgk4w3CV7mAb90t?=
- =?us-ascii?Q?rwrRZt2Z0Jwt1SmEM0loXHULPezXCzACIfyXaz6RTFj7ufZ3ceIamYBo2CBX?=
- =?us-ascii?Q?oz/WPswqGwAVBd93VwxGCEM/aDVMXzgo995jf94hysqGOEFEPu+yYjlMk24/?=
- =?us-ascii?Q?H8Je2XcHAd14DHO3BhKfUCr6zdE//aP2JacQlThiH62aLxUBml7XMvRXWdP4?=
- =?us-ascii?Q?pR7kp86k2O80MDEKWmH1DHq0amB9MabJ3RpWGM01vjVDN7IbamKte+mi55JE?=
- =?us-ascii?Q?jXsblWf0NeDWapBomMB6SfPaMCVyo+lnL3MQyPXyj0UZT9WOB8cwBKBQBroI?=
- =?us-ascii?Q?tSMbQm5e92eOPsr0iS5/lTmWBS4AVV+6chkkgYD2F8N2CaTkNabKrxBRWUfr?=
- =?us-ascii?Q?V/GuDcXtZdPQVGVGKMnMtkgs0kSsI2nFWUKUiGgjNgKCjS20zKuNQUfuMUHu?=
- =?us-ascii?Q?WzDA7S/z3kIGxC7NH+q628c3KvTs3OojF24whqL5tiy03P/TD0MKLBVXP+Q2?=
- =?us-ascii?Q?eyWirWphqPuOgarcR6tRx36mnXzD7M5+DE9LFEkaS9q1y4ZdL1RB3zn7ByUl?=
- =?us-ascii?Q?eIV4z/lOb8Esa9fs4B0JxS06B6uXcfTURcMFACMSSDsgFmENDTVgar82kEgh?=
- =?us-ascii?Q?n8IKl2yGOA=3D=3D?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 51d869d8-11ed-4eb2-aef3-08da3268d0dd
-X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 09:38:19.2116
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 516AL06KyeOufx2BfHyWFxr6WIUacicO7dKHiimGz3/pgnBgFtMx3K1hsEgw/h/RIlYY1/x5jRs5mNky5ewIuA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6980
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v3 1/4] fbdev: Prevent possible use-after-free in
+ fb_release()
+Content-Language: en-US
+To:     Javier Martinez Canillas <javierm@redhat.com>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        linux-fbdev@vger.kernel.org, Helge Deller <deller@gmx.de>,
+        dri-devel@lists.freedesktop.org,
+        Daniel Vetter <daniel.vetter@intel.com>
+References: <20220505215947.364694-1-javierm@redhat.com>
+ <20220505220413.365977-1-javierm@redhat.com>
+ <753d0350-42dc-389b-b10b-4533ddcf32ac@intel.com>
+ <1f788b8f-0bea-1818-349e-b1bc907bf251@redhat.com>
+ <a339df59-9e00-c7cb-e33d-2ac626443639@intel.com>
+ <3b7fe4fe-fdec-cef2-4e0e-309d9dc4a8af@redhat.com>
+ <b5ab1c49-04e7-36c3-677d-2989b79e50ca@suse.de>
+ <2bf27b09-0896-1849-254f-d5b19abdc892@redhat.com>
+ <fc3e8a40-664f-07ae-7474-c0412a1ab1b5@intel.com>
+ <1c36d431-d5c0-7278-c9e0-61867e9dc174@redhat.com>
+ <79aaea41-5dab-f896-ab3d-d6bc9a5de615@suse.de>
+ <2d8d8583-3a39-b826-dd83-ba5bc4c5b082@redhat.com>
+ <7ffd92d7-9c07-fa9c-dc95-9e82719fd237@suse.de>
+ <71ebd5f7-64d0-510a-6f1b-29921fca19fa@suse.de>
+ <35ffd96d-3cbe-12dd-c1ea-878299ec173c@redhat.com>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <35ffd96d-3cbe-12dd-c1ea-878299ec173c@redhat.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------Pr0hBfL67iKQw76eSiX70wuZ"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Fan <peng.fan@nxp.com>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------Pr0hBfL67iKQw76eSiX70wuZ
+Content-Type: multipart/mixed; boundary="------------RMriG2XPeJByxqDDiiYDx0DK";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: Javier Martinez Canillas <javierm@redhat.com>,
+ Andrzej Hajda <andrzej.hajda@intel.com>, linux-kernel@vger.kernel.org
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>, linux-fbdev@vger.kernel.org,
+ Helge Deller <deller@gmx.de>, dri-devel@lists.freedesktop.org,
+ Daniel Vetter <daniel.vetter@intel.com>
+Message-ID: <23ae6eaa-c281-9fc1-2c64-dd953ad2f5f1@suse.de>
+Subject: Re: [PATCH v3 1/4] fbdev: Prevent possible use-after-free in
+ fb_release()
+References: <20220505215947.364694-1-javierm@redhat.com>
+ <20220505220413.365977-1-javierm@redhat.com>
+ <753d0350-42dc-389b-b10b-4533ddcf32ac@intel.com>
+ <1f788b8f-0bea-1818-349e-b1bc907bf251@redhat.com>
+ <a339df59-9e00-c7cb-e33d-2ac626443639@intel.com>
+ <3b7fe4fe-fdec-cef2-4e0e-309d9dc4a8af@redhat.com>
+ <b5ab1c49-04e7-36c3-677d-2989b79e50ca@suse.de>
+ <2bf27b09-0896-1849-254f-d5b19abdc892@redhat.com>
+ <fc3e8a40-664f-07ae-7474-c0412a1ab1b5@intel.com>
+ <1c36d431-d5c0-7278-c9e0-61867e9dc174@redhat.com>
+ <79aaea41-5dab-f896-ab3d-d6bc9a5de615@suse.de>
+ <2d8d8583-3a39-b826-dd83-ba5bc4c5b082@redhat.com>
+ <7ffd92d7-9c07-fa9c-dc95-9e82719fd237@suse.de>
+ <71ebd5f7-64d0-510a-6f1b-29921fca19fa@suse.de>
+ <35ffd96d-3cbe-12dd-c1ea-878299ec173c@redhat.com>
+In-Reply-To: <35ffd96d-3cbe-12dd-c1ea-878299ec173c@redhat.com>
 
-Enable i.MX93 clk and pinctrl driver for booting the system
+--------------RMriG2XPeJByxqDDiiYDx0DK
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-Reviewed-by: Dong Aisheng <aisheng.dong@nxp.com>
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
----
- arch/arm64/configs/defconfig | 2 ++
- 1 file changed, 2 insertions(+)
+SGkgSmF2aWVyDQoNCkFtIDEwLjA1LjIyIHVtIDExOjA2IHNjaHJpZWIgSmF2aWVyIE1hcnRp
+bmV6IENhbmlsbGFzOg0KPiBIZWxsbyBUaG9tYXMsDQo+IA0KPiBPbiA1LzEwLzIyIDEwOjUw
+LCBUaG9tYXMgWmltbWVybWFubiB3cm90ZToNCj4gDQo+IFtzbmlwXQ0KPiANCj4+Pj4gRHJp
+dmVycyBzaG91bGRuJ3QgcmVhbGx5IGV4cGxpY2l0bHkgY2FsbCB0aGlzIGhlbHBlciBpbiBt
+eSBvcGluaW9uLg0KPj4NCj4+IE9uZSBtb3JlIHN0dXBpZCBxdWVzdGlvbjogZG9lcyBhcm1h
+ZGEgYWN0dWFsbHkgdXNlDQo+PiBkcm1fZmJkZXZfZmJfZGVzdHJveSgpPyBJdCdzIHN1cHBv
+c2VkIHRvIGJlIGEgY2FsbGJhY2sgZm9yIHN0cnVjdA0KPj4gZmJfb3BzLiBBcm1hZGEgdXNl
+cyBpdCdzIG93biBpbnN0YW5jZSBvZiBmYl9vcHMsIHdoaWNoIGFwcGFyZW50bHkNCj4+IGRv
+ZXNuJ3QgY29udGFpbiBmYl9kZXN0cm95LiBbMV0NCj4+DQo+IA0KPiBObyBzdHVwaWQgcXVl
+c3Rpb24gYXQgYWxsLiBZb3UgYXJlIGNvcnJlY3Qgb24gdGhpcy4gU28gSSBndWVzcyB3ZSBz
+dGlsbA0KPiBuZWVkIHRoaXMgY2FsbCBpbiB0aGUgZHJpdmVycyB0aGF0IGRvbid0IHByb3Zp
+ZGUgYSAuZmJfZGVzdHJveSgpIGhhbmRsZXIuDQo+IA0KPiBJIHNlZSBtYW55IG9wdGlvbnMg
+aGVyZToNCj4gDQo+IDEpIERvY3VtZW50IGluIGRybV9mYl9oZWxwZXJfYWxsb2NfZmJpKCkg
+dGhhdCBkcml2ZXJzIG9ubHkgbmVlZCB0byBjYWxsDQo+ICAgICBkcm1fZmJfaGVscGVyX2Zp
+bmkoKSBleHBsaWNpdGx5IGlmIHRoZXkgYXJlIG5vdCBzZXR0aW5nIHVwIGEgZmJkZXYNCj4g
+ICAgIHdpdGggZHJtX2ZiZGV2X2dlbmVyaWNfc2V0dXAoKSwgb3RoZXJ3aXNlIGlzIG5vdCBu
+ZWVkZWQuDQo+IA0KPiAyKSBNYWtlIGRybV9mYmRldl9mYl9kZXN0cm95KCkgYW4gZXhwb3J0
+ZWQgc3ltYm9sIHNvIGRyaXZlcnMgdGhhdCBoYXZlDQo+ICAgICBjdXN0b20gZmJfb3BzIGNh
+biB1c2UgaXQuDQo+IA0KPiAzKSBTZXQgLmZiX2Rlc3Ryb3kgdG8gZHJtX2ZiZGV2X2ZiX2Rl
+c3Ryb3koKSBpZiBpc24ndCBzZXQgYnkgZHJpdmVycyB3aGVuDQo+ICAgICB0aGV5IGNhbGwg
+ZHJtX2ZiX2hlbHBlcl9pbml0aWFsX2NvbmZpZygpIG9yIGRybV9mYl9oZWxwZXJfZmlsbF9p
+bmZvKCkuDQo+IA0KPiBJJ20gbGVhbmluZyB0b3dhcmRzIG9wdGlvbiAoMykuIFRoZW4gdGhl
+IGZiX2luZm8gcmVsZWFzZSB3aWxsIGJlIGF1dG9tYXRpYw0KPiB3aGV0aGVyIGRyaXZlcnMg
+YXJlIHVzaW5nIHRoZSBnZW5lcmljIHNldHVwIG9yIGEgY3VzdG9tIG9uZS4NCg0KSU1ITyB0
+aGlzIHdvdWxkIGp1c3QgYmUgYW5vdGhlciBnbGl0Y2ggdG8gcGFwZXIgb3ZlciBhbGwgdGhl
+IGJyb2tlbiANCmNvZGUuIEFuZCBpZiB5b3UgZm9sbG93IHRocm91Z2ggZHJtX2ZiZGV2X2Zi
+X2hlbHBlcigpLCBbMV0gaXQnbGwgY2FsbCANCl9maW5pIGF0IHNvbWUgcG9pbnQgYW5kIHBy
+b2JhYmx5IGJsb3cgdXAgaW4gc29tZSBvdGhlciB3YXkuIEluc3RhbmNlcyBvZiANCnN0cnVj
+dCBmYl9vcHMgYXJlIGFsc28gdXN1YWxseSBjb25zdC4NCg0KVGhlIG9ubHkgcmVsaWFibGUg
+d2F5IEFGQUlDVCBpcyB0byBkbyB3aGF0IGdlbmVyaWMgZmJkZXYgZG9lczogdXNlIA0KdW5y
+ZWdpc3Rlcl9mcmFtZWJ1ZmZlciBhbmQgZG8gdGhlIHNvZnR3YXJlIGNsZWFudXAgc29tZXdo
+ZXJlIHdpdGhpbiANCmZiX2Rlc3Ryb3kuIEFuZCB0aGVuIGZpeCBhbGwgZHJpdmVycyB0byB1
+c2UgdGhhdCBwYXR0ZXJuLg0KDQpCZXN0IHJlZ2FyZHMNClRob21hcw0KDQpbMV0gDQpodHRw
+czovL2VsaXhpci5ib290bGluLmNvbS9saW51eC92NS4xNy42L3NvdXJjZS9kcml2ZXJzL2dw
+dS9kcm0vZHJtX2ZiX2hlbHBlci5jI0wyMDgyDQoNCj4gDQoNCi0tIA0KVGhvbWFzIFppbW1l
+cm1hbm4NCkdyYXBoaWNzIERyaXZlciBEZXZlbG9wZXINClNVU0UgU29mdHdhcmUgU29sdXRp
+b25zIEdlcm1hbnkgR21iSA0KTWF4ZmVsZHN0ci4gNSwgOTA0MDkgTsO8cm5iZXJnLCBHZXJt
+YW55DQooSFJCIDM2ODA5LCBBRyBOw7xybmJlcmcpDQpHZXNjaMOkZnRzZsO8aHJlcjogSXZv
+IFRvdGV2DQo=
 
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index e0aa3a924eb7..148cebd0224a 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -520,6 +520,7 @@ CONFIG_PINCTRL_IMX8QM=y
- CONFIG_PINCTRL_IMX8QXP=y
- CONFIG_PINCTRL_IMX8DXL=y
- CONFIG_PINCTRL_IMX8ULP=y
-+CONFIG_PINCTRL_IMX93=y
- CONFIG_PINCTRL_MSM=y
- CONFIG_PINCTRL_IPQ8074=y
- CONFIG_PINCTRL_IPQ6018=y
-@@ -1006,6 +1007,7 @@ CONFIG_CLK_IMX8MP=y
- CONFIG_CLK_IMX8MQ=y
- CONFIG_CLK_IMX8QXP=y
- CONFIG_CLK_IMX8ULP=y
-+CONFIG_CLK_IMX93=y
- CONFIG_TI_SCI_CLK=y
- CONFIG_COMMON_CLK_QCOM=y
- CONFIG_QCOM_A53PLL=y
--- 
-2.25.1
+--------------RMriG2XPeJByxqDDiiYDx0DK--
 
+--------------Pr0hBfL67iKQw76eSiX70wuZ
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmJ6MtkFAwAAAAAACgkQlh/E3EQov+B8
+ABAAmOlPG+zQT0HBwlB0JVRJG+cYfU8cwS5kJpxC5knB3RdmAEPYHBJsiIUJ3SGE4MZ4OlWWpdA+
+vNjOncwKkAcXkmyrfYtNdVO7LpS4B61HnsL97VZfziEXGuz/ceHOFZAaBvPe/RPHKrINhsOr2qD8
+NBL9EXjXtvhG9a2flyTJGCJIAtueZQqkmxx9yqNeiJ6AlKMx9B7zg1QnVEr2Iff0mKmyy+eD9RQ/
+biM7/ioAKduLUb/ATIASz/6EJsorvHPKheuRlM2vJ6LShqBxeNb0XzeCKF3n/JLzUlO1HBueZT+3
+k0LgEFm/LBBO04EFpP/HXCt5naKtPXYb5vMRwWdE0ILYcNFCzbdsOKN6SDlULQP208+BIo4JFq70
+GfeLyyZoJxtOOdn8YSPfQdUh59pubkUOrQQjTwDP+M85+/MCop32K1xFpllfviV1gY6Cc5rn/KiL
+PYk50YtisPcKrYEXjXZ+3cAV81WT+YZV1Nxc4+JARgpN11gQpSbZhBluI9OO7VUYfnAOp3OdaoVK
+7/YnzZBOfwpxjfTCunL3e9hdfLhVkX/C4O6k+WZfpw6LgChjR7sKCH/QVL1IhjxZ5ACoqQCUepke
+m4wb+y0uGATmkcPCzKi2PEWEfqnOeHxo+w5d22jvZrSXvZ6ZAoBGjRjr1RWj8IQTDIIAvgPzDZkC
+Wyw=
+=Rqge
+-----END PGP SIGNATURE-----
+
+--------------Pr0hBfL67iKQw76eSiX70wuZ--
