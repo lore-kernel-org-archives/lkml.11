@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C21CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:55:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68303C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:55:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345345AbiEJP7R (ORCPT
+        id S1346882AbiEJP7Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:59:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60216 "EHLO
+        Tue, 10 May 2022 11:59:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347209AbiEJPwE (ORCPT
+        with ESMTP id S1347030AbiEJPvx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:52:04 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C9BC26BCBD;
-        Tue, 10 May 2022 08:47:25 -0700 (PDT)
+        Tue, 10 May 2022 11:51:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB2A42457A8;
+        Tue, 10 May 2022 08:46:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id CAC2BCE1F37;
-        Tue, 10 May 2022 15:47:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BCE2C385C2;
-        Tue, 10 May 2022 15:47:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 869CC615A5;
+        Tue, 10 May 2022 15:46:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C365C385A6;
+        Tue, 10 May 2022 15:46:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652197642;
-        bh=RwMynqfZ8kOC3Wy8PKgPjxFl1WOjYkcreb4psjsrtlE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NRzCoM401gjiJ/+g6wY0vGkWGeGxv2rYg12Mtysb1GwetXNhXWIklA74y3Lq6PWHK
-         9sK2ByeWMafNOgO5hDFraGqltzkaeu/LRK/Dp6k11aoE8IUmlyuPmNDYRw8X0oPsSw
-         D3VHgCSvu2iHAom/r3Rmx9fuNrobNsSR1r0MqFbktom/PyHR3GhbxctMz6BZH9Qw1Q
-         1kQ1aZz7eOyRKiIzgad+2BJVOg8yY/Cr0c7F7O0LWuSDMxVj+XJ5q020gwUYzm5D2v
-         cveGWfVorvyisXLepEVM8eSSOie51wqxV2a2WaDHAzwEYquVr1qn6+nNlakVVYuE5L
-         UYjZaJvBw3MVw==
+        s=k20201202; t=1652197600;
+        bh=k7NdOnPBJCcgtgOHqgdMJ6TXBvkuxMVH2PFiZnYqYvk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=A39jedJRCVvf0WCTlpOKkKm6x/DUe/y51LN4xjZrZ8KLR9Tt1mPWpfmvPOiZHOJsq
+         bhNmp0cN6cLrwMc21WLncAi+OurS/qJucQy1L/HRgc/Uf01g9YlsPsO39Qm/sTvjAE
+         MCNAHIsQZXgKXBKSlKl0DUWxtifOsfb3Gf4h4HIVYHJhlEy8h/U5FCsLQWRhQ9n03L
+         TewAGz8Dl4oOagFxbIumRofr391ijzkJq5qajeB5iBjVH70TYwrnCDt5yt2y4qz9PY
+         FRFgKtzPUHYvlLuHQxMOh/GEmN9qx3hB+KXjraKUqehajCgTFBji2L6Du71sxjw7PW
+         3dRMA14qnegcw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mark Brown <broonie@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        pierre-louis.bossart@linux.intel.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 4.9 3/4] ASoC: max98090: Generate notifications on changes for custom control
-Date:   Tue, 10 May 2022 11:47:02 -0400
-Message-Id: <20220510154704.154362-3-sashal@kernel.org>
+Cc:     "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>,
+        Ji-Ze Hong <hpeter+linux_kernel@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Sasha Levin <sashal@kernel.org>, jdelvare@suse.com,
+        linux-hwmon@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 1/5] hwmon: (f71882fg) Fix negative temperature
+Date:   Tue, 10 May 2022 11:46:33 -0400
+Message-Id: <20220510154637.154283-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220510154704.154362-1-sashal@kernel.org>
-References: <20220510154704.154362-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,35 +52,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
 
-[ Upstream commit 13fcf676d9e102594effc686d98521ff5c90b925 ]
+[ Upstream commit 4aaaaf0f279836f06d3b9d0ffeec7a1e1a04ceef ]
 
-The max98090 driver has some custom controls which share a put() function
-which returns 0 unconditionally, meaning that events are not generated
-when the value changes. Fix that.
+All temperature of Fintek superio hwmonitor that using 1-byte reg will use
+2's complement.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20220420193454.2647908-2-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+In show_temp()
+	temp = data->temp[nr] * 1000;
+
+When data->temp[nr] read as 255, it indicate -1C, but this code will report
+255C to userspace. It'll be ok when change to:
+	temp = ((s8)data->temp[nr]) * 1000;
+
+Signed-off-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
+Link: https://lore.kernel.org/r/20220418090706.6339-1-hpeter+linux_kernel@gmail.com
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/max98090.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/hwmon/f71882fg.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/max98090.c b/sound/soc/codecs/max98090.c
-index 4aefb13900c2..1a55f6aecdfe 100644
---- a/sound/soc/codecs/max98090.c
-+++ b/sound/soc/codecs/max98090.c
-@@ -436,7 +436,7 @@ static int max98090_put_enab_tlv(struct snd_kcontrol *kcontrol,
- 		mask << mc->shift,
- 		sel << mc->shift);
+diff --git a/drivers/hwmon/f71882fg.c b/drivers/hwmon/f71882fg.c
+index ca54ce5c8e10..4010b61743f5 100644
+--- a/drivers/hwmon/f71882fg.c
++++ b/drivers/hwmon/f71882fg.c
+@@ -1590,8 +1590,9 @@ static ssize_t show_temp(struct device *dev, struct device_attribute *devattr,
+ 		temp *= 125;
+ 		if (sign)
+ 			temp -= 128000;
+-	} else
+-		temp = data->temp[nr] * 1000;
++	} else {
++		temp = ((s8)data->temp[nr]) * 1000;
++	}
  
--	return 0;
-+	return *select != val;
+ 	return sprintf(buf, "%d\n", temp);
  }
- 
- static const char *max98090_perf_pwr_text[] =
 -- 
 2.35.1
 
