@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 826EEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:21:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B369DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:21:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242854AbiEJNZK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:25:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45948 "EHLO
+        id S240014AbiEJNZN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:25:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243289AbiEJNVq (ORCPT
+        with ESMTP id S243279AbiEJNVp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:21:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F6D42C336B;
-        Tue, 10 May 2022 06:15:33 -0700 (PDT)
+        Tue, 10 May 2022 09:21:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A902C3360;
+        Tue, 10 May 2022 06:15:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F33DF6123F;
-        Tue, 10 May 2022 13:15:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AD81C385A6;
-        Tue, 10 May 2022 13:15:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B8BAA61532;
+        Tue, 10 May 2022 13:15:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95C3FC385A6;
+        Tue, 10 May 2022 13:15:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188510;
-        bh=lwwCpzWHUUhleWMxpvTZOhW5QOtkJCzvcj55PnUh7gQ=;
+        s=korg; t=1652188529;
+        bh=q+s6FJfbA7d6EcGsRe441ZZ2FTLTaNIUc3UIe2otjyk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gm2NPsmSCHIa0wRmEqkkChzl/h0xVa2vyQ4hBKW82/I/wx9/MUM6UDh0gJYt3R9/+
-         wlBo7l/dRw+KQ+UfgkNlsKH2PuEJs1RTYVXnhm7GtjommHe/z+5qyUVb2TWTD1Munh
-         B5TNR+eZCStmGEhPe9yYT1SW7aPaqUC8srEiEaTA=
+        b=ODDB9AgR9nwgLkSzEc6WFhnre+E8Vhxe1//QdNgqm1dnTUnB7mXoVGV6P/aONyHqI
+         RSR5pes1OoGY3oFrRFKkiAFResH4P4cF0uuvPQ0f3rIrEIzP85qoVmDbrev7Gop91b
+         RVU+endp9XQsMRIwlb/uF8HFyzNhmQDtIn+nHyPM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 30/78] ARM: dts: Fix mmc order for omap3-gta04
-Date:   Tue, 10 May 2022 15:07:16 +0200
-Message-Id: <20220510130733.427851952@linuxfoundation.org>
+        stable@vger.kernel.org, Oliver Neukum <oneukum@suse.com>
+Subject: [PATCH 4.14 08/78] USB: quirks: add a Realtek card reader
+Date:   Tue, 10 May 2022 15:06:54 +0200
+Message-Id: <20220510130732.779603638@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
 References: <20220510130732.522479698@linuxfoundation.org>
@@ -49,38 +47,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: H. Nikolaus Schaller <hns@goldelico.com>
+From: Oliver Neukum <oneukum@suse.com>
 
-[ Upstream commit 09269dd050094593fc747f2a5853d189fefcb6b5 ]
+commit 2a7ccf6bb6f147f64c025ad68f4255d8e1e0ce6d upstream.
 
-Commit a1ebdb374199 ("ARM: dts: Fix swapped mmc order for omap3")
-introduces general mmc aliases. Let's tailor them to the need
-of the GTA04 board which does not make use of mmc2 and mmc3 interfaces.
+This device is reported to stall when enummerated.
 
-Fixes: a1ebdb374199 ("ARM: dts: Fix swapped mmc order for omap3")
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-Message-Id: <dc9173ee3d391d9e92b7ab8ed4f84b29f0a21c83.1646744420.git.hns@goldelico.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
+Link: https://lore.kernel.org/r/20220414110209.30924-1-oneukum@suse.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/omap3-gta04.dtsi | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/usb/core/quirks.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/arm/boot/dts/omap3-gta04.dtsi b/arch/arm/boot/dts/omap3-gta04.dtsi
-index ee028aa663fa..312267724033 100644
---- a/arch/arm/boot/dts/omap3-gta04.dtsi
-+++ b/arch/arm/boot/dts/omap3-gta04.dtsi
-@@ -29,6 +29,8 @@ memory@80000000 {
- 	aliases {
- 		display0 = &lcd;
- 		display1 = &tv0;
-+		/delete-property/ mmc2;
-+		/delete-property/ mmc3;
- 	};
+--- a/drivers/usb/core/quirks.c
++++ b/drivers/usb/core/quirks.c
+@@ -243,6 +243,9 @@ static const struct usb_device_id usb_qu
+ 	{ USB_DEVICE(0x0b05, 0x17e0), .driver_info =
+ 			USB_QUIRK_IGNORE_REMOTE_WAKEUP },
  
- 	gpio-keys {
--- 
-2.35.1
-
++	/* Realtek Semiconductor Corp. Mass Storage Device (Multicard Reader)*/
++	{ USB_DEVICE(0x0bda, 0x0151), .driver_info = USB_QUIRK_CONFIG_INTF_STRINGS },
++
+ 	/* Realtek hub in Dell WD19 (Type-C) */
+ 	{ USB_DEVICE(0x0bda, 0x0487), .driver_info = USB_QUIRK_NO_LPM },
+ 	{ USB_DEVICE(0x0bda, 0x5487), .driver_info = USB_QUIRK_RESET_RESUME },
 
 
