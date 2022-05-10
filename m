@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4885FC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32DF0C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:24:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245281AbiEJO2B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:28:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40946 "EHLO
+        id S1344141AbiEJO15 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:27:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245384AbiEJN5f (ORCPT
+        with ESMTP id S245361AbiEJN5f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:57:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FA50BA99A;
-        Tue, 10 May 2022 06:39:16 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF1C8FD41;
+        Tue, 10 May 2022 06:39:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D2FC9615E9;
-        Tue, 10 May 2022 13:39:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D28F3C385A6;
-        Tue, 10 May 2022 13:39:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F3373B81D24;
+        Tue, 10 May 2022 13:39:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27AF7C385A6;
+        Tue, 10 May 2022 13:39:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189955;
-        bh=Npll0bIzELg7Cimq0/UJWbziWMNdzG1D97DZlEZJQ9U=;
+        s=korg; t=1652189948;
+        bh=KROBn0sVKqejLhXC5hNUtuLqTsLA0EpNTTg+h0Jc3Nc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YNPHuRS+t372bNTfwy4zOjxVLZ8zFoE5/0Z2FXbxZ/QpC72NhgruVcTqF0Tmzbk44
-         sO5+vX0bHG2GqIPepGobegzw8lzPLTn/96WmCyQtW4/IjmJaUNJB80treqwBlRZLdN
-         cLFj25D3SRCqMgdsTR7oDuBRQJFGsH6IpYFfPeu0=
+        b=TFEy2P+nLad7HdDsyo9zq70Qo/+orj97S/1ltdL7L2oM0dkBW8xFt7EvuOr0UP+ph
+         JScF+fPyMbf0bnoK3Ag39FPWFwW0EXAu0c43Jf8HZQeeiy8cFji/9wmnWgpdeXHqEh
+         Rnk5LcPMYTXlNrr4BHYlKGXxDakNSSQJt4BtKy+A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Tatyana Nikolova <tatyana.e.nikolova@intel.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
+        stable@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>,
+        Bernard Metzler <bmt@zurich.ibm.com>,
+        Cheng Xu <chengyou@linux.alibaba.com>,
         Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.17 080/140] RDMA/irdma: Flush iWARP QP if modified to ERR from RTR state
-Date:   Tue, 10 May 2022 15:07:50 +0200
-Message-Id: <20220510130743.901483246@linuxfoundation.org>
+Subject: [PATCH 5.17 079/140] RDMA/siw: Fix a condition race issue in MPA request processing
+Date:   Tue, 10 May 2022 15:07:49 +0200
+Message-Id: <20220510130743.873150359@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
 References: <20220510130741.600270947@linuxfoundation.org>
@@ -50,79 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tatyana Nikolova <tatyana.e.nikolova@intel.com>
+From: Cheng Xu <chengyou@linux.alibaba.com>
 
-commit 7b8943b821bafab492f43aafbd006b57c6b65845 upstream.
+commit ef91271c65c12d36e4c2b61c61d4849fb6d11aa0 upstream.
 
-When connection establishment fails in iWARP mode, an app can drain the
-QPs and hang because flush isn't issued when the QP is modified from RTR
-state to error. Issue a flush in this case using function
-irdma_cm_disconn().
+The calling of siw_cm_upcall and detaching new_cep with its listen_cep
+should be atomistic semantics. Otherwise siw_reject may be called in a
+temporary state, e,g, siw_cm_upcall is called but the new_cep->listen_cep
+has not being cleared.
 
-Update irdma_cm_disconn() to do flush when cm_id is NULL, which is the
-case when the QP is in RTR state and there is an error in the connection
-establishment.
+This fixes a WARN:
 
-Fixes: b48c24c2d710 ("RDMA/irdma: Implement device supported verb APIs")
-Link: https://lore.kernel.org/r/20220425181703.1634-2-shiraz.saleem@intel.com
-Signed-off-by: Tatyana Nikolova <tatyana.e.nikolova@intel.com>
-Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
+  WARNING: CPU: 7 PID: 201 at drivers/infiniband/sw/siw/siw_cm.c:255 siw_cep_put+0x125/0x130 [siw]
+  CPU: 2 PID: 201 Comm: kworker/u16:22 Kdump: loaded Tainted: G            E     5.17.0-rc7 #1
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
+  Workqueue: iw_cm_wq cm_work_handler [iw_cm]
+  RIP: 0010:siw_cep_put+0x125/0x130 [siw]
+  Call Trace:
+   <TASK>
+   siw_reject+0xac/0x180 [siw]
+   iw_cm_reject+0x68/0xc0 [iw_cm]
+   cm_work_handler+0x59d/0xe20 [iw_cm]
+   process_one_work+0x1e2/0x3b0
+   worker_thread+0x50/0x3a0
+   ? rescuer_thread+0x390/0x390
+   kthread+0xe5/0x110
+   ? kthread_complete_and_exit+0x20/0x20
+   ret_from_fork+0x1f/0x30
+   </TASK>
+
+Fixes: 6c52fdc244b5 ("rdma/siw: connection management")
+Link: https://lore.kernel.org/r/d528d83466c44687f3872eadcb8c184528b2e2d4.1650526554.git.chengyou@linux.alibaba.com
+Reported-by: Luis Chamberlain <mcgrof@kernel.org>
+Reviewed-by: Bernard Metzler <bmt@zurich.ibm.com>
+Signed-off-by: Cheng Xu <chengyou@linux.alibaba.com>
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/hw/irdma/cm.c    |   16 +++++-----------
- drivers/infiniband/hw/irdma/verbs.c |    4 ++--
- 2 files changed, 7 insertions(+), 13 deletions(-)
+ drivers/infiniband/sw/siw/siw_cm.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
---- a/drivers/infiniband/hw/irdma/cm.c
-+++ b/drivers/infiniband/hw/irdma/cm.c
-@@ -3465,12 +3465,6 @@ static void irdma_cm_disconn_true(struct
- 	}
+--- a/drivers/infiniband/sw/siw/siw_cm.c
++++ b/drivers/infiniband/sw/siw/siw_cm.c
+@@ -968,14 +968,15 @@ static void siw_accept_newconn(struct si
  
- 	cm_id = iwqp->cm_id;
--	/* make sure we havent already closed this connection */
--	if (!cm_id) {
--		spin_unlock_irqrestore(&iwqp->lock, flags);
--		return;
--	}
+ 		siw_cep_set_inuse(new_cep);
+ 		rv = siw_proc_mpareq(new_cep);
+-		siw_cep_set_free(new_cep);
 -
- 	original_hw_tcp_state = iwqp->hw_tcp_state;
- 	original_ibqp_state = iwqp->ibqp_state;
- 	last_ae = iwqp->last_aeq;
-@@ -3492,11 +3486,11 @@ static void irdma_cm_disconn_true(struct
- 			disconn_status = -ECONNRESET;
+ 		if (rv != -EAGAIN) {
+ 			siw_cep_put(cep);
+ 			new_cep->listen_cep = NULL;
+-			if (rv)
++			if (rv) {
++				siw_cep_set_free(new_cep);
+ 				goto error;
++			}
+ 		}
++		siw_cep_set_free(new_cep);
  	}
- 
--	if ((original_hw_tcp_state == IRDMA_TCP_STATE_CLOSED ||
--	     original_hw_tcp_state == IRDMA_TCP_STATE_TIME_WAIT ||
--	     last_ae == IRDMA_AE_RDMAP_ROE_BAD_LLP_CLOSE ||
--	     last_ae == IRDMA_AE_BAD_CLOSE ||
--	     last_ae == IRDMA_AE_LLP_CONNECTION_RESET || iwdev->rf->reset)) {
-+	if (original_hw_tcp_state == IRDMA_TCP_STATE_CLOSED ||
-+	    original_hw_tcp_state == IRDMA_TCP_STATE_TIME_WAIT ||
-+	    last_ae == IRDMA_AE_RDMAP_ROE_BAD_LLP_CLOSE ||
-+	    last_ae == IRDMA_AE_BAD_CLOSE ||
-+	    last_ae == IRDMA_AE_LLP_CONNECTION_RESET || iwdev->rf->reset || !cm_id) {
- 		issue_close = 1;
- 		iwqp->cm_id = NULL;
- 		qp->term_flags = 0;
---- a/drivers/infiniband/hw/irdma/verbs.c
-+++ b/drivers/infiniband/hw/irdma/verbs.c
-@@ -1620,13 +1620,13 @@ int irdma_modify_qp(struct ib_qp *ibqp,
- 
- 	if (issue_modify_qp && iwqp->ibqp_state > IB_QPS_RTS) {
- 		if (dont_wait) {
--			if (iwqp->cm_id && iwqp->hw_tcp_state) {
-+			if (iwqp->hw_tcp_state) {
- 				spin_lock_irqsave(&iwqp->lock, flags);
- 				iwqp->hw_tcp_state = IRDMA_TCP_STATE_CLOSED;
- 				iwqp->last_aeq = IRDMA_AE_RESET_SENT;
- 				spin_unlock_irqrestore(&iwqp->lock, flags);
--				irdma_cm_disconn(iwqp);
- 			}
-+			irdma_cm_disconn(iwqp);
- 		} else {
- 			int close_timer_started;
+ 	return;
  
 
 
