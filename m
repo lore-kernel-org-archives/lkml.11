@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A351C4167E
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:56:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE2E7C43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:56:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343768AbiEJN7m (ORCPT
+        id S1343737AbiEJN7i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:59:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48412 "EHLO
+        Tue, 10 May 2022 09:59:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244438AbiEJNhf (ORCPT
+        with ESMTP id S245158AbiEJNif (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:37:35 -0400
+        Tue, 10 May 2022 09:38:35 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A774403E5;
-        Tue, 10 May 2022 06:25:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DEE1261953;
+        Tue, 10 May 2022 06:27:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5A189B81D24;
-        Tue, 10 May 2022 13:25:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87B0CC385C6;
-        Tue, 10 May 2022 13:25:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2FCCCB81DA9;
+        Tue, 10 May 2022 13:27:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79D49C385A6;
+        Tue, 10 May 2022 13:27:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189138;
-        bh=M++pNsSDyjD/GlMxredGq+cpP1ZDMWAdbPKhR1TW1Ls=;
+        s=korg; t=1652189254;
+        bh=dhkW1ASMyZWLN/zK5ccMxBpm7mwVmOaNbaYYAvXnbn4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P2YIRiMPVnKq6DxvjHsB+UCJICiw3pV7qYXigEIzzCwi5pWAmXpmBQv5B/BwZrY9Z
-         RfRiPaT3uT/PNQgaSq92sIwot8WLSkDqvexmbEQsthC5ZGmIOsNpNpOwcz/0+b8zpm
-         /yt3v+3UpiiH4aKeU6W+rQhi9PNEuDcNNvKwFEQ4=
+        b=JxzFxJdA0wfqRpemUkzZi/dp27p7iSABKRVb74eYCh+fd2FrSxvnFlB1mqnjvLmvj
+         Fp3Ld5leSJx9IvLu5bXyr1lcEEjOcrwI51Rmw8fGYj6uiBvu0KkDCa6u2PfRuRmd1t
+         f5M+8j+U+pi8PfjF5Kxh7/g+IiNLVm6WEizH0pUM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Sakamoto <o-takashi@sakamocchi.jp>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.10 04/70] ALSA: fireworks: fix wrong return count shorter than expected by 4 bytes
-Date:   Tue, 10 May 2022 15:07:23 +0200
-Message-Id: <20220510130732.992861507@linuxfoundation.org>
+        stable@vger.kernel.org, Chao Gao <chao.gao@intel.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 61/70] KVM: x86: Do not change ICR on write to APIC_SELF_IPI
+Date:   Tue, 10 May 2022 15:08:20 +0200
+Message-Id: <20220510130734.653510441@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
 References: <20220510130732.861729621@linuxfoundation.org>
@@ -49,34 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Sakamoto <o-takashi@sakamocchi.jp>
+From: Paolo Bonzini <pbonzini@redhat.com>
 
-commit eb9d84b0ffe39893cb23b0b6712bbe3637fa25fa upstream.
+[ Upstream commit d22a81b304a27fca6124174a8e842e826c193466 ]
 
-ALSA fireworks driver has a bug in its initial state to return count
-shorter than expected by 4 bytes to userspace applications when handling
-response frame for Echo Audio Fireworks transaction. It's due to missing
-addition of the size for the type of event in ALSA firewire stack.
+Emulating writes to SELF_IPI with a write to ICR has an unwanted side effect:
+the value of ICR in vAPIC page gets changed.  The lists SELF_IPI as write-only,
+with no associated MMIO offset, so any write should have no visible side
+effect in the vAPIC page.
 
-Fixes: 555e8a8f7f14 ("ALSA: fireworks: Add command/response functionality into hwdep interface")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
-Link: https://lore.kernel.org/r/20220424102428.21109-1-o-takashi@sakamocchi.jp
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Chao Gao <chao.gao@intel.com>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/firewire/fireworks/fireworks_hwdep.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/kvm/lapic.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
---- a/sound/firewire/fireworks/fireworks_hwdep.c
-+++ b/sound/firewire/fireworks/fireworks_hwdep.c
-@@ -34,6 +34,7 @@ hwdep_read_resp_buf(struct snd_efw *efw,
- 	type = SNDRV_FIREWIRE_EVENT_EFW_RESPONSE;
- 	if (copy_to_user(buf, &type, sizeof(type)))
- 		return -EFAULT;
-+	count += sizeof(type);
- 	remained -= sizeof(type);
- 	buf += sizeof(type);
+diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+index de11149e28e0..e45ebf0870b6 100644
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -2106,10 +2106,9 @@ int kvm_lapic_reg_write(struct kvm_lapic *apic, u32 reg, u32 val)
+ 		break;
  
+ 	case APIC_SELF_IPI:
+-		if (apic_x2apic_mode(apic)) {
+-			kvm_lapic_reg_write(apic, APIC_ICR,
+-					    APIC_DEST_SELF | (val & APIC_VECTOR_MASK));
+-		} else
++		if (apic_x2apic_mode(apic))
++			kvm_apic_send_ipi(apic, APIC_DEST_SELF | (val & APIC_VECTOR_MASK), 0);
++		else
+ 			ret = 1;
+ 		break;
+ 	default:
+-- 
+2.35.1
+
 
 
