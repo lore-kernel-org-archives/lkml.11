@@ -2,235 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 302B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:36:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC161C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:38:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346153AbiEJPkn (ORCPT
+        id S1346043AbiEJPmK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:40:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45566 "EHLO
+        Tue, 10 May 2022 11:42:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346019AbiEJPjQ (ORCPT
+        with ESMTP id S1346099AbiEJPjj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:39:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E4DB5227057
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 08:34:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652196876;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=zmp3GU6lr5BXYKTwCgRRnMUeaC9QIFA4NnCFReGa84k=;
-        b=HawWtVUs12UsD/CNIGtzTx4s3LCN06bJnswF/zFoGbztlZ8JTODQf5Q8Q5rk60e6IW+q+E
-        d5S29BV7xW3uoMMP+KMV4WDUvTfheyqhxfaGcnDcFT1g2iglU3EqaAiMbVxGewTYe1g9gD
-        qQny7qnhxKvONE8yNTXc78q/YiwIPAs=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-629-pCQZwa8iM1qov1KCvyOByg-1; Tue, 10 May 2022 11:34:33 -0400
-X-MC-Unique: pCQZwa8iM1qov1KCvyOByg-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AE44F3C977E6;
-        Tue, 10 May 2022 15:34:32 +0000 (UTC)
-Received: from llong.com (dhcp-17-215.bos.redhat.com [10.18.17.215])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2D30C403171;
-        Tue, 10 May 2022 15:34:32 +0000 (UTC)
-From:   Waiman Long <longman@redhat.com>
-To:     Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>, Shuah Khan <shuah@kernel.org>
-Cc:     cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <guro@fb.com>, Phil Auld <pauld@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
-        Waiman Long <longman@redhat.com>
-Subject: [PATCH v11 0/8] cgroup/cpuset: cpu partition code enhancements
-Date:   Tue, 10 May 2022 11:34:05 -0400
-Message-Id: <20220510153413.400020-1-longman@redhat.com>
+        Tue, 10 May 2022 11:39:39 -0400
+Received: from mail-yb1-f176.google.com (mail-yb1-f176.google.com [209.85.219.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 654641F8C5E;
+        Tue, 10 May 2022 08:35:04 -0700 (PDT)
+Received: by mail-yb1-f176.google.com with SMTP id y76so31408883ybe.1;
+        Tue, 10 May 2022 08:35:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=P0b4svRqqLvSjZJ3zoTOM74xlJmN8RWL/PjHlhHodGU=;
+        b=icXlApJ+3wo3VZ+9VSoCprhBXao5sABZt9l9EVCZzgUuD8jE5enge46Rx7CJ8e2qO+
+         4IOPQCYDoXeceWwfSkX5pPUCUFVoQjrB4W4sOEL/g1JqXUQsSm0F9OATbeV6VQV1rW52
+         EzZ6i7KkYnaEXrsgpkOKDP/0Uv9qjqy3+iTx43NPOSEglcHNqQ67seCcV9AIpirVtiNN
+         A1cw50ipHgvdD7YF8u+KDqMH/O5VGl7SB6gDE+kuIPFvpIS5auJOMaDfZwITPKwnQR5A
+         UB/wsS3MG5b/vCptgGyOAtq+OQzAkKoaPKyIqIXE8Xq6d2cuYFReXNsUIXRX+HCxd3Fa
+         gK4w==
+X-Gm-Message-State: AOAM5332qhptbjL3OEdOVV2j8N8wI9XrtWgUxkVNT1q37ICpT5GlfEhc
+        JOGeuuuc6FxLFhr0QvAC9TKUInlhe9tbdkEoJiQ=
+X-Google-Smtp-Source: ABdhPJz5wgor03irFmw2wqgvtOOp8DCo6bgMa19LwGPaMtLH+4JR/3kdDmT65DDU7lOYUnMbwNPbcYQEfRRVWu7ekGc=
+X-Received: by 2002:a25:c0d5:0:b0:64a:c6dd:1a00 with SMTP id
+ c204-20020a25c0d5000000b0064ac6dd1a00mr10716120ybf.365.1652196901076; Tue, 10
+ May 2022 08:35:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+References: <20220510035259.5ep52sgahd2a6rie@vireshk-i7> <20220510152811.88071-1-schspa@gmail.com>
+In-Reply-To: <20220510152811.88071-1-schspa@gmail.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 10 May 2022 17:34:49 +0200
+Message-ID: <CAJZ5v0hj_7tGTQm8q4AVqL6F=Y6FzGP=UV7TkbJ=hJk2LPCN1Q@mail.gmail.com>
+Subject: Re: [PATCH v2] cpufreq: fix race on cpufreq online
+To:     Schspa Shi <schspa@gmail.com>
+Cc:     Viresh Kumar <viresh.kumar@linaro.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-v11:
- - Fix incorrect spacing in patch 7 and include documentation suggestions
-   by Michal.
- - Move partition_is_populated() check to the last one in list of
-   conditions to be checked.
+On Tue, May 10, 2022 at 5:28 PM Schspa Shi <schspa@gmail.com> wrote:
+>
+> When cpufreq online failed, policy->cpus are not empty while
+> cpufreq sysfs file available, we may access some data freed.
+>
+> Take policy->clk as an example:
+>
+> static int cpufreq_online(unsigned int cpu)
+> {
+>   ...
+>   // policy->cpus != 0 at this time
+>   down_write(&policy->rwsem);
+>   ret = cpufreq_add_dev_interface(policy);
+>   up_write(&policy->rwsem);
+>
+>   down_write(&policy->rwsem);
+>   ...
+>   /* cpufreq nitialization fails in some cases */
+>   if (cpufreq_driver->get && has_target()) {
+>     policy->cur = cpufreq_driver->get(policy->cpu);
+>     if (!policy->cur) {
+>       ret = -EIO;
+>       pr_err("%s: ->get() failed\n", __func__);
+>       goto out_destroy_policy;
+>     }
+>   }
+>   ...
+>   up_write(&policy->rwsem);
+>   ...
+>
+>   return 0;
+>
+> out_destroy_policy:
+>         for_each_cpu(j, policy->real_cpus)
+>                 remove_cpu_dev_symlink(policy, get_cpu_device(j));
+>     up_write(&policy->rwsem);
+> ...
+> out_exit_policy:
+>   if (cpufreq_driver->exit)
+>     cpufreq_driver->exit(policy);
+>       clk_put(policy->clk);
+>       // policy->clk is a wild pointer
+> ...
+>                                     ^
+>                                     |
+>                             Another process access
+>                             __cpufreq_get
+>                               cpufreq_verify_current_freq
+>                                 cpufreq_generic_get
+>                                   // acces wild pointer of policy->clk;
+>                                     |
+>                                     |
+> out_offline_policy:                 |
+>   cpufreq_policy_free(policy);      |
+>     // deleted here, and will wait for no body reference
+>     cpufreq_policy_put_kobj(policy);
+> }
+>
+> We can fix it by clear the policy->cpus mask.
+> Both show_scaling_cur_freq and show_cpuinfo_cur_freq will return an
+> error by checking this mask, thus avoiding UAF.
+>
+> Signed-off-by: Schspa Shi <schspa@gmail.com>
+>
+> ---
+>
+> Changelog:
+> v1 -> v2:
+>         - Fix bad critical region enlarge which causes uninitialized
+>           unlock.
+> ---
+>  drivers/cpufreq/cpufreq.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
+> index 80f535cc8a75..8edfa840dd74 100644
+> --- a/drivers/cpufreq/cpufreq.c
+> +++ b/drivers/cpufreq/cpufreq.c
+> @@ -1337,12 +1337,12 @@ static int cpufreq_online(unsigned int cpu)
+>                 down_write(&policy->rwsem);
+>                 policy->cpu = cpu;
+>                 policy->governor = NULL;
+> -               up_write(&policy->rwsem);
+>         } else {
+>                 new_policy = true;
+>                 policy = cpufreq_policy_alloc(cpu);
+>                 if (!policy)
+>                         return -ENOMEM;
+> +               down_write(&policy->rwsem);
+>         }
+>
+>         if (!new_policy && cpufreq_driver->online) {
 
-v10:
- - Relax constraints for changes made to "cpuset.cpus"
-   and "cpuset.cpus.partition" as suggested. Now almost all changes
-   are allowed.
- - Add patch 1 to signal that we may need to do additional work in
-   the future to relax the constraint that tasks' cpumask may need
-   some adjustment if child partitions are present.
- - Add patch 2 for miscellaneous cleanups.
+You seem to have missed the down_write() before the
 
-This patchset include the following enhancements to the cpuset v2
-partition code.
- 1) Allow partitions that have no task to have empty effective cpus.
- 2) Relax the constraints on what changes are allowed in cpuset.cpus
-    and cpuset.cpus.partition. However, the partition remain invalid
-    until the constraints of a valid partition root is satisfied.
- 3) Add a new "isolated" partition type for partitions with no load
-    balancing which is available in v1 but not yet in v2.
- 4) Allow the reading of cpuset.cpus.partition to include a reason
-    string as to why the partition remain invalid.
+cpumask_and(policy->cpus, policy->cpus, cpu_online_mask);
 
-In addition, the cgroup-v2.rst documentation file is updated and a self
-test is added to verify the correctness the partition code.
+statement.
 
-The code diff from v10 is listed below.
+It needs to be removed, because the semaphore is already being held
+for writing at that point after the changes above.
 
-Waiman Long (8):
-  cgroup/cpuset: Add top_cpuset check in update_tasks_cpumask()
-  cgroup/cpuset: Miscellaneous cleanups & add helper functions
-  cgroup/cpuset: Allow no-task partition to have empty
-    cpuset.cpus.effective
-  cgroup/cpuset: Relax constraints to partition & cpus changes
-  cgroup/cpuset: Add a new isolated cpus.partition type
-  cgroup/cpuset: Show invalid partition reason string
-  cgroup/cpuset: Update description of cpuset.cpus.partition in
-    cgroup-v2.rst
-  kselftest/cgroup: Add cpuset v2 partition root state test
-
- Documentation/admin-guide/cgroup-v2.rst       | 149 ++--
- kernel/cgroup/cpuset.c                        | 718 +++++++++++-------
- tools/testing/selftests/cgroup/Makefile       |   5 +-
- .../selftests/cgroup/test_cpuset_prs.sh       | 674 ++++++++++++++++
- tools/testing/selftests/cgroup/wait_inotify.c |  87 +++
- 5 files changed, 1304 insertions(+), 329 deletions(-)
- create mode 100755 tools/testing/selftests/cgroup/test_cpuset_prs.sh
- create mode 100644 tools/testing/selftests/cgroup/wait_inotify.c
-
--- 
-diff --git a/Documentation/admin-guide/cgroup-v2.rst b/Documentation/admin-guide/cgroup-v2.rst
-index 94e1e3771830..9184a09e0fc9 100644
---- a/Documentation/admin-guide/cgroup-v2.rst
-+++ b/Documentation/admin-guide/cgroup-v2.rst
-@@ -2130,10 +2130,10 @@ Cpuset Interface Files
- 	CPUs should be carefully distributed and bound to each of the
- 	individual CPUs for optimal performance.
-
--	The value shown in "cpuset.cpus.effective" of a partition root is
--	the CPUs that the parent partition root can dedicate to the new
--	partition root.  They are subtracted from "cpuset.cpus.effective"
--	of the parent and may be different from "cpuset.cpus"
-+	The value shown in "cpuset.cpus.effective" of a partition root
-+	is the CPUs that the partition root can dedicate to a potential
-+	new child partition root. The new child subtracts available
-+	CPUs from its parent "cpuset.cpus.effective".
-
- 	A partition root ("root" or "isolated") can be in one of the
- 	two possible states - valid or invalid.  An invalid partition
-@@ -2165,24 +2165,28 @@ Cpuset Interface Files
- 	2) The parent cgroup is a valid partition root.
- 	3) The "cpuset.cpus" is not empty and must contain at least
- 	   one of the CPUs from parent's "cpuset.cpus", i.e. they overlap.
--        4) The "cpuset.cpus.effective" must be a subset of "cpuset.cpus"
--           and cannot be empty unless there is no task associated with
--           this partition.
-+	4) The "cpuset.cpus.effective" must be a subset of "cpuset.cpus"
-+	   and cannot be empty unless there is no task associated with
-+	   this partition.
-
- 	External events like hotplug or changes to "cpuset.cpus" can
- 	cause a valid partition root to become invalid and vice versa.
- 	Note that a task cannot be moved to a cgroup with empty
- 	"cpuset.cpus.effective".
-
--        For a valid partition root or an invalid partition root with
--        the exclusivity rule enabled, changes made to "cpuset.cpus"
--        that violate the exclusivity rule will not be allowed.
-+	For a valid partition root or an invalid partition root with
-+	the exclusivity rule enabled, changes made to "cpuset.cpus"
-+	that violate the exclusivity rule will not be allowed.
-
- 	A valid non-root parent partition may distribute out all its CPUs
- 	to its child partitions when there is no task associated with it.
-
--        Care must be taken to change a valid partition root to "member"
--        as all its child partitions, if present, will become invalid.
-+	Care must be taken to change a valid partition root to
-+	"member" as all its child partitions, if present, will become
-+	invalid causing disruption to tasks running in those child
-+	partitions. These inactivated partitions could be recovered if
-+	their parent is switched back to a partition root with a proper
-+	set of "cpuset.cpus".
-
- 	Poll and inotify events are triggered whenever the state of
- 	"cpuset.cpus.partition" changes.  That includes changes caused
-diff --git a/kernel/cgroup/cpuset.c b/kernel/cgroup/cpuset.c
-index 90ee0e4d8d7e..261974f5bb3c 100644
---- a/kernel/cgroup/cpuset.c
-+++ b/kernel/cgroup/cpuset.c
-@@ -1283,9 +1283,12 @@ static int update_flag(cpuset_flagbits_t bit, struct cpuset *cs,
-  * invalid to valid violates the exclusivity rule.
-  *
-  * The partcmd_enable and partcmd_disable commands are used by
-- * update_prstate(). The partcmd_update command is used by
-- * update_cpumasks_hier() with newmask NULL and update_cpumask() with
-- * newmask set.
-+ * update_prstate(). An error code may be returned and the caller will check
-+ * for error.
-+ *
-+ * The partcmd_update command is used by update_cpumasks_hier() with newmask
-+ * NULL and update_cpumask() with newmask set. The callers won't check for
-+ * error and so partition_root_state and prs_error will be updated directly.
-  */
- static int update_parent_subparts_cpumask(struct cpuset *cs, int cmd,
- 					  struct cpumask *newmask,
-@@ -1326,8 +1329,8 @@ static int update_parent_subparts_cpumask(struct cpuset *cs, int cmd,
- 		 * A parent can be left with no CPU as long as there is no
- 		 * task directly associated with the parent partition.
- 		 */
--		if (partition_is_populated(parent, cs) &&
--		   !cpumask_intersects(cs->cpus_allowed, parent->effective_cpus))
-+		if (!cpumask_intersects(cs->cpus_allowed, parent->effective_cpus) &&
-+		    partition_is_populated(parent, cs))
- 			return PERR_NOCPUS;
-
- 		cpumask_copy(tmp->addmask, cs->cpus_allowed);
-@@ -1361,9 +1364,10 @@ static int update_parent_subparts_cpumask(struct cpuset *cs, int cmd,
- 		 * Make partition invalid if parent's effective_cpus could
- 		 * become empty and there are tasks in the parent.
- 		 */
--		if (adding && partition_is_populated(parent, cs) &&
-+		if (adding &&
- 		    cpumask_subset(parent->effective_cpus, tmp->addmask) &&
--		    !cpumask_intersects(tmp->delmask, cpu_active_mask)) {
-+		    !cpumask_intersects(tmp->delmask, cpu_active_mask) &&
-+		    partition_is_populated(parent, cs)) {
- 			part_error = PERR_NOCPUS;
- 			adding = false;
- 			deleting = cpumask_and(tmp->delmask, cs->cpus_allowed,
-@@ -1749,13 +1753,13 @@ static int update_cpumask(struct cpuset *cs, struct cpuset *trialcs,
-
- 	/*
- 	 * Make sure that subparts_cpus, if not empty, is a subset of
--	 * cpus_allowed. Clear subparts_cpus if there is an error or
-+	 * cpus_allowed. Clear subparts_cpus if partition not valid or
- 	 * empty effective cpus with tasks.
- 	 */
- 	if (cs->nr_subparts_cpus) {
--		if (cs->prs_err ||
--		   (partition_is_populated(cs, NULL) &&
--		    cpumask_subset(trialcs->effective_cpus, cs->subparts_cpus))) {
-+		if (!is_partition_valid(cs) ||
-+		   (cpumask_subset(trialcs->effective_cpus, cs->subparts_cpus) &&
-+		    partition_is_populated(cs, NULL))) {
- 			cs->nr_subparts_cpus = 0;
- 			cpumask_clear(cs->subparts_cpus);
- 		} else {
-
+> @@ -1533,7 +1533,7 @@ static int cpufreq_online(unsigned int cpu)
+>         for_each_cpu(j, policy->real_cpus)
+>                 remove_cpu_dev_symlink(policy, get_cpu_device(j));
+>
+> -       up_write(&policy->rwsem);
+> +       cpumask_clear(policy->cpus);
+>
+>  out_offline_policy:
+>         if (cpufreq_driver->offline)
+> @@ -1542,6 +1542,7 @@ static int cpufreq_online(unsigned int cpu)
+>  out_exit_policy:
+>         if (cpufreq_driver->exit)
+>                 cpufreq_driver->exit(policy);
+> +       up_write(&policy->rwsem);
+>
+>  out_free_policy:
+>         cpufreq_policy_free(policy);
+> --
