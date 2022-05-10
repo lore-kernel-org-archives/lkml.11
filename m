@@ -2,961 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7090C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 23:58:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82852C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 23:59:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229684AbiEJX6L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 19:58:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45600 "EHLO
+        id S238962AbiEJX7V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 19:59:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238909AbiEJX5W (ORCPT
+        with ESMTP id S239062AbiEJX7A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 19:57:22 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B205920AE4F
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 16:57:13 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2f7dbceab08so2978777b3.10
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 16:57:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=vYLS3oj++fkZhz2B1aA1LN2l8oqjivSrY2nMWaiYle8=;
-        b=d1oSO0BeVg1FVxSB/qXK8BCqlJsRw7FmfjlebAH3PpntaqCDpI/aS1vsH8ZVzGwhQu
-         TNju9VykU/22gAKFZoYLFbZG+GJtoxgosLEmutZB+V3gTK7ntiditzw3hvVgnoDA0WWd
-         Tytw5lqrinQNnPb8K7njZ1f47XfQ2vjaiVT8wzf1O5FMBnSuN3h9Ei6/00fGTVF3xJzr
-         YQP/Ujlw3R2TkrXVoYnkU3c9rpqeXIwxt5yn9DCHuKLTRODszz68q2w0h2c3bGrvqHOy
-         vd/NKrDI+cq1jTI+z1l9/hVFG4xDlJ5+aDdiOkjj3QR8g4gwKkbJ1uyP0IVlJ+U7n8/k
-         tvRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=vYLS3oj++fkZhz2B1aA1LN2l8oqjivSrY2nMWaiYle8=;
-        b=JLfEqJlYuz3/87PdMIjqpmu3Fg5psdU3rCTA+AMrtbaUVmZO9Y2WyP9uBQedhb5DLb
-         LL6xMRT1LSoNWHC5yAlN0NWQvd5HKPKbJOJCbD+mHlk4Za6CqHIFApDubWcGzdgLBOSc
-         Zde0ULWjqDt7Wjn0wY78AUulCsexQP7VTJAOhJVnnzq70DOhBQy+6A4jjDyWpEspRFCz
-         +4KmUEhGzwVNG8WyPtvE8btGePs2Prvp9phgvvCWsmGWcX5q5QtMwfy8o/SNWT4ebEBE
-         7K2TO/+HrchrJJdRIVgrFVWjDOWwuMcaqEHVWylSghOjqROgPIGWNgiYxTA+44X6ShqM
-         2nzQ==
-X-Gm-Message-State: AOAM532TvhyCIFjPdZ4aWPZ0riEG43QWzRgWGG7TcOGKSLTtX7YBNDiQ
-        s77NPPkHyl5jmpegd2RnwobZa/oT7pS9kaE=
-X-Google-Smtp-Source: ABdhPJyiJFTC6bmOoLACJ6XbVXoBht/tGZA4r8ZTNhnhWEL/FeyX7YINW87E6pH33bpV5H9d+Oomlo5v9wOaYH8=
-X-Received: from tj.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:53a])
- (user=tjmercier job=sendgmr) by 2002:a25:ab50:0:b0:648:4bb1:833a with SMTP id
- u74-20020a25ab50000000b006484bb1833amr20097446ybi.179.1652227033383; Tue, 10
- May 2022 16:57:13 -0700 (PDT)
-Date:   Tue, 10 May 2022 23:56:50 +0000
-In-Reply-To: <20220510235653.933868-1-tjmercier@google.com>
-Message-Id: <20220510235653.933868-7-tjmercier@google.com>
-Mime-Version: 1.0
-References: <20220510235653.933868-1-tjmercier@google.com>
-X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
-Subject: [PATCH v7 6/6] selftests: Add binder cgroup gpu memory transfer tests
-From:   "T.J. Mercier" <tjmercier@google.com>
-To:     tjmercier@google.com, Shuah Khan <shuah@kernel.org>
-Cc:     daniel@ffwll.ch, tj@kernel.org, hridya@google.com,
-        christian.koenig@amd.com, jstultz@google.com, tkjos@android.com,
-        cmllamas@google.com, surenb@google.com, kaleshsingh@google.com,
-        Kenny.Ho@amd.com, mkoutny@suse.com, skhan@linuxfoundation.org,
-        kernel-team@android.com, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 10 May 2022 19:59:00 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2068.outbound.protection.outlook.com [40.107.220.68])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD665223862
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 16:58:17 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=O67/u7phd5gMPEb1FDPnQMYU2b2oCuAsfh+Ml8Fh4VIXHR1oI92Zw9wg8A9oCmB57Iej628SPFK0ojPmEKmkvVFLaC11006feVZ+bgPln+V+JVzYPllQodhnwOo69VqunGlD8nkkBpqzS87rFWG60uPsB1zo6b97QeXKy8pB+wJWwppyhprhE7+OXTYYLg4iXNLWqkyJ/k4EdxEtHrQ4kxuRKE2uatDtX7FRewOVAwsLMg8PxZfnja/FHLC8hMX053KnsbLJQ9OWw14o4duJ0I4eixTlUQ2QIJiBMlqp12qaHyJfOvndInBAqnkIPy9L4Dl+B1ssE/NdhANiBTsvUQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=tVOyizssLsyFxzqqu0cqDIZlYhFmV2667/U9pwLg4Lk=;
+ b=jHfSm6cjsejsIQvNfaOHbMCt2x+RYJJgFN4gI8FvGCuhBDFTxnwNAe1DaOc5d3yQYiAc77SqsI/srorgkAvhybpD0pwaW+uuVdPKRfWSImAC4r/kdHqlUEig3fBeBF9pGEzqtL/1OAD9/WdYVy0LTa1/MJKJsRE1Afz/WklpVIEKIku9443V0XlGx55Oib39RzvyCjEFtoX8g86zi4l/HPsiWiA8fMqqMku2u+1mD/UeKcglrYJgaumvraMWCDEh3wL3bsaoYMNmQPFdxPjsPm/3KB2aja4jhn7JwA8jjS29q0BajfDZPjALA1mk/EfKsLWpm5w770O+icL70WKYyw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tVOyizssLsyFxzqqu0cqDIZlYhFmV2667/U9pwLg4Lk=;
+ b=nh4qcMTInGBwPjWXRCcQBCHEny7AQP9k0aG/zbzWA9UdWGBqQS72rgH7jHBwPyg9COMq9PMs6zTEgcprtkm9r68auBZsnngj5HGDgQt5f3MOahtLZIQQiIcv/DsZQg1ThRT687F+PB6MsgA4o1AyPYl7yP6OkRmi1NMlVG0Fm22U0ESpCquCtScJ9hlVwQXUBIjrPtQbOFjZIt2vmkwJAzc4hDaGJ5YChk9F+axTUtQqWcqLDeOuLH/JhU0b9/pj2Bv5QSSdVUQ93V0954Fo3eVPhm1ClTaFi7nGV2iV6c1dhfmiOHoiqfKw6AcTes3GuPnBdl0HtVK+XwqGnfCcRQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BY5PR12MB4130.namprd12.prod.outlook.com (2603:10b6:a03:20b::16)
+ by IA1PR12MB6114.namprd12.prod.outlook.com (2603:10b6:208:3ea::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23; Tue, 10 May
+ 2022 23:58:15 +0000
+Received: from BY5PR12MB4130.namprd12.prod.outlook.com
+ ([fe80::15e3:d746:57e8:4de0]) by BY5PR12MB4130.namprd12.prod.outlook.com
+ ([fe80::15e3:d746:57e8:4de0%7]) with mapi id 15.20.5227.023; Tue, 10 May 2022
+ 23:58:15 +0000
+Message-ID: <bb6e76f1-2cbc-893d-c8ab-3ecd3fcae2a5@nvidia.com>
+Date:   Tue, 10 May 2022 16:58:13 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Subject: Re: [PATCH v4] mm: fix is_pinnable_page against on cma page
+Content-Language: en-US
+To:     Minchan Kim <minchan@kernel.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        linux-mm <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        John Dias <joaodias@google.com>,
+        David Hildenbrand <david@redhat.com>
+References: <20220510211743.95831-1-minchan@kernel.org>
+ <857d21da-5de2-fa3e-b1ce-41cc1cfb0191@nvidia.com>
+ <Ynr10y6pkH6WwbQo@google.com>
+From:   John Hubbard <jhubbard@nvidia.com>
+In-Reply-To: <Ynr10y6pkH6WwbQo@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR13CA0033.namprd13.prod.outlook.com
+ (2603:10b6:a03:2c2::8) To BY5PR12MB4130.namprd12.prod.outlook.com
+ (2603:10b6:a03:20b::16)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 54ea1d2e-e3a1-43c9-ff45-08da32e0f2fd
+X-MS-TrafficTypeDiagnostic: IA1PR12MB6114:EE_
+X-Microsoft-Antispam-PRVS: <IA1PR12MB611448E3DA6984F516778C79A8C99@IA1PR12MB6114.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: pp4YhLoweVnem4j7TkWeul3TetDLWJZvBYZlUZaMHIUibuFFosvenyvqgaulIqgR0YZUcpjf+kTtbbxvKp5X8M4r2fPlWgHJzqOPrbJK1AIGyQjDl0ME49RlT/BOusJkYLrikZ5JDXt8vICmH5Ee2QKCqFbY7PYpo1RmwYVFG5F4UUsGsm9HzIGs9pKuItxJaUygfAxeggee64FEiw256ZqfFsXmI3zOIOqU4fu3CH0cACkd8RL0B1+ckA8HhKAQANBL4CCiKH+pjulvWXe2F6jIdqiIJ0o8NlVmziKTJyP+TXxUfLXmOyAph+TAxxRmfYuXX+/f8n/5vetsdQPmMuFI1bB7piWZCv9wJ4wKnYB2U/GWa/WkYG2wY9NnmLXNToqIsDnN+zI7m2OaE1KhfpuQPb4L9SSBgkWbxZTJ2fnG0PPtJ6S/pzN3NaQdXdav/dnSRpGEBmKhXGwOu4qGHxPrAsMMxtppNA+CuRXYtsZo5oCpbC3hC1nhYzrwE6oa7NfJi7J2aERjF2f9JWM8xkzjZgV4D6kGo9R58lRDpTVK/k+uLGzAsEvpqVPi7ASUfRT0Iud3a8gmoNYQWQvLIFs2j5BlHiqvccOM3nImuDhvsxI+Yy1s9XfLBwal1bnsQwIscpb07z5UxhLyRipinCKQ02EQfzfwiJ4d6DmO+vp/hxtlmQNULIY10xbFxG+Mt+g6GCHpoSzzbwQCLncyMweKNwyHv51J4q3Sj8BWimqcEfqro0m49GC80Yi2toby
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4130.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6512007)(26005)(2616005)(186003)(66946007)(31686004)(8936002)(66556008)(4326008)(66476007)(8676002)(36756003)(5660300002)(316002)(54906003)(2906002)(6916009)(508600001)(38100700002)(6506007)(6486002)(31696002)(53546011)(86362001)(83380400001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?OXJzWTQyRVJDNm1hOVVYUDR4K09zNHNJVTJLdjhOcUhYZW03NGlmajNZbDgw?=
+ =?utf-8?B?ZmZVODB3RGVBY2ZaYlI3V1RIZysvendRSDdIQzl1eFo0cGlCY0RSQjIwRnBn?=
+ =?utf-8?B?RU1rSEFxdkZybEVBSzJTZzJPNlpTaU9wRExYdDRaekpXdjc2eWVReXRHSlg0?=
+ =?utf-8?B?U3VnYzhpUkl0STlzeFd4Sm1PeWZUcEh5enRaRitYaE1EK0Z5bUpZUTk1U1VX?=
+ =?utf-8?B?MFdHRDB3VEpQek1hOURleHZJYmVadGdzNlJjUmFWc0pzaWRNd0RSZTEydTFp?=
+ =?utf-8?B?S2t0UFFVWEhNUlAzSWlUNm9IRnFPd3lmbzlPTkNZUzB2RGJUMy81SkQwV1F3?=
+ =?utf-8?B?bGhjQ3VQQ0tjV0FFakpiNmFYNEI0ZDZtT1FaMlI2UXR1TmdIZGZvck9qRkFJ?=
+ =?utf-8?B?eUMvZVc5OWpkUWdJSWw4S1BISGVjSDZMSzI0WCs2cmtwR2tROE5TZ1RpTWdS?=
+ =?utf-8?B?UThrVVVHeDJWNkRvUmU3SU5EZWt0K1B4UXZRRkpxYTVtZ2xjZVZUTlhxRzJQ?=
+ =?utf-8?B?WDRQUWs2bnRRdkY3RWZQd3lld2QwL0MzMmVPMmp0Y3pCcUJSS2tyVXV3Tm5N?=
+ =?utf-8?B?MzMvY1pBM3hJdG13RHc1cUVOMFNMRmwwS0hFbk5CMGtlaVVZZDhIVjFmdUNx?=
+ =?utf-8?B?Mm12SmV2eW9LRFdxTmtGWCtQdzZZcWUwS1BYOG5rYk52ZDRhbzZLN0dGUmZN?=
+ =?utf-8?B?YlZKRzcwaUpuc0kwbWNORFBzU2ZNRFRQOTJ3aHdKUVRmS0VKT3RQYytJY1Ri?=
+ =?utf-8?B?b01BZ21kbFhoMmwzVUZ3V3liLzl4SlZBajgzSndwQWJxc2lxbW04d2RTMzNC?=
+ =?utf-8?B?NTlJMktTYVRBRU4yYTdZRVFZYkdpOTlQOVptNW1Ka1RRalBPdEhFUlh3anA1?=
+ =?utf-8?B?emtKUkNYdEw2UHovaTJjbHNHQVRpMUZyNHd6RWpuYldZZnlURUU0eERySjdt?=
+ =?utf-8?B?NVJaNmFVSnFDSVZkbjZHaTlFVjlORmNza3B2bUpXQlN0cUl5Vis2VnRkTVht?=
+ =?utf-8?B?cnNLUGc0L3IreUFoQldMWE9sQU9TSlBtSGViU1Y3dlIxdWt6K3lwazNHWVFZ?=
+ =?utf-8?B?MFFzL1Q5QWkyUDZ0eTgxRXFYWHI2cmtNVmoyTHRaZWl5WWxSL2pkODJCenc5?=
+ =?utf-8?B?dVRCUHRLNXNEZTFzMWpLVS9UQUZlcUlTK2JsQkdpOTcwTk9OWHJZR3FhVWhJ?=
+ =?utf-8?B?UWkxRldyeWtCZzZvOHhmb1Jjem9yTER6MTh1V210cjRjREVuTGxHN1RLdlpj?=
+ =?utf-8?B?VUxYWWRxWnhxblZNWWNLREx5RlNFbUtZaVV6N3dEazVrYWdGNktpakF5YTRH?=
+ =?utf-8?B?WitHc0xSQUE0UER3VENDQ2h3cTZ4ZExXak1IY002YzVKSDdPV29xRkxPL3M4?=
+ =?utf-8?B?THVNbVlETWhlSFdJY1o1MXJWcXcvUGJIM0tQakpudk1NcUIrVVNyd3F3Vkdu?=
+ =?utf-8?B?UHFZWjRkN01rY0JqNkpIb21WOFd4MW9VNmMzSUN3YUp0YlAxVy96OFY0alJS?=
+ =?utf-8?B?OS96WFZ1R2FZajBSMGl2WjMyWEZoa0l5cmM3UXl6UmVoZ3lRa1pXcVNmVXBs?=
+ =?utf-8?B?dzliN3JzemwySFJLK2d1anJYak9EYmJIS2E5RjNNbG40ZEZ3VHRsUVRxYUR5?=
+ =?utf-8?B?U1hEMTNyQWxkSDJ6eVlBeDFDcWxTZGRnM3dqTFhnNGxvUUticllUQ3VRZXlF?=
+ =?utf-8?B?OFpNVFhUWUVlMnpVUnJOYUpNS21NUWozbjd1RjVOaXV3Y2daYkFPWXpnY0F1?=
+ =?utf-8?B?bFRabmFDTFMxUkNWVXorTW1Lc3hTcXZ4ZFpRNGxwZmd1YnIycUM2RDJINnRs?=
+ =?utf-8?B?aFRpakE0bkRxcUNsWjcrRTA3L05jRFZjblZlOUNzVGdvZFh0TmJXMnBHTmgr?=
+ =?utf-8?B?THBBZlMwYnJUa0ZOUms1OFpSM2pBUlpRU2tKNjkvTUY5aVF6bVUvQVNtbE9P?=
+ =?utf-8?B?bFl4RmNkQnNLOUxZQWg1QlVGL0Z5T3o4ZGxuOTFkSDBTR2VKQlhLK2o0NU1a?=
+ =?utf-8?B?R3RkVlJYQVpPQzhDNTByRkZGWXA1SE5tRWl6VmNTMGtWQ0RnUzQ1Ny9ac3dH?=
+ =?utf-8?B?UERwSFdrUC9mM1JOZSs5RTNzMjc1Tkk3MlpOR0tERGJlUW5kamV5TXpiUU03?=
+ =?utf-8?B?WVZyL05ZZzRBTEZucS85MmtQR2xZM05SZWVUZk5sQ29aM2c0MlNGR1c0dFdW?=
+ =?utf-8?B?NENWdlFvZWIvOXdrcE1OR0lSdkltYzVtN3dRaEtJbTBWTmlRc1ppbXZrZlhr?=
+ =?utf-8?B?R2M0emxmSlUrV3ZzTGh3QW5lTHRCak1FMGE2T1dyR0lUVWhFUUFzYmFlc2Qz?=
+ =?utf-8?B?R3JUbTJ0T0FwWUw4N2NTZHNiNFBuY0FVM1I4aEZxNTFBeS9nUVNiV1NmLzNG?=
+ =?utf-8?Q?1gl6GqNNGZerbLIQ=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 54ea1d2e-e3a1-43c9-ff45-08da32e0f2fd
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4130.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 23:58:15.8235
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: HR8IyqTJeSkqX7IOlLuFht/DtYn61Ilni9UCSHtRjq8KpVBgwOIrZtUVEIKiwuPMPp9ChNnpEei8145/gZqWuw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6114
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These tests verify that the cgroup GPU memory charge is transferred
-correctly when a dmabuf is passed between processes in two different
-cgroups and the sender specifies BINDER_FD_FLAG_XFER_CHARGE or
-BINDER_FDA_FLAG_XFER_CHARGE in the binder transaction data
-containing the dmabuf file descriptor.
+On 5/10/22 4:31 PM, Minchan Kim wrote:
+>>> +	int __mt = get_pageblock_migratetype(page);
+>>> +	int mt = __READ_ONCE(__mt);
+>>
+>> Although I saw the email discussion about this in v2, that discussion
+>> didn't go far enough. It started with "don't use volatile", and went
+>> on to "try __READ_ONCE() instead", but it should have continued on
+>> to "you don't need this at all".
+> 
+> That's really what I want to hear from experts so wanted to learn
+> "Why". How could we prevent refetching of the mt if we don't use
+> __READ_ONCE or volatile there?
+> 
+>>
+>> Because you don't. There is nothing you are racing with, and adding
+>> __READ_ONCE() in order to avoid a completely not-going-to-happen
+>> compiler re-invocation of a significant code block is just very wrong.
+>>
+>> So let's just let it go entirely. :)
+> 
+> Yeah, once it's clear for everyone, I am happy to remove the
+> unnecessary lines.
+> 
+>>
+>>> +
+>>> +	if (mt == MIGRATE_CMA || mt == MIGRATE_ISOLATE)
+>>
 
-Signed-off-by: T.J. Mercier <tjmercier@google.com>
+With or without __READ_ONCE() or volatile or anything else,
+this code will do what you want. Which is: loosely check
+for either of the above.
 
----
-v6 changes
-Rename BINDER_FD{A}_FLAG_SENDER_NO_NEED ->
-BINDER_FD{A}_FLAG_XFER_CHARGE per Carlos Llamas.
+What functional problem do you think you are preventing
+with __READ_ONCE()? Because I don't see one.
 
-v5 changes
-Tests for both binder_fd_array_object and binder_fd_object.
+thanks,
 
-Return error code instead of struct binder{fs}_ctx.
-
-Use ifdef __ANDROID__ to choose platform-dependent temp path instead of a
-runtime fallback.
-
-Ensure binderfs_mntpt ends with a trailing '/' character instead of
-prepending it where used.
-
-v4 changes
-Skip test if not run as root per Shuah Khan.
-
-Add better logging for abnormal child termination per Shuah Khan.
----
- .../selftests/drivers/android/binder/Makefile |   8 +
- .../drivers/android/binder/binder_util.c      | 250 +++++++++
- .../drivers/android/binder/binder_util.h      |  32 ++
- .../selftests/drivers/android/binder/config   |   4 +
- .../binder/test_dmabuf_cgroup_transfer.c      | 526 ++++++++++++++++++
- 5 files changed, 820 insertions(+)
- create mode 100644 tools/testing/selftests/drivers/android/binder/Makefile
- create mode 100644 tools/testing/selftests/drivers/android/binder/binder_util.c
- create mode 100644 tools/testing/selftests/drivers/android/binder/binder_util.h
- create mode 100644 tools/testing/selftests/drivers/android/binder/config
- create mode 100644 tools/testing/selftests/drivers/android/binder/test_dmabuf_cgroup_transfer.c
-
-diff --git a/tools/testing/selftests/drivers/android/binder/Makefile b/tools/testing/selftests/drivers/android/binder/Makefile
-new file mode 100644
-index 000000000000..726439d10675
---- /dev/null
-+++ b/tools/testing/selftests/drivers/android/binder/Makefile
-@@ -0,0 +1,8 @@
-+# SPDX-License-Identifier: GPL-2.0
-+CFLAGS += -Wall
-+
-+TEST_GEN_PROGS = test_dmabuf_cgroup_transfer
-+
-+include ../../../lib.mk
-+
-+$(OUTPUT)/test_dmabuf_cgroup_transfer: ../../../cgroup/cgroup_util.c binder_util.c
-diff --git a/tools/testing/selftests/drivers/android/binder/binder_util.c b/tools/testing/selftests/drivers/android/binder/binder_util.c
-new file mode 100644
-index 000000000000..cdd97cb0bb60
---- /dev/null
-+++ b/tools/testing/selftests/drivers/android/binder/binder_util.c
-@@ -0,0 +1,250 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include "binder_util.h"
-+
-+#include <errno.h>
-+#include <fcntl.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <string.h>
-+#include <unistd.h>
-+#include <sys/ioctl.h>
-+#include <sys/mman.h>
-+#include <sys/mount.h>
-+
-+#include <linux/limits.h>
-+#include <linux/android/binder.h>
-+#include <linux/android/binderfs.h>
-+
-+static const size_t BINDER_MMAP_SIZE = 64 * 1024;
-+
-+static void binderfs_unmount(const char *mountpoint)
-+{
-+	if (umount2(mountpoint, MNT_DETACH))
-+		fprintf(stderr, "Failed to unmount binderfs at %s: %s\n",
-+			mountpoint, strerror(errno));
-+	else
-+		fprintf(stderr, "Binderfs unmounted: %s\n", mountpoint);
-+
-+	if (rmdir(mountpoint))
-+		fprintf(stderr, "Failed to remove binderfs mount %s: %s\n",
-+			mountpoint, strerror(errno));
-+	else
-+		fprintf(stderr, "Binderfs mountpoint destroyed: %s\n", mountpoint);
-+}
-+
-+int create_binderfs(struct binderfs_ctx *ctx, const char *name)
-+{
-+	int fd, ret, saved_errno;
-+	struct binderfs_device device = { 0 };
-+
-+	/*
-+	 * P_tmpdir is set to "/tmp/" on Android platforms where Binder is most commonly used, but
-+	 * this path does not actually exist on Android. For Android we'll try using
-+	 * "/data/local/tmp" and P_tmpdir for non-Android platforms.
-+	 *
-+	 * This mount point should have a trailing '/' character, but mkdtemp requires that the last
-+	 * six characters (before the first null terminator) must be "XXXXXX". Manually append an
-+	 * additional null character in the string literal to allocate a character array of the
-+	 * correct final size, which we will replace with a '/' after successful completion of the
-+	 * mkdtemp call.
-+	 */
-+#ifdef __ANDROID__
-+	char binderfs_mntpt[] = "/data/local/tmp/binderfs_XXXXXX\0";
-+#else
-+	/* P_tmpdir may or may not contain a trailing '/' separator. We always append one here. */
-+	char binderfs_mntpt[] = P_tmpdir "/binderfs_XXXXXX\0";
-+#endif
-+	static const char BINDER_CONTROL_NAME[] = "binder-control";
-+	char device_path[strlen(binderfs_mntpt) + 1 + strlen(BINDER_CONTROL_NAME) + 1];
-+
-+	if (mkdtemp(binderfs_mntpt) == NULL) {
-+		fprintf(stderr, "Failed to create binderfs mountpoint at %s: %s.\n",
-+			binderfs_mntpt, strerror(errno));
-+		return -1;
-+	}
-+	binderfs_mntpt[strlen(binderfs_mntpt)] = '/';
-+	fprintf(stderr, "Binderfs mountpoint created at %s\n", binderfs_mntpt);
-+
-+	if (mount(NULL, binderfs_mntpt, "binder", 0, 0)) {
-+		perror("Could not mount binderfs");
-+		rmdir(binderfs_mntpt);
-+		return -1;
-+	}
-+	fprintf(stderr, "Binderfs mounted at %s\n", binderfs_mntpt);
-+
-+	strncpy(device.name, name, sizeof(device.name));
-+	snprintf(device_path, sizeof(device_path), "%s%s", binderfs_mntpt, BINDER_CONTROL_NAME);
-+	fd = open(device_path, O_RDONLY | O_CLOEXEC);
-+	if (!fd) {
-+		fprintf(stderr, "Failed to open %s device", BINDER_CONTROL_NAME);
-+		binderfs_unmount(binderfs_mntpt);
-+		return -1;
-+	}
-+
-+	ret = ioctl(fd, BINDER_CTL_ADD, &device);
-+	saved_errno = errno;
-+	close(fd);
-+	errno = saved_errno;
-+	if (ret) {
-+		perror("Failed to allocate new binder device");
-+		binderfs_unmount(binderfs_mntpt);
-+		return -1;
-+	}
-+
-+	fprintf(stderr, "Allocated new binder device with major %d, minor %d, and name %s at %s\n",
-+		device.major, device.minor, device.name, binderfs_mntpt);
-+
-+	ctx->name = strdup(name);
-+	ctx->mountpoint = strdup(binderfs_mntpt);
-+
-+	return 0;
-+}
-+
-+void destroy_binderfs(struct binderfs_ctx *ctx)
-+{
-+	char path[PATH_MAX];
-+
-+	snprintf(path, sizeof(path), "%s%s", ctx->mountpoint, ctx->name);
-+
-+	if (unlink(path))
-+		fprintf(stderr, "Failed to unlink binder device %s: %s\n", path, strerror(errno));
-+	else
-+		fprintf(stderr, "Destroyed binder %s at %s\n", ctx->name, ctx->mountpoint);
-+
-+	binderfs_unmount(ctx->mountpoint);
-+
-+	free(ctx->name);
-+	free(ctx->mountpoint);
-+}
-+
-+int open_binder(const struct binderfs_ctx *bfs_ctx, struct binder_ctx *ctx)
-+{
-+	char path[PATH_MAX];
-+
-+	snprintf(path, sizeof(path), "%s%s", bfs_ctx->mountpoint, bfs_ctx->name);
-+	ctx->fd = open(path, O_RDWR | O_NONBLOCK | O_CLOEXEC);
-+	if (ctx->fd < 0) {
-+		fprintf(stderr, "Error opening binder device %s: %s\n", path, strerror(errno));
-+		return -1;
-+	}
-+
-+	ctx->memory = mmap(NULL, BINDER_MMAP_SIZE, PROT_READ, MAP_SHARED, ctx->fd, 0);
-+	if (ctx->memory == NULL) {
-+		perror("Error mapping binder memory");
-+		close(ctx->fd);
-+		ctx->fd = -1;
-+		return -1;
-+	}
-+
-+	return 0;
-+}
-+
-+void close_binder(struct binder_ctx *ctx)
-+{
-+	if (munmap(ctx->memory, BINDER_MMAP_SIZE))
-+		perror("Failed to unmap binder memory");
-+	ctx->memory = NULL;
-+
-+	if (close(ctx->fd))
-+		perror("Failed to close binder");
-+	ctx->fd = -1;
-+}
-+
-+int become_binder_context_manager(int binder_fd)
-+{
-+	return ioctl(binder_fd, BINDER_SET_CONTEXT_MGR, 0);
-+}
-+
-+int do_binder_write_read(int binder_fd, void *writebuf, binder_size_t writesize,
-+			 void *readbuf, binder_size_t readsize)
-+{
-+	int err;
-+	struct binder_write_read bwr = {
-+		.write_buffer = (binder_uintptr_t)writebuf,
-+		.write_size = writesize,
-+		.read_buffer = (binder_uintptr_t)readbuf,
-+		.read_size = readsize
-+	};
-+
-+	do {
-+		if (ioctl(binder_fd, BINDER_WRITE_READ, &bwr) >= 0)
-+			err = 0;
-+		else
-+			err = -errno;
-+	} while (err == -EINTR);
-+
-+	if (err < 0) {
-+		perror("BINDER_WRITE_READ");
-+		return -1;
-+	}
-+
-+	if (bwr.write_consumed < writesize) {
-+		fprintf(stderr, "Binder did not consume full write buffer %llu %llu\n",
-+			bwr.write_consumed, writesize);
-+		return -1;
-+	}
-+
-+	return bwr.read_consumed;
-+}
-+
-+static const char *reply_string(int cmd)
-+{
-+	switch (cmd) {
-+	case BR_ERROR:
-+		return "BR_ERROR";
-+	case BR_OK:
-+		return "BR_OK";
-+	case BR_TRANSACTION_SEC_CTX:
-+		return "BR_TRANSACTION_SEC_CTX";
-+	case BR_TRANSACTION:
-+		return "BR_TRANSACTION";
-+	case BR_REPLY:
-+		return "BR_REPLY";
-+	case BR_ACQUIRE_RESULT:
-+		return "BR_ACQUIRE_RESULT";
-+	case BR_DEAD_REPLY:
-+		return "BR_DEAD_REPLY";
-+	case BR_TRANSACTION_COMPLETE:
-+		return "BR_TRANSACTION_COMPLETE";
-+	case BR_INCREFS:
-+		return "BR_INCREFS";
-+	case BR_ACQUIRE:
-+		return "BR_ACQUIRE";
-+	case BR_RELEASE:
-+		return "BR_RELEASE";
-+	case BR_DECREFS:
-+		return "BR_DECREFS";
-+	case BR_ATTEMPT_ACQUIRE:
-+		return "BR_ATTEMPT_ACQUIRE";
-+	case BR_NOOP:
-+		return "BR_NOOP";
-+	case BR_SPAWN_LOOPER:
-+		return "BR_SPAWN_LOOPER";
-+	case BR_FINISHED:
-+		return "BR_FINISHED";
-+	case BR_DEAD_BINDER:
-+		return "BR_DEAD_BINDER";
-+	case BR_CLEAR_DEATH_NOTIFICATION_DONE:
-+		return "BR_CLEAR_DEATH_NOTIFICATION_DONE";
-+	case BR_FAILED_REPLY:
-+		return "BR_FAILED_REPLY";
-+	case BR_FROZEN_REPLY:
-+		return "BR_FROZEN_REPLY";
-+	case BR_ONEWAY_SPAM_SUSPECT:
-+		return "BR_ONEWAY_SPAM_SUSPECT";
-+	default:
-+		return "Unknown";
-+	};
-+}
-+
-+int expect_binder_reply(int32_t actual, int32_t expected)
-+{
-+	if (actual != expected) {
-+		fprintf(stderr, "Expected %s but received %s\n",
-+			reply_string(expected), reply_string(actual));
-+		return -1;
-+	}
-+	return 0;
-+}
-+
-diff --git a/tools/testing/selftests/drivers/android/binder/binder_util.h b/tools/testing/selftests/drivers/android/binder/binder_util.h
-new file mode 100644
-index 000000000000..adc2b20e8d0a
---- /dev/null
-+++ b/tools/testing/selftests/drivers/android/binder/binder_util.h
-@@ -0,0 +1,32 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+
-+#ifndef SELFTEST_BINDER_UTIL_H
-+#define SELFTEST_BINDER_UTIL_H
-+
-+#include <stdint.h>
-+
-+#include <linux/android/binder.h>
-+
-+struct binderfs_ctx {
-+	char *name;
-+	char *mountpoint;
-+};
-+
-+struct binder_ctx {
-+	int fd;
-+	void *memory;
-+};
-+
-+int create_binderfs(struct binderfs_ctx *ctx, const char *name);
-+void destroy_binderfs(struct binderfs_ctx *ctx);
-+
-+int open_binder(const struct binderfs_ctx *bfs_ctx, struct binder_ctx *ctx);
-+void close_binder(struct binder_ctx *ctx);
-+
-+int become_binder_context_manager(int binder_fd);
-+
-+int do_binder_write_read(int binder_fd, void *writebuf, binder_size_t writesize,
-+			 void *readbuf, binder_size_t readsize);
-+
-+int expect_binder_reply(int32_t actual, int32_t expected);
-+#endif
-diff --git a/tools/testing/selftests/drivers/android/binder/config b/tools/testing/selftests/drivers/android/binder/config
-new file mode 100644
-index 000000000000..fcc5f8f693b3
---- /dev/null
-+++ b/tools/testing/selftests/drivers/android/binder/config
-@@ -0,0 +1,4 @@
-+CONFIG_CGROUP_GPU=y
-+CONFIG_ANDROID=y
-+CONFIG_ANDROID_BINDERFS=y
-+CONFIG_ANDROID_BINDER_IPC=y
-diff --git a/tools/testing/selftests/drivers/android/binder/test_dmabuf_cgroup_transfer.c b/tools/testing/selftests/drivers/android/binder/test_dmabuf_cgroup_transfer.c
-new file mode 100644
-index 000000000000..4d468c1dc4e3
---- /dev/null
-+++ b/tools/testing/selftests/drivers/android/binder/test_dmabuf_cgroup_transfer.c
-@@ -0,0 +1,526 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+/*
-+ * These tests verify that the cgroup GPU memory charge is transferred correctly when a dmabuf is
-+ * passed between processes in two different cgroups and the sender specifies
-+ * BINDER_FD_FLAG_XFER_CHARGE or BINDER_FDA_FLAG_XFER_CHARGE in the binder transaction data
-+ * containing the dmabuf file descriptor.
-+ *
-+ * The parent test process becomes the binder context manager, then forks a child who initiates a
-+ * transaction with the context manager by specifying a target of 0. The context manager reply
-+ * contains a dmabuf file descriptor (or an array of one file descriptor) which was allocated by the
-+ * parent, but should be charged to the child cgroup after the binder transaction.
-+ */
-+
-+#include <errno.h>
-+#include <fcntl.h>
-+#include <stddef.h>
-+#include <stdint.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <string.h>
-+#include <unistd.h>
-+#include <sys/epoll.h>
-+#include <sys/ioctl.h>
-+#include <sys/types.h>
-+#include <sys/wait.h>
-+
-+#include "binder_util.h"
-+#include "../../../cgroup/cgroup_util.h"
-+#include "../../../kselftest.h"
-+#include "../../../kselftest_harness.h"
-+
-+#include <linux/limits.h>
-+#include <linux/dma-heap.h>
-+#include <linux/android/binder.h>
-+
-+#define UNUSED(x) ((void)(x))
-+
-+static const unsigned int BINDER_CODE = 8675309; /* Any number will work here */
-+
-+struct cgroup_ctx {
-+	char *root;
-+	char *source;
-+	char *dest;
-+};
-+
-+void destroy_cgroups(struct __test_metadata *_metadata, struct cgroup_ctx *ctx)
-+{
-+	if (ctx->source != NULL) {
-+		TH_LOG("Destroying cgroup: %s", ctx->source);
-+		rmdir(ctx->source);
-+		free(ctx->source);
-+	}
-+
-+	if (ctx->dest != NULL) {
-+		TH_LOG("Destroying cgroup: %s", ctx->dest);
-+		rmdir(ctx->dest);
-+		free(ctx->dest);
-+	}
-+
-+	free(ctx->root);
-+	ctx->root = ctx->source = ctx->dest = NULL;
-+}
-+
-+struct cgroup_ctx create_cgroups(struct __test_metadata *_metadata)
-+{
-+	struct cgroup_ctx ctx = {0};
-+	char root[PATH_MAX], *tmp;
-+	static const char template[] = "/gpucg_XXXXXX";
-+
-+	if (cg_find_unified_root(root, sizeof(root))) {
-+		TH_LOG("Could not find cgroups root");
-+		return ctx;
-+	}
-+
-+	if (cg_read_strstr(root, "cgroup.controllers", "gpu")) {
-+		TH_LOG("Could not find GPU controller");
-+		return ctx;
-+	}
-+
-+	if (cg_write(root, "cgroup.subtree_control", "+gpu")) {
-+		TH_LOG("Could not enable GPU controller");
-+		return ctx;
-+	}
-+
-+	ctx.root = strdup(root);
-+
-+	snprintf(root, sizeof(root), "%s/%s", ctx.root, template);
-+	tmp = mkdtemp(root);
-+	if (tmp == NULL) {
-+		TH_LOG("%s - Could not create source cgroup", strerror(errno));
-+		destroy_cgroups(_metadata, &ctx);
-+		return ctx;
-+	}
-+	ctx.source = strdup(tmp);
-+
-+	snprintf(root, sizeof(root), "%s/%s", ctx.root, template);
-+	tmp = mkdtemp(root);
-+	if (tmp == NULL) {
-+		TH_LOG("%s - Could not create destination cgroup", strerror(errno));
-+		destroy_cgroups(_metadata, &ctx);
-+		return ctx;
-+	}
-+	ctx.dest = strdup(tmp);
-+
-+	TH_LOG("Created cgroups: %s %s", ctx.source, ctx.dest);
-+
-+	return ctx;
-+}
-+
-+int dmabuf_heap_alloc(int fd, size_t len, int *dmabuf_fd)
-+{
-+	struct dma_heap_allocation_data data = {
-+		.len = len,
-+		.fd = 0,
-+		.fd_flags = O_RDONLY | O_CLOEXEC,
-+		.heap_flags = 0,
-+	};
-+	int ret;
-+
-+	if (!dmabuf_fd)
-+		return -EINVAL;
-+
-+	ret = ioctl(fd, DMA_HEAP_IOCTL_ALLOC, &data);
-+	if (ret < 0)
-+		return ret;
-+	*dmabuf_fd = (int)data.fd;
-+	return ret;
-+}
-+
-+/* The system heap is known to export dmabufs with support for cgroup tracking */
-+int alloc_dmabuf_from_system_heap(struct __test_metadata *_metadata, size_t bytes)
-+{
-+	int heap_fd = -1, dmabuf_fd = -1;
-+	static const char * const heap_path = "/dev/dma_heap/system";
-+
-+	heap_fd = open(heap_path, O_RDONLY);
-+	if (heap_fd < 0) {
-+		TH_LOG("%s - open %s failed!\n", strerror(errno), heap_path);
-+		return -1;
-+	}
-+
-+	if (dmabuf_heap_alloc(heap_fd, bytes, &dmabuf_fd))
-+		TH_LOG("dmabuf allocation failed! - %s", strerror(errno));
-+	close(heap_fd);
-+
-+	return dmabuf_fd;
-+}
-+
-+int binder_request_dmabuf(int binder_fd)
-+{
-+	int ret;
-+
-+	/*
-+	 * We just send an empty binder_buffer_object to initiate a transaction
-+	 * with the context manager, who should respond with a single dmabuf
-+	 * inside a binder_fd_array_object or a binder_fd_object.
-+	 */
-+
-+	struct binder_buffer_object bbo = {
-+		.hdr.type = BINDER_TYPE_PTR,
-+		.flags = 0,
-+		.buffer = 0,
-+		.length = 0,
-+		.parent = 0, /* No parent */
-+		.parent_offset = 0 /* No parent */
-+	};
-+
-+	binder_size_t offsets[] = {0};
-+
-+	struct {
-+		int32_t cmd;
-+		struct binder_transaction_data btd;
-+	} __attribute__((packed)) bc = {
-+		.cmd = BC_TRANSACTION,
-+		.btd = {
-+			.target = { 0 },
-+			.cookie = 0,
-+			.code = BINDER_CODE,
-+			.flags = TF_ACCEPT_FDS, /* We expect a FD/FDA in the reply */
-+			.data_size = sizeof(bbo),
-+			.offsets_size = sizeof(offsets),
-+			.data.ptr = {
-+				(binder_uintptr_t)&bbo,
-+				(binder_uintptr_t)offsets
-+			}
-+		},
-+	};
-+
-+	struct {
-+		int32_t reply_noop;
-+	} __attribute__((packed)) br;
-+
-+	ret = do_binder_write_read(binder_fd, &bc, sizeof(bc), &br, sizeof(br));
-+	if (ret >= sizeof(br) && expect_binder_reply(br.reply_noop, BR_NOOP)) {
-+		return -1;
-+	} else if (ret < sizeof(br)) {
-+		fprintf(stderr, "Not enough bytes in binder reply %d\n", ret);
-+		return -1;
-+	}
-+	return 0;
-+}
-+
-+int send_dmabuf_reply_fda(int binder_fd, struct binder_transaction_data *tr, int dmabuf_fd)
-+{
-+	int ret;
-+	/*
-+	 * The trailing 0 is to achieve the necessary alignment for the binder
-+	 * buffer_size.
-+	 */
-+	int fdarray[] = { dmabuf_fd, 0 };
-+
-+	struct binder_buffer_object bbo = {
-+		.hdr.type = BINDER_TYPE_PTR,
-+		.flags = 0,
-+		.buffer = (binder_uintptr_t)fdarray,
-+		.length = sizeof(fdarray),
-+		.parent = 0, /* No parent */
-+		.parent_offset = 0 /* No parent */
-+	};
-+
-+	struct binder_fd_array_object bfdao = {
-+		.hdr.type = BINDER_TYPE_FDA,
-+		.flags = BINDER_FDA_FLAG_XFER_CHARGE,
-+		.num_fds = 1,
-+		.parent = 0, /* The binder_buffer_object */
-+		.parent_offset = 0 /* FDs follow immediately */
-+	};
-+
-+	uint64_t sz = sizeof(fdarray);
-+	uint8_t data[sizeof(sz) + sizeof(bbo) + sizeof(bfdao)];
-+	binder_size_t offsets[] = {sizeof(sz), sizeof(sz)+sizeof(bbo)};
-+
-+	memcpy(data,                            &sz, sizeof(sz));
-+	memcpy(data + sizeof(sz),               &bbo, sizeof(bbo));
-+	memcpy(data + sizeof(sz) + sizeof(bbo), &bfdao, sizeof(bfdao));
-+
-+	struct {
-+		int32_t cmd;
-+		struct binder_transaction_data_sg btd;
-+	} __attribute__((packed)) bc = {
-+		.cmd = BC_REPLY_SG,
-+		.btd.transaction_data = {
-+			.target = { tr->target.handle },
-+			.cookie = tr->cookie,
-+			.code = BINDER_CODE,
-+			.flags = 0,
-+			.data_size = sizeof(data),
-+			.offsets_size = sizeof(offsets),
-+			.data.ptr = {
-+				(binder_uintptr_t)data,
-+				(binder_uintptr_t)offsets
-+			}
-+		},
-+		.btd.buffers_size = sizeof(fdarray)
-+	};
-+
-+	struct {
-+		int32_t reply_noop;
-+	} __attribute__((packed)) br;
-+
-+	ret = do_binder_write_read(binder_fd, &bc, sizeof(bc), &br, sizeof(br));
-+	if (ret >= sizeof(br) && expect_binder_reply(br.reply_noop, BR_NOOP)) {
-+		return -1;
-+	} else if (ret < sizeof(br)) {
-+		fprintf(stderr, "Not enough bytes in binder reply %d\n", ret);
-+		return -1;
-+	}
-+	return 0;
-+}
-+
-+int send_dmabuf_reply_fd(int binder_fd, struct binder_transaction_data *tr, int dmabuf_fd)
-+{
-+	int ret;
-+
-+	struct binder_fd_object bfdo = {
-+		.hdr.type = BINDER_TYPE_FD,
-+		.flags = BINDER_FD_FLAG_XFER_CHARGE,
-+		.fd = dmabuf_fd
-+	};
-+
-+	binder_size_t offset = 0;
-+
-+	struct {
-+		int32_t cmd;
-+		struct binder_transaction_data btd;
-+	} __attribute__((packed)) bc = {
-+		.cmd = BC_REPLY,
-+		.btd = {
-+			.target = { tr->target.handle },
-+			.cookie = tr->cookie,
-+			.code = BINDER_CODE,
-+			.flags = 0,
-+			.data_size = sizeof(bfdo),
-+			.offsets_size = sizeof(offset),
-+			.data.ptr = {
-+				(binder_uintptr_t)&bfdo,
-+				(binder_uintptr_t)&offset
-+			}
-+		}
-+	};
-+
-+	struct {
-+		int32_t reply_noop;
-+	} __attribute__((packed)) br;
-+
-+	ret = do_binder_write_read(binder_fd, &bc, sizeof(bc), &br, sizeof(br));
-+	if (ret >= sizeof(br) && expect_binder_reply(br.reply_noop, BR_NOOP)) {
-+		return -1;
-+	} else if (ret < sizeof(br)) {
-+		fprintf(stderr, "Not enough bytes in binder reply %d\n", ret);
-+		return -1;
-+	}
-+	return 0;
-+}
-+
-+struct binder_transaction_data *binder_wait_for_transaction(int binder_fd,
-+							    uint32_t *readbuf,
-+							    size_t readsize)
-+{
-+	static const int MAX_EVENTS = 1, EPOLL_WAIT_TIME_MS = 3 * 1000;
-+	struct binder_reply {
-+		int32_t reply0;
-+		int32_t reply1;
-+		struct binder_transaction_data btd;
-+	} *br;
-+	struct binder_transaction_data *ret = NULL;
-+	struct epoll_event events[MAX_EVENTS];
-+	int epoll_fd, num_events, readcount;
-+	uint32_t bc[] = { BC_ENTER_LOOPER };
-+
-+	do_binder_write_read(binder_fd, &bc, sizeof(bc), NULL, 0);
-+
-+	epoll_fd = epoll_create1(EPOLL_CLOEXEC);
-+	if (epoll_fd == -1) {
-+		perror("epoll_create");
-+		return NULL;
-+	}
-+
-+	events[0].events = EPOLLIN;
-+	if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, binder_fd, &events[0])) {
-+		perror("epoll_ctl add");
-+		goto err_close;
-+	}
-+
-+	num_events = epoll_wait(epoll_fd, events, MAX_EVENTS, EPOLL_WAIT_TIME_MS);
-+	if (num_events < 0) {
-+		perror("epoll_wait");
-+		goto err_ctl;
-+	} else if (num_events == 0) {
-+		fprintf(stderr, "No events\n");
-+		goto err_ctl;
-+	}
-+
-+	readcount = do_binder_write_read(binder_fd, NULL, 0, readbuf, readsize);
-+	fprintf(stderr, "Read %d bytes from binder\n", readcount);
-+
-+	if (readcount < (int)sizeof(struct binder_reply)) {
-+		fprintf(stderr, "read_consumed not large enough\n");
-+		goto err_ctl;
-+	}
-+
-+	br = (struct binder_reply *)readbuf;
-+	if (expect_binder_reply(br->reply0, BR_NOOP))
-+		goto err_ctl;
-+
-+	if (br->reply1 == BR_TRANSACTION) {
-+		if (br->btd.code == BINDER_CODE)
-+			ret = &br->btd;
-+		else
-+			fprintf(stderr, "Received transaction with unexpected code: %u\n",
-+				br->btd.code);
-+	} else {
-+		expect_binder_reply(br->reply1, BR_TRANSACTION_COMPLETE);
-+	}
-+
-+err_ctl:
-+	if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, binder_fd, NULL))
-+		perror("epoll_ctl del");
-+err_close:
-+	close(epoll_fd);
-+	return ret;
-+}
-+
-+static int child_request_dmabuf_transfer(const char *cgroup, void *arg)
-+{
-+	UNUSED(cgroup);
-+	int ret = -1;
-+	uint32_t readbuf[32];
-+	struct binderfs_ctx bfs_ctx = *(struct binderfs_ctx *)arg;
-+	struct binder_ctx b_ctx;
-+
-+	fprintf(stderr, "Child PID: %d\n", getpid());
-+
-+	if (open_binder(&bfs_ctx, &b_ctx)) {
-+		fprintf(stderr, "Child unable to open binder\n");
-+		return -1;
-+	}
-+
-+	if (binder_request_dmabuf(b_ctx.fd))
-+		goto err;
-+
-+	/* The child must stay alive until the binder reply is received */
-+	if (binder_wait_for_transaction(b_ctx.fd, readbuf, sizeof(readbuf)) == NULL)
-+		ret = 0;
-+
-+	/*
-+	 * We don't close the received dmabuf here so that the parent can
-+	 * inspect the cgroup gpu memory charges to verify the charge transfer
-+	 * completed successfully.
-+	 */
-+err:
-+	close_binder(&b_ctx);
-+	fprintf(stderr, "Child done\n");
-+	return ret;
-+}
-+
-+static const char * const GPUMEM_FILENAME = "gpu.memory.current";
-+static const size_t ONE_MiB = 1024 * 1024;
-+
-+FIXTURE(fix) {
-+	int dmabuf_fd;
-+	struct binderfs_ctx bfs_ctx;
-+	struct binder_ctx b_ctx;
-+	struct cgroup_ctx cg_ctx;
-+	struct binder_transaction_data *tr;
-+	pid_t child_pid;
-+};
-+
-+FIXTURE_SETUP(fix)
-+{
-+	long memsize;
-+	uint32_t readbuf[32];
-+	struct flat_binder_object *fbo;
-+	struct binder_buffer_object *bbo;
-+
-+	if (geteuid() != 0)
-+		ksft_exit_skip("Need to be root to mount binderfs\n");
-+
-+	if (create_binderfs(&self->bfs_ctx, "testbinder"))
-+		ksft_exit_skip("The Android binderfs filesystem is not available\n");
-+
-+	self->cg_ctx = create_cgroups(_metadata);
-+	if (self->cg_ctx.root == NULL) {
-+		destroy_binderfs(&self->bfs_ctx);
-+		ksft_exit_skip("cgroup v2 isn't mounted\n");
-+	}
-+
-+	ASSERT_EQ(cg_enter_current(self->cg_ctx.source), 0) {
-+		TH_LOG("Could not move parent to cgroup: %s", self->cg_ctx.source);
-+	}
-+
-+	self->dmabuf_fd = alloc_dmabuf_from_system_heap(_metadata, ONE_MiB);
-+	ASSERT_GE(self->dmabuf_fd, 0);
-+	TH_LOG("Allocated dmabuf");
-+
-+	memsize = cg_read_key_long(self->cg_ctx.source, GPUMEM_FILENAME, "system-heap");
-+	ASSERT_EQ(memsize, ONE_MiB) {
-+		TH_LOG("GPU memory used after allocation: %ld but it should be %lu",
-+		       memsize, (unsigned long)ONE_MiB);
-+	}
-+
-+	ASSERT_EQ(open_binder(&self->bfs_ctx, &self->b_ctx), 0) {
-+		TH_LOG("Parent unable to open binder");
-+	}
-+	TH_LOG("Opened binder at %s/%s", self->bfs_ctx.mountpoint, self->bfs_ctx.name);
-+
-+	ASSERT_EQ(become_binder_context_manager(self->b_ctx.fd), 0) {
-+		TH_LOG("Cannot become context manager: %s", strerror(errno));
-+	}
-+
-+	self->child_pid = cg_run_nowait(
-+		self->cg_ctx.dest, child_request_dmabuf_transfer, &self->bfs_ctx);
-+	ASSERT_GT(self->child_pid, 0) {
-+		TH_LOG("Error forking: %s", strerror(errno));
-+	}
-+
-+	self->tr = binder_wait_for_transaction(self->b_ctx.fd, readbuf, sizeof(readbuf));
-+	ASSERT_NE(self->tr, NULL) {
-+		TH_LOG("Error receiving transaction request from child");
-+	}
-+	fbo = (struct flat_binder_object *)self->tr->data.ptr.buffer;
-+	ASSERT_EQ(fbo->hdr.type, BINDER_TYPE_PTR) {
-+		TH_LOG("Did not receive a buffer object from child");
-+	}
-+	bbo = (struct binder_buffer_object *)fbo;
-+	ASSERT_EQ(bbo->length, 0) {
-+		TH_LOG("Did not receive an empty buffer object from child");
-+	}
-+
-+	TH_LOG("Received transaction from child");
-+}
-+
-+FIXTURE_TEARDOWN(fix)
-+{
-+	close_binder(&self->b_ctx);
-+	close(self->dmabuf_fd);
-+	destroy_cgroups(_metadata, &self->cg_ctx);
-+	destroy_binderfs(&self->bfs_ctx);
-+}
-+
-+
-+void verify_transfer_success(struct _test_data_fix *self, struct __test_metadata *_metadata)
-+{
-+	ASSERT_EQ(cg_read_key_long(self->cg_ctx.dest, GPUMEM_FILENAME, "system-heap"), ONE_MiB) {
-+		TH_LOG("Destination cgroup does not have system-heap charge!");
-+	}
-+	ASSERT_EQ(cg_read_key_long(self->cg_ctx.source, GPUMEM_FILENAME, "system-heap"), 0) {
-+		TH_LOG("Source cgroup still has system-heap charge!");
-+	}
-+	TH_LOG("Charge transfer succeeded!");
-+}
-+
-+TEST_F(fix, individual_fd)
-+{
-+	send_dmabuf_reply_fd(self->b_ctx.fd, self->tr, self->dmabuf_fd);
-+	verify_transfer_success(self, _metadata);
-+}
-+
-+TEST_F(fix, fd_array)
-+{
-+	send_dmabuf_reply_fda(self->b_ctx.fd, self->tr, self->dmabuf_fd);
-+	verify_transfer_success(self, _metadata);
-+}
-+
-+TEST_HARNESS_MAIN
 -- 
-2.36.0.512.ge40c2bad7a-goog
-
+John Hubbard
+NVIDIA
