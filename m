@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF57CC43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:48:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31648C38A2D
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:48:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245013AbiEJNvp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:51:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43378 "EHLO
+        id S245140AbiEJNvx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:51:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243078AbiEJNeL (ORCPT
+        with ESMTP id S243387AbiEJNfH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:34:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8F41238D69;
-        Tue, 10 May 2022 06:24:29 -0700 (PDT)
+        Tue, 10 May 2022 09:35:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC81F23BB67;
+        Tue, 10 May 2022 06:24:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7AB1E6176A;
-        Tue, 10 May 2022 13:24:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85D28C385C2;
-        Tue, 10 May 2022 13:24:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 345B160C1C;
+        Tue, 10 May 2022 13:24:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42BD5C385A6;
+        Tue, 10 May 2022 13:24:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189068;
-        bh=1AXQ3dyomRPqn7p9wxP3qVn0xywkRsSkCHmDBhRbD88=;
+        s=korg; t=1652189074;
+        bh=Oxqmg5On0Kxc+HB0RbX0AWLqnqW77I9VeZGnOIHltcs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mR39yUCGfHhdKmrRPzTHQAZcOlOF9pmMnLep2NVCUHPkyiPYNxQbWdMw3vzUO2zuP
-         nQ790U/u//8oC5btO3M+Xj7d8j7bS121bSo+K1EuQB8Xl4X2jaes9bhB88/GbMPmg7
-         Cr93ImOTezltL939pqMNBoH933sSiwrdfdOgU1E4=
+        b=KcfiiaXqzsojEphFefpIqeZQ+5X9JaxcZqf2tp7ly46igKnKKBmoKWdukMdzWgsfd
+         EtOQV+U/RFiXFPruGz67PrajfJa57DMB8NN3/8HYmcfo8kp3Tdeu3eWKsFIU8ID7Gj
+         Z4VD5tobV6pPjnPclJVUPTgm6HhHxB3MmLc9m9gg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.de>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 5.4 45/52] ALSA: pcm: Fix races among concurrent prealloc proc writes
-Date:   Tue, 10 May 2022 15:08:14 +0200
-Message-Id: <20220510130731.171954555@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.4 47/52] tcp: make sure treq->af_specific is initialized
+Date:   Tue, 10 May 2022 15:08:16 +0200
+Message-Id: <20220510130731.231401719@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.852544477@linuxfoundation.org>
 References: <20220510130729.852544477@linuxfoundation.org>
@@ -48,70 +49,143 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 69534c48ba8ce552ce383b3dfdb271ffe51820c3 upstream.
+commit ba5a4fdd63ae0c575707030db0b634b160baddd7 upstream.
 
-We have no protection against concurrent PCM buffer preallocation
-changes via proc files, and it may potentially lead to UAF or some
-weird problem.  This patch applies the PCM open_mutex to the proc
-write operation for avoiding the racy proc writes and the PCM stream
-open (and further operations).
+syzbot complained about a recent change in TCP stack,
+hitting a NULL pointer [1]
 
-Cc: <stable@vger.kernel.org>
-Reviewed-by: Jaroslav Kysela <perex@perex.cz>
-Link: https://lore.kernel.org/r/20220322170720.3529-5-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-[OP: backport to 5.4: adjusted context]
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+tcp request sockets have an af_specific pointer, which
+was used before the blamed change only for SYNACK generation
+in non SYNCOOKIE mode.
+
+tcp requests sockets momentarily created when third packet
+coming from client in SYNCOOKIE mode were not using
+treq->af_specific.
+
+Make sure this field is populated, in the same way normal
+TCP requests sockets do in tcp_conn_request().
+
+[1]
+TCP: request_sock_TCPv6: Possible SYN flooding on port 20002. Sending cookies.  Check SNMP counters.
+general protection fault, probably for non-canonical address 0xdffffc0000000001: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
+CPU: 1 PID: 3695 Comm: syz-executor864 Not tainted 5.18.0-rc3-syzkaller-00224-g5fd1fe4807f9 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:tcp_create_openreq_child+0xe16/0x16b0 net/ipv4/tcp_minisocks.c:534
+Code: 48 c1 ea 03 80 3c 02 00 0f 85 e5 07 00 00 4c 8b b3 28 01 00 00 48 b8 00 00 00 00 00 fc ff df 49 8d 7e 08 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 c9 07 00 00 48 8b 3c 24 48 89 de 41 ff 56 08 48
+RSP: 0018:ffffc90000de0588 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: ffff888076490330 RCX: 0000000000000100
+RDX: 0000000000000001 RSI: ffffffff87d67ff0 RDI: 0000000000000008
+RBP: ffff88806ee1c7f8 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff87d67f00 R11: 0000000000000000 R12: ffff88806ee1bfc0
+R13: ffff88801b0e0368 R14: 0000000000000000 R15: 0000000000000000
+FS:  00007f517fe58700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffcead76960 CR3: 000000006f97b000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <IRQ>
+ tcp_v6_syn_recv_sock+0x199/0x23b0 net/ipv6/tcp_ipv6.c:1267
+ tcp_get_cookie_sock+0xc9/0x850 net/ipv4/syncookies.c:207
+ cookie_v6_check+0x15c3/0x2340 net/ipv6/syncookies.c:258
+ tcp_v6_cookie_check net/ipv6/tcp_ipv6.c:1131 [inline]
+ tcp_v6_do_rcv+0x1148/0x13b0 net/ipv6/tcp_ipv6.c:1486
+ tcp_v6_rcv+0x3305/0x3840 net/ipv6/tcp_ipv6.c:1725
+ ip6_protocol_deliver_rcu+0x2e9/0x1900 net/ipv6/ip6_input.c:422
+ ip6_input_finish+0x14c/0x2c0 net/ipv6/ip6_input.c:464
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ NF_HOOK include/linux/netfilter.h:301 [inline]
+ ip6_input+0x9c/0xd0 net/ipv6/ip6_input.c:473
+ dst_input include/net/dst.h:461 [inline]
+ ip6_rcv_finish net/ipv6/ip6_input.c:76 [inline]
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ NF_HOOK include/linux/netfilter.h:301 [inline]
+ ipv6_rcv+0x27f/0x3b0 net/ipv6/ip6_input.c:297
+ __netif_receive_skb_one_core+0x114/0x180 net/core/dev.c:5405
+ __netif_receive_skb+0x24/0x1b0 net/core/dev.c:5519
+ process_backlog+0x3a0/0x7c0 net/core/dev.c:5847
+ __napi_poll+0xb3/0x6e0 net/core/dev.c:6413
+ napi_poll net/core/dev.c:6480 [inline]
+ net_rx_action+0x8ec/0xc60 net/core/dev.c:6567
+ __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
+ invoke_softirq kernel/softirq.c:432 [inline]
+ __irq_exit_rcu+0x123/0x180 kernel/softirq.c:637
+ irq_exit_rcu+0x5/0x20 kernel/softirq.c:649
+ sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1097
+
+Fixes: 5b0b9e4c2c89 ("tcp: md5: incorrect tcp_header_len for incoming connections")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Francesco Ruggeri <fruggeri@arista.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+[fruggeri: Account for backport conflicts from 35b2c3211609 and 6fc8c827dd4f]
+Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/core/pcm_memory.c |   11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ include/net/tcp.h     |    5 +++++
+ net/ipv4/syncookies.c |    1 +
+ net/ipv4/tcp_ipv4.c   |    2 +-
+ net/ipv6/syncookies.c |    1 +
+ net/ipv6/tcp_ipv6.c   |    2 +-
+ 5 files changed, 9 insertions(+), 2 deletions(-)
 
---- a/sound/core/pcm_memory.c
-+++ b/sound/core/pcm_memory.c
-@@ -133,19 +133,20 @@ static void snd_pcm_lib_preallocate_proc
- 	size_t size;
- 	struct snd_dma_buffer new_dmab;
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -2015,6 +2015,11 @@ struct tcp_request_sock_ops {
+ 			   enum tcp_synack_type synack_type);
+ };
  
-+	mutex_lock(&substream->pcm->open_mutex);
- 	if (substream->runtime) {
- 		buffer->error = -EBUSY;
--		return;
-+		goto unlock;
- 	}
- 	if (!snd_info_get_line(buffer, line, sizeof(line))) {
- 		snd_info_get_str(str, line, sizeof(str));
- 		size = simple_strtoul(str, NULL, 10) * 1024;
- 		if ((size != 0 && size < 8192) || size > substream->dma_max) {
- 			buffer->error = -EINVAL;
--			return;
-+			goto unlock;
- 		}
- 		if (substream->dma_buffer.bytes == size)
--			return;
-+			goto unlock;
- 		memset(&new_dmab, 0, sizeof(new_dmab));
- 		new_dmab.dev = substream->dma_buffer.dev;
- 		if (size > 0) {
-@@ -153,7 +154,7 @@ static void snd_pcm_lib_preallocate_proc
- 						substream->dma_buffer.dev.dev,
- 						size, &new_dmab) < 0) {
- 				buffer->error = -ENOMEM;
--				return;
-+				goto unlock;
- 			}
- 			substream->buffer_bytes_max = size;
- 		} else {
-@@ -165,6 +166,8 @@ static void snd_pcm_lib_preallocate_proc
- 	} else {
- 		buffer->error = -EINVAL;
- 	}
-+ unlock:
-+	mutex_unlock(&substream->pcm->open_mutex);
- }
++extern const struct tcp_request_sock_ops tcp_request_sock_ipv4_ops;
++#if IS_ENABLED(CONFIG_IPV6)
++extern const struct tcp_request_sock_ops tcp_request_sock_ipv6_ops;
++#endif
++
+ #ifdef CONFIG_SYN_COOKIES
+ static inline __u32 cookie_init_sequence(const struct tcp_request_sock_ops *ops,
+ 					 const struct sock *sk, struct sk_buff *skb,
+--- a/net/ipv4/syncookies.c
++++ b/net/ipv4/syncookies.c
+@@ -332,6 +332,7 @@ struct sock *cookie_v4_check(struct sock
  
- static inline void preallocate_info_init(struct snd_pcm_substream *substream)
+ 	ireq = inet_rsk(req);
+ 	treq = tcp_rsk(req);
++	treq->af_specific	= &tcp_request_sock_ipv4_ops;
+ 	treq->rcv_isn		= ntohl(th->seq) - 1;
+ 	treq->snt_isn		= cookie;
+ 	treq->ts_off		= 0;
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1383,7 +1383,7 @@ struct request_sock_ops tcp_request_sock
+ 	.syn_ack_timeout =	tcp_syn_ack_timeout,
+ };
+ 
+-static const struct tcp_request_sock_ops tcp_request_sock_ipv4_ops = {
++const struct tcp_request_sock_ops tcp_request_sock_ipv4_ops = {
+ 	.mss_clamp	=	TCP_MSS_DEFAULT,
+ #ifdef CONFIG_TCP_MD5SIG
+ 	.req_md5_lookup	=	tcp_v4_md5_lookup,
+--- a/net/ipv6/syncookies.c
++++ b/net/ipv6/syncookies.c
+@@ -176,6 +176,7 @@ struct sock *cookie_v6_check(struct sock
+ 
+ 	ireq = inet_rsk(req);
+ 	treq = tcp_rsk(req);
++	treq->af_specific = &tcp_request_sock_ipv6_ops;
+ 	treq->tfo_listener = false;
+ 
+ 	if (security_inet_conn_request(sk, skb, req))
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -800,7 +800,7 @@ struct request_sock_ops tcp6_request_soc
+ 	.syn_ack_timeout =	tcp_syn_ack_timeout,
+ };
+ 
+-static const struct tcp_request_sock_ops tcp_request_sock_ipv6_ops = {
++const struct tcp_request_sock_ops tcp_request_sock_ipv6_ops = {
+ 	.mss_clamp	=	IPV6_MIN_MTU - sizeof(struct tcphdr) -
+ 				sizeof(struct ipv6hdr),
+ #ifdef CONFIG_TCP_MD5SIG
 
 
