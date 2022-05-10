@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EE4CC352A7
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2A9CC38A02
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245316AbiEJN5b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:57:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41314 "EHLO
+        id S245500AbiEJN55 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:57:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245170AbiEJNig (ORCPT
+        with ESMTP id S245159AbiEJNif (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:38:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 563B2263DA3;
-        Tue, 10 May 2022 06:27:57 -0700 (PDT)
+        Tue, 10 May 2022 09:38:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE75A25A79D;
+        Tue, 10 May 2022 06:27:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E9A5061811;
-        Tue, 10 May 2022 13:27:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F33E2C385C6;
-        Tue, 10 May 2022 13:27:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AC8E6175F;
+        Tue, 10 May 2022 13:27:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59331C385A6;
+        Tue, 10 May 2022 13:27:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189276;
-        bh=vhZPAZC12jopcl22RGk4KShYkyUbXa5G4GTjYZOb4Gc=;
+        s=korg; t=1652189257;
+        bh=QtB4FLTGl2FYMU5SExiHr2416mWxcRNtxJ+kWgPShxU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B5+7xARIWHsJQVVofJF/SeGsdnfr182WjszsfPgIiYXyaAY6JwAHiBCrK2NSh7ZaQ
-         AuNLeQkmrZ/8gzinGVRkpq7c0H3oQrKjBnMFS1I2FQ3hrLdLSK+ZSV/t7YLdbeDEoi
-         n1JtOZCuXPa+8YP+4arVq24rmze8Jf6Zr3joliyc=
+        b=FWzTqvOlBSIy6Mp+UWNT1sE1eupUYViMRbDVZKHAbHj5+IdzHyJVnb4LM8n+avqtz
+         AE0zctqABM6OQmua5yEwPGi1LSzZZs4N+dklhqZB2KSErzYGzgtowHOzw5icgLibSt
+         BOADeVcmKXz8NoMhxol4mrSWnYpaeiCQFVetOvjA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Hellstrom <daniel@gaisler.com>,
-        Andreas Larsson <andreas@gaisler.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.10 28/70] can: grcan: use ofdev->dev when allocating DMA memory
-Date:   Tue, 10 May 2022 15:07:47 +0200
-Message-Id: <20220510130733.693424668@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 62/70] KVM: x86/mmu: avoid NULL-pointer dereference on page freeing bugs
+Date:   Tue, 10 May 2022 15:08:21 +0200
+Message-Id: <20220510130734.682827151@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
 References: <20220510130732.861729621@linuxfoundation.org>
@@ -49,63 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Hellstrom <daniel@gaisler.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
 
-commit 101da4268626b00d16356a6bf284d66e44c46ff9 upstream.
+[ Upstream commit 9191b8f0745e63edf519e4a54a4aaae1d3d46fbd ]
 
-Use the device of the device tree node should be rather than the
-device of the struct net_device when allocating DMA buffers.
+WARN and bail if KVM attempts to free a root that isn't backed by a shadow
+page.  KVM allocates a bare page for "special" roots, e.g. when using PAE
+paging or shadowing 2/3/4-level page tables with 4/5-level, and so root_hpa
+will be valid but won't be backed by a shadow page.  It's all too easy to
+blindly call mmu_free_root_page() on root_hpa, be nice and WARN instead of
+crashing KVM and possibly the kernel.
 
-The driver got away with it on sparc32 until commit 53b7670e5735
-("sparc: factor the dma coherent mapping into helper") after which the
-driver oopses.
-
-Fixes: 6cec9b07fe6a ("can: grcan: Add device driver for GRCAN and GRHCAN cores")
-Link: https://lore.kernel.org/all/20220429084656.29788-2-andreas@gaisler.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Hellstrom <daniel@gaisler.com>
-Signed-off-by: Andreas Larsson <andreas@gaisler.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/grcan.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ arch/x86/kvm/mmu/mmu.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/net/can/grcan.c
-+++ b/drivers/net/can/grcan.c
-@@ -248,6 +248,7 @@ struct grcan_device_config {
- struct grcan_priv {
- 	struct can_priv can;	/* must be the first member */
- 	struct net_device *dev;
-+	struct device *ofdev_dev;
- 	struct napi_struct napi;
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index 99ea1ec12ffe..70ef5b542681 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -3140,6 +3140,8 @@ static void mmu_free_root_page(struct kvm *kvm, hpa_t *root_hpa,
+ 		return;
  
- 	struct grcan_registers __iomem *regs;	/* ioremap'ed registers */
-@@ -924,7 +925,7 @@ static void grcan_free_dma_buffers(struc
- 	struct grcan_priv *priv = netdev_priv(dev);
- 	struct grcan_dma *dma = &priv->dma;
+ 	sp = to_shadow_page(*root_hpa & PT64_BASE_ADDR_MASK);
++	if (WARN_ON(!sp))
++		return;
  
--	dma_free_coherent(&dev->dev, dma->base_size, dma->base_buf,
-+	dma_free_coherent(priv->ofdev_dev, dma->base_size, dma->base_buf,
- 			  dma->base_handle);
- 	memset(dma, 0, sizeof(*dma));
- }
-@@ -949,7 +950,7 @@ static int grcan_allocate_dma_buffers(st
- 
- 	/* Extra GRCAN_BUFFER_ALIGNMENT to allow for alignment */
- 	dma->base_size = lsize + ssize + GRCAN_BUFFER_ALIGNMENT;
--	dma->base_buf = dma_alloc_coherent(&dev->dev,
-+	dma->base_buf = dma_alloc_coherent(priv->ofdev_dev,
- 					   dma->base_size,
- 					   &dma->base_handle,
- 					   GFP_KERNEL);
-@@ -1602,6 +1603,7 @@ static int grcan_setup_netdev(struct pla
- 	memcpy(&priv->config, &grcan_module_config,
- 	       sizeof(struct grcan_device_config));
- 	priv->dev = dev;
-+	priv->ofdev_dev = &ofdev->dev;
- 	priv->regs = base;
- 	priv->can.bittiming_const = &grcan_bittiming_const;
- 	priv->can.do_set_bittiming = grcan_set_bittiming;
+ 	if (kvm_mmu_put_root(kvm, sp)) {
+ 		if (sp->tdp_mmu_page)
+-- 
+2.35.1
+
 
 
