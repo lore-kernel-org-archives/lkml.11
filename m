@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71596C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92E17C43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:06:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245256AbiEJOJr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:09:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51268 "EHLO
+        id S1343700AbiEJOKB (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:10:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244919AbiEJNrG (ORCPT
+        with ESMTP id S244946AbiEJNrI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:47:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1253205257;
-        Tue, 10 May 2022 06:32:41 -0700 (PDT)
+        Tue, 10 May 2022 09:47:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4068B2B25E;
+        Tue, 10 May 2022 06:32:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 688D261763;
-        Tue, 10 May 2022 13:32:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 744DAC385A6;
-        Tue, 10 May 2022 13:32:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 034EEB81DA0;
+        Tue, 10 May 2022 13:32:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60311C385A6;
+        Tue, 10 May 2022 13:32:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189560;
-        bh=vLBoovPnxDJ2FrdCK4ySKFcu1U2r0SBTTDc2ZSENcHY=;
+        s=korg; t=1652189567;
+        bh=Oe3TttIwRhAC186u7dwRFfWEnIRrbnIBd82Sell4Og0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oPlmIpPEduicnYGOpkL68baXh3YA/v/vi2utjHNXChWhrsAjYRmsSI94NexvB7vW3
-         0sBOR8SlSV1psOUXgq/QWuA96nhKhqUPaRv8h+k6ieJJmBxQ5tLI2YSRsEgzQ6hD+q
-         JZMNsHo6UTKY2s7JSFF0/4YBbnNtpDhekkrtCqYQ=
+        b=VrMSghyfmItZeomAnQXj/yWfx+MZ+RG3QgzJQtRRxYjEHAIGKOtpCnDcR/SfZTcM8
+         KJElC8o16EK0ekh98hnCxYmupQiVVG9FgLWKPV4nHmaiDqgMneMYYlUveqRxbuspSz
+         +6GyVjEozjx59qSquvWqlsImTu5TdGSFOWG7JBLg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vlad Buslov <vladbu@nvidia.com>,
-        Maor Dickman <maord@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 091/135] net/mlx5e: Lag, Fix fib_info pointer assignment
-Date:   Tue, 10 May 2022 15:07:53 +0200
-Message-Id: <20220510130743.021810602@linuxfoundation.org>
+        stable@vger.kernel.org, Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 093/135] iommu/dart: Add missing module owner to ops structure
+Date:   Tue, 10 May 2022 15:07:55 +0200
+Message-Id: <20220510130743.078569575@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -50,38 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vlad Buslov <vladbu@nvidia.com>
+From: Hector Martin <marcan@marcan.st>
 
-[ Upstream commit a6589155ec9847918e00e7279b8aa6d4c272bea7 ]
+[ Upstream commit 2ac2fab52917ae82cbca97cf6e5d2993530257ed ]
 
-Referenced change incorrectly sets single path fib_info even when LAG is
-not active. Fix it by moving call to mlx5_lag_fib_set() into conditional
-that verifies LAG state.
+This is required to make loading this as a module work.
 
-Fixes: ad11c4f1d8fd ("net/mlx5e: Lag, Only handle events from highest priority multipath entry")
-Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
-Reviewed-by: Maor Dickman <maord@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Fixes: 46d1fb072e76 ("iommu/dart: Add DART iommu driver")
+Reviewed-by: Sven Peter <sven@svenpeter.dev>
+Link: https://lore.kernel.org/r/20220502092238.30486-1-marcan@marcan.st
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/apple-dart.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-index 8d278c45e7cc..9d50b9c2db5e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-@@ -149,9 +149,9 @@ static void mlx5_lag_fib_route_event(struct mlx5_lag *ldev,
+diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+index 9c9bbccc00bd..baba4571c815 100644
+--- a/drivers/iommu/apple-dart.c
++++ b/drivers/iommu/apple-dart.c
+@@ -757,6 +757,7 @@ static const struct iommu_ops apple_dart_iommu_ops = {
+ 	.of_xlate = apple_dart_of_xlate,
+ 	.def_domain_type = apple_dart_def_domain_type,
+ 	.pgsize_bitmap = -1UL, /* Restricted during dart probe */
++	.owner = THIS_MODULE,
+ };
  
- 			i++;
- 			mlx5_lag_set_port_affinity(ldev, i);
-+			mlx5_lag_fib_set(mp, fi);
- 		}
- 
--		mlx5_lag_fib_set(mp, fi);
- 		return;
- 	}
- 
+ static irqreturn_t apple_dart_irq(int irq, void *dev)
 -- 
 2.35.1
 
