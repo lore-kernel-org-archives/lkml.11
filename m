@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 308A0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:24:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBEEAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:24:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232105AbiEJN2a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:28:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45950 "EHLO
+        id S237996AbiEJN2j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:28:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243203AbiEJNVj (ORCPT
+        with ESMTP id S243231AbiEJNVk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:21:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E0792C183F;
-        Tue, 10 May 2022 06:15:11 -0700 (PDT)
+        Tue, 10 May 2022 09:21:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A16DF2C3345;
+        Tue, 10 May 2022 06:15:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 725C2B81DAA;
-        Tue, 10 May 2022 13:15:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E598FC385A6;
-        Tue, 10 May 2022 13:15:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 90E66B81DA6;
+        Tue, 10 May 2022 13:15:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC2EEC385A6;
+        Tue, 10 May 2022 13:15:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188507;
-        bh=VtJerBDQCYbUCgpxXLdGU8t1nlWfii6eDosdmY9hF0w=;
+        s=korg; t=1652188504;
+        bh=rBjHofO1WNs/cYxljno5UdrSN3KrNADHJN7VZG+ibug=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F0mAqS3Zfdi0NS+57tmp/Q0jyInaDB6RGYUuVqrp2LMIz1SvBIXQ8mMedhHM2LajV
-         678Aw2yC1B/7sZlGdl1AegAO78Y9pz+NKDXYibSHHH39jcC77Yy4q2cDPXEygMJpZ2
-         Acjk3Zn63yMEH0xemsXLKDFsrdMkpx68Bw6c/kRA=
+        b=RAHxRnG4wkEDLVkRZwvDGbtqyTol01tUXpRAq45vnLqH8ZzwHtrJKjmOhIkOc3RBa
+         JrLbFEM/oaOzjZXY96MLOVOiBU7sRPLBehPGqKKDPd6gCODv2KAtwxdOhR3slB2QTT
+         nGD5veBV7ijpYt14uKYHePOW2YG7BlfFz5dpd7IU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 4.14 03/78] hamradio: remove needs_free_netdev to avoid UAF
-Date:   Tue, 10 May 2022 15:06:49 +0200
-Message-Id: <20220510130732.628205315@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 29/78] ARM: OMAP2+: Fix refcount leak in omap_gic_of_init
+Date:   Tue, 10 May 2022 15:07:15 +0200
+Message-Id: <20220510130733.398424783@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
 References: <20220510130732.522479698@linuxfoundation.org>
@@ -49,42 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lin Ma <linma@zju.edu.cn>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 81b1d548d00bcd028303c4f3150fa753b9b8aa71 upstream.
+[ Upstream commit 0f83e6b4161617014017a694888dd8743f46f071 ]
 
-The former patch "defer 6pack kfree after unregister_netdev" reorders
-the kfree of two buffer after the unregister_netdev to prevent the race
-condition. It also adds free_netdev() function in sixpack_close(), which
-is a direct copy from the similar code in mkiss_close().
+The of_find_compatible_node() function returns a node pointer with
+refcount incremented, We should use of_node_put() on it when done
+Add the missing of_node_put() to release the refcount.
 
-However, in sixpack driver, the flag needs_free_netdev is set to true in
-sp_setup(), hence the unregister_netdev() will free the netdev
-automatically. Therefore, as the sp is netdev_priv, use-after-free
-occurs.
-
-This patch removes the needs_free_netdev = true and just let the
-free_netdev to finish this deallocation task.
-
-Fixes: 0b9111922b1f ("hamradio: defer 6pack kfree after unregister_netdev")
-Signed-off-by: Lin Ma <linma@zju.edu.cn>
-Link: https://lore.kernel.org/r/20211111141402.7551-1-linma@zju.edu.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: fd1c07861491 ("ARM: OMAP4: Fix the init code to have OMAP4460 errata available in DT build")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Message-Id: <20220309104302.18398-1-linmq006@gmail.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/hamradio/6pack.c |    1 -
- 1 file changed, 1 deletion(-)
+ arch/arm/mach-omap2/omap4-common.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/net/hamradio/6pack.c
-+++ b/drivers/net/hamradio/6pack.c
-@@ -311,7 +311,6 @@ static void sp_setup(struct net_device *
- {
- 	/* Finish setting up the DEVICE info. */
- 	dev->netdev_ops		= &sp_netdev_ops;
--	dev->needs_free_netdev	= true;
- 	dev->mtu		= SIXP_MTU;
- 	dev->hard_header_len	= AX25_MAX_HEADER_LEN;
- 	dev->header_ops 	= &ax25_header_ops;
+diff --git a/arch/arm/mach-omap2/omap4-common.c b/arch/arm/mach-omap2/omap4-common.c
+index e5dcbda20129..7fff67ea7bcd 100644
+--- a/arch/arm/mach-omap2/omap4-common.c
++++ b/arch/arm/mach-omap2/omap4-common.c
+@@ -342,10 +342,12 @@ void __init omap_gic_of_init(void)
+ 
+ 	np = of_find_compatible_node(NULL, NULL, "arm,cortex-a9-gic");
+ 	gic_dist_base_addr = of_iomap(np, 0);
++	of_node_put(np);
+ 	WARN_ON(!gic_dist_base_addr);
+ 
+ 	np = of_find_compatible_node(NULL, NULL, "arm,cortex-a9-twd-timer");
+ 	twd_base = of_iomap(np, 0);
++	of_node_put(np);
+ 	WARN_ON(!twd_base);
+ 
+ skip_errata_init:
+-- 
+2.35.1
+
 
 
