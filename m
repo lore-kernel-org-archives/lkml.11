@@ -2,53 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60635C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:49:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BC44C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 15:50:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346585AbiEJPxu (ORCPT
+        id S1346715AbiEJPxz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 11:53:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33172 "EHLO
+        Tue, 10 May 2022 11:53:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346648AbiEJPvQ (ORCPT
+        with ESMTP id S1346710AbiEJPvU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 11:51:16 -0400
+        Tue, 10 May 2022 11:51:20 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 561AB28D4E1;
-        Tue, 10 May 2022 08:45:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21FDFA8;
+        Tue, 10 May 2022 08:45:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7CFFB81D0D;
-        Tue, 10 May 2022 15:45:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC4ADC385A6;
-        Tue, 10 May 2022 15:45:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DA03DB81DF9;
+        Tue, 10 May 2022 15:45:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A39B0C385CA;
+        Tue, 10 May 2022 15:45:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652197527;
-        bh=4IYxJ6CPgg/V9tO8g9viSi66zx65sRyQ0HAkWF2gGN8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tkdMGS3kK23l3eKlkgcFK3RRl7VxntRFPo4d2WQyW2ujBmu2d77huBqVXRNUQgCxo
-         hHJ1juGFNw/htyeopIpickvxrNaAcPXmX8swfXSDx43CEHVAvbY4HZvMZga4ejqhEW
-         iuq2SUq0/7AA8eR58altCpc8nzAakMy1F50TMX0vVwCAZA0isxbwE8/0HGZAtdAg5m
-         XfUZu89DnRNmeS8UWjckztW/KYl7efOdA+D6McqOSoDqRkjahpBt5CC8DHW9OUHi7A
-         wmpKYi5moQshWFTuk9RiJil5MgOhuKhv/efq1CxWw83QR+7+GERw0DypV3A5FsOozn
-         xxamTQCoKP4SA==
+        s=k20201202; t=1652197539;
+        bh=VSp8R7ioN0Nf+zXELqSlQIXfzKLCMABgFjVrEvPXA04=;
+        h=From:To:Cc:Subject:Date:From;
+        b=TN9epGgfNLXeF9U9jRuoRmaLfjohghNACtLXWlyjuD3aFq60F69pn9xBy/WgebSAR
+         M5epfUdN85wmw3U+4tyRJlAFvGwCKINVYga9MT96Zu+DO0AxVJUDGk72YW0jqFnXrq
+         /dKUveFLoSx1CeRHz6ckriSOwAQyk0LNK9Y4QMuFT4+B9eJaLDj6gdEEnc2+zDf4+n
+         QEDWHK9EoQhi2VH8Fo/INyHi+X/65GcYAFfoBZJdIJqQnonVjpXFpx2R+l1f9xmFLF
+         9XdwYe1vJCPfmxbd1gzscMeR8FXf2aJCQc+yKUbVgTC2uxbOENKOxTFoCkSJ/wHS/3
+         cDDubZEMfLLfw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shravya Kumbham <shravya.kumbham@xilinx.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, michal.simek@xilinx.com,
-        yuehaibing@huawei.com, arnd@arndb.de, trix@redhat.com,
-        linmq006@gmail.com, prabhakar.mahadev-lad.rj@bp.renesas.com,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.10 6/9] net: emaclite: Don't advertise 1000BASE-T and do auto negotiation
-Date:   Tue, 10 May 2022 11:45:09 -0400
-Message-Id: <20220510154512.153945-6-sashal@kernel.org>
+Cc:     "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>,
+        Ji-Ze Hong <hpeter+linux_kernel@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Sasha Levin <sashal@kernel.org>, jdelvare@suse.com,
+        linux-hwmon@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 1/8] hwmon: (f71882fg) Fix negative temperature
+Date:   Tue, 10 May 2022 11:45:29 -0400
+Message-Id: <20220510154536.154070-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220510154512.153945-1-sashal@kernel.org>
-References: <20220510154512.153945-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -57,60 +52,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shravya Kumbham <shravya.kumbham@xilinx.com>
+From: "Ji-Ze Hong (Peter Hong)" <hpeter@gmail.com>
 
-[ Upstream commit b800528b97d0adc3a5ba42d78a8b0d3f07a31f44 ]
+[ Upstream commit 4aaaaf0f279836f06d3b9d0ffeec7a1e1a04ceef ]
 
-In xemaclite_open() function we are setting the max speed of
-emaclite to 100Mb using phy_set_max_speed() function so,
-there is no need to write the advertising registers to stop
-giga-bit speed and the phy_start() function starts the
-auto-negotiation so, there is no need to handle it separately
-using advertising registers. Remove the phy_read and phy_write
-of advertising registers in xemaclite_open() function.
+All temperature of Fintek superio hwmonitor that using 1-byte reg will use
+2's complement.
 
-Signed-off-by: Shravya Kumbham <shravya.kumbham@xilinx.com>
-Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+In show_temp()
+	temp = data->temp[nr] * 1000;
+
+When data->temp[nr] read as 255, it indicate -1C, but this code will report
+255C to userspace. It'll be ok when change to:
+	temp = ((s8)data->temp[nr]) * 1000;
+
+Signed-off-by: Ji-Ze Hong (Peter Hong) <hpeter+linux_kernel@gmail.com>
+Link: https://lore.kernel.org/r/20220418090706.6339-1-hpeter+linux_kernel@gmail.com
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/xilinx/xilinx_emaclite.c | 15 ---------------
- 1 file changed, 15 deletions(-)
+ drivers/hwmon/f71882fg.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/xilinx/xilinx_emaclite.c b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-index 4bd44fbc6ecf..cc0335fceec5 100644
---- a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-@@ -923,8 +923,6 @@ static int xemaclite_open(struct net_device *dev)
- 	xemaclite_disable_interrupts(lp);
+diff --git a/drivers/hwmon/f71882fg.c b/drivers/hwmon/f71882fg.c
+index d09deb409de7..3336ff9e306b 100644
+--- a/drivers/hwmon/f71882fg.c
++++ b/drivers/hwmon/f71882fg.c
+@@ -1577,8 +1577,9 @@ static ssize_t show_temp(struct device *dev, struct device_attribute *devattr,
+ 		temp *= 125;
+ 		if (sign)
+ 			temp -= 128000;
+-	} else
+-		temp = data->temp[nr] * 1000;
++	} else {
++		temp = ((s8)data->temp[nr]) * 1000;
++	}
  
- 	if (lp->phy_node) {
--		u32 bmcr;
--
- 		lp->phy_dev = of_phy_connect(lp->ndev, lp->phy_node,
- 					     xemaclite_adjust_link, 0,
- 					     PHY_INTERFACE_MODE_MII);
-@@ -935,19 +933,6 @@ static int xemaclite_open(struct net_device *dev)
- 
- 		/* EmacLite doesn't support giga-bit speeds */
- 		phy_set_max_speed(lp->phy_dev, SPEED_100);
--
--		/* Don't advertise 1000BASE-T Full/Half duplex speeds */
--		phy_write(lp->phy_dev, MII_CTRL1000, 0);
--
--		/* Advertise only 10 and 100mbps full/half duplex speeds */
--		phy_write(lp->phy_dev, MII_ADVERTISE, ADVERTISE_ALL |
--			  ADVERTISE_CSMA);
--
--		/* Restart auto negotiation */
--		bmcr = phy_read(lp->phy_dev, MII_BMCR);
--		bmcr |= (BMCR_ANENABLE | BMCR_ANRESTART);
--		phy_write(lp->phy_dev, MII_BMCR, bmcr);
--
- 		phy_start(lp->phy_dev);
- 	}
- 
+ 	return sprintf(buf, "%d\n", temp);
+ }
 -- 
 2.35.1
 
