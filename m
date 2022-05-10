@@ -2,151 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E51EC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:34:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25F0CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:34:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243297AbiEJOiI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:38:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33478 "EHLO
+        id S1344287AbiEJOiO (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:38:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344703AbiEJOfu (ORCPT
+        with ESMTP id S245074AbiEJOhe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:35:50 -0400
-Received: from conssluserg-05.nifty.com (conssluserg-05.nifty.com [210.131.2.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC33923176;
-        Tue, 10 May 2022 06:55:23 -0700 (PDT)
-Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176]) (authenticated)
-        by conssluserg-05.nifty.com with ESMTP id 24ADsqFH021437;
-        Tue, 10 May 2022 22:54:52 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 24ADsqFH021437
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1652190892;
-        bh=GhyJd382a/wS1zL1PdRPTSc5dz0OmScabiVrpCKaIOA=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=UauZq89LrkM/cBmL1IrYEN9SfUuhjvaGe24+hHUTCr6S1DeVhg6gB6xE3NmQVWVBj
-         6DbqE9knamXjVI5te5FZFczDJTT7rQh6QEpZGNweYCbuimKgjSP/aGE47BFaaWV7QP
-         nWQxXCsVVeDV23zU0WTiLibA+WIGOjBJTHCjF4SPElVzM4LAreMHLGulclrOMvYw5E
-         qm1qnxBibkRLJhddDsUy2bW1mf7U3O4hZWjTWyZEgCdTAJ2UZWyhO6iXkwbD01KF5z
-         Z5XKrZ5vubGXCeK8VoNsMtnTLZZswrdolQP0koNBf4Nj8MTqic3HFt8425yBdlzD20
-         yW/2Fl9yu/nuQ==
-X-Nifty-SrcIP: [209.85.214.176]
-Received: by mail-pl1-f176.google.com with SMTP id i17so16800307pla.10;
-        Tue, 10 May 2022 06:54:52 -0700 (PDT)
-X-Gm-Message-State: AOAM532NTcpjBtDK34EPiQZlMkC0euoAT2hkOfRsfRlwirrLz8tkJuZT
-        mvr0v6LnSSBlIPozH2J8+7PXuUvYU47N4t8vHw4=
-X-Google-Smtp-Source: ABdhPJzh5Xg40qnHgjRxAy+2yZ4xm+X8+in8r4zEytwaErju3Iipi+xTG2cJwA+7X0E5U7wpLUUa0KgN+U0NnVHMv0g=
-X-Received: by 2002:a17:902:7891:b0:15e:cae9:7620 with SMTP id
- q17-20020a170902789100b0015ecae97620mr21001207pll.136.1652190891612; Tue, 10
- May 2022 06:54:51 -0700 (PDT)
+        Tue, 10 May 2022 10:37:34 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F024B2F30B6
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 06:56:44 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id n10so33127419ejk.5
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 06:56:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=pjmJ7M+KMckwEPKWOfiYlDmA1Pppkrstffdbv55ePIA=;
+        b=IaCvboNyy9XXm/WOVingix5kNVr2ZVr9B56ITuA78kNWY5vjtaG4aGi4nxNAbQCKLf
+         Q2qF9RGNRQW4KkfBoUYGqu0KYxt5eJkmD0C+GkuyII0reCCOzipRy4etvpV3qrNxIqoR
+         VJrzA4JgMuUqNz29D9k1ax94UQkpP1YKDNos+ca13xP0GfEVLQBGdAG6UoQ1A1To8Q+9
+         LZuVOMhBDbIm1ZZbhlBwAlv7xHAFlfaVQ7kEZnNH3EzYxS+BScNZd6ih0Bl/EjR3/LwH
+         ZTENTY6nQMiIlcN1uo6esDCkVS81+TXUYClr7e8oAM4j4N8BXaRZadJeiTBH2AWrtBJg
+         iSJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=pjmJ7M+KMckwEPKWOfiYlDmA1Pppkrstffdbv55ePIA=;
+        b=rRIyk/jH9nYk8n6MKupzsF5vAfqjO5G5PlFDMPll8HVXszQlhM87A8Dyh8MdbHbwc2
+         KxIKBu7ywBpRThvpf+QO7EYlYqiypTnsIzaWTE3kpKuYDOn4UoezzG6YOrDFqKXKRHEj
+         eNj4EnzdDX+fcvB6IgX6xdpFfWOGES2+y+5FZXhh6S0HulQZ47uI56Qs6e9FcFzC47UD
+         G4BdUwt3HrlxCQK7V3TKve4RD2rzanGHPXtwt8UvC2NNvdEK/dGn12esZ6D13eCItt5n
+         bu/ZkoDq5Sek//QWQLL4aWtdewLOWAYA00i9CU8+7zCisSY+RF5KHlFuhzc39wztWp2w
+         T6gw==
+X-Gm-Message-State: AOAM533gEkZ4kXlXj2z5/S5ExxDOiOjY5GDmFbQEw3VxLmusJZynUp1+
+        sI4+Ft3LqMwHhdQAA2YN6mmQFg==
+X-Google-Smtp-Source: ABdhPJzX8NehLFbd2eHiwAz5mIFRYvEUSDEbzbZGkzzZ0F3c8SW4arwk9U2t99jcgn0VYiWyWa6n5A==
+X-Received: by 2002:a17:906:5fc3:b0:6f3:9901:bc3a with SMTP id k3-20020a1709065fc300b006f39901bc3amr19929018ejv.711.1652190998024;
+        Tue, 10 May 2022 06:56:38 -0700 (PDT)
+Received: from [192.168.0.253] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id hf15-20020a1709072c4f00b006f3ef214e4asm6150973ejc.176.2022.05.10.06.56.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 May 2022 06:56:37 -0700 (PDT)
+Message-ID: <b183f838-359c-752a-dd23-9bd1a160eee5@linaro.org>
+Date:   Tue, 10 May 2022 15:56:36 +0200
 MIME-Version: 1.0
-References: <20220508190631.2386038-1-masahiroy@kernel.org>
- <20220508190631.2386038-11-masahiroy@kernel.org> <CAKwvOdkhcJB8Bnrt51siRefWe+ZSvHagCs2G011PzkkrD3cxQw@mail.gmail.com>
-In-Reply-To: <CAKwvOdkhcJB8Bnrt51siRefWe+ZSvHagCs2G011PzkkrD3cxQw@mail.gmail.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Tue, 10 May 2022 22:53:40 +0900
-X-Gmail-Original-Message-ID: <CAK7LNATMaW34NP+=0UF=aJ=Z7h0QSuzV2F1QjYjru9nFooG9tQ@mail.gmail.com>
-Message-ID: <CAK7LNATMaW34NP+=0UF=aJ=Z7h0QSuzV2F1QjYjru9nFooG9tQ@mail.gmail.com>
-Subject: Re: [PATCH v4 10/14] kbuild: check static EXPORT_SYMBOL* by script
- instead of modpost
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nicolas Schier <nicolas@fjasle.eu>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-modules <linux-modules@vger.kernel.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Sami Tolvanen <samitolvanen@google.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2 1/2] arm64: dts: uDPU: update partition table
+Content-Language: en-US
+To:     Robert Marko <robert.marko@sartura.hr>, andrew@lunn.ch,
+        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
+        robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        pali@kernel.org, marek.behun@nic.cz
+References: <20220322105857.1107016-1-robert.marko@sartura.hr>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220322105857.1107016-1-robert.marko@sartura.hr>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 3:05 AM 'Nick Desaulniers' via Clang Built
-Linux <clang-built-linux@googlegroups.com> wrote:
->
-> On Sun, May 8, 2022 at 12:10 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
-> >
-> > diff --git a/scripts/check-local-export b/scripts/check-local-export
-> > new file mode 100755
-> > index 000000000000..d1721fa63057
-> > --- /dev/null
-> > +++ b/scripts/check-local-export
-> > @@ -0,0 +1,48 @@
-> > +#!/bin/bash
-> > +# SPDX-License-Identifier: GPL-2.0-only
-> > +#
-> > +# Copyright (C) 2022 Masahiro Yamada
-> > +
-> > +set -e
-> > +set -o pipefail
-> > +
-> > +declare -A symbol_types
-> > +declare -a export_symbols
-> > +
-> > +exit_code=0
-> > +
-> > +while read value type name
-> > +do
-> > +       # to avoid error for clang LTO; $name may be empty
-> > +       if [[ $value = -* && -z $name ]]; then
-> > +               continue
-> > +       fi
-> > +
-> > +       # The first field (value) may be empty. If so, fix it up.
-> > +       if [[ -z $name ]]; then
-> > +          name=${type}
-> > +          type=${value}
-> > +       fi
->
-> Consider adding examples of output from NM as comments where you're
-> handling special cases.
->
-> Aren't BOTH from LTO?  The first case is:
->
-> ---------------- T strncpy
+On 22/03/2022 11:58, Robert Marko wrote:
+> Partition currently called "uboot" does not only contain U-boot, but
+> rather it contains TF-A, U-boot and U-boot environment.
+> 
+> So, to avoid accidentally deleting the U-boot environment which is
+> located at 0x180000 split the partition.
+> 
+> "uboot" is not the correct name as you can't boot these boards with U-boot
+> only, TF-A must be present as well, so rename the "uboot" partition to
+> "firmware".
+> 
+> While we are here, describe the NOR node as "spi-flash@0" instead of
+> "m25p80@0" which is the old SPI-NOR driver name.
 
+This patch was applied, but it was never tested with dtbs_check (nor
+rebased on my cleanups). spi-flash is still wrong.
 
-For LTO, I see
-
----------------- t
-
-in the llvm-nm output.
-
-
-
->
-> while the second is
->
->                  U strncpy
-
-Right, this happens for all unresolved symbols.
-The address part is empty.
-
-
-I will add the output example in the comment block.
-
-
-
-
-
-> IIUC?
->
-> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-> --
-> Thanks,
-> ~Nick Desaulniers
->
-> --
-> You received this message because you are subscribed to the Google Groups "Clang Built Linux" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to clang-built-linux+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/clang-built-linux/CAKwvOdkhcJB8Bnrt51siRefWe%2BZSvHagCs2G011PzkkrD3cxQw%40mail.gmail.com.
-
-
-
--- 
-Best Regards
-Masahiro Yamada
+Best regards,
+Krzysztof
