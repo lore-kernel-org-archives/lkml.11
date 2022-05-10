@@ -2,90 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0595CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 18:52:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13843C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 18:54:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349096AbiEJSwF (ORCPT
+        id S1343831AbiEJSyi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 14:52:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49324 "EHLO
+        Tue, 10 May 2022 14:54:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245507AbiEJSwC (ORCPT
+        with ESMTP id S233830AbiEJSy3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 14:52:02 -0400
-X-Greylist: delayed 570 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 10 May 2022 11:52:00 PDT
-Received: from mail.mleia.com (mleia.com [178.79.152.223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53DBD3983A;
-        Tue, 10 May 2022 11:51:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mleia.com; s=mail;
-        t=1652207619; bh=eEMgZINYQ44NSW+OonRUpyj7F/sW+A2Jm9uwvNs8jr4=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=TpcJSDuUmNMt953JxafvbVtrBCNZSU4KFNH9R8LcqVbMEE+jS9t3DgO4EfiTJqEuC
-         SWookCL89KKFGsLJgBkvA8SkmjY45ISwAbh+e05CR5NXVurAFn3Td1rNJZ13LqAXmH
-         ennypFhlKI5SbA0jLm73qNQFdA5nwIQ9HnCjy1H/19WKXLucwLIXtsliXXHt3iaj89
-         CLm7sk43uszo2mxV1b7yYbK/P1m+a49N2es95no7t+lXhz5Ri66w7YuIBFFGMAoKPv
-         LcC9K62uyZnFUWZNAO9+A/unxjlImu1OZ4MmL5BY9WAebqdwj8DNsOTue3iqZfrw6M
-         VOOGrb60PUIsQ==
-Received: from mail.mleia.com (localhost [127.0.0.1])
-        by mail.mleia.com (Postfix) with ESMTP id 444E73B24F0;
-        Tue, 10 May 2022 18:33:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mleia.com; s=mail;
-        t=1652207619; bh=eEMgZINYQ44NSW+OonRUpyj7F/sW+A2Jm9uwvNs8jr4=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=TpcJSDuUmNMt953JxafvbVtrBCNZSU4KFNH9R8LcqVbMEE+jS9t3DgO4EfiTJqEuC
-         SWookCL89KKFGsLJgBkvA8SkmjY45ISwAbh+e05CR5NXVurAFn3Td1rNJZ13LqAXmH
-         ennypFhlKI5SbA0jLm73qNQFdA5nwIQ9HnCjy1H/19WKXLucwLIXtsliXXHt3iaj89
-         CLm7sk43uszo2mxV1b7yYbK/P1m+a49N2es95no7t+lXhz5Ri66w7YuIBFFGMAoKPv
-         LcC9K62uyZnFUWZNAO9+A/unxjlImu1OZ4MmL5BY9WAebqdwj8DNsOTue3iqZfrw6M
-         VOOGrb60PUIsQ==
-Received: from [192.168.1.102] (mobile-access-5672eb-224.dhcp.inet.fi [86.114.235.224])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.mleia.com (Postfix) with ESMTPSA id A13493B2450;
-        Tue, 10 May 2022 18:33:38 +0000 (UTC)
-Message-ID: <dfb390de-28eb-c56e-0283-c3202fab3891@mleia.com>
-Date:   Tue, 10 May 2022 21:33:34 +0300
+        Tue, 10 May 2022 14:54:29 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AAE312EA0B;
+        Tue, 10 May 2022 11:54:29 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id l11so9793524pgt.13;
+        Tue, 10 May 2022 11:54:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Se915aO2vPjgqlRAWsxAyLIac4mNleYAwasmX9ThcTs=;
+        b=qtKjfeAFfdWJmrcdiDBx3H9tdAengHKNuMfJ+52+dCHfb2fEN26tHa4yctHK9itWCi
+         /S7QNeU9Mg40uShLcIXkEmMQBAcSgSG8JD7arS1Sehk7BvdL17T/fc4ATxuX9eqVVo3M
+         5O0f9kenrSlerNMDKS+0efpEqXLaaxeNoAK3sb+ffui7C7i2Sh8tJUX66ZhJOL6H1JWb
+         cVEKHijbwtuXVvjBKUXvamEFrR0+KFcejFT4sK0xPlHJRPzLSrEI7qex90z2uxymQT3f
+         qY6M3x9dVrSQwXQJ89W7tNLpS467f62pp4xJkrmjfsjuLND+Utd1muiCbeJuVeU4BgDw
+         wiug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=Se915aO2vPjgqlRAWsxAyLIac4mNleYAwasmX9ThcTs=;
+        b=Yjyw7v5N+iUZjL44wJ1lVodEQTyTU7xxIvqq+EZMsZ80kuO6Th9NReVIyQGmbrQfv5
+         Q21+VM7mZ51ZjMNGxwFUu45Z25qLE2F22pPTuFeqOGz8PwPvjOh/H0CMY4nUfvbIVe1M
+         ESOUrnWBVArz+vZFEIp0TC412qmFLO6zKlDaC88Hi+HtcnGCyE/eftym5GXcaqR61rPR
+         bJv6VP00o5hDsdjZl7qHYitQ7WqD4qgJh1GVp695mpT19tB/RXmVA4Nl++79Jy71OUO4
+         1bFXL53oBaMzO1760gW039lt3Oj7QRc+zxMHLlONIkkXUB8rk+ssIvAUqx51jJVyneyd
+         H+hg==
+X-Gm-Message-State: AOAM533SR8R+R28qjmBghAvsYalOD77rEKh1wKqcPBF9bHebZbLHUuGy
+        WfWY7P4zWYmRCfrRztB4fio=
+X-Google-Smtp-Source: ABdhPJweJ4qdfrx2+kzhEognD0PEYcgHg++Dtst9d97jC8SFSQp0MTMLH8RZ38mnOn0Ip+guLs6JoQ==
+X-Received: by 2002:aa7:83c2:0:b0:505:723f:6ace with SMTP id j2-20020aa783c2000000b00505723f6acemr21710594pfn.86.1652208868419;
+        Tue, 10 May 2022 11:54:28 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::4:6c64])
+        by smtp.gmail.com with ESMTPSA id r22-20020a170903021600b0015e8d4eb22csm2431432plh.118.2022.05.10.11.54.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 11:54:27 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Tue, 10 May 2022 08:54:26 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Yosry Ahmed <yosryahmed@google.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Michal Hocko <mhocko@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, cgroups@vger.kernel.org
+Subject: Re: [RFC PATCH bpf-next 8/9] bpf: Introduce cgroup iter
+Message-ID: <Ynq04gC1l7C2tx6o@slm.duckdns.org>
+References: <20220510001807.4132027-1-yosryahmed@google.com>
+ <20220510001807.4132027-9-yosryahmed@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [patch 06/10] clocksource/drivers/lpc32xx: Convert to SPDX
- identifier
-Content-Language: en-US
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     linux-spdx@vger.kernel.org, Joachim Eastwood <manabian@gmail.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        linux-arm-kernel@lists.infradead.org
-References: <20220510171003.952873904@linutronix.de>
- <20220510171254.717233312@linutronix.de>
-From:   Vladimir Zapolskiy <vz@mleia.com>
-In-Reply-To: <20220510171254.717233312@linutronix.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-49551924 
-X-CRM114-CacheID: sfid-20220510_183339_301208_64D1F334 
-X-CRM114-Status: UNSURE (   8.32  )
-X-CRM114-Notice: Please train this message. 
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220510001807.4132027-9-yosryahmed@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/10/22 20:24, Thomas Gleixner wrote:
-> The license information clearly states GPL version 2 only. The extra text
-> which excludes warranties is an excerpt of the corresponding GPLv2 clause
-> 11.
-> 
-> So the SPDX identifier covers it completely.
-> 
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Joachim Eastwood <manabian@gmail.com>
-> Cc: Vladimir Zapolskiy <vz@mleia.com>
-> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-> Cc: linux-arm-kernel@lists.infradead.org
+Hello,
 
-Acked-by: Vladimir Zapolskiy <vz@mleia.com>
+On Tue, May 10, 2022 at 12:18:06AM +0000, Yosry Ahmed wrote:
+> From: Hao Luo <haoluo@google.com>
+> 
+> Introduce a new type of iter prog: cgroup. Unlike other bpf_iter, this
+> iter doesn't iterate a set of kernel objects. Instead, it is supposed to
+> be parameterized by a cgroup id and prints only that cgroup. So one
+> needs to specify a target cgroup id when attaching this iter. The target
+> cgroup's state can be read out via a link of this iter.
 
---
-Best wishes,
-Vladimir
+Is there a reason why this can't be a proper iterator which supports
+lseek64() to locate a specific cgroup?
+
+Thanks.
+
+-- 
+tejun
