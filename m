@@ -2,113 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 566BCC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 21:03:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DF87C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 21:05:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230517AbiEJVDq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 17:03:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58916 "EHLO
+        id S231608AbiEJVF5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 17:05:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233765AbiEJVDY (ORCPT
+        with ESMTP id S229529AbiEJVFw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 17:03:24 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 124FB23724D;
-        Tue, 10 May 2022 14:03:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652216604; x=1683752604;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=MOu4j9oTaoLByHMcGaRvSM1IqcXLeJucVfuaFmAdiQ0=;
-  b=Y3d0qofRyM0eNUyf1DYG7QB27PRtxPoAdpuDEhEd7UXOTM8DTjr1k0Qk
-   +9aH+c0rZTzhSWj2WU4IR679R1hdZ31sDwFYYcABG3lq76DlZl5xXb311
-   MvxxdllVvL8eEh217OGD8H4SbNk/7e6MRAYLd7HY29I/nA+KDgQR3RLqo
-   wMcGcmdSoTcq8BrNJkPQZ7KO9cQ3Z6iS79VJ9N09f9ATT3Fpt0h8uswOf
-   YiEH8XilDcZBqglAastTlhk0IjtqN6U4W9Jn4MxUzxRfOwl3IJdK0gnx4
-   E7wGGRtXYn4KJMJDwLToa2UGR5ws8x5tEt0qwHwfP7NHtNVCFfAa+1b32
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="332538562"
-X-IronPort-AV: E=Sophos;i="5.91,215,1647327600"; 
-   d="scan'208";a="332538562"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 14:03:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,215,1647327600"; 
-   d="scan'208";a="553017155"
-Received: from otc-wp-03.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.39.79])
-  by orsmga002.jf.intel.com with ESMTP; 10 May 2022 14:03:23 -0700
-From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
-To:     iommu@lists.linux-foundation.org,
-        LKML <linux-kernel@vger.kernel.org>, dmaengine@vger.kernel.org,
-        Joerg Roedel <joro@8bytes.org>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        "Lu Baolu" <baolu.lu@linux.intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>, vkoul@kernel.org,
-        robin.murphy@arm.com, will@kernel.org
-Cc:     Yi Liu <yi.l.liu@intel.com>, Dave Jiang <dave.jiang@intel.com>,
-        "Tian, Kevin" <kevin.tian@intel.com>,
-        Raj Ashok <ashok.raj@intel.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v3 4/4] iommu/vt-d: Delete unused SVM flag
-Date:   Tue, 10 May 2022 14:07:04 -0700
-Message-Id: <20220510210704.3539577-5-jacob.jun.pan@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220510210704.3539577-1-jacob.jun.pan@linux.intel.com>
-References: <20220510210704.3539577-1-jacob.jun.pan@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 10 May 2022 17:05:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B96AD193CE;
+        Tue, 10 May 2022 14:05:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 88466B81D0E;
+        Tue, 10 May 2022 21:05:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9051EC385C8;
+        Tue, 10 May 2022 21:05:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1652216747;
+        bh=HK/U9ZnYCVJJhfgJnWA8+Meia8HhzwzQcw7dOhhRSYA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BrzDyZjB5HvQ/Lev6VHmoi8QLWXi1sqqO2eCbz1H5Kb/qtiFlZDGpbFcNkpBziSTz
+         7vVlUcChs1pklgTI5UQYb7AYjsQHAMwYL2sB+rbc7eWN8ewEIN+i3NnQYGyG322tXw
+         ESstyyt9vP8bP9xx1HH3klVgQidq1/dDTNdIilH4=
+Date:   Tue, 10 May 2022 14:05:45 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Yang Shi <shy828301@gmail.com>
+Cc:     vbabka@suse.cz, kirill.shutemov@linux.intel.com,
+        linmiaohe@huawei.com, songliubraving@fb.com, riel@surriel.com,
+        willy@infradead.org, ziy@nvidia.com, tytso@mit.edu,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [v4 PATCH 6/8] mm: khugepaged: make hugepage_vma_check()
+ non-static
+Message-Id: <20220510140545.5dd9d3145b53cb7e226c236a@linux-foundation.org>
+In-Reply-To: <20220510203222.24246-7-shy828301@gmail.com>
+References: <20220510203222.24246-1-shy828301@gmail.com>
+        <20220510203222.24246-7-shy828301@gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Supervisor PASID for SVA/SVM is no longer supported, delete the unused
-flag.
+On Tue, 10 May 2022 13:32:20 -0700 Yang Shi <shy828301@gmail.com> wrote:
 
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
----
- drivers/iommu/intel/svm.c |  2 +-
- include/linux/intel-svm.h | 13 -------------
- 2 files changed, 1 insertion(+), 14 deletions(-)
+> The hugepage_vma_check() could be reused by khugepaged_enter() and
+> khugepaged_enter_vma_merge(), but it is static in khugepaged.c.
+> Make it non-static and declare it in khugepaged.h.
+> 
+> ..
+>
+> @@ -508,20 +508,13 @@ void __khugepaged_enter(struct mm_struct *mm)
+>  void khugepaged_enter_vma_merge(struct vm_area_struct *vma,
+>  			       unsigned long vm_flags)
+>  {
+> -	unsigned long hstart, hend;
+> -
+> -	/*
+> -	 * khugepaged only supports read-only files for non-shmem files.
+> -	 * khugepaged does not yet work on special mappings. And
+> -	 * file-private shmem THP is not supported.
+> -	 */
+> -	if (!hugepage_vma_check(vma, vm_flags))
+> -		return;
+> -
+> -	hstart = (vma->vm_start + ~HPAGE_PMD_MASK) & HPAGE_PMD_MASK;
+> -	hend = vma->vm_end & HPAGE_PMD_MASK;
+> -	if (hstart < hend)
+> -		khugepaged_enter(vma, vm_flags);
+> +	if (!test_bit(MMF_VM_HUGEPAGE, &vma->vm_mm->flags) &&
+> +	    khugepaged_enabled() &&
+> +	    (((vma->vm_start + ~HPAGE_PMD_MASK) & HPAGE_PMD_MASK) <
+> +	     (vma->vm_end & HPAGE_PMD_MASK))) {
 
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 38c33cde177e..98ec77415770 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -750,7 +750,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- 			 * to unbind the mm while any page faults are outstanding.
- 			 */
- 			svm = pasid_private_find(req->pasid);
--			if (IS_ERR_OR_NULL(svm) || (svm->flags & SVM_FLAG_SUPERVISOR_MODE))
-+			if (IS_ERR_OR_NULL(svm))
- 				goto bad_req;
- 		}
- 
-diff --git a/include/linux/intel-svm.h b/include/linux/intel-svm.h
-index b3b125b332aa..6835a665c195 100644
---- a/include/linux/intel-svm.h
-+++ b/include/linux/intel-svm.h
-@@ -13,17 +13,4 @@
- #define PRQ_RING_MASK	((0x1000 << PRQ_ORDER) - 0x20)
- #define PRQ_DEPTH	((0x1000 << PRQ_ORDER) >> 5)
- 
--/*
-- * The SVM_FLAG_SUPERVISOR_MODE flag requests a PASID which can be used only
-- * for access to kernel addresses. No IOTLB flushes are automatically done
-- * for kernel mappings; it is valid only for access to the kernel's static
-- * 1:1 mapping of physical memory — not to vmalloc or even module mappings.
-- * A future API addition may permit the use of such ranges, by means of an
-- * explicit IOTLB flush call (akin to the DMA API's unmap method).
-- *
-- * It is unlikely that we will ever hook into flush_tlb_kernel_range() to
-- * do such IOTLB flushes automatically.
-- */
--#define SVM_FLAG_SUPERVISOR_MODE	BIT(0)
--
- #endif /* __INTEL_SVM_H__ */
--- 
-2.25.1
+Reviewing these bounds-checking tests is so hard :(  Can we simplify?
 
+> +		if (hugepage_vma_check(vma, vm_flags))
+> +			__khugepaged_enter(vma->vm_mm);
+> +	}
+>  }
+
+void khugepaged_enter_vma(struct vm_area_struct *vma,
+			  unsigned long vm_flags)
+{
+	if (test_bit(MMF_VM_HUGEPAGE, &vma->vm_mm->flags))
+		return;
+	if (!khugepaged_enabled())
+		return;
+	if (round_up(vma->vm_start, HPAGE_PMD_SIZE) >=
+			(vma->vm_end & HPAGE_PMD_MASK))
+		return;		/* vma is too small */
+	if (!hugepage_vma_check(vma, vm_flags))
+		return;
+	__khugepaged_enter(vma->vm_mm);
+}
+
+
+Also, it might be slightly faster to have checked MMF_VM_HUGEPAGE
+before khugepaged_enabled(), but it looks odd.  And it might be slower,
+too - more pointer chasing.
+
+I wish someone would document hugepage_vma_check().
