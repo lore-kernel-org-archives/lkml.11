@@ -2,51 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1EF6C388F3
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 391F6C35296
 	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245482AbiEJN5u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:57:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41316 "EHLO
+        id S245225AbiEJN5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:57:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245163AbiEJNig (ORCPT
+        with ESMTP id S245139AbiEJNie (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:38:36 -0400
+        Tue, 10 May 2022 09:38:34 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09353262643;
-        Tue, 10 May 2022 06:27:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14956246427;
+        Tue, 10 May 2022 06:27:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5B33B81DA2;
-        Tue, 10 May 2022 13:27:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE139C385C6;
-        Tue, 10 May 2022 13:27:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C33D4B81DA2;
+        Tue, 10 May 2022 13:27:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB42CC385C2;
+        Tue, 10 May 2022 13:27:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189267;
-        bh=NMFFJtZLPoq1knCC/w0d1kwtFNpn/m+HxWT5aO4P7g0=;
+        s=korg; t=1652189239;
+        bh=ak1PU6vYkC/9zG/U/L+QP5Hp2f2tGX4tEkjKfUlRCH0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iFzrkqqWcFHuqGknCvnPOwA0OMAtzq+rgdMjObePyDRbBqrnWG6bgRXucIkRKtyo0
-         WImRhGo6kv3kCCxN5G+B0jLVTnaUcvpHBNAL08RsTAOOW4UbUEvMxwKOQXxiZ/Rr1K
-         ey36orMIPitqIVvVLETCESkONDR+2VYYZYX+g2CQ=
+        b=yn6h+2UUVX65cv7X90bmt4N1CNQ9q4XH7wyEWEdKI+V74SM0p2shASaORxKfgQJCx
+         R9krx2yvpBlQ6HdmcKTD99EGKo1/0QGJ4NIi0aqFpGZ9gjFN5fjsq84ae2BFR2PyOI
+         eofsHTf+3MfmW/eUmBmKy/V23a+1vUCt5FX/7pBA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Neeraj Upadhyay <neeraju@codeaurora.org>,
-        Uladzislau Rezki <urezki@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Paul E. McKenney" <paulmck@kernel.org>
-Subject: [PATCH 5.10 64/70] rcu: Fix callbacks processing time limit retaining cond_resched()
-Date:   Tue, 10 May 2022 15:08:23 +0200
-Message-Id: <20220510130734.740079392@linuxfoundation.org>
+        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.10 56/70] btrfs: always log symlinks in full mode
+Date:   Tue, 10 May 2022 15:08:15 +0200
+Message-Id: <20220510130734.506158628@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
 References: <20220510130732.861729621@linuxfoundation.org>
@@ -58,83 +48,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frederic Weisbecker <frederic@kernel.org>
+From: Filipe Manana <fdmanana@suse.com>
 
-commit 3e61e95e2d095e308616cba4ffb640f95a480e01 upstream.
+commit d0e64a981fd841cb0f28fcd6afcac55e6f1e6994 upstream.
 
-The callbacks processing time limit makes sure we are not exceeding a
-given amount of time executing the queue.
+On Linux, empty symlinks are invalid, and attempting to create one with
+the system call symlink(2) results in an -ENOENT error and this is
+explicitly documented in the man page.
 
-However its "continue" clause bypasses the cond_resched() call on
-rcuc and NOCB kthreads, delaying it until we reach the limit, which can
-be very long...
+If we rename a symlink that was created in the current transaction and its
+parent directory was logged before, we actually end up logging the symlink
+without logging its content, which is stored in an inline extent. That
+means that after a power failure we can end up with an empty symlink,
+having no content and an i_size of 0 bytes.
 
-Make sure the scheduler has a higher priority than the time limit.
+It can be easily reproduced like this:
 
-Reviewed-by: Valentin Schneider <valentin.schneider@arm.com>
-Tested-by: Valentin Schneider <valentin.schneider@arm.com>
-Tested-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
-Cc: Valentin Schneider <valentin.schneider@arm.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Josh Triplett <josh@joshtriplett.org>
-Cc: Joel Fernandes <joel@joelfernandes.org>
-Cc: Boqun Feng <boqun.feng@gmail.com>
-Cc: Neeraj Upadhyay <neeraju@codeaurora.org>
-Cc: Uladzislau Rezki <urezki@gmail.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-[UR: backport to 5.10-stable + commit update]
-Signed-off-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
+  $ mkfs.btrfs -f /dev/sdc
+  $ mount /dev/sdc /mnt
+
+  $ mkdir /mnt/testdir
+  $ sync
+
+  # Create a file inside the directory and fsync the directory.
+  $ touch /mnt/testdir/foo
+  $ xfs_io -c "fsync" /mnt/testdir
+
+  # Create a symlink inside the directory and then rename the symlink.
+  $ ln -s /mnt/testdir/foo /mnt/testdir/bar
+  $ mv /mnt/testdir/bar /mnt/testdir/baz
+
+  # Now fsync again the directory, this persist the log tree.
+  $ xfs_io -c "fsync" /mnt/testdir
+
+  <power failure>
+
+  $ mount /dev/sdc /mnt
+  $ stat -c %s /mnt/testdir/baz
+  0
+  $ readlink /mnt/testdir/baz
+  $
+
+Fix this by always logging symlinks in full mode (LOG_INODE_ALL), so that
+their content is also logged.
+
+A test case for fstests will follow.
+
+CC: stable@vger.kernel.org # 4.9+
+Signed-off-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/rcu/tree.c |   28 ++++++++++++++++------------
- 1 file changed, 16 insertions(+), 12 deletions(-)
+ fs/btrfs/tree-log.c |   14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
---- a/kernel/rcu/tree.c
-+++ b/kernel/rcu/tree.c
-@@ -2490,10 +2490,22 @@ static void rcu_do_batch(struct rcu_data
- 		 * Stop only if limit reached and CPU has something to do.
- 		 * Note: The rcl structure counts down from zero.
- 		 */
--		if (-rcl.len >= bl && !offloaded &&
--		    (need_resched() ||
--		     (!is_idle_task(current) && !rcu_is_callbacks_kthread())))
--			break;
-+		if (in_serving_softirq()) {
-+			if (-rcl.len >= bl && (need_resched() ||
-+					(!is_idle_task(current) && !rcu_is_callbacks_kthread())))
-+				break;
-+		} else {
-+			local_bh_enable();
-+			lockdep_assert_irqs_enabled();
-+			cond_resched_tasks_rcu_qs();
-+			lockdep_assert_irqs_enabled();
-+			local_bh_disable();
-+		}
-+
-+		/*
-+		 * Make sure we don't spend too much time here and deprive other
-+		 * softirq vectors of CPU cycles.
-+		 */
- 		if (unlikely(tlimit)) {
- 			/* only call local_clock() every 32 callbacks */
- 			if (likely((-rcl.len & 31) || local_clock() < tlimit))
-@@ -2501,14 +2513,6 @@ static void rcu_do_batch(struct rcu_data
- 			/* Exceeded the time limit, so leave. */
- 			break;
- 		}
--		if (offloaded) {
--			WARN_ON_ONCE(in_serving_softirq());
--			local_bh_enable();
--			lockdep_assert_irqs_enabled();
--			cond_resched_tasks_rcu_qs();
--			lockdep_assert_irqs_enabled();
--			local_bh_disable();
--		}
+--- a/fs/btrfs/tree-log.c
++++ b/fs/btrfs/tree-log.c
+@@ -5335,6 +5335,18 @@ static int btrfs_log_inode(struct btrfs_
  	}
  
- 	local_irq_save(flags);
+ 	/*
++	 * For symlinks, we must always log their content, which is stored in an
++	 * inline extent, otherwise we could end up with an empty symlink after
++	 * log replay, which is invalid on linux (symlink(2) returns -ENOENT if
++	 * one attempts to create an empty symlink).
++	 * We don't need to worry about flushing delalloc, because when we create
++	 * the inline extent when the symlink is created (we never have delalloc
++	 * for symlinks).
++	 */
++	if (S_ISLNK(inode->vfs_inode.i_mode))
++		inode_only = LOG_INODE_ALL;
++
++	/*
+ 	 * a brute force approach to making sure we get the most uptodate
+ 	 * copies of everything.
+ 	 */
+@@ -5724,7 +5736,7 @@ process_leaf:
+ 			}
+ 
+ 			ctx->log_new_dentries = false;
+-			if (type == BTRFS_FT_DIR || type == BTRFS_FT_SYMLINK)
++			if (type == BTRFS_FT_DIR)
+ 				log_mode = LOG_INODE_ALL;
+ 			ret = btrfs_log_inode(trans, root, BTRFS_I(di_inode),
+ 					      log_mode, ctx);
 
 
