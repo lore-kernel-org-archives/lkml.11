@@ -2,119 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71985C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:08:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74479C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:09:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240788AbiEJLMP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 07:12:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56774 "EHLO
+        id S238660AbiEJLNJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 07:13:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240719AbiEJLLy (ORCPT
+        with ESMTP id S232692AbiEJLNH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 07:11:54 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C401A1116F1;
-        Tue, 10 May 2022 04:07:51 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6F2C111FB;
-        Tue, 10 May 2022 04:07:51 -0700 (PDT)
-Received: from bogus (unknown [10.57.0.250])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 70A193F66F;
-        Tue, 10 May 2022 04:07:48 -0700 (PDT)
-Date:   Tue, 10 May 2022 12:07:42 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Besar Wicaksono <bwicaksono@nvidia.com>
-Cc:     Will Deacon <will@kernel.org>, catalin.marinas@arm.com,
-        mark.rutland@arm.com, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
-        thanu.rangarajan@arm.com, Michael.Williams@arm.com,
-        treding@nvidia.com, jonathanh@nvidia.com, vsethi@nvidia.com,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-Subject: Re: [PATCH 0/2] perf: ARM CoreSight PMU support
-Message-ID: <20220510110742.ievkihggndpms3fn@bogus>
-References: <20220509002810.12412-1-bwicaksono@nvidia.com>
- <20220509092843.GB26264@willie-the-truck>
- <2e5e09f9-b71b-d936-e291-db8f94554b18@arm.com>
+        Tue, 10 May 2022 07:13:07 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF123106366;
+        Tue, 10 May 2022 04:09:09 -0700 (PDT)
+Received: from kwepemi500020.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KyFd84Fk7zfbXF;
+        Tue, 10 May 2022 19:07:56 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi500020.china.huawei.com (7.221.188.8) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 10 May 2022 19:09:07 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
+ (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 10 May
+ 2022 19:09:07 +0800
+From:   Yu Kuai <yukuai3@huawei.com>
+To:     <axboe@kernel.dk>
+CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <yukuai3@huawei.com>, <yi.zhang@huawei.com>
+Subject: [PATCH] blk-mq: don't queue 'hctx->run_work' if the queue is dead
+Date:   Tue, 10 May 2022 19:23:02 +0800
+Message-ID: <20220510112302.1215092-1-yukuai3@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2e5e09f9-b71b-d936-e291-db8f94554b18@arm.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 11:02:23AM +0100, Suzuki K Poulose wrote:
-> Cc: Mike Williams, Mathieu Poirier
-> 
-> On 09/05/2022 10:28, Will Deacon wrote:
-> > On Sun, May 08, 2022 at 07:28:08PM -0500, Besar Wicaksono wrote:
-> > > Add driver support for ARM CoreSight PMU device and event attributes for NVIDIA
-> > > implementation. The code is based on ARM Coresight PMU architecture and ACPI ARM
-> > > Performance Monitoring Unit table (APMT) specification below:
-> > >   * ARM Coresight PMU:
-> > >          https://developer.arm.com/documentation/ihi0091/latest
-> > >   * APMT: https://developer.arm.com/documentation/den0117/latest
-> > > 
-> > > Notes:
-> > >   * There is a concern on the naming of the PMU device.
-> > >     Currently the driver is probing "arm-coresight-pmu" device, however the APMT
-> > >     spec supports different kinds of CoreSight PMU based implementation. So it is
-> > >     open for discussion if the name can stay or a "generic" name is required.
-> > >     Please see the following thread:
-> > >     http://lists.infradead.org/pipermail/linux-arm-kernel/2022-May/740485.html
-> > > 
-> > > Besar Wicaksono (2):
-> > >    perf: coresight_pmu: Add support for ARM CoreSight PMU driver
-> > >    perf: coresight_pmu: Add support for NVIDIA SCF and MCF attribute
-> > > 
-> > >   arch/arm64/configs/defconfig                  |    1 +
-> > >   drivers/perf/Kconfig                          |    2 +
-> > >   drivers/perf/Makefile                         |    1 +
-> > >   drivers/perf/coresight_pmu/Kconfig            |   10 +
-> > >   drivers/perf/coresight_pmu/Makefile           |    7 +
-> > >   .../perf/coresight_pmu/arm_coresight_pmu.c    | 1317 +++++++++++++++++
-> > >   .../perf/coresight_pmu/arm_coresight_pmu.h    |  147 ++
-> > >   .../coresight_pmu/arm_coresight_pmu_nvidia.c  |  300 ++++
-> > >   .../coresight_pmu/arm_coresight_pmu_nvidia.h  |   17 +
-> > >   9 files changed, 1802 insertions(+)
-> > 
-> > How does this interact with all the stuff we have under
-> > drivers/hwtracing/coresight/?
-> 
-> Absolutely zero, except for the name. The standard
-> is named "CoreSight PMU" which is a bit unfortunate,
-> given the only link, AFAIU, with the "CoreSight" architecture
-> is the Lock Access Register(LAR). For reference, the
-> drivers/hwtracing/coresight/ is purely "CoreSight" self-hosted
-> tracing and the PMU is called "cs_etm" (expands to coresight etm).
-> Otherwise the standard doesn't have anything to do with what
-> exists already in the kernel.
-> 
-> That said, I am concerned that the "coresight_pmu" is easily confused
-> with what exists today. Given that this is more of a "PMU" standard
-> for the IPs in the Arm world, it would be better to name it as such
-> avoiding any confusion with the existing PMUs.
-> 
+Our test report a following crash:
 
-Thanks Suzuki. I did suggest something similar[1] but asked to retain it
-so that it can be discussed in the bigger and right forum.
+BUG: kernel NULL pointer dereference, address: 0000000000000018
+PGD 0 P4D 0
+Oops: 0000 [#1] SMP NOPTI
+CPU: 6 PID: 265 Comm: kworker/6:1H Kdump: loaded Tainted: G           O      5.10.0-60.17.0.h43.eulerosv2r11.x86_64 #1
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.12.1-0-ga5cab58-20220320_160524-szxrtosci10000 04/01/2014
+Workqueue: kblockd blk_mq_run_work_fn
+RIP: 0010:blk_mq_delay_run_hw_queues+0xb6/0xe0
+RSP: 0018:ffffacc6803d3d88 EFLAGS: 00010246
+RAX: 0000000000000006 RBX: ffff99e2c3d25008 RCX: 00000000ffffffff
+RDX: 0000000000000000 RSI: 0000000000000003 RDI: ffff99e2c911ae18
+RBP: ffffacc6803d3dd8 R08: 0000000000000000 R09: ffff99e2c0901f6c
+R10: 0000000000000018 R11: 0000000000000018 R12: ffff99e2c911ae18
+R13: 0000000000000000 R14: 0000000000000003 R15: ffff99e2c911ae18
+FS:  0000000000000000(0000) GS:ffff99e6bbf00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000018 CR3: 000000007460a006 CR4: 00000000003706e0
+Call Trace:
+ __blk_mq_do_dispatch_sched+0x2a7/0x2c0
+ ? newidle_balance+0x23e/0x2f0
+ __blk_mq_sched_dispatch_requests+0x13f/0x190
+ blk_mq_sched_dispatch_requests+0x30/0x60
+ __blk_mq_run_hw_queue+0x47/0xd0
+ process_one_work+0x1b0/0x350
+ worker_thread+0x49/0x300
+ ? rescuer_thread+0x3a0/0x3a0
+ kthread+0xfe/0x140
+ ? kthread_park+0x90/0x90
+ ret_from_fork+0x22/0x30
 
-> One potential recommendation for the name is, "Arm PMU"  (The ACPI table is
-> named Arm PMU Table). But then that could be clashing with the armv8_pmu
-> :-(.
-> 
-> Some of the other options are :
-> 
-> "Arm Generic PMU"
-> "Arm Uncore PMU"
+After digging from vmcore, I found that the queue is cleaned
+up(blk_cleanup_queue() is done) and tag set is
+freed(blk_mq_free_tag_set() is done).
 
-I wasn't sure on this if there is any restriction on usage of this on Arm
-and hence didn't make the suggestion. But if allowed, this would be my
-choice too.
+There are two problems here:
 
+1) blk_mq_delay_run_hw_queues() will only be called from
+__blk_mq_do_dispatch_sched() if e->type->ops.has_work() return true.
+This seems impossible because blk_cleanup_queue() is done, and there
+should be no io. However, bfq_has_work() can return true even if no
+io is queued. This is because bfq_has_work() is using busy queues, and
+bfq_queue can stay busy after dispatching all the requests.
+
+2) 'hctx->run_work' still exists after blk_cleanup_queue().
+blk_mq_cancel_work_sync() is called from blk_cleanup_queue() to cancel
+all the 'run_work'. However, there is no guarantee that new 'run_work'
+won't be queued after that(and before blk_mq_exit_queue() is done).
+
+The first problem is not the root cause, this patch just fix the second
+problem by checking the 'QUEUE_FLAG_DEAD' before queuing 'hctx->run_work',
+and using 'queue_lock' to synchronize queuing new work and cacelling the
+old work.
+
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+---
+ block/blk-core.c |  3 +++
+ block/blk-mq.c   | 10 ++++++++--
+ 2 files changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/block/blk-core.c b/block/blk-core.c
+index c3f1e46ddd43..2609805861be 100644
+--- a/block/blk-core.c
++++ b/block/blk-core.c
+@@ -318,7 +318,10 @@ void blk_cleanup_queue(struct request_queue *q)
+ 	/* cleanup rq qos structures for queue without disk */
+ 	rq_qos_exit(q);
+ 
++	/* New 'hctx->run_work' can't be queued after setting the dead flag */
++	spin_lock_irq(&q->queue_lock);
+ 	blk_queue_flag_set(QUEUE_FLAG_DEAD, q);
++	spin_unlock_irq(&q->queue_lock);
+ 
+ 	blk_sync_queue(q);
+ 	if (queue_is_mq(q)) {
+diff --git a/block/blk-mq.c b/block/blk-mq.c
+index 2cf011b57cf9..34b4914204dd 100644
+--- a/block/blk-mq.c
++++ b/block/blk-mq.c
+@@ -2042,6 +2042,8 @@ static int blk_mq_hctx_next_cpu(struct blk_mq_hw_ctx *hctx)
+ static void __blk_mq_delay_run_hw_queue(struct blk_mq_hw_ctx *hctx, bool async,
+ 					unsigned long msecs)
+ {
++	unsigned long flag;
++
+ 	if (unlikely(blk_mq_hctx_stopped(hctx)))
+ 		return;
+ 
+@@ -2056,8 +2058,12 @@ static void __blk_mq_delay_run_hw_queue(struct blk_mq_hw_ctx *hctx, bool async,
+ 		put_cpu();
+ 	}
+ 
+-	kblockd_mod_delayed_work_on(blk_mq_hctx_next_cpu(hctx), &hctx->run_work,
+-				    msecs_to_jiffies(msecs));
++	spin_lock_irqsave(&hctx->queue->queue_lock, flag);
++	if (!blk_queue_dead(hctx->queue))
++		kblockd_mod_delayed_work_on(blk_mq_hctx_next_cpu(hctx),
++					    &hctx->run_work,
++					    msecs_to_jiffies(msecs));
++	spin_unlock_irqrestore(&hctx->queue->queue_lock, flag);
+ }
+ 
+ /**
 -- 
-Regards,
-Sudeep
+2.31.1
 
-[1] https://lore.kernel.org/lkml/20220504182633.a3mwuiohfqtjvpep@bogus
