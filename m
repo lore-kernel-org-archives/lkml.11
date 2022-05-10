@@ -2,85 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 104C6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:29:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC8DDC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:29:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243417AbiEJOdR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:33:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43120 "EHLO
+        id S244729AbiEJOd0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:33:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344266AbiEJOHs (ORCPT
+        with ESMTP id S244142AbiEJOH6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 10:07:48 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 455A821333B;
-        Tue, 10 May 2022 06:42:06 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id fv2so15904481pjb.4;
-        Tue, 10 May 2022 06:42:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=V0UajMzXFBNf7cUMuc7pmjx3pa00PRDw60cm0sn0muk=;
-        b=lgt9ntka8XC6Yi2GBLVPGUc7IL9mqeVrgCUn+a495s7WoVDLZsuLi8UBqCVFBGR4gl
-         CXJ6XZlsjCnYG/dPov2d+syOxEJD9983PlWVPtDJO2w6qjp+j23q9pHTEgbgsLoF/sXi
-         6FVIqlso1nwB6AVxDNCM6TuCDpAlcK8DyBLW39KMkw2X5GPwaG4L/d8pWoA5oQyfYGpI
-         2YZ9JPS375oUN3AvwfnXyALr+6YVzOmI/Q51+h90/MtQQV4XHqibYRRYWBGbD/nWcRqZ
-         nAJG9MvA8fvA+Dxd6ZmMGEApfljXC5eQopjE1jdfILLO2IhaAcEoHZVcK9W+3zxOy1ZD
-         tuow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=V0UajMzXFBNf7cUMuc7pmjx3pa00PRDw60cm0sn0muk=;
-        b=tk8oiFyf6U94Wtdz1KNGzPkMjRKLdOV0u7U7486AHHvCuEefuwEGCQRdYnjWTX0uA/
-         7b9TAGrMCC4sRgjes/PfkiSnwdNhEqZ7dCyGLZI2AovWm5sWOSONhdpHIGRFfylI+MxX
-         Pi0lfrRS9G8ehywj+eM6bCH5RGxv2oEvCwUe1MrpEZl4k3XvaAx5C6IckD/l0MURMJJN
-         FP+oBBCV05s5aGGwq1uxdjmLKOr/AtQ216OZqdD0y8fbj4fwvv3qHkt6F9/IW+w4fvMP
-         D9W8H1psIToqnoh7t+p7GMHzqOy6qbVURpSF5mGFAVVONpL8JMY8BbAzYlrVpn3vcn+I
-         opfw==
-X-Gm-Message-State: AOAM530V8MrzlJFn1ww4mBcROCYxu+hsCI2+j3/R6Jy7c3NOC89IW27O
-        sIsCOYckSV3l7jzWydfcYw==
-X-Google-Smtp-Source: ABdhPJwTz7s06PP6uRYb/QITkzoElavq6dzKxWX4Lw0gWua0HhSDOW5UhhcaCyvj/T6uUDIIyNWGXw==
-X-Received: by 2002:a17:90a:d3d2:b0:1dd:30bb:6a45 with SMTP id d18-20020a17090ad3d200b001dd30bb6a45mr88985pjw.206.1652190125550;
-        Tue, 10 May 2022 06:42:05 -0700 (PDT)
-Received: from localhost.localdomain ([144.202.91.207])
-        by smtp.gmail.com with ESMTPSA id a13-20020aa794ad000000b0050dc76281desm10768620pfl.184.2022.05.10.06.42.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 06:42:05 -0700 (PDT)
-From:   Zheyu Ma <zheyuma97@gmail.com>
-To:     tharvey@gateworks.com, mchehab@kernel.org
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Zheyu Ma <zheyuma97@gmail.com>
-Subject: [PATCH] media: TDA1997x: Fix the error handling in tda1997x_probe()
-Date:   Tue, 10 May 2022 21:41:46 +0800
-Message-Id: <20220510134146.1727701-1-zheyuma97@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 10 May 2022 10:07:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD282268B6;
+        Tue, 10 May 2022 06:42:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D19DA618E6;
+        Tue, 10 May 2022 13:42:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C10B6C385A6;
+        Tue, 10 May 2022 13:42:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652190133;
+        bh=e0M+IDH0ed3gsuTENoGo0PZf/xef+c37kCmm6wGjOqQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=WI7GO5AEyBoMaG3f0VfGEIQd8cxDALlAE54H5Rq2ljggAldT5nAsYqTRsLmB3ZWrB
+         ObtbHCNzFfqKU5AAIIwaRjpDc/IER6KTvIJ0djmlzuXtX9b+IInnQRaf5mcsW8uvrt
+         3ib9syl46coEJFLxMZs4XwxTYLCip4kMWDFJQxJ8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, pali@kernel.org,
+        =?UTF-8?q?Marek=20Beh=FAn?= <kabel@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: [PATCH 5.17 139/140] PCI: aardvark: Drop __maybe_unused from advk_pcie_disable_phy()
+Date:   Tue, 10 May 2022 15:08:49 +0200
+Message-Id: <20220510130745.560970374@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
+References: <20220510130741.600270947@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The driver should disable the regulator when failing to probe.
+From: "Marek Behún" <kabel@kernel.org>
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+commit 0c36ab437e1d94b6628b006a1d48f05ea3b0b222 upstream.
+
+This function is now always used in driver remove method, drop the
+__maybe_unused attribute.
+
+Link: https://lore.kernel.org/r/20220110015018.26359-22-kabel@kernel.org
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/i2c/tda1997x.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/pci/controller/pci-aardvark.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/i2c/tda1997x.c b/drivers/media/i2c/tda1997x.c
-index 8fafce26d62f..0de7acdf58a7 100644
---- a/drivers/media/i2c/tda1997x.c
-+++ b/drivers/media/i2c/tda1997x.c
-@@ -2798,6 +2798,7 @@ static int tda1997x_probe(struct i2c_client *client,
- 	cancel_delayed_work(&state->delayed_work_enable_hpd);
- 	mutex_destroy(&state->page_lock);
- 	mutex_destroy(&state->lock);
-+	tda1997x_set_power(state, 0);
- err_free_state:
- 	kfree(state);
- 	dev_err(&client->dev, "%s failed: %d\n", __func__, ret);
--- 
-2.25.1
+--- a/drivers/pci/controller/pci-aardvark.c
++++ b/drivers/pci/controller/pci-aardvark.c
+@@ -1603,7 +1603,7 @@ static int advk_pcie_map_irq(const struc
+ 		return of_irq_parse_and_map_pci(dev, slot, pin);
+ }
+ 
+-static void __maybe_unused advk_pcie_disable_phy(struct advk_pcie *pcie)
++static void advk_pcie_disable_phy(struct advk_pcie *pcie)
+ {
+ 	phy_power_off(pcie->phy);
+ 	phy_exit(pcie->phy);
+
 
