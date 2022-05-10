@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A577C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8EF8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:55:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244863AbiEJN4j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:56:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41166 "EHLO
+        id S244731AbiEJN4X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:56:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244983AbiEJNiS (ORCPT
+        with ESMTP id S244961AbiEJNiR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:38:18 -0400
+        Tue, 10 May 2022 09:38:17 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 136F48022F;
-        Tue, 10 May 2022 06:26:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A493878929;
+        Tue, 10 May 2022 06:26:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 376FC617F5;
-        Tue, 10 May 2022 13:26:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44B6EC385C2;
-        Tue, 10 May 2022 13:26:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 387E46170D;
+        Tue, 10 May 2022 13:26:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48F47C385C2;
+        Tue, 10 May 2022 13:26:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189208;
-        bh=sepjU7tRU13o/CeRhHjVMN4T6eotrZo2Y0GY3FV6c/Y=;
+        s=korg; t=1652189205;
+        bh=Y25/R4Z9zWRfq6oQO6x6b8SBv9CRfRZbAbHgBjQAO2c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NaaHM0Pln90CFFWdOhb3e8Qc2qaj60GnfnD+Ni3TOKjLuADf7UV1XhfXXpJ4oSzoE
-         tF5tJn3hEMWTHjMK3+bGYZmZFXMyHblHoLJCga1OuyVW2uuKdE+ftN+4wIUjexWGSw
-         rtPexCJOtRDS9qvq0wVZCKGVMoRCqzzYJPz5N39M=
+        b=rYk+RlMyBOiPEGDl11TARMb1LeUvK9FCmuIMw8ZPrVO/1hd4RAs8C+BqbTtHtWBXi
+         kvTAoKEtSpHQ9G3jRP2TnSSjj2hP5jtm2rW5KKcsHF4olU9gp2CATTve4pr5/5uwhc
+         zaQDsMOqbltol8IuHk4M46ivuc8kxsygvvRbCf04=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
         Yang Yingliang <yangyingliang@huawei.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 47/70] net: stmmac: dwmac-sun8i: add missing of_node_put() in sun8i_dwmac_register_mdio_mux()
-Date:   Tue, 10 May 2022 15:08:06 +0200
-Message-Id: <20220510130734.239367180@linuxfoundation.org>
+Subject: [PATCH 5.10 46/70] net: dsa: mt7530: add missing of_node_put() in mt7530_setup()
+Date:   Tue, 10 May 2022 15:08:05 +0200
+Message-Id: <20220510130734.207506860@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
 References: <20220510130732.861729621@linuxfoundation.org>
@@ -51,30 +51,29 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Yang Yingliang <yangyingliang@huawei.com>
 
-commit 1a15267b7be77e0792cf0c7b36ca65c8eb2df0d8 upstream.
+commit a9e9b091a1c14ecd8bd9d3214a62142a1786fe30 upstream.
 
-The node pointer returned by of_get_child_by_name() with refcount incremented,
-so add of_node_put() after using it.
+Add of_node_put() if of_get_phy_mode() fails in mt7530_setup()
 
-Fixes: 634db83b8265 ("net: stmmac: dwmac-sun8i: Handle integrated/external MDIOs")
+Fixes: 0c65b2b90d13 ("net: of_get_phy_mode: Change API to solve int/unit warnings")
 Reported-by: Hulk Robot <hulkci@huawei.com>
 Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220428095716.540452-1-yangyingliang@huawei.com
+Link: https://lore.kernel.org/r/20220428095317.538829-1-yangyingliang@huawei.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c |    1 +
+ drivers/net/dsa/mt7530.c |    1 +
  1 file changed, 1 insertion(+)
 
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-@@ -895,6 +895,7 @@ static int sun8i_dwmac_register_mdio_mux
- 
- 	ret = mdio_mux_init(priv->device, mdio_mux, mdio_mux_syscon_switch_fn,
- 			    &gmac->mux_handle, priv, priv->mii);
-+	of_node_put(mdio_mux);
- 	return ret;
- }
- 
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -1663,6 +1663,7 @@ mt7530_setup(struct dsa_switch *ds)
+ 				ret = of_get_phy_mode(mac_np, &interface);
+ 				if (ret && ret != -ENODEV) {
+ 					of_node_put(mac_np);
++					of_node_put(phy_node);
+ 					return ret;
+ 				}
+ 				id = of_mdio_parse_addr(ds->dev, phy_node);
 
 
