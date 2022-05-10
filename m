@@ -2,173 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A862C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:51:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2D23C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 12:53:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242149AbiEJMzt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 08:55:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40106 "EHLO
+        id S242157AbiEJM44 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 08:56:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242136AbiEJMzP (ORCPT
+        with ESMTP id S242099AbiEJM4z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 08:55:15 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C05791B7A7
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 05:50:45 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id gh6so32798480ejb.0
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 05:50:45 -0700 (PDT)
+        Tue, 10 May 2022 08:56:55 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D53B813C369;
+        Tue, 10 May 2022 05:52:57 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id be20so19852959edb.12;
+        Tue, 10 May 2022 05:52:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ZF8DHbmS388Np7uc8s/GbJpWl+U//ZF9U03m6TrvUIk=;
-        b=ctEjS1mw40rwGEQrV75cPoX/8cKyE3G3wc99zCNkX/1TgQE/cgMkEPwEe62E7AaiE3
-         nnZ9Rl8xfKJh1NCdVZ8EFwl++UI1129pwpPS1FMtgKe7rmOBQcp8Z41wLEDrI9j1D8yN
-         C3z58X9tesEVEMdWw54jtWTovNwD82aYDPb2qRjxo3boLJ2j/4oWGjQH439PxGU7KIlj
-         eV8U+ZUkWQeDg8OopLJwoJdBpyMvci8UeQfNu8F1gew0ZCn9y9JEMJ6owwOySJvqq6QA
-         IW4rlVqWvwlOHhA3PUAqjlnI+tS6wDy6/9S3GdsTZkp7uqfLnJxZ/yBHhueuHWH1lYrz
-         pgPA==
+        bh=WI1zTOfSIg5efVZfyvBSsp8//tfBd0cdczBSSxTFZbM=;
+        b=M0XRCTZL5/OCjpLOp6VQQC7z0Re+F/RgmF1UukIrioiMykPB0R7Aj13djyzrg2StTD
+         VJDOyuKku0W+egHu+VrN33KttIt3d5+iHhTH3n/5IAmZek52mv17Dg1VcM7yXoyQttmc
+         /ZZ+3qIfmL178zYSJkv8X3S0uvoLXDPUu45142K201/sJhbuvvpMuTRzgyPc3YuIXza6
+         wIiYACOsi0KOPM/2POCEvOByBujP9Syuh5km2bLbH4e9CB0SYHbUVAnBIqvgA0oOQTmr
+         7gOt+5bvgMYuCV5wk35z/SUzp8lENBLwnQYKgIQPJW4nLEsiPn9P1pvj2F4NPM8pdkaE
+         AsOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=ZF8DHbmS388Np7uc8s/GbJpWl+U//ZF9U03m6TrvUIk=;
-        b=JXOHove8p2vKvei1WlUy9zx4VRZOPx2RzBIJaNQiDcN5zKL0Oj0CtnHHDVFnHt24oV
-         HKsT0V+H6OgVxpyvEajRabxQCYi/mrNm+NlS2TLQyC4nOTglgemmKcZph7zUosyx0H0E
-         /IqWFH08P2tPMt95vQ+U0mi+JSl/mx7ChFT/2xx5/x0oVl5kXJ0fPhRu4q0IKdseZ9cC
-         0dxOrK3gwk31xnr8QCan0r9rvVmTe/xG7SlKpMX6x845NOQ0iW279O9e4/N/vr9F6VXm
-         dqIxo+EAQC8RjPN66Zbt/XiUHgPWj0RYMks+VrbnwnMgQTwY31y8SoPuaWKNg+jbFVvF
-         DRWw==
-X-Gm-Message-State: AOAM531W2pmALkV2bgerVXY0DN1TLtCLE8ai1N4zuBGxuX2CrCFFYSbo
-        DCKW7XL2fquF9jaV1sxSZwXNgg==
-X-Google-Smtp-Source: ABdhPJxe0M9EVK6O6ql1Fso5MfAt7H4Somn7p3Sh53wP8LDECzarboslO+4IUO0usgu7zJ0vOUFXUQ==
-X-Received: by 2002:a17:907:d01:b0:6f4:d873:d7a0 with SMTP id gn1-20020a1709070d0100b006f4d873d7a0mr19758976ejc.717.1652187043646;
-        Tue, 10 May 2022 05:50:43 -0700 (PDT)
-Received: from [192.168.0.252] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id en20-20020a17090728d400b006f3ef214e20sm6110205ejc.134.2022.05.10.05.50.41
+        bh=WI1zTOfSIg5efVZfyvBSsp8//tfBd0cdczBSSxTFZbM=;
+        b=FKhywKOKz1HqzsTMQZM9rD9uW/qR8sBICi+Xb6Wu1sj2YCW8ef4SfcUuK/T7+/4TV2
+         bqw0w/4sKdHjfY5772fhSWUOHkGNoO6flJDNX6TYT76e3FGkT0g6mpT78Dx6dpHp9Iu1
+         4ep6XZzJ7lV32Sq1bvXNY/tpMkUD+sYUI62ei/OgfJYD2u1Hd+er45d5s5TbrEKGG6Xa
+         RfhtPmxyuRGVGx9WSFG0mDAqbnTX62XXnhHaJMukL5sFMdqWJ75oPWIzveeoAplC4eov
+         6+60CGG9Wzhka10HtW0qsoqUI9VxBOnYhGS5+7aitXSiwy6nuoMnBD5J3ZBWVbF0ysPe
+         /e5Q==
+X-Gm-Message-State: AOAM530egDNV37vRdiKKEBbsOPDJ07Mn8yW7uUGQUq5lzZOfAjA/R2HQ
+        smgkw5yXBp9ctMr61nEXp9Q=
+X-Google-Smtp-Source: ABdhPJyN5CN/JhTtUeKUlijPnHsp542eYOzriocQW2nzKpv+Am+UGABpfo9csh4/XMFj0hFFENFGfA==
+X-Received: by 2002:a50:ce14:0:b0:425:cb75:5322 with SMTP id y20-20020a50ce14000000b00425cb755322mr23429940edi.386.1652187176341;
+        Tue, 10 May 2022 05:52:56 -0700 (PDT)
+Received: from ?IPV6:2a02:908:1256:79a0:616c:3555:9eac:59cc? ([2a02:908:1256:79a0:616c:3555:9eac:59cc])
+        by smtp.gmail.com with ESMTPSA id s3-20020a170906284300b006f3ef214df2sm6096680ejc.88.2022.05.10.05.52.55
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 May 2022 05:50:42 -0700 (PDT)
-Message-ID: <0cdf8323-7f23-a291-9d20-6d182bc84913@linaro.org>
-Date:   Tue, 10 May 2022 14:50:41 +0200
+        Tue, 10 May 2022 05:52:55 -0700 (PDT)
+Message-ID: <ae249cf7-7367-d3c2-60e5-7bfab6e3ef73@gmail.com>
+Date:   Tue, 10 May 2022 14:52:54 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 2/2] arm64: dts: marvell: add support for Methode eDPU
+ Thunderbird/91.7.0
+Subject: Re: [Linaro-mm-sig] Re: [PATCH] dmabuf: ensure unique directory name
+ for dmabuf stats
 Content-Language: en-US
-To:     Robert Marko <robert.marko@sartura.hr>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org, Andrew Lunn <andrew@lunn.ch>,
-        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
-        shawnguo@kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        kostap@marvell.com, devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
-        =?UTF-8?Q?Marek_Beh=c3=ban?= <marek.behun@nic.cz>
-References: <20220509110028.144226-1-robert.marko@sartura.hr>
- <20220509110028.144226-2-robert.marko@sartura.hr>
- <8e22cbf7-eee1-0ec7-10f9-3839ec80dfbf@linaro.org>
- <CA+HBbNE1w5w6c8MwMuSwCFzjnyKOQ7Y0MV4bPijJW3rekWLo4w@mail.gmail.com>
- <fde74400-34aa-df80-5af5-cb4ee89c8e6f@linaro.org>
- <CA+HBbNGWbGu73JtCb68QMhF6o9KrcfZH2AtOL6jUAnxrmCBcsQ@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CA+HBbNGWbGu73JtCb68QMhF6o9KrcfZH2AtOL6jUAnxrmCBcsQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+Cc:     Charan Teja Kalla <quic_charante@quicinc.com>,
+        sumit.semwal@linaro.org, tjmercier@google.com,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
+References: <1652178212-22383-1-git-send-email-quic_charante@quicinc.com>
+ <YnpF1XP1tH83uBlM@kroah.com> <039e1acc-8688-2e06-1b2a-1acbe813b91e@amd.com>
+ <YnpWNSdAQzG80keQ@kroah.com>
+From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>
+In-Reply-To: <YnpWNSdAQzG80keQ@kroah.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/05/2022 14:43, Robert Marko wrote:
-> On Tue, May 10, 2022 at 1:46 PM Krzysztof Kozlowski
-> <krzysztof.kozlowski@linaro.org> wrote:
->>
->> On 10/05/2022 13:41, Robert Marko wrote:
->>> On Tue, May 10, 2022 at 12:20 PM Krzysztof Kozlowski
->>> <krzysztof.kozlowski@linaro.org> wrote:
+Am 10.05.22 um 14:10 schrieb Greg KH:
+> On Tue, May 10, 2022 at 01:35:41PM +0200, Christian König wrote:
+>> Am 10.05.22 um 13:00 schrieb Greg KH:
+>>> On Tue, May 10, 2022 at 03:53:32PM +0530, Charan Teja Kalla wrote:
+>>>> The dmabuf file uses get_next_ino()(through dma_buf_getfile() ->
+>>>> alloc_anon_inode()) to get an inode number and uses the same as a
+>>>> directory name under /sys/kernel/dmabuf/buffers/<ino>. This directory is
+>>>> used to collect the dmabuf stats and it is created through
+>>>> dma_buf_stats_setup(). At current, failure to create this directory
+>>>> entry can make the dma_buf_export() to fail.
 >>>>
->>>> On 09/05/2022 13:00, Robert Marko wrote:
->>>>> Methode eDPU is an Armada 3720 powered board based on the Methode uDPU.
->>>>>
->>>>> They feature the same CPU, RAM, and storage as well as the form factor.
->>>>>
->>>>> However, eDPU only has one SFP slot plus a copper G.hn port.
->>>>>
->>>>> In order to reduce duplication, split the uDPU DTS into a common one.
->>>>>
->>>>> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
->>>>> ---
->>>>>  arch/arm64/boot/dts/marvell/Makefile          |   1 +
->>>>>  .../boot/dts/marvell/armada-3720-eDPU.dts     |  14 ++
->>>>>  .../boot/dts/marvell/armada-3720-uDPU.dts     | 148 +---------------
->>>>>  .../boot/dts/marvell/armada-3720-uDPU.dtsi    | 163 ++++++++++++++++++
->>>>>  4 files changed, 179 insertions(+), 147 deletions(-)
->>>>>  create mode 100644 arch/arm64/boot/dts/marvell/armada-3720-eDPU.dts
->>>>>  create mode 100644 arch/arm64/boot/dts/marvell/armada-3720-uDPU.dtsi
->>>>>
->>>>> diff --git a/arch/arm64/boot/dts/marvell/Makefile b/arch/arm64/boot/dts/marvell/Makefile
->>>>> index 1c794cdcb8e6..104d7d7e8215 100644
->>>>> --- a/arch/arm64/boot/dts/marvell/Makefile
->>>>> +++ b/arch/arm64/boot/dts/marvell/Makefile
->>>>> @@ -1,6 +1,7 @@
->>>>>  # SPDX-License-Identifier: GPL-2.0
->>>>>  # Mvebu SoC Family
->>>>>  dtb-$(CONFIG_ARCH_MVEBU) += armada-3720-db.dtb
->>>>> +dtb-$(CONFIG_ARCH_MVEBU) += armada-3720-eDPU.dtb
->>>>>  dtb-$(CONFIG_ARCH_MVEBU) += armada-3720-espressobin.dtb
->>>>>  dtb-$(CONFIG_ARCH_MVEBU) += armada-3720-espressobin-emmc.dtb
->>>>>  dtb-$(CONFIG_ARCH_MVEBU) += armada-3720-espressobin-ultra.dtb
->>>>> diff --git a/arch/arm64/boot/dts/marvell/armada-3720-eDPU.dts b/arch/arm64/boot/dts/marvell/armada-3720-eDPU.dts
->>>>> new file mode 100644
->>>>> index 000000000000..6b573a6854cc
->>>>> --- /dev/null
->>>>> +++ b/arch/arm64/boot/dts/marvell/armada-3720-eDPU.dts
->>>>> @@ -0,0 +1,14 @@
->>>>> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
->>>>> +
->>>>> +/dts-v1/;
->>>>> +
->>>>> +#include "armada-3720-uDPU.dtsi"
->>>>> +
->>>>> +/ {
->>>>> +     model = "Methode eDPU Board";
->>>>> +     compatible = "methode,edpu", "marvell,armada3720";
+>>>> Now, as the get_next_ino() can definitely give a repetitive inode no
+>>>> causing the directory entry creation to fail with -EEXIST. This is a
+>>>> problem on the systems where dmabuf stats functionality is enabled on
+>>>> the production builds can make the dma_buf_export(), though the dmabuf
+>>>> memory is allocated successfully, to fail just because it couldn't
+>>>> create stats entry.
+>>> Then maybe we should not fail the creation path of the kobject fails to
+>>> be created?  It's just for debugging, it should be fine if the creation
+>>> of it isn't there.
+>> Well if it's just for debugging then it should be under debugfs and not
+>> sysfs.
+> I'll note that the original patch series for this described why this was
+> moved from debugfs to sysfs.
+>
+>>>> This issue we are able to see on the snapdragon system within 13 days
+>>>> where there already exists a directory with inode no "122602" so
+>>>> dma_buf_stats_setup() failed with -EEXIST as it is trying to create
+>>>> the same directory entry.
 >>>>
->>>> You need also bindings for the board compatible. Someone should convert
->>>> the Documentation/devicetree/bindings/arm/marvell/armada-37xx.txt to YAML.
->>>
->>> Ok, I can convert the SoC compatibles at least for now.
->>> Any advice you can give me on how the handle the Espressobin boards
->>> having multiple board-specific compatibles?
->>> For example, Espressobin V7 has:
->>> "globalscale,espressobin-v7", "globalscale,espressobin"
->>>
->>
->> Documentation/devicetree/bindings/arm/fsl.yaml
-> 
-> Thanks, now it makes sense.
-> 
->>
->>>>
->>>>> +};
->>>>> +> +  sfp_eth1: sfp-eth1 {
->>>>
->>>> Generic node names, please.
->>>
->>> Can you give me an example of what would be appropriate here because the SFP
->>> bindings example utilizes the same naming scheme as used here?
->>
->> "sfp" if you have only one sfp node.
-> 
-> There are 2 SFP nodes in total, that is why they are named according
-> to the ethernet controller
-> to which they are connected.
-> uDPU has 2 SFP slots while eDPU has 1, so one was moved to uDPU DTS.
+>>>> To make the directory entry as unique, append the inode creation time to
+>>>> the inode. With this change the stats directory entries will be in the
+>>>> format of: /sys/kernel/dmabuf/buffers/<inode no>-<inode creation time in
+>>>> secs>.
+>>> As you are changing the format here, shouldn't the Documentation/ABI/
+>>> entry for this also be changed?
+>> As far as I can see that is even an UAPI break, not sure if we can allow
+>> that.
+> Why?  Device names change all the time and should never be static.  A
+> buffer name should just be a unique identifier in that directory, that's
+> all.  No rules on the formatting of it unless for some reason the name
+> being the inode number was somehow being used in userspace for that
+> number?
 
-Ah, then let it be. sfp-1 and sfp-2 would also work, but that's not
-important.
+My impression was that we documented that should have been a number, but 
+I might be wrong on this. And if it's not documented to be a number, I 
+think it should be.
 
+The background is that you probably need to associate the DMA-buf with 
+some userspace structure for accounting and that becomes easier when you 
+can just put them into a radix.
 
-Best regards,
-Krzysztof
+Regards,
+Christian.
+
+>
+> thanks,
+>
+> greg k-h
+> _______________________________________________
+> Linaro-mm-sig mailing list -- linaro-mm-sig@lists.linaro.org
+> To unsubscribe send an email to linaro-mm-sig-leave@lists.linaro.org
+
