@@ -2,151 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E92CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:56:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18455C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:56:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244994AbiEJN75 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:59:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49464 "EHLO
+        id S237262AbiEJOAU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:00:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244843AbiEJNiI (ORCPT
+        with ESMTP id S245000AbiEJNiV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:38:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FA1562CFC;
-        Tue, 10 May 2022 06:26:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A3D9CB81DA8;
-        Tue, 10 May 2022 13:26:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A668C385A6;
-        Tue, 10 May 2022 13:26:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189187;
-        bh=O6BESBseo/1PxSG1YQz7m3Aoqpw3BtYVHDjNoochBjA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R98m76OkHffd8PUUgK1hl/zIdF5AqRBrf8y/N5sqPnLr1DIOC22DHfktewRNXnHte
-         kW9IdWriPIhkWoF3/f+skxZlYtRJfiiD8vH9xKr6UKSeAEo3Hia0civfb5W0T+wE61
-         oi47NPfoSOB6J89GS0mbUaUofoAnJq15I7QGA89M=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Moshe Shemesh <moshe@nvidia.com>,
-        Maher Sanalla <msanalla@nvidia.com>,
-        Shay Drory <shayd@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.10 41/70] net/mlx5: Avoid double clear or set of sync reset requested
-Date:   Tue, 10 May 2022 15:08:00 +0200
-Message-Id: <20220510130734.064449793@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
-References: <20220510130732.861729621@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 10 May 2022 09:38:21 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD9C8073F;
+        Tue, 10 May 2022 06:26:50 -0700 (PDT)
+X-UUID: e9e4fe1c2fa349a2831d8a92d91f6198-20220510
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:cf7588dd-2b6d-4660-a492-a766291dd8e7,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:faefae9,CLOUDID:82164ab3-56b5-4c9e-8d83-0070b288eb6a,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: e9e4fe1c2fa349a2831d8a92d91f6198-20220510
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <allen-kh.cheng@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1792481390; Tue, 10 May 2022 21:26:43 +0800
+Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Tue, 10 May 2022 21:26:42 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 10 May 2022 21:26:41 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Tue, 10 May 2022 21:26:41 +0800
+From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski@canonical.com>
+CC:     Lala Lin <lala.lin@mediatek.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        "Chen-Yu Tsai" <wenst@chromium.org>,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Subject: [PATCH v4 3/3] arm64: dts: mediatek: update efuse compatible fallbacks
+Date:   Tue, 10 May 2022 21:26:37 +0800
+Message-ID: <20220510132637.5864-4-allen-kh.cheng@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220510132637.5864-1-allen-kh.cheng@mediatek.com>
+References: <20220510132637.5864-1-allen-kh.cheng@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Moshe Shemesh <moshe@nvidia.com>
+dtschema expects mediatek,efuse to be a generic fallback. We add
+mediatek,efuse fallback for mt8173 and mt8192 SoC.
 
-commit fc3d3db07b35885f238e1fa06b9f04a8fa7a62d0 upstream.
-
-Double clear of reset requested state can lead to NULL pointer as it
-will try to delete the timer twice. This can happen for example on a
-race between abort from FW and pci error or reset. Avoid such case using
-test_and_clear_bit() to verify only one time reset requested state clear
-flow. Similarly use test_and_set_bit() to verify only one time reset
-requested state set flow.
-
-Fixes: 7dd6df329d4c ("net/mlx5: Handle sync reset abort event")
-Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
-Reviewed-by: Maher Sanalla <msanalla@nvidia.com>
-Reviewed-by: Shay Drory <shayd@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c |   28 ++++++++++++++-------
- 1 file changed, 19 insertions(+), 9 deletions(-)
+ arch/arm64/boot/dts/mediatek/mt8173.dtsi | 3 ++-
+ arch/arm64/boot/dts/mediatek/mt8192.dtsi | 3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-@@ -134,14 +134,19 @@ static void mlx5_stop_sync_reset_poll(st
- 	del_timer_sync(&fw_reset->timer);
- }
+diff --git a/arch/arm64/boot/dts/mediatek/mt8173.dtsi b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
+index 40d7b47fc52e..a62fb810d2a0 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8173.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
+@@ -594,7 +594,8 @@
+ 		};
  
--static void mlx5_sync_reset_clear_reset_requested(struct mlx5_core_dev *dev, bool poll_health)
-+static int mlx5_sync_reset_clear_reset_requested(struct mlx5_core_dev *dev, bool poll_health)
- {
- 	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
+ 		efuse: efuse@10206000 {
+-			compatible = "mediatek,mt8173-efuse";
++			compatible = "mediatek,mt8173-efuse",
++				     "mediatek,efuse";
+ 			reg = <0 0x10206000 0 0x1000>;
+ 			#address-cells = <1>;
+ 			#size-cells = <1>;
+diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+index 26dbe9ecc528..4a5af1ed3abf 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+@@ -911,7 +911,8 @@
+ 		};
  
-+	if (!test_and_clear_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags)) {
-+		mlx5_core_warn(dev, "Reset request was already cleared\n");
-+		return -EALREADY;
-+	}
-+
- 	mlx5_stop_sync_reset_poll(dev);
--	clear_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags);
- 	if (poll_health)
- 		mlx5_start_health_poll(dev);
-+	return 0;
- }
- 
- #define MLX5_RESET_POLL_INTERVAL	(HZ / 10)
-@@ -185,13 +190,17 @@ static int mlx5_fw_reset_set_reset_sync_
- 	return mlx5_reg_mfrl_set(dev, MLX5_MFRL_REG_RESET_LEVEL3, 0, 2, false);
- }
- 
--static void mlx5_sync_reset_set_reset_requested(struct mlx5_core_dev *dev)
-+static int mlx5_sync_reset_set_reset_requested(struct mlx5_core_dev *dev)
- {
- 	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
- 
-+	if (test_and_set_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags)) {
-+		mlx5_core_warn(dev, "Reset request was already set\n");
-+		return -EALREADY;
-+	}
- 	mlx5_stop_health_poll(dev, true);
--	set_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags);
- 	mlx5_start_sync_reset_poll(dev);
-+	return 0;
- }
- 
- static void mlx5_fw_live_patch_event(struct work_struct *work)
-@@ -225,7 +234,9 @@ static void mlx5_sync_reset_request_even
- 			       err ? "Failed" : "Sent");
- 		return;
- 	}
--	mlx5_sync_reset_set_reset_requested(dev);
-+	if (mlx5_sync_reset_set_reset_requested(dev))
-+		return;
-+
- 	err = mlx5_fw_reset_set_reset_sync_ack(dev);
- 	if (err)
- 		mlx5_core_warn(dev, "PCI Sync FW Update Reset Ack Failed. Error code: %d\n", err);
-@@ -325,7 +336,8 @@ static void mlx5_sync_reset_now_event(st
- 	struct mlx5_core_dev *dev = fw_reset->dev;
- 	int err;
- 
--	mlx5_sync_reset_clear_reset_requested(dev, false);
-+	if (mlx5_sync_reset_clear_reset_requested(dev, false))
-+		return;
- 
- 	mlx5_core_warn(dev, "Sync Reset now. Device is going to reset.\n");
- 
-@@ -354,10 +366,8 @@ static void mlx5_sync_reset_abort_event(
- 						      reset_abort_work);
- 	struct mlx5_core_dev *dev = fw_reset->dev;
- 
--	if (!test_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags))
-+	if (mlx5_sync_reset_clear_reset_requested(dev, true))
- 		return;
--
--	mlx5_sync_reset_clear_reset_requested(dev, true);
- 	mlx5_core_warn(dev, "PCI Sync FW Update Reset Aborted.\n");
- }
- 
-
+ 		efuse: efuse@11c10000 {
+-			compatible = "mediatek,efuse";
++			compatible = "mediatek,mt8192-efuse",
++				     "mediatek,efuse";
+ 			reg = <0 0x11c10000 0 0x1000>;
+ 			#address-cells = <1>;
+ 			#size-cells = <1>;
+-- 
+2.18.0
 
