@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9D6CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:06:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 035B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 14:06:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237665AbiEJOKU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:10:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51296 "EHLO
+        id S245493AbiEJOK3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:10:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244949AbiEJNrI (ORCPT
+        with ESMTP id S244977AbiEJNrK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:47:08 -0400
+        Tue, 10 May 2022 09:47:10 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E746C21B178;
-        Tue, 10 May 2022 06:32:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47ACD2380E9;
+        Tue, 10 May 2022 06:33:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 83E0F618A0;
-        Tue, 10 May 2022 13:32:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CBB5C385A6;
-        Tue, 10 May 2022 13:32:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA9226188A;
+        Tue, 10 May 2022 13:33:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0610C385C2;
+        Tue, 10 May 2022 13:33:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189573;
-        bh=ueB1Y6/yuNWGMloKhd/JUy0TqGqlP4o97wbX0fFeZTk=;
+        s=korg; t=1652189589;
+        bh=RrY/267cCvZ+Zw6/oIJgYru9TUR3Qifk5FHKotJx9AQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pk2KDvE2F4dJLlGsM79y6251i9aZie0Bj9YtOJhEYTDuPyF/R36+gQTd+da/ElPv0
-         DwPPXAkZ3YsKBwu5fxeJFcUUSDwQ1CpzxF+ysQqtMPd3Qw77WmOqTfAoscllmCs/a2
-         ktGqqUilwos5VaPzBdauN4cYCvQJpQWuruBGhzJs=
+        b=xQP7gr2VxCVOLZdYNXvinIbdhuL7E5XUAekHoUtc1PPBZKMqT5NhFF5fhQinCgBDB
+         PVijrBIO4NZbk9f8P3EhM+AdrZepMK/ynbP8JMDdFgkqYDSlc2bzfpt6y+ZFq0elzG
+         MxHgG3y2IQaAiOs5eD4q8pT55sPoau2Ce21HOIow=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Huth <thuth@redhat.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org,
+        Sidhartha Kumar <sidhartha.kumar@oracle.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 095/135] KVM: selftests: Silence compiler warning in the kvm_page_table_test
-Date:   Tue, 10 May 2022 15:07:57 +0200
-Message-Id: <20220510130743.134928802@linuxfoundation.org>
+Subject: [PATCH 5.15 100/135] selftest/vm: verify mmap addr in mremap_test
+Date:   Tue, 10 May 2022 15:08:02 +0200
+Message-Id: <20220510130743.277550432@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
 References: <20220510130740.392653815@linuxfoundation.org>
@@ -50,46 +52,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Huth <thuth@redhat.com>
+From: Sidhartha Kumar <sidhartha.kumar@oracle.com>
 
-[ Upstream commit 266a19a0bc4fbfab4d981a47640ca98972a01865 ]
+[ Upstream commit 9c85a9bae267f6b5e5e374d0d023bbbe9db096d3 ]
 
-When compiling kvm_page_table_test.c, I get this compiler warning
-with gcc 11.2:
+Avoid calling mmap with requested addresses that are less than the
+system's mmap_min_addr.  When run as root, mmap returns EACCES when
+trying to map addresses < mmap_min_addr.  This is not one of the error
+codes for the condition to retry the mmap in the test.
 
-kvm_page_table_test.c: In function 'pre_init_before_test':
-../../../../tools/include/linux/kernel.h:44:24: warning: comparison of
- distinct pointer types lacks a cast
-   44 |         (void) (&_max1 == &_max2);              \
-      |                        ^~
-kvm_page_table_test.c:281:21: note: in expansion of macro 'max'
-  281 |         alignment = max(0x100000, alignment);
-      |                     ^~~
+Rather than arbitrarily retrying on EACCES, don't attempt an mmap until
+addr > vm.mmap_min_addr.
 
-Fix it by adjusting the type of the absolute value.
+Add a munmap call after an alignment check as the mappings are retained
+after the retry and can reach the vm.max_map_count sysctl.
 
-Signed-off-by: Thomas Huth <thuth@redhat.com>
-Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-Message-Id: <20220414103031.565037-1-thuth@redhat.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Link: https://lkml.kernel.org/r/20220420215721.4868-1-sidhartha.kumar@oracle.com
+Signed-off-by: Sidhartha Kumar <sidhartha.kumar@oracle.com>
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/kvm/kvm_page_table_test.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/vm/mremap_test.c | 29 ++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
 
-diff --git a/tools/testing/selftests/kvm/kvm_page_table_test.c b/tools/testing/selftests/kvm/kvm_page_table_test.c
-index 36407cb0ec85..f1ddfe4c4a03 100644
---- a/tools/testing/selftests/kvm/kvm_page_table_test.c
-+++ b/tools/testing/selftests/kvm/kvm_page_table_test.c
-@@ -278,7 +278,7 @@ static struct kvm_vm *pre_init_before_test(enum vm_guest_mode mode, void *arg)
- 	else
- 		guest_test_phys_mem = p->phys_offset;
- #ifdef __s390x__
--	alignment = max(0x100000, alignment);
-+	alignment = max(0x100000UL, alignment);
- #endif
- 	guest_test_phys_mem &= ~(alignment - 1);
+diff --git a/tools/testing/selftests/vm/mremap_test.c b/tools/testing/selftests/vm/mremap_test.c
+index e3ce33a9954e..efcbf537b3d5 100644
+--- a/tools/testing/selftests/vm/mremap_test.c
++++ b/tools/testing/selftests/vm/mremap_test.c
+@@ -66,6 +66,35 @@ enum {
+ 	.expect_failure = should_fail				\
+ }
  
++/* Returns mmap_min_addr sysctl tunable from procfs */
++static unsigned long long get_mmap_min_addr(void)
++{
++	FILE *fp;
++	int n_matched;
++	static unsigned long long addr;
++
++	if (addr)
++		return addr;
++
++	fp = fopen("/proc/sys/vm/mmap_min_addr", "r");
++	if (fp == NULL) {
++		ksft_print_msg("Failed to open /proc/sys/vm/mmap_min_addr: %s\n",
++			strerror(errno));
++		exit(KSFT_SKIP);
++	}
++
++	n_matched = fscanf(fp, "%llu", &addr);
++	if (n_matched != 1) {
++		ksft_print_msg("Failed to read /proc/sys/vm/mmap_min_addr: %s\n",
++			strerror(errno));
++		fclose(fp);
++		exit(KSFT_SKIP);
++	}
++
++	fclose(fp);
++	return addr;
++}
++
+ /*
+  * Returns false if the requested remap region overlaps with an
+  * existing mapping (e.g text, stack) else returns true.
 -- 
 2.35.1
 
