@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37C27C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:14:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B755BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:14:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242514AbiEJNRv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:17:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35746 "EHLO
+        id S242381AbiEJNSI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:18:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242360AbiEJNQQ (ORCPT
+        with ESMTP id S242328AbiEJNQT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:16:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 741573ED13;
-        Tue, 10 May 2022 06:12:12 -0700 (PDT)
+        Tue, 10 May 2022 09:16:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C56C24132B;
+        Tue, 10 May 2022 06:12:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3850D61574;
-        Tue, 10 May 2022 13:12:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4855BC385C2;
-        Tue, 10 May 2022 13:12:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C4435615F4;
+        Tue, 10 May 2022 13:11:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEF6DC385C2;
+        Tue, 10 May 2022 13:11:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188331;
-        bh=JRE8OAckK6Z2/pZaQdU2BPmNB27yYOJnPnYlHynw71Q=;
+        s=korg; t=1652188317;
+        bh=zlgTwDPqMHGwCom7yT3bg2E8DypAoRsb8SCA47wPt4w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZhjFuPD0LJiz8ipPJInDDSnvRb2fSJHo397HP6DgUFPYohMFCEX8BKZqNJQOLtEzU
-         Z6EK4RmMy5ObeAhDy1jQ+7kwJdtoitDvJSXcTFlIs3D7mO/lzVNPufzAny1zoIG/RB
-         fYlFLo8RBRSy/KtXlWwLx/Z8vpFtuYmRknzhZIaw=
+        b=WwRFkwKtdKfveyy1CuXRQsp2AYgv4POCkOydJpCF8SJVEhTpU+USTdw7X9rkvXxaS
+         Yco7JA0dBKWPXwfjdQ/HbFZrNwHx38KyR5PZDykrEtm42rqHV0bXZafsXeTbMVAS4x
+         1qe5eLotuCuE1y5C9tofGTla9g9pn7bF5G/DZXjI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 4.9 39/66] tty: n_gsm: fix missing explicit ldisc flush
-Date:   Tue, 10 May 2022 15:07:29 +0200
-Message-Id: <20220510130730.915130452@linuxfoundation.org>
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 34/66] drivers: net: hippi: Fix deadlock in rr_close()
+Date:   Tue, 10 May 2022 15:07:24 +0200
+Message-Id: <20220510130730.764886380@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130729.762341544@linuxfoundation.org>
 References: <20220510130729.762341544@linuxfoundation.org>
@@ -47,35 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-commit 17eac652028501df7ea296b1d9b9c134db262b7d upstream.
+[ Upstream commit bc6de2878429e85c1f1afaa566f7b5abb2243eef ]
 
-In gsm_cleanup_mux() the muxer is closed down and all queues are removed.
-However, removing the queues is done without explicit control of the
-underlying buffers. Flush those before freeing up our queues to ensure
-that all outgoing queues are cleared consistently. Otherwise, a new mux
-connection establishment attempt may time out while the underlying tty is
-still busy sending out the remaining data from the previous connection.
+There is a deadlock in rr_close(), which is shown below:
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220414094225.4527-10-daniel.starke@siemens.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+   (Thread 1)                |      (Thread 2)
+                             | rr_open()
+rr_close()                   |  add_timer()
+ spin_lock_irqsave() //(1)   |  (wait a time)
+ ...                         | rr_timer()
+ del_timer_sync()            |  spin_lock_irqsave() //(2)
+ (wait timer to stop)        |  ...
+
+We hold rrpriv->lock in position (1) of thread 1 and
+use del_timer_sync() to wait timer to stop, but timer handler
+also need rrpriv->lock in position (2) of thread 2.
+As a result, rr_close() will block forever.
+
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irqsave(), which could let timer handler to obtain
+the needed lock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417125519.82618-1-duoming@zju.edu.cn
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/hippi/rrunner.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -2101,6 +2101,7 @@ static void gsm_cleanup_mux(struct gsm_m
- 			gsm_dlci_release(gsm->dlci[i]);
- 	mutex_unlock(&gsm->mutex);
- 	/* Now wipe the queues */
-+	tty_ldisc_flush(gsm->tty);
- 	list_for_each_entry_safe(txq, ntxq, &gsm->tx_list, list)
- 		kfree(txq);
- 	INIT_LIST_HEAD(&gsm->tx_list);
+diff --git a/drivers/net/hippi/rrunner.c b/drivers/net/hippi/rrunner.c
+index 6f3519123eb6..0e1a422d9567 100644
+--- a/drivers/net/hippi/rrunner.c
++++ b/drivers/net/hippi/rrunner.c
+@@ -1354,7 +1354,9 @@ static int rr_close(struct net_device *dev)
+ 
+ 	rrpriv->fw_running = 0;
+ 
++	spin_unlock_irqrestore(&rrpriv->lock, flags);
+ 	del_timer_sync(&rrpriv->timer);
++	spin_lock_irqsave(&rrpriv->lock, flags);
+ 
+ 	writel(0, &regs->TxPi);
+ 	writel(0, &regs->IpRxPi);
+-- 
+2.35.1
+
 
 
