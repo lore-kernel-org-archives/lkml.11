@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0C50C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:58:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7436FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:58:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244488AbiEJOAw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 10:00:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56518 "EHLO
+        id S242581AbiEJOCp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 10:02:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245095AbiEJNia (ORCPT
+        with ESMTP id S245474AbiEJNjA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 09:38:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B06112380F0;
-        Tue, 10 May 2022 06:27:04 -0700 (PDT)
+        Tue, 10 May 2022 09:39:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F200F235C18;
+        Tue, 10 May 2022 06:29:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 343BE61765;
-        Tue, 10 May 2022 13:27:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28F10C385A6;
-        Tue, 10 May 2022 13:27:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0832161825;
+        Tue, 10 May 2022 13:29:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E90BDC385C2;
+        Tue, 10 May 2022 13:29:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652189223;
-        bh=gtbfH+T5AoOjAbd4/m5ZRqSJUdNdOLZiOe36gKOgnjI=;
+        s=korg; t=1652189356;
+        bh=U3t5kK9OCHwvOySeFZuGHZJrRFzboJZwTeQJEzdZGVU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=agp/VSysortu0V2oEzEOSB9lKLpy+oUtyg7WGeC2MTtpOpxtYRcrEB8vmFKvGvoWT
-         lGcpFHmnHU9f7B8yceZ/RTOA6qZss1L66LjbT24KZomJ9gGcbu2Nqg89hHEr/fgaV2
-         aZWu+o2GYkTu1uVAsEw+wCvb9jLnZTVWDfjc/++o=
+        b=qEP1DRcSMnWEEbFBc+q+Ua03lgCv06ssn85BolXLRMCdNdRkG1pQMy7//wkw3x6qs
+         D0gh8AlcJ+mo7WNmOvnJpeR2SRW85SHBwEifnYw6Yeo4XB+7RaKQQugz8rTKmZLs1K
+         VRv/wWabOVil1dTB8kIVxtJw/k0SmWMneiTK44Q4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Somnath Kotur <somnath.kotur@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 52/70] bnxt_en: Fix possible bnxt_open() failure caused by wrong RFS flag
-Date:   Tue, 10 May 2022 15:08:11 +0200
-Message-Id: <20220510130734.385248355@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>
+Subject: [PATCH 5.15 024/135] ASoC: wm8958: Fix change notifications for DSP controls
+Date:   Tue, 10 May 2022 15:06:46 +0200
+Message-Id: <20220510130741.094726393@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220510130732.861729621@linuxfoundation.org>
-References: <20220510130732.861729621@linuxfoundation.org>
+In-Reply-To: <20220510130740.392653815@linuxfoundation.org>
+References: <20220510130740.392653815@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,76 +48,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Somnath Kotur <somnath.kotur@broadcom.com>
+From: Mark Brown <broonie@kernel.org>
 
-commit 13ba794397e45e52893cfc21d7a69cb5f341b407 upstream.
+commit b4f5c6b2e52b27462c0599e64e96e53b58438de1 upstream.
 
-bnxt_open() can fail in this code path, especially on a VF when
-it fails to reserve default rings:
+The WM8958 DSP controls all return 0 on successful write, not a boolean
+value indicating if the write changed the value of the control. Fix this
+by returning 1 after a change, there is already a check at the start of
+each put() that skips the function in the case that there is no change.
 
-bnxt_open()
-  __bnxt_open_nic()
-    bnxt_clear_int_mode()
-    bnxt_init_dflt_ring_mode()
-
-RX rings would be set to 0 when we hit this error path.
-
-It is possible for a subsequent bnxt_open() call to potentially succeed
-with a code path like this:
-
-bnxt_open()
-  bnxt_hwrm_if_change()
-    bnxt_fw_init_one()
-      bnxt_fw_init_one_p3()
-        bnxt_set_dflt_rfs()
-          bnxt_rfs_capable()
-            bnxt_hwrm_reserve_rings()
-
-On older chips, RFS is capable if we can reserve the number of vnics that
-is equal to RX rings + 1.  But since RX rings is still set to 0 in this
-code path, we may mistakenly think that RFS is supported for 0 RX rings.
-
-Later, when the default RX rings are reserved and we try to enable
-RFS, it would fail and cause bnxt_open() to fail unnecessarily.
-
-We fix this in 2 places.  bnxt_rfs_capable() will always return false if
-RX rings is not yet set.  bnxt_init_dflt_ring_mode() will call
-bnxt_set_dflt_rfs() which will always clear the RFS flags if RFS is not
-supported.
-
-Fixes: 20d7d1c5c9b1 ("bnxt_en: reliably allocate IRQ table on reset to avoid crash")
-Signed-off-by: Somnath Kotur <somnath.kotur@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220416125408.197440-1-broonie@kernel.org
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c |    9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ sound/soc/codecs/wm8958-dsp2.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -10453,7 +10453,7 @@ static bool bnxt_rfs_capable(struct bnxt
+--- a/sound/soc/codecs/wm8958-dsp2.c
++++ b/sound/soc/codecs/wm8958-dsp2.c
+@@ -530,7 +530,7 @@ static int wm8958_mbc_put(struct snd_kco
  
- 	if (bp->flags & BNXT_FLAG_CHIP_P5)
- 		return bnxt_rfs_supported(bp);
--	if (!(bp->flags & BNXT_FLAG_MSIX_CAP) || !bnxt_can_reserve_rings(bp))
-+	if (!(bp->flags & BNXT_FLAG_MSIX_CAP) || !bnxt_can_reserve_rings(bp) || !bp->rx_nr_rings)
- 		return false;
+ 	wm8958_dsp_apply(component, mbc, wm8994->mbc_ena[mbc]);
  
- 	vnics = 1 + bp->rx_nr_rings;
-@@ -12481,10 +12481,9 @@ static int bnxt_init_dflt_ring_mode(stru
- 		goto init_dflt_ring_err;
+-	return 0;
++	return 1;
+ }
  
- 	bp->tx_nr_rings_per_tc = bp->tx_nr_rings;
--	if (bnxt_rfs_supported(bp) && bnxt_rfs_capable(bp)) {
--		bp->flags |= BNXT_FLAG_RFS;
--		bp->dev->features |= NETIF_F_NTUPLE;
--	}
-+
-+	bnxt_set_dflt_rfs(bp);
-+
- init_dflt_ring_err:
- 	bnxt_ulp_irq_restart(bp, rc);
- 	return rc;
+ #define WM8958_MBC_SWITCH(xname, xval) {\
+@@ -656,7 +656,7 @@ static int wm8958_vss_put(struct snd_kco
+ 
+ 	wm8958_dsp_apply(component, vss, wm8994->vss_ena[vss]);
+ 
+-	return 0;
++	return 1;
+ }
+ 
+ 
+@@ -730,7 +730,7 @@ static int wm8958_hpf_put(struct snd_kco
+ 
+ 	wm8958_dsp_apply(component, hpf % 3, ucontrol->value.integer.value[0]);
+ 
+-	return 0;
++	return 1;
+ }
+ 
+ #define WM8958_HPF_SWITCH(xname, xval) {\
+@@ -824,7 +824,7 @@ static int wm8958_enh_eq_put(struct snd_
+ 
+ 	wm8958_dsp_apply(component, eq, ucontrol->value.integer.value[0]);
+ 
+-	return 0;
++	return 1;
+ }
+ 
+ #define WM8958_ENH_EQ_SWITCH(xname, xval) {\
 
 
