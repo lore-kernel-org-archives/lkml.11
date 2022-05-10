@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 319BFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:21:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 441C8C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 13:21:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242946AbiEJNZa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 09:25:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60630 "EHLO
+        id S242715AbiEJNZi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 09:25:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243400AbiEJNVv (ORCPT
+        with ESMTP id S243397AbiEJNVv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 09:21:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07111473BD;
-        Tue, 10 May 2022 06:15:55 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 077D847ACE;
+        Tue, 10 May 2022 06:15:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A9CB61668;
-        Tue, 10 May 2022 13:15:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A61DEC385C2;
-        Tue, 10 May 2022 13:15:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 07EB36165A;
+        Tue, 10 May 2022 13:15:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0947DC385C6;
+        Tue, 10 May 2022 13:15:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652188550;
-        bh=91cH3L1VOAhw76ePh5Cx8T4GAcal67FgrHUFzd3Uz3w=;
+        s=korg; t=1652188525;
+        bh=FZfg3tIgQzItUpFCdxmW/CBbwci+zbGsCQcD8ZzaOdI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yNYqBn/cYqfd+i6WRoCVdjW4GDNI9dNf+rlyVMksymzrHQfdHUOHT3g18pjU3k+sr
-         TsIlc24DYXYZ/cWt+OnUfipsiH3zJhLbT4cCFg63ypAr0WvIW6tg9Ah9Y7pPjZqFat
-         jy6kz1UiR7lnsIK3vvb/Tzv+UtAT80p+rQ2lWuL4=
+        b=LOpPWQfK0KuvpsV++Wl2i2knLyf5HpY28p4h/q0dHhQ/e7yxtZ2gth8QGPNIti/6E
+         nW1eKuY6RpIfpAuzzCOA5GXTFaPpurD7V2o1dNpfqBvlPyBMNyBToJUlQrnOJNeuWN
+         Yd46OlQAo/+nCGsIFcv/ckZY/kOUbejCLFOhePkI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Kyle D. Pelton" <kyle.d.pelton@intel.com>,
-        Borislav Petkov <bp@suse.de>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-Subject: [PATCH 4.14 45/78] x86/cpu: Load microcode during restore_processor_state()
-Date:   Tue, 10 May 2022 15:07:31 +0200
-Message-Id: <20220510130733.869269749@linuxfoundation.org>
+        stable@vger.kernel.org, Fabien Parent <fparent@baylibre.com>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Macpaul Lin <macpaul.lin@mediatek.com>,
+        Tainping Fang <tianping.fang@mediatek.com>
+Subject: [PATCH 4.14 07/78] usb: mtu3: fix USB 3.0 dual-role-switch from device to host
+Date:   Tue, 10 May 2022 15:06:53 +0200
+Message-Id: <20220510130732.745738342@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220510130732.522479698@linuxfoundation.org>
 References: <20220510130732.522479698@linuxfoundation.org>
@@ -49,119 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Macpaul Lin <macpaul.lin@mediatek.com>
 
-commit f9e14dbbd454581061c736bf70bf5cbb15ac927c upstream.
+commit 456244aeecd54249096362a173dfe06b82a5cafa upstream.
 
-When resuming from system sleep state, restore_processor_state()
-restores the boot CPU MSRs. These MSRs could be emulated by microcode.
-If microcode is not loaded yet, writing to emulated MSRs leads to
-unchecked MSR access error:
+Issue description:
+  When an OTG port has been switched to device role and then switch back
+  to host role again, the USB 3.0 Host (XHCI) will not be able to detect
+  "plug in event of a connected USB 2.0/1.0 ((Highspeed and Fullspeed)
+  devices until system reboot.
 
-  ...
-  PM: Calling lapic_suspend+0x0/0x210
-  unchecked MSR access error: WRMSR to 0x10f (tried to write 0x0...0) at rIP: ... (native_write_msr)
-  Call Trace:
-    <TASK>
-    ? restore_processor_state
-    x86_acpi_suspend_lowlevel
-    acpi_suspend_enter
-    suspend_devices_and_enter
-    pm_suspend.cold
-    state_store
-    kobj_attr_store
-    sysfs_kf_write
-    kernfs_fop_write_iter
-    new_sync_write
-    vfs_write
-    ksys_write
-    __x64_sys_write
-    do_syscall_64
-    entry_SYSCALL_64_after_hwframe
-   RIP: 0033:0x7fda13c260a7
+Root cause and Solution:
+  There is a condition checking flag "ssusb->otg_switch.is_u3_drd" in
+  toggle_opstate(). At the end of role switch procedure, toggle_opstate()
+  will be called to set DC_SESSION and SOFT_CONN bit. If "is_u3_drd" was
+  set and switched the role to USB host 3.0, bit DC_SESSION and SOFT_CONN
+  will be skipped hence caused the port cannot detect connected USB 2.0
+  (Highspeed and Fullspeed) devices. Simply remove the condition check to
+  solve this issue.
 
-To ensure microcode emulated MSRs are available for restoration, load
-the microcode on the boot CPU before restoring these MSRs.
-
-  [ Pawan: write commit message and productize it. ]
-
-Fixes: e2a1256b17b1 ("x86/speculation: Restore speculation related MSRs during S3 resume")
-Reported-by: Kyle D. Pelton <kyle.d.pelton@intel.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-Tested-by: Kyle D. Pelton <kyle.d.pelton@intel.com>
+Fixes: d0ed062a8b75 ("usb: mtu3: dual-role mode support")
 Cc: stable@vger.kernel.org
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215841
-Link: https://lore.kernel.org/r/4350dfbf785cd482d3fafa72b2b49c83102df3ce.1650386317.git.pawan.kumar.gupta@linux.intel.com
+Tested-by: Fabien Parent <fparent@baylibre.com>
+Reviewed-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+Signed-off-by: Macpaul Lin <macpaul.lin@mediatek.com>
+Signed-off-by: Tainping Fang <tianping.fang@mediatek.com>
+Link: https://lore.kernel.org/r/20220419081245.21015-1-macpaul.lin@mediatek.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/microcode.h     |    2 ++
- arch/x86/kernel/cpu/microcode/core.c |    6 +++---
- arch/x86/power/cpu.c                 |    8 ++++++++
- 3 files changed, 13 insertions(+), 3 deletions(-)
+ drivers/usb/mtu3/mtu3_dr.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
---- a/arch/x86/include/asm/microcode.h
-+++ b/arch/x86/include/asm/microcode.h
-@@ -147,11 +147,13 @@ extern void load_ucode_ap(void);
- void reload_early_microcode(void);
- extern bool get_builtin_firmware(struct cpio_data *cd, const char *name);
- extern bool initrd_gone;
-+void microcode_bsp_resume(void);
- #else
- static inline int __init microcode_init(void)			{ return 0; };
- static inline void __init load_ucode_bsp(void)			{ }
- static inline void load_ucode_ap(void)				{ }
- static inline void reload_early_microcode(void)			{ }
-+static inline void microcode_bsp_resume(void)			{ }
- static inline bool
- get_builtin_firmware(struct cpio_data *cd, const char *name)	{ return false; }
- #endif
---- a/arch/x86/kernel/cpu/microcode/core.c
-+++ b/arch/x86/kernel/cpu/microcode/core.c
-@@ -773,9 +773,9 @@ static struct subsys_interface mc_cpu_in
- };
+--- a/drivers/usb/mtu3/mtu3_dr.c
++++ b/drivers/usb/mtu3/mtu3_dr.c
+@@ -39,10 +39,8 @@ enum mtu3_vbus_id_state {
  
- /**
-- * mc_bp_resume - Update boot CPU microcode during resume.
-+ * microcode_bsp_resume - Update boot CPU microcode during resume.
-  */
--static void mc_bp_resume(void)
-+void microcode_bsp_resume(void)
+ static void toggle_opstate(struct ssusb_mtk *ssusb)
  {
- 	int cpu = smp_processor_id();
- 	struct ucode_cpu_info *uci = ucode_cpu_info + cpu;
-@@ -787,7 +787,7 @@ static void mc_bp_resume(void)
+-	if (!ssusb->otg_switch.is_u3_drd) {
+-		mtu3_setbits(ssusb->mac_base, U3D_DEVICE_CONTROL, DC_SESSION);
+-		mtu3_setbits(ssusb->mac_base, U3D_POWER_MANAGEMENT, SOFT_CONN);
+-	}
++	mtu3_setbits(ssusb->mac_base, U3D_DEVICE_CONTROL, DC_SESSION);
++	mtu3_setbits(ssusb->mac_base, U3D_POWER_MANAGEMENT, SOFT_CONN);
  }
  
- static struct syscore_ops mc_syscore_ops = {
--	.resume			= mc_bp_resume,
-+	.resume			= microcode_bsp_resume,
- };
- 
- static int mc_cpu_starting(unsigned int cpu)
---- a/arch/x86/power/cpu.c
-+++ b/arch/x86/power/cpu.c
-@@ -26,6 +26,7 @@
- #include <asm/cpu.h>
- #include <asm/mmu_context.h>
- #include <asm/cpu_device_id.h>
-+#include <asm/microcode.h>
- 
- #ifdef CONFIG_X86_32
- __visible unsigned long saved_context_ebx;
-@@ -268,6 +269,13 @@ static void notrace __restore_processor_
- 	x86_platform.restore_sched_clock_state();
- 	mtrr_bp_restore();
- 	perf_restore_debug_store();
-+
-+	microcode_bsp_resume();
-+
-+	/*
-+	 * This needs to happen after the microcode has been updated upon resume
-+	 * because some of the MSRs are "emulated" in microcode.
-+	 */
- 	msr_restore_context(ctxt);
- }
- 
+ /* only port0 supports dual-role mode */
 
 
