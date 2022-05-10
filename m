@@ -2,84 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A679C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:20:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0FAFC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 10 May 2022 11:20:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240884AbiEJLYK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 07:24:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44576 "EHLO
+        id S240896AbiEJLYf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 07:24:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240892AbiEJLYB (ORCPT
+        with ESMTP id S240911AbiEJLY3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 07:24:01 -0400
-Received: from smtp2.infineon.com (smtp2.infineon.com [IPv6:2a00:18f0:1e00:4::4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A31C1868CB;
-        Tue, 10 May 2022 04:20:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=infineon.com; i=@infineon.com; q=dns/txt; s=IFXMAIL;
-  t=1652181603; x=1683717603;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=jSzBja/18U0bgtuUTZtzvvQV6oPRcRl5G5R14KGtuhg=;
-  b=Lazj3NP43+1oVQdKC8jrD7zh298PkoaKAugxCureygvdggLdRXKDbMz+
-   RS1NiUZdiK9XSTlsSVK9D88VYh7sIIUIZOkQH7ep5d30hlFP5XV65sNeD
-   idemTFFcFCU+7gsYleoUaRCEZ1bANOQ/Rpxcl917g46x/4qCXjpfh6qEz
-   U=;
-X-SBRS: None
-X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="176812916"
-X-IronPort-AV: E=Sophos;i="5.91,214,1647298800"; 
-   d="scan'208";a="176812916"
-Received: from unknown (HELO mucxv002.muc.infineon.com) ([172.23.11.17])
-  by smtp2.infineon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 13:20:01 +0200
-Received: from MUCSE819.infineon.com (MUCSE819.infineon.com [172.23.29.45])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mucxv002.muc.infineon.com (Postfix) with ESMTPS;
-        Tue, 10 May 2022 13:20:01 +0200 (CEST)
-Received: from ISCN5CG1067W80.muc.infineon.com (172.23.8.247) by
- MUCSE819.infineon.com (172.23.29.45) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 10 May 2022 13:20:00 +0200
-From:   Johannes Holland <johannes.holland@infineon.com>
-To:     <jarkko@kernel.org>, <linux-integrity@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <peterhuewe@gmx.de>, <jgg@ziepe.ca>,
-        Johannes Holland <johannes.holland@infineon.com>
-Subject: [PATCH] tpm: increase timeout for kselftests
-Date:   Tue, 10 May 2022 13:16:08 +0200
-Message-ID: <20220510111607.22984-1-johannes.holland@infineon.com>
-X-Mailer: git-send-email 2.34.1
+        Tue, 10 May 2022 07:24:29 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E2232A9764;
+        Tue, 10 May 2022 04:20:26 -0700 (PDT)
+Received: from fraeml711-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KyFp51ccmz6H7gL;
+        Tue, 10 May 2022 19:15:41 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml711-chm.china.huawei.com (10.206.15.60) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 10 May 2022 13:20:24 +0200
+Received: from localhost.localdomain (10.69.192.58) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 10 May 2022 12:20:22 +0100
+From:   John Garry <john.garry@huawei.com>
+To:     <axboe@kernel.dk>, <linux-block@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
+        John Garry <john.garry@huawei.com>
+Subject: [RFC PATCH 1/2] sbitmap: Make sbitmap.map a double pointer
+Date:   Tue, 10 May 2022 19:14:33 +0800
+Message-ID: <1652181274-136198-2-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
+In-Reply-To: <1652181274-136198-1-git-send-email-john.garry@huawei.com>
+References: <1652181274-136198-1-git-send-email-john.garry@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [172.23.8.247]
-X-ClientProxiedBy: MUCSE803.infineon.com (172.23.29.29) To
- MUCSE819.infineon.com (172.23.29.45)
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Due to CreatePrimary commands which need to create RSA keys of
-increasing size, the timeout value need to be raised, as well.
-Default is 300s.
+Currently sbitmap.map points to a single array of sbitmap words.
 
-Signed-off-by: Johannes Holland <johannes.holland@infineon.com>
+To allow each word to be allocated individually, make it a double pointer.
+
+This will mean that to access to a word will require an extra load.
+
+Signed-off-by: John Garry <john.garry@huawei.com>
 ---
-A timeout of anything below 600s still lead to occasional timeouts for
-me. Therefore, I propose 600s as a new value. 
+ include/linux/sbitmap.h | 11 ++++++-----
+ lib/sbitmap.c           | 34 ++++++++++++++++++++++++----------
+ 2 files changed, 30 insertions(+), 15 deletions(-)
 
- tools/testing/selftests/tpm2/settings | 2 ++
- 1 file changed, 2 insertions(+)
- create mode 100644 tools/testing/selftests/tpm2/settings
-
-diff --git a/tools/testing/selftests/tpm2/settings b/tools/testing/selftests/tpm2/settings
-new file mode 100644
-index 000000000000..919bc3803f03
---- /dev/null
-+++ b/tools/testing/selftests/tpm2/settings
-@@ -0,0 +1,2 @@
-+timeout=600
+diff --git a/include/linux/sbitmap.h b/include/linux/sbitmap.h
+index 8f5a86e210b9..46268f391e32 100644
+--- a/include/linux/sbitmap.h
++++ b/include/linux/sbitmap.h
+@@ -68,7 +68,7 @@ struct sbitmap {
+ 	/**
+ 	 * @map: Allocated bitmap.
+ 	 */
+-	struct sbitmap_word *map;
++	struct sbitmap_word **map;
+ 
+ 	/*
+ 	 * @alloc_hint: Cache of last successfully allocated or freed bit.
+@@ -256,9 +256,10 @@ static inline void __sbitmap_for_each_set(struct sbitmap *sb,
+ 		unsigned int depth = min_t(unsigned int,
+ 					   __map_depth(sb, index) - nr,
+ 					   sb->depth - scanned);
+-
++		struct sbitmap_word *map = sb->map[index];
+ 		scanned += depth;
+-		word = sb->map[index].word & ~sb->map[index].cleared;
 +
++		word = map->word & ~map->cleared;
+ 		if (!word)
+ 			goto next;
+ 
+@@ -299,7 +300,7 @@ static inline void sbitmap_for_each_set(struct sbitmap *sb, sb_for_each_fn fn,
+ static inline unsigned long *__sbitmap_word(struct sbitmap *sb,
+ 					    unsigned int bitnr)
+ {
+-	return &sb->map[SB_NR_TO_INDEX(sb, bitnr)].word;
++	return &sb->map[SB_NR_TO_INDEX(sb, bitnr)]->word;
+ }
+ 
+ /* Helpers equivalent to the operations in asm/bitops.h and linux/bitmap.h */
+@@ -322,7 +323,7 @@ static inline void sbitmap_clear_bit(struct sbitmap *sb, unsigned int bitnr)
+  */
+ static inline void sbitmap_deferred_clear_bit(struct sbitmap *sb, unsigned int bitnr)
+ {
+-	unsigned long *addr = &sb->map[SB_NR_TO_INDEX(sb, bitnr)].cleared;
++	unsigned long *addr = &sb->map[SB_NR_TO_INDEX(sb, bitnr)]->cleared;
+ 
+ 	set_bit(SB_NR_TO_BIT(sb, bitnr), addr);
+ }
+diff --git a/lib/sbitmap.c b/lib/sbitmap.c
+index ae4fd4de9ebe..64fb9800ed8c 100644
+--- a/lib/sbitmap.c
++++ b/lib/sbitmap.c
+@@ -85,6 +85,8 @@ int sbitmap_init_node(struct sbitmap *sb, unsigned int depth, int shift,
+ 		      bool alloc_hint)
+ {
+ 	unsigned int bits_per_word;
++	struct sbitmap_word *map;
++	int index;
+ 
+ 	if (shift < 0)
+ 		shift = sbitmap_calculate_shift(depth);
+@@ -116,6 +118,17 @@ int sbitmap_init_node(struct sbitmap *sb, unsigned int depth, int shift,
+ 		return -ENOMEM;
+ 	}
+ 
++	map = kvzalloc_node(sb->map_nr * sizeof(**sb->map), flags, node);
++	if (!map)
++		return -ENOMEM;
++
++	for (index = 0; index < sb->map_nr; index++, map++) {
++		struct sbitmap_word **_map;
++
++		_map = &sb->map[index];
++		*_map = map;
++	}
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(sbitmap_init_node);
+@@ -126,7 +139,7 @@ void sbitmap_resize(struct sbitmap *sb, unsigned int depth)
+ 	unsigned int i;
+ 
+ 	for (i = 0; i < sb->map_nr; i++)
+-		sbitmap_deferred_clear(&sb->map[i]);
++		sbitmap_deferred_clear(sb->map[i]);
+ 
+ 	sb->depth = depth;
+ 	sb->map_nr = DIV_ROUND_UP(sb->depth, bits_per_word);
+@@ -170,7 +183,7 @@ static int __sbitmap_get_word(unsigned long *word, unsigned long depth,
+ static int sbitmap_find_bit_in_index(struct sbitmap *sb, int index,
+ 				     unsigned int alloc_hint)
+ {
+-	struct sbitmap_word *map = &sb->map[index];
++	struct sbitmap_word *map = sb->map[index];
+ 	int nr;
+ 
+ 	do {
+@@ -246,7 +259,7 @@ static int __sbitmap_get_shallow(struct sbitmap *sb,
+ 
+ 	for (i = 0; i < sb->map_nr; i++) {
+ again:
+-		nr = __sbitmap_get_word(&sb->map[index].word,
++		nr = __sbitmap_get_word(&sb->map[index]->word,
+ 					min_t(unsigned int,
+ 					      __map_depth(sb, index),
+ 					      shallow_depth),
+@@ -256,7 +269,7 @@ static int __sbitmap_get_shallow(struct sbitmap *sb,
+ 			break;
+ 		}
+ 
+-		if (sbitmap_deferred_clear(&sb->map[index]))
++		if (sbitmap_deferred_clear(sb->map[index]))
+ 			goto again;
+ 
+ 		/* Jump to next index. */
+@@ -294,7 +307,7 @@ bool sbitmap_any_bit_set(const struct sbitmap *sb)
+ 	unsigned int i;
+ 
+ 	for (i = 0; i < sb->map_nr; i++) {
+-		if (sb->map[i].word & ~sb->map[i].cleared)
++		if (sb->map[i]->word & ~sb->map[i]->cleared)
+ 			return true;
+ 	}
+ 	return false;
+@@ -306,7 +319,7 @@ static unsigned int __sbitmap_weight(const struct sbitmap *sb, bool set)
+ 	unsigned int i, weight = 0;
+ 
+ 	for (i = 0; i < sb->map_nr; i++) {
+-		const struct sbitmap_word *word = &sb->map[i];
++		const struct sbitmap_word *word = sb->map[i];
+ 		unsigned int word_depth = __map_depth(sb, i);
+ 
+ 		if (set)
+@@ -358,8 +371,9 @@ void sbitmap_bitmap_show(struct sbitmap *sb, struct seq_file *m)
+ 	int i;
+ 
+ 	for (i = 0; i < sb->map_nr; i++) {
+-		unsigned long word = READ_ONCE(sb->map[i].word);
+-		unsigned long cleared = READ_ONCE(sb->map[i].cleared);
++		struct sbitmap_word *map = READ_ONCE(sb->map[i]);
++		unsigned long word = READ_ONCE(map->word);
++		unsigned long cleared = READ_ONCE(map->cleared);
+ 		unsigned int word_bits = __map_depth(sb, i);
+ 
+ 		word &= ~cleared;
+@@ -522,7 +536,7 @@ unsigned long __sbitmap_queue_get_batch(struct sbitmap_queue *sbq, int nr_tags,
+ 	index = SB_NR_TO_INDEX(sb, hint);
+ 
+ 	for (i = 0; i < sb->map_nr; i++) {
+-		struct sbitmap_word *map = &sb->map[index];
++		struct sbitmap_word *map = sb->map[index];
+ 		unsigned long get_mask;
+ 		unsigned int map_depth = __map_depth(sb, index);
+ 
+@@ -665,7 +679,7 @@ void sbitmap_queue_clear_batch(struct sbitmap_queue *sbq, int offset,
+ 		unsigned long *this_addr;
+ 
+ 		/* since we're clearing a batch, skip the deferred map */
+-		this_addr = &sb->map[SB_NR_TO_INDEX(sb, tag)].word;
++		this_addr = &sb->map[SB_NR_TO_INDEX(sb, tag)]->word;
+ 		if (!addr) {
+ 			addr = this_addr;
+ 		} else if (addr != this_addr) {
 -- 
-2.34.1
+2.26.2
 
