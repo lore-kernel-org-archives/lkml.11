@@ -2,41 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9260AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:50:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D36C4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:50:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241499AbiEKCuM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 22:50:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55572 "EHLO
+        id S232733AbiEKCu0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 22:50:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245154AbiEKCrL (ORCPT
+        with ESMTP id S244450AbiEKCoh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 22:47:11 -0400
-Received: from mail.meizu.com (unknown [14.29.68.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FF0554F91;
-        Tue, 10 May 2022 19:47:07 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
- (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Wed, 11 May
- 2022 10:47:07 +0800
+        Tue, 10 May 2022 22:44:37 -0400
+Received: from mail.meizu.com (edge07.meizu.com [112.91.151.210])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABFB1239DB6;
+        Tue, 10 May 2022 19:44:35 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail11.meizu.com
+ (172.16.1.15) with Microsoft SMTP Server (TLS) id 14.3.487.0; Wed, 11 May
+ 2022 10:44:33 +0800
 Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
  (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Wed, 11 May
- 2022 10:47:05 +0800
+ 2022 10:44:33 +0800
 From:   Haowen Bai <baihaowen@meizu.com>
-To:     Davidlohr Bueso <dave@stgolabs.net>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Josh Triplett <josh@joshtriplett.org>,
-        "Frederic Weisbecker" <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Joel Fernandes <joel@joelfernandes.org>
-CC:     Haowen Bai <baihaowen@meizu.com>, <linux-kernel@vger.kernel.org>,
-        <rcu@vger.kernel.org>
-Subject: [PATCH] rcutorture: remove useless INIT_LIST_HEAD()
-Date:   Wed, 11 May 2022 10:47:04 +0800
-Message-ID: <1652237224-11656-1-git-send-email-baihaowen@meizu.com>
+To:     Song Liu <song@kernel.org>
+CC:     Haowen Bai <baihaowen@meizu.com>, <linux-raid@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] md: remove useless INIT_LIST_HEAD()
+Date:   Wed, 11 May 2022 10:44:28 +0800
+Message-ID: <1652237069-11486-1-git-send-email-baihaowen@meizu.com>
 X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
 Content-Type: text/plain
@@ -47,27 +39,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-list rcu_torture_freelist has been inited staticly through LIST_HEAD,
+list candidates has been inited staticly through LIST_HEAD,
 so there's no need to call another INIT_LIST_HEAD. Simply remove
 it.
 
 Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 ---
- kernel/rcu/rcutorture.c | 1 -
+ drivers/md/md.c | 1 -
  1 file changed, 1 deletion(-)
 
-diff --git a/kernel/rcu/rcutorture.c b/kernel/rcu/rcutorture.c
-index faf6b4c7a757..0005e259c4ce 100644
---- a/kernel/rcu/rcutorture.c
-+++ b/kernel/rcu/rcutorture.c
-@@ -3247,7 +3247,6 @@ rcu_torture_init(void)
+diff --git a/drivers/md/md.c b/drivers/md/md.c
+index 707e802d0082..eb2b23ef5ecc 100644
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -6491,7 +6491,6 @@ static void autorun_devices(int part)
+ 					 struct md_rdev, same_set);
  
- 	/* Set up the freelist. */
- 
--	INIT_LIST_HEAD(&rcu_torture_freelist);
- 	for (i = 0; i < ARRAY_SIZE(rcu_tortures); i++) {
- 		rcu_tortures[i].rtort_mbtest = 0;
- 		list_add_tail(&rcu_tortures[i].rtort_free,
+ 		pr_debug("md: considering %s ...\n", bdevname(rdev0->bdev,b));
+-		INIT_LIST_HEAD(&candidates);
+ 		rdev_for_each_list(rdev, tmp, &pending_raid_disks)
+ 			if (super_90_load(rdev, rdev0, 0) >= 0) {
+ 				pr_debug("md:  adding %s ...\n",
 -- 
 2.7.4
 
