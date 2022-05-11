@@ -2,106 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0186CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 19:07:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C08BC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 19:07:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346576AbiEKTHD (ORCPT
+        id S1346610AbiEKTHg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 15:07:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34738 "EHLO
+        Wed, 11 May 2022 15:07:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237377AbiEKTHB (ORCPT
+        with ESMTP id S237377AbiEKTHe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 15:07:01 -0400
-Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E45769716
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 12:06:58 -0700 (PDT)
-Received: by mail-qv1-xf30.google.com with SMTP id dv4so2758319qvb.13
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 12:06:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=RFcLVWiWlqjohwWrz8ZmNxS2c0JbCUFp6Lb1Ilp7lsM=;
-        b=Wqi934csibhv/mpquejGDXyoEtv7L4by8ZdjiC8Vt5xc0YCHBzZJVfZphSsZTUFtlk
-         BWN+uBN6xJN4vfk6rYwpgxP0+Hto8wWvFVtfTc81X66yFGK+cH1Z1HReUfrgi+Yk1g8h
-         vWplRp9WFeeKoSsIxxqRrUkTH0jt2TDkk/gNd00645n46RTD+bg1mhWdv97mtH3aF0HF
-         yhMdAMiB2NXXE93IjVJ7yPGxLJnM429NTCqFxnYtxNrKudFgsM3k8cVwAAYJk1fp+qp5
-         X/r/ZbGqcqzfvRKub5gm3w23S19pd4l2vLznyNBwE9dbtRWA6EbSBXEb7cMd6sqpbwND
-         H4/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=RFcLVWiWlqjohwWrz8ZmNxS2c0JbCUFp6Lb1Ilp7lsM=;
-        b=N+WOLY//zyaEUogVSua+lyKJE7PUENAy6org6KlawFY+evL7lG693ApZVDCdWTtb9R
-         bbSGCp7hci2ADxjzMAzuXDvBtAxOSdjzwyTt8+XbcBFlUIRBGbmkOHUcokAoqRr9Wtdp
-         Qs2neq/rs6cb2lkA87GE4lZkncqbhQyB7tSDzTgYnld5A9mc04SiTwbTdTJV1xjRHuz7
-         2jfXdeXLhFr1rTxZVXb1d3e8mKLnn9O0RFewLrFmhCaDh26PQzZPYJhRBFuWvqa+QXLs
-         W5MWo0NW9R0a7e4Xrs2dPXMatORuHf5ItG8iUoPnLOprVQNzKn9P4EBAxihNzYwZlD+x
-         xjFA==
-X-Gm-Message-State: AOAM533f8OeluX1UjgzdDY1Ikc1ZKXAwHWUJ3rirlOYDmQ6+GQG0pQq1
-        qKSTkmRRf18WgEXKmPTCuEmznQ==
-X-Google-Smtp-Source: ABdhPJwN87h/5O8XKH+GeEZgluUajrgQzz3p3faqLc70d9m7twEIqgosgWojvjricOwl86yxDeE5PA==
-X-Received: by 2002:ad4:4ee6:0:b0:45a:fe5a:1e2c with SMTP id dv6-20020ad44ee6000000b0045afe5a1e2cmr18676356qvb.103.1652296017143;
-        Wed, 11 May 2022 12:06:57 -0700 (PDT)
-Received: from localhost ([2620:10d:c091:480::1:14fe])
-        by smtp.gmail.com with ESMTPSA id k11-20020ac8140b000000b002f39b99f6a8sm1601966qtj.66.2022.05.11.12.06.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 12:06:56 -0700 (PDT)
-Date:   Wed, 11 May 2022 15:06:56 -0400
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Seth Jennings <sjenning@redhat.com>,
-        Dan Streetman <ddstreet@ieee.org>,
-        Minchan Kim <minchan@kernel.org>, linux-mm@kvack.org,
-        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-team@fb.com
-Subject: Re: [PATCH v2 6/6] zswap: memcg accounting
-Message-ID: <YnwJUL90fuoHs3YW@cmpxchg.org>
-References: <20220510152847.230957-1-hannes@cmpxchg.org>
- <20220510152847.230957-7-hannes@cmpxchg.org>
- <20220511173218.GB31592@blackbody.suse.cz>
+        Wed, 11 May 2022 15:07:34 -0400
+Received: from relay05.th.seeweb.it (relay05.th.seeweb.it [5.144.164.166])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C91106BFF6;
+        Wed, 11 May 2022 12:07:32 -0700 (PDT)
+Received: from Marijn-Arch-PC.localdomain (94-209-165-62.cable.dynamic.v4.ziggo.nl [94.209.165.62])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id 6A2A13F855;
+        Wed, 11 May 2022 21:07:30 +0200 (CEST)
+From:   Marijn Suijten <marijn.suijten@somainline.org>
+To:     phone-devel@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     ~postmarketos/upstreaming@lists.sr.ht,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Martin Botka <martin.botka@somainline.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        linux-arm-msm@vger.kernel.org, linux-leds@vger.kernel.org,
+        Rob Herring <robh@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Satya Priya <quic_c_skakit@quicinc.com>,
+        Matthias Kaehlcke <mka@chromium.org>
+Subject: [PATCH v3 2/4] leds: qcom-lpg: Add PM660L configuration and compatible
+Date:   Wed, 11 May 2022 21:07:16 +0200
+Message-Id: <20220511190718.764445-2-marijn.suijten@somainline.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220511190718.764445-1-marijn.suijten@somainline.org>
+References: <20220511190718.764445-1-marijn.suijten@somainline.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220511173218.GB31592@blackbody.suse.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 07:32:18PM +0200, Michal Koutný wrote:
-> Hello.
-> 
-> On Tue, May 10, 2022 at 11:28:47AM -0400, Johannes Weiner <hannes@cmpxchg.org> wrote:
-> > +void obj_cgroup_charge_zswap(struct obj_cgroup *objcg, size_t size)
-> > +{
-> > +	struct mem_cgroup *memcg;
-> > +
-> > +	VM_WARN_ON_ONCE(!(current->flags & PF_MEMALLOC));
-> > +
-> > +	/* PF_MEMALLOC context, charging must succeed */
-> > +	if (obj_cgroup_charge(objcg, GFP_KERNEL, size))
-> > +		VM_WARN_ON_ONCE(1);
-> 
-> IIUC, the objcg is derived from the compressed page, i.e. same memcg
-> (reparenting neglected for now). This memcg's memory.current is then
-> charged with the compressed object size.
+Inherit PM660L PMIC LPG/triled block configuration from downstream
+drivers and DT sources, consisting of a triled block with automatic
+trickle charge control and source selection, three colored led channels
+belonging to the synchronized triled block and one loose PWM channel.
 
-Correct. After which the uncompressed page is reclaimed and uncharged.
-So the zswapout process will reduce the charge bottom line.
+Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+---
 
-> Do I get it right that memory.zswap.current is a subset of memory.current?
->
-> (And that zswap is limited both by memory.max and memory.zswap.max?)
+Changes since v2:
+- Constify channels struct-array (Bjorn);
+- Correct LUT size to 49 slots (Bjorn).
 
-Yes. Zswap is a memory consumer, and we want the compressed part of a
-workload's memory to show up in the total memory footprint.
+v2: https://lore.kernel.org/linux-leds/20220507221123.2201668-1-marijn.suijten@somainline.org/T/#u
 
-memory.zswap.* are there to configure zswap policy, within the
-boundaries of available memory - it's by definition a subset.
+Changes since v1:
+- Rebased to pick up pm8350c in the diff-context (Pavel).
+
+v1: https://lore.kernel.org/linux-leds/20220504205704.699500-1-marijn.suijten@somainline.org/T/#u
+
+ drivers/leds/rgb/leds-qcom-lpg.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/drivers/leds/rgb/leds-qcom-lpg.c b/drivers/leds/rgb/leds-qcom-lpg.c
+index cfa3362b2457..44b0d1a563df 100644
+--- a/drivers/leds/rgb/leds-qcom-lpg.c
++++ b/drivers/leds/rgb/leds-qcom-lpg.c
+@@ -1271,6 +1271,23 @@ static int lpg_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++static const struct lpg_data pm660l_lpg_data = {
++	.lut_base = 0xb000,
++	.lut_size = 49,
++
++	.triled_base = 0xd000,
++	.triled_has_atc_ctl = true,
++	.triled_has_src_sel = true,
++
++	.num_channels = 4,
++	.channels = (const struct lpg_channel_data[]) {
++		{ .base = 0xb100, .triled_mask = BIT(5) },
++		{ .base = 0xb200, .triled_mask = BIT(6) },
++		{ .base = 0xb300, .triled_mask = BIT(7) },
++		{ .base = 0xb400 },
++	},
++};
++
+ static const struct lpg_data pm8916_pwm_data = {
+ 	.num_channels = 1,
+ 	.channels = (const struct lpg_channel_data[]) {
+@@ -1391,6 +1408,7 @@ static const struct lpg_data pm8350c_pwm_data = {
+ };
+ 
+ static const struct of_device_id lpg_of_table[] = {
++	{ .compatible = "qcom,pm660l-lpg", .data = &pm660l_lpg_data },
+ 	{ .compatible = "qcom,pm8150b-lpg", .data = &pm8150b_lpg_data },
+ 	{ .compatible = "qcom,pm8150l-lpg", .data = &pm8150l_lpg_data },
+ 	{ .compatible = "qcom,pm8350c-pwm", .data = &pm8350c_pwm_data },
+-- 
+2.36.1
+
