@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EA25C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69350C433EF
 	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 03:58:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241961AbiEKDz7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 23:55:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36626 "EHLO
+        id S242014AbiEKD4B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 23:56:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241882AbiEKDzp (ORCPT
+        with ESMTP id S240223AbiEKDzi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 23:55:45 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 126CD4CD55
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 20:55:39 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id q4so653297plr.11
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 20:55:39 -0700 (PDT)
+        Tue, 10 May 2022 23:55:38 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ADF2217195
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 20:55:34 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id x88so1065385pjj.1
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 20:55:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=fastly.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=8Oj5fYgOyP9r6j4Oo2YFgfJ89J2j62xWeof0Jo9AY3w=;
-        b=v9w+8OSo8NSVmDmBQbc8obXr4Wi1nhD7MIDl5mmowMNt72/kNMxqluqzW8jS3Kp7UB
-         /7VISt6MIJKtVD9o0A7m6LzNO5Lqp9ow+x5B9kBGB7t7PtEZGsvXfcXksfmbNr4z51g2
-         LTzKHBx8TvH8VwSw5qQxFSvqLW2aYGDGcyTCY=
+        bh=aZBrMhde8FpEVWkUnj31KTacbZRR8gMfK1YB4YXQ0jc=;
+        b=h83XAA98G4q5ePsZrIsLvPfnCfnbTjI1gSU8AzJSpPDJntT477r7QuDZCMsCDJKWG9
+         TqetClC0MszlVLsO1ojgFUTsLAAGc1OgU2jb+FQKxhxP0S81l5KGJ6eWfk7b45R21mEG
+         Eq2ntBM7BWiZhqRxdb4HIcuGcH1vbYaRo55F4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=8Oj5fYgOyP9r6j4Oo2YFgfJ89J2j62xWeof0Jo9AY3w=;
-        b=gKBNlz3W4ErVwNaV1LBEXKfjk7dCw+kncT24w8YgNAZMfksrnNqLEjZ6DORKeShwBx
-         igHWdzB+GyTeyq3If4B9nthhjFGz8ia39GQvuynsCyFmOB9gp3L+uiMaSzYYUSlW8oNe
-         H1Rqca0uRaQ2eWCKttcrrSujNy+gCXXgCUGHNDbTJLWfZAU5v82Y62LRfoDRJqhd4nFo
-         3vDgYJDJzsdOpgMYNeYUIMsu0MHBFmFAFhZViA+r7rxNqjYZnIvVCg532GpOiVWa2DxX
-         nU5IgyQI5uhCqMmqqLNTJ/BP2zVE4v1ft5xeW4ZFm4wyw5SiwP8MbrrJNbakXW81IorF
-         1rSA==
-X-Gm-Message-State: AOAM531dBxzYBmWuyzNcoVP/2nYXsVki2W4LEXf29DifWLr2XuKxWIpJ
-        VCYA9InzH8te8LaODbwvlJAJLA==
-X-Google-Smtp-Source: ABdhPJzDBQpUZk7W8Mq0NWHrteV9nx9UH/BVPj5fyK4gC7QCMNmi9ReuRK03KcV0ElJJJiZ8qW3FTA==
-X-Received: by 2002:a17:902:8644:b0:153:9f01:2090 with SMTP id y4-20020a170902864400b001539f012090mr22917397plt.101.1652241338601;
-        Tue, 10 May 2022 20:55:38 -0700 (PDT)
+        bh=aZBrMhde8FpEVWkUnj31KTacbZRR8gMfK1YB4YXQ0jc=;
+        b=tsLirsClRY9/axLL15nXel1Fw8xvF2nx9X4kE7xF5yEpsi2gU4fJN+ZIxfQisHqXpW
+         sqMCUsc3mOiC/Db8NLVj4d3RJ/Fwsq/rx3aHnF8XH8nfOuZY1Kdw0Rcku1VIPJILlzd0
+         SlQHN62hEA1gXkq9xDl91zHYlFmSy9Ywdchik+eq0TYMNXh8+4xHKi4ZhtFxs/lugbfS
+         66pL8Uy5YLkPn67QiMBSqGgvREVBha6w1H28yPqCZFkDGCJJWIpic9zgiAlDhib+DZpK
+         eDJ742hlKG4O7l7i3QujsiLCIbSvPdM10JgsfaPnNMNeWo35ONaUtf9FRBZqVGAqz2aE
+         KcFA==
+X-Gm-Message-State: AOAM530mBT8otpIIrStLgZVoT1WA5m17Aigpm6An8/GUn22eHE3RrNNf
+        p+0TqGO3WJT+KOT+2SCSzZbBLKo4E+SJQg==
+X-Google-Smtp-Source: ABdhPJxhMetGgdMphFhnMhts3MbZSr4+18d+mQckIRBqUPMXsNdPRazRpLHEHvEAaWw9V+TQ0BG9Vg==
+X-Received: by 2002:a17:902:ecca:b0:15e:8971:4540 with SMTP id a10-20020a170902ecca00b0015e89714540mr23357838plh.43.1652241334487;
+        Tue, 10 May 2022 20:55:34 -0700 (PDT)
 Received: from localhost.localdomain (c-73-223-190-181.hsd1.ca.comcast.net. [73.223.190.181])
-        by smtp.gmail.com with ESMTPSA id d7-20020a170903230700b0015e8d4eb1f7sm442789plh.65.2022.05.10.20.55.37
+        by smtp.gmail.com with ESMTPSA id d7-20020a170903230700b0015e8d4eb1f7sm442789plh.65.2022.05.10.20.55.33
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 10 May 2022 20:55:38 -0700 (PDT)
+        Tue, 10 May 2022 20:55:33 -0700 (PDT)
 From:   Joe Damato <jdamato@fastly.com>
 To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
         linux-kernel@vger.kernel.org, x86@kernel.org,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     Joe Damato <jdamato@fastly.com>
-Subject: [RFC,net-next 6/6] net: unix: Add MSG_NTCOPY
-Date:   Tue, 10 May 2022 20:54:27 -0700
-Message-Id: <1652241268-46732-7-git-send-email-jdamato@fastly.com>
+Subject: [RFC,net-next 4/6] net: Add a struct for managing copy functions
+Date:   Tue, 10 May 2022 20:54:25 -0700
+Message-Id: <1652241268-46732-5-git-send-email-jdamato@fastly.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1652241268-46732-1-git-send-email-jdamato@fastly.com>
 References: <1652241268-46732-1-git-send-email-jdamato@fastly.com>
@@ -60,59 +60,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a new sendmsg flag, MSG_NTCOPY, which user programs can use to signal
-to the kernel that data copied into the kernel during sendmsg should be
-done so using nontemporal copies, if it is supported by the architecture.
+Add struct skb_copier which encapsulates two functions for copying data,
+and provide a default copier, skb_copier.
+
+Separate skb_copy_datagram_from_iter into a a helper function,
+do_skb_copy_datagram, which takes a struct skb_copier.
 
 Signed-off-by: Joe Damato <jdamato@fastly.com>
 ---
- include/linux/socket.h |  1 +
- net/unix/af_unix.c     | 13 +++++++++++--
- 2 files changed, 12 insertions(+), 2 deletions(-)
+ net/core/datagram.c | 49 ++++++++++++++++++++++++++++++++-----------------
+ 1 file changed, 32 insertions(+), 17 deletions(-)
 
-diff --git a/include/linux/socket.h b/include/linux/socket.h
-index 12085c9..c9b10aa 100644
---- a/include/linux/socket.h
-+++ b/include/linux/socket.h
-@@ -318,6 +318,7 @@ struct ucred {
- 					  * plain text and require encryption
- 					  */
+diff --git a/net/core/datagram.c b/net/core/datagram.c
+index 50f4fae..a87c41b 100644
+--- a/net/core/datagram.c
++++ b/net/core/datagram.c
+@@ -532,18 +532,19 @@ int skb_copy_datagram_iter(const struct sk_buff *skb, int offset,
+ }
+ EXPORT_SYMBOL(skb_copy_datagram_iter);
  
-+#define MSG_NTCOPY	0x2000000	/* Use a non-temporal copy */
- #define MSG_ZEROCOPY	0x4000000	/* Use user data in kernel path */
- #define MSG_FASTOPEN	0x20000000	/* Send data in TCP SYN */
- #define MSG_CMSG_CLOEXEC 0x40000000	/* Set close_on_exec for file
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index e1dd9e9..ccbd643 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -1907,7 +1907,11 @@ static int unix_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
- 	skb_put(skb, len - data_len);
- 	skb->data_len = data_len;
- 	skb->len = len;
--	err = skb_copy_datagram_from_iter(skb, 0, &msg->msg_iter, len);
-+	if (msg->msg_flags & MSG_NTCOPY)
-+		err = skb_copy_datagram_from_iter_nocache(skb, 0, &msg->msg_iter, len);
-+	else
-+		err = skb_copy_datagram_from_iter(skb, 0, &msg->msg_iter, len);
+-/**
+- *	skb_copy_datagram_from_iter - Copy a datagram from an iov_iter.
+- *	@skb: buffer to copy
+- *	@offset: offset in the buffer to start copying to
+- *	@from: the copy source
+- *	@len: amount of data to copy to buffer from iovec
+- *
+- *	Returns 0 or -EFAULT.
+- */
+-int skb_copy_datagram_from_iter(struct sk_buff *skb, int offset,
+-				 struct iov_iter *from,
+-				 int len)
++struct skb_copier {
++	size_t (*copy_from_iter)(void *addr, size_t bytes, struct iov_iter *i);
++	size_t (*copy_page_from_iter)(struct page *page, size_t offset, size_t bytes,
++				      struct iov_iter *i);
++};
 +
- 	if (err)
- 		goto out_free;
++struct skb_copier skb_copier = {
++	.copy_from_iter = copy_from_iter,
++	.copy_page_from_iter = copy_page_from_iter
++};
++
++static int do_skb_copy_datagram(struct sk_buff *skb, int offset,
++				struct iov_iter *from, int len, struct skb_copier copier)
+ {
+ 	int start = skb_headlen(skb);
+ 	int i, copy = start - offset;
+@@ -553,7 +554,7 @@ int skb_copy_datagram_from_iter(struct sk_buff *skb, int offset,
+ 	if (copy > 0) {
+ 		if (copy > len)
+ 			copy = len;
+-		if (copy_from_iter(skb->data + offset, copy, from) != copy)
++		if (copier.copy_from_iter(skb->data + offset, copy, from) != copy)
+ 			goto fault;
+ 		if ((len -= copy) == 0)
+ 			return 0;
+@@ -573,7 +574,7 @@ int skb_copy_datagram_from_iter(struct sk_buff *skb, int offset,
  
-@@ -2167,7 +2171,12 @@ static int unix_stream_sendmsg(struct socket *sock, struct msghdr *msg,
- 		skb_put(skb, size - data_len);
- 		skb->data_len = data_len;
- 		skb->len = size;
--		err = skb_copy_datagram_from_iter(skb, 0, &msg->msg_iter, size);
+ 			if (copy > len)
+ 				copy = len;
+-			copied = copy_page_from_iter(skb_frag_page(frag),
++			copied = copier.copy_page_from_iter(skb_frag_page(frag),
+ 					  skb_frag_off(frag) + offset - start,
+ 					  copy, from);
+ 			if (copied != copy)
+@@ -595,9 +596,7 @@ int skb_copy_datagram_from_iter(struct sk_buff *skb, int offset,
+ 		if ((copy = end - offset) > 0) {
+ 			if (copy > len)
+ 				copy = len;
+-			if (skb_copy_datagram_from_iter(frag_iter,
+-							offset - start,
+-							from, copy))
++			if (do_skb_copy_datagram(frag_iter, offset - start, from, copy, copier))
+ 				goto fault;
+ 			if ((len -= copy) == 0)
+ 				return 0;
+@@ -611,6 +610,22 @@ int skb_copy_datagram_from_iter(struct sk_buff *skb, int offset,
+ fault:
+ 	return -EFAULT;
+ }
 +
-+		if (msg->msg_flags & MSG_NTCOPY)
-+			err = skb_copy_datagram_from_iter_nocache(skb, 0, &msg->msg_iter, size);
-+		else
-+			err = skb_copy_datagram_from_iter(skb, 0, &msg->msg_iter, size);
-+
- 		if (err) {
- 			kfree_skb(skb);
- 			goto out_err;
++/**
++ *	skb_copy_datagram_from_iter - Copy a datagram from an iov_iter.
++ *	@skb: buffer to copy
++ *	@offset: offset in the buffer to start copying to
++ *	@from: the copy source
++ *	@len: amount of data to copy to buffer from iovec
++ *
++ *	Returns 0 or -EFAULT.
++ */
++int skb_copy_datagram_from_iter(struct sk_buff *skb, int offset,
++				struct iov_iter *from,
++				 int len)
++{
++	return do_skb_copy_datagram(skb, offset, from, len, skb_copier);
++}
+ EXPORT_SYMBOL(skb_copy_datagram_from_iter);
+ 
+ int __zerocopy_sg_from_iter(struct sock *sk, struct sk_buff *skb,
 -- 
 2.7.4
 
