@@ -2,67 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2C58C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 23:26:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 867BBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 23:28:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349325AbiEKXZs (ORCPT
+        id S1349312AbiEKX2D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 19:25:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46488 "EHLO
+        Wed, 11 May 2022 19:28:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349228AbiEKXZc (ORCPT
+        with ESMTP id S245183AbiEKX2B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 19:25:32 -0400
+        Wed, 11 May 2022 19:28:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C335210898;
-        Wed, 11 May 2022 16:25:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C67BE694AB;
+        Wed, 11 May 2022 16:28:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E19461DD1;
-        Wed, 11 May 2022 23:25:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAEEDC340EE;
-        Wed, 11 May 2022 23:25:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6120261DC9;
+        Wed, 11 May 2022 23:28:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 751F9C340EE;
+        Wed, 11 May 2022 23:27:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652311522;
-        bh=Xr/PGgbfybpVEpcSOPJrloL7Oo2fDa2irJaiFzNYSbc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DmxBDFhiv2XAlPhLcdRkck7Dt+lIq/JWyu0hPYVLlkUUnopoh5NnERA4sBAq4rcq/
-         oXQKL+ke0kCLJspodU4klWRwgnVLdB0cLww6yvGaiGSzBCthft4unMT7JqesiSNlqE
-         n82eBQe77u4yHuTvHeUb5wk1fTdB+zHEVzu1Va9cbLqiAI7ZhgbV7IR8g5jxf7tI82
-         QoFyHOh/LD6q1qsiy6cQtC3jO49fLwHjallXRWjYxcMKKyqUN82q1P2vJVjNekvM/f
-         zpPrQdmNFdKRDRO24gKvdeeq2Do0r+rR725Zuzo9L2k+V4m0MIptL/DdoM83hRCMWj
-         3E0+8KrgGfj8A==
-Date:   Wed, 11 May 2022 16:25:20 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Joe Damato <jdamato@fastly.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        linux-kernel@vger.kernel.org, x86@kernel.org
-Subject: Re: [RFC,net-next,x86 0/6] Nontemporal copies in unix socket write
- path
-Message-ID: <20220511162520.6174f487@kernel.org>
-In-Reply-To: <1652241268-46732-1-git-send-email-jdamato@fastly.com>
-References: <1652241268-46732-1-git-send-email-jdamato@fastly.com>
+        s=k20201202; t=1652311679;
+        bh=siF8PIsP3XHsVSZH5Wv97Tl+fZ+3A6Kd5SrYh1Feyp8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=cmdoL7mS/UXMhq4bFqDfAewpfd7ifK2Y83cZJgqQAb5UvtYPro4j5Lf4DTm09oqMH
+         5Tivg2wc2r6fMg7SSjY5/eHYp/DhPkwbtcFBoM9OPWI5jS4wRAgjt0n5CduKdlIsml
+         RgCP7NLJCJZlQ4o5Yc9/2tpjejnHsv3jTRn2sG6sFm78MGBncAjhNFoHSha+Lr4qlR
+         6FJ4c0OsGA9yowCGZzj9mKDLvuuK52Vx00IdduEhyFi+DgzqNY6FYEQMIZZVszJy2r
+         c6h5iC2Zn9OB2DofxQiphWhzyBJSO4J6QFe8OY55YeLeK71aMUSIDEByxgHMOoCdj/
+         jNDlLzEdn3/bQ==
+Date:   Wed, 11 May 2022 18:27:57 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Russell Currey <ruscur@russell.cc>,
+        Oliver OHalloran <oohall@gmail.com>, linux-pci@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] PCI/AER: Handle Multi UnCorrectable/Correctable
+ errors properly
+Message-ID: <20220511232757.GA829078@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220418150237.1021519-1-sathyanarayanan.kuppuswamy@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 10 May 2022 20:54:21 -0700 Joe Damato wrote:
-> Initial benchmarks are extremely encouraging. I wrote a simple C program to
-> benchmark this patchset, the program:
->   - Creates a unix socket pair
->   - Forks a child process
->   - The parent process writes to the unix socket using MSG_NTCOPY - or not -
->     depending on the command line flags
->   - The child process uses splice to move the data from the unix socket to
->     a pipe buffer, followed by a second splice call to move the data from
->     the pipe buffer to a file descriptor opened on /dev/null.
->   - taskset is used when launching the benchmark to ensure the parent and
->     child run on appropriate CPUs for various scenarios
+On Mon, Apr 18, 2022 at 03:02:37PM +0000, Kuppuswamy Sathyanarayanan wrote:
+> Currently the aer_irq() handler returns IRQ_NONE for cases without bits
+> PCI_ERR_ROOT_UNCOR_RCV or PCI_ERR_ROOT_COR_RCV are set. But this
+> assumption is incorrect.
+> 
+> Consider a scenario where aer_irq() is triggered for a correctable
+> error, and while we process the error and before we clear the error
+> status in "Root Error Status" register, if the same kind of error
+> is triggered again, since aer_irq() only clears events it saw, the
+> multi-bit error is left in tact. This will cause the interrupt to fire
+> again, resulting in entering aer_irq() with just the multi-bit error
+> logged in the "Root Error Status" register.
+> 
+> Repeated AER recovery test has revealed this condition does happen
+> and this prevents any new interrupt from being triggered. Allow to
+> process interrupt even if only multi-correctable (BIT 1) or
+> multi-uncorrectable bit (BIT 3) is set.
+> 
+> Also note that, for cases with only multi-bit error is set, since this
+> is not the first occurrence of the error, PCI_ERR_ROOT_ERR_SRC may have
+> zero or some junk value. So we cannot cleanly process this error
+> information using aer_isr_one_error(). All we are attempting with this
+> fix is to make sure error interrupt processing can continue in this
+> scenario.
+> 
+> This error can be reproduced by making following changes to the
+> aer_irq() function and by executing the given test commands.
+> 
+>  static irqreturn_t aer_irq(int irq, void *context)
+>          struct aer_err_source e_src = {};
+> 
+>          pci_read_config_dword(rp, aer + PCI_ERR_ROOT_STATUS,
+> 				&e_src.status);
+>  +       pci_dbg(pdev->port, "Root Error Status: %04x\n",
+>  +		e_src.status);
+>          if (!(e_src.status & AER_ERR_STATUS_MASK))
+>                  return IRQ_NONE;
+> 
+>  +       mdelay(5000);
+> 
+>  # Prep injection data for a correctable error.
+>  $ cd /sys/kernel/debug/apei/einj
+>  $ echo 0x00000040 > error_type
+>  $ echo 0x4 > flags
+>  $ echo 0x891000 > param4
+> 
+>  # Root Error Status is initially clear
+>  $ setpci -s <Dev ID> ECAP0001+0x30.w
+>  0000
+> 
+>  # Inject one error
+>  $ echo 1 > error_inject
+> 
+>  # Interrupt received
+>  pcieport <Dev ID>: AER: Root Error Status 0001
+> 
+>  # Inject another error (within 5 seconds)
+>  $ echo 1 > error_inject
+> 
+>  # You will get a new IRQ with only multiple ERR_COR bit set
+>  pcieport <Dev ID>: AER: Root Error Status 0002
+> 
+> Currently, the above issue has been only reproduced in the ICL server
+> platform.
+> 
+> [Eric: proposed reproducing steps]
+> Fixes: 4696b828ca37 ("PCI/AER: Hoist aerdrv.c, aer_inject.c up to drivers/pci/pcie/")
 
-Is there a practical use case?
+4696b828ca37 only *moves* drivers/pci/pcie/aer/aerdrv.c to
+drivers/pci/pcie/aer.c, so I don't think it's related.
 
-The patches look like a lot of extra indirect calls.
+I think the actual change of interest is e167bfcaa4cd ("PCI: aerdrv:
+remove magical ROOT_ERR_STATUS_MASKS") [1].  It looks like we did
+exactly what you propose before that commit.
+
+I can update this unless you disagree.
+
+[1] https://git.kernel.org/linus/e167bfcaa4cd
+
+> Reported-by: Eric Badger <ebadger@purestorage.com>
+> Reviewed-by: Ashok Raj <ashok.raj@intel.com>
+> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+> ---
+> 
+> Changes since v2:
+>  * Added more details to the commit log.
+>  * Rebased on v5.18-rc1.
+> 
+> Changes since v1:
+>  * Added Fixes tag.
+>  * Included reproducing steps proposed by Eric.
+> 
+>  drivers/pci/pcie/aer.c | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/pci/pcie/aer.c b/drivers/pci/pcie/aer.c
+> index 9fa1f97e5b27..7952e5efd6cf 100644
+> --- a/drivers/pci/pcie/aer.c
+> +++ b/drivers/pci/pcie/aer.c
+> @@ -101,6 +101,11 @@ struct aer_stats {
+>  #define ERR_COR_ID(d)			(d & 0xffff)
+>  #define ERR_UNCOR_ID(d)			(d >> 16)
+>  
+> +#define AER_ERR_STATUS_MASK		(PCI_ERR_ROOT_UNCOR_RCV |	\
+> +					PCI_ERR_ROOT_COR_RCV |		\
+> +					PCI_ERR_ROOT_MULTI_COR_RCV |	\
+> +					PCI_ERR_ROOT_MULTI_UNCOR_RCV)
+> +
+>  static int pcie_aer_disable;
+>  static pci_ers_result_t aer_root_reset(struct pci_dev *dev);
+>  
+> @@ -1196,7 +1201,7 @@ static irqreturn_t aer_irq(int irq, void *context)
+>  	struct aer_err_source e_src = {};
+>  
+>  	pci_read_config_dword(rp, aer + PCI_ERR_ROOT_STATUS, &e_src.status);
+> -	if (!(e_src.status & (PCI_ERR_ROOT_UNCOR_RCV|PCI_ERR_ROOT_COR_RCV)))
+> +	if (!(e_src.status & AER_ERR_STATUS_MASK))
+>  		return IRQ_NONE;
+>  
+>  	pci_read_config_dword(rp, aer + PCI_ERR_ROOT_ERR_SRC, &e_src.id);
+> -- 
+> 2.25.1
+> 
