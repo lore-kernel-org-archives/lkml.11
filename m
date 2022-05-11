@@ -2,57 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFC1FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 00:09:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61762C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 00:09:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239620AbiEKAJs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 20:09:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35252 "EHLO
+        id S239399AbiEKAJw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 20:09:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239436AbiEKAIj (ORCPT
+        with ESMTP id S239375AbiEKAJL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 20:08:39 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DD659398C
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 17:08:33 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id h128-20020a636c86000000b003c574b3422aso155875pgc.12
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 17:08:33 -0700 (PDT)
+        Tue, 10 May 2022 20:09:11 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4795B66F80
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 17:08:46 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id ij27-20020a170902ab5b00b0015d41282214so163633plb.9
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 17:08:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=+OvHhqt+M1RLlLwyc9HE0Jj3sR2gjcJo/jfqnOHXFtA=;
-        b=pDdvYl4liRqjWSaJccStjWYwZZV9ExTf0TKOqyZH/a0lXvGR6JPGMutccbUkwXwEjC
-         O0E455AAnVQY7wmeDgpPMRVSQqY6IVoeJ+ueNBr/Z/oRcAN325cjTiBBk282CDqXPreT
-         0l/4xm6ztKCiAn+wELjc2d/8QVtDZFYdTl9Xf6omeAzXArKc9KkBQIyaVnoevwHXYCPE
-         jIJ9BjoCoFX0eChwxxagIni3jDz/TL9XTEZ2OFclurVRhl67K2iqkxscPnSzF3fNhjBr
-         f4yiTS6mDrLKN2PeRcezWbMlKgRNM37sHLWpgVhGbbSTTGYs8SrP/UILcgudfVFlgfQN
-         VX9A==
+        bh=FKYCy8nTeKBSce/4iCSXAO9o2F9LxoRfpI1neokEeTE=;
+        b=WrZJT/TTcn8b/jtcJKP77InSNooQFUCjeau/X0H0SV09QpVull24vp0CmIuLtWLJiw
+         fCJ+/jiOlCMCEbU3fOVbp/r8u6+YhOZRw12u1T65WftzSSwYsOxlhV/4N6Vxnn8BXvxk
+         h4cqcdgskBOOZvtOJozqZCGvUeA+MdartxN0ILu3UuuM2unHTauGZdk2M4Rb7gnSIibv
+         B1cYFhbyq1OZl08wTouqbJBkEaP2r4FvJT3csHtYs4iWzQ9cj/5VRkpm8rV/lRxzWLOL
+         NDufTqaZz+h9de/5ln2+xnQiAXOJmVhaLGTNvTfvTkRmv2Q7B+OKf9sm3qy9zITR9o7f
+         Edmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=+OvHhqt+M1RLlLwyc9HE0Jj3sR2gjcJo/jfqnOHXFtA=;
-        b=hF2BjWTPi7UoHhkYYIYSbhKnA9pHD/QrTQCs+OjWtBqNNJEtAo653T/llw1vdb83qt
-         5X9Qs4G6s77syhiRvuWZ4PMLN+Pdg6iSvwG1zO07kmYMfFL89c9VV2tdOsgrKKrQlcME
-         t7xsxy2ZuU8L+Fhe41evJWHHSXoZedYCgBAte1Z3W0CxDOwdabUw9Bd7+C7rsz1sZOLe
-         DDoVG95ORiA6iHch3bsf0CNUdHYw5z/YMO7qfxwl7UAXBK9zlmoXJQH8Lxnzx1/FTol9
-         HXuC4AW9jZjKm5TwN0MZxaKZgw6a7mmFjowQzXzJnb1u0r3u937CBTX3rNw3wU/JST5O
-         l4zA==
-X-Gm-Message-State: AOAM530RJR56T/Cu6z4uU4vLmHnt+9mNC3RwoNyaJO4Oo5YAEBwwGwVt
-        zxJ1rN2GO3qEaY/uJdUSv94JK1RPPIpkdJHr
-X-Google-Smtp-Source: ABdhPJxkoMI9iyLMP/Xf2UCY0LX57CH7UuCXvd7tBR3phxh4aQm7Y1+mJkCzCI+BwFYC/MJVg+Jsw2Eb7yRnd1t7
+        bh=FKYCy8nTeKBSce/4iCSXAO9o2F9LxoRfpI1neokEeTE=;
+        b=LWqHPbhNA502Kx0cWhiMidOu6sDvTiPlLN5N7ef3PLJFw26KhI9V04lp8VDWhp3OkQ
+         bpa9JQSGpG4/Pwjh94S+btvAPkS7VzqVEIQpRLZ91RS6H7nSGDuKNvcqqYo7GVfAbwOu
+         2LRyToy1HT9lrIpMWfCr2geqRAe0Tz+YqEhiCmece9rRn+y4bIRl79NMLvDqVfFHd16C
+         Uj5KmQCgapFSFbrLFBmmNk6If1IyLUnTtwAG8xG9C6W8/sToySKDCwxLAFxBcbIEGrTg
+         CdvnqVf86qkq4/Kd/PA9h8bA+NxZeXHtGMm5e5qAcz2ArMMBR3z77z6oxPjags1E8u3v
+         XXlg==
+X-Gm-Message-State: AOAM5312NA6NZ52YpkbF/g+TgZQI7Cd8/KgYq3IzV2tsgMCoyeCC9mtD
+        B9f4BvJwwN/+TvEqHJOvEepIej/+Gdf5WUEK
+X-Google-Smtp-Source: ABdhPJwl/lO+0cjrfsYrNaI2y61itV/RzyivjHB/9eGEeXIrW2BIZ4lIStQL7yRe9lkokTR3DMkLl8lXRk6cv9Y3
 X-Received: from vannapurve2.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:41f8])
- (user=vannapurve job=sendgmr) by 2002:a17:902:ecc2:b0:15e:9add:104c with SMTP
- id a2-20020a170902ecc200b0015e9add104cmr22970611plh.140.1652227712910; Tue,
- 10 May 2022 17:08:32 -0700 (PDT)
-Date:   Wed, 11 May 2022 00:08:07 +0000
+ (user=vannapurve job=sendgmr) by 2002:a17:90a:e510:b0:1d9:ee23:9fa1 with SMTP
+ id t16-20020a17090ae51000b001d9ee239fa1mr55596pjy.0.1652227725108; Tue, 10
+ May 2022 17:08:45 -0700 (PDT)
+Date:   Wed, 11 May 2022 00:08:11 +0000
 In-Reply-To: <20220511000811.384766-1-vannapurve@google.com>
-Message-Id: <20220511000811.384766-6-vannapurve@google.com>
+Message-Id: <20220511000811.384766-10-vannapurve@google.com>
 Mime-Version: 1.0
 References: <20220511000811.384766-1-vannapurve@google.com>
 X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
-Subject: [RFC V2 PATCH 5/8] selftests: kvm: Add implicit memory conversion tests
+Subject: [RFC V2 PATCH 8/8] selftests: kvm: priv_memfd: Add test without
+ double allocation
 From:   Vishal Annapurve <vannapurve@google.com>
 To:     x86@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-kselftest@vger.kernel.org
@@ -76,349 +77,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add tests to exercise implicit memory conversion path.
+Add a memory conversion test without leading to double allocation
+of memory backing gpa ranges.
 
 Signed-off-by: Vishal Annapurve <vannapurve@google.com>
 ---
- tools/testing/selftests/kvm/priv_memfd_test.c | 384 +++++++++++++++++-
- 1 file changed, 383 insertions(+), 1 deletion(-)
+ tools/testing/selftests/kvm/priv_memfd_test.c | 225 ++++++++++++++++--
+ 1 file changed, 211 insertions(+), 14 deletions(-)
 
 diff --git a/tools/testing/selftests/kvm/priv_memfd_test.c b/tools/testing/selftests/kvm/priv_memfd_test.c
-index 48bc4343e7b5..f6f6b064a101 100644
+index dbe6ead92ba7..3b6e84cf6a44 100644
 --- a/tools/testing/selftests/kvm/priv_memfd_test.c
 +++ b/tools/testing/selftests/kvm/priv_memfd_test.c
-@@ -211,6 +211,369 @@ static void pmsat_guest_code(void)
+@@ -63,6 +63,8 @@ struct test_run_helper {
+ 	guest_code_fn guest_fn;
+ 	void *shared_mem;
+ 	int priv_memfd;
++	bool disallow_boot_shared_access;
++	bool toggle_shared_mem_state;
+ };
+ 
+ enum page_size {
+@@ -779,6 +781,151 @@ static void pspahct_guest_code(void)
  	GUEST_DONE();
  }
  
-+/* Test to verify guest shared accesses on shared memory with following steps:
-+ * 1) Upon entry, guest signals VMM that it has started.
-+ * 2) VMM deallocates the backing private memory and populates the shared memory
-+ *    with known pattern and continues guest execution.
-+ * 3) Guest reads shared gpa range in a shared fashion and verifies that it
-+ *    reads what VMM has written in step2.
-+ * 3) Guest writes a different pattern on the shared memory and signals VMM
-+ *      that it has updated the shared memory.
-+ * 4) VMM verifies shared memory contents to be same as the data populated
-+ *      in step 3 and continues guest execution.
++/* Test to verify guest accesses without double allocation:
++ * Guest starts with shared memory access disallowed by default.
++ * 1) Guest writes the private memory privately via a known pattern
++ * 3) Guest reads the private memory privately and verifies that the contents
++ *    are same as written.
++ * 4) Guest invokes KVM_HC_MAP_GPA_RANGE to map the hpa range as shared
++ *    and marks the range to be accessed via shared access.
++ * 5) Guest writes shared memory with another pattern and signals VMM
++ * 6) VMM verifies the memory contents to be same as written by guest in step
++ *    5 and updates the memory with a different pattern
++ * 7) Guest verifies the memory contents to be same as written in step 6.
++ * 8) Guest invokes KVM_HC_MAP_GPA_RANGE to map the hpa range as private
++ *    and marks the range to be accessed via private access.
++ * 9) Guest writes a known pattern to the test memory and verifies the contents
++ *    to be same as written.
++ * 10) Guest invokes KVM_HC_MAP_GPA_RANGE to map the hpa range as shared
++ *    and marks the range to be accessed via shared access.
++ * 11) Guest writes shared memory with another pattern and signals VMM
++ * 12) VMM verifies the memory contents to be same as written by guest in step
++ *    5 and updates the memory with a different pattern
++ * 13) Guest verifies the memory contents to be same as written in step 6.
 + */
-+#define SMSAT_ID				2
-+#define SMSAT_DESC				"SharedMemorySharedAccessTest"
++#define PSAWDAT_ID	7
++#define PSAWDAT_DESC	"PrivateSharedAccessWithoutDoubleAllocationTest"
 +
-+#define SMSAT_GUEST_STARTED			0ULL
-+#define SMSAT_GUEST_TEST_MEM_UPDATED		1ULL
++#define PSAWDAT_GUEST_SHARED_MEM_UPDATED1		1ULL
++#define PSAWDAT_GUEST_SHARED_MEM_UPDATED2		2ULL
 +
-+static bool smsat_handle_vm_stage(struct kvm_vm *vm,
++static bool psawdat_handle_vm_stage(struct kvm_vm *vm,
 +			void *test_info,
 +			uint64_t stage)
 +{
 +	void *shared_mem = ((struct test_run_helper *)test_info)->shared_mem;
-+	int priv_memfd = ((struct test_run_helper *)test_info)->priv_memfd;
 +
 +	switch (stage) {
-+	case SMSAT_GUEST_STARTED: {
-+		/* Remove the backing private memory storage */
-+		int ret = fallocate(priv_memfd,
-+				FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE,
-+				0, TEST_MEM_SIZE);
-+		TEST_ASSERT(ret != -1,
-+			"fallocate failed in smsat handling");
-+		/* Initialize the contents of shared memory */
-+		TEST_ASSERT(do_mem_op(SET_PAT, shared_mem,
-+			TEST_MEM_DATA_PAT1, TEST_MEM_SIZE),
-+			"Shared memory updated failed");
-+		VM_STAGE_PROCESSED(SMSAT_GUEST_STARTED);
-+		break;
-+	}
-+	case SMSAT_GUEST_TEST_MEM_UPDATED: {
-+		/* verify data to be same as what guest wrote */
-+		TEST_ASSERT(do_mem_op(VERIFY_PAT, shared_mem,
-+			TEST_MEM_DATA_PAT2, TEST_MEM_SIZE),
-+			"Shared memory view mismatch");
-+		VM_STAGE_PROCESSED(SMSAT_GUEST_TEST_MEM_UPDATED);
-+		break;
-+	}
-+	default:
-+		printf("Unhandled VM stage %ld\n", stage);
-+		return false;
-+	}
-+
-+	return true;
-+}
-+
-+static void smsat_guest_code(void)
-+{
-+	void *shared_mem = (void *)TEST_MEM_GPA;
-+
-+	GUEST_SYNC(SMSAT_GUEST_STARTED);
-+	GUEST_ASSERT(do_mem_op(VERIFY_PAT, shared_mem,
-+			TEST_MEM_DATA_PAT1, TEST_MEM_SIZE));
-+
-+	GUEST_ASSERT(do_mem_op(SET_PAT, shared_mem,
-+			TEST_MEM_DATA_PAT2, TEST_MEM_SIZE));
-+	GUEST_SYNC(SMSAT_GUEST_TEST_MEM_UPDATED);
-+
-+	GUEST_DONE();
-+}
-+
-+/* Test to verify guest private accesses on shared memory with following steps:
-+ * 1) Upon entry, guest signals VMM that it has started.
-+ * 2) VMM deallocates the backing private memory and populates the shared memory
-+ *    with known pattern and continues guest execution.
-+ * 3) Guest writes gpa range via private access and signals VMM.
-+ * 4) VMM verifies shared memory contents to be same as the data populated
-+ *    in step 2 and continues guest execution.
-+ * 5) Guest reads gpa range via private access and verifies that the contents
-+ *    are same as written in step 3.
-+ */
-+#define SMPAT_ID				3
-+#define SMPAT_DESC				"SharedMemoryPrivateAccessTest"
-+
-+#define SMPAT_GUEST_STARTED			0ULL
-+#define SMPAT_GUEST_TEST_MEM_UPDATED		1ULL
-+
-+static bool smpat_handle_vm_stage(struct kvm_vm *vm,
-+			void *test_info,
-+			uint64_t stage)
-+{
-+	void *shared_mem = ((struct test_run_helper *)test_info)->shared_mem;
-+	int priv_memfd = ((struct test_run_helper *)test_info)->priv_memfd;
-+
-+	switch (stage) {
-+	case SMPAT_GUEST_STARTED: {
-+		/* Remove the backing private memory storage */
-+		int ret = fallocate(priv_memfd,
-+				FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE,
-+				0, TEST_MEM_SIZE);
-+		TEST_ASSERT(ret != -1,
-+			"fallocate failed in smpat handling");
-+		/* Initialize the contents of shared memory */
-+		TEST_ASSERT(do_mem_op(SET_PAT, shared_mem,
-+			TEST_MEM_DATA_PAT1, TEST_MEM_SIZE),
-+			"Shared memory updated failed");
-+		VM_STAGE_PROCESSED(SMPAT_GUEST_STARTED);
-+		break;
-+	}
-+	case SMPAT_GUEST_TEST_MEM_UPDATED: {
-+		/* verify data to be same as what vmm wrote earlier */
-+		TEST_ASSERT(do_mem_op(VERIFY_PAT, shared_mem,
-+			TEST_MEM_DATA_PAT1, TEST_MEM_SIZE),
-+			"Shared memory view mismatch");
-+		VM_STAGE_PROCESSED(SMPAT_GUEST_TEST_MEM_UPDATED);
-+		break;
-+	}
-+	default:
-+		printf("Unhandled VM stage %ld\n", stage);
-+		return false;
-+	}
-+
-+	return true;
-+}
-+
-+static void smpat_guest_code(void)
-+{
-+	void *shared_mem = (void *)TEST_MEM_GPA;
-+	int ret;
-+
-+	GUEST_SYNC(SMPAT_GUEST_STARTED);
-+
-+	/* Mark the GPA range to be treated as always accessed privately */
-+	ret = kvm_hypercall(KVM_HC_MAP_GPA_RANGE, TEST_MEM_GPA,
-+		TEST_MEM_SIZE >> MIN_PAGE_SHIFT,
-+		KVM_MARK_GPA_RANGE_ENC_ACCESS, 0);
-+	GUEST_ASSERT_1(ret == 0, ret);
-+
-+	GUEST_ASSERT(do_mem_op(SET_PAT, shared_mem,
-+			TEST_MEM_DATA_PAT2, TEST_MEM_SIZE));
-+	GUEST_SYNC(SMPAT_GUEST_TEST_MEM_UPDATED);
-+	GUEST_ASSERT(do_mem_op(VERIFY_PAT, shared_mem,
-+			TEST_MEM_DATA_PAT2, TEST_MEM_SIZE));
-+
-+	GUEST_DONE();
-+}
-+
-+/* Test to verify guest shared and private accesses on memory with following
-+ * steps:
-+ * 1) Upon entry, guest signals VMM that it has started.
-+ * 2) VMM populates the shared memory with known pattern and continues guest
-+ *    execution.
-+ * 3) Guest writes shared gpa range in a private fashion and signals VMM
-+ * 4) VMM verifies that shared memory still contains the pattern written in
-+ *    step 2 and continues guest execution.
-+ * 5) Guest verifies private memory contents to be same as the data populated
-+ *    in step 3 and signals VMM.
-+ * 6) VMM removes the private memory backing which should also clear out the
-+ *    second stage mappings for the VM
-+ * 6) Guest does shared write access on shared memory and signals vmm
-+ * 7) VMM reads the shared memory and verifies that the data is same as what
-+ *    guest wrote in step 6 and continues guest execution.
-+ * 8) Guest reads the private memory and verifies that the data is same as
-+ *    written in step 6.
-+ */
-+#define PSAT_ID			4
-+#define PSAT_DESC		"PrivateSharedAccessTest"
-+
-+#define PSAT_GUEST_STARTED			0ULL
-+#define PSAT_GUEST_PRIVATE_MEM_UPDATED		1ULL
-+#define PSAT_GUEST_PRIVATE_MEM_VERIFIED		2ULL
-+#define PSAT_GUEST_SHARED_MEM_UPDATED		3ULL
-+
-+static bool psat_handle_vm_stage(struct kvm_vm *vm,
-+			void *test_info,
-+			uint64_t stage)
-+{
-+	void *shared_mem = ((struct test_run_helper *)test_info)->shared_mem;
-+	int priv_memfd = ((struct test_run_helper *)test_info)->priv_memfd;
-+
-+	switch (stage) {
-+	case PSAT_GUEST_STARTED: {
-+		/* Initialize the contents of shared memory */
-+		TEST_ASSERT(do_mem_op(SET_PAT, shared_mem,
-+			TEST_MEM_DATA_PAT1, TEST_MEM_SIZE),
-+			"Shared memory update failed");
-+		VM_STAGE_PROCESSED(PSAT_GUEST_STARTED);
-+		break;
-+	}
-+	case PSAT_GUEST_PRIVATE_MEM_UPDATED: {
-+		/* verify data to be same as what vmm wrote earlier */
-+		TEST_ASSERT(do_mem_op(VERIFY_PAT, shared_mem,
-+			TEST_MEM_DATA_PAT1, TEST_MEM_SIZE),
-+			"Shared memory view mismatch");
-+		VM_STAGE_PROCESSED(PSAT_GUEST_PRIVATE_MEM_UPDATED);
-+		break;
-+	}
-+	case PSAT_GUEST_PRIVATE_MEM_VERIFIED: {
-+		/* Remove the backing private memory storage so that
-+		 * subsequent accesses from guest cause a second stage
-+		 * page fault
-+		 */
-+		int ret = fallocate(priv_memfd,
-+				FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE,
-+				0, TEST_MEM_SIZE);
-+		TEST_ASSERT(ret != -1,
-+			"fallocate failed in smpat handling");
-+		VM_STAGE_PROCESSED(PSAT_GUEST_PRIVATE_MEM_VERIFIED);
-+		break;
-+	}
-+	case PSAT_GUEST_SHARED_MEM_UPDATED: {
-+		/* verify data to be same as what guest wrote */
-+		TEST_ASSERT(do_mem_op(VERIFY_PAT, shared_mem,
-+			TEST_MEM_DATA_PAT2, TEST_MEM_SIZE),
-+			"Shared memory view mismatch");
-+		VM_STAGE_PROCESSED(PSAT_GUEST_SHARED_MEM_UPDATED);
-+		break;
-+	}
-+	default:
-+		printf("Unhandled VM stage %ld\n", stage);
-+		return false;
-+	}
-+
-+	return true;
-+}
-+
-+static void psat_guest_code(void)
-+{
-+	void *shared_mem = (void *)TEST_MEM_GPA;
-+	int ret;
-+
-+	GUEST_SYNC(PSAT_GUEST_STARTED);
-+	/* Mark the GPA range to be treated as always accessed privately */
-+	ret = kvm_hypercall(KVM_HC_MAP_GPA_RANGE, TEST_MEM_GPA,
-+		TEST_MEM_SIZE >> MIN_PAGE_SHIFT,
-+		KVM_MARK_GPA_RANGE_ENC_ACCESS, 0);
-+	GUEST_ASSERT_1(ret == 0, ret);
-+
-+	GUEST_ASSERT(do_mem_op(SET_PAT, shared_mem,
-+			TEST_MEM_DATA_PAT2, TEST_MEM_SIZE));
-+	GUEST_SYNC(PSAT_GUEST_PRIVATE_MEM_UPDATED);
-+	GUEST_ASSERT(do_mem_op(VERIFY_PAT, shared_mem,
-+			TEST_MEM_DATA_PAT2, TEST_MEM_SIZE));
-+
-+	GUEST_SYNC(PSAT_GUEST_PRIVATE_MEM_VERIFIED);
-+
-+	/* Mark no GPA range to be treated as accessed privately */
-+	ret = kvm_hypercall(KVM_HC_MAP_GPA_RANGE, 0,
-+		0, KVM_MARK_GPA_RANGE_ENC_ACCESS, 0);
-+	GUEST_ASSERT_1(ret == 0, ret);
-+	GUEST_ASSERT(do_mem_op(SET_PAT, shared_mem,
-+			TEST_MEM_DATA_PAT2, TEST_MEM_SIZE));
-+	GUEST_SYNC(PSAT_GUEST_SHARED_MEM_UPDATED);
-+	GUEST_ASSERT(do_mem_op(VERIFY_PAT, shared_mem,
-+			TEST_MEM_DATA_PAT2, TEST_MEM_SIZE));
-+
-+	GUEST_DONE();
-+}
-+
-+/* Test to verify guest shared and private accesses on memory with following
-+ * steps:
-+ * 1) Upon entry, guest signals VMM that it has started.
-+ * 2) VMM removes the private memory backing and populates the shared memory
-+ *    with known pattern and continues guest execution.
-+ * 3) Guest reads shared gpa range in a shared fashion and verifies that it
-+ *    reads what VMM has written in step2.
-+ * 4) Guest writes a different pattern on the shared memory and signals VMM
-+ *      that it has updated the shared memory.
-+ * 5) VMM verifies shared memory contents to be same as the data populated
-+ *      in step 4 and installs private memory backing again to allow guest
-+ *      to do private access and invalidate second stage mappings.
-+ * 6) Guest does private write access on shared memory and signals vmm
-+ * 7) VMM reads the shared memory and verified that the data is still same
-+ *    as in step 4 and continues guest execution.
-+ * 8) Guest reads the private memory and verifies that the data is same as
-+ *    written in step 6.
-+ */
-+#define SPAT_ID					5
-+#define SPAT_DESC				"SharedPrivateAccessTest"
-+
-+#define SPAT_GUEST_STARTED			0ULL
-+#define SPAT_GUEST_SHARED_MEM_UPDATED		1ULL
-+#define SPAT_GUEST_PRIVATE_MEM_UPDATED		2ULL
-+
-+static bool spat_handle_vm_stage(struct kvm_vm *vm,
-+			void *test_info,
-+			uint64_t stage)
-+{
-+	void *shared_mem = ((struct test_run_helper *)test_info)->shared_mem;
-+	int priv_memfd = ((struct test_run_helper *)test_info)->priv_memfd;
-+
-+	switch (stage) {
-+	case SPAT_GUEST_STARTED: {
-+		/* Remove the backing private memory storage so that
-+		 * subsequent accesses from guest cause a second stage
-+		 * page fault
-+		 */
-+		int ret = fallocate(priv_memfd,
-+				FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE,
-+				0, TEST_MEM_SIZE);
-+		TEST_ASSERT(ret != -1,
-+			"fallocate failed in spat handling");
-+
-+		/* Initialize the contents of shared memory */
-+		TEST_ASSERT(do_mem_op(SET_PAT, shared_mem,
-+			TEST_MEM_DATA_PAT1, TEST_MEM_SIZE),
-+			"Shared memory updated failed");
-+		VM_STAGE_PROCESSED(SPAT_GUEST_STARTED);
-+		break;
-+	}
-+	case SPAT_GUEST_SHARED_MEM_UPDATED: {
++	case PSAWDAT_GUEST_SHARED_MEM_UPDATED1: {
 +		/* verify data to be same as what guest wrote earlier */
 +		TEST_ASSERT(do_mem_op(VERIFY_PAT, shared_mem,
-+			TEST_MEM_DATA_PAT2, TEST_MEM_SIZE),
++			TEST_MEM_DATA_PAT2, test_mem_size),
 +			"Shared memory view mismatch");
-+		/* Allocate memory for private backing store */
-+		int ret = fallocate(priv_memfd,
-+				0, 0, TEST_MEM_SIZE);
-+		TEST_ASSERT(ret != -1,
-+			"fallocate failed in spat handling");
-+		VM_STAGE_PROCESSED(SPAT_GUEST_SHARED_MEM_UPDATED);
++		TEST_ASSERT(do_mem_op(SET_PAT, shared_mem,
++			TEST_MEM_DATA_PAT1, test_mem_size),
++			"Shared mem update Failure");
++		VM_STAGE_PROCESSED(PSAWDAT_GUEST_SHARED_MEM_UPDATED);
 +		break;
 +	}
-+	case SPAT_GUEST_PRIVATE_MEM_UPDATED: {
++	case PSAWDAT_GUEST_SHARED_MEM_UPDATED2: {
 +		/* verify data to be same as what guest wrote earlier */
 +		TEST_ASSERT(do_mem_op(VERIFY_PAT, shared_mem,
-+			TEST_MEM_DATA_PAT2, TEST_MEM_SIZE),
++			TEST_MEM_DATA_PAT3, test_mem_size),
 +			"Shared memory view mismatch");
-+		VM_STAGE_PROCESSED(SPAT_GUEST_PRIVATE_MEM_UPDATED);
++		TEST_ASSERT(do_mem_op(SET_PAT, shared_mem,
++			TEST_MEM_DATA_PAT4, test_mem_size),
++			"Shared mem update Failure");
++		VM_STAGE_PROCESSED(PSAWDAT_GUEST_SHARED_MEM_UPDATED2);
 +		break;
 +	}
 +	default:
@@ -429,69 +167,263 @@ index 48bc4343e7b5..f6f6b064a101 100644
 +	return true;
 +}
 +
-+static void spat_guest_code(void)
++static void psawdat_guest_code(void)
 +{
-+	void *shared_mem = (void *)TEST_MEM_GPA;
++	void *test_mem = (void *)TEST_MEM_GPA;
 +	int ret;
 +
-+	GUEST_SYNC(SPAT_GUEST_STARTED);
-+	GUEST_ASSERT(do_mem_op(VERIFY_PAT, shared_mem,
-+			TEST_MEM_DATA_PAT1, TEST_MEM_SIZE));
-+	GUEST_ASSERT(do_mem_op(SET_PAT, shared_mem,
-+			TEST_MEM_DATA_PAT2, TEST_MEM_SIZE));
-+	GUEST_SYNC(SPAT_GUEST_SHARED_MEM_UPDATED);
++	const size_t mem_size = *((size_t *)MEM_SIZE_MMIO_ADDRESS);
++
 +	/* Mark the GPA range to be treated as always accessed privately */
 +	ret = kvm_hypercall(KVM_HC_MAP_GPA_RANGE, TEST_MEM_GPA,
-+		TEST_MEM_SIZE >> MIN_PAGE_SHIFT,
++		mem_size >> MIN_PAGE_SHIFT,
++		KVM_MARK_GPA_RANGE_ENC_ACCESS, 0);
++	GUEST_ASSERT_1(ret == 0, ret);
++	GUEST_ASSERT(do_mem_op(SET_PAT, test_mem,
++			TEST_MEM_DATA_PAT1, mem_size));
++
++	GUEST_ASSERT(do_mem_op(VERIFY_PAT, test_mem,
++			TEST_MEM_DATA_PAT1, mem_size));
++
++	/* Map the GPA range to be treated as shared */
++	ret = kvm_hypercall(KVM_HC_MAP_GPA_RANGE, TEST_MEM_GPA,
++		mem_size >> MIN_PAGE_SHIFT,
++		KVM_MAP_GPA_RANGE_DECRYPTED | KVM_MAP_GPA_RANGE_PAGE_SZ_4K, 0);
++	GUEST_ASSERT_1(ret == 0, ret);
++
++	/* Mark the GPA range to be treated as always accessed via shared
++	 * access
++	 */
++	ret = kvm_hypercall(KVM_HC_MAP_GPA_RANGE, 0, 0,
 +		KVM_MARK_GPA_RANGE_ENC_ACCESS, 0);
 +	GUEST_ASSERT_1(ret == 0, ret);
 +
-+	GUEST_ASSERT(do_mem_op(SET_PAT, shared_mem,
-+			TEST_MEM_DATA_PAT1, TEST_MEM_SIZE));
-+	GUEST_SYNC(PSAT_GUEST_PRIVATE_MEM_UPDATED);
-+	GUEST_ASSERT(do_mem_op(VERIFY_PAT, shared_mem,
-+			TEST_MEM_DATA_PAT1, TEST_MEM_SIZE));
++	GUEST_ASSERT(do_mem_op(SET_PAT, test_mem,
++			TEST_MEM_DATA_PAT2, mem_size));
++	GUEST_SYNC(PSAWDAT_GUEST_SHARED_MEM_UPDATED1);
++
++	GUEST_ASSERT(do_mem_op(VERIFY_PAT, test_mem,
++			TEST_MEM_DATA_PAT1, mem_size));
++
++	/* Map the GPA range to be treated as private */
++	ret = kvm_hypercall(KVM_HC_MAP_GPA_RANGE, TEST_MEM_GPA,
++		mem_size >> MIN_PAGE_SHIFT,
++		KVM_MAP_GPA_RANGE_ENCRYPTED | KVM_MAP_GPA_RANGE_PAGE_SZ_4K, 0);
++	GUEST_ASSERT_1(ret == 0, ret);
++
++	/* Mark the GPA range to be treated as always accessed via private
++	 * access
++	 */
++	ret = kvm_hypercall(KVM_HC_MAP_GPA_RANGE, TEST_MEM_GPA,
++		mem_size >> MIN_PAGE_SHIFT,
++		KVM_MARK_GPA_RANGE_ENC_ACCESS, 0);
++	GUEST_ASSERT_1(ret == 0, ret);
++
++	GUEST_ASSERT(do_mem_op(SET_PAT, test_mem,
++			TEST_MEM_DATA_PAT2, mem_size));
++	GUEST_ASSERT(do_mem_op(VERIFY_PAT, test_mem,
++			TEST_MEM_DATA_PAT2, mem_size));
++
++	/* Map the GPA range to be treated as shared */
++	ret = kvm_hypercall(KVM_HC_MAP_GPA_RANGE, TEST_MEM_GPA,
++		mem_size >> MIN_PAGE_SHIFT,
++		KVM_MAP_GPA_RANGE_DECRYPTED | KVM_MAP_GPA_RANGE_PAGE_SZ_4K, 0);
++	GUEST_ASSERT_1(ret == 0, ret);
++
++	/* Mark the GPA range to be treated as always accessed via shared
++	 * access
++	 */
++	ret = kvm_hypercall(KVM_HC_MAP_GPA_RANGE, 0, 0,
++		KVM_MARK_GPA_RANGE_ENC_ACCESS, 0);
++	GUEST_ASSERT_1(ret == 0, ret);
++
++	GUEST_ASSERT(do_mem_op(SET_PAT, test_mem,
++			TEST_MEM_DATA_PAT3, mem_size));
++	GUEST_SYNC(PSAWDAT_GUEST_SHARED_MEM_UPDATED2);
++
++	GUEST_ASSERT(do_mem_op(VERIFY_PAT, test_mem,
++			TEST_MEM_DATA_PAT4, mem_size));
++
 +	GUEST_DONE();
 +}
 +
  static struct test_run_helper priv_memfd_testsuite[] = {
  	[PMPAT_ID] = {
  		.test_desc = PMPAT_DESC,
-@@ -222,6 +585,26 @@ static struct test_run_helper priv_memfd_testsuite[] = {
- 		.vmst_handler = pmsat_handle_vm_stage,
- 		.guest_fn = pmsat_guest_code,
+@@ -815,6 +962,13 @@ static struct test_run_helper priv_memfd_testsuite[] = {
+ 		.vmst_handler = pspahct_handle_vm_stage,
+ 		.guest_fn = pspahct_guest_code,
  	},
-+	[SMSAT_ID] = {
-+		.test_desc = SMSAT_DESC,
-+		.vmst_handler = smsat_handle_vm_stage,
-+		.guest_fn = smsat_guest_code,
-+	},
-+	[SMPAT_ID] = {
-+		.test_desc = SMPAT_DESC,
-+		.vmst_handler = smpat_handle_vm_stage,
-+		.guest_fn = smpat_guest_code,
-+	},
-+	[PSAT_ID] = {
-+		.test_desc = PSAT_DESC,
-+		.vmst_handler = psat_handle_vm_stage,
-+		.guest_fn = psat_guest_code,
-+	},
-+	[SPAT_ID] = {
-+		.test_desc = SPAT_DESC,
-+		.vmst_handler = spat_handle_vm_stage,
-+		.guest_fn = spat_guest_code,
++	[PSAWDAT_ID] = {
++		.test_desc = PSAWDAT_DESC,
++		.vmst_handler = psawdat_handle_vm_stage,
++		.guest_fn = psawdat_guest_code,
++		.toggle_shared_mem_state = true,
++		.disallow_boot_shared_access = true,
 +	},
  };
  
  static void handle_vm_exit_hypercall(struct kvm_run *run,
-@@ -365,7 +748,6 @@ static void priv_memory_region_add(struct kvm_vm *vm, void *mem, uint32_t slot,
- 		guest_addr);
+@@ -825,6 +979,10 @@ static void handle_vm_exit_hypercall(struct kvm_run *run,
+ 		priv_memfd_testsuite[test_id].priv_memfd;
+ 	int ret;
+ 	int fallocate_mode;
++	void *shared_mem = priv_memfd_testsuite[test_id].shared_mem;
++	bool toggle_shared_mem_state =
++		priv_memfd_testsuite[test_id].toggle_shared_mem_state;
++	int mprotect_mode;
+ 
+ 	if (run->hypercall.nr != KVM_HC_MAP_GPA_RANGE) {
+ 		TEST_FAIL("Unhandled Hypercall %lld\n",
+@@ -842,11 +1000,13 @@ static void handle_vm_exit_hypercall(struct kvm_run *run,
+ 			gpa, npages);
+ 	}
+ 
+-	if (attrs & KVM_MAP_GPA_RANGE_ENCRYPTED)
++	if (attrs & KVM_MAP_GPA_RANGE_ENCRYPTED) {
+ 		fallocate_mode = 0;
+-	else {
++		mprotect_mode = PROT_NONE;
++	} else {
+ 		fallocate_mode = (FALLOC_FL_PUNCH_HOLE |
+ 			FALLOC_FL_KEEP_SIZE);
++		mprotect_mode = PROT_READ | PROT_WRITE;
+ 	}
+ 	pr_info("Converting off 0x%lx pages 0x%lx to %s\n",
+ 		(gpa - TEST_MEM_GPA), npages,
+@@ -857,6 +1017,17 @@ static void handle_vm_exit_hypercall(struct kvm_run *run,
+ 		npages << MIN_PAGE_SHIFT);
+ 	TEST_ASSERT(ret != -1,
+ 		"fallocate failed in hc handling");
++	if (toggle_shared_mem_state) {
++		if (fallocate_mode) {
++			ret = madvise(shared_mem, test_mem_size,
++				MADV_DONTNEED);
++			TEST_ASSERT(ret != -1,
++				"madvise failed in hc handling");
++		}
++		ret = mprotect(shared_mem, test_mem_size, mprotect_mode);
++		TEST_ASSERT(ret != -1,
++			"mprotect failed in hc handling");
++	}
+ 	run->hypercall.ret = 0;
  }
  
--/* Do private access to the guest's private memory */
- static void setup_and_execute_test(uint32_t test_id)
- {
- 	struct kvm_vm *vm;
+@@ -867,7 +1038,11 @@ static void handle_vm_exit_memory_error(struct kvm_run *run,
+ 	int ret;
+ 	int priv_memfd =
+ 		priv_memfd_testsuite[test_id].priv_memfd;
++	void *shared_mem = priv_memfd_testsuite[test_id].shared_mem;
++	bool toggle_shared_mem_state =
++		priv_memfd_testsuite[test_id].toggle_shared_mem_state;
+ 	int fallocate_mode;
++	int mprotect_mode;
+ 
+ 	gpa = run->memory.gpa;
+ 	size = run->memory.size;
+@@ -880,11 +1055,13 @@ static void handle_vm_exit_memory_error(struct kvm_run *run,
+ 			gpa, size);
+ 	}
+ 
+-	if (flags & KVM_MEMORY_EXIT_FLAG_PRIVATE)
++	if (flags & KVM_MEMORY_EXIT_FLAG_PRIVATE) {
+ 		fallocate_mode = 0;
+-	else {
++		mprotect_mode = PROT_NONE;
++	} else {
+ 		fallocate_mode = (FALLOC_FL_PUNCH_HOLE |
+ 				FALLOC_FL_KEEP_SIZE);
++		mprotect_mode = PROT_READ | PROT_WRITE;
+ 	}
+ 	pr_info("Converting off 0x%lx size 0x%lx to %s\n",
+ 		(gpa - TEST_MEM_GPA), size,
+@@ -894,6 +1071,18 @@ static void handle_vm_exit_memory_error(struct kvm_run *run,
+ 		(gpa - TEST_MEM_GPA), size);
+ 	TEST_ASSERT(ret != -1,
+ 		"fallocate failed in memory error handling");
++
++	if (toggle_shared_mem_state) {
++		if (fallocate_mode) {
++			ret = madvise(shared_mem, test_mem_size,
++				MADV_DONTNEED);
++			TEST_ASSERT(ret != -1,
++				"madvise failed in memory error handling");
++		}
++		ret = mprotect(shared_mem, test_mem_size, mprotect_mode);
++		TEST_ASSERT(ret != -1,
++			"mprotect failed in memory error handling");
++	}
+ }
+ 
+ static void vcpu_work(struct kvm_vm *vm, uint32_t test_id)
+@@ -924,14 +1113,14 @@ static void vcpu_work(struct kvm_vm *vm, uint32_t test_id)
+ 
+ 		if (run->exit_reason == KVM_EXIT_MMIO) {
+ 			if (run->mmio.phys_addr == MEM_SIZE_MMIO_ADDRESS) {
+-				// tell the guest the size of the memory
+-				// it's been allocated
++				/* tell the guest the size of the memory it's
++				 * been allocated
++				 */
+ 				int shift_amount = 0;
+ 
+ 				for (int i = 0; i < sizeof(uint64_t); ++i) {
+-					run->mmio.data[i] =
+-						(test_mem_size >>
+-							shift_amount) & BYTE_MASK;
++					run->mmio.data[i] = (test_mem_size >>
++						shift_amount) & BYTE_MASK;
+ 					shift_amount += CHAR_BIT;
+ 				}
+ 			}
+@@ -985,6 +1174,9 @@ static void setup_and_execute_test(uint32_t test_id,
+ 	int ret;
+ 	void *shared_mem;
+ 	struct kvm_enable_cap cap;
++	bool disallow_boot_shared_access =
++		priv_memfd_testsuite[test_id].disallow_boot_shared_access;
++	int prot_flags = PROT_READ | PROT_WRITE;
+ 
+ 	vm = vm_create_default(VCPU_ID, 0,
+ 				priv_memfd_testsuite[test_id].guest_fn);
+@@ -1036,10 +1228,12 @@ static void setup_and_execute_test(uint32_t test_id,
+ 	// set global for mem size to use later
+ 	test_mem_size = mem_size;
+ 
++	if (disallow_boot_shared_access)
++		prot_flags = PROT_NONE;
++
+ 	/* Allocate shared memory */
+ 	shared_mem = mmap(NULL, mem_size,
+-			PROT_READ | PROT_WRITE,
+-			mmap_flags, -1, 0);
++			prot_flags, mmap_flags, -1, 0);
+ 	TEST_ASSERT(shared_mem != MAP_FAILED, "Failed to mmap() host");
+ 
+ 	if (using_hugepages) {
+@@ -1166,7 +1360,8 @@ int main(int argc, char *argv[])
+ 
+ 	for (uint32_t i = 0; i < ARRAY_SIZE(priv_memfd_testsuite); i++) {
+ 		for (uint32_t j = 0; j < ARRAY_SIZE(page_size_matrix); j++) {
+-			const struct page_combo current_page_matrix = page_size_matrix[j];
++			const struct page_combo current_page_matrix =
++							page_size_matrix[j];
+ 
+ 			if (should_skip_test(current_page_matrix,
+ 				use_2mb_pages, use_1gb_pages))
+@@ -1174,8 +1369,10 @@ int main(int argc, char *argv[])
+ 			pr_info("=== Starting test %s... ===\n",
+ 					priv_memfd_testsuite[i].test_desc);
+ 			pr_info("using page sizes shared: %s private: %s\n",
+-					page_size_to_str(current_page_matrix.shared),
+-					page_size_to_str(current_page_matrix.private));
++					page_size_to_str(
++						current_page_matrix.shared),
++					page_size_to_str(
++						current_page_matrix.private));
+ 			hugepage_requirements_text(current_page_matrix);
+ 			setup_and_execute_test(i, current_page_matrix.shared,
+ 				current_page_matrix.private);
 -- 
 2.36.0.550.gb090851708-goog
 
