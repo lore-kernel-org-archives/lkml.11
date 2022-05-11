@@ -2,141 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4756CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 12:38:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 199F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 12:42:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242545AbiEKMit (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 08:38:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46160 "EHLO
+        id S240984AbiEKMmT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 08:42:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232923AbiEKMiq (ORCPT
+        with ESMTP id S231299AbiEKMmO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 08:38:46 -0400
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5209722EA5F;
-        Wed, 11 May 2022 05:38:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1652272719;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
-    From:Subject:Sender;
-    bh=3R1nyN7qEurI7mKVx7fVNCCwr1ntHBiV1xbhlFCvjRM=;
-    b=DiUzy4XK9JglPAKp58efIOGrWW9GhTsNGo6Pxl/cUe76D7l9JZXWD81dtsA110wv3I
-    Tk6dchEclVKI4PpBf1bgJDIfFozpkaOqNx0rStDUbsQLjM+0yQeVGaBSRF4ESYZ6IXA3
-    RjXOgee6Nu7+1CBSz5vjMWMTwT1ISb8dhvtYWGpGcC5DPYN8yQCHRTBq9IrEweAopXFw
-    pOoZHXnMjgwkLil2WGORwJ3ZORswfXizK9PsPkGZT0FRDVGdbbLnrrQIbt7tjovJQeBb
-    nD+SmdHRGazh5J39MinuSMv/GalS14MTOuoJtZr1MMZv9Cue/avwGlA9X5D8qvqj1ncb
-    BUDw==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdBqPeOuh2koeKQvJnLjhchY2TXGXhEF98MlNg=="
-X-RZG-CLASS-ID: mo00
-Received: from [IPV6:2a00:6020:1cff:5b00:9642:f755:5daa:777e]
-    by smtp.strato.de (RZmta 47.42.2 AUTH)
-    with ESMTPSA id 4544c9y4BCcdy2r
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Wed, 11 May 2022 14:38:39 +0200 (CEST)
-Message-ID: <b631b022-72d5-9160-fd13-f33c80dbbe59@hartkopp.net>
-Date:   Wed, 11 May 2022 14:38:32 +0200
+        Wed, 11 May 2022 08:42:14 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9A4173F311;
+        Wed, 11 May 2022 05:42:12 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 72402ED1;
+        Wed, 11 May 2022 05:42:12 -0700 (PDT)
+Received: from [10.57.80.111] (unknown [10.57.80.111])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8555C3F66F;
+        Wed, 11 May 2022 05:42:09 -0700 (PDT)
+Message-ID: <b0b92bdd-9ebe-8ce9-abe3-1f4d05a838dc@arm.com>
+Date:   Wed, 11 May 2022 13:42:02 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 1/1] can: skb: add and set local_origin flag
-Content-Language: en-US
-To:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Devid Antonio Filoni <devid.filoni@egluetechnologies.com>,
-        kernel@pengutronix.de, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        David Jander <david@protonic.nl>
-References: <20220511121913.2696181-1-o.rempel@pengutronix.de>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-In-Reply-To: <20220511121913.2696181-1-o.rempel@pengutronix.de>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 0/2] perf: ARM CoreSight PMU support
+Content-Language: en-GB
+To:     Besar Wicaksono <bwicaksono@nvidia.com>,
+        Sudeep Holla <sudeep.holla@arm.com>
+Cc:     Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Will Deacon <will@kernel.org>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+        "thanu.rangarajan@arm.com" <thanu.rangarajan@arm.com>,
+        "Michael.Williams@arm.com" <Michael.Williams@arm.com>,
+        Thierry Reding <treding@nvidia.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Vikram Sethi <vsethi@nvidia.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>
+References: <20220509002810.12412-1-bwicaksono@nvidia.com>
+ <20220509092843.GB26264@willie-the-truck>
+ <2e5e09f9-b71b-d936-e291-db8f94554b18@arm.com>
+ <20220510110742.ievkihggndpms3fn@bogus>
+ <20220510111318.GD27557@willie-the-truck>
+ <20220510184025.iwgknfqe5ygz4jwn@bogus>
+ <SJ0PR12MB5676E68453A977F1220FF7AFA0C89@SJ0PR12MB5676.namprd12.prod.outlook.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <SJ0PR12MB5676E68453A977F1220FF7AFA0C89@SJ0PR12MB5676.namprd12.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Oleksij,
-
-On 5/11/22 14:19, Oleksij Rempel wrote:
-> Add new can_skb_priv::local_origin flag to be able detect egress
-> packages even if they was sent directly from kernel and not assigned to
-> some socket.
+On 2022-05-11 02:29, Besar Wicaksono wrote:
 > 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> Cc: Devid Antonio Filoni <devid.filoni@egluetechnologies.com>
-> ---
->   drivers/net/can/dev/skb.c | 3 +++
->   include/linux/can/skb.h   | 1 +
->   net/can/raw.c             | 2 +-
->   3 files changed, 5 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/net/can/dev/skb.c b/drivers/net/can/dev/skb.c
-> index 61660248c69e..3e2357fb387e 100644
-> --- a/drivers/net/can/dev/skb.c
-> +++ b/drivers/net/can/dev/skb.c
-> @@ -63,6 +63,7 @@ int can_put_echo_skb(struct sk_buff *skb, struct net_device *dev,
->   
->   		/* save frame_len to reuse it when transmission is completed */
->   		can_skb_prv(skb)->frame_len = frame_len;
-> +		can_skb_prv(skb)->local_origin = true;
->   
->   		skb_tx_timestamp(skb);
->   
-> @@ -200,6 +201,7 @@ struct sk_buff *alloc_can_skb(struct net_device *dev, struct can_frame **cf)
->   	can_skb_reserve(skb);
->   	can_skb_prv(skb)->ifindex = dev->ifindex;
->   	can_skb_prv(skb)->skbcnt = 0;
-> +	can_skb_prv(skb)->local_origin = false;
->   
->   	*cf = skb_put_zero(skb, sizeof(struct can_frame));
->   
-> @@ -231,6 +233,7 @@ struct sk_buff *alloc_canfd_skb(struct net_device *dev,
->   	can_skb_reserve(skb);
->   	can_skb_prv(skb)->ifindex = dev->ifindex;
->   	can_skb_prv(skb)->skbcnt = 0;
-> +	can_skb_prv(skb)->local_origin = false;
+>> -----Original Message-----
+>> From: Sudeep Holla <sudeep.holla@arm.com>
+>> Sent: Tuesday, May 10, 2022 1:40 PM
+>> To: Besar Wicaksono <bwicaksono@nvidia.com>
+>> Cc: Suzuki K Poulose <suzuki.poulose@arm.com>; Will Deacon
+>> <will@kernel.org>; Sudeep Holla <sudeep.holla@arm.com>;
+>> catalin.marinas@arm.com; mark.rutland@arm.com; linux-arm-
+>> kernel@lists.infradead.org; linux-kernel@vger.kernel.org; linux-
+>> tegra@vger.kernel.org; thanu.rangarajan@arm.com;
+>> Michael.Williams@arm.com; Thierry Reding <treding@nvidia.com>; Jonathan
+>> Hunter <jonathanh@nvidia.com>; Vikram Sethi <vsethi@nvidia.com>;
+>> Mathieu Poirier <mathieu.poirier@linaro.org>
+>> Subject: Re: [PATCH 0/2] perf: ARM CoreSight PMU support
+>>
+>> External email: Use caution opening links or attachments
+>>
+>>
+>> On Tue, May 10, 2022 at 12:13:19PM +0100, Will Deacon wrote:
+>>> On Tue, May 10, 2022 at 12:07:42PM +0100, Sudeep Holla wrote:
+>>>> On Mon, May 09, 2022 at 11:02:23AM +0100, Suzuki K Poulose wrote:
+>>>>> Cc: Mike Williams, Mathieu Poirier
+>>>>> On 09/05/2022 10:28, Will Deacon wrote:
+>>>>>> On Sun, May 08, 2022 at 07:28:08PM -0500, Besar Wicaksono wrote:
+>>>>>>>    arch/arm64/configs/defconfig                  |    1 +
+>>>>>>>    drivers/perf/Kconfig                          |    2 +
+>>>>>>>    drivers/perf/Makefile                         |    1 +
+>>>>>>>    drivers/perf/coresight_pmu/Kconfig            |   10 +
+>>>>>>>    drivers/perf/coresight_pmu/Makefile           |    7 +
+>>>>>>>    .../perf/coresight_pmu/arm_coresight_pmu.c    | 1317
+>> +++++++++++++++++
+>>>>>>>    .../perf/coresight_pmu/arm_coresight_pmu.h    |  147 ++
+>>>>>>>    .../coresight_pmu/arm_coresight_pmu_nvidia.c  |  300 ++++
+>>>>>>>    .../coresight_pmu/arm_coresight_pmu_nvidia.h  |   17 +
+>>>>>>>    9 files changed, 1802 insertions(+)
+>>>>>>
+>>>>>> How does this interact with all the stuff we have under
+>>>>>> drivers/hwtracing/coresight/?
+>>>>>
+>>>>> Absolutely zero, except for the name. The standard
+>>>>> is named "CoreSight PMU" which is a bit unfortunate,
+>>>>> given the only link, AFAIU, with the "CoreSight" architecture
+>>>>> is the Lock Access Register(LAR). For reference, the
+>>>>> drivers/hwtracing/coresight/ is purely "CoreSight" self-hosted
+>>>>> tracing and the PMU is called "cs_etm" (expands to coresight etm).
+>>>>> Otherwise the standard doesn't have anything to do with what
+>>>>> exists already in the kernel.
+>>>
+>>> That's... a poor naming choice! But good, if it's entirely separate then I
+>>> don't have to worry about that. Just wanted to make sure we're not going
+>> to
+>>> get tangled up in things like ROM tables and Coresight power domains for
+>>> these things.
+>>>
+>>
+>> OK, now that triggered another question/thought.
+>>
+>> 1. Do you need to do active power management for these PMUs ? Or like
+>>     CPU PMUs, do you reject entering low power states if there is active
+>>     session in progress. If there is active session, runtime PM won't get
+>>     triggered but if there is system wide suspend, how is that dealt with ?
+>>
+> 
+> Looking at the other uncore/system PMUs, none of the drivers support PM ops.
+> NVIDIA system PMU also does not get power gated and system suspend is not
+> supported. But just like other uncore PMU driver, this driver supports CPU hotplug.
+> If PM is needed, the required info should have been expressed in ACPI.
+> 
+>> 2. Assuming you need some sort of PM, and since this is static table(which
+>>     I really don't like/prefer but it is out there 🙁), how do you plan to
+>>     get the power domain related information.
+>>
+> 
+> I guess the APMT spec in section 2.2 may cover this. If a PMU implementation has
+> properties beyond what is defined in the spec, these properties can be described in DSDT.
+> The driver doesn’t take care of this currently, so this is a room for future improvement.
 
-IMO this patch does not work as intended.
+Yes, I assume it's essentially the same story as for MPAM MSCs in this 
+respect. Plus it means that MSI support will be similarly fun, where 
+we'll need to have a corresponding DSDT device via which we can request 
+the interrupt, because that needs to further correlate to an IORT Named 
+Component node describing the ITS mapping. Hopefully we can abstract 
+some of that in the APMT code rather than expose it all to the PMU 
+driver...
 
-You probably need to revisit every place where can_skb_reserve() is 
-used, e.g. in raw_sendmsg().
-
-E.g. to make it work for virtual CAN and vxcan interfaces.
-
-I'm a bit unsure why we should not stick with the simple skb->sk handling?
-
-Regards,
-Oliver
-
->   
->   	*cfd = skb_put_zero(skb, sizeof(struct canfd_frame));
->   
-> diff --git a/include/linux/can/skb.h b/include/linux/can/skb.h
-> index fdb22b00674a..1b8a8cf2b13b 100644
-> --- a/include/linux/can/skb.h
-> +++ b/include/linux/can/skb.h
-> @@ -52,6 +52,7 @@ struct can_skb_priv {
->   	int ifindex;
->   	int skbcnt;
->   	unsigned int frame_len;
-> +	bool local_origin;
->   	struct can_frame cf[];
->   };
->   
-> diff --git a/net/can/raw.c b/net/can/raw.c
-> index b7dbb57557f3..df2d9334b395 100644
-> --- a/net/can/raw.c
-> +++ b/net/can/raw.c
-> @@ -173,7 +173,7 @@ static void raw_rcv(struct sk_buff *oskb, void *data)
->   	/* add CAN specific message flags for raw_recvmsg() */
->   	pflags = raw_flags(skb);
->   	*pflags = 0;
-> -	if (oskb->sk)
-> +	if (can_skb_prv(skb)->local_origin)
->   		*pflags |= MSG_DONTROUTE;
->   	if (oskb->sk == sk)
->   		*pflags |= MSG_CONFIRM;
+Robin.
