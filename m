@@ -2,117 +2,243 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F12A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 23:41:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76CB2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 23:43:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344439AbiEKXlK (ORCPT
+        id S1349434AbiEKXnr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 19:41:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41234 "EHLO
+        Wed, 11 May 2022 19:43:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349451AbiEKXlB (ORCPT
+        with ESMTP id S1349432AbiEKXnl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 19:41:01 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 699792CC98
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 16:40:59 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1652312457;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=kH9OohPfXgK2fOqvMs876VLdS4ytX/lNxe9AdFrucOE=;
-        b=veojJr+RXkl7uopde/STRTEdqzrV3J3lqr+LLlfBb0FLHamC6kQ2Ywghn6j1N0twONog8h
-        +tHD1pQLnUSFRJxK2kEGRe63rVVnioRqX9DrVXtSQ+sQDgEwfos0LvWiG0/xCp4gZUmX+/
-        UT2Yh0GdlZqBJTPcXsyxxAgM9vbZuHcPTVm+tueiHYzpWxGzXxUCwDTcyVbOhMFHITXS6k
-        iahSA8yHj4reSmqmRdqlsvkGPvyJtLA9KwoI0zg6pveC9lMKCaeUeS/yTiQWW7y0KOE8CN
-        t7R0vimhhtoby8PGCU/9ZNqK4TxQmK2DLZ2FJtf8N4FLv1h0wfY255bNgwpk2Q==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1652312457;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=kH9OohPfXgK2fOqvMs876VLdS4ytX/lNxe9AdFrucOE=;
-        b=gpFs+rwcRqxzTdGGf+UKbSVg2pfrmnuNGIdFmZc0pnr+RN1vxwkpwSJD6koI080l9zIDY7
-        MyjGv8K9tkszMLAg==
-To:     Delyan Kratunov <delyank@fb.com>,
-        "peterz@infradead.org" <peterz@infradead.org>
-Cc:     "dietmar.eggemann@arm.com" <dietmar.eggemann@arm.com>,
-        "bigeasy@linutronix.de" <bigeasy@linutronix.de>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "qais.yousef@arm.com" <qais.yousef@arm.com>,
-        Delyan Kratunov <delyank@fb.com>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "vincent.guittot@linaro.org" <vincent.guittot@linaro.org>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "adharmap@quicinc.com" <adharmap@quicinc.com>,
-        "alexei.starovoitov@gmail.com" <alexei.starovoitov@gmail.com>,
-        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "Kenta.Tada@sony.com" <Kenta.Tada@sony.com>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "bristot@redhat.com" <bristot@redhat.com>,
-        "ebiederm@xmission.com" <ebiederm@xmission.com>,
-        "mingo@kernel.org" <mingo@kernel.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "ed.tsai@mediatek.com" <ed.tsai@mediatek.com>,
-        "legion@kernel.org" <legion@kernel.org>,
-        "acme@kernel.org" <acme@kernel.org>,
-        "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>,
-        "valentin.schneider@arm.com" <valentin.schneider@arm.com>,
-        "juri.lelli@redhat.com" <juri.lelli@redhat.com>,
-        "namhyung@kernel.org" <namhyung@kernel.org>
-Subject: Re: [PATCH v2] sched/tracing: append prev_state to tp args instead
-In-Reply-To: <c8a6930dfdd58a4a5755fc01732675472979732b.camel@fb.com>
-References: <20220510082940.GA100765@worktop.programming.kicks-ass.net>
- <c8a6930dfdd58a4a5755fc01732675472979732b.camel@fb.com>
-Date:   Thu, 12 May 2022 01:40:57 +0200
-Message-ID: <8735hfy6wm.ffs@tglx>
-MIME-Version: 1.0
-Content-Type: text/plain
+        Wed, 11 May 2022 19:43:41 -0400
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FD0D60DBC
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 16:43:40 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id e185-20020a6369c2000000b003d822d1900eso1698894pgc.19
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 16:43:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:to:cc;
+        bh=TAxiS/Ab5c7/hNi33nkS+3tREbvoK0JgsSTtBLjXVkU=;
+        b=h89nNOgesg/Zplpl0ZYbjqjWzs5L+D0otRohm8XU+6Hv6kzBUyXDVofmGhGX1Bh+ex
+         gVQRpNKzTjeMu7tX07SCLPcafM1dM1Bg0CwodQ7CKyDUZ9a48n5EXexk0vr9F+EHv6kE
+         a9FuMi472lHKFi0mLSZrFF3RvMwe8VyBaIHtpjMFMjAdYjLleF3F8bbqLoVQmShpXux1
+         DcLepZ6yhB1NSFvRrWy28V97zD0BsEnJbcqWYCXeHk8n26PMKvp2k6xd33to1nSAAKEv
+         yJtZMQBMEK1xtHT02KDKbSg2Y8AfQbbYcRbVh5+0wyZHhXHXtsaGED2lDteu4vA9uOJ1
+         TRcg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:to:cc;
+        bh=TAxiS/Ab5c7/hNi33nkS+3tREbvoK0JgsSTtBLjXVkU=;
+        b=Huw7UVh5mHnMTjGAz3JGchI0vkC0gi/cMwNIgpkN7rlP3Ma3AM9frzpTh+CdNtjWj3
+         aR27q7aPtQz2LgFAVgqaFoVqEtQL+TEVysmn3cDV6kDsGK7e5fZ9zkmuYiRVEEKwqNMI
+         uPZl4EvVJkdo6YLxsbBBqz0NtgCjrRiD5pMz0fdw2PjdBm1y/OJMa4/NdInzw9U6yJOJ
+         rvnigHnP4hnZcgMa8Qo5tMYpBWfRaTU1p7SCzU0C+M4KydA3k6igL3wDCqlEUPlMr9MB
+         2yQ2aK5XVRfr/TP+sujtTIOmd3Xk7I7yYoViE81FXavuuCORLzqyWj+plFPmrV7Dkldz
+         kf2Q==
+X-Gm-Message-State: AOAM531lhxlQoyOz1kjIsvyRWvWtMixzP25Bm2HN5BwdKSl2wgv+1qjl
+        fcILSQ6C3bHuDGfuMNHCkuGXs9VfgRU=
+X-Google-Smtp-Source: ABdhPJzSb+Lwdgqy/6LSwc2c3Q6c+j5VBj5Kf+iEbER8+WRuCWXi7dyura/z7bCijxTQFdxL07NwUPaTf8A=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:a62:15d1:0:b0:50d:3db1:babd with SMTP id
+ 200-20020a6215d1000000b0050d3db1babdmr27415479pfv.19.1652312620124; Wed, 11
+ May 2022 16:43:40 -0700 (PDT)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Wed, 11 May 2022 23:43:31 +0000
+In-Reply-To: <20220511234332.3654455-1-seanjc@google.com>
+Message-Id: <20220511234332.3654455-2-seanjc@google.com>
+Mime-Version: 1.0
+References: <20220511234332.3654455-1-seanjc@google.com>
+X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
+Subject: [PATCH 1/2] x86/crash: Disable virt in core NMI crash handler to
+ avoid double list_add
+From:   Sean Christopherson <seanjc@google.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
+Cc:     "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
+        "Guilherme G . Piccoli" <gpiccoli@igalia.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11 2022 at 18:28, Delyan Kratunov wrote:
-> Commit fa2c3254d7cf (sched/tracing: Don't re-read p->state when emitting
-> sched_switch event, 2022-01-20) added a new prev_state argument to the
-> sched_switch tracepoint, before the prev task_struct pointer.
->
-> This reordering of arguments broke BPF programs that use the raw
-> tracepoint (e.g. tp_btf programs). The type of the second argument has
-> changed and existing programs that assume a task_struct* argument
-> (e.g. for bpf_task_storage access) will now fail to verify.
->
-> If we instead append the new argument to the end, all existing programs
-> would continue to work and can conditionally extract the prev_state
-> argument on supported kernel versions.
+Disable virtualization in crash_nmi_callback() and skip the requested NMI
+shootdown if a shootdown has already occurred, i.e. a callback has been
+registered.  The NMI crash shootdown path doesn't play nice with multiple
+invocations, e.g. attempting to register the NMI handler multiple times
+will trigger a double list_add() and hang the system (in addition to
+multiple other issues).  If "crash_kexec_post_notifiers" is specified on
+the kernel command line, panic() will invoke crash_smp_send_stop() and
+result in a second call to nmi_shootdown_cpus() during
+native_machine_emergency_restart().
 
-If we instead? ... would continue to work?
+Invoke the callback _before_ disabling virtualization, as the current
+VMCS needs to be cleared before doing VMXOFF.  Note, this results in a
+subtle change in ordering between disabling virtualization and stopping
+Intel PT on the responding CPUs.  While VMX and Intel PT do interact,
+VMXOFF and writes to MSR_IA32_RTIT_CTL do not induce faults between one
+another, which is all that matters when panicking.
 
-  https://www.kernel.org/doc/html/latest/process/maintainer-tip.html#changelog
-  https://www.kernel.org/doc/html/latest/process/submitting-patches.html#submittingpatches
+WARN if nmi_shootdown_cpus() is called a second time with anything other
+than the reboot path's "nop" handler, as bailing means the requested
+isn't being invoked.  Punt true handling of multiple shootdown callbacks
+until there's an actual use case for doing so (beyond disabling
+virtualization).
 
-It's not too hard to actually follow documented rules. Something like
-this:
+Extract the disabling logic to a common helper to deduplicate code, and
+to prepare for doing the shootdown in the emergency reboot path if SVM
+is supported.
 
-  "Undo the reordering and move the new argument last, which ensures
-   that all existing programs continue to work."
+Note, prior to commit ed72736183c4 ("x86/reboot: Force all cpus to exit
+VMX root if VMX is supported"), nmi_shootdown_cpus() was subtly protected
+against a second invocation by a cpu_vmx_enabled() check as the kdump
+handler would disable VMX if it ran first.
 
-Hmm?
+Fixes: ed72736183c4 ("x86/reboot: Force all cpus to exit VMX root if VMX is supported)
+Cc: stable@vger.kernel.org
+Reported-and-tested-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+Cc: Vitaly Kuznetsov <vkuznets@redhat.com>
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+Link: https://lore.kernel.org/all/20220427224924.592546-2-gpiccoli@igalia.com
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+---
+ arch/x86/include/asm/reboot.h |  1 +
+ arch/x86/kernel/crash.c       | 16 +--------------
+ arch/x86/kernel/reboot.c      | 38 ++++++++++++++++++++++++++++++++---
+ 3 files changed, 37 insertions(+), 18 deletions(-)
 
-What's worse is that the changelog is missing a clear statement that
-this is a one-time change which cannot be abused to turn tracepoints
-into unmodifiable ABI as you stated in:
-
- https://lore.kernel.org/lkml/CAEf4BzaEo+dxSRJZHQiXYrj-a3_B-eODZUxGh3HrnPjquMYFXQ@mail.gmail.com
-
-Thanks,
-
-        tglx
-
-
+diff --git a/arch/x86/include/asm/reboot.h b/arch/x86/include/asm/reboot.h
+index 04c17be9b5fd..8f2da36435a6 100644
+--- a/arch/x86/include/asm/reboot.h
++++ b/arch/x86/include/asm/reboot.h
+@@ -25,6 +25,7 @@ void __noreturn machine_real_restart(unsigned int type);
+ #define MRR_BIOS	0
+ #define MRR_APM		1
+ 
++void cpu_crash_disable_virtualization(void);
+ typedef void (*nmi_shootdown_cb)(int, struct pt_regs*);
+ void nmi_panic_self_stop(struct pt_regs *regs);
+ void nmi_shootdown_cpus(nmi_shootdown_cb callback);
+diff --git a/arch/x86/kernel/crash.c b/arch/x86/kernel/crash.c
+index e8326a8d1c5d..fe0cf83843ba 100644
+--- a/arch/x86/kernel/crash.c
++++ b/arch/x86/kernel/crash.c
+@@ -81,15 +81,6 @@ static void kdump_nmi_callback(int cpu, struct pt_regs *regs)
+ 	 */
+ 	cpu_crash_vmclear_loaded_vmcss();
+ 
+-	/* Disable VMX or SVM if needed.
+-	 *
+-	 * We need to disable virtualization on all CPUs.
+-	 * Having VMX or SVM enabled on any CPU may break rebooting
+-	 * after the kdump kernel has finished its task.
+-	 */
+-	cpu_emergency_vmxoff();
+-	cpu_emergency_svm_disable();
+-
+ 	/*
+ 	 * Disable Intel PT to stop its logging
+ 	 */
+@@ -148,12 +139,7 @@ void native_machine_crash_shutdown(struct pt_regs *regs)
+ 	 */
+ 	cpu_crash_vmclear_loaded_vmcss();
+ 
+-	/* Booting kdump kernel with VMX or SVM enabled won't work,
+-	 * because (among other limitations) we can't disable paging
+-	 * with the virt flags.
+-	 */
+-	cpu_emergency_vmxoff();
+-	cpu_emergency_svm_disable();
++	cpu_crash_disable_virtualization();
+ 
+ 	/*
+ 	 * Disable Intel PT to stop its logging
+diff --git a/arch/x86/kernel/reboot.c b/arch/x86/kernel/reboot.c
+index fa700b46588e..f9543a4e9b09 100644
+--- a/arch/x86/kernel/reboot.c
++++ b/arch/x86/kernel/reboot.c
+@@ -528,9 +528,9 @@ static inline void kb_wait(void)
+ 	}
+ }
+ 
+-static void vmxoff_nmi(int cpu, struct pt_regs *regs)
++static void nmi_shootdown_nop(int cpu, struct pt_regs *regs)
+ {
+-	cpu_emergency_vmxoff();
++	/* Nothing to do, the NMI shootdown handler disables virtualization. */
+ }
+ 
+ /* Use NMIs as IPIs to tell all CPUs to disable virtualization */
+@@ -554,7 +554,7 @@ static void emergency_vmx_disable_all(void)
+ 		__cpu_emergency_vmxoff();
+ 
+ 		/* Halt and exit VMX root operation on the other CPUs. */
+-		nmi_shootdown_cpus(vmxoff_nmi);
++		nmi_shootdown_cpus(nmi_shootdown_nop);
+ 	}
+ }
+ 
+@@ -802,6 +802,18 @@ static nmi_shootdown_cb shootdown_callback;
+ static atomic_t waiting_for_crash_ipi;
+ static int crash_ipi_issued;
+ 
++void cpu_crash_disable_virtualization(void)
++{
++	/*
++	 * Disable virtualization, i.e. VMX or SVM, so that INIT is recognized
++	 * during reboot.  VMX blocks INIT if the CPU is post-VMXON, and SVM
++	 * blocks INIT if GIF=0.  Note, CLGI #UDs if SVM isn't enabled, so it's
++	 * easier to just disable SVM unconditionally.
++	 */
++	cpu_emergency_vmxoff();
++	cpu_emergency_svm_disable();
++}
++
+ static int crash_nmi_callback(unsigned int val, struct pt_regs *regs)
+ {
+ 	int cpu;
+@@ -819,6 +831,12 @@ static int crash_nmi_callback(unsigned int val, struct pt_regs *regs)
+ 
+ 	shootdown_callback(cpu, regs);
+ 
++	/*
++	 * Prepare the CPU for reboot _after_ invoking the callback so that the
++	 * callback can safely use virtualization instructions, e.g. VMCLEAR.
++	 */
++	cpu_crash_disable_virtualization();
++
+ 	atomic_dec(&waiting_for_crash_ipi);
+ 	/* Assume hlt works */
+ 	halt();
+@@ -840,6 +858,20 @@ void nmi_shootdown_cpus(nmi_shootdown_cb callback)
+ 	unsigned long msecs;
+ 	local_irq_disable();
+ 
++	/*
++	 * Invoking multiple callbacks is not currently supported, registering
++	 * the NMI handler twice will cause a list_add() double add BUG().
++	 * The exception is the "nop" handler in the emergency reboot path,
++	 * which can run after e.g. kdump's shootdown.  Do nothing if the crash
++	 * handler has already run, i.e. has already prepared other CPUs, the
++	 * reboot path doesn't have any work of its to do, it just needs to
++	 * ensure all CPUs have prepared for reboot.
++	 */
++	if (shootdown_callback) {
++		WARN_ON_ONCE(callback != nmi_shootdown_nop);
++		return;
++	}
++
+ 	/* Make a note of crashing cpu. Will be used in NMI callback. */
+ 	crashing_cpu = safe_smp_processor_id();
+ 
+-- 
+2.36.0.512.ge40c2bad7a-goog
 
