@@ -2,137 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 215E3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 07:50:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2E0AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 07:51:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238592AbiEKHt5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 03:49:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47048 "EHLO
+        id S235651AbiEKHu6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 03:50:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243181AbiEKHtu (ORCPT
+        with ESMTP id S234068AbiEKHux (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 03:49:50 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B7942380CE
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 00:49:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652255381; x=1683791381;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=b6gFhgmPfcp/OZxV5AdY/HulAh7d6sjI5KnIRmFjjnE=;
-  b=br4FO2HeL03j8llWkjIqTlDDbBnRMNoQmIVE6ttP1askSQsNr/LDcfrz
-   tKeHsv+WUTHAcPliV2smWSuOWbB5jfLMu5WI3ccNCLke0WvF9zw/FGhwY
-   1vGu9Xyvk6hz+q8lw7J5LQ3n1UWus1+MhD666utouinUgu91pxuCYF6uK
-   r/ePjJgT7g4MaIp6Ts5BrrAB3f5AnpiwESvdncQ5XaLdEMBetqisU1scS
-   tmfTtHakNVJz1qVagmyYkj/Oa5fLXsm4IZIbTUUz40m2iWQWk3301/06k
-   vd7AdeCOrCIa3iNgSSvCfvHe1vu0hpMIW6IzW8w4mYUSrjxAjQQyV40J6
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="269753785"
-X-IronPort-AV: E=Sophos;i="5.91,216,1647327600"; 
-   d="scan'208";a="269753785"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 00:49:41 -0700
-X-IronPort-AV: E=Sophos;i="5.91,216,1647327600"; 
-   d="scan'208";a="593991837"
-Received: from rliu1-mobl1.ccr.corp.intel.com ([10.254.213.20])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 00:49:37 -0700
-Message-ID: <68333b21a58604f3fd0e660f1a39921ae22849d8.camel@intel.com>
-Subject: Re: RFC: Memory Tiering Kernel Interfaces
-From:   "ying.huang@intel.com" <ying.huang@intel.com>
-To:     Wei Xu <weixugc@google.com>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-Cc:     Alistair Popple <apopple@nvidia.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        Wed, 11 May 2022 03:50:53 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 789B6BE0B
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 00:50:52 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id i24so1288365pfa.7
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 00:50:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=TOpiEgIVOcB5WT+3SW82dW6oiJYrSmauk2q3s83vFLY=;
+        b=GjYiH/cdcBunvwcLneFnTnTdDBF/SnRaJ9OcOMcfesIKYqQx/BCTReS/SXwkP5ZAuK
+         KtBBQl+aHtTVNQHlgfhLMAaDwx9uiilDXJIuJEW1n8qxDy0UXOBW3BkjdzBqxRoS3Ymb
+         XfWIZAaRT/pp0dt/FLpu+J+g2cU0bFBma1IYlsIpE1zbMhtbToxM3Gx7Vl1lRkAd1s3T
+         8ZvSgHSd96OOqNpjQGrdxpJ4kPwp5P7PqxjUiM46yTHg3PSGx8ma2CM4infM86N7zc21
+         LUgF+mTB3/NAoDVwNDqV/Au4D3ijEzrwW+g8sDwesW2BWYFli08oKOgN7I0jjoCOFiOa
+         D3jQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TOpiEgIVOcB5WT+3SW82dW6oiJYrSmauk2q3s83vFLY=;
+        b=0rh4vnJDZX33SFsxCUCqHB4HrPIA56UyRj4ZAfOJbeS6bqWcIXr8IbY2QbvD+R+HfT
+         fdPo4efN5gKnUC+mMIdho5TKcfS0v3JncgAXKYNYP+QYKnrh3Mv+MKU2YYPLAIJicyj4
+         om2kPWCOYx0qwIMxtXFBXX/IEYJjWVWIdTqfZCIQ4y5+YYROCfz039vE7kP6zL1Vl7cY
+         +ZTV1hXhqF42PjEprYc/Rjj5yWm0qdwtpTLiEizSjYfDs/2bjpGSeQ5jwFA/PQp94kPS
+         jS++4+vH4Kl0gpQfA5cbekztOfC9oXkZorgn5rk6F8RvzutPfhxN2/Z4aisJBXp7Yw7V
+         Er8A==
+X-Gm-Message-State: AOAM530ucZYGbIDYqusbZb5PrxGclcdl0d0UTY5ZW+Gz7DBQVYmm4XxG
+        BPxiKdn5rxvI5atth2nVXEU=
+X-Google-Smtp-Source: ABdhPJyWfCGGLnrrOVCcFuplYmh4xhOYlD6nL1apLGnsFdOkhHBpxvGTnM+WgF1ZB4sgnv6HEW8Jbw==
+X-Received: by 2002:a65:6a01:0:b0:3aa:b8:afc3 with SMTP id m1-20020a656a01000000b003aa00b8afc3mr19850719pgu.348.1652255451792;
+        Wed, 11 May 2022 00:50:51 -0700 (PDT)
+Received: from hyeyoo ([114.29.24.243])
+        by smtp.gmail.com with ESMTPSA id y19-20020a170902d65300b0015e8d4eb273sm1019850plh.189.2022.05.11.00.50.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 May 2022 00:50:50 -0700 (PDT)
+Date:   Wed, 11 May 2022 16:50:44 +0900
+From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To:     Mike Rapoport <rppt@kernel.org>
+Cc:     linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>,
+        Andy Lutomirski <luto@kernel.org>,
         Dave Hansen <dave.hansen@linux.intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Linux MM <linux-mm@kvack.org>,
-        Greg Thelen <gthelen@google.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Michal Hocko <mhocko@kernel.org>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Tim Chen <tim.c.chen@linux.intel.com>
-Date:   Wed, 11 May 2022 15:49:34 +0800
-In-Reply-To: <CAAPL-u9FvCfgA7xsqStLNZ=W03iyWBmvHrpVzPKyitsGN2v_KQ@mail.gmail.com>
-References: <CAAPL-u9sVx94ACSuCVN8V0tKp+AMxiY89cro0japtyB=xNfNBw@mail.gmail.com>
-         <CAHbLzkq1YXXLMiREpGnzhJjPssu4WpSsnkTmrLJ=hAEhZVUr9w@mail.gmail.com>
-         <CAAPL-u-r2Pc_MaHQmKKNH_icAa_fH1COWb5qSPpr8xffREQ_cQ@mail.gmail.com>
-         <87tua3h5r1.fsf@nvdebian.thelocal>
-         <CAAPL-u-0HwL6p1SA73LPfFyywG55QqE9O+q=83fhShoJAVVxyQ@mail.gmail.com>
-         <875ymerl81.fsf@nvdebian.thelocal> <87fslhhb2l.fsf@linux.ibm.com>
-         <CAAPL-u9FvCfgA7xsqStLNZ=W03iyWBmvHrpVzPKyitsGN2v_KQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        Ira Weiny <ira.weiny@intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
+        x86@kernel.org
+Subject: Re: [RFC PATCH 0/3] Prototype for direct map awareness in page
+ allocator
+Message-ID: <Yntq1IhbwjyAHTON@hyeyoo>
+References: <20220127085608.306306-1-rppt@kernel.org>
+ <YmezWeMZSRNRfXyG@hyeyoo>
+ <YmgOFa3FUUpiANMq@kernel.org>
+ <20220430134415.GA25819@ip-172-31-27-201.ap-northeast-1.compute.internal>
+ <YnCzQJk8Mu1848tG@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YnCzQJk8Mu1848tG@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-05-10 at 22:30 -0700, Wei Xu wrote:
-> On Tue, May 10, 2022 at 4:38 AM Aneesh Kumar K.V
-> <aneesh.kumar@linux.ibm.com> wrote:
-> > 
-> > Alistair Popple <apopple@nvidia.com> writes:
-> > 
-> > > Wei Xu <weixugc@google.com> writes:
+On Mon, May 02, 2022 at 09:44:48PM -0700, Mike Rapoport wrote:
+> On Sat, Apr 30, 2022 at 01:44:16PM +0000, Hyeonggon Yoo wrote:
+> > On Tue, Apr 26, 2022 at 06:21:57PM +0300, Mike Rapoport wrote:
+> > > Hello Hyeonggon,
 > > > 
-> > > > On Thu, May 5, 2022 at 5:19 PM Alistair Popple <apopple@nvidia.com> wrote:
+> > > On Tue, Apr 26, 2022 at 05:54:49PM +0900, Hyeonggon Yoo wrote:
+> > > > On Thu, Jan 27, 2022 at 10:56:05AM +0200, Mike Rapoport wrote:
+> > > > > From: Mike Rapoport <rppt@linux.ibm.com>
 > > > > > 
-> > > > > Wei Xu <weixugc@google.com> writes:
+> > > > > Hi,
 > > > > > 
-> > > > > [...]
-> > > > > 
-> > > > > > > > 
-> > > > > > > > 
-> > > > > > > > Tiering Hierarchy Initialization
-> > > > > > > > `=============================='
-> > > > > > > > 
-> > > > > > > > By default, all memory nodes are in the top tier (N_TOPTIER_MEMORY).
-> > > > > > > > 
-> > > > > > > > A device driver can remove its memory nodes from the top tier, e.g.
-> > > > > > > > a dax driver can remove PMEM nodes from the top tier.
-> > > > > > > 
-> > > > > > > With the topology built by firmware we should not need this.
-> > > > > 
-> > > > > I agree that in an ideal world the hierarchy should be built by firmware based
-> > > > > on something like the HMAT. But I also think being able to override this will be
-> > > > > useful in getting there. Therefore a way of overriding the generated hierarchy
-> > > > > would be good, either via sysfs or kernel boot parameter if we don't want to
-> > > > > commit to a particular user interface now.
-> > > > > 
-> > > > > However I'm less sure letting device-drivers override this is a good idea. How
-> > > > > for example would a GPU driver make sure it's node is in the top tier? By moving
-> > > > > every node that the driver does not know about out of N_TOPTIER_MEMORY? That
-> > > > > could get messy if say there were two drivers both of which wanted their node to
-> > > > > be in the top tier.
+> > > > > This is a second attempt to make page allocator aware of the direct map
+> > > > > layout and allow grouping of the pages that must be mapped at PTE level in
+> > > > > the direct map.
+> > > > >
 > > > > 
-> > > > The suggestion is to allow a device driver to opt out its memory
-> > > > devices from the top-tier, not the other way around.
-> > > 
-> > > So how would demotion work in the case of accelerators then? In that
-> > > case we would want GPU memory to demote to DRAM, but that won't happen
-> > > if both DRAM and GPU memory are in N_TOPTIER_MEMORY and it seems the
-> > > only override available with this proposal would move GPU memory into a
-> > > lower tier, which is the opposite of what's needed there.
+> > > > Hello mike, It may be a silly question...
+> > > > 
+> > > > Looking at implementation of set_memory*(), they only split
+> > > > PMD/PUD-sized entries. But why not _merge_ them when all entries
+> > > > have same permissions after changing permission of an entry?
+> > > > 
+> > > > I think grouping __GFP_UNMAPPED allocations would help reducing
+> > > > direct map fragmentation, but IMHO merging split entries seems better
+> > > > to be done in those helpers than in page allocator.
+> > >
+> > > Maybe, I didn't got as far as to try merging split entries in the direct
+> > > map.  IIRC, Kirill sent a patch for collapsing huge pages in the direct map
+> > > some time ago, but there still was something that had to initiate the
+> > > collapse.
 > > 
-> > How about we do 3 tiers now. dax kmem devices can be registered to
-> > tier 3. By default all numa nodes can be registered at tier 2 and HBM or
-> > GPU can be enabled to register at tier 1. ?
+> > But in this case buddy allocator's view of direct map is quite limited.
+> > It cannot merge 2M entries to 1G entry as it does not support
+> > big allocations. Also it cannot merge entries of pages freed in boot process
+> > as they weren't allocated from page allocator.
+> > 
+> > And it will become harder when pages in MIGRATE_UNMAPPED is borrowed
+> > from another migrate type....
+> > 
+> > So it would be nice if we can efficiently merge mappings in
+> > change_page_attr_set(). this approach can handle cases above.
+> > 
+> > I think in this case grouping allocations and merging mappings
+> > should be done separately.
 > 
-> This makes sense.  I will send an updated RFC based on the discussions so far.
+> I've added the provision to merge the mappings in __free_one_page() because
+> at that spot we know for sure we can replace multiple PTEs with a single
+> PMD.
+> 
+> I'm not saying there should be no additional mechanism for collapsing
+> direct map pages, but I don't know when and how it should be invoked.
+>
 
-Are these tier number fixed?  If so, it appears strange that the
-smallest tier number is 0 on some machines, but 1 on some other
-machines.
+I'm still thinking about a way to accurately track number of split
+pages - because tracking number of split pages only in CPA code may be
+inaccurate when kernel page table is changed outside CPA.
 
-Best Regards,
-Huang, Ying
+In case you wonder, my code is available at:
+https://github.com/hygoni/linux/tree/merge-mapping-v1r3
 
+it also adds vmstat items:
+	# cat /proc/vmstat | grep direct_map
+	direct_map_level2_splits 1079
+	direct_map_level3_splits 6
+	direct_map_level1_merges 1079
+	direct_map_level2_merges 6
 
+Thanks,
+Hyeonggon
+
+> > > > For example:
+> > > > 	1) set_memory_ro() splits 1 RW PMD entry into 511 RW PTE
+> > > > 	entries and 1 RO PTE entry.
+> > > > 
+> > > > 	2) before freeing the pages, we call set_memory_rw() and we have
+> > > > 	512 RW PTE entries. Then we can merge it to 1 RW PMD entry.
+> > > 
+> > > For this we need to check permissions of all 512 pages to make sure we can
+> > > use a PMD entry to map them.
+> > 
+> > Of course that may be slow. Maybe one way to optimize this is using some bits
+> > in struct page, something like: each bit of page->direct_map_split (unsigned long)
+> > is set when at least one entry in (PTRS_PER_PTE = 512)/(BITS_PER_LONG = 64) = 8 entries
+> > has special permissions.
+> > 
+> > Then we just need to set the corresponding bit when splitting mappings and
+> > iterate 8 entries when changing permission back again. (and then unset the bit when 8 entries has
+> > usual permissions). we can decide to merge by checking if page->direct_map_split is zero.
+> > 
+> > When scanning, 8 entries would fit into one cacheline.
+> > 
+> > Any other ideas?
+> > 
+> > > Not sure that doing the scan in each set_memory call won't cause an overall
+> > > slowdown.
+> > 
+> > I think we can evaluate it by measuring boot time and bpf/module
+> > load/unload time.
+> > 
+> > Is there any other workload that is directly affected
+> > by performance of set_memory*()?
+> > 
+> > > > 	3) after 2) we can do same thing about PMD-sized entries
+> > > > 	and merge them into 1 PUD entry if 512 PMD entries have
+> > > > 	same permissions.
+> > > > [...]
+> > > > > Mike Rapoport (3):
+> > > > >   mm/page_alloc: introduce __GFP_UNMAPPED and MIGRATE_UNMAPPED
+> > > > >   mm/secretmem: use __GFP_UNMAPPED to allocate pages
+> > > > >   EXPERIMENTAL: x86/module: use __GFP_UNMAPPED in module_alloc
+> > > > -- 
+> > > > Thanks,
+> > > > Hyeonggon
+> > > 
+> > > -- 
+> > > Sincerely yours,
+> > > Mike.
+> 
+> -- 
+> Sincerely yours,
+> Mike.
+
+-- 
+Thanks,
+Hyeonggon
