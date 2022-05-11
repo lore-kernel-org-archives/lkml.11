@@ -2,166 +2,271 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53C77C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 12:17:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F385C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 12:18:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241824AbiEKMR5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 08:17:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53130 "EHLO
+        id S242028AbiEKMSB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 08:18:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241889AbiEKMRs (ORCPT
+        with ESMTP id S241611AbiEKMRu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 08:17:48 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDFEA4EF41;
-        Wed, 11 May 2022 05:17:41 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id gj17-20020a17090b109100b001d8b390f77bso4785687pjb.1;
-        Wed, 11 May 2022 05:17:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=6jloxkDrIBx1FQXB3WO3Zmzcd3Q83JGcMWSxebzbF80=;
-        b=oU7QGwSElhyci8ZR/OTe9HHc5yH5oBDGLYBqdFuGP0A+UntWW+o126T+puwM3gGQaa
-         s8eH+vRmefjW0g9a2Ld4jCTmsADSpVHsyopJw+86eX97RIJVO3ucW+e+tLOJJmhDdZTW
-         RV+FZFJAbM0gbfYxUpn86RCEy/gt5mq0YZBclMJGrwklm7ecn0L4M2eLm0WRZQnZSILt
-         HmrRTUfFcgUueejhcV96JGCweuRkh4YtPylbiTUDPezsvbnL9MH3jHvL7x9upNuWPH5x
-         GTxrVTheyp2VgmmZy5FhNOWBP0e1+5Be8X2g9poc544EzW8f900YlCQk1RKHeJokUzDw
-         Ij4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=6jloxkDrIBx1FQXB3WO3Zmzcd3Q83JGcMWSxebzbF80=;
-        b=L3+7q9/bX7qiAG5UsKRHhSrbd6X4+KAegtT2P9F0DOrfLkovjKk8MOHp7DkseDJn/w
-         05bCtkhl3xuQ8VdRV8BaFhoeIc0LOaU+42gEA9S+TCdO6IbHmElsw5GZZukIJEvUT+Jo
-         +71JEk7P4ddxhe+vbClekaIXXLsHoe45JC3FEdhAv+SloPHDfdAtMqxdblmbajxt5ooC
-         m317e4o8iFQL5fkAhDJ+EyOl/wjIE9hrcitYCNMQQCdC4KfoGT2Ra5T3V3A/FOjJtfHy
-         c3QPXI8oqN6zJjnmOYrK8tVjufQyZ7vD6EbdYvjNiXnYY+b4hI+UPKqHcXEmgcw1NSl9
-         UeEg==
-X-Gm-Message-State: AOAM532Wvr+S1BRqYt5FPhLwFtiImqpM7vE/Bb5GgnvBwfD0tFyOvEEj
-        b17EIFjNQoAGxWOhheLhbn8=
-X-Google-Smtp-Source: ABdhPJxPUIzteam2t9wDpHP6nr06rCewsN5+gC9SkiHTFRp8pdZVPv3cYpJfFGaF/VpS85E2BKIFXA==
-X-Received: by 2002:a17:902:9349:b0:158:a6f7:e280 with SMTP id g9-20020a170902934900b00158a6f7e280mr24853463plp.155.1652271461237;
-        Wed, 11 May 2022 05:17:41 -0700 (PDT)
-Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
-        by smtp.gmail.com with ESMTPSA id v24-20020a170902e8d800b0015e8d4eb272sm1676730plg.188.2022.05.11.05.17.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 05:17:40 -0700 (PDT)
-Date:   Wed, 11 May 2022 21:17:38 +0900
-From:   Stafford Horne <shorne@gmail.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Mikulas Patocka <mpatocka@redhat.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        device-mapper development <dm-devel@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Mike Snitzer <msnitzer@redhat.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Milan Broz <gmazyland@gmail.com>
-Subject: Re: [PATCH v2] hex2bin: make the function hex_to_bin constant-time
-Message-ID: <YnupYin9knBu6c91@antec>
-References: <YnJI4Ru0AlUgrr9C@zx2c4.com>
- <YnJOCbLtdATzC+jn@zx2c4.com>
- <YnJQXr3igEMTqY3+@smile.fi.intel.com>
- <YnJSQ3jJyvhmIstD@zx2c4.com>
- <CAHk-=wgb_eBdjM_mzEvXfRG2EhrSK5MHNGyAj7=4vxvN4U9Rug@mail.gmail.com>
- <CAHmME9q_-nfGxp8_VCqaritm4N8v8g67AzRjXs9du846JhhpoQ@mail.gmail.com>
- <CAAfxs77yaLvWx9KnkDZX7E1eDm9N-NVJn5n8=mCK9BU-cSob=A@mail.gmail.com>
- <CAHk-=wjLRo-6PbhbvMUDojbMo=L+2jc5VpCYTyF-LGxZPhUngA@mail.gmail.com>
- <YnLkYjOF2vEOdjOo@antec>
- <YncQxl1shpH5TpbK@antec>
+        Wed, 11 May 2022 08:17:50 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9CC251325
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 05:17:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652271466; x=1683807466;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Wq5AgkD3c2Ft7Ghx/FLA5zagMyM7Ruibcw3V4PH7YoM=;
+  b=EP4PJN9ScOllI4Mn/2IKdHK5G/dBddeF+/fStrl3c/3jRnYvy3rpos3G
+   Z7nvKTfdn7gcdX/k0819FeZhnaioxyaM/uZZk2fX9yL85dclbSYXVqoj9
+   mSsM6nxjEt2KEAAONWtb5ZD3g7CJim2sUur58ZJc1f2UpGmqcbqlHhxh6
+   WiFkiWdkKh6HyXn4DH1dFydq+SFlMEw5mrh2XLM+vehDLg3DriSfHezvn
+   ivBhgkC+LipE5AOEWsdQVR6JHdHxhYaYJDt0aN12qrDQAvYimd/pYFmuu
+   a7n8tDTJFlmpsd+wpJdJQk3yGz7zJZxECZWrj8idblNR8TWduCTAxIN/r
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="250209660"
+X-IronPort-AV: E=Sophos;i="5.91,217,1647327600"; 
+   d="scan'208";a="250209660"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 05:17:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,217,1647327600"; 
+   d="scan'208";a="520494741"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 11 May 2022 05:17:44 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nolHj-000J5O-WA;
+        Wed, 11 May 2022 12:17:44 +0000
+Date:   Wed, 11 May 2022 20:17:26 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Allison Henderson <allison.henderson@oracle.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Dave Chinner <dchinner@redhat.com>
+Subject: [allisonhenderson-xfs-work:larp_cleanupv4_pptrs 28/35]
+ fs/xfs/libxfs/xfs_attr.c:709:18: warning: unused variable 'forkoff'
+Message-ID: <202205112055.mIusyY2I-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YncQxl1shpH5TpbK@antec>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 08, 2022 at 09:37:26AM +0900, Stafford Horne wrote:
-> On Thu, May 05, 2022 at 05:38:58AM +0900, Stafford Horne wrote:
-> > On Wed, May 04, 2022 at 01:10:03PM -0700, Linus Torvalds wrote:
-> > > On Wed, May 4, 2022 at 12:58 PM Stafford Horne <shorne@gmail.com> wrote:
-> > > >
-> > > > I have uploaded a diff I created here:
-> > > >   https://gist.github.com/54334556f2907104cd12374872a0597c
-> > > >
-> > > > It shows the same output.
-> > > 
-> > > In hex_to_bin itself it seems to only be a difference due to some
-> > > register allocation (r19 and r3 switched around).
-> > > 
-> > > But then it gets inlined into hex2bin and there changes there seem to
-> > > be about instruction and basic block scheduling, so it's a lot harder
-> > > to see what's going on.
-> > > 
-> > > And a lot of constant changes, which honestly look just like code code
-> > > moved around by 16 bytes and offsets changed due to that.
-> > > 
-> > > So I doubt it's hex_to_bin() that is causing problems, I think it's
-> > > purely code movement. Which explains why adding a nop or a fake printk
-> > > fixes things.
-> > > 
-> > > Some alignment assumption that got broken?
-> > 
-> > This is what it looks like to me too.  I will have to do a deep dive on what is
-> > going on with this particular build combination as I can't figure out what it is
-> > off the top of my head.
-> > 
-> > This test is using a gcc 11 compiler, I tried with my gcc 12 toolchain and the
-> > issue cannot be reproduced.
-> > 
-> >   - musl gcc 11 - https://musl.cc/or1k-linux-musl-cross.tgz
-> >   - openrisc gcc 12 - https://github.com/openrisc/or1k-gcc/releases/tag/or1k-12.0.1-20220210-20220304
-> > 
-> > But again the difference between the two compiler outputs is a lot of register
-> > allocation and offsets changes.  Its not easy to see anything that stands out.
-> > I checked the change log for the openrisc specific changes from gcc 11 to gcc
-> > 12.  Nothing seems to stand out, mcount profiler fix for PIC, a new large binary
-> > link flag.
-> 
-> Hello,
-> 
-> Just an update on this.  The issue so far has been traced to the alignment of
-> the crypto multiplication function fe_mul_impl in lib/crypto/curve25519-fiat32.c.
-> 
-> This patch e5be15767e7e ("hex2bin: make the function hex_to_bin constant-time")
-> allowed for the alignment to be just right to cause the failure.  Without
-> this patch and forcing the alignment we can reproduce the issue.  So though the
-> bisect is correct, this patch is not the root cause of the issue.
-> 
-> Using some l.nop sliding techniques and some strategically placed .align
-> statements I have been able to reproduce the issue on:
-> 
->   - gcc 11 and gcc 12
->   - preempt and non-preempt kernels
-> 
-> I have not been able to reproduce this on my FPGA, so far only QEMU.  My
-> hunch now is that since the fe_mul_impl function contains some rather long basic
-> blocks it appears that timer interrupts that interrupt qemu mid basic block
-> execution somehow is causing this.  The hypothesis is it may be basic block
-> resuming behavior in qemu that causes incosistent behavior.
-> 
-> It will take a bit more time to trace this.  Since I maintain OpenRISC QEMU the
-> issue is on me.
-> 
-> Again, It's safe to say that patch e5be15767e7e ("hex2bin: make the function
-> hex_to_bin constant-time") is not an issue.
+tree:   https://github.com/allisonhenderson/xfs_work.git larp_cleanupv4_pptrs
+head:   3d7771d8177638d5d115404cbee0b9a77cf0bb4c
+commit: d8a025407f7fa54df7d250ae011fdd0d9223efa4 [28/35] xfs: parent pointer attribute creation
+config: x86_64-randconfig-a003-20220509 (https://download.01.org/0day-ci/archive/20220511/202205112055.mIusyY2I-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 18dd123c56754edf62c7042dcf23185c3727610f)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/allisonhenderson/xfs_work/commit/d8a025407f7fa54df7d250ae011fdd0d9223efa4
+        git remote add allisonhenderson-xfs-work https://github.com/allisonhenderson/xfs_work.git
+        git fetch --no-tags allisonhenderson-xfs-work larp_cleanupv4_pptrs
+        git checkout d8a025407f7fa54df7d250ae011fdd0d9223efa4
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash fs/xfs/
 
-This issue has been fixed.  I sent a patch to QEMU for it:
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
- - https://lore.kernel.org/qemu-devel/20220511120541.2242797-1-shorne@gmail.com/T/#u
+All warnings (new ones prefixed by >>):
 
-The issue was a bug in the OpenRISC emulation in QEMU which was triggered when
-receiving a TICK TIMER interrupt, in a delay slot, on a page boundary.
+>> fs/xfs/libxfs/xfs_attr.c:709:18: warning: unused variable 'forkoff' [-Wunused-variable]
+           int                             sf_size, forkoff, error = 0;
+                                                    ^
+>> fs/xfs/libxfs/xfs_attr.c:708:20: warning: unused variable 'bp' [-Wunused-variable]
+           struct xfs_buf                  *bp = NULL;
+                                            ^
+>> fs/xfs/libxfs/xfs_attr.c:707:21: warning: unused variable 'dp' [-Wunused-variable]
+           struct xfs_inode                *dp = args->dp;
+                                            ^
+>> fs/xfs/libxfs/xfs_attr.c:710:21: warning: unused variable 'mp' [-Wunused-variable]
+           struct xfs_mount                *mp = args->dp->i_mount;
+                                            ^
+   fs/xfs/libxfs/xfs_attr.c:723:2: warning: unannotated fall-through between switch labels [-Wimplicit-fallthrough]
+           case XFS_DAS_SF_ADD:
+           ^
+   fs/xfs/libxfs/xfs_attr.c:723:2: note: insert '__attribute__((fallthrough));' to silence this warning
+           case XFS_DAS_SF_ADD:
+           ^
+           __attribute__((fallthrough)); 
+   fs/xfs/libxfs/xfs_attr.c:723:2: note: insert 'break;' to avoid fall-through
+           case XFS_DAS_SF_ADD:
+           ^
+           break; 
+   5 warnings generated.
 
-The fix was simple enough, but investigation took quite some work.
 
-Thanks,
+vim +/forkoff +709 fs/xfs/libxfs/xfs_attr.c
 
--Stafford
+   693	
+   694	/*
+   695	 * Run the attribute operation specified in @attr.
+   696	 *
+   697	 * This routine is meant to function as a delayed operation and will set the
+   698	 * state to XFS_DAS_DONE when the operation is complete.  Calling functions will
+   699	 * need to handle this, and recall the function until either an error or
+   700	 * XFS_DAS_DONE is detected.
+   701	 */
+   702	int
+   703	xfs_attr_set_iter(
+   704		struct xfs_attr_item		*attr)
+   705	{
+   706		struct xfs_da_args              *args = attr->xattri_da_args;
+ > 707		struct xfs_inode		*dp = args->dp;
+ > 708		struct xfs_buf			*bp = NULL;
+ > 709		int				sf_size, forkoff, error = 0;
+ > 710		struct xfs_mount		*mp = args->dp->i_mount;
+   711	
+   712	
+   713		/* State machine switch */
+   714	next_state:
+   715		switch (attr->xattri_dela_state) {
+   716		case XFS_DAS_UNINIT:
+   717			sf_size = sizeof(struct xfs_attr_sf_hdr) +
+   718				  xfs_attr_sf_entsize_byname(args->namelen,
+   719								     args->valuelen);
+   720			xfs_bmap_set_attrforkoff(args->dp, sf_size, NULL);
+   721			args->dp->i_afp = kmem_cache_zalloc(xfs_ifork_cache, 0);
+   722			args->dp->i_afp->if_format = XFS_DINODE_FMT_EXTENTS;
+   723		case XFS_DAS_SF_ADD:
+   724			return xfs_attr_sf_addname(attr);
+   725		case XFS_DAS_LEAF_ADD:
+   726			return xfs_attr_leaf_addname(attr);
+   727		case XFS_DAS_NODE_ADD:
+   728			return xfs_attr_node_addname(attr);
+   729	
+   730		case XFS_DAS_SF_REMOVE:
+   731			error = xfs_attr_sf_removename(args);
+   732			attr->xattri_dela_state = xfs_attr_complete_op(attr,
+   733							xfs_attr_init_add_state(args));
+   734			break;
+   735		case XFS_DAS_LEAF_REMOVE:
+   736			error = xfs_attr_leaf_removename(args);
+   737			attr->xattri_dela_state = xfs_attr_complete_op(attr,
+   738							xfs_attr_init_add_state(args));
+   739			break;
+   740		case XFS_DAS_NODE_REMOVE:
+   741			error = xfs_attr_node_removename_setup(attr);
+   742			if (error == -ENOATTR &&
+   743			    (args->op_flags & XFS_DA_OP_RECOVERY)) {
+   744				attr->xattri_dela_state = xfs_attr_complete_op(attr,
+   745							xfs_attr_init_add_state(args));
+   746				error = 0;
+   747				break;
+   748			}
+   749			if (error)
+   750				return error;
+   751			attr->xattri_dela_state = XFS_DAS_NODE_REMOVE_RMT;
+   752			if (args->rmtblkno == 0)
+   753				attr->xattri_dela_state++;
+   754			break;
+   755	
+   756		case XFS_DAS_LEAF_SET_RMT:
+   757		case XFS_DAS_NODE_SET_RMT:
+   758			error = xfs_attr_rmtval_find_space(attr);
+   759			if (error)
+   760				return error;
+   761			attr->xattri_dela_state++;
+   762			fallthrough;
+   763	
+   764		case XFS_DAS_LEAF_ALLOC_RMT:
+   765		case XFS_DAS_NODE_ALLOC_RMT:
+   766			error = xfs_attr_rmtval_alloc(attr);
+   767			if (error)
+   768				return error;
+   769			if (attr->xattri_dela_state == XFS_DAS_DONE)
+   770				break;
+   771			goto next_state;
+   772	
+   773		case XFS_DAS_LEAF_REPLACE:
+   774		case XFS_DAS_NODE_REPLACE:
+   775			/*
+   776			 * We must "flip" the incomplete flags on the "new" and "old"
+   777			 * attribute/value pairs so that one disappears and one appears
+   778			 * atomically.
+   779			 */
+   780			error = xfs_attr3_leaf_flipflags(args);
+   781			if (error)
+   782				return error;
+   783			/*
+   784			 * We must commit the flag value change now to make it atomic
+   785			 * and then we can start the next trans in series at REMOVE_OLD.
+   786			 */
+   787			attr->xattri_dela_state++;
+   788			break;
+   789	
+   790		case XFS_DAS_LEAF_REMOVE_OLD:
+   791		case XFS_DAS_NODE_REMOVE_OLD:
+   792			/*
+   793			 * If we have a remote attr, start the process of removing it
+   794			 * by invalidating any cached buffers.
+   795			 *
+   796			 * If we don't have a remote attr, we skip the remote block
+   797			 * removal state altogether with a second state increment.
+   798			 */
+   799			xfs_attr_restore_rmt_blk(args);
+   800			if (args->rmtblkno) {
+   801				error = xfs_attr_rmtval_invalidate(args);
+   802				if (error)
+   803					return error;
+   804			} else {
+   805				attr->xattri_dela_state++;
+   806			}
+   807	
+   808			attr->xattri_dela_state++;
+   809			goto next_state;
+   810	
+   811		case XFS_DAS_LEAF_REMOVE_RMT:
+   812		case XFS_DAS_NODE_REMOVE_RMT:
+   813			error = xfs_attr_rmtval_remove(attr);
+   814			if (error == -EAGAIN) {
+   815				error = 0;
+   816				break;
+   817			}
+   818			if (error)
+   819				return error;
+   820	
+   821			/*
+   822			 * We've finished removing the remote attr blocks, so commit the
+   823			 * transaction and move on to removing the attr name from the
+   824			 * leaf/node block. Removing the attr might require a full
+   825			 * transaction reservation for btree block freeing, so we
+   826			 * can't do that in the same transaction where we removed the
+   827			 * remote attr blocks.
+   828			 */
+   829			attr->xattri_dela_state++;
+   830			break;
+   831	
+   832		case XFS_DAS_LEAF_REMOVE_ATTR:
+   833			error = xfs_attr_leaf_remove_attr(attr);
+   834			attr->xattri_dela_state = xfs_attr_complete_op(attr,
+   835							xfs_attr_init_add_state(args));
+   836			break;
+   837	
+   838		case XFS_DAS_NODE_REMOVE_ATTR:
+   839			error = xfs_attr_node_remove_attr(attr);
+   840			if (!error)
+   841				error = xfs_attr_leaf_shrink(args);
+   842			attr->xattri_dela_state = xfs_attr_complete_op(attr,
+   843							xfs_attr_init_add_state(args));
+   844			break;
+   845		default:
+   846			ASSERT(0);
+   847			break;
+   848		}
+   849	
+   850		trace_xfs_attr_set_iter_return(attr->xattri_dela_state, args->dp);
+   851		return error;
+   852	}
+   853	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
