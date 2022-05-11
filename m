@@ -2,130 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A74DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 07:16:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A239C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 07:18:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242743AbiEKHQ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 03:16:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45788 "EHLO
+        id S242745AbiEKHSd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 03:18:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241184AbiEKHQu (ORCPT
+        with ESMTP id S232103AbiEKHSa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 03:16:50 -0400
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDAEF66AFE;
-        Wed, 11 May 2022 00:16:47 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 2F5AF1C0002;
-        Wed, 11 May 2022 07:16:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1652253406;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fOqxb4Qu9rmih6DzG9zt5c/lYLp6jBz4NYLyC5x7wow=;
-        b=BzgOuVt+7Zca6d+dNLk2gWvrAkAqOfykz9eziVZyd3Z9zJzIwFb2oIETTedQIGbTi6y4sg
-        5Ska0+kn3yD2mX3EOatDjrPVRqosF9cWc8TqaStubN2zIj04GVmiY3J3yLZ85Hw/0W9Glz
-        iYs5UgjNHwcyWrRXrp0N1JNc2K9c2uXetfAz/X+T8Zhgbk5CC4vHdm3R2ckSPZ5euvDjDX
-        hGkO28k69Fs264A8+2uJhsNLNFwgoD8LCq5GavzW0yQgRYtMZIByxNKLPWJA6tHRCiOz7A
-        iaBIrElYm74U2o+vlc1PkgcTQZ9lWGzdvKWorcZF4M28rQCr1xrQ2/ma4mHWqA==
-Date:   Wed, 11 May 2022 09:16:43 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Mikhail Zhilkin <csharper2005@gmail.com>
-Cc:     Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        NOGUCHI Hiroshi <drvlabo@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Karim <Karimdplay@gmail.com>, M <x1@disroot.org>,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH] mtd: parsers: add support for Sercomm partitions
-Message-ID: <20220511091643.064f9d13@xps13>
-In-Reply-To: <ede9e050-3b60-ba0e-c626-044f7825adb7@gmail.com>
-References: <20220329122016.4122899-1-csharper2005@gmail.com>
-        <20220330100958.57dc4d61@xps13>
-        <ede9e050-3b60-ba0e-c626-044f7825adb7@gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Wed, 11 May 2022 03:18:30 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24931E15EA;
+        Wed, 11 May 2022 00:18:28 -0700 (PDT)
+Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KymTK6TpYzbngy;
+        Wed, 11 May 2022 15:17:57 +0800 (CST)
+Received: from huawei.com (10.175.112.208) by dggpeml500024.china.huawei.com
+ (7.185.36.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 11 May
+ 2022 15:18:25 +0800
+From:   Yuan Can <yuancan@huawei.com>
+To:     <linux-rtc@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <a.zummo@towertech.it>,
+        <alexandre.belloni@bootlin.com>, <yuancan@huawei.com>,
+        <linkmauve@linkmauve.fr>
+Subject: [PATCH] rtc: gamecube: Add missing iounmap in gamecube_rtc_read_offset_from_sram
+Date:   Wed, 11 May 2022 07:13:54 +0000
+Message-ID: <20220511071354.46202-1-yuancan@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.208]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpeml500024.china.huawei.com (7.185.36.10)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mikhail,
+The hw_srnprot needs to be unmapped when gamecube_rtc_read_offset_from_sram returns.
 
-csharper2005@gmail.com wrote on Tue, 10 May 2022 23:07:23 +0300:
+Fixs: 86559400b3ef9d (rtc: gamecube: Add a RTC driver for the GameCube, Wii and Wii U)
+Signed-off-by: Yuan Can <yuancan@huawei.com>
+---
+ drivers/rtc/rtc-gamecube.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> Hi Miquel,
->=20
-> On 3/30/2022 11:09 AM, Miquel Raynal wrote:
-> > Hi Mikhail,
-> >
-> > csharper2005@gmail.com wrote on Tue, 29 Mar 2022 12:20:16 +0000:
-> > =20
-> >> This adds an MTD partition parser for the Sercomm partition table that
-> >> is used in some Beeline, Netgear and Sercomm routers.
-> >>
-> >> The Sercomm partition map table contains real partition offsets, which
-> >> may differ from device to device depending on the number and location =
-of
-> >> bad blocks on NAND.
-> >>
-> >> Device tree example:
-> >> partitions {
-> >> 	compatible =3D "sercomm,sc-partitions", "fixed-partitions";
-> >> 	#address-cells =3D <1>;
-> >> 	#size-cells =3D <1>;
-> >>
-> >> 	partition@0 {
-> >> 		label =3D "u-boot";
-> >> 		reg =3D <0x0 0x100000>;
-> >> 		scpart-id =3D <0>;
-> >> 		read-only;
-> >> 	};
-> >> }; =20
-> > You'll need a DT binding patch and Rob's ack! =20
->=20
-> I hope that I near to finish with DT binding...
->=20
-> Link:
-> https://lore.kernel.org/all/20220510162314.20810-1-csharper2005@gmail.com/
->=20
-> Link:
-> https://lore.kernel.org/all/20220510162403.20861-1-csharper2005@gmail.com/
->=20
-> >> This is essentially the same code as proposed by NOGUCHI Hiroshi
-> >> <drvlabo@gmail.com> here: =20
-> > I would credit Hiroshi with a Suggested-by at least =20
->=20
-> I read submitting patches rules again and thought that Signed-off-by is
-> suitable for this case. Is this ok?
+diff --git a/drivers/rtc/rtc-gamecube.c b/drivers/rtc/rtc-gamecube.c
+index 18ca3b38b2d0..c2717bb52b2b 100644
+--- a/drivers/rtc/rtc-gamecube.c
++++ b/drivers/rtc/rtc-gamecube.c
+@@ -267,6 +267,7 @@ static int gamecube_rtc_read_offset_from_sram(struct priv *d)
+ 	ret = regmap_read(d->regmap, RTC_SRAM_BIAS, &d->rtc_bias);
+ 	if (ret) {
+ 		pr_err("failed to get the RTC bias\n");
++		iounmap(hw_srnprot);
+ 		return -1;
+ 	}
+ 
+-- 
+2.17.1
 
-Either you take his work almost like it is and he must be the author
-*and* the first signed-off-by line, or you take the authorship if you
-think you did enough modifications to the code and in this case you can
-either credit him with a suggested-by before your signed-off, or you
-can credit him with a co-developed-by + his signed-off and then yours.
-
->=20
-> Link:
-> https://lore.kernel.org/all/20220510162655.21011-1-csharper2005@gmail.com/
->=20
-> >> https://github.com/openwrt/openwrt/pull/1318#issuecomment-420607394 =20
-> > And use a Link: tag for this.
-> > =20
-> Fixed, thanks!
->=20
-> Link:
-> https://lore.kernel.org/all/20220510162655.21011-1-csharper2005@gmail.com/
->=20
-> > Thanks,
-> > Miqu=C3=A8l =20
-
-
-Thanks,
-Miqu=C3=A8l
