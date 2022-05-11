@@ -2,72 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF3EBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 06:45:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5364CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 06:46:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242323AbiEKGpZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 02:45:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44284 "EHLO
+        id S242304AbiEKGqV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 02:46:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240497AbiEKGpR (ORCPT
+        with ESMTP id S231364AbiEKGqT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 02:45:17 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21EF71FD845;
-        Tue, 10 May 2022 23:45:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 4BDF1CE22C4;
-        Wed, 11 May 2022 06:45:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2242C385DB;
-        Wed, 11 May 2022 06:45:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1652251512;
-        bh=Fx2QMCjEWeZ49x9y9ggLcnUsS1BY3UQodV4PGmGBX8c=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OC8eDHtpnhpd1T5hhiDvGvZjuDaefTo3FWKpw8wMrsbbjeLLK8SUI4b2GTl89obOc
-         QOTRQNGbaXzWhU2PyWm7l70mAwcEb5yQbVFOR5OgGmJtkx3WJHkCV3Rmt5ReSiz1LW
-         3ETwi0xVb8HNKR9L/QyeqZSfoQLHBv2oWeYBOUt8=
-Date:   Wed, 11 May 2022 08:45:09 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        zbr@ioremap.net, jdelvare@suse.com, linux@roeck-us.net
-Subject: Re: [PATCH -next] drivers: w1: use kfree_sensitive()
-Message-ID: <YntbdfHLjeHzAb9/@kroah.com>
-References: <20220511064954.3401381-1-yangyingliang@huawei.com>
+        Wed, 11 May 2022 02:46:19 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FE5E2EA39
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 23:46:16 -0700 (PDT)
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24B4hxSG021004;
+        Wed, 11 May 2022 08:45:56 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : subject
+ : from : to : cc : in-reply-to : references : content-type :
+ content-transfer-encoding : date : mime-version; s=selector1;
+ bh=9YYnwNfMMp9aQpgH4lmO552ifYtlfvbBnjgFiJluffU=;
+ b=cxDlvgTRxykxPoFoXt2jquDUKz3zJrNbAYkJFegkgL+zwXF6sA51FRSnYjQt5AWGA0/n
+ pDopkqerMw3z2hAComH3g8i8Ql56TSj7ukGM7lNvGwAvZXEgt/2WB9Fy1f0hGWV2jf07
+ yyWV4MSssrmhKrjjb21j4RiVf0sDpsn69upFZM4hueqoxQhZ1hnXWjhhi+x8WI3llclo
+ s9IorcdMgaQZxSUYtUt9ttw8RuOfS9qjWM1mzMHFltnM36ZaepZriFtuZD+Z5+nJ+AAm
+ KvkguFN0TUL+D1jwMPWqcl03189Z4HXcgamzKodZ61wy3J4B6NhyCGEkMWStDcjOzCfi Tg== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3fwe6kw5ak-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 11 May 2022 08:45:56 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 30F2410002A;
+        Wed, 11 May 2022 08:45:56 +0200 (CEST)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 277A020FA2D;
+        Wed, 11 May 2022 08:45:56 +0200 (CEST)
+Received: from [192.168.8.15] (10.75.127.45) by SFHDAG2NODE2.st.com
+ (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Wed, 11 May
+ 2022 08:45:54 +0200
+Message-ID: <05d9a88de4a7c415545043fab1e577e7f6151b8c.camel@foss.st.com>
+Subject: Re: [PATCH 1/7] irqchip/stm32-exti: set_affinity return
+ IRQ_SET_MASK_OK_DONE if no parent
+From:   Antonio Borneo <antonio.borneo@foss.st.com>
+To:     Marc Zyngier <maz@kernel.org>
+CC:     Thomas Gleixner <tglx@linutronix.de>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Ludovic Barre <ludovic.barre@foss.st.com>,
+        Loic Pallardy <loic.pallardy@foss.st.com>,
+        Pascal Paillet <p.paillet@foss.st.com>
+In-Reply-To: <878rr96xuo.wl-maz@kernel.org>
+References: <20220510164123.557921-1-antonio.borneo@foss.st.com>
+         <878rr96xuo.wl-maz@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Date:   Wed, 11 May 2022 08:39:43 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220511064954.3401381-1-yangyingliang@huawei.com>
+User-Agent: Evolution 3.44.1 
+X-Originating-IP: [10.75.127.45]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-11_02,2022-05-10_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 02:49:54PM +0800, Yang Yingliang wrote:
-> Use kfree_sensitive() instead of open-coding it.
-> 
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
->  drivers/w1/w1.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/w1/w1.c b/drivers/w1/w1.c
-> index f2ae2e563dc5..a0a6c3c739d9 100644
-> --- a/drivers/w1/w1.c
-> +++ b/drivers/w1/w1.c
-> @@ -73,8 +73,7 @@ static void w1_master_release(struct device *dev)
->  	struct w1_master *md = dev_to_w1_master(dev);
->  
->  	dev_dbg(dev, "%s: Releasing %s.\n", __func__, md->name);
-> -	memset(md, 0, sizeof(struct w1_master) + sizeof(struct w1_bus_master));
-> -	kfree(md);
-> +	kfree_sensitive(md);
+Hi Marc,
 
-Does this actually change anything?  Why is the memset being called here
-at all?
+On Tue, 2022-05-10 at 19:34 +0100, Marc Zyngier wrote:
+> Antonio,
+>=20
+> On Tue, 10 May 2022 17:41:17 +0100,
+> Antonio Borneo <antonio.borneo@foss.st.com> wrote:
+> >=20
+> > From: Ludovic Barre <ludovic.barre@foss.st.com>
+> >=20
+> > If no parent, there is no specific action to do in
+> > stm32 irqchip, and so return IRQ_SET_MASK_OK_DONE.
+> >=20
+> > Signed-off-by: Ludovic Barre <ludovic.barre@foss.st.com>
+> > Signed-off-by: Antonio Borneo <antonio.borneo@foss.st.com>
+> > ---
+> > =C2=A0drivers/irqchip/irq-stm32-exti.c | 2 +-
+> > =C2=A01 file changed, 1 insertion(+), 1 deletion(-)
+> >=20
+> > diff --git a/drivers/irqchip/irq-stm32-exti.c
+> > b/drivers/irqchip/irq-stm32-exti.c
+> > index 9d18f47040eb..10c9c742c216 100644
+> > --- a/drivers/irqchip/irq-stm32-exti.c
+> > +++ b/drivers/irqchip/irq-stm32-exti.c
+> > @@ -614,7 +614,7 @@ static int stm32_exti_h_set_affinity(struct
+> > irq_data *d,
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (d->parent_data->chi=
+p)
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0return irq_chip_set_affinity_parent(d, dest,
+> > force);
+> > =C2=A0
+> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0return -EINVAL;
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0return IRQ_SET_MASK_OK_DONE;
+> > =C2=A0}
+> > =C2=A0
+> > =C2=A0static int __maybe_unused stm32_exti_h_suspend(void)
+>=20
+> <rant>
+> Can you *please* use a cover-letter when sending more that a single
+> patch? I expect there is an overarching motive to this series. Where
+> is it described?
+>=20
+> Also, please look at the way the subject lines are written for most
+> irqchip patches:
+>=20
+> irqchip/foo: Frobify the bar callback return value
+>=20
+> Note the capital letter after the ':', and the fact that it starts
+> with a verb. Here, I would have liked to see:
+>=20
+> irqchip/stm32-exti: Fix set_affinity() return value
+>=20
+> and leave the meat of the description to the commit log (instead of
+> saying the exact same thing twice).
+> </rant>
 
-thanks,
+thanks for your review and the hints on this series.
+I will shortly send a V2.
 
-greg k-h
+Regards,
+Antonio
+
+
