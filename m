@@ -2,76 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89349C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 17:39:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3B3FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 17:39:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345712AbiEKRjJ (ORCPT
+        id S1345702AbiEKRji (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 13:39:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44226 "EHLO
+        Wed, 11 May 2022 13:39:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345690AbiEKRi6 (ORCPT
+        with ESMTP id S245036AbiEKRja (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 13:38:58 -0400
-Received: from relay3.hostedemail.com (smtprelay0015.hostedemail.com [216.40.44.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32B9F2317F6
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 10:38:58 -0700 (PDT)
-Received: from omf15.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay09.hostedemail.com (Postfix) with ESMTP id EF410324D4;
-        Wed, 11 May 2022 17:38:54 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf15.hostedemail.com (Postfix) with ESMTPA id E7B6723;
-        Wed, 11 May 2022 17:38:51 +0000 (UTC)
-Message-ID: <f8400e5da994b81dda0b90c840afb92489ca0061.camel@perches.com>
-Subject: Re: [PATCH v2 5/5] clang-format: Fix space after for_each macros
-From:   Joe Perches <joe@perches.com>
-To:     =?ISO-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>,
-        Miguel Ojeda <ojeda@kernel.org>
-Cc:     Andy Whitcroft <apw@canonical.com>,
-        Brian Norris <briannorris@chromium.org>,
-        Dwaipayan Ray <dwaipayanray1@gmail.com>,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>,
-        Kees Cook <keescook@chromium.org>,
-        Konstantin Meskhidze <konstantin.meskhidze@huawei.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Paul Moore <paul@paul-moore.com>, Tom Rix <trix@redhat.com>,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Date:   Wed, 11 May 2022 10:38:50 -0700
-In-Reply-To: <d519b20b-694a-d8a7-66ed-1c5961590d4b@digikod.net>
-References: <20220506160106.522341-1-mic@digikod.net>
-         <20220506160106.522341-6-mic@digikod.net>
-         <e40f779c7de2f9abe5fdd76d0a77477e4bf1fe32.camel@perches.com>
-         <d519b20b-694a-d8a7-66ed-1c5961590d4b@digikod.net>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Wed, 11 May 2022 13:39:30 -0400
+Received: from mailrelay2-1.pub.mailoutpod1-cph3.one.com (mailrelay2-1.pub.mailoutpod1-cph3.one.com [46.30.210.183])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E92151D5010
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 10:39:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ravnborg.org; s=rsa1;
+        h=in-reply-to:content-type:mime-version:references:message-id:subject:cc:to:
+         from:date:from;
+        bh=iALarvYr6q24+R4Th1G4RXSh7gnuFWx7r3JvoYpd3xk=;
+        b=W9xFVeO8LlGUfyYNl9YjYZ9ZctbU8etMQKk6mgK5eNNMwHdKmpY1Rnlvs/tcMhZuFNDgDDj5D5xXp
+         rKFTaUrT9umvFG6ucNypFltBnfVrVGggs0wfStO2aYLtgvujAgsIla6xNkv1J4JbPo7Nha+k4HgVA3
+         F5yO8ZUKqcdNeVVLUDs/WW1trNoqLrkN+qpGV7A3u5imlgspD7rOfqkhXJePu5ye7AE1s8tzCvPZAB
+         doXWdIYAX+qAJv1VW7krOJtgjK5BfTOEWbaGvw0iSuO6eye4XNUjcp/w+FnCMSfiK5ULbPTmD+h+ES
+         nGeCfompngqVHV83tGs3mGxM8k8xXpA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed;
+        d=ravnborg.org; s=ed1;
+        h=in-reply-to:content-type:mime-version:references:message-id:subject:cc:to:
+         from:date:from;
+        bh=iALarvYr6q24+R4Th1G4RXSh7gnuFWx7r3JvoYpd3xk=;
+        b=hImXde1zDvSVJkx15NBS5pKNiZbhkQkuYrmlHkQ98BvXln9AlcTSZH6xC64Y7s7D/j8PJ2tjjUnDu
+         FOqhaicBQ==
+X-HalOne-Cookie: e2cdac57c96ca2243c1cd42b5ad62a44227cc89d
+X-HalOne-ID: 4cacf8ba-d151-11ec-a908-d0431ea8a290
+Received: from mailproxy3.cst.dirpod4-cph3.one.com (80-162-45-141-cable.dk.customer.tdc.net [80.162.45.141])
+        by mailrelay2.pub.mailoutpod1-cph3.one.com (Halon) with ESMTPSA
+        id 4cacf8ba-d151-11ec-a908-d0431ea8a290;
+        Wed, 11 May 2022 17:39:25 +0000 (UTC)
+Date:   Wed, 11 May 2022 19:39:23 +0200
+From:   Sam Ravnborg <sam@ravnborg.org>
+To:     Joel Selvaraj <jo@jsfamily.in>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Stanislav Jakubek <stano.jakubek@gmail.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Corentin Labbe <clabbe@baylibre.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hao Fang <fanghao11@huawei.com>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org
+Subject: Re: [PATCH v2 3/3] drm/panel: introduce ebbg,ft8719 panel
+Message-ID: <Ynv0y6xmtnE+33/y@ravnborg.org>
+References: <cover.1652245767.git.jo@jsfamily.in>
+ <BY5PR02MB70098FF9BDEDE264B78CFCE0D9C89@BY5PR02MB7009.namprd02.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Stat-Signature: xk4rirt9tqcfdijxwq6jsuccg5tji759
-X-Rspamd-Server: rspamout02
-X-Rspamd-Queue-Id: E7B6723
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX18KCf0qJJBiyy4lhCRxjdwXstA6/L23tnk=
-X-HE-Tag: 1652290731-601001
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BY5PR02MB70098FF9BDEDE264B78CFCE0D9C89@BY5PR02MB7009.namprd02.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-05-11 at 19:34 +0200, Mickaël Salaün wrote:
-> On 11/05/2022 17:40, Joe Perches wrote:
-> > On Fri, 2022-05-06 at 18:01 +0200, Mickaël Salaün wrote:
-> > > Set SpaceBeforeParens to ControlStatementsExceptForEachMacros to not add
-> > > space between a for_each macro and the following parenthesis.  This
-> > > option is available since clang-format-11 [1] and is in line with the
-> > > checkpatch.pl rules [2].
-> > 
-> > If this is applied, could the .clang_format ForEachMacros:
-> > block be removed?
+Hi Joel,
+On Wed, May 11, 2022 at 10:58:11AM +0530, Joel Selvaraj wrote:
+> Add DRM panel driver for EBBG FT8719 6.18" 2246x1080 DSI video mode
+> panel, which can be found on some Xiaomi Poco F1 phones. The panel's
+> backlight is managed through QCOM WLED driver.
 > 
-> The ForEachMacros block is still required to not put the " {" on the 
-> next line.
+> Signed-off-by: Joel Selvaraj <jo@jsfamily.in>
 
-Pity these aren't linked as many for_each macro definitions and uses
-exist outside of the grep search paths.
+Driver looks good:
+Reviewed-by: Sam Ravnborg <sam@ravnborg.org>
 
+I expect someone else to pick it up and apply.
 
+	Sam
