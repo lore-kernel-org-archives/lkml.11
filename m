@@ -2,89 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3575C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 01:25:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DD59C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 01:26:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240334AbiEKBZa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 21:25:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47762 "EHLO
+        id S240337AbiEKB0p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 21:26:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240272AbiEKBZV (ORCPT
+        with ESMTP id S238569AbiEKB0j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 21:25:21 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 277FCE15FC
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 18:25:19 -0700 (PDT)
-Received: from kwepemi500017.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kycds2qvHzbmKr;
-        Wed, 11 May 2022 09:24:49 +0800 (CST)
-Received: from kwepemm600005.china.huawei.com (7.193.23.191) by
- kwepemi500017.china.huawei.com (7.221.188.110) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 11 May 2022 09:25:17 +0800
-Received: from ubuntu1804.huawei.com (10.67.175.30) by
- kwepemm600005.china.huawei.com (7.193.23.191) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 11 May 2022 09:25:16 +0800
-From:   Hui Tang <tanghui20@huawei.com>
-To:     <lgirdwood@gmail.com>
-CC:     <broonie@kernel.org>, <perex@perex.cz>, <tiwai@suse.com>,
-        <ryan.lee.analog@gmail.com>, <ricardw@axis.com>, <steve@sk2.org>,
-        <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
-        <tanghui20@huawei.com>
-Subject: [PATCH -next 1/2] ASoC: max98396: Fix build error for implicit function declaration
-Date:   Wed, 11 May 2022 09:23:47 +0800
-Message-ID: <20220511012348.94288-2-tanghui20@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220511012348.94288-1-tanghui20@huawei.com>
-References: <20220511012348.94288-1-tanghui20@huawei.com>
+        Tue, 10 May 2022 21:26:39 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAA686FD00;
+        Tue, 10 May 2022 18:26:37 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id i27so1074958ejd.9;
+        Tue, 10 May 2022 18:26:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bRbUgRTaSaGKFWOQVW0vsPy+my+VkFAnyFE5K6q7L9M=;
+        b=qhyR8P53avM7dqw0RfzKOnZGncdneWha7XFdoMznIeUAqy1T8E3ckkbnYsVgq5Sd+8
+         NKSqqzlLMedZ/ub9Dv+oUWfz+X9M6TikmUvhqrFYZdoY6WuMacjhdqGw0H5tCyuyJtmI
+         WbiRGrmCZqFjSg+0swBR0xzI+xbbNVf2PPKn68hxD9yalmWVBam9AfTFcoKTj3DAnDb4
+         HJkFdrAZAS0edWDdl5FyteiJ9GEzpfwR8bmURf43vXsoQ5wepFu/h98uRb1Qgv7j/M7S
+         j7wwbbZNGoHEuB/7EfR/6TXFOUyrzCCNsg1cTf5IGSruAF757k3gjr2U9932Tdd6slri
+         MruQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bRbUgRTaSaGKFWOQVW0vsPy+my+VkFAnyFE5K6q7L9M=;
+        b=zVNP90XOTHigLJ0W2wNT0hmnLxxO/5F6XgqKHZlQ4X0KnA5lgaQGZ4Tyxa2ZARS3GQ
+         n23FYuN1GfnSz/KxB/VndCs+KFRtZHyHrWxTbwpeka0I+2W3HFJ1qsiyTbCYq+VdboM/
+         TC5BYB9EPkoGpMiYQRGKuEY5U5N1wHicVd0MZIOP0clvbZlCTW0UQYU/7v2Hia3jyUXR
+         bpVpM00D2W5eKmU+3ZeFpWvk3o5f/wEqQld8yZOyIZSINSbbICKIOqAQepIhAM58jvIm
+         AJk4s6Yz79x33LyHmxSLqlCwj+wU4C6IzlfqUH8+/p2qdQI/wKOnF/LXCJU46Kgz6dUN
+         ObIA==
+X-Gm-Message-State: AOAM532ODFoiLzjLoKuBzJOOwlVfXE//8cLzIHn24OC6a1txDUFgNh3A
+        KEDYvx686BkGsZiG37am4PD4t02vnYtwvypc10M1r++hLas=
+X-Google-Smtp-Source: ABdhPJzGF0MlZtd+4qPm8c00mpqbAg80KAzF9urrIpJUUz5MriRD5cxJF5uvWXYBkvG8VM2ceU378E1aIuzhDzE/YP0=
+X-Received: by 2002:a17:906:c14b:b0:6f8:e6bb:f8d5 with SMTP id
+ dp11-20020a170906c14b00b006f8e6bbf8d5mr15304336ejc.4.1652232396394; Tue, 10
+ May 2022 18:26:36 -0700 (PDT)
 MIME-Version: 1.0
+References: <20220509111126.7032-1-max.oss.09@gmail.com> <20220509111126.7032-3-max.oss.09@gmail.com>
+In-Reply-To: <20220509111126.7032-3-max.oss.09@gmail.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Tue, 10 May 2022 22:26:24 -0300
+Message-ID: <CAOMZO5AGLnf8-c3Birfs8nONMCOX9ZX2dwzfpnH+EseWyVVSpg@mail.gmail.com>
+Subject: Re: [PATCH v1 2/3] ARM: dts: imx6qdl-colibri: Mux mclk for sgtl5000
+ with the codec node
+To:     Max Krummenacher <max.oss.09@gmail.com>
+Cc:     Max Krummenacher <max.krummenacher@toradex.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.175.30]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600005.china.huawei.com (7.193.23.191)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-sound/soc/codecs/max98396.c: In function ‘max98396_i2c_probe’:
-sound/soc/codecs/max98396.c:1555:25: error: implicit declaration of function ‘devm_gpiod_get_optional’; did you mean ‘devm_regulator_get_optional’? [-Werror=implicit-function-declaration]
-  max98396->reset_gpio = devm_gpiod_get_optional(&i2c->dev,
-                         ^~~~~~~~~~~~~~~~~~~~~~~
-                         devm_regulator_get_optional
-sound/soc/codecs/max98396.c:1556:23: error: ‘GPIOD_OUT_HIGH’ undeclared (first use in this function); did you mean ‘GPIOF_INIT_HIGH’?
-              "reset", GPIOD_OUT_HIGH);
-                       ^~~~~~~~~~~~~~
-                       GPIOF_INIT_HIGH
-sound/soc/codecs/max98396.c:1556:23: note: each undeclared identifier is reported only once for each function it appears in
-sound/soc/codecs/max98396.c:1565:3: error: implicit declaration of function ‘gpiod_set_value_cansleep’; did you mean ‘gpio_set_value_cansleep’? [-Werror=implicit-function-declaration]
-   gpiod_set_value_cansleep(max98396->reset_gpio, 0);
-   ^~~~~~~~~~~~~~~~~~~~~~~~
-   gpio_set_value_cansleep
-cc1: all warnings being treated as errors
+On Mon, May 9, 2022 at 8:12 AM Max Krummenacher <max.oss.09@gmail.com> wrote:
+>
+> From: Max Krummenacher <max.krummenacher@toradex.com>
+>
+> Move the pin muxing for MCLK used by the codec to the codec node
+> instead of placing it inside the audmux pinctrl group.
+>
+> While no negative effects have been observed this should make sure that
+> MCLK is provided when the codec driver is probed.
+>
+> Follows commit fa51e1dc4b91 ("ARM: dts: imx6qdl-apalis: Fix sgtl5000
+> detection issue")
+>
+> Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
 
-Add depend on GPIOLIB for 'config SND_SOC_MAX98396'
-
-Fixes: b58581136770 ("ASoC: max98396: add amplifier driver")
-Signed-off-by: Hui Tang <tanghui20@huawei.com>
----
- sound/soc/codecs/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
-index b106e5517090..71a7afedd0aa 100644
---- a/sound/soc/codecs/Kconfig
-+++ b/sound/soc/codecs/Kconfig
-@@ -1051,6 +1051,7 @@ config SND_SOC_MAX98390
- config SND_SOC_MAX98396
- 	tristate "Analog Devices MAX98396 Speaker Amplifier"
- 	depends on I2C
-+	depends on GPIOLIB
- 	help
- 	  Enable support for Analog Devices MAX98396 audio
- 	  amplifier. The device provides a PCM interface for
--- 
-2.17.1
-
+Reviewed-by: Fabio Estevam <festevam@gmail.com>
