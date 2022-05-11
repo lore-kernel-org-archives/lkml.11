@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0636FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 19:07:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FC54C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 19:07:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346614AbiEKTHm (ORCPT
+        id S1346643AbiEKTHq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 15:07:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37702 "EHLO
+        Wed, 11 May 2022 15:07:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346583AbiEKTHe (ORCPT
+        with ESMTP id S1346605AbiEKTHf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 15:07:34 -0400
-Received: from relay07.th.seeweb.it (relay07.th.seeweb.it [IPv6:2001:4b7a:2000:18::168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5988F6BFD8
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 12:07:29 -0700 (PDT)
+        Wed, 11 May 2022 15:07:35 -0400
+Received: from relay05.th.seeweb.it (relay05.th.seeweb.it [5.144.164.166])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 423A16C552;
+        Wed, 11 May 2022 12:07:34 -0700 (PDT)
 Received: from Marijn-Arch-PC.localdomain (94-209-165-62.cable.dynamic.v4.ziggo.nl [94.209.165.62])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id DE8A93F869;
-        Wed, 11 May 2022 21:07:25 +0200 (CEST)
+        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id E7E053F86F;
+        Wed, 11 May 2022 21:07:31 +0200 (CEST)
 From:   Marijn Suijten <marijn.suijten@somainline.org>
 To:     phone-devel@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
         Bjorn Andersson <bjorn.andersson@linaro.org>
@@ -35,38 +35,80 @@ Cc:     ~postmarketos/upstreaming@lists.sr.ht,
         Rob Herring <robh@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 1/4] dt-bindings: leds: qcom-lpg: Add compatible for PM660L LPG block
-Date:   Wed, 11 May 2022 21:07:15 +0200
-Message-Id: <20220511190718.764445-1-marijn.suijten@somainline.org>
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andy Gross <agross@kernel.org>
+Subject: [PATCH v3 4/4] arm64: dts: qcom: sdm630-nile: Add RGB status LED on the PM660L LPG
+Date:   Wed, 11 May 2022 21:07:18 +0200
+Message-Id: <20220511190718.764445-4-marijn.suijten@somainline.org>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220511190718.764445-1-marijn.suijten@somainline.org>
+References: <20220511190718.764445-1-marijn.suijten@somainline.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document the availability of an LPG configuration for the PM660L PMIC in
-the Qualcomm Light Pulse Generator driver.
+The entire Sony Nile and Ganges lineup utilize the first three channels
+(the triled channels) of the LPG block for an RGB (battery) status and
+notification indicator.
 
 Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
-Acked-by: Rob Herring <robh@kernel.org>
 ---
- Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ .../dts/qcom/sdm630-sony-xperia-nile.dtsi     | 33 +++++++++++++++++++
+ 1 file changed, 33 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml b/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml
-index 409a4c7298e1..cd02811583ec 100644
---- a/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml
-+++ b/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml
-@@ -17,6 +17,7 @@ description: >
- properties:
-   compatible:
-     enum:
-+      - qcom,pm660l-lpg
-       - qcom,pm8150b-lpg
-       - qcom,pm8150l-lpg
-       - qcom,pm8350c-pwm
+diff --git a/arch/arm64/boot/dts/qcom/sdm630-sony-xperia-nile.dtsi b/arch/arm64/boot/dts/qcom/sdm630-sony-xperia-nile.dtsi
+index 42af1fade461..f42304671520 100644
+--- a/arch/arm64/boot/dts/qcom/sdm630-sony-xperia-nile.dtsi
++++ b/arch/arm64/boot/dts/qcom/sdm630-sony-xperia-nile.dtsi
+@@ -10,6 +10,7 @@
+ #include <dt-bindings/gpio/gpio.h>
+ #include <dt-bindings/input/input.h>
+ #include <dt-bindings/input/gpio-keys.h>
++#include <dt-bindings/leds/common.h>
+ 
+ / {
+ 	/* required for bootloader to select correct board */
+@@ -214,6 +215,38 @@ &blsp2_uart1 {
+ 	/* HCI Bluetooth */
+ };
+ 
++&pm660l_lpg {
++	status = "okay";
++
++	#address-cells = <1>;
++	#size-cells = <0>;
++
++	qcom,power-source = <1>;
++
++	multi-led {
++		color = <LED_COLOR_ID_RGB>;
++		function = LED_FUNCTION_STATUS;
++
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		led@1 {
++			reg = <1>;
++			color = <LED_COLOR_ID_BLUE>;
++		};
++
++		led@2 {
++			reg = <2>;
++			color = <LED_COLOR_ID_GREEN>;
++		};
++
++		led@3 {
++			reg = <3>;
++			color = <LED_COLOR_ID_RED>;
++		};
++	};
++};
++
+ &pon_pwrkey {
+ 	status = "okay";
+ };
 -- 
 2.36.1
 
