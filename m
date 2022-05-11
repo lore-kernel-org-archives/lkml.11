@@ -2,94 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA26CC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 06:45:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF3EBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 06:45:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240707AbiEKGpO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 02:45:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44174 "EHLO
+        id S242323AbiEKGpZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 02:45:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237570AbiEKGpM (ORCPT
+        with ESMTP id S240497AbiEKGpR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 02:45:12 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1AC313FD76
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 23:45:11 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nog5d-0005UM-PD; Wed, 11 May 2022 08:44:53 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 13FD27B124;
-        Wed, 11 May 2022 06:44:51 +0000 (UTC)
-Date:   Wed, 11 May 2022 08:44:50 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Bernard Zhao <zhaojunkui2008@126.com>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Stefan =?utf-8?B?TcOkdGpl?= <stefan.maetje@esd.eu>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bernard@vivo.com
-Subject: Re: [PATCH] usb/peak_usb: cleanup code
-Message-ID: <20220511064450.phisxc7ztcc3qkpj@pengutronix.de>
-References: <20220511063850.649012-1-zhaojunkui2008@126.com>
+        Wed, 11 May 2022 02:45:17 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21EF71FD845;
+        Tue, 10 May 2022 23:45:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4BDF1CE22C4;
+        Wed, 11 May 2022 06:45:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2242C385DB;
+        Wed, 11 May 2022 06:45:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652251512;
+        bh=Fx2QMCjEWeZ49x9y9ggLcnUsS1BY3UQodV4PGmGBX8c=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OC8eDHtpnhpd1T5hhiDvGvZjuDaefTo3FWKpw8wMrsbbjeLLK8SUI4b2GTl89obOc
+         QOTRQNGbaXzWhU2PyWm7l70mAwcEb5yQbVFOR5OgGmJtkx3WJHkCV3Rmt5ReSiz1LW
+         3ETwi0xVb8HNKR9L/QyeqZSfoQLHBv2oWeYBOUt8=
+Date:   Wed, 11 May 2022 08:45:09 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        zbr@ioremap.net, jdelvare@suse.com, linux@roeck-us.net
+Subject: Re: [PATCH -next] drivers: w1: use kfree_sensitive()
+Message-ID: <YntbdfHLjeHzAb9/@kroah.com>
+References: <20220511064954.3401381-1-yangyingliang@huawei.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="dq7m2atvmyrifx54"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220511063850.649012-1-zhaojunkui2008@126.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+In-Reply-To: <20220511064954.3401381-1-yangyingliang@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, May 11, 2022 at 02:49:54PM +0800, Yang Yingliang wrote:
+> Use kfree_sensitive() instead of open-coding it.
+> 
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> ---
+>  drivers/w1/w1.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/w1/w1.c b/drivers/w1/w1.c
+> index f2ae2e563dc5..a0a6c3c739d9 100644
+> --- a/drivers/w1/w1.c
+> +++ b/drivers/w1/w1.c
+> @@ -73,8 +73,7 @@ static void w1_master_release(struct device *dev)
+>  	struct w1_master *md = dev_to_w1_master(dev);
+>  
+>  	dev_dbg(dev, "%s: Releasing %s.\n", __func__, md->name);
+> -	memset(md, 0, sizeof(struct w1_master) + sizeof(struct w1_bus_master));
+> -	kfree(md);
+> +	kfree_sensitive(md);
 
---dq7m2atvmyrifx54
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Does this actually change anything?  Why is the memset being called here
+at all?
 
-On 10.05.2022 23:38:38, Bernard Zhao wrote:
-> The variable fi and bi only used in branch if (!dev->prev_siblings)
-> , fi & bi not kmalloc in else branch, so move kfree into branch
-> if (!dev->prev_siblings),this change is to cleanup the code a bit.
+thanks,
 
-Please move the variable declaration into that scope, too. Adjust the
-error handling accordingly.
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---dq7m2atvmyrifx54
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmJ7W18ACgkQrX5LkNig
-013BNgf+P67Oin0cXNemqeEdYw4/XZiAPTSqYELYFmJ+aSFuL+/0bT98LwE+3Age
-wuaDlSZrLAYnB8FiOyISV6Hgmqubw46mukSn7KRZUrEyug4ca2U4SbKXU8IyZP9z
-c07Ufpyk3lDSMOunJoyaNt37gF/JiCz7+adtnh3ipvGUy2/VwRdmmundl9U6cC02
-3YawFRwA3Qju7VTYB0oEdA4EnxJ2y5OpnZvnBD1oOu8btEHW1pvptR324KW+NNlm
-hO4/wFzPH37GICxmgUm9kHbBdqA3bZA3PnmbaZHaSSq8jEsgkb2pc9I5+FF8r6cb
-OD0zhBSE5km2+JCEtKQNFBYoFtfOhw==
-=tSaC
------END PGP SIGNATURE-----
-
---dq7m2atvmyrifx54--
+greg k-h
