@@ -2,141 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC721C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:50:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F19C2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:50:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241377AbiEKCur (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 22:50:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48552 "EHLO
+        id S237323AbiEKCuz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 22:50:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242384AbiEKCg1 (ORCPT
+        with ESMTP id S241650AbiEKCru (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 22:36:27 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F09E662A12
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:36:25 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id bo5so782697pfb.4
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:36:25 -0700 (PDT)
+        Tue, 10 May 2022 22:47:50 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DFC35DE78
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:47:42 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id p8so779416pfh.8
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:47:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=7t9UcsXwVYVSYCIK3NACYHQqA+B/CoJMpZoDVJt307g=;
-        b=KIzyRIfP1t/fKgS5DVcd9/4E4DAVHgKfNtr3m35zCsC23uMy7PhbbdYcIKWT/PSVJN
-         VWtl1q4ft/NYUAW9XiIweKWNtzi/KWkoHv5m+FV6AcbBAfuxHYeBoa/qNxdrZGw26qm8
-         edNhDUV5knhAD7JWjsoejkliLyzX57R3cSN3XY6V3utrUbKK0jBcxygCmkGcf8BQvbb2
-         mqY4IC5MzPy7ciF6dv8+NgThoNH7rb6U5mqybgajhhk6xad5JPVyP0T8UO9tgUx5ZUKc
-         KP1zvGt9tXzbYTH+SxFYsaP4OrKyghb2Vtx7qZkHKBTQfPoon6Abjq2C+Qoj/dE43WNd
-         ihmg==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FU8nuOBOYophOA1hloaA7o9A3ff/ju/iZFOpgx4Wpp8=;
+        b=HsHjcfA4jYrmtymqyGxlfvrOgbtR0AATiQX915JjYpQBDC9guuXBZ5fkE7SC4SChYF
+         eCRgDqQ+NSw6GnyPOXDJn7/wGNIrob6UupYsYC7qxbfIPelGPkuyTnkNTicbaiCNGJN8
+         VO68ksXNyI6nSLJVESX7gKrwXPnwL1LDVRHBf6pvjX5Rw+a6JS3n/4vilUd7Peitm2On
+         t0uyCGg6+E8MQCu0a6qO6ggWmi5zMvHk318FnjGyYZx4owtdDiFMHB2xz/E4aaxZsK92
+         CKoj6+GqXS7oBiDvZV550aDCccXaq8KLRXwW2rzA1RwQoQ8TGAaLR5rEbn3V5TPH6/bP
+         TdrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=7t9UcsXwVYVSYCIK3NACYHQqA+B/CoJMpZoDVJt307g=;
-        b=mnRFDM9ZQLbxMOlAveaM3azk6sfft03uwWQZc6oY7DPVhvZQ4ZBvZrz4oBUggn+ToX
-         X1MsjqKKXvnyhIqrcSZ8E65kn9vBaUyvQ5lpdn9ns8cM+eIsj1Q76in2Jh5GBtJUoSYF
-         gRbL3QaTlwt8KApHCVmXaetDAmwy6xVCaaK4hp89f4ycydhbk8GtjXD/KIVusqp4r/Bt
-         EbQvNJAfY9yJF4aZtYQ0szUJftGofaT1j++AG75dsDp6p/ECL+9Jbd4bEpfXiiILFj9t
-         5qLlbdJXGkez0QQM7MTQAukMSJx6qtTMNUR5MAv8C9GArCcVfVM4lUvojk6w7dEAYmg1
-         gjCg==
-X-Gm-Message-State: AOAM5327xYso+qgHoLwLeR0ypwYi9Fl98bPwm2Ut2BNk4i+vUzdBxLxt
-        y1L0zQGlH4bfdgOLXewrvd8oyg==
-X-Google-Smtp-Source: ABdhPJxTh/LcvNMMEoQZO0pKwBDLiPRwF4uEXSoj63PgVF8fCV7RowiyCtUIUh92JHNPPEC3BNdtHg==
-X-Received: by 2002:a63:505a:0:b0:3c6:d5d1:eb2 with SMTP id q26-20020a63505a000000b003c6d5d10eb2mr8148519pgl.122.1652236585505;
-        Tue, 10 May 2022 19:36:25 -0700 (PDT)
-Received: from [10.254.203.126] ([139.177.225.242])
-        by smtp.gmail.com with ESMTPSA id s12-20020a170902a50c00b0015e8d4eb2b7sm311852plq.257.2022.05.10.19.36.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 May 2022 19:36:24 -0700 (PDT)
-Message-ID: <ebb3c657-c914-7d71-c4c9-6e8fe2d2e0c0@bytedance.com>
-Date:   Wed, 11 May 2022 10:36:18 +0800
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FU8nuOBOYophOA1hloaA7o9A3ff/ju/iZFOpgx4Wpp8=;
+        b=77eGE7ELpz9DjhQSwdYA4AcaHdQwcmdWkmSrNkEcHMQamBv3PTAS+6XXRh30AxNC5F
+         HVcNYZ8slhnKHVzZpDdeZnHczrODhzPYoMQphoCI8HKIfms/jrNeZusRlTHRYbau4dQH
+         bmbGMVZ9Y5QCO07Ux7+LWHVk4xXRv+4E4jOwR3iaBGgQKaVQ5lEe7vNx8usQgnv0ljoY
+         wkz94tfouVUWjpb3T6AbNCZl9zE9iUk69YpebsNcfCsc//bl1nSFZsOKrLvfdF+01pul
+         StD0+NmtIcw22KElQoFkg9UaC/5WM3iKwNqc92ABBwPWbGNwrGBeEK6exc15qdez91RA
+         /esA==
+X-Gm-Message-State: AOAM531jI/7qSi/i6tYUKzud73PKL7W9LuUQMtmaqDtjYOxiUvk7pc9G
+        3e0pbfVAQhaDcYhlmOHkjnMA8mW/BfGPQtREPrJH5Q==
+X-Google-Smtp-Source: ABdhPJynco7KWu1tlLJFmHL3UbqOQ8ISOoU6Gvv0V/MUo2w+djtES+oiEgPw8O+7US6KMAW6NeoNZLivXil/V8Hw2i4=
+X-Received: by 2002:a05:6a00:1c53:b0:50d:5860:5b58 with SMTP id
+ s19-20020a056a001c5300b0050d58605b58mr23066386pfw.85.1652237261347; Tue, 10
+ May 2022 19:47:41 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.0
-Subject: Re: [PATCH 1/2] mm: fix missing handler for __GFP_NOWARN
-Content-Language: en-US
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     akinobu.mita@gmail.com, vbabka@suse.cz, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, rostedt@goodmis.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-References: <20220510113809.80626-1-zhengqi.arch@bytedance.com>
- <20220510115922.350a496ca8b91686c1758282@linux-foundation.org>
- <c44769b3-a132-63a5-fd40-4d483497dff2@bytedance.com>
- <20220510193215.14ed7e3fb70857738e10c0a2@linux-foundation.org>
-From:   Qi Zheng <zhengqi.arch@bytedance.com>
-In-Reply-To: <20220510193215.14ed7e3fb70857738e10c0a2@linux-foundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220505033814.103256-1-xu.xin16@zte.com.cn> <YnUlntNFR4zeD+qa@dhcp22.suse.cz>
+ <6275d3e7.1c69fb81.1d62.4504@mx.google.com> <YnjmPAToTR0C5o8x@dhcp22.suse.cz>
+ <6278fa75.1c69fb81.9c598.f794@mx.google.com> <Ynj/l+pyFJxKfcbQ@dhcp22.suse.cz>
+ <6279c354.1c69fb81.7f6c1.15e0@mx.google.com> <CAHbLzkqztB+NXVcxtd7bVo7onH6AcMJ3JWCAHHqH3OAdbZsMOQ@mail.gmail.com>
+ <627b1d39.1c69fb81.fe952.6426@mx.google.com>
+In-Reply-To: <627b1d39.1c69fb81.fe952.6426@mx.google.com>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Tue, 10 May 2022 19:47:29 -0700
+Message-ID: <CALvZod5aqZjUE8BBQZxwHDBuSWOSEAOqW4_xE22Am0sGZZs4sw@mail.gmail.com>
+Subject: Re: [PATCH] mm/memcg: support control THP behaviour in cgroup
+To:     CGEL <cgel.zte@gmail.com>
+Cc:     Yang Shi <shy828301@gmail.com>, Michal Hocko <mhocko@suse.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        William Kucharski <william.kucharski@oracle.com>,
+        Peter Xu <peterx@redhat.com>, Hugh Dickins <hughd@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Cgroups <cgroups@vger.kernel.org>,
+        Yang Yang <yang.yang29@zte.com.cn>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, May 10, 2022 at 7:19 PM CGEL <cgel.zte@gmail.com> wrote:
+>
+[...]
+> > > >
+> > > > All controls in cgroup v2 should be hierarchical. This is really
+> > > > required for a proper delegation semantic.
+> > > >
+> > >
+> > > Could we align to the semantic of /sys/fs/cgroup/memory.swappiness?
+> > > Some distributions like Ubuntu is still using cgroup v1.
+> >
+> > Other than enable flag, how would you handle the defrag flag
+> > hierarchically? It is much more complicated.
+>
+> Refer to memory.swappiness for cgroup, this new interface better be independent.
 
-
-On 2022/5/11 10:32 AM, Andrew Morton wrote:
-> On Wed, 11 May 2022 10:19:48 +0800 Qi Zheng <zhengqi.arch@bytedance.com> wrote:
-> 
->>
->> ,,,
->>>> --- a/mm/internal.h
->>>> +++ b/mm/internal.h
->>>> @@ -35,6 +35,17 @@ struct folio_batch;
->>>>    /* Do not use these with a slab allocator */
->>>>    #define GFP_SLAB_BUG_MASK (__GFP_DMA32|__GFP_HIGHMEM|~__GFP_BITS_MASK)
->>>>    
->>>> +#define WARN_ON_ONCE_GFP(cond, gfp)	({				\
->>>> +	static bool __section(".data.once") __warned;			\
->>>> +	int __ret_warn_once = !!(cond);					\
->>>> +									\
->>>> +	if (unlikely(!(gfp & __GFP_NOWARN) && __ret_warn_once && !__warned)) { \
->>>> +		__warned = true;					\
->>>> +		WARN_ON(1);						\
->>>> +	}								\
->>>> +	unlikely(__ret_warn_once);					\
->>>> +})
->>>
->>> I don't think WARN_ON_ONCE_GFP is a good name for this.  But
->>> WARN_ON_ONCE_IF_NOT_GFP_NOWARN is too long :(
->>>
->>> WARN_ON_ONCE_NOWARN might be better.  No strong opinion here, really.
->>
->> I've thought about WARN_ON_ONCE_NOWARN, but I feel a little weird
->> putting 'WARN' and 'NOWARN' together, how about WARN_ON_ONCE_IF_ALLOWED?
-> 
-> I dunno.  WARN_ON_ONCE_GFP isn't too bad I suppose.  Add a comment over
-> the definition explaining it?
-
-OK, I will add a comment to it.
-
-> 
->>>
->>>> @@ -4902,8 +4906,8 @@ __alloc_pages_slowpath(gfp_t gfp_mask, unsigned int order,
->>>>    	 * We also sanity check to catch abuse of atomic reserves being used by
->>>>    	 * callers that are not in atomic context.
->>>>    	 */
->>>> -	if (WARN_ON_ONCE((gfp_mask & (__GFP_ATOMIC|__GFP_DIRECT_RECLAIM)) ==
->>>> -				(__GFP_ATOMIC|__GFP_DIRECT_RECLAIM)))
->>>> +	if (WARN_ON_ONCE_GFP((gfp_mask & (__GFP_ATOMIC|__GFP_DIRECT_RECLAIM)) ==
->>>> +				(__GFP_ATOMIC|__GFP_DIRECT_RECLAIM), gfp_mask))
->>>>    		gfp_mask &= ~__GFP_ATOMIC;
->>>>    
->>>>    retry_cpuset:
->>>
->>> I dropped this hunk - Neil's "mm: discard __GFP_ATOMIC"
->>> (https://lkml.kernel.org/r/163712397076.13692.4727608274002939094@noble.neil.brown.name)
->>> deleted this code.
->>>
->>
->> This series is based on v5.18-rc5, I will rebase it to the latest next
->> branch and check if there are any missing WARN_ON_ONCEs that are not
->> being handled.
-> 
-> Against git://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm branch
-> mm-unstable, please.  That ends up in linux-next, with a delay.
-
-OK, will do.
-
--- 
-Thanks,
-Qi
+Let me give my 0.02. I buy the use-case of Admin restricting THPs to
+low priority jobs but I don't think memory controller is the right
+place to enforce that policy. Michal gave one way (prctl()) to enforce
+that policy. Have you explored the BPF way to enforce this policy?
