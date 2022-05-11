@@ -2,76 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45C83C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 09:07:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDD24C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 09:09:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241891AbiEKJHj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 05:07:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38368 "EHLO
+        id S233584AbiEKJJt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 05:09:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239304AbiEKJHL (ORCPT
+        with ESMTP id S229805AbiEKJJn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 05:07:11 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74FAD25594;
-        Wed, 11 May 2022 02:07:08 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 8042F22246;
-        Wed, 11 May 2022 11:07:06 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1652260027;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SFLazLqodw88O+Oa2pGpE5oHQ9oeAxdq4SGRj/usDso=;
-        b=EST04xsRjCrr5enoExqUbt/IzHag4Pa5FTLvHeE06M82WUupQntxibwz+Xd5OnqMGYO97m
-        2A8zWmDafXdH8xirdjwB7nxHUY/eO+fbuW1Vkg3rfyzYKsl19N8LOKzO6hR9SfW6pTkvDQ
-        LT4goOFPdNz+5PuvH4jl8CE7mntG4h0=
+        Wed, 11 May 2022 05:09:43 -0400
+Received: from mail-oo1-xc35.google.com (mail-oo1-xc35.google.com [IPv6:2607:f8b0:4864:20::c35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEC3656749
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 02:09:42 -0700 (PDT)
+Received: by mail-oo1-xc35.google.com with SMTP id l9-20020a4abe09000000b0035eb3d4a2aeso1481216oop.0
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 02:09:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LFJbGCO+KEpkTahVLKoJS07JSk1FU7jnYtVBpRVs9qA=;
+        b=nqvWipIic4TOarPih9e4ymbhEt8VLbgMLDGzik5DKPt8XstB3kHfLw345zcFyas6MT
+         gQSczD9ebL7Yf7bu3M3k8n+3DDzKaXIX1l1aF9+3XLlzU626Eo2I6p3VTuxR33RIom6Y
+         9U2dJRZd4/hkh01dN9oqHUJH5iPUschuDwok3Fphrc7b8FQ7MufY1C2supWd2qEzYWcM
+         6k8KuZoA7wUvSTuPp3aWEDw7EanHKUEFx4tWB31OxcTjQVpGkON6CppT3dg306+igWGr
+         pOO0Bfjf1jIaqyp+1hGcQ0+r8aumhVgAtKtnyDqzjdERPSY4yA1VnURzQSZbG+ofiBDe
+         8vLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LFJbGCO+KEpkTahVLKoJS07JSk1FU7jnYtVBpRVs9qA=;
+        b=UgW+Q4hb54nQTEh6SQp8OXpGbb5RWeFgzWfe7JGuwPn3YEGx1rooEJuek2Vdne9hOF
+         Bq6DzJO+vRR1lr8pxnsQYG3fLzySS9sQxJ1rKLDIpVWu+OUbGNqXXtDvcAEWaBVqAflQ
+         Y2KqHseypWwyFyopeV+jJVFmDvHrLzVHuLuaz7Nh0iAKVRzEMP0QAaslcUwTXJ5UmZVa
+         Feof34A4g/6QP2g5IYPUat+aDJDx7wFUmFXPkIhKju634AzKTPu/PhPV0AURCGvxMtjF
+         Vdi9f3vOCehTribPu9M4/fONImt8gAvFKHp3H8+pjL3f7evza839UVdnCr1TZHZImrAL
+         tNXQ==
+X-Gm-Message-State: AOAM5335wWlduCM8qKmV8u3Tg3ngj+SeAz6TSPhGVjJeUbVkmXUJaS8T
+        ma96VGPP/c/9wI2r075sCYb2uBq3UbSFnaJBQNF5kdZSSyE=
+X-Google-Smtp-Source: ABdhPJz5KG/JZw3SPJe9r+dzzejESWWET6oyIgfk4ClgLnCEwFmmT6ehztogA7zfGYfhraqt7Vp1XigcnX1IL/CcEs4=
+X-Received: by 2002:a9d:7ac1:0:b0:605:e9ce:ddfd with SMTP id
+ m1-20020a9d7ac1000000b00605e9ceddfdmr9279992otn.384.1652260182247; Wed, 11
+ May 2022 02:09:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Wed, 11 May 2022 11:07:06 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        soc@kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Tudor.Ambarus@microchip.com,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: Re: [PATCH v4 00/13] ARM: dts: lan966x: dtsi improvements and KSwitch
- D10 support
-In-Reply-To: <20220502224127.2604333-1-michael@walle.cc>
-References: <20220502224127.2604333-1-michael@walle.cc>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <722a2b75211695b63699457f653a3f1c@walle.cc>
-X-Sender: michael@walle.cc
+References: <20220508022910.98481-1-wangborong@cdjrlc.com>
+In-Reply-To: <20220508022910.98481-1-wangborong@cdjrlc.com>
+From:   Max Filippov <jcmvbkbc@gmail.com>
+Date:   Wed, 11 May 2022 02:09:31 -0700
+Message-ID: <CAMo8BfK9HcYWYFmvxLASO_4CTjY+fT0+LiPi6EZX+zz0-e3HnA@mail.gmail.com>
+Subject: Re: [PATCH] xtensa: no need to initialise statics to 0
+To:     Jason Wang <wangborong@cdjrlc.com>
+Cc:     Chris Zankel <chris@zankel.net>,
+        "open list:TENSILICA XTENSA PORT (xtensa)" 
+        <linux-xtensa@linux-xtensa.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-05-03 00:41, schrieb Michael Walle:
-> Add missing nodes for the flexcom blocks and a node for the SGPIO
-> block. Then add basic support for the Kontron KSwitch D10.
-> 
-> The first submission of this patchset was a long time ago. Since
-> then networking matured and is now working. Thus this now also
-> contains patches for all the networking related nodes and enables
-> them on the Kontron D10 switch.
+On Sat, May 7, 2022 at 7:30 PM Jason Wang <wangborong@cdjrlc.com> wrote:
+>
+> Static variables do not need to be initialised to 0, because compiler
+> will initialise all uninitialised statics to 0. Thus, remove the
+> unneeded initializations.
+>
+> Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+> ---
+>  arch/xtensa/platforms/xt2000/setup.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks Claudiu for reviewing and Horatiu for testing.
+Thanks, applied to my xtensa tree.
 
-Nicolas, could you pick this one up for the next merge window? Most
-of the patches are now pending for 4+ weeks. It would be great to
-have the support for our board in mainline to finally get it into
-KernelCI.
-
--michael
+-- Max
