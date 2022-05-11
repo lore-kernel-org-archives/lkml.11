@@ -2,74 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 824E4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:23:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31E61C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:23:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343575AbiEKPXW (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 11:23:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41190 "EHLO
+        id S230219AbiEKPXe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 11:23:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242665AbiEKPXU (ORCPT
+        with ESMTP id S1343580AbiEKPXb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 11:23:20 -0400
-Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93ED54EDE2;
-        Wed, 11 May 2022 08:23:19 -0700 (PDT)
-Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-edf9ddb312so3190331fac.8;
-        Wed, 11 May 2022 08:23:19 -0700 (PDT)
+        Wed, 11 May 2022 11:23:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4D5D722404B
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 08:23:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652282609;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QSwu7xqkqoNLt+H1Fs+CQIumcyQcOiTFfolxhe68oB0=;
+        b=bGGJXIaxT4eTG53R4qklI3Dc/tE+pP3NP5Cyn91Y58jply+yIltKxyEVhzhKnmTI62Tws/
+        ulxV/GAunXDUdSxQybYeLYeYKksO1/NuZxXFUNtragfnWYbqqlDN14eVAf5G/bsWHXHmNV
+        ocpfLCjaKFjaXHvT4sdAgzOuZQmaYA4=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-59-KxBzYXLgOU2XJmgfP0SttA-1; Wed, 11 May 2022 11:23:27 -0400
+X-MC-Unique: KxBzYXLgOU2XJmgfP0SttA-1
+Received: by mail-wm1-f69.google.com with SMTP id k16-20020a7bc310000000b0038e6cf00439so841552wmj.0
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 08:23:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=5zNISZaXlYvmRc3tMtVlWkswi785e/B+9/uY5oE6YAQ=;
-        b=qeMnAmAJokulvB1pYIRpLATzJ+WX2Pr91CYsHYvGhLzKlJG6NdkQ7ukU+DQjRgpv6D
-         VzEZlap5B8+B8WzYVvHGE6hHeHZmc+OvQPxhGKTlU0DKrM+6BgoVchGJwyu6ylx9voth
-         aCGeMaLEXqddnN9Bi8lQ5Oz1Jy3QvEdO1wYvgjtsffAI0ThmZUBcr2YFxJqKggqJo+Zg
-         HAbR7wdHXSBItvK4ZR+XBbvT7Kfh9gKBEjyjqCR2XsN6bBlfLrq9eGpiqBNcOBidvPfp
-         7qfepk4foWiJMzpb1W74JUEkbScUHbltHQbPo+faDQrdFNpuQjPM8gnzod9Z3lsEOYwN
-         EO9A==
-X-Gm-Message-State: AOAM530R2ADdSXA2Cap5lYwhsXKyREpR8+vthQ/sH0E9XxYYlsTUMxI3
-        1Rk+xKQhhfRYJMhAaXAAog==
-X-Google-Smtp-Source: ABdhPJz8rVBN06gIFVAn3YY+UTbDRGhzGs7/A3hZxVp8AZpNRgriF0sbM0SVBw8RFbySvGxuvEdMuQ==
-X-Received: by 2002:a05:6870:61cd:b0:e9:8de7:9c51 with SMTP id b13-20020a05687061cd00b000e98de79c51mr2953718oah.50.1652282598896;
-        Wed, 11 May 2022 08:23:18 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id bk14-20020a056820190e00b0035ec65ac944sm1036801oob.16.2022.05.11.08.23.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 08:23:18 -0700 (PDT)
-Received: (nullmailer pid 337784 invoked by uid 1000);
-        Wed, 11 May 2022 15:23:17 -0000
-Date:   Wed, 11 May 2022 10:23:17 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Jacky Huang <ychuang3@nuvoton.com>
-Cc:     linux-kernel@vger.kernel.org, ychuang570808@gmail.com,
-        cfli0@nuvoton.com, devicetree@vger.kernel.org, soc@kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        catalin.marinas@arm.com, sboyd@kernel.org, robh+dt@kernel.org,
-        arnd@arndb.de, krzk+dt@kernel.org, will@kernel.org, olof@lixom.net
-Subject: Re: [PATCH V4 5/5] dt-bindings: arm: Add initial bindings for
- Nuvoton Platform
-Message-ID: <20220511152317.GA337729-robh@kernel.org>
-References: <20220510032558.10304-1-ychuang3@nuvoton.com>
- <20220510032558.10304-6-ychuang3@nuvoton.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=QSwu7xqkqoNLt+H1Fs+CQIumcyQcOiTFfolxhe68oB0=;
+        b=4CJ5gJoJOuZ6V66YF2J+mPlXEe6dgGkiJQVY7aOBGMzBNqB2HeN7ts8AiQuaGwJcwM
+         NlNAtyAuBAjCwIMEbvSRcn1DhoeH4EbcnsT93BoxoxQR3buP7b3W2c55jwehfLjrhew6
+         9gvDs+NK9aQ74ACEZpltEYfW0NMjoCJL13P9hkZOxI8IjBii5T/m+sNhJ5/pPbMbzPJR
+         pCF8G3f5jI8JqwuMH//W4TqgACR2DBdW1UIe2DNho6Ae/W5zuDm7bu70MRVbDbq7epKC
+         QnOzYx4dveT6PAMUIH0iNO1xn7Hj8sDBq9kqilP30FxpL4PuLgWMTtST4wlFT5ut7f/s
+         28HA==
+X-Gm-Message-State: AOAM533eCHmuZevQGivbndnZkA+IM4oyBBp5EJ10oPTQjXPQZMxUpX2Z
+        yj9YDSDL3/wzSwN7yl4Ew0+j8zsXFt1wCKCTMwwcgZNrUPD0FvGOtmTL5WoE1Zbts5xW8t3BiPB
+        yHiySg1EUJOtxSLOrmzVNQ0Cc
+X-Received: by 2002:a05:6000:144e:b0:20c:ab37:70f3 with SMTP id v14-20020a056000144e00b0020cab3770f3mr23119861wrx.682.1652282606801;
+        Wed, 11 May 2022 08:23:26 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzXmrCQHyV0Vzn7S9Pf5AXsxOTUZnIuFnjQeZxtcrP3EcXVkDoAgCyGtUebE34qnyln2EmSPQ==
+X-Received: by 2002:a05:6000:144e:b0:20c:ab37:70f3 with SMTP id v14-20020a056000144e00b0020cab3770f3mr23119840wrx.682.1652282606497;
+        Wed, 11 May 2022 08:23:26 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c701:700:2393:b0f4:ef08:bd51? (p200300cbc70107002393b0f4ef08bd51.dip0.t-ipconnect.de. [2003:cb:c701:700:2393:b0f4:ef08:bd51])
+        by smtp.gmail.com with ESMTPSA id i10-20020a5d630a000000b0020c5253d8d4sm1956738wru.32.2022.05.11.08.23.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 May 2022 08:23:25 -0700 (PDT)
+Message-ID: <4cf144a9-fff5-d993-4fcb-7f2dfa6e71bb@redhat.com>
+Date:   Wed, 11 May 2022 17:23:25 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220510032558.10304-6-ychuang3@nuvoton.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Content-Language: en-US
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     ying.huang@intel.com, hch@lst.de, dhowells@redhat.com,
+        cl@linux.com, linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        akpm@linux-foundation.org, mike.kravetz@oracle.com,
+        naoya.horiguchi@nec.com
+References: <20220425132723.34824-1-linmiaohe@huawei.com>
+ <20220425132723.34824-3-linmiaohe@huawei.com>
+ <525298ad-5e6a-2f8d-366d-4dcb7eebd093@redhat.com>
+ <f5f933dc-450c-f3ac-34e6-d6dc1d901efd@huawei.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [PATCH v2 2/4] mm/migration: remove unneeded lock page and
+ PageMovable check
+In-Reply-To: <f5f933dc-450c-f3ac-34e6-d6dc1d901efd@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 10 May 2022 11:25:58 +0800, Jacky Huang wrote:
-> Add binding for ARMv8 based Nuvotn SoCs and platform boards.
-> Add initial bindings for MA35D1 series development boards.
+On 09.05.22 10:51, Miaohe Lin wrote:
+> On 2022/4/29 18:07, David Hildenbrand wrote:
+>> On 25.04.22 15:27, Miaohe Lin wrote:
+>>> When non-lru movable page was freed from under us, __ClearPageMovable must
+>>> have been done. Even if it's not done, ClearPageIsolated here won't hurt
+>>> as page will be freed anyway. So we can thus remove unneeded lock page and
+>>> PageMovable check here.
+>>>
+>>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>>> Reviewed-by: Christoph Hellwig <hch@lst.de>
+>>> ---
+>>>  mm/migrate.c | 8 ++------
+>>>  1 file changed, 2 insertions(+), 6 deletions(-)
+>>>
+>>> diff --git a/mm/migrate.c b/mm/migrate.c
+>>> index b779646665fe..0fc4651b3e39 100644
+>>> --- a/mm/migrate.c
+>>> +++ b/mm/migrate.c
+>>> @@ -1093,12 +1093,8 @@ static int unmap_and_move(new_page_t get_new_page,
+>>>  		/* page was freed from under us. So we are done. */
+>>>  		ClearPageActive(page);
+>>>  		ClearPageUnevictable(page);
+>>> -		if (unlikely(__PageMovable(page))) {
+>>> -			lock_page(page);
+>>> -			if (!PageMovable(page))
+>>> -				ClearPageIsolated(page);
+>>> -			unlock_page(page);
+>>> -		}
+>>> +		if (unlikely(__PageMovable(page)))
+>>> +			ClearPageIsolated(page);
+>>>  		goto out;
+>>>  	}
+>>
+>> Hm, that code+change raises a couple of questions.
+>>
+>> We're doing here the same as in putback_movable_pages(). So I guess the
+>> difference here is that the caller did release the reference while the
+>> page was isolated, while we don't assume the same in
+>> putback_movable_pages().
 > 
-> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
-> ---
->  .../devicetree/bindings/arm/nuvoton.yaml      | 31 +++++++++++++++++++
->  1 file changed, 31 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/arm/nuvoton.yaml
+> Agree.
 > 
+>>
+>>
+>> Shouldn't whoever owned the page have cleared that? IOW, is it even
+>> valid that we see a movable or isolated page here (WARN/BUG?)?
+>>
+>> At least for balloon compaction, I remember that __PageMovable() is
+>> properly cleared before freeing it via balloon_page_delete().
+> 
+> z3fold, zsmalloc will do __ClearPageMovable when the page is going to be released.
+> So I think we shouldn't see a movable page here:
+> 
+> void __ClearPageMovable(struct page *page)
+> {
+> 	VM_BUG_ON_PAGE(!PageMovable(page), page);
+> 	/*
+> 	 * Clear registered address_space val with keeping PAGE_MAPPING_MOVABLE
+> 	 * flag so that VM can catch up released page by driver after isolation.
+> 	 * With it, VM migration doesn't try to put it back.
+> 	 */
+> 	page->mapping = (void *)((unsigned long)page->mapping &
+> 				PAGE_MAPPING_MOVABLE);
+> }
+> 
+> But it seems there is no guarantee for PageIsolated flag. Or am I miss something?
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+At least the code we have now:
+
+if (unlikely(__PageMovable(page)))
+	ClearPageIsolated(page);
+
+Should be dead code. So PG_isolated could remain set.
+
+If PG_isolated is still set, it will get cleared in the buddy when
+freeing the page via
+
+	page->flags &= ~PAGE_FLAGS_CHECK_AT_PREP;
+
+> 
+>>
+>>
+>> Also, I am not sure how reliable that page count check is here: if we'd
+>> have another speculative reference to the page, we might see
+>> "page_count(page) > 1" and not take that path, although the previous
+>> owner released the last reference.
+> 
+> IIUC, there should not be such speculative reference. The driver should have taken care
+> of it.
+
+How can you prevent any kind of speculative references?
+
+See isolate_movable_page() as an example, which grabs a speculative
+reference to then find out that the page is already isolated by someone
+else, to then back off.
+
+-- 
+Thanks,
+
+David / dhildenb
+
