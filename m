@@ -2,155 +2,224 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26F1CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 09:46:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76611C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 09:46:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232215AbiEKJqh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 05:46:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51646 "EHLO
+        id S234189AbiEKJqo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 05:46:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241332AbiEKJqQ (ORCPT
+        with ESMTP id S230020AbiEKJpf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 05:46:16 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51EE522BC7
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 02:46:10 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id j14so1373670plx.3
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 02:46:10 -0700 (PDT)
+        Wed, 11 May 2022 05:45:35 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 956D4177065
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 02:45:10 -0700 (PDT)
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24B7W0S8013766;
+        Wed, 11 May 2022 09:45:06 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : content-type : mime-version; s=corp-2021-07-09;
+ bh=X0Yww1Kg7PeIBiDcmdjPt6BGf8YbzC4XLqtbgO82sQs=;
+ b=StRa3YB4WL1VVcYH6iAFoj4OKv7TfRwOn436mobm2HsmnxoGIfjBrNyGfRmEK1P2vVVG
+ jsWZIjk+OAk/ajj0GgQ3cVdcbzgK9fXk9bZRB2eik5Es6ACtMcTWc4Y5jJOGkgC3WFQT
+ 92nkjswkF+YYk7iMdA4bhN2qJwLz7/u4VnVp3aJlIIP0Uh/BfCTG75XVkyHfrJ74QJf2
+ Ld/BAIvAMSsIDqh4UfZHp0BmxyRt/l7jCl2hXCFy68TgdQoteRx6C6OvVALWz7mZi4W7
+ 26PMkixGB2X7e3soXHmh/RzikfWJM58JvDLOnh4XsCdWxo2ViyLiW3q0xuqTwZo+jJqM Pw== 
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3fwgn9rvfr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 11 May 2022 09:45:06 +0000
+Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 24B9fKOt013923;
+        Wed, 11 May 2022 09:45:04 GMT
+Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2172.outbound.protection.outlook.com [104.47.56.172])
+        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fyg6ek4rg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 11 May 2022 09:45:04 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=K4owZlQmAYMuWa9Fr0bpAi/InRIHqs3VYoc5U7pUfIDdpBpRg4tFlTaYFrB0zXCFG9bvsOOnyFNb1Xk5PGoth386H8dfpaKNx692lP39Q0OCoW5yuPDsDACF5hNob2OXBbI0RYP1lP8DCwxJjmNwjqoX5RCZZfXevWt9dFLHIzYntN41Gc1N3uumZn0c1IFXH9p65BYjWzJQ0kIOWSAcHALBV5cQz2BzDxZpia6WTYHv8wkC0jAREsNi+qjc2sZKUWf3cG8pj4+hcDYKXSAmttBqtdGb11bVLmlVzja4Ux9asIjVNmIESt+wLgYejRl0TR6+Fam54OVHSvnrPIj0sA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=X0Yww1Kg7PeIBiDcmdjPt6BGf8YbzC4XLqtbgO82sQs=;
+ b=EIuTObCUAD02hzVZilQ0+1zrN8Gi6vv82AxYptyKeMGUL0PDA3KYeR2/gpF8j0k5cU6pSttBXRAWNXCZIe0LdrNyU3Hw7nvcG7uSy7D0273iNOukT6KfqjTWGzMw6ABC8WiGVjT9gzxXD553Sag0JY9s9jVd8UeF7B+eODOUtAv1/H28pWxg+CoVDA5MMJRsGCQMTL/oDXc1pHdKpRpiqsTHPnrfGjVLI2YyKh7/XragUAO0XB9vEVbjJEWp+yXr5arFJKJINvB1MzWOqfA/UdKsnXVhMNi3MmaVuEXlqztzsy0WAzchwUeu0NqEAi5e1AufkJkBTL19m3dk00yd9Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=tnyhr9C4u86T0lqYrI8D0t2XdDrJ442Ns675Ildd+iQ=;
-        b=Q+hGr50U5r7y+ABZgbwRjKwIrlkCY4Fbmk4XJC20JBI59bDP2DTmf3GXcrwElHQTdP
-         8dFrnWkgRJX+KOeHLnOOUashuYoweNIwoeoBsVsKcC1ZuhumaOcwkCUv+PydchpWyna8
-         pNAkYUmRtIMl4ClHqMh8GvcSuPH9Bx3N+1wa34t9/ouIgrmesgxIJMAg5dKob1eN7k6L
-         2haHAncIlPJyJwBWsOS3r3k3CcqkZqaxRUZ40hsI9ObrC3Lz4iIM7IyTFrDIoMU7L4uC
-         JkInJYvKlzK4lv0LfAuUxRC+E61wXdP6LStW3Ckr9oB3aPKV4ukrtiCuM839GCUpc6vV
-         kyoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tnyhr9C4u86T0lqYrI8D0t2XdDrJ442Ns675Ildd+iQ=;
-        b=7bmLw1Urb0771+SbxgVk/BEXx5tlLDfmBm0FvPi3P1XbGrhHMuJV+YZw86pcCMQKPv
-         t98WDLyptXKYdoIkck9/WSBOosccqWn0ifnaY2fJoj9XQfWEJ0YtyVmOdzk6yaaMfe8A
-         2A+iba8Go9MHhsOzqnYgvZQ0Hg1iGKDYu7ycxntSfrp8ocLBBqgNQZ6ouAGXNTgP71/z
-         49LahRTpshbfoW4nCupQ6TSuQeYryZ9vzRhRhsOhkJ/U0VfxKwq05hTuLVOzQl0NYGOy
-         I4hZBxzUiun3tR+1RRe2/u3ACY6YtBLBt0qtmeRs1ETCINuFpi2q06hCZy3XewsAAbUd
-         pY6g==
-X-Gm-Message-State: AOAM533c6/SqYjnDHSWf4E15aNcJs8ANyQD1OgO3U00MhMO1nOO0qqXJ
-        zfQFOQn8j8DI9wy844h9SUftoQ==
-X-Google-Smtp-Source: ABdhPJxIRZ1iBB/Hr0rz7Sunm9OPwb9CrQztMG9WxDcqkhIyyubwVwhbRR3ejI7COeCc5NEHiLzc7A==
-X-Received: by 2002:a17:902:bb90:b0:156:2c05:b34f with SMTP id m16-20020a170902bb9000b001562c05b34fmr25156995pls.53.1652262369846;
-        Wed, 11 May 2022 02:46:09 -0700 (PDT)
-Received: from localhost ([139.177.225.234])
-        by smtp.gmail.com with ESMTPSA id g23-20020a170902869700b0015ec44d25dasm1297219plo.235.2022.05.11.02.46.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 02:46:09 -0700 (PDT)
-Date:   Wed, 11 May 2022 17:45:57 +0800
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     Mike Kravetz <mike.kravetz@oracle.com>
-Cc:     corbet@lwn.net, akpm@linux-foundation.org, mcgrof@kernel.org,
-        keescook@chromium.org, yzaikin@google.com, osalvador@suse.de,
-        david@redhat.com, masahiroy@kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        duanxiongchun@bytedance.com, smuchun@gmail.com
-Subject: Re: [PATCH v10 4/4] mm: hugetlb_vmemmap: add
- hugetlb_optimize_vmemmap sysctl
-Message-ID: <YnuF1c5fMOzJnNfD@FVFYT0MHHV2J.usts.net>
-References: <20220509062703.64249-1-songmuchun@bytedance.com>
- <20220509062703.64249-5-songmuchun@bytedance.com>
- <970166e0-f70e-dd2a-c764-af23a8425f87@oracle.com>
- <9d64809f-db8c-0a3e-1ae9-d4a8ab79041e@oracle.com>
-MIME-Version: 1.0
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=X0Yww1Kg7PeIBiDcmdjPt6BGf8YbzC4XLqtbgO82sQs=;
+ b=oHjOAOd6tH8jVPDuvtIULBmuKWiduu/6wCplHZBryI7LkLZp38p2WkMUBg7fvONVPmmO0zGb7ejwsF1ID/iULTBsKLIYXRw+qlUi0w7lbXUbUhroU0SO33zkxRUDROH7BXxGYD8cQymZiMoOoMVDh+oCRUv+kcIdn/1bEW3s9xE=
+Received: from CY4PR1001MB2358.namprd10.prod.outlook.com
+ (2603:10b6:910:4a::32) by MWHPR10MB1455.namprd10.prod.outlook.com
+ (2603:10b6:300:20::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13; Wed, 11 May
+ 2022 09:45:02 +0000
+Received: from CY4PR1001MB2358.namprd10.prod.outlook.com
+ ([fe80::e929:b74c:f47c:4b6e]) by CY4PR1001MB2358.namprd10.prod.outlook.com
+ ([fe80::e929:b74c:f47c:4b6e%4]) with mapi id 15.20.5227.023; Wed, 11 May 2022
+ 09:45:02 +0000
+Date:   Wed, 11 May 2022 12:44:38 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     kbuild@lists.01.org, Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     lkp@intel.com, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [krzk-github:n/qcom-ufs-opp-v3 10/13] drivers/opp/core.c:1335
+ dev_pm_opp_set_rate() error: uninitialized symbol 'ret'.
+Message-ID: <202205101034.m9Hf56oV-lkp@intel.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9d64809f-db8c-0a3e-1ae9-d4a8ab79041e@oracle.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JN2P275CA0015.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:3::27)
+ To CY4PR1001MB2358.namprd10.prod.outlook.com (2603:10b6:910:4a::32)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7bff027b-b2a6-414a-1632-08da3332ebaa
+X-MS-TrafficTypeDiagnostic: MWHPR10MB1455:EE_
+X-Microsoft-Antispam-PRVS: <MWHPR10MB14550DA343B3D0D48EE1C8618EC89@MWHPR10MB1455.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: KGC5L4ixx45hQK0mi1QoYkMa6b6TlADUifJUUiNpd1h4z5DXVeIXWPEQmmg3lrjqr/XyP0gK2tjG09B/RwHbcNLbAMtMTwLcKPxsK0F/mM/0/JCM2mpZN1hrtbl5ML4FHXaYsapM9xwx9ZbZGAbdtgecPcO+uD6r/fOOXjUDIIBoIDbGhzPsosKNCtkJhWH386uEVYG5kMOEhGlIXS0m0FhL7L1eWEgn0JmaEcp6yg1PxKbxlt1n/wagNDQTWbvWNunbJKmIx+OaFRMeh2olr0Ui4MsdcPrsQ2aePvAvBhdc+ZmLSYt1VZ23lIwwUn7ElYBuwplATBnTUAK+lEWfTs5YfpRr8KXBaLjpuTnjUyMIVi52QpCOcJN0wktSHrYb55QHNUTC6cK0qKRbrK7smzboi5AiQ8py9aTYVzG5IfQaI5EdO4rVCUe0JMnC85Cy0308wF0rsnkBYYaAoJSYgrlimaBpFEdYHP/IcYyu8fqn7JfKSKNcetlm6JnDhjEbQxJXlyq+FOXR5QX+jzKpdTFf0he7Ro4eT8FPPnRz44YnLcFfCD3BqL7dytpk+B9kGnWXHr6YivHqvGb5M7PriPhc5rtgLQraGw5ZhkSSkZVyAun3t9iuFrFdmP2qmNTu50wvmEzgT4zlI5D0DmWJQmFosAwT1fMROZDXYVhF0xviVU/WO72ysV85xMWziZLrZkWFyKsu1eQXXN9omOg6bhFNcPNttV3TcOl4tM7w5Z8JBUZK958Ja6D4N4RJGiyr65IQHfO8oZjxH6CZ12nZZEOH2+c+Qucvkr+X37m9Jr0MW6vMyLf0VvYT1067ayTx6kmnarH5ebflwxkoPGiJwA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY4PR1001MB2358.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(38100700002)(36756003)(6506007)(8936002)(38350700002)(316002)(66476007)(66946007)(66556008)(83380400001)(6512007)(6666004)(5660300002)(8676002)(4326008)(9686003)(26005)(44832011)(86362001)(52116002)(6916009)(186003)(966005)(6486002)(508600001)(1076003)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?L6BfmpUmcKEPpQD86l2MmE2jKP9bKRi8cnlfWuyThyP/MmuwybEbwKibri4l?=
+ =?us-ascii?Q?4I10WjKQKtbhy4LG9sbjviYQpa5O99ljZ5vw8TDMUMbU4Qpe6Xa7S++9vXzP?=
+ =?us-ascii?Q?B4hPYMEu7CEvLrGWaP+kfXkUSN5TDF+IlbyHJgUJERvkxlttM/osukJn2sQo?=
+ =?us-ascii?Q?UnVuKCz8WdkYs9AzKX+Bb5j9D02Xg/Zq3fZj31tu5ACrSNdYnCRB3q7bZoAb?=
+ =?us-ascii?Q?r85/bPEKo8lkR+lUvPScywQqMaSYE2REzXUfvXymWQsMNCWki93Dax0ks6+9?=
+ =?us-ascii?Q?gGgoaMuyFHHLOENSJWg/OtGJQKNZNmOb+UYVthtWHVABxlP/OS0VnwUIg+XQ?=
+ =?us-ascii?Q?Zh55C/221sWrBQ/UP9IFrPCG5Z4Jn8c0ArGrhIqGMwyZtqfKZLExkww+dNrN?=
+ =?us-ascii?Q?hp47Nff2Hta8/8PhcjXhNTpS+/8858blRuFCHcmx4y7UKa0ssBKgS9ifLQcz?=
+ =?us-ascii?Q?1rV4eZT9gBdQm1CxFbnw5rkdYKTq0d/TohlIpdQ1pzr7KLPd4kcY7aA0DqO7?=
+ =?us-ascii?Q?5rtifs2KjRWl+EuZFbpQc3YhK9o2b3CPFJTgECsaDvaQ9jYGK3vE+HUeSsKT?=
+ =?us-ascii?Q?FeWSxSlHvaF5+dzkTZRtKlpO1zNDRQN1BfhEuOUpUdaKDMcyvgwgDziMcyOj?=
+ =?us-ascii?Q?U2bpLKGU1tacZw4tHq/P6ksesIbFz1zDIC+MmQHkMDIQl6sNL86w7+tGV8Mn?=
+ =?us-ascii?Q?nwM3t3h6jYjRMD+tEHEUhSTmk4dcvjTeO7uQn2P14XuL4Thd8aezqtMNEaME?=
+ =?us-ascii?Q?xh4jc8XRaFblbTl7qE/XlI49NKIz6otYgmvsIblCtF3wk8JqyxyOwdqRYPwh?=
+ =?us-ascii?Q?hbVqtdMeR3NNwwwcGm/QSFkIrfslFyiIkZ7LZYi2YThIma2n1PjDRTMDZ4iE?=
+ =?us-ascii?Q?MdNCwaUvyzvmRQrcGsksWUjZNblIj/+pTtIiFzjqPHd+J+/W3juBeiUw0UfE?=
+ =?us-ascii?Q?qzheqk5ryppfeS872j9MX2XLWXYAxynt/MmSYOUJT0y9iOm7ihc57khtBlKa?=
+ =?us-ascii?Q?axGsDiKdLQXsPlK22vR9r7pn7qVNpVZrq3Bro0dKw79phz4qK/ih1FcFbXpO?=
+ =?us-ascii?Q?kswpyE0Tn/n9KXuoK4xPEjUCL5h7wDRPYWW13oBBSZ69XrZmz8Nn4vjJQPsM?=
+ =?us-ascii?Q?rNYN5ogt3973m1io7JXms3zyJHuUM9rdvRe4MTorSwFG6ZEVHUhUkrsiIJWT?=
+ =?us-ascii?Q?OMq5wtL1GcLllitsxsZeFIyXMAy51dbmaBn9EhjFRdESlN6bxJitqXVyWixl?=
+ =?us-ascii?Q?/URTCf+9Dzxvl/jnLw28D/tHCc33zvIGpn0uRFxm0yeFlltE6agKHLWC6TxN?=
+ =?us-ascii?Q?U12u0SjZdWn/XVOa8ieMk4PHI+0ozurQ+TqPLYacz8xM/XZuS0vLQCYfvfwn?=
+ =?us-ascii?Q?8AdLs7YnBJ716smUCGzYPPCsdXFRa9ttIMLFCi5W1RfuV/PwZCLQcjQpJtkH?=
+ =?us-ascii?Q?QRmYSwHQmJyx0IghsmBtmcsHprA/QssC6tkeWD3/bzpOgYk8rFDLtswZ9J6J?=
+ =?us-ascii?Q?ycDqJW0XQ0VoeH63R1hCr2vtrOzD390jagmRv+2/tPYwqODi5TcyNVG3DLR0?=
+ =?us-ascii?Q?U3G6MfFT/8HbV3ECbatpHWvm1jWnVI+AlvpWR5jQKbe/B2VjSjLLx4SuNnJo?=
+ =?us-ascii?Q?oXz++5foBnbWIrBDrMMlryg9Qo7WOBCY2mdzGuTctwTZR7B61GmMDljZnONL?=
+ =?us-ascii?Q?mNgxkz+p3wE0n8YAFujWLKXpvH0fKXV8xRfox4OyxXferpovK2ouvSv5dkHy?=
+ =?us-ascii?Q?wFhpLt7HoAs0HqX1mVdMMBQWLmcHDmk=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7bff027b-b2a6-414a-1632-08da3332ebaa
+X-MS-Exchange-CrossTenant-AuthSource: CY4PR1001MB2358.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2022 09:45:02.2770
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Rz0+lzTUJ9vBZxilVrezfjxVigQBXbdnA+96z2nVALHjJ9iE3peRop7ENtGfmlsDo7UYMpOwMGPS6BixQaoUlwlto3HgYjgbv7HzB+k1rtE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR10MB1455
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.858
+ definitions=2022-05-11_03:2022-05-09,2022-05-11 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 malwarescore=0
+ mlxscore=0 phishscore=0 spamscore=0 bulkscore=0 adultscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205110043
+X-Proofpoint-GUID: UmHGYT-S1YvPEYuF5M3Rjv72RleAJDtb
+X-Proofpoint-ORIG-GUID: UmHGYT-S1YvPEYuF5M3Rjv72RleAJDtb
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 05:39:40PM -0700, Mike Kravetz wrote:
-> On 5/10/22 14:30, Mike Kravetz wrote:
-> > On 5/8/22 23:27, Muchun Song wrote:
-> >> diff --git a/include/linux/memory_hotplug.h b/include/linux/memory_hotplug.h
-> >> index 029fb7e26504..917112661b5c 100644
-> >> --- a/include/linux/memory_hotplug.h
-> >> +++ b/include/linux/memory_hotplug.h
-> >> @@ -351,4 +351,13 @@ void arch_remove_linear_mapping(u64 start, u64 size);
-> >>  extern bool mhp_supports_memmap_on_memory(unsigned long size);
-> >>  #endif /* CONFIG_MEMORY_HOTPLUG */
-> >>  
-> >> +#ifdef CONFIG_MHP_MEMMAP_ON_MEMORY
-> >> +bool mhp_memmap_on_memory(void);
-> >> +#else
-> >> +static inline bool mhp_memmap_on_memory(void)
-> >> +{
-> >> +	return false;
-> >> +}
-> >> +#endif
-> >> +
-> >>  #endif /* __LINUX_MEMORY_HOTPLUG_H */
-> >> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-> >> index 8605d7eb7f5c..86158eb9da70 100644
-> >> --- a/mm/hugetlb.c
-> >> +++ b/mm/hugetlb.c
-> >> @@ -1617,6 +1617,9 @@ static DECLARE_WORK(free_hpage_work, free_hpage_workfn);
-> >>  
-> >>  static inline void flush_free_hpage_work(struct hstate *h)
-> >>  {
-> >> +	if (!hugetlb_optimize_vmemmap_enabled())
-> >> +		return;
-> >> +
-> > 
-> > Hi Muchun,
-> > 
-> > In v9 I was suggesting that we may be able to eliminate the static_branch_inc/dec from the vmemmap free/alloc paths.  With this patch
-> > I believe hugetlb_optimize_vmemmap_enabled() is really checking
-> > 'has hugetlb vmemmap optimization been enabled' OR 'are there still vmemmap
-> > optimized hugetlb pages in the system'.  That may be confusing.
-> > 
-> 
-> Sorry, I forgot about the use of hugetlb_optimize_vmemmap_enabled in
-> page_fixed_fake_head.  We need to know if there are any vmemmap optimized
-> hugetlb pages in the system in this performance sensitive path.  So,
-> static_branch_inc/dec is indeed a good idea.
->
+tree:   https://github.com/krzk/linux n/qcom-ufs-opp-v3
+head:   22a49fd92d5e31234d4174cdf1fdade79f38ae3d
+commit: ff3c34983e1cca80d8c081ea99e0117c5c38c6c3 [10/13] PM: opp: allow control of multiple clocks
+config: x86_64-randconfig-m001-20220509 (https://download.01.org/0day-ci/archive/20220510/202205101034.m9Hf56oV-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
 
-Agree.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-> Please disregard my attempt below at removing static_branch_inc/dec.
-> 
-> I still find the name hugetlb_optimize_vmemmap_enabled a bit confusing as
-> it tests two conditions (enabled and pages in use).
->
+smatch warnings:
+drivers/opp/core.c:1335 dev_pm_opp_set_rate() error: uninitialized symbol 'ret'.
 
-Right. It tests two conditions.
+vim +/ret +1335 drivers/opp/core.c
 
-> You have already 'open coded' just the check for enabled in the routine
-> hugetlb_vmemmap_free with:
-> 
-> 	READ_ONCE(vmemmap_optimize_mode) == VMEMMAP_OPTIMIZE_OFF
-> 
-> How about having hugetlb_optimize_vmemmap_enabled() just check
-> vmemmap_optimize_mode in a manner like above?  Then rename
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1275  int dev_pm_opp_set_rate(struct device *dev, unsigned long target_freq)
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1276  {
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1277  	struct opp_table *opp_table;
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1278  	unsigned long freq = 0, temp_freq;
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1279  	struct dev_pm_opp *opp = NULL;
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1280  	int ret;
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1281  
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1282  	opp_table = _find_opp_table(dev);
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1283  	if (IS_ERR(opp_table)) {
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1284  		dev_err(dev, "%s: device's opp table doesn't exist\n", __func__);
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1285  		return PTR_ERR(opp_table);
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1286  	}
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1287  
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1288  	if (target_freq) {
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1289  		/*
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1290  		 * For IO devices which require an OPP on some platforms/SoCs
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1291  		 * while just needing to scale the clock on some others
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1292  		 * we look for empty OPP tables with just a clock handle and
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1293  		 * scale only the clk. This makes dev_pm_opp_set_rate()
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1294  		 * equivalent to a clk_set_rate()
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1295  		 */
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1296  		if (!_get_opp_count(opp_table)) {
+ff3c34983e1cca drivers/opp/core.c            Krzysztof Kozlowski 2022-04-05  1297  			if (opp_table->clks)
+ff3c34983e1cca drivers/opp/core.c            Krzysztof Kozlowski 2022-04-05  1298  				ret = _generic_set_opp_clk_only(dev,
+ff3c34983e1cca drivers/opp/core.c            Krzysztof Kozlowski 2022-04-05  1299  								opp_table->clks[0],
+ff3c34983e1cca drivers/opp/core.c            Krzysztof Kozlowski 2022-04-05  1300  								target_freq);
 
-I'm wondering is it necessary to do this? vmemmap_optimize_mode
-is a internal state in hugetlb_vmemmap.c, at leaset now there is
-no outside users who care about this.  Open-coding may be not
-an issue (I guess)?  If one day someone cares it, maybe it it
-the time to do this and rename hugetlb_optimize_vmemmap_enabled()?
-I'm not against doing this, just expressing some of my thoughts.
-What do you think, Mike?
+ret not set on else path
 
-> hugetlb_optimize_vmemmap_enabled to something like:
-> hugetlb_optimized_vmemmap_possible().  Sorry, I can think if a great name.
-> 
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1301  			goto put_opp_table;
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1302  		}
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1303  
+ff3c34983e1cca drivers/opp/core.c            Krzysztof Kozlowski 2022-04-05  1304  		if (opp_table->clks)
+ff3c34983e1cca drivers/opp/core.c            Krzysztof Kozlowski 2022-04-05  1305  			freq = clk_round_rate(opp_table->clks[0], target_freq);
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1306  		if ((long)freq <= 0)
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1307  			freq = target_freq;
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1308  
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1309  		/*
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1310  		 * The clock driver may support finer resolution of the
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1311  		 * frequencies than the OPP table, don't update the frequency we
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1312  		 * pass to clk_set_rate() here.
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1313  		 */
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1314  		temp_freq = freq;
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1315  		opp = _find_freq_ceil(opp_table, &temp_freq);
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1316  		if (IS_ERR(opp)) {
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1317  			ret = PTR_ERR(opp);
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1318  			dev_err(dev, "%s: failed to find OPP for freq %lu (%d)\n",
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1319  				__func__, freq, ret);
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1320  			goto put_opp_table;
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1321  		}
+ff3c34983e1cca drivers/opp/core.c            Krzysztof Kozlowski 2022-04-05  1322  		/*
+ff3c34983e1cca drivers/opp/core.c            Krzysztof Kozlowski 2022-04-05  1323  		 * opp->rates are used for scaling clocks, so be sure accurate
+ff3c34983e1cca drivers/opp/core.c            Krzysztof Kozlowski 2022-04-05  1324  		 * 'freq' is used, instead what was defined via e.g. Devicetree.
+ff3c34983e1cca drivers/opp/core.c            Krzysztof Kozlowski 2022-04-05  1325  		 */
+ff3c34983e1cca drivers/opp/core.c            Krzysztof Kozlowski 2022-04-05  1326  		opp->rates[0] = freq;
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1327  	}
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1328  
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1329  	ret = _set_opp(dev, opp_table, opp, freq);
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1330  
+386ba854d9f316 drivers/opp/core.c            Viresh Kumar        2021-01-21  1331  	if (target_freq)
+8a31d9d94297b1 drivers/base/power/opp/core.c Viresh Kumar        2017-01-23  1332  		dev_pm_opp_put(opp);
+052c6f19141dd1 drivers/base/power/opp/core.c Viresh Kumar        2017-01-23  1333  put_opp_table:
+5b650b388844f2 drivers/base/power/opp/core.c Viresh Kumar        2017-01-23  1334  	dev_pm_opp_put_opp_table(opp_table);
+052c6f19141dd1 drivers/base/power/opp/core.c Viresh Kumar        2017-01-23 @1335  	return ret;
+6a0712f6f199e7 drivers/base/power/opp/core.c Viresh Kumar        2016-02-09  1336  }
 
-At least I cannot come up with an appropriate name.
-hugetlb_optimize_vmemmap_may_enabled()? It's not easy to come
-up with a good name.
-
-Thanks.
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
 
