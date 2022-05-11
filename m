@@ -2,96 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCFABC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 14:19:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A61FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 14:22:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244514AbiEKOTh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 10:19:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38516 "EHLO
+        id S244527AbiEKOW2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 10:22:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234147AbiEKOTd (ORCPT
+        with ESMTP id S232954AbiEKOW0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 10:19:33 -0400
-Received: from smtp-bc0f.mail.infomaniak.ch (smtp-bc0f.mail.infomaniak.ch [IPv6:2001:1600:3:17::bc0f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1194566221
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 07:19:30 -0700 (PDT)
-Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4Kyxqh0RDQzMqHtD;
-        Wed, 11 May 2022 16:19:28 +0200 (CEST)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4Kyxqd6C0Lzlj4cK;
-        Wed, 11 May 2022 16:19:25 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1652278768;
-        bh=/n5oEC4CvxILBZQp6ChxximF4mWD7I5QTdFgyCOlYJY=;
-        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
-        b=h36XxvDcJBu2sTf7wBmxnAMEehwmVxMmhHKFTptP/LIZsqf5FuDGv21jJRbdukTH1
-         UjD0Vu6rGibTzYk/3q+3g9c8NVI/S6oNeLJZ08bF9Ks7g+L2BRuDkE9Yk/0kSh2ZCE
-         igV3+abVFVmazKYhYyCl8ju9vWlU5ztV3HAtmGLk=
-Message-ID: <152da06a-330d-3125-6f41-262e0751f41b@digikod.net>
-Date:   Wed, 11 May 2022 16:19:10 +0200
+        Wed, 11 May 2022 10:22:26 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0255E62CFF;
+        Wed, 11 May 2022 07:22:25 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CD59EED1;
+        Wed, 11 May 2022 07:22:24 -0700 (PDT)
+Received: from bogus (e103737-lin.cambridge.arm.com [10.1.197.49])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 24B343F66F;
+        Wed, 11 May 2022 07:22:23 -0700 (PDT)
+Date:   Wed, 11 May 2022 15:22:20 +0100
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Pierre Gondois <pierre.gondois@arm.com>
+Cc:     linux-kernel@vger.kernel.org, Ionela.Voinescu@arm.com,
+        Sudeep Holla <sudeep.holla@arm.com>, Dietmar.Eggemann@arm.com,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Robert Moore <robert.moore@intel.com>,
+        linux-acpi@vger.kernel.org, linux-pm@vger.kernel.org,
+        devel@acpica.org
+Subject: Re: [PATCH v1 2/5] ACPI: bus: Set CPPC _OSC bits for all and when
+ CPPC_LIB is supported
+Message-ID: <20220511142220.sjfhikuf6fydnrkb@bogus>
+References: <20220511134559.1466925-1-pierre.gondois@arm.com>
+ <20220511134559.1466925-2-pierre.gondois@arm.com>
 MIME-Version: 1.0
-User-Agent: 
-Content-Language: en-US
-To:     Miguel Ojeda <ojeda@kernel.org>
-Cc:     Andy Whitcroft <apw@canonical.com>,
-        Brian Norris <briannorris@chromium.org>,
-        Dwaipayan Ray <dwaipayanray1@gmail.com>,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>,
-        Joe Perches <joe@perches.com>,
-        Kees Cook <keescook@chromium.org>,
-        Konstantin Meskhidze <konstantin.meskhidze@huawei.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Paul Moore <paul@paul-moore.com>, Tom Rix <trix@redhat.com>,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-References: <20220506160106.522341-1-mic@digikod.net>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-Subject: Re: [PATCH v2 0/5] Fix clang-format configuration according to
- checkpatch.pl
-In-Reply-To: <20220506160106.522341-1-mic@digikod.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220511134559.1466925-2-pierre.gondois@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Miguel, what do you think about this series? Do you plan to take it for 
-the next merge window? FYI, I plan to use it for Landlock [1] and send 
-it for the next merge window. Could you publish your pending 
-clang-format changes so that I can make sure everything is OK?
+On Wed, May 11, 2022 at 03:45:56PM +0200, Pierre Gondois wrote:
+> The _OSC method allows the OS and firmware to communicate about
+> supported features/capabitlities. It also allows the OS to take
+> control of some features.
+> 
+> In ACPI 6.4, s6.2.11.2 Platform-Wide OSPM Capabilities, the CPPC
+> (resp. v2) bit should be set by the OS if it 'supports controlling
+> processor performance via the interfaces described in the _CPC
+> object'.
+> 
+> The OS supports CPPC and parses the _CPC object only if
+> CONFIG_ACPI_CPPC_LIB is set. Replace the x86 specific
+> boot_cpu_has(X86_FEATURE_HWP) dynamic check with an arch
+> generic CONFIG_ACPI_CPPC_LIB build-time check.
+> 
+> Note:
+> CONFIG_X86_INTEL_PSTATE selects CONFIG_ACPI_CPPC_LIB.
 
-[1] https://lore.kernel.org/r/20220506160513.523257-1-mic@digikod.net
+While this is work as per the spec, by not sure what kind of ACPI firmware are
+in the wild. So be prepared to relax/constrain to original feature check
+for x86, unfortunate but may be needed.
 
-On 06/05/2022 18:01, Mickaël Salaün wrote:
-> Hi,
-> 
-> This series brings some improvements to the clang-format configuration
-> to make it compatible with the checkpatch.pl rules:
-> https://lore.kernel.org/r/8b6b252b-47a6-9d52-f0bd-10d3bc4ad244@digikod.net
-> 
-> I also found that the for_each issue has already been talk about here:
-> https://lore.kernel.org/lkml/CAHmME9ofzanQTBD_WYBRW49d+gM77rCdh8Utdk4+PM9n_bmKwA@mail.gmail.com/
-> 
-> I use these changes for Landlock.
-> 
-> This is based on v5.18-rc5.
-> 
-> Previous version:
-> https://lore.kernel.org/r/20220412153906.428179-1-mic@digikod.net
-> 
-> Regards,
-> 
-> Mickaël Salaün (5):
->    clang-format: Update and extend the for_each list with tools/
->    clang-format: Update to clang-format >= 6
->    clang-format: Fix goto labels indentation
->    clang-format: Fix empty curly braces
->    clang-format: Fix space after for_each macros
-> 
->   .clang-format | 216 +++++++++++++++++++++++++++++++++++++++-----------
->   1 file changed, 169 insertions(+), 47 deletions(-)
-> 
-> 
-> base-commit: 672c0c5173427e6b3e2a9bbb7be51ceeec78093a
+Anyways,
+
+Reviewed-by: Sudeep Holla <sudeep.holla@arm.com>
+
+-- 
+Regards,
+Sudeep
