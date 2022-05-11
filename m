@@ -2,151 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD1DFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 00:22:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E32BCC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 00:26:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239004AbiEKAWi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 20:22:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33038 "EHLO
+        id S239449AbiEKA0d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 20:26:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231645AbiEKAWc (ORCPT
+        with ESMTP id S233256AbiEKA0Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 20:22:32 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5956F51589
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 17:22:31 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id i11so909511ybq.9
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 17:22:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DdS4LZ7mqGBxPaeGzqFu6xL7PLhOVbvjUXM7la61o/M=;
-        b=XgCUr/iOevJS21fhdEkGGCivLNeOLhoAWYumXsPp88f8f/zg+5r5oQHJyI4Ie99jFI
-         agkIVkxUbE8yXd6i6Us8qlSyT/Th3Y/mrwqi1qoVavNqEeWz0RweVhVtAqH3vjyRYzQ3
-         ItTBNXxi/bmOSBRTTNxUjknJVTUCg+RndVzGtDIYpws852Kh9mUQXEBSpuS563rOh/hE
-         bfDND2E5hCJkaOpuX/tSNFmiHcrXBGanJACUQmkrx5DOn3b2P9kZmXBCR1m7VvrDkv6A
-         jKVcgfEuIoysQ3aA0Mo3H3SGEIPWd/6Z/VCs8DchZjZGpV1XFn4R47tG4UWTYddAgCIb
-         cA8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DdS4LZ7mqGBxPaeGzqFu6xL7PLhOVbvjUXM7la61o/M=;
-        b=35r7BS9G88Ouppp/ZPP9fQR+7LB4hXL6vqYbm1e10Lmyt6j08giVSnJC6nKwjiO6ya
-         iNz1pTXuffb4Dkbdgdg9wVfikQVjJ6hWZmQEJMkqG1hWrY1d7Af6XBotQ+22N6/3yIzo
-         Hdc9SD9DtvrCIDgykTGwpGlpVxAbS6nM1d4VI/sZlf+FYETCgYFdTLEV1Bx9kTreDZHF
-         AVfK4IrHXLhwy6CJL6vgeoQcPEfSdukbQdOCf0AUTtgovMFAP6NMWUdvBiADgPXAP+1i
-         9QIxcKAaGi4XNx6/AEwapMUgfCLNoeTBVOki0XkDZb9TLB6JFkw0ZdkwF2a5oRq9LQkY
-         mMZg==
-X-Gm-Message-State: AOAM532iLEzbX5lACa9pdKqj8s4hGuWOWsVM3fzz5c89zmwz4JVmcEGN
-        6O6Ozhzv1B/0CXP46RphHmyB4dm8EH/guBHrjaeAUw==
-X-Google-Smtp-Source: ABdhPJz4MB95vmfbkO8RYAD9atniqUztRKCagWj0vKt6uZa5Ph2V5Tsln22BbnQi2fFneVAxvQrYIjwoAXhjbIjn+NQ=
-X-Received: by 2002:a25:fb10:0:b0:64a:d339:3f38 with SMTP id
- j16-20020a25fb10000000b0064ad3393f38mr11111060ybe.234.1652228550563; Tue, 10
- May 2022 17:22:30 -0700 (PDT)
+        Tue, 10 May 2022 20:26:24 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B47D25C86A;
+        Tue, 10 May 2022 17:26:21 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 24B0Q2oF088303;
+        Tue, 10 May 2022 19:26:02 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1652228762;
+        bh=r+u+xNyw/SIOrcRn/x4HsI3UIutpES3API0Xd2YG4N0=;
+        h=From:To:CC:Subject:Date;
+        b=qju2WNU5uyOIWzk4jWq4qJpImFpaNa2FUwp3sTg252GTX1KMLbLlPS2QWDdXBbQ8J
+         2iayAPKXHjilADVd66s7XZTgLst77J0NdOHrJftgzkmfJ0+vPTLauvjKWZpVolMSVx
+         7LtEpk8W2JPW920wnViEfy/eBFOD6rjpxuYWMv0E=
+Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 24B0Q2FP016478
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 10 May 2022 19:26:02 -0500
+Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE109.ent.ti.com
+ (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 10
+ May 2022 19:26:01 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 10 May 2022 19:26:01 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 24B0Q1uI028296;
+        Tue, 10 May 2022 19:26:01 -0500
+From:   Nishanth Menon <nm@ti.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alessandro Zummo <a.zummo@towertech.it>
+CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-rtc@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Andrew Davis <afd@ti.com>, Nishanth Menon <nm@ti.com>
+Subject: [PATCH V2 0/2] rtc: Introduce rtc-ti-k3
+Date:   Tue, 10 May 2022 19:25:57 -0500
+Message-ID: <20220511002600.27964-1-nm@ti.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20220510192944.2408515-1-dianders@chromium.org> <20220510122726.v3.3.Iba4b9bf6c7a1ee5ea2835ad7bd5eaf84d7688520@changeid>
-In-Reply-To: <20220510122726.v3.3.Iba4b9bf6c7a1ee5ea2835ad7bd5eaf84d7688520@changeid>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Wed, 11 May 2022 03:22:19 +0300
-Message-ID: <CAA8EJpqBnR_-YaNj-hc6fjfeRX-aTBhuzCFKg77QEyANu37cnA@mail.gmail.com>
-Subject: Re: [PATCH v3 3/4] drm/bridge: Add devm_drm_bridge_add()
-To:     Douglas Anderson <dianders@chromium.org>
-Cc:     dri-devel@lists.freedesktop.org,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Philip Chen <philipchen@chromium.org>,
-        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        Stephen Boyd <swboyd@chromium.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 10 May 2022 at 22:30, Douglas Anderson <dianders@chromium.org> wrote:
->
-> This adds a devm managed version of drm_bridge_add(). Like other
-> "devm" function listed in drm_bridge.h, this function takes an
-> explicit "dev" to use for the lifetime management. A few notes:
-> * In general we have a "struct device" for bridges that makes a good
->   candidate for where the lifetime matches exactly what we want.
-> * The "bridge->dev->dev" device appears to be the encoder
->   device. That's not the right device to use for lifetime management.
->
-> Suggested-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Hi,
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+This series adds support for TI K3 RTC as instantiated on TI's AM625
+SoC.
 
-> ---
->
-> Changes in v3:
-> - Patch ("drm/bridge: Add devm_drm_bridge_add()") new for v3.
->
->  drivers/gpu/drm/drm_bridge.c | 23 +++++++++++++++++++++++
->  include/drm/drm_bridge.h     |  1 +
->  2 files changed, 24 insertions(+)
->
-> diff --git a/drivers/gpu/drm/drm_bridge.c b/drivers/gpu/drm/drm_bridge.c
-> index c96847fc0ebc..e275b4ca344b 100644
-> --- a/drivers/gpu/drm/drm_bridge.c
-> +++ b/drivers/gpu/drm/drm_bridge.c
-> @@ -170,6 +170,29 @@ void drm_bridge_add(struct drm_bridge *bridge)
->  }
->  EXPORT_SYMBOL(drm_bridge_add);
->
-> +static void drm_bridge_remove_void(void *bridge)
-> +{
-> +       drm_bridge_remove(bridge);
-> +}
-> +
-> +/**
-> + * devm_drm_bridge_add - devm managed version of drm_bridge_add()
-> + *
-> + * @dev: device to tie the bridge lifetime to
-> + * @bridge: bridge control structure
-> + *
-> + * This is the managed version of drm_bridge_add() which automatically
-> + * calls drm_bridge_remove() when @dev is unbound.
-> + *
-> + * Return: 0 if no error or negative error code.
-> + */
-> +int devm_drm_bridge_add(struct device *dev, struct drm_bridge *bridge)
-> +{
-> +       drm_bridge_add(bridge);
-> +       return devm_add_action_or_reset(dev, drm_bridge_remove_void, bridge);
-> +}
-> +EXPORT_SYMBOL(devm_drm_bridge_add);
-> +
->  /**
->   * drm_bridge_remove - remove the given bridge from the global bridge list
->   *
-> diff --git a/include/drm/drm_bridge.h b/include/drm/drm_bridge.h
-> index f27b4060faa2..42aec8612f37 100644
-> --- a/include/drm/drm_bridge.h
-> +++ b/include/drm/drm_bridge.h
-> @@ -796,6 +796,7 @@ drm_priv_to_bridge(struct drm_private_obj *priv)
->  }
->
->  void drm_bridge_add(struct drm_bridge *bridge);
-> +int devm_drm_bridge_add(struct device *dev, struct drm_bridge *bridge);
->  void drm_bridge_remove(struct drm_bridge *bridge);
->  int drm_bridge_attach(struct drm_encoder *encoder, struct drm_bridge *bridge,
->                       struct drm_bridge *previous,
-> --
-> 2.36.0.550.gb090851708-goog
->
+Documentation in the current early release version of Technical
+Reference Manual is incomplete at the moment, but due to be updated
+later this year.
+https://www.ti.com/lit/pdf/spruiv7
+
+Testing log can be found here (next-20220509 + additional node for dts):
+	https://gist.github.com/nmenon/df536a01c3c14cf8b6c809aec8972339
 
 
---
-With best wishes
-Dmitry
+Changes since V1:
+* bindings updated for review comments
+* driver modified to move to regmap fields and review comments
+  incorporated.
+
+V1: https://lore.kernel.org/all/20220412073138.25027-1-nm@ti.com/
+
+Nishanth Menon (2):
+  dt-bindings: rtc: Add TI K3 RTC description
+  rtc: Introduce ti-k3-rtc
+
+ .../devicetree/bindings/rtc/ti,k3-rtc.yaml    |  61 ++
+ drivers/rtc/Kconfig                           |  11 +
+ drivers/rtc/Makefile                          |   1 +
+ drivers/rtc/rtc-ti-k3.c                       | 688 ++++++++++++++++++
+ 4 files changed, 761 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/rtc/ti,k3-rtc.yaml
+ create mode 100644 drivers/rtc/rtc-ti-k3.c
+
+-- 
+2.31.1
+
