@@ -2,156 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6FD4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 07:13:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9336FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 07:14:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242723AbiEKHNc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 03:13:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36794 "EHLO
+        id S235139AbiEKHOc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 03:14:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234682AbiEKHN2 (ORCPT
+        with ESMTP id S234003AbiEKHOa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 03:13:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CF19C6FD1F
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 00:13:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652253203;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=sQHjzpYWUbx4DIbzDfueaE5axYdznIwfVWGZh8Ng7j8=;
-        b=HCshzj2BYoQDbguzjJ2fnhxSK+/VRtg97LKEp9mwRKjKSweXD1FQYsXvZj73IT7eA/5TUv
-        1OmZTwwbNSUATvpO6nt7Fhemk1cBxkactJb4n3TAxsOqNxV1plDcYb1waMX+gEyJplAi/T
-        ttgFIgdzUvjyzbXRvW3WZlAZbdWjPdQ=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-500-v0TonRvYN-CEXdV5Q_3ANw-1; Wed, 11 May 2022 03:13:22 -0400
-X-MC-Unique: v0TonRvYN-CEXdV5Q_3ANw-1
-Received: by mail-wr1-f69.google.com with SMTP id w4-20020adfbac4000000b0020acba4b779so460872wrg.22
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 00:13:22 -0700 (PDT)
+        Wed, 11 May 2022 03:14:30 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94252197F6C
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 00:14:29 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id g8so1228059pfh.5
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 00:14:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Nb9VOTPefU04ZkWaBIc27j2TxwZGEgIDTFhjne1We7k=;
+        b=NRf2yM722qnKh9mZGPSorWXO6zKi4XFNmvqg2E7czymLhFBvWQmc7fnHhY7TcE2+HX
+         zKsp0jTJmGI9rqIQwFflS32GQmXqxitT3Yqj9U26KCOTv69fat121HcDKP8G+JCstpg6
+         HF14zXrKDPfn1Qo+Yq+I3itwK7ASvgH9u4uglPkqwbT8qTeB9dGeWYFAENa435yzdpme
+         v8b4WH1iO3a80yOq9g6WIt1IP+WlqB1VQjHMel5vhENaOUY+/Rh7dm741Rx/DpxHI/AO
+         1FZUuQCn44p2Nq28Wmv5hbPBCX2+sJnufbcE38l3lKb55qiB9cxO30V4gY6Suoplz1Pe
+         9+1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=sQHjzpYWUbx4DIbzDfueaE5axYdznIwfVWGZh8Ng7j8=;
-        b=DXkEgCARIhhsVRk8dy+4OoSt9b9K5vH3RFdD+ZigvXc+DBhRak9fHCwrNEsKFJUFJf
-         5n62CNq2HUsZwGL7rSMgS//T9suNe32eh0fqiWIDIPBWYvwisCCcVKI/ZVmb24xwCIIk
-         2DUlxbfctn02i4HiTAgn1lJOK7dB1+dVWlhcZy5fTPdB/0Of9HOWoXJthbDiP648d7u3
-         1VmreWA1YdAojF+zgVlaIim8PEdjQ4raV6OZodNEg4fdqv0Aq140SQZ1lTqxpDxWikE4
-         iORbPk+vsHYbbTE39Lh5b7cclR/JfuXz8fJSUsfJD8u38D3Y9TJrXDvoMPrTJDIefdBn
-         3NxA==
-X-Gm-Message-State: AOAM533MILVhz67nWj0KaD35KqtVYVNUI6Pcs6oCU6rF8oyAfdfRFLEY
-        U9Cm8df4QCvP27Btqphznh6xZezK9IlSmhBtfzTKTj9fo3Oj7XOrcJWMerE/efjR5HrzU4SdmWw
-        4NJ9m3SWZJUzz/bOHcGslblq/
-X-Received: by 2002:a05:6000:156e:b0:20c:5218:8907 with SMTP id 14-20020a056000156e00b0020c52188907mr21286290wrz.297.1652253201347;
-        Wed, 11 May 2022 00:13:21 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxxTTooDnLmLT4EcFTkOSjKBlkOtgpHLONSlsyygQ8QPYyAJluPBdZsBfMCA6OcI1SOoePXNQ==
-X-Received: by 2002:a05:6000:156e:b0:20c:5218:8907 with SMTP id 14-20020a056000156e00b0020c52188907mr21286271wrz.297.1652253201133;
-        Wed, 11 May 2022 00:13:21 -0700 (PDT)
-Received: from redhat.com ([2.55.46.133])
-        by smtp.gmail.com with ESMTPSA id o20-20020a05600c2e1400b003944821105esm1239510wmf.2.2022.05.11.00.13.18
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Nb9VOTPefU04ZkWaBIc27j2TxwZGEgIDTFhjne1We7k=;
+        b=oApAcqZWiQQJ8c5k9jzroxiye6ChAqU52R7nQ5mjdUjqq3yZAqoPNIYXhnaRm4l3Wu
+         wt5iDgSiV0A5LsgGa/JGPMHokCZnkqBCsJpYq8j97PqZaLkMvd3pSfu1s0OOW7asGH9b
+         oX9bT0Dd/jqZEVgpJr323my0QwU3bHrBXrccA1nJEvyPChYKqzOQ8dJnJ/csE309wBFD
+         0JmC5tyBNU+Ek6endyZDUbbTyV/++e+X8G6uOypC+4ujisbeZS+xV9pdx35j6QK6VnTm
+         vIUbjt1eylBwK5fNm2oorTrbBXpOOZKgHbkO3tPmN2CTCQCAr1d8aeFCnqojTCWxdK7E
+         vKtw==
+X-Gm-Message-State: AOAM532ZlAawq6mIj7xTFzpLD6Vc0ibgFtHQUDyP9DGKZA6DSiUgp/to
+        +WsjJjoaUvqZTyUqBpEIOwg=
+X-Google-Smtp-Source: ABdhPJwMvmJ5ywQPZGxmf5Id/CgUeArECSdrmuUEnwfJpS/n3PCOxDtIOzC/ZdQXNUEjmY3bZoOjyQ==
+X-Received: by 2002:a05:6a00:2402:b0:4e1:46ca:68bd with SMTP id z2-20020a056a00240200b004e146ca68bdmr23615409pfh.70.1652253269139;
+        Wed, 11 May 2022 00:14:29 -0700 (PDT)
+Received: from localhost.localdomain ([202.120.234.246])
+        by smtp.googlemail.com with ESMTPSA id o6-20020a17090a420600b001cd498dc153sm1423840pjg.3.2022.05.11.00.14.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 00:13:19 -0700 (PDT)
-Date:   Wed, 11 May 2022 03:13:16 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
-        KVM list <kvm@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        mie@igel.co.jp
-Subject: Re: [GIT PULL] virtio: last minute fixup
-Message-ID: <20220511030407-mutt-send-email-mst@kernel.org>
-References: <20220510082351-mutt-send-email-mst@kernel.org>
- <CAHk-=wjPR+bj7P1O=MAQWXp0Mx2hHuNQ1acn6gS+mRo_kbo5Lg@mail.gmail.com>
- <YnrxTMVRtDnGA/EK@dev-arch.thelio-3990X>
- <CAHk-=wgAk3NEJ2PHtb0jXzCUOGytiHLq=rzjkFKfpiuH-SROgA@mail.gmail.com>
+        Wed, 11 May 2022 00:14:28 -0700 (PDT)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Miaoqian Lin <linmq006@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mike Waychison <mikew@google.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH] firmware: dmi-sysfs: Fix memory leak in dmi_sysfs_register_handle
+Date:   Wed, 11 May 2022 11:14:19 +0400
+Message-Id: <20220511071421.9769-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wgAk3NEJ2PHtb0jXzCUOGytiHLq=rzjkFKfpiuH-SROgA@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 04:50:47PM -0700, Linus Torvalds wrote:
-> On Tue, May 10, 2022 at 4:12 PM Nathan Chancellor <nathan@kernel.org> wrote:
-> >
-> > For what it's worth, as someone who is frequently tracking down and
-> > reporting issues, a link to the mailing list post in the commit message
-> > makes it much easier to get these reports into the right hands, as the
-> > original posting is going to have all relevant parties in one location
-> > and it will usually have all the context necessary to triage the
-> > problem.
-> 
-> Honestly, I think such a thing would be trivial to automate with
-> something like just a patch-id lookup, rather than a "Link:".
-> 
-> And such a lookup model ("where was this patch posted") would work for
-> <i>any</i> patch (and often also find previous unmodified versions of
-> it when it has been posted multiple times).
-> 
-> I suspect that most of the building blocks of such automation
-> effectively already exists, since I think the lore infrastructure
-> already integrates with patchwork, and patchwork already has a "look
-> up by patch id".
-> 
-> Wouldn't it be cool if you had some webby interface to just go from
-> commit SHA1 to patch ID to a lore.kernel.org lookup of where said
-> patch was done?
+kobject_init_and_add() takes reference even when it fails.
+According to the doc of kobject_init_and_add()
 
-Yes, that would be cool!
+   If this function returns an error, kobject_put() must be called to
+   properly clean up the memory associated with the object.
 
-> Of course, I personally tend to just search by the commit contents
-> instead, which works just about as well. If the first line of the
-> commit isn't very unique, add a "f:author" to the search.
->
-> IOW, I really don't find much value in the "Link to original
-> submission", because that thing is *already* trivial to find, and the
-> lore search is actually better in many ways (it also tends to find
-> people *reporting* that commit, which is often what you really want -
-> the reason you're doing the search is that there's something going on
-> with it).
-> 
-> My argument here really is that "find where this commit was posted" is
-> 
->  (a) not generally the most interesting thing
-> 
->  (b) doesn't even need that "Link:" line.
-> 
-> but what *is* interesting, and where the "Link:" line is very useful,
-> is finding where the original problem that *caused* that patch to be
-> posted in the first place.
-> 
-> Yes, obviously you can find that original problem by searching too if
-> the commit message has enough other information.
-> 
-> For example, if there is an oops quoted in the commit message, I have
-> personally searched for parts of that kind of information to find the
-> original report and discussion.
-> 
-> So that whole "searching is often an option" is true for pretty much
-> _any_ Link:, but I think that for the whole "original submission" it's
-> so mindless and can be automated that it really doesn't add much real
-> value at all.
-> 
->                 Linus
+Fix this issue by calling kobject_put().
 
-For me a problematic use-case is multiple versions of the patchset.
-So I have a tree and I apply a patchset, start testing etc. Meanwhile author
-posts another version. At that point I want to know which version
-did I apply. Since people put that within [] in the subject, it
-gets stripped off.
+Fixes: 948af1f0bbc8 ("firmware: Basic dmi-sysfs support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+ drivers/firmware/dmi-sysfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thinking about it some more, how about sticking a link to the *cover
-letter* in the commit, instead?  That would serve an extra useful purpose of
-being able to figure out which patches are part of the same patchset.
-And maybe Change "Link:" to "Patchset:" or "Cover-letter:"?
-
+diff --git a/drivers/firmware/dmi-sysfs.c b/drivers/firmware/dmi-sysfs.c
+index 3a353776bd34..66727ad3361b 100644
+--- a/drivers/firmware/dmi-sysfs.c
++++ b/drivers/firmware/dmi-sysfs.c
+@@ -604,7 +604,7 @@ static void __init dmi_sysfs_register_handle(const struct dmi_header *dh,
+ 				    "%d-%d", dh->type, entry->instance);
+ 
+ 	if (*ret) {
+-		kfree(entry);
++		kobject_put(&entry->kobj);
+ 		return;
+ 	}
+ 
 -- 
-MST
+2.25.1
 
