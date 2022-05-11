@@ -2,137 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5364CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 06:46:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EBE5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 06:46:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242304AbiEKGqV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 02:46:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46830 "EHLO
+        id S233126AbiEKGqh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 02:46:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231364AbiEKGqT (ORCPT
+        with ESMTP id S242315AbiEKGq1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 02:46:19 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FE5E2EA39
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 23:46:16 -0700 (PDT)
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24B4hxSG021004;
-        Wed, 11 May 2022 08:45:56 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : subject
- : from : to : cc : in-reply-to : references : content-type :
- content-transfer-encoding : date : mime-version; s=selector1;
- bh=9YYnwNfMMp9aQpgH4lmO552ifYtlfvbBnjgFiJluffU=;
- b=cxDlvgTRxykxPoFoXt2jquDUKz3zJrNbAYkJFegkgL+zwXF6sA51FRSnYjQt5AWGA0/n
- pDopkqerMw3z2hAComH3g8i8Ql56TSj7ukGM7lNvGwAvZXEgt/2WB9Fy1f0hGWV2jf07
- yyWV4MSssrmhKrjjb21j4RiVf0sDpsn69upFZM4hueqoxQhZ1hnXWjhhi+x8WI3llclo
- s9IorcdMgaQZxSUYtUt9ttw8RuOfS9qjWM1mzMHFltnM36ZaepZriFtuZD+Z5+nJ+AAm
- KvkguFN0TUL+D1jwMPWqcl03189Z4HXcgamzKodZ61wy3J4B6NhyCGEkMWStDcjOzCfi Tg== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3fwe6kw5ak-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 11 May 2022 08:45:56 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 30F2410002A;
-        Wed, 11 May 2022 08:45:56 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 277A020FA2D;
-        Wed, 11 May 2022 08:45:56 +0200 (CEST)
-Received: from [192.168.8.15] (10.75.127.45) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Wed, 11 May
- 2022 08:45:54 +0200
-Message-ID: <05d9a88de4a7c415545043fab1e577e7f6151b8c.camel@foss.st.com>
-Subject: Re: [PATCH 1/7] irqchip/stm32-exti: set_affinity return
- IRQ_SET_MASK_OK_DONE if no parent
-From:   Antonio Borneo <antonio.borneo@foss.st.com>
-To:     Marc Zyngier <maz@kernel.org>
-CC:     Thomas Gleixner <tglx@linutronix.de>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Ludovic Barre <ludovic.barre@foss.st.com>,
-        Loic Pallardy <loic.pallardy@foss.st.com>,
-        Pascal Paillet <p.paillet@foss.st.com>
-In-Reply-To: <878rr96xuo.wl-maz@kernel.org>
-References: <20220510164123.557921-1-antonio.borneo@foss.st.com>
-         <878rr96xuo.wl-maz@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Date:   Wed, 11 May 2022 08:39:43 +0200
+        Wed, 11 May 2022 02:46:27 -0400
+Received: from smtp2.math.uni-bielefeld.de (smtp2.math.uni-bielefeld.de [129.70.45.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED0F533A37;
+        Tue, 10 May 2022 23:46:22 -0700 (PDT)
+Received: from math.uni-bielefeld.de (kvm01.math.uni-bielefeld.de [129.70.45.15])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by smtp2.math.uni-bielefeld.de (Postfix) with ESMTPSA id 8825060283;
+        Wed, 11 May 2022 08:46:18 +0200 (CEST)
+Date:   Wed, 11 May 2022 08:46:17 +0200
+From:   Jean Rene Dawin <jdawin@math.uni-bielefeld.de>
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     "H . Nikolaus Schaller" <hns@goldelico.com>,
+        Huijin Park <huijin.park@samsung.com>,
+        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org
+Subject: Re: [PATCH] mmc: core: Restore (almost) the busy polling for
+ MMC_SEND_OP_COND
+Message-ID: <20220511064617.GA28982@math.uni-bielefeld.de>
+References: <20220304105656.149281-1-ulf.hansson@linaro.org>
+ <CAPDyKFr1PzSaiKqB4ZoqTS_8bGsEH=aB3ARhxyGu+cYeRqeBew@mail.gmail.com>
+ <20220504054652.GA7851@math.uni-bielefeld.de>
+ <CAPDyKFrBVyYx+BybGR2P8paS6qA=V2EHAXH+vPUc9JzxoXn6+g@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Evolution 3.44.1 
-X-Originating-IP: [10.75.127.45]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-11_02,2022-05-10_01,2022-02-23_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAPDyKFrBVyYx+BybGR2P8paS6qA=V2EHAXH+vPUc9JzxoXn6+g@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Marc,
+Ulf Hansson wrote on Wed  4/05/22 11:08:
+> On Wed, 4 May 2022 at 07:46, Jean Rene Dawin
+> <jdawin@math.uni-bielefeld.de> wrote:
+> >
+> > Ulf Hansson wrote on Mon  7/03/22 13:17:
+> > > On Fri, 4 Mar 2022 at 11:57, Ulf Hansson <ulf.hansson@linaro.org> wrote:
+> > > >
+> > > > Commit 76bfc7ccc2fa ("mmc: core: adjust polling interval for CMD1"),
+> > > > significantly decreased the polling period from ~10-12ms into just a couple
+> > > > of us. The purpose was to decrease the total time spent in the busy polling
+> > > > loop, but unfortunate it has lead to problems, that causes eMMC cards to
+> > > > never gets out busy and thus fails to be initialized.
+> > > >
+> > > > To fix the problem, but also to try to keep some of the new improved
+> > > > behaviour, let's start by using a polling period of 1-2ms, which then
+> > > > increases for each loop, according to common polling loop in
+> > > > __mmc_poll_for_busy().
+> > > >
+> > > > Reported-by: Jean Rene Dawin <jdawin@math.uni-bielefeld.de>
+> > > > Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
+> > > > Cc: Huijin Park <huijin.park@samsung.com>
+> > > > Fixes: 76bfc7ccc2fa ("mmc: core: adjust polling interval for CMD1")
+> > > > Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+> > > > ---
+> > > >
+> > > > Jean Rene and H. Nikolaus, if this doesn't work, please try extending the
+> > > > the MMC_OP_COND_PERIOD_US a bit, to so see if we can find a value that always
+> > > > works.
+> > > >
+> > > > Kind regards
+> > > > Uffe
+> >
+> > >
+> > > Applied for fixes and by adding two tested-by tags from you, thanks!
+> > >
+> > > Kind regards
+> > > Uffe
+> >
+> > Hi,
+> >
+> > with the current value of MMC_OP_COND_PERIOD_US = 1ms I still see
+> >
+> > mmc1: Card stuck being busy! __mmc_poll_for_busy
+> > mmc1: error -110 doing runtime resume
+> >
+> > regularly. The same with 2ms. Setting it to 4ms makes the messages go
+> > away. Would it be ok to increase MMC_OP_COND_PERIOD_US to 4ms?
+> 
+> It doesn't look like we have a very good alternative - unless the
+> problem is tied to a particular type of eMMC card, is it? (If so, we
+> can add a card-quirk).
+> 
+> The only other option I see, would then be to add a generic DT
+> property for eMMCs, that allows us to specify the OP_COND polling
+> period for it. See
+> Documentation/devicetree/bindings/mmc/mmc-card.yaml.
+> 
+> Kind regards
+> Uffe
 
-On Tue, 2022-05-10 at 19:34 +0100, Marc Zyngier wrote:
-> Antonio,
->=20
-> On Tue, 10 May 2022 17:41:17 +0100,
-> Antonio Borneo <antonio.borneo@foss.st.com> wrote:
-> >=20
-> > From: Ludovic Barre <ludovic.barre@foss.st.com>
-> >=20
-> > If no parent, there is no specific action to do in
-> > stm32 irqchip, and so return IRQ_SET_MASK_OK_DONE.
-> >=20
-> > Signed-off-by: Ludovic Barre <ludovic.barre@foss.st.com>
-> > Signed-off-by: Antonio Borneo <antonio.borneo@foss.st.com>
-> > ---
-> > =C2=A0drivers/irqchip/irq-stm32-exti.c | 2 +-
-> > =C2=A01 file changed, 1 insertion(+), 1 deletion(-)
-> >=20
-> > diff --git a/drivers/irqchip/irq-stm32-exti.c
-> > b/drivers/irqchip/irq-stm32-exti.c
-> > index 9d18f47040eb..10c9c742c216 100644
-> > --- a/drivers/irqchip/irq-stm32-exti.c
-> > +++ b/drivers/irqchip/irq-stm32-exti.c
-> > @@ -614,7 +614,7 @@ static int stm32_exti_h_set_affinity(struct
-> > irq_data *d,
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (d->parent_data->chi=
-p)
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0return irq_chip_set_affinity_parent(d, dest,
-> > force);
-> > =C2=A0
-> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0return -EINVAL;
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0return IRQ_SET_MASK_OK_DONE;
-> > =C2=A0}
-> > =C2=A0
-> > =C2=A0static int __maybe_unused stm32_exti_h_suspend(void)
->=20
-> <rant>
-> Can you *please* use a cover-letter when sending more that a single
-> patch? I expect there is an overarching motive to this series. Where
-> is it described?
->=20
-> Also, please look at the way the subject lines are written for most
-> irqchip patches:
->=20
-> irqchip/foo: Frobify the bar callback return value
->=20
-> Note the capital letter after the ':', and the fact that it starts
-> with a verb. Here, I would have liked to see:
->=20
-> irqchip/stm32-exti: Fix set_affinity() return value
->=20
-> and leave the meat of the description to the commit log (instead of
-> saying the exact same thing twice).
-> </rant>
+Hi,
 
-thanks for your review and the hints on this series.
-I will shortly send a V2.
+I tested 2 beaglebones now - one with Micron eMMC and the other with Kingston.
+With the Kingston chip I don't get the errors. So it seems to be card specific.
+
+Grepping for mmc in dmesg gives the following.
+
+Beaglebone with Micron eMMC:
+
+  sdhci-omap 481d8000.mmc: supply pbias not found, using dummy regulator
+  sdhci-omap 481d8000.mmc: supply vqmmc not found, using dummy regulator
+  mmc1: SDHCI controller on 481d8000.mmc [481d8000.mmc] using External DMA
+  mmc1: new high speed MMC card at address 0001
+  mmcblk1: mmc1:0001 MMC04G 3.66 GiB
+   mmcblk1: p1
+  mmcblk1boot0: mmc1:0001 MMC04G 1.00 MiB
+  mmcblk1boot1: mmc1:0001 MMC04G 1.00 MiB
+  mmcblk1rpmb: mmc1:0001 MMC04G 128 KiB, chardev (247:0)
+  sdhci-omap 48060000.mmc: Got CD GPIO
+  sdhci-omap 48060000.mmc: supply pbias not found, using dummy regulator
+  sdhci-omap 48060000.mmc: supply vqmmc not found, using dummy regulator
+  mmc0: SDHCI controller on 48060000.mmc [48060000.mmc] using External DMA
+
+
+Beaglebone with Kingston eMMC:
+
+  sdhci-omap 481d8000.mmc: supply pbias not found, using dummy regulator
+  sdhci-omap 481d8000.mmc: supply vqmmc not found, using dummy regulator
+  mmc1: SDHCI controller on 481d8000.mmc [481d8000.mmc] using External DMA
+  mmc1: new high speed MMC card at address 0001
+  mmcblk1: mmc1:0001 M62704 3.56 GiB
+   mmcblk1: p1
+  mmcblk1boot0: mmc1:0001 M62704 2.00 MiB
+  mmcblk1boot1: mmc1:0001 M62704 2.00 MiB
+  mmcblk1rpmb: mmc1:0001 M62704 512 KiB, chardev (247:0)
+  sdhci-omap 48060000.mmc: Got CD GPIO
+  sdhci-omap 48060000.mmc: supply pbias not found, using dummy regulator
+  sdhci-omap 48060000.mmc: supply vqmmc not found, using dummy regulator
+  mmc0: SDHCI controller on 48060000.mmc [48060000.mmc] using External DMA
+
+Is this enough information to identify the mmc card?
 
 Regards,
-Antonio
-
-
+Jean Rene
