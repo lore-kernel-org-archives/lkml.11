@@ -2,147 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22450C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:31:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A670C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:33:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242366AbiEKPbm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 11:31:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45808 "EHLO
+        id S1343755AbiEKPds (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 11:33:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240224AbiEKPbg (ORCPT
+        with ESMTP id S244494AbiEKPdo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 11:31:36 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7060B53E29;
-        Wed, 11 May 2022 08:31:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652283095; x=1683819095;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Ndczgwyznivdqv1iFCHWhopQvKb+2Iqd5Yk+4O3ea9c=;
-  b=aUKdevAP1zBomDOXOkOhphGq5H4HUjh0MTWzI5wobT7G81nxLe+8P5KA
-   mslzsR3lcxHFNhOmHPLYc6+TNFqkdUX+k+hhVH9wd4ItfNpjEdYq/AhtY
-   tXDFNRkCqgcKhdBokaki0CSHyF2cIIdm3V0UI2g+qKy4yRvq6p0yL/V/D
-   BV/NL3DUqVJon9ayqBRl5B9CEgbQ6ca/eyXkFx/YJ8lSS8FJeulqtITwc
-   dYDyNvyIQ33oPQlrKNfzLCpa6ktzfHf2jA7z9CrbwWlAL0GnHApex/f/V
-   nvdOSr6Y4oZCZE3fAmpCqR+qVAOymvA8e5mZH7LLUEau6dv4ieW0Mhmv4
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="330330913"
-X-IronPort-AV: E=Sophos;i="5.91,217,1647327600"; 
-   d="scan'208";a="330330913"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 08:31:33 -0700
-X-IronPort-AV: E=Sophos;i="5.91,217,1647327600"; 
-   d="scan'208";a="895392286"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 08:31:32 -0700
-Date:   Wed, 11 May 2022 08:35:18 -0700
-From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     iommu@lists.linux-foundation.org,
-        LKML <linux-kernel@vger.kernel.org>, dmaengine@vger.kernel.org,
-        Joerg Roedel <joro@8bytes.org>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>, vkoul@kernel.org,
-        robin.murphy@arm.com, will@kernel.org, Yi Liu <yi.l.liu@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        "Tian, Kevin" <kevin.tian@intel.com>,
-        Raj Ashok <ashok.raj@intel.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v3 1/4] iommu/vt-d: Implement domain ops for
- attach_dev_pasid
-Message-ID: <20220511082958.79d5d8ee@jacob-builder>
-In-Reply-To: <20220511115427.GU49344@nvidia.com>
-References: <20220510210704.3539577-1-jacob.jun.pan@linux.intel.com>
- <20220510210704.3539577-2-jacob.jun.pan@linux.intel.com>
- <20220510232121.GP49344@nvidia.com>
- <20220510172309.3c4e7512@jacob-builder>
- <20220511115427.GU49344@nvidia.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Wed, 11 May 2022 11:33:44 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3769562BFD;
+        Wed, 11 May 2022 08:33:43 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id gh6so4924290ejb.0;
+        Wed, 11 May 2022 08:33:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=hwv+tHRthGjMF6T+0E5omfvbRMHbBx+VEPozMcOm4FQ=;
+        b=RCize1dOWO6Z2UQaXjmfoNi90tsIQzVbnmrcQmRSP4yYiMDdA4FWNns0zbKZ9Yja94
+         rGX+NPjMLh2q94s92DsjoCSWkcXIk0E151EhR4Ck7Y4f3EdKmfPd1VZdMUT2JLLmA0oL
+         YjgRWgYqV9CMgF/Cy6XwDDBDlzK+Cock8E6ecPudySXQI/5iGe9zMDFUfhEqwke1psvX
+         xumEJOVBL7fQY2k1xWi9yrA+rKwkAHevwUwMaVtB7EUMiQkP5wpOuG6U4fCH9M3IZKOg
+         w8V28Zjx+7D9j0GVILC6udoWYWo7OEz25YF+YhHGRt+aHV58WMmS8ZCzuRLMiU5kCXBg
+         fpKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hwv+tHRthGjMF6T+0E5omfvbRMHbBx+VEPozMcOm4FQ=;
+        b=zBs0W3hkzVvvkOwt5lfwa0NTy2rmRRzfr+8thKsh6S2/iMphaVvaOnh6WXGdlLeZ3F
+         UQjHwVwQnrcnhw6Pn9MxmtSSJScL0+dJ9dWKlivSpqDZCaTVJjSXjb038IcDB2rZyCzk
+         Da4WumETHlElIMCBt43u3MPYP7TZMw80J9KY9EppOkLLaxJKVxcYwA12Nn9GEBkKLuc2
+         51DbHALnaqYWtF7U4PDNG/kxEXyZYKWut2/JxbIOoUM5aY1zdX7ovJpUtXx7YoHQBtjs
+         rtK3XUdetVEvHJJt9CoqpHpvDab0g6lNUniBz1gMPkC2MX7dMLNpQRna492YXRvTbpSn
+         9Rig==
+X-Gm-Message-State: AOAM530JkLsGMUqkRynk+dZubfxKOBdf9O1laYk+795TtZpxzKtl55NN
+        vRHaAq6T1BxyhkawWXC6E7U=
+X-Google-Smtp-Source: ABdhPJzBCHND5vtVrFsSKG9WjTxF0PdeUAJcyug8qK+/StsoULuJ4vsbhThOie/Ko9EIIQLNBpkn6A==
+X-Received: by 2002:a17:907:c2a:b0:6f4:4b49:9cfb with SMTP id ga42-20020a1709070c2a00b006f44b499cfbmr24098814ejc.697.1652283221695;
+        Wed, 11 May 2022 08:33:41 -0700 (PDT)
+Received: from skbuf ([188.25.160.86])
+        by smtp.gmail.com with ESMTPSA id z22-20020a50cd16000000b00426488dce1dsm1337316edi.25.2022.05.11.08.33.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 May 2022 08:33:39 -0700 (PDT)
+Date:   Wed, 11 May 2022 18:33:37 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?utf-8?Q?Miqu=C3=A8l?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v4 05/12] dt-bindings: net: dsa: add bindings
+ for Renesas RZ/N1 Advanced 5 port switch
+Message-ID: <20220511153337.deqxawpbbk3actxf@skbuf>
+References: <20220509131900.7840-1-clement.leger@bootlin.com>
+ <20220509131900.7840-6-clement.leger@bootlin.com>
+ <20220511152221.GA334055-robh@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220511152221.GA334055-robh@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jason,
-
-On Wed, 11 May 2022 08:54:27 -0300, Jason Gunthorpe <jgg@nvidia.com> wrote:
-
-> On Tue, May 10, 2022 at 05:23:09PM -0700, Jacob Pan wrote:
+On Wed, May 11, 2022 at 10:22:21AM -0500, Rob Herring wrote:
+> > +patternProperties:
+> > +  "^ethernet-ports$":
 > 
-> > > > diff --git a/include/linux/intel-iommu.h
-> > > > b/include/linux/intel-iommu.h index 5af24befc9f1..55845a8c4f4d
-> > > > 100644 +++ b/include/linux/intel-iommu.h
-> > > > @@ -627,6 +627,7 @@ struct device_domain_info {
-> > > >  	struct intel_iommu *iommu; /* IOMMU used by this device */
-> > > >  	struct dmar_domain *domain; /* pointer to domain */
-> > > >  	struct pasid_table *pasid_table; /* pasid table */
-> > > > +	ioasid_t pasid; /* DMA request with PASID */    
-> > > 
-> > > And this seems wrong - the DMA API is not the only user of
-> > > attach_dev_pasid, so there should not be any global pasid for the
-> > > device.
-> > >   
-> > True but the attach_dev_pasid() op is domain type specific. i.e. DMA API
-> > has its own attach_dev_pasid which is different than sva domain
-> > attach_dev_pasid().  
+> Move to 'properties', not a pattern.
 > 
-> Huh? The intel driver shares the same ops between UNMANAGED and DMA -
-> and in general I do not think we should be putting special knowledge
-> about the DMA domains in the drivers. Drivers should continue to treat
-> them identically to UNMANAGED.
+> With that,
 > 
-OK, other than SVA domain, the rest domain types share the same default ops.
-I agree that the default ops should be the same for UNMANAGED, IDENTITY, and
-DMA domain types. Minor detail is that we need to treat IDENTITY domain
-slightly different when it comes down to PASID entry programming.
+> Reviewed-by: Rob Herring <robh@kernel.org>
 
-If not global, perhaps we could have a list of pasids (e.g. xarray) attached
-to the device_domain_info. The TLB flush logic would just go through the
-list w/o caring what the PASIDs are for. Does it make sense to you?
-
-> > device_domain_info is only used by DMA API.  
-> 
-> Huh?
-My mistake, i meant the device_domain_info.pasid is only used by DMA API
-
->  
-> > > I suspect this should be a counter of # of pasid domains attached so
-> > > that the special flush logic triggers
-> > >   
-> > This field is only used for devTLB, so it is per domain-device. struct
-> > device_domain_info is allocated per device-domain as well. Sorry, I
-> > might have totally missed your point.  
-> 
-> You can't store a single pasid in the driver like this, since the only
-> thing it does is trigger the flush logic just count how many pasids
-> are used by the device-domain and trigger pasid flush if any pasids
-> are attached
-> 
-Got it, will put the pasids in an xa as described above.
-
-> > > And rely on the core code to worry about assigning only one domain per
-> > > pasid - this should really be a 'set' function.  
-> >
-> > Yes, in this set the core code (in dma-iommu.c) only assign one PASID
-> > per DMA domain type.
-> > 
-> > Are you suggesting the dma-iommu API should be called
-> > iommu_set_dma_pasid instead of iommu_attach_dma_pasid?  
-> 
-> No that API is Ok - the driver ops API should be 'set' not attach/detach
-> 
-Sounds good, this operation has little in common with
-domain_ops.dev_attach_pasid() used by SVA domain. So I will add a new
-domain_ops.dev_set_pasid()
-
-
-Thanks,
-
-Jacob
+Even if it should have been "^(ethernet-)?ports$"?
