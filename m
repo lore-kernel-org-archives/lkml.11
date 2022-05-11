@@ -2,104 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41F8EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:20:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D031C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:20:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245752AbiEKPU0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 11:20:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56712 "EHLO
+        id S1343505AbiEKPUr (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 11:20:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245733AbiEKPUF (ORCPT
+        with ESMTP id S1343539AbiEKPUm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 11:20:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A023620EE07;
-        Wed, 11 May 2022 08:20:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3047C61913;
-        Wed, 11 May 2022 15:20:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 167A1C340EE;
-        Wed, 11 May 2022 15:20:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652282403;
-        bh=GMvnWYvbccZQktGrME0uBhLf6d3GEhAgIRMMt6zfpKA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=I0GgXQ3dUxlFBEyRNuKUVqUYG6uMd2yFDSWva9G/T2PZlVOT9WDgfIg5Aw4gRrLVH
-         LKx4I4DRmD5X5d+ukbDh0BUbefKRNEti9au2j7vah7qjirqIJJYTFesBfLg9ey8LIl
-         i7GZuYMCbttNcxJZGkYMctx8CWaFGzRT8u26sCF6y9yXLHftCHCvYfVjWw8zO5bCUC
-         PtDhOpduD0WUaYXj4wSRTRODtFpy2Ic11C7NZgkYUnvmJZ7V3mxQa9v2DHPNg6LwE/
-         yuZlQfJm9mh7R4hmn1ZQzCY0rgJ0AUOUcS0UT+2rmHoSfTNSm18QcSvhdLLKWFYDSv
-         vtpwU9Do0HeIw==
-Date:   Wed, 11 May 2022 18:18:33 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Ahmad Fatoum <a.fatoum@pengutronix.de>
-Cc:     James Bottomley <jejb@linux.ibm.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        David Howells <dhowells@redhat.com>, kernel@pengutronix.de,
-        Pankaj Gupta <pankaj.gupta@nxp.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Horia =?utf-8?Q?Geant=C4=83?= <horia.geanta@nxp.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Jan Luebbe <j.luebbe@pengutronix.de>,
-        David Gstir <david@sigma-star.at>,
-        Richard Weinberger <richard@nod.at>,
-        Franck LENORMAND <franck.lenormand@nxp.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Michael Walle <michael@walle.cc>,
-        Sumit Garg <sumit.garg@linaro.org>, keyrings@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org
-Subject: Re: [PATCH v9 7/7] MAINTAINERS: add KEYS-TRUSTED-CAAM
-Message-ID: <YnvTyd8s4T+s/uAL@kernel.org>
-References: <20220506062553.1068296-1-a.fatoum@pengutronix.de>
- <20220506062553.1068296-8-a.fatoum@pengutronix.de>
- <YnbH2Fgn/JFOU3Rf@iki.fi>
- <YnbIiJynQq/tcFa2@iki.fi>
- <e49920e6-0852-ad3d-5758-604655591671@pengutronix.de>
+        Wed, 11 May 2022 11:20:42 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9802E224684
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 08:20:30 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id z2so4776168ejj.3
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 08:20:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=geKshak1zwJUIf6OJmXvrC7YdZBGtitn11Vxo6ekyyA=;
+        b=l20H3mA7oW2a+08LERco53HKdKbo219aB2WAapCII+6f+y9IzHx4HswyXM1KzGYjvO
+         bzH58mV2hjC7NGckBKnwPYTxLnai4AVKm610If4TLKWKSBjeDLKw45Ih/1OOwktZPb4J
+         tttTyazCCkuV0Udgr/mC7OfZiv4pt1gs0XPZNq51YAN7PnsJ8t5FOw+KlyUK8CKP7QlZ
+         oB85sNr0d9Ww/tDpirsFMJX6WRtjgAEQe7MWx+rCxBO/4kj4kLuWryMRhb/x1bKFn1dh
+         CU2j1xYQKKPrr5rZmW3Wo0UtPGq5M/m4zb83+fuiFaR8i5j5rV3o3gOzFoMRcBv4QOxY
+         7GoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=geKshak1zwJUIf6OJmXvrC7YdZBGtitn11Vxo6ekyyA=;
+        b=Eyn+PXcaK00K6Krb0IIrvBSU5jzXsUglhp5SGS9oYL3HUIxaiWdiIhRlsVr8SKgKrt
+         G5O3TJB77v5FoDVcFiWeQ08SHCH/5CBUEK5d6HShy0cBsxc0pBzdKTGpbhffnO+5Q02e
+         Ls3HS/R2tf1O7FwJIvlqR2mq6oqhKnv5nOzH1w5wxRDewXKSMa9iNCNSf5/NK9BAwJCJ
+         lTNX5AQeItvQ84tWFFFP1AtO7eV+DLzM1TpCA2ort0SQC0Anrv1kmTswfzGDnjqwYI9m
+         HKvYtF2PTi5RZvbYIaIIeIx4/yRe0OjxgNjPfSBY9sbRkVEHZrB9VFQ0i2Y3OK7azotR
+         2eCQ==
+X-Gm-Message-State: AOAM533cqdLBY9qYEPPrUJgUy4C7vlSC0xyeXgYTDks3BZi7PogF3e+S
+        9LnxtAPg/oh+/hCXg6ZuVOEJI1fA2N1QBEfv
+X-Google-Smtp-Source: ABdhPJzp4+SiFl11hXg8UOEugmLgp6eOUHjNYxsYVthXNxpX+8C9Ahj3caDgh9Ngw0AFLp/1Je3bpQ==
+X-Received: by 2002:a17:907:7e99:b0:6fd:c2a2:9620 with SMTP id qb25-20020a1709077e9900b006fdc2a29620mr6120374ejc.554.1652282428949;
+        Wed, 11 May 2022 08:20:28 -0700 (PDT)
+Received: from [192.168.0.154] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id m4-20020a1709060d8400b006f3ef214e2csm1079710eji.146.2022.05.11.08.20.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 May 2022 08:20:28 -0700 (PDT)
+Message-ID: <78cc1d8a-e8c4-bb6a-1058-ab912b90ebe4@linaro.org>
+Date:   Wed, 11 May 2022 17:20:27 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e49920e6-0852-ad3d-5758-604655591671@pengutronix.de>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v4 2/3] dt-bindings: nvmem: mediatek: document deprecated
+ efuse property
+Content-Language: en-US
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Lala Lin <lala.lin@mediatek.com>,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Allen-kh Cheng <allen-kh.cheng@mediatek.corp-partner.google.com>
+References: <20220510132637.5864-1-allen-kh.cheng@mediatek.com>
+ <20220510132637.5864-3-allen-kh.cheng@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220510132637.5864-3-allen-kh.cheng@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 12:48:53PM +0200, Ahmad Fatoum wrote:
-> On 07.05.22 21:29, Jarkko Sakkinen wrote:
-> >>> +KEYS-TRUSTED-CAAM
-> >>> +M:	Ahmad Fatoum <a.fatoum@pengutronix.de>
-> >>> +R:	Pengutronix Kernel Team <kernel@pengutronix.de>
-> >>> +L:	linux-integrity@vger.kernel.org
-> >>> +L:	keyrings@vger.kernel.org
-> >>> +S:	Maintained
-> >>> +F:	include/keys/trusted_caam.h
-> >>> +F:	security/keys/trusted-keys/trusted_caam.c
-> >>> +
-> >>>  KEYS/KEYRINGS
-> >>>  M:	David Howells <dhowells@redhat.com>
-> >>>  M:	Jarkko Sakkinen <jarkko@kernel.org>
-> >>> -- 
-> >>> 2.30.2
-> >>>
-> >>
-> >> Acked-by: Jarkko Sakkinen <jarkko@kernel.org>
-> > 
-> > 3/7 would probably need tested-by. Other than that this starts to look
-> > good...
+On 10/05/2022 15:26, Allen-KH Cheng wrote:
+> From: Allen-kh Cheng <allen-kh.cheng@mediatek.corp-partner.google.com>
 > 
-> It has been tested by me on an i.MX6 (era < 10 with blobbing support)
-> and by Michael on a LS1028A (era >= 10, both with and without blobbing
-> support).
+> We mark mediatek,mt8173-efuse and mediatek,efuse as deprecated to
+> prevent them from being the single compatible in the future.
 > 
-> Cheers,
-> Ahmad
+> The mediatek,efuse compatible should be used as generic fallback for
+> all MediaTek chipsets.
+> 
+> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+> ---
+>  .../devicetree/bindings/nvmem/mediatek,efuse.yaml | 15 +++++++++------
+>  1 file changed, 9 insertions(+), 6 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml b/Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml
+> index 529f5888d93f..04ecf5980b2e 100644
+> --- a/Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml
+> +++ b/Documentation/devicetree/bindings/nvmem/mediatek,efuse.yaml
+> @@ -16,16 +16,18 @@ allOf:
+>  properties:
+>    compatible:
+>      oneOf:
+> -      - enum:
+> -          - mediatek,mt8173-efuse
+> -          - mediatek,efuse
+> +      - const: mediatek,mt8173-efuse # Don't use this in new dts files
+> +        deprecated: true
+> +      - const: mediatek,efuse
+> +        deprecated: true
+>          description:
+> -          Only mt8173 SoC-specific compatible with generic fallback should be
+> -          used
+> +          Please use mediatek,efuse as generic fallback to enable the MediaTek
+> +          eFuse support.
 
-Michael, can you give a tested-by for the corresponding patch?
+Now I see the change, it's a bit surprising to have it in separate
+patch, but ok. In such case, in your first patch don't add this
+description. There is no point to add a description which immediately
+you change in next patch.
 
-BR, Jarkko
+
+Best regards,
+Krzysztof
