@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DD59C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 01:26:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48C03C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 01:27:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240337AbiEKB0p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 21:26:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51486 "EHLO
+        id S240581AbiEKB00 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 21:26:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238569AbiEKB0j (ORCPT
+        with ESMTP id S240474AbiEKB0K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 21:26:39 -0400
+        Tue, 10 May 2022 21:26:10 -0400
 Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAA686FD00;
-        Tue, 10 May 2022 18:26:37 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id i27so1074958ejd.9;
-        Tue, 10 May 2022 18:26:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEE764D9E4;
+        Tue, 10 May 2022 18:26:08 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id z2so1124270ejj.3;
+        Tue, 10 May 2022 18:26:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=bRbUgRTaSaGKFWOQVW0vsPy+my+VkFAnyFE5K6q7L9M=;
-        b=qhyR8P53avM7dqw0RfzKOnZGncdneWha7XFdoMznIeUAqy1T8E3ckkbnYsVgq5Sd+8
-         NKSqqzlLMedZ/ub9Dv+oUWfz+X9M6TikmUvhqrFYZdoY6WuMacjhdqGw0H5tCyuyJtmI
-         WbiRGrmCZqFjSg+0swBR0xzI+xbbNVf2PPKn68hxD9yalmWVBam9AfTFcoKTj3DAnDb4
-         HJkFdrAZAS0edWDdl5FyteiJ9GEzpfwR8bmURf43vXsoQ5wepFu/h98uRb1Qgv7j/M7S
-         j7wwbbZNGoHEuB/7EfR/6TXFOUyrzCCNsg1cTf5IGSruAF757k3gjr2U9932Tdd6slri
-         MruQ==
+        bh=PvfiOTtqCMinHntPJghe2tAinuCO5v0PtBVLPwSQ7Xw=;
+        b=IT2YsSa+KlFPxWLz7VYVpluaeuLBPZsvknp7OYOsCNpwO7y03s3I7DTdKHN3FAiQ2Z
+         bG0d3yiMua3KShteUyfkcgWogjO54PWDWRmU/NOUzvCviM3QASQel/nUeDiIRe+wV0vf
+         jkkkkHn6pdQ8/ELxLmMcnn5PkGTWfHvif2xUcIAsc2H5yD20H8R4oLaKgPmzFzHjibd6
+         Q+5bFHzeNUVTBJxjZq9LuzTcF5rjOXHtT+LBgJHXhZ8D9gPgQKDpVhe/XzamM97dI294
+         qQ/9PXi2vahzo6x121R3xqgSxImmoyqictKFjqSFsSIc1OVfwz4sVKz/5lYnmZsR9uxG
+         lJvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=bRbUgRTaSaGKFWOQVW0vsPy+my+VkFAnyFE5K6q7L9M=;
-        b=zVNP90XOTHigLJ0W2wNT0hmnLxxO/5F6XgqKHZlQ4X0KnA5lgaQGZ4Tyxa2ZARS3GQ
-         n23FYuN1GfnSz/KxB/VndCs+KFRtZHyHrWxTbwpeka0I+2W3HFJ1qsiyTbCYq+VdboM/
-         TC5BYB9EPkoGpMiYQRGKuEY5U5N1wHicVd0MZIOP0clvbZlCTW0UQYU/7v2Hia3jyUXR
-         bpVpM00D2W5eKmU+3ZeFpWvk3o5f/wEqQld8yZOyIZSINSbbICKIOqAQepIhAM58jvIm
-         AJk4s6Yz79x33LyHmxSLqlCwj+wU4C6IzlfqUH8+/p2qdQI/wKOnF/LXCJU46Kgz6dUN
-         ObIA==
-X-Gm-Message-State: AOAM532ODFoiLzjLoKuBzJOOwlVfXE//8cLzIHn24OC6a1txDUFgNh3A
-        KEDYvx686BkGsZiG37am4PD4t02vnYtwvypc10M1r++hLas=
-X-Google-Smtp-Source: ABdhPJzGF0MlZtd+4qPm8c00mpqbAg80KAzF9urrIpJUUz5MriRD5cxJF5uvWXYBkvG8VM2ceU378E1aIuzhDzE/YP0=
-X-Received: by 2002:a17:906:c14b:b0:6f8:e6bb:f8d5 with SMTP id
- dp11-20020a170906c14b00b006f8e6bbf8d5mr15304336ejc.4.1652232396394; Tue, 10
- May 2022 18:26:36 -0700 (PDT)
+        bh=PvfiOTtqCMinHntPJghe2tAinuCO5v0PtBVLPwSQ7Xw=;
+        b=xfKNNfuIvukH/30qtiD0PuZBLjq3WFCDc9KwTGyNNtL2ewTKwXqWz3X30yhil1Hluu
+         /DPlLjXjAjcG0A57eMcKw7EvVGGeMI10q5qBnpoMkx0YSzKU4bbnMY8uzIVv2Ek85xhh
+         wmycHxsN/CdVQhPQM30RQvXenZ3ts1IBQnJBA4KSXtYp0Ra/EyPn5rs2pgzzDc9LZYRY
+         sMB2h8czCKy8XJFguHVrgcUeLtXIg1G5rWCTzBH2ttvuJr8H91VdAnuk+mxC+LkEW/Ac
+         QQ0XUYB488mP32WD9HZTdqzVThnTK73lK6GKjcyEkg0mZAdkL7nqHN8S3LcgYPrlgcpH
+         zjfg==
+X-Gm-Message-State: AOAM533j7Qr2kZ5swaLYjIiY9sq21Xh82EmsM37iXjo0KIuXcZvChoJB
+        jGCcMp70y2BrXWGngUT6/a894NTyw3LH9/n/BNo=
+X-Google-Smtp-Source: ABdhPJy2UWzt9+ZBfW/ZU9LjONSYUHdkm5v6PfxnlnbjActnnTufr6GAZLz3AITobYht4uWyazqi7RihJuJFOqFEKd0=
+X-Received: by 2002:a17:906:1845:b0:6f4:346f:f767 with SMTP id
+ w5-20020a170906184500b006f4346ff767mr21292457eje.214.1652232367153; Tue, 10
+ May 2022 18:26:07 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220509111126.7032-1-max.oss.09@gmail.com> <20220509111126.7032-3-max.oss.09@gmail.com>
-In-Reply-To: <20220509111126.7032-3-max.oss.09@gmail.com>
+References: <20220509111126.7032-1-max.oss.09@gmail.com> <20220509111126.7032-4-max.oss.09@gmail.com>
+In-Reply-To: <20220509111126.7032-4-max.oss.09@gmail.com>
 From:   Fabio Estevam <festevam@gmail.com>
-Date:   Tue, 10 May 2022 22:26:24 -0300
-Message-ID: <CAOMZO5AGLnf8-c3Birfs8nONMCOX9ZX2dwzfpnH+EseWyVVSpg@mail.gmail.com>
-Subject: Re: [PATCH v1 2/3] ARM: dts: imx6qdl-colibri: Mux mclk for sgtl5000
- with the codec node
+Date:   Tue, 10 May 2022 22:25:55 -0300
+Message-ID: <CAOMZO5B1ESLpmK3fM9CzqYEWz969BajPAEbetofC4rDxg5V+dw@mail.gmail.com>
+Subject: Re: [PATCH v1 3/3] ARM: dts: imx6qdl-colibri: backlight pwm: Simplify
+ inverted backlight
 To:     Max Krummenacher <max.oss.09@gmail.com>
 Cc:     Max Krummenacher <max.krummenacher@toradex.com>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
@@ -75,15 +75,11 @@ On Mon, May 9, 2022 at 8:12 AM Max Krummenacher <max.oss.09@gmail.com> wrote:
 >
 > From: Max Krummenacher <max.krummenacher@toradex.com>
 >
-> Move the pin muxing for MCLK used by the codec to the codec node
-> instead of placing it inside the audmux pinctrl group.
+> Set #pwm-cells to the default 3 to gain access to the parameter
+> which allows inverting the PWM signal. This is useful to specify
+> a backlight which has its highest brightness at 0.
 >
-> While no negative effects have been observed this should make sure that
-> MCLK is provided when the codec driver is probed.
->
-> Follows commit fa51e1dc4b91 ("ARM: dts: imx6qdl-apalis: Fix sgtl5000
-> detection issue")
->
-> Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+> Also adapt the brightness steps as the backlight doesn't light up
+> for very low duty cycles.
 
-Reviewed-by: Fabio Estevam <festevam@gmail.com>
+This should probably be a different patch.
