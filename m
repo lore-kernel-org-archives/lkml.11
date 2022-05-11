@@ -2,66 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5F5FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 13:20:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3884EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 13:20:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231725AbiEKNUb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 09:20:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44056 "EHLO
+        id S243583AbiEKNUk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 09:20:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243733AbiEKNTy (ORCPT
+        with ESMTP id S243748AbiEKNTz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 09:19:54 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 078742375C5;
+        Wed, 11 May 2022 09:19:55 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7360623E2A3;
         Wed, 11 May 2022 06:19:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
   t=1652275191; x=1683811191;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=BDtuOCfS6C3Ia8cLwl8KAUdYzlIUCpcNho6y1uVXns4=;
-  b=Oz2yPJU7ytKS8zZJOrxjM0aj0SyGK3AFuTQ8v3NC3DsDP89NptRhppYy
-   w8kLv9dNR98TD+7qzQN+r6wLvDl8uZFT0K38JOgRL0zK2hoIMVppZU0X/
-   QxO5qgL784Rwcpn2tF6B+ufEOl0rMG5cq9iUpFqQfus590VPeRE7idvBT
-   zUdvH83+DfTX5Xap+XB8BCZQp3TCT2OWNwQeeagmnE6OLbQ4ziLORdq44
-   oR3MxzkKo0U65Aadu0k3+suKn+izXDYZR3kTkfrjGgRRHUYHVApUpILyU
-   tmPwHSvIWxEXmtR2mrtoRxN3j4/GU2F4q5gvQWYqcYhj6yH6m2m/YhqGc
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="330293914"
-X-IronPort-AV: E=Sophos;i="5.91,217,1647327600"; 
-   d="scan'208";a="330293914"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 06:19:50 -0700
-X-IronPort-AV: E=Sophos;i="5.91,217,1647327600"; 
-   d="scan'208";a="658155336"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 06:19:48 -0700
-Received: by lahna (sSMTP sendmail emulation); Wed, 11 May 2022 16:18:41 +0300
-Date:   Wed, 11 May 2022 16:18:41 +0300
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andy@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v1 1/1] pinctrl: broxton: Add module alias for Intel
- Apollo Lake
-Message-ID: <Ynu3sbnWwQgOUK4H@lahna>
-References: <20220511123421.88439-1-andriy.shevchenko@linux.intel.com>
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=YfT0+uqzgXTXi9KT06D+ODz4hYpjjNqdprrMGF2uXdk=;
+  b=sj2nSzrWC6xq/LR58ixItIuYKRAhL86QE/k61K1uAqlKRuvC5Lf9N3Ai
+   6BCQ112UX3KDrdkVfSuxL5E8WvqVb075EJftH2hfPEB4WlY6hOH3+Ab+X
+   t5oSwsDYZ7xpp4ra0/2L3CNkMVCP7pWqB8KsqJFZTI7FEY4fnY3Tvo8lk
+   E=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 11 May 2022 06:19:51 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 06:19:50 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 11 May 2022 06:19:30 -0700
+Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 11 May 2022 06:19:26 -0700
+From:   Satya Priya <quic_c_skakit@quicinc.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+CC:     Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
+        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
+        <quic_jprakash@quicinc.com>,
+        Satya Priya <quic_c_skakit@quicinc.com>
+Subject: [PATCH V12 9/9] arm64: dts: qcom: sc7280: Add pm8008 support for sc7280-idp
+Date:   Wed, 11 May 2022 18:48:33 +0530
+Message-ID: <1652275113-10277-10-git-send-email-quic_c_skakit@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1652275113-10277-1-git-send-email-quic_c_skakit@quicinc.com>
+References: <1652275113-10277-1-git-send-email-quic_c_skakit@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220511123421.88439-1-andriy.shevchenko@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 03:34:21PM +0300, Andy Shevchenko wrote:
-> We have platform device IDs for Broxton and Apollo Lake, but
-> module alias is provided only for the former. Make it consistent
-> by providing an alias for Apollo Lake.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Add pm8008 infra and regulators support for sc7280 idp.
 
-Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+---
+Changes in V12:
+ - None.
+
+Changes in V11:
+ - Add ldos and parent supplies directly under pm8008@8 node.
+
+Changes in V10:
+ - None.
+
+Changes in V9:
+ - Added interrupts properties.
+
+Changes in V8:
+ - Add an extra phandle "pm8008_bus" and then include pm8008 dtsi files inside it.
+ - Remove output-high from pm8008_active node.
+
+ arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 66 ++++++++++++++++++++++++++++++++
+ 1 file changed, 66 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+index 5eb6689..166812e 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+@@ -271,6 +271,63 @@
+ 	};
+ };
+ 
++pm8008_bus: &i2c1 {
++	status = "okay";
++};
++
++#include "pm8008.dtsi"
++
++&pm8008 {
++	interrupt-parent = <&tlmm>;
++	interrupts = <24 IRQ_TYPE_EDGE_RISING>;
++
++	pinctrl-names = "default";
++	pinctrl-0 = <&pm8008_active>;
++
++	reset-gpios = <&pm8350c_gpios 4 GPIO_ACTIVE_LOW>;
++
++	vdd_l1_l2-supply = <&vreg_s8b_1p2>;
++	vdd_l3_l4-supply = <&vreg_s1b_1p8>;
++	vdd_l5-supply = <&vreg_bob>;
++	vdd_l6-supply = <&vreg_bob>;
++	vdd_l7-supply = <&vreg_bob>;
++};
++
++&pm8008_l1 {
++	regulator-min-microvolt = <950000>;
++	regulator-max-microvolt = <1300000>;
++};
++
++&pm8008_l2 {
++	regulator-min-microvolt = <950000>;
++	regulator-max-microvolt = <1250000>;
++};
++
++&pm8008_l3 {
++	regulator-min-microvolt = <1650000>;
++	regulator-max-microvolt = <3000000>;
++};
++
++&pm8008_l4 {
++	regulator-min-microvolt = <1504000>;
++	regulator-max-microvolt = <1600000>;
++};
++
++&pm8008_l5 {
++	regulator-min-microvolt = <2600000>;
++	regulator-max-microvolt = <3000000>;
++};
++
++&pm8008_l6 {
++	regulator-min-microvolt = <2600000>;
++	regulator-max-microvolt = <3000000>;
++};
++
++&pm8008_l7 {
++	regulator-min-microvolt = <3000000>;
++	regulator-max-microvolt = <3544000>;
++};
++
+ &qfprom {
+ 	vcc-supply = <&vreg_l1c_1p8>;
+ };
+@@ -383,6 +440,15 @@
+ 	drive-strength = <2>;
+ };
+ 
++&pm8350c_gpios {
++	pm8008_active: pm8008-active {
++		pins = "gpio4";
++		function = "normal";
++		bias-disable;
++		power-source = <0>;
++	};
++};
++
+ &qspi_cs0 {
+ 	bias-disable;
+ };
+-- 
+2.7.4
+
