@@ -2,164 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91AC0C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 14:26:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 097B0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 14:27:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244767AbiEKO0x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 10:26:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57126 "EHLO
+        id S244611AbiEKO1b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 10:27:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244662AbiEKO0f (ORCPT
+        with ESMTP id S241417AbiEKO1X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 10:26:35 -0400
-Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5515C63BE7;
-        Wed, 11 May 2022 07:26:34 -0700 (PDT)
-Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-2f863469afbso23478887b3.0;
-        Wed, 11 May 2022 07:26:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=N+G+1F2bko9t4hU/+1Xb4IfFtS046K7mBmLmG7KLIwI=;
-        b=RyJjpnDleChRSXg2AZ14MuEalc0yTz97bE/R5PqLRSFtSJlQiCuRc5sJv2+aflzUqN
-         JUNrGKjMy25ntO47VJbYHeq/coAI00K5tvvceNU0HXlQAPA02Rlma4gkRHaCe5yFoi7g
-         eXgbWjX/Kpi7WBtlcjMAxMA/MEFNEu7nikdph+iO0W0vFPR18epG7CwmbVm2Wl2gdZ2z
-         //fvmDc4tgkMrFy6qugrHqHTECqR2GRJYVRsWu8uD9xRdfegqzvOfxux1TZxIMpeOPz8
-         NQLVC1bP2a5El5ecbg3WbvACHAuMvTHk/6bzN8ylRZiWYo2+tCcIRUPx56gSPwuF0Auj
-         LBBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=N+G+1F2bko9t4hU/+1Xb4IfFtS046K7mBmLmG7KLIwI=;
-        b=m5dtSRUP9m879eC+KOeQPWj5PLBOwvHMNUyYM+DVdqmpi3G3aT4foAHeGn5JR9puSV
-         YNaOu5C9U45CRiJgo37S+EWYbb4XjGggjQbjg4J/XZEETxp7WpN+YFbVu/BaGW/fCtmb
-         PXyJKuJMzDpONpu2C2xR3vIDSVYO8+uIQba0q9Ldm/rtqvl19I03iThWZA2xrGFGakX9
-         nTTQvyKShbv4mIycgx1Zec0RUAFAm4r9YTavWjMilarRvuVjrR5g3BZ4IkzMHRR15YP6
-         3tu0kIaszppMJKWANA3dvB87g9rhYXCOoTKZitFmUkVJ1cngC7A+unXEX9p3KrMuVPBU
-         K/tw==
-X-Gm-Message-State: AOAM533ksVuWx6ZeMjvrs7twXWU94VTi8HCXYwqoOqy7oFUPA6WZORSK
-        8EOarNylUh6mhMBk3zgLC+7c9wsfoO3wQxcyul4=
-X-Google-Smtp-Source: ABdhPJybwJw6ZZcx4u2vxPwqvJS4odhX0N1WECLM3hHbUER7xDfWeRgnIfz2/m7ulVYUFAsckCvGL1v0zfwnuDHF/7o=
-X-Received: by 2002:a81:32c1:0:b0:2f7:cda8:50e1 with SMTP id
- y184-20020a8132c1000000b002f7cda850e1mr25481799ywy.519.1652279193361; Wed, 11
- May 2022 07:26:33 -0700 (PDT)
+        Wed, 11 May 2022 10:27:23 -0400
+Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CD0F66F8A;
+        Wed, 11 May 2022 07:27:22 -0700 (PDT)
+Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
+        (authenticated bits=0)
+        (User authenticated as tytso@ATHENA.MIT.EDU)
+        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 24BER4kl013498
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 11 May 2022 10:27:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
+        t=1652279226; bh=8hgmElPz0t7OufSsTjC6m8Fq4s3uDD1h1JE9Mns8WZY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=RVOUih5Qajf8B9PG5732u2VscEjQ0g/gRbu9NoeL+w0DPlPSj2zvQwUO76SFWdOc/
+         1t0SsPQ2NnRorXMbpiI1reHynmq81gzipa/fx5yMaRER28qmosjrS3mJgW+f8YdNY9
+         Eu6zxxTv6L0yrJYVo/arE3Vc6gQTEvW/TFm6Osez0cKFC80SeDHZXL+MM6W+u9C/+L
+         AMhdLYNEXvvj2/odi0RQYf4W3dya7DdAeZ6wnimAdttxURtyXqTxiGdC7VkPT/Tgn8
+         FCMDQEzmRXlB43iC6gI+y/CEH923b3uAp+qiUPEiKxg53PodZP0oI4ZADvVzMf6gu7
+         68neOQZYM8p1w==
+Received: by cwcc.thunk.org (Postfix, from userid 15806)
+        id 51D9D15C3F0C; Wed, 11 May 2022 10:27:04 -0400 (EDT)
+From:   "Theodore Ts'o" <tytso@mit.edu>
+To:     adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
+        Ye Bin <yebin10@huawei.com>
+Cc:     "Theodore Ts'o" <tytso@mit.edu>, linux-kernel@vger.kernel.org,
+        lczerner@redhat.com, jack@suse.cz
+Subject: Re: [PATCH -next] ext4: fix warning in ext4_handle_inode_extension
+Date:   Wed, 11 May 2022 10:27:02 -0400
+Message-Id: <165227918943.390808.17562773461897886007.b4-ty@mit.edu>
+X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20220326065351.761952-1-yebin10@huawei.com>
+References: <20220326065351.761952-1-yebin10@huawei.com>
 MIME-Version: 1.0
-References: <20220429123832.2376381-1-pgwipeout@gmail.com> <20220429123832.2376381-3-pgwipeout@gmail.com>
- <Ynu/D4hXTRVy9IBF@lpieralisi>
-In-Reply-To: <Ynu/D4hXTRVy9IBF@lpieralisi>
-From:   Peter Geis <pgwipeout@gmail.com>
-Date:   Wed, 11 May 2022 10:26:20 -0400
-Message-ID: <CAMdYzYqdDPUFPhAZqA71dLaf6rT9CwFqQ1dFMRbGpVMyzgT8bg@mail.gmail.com>
-Subject: Re: [PATCH v9 2/5] PCI: rockchip-dwc: Reset core at driver probe
-To:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc:     "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Marc Zyngier <maz@kernel.org>, PCI <linux-pci@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        arm-mail-list <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 9:50 AM Lorenzo Pieralisi
-<lorenzo.pieralisi@arm.com> wrote:
->
-> On Fri, Apr 29, 2022 at 08:38:28AM -0400, Peter Geis wrote:
-> > The PCIe controller is in an unknown state at driver probe. This can
-> > lead to undesireable effects when the driver attempts to configure the
-> > controller.
-> >
-> > Prevent issues in the future by resetting the core during probe.
-> >
-> > Signed-off-by: Peter Geis <pgwipeout@gmail.com>
-> > Tested-by: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
-> > ---
-> >  drivers/pci/controller/dwc/pcie-dw-rockchip.c | 23 ++++++++-----------
-> >  1 file changed, 10 insertions(+), 13 deletions(-)
->
-> I fear that the controller reset behaviour is bootloader/firmware
-> dependent.
->
-> Are we sure we are not triggering any regressions by resetting the
-> controller in the middle of probe (aka is the driver implicitly
-> relying on existing behaviour on systems that are not the ones
-> you are testing on) ?
->
-> Just asking, the rockchip maintainers should be able to answer this
-> question.
+On Sat, 26 Mar 2022 14:53:51 +0800, Ye Bin wrote:
+> We got issue as follows:
+> EXT4-fs error (device loop0) in ext4_reserve_inode_write:5741: Out of memory
+> EXT4-fs error (device loop0): ext4_setattr:5462: inode #13: comm syz-executor.0: mark_inode_dirty error
+> EXT4-fs error (device loop0) in ext4_setattr:5519: Out of memory
+> EXT4-fs error (device loop0): ext4_ind_map_blocks:595: inode #13: comm syz-executor.0: Can't allocate blocks for non-extent mapped inodes with bigalloc
+> ------------[ cut here ]------------
+> WARNING: CPU: 1 PID: 4361 at fs/ext4/file.c:301 ext4_file_write_iter+0x11c9/0x1220
+> Modules linked in:
+> CPU: 1 PID: 4361 Comm: syz-executor.0 Not tainted 5.10.0+ #1
+> RIP: 0010:ext4_file_write_iter+0x11c9/0x1220
+> RSP: 0018:ffff924d80b27c00 EFLAGS: 00010282
+> RAX: ffffffff815a3379 RBX: 0000000000000000 RCX: 000000003b000000
+> RDX: ffff924d81601000 RSI: 00000000000009cc RDI: 00000000000009cd
+> RBP: 000000000000000d R08: ffffffffbc5a2c6b R09: 0000902e0e52a96f
+> R10: ffff902e2b7c1b40 R11: ffff902e2b7c1b40 R12: 000000000000000a
+> R13: 0000000000000001 R14: ffff902e0e52aa10 R15: ffffffffffffff8b
+> FS:  00007f81a7f65700(0000) GS:ffff902e3bc80000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: ffffffffff600400 CR3: 000000012db88001 CR4: 00000000003706e0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>  do_iter_readv_writev+0x2e5/0x360
+>  do_iter_write+0x112/0x4c0
+>  do_pwritev+0x1e5/0x390
+>  __x64_sys_pwritev2+0x7e/0xa0
+>  do_syscall_64+0x37/0x50
+>  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> 
+> [...]
 
-This is a new driver with no current users, this series enables the
-first user. It does not support ACPI nor any sort of handoff at this
-time.
+Applied, thanks!
 
->
-> Thanks,
-> Lorenzo
->
-> > diff --git a/drivers/pci/controller/dwc/pcie-dw-rockchip.c b/drivers/pci/controller/dwc/pcie-dw-rockchip.c
-> > index c9b341e55cbb..faedbd6ebc20 100644
-> > --- a/drivers/pci/controller/dwc/pcie-dw-rockchip.c
-> > +++ b/drivers/pci/controller/dwc/pcie-dw-rockchip.c
-> > @@ -152,6 +152,11 @@ static int rockchip_pcie_resource_get(struct platform_device *pdev,
-> >       if (IS_ERR(rockchip->rst_gpio))
-> >               return PTR_ERR(rockchip->rst_gpio);
-> >
-> > +     rockchip->rst = devm_reset_control_array_get_exclusive(&pdev->dev);
-> > +     if (IS_ERR(rockchip->rst))
-> > +             return dev_err_probe(&pdev->dev, PTR_ERR(rockchip->rst),
-> > +                                  "failed to get reset lines\n");
-> > +
-> >       return 0;
-> >  }
-> >
-> > @@ -182,18 +187,6 @@ static void rockchip_pcie_phy_deinit(struct rockchip_pcie *rockchip)
-> >       phy_power_off(rockchip->phy);
-> >  }
-> >
-> > -static int rockchip_pcie_reset_control_release(struct rockchip_pcie *rockchip)
-> > -{
-> > -     struct device *dev = rockchip->pci.dev;
-> > -
-> > -     rockchip->rst = devm_reset_control_array_get_exclusive(dev);
-> > -     if (IS_ERR(rockchip->rst))
-> > -             return dev_err_probe(dev, PTR_ERR(rockchip->rst),
-> > -                                  "failed to get reset lines\n");
-> > -
-> > -     return reset_control_deassert(rockchip->rst);
-> > -}
-> > -
-> >  static const struct dw_pcie_ops dw_pcie_ops = {
-> >       .link_up = rockchip_pcie_link_up,
-> >       .start_link = rockchip_pcie_start_link,
-> > @@ -222,6 +215,10 @@ static int rockchip_pcie_probe(struct platform_device *pdev)
-> >       if (ret)
-> >               return ret;
-> >
-> > +     ret = reset_control_assert(rockchip->rst);
-> > +     if (ret)
-> > +             return ret;
-> > +
-> >       /* DON'T MOVE ME: must be enable before PHY init */
-> >       rockchip->vpcie3v3 = devm_regulator_get_optional(dev, "vpcie3v3");
-> >       if (IS_ERR(rockchip->vpcie3v3)) {
-> > @@ -241,7 +238,7 @@ static int rockchip_pcie_probe(struct platform_device *pdev)
-> >       if (ret)
-> >               goto disable_regulator;
-> >
-> > -     ret = rockchip_pcie_reset_control_release(rockchip);
-> > +     ret = reset_control_deassert(rockchip->rst);
-> >       if (ret)
-> >               goto deinit_phy;
-> >
-> > --
-> > 2.25.1
-> >
+[1/1] ext4: fix warning in ext4_handle_inode_extension
+      commit: f3e076d26874f4d54126c07ba51d8dd407008697
+
+Best regards,
+-- 
+Theodore Ts'o <tytso@mit.edu>
