@@ -2,118 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B86C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 08:45:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA19DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 08:47:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243898AbiEKIpa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 04:45:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47360 "EHLO
+        id S242799AbiEKIr3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 04:47:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243909AbiEKIpC (ORCPT
+        with ESMTP id S235410AbiEKIrX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 04:45:02 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7DFE6201330;
-        Wed, 11 May 2022 01:45:01 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 499EF106F;
-        Wed, 11 May 2022 01:45:01 -0700 (PDT)
-Received: from [10.57.1.137] (unknown [10.57.1.137])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 185D63F73D;
-        Wed, 11 May 2022 01:44:58 -0700 (PDT)
-Message-ID: <6fcc2358-b029-fa01-cf06-aa040f53cf83@arm.com>
-Date:   Wed, 11 May 2022 09:44:57 +0100
+        Wed, 11 May 2022 04:47:23 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0096674D1
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 01:47:22 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nohzx-000642-LL; Wed, 11 May 2022 10:47:09 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 4AF667B9AC;
+        Wed, 11 May 2022 08:47:06 +0000 (UTC)
+Date:   Wed, 11 May 2022 10:47:05 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     z <zhaojunkui2008@126.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Stefan =?utf-8?B?TcOkdGpl?= <stefan.maetje@esd.eu>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bernard@vivo.com
+Subject: Re: [PATCH] usb/peak_usb: cleanup code
+Message-ID: <20220511084705.zh5fdetggullt75i@pengutronix.de>
+References: <20220511063850.649012-1-zhaojunkui2008@126.com>
+ <20220511064450.phisxc7ztcc3qkpj@pengutronix.de>
+ <4986975d.3de3.180b1f57189.Coremail.zhaojunkui2008@126.com>
+ <CAMZ6RqKHs4gdcNjVONfOTsHh6ZFEt0qpbEaKqDM7c1Cbc1OLdQ@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.8.1
-Subject: Re: [PATCH 0/2] perf: ARM CoreSight PMU support
-To:     Will Deacon <will@kernel.org>, Sudeep Holla <sudeep.holla@arm.com>
-Cc:     Besar Wicaksono <bwicaksono@nvidia.com>, catalin.marinas@arm.com,
-        mark.rutland@arm.com, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
-        thanu.rangarajan@arm.com, Michael.Williams@arm.com,
-        treding@nvidia.com, jonathanh@nvidia.com, vsethi@nvidia.com,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-References: <20220509002810.12412-1-bwicaksono@nvidia.com>
- <20220509092843.GB26264@willie-the-truck>
- <2e5e09f9-b71b-d936-e291-db8f94554b18@arm.com>
- <20220510110742.ievkihggndpms3fn@bogus>
- <20220510111318.GD27557@willie-the-truck>
-From:   Suzuki K Poulose <suzuki.poulose@arm.com>
-In-Reply-To: <20220510111318.GD27557@willie-the-truck>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="kn225256pnovgin4"
+Content-Disposition: inline
+In-Reply-To: <CAMZ6RqKHs4gdcNjVONfOTsHh6ZFEt0qpbEaKqDM7c1Cbc1OLdQ@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/05/2022 12:13, Will Deacon wrote:
-> On Tue, May 10, 2022 at 12:07:42PM +0100, Sudeep Holla wrote:
->> On Mon, May 09, 2022 at 11:02:23AM +0100, Suzuki K Poulose wrote:
->>> Cc: Mike Williams, Mathieu Poirier
->>> On 09/05/2022 10:28, Will Deacon wrote:
->>>> On Sun, May 08, 2022 at 07:28:08PM -0500, Besar Wicaksono wrote:
->>>>>    arch/arm64/configs/defconfig                  |    1 +
->>>>>    drivers/perf/Kconfig                          |    2 +
->>>>>    drivers/perf/Makefile                         |    1 +
->>>>>    drivers/perf/coresight_pmu/Kconfig            |   10 +
->>>>>    drivers/perf/coresight_pmu/Makefile           |    7 +
->>>>>    .../perf/coresight_pmu/arm_coresight_pmu.c    | 1317 +++++++++++++++++
->>>>>    .../perf/coresight_pmu/arm_coresight_pmu.h    |  147 ++
->>>>>    .../coresight_pmu/arm_coresight_pmu_nvidia.c  |  300 ++++
->>>>>    .../coresight_pmu/arm_coresight_pmu_nvidia.h  |   17 +
->>>>>    9 files changed, 1802 insertions(+)
->>>>
->>>> How does this interact with all the stuff we have under
->>>> drivers/hwtracing/coresight/?
->>>
->>> Absolutely zero, except for the name. The standard
->>> is named "CoreSight PMU" which is a bit unfortunate,
->>> given the only link, AFAIU, with the "CoreSight" architecture
->>> is the Lock Access Register(LAR). For reference, the
->>> drivers/hwtracing/coresight/ is purely "CoreSight" self-hosted
->>> tracing and the PMU is called "cs_etm" (expands to coresight etm).
->>> Otherwise the standard doesn't have anything to do with what
->>> exists already in the kernel.
-> 
-> That's... a poor naming choice! But good, if it's entirely separate then I
-> don't have to worry about that. Just wanted to make sure we're not going to
-> get tangled up in things like ROM tables and Coresight power domains for
-> these things.
-> 
->>> One potential recommendation for the name is, "Arm PMU"  (The ACPI table is
->>> named Arm PMU Table). But then that could be clashing with the armv8_pmu
->>> :-(.
->>>
->>> Some of the other options are :
->>>
->>> "Arm Generic PMU"
->>> "Arm Uncore PMU"
->>
->> I wasn't sure on this if there is any restriction on usage of this on Arm
->> and hence didn't make the suggestion. But if allowed, this would be my
->> choice too.
-> 
-> We'd taken to calling them "System" PMUS in the past, so maybe just stick
-> with that? I think "Uncore" is Intel terminology so it's probably best to
 
-I thought about that, but there are some IPs named "System Profilers" 
-(e.g., on Juno board) which could be easily confused. But I hope their
-population in the name space is much less. So, I am happy with that
-choice. The only other concern is, it doesn't indicate it supports PMUs
-that are compliant to a given Arm Standard. i.e., people could think of 
-this as a "single type" of PMU.
-So, I am wondering if something like "Arm Standard PMU" makes any sense ?
+--kn225256pnovgin4
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Also, I hope the drivers would choose a name indicating the "type"  -
-<vendor>_<type>_pmu (e.g., nvidia_pcie_pmu, arm_smmuv3_pmu etc) while 
-registering their PMU. That way it is clearer for the PMU while the
-base device could be arm_system_pmu_0 etc.
+On 11.05.2022 17:28:26, Vincent MAILHOL wrote:
+> On Wed. 11 May 2022 at 16:11, z <zhaojunkui2008@126.com> wrote:
+> > At 2022-05-11 14:44:50, "Marc Kleine-Budde" <mkl@pengutronix.de> wrote:
+> > >On 10.05.2022 23:38:38, Bernard Zhao wrote:
+> > >> The variable fi and bi only used in branch if (!dev->prev_siblings)
+> > >> , fi & bi not kmalloc in else branch, so move kfree into branch
+> > >> if (!dev->prev_siblings),this change is to cleanup the code a bit.
+> > >
+> > >Please move the variable declaration into that scope, too. Adjust the
+> > >error handling accordingly.
+> >
+> > Hi Marc:
+> >
+> > I am not sure if there is some gap.
+> > If we move the variable declaration into that scope, then each error br=
+anch has to do the kfree job, like:
+> > if (err) {
+> >                         dev_err(dev->netdev->dev.parent,
+> >                                 "unable to read %s firmware info (err %=
+d)\n",
+> >                                 pcan_usb_pro.name, err);
+> >                         kfree(bi);
+> >                         kfree(fi);
+> >                         kfree(usb_if);
+> >
+> >                        return err;
+> >                 }
+> > I am not sure if this looks a little less clear?
+> > Thanks!
+>=20
+> A cleaner way would be to move all the content of the if
+> (!dev->prev_siblings) to a new function.
 
-Suzuki
+Good idea.
 
+Marc
 
-> avoid it for non-Intel parts.
-> 
-> Will
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
+--kn225256pnovgin4
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmJ7eAcACgkQrX5LkNig
+010O0Qf8CEz2CHRSRsSKBUb5rg8XhWgg+Z/1qLnQ+fnIwut2NRazLzJxfxhU7+vo
+5xIA+7lc4K/N7TQXGKDHtgCt/o4znlfnHYAaUWEJE/B0O0XLq/bxu/feg1///eZz
+rJqWtUCCDHDyIVENF8QNQ66ZKAjmqtxZio4xtrO2EmOihktlokp/2fmt0kd+Jh03
+0vRz9mRJrKVj3Nb2n4MXerCSDuEK5Ne9Kco8UhGkuqY0+nlc/p7ZQv7aYCMxAj5g
+p/W7tVcDXNOqis6ywRUiI4YTTdXG26Hj9GcnSx1COmXzSdolYcmU0MOpQjsH/iYU
+y4EWtwp6ixPf389CUGsqTkrMXx63gQ==
+=UVby
+-----END PGP SIGNATURE-----
+
+--kn225256pnovgin4--
