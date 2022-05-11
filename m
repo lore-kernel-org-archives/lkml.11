@@ -2,176 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 867BBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 23:28:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56031C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 23:28:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349312AbiEKX2D (ORCPT
+        id S1349348AbiEKX2R (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 19:28:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55946 "EHLO
+        Wed, 11 May 2022 19:28:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245183AbiEKX2B (ORCPT
+        with ESMTP id S1349327AbiEKX2F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 19:28:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C67BE694AB;
-        Wed, 11 May 2022 16:28:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6120261DC9;
-        Wed, 11 May 2022 23:28:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 751F9C340EE;
-        Wed, 11 May 2022 23:27:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652311679;
-        bh=siF8PIsP3XHsVSZH5Wv97Tl+fZ+3A6Kd5SrYh1Feyp8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=cmdoL7mS/UXMhq4bFqDfAewpfd7ifK2Y83cZJgqQAb5UvtYPro4j5Lf4DTm09oqMH
-         5Tivg2wc2r6fMg7SSjY5/eHYp/DhPkwbtcFBoM9OPWI5jS4wRAgjt0n5CduKdlIsml
-         RgCP7NLJCJZlQ4o5Yc9/2tpjejnHsv3jTRn2sG6sFm78MGBncAjhNFoHSha+Lr4qlR
-         6FJ4c0OsGA9yowCGZzj9mKDLvuuK52Vx00IdduEhyFi+DgzqNY6FYEQMIZZVszJy2r
-         c6h5iC2Zn9OB2DofxQiphWhzyBJSO4J6QFe8OY55YeLeK71aMUSIDEByxgHMOoCdj/
-         jNDlLzEdn3/bQ==
-Date:   Wed, 11 May 2022 18:27:57 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Russell Currey <ruscur@russell.cc>,
-        Oliver OHalloran <oohall@gmail.com>, linux-pci@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] PCI/AER: Handle Multi UnCorrectable/Correctable
- errors properly
-Message-ID: <20220511232757.GA829078@bhelgaas>
+        Wed, 11 May 2022 19:28:05 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF82E1F15B2
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 16:28:04 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id j6so3229036pfe.13
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 16:28:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=wE4fM5nUVTqmCaQXZXpkbCTeK+S09eBBfW0cqX/Y51o=;
+        b=brQstMvvcVFVEOo7KS1GQjsrPzJKSSMUIv8IJ6jrjVfyKj6in5WrTNF3lzQFg2y6Wi
+         a44TJXIeuy5CLKYJAI80ISkbM5pXFjt19COwyCysbPRExE6la0Hax22Pi87Nd2Hf/AnX
+         HkXNj5aMYNujgLAbHL8jbcpRsJ95wrz0PEwnb086b7x2njW78b/yWJItesR/1WxYrzGy
+         nVQiCOb0ppp0nIVaTxstVk00lcy/O9JbUffqXll8YFKx+EaInMQzy9Iittv1cb5ANHQk
+         d5BLkn5n9Z8Eikajk8T1JOEuR6oxi7zizVjIQAoAEhlczm7XGK2UczP0fmBV2KRcSBL3
+         Rwjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=wE4fM5nUVTqmCaQXZXpkbCTeK+S09eBBfW0cqX/Y51o=;
+        b=xopgJb6OroG4x91U4HXnyIhwN0rOx8vnoCK4Gpwq1P2HIKnXeOsH3FGztbKOSbd09l
+         3rzkKGcgFVCuqH7g9SwVhTH7KeA2Nv/WL/lC6AQYKg+iH3TWHRC0FPVneWfDhydWD6hC
+         OuEJMfRBUyYgP/cMJBlfDApSPXjIw8mSTW605hOSOmyEwIO/MoKFD0cyKZL26gmGmn7q
+         yLm3x/K9tpJdtXhlZyEuFlEHHSBIsbaFj5wZQT1SL+6VHU9SA1XCsJUMAYG5m4VOmg3X
+         /pEySMuN7QDCpHeR7jt+vLYitoReWNbz0ls3yDCoj7x9aovgCZP2vhVYd9an+XqpQy3y
+         zXJw==
+X-Gm-Message-State: AOAM530p0HL2tXtyRmapmigV1sLNImSklYBg1wFOJAc8plnEa/7PvGq6
+        lbitkX1Pv0LwHpm4BcpHVkg=
+X-Google-Smtp-Source: ABdhPJzwqjxHOvferZVeyxYIdBt80+H2fYljXcefKzwrwfcYaMlp0arWX/ucyrB0VOQdrSrJzvgAPg==
+X-Received: by 2002:a63:4b42:0:b0:3c6:3c00:2608 with SMTP id k2-20020a634b42000000b003c63c002608mr22802358pgl.231.1652311684197;
+        Wed, 11 May 2022 16:28:04 -0700 (PDT)
+Received: from google.com ([2620:15c:211:201:69ef:9c87:7816:4f74])
+        by smtp.gmail.com with ESMTPSA id u17-20020a170903125100b0015e8d4eb21asm2466715plh.100.2022.05.11.16.28.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 May 2022 16:28:03 -0700 (PDT)
+Sender: Minchan Kim <minchan.kim@gmail.com>
+Date:   Wed, 11 May 2022 16:28:02 -0700
+From:   Minchan Kim <minchan@kernel.org>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        linux-mm <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        John Dias <joaodias@google.com>,
+        David Hildenbrand <david@redhat.com>
+Subject: Re: [PATCH v4] mm: fix is_pinnable_page against on cma page
+Message-ID: <YnxGgo9iCsnOOBHE@google.com>
+References: <bb6e76f1-2cbc-893d-c8ab-3ecd3fcae2a5@nvidia.com>
+ <Ynr+wTCQpyh8+vOD@google.com>
+ <2ffa7670-04ea-bb28-28f8-93a9b9eea7e8@nvidia.com>
+ <YnwupNzDNv7IbjRQ@google.com>
+ <54b5d177-f2f4-cef2-3a68-cd3b0b276f86@nvidia.com>
+ <Ynw6mauQuNhrOAHy@google.com>
+ <f7bcda22-8ffe-67be-36bc-fcde58d8884a@nvidia.com>
+ <YnxCCPZUfgQNXSg6@google.com>
+ <8f083802-7ab0-15ec-b37d-bc9471eea0b1@nvidia.com>
+ <YnxDhdb4YCo19Qx0@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220418150237.1021519-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <YnxDhdb4YCo19Qx0@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 18, 2022 at 03:02:37PM +0000, Kuppuswamy Sathyanarayanan wrote:
-> Currently the aer_irq() handler returns IRQ_NONE for cases without bits
-> PCI_ERR_ROOT_UNCOR_RCV or PCI_ERR_ROOT_COR_RCV are set. But this
-> assumption is incorrect.
+On Wed, May 11, 2022 at 04:15:17PM -0700, Minchan Kim wrote:
+> On Wed, May 11, 2022 at 04:13:10PM -0700, John Hubbard wrote:
+> > On 5/11/22 16:08, Minchan Kim wrote:
+> > > > OK, so the code checks the wrong item each time. But the code really
+> > > > only needs to know "is either _CMA or _ISOLATE set?". And so you
+> > > 
+> > > Yes.
+> > > 
+> > > > can just sidestep the entire question by writing it like this:
+> > > > 
+> > > > int mt = get_pageblock_migratetype(page);
+> > > > 
+> > > > if (mt & (MIGRATE_ISOLATE | MIGRATE_CMA))
+> > > > 	return false;
+> > > 
+> > > I am confused. Isn't it same question?
+> > > 
+> > >                                                      set_pageblock_migratetype(MIGRATE_ISOLATE)
+> > > if (get_pageblock_migrate(page) & MIGRATE_CMA)
+> > > 
+> > >                                                      set_pageblock_migratetype(MIGRATE_CMA)
+> > > 
+> > > if (get_pageblock_migrate(page) & MIGRATE_ISOLATE)
+> > 
+> > Well no, because the "&" operation is a single operation on the CPU, and
+> > isn't going to get split up like that.
 > 
-> Consider a scenario where aer_irq() is triggered for a correctable
-> error, and while we process the error and before we clear the error
-> status in "Root Error Status" register, if the same kind of error
-> is triggered again, since aer_irq() only clears events it saw, the
-> multi-bit error is left in tact. This will cause the interrupt to fire
-> again, resulting in entering aer_irq() with just the multi-bit error
-> logged in the "Root Error Status" register.
+> Oh, if that's true, yeah, I could live with it.
 > 
-> Repeated AER recovery test has revealed this condition does happen
-> and this prevents any new interrupt from being triggered. Allow to
-> process interrupt even if only multi-correctable (BIT 1) or
-> multi-uncorrectable bit (BIT 3) is set.
-> 
-> Also note that, for cases with only multi-bit error is set, since this
-> is not the first occurrence of the error, PCI_ERR_ROOT_ERR_SRC may have
-> zero or some junk value. So we cannot cleanly process this error
-> information using aer_isr_one_error(). All we are attempting with this
-> fix is to make sure error interrupt processing can continue in this
-> scenario.
-> 
-> This error can be reproduced by making following changes to the
-> aer_irq() function and by executing the given test commands.
-> 
->  static irqreturn_t aer_irq(int irq, void *context)
->          struct aer_err_source e_src = {};
-> 
->          pci_read_config_dword(rp, aer + PCI_ERR_ROOT_STATUS,
-> 				&e_src.status);
->  +       pci_dbg(pdev->port, "Root Error Status: %04x\n",
->  +		e_src.status);
->          if (!(e_src.status & AER_ERR_STATUS_MASK))
->                  return IRQ_NONE;
-> 
->  +       mdelay(5000);
-> 
->  # Prep injection data for a correctable error.
->  $ cd /sys/kernel/debug/apei/einj
->  $ echo 0x00000040 > error_type
->  $ echo 0x4 > flags
->  $ echo 0x891000 > param4
-> 
->  # Root Error Status is initially clear
->  $ setpci -s <Dev ID> ECAP0001+0x30.w
->  0000
-> 
->  # Inject one error
->  $ echo 1 > error_inject
-> 
->  # Interrupt received
->  pcieport <Dev ID>: AER: Root Error Status 0001
-> 
->  # Inject another error (within 5 seconds)
->  $ echo 1 > error_inject
-> 
->  # You will get a new IRQ with only multiple ERR_COR bit set
->  pcieport <Dev ID>: AER: Root Error Status 0002
-> 
-> Currently, the above issue has been only reproduced in the ICL server
-> platform.
-> 
-> [Eric: proposed reproducing steps]
-> Fixes: 4696b828ca37 ("PCI/AER: Hoist aerdrv.c, aer_inject.c up to drivers/pci/pcie/")
+> Thanks, let me post next revision with commenting about that.
 
-4696b828ca37 only *moves* drivers/pci/pcie/aer/aerdrv.c to
-drivers/pci/pcie/aer.c, so I don't think it's related.
+This is delta to confirm before posting next revision.
 
-I think the actual change of interest is e167bfcaa4cd ("PCI: aerdrv:
-remove magical ROOT_ERR_STATUS_MASKS") [1].  It looks like we did
-exactly what you propose before that commit.
+Are you okay with this one?
 
-I can update this unless you disagree.
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index cbf79eb790e0..7b2df6780552 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -1626,14 +1626,14 @@ static inline bool page_needs_cow_for_dma(struct vm_area_struct *vma,
+ static inline bool is_pinnable_page(struct page *page)
+ {
+ #ifdef CONFIG_CMA
++       int mt = get_pageblock_migratetype(page);
++
+        /*
+-        * use volatile to use local variable mt instead of
+-        * refetching mt value.
++        * "&" operation would prevent compiler split up
++        * get_pageblock_migratetype two times for each
++        * condition check: refetching mt value two times.
+         */
+-       int __mt = get_pageblock_migratetype(page);
+-       int mt = __READ_ONCE(__mt);
+-
+-       if (mt == MIGRATE_CMA || mt == MIGRATE_ISOLATE)
++       if (mt & (MIGRATE_ISOLATE | MIGRATE_CMA))
+                return false;
+ #endif
 
-[1] https://git.kernel.org/linus/e167bfcaa4cd
-
-> Reported-by: Eric Badger <ebadger@purestorage.com>
-> Reviewed-by: Ashok Raj <ashok.raj@intel.com>
-> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-> ---
-> 
-> Changes since v2:
->  * Added more details to the commit log.
->  * Rebased on v5.18-rc1.
-> 
-> Changes since v1:
->  * Added Fixes tag.
->  * Included reproducing steps proposed by Eric.
-> 
->  drivers/pci/pcie/aer.c | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/pci/pcie/aer.c b/drivers/pci/pcie/aer.c
-> index 9fa1f97e5b27..7952e5efd6cf 100644
-> --- a/drivers/pci/pcie/aer.c
-> +++ b/drivers/pci/pcie/aer.c
-> @@ -101,6 +101,11 @@ struct aer_stats {
->  #define ERR_COR_ID(d)			(d & 0xffff)
->  #define ERR_UNCOR_ID(d)			(d >> 16)
->  
-> +#define AER_ERR_STATUS_MASK		(PCI_ERR_ROOT_UNCOR_RCV |	\
-> +					PCI_ERR_ROOT_COR_RCV |		\
-> +					PCI_ERR_ROOT_MULTI_COR_RCV |	\
-> +					PCI_ERR_ROOT_MULTI_UNCOR_RCV)
-> +
->  static int pcie_aer_disable;
->  static pci_ers_result_t aer_root_reset(struct pci_dev *dev);
->  
-> @@ -1196,7 +1201,7 @@ static irqreturn_t aer_irq(int irq, void *context)
->  	struct aer_err_source e_src = {};
->  
->  	pci_read_config_dword(rp, aer + PCI_ERR_ROOT_STATUS, &e_src.status);
-> -	if (!(e_src.status & (PCI_ERR_ROOT_UNCOR_RCV|PCI_ERR_ROOT_COR_RCV)))
-> +	if (!(e_src.status & AER_ERR_STATUS_MASK))
->  		return IRQ_NONE;
->  
->  	pci_read_config_dword(rp, aer + PCI_ERR_ROOT_ERR_SRC, &e_src.id);
-> -- 
-> 2.25.1
-> 
