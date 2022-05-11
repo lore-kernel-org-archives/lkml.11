@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6876C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 13:19:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EA9DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 13:19:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243421AbiEKNTa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 09:19:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32940 "EHLO
+        id S243625AbiEKNTf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 09:19:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243364AbiEKNTA (ORCPT
+        with ESMTP id S243464AbiEKNTF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 09:19:00 -0400
+        Wed, 11 May 2022 09:19:05 -0400
 Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B02E9D041;
-        Wed, 11 May 2022 06:18:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1C1723677A;
+        Wed, 11 May 2022 06:19:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1652275135; x=1683811135;
+  t=1652275145; x=1683811145;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=90D8lqmzfGf0V/YMvKVQhQzEgHgPEPwsMRPeHW4f4zc=;
-  b=H0Y2KLy2pDGCgyr0nZqAUPyN4JZX9hykE9lIG+BLfzJbwG71ezF3C8w+
-   OJ35afPSz5T+VhxBOGc2q1fqQgrHAmZoAWZmhiRky1IozAfnKsz2rU7KK
-   UYjB4rWVvf/MNp6LoyXcTiRNdebFsRDjAJ+TptngTPOz3aP3oIYpmkp8E
-   8=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 11 May 2022 06:18:55 -0700
+  bh=U2kacXGJOPEe5GjtzLxRzXO9xMIgNAgjBN70Rg8weF4=;
+  b=qWkI0n1vYp4xKpmd2u6gcRR2ZvK/0k24Ll4Mom7YR36BrLs6PbK6S7U7
+   j+YBdgExFzOLbnGukij/LAswyFyRUFL0V54tyk9SIYaqA3wxyRwrjN3Ab
+   XJ+neYSQScemGmqZZgm+z7ikCBkWcDoz8LyWfhvXvkHp4dvgWe/puALPg
+   4=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 11 May 2022 06:19:04 -0700
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 06:18:54 -0700
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 06:19:04 -0700
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 11 May 2022 06:18:54 -0700
+ 15.2.986.22; Wed, 11 May 2022 06:19:04 -0700
 Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 11 May 2022 06:18:50 -0700
+ 15.2.986.22; Wed, 11 May 2022 06:18:59 -0700
 From:   Satya Priya <quic_c_skakit@quicinc.com>
 To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
         Rob Herring <robh+dt@kernel.org>
@@ -49,9 +49,9 @@ CC:     Lee Jones <lee.jones@linaro.org>,
         <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
         <quic_jprakash@quicinc.com>,
         Satya Priya <quic_c_skakit@quicinc.com>
-Subject: [PATCH V12 1/9] dt-bindings: mfd: pm8008: Add reset-gpios
-Date:   Wed, 11 May 2022 18:48:25 +0530
-Message-ID: <1652275113-10277-2-git-send-email-quic_c_skakit@quicinc.com>
+Subject: [PATCH V12 3/9] dt-bindings: mfd: pm8008: Add regulators for pm8008
+Date:   Wed, 11 May 2022 18:48:27 +0530
+Message-ID: <1652275113-10277-4-git-send-email-quic_c_skakit@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1652275113-10277-1-git-send-email-quic_c_skakit@quicinc.com>
 References: <1652275113-10277-1-git-send-email-quic_c_skakit@quicinc.com>
@@ -64,67 +64,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add reset-gpios property for pm8008.
+Add regulators and their parent supplies along with example.
 
 Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
 Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
 ---
 Changes in V12:
  - None.
 
 Changes in V11:
- - Change the GPIO_ACTIVE_HIGH flag to GPIO_ACTIVE_LOW.
+ - Add ldos directly under pm8008@8 node, remove the intermediate "regulators"
+   node.
 
 Changes in V10:
- - None.
+ - Regulators are added as a part of pm8008@8 device. Change bindings doc
+   accordingly.
 
 Changes in V9:
- - Undo the changes from V8 and only add reset-gpios. Leave interrupts
-   as required properties and do not change compatible.
+ - Remove description for reg and drop unused phandle from example.
 
- Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml | 7 +++++++
- 1 file changed, 7 insertions(+)
+Changes in V8:
+ - This is split from pm8008.yaml binding.
+
+ .../devicetree/bindings/mfd/qcom,pm8008.yaml       | 50 ++++++++++++++++++++++
+ 1 file changed, 50 insertions(+)
 
 diff --git a/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml b/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml
-index ec3138c..a89649c 100644
+index a41618e..231aaf0 100644
 --- a/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml
 +++ b/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml
-@@ -44,6 +44,9 @@ properties:
-   "#size-cells":
-     const: 0
+@@ -47,6 +47,21 @@ properties:
+   reset-gpios:
+     maxItems: 1
  
-+  reset-gpios:
-+    maxItems: 1
++  vdd_l1_l2-supply:
++    description: Input supply phandle of ldo1 and ldo2 regulators.
++
++  vdd_l3_l4-supply:
++    description: Input supply phandle of ldo3 and ldo4 regulators.
++
++  vdd_l5-supply:
++    description: Input supply phandle of ldo5 regulator.
++
++  vdd_l6-supply:
++    description: Input supply phandle of ldo6 regulator.
++
++  vdd_l7-supply:
++    description: Input supply phandle of ldo7 regulator.
 +
  patternProperties:
-   "^gpio@[0-9a-f]+$":
+   "^gpio@[0],[0-9a-f]+$":
      type: object
-@@ -92,6 +95,7 @@ required:
-   - "#address-cells"
-   - "#size-cells"
-   - "#interrupt-cells"
-+  - reset-gpios
+@@ -88,6 +103,27 @@ patternProperties:
  
- additionalProperties: false
+     additionalProperties: false
  
-@@ -99,6 +103,7 @@ examples:
-   - |
-     #include <dt-bindings/mfd/qcom-pm8008.h>
-     #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/gpio/gpio.h>
-     qupv3_se13_i2c {
-       #address-cells = <1>;
-       #size-cells = <0>;
-@@ -113,6 +118,8 @@ examples:
-         interrupt-parent = <&tlmm>;
-         interrupts = <32 IRQ_TYPE_EDGE_RISING>;
- 
-+        reset-gpios = <&pm8350c_gpios 4 GPIO_ACTIVE_LOW>;
++  "^ldo[1-7]@[1],[0-9a-f]+$":
++    type: object
 +
-         pm8008_gpios: gpio@c000 {
++    $ref: "/schemas/regulator/regulator.yaml#"
++
++    description: PM8008 regulator peripherals of PM8008 regulator device.
++
++    properties:
++      compatible:
++        const: qcom,pm8008-regulator
++
++      reg:
++        description: Peripheral offset and address of the ldo regulator.
++        maxItems: 1
++
++    required:
++      - compatible
++      - reg
++
++    unevaluatedProperties: false
++
+ required:
+   - compatible
+   - reg
+@@ -120,6 +156,12 @@ examples:
+ 
+         reset-gpios = <&pm8350c_gpios 4 GPIO_ACTIVE_LOW>;
+ 
++        vdd_l1_l2-supply = <&vreg_s8b_1p2>;
++        vdd_l3_l4-supply = <&vreg_s1b_1p8>;
++        vdd_l5-supply = <&vreg_bob>;
++        vdd_l6-supply = <&vreg_bob>;
++        vdd_l7-supply = <&vreg_bob>;
++
+         pm8008_gpios: gpio@0,c000 {
            compatible = "qcom,pm8008-gpio", "qcom,spmi-gpio";
-           reg = <0xc000>;
+           reg = <0x0 0xc000>;
+@@ -129,6 +171,14 @@ examples:
+           interrupt-controller;
+           #interrupt-cells = <2>;
+         };
++
++        ldo1@1,4000 {
++          compatible = "qcom,pm8008-regulator";
++          reg = <0x1 0x4000>;
++          regulator-name = "pm8008_ldo1";
++          regulator-min-microvolt = <950000>;
++          regulator-max-microvolt = <1300000>;
++        };
+       };
+     };
+ 
 -- 
 2.7.4
 
