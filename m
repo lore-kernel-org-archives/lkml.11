@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FE4AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 19:30:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4BA0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 19:30:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346940AbiEKTaQ (ORCPT
+        id S1346949AbiEKTaX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 15:30:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58720 "EHLO
+        Wed, 11 May 2022 15:30:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346838AbiEKT3s (ORCPT
+        with ESMTP id S1346842AbiEKT3s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 11 May 2022 15:29:48 -0400
 Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CCBCF61D3
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76A2AF1367
         for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 12:29:47 -0700 (PDT)
 Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
         by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <heiko@sntech.de>)
-        id 1nos1k-0004fe-7F; Wed, 11 May 2022 21:29:40 +0200
+        id 1nos1e-0004fe-Hf; Wed, 11 May 2022 21:29:34 +0200
 From:   Heiko Stuebner <heiko@sntech.de>
 To:     palmer@dabbelt.com, paul.walmsley@sifive.com, aou@eecs.berkeley.edu
 Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -32,9 +32,9 @@ Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
         allen.baum@esperantotech.com, jscheid@ventanamicro.com,
         rtrauben@gmail.com, samuel@sholland.org, cmuellner@linux.com,
         philipp.tomsich@vrull.eu, Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH 08/12] riscv: Fix accessing pfn bits in PTEs for non-32bit variants
-Date:   Wed, 11 May 2022 21:29:17 +0200
-Message-Id: <20220511192921.2223629-9-heiko@sntech.de>
+Subject: [PATCH 01/12] riscv: integrate alternatives better into the main architecture
+Date:   Wed, 11 May 2022 21:29:10 +0200
+Message-Id: <20220511192921.2223629-2-heiko@sntech.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220511192921.2223629-1-heiko@sntech.de>
 References: <20220511192921.2223629-1-heiko@sntech.de>
@@ -44,154 +44,212 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On rv32 the PFN part of PTEs is defined to use bits [xlen-1:10]
-while on rv64 it is defined to use bits [53:10], leaving [63:54]
-as reserved.
+Right now the alternatives need to be explicitly enabled and
+erratas are limited to SiFive ones.
 
-With upcoming optional extensions like svpbmt these previously
-reserved bits will get used so simply right-shifting the PTE
-to get the PFN won't be enough.
+We want to use alternatives not only for patching soc erratas,
+but in the future also for handling different behaviour depending
+on the existence of future extensions.
 
-So introduce a _PAGE_PFN_MASK constant to mask the correct bits
-for both rv32 and rv64 before shifting.
+So move the core alternatives over to the kernel subdirectory
+and move the CONFIG_RISCV_ALTERNATIVE to be a hidden symbol
+which we expect relevant erratas and extensions to just select
+if needed.
 
 Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 Reviewed-by: Philipp Tomsich <philipp.tomsich@vrull.eu>
 ---
- arch/riscv/include/asm/pgtable-32.h   |  8 ++++++++
- arch/riscv/include/asm/pgtable-64.h   | 14 +++++++++++---
- arch/riscv/include/asm/pgtable-bits.h |  6 ------
- arch/riscv/include/asm/pgtable.h      |  8 +++++---
- 4 files changed, 24 insertions(+), 12 deletions(-)
+ arch/riscv/Kconfig                          |  9 +++++++++
+ arch/riscv/Kconfig.erratas                  | 13 ++-----------
+ arch/riscv/Kconfig.socs                     |  1 -
+ arch/riscv/Makefile                         |  2 +-
+ arch/riscv/errata/Makefile                  |  1 -
+ arch/riscv/include/asm/alternative-macros.h |  7 ++++---
+ arch/riscv/include/asm/alternative.h        |  8 ++++++++
+ arch/riscv/kernel/Makefile                  |  1 +
+ arch/riscv/{errata => kernel}/alternative.c |  0
+ arch/riscv/kernel/smpboot.c                 |  2 --
+ arch/riscv/kernel/traps.c                   |  2 +-
+ 11 files changed, 26 insertions(+), 20 deletions(-)
+ rename arch/riscv/{errata => kernel}/alternative.c (100%)
 
-diff --git a/arch/riscv/include/asm/pgtable-32.h b/arch/riscv/include/asm/pgtable-32.h
-index 5b2e79e5bfa5..e266a4fe7f43 100644
---- a/arch/riscv/include/asm/pgtable-32.h
-+++ b/arch/riscv/include/asm/pgtable-32.h
-@@ -7,6 +7,7 @@
- #define _ASM_RISCV_PGTABLE_32_H
+diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+index f8a55d94016d..1ec07aa582a3 100644
+--- a/arch/riscv/Kconfig
++++ b/arch/riscv/Kconfig
+@@ -325,6 +325,15 @@ config NODES_SHIFT
+ 	  Specify the maximum number of NUMA Nodes available on the target
+ 	  system.  Increases memory reserved to accommodate various tables.
  
- #include <asm-generic/pgtable-nopmd.h>
-+#include <linux/bits.h>
- #include <linux/const.h>
- 
- /* Size of region mapped by a page global directory */
-@@ -16,4 +17,11 @@
- 
- #define MAX_POSSIBLE_PHYSMEM_BITS 34
- 
-+/*
-+ * rv32 PTE format:
-+ * | XLEN-1  10 | 9             8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
-+ *       PFN      reserved for SW   D   A   G   U   X   W   R   V
-+ */
-+#define _PAGE_PFN_MASK  GENMASK(31, 10)
++config RISCV_ALTERNATIVE
++	bool
++	depends on !XIP_KERNEL
++	help
++	  This Kconfig allows the kernel to automatically patch the
++	  errata required by the execution platform at run time. The
++	  code patching is performed once in the boot stages. It means
++	  that the overhead from this mechanism is just taken once.
 +
- #endif /* _ASM_RISCV_PGTABLE_32_H */
-diff --git a/arch/riscv/include/asm/pgtable-64.h b/arch/riscv/include/asm/pgtable-64.h
-index 7e246e9f8d70..15f3ad5aee4f 100644
---- a/arch/riscv/include/asm/pgtable-64.h
-+++ b/arch/riscv/include/asm/pgtable-64.h
-@@ -6,6 +6,7 @@
- #ifndef _ASM_RISCV_PGTABLE_64_H
- #define _ASM_RISCV_PGTABLE_64_H
+ config RISCV_ISA_C
+ 	bool "Emit compressed instructions when building Linux"
+ 	default y
+diff --git a/arch/riscv/Kconfig.erratas b/arch/riscv/Kconfig.erratas
+index 0aacd7052585..c521c2ae2de2 100644
+--- a/arch/riscv/Kconfig.erratas
++++ b/arch/riscv/Kconfig.erratas
+@@ -1,18 +1,9 @@
+ menu "CPU errata selection"
  
-+#include <linux/bits.h>
- #include <linux/const.h>
- 
- extern bool pgtable_l4_enabled;
-@@ -65,6 +66,13 @@ typedef struct {
- 
- #define PTRS_PER_PMD    (PAGE_SIZE / sizeof(pmd_t))
- 
-+/*
-+ * rv64 PTE format:
-+ * | 63 | 62 61 | 60 54 | 53  10 | 9             8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
-+ *   N      MT     RSV    PFN      reserved for SW   D   A   G   U   X   W   R   V
-+ */
-+#define _PAGE_PFN_MASK  GENMASK(53, 10)
-+
- static inline int pud_present(pud_t pud)
- {
- 	return (pud_val(pud) & _PAGE_PRESENT);
-@@ -108,12 +116,12 @@ static inline unsigned long _pud_pfn(pud_t pud)
- 
- static inline pmd_t *pud_pgtable(pud_t pud)
- {
--	return (pmd_t *)pfn_to_virt(pud_val(pud) >> _PAGE_PFN_SHIFT);
-+	return (pmd_t *)pfn_to_virt(__page_val_to_pfn(pud_val(pud)));
- }
- 
- static inline struct page *pud_page(pud_t pud)
- {
--	return pfn_to_page(pud_val(pud) >> _PAGE_PFN_SHIFT);
-+	return pfn_to_page(__page_val_to_pfn(pud_val(pud)));
- }
- 
- #define mm_p4d_folded  mm_p4d_folded
-@@ -143,7 +151,7 @@ static inline pmd_t pfn_pmd(unsigned long pfn, pgprot_t prot)
- 
- static inline unsigned long _pmd_pfn(pmd_t pmd)
- {
--	return pmd_val(pmd) >> _PAGE_PFN_SHIFT;
-+	return __page_val_to_pfn(pmd_val(pmd));
- }
- 
- #define mk_pmd(page, prot)    pfn_pmd(page_to_pfn(page), prot)
-diff --git a/arch/riscv/include/asm/pgtable-bits.h b/arch/riscv/include/asm/pgtable-bits.h
-index a6b0c89824c2..e571fa954afc 100644
---- a/arch/riscv/include/asm/pgtable-bits.h
-+++ b/arch/riscv/include/asm/pgtable-bits.h
-@@ -6,12 +6,6 @@
- #ifndef _ASM_RISCV_PGTABLE_BITS_H
- #define _ASM_RISCV_PGTABLE_BITS_H
- 
--/*
-- * PTE format:
-- * | XLEN-1  10 | 9             8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
-- *       PFN      reserved for SW   D   A   G   U   X   W   R   V
-- */
+-config RISCV_ERRATA_ALTERNATIVE
+-	bool "RISC-V alternative scheme"
+-	depends on !XIP_KERNEL
+-	default y
+-	help
+-	  This Kconfig allows the kernel to automatically patch the
+-	  errata required by the execution platform at run time. The
+-	  code patching is performed once in the boot stages. It means
+-	  that the overhead from this mechanism is just taken once.
 -
- #define _PAGE_ACCESSED_OFFSET 6
+ config ERRATA_SIFIVE
+ 	bool "SiFive errata"
+-	depends on RISCV_ERRATA_ALTERNATIVE
++	depends on !XIP_KERNEL
++	select RISCV_ALTERNATIVE
+ 	help
+ 	  All SiFive errata Kconfig depend on this Kconfig. Disabling
+ 	  this Kconfig will disable all SiFive errata. Please say "Y"
+diff --git a/arch/riscv/Kconfig.socs b/arch/riscv/Kconfig.socs
+index f6ef358d8a2c..85670dc9fe95 100644
+--- a/arch/riscv/Kconfig.socs
++++ b/arch/riscv/Kconfig.socs
+@@ -14,7 +14,6 @@ config SOC_SIFIVE
+ 	select CLK_SIFIVE
+ 	select CLK_SIFIVE_PRCI
+ 	select SIFIVE_PLIC
+-	select RISCV_ERRATA_ALTERNATIVE if !XIP_KERNEL
+ 	select ERRATA_SIFIVE if !XIP_KERNEL
+ 	help
+ 	  This enables support for SiFive SoC platform hardware.
+diff --git a/arch/riscv/Makefile b/arch/riscv/Makefile
+index 7d81102cffd4..a7ed47ce9311 100644
+--- a/arch/riscv/Makefile
++++ b/arch/riscv/Makefile
+@@ -103,7 +103,7 @@ endif
  
- #define _PAGE_PRESENT   (1 << 0)
-diff --git a/arch/riscv/include/asm/pgtable.h b/arch/riscv/include/asm/pgtable.h
-index 046b44225623..faba543e2b08 100644
---- a/arch/riscv/include/asm/pgtable.h
-+++ b/arch/riscv/include/asm/pgtable.h
-@@ -108,6 +108,8 @@
- #include <asm/tlbflush.h>
- #include <linux/mm_types.h>
+ head-y := arch/riscv/kernel/head.o
  
-+#define __page_val_to_pfn(_val)  (((_val) & _PAGE_PFN_MASK) >> _PAGE_PFN_SHIFT)
+-core-$(CONFIG_RISCV_ERRATA_ALTERNATIVE) += arch/riscv/errata/
++core-y += arch/riscv/errata/
+ core-$(CONFIG_KVM) += arch/riscv/kvm/
+ 
+ libs-y += arch/riscv/lib/
+diff --git a/arch/riscv/errata/Makefile b/arch/riscv/errata/Makefile
+index b8f8740a3e44..0ca1c5281a2d 100644
+--- a/arch/riscv/errata/Makefile
++++ b/arch/riscv/errata/Makefile
+@@ -1,2 +1 @@
+-obj-y	+= alternative.o
+ obj-$(CONFIG_ERRATA_SIFIVE) += sifive/
+diff --git a/arch/riscv/include/asm/alternative-macros.h b/arch/riscv/include/asm/alternative-macros.h
+index 67406c376389..5dd8d03a13da 100644
+--- a/arch/riscv/include/asm/alternative-macros.h
++++ b/arch/riscv/include/asm/alternative-macros.h
+@@ -2,7 +2,7 @@
+ #ifndef __ASM_ALTERNATIVE_MACROS_H
+ #define __ASM_ALTERNATIVE_MACROS_H
+ 
+-#ifdef CONFIG_RISCV_ERRATA_ALTERNATIVE
++#ifdef CONFIG_RISCV_ALTERNATIVE
+ 
+ #ifdef __ASSEMBLY__
+ 
+@@ -76,7 +76,7 @@
+ 
+ #endif /* __ASSEMBLY__ */
+ 
+-#else /* !CONFIG_RISCV_ERRATA_ALTERNATIVE*/
++#else /* CONFIG_RISCV_ALTERNATIVE */
+ #ifdef __ASSEMBLY__
+ 
+ .macro __ALTERNATIVE_CFG old_c
+@@ -95,7 +95,8 @@
+ 	__ALTERNATIVE_CFG(old_c)
+ 
+ #endif /* __ASSEMBLY__ */
+-#endif /* CONFIG_RISCV_ERRATA_ALTERNATIVE */
++#endif /* CONFIG_RISCV_ALTERNATIVE */
 +
- #ifdef CONFIG_64BIT
- #include <asm/pgtable-64.h>
+ /*
+  * Usage:
+  *   ALTERNATIVE(old_content, new_content, vendor_id, errata_id, CONFIG_k)
+diff --git a/arch/riscv/include/asm/alternative.h b/arch/riscv/include/asm/alternative.h
+index e625d3cafbed..7b42bcef0ecf 100644
+--- a/arch/riscv/include/asm/alternative.h
++++ b/arch/riscv/include/asm/alternative.h
+@@ -12,6 +12,8 @@
+ 
+ #ifndef __ASSEMBLY__
+ 
++#ifdef CONFIG_RISCV_ALTERNATIVE
++
+ #include <linux/init.h>
+ #include <linux/types.h>
+ #include <linux/stddef.h>
+@@ -35,5 +37,11 @@ struct errata_checkfunc_id {
+ void sifive_errata_patch_func(struct alt_entry *begin, struct alt_entry *end,
+ 			      unsigned long archid, unsigned long impid);
+ 
++#else /* CONFIG_RISCV_ALTERNATIVE */
++
++static inline void apply_boot_alternatives(void) { }
++
++#endif /* CONFIG_RISCV_ALTERNATIVE */
++
+ #endif
+ #endif
+diff --git a/arch/riscv/kernel/Makefile b/arch/riscv/kernel/Makefile
+index 87adbe47bc15..0f8348ac30f1 100644
+--- a/arch/riscv/kernel/Makefile
++++ b/arch/riscv/kernel/Makefile
+@@ -18,6 +18,7 @@ extra-y += head.o
+ extra-y += vmlinux.lds
+ 
+ obj-y	+= soc.o
++obj-$(CONFIG_RISCV_ALTERNATIVE) += alternative.o
+ obj-y	+= cpu.o
+ obj-y	+= cpufeature.o
+ obj-y	+= entry.o
+diff --git a/arch/riscv/errata/alternative.c b/arch/riscv/kernel/alternative.c
+similarity index 100%
+rename from arch/riscv/errata/alternative.c
+rename to arch/riscv/kernel/alternative.c
+diff --git a/arch/riscv/kernel/smpboot.c b/arch/riscv/kernel/smpboot.c
+index 622f226454d5..a6d13dca1403 100644
+--- a/arch/riscv/kernel/smpboot.c
++++ b/arch/riscv/kernel/smpboot.c
+@@ -41,9 +41,7 @@ static DECLARE_COMPLETION(cpu_running);
+ void __init smp_prepare_boot_cpu(void)
+ {
+ 	init_cpu_topology();
+-#ifdef CONFIG_RISCV_ERRATA_ALTERNATIVE
+ 	apply_boot_alternatives();
+-#endif
+ }
+ 
+ void __init smp_prepare_cpus(unsigned int max_cpus)
+diff --git a/arch/riscv/kernel/traps.c b/arch/riscv/kernel/traps.c
+index fe92e119e6a3..efa693b325a1 100644
+--- a/arch/riscv/kernel/traps.c
++++ b/arch/riscv/kernel/traps.c
+@@ -86,7 +86,7 @@ static void do_trap_error(struct pt_regs *regs, int signo, int code,
+ 	}
+ }
+ 
+-#if defined (CONFIG_XIP_KERNEL) && defined (CONFIG_RISCV_ERRATA_ALTERNATIVE)
++#if defined (CONFIG_XIP_KERNEL) && defined (CONFIG_RISCV_ALTERNATIVE)
+ #define __trap_section		__section(".xip.traps")
  #else
-@@ -261,12 +263,12 @@ static inline unsigned long _pgd_pfn(pgd_t pgd)
- 
- static inline struct page *pmd_page(pmd_t pmd)
- {
--	return pfn_to_page(pmd_val(pmd) >> _PAGE_PFN_SHIFT);
-+	return pfn_to_page(__page_val_to_pfn(pmd_val(pmd)));
- }
- 
- static inline unsigned long pmd_page_vaddr(pmd_t pmd)
- {
--	return (unsigned long)pfn_to_virt(pmd_val(pmd) >> _PAGE_PFN_SHIFT);
-+	return (unsigned long)pfn_to_virt(__page_val_to_pfn(pmd_val(pmd)));
- }
- 
- static inline pte_t pmd_pte(pmd_t pmd)
-@@ -282,7 +284,7 @@ static inline pte_t pud_pte(pud_t pud)
- /* Yields the page frame number (PFN) of a page table entry */
- static inline unsigned long pte_pfn(pte_t pte)
- {
--	return (pte_val(pte) >> _PAGE_PFN_SHIFT);
-+	return __page_val_to_pfn(pte_val(pte));
- }
- 
- #define pte_page(x)     pfn_to_page(pte_pfn(x))
+ #define __trap_section
 -- 
 2.35.1
 
