@@ -2,111 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9B14C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:50:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC721C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:50:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239833AbiEKCun (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 22:50:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49550 "EHLO
+        id S241377AbiEKCur (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 22:50:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242470AbiEKCgs (ORCPT
+        with ESMTP id S242384AbiEKCg1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 22:36:48 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7377BCE96
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:36:46 -0700 (PDT)
-X-UUID: 5d58e437754b43dcb4f5ee49c5feba1e-20220511
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:2dd0c135-d668-482c-b673-30e262d565e7,OB:0,LO
-        B:10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,A
-        CTION:release,TS:100
-X-CID-INFO: VERSION:1.1.4,REQID:2dd0c135-d668-482c-b673-30e262d565e7,OB:0,LOB:
-        10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,A
-        CTION:quarantine,TS:100
-X-CID-META: VersionHash:faefae9,CLOUDID:7ef604e6-38f2-431d-8de7-bf8fac490b0a,C
-        OID:332625d99147,Recheck:0,SF:28|16|19|48,TC:nil,Content:0,EDM:-3,File:nil
-        ,QS:0,BEC:nil
-X-UUID: 5d58e437754b43dcb4f5ee49c5feba1e-20220511
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <xinlei.lee@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1361079563; Wed, 11 May 2022 10:36:42 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Wed, 11 May 2022 10:36:41 +0800
-Received: from mszsdaap41.gcn.mediatek.inc (10.16.6.141) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Wed, 11 May 2022 10:36:40 +0800
-From:   <xinlei.lee@mediatek.com>
-To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
-        <airlied@linux.ie>, <daniel@ffwll.ch>, <matthias.bgg@gmail.com>
-CC:     <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <rex-bc.chen@mediatek.com>, <jitao.shi@mediatek.com>,
-        Xinlei Lee <xinlei.lee@mediatek.com>
-Subject: [PATCH v5,1/5] drm/mediatek: Adjust the timing of mipi signal from LP00 to LP11
-Date:   Wed, 11 May 2022 10:36:32 +0800
-Message-ID: <1652236596-21648-2-git-send-email-xinlei.lee@mediatek.com>
-X-Mailer: git-send-email 2.6.4
-In-Reply-To: <1652236596-21648-1-git-send-email-xinlei.lee@mediatek.com>
-References: <1652236596-21648-1-git-send-email-xinlei.lee@mediatek.com>
+        Tue, 10 May 2022 22:36:27 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F09E662A12
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:36:25 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id bo5so782697pfb.4
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:36:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=7t9UcsXwVYVSYCIK3NACYHQqA+B/CoJMpZoDVJt307g=;
+        b=KIzyRIfP1t/fKgS5DVcd9/4E4DAVHgKfNtr3m35zCsC23uMy7PhbbdYcIKWT/PSVJN
+         VWtl1q4ft/NYUAW9XiIweKWNtzi/KWkoHv5m+FV6AcbBAfuxHYeBoa/qNxdrZGw26qm8
+         edNhDUV5knhAD7JWjsoejkliLyzX57R3cSN3XY6V3utrUbKK0jBcxygCmkGcf8BQvbb2
+         mqY4IC5MzPy7ciF6dv8+NgThoNH7rb6U5mqybgajhhk6xad5JPVyP0T8UO9tgUx5ZUKc
+         KP1zvGt9tXzbYTH+SxFYsaP4OrKyghb2Vtx7qZkHKBTQfPoon6Abjq2C+Qoj/dE43WNd
+         ihmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=7t9UcsXwVYVSYCIK3NACYHQqA+B/CoJMpZoDVJt307g=;
+        b=mnRFDM9ZQLbxMOlAveaM3azk6sfft03uwWQZc6oY7DPVhvZQ4ZBvZrz4oBUggn+ToX
+         X1MsjqKKXvnyhIqrcSZ8E65kn9vBaUyvQ5lpdn9ns8cM+eIsj1Q76in2Jh5GBtJUoSYF
+         gRbL3QaTlwt8KApHCVmXaetDAmwy6xVCaaK4hp89f4ycydhbk8GtjXD/KIVusqp4r/Bt
+         EbQvNJAfY9yJF4aZtYQ0szUJftGofaT1j++AG75dsDp6p/ECL+9Jbd4bEpfXiiILFj9t
+         5qLlbdJXGkez0QQM7MTQAukMSJx6qtTMNUR5MAv8C9GArCcVfVM4lUvojk6w7dEAYmg1
+         gjCg==
+X-Gm-Message-State: AOAM5327xYso+qgHoLwLeR0ypwYi9Fl98bPwm2Ut2BNk4i+vUzdBxLxt
+        y1L0zQGlH4bfdgOLXewrvd8oyg==
+X-Google-Smtp-Source: ABdhPJxTh/LcvNMMEoQZO0pKwBDLiPRwF4uEXSoj63PgVF8fCV7RowiyCtUIUh92JHNPPEC3BNdtHg==
+X-Received: by 2002:a63:505a:0:b0:3c6:d5d1:eb2 with SMTP id q26-20020a63505a000000b003c6d5d10eb2mr8148519pgl.122.1652236585505;
+        Tue, 10 May 2022 19:36:25 -0700 (PDT)
+Received: from [10.254.203.126] ([139.177.225.242])
+        by smtp.gmail.com with ESMTPSA id s12-20020a170902a50c00b0015e8d4eb2b7sm311852plq.257.2022.05.10.19.36.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 May 2022 19:36:24 -0700 (PDT)
+Message-ID: <ebb3c657-c914-7d71-c4c9-6e8fe2d2e0c0@bytedance.com>
+Date:   Wed, 11 May 2022 10:36:18 +0800
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Subject: Re: [PATCH 1/2] mm: fix missing handler for __GFP_NOWARN
+Content-Language: en-US
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     akinobu.mita@gmail.com, vbabka@suse.cz, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, rostedt@goodmis.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+References: <20220510113809.80626-1-zhengqi.arch@bytedance.com>
+ <20220510115922.350a496ca8b91686c1758282@linux-foundation.org>
+ <c44769b3-a132-63a5-fd40-4d483497dff2@bytedance.com>
+ <20220510193215.14ed7e3fb70857738e10c0a2@linux-foundation.org>
+From:   Qi Zheng <zhengqi.arch@bytedance.com>
+In-Reply-To: <20220510193215.14ed7e3fb70857738e10c0a2@linux-foundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jitao Shi <jitao.shi@mediatek.com>
 
-Old sequence:
-1. Pull the MIPI signal high
-2. Delay & Dsi_reset
-3. Set the dsi timing register
-4. dsi clk & lanes leave ulp mode and enter hs mode
 
-The sequence after patching is:
-1. Set the dsi timing register
-2. Pull the MIPI signal high
-3. Delay & Dsi_reset
-4. dsi clk & lanes leave ulp mode and enter hs mode
+On 2022/5/11 10:32 AM, Andrew Morton wrote:
+> On Wed, 11 May 2022 10:19:48 +0800 Qi Zheng <zhengqi.arch@bytedance.com> wrote:
+> 
+>>
+>> ,,,
+>>>> --- a/mm/internal.h
+>>>> +++ b/mm/internal.h
+>>>> @@ -35,6 +35,17 @@ struct folio_batch;
+>>>>    /* Do not use these with a slab allocator */
+>>>>    #define GFP_SLAB_BUG_MASK (__GFP_DMA32|__GFP_HIGHMEM|~__GFP_BITS_MASK)
+>>>>    
+>>>> +#define WARN_ON_ONCE_GFP(cond, gfp)	({				\
+>>>> +	static bool __section(".data.once") __warned;			\
+>>>> +	int __ret_warn_once = !!(cond);					\
+>>>> +									\
+>>>> +	if (unlikely(!(gfp & __GFP_NOWARN) && __ret_warn_once && !__warned)) { \
+>>>> +		__warned = true;					\
+>>>> +		WARN_ON(1);						\
+>>>> +	}								\
+>>>> +	unlikely(__ret_warn_once);					\
+>>>> +})
+>>>
+>>> I don't think WARN_ON_ONCE_GFP is a good name for this.  But
+>>> WARN_ON_ONCE_IF_NOT_GFP_NOWARN is too long :(
+>>>
+>>> WARN_ON_ONCE_NOWARN might be better.  No strong opinion here, really.
+>>
+>> I've thought about WARN_ON_ONCE_NOWARN, but I feel a little weird
+>> putting 'WARN' and 'NOWARN' together, how about WARN_ON_ONCE_IF_ALLOWED?
+> 
+> I dunno.  WARN_ON_ONCE_GFP isn't too bad I suppose.  Add a comment over
+> the definition explaining it?
 
-Fixes: 75374fc2c152 ("drm/mediatek: add dphy reset after setting lanes number")
+OK, I will add a comment to it.
 
-Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
----
- drivers/gpu/drm/mediatek/mtk_dsi.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+>>>
+>>>> @@ -4902,8 +4906,8 @@ __alloc_pages_slowpath(gfp_t gfp_mask, unsigned int order,
+>>>>    	 * We also sanity check to catch abuse of atomic reserves being used by
+>>>>    	 * callers that are not in atomic context.
+>>>>    	 */
+>>>> -	if (WARN_ON_ONCE((gfp_mask & (__GFP_ATOMIC|__GFP_DIRECT_RECLAIM)) ==
+>>>> -				(__GFP_ATOMIC|__GFP_DIRECT_RECLAIM)))
+>>>> +	if (WARN_ON_ONCE_GFP((gfp_mask & (__GFP_ATOMIC|__GFP_DIRECT_RECLAIM)) ==
+>>>> +				(__GFP_ATOMIC|__GFP_DIRECT_RECLAIM), gfp_mask))
+>>>>    		gfp_mask &= ~__GFP_ATOMIC;
+>>>>    
+>>>>    retry_cpuset:
+>>>
+>>> I dropped this hunk - Neil's "mm: discard __GFP_ATOMIC"
+>>> (https://lkml.kernel.org/r/163712397076.13692.4727608274002939094@noble.neil.brown.name)
+>>> deleted this code.
+>>>
+>>
+>> This series is based on v5.18-rc5, I will rebase it to the latest next
+>> branch and check if there are any missing WARN_ON_ONCEs that are not
+>> being handled.
+> 
+> Against git://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm branch
+> mm-unstable, please.  That ends up in linux-next, with a delay.
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-index bd3f5b485085..02e31a7d9257 100644
---- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-@@ -661,14 +661,14 @@ static int mtk_dsi_poweron(struct mtk_dsi *dsi)
- 	mtk_dsi_reset_engine(dsi);
- 	mtk_dsi_phy_timconfig(dsi);
- 
--	mtk_dsi_rxtx_control(dsi);
--	usleep_range(30, 100);
--	mtk_dsi_reset_dphy(dsi);
- 	mtk_dsi_ps_control_vact(dsi);
- 	mtk_dsi_set_vm_cmd(dsi);
- 	mtk_dsi_config_vdo_timing(dsi);
- 	mtk_dsi_set_interrupt_enable(dsi);
- 
-+	mtk_dsi_rxtx_control(dsi);
-+	usleep_range(30, 100);
-+	mtk_dsi_reset_dphy(dsi);
- 	mtk_dsi_clk_ulp_mode_leave(dsi);
- 	mtk_dsi_lane0_ulp_mode_leave(dsi);
- 	mtk_dsi_clk_hs_mode(dsi, 0);
+OK, will do.
+
 -- 
-2.18.0
-
+Thanks,
+Qi
