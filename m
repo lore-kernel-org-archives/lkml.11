@@ -2,64 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D36C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:50:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9B14C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:50:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232733AbiEKCu0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 22:50:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47368 "EHLO
+        id S239833AbiEKCun (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 22:50:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244450AbiEKCoh (ORCPT
+        with ESMTP id S242470AbiEKCgs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 22:44:37 -0400
-Received: from mail.meizu.com (edge07.meizu.com [112.91.151.210])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABFB1239DB6;
-        Tue, 10 May 2022 19:44:35 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail11.meizu.com
- (172.16.1.15) with Microsoft SMTP Server (TLS) id 14.3.487.0; Wed, 11 May
- 2022 10:44:33 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Wed, 11 May
- 2022 10:44:33 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     Song Liu <song@kernel.org>
-CC:     Haowen Bai <baihaowen@meizu.com>, <linux-raid@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] md: remove useless INIT_LIST_HEAD()
-Date:   Wed, 11 May 2022 10:44:28 +0800
-Message-ID: <1652237069-11486-1-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
+        Tue, 10 May 2022 22:36:48 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7377BCE96
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:36:46 -0700 (PDT)
+X-UUID: 5d58e437754b43dcb4f5ee49c5feba1e-20220511
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:2dd0c135-d668-482c-b673-30e262d565e7,OB:0,LO
+        B:10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,A
+        CTION:release,TS:100
+X-CID-INFO: VERSION:1.1.4,REQID:2dd0c135-d668-482c-b673-30e262d565e7,OB:0,LOB:
+        10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,A
+        CTION:quarantine,TS:100
+X-CID-META: VersionHash:faefae9,CLOUDID:7ef604e6-38f2-431d-8de7-bf8fac490b0a,C
+        OID:332625d99147,Recheck:0,SF:28|16|19|48,TC:nil,Content:0,EDM:-3,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 5d58e437754b43dcb4f5ee49c5feba1e-20220511
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <xinlei.lee@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1361079563; Wed, 11 May 2022 10:36:42 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Wed, 11 May 2022 10:36:41 +0800
+Received: from mszsdaap41.gcn.mediatek.inc (10.16.6.141) by
+ mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Wed, 11 May 2022 10:36:40 +0800
+From:   <xinlei.lee@mediatek.com>
+To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
+        <airlied@linux.ie>, <daniel@ffwll.ch>, <matthias.bgg@gmail.com>
+CC:     <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <rex-bc.chen@mediatek.com>, <jitao.shi@mediatek.com>,
+        Xinlei Lee <xinlei.lee@mediatek.com>
+Subject: [PATCH v5,1/5] drm/mediatek: Adjust the timing of mipi signal from LP00 to LP11
+Date:   Wed, 11 May 2022 10:36:32 +0800
+Message-ID: <1652236596-21648-2-git-send-email-xinlei.lee@mediatek.com>
+X-Mailer: git-send-email 2.6.4
+In-Reply-To: <1652236596-21648-1-git-send-email-xinlei.lee@mediatek.com>
+References: <1652236596-21648-1-git-send-email-xinlei.lee@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-list candidates has been inited staticly through LIST_HEAD,
-so there's no need to call another INIT_LIST_HEAD. Simply remove
-it.
+From: Jitao Shi <jitao.shi@mediatek.com>
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+Old sequence:
+1. Pull the MIPI signal high
+2. Delay & Dsi_reset
+3. Set the dsi timing register
+4. dsi clk & lanes leave ulp mode and enter hs mode
+
+The sequence after patching is:
+1. Set the dsi timing register
+2. Pull the MIPI signal high
+3. Delay & Dsi_reset
+4. dsi clk & lanes leave ulp mode and enter hs mode
+
+Fixes: 75374fc2c152 ("drm/mediatek: add dphy reset after setting lanes number")
+
+Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
+Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
 ---
- drivers/md/md.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/gpu/drm/mediatek/mtk_dsi.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/md/md.c b/drivers/md/md.c
-index 707e802d0082..eb2b23ef5ecc 100644
---- a/drivers/md/md.c
-+++ b/drivers/md/md.c
-@@ -6491,7 +6491,6 @@ static void autorun_devices(int part)
- 					 struct md_rdev, same_set);
+diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
+index bd3f5b485085..02e31a7d9257 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dsi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
+@@ -661,14 +661,14 @@ static int mtk_dsi_poweron(struct mtk_dsi *dsi)
+ 	mtk_dsi_reset_engine(dsi);
+ 	mtk_dsi_phy_timconfig(dsi);
  
- 		pr_debug("md: considering %s ...\n", bdevname(rdev0->bdev,b));
--		INIT_LIST_HEAD(&candidates);
- 		rdev_for_each_list(rdev, tmp, &pending_raid_disks)
- 			if (super_90_load(rdev, rdev0, 0) >= 0) {
- 				pr_debug("md:  adding %s ...\n",
+-	mtk_dsi_rxtx_control(dsi);
+-	usleep_range(30, 100);
+-	mtk_dsi_reset_dphy(dsi);
+ 	mtk_dsi_ps_control_vact(dsi);
+ 	mtk_dsi_set_vm_cmd(dsi);
+ 	mtk_dsi_config_vdo_timing(dsi);
+ 	mtk_dsi_set_interrupt_enable(dsi);
+ 
++	mtk_dsi_rxtx_control(dsi);
++	usleep_range(30, 100);
++	mtk_dsi_reset_dphy(dsi);
+ 	mtk_dsi_clk_ulp_mode_leave(dsi);
+ 	mtk_dsi_lane0_ulp_mode_leave(dsi);
+ 	mtk_dsi_clk_hs_mode(dsi, 0);
 -- 
-2.7.4
+2.18.0
 
