@@ -2,157 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84779C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:50:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9260AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:50:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239041AbiEKCuD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 22:50:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49950 "EHLO
+        id S241499AbiEKCuM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 22:50:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242501AbiEKCgy (ORCPT
+        with ESMTP id S245154AbiEKCrL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 22:36:54 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E853BEAB91
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:36:52 -0700 (PDT)
-X-UUID: ecf4cfd4ab4649c1a64b1584d5b22eb7-20220511
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:5e8c6f4e-262b-4f47-95c7-7d8a7d5fb507,OB:0,LO
-        B:10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,A
-        CTION:release,TS:100
-X-CID-INFO: VERSION:1.1.4,REQID:5e8c6f4e-262b-4f47-95c7-7d8a7d5fb507,OB:0,LOB:
-        10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,A
-        CTION:quarantine,TS:100
-X-CID-META: VersionHash:faefae9,CLOUDID:2d5659b3-56b5-4c9e-8d83-0070b288eb6a,C
-        OID:588541e764fd,Recheck:0,SF:28|16|19|48,TC:nil,Content:0,EDM:-3,File:nil
-        ,QS:0,BEC:nil
-X-UUID: ecf4cfd4ab4649c1a64b1584d5b22eb7-20220511
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <xinlei.lee@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 664999981; Wed, 11 May 2022 10:36:49 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Wed, 11 May 2022 10:36:48 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 11 May 2022 10:36:48 +0800
-Received: from mszsdaap41.gcn.mediatek.inc (10.16.6.141) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Wed, 11 May 2022 10:36:47 +0800
-From:   <xinlei.lee@mediatek.com>
-To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
-        <airlied@linux.ie>, <daniel@ffwll.ch>, <matthias.bgg@gmail.com>
-CC:     <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <rex-bc.chen@mediatek.com>, <jitao.shi@mediatek.com>,
-        Xinlei Lee <xinlei.lee@mediatek.com>
-Subject: [PATCH v5,4/5] drm/mediatek: keep dsi as LP00 before dcs cmds transfer
-Date:   Wed, 11 May 2022 10:36:35 +0800
-Message-ID: <1652236596-21648-5-git-send-email-xinlei.lee@mediatek.com>
-X-Mailer: git-send-email 2.6.4
-In-Reply-To: <1652236596-21648-1-git-send-email-xinlei.lee@mediatek.com>
-References: <1652236596-21648-1-git-send-email-xinlei.lee@mediatek.com>
+        Tue, 10 May 2022 22:47:11 -0400
+Received: from mail.meizu.com (unknown [14.29.68.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FF0554F91;
+        Tue, 10 May 2022 19:47:07 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
+ (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Wed, 11 May
+ 2022 10:47:07 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Wed, 11 May
+ 2022 10:47:05 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     Davidlohr Bueso <dave@stgolabs.net>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Josh Triplett <josh@joshtriplett.org>,
+        "Frederic Weisbecker" <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>
+CC:     Haowen Bai <baihaowen@meizu.com>, <linux-kernel@vger.kernel.org>,
+        <rcu@vger.kernel.org>
+Subject: [PATCH] rcutorture: remove useless INIT_LIST_HEAD()
+Date:   Wed, 11 May 2022 10:47:04 +0800
+Message-ID: <1652237224-11656-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
 Content-Type: text/plain
-X-MTK:  N
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jitao Shi <jitao.shi@mediatek.com>
+list rcu_torture_freelist has been inited staticly through LIST_HEAD,
+so there's no need to call another INIT_LIST_HEAD. Simply remove
+it.
 
-To comply with the panel sequence, hold the mipi signal to LP00 before the dcs cmds transmission,
-and pull the mipi signal high from LP00 to LP11 until the start of the dcs cmds transmission.
-The normal panel timing is :
-(1) pp1800 DC pull up
-(2) avdd & avee AC pull high
-(3) lcm_reset pull high -> pull low -> pull high
-(4) Pull MIPI signal high (LP11) -> initial code -> send video data(HS mode)
-The power-off sequence is reversed.
-If dsi is not in cmd mode, then dsi will pull the mipi signal high in the mtk_output_dsi_enable function.
-The delay in lane_ready func is the reaction time of dsi_rx after pulling up the mipi signal.
-
-Fixes: 2dd8075d2185 ("drm/mediatek: mtk_dsi: Use the drm_panel_bridge API")
-
-Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 ---
- drivers/gpu/drm/mediatek/mtk_dsi.c | 29 ++++++++++++++++++++++-------
- 1 file changed, 22 insertions(+), 7 deletions(-)
+ kernel/rcu/rcutorture.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-index 2dee6632a541..98b7811502e7 100644
---- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-@@ -203,6 +203,7 @@ struct mtk_dsi {
- 	struct mtk_phy_timing phy_timing;
- 	int refcount;
- 	bool enabled;
-+	bool lanes_ready;
- 	u32 irq_data;
- 	wait_queue_head_t irq_wait_queue;
- 	const struct mtk_dsi_driver_data *driver_data;
-@@ -666,13 +667,6 @@ static int mtk_dsi_poweron(struct mtk_dsi *dsi)
- 	mtk_dsi_config_vdo_timing(dsi);
- 	mtk_dsi_set_interrupt_enable(dsi);
+diff --git a/kernel/rcu/rcutorture.c b/kernel/rcu/rcutorture.c
+index faf6b4c7a757..0005e259c4ce 100644
+--- a/kernel/rcu/rcutorture.c
++++ b/kernel/rcu/rcutorture.c
+@@ -3247,7 +3247,6 @@ rcu_torture_init(void)
  
--	mtk_dsi_rxtx_control(dsi);
--	usleep_range(30, 100);
--	mtk_dsi_reset_dphy(dsi);
--	mtk_dsi_clk_ulp_mode_leave(dsi);
--	mtk_dsi_lane0_ulp_mode_leave(dsi);
--	mtk_dsi_clk_hs_mode(dsi, 0);
--
- 	return 0;
- err_disable_engine_clk:
- 	clk_disable_unprepare(dsi->engine_clk);
-@@ -701,6 +695,24 @@ static void mtk_dsi_poweroff(struct mtk_dsi *dsi)
- 	clk_disable_unprepare(dsi->digital_clk);
+ 	/* Set up the freelist. */
  
- 	phy_power_off(dsi->phy);
-+
-+	dsi->lanes_ready = false;
-+
-+}
-+
-+static void mtk_dsi_lane_ready(struct mtk_dsi *dsi)
-+{
-+	if (!dsi->lanes_ready) {
-+		dsi->lanes_ready = true;
-+		mtk_dsi_rxtx_control(dsi);
-+		usleep_range(30, 100);
-+		mtk_dsi_reset_dphy(dsi);
-+		mtk_dsi_clk_ulp_mode_leave(dsi);
-+		mtk_dsi_lane0_ulp_mode_leave(dsi);
-+		mtk_dsi_clk_hs_mode(dsi, 0);
-+		msleep(20);
-+		/* The reaction time after pulling up the mipi signal for dsi_rx */
-+	}
- }
- 
- static void mtk_output_dsi_enable(struct mtk_dsi *dsi)
-@@ -708,6 +720,7 @@ static void mtk_output_dsi_enable(struct mtk_dsi *dsi)
- 	if (dsi->enabled)
- 		return;
- 
-+	mtk_dsi_lane_ready(dsi);
- 	mtk_dsi_set_mode(dsi);
- 	mtk_dsi_clk_hs_mode(dsi, 1);
- 
-@@ -1017,6 +1030,8 @@ static ssize_t mtk_dsi_host_transfer(struct mipi_dsi_host *host,
- 	if (MTK_DSI_HOST_IS_READ(msg->type))
- 		irq_flag |= LPRX_RD_RDY_INT_FLAG;
- 
-+	mtk_dsi_lane_ready(dsi);
-+
- 	ret = mtk_dsi_host_send_cmd(dsi, msg, irq_flag);
- 	if (ret)
- 		goto restore_dsi_mode;
+-	INIT_LIST_HEAD(&rcu_torture_freelist);
+ 	for (i = 0; i < ARRAY_SIZE(rcu_tortures); i++) {
+ 		rcu_tortures[i].rtort_mbtest = 0;
+ 		list_add_tail(&rcu_tortures[i].rtort_free,
 -- 
-2.18.0
+2.7.4
 
