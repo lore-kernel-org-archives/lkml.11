@@ -2,166 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16606C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 11:25:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C54AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 11:26:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240392AbiEKLZy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 07:25:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55312 "EHLO
+        id S240802AbiEKL0F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 07:26:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241287AbiEKLZD (ORCPT
+        with ESMTP id S239732AbiEKLZD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 11 May 2022 07:25:03 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4AF9C235C1D
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 04:24:45 -0700 (PDT)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8DAAA236747
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 04:24:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652268284;
+        s=mimecast20190719; t=1652268296;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+hqVlDvCMcE/tiHufqNgKFkt8nO8gwuxe1+upIvX5Ak=;
-        b=dpMcFkWfcNBZGmLZnXY/Bihu3uI0HGYP92H8ornxSLOzZkG9dmCGpyUj7QX6QMk642uM5Z
-        4CD1UtVpoTGZJDt9iZqy0Rn6bGDLVPAaP9FzcGmLpuax3cgX+bcypxPrSmyS6zf5h4oLjU
-        /VbpU0L2iD+2hvg5vBmmOLHNS69U4EI=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=74g0bmnivF1+sjdv/ldmbPuCRqvKL9LcvXu85lOOZDc=;
+        b=AwDFplJtljDncHhuo6rFu1NkXjL2rVrHFR1MSp1a+NOWrkzKM221k3A+hXZzcEsFlql5Fl
+        UpBg3N3pQmamFdDnKluhuU0PpIor5C5wOoO30xTgIJquJrhFT6kkv/TBytR5isurwVthWB
+        YQWtL7cC1WvoHf7tRCgCf/YNvRmRo9k=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-504-hvVlbODnP1-ixabgTo6srg-1; Wed, 11 May 2022 07:24:41 -0400
-X-MC-Unique: hvVlbODnP1-ixabgTo6srg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id EE3D185A5A8;
-        Wed, 11 May 2022 11:24:40 +0000 (UTC)
-Received: from starship (unknown [10.40.192.26])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AA1822166B2F;
-        Wed, 11 May 2022 11:24:38 +0000 (UTC)
-Message-ID: <94cec439f345313c1a909f6a012665dd10686d47.camel@redhat.com>
-Subject: Re: [PATCH v3 09/34] KVM: x86: hyper-v: Don't use
- sparse_set_to_vcpu_mask() in kvm_hv_send_ipi()
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Wed, 11 May 2022 14:24:37 +0300
-In-Reply-To: <20220414132013.1588929-10-vkuznets@redhat.com>
-References: <20220414132013.1588929-1-vkuznets@redhat.com>
-         <20220414132013.1588929-10-vkuznets@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+ us-mta-503-ZNS1exgHMeWmL9R1_Q0ACA-1; Wed, 11 May 2022 07:24:55 -0400
+X-MC-Unique: ZNS1exgHMeWmL9R1_Q0ACA-1
+Received: by mail-wm1-f69.google.com with SMTP id s14-20020a05600c29ce00b00394611a8059so2695858wmd.4
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 04:24:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=74g0bmnivF1+sjdv/ldmbPuCRqvKL9LcvXu85lOOZDc=;
+        b=qZrnev7x1DhrFHh/GMZdgIGw7u7Y643fJq57HORbxdGGygQRuqBvBklQzFMoICr15p
+         LxazExI/w/3xFWlrsRuvuJi/prq4hRX6ws4ZINJ+NqYTs/vLZpVp54v9k/mHNjhhg2eF
+         KRVhTH/kGg4H0OtPKi83wynBqPScruME37ZbbxoKaJn9qJqHHeDz9vfJW65BDxECwmCG
+         PqARxuZmU5NYygNchlUQ+HDaqkoJe0YQJPHsjdk9Mg2UQrQeMqa8PKQvblTCI3Dulv9D
+         HIRW3fdjKN6uT264kXKbTseWf3hs9IYMtHvA9pFdOy9hfqjUpeT5XJ4j2rQe0hAfVyCT
+         gYdg==
+X-Gm-Message-State: AOAM532SqfwrfrSl/dEb1u+9vHP+OtpUrhqLW81Ds0Lys6YgfBSvYae6
+        r4VfiQC3CqlNzipc+fDCkGw4c7lcbxstZUcYc2Kb7gkx0tZ5HVJ+e0xngUyvujfiStbkIVTebVI
+        wFZ4lfppsprQg7L6hWS/dDcxxl89ULj0hCqVrHEYgimY0jxlgJeoSMyp6azOKqH7cD4eIjAkDqb
+        g=
+X-Received: by 2002:a05:6000:1841:b0:20c:788b:9306 with SMTP id c1-20020a056000184100b0020c788b9306mr21501002wri.369.1652268294389;
+        Wed, 11 May 2022 04:24:54 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzqiIDFQEwbgjQPCLimkTEcDNRsKPVMAysuPiAMG2NOuNeRfcXzFKnVvUYrhq6SaYWWb2umNQ==
+X-Received: by 2002:a05:6000:1841:b0:20c:788b:9306 with SMTP id c1-20020a056000184100b0020c788b9306mr21500957wri.369.1652268294033;
+        Wed, 11 May 2022 04:24:54 -0700 (PDT)
+Received: from minerva.home (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id j1-20020a5d4481000000b0020c5253d8d3sm1429174wrq.31.2022.05.11.04.24.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 May 2022 04:24:53 -0700 (PDT)
+From:   Javier Martinez Canillas <javierm@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        dri-devel@lists.freedesktop.org,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Helge Deller <deller@gmx.de>, Jonathan Corbet <corbet@lwn.net>,
+        Peter Jones <pjones@redhat.com>, linux-doc@vger.kernel.org,
+        linux-fbdev@vger.kernel.org
+Subject: [PATCH v5 0/7] Fix some races between sysfb device registration and drivers probe
+Date:   Wed, 11 May 2022 13:24:31 +0200
+Message-Id: <20220511112438.1251024-1-javierm@redhat.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-04-14 at 15:19 +0200, Vitaly Kuznetsov wrote:
-> Get rid of on-stack allocation of vcpu_mask and optimize kvm_hv_send_ipi()
-> for a smaller number of vCPUs in the request. When Hyper-V TLB flush
-> is in  use, HvSendSyntheticClusterIpi{,Ex} calls are not commonly used to
-> send IPIs to a large number of vCPUs (and are rarely used in general).
-> 
-> Introduce hv_is_vp_in_sparse_set() to directly check if the specified
-> VP_ID is present in sparse vCPU set.
-> 
-> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-> ---
->  arch/x86/kvm/hyperv.c | 37 ++++++++++++++++++++++++++-----------
->  1 file changed, 26 insertions(+), 11 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-> index 3cf68645a2e6..aebbb598ad1d 100644
-> --- a/arch/x86/kvm/hyperv.c
-> +++ b/arch/x86/kvm/hyperv.c
-> @@ -1746,6 +1746,25 @@ static void sparse_set_to_vcpu_mask(struct kvm *kvm, u64 *sparse_banks,
->  	}
->  }
->  
-> +static bool hv_is_vp_in_sparse_set(u32 vp_id, u64 valid_bank_mask, u64 sparse_banks[])
-> +{
-> +	int bank, sbank = 0;
-> +
-> +	if (!test_bit(vp_id / HV_VCPUS_PER_SPARSE_BANK,
-> +		      (unsigned long *)&valid_bank_mask))
-> +		return false;
-> +
-> +	for_each_set_bit(bank, (unsigned long *)&valid_bank_mask,
-> +			 KVM_HV_MAX_SPARSE_VCPU_SET_BITS) {
-> +		if (bank == vp_id / HV_VCPUS_PER_SPARSE_BANK)
-> +			break;
-> +		sbank++;
-> +	}
-> +
-> +	return test_bit(vp_id % HV_VCPUS_PER_SPARSE_BANK,
-> +			(unsigned long *)&sparse_banks[sbank]);
-> +}
-> +
->  struct kvm_hv_hcall {
->  	u64 param;
->  	u64 ingpa;
-> @@ -2089,8 +2108,8 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
->  		((u64)hc->rep_cnt << HV_HYPERCALL_REP_COMP_OFFSET);
->  }
->  
-> -static void kvm_send_ipi_to_many(struct kvm *kvm, u32 vector,
-> -				 unsigned long *vcpu_bitmap)
-> +static void kvm_hv_send_ipi_to_many(struct kvm *kvm, u32 vector,
-> +				    u64 *sparse_banks, u64 valid_bank_mask)
-I think the indentation is wrong here (was wrong before as well)
+Hello,
 
+The patches in this series contain mostly changes suggested by Daniel Vetter
+Thomas Zimmermann. They aim to fix existing races between the Generic System
+Framebuffer (sysfb) infrastructure and the fbdev and DRM device registration.
 
->  {
->  	struct kvm_lapic_irq irq = {
->  		.delivery_mode = APIC_DM_FIXED,
-> @@ -2100,7 +2119,10 @@ static void kvm_send_ipi_to_many(struct kvm *kvm, u32 vector,
->  	unsigned long i;
->  
->  	kvm_for_each_vcpu(i, vcpu, kvm) {
-> -		if (vcpu_bitmap && !test_bit(i, vcpu_bitmap))
-> +		if (sparse_banks &&
-> +		    !hv_is_vp_in_sparse_set(kvm_hv_get_vpindex(vcpu),
-> +					    valid_bank_mask,
-> +					    sparse_banks))
->  			continue;
->  
->  		/* We fail only when APIC is disabled */
-> @@ -2113,7 +2135,6 @@ static u64 kvm_hv_send_ipi(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
->  	struct kvm *kvm = vcpu->kvm;
->  	struct hv_send_ipi_ex send_ipi_ex;
->  	struct hv_send_ipi send_ipi;
-> -	DECLARE_BITMAP(vcpu_mask, KVM_MAX_VCPUS);
->  	unsigned long valid_bank_mask;
->  	u64 sparse_banks[KVM_HV_MAX_SPARSE_VCPU_SET_BITS];
->  	u32 vector;
-> @@ -2175,13 +2196,7 @@ static u64 kvm_hv_send_ipi(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
->  	if ((vector < HV_IPI_LOW_VECTOR) || (vector > HV_IPI_HIGH_VECTOR))
->  		return HV_STATUS_INVALID_HYPERCALL_INPUT;
->  
-> -	if (all_cpus) {
-> -		kvm_send_ipi_to_many(kvm, vector, NULL);
-> -	} else {
-> -		sparse_set_to_vcpu_mask(kvm, sparse_banks, valid_bank_mask, vcpu_mask);
-> -
-> -		kvm_send_ipi_to_many(kvm, vector, vcpu_mask);
-> -	}
-> +	kvm_hv_send_ipi_to_many(kvm, vector, all_cpus ? NULL : sparse_banks, valid_bank_mask);
->  
->  ret_success:
->  	return HV_STATUS_SUCCESS;
+For example, it is currently possible for sysfb to register a platform
+device after a real DRM driver was registered and requested to remove the
+conflicting framebuffers. Or is possible for a simple{fb,drm} to match with
+a device previously registered by sysfb, even after a real driver is present.
 
+A symptom of this issue, was worked around with the commit fb561bf9abde
+("fbdev: Prevent probing generic drivers if a FB is already registered")
+but that's really a hack and should be reverted instead.
 
-Overall looks good to me, but I might have missed something.
+This series attempt to fix it more correctly and revert the mentioned hack.
+That will also allow to make the num_registered_fb variable not visible to
+drivers anymore, since that's internal to fbdev core.
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Pach 1 is just a simple cleanup in preparation for later patches.
+
+Patch 2 add a sysfb_disable() and sysfb_try_unregister() helpers to allow
+disabling sysfb and attempt to unregister registered devices respectively.
+
+Patch 3 changes how is dealt with conflicting framebuffers unregistering,
+rather than having a variable to determine if a lock should be take, it
+just drops the lock before unregistering the platform device.
+
+Patch 4 changes the fbdev core to not attempt to unregister devices that
+were registered by sysfb, let the same code doing the registration to also
+handle the unregistration.
+
+Patch 5 fixes the race that exists between sysfb devices registration and
+fbdev framebuffer devices registration, by disabling the sysfb when a DRM
+or fbdev driver requests to remove conflicting framebuffers.
+
+Patch 6 is the revert patch that was posted by Daniel before but dropped
+from his set and finally patch 7 is the one that makes num_registered_fb
+private to fbmem.c, to not allow drivers to use it anymore.
+
+The patches were tested on a rpi4 with the vc4, simpledrm and simplefb
+drivers, using different combinations of built-in and as a module.
+
+For example, having simpledrm as a module and loading it after the vc4
+driver probed would not register a DRM device, which happens now without
+the patches from this series.
 
 Best regards,
-	Maxim Levitsky
+Javier
+
+Changes in v5:
+- Move the sysfb_disable() call at conflicting framebuffers again to
+  avoid the need of a DRIVER_FIRMWARE capability flag.
+- Add Daniel Vetter's Reviewed-by tag again since reverted to the old
+  patch that he already reviewed in v2.
+- Drop patches that added a DRM_FIRMWARE capability and use them
+  since the case those prevented could be ignored (Daniel Vetter).
+
+Changes in v4:
+- Make sysfb_disable() to also attempt to unregister a device.
+- Drop call to sysfb_disable() in fbmem since is done in other places now.
+- Add patch to make registered_fb[] private.
+- Add patches that introduce the DRM_FIRMWARE capability and usage.
+
+Changes in v3:
+- Add Thomas Zimmermann's Reviewed-by tag to patch #1.
+- Call sysfb_disable() when a DRM dev and a fbdev are registered rather
+  than when conflicting framebuffers are removed (Thomas Zimmermann).
+- Call sysfb_disable() when a fbdev framebuffer is registered rather
+  than when conflicting framebuffers are removed (Thomas Zimmermann).
+- Drop Daniel Vetter's Reviewed-by tag since patch changed a lot.
+- Rebase on top of latest drm-misc-next branch.
+
+Changes in v2:
+- Rebase on top of latest drm-misc-next and fix conflicts (Daniel Vetter).
+- Add kernel-doc comments and include in other_interfaces.rst (Daniel Vetter).
+- Explain in the commit message that fbmem has to unregister the device
+  as fallback if a driver registered the device itself (Daniel Vetter).
+- Also explain that fallback in a comment in the code (Daniel Vetter).
+- Don't encode in fbmem the assumption that sysfb will always register
+  platform devices (Daniel Vetter).
+- Add a FIXME comment about drivers registering devices (Daniel Vetter).
+- Explain in the commit message that fbmem has to unregister the device
+  as fallback if a driver registered the device itself (Daniel Vetter).
+- Also explain that fallback in a comment in the code (Daniel Vetter).
+- Don't encode in fbmem the assumption that sysfb will always register
+  platform devices (Daniel Vetter).
+- Add a FIXME comment about drivers registering devices (Daniel Vetter).
+- Drop RFC prefix since patches were already reviewed by Daniel Vetter.
+- Add Daniel Reviewed-by tags to the patches.
+
+Daniel Vetter (2):
+  Revert "fbdev: Prevent probing generic drivers if a FB is already
+    registered"
+  fbdev: Make registered_fb[] private to fbmem.c
+
+Javier Martinez Canillas (5):
+  firmware: sysfb: Make sysfb_create_simplefb() return a pdev pointer
+  firmware: sysfb: Add helpers to unregister a pdev and disable
+    registration
+  fbdev: Restart conflicting fb removal loop when unregistering devices
+  fbdev: Make sysfb to unregister its own registered devices
+  fbdev: Disable sysfb device registration when removing conflicting FBs
+
+ .../driver-api/firmware/other_interfaces.rst  |  6 ++
+ drivers/firmware/sysfb.c                      | 91 +++++++++++++++++--
+ drivers/firmware/sysfb_simplefb.c             | 16 ++--
+ drivers/video/fbdev/core/fbmem.c              | 67 +++++++++++---
+ drivers/video/fbdev/efifb.c                   | 11 ---
+ drivers/video/fbdev/simplefb.c                | 11 ---
+ include/linux/fb.h                            |  8 +-
+ include/linux/sysfb.h                         | 29 +++++-
+ 8 files changed, 178 insertions(+), 61 deletions(-)
+
+-- 
+2.35.1
 
