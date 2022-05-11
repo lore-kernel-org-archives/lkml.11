@@ -2,122 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2377C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:32:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02725C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:32:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241463AbiEKCcg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 22:32:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52738 "EHLO
+        id S235404AbiEKCcp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 22:32:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242382AbiEKCcJ (ORCPT
+        with ESMTP id S238096AbiEKCcT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 22:32:09 -0400
-Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E81E960BAA;
-        Tue, 10 May 2022 19:31:41 -0700 (PDT)
-Received: from NTHCCAS01.nuvoton.com (NTHCCAS01.nuvoton.com [10.1.8.28])
-        by maillog.nuvoton.com (Postfix) with ESMTP id 222F31C80D1F;
-        Wed, 11 May 2022 10:31:41 +0800 (CST)
-Received: from NTHCCAS02.nuvoton.com (10.1.9.121) by NTHCCAS01.nuvoton.com
- (10.1.8.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.7; Wed, 11 May
- 2022 10:31:40 +0800
-Received: from NTHCCAS04.nuvoton.com (10.1.8.29) by NTHCCAS02.nuvoton.com
- (10.1.9.121) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Wed, 11 May
- 2022 10:31:40 +0800
-Received: from [172.19.1.47] (172.19.1.47) by NTHCCAS04.nuvoton.com
- (10.1.12.25) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
- Transport; Wed, 11 May 2022 10:31:40 +0800
-Message-ID: <f4d77335-262e-479f-3fec-b68ec19a51c4@nuvoton.com>
-Date:   Wed, 11 May 2022 10:31:40 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH V4 0/5] Add initial support for MA35D1 SoC
-Content-Language: en-US
-To:     Arnd Bergmann <arnd@arndb.de>
-CC:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "Linux ARM" <linux-arm-kernel@lists.infradead.org>,
-        <ychuang570808@gmail.com>, "Rob Herring" <robh+dt@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        "Krzysztof Kozlowski" <krzk+dt@kernel.org>,
-        Olof Johansson <olof@lixom.net>,
-        "Catalin Marinas" <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, SoC Team <soc@kernel.org>,
-        <cfli0@nuvoton.com>
-References: <20220510032558.10304-1-ychuang3@nuvoton.com>
- <CAK8P3a1k8y8U99bBmqBYE1vYAc0q-UeaM0oLP4tTHZCpyYNOgA@mail.gmail.com>
- <d64f260d-8ee6-808a-5725-e1181f104dfe@nuvoton.com>
- <CAK8P3a3UZ_thp=CVeXYwJ57MXxsurr+Y9Ad0bv0EOi4Jn=S+eg@mail.gmail.com>
-From:   Jacky Huang <ychuang3@nuvoton.com>
-In-Reply-To: <CAK8P3a3UZ_thp=CVeXYwJ57MXxsurr+Y9Ad0bv0EOi4Jn=S+eg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
+        Tue, 10 May 2022 22:32:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B730FD5
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:32:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF207B81F93
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 02:32:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26FACC385D8;
+        Wed, 11 May 2022 02:32:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1652236336;
+        bh=/Hp6dU5hclTkoExV1aXWnjWD+RcFFs7kpZHwfwv6wEk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=o8RU/4GYhn7UPYgYuI1ACj0GMtmWe15Z9yy8qhGLuCOojJ817oL44x7KTrsCqd15i
+         HBSah0TyT99EjnD+fwvU5YclqKzLpJ7u4tiz6S2/R8DMA1Wckeo4YKmpbsJ/Ox/Vlv
+         Shy2mseOIgOs9IHx+HO0yWs9B+eo7WkAod8q9qs0=
+Date:   Tue, 10 May 2022 19:32:15 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Qi Zheng <zhengqi.arch@bytedance.com>
+Cc:     akinobu.mita@gmail.com, vbabka@suse.cz, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, rostedt@goodmis.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH 1/2] mm: fix missing handler for __GFP_NOWARN
+Message-Id: <20220510193215.14ed7e3fb70857738e10c0a2@linux-foundation.org>
+In-Reply-To: <c44769b3-a132-63a5-fd40-4d483497dff2@bytedance.com>
+References: <20220510113809.80626-1-zhengqi.arch@bytedance.com>
+        <20220510115922.350a496ca8b91686c1758282@linux-foundation.org>
+        <c44769b3-a132-63a5-fd40-4d483497dff2@bytedance.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, 11 May 2022 10:19:48 +0800 Qi Zheng <zhengqi.arch@bytedance.com> wrote:
 
+> 
+> ,,,
+> >> --- a/mm/internal.h
+> >> +++ b/mm/internal.h
+> >> @@ -35,6 +35,17 @@ struct folio_batch;
+> >>   /* Do not use these with a slab allocator */
+> >>   #define GFP_SLAB_BUG_MASK (__GFP_DMA32|__GFP_HIGHMEM|~__GFP_BITS_MASK)
+> >>   
+> >> +#define WARN_ON_ONCE_GFP(cond, gfp)	({				\
+> >> +	static bool __section(".data.once") __warned;			\
+> >> +	int __ret_warn_once = !!(cond);					\
+> >> +									\
+> >> +	if (unlikely(!(gfp & __GFP_NOWARN) && __ret_warn_once && !__warned)) { \
+> >> +		__warned = true;					\
+> >> +		WARN_ON(1);						\
+> >> +	}								\
+> >> +	unlikely(__ret_warn_once);					\
+> >> +})
+> > 
+> > I don't think WARN_ON_ONCE_GFP is a good name for this.  But
+> > WARN_ON_ONCE_IF_NOT_GFP_NOWARN is too long :(
+> > 
+> > WARN_ON_ONCE_NOWARN might be better.  No strong opinion here, really.
+> 
+> I've thought about WARN_ON_ONCE_NOWARN, but I feel a little weird 
+> putting 'WARN' and 'NOWARN' together, how about WARN_ON_ONCE_IF_ALLOWED?
 
-On 2022/5/10 下午 08:45, Arnd Bergmann wrote:
-> On Tue, May 10, 2022 at 10:40 AM Jacky Huang <ychuang3@nuvoton.com> wrote:
->> On 2022/5/10 下午 03:07, Arnd Bergmann wrote:
->>
->> MA35D1 is target at consumer application, while NPCM is for BMC.
->> MA35D1 is equipped with ARM Coretx-A35 dual-core with the M4 co-processor.
->>
->> Our team has developed Linux application on MA35D1 test chip in the last
->> year, and
->> the mass production version is wafer-out in last month. It will be
->> announced soon.
->>
->> We have ported TF-A, U-Boot, OP-TEE, and Linux 5.4.y to MA35D1 platform, and
->> have provided Yocto and Buildroot distribution for beta site evaluation.
->> All the source
->> code can be found at https://apc01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fgithub.com%2FOpenNuvoton%2FMPU-Family&amp;data=05%7C01%7Cychuang3%40nuvoton.com%7Cf65d464391574dcf60af08da3282f453%7Ca3f24931d4034b4a94f17d83ac638e07%7C0%7C0%7C637877835284415849%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=b6sopMTwT8XT%2FR76qASvOtqw7zs9Kcp7lIxDw4O9%2FT8%3D&amp;reserved=0, include the
->> Linux 5.4.y porting on MA35D1 platform.
-> Ok, thanks for the information, this is exactly what we need in the
-> changelog text for the platform, and (if you send a pull request)
-> in the tag description.
->
->> Yes, we have console device driver ready. Please refer to
->> https://apc01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fgithub.com%2FOpenNuvoton%2FMA35D1_linux-5.4.y%2Fblob%2Fmaster%2Fdrivers%2Ftty%2Fserial%2Fma35d1_serial.c&amp;data=05%7C01%7Cychuang3%40nuvoton.com%7Cf65d464391574dcf60af08da3282f453%7Ca3f24931d4034b4a94f17d83ac638e07%7C0%7C0%7C637877835284415849%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=ULfLkju2X98pXn%2BeCWGrvEgRchIAlv%2FSECx%2BoJzSdWI%3D&amp;reserved=0.
->> But I think we have to fix coding style and have more review on it. Is
->> the console driver must for the initial support submit, or can we submit it later?
-> I would prefer to have it included, but it looks like this has never been
-> reviewed, and I can immediately see a few things that need changes
-> before it can get included, so I suppose we could merge the platform
-> without it.
->
-> The reason I'd like to have it included is that without any I/O devices
-> it is obvious that the code you are sending has never been tested
-> on the kernel version you are sending it against, and that makes it
-> more likely that there are bugs.
->
-> If the platform for some reason does not make it into v5.19, I would
-> ask you to include the serial driver in the series so we can merge
-> a working initial branch for v5.20.
->
-> In the meantime, please post the driver for review to the linux-kernel
-> and linux-serial lists by itself, and keep me on Cc.
->
->> And thank you to remind us to create an entry in MAINTAINERS file. I
->> will add the patch in the next version.
-> Ok.
->
->         Arnd
+I dunno.  WARN_ON_ONCE_GFP isn't too bad I suppose.  Add a comment over
+the definition explaining it?
 
-Hi Anrd,
+> > 
+> >> @@ -4902,8 +4906,8 @@ __alloc_pages_slowpath(gfp_t gfp_mask, unsigned int order,
+> >>   	 * We also sanity check to catch abuse of atomic reserves being used by
+> >>   	 * callers that are not in atomic context.
+> >>   	 */
+> >> -	if (WARN_ON_ONCE((gfp_mask & (__GFP_ATOMIC|__GFP_DIRECT_RECLAIM)) ==
+> >> -				(__GFP_ATOMIC|__GFP_DIRECT_RECLAIM)))
+> >> +	if (WARN_ON_ONCE_GFP((gfp_mask & (__GFP_ATOMIC|__GFP_DIRECT_RECLAIM)) ==
+> >> +				(__GFP_ATOMIC|__GFP_DIRECT_RECLAIM), gfp_mask))
+> >>   		gfp_mask &= ~__GFP_ATOMIC;
+> >>   
+> >>   retry_cpuset:
+> > 
+> > I dropped this hunk - Neil's "mm: discard __GFP_ATOMIC"
+> > (https://lkml.kernel.org/r/163712397076.13692.4727608274002939094@noble.neil.brown.name)
+> > deleted this code.
+> > 
+> 
+> This series is based on v5.18-rc5, I will rebase it to the latest next
+> branch and check if there are any missing WARN_ON_ONCEs that are not
+> being handled.
 
-Thanks for your kind help.
-Sure, we will have review on the serial driver and include the serial 
-driver in the next submit.
-
-
-Best Regards,
-Jacky Huang
-
-
+Against git://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm branch
+mm-unstable, please.  That ends up in linux-next, with a delay.
