@@ -2,118 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87160C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 13:20:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD249C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 13:20:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243236AbiEKNUM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 09:20:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44212 "EHLO
+        id S243401AbiEKNUR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 09:20:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243519AbiEKNTt (ORCPT
+        with ESMTP id S243738AbiEKNTa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 09:19:49 -0400
-Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F9B223E34E;
-        Wed, 11 May 2022 06:19:46 -0700 (PDT)
+        Wed, 11 May 2022 09:19:30 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 547CA2469CF;
+        Wed, 11 May 2022 06:19:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1652275187; x=1683811187;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Lh9K+giOiNlFyLkTxJKFiRE8lg/TsLPmFcvhvKDzV48=;
-  b=b1U6k2ALXMJqc8zPzbkMpmiif5nJLrVBOui/QRDjBGnLaCvh30ycxzDK
-   BhinQBH3jRtQMWgFi78WXGXWI262wLcHJm9RjBHis+St7FeV7dqQ9jk5I
-   V7FYg5DI6NDhgPbkOzLHQ/ABuKu5dm1idNCNSnnCauAoXHglX7foT7abD
-   Y=;
-X-IronPort-AV: E=Sophos;i="5.91,217,1647302400"; 
-   d="scan'208";a="87352345"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-87b71607.us-east-1.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP; 11 May 2022 13:19:27 +0000
-Received: from EX13MTAUWC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1a-87b71607.us-east-1.amazon.com (Postfix) with ESMTPS id B3A1814373C;
-        Wed, 11 May 2022 13:19:24 +0000 (UTC)
-Received: from EX13D20UWC001.ant.amazon.com (10.43.162.244) by
- EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Wed, 11 May 2022 13:19:24 +0000
-Received: from [0.0.0.0] (10.43.160.178) by EX13D20UWC001.ant.amazon.com
- (10.43.162.244) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Wed, 11 May
- 2022 13:19:21 +0000
-Message-ID: <4537666b-a09d-2727-f797-a730ce8b76e6@amazon.com>
-Date:   Wed, 11 May 2022 15:19:19 +0200
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1652275167; x=1683811167;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=WCxOupJ7jOWivGIb7XUrdsY4tpQco+HSUEbzzGV3I7E=;
+  b=fR3IcI6IGf50QhN6BvFcToaqQ1uajW6hy1xiJcIHL5bL6+NDIsL3v2oH
+   FV758P7OFCfNRp9GEwvU5KhnN9//8JbGl/4nQN84TJJ3p40TSVVk+PFFw
+   5PGAZn2ySAoGXAvsWYPwbB2zB4zCppJWew9AYmh5Q/v41g/JMSjcNqzyg
+   k=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 11 May 2022 06:19:26 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 06:19:26 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 11 May 2022 06:19:26 -0700
+Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 11 May 2022 06:19:21 -0700
+From:   Satya Priya <quic_c_skakit@quicinc.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+CC:     Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
+        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
+        <quic_jprakash@quicinc.com>,
+        Satya Priya <quic_c_skakit@quicinc.com>
+Subject: [PATCH V12 8/9] arm64: dts: qcom: pm8008: Add base dts file
+Date:   Wed, 11 May 2022 18:48:32 +0530
+Message-ID: <1652275113-10277-9-git-send-email-quic_c_skakit@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1652275113-10277-1-git-send-email-quic_c_skakit@quicinc.com>
+References: <1652275113-10277-1-git-send-email-quic_c_skakit@quicinc.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.0
-Subject: Re: [PATCH 2/2] random: add fork_event sysctl for polling VM forks
-To:     Simo Sorce <simo@redhat.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-CC:     <linux-kernel@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
-        "Dominik Brodowski" <linux@dominikbrodowski.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Theodore Ts'o <tytso@mit.edu>,
-        "Colm MacCarthaigh" <colmmacc@amazon.com>,
-        Torben Hansen <htorben@amazon.co.uk>,
-        Jann Horn <jannh@google.com>
-References: <20220502140602.130373-1-Jason@zx2c4.com>
- <20220502140602.130373-2-Jason@zx2c4.com>
- <8f305036248cae1d158c4e567191a957a1965ad1.camel@redhat.com>
- <YnsO1JGQm5FEkbJt@zx2c4.com>
- <f6a4a5ccb126053534bebe4b070fc1384839e919.camel@redhat.com>
-From:   Alexander Graf <graf@amazon.com>
-In-Reply-To: <f6a4a5ccb126053534bebe4b070fc1384839e919.camel@redhat.com>
-X-Originating-IP: [10.43.160.178]
-X-ClientProxiedBy: EX13D32UWB001.ant.amazon.com (10.43.161.248) To
- EX13D20UWC001.ant.amazon.com (10.43.162.244)
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGkgU2ltbywKCk9uIDExLjA1LjIyIDE0OjU5LCBTaW1vIFNvcmNlIHdyb3RlOgo+IEhpIEphc29u
-LAo+Cj4gT24gV2VkLCAyMDIyLTA1LTExIGF0IDAzOjE4ICswMjAwLCBKYXNvbiBBLiBEb25lbmZl
-bGQgd3JvdGU6Cj4+IE15IHByb3Bvc2FsIGhlcmUgaXMgbWFkZSB3aXRoIG5vbmNlIHJldXNlIGlu
-IG1pbmQsIGZvciB0aGluZ3MgbGlrZQo+PiBzZXNzaW9uIGtleXMgdGhhdCB1c2Ugc2VxdWVudGlh
-bCBub25jZXMuCj4gQWx0aG91Z2ggdGhpcyBtYWtlcyBzZW5zZSB0aGUgcHJvYmxlbSBpcyB0aGF0
-IGNoYW5naW5nIGFwcGxpY2F0aW9ucyB0bwo+IGRvIHRoZSByaWdodCB0aGluZyBiYXNlZCBvbiB3
-aGljaCBzaXR1YXRpb24gdGhleSBhcmUgaW4gd2lsbCBuZXZlciBiZQo+IGRvbmUgcmlnaHQgb3Ig
-c29vbiBlbm91Z2guIFNvIEkgd291bGQgZm9jdXMgb24gYSBzb2x1dGlvbiB0aGF0IG1ha2VzCj4g
-dGhlIENTUFJOR3MgaW4gY3J5cHRvIGxpYnJhcmllcyBzYWZlLgoKCkkgdGhpbmsgd2UgaW50cmlu
-c2ljYWxseSBoYXZlIDIgc2V0cyBvZiBhcHBsaWNhdGlvbnM6IE9uZXMgdGhhdCB3YW50IGFuIApl
-dmVudCBiYXNlZCBub3RpZmljYXRpb24gYW5kIGRvbid0IGNhcmUgYWJvdXQgdGhlIHJhY3luZXNz
-IG9mIGl0IGFuZCAKb25lcyB0aGF0IHdhbnQgYW4gYXRvbWljIHdheSB0byBkZXRlcm1pbmUgdGhl
-IGVwb2NoLiBVc2Vyc3BhY2UgUk5HcyBhcmUgCm5hdHVyYWxseSBpbiB0aGUgc2Vjb25kIGNhdGVn
-b3J5LgoKCj4KPj4gQSBkaWZmZXJlbnQgaXNzdWUgaXMgcmFuZG9tIG5vbmNlcy4gRm9yIHRoZXNl
-LCBpdCBzZWVtcyBsaWtlIGEgY2FsbCB0bwo+PiBnZXRyYW5kb20oKSBmb3IgZWFjaCBub25jZSBp
-cyBwcm9iYWJseSB0aGUgYmVzdCBiZXQuIEJ1dCBpdCBzb3VuZHMgbGlrZQo+PiB5b3UncmUgaW50
-ZXJlc3RlZCBpbiBhIHVzZXJzcGFjZSBSTkcsIGFraW4gdG8gT3BlbkJTRCdzIGFyYzRyYW5kb20o
-MykuIEkKPj4gaG9wZSB5b3Ugc2F3IHRoZXNlIHRocmVhZHM6Cj4+Cj4+IC0gaHR0cHM6Ly9sb3Jl
-Lmtlcm5lbC5vcmcvbGttbC9ZbkE1Q1VKS3ZxbVhKeGYyQHp4MmM0LmNvbS8KPj4gLSBodHRwczov
-L2xvcmUua2VybmVsLm9yZy9sa21sL1loNCs5K1VwYW5KV0FJeVpAengyYzQuY29tLwo+PiAtIGh0
-dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xrbWwvQ0FIbU1FOXFIR1NGOHczRG95Q1ArdWRfTjBNQUo1
-Xzh6c1VXeD1yeFFCMW1GbkdjdTl3QG1haWwuZ21haWwuY29tLwo+IDRjIGRvZXMgc291bmQgbGlr
-ZSBhIGRlY2VudCBzb2x1dGlvbiwgaXQgaXMgc2VtYW50aWNhbGx5IGlkZW50aWNhbCB0bwo+IGFu
-IGVwb2NoIHZtZ2VuaWQsIGFsbCB0aGUgbGlicmFyeSBuZWVkcyB0byBkbyBpcyB0byBjcmVhdGUg
-c3VjaCBhIG1tYXAKPiByZWdpb24sIHN0aWNrIGEgdmFsdWUgb24gIGl0LCB2ZXJpZnkgaXQgaXMg
-bm90IHplcm8gYWZ0ZXIgY29tcHV0aW5nIHRoZQo+IG5leHQgcmFuZG9tIHZhbHVlIGJ1dCBiZWZv
-cmUgcmV0dXJuaW5nIGl0IHRvIHRoZSBjYWxsZXIuCj4gVGhpcyByZWR1Y2VzIHRoZSByYWNlIHRv
-IGEgdmVyeSBzbWFsbCB3aW5kb3cgd2hlbiB0aGUgbWFjaGluZSBpcyBmcm96ZW4KPiByaWdodCBh
-ZnRlciB0aGUgcmFuZG9tIHZhbHVlIGlzIHJldHVybmVkIHRvIHRoZSBjYWxsZXIgYnV0IGJlZm9y
-ZSBpdCBpcwo+IHVzZWQsIGJ1dCBob3BlZnVsbHkgdGhpcyBqdXN0IG1lYW5zIHRoYXQgdGhlIHR3
-byBtYWNoaW5lcyB3aWxsIGp1c3QKPiBtYWtlIHBhcmFsbGVsIGNvbXB1dGF0aW9ucyB0aGF0IHlp
-ZWxkIHRoZSBleGFjdCBzYW1lIHZhbHVlLCBzbyBubwo+IGNhdGFzdHJvcGhpYyBjb25zZXF1ZW5j
-ZSB3aWxsIGFyaXNlICh0aGVyZSBpcyB0aGUgb2RkIGNhc2Ugd2hlcmUgdHdvCj4gcmFuZG9tIHZh
-bHVlcyBhcmUgc291Z2h0IGFuZCB0aGUgc3BsaXQgaGFwcGVucyBiZXR3ZWVuIHRoZSB0d28gYXJl
-Cj4gcmV0cmlldmVkIGFuZCB0aGlzIGhhcyBiYWQgY29uc2VxdWVuY2VzLCBJIHRoaW5rIHdlIGNh
-biBpZ25vcmUgdGhhdCkuCgoKVGhlIHByb2JsZW0gd2l0aCB3aXBpbmcgbWVtb3J5IG9uIGNsb25l
-IGlzIHRoYXQgaXQgbWVhbnMgeW91IG11c3Qga2VlcCAKdGhlc2Ugc3BlY2lhbCB3aXBlIG9uIGNs
-b25lIHBhZ2VzIGFsd2F5cyBwcmVzZW50IGFuZCBwaW5uZWQgaW4gbWVtb3J5IAphbmQgY2FuIG5v
-IGxvbmdlciBzd2FwIHRoZW0gb3V0LCBjb21wYWN0IHRoZW0gb3IgbW92ZSB0aGVtIGZvciBtZW1v
-cnkgCmhvdHBsdWcuCgpXZSBzdGFydGVkIHRoZSBqb3VybmV5IHdpdGggYSBXSVBFT05TVVNQRU5E
-IGZsYWcgYW5kIGV2ZW50dWFsbHkgCmFiYW5kb25lZCBpdCBiZWNhdXNlIGl0IHNlZW1lZCBjbHVu
-a3kuIEhhcHB5IHRvIHJlb3BlbiBpdCBpZiB3ZSBiZWxpZXZlIAppdCdzIGEgdmlhYmxlIHBhdGg6
-CgogwqAgaHR0cHM6Ly9sd24ubmV0L0FydGljbGVzLzgyNTIzMC8KCgpBbGV4CgoKCgpBbWF6b24g
-RGV2ZWxvcG1lbnQgQ2VudGVyIEdlcm1hbnkgR21iSApLcmF1c2Vuc3RyLiAzOAoxMDExNyBCZXJs
-aW4KR2VzY2hhZWZ0c2Z1ZWhydW5nOiBDaHJpc3RpYW4gU2NobGFlZ2VyLCBKb25hdGhhbiBXZWlz
-cwpFaW5nZXRyYWdlbiBhbSBBbXRzZ2VyaWNodCBDaGFybG90dGVuYnVyZyB1bnRlciBIUkIgMTQ5
-MTczIEIKU2l0ejogQmVybGluClVzdC1JRDogREUgMjg5IDIzNyA4NzkKCgo=
+Add base DTS file for pm8008.
+
+Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+---
+Changes in V12:
+ - None.
+
+Changes in V11:
+ - Remove intermediate regulators node and add the ldos under
+   pm8008@8 node.
+ - change the address cells as 2 for pm8008 parent mfd node.
+ - add compatible to register the ldos.
+ - add reg with i2c client offset and address.
+
+Changes in V10:
+ - Add regulators under pm8008@8 i.e main mfd node.
+
+Changes in V9:
+ - Add single dt file for pm8008 instead of adding files like in V8.
+
+ arch/arm64/boot/dts/qcom/pm8008.dtsi | 54 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 54 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/qcom/pm8008.dtsi
+
+diff --git a/arch/arm64/boot/dts/qcom/pm8008.dtsi b/arch/arm64/boot/dts/qcom/pm8008.dtsi
+new file mode 100644
+index 0000000..5606344
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/pm8008.dtsi
+@@ -0,0 +1,54 @@
++// SPDX-License-Identifier: BSD-3-Clause
++// Copyright (c) 2022, The Linux Foundation. All rights reserved.
++
++&pm8008_bus {
++	pm8008: pmic@8 {
++		compatible = "qcom,pm8008";
++		reg = <0x8>;
++		#address-cells = <2>;
++		#size-cells = <0>;
++		#interrupt-cells = <2>;
++
++		pm8008_l1: ldo1@1,4000 {
++			compatible = "qcom,pm8008-regulator";
++			reg = <0x1 0x4000>;
++			regulator-name = "pm8008_ldo1";
++		};
++
++		pm8008_l2: ldo2@1,4100 {
++			compatible = "qcom,pm8008-regulator";
++			reg = <0x1 0x4100>;
++			regulator-name = "pm8008_ldo2";
++		};
++
++		pm8008_l3: ldo3@1,4200 {
++			compatible = "qcom,pm8008-regulator";
++			reg = <0x1 0x4200>;
++			regulator-name = "pm8008_ldo3";
++		};
++
++		pm8008_l4: ldo4@1,4300 {
++			compatible = "qcom,pm8008-regulator";
++			reg = <0x1 0x4300>;
++			regulator-name = "pm8008_ldo4";
++		};
++
++		pm8008_l5: ldo5@1,4400 {
++			compatible = "qcom,pm8008-regulator";
++			reg = <0x1 0x4400>;
++			regulator-name = "pm8008_ldo5";
++		};
++
++		pm8008_l6: ldo6@1,4500 {
++			compatible = "qcom,pm8008-regulator";
++			reg = <0x1 0x4500>;
++			regulator-name = "pm8008_ldo6";
++		};
++
++		pm8008_l7: ldo7@1,4600 {
++			compatible = "qcom,pm8008-regulator";
++			reg = <0x1 0x4600>;
++			regulator-name = "pm8008_ldo7";
++		};
++	};
++};
+-- 
+2.7.4
 
