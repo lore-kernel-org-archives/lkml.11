@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ADDBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 14:58:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48875C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 14:58:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245283AbiEKO6Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 10:58:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35546 "EHLO
+        id S229638AbiEKO6b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 10:58:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245329AbiEKO5j (ORCPT
+        with ESMTP id S245325AbiEKO5i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 10:57:39 -0400
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 087AB67D3D
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 07:57:34 -0700 (PDT)
-Received: by mail-lj1-x22b.google.com with SMTP id g16so2976553lja.3
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 07:57:34 -0700 (PDT)
+        Wed, 11 May 2022 10:57:38 -0400
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A3691FD866
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 07:57:33 -0700 (PDT)
+Received: by mail-lj1-x22c.google.com with SMTP id t25so2956004ljd.6
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 07:57:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=L4Cgf9CCBKn83g7/KBEuaNwcj4g0FN5Zjd21HT3ZAg8=;
-        b=hARKzpbiibT8wZ6cRWUlNHAwxXB5ahdvlALYyO4z7iYJ/yCSbhsYiJtQI0b061QvaB
-         T0z3ZQBb4q5fHOnw2qdaT6iHhDbxL9q+Mfdv+7f5P3zo0BnrSW2LBdN/g4WTJCgC44qA
-         JxLCfL9Ul1vPV6g2KIum0DMTwuxO+LzCHqvfATvnDhMZ92PnVR3U++ebLHY+eVrpB9zO
-         /zmiXe6AH03O6DIUVtjYFgtNkPSZw0Pg1/L402McRSqNE3wzsKg1O81tG+7rDoCKFny9
-         DEMiwBxLQTU5nZEqNitXnECE0negcXRGO3zmI6Rd0kjVRyl/l4fGxzoQRl2xZAXdhlM6
-         30pg==
+        bh=1l+XmFy90zJUqh6uSXg8CIYQDjU5HDLCDj0R7eANRVs=;
+        b=KSlADItncdzu7g/umHmQz3OtajEsfndFD+dkoDvvfzlZo2fREDqcLmV+CqiHDXFjMm
+         oeO36+yXMVzEjqnEB2JFbNi5ovuCxSyQstqQU2zqnhch+RNOaLIGnOxPIXKl89dM76S+
+         y68pdPWTEqXeoAaGuijCxJDG5i+aAjNLrS7+pq0N/tFdq1UxdeIv5q7AHzIGl/o9yOKv
+         z1bVdY1tDEp6mE2bbZK+lYRn8/t3SWLflT9lMDsxzLePFj+MH2abaHEn5gRurfe52+OU
+         78XUs9Pymg+1GL7aUV2ZHJ34OWGWNNZhOQCpodipAI1erTZBuSIzA4LoRF8t222NbymO
+         kQ2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=L4Cgf9CCBKn83g7/KBEuaNwcj4g0FN5Zjd21HT3ZAg8=;
-        b=Mfs/KStHXrkN8YFv8r8mrGMEdRdwtobZUEGhKs2UPSLggXKzWCYFEVl/yk4YokgKtu
-         dUKL8G22q/7CBNs9NNh57Qg83vOLvroMdyPbu8dtXgJLKvsBmkTSJ/OoLPUtISQhZGP9
-         4hk1Y4UhCeNCXGQJyc4IMqRGVLoby63BVPZ+eBcActZSLxmt22VomVBbmoVjsEzgqXyw
-         gBUycZ9rkEZDs9Z2323g4BBWnlhcA+RIEqPkxK0D3zR9r78v+F1xNI5XrLVbnwkNTonK
-         zMn788+EzkgVPDHVhzSTmuRGAODKmgmiDRIz3myAqe7ojxouE9LDfIFb3tztD33V72cM
-         7PTw==
-X-Gm-Message-State: AOAM532SSeqDuqKKKfoAFDPRylJMJVtOpun2F2Ojhlf19+5a9Edut4uo
-        fSaKSh8pKct40QniGuAxJu+cVw==
-X-Google-Smtp-Source: ABdhPJySa48Kx14B5FTFLVO2CgILH59wgRXZtob6dJ+mULnBA+aIcSCJKYUHN/PjPYbiMNiuK1hb+A==
-X-Received: by 2002:a2e:9ad2:0:b0:24f:435:19c5 with SMTP id p18-20020a2e9ad2000000b0024f043519c5mr16893662ljj.281.1652281054470;
-        Wed, 11 May 2022 07:57:34 -0700 (PDT)
+        bh=1l+XmFy90zJUqh6uSXg8CIYQDjU5HDLCDj0R7eANRVs=;
+        b=jSJGCOMLy0MM/ruUSDFrKZcXC/BuVvmTwULSaChWt/rTTCN1GCvFzidQu7e1f75Aoi
+         XjdcKcw3DWL6Y9UZ/Bo+/wOWQrFjDo9Dq8fdp7AZXPRlWBECLDre5ASc6pbrPLLtViLj
+         1GGHSX73YjCrc4BZR5FP9vh89+UYYk0OFE9lhDS4vYu1HmHW7d6/38YzN/bnIkeTWAoI
+         a8ERj0MCVITh+s6f+zlszaNMq5tCsFID6P6HaUfAwvze0+r1JpW8NG/ml7yJtwoDObTK
+         UFJ/5ClhYZgUnOZRLl77H3q4GMoxR3OuPcBBjazOR/uyDf/cKGsYC9upT966RKKIU1Mw
+         Aabg==
+X-Gm-Message-State: AOAM531yz/VSsuBmFO6GaIvWjjpUBvzbUCl1WmeOYJKl6Kl+8DmCacmW
+        uNfxGz+3Y5WOiKuJ9/ZXQyyhZA==
+X-Google-Smtp-Source: ABdhPJxXvTOm0cxB4sH4Yz2HTmmgnHipU4lVOgRNiD0Lw1H2QftanODBihzRGG0PhZdXh4L4C788JQ==
+X-Received: by 2002:a2e:3304:0:b0:250:9109:2e80 with SMTP id d4-20020a2e3304000000b0025091092e80mr17593469ljc.508.1652281052855;
+        Wed, 11 May 2022 07:57:32 -0700 (PDT)
 Received: from localhost.localdomain (h-98-128-181-154.NA.cust.bahnhof.se. [98.128.181.154])
-        by smtp.gmail.com with ESMTPSA id z26-20020a19f71a000000b0047255d210f3sm320793lfe.34.2022.05.11.07.57.33
+        by smtp.gmail.com with ESMTPSA id z26-20020a19f71a000000b0047255d210f3sm320793lfe.34.2022.05.11.07.57.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 07:57:33 -0700 (PDT)
+        Wed, 11 May 2022 07:57:31 -0700 (PDT)
 From:   Ulf Hansson <ulf.hansson@linaro.org>
 To:     "Rafael J . Wysocki" <rafael@kernel.org>, linux-pm@vger.kernel.org
 Cc:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
@@ -59,9 +59,9 @@ Cc:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
         Kevin Hilman <khilman@kernel.org>,
         Ulf Hansson <ulf.hansson@linaro.org>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 09/14] PM: domains: Fixup QoS latency measurements for IRQ safe devices in genpd
-Date:   Wed, 11 May 2022 16:56:59 +0200
-Message-Id: <20220511145704.698189-10-ulf.hansson@linaro.org>
+Subject: [PATCH 08/14] PM: domains: Measure suspend/resume latencies in genpd based on governor
+Date:   Wed, 11 May 2022 16:56:58 +0200
+Message-Id: <20220511145704.698189-9-ulf.hansson@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220511145704.698189-1-ulf.hansson@linaro.org>
 References: <20220511145704.698189-1-ulf.hansson@linaro.org>
@@ -71,40 +71,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When an IRQ safe device is attached to a non-IRQ safe PM domain, genpd
-needs to prevent the PM domain from being powered off. However, genpd still
-allows the device to be runtime suspended/resumed, hence it's also
-reasonable to think that a governor may be used to validate the QoS latency
-constraints.
+The QoS latency measurements for devices in genpd_runtime_suspend|resume()
+are superfluous, unless the corresponding genpd has a governor assigned to
+it, which would make use of the data.
 
-Unfortunately, genpd_runtime_resume() treats the configuration above, as a
-reason to skip measuring the QoS resume latency for the device. This is a
-legacy behaviour that was earlier correct, but should have been changed
-when genpd was transformed into its current behaviour around how it manages
-IRQ safe devices. Luckily, there's no report about problems, so let's just
-fixup the behaviour.
+Therefore, let's improve the behaviour in genpd by making the measurements
+conditional, based upon if there's a governor assigned.
 
 Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 ---
- drivers/base/power/domain.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/base/power/domain.c | 21 +++++++++------------
+ 1 file changed, 9 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
-index 2cdfbe48dde0..48101232fcb9 100644
+index 4c059a858957..2cdfbe48dde0 100644
 --- a/drivers/base/power/domain.c
 +++ b/drivers/base/power/domain.c
-@@ -970,10 +970,8 @@ static int genpd_runtime_resume(struct device *dev)
- 	 * As we don't power off a non IRQ safe domain, which holds
- 	 * an IRQ safe device, we don't need to restore power to it.
- 	 */
--	if (irq_safe_dev_in_sleep_domain(dev, genpd)) {
--		timed = false;
-+	if (irq_safe_dev_in_sleep_domain(dev, genpd))
- 		goto out;
--	}
+@@ -881,7 +881,7 @@ static int genpd_runtime_suspend(struct device *dev)
+ 	struct generic_pm_domain_data *gpd_data = dev_gpd_data(dev);
+ 	struct gpd_timing_data *td = gpd_data->td;
+ 	bool runtime_pm = pm_runtime_enabled(dev);
+-	ktime_t time_start;
++	ktime_t time_start = 0;
+ 	s64 elapsed_ns;
+ 	int ret;
  
- 	genpd_lock(genpd);
- 	ret = genpd_power_on(genpd, 0);
+@@ -902,8 +902,7 @@ static int genpd_runtime_suspend(struct device *dev)
+ 		return -EBUSY;
+ 
+ 	/* Measure suspend latency. */
+-	time_start = 0;
+-	if (runtime_pm)
++	if (td && runtime_pm)
+ 		time_start = ktime_get();
+ 
+ 	ret = __genpd_runtime_suspend(dev);
+@@ -917,9 +916,9 @@ static int genpd_runtime_suspend(struct device *dev)
+ 	}
+ 
+ 	/* Update suspend latency value if the measured time exceeds it. */
+-	if (runtime_pm) {
++	if (td && runtime_pm) {
+ 		elapsed_ns = ktime_to_ns(ktime_sub(ktime_get(), time_start));
+-		if (td && (elapsed_ns > td->suspend_latency_ns)) {
++		if (elapsed_ns > td->suspend_latency_ns) {
+ 			td->suspend_latency_ns = elapsed_ns;
+ 			dev_dbg(dev, "suspend latency exceeded, %lld ns\n",
+ 				elapsed_ns);
+@@ -956,11 +955,10 @@ static int genpd_runtime_resume(struct device *dev)
+ 	struct generic_pm_domain *genpd;
+ 	struct generic_pm_domain_data *gpd_data = dev_gpd_data(dev);
+ 	struct gpd_timing_data *td = gpd_data->td;
+-	bool runtime_pm = pm_runtime_enabled(dev);
+-	ktime_t time_start;
++	bool timed = td && pm_runtime_enabled(dev);
++	ktime_t time_start = 0;
+ 	s64 elapsed_ns;
+ 	int ret;
+-	bool timed = true;
+ 
+ 	dev_dbg(dev, "%s()\n", __func__);
+ 
+@@ -988,8 +986,7 @@ static int genpd_runtime_resume(struct device *dev)
+ 
+  out:
+ 	/* Measure resume latency. */
+-	time_start = 0;
+-	if (timed && runtime_pm)
++	if (timed)
+ 		time_start = ktime_get();
+ 
+ 	ret = genpd_start_dev(genpd, dev);
+@@ -1001,9 +998,9 @@ static int genpd_runtime_resume(struct device *dev)
+ 		goto err_stop;
+ 
+ 	/* Update resume latency value if the measured time exceeds it. */
+-	if (timed && runtime_pm) {
++	if (timed) {
+ 		elapsed_ns = ktime_to_ns(ktime_sub(ktime_get(), time_start));
+-		if (td && (elapsed_ns > td->resume_latency_ns)) {
++		if (elapsed_ns > td->resume_latency_ns) {
+ 			td->resume_latency_ns = elapsed_ns;
+ 			dev_dbg(dev, "resume latency exceeded, %lld ns\n",
+ 				elapsed_ns);
 -- 
 2.25.1
 
