@@ -2,141 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0602EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 03:31:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D548EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 03:32:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241830AbiEKDbx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 23:31:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41482 "EHLO
+        id S241843AbiEKDcZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 23:32:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241776AbiEKDbt (ORCPT
+        with ESMTP id S238786AbiEKDcT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 23:31:49 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E83445F26B
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 20:31:47 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id c1-20020a17090a558100b001dca2694f23so884663pji.3
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 20:31:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=0Cuz/4c60eAy74LVoGu/qfMMHC1/J7T3iJogMolLBpY=;
-        b=V4ZE0XDxk26uwPSQS8dJPeFtf5cIpGdQnSJhziEOEYbidw5ZiU1L5yPsD1GPsa+HOz
-         tQTsF4MIFhOYiUuXT6VrVPnZ/YDdwSKEj8Jxz2hjTZe+Q2WitMTb3TRmYchmTZwsrBht
-         NO0blCP5OEyyYsvgJLxXOBrITmTOtMAt6Dsao/WkJUbNf4QEhGMIzV4Pqdm/VE7dkKu/
-         vMz0QnLSUIMnzs/ikouWcRwlLJg01nwuGrXJ2zLlfoBsoRmN9/jwbojf7rQsr/AmvB+e
-         U5mc9rqZahHXdbY5SeXRJI5hTe3QpmaAdq4cCycFRusJxZ6FOmKGdTWhQ2UteZOsc7DZ
-         LLJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=0Cuz/4c60eAy74LVoGu/qfMMHC1/J7T3iJogMolLBpY=;
-        b=BUaT8n6Fh9JKX3SIc8YwJ4b/ODR3E08JDoUT/sH+Z8s8PCkVT2JnQoxokokamSpYuV
-         L51lTeAA4yuctvDhiPlJyGSzyK3fi+5kwYjbjIPhoIqACkFOBiiXE7UyLwO00zwbPHpA
-         EppVl+WO/Lb39e6chV9UQR+L5hprdywPXMs17s1OEL77TNrnVbzn1PZZI/p3+lbVP+go
-         lFSw49RQl327y/cUsNvSCz4vtUjaUXkbkedWVVlE5fP9bRwP7O8bLpWKsD6wuZH4SZtk
-         5bYY296nOH+pFQPvQUiWDfQC+9HuochinUJDX1hiJ+D5zeT27pNrLt/XyvilIU4REbXU
-         AiLA==
-X-Gm-Message-State: AOAM5325arFIc4nsGaKX9F1Zkm3OJt86Dp5xwWT9uB28YuoSHVZQxEmt
-        3vPHvPHd2FUUZ/MLlahXdgiSpg==
-X-Google-Smtp-Source: ABdhPJxY0SlCXZqyVxerhzEeDAaBhp6GhEa2eaFw/HdrskiYy68wUGSjbKGUmrMT8YnswcQAMiPSSg==
-X-Received: by 2002:a17:90b:194f:b0:1dd:a47:3db5 with SMTP id nk15-20020a17090b194f00b001dd0a473db5mr3157292pjb.74.1652239907513;
-        Tue, 10 May 2022 20:31:47 -0700 (PDT)
-Received: from [10.255.89.252] ([139.177.225.239])
-        by smtp.gmail.com with ESMTPSA id q6-20020a056a0002a600b0050dc76281f0sm307226pfs.202.2022.05.10.20.31.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 May 2022 20:31:46 -0700 (PDT)
-Message-ID: <55fc700a-9cdb-a4ed-c155-5b03a328eb6c@bytedance.com>
-Date:   Wed, 11 May 2022 11:27:52 +0800
+        Tue, 10 May 2022 23:32:19 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36D2B87A07
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 20:32:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652239937; x=1683775937;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=FiCMab+ZLojIctV6N13AsokbDZNq2W9ALPtuQ8i2vZU=;
+  b=LAgrSd8aQ/deujuwi3Aga1pta9o2qMMLgX5ZzRemzaMQScvj9n+TVhGo
+   w/Ciy1/3qFSooTz9g+qRgUjtw9Ix58ZCIoywE8ig4Fcf6PVDr2035Bfzr
+   UUGqTBmsQZshZoNgQElvz9LW3vWeGIxVJitsdVcL6UcOW6LFPx2DSP9Hv
+   egKKNwfMae+eKPk55NU1fyIthum1IPScbGEoIc1Qoc8GwZFDz3MDv/zMz
+   jHiUp3FAzWflhX4rPpfBtnMik+F6uwwof19fj4TqZu+aBpPizKk4FHJO+
+   jITB+qVPDbvCaDNFiSmqgl3Xep9nG4YrY5nb7HgFwmIK33hDrrnIGRegT
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="332606980"
+X-IronPort-AV: E=Sophos;i="5.91,215,1647327600"; 
+   d="scan'208";a="332606980"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 20:32:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,215,1647327600"; 
+   d="scan'208";a="697380868"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 10 May 2022 20:32:15 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nod5C-000Ig1-Ef;
+        Wed, 11 May 2022 03:32:14 +0000
+Date:   Wed, 11 May 2022 11:31:29 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Markus Reichl <m.reichl@fivetechno.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Mark Brown <broonie@kernel.org>
+Subject: drivers/regulator/mp8859.c:131:34: warning: 'mp8859_dt_id' defined
+ but not used
+Message-ID: <202205111110.NZWaV5qs-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: PING: [PATCH v6 0/5] virtio-crypto: Improve performance
-Content-Language: en-US
-To:     mst@redhat.com
-Cc:     jasowang@redhat.com, arei.gonglei@huawei.com,
-        herbert@gondor.apana.org.au, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-crypto@vger.kernel.org, helei.sig11@bytedance.com,
-        davem@davemloft.net
-References: <20220506131627.180784-1-pizhenwei@bytedance.com>
-From:   zhenwei pi <pizhenwei@bytedance.com>
-In-Reply-To: <20220506131627.180784-1-pizhenwei@bytedance.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Michael
+Hi Markus,
 
-I would appreciate it if you could review this series!
+First bad commit (maybe != root cause):
 
-On 5/6/22 21:16, zhenwei pi wrote:
-> v5 -> v6:
->   - Minor fix for crypto_engine_alloc_init_and_set().
->   - All the patches have been reviewed by Gonglei, add this in patch.
->   Thanks to Gonglei.
-> 
-> v4 -> v5:
->   - Fix potentially dereferencing uninitialized variables in
->     'virtio-crypto: use private buffer for control request'.
->     Thanks to Dan Carpenter!
-> 
-> v3 -> v4:
->   - Don't create new file virtio_common.c, the new functions are added
->     into virtio_crypto_core.c
->   - Split the first patch into two parts:
->       1, change code style,
->       2, use private buffer instead of shared buffer
->   - Remove relevant change.
->   - Other minor changes.
-> 
-> v2 -> v3:
->   - Jason suggested that spliting the first patch into two part:
->       1, using private buffer
->       2, remove the busy polling
->     Rework as Jason's suggestion, this makes the smaller change in
->     each one and clear.
-> 
-> v1 -> v2:
->   - Use kfree instead of kfree_sensitive for insensitive buffer.
->   - Several coding style fix.
->   - Use memory from current node, instead of memory close to device
->   - Add more message in commit, also explain why removing per-device
->     request buffer.
->   - Add necessary comment in code to explain why using kzalloc to
->     allocate struct virtio_crypto_ctrl_request.
-> 
-> v1:
-> The main point of this series is to improve the performance for
-> virtio crypto:
-> - Use wait mechanism instead of busy polling for ctrl queue, this
->    reduces CPU and lock racing, it's possiable to create/destroy session
->    parallelly, QPS increases from ~40K/s to ~200K/s.
-> - Enable retry on crypto engine to improve performance for data queue,
->    this allows the larger depth instead of 1.
-> - Fix dst data length in akcipher service.
-> - Other style fix.
-> 
-> lei he (2):
->    virtio-crypto: adjust dst_len at ops callback
->    virtio-crypto: enable retry for virtio-crypto-dev
-> 
-> zhenwei pi (3):
->    virtio-crypto: change code style
->    virtio-crypto: use private buffer for control request
->    virtio-crypto: wait ctrl queue instead of busy polling
-> 
->   .../virtio/virtio_crypto_akcipher_algs.c      |  95 ++++++------
->   drivers/crypto/virtio/virtio_crypto_common.h  |  21 ++-
->   drivers/crypto/virtio/virtio_crypto_core.c    |  55 ++++++-
->   .../virtio/virtio_crypto_skcipher_algs.c      | 140 ++++++++----------
->   4 files changed, 182 insertions(+), 129 deletions(-)
-> 
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   feb9c5e19e913b53cb536a7aa7c9f20107bb51ec
+commit: c66f1cbad53a61f00f8b6273e737d5e560b69ec7 regulator: mp8859: add config option and build entry
+date:   2 years, 4 months ago
+config: x86_64-randconfig-a013 (https://download.01.org/0day-ci/archive/20220511/202205111110.NZWaV5qs-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c66f1cbad53a61f00f8b6273e737d5e560b69ec7
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout c66f1cbad53a61f00f8b6273e737d5e560b69ec7
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/gpu/drm/bridge/analogix/ drivers/regulator/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/regulator/mp8859.c:131:34: warning: 'mp8859_dt_id' defined but not used [-Wunused-const-variable=]
+     131 | static const struct of_device_id mp8859_dt_id[] = {
+         |                                  ^~~~~~~~~~~~
+
+
+vim +/mp8859_dt_id +131 drivers/regulator/mp8859.c
+
+4444a1c10069e2f Markus Reichl 2020-01-06  130  
+4444a1c10069e2f Markus Reichl 2020-01-06 @131  static const struct of_device_id mp8859_dt_id[] = {
+4444a1c10069e2f Markus Reichl 2020-01-06  132  	{.compatible =  "mps,mp8859"},
+4444a1c10069e2f Markus Reichl 2020-01-06  133  	{},
+4444a1c10069e2f Markus Reichl 2020-01-06  134  };
+4444a1c10069e2f Markus Reichl 2020-01-06  135  MODULE_DEVICE_TABLE(of, mp8859_dt_id);
+4444a1c10069e2f Markus Reichl 2020-01-06  136  
+
+:::::: The code at line 131 was first introduced by commit
+:::::: 4444a1c10069e2f371fa497ba22feafafed5aada regulator: mp8859: add driver
+
+:::::: TO: Markus Reichl <m.reichl@fivetechno.de>
+:::::: CC: Mark Brown <broonie@kernel.org>
 
 -- 
-zhenwei pi
+0-DAY CI Kernel Test Service
+https://01.org/lkp
