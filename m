@@ -2,117 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14FE4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 03:24:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EAA5C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 03:29:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238359AbiEKDYg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 23:24:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44564 "EHLO
+        id S239747AbiEKD3d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 23:29:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231142AbiEKDYc (ORCPT
+        with ESMTP id S231142AbiEKD3a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 23:24:32 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36D8560E9;
-        Tue, 10 May 2022 20:24:31 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KygDj1QKRzGpk3;
-        Wed, 11 May 2022 11:21:41 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 11 May 2022 11:24:29 +0800
-Received: from thunder-town.china.huawei.com (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 11 May 2022 11:24:28 +0800
-From:   Zhen Lei <thunder.leizhen@huawei.com>
-To:     Dave Young <dyoung@redhat.com>, Baoquan He <bhe@redhat.com>,
-        Vivek Goyal <vgoyal@redhat.com>, <kexec@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Jonathan Corbet <corbet@lwn.net>, <linux-doc@vger.kernel.org>
-CC:     Zhen Lei <thunder.leizhen@huawei.com>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Feng Zhou <zhoufeng.zf@bytedance.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        "Chen Zhou" <dingguo.cz@antgroup.com>,
-        John Donnelly <John.p.donnelly@oracle.com>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>
-Subject: [PATCH] arm64: kdump: Do not allocate crash low memory if not needed
-Date:   Wed, 11 May 2022 11:20:32 +0800
-Message-ID: <20220511032033.426-1-thunder.leizhen@huawei.com>
-X-Mailer: git-send-email 2.26.0.windows.1
+        Tue, 10 May 2022 23:29:30 -0400
+Received: from mail.tkos.co.il (wiki.tkos.co.il [84.110.109.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C732415F6D9;
+        Tue, 10 May 2022 20:29:27 -0700 (PDT)
+Received: from tarshish (unknown [10.0.8.3])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.tkos.co.il (Postfix) with ESMTPS id B75EC4405D7;
+        Wed, 11 May 2022 06:28:13 +0300 (IDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tkos.co.il;
+        s=default; t=1652239705;
+        bh=hLkOr9Q3wOOxVxVqfRPVJC9npyiSf6OayQQDHuAhlug=;
+        h=References:From:To:Cc:Subject:Date:In-reply-to:From;
+        b=rVQoBExujuCZYosFgWxBdp2r/XDI/UPoL+0AslXUaS0tcPrBtQZlOFULsi5kGucjQ
+         GRrjAZ2qOrIiD+38mxyDTCLvsBtdrd59kZPin/o7C2FCrtUArzqujf3P9QwCiXKleQ
+         vXi4P47nmvBRYZY2DI65/4nLroL0/TEwdnu0e4EQs3HOVsD0wHujStZt3Oxff98PNr
+         /xVHSoUPDJXjkHqWZYQs+WNyxIsEuiaFlXQCBA24sQv0yifez2uifHdCKtltaWB9h0
+         2vXSKiwW4Ye1KJ+HqGuPz6pbUvQkINHvXe+u2ySUZnpF62ERotkcyX5Aql1Q+xJm/F
+         9+ppGVxEoqZqg==
+References: <20220510171003.952873904@linutronix.de>
+ <20220510171254.655035023@linutronix.de>
+User-agent: mu4e 1.6.10; emacs 27.1
+From:   Baruch Siach <baruch@tkos.co.il>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>, linux-spdx@vger.kernel.org,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [patch 05/10] clocksource/drivers/digicolor: Convert to SPDX
+ identifier
+Date:   Wed, 11 May 2022 06:28:23 +0300
+In-reply-to: <20220510171254.655035023@linutronix.de>
+Message-ID: <87h75w9285.fsf@tarshish>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When "crashkernel=X,high" is specified, the specified "crashkernel=Y,low"
-memory is not required in the following corner cases:
-1. If both CONFIG_ZONE_DMA and CONFIG_ZONE_DMA32 are disabled, it means
-   that the devices can access any memory.
-2. If the system memory is small, the crash high memory may be allocated
-   from the DMA zones. If that happens, there's no need to allocate
-   another crash low memory because there's already one.
+Hi Thomas,
 
-Add condition '(crash_base >= CRASH_ADDR_LOW_MAX)' to determine whether
-the 'high' memory is allocated above DMA zones. Note: when both
-CONFIG_ZONE_DMA and CONFIG_ZONE_DMA32 are disabled, the entire physical
-memory is DMA accessible, CRASH_ADDR_LOW_MAX equals 'PHYS_MASK + 1'.
+On Tue, May 10 2022, Thomas Gleixner wrote:
 
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
----
- Documentation/admin-guide/kernel-parameters.txt | 5 +++--
- arch/arm64/mm/init.c                            | 3 ++-
- 2 files changed, 5 insertions(+), 3 deletions(-)
+> The license information clearly states GPL version 2 only. The extra text
+> which excludes warranties is an excerpt of the corresponding GPLv2 clause
+> 11.
+>
+> So the SPDX identifier covers it completely.
+>
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
+> Cc: Baruch Siach <baruch@tkos.co.il>
+> Cc: linux-arm-kernel@lists.infradead.org
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index f6ff55840751a78..1b543c3109f4851 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -823,7 +823,7 @@
- 			low memory is needed to make sure DMA buffers for 32-bit
- 			devices won't run out. Kernel would try to allocate
- 			at least 256M below 4G automatically.
--			This one let user to specify own low range under 4G
-+			This one lets the user specify own low range under 4G
- 			for second kernel instead.
- 			0: to disable low allocation.
- 			It will be ignored when crashkernel=X,high is not used
-@@ -832,7 +832,8 @@
- 			[KNL, ARM64] range in low memory.
- 			This one lets the user specify a low range in the
- 			DMA zone for the crash dump kernel.
--			It will be ignored when crashkernel=X,high is not used.
-+			It will be ignored when crashkernel=X,high is not used
-+			or memory reserved is located in the DMA zones.
- 
- 	cryptomgr.notests
- 			[KNL] Disable crypto self-tests
-diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-index 18ba66c90991ea0..ac510fb6a2c0189 100644
---- a/arch/arm64/mm/init.c
-+++ b/arch/arm64/mm/init.c
-@@ -170,7 +170,8 @@ static void __init reserve_crashkernel(void)
- 		return;
- 	}
- 
--	if (crash_low_size && reserve_crashkernel_low(crash_low_size)) {
-+	if ((crash_base >= CRASH_ADDR_LOW_MAX) &&
-+	     crash_low_size && reserve_crashkernel_low(crash_low_size)) {
- 		memblock_phys_free(crash_base, crash_size);
- 		return;
- 	}
+Acked-by: Baruch Siach <baruch@tkos.co.il>
+
+Thanks,
+baruch
+
+> ---
+>  drivers/clocksource/timer-digicolor.c |    5 +----
+>  1 file changed, 1 insertion(+), 4 deletions(-)
+>
+> --- a/drivers/clocksource/timer-digicolor.c
+> +++ b/drivers/clocksource/timer-digicolor.c
+> @@ -1,3 +1,4 @@
+> +// SPDX-License-Identifier: GPL-2.0
+>  /*
+>   * Conexant Digicolor timer driver
+>   *
+> @@ -11,10 +12,6 @@
+>   * Copyright (C) 2013 Maxime Ripard
+>   *
+>   * Maxime Ripard <maxime.ripard@free-electrons.com>
+> - *
+> - * This file is licensed under the terms of the GNU General Public
+> - * License version 2.  This program is licensed "as is" without any
+> - * warranty of any kind, whether express or implied.
+>   */
+>  
+>  /*
+
+
 -- 
-2.25.1
-
+                                                     ~. .~   Tk Open Systems
+=}------------------------------------------------ooO--U--Ooo------------{=
+   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
