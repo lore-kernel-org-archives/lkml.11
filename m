@@ -2,101 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B39DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 08:20:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0507C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 08:22:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243551AbiEKIUq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 04:20:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44242 "EHLO
+        id S243572AbiEKIWZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 04:22:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243556AbiEKIUc (ORCPT
+        with ESMTP id S243571AbiEKIWO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 04:20:32 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1107723978F
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 01:20:24 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id m20so2440272ejj.10
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 01:20:23 -0700 (PDT)
+        Wed, 11 May 2022 04:22:14 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 004FA2E6B3
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 01:22:10 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id 204so1362857pfx.3
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 01:22:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=uy8aR8kz6BQpVxur6Kjai6fQ+hpFlGiZWJG0Qp4yCOg=;
-        b=Fr/vip9pejDSZqSSt8H/JK2iltHXzGX5eyeHFwgdyMnJezlK+2lTTWFI7fPT/aDXhU
-         ZrqpNPb1xceNSyxiAneMZxZe9H6xKDVWciNwUtz+ziERQ843v/TQKqZASKu8vw7DREcz
-         3nPSd8C2luHoFafniYeVRyOKVKHuNSnwoKsIg5jyZl5gplAmflS02dUFnFDgmOyjkZat
-         c4hF0Ko5ccpUqOQco9bSDG1oqaRPHVjoZrYUjXJ71oe/n4FJoEtQqr6HpggI0IeYjnhk
-         G5gpN/enDBRgL6Buxh4W2eU5sBg19B81dLFeIj6ybSczHxNadFCayl6m4CEAAwFQi5E0
-         ID3g==
+        bh=ok9rm5eSTA5NSL17Rhwq9EtRVWax1XY2Vi3Ds9AAgoI=;
+        b=1kOoitGokYdgXjsF0flRyn8o7fugnSK/+ThmSsEeyuc8Enzq/2hd03m5qRiq9Ddz3J
+         D1C5Ojry6Yl5nxjnZxEcZwN8oPaZrWH/tzk6KJZx0uKnrpvGOyteBoMwR17maxPhuDRw
+         NffRsYiQHTkoTmRR9n8SOQ8eK5jk+5TQL5rrvPque8hUwxph2iJq5AY7LJyFEfyezb9D
+         KaK2IaqLfcA4jSN+AE8+vPh71imDXpesFT5ZM9xoUlwFWTnymsWlhfWb5LdJUj3Lgv3F
+         /3HGDMUPcz8RhIYOm3lVGBBQmQ9Ij4OE7H9TVztToRykZSK6Ekyssd71dyPgZdV+wCud
+         r6XA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=uy8aR8kz6BQpVxur6Kjai6fQ+hpFlGiZWJG0Qp4yCOg=;
-        b=kXJWfhF4MG9k/AmXlZ/bJg8bLq9qpBO42tQdl/Rodve49Evcx5bZMsVzHqPdPrXg2s
-         owKMVpPgmib+esV87bFyq7vn+19p56P2QQOJEKMb06gqUT6WUCRieDzkuKDYA5o/o9w4
-         t6KNI61+4vvWBpR4sXmejdwaDtpTvxEuWhmrO/B+qygkmjOdZvT94cO3prjUD/HhZGNW
-         d+/B7cp8C833ICiJlycMTAmTFn0myy/RQ7YRD9hQFVuR5q21mMNceKROM1wIo4HR7tCE
-         LqQja2q9FeHrjUvbRVt2jCsrrL3LMw1VllNM5LZjsjCZjBFmV+TKWmYwYXCAHIZaF3Te
-         3meQ==
-X-Gm-Message-State: AOAM532z92gF3IMcHcIykrgYzIR0U/4k7iOl/ZqWCKvx+1mu6PQhvziJ
-        KWiAJryQzxaqsatCwVK2XDUbwA==
-X-Google-Smtp-Source: ABdhPJyp5kcKMjgrjpqm7gLFmCjmNvtcblZ57zYzau/VMyDvaHMxuHZ6/U1RNDoP2QszXU6cQEtuig==
-X-Received: by 2002:a17:906:54c3:b0:6ef:d07b:c8ec with SMTP id c3-20020a17090654c300b006efd07bc8ecmr22902989ejp.687.1652257222606;
-        Wed, 11 May 2022 01:20:22 -0700 (PDT)
-Received: from [192.168.0.254] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id k18-20020a1709063e1200b006f3ef214e20sm668612eji.134.2022.05.11.01.20.21
+        bh=ok9rm5eSTA5NSL17Rhwq9EtRVWax1XY2Vi3Ds9AAgoI=;
+        b=4a/vFw8DNJhsfwqvRyNcpkS+MfPjkN/BHWkBV8pk55d+K+Fw8cKlyjEP9xB9QaABtb
+         IIPz+yd9MBnCxeFo57vIS9QSWKZi39FLlz1XCjtFG8rQqer/eo6KyLHUzzLufFn48yGI
+         AWzDhWyXBLk8ZNejPIeRuc8fXWxM0IXSrSrAp/zMvAYhZRzc/Qv0PjhDku5HhKQ5vPXg
+         bRXuM3Tta+WahGbzh4Rp6vBVfxOCeBjr2oALLlDZOK07NSZB33muz0LwOShqba5u3nE6
+         aMuz7+HyJ23rj3HrlfA8idnhc5BmAWmRq9TN/mZZKEpYV4tycYqL7N4H0Sko5Jy4jBtc
+         OjMw==
+X-Gm-Message-State: AOAM530Se87psR+1wQesC80xtihWrO2o8S5kt85FrPMosvrQVPPNLTSg
+        errHUR5lQHOgqwseggk1HQFQS60vvwPsHQ==
+X-Google-Smtp-Source: ABdhPJyI3XwnQck5yj0j+Fts4bxAMxiOgAF+ugKSbXj5JQ/HxpiYyfhMeBXr1WNEXRZRkmxuF6q2Xw==
+X-Received: by 2002:a65:6e9b:0:b0:3c5:f761:2d94 with SMTP id bm27-20020a656e9b000000b003c5f7612d94mr19725021pgb.79.1652257330292;
+        Wed, 11 May 2022 01:22:10 -0700 (PDT)
+Received: from [10.255.89.252] ([139.177.225.239])
+        by smtp.gmail.com with ESMTPSA id c20-20020a62e814000000b0050dc7628130sm1035498pfi.10.2022.05.11.01.22.07
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 May 2022 01:20:22 -0700 (PDT)
-Message-ID: <b3a618a6-f236-549c-0bac-4c874cd49a00@linaro.org>
-Date:   Wed, 11 May 2022 10:20:20 +0200
+        Wed, 11 May 2022 01:22:09 -0700 (PDT)
+Message-ID: <7aceb944-4c53-8cc8-473d-fc8a9da0ef11@bytedance.com>
+Date:   Wed, 11 May 2022 16:18:16 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: Re: [PATCH v2 1/3] dt-bindings: vendor-prefixes: Add prefix for EBBG
+Subject: Re: Re: [PATCH v2 5/5] mm/memory-failure.c: simplify
+ num_poisoned_pages_inc/dec
 Content-Language: en-US
-To:     Joel Selvaraj <jo@jsfamily.in>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Stanislav Jakubek <stano.jakubek@gmail.com>,
-        Corentin Labbe <clabbe@baylibre.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hao Fang <fanghao11@huawei.com>
-Cc:     dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org
-References: <cover.1652245767.git.jo@jsfamily.in>
- <BY5PR02MB700946D0A3DA7AB7BE2CBBEBD9C89@BY5PR02MB7009.namprd02.prod.outlook.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <BY5PR02MB700946D0A3DA7AB7BE2CBBEBD9C89@BY5PR02MB7009.namprd02.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
+        <naoya.horiguchi@nec.com>
+Cc:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220509105641.491313-1-pizhenwei@bytedance.com>
+ <20220509105641.491313-6-pizhenwei@bytedance.com>
+ <20220511082011.GC211620@hori.linux.bs1.fc.nec.co.jp>
+From:   zhenwei pi <pizhenwei@bytedance.com>
+In-Reply-To: <20220511082011.GC211620@hori.linux.bs1.fc.nec.co.jp>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/05/2022 07:28, Joel Selvaraj wrote:
-> Add a prefix for EBBG. They manufacture displays which are used in some
-> Xiaomi phones, but I could not find much details about the company.
+
+
+On 5/11/22 16:20, HORIGUCHI NAOYA(堀口 直也) wrote:
+> On Mon, May 09, 2022 at 06:56:41PM +0800, zhenwei pi wrote:
+>> Originally, do num_poisoned_pages_inc() in memory failure routine,
+>> use num_poisoned_pages_dec() to rollback the number if filtered/
+>> cancelled.
+>>
+>> Suggested by Naoya, do num_poisoned_pages_inc() only in
+>> action_result(), this make this clear and simple.
+>>
+>> Signed-off-by: zhenwei pi <pizhenwei@bytedance.com>
 > 
-> Signed-off-by: Joel Selvaraj <jo@jsfamily.in>
-> ---
->  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
->  1 file changed, 2 insertions(+)
+> I found that action_result(MF_MSG_UNKNOWN) in try_memory_failure_hugetlb()
+> does not follow the rule, so that could break the counter.
+> I don't think this is the issue in your patch, so I'm fine with this patch.
+> 
+> I'll submit a fix later for this, which will add hugetlb_set_page_hwpoison()
+> in the path.  That will have a bit non-trivial change because we need do
+> this in hugeltb_lock.
+> 
+> Anyway, thank you for this work.
+> 
+> Acked-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
 
-Please add Acked-by/Reviewed-by tags when posting new versions. However,
-there's no need to repost patches *only* to add the tags. The upstream
-maintainer will do that for acks received on the version they apply.
+A million thanks to you!
 
-https://elixir.bootlin.com/linux/v5.13/source/Documentation/process/submitting-patches.rst#L543
-
-If a tag was not added on purpose, please state why and what changed.
-
-Best regards,
-Krzysztof
+-- 
+zhenwei pi
