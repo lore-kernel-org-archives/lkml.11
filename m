@@ -2,121 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F05CC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 03:58:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F124C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 03:59:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242117AbiEKD4I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 23:56:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36282 "EHLO
+        id S234940AbiEKD7h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 23:59:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241209AbiEKDzj (ORCPT
+        with ESMTP id S229584AbiEKD7c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 23:55:39 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 280D4218FF8
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 20:55:37 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id l11-20020a17090a49cb00b001d923a9ca99so938986pjm.1
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 20:55:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fastly.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=HVRP118ZOlUZuoG/hDkho2/EllajCBtZWJSv42QBoCc=;
-        b=GEO29e6cFLU3C6rQeRvcHHx1B7Gl6areArEPEnkD1l5qphc906h2sIwiQ9NEQT3nxy
-         hnqzbFtx/vuGJLQlvdprTdtvWNTrHhwoY3C4BKHov0yQYeFQb7vB7W02Zx/MJLmHLzIm
-         0waUvGXOJQ5G3GNz0yafi51anAAeRtIfzso7A=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=HVRP118ZOlUZuoG/hDkho2/EllajCBtZWJSv42QBoCc=;
-        b=ZEH+Rk1YOo6wMwQCVQFVDK7NBdPEiaNtcRBzF7Pa2T7MzRAeGk343qJ3KsQ1ia1INO
-         wDNhXlHKJkEF1A/bf1wzJzIiT7KbDsHk+ecORCH9AsFdv6qUwrZ8IJj+gFa313hHV1gD
-         7RXa8C9Q685O1N0zG48YFFBzVD45V9c0BauOODN39sNuDJzme0Vx5jPi+LhMgvRpDAi0
-         2dpvnib/5xLan1dC0C8BPifiSdycZGtN5lvTbLgDXl2A2ScjRGUx/BzpLKKncXOfVKk9
-         a46omV6vanW6xyYbIuQer1bterR09jhxTGWTG+MSa1M2Bg5xc42JO7RlH1wWX20Kzuc9
-         j74g==
-X-Gm-Message-State: AOAM530bxCmzwtewQ0UUiOxAQUpSPYRnvz5SkAcHAsqo6HEnNMroUq3f
-        z2VqOP+ayuKinOmi0vD7eGJDaQ==
-X-Google-Smtp-Source: ABdhPJx2cBOX8TKr/h/WTeqUC4FZm457izcVFqtGtuZ/tZr6Sm6aO2hN978l1aOE3sJBvl184EerOw==
-X-Received: by 2002:a17:902:8644:b0:15a:3b4a:538a with SMTP id y4-20020a170902864400b0015a3b4a538amr23511594plt.146.1652241336651;
-        Tue, 10 May 2022 20:55:36 -0700 (PDT)
-Received: from localhost.localdomain (c-73-223-190-181.hsd1.ca.comcast.net. [73.223.190.181])
-        by smtp.gmail.com with ESMTPSA id d7-20020a170903230700b0015e8d4eb1f7sm442789plh.65.2022.05.10.20.55.35
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 10 May 2022 20:55:35 -0700 (PDT)
-From:   Joe Damato <jdamato@fastly.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, x86@kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Joe Damato <jdamato@fastly.com>
-Subject: [RFC,net-next 5/6] net: Add a way to copy skbs without affect cache
-Date:   Tue, 10 May 2022 20:54:26 -0700
-Message-Id: <1652241268-46732-6-git-send-email-jdamato@fastly.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1652241268-46732-1-git-send-email-jdamato@fastly.com>
-References: <1652241268-46732-1-git-send-email-jdamato@fastly.com>
+        Tue, 10 May 2022 23:59:32 -0400
+Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7A10229FD5;
+        Tue, 10 May 2022 20:59:28 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=31;SR=0;TI=SMTPD_---0VCu38tE_1652241558;
+Received: from 30.30.99.144(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VCu38tE_1652241558)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 11 May 2022 11:59:22 +0800
+Message-ID: <84209c7b-ac3e-fa3b-75fc-d76ec7c99d68@linux.alibaba.com>
+Date:   Wed, 11 May 2022 11:59:57 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v3 2/3] mm: rmap: Fix CONT-PTE/PMD size hugetlb issue when
+ migration
+To:     Andrew Morton <akpm@linux-foundation.org>, mike.kravetz@oracle.com,
+        catalin.marinas@arm.com, will@kernel.org, songmuchun@bytedance.com,
+        tsbogend@alpha.franken.de, James.Bottomley@HansenPartnership.com,
+        deller@gmx.de, mpe@ellerman.id.au, benh@kernel.crashing.org,
+        paulus@samba.org, hca@linux.ibm.com, gor@linux.ibm.com,
+        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+        svens@linux.ibm.com, ysato@users.osdn.me, dalias@libc.org,
+        davem@davemloft.net, arnd@arndb.de,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
+        sparclinux@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-mm@kvack.org
+References: <cover.1652147571.git.baolin.wang@linux.alibaba.com>
+ <ea5abf529f0997b5430961012bfda6166c1efc8c.1652147571.git.baolin.wang@linux.alibaba.com>
+ <20220510161739.fdea4d78dde8471033aab22b@linux-foundation.org>
+ <20220510162847.d9cf3c767e755a54699fb121@linux-foundation.org>
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+In-Reply-To: <20220510162847.d9cf3c767e755a54699fb121@linux-foundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add an skb_copier, skb_nocache_copier, which contains function pointers to
-nontemporal copy routines.
 
-Using skb_nocache_copier and do_skb_copy_datagram implement
-skb_copy_datagram_from_iter_nocache. This function is intended to be used
-by callers which would like to copy data into SKBs using nontemporal
-instructions to avoid the CPU cache.
 
-Signed-off-by: Joe Damato <jdamato@fastly.com>
----
- include/linux/skbuff.h |  2 ++
- net/core/datagram.c    | 12 ++++++++++++
- 2 files changed, 14 insertions(+)
+On 5/11/2022 7:28 AM, Andrew Morton wrote:
+> On Tue, 10 May 2022 16:17:39 -0700 Andrew Morton <akpm@linux-foundation.org> wrote:
+> 
+>>> +
+>>> +static inline pte_t huge_ptep_clear_flush(struct vm_area_struct *vma,
+>>> +					  unsigned long addr, pte_t *ptep)
+>>> +{
+>>> +	return ptep_get(ptep);
+>>> +}
+>>> +
+>>> +static inline void set_huge_pte_at(struct mm_struct *mm, unsigned long addr,
+>>> +				   pte_t *ptep, pte_t pte)
+>>> +{
+>>> +}
+>>>   #endif	/* CONFIG_HUGETLB_PAGE */
+>>>   
+>>
+>> This blows up nommu (arm allnoconfig):
+>>
+>> In file included from fs/io_uring.c:71:
+>> ./include/linux/hugetlb.h: In function 'huge_ptep_clear_flush':
+>> ./include/linux/hugetlb.h:1100:16: error: implicit declaration of function 'ptep_get' [-Werror=implicit-function-declaration]
+>>   1100 |         return ptep_get(ptep);
+>>        |                ^~~~~~~~
+>>
+>>
+>> huge_ptep_clear_flush() is only used in CONFIG_NOMMU=n files, so I simply
+>> zapped this change.
+>>
+> 
+> Well that wasn't a great success.  Doing this instead.  It's pretty
+> nasty - something nicer would be nicer please.
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 97de40b..32c0cba 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -3918,6 +3918,8 @@ int skb_copy_and_hash_datagram_iter(const struct sk_buff *skb, int offset,
- 			   struct ahash_request *hash);
- int skb_copy_datagram_from_iter(struct sk_buff *skb, int offset,
- 				 struct iov_iter *from, int len);
-+int skb_copy_datagram_from_iter_nocache(struct sk_buff *skb, int offset,
-+				 struct iov_iter *from, int len);
- int zerocopy_sg_from_iter(struct sk_buff *skb, struct iov_iter *frm);
- void skb_free_datagram(struct sock *sk, struct sk_buff *skb);
- void __skb_free_datagram_locked(struct sock *sk, struct sk_buff *skb, int len);
-diff --git a/net/core/datagram.c b/net/core/datagram.c
-index a87c41b..da8557b 100644
---- a/net/core/datagram.c
-+++ b/net/core/datagram.c
-@@ -543,6 +543,11 @@ struct skb_copier skb_copier = {
- 	.copy_page_from_iter = copy_page_from_iter
- };
- 
-+struct skb_copier skb_nocache_copier = {
-+	.copy_from_iter = copy_from_iter_nocache,
-+	.copy_page_from_iter = copy_page_from_iter_nocache
-+};
-+
- static int do_skb_copy_datagram(struct sk_buff *skb, int offset,
- 				struct iov_iter *from, int len, struct skb_copier copier)
- {
-@@ -611,6 +616,13 @@ static int do_skb_copy_datagram(struct sk_buff *skb, int offset,
- 	return -EFAULT;
- }
- 
-+int skb_copy_datagram_from_iter_nocache(struct sk_buff *skb, int offset,
-+					struct iov_iter *from, int len)
-+{
-+	return do_skb_copy_datagram(skb, offset, from, len, skb_nocache_copier);
-+}
-+EXPORT_SYMBOL(skb_copy_datagram_from_iter_nocache);
-+
- /**
-  *	skb_copy_datagram_from_iter - Copy a datagram from an iov_iter.
-  *	@skb: buffer to copy
--- 
-2.7.4
+Thanks for fixing the building issue. I'll look at this to simplify the 
+dummy function. Myabe just remove the ptep_get().
 
+diff --git a/include/linux/hugetlb.h b/include/linux/hugetlb.h
+--- a/include/linux/hugetlb.h
++++ b/include/linux/hugetlb.h
+@@ -1097,7 +1097,7 @@ static inline void set_huge_swap_pte_at(struct 
+mm_struct *mm, unsigned long addr
+  static inline pte_t huge_ptep_clear_flush(struct vm_area_struct *vma,
+                                           unsigned long addr, pte_t *ptep)
+  {
+-       return ptep_get(ptep);
++       return *ptep;
+  }
+
+> 
+> --- a/include/linux/hugetlb.h~mm-rmap-fix-cont-pte-pmd-size-hugetlb-issue-when-migration-fix
+> +++ a/include/linux/hugetlb.h
+> @@ -1094,6 +1094,7 @@ static inline void set_huge_swap_pte_at(
+>   {
+>   }
+>   
+> +#ifdef CONFIG_MMU
+>   static inline pte_t huge_ptep_clear_flush(struct vm_area_struct *vma,
+>   					  unsigned long addr, pte_t *ptep)
+>   {
+> @@ -1104,6 +1105,7 @@ static inline void set_huge_pte_at(struc
+>   				   pte_t *ptep, pte_t pte)
+>   {
+>   }
+> +#endif
+>   #endif	/* CONFIG_HUGETLB_PAGE */
+>   
+>   static inline spinlock_t *huge_pte_lock(struct hstate *h,
+> _
