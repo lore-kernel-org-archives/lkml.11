@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFA91C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 14:25:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 004F2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 14:25:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244596AbiEKOZc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 10:25:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53198 "EHLO
+        id S244587AbiEKOZg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 10:25:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232399AbiEKOZT (ORCPT
+        with ESMTP id S242913AbiEKOZV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 10:25:19 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41C9963394
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 07:25:18 -0700 (PDT)
+        Wed, 11 May 2022 10:25:21 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D06A40A3B
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 07:25:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
+        d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=RrsRwnufM8aJb8X9Do0ueNVFWhI9Rg8k/jxvL6pTy3A=; b=vnzOmGsJ8JHF5tstWbXoHMfj1B
-        yet9pcHyTbhthoPq81ecsWA4MmEu0qPUOXOm3kD0AxKaRrUBfYz+kzBvrzC1xr3a7PuvUDZ8YQ1I7
-        2QxmPAu3g8eilLhw3+nFUiTgD4DRE5IoPiuYuYIk4O8PvR3XuWFldF5aCMIUNEHPEmQ6rc4ScgYTF
-        aBYHYUzEyEUL0+NQNN5TgWP+vBQ5UlioCreu9ADuqI0GUHTcZPeGDJ3yGQtdr+s2RY1DNyNJqLtqs
-        oP2UGPL9aASxNV1DvWesK4gvE5ug7avOO0hskbN83R3pkSzHWLOVLHe7TNtWi5fadrvLfMypH/Xnk
-        cFd8s/Sw==;
+        bh=fzXxRG6OXG8jw/YQezAyrq7G35GCWfwkvISstTTxtus=; b=BdcmOLm2rz344t6tbIbh6CFOC8
+        AvsfNgbdPXnGb5G9LrIlEaTB17d8qe9Y21KRpRS0ER9wTdMjrs/EOKmspYoQXKiJ66mcQaxyYL8+B
+        LFAyt53fU1q2GR6wZmSyAjC4w9gtoFbuvvwkHuZ44b3Ik5o41uuua7Nrt5cUYunu8mcSVIz/Y3uUP
+        nhUvO9PlZigtTlQVTOpvIeV5ak5psuqVw2stonZVGkVmqrWsW/qejQgVUM5kqXa1C9v3yHeK1L95u
+        r6XEeDmRNUkz5sFv5nKfo4W0Kmq01GBwdU0hYhWXfg1YKoVgyoSYYUGgNzhfje5KZFCQhaFpUh2d3
+        /eGXE/3A==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nonH5-005VvM-LM; Wed, 11 May 2022 14:25:11 +0000
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nonH5-00DBu4-1R; Wed, 11 May 2022 14:25:11 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 85EEE300859;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 3454430047E;
         Wed, 11 May 2022 16:25:09 +0200 (CEST)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 2FE7C203C276F; Wed, 11 May 2022 16:25:09 +0200 (CEST)
-Message-ID: <20220511142345.354695274@infradead.org>
+        id 1E5D920236A42; Wed, 11 May 2022 16:25:09 +0200 (CEST)
+Message-ID: <20220511142345.084235472@infradead.org>
 User-Agent: quilt/0.66
-Date:   Wed, 11 May 2022 16:20:42 +0200
+Date:   Wed, 11 May 2022 16:20:38 +0200
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org, kan.liang@linux.intel.com, eranian@google.com
 Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         acme@kernel.org, mark.rutland@arm.com,
         alexander.shishkin@linux.intel.com, jolsa@kernel.org,
         namhyung@kernel.org
-Subject: [PATCH 5/5] perf/x86: Add a x86_pmu::limit_period static_call
+Subject: [PATCH 1/5] perf/x86/amd: Fix AMD BRS period adjustment
 References: <20220511142037.353492804@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,44 +53,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Avoid a branch and indirect call.
+There's two problems with the current amd_brs_adjust_period() code:
 
+ - it isn't in fact AMD specific and wil always adjust the period;
+
+ - it adjusts the period, while it should only adjust the event count,
+   resulting in repoting a short period.
+
+Fix this by using x86_pmu.limit_period, this makes it specific to the
+AMD BRS case and ensures only the event count is adjusted while the
+reported period is unmodified.
+
+Fixes: ba2fe7500845 ("perf/x86/amd: Add AMD branch sampling period adjustment")
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- arch/x86/events/core.c |    9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ arch/x86/events/amd/core.c   |   13 +++++++++++++
+ arch/x86/events/core.c       |    7 -------
+ arch/x86/events/perf_event.h |   18 ------------------
+ 3 files changed, 13 insertions(+), 25 deletions(-)
 
+--- a/arch/x86/events/amd/core.c
++++ b/arch/x86/events/amd/core.c
+@@ -1258,6 +1258,18 @@ static void amd_pmu_sched_task(struct pe
+ 		amd_pmu_brs_sched_task(ctx, sched_in);
+ }
+ 
++static u64 amd_pmu_limit_period(struct perf_event *event, u64 left)
++{
++	/*
++	 * Decrease period by the depth of the BRS feature to get the last N
++	 * taken branches and approximate the desired period
++	 */
++	if (has_branch_stack(event) && left > x86_pmu.lbr_nr)
++		left -= x86_pmu.lbr_nr;
++
++	return left;
++}
++
+ static __initconst const struct x86_pmu amd_pmu = {
+ 	.name			= "AMD",
+ 	.handle_irq		= amd_pmu_handle_irq,
+@@ -1418,6 +1430,7 @@ static int __init amd_core_pmu_init(void
+ 	if (boot_cpu_data.x86 >= 0x19 && !amd_brs_init()) {
+ 		x86_pmu.get_event_constraints = amd_get_event_constraints_f19h;
+ 		x86_pmu.sched_task = amd_pmu_sched_task;
++		x86_pmu.limit_period = amd_pmu_limit_period;
+ 		/*
+ 		 * put_event_constraints callback same as Fam17h, set above
+ 		 */
 --- a/arch/x86/events/core.c
 +++ b/arch/x86/events/core.c
-@@ -72,8 +72,9 @@ DEFINE_STATIC_CALL_NULL(x86_pmu_add,  *x
- DEFINE_STATIC_CALL_NULL(x86_pmu_del,  *x86_pmu.del);
- DEFINE_STATIC_CALL_NULL(x86_pmu_read, *x86_pmu.read);
+@@ -1375,13 +1375,6 @@ int x86_perf_event_set_period(struct per
+ 		return x86_pmu.set_topdown_event_period(event);
  
--DEFINE_STATIC_CALL_NULL(x86_pmu_set_period, *x86_pmu.set_period);
--DEFINE_STATIC_CALL_NULL(x86_pmu_update,     *x86_pmu.update);
-+DEFINE_STATIC_CALL_NULL(x86_pmu_set_period,   *x86_pmu.set_period);
-+DEFINE_STATIC_CALL_NULL(x86_pmu_update,       *x86_pmu.update);
-+DEFINE_STATIC_CALL_NULL(x86_pmu_limit_period, *x86_pmu.limit_period);
+ 	/*
+-	 * decrease period by the depth of the BRS feature to get
+-	 * the last N taken branches and approximate the desired period
+-	 */
+-	if (has_branch_stack(event))
+-		period = amd_brs_adjust_period(period);
+-
+-	/*
+ 	 * If we are way outside a reasonable range then just skip forward:
+ 	 */
+ 	if (unlikely(left <= -period)) {
+--- a/arch/x86/events/perf_event.h
++++ b/arch/x86/events/perf_event.h
+@@ -1254,14 +1254,6 @@ static inline void amd_pmu_brs_del(struc
+ }
  
- DEFINE_STATIC_CALL_NULL(x86_pmu_schedule_events,       *x86_pmu.schedule_events);
- DEFINE_STATIC_CALL_NULL(x86_pmu_get_event_constraints, *x86_pmu.get_event_constraints);
-@@ -1391,8 +1392,7 @@ int x86_perf_event_set_period(struct per
- 	if (left > x86_pmu.max_period)
- 		left = x86_pmu.max_period;
+ void amd_pmu_brs_sched_task(struct perf_event_context *ctx, bool sched_in);
+-
+-static inline s64 amd_brs_adjust_period(s64 period)
+-{
+-	if (period > x86_pmu.lbr_nr)
+-		return period - x86_pmu.lbr_nr;
+-
+-	return period;
+-}
+ #else
+ static inline int amd_brs_init(void)
+ {
+@@ -1290,11 +1282,6 @@ static inline void amd_pmu_brs_sched_tas
+ {
+ }
  
--	if (x86_pmu.limit_period)
--		x86_pmu.limit_period(event, &left);
-+	static_call_cond(x86_pmu_limit_period)(event, &left);
+-static inline s64 amd_brs_adjust_period(s64 period)
+-{
+-	return period;
+-}
+-
+ static inline void amd_brs_enable_all(void)
+ {
+ }
+@@ -1324,11 +1311,6 @@ static inline void amd_brs_enable_all(vo
+ static inline void amd_brs_disable_all(void)
+ {
+ }
+-
+-static inline s64 amd_brs_adjust_period(s64 period)
+-{
+-	return period;
+-}
+ #endif /* CONFIG_CPU_SUP_AMD */
  
- 	this_cpu_write(pmc_prev_left[idx], left);
- 
-@@ -2017,6 +2017,7 @@ static void x86_pmu_static_call_update(v
- 
- 	static_call_update(x86_pmu_set_period, x86_pmu.set_period);
- 	static_call_update(x86_pmu_update, x86_pmu.update);
-+	static_call_update(x86_pmu_limit_period, x86_pmu.limit_period);
- 
- 	static_call_update(x86_pmu_schedule_events, x86_pmu.schedule_events);
- 	static_call_update(x86_pmu_get_event_constraints, x86_pmu.get_event_constraints);
+ static inline int is_pebs_pt(struct perf_event *event)
 
 
