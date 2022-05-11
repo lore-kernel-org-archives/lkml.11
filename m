@@ -2,100 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1365FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 22:36:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC0A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 22:37:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348852AbiEKWgy (ORCPT
+        id S1348844AbiEKWhT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 18:36:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47832 "EHLO
+        Wed, 11 May 2022 18:37:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348832AbiEKWgq (ORCPT
+        with ESMTP id S1348832AbiEKWhQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 18:36:46 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BBBA38795
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 15:36:46 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id c9so3230673plh.2
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 15:36:46 -0700 (PDT)
+        Wed, 11 May 2022 18:37:16 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE4EB69726
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 15:37:15 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id gj17-20020a17090b109100b001d8b390f77bso6189951pjb.1
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 15:37:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=si1Rwhr5j9axuLzTcmMSWZj1IF9byAf7FS+JUx2lWqQ=;
-        b=Y1mOoFpuxbMkem3auol/NJSBXB/PCujD/y1PVTZDkChfddxepgxXfoqshDcktwqGpP
-         ARhYZ7veM2ssN8ZclXRl3dw+H03xpWbYiIROWS3VPFrzWnf2UPTo/ZvCBunsjbo0iayU
-         1kzdoHqbypVeAr1XxsMdL2S/gZSskNsyRZymg=
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=nehdr7PITXzy3bqyFSTIHEYGzvy9BmPaO54SUkuQJus=;
+        b=Yt4rmSeljKAy4zVAJt38bsEUP+R/ch5xnFMH1IcPKPcH9fhCkYfitu2Bz7DZr64Zgs
+         zS0pxud8f1P0frTY4URR6vlv3jGV2gOh3d2DoucZdDjS4qr2Ga274DQHMeLlYcGIMbIn
+         XPEghnlayuephnbpvOaYmlbtLLreK1cfBskDVzqqLxbBiJPmBPOKPyQ63VJRnRRBugWA
+         4hnNM8TnPq6TnqkREYiyo66NBdJtZhaV8tqUioqmgbIp4nEUvzcPr/S0Ax+iNvOKKsnL
+         YE2/8Lb1fsSmQbLe6bDPxO0Pc2BxY+we5Y4fvoti9aZSjgjwqfd7JrSBugkX4K1Tp87B
+         tAZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=si1Rwhr5j9axuLzTcmMSWZj1IF9byAf7FS+JUx2lWqQ=;
-        b=MsBQJYIdDmTmnmq6hzTAcnCfH7GRmC7wUD7R0pQGOyYwrluLtPoeWWEYXaqh0CKdYg
-         /cLUtaAWSmwkOWlCH40BFqZ3VQxyFWKssQBAzz5tp02BJg83HIp87w8ScsqAgknMjq33
-         cIWIx3HV2SN3y1oQtkFMIp25nx15eZff/oI3YG159KclToUHgK5LogfgzSfmd+Zr/r9t
-         ueGuQ5RIglI0opDPCqhX9PEtkdIxq8J/l2sqwCCTQxWa+sWUS4NfWj5OovEB2wcxNlVh
-         X+YdCi0MAQzgNCd5T+1kzm4EW5abKbzwH8JKIDUe8y+UBe0rnsMjj4ISSqdW8kM1BWYL
-         XMfg==
-X-Gm-Message-State: AOAM5323Wik5CawXNklI1WRfWx6xRoUFM7HrU+L+vKk72wuvnEx7W7DF
-        jyW2Q1PjoBTRqhaLIx79q3WeMg==
-X-Google-Smtp-Source: ABdhPJzhp1wK1HcHgFgRwXNdOwOYc2AkkaevEP6SkCY6EqKLZyEDAmT5vf1CXRqTBa5UrZOjEt/Liw==
-X-Received: by 2002:a17:90b:4a08:b0:1dc:6cc1:3d24 with SMTP id kk8-20020a17090b4a0800b001dc6cc13d24mr7728354pjb.131.1652308605699;
-        Wed, 11 May 2022 15:36:45 -0700 (PDT)
-Received: from dlunevwfh.roam.corp.google.com (n122-107-196-14.sbr2.nsw.optusnet.com.au. [122.107.196.14])
-        by smtp.gmail.com with ESMTPSA id d5-20020a170902c18500b0015e8d4eb1d2sm2391855pld.28.2022.05.11.15.36.42
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=nehdr7PITXzy3bqyFSTIHEYGzvy9BmPaO54SUkuQJus=;
+        b=sg/tj03u8OQNudMvB4zgaTf1WgBDh8cboUe7vixa0CJMI4Zle7bEZhWUSfcm8mD1d4
+         71wJv+uIqkQCMPeQI97Q8T5/JbCIdfjH40T7IVStS19aX8FlOqWcCuFQxwj9q4iU45AJ
+         g/ghK978REG4I2m7ibevfrOdQCZ4zjVkMoSC1SMo49SCa7OBzqUGDeZQwnnoH8TEP6QQ
+         wS8Oui1Yz71MpLDC6ordpKLecVh09dT0/2maa4ZcewXY0M6O3rxcc8SolR3SfNuEHKgF
+         83ou4SMaI/pjnlWrZjwgTUIIVt4sSChJHk5RcNs2S248atkwoCjxBKPDhgjRIb+X5col
+         G18w==
+X-Gm-Message-State: AOAM533GxrhbqQaMI+tDOGQPG5L7gXvFPJq+/PL+1Lfl2WnWxbQdzW/f
+        B3uY3YwsRrkvxWuMpC4VNPI=
+X-Google-Smtp-Source: ABdhPJzyASJ01em+i4TBSflUo8jGKENF4EVaVlb3eN6NoOzTtMFrNN1ofuibrUqvb/9Z2fzC0MC73Q==
+X-Received: by 2002:a17:902:bb92:b0:153:4eae:c77e with SMTP id m18-20020a170902bb9200b001534eaec77emr27112543pls.93.1652308635389;
+        Wed, 11 May 2022 15:37:15 -0700 (PDT)
+Received: from google.com ([2620:15c:211:201:69ef:9c87:7816:4f74])
+        by smtp.gmail.com with ESMTPSA id l7-20020a170902f68700b0015e8d4eb2e9sm2469090plg.307.2022.05.11.15.37.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 15:36:45 -0700 (PDT)
-From:   Daniil Lunev <dlunev@chromium.org>
-To:     linux-fsdevel@vger.kernel.org
-Cc:     hch@infradead.org, fuse-devel@lists.sourceforge.net, tytso@mit.edu,
-        miklos@szeredi.hu, viro@zeniv.linux.org.uk,
-        linux-kernel@vger.kernel.org, Daniil Lunev <dlunev@chromium.org>
-Subject: [PATCH v2 2/2] FUSE: Retire superblock on force unmount
-Date:   Thu, 12 May 2022 08:29:10 +1000
-Message-Id: <20220512082832.v2.2.I692165059274c30b59bed56940b54a573ccb46e4@changeid>
-X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20220511222910.635307-1-dlunev@chromium.org>
-References: <20220511222910.635307-1-dlunev@chromium.org>
+        Wed, 11 May 2022 15:37:15 -0700 (PDT)
+Sender: Minchan Kim <minchan.kim@gmail.com>
+Date:   Wed, 11 May 2022 15:37:13 -0700
+From:   Minchan Kim <minchan@kernel.org>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        linux-mm <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        John Dias <joaodias@google.com>,
+        David Hildenbrand <david@redhat.com>
+Subject: Re: [PATCH v4] mm: fix is_pinnable_page against on cma page
+Message-ID: <Ynw6mauQuNhrOAHy@google.com>
+References: <20220510211743.95831-1-minchan@kernel.org>
+ <857d21da-5de2-fa3e-b1ce-41cc1cfb0191@nvidia.com>
+ <Ynr10y6pkH6WwbQo@google.com>
+ <bb6e76f1-2cbc-893d-c8ab-3ecd3fcae2a5@nvidia.com>
+ <Ynr+wTCQpyh8+vOD@google.com>
+ <2ffa7670-04ea-bb28-28f8-93a9b9eea7e8@nvidia.com>
+ <YnwupNzDNv7IbjRQ@google.com>
+ <54b5d177-f2f4-cef2-3a68-cd3b0b276f86@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <54b5d177-f2f4-cef2-3a68-cd3b0b276f86@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Force unmount of FUSE severes the connection with the user space, even
-if there are still open files. Subsequent remount tries to re-use the
-superblock held by the open files, which is meaningless in the FUSE case
-after disconnect - reused super block doesn't have userspace counterpart
-attached to it and is incapable of doing any IO.
+On Wed, May 11, 2022 at 03:25:49PM -0700, John Hubbard wrote:
+> On 5/11/22 2:46 PM, Minchan Kim wrote:
+> > > I read that, but there was never any real justification there for needing
+> > > to prevent a re-read of mt, just a preference: "I'd like to keep use the local
+> > > variable mt's value in folloing conditions checks instead of refetching
+> > > the value from get_pageblock_migratetype."
+> > > 
+> > > But I don't believe that there is any combination of values of mt that
+> > > will cause a problem here.
+> > > 
+> > > I also think that once we pull in experts, they will tell us that the
+> > > compiler is not going to re-run a non-trivial function to re-fetch a
+> > > value, but I'm not one of those experts, so that's still arguable. But
+> > > imagine what the kernel code would look like if every time we call
+> > > a large function, we have to consider if it actually gets called some
+> > > arbitrary number of times, due to (anti-) optimizations by the compiler.
+> > > This seems like something that is not really happening.
+> > 
+> > Maybe, I might be paranoid since I have heard too subtle things
+> > about how compiler could changes high level language code so wanted
+> > be careful especially when we do lockless-stuff.
+> > 
+> > Who cares when we change the large(?) function to small(?) function
+> > later on? I'd like to hear from experts to decide it.
+> > 
+> 
+> Yes. But one thing that is still unanswered, that I think you can
+> answer, is: even if the compiler *did* re-read the mt variable, what
+> problems could that cause? I claim "no problems", because there is
+> no combination of 0, _CMA, _ISOLATE, _CMA|ISOLATE that will cause
+> problems here.
 
-Signed-off-by: Daniil Lunev <dlunev@chromium.org>
----
+What scenario I am concerning with __READ_ONCE so compiler
+inlining get_pageblock_migratetype two times are
 
-Changes in v2:
-- Use an exported function instead of directly modifying superblock
+        CPU 0                                                       CPU 1
+                                                                alloc_contig_range
+is_pinnable_page                                                start_isolate_page_range
+                                                                  set_pageblock_migratetype(MIGRATE_ISOLATE)
+   if (get_pageeblock_migratetype(page) == MIGRATE_CMA)    
+       so it's false
+                                                                undo:
+                                                                  set_pageblock_migratetype(MIGRATE_CMA)
+     
+   if (get_pageeblock_migratetype(page) == MIGRATE_ISOLATE) 
+       so it's false
 
- fs/fuse/inode.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+In the end, CMA memory would be pinned by CPU 0 process
+so CMA allocation keep failed until the process release the
+refcount.
 
-diff --git a/fs/fuse/inode.c b/fs/fuse/inode.c
-index 8c0665c5dff88..8875361544b2a 100644
---- a/fs/fuse/inode.c
-+++ b/fs/fuse/inode.c
-@@ -476,8 +476,11 @@ static void fuse_umount_begin(struct super_block *sb)
- {
- 	struct fuse_conn *fc = get_fuse_conn_super(sb);
- 
--	if (!fc->no_force_umount)
--		fuse_abort_conn(fc);
-+	if (fc->no_force_umount)
-+		return;
-+
-+	fuse_abort_conn(fc);
-+	retire_super(sb);
- }
- 
- static void fuse_send_destroy(struct fuse_mount *fm)
--- 
-2.31.0
-
+> 
+> Any if that's true, then we can leave the experts alone, because
+> the answer is there without knowing what happens exactly to mt.
+> 
+> thanks,
+> 
+> -- 
+> John Hubbard
+> NVIDIA
+> 
