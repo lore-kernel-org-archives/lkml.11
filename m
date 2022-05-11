@@ -2,176 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3884EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 13:20:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B564C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 13:20:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243583AbiEKNUk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 09:20:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44700 "EHLO
+        id S242281AbiEKNUu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 09:20:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243748AbiEKNTz (ORCPT
+        with ESMTP id S243735AbiEKNT6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 09:19:55 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7360623E2A3;
-        Wed, 11 May 2022 06:19:51 -0700 (PDT)
+        Wed, 11 May 2022 09:19:58 -0400
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B5BB239D9C;
+        Wed, 11 May 2022 06:19:53 -0700 (PDT)
+Received: by mail-oi1-x22e.google.com with SMTP id w130so2723848oig.0;
+        Wed, 11 May 2022 06:19:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1652275191; x=1683811191;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=YfT0+uqzgXTXi9KT06D+ODz4hYpjjNqdprrMGF2uXdk=;
-  b=sj2nSzrWC6xq/LR58ixItIuYKRAhL86QE/k61K1uAqlKRuvC5Lf9N3Ai
-   6BCQ112UX3KDrdkVfSuxL5E8WvqVb075EJftH2hfPEB4WlY6hOH3+Ab+X
-   t5oSwsDYZ7xpp4ra0/2L3CNkMVCP7pWqB8KsqJFZTI7FEY4fnY3Tvo8lk
-   E=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 11 May 2022 06:19:51 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 06:19:50 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 11 May 2022 06:19:30 -0700
-Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 11 May 2022 06:19:26 -0700
-From:   Satya Priya <quic_c_skakit@quicinc.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
-        <quic_jprakash@quicinc.com>,
-        Satya Priya <quic_c_skakit@quicinc.com>
-Subject: [PATCH V12 9/9] arm64: dts: qcom: sc7280: Add pm8008 support for sc7280-idp
-Date:   Wed, 11 May 2022 18:48:33 +0530
-Message-ID: <1652275113-10277-10-git-send-email-quic_c_skakit@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1652275113-10277-1-git-send-email-quic_c_skakit@quicinc.com>
-References: <1652275113-10277-1-git-send-email-quic_c_skakit@quicinc.com>
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=xTKoqmkJyd5jKlpEWOxjT/YXWFjjUDfLBGo4J9TZy7g=;
+        b=kKYtw5KYvJu3JDMAeeeiZQqbGYik4wVt1sIFGpnkGAZMDSekQOJaQt1FVeZwvRPCmG
+         G+PakaqZkpjmITjjoQLpTwQMI7+ZO9IvF/2NzRDjU9BSR/gafqIkbspnhnUj1OZKVymj
+         b1A4z2AzqbGwV0a64HBw87knlUST8jNwz3NWjKY6JFjPaIy39i+VOSWk9XvAxZ9rI0hh
+         akciP2cBFm9m6NuppgLPV+ajLMEGHhEV4gGe9TwcLwCA/Ezmy273YjF8fPWz1NBTkPnM
+         OMwJ9lK3CLD6axBvSfTqNVTOkPyLep2ZEDKTSwxp3DXU9vQ7HIzZKekkp7L7YAVS68wc
+         umIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=xTKoqmkJyd5jKlpEWOxjT/YXWFjjUDfLBGo4J9TZy7g=;
+        b=P7BBEeNvdWUgFMOSXWoSJxppobE+FmTxHxqyT/MIDuR1cHJ9TTp4ASI5HlMiKOZ7Qh
+         C2ZAfm/4gcxOc+zTDuKmBfhUaUja8PxeUWWAv3thRKh9xgdFkgHwIykmVJj/iP6b8mrS
+         oiVZKSn89b9Mf4QE1ZwcjUtS1qhp3nzLdOQU907eY4n3ciebJ/ptaLCsxrKfO4uLwWhu
+         w3BpQK2ifXS09WYF+B2taaIjK27EagXeEP606q3Z0x7qTZq1MS+dG3kSSsXyT0u4F60A
+         CME/M+b+Lkv5TescW70hBpxw4iwHAc4yIeqfx8dcBa3JqyQJkSGSUtCqN8mQrQdVyMrf
+         vqbA==
+X-Gm-Message-State: AOAM532LskvW50cvrZy1NO+of2KaLfDnGXnQAU7aYIpjpqm4d7Jl7Kix
+        0Y6W/pAGlMUYRQj6jsjaxAnGrqTcdC6PYQ==
+X-Google-Smtp-Source: ABdhPJwBIaXef/tEui+TOYaLAsav+BgIvyBQIyRvhutgluQotb5jEVONp6I43z5A0+6UPgrVnek+iA==
+X-Received: by 2002:a05:6808:1ce:b0:325:7a0c:b315 with SMTP id x14-20020a05680801ce00b003257a0cb315mr2346533oic.40.1652275192877;
+        Wed, 11 May 2022 06:19:52 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id r9-20020a056870438900b000e92d5a54ffsm554131oah.26.2022.05.11.06.19.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 May 2022 06:19:52 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <31fd924f-0b3e-a47b-1ee5-fd321c5f0f17@roeck-us.net>
+Date:   Wed, 11 May 2022 06:19:50 -0700
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] watchdog: ts4800_wdt: Fix refcount leak in
+ ts4800_wdt_probe
+Content-Language: en-US
+To:     Miaoqian Lin <linmq006@gmail.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Damien Riegel <damien.riegel@savoirfairelinux.com>,
+        Rob Herring <robh@kernel.org>, linux-watchdog@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220511114203.47420-1-linmq006@gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <20220511114203.47420-1-linmq006@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add pm8008 infra and regulators support for sc7280 idp.
+On 5/11/22 04:42, Miaoqian Lin wrote:
+> of_parse_phandle() returns a node pointer with refcount
+> incremented, we should use of_node_put() on it when done.
+> Add  missing of_node_put() in some error paths.
+> 
+> Fixes: bf9006399939 ("watchdog: ts4800: add driver for TS-4800 watchdog")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 
-Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
----
-Changes in V12:
- - None.
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
 
-Changes in V11:
- - Add ldos and parent supplies directly under pm8008@8 node.
-
-Changes in V10:
- - None.
-
-Changes in V9:
- - Added interrupts properties.
-
-Changes in V8:
- - Add an extra phandle "pm8008_bus" and then include pm8008 dtsi files inside it.
- - Remove output-high from pm8008_active node.
-
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 66 ++++++++++++++++++++++++++++++++
- 1 file changed, 66 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-index 5eb6689..166812e 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-@@ -271,6 +271,63 @@
- 	};
- };
- 
-+pm8008_bus: &i2c1 {
-+	status = "okay";
-+};
-+
-+#include "pm8008.dtsi"
-+
-+&pm8008 {
-+	interrupt-parent = <&tlmm>;
-+	interrupts = <24 IRQ_TYPE_EDGE_RISING>;
-+
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pm8008_active>;
-+
-+	reset-gpios = <&pm8350c_gpios 4 GPIO_ACTIVE_LOW>;
-+
-+	vdd_l1_l2-supply = <&vreg_s8b_1p2>;
-+	vdd_l3_l4-supply = <&vreg_s1b_1p8>;
-+	vdd_l5-supply = <&vreg_bob>;
-+	vdd_l6-supply = <&vreg_bob>;
-+	vdd_l7-supply = <&vreg_bob>;
-+};
-+
-+&pm8008_l1 {
-+	regulator-min-microvolt = <950000>;
-+	regulator-max-microvolt = <1300000>;
-+};
-+
-+&pm8008_l2 {
-+	regulator-min-microvolt = <950000>;
-+	regulator-max-microvolt = <1250000>;
-+};
-+
-+&pm8008_l3 {
-+	regulator-min-microvolt = <1650000>;
-+	regulator-max-microvolt = <3000000>;
-+};
-+
-+&pm8008_l4 {
-+	regulator-min-microvolt = <1504000>;
-+	regulator-max-microvolt = <1600000>;
-+};
-+
-+&pm8008_l5 {
-+	regulator-min-microvolt = <2600000>;
-+	regulator-max-microvolt = <3000000>;
-+};
-+
-+&pm8008_l6 {
-+	regulator-min-microvolt = <2600000>;
-+	regulator-max-microvolt = <3000000>;
-+};
-+
-+&pm8008_l7 {
-+	regulator-min-microvolt = <3000000>;
-+	regulator-max-microvolt = <3544000>;
-+};
-+
- &qfprom {
- 	vcc-supply = <&vreg_l1c_1p8>;
- };
-@@ -383,6 +440,15 @@
- 	drive-strength = <2>;
- };
- 
-+&pm8350c_gpios {
-+	pm8008_active: pm8008-active {
-+		pins = "gpio4";
-+		function = "normal";
-+		bias-disable;
-+		power-source = <0>;
-+	};
-+};
-+
- &qspi_cs0 {
- 	bias-disable;
- };
--- 
-2.7.4
+> ---
+>   drivers/watchdog/ts4800_wdt.c | 5 ++++-
+>   1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/watchdog/ts4800_wdt.c b/drivers/watchdog/ts4800_wdt.c
+> index c137ad2bd5c3..0ea554c7cda5 100644
+> --- a/drivers/watchdog/ts4800_wdt.c
+> +++ b/drivers/watchdog/ts4800_wdt.c
+> @@ -125,13 +125,16 @@ static int ts4800_wdt_probe(struct platform_device *pdev)
+>   	ret = of_property_read_u32_index(np, "syscon", 1, &reg);
+>   	if (ret < 0) {
+>   		dev_err(dev, "no offset in syscon\n");
+> +		of_node_put(syscon_np);
+>   		return ret;
+>   	}
+>   
+>   	/* allocate memory for watchdog struct */
+>   	wdt = devm_kzalloc(dev, sizeof(*wdt), GFP_KERNEL);
+> -	if (!wdt)
+> +	if (!wdt) {
+> +		of_node_put(syscon_np);
+>   		return -ENOMEM;
+> +	}
+>   
+>   	/* set regmap and offset to know where to write */
+>   	wdt->feed_offset = reg;
 
