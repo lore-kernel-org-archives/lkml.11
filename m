@@ -2,70 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5448AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 11:42:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF026C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 11:42:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241679AbiEKLlz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 07:41:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34328 "EHLO
+        id S234866AbiEKLmF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 07:42:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241269AbiEKLlg (ORCPT
+        with ESMTP id S241691AbiEKLl5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 07:41:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6A896221F;
-        Wed, 11 May 2022 04:41:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 821D3B82215;
-        Wed, 11 May 2022 11:41:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 649A8C340F2;
-        Wed, 11 May 2022 11:41:31 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="LoYM1Glt"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1652269289;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0eZFVr0R7tr8pw1d+4up9u7mZ3WWk1zMsEZIi4198wM=;
-        b=LoYM1GltXCzbdsQ/25CVajZQVoSqUAN8UhoOsZiWg0Kq6Bi1/kBG7KibB4PZCjJRpmx3fW
-        UgdAsOkclk+7raS2ozM4dbiF98xnRpB3RJ9oeo30PrnSCa3xmI3mZ24OWL+A1Oda83vcBi
-        wT4anzX9ubyzD6Vdfvg0q2W6EF9o/is=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 28e7ee18 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 11 May 2022 11:41:29 +0000 (UTC)
-Date:   Wed, 11 May 2022 13:41:27 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
-Cc:     Theodore Ts'o <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ard Biesheuvel <ardb@kernel.org>
-Subject: Re: [PATCH RFC v1] random: use static branch for crng_ready()
-Message-ID: <Ynug580srdedsiY9@zx2c4.com>
-References: <20220503134052.646325-1-Jason@zx2c4.com>
+        Wed, 11 May 2022 07:41:57 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D362267D34;
+        Wed, 11 May 2022 04:41:53 -0700 (PDT)
+Received: from fraeml711-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KytDK07y5z67Wgc;
+        Wed, 11 May 2022 19:37:05 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml711-chm.china.huawei.com (10.206.15.60) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 11 May 2022 13:41:51 +0200
+Received: from [10.47.91.186] (10.47.91.186) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2375.24; Wed, 11 May
+ 2022 12:41:49 +0100
+Message-ID: <cee3177d-458f-e61c-d38f-08965eb79eb6@huawei.com>
+Date:   Wed, 11 May 2022 12:42:02 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220503134052.646325-1-Jason@zx2c4.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v7 1/7] iommu/arm-smmu-v3: Make default domain type of
+ HiSilicon PTT device to identity
+To:     Yicong Yang <yangyicong@hisilicon.com>,
+        <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
+        <alexander.shishkin@linux.intel.com>, <lorenzo.pieralisi@arm.com>,
+        <will@kernel.org>, <mark.rutland@arm.com>,
+        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
+        <mike.leach@linaro.org>, <leo.yan@linaro.org>,
+        <jonathan.cameron@huawei.com>, <daniel.thompson@linaro.org>,
+        <joro@8bytes.org>, <shameerali.kolothum.thodi@huawei.com>,
+        <robin.murphy@arm.com>, <peterz@infradead.org>, <mingo@redhat.com>,
+        <acme@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
+        <linux-perf-users@vger.kernel.org>,
+        <iommu@lists.linux-foundation.org>
+CC:     <prime.zeng@huawei.com>, <liuqi115@huawei.com>,
+        <zhangshaokun@hisilicon.com>, <linuxarm@huawei.com>
+References: <20220407125841.3678-1-yangyicong@hisilicon.com>
+ <20220407125841.3678-2-yangyicong@hisilicon.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <20220407125841.3678-2-yangyicong@hisilicon.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.47.91.186]
+X-ClientProxiedBy: lhreml705-chm.china.huawei.com (10.201.108.54) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 03, 2022 at 03:40:52PM +0200, Jason A. Donenfeld wrote:
-> +static bool crng_ready_slowpath(void)
+On 07/04/2022 13:58, Yicong Yang wrote:
+> The DMA operations of HiSilicon PTT device can only work properly with
+> identical mappings. So add a quirk for the device to force the domain
+
+I'm not sure if you meant to write "identity mappings".
+
+> as passthrough.
+> 
+> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+
+FWIW,
+
+Reviewed-by: John Garry <john.garry@huawei.com>
+
+> ---
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 16 ++++++++++++++++
+>   1 file changed, 16 insertions(+)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 627a3ed5ee8f..5ec15ae2a9b1 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2839,6 +2839,21 @@ static int arm_smmu_dev_disable_feature(struct device *dev,
+>   	}
+>   }
+>   
+> +#define IS_HISI_PTT_DEVICE(pdev)	((pdev)->vendor == PCI_VENDOR_ID_HUAWEI && \
+> +					 (pdev)->device == 0xa12e)
+> +
+> +static int arm_smmu_def_domain_type(struct device *dev)
 > +{
-> +	if (crng_init <= 1)
-> +		return false;
-> +	if (in_atomic() || irqs_disabled() || cmpxchg(&crng_init, 2, 3) != 2)
-> +		return true;
+> +	if (dev_is_pci(dev)) {
+> +		struct pci_dev *pdev = to_pci_dev(dev);
+> +
+> +		if (IS_HISI_PTT_DEVICE(pdev))
+> +			return IOMMU_DOMAIN_IDENTITY;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>   static struct iommu_ops arm_smmu_ops = {
+>   	.capable		= arm_smmu_capable,
+>   	.domain_alloc		= arm_smmu_domain_alloc,
+> @@ -2856,6 +2871,7 @@ static struct iommu_ops arm_smmu_ops = {
+>   	.sva_unbind		= arm_smmu_sva_unbind,
+>   	.sva_get_pasid		= arm_smmu_sva_get_pasid,
+>   	.page_response		= arm_smmu_page_response,
+> +	.def_domain_type	= arm_smmu_def_domain_type,
+>   	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
+>   	.owner			= THIS_MODULE,
+>   	.default_domain_ops = &(const struct iommu_domain_ops) {
 
-Nobody chimed in here, but for posterity I thought I should point out
-that this approach actually won't work, since in_atomic() doesn't work
-with CONFIG_PREEMPT_COUNT=n kernels.
-
-So back to the drawing board in trying to figure out the best way to do
-this...
- 
-Jason
