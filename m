@@ -2,147 +2,269 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EBE5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 06:46:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E69ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 06:48:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233126AbiEKGqh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 02:46:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47272 "EHLO
+        id S242268AbiEKGsB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 02:48:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242315AbiEKGq1 (ORCPT
+        with ESMTP id S230010AbiEKGrz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 02:46:27 -0400
-Received: from smtp2.math.uni-bielefeld.de (smtp2.math.uni-bielefeld.de [129.70.45.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED0F533A37;
-        Tue, 10 May 2022 23:46:22 -0700 (PDT)
-Received: from math.uni-bielefeld.de (kvm01.math.uni-bielefeld.de [129.70.45.15])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by smtp2.math.uni-bielefeld.de (Postfix) with ESMTPSA id 8825060283;
-        Wed, 11 May 2022 08:46:18 +0200 (CEST)
-Date:   Wed, 11 May 2022 08:46:17 +0200
-From:   Jean Rene Dawin <jdawin@math.uni-bielefeld.de>
-To:     Ulf Hansson <ulf.hansson@linaro.org>
-Cc:     "H . Nikolaus Schaller" <hns@goldelico.com>,
-        Huijin Park <huijin.park@samsung.com>,
-        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org
-Subject: Re: [PATCH] mmc: core: Restore (almost) the busy polling for
- MMC_SEND_OP_COND
-Message-ID: <20220511064617.GA28982@math.uni-bielefeld.de>
-References: <20220304105656.149281-1-ulf.hansson@linaro.org>
- <CAPDyKFr1PzSaiKqB4ZoqTS_8bGsEH=aB3ARhxyGu+cYeRqeBew@mail.gmail.com>
- <20220504054652.GA7851@math.uni-bielefeld.de>
- <CAPDyKFrBVyYx+BybGR2P8paS6qA=V2EHAXH+vPUc9JzxoXn6+g@mail.gmail.com>
+        Wed, 11 May 2022 02:47:55 -0400
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25D4133E20;
+        Tue, 10 May 2022 23:47:54 -0700 (PDT)
+Received: by mail-wm1-f51.google.com with SMTP id m62so585202wme.5;
+        Tue, 10 May 2022 23:47:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=d0+VSEkVTN5UKp/1tlZfodLf5D5A+zx04J2EOUOCF00=;
+        b=bpIyUzwbs/OtUHpzNEIE2R7Q4lGuQhU5BWu7fPzD6N45WXlzywpcfzFUtlRKK+WLyX
+         M+gETnkRftfEV7SDDmpvxYYh5K2m12i5hLxhPwWEa2BL5+2eOsk4S1fEkqXm7wucvnda
+         xT+Fi2wXunMoBdMn1oCoQl6Nx9ITSjfl11ZESjHqhAEIu3jA9n+DLkUpNRRG51Xfiyd6
+         5uHn7iKO+ulUhUu9JGwMbqZjp8DGbMuiI1cywCL/SEY5P8lAjasQh+xQ8/I0/84oHDiq
+         iw4kkhodK6NmJjfaa90lpd3TkKYA98d3WRyVAIfg2phx+fkFP5qpLHjG15Ag0d8IsnNQ
+         zqrg==
+X-Gm-Message-State: AOAM530GyhAAuAh7qo1Sof6+iEFZwkxzOEJlfGELnYZD3pmjhwe/1MuU
+        kvdgqgeha7pU5D1uVkqOaJA=
+X-Google-Smtp-Source: ABdhPJzpnoc2OQxaCLNzOlLY2Q6PMGILiG41ZK3gGqRANQoSQNuIjjpR7zhzwOg/QpERIZ7XiCnJ5Q==
+X-Received: by 2002:a05:600c:6021:b0:394:56be:18e with SMTP id az33-20020a05600c602100b0039456be018emr3207844wmb.86.1652251672631;
+        Tue, 10 May 2022 23:47:52 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id m36-20020a05600c3b2400b003942a244edbsm1446971wms.32.2022.05.10.23.47.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 May 2022 23:47:52 -0700 (PDT)
+Message-ID: <48cfa0b3-0424-81bd-ac6a-d631184b71b7@kernel.org>
+Date:   Wed, 11 May 2022 08:47:50 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAPDyKFrBVyYx+BybGR2P8paS6qA=V2EHAXH+vPUc9JzxoXn6+g@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v4 1/1] soc: fujitsu: Add A64FX diagnostic interrupt
+ driver
+Content-Language: en-US
+To:     Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>,
+        linux-arm-kernel@lists.infradead.org, soc@kernel.org,
+        linux-serial@vger.kernel.org, sumit.garg@linaro.org
+Cc:     arnd@arndb.de, olof@lixom.net, catalin.marinas@arm.com,
+        will@kernel.org, gregkh@linuxfoundation.org,
+        jason.wessel@windriver.com, daniel.thompson@linaro.org,
+        dianders@chromium.org, linux-kernel@vger.kernel.org,
+        kgdb-bugreport@lists.sourceforge.net, peterz@infradead.org
+References: <20220511062113.2645747-1-hasegawa-hitomi@fujitsu.com>
+ <20220511062113.2645747-2-hasegawa-hitomi@fujitsu.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220511062113.2645747-2-hasegawa-hitomi@fujitsu.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ulf Hansson wrote on Wed  4/05/22 11:08:
-> On Wed, 4 May 2022 at 07:46, Jean Rene Dawin
-> <jdawin@math.uni-bielefeld.de> wrote:
-> >
-> > Ulf Hansson wrote on Mon  7/03/22 13:17:
-> > > On Fri, 4 Mar 2022 at 11:57, Ulf Hansson <ulf.hansson@linaro.org> wrote:
-> > > >
-> > > > Commit 76bfc7ccc2fa ("mmc: core: adjust polling interval for CMD1"),
-> > > > significantly decreased the polling period from ~10-12ms into just a couple
-> > > > of us. The purpose was to decrease the total time spent in the busy polling
-> > > > loop, but unfortunate it has lead to problems, that causes eMMC cards to
-> > > > never gets out busy and thus fails to be initialized.
-> > > >
-> > > > To fix the problem, but also to try to keep some of the new improved
-> > > > behaviour, let's start by using a polling period of 1-2ms, which then
-> > > > increases for each loop, according to common polling loop in
-> > > > __mmc_poll_for_busy().
-> > > >
-> > > > Reported-by: Jean Rene Dawin <jdawin@math.uni-bielefeld.de>
-> > > > Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
-> > > > Cc: Huijin Park <huijin.park@samsung.com>
-> > > > Fixes: 76bfc7ccc2fa ("mmc: core: adjust polling interval for CMD1")
-> > > > Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-> > > > ---
-> > > >
-> > > > Jean Rene and H. Nikolaus, if this doesn't work, please try extending the
-> > > > the MMC_OP_COND_PERIOD_US a bit, to so see if we can find a value that always
-> > > > works.
-> > > >
-> > > > Kind regards
-> > > > Uffe
-> >
-> > >
-> > > Applied for fixes and by adding two tested-by tags from you, thanks!
-> > >
-> > > Kind regards
-> > > Uffe
-> >
-> > Hi,
-> >
-> > with the current value of MMC_OP_COND_PERIOD_US = 1ms I still see
-> >
-> > mmc1: Card stuck being busy! __mmc_poll_for_busy
-> > mmc1: error -110 doing runtime resume
-> >
-> > regularly. The same with 2ms. Setting it to 4ms makes the messages go
-> > away. Would it be ok to increase MMC_OP_COND_PERIOD_US to 4ms?
+On 11. 05. 22, 8:21, Hitomi Hasegawa wrote:
+> Enable diagnostic interrupts for the Fujitsu A64FX.
 > 
-> It doesn't look like we have a very good alternative - unless the
-> problem is tied to a particular type of eMMC card, is it? (If so, we
-> can add a card-quirk).
+> Register the NMI/IRQ corresponding to the A64FX's device definition
+> dedicated to diagnostic interrupts, so that when this interrupt is
+> sent using the BMC, it causes a panic. This can be used to obtain
+> a kernel dump.
 > 
-> The only other option I see, would then be to add a generic DT
-> property for eMMCs, that allows us to specify the OP_COND polling
-> period for it. See
-> Documentation/devicetree/bindings/mmc/mmc-card.yaml.
-> 
-> Kind regards
-> Uffe
+> Signed-off-by: Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>
 
 Hi,
 
-I tested 2 beaglebones now - one with Micron eMMC and the other with Kingston.
-With the Kingston chip I don't get the errors. So it seems to be card specific.
+I'm not sure why you cc linux-serial, but anyway, comments below :).
 
-Grepping for mmc in dmesg gives the following.
+> --- /dev/null
+> +++ b/drivers/soc/fujitsu/a64fx-diag.c
+> @@ -0,0 +1,155 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * A64FX diag driver.
+> + * Copyright (c) 2022 Fujitsu Ltd.
+> + */
+> +
+> +#include <linux/acpi.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/irq.h>
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +
+> +#define A64FX_DIAG_IRQ 1
+> +#define BMC_DIAG_INTERRUPT_STATUS_OFFSET (0x0044)
+> +#define BMC_DIAG_INTERRUPT_ENABLE_OFFSET (0x0040)
+> +#define BMC_DIAG_INTERRUPT_MASK BIT(31)
+> +
+> +struct a64fx_diag_priv {
+> +	int irq;
+> +	void __iomem *mmsc_reg_base;
+> +	bool has_nmi;
 
-Beaglebone with Micron eMMC:
+There are unnecessary holes in the struct. If you reorder it, you drop 
+some alignment. Like: pointer, int, bool.
 
-  sdhci-omap 481d8000.mmc: supply pbias not found, using dummy regulator
-  sdhci-omap 481d8000.mmc: supply vqmmc not found, using dummy regulator
-  mmc1: SDHCI controller on 481d8000.mmc [481d8000.mmc] using External DMA
-  mmc1: new high speed MMC card at address 0001
-  mmcblk1: mmc1:0001 MMC04G 3.66 GiB
-   mmcblk1: p1
-  mmcblk1boot0: mmc1:0001 MMC04G 1.00 MiB
-  mmcblk1boot1: mmc1:0001 MMC04G 1.00 MiB
-  mmcblk1rpmb: mmc1:0001 MMC04G 128 KiB, chardev (247:0)
-  sdhci-omap 48060000.mmc: Got CD GPIO
-  sdhci-omap 48060000.mmc: supply pbias not found, using dummy regulator
-  sdhci-omap 48060000.mmc: supply vqmmc not found, using dummy regulator
-  mmc0: SDHCI controller on 48060000.mmc [48060000.mmc] using External DMA
+> +};
+> +
+> +static irqreturn_t a64fx_diag_handler_nmi(int irq, void *dev_id)
+> +{
+> +	nmi_panic(NULL, "a64fx_diag: interrupt received\n");
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static irqreturn_t a64fx_diag_handler_irq(int irq, void *dev_id)
+> +{
+> +	panic("a64fx_diag: interrupt received\n");
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static void a64fx_diag_interrupt_clear(struct a64fx_diag_priv *priv)
+> +{
+> +	u32 mmsc;
+> +	void __iomem *diag_status_reg_addr;
+
+I'm not sure what soc/ maintainers prefer, but inverted xmas tree would 
+look/read better.
+
+> +
+> +	diag_status_reg_addr = priv->mmsc_reg_base + BMC_DIAG_INTERRUPT_STATUS_OFFSET;
+> +	mmsc = readl(diag_status_reg_addr);
+> +	if (mmsc & BMC_DIAG_INTERRUPT_MASK)
+> +		writel(BMC_DIAG_INTERRUPT_MASK, diag_status_reg_addr);
+> +}
+> +
+> +static void a64fx_diag_interrupt_enable(struct a64fx_diag_priv *priv)
+> +{
+> +	u32 mmsc;
+> +	void __iomem *diag_enable_reg_addr;
+> +
+> +	diag_enable_reg_addr = priv->mmsc_reg_base + BMC_DIAG_INTERRUPT_ENABLE_OFFSET;
+> +	mmsc = readl(diag_enable_reg_addr);
+> +	if (!(mmsc & BMC_DIAG_INTERRUPT_MASK)) {
+> +		mmsc |= BMC_DIAG_INTERRUPT_MASK;
+> +		writel(mmsc, diag_enable_reg_addr);
+> +	}
+> +}
+> +
+> +static void a64fx_diag_interrupt_disable(struct a64fx_diag_priv *priv)
+> +{
+> +	u32 mmsc;
+> +	void __iomem *diag_enable_reg_addr;
+> +
+> +	diag_enable_reg_addr = priv->mmsc_reg_base + BMC_DIAG_INTERRUPT_ENABLE_OFFSET;
+> +	mmsc = readl(diag_enable_reg_addr);
+> +	if (mmsc & BMC_DIAG_INTERRUPT_MASK) {
+> +		mmsc &= ~BMC_DIAG_INTERRUPT_MASK;
+> +		writel(mmsc, diag_enable_reg_addr);
+> +	}
+> +}
+> +
+> +static int a64fx_diag_probe(struct platform_device *pdev)
+> +{
+> +	int ret;
+> +	unsigned long irq_flags;
+> +	struct device *dev = &pdev->dev;
+> +	struct a64fx_diag_priv *priv;
+> +
+> +	priv = devm_kzalloc(dev, sizeof(struct a64fx_diag_priv), GFP_KERNEL);
+
+Don't we prefer sizeof(*priv)?
+
+> +	if (priv == NULL)
+> +		return -ENOMEM;
+> +
+> +	priv->mmsc_reg_base = devm_platform_ioremap_resource(pdev, 0);
+> +	if (IS_ERR(priv->mmsc_reg_base))
+> +		return PTR_ERR(priv->mmsc_reg_base);
+> +
+> +	priv->irq = platform_get_irq(pdev, A64FX_DIAG_IRQ);
+> +	if (priv->irq < 0)
+> +		return priv->irq;
+> +
+> +	platform_set_drvdata(pdev, priv);
+> +
+> +	a64fx_diag_interrupt_clear(priv);
+> +	a64fx_diag_interrupt_enable(priv);
+> +
+> +	irq_flags = IRQF_PERCPU | IRQF_NOBALANCING | IRQF_NO_AUTOEN |
+> +		   IRQF_NO_THREAD;
+> +	ret = request_nmi(priv->irq, &a64fx_diag_handler_nmi, irq_flags,
+> +			"a64fx_diag_nmi", NULL);
+> +	if (ret) {
+> +		ret = request_irq(priv->irq, &a64fx_diag_handler_irq,
+> +				irq_flags, "a64fx_diag_irq", NULL);
+> +		if (ret) {
+> +			dev_err(dev, "cannot register IRQ %d\n", ret);
+
+No a64fx_diag_interrupt_disable()?
+
+> +			return ret;
+> +		}
+> +		enable_irq(priv->irq);
+
+Hmm...
+
+> +		priv->has_nmi = false;
+
+No need to set zeroed priv member to zero.
+
+> +	} else {
+> +		enable_nmi(priv->irq);
+
+Provided the above, I don't immediatelly see, what's the purpose of 
+IRQF_NO_AUTOEN then?
+
+> +		priv->has_nmi = true;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int __exit a64fx_diag_remove(struct platform_device *pdev)
+
+Is __exit appropriate here at all -- I doubt that.
+
+> +{
+> +	struct a64fx_diag_priv *priv = platform_get_drvdata(pdev);
+> +
+> +	a64fx_diag_interrupt_disable(priv);
+> +	a64fx_diag_interrupt_clear(priv);
+> +
+> +	if (priv->has_nmi)
+> +		free_nmi(priv->irq, NULL);
+> +	else
+> +		free_irq(priv->irq, NULL);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct acpi_device_id a64fx_diag_acpi_match[] = {
+> +	{ "FUJI2007", 0 },
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(acpi, a64fx_diag_acpi_match);
+> +
+> +
+> +static struct platform_driver a64fx_diag_driver = {
+> +	.driver = {
+> +		.name = "a64fx_diag_driver",
+> +		.acpi_match_table = ACPI_PTR(a64fx_diag_acpi_match),
+> +	},
+> +	.probe = a64fx_diag_probe,
+> +	.remove = a64fx_diag_remove,
+> +};
+> +
+> +module_platform_driver(a64fx_diag_driver);
+> +
+> +MODULE_LICENSE("GPL v2");
+> +MODULE_AUTHOR("Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>");
+> +MODULE_DESCRIPTION("A64FX diag driver");
 
 
-Beaglebone with Kingston eMMC:
-
-  sdhci-omap 481d8000.mmc: supply pbias not found, using dummy regulator
-  sdhci-omap 481d8000.mmc: supply vqmmc not found, using dummy regulator
-  mmc1: SDHCI controller on 481d8000.mmc [481d8000.mmc] using External DMA
-  mmc1: new high speed MMC card at address 0001
-  mmcblk1: mmc1:0001 M62704 3.56 GiB
-   mmcblk1: p1
-  mmcblk1boot0: mmc1:0001 M62704 2.00 MiB
-  mmcblk1boot1: mmc1:0001 M62704 2.00 MiB
-  mmcblk1rpmb: mmc1:0001 M62704 512 KiB, chardev (247:0)
-  sdhci-omap 48060000.mmc: Got CD GPIO
-  sdhci-omap 48060000.mmc: supply pbias not found, using dummy regulator
-  sdhci-omap 48060000.mmc: supply vqmmc not found, using dummy regulator
-  mmc0: SDHCI controller on 48060000.mmc [48060000.mmc] using External DMA
-
-Is this enough information to identify the mmc card?
-
-Regards,
-Jean Rene
+-- 
+js
+suse labs
