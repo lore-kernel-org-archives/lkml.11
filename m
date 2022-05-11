@@ -2,303 +2,2354 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 567CCC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 14:27:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9B86C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 14:28:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244963AbiEKO0g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 10:26:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54162 "EHLO
+        id S240569AbiEKO17 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 10:27:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244660AbiEKOZp (ORCPT
+        with ESMTP id S244965AbiEKO0g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 10:25:45 -0400
-Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2101.outbound.protection.outlook.com [40.107.114.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A075E9B;
-        Wed, 11 May 2022 07:25:41 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CkHbLy6hSYmDvcfcu/LH+91HmqHSyUiDrwEexN10Wmjl1BFsQFkuzVfRMonnpOfe8c/+azYW7GpNd1OSfLnc9ooUg9iN80VXjhRUQzGfAol88rQmm3htAMdEh4rCHyoUI5uu32nCXiv9/6UI5F0u5tzUhzvR6CmD5eRNCYoEcthTeVsgokkQY8+D9+CyTzS6wjFTYGxC5tex+LR+EyOoANrUmWGm76NzFh/BNcEauVA51RhNCB2AGNIaJgP+nVphmJESxVy7MXn0Ye1M0JcVMvzgc7hmAKYbfdnBXmtkaejscUiT2heEPY39lCTR5UgJORVVZRsZjFbBp6K1Tw4/gA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0YWEn41LK6IgDcRT84tlqkHUgJFOtdqr46aFsWge7Ow=;
- b=f6+/x8TCDKJbEIMSsQMaLu8kBU40ZcT66l29Ts6TvDlwHdwWZiMUNIRkrhjjjRQL/qqBg25tBUAe9X6OzIlpCYyPCh5DpBrsh+QDENRfcuuZwACCmDg9XWjUsgcU7+aT3eR9RpBH44y9uczJeE5iCwVyH3wV9kpsyqmnmvc6gc/F5hmhMam3jlgpMEmKYCH43o6CWne0i6WgsRyzIQr3sWXawwsegRN/jMmpYbV5SX+oktjIpD0eWTWWsGF+WhYKL03j67gXUjDpkgd/B5NAAc0u+9RECWtcC0C4zuqfqs7ndoJp8p6EBw/y9TYAuRWlCUk93tXSK7Ogpi2h8CJ2yA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0YWEn41LK6IgDcRT84tlqkHUgJFOtdqr46aFsWge7Ow=;
- b=nJZkfUWeP8bfi3zRzw96WeXIqNa4+KnnX/tY5bV3zKQumuCGJwehC9/dM8KXzfp8OWHjlvIJyLRBzELp50C5yiWy5XdlDqjRa7wK5lPmxx4faeZLK0dQV6NWE+CChQuU4mA1r6Cs8BZp5zs5PMqJY7TbFp0GeR81Ix9P8jkynj8=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=renesas.com;
-Received: from OS3PR01MB6593.jpnprd01.prod.outlook.com (2603:1096:604:101::7)
- by OS3PR01MB9545.jpnprd01.prod.outlook.com (2603:1096:604:1ca::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.21; Wed, 11 May
- 2022 14:25:39 +0000
-Received: from OS3PR01MB6593.jpnprd01.prod.outlook.com
- ([fe80::a07c:4b38:65f3:6663]) by OS3PR01MB6593.jpnprd01.prod.outlook.com
- ([fe80::a07c:4b38:65f3:6663%9]) with mapi id 15.20.5250.013; Wed, 11 May 2022
- 14:25:38 +0000
-From:   Min Li <min.li.xe@renesas.com>
-To:     richardcochran@gmail.com, lee.jones@linaro.org
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Min Li <min.li.xe@renesas.com>
-Subject: [PATCH net v5 3/3] ptp: clockmatrix: miscellaneous cosmetic change
-Date:   Wed, 11 May 2022 10:25:14 -0400
-Message-Id: <1652279114-25939-3-git-send-email-min.li.xe@renesas.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1652279114-25939-1-git-send-email-min.li.xe@renesas.com>
-References: <1652279114-25939-1-git-send-email-min.li.xe@renesas.com>
-Content-Type: text/plain
-X-ClientProxiedBy: BN9PR03CA0203.namprd03.prod.outlook.com
- (2603:10b6:408:f9::28) To OS3PR01MB6593.jpnprd01.prod.outlook.com
- (2603:1096:604:101::7)
+        Wed, 11 May 2022 10:26:36 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F16014C780;
+        Wed, 11 May 2022 07:26:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652279193; x=1683815193;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=DAKwIwvr3fu46e6SUqaVnv23ckfMjeXFyGAoSQMGcbk=;
+  b=mFESleq8FPazv7icoEwH4Vfzv0JHGRnKoniKVLUG8Ze1yctIH7dLKYtH
+   sS6XBg9Liodqk+Hk60DIzg3dkFbnJwkQyfi0gbw4cm3j+SXTEyvLczFh3
+   S587Xf7sBJ7W+4EOmukxGz3+de47mbXze5kAs94zmvrZ/aT2V6KUf1ip8
+   GC9+BHZoKgbrOMMJxSxu9mFONhog9bhFoVHMC7iyGoJhki0CqSEdbAb0+
+   iNzmxkk1e8uu5xRfQRPI672hkYiaWg8kd17maumEyU5rAEhTY7QRzvktg
+   RY0c5Qtepl8gZYrTyafcDkBal9tcqgrRjGmbnrDgScp4saEr4Vc0MzEnj
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="269648181"
+X-IronPort-AV: E=Sophos;i="5.91,217,1647327600"; 
+   d="scan'208";a="269648181"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 07:26:32 -0700
+X-IronPort-AV: E=Sophos;i="5.91,217,1647327600"; 
+   d="scan'208";a="542328237"
+Received: from kniesyn-mobl1.ger.corp.intel.com (HELO localhost) ([10.249.131.79])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 07:26:26 -0700
+From:   Jani Nikula <jani.nikula@linux.intel.com>
+To:     Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>
+Cc:     Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        linux-doc@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org,
+        Petri Latvala <petri.latvala@intel.com>,
+        Arkadiusz Hiler <arek@hiler.eu>
+Subject: Re: [RFC] drm/msm: Add initial ci/ subdirectory
+In-Reply-To: <20220510070140.45407-1-tomeu.vizoso@collabora.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220510070140.45407-1-tomeu.vizoso@collabora.com>
+Date:   Wed, 11 May 2022 17:26:23 +0300
+Message-ID: <87mtfoi1rk.fsf@intel.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 462001d4-4fb7-4805-3311-08da335a1f04
-X-MS-TrafficTypeDiagnostic: OS3PR01MB9545:EE_
-X-Microsoft-Antispam-PRVS: <OS3PR01MB95453FEC37663E7F2169D359BAC89@OS3PR01MB9545.jpnprd01.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9b/m8H4PQp8ekJwH94fetiYgXDjF1WEK/Iu3WYl63J3ofjTHbYJDkZew1YPGFUI1XnK+bHj8GiXHHZNyOUi1vkaEdmSi3GtXq2WpTZcNeleQsWyUJvLij8iCuGd4ST/nYQtKvWGP/W0B9rbbSeFjTbY5jP+e6gzJ0uerlwjg5CDNvJcy0/VTmfA3OEJH1T87jCqyOQC7FfyOBe1IHdgzEEFTEzEbqtscFYNXI8zi2YnCeO3EqRda97gT064gMKaWRiEuZgqzgAqZ4g5aQnPf1J8/lTOKFVx+8LumbAajZSvflW2m+hlO+Wggsdm0B57WHQ8Vra15fbVctr9AZPjnOp4dzRiU8U/OSx8RZmmJ0C61zRYXT7CKrMBVpuVBdXKMvVr2+mH0xm0UIehDq3KiSaWB6mTSeR9qAuV4A9H60SGwkgqj4b3CLdHgK5GZ4CUQ79A0XdTCkPON1MjFF7iTIc9v241fC4dJHZWbOUVL4Uua3YZ5KHH3fgR8EPrF63iSPprlRJ5wlD/zJDyp9WYlTjVs/Yf5LaS4feLrzVqY5HrqY2ab07JJUUm/yZt+tPRVH3XNZAtPys0T3E0Q1L3G9/nAlQgzk/6UiKx/x89KDpy3cvTq2XBw5eJPEwyTD+D0XgKfcpi52PkPwbINKTTxtDXtE9h/j2/Tqd46u9mNRQGLs/awYqhx7BDePpCPM3ipzyJk59qC0QhnSxAGORC8Nw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS3PR01MB6593.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2906002)(2616005)(6506007)(6512007)(107886003)(26005)(4326008)(8676002)(38100700002)(66556008)(66476007)(66946007)(186003)(36756003)(316002)(6486002)(86362001)(6666004)(38350700002)(83380400001)(52116002)(508600001)(8936002)(5660300002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?S+dUWDIRaHrlzyGHz6YMHQPduK2+oUZ8Uhmfkq1aPf2usLOMKtbTkt2OO105?=
- =?us-ascii?Q?WArA667aFd62wJ3GYU3HA156ldiyqK+jiLAzCT+3v29R9oCnIrS/Qoi2FxiA?=
- =?us-ascii?Q?LRlBHnsV3waFqr8QAL7Xewr+38V/g9yiE89JP3YfmET3vUxMX8w1NweKYBKf?=
- =?us-ascii?Q?moLZfJcmiQxptr1niHZj5u6w5lN6sQS03PNP3FYvdiG8zxai1SXithpHd9cu?=
- =?us-ascii?Q?Sgjkt5iH0IpFECLityr6Ee6Lg1kDl71u0CKvjMckbbSmMGnn1b4ykjuIvkJb?=
- =?us-ascii?Q?K/lkDUmYJVNMOQJovuPRrQQaLq9NoZSXv5UfwN9Dem6FpicTbxqbP/ozEoHn?=
- =?us-ascii?Q?To6DbXD3UEr8B/eUXMzAjSWMFBEi31w9It5sfAo/jEbWR+tGiRS71Pjz+yRU?=
- =?us-ascii?Q?nUdNJi+OynOvJQxaecryk5wYrJ8eor7ylVK5YaVoAPT1+ScCbNAy/2APamFi?=
- =?us-ascii?Q?pqsFgZPQ0sqZd1nRlPEHUyiH+JgFl94rhWcsNQIwfwP5dgrWns1xHgYCmo0w?=
- =?us-ascii?Q?OMOr4uHW7et7N/Cfx926wsdSQUVW1hto6gG8ZVhcD7WMA4oimvFlbeHyNUsm?=
- =?us-ascii?Q?7At/x3VVWS7wHAuwu0tr1SVFrdD3rLspCFVD4X9DANPJFEFAvQ1Jr4znFE7X?=
- =?us-ascii?Q?COPtAZlP0V7nzPtGrKwbe4vDppZK1Oani8Df9BvF0eYK/wuMAvzKG76ZVViI?=
- =?us-ascii?Q?T8BFp0a3m9aNSmSQniEFkMfX1iFk/Q6gnCyVuRF+STf35rTD6v+koTSd87N8?=
- =?us-ascii?Q?8caJUo9lQYp93r+hl7ydtYmTPRxoaMTm7Y+6yPe7KqNAoWxPIakREU18cgfj?=
- =?us-ascii?Q?bilSIkkDwYzXYWYVkjBxpgMSb7ZQ67mglrVt4TY55QFUWY38EEVNTWrjKzPX?=
- =?us-ascii?Q?8avf9SAs/U3wrS3Gneqz1gCowDQtyQSUnCdqtdeGhq2jsKx9yYNf/2pY25oe?=
- =?us-ascii?Q?aXorS0NqHR49WNAbDxv24cRwEeTOijfh4hzUpjdwRlNg5W6g5MhIt1bhPb9e?=
- =?us-ascii?Q?onqZVbvEu0baacHh1VLgYPo4ThaAyFvlCODAFPDmijvtgMizXIc7B+amwOyJ?=
- =?us-ascii?Q?w/Dugr+2445yeTANWYU79a0UBhNkFYwQpdm4rp0wvS2ExHpQqS+C/xpv8mC8?=
- =?us-ascii?Q?N5gMegmSe66op+Wr/Rp4CpHA4Jz6RZlQbFCTStigRMTsjXRt9CfZkjZj6wCm?=
- =?us-ascii?Q?E2C1PvIeUQl22skBtZPj7HTSCJMJ9RcFL4LqRKSLPsl/qveVBbmAI4Wk19gI?=
- =?us-ascii?Q?SDuAwe3liaBTd9O2eMc6r7GbB1MtjHhqQRUelh6WUjEW+eDQEAESSdW5BbrV?=
- =?us-ascii?Q?p9CSfmDA3v1l80I1Dkxs9lq2zCcRMXazCXGV3zw0XosH4HOmf+Q7TYJejl56?=
- =?us-ascii?Q?ZvPhjY5YeDG0zMkuXFs65ITAcnKUET+eTiS9RH9QgqdwiaAqDfR57IkahaWK?=
- =?us-ascii?Q?4u+bz9Uh/S42hUgldffQJfOBKI/Su7mcmh5bgMXo057obJ0RSiXPIJ856lvy?=
- =?us-ascii?Q?Ob12Ciy9hw0bDaJxItja1hTtp3WEJuNsTnlX9p58RiKmZ8rs9Uy8EUdMAzyB?=
- =?us-ascii?Q?qBTu8ypmb7g35C2msvtKujaNNbvbL/f9R0gEUHIgqYKjLUekQ7jZEYGy0AfO?=
- =?us-ascii?Q?ImYnDYh3X0XOYcd4BcRgQZqews2vuM1rHCtjpNoMyrJyjo81FwjenEPIj0e7?=
- =?us-ascii?Q?F4AIDbQgU16oHoVtcJ0mIhEeny+0Rcq2rAB0hdxC/X46ppntu2/C3JM4CSFE?=
- =?us-ascii?Q?7L1dQND+ffpBxdLQfa89Uz5gs+S9UFM=3D?=
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 462001d4-4fb7-4805-3311-08da335a1f04
-X-MS-Exchange-CrossTenant-AuthSource: OS3PR01MB6593.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2022 14:25:38.8975
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ULQU00eg4wLJUpfOVfwYYhjmCxDA2u+CEEgvzo9p0P9d30mhDSGjeOHOsVYAnOLEmjSkdhZ1qQgE1fWLAmhYlQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OS3PR01MB9545
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-suggested by Jakub Kicinski
+On Tue, 10 May 2022, Tomeu Vizoso <tomeu.vizoso@collabora.com> wrote:
+> And use it to store expectations about what the drm/msm driver is
+> supposed to pass in the IGT test suite.
+>
+> Also include a configuration file that points to the out-of-tree CI
+> scripts.
+>
+> By storing the test expectations along the code we can make sure both
+> stay in sync with each other, and so we can know when a code change
+> breaks those expectations.
+>
+> This will allow all contributors to drm/msm to reuse the infrastructure
+> already in gitlab.freedesktop.org to test the driver on several
+> generations of the hardware.
 
-Signed-off-by: Min Li <min.li.xe@renesas.com>
----
- drivers/ptp/ptp_clockmatrix.c | 69 +++++++++++++------------------------------
- 1 file changed, 20 insertions(+), 49 deletions(-)
+Cc: Petri and Arek
 
-diff --git a/drivers/ptp/ptp_clockmatrix.c b/drivers/ptp/ptp_clockmatrix.c
-index ea87487..4461635 100644
---- a/drivers/ptp/ptp_clockmatrix.c
-+++ b/drivers/ptp/ptp_clockmatrix.c
-@@ -261,17 +261,13 @@ static int arm_tod_read_trig_sel_refclk(struct idtcm_channel *channel, u8 ref)
- 
- 	if (err)
- 		dev_err(idtcm->dev, "%s: err = %d", __func__, err);
--
- 	return err;
- }
- 
- static bool is_single_shot(u8 mask)
- {
- 	/* Treat single bit ToD masks as continuous trigger */
--	if ((mask == 1) || (mask == 2) || (mask == 4) || (mask == 8))
--		return false;
--	else
--		return true;
-+	return mask <= 8 && is_power_of_2(mask);
- }
- 
- static int idtcm_extts_enable(struct idtcm_channel *channel,
-@@ -418,13 +414,10 @@ static int _idtcm_gettime_triggered(struct idtcm_channel *channel,
- 
- 	err = idtcm_read(idtcm, channel->tod_read_secondary,
- 			 TOD_READ_SECONDARY_BASE, buf, sizeof(buf));
--
- 	if (err)
- 		return err;
- 
--	err = char_array_to_timespec(buf, sizeof(buf), ts);
--
--	return err;
-+	return char_array_to_timespec(buf, sizeof(buf), ts);
- }
- 
- static int _idtcm_gettime(struct idtcm_channel *channel,
-@@ -456,9 +449,7 @@ static int _idtcm_gettime(struct idtcm_channel *channel,
- 	if (err)
- 		return err;
- 
--	err = char_array_to_timespec(buf, sizeof(buf), ts);
--
--	return err;
-+	return char_array_to_timespec(buf, sizeof(buf), ts);
- }
- 
- static int idtcm_extts_check_channel(struct idtcm *idtcm, u8 todn)
-@@ -500,13 +491,10 @@ static int _idtcm_gettime_immediate(struct idtcm_channel *channel,
- 
- 	err = idtcm_write(idtcm, channel->tod_read_primary,
- 			  tod_read_cmd, &val, sizeof(val));
--
- 	if (err)
- 		return err;
- 
--	err = _idtcm_gettime(channel, ts, 10);
--
--	return err;
-+	return _idtcm_gettime(channel, ts, 10);
- }
- 
- static int _sync_pll_output(struct idtcm *idtcm,
-@@ -631,9 +619,7 @@ static int _sync_pll_output(struct idtcm *idtcm,
- 
- 	/* Place master sync out of reset */
- 	val &= ~(SYNCTRL1_MASTER_SYNC_RST);
--	err = idtcm_write(idtcm, 0, sync_ctrl1, &val, sizeof(val));
--
--	return err;
-+	return idtcm_write(idtcm, 0, sync_ctrl1, &val, sizeof(val));
- }
- 
- static int idtcm_sync_pps_output(struct idtcm_channel *channel)
-@@ -917,7 +903,6 @@ static int _idtcm_settime(struct idtcm_channel *channel,
- static int idtcm_set_phase_pull_in_offset(struct idtcm_channel *channel,
- 					  s32 offset_ns)
- {
--	int err;
- 	int i;
- 	struct idtcm *idtcm = channel->idtcm;
- 	u8 buf[4];
-@@ -927,16 +912,13 @@ static int idtcm_set_phase_pull_in_offset(struct idtcm_channel *channel,
- 		offset_ns >>= 8;
- 	}
- 
--	err = idtcm_write(idtcm, channel->dpll_phase_pull_in, PULL_IN_OFFSET,
--			  buf, sizeof(buf));
--
--	return err;
-+	return idtcm_write(idtcm, channel->dpll_phase_pull_in, PULL_IN_OFFSET,
-+			   buf, sizeof(buf));
- }
- 
- static int idtcm_set_phase_pull_in_slope_limit(struct idtcm_channel *channel,
- 					       u32 max_ffo_ppb)
- {
--	int err;
- 	u8 i;
- 	struct idtcm *idtcm = channel->idtcm;
- 	u8 buf[3];
-@@ -949,10 +931,8 @@ static int idtcm_set_phase_pull_in_slope_limit(struct idtcm_channel *channel,
- 		max_ffo_ppb >>= 8;
- 	}
- 
--	err = idtcm_write(idtcm, channel->dpll_phase_pull_in,
--			  PULL_IN_SLOPE_LIMIT, buf, sizeof(buf));
--
--	return err;
-+	return idtcm_write(idtcm, channel->dpll_phase_pull_in,
-+			   PULL_IN_SLOPE_LIMIT, buf, sizeof(buf));
- }
- 
- static int idtcm_start_phase_pull_in(struct idtcm_channel *channel)
-@@ -991,9 +971,7 @@ static int do_phase_pull_in_fw(struct idtcm_channel *channel,
- 	if (err)
- 		return err;
- 
--	err = idtcm_start_phase_pull_in(channel);
--
--	return err;
-+	return idtcm_start_phase_pull_in(channel);
- }
- 
- static int set_tod_write_overhead(struct idtcm_channel *channel)
-@@ -1417,10 +1395,9 @@ static int idtcm_set_pll_mode(struct idtcm_channel *channel,
- 
- 	dpll_mode |= (mode << PLL_MODE_SHIFT);
- 
--	err = idtcm_write(idtcm, channel->dpll_n,
--			  IDTCM_FW_REG(idtcm->fw_ver, V520, DPLL_MODE),
--			  &dpll_mode, sizeof(dpll_mode));
--	return err;
-+	return idtcm_write(idtcm, channel->dpll_n,
-+			   IDTCM_FW_REG(idtcm->fw_ver, V520, DPLL_MODE),
-+			   &dpll_mode, sizeof(dpll_mode));
- }
- 
- static int idtcm_get_manual_reference(struct idtcm_channel *channel,
-@@ -1460,11 +1437,9 @@ static int idtcm_set_manual_reference(struct idtcm_channel *channel,
- 
- 	dpll_manu_ref_cfg |= (ref << MANUAL_REFERENCE_SHIFT);
- 
--	err = idtcm_write(idtcm, channel->dpll_ctrl_n,
--			  DPLL_CTRL_DPLL_MANU_REF_CFG,
--			  &dpll_manu_ref_cfg, sizeof(dpll_manu_ref_cfg));
--
--	return err;
-+	return idtcm_write(idtcm, channel->dpll_ctrl_n,
-+			   DPLL_CTRL_DPLL_MANU_REF_CFG,
-+			   &dpll_manu_ref_cfg, sizeof(dpll_manu_ref_cfg));
- }
- 
- static int configure_dpll_mode_write_frequency(struct idtcm_channel *channel)
-@@ -1746,10 +1721,8 @@ static int _idtcm_adjphase(struct idtcm_channel *channel, s32 delta_ns)
- 		phase_50ps >>= 8;
- 	}
- 
--	err = idtcm_write(idtcm, channel->dpll_phase, DPLL_WR_PHASE,
--			  buf, sizeof(buf));
--
--	return err;
-+	return idtcm_write(idtcm, channel->dpll_phase, DPLL_WR_PHASE,
-+			   buf, sizeof(buf));
- }
- 
- static int _idtcm_adjfine(struct idtcm_channel *channel, long scaled_ppm)
-@@ -1790,10 +1763,8 @@ static int _idtcm_adjfine(struct idtcm_channel *channel, long scaled_ppm)
- 		fcw >>= 8;
- 	}
- 
--	err = idtcm_write(idtcm, channel->dpll_freq, DPLL_WR_FREQ,
--			  buf, sizeof(buf));
--
--	return err;
-+	return idtcm_write(idtcm, channel->dpll_freq, DPLL_WR_FREQ,
-+			   buf, sizeof(buf));
- }
- 
- static int idtcm_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
+The tests and subtests and their names are inevitably going to change
+over time. I don't think there are any guarantees that they're
+stable. How are you going to handle such changes with the test names and
+results committed to the kernel tree?
+
+
+BR,
+Jani.
+
+
+>
+> Signed-off-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+> ---
+>  Documentation/gpu/msm_automated_testing.rst |  70 ++++
+>  drivers/gpu/drm/msm/ci/gitlab-ci.yml        |  11 +
+>  drivers/gpu/drm/msm/ci/msm.testlist         | 429 ++++++++++++++++++++
+>  drivers/gpu/drm/msm/ci/msm_a360_results.txt | 421 +++++++++++++++++++
+>  drivers/gpu/drm/msm/ci/msm_a530_results.txt | 421 +++++++++++++++++++
+>  drivers/gpu/drm/msm/ci/msm_a618_results.txt | 422 +++++++++++++++++++
+>  drivers/gpu/drm/msm/ci/msm_a630_results.txt | 422 +++++++++++++++++++
+>  7 files changed, 2196 insertions(+)
+>  create mode 100644 Documentation/gpu/msm_automated_testing.rst
+>  create mode 100644 drivers/gpu/drm/msm/ci/gitlab-ci.yml
+>  create mode 100644 drivers/gpu/drm/msm/ci/msm.testlist
+>  create mode 100644 drivers/gpu/drm/msm/ci/msm_a360_results.txt
+>  create mode 100644 drivers/gpu/drm/msm/ci/msm_a530_results.txt
+>  create mode 100644 drivers/gpu/drm/msm/ci/msm_a618_results.txt
+>  create mode 100644 drivers/gpu/drm/msm/ci/msm_a630_results.txt
+>
+> diff --git a/Documentation/gpu/msm_automated_testing.rst b/Documentation/gpu/msm_automated_testing.rst
+> new file mode 100644
+> index 000000000000..fe59474569c2
+> --- /dev/null
+> +++ b/Documentation/gpu/msm_automated_testing.rst
+> @@ -0,0 +1,70 @@
+> +.. SPDX-License-Identifier: GPL-2.0+
+> +
+> +=========================================
+> +Automated testing of MSM DRM driver
+> +=========================================
+> +
+> +
+> +Introduction
+> +============
+> +
+> +Making sure that changes to a driver don't introduce regressions can be very time consuming when lots of different hardware configurations need to be tested. Moreover, it isn't practical for each person interested in this testing to have to acquire and maintain what can be a considerable amount of hardware.
+> +
+> +Also, it is desirable for developers to check for regressions in their code by themselves, instead of relying on the maintainer finding them and then reporting back.
+> +
+> +There are facilities in gitlab.freedesktop.org to automatically test Mesa that can be used as well for testing DRM drivers such as drm/msm. This document explains how people interested in testing the drm/msm driver can use this shared infrastructure to save quite some time and effort.
+> +
+> +
+> +Relevant files
+> +==============
+> +
+> +drivers/gpu/drm/msm/ci/gitlab-ci.yml
+> +------------------------------------
+> +
+> +Specifies the specific version of the scripts to be used. GitLab CI will use the values defined in this file to fetch the right scripts.
+> +
+> +
+> +drivers/gpu/drm/msm/ci/msm.testlist
+> +-----------------------------------
+> +
+> +Specifies the tests that the current code is expected to be able to reliably run. These tests are expected to not hang the DUT (device under testing) when running on the revision they belong to, and to give consistent results.
+> +
+> +
+> +drivers/gpu/drm/msm/ci/msm_*_results.txt
+> +----------------------------------------
+> +
+> +Specifies the expected results of running this specific kernel revision on a given hardware configuration.
+> +
+> +
+> +How to enable automated testing on your tree
+> +============================================
+> +
+> +1. Create a Linux tree in https://gitlab.freedesktop.org/ if you don't have one yet
+> +
+> +2. In your kernel repo's configuration (eg. https://gitlab.freedesktop.org/tomeu/linux/-/settings/ci_cd), change the CI/CD configuration file from .gitlab-ci.yml to drivers/gpu/drm/msm/ci/gitlab-ci.yml.
+> +
+> +3. Next time you push to this repository, you will see a CI pipeline being created (eg. https://gitlab.freedesktop.org/tomeu/linux/-/pipelines)
+> +
+> +4. The various jobs will be run and when the pipeline is finished, all jobs should be green unless a regression has been found.
+> +
+> +
+> +How to update test expectations
+> +===============================
+> +
+> +If your changes to the code fix any tests, you will have to update one or more of the files in drivers/gpu/drm/msm/ci/msm_*_results.txt, for each of the test platforms affected by the change.
+> +
+> +If you have run a pipeline and it failed because of a mismatched test result, you will have been offered a patch at the end of the run that you can apply after reviewing it.
+> +
+> +
+> +How to expand coverage
+> +======================
+> +
+> +If your code changes makes it possible to run more tests (by solving reliability issues, for example), more tests can be added to this list, and then the expected results updated with the patch file that will be printed at the end of each job.
+> +
+> +If there is a need for updating the version of IGT being used (maybe you have added more tests to it), follow the instructions at https://gitlab.freedesktop.org/gfx-ci/drm-ci/-/tree/msm#upreving-igt.
+> +
+> +
+> +How to test your changes to the scripts
+> +==========================================
+> +
+> +For testing changes to the scripts in the drm-ci repo, change the DRM_CI_PROJECT_PATH variable in drivers/gpu/drm/msm/ci/gitlab-ci.yml to match your fork of the project (eg. tomeu/drm-ci). This fork needs to be in https://gitlab.freedesktop.org/.
+> \ No newline at end of file
+> diff --git a/drivers/gpu/drm/msm/ci/gitlab-ci.yml b/drivers/gpu/drm/msm/ci/gitlab-ci.yml
+> new file mode 100644
+> index 000000000000..9b7caa7fcab2
+> --- /dev/null
+> +++ b/drivers/gpu/drm/msm/ci/gitlab-ci.yml
+> @@ -0,0 +1,11 @@
+> +variables:
+> +  # Change this to use your fork of drm-ci
+> +  DRM_CI_PROJECT_PATH: &drm-ci-project-path gfx-ci/drm-ci
+> +  DRM_CI_COMMIT_SHA: &drm-ci-commit-sha msm
+> +
+> +include:
+> +  - project: *drm-ci-project-path
+> +    ref: *drm-ci-commit-sha
+> +    file:
+> +      - '.msm-gitlab-ci.yml'
+> +      - '.gitlab-ci.yml'
+> diff --git a/drivers/gpu/drm/msm/ci/msm.testlist b/drivers/gpu/drm/msm/ci/msm.testlist
+> new file mode 100644
+> index 000000000000..7c771471dfa2
+> --- /dev/null
+> +++ b/drivers/gpu/drm/msm/ci/msm.testlist
+> @@ -0,0 +1,429 @@
+> +# Keep alphabetically sorted by default
+> +
+> +igt@core_auth@getclient-simple
+> +igt@core_auth@getclient-master-drop
+> +igt@core_auth@basic-auth
+> +igt@core_auth@many-magics
+> +igt@core_getclient
+> +igt@core_getstats
+> +igt@core_getversion
+> +igt@core_setmaster_vs_auth
+> +igt@drm_read@invalid-buffer
+> +igt@drm_read@fault-buffer
+> +igt@drm_read@empty-block
+> +igt@drm_read@empty-nonblock
+> +igt@drm_read@short-buffer-block
+> +igt@drm_read@short-buffer-nonblock
+> +igt@drm_read@short-buffer-wakeup
+> +igt@kms_addfb_basic@unused-handle
+> +igt@kms_addfb_basic@unused-pitches
+> +igt@kms_addfb_basic@unused-offsets
+> +igt@kms_addfb_basic@unused-modifier
+> +igt@kms_addfb_basic@clobberred-modifier
+> +igt@kms_addfb_basic@invalid-smem-bo-on-discrete
+> +igt@kms_addfb_basic@legacy-format
+> +igt@kms_addfb_basic@no-handle
+> +igt@kms_addfb_basic@basic
+> +igt@kms_addfb_basic@bad-pitch-0
+> +igt@kms_addfb_basic@bad-pitch-32
+> +igt@kms_addfb_basic@bad-pitch-63
+> +igt@kms_addfb_basic@bad-pitch-128
+> +igt@kms_addfb_basic@bad-pitch-256
+> +igt@kms_addfb_basic@bad-pitch-1024
+> +igt@kms_addfb_basic@bad-pitch-999
+> +igt@kms_addfb_basic@bad-pitch-65536
+> +igt@kms_addfb_basic@size-max
+> +igt@kms_addfb_basic@too-wide
+> +igt@kms_addfb_basic@too-high
+> +igt@kms_addfb_basic@bo-too-small
+> +igt@kms_addfb_basic@small-bo
+> +igt@kms_addfb_basic@bo-too-small-due-to-tiling
+> +igt@kms_addfb_basic@addfb25-modifier-no-flag
+> +igt@kms_addfb_basic@addfb25-bad-modifier
+> +igt@kms_addfb_basic@addfb25-x-tiled-mismatch-legacy
+> +igt@kms_addfb_basic@addfb25-x-tiled-legacy
+> +igt@kms_addfb_basic@addfb25-framebuffer-vs-set-tiling
+> +igt@kms_addfb_basic@addfb25-y-tiled-legacy
+> +igt@kms_addfb_basic@addfb25-yf-tiled-legacy
+> +igt@kms_addfb_basic@addfb25-y-tiled-small-legacy
+> +igt@kms_addfb_basic@addfb25-4-tiled
+> +igt@kms_addfb_basic@basic-x-tiled-legacy
+> +igt@kms_addfb_basic@framebuffer-vs-set-tiling
+> +igt@kms_addfb_basic@tile-pitch-mismatch
+> +igt@kms_addfb_basic@basic-y-tiled-legacy
+> +igt@kms_addfb_basic@invalid-get-prop-any
+> +igt@kms_addfb_basic@invalid-get-prop
+> +igt@kms_addfb_basic@invalid-set-prop-any
+> +igt@kms_addfb_basic@invalid-set-prop
+> +igt@kms_addfb_basic@master-rmfb
+> +igt@kms_atomic@plane-overlay-legacy
+> +igt@kms_atomic@plane-primary-legacy
+> +igt@kms_atomic@plane-primary-overlay-mutable-zpos
+> +igt@kms_atomic@plane-immutable-zpos
+> +igt@kms_atomic@test-only
+> +igt@kms_atomic@plane-cursor-legacy
+> +igt@kms_atomic@plane-invalid-params
+> +igt@kms_atomic@plane-invalid-params-fence
+> +igt@kms_atomic@crtc-invalid-params
+> +igt@kms_atomic@crtc-invalid-params-fence
+> +igt@kms_atomic@atomic-invalid-params
+> +igt@kms_atomic@atomic_plane_damage
+> +igt@kms_atomic_interruptible@legacy-setmode@pipe-a-edp-1
+> +igt@kms_atomic_interruptible@atomic-setmode@pipe-a-edp-1
+> +igt@kms_atomic_interruptible@legacy-dpms@pipe-a-edp-1
+> +igt@kms_atomic_interruptible@legacy-pageflip@pipe-a-edp-1
+> +igt@kms_atomic_interruptible@legacy-cursor@pipe-a-edp-1
+> +igt@kms_atomic_interruptible@universal-setplane-primary@pipe-a-edp-1
+> +igt@kms_atomic_interruptible@universal-setplane-cursor@pipe-a-edp-1
+> +igt@kms_content_protection@legacy
+> +igt@kms_content_protection@atomic
+> +igt@kms_content_protection@atomic-dpms
+> +igt@kms_content_protection@LIC
+> +igt@kms_content_protection@type1
+> +igt@kms_content_protection@mei_interface
+> +igt@kms_content_protection@content_type_change
+> +igt@kms_content_protection@uevent
+> +igt@kms_content_protection@srm
+> +igt@kms_content_protection@dp-mst-type-0
+> +igt@kms_content_protection@dp-mst-lic-type-0
+> +igt@kms_content_protection@dp-mst-type-1
+> +igt@kms_content_protection@dp-mst-lic-type-1
+> +igt@kms_dp_aux_dev
+> +igt@kms_flip_event_leak
+> +igt@kms_getfb@getfb-handle-zero
+> +igt@kms_getfb@getfb-handle-valid
+> +igt@kms_getfb@getfb-handle-closed
+> +igt@kms_getfb@getfb-handle-not-fb
+> +igt@kms_getfb@getfb-addfb-different-handles
+> +igt@kms_getfb@getfb-repeated-different-handles
+> +igt@kms_getfb@getfb-reject-ccs
+> +igt@kms_getfb@getfb2-handle-zero
+> +igt@kms_getfb@getfb2-handle-closed
+> +igt@kms_getfb@getfb2-handle-not-fb
+> +igt@kms_getfb@getfb2-accept-ccs
+> +igt@kms_getfb@getfb2-into-addfb2
+> +igt@kms_getfb@getfb-handle-protection
+> +igt@kms_getfb@getfb2-handle-protection
+> +igt@kms_hdmi_inject@inject-4k
+> +igt@kms_hdmi_inject@inject-audio
+> +igt@kms_hdr@bpc-switch
+> +igt@kms_hdr@bpc-switch-dpms
+> +igt@kms_hdr@static-toggle
+> +igt@kms_hdr@static-toggle-dpms
+> +igt@kms_hdr@static-swap
+> +igt@kms_multipipe_modeset@basic-max-pipe-crc-check
+> +igt@kms_pipe_crc_basic@bad-source
+> +igt@kms_pipe_crc_basic@read-crc-pipe-a
+> +igt@kms_pipe_crc_basic@read-crc-pipe-a-frame-sequence
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a-frame-sequence
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-a
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-a
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-a
+> +igt@kms_pipe_crc_basic@read-crc-pipe-b
+> +igt@kms_pipe_crc_basic@read-crc-pipe-b-frame-sequence
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b-frame-sequence
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-b
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-b
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-b
+> +igt@kms_pipe_crc_basic@read-crc-pipe-c
+> +igt@kms_pipe_crc_basic@read-crc-pipe-c-frame-sequence
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c-frame-sequence
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-c
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-c
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-c
+> +igt@kms_pipe_crc_basic@read-crc-pipe-d
+> +igt@kms_pipe_crc_basic@read-crc-pipe-d-frame-sequence
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d-frame-sequence
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-d
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-d
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-d
+> +igt@kms_pipe_crc_basic@read-crc-pipe-e
+> +igt@kms_pipe_crc_basic@read-crc-pipe-e-frame-sequence
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e-frame-sequence
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-e
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-e
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-e
+> +igt@kms_pipe_crc_basic@read-crc-pipe-f
+> +igt@kms_pipe_crc_basic@read-crc-pipe-f-frame-sequence
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f-frame-sequence
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-f
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-f
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-f
+> +igt@kms_plane_lowres@pipe-a-tiling-none
+> +igt@kms_plane_lowres@pipe-a-tiling-x
+> +igt@kms_plane_lowres@pipe-a-tiling-y
+> +igt@kms_plane_lowres@pipe-a-tiling-yf
+> +igt@kms_plane_lowres@pipe-a-tiling-4
+> +igt@kms_plane_lowres@pipe-b-tiling-none
+> +igt@kms_plane_lowres@pipe-b-tiling-x
+> +igt@kms_plane_lowres@pipe-b-tiling-y
+> +igt@kms_plane_lowres@pipe-b-tiling-yf
+> +igt@kms_plane_lowres@pipe-b-tiling-4
+> +igt@kms_plane_lowres@pipe-c-tiling-none
+> +igt@kms_plane_lowres@pipe-c-tiling-x
+> +igt@kms_plane_lowres@pipe-c-tiling-y
+> +igt@kms_plane_lowres@pipe-c-tiling-yf
+> +igt@kms_plane_lowres@pipe-c-tiling-4
+> +igt@kms_plane_lowres@pipe-d-tiling-none
+> +igt@kms_plane_lowres@pipe-d-tiling-x
+> +igt@kms_plane_lowres@pipe-d-tiling-y
+> +igt@kms_plane_lowres@pipe-d-tiling-yf
+> +igt@kms_plane_lowres@pipe-d-tiling-4
+> +igt@kms_plane_lowres@pipe-e-tiling-none
+> +igt@kms_plane_lowres@pipe-e-tiling-x
+> +igt@kms_plane_lowres@pipe-e-tiling-y
+> +igt@kms_plane_lowres@pipe-e-tiling-yf
+> +igt@kms_plane_lowres@pipe-e-tiling-4
+> +igt@kms_plane_lowres@pipe-f-tiling-none
+> +igt@kms_plane_lowres@pipe-f-tiling-x
+> +igt@kms_plane_lowres@pipe-f-tiling-y
+> +igt@kms_plane_lowres@pipe-f-tiling-yf
+> +igt@kms_plane_lowres@pipe-f-tiling-4
+> +igt@kms_prop_blob@basic
+> +igt@kms_prop_blob@blob-prop-core
+> +igt@kms_prop_blob@blob-prop-validate
+> +igt@kms_prop_blob@blob-prop-lifetime
+> +igt@kms_prop_blob@blob-multiple
+> +igt@kms_prop_blob@invalid-get-prop-any
+> +igt@kms_prop_blob@invalid-get-prop
+> +igt@kms_prop_blob@invalid-set-prop-any
+> +igt@kms_prop_blob@invalid-set-prop
+> +igt@kms_rmfb@rmfb-ioctl
+> +igt@kms_rmfb@close-fd
+> +igt@kms_rotation_crc@primary-rotation-90
+> +igt@kms_rotation_crc@primary-rotation-180
+> +igt@kms_rotation_crc@primary-rotation-270
+> +igt@kms_rotation_crc@sprite-rotation-90
+> +igt@kms_rotation_crc@sprite-rotation-180
+> +igt@kms_rotation_crc@sprite-rotation-270
+> +igt@kms_rotation_crc@cursor-rotation-180
+> +igt@kms_rotation_crc@sprite-rotation-90-pos-100-0
+> +igt@kms_rotation_crc@bad-pixel-format
+> +igt@kms_rotation_crc@bad-tiling
+> +igt@kms_rotation_crc@primary-x-tiled-reflect-x-0
+> +igt@kms_rotation_crc@primary-x-tiled-reflect-x-180
+> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-0
+> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-90
+> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-180
+> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-270
+> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-0
+> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-90
+> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-180
+> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-270
+> +igt@kms_rotation_crc@primary-4-tiled-reflect-x-0
+> +igt@kms_rotation_crc@primary-4-tiled-reflect-x-180
+> +igt@kms_rotation_crc@multiplane-rotation
+> +igt@kms_rotation_crc@multiplane-rotation-cropping-top
+> +igt@kms_rotation_crc@multiplane-rotation-cropping-bottom
+> +igt@kms_rotation_crc@exhaust-fences
+> +igt@kms_selftest@all
+> +igt@kms_setmode@basic@pipe-a-edp-1
+> +igt@kms_setmode@basic@pipe-b-edp-1
+> +igt@kms_setmode@basic-clone-single-crtc
+> +igt@kms_setmode@invalid-clone-single-crtc
+> +igt@kms_setmode@invalid-clone-exclusive-crtc
+> +igt@kms_setmode@clone-exclusive-crtc
+> +igt@kms_setmode@invalid-clone-single-crtc-stealing
+> +
+> +# Flakes on a530 with:
+> +# arm-smmu b40000.iommu: Unhandled context fault: fsr=0x408, iova=0x01003000, fsynr=0x13, cbfrsynra=0x0, cb=0
+> +# igt@msm_mapping@ring
+> +
+> +igt@msm_mapping@sqefw
+> +igt@msm_mapping@shadow
+> +igt@msm_recovery@hangcheck
+> +igt@msm_recovery@gpu-fault
+> +igt@msm_recovery@iova-fault
+> +igt@msm_submit@empty-submit
+> +igt@msm_submit@invalid-queue-submit
+> +igt@msm_submit@invalid-flags-submit
+> +igt@msm_submit@invalid-in-fence-submit
+> +igt@msm_submit@invalid-duplicate-bo-submit
+> +igt@msm_submit@invalid-cmd-idx-submit
+> +igt@msm_submit@invalid-cmd-type-submit
+> +igt@msm_submit@valid-submit
+> +igt@kms_sysfs_edid_timing
+> +igt@kms_universal_plane@universal-plane-pipe-a-functional
+> +igt@kms_universal_plane@universal-plane-pipe-a-sanity
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-a
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-a
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-a
+> +igt@kms_universal_plane@universal-plane-pipe-b-functional
+> +igt@kms_universal_plane@universal-plane-pipe-b-sanity
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-b
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-b
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-b
+> +igt@kms_universal_plane@universal-plane-pipe-c-functional
+> +igt@kms_universal_plane@universal-plane-pipe-c-sanity
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-c
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-c
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-c
+> +igt@kms_universal_plane@universal-plane-pipe-d-functional
+> +igt@kms_universal_plane@universal-plane-pipe-d-sanity
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-d
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-d
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-d
+> +igt@kms_universal_plane@universal-plane-pipe-e-functional
+> +igt@kms_universal_plane@universal-plane-pipe-e-sanity
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-e
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-e
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-e
+> +igt@kms_universal_plane@universal-plane-pipe-f-functional
+> +igt@kms_universal_plane@universal-plane-pipe-f-sanity
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-f
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-f
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-f
+> +igt@kms_vblank@invalid
+> +igt@kms_vblank@crtc-id
+> +igt@kms_vblank@pipe-a-query-idle
+> +igt@kms_vblank@pipe-a-query-idle-hang
+> +igt@kms_vblank@pipe-a-query-forked
+> +igt@kms_vblank@pipe-a-query-forked-hang
+> +igt@kms_vblank@pipe-a-query-busy
+> +igt@kms_vblank@pipe-a-query-busy-hang
+> +igt@kms_vblank@pipe-a-query-forked-busy
+> +igt@kms_vblank@pipe-a-query-forked-busy-hang
+> +igt@kms_vblank@pipe-a-wait-idle
+> +igt@kms_vblank@pipe-a-wait-idle-hang
+> +igt@kms_vblank@pipe-a-wait-forked
+> +igt@kms_vblank@pipe-a-wait-forked-hang
+> +igt@kms_vblank@pipe-a-wait-busy
+> +igt@kms_vblank@pipe-a-wait-busy-hang
+> +igt@kms_vblank@pipe-a-wait-forked-busy
+> +igt@kms_vblank@pipe-a-wait-forked-busy-hang
+> +igt@kms_vblank@pipe-a-ts-continuation-idle
+> +igt@kms_vblank@pipe-a-ts-continuation-idle-hang
+> +igt@kms_vblank@pipe-a-ts-continuation-dpms-rpm
+> +igt@kms_vblank@pipe-a-ts-continuation-modeset
+> +igt@kms_vblank@pipe-a-ts-continuation-modeset-hang
+> +igt@kms_vblank@pipe-a-ts-continuation-modeset-rpm
+> +igt@kms_vblank@pipe-b-accuracy-idle
+> +igt@kms_vblank@pipe-b-query-idle
+> +igt@kms_vblank@pipe-b-query-idle-hang
+> +igt@kms_vblank@pipe-b-query-forked
+> +igt@kms_vblank@pipe-b-query-forked-hang
+> +igt@kms_vblank@pipe-b-query-busy
+> +igt@kms_vblank@pipe-b-query-busy-hang
+> +igt@kms_vblank@pipe-b-query-forked-busy
+> +igt@kms_vblank@pipe-b-query-forked-busy-hang
+> +igt@kms_vblank@pipe-b-wait-idle
+> +igt@kms_vblank@pipe-b-wait-idle-hang
+> +igt@kms_vblank@pipe-b-wait-forked
+> +igt@kms_vblank@pipe-b-wait-forked-hang
+> +igt@kms_vblank@pipe-b-wait-busy
+> +igt@kms_vblank@pipe-b-wait-busy-hang
+> +igt@kms_vblank@pipe-b-wait-forked-busy
+> +igt@kms_vblank@pipe-b-wait-forked-busy-hang
+> +igt@kms_vblank@pipe-b-ts-continuation-idle
+> +igt@kms_vblank@pipe-b-ts-continuation-idle-hang
+> +igt@kms_vblank@pipe-b-ts-continuation-dpms-rpm
+> +igt@kms_vblank@pipe-b-ts-continuation-modeset
+> +igt@kms_vblank@pipe-b-ts-continuation-modeset-hang
+> +igt@kms_vblank@pipe-b-ts-continuation-modeset-rpm
+> +igt@kms_vblank@pipe-c-accuracy-idle
+> +igt@kms_vblank@pipe-c-query-idle
+> +igt@kms_vblank@pipe-c-query-idle-hang
+> +igt@kms_vblank@pipe-c-query-forked
+> +igt@kms_vblank@pipe-c-query-forked-hang
+> +igt@kms_vblank@pipe-c-query-busy
+> +igt@kms_vblank@pipe-c-query-busy-hang
+> +igt@kms_vblank@pipe-c-query-forked-busy
+> +igt@kms_vblank@pipe-c-query-forked-busy-hang
+> +igt@kms_vblank@pipe-c-wait-idle
+> +igt@kms_vblank@pipe-c-wait-idle-hang
+> +igt@kms_vblank@pipe-c-wait-forked
+> +igt@kms_vblank@pipe-c-wait-forked-hang
+> +igt@kms_vblank@pipe-c-wait-busy
+> +igt@kms_vblank@pipe-c-wait-busy-hang
+> +igt@kms_vblank@pipe-c-wait-forked-busy
+> +igt@kms_vblank@pipe-c-wait-forked-busy-hang
+> +igt@kms_vblank@pipe-c-ts-continuation-idle
+> +igt@kms_vblank@pipe-c-ts-continuation-idle-hang
+> +igt@kms_vblank@pipe-c-ts-continuation-dpms-rpm
+> +igt@kms_vblank@pipe-c-ts-continuation-modeset
+> +igt@kms_vblank@pipe-c-ts-continuation-modeset-hang
+> +igt@kms_vblank@pipe-c-ts-continuation-modeset-rpm
+> +igt@kms_vblank@pipe-d-accuracy-idle
+> +igt@kms_vblank@pipe-d-query-idle
+> +igt@kms_vblank@pipe-d-query-idle-hang
+> +igt@kms_vblank@pipe-d-query-forked
+> +igt@kms_vblank@pipe-d-query-forked-hang
+> +igt@kms_vblank@pipe-d-query-busy
+> +igt@kms_vblank@pipe-d-query-busy-hang
+> +igt@kms_vblank@pipe-d-query-forked-busy
+> +igt@kms_vblank@pipe-d-query-forked-busy-hang
+> +igt@kms_vblank@pipe-d-wait-idle
+> +igt@kms_vblank@pipe-d-wait-idle-hang
+> +igt@kms_vblank@pipe-d-wait-forked
+> +igt@kms_vblank@pipe-d-wait-forked-hang
+> +igt@kms_vblank@pipe-d-wait-busy
+> +igt@kms_vblank@pipe-d-wait-busy-hang
+> +igt@kms_vblank@pipe-d-wait-forked-busy
+> +igt@kms_vblank@pipe-d-wait-forked-busy-hang
+> +igt@kms_vblank@pipe-d-ts-continuation-idle
+> +igt@kms_vblank@pipe-d-ts-continuation-idle-hang
+> +igt@kms_vblank@pipe-d-ts-continuation-dpms-rpm
+> +igt@kms_vblank@pipe-d-ts-continuation-modeset
+> +igt@kms_vblank@pipe-d-ts-continuation-modeset-hang
+> +igt@kms_vblank@pipe-d-ts-continuation-modeset-rpm
+> +igt@kms_vblank@pipe-e-accuracy-idle
+> +igt@kms_vblank@pipe-e-query-idle
+> +igt@kms_vblank@pipe-e-query-idle-hang
+> +igt@kms_vblank@pipe-e-query-forked
+> +igt@kms_vblank@pipe-e-query-forked-hang
+> +igt@kms_vblank@pipe-e-query-busy
+> +igt@kms_vblank@pipe-e-query-busy-hang
+> +igt@kms_vblank@pipe-e-query-forked-busy
+> +igt@kms_vblank@pipe-e-query-forked-busy-hang
+> +igt@kms_vblank@pipe-e-wait-idle
+> +igt@kms_vblank@pipe-e-wait-idle-hang
+> +igt@kms_vblank@pipe-e-wait-forked
+> +igt@kms_vblank@pipe-e-wait-forked-hang
+> +igt@kms_vblank@pipe-e-wait-busy
+> +igt@kms_vblank@pipe-e-wait-busy-hang
+> +igt@kms_vblank@pipe-e-wait-forked-busy
+> +igt@kms_vblank@pipe-e-wait-forked-busy-hang
+> +igt@kms_vblank@pipe-e-ts-continuation-idle
+> +igt@kms_vblank@pipe-e-ts-continuation-idle-hang
+> +igt@kms_vblank@pipe-e-ts-continuation-dpms-rpm
+> +igt@kms_vblank@pipe-e-ts-continuation-modeset
+> +igt@kms_vblank@pipe-e-ts-continuation-modeset-hang
+> +igt@kms_vblank@pipe-e-ts-continuation-modeset-rpm
+> +igt@kms_vblank@pipe-f-accuracy-idle
+> +igt@kms_vblank@pipe-f-query-idle
+> +igt@kms_vblank@pipe-f-query-idle-hang
+> +igt@kms_vblank@pipe-f-query-forked
+> +igt@kms_vblank@pipe-f-query-forked-hang
+> +igt@kms_vblank@pipe-f-query-busy
+> +igt@kms_vblank@pipe-f-query-busy-hang
+> +igt@kms_vblank@pipe-f-query-forked-busy
+> +igt@kms_vblank@pipe-f-query-forked-busy-hang
+> +igt@kms_vblank@pipe-f-wait-idle
+> +igt@kms_vblank@pipe-f-wait-idle-hang
+> +igt@kms_vblank@pipe-f-wait-forked
+> +igt@kms_vblank@pipe-f-wait-forked-hang
+> +igt@kms_vblank@pipe-f-wait-busy
+> +igt@kms_vblank@pipe-f-wait-busy-hang
+> +igt@kms_vblank@pipe-f-wait-forked-busy
+> +igt@kms_vblank@pipe-f-wait-forked-busy-hang
+> +igt@kms_vblank@pipe-f-ts-continuation-idle
+> +igt@kms_vblank@pipe-f-ts-continuation-idle-hang
+> +igt@kms_vblank@pipe-f-ts-continuation-dpms-rpm
+> +igt@kms_vblank@pipe-f-ts-continuation-modeset
+> +igt@kms_vblank@pipe-f-ts-continuation-modeset-hang
+> +igt@kms_vblank@pipe-f-ts-continuation-modeset-rpm
+> +igt@kms_vrr@flip-basic
+> +igt@kms_vrr@flip-dpms
+> +igt@kms_vrr@flipline
+> +igt@kms_async_flip@async-flip-with-page-flip-events
+> +igt@kms_async_flip@alternate-sync-async-flip
+> +igt@kms_async_flip@test-time-stamp
+> +igt@kms_async_flip@test-cursor
+> +igt@kms_async_flip@invalid-async-flip
+> +igt@kms_async_flip@crc
+> diff --git a/drivers/gpu/drm/msm/ci/msm_a360_results.txt b/drivers/gpu/drm/msm/ci/msm_a360_results.txt
+> new file mode 100644
+> index 000000000000..fd80d2bf2bcb
+> --- /dev/null
+> +++ b/drivers/gpu/drm/msm/ci/msm_a360_results.txt
+> @@ -0,0 +1,421 @@
+> +igt@core_auth@getclient-simple,pass
+> +igt@core_auth@getclient-master-drop,pass
+> +igt@core_auth@basic-auth,pass
+> +igt@core_auth@many-magics,pass
+> +igt@core_getclient,pass
+> +igt@core_getstats,pass
+> +igt@core_getversion,pass
+> +igt@core_setmaster_vs_auth,pass
+> +igt@drm_read@invalid-buffer,skip
+> +igt@drm_read@fault-buffer,skip
+> +igt@drm_read@empty-block,skip
+> +igt@drm_read@empty-nonblock,skip
+> +igt@drm_read@short-buffer-block,skip
+> +igt@drm_read@short-buffer-nonblock,skip
+> +igt@drm_read@short-buffer-wakeup,skip
+> +igt@kms_addfb_basic@unused-handle,pass
+> +igt@kms_addfb_basic@unused-pitches,pass
+> +igt@kms_addfb_basic@unused-offsets,pass
+> +igt@kms_addfb_basic@unused-modifier,pass
+> +igt@kms_addfb_basic@clobberred-modifier,skip
+> +igt@kms_addfb_basic@invalid-smem-bo-on-discrete,skip
+> +igt@kms_addfb_basic@legacy-format,dmesg-warn
+> +igt@kms_addfb_basic@no-handle,pass
+> +igt@kms_addfb_basic@basic,pass
+> +igt@kms_addfb_basic@bad-pitch-0,pass
+> +igt@kms_addfb_basic@bad-pitch-32,pass
+> +igt@kms_addfb_basic@bad-pitch-63,pass
+> +igt@kms_addfb_basic@bad-pitch-128,pass
+> +igt@kms_addfb_basic@bad-pitch-256,pass
+> +igt@kms_addfb_basic@bad-pitch-1024,pass
+> +igt@kms_addfb_basic@bad-pitch-999,pass
+> +igt@kms_addfb_basic@bad-pitch-65536,pass
+> +igt@kms_addfb_basic@size-max,pass
+> +igt@kms_addfb_basic@too-wide,pass
+> +igt@kms_addfb_basic@too-high,dmesg-warn
+> +igt@kms_addfb_basic@bo-too-small,pass
+> +igt@kms_addfb_basic@small-bo,pass
+> +igt@kms_addfb_basic@bo-too-small-due-to-tiling,skip
+> +igt@kms_addfb_basic@addfb25-modifier-no-flag,pass
+> +igt@kms_addfb_basic@addfb25-bad-modifier,fail
+> +igt@kms_addfb_basic@addfb25-x-tiled-mismatch-legacy,skip
+> +igt@kms_addfb_basic@addfb25-x-tiled-legacy,skip
+> +igt@kms_addfb_basic@addfb25-framebuffer-vs-set-tiling,skip
+> +igt@kms_addfb_basic@addfb25-y-tiled-legacy,skip
+> +igt@kms_addfb_basic@addfb25-yf-tiled-legacy,skip
+> +igt@kms_addfb_basic@addfb25-y-tiled-small-legacy,skip
+> +igt@kms_addfb_basic@addfb25-4-tiled,skip
+> +igt@kms_addfb_basic@basic-x-tiled-legacy,skip
+> +igt@kms_addfb_basic@framebuffer-vs-set-tiling,skip
+> +igt@kms_addfb_basic@tile-pitch-mismatch,skip
+> +igt@kms_addfb_basic@basic-y-tiled-legacy,skip
+> +igt@kms_addfb_basic@invalid-get-prop-any,pass
+> +igt@kms_addfb_basic@invalid-get-prop,pass
+> +igt@kms_addfb_basic@invalid-set-prop-any,pass
+> +igt@kms_addfb_basic@invalid-set-prop,pass
+> +igt@kms_addfb_basic@master-rmfb,pass
+> +igt@kms_atomic@plane-overlay-legacy,skip
+> +igt@kms_atomic@plane-primary-legacy,skip
+> +igt@kms_atomic@plane-primary-overlay-mutable-zpos,skip
+> +igt@kms_atomic@plane-immutable-zpos,skip
+> +igt@kms_atomic@test-only,skip
+> +igt@kms_atomic@plane-cursor-legacy,skip
+> +igt@kms_atomic@plane-invalid-params,skip
+> +igt@kms_atomic@plane-invalid-params-fence,skip
+> +igt@kms_atomic@crtc-invalid-params,skip
+> +igt@kms_atomic@crtc-invalid-params-fence,skip
+> +igt@kms_atomic@atomic-invalid-params,skip
+> +igt@kms_atomic@atomic_plane_damage,skip
+> +igt@kms_atomic_interruptible@legacy-setmode,skip
+> +igt@kms_atomic_interruptible@atomic-setmode,skip
+> +igt@kms_atomic_interruptible@legacy-dpms,skip
+> +igt@kms_atomic_interruptible@legacy-pageflip,skip
+> +igt@kms_atomic_interruptible@legacy-cursor,skip
+> +igt@kms_atomic_interruptible@universal-setplane-primary,skip
+> +igt@kms_atomic_interruptible@universal-setplane-cursor,skip
+> +igt@kms_content_protection@legacy,skip
+> +igt@kms_content_protection@atomic,skip
+> +igt@kms_content_protection@atomic-dpms,skip
+> +igt@kms_content_protection@lic,skip
+> +igt@kms_content_protection@type1,skip
+> +igt@kms_content_protection@mei_interface,skip
+> +igt@kms_content_protection@content_type_change,skip
+> +igt@kms_content_protection@uevent,skip
+> +igt@kms_content_protection@srm,skip
+> +igt@kms_content_protection@dp-mst-type-0,skip
+> +igt@kms_content_protection@dp-mst-lic-type-0,skip
+> +igt@kms_content_protection@dp-mst-type-1,skip
+> +igt@kms_content_protection@dp-mst-lic-type-1,skip
+> +igt@kms_dp_aux_dev,skip
+> +igt@kms_flip_event_leak,skip
+> +igt@kms_getfb@getfb-handle-zero,pass
+> +igt@kms_getfb@getfb-handle-valid,pass
+> +igt@kms_getfb@getfb-handle-closed,pass
+> +igt@kms_getfb@getfb-handle-not-fb,pass
+> +igt@kms_getfb@getfb-addfb-different-handles,pass
+> +igt@kms_getfb@getfb-repeated-different-handles,pass
+> +igt@kms_getfb@getfb-reject-ccs,skip
+> +igt@kms_getfb@getfb2-handle-zero,pass
+> +igt@kms_getfb@getfb2-handle-closed,pass
+> +igt@kms_getfb@getfb2-handle-not-fb,pass
+> +igt@kms_getfb@getfb2-accept-ccs,skip
+> +igt@kms_getfb@getfb2-into-addfb2,pass
+> +igt@kms_getfb@getfb-handle-protection,pass
+> +igt@kms_getfb@getfb2-handle-protection,pass
+> +igt@kms_hdmi_inject@inject-4k,fail
+> +igt@kms_hdmi_inject@inject-audio,skip
+> +igt@kms_hdr@bpc-switch,skip
+> +igt@kms_hdr@bpc-switch-dpms,skip
+> +igt@kms_hdr@static-toggle,skip
+> +igt@kms_hdr@static-toggle-dpms,skip
+> +igt@kms_hdr@static-swap,skip
+> +igt@kms_multipipe_modeset@basic-max-pipe-crc-check,skip
+> +igt@kms_pipe_crc_basic@bad-source,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-a,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-a-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-a,skip
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-a,skip
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-a,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-b,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-b-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-b,skip
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-b,skip
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-b,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-c,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-c-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-c,skip
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-c,skip
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-c,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-d,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-d-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-d,skip
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-d,skip
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-d,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-e,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-e-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-e,skip
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-e,skip
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-e,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-f,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-f-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-f,skip
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-f,skip
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-f,skip
+> +igt@kms_plane_lowres@pipe-a-tiling-none,skip
+> +igt@kms_plane_lowres@pipe-a-tiling-x,skip
+> +igt@kms_plane_lowres@pipe-a-tiling-y,skip
+> +igt@kms_plane_lowres@pipe-a-tiling-yf,skip
+> +igt@kms_plane_lowres@pipe-a-tiling-4,skip
+> +igt@kms_plane_lowres@pipe-b-tiling-none,skip
+> +igt@kms_plane_lowres@pipe-b-tiling-x,skip
+> +igt@kms_plane_lowres@pipe-b-tiling-y,skip
+> +igt@kms_plane_lowres@pipe-b-tiling-yf,skip
+> +igt@kms_plane_lowres@pipe-b-tiling-4,skip
+> +igt@kms_plane_lowres@pipe-c-tiling-none,skip
+> +igt@kms_plane_lowres@pipe-c-tiling-x,skip
+> +igt@kms_plane_lowres@pipe-c-tiling-y,skip
+> +igt@kms_plane_lowres@pipe-c-tiling-yf,skip
+> +igt@kms_plane_lowres@pipe-c-tiling-4,skip
+> +igt@kms_plane_lowres@pipe-d-tiling-none,skip
+> +igt@kms_plane_lowres@pipe-d-tiling-x,skip
+> +igt@kms_plane_lowres@pipe-d-tiling-y,skip
+> +igt@kms_plane_lowres@pipe-d-tiling-yf,skip
+> +igt@kms_plane_lowres@pipe-d-tiling-4,skip
+> +igt@kms_plane_lowres@pipe-e-tiling-none,skip
+> +igt@kms_plane_lowres@pipe-e-tiling-x,skip
+> +igt@kms_plane_lowres@pipe-e-tiling-y,skip
+> +igt@kms_plane_lowres@pipe-e-tiling-yf,skip
+> +igt@kms_plane_lowres@pipe-e-tiling-4,skip
+> +igt@kms_plane_lowres@pipe-f-tiling-none,skip
+> +igt@kms_plane_lowres@pipe-f-tiling-x,skip
+> +igt@kms_plane_lowres@pipe-f-tiling-y,skip
+> +igt@kms_plane_lowres@pipe-f-tiling-yf,skip
+> +igt@kms_plane_lowres@pipe-f-tiling-4,skip
+> +igt@kms_prop_blob@basic,pass
+> +igt@kms_prop_blob@blob-prop-core,pass
+> +igt@kms_prop_blob@blob-prop-validate,pass
+> +igt@kms_prop_blob@blob-prop-lifetime,pass
+> +igt@kms_prop_blob@blob-multiple,pass
+> +igt@kms_prop_blob@invalid-get-prop-any,pass
+> +igt@kms_prop_blob@invalid-get-prop,pass
+> +igt@kms_prop_blob@invalid-set-prop-any,pass
+> +igt@kms_prop_blob@invalid-set-prop,pass
+> +igt@kms_rmfb@rmfb-ioctl,skip
+> +igt@kms_rmfb@close-fd,skip
+> +igt@kms_rotation_crc@primary-rotation-90,skip
+> +igt@kms_rotation_crc@primary-rotation-180,skip
+> +igt@kms_rotation_crc@primary-rotation-270,skip
+> +igt@kms_rotation_crc@sprite-rotation-90,skip
+> +igt@kms_rotation_crc@sprite-rotation-180,skip
+> +igt@kms_rotation_crc@sprite-rotation-270,skip
+> +igt@kms_rotation_crc@cursor-rotation-180,skip
+> +igt@kms_rotation_crc@sprite-rotation-90-pos-100-0,skip
+> +igt@kms_rotation_crc@bad-pixel-format,skip
+> +igt@kms_rotation_crc@bad-tiling,skip
+> +igt@kms_rotation_crc@primary-x-tiled-reflect-x-0,skip
+> +igt@kms_rotation_crc@primary-x-tiled-reflect-x-180,skip
+> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-0,skip
+> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-90,skip
+> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-180,skip
+> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-270,skip
+> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-0,skip
+> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-90,skip
+> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-180,skip
+> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-270,skip
+> +igt@kms_rotation_crc@primary-4-tiled-reflect-x-0,skip
+> +igt@kms_rotation_crc@primary-4-tiled-reflect-x-180,skip
+> +igt@kms_rotation_crc@multiplane-rotation,skip
+> +igt@kms_rotation_crc@multiplane-rotation-cropping-top,skip
+> +igt@kms_rotation_crc@multiplane-rotation-cropping-bottom,skip
+> +igt@kms_rotation_crc@exhaust-fences,skip
+> +igt@kms_selftest@all,skip
+> +igt@kms_setmode@basic,skip
+> +igt@kms_setmode@basic-clone-single-crtc,skip
+> +igt@kms_setmode@invalid-clone-single-crtc,skip
+> +igt@kms_setmode@invalid-clone-exclusive-crtc,skip
+> +igt@kms_setmode@clone-exclusive-crtc,skip
+> +igt@kms_setmode@invalid-clone-single-crtc-stealing,skip
+> +igt@msm_mapping@sqefw,skip
+> +igt@msm_mapping@shadow,skip
+> +igt@msm_recovery@hangcheck,skip
+> +igt@msm_recovery@gpu-fault,skip
+> +igt@msm_recovery@iova-fault,skip
+> +igt@msm_submit@empty-submit,pass
+> +igt@msm_submit@invalid-queue-submit,pass
+> +igt@msm_submit@invalid-flags-submit,pass
+> +igt@msm_submit@invalid-in-fence-submit,pass
+> +igt@msm_submit@invalid-duplicate-bo-submit,dmesg-warn
+> +igt@msm_submit@invalid-cmd-idx-submit,dmesg-warn
+> +igt@msm_submit@invalid-cmd-type-submit,dmesg-warn
+> +igt@msm_submit@valid-submit,pass
+> +igt@kms_sysfs_edid_timing,pass
+> +igt@kms_universal_plane@universal-plane-pipe-a-functional,skip
+> +igt@kms_universal_plane@universal-plane-pipe-a-sanity,skip
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-a,skip
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-a,skip
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-a,skip
+> +igt@kms_universal_plane@universal-plane-pipe-b-functional,skip
+> +igt@kms_universal_plane@universal-plane-pipe-b-sanity,skip
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-b,skip
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-b,skip
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-b,skip
+> +igt@kms_universal_plane@universal-plane-pipe-c-functional,skip
+> +igt@kms_universal_plane@universal-plane-pipe-c-sanity,skip
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-c,skip
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-c,skip
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-c,skip
+> +igt@kms_universal_plane@universal-plane-pipe-d-functional,skip
+> +igt@kms_universal_plane@universal-plane-pipe-d-sanity,skip
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-d,skip
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-d,skip
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-d,skip
+> +igt@kms_universal_plane@universal-plane-pipe-e-functional,skip
+> +igt@kms_universal_plane@universal-plane-pipe-e-sanity,skip
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-e,skip
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-e,skip
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-e,skip
+> +igt@kms_universal_plane@universal-plane-pipe-f-functional,skip
+> +igt@kms_universal_plane@universal-plane-pipe-f-sanity,skip
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-f,skip
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-f,skip
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-f,skip
+> +igt@kms_vblank@invalid,skip
+> +igt@kms_vblank@crtc-id,skip
+> +igt@kms_vblank@pipe-a-query-idle,skip
+> +igt@kms_vblank@pipe-a-query-idle-hang,skip
+> +igt@kms_vblank@pipe-a-query-forked,skip
+> +igt@kms_vblank@pipe-a-query-forked-hang,skip
+> +igt@kms_vblank@pipe-a-query-busy,skip
+> +igt@kms_vblank@pipe-a-query-busy-hang,skip
+> +igt@kms_vblank@pipe-a-query-forked-busy,skip
+> +igt@kms_vblank@pipe-a-query-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-a-wait-idle,skip
+> +igt@kms_vblank@pipe-a-wait-idle-hang,skip
+> +igt@kms_vblank@pipe-a-wait-forked,skip
+> +igt@kms_vblank@pipe-a-wait-forked-hang,skip
+> +igt@kms_vblank@pipe-a-wait-busy,skip
+> +igt@kms_vblank@pipe-a-wait-busy-hang,skip
+> +igt@kms_vblank@pipe-a-wait-forked-busy,skip
+> +igt@kms_vblank@pipe-a-wait-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-a-ts-continuation-idle,skip
+> +igt@kms_vblank@pipe-a-ts-continuation-idle-hang,skip
+> +igt@kms_vblank@pipe-a-ts-continuation-dpms-rpm,skip
+> +igt@kms_vblank@pipe-a-ts-continuation-modeset,skip
+> +igt@kms_vblank@pipe-a-ts-continuation-modeset-hang,skip
+> +igt@kms_vblank@pipe-a-ts-continuation-modeset-rpm,skip
+> +igt@kms_vblank@pipe-b-accuracy-idle,skip
+> +igt@kms_vblank@pipe-b-query-idle,skip
+> +igt@kms_vblank@pipe-b-query-idle-hang,skip
+> +igt@kms_vblank@pipe-b-query-forked,skip
+> +igt@kms_vblank@pipe-b-query-forked-hang,skip
+> +igt@kms_vblank@pipe-b-query-busy,skip
+> +igt@kms_vblank@pipe-b-query-busy-hang,skip
+> +igt@kms_vblank@pipe-b-query-forked-busy,skip
+> +igt@kms_vblank@pipe-b-query-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-b-wait-idle,skip
+> +igt@kms_vblank@pipe-b-wait-idle-hang,skip
+> +igt@kms_vblank@pipe-b-wait-forked,skip
+> +igt@kms_vblank@pipe-b-wait-forked-hang,skip
+> +igt@kms_vblank@pipe-b-wait-busy,skip
+> +igt@kms_vblank@pipe-b-wait-busy-hang,skip
+> +igt@kms_vblank@pipe-b-wait-forked-busy,skip
+> +igt@kms_vblank@pipe-b-wait-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-b-ts-continuation-idle,skip
+> +igt@kms_vblank@pipe-b-ts-continuation-idle-hang,skip
+> +igt@kms_vblank@pipe-b-ts-continuation-dpms-rpm,skip
+> +igt@kms_vblank@pipe-b-ts-continuation-modeset,skip
+> +igt@kms_vblank@pipe-b-ts-continuation-modeset-hang,skip
+> +igt@kms_vblank@pipe-b-ts-continuation-modeset-rpm,skip
+> +igt@kms_vblank@pipe-c-accuracy-idle,skip
+> +igt@kms_vblank@pipe-c-query-idle,skip
+> +igt@kms_vblank@pipe-c-query-idle-hang,skip
+> +igt@kms_vblank@pipe-c-query-forked,skip
+> +igt@kms_vblank@pipe-c-query-forked-hang,skip
+> +igt@kms_vblank@pipe-c-query-busy,skip
+> +igt@kms_vblank@pipe-c-query-busy-hang,skip
+> +igt@kms_vblank@pipe-c-query-forked-busy,skip
+> +igt@kms_vblank@pipe-c-query-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-c-wait-idle,skip
+> +igt@kms_vblank@pipe-c-wait-idle-hang,skip
+> +igt@kms_vblank@pipe-c-wait-forked,skip
+> +igt@kms_vblank@pipe-c-wait-forked-hang,skip
+> +igt@kms_vblank@pipe-c-wait-busy,skip
+> +igt@kms_vblank@pipe-c-wait-busy-hang,skip
+> +igt@kms_vblank@pipe-c-wait-forked-busy,skip
+> +igt@kms_vblank@pipe-c-wait-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-c-ts-continuation-idle,skip
+> +igt@kms_vblank@pipe-c-ts-continuation-idle-hang,skip
+> +igt@kms_vblank@pipe-c-ts-continuation-dpms-rpm,skip
+> +igt@kms_vblank@pipe-c-ts-continuation-modeset,skip
+> +igt@kms_vblank@pipe-c-ts-continuation-modeset-hang,skip
+> +igt@kms_vblank@pipe-c-ts-continuation-modeset-rpm,skip
+> +igt@kms_vblank@pipe-d-accuracy-idle,skip
+> +igt@kms_vblank@pipe-d-query-idle,skip
+> +igt@kms_vblank@pipe-d-query-idle-hang,skip
+> +igt@kms_vblank@pipe-d-query-forked,skip
+> +igt@kms_vblank@pipe-d-query-forked-hang,skip
+> +igt@kms_vblank@pipe-d-query-busy,skip
+> +igt@kms_vblank@pipe-d-query-busy-hang,skip
+> +igt@kms_vblank@pipe-d-query-forked-busy,skip
+> +igt@kms_vblank@pipe-d-query-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-d-wait-idle,skip
+> +igt@kms_vblank@pipe-d-wait-idle-hang,skip
+> +igt@kms_vblank@pipe-d-wait-forked,skip
+> +igt@kms_vblank@pipe-d-wait-forked-hang,skip
+> +igt@kms_vblank@pipe-d-wait-busy,skip
+> +igt@kms_vblank@pipe-d-wait-busy-hang,skip
+> +igt@kms_vblank@pipe-d-wait-forked-busy,skip
+> +igt@kms_vblank@pipe-d-wait-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-d-ts-continuation-idle,skip
+> +igt@kms_vblank@pipe-d-ts-continuation-idle-hang,skip
+> +igt@kms_vblank@pipe-d-ts-continuation-dpms-rpm,skip
+> +igt@kms_vblank@pipe-d-ts-continuation-modeset,skip
+> +igt@kms_vblank@pipe-d-ts-continuation-modeset-hang,skip
+> +igt@kms_vblank@pipe-d-ts-continuation-modeset-rpm,skip
+> +igt@kms_vblank@pipe-e-accuracy-idle,skip
+> +igt@kms_vblank@pipe-e-query-idle,skip
+> +igt@kms_vblank@pipe-e-query-idle-hang,skip
+> +igt@kms_vblank@pipe-e-query-forked,skip
+> +igt@kms_vblank@pipe-e-query-forked-hang,skip
+> +igt@kms_vblank@pipe-e-query-busy,skip
+> +igt@kms_vblank@pipe-e-query-busy-hang,skip
+> +igt@kms_vblank@pipe-e-query-forked-busy,skip
+> +igt@kms_vblank@pipe-e-query-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-e-wait-idle,skip
+> +igt@kms_vblank@pipe-e-wait-idle-hang,skip
+> +igt@kms_vblank@pipe-e-wait-forked,skip
+> +igt@kms_vblank@pipe-e-wait-forked-hang,skip
+> +igt@kms_vblank@pipe-e-wait-busy,skip
+> +igt@kms_vblank@pipe-e-wait-busy-hang,skip
+> +igt@kms_vblank@pipe-e-wait-forked-busy,skip
+> +igt@kms_vblank@pipe-e-wait-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-e-ts-continuation-idle,skip
+> +igt@kms_vblank@pipe-e-ts-continuation-idle-hang,skip
+> +igt@kms_vblank@pipe-e-ts-continuation-dpms-rpm,skip
+> +igt@kms_vblank@pipe-e-ts-continuation-modeset,skip
+> +igt@kms_vblank@pipe-e-ts-continuation-modeset-hang,skip
+> +igt@kms_vblank@pipe-e-ts-continuation-modeset-rpm,skip
+> +igt@kms_vblank@pipe-f-accuracy-idle,skip
+> +igt@kms_vblank@pipe-f-query-idle,skip
+> +igt@kms_vblank@pipe-f-query-idle-hang,skip
+> +igt@kms_vblank@pipe-f-query-forked,skip
+> +igt@kms_vblank@pipe-f-query-forked-hang,skip
+> +igt@kms_vblank@pipe-f-query-busy,skip
+> +igt@kms_vblank@pipe-f-query-busy-hang,skip
+> +igt@kms_vblank@pipe-f-query-forked-busy,skip
+> +igt@kms_vblank@pipe-f-query-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-f-wait-idle,skip
+> +igt@kms_vblank@pipe-f-wait-idle-hang,skip
+> +igt@kms_vblank@pipe-f-wait-forked,skip
+> +igt@kms_vblank@pipe-f-wait-forked-hang,skip
+> +igt@kms_vblank@pipe-f-wait-busy,skip
+> +igt@kms_vblank@pipe-f-wait-busy-hang,skip
+> +igt@kms_vblank@pipe-f-wait-forked-busy,skip
+> +igt@kms_vblank@pipe-f-wait-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-f-ts-continuation-idle,skip
+> +igt@kms_vblank@pipe-f-ts-continuation-idle-hang,skip
+> +igt@kms_vblank@pipe-f-ts-continuation-dpms-rpm,skip
+> +igt@kms_vblank@pipe-f-ts-continuation-modeset,skip
+> +igt@kms_vblank@pipe-f-ts-continuation-modeset-hang,skip
+> +igt@kms_vblank@pipe-f-ts-continuation-modeset-rpm,skip
+> +igt@kms_vrr@flip-basic,skip
+> +igt@kms_vrr@flip-dpms,skip
+> +igt@kms_vrr@flipline,skip
+> +igt@kms_async_flip@async-flip-with-page-flip-events,skip
+> +igt@kms_async_flip@alternate-sync-async-flip,skip
+> +igt@kms_async_flip@test-time-stamp,skip
+> +igt@kms_async_flip@test-cursor,skip
+> +igt@kms_async_flip@invalid-async-flip,skip
+> +igt@kms_async_flip@crc,skip
+> diff --git a/drivers/gpu/drm/msm/ci/msm_a530_results.txt b/drivers/gpu/drm/msm/ci/msm_a530_results.txt
+> new file mode 100644
+> index 000000000000..d5bf402f830c
+> --- /dev/null
+> +++ b/drivers/gpu/drm/msm/ci/msm_a530_results.txt
+> @@ -0,0 +1,421 @@
+> +igt@core_auth@getclient-simple,pass
+> +igt@core_auth@getclient-master-drop,pass
+> +igt@core_auth@basic-auth,pass
+> +igt@core_auth@many-magics,pass
+> +igt@core_getclient,pass
+> +igt@core_getstats,pass
+> +igt@core_getversion,pass
+> +igt@core_setmaster_vs_auth,pass
+> +igt@drm_read@invalid-buffer,skip
+> +igt@drm_read@fault-buffer,skip
+> +igt@drm_read@empty-block,skip
+> +igt@drm_read@empty-nonblock,skip
+> +igt@drm_read@short-buffer-block,skip
+> +igt@drm_read@short-buffer-nonblock,skip
+> +igt@drm_read@short-buffer-wakeup,skip
+> +igt@kms_addfb_basic@unused-handle,pass
+> +igt@kms_addfb_basic@unused-pitches,pass
+> +igt@kms_addfb_basic@unused-offsets,pass
+> +igt@kms_addfb_basic@unused-modifier,pass
+> +igt@kms_addfb_basic@clobberred-modifier,skip
+> +igt@kms_addfb_basic@invalid-smem-bo-on-discrete,skip
+> +igt@kms_addfb_basic@legacy-format,dmesg-warn
+> +igt@kms_addfb_basic@no-handle,pass
+> +igt@kms_addfb_basic@basic,pass
+> +igt@kms_addfb_basic@bad-pitch-0,pass
+> +igt@kms_addfb_basic@bad-pitch-32,pass
+> +igt@kms_addfb_basic@bad-pitch-63,pass
+> +igt@kms_addfb_basic@bad-pitch-128,pass
+> +igt@kms_addfb_basic@bad-pitch-256,pass
+> +igt@kms_addfb_basic@bad-pitch-1024,pass
+> +igt@kms_addfb_basic@bad-pitch-999,pass
+> +igt@kms_addfb_basic@bad-pitch-65536,pass
+> +igt@kms_addfb_basic@size-max,pass
+> +igt@kms_addfb_basic@too-wide,pass
+> +igt@kms_addfb_basic@too-high,dmesg-warn
+> +igt@kms_addfb_basic@bo-too-small,pass
+> +igt@kms_addfb_basic@small-bo,pass
+> +igt@kms_addfb_basic@bo-too-small-due-to-tiling,skip
+> +igt@kms_addfb_basic@addfb25-modifier-no-flag,pass
+> +igt@kms_addfb_basic@addfb25-bad-modifier,fail
+> +igt@kms_addfb_basic@addfb25-x-tiled-mismatch-legacy,skip
+> +igt@kms_addfb_basic@addfb25-x-tiled-legacy,skip
+> +igt@kms_addfb_basic@addfb25-framebuffer-vs-set-tiling,skip
+> +igt@kms_addfb_basic@addfb25-y-tiled-legacy,skip
+> +igt@kms_addfb_basic@addfb25-yf-tiled-legacy,skip
+> +igt@kms_addfb_basic@addfb25-y-tiled-small-legacy,skip
+> +igt@kms_addfb_basic@addfb25-4-tiled,skip
+> +igt@kms_addfb_basic@basic-x-tiled-legacy,skip
+> +igt@kms_addfb_basic@framebuffer-vs-set-tiling,skip
+> +igt@kms_addfb_basic@tile-pitch-mismatch,skip
+> +igt@kms_addfb_basic@basic-y-tiled-legacy,skip
+> +igt@kms_addfb_basic@invalid-get-prop-any,pass
+> +igt@kms_addfb_basic@invalid-get-prop,pass
+> +igt@kms_addfb_basic@invalid-set-prop-any,pass
+> +igt@kms_addfb_basic@invalid-set-prop,pass
+> +igt@kms_addfb_basic@master-rmfb,pass
+> +igt@kms_atomic@plane-overlay-legacy,skip
+> +igt@kms_atomic@plane-primary-legacy,skip
+> +igt@kms_atomic@plane-primary-overlay-mutable-zpos,skip
+> +igt@kms_atomic@plane-immutable-zpos,skip
+> +igt@kms_atomic@test-only,skip
+> +igt@kms_atomic@plane-cursor-legacy,skip
+> +igt@kms_atomic@plane-invalid-params,skip
+> +igt@kms_atomic@plane-invalid-params-fence,skip
+> +igt@kms_atomic@crtc-invalid-params,skip
+> +igt@kms_atomic@crtc-invalid-params-fence,skip
+> +igt@kms_atomic@atomic-invalid-params,skip
+> +igt@kms_atomic@atomic_plane_damage,skip
+> +igt@kms_atomic_interruptible@legacy-setmode,skip
+> +igt@kms_atomic_interruptible@atomic-setmode,skip
+> +igt@kms_atomic_interruptible@legacy-dpms,skip
+> +igt@kms_atomic_interruptible@legacy-pageflip,skip
+> +igt@kms_atomic_interruptible@legacy-cursor,skip
+> +igt@kms_atomic_interruptible@universal-setplane-primary,skip
+> +igt@kms_atomic_interruptible@universal-setplane-cursor,skip
+> +igt@kms_content_protection@legacy,skip
+> +igt@kms_content_protection@atomic,skip
+> +igt@kms_content_protection@atomic-dpms,skip
+> +igt@kms_content_protection@lic,skip
+> +igt@kms_content_protection@type1,skip
+> +igt@kms_content_protection@mei_interface,skip
+> +igt@kms_content_protection@content_type_change,skip
+> +igt@kms_content_protection@uevent,skip
+> +igt@kms_content_protection@srm,skip
+> +igt@kms_content_protection@dp-mst-type-0,skip
+> +igt@kms_content_protection@dp-mst-lic-type-0,skip
+> +igt@kms_content_protection@dp-mst-type-1,skip
+> +igt@kms_content_protection@dp-mst-lic-type-1,skip
+> +igt@kms_dp_aux_dev,skip
+> +igt@kms_flip_event_leak,skip
+> +igt@kms_getfb@getfb-handle-zero,pass
+> +igt@kms_getfb@getfb-handle-valid,pass
+> +igt@kms_getfb@getfb-handle-closed,pass
+> +igt@kms_getfb@getfb-handle-not-fb,pass
+> +igt@kms_getfb@getfb-addfb-different-handles,pass
+> +igt@kms_getfb@getfb-repeated-different-handles,pass
+> +igt@kms_getfb@getfb-reject-ccs,skip
+> +igt@kms_getfb@getfb2-handle-zero,pass
+> +igt@kms_getfb@getfb2-handle-closed,pass
+> +igt@kms_getfb@getfb2-handle-not-fb,pass
+> +igt@kms_getfb@getfb2-accept-ccs,skip
+> +igt@kms_getfb@getfb2-into-addfb2,pass
+> +igt@kms_getfb@getfb-handle-protection,pass
+> +igt@kms_getfb@getfb2-handle-protection,pass
+> +igt@kms_hdmi_inject@inject-4k,dmesg-warn
+> +igt@kms_hdmi_inject@inject-audio,skip
+> +igt@kms_hdr@bpc-switch,skip
+> +igt@kms_hdr@bpc-switch-dpms,skip
+> +igt@kms_hdr@static-toggle,skip
+> +igt@kms_hdr@static-toggle-dpms,skip
+> +igt@kms_hdr@static-swap,skip
+> +igt@kms_multipipe_modeset@basic-max-pipe-crc-check,skip
+> +igt@kms_pipe_crc_basic@bad-source,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-a,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-a-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-a,skip
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-a,skip
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-a,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-b,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-b-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-b,skip
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-b,skip
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-b,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-c,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-c-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-c,skip
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-c,skip
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-c,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-d,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-d-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-d,skip
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-d,skip
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-d,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-e,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-e-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-e,skip
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-e,skip
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-e,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-f,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-f-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-f,skip
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-f,skip
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-f,skip
+> +igt@kms_plane_lowres@pipe-a-tiling-none,skip
+> +igt@kms_plane_lowres@pipe-a-tiling-x,skip
+> +igt@kms_plane_lowres@pipe-a-tiling-y,skip
+> +igt@kms_plane_lowres@pipe-a-tiling-yf,skip
+> +igt@kms_plane_lowres@pipe-a-tiling-4,skip
+> +igt@kms_plane_lowres@pipe-b-tiling-none,skip
+> +igt@kms_plane_lowres@pipe-b-tiling-x,skip
+> +igt@kms_plane_lowres@pipe-b-tiling-y,skip
+> +igt@kms_plane_lowres@pipe-b-tiling-yf,skip
+> +igt@kms_plane_lowres@pipe-b-tiling-4,skip
+> +igt@kms_plane_lowres@pipe-c-tiling-none,skip
+> +igt@kms_plane_lowres@pipe-c-tiling-x,skip
+> +igt@kms_plane_lowres@pipe-c-tiling-y,skip
+> +igt@kms_plane_lowres@pipe-c-tiling-yf,skip
+> +igt@kms_plane_lowres@pipe-c-tiling-4,skip
+> +igt@kms_plane_lowres@pipe-d-tiling-none,skip
+> +igt@kms_plane_lowres@pipe-d-tiling-x,skip
+> +igt@kms_plane_lowres@pipe-d-tiling-y,skip
+> +igt@kms_plane_lowres@pipe-d-tiling-yf,skip
+> +igt@kms_plane_lowres@pipe-d-tiling-4,skip
+> +igt@kms_plane_lowres@pipe-e-tiling-none,skip
+> +igt@kms_plane_lowres@pipe-e-tiling-x,skip
+> +igt@kms_plane_lowres@pipe-e-tiling-y,skip
+> +igt@kms_plane_lowres@pipe-e-tiling-yf,skip
+> +igt@kms_plane_lowres@pipe-e-tiling-4,skip
+> +igt@kms_plane_lowres@pipe-f-tiling-none,skip
+> +igt@kms_plane_lowres@pipe-f-tiling-x,skip
+> +igt@kms_plane_lowres@pipe-f-tiling-y,skip
+> +igt@kms_plane_lowres@pipe-f-tiling-yf,skip
+> +igt@kms_plane_lowres@pipe-f-tiling-4,skip
+> +igt@kms_prop_blob@basic,pass
+> +igt@kms_prop_blob@blob-prop-core,pass
+> +igt@kms_prop_blob@blob-prop-validate,pass
+> +igt@kms_prop_blob@blob-prop-lifetime,pass
+> +igt@kms_prop_blob@blob-multiple,pass
+> +igt@kms_prop_blob@invalid-get-prop-any,pass
+> +igt@kms_prop_blob@invalid-get-prop,pass
+> +igt@kms_prop_blob@invalid-set-prop-any,pass
+> +igt@kms_prop_blob@invalid-set-prop,pass
+> +igt@kms_rmfb@rmfb-ioctl,skip
+> +igt@kms_rmfb@close-fd,skip
+> +igt@kms_rotation_crc@primary-rotation-90,skip
+> +igt@kms_rotation_crc@primary-rotation-180,skip
+> +igt@kms_rotation_crc@primary-rotation-270,skip
+> +igt@kms_rotation_crc@sprite-rotation-90,skip
+> +igt@kms_rotation_crc@sprite-rotation-180,skip
+> +igt@kms_rotation_crc@sprite-rotation-270,skip
+> +igt@kms_rotation_crc@cursor-rotation-180,skip
+> +igt@kms_rotation_crc@sprite-rotation-90-pos-100-0,skip
+> +igt@kms_rotation_crc@bad-pixel-format,skip
+> +igt@kms_rotation_crc@bad-tiling,skip
+> +igt@kms_rotation_crc@primary-x-tiled-reflect-x-0,skip
+> +igt@kms_rotation_crc@primary-x-tiled-reflect-x-180,skip
+> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-0,skip
+> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-90,skip
+> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-180,skip
+> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-270,skip
+> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-0,skip
+> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-90,skip
+> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-180,skip
+> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-270,skip
+> +igt@kms_rotation_crc@primary-4-tiled-reflect-x-0,skip
+> +igt@kms_rotation_crc@primary-4-tiled-reflect-x-180,skip
+> +igt@kms_rotation_crc@multiplane-rotation,skip
+> +igt@kms_rotation_crc@multiplane-rotation-cropping-top,skip
+> +igt@kms_rotation_crc@multiplane-rotation-cropping-bottom,skip
+> +igt@kms_rotation_crc@exhaust-fences,skip
+> +igt@kms_selftest@all,skip
+> +igt@kms_setmode@basic,skip
+> +igt@kms_setmode@basic-clone-single-crtc,skip
+> +igt@kms_setmode@invalid-clone-single-crtc,skip
+> +igt@kms_setmode@invalid-clone-exclusive-crtc,skip
+> +igt@kms_setmode@clone-exclusive-crtc,skip
+> +igt@kms_setmode@invalid-clone-single-crtc-stealing,skip
+> +igt@msm_mapping@sqefw,skip
+> +igt@msm_mapping@shadow,skip
+> +igt@msm_recovery@hangcheck,skip
+> +igt@msm_recovery@gpu-fault,skip
+> +igt@msm_recovery@iova-fault,skip
+> +igt@msm_submit@empty-submit,pass
+> +igt@msm_submit@invalid-queue-submit,pass
+> +igt@msm_submit@invalid-flags-submit,pass
+> +igt@msm_submit@invalid-in-fence-submit,pass
+> +igt@msm_submit@invalid-duplicate-bo-submit,dmesg-warn
+> +igt@msm_submit@invalid-cmd-idx-submit,dmesg-warn
+> +igt@msm_submit@invalid-cmd-type-submit,dmesg-warn
+> +igt@msm_submit@valid-submit,pass
+> +igt@kms_sysfs_edid_timing,pass
+> +igt@kms_universal_plane@universal-plane-pipe-a-functional,skip
+> +igt@kms_universal_plane@universal-plane-pipe-a-sanity,skip
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-a,skip
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-a,skip
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-a,skip
+> +igt@kms_universal_plane@universal-plane-pipe-b-functional,skip
+> +igt@kms_universal_plane@universal-plane-pipe-b-sanity,skip
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-b,skip
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-b,skip
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-b,skip
+> +igt@kms_universal_plane@universal-plane-pipe-c-functional,skip
+> +igt@kms_universal_plane@universal-plane-pipe-c-sanity,skip
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-c,skip
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-c,skip
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-c,skip
+> +igt@kms_universal_plane@universal-plane-pipe-d-functional,skip
+> +igt@kms_universal_plane@universal-plane-pipe-d-sanity,skip
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-d,skip
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-d,skip
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-d,skip
+> +igt@kms_universal_plane@universal-plane-pipe-e-functional,skip
+> +igt@kms_universal_plane@universal-plane-pipe-e-sanity,skip
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-e,skip
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-e,skip
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-e,skip
+> +igt@kms_universal_plane@universal-plane-pipe-f-functional,skip
+> +igt@kms_universal_plane@universal-plane-pipe-f-sanity,skip
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-f,skip
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-f,skip
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-f,skip
+> +igt@kms_vblank@invalid,skip
+> +igt@kms_vblank@crtc-id,skip
+> +igt@kms_vblank@pipe-a-query-idle,skip
+> +igt@kms_vblank@pipe-a-query-idle-hang,skip
+> +igt@kms_vblank@pipe-a-query-forked,skip
+> +igt@kms_vblank@pipe-a-query-forked-hang,skip
+> +igt@kms_vblank@pipe-a-query-busy,skip
+> +igt@kms_vblank@pipe-a-query-busy-hang,skip
+> +igt@kms_vblank@pipe-a-query-forked-busy,skip
+> +igt@kms_vblank@pipe-a-query-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-a-wait-idle,skip
+> +igt@kms_vblank@pipe-a-wait-idle-hang,skip
+> +igt@kms_vblank@pipe-a-wait-forked,skip
+> +igt@kms_vblank@pipe-a-wait-forked-hang,skip
+> +igt@kms_vblank@pipe-a-wait-busy,skip
+> +igt@kms_vblank@pipe-a-wait-busy-hang,skip
+> +igt@kms_vblank@pipe-a-wait-forked-busy,skip
+> +igt@kms_vblank@pipe-a-wait-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-a-ts-continuation-idle,skip
+> +igt@kms_vblank@pipe-a-ts-continuation-idle-hang,skip
+> +igt@kms_vblank@pipe-a-ts-continuation-dpms-rpm,skip
+> +igt@kms_vblank@pipe-a-ts-continuation-modeset,skip
+> +igt@kms_vblank@pipe-a-ts-continuation-modeset-hang,skip
+> +igt@kms_vblank@pipe-a-ts-continuation-modeset-rpm,skip
+> +igt@kms_vblank@pipe-b-accuracy-idle,skip
+> +igt@kms_vblank@pipe-b-query-idle,skip
+> +igt@kms_vblank@pipe-b-query-idle-hang,skip
+> +igt@kms_vblank@pipe-b-query-forked,skip
+> +igt@kms_vblank@pipe-b-query-forked-hang,skip
+> +igt@kms_vblank@pipe-b-query-busy,skip
+> +igt@kms_vblank@pipe-b-query-busy-hang,skip
+> +igt@kms_vblank@pipe-b-query-forked-busy,skip
+> +igt@kms_vblank@pipe-b-query-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-b-wait-idle,skip
+> +igt@kms_vblank@pipe-b-wait-idle-hang,skip
+> +igt@kms_vblank@pipe-b-wait-forked,skip
+> +igt@kms_vblank@pipe-b-wait-forked-hang,skip
+> +igt@kms_vblank@pipe-b-wait-busy,skip
+> +igt@kms_vblank@pipe-b-wait-busy-hang,skip
+> +igt@kms_vblank@pipe-b-wait-forked-busy,skip
+> +igt@kms_vblank@pipe-b-wait-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-b-ts-continuation-idle,skip
+> +igt@kms_vblank@pipe-b-ts-continuation-idle-hang,skip
+> +igt@kms_vblank@pipe-b-ts-continuation-dpms-rpm,skip
+> +igt@kms_vblank@pipe-b-ts-continuation-modeset,skip
+> +igt@kms_vblank@pipe-b-ts-continuation-modeset-hang,skip
+> +igt@kms_vblank@pipe-b-ts-continuation-modeset-rpm,skip
+> +igt@kms_vblank@pipe-c-accuracy-idle,skip
+> +igt@kms_vblank@pipe-c-query-idle,skip
+> +igt@kms_vblank@pipe-c-query-idle-hang,skip
+> +igt@kms_vblank@pipe-c-query-forked,skip
+> +igt@kms_vblank@pipe-c-query-forked-hang,skip
+> +igt@kms_vblank@pipe-c-query-busy,skip
+> +igt@kms_vblank@pipe-c-query-busy-hang,skip
+> +igt@kms_vblank@pipe-c-query-forked-busy,skip
+> +igt@kms_vblank@pipe-c-query-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-c-wait-idle,skip
+> +igt@kms_vblank@pipe-c-wait-idle-hang,skip
+> +igt@kms_vblank@pipe-c-wait-forked,skip
+> +igt@kms_vblank@pipe-c-wait-forked-hang,skip
+> +igt@kms_vblank@pipe-c-wait-busy,skip
+> +igt@kms_vblank@pipe-c-wait-busy-hang,skip
+> +igt@kms_vblank@pipe-c-wait-forked-busy,skip
+> +igt@kms_vblank@pipe-c-wait-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-c-ts-continuation-idle,skip
+> +igt@kms_vblank@pipe-c-ts-continuation-idle-hang,skip
+> +igt@kms_vblank@pipe-c-ts-continuation-dpms-rpm,skip
+> +igt@kms_vblank@pipe-c-ts-continuation-modeset,skip
+> +igt@kms_vblank@pipe-c-ts-continuation-modeset-hang,skip
+> +igt@kms_vblank@pipe-c-ts-continuation-modeset-rpm,skip
+> +igt@kms_vblank@pipe-d-accuracy-idle,skip
+> +igt@kms_vblank@pipe-d-query-idle,skip
+> +igt@kms_vblank@pipe-d-query-idle-hang,skip
+> +igt@kms_vblank@pipe-d-query-forked,skip
+> +igt@kms_vblank@pipe-d-query-forked-hang,skip
+> +igt@kms_vblank@pipe-d-query-busy,skip
+> +igt@kms_vblank@pipe-d-query-busy-hang,skip
+> +igt@kms_vblank@pipe-d-query-forked-busy,skip
+> +igt@kms_vblank@pipe-d-query-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-d-wait-idle,skip
+> +igt@kms_vblank@pipe-d-wait-idle-hang,skip
+> +igt@kms_vblank@pipe-d-wait-forked,skip
+> +igt@kms_vblank@pipe-d-wait-forked-hang,skip
+> +igt@kms_vblank@pipe-d-wait-busy,skip
+> +igt@kms_vblank@pipe-d-wait-busy-hang,skip
+> +igt@kms_vblank@pipe-d-wait-forked-busy,skip
+> +igt@kms_vblank@pipe-d-wait-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-d-ts-continuation-idle,skip
+> +igt@kms_vblank@pipe-d-ts-continuation-idle-hang,skip
+> +igt@kms_vblank@pipe-d-ts-continuation-dpms-rpm,skip
+> +igt@kms_vblank@pipe-d-ts-continuation-modeset,skip
+> +igt@kms_vblank@pipe-d-ts-continuation-modeset-hang,skip
+> +igt@kms_vblank@pipe-d-ts-continuation-modeset-rpm,skip
+> +igt@kms_vblank@pipe-e-accuracy-idle,skip
+> +igt@kms_vblank@pipe-e-query-idle,skip
+> +igt@kms_vblank@pipe-e-query-idle-hang,skip
+> +igt@kms_vblank@pipe-e-query-forked,skip
+> +igt@kms_vblank@pipe-e-query-forked-hang,skip
+> +igt@kms_vblank@pipe-e-query-busy,skip
+> +igt@kms_vblank@pipe-e-query-busy-hang,skip
+> +igt@kms_vblank@pipe-e-query-forked-busy,skip
+> +igt@kms_vblank@pipe-e-query-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-e-wait-idle,skip
+> +igt@kms_vblank@pipe-e-wait-idle-hang,skip
+> +igt@kms_vblank@pipe-e-wait-forked,skip
+> +igt@kms_vblank@pipe-e-wait-forked-hang,skip
+> +igt@kms_vblank@pipe-e-wait-busy,skip
+> +igt@kms_vblank@pipe-e-wait-busy-hang,skip
+> +igt@kms_vblank@pipe-e-wait-forked-busy,skip
+> +igt@kms_vblank@pipe-e-wait-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-e-ts-continuation-idle,skip
+> +igt@kms_vblank@pipe-e-ts-continuation-idle-hang,skip
+> +igt@kms_vblank@pipe-e-ts-continuation-dpms-rpm,skip
+> +igt@kms_vblank@pipe-e-ts-continuation-modeset,skip
+> +igt@kms_vblank@pipe-e-ts-continuation-modeset-hang,skip
+> +igt@kms_vblank@pipe-e-ts-continuation-modeset-rpm,skip
+> +igt@kms_vblank@pipe-f-accuracy-idle,skip
+> +igt@kms_vblank@pipe-f-query-idle,skip
+> +igt@kms_vblank@pipe-f-query-idle-hang,skip
+> +igt@kms_vblank@pipe-f-query-forked,skip
+> +igt@kms_vblank@pipe-f-query-forked-hang,skip
+> +igt@kms_vblank@pipe-f-query-busy,skip
+> +igt@kms_vblank@pipe-f-query-busy-hang,skip
+> +igt@kms_vblank@pipe-f-query-forked-busy,skip
+> +igt@kms_vblank@pipe-f-query-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-f-wait-idle,skip
+> +igt@kms_vblank@pipe-f-wait-idle-hang,skip
+> +igt@kms_vblank@pipe-f-wait-forked,skip
+> +igt@kms_vblank@pipe-f-wait-forked-hang,skip
+> +igt@kms_vblank@pipe-f-wait-busy,skip
+> +igt@kms_vblank@pipe-f-wait-busy-hang,skip
+> +igt@kms_vblank@pipe-f-wait-forked-busy,skip
+> +igt@kms_vblank@pipe-f-wait-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-f-ts-continuation-idle,skip
+> +igt@kms_vblank@pipe-f-ts-continuation-idle-hang,skip
+> +igt@kms_vblank@pipe-f-ts-continuation-dpms-rpm,skip
+> +igt@kms_vblank@pipe-f-ts-continuation-modeset,skip
+> +igt@kms_vblank@pipe-f-ts-continuation-modeset-hang,skip
+> +igt@kms_vblank@pipe-f-ts-continuation-modeset-rpm,skip
+> +igt@kms_vrr@flip-basic,skip
+> +igt@kms_vrr@flip-dpms,skip
+> +igt@kms_vrr@flipline,skip
+> +igt@kms_async_flip@async-flip-with-page-flip-events,skip
+> +igt@kms_async_flip@alternate-sync-async-flip,skip
+> +igt@kms_async_flip@test-time-stamp,skip
+> +igt@kms_async_flip@test-cursor,skip
+> +igt@kms_async_flip@invalid-async-flip,skip
+> +igt@kms_async_flip@crc,skip
+> diff --git a/drivers/gpu/drm/msm/ci/msm_a618_results.txt b/drivers/gpu/drm/msm/ci/msm_a618_results.txt
+> new file mode 100644
+> index 000000000000..6e42262bf61b
+> --- /dev/null
+> +++ b/drivers/gpu/drm/msm/ci/msm_a618_results.txt
+> @@ -0,0 +1,422 @@
+> +igt@core_auth@getclient-simple,dmesg-warn
+> +igt@core_auth@getclient-master-drop,pass
+> +igt@core_auth@basic-auth,pass
+> +igt@core_auth@many-magics,pass
+> +igt@core_getclient,pass
+> +igt@core_getstats,pass
+> +igt@core_getversion,pass
+> +igt@core_setmaster_vs_auth,pass
+> +igt@drm_read@invalid-buffer,pass
+> +igt@drm_read@fault-buffer,pass
+> +igt@drm_read@empty-block,pass
+> +igt@drm_read@empty-nonblock,pass
+> +igt@drm_read@short-buffer-block,pass
+> +igt@drm_read@short-buffer-nonblock,pass
+> +igt@drm_read@short-buffer-wakeup,pass
+> +igt@kms_addfb_basic@unused-handle,pass
+> +igt@kms_addfb_basic@unused-pitches,pass
+> +igt@kms_addfb_basic@unused-offsets,pass
+> +igt@kms_addfb_basic@unused-modifier,pass
+> +igt@kms_addfb_basic@clobberred-modifier,skip
+> +igt@kms_addfb_basic@invalid-smem-bo-on-discrete,skip
+> +igt@kms_addfb_basic@legacy-format,dmesg-warn
+> +igt@kms_addfb_basic@no-handle,pass
+> +igt@kms_addfb_basic@basic,pass
+> +igt@kms_addfb_basic@bad-pitch-0,pass
+> +igt@kms_addfb_basic@bad-pitch-32,pass
+> +igt@kms_addfb_basic@bad-pitch-63,pass
+> +igt@kms_addfb_basic@bad-pitch-128,pass
+> +igt@kms_addfb_basic@bad-pitch-256,pass
+> +igt@kms_addfb_basic@bad-pitch-1024,pass
+> +igt@kms_addfb_basic@bad-pitch-999,pass
+> +igt@kms_addfb_basic@bad-pitch-65536,pass
+> +igt@kms_addfb_basic@size-max,pass
+> +igt@kms_addfb_basic@too-wide,pass
+> +igt@kms_addfb_basic@too-high,dmesg-warn
+> +igt@kms_addfb_basic@bo-too-small,pass
+> +igt@kms_addfb_basic@small-bo,pass
+> +igt@kms_addfb_basic@bo-too-small-due-to-tiling,skip
+> +igt@kms_addfb_basic@addfb25-modifier-no-flag,pass
+> +igt@kms_addfb_basic@addfb25-bad-modifier,dmesg-warn
+> +igt@kms_addfb_basic@addfb25-x-tiled-mismatch-legacy,skip
+> +igt@kms_addfb_basic@addfb25-x-tiled-legacy,skip
+> +igt@kms_addfb_basic@addfb25-framebuffer-vs-set-tiling,skip
+> +igt@kms_addfb_basic@addfb25-y-tiled-legacy,skip
+> +igt@kms_addfb_basic@addfb25-yf-tiled-legacy,skip
+> +igt@kms_addfb_basic@addfb25-y-tiled-small-legacy,skip
+> +igt@kms_addfb_basic@addfb25-4-tiled,skip
+> +igt@kms_addfb_basic@basic-x-tiled-legacy,skip
+> +igt@kms_addfb_basic@framebuffer-vs-set-tiling,skip
+> +igt@kms_addfb_basic@tile-pitch-mismatch,skip
+> +igt@kms_addfb_basic@basic-y-tiled-legacy,skip
+> +igt@kms_addfb_basic@invalid-get-prop-any,pass
+> +igt@kms_addfb_basic@invalid-get-prop,pass
+> +igt@kms_addfb_basic@invalid-set-prop-any,pass
+> +igt@kms_addfb_basic@invalid-set-prop,pass
+> +igt@kms_addfb_basic@master-rmfb,pass
+> +igt@kms_atomic@plane-overlay-legacy,skip
+> +igt@kms_atomic@plane-primary-legacy,pass
+> +igt@kms_atomic@plane-primary-overlay-mutable-zpos,skip
+> +igt@kms_atomic@plane-immutable-zpos,pass
+> +igt@kms_atomic@test-only,pass
+> +igt@kms_atomic@plane-cursor-legacy,pass
+> +igt@kms_atomic@plane-invalid-params,pass
+> +igt@kms_atomic@plane-invalid-params-fence,skip
+> +igt@kms_atomic@crtc-invalid-params,pass
+> +igt@kms_atomic@crtc-invalid-params-fence,skip
+> +igt@kms_atomic@atomic-invalid-params,pass
+> +igt@kms_atomic@atomic_plane_damage,pass
+> +igt@kms_atomic_interruptible@legacy-setmode,skip
+> +igt@kms_atomic_interruptible@atomic-setmode,skip
+> +igt@kms_atomic_interruptible@legacy-dpms,skip
+> +igt@kms_atomic_interruptible@legacy-pageflip,skip
+> +igt@kms_atomic_interruptible@legacy-cursor,skip
+> +igt@kms_atomic_interruptible@universal-setplane-primary,skip
+> +igt@kms_atomic_interruptible@universal-setplane-cursor,skip
+> +igt@kms_content_protection@legacy,skip
+> +igt@kms_content_protection@atomic,skip
+> +igt@kms_content_protection@atomic-dpms,skip
+> +igt@kms_content_protection@lic,skip
+> +igt@kms_content_protection@type1,skip
+> +igt@kms_content_protection@mei_interface,skip
+> +igt@kms_content_protection@content_type_change,skip
+> +igt@kms_content_protection@uevent,skip
+> +igt@kms_content_protection@srm,skip
+> +igt@kms_content_protection@dp-mst-type-0,skip
+> +igt@kms_content_protection@dp-mst-lic-type-0,skip
+> +igt@kms_content_protection@dp-mst-type-1,skip
+> +igt@kms_content_protection@dp-mst-lic-type-1,skip
+> +igt@kms_dp_aux_dev,skip
+> +igt@kms_flip_event_leak,pass
+> +igt@kms_getfb@getfb-handle-zero,pass
+> +igt@kms_getfb@getfb-handle-valid,pass
+> +igt@kms_getfb@getfb-handle-closed,pass
+> +igt@kms_getfb@getfb-handle-not-fb,pass
+> +igt@kms_getfb@getfb-addfb-different-handles,pass
+> +igt@kms_getfb@getfb-repeated-different-handles,pass
+> +igt@kms_getfb@getfb-reject-ccs,skip
+> +igt@kms_getfb@getfb2-handle-zero,pass
+> +igt@kms_getfb@getfb2-handle-closed,pass
+> +igt@kms_getfb@getfb2-handle-not-fb,pass
+> +igt@kms_getfb@getfb2-accept-ccs,skip
+> +igt@kms_getfb@getfb2-into-addfb2,pass
+> +igt@kms_getfb@getfb-handle-protection,pass
+> +igt@kms_getfb@getfb2-handle-protection,pass
+> +igt@kms_hdmi_inject@inject-4k,skip
+> +igt@kms_hdmi_inject@inject-audio,skip
+> +igt@kms_hdr@bpc-switch,skip
+> +igt@kms_hdr@bpc-switch-dpms,skip
+> +igt@kms_hdr@static-toggle,skip
+> +igt@kms_hdr@static-toggle-dpms,skip
+> +igt@kms_hdr@static-swap,skip
+> +igt@kms_multipipe_modeset@basic-max-pipe-crc-check,skip
+> +igt@kms_pipe_crc_basic@bad-source,pass
+> +igt@kms_pipe_crc_basic@read-crc-pipe-a,pass
+> +igt@kms_pipe_crc_basic@read-crc-pipe-a-frame-sequence,pass
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a,pass
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a-frame-sequence,pass
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-a,pass
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-a,skip
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-a,pass
+> +igt@kms_pipe_crc_basic@read-crc-pipe-b,pass
+> +igt@kms_pipe_crc_basic@read-crc-pipe-b-frame-sequence,pass
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b,pass
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b-frame-sequence,pass
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-b,pass
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-b,skip
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-b,pass
+> +igt@kms_pipe_crc_basic@read-crc-pipe-c,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-c-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-c,skip
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-c,skip
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-c,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-d,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-d-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-d,skip
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-d,skip
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-d,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-e,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-e-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-e,skip
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-e,skip
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-e,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-f,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-f-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-f,skip
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-f,skip
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-f,skip
+> +igt@kms_plane_lowres@pipe-a-tiling-none,skip
+> +igt@kms_plane_lowres@pipe-a-tiling-x,skip
+> +igt@kms_plane_lowres@pipe-a-tiling-y,skip
+> +igt@kms_plane_lowres@pipe-a-tiling-yf,skip
+> +igt@kms_plane_lowres@pipe-a-tiling-4,skip
+> +igt@kms_plane_lowres@pipe-b-tiling-none,skip
+> +igt@kms_plane_lowres@pipe-b-tiling-x,skip
+> +igt@kms_plane_lowres@pipe-b-tiling-y,skip
+> +igt@kms_plane_lowres@pipe-b-tiling-yf,skip
+> +igt@kms_plane_lowres@pipe-b-tiling-4,skip
+> +igt@kms_plane_lowres@pipe-c-tiling-none,skip
+> +igt@kms_plane_lowres@pipe-c-tiling-x,skip
+> +igt@kms_plane_lowres@pipe-c-tiling-y,skip
+> +igt@kms_plane_lowres@pipe-c-tiling-yf,skip
+> +igt@kms_plane_lowres@pipe-c-tiling-4,skip
+> +igt@kms_plane_lowres@pipe-d-tiling-none,skip
+> +igt@kms_plane_lowres@pipe-d-tiling-x,skip
+> +igt@kms_plane_lowres@pipe-d-tiling-y,skip
+> +igt@kms_plane_lowres@pipe-d-tiling-yf,skip
+> +igt@kms_plane_lowres@pipe-d-tiling-4,skip
+> +igt@kms_plane_lowres@pipe-e-tiling-none,skip
+> +igt@kms_plane_lowres@pipe-e-tiling-x,skip
+> +igt@kms_plane_lowres@pipe-e-tiling-y,skip
+> +igt@kms_plane_lowres@pipe-e-tiling-yf,skip
+> +igt@kms_plane_lowres@pipe-e-tiling-4,skip
+> +igt@kms_plane_lowres@pipe-f-tiling-none,skip
+> +igt@kms_plane_lowres@pipe-f-tiling-x,skip
+> +igt@kms_plane_lowres@pipe-f-tiling-y,skip
+> +igt@kms_plane_lowres@pipe-f-tiling-yf,skip
+> +igt@kms_plane_lowres@pipe-f-tiling-4,skip
+> +igt@kms_prop_blob@basic,pass
+> +igt@kms_prop_blob@blob-prop-core,pass
+> +igt@kms_prop_blob@blob-prop-validate,pass
+> +igt@kms_prop_blob@blob-prop-lifetime,pass
+> +igt@kms_prop_blob@blob-multiple,pass
+> +igt@kms_prop_blob@invalid-get-prop-any,pass
+> +igt@kms_prop_blob@invalid-get-prop,pass
+> +igt@kms_prop_blob@invalid-set-prop-any,pass
+> +igt@kms_prop_blob@invalid-set-prop,pass
+> +igt@kms_rmfb@rmfb-ioctl,pass
+> +igt@kms_rmfb@close-fd,fail
+> +igt@kms_rotation_crc@primary-rotation-90,skip
+> +igt@kms_rotation_crc@primary-rotation-180,skip
+> +igt@kms_rotation_crc@primary-rotation-270,skip
+> +igt@kms_rotation_crc@sprite-rotation-90,skip
+> +igt@kms_rotation_crc@sprite-rotation-180,skip
+> +igt@kms_rotation_crc@sprite-rotation-270,skip
+> +igt@kms_rotation_crc@cursor-rotation-180,skip
+> +igt@kms_rotation_crc@sprite-rotation-90-pos-100-0,skip
+> +igt@kms_rotation_crc@bad-pixel-format,skip
+> +igt@kms_rotation_crc@bad-tiling,skip
+> +igt@kms_rotation_crc@primary-x-tiled-reflect-x-0,skip
+> +igt@kms_rotation_crc@primary-x-tiled-reflect-x-180,skip
+> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-0,skip
+> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-90,skip
+> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-180,skip
+> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-270,skip
+> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-0,skip
+> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-90,skip
+> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-180,skip
+> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-270,skip
+> +igt@kms_rotation_crc@primary-4-tiled-reflect-x-0,skip
+> +igt@kms_rotation_crc@primary-4-tiled-reflect-x-180,skip
+> +igt@kms_rotation_crc@multiplane-rotation,skip
+> +igt@kms_rotation_crc@multiplane-rotation-cropping-top,skip
+> +igt@kms_rotation_crc@multiplane-rotation-cropping-bottom,skip
+> +igt@kms_rotation_crc@exhaust-fences,skip
+> +igt@kms_selftest@all,skip
+> +igt@kms_setmode@basic@pipe-a-edp-1,pass
+> +igt@kms_setmode@basic@pipe-b-edp-1,pass
+> +igt@kms_setmode@basic-clone-single-crtc,skip
+> +igt@kms_setmode@invalid-clone-single-crtc,skip
+> +igt@kms_setmode@invalid-clone-exclusive-crtc,skip
+> +igt@kms_setmode@clone-exclusive-crtc,skip
+> +igt@kms_setmode@invalid-clone-single-crtc-stealing,skip
+> +igt@msm_mapping@sqefw,dmesg-fail
+> +igt@msm_mapping@shadow,dmesg-fail
+> +igt@msm_recovery@hangcheck,dmesg-warn
+> +igt@msm_recovery@gpu-fault,dmesg-warn
+> +igt@msm_recovery@iova-fault,dmesg-warn
+> +igt@msm_submit@empty-submit,pass
+> +igt@msm_submit@invalid-queue-submit,pass
+> +igt@msm_submit@invalid-flags-submit,pass
+> +igt@msm_submit@invalid-in-fence-submit,pass
+> +igt@msm_submit@invalid-duplicate-bo-submit,dmesg-warn
+> +igt@msm_submit@invalid-cmd-idx-submit,dmesg-warn
+> +igt@msm_submit@invalid-cmd-type-submit,dmesg-warn
+> +igt@msm_submit@valid-submit,pass
+> +igt@kms_sysfs_edid_timing,pass
+> +igt@kms_universal_plane@universal-plane-pipe-a-functional,skip
+> +igt@kms_universal_plane@universal-plane-pipe-a-sanity,skip
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-a,pass
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-a,skip
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-a,skip
+> +igt@kms_universal_plane@universal-plane-pipe-b-functional,skip
+> +igt@kms_universal_plane@universal-plane-pipe-b-sanity,skip
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-b,fail
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-b,skip
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-b,skip
+> +igt@kms_universal_plane@universal-plane-pipe-c-functional,skip
+> +igt@kms_universal_plane@universal-plane-pipe-c-sanity,skip
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-c,skip
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-c,skip
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-c,skip
+> +igt@kms_universal_plane@universal-plane-pipe-d-functional,skip
+> +igt@kms_universal_plane@universal-plane-pipe-d-sanity,skip
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-d,skip
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-d,skip
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-d,skip
+> +igt@kms_universal_plane@universal-plane-pipe-e-functional,skip
+> +igt@kms_universal_plane@universal-plane-pipe-e-sanity,skip
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-e,skip
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-e,skip
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-e,skip
+> +igt@kms_universal_plane@universal-plane-pipe-f-functional,skip
+> +igt@kms_universal_plane@universal-plane-pipe-f-sanity,skip
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-f,skip
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-f,skip
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-f,skip
+> +igt@kms_vblank@invalid,pass
+> +igt@kms_vblank@crtc-id,pass
+> +igt@kms_vblank@pipe-a-query-idle,pass
+> +igt@kms_vblank@pipe-a-query-idle-hang,skip
+> +igt@kms_vblank@pipe-a-query-forked,pass
+> +igt@kms_vblank@pipe-a-query-forked-hang,skip
+> +igt@kms_vblank@pipe-a-query-busy,pass
+> +igt@kms_vblank@pipe-a-query-busy-hang,skip
+> +igt@kms_vblank@pipe-a-query-forked-busy,pass
+> +igt@kms_vblank@pipe-a-query-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-a-wait-idle,pass
+> +igt@kms_vblank@pipe-a-wait-idle-hang,skip
+> +igt@kms_vblank@pipe-a-wait-forked,pass
+> +igt@kms_vblank@pipe-a-wait-forked-hang,skip
+> +igt@kms_vblank@pipe-a-wait-busy,pass
+> +igt@kms_vblank@pipe-a-wait-busy-hang,skip
+> +igt@kms_vblank@pipe-a-wait-forked-busy,pass
+> +igt@kms_vblank@pipe-a-wait-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-a-ts-continuation-idle,pass
+> +igt@kms_vblank@pipe-a-ts-continuation-idle-hang,skip
+> +igt@kms_vblank@pipe-a-ts-continuation-dpms-rpm,skip
+> +igt@kms_vblank@pipe-a-ts-continuation-modeset,pass
+> +igt@kms_vblank@pipe-a-ts-continuation-modeset-hang,skip
+> +igt@kms_vblank@pipe-a-ts-continuation-modeset-rpm,skip
+> +igt@kms_vblank@pipe-b-accuracy-idle,pass
+> +igt@kms_vblank@pipe-b-query-idle,pass
+> +igt@kms_vblank@pipe-b-query-idle-hang,skip
+> +igt@kms_vblank@pipe-b-query-forked,pass
+> +igt@kms_vblank@pipe-b-query-forked-hang,skip
+> +igt@kms_vblank@pipe-b-query-busy,pass
+> +igt@kms_vblank@pipe-b-query-busy-hang,skip
+> +igt@kms_vblank@pipe-b-query-forked-busy,pass
+> +igt@kms_vblank@pipe-b-query-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-b-wait-idle,pass
+> +igt@kms_vblank@pipe-b-wait-idle-hang,skip
+> +igt@kms_vblank@pipe-b-wait-forked,pass
+> +igt@kms_vblank@pipe-b-wait-forked-hang,skip
+> +igt@kms_vblank@pipe-b-wait-busy,pass
+> +igt@kms_vblank@pipe-b-wait-busy-hang,skip
+> +igt@kms_vblank@pipe-b-wait-forked-busy,pass
+> +igt@kms_vblank@pipe-b-wait-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-b-ts-continuation-idle,pass
+> +igt@kms_vblank@pipe-b-ts-continuation-idle-hang,skip
+> +igt@kms_vblank@pipe-b-ts-continuation-dpms-rpm,skip
+> +igt@kms_vblank@pipe-b-ts-continuation-modeset,pass
+> +igt@kms_vblank@pipe-b-ts-continuation-modeset-hang,skip
+> +igt@kms_vblank@pipe-b-ts-continuation-modeset-rpm,skip
+> +igt@kms_vblank@pipe-c-accuracy-idle,skip
+> +igt@kms_vblank@pipe-c-query-idle,skip
+> +igt@kms_vblank@pipe-c-query-idle-hang,skip
+> +igt@kms_vblank@pipe-c-query-forked,skip
+> +igt@kms_vblank@pipe-c-query-forked-hang,skip
+> +igt@kms_vblank@pipe-c-query-busy,skip
+> +igt@kms_vblank@pipe-c-query-busy-hang,skip
+> +igt@kms_vblank@pipe-c-query-forked-busy,skip
+> +igt@kms_vblank@pipe-c-query-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-c-wait-idle,skip
+> +igt@kms_vblank@pipe-c-wait-idle-hang,skip
+> +igt@kms_vblank@pipe-c-wait-forked,skip
+> +igt@kms_vblank@pipe-c-wait-forked-hang,skip
+> +igt@kms_vblank@pipe-c-wait-busy,skip
+> +igt@kms_vblank@pipe-c-wait-busy-hang,skip
+> +igt@kms_vblank@pipe-c-wait-forked-busy,skip
+> +igt@kms_vblank@pipe-c-wait-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-c-ts-continuation-idle,skip
+> +igt@kms_vblank@pipe-c-ts-continuation-idle-hang,skip
+> +igt@kms_vblank@pipe-c-ts-continuation-dpms-rpm,skip
+> +igt@kms_vblank@pipe-c-ts-continuation-modeset,skip
+> +igt@kms_vblank@pipe-c-ts-continuation-modeset-hang,skip
+> +igt@kms_vblank@pipe-c-ts-continuation-modeset-rpm,skip
+> +igt@kms_vblank@pipe-d-accuracy-idle,skip
+> +igt@kms_vblank@pipe-d-query-idle,skip
+> +igt@kms_vblank@pipe-d-query-idle-hang,skip
+> +igt@kms_vblank@pipe-d-query-forked,skip
+> +igt@kms_vblank@pipe-d-query-forked-hang,skip
+> +igt@kms_vblank@pipe-d-query-busy,skip
+> +igt@kms_vblank@pipe-d-query-busy-hang,skip
+> +igt@kms_vblank@pipe-d-query-forked-busy,skip
+> +igt@kms_vblank@pipe-d-query-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-d-wait-idle,skip
+> +igt@kms_vblank@pipe-d-wait-idle-hang,skip
+> +igt@kms_vblank@pipe-d-wait-forked,skip
+> +igt@kms_vblank@pipe-d-wait-forked-hang,skip
+> +igt@kms_vblank@pipe-d-wait-busy,skip
+> +igt@kms_vblank@pipe-d-wait-busy-hang,skip
+> +igt@kms_vblank@pipe-d-wait-forked-busy,skip
+> +igt@kms_vblank@pipe-d-wait-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-d-ts-continuation-idle,skip
+> +igt@kms_vblank@pipe-d-ts-continuation-idle-hang,skip
+> +igt@kms_vblank@pipe-d-ts-continuation-dpms-rpm,skip
+> +igt@kms_vblank@pipe-d-ts-continuation-modeset,skip
+> +igt@kms_vblank@pipe-d-ts-continuation-modeset-hang,skip
+> +igt@kms_vblank@pipe-d-ts-continuation-modeset-rpm,skip
+> +igt@kms_vblank@pipe-e-accuracy-idle,skip
+> +igt@kms_vblank@pipe-e-query-idle,skip
+> +igt@kms_vblank@pipe-e-query-idle-hang,skip
+> +igt@kms_vblank@pipe-e-query-forked,skip
+> +igt@kms_vblank@pipe-e-query-forked-hang,skip
+> +igt@kms_vblank@pipe-e-query-busy,skip
+> +igt@kms_vblank@pipe-e-query-busy-hang,skip
+> +igt@kms_vblank@pipe-e-query-forked-busy,skip
+> +igt@kms_vblank@pipe-e-query-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-e-wait-idle,skip
+> +igt@kms_vblank@pipe-e-wait-idle-hang,skip
+> +igt@kms_vblank@pipe-e-wait-forked,skip
+> +igt@kms_vblank@pipe-e-wait-forked-hang,skip
+> +igt@kms_vblank@pipe-e-wait-busy,skip
+> +igt@kms_vblank@pipe-e-wait-busy-hang,skip
+> +igt@kms_vblank@pipe-e-wait-forked-busy,skip
+> +igt@kms_vblank@pipe-e-wait-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-e-ts-continuation-idle,skip
+> +igt@kms_vblank@pipe-e-ts-continuation-idle-hang,skip
+> +igt@kms_vblank@pipe-e-ts-continuation-dpms-rpm,skip
+> +igt@kms_vblank@pipe-e-ts-continuation-modeset,skip
+> +igt@kms_vblank@pipe-e-ts-continuation-modeset-hang,skip
+> +igt@kms_vblank@pipe-e-ts-continuation-modeset-rpm,skip
+> +igt@kms_vblank@pipe-f-accuracy-idle,skip
+> +igt@kms_vblank@pipe-f-query-idle,skip
+> +igt@kms_vblank@pipe-f-query-idle-hang,skip
+> +igt@kms_vblank@pipe-f-query-forked,skip
+> +igt@kms_vblank@pipe-f-query-forked-hang,skip
+> +igt@kms_vblank@pipe-f-query-busy,skip
+> +igt@kms_vblank@pipe-f-query-busy-hang,skip
+> +igt@kms_vblank@pipe-f-query-forked-busy,skip
+> +igt@kms_vblank@pipe-f-query-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-f-wait-idle,skip
+> +igt@kms_vblank@pipe-f-wait-idle-hang,skip
+> +igt@kms_vblank@pipe-f-wait-forked,skip
+> +igt@kms_vblank@pipe-f-wait-forked-hang,skip
+> +igt@kms_vblank@pipe-f-wait-busy,skip
+> +igt@kms_vblank@pipe-f-wait-busy-hang,skip
+> +igt@kms_vblank@pipe-f-wait-forked-busy,skip
+> +igt@kms_vblank@pipe-f-wait-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-f-ts-continuation-idle,skip
+> +igt@kms_vblank@pipe-f-ts-continuation-idle-hang,skip
+> +igt@kms_vblank@pipe-f-ts-continuation-dpms-rpm,skip
+> +igt@kms_vblank@pipe-f-ts-continuation-modeset,skip
+> +igt@kms_vblank@pipe-f-ts-continuation-modeset-hang,skip
+> +igt@kms_vblank@pipe-f-ts-continuation-modeset-rpm,skip
+> +igt@kms_vrr@flip-basic,skip
+> +igt@kms_vrr@flip-dpms,skip
+> +igt@kms_vrr@flipline,skip
+> +igt@kms_async_flip@async-flip-with-page-flip-events,skip
+> +igt@kms_async_flip@alternate-sync-async-flip,skip
+> +igt@kms_async_flip@test-time-stamp,skip
+> +igt@kms_async_flip@test-cursor,skip
+> +igt@kms_async_flip@invalid-async-flip,skip
+> +igt@kms_async_flip@crc,skip
+> diff --git a/drivers/gpu/drm/msm/ci/msm_a630_results.txt b/drivers/gpu/drm/msm/ci/msm_a630_results.txt
+> new file mode 100644
+> index 000000000000..18ebfae09f1a
+> --- /dev/null
+> +++ b/drivers/gpu/drm/msm/ci/msm_a630_results.txt
+> @@ -0,0 +1,422 @@
+> +igt@core_auth@getclient-simple,dmesg-warn
+> +igt@core_auth@getclient-master-drop,pass
+> +igt@core_auth@basic-auth,pass
+> +igt@core_auth@many-magics,pass
+> +igt@core_getclient,pass
+> +igt@core_getstats,pass
+> +igt@core_getversion,pass
+> +igt@core_setmaster_vs_auth,pass
+> +igt@drm_read@invalid-buffer,pass
+> +igt@drm_read@fault-buffer,pass
+> +igt@drm_read@empty-block,pass
+> +igt@drm_read@empty-nonblock,pass
+> +igt@drm_read@short-buffer-block,pass
+> +igt@drm_read@short-buffer-nonblock,pass
+> +igt@drm_read@short-buffer-wakeup,pass
+> +igt@kms_addfb_basic@unused-handle,pass
+> +igt@kms_addfb_basic@unused-pitches,pass
+> +igt@kms_addfb_basic@unused-offsets,pass
+> +igt@kms_addfb_basic@unused-modifier,pass
+> +igt@kms_addfb_basic@clobberred-modifier,skip
+> +igt@kms_addfb_basic@invalid-smem-bo-on-discrete,skip
+> +igt@kms_addfb_basic@legacy-format,dmesg-warn
+> +igt@kms_addfb_basic@no-handle,pass
+> +igt@kms_addfb_basic@basic,pass
+> +igt@kms_addfb_basic@bad-pitch-0,pass
+> +igt@kms_addfb_basic@bad-pitch-32,pass
+> +igt@kms_addfb_basic@bad-pitch-63,pass
+> +igt@kms_addfb_basic@bad-pitch-128,pass
+> +igt@kms_addfb_basic@bad-pitch-256,pass
+> +igt@kms_addfb_basic@bad-pitch-1024,pass
+> +igt@kms_addfb_basic@bad-pitch-999,pass
+> +igt@kms_addfb_basic@bad-pitch-65536,pass
+> +igt@kms_addfb_basic@size-max,pass
+> +igt@kms_addfb_basic@too-wide,pass
+> +igt@kms_addfb_basic@too-high,dmesg-warn
+> +igt@kms_addfb_basic@bo-too-small,pass
+> +igt@kms_addfb_basic@small-bo,pass
+> +igt@kms_addfb_basic@bo-too-small-due-to-tiling,skip
+> +igt@kms_addfb_basic@addfb25-modifier-no-flag,pass
+> +igt@kms_addfb_basic@addfb25-bad-modifier,dmesg-warn
+> +igt@kms_addfb_basic@addfb25-x-tiled-mismatch-legacy,skip
+> +igt@kms_addfb_basic@addfb25-x-tiled-legacy,skip
+> +igt@kms_addfb_basic@addfb25-framebuffer-vs-set-tiling,skip
+> +igt@kms_addfb_basic@addfb25-y-tiled-legacy,skip
+> +igt@kms_addfb_basic@addfb25-yf-tiled-legacy,skip
+> +igt@kms_addfb_basic@addfb25-y-tiled-small-legacy,skip
+> +igt@kms_addfb_basic@addfb25-4-tiled,skip
+> +igt@kms_addfb_basic@basic-x-tiled-legacy,skip
+> +igt@kms_addfb_basic@framebuffer-vs-set-tiling,skip
+> +igt@kms_addfb_basic@tile-pitch-mismatch,skip
+> +igt@kms_addfb_basic@basic-y-tiled-legacy,skip
+> +igt@kms_addfb_basic@invalid-get-prop-any,pass
+> +igt@kms_addfb_basic@invalid-get-prop,pass
+> +igt@kms_addfb_basic@invalid-set-prop-any,pass
+> +igt@kms_addfb_basic@invalid-set-prop,pass
+> +igt@kms_addfb_basic@master-rmfb,pass
+> +igt@kms_atomic@plane-overlay-legacy,dmesg-warn
+> +igt@kms_atomic@plane-primary-legacy,dmesg-warn
+> +igt@kms_atomic@plane-primary-overlay-mutable-zpos,dmesg-warn
+> +igt@kms_atomic@plane-immutable-zpos,dmesg-warn
+> +igt@kms_atomic@test-only,dmesg-warn
+> +igt@kms_atomic@plane-cursor-legacy,dmesg-warn
+> +igt@kms_atomic@plane-invalid-params,dmesg-warn
+> +igt@kms_atomic@plane-invalid-params-fence,skip
+> +igt@kms_atomic@crtc-invalid-params,dmesg-warn
+> +igt@kms_atomic@crtc-invalid-params-fence,skip
+> +igt@kms_atomic@atomic-invalid-params,dmesg-warn
+> +igt@kms_atomic@atomic_plane_damage,dmesg-warn
+> +igt@kms_atomic_interruptible@legacy-setmode,skip
+> +igt@kms_atomic_interruptible@atomic-setmode,skip
+> +igt@kms_atomic_interruptible@legacy-dpms,skip
+> +igt@kms_atomic_interruptible@legacy-pageflip,skip
+> +igt@kms_atomic_interruptible@legacy-cursor,skip
+> +igt@kms_atomic_interruptible@universal-setplane-primary,skip
+> +igt@kms_atomic_interruptible@universal-setplane-cursor,skip
+> +igt@kms_content_protection@legacy,skip
+> +igt@kms_content_protection@atomic,skip
+> +igt@kms_content_protection@atomic-dpms,skip
+> +igt@kms_content_protection@lic,skip
+> +igt@kms_content_protection@type1,skip
+> +igt@kms_content_protection@mei_interface,skip
+> +igt@kms_content_protection@content_type_change,skip
+> +igt@kms_content_protection@uevent,skip
+> +igt@kms_content_protection@srm,skip
+> +igt@kms_content_protection@dp-mst-type-0,skip
+> +igt@kms_content_protection@dp-mst-lic-type-0,skip
+> +igt@kms_content_protection@dp-mst-type-1,skip
+> +igt@kms_content_protection@dp-mst-lic-type-1,skip
+> +igt@kms_dp_aux_dev,skip
+> +igt@kms_flip_event_leak,dmesg-warn
+> +igt@kms_getfb@getfb-handle-zero,pass
+> +igt@kms_getfb@getfb-handle-valid,pass
+> +igt@kms_getfb@getfb-handle-closed,pass
+> +igt@kms_getfb@getfb-handle-not-fb,pass
+> +igt@kms_getfb@getfb-addfb-different-handles,pass
+> +igt@kms_getfb@getfb-repeated-different-handles,pass
+> +igt@kms_getfb@getfb-reject-ccs,skip
+> +igt@kms_getfb@getfb2-handle-zero,pass
+> +igt@kms_getfb@getfb2-handle-closed,pass
+> +igt@kms_getfb@getfb2-handle-not-fb,pass
+> +igt@kms_getfb@getfb2-accept-ccs,skip
+> +igt@kms_getfb@getfb2-into-addfb2,pass
+> +igt@kms_getfb@getfb-handle-protection,pass
+> +igt@kms_getfb@getfb2-handle-protection,pass
+> +igt@kms_hdmi_inject@inject-4k,skip
+> +igt@kms_hdmi_inject@inject-audio,skip
+> +igt@kms_hdr@bpc-switch,skip
+> +igt@kms_hdr@bpc-switch-dpms,skip
+> +igt@kms_hdr@static-toggle,skip
+> +igt@kms_hdr@static-toggle-dpms,skip
+> +igt@kms_hdr@static-swap,skip
+> +igt@kms_multipipe_modeset@basic-max-pipe-crc-check,pass
+> +igt@kms_pipe_crc_basic@bad-source,pass
+> +igt@kms_pipe_crc_basic@read-crc-pipe-a,pass
+> +igt@kms_pipe_crc_basic@read-crc-pipe-a-frame-sequence,pass
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a,pass
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a-frame-sequence,pass
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-a,dmesg-warn
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-a,skip
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-a,dmesg-warn
+> +igt@kms_pipe_crc_basic@read-crc-pipe-b,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-b-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-b,skip
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-b,skip
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-b,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-c,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-c-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-c,skip
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-c,skip
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-c,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-d,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-d-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-d,skip
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-d,skip
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-d,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-e,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-e-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-e,skip
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-e,skip
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-e,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-f,skip
+> +igt@kms_pipe_crc_basic@read-crc-pipe-f-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f,skip
+> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f-frame-sequence,skip
+> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-f,skip
+> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-f,skip
+> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-f,skip
+> +igt@kms_plane_lowres@pipe-a-tiling-none,skip
+> +igt@kms_plane_lowres@pipe-a-tiling-x,skip
+> +igt@kms_plane_lowres@pipe-a-tiling-y,skip
+> +igt@kms_plane_lowres@pipe-a-tiling-yf,skip
+> +igt@kms_plane_lowres@pipe-a-tiling-4,skip
+> +igt@kms_plane_lowres@pipe-b-tiling-none,skip
+> +igt@kms_plane_lowres@pipe-b-tiling-x,skip
+> +igt@kms_plane_lowres@pipe-b-tiling-y,skip
+> +igt@kms_plane_lowres@pipe-b-tiling-yf,skip
+> +igt@kms_plane_lowres@pipe-b-tiling-4,skip
+> +igt@kms_plane_lowres@pipe-c-tiling-none,skip
+> +igt@kms_plane_lowres@pipe-c-tiling-x,skip
+> +igt@kms_plane_lowres@pipe-c-tiling-y,skip
+> +igt@kms_plane_lowres@pipe-c-tiling-yf,skip
+> +igt@kms_plane_lowres@pipe-c-tiling-4,skip
+> +igt@kms_plane_lowres@pipe-d-tiling-none,skip
+> +igt@kms_plane_lowres@pipe-d-tiling-x,skip
+> +igt@kms_plane_lowres@pipe-d-tiling-y,skip
+> +igt@kms_plane_lowres@pipe-d-tiling-yf,skip
+> +igt@kms_plane_lowres@pipe-d-tiling-4,skip
+> +igt@kms_plane_lowres@pipe-e-tiling-none,skip
+> +igt@kms_plane_lowres@pipe-e-tiling-x,skip
+> +igt@kms_plane_lowres@pipe-e-tiling-y,skip
+> +igt@kms_plane_lowres@pipe-e-tiling-yf,skip
+> +igt@kms_plane_lowres@pipe-e-tiling-4,skip
+> +igt@kms_plane_lowres@pipe-f-tiling-none,skip
+> +igt@kms_plane_lowres@pipe-f-tiling-x,skip
+> +igt@kms_plane_lowres@pipe-f-tiling-y,skip
+> +igt@kms_plane_lowres@pipe-f-tiling-yf,skip
+> +igt@kms_plane_lowres@pipe-f-tiling-4,skip
+> +igt@kms_prop_blob@basic,pass
+> +igt@kms_prop_blob@blob-prop-core,pass
+> +igt@kms_prop_blob@blob-prop-validate,pass
+> +igt@kms_prop_blob@blob-prop-lifetime,pass
+> +igt@kms_prop_blob@blob-multiple,pass
+> +igt@kms_prop_blob@invalid-get-prop-any,pass
+> +igt@kms_prop_blob@invalid-get-prop,pass
+> +igt@kms_prop_blob@invalid-set-prop-any,pass
+> +igt@kms_prop_blob@invalid-set-prop,pass
+> +igt@kms_rmfb@rmfb-ioctl,pass
+> +igt@kms_rmfb@close-fd,fail
+> +igt@kms_rotation_crc@primary-rotation-90,skip
+> +igt@kms_rotation_crc@primary-rotation-180,skip
+> +igt@kms_rotation_crc@primary-rotation-270,skip
+> +igt@kms_rotation_crc@sprite-rotation-90,skip
+> +igt@kms_rotation_crc@sprite-rotation-180,skip
+> +igt@kms_rotation_crc@sprite-rotation-270,skip
+> +igt@kms_rotation_crc@cursor-rotation-180,skip
+> +igt@kms_rotation_crc@sprite-rotation-90-pos-100-0,skip
+> +igt@kms_rotation_crc@bad-pixel-format,skip
+> +igt@kms_rotation_crc@bad-tiling,skip
+> +igt@kms_rotation_crc@primary-x-tiled-reflect-x-0,skip
+> +igt@kms_rotation_crc@primary-x-tiled-reflect-x-180,skip
+> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-0,skip
+> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-90,skip
+> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-180,skip
+> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-270,skip
+> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-0,skip
+> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-90,skip
+> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-180,skip
+> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-270,skip
+> +igt@kms_rotation_crc@primary-4-tiled-reflect-x-0,skip
+> +igt@kms_rotation_crc@primary-4-tiled-reflect-x-180,skip
+> +igt@kms_rotation_crc@multiplane-rotation,skip
+> +igt@kms_rotation_crc@multiplane-rotation-cropping-top,skip
+> +igt@kms_rotation_crc@multiplane-rotation-cropping-bottom,skip
+> +igt@kms_rotation_crc@exhaust-fences,skip
+> +igt@kms_selftest@all,skip
+> +igt@kms_setmode@basic@pipe-a-edp-1,dmesg-warn
+> +igt@kms_setmode@basic,skip
+> +igt@kms_setmode@basic-clone-single-crtc,skip
+> +igt@kms_setmode@invalid-clone-single-crtc,skip
+> +igt@kms_setmode@invalid-clone-exclusive-crtc,skip
+> +igt@kms_setmode@clone-exclusive-crtc,skip
+> +igt@kms_setmode@invalid-clone-single-crtc-stealing,skip
+> +igt@msm_mapping@sqefw,dmesg-fail
+> +igt@msm_mapping@shadow,dmesg-fail
+> +igt@msm_recovery@hangcheck,dmesg-warn
+> +igt@msm_recovery@gpu-fault,dmesg-warn
+> +igt@msm_recovery@iova-fault,dmesg-warn
+> +igt@msm_submit@empty-submit,pass
+> +igt@msm_submit@invalid-queue-submit,pass
+> +igt@msm_submit@invalid-flags-submit,pass
+> +igt@msm_submit@invalid-in-fence-submit,pass
+> +igt@msm_submit@invalid-duplicate-bo-submit,dmesg-warn
+> +igt@msm_submit@invalid-cmd-idx-submit,dmesg-warn
+> +igt@msm_submit@invalid-cmd-type-submit,dmesg-warn
+> +igt@msm_submit@valid-submit,pass
+> +igt@kms_sysfs_edid_timing,pass
+> +igt@kms_universal_plane@universal-plane-pipe-a-functional,dmesg-fail
+> +igt@kms_universal_plane@universal-plane-pipe-a-sanity,skip
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-a,dmesg-warn
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-a,skip
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-a,skip
+> +igt@kms_universal_plane@universal-plane-pipe-b-functional,skip
+> +igt@kms_universal_plane@universal-plane-pipe-b-sanity,skip
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-b,skip
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-b,skip
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-b,skip
+> +igt@kms_universal_plane@universal-plane-pipe-c-functional,skip
+> +igt@kms_universal_plane@universal-plane-pipe-c-sanity,skip
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-c,skip
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-c,skip
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-c,skip
+> +igt@kms_universal_plane@universal-plane-pipe-d-functional,skip
+> +igt@kms_universal_plane@universal-plane-pipe-d-sanity,skip
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-d,skip
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-d,skip
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-d,skip
+> +igt@kms_universal_plane@universal-plane-pipe-e-functional,skip
+> +igt@kms_universal_plane@universal-plane-pipe-e-sanity,skip
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-e,skip
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-e,skip
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-e,skip
+> +igt@kms_universal_plane@universal-plane-pipe-f-functional,skip
+> +igt@kms_universal_plane@universal-plane-pipe-f-sanity,skip
+> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-f,skip
+> +igt@kms_universal_plane@cursor-fb-leak-pipe-f,skip
+> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-f,skip
+> +igt@kms_vblank@invalid,dmesg-warn
+> +igt@kms_vblank@crtc-id,dmesg-warn
+> +igt@kms_vblank@pipe-a-query-idle,dmesg-warn
+> +igt@kms_vblank@pipe-a-query-idle-hang,skip
+> +igt@kms_vblank@pipe-a-query-forked,dmesg-warn
+> +igt@kms_vblank@pipe-a-query-forked-hang,skip
+> +igt@kms_vblank@pipe-a-query-busy,dmesg-warn
+> +igt@kms_vblank@pipe-a-query-busy-hang,skip
+> +igt@kms_vblank@pipe-a-query-forked-busy,dmesg-warn
+> +igt@kms_vblank@pipe-a-query-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-a-wait-idle,dmesg-warn
+> +igt@kms_vblank@pipe-a-wait-idle-hang,skip
+> +igt@kms_vblank@pipe-a-wait-forked,dmesg-warn
+> +igt@kms_vblank@pipe-a-wait-forked-hang,skip
+> +igt@kms_vblank@pipe-a-wait-busy,dmesg-warn
+> +igt@kms_vblank@pipe-a-wait-busy-hang,skip
+> +igt@kms_vblank@pipe-a-wait-forked-busy,dmesg-warn
+> +igt@kms_vblank@pipe-a-wait-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-a-ts-continuation-idle,dmesg-warn
+> +igt@kms_vblank@pipe-a-ts-continuation-idle-hang,skip
+> +igt@kms_vblank@pipe-a-ts-continuation-dpms-rpm,skip
+> +igt@kms_vblank@pipe-a-ts-continuation-modeset,dmesg-warn
+> +igt@kms_vblank@pipe-a-ts-continuation-modeset-hang,skip
+> +igt@kms_vblank@pipe-a-ts-continuation-modeset-rpm,skip
+> +igt@kms_vblank@pipe-b-accuracy-idle,skip
+> +igt@kms_vblank@pipe-b-query-idle,skip
+> +igt@kms_vblank@pipe-b-query-idle-hang,skip
+> +igt@kms_vblank@pipe-b-query-forked,skip
+> +igt@kms_vblank@pipe-b-query-forked-hang,skip
+> +igt@kms_vblank@pipe-b-query-busy,skip
+> +igt@kms_vblank@pipe-b-query-busy-hang,skip
+> +igt@kms_vblank@pipe-b-query-forked-busy,skip
+> +igt@kms_vblank@pipe-b-query-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-b-wait-idle,skip
+> +igt@kms_vblank@pipe-b-wait-idle-hang,skip
+> +igt@kms_vblank@pipe-b-wait-forked,skip
+> +igt@kms_vblank@pipe-b-wait-forked-hang,skip
+> +igt@kms_vblank@pipe-b-wait-busy,skip
+> +igt@kms_vblank@pipe-b-wait-busy-hang,skip
+> +igt@kms_vblank@pipe-b-wait-forked-busy,skip
+> +igt@kms_vblank@pipe-b-wait-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-b-ts-continuation-idle,skip
+> +igt@kms_vblank@pipe-b-ts-continuation-idle-hang,skip
+> +igt@kms_vblank@pipe-b-ts-continuation-dpms-rpm,skip
+> +igt@kms_vblank@pipe-b-ts-continuation-modeset,skip
+> +igt@kms_vblank@pipe-b-ts-continuation-modeset-hang,skip
+> +igt@kms_vblank@pipe-b-ts-continuation-modeset-rpm,skip
+> +igt@kms_vblank@pipe-c-accuracy-idle,skip
+> +igt@kms_vblank@pipe-c-query-idle,skip
+> +igt@kms_vblank@pipe-c-query-idle-hang,skip
+> +igt@kms_vblank@pipe-c-query-forked,skip
+> +igt@kms_vblank@pipe-c-query-forked-hang,skip
+> +igt@kms_vblank@pipe-c-query-busy,skip
+> +igt@kms_vblank@pipe-c-query-busy-hang,skip
+> +igt@kms_vblank@pipe-c-query-forked-busy,skip
+> +igt@kms_vblank@pipe-c-query-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-c-wait-idle,skip
+> +igt@kms_vblank@pipe-c-wait-idle-hang,skip
+> +igt@kms_vblank@pipe-c-wait-forked,skip
+> +igt@kms_vblank@pipe-c-wait-forked-hang,skip
+> +igt@kms_vblank@pipe-c-wait-busy,skip
+> +igt@kms_vblank@pipe-c-wait-busy-hang,skip
+> +igt@kms_vblank@pipe-c-wait-forked-busy,skip
+> +igt@kms_vblank@pipe-c-wait-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-c-ts-continuation-idle,skip
+> +igt@kms_vblank@pipe-c-ts-continuation-idle-hang,skip
+> +igt@kms_vblank@pipe-c-ts-continuation-dpms-rpm,skip
+> +igt@kms_vblank@pipe-c-ts-continuation-modeset,skip
+> +igt@kms_vblank@pipe-c-ts-continuation-modeset-hang,skip
+> +igt@kms_vblank@pipe-c-ts-continuation-modeset-rpm,skip
+> +igt@kms_vblank@pipe-d-accuracy-idle,skip
+> +igt@kms_vblank@pipe-d-query-idle,skip
+> +igt@kms_vblank@pipe-d-query-idle-hang,skip
+> +igt@kms_vblank@pipe-d-query-forked,skip
+> +igt@kms_vblank@pipe-d-query-forked-hang,skip
+> +igt@kms_vblank@pipe-d-query-busy,skip
+> +igt@kms_vblank@pipe-d-query-busy-hang,skip
+> +igt@kms_vblank@pipe-d-query-forked-busy,skip
+> +igt@kms_vblank@pipe-d-query-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-d-wait-idle,skip
+> +igt@kms_vblank@pipe-d-wait-idle-hang,skip
+> +igt@kms_vblank@pipe-d-wait-forked,skip
+> +igt@kms_vblank@pipe-d-wait-forked-hang,skip
+> +igt@kms_vblank@pipe-d-wait-busy,skip
+> +igt@kms_vblank@pipe-d-wait-busy-hang,skip
+> +igt@kms_vblank@pipe-d-wait-forked-busy,skip
+> +igt@kms_vblank@pipe-d-wait-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-d-ts-continuation-idle,skip
+> +igt@kms_vblank@pipe-d-ts-continuation-idle-hang,skip
+> +igt@kms_vblank@pipe-d-ts-continuation-dpms-rpm,skip
+> +igt@kms_vblank@pipe-d-ts-continuation-modeset,skip
+> +igt@kms_vblank@pipe-d-ts-continuation-modeset-hang,skip
+> +igt@kms_vblank@pipe-d-ts-continuation-modeset-rpm,skip
+> +igt@kms_vblank@pipe-e-accuracy-idle,skip
+> +igt@kms_vblank@pipe-e-query-idle,skip
+> +igt@kms_vblank@pipe-e-query-idle-hang,skip
+> +igt@kms_vblank@pipe-e-query-forked,skip
+> +igt@kms_vblank@pipe-e-query-forked-hang,skip
+> +igt@kms_vblank@pipe-e-query-busy,skip
+> +igt@kms_vblank@pipe-e-query-busy-hang,skip
+> +igt@kms_vblank@pipe-e-query-forked-busy,skip
+> +igt@kms_vblank@pipe-e-query-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-e-wait-idle,skip
+> +igt@kms_vblank@pipe-e-wait-idle-hang,skip
+> +igt@kms_vblank@pipe-e-wait-forked,skip
+> +igt@kms_vblank@pipe-e-wait-forked-hang,skip
+> +igt@kms_vblank@pipe-e-wait-busy,skip
+> +igt@kms_vblank@pipe-e-wait-busy-hang,skip
+> +igt@kms_vblank@pipe-e-wait-forked-busy,skip
+> +igt@kms_vblank@pipe-e-wait-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-e-ts-continuation-idle,skip
+> +igt@kms_vblank@pipe-e-ts-continuation-idle-hang,skip
+> +igt@kms_vblank@pipe-e-ts-continuation-dpms-rpm,skip
+> +igt@kms_vblank@pipe-e-ts-continuation-modeset,skip
+> +igt@kms_vblank@pipe-e-ts-continuation-modeset-hang,skip
+> +igt@kms_vblank@pipe-e-ts-continuation-modeset-rpm,skip
+> +igt@kms_vblank@pipe-f-accuracy-idle,skip
+> +igt@kms_vblank@pipe-f-query-idle,skip
+> +igt@kms_vblank@pipe-f-query-idle-hang,skip
+> +igt@kms_vblank@pipe-f-query-forked,skip
+> +igt@kms_vblank@pipe-f-query-forked-hang,skip
+> +igt@kms_vblank@pipe-f-query-busy,skip
+> +igt@kms_vblank@pipe-f-query-busy-hang,skip
+> +igt@kms_vblank@pipe-f-query-forked-busy,skip
+> +igt@kms_vblank@pipe-f-query-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-f-wait-idle,skip
+> +igt@kms_vblank@pipe-f-wait-idle-hang,skip
+> +igt@kms_vblank@pipe-f-wait-forked,skip
+> +igt@kms_vblank@pipe-f-wait-forked-hang,skip
+> +igt@kms_vblank@pipe-f-wait-busy,skip
+> +igt@kms_vblank@pipe-f-wait-busy-hang,skip
+> +igt@kms_vblank@pipe-f-wait-forked-busy,skip
+> +igt@kms_vblank@pipe-f-wait-forked-busy-hang,skip
+> +igt@kms_vblank@pipe-f-ts-continuation-idle,skip
+> +igt@kms_vblank@pipe-f-ts-continuation-idle-hang,skip
+> +igt@kms_vblank@pipe-f-ts-continuation-dpms-rpm,skip
+> +igt@kms_vblank@pipe-f-ts-continuation-modeset,skip
+> +igt@kms_vblank@pipe-f-ts-continuation-modeset-hang,skip
+> +igt@kms_vblank@pipe-f-ts-continuation-modeset-rpm,skip
+> +igt@kms_vrr@flip-basic,skip
+> +igt@kms_vrr@flip-dpms,skip
+> +igt@kms_vrr@flipline,skip
+> +igt@kms_async_flip@async-flip-with-page-flip-events,skip
+> +igt@kms_async_flip@alternate-sync-async-flip,skip
+> +igt@kms_async_flip@test-time-stamp,skip
+> +igt@kms_async_flip@test-cursor,skip
+> +igt@kms_async_flip@invalid-async-flip,skip
+> +igt@kms_async_flip@crc,skip
+
 -- 
-2.7.4
-
+Jani Nikula, Intel Open Source Graphics Center
