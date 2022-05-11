@@ -2,90 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55ED0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 06:40:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FFE0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 06:42:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239257AbiEKGkN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 02:40:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53978 "EHLO
+        id S242189AbiEKGmt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 02:42:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234181AbiEKGkI (ORCPT
+        with ESMTP id S230070AbiEKGmq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 02:40:08 -0400
-Received: from m15111.mail.126.com (m15111.mail.126.com [220.181.15.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7C4C42421BA;
-        Tue, 10 May 2022 23:40:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=RtS24
-        7RW6ZxcuKLxbipUrhShdpX0VWnQy9+bo9nU/z0=; b=MtRl5z1q/6cIOBNpfGv+r
-        d+HK7xlcGhnOB1NZz5JT3W5KP4euDRBauSrk4vaAOpt5albmVCDnmSajEf/SC1PR
-        UpmtuSWazeyp5UUjAwiycAmy9zM6Jf5hicMy5+yiIv1h3XegS83EvDW951zrgfyL
-        o7xWVdkvcAJbYDBU8hwWL8=
-Received: from ubuntu.localdomain (unknown [58.213.83.157])
-        by smtp1 (Coremail) with SMTP id C8mowAAXj9_8WXtiubKBBw--.33626S4;
-        Wed, 11 May 2022 14:38:54 +0800 (CST)
-From:   Bernard Zhao <zhaojunkui2008@126.com>
-To:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        =?UTF-8?q?Stefan=20M=C3=A4tje?= <stefan.maetje@esd.eu>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Bernard Zhao <zhaojunkui2008@126.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     bernard@vivo.com
-Subject: [PATCH] usb/peak_usb: cleanup code
-Date:   Tue, 10 May 2022 23:38:38 -0700
-Message-Id: <20220511063850.649012-1-zhaojunkui2008@126.com>
-X-Mailer: git-send-email 2.33.1
+        Wed, 11 May 2022 02:42:46 -0400
+Received: from mail.meizu.com (edge05.meizu.com [157.122.146.251])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C176EB1D4;
+        Tue, 10 May 2022 23:42:42 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail12.meizu.com
+ (172.16.1.108) with Microsoft SMTP Server (TLS) id 14.3.487.0; Wed, 11 May
+ 2022 14:42:42 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Wed, 11 May
+ 2022 14:42:40 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     <pmenzel@molgen.mpg.de>
+CC:     <baihaowen@meizu.com>, <linux-kernel@vger.kernel.org>,
+        <linux-raid@vger.kernel.org>, <song@kernel.org>
+Subject: [PATCH V2] md: remove useless INIT_LIST_HEAD()
+Date:   Wed, 11 May 2022 14:42:38 +0800
+Message-ID: <1652251358-14953-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <d5aecbb9-a897-9423-833f-432907b5be87@molgen.mpg.de>
+References: <d5aecbb9-a897-9423-833f-432907b5be87@molgen.mpg.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: C8mowAAXj9_8WXtiubKBBw--.33626S4
-X-Coremail-Antispam: 1Uf129KBjvdXoWrurWktF4fWF1fAryrWFyxGrg_yoWktrXEkr
-        W7Zr4kJF1UCrWjqF4DJw4Svry2y3WkuFs7XwnrKFs3G34YyF4UXrWxCFZ3Gw43WF1ayF9I
-        kr1UJr4xAr18tjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRAR6w3UUUUU==
-X-Originating-IP: [58.213.83.157]
-X-CM-SenderInfo: p2kd0y5xqn3xasqqmqqrswhudrp/1tbiuR79qlpD854fggAAsZ
+Content-Type: text/plain
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The variable fi and bi only used in branch if (!dev->prev_siblings)
-, fi & bi not kmalloc in else branch, so move kfree into branch
-if (!dev->prev_siblings),this change is to cleanup the code a bit.
+list candidates has been initialized statically through LIST_HEAD,
+so there's no need to call another INIT_LIST_HEAD. Simply remove it.
 
-Signed-off-by: Bernard Zhao <zhaojunkui2008@126.com>
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 ---
- drivers/net/can/usb/peak_usb/pcan_usb_pro.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+V1->V2: fix typo at description.
+ drivers/md/md.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_pro.c b/drivers/net/can/usb/peak_usb/pcan_usb_pro.c
-index ebe087f258e3..70c5aef57247 100644
---- a/drivers/net/can/usb/peak_usb/pcan_usb_pro.c
-+++ b/drivers/net/can/usb/peak_usb/pcan_usb_pro.c
-@@ -903,6 +903,9 @@ static int pcan_usb_pro_init(struct peak_usb_device *dev)
- 		     pcan_usb_pro.name,
- 		     bi->hw_rev, bi->serial_num_hi, bi->serial_num_lo,
- 		     pcan_usb_pro.ctrl_count);
-+
-+		kfree(bi);
-+		kfree(fi);
- 	} else {
- 		usb_if = pcan_usb_pro_dev_if(dev->prev_siblings);
- 	}
-@@ -913,9 +916,6 @@ static int pcan_usb_pro_init(struct peak_usb_device *dev)
- 	/* set LED in default state (end of init phase) */
- 	pcan_usb_pro_set_led(dev, PCAN_USBPRO_LED_DEVICE, 1);
+diff --git a/drivers/md/md.c b/drivers/md/md.c
+index 707e802d0082..eb2b23ef5ecc 100644
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -6491,7 +6491,6 @@ static void autorun_devices(int part)
+ 					 struct md_rdev, same_set);
  
--	kfree(bi);
--	kfree(fi);
--
- 	return 0;
- 
-  err_out:
+ 		pr_debug("md: considering %s ...\n", bdevname(rdev0->bdev,b));
+-		INIT_LIST_HEAD(&candidates);
+ 		rdev_for_each_list(rdev, tmp, &pending_raid_disks)
+ 			if (super_90_load(rdev, rdev0, 0) >= 0) {
+ 				pr_debug("md:  adding %s ...\n",
 -- 
-2.33.1
+2.7.4
 
