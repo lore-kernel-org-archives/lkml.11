@@ -2,97 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFDE3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 16:17:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CF87C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 16:17:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242665AbiEKQRp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 12:17:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39526 "EHLO
+        id S237501AbiEKQRy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 12:17:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344589AbiEKQRf (ORCPT
+        with ESMTP id S1344627AbiEKQRh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 12:17:35 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 40A363C480
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 09:17:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652285842;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ch8AYJSR0bVojuLA0JpsnHZw3evm/2ziMe/ALgDSt0o=;
-        b=LTa4hovtxTdZUSHIazBqExY97I5Y63pxvlxA/aREFEe7jVVsKaMp7gOVEKOsGQaUMBLnuH
-        XLz9VRI81IblyLle9tv7iTIxn4b6Z6Xp+5R9WO3i8deAUQ5s5NA4ielh+Jo23wRpJlUOYV
-        bMFy4EYVFPDqnbVocIWnBqBEsb2RO4U=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-152-gvGzGxhpO0KBaP3E_N9zzA-1; Wed, 11 May 2022 12:17:16 -0400
-X-MC-Unique: gvGzGxhpO0KBaP3E_N9zzA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C32A380418F;
-        Wed, 11 May 2022 16:17:15 +0000 (UTC)
-Received: from oldenburg.str.redhat.com (unknown [10.39.192.194])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id D295640CF8E4;
-        Wed, 11 May 2022 16:17:10 +0000 (UTC)
-From:   Florian Weimer <fweimer@redhat.com>
-To:     Christian Brauner <brauner@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Huacai Chen <chenhuacai@gmail.com>,
-        Huacai Chen <chenhuacai@loongson.cn>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Linux API <linux-api@vger.kernel.org>
-Subject: Re: [PATCH V9 13/24] LoongArch: Add system call support
-References: <20220430090518.3127980-1-chenhuacai@loongson.cn>
-        <20220430090518.3127980-14-chenhuacai@loongson.cn>
-        <CAK8P3a0A9dW4mwJ6JHDiJxizL7vWfr4r4c5KhbjtAY0sWbZJVA@mail.gmail.com>
-        <CAAhV-H4te_+AS69viO4eBz=abBUm5oQ6AfoY1Cb+nOCZyyeMdA@mail.gmail.com>
-        <CAK8P3a0DqQcApv8aa2dgBS5At=tEkN7cnaskoUeXDi2-Bu9Rnw@mail.gmail.com>
-        <20220507121104.7soocpgoqkvwv3gc@wittgenstein>
-        <20220509100058.vmrgn5fkk3ayt63v@wittgenstein>
-Date:   Wed, 11 May 2022 18:17:09 +0200
-In-Reply-To: <20220509100058.vmrgn5fkk3ayt63v@wittgenstein> (Christian
-        Brauner's message of "Mon, 9 May 2022 12:00:58 +0200")
-Message-ID: <87bkw4doxm.fsf@oldenburg.str.redhat.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
+        Wed, 11 May 2022 12:17:37 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3989B3EB92;
+        Wed, 11 May 2022 09:17:32 -0700 (PDT)
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nop1i-000Ajc-RB; Wed, 11 May 2022 18:17:26 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nop1i-0003tN-Ja; Wed, 11 May 2022 18:17:26 +0200
+Subject: Re: [PATCH] bpf.h: fix clang compiler warning with
+ unpriv_ebpf_notify()
+To:     Luis Chamberlain <mcgrof@kernel.org>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Song Liu <songliubraving@fb.com>, bpf <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev,
+        Borislav Petkov <bp@alien8.de>
+References: <20220509203623.3856965-1-mcgrof@kernel.org>
+ <YnvdOAaYmhNiA5WN@bombadil.infradead.org>
+ <CAADnVQLCvjqphpJDkz-5bpJLs3k_PRH1JcwehCRLrWYvsA9ENw@mail.gmail.com>
+ <YnvflsM1t5vL/ViP@bombadil.infradead.org>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <3e3ed3d1-937b-a715-376d-43a8b7485f68@iogearbox.net>
+Date:   Wed, 11 May 2022 18:17:26 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+In-Reply-To: <YnvflsM1t5vL/ViP@bombadil.infradead.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.5/26538/Wed May 11 10:06:03 2022)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* Christian Brauner:
+On 5/11/22 6:08 PM, Luis Chamberlain wrote:
+> On Wed, May 11, 2022 at 09:03:13AM -0700, Alexei Starovoitov wrote:
+>> On Wed, May 11, 2022 at 8:58 AM Luis Chamberlain <mcgrof@kernel.org> wrote:
+>>> On Mon, May 09, 2022 at 01:36:23PM -0700, Luis Chamberlain wrote:
+>>>> The recent commit "bpf: Move BPF sysctls from kernel/sysctl.c to BPF core"
+>>>> triggered 0-day to issue an email for what seems to have been an old
+>>>> clang warning. So this issue should have existed before as well, from
+>>>> what I can tell. The issue is that clang expects a forward declaration
+>>>> for routines declared as weak while gcc does not.
+>>>>
+>>>> This can be reproduced with 0-day's x86_64-randconfig-c007
+>>>> https://download.01.org/0day-ci/archive/20220424/202204240008.JDntM9cU-lkp@intel.com/config
+>>>>
+>>>> And using:
+>>>>
+>>>> COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 ARCH=x86_64 SHELL=/bin/bash kernel/bpf/syscall.o
+>>>> Compiler will be installed in /home/mcgrof/0day
+>>>> make --keep-going HOSTCC=/home/mcgrof/0day/clang/bin/clang CC=/home/mcgrof/0day/clang/bin/clang LD=/home/mcgrof/0day/clang/bin/ld.lld HOSTLD=/home/mcgrof/0day/clang/bin/ld.lld AR=llvm-ar NM=llvm-nm STRIP=llvm-strip OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump OBJSIZE=llvm-size READELF=llvm-readelf HOSTCXX=clang++ HOSTAR=llvm-ar CROSS_COMPILE=x86_64-linux-gnu- --jobs=24 W=1 ARCH=x86_64 SHELL=/bin/bash kernel/bpf/syscall.o
+>>>>    DESCEND objtool
+>>>>    CALL    scripts/atomic/check-atomics.sh
+>>>>    CALL    scripts/checksyscalls.sh
+>>>>    CC      kernel/bpf/syscall.o
+>>>> kernel/bpf/syscall.c:4944:13: warning: no previous prototype for function 'unpriv_ebpf_notify' [-Wmissing-prototypes]
+>>>> void __weak unpriv_ebpf_notify(int new_state)
+>>>>              ^
+>>>> kernel/bpf/syscall.c:4944:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+>>>> void __weak unpriv_ebpf_notify(int new_state)
+>>>> ^
+>>>> static
+>>>>
+>>>> Fixes: 2900005ea287 ("bpf: Move BPF sysctls from kernel/sysctl.c to BPF core")
+>>>> Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+>>>> ---
+>>>>
+>>>> Daniel,
+>>>>
+>>>> Given what we did fore 2900005ea287 ("bpf: Move BPF sysctls from
+>>>> kernel/sysctl.c to BPF core") where I had pulled pr/bpf-sysctl a
+>>>> while ago into sysctl-next and then merged the patch in question,
+>>>> should I just safely carry this patch onto sysctl-next? Let me know
+>>>> how you'd like to proceed.
+>>>>
+>>>> Also, it wasn't clear if putting this forward declaration on
+>>>> bpf.h was your ideal preference.
+>>>
+>>> After testing this on sysctl-testing without issues going to move this
+>>> to sysctl-next now.
+>>
+>> Hmm. No.
+>> A similar patch should be in tip already. You have to wait
+>> for it to go through Linus's tree and back to whatever tree you use.
+> 
+> I'm a bit confused, the patch in question which my patch fixes should only
+> be in my sysctl-next tree at this point, not in Linus's tree.
 
-> Without an approach like this certain sandboxes will fallback to
-> ENOSYSing system calls they can't filter. This is a generic problem
-> though with clone3() being one promiment example.
+Borislav was planning to route it via tip tree, maybe confusion was that the
+fix in the link below is from Josh:
 
-Furthermore, for glibc (and I believe musl as well), the trick with
-in-process emulation of clone3 using SIGSYS does not work here because
-we must inhibit delivery of signals on the nascent thread, before it is
-fully set up.  This means that we have to block signals around the
-clone/clone3 system call, so that the new thread is created with all
-signals blocked.  This means that instead of calling the SIGSYS handler,
-the filtered system call simply terminates the process.
+https://lore.kernel.org/bpf/CAADnVQKjfQMG_zFf9F9P7m0UzqESs7XoRy=udqrDSodxa8yBpg@mail.gmail.com/
 
-(I think there have been discussions of using out-of-process filtering,
-but I don't know where we are with that.)
+But I presume this is routed as fix to Linus, so should land in both sysctl
+and bpf tree at some point after re-sync.
 
 Thanks,
-Florian
-
+Daniel
