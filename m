@@ -2,101 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2985DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:49:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6F60C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:49:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236967AbiEKCtG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 22:49:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50154 "EHLO
+        id S232559AbiEKCtQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 22:49:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242518AbiEKCg5 (ORCPT
+        with ESMTP id S244039AbiEKCnF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 22:36:57 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E848A106A4E
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:36:55 -0700 (PDT)
-X-UUID: 2460bfb9b5104cdfa9cb0b10481e2640-20220511
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:60c10ef1-6e2c-4bde-84be-c9f6ecdb6602,OB:0,LO
-        B:0,IP:0,URL:8,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:108
-X-CID-INFO: VERSION:1.1.4,REQID:60c10ef1-6e2c-4bde-84be-c9f6ecdb6602,OB:0,LOB:
-        0,IP:0,URL:8,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,AC
-        TION:quarantine,TS:108
-X-CID-META: VersionHash:faefae9,CLOUDID:e0f704e6-38f2-431d-8de7-bf8fac490b0a,C
-        OID:352b0387439c,Recheck:0,SF:28|16|19|48,TC:nil,Content:0,EDM:-3,File:nil
-        ,QS:0,BEC:nil
-X-UUID: 2460bfb9b5104cdfa9cb0b10481e2640-20220511
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <xinlei.lee@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1996386182; Wed, 11 May 2022 10:36:52 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Wed, 11 May 2022 10:36:51 +0800
-Received: from mszsdaap41.gcn.mediatek.inc (10.16.6.141) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Wed, 11 May 2022 10:36:50 +0800
-From:   <xinlei.lee@mediatek.com>
-To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
-        <airlied@linux.ie>, <daniel@ffwll.ch>, <matthias.bgg@gmail.com>
-CC:     <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <rex-bc.chen@mediatek.com>, <jitao.shi@mediatek.com>,
-        Xinlei Lee <xinlei.lee@mediatek.com>
-Subject: [PATCH v5,5/5] drm/mediatek: Add pull-down MIPI operation in mtk_dsi_poweroff function
-Date:   Wed, 11 May 2022 10:36:36 +0800
-Message-ID: <1652236596-21648-6-git-send-email-xinlei.lee@mediatek.com>
-X-Mailer: git-send-email 2.6.4
-In-Reply-To: <1652236596-21648-1-git-send-email-xinlei.lee@mediatek.com>
-References: <1652236596-21648-1-git-send-email-xinlei.lee@mediatek.com>
+        Tue, 10 May 2022 22:43:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 560835B3D1;
+        Tue, 10 May 2022 19:43:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DD5D5B82101;
+        Wed, 11 May 2022 02:43:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90AECC385CB;
+        Wed, 11 May 2022 02:43:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652236981;
+        bh=H+slBZhjJ5EG7moKEOfvPRRGLjpkOTwOOM/Iqo+g4oY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=FxyrotPwafWFnECQ6+E1BpXm+/56DaFyJ/XOvXN884cx5Km0J/vV+razdDlMXFYGE
+         JxWHkLwz2P5tCkPvHzepdp/zjD3UYVmnoVeOBblQAJlz5BXr4ZxiYMXzqJpZWC/I5E
+         i9BaywZ949nDVoG6E2cmfJXLikmAOkTU9g+QdqYiLdD42X9dzXIM1n8cP9Ik17gMKE
+         Z/hkeyECRJhqGjdEcze11T7rsAQiF4miwr6XESuE1Rix93PDZ6w921TM9hLtdrRHd6
+         V72lXep5kkgc9R4tGJAvA366FPEe3zzjoeWflOeQ5ngwG3LVbgVWKqV4roBtcsTaz2
+         WRv7inNKqcdfg==
+Date:   Tue, 10 May 2022 19:43:01 -0700
+From:   "Darrick J. Wong" <djwong@kernel.org>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Dan Williams <dan.j.williams@intel.com>,
+        Dave Chinner <david@fromorbit.com>,
+        Shiyang Ruan <ruansy.fnst@fujitsu.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-xfs <linux-xfs@vger.kernel.org>,
+        Linux NVDIMM <nvdimm@lists.linux.dev>,
+        Linux MM <linux-mm@kvack.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jane Chu <jane.chu@oracle.com>,
+        Goldwyn Rodrigues <rgoldwyn@suse.de>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Matthew Wilcox <willy@infradead.org>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>, linmiaohe@huawei.com
+Subject: Re: [PATCHSETS] v14 fsdax-rmap + v11 fsdax-reflink
+Message-ID: <20220511024301.GD27195@magnolia>
+References: <20220508143620.1775214-1-ruansy.fnst@fujitsu.com>
+ <20220511000352.GY27195@magnolia>
+ <20220511014818.GE1098723@dread.disaster.area>
+ <CAPcyv4h0a3aT3XH9qCBW3nbT4K3EwQvBSD_oX5W=55_x24-wFA@mail.gmail.com>
+ <20220510192853.410ea7587f04694038cd01de@linux-foundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220510192853.410ea7587f04694038cd01de@linux-foundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xinlei Lee <xinlei.lee@mediatek.com>
+On Tue, May 10, 2022 at 07:28:53PM -0700, Andrew Morton wrote:
+> On Tue, 10 May 2022 18:55:50 -0700 Dan Williams <dan.j.williams@intel.com> wrote:
+> 
+> > > It'll need to be a stable branch somewhere, but I don't think it
+> > > really matters where al long as it's merged into the xfs for-next
+> > > tree so it gets filesystem test coverage...
+> > 
+> > So how about let the notify_failure() bits go through -mm this cycle,
+> > if Andrew will have it, and then the reflnk work has a clean v5.19-rc1
+> > baseline to build from?
+> 
+> What are we referring to here?  I think a minimal thing would be the
+> memremap.h and memory-failure.c changes from
+> https://lkml.kernel.org/r/20220508143620.1775214-4-ruansy.fnst@fujitsu.com ?
+> 
+> Sure, I can scoot that into 5.19-rc1 if you think that's best.  It
+> would probably be straining things to slip it into 5.19.
+> 
+> The use of EOPNOTSUPP is a bit suspect, btw.  It *sounds* like the
+> right thing, but it's a networking errno.  I suppose livable with if it
+> never escapes the kernel, but if it can get back to userspace then a
+> user would be justified in wondering how the heck a filesystem
+> operation generated a networking errno?
 
-In the dsi_enable function, mtk_dsi_rxtx_control is to
-pull up the MIPI signal operation. Before dsi_disable,
-MIPI should also be pulled down by writing a register
-instead of disabling dsi.
+<shrug> most filesystems return EOPNOTSUPP rather enthusiastically when
+they don't know how to do something...
 
-If disable dsi without pulling the mipi signal low, the value of
-the register will still maintain the setting of the mipi signal being
-pulled high.
-After resume, even if the mipi signal is not pulled high, it will still
-be in the high state.
-
-Fixes: 2e54c14e310f ("drm/mediatek: Add DSI sub driver")
-
-Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
-Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Reviewed-by: CK Hu <ck.hu@mediatek.com>
----
- drivers/gpu/drm/mediatek/mtk_dsi.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-index 98b7811502e7..1035fafdbf7c 100644
---- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-@@ -688,6 +688,8 @@ static void mtk_dsi_poweroff(struct mtk_dsi *dsi)
- 	mtk_dsi_reset_engine(dsi);
- 	mtk_dsi_lane0_ulp_mode_enter(dsi);
- 	mtk_dsi_clk_ulp_mode_enter(dsi);
-+	/* set the lane number as 0 to pull down mipi */
-+	writel(0, dsi->regs + DSI_TXRX_CTRL);
- 
- 	mtk_dsi_disable(dsi);
- 
--- 
-2.18.0
-
+--D
