@@ -2,89 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A675C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 07:45:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DE41C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 07:47:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243045AbiEKHpY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 03:45:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59338 "EHLO
+        id S243095AbiEKHrZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 03:47:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbiEKHpW (ORCPT
+        with ESMTP id S238103AbiEKHrW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 03:45:22 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A15C26B015
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 00:45:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=zQStQvqHTMn/lq4ztBBoUMAZrkzuwgeyV+t4snpAvM8=; b=UWiv7NTPus3l28tAO0e8eiSK9I
-        RT06/y3Q8GxqTVOEDoMwVswZAx+Mirl+fY3OBWVaCPpHbCpf1ZxdMiL2ZF60fdSWtFtyrT0cDwL7c
-        ts6ahlMXeNOSk6Pm2j1wajMVAa97+TiASz8nZRr6Fq1pxyAyn4YAf+5D7Hw7XHSrpdAKFrgT6yAV8
-        mDnM62iKyYMB+Q/hCKuZnvUzTUnPjA4nwCF9fYDCsi8Eu3hmegNKq+kkefuSswzZlvRf5IW/HxSw1
-        jXbKRSTi3j0atnx1m8lGCnq8QO2sM5mVKLK8sSTQ9B/iY72iprnW7PdDTTV2rFBHUHieP5S11LCWr
-        08ypHoYA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1noh1u-005F9n-QA; Wed, 11 May 2022 07:45:07 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 646FD980E3A; Wed, 11 May 2022 09:45:06 +0200 (CEST)
-Date:   Wed, 11 May 2022 09:45:06 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>, x86@kernel.org,
-        Andrey Ryabinin <aryabinin@virtuozzo.com>,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "H . J . Lu" <hjl.tools@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFCv2 05/10] x86/mm: Provide untagged_addr() helper
-Message-ID: <20220511074506.GB100765@worktop.programming.kicks-ass.net>
-References: <20220511022751.65540-1-kirill.shutemov@linux.intel.com>
- <20220511022751.65540-7-kirill.shutemov@linux.intel.com>
- <20220511072116.GT76023@worktop.programming.kicks-ass.net>
+        Wed, 11 May 2022 03:47:22 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2244E7356F;
+        Wed, 11 May 2022 00:47:20 -0700 (PDT)
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24B4hxge021004;
+        Wed, 11 May 2022 09:47:04 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=1ai4dm2l20Sc9AImn6T6dcp7p4IL4yIAR2T4CFSl3Aw=;
+ b=z9jheGbqV4h2/VUvjiY0HUqshCihxPXcmCgImnv3QLcsn8Tl00SUKi/gW62lk5vsz3zE
+ LaBHpevyphqk9qn18IwBfDZyJlfuR4UUIA8fjBjlibMXujjscifCFpRPFfxyVK4evvRi
+ Amls0cYvjASZXNuJZKiV/flgFRlgGMmOtWjznfwlApqdYn+6zbW3UM39h8hmxmglMhUw
+ Q6MR07HbL8RcW8B/K2GiRN61BKDKDkzmoPx9hH4izHnFu2GofwjVmzxHTsvOMAK7FrI+
+ YfjHoGKL9RiSSjykNUjQ9TJLfTTxeYoUJLcKiJLtTVaakvwPK11CzdDhP43OYOHFmtwG HQ== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3fwe6kwhse-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 11 May 2022 09:47:04 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id C3EFA100034;
+        Wed, 11 May 2022 09:47:03 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id BE1DF2128DB;
+        Wed, 11 May 2022 09:47:03 +0200 (CEST)
+Received: from localhost (10.75.127.46) by SHFDAG1NODE1.st.com (10.75.129.69)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Wed, 11 May
+ 2022 09:47:03 +0200
+From:   <patrice.chotard@foss.st.com>
+To:     Mark Brown <broonie@kernel.org>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>
+CC:     <linux-spi@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <christophe.kerello@foss.st.com>,
+        <patrice.chotard@foss.st.com>
+Subject: [PATCH 3/3] spi: stm32-qspi: Remove SR_BUSY bit check before sending command
+Date:   Wed, 11 May 2022 09:46:44 +0200
+Message-ID: <20220511074644.558874-4-patrice.chotard@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220511074644.558874-1-patrice.chotard@foss.st.com>
+References: <20220511074644.558874-1-patrice.chotard@foss.st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220511072116.GT76023@worktop.programming.kicks-ass.net>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.46]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-11_02,2022-05-10_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 09:21:16AM +0200, Peter Zijlstra wrote:
-> On Wed, May 11, 2022 at 05:27:46AM +0300, Kirill A. Shutemov wrote:
-> > +#define __untagged_addr(addr, n)	\
-> > +	((__force __typeof__(addr))sign_extend64((__force u64)(addr), n))
-> > +
-> > +#define untagged_addr(addr)	({					\
-> > +	u64 __addr = (__force u64)(addr);				\
-> > +	if (__addr >> 63 == 0) {					\
-> > +		if (current->thread.features & X86_THREAD_LAM_U57)	\
-> > +			__addr &= __untagged_addr(__addr, 56);		\
-> > +		else if (current->thread.features & X86_THREAD_LAM_U48)	\
-> > +			__addr &= __untagged_addr(__addr, 47);		\
-> > +	}								\
-> > +	(__force __typeof__(addr))__addr;				\
-> > +})
-> 
-> Assuming you got your bits in hardware order:
-> 
-> 	u64 __addr = addr;
-> 	if ((s64)__addr >= 0) {
-> 		int lam = (current->thread.features >> X86_THREAD_LAM_U57) & 3;
+From: Patrice Chotard <patrice.chotard@foss.st.com>
 
-That needs a _BIT suffix or something, same in the previous reply.
+Waiting for SR_BUSY bit when receiving a new command is not needed.
+SR_BUSY bit is already managed in the previous command treatment.
 
-> 		if (lam)
-> 			__addr &= sign_extend64(__addr, 65 - 9*lam);
-> 	}
-> 	__addr;
-> 
-> has less branches on and should definitely result in better code (or I
-> need more morning juice).
+Signed-off-by: Patrice Chotard <patrice.chotard@foss.st.com>
+---
+ drivers/spi/spi-stm32-qspi.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-I definitely needs more morning juice :-)
+diff --git a/drivers/spi/spi-stm32-qspi.c b/drivers/spi/spi-stm32-qspi.c
+index 1660ca5bd1c5..c0239e405c39 100644
+--- a/drivers/spi/spi-stm32-qspi.c
++++ b/drivers/spi/spi-stm32-qspi.c
+@@ -369,10 +369,6 @@ static int stm32_qspi_send(struct spi_mem *mem, const struct spi_mem_op *op)
+ 		op->dummy.buswidth, op->data.buswidth,
+ 		op->addr.val, op->data.nbytes);
+ 
+-	err = stm32_qspi_wait_nobusy(qspi);
+-	if (err)
+-		goto abort;
+-
+ 	cr = readl_relaxed(qspi->io_base + QSPI_CR);
+ 	cr &= ~CR_PRESC_MASK & ~CR_FSEL;
+ 	cr |= FIELD_PREP(CR_PRESC_MASK, flash->presc);
+-- 
+2.25.1
+
