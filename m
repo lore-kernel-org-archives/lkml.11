@@ -2,166 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A05E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 14:25:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9847C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 14:25:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244589AbiEKOZm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 10:25:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53232 "EHLO
+        id S244692AbiEKOZv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 10:25:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244560AbiEKOZV (ORCPT
+        with ESMTP id S242913AbiEKOZh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 10:25:21 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07F9F633A0
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 07:25:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
-        Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:In-Reply-To;
-        bh=69XAIoGDwel9FBx285nF3+WxoH4y8KYpY4nBuO7IJh8=; b=Ih99V/BJlIdC9sEbXKvAS+KVKa
-        niWZ3kd8r8UynTXMsHglgGBNYaVYw0KfvDk0n4WrpYbZM0tCJhgs4B3M8lbeGXmB0nW8sBqCaNwRO
-        sJfJEXF6/hHt5MninTZuIX/eRvfoXmGC6yLDfVGcjERDhNvyoSBlBCo6aRkRKH3grZoGN07X5pTNc
-        oHgjfoh8+xtW7NvS8b4gfudf9+mq875JSCiRxqzOIVKrM3OHqOUNxDciXzynLrph8o2+HDoToy57r
-        aqTMnbh0F9ppSjqXb5VR/382NHAmqQ2g+IWxmCcrEVX4oJkv27pKtTfYWtF1dhMLMgublJ2BY+5Py
-        LXA2d6BQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nonH5-00DBu5-0m; Wed, 11 May 2022 14:25:11 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 37B993005B9;
-        Wed, 11 May 2022 16:25:09 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 224C4201E6488; Wed, 11 May 2022 16:25:09 +0200 (CEST)
-Message-ID: <20220511142345.146224050@infradead.org>
-User-Agent: quilt/0.66
-Date:   Wed, 11 May 2022 16:20:39 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     x86@kernel.org, kan.liang@linux.intel.com, eranian@google.com
-Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
-        acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
-        namhyung@kernel.org
-Subject: [PATCH 2/5] perf/x86: Add two more x86_pmu methods
-References: <20220511142037.353492804@infradead.org>
+        Wed, 11 May 2022 10:25:37 -0400
+Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2112.outbound.protection.outlook.com [40.107.114.112])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A23964737;
+        Wed, 11 May 2022 07:25:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=B9ViiWhZzNurn4F5xVSb8ZqJtGU7yP61gwRI/3q6dz5+XI0NwaKFD4/GODNyUcC2Hn4LfYul0yVAp9d2zWOwzSAaSX5PTl90zs3aW5CtYvMYgPB+eA7FVfryDM3hji+pjHtxdTW/R0qSSdJ3psLjBnN7DTuMEgeZe9JsiJPVf8V4HLPPvVpaJNeIdF/y6xEaqkdib1mxNSGK8mmb02gz3GfTEpwpq9Im8Sqf14jGXfTF3i8iEPcsM0FB9GDrLowSSMtUGGpt25f1yVAA82n85brs5nh92h0xF/PHWrAHIvi7yIXdongftEqz7FRFVXPozb/+6VEE/hvua0PrMVDxNA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0SLGe36sfTPr6X3bEb/UxR3gcJbp6tf3M0YK1pXELk4=;
+ b=d/OzeNM5Bez8Sxgw3AXif3ELVzoWWiJ44pup1UBuP2hkkKIzCGu2GaKBSlTj/s32ICUJiHU+AC8lcKp2/gsgko2ymDPrXWLl3D7+/Px7SpGPd0mFqxcNgZqNLBPUPD3hKfqnz1YGSDms27lBxJ/TDkOLmbZhw7DdmN6jASfCVkU1uRNwsUQKLMHt/V1NJp0I9zULoZ4so0JOZdP6adgeuO6ZMPHHoq9CSrmBiX1w2dcbfnzNlZGSrIpXIlBOCI2ucEAPApqo8htDmnv4OpO9JPzNnn4VkkR1Wt3VUtnvKhHvp8sMyc05neQEB3oCZKv7klnQnPoMHOV7ZP8fXGpV1Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0SLGe36sfTPr6X3bEb/UxR3gcJbp6tf3M0YK1pXELk4=;
+ b=i1hrbyA/TiOlBmU/XxfKS3F7NvzC9OeMfcznjD/sxm3JIhHUsZXoo30rjWS5Ig/9Jkf8xXCilhyR0QTSt4NtLQvlINOroBkRTrSmmbCCSOMmznPrv7MgpPSnXBfapx8gphaTFjfC/hrdV5qv7xZUWfgbZvjlqm/f+6qPpQkrk4w=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=renesas.com;
+Received: from OS3PR01MB6593.jpnprd01.prod.outlook.com (2603:1096:604:101::7)
+ by OSAPR01MB4850.jpnprd01.prod.outlook.com (2603:1096:604:69::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.21; Wed, 11 May
+ 2022 14:25:35 +0000
+Received: from OS3PR01MB6593.jpnprd01.prod.outlook.com
+ ([fe80::a07c:4b38:65f3:6663]) by OS3PR01MB6593.jpnprd01.prod.outlook.com
+ ([fe80::a07c:4b38:65f3:6663%9]) with mapi id 15.20.5250.013; Wed, 11 May 2022
+ 14:25:35 +0000
+From:   Min Li <min.li.xe@renesas.com>
+To:     richardcochran@gmail.com, lee.jones@linaro.org
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Min Li <min.li.xe@renesas.com>
+Subject: [PATCH net v5 2/3] ptp: ptp_clockmatrix: return -EBUSY if phase pull-in is in progress
+Date:   Wed, 11 May 2022 10:25:13 -0400
+Message-Id: <1652279114-25939-2-git-send-email-min.li.xe@renesas.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1652279114-25939-1-git-send-email-min.li.xe@renesas.com>
+References: <1652279114-25939-1-git-send-email-min.li.xe@renesas.com>
+Content-Type: text/plain
+X-ClientProxiedBy: BN9PR03CA0203.namprd03.prod.outlook.com
+ (2603:10b6:408:f9::28) To OS3PR01MB6593.jpnprd01.prod.outlook.com
+ (2603:1096:604:101::7)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a2a24860-0a8f-4e6c-d74e-08da335a1cb6
+X-MS-TrafficTypeDiagnostic: OSAPR01MB4850:EE_
+X-Microsoft-Antispam-PRVS: <OSAPR01MB4850E0D26BC6463375D79C77BAC89@OSAPR01MB4850.jpnprd01.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: sL5vMlchj+1dyrhseTj1eFhN/tde1VyBwb85ADCnHM8ozEAWe1Qgoanqyyq0PyzoZvcQvqxX/ShHOjnufyYgPJBCCMZ0hUUSRPmzKRv2ZnwJAEK86BPgjfBVBBaQVhcnL9VP1inn+GluRH3fOG+xtUVuXg/aA7pED4Js32NR6bUoz2AndF+GbJ5UnS3QLLFpWb6DGqZXOt7NKtBAI6cYBaX8nd7i/76VwaiMV4Un2K9lk6CnmuRROnFlXf8queHvzgdBX/0dcz+XA8cVFpCepNUnCGrjfhuTpdtgJbL08iklhi/K6yHzWK9Cqbdmix4FHmna6r9dWGyBSabeD6MClMdA74qHpkAPpZi7Rcm9rn6BXsuuFeaA7dMGSgpYaQXDi3OcnM59Zm/iD9ORXSC/3QN9dHXUS9HE+zwCzQDhBbvugSmFPn/SV7nsR6MlY+9GUmuYDpzLTalX+ylQU4mtfkM6DaGcF6D7ioxN9ZkWtTFiI2apc01vbWRE9GwJj8Xip62bLRvGNcUFz5pkQidTxYhr7u7v+CA7Jy3nLrcWuwxwBRxP6iVExBp2bS9KN1OukO8tw3kPhyNqjHx27pfMLGDJfjmSKBqQa3imxd4mL9/lWmIUo6REHz90m1psdmoKFxVW/RGamU7Pl6h5MtNUvOymT+Byk3lISBkPQIFa+2x4ax+GLoYnmT5Ieg/dkH/eUpQckGHtqBMzmQzuR9G9cQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS3PR01MB6593.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6486002)(107886003)(508600001)(6512007)(26005)(6506007)(186003)(52116002)(316002)(86362001)(6666004)(2906002)(5660300002)(83380400001)(36756003)(2616005)(4326008)(8676002)(66476007)(66946007)(66556008)(38100700002)(38350700002)(8936002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8Xu9/u4vOOPUiggt18SkO1XHXVvL3HNPXLmWKOC+Xf+entBQh5mnwLFxDCh3?=
+ =?us-ascii?Q?B9O5T5VdlYmoy1rz6WUvPW7eXlnKvQJupD8NIcZaLgnT0kU1k0xqSh1o8nMM?=
+ =?us-ascii?Q?uln93glC13AJReIerHVulI6qwjqUFWH4+09ZSIoqYvW0oy+thJRDAnZOoX3j?=
+ =?us-ascii?Q?fCc8W1a4EBSJtKQo1ykE2FsqnRX/4txRcXHTmjXNra5UwF0+f5J8WnwR1xRi?=
+ =?us-ascii?Q?6lizPnTqssIL2xhzGqUOd/bIL0y7/nBSZl8wMtSrZuE+XTHgMIaZn4EzoaIU?=
+ =?us-ascii?Q?IDP/R2pHIXR8RDdAAww7/On1wxTIYiS51IWSjBxQF8KkGyXJkh0rYyOqv067?=
+ =?us-ascii?Q?JH/3Ziu1I1Dk8Kpg0LrgtRvoQB4tzUDR7KhDgPpzzDdg2b+RUOZFFMpAzV2R?=
+ =?us-ascii?Q?ov1SdlhvX6gpwXomBXvIyo3ijYCgNb4EjkbRQZrXhTEScbzgnkhYr8DMo3CJ?=
+ =?us-ascii?Q?NQWOvWgGQ155en7Q55t7TzMyshnwDA0Mw4mCwKI81iYgF0IApoJeJCQxizww?=
+ =?us-ascii?Q?pPWRhmjcPSBp4bpN/8j0t36tm1JxVIqSzYug0gFN08Yr1OXSegHVTf7WDW63?=
+ =?us-ascii?Q?f8/Vmnj3P7cAenY2DUKZ3ZsYRSrbI4mDnEarVNj7Muopq7K1b6vrhL6eoAaV?=
+ =?us-ascii?Q?qsuKTCCX55sBkMP206XrdT6g/FGHku2KbhzS/S2Hbpqz3xGnvTQVflrgErHh?=
+ =?us-ascii?Q?mSUovOsm64HxcnlvTFPuMaJceNVGw1jBNjD/ANmmP4KPilZr71dVbSFZdyQI?=
+ =?us-ascii?Q?TMw0gln4kDubg/vnlTZ+C1fS4RxbEOcc5lm3P5LIPKGEjjKbFLzqyOFSYSe0?=
+ =?us-ascii?Q?fwmrUag2Pc3UJyI1HVZCzpS2Pv2EyxLtHRp36Lnp3ntlVBCUcNiwDrvJ/8Hm?=
+ =?us-ascii?Q?R4iqRJD8slQf6im/5Lt8Fl09ElBka6ppjJMMiofS4whQz75gs49ATTrH7yoN?=
+ =?us-ascii?Q?f26grvwYvgyBafDxvhjCCUF2YIIZgNaBn+gd6BR5P+e4dQRCnbCrkk4oRRb+?=
+ =?us-ascii?Q?E7ey1e0UKIwMKYGnQDwSnqvlFMMUS9DKrSTNjDhhcwZU841IV8WRI4nbQYaQ?=
+ =?us-ascii?Q?04JVslfi5JwdENLfKmGBEPX/VnLTua5FN/6CapvBO3Enud6SR0D9u+C0XTy6?=
+ =?us-ascii?Q?vL3iRjucLnKHvYFxQ1DDQY3u+lPK6jNZdlRoVlnnKCA4tCMEJtpSPNkM5cOY?=
+ =?us-ascii?Q?ZQx5yFqoz09ivZsVXd1ePpiq2RKCCQmwga8/rfGkFBqEO9GIemCCdkPoGzdW?=
+ =?us-ascii?Q?rwP2tsBmebik/9/w5FHBp/c605CZpxjP02qqvqEm9lTIT6Ldn+HnXgxGRMzY?=
+ =?us-ascii?Q?3z/YSYZfkPAmaxWWFkuOysGudfocOzmwclYcuwDEPwvYZiIc7Tg6C3oZ8vSX?=
+ =?us-ascii?Q?AbEgmD/Uzn0EeKsOEk90/gqzy3DODEaJJaJmbpI/H9MVFz5yOl7Ob78/FYfp?=
+ =?us-ascii?Q?QFVwSu/yzbiY9OUUxYC+GUFd/fXL2DCUIWjyYAnOVPnukY44U+Cs6AoQ800o?=
+ =?us-ascii?Q?F4snvgXhcpMzvSfdf8KioPlJQie19gTBpEMkFYtFFQniwluPkqqn4ZFSEuIY?=
+ =?us-ascii?Q?Y2R+VskzTlUVM/UPplyDwfwfgiIo+Qi+4iSqrU4AArshY75uRpFrJd9tV9u3?=
+ =?us-ascii?Q?JgLRr+cjhuUPosQCNr2iL9krUtLlfexdWkJ4DSnYf1RoQZmCeW3sGBwZiCRI?=
+ =?us-ascii?Q?9GEXxkWhNdkIdfTrpo4wsucewzzFVDXGnSmaf0FtHxrOMES38ePuBDS0CPmJ?=
+ =?us-ascii?Q?KI9D5IUSlZpfDPOjX3mPdFL3buOVXVU=3D?=
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a2a24860-0a8f-4e6c-d74e-08da335a1cb6
+X-MS-Exchange-CrossTenant-AuthSource: OS3PR01MB6593.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2022 14:25:35.0351
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: x9dRXfFFMx0eY5+5Xr/zdfgSEJPHB9JEhANGfCFZG9gMVvtClanljtzS/QKiidaDN1pXpyJSdcoISLc1MycVig==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSAPR01MB4850
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to clean up x86_perf_event_{set_period,update)() start by
-adding them as x86_pmu methods.
+Also removes PEROUT_ENABLE_OUTPUT_MASK
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Min Li <min.li.xe@renesas.com>
+Acked-by: Richard Cochran <richardcochran@gmail.com>
 ---
- arch/x86/events/core.c       |   22 +++++++++++++++++-----
- arch/x86/events/perf_event.h |    5 +++++
- 2 files changed, 22 insertions(+), 5 deletions(-)
+ drivers/ptp/ptp_clockmatrix.c | 32 ++------------------------------
+ drivers/ptp/ptp_clockmatrix.h |  2 --
+ 2 files changed, 2 insertions(+), 32 deletions(-)
 
---- a/arch/x86/events/core.c
-+++ b/arch/x86/events/core.c
-@@ -72,6 +72,9 @@ DEFINE_STATIC_CALL_NULL(x86_pmu_add,  *x
- DEFINE_STATIC_CALL_NULL(x86_pmu_del,  *x86_pmu.del);
- DEFINE_STATIC_CALL_NULL(x86_pmu_read, *x86_pmu.read);
- 
-+DEFINE_STATIC_CALL_NULL(x86_pmu_set_period, *x86_pmu.set_period);
-+DEFINE_STATIC_CALL_NULL(x86_pmu_update,     *x86_pmu.update);
-+
- DEFINE_STATIC_CALL_NULL(x86_pmu_schedule_events,       *x86_pmu.schedule_events);
- DEFINE_STATIC_CALL_NULL(x86_pmu_get_event_constraints, *x86_pmu.get_event_constraints);
- DEFINE_STATIC_CALL_NULL(x86_pmu_put_event_constraints, *x86_pmu.put_event_constraints);
-@@ -1518,7 +1521,7 @@ static void x86_pmu_start(struct perf_ev
- 
- 	if (flags & PERF_EF_RELOAD) {
- 		WARN_ON_ONCE(!(event->hw.state & PERF_HES_UPTODATE));
--		x86_perf_event_set_period(event);
-+		static_call(x86_pmu_set_period)(event);
- 	}
- 
- 	event->hw.state = 0;
-@@ -1610,7 +1613,7 @@ void x86_pmu_stop(struct perf_event *eve
- 		 * Drain the remaining delta count out of a event
- 		 * that we are disabling:
- 		 */
--		x86_perf_event_update(event);
-+		static_call(x86_pmu_update)(event);
- 		hwc->state |= PERF_HES_UPTODATE;
- 	}
- }
-@@ -1700,7 +1703,7 @@ int x86_pmu_handle_irq(struct pt_regs *r
- 
- 		event = cpuc->events[idx];
- 
--		val = x86_perf_event_update(event);
-+		val = static_call(x86_pmu_update)(event);
- 		if (val & (1ULL << (x86_pmu.cntval_bits - 1)))
- 			continue;
- 
-@@ -1709,7 +1712,7 @@ int x86_pmu_handle_irq(struct pt_regs *r
- 		 */
- 		handled++;
- 
--		if (!x86_perf_event_set_period(event))
-+		if (!static_call(x86_pmu_set_period)(event))
- 			continue;
- 
- 		perf_sample_data_init(&data, 0, event->hw.last_period);
-@@ -2023,6 +2026,9 @@ static void x86_pmu_static_call_update(v
- 	static_call_update(x86_pmu_del, x86_pmu.del);
- 	static_call_update(x86_pmu_read, x86_pmu.read);
- 
-+	static_call_update(x86_pmu_set_period, x86_pmu.set_period);
-+	static_call_update(x86_pmu_update, x86_pmu.update);
-+
- 	static_call_update(x86_pmu_schedule_events, x86_pmu.schedule_events);
- 	static_call_update(x86_pmu_get_event_constraints, x86_pmu.get_event_constraints);
- 	static_call_update(x86_pmu_put_event_constraints, x86_pmu.put_event_constraints);
-@@ -2042,7 +2048,7 @@ static void x86_pmu_static_call_update(v
- 
- static void _x86_pmu_read(struct perf_event *event)
- {
--	x86_perf_event_update(event);
-+	static_call(x86_pmu_update)(event);
+diff --git a/drivers/ptp/ptp_clockmatrix.c b/drivers/ptp/ptp_clockmatrix.c
+index aaff5cd..ea87487 100644
+--- a/drivers/ptp/ptp_clockmatrix.c
++++ b/drivers/ptp/ptp_clockmatrix.c
+@@ -1363,43 +1363,15 @@ static int idtcm_output_enable(struct idtcm_channel *channel,
+ 	return idtcm_write(idtcm, (u16)base, OUT_CTRL_1, &val, sizeof(val));
  }
  
- void x86_pmu_show_pmu_cap(int num_counters, int num_counters_fixed,
-@@ -2148,6 +2154,12 @@ static int __init init_hw_perf_events(vo
- 	if (!x86_pmu.guest_get_msrs)
- 		x86_pmu.guest_get_msrs = (void *)&__static_call_return0;
- 
-+	if (!x86_pmu.set_period)
-+		x86_pmu.set_period = x86_perf_event_set_period;
-+
-+	if (!x86_pmu.update)
-+		x86_pmu.update = x86_perf_event_update;
-+
- 	x86_pmu_static_call_update();
- 
- 	/*
---- a/arch/x86/events/perf_event.h
-+++ b/arch/x86/events/perf_event.h
-@@ -735,6 +735,8 @@ struct x86_pmu {
- 	void		(*add)(struct perf_event *);
- 	void		(*del)(struct perf_event *);
- 	void		(*read)(struct perf_event *event);
-+	int		(*set_period)(struct perf_event *event);
-+	u64		(*update)(struct perf_event *event);
- 	int		(*hw_config)(struct perf_event *event);
- 	int		(*schedule_events)(struct cpu_hw_events *cpuc, int n, int *assign);
- 	unsigned	eventsel;
-@@ -1031,6 +1033,9 @@ static struct perf_pmu_format_hybrid_att
- struct pmu *x86_get_pmu(unsigned int cpu);
- extern struct x86_pmu x86_pmu __read_mostly;
- 
-+DECLARE_STATIC_CALL(x86_pmu_set_period, *x86_pmu.set_period);
-+DECLARE_STATIC_CALL(x86_pmu_update,     *x86_pmu.update);
-+
- static __always_inline struct x86_perf_task_context_opt *task_context_opt(void *ctx)
+-static int idtcm_output_mask_enable(struct idtcm_channel *channel,
+-				    bool enable)
+-{
+-	u16 mask;
+-	int err;
+-	u8 outn;
+-
+-	mask = channel->output_mask;
+-	outn = 0;
+-
+-	while (mask) {
+-		if (mask & 0x1) {
+-			err = idtcm_output_enable(channel, enable, outn);
+-			if (err)
+-				return err;
+-		}
+-
+-		mask >>= 0x1;
+-		outn++;
+-	}
+-
+-	return 0;
+-}
+-
+ static int idtcm_perout_enable(struct idtcm_channel *channel,
+ 			       struct ptp_perout_request *perout,
+ 			       bool enable)
  {
- 	if (static_cpu_has(X86_FEATURE_ARCH_LBR))
-
+ 	struct idtcm *idtcm = channel->idtcm;
+-	unsigned int flags = perout->flags;
+ 	struct timespec64 ts = {0, 0};
+ 	int err;
+ 
+-	if (flags == PEROUT_ENABLE_OUTPUT_MASK)
+-		err = idtcm_output_mask_enable(channel, enable);
+-	else
+-		err = idtcm_output_enable(channel, enable, perout->index);
++	err = idtcm_output_enable(channel, enable, perout->index);
+ 
+ 	if (err) {
+ 		dev_err(idtcm->dev, "Unable to set output enable");
+@@ -1903,7 +1875,7 @@ static int idtcm_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ 	int err;
+ 
+ 	if (channel->phase_pull_in == true)
+-		return 0;
++		return -EBUSY;
+ 
+ 	mutex_lock(idtcm->lock);
+ 
+diff --git a/drivers/ptp/ptp_clockmatrix.h b/drivers/ptp/ptp_clockmatrix.h
+index 4379650..bf1e49409 100644
+--- a/drivers/ptp/ptp_clockmatrix.h
++++ b/drivers/ptp/ptp_clockmatrix.h
+@@ -54,8 +54,6 @@
+ #define LOCK_TIMEOUT_MS			(2000)
+ #define LOCK_POLL_INTERVAL_MS		(10)
+ 
+-#define PEROUT_ENABLE_OUTPUT_MASK	(0xdeadbeef)
+-
+ #define IDTCM_MAX_WRITE_COUNT		(512)
+ 
+ #define PHASE_PULL_IN_MAX_PPB		(144000)
+-- 
+2.7.4
 
