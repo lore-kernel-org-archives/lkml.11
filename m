@@ -2,133 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3FBBC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 05:43:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE49DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 05:44:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234318AbiEKFnN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 01:43:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59214 "EHLO
+        id S234295AbiEKFof (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 01:44:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242006AbiEKFnG (ORCPT
+        with ESMTP id S240481AbiEKFob (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 01:43:06 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8539F244F30;
-        Tue, 10 May 2022 22:43:05 -0700 (PDT)
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24B5JCv6014860;
-        Wed, 11 May 2022 05:42:44 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=IZihMvTZxLEvEn/T42ljcSuxs433WB3J2v0ydnxX9FI=;
- b=XlqSsN52VPE9AQVymdYv4/VGSx8+n2oQRFgcaqgJSpaKN9iyVGwT8N3maO2nHxfKhDAr
- 0MROew8CJfck2SOnALzZPQL5z0YzqLl8++EQzvQ80HVJT4DHXd/lua1Q1bptygneh51x
- gde0SB99LHu2kHF2kX1IcyAdtzFzbLnupXwtUzRgh3QsDdg75Dz7B2SHIQNJ41DwChPN
- 5OiT7EIIs0eEUSQypY539Y1Tz952JHzG0ag08GA18+IoPIgK88U/fb4t7B73quA1SOD4
- OVjy6dJP5q1TImrKUVtcR6yKEk1pOohs380LOg/f/vj1gUNCoWIA/IXD/W2PE9Bk2SG+ Ow== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g06w3rb01-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 11 May 2022 05:42:44 +0000
-Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24B5KhtC019439;
-        Wed, 11 May 2022 05:42:43 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g06w3rayj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 11 May 2022 05:42:43 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24B5XYg8018231;
-        Wed, 11 May 2022 05:42:41 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma01fra.de.ibm.com with ESMTP id 3fwgd8kuj1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 11 May 2022 05:42:41 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24B5gKPP33423862
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 11 May 2022 05:42:20 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1AA3F4C044;
-        Wed, 11 May 2022 05:42:39 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9FE2E4C040;
-        Wed, 11 May 2022 05:42:32 +0000 (GMT)
-Received: from [9.43.104.77] (unknown [9.43.104.77])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 11 May 2022 05:42:32 +0000 (GMT)
-Message-ID: <eef22a4a-2695-a1a8-0926-781370e75cbf@linux.ibm.com>
-Date:   Wed, 11 May 2022 11:12:30 +0530
+        Wed, 11 May 2022 01:44:31 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8E95244F1C
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 22:44:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652247870; x=1683783870;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=O/LKqF2r6cXVe/FaTSWKC+U4U0uUtqbT/QPMs+Ecj98=;
+  b=Pc64qkSZ94IswpUrL9xJ6H8Ug8edWuyvHkMlz9AS8X35bSCRpBq+IlR+
+   BiYIUy2LD87lfzrKE1YlGzlyuBztQyPcT/wyXc6MOg1y3GkkRKQpTOkFp
+   mhVD+63bpFd7+VsOabPrmVtRabzw+6Hd97iJTzeVDmsmQUt2mullJmLs/
+   l771dfZFv+DvkkxgohUEZjLAPfFGtCmpFxjkhwGDHSZhSjI7bRV4EtX4n
+   X/nFzFpmM7oDS3b4zlmCkoAk4zIj7o6VLG67eEwyKz9BjwZDcaNE2wvFd
+   ns0WDn1A/xFlALbd5ftbL0xCiEEbShrCZIHv5Ho3Uqle461vyz+61pGzd
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="269529367"
+X-IronPort-AV: E=Sophos;i="5.91,216,1647327600"; 
+   d="scan'208";a="269529367"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 22:44:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,216,1647327600"; 
+   d="scan'208";a="520368411"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 10 May 2022 22:44:28 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nof99-000IlQ-Tx;
+        Wed, 11 May 2022 05:44:27 +0000
+Date:   Wed, 11 May 2022 13:43:28 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Icenowy Zheng <icenowy@aosc.io>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Maxime Ripard <maxime@cerno.tech>,
+        Vasily Khoruzhick <anarsoul@gmail.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Torsten Duwe <duwe@suse.de>,
+        Andrzej Hajda <a.hajda@samsung.com>
+Subject: drivers/gpu/drm/bridge/analogix/analogix-anx78xx.c:50:17: warning:
+ 'anx781x_i2c_addresses' defined but not used
+Message-ID: <202205111306.DCEG8q0G-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v8 2/5] perf tools: sync addition of PERF_MEM_SNOOPX_PEER
-Content-Language: en-US
-To:     Ali Saidi <alisaidi@amazon.com>, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, german.gomez@arm.com,
-        leo.yan@linaro.org, acme@kernel.org
-Cc:     benh@kernel.crashing.org, Nick.Forrington@arm.com,
-        alexander.shishkin@linux.intel.com, andrew.kilroy@arm.com,
-        james.clark@arm.com, john.garry@huawei.com, jolsa@kernel.org,
-        lihuafei1@huawei.com, mark.rutland@arm.com,
-        mathieu.poirier@linaro.org, mingo@redhat.com, namhyung@kernel.org,
-        peterz@infradead.org, will@kernel.org
-References: <20220504184850.24986-1-alisaidi@amazon.com>
- <20220504184850.24986-3-alisaidi@amazon.com>
-From:   kajoljain <kjain@linux.ibm.com>
-In-Reply-To: <20220504184850.24986-3-alisaidi@amazon.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: _9mkWQ9OzGZ0jaqtLz89LX6uvyRAVDyR
-X-Proofpoint-GUID: qHlb0WGRz-hGJEzR43LJmjs0udLtB7qA
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-11_01,2022-05-10_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 phishscore=0
- suspectscore=0 impostorscore=0 mlxscore=0 bulkscore=0 priorityscore=1501
- clxscore=1015 adultscore=0 mlxlogscore=999 spamscore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2205110025
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   feb9c5e19e913b53cb536a7aa7c9f20107bb51ec
+commit: 5d97408e0d70a7c7c5942ba95260bab7c9e21eb4 drm/bridge: move ANA78xx driver to analogix subdirectory
+date:   2 years, 6 months ago
+config: x86_64-randconfig-a013 (https://download.01.org/0day-ci/archive/20220511/202205111306.DCEG8q0G-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=5d97408e0d70a7c7c5942ba95260bab7c9e21eb4
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 5d97408e0d70a7c7c5942ba95260bab7c9e21eb4
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/gpu/drm/bridge/analogix/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/gpu/drm/bridge/analogix/analogix-anx78xx.c:50:17: warning: 'anx781x_i2c_addresses' defined but not used [-Wunused-const-variable=]
+      50 | static const u8 anx781x_i2c_addresses[] = {
+         |                 ^~~~~~~~~~~~~~~~~~~~~
+>> drivers/gpu/drm/bridge/analogix/analogix-anx78xx.c:42:17: warning: 'anx7808_i2c_addresses' defined but not used [-Wunused-const-variable=]
+      42 | static const u8 anx7808_i2c_addresses[] = {
+         |                 ^~~~~~~~~~~~~~~~~~~~~
 
 
-On 5/5/22 00:18, Ali Saidi wrote:
-> Add a flag to the perf mem data struct to signal that a request caused a
-> cache-to-cache transfer of a line from a peer of the requestor and
-> wasn't sourced from a lower cache level.  The line being moved from one
-> peer cache to another has latency and performance implications. On Arm64
-> Neoverse systems the data source can indicate a cache-to-cache transfer
-> but not if the line is dirty or clean, so instead of overloading HITM
-> define a new flag that indicates this type of transfer.
-> 
-> Signed-off-by: Ali Saidi <alisaidi@amazon.com>
-> Reviewed-by: Leo Yan <leo.yan@linaro.org>
-> ---
->  tools/include/uapi/linux/perf_event.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tools/include/uapi/linux/perf_event.h b/tools/include/uapi/linux/perf_event.h
-> index d37629dbad72..7b88bfd097dc 100644
-> --- a/tools/include/uapi/linux/perf_event.h
-> +++ b/tools/include/uapi/linux/perf_event.h
-> @@ -1310,7 +1310,7 @@ union perf_mem_data_src {
->  #define PERF_MEM_SNOOP_SHIFT	19
->  
->  #define PERF_MEM_SNOOPX_FWD	0x01 /* forward */
-> -/* 1 free */
-> +#define PERF_MEM_SNOOPX_PEER	0x02 /* xfer from peer */
->  #define PERF_MEM_SNOOPX_SHIFT  38
->  
->  /* locked instruction */
-Patch looks good to me.
+vim +/anx781x_i2c_addresses +50 drivers/gpu/drm/bridge/analogix/analogix-anx78xx.c
 
-Reviewed-By: Kajol Jain<kjain@linux.ibm.com>
+0647e7dd3f7ab2e drivers/gpu/drm/bridge/analogix-anx78xx.c Enric Balletbo i Serra 2016-05-02  41  
+025910db8057f60 drivers/gpu/drm/bridge/analogix-anx78xx.c Brian Masney           2019-09-22 @42  static const u8 anx7808_i2c_addresses[] = {
+025910db8057f60 drivers/gpu/drm/bridge/analogix-anx78xx.c Brian Masney           2019-09-22  43  	[I2C_IDX_TX_P0] = 0x78,
+025910db8057f60 drivers/gpu/drm/bridge/analogix-anx78xx.c Brian Masney           2019-09-22  44  	[I2C_IDX_TX_P1] = 0x7a,
+025910db8057f60 drivers/gpu/drm/bridge/analogix-anx78xx.c Brian Masney           2019-09-22  45  	[I2C_IDX_TX_P2] = 0x72,
+025910db8057f60 drivers/gpu/drm/bridge/analogix-anx78xx.c Brian Masney           2019-09-22  46  	[I2C_IDX_RX_P0] = 0x7e,
+025910db8057f60 drivers/gpu/drm/bridge/analogix-anx78xx.c Brian Masney           2019-09-22  47  	[I2C_IDX_RX_P1] = 0x80,
+025910db8057f60 drivers/gpu/drm/bridge/analogix-anx78xx.c Brian Masney           2019-09-22  48  };
+025910db8057f60 drivers/gpu/drm/bridge/analogix-anx78xx.c Brian Masney           2019-09-22  49  
+025910db8057f60 drivers/gpu/drm/bridge/analogix-anx78xx.c Brian Masney           2019-09-22 @50  static const u8 anx781x_i2c_addresses[] = {
+025910db8057f60 drivers/gpu/drm/bridge/analogix-anx78xx.c Brian Masney           2019-09-22  51  	[I2C_IDX_TX_P0] = 0x70,
+025910db8057f60 drivers/gpu/drm/bridge/analogix-anx78xx.c Brian Masney           2019-09-22  52  	[I2C_IDX_TX_P1] = 0x7a,
+025910db8057f60 drivers/gpu/drm/bridge/analogix-anx78xx.c Brian Masney           2019-09-22  53  	[I2C_IDX_TX_P2] = 0x72,
+025910db8057f60 drivers/gpu/drm/bridge/analogix-anx78xx.c Brian Masney           2019-09-22  54  	[I2C_IDX_RX_P0] = 0x7e,
+025910db8057f60 drivers/gpu/drm/bridge/analogix-anx78xx.c Brian Masney           2019-09-22  55  	[I2C_IDX_RX_P1] = 0x80,
+0647e7dd3f7ab2e drivers/gpu/drm/bridge/analogix-anx78xx.c Enric Balletbo i Serra 2016-05-02  56  };
+0647e7dd3f7ab2e drivers/gpu/drm/bridge/analogix-anx78xx.c Enric Balletbo i Serra 2016-05-02  57  
 
-Thanks,
-Kajol Jain
+:::::: The code at line 50 was first introduced by commit
+:::::: 025910db8057f60d2d2aa11002f7751e3eb66588 drm/bridge: analogix-anx78xx: add support for 7808 addresses
+
+:::::: TO: Brian Masney <masneyb@onstation.org>
+:::::: CC: Andrzej Hajda <a.hajda@samsung.com>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
