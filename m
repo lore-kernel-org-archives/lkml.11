@@ -2,152 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF106C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 16:04:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79FEEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 16:05:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344357AbiEKQEi (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 12:04:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47034 "EHLO
+        id S239663AbiEKQFG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 12:05:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344273AbiEKQEX (ORCPT
+        with ESMTP id S1344360AbiEKQEz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 12:04:23 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E23011A15D4;
-        Wed, 11 May 2022 09:04:19 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id CBA4A1F460;
-        Wed, 11 May 2022 16:04:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1652285057;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Xc6b2DGSHNoqcRaRJAmNz3xmM8+5hVjJ6d9Uf3kedYI=;
-        b=AptAfNQUACxbGuDofIFikwhqSmZLKp4LaZkHv0nu5pVn6UGKlHaoJuH95JxLwf223Z+HIf
-        R8aoLP+L+YwysdX0gx8806E5IouENUnMmezge+u6h42ZR1TitVwdwkQ25tBBdHfU4gLBzg
-        bPkaIp0vtR6+ExEinYmIQH18c7X68Oo=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1652285057;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Xc6b2DGSHNoqcRaRJAmNz3xmM8+5hVjJ6d9Uf3kedYI=;
-        b=XqXkW74F8Zok5rdnrEAgPSVAz1K4bzmN0oplvOFkQ34V3VduS2lJo/LPWmHvXSFvI7IzbV
-        VI5pIiFWh6KxVkAg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2D07B13A76;
-        Wed, 11 May 2022 16:04:17 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id Ton9CYHee2KSRQAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Wed, 11 May 2022 16:04:17 +0000
-Date:   Wed, 11 May 2022 18:00:02 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Pankaj Raghav <p.raghav@samsung.com>
-Cc:     dsterba@suse.cz, jaegeuk@kernel.org, hare@suse.de,
-        dsterba@suse.com, axboe@kernel.dk, hch@lst.de,
-        damien.lemoal@opensource.wdc.com, snitzer@kernel.org,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        bvanassche@acm.org, linux-fsdevel@vger.kernel.org,
-        matias.bjorling@wdc.com, Jens Axboe <axboe@fb.com>,
-        gost.dev@samsung.com, jonathan.derrick@linux.dev,
-        jiangbo.365@bytedance.com, linux-nvme@lists.infradead.org,
-        dm-devel@redhat.com, Naohiro Aota <naohiro.aota@wdc.com>,
-        linux-kernel@vger.kernel.org, Johannes Thumshirn <jth@kernel.org>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Alasdair Kergon <agk@redhat.com>, linux-block@vger.kernel.org,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Keith Busch <kbusch@kernel.org>, linux-btrfs@vger.kernel.org,
-        Luis Chamberlain <mcgrof@kernel.org>
-Subject: Re: [PATCH v3 11/11] dm-zoned: ensure only power of 2 zone sizes are
- allowed
-Message-ID: <20220511160001.GQ18596@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Pankaj Raghav <p.raghav@samsung.com>,
-        jaegeuk@kernel.org, hare@suse.de, dsterba@suse.com, axboe@kernel.dk,
-        hch@lst.de, damien.lemoal@opensource.wdc.com, snitzer@kernel.org,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        bvanassche@acm.org, linux-fsdevel@vger.kernel.org,
-        matias.bjorling@wdc.com, Jens Axboe <axboe@fb.com>,
-        gost.dev@samsung.com, jonathan.derrick@linux.dev,
-        jiangbo.365@bytedance.com, linux-nvme@lists.infradead.org,
-        dm-devel@redhat.com, Naohiro Aota <naohiro.aota@wdc.com>,
-        linux-kernel@vger.kernel.org, Johannes Thumshirn <jth@kernel.org>,
-        Sagi Grimberg <sagi@grimberg.me>, Alasdair Kergon <agk@redhat.com>,
-        linux-block@vger.kernel.org, Chaitanya Kulkarni <kch@nvidia.com>,
-        Keith Busch <kbusch@kernel.org>, linux-btrfs@vger.kernel.org,
-        Luis Chamberlain <mcgrof@kernel.org>
-References: <20220506081105.29134-1-p.raghav@samsung.com>
- <CGME20220506081118eucas1p17f3c29cc36d748c3b5a3246f069f434a@eucas1p1.samsung.com>
- <20220506081105.29134-12-p.raghav@samsung.com>
- <20220509185432.GB18596@twin.jikos.cz>
- <d8e86c32-f122-01df-168e-648179766c55@samsung.com>
+        Wed, 11 May 2022 12:04:55 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD3B81CE60C;
+        Wed, 11 May 2022 09:04:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652285088; x=1683821088;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=DdgW529vfrzUdK200xAyqlK8chpMkKRWAWDKnvN+xwU=;
+  b=n/CoXh9Go0iybYnUG27b1a3hP3k/avkGPZonqwWtrkrN7K5m3OHChXVn
+   c7z/BACU6zTcM0yjnYpee1POSZyj642aXVxaYM70LpyoAtOOUIYyDfCjO
+   YLw7ZpVgA8+W7jPhid0NFF5SMGiiwCoMyKEZOxNlUExYBddAivsTPbPux
+   KFN1Q9zFMF9PwB6rvxzs6tAai3dziwvM9LJQQLcOXBFmO7cNWEvmHybPk
+   4gUNjD/J5taec7USjt07jDZQYQN2uJbQ5Ja6VEBOdGNyhddxawtg5ED/+
+   erBdZ319BuMI3tAqAzT7xRs43sCClDi/A9GMH/wW8rgzsGTqJ3pvLxb7F
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="294982389"
+X-IronPort-AV: E=Sophos;i="5.91,217,1647327600"; 
+   d="scan'208";a="294982389"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 09:04:48 -0700
+X-IronPort-AV: E=Sophos;i="5.91,217,1647327600"; 
+   d="scan'208";a="739283010"
+Received: from abynum-mobl.amr.corp.intel.com (HELO spandruv-desk1.amr.corp.intel.com) ([10.209.66.243])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 09:04:47 -0700
+Message-ID: <7481e4eb79a1eabb7389b3d74d132c111be36477.camel@linux.intel.com>
+Subject: Re: [PATCH] tools/power/x86/intel-speed-select: Display error on
+ turbo mode disabled
+From:   srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+To:     Hans de Goede <hdegoede@redhat.com>, markgross@kernel.org
+Cc:     platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Wed, 11 May 2022 09:04:47 -0700
+In-Reply-To: <e2f85541-3e7b-6120-1c44-70ec4447291c@redhat.com>
+References: <20220510023421.3930540-1-srinivas.pandruvada@linux.intel.com>
+         <e2f85541-3e7b-6120-1c44-70ec4447291c@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d8e86c32-f122-01df-168e-648179766c55@samsung.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 04:39:17PM +0200, Pankaj Raghav wrote:
-> Hi David,
+Hi Hans,
+
+On Wed, 2022-05-11 at 17:56 +0200, Hans de Goede wrote:
+> Hi,
 > 
-> On 2022-05-09 20:54, David Sterba wrote:>> diff --git
-> a/drivers/md/dm-zone.c b/drivers/md/dm-zone.c
-> >> index 3e7b1fe15..27dc4ddf2 100644
-> >> --- a/drivers/md/dm-zone.c
-> >> +++ b/drivers/md/dm-zone.c
-> >> @@ -231,6 +231,18 @@ static int dm_revalidate_zones(struct mapped_device *md, struct dm_table *t)
-> >>  	struct request_queue *q = md->queue;
-> >>  	unsigned int noio_flag;
-> >>  	int ret;
-> >> +	struct block_device *bdev = md->disk->part0;
-> >> +	sector_t zone_sectors;
-> >> +	char bname[BDEVNAME_SIZE];
-> >> +
-> >> +	zone_sectors = bdev_zone_sectors(bdev);
-> >> +
-> >> +	if (!is_power_of_2(zone_sectors)) {
+> On 5/10/22 04:34, Srinivas Pandruvada wrote:
+> > For Intel SST turbo-freq feature to be enabled, the turbo mode on
+> > the
+> > platform must be enabled also. If turbo mode is disabled, display
+> > error
+> > while enabling turbo-freq feature.
 > > 
-> > is_power_of_2 takes 'unsigned long' and sector_t is u64, so this is not
-> > 32bit clean and we had an actual bug where value 1<<48 was not
-> > recognized as power of 2.
+> > Signed-off-by: Srinivas Pandruvada
+> > <srinivas.pandruvada@linux.intel.com>
+> > ---
+> > Since this is a trivial patch, I am not sending a PULL request.
+> 
+> Note not related to this patch, but when test building intel-speed-
+> select
+> I got the following compiler warning:
+> 
+>   CC      hfi-events.o
+> In function ‘process_hfi_event’,
+>     inlined from ‘handle_event’ at hfi-events.c:220:5:
+> hfi-events.c:184:9: warning: ‘perf_cap.cpu’ may be used uninitialized
+> [-Wmaybe-uninitialized]
+>   184 |         process_level_change(perf_cap->cpu);
+>       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> hfi-events.c: In function ‘handle_event’:
+> hfi-events.c:193:25: note: ‘perf_cap.cpu’ was declared here
+>   193 |         struct perf_cap perf_cap;
+>       |                         ^~~~~~~~
+> 
+> 
+Let me send a patch to fix. In reality this will not happen as HFI
+message will always have a CPU.
+
+Thanks,
+Srinivas
+
+
+> Regards,
+> 
+> Hans
+> 
+> 
+> 
 > > 
-> Good catch. Now I understand why btrfs has a helper for is_power_of_two_u64.
+> >  tools/power/x86/intel-speed-select/isst-config.c | 6 ++++++
+> >  1 file changed, 6 insertions(+)
+> > 
+> > diff --git a/tools/power/x86/intel-speed-select/isst-config.c
+> > b/tools/power/x86/intel-speed-select/isst-config.c
+> > index 060390e88e37..9d35614995ee 100644
+> > --- a/tools/power/x86/intel-speed-select/isst-config.c
+> > +++ b/tools/power/x86/intel-speed-select/isst-config.c
+> > @@ -1892,6 +1892,12 @@ static void set_fact_for_cpu(int cpu, void
+> > *arg1, void *arg2, void *arg3,
+> >         int ret;
+> >         int status = *(int *)arg4;
+> >  
+> > +       if (status && no_turbo()) {
+> > +               isst_display_error_info_message(1, "Turbo mode is
+> > disabled", 0, 0);
+> > +               ret = -1;
+> > +               goto disp_results;
+> > +       }
+> > +
+> >         ret = isst_get_ctdp_levels(cpu, &pkg_dev);
+> >         if (ret) {
+> >                 isst_display_error_info_message(1, "Failed to get
+> > number of levels", 0, 0);
 > 
-> But the zone size can never be more than 32bit value so the zone size
-> sect will never greater than unsigned long.
 
-We've set the maximum supported zone size in btrfs to be 8G, which is a
-lot and should be sufficient for some time, but this also means that the
-value is larger than 32bit maximum. I have actually tested btrfs on top
-of such emaulated zoned device via TCMU, so it's not dm-zoned, so it's
-up to you to make sure that a silent overflow won't happen.
-
-> With that said, we have two options:
-> 
-> 1.) We can put a comment explaining that even though it is 32 bit
-> unsafe, zone size sect can never be a 32bit value
-
-This is probably part of the protocol and specification of the zoned
-devices, the filesystem either accepts the spec or makes some room for
-larger values in case it's not too costly.
-
-> or
-> 
-> 2) We should move the btrfs only helper `is_power_of_two_u64` to some
-> common header and use it everywhere.
-
-Yeah, that can be done independently. With some macro magic it can be
-made type-safe for any argument while preserving the 'is_power_of_2'
-name.
