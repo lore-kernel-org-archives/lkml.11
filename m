@@ -2,181 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B55B2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:09:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5533DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:11:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245489AbiEKPJt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 11:09:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50904 "EHLO
+        id S245567AbiEKPLq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 11:11:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245433AbiEKPJq (ORCPT
+        with ESMTP id S245605AbiEKPL2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 11:09:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C5D25A5BA;
-        Wed, 11 May 2022 08:09:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 099A4617F4;
-        Wed, 11 May 2022 15:09:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 164F3C340EE;
-        Wed, 11 May 2022 15:09:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652281784;
-        bh=+5yhdEg3t7GmuaYfoKfEfexhg5W3/y5N1bM9raZWrGY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=IBY5WeqxFQIsvZwdQLVR9GkA5PwhiSY6/1rd0dgaHKLxhFW6thgEhZXndBnhCLjmS
-         jbXYJOdaMshS5BDHa8cXWyQY5oKStPOqgRdoSb3hhDjRiVHDZrVwyo5MqtqOonEdHC
-         5J5XS0MkTv7ZRNQIooeeLcV3Cyd3E7FuFNwe+wr5c9BV+l2a0p6hBGmZBbOPx9zbFB
-         bYFeQiGDKA6JWe9bgxiPlWu6oXyqly1TmLxzSXFchguUywApwUV6j2bp/ZwZrc9Omx
-         7q5ZrW//Hu0a4enfgTsYirseppHifF8T49s8HW0qg4CR5GbBMWyqubaBR+gsGx/LUW
-         gpBv7UeNFH27w==
-Date:   Wed, 11 May 2022 18:08:14 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Cc:     peterhuewe@gmx.de, jgg@ziepe.ca, stefanb@linux.vnet.ibm.com,
-        linux@mniewoehner.de, linux-integrity@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lukas@wunner.de,
-        p.rosenberger@kunbus.com, Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Subject: Re: [PATCH v4 6/6] tpm, tpm_tis: Only enable supported IRQs
-Message-ID: <YnvRXiMxMRF3mIb8@kernel.org>
-References: <20220509080559.4381-1-LinoSanfilippo@gmx.de>
- <20220509080559.4381-7-LinoSanfilippo@gmx.de>
+        Wed, 11 May 2022 11:11:28 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4E8EF5A16D
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 08:11:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652281881;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=39RuDmaNXDQBWH0X/kkcsp5HOrtgFjXcurofW9ePNCM=;
+        b=cZDez6dq8JlgfyTG/BZrVg5VfeI5OO1jQaQ6b2bAfMZDExqkc0y71cIMpiX3SM0v9imZ/n
+        i/Qjd92wGtNTiJBXlv9ekDmcSP+dwe/AARg1B5a/L5PW5ZoihHEAqjwpxj40h+UXcFUpu6
+        VAzIP9wpvmYCsd4wroWTseKD4x8U42I=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-349-Xbqf-21QNTafiAGkvraN5Q-1; Wed, 11 May 2022 11:11:20 -0400
+X-MC-Unique: Xbqf-21QNTafiAGkvraN5Q-1
+Received: by mail-wm1-f71.google.com with SMTP id o24-20020a05600c379800b003943412e81dso803311wmr.6
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 08:11:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=39RuDmaNXDQBWH0X/kkcsp5HOrtgFjXcurofW9ePNCM=;
+        b=mmJCfvLt6BKSgd3HZ8bhqnii9+mxbMUnvhsE8COGaE2UT814G7cw4091dNoZFwe5AQ
+         g8+RJyXdCuzoODJr8ZHra/8eQ6y0Bq0xUKfrJtz0IJJZ1Yk1E2UjKaJTiZGv+kJSRgLT
+         NBTPs9FZKmkobnXTKacFCNulgc80cojjn6BwpFLWqUC7CLXX7X16lrgnWg9AQrDOm0nm
+         2A/dBlgXs4eY3PXTjMDeZOh6HCPKLzCPufU6FK0QN1Q2kRe1pc/dwF3Y87o3+8/R+UPO
+         7Ma2o4LC5EAez5DRu0WDS16HqegcEAUhS5lZ21Y0oe+JNk7NSkNGlG4foOKQQ6ofYyJG
+         62DQ==
+X-Gm-Message-State: AOAM5301VGi8KZfJRGUywTnLe1/Qw1CzC/5ruYQSEfchhhwi2XmL2Ghd
+        V3z1fwS0EF5JcKIj8sLzdn4pUCMSOWC5iKUWHhc0GWUdnXIg1I5hR+ncqY6jX+Kq7orpKBbc56e
+        UdBhKkvu2SzZB09mlHPAFDMAR
+X-Received: by 2002:a05:6000:178d:b0:20c:5bfd:4d7d with SMTP id e13-20020a056000178d00b0020c5bfd4d7dmr23049801wrg.23.1652281879117;
+        Wed, 11 May 2022 08:11:19 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxxsf9oFM7Gk42CfSx1fKwFraAW0U7qz+SidUX3vN/Bplz5t0edJ1yw0cEoY4YS/Cm/duWrAA==
+X-Received: by 2002:a05:6000:178d:b0:20c:5bfd:4d7d with SMTP id e13-20020a056000178d00b0020c5bfd4d7dmr23049777wrg.23.1652281878846;
+        Wed, 11 May 2022 08:11:18 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c701:700:2393:b0f4:ef08:bd51? (p200300cbc70107002393b0f4ef08bd51.dip0.t-ipconnect.de. [2003:cb:c701:700:2393:b0f4:ef08:bd51])
+        by smtp.gmail.com with ESMTPSA id n7-20020adffe07000000b0020c5253d8dasm1865846wrr.38.2022.05.11.08.11.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 May 2022 08:11:18 -0700 (PDT)
+Message-ID: <0389eac1-af68-56b5-696d-581bb56878b9@redhat.com>
+Date:   Wed, 11 May 2022 17:11:17 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220509080559.4381-7-LinoSanfilippo@gmx.de>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Content-Language: en-US
+To:     Miaohe Lin <linmiaohe@huawei.com>,
+        Oscar Salvador <osalvador@suse.de>
+Cc:     =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
+        <naoya.horiguchi@nec.com>,
+        Naoya Horiguchi <naoya.horiguchi@linux.dev>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220427042841.678351-1-naoya.horiguchi@linux.dev>
+ <54399815-10fe-9d43-7ada-7ddb55e798cb@redhat.com>
+ <20220427122049.GA3918978@hori.linux.bs1.fc.nec.co.jp>
+ <bb1caf48-7e9d-61bf-e0dc-72fcc0228f28@redhat.com>
+ <20220509072902.GB123646@hori.linux.bs1.fc.nec.co.jp>
+ <6a5d31a3-c27f-f6d9-78bb-d6bf69547887@huawei.com>
+ <Ynjl4JmLXkA47U8T@localhost.localdomain>
+ <465902dc-d3bf-7a93-da04-839faddcd699@huawei.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [RFC PATCH v1 0/4] mm, hwpoison: improve handling workload
+ related to hugetlb and memory_hotplug
+In-Reply-To: <465902dc-d3bf-7a93-da04-839faddcd699@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 10:05:59AM +0200, Lino Sanfilippo wrote:
-> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+On 09.05.22 12:53, Miaohe Lin wrote:
+> On 2022/5/9 17:58, Oscar Salvador wrote:
+>> On Mon, May 09, 2022 at 05:04:54PM +0800, Miaohe Lin wrote:
+>>>>> So that leaves us with either
+>>>>>
+>>>>> 1) Fail offlining -> no need to care about reonlining
+>>>
+>>> Maybe fail offlining will be a better alternative as we can get rid of many races
+>>> between memory failure and memory offline? But no strong opinion. :)
+>>
+>> If taking care of those races is not an herculean effort, I'd go with
+>> allowing offlining + disallow re-onlining.
+>> Mainly because memory RAS stuff.
 > 
-> Instead of blindly trying to enable all possible interrupts, use the result
-> from the capability query and request only the interrupts that are actually
-> supported.
+> This dose make sense to me. Thanks. We can try to solve those races if
+> offlining + disallow re-onlining is applied. :)
 > 
-> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> ---
->  drivers/char/tpm/tpm_tis_core.c | 67 ++++++++++++++++++---------------
->  drivers/char/tpm/tpm_tis_core.h |  1 +
->  2 files changed, 37 insertions(+), 31 deletions(-)
+>>
+>> Now, to the re-onlining thing, we'll have to come up with a way to check
+>> whether a section contains hwpoisoned pages, so we do not have to go
+>> and check every single page, as that will be really suboptimal.
 > 
-> diff --git a/drivers/char/tpm/tpm_tis_core.c b/drivers/char/tpm/tpm_tis_core.c
-> index 4c65718feb7d..784e153e2895 100644
-> --- a/drivers/char/tpm/tpm_tis_core.c
-> +++ b/drivers/char/tpm/tpm_tis_core.c
-> @@ -976,13 +976,46 @@ int tpm_tis_core_init(struct device *dev, struct tpm_tis_data *priv, int irq,
->  		goto out_err;
->  	}
->  
-> +	/* Figure out the capabilities */
-> +	rc = tpm_tis_read32(priv, TPM_INTF_CAPS(priv->locality), &intfcaps);
-> +	if (rc < 0)
-> +		goto out_err;
-> +
-> +	dev_dbg(dev, "TPM interface capabilities (0x%x):\n",
-> +		intfcaps);
-> +	if (intfcaps & TPM_INTF_BURST_COUNT_STATIC)
-> +		dev_dbg(dev, "\tBurst Count Static\n");
-> +	if (intfcaps & TPM_INTF_CMD_READY_INT) {
-> +		priv->supported_irqs |= TPM_INTF_CMD_READY_INT;
-> +		dev_dbg(dev, "\tCommand Ready Int Support\n");
-> +	}
-> +	if (intfcaps & TPM_INTF_INT_EDGE_FALLING)
-> +		dev_dbg(dev, "\tInterrupt Edge Falling\n");
-> +	if (intfcaps & TPM_INTF_INT_EDGE_RISING)
-> +		dev_dbg(dev, "\tInterrupt Edge Rising\n");
-> +	if (intfcaps & TPM_INTF_INT_LEVEL_LOW)
-> +		dev_dbg(dev, "\tInterrupt Level Low\n");
-> +	if (intfcaps & TPM_INTF_INT_LEVEL_HIGH)
-> +		dev_dbg(dev, "\tInterrupt Level High\n");
-> +	if (intfcaps & TPM_INTF_LOCALITY_CHANGE_INT) {
-> +		priv->supported_irqs |= TPM_INTF_LOCALITY_CHANGE_INT;
-> +		dev_dbg(dev, "\tLocality Change Int Support\n");
-> +	}
-> +	if (intfcaps & TPM_INTF_STS_VALID_INT) {
-> +		priv->supported_irqs |= TPM_INTF_STS_VALID_INT;
-> +		dev_dbg(dev, "\tSts Valid Int Support\n");
-> +	}
-> +	if (intfcaps & TPM_INTF_DATA_AVAIL_INT) {
-> +		priv->supported_irqs |= TPM_INTF_DATA_AVAIL_INT;
-> +		dev_dbg(dev, "\tData Avail Int Support\n");
-> +	}
-> +
->  	/* Take control of the TPM's interrupt hardware and shut it off */
->  	rc = tpm_tis_read32(priv, TPM_INT_ENABLE(priv->locality), &intmask);
->  	if (rc < 0)
->  		goto out_err;
->  
-> -	intmask |= TPM_INTF_CMD_READY_INT | TPM_INTF_LOCALITY_CHANGE_INT |
-> -		   TPM_INTF_DATA_AVAIL_INT | TPM_INTF_STS_VALID_INT;
-> +	intmask |= priv->supported_irqs;
->  	intmask &= ~TPM_GLOBAL_INT_ENABLE;
->  
->  	tpm_tis_write32(priv, TPM_INT_ENABLE(priv->locality), intmask);
-> @@ -1009,32 +1042,6 @@ int tpm_tis_core_init(struct device *dev, struct tpm_tis_data *priv, int irq,
->  		goto out_err;
->  	}
->  
-> -	/* Figure out the capabilities */
-> -	rc = tpm_tis_read32(priv, TPM_INTF_CAPS(priv->locality), &intfcaps);
-> -	if (rc < 0)
-> -		goto out_err;
-> -
-> -	dev_dbg(dev, "TPM interface capabilities (0x%x):\n",
-> -		intfcaps);
-> -	if (intfcaps & TPM_INTF_BURST_COUNT_STATIC)
-> -		dev_dbg(dev, "\tBurst Count Static\n");
-> -	if (intfcaps & TPM_INTF_CMD_READY_INT)
-> -		dev_dbg(dev, "\tCommand Ready Int Support\n");
-> -	if (intfcaps & TPM_INTF_INT_EDGE_FALLING)
-> -		dev_dbg(dev, "\tInterrupt Edge Falling\n");
-> -	if (intfcaps & TPM_INTF_INT_EDGE_RISING)
-> -		dev_dbg(dev, "\tInterrupt Edge Rising\n");
-> -	if (intfcaps & TPM_INTF_INT_LEVEL_LOW)
-> -		dev_dbg(dev, "\tInterrupt Level Low\n");
-> -	if (intfcaps & TPM_INTF_INT_LEVEL_HIGH)
-> -		dev_dbg(dev, "\tInterrupt Level High\n");
-> -	if (intfcaps & TPM_INTF_LOCALITY_CHANGE_INT)
-> -		dev_dbg(dev, "\tLocality Change Int Support\n");
-> -	if (intfcaps & TPM_INTF_STS_VALID_INT)
-> -		dev_dbg(dev, "\tSts Valid Int Support\n");
-> -	if (intfcaps & TPM_INTF_DATA_AVAIL_INT)
-> -		dev_dbg(dev, "\tData Avail Int Support\n");
-> -
->  	/* INTERRUPT Setup */
->  	init_waitqueue_head(&priv->read_queue);
->  	init_waitqueue_head(&priv->int_queue);
-> @@ -1101,9 +1108,7 @@ static void tpm_tis_reenable_interrupts(struct tpm_chip *chip)
->  	if (rc < 0)
->  		goto out;
->  
-> -	intmask |= TPM_INTF_CMD_READY_INT
-> -	    | TPM_INTF_LOCALITY_CHANGE_INT | TPM_INTF_DATA_AVAIL_INT
-> -	    | TPM_INTF_STS_VALID_INT | TPM_GLOBAL_INT_ENABLE;
-> +	intmask |= priv->supported_irqs | TPM_GLOBAL_INT_ENABLE;
->  
->  	tpm_tis_write32(priv, TPM_INT_ENABLE(priv->locality), intmask);
->  
-> diff --git a/drivers/char/tpm/tpm_tis_core.h b/drivers/char/tpm/tpm_tis_core.h
-> index c8972ea8e13e..3d6b05c6fdba 100644
-> --- a/drivers/char/tpm/tpm_tis_core.h
-> +++ b/drivers/char/tpm/tpm_tis_core.h
-> @@ -97,6 +97,7 @@ struct tpm_tis_data {
->  	u16 manufacturer_id;
->  	int locality;
->  	int irq;
-> +	unsigned int supported_irqs;
->  	unsigned long irqtest_flags;
->  	unsigned long flags;
->  	void __iomem *ilb_base_addr;
-> -- 
-> 2.36.0
-> 
+> Yes, we need a stable and cheap way to do that.
 
-Does the existing code cause issues in a some specific environment?
+My simplistic approach would be a simple flag/indicator in the memory block devices
+that indicates that any page in the memory block was hwpoisoned. It's easy to
+check that during memory onlining and fail it.
 
-BR, Jarkko
+diff --git a/drivers/base/memory.c b/drivers/base/memory.c
+index 084d67fd55cc..3d0ef812e901 100644
+--- a/drivers/base/memory.c
++++ b/drivers/base/memory.c
+@@ -183,6 +183,9 @@ static int memory_block_online(struct memory_block *mem)
+        struct zone *zone;
+        int ret;
+ 
++       if (mem->hwpoisoned)
++               return -EHWPOISON;
++
+        zone = zone_for_pfn_range(mem->online_type, mem->nid, mem->group,
+                                  start_pfn, nr_pages);
+ 
+
+
+Once the problematic DIMM would actually get unplugged, the memory block devices
+would get removed as well. So when hotplugging a new DIMM in the same
+location, we could online that memory again.
+
+Another place to store that would be the memory section, we'd then have to check
+all underlying sections here.
+
+We're a bit short on flags in the memory section I think, but they are easier to
+lookup from other code eventually then memory block devices.
+
+-- 
+Thanks,
+
+David / dhildenb
+
