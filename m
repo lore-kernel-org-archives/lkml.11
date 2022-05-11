@@ -2,370 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCA7AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 21:41:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E32AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 21:45:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348280AbiEKVl6 (ORCPT
+        id S1348278AbiEKVpi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 17:41:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60082 "EHLO
+        Wed, 11 May 2022 17:45:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348322AbiEKVlq (ORCPT
+        with ESMTP id S1348263AbiEKVpe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 17:41:46 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0EE55D188;
-        Wed, 11 May 2022 14:41:44 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1nou5P-0005NU-7M; Wed, 11 May 2022 23:41:35 +0200
-From:   Heiko Stuebner <heiko@sntech.de>
-To:     palmer@dabbelt.com, paul.walmsley@sifive.com
-Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        wefu@redhat.com, guoren@kernel.org, atishp@atishpatra.org,
-        anup@brainfault.org, mick@ics.forth.gr, samuel@sholland.org,
-        cmuellner@linux.com, philipp.tomsich@vrull.eu, robh+dt@kernel.org,
-        krzk+dt@kernel.org, devicetree@vger.kernel.org,
-        Heiko Stuebner <heiko@sntech.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Atish Patra <atish.patra@wdc.com>
-Subject: [PATCH v2 2/3] riscv: Implement Zicbom-based cache management operations
-Date:   Wed, 11 May 2022 23:41:31 +0200
-Message-Id: <20220511214132.2281431-3-heiko@sntech.de>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220511214132.2281431-1-heiko@sntech.de>
-References: <20220511214132.2281431-1-heiko@sntech.de>
+        Wed, 11 May 2022 17:45:34 -0400
+Received: from mail-pj1-f45.google.com (mail-pj1-f45.google.com [209.85.216.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01740880F3;
+        Wed, 11 May 2022 14:45:34 -0700 (PDT)
+Received: by mail-pj1-f45.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso3233380pjg.0;
+        Wed, 11 May 2022 14:45:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hccI8UlqfXJMYenm6/39/T+QVSnq+XdDQON/tzN24oY=;
+        b=2Nau2VXc0KmD4X8B5ngja7opkUeMPRmu+Hm5ew+Fr08r4qyrW7TNxBMSZ5Zlkf31hx
+         mDbaMak+8JSHHdZHgxG+pJBFAMDvBqHreLmuhBmHuXJyJUvn0XThOxtwNLRLj2YJf6p6
+         yBOFONZnhStFKAMF/taQMyM6uB391fZPLw1cC9wY6aOzp+FpN8fsZldpoj9/pLEHKEg5
+         ZbYzpDFCktiVsREGo0CD43ZcW636NB9Yt22+lJQS84KYxixjmavyhWECVWYCC6/e52t6
+         4i+sdmVb9qzIbkyVQ8YvX2tQ36I2VcBr27TVranLA10stDPF059KxEt87TXeZD1wbtEB
+         8q6Q==
+X-Gm-Message-State: AOAM5326Pqsl1bkhvQ/imZjDfxMb06Hy36m0IW3j533pXoZER9CcpWW+
+        bYdNLFRCTnM6srcvw6HCTNU=
+X-Google-Smtp-Source: ABdhPJyqwwqMWMSTHIkPjyk0V3hrhrXMPefLSWa46Y0DRvr8ESWCK43x0POV9JQ/7C6WKYMm+wlv6Q==
+X-Received: by 2002:a17:90a:db45:b0:1d9:29d0:4c6e with SMTP id u5-20020a17090adb4500b001d929d04c6emr7428285pjx.46.1652305533462;
+        Wed, 11 May 2022 14:45:33 -0700 (PDT)
+Received: from sultan-box.localdomain ([204.152.216.102])
+        by smtp.gmail.com with ESMTPSA id az12-20020a170902a58c00b0015e8d4eb2d5sm2312664plb.287.2022.05.11.14.45.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 May 2022 14:45:32 -0700 (PDT)
+Date:   Wed, 11 May 2022 14:45:30 -0700
+From:   Sultan Alsawaf <sultan@kerneltoast.com>
+To:     Minchan Kim <minchan@kernel.org>
+Cc:     stable@vger.kernel.org, Nitin Gupta <ngupta@vflare.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] zsmalloc: Fix races between asynchronous zspage free and
+ page migration
+Message-ID: <Ynwuepzrr3krjLG0@sultan-box.localdomain>
+References: <20220509024703.243847-1-sultan@kerneltoast.com>
+ <Ynv53fkx8cG0ixaE@google.com>
+ <YnwTfBLn+6vYSe59@sultan-box.localdomain>
+ <Ynwlh3RT0PAYpWpD@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ynwlh3RT0PAYpWpD@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Zicbom ISA-extension was ratified in november 2021
-and introduces instructions for dcache invalidate, clean
-and flush operations.
+On Wed, May 11, 2022 at 02:07:19PM -0700, Minchan Kim wrote:
+> Then, how about this?
 
-Implement cache management operations based on them.
+Your proposal is completely wrong still. My original patch is fine; we can stick
+with that.
 
-Of course not all cores will support this, so implement an
-alternative-based mechanism that replaces empty instructions
-with ones done around Zicbom instructions.
+> diff --git a/mm/zsmalloc.c b/mm/zsmalloc.c
+> index 9152fbde33b5..2f205c18aee4 100644
+> --- a/mm/zsmalloc.c
+> +++ b/mm/zsmalloc.c
+> @@ -1716,12 +1716,31 @@ static enum fullness_group putback_zspage(struct size_class *class,
+>   * To prevent zspage destroy during migration, zspage freeing should
+>   * hold locks of all pages in the zspage.
+>   */
+> -static void lock_zspage(struct zspage *zspage)
+> +static void lock_zspage(struct zs_pool *pool, struct zspage *zspage)
+>  {
+> -       struct page *page = get_first_page(zspage);
+> -
+> +       struct page *page;
+> +       int nr_locked;
+> +       struct page *locked_pages[ZS_MAX_PAGES_PER_ZSPAGE];
+> +       struct address_space *mapping;
+> +retry:
+> +       nr_locked = 0;
+> +       memset(locked_pages, 0, sizeof(struct page) * ARRAY_SIZE(locked_pages));
 
-We're using prebuild instructions for the Zicbom instructions
-for now, to not require a bleeding-edge compiler (gcc-12)
-for these somewhat simple instructions.
+This memset() zeroes out memory past the end of the array because it is an array
+of pointers, not an array of page structs; the sizeof() is incorrect.
 
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Atish Patra <atish.patra@wdc.com>
-Cc: Guo Ren <guoren@kernel.org>
----
- arch/riscv/Kconfig                   | 15 +++++
- arch/riscv/include/asm/cacheflush.h  |  6 ++
- arch/riscv/include/asm/errata_list.h | 39 +++++++++++-
- arch/riscv/include/asm/hwcap.h       |  1 +
- arch/riscv/kernel/cpu.c              |  1 +
- arch/riscv/kernel/cpufeature.c       | 17 +++++
- arch/riscv/kernel/setup.c            |  2 +
- arch/riscv/mm/Makefile               |  1 +
- arch/riscv/mm/dma-noncoherent.c      | 92 ++++++++++++++++++++++++++++
- 9 files changed, 173 insertions(+), 1 deletion(-)
- create mode 100644 arch/riscv/mm/dma-noncoherent.c
+> +       page = get_first_page(zspage);
 
-diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
-index 65285b980134..532db45367a7 100644
---- a/arch/riscv/Kconfig
-+++ b/arch/riscv/Kconfig
-@@ -363,6 +363,21 @@ config RISCV_ISA_SVPBMT
- 
- 	   If you don't know what to do here, say Y.
- 
-+config RISCV_ISA_ZICBOM
-+	bool "Zicbom extension support for non-coherent dma operation"
-+	select ARCH_HAS_DMA_PREP_COHERENT
-+	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
-+	select ARCH_HAS_SYNC_DMA_FOR_CPU
-+	select ARCH_HAS_SETUP_DMA_OPS
-+	select DMA_DIRECT_REMAP
-+	select RISCV_ALTERNATIVE
-+	default y
-+	help
-+	   Adds support to dynamically detect the presence of the ZICBOM extension
-+	   (Cache Block Management Operations) and enable its usage.
-+
-+	   If you don't know what to do here, say Y.
-+
- config FPU
- 	bool "FPU support"
- 	default y
-diff --git a/arch/riscv/include/asm/cacheflush.h b/arch/riscv/include/asm/cacheflush.h
-index 23ff70350992..eb12d014b158 100644
---- a/arch/riscv/include/asm/cacheflush.h
-+++ b/arch/riscv/include/asm/cacheflush.h
-@@ -42,6 +42,12 @@ void flush_icache_mm(struct mm_struct *mm, bool local);
- 
- #endif /* CONFIG_SMP */
- 
-+#ifdef CONFIG_RISCV_ISA_ZICBOM
-+void riscv_init_cbom_blocksize(void);
-+#else
-+static inline void riscv_init_cbom_blocksize(void) { }
-+#endif
-+
- /*
-  * Bits in sys_riscv_flush_icache()'s flags argument.
-  */
-diff --git a/arch/riscv/include/asm/errata_list.h b/arch/riscv/include/asm/errata_list.h
-index 9e2888dbb5b1..eebcd4415049 100644
---- a/arch/riscv/include/asm/errata_list.h
-+++ b/arch/riscv/include/asm/errata_list.h
-@@ -20,7 +20,8 @@
- #endif
- 
- #define	CPUFEATURE_SVPBMT 0
--#define	CPUFEATURE_NUMBER 1
-+#define	CPUFEATURE_CMO 1
-+#define	CPUFEATURE_NUMBER 2
- 
- #ifdef __ASSEMBLY__
- 
-@@ -93,6 +94,42 @@ asm volatile(ALTERNATIVE(						\
- #define ALT_THEAD_PMA(_val)
- #endif
- 
-+/*
-+ * cbo.clean rs1
-+ * | 31 - 20 | 19 - 15 | 14 - 12 | 11 - 7 | 6 - 0 |
-+ *    0...01     rs1       010      00000  0001111
-+ *
-+ * cbo.flush rs1
-+ * | 31 - 20 | 19 - 15 | 14 - 12 | 11 - 7 | 6 - 0 |
-+ *    0...10     rs1       010      00000  0001111
-+ *
-+ * cbo.inval rs1
-+ * | 31 - 20 | 19 - 15 | 14 - 12 | 11 - 7 | 6 - 0 |
-+ *    0...00     rs1       010      00000  0001111
-+ */
-+#define CBO_INVAL_A0	".long 0x15200F"
-+#define CBO_CLEAN_A0	".long 0x25200F"
-+#define CBO_FLUSH_A0	".long 0x05200F"
-+
-+#define ALT_CMO_OP(_op, _start, _size, _cachesize)			\
-+asm volatile(ALTERNATIVE(						\
-+	"nop\n\t"							\
-+	"nop\n\t"							\
-+	"nop\n\t"							\
-+	"nop\n\t"							\
-+	"nop",								\
-+	"mv a0, %1\n\t"							\
-+	"j 2f\n\t"							\
-+	"3:\n\t"							\
-+	CBO_##_op##_A0 "\n\t"						\
-+	"add a0, a0, %0\n\t"						\
-+	"2:\n\t"							\
-+	"bltu a0, %2, 3b\n\t", 0,					\
-+		CPUFEATURE_CMO, CONFIG_RISCV_ISA_ZICBOM)		\
-+	: : "r"(_cachesize),						\
-+	    "r"(ALIGN((_start), (_cachesize))),				\
-+	    "r"(ALIGN((_start) + (_size), (_cachesize))))
-+
- #endif /* __ASSEMBLY__ */
- 
- #endif
-diff --git a/arch/riscv/include/asm/hwcap.h b/arch/riscv/include/asm/hwcap.h
-index 4e2486881840..6044e402003d 100644
---- a/arch/riscv/include/asm/hwcap.h
-+++ b/arch/riscv/include/asm/hwcap.h
-@@ -53,6 +53,7 @@ extern unsigned long elf_hwcap;
- enum riscv_isa_ext_id {
- 	RISCV_ISA_EXT_SSCOFPMF = RISCV_ISA_EXT_BASE,
- 	RISCV_ISA_EXT_SVPBMT,
-+	RISCV_ISA_EXT_ZICBOM,
- 	RISCV_ISA_EXT_ID_MAX = RISCV_ISA_EXT_MAX,
- };
- 
-diff --git a/arch/riscv/kernel/cpu.c b/arch/riscv/kernel/cpu.c
-index 40c8776aec12..8f6fc15baa8e 100644
---- a/arch/riscv/kernel/cpu.c
-+++ b/arch/riscv/kernel/cpu.c
-@@ -89,6 +89,7 @@ int riscv_of_parent_hartid(struct device_node *node)
- static struct riscv_isa_ext_data isa_ext_arr[] = {
- 	__RISCV_ISA_EXT_DATA(sscofpmf, RISCV_ISA_EXT_SSCOFPMF),
- 	__RISCV_ISA_EXT_DATA(svpbmt, RISCV_ISA_EXT_SVPBMT),
-+	__RISCV_ISA_EXT_DATA(zicbom, RISCV_ISA_EXT_ZICBOM),
- 	__RISCV_ISA_EXT_DATA("", RISCV_ISA_EXT_MAX),
- };
- 
-diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
-index dea3ea19deee..db3c02409a4a 100644
---- a/arch/riscv/kernel/cpufeature.c
-+++ b/arch/riscv/kernel/cpufeature.c
-@@ -199,6 +199,7 @@ void __init riscv_fill_hwcap(void)
- 			} else {
- 				SET_ISA_EXT_MAP("sscofpmf", RISCV_ISA_EXT_SSCOFPMF);
- 				SET_ISA_EXT_MAP("svpbmt", RISCV_ISA_EXT_SVPBMT);
-+				SET_ISA_EXT_MAP("zicbom", RISCV_ISA_EXT_ZICBOM);
- 			}
- #undef SET_ISA_EXT_MAP
- 		}
-@@ -265,12 +266,28 @@ static bool __init_or_module cpufeature_svpbmt_check_func(unsigned int stage)
- 	return false;
- }
- 
-+static bool __init_or_module cpufeature_cmo_check_func(unsigned int stage)
-+{
-+	switch (stage) {
-+	case RISCV_ALTERNATIVES_EARLY_BOOT:
-+		return false;
-+	default:
-+		return riscv_isa_extension_available(NULL, ZICBOM);
-+	}
-+
-+	return false;
-+}
-+
- static const struct cpufeature_info __initdata_or_module
- cpufeature_list[CPUFEATURE_NUMBER] = {
- 	{
- 		.name = "svpbmt",
- 		.check_func = cpufeature_svpbmt_check_func
- 	},
-+	{
-+		.name = "cmo",
-+		.check_func = cpufeature_cmo_check_func
-+	},
- };
- 
- static u32 __init_or_module cpufeature_probe(unsigned int stage)
-diff --git a/arch/riscv/kernel/setup.c b/arch/riscv/kernel/setup.c
-index 9162e9a824d2..cc5bfeba499a 100644
---- a/arch/riscv/kernel/setup.c
-+++ b/arch/riscv/kernel/setup.c
-@@ -22,6 +22,7 @@
- #include <linux/crash_dump.h>
- 
- #include <asm/alternative.h>
-+#include <asm/cacheflush.h>
- #include <asm/cpu_ops.h>
- #include <asm/early_ioremap.h>
- #include <asm/pgtable.h>
-@@ -296,6 +297,7 @@ void __init setup_arch(char **cmdline_p)
- #endif
- 
- 	riscv_fill_hwcap();
-+	riscv_init_cbom_blocksize();
- 	apply_boot_alternatives();
- }
- 
-diff --git a/arch/riscv/mm/Makefile b/arch/riscv/mm/Makefile
-index ac7a25298a04..548f2f3c00e9 100644
---- a/arch/riscv/mm/Makefile
-+++ b/arch/riscv/mm/Makefile
-@@ -30,3 +30,4 @@ endif
- endif
- 
- obj-$(CONFIG_DEBUG_VIRTUAL) += physaddr.o
-+obj-$(CONFIG_RISCV_ISA_ZICBOM) += dma-noncoherent.o
-diff --git a/arch/riscv/mm/dma-noncoherent.c b/arch/riscv/mm/dma-noncoherent.c
-new file mode 100644
-index 000000000000..99decaa25324
---- /dev/null
-+++ b/arch/riscv/mm/dma-noncoherent.c
-@@ -0,0 +1,92 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * RISC-V specific functions to support DMA for non-coherent devices
-+ *
-+ * Copyright (c) 2021 Western Digital Corporation or its affiliates.
-+ */
-+
-+#include <linux/dma-direct.h>
-+#include <linux/dma-map-ops.h>
-+#include <linux/init.h>
-+#include <linux/io.h>
-+#include <linux/libfdt.h>
-+#include <linux/mm.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+
-+static unsigned int riscv_cbom_block_size = L1_CACHE_BYTES;
-+
-+void arch_sync_dma_for_device(phys_addr_t paddr, size_t size, enum dma_data_direction dir)
-+{
-+	switch (dir) {
-+	case DMA_TO_DEVICE:
-+		ALT_CMO_OP(CLEAN, (unsigned long)phys_to_virt(paddr), size, riscv_cbom_block_size);
-+		break;
-+	case DMA_FROM_DEVICE:
-+		ALT_CMO_OP(INVAL, (unsigned long)phys_to_virt(paddr), size, riscv_cbom_block_size);
-+		break;
-+	case DMA_BIDIRECTIONAL:
-+		ALT_CMO_OP(FLUSH, (unsigned long)phys_to_virt(paddr), size, riscv_cbom_block_size);
-+		break;
-+	default:
-+		break;
-+	}
-+}
-+
-+void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size, enum dma_data_direction dir)
-+{
-+	switch (dir) {
-+	case DMA_TO_DEVICE:
-+		break;
-+	case DMA_FROM_DEVICE:
-+	case DMA_BIDIRECTIONAL:
-+		ALT_CMO_OP(INVAL, (unsigned long)phys_to_virt(paddr), size, riscv_cbom_block_size);
-+		break;
-+	default:
-+		break;
-+	}
-+}
-+
-+void arch_dma_prep_coherent(struct page *page, size_t size)
-+{
-+	void *flush_addr = page_address(page);
-+
-+	memset(flush_addr, 0, size);
-+	ALT_CMO_OP(FLUSH, (unsigned long)flush_addr, size, riscv_cbom_block_size);
-+}
-+
-+void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
-+		const struct iommu_ops *iommu, bool coherent)
-+{
-+	/* If a specific device is dma-coherent, set it here */
-+	dev->dma_coherent = coherent;
-+}
-+
-+void riscv_init_cbom_blocksize(void)
-+{
-+	struct device_node *node;
-+	int ret;
-+	u32 val;
-+
-+	for_each_of_cpu_node(node) {
-+		int hartid = riscv_of_processor_hartid(node);
-+		int cbom_hartid;
-+
-+		if (hartid < 0)
-+			continue;
-+
-+		/* set block-size for cbom extension if available */
-+		ret = of_property_read_u32(node, "riscv,cbom-block-size", &val);
-+		if (ret)
-+			continue;
-+
-+		if (!riscv_cbom_block_size) {
-+			riscv_cbom_block_size = val;
-+			cbom_hartid = hartid;
-+		} else {
-+			if (riscv_cbom_block_size != val)
-+				pr_warn("cbom-block-size mismatched between harts %d and %d\n",
-+					cbom_hartid, hartid);
-+		}
-+	}
-+}
--- 
-2.35.1
+You can't use get_first_page() outside of the migrate lock.
 
+>         do {
+>                 lock_page(page);
+
+You can't lock a page that you don't own.
+
+> +               locked_pages[nr_locked++] = page;
+> +               /*
+> +                * subpage in the zspage could be migrated under us so
+> +                * verify it. Once it happens, retry the lock sequence.
+> +                */
+> +               mapping = page_mapping(page)
+
+This doesn't compile.
+
+> +               if (mapping != pool->inode->i_mapping ||
+> +                   page_private(page) != (unsigned long)zspage) {
+> +                       do {
+> +                               unlock_page(locked_pages[--nr_locked]);
+> +                       } while (nr_locked > 0)
+
+This doesn't compile.
+
+> +                       goto retry;
+> +               }
+
+There's no need to unlock all of the pages that were locked so far because once
+a page is locked, it cannot be migrated.
+
+>         } while ((page = get_next_page(page)) != NULL);
+>  }
+
+You can't use get_next_page() outside of the migrate lock.
+
+> 
+> @@ -1987,7 +2006,7 @@ static void async_free_zspage(struct work_struct *work)
+> 
+>         list_for_each_entry_safe(zspage, tmp, &free_pages, list) {
+>                 list_del(&zspage->list);
+> -               lock_zspage(zspage);
+> +               lock_zspage(pool, zspage);
+> 
+>                 get_zspage_mapping(zspage, &class_idx, &fullness);
+>                 VM_BUG_ON(fullness != ZS_EMPTY);
+
+Sultan
