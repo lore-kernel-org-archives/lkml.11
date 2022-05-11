@@ -2,127 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E05F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 11:13:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FA5CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 11:15:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230046AbiEKLNe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 07:13:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46044 "EHLO
+        id S233539AbiEKLPR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 07:15:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239026AbiEKLN3 (ORCPT
+        with ESMTP id S231238AbiEKLPP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 07:13:29 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C9D41EE090;
-        Wed, 11 May 2022 04:13:24 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 9864A1F37E;
-        Wed, 11 May 2022 11:13:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1652267602; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=FC1sflG6Id2SKeEdl4FJxU/B3titx078hgJ9iLge96M=;
-        b=PzdYpVjDm9GZjow/EUq37H7ookCOkOdew3j+O3sWtMh70hNVOnxtZzKqOPpZDQnacwtKh8
-        hTKee3j+Sl0MntfBuf4Onekv+PULsWjOAIitLyhS1jfqtNLxp3KL+emXCY3ZW29THEdaU3
-        +LT7bZxhID8yMwqQ2reWXTGMidRsh/s=
-Received: from suse.cz (pathway.suse.cz [10.100.12.24])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id BC7822C141;
-        Wed, 11 May 2022 11:13:20 +0000 (UTC)
-Date:   Wed, 11 May 2022 13:13:20 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        Evan Green <evgreen@chromium.org>,
-        Andrew Morton <akpm@linux-foundation.org>, bhe@redhat.com,
-        kexec@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>,
-        bcm-kernel-feedback-list@broadcom.com,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, Linux PM <linux-pm@vger.kernel.org>,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
-        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
-        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
-        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
-        halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Jonathan Corbet <corbet@lwn.net>, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, Kees Cook <keescook@chromium.org>,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, senozhatsky@chromium.org,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Thomas Gleixner <tglx@linutronix.de>, vgoyal@redhat.com,
-        vkuznets@redhat.com, Will Deacon <will@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        David Gow <davidgow@google.com>,
-        Julius Werner <jwerner@chromium.org>
-Subject: Re: [PATCH 04/30] firmware: google: Convert regular spinlock into
- trylock on panic path
-Message-ID: <20220511111320.GB26047@pathway.suse.cz>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-5-gpiccoli@igalia.com>
- <CAE=gft5Pq25L4KFoPWbftkPF-JN1ex2yws77mMJ4GQnn9W0L2g@mail.gmail.com>
- <adcf6d0e-c37c-6ede-479e-29959d03d8c0@igalia.com>
- <YnpOv4hAPV4b+6v4@alley>
- <20220510132015.38923cb2@gandalf.local.home>
- <87h75xkwg9.fsf@jogness.linutronix.de>
+        Wed, 11 May 2022 07:15:15 -0400
+Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C42D6237242
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 04:15:14 -0700 (PDT)
+Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-2ebf4b91212so16585897b3.8
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 04:15:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=eSCurJ4ghpxs8YXtVvBKXMNXNhwTELGU9OmHkyGedXQ=;
+        b=Gx8mo99eRQyvZg9T0g22nL+WNohNJT6ZErCf73vIQvX17kOheuurYqHNaJFB6XGH/E
+         43d4AJEjJ0uutOHSR7m9sIokq4yKYLHdBNAzWgo+MCMk1OMXhvElYj6Ol5yFh53Pn7Cv
+         wJq2rQ20xK+jwKPATwgDJZ3ebr1aJiWFEXjkRGO6DKofbuZtKzVEp3D8Rdezl/z+vYZe
+         jaZ54l5KRMtdDsek6LpKlUObbhdO9BSjbB0S5Rr8aPIW2o9g6pGiyvfnJxHtFP+ZiNVE
+         5bFTfCSjulf9s+WCMNmM77AUy3YN7d3d6L0CDBAtDO4aM1fnyYEA1i068M3YQ+f9Irq8
+         XZRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=eSCurJ4ghpxs8YXtVvBKXMNXNhwTELGU9OmHkyGedXQ=;
+        b=S7j9luuecZVYvMWwJK6dpRF5vDzNqUXdqfhxPzSRWPsl9gzkyike7QOxjC4f/UgRE+
+         LWkjVF+jyV48i0VaQXpBfJaP2vZA86BMYprpOxSvfGJLQROJxdy6kUViZ6S9HOAo7o9z
+         L2msXVlZ4KPxThBnX2JuCaxX/2L908zGntDT8BGOjtqGjEwDgJzksqUvdtqCHJOJJunW
+         NsFHqwY7lDOPrp1+AJfCYB8wtL1Y6AQaJbW+NalyKUqnr15d4c1ZFReJ8ZBfC+T8102n
+         6nJMmbO+4Avwxw0pzecoIH24jxq8Y00utuYmRtXNSEyezLJZEiWSfkSiq7gkLwjlsfBc
+         r5tg==
+X-Gm-Message-State: AOAM531kXoVWddRaZVv9bzIMViG+I5JhNGfhcCbAwyErlC4S8fSrVm0H
+        5Nvgh88CC744SX2CqZmW/t9JsgH7y9C55rv9oG2igA==
+X-Google-Smtp-Source: ABdhPJx9ROe+fPWiYR2Lpd+JkD+5ml+xHth0XXMWQCkZvGos1zeFiLHoeAW80RbgsDnAgnJgHLz84D2wogX6aN63emU=
+X-Received: by 2002:a81:23ce:0:b0:2f8:ad74:1185 with SMTP id
+ j197-20020a8123ce000000b002f8ad741185mr24246559ywj.120.1652267713817; Wed, 11
+ May 2022 04:15:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87h75xkwg9.fsf@jogness.linutronix.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220510130729.762341544@linuxfoundation.org>
+In-Reply-To: <20220510130729.762341544@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Wed, 11 May 2022 16:45:02 +0530
+Message-ID: <CA+G9fYu0=-RBEf4bxLDVX2H+wvLuAQ1_1gwZ3+1CvLqP=SSbnw@mail.gmail.com>
+Subject: Re: [PATCH 4.9 00/66] 4.9.313-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 2022-05-10 21:46:38, John Ogness wrote:
-> On 2022-05-10, Steven Rostedt <rostedt@goodmis.org> wrote:
-> >> As already mentioned in the other reply, panic() sometimes stops the
-> >> other CPUs using NMI, for example, see kdump_nmi_shootdown_cpus().
-> >> 
-> >> Another situation is when the CPU using the lock ends in some
-> >> infinite loop because something went wrong. The system is in
-> >> an unpredictable state during panic().
-> >> 
-> >> I am not sure if this is possible with the code under gsmi_dev.lock
-> >> but such things really happen during panic() in other subsystems.
-> >> Using trylock in the panic() code path is a good practice.
-> >
-> > I believe that Peter Zijlstra had a special spin lock for NMIs or
-> > early printk, where it would not block if the lock was held on the
-> > same CPU. That is, if an NMI happened and paniced while this lock was
-> > held on the same CPU, it would not deadlock. But it would block if the
-> > lock was held on another CPU.
-> 
-> Yes. And starting with 5.19 it will be carrying the name that _you_ came
-> up with (cpu_sync):
-> 
-> printk_cpu_sync_get_irqsave()
-> printk_cpu_sync_put_irqrestore()
+On Tue, 10 May 2022 at 18:41, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 4.9.313 release.
+> There are 66 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Thu, 12 May 2022 13:07:16 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-=
+4.9.313-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-4.9.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-There is a risk that this lock might become a big kernel lock.
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-This special lock would need to be used even during normal
-system operation. It does not make sense to suddenly start using
-another lock during panic.
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-So I think that we should think twice before using it.
-I would prefer using trylock of the original lock when
-possible during panic.
+## Build
+* kernel: 4.9.313-rc1
+* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
+rc.git
+* git branch: linux-4.9.y
+* git commit: bc7a724ac0ce0bc37f8b7335bfcbbc0d9bf71e51
+* git describe: v4.9.312-67-gbc7a724ac0ce
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-4.9.y/build/v4.9.3=
+12-67-gbc7a724ac0ce
 
-It is possible that I miss something.
+## Test Regressions (compared to v4.9.312-60-g806e59090c6c)
+No test regressions found.
 
-Best Regards,
-Petr
+## Metric Regressions (compared to v4.9.312-60-g806e59090c6c)
+No metric regressions found.
+
+## Test Fixes (compared to v4.9.312-60-g806e59090c6c)
+No test fixes found.
+
+## Metric Fixes (compared to v4.9.312-60-g806e59090c6c)
+No metric fixes found.
+
+## Test result summary
+total: 65257, pass: 51559, fail: 751, skip: 11207, xfail: 1740
+
+## Build Summary
+* arm: 254 total, 238 passed, 16 failed
+* arm64: 32 total, 32 passed, 0 failed
+* dragonboard-410c: 1 total, 1 passed, 0 failed
+* hi6220-hikey: 1 total, 1 passed, 0 failed
+* i386: 19 total, 19 passed, 0 failed
+* juno-r2: 1 total, 1 passed, 0 failed
+* mips: 22 total, 22 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x15: 1 total, 1 passed, 0 failed
+* x86: 1 total, 1 passed, 0 failed
+* x86_64: 31 total, 31 passed, 0 failed
+
+## Test suites summary
+* fwts
+* kselftest-android
+* kselftest-arm64
+* kselftest-bpf
+* kselftest-breakpoints
+* kselftest-capabilities
+* kselftest-cgroup
+* kselftest-clone3
+* kselftest-core
+* kselftest-cpu-hotplug
+* kselftest-cpufreq
+* kselftest-drivers
+* kselftest-efivarfs
+* kselftest-filesystems
+* kselftest-firmware
+* kselftest-fpu
+* kselftest-futex
+* kselftest-gpio
+* kselftest-intel_pstate
+* kselftest-ipc
+* kselftest-ir
+* kselftest-kcmp
+* kselftest-kexec
+* kselftest-kvm
+* kselftest-lib
+* kselftest-livepatch
+* kselftest-membarrier
+* kselftest-openat2
+* kselftest-pid_namespace
+* kselftest-pidfd
+* kselftest-proc
+* kselftest-pstore
+* kselftest-ptrace
+* kselftest-rseq
+* kselftest-rtc
+* kselftest-seccomp
+* kselftest-sigaltstack
+* kselftest-size
+* kselftest-splice
+* kselftest-static_keys
+* kselftest-sync
+* kselftest-sysctl
+* kselftest-timens
+* kselftest-timers
+* kselftest-tmpfs
+* kselftest-tpm2
+* kselftest-user
+* kselftest-vm
+* kselftest-x86
+* kselftest-zram
+* kvm-unit-tests
+* libhugetlbfs
+* linux-log-parser
+* ltp-cap_bounds-tests
+* ltp-commands-tests
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps-tests
+* ltp-fs-tests
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple-tests
+* ltp-fsx-tests
+* ltp-hugetlb-tests
+* ltp-io-tests
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
