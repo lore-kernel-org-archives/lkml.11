@@ -2,128 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2895CC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 16:04:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF106C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 16:04:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344302AbiEKQEb (ORCPT
+        id S1344357AbiEKQEi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 12:04:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46736 "EHLO
+        Wed, 11 May 2022 12:04:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344303AbiEKQEV (ORCPT
+        with ESMTP id S1344273AbiEKQEX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 12:04:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5687419CECC
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 09:04:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652285056;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        Wed, 11 May 2022 12:04:23 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E23011A15D4;
+        Wed, 11 May 2022 09:04:19 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id CBA4A1F460;
+        Wed, 11 May 2022 16:04:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1652285057;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=/5E5ae+fiX+8fhds4+yHVslnnnzZ+qVMHnlGIRP/rgo=;
-        b=OtxltTT9GD8rlYeUvSWVBdmXHc2GykIiWQq7CFseHY+ywjhvt6MylqJkikMFVQYaEgc9rJ
-        ThNXqdgWBcL964UcqsQbrDnXXEGGbiArzFe7OR8MqgMd08hfxUkOn0hWc5qpXdHxEP/sWd
-        uD0ODCtYZ3rnQ0XZdQ7GrYbj0nk8BrI=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-367-dU1fsjFGNTaCZ6Q27RdIcA-1; Wed, 11 May 2022 12:04:13 -0400
-X-MC-Unique: dU1fsjFGNTaCZ6Q27RdIcA-1
-Received: by mail-ed1-f70.google.com with SMTP id cz24-20020a0564021cb800b00425dfdd7768so1613039edb.2
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 09:04:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=/5E5ae+fiX+8fhds4+yHVslnnnzZ+qVMHnlGIRP/rgo=;
-        b=HmNrnt5qH+HNioVvWxDMjXpEXLaJ96/PZzdPZimBce8RTeLYEHC78yz2HFmQ4mkjJ3
-         XKaKLJiVa0uA4A9C34eNGw8vKe0kW2KNH6tknz1tnUlxXgVmsfszHvpD9si1P1OQbhKC
-         auQKMeuwwj9U9PrN4b2NzEYuDBxPmAVdln95XgJMN8zduBy3oXFeQ2a5vdv75Um9xxZa
-         1GHJumDz+AihzL+GO2OOwNlUVyWpm4aDy7KcH94maguCUi7uD6RDPGiTX/0lXUjYgKv5
-         OxhbsFhqJlis/Dth83gYEH54OG27cVxju5NfRNAEUNB1veToK7jcMdPxzIjyJP6MOwH0
-         7oXA==
-X-Gm-Message-State: AOAM530jBu8Tvl1RfkJ0ZHB0JV7SKGv2ZnOqhlzT9P8WMuOkHOeLdDiz
-        5hl4waAl00B6ph5TCbEwG7G0w+3f/5/0e+maYlPX/DP9PaXYTqcxK4TkR46KF7A+WwarMHZ9mqB
-        AqyMEu/6NwoIXVacYCn7BeHPy
-X-Received: by 2002:a17:907:2cc4:b0:6f5:28ea:83f with SMTP id hg4-20020a1709072cc400b006f528ea083fmr24163748ejc.255.1652285052540;
-        Wed, 11 May 2022 09:04:12 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw4FYhwaUmeTEVBmeSUYIufRa7f3HQ22CFzDmAHIL5LOnpIxLtX0aUZqjA+oZOOPoQ2QWcJwg==
-X-Received: by 2002:a17:907:2cc4:b0:6f5:28ea:83f with SMTP id hg4-20020a1709072cc400b006f528ea083fmr24163736ejc.255.1652285052373;
-        Wed, 11 May 2022 09:04:12 -0700 (PDT)
-Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
-        by smtp.gmail.com with ESMTPSA id k8-20020a1709065fc800b006f3ef214e71sm1121435ejv.215.2022.05.11.09.04.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 May 2022 09:04:12 -0700 (PDT)
-Message-ID: <6c848c9f-5099-b565-0d33-2ab4c6b9fff0@redhat.com>
-Date:   Wed, 11 May 2022 18:04:11 +0200
+        bh=Xc6b2DGSHNoqcRaRJAmNz3xmM8+5hVjJ6d9Uf3kedYI=;
+        b=AptAfNQUACxbGuDofIFikwhqSmZLKp4LaZkHv0nu5pVn6UGKlHaoJuH95JxLwf223Z+HIf
+        R8aoLP+L+YwysdX0gx8806E5IouENUnMmezge+u6h42ZR1TitVwdwkQ25tBBdHfU4gLBzg
+        bPkaIp0vtR6+ExEinYmIQH18c7X68Oo=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1652285057;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Xc6b2DGSHNoqcRaRJAmNz3xmM8+5hVjJ6d9Uf3kedYI=;
+        b=XqXkW74F8Zok5rdnrEAgPSVAz1K4bzmN0oplvOFkQ34V3VduS2lJo/LPWmHvXSFvI7IzbV
+        VI5pIiFWh6KxVkAg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2D07B13A76;
+        Wed, 11 May 2022 16:04:17 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id Ton9CYHee2KSRQAAMHmgww
+        (envelope-from <dsterba@suse.cz>); Wed, 11 May 2022 16:04:17 +0000
+Date:   Wed, 11 May 2022 18:00:02 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Pankaj Raghav <p.raghav@samsung.com>
+Cc:     dsterba@suse.cz, jaegeuk@kernel.org, hare@suse.de,
+        dsterba@suse.com, axboe@kernel.dk, hch@lst.de,
+        damien.lemoal@opensource.wdc.com, snitzer@kernel.org,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        bvanassche@acm.org, linux-fsdevel@vger.kernel.org,
+        matias.bjorling@wdc.com, Jens Axboe <axboe@fb.com>,
+        gost.dev@samsung.com, jonathan.derrick@linux.dev,
+        jiangbo.365@bytedance.com, linux-nvme@lists.infradead.org,
+        dm-devel@redhat.com, Naohiro Aota <naohiro.aota@wdc.com>,
+        linux-kernel@vger.kernel.org, Johannes Thumshirn <jth@kernel.org>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Alasdair Kergon <agk@redhat.com>, linux-block@vger.kernel.org,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Keith Busch <kbusch@kernel.org>, linux-btrfs@vger.kernel.org,
+        Luis Chamberlain <mcgrof@kernel.org>
+Subject: Re: [PATCH v3 11/11] dm-zoned: ensure only power of 2 zone sizes are
+ allowed
+Message-ID: <20220511160001.GQ18596@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Pankaj Raghav <p.raghav@samsung.com>,
+        jaegeuk@kernel.org, hare@suse.de, dsterba@suse.com, axboe@kernel.dk,
+        hch@lst.de, damien.lemoal@opensource.wdc.com, snitzer@kernel.org,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        bvanassche@acm.org, linux-fsdevel@vger.kernel.org,
+        matias.bjorling@wdc.com, Jens Axboe <axboe@fb.com>,
+        gost.dev@samsung.com, jonathan.derrick@linux.dev,
+        jiangbo.365@bytedance.com, linux-nvme@lists.infradead.org,
+        dm-devel@redhat.com, Naohiro Aota <naohiro.aota@wdc.com>,
+        linux-kernel@vger.kernel.org, Johannes Thumshirn <jth@kernel.org>,
+        Sagi Grimberg <sagi@grimberg.me>, Alasdair Kergon <agk@redhat.com>,
+        linux-block@vger.kernel.org, Chaitanya Kulkarni <kch@nvidia.com>,
+        Keith Busch <kbusch@kernel.org>, linux-btrfs@vger.kernel.org,
+        Luis Chamberlain <mcgrof@kernel.org>
+References: <20220506081105.29134-1-p.raghav@samsung.com>
+ <CGME20220506081118eucas1p17f3c29cc36d748c3b5a3246f069f434a@eucas1p1.samsung.com>
+ <20220506081105.29134-12-p.raghav@samsung.com>
+ <20220509185432.GB18596@twin.jikos.cz>
+ <d8e86c32-f122-01df-168e-648179766c55@samsung.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH V2] toshiba_acpi: use kobj_to_dev()
-Content-Language: en-US
-To:     cgel.zte@gmail.com, andy.shevchenko@gmail.com
-Cc:     chi.minghao@zte.com.cn, coproscefalo@gmail.com,
-        linux-kernel@vger.kernel.org, markgross@kernel.org,
-        platform-driver-x86@vger.kernel.org, zealci@zte.com.cn
-References: <CAHp75VfzbWAS6phV3eB7ehe50NrXitkuS54sYjdVK-OqqYVieA@mail.gmail.com>
- <20220511021638.1488650-1-chi.minghao@zte.com.cn>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220511021638.1488650-1-chi.minghao@zte.com.cn>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d8e86c32-f122-01df-168e-648179766c55@samsung.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On 5/11/22 04:16, cgel.zte@gmail.com wrote:
-> From: Minghao Chi <chi.minghao@zte.com.cn>
+On Wed, May 11, 2022 at 04:39:17PM +0200, Pankaj Raghav wrote:
+> Hi David,
 > 
-> Use kobj_to_dev() instead of open-coding it.
+> On 2022-05-09 20:54, David Sterba wrote:>> diff --git
+> a/drivers/md/dm-zone.c b/drivers/md/dm-zone.c
+> >> index 3e7b1fe15..27dc4ddf2 100644
+> >> --- a/drivers/md/dm-zone.c
+> >> +++ b/drivers/md/dm-zone.c
+> >> @@ -231,6 +231,18 @@ static int dm_revalidate_zones(struct mapped_device *md, struct dm_table *t)
+> >>  	struct request_queue *q = md->queue;
+> >>  	unsigned int noio_flag;
+> >>  	int ret;
+> >> +	struct block_device *bdev = md->disk->part0;
+> >> +	sector_t zone_sectors;
+> >> +	char bname[BDEVNAME_SIZE];
+> >> +
+> >> +	zone_sectors = bdev_zone_sectors(bdev);
+> >> +
+> >> +	if (!is_power_of_2(zone_sectors)) {
+> > 
+> > is_power_of_2 takes 'unsigned long' and sector_t is u64, so this is not
+> > 32bit clean and we had an actual bug where value 1<<48 was not
+> > recognized as power of 2.
+> > 
+> Good catch. Now I understand why btrfs has a helper for is_power_of_two_u64.
 > 
-> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+> But the zone size can never be more than 32bit value so the zone size
+> sect will never greater than unsigned long.
 
-Thank you for your patch, I've applied this patch to my review-hans 
-branch:
-https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git/log/?h=review-hans
+We've set the maximum supported zone size in btrfs to be 8G, which is a
+lot and should be sufficient for some time, but this also means that the
+value is larger than 32bit maximum. I have actually tested btrfs on top
+of such emaulated zoned device via TCMU, so it's not dm-zoned, so it's
+up to you to make sure that a silent overflow won't happen.
 
-Note it will show up in my review-hans branch once I've pushed my
-local branch there, which might take a while.
-
-Once I've run some tests on this branch the patches there will be
-added to the platform-drivers-x86/for-next branch and eventually
-will be included in the pdx86 pull-request to Linus for the next
-merge-window.
-
-Regards,
-
-Hans
-
-
-
-> ---
-> v1->v2:
-> 	remove Reported-by: Zeal Robot <zealci@zte.com.cn>
+> With that said, we have two options:
 > 
->  drivers/platform/x86/toshiba_acpi.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/platform/x86/toshiba_acpi.c
-> b/drivers/platform/x86/toshiba_acpi.c
-> index f113dec98e21..0fc9e8b8827b 100644
-> --- a/drivers/platform/x86/toshiba_acpi.c
-> +++ b/drivers/platform/x86/toshiba_acpi.c
-> @@ -2353,7 +2353,7 @@ static struct attribute *toshiba_attributes[] = {
->  static umode_t toshiba_sysfs_is_visible(struct kobject *kobj,
->  					struct attribute *attr, int idx)
->  {
-> -	struct device *dev = container_of(kobj, struct device, kobj);
-> +	struct device *dev = kobj_to_dev(kobj);
->  	struct toshiba_acpi_dev *drv = dev_get_drvdata(dev);
->  	bool exists = true;
->  
+> 1.) We can put a comment explaining that even though it is 32 bit
+> unsafe, zone size sect can never be a 32bit value
 
+This is probably part of the protocol and specification of the zoned
+devices, the filesystem either accepts the spec or makes some room for
+larger values in case it's not too costly.
+
+> or
+> 
+> 2) We should move the btrfs only helper `is_power_of_two_u64` to some
+> common header and use it everywhere.
+
+Yeah, that can be done independently. With some macro magic it can be
+made type-safe for any argument while preserving the 'is_power_of_2'
+name.
