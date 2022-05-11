@@ -2,135 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97B79C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 01:13:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BBDEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 01:16:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239355AbiEKBN6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 21:13:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33902 "EHLO
+        id S240157AbiEKBQR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 21:16:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235580AbiEKBNz (ORCPT
+        with ESMTP id S240206AbiEKBQP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 21:13:55 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C645C21AABC
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 18:13:49 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id y32so952634lfa.6
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 18:13:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Bz7T0QeLgAJ6DucemKvTFSRRlyGBkltInGSYnDXnR6E=;
-        b=SITdpMnlNlx+3zL+SdaU/V7AVAmvkiqPssMcBSWZWWDUdtfPM2FI3GlFrfXkRXujBX
-         9DWIF4Ur9OceQgYPcvcJD9fJw9kaCM0AzQ4sZUpZoprhUue1tO/tTqWR5hLzH1p6ksQR
-         00Sf1wl28/tqU/6fg3271g6fUeNlfzqwzZNRgg52wEaXuyvenE+FO7wFGU35V0JkRyE/
-         KeKZekt1aeYzaQ0P/YK4BNZk+xtI8SMHuieVKGSc8Vjj/SDBRoUU3xQ0u7y1HOm5z/Lx
-         tGHJClst604ij70mzpHhoKbFU46qmOdfa5hyokCbDK1fsQLPyd7EbGxQ37aGOSA7H/7s
-         ZRaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Bz7T0QeLgAJ6DucemKvTFSRRlyGBkltInGSYnDXnR6E=;
-        b=iLpMTXKAxch4ZxbjtKen9fUyFcGw1qxEjU74mTOnj/YMVAGrtjmiANhljc52GmEaL5
-         Q3uR/gpj++NVMgOWzHpvTbaQqSkT2j1qyLGUQo10ZXW4QY/vR0lrff22Msik0tl5khAx
-         iQ7jROWcvF0VAim4m6Q0GWLb+KR8C10y0DBRUShiNpHOFL5frCcsqGeIPO/F2GEj5o20
-         5VN+bt8+6EXBKGVUoU01v9YUBLzy9YRkkTg984zEHUinuEeJD5X9fzfMmmJw7DB0wQ0o
-         /ATr3V3r6kitHXYEQreRy0N1yOHzPDmtC0/z2ewnZ8e9EfZ2KLunW7oCT+553Hle9v4M
-         88KA==
-X-Gm-Message-State: AOAM531aa8DvU3Yn65hQaJb9aa82Mg0hoYtHchweBsSzmFD16ncRUyTL
-        QBmo9XBcrEiRmBWDjMBkPeqr6g==
-X-Google-Smtp-Source: ABdhPJxs/icOeGtB0xTHmPLhJmWFLDgo13VXMOYoMaE6Q8CFmDYapX/c98WO7YQadPeColzl9WZUJg==
-X-Received: by 2002:a05:6512:32ca:b0:473:cb3d:6ca2 with SMTP id f10-20020a05651232ca00b00473cb3d6ca2mr18143399lfg.261.1652231628067;
-        Tue, 10 May 2022 18:13:48 -0700 (PDT)
-Received: from box.localdomain ([86.57.175.117])
-        by smtp.gmail.com with ESMTPSA id o9-20020ac24349000000b0047428dbea1csm56357lfl.303.2022.05.10.18.13.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 18:13:47 -0700 (PDT)
-Received: by box.localdomain (Postfix, from userid 1000)
-        id 75072104757; Wed, 11 May 2022 04:15:35 +0300 (+03)
-Date:   Wed, 11 May 2022 04:15:35 +0300
-From:   "Kirill A. Shutemov" <kirill@shutemov.name>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Dario Faggioli <dfaggioli@suse.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        David Hildenbrand <david@redhat.com>, x86@kernel.org,
-        linux-mm@kvack.org, linux-coco@lists.linux.dev,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCHv5 08/12] x86/mm: Provide helpers for unaccepted memory
-Message-ID: <20220511011535.or73rm6oviwa5niy@box.shutemov.name>
-References: <20220425033934.68551-1-kirill.shutemov@linux.intel.com>
- <20220425033934.68551-9-kirill.shutemov@linux.intel.com>
- <YnJfhiiHn+48H2vb@zn.tnic>
- <20220506161359.4j5j5fxrw53fdbyr@box.shutemov.name>
- <Ynqvtyjp77ywiI6f@zn.tnic>
+        Tue, 10 May 2022 21:16:15 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BBD0275F7;
+        Tue, 10 May 2022 18:16:13 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KycQX0Q2Kz1JC3x;
+        Wed, 11 May 2022 09:15:00 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 11 May 2022 09:16:11 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 11 May
+ 2022 09:16:11 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-i2c@vger.kernel.org>
+CC:     <wsa@kernel.org>
+Subject: [PATCH v2] i2c: core: Fix possible memleak in i2c_new_client_device()
+Date:   Wed, 11 May 2022 09:27:38 +0800
+Message-ID: <20220511012738.3031346-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ynqvtyjp77ywiI6f@zn.tnic>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 08:32:23PM +0200, Borislav Petkov wrote:
-> On Fri, May 06, 2022 at 07:13:59PM +0300, Kirill A. Shutemov wrote:
-> > Failure to accept the memory is fatal. Why pretend it is not?
-> > 
-> > For TDX it will result in a crash on the first access. Prolonging the
-> > suffering just make it harder to understand what happened.
-> 
-> Ok then. Does that panic message contain enough info so that the
-> acceptance failure can be debugged?
-> 
-> Just "Cannot accept memory" doesn't seem very helpful to me...
+I got memory leak as follows when doing fault injection test:
 
-Okay. Fair enough. I will change it to
+unreferenced object 0xffff888014aec078 (size 8):
+  comm "xrun", pid 356, jiffies 4294910619 (age 16.332s)
+  hex dump (first 8 bytes):
+    31 2d 30 30 31 63 00 00                          1-001c..
+  backtrace:
+    [<00000000eb56c0a9>] __kmalloc_track_caller+0x1a6/0x300
+    [<000000000b220ea3>] kvasprintf+0xad/0x140
+    [<00000000b83203e5>] kvasprintf_const+0x62/0x190
+    [<000000002a5eab37>] kobject_set_name_vargs+0x56/0x140
+    [<00000000300ac279>] dev_set_name+0xb0/0xe0
+    [<00000000b66ebd6f>] i2c_new_client_device+0x7e4/0x9a0
 
-			panic("Cannot accept memory: unknown platform.");
+In error path after calling dev_set_name() which called by
+i2c_dev_set_name(), the put_device() should be used to give up
+the device reference, then the name allocated in dev_set_name()
+will be freed in kobject_cleanup().
+In this patch, I splited device_register() into device_initialize()
+and device_add() to make the code more clear.
 
-> 
-> > That's true. Note also that the check is inherently racy. Other CPU can
-> > get the range or subrange accepted just after spin_unlock().
-> > 
-> > The check indicates that accept_memory() has to be called on the range
-> > before first access.
-> > 
-> > Do you have problem with a name? Maybe has_unaccepted_memory()?
-> 
-> I have a problem with the definition of this function, what it is
-> supposed to do and how it is supposed to be used.
-> 
-> Right now, it looks weird and strange: is it supposed to check for *all*
-> in-between (start, end)? It doesn't, atm, so what's the meaning of
-> @start and @end then at all?
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+v2:
+  split device_register() into device_initialize() and device_add()
+---
+ drivers/i2c/i2c-core-base.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-It checks if the range of memory requires accept_memory() call before it
-can be accessed.
-
-If any part of the range is not accepted, the call is required.
-accept_memory() knows what exactly has to be done. Note that
-accept_memory() call is harmless for any valid memory range.
-It can be called on already accepted memory.
-
+diff --git a/drivers/i2c/i2c-core-base.c b/drivers/i2c/i2c-core-base.c
+index d43db2c3876e..e7dded8b037b 100644
+--- a/drivers/i2c/i2c-core-base.c
++++ b/drivers/i2c/i2c-core-base.c
+@@ -928,6 +928,11 @@ i2c_new_client_device(struct i2c_adapter *adap, struct i2c_board_info const *inf
+ 	client->flags = info->flags;
+ 	client->addr = info->addr;
+ 
++	client->dev.parent = &client->adapter->dev;
++	client->dev.bus = &i2c_bus_type;
++	client->dev.type = &i2c_client_type;
++	device_initialize(&client->dev);
++
+ 	client->init_irq = info->irq;
+ 	if (!client->init_irq)
+ 		client->init_irq = i2c_dev_irq_from_resources(info->resources,
+@@ -947,9 +952,6 @@ i2c_new_client_device(struct i2c_adapter *adap, struct i2c_board_info const *inf
+ 	if (status)
+ 		goto out_err;
+ 
+-	client->dev.parent = &client->adapter->dev;
+-	client->dev.bus = &i2c_bus_type;
+-	client->dev.type = &i2c_client_type;
+ 	client->dev.of_node = of_node_get(info->of_node);
+ 	client->dev.fwnode = info->fwnode;
+ 
+@@ -966,7 +968,7 @@ i2c_new_client_device(struct i2c_adapter *adap, struct i2c_board_info const *inf
+ 		}
+ 	}
+ 
+-	status = device_register(&client->dev);
++	status = device_add(&client->dev);
+ 	if (status)
+ 		goto out_remove_swnode;
+ 
+@@ -984,7 +986,7 @@ i2c_new_client_device(struct i2c_adapter *adap, struct i2c_board_info const *inf
+ 		"Failed to register i2c client %s at 0x%02x (%d)\n",
+ 		client->name, client->addr, status);
+ out_err_silent:
+-	kfree(client);
++	put_device(&client->dev);
+ 	return ERR_PTR(status);
+ }
+ EXPORT_SYMBOL_GPL(i2c_new_client_device);
 -- 
- Kirill A. Shutemov
+2.25.1
+
