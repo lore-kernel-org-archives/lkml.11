@@ -2,164 +2,268 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 899BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 14:55:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFB45C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 14:57:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245235AbiEKOz3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 10:55:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56150 "EHLO
+        id S236636AbiEKO5X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 10:57:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245231AbiEKOzZ (ORCPT
+        with ESMTP id S235418AbiEKO5F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 10:55:25 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 965A2200F4F
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 07:55:23 -0700 (PDT)
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24BAW1Ju018362;
-        Wed, 11 May 2022 16:55:08 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : subject
- : from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=selector1;
- bh=+YPIl1+HECBCIFGnFWdVUt+GpcgGMMtibG+mpoeQNc0=;
- b=bSLmsDXRbL88WEdwp57DO3MAA2xNUkKwZ+ReLtxsGg+2rbFq1qzUNkr8szuo0K4kViJW
- H/oJhgbuzjj+Xb/KP+xIVj2b6+/cLkbCT+r963uBsYYRCSrBkTE0XRm9MXCSamf9DNml
- Mt4Xh4okVW683qpN28yWgXXfyYA1AeHzCVuDBMRcHPHZ5bGE/2qm+hj6DTfA5Az+vQeg
- cwqPvh3y/6LemoJL7tYpiZ3nx6ZbtXF0n7px/qwRD0yMv5NftcLlJF5Vx+o8E0imhhq9
- 6/HZSH3jktQ1++ft31T4FcrDO4WRbBP6STXf/draglsWSkR0q2efXNUtineHg3frTNM3 yA== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3fwdw9bawu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 11 May 2022 16:55:08 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 7D80F10002A;
-        Wed, 11 May 2022 16:55:07 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 763F7229A9A;
-        Wed, 11 May 2022 16:55:07 +0200 (CEST)
-Received: from [192.168.8.15] (10.75.127.47) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Wed, 11 May
- 2022 16:55:04 +0200
-Message-ID: <87d059e62a54e2216acdf4ca3a6a81b8d771af42.camel@foss.st.com>
-Subject: Re: [PATCH 4/7] irqchip/stm32-exti: forward irq_request_resources
- to parent
-From:   Antonio Borneo <antonio.borneo@foss.st.com>
-To:     Marc Zyngier <maz@kernel.org>
-CC:     Thomas Gleixner <tglx@linutronix.de>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Pascal Paillet <p.paillet@foss.st.com>,
-        Ludovic Barre <ludovic.barre@foss.st.com>,
-        "Loic Pallardy" <loic.pallardy@foss.st.com>
-Date:   Wed, 11 May 2022 16:55:03 +0200
-In-Reply-To: <875ymd6xdu.wl-maz@kernel.org>
-References: <20220510164123.557921-1-antonio.borneo@foss.st.com>
-         <20220510164123.557921-4-antonio.borneo@foss.st.com>
-         <875ymd6xdu.wl-maz@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1 
+        Wed, 11 May 2022 10:57:05 -0400
+Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA02A67D3D;
+        Wed, 11 May 2022 07:57:03 -0700 (PDT)
+Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-edf9ddb312so3096601fac.8;
+        Wed, 11 May 2022 07:57:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FXhU4C+XFzjEf7MapqS6QgArPbwtn+GG7z2RycgMf0k=;
+        b=UjzzQfUO58qjnFjN+MdwmL5YRrb+nD0gqEAn4zFAYvz21P+a4sGW+98mT7AZMgp/lM
+         zpdZi5GWLDTJyJf+QBDM5uvNkT2b3AB5pLRXMPungGgwizNHOpulia2UtmTxOr8goQ8E
+         p6/W9KZ1nT4dXdw8vw8Z8NBkn48Jq0khdTQuLLtNwb77aV+OJyDM2N2juzY5H2D7eoZr
+         5bVcsux9/kp6V9T4EfqrDvmR1+bb8oVQnMsYy8qXajLYPEp7iV4so5ATp5HxY06f62H/
+         TH7baXxeC+WXIJRknSUXU9L4xCAALjHKRufSjmRgIy+eAbKZaNy7vkGxydPO4nkHr7Vg
+         lk0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=FXhU4C+XFzjEf7MapqS6QgArPbwtn+GG7z2RycgMf0k=;
+        b=aPW1ZuKDKX3A2Gjv/HRfqeshbXNUZ05FzYueYd7NpBkdbpPdrceurk6QIfWwegvKOa
+         g/XffWceHbwsky3CcV0+HzPjz8BYLedQbxvlhboiFH73CwsShJkfWxJ5O3R3Q3LOVhKf
+         OL7db3MO16pLGavvOM7CXswii4movZXF5jiEUOK03+N4gidYsOOZ4oT8ho3AHrGWZWB8
+         hEtiZjJRrE4H39VF41PFhmFOF5W0mIGPi+1A6dsKIzw/rxErvsqwGqdVb+hJE5AY1BRC
+         T3j9eOdiaqNGYupm6vxdFSYaR7FjFh5+iwK/l76mhDvuZCEzgj94ZJFd+id8h3Xyma2n
+         ja0g==
+X-Gm-Message-State: AOAM531XwXh9abxUxZ7GNTgnbuPgytvw0eKS2PoVU3eXRi1FbQgZ8mzp
+        ZHNpvLoTn15ohFu5PzuAaJhPP/TzOQHC2g==
+X-Google-Smtp-Source: ABdhPJzUqipn5lG6D+WbLJ8OGfyF8kehzF1R6MRpEJUeoyqU60+Ufdlk0gA3xjOoQhMmWF0ieGuJ1A==
+X-Received: by 2002:a05:6871:80e:b0:ed:895a:ae92 with SMTP id q14-20020a056871080e00b000ed895aae92mr2745692oap.187.1652281022748;
+        Wed, 11 May 2022 07:57:02 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id g10-20020a056870d20a00b000e9364288bfsm619083oac.45.2022.05.11.07.57.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 May 2022 07:57:02 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Huacai Chen <chenhuacai@kernel.org>
+Cc:     Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        Zhi Li <lizhi01@loongson.cn>
+Subject: [PATCH] MIPS: Loongson: Use hwmon_device_register_with_groups() to register hwmon
+Date:   Wed, 11 May 2022 07:56:59 -0700
+Message-Id: <20220511145659.2976950-1-linux@roeck-us.net>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-X-Originating-IP: [10.75.127.47]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-11_07,2022-05-11_01,2022-02-23_01
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-05-10 at 19:44 +0100, Marc Zyngier wrote:
-> On Tue, 10 May 2022 17:41:20 +0100,
-> Antonio Borneo <antonio.borneo@foss.st.com> wrote:
-> >=20
-> > From: Pascal Paillet <p.paillet@foss.st.com>
-> >=20
-> > Enhance stm32-exti driver to forward request_resources and
-> > release_resources_parent operations to parent.
-> > Do not use irq_request_resources_parent because it returns
-> > an error when the parent does not implement irq_request_resources.
-> >=20
-> > Signed-off-by: Pascal Paillet <p.paillet@foss.st.com>
-> > Signed-off-by: Antonio Borneo <antonio.borneo@foss.st.com>
-> > ---
-> > =C2=A0drivers/irqchip/irq-stm32-exti.c | 14 ++++++++++++++
-> > =C2=A01 file changed, 14 insertions(+)
-> >=20
-> > diff --git a/drivers/irqchip/irq-stm32-exti.c
-> > b/drivers/irqchip/irq-stm32-exti.c
-> > index c8003f4f0457..3f6d524a87fe 100644
-> > --- a/drivers/irqchip/irq-stm32-exti.c
-> > +++ b/drivers/irqchip/irq-stm32-exti.c
-> > @@ -550,6 +550,16 @@ static void stm32_exti_h_unmask(struct
-> > irq_data *d)
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0irq_chip_unmask_parent(d);
-> > =C2=A0}
-> > =C2=A0
-> > +static int stm32_exti_h_request_resources(struct irq_data *data)
-> > +{
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0data =3D data->parent_data;
-> > +
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (data->chip->irq_request_=
-resources)
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0return data->chip->irq_request_resources(data);
-> > +
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0return 0;
-> > +}
->=20
-> Why do you need to reinvent the whole thing? Why isn't it just:
->=20
-> static int stm32_exti_h_request_resources(struct irq_data *data)
-> {
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0irq_chip_request_resource=
-s_parent(data);
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0return 0;
-> }
->=20
-> And this really deserves a comment. I also wonder whether we should
-> change this behaviour to always return 0.
+Calling hwmon_device_register_with_info() with NULL dev and/or chip
+information parameters is an ABI abuse and not a real conversion to
+the new API. Also, the code creates sysfs attributes _after_ creating
+the hwmon device, which is racy and unsupported to start with. On top
+of that, the removal code tries to remove the name attribute which is
+owned by the hwmon core.
 
-Marc,
-the stm32-exti sits in the middle of an irq hierarchy, exactly as the
-"Interrupt remapping controller" in the section "Hierarchy IRQ domain"
-in Documentation/core-api/irq/irq-domain.rst
+Use hwmon_device_register_with_groups() to register the hwmon device
+instead.
 
-When the "IOAPIC controller" runs a request_*_irq(), it causes calling
-irq_request_resources() of its parent, if the parent implements it.
-There is no automatic propagation in the hierarchy, so it's up to each
-irq_chip in the hierarchy to propagate this call to its parent.
-Using irq_chip_request_resources_parent() fits this use case.
+In the future, the hwmon subsystem will reject calls to
+hwmon_device_register_with_info with NULL dev or chip/info parameters.
+Without this patch, the hwmon device will fail to register.
 
-At the end of the chain, the "Local APIC controller" is not obliged to
-implement the 'optional' irq_request_resources(). And here starts the
-pain:
-irq_chip_request_resources_parent() returns -ENOSYS if the parent does
-not implement the optional irq_request_resources().
-So we need to filter-out the error for unimplemented function, e.g.:
+Fixes: f59dc5119192 ("MIPS: Loongson: Fix boot warning about hwmon_device_register()")
+Cc: Zhi Li <lizhi01@loongson.cn>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+---
+ drivers/platform/mips/cpu_hwmon.c | 127 ++++++++++--------------------
+ 1 file changed, 41 insertions(+), 86 deletions(-)
 
-static int stm32_exti_h_request_resources(struct irq_data *data)
-{
-	int ret;
-	ret =3D irq_chip_request_resources_parent(data);
-	/* not an error if parent does not implement it */
-	return (ret =3D=3D -ENOSYS) ? 0 : ret;
-}
+diff --git a/drivers/platform/mips/cpu_hwmon.c b/drivers/platform/mips/cpu_hwmon.c
+index 386389ffec41..d8c5f9195f85 100644
+--- a/drivers/platform/mips/cpu_hwmon.c
++++ b/drivers/platform/mips/cpu_hwmon.c
+@@ -55,55 +55,6 @@ int loongson3_cpu_temp(int cpu)
+ static int nr_packages;
+ static struct device *cpu_hwmon_dev;
+ 
+-static SENSOR_DEVICE_ATTR(name, 0444, NULL, NULL, 0);
+-
+-static struct attribute *cpu_hwmon_attributes[] = {
+-	&sensor_dev_attr_name.dev_attr.attr,
+-	NULL
+-};
+-
+-/* Hwmon device attribute group */
+-static struct attribute_group cpu_hwmon_attribute_group = {
+-	.attrs = cpu_hwmon_attributes,
+-};
+-
+-static ssize_t get_cpu_temp(struct device *dev,
+-			struct device_attribute *attr, char *buf);
+-static ssize_t cpu_temp_label(struct device *dev,
+-			struct device_attribute *attr, char *buf);
+-
+-static SENSOR_DEVICE_ATTR(temp1_input, 0444, get_cpu_temp, NULL, 1);
+-static SENSOR_DEVICE_ATTR(temp1_label, 0444, cpu_temp_label, NULL, 1);
+-static SENSOR_DEVICE_ATTR(temp2_input, 0444, get_cpu_temp, NULL, 2);
+-static SENSOR_DEVICE_ATTR(temp2_label, 0444, cpu_temp_label, NULL, 2);
+-static SENSOR_DEVICE_ATTR(temp3_input, 0444, get_cpu_temp, NULL, 3);
+-static SENSOR_DEVICE_ATTR(temp3_label, 0444, cpu_temp_label, NULL, 3);
+-static SENSOR_DEVICE_ATTR(temp4_input, 0444, get_cpu_temp, NULL, 4);
+-static SENSOR_DEVICE_ATTR(temp4_label, 0444, cpu_temp_label, NULL, 4);
+-
+-static const struct attribute *hwmon_cputemp[4][3] = {
+-	{
+-		&sensor_dev_attr_temp1_input.dev_attr.attr,
+-		&sensor_dev_attr_temp1_label.dev_attr.attr,
+-		NULL
+-	},
+-	{
+-		&sensor_dev_attr_temp2_input.dev_attr.attr,
+-		&sensor_dev_attr_temp2_label.dev_attr.attr,
+-		NULL
+-	},
+-	{
+-		&sensor_dev_attr_temp3_input.dev_attr.attr,
+-		&sensor_dev_attr_temp3_label.dev_attr.attr,
+-		NULL
+-	},
+-	{
+-		&sensor_dev_attr_temp4_input.dev_attr.attr,
+-		&sensor_dev_attr_temp4_label.dev_attr.attr,
+-		NULL
+-	}
+-};
+-
+ static ssize_t cpu_temp_label(struct device *dev,
+ 			struct device_attribute *attr, char *buf)
+ {
+@@ -121,24 +72,47 @@ static ssize_t get_cpu_temp(struct device *dev,
+ 	return sprintf(buf, "%d\n", value);
+ }
+ 
+-static int create_sysfs_cputemp_files(struct kobject *kobj)
+-{
+-	int i, ret = 0;
+-
+-	for (i = 0; i < nr_packages; i++)
+-		ret = sysfs_create_files(kobj, hwmon_cputemp[i]);
++static SENSOR_DEVICE_ATTR(temp1_input, 0444, get_cpu_temp, NULL, 1);
++static SENSOR_DEVICE_ATTR(temp1_label, 0444, cpu_temp_label, NULL, 1);
++static SENSOR_DEVICE_ATTR(temp2_input, 0444, get_cpu_temp, NULL, 2);
++static SENSOR_DEVICE_ATTR(temp2_label, 0444, cpu_temp_label, NULL, 2);
++static SENSOR_DEVICE_ATTR(temp3_input, 0444, get_cpu_temp, NULL, 3);
++static SENSOR_DEVICE_ATTR(temp3_label, 0444, cpu_temp_label, NULL, 3);
++static SENSOR_DEVICE_ATTR(temp4_input, 0444, get_cpu_temp, NULL, 4);
++static SENSOR_DEVICE_ATTR(temp4_label, 0444, cpu_temp_label, NULL, 4);
+ 
+-	return ret;
+-}
++static struct attribute *cpu_hwmon_attributes[] = {
++	&sensor_dev_attr_temp1_input.dev_attr.attr,
++	&sensor_dev_attr_temp1_label.dev_attr.attr,
++	&sensor_dev_attr_temp2_input.dev_attr.attr,
++	&sensor_dev_attr_temp2_label.dev_attr.attr,
++	&sensor_dev_attr_temp3_input.dev_attr.attr,
++	&sensor_dev_attr_temp3_label.dev_attr.attr,
++	&sensor_dev_attr_temp4_input.dev_attr.attr,
++	&sensor_dev_attr_temp4_label.dev_attr.attr,
++	NULL
++};
+ 
+-static void remove_sysfs_cputemp_files(struct kobject *kobj)
++static umode_t cpu_hwmon_is_visible(struct kobject *kobj,
++				    struct attribute *attr, int i)
+ {
+-	int i;
++	int id = i / 2;
+ 
+-	for (i = 0; i < nr_packages; i++)
+-		sysfs_remove_files(kobj, hwmon_cputemp[i]);
++	if (id < nr_packages)
++		return attr->mode;
++	return 0;
+ }
+ 
++static struct attribute_group cpu_hwmon_group = {
++	.attrs = cpu_hwmon_attributes,
++	.is_visible = cpu_hwmon_is_visible,
++};
++
++static const struct attribute_group *cpu_hwmon_groups[] = {
++	&cpu_hwmon_group,
++	NULL
++};
++
+ #define CPU_THERMAL_THRESHOLD 90000
+ static struct delayed_work thermal_work;
+ 
+@@ -159,50 +133,31 @@ static void do_thermal_timer(struct work_struct *work)
+ 
+ static int __init loongson_hwmon_init(void)
+ {
+-	int ret;
+-
+ 	pr_info("Loongson Hwmon Enter...\n");
+ 
+ 	if (cpu_has_csr())
+ 		csr_temp_enable = csr_readl(LOONGSON_CSR_FEATURES) &
+ 				  LOONGSON_CSRF_TEMP;
+ 
+-	cpu_hwmon_dev = hwmon_device_register_with_info(NULL, "cpu_hwmon", NULL, NULL, NULL);
+-	if (IS_ERR(cpu_hwmon_dev)) {
+-		ret = PTR_ERR(cpu_hwmon_dev);
+-		pr_err("hwmon_device_register fail!\n");
+-		goto fail_hwmon_device_register;
+-	}
+-
+ 	nr_packages = loongson_sysconf.nr_cpus /
+ 		loongson_sysconf.cores_per_package;
+ 
+-	ret = create_sysfs_cputemp_files(&cpu_hwmon_dev->kobj);
+-	if (ret) {
+-		pr_err("fail to create cpu temperature interface!\n");
+-		goto fail_create_sysfs_cputemp_files;
++	cpu_hwmon_dev = hwmon_device_register_with_groups(NULL, "cpu_hwmon",
++							  NULL, cpu_hwmon_groups);
++	if (IS_ERR(cpu_hwmon_dev)) {
++		pr_err("hwmon_device_register fail!\n");
++		return PTR_ERR(cpu_hwmon_dev);
+ 	}
+ 
+ 	INIT_DEFERRABLE_WORK(&thermal_work, do_thermal_timer);
+ 	schedule_delayed_work(&thermal_work, msecs_to_jiffies(20000));
+ 
+-	return ret;
+-
+-fail_create_sysfs_cputemp_files:
+-	sysfs_remove_group(&cpu_hwmon_dev->kobj,
+-				&cpu_hwmon_attribute_group);
+-	hwmon_device_unregister(cpu_hwmon_dev);
+-
+-fail_hwmon_device_register:
+-	return ret;
++	return 0;
+ }
+ 
+ static void __exit loongson_hwmon_exit(void)
+ {
+ 	cancel_delayed_work_sync(&thermal_work);
+-	remove_sysfs_cputemp_files(&cpu_hwmon_dev->kobj);
+-	sysfs_remove_group(&cpu_hwmon_dev->kobj,
+-				&cpu_hwmon_attribute_group);
+ 	hwmon_device_unregister(cpu_hwmon_dev);
+ }
+ 
+-- 
+2.35.1
 
-but then we cannot discriminate if -ENOSYS comes from missing optional
-irq_request_resources() in parent, or from an error inside parent's
-irq_request_resources(). That's why this patch reimplements the wheel.
-
-Shuldn't irq_chip_request_resources_parent() return 0 when the parent
-doesn't implements the optional method, as it's already the case inside
-kernel/irq/manage.c:1390 static int irq_request_resources(struct
-irq_desc *desc)
-?
-
-Regards,
-Antonio
