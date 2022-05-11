@@ -2,84 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F30E4C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:18:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A127C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:19:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245683AbiEKPSA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 11:18:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49658 "EHLO
+        id S245723AbiEKPTu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 11:19:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245706AbiEKPR6 (ORCPT
+        with ESMTP id S232787AbiEKPTq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 11:17:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD0A320F4FD;
-        Wed, 11 May 2022 08:17:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B035618D6;
-        Wed, 11 May 2022 15:17:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52C70C340EE;
-        Wed, 11 May 2022 15:17:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652282276;
-        bh=15pJJEvRiuh11eXzFUTX/Cwaj4pw2lagxUeoD6XptCw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ONIcOnI44zE5Tg6ztuEmm0O+DTBmtSBtOpWp0UabRx2n1nmqAU56mPPAXziljv3+K
-         5Kekccr9BKxpYXhQ143unTvldjH4BFm2xaTRoIM339zjsDzHTh22wlbpkJLOmNCqln
-         iV7gh6OZ21a/uUP88nZw9mQkBgF+coPaoMY2B1QZ4n/7hdvzPgDaBSwicXs/NNm+AT
-         QyoCvS2gGK0bmsVf30hDh9CWy0Oa3kvImIu8YHFfC2inRWPfADasjfIh6roKmPbD6I
-         ZKHTbcWPGhuiSQKwPLbjJ4kgIQCtI9q+3MtEen0TBoL0i8bPjWz4gkHJuF3rhHlE9L
-         anIxWuwhMyDfA==
-Date:   Wed, 11 May 2022 18:16:26 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Johannes Holland <johannes.holland@infineon.com>,
-        Nayna <nayna@linux.vnet.ibm.com>,
-        Mimi Zohar <zohar@linux.ibm.com>
-Cc:     linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        peterhuewe@gmx.de, jgg@ziepe.ca
-Subject: Re: [PATCH] tpm: sleep at least <...> ms in tpm_msleep()
-Message-ID: <YnvTSqRgYkWu0qgp@kernel.org>
-References: <20220510112902.23213-1-johannes.holland@infineon.com>
+        Wed, 11 May 2022 11:19:46 -0400
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD57320D4FF;
+        Wed, 11 May 2022 08:19:45 -0700 (PDT)
+Received: by mail-wm1-f49.google.com with SMTP id m2-20020a1ca302000000b003943bc63f98so1427519wme.4;
+        Wed, 11 May 2022 08:19:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=llXmD2rCq1+l8jPwFHVjaI9KkiK/giTbs6qtyUFVaFE=;
+        b=hqViGr2eMwvt1XQDbIyCQjIG764VWBKwuKJDuPa5kTDISu1vnn7OvnUcmNhb2Fhd9I
+         +bgEVvcreZvu4b8/fH2f2ZjE+am1v1kRfjLMTWQFBhxUm1Yl9T+/hY8rY9jj+hcLiMcC
+         0a1uBHuMgLflYtHmbfJc7VjhxB5sV8+DFi+q73XY8ecgrBGRtq8FV2vLnXTjQDZuz56m
+         Q7uJkVCccgnncm5CoWkH1+D1lJOXwjri8iKCgeqKXpSyR92dbne9RJlpOoXN04q4PWAG
+         uHqtvAgnZ7l5BAaa5lbQ9cq9mTpIS7iUMbtCW88fmzH3DdpvNloojyM9df3dnQYstwE5
+         TeCA==
+X-Gm-Message-State: AOAM532QjbIkQvFgRPybsz7cQGNJBmMQqYaScBDLx7q7kTx2PyhydLuk
+        BtrnkSPwXN3zGDXwk49+pCI=
+X-Google-Smtp-Source: ABdhPJz/IdYlaLe1v8zDU6pSmd8VWCh7Ua5p2i7f1ZEzponF7E0GJNqJnUWRh0RBxzQpyCUSwYOIGg==
+X-Received: by 2002:a7b:c199:0:b0:394:26d0:a6a9 with SMTP id y25-20020a7bc199000000b0039426d0a6a9mr5408256wmi.116.1652282384442;
+        Wed, 11 May 2022 08:19:44 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id p8-20020adfe608000000b0020c5253d8e6sm1882998wrm.50.2022.05.11.08.19.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 May 2022 08:19:43 -0700 (PDT)
+Date:   Wed, 11 May 2022 15:19:42 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     Jeffrey Hugo <quic_jhugo@quicinc.com>
+Cc:     Wei Liu <wei.liu@kernel.org>, kys@microsoft.com,
+        haiyangz@microsoft.com, sthemmin@microsoft.com,
+        decui@microsoft.com, lorenzo.pieralisi@arm.com, robh@kernel.org,
+        kw@linux.com, bhelgaas@google.com, jakeo@microsoft.com,
+        dazhan@microsoft.com, linux-hyperv@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2] hyperv compose_msi_msg fixups
+Message-ID: <20220511151942.ekxy2vodzvxzfs2e@liuwe-devbox-debian-v2>
+References: <1652132902-27109-1-git-send-email-quic_jhugo@quicinc.com>
+ <20220511144124.rj7inq6zy6bgbii4@liuwe-devbox-debian-v2>
+ <a0e60283-a448-650f-808e-a0080ae550f7@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220510112902.23213-1-johannes.holland@infineon.com>
+In-Reply-To: <a0e60283-a448-650f-808e-a0080ae550f7@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 01:29:03PM +0200, Johannes Holland wrote:
-> To comply with protocol requirements, minimum polling times must often
-> be adhered to. Therefore, a macro like tpm_msleep() should sleep at
-> least the given amount of time (not up to the given period). Have
-> tpm_msleep() sleep at least the given number of milliseconds.
+On Wed, May 11, 2022 at 08:47:23AM -0600, Jeffrey Hugo wrote:
+> On 5/11/2022 8:41 AM, Wei Liu wrote:
+> > On Mon, May 09, 2022 at 03:48:20PM -0600, Jeffrey Hugo wrote:
+> > > While multi-MSI appears to work with pci-hyperv.c, there was a concern about
+> > > how linux was doing the ITRE allocations.  Patch 2 addresses the concern.
+> > > 
+> > > However, patch 2 exposed an issue with how compose_msi_msg() was freeing a
+> > > previous allocation when called for the Nth time.  Imagine a driver using
+> > > pci_alloc_irq_vectors() to request 32 MSIs.  This would cause compose_msi_msg()
+> > > to be called 32 times, once for each MSI.  With patch 2, MSI0 would allocate
+> > > the ITREs needed, and MSI1-31 would use the cached information.  Then the driver
+> > > uses request_irq() on MSI1-17.  This would call compose_msi_msg() again on those
+> > > MSIs, which would again use the cached information.  Then unmask() would be
+> > > called to retarget the MSIs to the right VCPU vectors.  Finally, the driver
+> > > calls request_irq() on MSI0.  This would call conpose_msi_msg(), which would
+> > > free the block of 32 MSIs, and allocate a new block.  This would undo the
+> > > retarget of MSI1-17, and likely leave those MSIs targeting invalid VCPU vectors.
+> > > This is addressed by patch 1, which is introduced first to prevent a regression.
+> > > 
+> > > Jeffrey Hugo (2):
+> > >    PCI: hv: Reuse existing ITRE allocation in compose_msi_msg()
+> > >    PCI: hv: Fix interrupt mapping for multi-MSI
+> > > 
+> > 
+> > Applied to hyperv-next. Thanks.
 > 
-> Signed-off-by: Johannes Holland <johannes.holland@infineon.com>
-> ---
->  drivers/char/tpm/tpm.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/char/tpm/tpm.h b/drivers/char/tpm/tpm.h
-> index 2163c6ee0d36..0971b55fffe3 100644
-> --- a/drivers/char/tpm/tpm.h
-> +++ b/drivers/char/tpm/tpm.h
-> @@ -185,8 +185,8 @@ int tpm_pm_resume(struct device *dev);
->  
->  static inline void tpm_msleep(unsigned int delay_msec)
->  {
-> -	usleep_range((delay_msec * 1000) - TPM_TIMEOUT_RANGE_US,
-> -		     delay_msec * 1000);
-> +	usleep_range(delay_msec * 1000, (delay_msec * 1000)
-> +		     + TPM_TIMEOUT_RANGE_US);
->  };
->  
->  int tpm_chip_start(struct tpm_chip *chip);
-> -- 
-> 2.34.1
+> Huh?  I thought you wanted a V2.  I was intending on sending that out today.
 > 
 
-For this I would really like to hear a 2nd opinion from Nayna and Mimi.
+Please send them out. I will apply the new version.
 
-BR, Jarkko
+Thanks,
+Wei.
+
+> -Jeff
