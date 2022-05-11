@@ -2,122 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E4C4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 12:29:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BA5FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 12:29:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240175AbiEKM3Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 08:29:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44322 "EHLO
+        id S242428AbiEKM3v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 08:29:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237854AbiEKM3M (ORCPT
+        with ESMTP id S237854AbiEKM3s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 08:29:12 -0400
-Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667081FD843;
-        Wed, 11 May 2022 05:29:11 -0700 (PDT)
-Received: from localhost.localdomain (unknown [10.101.196.174])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 908F44151F;
-        Wed, 11 May 2022 12:29:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1652272150;
-        bh=RvRGkbmZwsRxXLTPfCg6GAIzFml3B5IBzVyodoZxRPM=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=CIVeKnEBZvBtlQK7YFRYChmtSflJc+taUo5CkdUoDIrMySSjaOq5hcSq4ZPwANPjB
-         AF+JgQCEVLMX8d0UtT4XL8caObBTCBQqYCsUwKpsXM4JoXFrWY7tvELe0cAGb9j6Fm
-         OOyJ0OhjCB59X/S/PFeIWDCYjOo7DizbRLza76FUZYv9i7JoZxp0YhL1KccvIWGGM5
-         lowfpiR/D7RqVczva4hZ5FN4kEFyzVFwlJABJJ2ZR6vNLEP/ebjX7N1bri5JmPrRLe
-         s2RELGwMK77FZnQNjTXPYc57Nz05UGJTDQwSgsc0j8GdddTUPKOH6vNmRwi8RCClwL
-         YB6NzKQEweRxQ==
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] igb: Make DMA faster when CPU is active on the PCIe link
-Date:   Wed, 11 May 2022 20:28:05 +0800
-Message-Id: <20220511122806.2146847-2-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220511122806.2146847-1-kai.heng.feng@canonical.com>
-References: <20220511122806.2146847-1-kai.heng.feng@canonical.com>
+        Wed, 11 May 2022 08:29:48 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4C1CA1FD843
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 05:29:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652272186;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FcY+Zd5XlbADrOvbXaU3QNiZrTO7S7HXtWKbPkPLOyo=;
+        b=eL0ZA7ppauucDhal33SvDyapExjHpP+HavL5S5FKdiaH8B0Q7cqRI3TCb0suhJ1DgItGhq
+        kuD10qSpZcbwQQj2c5HVF1sN0xHzKNrkPyeC3WehkxQWdzTMPETHiMOxT6Dgg00QLVZ8dt
+        nbie/W2cvX0xvZb0bJJBgyzVJF+oSzY=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-25-onPLTyFJOfOUtM69hrJSVw-1; Wed, 11 May 2022 08:29:45 -0400
+X-MC-Unique: onPLTyFJOfOUtM69hrJSVw-1
+Received: by mail-wm1-f70.google.com with SMTP id t184-20020a1c46c1000000b00394209f54f1so648307wma.4
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 05:29:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=FcY+Zd5XlbADrOvbXaU3QNiZrTO7S7HXtWKbPkPLOyo=;
+        b=vyq4TzvVaVPVk911kFpRk/m+r9vuilaFytZ6q2/XrP7N/V3S7DABpEXFcMwjb8qcaX
+         UWfvLXlx9sCjqp+9QQFYe8jtSCDrtkuRlkaLxUIsymcg/sHAehAiIm79+FTZTN9uGE7k
+         UPiYLY31TW3VqPBZxAIWL5Mi+M2l5vjMnQhjpODfL1/sRmIFNJ2V0Zrs3XferpNalA/d
+         k0aOhTzp0X8dfwY3WbssPlCs2Webem4MtdCdnh2RrtZFMtlN7LyDtH02MmgUxYWL0QlM
+         aH4YYOQlucdXo8WGn0unM7pLXRo+6fs8EePpuQxLXNReAJaW6MeKBoRAEYTJkrrn4vuN
+         B3vA==
+X-Gm-Message-State: AOAM530/FuyahYekr3T9FXKkUJeq93KCFStFiwC1kXOJXYF6Za/Eryfi
+        7d0wHMo6X51bBvUK0uxrzcm1LsI8dRW4cctJKJ5gIWKrQ4eGVxO4P91w27uhTPTiXd6qSdUeWey
+        IJKy+g2GoF0ASOeiMkPt/GCve
+X-Received: by 2002:a05:600c:1e23:b0:394:6133:a746 with SMTP id ay35-20020a05600c1e2300b003946133a746mr4578086wmb.17.1652272183900;
+        Wed, 11 May 2022 05:29:43 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwy2ou+Mk/PkR/G/eo5g55eQmz0xGQXbimhYd6JFu/Xn+JJE2bLkuI6rzG6fUa4G4ybIfW0sg==
+X-Received: by 2002:a05:600c:1e23:b0:394:6133:a746 with SMTP id ay35-20020a05600c1e2300b003946133a746mr4578064wmb.17.1652272183647;
+        Wed, 11 May 2022 05:29:43 -0700 (PDT)
+Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id n5-20020a05600c464500b0039482d95ab7sm1880616wmo.24.2022.05.11.05.29.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 May 2022 05:29:43 -0700 (PDT)
+Message-ID: <fa10ffa4-d43f-1270-acab-3d3d228e0b88@redhat.com>
+Date:   Wed, 11 May 2022 14:29:42 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v5 2/7] firmware: sysfb: Add helpers to unregister a pdev
+ and disable registration
+Content-Language: en-US
+To:     Thomas Zimmermann <tzimmermann@suse.de>,
+        linux-kernel@vger.kernel.org
+Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+References: <20220511112438.1251024-1-javierm@redhat.com>
+ <20220511112438.1251024-3-javierm@redhat.com>
+ <09cc267d-ead4-dd63-07dd-dfa347cbcee1@suse.de>
+ <7d9f44e6-ae45-1747-366a-15cf2941dc2f@redhat.com>
+ <8ec8d896-599e-b1ff-2b4f-077d73944705@suse.de>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <8ec8d896-599e-b1ff-2b4f-077d73944705@suse.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We found Intel I210 can only achieve ~750Mbps Tx speed on some
-platforms. The RR2DCDELAY shows around 0x2xxx DMA delay, which will be
-significantly lower when 1) ASPM is disabled or 2) SoC package c-state
-stays above PC3. When the RR2DCDELAY is around 0x1xxx the Tx speed can
-reach to ~950Mbps.
+Hello Thomas,
 
-According to the I210 datasheet "8.26.1 PCIe Misc. Register - PCIEMISC",
-"DMA Idle Indication" doesn't seem to tie to DMA coalesce anymore, so
-set it to 1b for "DMA is considered idle when there is no Rx or Tx AND
-when there are no TLPs indicating that CPU is active detected on the
-PCIe link (such as the host executes CSR or Configuration register read
-or write operation)" and performing Tx should also fall under "active
-CPU on PCIe link" case.
+On 5/11/22 14:05, Thomas Zimmermann wrote:
 
-In addition to that, commit b6e0c419f040 ("igb: Move DMA Coalescing init
-code to separate function.") seems to wrongly changed from enabling
-E1000_PCIEMISC_LX_DECISION to disabling it, also fix that.
+[snip]
 
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
----
- drivers/net/ethernet/intel/igb/igb_main.c | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+>>
+>> Other subsystems ask you to do the opposite, to split the definition and
+>> usage in separate patches. But I'm fine with merging those if you prefer.
+> 
+> Usually, I have no strong opinion on this. But in the case of this 
+> specific patchset, I have the feeling that I'm missing some important 
+> point because call and implementation are separate.  See my other 
+> replies for that.  Putting them next to each other will hopefully help. 
+> Sorry for the inconvenience.
+>
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 34b33b21e0dcd..eca797dded429 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -9897,11 +9897,10 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
- 	struct e1000_hw *hw = &adapter->hw;
- 	u32 dmac_thr;
- 	u16 hwm;
-+	u32 reg;
- 
- 	if (hw->mac.type > e1000_82580) {
- 		if (adapter->flags & IGB_FLAG_DMAC) {
--			u32 reg;
--
- 			/* force threshold to 0. */
- 			wr32(E1000_DMCTXTH, 0);
- 
-@@ -9934,7 +9933,6 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
- 			/* Disable BMC-to-OS Watchdog Enable */
- 			if (hw->mac.type != e1000_i354)
- 				reg &= ~E1000_DMACR_DC_BMC2OSW_EN;
--
- 			wr32(E1000_DMACR, reg);
- 
- 			/* no lower threshold to disable
-@@ -9951,12 +9949,12 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
- 			 */
- 			wr32(E1000_DMCTXTH, (IGB_MIN_TXPBSIZE -
- 			     (IGB_TX_BUF_4096 + adapter->max_frame_size)) >> 6);
-+		}
- 
--			/* make low power state decision controlled
--			 * by DMA coal
--			 */
-+		if (hw->mac.type >= e1000_i210 ||
-+		    (adapter->flags & IGB_FLAG_DMAC)) {
- 			reg = rd32(E1000_PCIEMISC);
--			reg &= ~E1000_PCIEMISC_LX_DECISION;
-+			reg |= E1000_PCIEMISC_LX_DECISION;
- 			wr32(E1000_PCIEMISC, reg);
- 		} /* endif adapter->dmac is not disabled */
- 	} else if (hw->mac.type == e1000_82580) {
+No worries at all. Happy to do that change if the patches are easy to
+understand. It took me some time as well to wrap my head around all
+the race conditions and needed locking.
+
+Same for patch 3/7, but I'm convinced that dropping the lock is the
+correct thing to do than calling to drivers' .remove callbacks with
+a lock held.
+
 -- 
-2.34.1
+Best regards,
+
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
 
