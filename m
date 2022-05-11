@@ -2,158 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A758C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 16:21:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 934F0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 16:22:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344655AbiEKQVa (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 12:21:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52280 "EHLO
+        id S243270AbiEKQWu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 12:22:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239974AbiEKQVZ (ORCPT
+        with ESMTP id S237848AbiEKQWr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 12:21:25 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AA0837028
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 09:21:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652286084; x=1683822084;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=EfMBhlQXAU1MQXDmgFL/wcvIL8MHq+xSFKfwYV33fY4=;
-  b=eCd1FlJyRebx13PuauKDfrvt+zX+1yetUXF+FGMLZG8xYeAf1yAHiKVv
-   BkJCHHW6BxpAOgWzetLVi2g7cJM2msRrPJWi2fY7JefMQprv33WvvwiW1
-   FRCWElyPMUxWhE7NYb7vh3WWd84v8XuMeIfrskPQR7lkNjAts+xts3zYx
-   cpWIRXcPg+kUL55oGxTAEE2SiH/X0XjSUauWcbE6tXjUjgHcfhXYaZpHg
-   dy++Uz3FTBufx+4hiCXXoPtpIADR9caxmfjAHrb7+0AV8dNgkzWHOWtya
-   tHqJfJSyyMWP/6bO1tYP4oMHm65ebP9lHzakMrfXzRfy0nsA6ZeW0Ji4X
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="269876902"
-X-IronPort-AV: E=Sophos;i="5.91,217,1647327600"; 
-   d="scan'208";a="269876902"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 09:18:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,217,1647327600"; 
-   d="scan'208";a="814542469"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 11 May 2022 09:17:57 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nop2C-000JI4-Uj;
-        Wed, 11 May 2022 16:17:56 +0000
-Date:   Thu, 12 May 2022 00:17:01 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Xingui Yang <yangxingui@huawei.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Qi Liu <liuqi115@huawei.com>,
-        John Garry <john.garry@huawei.com>
-Subject: drivers/scsi/hisi_sas/hisi_sas_v3_hw.c:2168:43: sparse: sparse:
- restricted __le32 degrades to integer
-Message-ID: <202205120028.ztSHSLFJ-lkp@intel.com>
+        Wed, 11 May 2022 12:22:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EA00141602
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 09:22:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652286166;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Hiwl13S5NM3HM0W7mWp+8TFZzRfSH80QjmVZsWuPHhc=;
+        b=Pkwb6vkfY6mfikR32UmqN+iGQD8R4UW4b2Jt7eHMoYhueTzariRjqvaPVqES9mjq/Uiq6+
+        DJoQ5tW37GMP9Aly+My90fYAx4YQXbpcUjFmAv7annj6/er8SnNElNIIFgQ237VhdcUR7Y
+        YbIyggduoxiqe1q6zTR2rGeN4vQiETs=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-383-ExhkFowQOXmwTulpvAZ4gw-1; Wed, 11 May 2022 12:22:44 -0400
+X-MC-Unique: ExhkFowQOXmwTulpvAZ4gw-1
+Received: by mail-wm1-f72.google.com with SMTP id e9-20020a05600c4e4900b00394779649b1so3054041wmq.3
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 09:22:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=Hiwl13S5NM3HM0W7mWp+8TFZzRfSH80QjmVZsWuPHhc=;
+        b=cVNPoZbPtnI7gvVvC4cv0xLH004+AZKlPyI8Arh/GbcUzPlvxyBQMMlgkK6iQ0U5p+
+         /SacoACoQj2bC0ODmctWjbSKw+6P7yfTXwYqH2IIdjeGVxQg7a1Fj3atewq635sj0H3M
+         brECvGuZvTUArLFewwBTqo3FkpzaYQPege73dvYBQkArSu6bR1o5U4iZdM2e9+h1V28b
+         qB1lfkpi2GBJr7OlyDzIHZdlEZtD99uyovIIaGwMApBUUm+eV6mrq3GIjBD1fggGUksz
+         u7YcGUS4QihdCjJZYHb8Vrl7mj7mv2AuCRWtkA4P9+RWfNGMDvF45++8/PHfLe6OoYO1
+         XITg==
+X-Gm-Message-State: AOAM530oKssQlsNFdv5wlVdvCjWFadoKIUZc5Vl8oN29vPvmOjCLxd72
+        G2ddrTl6X6d/J2rZl62MF2RYMXTiBeUFdr+5DxdxhFTz90CUx0vP2E6EDh9TwtGgKcZO+eHS8e2
+        8mhpv/S2qnvev1c+xEULSbDS8
+X-Received: by 2002:a5d:6d83:0:b0:20c:7329:7c36 with SMTP id l3-20020a5d6d83000000b0020c73297c36mr24141327wrs.518.1652286163460;
+        Wed, 11 May 2022 09:22:43 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzGO4vI4JoCaf4cPeuP3MYjvWKfYId+drtyvlVaFpOby8FpKOxVxJTFkMDVzBcR5zmEc6MJuw==
+X-Received: by 2002:a5d:6d83:0:b0:20c:7329:7c36 with SMTP id l3-20020a5d6d83000000b0020c73297c36mr24141308wrs.518.1652286163200;
+        Wed, 11 May 2022 09:22:43 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c701:700:2393:b0f4:ef08:bd51? (p200300cbc70107002393b0f4ef08bd51.dip0.t-ipconnect.de. [2003:cb:c701:700:2393:b0f4:ef08:bd51])
+        by smtp.gmail.com with ESMTPSA id p8-20020a5d48c8000000b0020c5253d907sm2036804wrs.83.2022.05.11.09.22.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 May 2022 09:22:42 -0700 (PDT)
+Message-ID: <6986a8dd-7211-fb4d-1d66-5b203cad1aab@redhat.com>
+Date:   Wed, 11 May 2022 18:22:41 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Content-Language: en-US
+To:     =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
+        <naoya.horiguchi@nec.com>
+Cc:     Miaohe Lin <linmiaohe@huawei.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Naoya Horiguchi <naoya.horiguchi@linux.dev>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220427042841.678351-1-naoya.horiguchi@linux.dev>
+ <54399815-10fe-9d43-7ada-7ddb55e798cb@redhat.com>
+ <20220427122049.GA3918978@hori.linux.bs1.fc.nec.co.jp>
+ <bb1caf48-7e9d-61bf-e0dc-72fcc0228f28@redhat.com>
+ <20220509072902.GB123646@hori.linux.bs1.fc.nec.co.jp>
+ <6a5d31a3-c27f-f6d9-78bb-d6bf69547887@huawei.com>
+ <Ynjl4JmLXkA47U8T@localhost.localdomain>
+ <465902dc-d3bf-7a93-da04-839faddcd699@huawei.com>
+ <0389eac1-af68-56b5-696d-581bb56878b9@redhat.com>
+ <20220511161052.GA224675@hori.linux.bs1.fc.nec.co.jp>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [RFC PATCH v1 0/4] mm, hwpoison: improve handling workload
+ related to hugetlb and memory_hotplug
+In-Reply-To: <20220511161052.GA224675@hori.linux.bs1.fc.nec.co.jp>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   feb9c5e19e913b53cb536a7aa7c9f20107bb51ec
-commit: 62413199cd6d2906c121c2dfa3d7b82fd05f08db scsi: hisi_sas: Modify v3 HW SSP underflow error processing
-date:   2 months ago
-config: arm64-allmodconfig (https://download.01.org/0day-ci/archive/20220512/202205120028.ztSHSLFJ-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.3.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=62413199cd6d2906c121c2dfa3d7b82fd05f08db
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 62413199cd6d2906c121c2dfa3d7b82fd05f08db
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/scsi/hisi_sas/
+On 11.05.22 18:10, HORIGUCHI NAOYA(堀口 直也) wrote:
+> On Wed, May 11, 2022 at 05:11:17PM +0200, David Hildenbrand wrote:
+>> On 09.05.22 12:53, Miaohe Lin wrote:
+>>> On 2022/5/9 17:58, Oscar Salvador wrote:
+>>>> On Mon, May 09, 2022 at 05:04:54PM +0800, Miaohe Lin wrote:
+>>>>>>> So that leaves us with either
+>>>>>>>
+>>>>>>> 1) Fail offlining -> no need to care about reonlining
+>>>>>
+>>>>> Maybe fail offlining will be a better alternative as we can get rid of many races
+>>>>> between memory failure and memory offline? But no strong opinion. :)
+>>>>
+>>>> If taking care of those races is not an herculean effort, I'd go with
+>>>> allowing offlining + disallow re-onlining.
+>>>> Mainly because memory RAS stuff.
+>>>
+>>> This dose make sense to me. Thanks. We can try to solve those races if
+>>> offlining + disallow re-onlining is applied. :)
+>>>
+>>>>
+>>>> Now, to the re-onlining thing, we'll have to come up with a way to check
+>>>> whether a section contains hwpoisoned pages, so we do not have to go
+>>>> and check every single page, as that will be really suboptimal.
+>>>
+>>> Yes, we need a stable and cheap way to do that.
+>>
+>> My simplistic approach would be a simple flag/indicator in the memory block devices
+>> that indicates that any page in the memory block was hwpoisoned. It's easy to
+>> check that during memory onlining and fail it.
+>>
+>> diff --git a/drivers/base/memory.c b/drivers/base/memory.c
+>> index 084d67fd55cc..3d0ef812e901 100644
+>> --- a/drivers/base/memory.c
+>> +++ b/drivers/base/memory.c
+>> @@ -183,6 +183,9 @@ static int memory_block_online(struct memory_block *mem)
+>>         struct zone *zone;
+>>         int ret;
+>>  
+>> +       if (mem->hwpoisoned)
+>> +               return -EHWPOISON;
+>> +
+>>         zone = zone_for_pfn_range(mem->online_type, mem->nid, mem->group,
+>>                                   start_pfn, nr_pages);
+>>  
+> 
+> Thanks for the idea, a simple flag could work if we don't have to consider
+> unpoison.  If we need consider unpoison, we need remember the last hwpoison
+> page in the memory block, so mem->hwpoisoned should be the counter of
+> hwpoison pages.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Right, but unpoisoning+memory offlining+memory onlining is a yet more
+extreme use case we don't have to bother about I think.
 
+> 
+>>
+>>
+>> Once the problematic DIMM would actually get unplugged, the memory block devices
+>> would get removed as well. So when hotplugging a new DIMM in the same
+>> location, we could online that memory again.
+> 
+> What about PG_hwpoison flags?  struct pages are also freed and reallocated
+> in the actual DIMM replacement?
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/scsi/hisi_sas/hisi_sas_v3_hw.c:2168:43: sparse: sparse: restricted __le32 degrades to integer
-   drivers/scsi/hisi_sas/hisi_sas_v3_hw.c:2169:46: sparse: sparse: restricted __le32 degrades to integer
-   drivers/scsi/hisi_sas/hisi_sas_v3_hw.c:4427:35: sparse: sparse: incorrect type in argument 4 (different base types) @@     expected restricted __le32 [usertype] *[assigned] ptr @@     got unsigned int * @@
-   drivers/scsi/hisi_sas/hisi_sas_v3_hw.c:4427:35: sparse:     expected restricted __le32 [usertype] *[assigned] ptr
-   drivers/scsi/hisi_sas/hisi_sas_v3_hw.c:4427:35: sparse:     got unsigned int *
+Once memory is offline, the memmap is stale and is no longer
+trustworthy. It gets reinitialize during memory onlining -- so any
+previous PG_hwpoison is overridden at least there. In some setups, we
+even poison the whole memmap via page_init_poison() during memory offlining.
 
-vim +2168 drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-
-  2144	
-  2145	static bool
-  2146	slot_err_v3_hw(struct hisi_hba *hisi_hba, struct sas_task *task,
-  2147		       struct hisi_sas_slot *slot)
-  2148	{
-  2149		struct task_status_struct *ts = &task->task_status;
-  2150		struct hisi_sas_complete_v3_hdr *complete_queue =
-  2151				hisi_hba->complete_hdr[slot->cmplt_queue];
-  2152		struct hisi_sas_complete_v3_hdr *complete_hdr =
-  2153				&complete_queue[slot->cmplt_queue_slot];
-  2154		struct hisi_sas_err_record_v3 *record =
-  2155				hisi_sas_status_buf_addr_mem(slot);
-  2156		u32 dma_rx_err_type = le32_to_cpu(record->dma_rx_err_type);
-  2157		u32 trans_tx_fail_type = le32_to_cpu(record->trans_tx_fail_type);
-  2158		u32 dw3 = le32_to_cpu(complete_hdr->dw3);
-  2159	
-  2160		switch (task->task_proto) {
-  2161		case SAS_PROTOCOL_SSP:
-  2162			if (dma_rx_err_type & RX_DATA_LEN_UNDERFLOW_MSK) {
-  2163				/*
-  2164				 * If returned response frame is incorrect because of data underflow,
-  2165				 * but I/O information has been written to the host memory, we examine
-  2166				 * response IU.
-  2167				 */
-> 2168				if (!(complete_hdr->dw0 & CMPLT_HDR_RSPNS_GOOD_MSK) &&
-  2169					(complete_hdr->dw0 & CMPLT_HDR_RSPNS_XFRD_MSK))
-  2170					return false;
-  2171	
-  2172				ts->residual = trans_tx_fail_type;
-  2173				ts->stat = SAS_DATA_UNDERRUN;
-  2174			} else if (dw3 & CMPLT_HDR_IO_IN_TARGET_MSK) {
-  2175				ts->stat = SAS_QUEUE_FULL;
-  2176				slot->abort = 1;
-  2177			} else {
-  2178				ts->stat = SAS_OPEN_REJECT;
-  2179				ts->open_rej_reason = SAS_OREJ_RSVD_RETRY;
-  2180			}
-  2181			break;
-  2182		case SAS_PROTOCOL_SATA:
-  2183		case SAS_PROTOCOL_STP:
-  2184		case SAS_PROTOCOL_SATA | SAS_PROTOCOL_STP:
-  2185			if (dma_rx_err_type & RX_DATA_LEN_UNDERFLOW_MSK) {
-  2186				ts->residual = trans_tx_fail_type;
-  2187				ts->stat = SAS_DATA_UNDERRUN;
-  2188			} else if (dw3 & CMPLT_HDR_IO_IN_TARGET_MSK) {
-  2189				ts->stat = SAS_PHY_DOWN;
-  2190				slot->abort = 1;
-  2191			} else {
-  2192				ts->stat = SAS_OPEN_REJECT;
-  2193				ts->open_rej_reason = SAS_OREJ_RSVD_RETRY;
-  2194			}
-  2195			hisi_sas_sata_done(task, slot);
-  2196			break;
-  2197		case SAS_PROTOCOL_SMP:
-  2198			ts->stat = SAS_SAM_STAT_CHECK_CONDITION;
-  2199			break;
-  2200		default:
-  2201			break;
-  2202		}
-  2203		return true;
-  2204	}
-  2205	
+Apart from that, we should be freeing the memmap in all relevant cases
+when removing memory. I remember there are a couple of corner cases, but
+we don't really have to care about that.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks,
+
+David / dhildenb
+
