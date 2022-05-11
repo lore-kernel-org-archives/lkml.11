@@ -2,116 +2,262 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA687C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:47:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3FF6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:48:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237195AbiEKCrq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 22:47:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59634 "EHLO
+        id S232086AbiEKCsK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 22:48:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243334AbiEKCkf (ORCPT
+        with ESMTP id S243348AbiEKCkh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 22:40:35 -0400
-Received: from mail-oo1-xc32.google.com (mail-oo1-xc32.google.com [IPv6:2607:f8b0:4864:20::c32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B91C20F4C6
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:40:32 -0700 (PDT)
-Received: by mail-oo1-xc32.google.com with SMTP id f6-20020a4ace86000000b0035f083d2216so746291oos.4
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:40:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=endlessos.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=jtaiydWG/wHEMbYT/FSFofg9mXlu8btSO46ZLTfW2rA=;
-        b=eGyFVrO10lmw+zfaf5pcltLktNJ/1CbPOHymz7tN2r3TOcOAfeRKz40YqA963vP6Sj
-         4+pnLx6kifsxT1QTpSkWWCvT4wJFDRgxVEoNYJTNnEUcNXwtYAow1ohLI7MDL0WpObqn
-         gZ1nDsuhO86xqC+aFz2sB7vp0Ouj/1FMnmCy72wpLNUxqg+7C/l6Mo2WdgmQGLgSzuZk
-         OFFxkfvg12/OVpCkcbcp4SILs5YLxNRAHP7/XiWcAZIdRMXK7xsXq8bAqaFQKeaBgyhA
-         +uf0OmAUGoclt2ZWaXD3s1vaf6OuMtxkT6nDPaBm+PzUVYwoyq1a668E06SVvS8yzasc
-         AVlg==
+        Tue, 10 May 2022 22:40:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2B62920EE3B
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:40:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652236832;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=4rsScbuPuNJutA0AJwuwsA+ysprCiaTZ/68Y1lfAnjY=;
+        b=EtK41e8XodKyi6LBr/oCEz3RJ5KKM45ydTzB+T13qEtyoEO1dM4vt6hwpz2WJTE1VehiOA
+        0+NBuLzb0709hcmzJJJironSeRWL3Ddx+xyVAV3aSsStIcokfi++MfG4Aj8Oj3xExendbc
+        SB8P9TzepQmr9Kvdw0FPvrouIaXEKho=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-528-LHez9YA0OSahYT54E_bJbw-1; Tue, 10 May 2022 22:40:24 -0400
+X-MC-Unique: LHez9YA0OSahYT54E_bJbw-1
+Received: by mail-lf1-f69.google.com with SMTP id i8-20020a0565123e0800b004725f87c5f2so294528lfv.1
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:40:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=jtaiydWG/wHEMbYT/FSFofg9mXlu8btSO46ZLTfW2rA=;
-        b=alsI+gWaaoaRGChDRTy6L0hfyC97zpwoBiZxlsELApeER2618fIGdAFfCDD+F3NJp/
-         AbsskwfebhAU+yJT8Km76mlJjCmZ4xp2kdMEU6e1+rASVuYEtrFe21hZd72QWI3Eb/xx
-         8yR9ek8Cfx/0yeDu6J2fgY+F2iwcoxqLmQjnlx9TqVA7k49f93xWhmIH0/Ye28ia+nrf
-         KCqJyb3nFm8d1LPptiywcL3S6w8XAN+1Ek/eFr8R9L4ve0Dl9CbsPpKs5GYDyx9xpjKo
-         8cm2gbrrQI2tQnRt/cwz1+kxMpGxZulfB8ZVWPZJIKy+T7ZrwEsuvlKZYMsTWQGJrH6n
-         i4NQ==
-X-Gm-Message-State: AOAM533zoNgGajxzB8+GtFhx1knaI4luIotQjHk3lnrVW3+LCVzDnAaF
-        oC1xJvG1tLcQus9cVsyettrWc/Zess7CkueptYILZg==
-X-Google-Smtp-Source: ABdhPJz+ei/hQMAcBiVGCP/disKXAMzLMiX0vJBayUYqAiRMua51m3bNh5IsKSq1ogoNfL8nyG0RKn+rtIE9XjUvhAU=
-X-Received: by 2002:a05:6830:246f:b0:606:bbb:f613 with SMTP id
- x47-20020a056830246f00b006060bbbf613mr8997032otr.102.1652236831957; Tue, 10
- May 2022 19:40:31 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=4rsScbuPuNJutA0AJwuwsA+ysprCiaTZ/68Y1lfAnjY=;
+        b=4jwEiS1+RhuFxxNuhfL80kUcrZl9bInXtPJ69mF/V8qT04iG4tstC5Ok4SMu+tvqFG
+         nDRNtRiJXHnWfuoqFiH1bKt1CJK1dHOq5mz3UIL7fBrbfW8zJg4PWKpOn+BQguasVNxO
+         PIBaOg7h4zEurygNL4F8Et7IBDcJ2yIfVjcrMgtj6efwlI8QlPMMLaaLlLf57/QVFtgJ
+         TV22aJ5PkMayNv+A6bTnvdJhdqNsJFQHClcsV8ganIbCaRgXXuJdsYpcziaIM5WrxxaO
+         FmQ8Wzoozv7PbhnCEnwLMLwA1lIAQN1dAmUok+emxVCqpWL4AYpj5TTAFnGlT7lWW9Se
+         3wdQ==
+X-Gm-Message-State: AOAM530SlLrWgxlfF1B5BcJ9eloZjIY0RIR5B1DVfdIF9CYpam/AsPvV
+        lAbMi/JuYDetx6QGztkvWW029qe0+qDcoLp2oU+vHBUTHYSKYRp9DJMQRU+xo0xLwTnKSRTZulL
+        uImslWfXWO2QzMlih1B+nO8cbcu3W1jTsotU4vsYY
+X-Received: by 2002:a05:6512:33d0:b0:473:a25e:f9fb with SMTP id d16-20020a05651233d000b00473a25ef9fbmr18536561lfg.98.1652236822576;
+        Tue, 10 May 2022 19:40:22 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyXPhsS7aZArFqRm1KQv3WcIM3fpOGbBNyqmSsuzU0vfQIcoWpVROQBx3w5Yryj7t+vM1cSBoexVRWIu8KK29c=
+X-Received: by 2002:a05:6512:33d0:b0:473:a25e:f9fb with SMTP id
+ d16-20020a05651233d000b00473a25ef9fbmr18536556lfg.98.1652236822393; Tue, 10
+ May 2022 19:40:22 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220510131136.1103-1-mario.limonciello@amd.com>
-In-Reply-To: <20220510131136.1103-1-mario.limonciello@amd.com>
-From:   Jian-Hong Pan <jhp@endlessos.org>
-Date:   Wed, 11 May 2022 10:39:25 +0800
-Message-ID: <CAPpJ_efn1YiLRtbhNwDEr8j+jJfZrHBM9fukDJpuH0czJpgRTQ@mail.gmail.com>
-Subject: Re: [PATCH] ACPI: PM: Block ASUS B1400CEAE from suspend to idle by default
-To:     Mario Limonciello <mario.limonciello@amd.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        "open list:ACPI" <linux-acpi@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
+References: <20220507071954.14455-1-jasowang@redhat.com> <20220507071954.14455-9-jasowang@redhat.com>
+ <20220510072833-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20220510072833-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Wed, 11 May 2022 10:40:11 +0800
+Message-ID: <CACGkMEtBfdhx-9CMKD0F4+536e5ewf6NQJGPTEBX00uby-C8+w@mail.gmail.com>
+Subject: Re: [PATCH V4 8/9] virtio: harden vring IRQ
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     virtualization <virtualization@lists.linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        eperezma <eperezma@redhat.com>, Cindy Lu <lulu@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Mario Limonciello <mario.limonciello@amd.com> =E6=96=BC 2022=E5=B9=B45=E6=
-=9C=8810=E6=97=A5 =E9=80=B1=E4=BA=8C =E4=B8=8B=E5=8D=889:11=E5=AF=AB=E9=81=
-=93=EF=BC=9A
+On Tue, May 10, 2022 at 7:32 PM Michael S. Tsirkin <mst@redhat.com> wrote:
 >
-> ASUS B1400CEAE fails to resume from suspend to idle by default.  This was
-> bisected back to commit df4f9bc4fb9c ("nvme-pci: add support for ACPI
-> StorageD3Enable property") but this is a red herring to the problem.
+> On Sat, May 07, 2022 at 03:19:53PM +0800, Jason Wang wrote:
+> > This is a rework on the previous IRQ hardening that is done for
+> > virtio-pci where several drawbacks were found and were reverted:
+> >
+> > 1) try to use IRQF_NO_AUTOEN which is not friendly to affinity managed IRQ
+> >    that is used by some device such as virtio-blk
+> > 2) done only for PCI transport
+> >
+> > The vq->broken is re-used in this patch for implementing the IRQ
+> > hardening. The vq->broken is set to true during both initialization
+> > and reset. And the vq->broken is set to false in
+> > virtio_device_ready(). Then vring_interrupt can check and return when
+> > vq->broken is true. And in this case, switch to return IRQ_NONE to let
+> > the interrupt core aware of such invalid interrupt to prevent IRQ
+> > storm.
+> >
+> > The reason of using a per queue variable instead of a per device one
+> > is that we may need it for per queue reset hardening in the future.
+> >
+> > Note that the hardening is only done for vring interrupt since the
+> > config interrupt hardening is already done in commit 22b7050a024d7
+> > ("virtio: defer config changed notifications"). But the method that is
+> > used by config interrupt can't be reused by the vring interrupt
+> > handler because it uses spinlock to do the synchronization which is
+> > expensive.
+> >
+> > Cc: Thomas Gleixner <tglx@linutronix.de>
+> > Cc: Peter Zijlstra <peterz@infradead.org>
+> > Cc: "Paul E. McKenney" <paulmck@kernel.org>
+> > Cc: Marc Zyngier <maz@kernel.org>
+> > Cc: Halil Pasic <pasic@linux.ibm.com>
+> > Cc: Cornelia Huck <cohuck@redhat.com>
+> > Signed-off-by: Jason Wang <jasowang@redhat.com>
+> > ---
+> >  drivers/virtio/virtio.c       | 15 ++++++++++++---
+> >  drivers/virtio/virtio_ring.c  | 11 +++++++----
+> >  include/linux/virtio_config.h | 12 ++++++++++++
+> >  3 files changed, 31 insertions(+), 7 deletions(-)
+> >
+> > diff --git a/drivers/virtio/virtio.c b/drivers/virtio/virtio.c
+> > index 8dde44ea044a..696f5ba4f38e 100644
+> > --- a/drivers/virtio/virtio.c
+> > +++ b/drivers/virtio/virtio.c
+> > @@ -220,6 +220,15 @@ static int virtio_features_ok(struct virtio_device *dev)
+> >   * */
+> >  void virtio_reset_device(struct virtio_device *dev)
+> >  {
+> > +     /*
+> > +      * The below virtio_synchronize_cbs() guarantees that any
+> > +      * interrupt for this line arriving after
+> > +      * virtio_synchronize_vqs() has completed is guaranteed to see
+> > +      * driver_ready == false.
+> > +      */
+> > +     virtio_break_device(dev);
+> > +     virtio_synchronize_cbs(dev);
+> > +
+> >       dev->config->reset(dev);
+> >  }
+> >  EXPORT_SYMBOL_GPL(virtio_reset_device);
+> > @@ -428,6 +437,9 @@ int register_virtio_device(struct virtio_device *dev)
+> >       dev->config_enabled = false;
+> >       dev->config_change_pending = false;
+> >
+> > +     INIT_LIST_HEAD(&dev->vqs);
+> > +     spin_lock_init(&dev->vqs_list_lock);
+> > +
+> >       /* We always start by resetting the device, in case a previous
+> >        * driver messed it up.  This also tests that code path a little. */
+> >       virtio_reset_device(dev);
+> > @@ -435,9 +447,6 @@ int register_virtio_device(struct virtio_device *dev)
+> >       /* Acknowledge that we've seen the device. */
+> >       virtio_add_status(dev, VIRTIO_CONFIG_S_ACKNOWLEDGE);
+> >
+> > -     INIT_LIST_HEAD(&dev->vqs);
+> > -     spin_lock_init(&dev->vqs_list_lock);
+> > -
+> >       /*
+> >        * device_add() causes the bus infrastructure to look for a matching
+> >        * driver.
+> > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+> > index 5b7df7c455f0..9dfad2890d7a 100644
+> > --- a/drivers/virtio/virtio_ring.c
+> > +++ b/drivers/virtio/virtio_ring.c
+> > @@ -1690,7 +1690,7 @@ static struct virtqueue *vring_create_virtqueue_packed(
+> >       vq->we_own_ring = true;
+> >       vq->notify = notify;
+> >       vq->weak_barriers = weak_barriers;
+> > -     vq->broken = false;
+> > +     vq->broken = true;
+> >       vq->last_used_idx = 0;
+> >       vq->event_triggered = false;
+> >       vq->num_added = 0;
+> > @@ -2136,8 +2136,11 @@ irqreturn_t vring_interrupt(int irq, void *_vq)
+> >               return IRQ_NONE;
+> >       }
+> >
+> > -     if (unlikely(vq->broken))
+> > -             return IRQ_HANDLED;
+> > +     if (unlikely(vq->broken)) {
+> > +             dev_warn_once(&vq->vq.vdev->dev,
+> > +                           "virtio vring IRQ raised before DRIVER_OK");
+> > +             return IRQ_NONE;
+> > +     }
+> >
+> >       /* Just a hint for performance: so it's ok that this can be racy! */
+> >       if (vq->event)
+> > @@ -2179,7 +2182,7 @@ struct virtqueue *__vring_new_virtqueue(unsigned int index,
+> >       vq->we_own_ring = false;
+> >       vq->notify = notify;
+> >       vq->weak_barriers = weak_barriers;
+> > -     vq->broken = false;
+> > +     vq->broken = true;
+> >       vq->last_used_idx = 0;
+> >       vq->event_triggered = false;
+> >       vq->num_added = 0;
+> > diff --git a/include/linux/virtio_config.h b/include/linux/virtio_config.h
+> > index d8a2340f928e..23f1694cdbd5 100644
+> > --- a/include/linux/virtio_config.h
+> > +++ b/include/linux/virtio_config.h
+> > @@ -256,6 +256,18 @@ void virtio_device_ready(struct virtio_device *dev)
+> >       unsigned status = dev->config->get_status(dev);
+> >
+> >       BUG_ON(status & VIRTIO_CONFIG_S_DRIVER_OK);
+> > +
+> > +     /*
+> > +      * The virtio_synchronize_cbs() makes sure vring_interrupt()
+> > +      * will see the driver specific setup if it sees vq->broken
+> > +      * as false.
+> > +      */
+> > +     virtio_synchronize_cbs(dev);
 >
-> Before this commit the system wasn't getting into deepest sleep state.
-> Presumably this commit is allowing entry into deepest sleep state as
-> advertised by firmware, but there are some other problems related to
-> the wakeup.
+> since you mention vq->broken above, maybe add
+>         "set vq->broken to false"
+
+Ok.
+
 >
-> As it is confirmed the system works properly with S3, set the default for
-> this system to S3.
+> > +     __virtio_unbreak_device(dev);
+> > +     /*
+> > +      * The transport is expected ensure the visibility of
 >
-> Reported-by: Jian-Hong Pan <jhp@endlessos.org>
-> Link: https://bugzilla.kernel.org/show_bug.cgi?id=3D215742
-> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-> ---
->  drivers/acpi/sleep.c | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
+> to ensure
+
+Will fix.
+
 >
-> diff --git a/drivers/acpi/sleep.c b/drivers/acpi/sleep.c
-> index c992e57b2c79..3147702710af 100644
-> --- a/drivers/acpi/sleep.c
-> +++ b/drivers/acpi/sleep.c
-> @@ -373,6 +373,18 @@ static const struct dmi_system_id acpisleep_dmi_tabl=
-e[] __initconst =3D {
->                 DMI_MATCH(DMI_PRODUCT_NAME, "20GGA00L00"),
->                 },
->         },
-> +       /*
-> +        * ASUS B1400CEAE hangs on resume from suspend (see
-> +        * https://bugzilla.kernel.org/show_bug.cgi?id=3D215742).
-> +        */
-> +       {
-> +       .callback =3D init_default_s3,
-> +       .ident =3D "ASUS B1400CEAE",
-> +       .matches =3D {
-> +               DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
-> +               DMI_MATCH(DMI_PRODUCT_NAME, "ASUS EXPERTBOOK B1400CEAE"),
-> +               },
-> +       },
->         {},
->  };
+> > +      * vq->broken
 >
-> --
-> 2.34.1
+> let's add: "visibility by vq callbacks"
+
+Sure.
+
+>
+> > before setting VIRTIO_CONFIG_S_DRIVER_OK.
+> > +      */
+>
+>
+> Can I see some analysis of existing transports showing
+> this is actually the case for them?
+
+Yes.
+
+> And maybe add a comment near set_status to document the
+> requirement.
+
+For PCI and MMIO, we can quote the memory-barriers.txt or explain that
+wmb() is not needed before the MMIO writel().
+For CCW, it looks not obvious, it looks to me the IO was submitted via
+__ssch() which has an inline assembly.  Cornelia and Hali, could you
+help me to understand if and how did virtio_ccw_set_status() can
+ensure the visibility of the previous driver setup and vq->broken
+here?
+
+Thanks
+
+>
+> >       dev->config->set_status(dev, status | VIRTIO_CONFIG_S_DRIVER_OK);
+> >  }
+> >
+> > --
+> > 2.25.1
 >
 
-Tested-by: Jian-Hong Pan <jhp@endlessos.org>
