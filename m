@@ -2,129 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B549BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 13:21:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EA9DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 13:21:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238957AbiEKNVY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 09:21:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45418 "EHLO
+        id S243756AbiEKNV3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 09:21:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243786AbiEKNUB (ORCPT
+        with ESMTP id S243779AbiEKNUB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 11 May 2022 09:20:01 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0380C2457BD
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 06:19:55 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EEBE2469DF
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 06:19:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 50E7DCE249C
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 13:19:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 064C0C34110
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 13:19:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CE4261CB0
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 13:19:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75275C34111;
+        Wed, 11 May 2022 13:19:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652275192;
-        bh=uJNAc1t8T+kTYKJOXUGKSRo17sVrsJjMQmCKXoxR5Vw=;
-        h=From:To:Subject:Date:From;
-        b=EgUYxmnVxPbxUSeuOXfTuJJgW2izrL8XSCPezZOYfe2SdDFEk2QmKVGyhhEp5bdUZ
-         kMKG8BaZXK6dGv3G2T6h33tu+9At77M1L8EO+6OfbT5N3qb3boOcL5SFyzvqvFugmt
-         NZM8gXOhGGrHHuYTpy6oE7vfK+S4Ub5t8+KJrGorhWW7xc0mwbdVd+iNXote/8Jnax
-         pZEJLjaQmQeoDueTKyljZGnLvtOvD/QAFLT58PQZkjyD7hWJg8YnfNTqIBRcoSNUTA
-         l7J6AMc6SaXpwVpRaGdjSz1lQLHB/Nucf+C/PiRZZHQxGdaa38f/2I3/JBhzMhW+Yx
-         V0nEAzC1Ca0yA==
+        s=k20201202; t=1652275195;
+        bh=ZeV3gMfU+a1WJKfFQfnsBBxgRnqLCEoRt8Ufidruioo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RtaP+Us29DU+hM5bw51wQRbzIjbAceM+GvsOrOBoOs/c1EE+1ubdJs4DZAmZ2WK30
+         GdIZAwgrmBlOJRiiZEYOQwLcZyKAOODTXgIwxlncDqk+79Gh5RhaZYMropUfvYUBt6
+         wEQ1iVX4ldB4sLI/sVeb7hXk7sZhGlBbQ5ER724uZjnBkun5UbScCPWT6B6s3DIYYn
+         J4TC16P1SWSBTNb5t/zGtHKsg3SiX0S58iZit/lvYv5hfefKly1u9ANoFQ4An964kn
+         PY4xFfOOX8CQ7flf+q+6S/wbcfo5+VkvUfsVAbEa5pU5F3q83PDh7PuEE0ah/qECEN
+         8sF9BvEuTcFeQ==
 From:   Oded Gabbay <ogabbay@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Subject: [PATCH 1/3] habanalabs: update firmware header
-Date:   Wed, 11 May 2022 16:19:46 +0300
-Message-Id: <20220511131948.1156471-1-ogabbay@kernel.org>
+Cc:     kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [PATCH 3/3] habanalabs: return -EFAULT on copy_to_user error
+Date:   Wed, 11 May 2022 16:19:48 +0300
+Message-Id: <20220511131948.1156471-3-ogabbay@kernel.org>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220511131948.1156471-1-ogabbay@kernel.org>
+References: <20220511131948.1156471-1-ogabbay@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update cpucp_if.h to latest version.
+If copy_to_user failed in info ioctl, we always return -EFAULT so the
+user will know there was an error.
 
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
 Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- .../misc/habanalabs/include/common/cpucp_if.h | 32 ++++++++++++++++++-
- 1 file changed, 31 insertions(+), 1 deletion(-)
+ drivers/misc/habanalabs/common/habanalabs_ioctl.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/misc/habanalabs/include/common/cpucp_if.h b/drivers/misc/habanalabs/include/common/cpucp_if.h
-index 4af5bb695c16..38e44b6cf581 100644
---- a/drivers/misc/habanalabs/include/common/cpucp_if.h
-+++ b/drivers/misc/habanalabs/include/common/cpucp_if.h
-@@ -568,6 +568,12 @@ struct cpucp_array_data_packet {
- 	__le32 data[];
- };
+diff --git a/drivers/misc/habanalabs/common/habanalabs_ioctl.c b/drivers/misc/habanalabs/common/habanalabs_ioctl.c
+index 51fa56287309..8fd2b427863f 100644
+--- a/drivers/misc/habanalabs/common/habanalabs_ioctl.c
++++ b/drivers/misc/habanalabs/common/habanalabs_ioctl.c
+@@ -118,7 +118,6 @@ static int hw_events_info(struct hl_device *hdev, bool aggregate,
  
-+enum cpucp_led_index {
-+	CPUCP_LED0_INDEX = 0,
-+	CPUCP_LED1_INDEX,
-+	CPUCP_LED2_INDEX
-+};
-+
- enum cpucp_packet_rc {
- 	cpucp_packet_success,
- 	cpucp_packet_invalid,
-@@ -589,7 +595,10 @@ enum cpucp_temp_type {
- 	cpucp_temp_offset = 19,
- 	cpucp_temp_lowest = 21,
- 	cpucp_temp_highest = 22,
--	cpucp_temp_reset_history = 23
-+	cpucp_temp_reset_history = 23,
-+	cpucp_temp_warn = 24,
-+	cpucp_temp_max_crit = 25,
-+	cpucp_temp_max_warn = 26,
- };
+ static int events_info(struct hl_fpriv *hpriv, struct hl_info_args *args)
+ {
+-	int rc;
+ 	u32 max_size = args->return_size;
+ 	u64 events_mask;
+ 	void __user *out = (void __user *) (uintptr_t) args->return_pointer;
+@@ -131,8 +130,7 @@ static int events_info(struct hl_fpriv *hpriv, struct hl_info_args *args)
+ 	hpriv->notifier_event.events_mask = 0;
+ 	mutex_unlock(&hpriv->notifier_event.lock);
  
- enum cpucp_in_attributes {
-@@ -699,6 +708,7 @@ enum pll_index {
- enum rl_index {
- 	TPC_RL = 0,
- 	MME_RL,
-+	EDMA_RL,
- };
+-	rc = copy_to_user(out, &events_mask, sizeof(u64));
+-	return rc;
++	return copy_to_user(out, &events_mask, sizeof(u64)) ? -EFAULT : 0;
+ }
  
- enum pvt_index {
-@@ -833,6 +843,7 @@ enum cpucp_serdes_type {
- 	TYPE_2_SERDES_TYPE,
- 	HLS1_SERDES_TYPE,
- 	HLS1H_SERDES_TYPE,
-+	HLS2_SERDES_TYPE,
- 	UNKNOWN_SERDES_TYPE,
- 	MAX_NUM_SERDES_TYPE = UNKNOWN_SERDES_TYPE
- };
-@@ -846,9 +857,28 @@ struct cpucp_nic_info {
- 	__u8 qsfp_eeprom[CPUCP_NIC_QSFP_EEPROM_MAX_LEN];
- 	__le64 auto_neg_mask[CPUCP_NIC_MASK_ARR_LEN];
- 	__le16 serdes_type; /* enum cpucp_serdes_type */
-+	__le16 tx_swap_map[CPUCP_MAX_NICS];
- 	__u8 reserved[6];
- };
- 
-+#define PAGE_DISCARD_MAX	64
-+
-+struct page_discard_info {
-+	__u8 num_entries;
-+	__u8 reserved[7];
-+	__le32 mmu_page_idx[PAGE_DISCARD_MAX];
-+};
-+
-+/*
-+ * struct ser_val - the SER (symbol error rate) value is represented by "integer * 10 ^ -exp".
-+ * @integer: the integer part of the SER value;
-+ * @exp: the exponent part of the SER value.
-+ */
-+struct ser_val {
-+	__le16 integer;
-+	__le16 exp;
-+};
-+
- /*
-  * struct cpucp_nic_status - describes the status of a NIC port.
-  * @port: NIC port index.
+ static int dram_usage_info(struct hl_fpriv *hpriv, struct hl_info_args *args)
 -- 
 2.25.1
 
