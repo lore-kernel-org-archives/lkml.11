@@ -2,100 +2,232 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62CB8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 05:41:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49047C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 05:42:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242090AbiEKFld (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 01:41:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52144 "EHLO
+        id S241940AbiEKFmr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 01:42:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241940AbiEKFlD (ORCPT
+        with ESMTP id S232431AbiEKFmo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 01:41:03 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD58D1580F
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 22:41:01 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id x23so1042967pff.9
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 22:41:01 -0700 (PDT)
+        Wed, 11 May 2022 01:42:44 -0400
+Received: from mail-ua1-x92e.google.com (mail-ua1-x92e.google.com [IPv6:2607:f8b0:4864:20::92e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E98E6244F19
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 22:42:42 -0700 (PDT)
+Received: by mail-ua1-x92e.google.com with SMTP id p1so386895uak.1
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 22:42:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yXF3SCNfjM2bxLwQ5AjghUOySdcJkYrZZ8M04WZEgOE=;
-        b=je2OkTXoLAiJsYF6ntKWkXMs5+pyupPPj6tCBhGU4fGDuWvUG10HQ0BqCMmSaUA5YX
-         tXf1U6mKLkDBRGx5eW6S6uconZii8wv4a2pMYNv799tH9Qqt/KcmfzF3ZbfGGMrgNhTr
-         KmRxZla6QKPpnw9wUoXoDmACI0tmIBBKs4PuuqjSNvT6BPINoH8w2ftMVsH9U/GN/S+u
-         cnFkluyiZ5jsPtVzFtHl6EYQaAVaijYDfifiA2+YhZXtkPdksSOyaU/H6xCmd8iYsg5k
-         utWCOxed4g2PcsPd2RHU/ew5XSyPFWPuJvUwN8XXRuw9kWQa69naewIi9ULUljOm212V
-         ArnA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vGxPmJDM+cvx1KDtqTZS+UTdKLlUMP0zI7c+wSVmsgY=;
+        b=MYGn0ZQ3a43eA+HINVZpZPpyE4SoDYREVL72759FD4eYh5rz+qlhLlfCmgCWrpcmBi
+         evBpYgzn2guWEhSpqz6CJ98/Ltf4fUmuFSfsW6iDEMBcu8gvPaRykbJmS19i78/kBMAR
+         uU22AwG7xDYnFhs+qFjmYzrgMM8gBmdaGmY9llctP9UQpK5dE9uQlFxkMDWj1TbPgeBM
+         InNWP1EFZTG6Ech3/sS5J/POD/aDZ8JWWP/HBAS5KrHoTTRapVEawmHJrWAq8crPfzAn
+         +e/mi1ounO+JP2PYmP74INHWma6QVm8Ay92juLa3gq7ne6QxfS8gE5NVXCMhh3XDto8V
+         VD1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yXF3SCNfjM2bxLwQ5AjghUOySdcJkYrZZ8M04WZEgOE=;
-        b=zxNsKuGgFuic/3u/BwJF6PK2HgYPnP+Z8M2PcegqhspQLy6+FIpkC1PtnqLjMkX/Fi
-         uqj0DAzScEctYsEf8gTeG4QZ79e7mnKGUweUgaNQPfW4eVRX8RBQw9HJ+2+nxAiGwnCl
-         aDcpBh1kWgvYEeYrR76FgG8IKe9sS2iDvdj2cliwop1D7gd7pEeUc1E8OduBC2W9wJAz
-         lqd5u5FGdAKZUiW0L4+pxHPHhM7f6D49M/g1NZrmn6Iplm86+ya0s23mTnttD5U8/nbQ
-         XLuGRTheQCaQY2qqFWESt91+5On+cRXMjwYYsT3RFewUOqLlcAJv3MDMekx2z4AqxVk8
-         8Aqw==
-X-Gm-Message-State: AOAM532IQHVsRE6G4ZMDjXBVBUwTEkk4yzYxElNLHbCZDh4SgWnnehpj
-        OQ1tmQlU328E1BD5zJXk3pE=
-X-Google-Smtp-Source: ABdhPJw7a6nCTB9DlRmTN0EmUxMmxzMov1YhkKH8myZAr3gidDhmH5/zIHIY+HZx3JcDbV79Xk2ULw==
-X-Received: by 2002:a05:6a00:21c8:b0:4fd:f89f:ec0e with SMTP id t8-20020a056a0021c800b004fdf89fec0emr23243222pfj.83.1652247661317;
-        Tue, 10 May 2022 22:41:01 -0700 (PDT)
-Received: from localhost.localdomain ([202.120.234.246])
-        by smtp.googlemail.com with ESMTPSA id r17-20020a170903021100b0015e8d4eb20bsm673772plh.85.2022.05.10.22.40.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 22:41:00 -0700 (PDT)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Neil Armstrong <narmstrong@baylibre.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        dri-devel@lists.freedesktop.org, linux-amlogic@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     linmq006@gmail.com
-Subject: [PATCH] drm/meson: Fix refcount leak in meson_encoder_hdmi_init
-Date:   Wed, 11 May 2022 09:40:51 +0400
-Message-Id: <20220511054052.51981-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vGxPmJDM+cvx1KDtqTZS+UTdKLlUMP0zI7c+wSVmsgY=;
+        b=jYNcHo1K2uIctFyFw1hRR+42FP3W1qk9K2VN56Gu8Q6F+biFduqAO44AsTwkN0aRT0
+         qmfrfqHzPIJIoACjZGBnil49BFCpV26CRwTotv+jiiR/qX9SSXAJtKatwAgUSfdwBUma
+         +spyVOT70kXoaCNdlaspxeOgNnAd+5r5ETQrg73pNRqgiFZUsPPFutIC8EOpqiKTXJGB
+         z5w7brGhHfK9cwezuZ1xQRjRSfmqGReE8U9R2bu6chRif/Ll2hteOtlrD0XtxpsMhBO3
+         Upjdboo39WW3/HNrVdS0IIiyaCeDUy7NKgOoWMlzY2EsAw6u3Pj9qaAu2X20VIrEILSg
+         e6GQ==
+X-Gm-Message-State: AOAM533buJCQs7M8dWqd0x8e5K2lKy4Fy/GvIaTv3xli1j4RF1bF0GG1
+        UZ+6yuI3ZLxJAtepeZpm/wqd3B88Jkt1cs4A7+tAJw==
+X-Google-Smtp-Source: ABdhPJzFPFltZtUFX4vhtGVjtORhdG+McAS0oa6PaWPDH5huwZItLsFCY18KX/JXOqEtg34hf3vp8BO60wHDIsdtDg4=
+X-Received: by 2002:ab0:349a:0:b0:35c:b898:a733 with SMTP id
+ c26-20020ab0349a000000b0035cb898a733mr12723212uar.85.1652247761972; Tue, 10
+ May 2022 22:42:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAAPL-u9sVx94ACSuCVN8V0tKp+AMxiY89cro0japtyB=xNfNBw@mail.gmail.com>
+ <CAHbLzkq1YXXLMiREpGnzhJjPssu4WpSsnkTmrLJ=hAEhZVUr9w@mail.gmail.com>
+ <CAAPL-u-r2Pc_MaHQmKKNH_icAa_fH1COWb5qSPpr8xffREQ_cQ@mail.gmail.com>
+ <CAHbLzkrit3SDQUWPQ_RtTO_xFqxoqR9LpY=72afERapUgkjxZg@mail.gmail.com>
+ <1642ab64-7957-e1e6-71c5-ceab9c23bf41@huawei.com> <CAHbLzkqBVdaT5wwPuCXUMb8DwLEzHPaQwCKXsjsPBRTgZAAgnw@mail.gmail.com>
+ <c272e43d-47c5-d7d4-cb17-95dc6f28f5cd@huawei.com> <e1bf6346-fd93-13ee-0b38-c1d956df0e99@linux.ibm.com>
+In-Reply-To: <e1bf6346-fd93-13ee-0b38-c1d956df0e99@linux.ibm.com>
+From:   Wei Xu <weixugc@google.com>
+Date:   Tue, 10 May 2022 22:42:30 -0700
+Message-ID: <CAAPL-u-Q1_19TM-J-QD9QWXGcp6A9xJS126xO54H83u+c569Tg@mail.gmail.com>
+Subject: Re: RFC: Memory Tiering Kernel Interfaces
+To:     Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>
+Cc:     Hesham Almatary <hesham.almatary@huawei.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Huang Ying <ying.huang@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Linux MM <linux-mm@kvack.org>,
+        Greg Thelen <gthelen@google.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Alistair Popple <apopple@nvidia.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Michal Hocko <mhocko@kernel.org>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Tim Chen <tim.c.chen@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-of_find_device_by_node() takes reference, we should use put_device()
-to release it when not need anymore.
-Add missing put_device() in error path to avoid refcount
-leak.
+On Tue, May 10, 2022 at 5:10 AM Aneesh Kumar K V
+<aneesh.kumar@linux.ibm.com> wrote:
+>
+> On 5/10/22 3:29 PM, Hesham Almatary wrote:
+> > Hello Yang,
+> >
+> > On 5/10/2022 4:24 AM, Yang Shi wrote:
+> >> On Mon, May 9, 2022 at 7:32 AM Hesham Almatary
+> >> <hesham.almatary@huawei.com> wrote:
+>
+>
+> ...
+>
+> >>>
+> >>> node 0 has a CPU and DDR memory in tier 0, node 1 has GPU and DDR memory
+> >>> in tier 0,
+> >>> node 2 has NVMM memory in tier 1, node 3 has some sort of bigger memory
+> >>> (could be a bigger DDR or something) in tier 2. The distances are as
+> >>> follows:
+> >>>
+> >>> --------------          --------------
+> >>> |   Node 0   |          |   Node 1   |
+> >>> |  -------   |          |  -------   |
+> >>> | |  DDR  |  |          | |  DDR  |  |
+> >>> |  -------   |          |  -------   |
+> >>> |            |          |            |
+> >>> --------------          --------------
+> >>>          | 20               | 120    |
+> >>>          v                  v        |
+> >>> ----------------------------       |
+> >>> | Node 2     PMEM          |       | 100
+> >>> ----------------------------       |
+> >>>          | 100                       |
+> >>>          v                           v
+> >>> --------------------------------------
+> >>> | Node 3    Large mem                |
+> >>> --------------------------------------
+> >>>
+> >>> node distances:
+> >>> node   0    1    2    3
+> >>>      0  10   20   20  120
+> >>>      1  20   10  120  100
+> >>>      2  20  120   10  100
+> >>>      3  120 100  100   10
+> >>>
+> >>> /sys/devices/system/node/memory_tiers
+> >>> 0-1
+> >>> 2
+> >>> 3
+> >>>
+> >>> N_TOPTIER_MEMORY: 0-1
+> >>>
+> >>>
+> >>> In this case, we want to be able to "skip" the demotion path from Node 1
+> >>> to Node 2,
+> >>>
+> >>> and make demotion go directely to Node 3 as it is closer, distance wise.
+> >>> How can
+> >>>
+> >>> we accommodate this scenario (or at least not rule it out as future
+> >>> work) with the
+> >>>
+> >>> current RFC?
+> >> If I remember correctly NUMA distance is hardcoded in SLIT by the
+> >> firmware, it is supposed to reflect the latency. So I suppose it is
+> >> the firmware's responsibility to have correct information. And the RFC
+> >> assumes higher tier memory has better performance than lower tier
+> >> memory (latency, bandwidth, throughput, etc), so it sounds like a
+> >> buggy firmware to have lower tier memory with shorter distance than
+> >> higher tier memory IMHO.
+> >
+> > You are correct if you're assuming the topology is all hierarchically
+> >
+> > symmetric, but unfortuantely, in real hardware (e.g., my example above)
+> >
+> > it is not. The distance/latency between two nodes in the same tier
+> >
+> > and a third node, is different. The firmware still provides the correct
+> >
+> > latency, but putting a node in a tier is up to the kernel/user, and
+> >
+> > is relative: e.g., Node 3 could belong to tier 1 from Node 1's
+> >
+> > perspective, but to tier 2 from Node 0's.
+> >
+> >
+> > A more detailed example (building on my previous one) is when having
+> >
+> > the GPU connected to a switch:
+> >
+> > ----------------------------
+> > | Node 2     PMEM          |
+> > ----------------------------
+> >        ^
+> >        |
+> > --------------          --------------
+> > |   Node 0   |          |   Node 1   |
+> > |  -------   |          |  -------   |
+> > | |  DDR  |  |          | |  DDR  |  |
+> > |  -------   |          |  -------   |
+> > |    CPU     |          |    GPU     |
+> > --------------          --------------
+> >         |                  |
+> >         v                  v
+> > ----------------------------
+> > |         Switch           |
+> > ----------------------------
+> >         |
+> >         v
+> > --------------------------------------
+> > | Node 3    Large mem                |
+> > --------------------------------------
+> >
+> > Here, demoting from Node 1 to Node 3 directly would be faster as
+> >
+> > it only has to go through one hub, compared to demoting from Node 1
+> >
+> > to Node 2, where it goes through two hubs. I hope that example
+> >
+> > clarifies things a little bit.
+> >
+>
+> Alistair mentioned that we want to consider GPU memory to be expensive
+> and want to demote from GPU to regular DRAM. In that case for the above
+> case we should end up with
+>
+>
+> tier 0 - > Node3
+> tier 1 ->  Node0, Node1
+> tier 2 ->  Node2
+>
+> Hence
+>
+>   node 0: allowed=2
+>   node 1: allowed=2
+>   node 2: allowed = empty
+>   node 3: allowed = 0-1 , based on fallback order 1, 0
 
-Fixes: 0af5e0b41110 ("drm/meson: encoder_hdmi: switch to bridge DRM_BRIDGE_ATTACH_NO_CONNECTOR")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
- drivers/gpu/drm/meson/meson_encoder_hdmi.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+If we have 3 tiers as defined above, then we'd better to have:
 
-diff --git a/drivers/gpu/drm/meson/meson_encoder_hdmi.c b/drivers/gpu/drm/meson/meson_encoder_hdmi.c
-index 5e306de6f485..de87f02cd388 100644
---- a/drivers/gpu/drm/meson/meson_encoder_hdmi.c
-+++ b/drivers/gpu/drm/meson/meson_encoder_hdmi.c
-@@ -435,8 +435,10 @@ int meson_encoder_hdmi_init(struct meson_drm *priv)
- 		cec_fill_conn_info_from_drm(&conn_info, meson_encoder_hdmi->connector);
- 
- 		notifier = cec_notifier_conn_register(&pdev->dev, NULL, &conn_info);
--		if (!notifier)
-+		if (!notifier) {
-+			put_device(&pdev->dev);
- 			return -ENOMEM;
-+		}
- 
- 		meson_encoder_hdmi->cec_notifier = notifier;
- 	}
--- 
-2.25.1
+node 0: allowed = 2
+node 1: allowed = 2
+node 2: allowed = empty
+node 3: allowed = 0-2, based on fallback order: 1,0,2
 
+The firmware should provide the node distance values to reflect that
+PMEM is slowest and should have the largest distance away from node 3.
+
+> -aneesh
+>
+>
