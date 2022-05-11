@@ -2,205 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59607C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:11:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93D09C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:12:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245652AbiEKPLl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 11:11:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52928 "EHLO
+        id S245543AbiEKPMQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 11:12:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245554AbiEKPLH (ORCPT
+        with ESMTP id S245505AbiEKPMO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 11:11:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94B522DA8D;
-        Wed, 11 May 2022 08:11:05 -0700 (PDT)
+        Wed, 11 May 2022 11:12:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3C6A6211B
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 08:12:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4E9AAB82495;
-        Wed, 11 May 2022 15:11:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B88C2C340EE;
-        Wed, 11 May 2022 15:11:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652281863;
-        bh=Is3ld2rj7eoXcoAoTL8llrIXex9PRPpshhLsbMbT6es=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mMA2KIqu6H/4epqSJsI+jDmXUpOJJ1sw5FPk5+hbW8sUurqbVcevJc6tZDvjFiSwC
-         /XdAbb3NVfG/GZLHUe549y6ZUZQvn0WIKIbdZga/95aYspL9wyKmBgXvgg8kh53d4g
-         P2x0U/2+7PQrK6v0RqEV9C5FvS+RDln0j/86HK50PoUkChSeQnMrY49+6tVeqdLzEy
-         O1XPodV/sX01+SbHeC7Br6l8pJGFSdo/3KKhLdo5kth2H4U1gtrAoBNFbvHCCpc1zw
-         EgL9V1aRs+1taqhnDq2VzACruHzR+pLtcS2KflIjs4226VGuG1kJPDDXDyAZulSVwL
-         SseZCcjJcHXDQ==
-Date:   Wed, 11 May 2022 18:09:33 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Cc:     peterhuewe@gmx.de, jgg@ziepe.ca, stefanb@linux.vnet.ibm.com,
-        linux@mniewoehner.de, linux-integrity@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lukas@wunner.de,
-        p.rosenberger@kunbus.com, Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Subject: Re: [PATCH v4 5/6] tpm, tpm_tis: Move irq test from tpm_tis_send()
- to tpm_tis_probe_irq_single()
-Message-ID: <YnvRrT19Pe2SPDNe@kernel.org>
-References: <20220509080559.4381-1-LinoSanfilippo@gmx.de>
- <20220509080559.4381-6-LinoSanfilippo@gmx.de>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C1BE6186A
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 15:12:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AB63C340EE;
+        Wed, 11 May 2022 15:12:09 +0000 (UTC)
+Date:   Wed, 11 May 2022 11:12:07 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Wang ShaoBo <bobo.shaobowang@huawei.com>,
+        cj.chengjian@huawei.com, huawei.libin@huawei.com,
+        xiexiuqi@huawei.com, liwei391@huawei.com,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        catalin.marinas@arm.com, will@kernel.org, zengshun.wu@outlook.com,
+        Jiri Olsa <jolsa@kernel.org>
+Subject: Re: [RFC PATCH -next v2 3/4] arm64/ftrace: support dynamically
+ allocated trampolines
+Message-ID: <20220511111207.25d1a693@gandalf.local.home>
+In-Reply-To: <20220511233450.40136cdf6a53eb32cd825be8@kernel.org>
+References: <YmFXrBG5AmX3+4f8@lakrids>
+        <20220421100639.03c0d123@gandalf.local.home>
+        <YmF0xYpTMoWOIl00@lakrids>
+        <20220421114201.21228eeb@gandalf.local.home>
+        <YmGF/OpIhAF8YeVq@lakrids>
+        <20220421130648.56b21951@gandalf.local.home>
+        <YmJ/l4vJoEpFt68l@FVFF77S0Q05N>
+        <20220422114541.34d71ad9@gandalf.local.home>
+        <YmLlmaXF00hPkOID@lakrids>
+        <20220426174749.b5372c5769af7bf901649a05@kernel.org>
+        <YnJUTuOIX9YoJq23@FVFF77S0Q05N>
+        <20220505121538.04773ac98e2a8ba17f675d39@kernel.org>
+        <20220509142203.6c4f2913@gandalf.local.home>
+        <20220510181012.d5cba23a2547f14d14f016b9@kernel.org>
+        <20220510104446.6d23b596@gandalf.local.home>
+        <20220511233450.40136cdf6a53eb32cd825be8@kernel.org>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220509080559.4381-6-LinoSanfilippo@gmx.de>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 10:05:58AM +0200, Lino Sanfilippo wrote:
-> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> 
-> There is no need to check for the irq test completion at each data
-> transmission during the driver livetime. Instead do the check only once at
-> driver startup.
-> 
-> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> ---
->  drivers/char/tpm/tpm_tis_core.c | 68 +++++++++++----------------------
->  1 file changed, 22 insertions(+), 46 deletions(-)
-> 
-> diff --git a/drivers/char/tpm/tpm_tis_core.c b/drivers/char/tpm/tpm_tis_core.c
-> index bdfde1cd71fe..4c65718feb7d 100644
-> --- a/drivers/char/tpm/tpm_tis_core.c
-> +++ b/drivers/char/tpm/tpm_tis_core.c
-> @@ -432,7 +432,7 @@ static void disable_interrupts(struct tpm_chip *chip)
->   * tpm.c can skip polling for the data to be available as the interrupt is
->   * waited for here
->   */
-> -static int tpm_tis_send_main(struct tpm_chip *chip, const u8 *buf, size_t len)
-> +static int tpm_tis_send(struct tpm_chip *chip, u8 *buf, size_t len)
->  {
->  	struct tpm_tis_data *priv = dev_get_drvdata(&chip->dev);
->  	int rc;
-> @@ -465,30 +465,6 @@ static int tpm_tis_send_main(struct tpm_chip *chip, const u8 *buf, size_t len)
->  	return rc;
->  }
->  
-> -static int tpm_tis_send(struct tpm_chip *chip, u8 *buf, size_t len)
-> -{
-> -	int rc, irq;
-> -	struct tpm_tis_data *priv = dev_get_drvdata(&chip->dev);
-> -
-> -	if (!(chip->flags & TPM_CHIP_FLAG_IRQ) ||
-> -	     test_bit(TPM_TIS_IRQTEST_OK, &priv->irqtest_flags))
-> -		return tpm_tis_send_main(chip, buf, len);
-> -
-> -	/* Verify receipt of the expected IRQ */
-> -	irq = priv->irq;
-> -	priv->irq = 0;
-> -	chip->flags &= ~TPM_CHIP_FLAG_IRQ;
-> -	rc = tpm_tis_send_main(chip, buf, len);
-> -	priv->irq = irq;
-> -	chip->flags |= TPM_CHIP_FLAG_IRQ;
-> -	if (!test_bit(TPM_TIS_IRQTEST_OK, &priv->irqtest_flags))
-> -		tpm_msleep(1);
-> -	if (!test_bit(TPM_TIS_IRQTEST_OK, &priv->irqtest_flags))
-> -		disable_interrupts(chip);
-> -	set_bit(TPM_TIS_IRQTEST_OK, &priv->irqtest_flags);
-> -	return rc;
-> -}
-> -
->  struct tis_vendor_durations_override {
->  	u32 did_vid;
->  	struct tpm1_version version;
-> @@ -759,51 +735,54 @@ static int tpm_tis_probe_irq_single(struct tpm_chip *chip, u32 intmask,
->  
->  	rc = tpm_tis_read8(priv, TPM_INT_VECTOR(priv->locality),
->  			   &original_int_vec);
-> -	if (rc < 0)
-> +	if (rc < 0) {
-> +		disable_interrupts(chip);
->  		return rc;
-> +	}
->  
->  	rc = tpm_tis_write8(priv, TPM_INT_VECTOR(priv->locality), irq);
->  	if (rc < 0)
-> -		return rc;
-> +		goto out_err;
->  
->  	rc = tpm_tis_read32(priv, TPM_INT_STATUS(priv->locality), &int_status);
->  	if (rc < 0)
-> -		return rc;
-> +		goto out_err;
->  
->  	/* Clear all existing */
->  	rc = tpm_tis_write32(priv, TPM_INT_STATUS(priv->locality), int_status);
->  	if (rc < 0)
-> -		return rc;
-> +		goto out_err;
->  
->  	/* Turn on */
->  	rc = tpm_tis_write32(priv, TPM_INT_ENABLE(priv->locality),
->  			     intmask | TPM_GLOBAL_INT_ENABLE);
->  	if (rc < 0)
-> -		return rc;
-> +		goto out_err;
->  
->  	clear_bit(TPM_TIS_IRQTEST_OK, &priv->irqtest_flags);
-> -	chip->flags |= TPM_CHIP_FLAG_IRQ;
->  
->  	/* Generate an interrupt by having the core call through to
->  	 * tpm_tis_send
->  	 */
->  	rc = tpm_tis_gen_interrupt(chip);
->  	if (rc < 0)
-> -		return rc;
-> +		goto out_err;
->  
-> -	/* tpm_tis_send will either confirm the interrupt is working or it
-> -	 * will call disable_irq which undoes all of the above.
-> -	 */
-> -	if (!(chip->flags & TPM_CHIP_FLAG_IRQ)) {
-> -		rc = tpm_tis_write8(priv, original_int_vec,
-> -				TPM_INT_VECTOR(priv->locality));
-> -		if (rc < 0)
-> -			return rc;
-> +	tpm_msleep(1);
->  
-> -		return 1;
-> -	}
-> +	/* Verify receipt of the expected IRQ */
-> +	if (!test_bit(TPM_TIS_IRQTEST_OK, &priv->irqtest_flags))
-> +		goto out_err;
-> +
-> +	chip->flags |= TPM_CHIP_FLAG_IRQ;
->  
->  	return 0;
-> +
-> +out_err:
-> +	disable_interrupts(chip);
-> +	tpm_tis_write8(priv, original_int_vec, TPM_INT_VECTOR(priv->locality));
-> +
-> +	return rc;
->  }
->  
->  /* Try to find the IRQ the TPM is using. This is for legacy x86 systems that
-> @@ -1075,12 +1054,9 @@ int tpm_tis_core_init(struct device *dev, struct tpm_tis_data *priv, int irq,
->  		if (irq) {
->  			tpm_tis_probe_irq_single(chip, intmask, IRQF_SHARED,
->  						 irq);
-> -			if (!(chip->flags & TPM_CHIP_FLAG_IRQ)) {
-> +			if (!(chip->flags & TPM_CHIP_FLAG_IRQ))
->  				dev_err(&chip->dev, FW_BUG
->  					"TPM interrupt not working, polling instead\n");
-> -
-> -				disable_interrupts(chip);
-> -			}
->  		} else {
->  			tpm_tis_probe_irq(chip, intmask);
->  		}
-> -- 
-> 2.36.0
-> 
+On Wed, 11 May 2022 23:34:50 +0900
+Masami Hiramatsu <mhiramat@kernel.org> wrote:
 
-For me this looks just code shuffling.
+> OK, so fregs::regs will have a subset of pt_regs, and accessibility of
+> the registers depends on the architecture. If we can have a checker like
+> 
+> ftrace_regs_exist(fregs, reg_offset)
 
-I don't disagree but changing working code without actual semantical
-reasons neither makes sense.
+Or something. I'd have to see the use case.
 
-BR, Jarkko
+> 
+> kprobe on ftrace or fprobe user (BPF) can filter user's requests.
+> I think I can introduce a flag for kprobes so that user can make a
+> kprobe handler only using a subset of registers. 
+> Maybe similar filter code is also needed for BPF 'user space' library
+> because this check must be done when compiling BPF.
+
+Is there any other case without full regs that the user would want anything
+other than the args, stack pointer and instruction pointer?
+
+That is, have a flag that says "only_args" or something, that says they
+will only get the registers for arguments, a stack pointer, and the
+instruction pointer (note, the fregs may not have the instruction pointer
+as that is passed to the the caller via the "ip" parameter. If the fregs
+needs that, we can add a "ftrace_regs_set_ip()" before calling the
+callback registered to the fprobe).
+
+-- Steve
