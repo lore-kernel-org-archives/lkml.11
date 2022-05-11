@@ -2,126 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A82C7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 06:50:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4C8DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 06:50:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242388AbiEKGuW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 02:50:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33408 "EHLO
+        id S242413AbiEKGuZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 02:50:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235515AbiEKGuN (ORCPT
+        with ESMTP id S242431AbiEKGuL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 02:50:13 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66B865D190
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 23:50:12 -0700 (PDT)
-X-UUID: 33d18a52e2a347b082f05c9c411eec43-20220511
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:1f226f53-b785-49b6-bb50-1eb413231f61,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:-20
-X-CID-META: VersionHash:faefae9,CLOUDID:23eb63b3-56b5-4c9e-8d83-0070b288eb6a,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: 33d18a52e2a347b082f05c9c411eec43-20220511
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <yong.wu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1948481888; Wed, 11 May 2022 14:50:05 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Wed, 11 May 2022 14:50:04 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 11 May 2022 14:50:03 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 11 May 2022 14:50:02 +0800
-From:   Yong Wu <yong.wu@mediatek.com>
-To:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>
-CC:     <iommu@lists.linux-foundation.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, "Yong Wu" <yong.wu@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
-        <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>,
-        <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
-        <xueqi.zhang@mediatek.com>, Guenter Roeck <groeck@chromium.org>,
-        "Dan Carpenter" <dan.carpenter@oracle.com>
-Subject: [PATCH 3/4] iommu/mediatek: Validate number of phandles associated with "mediatek,larbs"
-Date:   Wed, 11 May 2022 14:49:19 +0800
-Message-ID: <20220511064920.18455-4-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220511064920.18455-1-yong.wu@mediatek.com>
-References: <20220511064920.18455-1-yong.wu@mediatek.com>
+        Wed, 11 May 2022 02:50:11 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F8652438C8
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 23:50:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Wb2IprcNdbCRFCgYDckZft2aeKRMMRpizPTVHCdq9g0=; b=oWKuI4E3xRnBU4umLmcQ1pnmQf
+        LBr3d8Mp4iRH4vwyhYDq2IOOss3+KBuyWkhsc7rtMVBjlMEqnAfNVgaq93uubMCwyzOd5FZbyTZzG
+        sbegnrNLtPGySXv5K4yfgixrJYiH4vI0lM1+oPYgUAi4hyeRytVJI8ddGe8D3C6IISSm9YIkyvcoj
+        TMz5R6HKyqiDeyzEQNaO7tjB3YUfosoj0dZ5GpW3kXYWZSJ+62ETrVWScB+OGgJlKwipYnvClE0ey
+        JfUGQ66pzagM/JllXwO6R/4wQoO3PlL6s9wMWtRJ7pmJULeFiIhk6h+0k4tRn57uwDBOKyeuTYHYM
+        urGdqZlQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nogAM-005CRz-5i; Wed, 11 May 2022 06:49:46 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id DC5ED980E3A; Wed, 11 May 2022 08:49:43 +0200 (CEST)
+Date:   Wed, 11 May 2022 08:49:43 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>, x86@kernel.org,
+        Andrey Ryabinin <aryabinin@virtuozzo.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "H . J . Lu" <hjl.tools@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFCv2 00/10] Linear Address Masking enabling
+Message-ID: <20220511064943.GR76023@worktop.programming.kicks-ass.net>
+References: <20220511022751.65540-1-kirill.shutemov@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220511022751.65540-1-kirill.shutemov@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guenter Roeck <groeck@chromium.org>
+On Wed, May 11, 2022 at 05:27:40AM +0300, Kirill A. Shutemov wrote:
+> Hi all. Here's long overdue update on LAM enabling.
+> 
+> # Description #
+> 
+> Linear Address Masking[1] (LAM) modifies the checking that is applied to
+> 64-bit linear addresses, allowing software to use of the untranslated
+> address bits for metadata.
+> 
+> The patchset brings support for LAM for userspace addresses.
+> 
+> The most sensitive part of enabling is change in tlb.c, where CR3 flags
+> get set. Please take a look that what I'm doing makes sense.
+> 
+> The feature competes for bits with 5-level paging: LAM_U48 makes it
+> impossible to map anything about 47-bits. The patchset made these
+> capability mutually exclusive: whatever used first wins. LAM_U57 can be
+> combined with mappings above 47-bits.
 
-Fix the smatch warnings:
-drivers/iommu/mtk_iommu.c:878 mtk_iommu_mm_dts_parse() error: uninitialized
-symbol 'larbnode'.
+So aren't we creating a problem with LAM_U48 where programs relying on
+it are of limited sustainability?
 
-If someone abuse the dtsi node(Don't follow the definition of dt-binding),
-for example "mediatek,larbs" is provided as boolean property, the code may
-crash. To fix this problem and improve the code safety, add some checking
-for the invalid input from dtsi, e.g. checking the larb_nr/larbid valid
-range, and avoid "mediatek,larb-id" property conflicts in the smi-larb
-nodes.
-
-Fixes: d2e9a1102cfc ("iommu/mediatek: Contain MM IOMMU flow with the MM TYPE")
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Guenter Roeck <groeck@chromium.org>
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
----
- drivers/iommu/mtk_iommu.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
-
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 523bf59264e1..1ba92751e9df 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -1046,6 +1046,8 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
- 	larb_nr = of_count_phandle_with_args(dev->of_node, "mediatek,larbs", NULL);
- 	if (larb_nr < 0)
- 		return larb_nr;
-+	if (larb_nr == 0 || larb_nr > MTK_LARB_NR_MAX)
-+		return -EINVAL;
- 
- 	for (i = 0; i < larb_nr; i++) {
- 		u32 id;
-@@ -1062,6 +1064,10 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
- 		ret = of_property_read_u32(larbnode, "mediatek,larb-id", &id);
- 		if (ret)/* The id is consecutive if there is no this property */
- 			id = i;
-+		if (id >= MTK_LARB_NR_MAX) {
-+			ret = -EINVAL;
-+			goto err_larbnode_put;
-+		}
- 
- 		plarbdev = of_find_device_by_node(larbnode);
- 		if (!plarbdev) {
-@@ -1072,6 +1078,11 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
- 			ret = -EPROBE_DEFER;
- 			goto err_larbnode_put;
- 		}
-+
-+		if (data->larb_imu[id].dev) {
-+			ret = -EEXIST;
-+			goto err_larbnode_put;
-+		}
- 		data->larb_imu[id].dev = &plarbdev->dev;
- 
- 		component_match_add_release(dev, match, component_release_of,
--- 
-2.18.0
-
+Any such program simply *cannot* run on 5 level pagetables. Why do we
+want to do this?
