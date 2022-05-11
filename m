@@ -2,263 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A567C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 23:24:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 284F0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 23:25:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349256AbiEKXY2 (ORCPT
+        id S1349226AbiEKXZN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 19:24:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52404 "EHLO
+        Wed, 11 May 2022 19:25:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349465AbiEKXYI (ORCPT
+        with ESMTP id S245183AbiEKXZH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 19:24:08 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4830D6213A
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 16:22:44 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id a21so4300210edb.1
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 16:22:44 -0700 (PDT)
+        Wed, 11 May 2022 19:25:07 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 775CC202B31
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 16:25:05 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id j4so6125173lfh.8
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 16:25:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=h+W2uqkvSL6U5jn2MaeFHt2XSCx3i+exVEBv5pf2t0s=;
-        b=p4EkiWxjIQeox8PBlqp+ZcAP4vTVS+9knd4t+eQLjFArs98erdGnkuCkI0BYQr18d4
-         jWmPkNcqgWzRI5FA3YTcNLY36l+6T7Wes6hXHud08yyT2gAUlAhEVd7DAo2tT/PyK7l4
-         aixSO7/N+eLnhVLPC20xZqDXAS3mHKX8lSDWnSM/59ETR7rTULy50JXLwCCOVnB0nniC
-         d6L5cxLOUklG1Nup9A5SQx+C3KrfWWDOIK6eOWOvWXGaM4Qp5mmvM47tA+5wz0tdw4fJ
-         i9y+3kj5Qd0AaHnvOGBtHzHo2bD569jg4Fh+BvbsTBsnIoxdLD89hv+JJlmFF+C7J7mA
-         Sk3A==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=7ee9VsqZs3R0q1Ol8XBVP7c4JuwLiaeH0j2GOCI20bk=;
+        b=TXIawwqIYCwHSUzBurh+oUQrTGWcpvKzU+K/HwaFRZzf9TqYELeMMsAai6Kvqlwtnj
+         yYMSBGuACItmDIvqAk59lsZ6CWBbnyDx7jm8HSnPnngw0TtjA9volohqPAFFsCsqM4sV
+         KjcbHpN+CJIcMIPcoZexrs2Tq31vUZXYVa7zme0/DUCM7sDnAHvkWuszFyhFFVwVQ4ve
+         E5bZxs2l6Z0I8LJDXxcYmLzNHAM7IFGrOOChR7TWK9ylveLt6pS57zb21m+8pbBVd9Js
+         L5APxcJKw0O2b5I6cRKu8Bp3vp6Z5zqTQmm5Mb0V8TXQUOIQ8sc6stX299BzezbxhSdg
+         5aKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=h+W2uqkvSL6U5jn2MaeFHt2XSCx3i+exVEBv5pf2t0s=;
-        b=i/LdEWhkRJ6nV3Pc0GV63MzgZhN27qIU3SWh9eKeyLkll09YcdDEegViv47EYX/F52
-         cF+1O3zH1pnKOD9wS7XzQLgx5pT2eMxf3mp70uuHj6nEW05k4y7bd73ntadVsfV4WhnX
-         dMfYol6pI1JRmCbM/xq0WAz+TAR6wf5I3PpzsguS+PWUl0O0JnvWNUnuErWPzrNkd5re
-         8r7wga3tZCIzXKlOLxWGKpBqSYt14s72l09N84lc9eaWPqqRqTZ1qQ3vxWW0GXd4Y0M6
-         DgscsfQMl1Uu6X0ssporNz/jqU0Z4vfc74AAoehgyjHsmayMfHfIO1mTqsX8BRaABmFL
-         Ryig==
-X-Gm-Message-State: AOAM530pxL7J5PbdXhGcXMNqMoGNJTKlnlyDT1Wa1OT+JW7ZTQvAAQye
-        +w9MxQ1oMduLqNiRA1HdMN/mMvxbPCryzUGrdjNhhA==
-X-Google-Smtp-Source: ABdhPJxv3RcmiWoN4KAIHvKOv1TuEje4H2x0E+LVOK4OxIM31BAHdXVfcuy8yWPZJVH25UGhnVtvIlUyox6Q0kDGBm4=
-X-Received: by 2002:a05:6402:1148:b0:416:a4fb:3c2e with SMTP id
- g8-20020a056402114800b00416a4fb3c2emr31968096edw.182.1652311362565; Wed, 11
- May 2022 16:22:42 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=7ee9VsqZs3R0q1Ol8XBVP7c4JuwLiaeH0j2GOCI20bk=;
+        b=YKWnRgvLbQ5rceaj2bn/NtntkOcfMCpJvOg6ttPdA3HhlbOVZPha8zuWflyGEMaXPl
+         2JqBKxF6d3DL3J/fd26xYymPgTnLhY+6BcLLZySfrGHvuB6jZeF/cfbenjgoY+MpC+k4
+         2UvN097EpUvDyf9F4RrJ8OcnJheNX6t65UyWUUeeqg3kGRAl8VZRvJmcd0eHmYPPV08D
+         hFF2gfFNiyV48L0KdL4UvKEuj+ujp7SitGP6LksAO8QBAFcfjGVvc8E5Vvs6WI+9nLXW
+         P2oKhJJL5jUqz9H/9tntmhAokH7lmzVJfMyBjVN9mWGExCN9fdRW8G40WDeKsidVZpDX
+         B/tw==
+X-Gm-Message-State: AOAM530St4/pNLZsMKpskuXQgd1X/ILXDzakmOYlZiJJ990qD9MlWcw+
+        6g034cD5XnfxajMvXClBrjSmXw==
+X-Google-Smtp-Source: ABdhPJwQxJtLD6fYIqLpAZafjT/9q2YUVoO6GuZlPL5rawsjVyr2hZx94fTbNxBt3M/94vPZXYVH3w==
+X-Received: by 2002:a05:6512:150a:b0:474:bb9:5174 with SMTP id bq10-20020a056512150a00b004740bb95174mr17407643lfb.207.1652311503777;
+        Wed, 11 May 2022 16:25:03 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id i3-20020a05651c120300b0024f3d1daedasm576957lja.98.2022.05.11.16.25.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 May 2022 16:25:03 -0700 (PDT)
+Message-ID: <67a91eca-a116-7db8-f905-25750d8bf4b6@linaro.org>
+Date:   Thu, 12 May 2022 02:25:02 +0300
 MIME-Version: 1.0
-References: <20220420203020.1412886-1-dlatypov@google.com>
-In-Reply-To: <20220420203020.1412886-1-dlatypov@google.com>
-From:   Brendan Higgins <brendanhiggins@google.com>
-Date:   Wed, 11 May 2022 19:22:31 -0400
-Message-ID: <CAFd5g454KM9-45NEjUN3JWTZmpajHY9to=CW7Ecg6z_5xorU+w@mail.gmail.com>
-Subject: Re: [PATCH] kunit: tool: stop using a shell to run kernel under QEMU
-To:     Daniel Latypov <dlatypov@google.com>
-Cc:     davidgow@google.com, linux-kernel@vger.kernel.org,
-        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
-        skhan@linuxfoundation.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2] Revert "drm/msm/dsi: move DSI host powerup to modeset
+ time"
+Content-Language: en-GB
+To:     Douglas Anderson <dianders@chromium.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>
+Cc:     Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>, Sean Paul <sean@poorly.run>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Vinod Koul <vkoul@kernel.org>, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220511161539.v2.1.Ia196e35ad985059e77b038a41662faae9e26f411@changeid>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <20220511161539.v2.1.Ia196e35ad985059e77b038a41662faae9e26f411@changeid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 4:30 PM Daniel Latypov <dlatypov@google.com> wrote:
->
-> Note: this potentially breaks custom qemu_configs if people are using
-> them! But the fix for them is simple, don't specify multiple arguments
-> in one string and don't add on a redundant ''.
->
-> It feels a bit iffy to be using a shell in the first place.
->
-> There's the usual shenanigans where people could pass in arbitrary shell
-> commands via --kernel_arg (since we're just adding '' around the
-> kernel_cmdline) or via a custom qemu_config.
-> This isn't too much of a concern given the nature of this script (and
-> the qemu_config file is in python, you can do w/e you want already).
->
-> But it does have some other drawbacks.
->
-> One example of a kunit-specific pain point:
-> If the relevant qemu binary is missing, we get output like this:
-> > /bin/sh: line 1: qemu-system-aarch64: command not found
-> This in turn results in our KTAP parser complaining about
-> missing/invalid KTAP, but we don't directly show the error!
-> It's even more annoying to debug when you consider --raw_output only
-> shows KUnit output by default, i.e. you need --raw_output=all to see it.
->
-> Whereas directly invoking the binary, Python will raise a
-> FileNotFoundError for us, which is a noisier but more clear.
->
-> Making this change requires
-> * splitting parameters like ['-m 256'] into ['-m', '256'] in
->   kunit/qemu_configs/*.py
-> * change [''] to [] in kunit/qemu_configs/*.py since otherwise
->   QEMU fails w/ 'Device needs media, but drive is empty'
-> * dropping explicit quoting of the kernel cmdline
-> * using shlex.quote() when we print what command we're running
->   so the user can copy-paste and run it
->
-> Signed-off-by: Daniel Latypov <dlatypov@google.com>
-
-One issue I noticed below, otherwise:
-
-Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
-
+On 12/05/2022 02:15, Douglas Anderson wrote:
+> This reverts commit 7d8e9a90509f1bd1d193a0c93cb8d1dbad9049fb.
+> 
+> The patch causes sc7180 Chromebooks that use the parade-ps8640 bridge
+> chip to fail to turn the display back on after it turns off.
+> 
+> Let's revert to get these devices back to a working state. It seems
+> like the DSI powerup problem is somewhat common and probably we should
+> land something more general like Dave Stevenson's series [1] that
+> would give more flexibility.
+> 
+> [1] https://lore.kernel.org/r/cover.1646406653.git.dave.stevenson@raspberrypi.com
+> 
+> Fixes: 7d8e9a90509f ("drm/msm/dsi: move DSI host powerup to modeset time")
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
 > ---
->  tools/testing/kunit/kunit_kernel.py         | 18 ++++++++++--------
->  tools/testing/kunit/qemu_configs/alpha.py   |  2 +-
->  tools/testing/kunit/qemu_configs/arm.py     |  2 +-
->  tools/testing/kunit/qemu_configs/arm64.py   |  2 +-
->  tools/testing/kunit/qemu_configs/i386.py    |  2 +-
->  tools/testing/kunit/qemu_configs/powerpc.py |  2 +-
->  tools/testing/kunit/qemu_configs/riscv.py   |  6 +++---
->  tools/testing/kunit/qemu_configs/s390.py    |  4 ++--
->  tools/testing/kunit/qemu_configs/sparc.py   |  2 +-
->  tools/testing/kunit/qemu_configs/x86_64.py  |  2 +-
->  10 files changed, 22 insertions(+), 20 deletions(-)
->
-> diff --git a/tools/testing/kunit/kunit_kernel.py b/tools/testing/kunit/kunit_kernel.py
-> index 483f78e15ce9..1b9c4922a675 100644
-> --- a/tools/testing/kunit/kunit_kernel.py
-> +++ b/tools/testing/kunit/kunit_kernel.py
-> @@ -11,6 +11,7 @@ import importlib.util
->  import logging
->  import subprocess
->  import os
-> +import shlex
->  import shutil
->  import signal
->  import threading
-> @@ -118,16 +119,17 @@ class LinuxSourceTreeOperationsQemu(LinuxSourceTreeOperations):
->                                 '-nodefaults',
->                                 '-m', '1024',
->                                 '-kernel', kernel_path,
-> -                               '-append', '\'' + ' '.join(params + [self._kernel_command_line]) + '\'',
-> +                               '-append', ' '.join(params + [self._kernel_command_line]),
->                                 '-no-reboot',
->                                 '-nographic',
-> -                               '-serial stdio'] + self._extra_qemu_params
-> -               print('Running tests with:\n$', ' '.join(qemu_command))
-> -               return subprocess.Popen(' '.join(qemu_command),
-> -                                          stdin=subprocess.PIPE,
-> -                                          stdout=subprocess.PIPE,
-> -                                          stderr=subprocess.STDOUT,
-> -                                          text=True, shell=True, errors='backslashreplace')
-> +                               '-serial', 'stdio'] + self._extra_qemu_params
-> +               # Note: shlex.join() does what we want, but requires python 3.8+.
-> +               print('Running tests with:\n$', ' '.join(shlex.quote(arg) for arg in qemu_command))
-> +               return subprocess.Popen(qemu_command,
-> +                                       stdin=subprocess.PIPE,
-> +                                       stdout=subprocess.PIPE,
-> +                                       stderr=subprocess.STDOUT,
-> +                                       text=True, errors='backslashreplace')
->
->  class LinuxSourceTreeOperationsUml(LinuxSourceTreeOperations):
->         """An abstraction over command line operations performed on a source tree."""
-> diff --git a/tools/testing/kunit/qemu_configs/alpha.py b/tools/testing/kunit/qemu_configs/alpha.py
-> index 5d0c0cff03bd..3ac846e03a6b 100644
-> --- a/tools/testing/kunit/qemu_configs/alpha.py
-> +++ b/tools/testing/kunit/qemu_configs/alpha.py
-> @@ -7,4 +7,4 @@ CONFIG_SERIAL_8250_CONSOLE=y''',
->                            qemu_arch='alpha',
->                            kernel_path='arch/alpha/boot/vmlinux',
->                            kernel_command_line='console=ttyS0',
-> -                          extra_qemu_params=[''])
-> +                          extra_qemu_params=[])
-> diff --git a/tools/testing/kunit/qemu_configs/arm.py b/tools/testing/kunit/qemu_configs/arm.py
-> index b9c2a35e0296..db2160200566 100644
-> --- a/tools/testing/kunit/qemu_configs/arm.py
-> +++ b/tools/testing/kunit/qemu_configs/arm.py
-> @@ -10,4 +10,4 @@ CONFIG_SERIAL_AMBA_PL011_CONSOLE=y''',
->                            qemu_arch='arm',
->                            kernel_path='arch/arm/boot/zImage',
->                            kernel_command_line='console=ttyAMA0',
-> -                          extra_qemu_params=['-machine virt'])
-> +                          extra_qemu_params=['-machine', 'virt'])
-> diff --git a/tools/testing/kunit/qemu_configs/arm64.py b/tools/testing/kunit/qemu_configs/arm64.py
-> index 517c04459f47..67d04064f785 100644
-> --- a/tools/testing/kunit/qemu_configs/arm64.py
-> +++ b/tools/testing/kunit/qemu_configs/arm64.py
-> @@ -9,4 +9,4 @@ CONFIG_SERIAL_AMBA_PL011_CONSOLE=y''',
->                            qemu_arch='aarch64',
->                            kernel_path='arch/arm64/boot/Image.gz',
->                            kernel_command_line='console=ttyAMA0',
-> -                          extra_qemu_params=['-machine virt', '-cpu cortex-a57'])
-> +                          extra_qemu_params=['-machine', 'virt', '-cpu', 'cortex-a57'])
-> diff --git a/tools/testing/kunit/qemu_configs/i386.py b/tools/testing/kunit/qemu_configs/i386.py
-> index aed3ffd3937d..52b80be40e4b 100644
-> --- a/tools/testing/kunit/qemu_configs/i386.py
-> +++ b/tools/testing/kunit/qemu_configs/i386.py
-> @@ -7,4 +7,4 @@ CONFIG_SERIAL_8250_CONSOLE=y''',
->                            qemu_arch='x86_64',
->                            kernel_path='arch/x86/boot/bzImage',
->                            kernel_command_line='console=ttyS0',
-> -                          extra_qemu_params=[''])
-> +                          extra_qemu_params=[])
-> diff --git a/tools/testing/kunit/qemu_configs/powerpc.py b/tools/testing/kunit/qemu_configs/powerpc.py
-> index 35e9de24f0db..6c901149726b 100644
-> --- a/tools/testing/kunit/qemu_configs/powerpc.py
-> +++ b/tools/testing/kunit/qemu_configs/powerpc.py
-> @@ -9,4 +9,4 @@ CONFIG_HVC_CONSOLE=y''',
->                            qemu_arch='ppc64',
->                            kernel_path='vmlinux',
->                            kernel_command_line='console=ttyS0',
-> -                          extra_qemu_params=['-M pseries', '-cpu power8'])
-> +                          extra_qemu_params=['-M', ' pseries', '-cpu', 'power8'])
+> 
+> Changes in v2:
+> - Remove the mud from my face.
 
-This should be '-M', 'pseries', not '-M', ' pseries', (you left an
-extra space in.
+As stated, I'm for this revert, but after getting the mentioned patchset 
+in. Will that work for you? If not, I'd prefer to land a patch adding 
+modparam to powerup the DSI during the mode_set or during the pre_enabel().
 
-Note this actually breaks QEMU on my machine.
+> 
+>   drivers/gpu/drm/msm/dsi/dsi_manager.c | 43 ++++++++-------------------
+>   1 file changed, 12 insertions(+), 31 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/msm/dsi/dsi_manager.c b/drivers/gpu/drm/msm/dsi/dsi_manager.c
+> index 50b987658b1f..8d51711a3417 100644
+> --- a/drivers/gpu/drm/msm/dsi/dsi_manager.c
+> +++ b/drivers/gpu/drm/msm/dsi/dsi_manager.c
+> @@ -315,12 +315,13 @@ dsi_mgr_connector_best_encoder(struct drm_connector *connector)
+>   	return msm_dsi_get_encoder(msm_dsi);
+>   }
+>   
+> -static void dsi_mgr_bridge_power_on(struct drm_bridge *bridge)
+> +static void dsi_mgr_bridge_pre_enable(struct drm_bridge *bridge)
+>   {
+>   	int id = dsi_mgr_bridge_get_id(bridge);
+>   	struct msm_dsi *msm_dsi = dsi_mgr_get_dsi(id);
+>   	struct msm_dsi *msm_dsi1 = dsi_mgr_get_dsi(DSI_1);
+>   	struct mipi_dsi_host *host = msm_dsi->host;
+> +	struct drm_panel *panel = msm_dsi->panel;
+>   	struct msm_dsi_phy_shared_timings phy_shared_timings[DSI_MAX];
+>   	bool is_bonded_dsi = IS_BONDED_DSI();
+>   	int ret;
+> @@ -361,34 +362,6 @@ static void dsi_mgr_bridge_power_on(struct drm_bridge *bridge)
+>   	if (is_bonded_dsi && msm_dsi1)
+>   		msm_dsi_host_enable_irq(msm_dsi1->host);
+>   
+> -	return;
+> -
+> -host1_on_fail:
+> -	msm_dsi_host_power_off(host);
+> -host_on_fail:
+> -	dsi_mgr_phy_disable(id);
+> -phy_en_fail:
+> -	return;
+> -}
+> -
+> -static void dsi_mgr_bridge_pre_enable(struct drm_bridge *bridge)
+> -{
+> -	int id = dsi_mgr_bridge_get_id(bridge);
+> -	struct msm_dsi *msm_dsi = dsi_mgr_get_dsi(id);
+> -	struct msm_dsi *msm_dsi1 = dsi_mgr_get_dsi(DSI_1);
+> -	struct mipi_dsi_host *host = msm_dsi->host;
+> -	struct drm_panel *panel = msm_dsi->panel;
+> -	bool is_bonded_dsi = IS_BONDED_DSI();
+> -	int ret;
+> -
+> -	DBG("id=%d", id);
+> -	if (!msm_dsi_device_connected(msm_dsi))
+> -		return;
+> -
+> -	/* Do nothing with the host if it is slave-DSI in case of bonded DSI */
+> -	if (is_bonded_dsi && !IS_MASTER_DSI_LINK(id))
+> -		return;
+> -
+>   	/* Always call panel functions once, because even for dual panels,
+>   	 * there is only one drm_panel instance.
+>   	 */
+> @@ -423,7 +396,17 @@ static void dsi_mgr_bridge_pre_enable(struct drm_bridge *bridge)
+>   	if (panel)
+>   		drm_panel_unprepare(panel);
+>   panel_prep_fail:
+> +	msm_dsi_host_disable_irq(host);
+> +	if (is_bonded_dsi && msm_dsi1)
+> +		msm_dsi_host_disable_irq(msm_dsi1->host);
+>   
+> +	if (is_bonded_dsi && msm_dsi1)
+> +		msm_dsi_host_power_off(msm_dsi1->host);
+> +host1_on_fail:
+> +	msm_dsi_host_power_off(host);
+> +host_on_fail:
+> +	dsi_mgr_phy_disable(id);
+> +phy_en_fail:
+>   	return;
+>   }
+>   
+> @@ -569,8 +552,6 @@ static void dsi_mgr_bridge_mode_set(struct drm_bridge *bridge,
+>   	msm_dsi_host_set_display_mode(host, adjusted_mode);
+>   	if (is_bonded_dsi && other_dsi)
+>   		msm_dsi_host_set_display_mode(other_dsi->host, adjusted_mode);
+> -
+> -	dsi_mgr_bridge_power_on(bridge);
+>   }
+>   
+>   static enum drm_mode_status dsi_mgr_bridge_mode_valid(struct drm_bridge *bridge,
 
-> diff --git a/tools/testing/kunit/qemu_configs/riscv.py b/tools/testing/kunit/qemu_configs/riscv.py
-> index 9e528087cd7c..b882fde39435 100644
-> --- a/tools/testing/kunit/qemu_configs/riscv.py
-> +++ b/tools/testing/kunit/qemu_configs/riscv.py
-> @@ -26,6 +26,6 @@ CONFIG_SERIAL_EARLYCON_RISCV_SBI=y''',
->                            kernel_path='arch/riscv/boot/Image',
->                            kernel_command_line='console=ttyS0',
->                            extra_qemu_params=[
-> -                                          '-machine virt',
-> -                                          '-cpu rv64',
-> -                                          '-bios opensbi-riscv64-generic-fw_dynamic.bin'])
-> +                                          '-machine', 'virt',
-> +                                          '-cpu', 'rv64',
-> +                                          '-bios', 'opensbi-riscv64-generic-fw_dynamic.bin'])
-> diff --git a/tools/testing/kunit/qemu_configs/s390.py b/tools/testing/kunit/qemu_configs/s390.py
-> index e310bd521113..98fa4fb60c0a 100644
-> --- a/tools/testing/kunit/qemu_configs/s390.py
-> +++ b/tools/testing/kunit/qemu_configs/s390.py
-> @@ -10,5 +10,5 @@ CONFIG_MODULES=y''',
->                            kernel_path='arch/s390/boot/bzImage',
->                            kernel_command_line='console=ttyS0',
->                            extra_qemu_params=[
-> -                                          '-machine s390-ccw-virtio',
-> -                                          '-cpu qemu',])
-> +                                          '-machine', 's390-ccw-virtio',
-> +                                          '-cpu', 'qemu',])
-> diff --git a/tools/testing/kunit/qemu_configs/sparc.py b/tools/testing/kunit/qemu_configs/sparc.py
-> index 27f474e7ad6e..e975c4331a7c 100644
-> --- a/tools/testing/kunit/qemu_configs/sparc.py
-> +++ b/tools/testing/kunit/qemu_configs/sparc.py
-> @@ -7,4 +7,4 @@ CONFIG_SERIAL_8250_CONSOLE=y''',
->                            qemu_arch='sparc',
->                            kernel_path='arch/sparc/boot/zImage',
->                            kernel_command_line='console=ttyS0 mem=256M',
-> -                          extra_qemu_params=['-m 256'])
-> +                          extra_qemu_params=['-m', '256'])
-> diff --git a/tools/testing/kunit/qemu_configs/x86_64.py b/tools/testing/kunit/qemu_configs/x86_64.py
-> index 77ab1aeee8a3..dc7949076863 100644
-> --- a/tools/testing/kunit/qemu_configs/x86_64.py
-> +++ b/tools/testing/kunit/qemu_configs/x86_64.py
-> @@ -7,4 +7,4 @@ CONFIG_SERIAL_8250_CONSOLE=y''',
->                            qemu_arch='x86_64',
->                            kernel_path='arch/x86/boot/bzImage',
->                            kernel_command_line='console=ttyS0',
-> -                          extra_qemu_params=[''])
-> +                          extra_qemu_params=[])
->
-> base-commit: 59729170afcd4900e08997a482467ffda8d88c7f
-> --
-> 2.36.0.rc0.470.gd361397f0d-goog
->
+
+-- 
+With best wishes
+Dmitry
