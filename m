@@ -2,437 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2765AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:39:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36278C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:40:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343926AbiEKPjy (ORCPT
+        id S1343864AbiEKPko (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 11:39:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44032 "EHLO
+        Wed, 11 May 2022 11:40:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343867AbiEKPjh (ORCPT
+        with ESMTP id S241912AbiEKPkl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 11:39:37 -0400
-Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-eopbgr150053.outbound.protection.outlook.com [40.107.15.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB5B5986DD;
-        Wed, 11 May 2022 08:39:31 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ji9R8mLQ0KTNOJG8SEClA1KtulbHnH6Ip5C8HyQfrQ7aIQjCdSUCrbG1zHE9br5yrD/6ZWbmJOqkfl+rpY7v1shKN2540VmsDt3UYmh1601AjORhfYgfzwrtMFO3U6QUwbsL1L3+ENf1yYzo8V0tRZttv+YX9lr/Vc7rylZkouRxmL5+LtsuOenxvEwZRz9PENHmn/6xgCWbhgB90jxXRSvUPK9fqznSgYKIScDH/YM3leblbkfasFZdKG9I5K0b9vcoXb477kl+4YJ+2YjPaHCx5lXKwKfQ7tpbfCa52cpIx1qdgHR1VBWvJ75etxHLlI620fcX3CiDdOdSpoMQoQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=C67LZWsu1LSLQHL7KU5kb7ZQqW+0E9gYYYhWCoOKS2M=;
- b=Ob63NGokRz0cSdxPXv3pjxBDxhnJ60bcT1cs3WObt7WZ+/zaASlnYKIO7gWW9D0NkIJQzVYZp9MLStMW01H3CHtUaDffDtxjsyjmL2wS4eMbmCu6XghAP5o41QeezbBJSZaJ8FVhVQIctTvboA8LZ9fa35fti/DVfni8d2yvBD+ZG2Ul7kJYJnuBwYq2UOSMxQ0HCE94eaQjRo1+UdRr1NG/okK6YWN4iqT3s5ipa2Hm/9DiL6IoxZBBK5VAWzvD0l4qC35kUWPtTlNXkgD//hG/2dogrCAeOdYhzuJZ272m/9gWknu6D6Y7Ii39Jaof3KNVCCEZDzhwigObnr1LwA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 194.138.21.71) smtp.rcpttodomain=linux.intel.com smtp.mailfrom=siemens.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=siemens.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=C67LZWsu1LSLQHL7KU5kb7ZQqW+0E9gYYYhWCoOKS2M=;
- b=fMEYROst85BHAE9J3hsxdmbUhGL0ayCCrqp3Tka5P/p6JkP6umwjZits9W6eQAqDV4vb5bLANnSu3ZEOttdfg+pyBWgk7Hk9zliv6WIWDwaVSgJ3d8U2k3RQKh5GBuTHGnV1LpyD59yJnKx0yYcsIAhqSweBqu5Jm+mmCQ+4kRasFg0Bd1IcvTSQu5+qEyz70xomglEzEa8yDHvBDdEEuTIAwwVDHmIGU75aReWS7zIQYZdVzwzhtKPqFlVLOdbuAPjH4igwAIwMf34Uovp9eg0Vudvta4ooxnNSC5ljoAuiZ0IWelJwXCk4m3Bz5YX9hyvQ63P+FII2E0EgsHK1Ow==
-Received: from AM6PR04CA0025.eurprd04.prod.outlook.com (2603:10a6:20b:92::38)
- by AM5PR1001MB0980.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:203:11::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.22; Wed, 11 May
- 2022 15:39:29 +0000
-Received: from VE1EUR01FT017.eop-EUR01.prod.protection.outlook.com
- (2603:10a6:20b:92::4) by AM6PR04CA0025.outlook.office365.com
- (2603:10a6:20b:92::38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13 via Frontend
- Transport; Wed, 11 May 2022 15:39:29 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 194.138.21.71)
- smtp.mailfrom=siemens.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=siemens.com;
-Received-SPF: Pass (protection.outlook.com: domain of siemens.com designates
- 194.138.21.71 as permitted sender) receiver=protection.outlook.com;
- client-ip=194.138.21.71; helo=hybrid.siemens.com;
-Received: from hybrid.siemens.com (194.138.21.71) by
- VE1EUR01FT017.mail.protection.outlook.com (10.152.2.226) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5250.13 via Frontend Transport; Wed, 11 May 2022 15:39:28 +0000
-Received: from DEMCHDC8A0A.ad011.siemens.net (139.25.226.106) by
- DEMCHDC9SKA.ad011.siemens.net (194.138.21.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 11 May 2022 17:39:27 +0200
-Received: from md1za8fc.ad001.siemens.net (139.25.69.210) by
- DEMCHDC8A0A.ad011.siemens.net (139.25.226.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 11 May 2022 17:39:27 +0200
-From:   Henning Schild <henning.schild@siemens.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-CC:     Mark Gross <markgross@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        <linux-kernel@vger.kernel.org>, <linux-leds@vger.kernel.org>,
-        <platform-driver-x86@vger.kernel.org>,
-        <linux-watchdog@vger.kernel.org>, Enrico Weigelt <lkml@metux.net>,
-        Gerd Haeussler <gerd.haeussler.ext@siemens.com>,
-        Henning Schild <henning.schild@siemens.com>
-Subject: [PATCH v2 4/4] leds: simatic-ipc-leds-gpio: add GPIO version of Siemens driver
-Date:   Wed, 11 May 2022 17:39:05 +0200
-Message-ID: <20220511153905.13980-5-henning.schild@siemens.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220511153905.13980-1-henning.schild@siemens.com>
-References: <20220511153905.13980-1-henning.schild@siemens.com>
+        Wed, 11 May 2022 11:40:41 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26A89986DD
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 08:40:39 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: dmitry.osipenko)
+        with ESMTPSA id 2FC621F44F23
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1652283637;
+        bh=hw+IbRtV4FDEikHLzTfTUBZrISD/nOB98xNZrs4QRyU=;
+        h=Date:Subject:To:References:Cc:From:In-Reply-To:From;
+        b=bOXGXH5Mof/WN809Do+90df/7EsRUz5UB5E35+9u83eFqG0MQeydSNOnI7H+r03KZ
+         4oVD332NsucFenhT1sS6y5JMjYELDs9UgVxKnVmZK48ruUgMF7DdZW5C394j0xPJWs
+         H3lSh6y4irWJrPQCqxe/O+OUDmKhgc7hACpJR5OTu45f5T4U+RXKVSDRkEiLIcp6+z
+         U296UcsrcLjO82fctzxbTy6+KtIbdo2D5yMpOS6sbAu3Ml0B9pt/6iic6YINhbZUTe
+         EhLDNn85LhpwlO62kNVb5dLRDOUX37sFuy4SAgBB5BL2cVEYYu7qHp+7WOBC9Q5nT3
+         xObows7KOfk5Q==
+Message-ID: <ba2836d0-9a3a-b879-cb1e-a48aed31637d@collabora.com>
+Date:   Wed, 11 May 2022 18:40:32 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v4 10/15] drm/shmem-helper: Take reservation lock instead
+ of drm_gem_shmem locks
+Content-Language: en-US
+To:     =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel@ffwll.ch>
+References: <8f932ab0-bb72-8fea-4078-dc59e9164bd4@collabora.com>
+ <YnI3lE0TxLfZaQjE@phenom.ffwll.local>
+ <01506516-ab2f-cb6e-7507-f2a3295efb59@collabora.com>
+ <YnOHAh9I1ds4+1J+@phenom.ffwll.local>
+ <83e68918-68de-c0c6-6f9b-e94d34b19383@collabora.com>
+ <YnkaUk0mZNuPsZ5r@phenom.ffwll.local>
+ <4d08b382-0076-1ea2-b565-893d50b453cb@collabora.com>
+ <YnuziJDmXVR09UzP@phenom.ffwll.local>
+ <56787b70-fb64-64da-6006-d3aa3ed59d12@gmail.com>
+ <3a362c32-870c-1d73-bba6-bbdcd62dc326@collabora.com>
+ <YnvWUbh5QDDs6u2B@phenom.ffwll.local>
+Cc:     Daniel Stone <daniel@fooishbar.org>,
+        David Airlie <airlied@linux.ie>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Chia-I Wu <olvaffe@gmail.com>,
+        Daniel Almeida <daniel.almeida@collabora.com>,
+        Gert Wollny <gert.wollny@collabora.com>,
+        Gustavo Padovan <gustavo.padovan@collabora.com>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+        Rob Clark <robdclark@gmail.com>,
+        Emil Velikov <emil.l.velikov@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        virtualization@lists.linux-foundation.org
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+In-Reply-To: <YnvWUbh5QDDs6u2B@phenom.ffwll.local>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [139.25.69.210]
-X-ClientProxiedBy: DEMCHDC89XA.ad011.siemens.net (139.25.226.103) To
- DEMCHDC8A0A.ad011.siemens.net (139.25.226.106)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3debd758-f6b4-4b65-6b38-08da33646f86
-X-MS-TrafficTypeDiagnostic: AM5PR1001MB0980:EE_
-X-Microsoft-Antispam-PRVS: <AM5PR1001MB0980DE19616F8965E763BD7E85C89@AM5PR1001MB0980.EURPRD10.PROD.OUTLOOK.COM>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 7CNQwDm40+/VnH0/iN3FZpfF5ATmXjxY4acHAtP0NZoJ+cNEOCia5gQ1GHJHkXhRac1iR0xdZC/igPkNQ67I/nB74Xo8aMyNtihf1uvoyta39GmwcX0YpErtuKHvWaWBlUIqH0XyJPbxuONesN7TwbwZhlipgmUizZL1eqEymdADuYnswBxN5XAHO5V+iJdPfRVWr5quya6xNt/257/6mvE7zOC7DVDYVryfRFvVNypOWEUryazQGpTXhyRQPilgLBIkZD3SoNyj7ljArysEHydM4J6zRVTjunlMVPWVxbh+01Pm0k7Kg5Iu6Vobq9q6kvtL5Pk1p19iXannNgsq390ijuLrBJgO9Z3y9W5lh9g3VUi885j2iOU2eEPQ1Li0DnssdYdFjxMndRClxzOmv+VKlL3u6uWy97vgFqnoCwzXuZxd2QBKVNTYXWfkhZLB58YYMWzgZxRlTexdh0RpdYbB+Q+emhlzDQTwK633Bm3P15zayJqGyBy1bsvbBzqipC39E/THCuBeB0vcBl4bd9yBJbGVRk8xNE/HmdBWzy/1+sif5+n3cXh//vzQU79P5KFEhVQpXBJwwnKv9WlH+Q3HZPnusypsawFhbgRXEOaA6QWmaaTwfgkvrEWCSTbX/F7DAaaxKpOZYNLEwoTuZncFtz7Pz7EXaI9yUT2xdg1+/lfMc7ngwt8PueXPtrYVjwRWvoWNJjIAK23sSLcntw==
-X-Forefront-Antispam-Report: CIP:194.138.21.71;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:hybrid.siemens.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(1076003)(54906003)(6916009)(40460700003)(2616005)(956004)(107886003)(186003)(16526019)(86362001)(83380400001)(47076005)(356005)(82960400001)(8936002)(508600001)(336012)(26005)(81166007)(6666004)(316002)(36860700001)(2906002)(82310400005)(36756003)(70206006)(8676002)(70586007)(4326008)(30864003)(5660300002)(44832011)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2022 15:39:28.6553
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3debd758-f6b4-4b65-6b38-08da33646f86
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;Ip=[194.138.21.71];Helo=[hybrid.siemens.com]
-X-MS-Exchange-CrossTenant-AuthSource: VE1EUR01FT017.eop-EUR01.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM5PR1001MB0980
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Apollo Lake the pinctrl drivers will now come up without ACPI. Use
-that instead of open coding it.
-Create a new driver for that which can later be filled with more GPIO
-based models, and which has different dependencies.
+On 5/11/22 18:29, Daniel Vetter wrote:
+> On Wed, May 11, 2022 at 06:14:00PM +0300, Dmitry Osipenko wrote:
+>> On 5/11/22 17:24, Christian König wrote:
+>>> Am 11.05.22 um 15:00 schrieb Daniel Vetter:
+>>>> On Tue, May 10, 2022 at 04:39:53PM +0300, Dmitry Osipenko wrote:
+>>>>> [SNIP]
+>>>>> Since vmapping implies implicit pinning, we can't use a separate lock in
+>>>>> drm_gem_shmem_vmap() because we need to protect the
+>>>>> drm_gem_shmem_get_pages(), which is invoked by drm_gem_shmem_vmap() to
+>>>>> pin the pages and requires the dma_resv_lock to be locked.
+>>>>>
+>>>>> Hence the problem is:
+>>>>>
+>>>>> 1. If dma-buf importer holds the dma_resv_lock and invokes
+>>>>> dma_buf_vmap() -> drm_gem_shmem_vmap(), then drm_gem_shmem_vmap() shall
+>>>>> not take the dma_resv_lock.
+>>>>>
+>>>>> 2. Since dma-buf locking convention isn't specified, we can't assume
+>>>>> that dma-buf importer holds the dma_resv_lock around dma_buf_vmap().
+>>>>>
+>>>>> The possible solutions are:
+>>>>>
+>>>>> 1. Specify the dma_resv_lock convention for dma-bufs and make all
+>>>>> drivers to follow it.
+>>>>>
+>>>>> 2. Make only DRM drivers to hold dma_resv_lock around dma_buf_vmap().
+>>>>> Other non-DRM drivers will get the lockdep warning.
+>>>>>
+>>>>> 3. Make drm_gem_shmem_vmap() to take the dma_resv_lock and get deadlock
+>>>>> if dma-buf importer holds the lock.
+>>>>>
+>>>>> ...
+>>>> Yeah this is all very annoying.
+>>> Ah, yes that topic again :)
+>>>
+>>> I think we could relatively easily fix that by just defining and
+>>> enforcing that the dma_resv_lock must have be taken by the caller when
+>>> dma_buf_vmap() is called.
+>>>
+>>> A two step approach should work:
+>>> 1. Move the call to dma_resv_lock() into the dma_buf_vmap() function and
+>>> remove all lock taking from the vmap callback implementations.
+>>> 2. Move the call to dma_resv_lock() into the callers of dma_buf_vmap()
+>>> and enforce that the function is called with the lock held.
+>> I've doubts about the need to move out the dma_resv_lock() into the
+>> callers of dma_buf_vmap()..
+>>
+>> I looked through all the dma_buf_vmap() users and neither of them
+>> interacts with dma_resv_lock() at all, i.e. nobody takes the lock
+>> in/outside of dma_buf_vmap(). Hence it's easy and more practical to make
+>> dma_buf_mmap/vmap() to take the dma_resv_lock by themselves.
+> i915_gem_dmabuf_vmap -> i915_gem_object_pin_map_unlocked ->
+>   i915_gem_object_lock -> dma_resv_lock
+> 
+> And all the ttm drivers should work similarly. So there's definitely
+> drivers which grab dma_resv_lock from their vmap callback.
 
-Signed-off-by: Henning Schild <henning.schild@siemens.com>
----
- drivers/leds/simple/Kconfig                 |  12 ++-
- drivers/leds/simple/Makefile                |   3 +-
- drivers/leds/simple/simatic-ipc-leds-gpio.c | 108 ++++++++++++++++++++
- drivers/leds/simple/simatic-ipc-leds.c      |  80 +--------------
- drivers/platform/x86/simatic-ipc.c          |   5 +-
- 5 files changed, 129 insertions(+), 79 deletions(-)
- create mode 100644 drivers/leds/simple/simatic-ipc-leds-gpio.c
+Grr.. I'll take another look.
 
-diff --git a/drivers/leds/simple/Kconfig b/drivers/leds/simple/Kconfig
-index 9293e6b36c75..9d2487908743 100644
---- a/drivers/leds/simple/Kconfig
-+++ b/drivers/leds/simple/Kconfig
-@@ -3,10 +3,20 @@ config LEDS_SIEMENS_SIMATIC_IPC
- 	tristate "LED driver for Siemens Simatic IPCs"
- 	depends on LEDS_CLASS
- 	depends on SIEMENS_SIMATIC_IPC
--	select P2SB if X86
- 	help
- 	  This option enables support for the LEDs of several Industrial PCs
- 	  from Siemens.
- 
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called simatic-ipc-leds.
-+
-+config LEDS_SIEMENS_SIMATIC_IPC_GPIO
-+	tristate "LED driver for Siemens Simatic IPCs, GPIO based"
-+	depends on SIEMENS_SIMATIC_IPC
-+	depends on LEDS_GPIO
-+	help
-+	  This option enables support for the LEDs of several Industrial PCs
-+	  from Siemens.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called simatic-ipc-leds-gpio.
-diff --git a/drivers/leds/simple/Makefile b/drivers/leds/simple/Makefile
-index 8481f1e9e360..e1df74fb5915 100644
---- a/drivers/leds/simple/Makefile
-+++ b/drivers/leds/simple/Makefile
-@@ -1,2 +1,3 @@
- # SPDX-License-Identifier: GPL-2.0
--obj-$(CONFIG_LEDS_SIEMENS_SIMATIC_IPC)	+= simatic-ipc-leds.o
-+obj-$(CONFIG_LEDS_SIEMENS_SIMATIC_IPC)		+= simatic-ipc-leds.o
-+obj-$(CONFIG_LEDS_SIEMENS_SIMATIC_IPC_GPIO)	+= simatic-ipc-leds-gpio.o
-diff --git a/drivers/leds/simple/simatic-ipc-leds-gpio.c b/drivers/leds/simple/simatic-ipc-leds-gpio.c
-new file mode 100644
-index 000000000000..552b65a72e04
---- /dev/null
-+++ b/drivers/leds/simple/simatic-ipc-leds-gpio.c
-@@ -0,0 +1,108 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Siemens SIMATIC IPC driver for GPIO based LEDs
-+ *
-+ * Copyright (c) Siemens AG, 2022
-+ *
-+ * Authors:
-+ *  Henning Schild <henning.schild@siemens.com>
-+ */
-+
-+#include <linux/gpio/machine.h>
-+#include <linux/gpio/consumer.h>
-+#include <linux/leds.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+
-+static struct gpiod_lookup_table simatic_ipc_led_gpio_table = {
-+	.dev_id = "leds-gpio",
-+	.table = {
-+		GPIO_LOOKUP_IDX("apollolake-pinctrl.0", 51, NULL, 0, GPIO_ACTIVE_LOW),
-+		GPIO_LOOKUP_IDX("apollolake-pinctrl.0", 52, NULL, 1, GPIO_ACTIVE_LOW),
-+		GPIO_LOOKUP_IDX("apollolake-pinctrl.0", 53, NULL, 2, GPIO_ACTIVE_LOW),
-+		GPIO_LOOKUP_IDX("apollolake-pinctrl.0", 57, NULL, 3, GPIO_ACTIVE_LOW),
-+		GPIO_LOOKUP_IDX("apollolake-pinctrl.0", 58, NULL, 4, GPIO_ACTIVE_LOW),
-+		GPIO_LOOKUP_IDX("apollolake-pinctrl.0", 60, NULL, 5, GPIO_ACTIVE_LOW),
-+		GPIO_LOOKUP_IDX("apollolake-pinctrl.0", 56, NULL, 6, GPIO_ACTIVE_LOW),
-+		GPIO_LOOKUP_IDX("apollolake-pinctrl.0", 59, NULL, 7, GPIO_ACTIVE_HIGH),
-+	}
-+};
-+
-+static const struct gpio_led simatic_ipc_gpio_leds[] = {
-+	{ .name = "green:" LED_FUNCTION_STATUS "-3" },
-+	{ .name = "red:" LED_FUNCTION_STATUS "-1" },
-+	{ .name = "green:" LED_FUNCTION_STATUS "-1" },
-+	{ .name = "red:" LED_FUNCTION_STATUS "-2" },
-+	{ .name = "green:" LED_FUNCTION_STATUS "-2" },
-+	{ .name = "red:" LED_FUNCTION_STATUS "-3" },
-+};
-+
-+static const struct gpio_led_platform_data simatic_ipc_gpio_leds_pdata = {
-+	.num_leds	= ARRAY_SIZE(simatic_ipc_gpio_leds),
-+	.leds		= simatic_ipc_gpio_leds,
-+};
-+
-+static struct platform_device *simatic_leds_pdev;
-+
-+static int simatic_ipc_leds_gpio_remove(struct platform_device *pdev)
-+{
-+	gpiod_remove_lookup_table(&simatic_ipc_led_gpio_table);
-+	platform_device_unregister(simatic_leds_pdev);
-+
-+	return 0;
-+}
-+
-+static int simatic_ipc_leds_gpio_probe(struct platform_device *pdev)
-+{
-+	struct gpio_desc *gpiod;
-+	int err;
-+
-+	gpiod_add_lookup_table(&simatic_ipc_led_gpio_table);
-+	simatic_leds_pdev = platform_device_register_resndata(NULL,
-+		"leds-gpio", PLATFORM_DEVID_NONE, NULL, 0,
-+		&simatic_ipc_gpio_leds_pdata,
-+		sizeof(simatic_ipc_gpio_leds_pdata));
-+	if (IS_ERR(simatic_leds_pdev)) {
-+		err = PTR_ERR(simatic_leds_pdev);
-+		goto out;
-+	}
-+
-+	/* PM_BIOS_BOOT_N */
-+	gpiod = gpiod_get_index(&simatic_leds_pdev->dev, NULL, 6, 0);
-+	if (IS_ERR(gpiod)) {
-+		err = PTR_ERR(gpiod);
-+		goto out;
-+	}
-+	gpiod_set_value(gpiod, 0);
-+	gpiod_put(gpiod);
-+
-+	/* PM_WDT_OUT */
-+	gpiod = gpiod_get_index(&simatic_leds_pdev->dev, NULL, 7, 0);
-+	if (IS_ERR(gpiod)) {
-+		err = PTR_ERR(gpiod);
-+		goto out;
-+	}
-+	gpiod_set_value(gpiod, 0);
-+	gpiod_put(gpiod);
-+
-+	return 0;
-+out:
-+	simatic_ipc_leds_gpio_remove(pdev);
-+
-+	return err;
-+}
-+
-+static struct platform_driver simatic_ipc_led_gpio_driver = {
-+	.probe = simatic_ipc_leds_gpio_probe,
-+	.remove = simatic_ipc_leds_gpio_remove,
-+	.driver = {
-+		.name = KBUILD_MODNAME,
-+	}
-+};
-+
-+module_platform_driver(simatic_ipc_led_gpio_driver);
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_ALIAS("platform:" KBUILD_MODNAME);
-+MODULE_SOFTDEP("pre: platform:leds-gpio");
-+MODULE_AUTHOR("Henning Schild <henning.schild@siemens.com>");
-diff --git a/drivers/leds/simple/simatic-ipc-leds.c b/drivers/leds/simple/simatic-ipc-leds.c
-index 2e7597c143d8..4894c228c165 100644
---- a/drivers/leds/simple/simatic-ipc-leds.c
-+++ b/drivers/leds/simple/simatic-ipc-leds.c
-@@ -15,7 +15,6 @@
- #include <linux/leds.h>
- #include <linux/module.h>
- #include <linux/pci.h>
--#include <linux/platform_data/x86/p2sb.h>
- #include <linux/platform_data/x86/simatic-ipc-base.h>
- #include <linux/platform_device.h>
- #include <linux/sizes.h>
-@@ -24,7 +23,7 @@
- #define SIMATIC_IPC_LED_PORT_BASE	0x404E
- 
- struct simatic_ipc_led {
--	unsigned int value; /* mask for io and offset for mem */
-+	unsigned int value; /* mask for io */
- 	char *name;
- 	struct led_classdev cdev;
- };
-@@ -39,21 +38,6 @@ static struct simatic_ipc_led simatic_ipc_leds_io[] = {
- 	{ }
- };
- 
--/* the actual start will be discovered with p2sb, 0 is a placeholder */
--static struct resource simatic_ipc_led_mem_res = DEFINE_RES_MEM_NAMED(0, 0, KBUILD_MODNAME);
--
--static void __iomem *simatic_ipc_led_memory;
--
--static struct simatic_ipc_led simatic_ipc_leds_mem[] = {
--	{0x500 + 0x1A0, "red:" LED_FUNCTION_STATUS "-1"},
--	{0x500 + 0x1A8, "green:" LED_FUNCTION_STATUS "-1"},
--	{0x500 + 0x1C8, "red:" LED_FUNCTION_STATUS "-2"},
--	{0x500 + 0x1D0, "green:" LED_FUNCTION_STATUS "-2"},
--	{0x500 + 0x1E0, "red:" LED_FUNCTION_STATUS "-3"},
--	{0x500 + 0x198, "green:" LED_FUNCTION_STATUS "-3"},
--	{ }
--};
--
- static struct resource simatic_ipc_led_io_res =
- 	DEFINE_RES_IO_NAMED(SIMATIC_IPC_LED_PORT_BASE, SZ_2, KBUILD_MODNAME);
- 
-@@ -89,28 +73,6 @@ static enum led_brightness simatic_ipc_led_get_io(struct led_classdev *led_cd)
- 	return inw(SIMATIC_IPC_LED_PORT_BASE) & led->value ? LED_OFF : led_cd->max_brightness;
- }
- 
--static void simatic_ipc_led_set_mem(struct led_classdev *led_cd,
--				    enum led_brightness brightness)
--{
--	struct simatic_ipc_led *led = cdev_to_led(led_cd);
--	void __iomem *reg = simatic_ipc_led_memory + led->value;
--	u32 val;
--
--	val = readl(reg);
--	val = (val & ~1) | (brightness == LED_OFF);
--	writel(val, reg);
--}
--
--static enum led_brightness simatic_ipc_led_get_mem(struct led_classdev *led_cd)
--{
--	struct simatic_ipc_led *led = cdev_to_led(led_cd);
--	void __iomem *reg = simatic_ipc_led_memory + led->value;
--	u32 val;
--
--	val = readl(reg);
--	return (val & 1) ? LED_OFF : led_cd->max_brightness;
--}
--
- static int simatic_ipc_leds_probe(struct platform_device *pdev)
- {
- 	const struct simatic_ipc_platform *plat = pdev->dev.platform_data;
-@@ -118,9 +80,7 @@ static int simatic_ipc_leds_probe(struct platform_device *pdev)
- 	struct simatic_ipc_led *ipcled;
- 	struct led_classdev *cdev;
- 	struct resource *res;
--	void __iomem *reg;
--	int err, type;
--	u32 val;
-+	int err;
- 
- 	switch (plat->devmode) {
- 	case SIMATIC_IPC_DEVICE_227D:
-@@ -135,51 +95,19 @@ static int simatic_ipc_leds_probe(struct platform_device *pdev)
- 			}
- 			ipcled = simatic_ipc_leds_io;
- 		}
--		type = IORESOURCE_IO;
- 		if (!devm_request_region(dev, res->start, resource_size(res), KBUILD_MODNAME)) {
- 			dev_err(dev, "Unable to register IO resource at %pR\n", res);
- 			return -EBUSY;
- 		}
- 		break;
--	case SIMATIC_IPC_DEVICE_127E:
--		res = &simatic_ipc_led_mem_res;
--		ipcled = simatic_ipc_leds_mem;
--		type = IORESOURCE_MEM;
--
--		err = p2sb_bar(NULL, 0, res);
--		if (err)
--			return err;
--
--		/* do the final address calculation */
--		res->start = res->start + (0xC5 << 16);
--		res->end = res->start + SZ_4K - 1;
--
--		simatic_ipc_led_memory = devm_ioremap_resource(dev, res);
--		if (IS_ERR(simatic_ipc_led_memory))
--			return PTR_ERR(simatic_ipc_led_memory);
--
--		/* initialize power/watchdog LED */
--		reg = simatic_ipc_led_memory + 0x500 + 0x1D8; /* PM_WDT_OUT */
--		val = readl(reg);
--		writel(val & ~1, reg);
--
--		reg = simatic_ipc_led_memory + 0x500 + 0x1C0; /* PM_BIOS_BOOT_N */
--		val = readl(reg);
--		writel(val | 1, reg);
--		break;
- 	default:
- 		return -ENODEV;
- 	}
- 
- 	while (ipcled->value) {
- 		cdev = &ipcled->cdev;
--		if (type == IORESOURCE_MEM) {
--			cdev->brightness_set = simatic_ipc_led_set_mem;
--			cdev->brightness_get = simatic_ipc_led_get_mem;
--		} else {
--			cdev->brightness_set = simatic_ipc_led_set_io;
--			cdev->brightness_get = simatic_ipc_led_get_io;
--		}
-+		cdev->brightness_set = simatic_ipc_led_set_io;
-+		cdev->brightness_get = simatic_ipc_led_get_io;
- 		cdev->max_brightness = LED_ON;
- 		cdev->name = ipcled->name;
- 
-diff --git a/drivers/platform/x86/simatic-ipc.c b/drivers/platform/x86/simatic-ipc.c
-index 26c35e1660cb..ca3647b751d5 100644
---- a/drivers/platform/x86/simatic-ipc.c
-+++ b/drivers/platform/x86/simatic-ipc.c
-@@ -51,6 +51,7 @@ static int register_platform_devices(u32 station_id)
- {
- 	u8 ledmode = SIMATIC_IPC_DEVICE_NONE;
- 	u8 wdtmode = SIMATIC_IPC_DEVICE_NONE;
-+	char *pdevname = KBUILD_MODNAME "_leds";
- 	int i;
- 
- 	platform_data.devmode = SIMATIC_IPC_DEVICE_NONE;
-@@ -64,10 +65,12 @@ static int register_platform_devices(u32 station_id)
- 	}
- 
- 	if (ledmode != SIMATIC_IPC_DEVICE_NONE) {
-+		if (ledmode == SIMATIC_IPC_DEVICE_127E)
-+			pdevname = KBUILD_MODNAME "_leds_gpio";
- 		platform_data.devmode = ledmode;
- 		ipc_led_platform_device =
- 			platform_device_register_data(NULL,
--				KBUILD_MODNAME "_leds", PLATFORM_DEVID_NONE,
-+				pdevname, PLATFORM_DEVID_NONE,
- 				&platform_data,
- 				sizeof(struct simatic_ipc_platform));
- 		if (IS_ERR(ipc_led_platform_device))
+>> It's unclear to me which driver may ever want to do the mapping under
+>> the dma_resv_lock. But if we will ever have such a driver that will need
+>> to map imported buffer under dma_resv_lock, then we could always add the
+>> dma_buf_vmap_locked() variant of the function. In this case the locking
+>> rule will sound like this:
+>>
+>> "All dma-buf importers are responsible for holding the dma-reservation
+>> lock around the dmabuf->ops->mmap/vmap() calls."
+
+Are you okay with this rule?
+
+>>> It shouldn't be that hard to clean up. The last time I looked into it my
+>>> main problem was that we didn't had any easy unit test for it.
+>> Do we have any tests for dma-bufs at all? It's unclear to me what you
+>> are going to test in regards to the reservation locks, could you please
+>> clarify?
+> Unfortunately not really :-/ Only way really is to grab a driver which
+> needs vmap (those are mostly display drivers) on an imported buffer, and
+> see what happens.
+> 
+> 2nd best is liberally sprinkling lockdep annotations all over the place
+> and throwing it at intel ci (not sure amd ci is accessible to the public)
+> and then hoping that's good enough. Stuff like might_lock and
+> dma_resv_assert_held.
+
+Alright
+
 -- 
-2.35.1
-
+Best regards,
+Dmitry
