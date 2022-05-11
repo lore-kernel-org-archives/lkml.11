@@ -2,138 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF53AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 16:15:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79E2BC43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 16:16:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344473AbiEKQPF (ORCPT
+        id S1344484AbiEKQQW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 12:15:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57804 "EHLO
+        Wed, 11 May 2022 12:16:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344454AbiEKQO5 (ORCPT
+        with ESMTP id S243534AbiEKQQS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 12:14:57 -0400
-Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22EF86D189
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 09:14:56 -0700 (PDT)
-Received: by mail-oi1-x236.google.com with SMTP id q8so3240399oif.13
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 09:14:56 -0700 (PDT)
+        Wed, 11 May 2022 12:16:18 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A75F2317D;
+        Wed, 11 May 2022 09:16:18 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id g8so2409189pfh.5;
+        Wed, 11 May 2022 09:16:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Cf09Je3CtRN58q8NVoc2nPVu33QjMHj88UB5fSrOla4=;
-        b=CTG8yoxyViVJG9wmGrm6SLhEgFT0WuEvMoQXyZI5Kx6YkRB5j28pASLSwuZICqn0Cn
-         WUe9JQtUluE5n2n2m1EPa+FISLLmw74zubXRkCQO7+cPFnDb7SH7eHHvsAv5UmyVzyUV
-         Yg4qwAYNHpV19CvN9+QaSJdKAjMOYPnzZCA3hYz+C9nugper2Z4G1e1AGj+1SszRkaQo
-         moGjWWVVce7nK2CR/KrFugqD3XC1mwkzPeFT8lqC0rXm5ECEPIDRHLahArrblpkSEeOi
-         oarjMZfY1Bm/srauvkhyBWogv1HqzCKX1WkOEQx8b1IIsfASQoQDyYqMHU0Z+3n8xztv
-         Iymw==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5/F+UplkDIwqCQhOSjnvO6kFNp+CMNMp/7h16RlfZuc=;
+        b=M9+x/J4LgddCI29gHcE13YurFaETXEOT6sVdzKPRVZaJPBrqp4ZsdDBOWNcJ76311y
+         U3gpILNCWwFREbHgftBraQ4HgDb7qfkbfslboYuvzxnbzD10EcGcpiCArA9cw+xL+wp/
+         HtTra6bcLKBP2VwZF3EpUsyTnJdJToQpIAIdDHpGHGw65salxriXUB57IHitxKpbWRnJ
+         j4pZYkEwkiwvX8QLjmOSNwxXTniybWYlBLKmW5ApkxUU1P/zwBBLWmu0zT82kGAi8zdV
+         lfy8xRRjMjl2ld83wW5wQwS0VhRdL5OSCwb4WBt22eKRbhxatW1V0OJ+/OPSmEXXVzU2
+         TUsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Cf09Je3CtRN58q8NVoc2nPVu33QjMHj88UB5fSrOla4=;
-        b=X4CnYsKaB16zRCsY+IYEtZ4byzkEk0dYfPgj0cXZxg+N8WGwDO0uhaghTwE0RMrqnI
-         xyAt2949nbr0D6VCQyt5JDV8O2QtQos2+qKw7HCyF15KTEOYcXfmOMo2Z4wVw29Xsawu
-         uN5mICqYeEgXJx+4uM2JcrYvznsPaLIZ6XJ+noyB2ZTzVgEN/Y5JtpHAVpAXOmOQnsR2
-         4vzvY1F8e/8QsyjG89IT69c5VsdQ6WEGjxdekOZncZgJOMBuSjipeHDU15s+jKXYafJv
-         ovrkwn04ZDan1wZQo2nfv4Lq8XkGCP1QuyFgm7u5ycAE7ZPqY0W5qNntsomL387KCA7C
-         vwQw==
-X-Gm-Message-State: AOAM5309zT85WqfhLneRotZ75tsic9eBJxO7IRzNuIlvS3K1eeiRXQ78
-        79wvA/vkZ54IIE322+O1pGuUeg==
-X-Google-Smtp-Source: ABdhPJz8wvQ3CXsSwZJgwMBRizoEDzOcZERxCvR6YfvQLmBZIZFLmiRHdvM6kGdBrvW6hOVawnGctg==
-X-Received: by 2002:a05:6808:2199:b0:326:90e2:754b with SMTP id be25-20020a056808219900b0032690e2754bmr2876267oib.227.1652285695478;
-        Wed, 11 May 2022 09:14:55 -0700 (PDT)
-Received: from ripper (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id z18-20020a056808065200b00325cda1ffacsm861218oih.43.2022.05.11.09.14.54
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5/F+UplkDIwqCQhOSjnvO6kFNp+CMNMp/7h16RlfZuc=;
+        b=AT9LntQOlGtAUdYvFWPu8GiumbNHbbwJ19qkcbZzxHPNczfjC1iO0mzNOieUjGd5xJ
+         /LWaPg5/nksgD9uWDE6Sbz5ewyBFTf+zAoha36vajDuAtHxCAK2KqoJhcbpcGD/GpeW+
+         NIJKJikln18C36lhyLKQtLrdI2rudhEnrv9LQqof1QnscTnHRzd5pHOu4wrQ/+0ARw39
+         usZhmBAX0vOVcvIfJoFG6jbd09NIKG7puu6F8dR8hdtrze0rVAnU5ys84F5jp5mzB+U1
+         XHa/2Q9W9C3awqhluIgCM+BEd94JRd202OzN/2zWmBQNr+dN4UoI6XIfqjbnjGEFBSj8
+         0ToQ==
+X-Gm-Message-State: AOAM533sSc9p+P4NvuiyejiibkaeRhuNwQwugdKiv2X0TOyVGCBFvpWm
+        NjJJVA5kvc9raJeOcToFEPn3cVg8dB4356k7
+X-Google-Smtp-Source: ABdhPJzO1qvU1JiGX6Brj/VPaJ5dul5SDjo8MFHaHCLX0a1jwpw0M2DCKL4vV6DasdU5wPPTg6yi2Q==
+X-Received: by 2002:a63:6981:0:b0:3db:1a89:8849 with SMTP id e123-20020a636981000000b003db1a898849mr4093377pgc.505.1652285777491;
+        Wed, 11 May 2022 09:16:17 -0700 (PDT)
+Received: from skynet-linux.local ([49.204.239.218])
+        by smtp.googlemail.com with ESMTPSA id x7-20020a17090a1f8700b001ded49491basm220322pja.2.2022.05.11.09.16.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 09:14:54 -0700 (PDT)
-Date:   Wed, 11 May 2022 09:17:25 -0700
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Pavel Machek <pavel@ucw.cz>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        Uwe Kleine-K?nig <u.kleine-koenig@pengutronix.de>,
-        Lee Jones <lee.jones@linaro.org>, Luca Weiss <luca@z3ntu.xyz>,
-        Doug Anderson <dianders@chromium.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, linux-leds@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH v14 2/2] leds: Add driver for Qualcomm LPG
-Message-ID: <YnvhleAI5RW0ZvkV@ripper>
-References: <20220303214300.59468-1-bjorn.andersson@linaro.org>
- <20220303214300.59468-2-bjorn.andersson@linaro.org>
- <20220504073009.GC8204@duo.ucw.cz>
- <YnKTAvQc6eDxTl14@ripper>
- <20220506160901.GA1199@bug>
- <YnVMcaRV86jZslhd@ripper>
- <20220507063659.GA6968@amd>
+        Wed, 11 May 2022 09:16:16 -0700 (PDT)
+From:   Sireesh Kodali <sireeshkodali1@gmail.com>
+To:     linux-remoteproc@vger.kernel.org
+Cc:     linux-arm-msm@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, bjorn.andersson@linaro.org,
+        devicetree@vger.kernel.org, phone-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Sireesh Kodali <sireeshkodali1@gmail.com>
+Subject: [PATCH 0/9] Add support for remoteprocs on the MSM8953 platform
+Date:   Wed, 11 May 2022 21:45:53 +0530
+Message-Id: <20220511161602.117772-1-sireeshkodali1@gmail.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220507063659.GA6968@amd>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri 06 May 23:36 PDT 2022, Pavel Machek wrote:
+Hi,
 
-> Hi!
-> 
-> > > > As such the pattern sequence provided to hw_pattern looks to be the
-> > > > smae, but I don't see that it can be made compatible.
-> > > > 
-> > > > > Can I get either patch to disable pattern infrastructure for now or to
-> > > > > get it compatible?
-> > > > > 
-> > > > 
-> > > > I'd be happy to get this updated to your liking, but this was one of the
-> > > > drivers we discussed when we introduced the pattern trigger and led to
-> > > > the conclusion that we need the ability to do hw-specific patterns.
-> > > > 
-> > > > As such this document provides the hardware specific documentation, as
-> > > > we describe under "hw_pattern" in
-> > > > Documentation/ABI/testing/sysfs-class-led-trigger-pattern.
-> > > > 
-> > > > Please advice on what you would like me to do.
-> > > 
-> > > I'd like you to use same format leds-trigger-pattern describes.
-> > > 
-> > > If someone passes "255 500 0 500", that's requesting gradual transitions and
-> > > your hw can not do that. You return -EINVAL.
-> > > 
-> > > If someone wants that kind of blinking, they need to pass "255 0 255 500 0 0 0 500".
-> > > 
-> > 
-> > So the section under hw_pattern in sysfs-class-led-trigger-pattern that
-> > says:
-> > 
-> > "Since different LED hardware can have different semantics of
-> > hardware patterns, each driver is expected to provide its own
-> > description for the hardware patterns in their documentation
-> > file at Documentation/leds/."
-> > 
-> > That doesn't apply to this piece of hardware & driver?
-> 
-> It applies: since your hardware can not do arbitrary patterns, you
-> need description of what kinds of patterns it can do.
-> 
-> But you should still use compatible format, so that pattern that is
-> valid for hw_pattern file is valid for pattern file, too, and produces
-> same result.
-> 
+This patch series adds support for the audio DSP (q6v5_pas), modem
+(q6v5_mss), and WiFi (wcnss-pil) subsystems found on the MSM8953
+platform. Device tree bindings for MSS and WCNSS have been converted to
+YAML. The relevant nodes have also been added to the MSM8953
+device tree.
 
-Okay, I didn't understand that the hw_pattern needs to be a subset of
-the pattern. I will prepare a patch to require the pattern to include
-the zero-time entries as well.
+Sireesh Kodali (8):
+  remoteproc: qcom: pas: Add MSM8953 ADSP PIL support
+  remoteproc: qcom: q6v5-mss: Add modem support on MSM8953
+  dt-bindings: remoteproc: qcom: wcnss: Convert to YAML
+  dt-bindings: remoteproc: qcom: wcnss: Add compatible for pronto v3
+  dt-bindings: remoteproc: qcom: mss: Convert bindings to YAML
+  dt-bindings: remoteproc: qcom: mss: Add MSS on MSM8953
+  dt-bindings: remoteproc: qcom: adsp: Add ADSP on MSM8953
+  arm64: dts: qcom: msm8953: Add remote processor nodes
 
-> If you believe documentation implies something else, it may need to be
-> clarified.
-> 
+Vladimir Lypak (1):
+  remoteproc: qcom: qcom_wcnss: Add support for pronto-v3
 
-I'll read it again and if needed I'll try to clarify the expectations.
+ .../bindings/remoteproc/qcom,adsp.yaml        |   5 +
+ .../bindings/remoteproc/qcom,q6v5.txt         | 302 --------
+ .../bindings/remoteproc/qcom,q6v5.yaml        | 727 ++++++++++++++++++
+ .../bindings/remoteproc/qcom,wcnss-pil.txt    | 177 -----
+ .../bindings/remoteproc/qcom,wcnss-pil.yaml   | 230 ++++++
+ arch/arm64/boot/dts/qcom/msm8953.dtsi         | 378 +++++++++
+ drivers/remoteproc/qcom_q6v5_mss.c            |  64 +-
+ drivers/remoteproc/qcom_q6v5_pas.c            |  31 +
+ drivers/remoteproc/qcom_wcnss.c               |  13 +
+ 9 files changed, 1442 insertions(+), 485 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/remoteproc/qcom,q6v5.txt
+ create mode 100644 Documentation/devicetree/bindings/remoteproc/qcom,q6v5.yaml
+ delete mode 100644 Documentation/devicetree/bindings/remoteproc/qcom,wcnss-pil.txt
+ create mode 100644 Documentation/devicetree/bindings/remoteproc/qcom,wcnss-pil.yaml
 
-Thanks,
-Bjorn
+-- 
+2.36.0
+
