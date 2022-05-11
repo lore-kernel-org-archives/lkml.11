@@ -2,67 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12C54C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 09:44:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E97E6C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 09:44:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234663AbiEKJoY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 05:44:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41602 "EHLO
+        id S241550AbiEKJog (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 05:44:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234489AbiEKJmP (ORCPT
+        with ESMTP id S234189AbiEKJmO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 05:42:15 -0400
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 000592657C;
-        Wed, 11 May 2022 02:41:06 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="5.91,216,1647270000"; 
-   d="scan'208";a="119357492"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie5.idc.renesas.com with ESMTP; 11 May 2022 18:41:06 +0900
-Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 650F54236226;
-        Wed, 11 May 2022 18:41:03 +0900 (JST)
-From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH] pinctrl: renesas: pinctrl-rzg2l: Return -EINVAL for pins which have input disabled
-Date:   Wed, 11 May 2022 10:40:57 +0100
-Message-Id: <20220511094057.3151-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 11 May 2022 05:42:14 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0148DDED5;
+        Wed, 11 May 2022 02:41:08 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: shreeya)
+        with ESMTPSA id D06A41F43FDC
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1652262066;
+        bh=+2usJXmX9v+EVeE5jSEdCqwLDL5071aGc+5kYIF6aq8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=eCD9cZO350OL4oMGSCPh14Ukp+DQnX4Dz1Xs2PDxNK7HHQBoYeWl6kldHZTtcAmMy
+         S8QLpDN6D4aWQlYXXTez3FbaLqE2vuvmr72p3TakhBNIgGUxblCue4OgInDkCyxr3q
+         GnUURc/peFkCrFWv6WiywWGb8GIj93GhLPNWayfH4/6+gEvIXAYiBoO3qgHLFruAzW
+         lEt69fWLzRqJ0Lidwf817KgciRb/5X4SaJHbLhAhe5Qq3ExXa0xNbs0XQifCvFiPn5
+         MhYw40gIxyOPC2Jdh6tC3V3Ehd9O4jIDnRc+2emng0CSUxBbUj5xJ8PL6UmHFTzriy
+         g/Of/coNH8nnQ==
+From:   Shreeya Patel <shreeya.patel@collabora.com>
+To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
+        Zhigang.Shi@liteon.com, krisman@collabora.com
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@collabora.com,
+        alvaro.soliverez@collabora.com,
+        Shreeya Patel <shreeya.patel@collabora.com>
+Subject: [PATCH v4 0/3] Add LTRF216A Driver
+Date:   Wed, 11 May 2022 15:10:21 +0530
+Message-Id: <20220511094024.175994-1-shreeya.patel@collabora.com>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Pin status reported by pinconf-pins file always reported pin status as
-"input enabled" even for pins which had input disabled. Fix this by
-returning -EINVAL for the pins which have input disabled.
+This patchset adds support for ltrf216a Ambient Light Sensor
+and documents the DT bindings for the same.
 
-Fixes: c4c4637eb57f2 ("pinctrl: renesas: Add RZ/G2L pin and gpio controller driver")
-Reported-by: Phil Edworthy <phil.edworthy@renesas.com>
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
----
- drivers/pinctrl/renesas/pinctrl-rzg2l.c | 2 ++
- 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/pinctrl/renesas/pinctrl-rzg2l.c b/drivers/pinctrl/renesas/pinctrl-rzg2l.c
-index af2c739cdbaa..a63535ea47f5 100644
---- a/drivers/pinctrl/renesas/pinctrl-rzg2l.c
-+++ b/drivers/pinctrl/renesas/pinctrl-rzg2l.c
-@@ -527,6 +527,8 @@ static int rzg2l_pinctrl_pinconf_get(struct pinctrl_dev *pctldev,
- 		if (!(cfg & PIN_CFG_IEN))
- 			return -EINVAL;
- 		arg = rzg2l_read_pin_config(pctrl, IEN(port_offset), bit, IEN_MASK);
-+		if (!arg)
-+			return -EINVAL;
- 		break;
- 
- 	case PIN_CONFIG_POWER_SOURCE: {
+Changes in v4
+  - Add more descriptive comment for mutex lock
+  - Fix mutex locking in read_raw()
+  - Use i2c_smbus_read_i2c_block_data()
+
+Changes in v3
+  - Use u16 instead of u8 for int_time_fac
+  - Reorder headers in ltrf216a.c file
+  - Remove int_time_mapping table and use int_time_available
+  - Fix indentation in the bindings file.
+
+Changes in v2
+  - Add support for 25ms and 50ms integration time.
+  - Rename some of the macros as per names given in datasheet
+  - Add a comment for the mutex lock
+  - Use read_avail callback instead of attributes and set the
+    appropriate _available bit.
+  - Use FIELD_PREP() at appropriate places.
+  - Add a constant lookup table for integration time and reg val
+  - Use BIT() macro for magic numbers.
+  - Improve error handling at few places.
+  - Use get_unaligned_le24() and div_u64()
+  - Use probe_new() callback and devm functions
+  - Return errors in probe using dev_err_probe()
+  - Use DEFINE_SIMPLE_DEV_PM_OPS()
+  - Correct the formula for lux to use 0.45 instead of 0.8
+  - Add interrupt and power supply property in DT bindings
+  - Add vendor prefix name as per the alphabetical order.
+
+
+Shreeya Patel (3):
+  dt-bindings: vendor-prefixes: Add 'ltr' as deprecated vendor prefix
+  dt-bindings: Document ltrf216a light sensor bindings
+  iio: light: Add support for ltrf216a sensor
+
+ .../bindings/iio/light/liteon,ltrf216a.yaml   |  51 +++
+ .../devicetree/bindings/vendor-prefixes.yaml  |   3 +
+ drivers/iio/light/Kconfig                     |  10 +
+ drivers/iio/light/Makefile                    |   1 +
+ drivers/iio/light/ltrf216a.c                  | 346 ++++++++++++++++++
+ 5 files changed, 411 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml
+ create mode 100644 drivers/iio/light/ltrf216a.c
+
 -- 
-2.25.1
+2.30.2
 
