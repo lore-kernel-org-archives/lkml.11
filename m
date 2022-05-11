@@ -2,165 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17A9FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:53:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66650C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:57:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241475AbiEKCxt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 22:53:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33604 "EHLO
+        id S234820AbiEKC5L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 22:57:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241829AbiEKCxU (ORCPT
+        with ESMTP id S229608AbiEKC5F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 22:53:20 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAC3824959
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:53:05 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id i17so549049pla.10
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:53:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Sa6iliEUhHDKiJ4d5VKYWANmjzvcVks6FAQCBioSqwo=;
-        b=iLg1sZkLeKPM2kWZK1dOBgkVtvIv9fskmkv+uRa3VrGM/iSiUFxz9myhwDCq/lYtMQ
-         uqYJxL/zrLKanqkbFe33nehGm6l5DZ8mvHCYyk8RO7ro9VrUdoxqMHW1qj/9L4C/sZR+
-         79n1lE2VsyCc+x3k5bTSQqe4BWZOIwuScBssM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Sa6iliEUhHDKiJ4d5VKYWANmjzvcVks6FAQCBioSqwo=;
-        b=q1BTtqcZ0uTZlsPsyRBy+6pUIY2waZi95lnL2iKOio0vzJ4rAbS8gSlI4mwauMf490
-         +yCVyLbAMlCEekEsiwo5aqqkhBA5gwvaqEAaDTyDuCVR8zAxzazl/kCCPdVtLCRaP/nT
-         dCh1eFI1gIziu/P0LpZnTaclrQbFgi35ICcQHOumVZMRJ74hdmv0RSSR2PKJ1GwjM6T5
-         81d4efz3q+PbPitYXnhqGlCTecI2ouP6O7MiBRaaDpAfa6ZuGzD1B/G+/WtfNXhUXXaR
-         Ga8Hb6H3I7kgYhW/GYwKqBVf2ezR1rtyYTLFLC1x1bAHHNrG3Cx+28c3h3UdCkQ6xnHY
-         5i8Q==
-X-Gm-Message-State: AOAM533nWXH4g0eGC5hJ0JxsU8qeZIBTiEgMPIWDrLsgeRCZiRu44n8e
-        d+IkXxLnGdy2+4xvbw6+b5A5cA==
-X-Google-Smtp-Source: ABdhPJx1c1/TGylCkNI+72RCfr609NArcRVaQDmF+ypY51TnbvIezVGQVIwy6NL0mcbSprU53CJYrg==
-X-Received: by 2002:a17:902:d4c2:b0:15e:abd0:926f with SMTP id o2-20020a170902d4c200b0015eabd0926fmr23646480plg.129.1652237585369;
-        Tue, 10 May 2022 19:53:05 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id n9-20020a170902968900b0015e8d4eb1d7sm363503plp.33.2022.05.10.19.53.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 19:53:05 -0700 (PDT)
-From:   Kees Cook <keescook@chromium.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Coco Li <lixiaoyan@google.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>, netdev@vger.kernel.org,
-        linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH] fortify: Provide a memcpy trap door for sharp corners
-Date:   Tue, 10 May 2022 19:53:01 -0700
-Message-Id: <20220511025301.3636666-1-keescook@chromium.org>
-X-Mailer: git-send-email 2.32.0
+        Tue, 10 May 2022 22:57:05 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD7849F35;
+        Tue, 10 May 2022 19:57:03 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kyfgk0rclzbng6;
+        Wed, 11 May 2022 10:56:34 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 11 May 2022 10:57:02 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 11 May
+ 2022 10:57:01 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>
+CC:     <nbd@nbd.name>, <davem@davemloft.net>, <kuba@kernel.org>
+Subject: [PATCH] net: ethernet: mediatek: ppe: fix wrong size passed to memset()
+Date:   Wed, 11 May 2022 11:08:29 +0800
+Message-ID: <20220511030829.3308094-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4296; h=from:subject; bh=zskFoaXURO/IVylo7b2S5LXUxKy16zZKQmnvSBayKxA=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBieyUMQ7ji1ylNdh9eL1qcvtxDkFAlxq4iz5ETfoxb d7pbo8iJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYnslDAAKCRCJcvTf3G3AJnjwD/ 4vfLAWnR6lv2s6quyKFRlqqPX6DLgsFQO/0o6PWTm5WPdSp+jXJqvlubxLwxyUfRZUbAjVMOhXxrZz KnVhdajFWHnLc9B7YN9txp8Hh+eKcnC/OHn7yNU8hpZKQniQmkPh4D9/b1vwGodxeF6+u63TcnX8Z+ zZKjmoKETwoY1YykOIEE1Xqg8ox/oT52kP9u1N092vsWV6YXGrtSUQzsEqal/HToEvS6eW+ZUTi8i3 EyzzxjYtTSltgVY3Et9AqCO9Uo+0Ik7Go0rzqSNgnp0GS8xpKOFXb2g124++75uNB7utcfKmGn5yfR Wb4rd1+trzcYq7kxQp1xPZHqXXLV9UzeTqzToIVwDOwsWyKRmNdmsX9hDkiNiCn+7N9X+l9/gIbMm2 +RjZ/MRfPPTNuGmpliyix25Smdz53NXN1FrhronUFYEKnf1WpUEwTEvF4O42vsCTekwqIrgGXCLurf S/7d3fS4v4Bg8cA+5Qh+Uk0+ZqrTXgUP6OaDMkTICNXHTUGS80cHN7CrFE6q1UO+tsNQ/Fsge8taJS gm+Kiyli7VLSzYhXC0sKHxbB0JH0xP5894RSoW/K/PoLq+kRq7B1YseAHyV0Qfk5+iriQajxk+fnBQ egtZMtFQH8mxnRG8Q/Oo/X9lppUulkGrhJw92Vl2hjcQ77wy6/uvc14JCVXA==
-X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As we continue to narrow the scope of what the FORTIFY memcpy() will
-accept and build alternative APIs that give the compiler appropriate
-visibility into more complex memcpy scenarios, there is a need for
-"unfortified" memcpy use in rare cases where combinations of compiler
-behaviors, source code layout, etc, result in cases where the stricter
-memcpy checks need to be bypassed until appropriate solutions can be
-developed (i.e. fix compiler bugs, code refactoring, new API, etc). The
-intention is for this to be used only if there's no other reasonable
-solution, for its use to include a justification that can be used
-to assess future solutions, and for it to be temporary.
+'foe_table' is a pointer, the real size of struct mtk_foe_entry
+should be pass to memset().
 
-Example usage included, based on analysis and discussion from:
-https://lore.kernel.org/netdev/CANn89iLS_2cshtuXPyNUGDPaic=sJiYfvTb_wNLgWrZRyBxZ_g@mail.gmail.com
-
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Coco Li <lixiaoyan@google.com>
-Cc: Tariq Toukan <tariqt@nvidia.com>
-Cc: Saeed Mahameed <saeedm@nvidia.com>
-Cc: Leon Romanovsky <leon@kernel.org>
-Cc: netdev@vger.kernel.org
-Cc: linux-hardening@vger.kernel.org
-Signed-off-by: Kees Cook <keescook@chromium.org>
+Fixes: ba37b7caf1ed ("net: ethernet: mtk_eth_soc: add support for initializing the PPE")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_tx.c |  8 +++++++-
- include/linux/fortify-string.h                  | 16 ++++++++++++++++
- include/linux/string.h                          |  4 ++++
- 3 files changed, 27 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mediatek/mtk_ppe.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-index 2dc48406cd08..5855d8f9c509 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-@@ -386,7 +386,13 @@ mlx5e_sq_xmit_wqe(struct mlx5e_txqsq *sq, struct sk_buff *skb,
- 			stats->added_vlan_packets++;
- 		} else {
- 			eseg->inline_hdr.sz |= cpu_to_be16(attr->ihs);
--			memcpy(eseg->inline_hdr.start, skb->data, attr->ihs);
-+			unsafe_memcpy(eseg->inline_hdr.start, skb->data, attr->ihs,
-+				/* This copy has been bounds-checked earlier in
-+				 * mlx5i_sq_calc_wqe_attr() and intentionally
-+				 * crosses a flex array boundary. Since it is
-+				 * performance sensitive, splitting the copy is
-+				 * undesirable.
-+				 */);
- 		}
- 		dseg += wqe_attr->ds_cnt_inl;
- 	} else if (skb_vlan_tag_present(skb)) {
-diff --git a/include/linux/fortify-string.h b/include/linux/fortify-string.h
-index 295637a66c46..3b401fa0f374 100644
---- a/include/linux/fortify-string.h
-+++ b/include/linux/fortify-string.h
-@@ -52,6 +52,22 @@ extern char *__underlying_strncpy(char *p, const char *q, __kernel_size_t size)
- #define __underlying_strncpy	__builtin_strncpy
- #endif
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
+index 3ad10c793308..66298e2235c9 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe.c
++++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
+@@ -395,7 +395,7 @@ static void mtk_ppe_init_foe_table(struct mtk_ppe *ppe)
+ 	static const u8 skip[] = { 12, 25, 38, 51, 76, 89, 102 };
+ 	int i, k;
  
-+/**
-+ * unsafe_memcpy - memcpy implementation with no FORTIFY bounds checking
-+ *
-+ * @dst: Destination memory address to write to
-+ * @src: Source memory address to read from
-+ * @bytes: How many bytes to write to @dst from @src
-+ * @justification: Free-form text or comment describing why the use is needed
-+ *
-+ * This should be used for corner cases where the compiler cannot do the
-+ * right thing, or during transitions between APIs, etc. It should be used
-+ * very rarely, and includes a place for justification detailing where bounds
-+ * checking has happened, and why existing solutions cannot be employed.
-+ */
-+#define unsafe_memcpy(dst, src, bytes, justification)		\
-+	__underlying_memcpy(dst, src, bytes)
-+
- /*
-  * Clang's use of __builtin_object_size() within inlines needs hinting via
-  * __pass_object_size(). The preference is to only ever use type 1 (member
-diff --git a/include/linux/string.h b/include/linux/string.h
-index b6572aeca2f5..61ec7e4f6311 100644
---- a/include/linux/string.h
-+++ b/include/linux/string.h
-@@ -252,6 +252,10 @@ static inline const char *kbasename(const char *path)
- #if !defined(__NO_FORTIFY) && defined(__OPTIMIZE__) && defined(CONFIG_FORTIFY_SOURCE)
- #include <linux/fortify-string.h>
- #endif
-+#ifndef unsafe_memcpy
-+#define unsafe_memcpy(dst, src, bytes, justification)		\
-+	memcpy(dst, src, bytes)
-+#endif
+-	memset(ppe->foe_table, 0, MTK_PPE_ENTRIES * sizeof(ppe->foe_table));
++	memset(ppe->foe_table, 0, MTK_PPE_ENTRIES * sizeof(*ppe->foe_table));
  
- void memcpy_and_pad(void *dest, size_t dest_len, const void *src, size_t count,
- 		    int pad);
+ 	if (!IS_ENABLED(CONFIG_SOC_MT7621))
+ 		return;
 -- 
-2.32.0
+2.25.1
 
