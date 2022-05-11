@@ -2,71 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0FF7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 10:27:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDF40C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 10:28:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232266AbiEKK1y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 06:27:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50642 "EHLO
+        id S238394AbiEKK2A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 06:28:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239340AbiEKK0e (ORCPT
+        with ESMTP id S239660AbiEKK0f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 06:26:34 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 060AC289B0;
-        Wed, 11 May 2022 03:26:29 -0700 (PDT)
-Received: from zn.tnic (p5de8eeb4.dip0.t-ipconnect.de [93.232.238.180])
+        Wed, 11 May 2022 06:26:35 -0400
+Received: from mail-out.m-online.net (mail-out.m-online.net [212.18.0.9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF88628716
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 03:26:24 -0700 (PDT)
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 4Kyrfk14BNz1r0mV;
+        Wed, 11 May 2022 12:26:20 +0200 (CEST)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 4Kyrfh40nLz1qqkB;
+        Wed, 11 May 2022 12:26:20 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id NxkthguitX5R; Wed, 11 May 2022 12:26:19 +0200 (CEST)
+X-Auth-Info: tXIHxX5ZHslhb42XaJY3rZb8wZNgDXNyXF/IBEZkdDkmhIoND3kQLJkAM1OSuDJZ
+Received: from igel.home (ppp-46-244-167-40.dynamic.mnet-online.de [46.244.167.40])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 4CDDB1EC0531;
-        Wed, 11 May 2022 12:26:24 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1652264784;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=VEp2t13QqBjlm/ZQxi+DnPO1+jQii+Zbpf8zWxlnnl0=;
-        b=GIcHGpSHKshTcEogyx9MHmP5tZbnef7UvraEy3lU7NVYz/p/8IkqapaeuIAFISMxxKc/RW
-        ioVLi+L4F6qnd0IJkflmfDtGERwaqh1iJOUMpBZIT++sUTSj5ZmCioV6XtaufMOQKo6N/T
-        OBZOj4BZd6ZMfXSqugsKoWBpeYvzcsE=
-Date:   Wed, 11 May 2022 12:26:27 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Yazen Ghannam <yazen.ghannam@amd.com>
-Cc:     linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Smita.KoralahalliChannabasappa@amd.com, muralidhara.mk@amd.com,
-        naveenkrishna.chatradhi@amd.com
-Subject: Re: [PATCH 02/18] EDAC/amd64: Remove scrub rate control for Family
- 17h and later
-Message-ID: <YnuPU41KWLer9d5T@zn.tnic>
-References: <20220509145534.44912-1-yazen.ghannam@amd.com>
- <20220509145534.44912-3-yazen.ghannam@amd.com>
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Wed, 11 May 2022 12:26:19 +0200 (CEST)
+Received: by igel.home (Postfix, from userid 1000)
+        id 073C12C36A0; Wed, 11 May 2022 12:26:19 +0200 (CEST)
+From:   Andreas Schwab <schwab@linux-m68k.org>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Greg Ungerer <gerg@uclinux.org>, linux-m68k@lists.linux-m68k.org,
+        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH] m68k: math-emu: Fix dependencies of math emulation support
+References: <e0a9cf982a80f14efbf01cdc38e31128a9f41999.1652262437.git.geert@linux-m68k.org>
+X-Yow:  I guess it was all a DREAM..  or an episode of HAWAII FIVE-O...
+Date:   Wed, 11 May 2022 12:26:18 +0200
+In-Reply-To: <e0a9cf982a80f14efbf01cdc38e31128a9f41999.1652262437.git.geert@linux-m68k.org>
+        (Geert Uytterhoeven's message of "Wed, 11 May 2022 11:48:48 +0200")
+Message-ID: <875ymcwek5.fsf@igel.home>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220509145534.44912-3-yazen.ghannam@amd.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 02:55:18PM +0000, Yazen Ghannam wrote:
-> @@ -251,6 +234,9 @@ static int set_scrub_rate(struct mem_ctl_info *mci, u32 bw)
->  	struct amd64_pvt *pvt = mci->pvt_info;
->  	u32 min_scrubrate = 0x5;
->  
-> +	if (pvt->umc)
-> +		return -EPERM;
+On Mai 11 2022, Geert Uytterhoeven wrote:
 
-Since this function is testing families, it might be more
-straightforward for the check to be:
+> Drop the dependency on MMU, as the code should work fine on 68020 and up
+> without MMU (which are not yet supported by Linux, though).
+> Add dependencies on M68K_CLASSIC (to rule out Coldfire) and FPU (to rule
+> out 68xxx below 68020).
 
-	if (pvt->fam >= 0x17)
-
-> +
->  	if (pvt->fam == 0xf)
->  		min_scrubrate = 0x0;
+Depending on FPU looks strange, since that is supposed to be an FPU
+emulation, for CPUs that _lack_ an FPU (ie. 680[23]0 without the
+6888[12], or 68LC0[46]0).
 
 -- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Andreas Schwab, schwab@linux-m68k.org
+GPG Key fingerprint = 7578 EB47 D4E5 4D69 2510  2552 DF73 E780 A9DA AEC1
+"And now for something completely different."
