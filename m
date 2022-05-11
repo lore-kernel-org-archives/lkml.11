@@ -2,132 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B25BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 12:17:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53C77C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 12:17:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241474AbiEKMRj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 08:17:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51566 "EHLO
+        id S241824AbiEKMR5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 08:17:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237519AbiEKMRb (ORCPT
+        with ESMTP id S241889AbiEKMRs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 08:17:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D591C4E3BC
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 05:17:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652271450;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bcZFRYTKLactxBX9oYfEagpDJc8Hncop/DdMPPKBCuQ=;
-        b=R+QZQSIvPynvuxJCWJESk+KvnSo6Kj+almthqCdVWMVSpoAHb86n62kefax/WbTSab67S1
-        O8BQ4U/q/43WusE9YQnoMQE/ipEvqmiCoSHfMMLWVCmr5o8ZCOuxsOqHX1lCZimvohZKFQ
-        ww3XfM8/Zr6b70Z1jJuHWBnL4qgHDTU=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-608-Z2XXL7WZPASg_zPsh1D3EQ-1; Wed, 11 May 2022 08:17:26 -0400
-X-MC-Unique: Z2XXL7WZPASg_zPsh1D3EQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4D338101161C;
-        Wed, 11 May 2022 12:17:26 +0000 (UTC)
-Received: from starship (unknown [10.40.192.26])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0C37A14C26A3;
-        Wed, 11 May 2022 12:17:23 +0000 (UTC)
-Message-ID: <75de69e533590b5c5b10f15050081662c3f054f4.camel@redhat.com>
-Subject: Re: [PATCH v3 27/34] KVM: selftests: Sync 'struct
- hv_enlightened_vmcs' definition with hyperv-tlfs.h
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Wed, 11 May 2022 15:17:23 +0300
-In-Reply-To: <20220414132013.1588929-28-vkuznets@redhat.com>
-References: <20220414132013.1588929-1-vkuznets@redhat.com>
-         <20220414132013.1588929-28-vkuznets@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Wed, 11 May 2022 08:17:48 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDFEA4EF41;
+        Wed, 11 May 2022 05:17:41 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id gj17-20020a17090b109100b001d8b390f77bso4785687pjb.1;
+        Wed, 11 May 2022 05:17:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=6jloxkDrIBx1FQXB3WO3Zmzcd3Q83JGcMWSxebzbF80=;
+        b=oU7QGwSElhyci8ZR/OTe9HHc5yH5oBDGLYBqdFuGP0A+UntWW+o126T+puwM3gGQaa
+         s8eH+vRmefjW0g9a2Ld4jCTmsADSpVHsyopJw+86eX97RIJVO3ucW+e+tLOJJmhDdZTW
+         RV+FZFJAbM0gbfYxUpn86RCEy/gt5mq0YZBclMJGrwklm7ecn0L4M2eLm0WRZQnZSILt
+         HmrRTUfFcgUueejhcV96JGCweuRkh4YtPylbiTUDPezsvbnL9MH3jHvL7x9upNuWPH5x
+         GTxrVTheyp2VgmmZy5FhNOWBP0e1+5Be8X2g9poc544EzW8f900YlCQk1RKHeJokUzDw
+         Ij4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6jloxkDrIBx1FQXB3WO3Zmzcd3Q83JGcMWSxebzbF80=;
+        b=L3+7q9/bX7qiAG5UsKRHhSrbd6X4+KAegtT2P9F0DOrfLkovjKk8MOHp7DkseDJn/w
+         05bCtkhl3xuQ8VdRV8BaFhoeIc0LOaU+42gEA9S+TCdO6IbHmElsw5GZZukIJEvUT+Jo
+         +71JEk7P4ddxhe+vbClekaIXXLsHoe45JC3FEdhAv+SloPHDfdAtMqxdblmbajxt5ooC
+         m317e4o8iFQL5fkAhDJ+EyOl/wjIE9hrcitYCNMQQCdC4KfoGT2Ra5T3V3A/FOjJtfHy
+         c3QPXI8oqN6zJjnmOYrK8tVjufQyZ7vD6EbdYvjNiXnYY+b4hI+UPKqHcXEmgcw1NSl9
+         UeEg==
+X-Gm-Message-State: AOAM532Wvr+S1BRqYt5FPhLwFtiImqpM7vE/Bb5GgnvBwfD0tFyOvEEj
+        b17EIFjNQoAGxWOhheLhbn8=
+X-Google-Smtp-Source: ABdhPJxPUIzteam2t9wDpHP6nr06rCewsN5+gC9SkiHTFRp8pdZVPv3cYpJfFGaF/VpS85E2BKIFXA==
+X-Received: by 2002:a17:902:9349:b0:158:a6f7:e280 with SMTP id g9-20020a170902934900b00158a6f7e280mr24853463plp.155.1652271461237;
+        Wed, 11 May 2022 05:17:41 -0700 (PDT)
+Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
+        by smtp.gmail.com with ESMTPSA id v24-20020a170902e8d800b0015e8d4eb272sm1676730plg.188.2022.05.11.05.17.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 May 2022 05:17:40 -0700 (PDT)
+Date:   Wed, 11 May 2022 21:17:38 +0900
+From:   Stafford Horne <shorne@gmail.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Mikulas Patocka <mpatocka@redhat.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        device-mapper development <dm-devel@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Mike Snitzer <msnitzer@redhat.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Milan Broz <gmazyland@gmail.com>
+Subject: Re: [PATCH v2] hex2bin: make the function hex_to_bin constant-time
+Message-ID: <YnupYin9knBu6c91@antec>
+References: <YnJI4Ru0AlUgrr9C@zx2c4.com>
+ <YnJOCbLtdATzC+jn@zx2c4.com>
+ <YnJQXr3igEMTqY3+@smile.fi.intel.com>
+ <YnJSQ3jJyvhmIstD@zx2c4.com>
+ <CAHk-=wgb_eBdjM_mzEvXfRG2EhrSK5MHNGyAj7=4vxvN4U9Rug@mail.gmail.com>
+ <CAHmME9q_-nfGxp8_VCqaritm4N8v8g67AzRjXs9du846JhhpoQ@mail.gmail.com>
+ <CAAfxs77yaLvWx9KnkDZX7E1eDm9N-NVJn5n8=mCK9BU-cSob=A@mail.gmail.com>
+ <CAHk-=wjLRo-6PbhbvMUDojbMo=L+2jc5VpCYTyF-LGxZPhUngA@mail.gmail.com>
+ <YnLkYjOF2vEOdjOo@antec>
+ <YncQxl1shpH5TpbK@antec>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YncQxl1shpH5TpbK@antec>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-04-14 at 15:20 +0200, Vitaly Kuznetsov wrote:
-> 'struct hv_enlightened_vmcs' definition in selftests is not '__packed'
-> and so we rely on the compiler doing the right padding. This is not
-> obvious so it seems beneficial to use the same definition as in kernel.
+On Sun, May 08, 2022 at 09:37:26AM +0900, Stafford Horne wrote:
+> On Thu, May 05, 2022 at 05:38:58AM +0900, Stafford Horne wrote:
+> > On Wed, May 04, 2022 at 01:10:03PM -0700, Linus Torvalds wrote:
+> > > On Wed, May 4, 2022 at 12:58 PM Stafford Horne <shorne@gmail.com> wrote:
+> > > >
+> > > > I have uploaded a diff I created here:
+> > > >   https://gist.github.com/54334556f2907104cd12374872a0597c
+> > > >
+> > > > It shows the same output.
+> > > 
+> > > In hex_to_bin itself it seems to only be a difference due to some
+> > > register allocation (r19 and r3 switched around).
+> > > 
+> > > But then it gets inlined into hex2bin and there changes there seem to
+> > > be about instruction and basic block scheduling, so it's a lot harder
+> > > to see what's going on.
+> > > 
+> > > And a lot of constant changes, which honestly look just like code code
+> > > moved around by 16 bytes and offsets changed due to that.
+> > > 
+> > > So I doubt it's hex_to_bin() that is causing problems, I think it's
+> > > purely code movement. Which explains why adding a nop or a fake printk
+> > > fixes things.
+> > > 
+> > > Some alignment assumption that got broken?
+> > 
+> > This is what it looks like to me too.  I will have to do a deep dive on what is
+> > going on with this particular build combination as I can't figure out what it is
+> > off the top of my head.
+> > 
+> > This test is using a gcc 11 compiler, I tried with my gcc 12 toolchain and the
+> > issue cannot be reproduced.
+> > 
+> >   - musl gcc 11 - https://musl.cc/or1k-linux-musl-cross.tgz
+> >   - openrisc gcc 12 - https://github.com/openrisc/or1k-gcc/releases/tag/or1k-12.0.1-20220210-20220304
+> > 
+> > But again the difference between the two compiler outputs is a lot of register
+> > allocation and offsets changes.  Its not easy to see anything that stands out.
+> > I checked the change log for the openrisc specific changes from gcc 11 to gcc
+> > 12.  Nothing seems to stand out, mcount profiler fix for PIC, a new large binary
+> > link flag.
 > 
-> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-> ---
->  tools/testing/selftests/kvm/include/x86_64/evmcs.h | 12 +++++++-----
->  1 file changed, 7 insertions(+), 5 deletions(-)
+> Hello,
 > 
-> diff --git a/tools/testing/selftests/kvm/include/x86_64/evmcs.h b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
-> index cc5d14a45702..b6067b555110 100644
-> --- a/tools/testing/selftests/kvm/include/x86_64/evmcs.h
-> +++ b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
-> @@ -41,6 +41,8 @@ struct hv_enlightened_vmcs {
->  	u16 host_gs_selector;
->  	u16 host_tr_selector;
->  
-> +	u16 padding16_1;
-> +
->  	u64 host_ia32_pat;
->  	u64 host_ia32_efer;
->  
-> @@ -159,7 +161,7 @@ struct hv_enlightened_vmcs {
->  	u64 ept_pointer;
->  
->  	u16 virtual_processor_id;
-> -	u16 padding16[3];
-> +	u16 padding16_2[3];
->  
->  	u64 padding64_2[5];
->  	u64 guest_physical_address;
-> @@ -195,15 +197,15 @@ struct hv_enlightened_vmcs {
->  	u64 guest_rip;
->  
->  	u32 hv_clean_fields;
-> -	u32 hv_padding_32;
-> +	u32 padding32_1;
->  	u32 hv_synthetic_controls;
->  	struct {
->  		u32 nested_flush_hypercall:1;
->  		u32 msr_bitmap:1;
->  		u32 reserved:30;
-> -	} hv_enlightenments_control;
-> +	}  __packed hv_enlightenments_control;
->  	u32 hv_vp_id;
-> -
-> +	u32 padding32_2;
->  	u64 hv_vm_id;
->  	u64 partition_assist_page;
->  	u64 padding64_4[4];
-> @@ -211,7 +213,7 @@ struct hv_enlightened_vmcs {
->  	u64 padding64_5[7];
->  	u64 xss_exit_bitmap;
->  	u64 padding64_6[7];
-> -};
-> +} __packed;
->  
->  #define HV_VMX_ENLIGHTENED_CLEAN_FIELD_NONE                     0
->  #define HV_VMX_ENLIGHTENED_CLEAN_FIELD_IO_BITMAP                BIT(0)
+> Just an update on this.  The issue so far has been traced to the alignment of
+> the crypto multiplication function fe_mul_impl in lib/crypto/curve25519-fiat32.c.
+> 
+> This patch e5be15767e7e ("hex2bin: make the function hex_to_bin constant-time")
+> allowed for the alignment to be just right to cause the failure.  Without
+> this patch and forcing the alignment we can reproduce the issue.  So though the
+> bisect is correct, this patch is not the root cause of the issue.
+> 
+> Using some l.nop sliding techniques and some strategically placed .align
+> statements I have been able to reproduce the issue on:
+> 
+>   - gcc 11 and gcc 12
+>   - preempt and non-preempt kernels
+> 
+> I have not been able to reproduce this on my FPGA, so far only QEMU.  My
+> hunch now is that since the fe_mul_impl function contains some rather long basic
+> blocks it appears that timer interrupts that interrupt qemu mid basic block
+> execution somehow is causing this.  The hypothesis is it may be basic block
+> resuming behavior in qemu that causes incosistent behavior.
+> 
+> It will take a bit more time to trace this.  Since I maintain OpenRISC QEMU the
+> issue is on me.
+> 
+> Again, It's safe to say that patch e5be15767e7e ("hex2bin: make the function
+> hex_to_bin constant-time") is not an issue.
 
-Makes sense.
+This issue has been fixed.  I sent a patch to QEMU for it:
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+ - https://lore.kernel.org/qemu-devel/20220511120541.2242797-1-shorne@gmail.com/T/#u
 
-Best regards,
-	Maxim Levitsky
+The issue was a bug in the OpenRISC emulation in QEMU which was triggered when
+receiving a TICK TIMER interrupt, in a delay slot, on a page boundary.
 
+The fix was simple enough, but investigation took quite some work.
+
+Thanks,
+
+-Stafford
