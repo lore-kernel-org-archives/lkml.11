@@ -2,134 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B3B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 11:25:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C6A5C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 11:25:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239249AbiEKLZi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 07:25:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51686 "EHLO
+        id S230297AbiEKLZr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 07:25:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240040AbiEKLYu (ORCPT
+        with ESMTP id S238167AbiEKLYX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 07:24:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76895231CBD;
-        Wed, 11 May 2022 04:24:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 11 May 2022 07:24:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BC012239782
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 04:23:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652268232;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WYzPUdllJHiO6z7MbzaY1Iv/t1q26wP/KgKTQCHuXX8=;
+        b=Vy7L/phKNYO51U3x8N8iqTU4tu+7peG8lJR3W38TGGVYle8RE0IRUT+iS3xmAqDFEddLDG
+        BKhOyNtVxxXU/FzT6l1TGSKW2J+BPLogtzcShGKEZ7I906Dv4sYHEoWpWugsENo6k/Dxbw
+        70rmEtzgB+EdgSHbV+VJvbU1ambIfyE=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-454-29AgfxXiMIWQv51BI7mNUg-1; Wed, 11 May 2022 07:23:48 -0400
+X-MC-Unique: 29AgfxXiMIWQv51BI7mNUg-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2EB35B82217;
-        Wed, 11 May 2022 11:24:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64379C340F3;
-        Wed, 11 May 2022 11:24:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652268250;
-        bh=NQicI0jcyEUR6Fudb4tAuvnUgZQIKvtt0icfl6gJwCQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pnBq/HSTjd3IX5sroatFQhgvdbBjXhvbHffVsFtilrhkEoDFaahS2RpfiISzkj9/q
-         +70G4JvExSROBu6aP+NSwstIiLgpTbYMT8BrQLnif2MjgAO2CXa/8bCodBzIb2mwlP
-         UAJzOlOVQ8Weqw0AxA7sibne2diwYozkBr+xd8D6pzOMtsXfnkTMD9RXOYtTlVMvRz
-         BekSrBKVaehn0qCWxIpqo1wKNaTHp6Re5mKd2BfZ8UfKC7o9zuwn5CC7zzOZYye3TV
-         0TAppL932+y9djCzIN2auQEGWZNnTrA+womq4ZDhZ0zc3vy/40sjrPpASg8101A92d
-         pvr1Q1EHNsd5Q==
-Date:   Wed, 11 May 2022 14:22:40 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Cc:     peterhuewe@gmx.de, jgg@ziepe.ca, stefanb@linux.vnet.ibm.com,
-        linux@mniewoehner.de, linux-integrity@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lukas@wunner.de,
-        p.rosenberger@kunbus.com, Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Subject: Re: [PATCH v4 1/6] tpm, tpm_tis_spi: Request threaded irq
-Message-ID: <YnucgDH3I87RI8PN@kernel.org>
-References: <20220509080559.4381-1-LinoSanfilippo@gmx.de>
- <20220509080559.4381-2-LinoSanfilippo@gmx.de>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 589042999B3B;
+        Wed, 11 May 2022 11:23:48 +0000 (UTC)
+Received: from starship (unknown [10.40.192.26])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1461B1121314;
+        Wed, 11 May 2022 11:23:45 +0000 (UTC)
+Message-ID: <0bb5edd5969ff792c6d99c12d1e1976180180a19.camel@redhat.com>
+Subject: Re: [PATCH v3 06/34] KVM: x86: Prepare kvm_hv_flush_tlb() to handle
+ L2's GPAs
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Wed, 11 May 2022 14:23:44 +0300
+In-Reply-To: <20220414132013.1588929-7-vkuznets@redhat.com>
+References: <20220414132013.1588929-1-vkuznets@redhat.com>
+         <20220414132013.1588929-7-vkuznets@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220509080559.4381-2-LinoSanfilippo@gmx.de>
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 10:05:54AM +0200, Lino Sanfilippo wrote:
-> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+On Thu, 2022-04-14 at 15:19 +0200, Vitaly Kuznetsov wrote:
+> To handle L2 TLB flush requests, KVM needs to translate the specified
+> L2 GPA to L1 GPA to read hypercall arguments from there.
 > 
-> Interrupt handling at least includes reading and writing the interrupt
-> status register within the interrupt routine. Since accesses over the SPI
-> bus are synchronized by a mutex, request a threaded interrupt handler to
-> ensure a sleepable context during interrupt processing.
+> No fucntional change as KVM doesn't handle VMCALL/VMMCALL from L2 yet.
+   ^ typo
 > 
-> Fixes: 1a339b658d9d ("tpm_tis_spi: Pass the SPI IRQ down to the driver")
-> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-
-When you state that it needs a sleepable context, you should bring a
-context why it needs it. This not to disregard the code change overally but
-you cannot make even the most obvious claim without backing data.
-
+> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 > ---
->  drivers/char/tpm/tpm_tis_core.c     | 15 +++++++++++++--
->  drivers/char/tpm/tpm_tis_core.h     |  1 +
->  drivers/char/tpm/tpm_tis_spi_main.c |  5 +++--
->  3 files changed, 17 insertions(+), 4 deletions(-)
+>  arch/x86/kvm/hyperv.c | 7 +++++++
+>  1 file changed, 7 insertions(+)
 > 
-> diff --git a/drivers/char/tpm/tpm_tis_core.c b/drivers/char/tpm/tpm_tis_core.c
-> index dc56b976d816..52369ef39b03 100644
-> --- a/drivers/char/tpm/tpm_tis_core.c
-> +++ b/drivers/char/tpm/tpm_tis_core.c
-> @@ -747,8 +747,19 @@ static int tpm_tis_probe_irq_single(struct tpm_chip *chip, u32 intmask,
->  	int rc;
->  	u32 int_status;
+> diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
+> index 1a6f9628cee9..fc4bb0ead9fa 100644
+> --- a/arch/x86/kvm/hyperv.c
+> +++ b/arch/x86/kvm/hyperv.c
+> @@ -23,6 +23,7 @@
+>  #include "ioapic.h"
+>  #include "cpuid.h"
+>  #include "hyperv.h"
+> +#include "mmu.h"
+>  #include "xen.h"
 >  
-> -	if (devm_request_irq(chip->dev.parent, irq, tis_int_handler, flags,
-> -			     dev_name(&chip->dev), chip) != 0) {
-> +
-> +	if (priv->flags & TPM_TIS_USE_THREADED_IRQ) {
-> +		rc = devm_request_threaded_irq(chip->dev.parent, irq, NULL,
-> +					       tis_int_handler,
-> +					       IRQF_ONESHOT | flags,
-> +					       dev_name(&chip->dev),
-> +					       chip);
-> +	} else {
-> +		rc = devm_request_irq(chip->dev.parent, irq, tis_int_handler,
-> +				      flags, dev_name(&chip->dev), chip);
+>  #include <linux/cpu.h>
+> @@ -1975,6 +1976,12 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
+>  	 */
+>  	BUILD_BUG_ON(KVM_HV_MAX_SPARSE_VCPU_SET_BITS > 64);
+>  
+> +	if (!hc->fast && is_guest_mode(vcpu)) {
+> +		hc->ingpa = translate_nested_gpa(vcpu, hc->ingpa, 0, NULL);
+> +		if (unlikely(hc->ingpa == UNMAPPED_GVA))
+> +			return HV_STATUS_INVALID_HYPERCALL_INPUT;
 > +	}
 > +
-> +	if (rc) {
->  		dev_info(&chip->dev, "Unable to request irq: %d for probe\n",
->  			 irq);
->  		return -1;
-> diff --git a/drivers/char/tpm/tpm_tis_core.h b/drivers/char/tpm/tpm_tis_core.h
-> index 3be24f221e32..43b724e55192 100644
-> --- a/drivers/char/tpm/tpm_tis_core.h
-> +++ b/drivers/char/tpm/tpm_tis_core.h
-> @@ -86,6 +86,7 @@ enum tis_defaults {
->  enum tpm_tis_flags {
->  	TPM_TIS_ITPM_WORKAROUND		= BIT(0),
->  	TPM_TIS_INVALID_STATUS		= BIT(1),
-> +	TPM_TIS_USE_THREADED_IRQ	= BIT(2),
->  };
->  
->  struct tpm_tis_data {
-> diff --git a/drivers/char/tpm/tpm_tis_spi_main.c b/drivers/char/tpm/tpm_tis_spi_main.c
-> index 184396b3af50..f56613f2946f 100644
-> --- a/drivers/char/tpm/tpm_tis_spi_main.c
-> +++ b/drivers/char/tpm/tpm_tis_spi_main.c
-> @@ -223,9 +223,10 @@ static int tpm_tis_spi_probe(struct spi_device *dev)
->  	phy->flow_control = tpm_tis_spi_flow_control;
->  
->  	/* If the SPI device has an IRQ then use that */
-> -	if (dev->irq > 0)
-> +	if (dev->irq > 0) {
->  		irq = dev->irq;
-> -	else
-> +		phy->priv.flags |= TPM_TIS_USE_THREADED_IRQ;
-> +	} else
->  		irq = -1;
->  
->  	init_completion(&phy->ready);
-> -- 
-> 2.36.0
-> 
+>  	if (hc->code == HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST ||
+>  	    hc->code == HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE) {
+>  		if (hc->fast) {
 
 
-BR, Jarkko
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+
+Best regards,
+	Maxim Levitsky
+
