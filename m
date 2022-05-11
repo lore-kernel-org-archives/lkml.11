@@ -2,91 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1CBEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 14:09:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42783C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 14:09:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244404AbiEKOJG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 10:09:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57992 "EHLO
+        id S244401AbiEKOJX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 10:09:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244381AbiEKOJD (ORCPT
+        with ESMTP id S244406AbiEKOJU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 10:09:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0620D69CF2;
-        Wed, 11 May 2022 07:09:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C5842B823EC;
-        Wed, 11 May 2022 14:09:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5C47C34113;
-        Wed, 11 May 2022 14:08:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652278139;
-        bh=o5xX6sJ490PzLKK/fZ+dg3ieCtWuIK0BIN2ZYglmcSU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=n/+LK5uTuasJGcDXqcF0GVH52u8hAaFrbSlhBgleKlgPB7qeqLE8MUdP/dRazvxAj
-         fJO7MaZY7xv0y+UW3ku69aRzDb9DOLILNqSNj2vSSCgm5YnH7PUqFDFncN7BAYnkcg
-         c+DkyByzeTdpz75jqmSzoLs5Vknvl9nlTD9hAvL592nLUO6vVeGr+ODWqZC/cSmp0Y
-         qdJsQvy++Rkw+C0A7IzSXvCYG6CCRBcaabzK+f8zFhtiTU4THNb2IllRWRMUxiHPbt
-         ZTDup+yr2W2r41FyAeLLayyfwMxHnxVXlgAN0ThDChpyafU9H11iaw4ZcjSufwgQfW
-         eQ/2qxMLDcPVQ==
-Date:   Wed, 11 May 2022 17:08:52 +0300
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Conor.Dooley@microchip.com, sfr@canb.auug.org.au,
-        linux-next@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org
-Subject: Re: linux-next: Tree for May 3
-Message-ID: <YnvDdPz4S5IJ7l/5@kernel.org>
-References: <3f94c9a8-c927-5cc0-7d67-4b21c3d9dbaf@microchip.com>
- <9a424be9-380f-f99c-4126-25a00eba0271@microchip.com>
- <20220509141122.GA14555@lst.de>
- <dd946220-eaf6-773a-06b4-307cda466c9c@microchip.com>
- <505d41d1-1bc8-c8bc-5ebb-8a2b7934f3de@microchip.com>
- <20220511062232.GA32524@lst.de>
- <102578f2-5c10-e9c2-c1ef-e76ba90d011e@microchip.com>
- <20220511064832.GA761@lst.de>
- <2c0e2fbe-4e45-4acc-c2a7-4f4dcf9161a3@microchip.com>
- <20220511123724.GA25121@lst.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220511123724.GA25121@lst.de>
+        Wed, 11 May 2022 10:09:20 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3127869B78
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 07:09:18 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id E48EB21C33;
+        Wed, 11 May 2022 14:09:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1652278156; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=UW2GdRmJAnrhWiyCmp8j1OoOQeEqRLEmI9WIKtzeJdY=;
+        b=ZREBSIxBlMvMsrhwAgm8m76z1CTpbdK2vHFXqDo0x2e/ZfI7QMuTwfqRuFo2xmNYUFmvz9
+        k3dq75TKBMDzw6qH/gSvN9au73SO10U6sxrhQN/9yWmaQ9PmiFKgxdYIW8FLAiIwFOOGbj
+        e8X8alsWstOkdfD0YrvwMfHbQ2TAtA0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1652278156;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=UW2GdRmJAnrhWiyCmp8j1OoOQeEqRLEmI9WIKtzeJdY=;
+        b=ZUS8H9+FQ0oA+z/SdaDba7j2c18aAsh5gz/jo0CPFGnRjFZhJsgLA4s8ZmnUMKAAznNk8A
+        c3po3peuLT0XxnBw==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 87D212C141;
+        Wed, 11 May 2022 14:09:16 +0000 (UTC)
+Date:   Wed, 11 May 2022 16:09:16 +0200
+Message-ID: <s5hv8ucf9f7.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Werner Sembach <wse@tuxedocomputers.com>
+Cc:     alsa-devel@alsa-project.org, kai.vehmanen@linux.intel.com,
+        linux-kernel@vger.kernel.org, imre.deak@intel.com,
+        pierre-louis.bossart@linux.intel.com, tiwai@suse.com
+Subject: Re: [PATCH] ALSA: hda/intel: Add quirk for TongFang devices with pop noise
+In-Reply-To: <71fadca3-7750-2fc0-c04a-f05ab4e85112@tuxedocomputers.com>
+References: <20220511133828.13724-1-wse@tuxedocomputers.com>
+        <s5h35hggpao.wl-tiwai@suse.de>
+        <71fadca3-7750-2fc0-c04a-f05ab4e85112@tuxedocomputers.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 02:37:24PM +0200, Christoph Hellwig wrote:
-> On Wed, May 11, 2022 at 10:10:40AM +0000, Conor.Dooley@microchip.com wrote:
-> > Without even trying the patch, I double checked the boot log from
-> > 3f70356edf56 and I get a "software IO TLB: Cannot allocate buffer"
-> > With the patch its a "software IO TLB: swiotlb_init_remap: failed
-> > to allocate tlb structure". So spot on & I feel like an idiot for
-> > not spotting that before!
-> > 
-> > Is failing being fatal valid, or should it fail gracefully like it
-> > used to do? To me, blissfully unaware about swiotlb, the "current"
-> > behaviour of failing gracefully makes more sense.
+On Wed, 11 May 2022 15:58:03 +0200,
+Werner Sembach wrote:
 > 
-> Given that we're at -rc6 I think the most important thing for now is to
-> avoid a regression and restore the old behavior.  I'll send out a
-> series with this and the nslab related fixes for Xen today.
+> Am 11.05.22 um 15:41 schrieb Takashi Iwai:
+> > On Wed, 11 May 2022 15:38:28 +0200,
+> > Werner Sembach wrote:
+> >> When audio stops playing and sometimes when it starts playing, there is an
+> >> audible "pop" noise when using headphones on most Tongfang GMxMxxx,
+> >> GKxNxxx, GMxZxxx, GMxTxxx, and GMxAxxx devices.
+> >>
+> >> Disabling power saving for the Realtek codec fixes this noise. Presumably
+> >> it is triggered on some power event in the audio circuit.
+> >>
+> >> Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
+> >> Cc: stable@vger.kernel.org
+> > Usually this denylist is a last resort if any other methods never
+> > helped.  Is it the case?
 > 
-> But we should look into why allocating the memory fails for your
-> plaforms.  Does it have very little memory?  I can't really think
-> of why else the memblock allocation for swiotlb would fail.
+> I also tried setting codec->power_save_node = 0; in a patch_realtek.c quirk.
+> 
+> static void alc274_fixup_pop_noise(struct hda_codec *codec, const struct
+> hda_fixup *fix, int action)
+> {
+>        codec->power_save_node = 0;
+> }
+> 
+> That initially seemed to work, but when I tested it again a day later
+> after a fresh install, it didn't anymore. I don't know what is
+> different. On the install before, I did some debugging with boot
+> parameters and other stuff, cant reproduce anymore what exactly.
 
-I guess the default to use memblock_alloc_low() backfires on system with
-physical memory living at 0x1000200000:
+power_save_node is already 0 as default for patch_alc269(), so it must
+be irrelevant.
 
-[    0.000000] Early memory node ranges
-[    0.000000]   node   0: [mem 0x0000001000200000-0x000000103fffffff]
+> I took the line from alc274_fixup_bind_dacs which fixes the pop noise
+> when applied to the devices, but does a lot of random other stuff too
+> not meant for the device.
 
-The default limit for "low" memory is 0xffffffff and there is simply no
-memory there.
+It's only one thing, there are tons of different fixes :)
+alc274_fixup_bind_dacs() rather specifies the routing so that the
+speaker is connected to the preferred DAC.
 
--- 
-Sincerely yours,
-Mike.
+Many click noises come from the default pin shut-up behavior.  You
+can disable it or change it in other way.  Also, setting
+auto_mute_via_amp may influence on such behavior (that is included in
+alc274_fixup_bind_dacs()).
+
+Note that many quirks can be enabled even without compiling but via
+the codec patch loading (using hints).
+
+
+thanks,
+
+Takashi
