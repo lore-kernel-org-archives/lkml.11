@@ -2,132 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57ED0C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 01:40:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C8E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 01:46:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237509AbiEKBkE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 21:40:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46782 "EHLO
+        id S240634AbiEKBqO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 21:46:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234515AbiEKBkD (ORCPT
+        with ESMTP id S240757AbiEKBqK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 21:40:03 -0400
-Received: from mail-ua1-x930.google.com (mail-ua1-x930.google.com [IPv6:2607:f8b0:4864:20::930])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41111260863;
-        Tue, 10 May 2022 18:40:01 -0700 (PDT)
-Received: by mail-ua1-x930.google.com with SMTP id z15so211647uad.7;
-        Tue, 10 May 2022 18:40:01 -0700 (PDT)
+        Tue, 10 May 2022 21:46:10 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF67B3586E;
+        Tue, 10 May 2022 18:46:08 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id g23so729030edy.13;
+        Tue, 10 May 2022 18:46:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=CcFxQLzTZRJwr99fvgXAPxv27Gu79cyIN89beQ0h8+I=;
-        b=doQTqwTJY/0aNgS3TuLFjyoXwLksQMSfsszsNSnDHaolf1MYeOl9gG5O24PLVU82fH
-         btXj6S4frOw6tM9Z8GDA3by2QXpXn/WRgFG2WHiPhccEtDXkigJ3McQdvck16+qFbQUE
-         zcajmkr9sYjabxlbjMGVYu3hiaVg9TVfrkJcfEgzK0w/ftyVRIOUzjJrdJFVyHoMfYz1
-         xTTsT4FPfpa6wRskPwjoM8B5YNU8mRgis934ucNRgBsKSZbXoFHAdgPjgO6p5rGhYd9W
-         T+jYjGuPqxjbF18YNLyhCe27fVQsAQxm7h+Farsbe/wFNi60+8nVHRybTq1F8v5W8g5s
-         KStQ==
+         :cc;
+        bh=lyB03zfkduhEQiKRtkxNNhqSXJSw0Ic5n3CoIbYjaT8=;
+        b=PQfJWnTl4JTkqYV9vXc5RAPcrHTk3U40whCmQ7E/JC7ivDUBuz4k48ILtQKDiSWBRG
+         JptbT4Td5Rn1lOXj5gyNVWMVXgdEVd3Ikn5LUZwwkSdotAC5tFwvqrboc+E0fahrbkVy
+         fDsek+rD/1D3nA1uh/mw06whwWIKbVdw7j5F5UioiQBnXsflDDlC/8hrYpqu3sUNS0Tv
+         iYK5aXLgujdlQVA8Pja79jS8+mLsuWN8dPobMkyYnJLMGH3Ar3tvUk+eR6AJFQYhsoXv
+         UWcsSB7JLJ0CVPd0PV98W6sq+N1z+l5+iRmiPBEi8PjXuRT8iYWVkX7Z5yC+rEcHZg2v
+         w04g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=CcFxQLzTZRJwr99fvgXAPxv27Gu79cyIN89beQ0h8+I=;
-        b=jLU/Bi9RKtgj4NsbUgcjCxlFbPqqc7aWU11+PkvTQ/AvHjpmxtRKaHbJ+ULBVYOruA
-         4QM9wVQermynbIW1dHcEKNDBgCZeQ0GxM4ZWi4/KBDkD9tn14Cjkd2SPBpCan/Er6rqW
-         VJH0zmIsV+BxTN55Wfm8dW49zTaW/peo+9YstNxAgQCStpMhso9yn8GF57Pyg2gfVH+G
-         s1pyhjZIjoFhM1pramAArkL5vDks7r+UohvG7IZ7vWFLxmLoGeqjla98a5+R+L6R6hK3
-         5EPfb6TCKWB0iL0xWBarvVEidrW+7EGP6UMzO+6Q63y4/70XECEgF/vH499If+HqLxE7
-         d+QA==
-X-Gm-Message-State: AOAM533bKQXDE8qJrQHnDl6LaI5h1TjUZIwoW3kBXzC1DlHV++Jc0zIY
-        CCK95e/OyCjhWGYuhzeYIuAhDBApFORSimvJFA==
-X-Google-Smtp-Source: ABdhPJwOdeGJuYqe4UdD24r6xFX8A4WORqnypLWn7xKLOUFSl3SkCt3/PITp6+sTRwqH8HOqqFo3SqgByFDcT98cVao=
-X-Received: by 2002:ab0:6f95:0:b0:362:8cb3:36f3 with SMTP id
- f21-20020ab06f95000000b003628cb336f3mr12861637uav.46.1652233200103; Tue, 10
- May 2022 18:40:00 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=lyB03zfkduhEQiKRtkxNNhqSXJSw0Ic5n3CoIbYjaT8=;
+        b=FV4SIkobs4KTgj4J6oAiymy1Rxt5jDNfk/5+vUgpFvwSeV8HfBJ957kVgts4ITnobP
+         KshvHfPYMN+BQzVlRmhQLIJz5bLvvq5tlOlXo57g+tnM6TOEm7MqIuZ4Cqj/DeESTva7
+         J0J9SKC3CNZmH3x/EpgASdgI9zjM2yRVQ33zhGl9tXCDemhb1Jf190Mw1gagxbrUj/T9
+         3raok+RQ32fcZ8KZfzvrzdWOTRUH+JlnALUFFsnHaFRpOSkLjYKS2kpTfUUg5aquAZdG
+         TLQBmX4FfdV3V9UM5df8bhM+jV2vGr7JWCNcsH5kZeyTZ64O+iiJFIUtlq8Okl+4r/N4
+         KiRg==
+X-Gm-Message-State: AOAM533Q0+F/V81u8nX0aHh1K1cohbxuN0+dX2CEkrSJbExZn1Wp3u7x
+        8aYK0VPR9zRu3/O04p+Y9+FZ3QAnbrODSAtLwSw=
+X-Google-Smtp-Source: ABdhPJyqTVojPz5rdn5gqtln5rHLx1GDmbyqtSJ8oJaxRgefOPVmNUn4LBKW8qWffhB2mSlIbhsHF6lAOHGx1jixXLw=
+X-Received: by 2002:aa7:cd58:0:b0:427:b21f:5f79 with SMTP id
+ v24-20020aa7cd58000000b00427b21f5f79mr25894850edw.172.1652233566587; Tue, 10
+ May 2022 18:46:06 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220510091654.8498-1-warp5tw@gmail.com> <20220510091654.8498-9-warp5tw@gmail.com>
- <Yno8KMycNbJ+VGtc@smile.fi.intel.com>
-In-Reply-To: <Yno8KMycNbJ+VGtc@smile.fi.intel.com>
-From:   Tyrone Ting <warp5tw@gmail.com>
-Date:   Wed, 11 May 2022 09:39:48 +0800
-Message-ID: <CACD3sJYVyV_fFJu9zXJGL1ro02KnkHoeNNSNB8O46FRwd6=-BA@mail.gmail.com>
-Subject: Re: [PATCH v4 8/9] i2c: npcm: Remove own slave addresses 2:10
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
-        venture@google.com, yuenn@google.com, benjaminfair@google.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        wsa@kernel.org, jarkko.nikula@linux.intel.com,
-        semen.protsenko@linaro.org, sven@svenpeter.dev, jsd@semihalf.com,
-        lukas.bulwahn@gmail.com, olof@lixom.net, arnd@arndb.de,
-        tali.perry@nuvoton.com, Avi.Fishman@nuvoton.com,
-        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
-        kfting@nuvoton.com, openbmc@lists.ozlabs.org,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <20220510092503.1546698-1-dzm91@hust.edu.cn> <87ee118kmk.fsf@kernel.org>
+In-Reply-To: <87ee118kmk.fsf@kernel.org>
+From:   Dongliang Mu <mudongliangabcd@gmail.com>
+Date:   Wed, 11 May 2022 09:45:40 +0800
+Message-ID: <CAD-N9QULVjecGcsmFGREGV=joyA2SoZFzLB9A-2tRPsVM0_Ohg@mail.gmail.com>
+Subject: Re: [PATCH] net: rtlwifi: Use pr_warn_once instead of WARN_ONCE
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     Dongliang Mu <dzm91@hust.edu.cn>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-wireless@vger.kernel.org,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andy:
-
-Thank you for your comments and they will be addressed.
-
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> =E6=96=BC 2022=E5=B9=B4=
-5=E6=9C=8810=E6=97=A5 =E9=80=B1=E4=BA=8C =E4=B8=8B=E5=8D=886:19=E5=AF=AB=E9=
-=81=93=EF=BC=9A
+On Tue, May 10, 2022 at 11:37 PM Kalle Valo <kvalo@kernel.org> wrote:
 >
-> On Tue, May 10, 2022 at 05:16:53PM +0800, Tyrone Ting wrote:
-> > From: Tali Perry <tali.perry1@gmail.com>
+> Dongliang Mu <dzm91@hust.edu.cn> writes:
+>
+> > From: Dongliang Mu <mudongliangabcd@gmail.com>
 > >
-> > NPCM can support up to 10 own slave addresses.
-> > In practice, only one address is actually being used.
-> > In order to access addresses 2 and above, need to switch
-> > register banks. The switch needs spinlock.
-> > To avoid using spinlock for this useless feature
-> > removed support of SA >=3D 2.
->
-> > Also fix returned slave event enum.
+> > This memory allocation failure can be triggered by fault injection or
+> > high pressure testing, resulting a WARN.
 > >
-> > Remove some comment since the bank selection is not
-> > required. The bank selection is not required since
-> > the supported slave addresses are reduced.
+> > Fix this by replacing WARN with pr_warn_once.
+> >
+> > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+> > ---
+> >  drivers/net/wireless/realtek/rtlwifi/usb.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/net/wireless/realtek/rtlwifi/usb.c b/drivers/net/wireless/realtek/rtlwifi/usb.c
+> > index 86a236873254..acb0c15e9748 100644
+> > --- a/drivers/net/wireless/realtek/rtlwifi/usb.c
+> > +++ b/drivers/net/wireless/realtek/rtlwifi/usb.c
+> > @@ -1014,7 +1014,7 @@ int rtl_usb_probe(struct usb_interface *intf,
+> >       hw = ieee80211_alloc_hw(sizeof(struct rtl_priv) +
+> >                               sizeof(struct rtl_usb_priv), &rtl_ops);
+> >       if (!hw) {
+> > -             WARN_ONCE(true, "rtl_usb: ieee80211 alloc failed\n");
+> > +             pr_warn_once("rtl_usb: ieee80211 alloc failed\n");
+> >               return -ENOMEM;
+> >       }
+> >       rtlpriv = hw->priv;
 >
-> Fancy indentation. Please fix it in all your commit messages where it app=
-lies.
->
-> ...
->
-> > +     if (addr_type > I2C_SLAVE_ADDR2 && addr_type <=3D I2C_SLAVE_ADDR1=
-0) {
-> > +             dev_err(bus->dev,
-> > +                     "try to enable more then 2 SA not supported\n");
->
-> Make it one line and drop {}.
->
-> > +     }
->
-> ...
->
-> > +     if (addr_type > I2C_SLAVE_ADDR2 && addr_type <=3D I2C_SLAVE_ADDR1=
-0) {
-> > +             dev_err(bus->dev,
-> > +                     "get slave: try to use more then 2 slave addresse=
-s not supported\n");
->
-> As per above be consistent with abbreviations ("SA" here, which makes lin=
-e
-> shorter) and follow the above recommendation.
->
-> > +     }
+> I think we should warn every time ieee80211_alloc_hw() fails, it's
+> called only once per device initialisation, so pr_warn() is more
+> approriate.
+
+Yes, this is better. Already sent a v2 patch.
+
 >
 > --
-> With Best Regards,
-> Andy Shevchenko
+> https://patchwork.kernel.org/project/linux-wireless/list/
 >
->
-
-Best Regards,
-Tyrone
+> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
