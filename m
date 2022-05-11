@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BF42C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:30:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8BB8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:30:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241333AbiEKCaL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 22:30:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50810 "EHLO
+        id S241274AbiEKCaQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 22:30:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241244AbiEKC3p (ORCPT
+        with ESMTP id S241255AbiEKC3p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 22:29:45 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFAD3219C01
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:29:40 -0700 (PDT)
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E4D21AAA1
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:29:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652236180; x=1683772180;
+  t=1652236183; x=1683772183;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=5G0RO9Jzv5sMl5l3KPmaPojaLlcXXs9/0fmVZgdGWDk=;
-  b=NLqC9Zr2qIDkvZQ2vNnnIW/ci0JMlX8OUV9uJOQmjK+TSCXShq7dC1nP
-   WSBdHl6j0sqsdTveMqZSs0kc9Mjv3lMKWHrWRFYb8pFqgm91IRZt+5ZSo
-   KRArKAQ3MGG4v11ZqOKb8nmlb4QZJZ7HPG+xfZB+j5unhmaCKR3Kqo5uE
-   X02s974ZixwaEOhJnvEfHK4lMzsaPfx3ryBv/D7G14jkXIUaOhzw4aiwF
-   iJ2vovKyzA2DPtdGP24ZSdrOWEnvmmyp/KZuh1RR3FQSqL/WtQp0Y9FxY
-   IkU42T3JbaZ7gIrReGdITWL1E/mdRzmyp0LMgaC/fMQfM5XEJ/918KxcK
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="251610732"
+  bh=7o08EsiH9rBqx3Xez/FIIKap6Mag0l46E+Gl2UX4hIw=;
+  b=VS35aDYzeK4iL2qnl2NhGKM5VOy8SwzrsJ/sLkhB0HpGOb0VgfiB/oep
+   QMR6Wn9uNgpGNJYaz0KRY2l8iwn7oUB7YpjSirK+Jf0DoBxuqkzeW0zlB
+   /KYHQHZpumtOznbJQvcBaex7X9Rs1PcgPISNKD2JLE+M4fglRqCrZDKZq
+   32jk2Pr+U7y8FP76vOFRUBe/CyA9id2PKE+k2OXxy0OADGJ4bECSuqN5P
+   JMpmyOWGVL63TY4vuKEUlXQp1l+7NwaABf32gGBFqbQlumjHeZxiGCTf2
+   X3Rj+9kKbskoB198DH7CHEpPJExkbk+lX7GpZQyKg7HO4o+FLXnHTvKCo
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="355985770"
 X-IronPort-AV: E=Sophos;i="5.91,215,1647327600"; 
-   d="scan'208";a="251610732"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 19:29:39 -0700
+   d="scan'208";a="355985770"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 19:29:43 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,215,1647327600"; 
-   d="scan'208";a="895145510"
+   d="scan'208";a="636218429"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga005.fm.intel.com with ESMTP; 10 May 2022 19:29:36 -0700
+  by fmsmga004.fm.intel.com with ESMTP; 10 May 2022 19:29:40 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 2BB1B556; Wed, 11 May 2022 05:28:01 +0300 (EEST)
+        id 3AAF1512; Wed, 11 May 2022 05:28:01 +0300 (EEST)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         Andy Lutomirski <luto@kernel.org>,
@@ -52,9 +52,9 @@ Cc:     x86@kernel.org, Andrey Ryabinin <aryabinin@virtuozzo.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         linux-mm@kvack.org, linux-kernel@vger.kernel.org,
         "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [RFCv2 03/10] x86: Introduce userspace API to handle per-thread features
-Date:   Wed, 11 May 2022 05:27:44 +0300
-Message-Id: <20220511022751.65540-5-kirill.shutemov@linux.intel.com>
+Subject: [RFCv2 05/10] x86/mm: Provide untagged_addr() helper
+Date:   Wed, 11 May 2022 05:27:46 +0300
+Message-Id: <20220511022751.65540-7-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220511022751.65540-1-kirill.shutemov@linux.intel.com>
 References: <20220511022751.65540-1-kirill.shutemov@linux.intel.com>
@@ -64,116 +64,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add three new arch_prctl() handles:
+The helper used by the core-mm to strip tag bits and get the address to
+the canonical shape. In only handles userspace addresses.
 
- - ARCH_THREAD_FEATURE_ENABLE/DISABLE enables or disables the specified
-   features. Returns what features are enabled after the operation.
-
- - ARCH_THREAD_FEATURE_LOCK prevents future disabling or enabling of the
-   specified features. Returns the new set of locked features.
-
-The features handled per-thread and inherited over fork(2)/clone(2), but
-reset on exec().
-
-This is preparation patch. It does not impelement any features.
+For LAM, the address gets sanitized according to the thread features.
 
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 ---
- arch/x86/include/asm/processor.h  |  3 +++
- arch/x86/include/uapi/asm/prctl.h |  5 +++++
- arch/x86/kernel/process.c         | 37 +++++++++++++++++++++++++++++++
- 3 files changed, 45 insertions(+)
+ arch/x86/include/asm/page_32.h |  3 +++
+ arch/x86/include/asm/page_64.h | 20 ++++++++++++++++++++
+ 2 files changed, 23 insertions(+)
 
-diff --git a/arch/x86/include/asm/processor.h b/arch/x86/include/asm/processor.h
-index 91d0f93a00c7..ff0c34e18cc6 100644
---- a/arch/x86/include/asm/processor.h
-+++ b/arch/x86/include/asm/processor.h
-@@ -530,6 +530,9 @@ struct thread_struct {
- 	 */
- 	u32			pkru;
+diff --git a/arch/x86/include/asm/page_32.h b/arch/x86/include/asm/page_32.h
+index df42f8aa99e4..2d35059b90c1 100644
+--- a/arch/x86/include/asm/page_32.h
++++ b/arch/x86/include/asm/page_32.h
+@@ -15,6 +15,9 @@ extern unsigned long __phys_addr(unsigned long);
+ #define __phys_addr_symbol(x)	__phys_addr(x)
+ #define __phys_reloc_hide(x)	RELOC_HIDE((x), 0)
  
-+	unsigned long		features;
-+	unsigned long		features_locked;
++#define untagged_addr(addr)	(addr)
++#define untagged_ptr(ptr)	(ptr)
 +
- 	/* Floating point and extended processor state */
- 	struct fpu		fpu;
- 	/*
-diff --git a/arch/x86/include/uapi/asm/prctl.h b/arch/x86/include/uapi/asm/prctl.h
-index 500b96e71f18..67fc30d36c73 100644
---- a/arch/x86/include/uapi/asm/prctl.h
-+++ b/arch/x86/include/uapi/asm/prctl.h
-@@ -20,4 +20,9 @@
- #define ARCH_MAP_VDSO_32		0x2002
- #define ARCH_MAP_VDSO_64		0x2003
+ #ifdef CONFIG_FLATMEM
+ #define pfn_valid(pfn)		((pfn) < max_mapnr)
+ #endif /* CONFIG_FLATMEM */
+diff --git a/arch/x86/include/asm/page_64.h b/arch/x86/include/asm/page_64.h
+index e9c86299b835..3a40c958b24a 100644
+--- a/arch/x86/include/asm/page_64.h
++++ b/arch/x86/include/asm/page_64.h
+@@ -7,6 +7,7 @@
+ #ifndef __ASSEMBLY__
+ #include <asm/cpufeatures.h>
+ #include <asm/alternative.h>
++#include <uapi/asm/prctl.h>
  
-+/* Never implement 0x3001, it will confuse old glibc's */
-+#define ARCH_THREAD_FEATURE_ENABLE	0x3002
-+#define ARCH_THREAD_FEATURE_DISABLE	0x3003
-+#define ARCH_THREAD_FEATURE_LOCK	0x3004
-+
- #endif /* _ASM_X86_PRCTL_H */
-diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
-index b370767f5b19..cb8fc28f2eae 100644
---- a/arch/x86/kernel/process.c
-+++ b/arch/x86/kernel/process.c
-@@ -367,6 +367,10 @@ void arch_setup_new_exec(void)
- 		task_clear_spec_ssb_noexec(current);
- 		speculation_ctrl_update(read_thread_flags());
- 	}
-+
-+	/* Reset thread features on exec */
-+	current->thread.features = 0;
-+	current->thread.features_locked = 0;
+ /* duplicated to the one in bootmem.h */
+ extern unsigned long max_pfn;
+@@ -90,6 +91,25 @@ static __always_inline unsigned long task_size_max(void)
  }
+ #endif	/* CONFIG_X86_5LEVEL */
  
- #ifdef CONFIG_X86_IOPL_IOPERM
-@@ -985,6 +989,35 @@ unsigned long __get_wchan(struct task_struct *p)
- 	return addr;
- }
++#define __untagged_addr(addr, n)	\
++	((__force __typeof__(addr))sign_extend64((__force u64)(addr), n))
++
++#define untagged_addr(addr)	({					\
++	u64 __addr = (__force u64)(addr);				\
++	if (__addr >> 63 == 0) {					\
++		if (current->thread.features & X86_THREAD_LAM_U57)	\
++			__addr &= __untagged_addr(__addr, 56);		\
++		else if (current->thread.features & X86_THREAD_LAM_U48)	\
++			__addr &= __untagged_addr(__addr, 47);		\
++	}								\
++	(__force __typeof__(addr))__addr;				\
++})
++
++#define untagged_ptr(ptr)	({					\
++	u64 __ptrval = (__force u64)(ptr);				\
++	__ptrval = untagged_addr(__ptrval);				\
++	(__force __typeof__(*(ptr)) *)__ptrval;				\
++})
+ #endif	/* !__ASSEMBLY__ */
  
-+static long thread_feature_prctl(struct task_struct *task, int option,
-+				 unsigned long features)
-+{
-+	const unsigned long known_features = 0;
-+
-+	if (features & ~known_features)
-+		return -EINVAL;
-+
-+	if (option == ARCH_THREAD_FEATURE_LOCK) {
-+		task->thread.features_locked |= features;
-+		return task->thread.features_locked;
-+	}
-+
-+	/* Do not allow to change locked features */
-+	if (features & task->thread.features_locked)
-+		return -EPERM;
-+
-+	if (option == ARCH_THREAD_FEATURE_DISABLE) {
-+		task->thread.features &= ~features;
-+		goto out;
-+	}
-+
-+	/* Handle ARCH_THREAD_FEATURE_ENABLE */
-+
-+	task->thread.features |= features;
-+out:
-+	return task->thread.features;
-+}
-+
- long do_arch_prctl_common(struct task_struct *task, int option,
- 			  unsigned long arg2)
- {
-@@ -999,6 +1032,10 @@ long do_arch_prctl_common(struct task_struct *task, int option,
- 	case ARCH_GET_XCOMP_GUEST_PERM:
- 	case ARCH_REQ_XCOMP_GUEST_PERM:
- 		return fpu_xstate_prctl(task, option, arg2);
-+	case ARCH_THREAD_FEATURE_ENABLE:
-+	case ARCH_THREAD_FEATURE_DISABLE:
-+	case ARCH_THREAD_FEATURE_LOCK:
-+		return thread_feature_prctl(task, option, arg2);
- 	}
- 
- 	return -EINVAL;
+ #ifdef CONFIG_X86_VSYSCALL_EMULATION
 -- 
 2.35.1
 
