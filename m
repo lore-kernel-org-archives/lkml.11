@@ -2,56 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6939C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 23:43:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DC61C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 23:44:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349450AbiEKXnt (ORCPT
+        id S1349449AbiEKXn7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 19:43:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51796 "EHLO
+        Wed, 11 May 2022 19:43:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349431AbiEKXnk (ORCPT
+        with ESMTP id S1349466AbiEKXn5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 19:43:40 -0400
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCC3E61632
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 16:43:38 -0700 (PDT)
-Received: by mail-pf1-x44a.google.com with SMTP id h19-20020aa796d3000000b0050d3c025470so1785846pfq.0
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 16:43:38 -0700 (PDT)
+        Wed, 11 May 2022 19:43:57 -0400
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2FCB70911
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 16:43:52 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id bj12-20020a056a02018c00b003a9eebaad34so1698844pgb.10
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 16:43:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=reply-to:date:message-id:mime-version:subject:from:to:cc;
-        bh=AhvIfbu9X3YULPVlS1YjRn191iB1PujI5/9ME6nYCik=;
-        b=DnUML6wIBadul/FL+4pRJQuZEM5l6O4nJeDvMnUI2YmzUb5rJkLIU5kj4yL33RBi68
-         XmEnmdGjOIKbDmFdndazf0qw3r1Puu5ZRWgCeCepx0Gr7Hpo5yesHaMttzAPhoN926r4
-         xiKXTzs/zPVheNDGZgxa2LhbtnD1ObIQxYdSphU8ZdE8pb9UvIcKMmYnenrl4QzrRbHa
-         o6gKqb6LHg2TwKOPC6Xa5ZnxKNH6kwt9KUALkZVGgcxfVxs/TOP6Cy4rDHINHITNcQay
-         mSfYrjo29jeKzq+xkuLVNfS4mObtMcVpxP+3Z0WXaqusndoBeuX6ywKFXft9gB/IFJKO
-         hTvw==
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:to:cc;
+        bh=JtrG0Prmhr3vTXS8nWuYYpYreCaFB4jpf2e8MRiZPjM=;
+        b=e91y02DAWbubPKpcnfJaF8RXew9U7HmcVhFnnRSorWEJIF+xtGw9gYd/o6jByKTmH5
+         mYhRViuefbFj2gkEG3pbnMANbfFNqjz6DJ4NDUJJ1pIbf4HoX8aHS7NLQfuUJqKqvMhv
+         Sq8yDrFKqM/UX4zAafWN8RBlKpUoT6K3Cb3VdHRoqXi47QWvj9G1llm4281LvPyY0w+u
+         w3f8vlx5KtNSjdnhoMSnFPWx0Uz5zL2o8YWbnltfEG1e/VI816mpO+N5AMY9vJMnvZ7T
+         Z0KbSevGrEsInCZ20NWaNekREBrEgrNYPEiDf4U7QtgKIflx6bMSPyl9AVDHye3si88T
+         dHXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:message-id:mime-version:subject
-         :from:to:cc;
-        bh=AhvIfbu9X3YULPVlS1YjRn191iB1PujI5/9ME6nYCik=;
-        b=oJwI52j+naKrFb4NR2B9jMuLZgDs2Z6pO+GPDEDKY1UXLqQCbxkrh5NKoCo6DmIiBz
-         vRGF7Zp0gzuVFg2dNYxd0vXnlU8hVP5+Amfhed2OcRTAYbPmuUbCPer/Pcpu7519HOzB
-         oD1pwRFCwgc2DIZh6vHlvP+3B7Wk5wmOwAGIapOAUQTij1zWxD/fCj1Kip4nOud78UiR
-         /1IlxcDC/E+bMxMXRjBVmmPgvCZ58ClXxyJpamZjKJsCL4sHJOnN1+IfI/PCsbAYuvD7
-         5wNP/MVldSGLO7NZ/pBsdvqUdobNqrbrEJlA+lcZlDmnkEPZXIMwPQutDWeS6C/XKdb7
-         fnfw==
-X-Gm-Message-State: AOAM530etaU/qA0tLgRGTeLvDsD8/iIM7/Q6jZCGivGWjxa9WpbDn6y5
-        CBb4lv9OOZeSwaQQ6BEoYkhi280uUVs=
-X-Google-Smtp-Source: ABdhPJx9RKaiblAmdK5c2KrAPjFFUQWMXndsKum748UpvEOIMnytBalgOMcalvT2ieYzfC8dZyjhjFbO394=
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:to:cc;
+        bh=JtrG0Prmhr3vTXS8nWuYYpYreCaFB4jpf2e8MRiZPjM=;
+        b=4344cBVPJSSLplmFa4+jvjB9uLLSKdn9waRckRfxFelRpqGWJtFnmncCdLdHvOy0fn
+         oLuSAzAxfQYHaV+ytO5npen7RqHbT/w9Em7tLpb55uUJ05602Xh0da6vIM1Zkb+r1wh6
+         XEBHO01caSdrvRsroKnSsrfuDWLaAboMwr18450QdhKhoNYAJrwnUkfdSfkFDPoo3h3N
+         TiVLqives4Lzlw3TSgcyvc0jz1jhclimzneslI/LTGvRmFpYlZUQEmNPAsEmGT/gDlgX
+         hDe1jQEhst7CHupK6YHVfUqn7+Dg+KwxRaD1P7sPdqPBVdkmoWp/K4p2BQiqu6bqLhje
+         iw9A==
+X-Gm-Message-State: AOAM530XnXqYPmroNItP4caqqIGVw0zBdnTltpVYYDD4Jn4TH4C71oNs
+        OJLW0InYRni5BFHOX0RT4JOa4z5cop0=
+X-Google-Smtp-Source: ABdhPJxHLQMii3mrtX56N6obwbLOhtAoUbfM/fvBvnNgeIwM71qKfeQHFW/gH0KGVpy0KZsdnj9C7wEdOo8=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:b41:b0:50d:35fa:476d with SMTP id
- p1-20020a056a000b4100b0050d35fa476dmr27527530pfo.33.1652312618270; Wed, 11
- May 2022 16:43:38 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a62:bd14:0:b0:50d:4bec:ff78 with SMTP id
+ a20-20020a62bd14000000b0050d4becff78mr27275096pff.71.1652312621887; Wed, 11
+ May 2022 16:43:41 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed, 11 May 2022 23:43:30 +0000
-Message-Id: <20220511234332.3654455-1-seanjc@google.com>
+Date:   Wed, 11 May 2022 23:43:32 +0000
+In-Reply-To: <20220511234332.3654455-1-seanjc@google.com>
+Message-Id: <20220511234332.3654455-3-seanjc@google.com>
 Mime-Version: 1.0
+References: <20220511234332.3654455-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
-Subject: [PATCH 0/2] x86/crash: Fix double list_add nmi_shootdown bug
+Subject: [PATCH 2/2] x86/reboot: Disable virtualization in an emergency if SVM
+ is supported
 From:   Sean Christopherson <seanjc@google.com>
 To:     Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
@@ -66,40 +70,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix a double list_add() bug found and debugged by Guilherme, who did all
-the hard work.  nmi_shootdown_cpus() doesn't play nice with being called
-more than once.  With the "right" kexec/kdump configuration,
-emergency_vmx_disable_all() can be reached after kdump_nmi_shootdown_cpus()
-(the two users of nmi_shootdown_cpus()).
+Disable SVM on all CPUs via NMI shootdown during an emergency reboot.
+Like VMX, SVM can block INIT and thus prevent bringing up other CPUs via
+INIT-SIPI-SIPI.
 
-My solution is to turn the emergency_vmx_disable_all() shootdown into a
-nop of sorts, and move the disabling of virtualization into the core
-crash_nmi_callback() handler.  The only thing emergency_vmx_disable_all()
-cares about is disabling VMX/SVM (obviously), and since I can't envision a
-use case for an NMI shootdown that doesn't want to disable virtualization,
-doing that in the core handler means emergency_vmx_disable_all() only
-needs to ensure _a_ shootdown occurs, it doesn't care when that shootdown
-happened or what callback was run.
+Cc: stable@vger.kernel.org
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+---
+ arch/x86/kernel/reboot.c | 26 ++++++++++++++------------
+ 1 file changed, 14 insertions(+), 12 deletions(-)
 
-This obviously punts on making nmi_shootdown_cpus() truly multi-caller
-friendly, but notifier chains tend to be messy, and it's not obvious to
-me what would be the desired/correct behavior for a true multi-shootdown
-use case.
-
-Patch 2 is a related bug fix found while exploring ideas for patch 1.
-
-Sean Christopherson (2):
-  x86/crash: Disable virt in core NMI crash handler to avoid double
-    list_add
-  x86/reboot: Disable virtualization in an emergency if SVM is supported
-
- arch/x86/include/asm/reboot.h |  1 +
- arch/x86/kernel/crash.c       | 16 +--------
- arch/x86/kernel/reboot.c      | 64 +++++++++++++++++++++++++++--------
- 3 files changed, 51 insertions(+), 30 deletions(-)
-
-
-base-commit: feb9c5e19e913b53cb536a7aa7c9f20107bb51ec
+diff --git a/arch/x86/kernel/reboot.c b/arch/x86/kernel/reboot.c
+index f9543a4e9b09..33c1f4883b27 100644
+--- a/arch/x86/kernel/reboot.c
++++ b/arch/x86/kernel/reboot.c
+@@ -533,27 +533,29 @@ static void nmi_shootdown_nop(int cpu, struct pt_regs *regs)
+ 	/* Nothing to do, the NMI shootdown handler disables virtualization. */
+ }
+ 
+-/* Use NMIs as IPIs to tell all CPUs to disable virtualization */
+-static void emergency_vmx_disable_all(void)
++static void emergency_reboot_disable_virtualization(void)
+ {
+ 	/* Just make sure we won't change CPUs while doing this */
+ 	local_irq_disable();
+ 
+ 	/*
+-	 * Disable VMX on all CPUs before rebooting, otherwise we risk hanging
+-	 * the machine, because the CPU blocks INIT when it's in VMX root.
++	 * Disable virtualization on all CPUs before rebooting to avoid hanging
++	 * the system, as VMX and SVM block INIT when running in the host
+ 	 *
+ 	 * We can't take any locks and we may be on an inconsistent state, so
+-	 * use NMIs as IPIs to tell the other CPUs to exit VMX root and halt.
++	 * use NMIs as IPIs to tell the other CPUs to disable VMX/SVM and halt.
+ 	 *
+-	 * Do the NMI shootdown even if VMX if off on _this_ CPU, as that
+-	 * doesn't prevent a different CPU from being in VMX root operation.
++	 * Do the NMI shootdown even if virtualization is off on _this_ CPU, as
++	 * other CPUs may have virtualization enabled.
+ 	 */
+-	if (cpu_has_vmx()) {
+-		/* Safely force _this_ CPU out of VMX root operation. */
+-		__cpu_emergency_vmxoff();
++	if (cpu_has_vmx() || cpu_has_svm(NULL)) {
++		/* Safely force _this_ CPU out of VMX/SVM operation. */
++		if (cpu_has_vmx())
++			__cpu_emergency_vmxoff();
++		else
++			cpu_emergency_svm_disable();
+ 
+-		/* Halt and exit VMX root operation on the other CPUs. */
++		/* Disable VMX/SVM and halt on other CPUs. */
+ 		nmi_shootdown_cpus(nmi_shootdown_nop);
+ 	}
+ }
+@@ -590,7 +592,7 @@ static void native_machine_emergency_restart(void)
+ 	unsigned short mode;
+ 
+ 	if (reboot_emergency)
+-		emergency_vmx_disable_all();
++		emergency_reboot_disable_virtualization();
+ 
+ 	tboot_shutdown(TB_SHUTDOWN_REBOOT);
+ 
 -- 
 2.36.0.512.ge40c2bad7a-goog
 
