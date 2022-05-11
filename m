@@ -2,180 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29020C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:20:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41F8EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:20:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343492AbiEKPUN (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 11:20:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56304 "EHLO
+        id S245752AbiEKPU0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 11:20:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240478AbiEKPUD (ORCPT
+        with ESMTP id S245733AbiEKPUF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 11:20:03 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 154FD20D4FF;
-        Wed, 11 May 2022 08:20:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652282402; x=1683818402;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=PQuR+HgvaEKC/2b83oaJxBCQ61N54Tef7qI8lAy9YJM=;
-  b=ejfPFawcbSiyWFPUBEyQCMakRPPDx5E4idD4E7O0hnw93/W+0DUVHnLs
-   u3ugMtIrW63pE9MtWV9XQfTOU0GW4QYdNIoWxmXFrabFqiK1e2L7nFj1I
-   pIQusSn8w2UM7g14v5+BHHPaEr4W7SQwAkAengp2rDh4XZRtCnNLn/8f9
-   eUTu5i8w6ZwqMcqGGKeHFh96Vihws4MkgHoRxIWGIvGBfVIdITi/gFKPJ
-   V2hqCc8TNSKWGw7w2NBFQUwmd2fb9m0yfia8v6wuohuOaQiwaKfDGyT7l
-   +lJPbPeSiOBhEoN5OGI5ZOZYvHVXo/Sml9w25esmdPFtcQJD1o2f5vEjp
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="257272999"
-X-IronPort-AV: E=Sophos;i="5.91,217,1647327600"; 
-   d="scan'208";a="257272999"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 08:19:56 -0700
-X-IronPort-AV: E=Sophos;i="5.91,217,1647327600"; 
-   d="scan'208";a="697620911"
-Received: from jmpurse-mobl.amr.corp.intel.com (HELO [10.255.230.30]) ([10.255.230.30])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 08:19:54 -0700
-Message-ID: <41f62ad1-fee7-3509-f670-b62db8c37843@linux.intel.com>
-Date:   Wed, 11 May 2022 08:19:53 -0700
+        Wed, 11 May 2022 11:20:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A023620EE07;
+        Wed, 11 May 2022 08:20:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3047C61913;
+        Wed, 11 May 2022 15:20:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 167A1C340EE;
+        Wed, 11 May 2022 15:20:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652282403;
+        bh=GMvnWYvbccZQktGrME0uBhLf6d3GEhAgIRMMt6zfpKA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=I0GgXQ3dUxlFBEyRNuKUVqUYG6uMd2yFDSWva9G/T2PZlVOT9WDgfIg5Aw4gRrLVH
+         LKx4I4DRmD5X5d+ukbDh0BUbefKRNEti9au2j7vah7qjirqIJJYTFesBfLg9ey8LIl
+         i7GZuYMCbttNcxJZGkYMctx8CWaFGzRT8u26sCF6y9yXLHftCHCvYfVjWw8zO5bCUC
+         PtDhOpduD0WUaYXj4wSRTRODtFpy2Ic11C7NZgkYUnvmJZ7V3mxQa9v2DHPNg6LwE/
+         yuZlQfJm9mh7R4hmn1ZQzCY0rgJ0AUOUcS0UT+2rmHoSfTNSm18QcSvhdLLKWFYDSv
+         vtpwU9Do0HeIw==
+Date:   Wed, 11 May 2022 18:18:33 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Ahmad Fatoum <a.fatoum@pengutronix.de>
+Cc:     James Bottomley <jejb@linux.ibm.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        David Howells <dhowells@redhat.com>, kernel@pengutronix.de,
+        Pankaj Gupta <pankaj.gupta@nxp.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Horia =?utf-8?Q?Geant=C4=83?= <horia.geanta@nxp.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Jan Luebbe <j.luebbe@pengutronix.de>,
+        David Gstir <david@sigma-star.at>,
+        Richard Weinberger <richard@nod.at>,
+        Franck LENORMAND <franck.lenormand@nxp.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Michael Walle <michael@walle.cc>,
+        Sumit Garg <sumit.garg@linaro.org>, keyrings@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org
+Subject: Re: [PATCH v9 7/7] MAINTAINERS: add KEYS-TRUSTED-CAAM
+Message-ID: <YnvTyd8s4T+s/uAL@kernel.org>
+References: <20220506062553.1068296-1-a.fatoum@pengutronix.de>
+ <20220506062553.1068296-8-a.fatoum@pengutronix.de>
+ <YnbH2Fgn/JFOU3Rf@iki.fi>
+ <YnbIiJynQq/tcFa2@iki.fi>
+ <e49920e6-0852-ad3d-5758-604655591671@pengutronix.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.7.0
-Subject: Re: [PATCH v3] PCI/AER: Handle Multi UnCorrectable/Correctable errors
- properly
-Content-Language: en-US
-To:     Bjorn Helgaas <bhelgaas@google.com>,
-        Russell Currey <ruscur@russell.cc>,
-        Oliver OHalloran <oohall@gmail.com>
-Cc:     linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
-References: <20220418150237.1021519-1-sathyanarayanan.kuppuswamy@linux.intel.com>
-From:   Sathyanarayanan Kuppuswamy 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-In-Reply-To: <20220418150237.1021519-1-sathyanarayanan.kuppuswamy@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e49920e6-0852-ad3d-5758-604655591671@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Bjorn,
+On Wed, May 11, 2022 at 12:48:53PM +0200, Ahmad Fatoum wrote:
+> On 07.05.22 21:29, Jarkko Sakkinen wrote:
+> >>> +KEYS-TRUSTED-CAAM
+> >>> +M:	Ahmad Fatoum <a.fatoum@pengutronix.de>
+> >>> +R:	Pengutronix Kernel Team <kernel@pengutronix.de>
+> >>> +L:	linux-integrity@vger.kernel.org
+> >>> +L:	keyrings@vger.kernel.org
+> >>> +S:	Maintained
+> >>> +F:	include/keys/trusted_caam.h
+> >>> +F:	security/keys/trusted-keys/trusted_caam.c
+> >>> +
+> >>>  KEYS/KEYRINGS
+> >>>  M:	David Howells <dhowells@redhat.com>
+> >>>  M:	Jarkko Sakkinen <jarkko@kernel.org>
+> >>> -- 
+> >>> 2.30.2
+> >>>
+> >>
+> >> Acked-by: Jarkko Sakkinen <jarkko@kernel.org>
+> > 
+> > 3/7 would probably need tested-by. Other than that this starts to look
+> > good...
+> 
+> It has been tested by me on an i.MX6 (era < 10 with blobbing support)
+> and by Michael on a LS1028A (era >= 10, both with and without blobbing
+> support).
+> 
+> Cheers,
+> Ahmad
 
-On 4/18/22 8:02 AM, Kuppuswamy Sathyanarayanan wrote:
-> Currently the aer_irq() handler returns IRQ_NONE for cases without bits
-> PCI_ERR_ROOT_UNCOR_RCV or PCI_ERR_ROOT_COR_RCV are set. But this
-> assumption is incorrect.
-> 
-> Consider a scenario where aer_irq() is triggered for a correctable
-> error, and while we process the error and before we clear the error
-> status in "Root Error Status" register, if the same kind of error
-> is triggered again, since aer_irq() only clears events it saw, the
-> multi-bit error is left in tact. This will cause the interrupt to fire
-> again, resulting in entering aer_irq() with just the multi-bit error
-> logged in the "Root Error Status" register.
-> 
-> Repeated AER recovery test has revealed this condition does happen
-> and this prevents any new interrupt from being triggered. Allow to
-> process interrupt even if only multi-correctable (BIT 1) or
-> multi-uncorrectable bit (BIT 3) is set.
-> 
-> Also note that, for cases with only multi-bit error is set, since this
-> is not the first occurrence of the error, PCI_ERR_ROOT_ERR_SRC may have
-> zero or some junk value. So we cannot cleanly process this error
-> information using aer_isr_one_error(). All we are attempting with this
-> fix is to make sure error interrupt processing can continue in this
-> scenario.
-> 
-> This error can be reproduced by making following changes to the
-> aer_irq() function and by executing the given test commands.
-> 
->   static irqreturn_t aer_irq(int irq, void *context)
->           struct aer_err_source e_src = {};
-> 
->           pci_read_config_dword(rp, aer + PCI_ERR_ROOT_STATUS,
-> 				&e_src.status);
->   +       pci_dbg(pdev->port, "Root Error Status: %04x\n",
->   +		e_src.status);
->           if (!(e_src.status & AER_ERR_STATUS_MASK))
->                   return IRQ_NONE;
-> 
->   +       mdelay(5000);
-> 
->   # Prep injection data for a correctable error.
->   $ cd /sys/kernel/debug/apei/einj
->   $ echo 0x00000040 > error_type
->   $ echo 0x4 > flags
->   $ echo 0x891000 > param4
-> 
->   # Root Error Status is initially clear
->   $ setpci -s <Dev ID> ECAP0001+0x30.w
->   0000
-> 
->   # Inject one error
->   $ echo 1 > error_inject
-> 
->   # Interrupt received
->   pcieport <Dev ID>: AER: Root Error Status 0001
-> 
->   # Inject another error (within 5 seconds)
->   $ echo 1 > error_inject
-> 
->   # You will get a new IRQ with only multiple ERR_COR bit set
->   pcieport <Dev ID>: AER: Root Error Status 0002
-> 
-> Currently, the above issue has been only reproduced in the ICL server
-> platform.
-> 
-> [Eric: proposed reproducing steps]
-> Fixes: 4696b828ca37 ("PCI/AER: Hoist aerdrv.c, aer_inject.c up to drivers/pci/pcie/")
-> Reported-by: Eric Badger <ebadger@purestorage.com>
-> Reviewed-by: Ashok Raj <ashok.raj@intel.com>
-> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-> ---
-> 
+Michael, can you give a tested-by for the corresponding patch?
 
-Any comments on this patch? I'm wondering whether you are expecting any
-changes to be done to it. Please let me know.
-
-> Changes since v2:
->   * Added more details to the commit log.
->   * Rebased on v5.18-rc1.
-> 
-> Changes since v1:
->   * Added Fixes tag.
->   * Included reproducing steps proposed by Eric.
-> 
->   drivers/pci/pcie/aer.c | 7 ++++++-
->   1 file changed, 6 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/pci/pcie/aer.c b/drivers/pci/pcie/aer.c
-> index 9fa1f97e5b27..7952e5efd6cf 100644
-> --- a/drivers/pci/pcie/aer.c
-> +++ b/drivers/pci/pcie/aer.c
-> @@ -101,6 +101,11 @@ struct aer_stats {
->   #define ERR_COR_ID(d)			(d & 0xffff)
->   #define ERR_UNCOR_ID(d)			(d >> 16)
->   
-> +#define AER_ERR_STATUS_MASK		(PCI_ERR_ROOT_UNCOR_RCV |	\
-> +					PCI_ERR_ROOT_COR_RCV |		\
-> +					PCI_ERR_ROOT_MULTI_COR_RCV |	\
-> +					PCI_ERR_ROOT_MULTI_UNCOR_RCV)
-> +
->   static int pcie_aer_disable;
->   static pci_ers_result_t aer_root_reset(struct pci_dev *dev);
->   
-> @@ -1196,7 +1201,7 @@ static irqreturn_t aer_irq(int irq, void *context)
->   	struct aer_err_source e_src = {};
->   
->   	pci_read_config_dword(rp, aer + PCI_ERR_ROOT_STATUS, &e_src.status);
-> -	if (!(e_src.status & (PCI_ERR_ROOT_UNCOR_RCV|PCI_ERR_ROOT_COR_RCV)))
-> +	if (!(e_src.status & AER_ERR_STATUS_MASK))
->   		return IRQ_NONE;
->   
->   	pci_read_config_dword(rp, aer + PCI_ERR_ROOT_ERR_SRC, &e_src.id);
-
--- 
-Sathyanarayanan Kuppuswamy
-Linux Kernel Developer
+BR, Jarkko
