@@ -2,101 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EED66C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 08:03:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FA60C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 08:03:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243303AbiEKID3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 04:03:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37954 "EHLO
+        id S237470AbiEKIDr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 04:03:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243298AbiEKIDV (ORCPT
+        with ESMTP id S243300AbiEKIDl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 04:03:21 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7AA48CCCF;
-        Wed, 11 May 2022 01:03:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1652256192; x=1683792192;
-  h=from:to:cc:subject:date:message-id;
-  bh=U5JVmxHUUjxAbxSb6PLM4Nc67GW9UY1orKH/4MwbuNA=;
-  b=bCkL1ocYAlLpkbyLN7JZv7gxV/tX0Dq/om1qCxl7BVVBvDJJVxPaBlZP
-   NiawT2Qeaot9x461XiMuOIb7Vu7A/gjBPy77+vpCwZcKMjDqVejCuVN/v
-   K7DECh5413qPPHPQRyjJGcOeQ+inm46sApQ00A/a/NR3/0bOX5S2jL/ii
-   w=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 11 May 2022 01:03:10 -0700
-X-QCInternal: smtphost
-Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 11 May 2022 01:03:09 -0700
-X-QCInternal: smtphost
-Received: from blr-ubuntu-435.qualcomm.com ([10.79.42.176])
-  by ironmsg01-blr.qualcomm.com with ESMTP; 11 May 2022 13:32:51 +0530
-Received: by blr-ubuntu-435.qualcomm.com (Postfix, from userid 2327845)
-        id B31489008AA; Wed, 11 May 2022 13:32:50 +0530 (IST)
-From:   Shreyas K K <quic_shrekk@quicinc.com>
-To:     Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>
-Cc:     Andre Przywara <andre.przywara@arm.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org,
-        Jeffrey Hugo <quic_jhugo@quicinc.com>,
-        Shreyas K K <quic_shrekk@quicinc.com>,
-        Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
-        Rajendra Nayak <quic_rjendra@quicinc.com>,
-        Prasanna Kumar <quic_kprasan@quicinc.com>
-Subject: [PATCH] arm64: Enable repeat tlbi workaround on KRYO4XX gold CPUs
-Date:   Wed, 11 May 2022 13:32:47 +0530
-Message-Id: <20220511080247.1530-1-quic_shrekk@quicinc.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 11 May 2022 04:03:41 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D15158D69B;
+        Wed, 11 May 2022 01:03:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1652256165;
+        bh=B8FTFbkEKSq9FU1nYtmjnKVxghiXhAC0tTT4mBqiWNo=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=aJuH3WpsbGssY0jxWTz6NtSsyJj/F0xB3cw1/JLXp51ddDUIpUqmQD5Wdp4TqBz2q
+         CyjAL6KdVYo2Ky8npof7tVC9Rz3ydTCsz0+V5soEV9cGcl3c5snAF9lfbdd+Oqk7jz
+         o3Dv6CHPzzSk2VO22pirR0DPXkoP6QVPNaqeZdlQ=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [80.245.76.65] ([80.245.76.65]) by web-mail.gmx.net
+ (3c-app-gmx-bap47.server.lan [172.19.172.117]) (via HTTP); Wed, 11 May 2022
+ 10:02:45 +0200
+MIME-Version: 1.0
+Message-ID: <trinity-68761fe5-fcca-456b-ba50-ead759f0fb54-1652256165646@3c-app-gmx-bap47>
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Frank Wunderlich <linux@fw-web.de>,
+        linux-rockchip@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Greg Ungerer <gerg@kernel.org>,
+        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+Subject: Aw: Re: [PATCH v3 1/6] dt-bindings: net: dsa: convert binding for
+ mediatek switches
+Content-Type: text/plain; charset=UTF-8
+Date:   Wed, 11 May 2022 10:02:45 +0200
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <YnqymzCbabEjV7GQ@robh.at.kernel.org>
+References: <20220507170440.64005-1-linux@fw-web.de>
+ <20220507170440.64005-2-linux@fw-web.de>
+ <YnqymzCbabEjV7GQ@robh.at.kernel.org>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:eV/uQqPXza9IH9Y6Gv0NJsaSRebtJEgsDYaeyvL96Y4T6fYpr0o3B2H8VkA557m4XfuMP
+ EJm8YxcfAdgzGs60GWOyMLLyOLwpHUmbcx+QBI57BblTcXBCv083UmF50AdAZIM3kIVCwTi/9e6S
+ RZ31tWDNSxRFhYErWSOsYivD8eVR/a8PeaGq7XD3uTo325JmaNm68SgIKTNEqUSN38nYYXYf2/KT
+ mxvT4xypcXMmCQ4hX3DmI53H0fBjFxbp3EhsginVvb+AQXve2LPZbAm22l28+vdqt1gTW2Vyz3jw
+ 7s=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:IOaqh5ngyBI=:d3wI83YyXXlAM5qDVFD0Bx
+ cMUtUb2TC50x2gRAAJG8+Zg6pLpPDiDW9a92hECLC/VqDTv6yKkWZBeDp/qwthXNsa9xm6kVR
+ LkII6/vwvDGV3DD1wFHaWMKvAH18z0Ufgo41xshVPfGu2lmUbxzjT3RaBtSXyvKTopRWP3gsx
+ sPnFcGXfaVmXoA0AN9//S+VV/PVQ90jQ+9dTtsPEkgTpiGVgCs6FIWGjcyQ7u3tVEaCkNSUyi
+ 6RjE/M2Bo17O3Jb282h/qPFdHf4GS4k2Rq+BaBq7teOgLe/Y8oVScC45CVtGe2j/0XkJ1dbNM
+ LBk4Ts7/2cO8h6hX9BydCCEiX5lwqRNX1rDXTgVxqwdFdpbnnw/l2Pm6Kst1VA2ba4zjjKgJw
+ ZbrTNSqpt2lqPQiymgBt/e5NLYYn4GaUcTofI0j7jaGTiz0UOUMGzZg0uQwWCQoPtuf0afZHR
+ HvYfLGzpoYO3eEkT6DkOM2l4GOQdTADBRzPPl5ExffJfpBVk+rCMG1ZIwsLnBnwz/aOvUv+Hz
+ kctcK4jKKYPSSY+6LgGRFcR/wL2v7ZPEClOrrQE4GJgK0mN8lN66cTCSCP6eVNLjQsd8EuwhD
+ RrKqo97HwEmf5fMgTpUYoefC1aQi9DTIRS3RTk6o82BI9ay5kJO5zy428FX+UX8EVPmZzOC/+
+ 22GIwYHZnZnJrLv7AQAjNoYXx4ZxcMo207iAE1fbEPbcrm6gSuWWnUAdW0VmdjnmFYt4aZ6g5
+ E668W/8r4WDOpD8roFZvuJ12jZJ9N8wm0OhM2CsyQ0j2006xHt3m5PC63Ej5TtMF0KO2MgWMp
+ nupH2rG
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add KRYO4XX gold/big cores to the list of CPUs that need the
-repeat TLBI workaround. Apply this to the affected
-KRYO4XX cores (rcpe to rdpe).
+Hi
 
-The variant and revision bits are implementation defined and are
-different from the their Cortex CPU counterparts on which they are
-based on, i.e., (r0p0 to r1p0) is equivalent to (rcpe to rdpe).
+thanks for review
 
-Signed-off-by: Shreyas K K <quic_shrekk@quicinc.com>
----
- Documentation/arm64/silicon-errata.rst | 3 +++
- arch/arm64/kernel/cpu_errata.c         | 2 ++
- 2 files changed, 5 insertions(+)
+> Gesendet: Dienstag, 10. Mai 2022 um 20:44 Uhr
+> Von: "Rob Herring" <robh@kernel.org>
+> On Sat, May 07, 2022 at 07:04:35PM +0200, Frank Wunderlich wrote:
+> > From: Frank Wunderlich <frank-w@public-files.de>
 
-diff --git a/Documentation/arm64/silicon-errata.rst b/Documentation/arm64/silicon-errata.rst
-index 466cb9e89047..d27db84d585e 100644
---- a/Documentation/arm64/silicon-errata.rst
-+++ b/Documentation/arm64/silicon-errata.rst
-@@ -189,6 +189,9 @@ stable kernels.
- +----------------+-----------------+-----------------+-----------------------------+
- | Qualcomm Tech. | Kryo4xx Silver  | N/A             | ARM64_ERRATUM_1024718       |
- +----------------+-----------------+-----------------+-----------------------------+
-+| Qualcomm Tech. | Kryo4xx Gold    | N/A             | ARM64_ERRATUM_1286807       |
-++----------------+-----------------+-----------------+-----------------------------+
-+
- +----------------+-----------------+-----------------+-----------------------------+
- | Fujitsu        | A64FX           | E#010001        | FUJITSU_ERRATUM_010001      |
- +----------------+-----------------+-----------------+-----------------------------+
-diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
-index 4c9b5b4b7a0b..2518657e6de1 100644
---- a/arch/arm64/kernel/cpu_errata.c
-+++ b/arch/arm64/kernel/cpu_errata.c
-@@ -208,6 +208,8 @@ static const struct arm64_cpu_capabilities arm64_repeat_tlbi_list[] = {
- #ifdef CONFIG_ARM64_ERRATUM_1286807
- 	{
- 		ERRATA_MIDR_RANGE(MIDR_CORTEX_A76, 0, 0, 3, 0),
-+		/* Kryo4xx Gold (rcpe to rdpe) => (r0p0 to r1p0) */
-+		ERRATA_MIDR_RANGE(QCOM_CPU_PART_KRYO_4XX_GOLD, 0xc, 0xe, 0xd, 0xe),
- 	},
- #endif
- 	{},
--- 
-2.17.1
+> > +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
 
+> > +properties:
+> > +  compatible:
+> > +    enum:
+> > +      - mediatek,mt7530
+> > +      - mediatek,mt7531
+> > +      - mediatek,mt7621
+> > +
+>
+> > +  "#address-cells":
+> > +    const: 1
+> > +
+> > +  "#size-cells":
+> > +    const: 0
+>
+> I don't see any child nodes with addresses, so these can be removed.
+
+dropping this (and address-cells/size-cells from examples) causes errors l=
+ike this (address-/size-cells set in mdio
+node, so imho it should inherite):
+
+Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.example.dts:34.2=
+5-35: Warning (reg_format):
+/example-0/mdio/switch@0/ports/port@0:reg: property has invalid length (4 =
+bytes) (#address-cells =3D=3D 2, #size-cells =3D=3D 1)
+Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.example.dtb: War=
+ning (pci_device_reg): Failed prerequisite 'reg_format'
+
+> > +  interrupt-controller:
+> > +    type: boolean
+>
+> Already has a type. Just:
+>
+> interrupt-controller: true
+>
+> > +
+> > +  interrupts:
+> > +    maxItems: 1
+
+> > +patternProperties:
+> > +  "^(ethernet-)?ports$":
+> > +    type: object
+>
+>        additionalProperties: false
+
+imho this will block address-/size-cells from this level too. looks like i=
+t is needed here too (for port-regs).
+
+> > +
+> > +    patternProperties:
+> > +      "^(ethernet-)?port@[0-9]+$":
+> > +        type: object
+> > +        description: Ethernet switch ports
+> > +
+> > +        unevaluatedProperties: false
+> > +
+> > +        properties:
+> > +          reg:
+> > +            description:
+> > +              Port address described must be 5 or 6 for CPU port and =
+from 0
+> > +              to 5 for user ports.
+> > +
+> > +        allOf:
+> > +          - $ref: dsa-port.yaml#
+> > +          - if:
+> > +              properties:
+> > +                label:
+> > +                  items:
+> > +                    - const: cpu
+> > +            then:
+> > +              required:
+> > +                - reg
+> > +                - phy-mode
+> > +
+
+> > +  - if:
+> > +      required:
+> > +        - interrupt-controller
+> > +    then:
+> > +      required:
+> > +        - interrupts
+>
+> This can be expressed as:
+>
+> dependencies:
+>   interrupt-controller: [ interrupts ]
+
+ok, i will change this
+
+> > +            ports {
+>
+> Use the preferred form: ethernet-ports
+
+current implementation in all existing dts and examples from old binding a=
+re "ports" only.
+should they changed too?
+
+> > +                #address-cells =3D <1>;
+> > +                #size-cells =3D <0>;
+> > +                port@0 {
+
+regards Frank
