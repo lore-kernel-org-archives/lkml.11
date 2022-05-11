@@ -2,87 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D58A1C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 01:54:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19DB8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 01:55:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240797AbiEKBym (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 21:54:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39536 "EHLO
+        id S240815AbiEKBz2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 21:55:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232452AbiEKByk (ORCPT
+        with ESMTP id S229581AbiEKBz1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 21:54:40 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B28A5189E5F;
-        Tue, 10 May 2022 18:54:38 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KydBj5YxwzCscm;
-        Wed, 11 May 2022 09:49:49 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 11 May 2022 09:54:36 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 11 May
- 2022 09:54:36 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>
-CC:     <rafael@kernel.org>, <daniel.lezcano@linaro.org>,
-        <amitk@kernel.org>, <rui.zhang@intel.com>
-Subject: [PATCH] thermal: core: fix memory leak in __thermal_cooling_device_register()
-Date:   Wed, 11 May 2022 10:06:05 +0800
-Message-ID: <20220511020605.3096734-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+        Tue, 10 May 2022 21:55:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF00E18AABB
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 18:55:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5313661AF8
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 01:55:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84DF5C385D4;
+        Wed, 11 May 2022 01:55:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1652234124;
+        bh=RtSdZCnq9Vk4zc1XyJ8ZqHXdTm5EZ4CK1h6O7cMw0pI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=J79FLtB90hPRhj8Cyxnz5KUi42r/kNxFA3LWVSJAnnlxqXpoUmGvDgWXk+sf9663p
+         gacki1T30wP6yYsIoiz1GisRrMHjZKKFd7Y8FZf29HErhWaUq9kBMSh9AYY+lbXYL2
+         Hht6B3dw/xl2srLlkSdSQLev8e9GAfHBVPItXmn0=
+Date:   Tue, 10 May 2022 18:55:23 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Zhou Guanghui <zhouguanghui1@huawei.com>
+Cc:     <rppt@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-mm@kvack.org>, <xuqiang36@huawei.com>
+Subject: Re: [PATCH] memblock: config the number of init memblock regions
+Message-Id: <20220510185523.3f7479b8ffc49a8a7c17d328@linux-foundation.org>
+In-Reply-To: <20220511010530.60962-1-zhouguanghui1@huawei.com>
+References: <20220511010530.60962-1-zhouguanghui1@huawei.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I got memory leak as follows when doing fault injection test:
+On Wed, 11 May 2022 01:05:30 +0000 Zhou Guanghui <zhouguanghui1@huawei.com> wrote:
 
-unreferenced object 0xffff888010080000 (size 264312):
-  comm "182", pid 102533, jiffies 4296434960 (age 10.100s)
-  hex dump (first 32 bytes):
-    00 00 00 00 ad 4e ad de ff ff ff ff 00 00 00 00  .....N..........
-    ff ff ff ff ff ff ff ff 40 7f 1f b9 ff ff ff ff  ........@.......
-  backtrace:
-    [<0000000038b2f4fc>] kmalloc_order_trace+0x1d/0x110 mm/slab_common.c:969
-    [<00000000ebcb8da5>] __kmalloc+0x373/0x420 include/linux/slab.h:510
-    [<0000000084137f13>] thermal_cooling_device_setup_sysfs+0x15d/0x2d0 include/linux/slab.h:586
-    [<00000000352b8755>] __thermal_cooling_device_register+0x332/0xa60 drivers/thermal/thermal_core.c:927
-    [<00000000fb9f331b>] devm_thermal_of_cooling_device_register+0x6b/0xf0 drivers/thermal/thermal_core.c:1041
-    [<000000009b8012d2>] max6650_probe.cold+0x557/0x6aa drivers/hwmon/max6650.c:211
-    [<00000000da0b7e04>] i2c_device_probe+0x472/0xac0 drivers/i2c/i2c-core-base.c:561
+> During early boot, the number of memblocks may exceed 128(some memory
+> areas are not reported to the kernel due to test failures. As a result,
+> contiguous memory is divided into multiple parts for reporting). If
+> the size of the init memblock regions is exceeded before the array size
+> can be resized, the excess memory will be lost.
+> 
+> ...
+>
+> --- a/mm/Kconfig
+> +++ b/mm/Kconfig
+> @@ -89,6 +89,14 @@ config SPARSEMEM_VMEMMAP
+>  	  pfn_to_page and page_to_pfn operations.  This is the most
+>  	  efficient option when sufficient kernel resources are available.
+>  
+> +config MEMBLOCK_INIT_REGIONS
+> +	int "Number of init memblock regions"
+> +	range 128 1024
+> +	default 128
+> +	help
+> +	  The number of init memblock regions which used to track "memory" and
+> +	  "reserved" memblocks during early boot.
+> +
+>  config HAVE_MEMBLOCK_PHYS_MAP
+>  	bool
+>  
+> diff --git a/mm/memblock.c b/mm/memblock.c
+> index e4f03a6e8e56..6893d26b750e 100644
+> --- a/mm/memblock.c
+> +++ b/mm/memblock.c
+> @@ -22,7 +22,7 @@
+>  
+>  #include "internal.h"
+>  
+> -#define INIT_MEMBLOCK_REGIONS			128
+> +#define INIT_MEMBLOCK_REGIONS			CONFIG_MEMBLOCK_INIT_REGIONS
 
-If device_register() fails, thermal_cooling_device_destroy_sysfs() need be called
-to free the memory allocated in thermal_cooling_device_setup_sysfs().
+Consistent naming would be nice - MEMBLOCK_INIT versus INIT_MEMBLOCK.
 
-Fixes: 8ea229511e06 ("thermal: Add cooling device's statistics in sysfs")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/thermal/thermal_core.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
-index 82654dc8382b..cdc0552e8c42 100644
---- a/drivers/thermal/thermal_core.c
-+++ b/drivers/thermal/thermal_core.c
-@@ -947,6 +947,7 @@ __thermal_cooling_device_register(struct device_node *np,
- 	return cdev;
- 
- out_kfree_type:
-+	thermal_cooling_device_destroy_sysfs(cdev);
- 	kfree(cdev->type);
- 	put_device(&cdev->device);
- 	cdev = NULL;
--- 
-2.25.1
-
+Can we simply increase INIT_MEMBLOCK_REGIONS to 1024 and avoid the
+config option?  It appears that the overhead from this would be 60kB or
+so.  Or zero if CONFIG_ARCH_KEEP_MEMBLOCK and CONFIG_MEMORY_HOTPLUG
+are cooperating.
