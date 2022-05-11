@@ -2,83 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AAE9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 06:51:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44E72C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 06:51:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242433AbiEKGvu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 02:51:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40214 "EHLO
+        id S242120AbiEKGuT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 02:50:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242751AbiEKGv1 (ORCPT
+        with ESMTP id S242395AbiEKGuC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 02:51:27 -0400
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4882357128;
-        Tue, 10 May 2022 23:51:19 -0700 (PDT)
-Received: by mail-wr1-f54.google.com with SMTP id d5so1527136wrb.6;
-        Tue, 10 May 2022 23:51:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=1wEl4hKP70nqNM7+s33aDLROWITXXzeuUXQCyFgNxKQ=;
-        b=fL0QpNLjw5Bu1FPrB1EV69pKMr1WMiaxGDyNCVRaUu88Bdh1KTpsixQhD9bddg7O+u
-         6Rvz0mzL/8eE4ABC986jenh9G4Kw7NCZqqmkwbDj02D2UNWsh14SR/maEjFDo2OxI2gj
-         Lk+rHMVrXcEl+uIjjiaaY5mMAGV2ypdg4W7V20ejr8UNBYDll3HZv9lktTcS1Lnz+sPn
-         0Mwf2Y6F08Nq5wTIm31d8qBM5kyCtuiX7JEsILRPAeDBk6KglhUDvYf03Z1RfpUG1jfF
-         WRxTmTq866PI9cwsOBGHYQyf2C7eRHcvciooxoepfEylwhINYPyqS8KGR8xoLro166J9
-         VTwQ==
-X-Gm-Message-State: AOAM530BpgUxgyylrVAGSsY/zJipdAQrKOw5EMpW/1mQrb6Hj/7i2q9j
-        g6JLWtUKKY1Y3eLDXkJG0jE=
-X-Google-Smtp-Source: ABdhPJzvSiFXK+Pkx1A+5Jgez3pwE0NnwYeWyDPJFd2IMdUv3cDPSfUbrL34eucFRES0Ji7AeRNSEg==
-X-Received: by 2002:a05:6000:144a:b0:20c:6b73:804 with SMTP id v10-20020a056000144a00b0020c6b730804mr21963700wrx.88.1652251877878;
-        Tue, 10 May 2022 23:51:17 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id r5-20020a05600c424500b003942a244f3asm4242899wmm.19.2022.05.10.23.51.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 May 2022 23:51:17 -0700 (PDT)
-Message-ID: <e9a112f8-a35b-1df4-0567-9fddf80c8e17@kernel.org>
-Date:   Wed, 11 May 2022 08:51:16 +0200
+        Wed, 11 May 2022 02:50:02 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6317D243134
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 23:50:00 -0700 (PDT)
+X-UUID: 314b861995304686a98d95f0eb5368d3-20220511
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:4ab09c1c-dde3-41b9-9418-33fd4cc97169,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:-20
+X-CID-META: VersionHash:faefae9,CLOUDID:2d8e0fe6-38f2-431d-8de7-bf8fac490b0a,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: 314b861995304686a98d95f0eb5368d3-20220511
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        (envelope-from <yong.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 896768295; Wed, 11 May 2022 14:49:54 +0800
+Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 11 May 2022 14:49:53 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 11 May 2022 14:49:52 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 11 May 2022 14:49:51 +0800
+From:   Yong Wu <yong.wu@mediatek.com>
+To:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>
+CC:     <iommu@lists.linux-foundation.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, "Yong Wu" <yong.wu@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
+        <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>,
+        <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
+        <xueqi.zhang@mediatek.com>, Guenter Roeck <groeck@chromium.org>,
+        "Dan Carpenter" <dan.carpenter@oracle.com>
+Subject: [PATCH 2/4] iommu/mediatek: Add error path for loop of mm_dts_parse
+Date:   Wed, 11 May 2022 14:49:18 +0800
+Message-ID: <20220511064920.18455-3-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220511064920.18455-1-yong.wu@mediatek.com>
+References: <20220511064920.18455-1-yong.wu@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v4 1/1] soc: fujitsu: Add A64FX diagnostic interrupt
- driver
-Content-Language: en-US
-To:     Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>,
-        linux-arm-kernel@lists.infradead.org, soc@kernel.org,
-        linux-serial@vger.kernel.org, sumit.garg@linaro.org
-Cc:     arnd@arndb.de, olof@lixom.net, catalin.marinas@arm.com,
-        will@kernel.org, gregkh@linuxfoundation.org,
-        jason.wessel@windriver.com, daniel.thompson@linaro.org,
-        dianders@chromium.org, linux-kernel@vger.kernel.org,
-        kgdb-bugreport@lists.sourceforge.net, peterz@infradead.org
-References: <20220511062113.2645747-1-hasegawa-hitomi@fujitsu.com>
- <20220511062113.2645747-2-hasegawa-hitomi@fujitsu.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220511062113.2645747-2-hasegawa-hitomi@fujitsu.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11. 05. 22, 8:21, Hitomi Hasegawa wrote:
-> --- /dev/null
-> +++ b/drivers/soc/fujitsu/a64fx-diag.c
-> @@ -0,0 +1,155 @@
-...
-> +#define BMC_DIAG_INTERRUPT_STATUS_OFFSET (0x0044)
-> +#define BMC_DIAG_INTERRUPT_ENABLE_OFFSET (0x0040)
+The mtk_iommu_mm_dts_parse will parse the smi larbs nodes. if the i+1
+larb is parsed fail(return -EINVAL), we should of_node_put for the 0..i
+larbs.
 
-And I noticed here, I would:
-* remove unneeded parentheses
-* drop the "_OFFSET" suffix
-* just write 8bit values (0x40, 0x44), given they fit
-* order them numerically, 0x40 goes first
+Fixes: d2e9a1102cfc ("iommu/mediatek: Contain MM IOMMU flow with the MM TYPE")
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+---
+ drivers/iommu/mtk_iommu.c | 21 ++++++++++++++++-----
+ 1 file changed, 16 insertions(+), 5 deletions(-)
 
-thanks,
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 0f6ec4a4d9d4..523bf59264e1 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -1065,12 +1065,12 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
+ 
+ 		plarbdev = of_find_device_by_node(larbnode);
+ 		if (!plarbdev) {
+-			of_node_put(larbnode);
+-			return -ENODEV;
++			ret = -ENODEV;
++			goto err_larbnode_put;
+ 		}
+ 		if (!plarbdev->dev.driver) {
+-			of_node_put(larbnode);
+-			return -EPROBE_DEFER;
++			ret = -EPROBE_DEFER;
++			goto err_larbnode_put;
+ 		}
+ 		data->larb_imu[id].dev = &plarbdev->dev;
+ 
+@@ -1101,9 +1101,20 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
+ 			       DL_FLAG_STATELESS | DL_FLAG_PM_RUNTIME);
+ 	if (!link) {
+ 		dev_err(dev, "Unable to link %s.\n", dev_name(data->smicomm_dev));
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto err_larbnode_put;
+ 	}
+ 	return 0;
++
++err_larbnode_put:
++	while (i--) {
++		larbnode = of_parse_phandle(dev->of_node, "mediatek,larbs", i);
++		if (larbnode && of_device_is_available(larbnode)) {
++			of_node_put(larbnode);
++			of_node_put(larbnode);
++		}
++	}
++	return ret;
+ }
+ 
+ static int mtk_iommu_probe(struct platform_device *pdev)
 -- 
-js
-suse labs
+2.18.0
+
