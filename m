@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A83AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 08:32:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DDBCC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 08:32:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243846AbiEKIcV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 04:32:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56140 "EHLO
+        id S243691AbiEKIcq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 04:32:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243725AbiEKIbq (ORCPT
+        with ESMTP id S243738AbiEKIbr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 04:31:46 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2AA631509
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 01:31:32 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id d22so1183472plr.9
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 01:31:32 -0700 (PDT)
+        Wed, 11 May 2022 04:31:47 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8878B853
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 01:31:42 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id c1-20020a17090a558100b001dca2694f23so1430230pji.3
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 01:31:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=sifive.com; s=google;
         h=from:to:subject:date:message-id:in-reply-to:references:in-reply-to
          :references;
-        bh=JRX/iLnU0PEl4aE1jsRvHTuo999D/a+QvZpCGEgPlUA=;
-        b=HAJWgvIRoqs0LfgalWP6ojZO1g0sEnjUIfCygsOcXzR06mAxirp7FsF1rIPz8xH0TJ
-         6QsOm/LPEddHAO1rPR6C1P0qVYnfEaOEq9u6XnbvJdfGD5ewDaY8kEgX1D3+A5pxOeUm
-         InWSlP3RoygZr7h5hwVCVIiSevSmzaY9psUk9V+iuUhrhPZHWEsZXWEtDPb4R4jOk+yf
-         8sGmPstZ4OThvmH0GMvS0A9RIcU3oIU6fDlFPdvfOkw1gXc1q0Kol19+GikYAl1Ufzy4
-         TKI7aV/WyUFKaPykbHiXZeRjqn+Bwi0EdFA9/+5fsahSFUh1lwf3opCPCxV8ijiIU/Up
-         NEAw==
+        bh=lIPaVi/iw25tEhFvwxekxmoPFpktE2S3CDH6g+AQZN8=;
+        b=gnEVGhBZjcBviXMolR/BZI6SoUJ16vvpJefyHkk8X+xTDu2A7c4prdPtGwDQDyEEjC
+         /6I3ZM2hJXlRWfEy4vcXooF97elXNWlcR3ydaLHRc6QZp5McK/fzEp8QAcJtbtlFTfiF
+         pYQRK/rGhcXGKnmDVHaqcsuhdTWMd7+9pJWIqO4fZmmrUbJBVKEJCHDLprc7eXbwJk5y
+         wKBnf/4x6xeNqQDQ3ewDs2ZAg81eQimmoawgMML1QdluTOE5nNVefaQSZyJ40qZiACzk
+         3s/M4MqftlnmkBTYRa9dtVsGmr/HFogGJgmXoE50BI9XDjDPVZYpZ5/iJKTqs4FAV90A
+         6Tzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:in-reply-to:references;
-        bh=JRX/iLnU0PEl4aE1jsRvHTuo999D/a+QvZpCGEgPlUA=;
-        b=X7cy5UUbBJEl+MT1SIxD/NJ4ixANboHscmJ+8jsKg8ad/BVwdmzoUB0QmYKhg7qWc3
-         RCEVrc0ZuPMEIFTZXdt5dguHBPKBXasxiuhACQKnk9pt5LGpnHFIiwVtMBHt7V/2f3OC
-         7QFwU/OmibGaYN6jQ63BUQBudgQkKOyFwVQUK1KFts12bpCD+c03ZLBYomRRJAVYYgo/
-         ZstvT+Gx4MwFTvXy2S4lsfkkDEozn7bSdcYbfI8JQFU8PGhfXQWJndz2ddyH+UBFsz5X
-         lCT/sze2Cirfirom0LxAk6TdyU3g3SOfyMaKUJLYYaeYyUmuvlMKhVNTTBCbpewJr/Pv
-         HtxA==
-X-Gm-Message-State: AOAM532z8JBs1dyXILjPlgtThAu/BRiK6GbjO084VJNTpr9oz3esZmED
-        X376vc+DwOyecv4THibH8QBOCQ==
-X-Google-Smtp-Source: ABdhPJwsXQV+fb5RuleuyZPN6gdlX4DQrCU1gxu8pD+8g8dT4KUeC1ecnrXP925EDhqQm1GhsYAz1w==
-X-Received: by 2002:a17:90b:4f87:b0:1dd:100b:7342 with SMTP id qe7-20020a17090b4f8700b001dd100b7342mr4146651pjb.64.1652257892511;
-        Wed, 11 May 2022 01:31:32 -0700 (PDT)
+        bh=lIPaVi/iw25tEhFvwxekxmoPFpktE2S3CDH6g+AQZN8=;
+        b=yIc6SOB2R6n/9yXPjgwJ5bKQ3ym36tZX4A31ETy+o37Dc2Dl0quCGurXlL/3xdbsWU
+         M+BaTOeLXdGlZWnO3KshdLw4vVpj/1Oa3T4nzzvWy/ByCKAWWuFrJM82XLb/GL0MowNd
+         rjSmrKtqb1e8aZWUR2QWPanIsHyj0AwOyXMIdF6ikTgv6vjWvl4JdnyKJkktXCtpoo48
+         HdyvFj46CyrEZls1VrCv7xpHGz/a0Prfbympayhk6JVyE+jIGuQCdk2IdVuqbMl251xS
+         51Rb4SFJPDcN8Ah0kMZQr2It5sEuQVH9zM0v2d7G2n3ytnIjMZXCLKtu1ZUU4dyOJMLw
+         zguQ==
+X-Gm-Message-State: AOAM532gaqkwRJK+B7Dt36kOzsvGVw7KJye1JbB1wD+S2G0FMHeWigBk
+        PIYczq7ju9LZ6O9oXhv6w3wgDg==
+X-Google-Smtp-Source: ABdhPJysgdpEVFclbE6bwwFMoHRNXpqhpUG5+igm4bsD4AFK7iqJyo7JpNOED7VBkorad+uhynRZcw==
+X-Received: by 2002:a17:903:2091:b0:15c:b49b:664d with SMTP id d17-20020a170903209100b0015cb49b664dmr24482576plc.151.1652257902351;
+        Wed, 11 May 2022 01:31:42 -0700 (PDT)
 Received: from localhost.localdomain (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
-        by smtp.gmail.com with ESMTPSA id m10-20020aa7900a000000b0050dc7628170sm1020202pfo.74.2022.05.11.01.31.31
+        by smtp.gmail.com with ESMTPSA id m10-20020aa7900a000000b0050dc7628170sm1020202pfo.74.2022.05.11.01.31.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 01:31:32 -0700 (PDT)
+        Wed, 11 May 2022 01:31:42 -0700 (PDT)
 From:   Greentime Hu <greentime.hu@sifive.com>
 To:     palmer@dabbelt.com, paul.walmsley@sifive.com,
         linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
         aou@eecs.berkeley.edu
-Subject: [PATCH v10 02/16] riscv: Extending cpufeature.c to detect V-extension
-Date:   Wed, 11 May 2022 08:31:12 +0000
-Message-Id: <7fcce42051191f2c90f536d0bdbc57da1ee1d9c2.1652257230.git.greentime.hu@sifive.com>
+Subject: [PATCH v10 08/16] riscv: Add task switch support for vector
+Date:   Wed, 11 May 2022 08:31:18 +0000
+Message-Id: <3f544b952369e55f72a8771d0bec387c2ff49ae0.1652257230.git.greentime.hu@sifive.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <cover.1652257230.git.greentime.hu@sifive.com>
 References: <cover.1652257230.git.greentime.hu@sifive.com>
@@ -64,45 +64,220 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Ren <ren_guo@c-sky.com>
+This patch adds task switch support for vector. It supports partial lazy
+save and restore mechanism. It also supports all lengths of vlen.
 
-Current cpufeature.c doesn't support detecting V-extension, because
-"rv64" also contain a 'v' letter and we need to skip it.
+[guoren@linux.alibaba.com: First available porting to support vector
+context switching]
+[nick.knight@sifive.com: Rewrite vector.S to support dynamic vlen, xlen and
+code refine]
+[vincent.chen@sifive.com: Fix the might_sleep issue in vstate_save,
+vstate_restore]
+[andrew@sifive.com: Optimize task switch codes of vector]
+[ruinland.tsai@sifive.com: Fix the arch_release_task_struct free wrong
+datap issue]
 
-Signed-off-by: Guo Ren <ren_guo@c-sky.com>
+Suggested-by: Andrew Waterman <andrew@sifive.com>
+Co-developed-by: Nick Knight <nick.knight@sifive.com>
+Signed-off-by: Nick Knight <nick.knight@sifive.com>
+Co-developed-by: Guo Ren <guoren@linux.alibaba.com>
 Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-Reviewed-by: Anup Patel <anup@brainfault.org>
-Reviewed-by: Greentime Hu <greentime.hu@sifive.com>
+Co-developed-by: Vincent Chen <vincent.chen@sifive.com>
+Signed-off-by: Vincent Chen <vincent.chen@sifive.com>
+Co-developed-by: Ruinland Tsai <ruinland.tsai@sifive.com>
+Signed-off-by: Ruinland Tsai <ruinland.tsai@sifive.com>
 Signed-off-by: Greentime Hu <greentime.hu@sifive.com>
-Reviewed-by: Palmer Dabbelt <palmer@rivosinc.com>
 ---
- arch/riscv/include/uapi/asm/hwcap.h | 1 +
- arch/riscv/kernel/cpufeature.c      | 1 +
- 2 files changed, 2 insertions(+)
+ arch/riscv/include/asm/switch_to.h | 66 ++++++++++++++++++++++++++++++
+ arch/riscv/kernel/Makefile         |  1 +
+ arch/riscv/kernel/process.c        | 43 +++++++++++++++++++
+ 3 files changed, 110 insertions(+)
 
-diff --git a/arch/riscv/include/uapi/asm/hwcap.h b/arch/riscv/include/uapi/asm/hwcap.h
-index 46dc3f5ee99f..c52bb7bbbabe 100644
---- a/arch/riscv/include/uapi/asm/hwcap.h
-+++ b/arch/riscv/include/uapi/asm/hwcap.h
-@@ -21,5 +21,6 @@
- #define COMPAT_HWCAP_ISA_F	(1 << ('F' - 'A'))
- #define COMPAT_HWCAP_ISA_D	(1 << ('D' - 'A'))
- #define COMPAT_HWCAP_ISA_C	(1 << ('C' - 'A'))
-+#define COMPAT_HWCAP_ISA_V	(1 << ('V' - 'A'))
+diff --git a/arch/riscv/include/asm/switch_to.h b/arch/riscv/include/asm/switch_to.h
+index ec83770b3d98..6836c51885ce 100644
+--- a/arch/riscv/include/asm/switch_to.h
++++ b/arch/riscv/include/asm/switch_to.h
+@@ -7,10 +7,12 @@
+ #define _ASM_RISCV_SWITCH_TO_H
  
- #endif /* _UAPI_ASM_RISCV_HWCAP_H */
-diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
-index 1b2d42d7f589..92a8fd6bd3ed 100644
---- a/arch/riscv/kernel/cpufeature.c
-+++ b/arch/riscv/kernel/cpufeature.c
-@@ -76,6 +76,7 @@ void __init riscv_fill_hwcap(void)
- 	isa2hwcap['f'] = isa2hwcap['F'] = COMPAT_HWCAP_ISA_F;
- 	isa2hwcap['d'] = isa2hwcap['D'] = COMPAT_HWCAP_ISA_D;
- 	isa2hwcap['c'] = isa2hwcap['C'] = COMPAT_HWCAP_ISA_C;
-+	isa2hwcap['v'] = isa2hwcap['V'] = COMPAT_HWCAP_ISA_V;
+ #include <linux/jump_label.h>
++#include <linux/slab.h>
+ #include <linux/sched/task_stack.h>
+ #include <asm/processor.h>
+ #include <asm/ptrace.h>
+ #include <asm/csr.h>
++#include <asm/asm-offsets.h>
  
- 	elf_hwcap = 0;
+ #ifdef CONFIG_FPU
+ extern void __fstate_save(struct task_struct *save_to);
+@@ -68,6 +70,68 @@ static __always_inline bool has_fpu(void) { return false; }
+ #define __switch_to_fpu(__prev, __next) do { } while (0)
+ #endif
  
++#ifdef CONFIG_VECTOR
++extern struct static_key_false cpu_hwcap_vector;
++static __always_inline bool has_vector(void)
++{
++	return static_branch_likely(&cpu_hwcap_vector);
++}
++extern unsigned long riscv_vsize;
++extern void __vstate_save(struct __riscv_v_state *save_to, void *datap);
++extern void __vstate_restore(struct __riscv_v_state *restore_from, void *datap);
++
++static inline void __vstate_clean(struct pt_regs *regs)
++{
++	regs->status = (regs->status & ~(SR_VS)) | SR_VS_CLEAN;
++}
++
++static inline void vstate_off(struct task_struct *task,
++			      struct pt_regs *regs)
++{
++	regs->status = (regs->status & ~SR_VS) | SR_VS_OFF;
++}
++
++static inline void vstate_save(struct task_struct *task,
++			       struct pt_regs *regs)
++{
++	if ((regs->status & SR_VS) == SR_VS_DIRTY) {
++		struct __riscv_v_state *vstate = &(task->thread.vstate);
++
++		__vstate_save(vstate, vstate->datap);
++		__vstate_clean(regs);
++	}
++}
++
++static inline void vstate_restore(struct task_struct *task,
++				  struct pt_regs *regs)
++{
++	if ((regs->status & SR_VS) != SR_VS_OFF) {
++		struct __riscv_v_state *vstate = &(task->thread.vstate);
++
++		__vstate_restore(vstate, vstate->datap);
++		__vstate_clean(regs);
++	}
++}
++
++static inline void __switch_to_vector(struct task_struct *prev,
++				   struct task_struct *next)
++{
++	struct pt_regs *regs;
++
++	regs = task_pt_regs(prev);
++	if (unlikely(regs->status & SR_SD))
++		vstate_save(prev, regs);
++	vstate_restore(next, task_pt_regs(next));
++}
++
++#else
++static __always_inline bool has_vector(void) { return false; }
++#define riscv_vsize (0)
++#define vstate_save(task, regs) do { } while (0)
++#define vstate_restore(task, regs) do { } while (0)
++#define __switch_to_vector(__prev, __next) do { } while (0)
++#endif
++
+ extern struct task_struct *__switch_to(struct task_struct *,
+ 				       struct task_struct *);
+ 
+@@ -77,6 +141,8 @@ do {							\
+ 	struct task_struct *__next = (next);		\
+ 	if (has_fpu())					\
+ 		__switch_to_fpu(__prev, __next);	\
++	if (has_vector())					\
++		__switch_to_vector(__prev, __next);	\
+ 	((last) = __switch_to(__prev, __next));		\
+ } while (0)
+ 
+diff --git a/arch/riscv/kernel/Makefile b/arch/riscv/kernel/Makefile
+index 87adbe47bc15..5dc550a9fb45 100644
+--- a/arch/riscv/kernel/Makefile
++++ b/arch/riscv/kernel/Makefile
+@@ -40,6 +40,7 @@ obj-$(CONFIG_MMU) += vdso.o vdso/
+ 
+ obj-$(CONFIG_RISCV_M_MODE)	+= traps_misaligned.o
+ obj-$(CONFIG_FPU)		+= fpu.o
++obj-$(CONFIG_VECTOR)		+= vector.o
+ obj-$(CONFIG_SMP)		+= smpboot.o
+ obj-$(CONFIG_SMP)		+= smp.o
+ obj-$(CONFIG_SMP)		+= cpu_ops.o
+diff --git a/arch/riscv/kernel/process.c b/arch/riscv/kernel/process.c
+index 504b496787aa..64568a465c6e 100644
+--- a/arch/riscv/kernel/process.c
++++ b/arch/riscv/kernel/process.c
+@@ -96,6 +96,25 @@ void start_thread(struct pt_regs *regs, unsigned long pc,
+ 		 */
+ 		fstate_restore(current, regs);
+ 	}
++
++	if (has_vector()) {
++		struct __riscv_v_state *vstate = &(current->thread.vstate);
++
++		/* Enable vector and allocate memory for vector registers. */
++		if (!vstate->datap) {
++			vstate->datap = kzalloc(riscv_vsize, GFP_KERNEL);
++			if (WARN_ON(!vstate->datap))
++				return;
++		}
++		regs->status |= SR_VS_INITIAL;
++
++		/*
++		 * Restore the initial value to the vector register
++		 * before starting the user program.
++		 */
++		vstate_restore(current, regs);
++	}
++
+ 	regs->epc = pc;
+ 	regs->sp = sp;
+ }
+@@ -111,15 +130,29 @@ void flush_thread(void)
+ 	fstate_off(current, task_pt_regs(current));
+ 	memset(&current->thread.fstate, 0, sizeof(current->thread.fstate));
+ #endif
++#ifdef CONFIG_VECTOR
++	/* Reset vector state */
++	vstate_off(current, task_pt_regs(current));
++	memset(&current->thread.vstate, 0, RISCV_V_STATE_DATAP);
++#endif
+ }
+ 
+ int arch_dup_task_struct(struct task_struct *dst, struct task_struct *src)
+ {
+ 	fstate_save(src, task_pt_regs(src));
+ 	*dst = *src;
++	dst->thread.vstate.datap = NULL;
++
+ 	return 0;
+ }
+ 
++void arch_release_task_struct(struct task_struct *tsk)
++{
++	/* Free the vector context of datap. */
++	if (has_vector() && tsk->thread.vstate.datap)
++		kfree(tsk->thread.vstate.datap);
++}
++
+ int copy_thread(unsigned long clone_flags, unsigned long usp, unsigned long arg,
+ 		struct task_struct *p, unsigned long tls)
+ {
+@@ -136,7 +169,17 @@ int copy_thread(unsigned long clone_flags, unsigned long usp, unsigned long arg,
+ 		p->thread.ra = (unsigned long)ret_from_kernel_thread;
+ 		p->thread.s[0] = usp; /* fn */
+ 		p->thread.s[1] = arg;
++		p->thread.vstate.datap = NULL;
+ 	} else {
++		/* Allocate the datap for the user process if datap is NULL */
++		if (has_vector() && !p->thread.vstate.datap) {
++			void *datap = kzalloc(riscv_vsize, GFP_KERNEL);
++			/* Failed to allocate memory. */
++			if (!datap)
++				return -ENOMEM;
++			p->thread.vstate.datap = datap;
++			memset(&p->thread.vstate, 0, RISCV_V_STATE_DATAP);
++		}
+ 		*childregs = *(current_pt_regs());
+ 		if (usp) /* User fork */
+ 			childregs->sp = usp;
 -- 
 2.17.1
 
