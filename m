@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04B57C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 21:16:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 972E9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 21:16:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348074AbiEKVQU (ORCPT
+        id S1348180AbiEKVQc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 17:16:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52436 "EHLO
+        Wed, 11 May 2022 17:16:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348093AbiEKVPm (ORCPT
+        with ESMTP id S1348117AbiEKVPr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 17:15:42 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10D15B2E
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 14:15:40 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2f84aeb403fso28332987b3.22
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 14:15:40 -0700 (PDT)
+        Wed, 11 May 2022 17:15:47 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5CB15F7E
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 14:15:44 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id 9-20020a250909000000b006484b89c979so2901822ybj.21
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 14:15:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=GgOEX6vqcDmUbZeEZfV9Y8OwAyi4CUMj/lzft1WdlGs=;
-        b=fKHkxyFENKIi92w54Qdqx+wcrkTIQhvFO687BKS0YI7tGXjOcs6YcTI9vE+wRN9kXY
-         s4PX6AYOP+59/9tu1XwNcE10NOTQUE1KyGE0tYzkRdE+ggtTXxNqtn2YrhCknx2Wlt+c
-         +D8HlqOGyDmmfJ7xNdMHRn7BkSAhxFoVA9k5DE3QIcfiMeAdA6CJXa8dR7pPbrPjoqNv
-         nADaUigNCZWQMWbPkFnYCAc9hwQLD+W8mreWOxMZ9bG7YEKHe6uDebEhSO13lCC1e0Yz
-         An4cDLgOOcXX/b5jkJqdWLWqXc9Ufpg1pgbOGGowaKJo9EepnTuw0BV4BcjExXqGxJGd
-         F26w==
+        bh=D6em2/y0Ec3M3JoELPusdEp/9enysIaA1frZAYckr0E=;
+        b=aIDLDCuhHE8szzALl3o4l1VcmbNHpCJrVV9g5TMIh4zA1eD44EtcAVT4j0t+29zjCB
+         yCmL6UjQcrN68Nw/BhBwZqN+Qpk3L4lrYZYpBVVP5nSl/TW5JBV6OOEHc5DKJvx7042g
+         p3RqUPbMNUljpY+o+q5HhEJf2yEGYyQlGxVY5fjt2u8rVU+hTlROiQ/IK8fFwNAsN3ZS
+         KBExbsQVNevoBmRciu6IMypHDnM/Rbo7GUe0ps85yRhsbE6qY8GPr7AsvP+ZdHSfHR8Z
+         koEwd+/DSsMW1CCzUGUov6wacVz+8p4UDbckTkdjLicUEj9Zf/Z+Z11CFW61J1KD2QAA
+         TiTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=GgOEX6vqcDmUbZeEZfV9Y8OwAyi4CUMj/lzft1WdlGs=;
-        b=XN1BBZ8v+Y/Ov/Kn4BR2y6jEYtKCspTodrKyre5CnwUpvMrjGQGV3/EgmTlIbNmDLn
-         imRUqJnn3HC2M4MD7wfuW9sYO6Az1O1QfWC14sgFowFjDEdgMh45PcDNT3BFA0HKkKA6
-         gr2Ge8rgbkIx27YFD5vHsT87vKQEvkVje1lcwEX840p70YcW1AhGUeSqjlyShXoOEuqz
-         5Ga9zuBZpVZOhwoqCVTgul4Or65MIy8jjjUYxlRKTUMugJCO36MQ6MF0WT/qWfk6tNaE
-         j2GZ1mMhBGI4py0/0vGLmbWp20QgGt3J9DP6/eFErnCmx0OrZP9bHDglp03vUn78xaQX
-         QoUA==
-X-Gm-Message-State: AOAM5323YiQBZsYzBSt0Z5krWN2Ndw2sDam6Nn03D+PeEYDJnToxdkWJ
-        AzDN8eOGnAo0lWn87jjnsf5RjIv6ewiQ
-X-Google-Smtp-Source: ABdhPJyfsmj3qBydK0SmcgamBZ46WfIqZx+oKjTL9XqRWE8AqVM0XwiNQZXo6X5oChkGZQqUId1pMKbH+ncl
+        bh=D6em2/y0Ec3M3JoELPusdEp/9enysIaA1frZAYckr0E=;
+        b=4Jh+cDQ5mHK7w6eVOkOMFKLIG7GtS7LfZ2SLkZS3yE63r17jOcZl2BEd1uvxnN4MD3
+         hy9tlxLiO7w5xp9TEITuHR9jR4j3H0dv5bkWUrMF6D+N126wdsmcJ/vo9vP+lMtYlusG
+         Me2gFMloDLBP8QaFMBFE2VOi64D8CR5OyQUkRqeW+2fv1xEokT63dyP526ClCTW7WSWn
+         sEnO6OToQKBrXjvMvTxoauXmz0ohK+E0brxvY5trY05LbHktJJS3Tc6fSObaI/eLopjq
+         CT6tSwXEyfYBt7nb09pO9gBMl+9yuxRgzOu197Fmzl7jzvQwuOzCnmTY92LmnLIfd6xZ
+         ixsw==
+X-Gm-Message-State: AOAM533t4sPAzox6uOSlV6obDwLQyhpS1qez6AAlgtlBU6jgQT5s9hGY
+        r+zBkeSVX9bzfpOF14yrpgdC0EB3HMx2
+X-Google-Smtp-Source: ABdhPJwQubfByYKyFe3OrB488XFwH81yKlDdIAz9ec5X0EWpKoovnt6VO0H5+cYx6bUCUAxcUY8ggwHFrzIv
 X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:5993:294b:7b62:54cb])
- (user=irogers job=sendgmr) by 2002:a81:6145:0:b0:2f1:7a81:83f with SMTP id
- v66-20020a816145000000b002f17a81083fmr27026945ywb.366.1652303739208; Wed, 11
- May 2022 14:15:39 -0700 (PDT)
-Date:   Wed, 11 May 2022 14:15:23 -0700
+ (user=irogers job=sendgmr) by 2002:a81:b810:0:b0:2fb:2da2:e043 with SMTP id
+ v16-20020a81b810000000b002fb2da2e043mr28869289ywe.483.1652303743938; Wed, 11
+ May 2022 14:15:43 -0700 (PDT)
+Date:   Wed, 11 May 2022 14:15:25 -0700
 In-Reply-To: <20220511211526.1021908-1-irogers@google.com>
-Message-Id: <20220511211526.1021908-5-irogers@google.com>
+Message-Id: <20220511211526.1021908-7-irogers@google.com>
 Mime-Version: 1.0
 References: <20220511211526.1021908-1-irogers@google.com>
 X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
-Subject: [PATCH v2 4/7] perf jevents: Modify match field
+Subject: [PATCH v2 6/7] perf jevents: Switch build to use jevents.py
 From:   Ian Rogers <irogers@google.com>
 To:     Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@redhat.com>,
@@ -87,242 +87,114 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The match_field function looks for json values to append to the event
-string. As the C code processes these in order the output order matches
-that in the json dictionary. Python json readers read the entire
-dictionary and lose the ordering. To make the python and C output
-comparable make the C code first read the extra fields then append them
-to the event in an order not determined by their order in the file.
-
-Modify the pmu-events test so that test expectations match the new
-order.
+Generate pmu-events.c using jevents.py rather than the binary built from
+jevents.c. Add a new config variable NO_JEVENTS that is set when there
+is no architecture json or an appropriate python interpreter isn't present.
+When NO_JEVENTS is defined the file pmu-events/empty-pmu-events.c is copied
+and used as the pmu-events.c file.
 
 Signed-off-by: Ian Rogers <irogers@google.com>
 ---
- tools/perf/pmu-events/jevents.c | 82 ++++++++++++++++++++-------------
- tools/perf/tests/pmu-events.c   | 24 +++++-----
- 2 files changed, 62 insertions(+), 44 deletions(-)
+ tools/perf/Makefile.config               | 19 +++++++++++++++++++
+ tools/perf/Makefile.perf                 |  1 +
+ tools/perf/pmu-events/Build              | 11 +++++++++--
+ tools/perf/pmu-events/empty-pmu-events.c | 21 +++++++++++++++++++++
+ 4 files changed, 50 insertions(+), 2 deletions(-)
+ create mode 100644 tools/perf/pmu-events/empty-pmu-events.c
 
-diff --git a/tools/perf/pmu-events/jevents.c b/tools/perf/pmu-events/jevents.c
-index e1f7c7afd435..cee61c4ed59e 100644
---- a/tools/perf/pmu-events/jevents.c
-+++ b/tools/perf/pmu-events/jevents.c
-@@ -207,21 +207,6 @@ static struct msrmap {
- 	{ NULL, NULL }
- };
+diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
+index d9b699ad402c..5a19469f0048 100644
+--- a/tools/perf/Makefile.config
++++ b/tools/perf/Makefile.config
+@@ -854,6 +854,25 @@ else
+   endif
+ endif
  
--static struct field {
--	const char *field;
--	const char *kernel;
--} fields[] = {
--	{ "UMask",	"umask=" },
--	{ "CounterMask", "cmask=" },
--	{ "Invert",	"inv=" },
--	{ "AnyThread",	"any=" },
--	{ "EdgeDetect",	"edge=" },
--	{ "SampleAfterValue", "period=" },
--	{ "FCMask",	"fc_mask=" },
--	{ "PortMask",	"ch_mask=" },
--	{ NULL, NULL }
--};
--
- static void cut_comma(char *map, jsmntok_t *newval)
- {
- 	int i;
-@@ -233,21 +218,6 @@ static void cut_comma(char *map, jsmntok_t *newval)
- 	}
- }
++ifneq ($(NO_JEVENTS),1)
++  ifeq ($(wildcard pmu-events/arch/$(SRCARCH)/mapfile.csv),)
++    NO_JEVENTS := 1
++  endif
++endif
++ifneq ($(NO_JEVENTS),1)
++  NO_JEVENTS := 0
++  ifndef PYTHON
++    $(warning No python interpreter disabling jevent generation)
++    NO_JEVENTS := 1
++  else
++    # jevents.py uses os.scandir and type hints present in Python 3.5 released in Sept. 2015.
++    JEVENTS_PYTHON_GOOD := $(shell $(PYTHON) -c 'import sys;print("1" if(sys.version_info.major >= 3 and sys.version_info.minor >= 5) else "0")')
++    ifneq ($(JEVENTS_PYTHON_GOOD), 1)
++      $(warning Python interpreter too old (older than 3.5) disabling jevent generation)
++      NO_JEVENTS := 1
++    endif
++  endif
++endif
  
--static int match_field(char *map, jsmntok_t *field, int nz,
--		       char **event, jsmntok_t *val)
--{
--	struct field *f;
--	jsmntok_t newval = *val;
--
--	for (f = fields; f->field; f++)
--		if (json_streq(map, field, f->field) && nz) {
--			cut_comma(map, &newval);
--			addfield(map, event, ",", f->kernel, &newval);
--			return 1;
--		}
--	return 0;
--}
--
- static struct msrmap *lookup_msr(char *map, jsmntok_t *val)
- {
- 	jsmntok_t newval = *val;
-@@ -581,6 +551,14 @@ static int json_events(const char *fn,
- 		jsmntok_t *precise = NULL;
- 		jsmntok_t *obj = tok++;
- 		bool configcode_present = false;
-+		char *umask = NULL;
-+		char *cmask = NULL;
-+		char *inv = NULL;
-+		char *any = NULL;
-+		char *edge = NULL;
-+		char *period = NULL;
-+		char *fc_mask = NULL;
-+		char *ch_mask = NULL;
+ ifndef NO_LIBBFD
+   ifeq ($(feature-libbfd), 1)
+diff --git a/tools/perf/Makefile.perf b/tools/perf/Makefile.perf
+index 078f0b06f08a..db416a13dca7 100644
+--- a/tools/perf/Makefile.perf
++++ b/tools/perf/Makefile.perf
+@@ -655,6 +655,7 @@ JEVENTS       := $(OUTPUT)pmu-events/jevents
+ JEVENTS_IN    := $(OUTPUT)pmu-events/jevents-in.o
  
- 		EXPECT(obj->type == JSMN_OBJECT, obj, "expected object");
- 		for (j = 0; j < obj->size; j += 2) {
-@@ -596,8 +574,23 @@ static int json_events(const char *fn,
- 			       "Expected string value");
+ PMU_EVENTS_IN := $(OUTPUT)pmu-events/pmu-events-in.o
++export NO_JEVENTS
  
- 			nz = !json_streq(map, val, "0");
--			if (match_field(map, field, nz, &event, val)) {
--				/* ok */
-+			/* match_field */
-+			if (json_streq(map, field, "UMask") && nz) {
-+				addfield(map, &umask, "", "umask=", val);
-+			} else if (json_streq(map, field, "CounterMask") && nz) {
-+				addfield(map, &cmask, "", "cmask=", val);
-+			} else if (json_streq(map, field, "Invert") && nz) {
-+				addfield(map, &inv, "", "inv=", val);
-+			} else if (json_streq(map, field, "AnyThread") && nz) {
-+				addfield(map, &any, "", "any=", val);
-+			} else if (json_streq(map, field, "EdgeDetect") && nz) {
-+				addfield(map, &edge, "", "edge=", val);
-+			} else if (json_streq(map, field, "SampleAfterValue") && nz) {
-+				addfield(map, &period, "", "period=", val);
-+			} else if (json_streq(map, field, "FCMask") && nz) {
-+				addfield(map, &fc_mask, "", "fc_mask=", val);
-+			} else if (json_streq(map, field, "PortMask") && nz) {
-+				addfield(map, &ch_mask, "", "ch_mask=", val);
- 			} else if (json_streq(map, field, "EventCode")) {
- 				char *code = NULL;
- 				addfield(map, &code, "", "", val);
-@@ -690,6 +683,23 @@ static int json_events(const char *fn,
- 		else
- 			snprintf(buf, sizeof buf, "event=%#llx", eventcode);
- 		addfield(map, &event, ",", buf, NULL);
-+		if (any)
-+			addfield(map, &event, ",", any, NULL);
-+		if (ch_mask)
-+			addfield(map, &event, ",", ch_mask, NULL);
-+		if (cmask)
-+			addfield(map, &event, ",", cmask, NULL);
-+		if (edge)
-+			addfield(map, &event, ",", edge, NULL);
-+		if (fc_mask)
-+			addfield(map, &event, ",", fc_mask, NULL);
-+		if (inv)
-+			addfield(map, &event, ",", inv, NULL);
-+		if (period)
-+			addfield(map, &event, ",", period, NULL);
-+		if (umask)
-+			addfield(map, &event, ",", umask, NULL);
+ export JEVENTS
+ 
+diff --git a/tools/perf/pmu-events/Build b/tools/perf/pmu-events/Build
+index a055dee6a46a..5e459e1c7a85 100644
+--- a/tools/perf/pmu-events/Build
++++ b/tools/perf/pmu-events/Build
+@@ -9,10 +9,17 @@ JSON		=  $(shell [ -d $(JDIR) ] &&				\
+ JDIR_TEST	=  pmu-events/arch/test
+ JSON_TEST	=  $(shell [ -d $(JDIR_TEST) ] &&			\
+ 			find $(JDIR_TEST) -name '*.json')
++JEVENTS_PY	=  pmu-events/jevents.py
+ 
+ #
+ # Locate/process JSON files in pmu-events/arch/
+ # directory and create tables in pmu-events.c.
+ #
+-$(OUTPUT)pmu-events/pmu-events.c: $(JSON) $(JSON_TEST) $(JEVENTS)
+-	$(Q)$(call echo-cmd,gen)$(JEVENTS) $(SRCARCH) pmu-events/arch $(OUTPUT)pmu-events/pmu-events.c $(V)
 +
- 		if (je.desc && extra_desc)
- 			addfield(map, &je.desc, " ", extra_desc, NULL);
- 		if (je.long_desc && extra_desc)
-@@ -718,6 +728,14 @@ static int json_events(const char *fn,
- 		je.event = real_event(je.name, event);
- 		err = func(data, &je);
- free_strings:
-+		free(umask);
-+		free(cmask);
-+		free(inv);
-+		free(any);
-+		free(edge);
-+		free(period);
-+		free(fc_mask);
-+		free(ch_mask);
- 		free(event);
- 		free(je.desc);
- 		free(je.name);
-diff --git a/tools/perf/tests/pmu-events.c b/tools/perf/tests/pmu-events.c
-index b74c6ef59e51..f13368569d8b 100644
---- a/tools/perf/tests/pmu-events.c
-+++ b/tools/perf/tests/pmu-events.c
-@@ -63,33 +63,33 @@ static const struct perf_pmu_test_event bp_l2_btb_correct = {
- static const struct perf_pmu_test_event segment_reg_loads_any = {
- 	.event = {
- 		.name = "segment_reg_loads.any",
--		.event = "umask=0x80,period=200000,event=0x6",
-+		.event = "event=0x6,period=200000,umask=0x80",
- 		.desc = "Number of segment register loads",
- 		.topic = "other",
- 	},
--	.alias_str = "umask=0x80,period=0x30d40,event=0x6",
-+	.alias_str = "event=0x6,period=0x30d40,umask=0x80",
- 	.alias_long_desc = "Number of segment register loads",
- };
- 
- static const struct perf_pmu_test_event dispatch_blocked_any = {
- 	.event = {
- 		.name = "dispatch_blocked.any",
--		.event = "umask=0x20,period=200000,event=0x9",
-+		.event = "event=0x9,period=200000,umask=0x20",
- 		.desc = "Memory cluster signals to block micro-op dispatch for any reason",
- 		.topic = "other",
- 	},
--	.alias_str = "umask=0x20,period=0x30d40,event=0x9",
-+	.alias_str = "event=0x9,period=0x30d40,umask=0x20",
- 	.alias_long_desc = "Memory cluster signals to block micro-op dispatch for any reason",
- };
- 
- static const struct perf_pmu_test_event eist_trans = {
- 	.event = {
- 		.name = "eist_trans",
--		.event = "umask=0x0,period=200000,event=0x3a",
-+		.event = "event=0x3a,period=200000,umask=0x0",
- 		.desc = "Number of Enhanced Intel SpeedStep(R) Technology (EIST) transitions",
- 		.topic = "other",
- 	},
--	.alias_str = "umask=0,period=0x30d40,event=0x3a",
-+	.alias_str = "event=0x3a,period=0x30d40,umask=0",
- 	.alias_long_desc = "Number of Enhanced Intel SpeedStep(R) Technology (EIST) transitions",
- };
- 
-@@ -132,13 +132,13 @@ static const struct perf_pmu_test_event uncore_hisi_ddrc_flux_wcmd = {
- static const struct perf_pmu_test_event unc_cbo_xsnp_response_miss_eviction = {
- 	.event = {
- 		.name = "unc_cbo_xsnp_response.miss_eviction",
--		.event = "umask=0x81,event=0x22",
-+		.event = "event=0x22,umask=0x81",
- 		.desc = "A cross-core snoop resulted from L3 Eviction which misses in some processor core. Unit: uncore_cbox ",
- 		.topic = "uncore",
- 		.long_desc = "A cross-core snoop resulted from L3 Eviction which misses in some processor core",
- 		.pmu = "uncore_cbox",
- 	},
--	.alias_str = "umask=0x81,event=0x22",
-+	.alias_str = "event=0x22,umask=0x81",
- 	.alias_long_desc = "A cross-core snoop resulted from L3 Eviction which misses in some processor core",
- 	.matching_pmu = "uncore_cbox_0",
- };
-@@ -146,13 +146,13 @@ static const struct perf_pmu_test_event unc_cbo_xsnp_response_miss_eviction = {
- static const struct perf_pmu_test_event uncore_hyphen = {
- 	.event = {
- 		.name = "event-hyphen",
--		.event = "umask=0x00,event=0xe0",
-+		.event = "event=0xe0,umask=0x00",
- 		.desc = "UNC_CBO_HYPHEN. Unit: uncore_cbox ",
- 		.topic = "uncore",
- 		.long_desc = "UNC_CBO_HYPHEN",
- 		.pmu = "uncore_cbox",
- 	},
--	.alias_str = "umask=0,event=0xe0",
-+	.alias_str = "event=0xe0,umask=0",
- 	.alias_long_desc = "UNC_CBO_HYPHEN",
- 	.matching_pmu = "uncore_cbox_0",
- };
-@@ -160,13 +160,13 @@ static const struct perf_pmu_test_event uncore_hyphen = {
- static const struct perf_pmu_test_event uncore_two_hyph = {
- 	.event = {
- 		.name = "event-two-hyph",
--		.event = "umask=0x00,event=0xc0",
-+		.event = "event=0xc0,umask=0x00",
- 		.desc = "UNC_CBO_TWO_HYPH. Unit: uncore_cbox ",
- 		.topic = "uncore",
- 		.long_desc = "UNC_CBO_TWO_HYPH",
- 		.pmu = "uncore_cbox",
- 	},
--	.alias_str = "umask=0,event=0xc0",
-+	.alias_str = "event=0xc0,umask=0",
- 	.alias_long_desc = "UNC_CBO_TWO_HYPH",
- 	.matching_pmu = "uncore_cbox_0",
- };
++ifeq ($(NO_JEVENTS),1)
++$(OUTPUT)pmu-events/pmu-events.c: pmu-events/empty-pmu-events.c
++	$(Q)cp $< $@
++else
++$(OUTPUT)pmu-events/pmu-events.c: $(JSON) $(JSON_TEST) $(JEVENTS_PY)
++	$(Q)$(call echo-cmd,gen)$(PYTHON) $(JEVENTS_PY) $(SRCARCH) pmu-events/arch $@
++endif
+diff --git a/tools/perf/pmu-events/empty-pmu-events.c b/tools/perf/pmu-events/empty-pmu-events.c
+new file mode 100644
+index 000000000000..08fee615e015
+--- /dev/null
++++ b/tools/perf/pmu-events/empty-pmu-events.c
+@@ -0,0 +1,21 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * An empty pmu-events.c file used when there is no architecture json files in
++ * arch or when the jevents.py script cannot be run.
++ */
++#include "pmu-events/pmu-events.h"
++
++const struct pmu_events_map pmu_events_map[] = {
++	{
++		.cpuid = 0,
++		.version = 0,
++		.type = 0,
++		.table = 0,
++	},
++};
++
++const struct pmu_sys_events pmu_sys_event_tables[] = {
++	{
++		.table = 0
++	},
++};
 -- 
 2.36.0.512.ge40c2bad7a-goog
 
