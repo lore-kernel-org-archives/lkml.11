@@ -2,159 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E494AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 08:01:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6FD0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 08:03:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243262AbiEKIBX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 04:01:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59342 "EHLO
+        id S243267AbiEKIDE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 04:03:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239763AbiEKIBT (ORCPT
+        with ESMTP id S239763AbiEKIDB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 04:01:19 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACE5F39159
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 01:01:17 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id d6so1547839ede.8
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 01:01:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=M4aeMJFFFKV21hSaluDeCVxCbgPrszET6TE6+DuKZy0=;
-        b=pHErwaiX6ufGPbr+xXjlPt1Yc3gEtnWaSm8ytmYX710fnKTCNneuXmpcCLCEGqTExG
-         m7Hs6QUMpa2kf0CWT3yM0LTy2PyrJCG8N6qYBW7tQGijpTswQh71X3v6WO+XdWu0TuDe
-         09GmCLxd2aNLZu2aOIBXK4Nofo/Fe5dGXd/AkIQ8ZA4sJ3cl31BKatHndrY1YfzV4Cm+
-         Oz1Uu7sXr1ERXN6NrCvL7Vi7oHCV30QoCD8jBzDjIsjjJvfrXNxSGICoehoho0L32G9m
-         oLc7zw+8k22xvyS5HFxdVTtPJYJTjRW5Ps+XqcmHsp6UZroC3Oe4leN4M4Nu5ri+XNXa
-         INXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=M4aeMJFFFKV21hSaluDeCVxCbgPrszET6TE6+DuKZy0=;
-        b=R7OOgJLBtZ+ZdI+XL0ftNcHbkw/LQcGThd037rgi22LEZS+EBAtSC8AGt5ObnTGWSF
-         QNhfs/b3gbjCqBj5CAb39w9P+R3ZAohvpdoYIMrvfwH7NgZbO4uhM41pwWapWBaxA3eb
-         CkKt4hbLALmhf9cXR1fesjS+2kzYFC0OBJXYLJWFUpCz8DlpujjGq8B51QBxDsyZ//6F
-         0uELoMFStHHmOTGB+t7Oxk0t1kO9xdaDB54loUN1MIbTlLNM4Cqe/2z+H5EsDVjW5UR1
-         lb0w57yqYrHUH32hJlj/q4iGEm+tzVrpvTwqVfs/ZrmPXyl5MyiXuCgmbv3jIHT447nl
-         Nyhw==
-X-Gm-Message-State: AOAM532e0BK4cFW5vL2CTeOI+HeMUQgp7BTljkmMyoZLsRQccC+7pfQb
-        OrCwSM1iRzRzYct5OLPfUTuuyJ5DrYWpHv4L
-X-Google-Smtp-Source: ABdhPJxcUxYehRflQhrWm3q6OieQJAMKNGsZSTynkrhHLPcj2CC9w6aa7qaw0vo2XGXSDh8yqvw2IA==
-X-Received: by 2002:a05:6402:e9f:b0:41c:df21:b113 with SMTP id h31-20020a0564020e9f00b0041cdf21b113mr27914392eda.217.1652256076253;
-        Wed, 11 May 2022 01:01:16 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
-        by smtp.gmail.com with ESMTPSA id h12-20020a05640250cc00b0042617ba63d5sm783085edb.95.2022.05.11.01.01.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 01:01:15 -0700 (PDT)
-Date:   Wed, 11 May 2022 09:00:50 +0100
-From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
-To:     Baolu Lu <baolu.lu@linux.intel.com>
-Cc:     Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 02/12] iommu: Add pasid_bits field in struct dev_iommu
-Message-ID: <YnttMpX2geTKRzVV@myrica>
-References: <20220510061738.2761430-1-baolu.lu@linux.intel.com>
- <20220510061738.2761430-3-baolu.lu@linux.intel.com>
- <20220510143405.GE49344@nvidia.com>
- <3fe05f18-6726-276a-8c42-79e0b134dfdc@linux.intel.com>
+        Wed, 11 May 2022 04:03:01 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AC22A8B085
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 01:03:00 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3DEC8106F;
+        Wed, 11 May 2022 01:03:00 -0700 (PDT)
+Received: from FVFF77S0Q05N (unknown [10.57.3.187])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C8E5C3F73D;
+        Wed, 11 May 2022 01:02:58 -0700 (PDT)
+Date:   Wed, 11 May 2022 09:02:45 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Alexander Popov <alex.popov@linux.com>,
+        linux-arm-kernel@lists.infradead.org, akpm@linux-foundation.org,
+        catalin.marinas@arm.com, linux-kernel@vger.kernel.org,
+        luto@kernel.org, will@kernel.org
+Subject: Re: [PATCH v2 03/13] stackleak: remove redundant check
+Message-ID: <YnttpThLX0tgrw5i@FVFF77S0Q05N>
+References: <20220427173128.2603085-1-mark.rutland@arm.com>
+ <20220427173128.2603085-4-mark.rutland@arm.com>
+ <a604fa2b-e7c3-3fff-dd81-1a0585a9e2fa@linux.com>
+ <YnpQqBwYjlVffJk8@FVFF77S0Q05N>
+ <202205101958.2A33DE20@keescook>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <3fe05f18-6726-276a-8c42-79e0b134dfdc@linux.intel.com>
+In-Reply-To: <202205101958.2A33DE20@keescook>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 10:25:48AM +0800, Baolu Lu wrote:
-> On 2022/5/10 22:34, Jason Gunthorpe wrote:
-> > On Tue, May 10, 2022 at 02:17:28PM +0800, Lu Baolu wrote:
+On Tue, May 10, 2022 at 08:00:38PM -0700, Kees Cook wrote:
+> On Tue, May 10, 2022 at 12:46:48PM +0100, Mark Rutland wrote:
+> > On Sun, May 08, 2022 at 09:17:01PM +0300, Alexander Popov wrote:
+> > > On 27.04.2022 20:31, Mark Rutland wrote:
+> > > > In __stackleak_erase() we check that the `erase_low` value derived from
+> > > > `current->lowest_stack` is above the lowest legitimate stack pointer
+> > > > value, but this is already enforced by stackleak_track_stack() when
+> > > > recording the lowest stack value.
+> > > > 
+> > > > Remove the redundant check.
+> > > > 
+> > > > There should be no functional change as a result of this patch.
+> > > 
+> > > Mark, I can't agree here. I think this check is important.
+> > > The performance profit from dropping it is less than the confidence decrease :)
+> > > 
+> > > With this check, if the 'lowest_stack' value is corrupted, stackleak doesn't
+> > > overwrite some wrong kernel memory, but simply clears the whole thread
+> > > stack, which is safe behavior.
 > > 
-> > >   int iommu_device_register(struct iommu_device *iommu,
-> > > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > > index 627a3ed5ee8f..afc63fce6107 100644
-> > > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > > @@ -2681,6 +2681,8 @@ static struct iommu_device *arm_smmu_probe_device(struct device *dev)
-> > >   	    smmu->features & ARM_SMMU_FEAT_STALL_FORCE)
-> > >   		master->stall_enabled = true;
-> > > +	dev->iommu->pasid_bits = master->ssid_bits;
-> > >   	return &smmu->iommu;
-> > >   err_free_master:
-> > > diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> > > index 2990f80c5e08..99643f897f26 100644
-> > > +++ b/drivers/iommu/intel/iommu.c
-> > > @@ -4624,8 +4624,11 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
-> > >   			if (pasid_supported(iommu)) {
-> > >   				int features = pci_pasid_features(pdev);
-> > > -				if (features >= 0)
-> > > +				if (features >= 0) {
-> > >   					info->pasid_supported = features | 1;
-> > > +					dev->iommu->pasid_bits =
-> > > +						fls(pci_max_pasids(pdev)) - 1;
-> > > +				}
+> > If you feel strongly about it, I can restore the check, but I struggle to
+> > believe that it's worthwhile. The `lowest_stack` value lives in the
+> > task_struct, and if you have the power to corrupt that you have the power to do
+> > much more interesting things.
 > > 
-> > It is not very nice that both the iommu drivers have to duplicate the
-> > code to read the pasid capability out of the PCI device.
-> > 
-> > IMHO it would make more sense for the iommu layer to report the
-> > capability of its own HW block only, and for the core code to figure
-> > out the master's limitation using a bus-specific approach.
+> > If we do restore it, I'd like to add a big fat comment explaining the
+> > rationale (i.e. that it only matter if someone could corrupt
+> > `current->lowest_stack`, as otherwise that's guarnateed to be within bounds).
 > 
-> Fair enough. The iommu hardware capability could be reported in
-> 
-> /**
->  * struct iommu_device - IOMMU core representation of one IOMMU hardware
->  *                       instance
->  * @list: Used by the iommu-core to keep a list of registered iommus
->  * @ops: iommu-ops for talking to this iommu
->  * @dev: struct device for sysfs handling
->  */
-> struct iommu_device {
->         struct list_head list;
->         const struct iommu_ops *ops;
->         struct fwnode_handle *fwnode;
->         struct device *dev;
-> };
-> 
-> I haven't checked ARM code yet, but it works for x86 as far as I can
-> see.
+> Yeah, let's restore it and add the comment. While I do agree it's likely
+> that such an corruption would likely mean an attacker had significant
+> control over kernel memory already, it is not uncommon that an attack
+> only has a limited index from a given address, etc. Or some manipulation
+> is possible via weird gadgets, etc. It's unlikely, but not impossible,
+> and a bounds-check for that value is cheap compared to the rest of the
+> work happening. :)
 
-Arm also supports non-PCI PASID by reading a firmware property:
-
-        device_property_read_u32(dev, "pasid-num-bits", &master->ssid_bits);
-
-should be the only difference
+Fair enough; I can go spin a patch restoring this. I'm somewhat unhappy with
+silently fixing that up, though -- IMO it'd be better to BUG() or similar in
+that case.
 
 Thanks,
-Jean
-
-> 
-> > 
-> > It is also unfortunate that the enable/disable pasid is inside the
-> > iommu driver as well - ideally the PCI driver itself would do this
-> > when it knows it wants to use PASIDs.
-> > 
-> > The ordering interaction with ATS makes this look quite annoying
-> > though. :(
-> > 
-> > I'm also not convinced individual IOMMU drivers should be forcing ATS
-> > on, there are performance and functional implications here. Using ATS
-> > or not is possibly best left as an administrator policy controlled by
-> > the core code. Again we seem to have some mess.
-> 
-> Agreed with you. This has already been in my task list. I will start to
-> solve it after the iommufd tasks.
-> 
-> Best regards,
-> baolu
+Mark.
