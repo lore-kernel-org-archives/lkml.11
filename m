@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50F74C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:30:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25622C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:30:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241310AbiEKCaA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 22:30:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50812 "EHLO
+        id S241326AbiEKCaF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 22:30:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241243AbiEKC3p (ORCPT
+        with ESMTP id S241241AbiEKC3o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 22:29:45 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D7921A973
+        Tue, 10 May 2022 22:29:44 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34B0721A961
         for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:29:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1652236180; x=1683772180;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=G/TcLlTYfxbVJzq7dK3DevQwhZHsYFLz0w7V7nky4mc=;
-  b=fhjDZ4oSkjyg9xY5MZ+umL4KUuJ7Cai3bELL+rpEWwLigA3nlLOuytKR
-   fj+YcwnK0c8gHohHNa7qdSwPQQvRrx732cKZ7Z19UNKhVKVzMGtZ9ZBu5
-   GaTNdOAaQ8k/8pCvBFti+zCDl5cdVByq73qZOYNK/2qC2cQvoDu8Q4x61
-   SAp1RmG7ysoybZ2JopjQOTQzd5xYUXtvpAZnHmkaZI5m1/z8rFTxzhOK2
-   CRRMOs5oB2HNe+Q+lmywncG/t0x74DoM2vMfjlJNADF4N1JHaDMrPfq39
-   bkxtrWyNWSkrXjqkX+Dl5AtpvXvMDvhNmz2EqqQfofieUcE9EcaA7KhP+
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="251610731"
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=zyE/+02x9Fj+FgL1GeYtDyYutpy6orbTRtxDnBCOxV4=;
+  b=ZuprcYjgpYiDGzNC69bPz48Adpdfmq8ghcs8qSKIgwqVBrWjrO3QYxBt
+   M8cF28Wsu7g46Dbdea/KSwqMiKyrpOLIcimGOdilfqMKO4PrRIQR9rmtP
+   aEy7i8HgUFMLb1vqO1l9LteR64N2gP2cW4xl8XES5G2Q+pQlbV2hh3ot8
+   cXR9mEEHKrl+X0P2McOc94fE7k2miUsp0D+SQBaWgBC9BETBaS5x57Icj
+   P4mEx9TuPGyZJwOKPZzBj6uW5CMOI1CyeMPPKCQpUWZk0lxlEzCuqx2Sw
+   VhdwBpYMOX7psNXG/tnBucXtPSjTSRJxwAm8PovGPU1r4cDaSjvO+mDUX
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="269497327"
 X-IronPort-AV: E=Sophos;i="5.91,215,1647327600"; 
-   d="scan'208";a="251610731"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 19:29:39 -0700
+   d="scan'208";a="269497327"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 19:29:39 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,215,1647327600"; 
-   d="scan'208";a="602747391"
+   d="scan'208";a="542092629"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 10 May 2022 19:29:35 -0700
+  by orsmga006.jf.intel.com with ESMTP; 10 May 2022 19:29:36 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 05415508; Wed, 11 May 2022 05:28:00 +0300 (EEST)
+        id 2444753B; Wed, 11 May 2022 05:28:01 +0300 (EEST)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         Andy Lutomirski <luto@kernel.org>,
@@ -52,91 +52,63 @@ Cc:     x86@kernel.org, Andrey Ryabinin <aryabinin@virtuozzo.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         linux-mm@kvack.org, linux-kernel@vger.kernel.org,
         "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [RFCv2 00/10] Linear Address Masking enabling
-Date:   Wed, 11 May 2022 05:27:40 +0300
-Message-Id: <20220511022751.65540-1-kirill.shutemov@linux.intel.com>
+Subject: [RFCv2 02/10] x86: CPUID and CR3/CR4 flags for Linear Address Masking
+Date:   Wed, 11 May 2022 05:27:43 +0300
+Message-Id: <20220511022751.65540-4-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220511022751.65540-1-kirill.shutemov@linux.intel.com>
+References: <20220511022751.65540-1-kirill.shutemov@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all. Here's long overdue update on LAM enabling.
+Enumerate Linear Address Masking and provide defines for CR3 and CR4
+flags.
 
-# Description #
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+---
+ arch/x86/include/asm/cpufeatures.h          | 1 +
+ arch/x86/include/uapi/asm/processor-flags.h | 6 ++++++
+ 2 files changed, 7 insertions(+)
 
-Linear Address Masking[1] (LAM) modifies the checking that is applied to
-64-bit linear addresses, allowing software to use of the untranslated
-address bits for metadata.
-
-The patchset brings support for LAM for userspace addresses.
-
-The most sensitive part of enabling is change in tlb.c, where CR3 flags
-get set. Please take a look that what I'm doing makes sense.
-
-The feature competes for bits with 5-level paging: LAM_U48 makes it
-impossible to map anything about 47-bits. The patchset made these
-capability mutually exclusive: whatever used first wins. LAM_U57 can be
-combined with mappings above 47-bits.
-
-[1] ISE, Chapter 14.
-https://software.intel.com/content/dam/develop/external/us/en/documents-tps/architecture-instruction-set-extensions-programming-reference.pdf
-
-# What's new #
-
-The main change is interface rework. It is now arch_prctl(2)-based and
-suppose to be extendable to CET.
-
-QEMU implementation is also updated. It can now be applied onto current
-master branch. QEMU patch as it is was rejected by upstream, but it is
-functinal and can be used for testing.
-
-Please take a look. Any suggestions are welcome.
-
-v2:
-  - Rebased onto v5.18-rc1
-  - New arch_prctl(2)-based API
-  - Expose status of LAM (or other thread features) in
-    /proc/$PID/arch_status.
-
-Kirill A. Shutemov (10):
-  x86/mm: Fix CR3_ADDR_MASK
-  x86: CPUID and CR3/CR4 flags for Linear Address Masking
-  x86: Introduce userspace API to handle per-thread features
-  x86/mm: Introduce X86_THREAD_LAM_U48 and X86_THREAD_LAM_U57
-  x86/mm: Provide untagged_addr() helper
-  x86/uaccess: Remove tags from the address before checking
-  x86/mm: Handle tagged memory accesses from kernel threads
-  x86/mm: Make LAM_U48 and mappings above 47-bits mutually exclusive
-  x86/mm: Add userspace API to enable Linear Address Masking
-  x86: Expose thread features status in /proc/$PID/arch_status
-
- arch/x86/include/asm/cpufeatures.h          |   1 +
- arch/x86/include/asm/elf.h                  |   3 +-
- arch/x86/include/asm/mmu.h                  |   1 +
- arch/x86/include/asm/mmu_context.h          |  13 +++
- arch/x86/include/asm/page_32.h              |   3 +
- arch/x86/include/asm/page_64.h              |  20 ++++
- arch/x86/include/asm/processor-flags.h      |   2 +-
- arch/x86/include/asm/processor.h            |   3 +
- arch/x86/include/asm/tlbflush.h             |   5 +
- arch/x86/include/asm/uaccess.h              |  15 ++-
- arch/x86/include/uapi/asm/prctl.h           |   8 ++
- arch/x86/include/uapi/asm/processor-flags.h |   6 +
- arch/x86/kernel/Makefile                    |   2 +
- arch/x86/kernel/fpu/xstate.c                |  47 --------
- arch/x86/kernel/proc.c                      |  63 ++++++++++
- arch/x86/kernel/process.c                   |  56 +++++++++
- arch/x86/kernel/process.h                   |   2 +
- arch/x86/kernel/process_64.c                |  46 ++++++++
- arch/x86/kernel/sys_x86_64.c                |   5 +-
- arch/x86/mm/hugetlbpage.c                   |   6 +-
- arch/x86/mm/mmap.c                          |   9 +-
- arch/x86/mm/tlb.c                           | 123 +++++++++++++++++---
- 22 files changed, 367 insertions(+), 72 deletions(-)
- create mode 100644 arch/x86/kernel/proc.c
-
+diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
+index 73e643ae94b6..d443d1ba231a 100644
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -299,6 +299,7 @@
+ /* Intel-defined CPU features, CPUID level 0x00000007:1 (EAX), word 12 */
+ #define X86_FEATURE_AVX_VNNI		(12*32+ 4) /* AVX VNNI instructions */
+ #define X86_FEATURE_AVX512_BF16		(12*32+ 5) /* AVX512 BFLOAT16 instructions */
++#define X86_FEATURE_LAM			(12*32+26) /* Linear Address Masking */
+ 
+ /* AMD-defined CPU features, CPUID level 0x80000008 (EBX), word 13 */
+ #define X86_FEATURE_CLZERO		(13*32+ 0) /* CLZERO instruction */
+diff --git a/arch/x86/include/uapi/asm/processor-flags.h b/arch/x86/include/uapi/asm/processor-flags.h
+index c47cc7f2feeb..d898432947ff 100644
+--- a/arch/x86/include/uapi/asm/processor-flags.h
++++ b/arch/x86/include/uapi/asm/processor-flags.h
+@@ -82,6 +82,10 @@
+ #define X86_CR3_PCID_BITS	12
+ #define X86_CR3_PCID_MASK	(_AC((1UL << X86_CR3_PCID_BITS) - 1, UL))
+ 
++#define X86_CR3_LAM_U57_BIT	61 /* Activate LAM for userspace, 62:57 bits masked */
++#define X86_CR3_LAM_U57		_BITULL(X86_CR3_LAM_U57_BIT)
++#define X86_CR3_LAM_U48_BIT	62 /* Activate LAM for userspace, 62:48 bits masked */
++#define X86_CR3_LAM_U48		_BITULL(X86_CR3_LAM_U48_BIT)
+ #define X86_CR3_PCID_NOFLUSH_BIT 63 /* Preserve old PCID */
+ #define X86_CR3_PCID_NOFLUSH    _BITULL(X86_CR3_PCID_NOFLUSH_BIT)
+ 
+@@ -132,6 +136,8 @@
+ #define X86_CR4_PKE		_BITUL(X86_CR4_PKE_BIT)
+ #define X86_CR4_CET_BIT		23 /* enable Control-flow Enforcement Technology */
+ #define X86_CR4_CET		_BITUL(X86_CR4_CET_BIT)
++#define X86_CR4_LAM_SUP_BIT	28 /* LAM for supervisor pointers */
++#define X86_CR4_LAM_SUP		_BITUL(X86_CR4_LAM_SUP_BIT)
+ 
+ /*
+  * x86-64 Task Priority Register, CR8
 -- 
 2.35.1
 
