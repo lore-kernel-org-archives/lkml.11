@@ -2,94 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8EE3C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 13:04:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D58F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 13:04:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243216AbiEKNEj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 09:04:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50786 "EHLO
+        id S237638AbiEKNEp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 09:04:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243058AbiEKNEQ (ORCPT
+        with ESMTP id S243223AbiEKNE2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 09:04:16 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8878233A6A;
-        Wed, 11 May 2022 06:04:13 -0700 (PDT)
-Received: from kwepemi100014.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Kyw3H1n2DzCsbX;
-        Wed, 11 May 2022 20:59:23 +0800 (CST)
-Received: from kwepemm600001.china.huawei.com (7.193.23.3) by
- kwepemi100014.china.huawei.com (7.221.188.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 11 May 2022 21:04:10 +0800
-Received: from huawei.com (10.175.113.133) by kwepemm600001.china.huawei.com
- (7.193.23.3) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 11 May
- 2022 21:04:09 +0800
-From:   Wang Hai <wanghai38@huawei.com>
-To:     <trond.myklebust@hammerspace.com>, <bfields@fieldses.org>,
-        <anna@kernel.org>, <chuck.lever@oracle.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <pabeni@redhat.com>
-CC:     <linux-nfs@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <wanghai38@huawei.com>
-Subject: [PATCH 3/3] SUNRPC: Fix local socket leak in xs_setup_local()
-Date:   Wed, 11 May 2022 21:22:32 +0800
-Message-ID: <20220511132232.4030-4-wanghai38@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220511132232.4030-1-wanghai38@huawei.com>
-References: <20220511132232.4030-1-wanghai38@huawei.com>
+        Wed, 11 May 2022 09:04:28 -0400
+Received: from m15112.mail.126.com (m15112.mail.126.com [220.181.15.112])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2CC1423725D;
+        Wed, 11 May 2022 06:04:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=cA20v
+        jSQc0xTB5lj5GoeWHAPefqE6IHlE3Nbb8SvDhw=; b=eHhPo9MMLFFQdNOxPzh4R
+        dHDDNEJiYPWGiEIA/opcQbywOmTnsgv8An0DrOvcPjpt6/0guDU/RBEBF7Efdhpy
+        9BHQFyxEAGbhGNcX4VU1HX/Z5CtV00J6rOLs5ty0x1WLp5UBYxjcaLG2a16YAqif
+        PjWeOKI+AHBYdFy7rY5LPs=
+Received: from ubuntu.localdomain (unknown [58.213.83.157])
+        by smtp2 (Coremail) with SMTP id DMmowACXi_3xs3tivSKkBQ--.64503S4;
+        Wed, 11 May 2022 21:02:43 +0800 (CST)
+From:   Bernard Zhao <zhaojunkui2008@126.com>
+To:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        =?UTF-8?q?Stefan=20M=C3=A4tje?= <stefan.maetje@esd.eu>,
+        Bernard Zhao <zhaojunkui2008@126.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     bernard@vivo.com
+Subject: [PATCH v2] usb/peak_usb: cleanup code
+Date:   Wed, 11 May 2022 06:02:38 -0700
+Message-Id: <20220511130240.790771-1-zhaojunkui2008@126.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.113.133]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600001.china.huawei.com (7.193.23.3)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DMmowACXi_3xs3tivSKkBQ--.64503S4
+X-Coremail-Antispam: 1Uf129KBjvJXoWxZr4DCry7tFWxJr45Zr4xZwb_yoW5KrWDpa
+        1rAFW7Kr4UKF1rG348tr1ku3Way3W8Ka4Skryqqw1F9r1qg393XF95CFySvrs7Z39ru3Wa
+        qa1Utr18Ar1UGr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pEv388UUUUU=
+X-Originating-IP: [58.213.83.157]
+X-CM-SenderInfo: p2kd0y5xqn3xasqqmqqrswhudrp/1tbiLRT9qlpD935HVQAAss
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add mechanism in xs_setup_local() to safely tear xprt down and
-solve the socket leak problem.
+The variable fi and bi only used in branch if (!dev->prev_siblings)
+, fi & bi not kmalloc in else branch, so move kfree into branch
+if (!dev->prev_siblings),this change is to cleanup the code a bit.
 
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
+Signed-off-by: Bernard Zhao <zhaojunkui2008@126.com>
+
 ---
- net/sunrpc/xprtsock.c | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+Changes since V1:
+* move all the content of the if (!dev->prev_siblings) to a new
+function.
+---
+ drivers/net/can/usb/peak_usb/pcan_usb_pro.c | 57 +++++++++++++--------
+ 1 file changed, 36 insertions(+), 21 deletions(-)
 
-diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
-index 25b8a8ead56b..7b9a62750571 100644
---- a/net/sunrpc/xprtsock.c
-+++ b/net/sunrpc/xprtsock.c
-@@ -1264,6 +1264,18 @@ static void xs_xprt_free(struct rpc_xprt *xprt)
- 	xprt_free(xprt);
+diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_pro.c b/drivers/net/can/usb/peak_usb/pcan_usb_pro.c
+index ebe087f258e3..5e472fe086a8 100644
+--- a/drivers/net/can/usb/peak_usb/pcan_usb_pro.c
++++ b/drivers/net/can/usb/peak_usb/pcan_usb_pro.c
+@@ -841,32 +841,28 @@ static int pcan_usb_pro_stop(struct peak_usb_device *dev)
+ 	return 0;
  }
  
-+/**
-+ * xs_destroy_xprt - close xprt socket and destroy it.
-+ */
-+static void xs_destroy_xprt(struct work_struct *work)
-+{
-+	struct rpc_xprt *xprt =
-+		container_of(work, struct rpc_xprt, task_cleanup);
+-/*
+- * called when probing to initialize a device object.
+- */
+-static int pcan_usb_pro_init(struct peak_usb_device *dev)
++static int pcan_usb_pro_init_first_channel(struct peak_usb_device *dev, struct pcan_usb_pro_interface **usb_if)
+ {
+-	struct pcan_usb_pro_device *pdev =
+-			container_of(dev, struct pcan_usb_pro_device, dev);
+-	struct pcan_usb_pro_interface *usb_if = NULL;
+-	struct pcan_usb_pro_fwinfo *fi = NULL;
+-	struct pcan_usb_pro_blinfo *bi = NULL;
++	struct pcan_usb_pro_interface *pusb_if = NULL;
+ 	int err;
+ 
+ 	/* do this for 1st channel only */
+ 	if (!dev->prev_siblings) {
++		struct pcan_usb_pro_fwinfo *fi = NULL;
++		struct pcan_usb_pro_blinfo *bi = NULL;
 +
-+	xs_close(xprt);
-+	xs_xprt_free(xprt);
+ 		/* allocate netdevices common structure attached to first one */
+-		usb_if = kzalloc(sizeof(struct pcan_usb_pro_interface),
++		pusb_if = kzalloc(sizeof(struct pcan_usb_pro_interface),
+ 				 GFP_KERNEL);
+ 		fi = kmalloc(sizeof(struct pcan_usb_pro_fwinfo), GFP_KERNEL);
+ 		bi = kmalloc(sizeof(struct pcan_usb_pro_blinfo), GFP_KERNEL);
+-		if (!usb_if || !fi || !bi) {
++		if (!pusb_if || !fi || !bi) {
+ 			err = -ENOMEM;
+ 			goto err_out;
+ 		}
+ 
+ 		/* number of ts msgs to ignore before taking one into account */
+-		usb_if->cm_ignore_count = 5;
++		pusb_if->cm_ignore_count = 5;
+ 
+ 		/*
+ 		 * explicit use of dev_xxx() instead of netdev_xxx() here:
+@@ -903,18 +899,14 @@ static int pcan_usb_pro_init(struct peak_usb_device *dev)
+ 		     pcan_usb_pro.name,
+ 		     bi->hw_rev, bi->serial_num_hi, bi->serial_num_lo,
+ 		     pcan_usb_pro.ctrl_count);
++
++		kfree(bi);
++		kfree(fi);
+ 	} else {
+-		usb_if = pcan_usb_pro_dev_if(dev->prev_siblings);
++		pusb_if = pcan_usb_pro_dev_if(dev->prev_siblings);
+ 	}
+ 
+-	pdev->usb_if = usb_if;
+-	usb_if->dev[dev->ctrl_idx] = dev;
+-
+-	/* set LED in default state (end of init phase) */
+-	pcan_usb_pro_set_led(dev, PCAN_USBPRO_LED_DEVICE, 1);
+-
+-	kfree(bi);
+-	kfree(fi);
++	*usb_if = pusb_if;
+ 
+ 	return 0;
+ 
+@@ -926,6 +918,29 @@ static int pcan_usb_pro_init(struct peak_usb_device *dev)
+ 	return err;
+ }
+ 
++/*
++ * called when probing to initialize a device object.
++ */
++static int pcan_usb_pro_init(struct peak_usb_device *dev)
++{
++	struct pcan_usb_pro_device *pdev =
++			container_of(dev, struct pcan_usb_pro_device, dev);
++	struct pcan_usb_pro_interface *usb_if = NULL;
++	int err;
++
++	err = pcan_usb_pro_init_first_channel(dev, &usb_if);
++	if (err)
++		return err;
++
++	pdev->usb_if = usb_if;
++	usb_if->dev[dev->ctrl_idx] = dev;
++
++	/* set LED in default state (end of init phase) */
++	pcan_usb_pro_set_led(dev, PCAN_USBPRO_LED_DEVICE, 1);
++
++	return 0;
 +}
 +
- /**
-  * xs_destroy - prepare to shutdown a transport
-  * @xprt: doomed transport
-@@ -2891,7 +2903,9 @@ static struct rpc_xprt *xs_setup_local(struct xprt_create *args)
- 		return xprt;
- 	ret = ERR_PTR(-EINVAL);
- out_err:
--	xs_xprt_free(xprt);
-+
-+	INIT_WORK(&xprt->task_cleanup, xs_destroy_xprt);
-+	schedule_work(&xprt->task_cleanup);
- 	return ret;
- }
- 
+ static void pcan_usb_pro_exit(struct peak_usb_device *dev)
+ {
+ 	struct pcan_usb_pro_device *pdev =
 -- 
-2.17.1
+2.33.1
 
