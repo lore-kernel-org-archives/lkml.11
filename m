@@ -2,138 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E674C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 20:01:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64963C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 20:02:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347486AbiEKUBg (ORCPT
+        id S1347491AbiEKUCO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 16:01:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56898 "EHLO
+        Wed, 11 May 2022 16:02:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347497AbiEKUBa (ORCPT
+        with ESMTP id S241316AbiEKUCL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 16:01:30 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47E162311EE
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 13:01:27 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id b18so5404131lfv.9
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 13:01:27 -0700 (PDT)
+        Wed, 11 May 2022 16:02:11 -0400
+Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C46B16350A
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 13:02:10 -0700 (PDT)
+Received: by mail-ot1-x329.google.com with SMTP id y14-20020a9d460e000000b00605ee347da1so1217674ote.8
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 13:02:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aIr7kufHqh1aklBFT48PcfwiGgRwuFks7DI5SiM+9Q0=;
-        b=aDFV+CNgCaB8HAuXCMaTOeqfz3Euqlc9UfykqEg/M7trT+lMOcwb6NTqEGZJ7SsVNZ
-         wKPGERgQdDUkJumgL37urxFlDsGkmX7PqdKJaBJZ9MZbdtLV8cQTIpE0yfVn6cMSgZyZ
-         GDcUvdJSKIpdCHdovd/rPOddBCdGdf7Tcs7gNO1JNMXTpaAKmIBz3TFWivhPzhsqWiWP
-         vJ/31TdyTBLQqry7t/YKe6QWlgU/ihp+YfVohSDDCIs1NWIXVc6t8SiZYJv7SQNHxS8u
-         uvm0zjVSH3yCGxEApXJnHd78LwJfVPsGlD2n86/VBo9AQNLgEv62rjfzxd444XLv3wC4
-         k+Ew==
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=ZiUnLeYbAAtBNeslKJ9kDfYPeiKddn2ujL9ZO9dbSss=;
+        b=bD2jJUxhWqh1lySszIE6XLnaP0Rc3hQKNhJYPj+1QAWKz166Ne05+bVaF9Ip0b6RNp
+         39+W5UNlxspOsU6LgoLlexDdWL8RmmShTWAPFeqztyIjMs6ce3dbUqnfajF+meUDTiBj
+         mgkc3OkV+pyIX2EXl8ByYXT+ExNA+K16yEWXY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aIr7kufHqh1aklBFT48PcfwiGgRwuFks7DI5SiM+9Q0=;
-        b=zV9A1jAvLxEeixbbJC3QFmiTn3Ny16jP0ziantu6UP9OLiQ6T0N8ZSrl/uu2Iwowt9
-         Qg0uKBQVacYgtxug4eTakEreK/Moz/ePEOj2G/yjn671b/r1iSdDdRTMmkt4VBGhHhND
-         CEjz13hkz3ohWrF/Z6vdd+iImW8a974kQaeHlMbEYzt/ZCq4WA6853dd4UtogFjneUSV
-         Sr/PubI9rHq+P3oNKnVDcqw2DzxLyuvaNqeQr6CNZz+PMR3ESlblWDewQoV1/rt4UMZe
-         zrBBLE0DOuzTL1Y9oncl+Nlfp2m1IvYxKNJ5K/G3O8ge+mngqvlOdPhI0tUuUucmNixd
-         RNjA==
-X-Gm-Message-State: AOAM533XL4LrlH9eg6VzqbDzelZo0X0UJZ6t+GonjRHxaAywNWeOv7Ue
-        KiprKGS6ZmhNUMr4QJ9eNJB9TCA8/eR1nrCJo+EO3A==
-X-Google-Smtp-Source: ABdhPJyw+NM/b0aVOHtc066BYz2oDYf2ffAEKshIqZZZ77ExFAqpVJecq3d8qHUAeYUdPNE/gr7l7Cdi4Emgrt5UzVw=
-X-Received: by 2002:a19:4303:0:b0:473:f5fb:27b2 with SMTP id
- q3-20020a194303000000b00473f5fb27b2mr20127658lfa.626.1652299285108; Wed, 11
- May 2022 13:01:25 -0700 (PDT)
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=ZiUnLeYbAAtBNeslKJ9kDfYPeiKddn2ujL9ZO9dbSss=;
+        b=452Xo4yd1dn5tryrlf5Sa0D4ZWKObOUSWeCXU+101Rh3BaXveVAydr9K3pOAO/m6Xn
+         3N/SAqQWY3COvGUSkK2t6NHRdDT0FsZ4qazyhTNSXRmfd7qAHGMRzKm+qZ+M+XO8fjSa
+         qCZ6qZ6gCUqrBhdIAlB84Q2TYfXpUoTz2ADVeNsqSzjqL8wTFLgg2/w7rjojuvlHiWNU
+         PnAd6PgolqF/uzPJSQg++mjoeh0sUZghFUnfFqtuOnz6DyWRQzwzh8h+/pHFXw2hkUE3
+         ZC22htdsWoe6qTZS7KwnfE0spuQCCIbMm9hZhZRtZb+45vtNZl1lu7824UGtejtCndv3
+         iJ6A==
+X-Gm-Message-State: AOAM5337JDOF8uDlUeOAbyDoxfoS6oPX/KkeD9vnqJMythDHNWL28i37
+        PYo5XZ0dlq6qbcvX01RAGv/ZXvG5WXlcU2nHVjuc7Q==
+X-Google-Smtp-Source: ABdhPJzQSi37hJE4uy4An6c89r8omucO8AAe2OanTEc2+fADtdfeWbzQmb0Q/jsDaV/PniOYPvDHQ45PkpNAOpxBjrQ=
+X-Received: by 2002:a05:6830:13ce:b0:606:702b:87f0 with SMTP id
+ e14-20020a05683013ce00b00606702b87f0mr8503289otq.159.1652299330101; Wed, 11
+ May 2022 13:02:10 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Wed, 11 May 2022 13:02:09 -0700
 MIME-Version: 1.0
-References: <20220508190631.2386038-1-masahiroy@kernel.org>
- <20220508190631.2386038-4-masahiroy@kernel.org> <CAKwvOd=LR=UNOeWJDmM-McJ=FrCWTo8w1ox+KGMQCwCVpiUyFg@mail.gmail.com>
- <CAK7LNARGNEDzPPUsPjDXsXUUUPSFK2erQRuyPocR_v5hTYRihg@mail.gmail.com>
- <CAKwvOdmK4oH0t8Q6F19sWKX1fT=AgS=kfvn05FT01HffLJwgMQ@mail.gmail.com>
- <CAK7LNAR5preB59HJH1-F_ZfEmoF3N8b9z4eRhYzsEVwu_XUH4Q@mail.gmail.com> <8babc23b-5e24-f662-6c4a-eb1c30e0e6da@quicinc.com>
-In-Reply-To: <8babc23b-5e24-f662-6c4a-eb1c30e0e6da@quicinc.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Wed, 11 May 2022 13:01:13 -0700
-Message-ID: <CAKwvOdk1z6jnTA79W8qyy1sWuoa29YxppU1gAkHkQ=g6UiVvCw@mail.gmail.com>
-Subject: Re: [PATCH v4 03/14] modpost: split the section mismatch checks into section-check.c
-To:     Jeff Johnson <quic_jjohnson@quicinc.com>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nicolas Schier <nicolas@fjasle.eu>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-modules <linux-modules@vger.kernel.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        clang-built-linux <llvm@lists.linux.dev>
+In-Reply-To: <87sfphpwvy.ffs@tglx>
+References: <20220504223148.644228-1-swboyd@chromium.org> <87sfphpwvy.ffs@tglx>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Wed, 11 May 2022 13:02:09 -0700
+Message-ID: <CAE-0n51KTiQjVqJgFe3S9qCiTM+2jdqyVZ1trNO1KanbQJccyA@mail.gmail.com>
+Subject: Re: [PATCH] timers: Provide a better debugobjects hint for delayed works
+To:     John Stultz <john.stultz@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        Tejun Heo <tj@kernel.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Guenter Roeck <groeck@chromium.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 12:51 PM Jeff Johnson <quic_jjohnson@quicinc.com> wrote:
+Quoting Thomas Gleixner (2022-05-10 02:20:01)
+> On Wed, May 04 2022 at 15:31, Stephen Boyd wrote:
+> > ---
+> > I have an alternative approach which is to treat delayed works with a
+> > different debug_obj_descr structure but it basically boils down to
+> > another version of timer debugobjects in the workqueue code. The idea is
+> > to make the delayed work active once the timer is queued and then
+> > convert it over from a delayed work descriptor to a work descriptor once
+> > the timer runs delayed_work_timer_fn() or when we pull it off to flush
+> > out.
 >
-> On 5/11/2022 12:27 PM, Masahiro Yamada wrote:
-> > On Thu, May 12, 2022 at 3:48 AM Nick Desaulniers
-> > <ndesaulniers@google.com> wrote:
-> >>
-> >> On Mon, May 9, 2022 at 11:57 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
-> >>>
-> >>>>> diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-> >>>>> index a78b75f0eeb0..e7e2c70a98f5 100644
-> >>>>> --- a/scripts/mod/modpost.c
-> >>>>> +++ b/scripts/mod/modpost.c
-> >>>>> @@ -31,7 +31,7 @@ static bool external_module;
-> >>>>>   /* Only warn about unresolved symbols */
-> >>>>>   static bool warn_unresolved;
-> >>>>>
-> >>>>> -static int sec_mismatch_count;
-> >>>>> +int sec_mismatch_count;
-> >>>>
-> >>>> ^ this should go in modpost.h if it is to be used in two translation
-> >>>> units, rather than forward declaring it in section-check.c.  You did
-> >>>> this for the functions.
-> >>>
-> >>>
-> >>> Sorry, I do not understand.
-> >>>
-> >>>
-> >>> In modpost.h, I put the declaration:
-> >>>
-> >>>    extern int sec_mismatch_count;
-> >>>
-> >>> If I moved it to the header without 'extern'
-> >>> I would get multiple definitions.
-> >>
-> >> Yeah, you need to _declare_ it w/ extern in the header, then _define_
-> >> it in one source file.
-> >>
-> >> That way, if the type ever changes, the sources will agree on type in
-> >> all source files. You will get a redefinition error if the definition
-> >> changes the type of the variable since the last declaration.
-> >>
-> >> What you're doing is forward declaring, which works, and is a common
-> >> pattern for (bloated) C++, but is less type safe than sharing a single
-> >> common declaration between multiple source files via a single common
-> >> shared header. (Sorry I didn't respond before you sent v5)
-> >
-> > Sorry, I still do not understand your suggestion.
-> >
-> >
-> > Could you provide me with a code diff
-> > showing how to do this better?
->
-> I think you are doing exactly what he's asking for:
-> declare it with extern in the header (modpost.h change)
-> define it in one source file (modpost.c change)
->
+> Nah.
 
-Oh! Indeed, sorry, I'm getting lost here in the review. Sorry for the
-noise then.
--- 
-Thanks,
-~Nick Desaulniers
+:)
+
+>
+> >  #include <linux/uaccess.h>
+> >  #include <asm/unistd.h>
+> > @@ -617,7 +618,17 @@ static const struct debug_obj_descr timer_debug_descr;
+> >
+> >  static void *timer_debug_hint(void *addr)
+> >  {
+> > -     return ((struct timer_list *) addr)->function;
+> > +     struct timer_list *timer = addr;
+> > +
+> > +     if (timer->function == delayed_work_timer_fn) {
+> > +             struct delayed_work *dwork;
+> > +
+> > +             dwork = container_of(timer, struct delayed_work, timer);
+> > +
+> > +             return dwork->work.func;
+> > +     }
+>
+> The same issue exists for kthread_delayed_work_timer_fn.
+>
+> So maybe something like the uncompiled/untested below.
+
+Cool. Looks good to me. One problem below.
+
+>
+> Thanks,
+>
+>         tglx
+> ---
+> --- a/kernel/time/timer.c
+> +++ b/kernel/time/timer.c
+> @@ -638,9 +638,35 @@ static void internal_add_timer(struct ti
+>
+>  static const struct debug_obj_descr timer_debug_descr;
+>
+> +struct timer_hint {
+> +       void    (*function)(struct timer_list *);
+> +       long    offset;
+> +};
+> +
+> +#define TIMER_HINT(fn, container, timr, hintfn)                        \
+> +       {                                                       \
+> +               .function = fn,                                 \
+> +               .offset   = offsetof(container, hintfn) -       \
+> +                           offsetof(container, timr)   \
+> +       }
+> +
+> +static const struct timer_hint timer_hints[] = {
+> +       TIMER_HINT(delayed_work_timer_fn,
+> +                  struct delayed_work, timer, work.func),
+> +       TIMER_HINT(kthread_delayed_work_timer_fn,
+> +                  struct kthread_delayed_work, timer, work.func),
+> +};
+> +
+>  static void *timer_debug_hint(void *addr)
+>  {
+> -       return ((struct timer_list *) addr)->function;
+> +       struct timer_list *timer = addr;
+> +       int i;
+> +
+> +       for (i = 0; i < ARRAY_SIZE(timer_hints); i++) {
+> +               if (timer_hints[i].function == timer->function)
+> +                       return addr + timer_hints[i].offset;
+
+This locates the correct address of the function pointer 'work.func' but
+it needs to be dereferenced to return the function's address instead of
+the pointer to the function. We don't really care about the function
+signature so we could cast it to a void function pointer and deref:
+
+                      void (**fn)(void) = addr + timer_hints[i].offset;
+
+		      return *fn;
+
+I'll send this version of the patch.
