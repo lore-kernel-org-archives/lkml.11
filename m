@@ -2,89 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 184AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 12:46:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3084DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 12:47:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242580AbiEKMqH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 08:46:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36460 "EHLO
+        id S240645AbiEKMrK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 08:47:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237096AbiEKMpy (ORCPT
+        with ESMTP id S237096AbiEKMrH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 08:45:54 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9805560E9
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 05:45:48 -0700 (PDT)
-Received: from mail-yw1-f176.google.com ([209.85.128.176]) by
- mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MfHxt-1oGPQn1lSV-00gmH2 for <linux-kernel@vger.kernel.org>; Wed, 11 May
- 2022 14:45:46 +0200
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-2ec42eae76bso19290347b3.10
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 05:45:46 -0700 (PDT)
-X-Gm-Message-State: AOAM531pw4Yohh69kTGhSFC9Dp8dVUsb+EafmObVxvFp5Z0SRiuViWZu
-        IfqMv00c1A2LTW43+HnIR0OBTmdeGhyG2gcNt88=
-X-Google-Smtp-Source: ABdhPJx3Ihw5QbrjrUJNtEnDPy1YE8V5pGBK1eKDY9+khgcuFjVHkPcQYepldwk6qvTDv1OeLAY9J9sthBKYcvLYTfU=
-X-Received: by 2002:a81:1697:0:b0:2fa:32f9:78c8 with SMTP id
- 145-20020a811697000000b002fa32f978c8mr24808585yww.135.1652273145231; Wed, 11
- May 2022 05:45:45 -0700 (PDT)
+        Wed, 11 May 2022 08:47:07 -0400
+Received: from outbound-smtp51.blacknight.com (outbound-smtp51.blacknight.com [46.22.136.235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 457FA4F459
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 05:47:04 -0700 (PDT)
+Received: from mail.blacknight.com (pemlinmail02.blacknight.ie [81.17.254.11])
+        by outbound-smtp51.blacknight.com (Postfix) with ESMTPS id 1D9D8FB469
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 13:47:03 +0100 (IST)
+Received: (qmail 15750 invoked from network); 11 May 2022 12:47:02 -0000
+Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.198.246])
+  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 11 May 2022 12:47:02 -0000
+Date:   Wed, 11 May 2022 13:47:00 +0100
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Minchan Kim <minchan@kernel.org>
+Cc:     Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Michal Hocko <mhocko@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>
+Subject: Re: [RFC PATCH 0/6] Drain remote per-cpu directly v2
+Message-ID: <20220511124700.GF3441@techsingularity.net>
+References: <20220509130805.20335-1-mgorman@techsingularity.net>
+ <Ynk6O4WAut0Ejl7Z@google.com>
+ <20220510092733.GE3441@techsingularity.net>
+ <YnqrMckyHH3qvkdv@google.com>
 MIME-Version: 1.0
-References: <20220506192957.24889-1-nick.hawkins@hpe.com> <CAK8P3a045Di_zRomezeah0ZoSGPw0Z6YoYkZtoxx1qOXAtKbbw@mail.gmail.com>
- <7C103AEB-3111-4AE6-9645-CF590388A879@hpe.com> <CAK8P3a0OS+4XTG9VmfPwbuQoT+_G5-fSatbJ0g8Y7Y+O6-3YLQ@mail.gmail.com>
- <20220510141124.GB28104@willie-the-truck> <PH0PR84MB171830414ADC0DD69BD4116788C89@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
-In-Reply-To: <PH0PR84MB171830414ADC0DD69BD4116788C89@PH0PR84MB1718.NAMPRD84.PROD.OUTLOOK.COM>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 11 May 2022 14:45:27 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1AG5RXW74LbskwMh1yJzXUjrzdL=iqaVz_7W2hExVuGw@mail.gmail.com>
-Message-ID: <CAK8P3a1AG5RXW74LbskwMh1yJzXUjrzdL=iqaVz_7W2hExVuGw@mail.gmail.com>
-Subject: Re: [PATCH v1] ARM: A9: Add ARM ERRATA 764319 workaround
-To:     "Hawkins, Nick" <nick.hawkins@hpe.com>
-Cc:     Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        "Verdun, Jean-Marie" <verdun@hpe.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Joel Stanley <joel@jms.id.au>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:yrdzM//bITs5hQm7/2i0ucQko3AO17UBHIHsGVobMQ6loezfm/5
- KY+AM39OtSjmg2g3rRhDb5kevg8ZMsirZRnJTWbXcVu+NFMWM0FtVsWH4yswr5pZkyKbhAP
- Ljodherz3pn30NuzW7BnfgpAhR/TUZ2vLXg/VX7xHqBLAkEhRFA18FiUWQTJJzN26Cizum+
- YWR8Q+nEhCMIMRThsrIVA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:CX2RcqScdgU=:VDOXx2kH9Vxl6pscUv4XLv
- QSfBfk9kecU/iL3c4vtVIxREPeRHTzmmTVNH+hDuROmRabnVnfM9Wssmo8K8QYKKyIFfgFr97
- HbGNQGGVl9pr9lla/2eH9gjzKMA8Tu/2STzrkIHAzC7n3qF8/6IQyLeYIkDYgq1McN2T3SAO6
- OgOwr6WBhNprS3PliJxCeK3J1FkxG8YRi2AjYGzNDjFmNVRpLqcaZ3lNEuXQ4catQQKpaceSE
- Z31wp+COnnr4XDKwZ7YfsGThEI5jkHQIPS26Fh9aLIC52tuokx2ou35OjiDvA7GhB/2i8Xzs5
- ys5N+20lyLOK6rlDXXoe1oLfRNxUUz3svdPflip6vetQgFb1rpgOZe+gOcUnsm9nsIcxQZv1H
- Xz2FJwVgy4JqHGaMaeH33b3v26rTNly1nu9+HSelMgJTtLRYO82kvR6qLZICYtwU/r+jjfAFS
- msRVo8CUyisPqica6VXyvVwuuxqaJ8OBmxUlqGApd7RPD054hZgeM5oNp8uoFE9gevUn/el/e
- ZSWrtJRHdfG1tI0wQolzoh5YWUrz2FHwasiBhR+KNTKFrJJ6rp6SffdA6twACQ0WRBBPD6Jp7
- QhEXM0LkmaAW+Upc64ZDP9xxEkL5BQOgcwnkKyj99WsdxgkOR/ImuLxewz9XbPyY/oSu1FfFB
- F4zooS2Ynma4K2LRK+wttubkAtwJz2xo4mxiMGax9rreC4qWTfpvhc1qsHmNIXfjIFJs=
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
+In-Reply-To: <YnqrMckyHH3qvkdv@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 2:23 PM Hawkins, Nick <nick.hawkins@hpe.com> wrote:
-> On Tue, May 10, 2022 at 03:01:26PM +0200, Arnd Bergmann wrote:
-> > > On Tue, May 10, 2022 at 1:53 PM Verdun, Jean-Marie <verdun@hpe.com> wrote:
-> > >
-> > > I got a little lost trying to find where the breakpoint instruction
-> > > comes from that gets trapped here, but I would guess that they had to
-> > > do this using an undef_hook because the ex_table approach does not
-> > > work there for some reason.
-> > >
-> > > I would still pick the ex_table method here if that works.
->
-> > IIRC, the ex_table handlers are called only for data aborts and are intended to be used to handle cases where we take a fault on a memory access (e.g.
-> translation fault). In this case, we're taking an undefined instruction exception on a cp14 access and so the undef_hook is the right thing to use.
->
-> Given Will's input would you like me to still use the ex_table method?
+On Tue, May 10, 2022 at 11:13:05AM -0700, Minchan Kim wrote:
+> > Yes, but as reclaim is not fundamentally altered the main difference
+> > in behavious is that work is done inline instead of being deferred to a
+> > workqueue. That means in some cases, system CPU usage of a task will be
+> > higher because it's paying the cost directly.
+> 
+> Sure but the reclaim path is already expensive so I doubt we could
+> see the sizable measurement on the system CPU usage.
+> 
 
-If it doesn't work, then there is no point trying. You could try
-changing the exception
-handling so it searches the ex_table for Undefined Instruction
-exceptions as well,
-but that's probably more complicated.
+It would be difficult to distinguish from the noise.
 
-       Arnd
+> What I wanted to see was whether we have regression due to adding
+> spin_lock/unlock instructions in hot path. Due to squeeze it to
+> a cacheline, I expected the regression would be just marginal.
+> 
+
+Ah, yes, I did test for this. page-fault-test hits the relevant paths
+very heavily and did show minor differences.
+
+                                     5.18.0-rc1               5.18.0-rc1
+                                        vanilla         mm-pcpdrain-v2r1
+Hmean     faults/sec-1   886331.5718 (   0.00%)   885462.7479 (  -0.10%)
+Hmean     faults/sec-3  2337706.1583 (   0.00%)  2332130.4909 *  -0.24%*
+Hmean     faults/sec-5  2851594.2897 (   0.00%)  2844123.9307 (  -0.26%)
+Hmean     faults/sec-7  3543251.5507 (   0.00%)  3516889.0442 *  -0.74%*
+Hmean     faults/sec-8  3947098.0024 (   0.00%)  3916162.8476 *  -0.78%*
+Stddev    faults/sec-1     2302.9105 (   0.00%)     2065.0845 (  10.33%)
+Stddev    faults/sec-3     7275.2442 (   0.00%)     6033.2620 (  17.07%)
+Stddev    faults/sec-5    24726.0328 (   0.00%)    12525.1026 (  49.34%)
+Stddev    faults/sec-7     9974.2542 (   0.00%)     9543.9627 (   4.31%)
+Stddev    faults/sec-8     9468.0191 (   0.00%)     7958.2607 (  15.95%)
+CoeffVar  faults/sec-1        0.2598 (   0.00%)        0.2332 (  10.24%)
+CoeffVar  faults/sec-3        0.3112 (   0.00%)        0.2587 (  16.87%)
+CoeffVar  faults/sec-5        0.8670 (   0.00%)        0.4404 (  49.21%)
+CoeffVar  faults/sec-7        0.2815 (   0.00%)        0.2714 (   3.60%)
+CoeffVar  faults/sec-8        0.2399 (   0.00%)        0.2032 (  15.28%)
+
+There is a small hit in the number of faults per second but it's within
+the noise and the results are more stable with the series so I'd mark it
+down as a small but potentially measurable impact.
+
+> > 
+> > The workloads I used just hit reclaim directly to make sure it's
+> > functionally not broken. There is no change in page aging decisions,
+> > only timing of drains. I didn't check interference of a heavy workload
+> > interfering with a CPU-bound workload running on NOHZ CPUs as I assumed
+> > both you and Nicolas had a test case ready to use.
+> 
+> The my workload is not NOHZ CPUs but run apps under heavy memory
+> pressure so they goes to direct reclaim and be stuck on drain_all_pages
+> until work on workqueue run.
+> 
+> unit: nanosecond
+> max(dur)        avg(dur)                count(dur)
+> 166713013       487511.77786438033      1283
+> 
+> From traces, system encountered the drain_all_pages 1283 times and
+> worst case was 166ms and avg was 487us.
+> 
+> The other problem was alloc_contig_range in CMA. The PCP draining
+> takes several hundred millisecond sometimes though there is no
+> memory pressure or a few of pages to be migrated out but CPU were
+> fully booked.
+> 
+> Your patch perfectly removed those wasted time.
+> 
+
+Those stalls are painful and it's a direct impact where a workload does
+not make progress. The NOHZ stall is different in that it's worried
+about interference. Both problems should have the same solution.
+
+Do you mind if I quote these paragraphs in the leader to v3?
+
+> > Which ones are of concern?
+> > 
+> > Some of the page->lru references I left alone in the init paths simply
+> > because in those contexts, the page wasn't on a buddy or PCP list. In
+> > free_unref_page_list the page is not on the LRU, it's just been isolated
+> > from the LRU. In alloc_pages_bulk, it's not on a buddy, pcp or LRU list
+> > and is just a list placeholder so I left it alone. In
+> > free_tail_pages_check the context was a page that was likely previously
+> > on a LRU.
+> 
+> Just nits: all are list macros.
+> 
+> free_pcppages_bulk's list_last_entry should be pcp_list.
+> 
+> mark_free_pages's list_for_each_entry should be buddy_list
+> 
+> __rmqueue_pcplist's list_first_enty should be pcp_list.
+> 
+
+Ah, you're completely correct.
+
+> > 
+> > > since I have
+> > > tested these patchset in my workload and didn't spot any other
+> > > problems.
+> > > 
+> > 
+> > Can you describe this workload, is it available anywhere and does it
+> > require Android to execute?
+> 
+> I wrote down above. It runs on Android but I don't think it's
+> android specific issue but anyone could see such a long latency
+> from PCP draining once one of cores are monopolized by higher
+> priority processes or too many pending kworks.
+> 
+
+Yeah, I agree it's not an Android-specific problem. It could be detected by
+tracing the time spent in drain_all_pages for any arbitrary workload. The
+BCC funclatency tool could measure it.
+
+> > 
+> > If you have positive results, it would be appreciated if you could post
+> > them or just note in a Tested-by/Acked-by that it had a measurable impact
+> > on the reclaim/cma path.
+> 
+> Sure.
+> 
+> All patches in this series.
+> 
+> Tested-by: Minchan Kim <minchan@kernel.org>
+> Acked-by: Minchan Kim <minchan@kernel.org>
+> 
+
+Thanks, I've added that to all the patches. I'll wait another day for
+more feedback before sending out a v3. The following is the diff between
+v2 and v3 based on your feedback.
+
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 4ac39d30ec8f..0f5a6a5b0302 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -1497,7 +1497,7 @@ static void free_pcppages_bulk(struct zone *zone, int count,
+ 		do {
+ 			int mt;
+ 
+-			page = list_last_entry(list, struct page, lru);
++			page = list_last_entry(list, struct page, pcp_list);
+ 			mt = get_pcppage_migratetype(page);
+ 
+ 			/* must delete to avoid corrupting pcp list */
+@@ -3276,7 +3276,7 @@ void mark_free_pages(struct zone *zone)
+ 
+ 	for_each_migratetype_order(order, t) {
+ 		list_for_each_entry(page,
+-				&zone->free_area[order].free_list[t], lru) {
++				&zone->free_area[order].free_list[t], buddy_list) {
+ 			unsigned long i;
+ 
+ 			pfn = page_to_pfn(page);
+@@ -3761,7 +3761,7 @@ struct page *__rmqueue_pcplist(struct zone *zone, unsigned int order,
+ 			}
+ 		}
+ 
+-		page = list_first_entry(list, struct page, lru);
++		page = list_first_entry(list, struct page, pcp_list);
+ 		list_del(&page->pcp_list);
+ 		pcp->count -= 1 << order;
+ 	} while (check_new_pcp(page, order));
+
+-- 
+Mel Gorman
+SUSE Labs
