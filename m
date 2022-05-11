@@ -2,199 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C8C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:23:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 056A3C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:23:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234226AbiEKCXU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 22:23:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54218 "EHLO
+        id S239690AbiEKCXm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 22:23:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiEKCXP (ORCPT
+        with ESMTP id S233187AbiEKCXf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 22:23:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5B6DD14C760
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:23:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652235793;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NoNShCUgG/r5sx7GtSLhujeTcuOeCXLnixMsESYMdzg=;
-        b=iXiclLQi4KTDv51QJYRE2qBUztX1u5nCbw06Ohod28B8yoQNpGmq3PhqA5nWsYoICf+pgf
-        R0C6JMZZ8j/H6ugX3TeC8ebnadSDFUxGgx6AYWBrutLJyKco7ivIFYurlqhaRFgaVAANuw
-        45aQbAiQRamok/XooFJHy3hc0CCFKyQ=
-Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
- [209.85.208.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-433-u2Fj0teqMjOEoX3dK9jImg-1; Tue, 10 May 2022 22:23:12 -0400
-X-MC-Unique: u2Fj0teqMjOEoX3dK9jImg-1
-Received: by mail-lj1-f199.google.com with SMTP id j20-20020a2e8014000000b00250baa159ceso176731ljg.18
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:23:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NoNShCUgG/r5sx7GtSLhujeTcuOeCXLnixMsESYMdzg=;
-        b=K29p9tLEKBvx4ybzNoSDSDMghGU+AkY40ufyjIQP92snLLuJMANEAOR98+agfjY04N
-         ZxcfeRenjz8dD5wb6ItFAdTeRgxtnsYzr0WwagiSbhYlGu/3Nsgd35JC6XtcqOKCEQrG
-         waHtjrBf3IGZp7ZnqIeU6sSrZl+uXOnseZeDk9f85Ksgj3diy4ytkG0N5eeLYzfeAXb8
-         7mXRX8LuRIkLbxKTVjMG5DcWODBnKWLmmx+GN0eHKMaCdrA9yNSb2ggri1036Lul3R+M
-         8TCa9coi4He/OmciyvUsC8NrgIyvSr2dLCFo9ceGCScUJbdsqtQA6PAUPLZ5dpCfxny0
-         6plQ==
-X-Gm-Message-State: AOAM531kT6m0B1uCZtw5diQ0U1zJKf9ecw6PZL6VoPmRF2uB653v3n05
-        0zrs/yPQ3dBToi7dI7Y114UNNbQ7etYXa3fRLSdTgTXMgPBS03qNk+P7OnamZ/9losBG4+nqOlF
-        XAk22USy8usHginyfKjiU+i++Du0j4eRaHUHIJ5Bv
-X-Received: by 2002:a19:ca50:0:b0:471:f556:92b with SMTP id h16-20020a19ca50000000b00471f556092bmr18193781lfj.587.1652235790480;
-        Tue, 10 May 2022 19:23:10 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyfn5RF53v2JjmJJQkV8pzwLGeqEl3ZHCNTpF3vbu92pgelfIJ4hMyyAb1vY2XGHUKz6rIPN4WAR3mln3WzRxs=
-X-Received: by 2002:a19:ca50:0:b0:471:f556:92b with SMTP id
- h16-20020a19ca50000000b00471f556092bmr18193766lfj.587.1652235790258; Tue, 10
- May 2022 19:23:10 -0700 (PDT)
+        Tue, 10 May 2022 22:23:35 -0400
+Received: from heian.cn.fujitsu.com (mail.cn.fujitsu.com [183.91.158.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E991315A747;
+        Tue, 10 May 2022 19:23:33 -0700 (PDT)
+IronPort-Data: =?us-ascii?q?A9a23=3A2Yt6IazYVmULPJPjVhl6t+fuxCrEfRIJ4+MujC/?=
+ =?us-ascii?q?XYbTApGl03jQFzzFJDW/Sa/mKZWXxfop2PIS/9E0PusOAzdY1HQtv/xmBbVoQ9?=
+ =?us-ascii?q?5OdWo7xwmQcns+qBpSaChohtq3yU/GYRCwPZiKa9kfF3oTJ9yEmj/nSHuOkUYY?=
+ =?us-ascii?q?oBwgqLeNaYHZ44f5cs75h6mJYqYDR7zKl4bsekeWGULOW82Ic3lYv1k62gEgHU?=
+ =?us-ascii?q?MIeF98vlgdWifhj5DcynpSOZX4VDfnZw3DQGuG4EgMmLtsvwo1V/kuBl/ssIti?=
+ =?us-ascii?q?j1LjmcEwWWaOUNg+L4pZUc/H6xEEc+WppieBmXBYfQR4/ZzGhm9FjyNRPtJW2Y?=
+ =?us-ascii?q?Qk0PKzQg/lbWB5de817FfQcpOabeyTk66R/yGWDKRMA2c5GHlA0L5waoL4vWUl?=
+ =?us-ascii?q?B8PUZLHYGaRXrr+a3xq+rD+phnMIuKOH1M44F/HJt1zfUCbAhW5+ra6HL48JIm?=
+ =?us-ascii?q?S08g8lmA/nTfYwaZCBpYRCGZAdAUn8VB50WjualnnS5eDQwlb4/jcLb+ECKlEo?=
+ =?us-ascii?q?ojuera4GTJ7S3qQxuth7wjgr7E67RW3n27OCi9Ac=3D?=
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3AzgUm9K3MGoEoUuCrA2BiGwqjBI4kLtp133Aq?=
+ =?us-ascii?q?2lEZdPU1SL39qynKppkmPHDP5gr5J0tLpTntAsi9qBDnhPtICOsqTNSftWDd0Q?=
+ =?us-ascii?q?PGEGgI1/qB/9SPIU3D398Y/aJhXow7M9foEGV95PyQ3CCIV/om3/mLmZrFudvj?=
+X-IronPort-AV: E=Sophos;i="5.88,333,1635177600"; 
+   d="scan'208";a="124142432"
+Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
+  by heian.cn.fujitsu.com with ESMTP; 11 May 2022 10:23:32 +0800
+Received: from G08CNEXMBPEKD06.g08.fujitsu.local (unknown [10.167.33.206])
+        by cn.fujitsu.com (Postfix) with ESMTP id 3B0CD4D17192;
+        Wed, 11 May 2022 10:23:28 +0800 (CST)
+Received: from G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.85) by
+ G08CNEXMBPEKD06.g08.fujitsu.local (10.167.33.206) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.23; Wed, 11 May 2022 10:23:26 +0800
+Received: from localhost.localdomain (10.167.225.141) by
+ G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
+ id 15.0.1497.23 via Frontend Transport; Wed, 11 May 2022 10:23:26 +0800
+From:   Li Zhijian <lizhijian@fujitsu.com>
+To:     Zhu Yanjun <zyjzyj2000@gmail.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        <linux-rdma@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, Li Zhijian <lizhijian@fujitsu.com>
+Subject: [PATCH v2 2/2] RDMA/rxe: Generate error completion for error requester state
+Date:   Wed, 11 May 2022 10:30:30 +0800
+Message-ID: <20220511023030.229212-3-lizhijian@fujitsu.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220511023030.229212-1-lizhijian@fujitsu.com>
+References: <20220511023030.229212-1-lizhijian@fujitsu.com>
 MIME-Version: 1.0
-References: <20220507071954.14455-1-jasowang@redhat.com> <875ymd3fd1.fsf@redhat.com>
-In-Reply-To: <875ymd3fd1.fsf@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Wed, 11 May 2022 10:22:59 +0800
-Message-ID: <CACGkMEvfkUpsY4LRTuH7w18DZdq+w3=Ef6b-0sG0XvzVUVKdzg@mail.gmail.com>
-Subject: Re: [PATCH V4 0/9] rework on the IRQ hardening of virtio
-To:     Cornelia Huck <cohuck@redhat.com>
-Cc:     mst <mst@redhat.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        eperezma <eperezma@redhat.com>, Cindy Lu <lulu@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-yoursite-MailScanner-ID: 3B0CD4D17192.AC456
+X-yoursite-MailScanner: Found to be clean
+X-yoursite-MailScanner-From: lizhijian@fujitsu.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 5:29 PM Cornelia Huck <cohuck@redhat.com> wrote:
->
-> On Sat, May 07 2022, Jason Wang <jasowang@redhat.com> wrote:
->
-> > Hi All:
-> >
-> > This is a rework on the IRQ hardening for virtio which is done
-> > previously by the following commits are reverted:
-> >
-> > 9e35276a5344 ("virtio_pci: harden MSI-X interrupts")
-> > 080cd7c3ac87 ("virtio-pci: harden INTX interrupts")
-> >
-> > The reason is that it depends on the IRQF_NO_AUTOEN which may conflict
-> > with the assumption of the affinity managed IRQ that is used by some
-> > virtio drivers. And what's more, it is only done for virtio-pci but
-> > not other transports.
-> >
-> > In this rework, I try to implement a general virtio solution which
-> > borrows the idea of the INTX hardening by re-using per virtqueue
-> > boolean vq->broken and toggle it in virtio_device_ready() and
-> > virtio_reset_device(). Then we can simply reuse the existing checks in
-> > the vring_interrupt() and return early if the driver is not ready.
-> >
-> > Note that, I only did compile test on ccw and MMIO transport.
->
-> Lockdep is unhappy with the ccw parts:
->
-> ================================
-> WARNING: inconsistent lock state
-> 5.18.0-rc6+ #191 Not tainted
-> --------------------------------
-> inconsistent {IN-HARDIRQ-R} -> {HARDIRQ-ON-W} usage.
-> kworker/u4:0/9 [HC0[0]:SC0[0]:HE1:SE1] takes:
-> 00000000058e9618 (&vcdev->irq_lock){+-..}-{2:2}, at: virtio_ccw_synchronize_cbs+0x4e/0x60
-> {IN-HARDIRQ-R} state was registered at:
->   __lock_acquire+0x442/0xc20
->   lock_acquire.part.0+0xdc/0x228
->   lock_acquire+0xa6/0x1b0
->   _raw_read_lock_irqsave+0x72/0x100
->   virtio_ccw_int_handler+0x84/0x238
->   ccw_device_call_handler+0x72/0xd0
->   ccw_device_irq+0x7a/0x198
->   do_cio_interrupt+0x11c/0x1d0
->   __handle_irq_event_percpu+0xc2/0x318
->   handle_irq_event_percpu+0x26/0x68
->   handle_percpu_irq+0x64/0x88
->   generic_handle_irq+0x40/0x58
->   do_irq_async+0x56/0xb0
->   do_io_irq+0x82/0x160
->   io_int_handler+0xe6/0x120
->   rcu_read_lock_sched_held+0x3e/0xb0
->   lock_acquired+0x12e/0x208
->   new_inode+0x3e/0xd0
->   debugfs_get_inode+0x22/0x68
->   __debugfs_create_file+0x78/0x1c0
->   debugfs_create_file_unsafe+0x36/0x58
->   debugfs_create_u32+0x38/0x68
->   sched_init_debug+0xb0/0x1c0
->   do_one_initcall+0x108/0x280
->   do_initcalls+0x124/0x148
->   kernel_init_freeable+0x242/0x280
->   kernel_init+0x2e/0x158
->   __ret_from_fork+0x3c/0x50
->   ret_from_fork+0xa/0x40
-> irq event stamp: 539789
-> hardirqs last  enabled at (539789): [<0000000000d9c632>] _raw_spin_unlock_irqrestore+0x72/0x88
-> hardirqs last disabled at (539788): [<0000000000d9c2b6>] _raw_spin_lock_irqsave+0x96/0xd0
-> softirqs last  enabled at (539568): [<0000000000d9e0d4>] __do_softirq+0x434/0x588
-> softirqs last disabled at (539503): [<000000000018cd66>] __irq_exit_rcu+0x146/0x170
->
-> other info that might help us debug this:
->  Possible unsafe locking scenario:
->
->        CPU0
->        ----
->   lock(&vcdev->irq_lock);
->   <Interrupt>
->     lock(&vcdev->irq_lock);
->
->  *** DEADLOCK ***
+SoftRoCE always returns success when user space is posting a new wqe where
+it usually just enqueues a wqe.
 
-It looks to me we need to use write_lock_irq()/write_unlock_irq() to
-do the synchronization.
+Once the requester state becomes QP_STATE_ERROR, we should generate error
+completion for all subsequent wqe. So the user is able to poll the
+completion event to check if the former wqe is handled correctly.
 
-And we probably need to keep the
-read_lock_irqsave()/read_lock_irqrestore() logic since I can see the
-virtio_ccw_int_handler() to be called from process context (e.g from
-the io_subchannel_quiesce()).
+Here we check QP_STATE_ERROR after req_next_wqe() so that the completion
+can associate with its wqe.
 
-Thanks
+Signed-off-by: Li Zhijian <lizhijian@fujitsu.com>
+---
+ drivers/infiniband/sw/rxe/rxe_req.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
->
-> 2 locks held by kworker/u4:0/9:
->  #0: 000000000288d948 ((wq_completion)events_unbound){+.+.}-{0:0}, at: process_one_work+0x1ea/0x658
->  #1: 000003800004bdc8 ((work_completion)(&entry->work)){+.+.}-{0:0}, at: process_one_work+0x1ea/0x658
->
-> stack backtrace:
-> CPU: 1 PID: 9 Comm: kworker/u4:0 Not tainted 5.18.0-rc6+ #191
-> Hardware name: QEMU 8561 QEMU (KVM/Linux)
-> Workqueue: events_unbound async_run_entry_fn
-> Call Trace:
->  [<0000000000d8af22>] dump_stack_lvl+0x92/0xd0
->  [<00000000002032ac>] mark_lock_irq+0x864/0x968
->  [<0000000000203670>] mark_lock.part.0+0x2c0/0x790
->  [<0000000000203cea>] mark_usage+0x10a/0x178
->  [<000000000020692a>] __lock_acquire+0x442/0xc20
->  [<0000000000207cc4>] lock_acquire.part.0+0xdc/0x228
->  [<0000000000207eb6>] lock_acquire+0xa6/0x1b0
->  [<0000000000d9c774>] _raw_write_lock+0x54/0xa8
->  [<0000000000d5a1f6>] virtio_ccw_synchronize_cbs+0x4e/0x60
->  [<00000000008eec04>] register_virtio_device+0xdc/0x1b0
->  [<0000000000d5aabe>] virtio_ccw_online+0x246/0x2e8
->  [<0000000000c9fecc>] ccw_device_set_online+0x1c4/0x540
->  [<0000000000d5a05e>] virtio_ccw_auto_online+0x26/0x50
->  [<00000000001ba2b0>] async_run_entry_fn+0x40/0x108
->  [<00000000001ab9b4>] process_one_work+0x2a4/0x658
->  [<00000000001abdd0>] worker_thread+0x68/0x440
->  [<00000000001b4668>] kthread+0x128/0x130
->  [<0000000000102fac>] __ret_from_fork+0x3c/0x50
->  [<0000000000d9d3aa>] ret_from_fork+0xa/0x40
-> INFO: lockdep is turned off.
->
+diff --git a/drivers/infiniband/sw/rxe/rxe_req.c b/drivers/infiniband/sw/rxe/rxe_req.c
+index 8bdd0b6b578f..ed6a486c4343 100644
+--- a/drivers/infiniband/sw/rxe/rxe_req.c
++++ b/drivers/infiniband/sw/rxe/rxe_req.c
+@@ -624,7 +624,7 @@ int rxe_requester(void *arg)
+ 	rxe_get(qp);
+ 
+ next_wqe:
+-	if (unlikely(!qp->valid || qp->req.state == QP_STATE_ERROR))
++	if (unlikely(!qp->valid))
+ 		goto exit;
+ 
+ 	if (unlikely(qp->req.state == QP_STATE_RESET)) {
+@@ -646,6 +646,14 @@ int rxe_requester(void *arg)
+ 	if (unlikely(!wqe))
+ 		goto exit;
+ 
++	if (qp->req.state == QP_STATE_ERROR) {
++		/*
++		 * Generate an error completion so that user space is able to
++		 * poll this completion.
++		 */
++		goto err;
++	}
++
+ 	if (wqe->mask & WR_LOCAL_OP_MASK) {
+ 		ret = rxe_do_local_ops(qp, wqe);
+ 		if (unlikely(ret))
+-- 
+2.31.1
+
+
 
