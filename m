@@ -2,213 +2,334 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FE98C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 09:54:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9334AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 09:54:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233303AbiEKJyl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 05:54:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50550 "EHLO
+        id S236943AbiEKJyt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 05:54:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240212AbiEKJx7 (ORCPT
+        with ESMTP id S232685AbiEKJx0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 05:53:59 -0400
-Received: from APC01-TYZ-obe.outbound.protection.outlook.com (mail-tyzapc01on2120.outbound.protection.outlook.com [40.107.117.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D144B980A5
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 02:53:34 -0700 (PDT)
+        Wed, 11 May 2022 05:53:26 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EABCD60042
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 02:52:24 -0700 (PDT)
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24B8QrAa024470;
+        Wed, 11 May 2022 09:52:21 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references :
+ content-transfer-encoding : content-type : mime-version;
+ s=corp-2021-07-09; bh=6E1gBTMkxYHgvMkRLoIkGcvNZJNeFZKDzjzIA9IBXsw=;
+ b=nXnJMDBB6JCtWaHHF/V5k3/gGl1vH3c1fZY/04RfwLdXewqmPAkjRRE0OFyzXoFj9ai0
+ jensngIUkT/vecm3WSZpBOBppRQcey+6v01HVPeoqWTHZixmxhBqnwgxw83eiUWdScEY
+ E/fOdK6J4H6y64KmLw4y4A0S3bsO9+9Sqt8raMEwayrImYcMMCCDuOXHySm5mdk8Z9bG
+ TIEob8we9yVEGSN9DFzMtY2+3iVePLPAXzkX31hWBCx8Kqca1QuXRph+R+casKGbMath
+ cqT1Y4op4VPSWCBhcUX/yMqr1cYvLkqZT/qIYmOIFbEvVbb6+yEBBgU/faRn3oowHQ2L rg== 
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3fwfc0s7tp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 11 May 2022 09:52:20 +0000
+Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 24B9oOaQ028160;
+        Wed, 11 May 2022 09:52:19 GMT
+Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2174.outbound.protection.outlook.com [104.47.56.174])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fwf73w0pc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 11 May 2022 09:52:19 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KQdQL+Pd2wDNdmChV33vmCSzDLfEFcefo6pYgh7U58QVR3grV2D0fJPiS+SqrPuuTcgu2XEJcwkIZymQ9K4t9Qmq1cmhW5V2nhQ1j53Q5HI6oqfLx1Aasrp8Dv1Bmu0GfDEzFYk6bAWzjQa581nQZHiOZKI2a0Gy8N/nFvnEeIpjVy2mRJfWUQX2wHcBQDxsAPaENkA81eb5M4EAjJYpeRN8s7ytNtZjlyYaC+n9s4TzLQvi/0w0hgruHd1sRwlPJt+qWvaPucaVzy6vQoV2mqqOfYfWDVGDwQJ6Cgbxv9LbE0aBwXGBJYuOYhzz4g409CXQaDqCatCcmI7MfPrPaA==
+ b=QjV4EEaK5LlS/+QBK4iCvnxbb/6MqRk8GcS5Sc7CFlj7uxo0CRTagWppIEQ1VdISNmmdu/hm5UMsMf7nBDxaf/PcfPnRY1Z6aIauzc8C2tqYtRK/dM5xnqpmd1zE9Riu5ACufayaczhiaLzIW8m/zPwlHcKgcf5c1NaJpVb0qxWhtHBeOSmdUcheCLAtpjQ6rnoxoG6UqnNj7HO2IdTzVS1aXv5UtLdLi0TzoyKtuyVNpkSJSCXqAUTC476W4MxT0V23yjpIfsoBKY9NhZDdTSnqTPRoDmjskyqtZv8mJTz6mGopEyx3iPCCzuXRkrZYn5/RelMSNx6sSA0rDBMjvQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZLtXT9SCTVmzi96bkdfExuyyesAaFwu+K31iHfzHb4I=;
- b=SeBUR54N/X1IFmgy1gHQ4Xt0GCwm+e/nmBG+MM4Sk/Z7LarHfONFvtHG6yyxhSS0DRZ/idpuZS8LoMppkDImS29jwWAPkFhD/MENavPHMNU3wz4sqTjhD6iAqE2A0eHFHiOgIWLveKP98xvvQLF07sKvwHh3mXDI6xlJaB/Bf4FJI4e6Xn17llJ6Vr7Bim5KvSWxQDxGbks30iKhVVOa37nEuPSYDyNKZTvnL0tXNkOh4TNah4lw2Mpb62rFkiw3YpLzATJKNpjDWO3RJh117IBLhXiWrpMljpTejcmzU9aoWG39uAiL1htoa+XgVofpd7J+PAPVhvXH+by+sQDXxw==
+ bh=6E1gBTMkxYHgvMkRLoIkGcvNZJNeFZKDzjzIA9IBXsw=;
+ b=dLu0EkbHiZu/msrstInZ9jFXpbXlPgjR4GNtNLqKtn5vE0rj6ihv2/KF/DE68gilL9JwbfBunz2FGa8MHdQwlD0eLbCfi4EMuB4Ml0dKlzhnXv3fZ8MesuaDp56TXWYDip6x2e2IGZi1cG6Hg7Gbu4QWL6aa6+hsZEUx7I4r9hRpadtjU0E9b8AWOTnagCAs7DqWekxzV1pVEf8Fr8ad0jXY3jC2D/XElVhgnhlWuEYIo/7Vxn0fKMlOl5MFttz1+0707fjaowFpDbXTfjVmeqeGpxxOrHtMOB9QLHZzcFS/728Az8zaV6yqLdsgqGp4HhurN5ytXa1uxva+jVwBrw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZLtXT9SCTVmzi96bkdfExuyyesAaFwu+K31iHfzHb4I=;
- b=c22aBfFvDKEs4Yc8FrurBz4ACNS+Y6A232yBqRrgOpiDUroRKwcGo+4N/B0XEkU19wD7GTRnORyJVVrjJgdxD/v++cC2g1B4o5kl7L7QnwHyOBqaMFuFMtN88wU3OY9k7CuDS9ileflLGSuG59Gh3cishGhYG4CSqoWhItDN524=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from SL2PR06MB3082.apcprd06.prod.outlook.com (2603:1096:100:37::17)
- by PS2PR06MB3528.apcprd06.prod.outlook.com (2603:1096:300:67::12) with
+ bh=6E1gBTMkxYHgvMkRLoIkGcvNZJNeFZKDzjzIA9IBXsw=;
+ b=Tr5jppErlcdL4aElTNMJ25XqPZWKPqu4FKdURxTXn+ks+0riKYDGDVEOAM76dhlOLGPYDAfQDuJhf3IkjxHp7mkL/XjSNDFuDQeKRHzOQtBuUR5EZ4c8FjqTsKfg3k0DGwCf584//h3wQMJVOOI5eFAI8YIL19XWH6mlJ82a7SU=
+Received: from CO1PR10MB4468.namprd10.prod.outlook.com (2603:10b6:303:6c::24)
+ by CO1PR10MB4785.namprd10.prod.outlook.com (2603:10b6:303:95::11) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.20; Wed, 11 May
- 2022 09:53:31 +0000
-Received: from SL2PR06MB3082.apcprd06.prod.outlook.com
- ([fe80::e468:c298:cfe5:84fc]) by SL2PR06MB3082.apcprd06.prod.outlook.com
- ([fe80::e468:c298:cfe5:84fc%6]) with mapi id 15.20.5227.023; Wed, 11 May 2022
- 09:53:31 +0000
-From:   Qing Wang <wangqing@vivo.com>
-To:     Sudeep Holla <sudeep.holla@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        linux-kernel@vger.kernel.org
-Cc:     dietmar.eggemann@arm.com, Wang Qing <wangqing@vivo.com>
-Subject: [PATCH V2] arch_topology: support parsing cluster_id from DT
-Date:   Wed, 11 May 2022 02:52:56 -0700
-Message-Id: <1652262776-3056-1-git-send-email-wangqing@vivo.com>
-X-Mailer: git-send-email 2.7.4
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13; Wed, 11 May
+ 2022 09:52:17 +0000
+Received: from CO1PR10MB4468.namprd10.prod.outlook.com
+ ([fe80::14ef:8202:73ba:29ec]) by CO1PR10MB4468.namprd10.prod.outlook.com
+ ([fe80::14ef:8202:73ba:29ec%3]) with mapi id 15.20.5250.013; Wed, 11 May 2022
+ 09:52:17 +0000
+From:   Imran Khan <imran.f.khan@oracle.com>
+To:     tj@kernel.org, gregkh@linuxfoundation.org, viro@zeniv.linux.org.uk
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH v3 4/4] kernfs: Replace global kernfs_open_file_mutex with hashed mutexes.
+Date:   Wed, 11 May 2022 19:51:57 +1000
+Message-Id: <20220511095157.478522-5-imran.f.khan@oracle.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220511095157.478522-1-imran.f.khan@oracle.com>
+References: <20220511095157.478522-1-imran.f.khan@oracle.com>
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: TYAPR03CA0002.apcprd03.prod.outlook.com
- (2603:1096:404:14::14) To SL2PR06MB3082.apcprd06.prod.outlook.com
- (2603:1096:100:37::17)
+X-ClientProxiedBy: SY6PR01CA0011.ausprd01.prod.outlook.com
+ (2603:10c6:10:e8::16) To CO1PR10MB4468.namprd10.prod.outlook.com
+ (2603:10b6:303:6c::24)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: cb7d537b-b734-4fc0-cbde-08da33341b20
-X-MS-TrafficTypeDiagnostic: PS2PR06MB3528:EE_
-X-Microsoft-Antispam-PRVS: <PS2PR06MB3528D8EFC66A282B901264EDBDC89@PS2PR06MB3528.apcprd06.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 9c6f727f-4fdb-4a07-1d51-08da3333eef5
+X-MS-TrafficTypeDiagnostic: CO1PR10MB4785:EE_
+X-Microsoft-Antispam-PRVS: <CO1PR10MB47850EF1A8DAEA2B323BCC49B0C89@CO1PR10MB4785.namprd10.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: H59ZYi1pcvSEMx8d1mY9d+aL6t6sLaHB52IM729uVfD61qT0yuaVNysRPnaLMondIEZTN0tm7YLX6qLi8vgEQk4p9pnE9ypjRhOl7TER6LxmEFCD8DgtA8uyjWt4znS6lw0DDUoYs29DNe45PtALFJB+kIzhv2CVQ8aFORTttQ9cHTPgzvBmKKSnYgKXWmjSt28eTkdcS8IqpXvhxRnCdcz9MEY1iMyXCyT1ChrRBg6OOEAPQtCt/0vmvklV51PnyGMRJTUK4CWmHnOyfTUsQdVUe7fk2SA1PwpffduZLc2TijhIzTGeShpSPG6KvaREZJyvNdrwyESzj6SjJ3GzHMCr0jrpzOB8nySmeriktiJqPgrAaUvDOxfm63tq4HfsOPBz3YW7VWTGfguXXUlVq9g5LlCweVmjpFa82f10sMu5aQefvO6J1hli92DAkcVzC1PMNVYdR+wlyu+W3F/r+kgjXeqrOdB7TVaCXmj8R+vXcd2Aeoyr2ZP8J8rijWhNclrnowAweUrGR4N35h+wKxQVOjzlB/TInCLtraCnVxYiA3cT58b28PG1QCDhx0mdZTqgRABZdfEH2nMUkeGh3voWtwm1E/Ixc+aCtutSE6RlvhHWyrp/8CcZsYGEGtMJXeP62y+A1Z/E1g8GC90kPy5H2nkuAJDTAUz5ngYanY2pyU9xPH0Jktkqpx6QXmFuefUO9A/17qeDrC6XTB4nsw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SL2PR06MB3082.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8676002)(508600001)(4326008)(66556008)(66946007)(6486002)(52116002)(107886003)(83380400001)(8936002)(66476007)(6506007)(186003)(36756003)(38100700002)(316002)(38350700002)(2616005)(5660300002)(6512007)(2906002)(110136005)(6666004)(26005)(86362001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: 4+TMl8rTXLhSeq7tsixMaxo3cLYEVNaf4q1XnErYWcxquI0HVABLGn558rau6TI9SmM3fORaNba8YabiUMTJWftn2i822Mo4hnXFcr6qop9QBgzUAKICY72e0zyipBzvOcU7MOHmxc7GzezbJzBputpFwKJphhcFo/5eMOVB5dGXuW21UeTcXuIWnG5lnEloJcrOym9VCyg4kJXJNSy9vKvhBjCO7d5yHugHpH1JHGcnGIYJ0xd6MQpfErHEpPjS+NOplh4L5SFf8bWcRbYenAZZQfnLlPcuPRCbT8RR4xZj2HRJoKf9n8DVoqEnr+bDioYq1Dc9CPLIa6rX+0gcyi42OjgrBB0OnQWvrBKg3azEq9nRn66S1B1YG/NqSdI5oQiY4wi1MfOi98xtK4vPSGSAU6A36GE2Ns325/tPbI1PD2TARP9CAXtP58kFIs9bvGlM9TFUXPRRt4rn9k4ggL2UU3iy7DIJJdgTql/U8t0i0+EwDVExSZsC1EQ567MzmBARcfDRk0jET2tmR2gpqyTYydJgZhkM1Mg6ZIAnA8T9ZWCg1+ZGKPas4Zg1iNX+FOtPXSIjgkn8AU/4jCtU0cU6i0gKQjHX3SaxDNfNY8694RNqGAEGgdQpnSKpuE3QNCAc7g0ROFkK+nlShFio1Uf+/z0jlKzRg4vn6+gtKylRajU14ung6P8ikQVuBJBWB1KF2JEaVXW8WIcbWQygTg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR10MB4468.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(38350700002)(66556008)(2616005)(8676002)(1076003)(66476007)(5660300002)(4326008)(38100700002)(8936002)(316002)(508600001)(36756003)(6486002)(103116003)(6506007)(86362001)(2906002)(83380400001)(26005)(6512007)(186003)(66946007)(52116002)(6666004);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6ZxHmwidXHJBKBUdCgMTCV9whrgYaV6i6mByQWj3WG9nLVZeHpNfhLu6XUJo?=
- =?us-ascii?Q?vktOxjJ1SQ/n87+17D5p9M/GBuEPQTUG0izfBVd/DXJrAUabOU+Dxl7wItjp?=
- =?us-ascii?Q?sGeeOzYUVTQaqDeGeBKY0JHeNC955U0t7eboAOB1u+6jmkE6mL2j5+Ef2Exi?=
- =?us-ascii?Q?ZGlY0J7PWzuJ+isGIQKkN2BY0povZnW3dgxGr5VldzqvVAMz4NH1OsqJNvIq?=
- =?us-ascii?Q?nJJCjGsV/GNIPMhCGfHE0jR1B/fJgHimBbUi9sfr+shBWd6w8Y+Ak9Pf4qo9?=
- =?us-ascii?Q?kNmlk2PHkiL/JXjIAH8UFeZNC/Mwy/RyysrXwjkSokJeia9wTv+67xK9gv/l?=
- =?us-ascii?Q?uAp5qv2jDi8aXASnd2RvZEw0r2XbW6l3KdqDCJ3hEka4LhSMat1YFHmuzmLQ?=
- =?us-ascii?Q?kbcNLoaZzpTdoNlJOlGK+2Eb81MT5FpHshTs/dp0S9q6Y/+ktWdXMJG0fvjz?=
- =?us-ascii?Q?UHnhjdZ1fFdNZA3HaAURpSBEOqbbKByppnCBeOrZ9e26but94aw8IVFL7wOz?=
- =?us-ascii?Q?ALcq5CPXXd782sQqLopU+2TFgzCvdPlA9s46/hS/S7tViQuwGp+dljHdE8Ck?=
- =?us-ascii?Q?zC6miPlDhFxIRlEtESarzXYArVH5sCQnCPulhMpMDSvpTVCLrVoj4K2tOSSO?=
- =?us-ascii?Q?oNG12G4Iw18Q7VgmC7uoLxLBLH9eV19u0RDJwhRYI2kUgHSz4V0Xn7Sh+Jwm?=
- =?us-ascii?Q?RZ7las9mzWirt0BVpFreUpUJaYJADxG70jjEVGed+3i+fWcwKCFpTduTP7DG?=
- =?us-ascii?Q?5ftMVndeum2pP0tksNIYnUbaEoGXjjZq67qPvtDaMj7Deovl9qQKudLKzxIh?=
- =?us-ascii?Q?tsU9TKJA0Ct/9pII6uYViinHeFlCihyL0mOADb+q//sujhN8HNCe6cGgeeUi?=
- =?us-ascii?Q?wxrB1hJPoRHk5RaPlS/CbuUrRy76s1AT7OKaFy/rAtxsysbR9L3tz0Hwgb+j?=
- =?us-ascii?Q?NGOeRZ7X8h15eLCX35k/HxitvyLr+WwEnUtvFkY6Ubf2NMJggwwDiYZRAgms?=
- =?us-ascii?Q?KODmKVqdXo0o5Cr2VR0gy6zN9WP09518zMo3CUNbJsFH7GUfcSZA7uUVrug6?=
- =?us-ascii?Q?DN+qtwHcNizUiVfirmmwkJ/pkbv6B6bT1XaOQ9LqNDsUBUw7/6+W3PNleMdi?=
- =?us-ascii?Q?p91YkRUag9g0r9Ysy8g8wmP/Q5gH9kcdNqiGuGSlL8czSo6D6T12npdO+DyM?=
- =?us-ascii?Q?6YL2RnJ8VBDV1FglSDT9+jGsGTxIcqWNDqYsZY8iQkwyFmXzxyVyv6NSjDWU?=
- =?us-ascii?Q?Tk3rcjRnBgU660mhMUraDSBzGABod+YTtm+PzBiUdnWCtWzZPt20cVKmuChn?=
- =?us-ascii?Q?s7fJ5h2IRn9KvyMYgRdqXJorxezjRkj9te+rqqIoAe+0GO56FTydDcuq3h49?=
- =?us-ascii?Q?gugvomm8B9xnL7IpqkXQB5GudejqoaQOhKEJBcqZMCW5lOo7yHtE91NVQT5t?=
- =?us-ascii?Q?biLECd5lQ4UHvU1ceFvkX2DYfpZ6hnCjx9i0dpYtHoQ0o1KYxDwjGq67Aoje?=
- =?us-ascii?Q?tcmdW8U/o1QzJhgG2JCUvbVMoapnQUD6sBHGNY3qn4RmDGCfp74KH0MJ8Xow?=
- =?us-ascii?Q?BoXCG3mrHwRGCLVwf6tMUbIgjZYg3ut16W0i3bIWMlQrbYewcnwE/DpxErZv?=
- =?us-ascii?Q?8dxsoYtfd9ZQf5T4wXjZaoHRVES7wL7CwoNiFjtRyQMpvcncmfa2ItpcDAQ4?=
- =?us-ascii?Q?YdRucunbnIK3s00eIuUsgUqSzw6iKwYtc8fggfU8v7IHPHW58vq5pLcsTfEO?=
- =?us-ascii?Q?zGW1O9mNCA=3D=3D?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cb7d537b-b734-4fc0-cbde-08da33341b20
-X-MS-Exchange-CrossTenant-AuthSource: SL2PR06MB3082.apcprd06.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Z+VQyOLTFwN0JSDOgkD8HSnIGPmlv7dB/rgaIkbm0IAIry+lyjzlYlus+yaz?=
+ =?us-ascii?Q?w/c501x1L/ScJdXsBh0bt6xDDHJlHX7EL3RHsk/+EqsweJQ6xsHVCtfXx4Qg?=
+ =?us-ascii?Q?UMHtjBEVbS1ESFmHmuUidQSnM9A7DhcDbrE/TMkpv8aL1xrzm1gCMIVgefQN?=
+ =?us-ascii?Q?DWh2K3AcG33v7Rd2gZNQ9Jmkyer/nfF0dI5I90SEm+zOKicLLYvuclS2+wlw?=
+ =?us-ascii?Q?/CvmGdVh9YwaMnGE9KQ2WMJTmxWDDXA7kHuHgRjoTNUBmEsKcxv/ORJA5bQi?=
+ =?us-ascii?Q?Z5nHo2Yb0HP1ysSbOR8sjlF6/+UiYlIFeSPE4dPjBmRon4Ht4aFFXtihnlqO?=
+ =?us-ascii?Q?oJrERAvG+ziNDu950+NHJu2j91FXuTs284P0Q4lWK2XhqBA/XTQgZT6rQTFw?=
+ =?us-ascii?Q?RkEACUOfHqwMOUhtryIUY82VVoiOVNYrJWKTXS2dsy/9degVXu+LfL2z1IAY?=
+ =?us-ascii?Q?OMC3qF+GvprxTQZCet6MTe6V7A0ivU4VjGjx9Xz2UJTJo1jzlD2P/IPb+YIU?=
+ =?us-ascii?Q?0U5Dw3tCFQjtQbT7VlFrvZkE2iFNcPQ9WBx88uCNZYlDiN9XETikPvx5kkfX?=
+ =?us-ascii?Q?ObxLEHqwrkA8xH8yRwdWqh6RLNA2+Q5majj2PXZD1oXlnTvCsdlX7jvdCvwU?=
+ =?us-ascii?Q?ylSB7lk66JZbm2MzByeg8Xa2/B45jI/w3aPwc3qpLuN+EYWDopMMf4YcOoJZ?=
+ =?us-ascii?Q?9b1aqw8+syseIdso6AXJfIiuOcYxS3daQ6r1O6OdsduylPfO+O1ne1qTk2dw?=
+ =?us-ascii?Q?Mf6z37TtbyDvsUK/LU9c3VqtjbIUACuEfU/OZJ+OSFJOOKoPvl4t3tnma3OE?=
+ =?us-ascii?Q?eAsLU0KJROGbKTrW9Hor7T7WNS0nex81BRfaSFfksi4u1rkQAMA2BM3dpHQ2?=
+ =?us-ascii?Q?IcyPzCwtqpkCSWSHw1CCdLp30epEsPScMQKKP/q2kaIlQKXe8kKm+8ZtCG0C?=
+ =?us-ascii?Q?BBTeVe/iNAguWcarjwtgWIN9sOSG/mTPDpZJI3+GNLqf7BxrIZFH7+/ng7mE?=
+ =?us-ascii?Q?U1IjAP+GFZXxT3zpb8gKLW6wiRmajObF8tU7C0oWKGvMocn7qUY7vEOCA106?=
+ =?us-ascii?Q?2V/aWJvY+QHbfTzvCTm3ajxIXqiVQEh4ojET5BQmXzW8soRU4F6QcrwFIF0T?=
+ =?us-ascii?Q?5lxcUSXJir1r8ZnnMPvJXCs3ZLm19WO1VMAgA4LYqg76IyzQ1cUkALInXG/3?=
+ =?us-ascii?Q?HYnxSQPx8o9/NXC+DqJmnRO9bdUid9dEv72oUCswNIVU+2kEvOYvbA8UYTId?=
+ =?us-ascii?Q?c3YLFIOlWj+Ne2TD3ViTEg0EbD9cDQEEhaCMkvIyiGAkPophjyF0sUbwHbXB?=
+ =?us-ascii?Q?l1CVIOiG6y+qJZdK6KvxiJKRZ0sIW3Qeed3jri4GG7qZ+pRTZrZXqOHeIBpn?=
+ =?us-ascii?Q?9hK7Pn9vyNJQIIpfx7tubpbbKpEf9gsDSt7vNKL5n77SDSAV0+Q/90mV9SNA?=
+ =?us-ascii?Q?ePt6ujkOBF/OwamUoNigoyTBRhfEf2WvIDS3Ee84UACr6mh7m2BPH9pLhh/e?=
+ =?us-ascii?Q?L5G/PfkujrvMsAf1f+ZfSeekPlZw5AW44Fzyd4u8XpWcQWlzTrUeCMElnAg+?=
+ =?us-ascii?Q?6IjDAISzryqQt4IfU3vvrjnQvfOkKbQXMw5oxIkNYXi+N6UgaB60+3OnHGM6?=
+ =?us-ascii?Q?lJj6u6Uu/gZYcWaGCxV2VbRK0dLj+NChrcl2FCDxHB0cWOTJ0YF3N2WfquWZ?=
+ =?us-ascii?Q?jvkgBKSqvSp5Rg881YRrw2u9N9jQdxOE6gK4EXkrBvKS5w33YMJSj0z0sNSJ?=
+ =?us-ascii?Q?InZAlxS2Nq2E/5bfOV+X97I8V/X1e5U=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9c6f727f-4fdb-4a07-1d51-08da3333eef5
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR10MB4468.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2022 09:53:31.5296
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2022 09:52:17.3297
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Vvry7CVkz64ILYWeyKC/EuPdZ7uK0G223+PuQWpDLXcv1/lHbKk9UYuPWIW0LvrGKccq9RuZEcY81FM8hsokTg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PS2PR06MB3528
+X-MS-Exchange-CrossTenant-UserPrincipalName: cu+W6COpFQP8aJDsLuqLZfLVRBBZIkrxQm3by1vOoC5FD4kScmwazC2IXNtKtfwDBZL2NAVAlNB9d+0b9gn/kg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR10MB4785
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.858
+ definitions=2022-05-11_03:2022-05-09,2022-05-11 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 adultscore=0
+ spamscore=0 phishscore=0 suspectscore=0 mlxscore=0 bulkscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205110044
+X-Proofpoint-ORIG-GUID: ipi3VnwZeP1nj1ARIRKBakRdDVd6Nbd3
+X-Proofpoint-GUID: ipi3VnwZeP1nj1ARIRKBakRdDVd6Nbd3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Qing <wangqing@vivo.com>
+In current kernfs design a single mutex, kernfs_open_file_mutex, protects
+the list of kernfs_open_file instances corresponding to a sysfs attribute.
+So even if different tasks are opening or closing different sysfs files
+they can contend on osq_lock of this mutex. The contention is more apparent
+in large scale systems with few hundred CPUs where most of the CPUs have
+running tasks that are opening, accessing or closing sysfs files at any
+point of time.
 
-Use nested cluster structures in DT to support describing multi-level
-cluster topologies and increase the parsing of nested cluster.
+Using hashed mutexes in place of a single global mutex, can significantly
+reduce contention around global mutex and hence can provide better
+scalability. Moreover as these hashed mutexes are not part of kernfs_node
+objects we will not see any singnificant change in memory utilization of
+kernfs based file systems like sysfs, cgroupfs etc.
 
-Notice: the clusters describing in DT currently are not physical
-boundaries, since changing "cluster" to "socket" is too involved and error
-prone, this patch will not have any effect on one-level cluster topo, but
-can support the mutil-level cluster topo to support CLUSTER_SCHED.
+Modify interface introduced in previous patch to make use of hashed
+mutexes. Use kernfs_node address as hashing key.
 
-Signed-off-by: Wang Qing <wangqing@vivo.com>
+Signed-off-by: Imran Khan <imran.f.khan@oracle.com>
 ---
- drivers/base/arch_topology.c | 26 ++++++++++++++++++--------
- 1 file changed, 18 insertions(+), 8 deletions(-)
+ fs/kernfs/file.c            | 17 ++---------
+ fs/kernfs/kernfs-internal.h |  4 +++
+ fs/kernfs/mount.c           | 19 +++++++++++++
+ include/linux/kernfs.h      | 57 +++++++++++++++++++++++++++++++++++++
+ 4 files changed, 83 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
-index 1d6636ebaac5..5a407cff0ab1 100644
---- a/drivers/base/arch_topology.c
-+++ b/drivers/base/arch_topology.c
-@@ -491,7 +491,7 @@ static int __init get_cpu_for_node(struct device_node *node)
- }
+diff --git a/fs/kernfs/file.c b/fs/kernfs/file.c
+index 9000c85ce1e1..175c9f53284f 100644
+--- a/fs/kernfs/file.c
++++ b/fs/kernfs/file.c
+@@ -18,19 +18,6 @@
  
- static int __init parse_core(struct device_node *core, int package_id,
--			     int core_id)
-+			     int cluster_id, int core_id)
- {
- 	char name[20];
- 	bool leaf = true;
-@@ -507,6 +507,7 @@ static int __init parse_core(struct device_node *core, int package_id,
- 			cpu = get_cpu_for_node(t);
- 			if (cpu >= 0) {
- 				cpu_topology[cpu].package_id = package_id;
-+				cpu_topology[cpu].cluster_id = cluster_id;
- 				cpu_topology[cpu].core_id = core_id;
- 				cpu_topology[cpu].thread_id = i;
- 			} else if (cpu != -ENODEV) {
-@@ -528,6 +529,7 @@ static int __init parse_core(struct device_node *core, int package_id,
- 		}
+ #include "kernfs-internal.h"
  
- 		cpu_topology[cpu].package_id = package_id;
-+		cpu_topology[cpu].cluster_id = cluster_id;
- 		cpu_topology[cpu].core_id = core_id;
- 	} else if (leaf && cpu != -ENODEV) {
- 		pr_err("%pOF: Can't get CPU for leaf core\n", core);
-@@ -544,13 +546,15 @@ static int __init parse_cluster(struct device_node *cluster, int depth)
- 	bool has_cores = false;
- 	struct device_node *c;
- 	static int package_id __initdata;
-+	static int cluster_id __initdata;
- 	int core_id = 0;
- 	int i, ret;
- 
- 	/*
--	 * First check for child clusters; we currently ignore any
--	 * information about the nesting of clusters and present the
--	 * scheduler with a flat list of them.
-+	 * nesting of clusters :
-+	 * level 1:  package_id
-+	 * level 2:  cluster_id
-+	 * level 3+: ignore
- 	 */
- 	i = 0;
- 	do {
-@@ -559,6 +563,14 @@ static int __init parse_cluster(struct device_node *cluster, int depth)
- 		if (c) {
- 			leaf = false;
- 			ret = parse_cluster(c, depth + 1);
-+			if (depth == 0) {
-+				package_id++;
-+				cluster_id = 0;
-+			} else if (depth == 1)
-+				cluster_id++;
-+			else
-+				pr_err("Ignore nested clusters with more than two levels!\n");
-+
- 			of_node_put(c);
- 			if (ret != 0)
- 				return ret;
-@@ -582,7 +594,8 @@ static int __init parse_cluster(struct device_node *cluster, int depth)
- 			}
- 
- 			if (leaf) {
--				ret = parse_core(c, package_id, core_id++);
-+				ret = parse_core(c, package_id, (depth == 2)?cluster_id : -1,
-+					       core_id++);
- 			} else {
- 				pr_err("%pOF: Non-leaf cluster with core %s\n",
- 				       cluster, name);
-@@ -599,9 +612,6 @@ static int __init parse_cluster(struct device_node *cluster, int depth)
- 	if (leaf && !has_cores)
- 		pr_warn("%pOF: empty cluster\n", cluster);
- 
--	if (leaf)
--		package_id++;
+-/*
+- * There's one kernfs_open_file for each open file and one kernfs_open_node
+- * for each kernfs_node with one or more open files.
+- *
+- * kernfs_node->attr.open points to kernfs_open_node.  attr.open is
+- * RCU protected.
+- *
+- * filp->private_data points to seq_file whose ->private points to
+- * kernfs_open_file.  kernfs_open_files are chained at
+- * kernfs_open_node->files, which is protected by kernfs_open_file_mutex.
+- */
+-static DEFINE_MUTEX(kernfs_open_file_mutex);
 -
- 	return 0;
+ struct kernfs_open_node {
+ 	struct rcu_head		rcu_head;
+ 	atomic_t		event;
+@@ -51,7 +38,9 @@ static LLIST_HEAD(kernfs_notify_list);
+ 
+ static inline struct mutex *kernfs_open_file_mutex_ptr(struct kernfs_node *kn)
+ {
+-	return &kernfs_open_file_mutex;
++	int idx = hash_ptr(kn, NR_KERNFS_LOCK_BITS);
++
++	return &kernfs_locks->open_file_mutex[idx];
  }
  
+ static inline struct mutex *kernfs_open_file_mutex_lock(struct kernfs_node *kn)
+diff --git a/fs/kernfs/kernfs-internal.h b/fs/kernfs/kernfs-internal.h
+index eeaa779b929c..3ae214d02d44 100644
+--- a/fs/kernfs/kernfs-internal.h
++++ b/fs/kernfs/kernfs-internal.h
+@@ -164,4 +164,8 @@ void kernfs_drain_open_files(struct kernfs_node *kn);
+  */
+ extern const struct inode_operations kernfs_symlink_iops;
+ 
++/*
++ * kernfs locks
++ */
++extern struct kernfs_global_locks *kernfs_locks;
+ #endif	/* __KERNFS_INTERNAL_H */
+diff --git a/fs/kernfs/mount.c b/fs/kernfs/mount.c
+index cfa79715fc1a..d0859f72d2d6 100644
+--- a/fs/kernfs/mount.c
++++ b/fs/kernfs/mount.c
+@@ -20,6 +20,7 @@
+ #include "kernfs-internal.h"
+ 
+ struct kmem_cache *kernfs_node_cache, *kernfs_iattrs_cache;
++struct kernfs_global_locks *kernfs_locks;
+ 
+ static int kernfs_sop_show_options(struct seq_file *sf, struct dentry *dentry)
+ {
+@@ -387,6 +388,22 @@ void kernfs_kill_sb(struct super_block *sb)
+ 	kfree(info);
+ }
+ 
++static void __init kernfs_mutex_init(void)
++{
++	int count;
++
++	for (count = 0; count < NR_KERNFS_LOCKS; count++)
++		mutex_init(&kernfs_locks->open_file_mutex[count]);
++}
++
++static void __init kernfs_lock_init(void)
++{
++	kernfs_locks = kmalloc(sizeof(struct kernfs_global_locks), GFP_KERNEL);
++	WARN_ON(!kernfs_locks);
++
++	kernfs_mutex_init();
++}
++
+ void __init kernfs_init(void)
+ {
+ 	kernfs_node_cache = kmem_cache_create("kernfs_node_cache",
+@@ -397,4 +414,6 @@ void __init kernfs_init(void)
+ 	kernfs_iattrs_cache  = kmem_cache_create("kernfs_iattrs_cache",
+ 					      sizeof(struct kernfs_iattrs),
+ 					      0, SLAB_PANIC, NULL);
++
++	kernfs_lock_init();
+ }
+diff --git a/include/linux/kernfs.h b/include/linux/kernfs.h
+index 2dd9c8df0f4f..13e703f615f7 100644
+--- a/include/linux/kernfs.h
++++ b/include/linux/kernfs.h
+@@ -18,6 +18,7 @@
+ #include <linux/uidgid.h>
+ #include <linux/wait.h>
+ #include <linux/rwsem.h>
++#include <linux/cache.h>
+ 
+ struct file;
+ struct dentry;
+@@ -34,6 +35,62 @@ struct kernfs_fs_context;
+ struct kernfs_open_node;
+ struct kernfs_iattrs;
+ 
++/*
++ * NR_KERNFS_LOCK_BITS determines size (NR_KERNFS_LOCKS) of hash
++ * table of locks.
++ * Having a small hash table would impact scalability, since
++ * more and more kernfs_node objects will end up using same lock
++ * and having a very large hash table would waste memory.
++ *
++ * At the moment size of hash table of locks is being set based on
++ * the number of CPUs as follows:
++ *
++ * NR_CPU      NR_KERNFS_LOCK_BITS      NR_KERNFS_LOCKS
++ *   1                  1                       2
++ *  2-3                 2                       4
++ *  4-7                 4                       16
++ *  8-15                6                       64
++ *  16-31               8                       256
++ *  32 and more         10                      1024
++ *
++ * The above relation between NR_CPU and number of locks is based
++ * on some internal experimentation which involved booting qemu
++ * with different values of smp, performing some sysfs operations
++ * on all CPUs and observing how increase in number of locks impacts
++ * completion time of these sysfs operations on each CPU.
++ */
++#ifdef CONFIG_SMP
++#define NR_KERNFS_LOCK_BITS (2 * (ilog2(NR_CPUS < 32 ? NR_CPUS : 32)))
++#else
++#define NR_KERNFS_LOCK_BITS     1
++#endif
++
++#define NR_KERNFS_LOCKS     (1 << NR_KERNFS_LOCK_BITS)
++
++/*
++ * There's one kernfs_open_file for each open file and one kernfs_open_node
++ * for each kernfs_node with one or more open files.
++ *
++ * filp->private_data points to seq_file whose ->private points to
++ * kernfs_open_file.
++ *
++ * kernfs_open_files are chained at kernfs_open_node->files, which is
++ * protected by kernfs_global_locks.open_file_mutex[i].
++ *
++ * To reduce possible contention in sysfs access, arising due to single
++ * locks, use an array of locks (e.g. open_file_mutex) and use kernfs_node
++ * object address as hash keys to get the index of these locks.
++ *
++ * Hashed mutexes are safe to use here because operations using these don't
++ * rely on global exclusion.
++ *
++ * In future we intend to replace other global locks with hashed ones as well.
++ * kernfs_global_locks acts as a holder for all such hash tables.
++ */
++struct kernfs_global_locks {
++	struct mutex open_file_mutex[NR_KERNFS_LOCKS];
++};
++
+ enum kernfs_node_type {
+ 	KERNFS_DIR		= 0x0001,
+ 	KERNFS_FILE		= 0x0002,
 -- 
-2.7.4
+2.30.2
 
