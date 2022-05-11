@@ -2,99 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D43E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 11:35:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D448C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 11:35:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240401AbiEKLfg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 07:35:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40020 "EHLO
+        id S230354AbiEKLfk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 07:35:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239248AbiEKLfV (ORCPT
+        with ESMTP id S240099AbiEKLfX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 07:35:21 -0400
-Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94319237B8B;
-        Wed, 11 May 2022 04:35:20 -0700 (PDT)
-Received: by mail-qk1-x734.google.com with SMTP id bs17so2070911qkb.0;
-        Wed, 11 May 2022 04:35:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fIWpbH8Qkfx6CtZf98GRcpag46QLNFxJDLii79V6Ww4=;
-        b=iwUFlCXpNjAisVEfnwmlAdOatVcSnAwwbuVcsltGQ/5e2qlxjuvMvHFH0zjH653Mbe
-         P10WcoYwALsqMADv3kofz5Iv36VCkh+MBGhmZIVf+tfXY4c6t/nPYMTWollwMNTd8SA1
-         axrtWIBOwW4r+pvlA76424OgOCu0uMq70lLVLEb+qqhnND16vEEjQS5J1IpkudyWrFy4
-         5TlJT9hljT5a5CrhxTLXnu0mHPi/Gd9oa/44/w52HsA6upKYCtvyhYOLlUSUSNn9AO6J
-         FrVO5m0S9T8BVuuyUXNKoMtg808X7troFbx1f36TKqFRqd8P4T0doH2AqrtBrlJleTDW
-         O5Ww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fIWpbH8Qkfx6CtZf98GRcpag46QLNFxJDLii79V6Ww4=;
-        b=Ekv6pEGrRM9z70wvcLuRA3Cvnk1EQmeuCj49tW3am/hNaxf57DsWzPseZaYTx/4nUw
-         cj8gWUzNgfxXfwEE6uH8ZT/b+2iDKOKZ/IgySRmEK7pzAFAZrnQqkfPkpLyQK9WrznMP
-         /qIlbb9G2OBoBNWaaZgOdgKnjwgD+jzA/hyFseDKX0Dcxs01XVQBcblVxaQYoFI41PgO
-         l1FcVgJxch5DID34r9L3Vt+I52n1POeC9WCeF+JDN2H2Ut64AZaC6ARapHlKB9pPoDC+
-         uixd3Bi/eEVxy2u5v+lUkwWQ8kkuRVz4V3D8kDFt9y4BOJ/F0ErhdKCECQG0J727pvnx
-         6hRA==
-X-Gm-Message-State: AOAM532G3RBVHtOfosO2uW3o4IPVtQ4uXTAICtzhQMvkNcYweyHNzqJt
-        4jZ95FwsvJxlyWJkGqHdP+bcL167cHZ9nA==
-X-Google-Smtp-Source: ABdhPJzmxu38yPKnQkUR29DXmgeEH2Q7/lQoPhE5QKvfpHBeWFD/QSRUEnuuqI6W5KyHPA4iWJ4xBw==
-X-Received: by 2002:a05:620a:254e:b0:680:a307:8a33 with SMTP id s14-20020a05620a254e00b00680a3078a33mr18549892qko.304.1652268919643;
-        Wed, 11 May 2022 04:35:19 -0700 (PDT)
-Received: from master-x64.sparksnet ([2601:153:980:85b1::10])
-        by smtp.gmail.com with ESMTPSA id bw26-20020a05622a099a00b002f39b99f6basm953377qtb.84.2022.05.11.04.35.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 04:35:19 -0700 (PDT)
-From:   Peter Geis <pgwipeout@gmail.com>
-To:     linux-rockchip@lists.infradead.org
-Cc:     Heiko Stuebner <heiko@sntech.de>, dri-devel@lists.freedesktop.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Peter Geis <pgwipeout@gmail.com>
-Subject: [PATCH v2 0/3] add Pine64 touch panel support to rockpro64
-Date:   Wed, 11 May 2022 07:35:13 -0400
-Message-Id: <20220511113517.4172962-1-pgwipeout@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 11 May 2022 07:35:23 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A3B65469C
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 04:35:21 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id BA77E22205;
+        Wed, 11 May 2022 13:35:16 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1652268919;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fBxMjfOO74WU/5onEJvdMPUR6WuIE1EbEvkxKemvch8=;
+        b=LxIwoQmMbD18/LTL1HymORRMKdrt6BMI6A9PZgP48ewHwtu1+8HzJHelfaxd316z5/Mffk
+        8LOQ1lZGALk97YFSIp3XyJhBozStBpUd7ItIpijbqXqgZe9mojO0Q2vtV59UejBeGV6Jbn
+        smtdaC7xn6NaAuTKvJR/S6qYEfi7e/k=
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Wed, 11 May 2022 13:35:16 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     kbuild@lists.01.org, lkp@intel.com, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Pratyush Yadav <p.yadav@ti.com>
+Subject: Re: [mtd:spi-nor/next 16/18] drivers/mtd/spi-nor/debugfs.c:84
+ spi_nor_params_show() warn: '%ph' cannot be followed by 'n'
+In-Reply-To: <202205110320.WNi7ZQaB-lkp@intel.com>
+References: <202205110320.WNi7ZQaB-lkp@intel.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <f1399a5413d8f151e536c7005eca6763@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Good Morning,
+Am 2022-05-11 12:17, schrieb Dan Carpenter:
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git
+> spi-nor/next
+> head:   cdbc44dbb2c73d8bafa1a8ae0d780608be5dbd40
+> commit: 0257be79fc4a16a3252ce80aa13b3640f728c425 [16/18] mtd: spi-nor:
+> expose internal parameters via debugfs
+> config: x86_64-randconfig-m001-20220509
+> (https://download.01.org/0day-ci/archive/20220511/202205110320.WNi7ZQaB-lkp@intel.com/config)
+> compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> 
+> smatch warnings:
+> drivers/mtd/spi-nor/debugfs.c:84 spi_nor_params_show() warn: '%ph'
+> cannot be followed by 'n'
+> 
+> vim +84 drivers/mtd/spi-nor/debugfs.c
+> 
+> 0257be79fc4a16 Michael Walle 2022-04-29   73  static int
+> spi_nor_params_show(struct seq_file *s, void *data)
+> 0257be79fc4a16 Michael Walle 2022-04-29   74  {
+> 0257be79fc4a16 Michael Walle 2022-04-29   75  	struct spi_nor *nor = 
+> s->private;
+> 0257be79fc4a16 Michael Walle 2022-04-29   76  	struct
+> spi_nor_flash_parameter *params = nor->params;
+> 0257be79fc4a16 Michael Walle 2022-04-29   77  	struct
+> spi_nor_erase_map *erase_map = &params->erase_map;
+> 0257be79fc4a16 Michael Walle 2022-04-29   78  	struct
+> spi_nor_erase_region *region;
+> 0257be79fc4a16 Michael Walle 2022-04-29   79  	const struct flash_info
+> *info = nor->info;
+> 0257be79fc4a16 Michael Walle 2022-04-29   80  	char buf[16], *str;
+> 0257be79fc4a16 Michael Walle 2022-04-29   81  	int i;
+> 0257be79fc4a16 Michael Walle 2022-04-29   82
+> 0257be79fc4a16 Michael Walle 2022-04-29   83  	seq_printf(s,
+> "name\t\t%s\n", info->name);
+> 0257be79fc4a16 Michael Walle 2022-04-29  @84  	seq_printf(s,
+> "id\t\t%*phn\n", info->id_len, info->id);
+> 
+> Maybe N was intended instead of n?  (I have no idea).
 
-Apologies Heiko on taking so long for this v2.
+Thanks for reporting. Yeah I had %*phN previously but then
+I wanted to switch to "xx xx xx" style and i missed checking
+printk-formats.rst. %*phn worked as intended ;) I'll send
+a fixup patch.
 
-This patch series adds support for the Pine64 touch panel to the
-rockpro64 single board computer.
-This panel attaches to the dsi port and includes an i2c touch screen.
-
-The first two patches involve making the reset pin to the Feiyang
-fy07024di26a30d panel optional. On the rockpro64 and quartz64-a this pin
-is tied to dvdd and automatically comes high when power is applied.
-The third patch adds the device tree nodes to rockpro64 to permit the
-panel to be used.
-
-Changelog:
-v2:
-- Drop patch 4 so we don't "enable" the nodes
-- Drop the unnecessary null checks
-- Rebase to 5.18-rc1
-
-Peter Geis (3):
-  dt-bindings: display: panel: feiyang, fy07024di26a30d: make reset gpio
-    optional
-  drm/panel: feiyang-fy07024di26a30d: make reset gpio optional
-  arm64: dts: rockchip: add pine64 touch panel display to rockpro64
-
- .../panel/feiyang,fy07024di26a30d.yaml        |  1 -
- .../boot/dts/rockchip/rk3399-rockpro64.dtsi   | 80 ++++++++++++++++++-
- .../drm/panel/panel-feiyang-fy07024di26a30d.c |  2 +-
- 3 files changed, 77 insertions(+), 6 deletions(-)
-
--- 
-2.25.1
-
+-michael
