@@ -2,121 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44E72C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 06:51:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAE6FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 06:55:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242120AbiEKGuT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 02:50:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34618 "EHLO
+        id S241941AbiEKGzl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 02:55:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242395AbiEKGuC (ORCPT
+        with ESMTP id S238702AbiEKGzh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 02:50:02 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6317D243134
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 23:50:00 -0700 (PDT)
-X-UUID: 314b861995304686a98d95f0eb5368d3-20220511
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:4ab09c1c-dde3-41b9-9418-33fd4cc97169,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:-20
-X-CID-META: VersionHash:faefae9,CLOUDID:2d8e0fe6-38f2-431d-8de7-bf8fac490b0a,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: 314b861995304686a98d95f0eb5368d3-20220511
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <yong.wu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 896768295; Wed, 11 May 2022 14:49:54 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Wed, 11 May 2022 14:49:53 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 11 May 2022 14:49:52 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 11 May 2022 14:49:51 +0800
-From:   Yong Wu <yong.wu@mediatek.com>
-To:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>
-CC:     <iommu@lists.linux-foundation.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, "Yong Wu" <yong.wu@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
-        <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>,
-        <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
-        <xueqi.zhang@mediatek.com>, Guenter Roeck <groeck@chromium.org>,
-        "Dan Carpenter" <dan.carpenter@oracle.com>
-Subject: [PATCH 2/4] iommu/mediatek: Add error path for loop of mm_dts_parse
-Date:   Wed, 11 May 2022 14:49:18 +0800
-Message-ID: <20220511064920.18455-3-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220511064920.18455-1-yong.wu@mediatek.com>
-References: <20220511064920.18455-1-yong.wu@mediatek.com>
+        Wed, 11 May 2022 02:55:37 -0400
+Received: from m15113.mail.126.com (m15113.mail.126.com [220.181.15.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9107A243105;
+        Tue, 10 May 2022 23:55:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=u1j75
+        +jwMktH6WYAlX+Azz8jfD4KSlO2j7a6v1tqq5E=; b=pk1zLcnONLE5+XxUCcVkW
+        TDWFbncfWIPO97BebKB3GOACmwfAjDLvC8mwYbI23TXhPNMb2sIwVFV/VXIxLe53
+        rnXdENFlckqpfTvu0yfnwE7sZedKRakyMvdXDUNgvaX8d3b6AdQBAcuM4OyLukzh
+        4nbFmajLK5H31z8Rx2/VHc=
+Received: from ubuntu.localdomain (unknown [58.213.83.157])
+        by smtp3 (Coremail) with SMTP id DcmowACXS5zBXXtit4LEBQ--.33384S4;
+        Wed, 11 May 2022 14:54:58 +0800 (CST)
+From:   Bernard Zhao <zhaojunkui2008@126.com>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     bernard@vivo.com, Bernard Zhao <zhaojunkui2008@126.com>
+Subject: [PATCH] intel/i40e: delete if NULL check before dev_kfree_skb
+Date:   Tue, 10 May 2022 23:54:51 -0700
+Message-Id: <20220511065451.655335-1-zhaojunkui2008@126.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DcmowACXS5zBXXtit4LEBQ--.33384S4
+X-Coremail-Antispam: 1Uf129KBjvdXoWrtF1fCw18Wr1UAF1kZrWUurg_yoWfZFc_Cr
+        n7XF1xKw45KwnYqrn8Cr4fu3yjyrZ8W3yrury7t3yfJr9Fyr4UZryDZr95Xw4fWr4rCFy5
+        Aa43t3W7C345AjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRAR6w3UUUUU==
+X-Originating-IP: [58.213.83.157]
+X-CM-SenderInfo: p2kd0y5xqn3xasqqmqqrswhudrp/1tbiYAP9qlpEHUaynQAAse
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The mtk_iommu_mm_dts_parse will parse the smi larbs nodes. if the i+1
-larb is parsed fail(return -EINVAL), we should of_node_put for the 0..i
-larbs.
+dev_kfree_skb check if the input parameter NULL and do the right
+thing, there is no need to check again.
+This change is to cleanup the code a bit.
 
-Fixes: d2e9a1102cfc ("iommu/mediatek: Contain MM IOMMU flow with the MM TYPE")
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Signed-off-by: Bernard Zhao <zhaojunkui2008@126.com>
 ---
- drivers/iommu/mtk_iommu.c | 21 ++++++++++++++++-----
- 1 file changed, 16 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 0f6ec4a4d9d4..523bf59264e1 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -1065,12 +1065,12 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+index 0eae5858f2fe..98cfadfd0f35 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+@@ -1482,10 +1482,8 @@ void i40e_clean_rx_ring(struct i40e_ring *rx_ring)
+ 	if (!rx_ring->rx_bi)
+ 		return;
  
- 		plarbdev = of_find_device_by_node(larbnode);
- 		if (!plarbdev) {
--			of_node_put(larbnode);
--			return -ENODEV;
-+			ret = -ENODEV;
-+			goto err_larbnode_put;
- 		}
- 		if (!plarbdev->dev.driver) {
--			of_node_put(larbnode);
--			return -EPROBE_DEFER;
-+			ret = -EPROBE_DEFER;
-+			goto err_larbnode_put;
- 		}
- 		data->larb_imu[id].dev = &plarbdev->dev;
+-	if (rx_ring->skb) {
+-		dev_kfree_skb(rx_ring->skb);
+-		rx_ring->skb = NULL;
+-	}
++	dev_kfree_skb(rx_ring->skb);
++	rx_ring->skb = NULL;
  
-@@ -1101,9 +1101,20 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
- 			       DL_FLAG_STATELESS | DL_FLAG_PM_RUNTIME);
- 	if (!link) {
- 		dev_err(dev, "Unable to link %s.\n", dev_name(data->smicomm_dev));
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto err_larbnode_put;
- 	}
- 	return 0;
-+
-+err_larbnode_put:
-+	while (i--) {
-+		larbnode = of_parse_phandle(dev->of_node, "mediatek,larbs", i);
-+		if (larbnode && of_device_is_available(larbnode)) {
-+			of_node_put(larbnode);
-+			of_node_put(larbnode);
-+		}
-+	}
-+	return ret;
- }
- 
- static int mtk_iommu_probe(struct platform_device *pdev)
+ 	if (rx_ring->xsk_pool) {
+ 		i40e_xsk_clean_rx_ring(rx_ring);
 -- 
-2.18.0
+2.33.1
 
