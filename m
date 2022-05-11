@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9907EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 19:30:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16365C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 19:30:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346895AbiEKTaG (ORCPT
+        id S1346907AbiEKTaH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 15:30:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58716 "EHLO
+        Wed, 11 May 2022 15:30:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345242AbiEKT3r (ORCPT
+        with ESMTP id S1346837AbiEKT3r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 11 May 2022 15:29:47 -0400
 Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7C05F29D9
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 12:29:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CA15F29F9
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 12:29:45 -0700 (PDT)
 Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
         by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <heiko@sntech.de>)
-        id 1nos1i-0004fe-Fh; Wed, 11 May 2022 21:29:38 +0200
+        id 1nos1d-0004fe-No; Wed, 11 May 2022 21:29:33 +0200
 From:   Heiko Stuebner <heiko@sntech.de>
 To:     palmer@dabbelt.com, paul.walmsley@sifive.com, aou@eecs.berkeley.edu
 Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -32,114 +32,161 @@ Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
         allen.baum@esperantotech.com, jscheid@ventanamicro.com,
         rtrauben@gmail.com, samuel@sholland.org, cmuellner@linux.com,
         philipp.tomsich@vrull.eu, Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH 06/12] riscv: prevent compressed instructions in alternatives
-Date:   Wed, 11 May 2022 21:29:15 +0200
-Message-Id: <20220511192921.2223629-7-heiko@sntech.de>
+Subject: [PATCH v10 00/12] riscv: support for Svpbmt and D1 memory types
+Date:   Wed, 11 May 2022 21:29:09 +0200
+Message-Id: <20220511192921.2223629-1-heiko@sntech.de>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220511192921.2223629-1-heiko@sntech.de>
-References: <20220511192921.2223629-1-heiko@sntech.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instructions are opportunistically compressed by the RISC-V assembler
-when possible, but in alternatives-blocks both the old and new content
-need to be the same size, so having the toolchain do somewhat random
-optimizations will cause strange side-effects like
-"attempt to move .org backwards" compile-time errors.
+Svpbmt is an extension defining "Supervisor-mode: page-based memory types"
+for things like non-cacheable pages or I/O memory pages.
 
-Already a simple "and" used in alternatives assembly will cause these
-mismatched code sizes.
 
-So prevent compressed instructions to be generated in alternatives-
-code and use option-push and -pop to only limit this to the relevant
-code blocks
+So this is my 2nd try at implementing Svpbmt (and the diverging D1 memory
+types) using the alternatives framework.
 
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Philipp Tomsich <philipp.tomsich@vrull.eu>
----
- arch/riscv/include/asm/alternative-macros.h | 24 +++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+This includes a number of changes to the alternatives mechanism itself.
+The biggest one being the move to a more central location, as I expect
+in the future, nearly every chip needing some sort of patching, be it
+either for erratas or for optional features (svpbmt or others).
 
-diff --git a/arch/riscv/include/asm/alternative-macros.h b/arch/riscv/include/asm/alternative-macros.h
-index 8c2bbc7bbe50..e13b1f6bb400 100644
---- a/arch/riscv/include/asm/alternative-macros.h
-+++ b/arch/riscv/include/asm/alternative-macros.h
-@@ -21,7 +21,11 @@
- 	.popsection
- 	.subsection 1
- 888 :
-+	.option push
-+	.option norvc
-+	.option norelax
- 	\new_c
-+	.option pop
- 889 :
- 	.previous
- 	.org    . - (889b - 888b) + (887b - 886b)
-@@ -31,7 +35,11 @@
- 
- .macro __ALTERNATIVE_CFG old_c, new_c, vendor_id, errata_id, enable
- 886 :
-+	.option push
-+	.option norvc
-+	.option norelax
- 	\old_c
-+	.option pop
- 887 :
- 	ALT_NEW_CONTENT \vendor_id, \errata_id, \enable, \new_c
- .endm
-@@ -42,7 +50,11 @@
- .macro __ALTERNATIVE_CFG_2 old_c, new_c_1, vendor_id_1, errata_id_1, enable_1, \
- 				  new_c_2, vendor_id_2, errata_id_2, enable_2
- 886 :
-+	.option push
-+	.option norvc
-+	.option norelax
- 	\old_c
-+	.option pop
- 887 :
- 	ALT_NEW_CONTENT \vendor_id_1, \errata_id_1, \enable_1, \new_c_1
- 	ALT_NEW_CONTENT \vendor_id_2, \errata_id_2, \enable_2, \new_c_2
-@@ -76,7 +88,11 @@
- 	".popsection\n"							\
- 	".subsection 1\n"						\
- 	"888 :\n"							\
-+	".option push\n"						\
-+	".option norvc\n"						\
-+	".option norelax\n"						\
- 	new_c "\n"							\
-+	".option pop\n"							\
- 	"889 :\n"							\
- 	".previous\n"							\
- 	".org	. - (887b - 886b) + (889b - 888b)\n"			\
-@@ -85,7 +101,11 @@
- 
- #define __ALTERNATIVE_CFG(old_c, new_c, vendor_id, errata_id, enable)	\
- 	"886 :\n"							\
-+	".option push\n"						\
-+	".option norvc\n"						\
-+	".option norelax\n"						\
- 	old_c "\n"							\
-+	".option pop\n"							\
- 	"887 :\n"							\
- 	ALT_NEW_CONTENT(vendor_id, errata_id, enable, new_c)
- 
-@@ -97,7 +117,11 @@
- 				   new_c_2, vendor_id_2, errata_id_2,	\
- 					enable_2)			\
- 	"886 :\n"							\
-+	".option push\n"						\
-+	".option norvc\n"						\
-+	".option norelax\n"						\
- 	old_c "\n"							\
-+	".option pop\n"							\
- 	"887 :\n"							\
- 	ALT_NEW_CONTENT(vendor_id_1, errata_id_1, enable_1, new_c_1)	\
- 	ALT_NEW_CONTENT(vendor_id_2, errata_id_2, enable_2, new_c_2)
+Detection of the svpbmt functionality is done via Atish's isa extension
+handling series [0] and thus does not need any dt-parsing of its own
+anymore.
+
+The series also introduces support for the memory types of the D1
+which are implemented differently to svpbmt. But when patching anyway
+it's pretty clean to add the D1 variant via ALTERNATIVE_2 to the same
+location.
+
+The only slightly bigger difference is that the "normal" type is not 0
+as with svpbmt, so kernel patches for this PMA type need to be applied
+even before the MMU is brought up, so the series introduces a separate
+stage for that.
+
+
+In theory this series is 2 parts:
+- alternatives improvements
+- svpbmt+d1
+
+I picked the recipient list from the previous versions, hopefully
+I didn't forget anybody.
+
+I tested the series on:
+- qemu-rv32 + buildroot rootfs
+- qemu-rv64 + debian roots
+- Allwinner D1-Nezha
+- BeagleV - it at least reached the same point as without the series
+
+I also ran Palmers CI environment on 5.18-rc6 + this series and
+it passed with all testcases now.
+
+
+changes in v10:
+- add received review-tags
+- put early patching behind a kconfig symbol
+- adapt compiler flags of sources in use by early patching
+  similar to other riscv arch-parts.
+  This fixes the medlow cmodel issue on rv32 and also issues
+  with Kasan.
+
+changes in v9:
+- rebase onto 5.18-rc1
+- drop the sbi null-ptr patch
+  While I still think this to be non-ideal as is, it isn't really
+  necessary for svpbmt support anymore
+- merge cpufeature + svpbmt patch, as otherwise some empty shells
+  cause build warnings when a bisection stops between these two
+  patches
+- address review comments from Christoph Hellwig:
+  - keep alternatives optional, they now get selected by its
+    users (erratas and also the newly introduced svpbmt kconfig)
+  - wrap long lines and keep things below 80 characters
+  - restyle svpbmt + thead errata assembly
+  - introduce a helper for the repeated calls to
+    (val & _PAGE_PFN_MASK) >> _PAGE_PFN_SHIFT
+
+changes in v8:
+- rebase onto 5.17-final + isa extension series
+  We're halfway through the merge-window, so this series
+  should be merge after that
+- adapt to fix limiting alternatives to non-xip-kernels
+- add .norelax option for alternatives
+- fix unused cpu_apply_errata in thead errata
+- don't use static globals to store cpu-manufacturer data
+  as it makes machines hang if done too early
+
+changes in v7:
+- fix typo in patch1 (Atish)
+- moved to Atish's isa-extension framework
+- and therefore move regular boot-alternatives directly behind fill_hwcaps
+- change T-Head errata Kconfig text (Atish)
+
+changes in v6:
+- rebase onto 5.17-rc1
+- handle sbi null-ptr differently
+- improve commit messages
+- use riscv,mmu as property name
+
+changes in v5:
+- move to use alternatives for runtime-patching
+- add D1 variant
+
+
+[0] https://lore.kernel.org/r/20220222204811.2281949-2-atishp@rivosinc.com
+
+Heiko Stuebner (12):
+  riscv: integrate alternatives better into the main architecture
+  riscv: allow different stages with alternatives
+  riscv: implement module alternatives
+  riscv: implement ALTERNATIVE_2 macro
+  riscv: extend concatenated alternatives-lines to the same length
+  riscv: prevent compressed instructions in alternatives
+  riscv: move boot alternatives to after fill_hwcap
+  riscv: Fix accessing pfn bits in PTEs for non-32bit variants
+  riscv: add RISC-V Svpbmt extension support
+  riscv: remove FIXMAP_PAGE_IO and fall back to its default value
+  riscv: don't use global static vars to store alternative data
+  riscv: add memory-type errata for T-Head
+
+ arch/riscv/Kconfig                          |  28 +++++
+ arch/riscv/Kconfig.erratas                  |  34 ++++--
+ arch/riscv/Kconfig.socs                     |   1 -
+ arch/riscv/Makefile                         |   2 +-
+ arch/riscv/errata/Makefile                  |   2 +-
+ arch/riscv/errata/alternative.c             |  75 ------------
+ arch/riscv/errata/sifive/errata.c           |  20 ++-
+ arch/riscv/errata/thead/Makefile            |  11 ++
+ arch/riscv/errata/thead/errata.c            |  82 +++++++++++++
+ arch/riscv/include/asm/alternative-macros.h | 129 +++++++++++++++-----
+ arch/riscv/include/asm/alternative.h        |  25 +++-
+ arch/riscv/include/asm/errata_list.h        |  59 +++++++++
+ arch/riscv/include/asm/fixmap.h             |   2 -
+ arch/riscv/include/asm/hwcap.h              |   1 +
+ arch/riscv/include/asm/pgtable-32.h         |  17 +++
+ arch/riscv/include/asm/pgtable-64.h         |  79 +++++++++++-
+ arch/riscv/include/asm/pgtable-bits.h       |  10 --
+ arch/riscv/include/asm/pgtable.h            |  55 +++++++--
+ arch/riscv/include/asm/vendorid_list.h      |   1 +
+ arch/riscv/kernel/Makefile                  |  15 +++
+ arch/riscv/kernel/alternative.c             | 118 ++++++++++++++++++
+ arch/riscv/kernel/cpu.c                     |   1 +
+ arch/riscv/kernel/cpufeature.c              |  80 +++++++++++-
+ arch/riscv/kernel/module.c                  |  29 +++++
+ arch/riscv/kernel/setup.c                   |   2 +
+ arch/riscv/kernel/smpboot.c                 |   4 -
+ arch/riscv/kernel/traps.c                   |   2 +-
+ arch/riscv/mm/init.c                        |   1 +
+ 28 files changed, 724 insertions(+), 161 deletions(-)
+ delete mode 100644 arch/riscv/errata/alternative.c
+ create mode 100644 arch/riscv/errata/thead/Makefile
+ create mode 100644 arch/riscv/errata/thead/errata.c
+ create mode 100644 arch/riscv/kernel/alternative.c
+
 -- 
 2.35.1
 
