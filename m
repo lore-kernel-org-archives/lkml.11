@@ -2,85 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C42C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 07:27:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23E78C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 07:27:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242931AbiEKH1O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 03:27:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51406 "EHLO
+        id S242960AbiEKH11 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 03:27:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241426AbiEKH1C (ORCPT
+        with ESMTP id S242940AbiEKH1O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 03:27:02 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D7733BBC1
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 00:27:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=WqQvvzTawsUra3llaTMtecCGxHMoJa0AaVmr+uqshgk=; b=rXYulYiOCSxQOkz21USvuZ8PMZ
-        TFMOCQktj/apPUevOQxpan2cX+AhwEDOr7WXdUVoA21F/MINzQLqplcr3DnEtIkCuBFQzIYGlVpcz
-        iwTSzsGhevzamCUouHqSkWI3AzTOR7KDHHraSFvv9iCDUougczpM5iSCjchEwHWyrEx8seEsjAFp8
-        I0Q2NoC2U43NCqaZFejkQApFweQvaB9ecj+xvMJMinXynwM/qFm1Xl0IRWUgf+OLAUoz4Phf3g5fo
-        URRiGJ+HUn/aRnclAPxEz8gn39NHtp0w1CftST7ng5oE4E/lV+ya7UHoIaI3XcAW0iJTYXP22RTgA
-        LdIbpmEg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nogkG-005ENO-GQ; Wed, 11 May 2022 07:26:52 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 0CFF0980E3A; Wed, 11 May 2022 09:26:52 +0200 (CEST)
-Date:   Wed, 11 May 2022 09:26:51 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>, x86@kernel.org,
-        Andrey Ryabinin <aryabinin@virtuozzo.com>,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "H . J . Lu" <hjl.tools@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFCv2 09/10] x86/mm: Add userspace API to enable Linear Address
- Masking
-Message-ID: <20220511072651.GV76023@worktop.programming.kicks-ass.net>
-References: <20220511022751.65540-1-kirill.shutemov@linux.intel.com>
- <20220511022751.65540-11-kirill.shutemov@linux.intel.com>
+        Wed, 11 May 2022 03:27:14 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EB783CA5A
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 00:27:12 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id cq17-20020a17090af99100b001dc0386cd8fso1287779pjb.5
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 00:27:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=EK03M+puSu84y4LA2tpR63LGf6pYpcixQrSXDU5WY9M=;
+        b=XAqq6Vy677zzwsOLR9heaBfHSiYJe2gOzNQQ8+f8Jzs3ePCqpPjy3DXDNGUg/D3E+y
+         8AkX4EnxmxrMT9D5Rb9TTqaNrb97ZTLl+4pDgOvrYEes8fqaLI7LjIUdjnFXMOHuXRGJ
+         d8ANWQyWBnbZk7uEGOZnIVHP+/yqwIfFwIvS7vtm0lbGNPWgYb/uaOj1EIPWi3cTEmrc
+         0B5BQs6Ky91uwVf81cfPp6wSXFCzUUBxbnt/4mfG2z519sABIlo04X2OA3iXGchmCANl
+         T7FDPM1OazmIwU3GBHv2pRV7EowhxsW7ybaneHES2aGhu69zuZR3KWVzNhPDVXKU294z
+         Bgdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=EK03M+puSu84y4LA2tpR63LGf6pYpcixQrSXDU5WY9M=;
+        b=pSQQb/og9xo4UD09oDUB7pHSUt940iSjjrrNsJFqjT9/W+Jcy2A3UdGLS7Tw0n577O
+         /j4iz+6h1dIrz7RH6LaFAsOHnG2C2OEC93EMnmi9twkrX9cFJv25ETSwlCUrjjvvcR2l
+         swqkHjKIL+9lFbhdP7dFOpfN2srmeVbgkbeZVR+JkrYGVbC54AEMhtadRM4fRfuuRyLK
+         8zZgtP9hlSWnJol/CPQPEU9NvGsYPreBekVnVAl16MsOayTHZNCZuYPSkBujUa/gubeq
+         hivFD84hsHA6KQkdjwcr+65uue0408iM2omhz6SiehXArai/soWbrG05vgI44wgkRGaI
+         wt/g==
+X-Gm-Message-State: AOAM5319AXJc7YdXitYLrSBBTFtL6q0WF9BWGDWkVEgrWYMgng+dFr2r
+        oGqubkZdeieXVBNA++RjiE/P4hnBSJw=
+X-Google-Smtp-Source: ABdhPJy+S8UjM/NrSA0lu4NnbybJQGh/8pHGRrtf0KqkDZcoHERomd3uPoA8dO0uqFfyRkozbrPpcw==
+X-Received: by 2002:a17:902:d58b:b0:15f:16f9:abe4 with SMTP id k11-20020a170902d58b00b0015f16f9abe4mr11352905plh.83.1652254031691;
+        Wed, 11 May 2022 00:27:11 -0700 (PDT)
+Received: from localhost ([47.251.4.198])
+        by smtp.gmail.com with ESMTPSA id r13-20020a170902ea4d00b0015e8d4eb1e5sm962306plg.47.2022.05.11.00.27.10
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 11 May 2022 00:27:11 -0700 (PDT)
+From:   Lai Jiangshan <jiangshanlai@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>
+Subject: [PATCH 2/7] x86/entry: Move PTI_USER_* to arch/x86/include/asm/processor-flags.h
+Date:   Wed, 11 May 2022 15:27:42 +0800
+Message-Id: <20220511072747.3960-3-jiangshanlai@gmail.com>
+X-Mailer: git-send-email 2.19.1.6.gb485710b
+In-Reply-To: <20220511072747.3960-1-jiangshanlai@gmail.com>
+References: <20220511072747.3960-1-jiangshanlai@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220511022751.65540-11-kirill.shutemov@linux.intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 05:27:50AM +0300, Kirill A. Shutemov wrote:
-> @@ -1013,8 +1017,23 @@ static long thread_feature_prctl(struct task_struct *task, int option,
->  
->  	/* Handle ARCH_THREAD_FEATURE_ENABLE */
->  
-> +	if (features & (X86_THREAD_LAM_U48 | X86_THREAD_LAM_U57)) {
-> +		long ret;
-> +
-> +		/* LAM is only available in long mode */
-> +		if (in_32bit_syscall())
-> +			return -EINVAL;
+From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-So what happens if userspace sets up a 32bit code entry in the LDT and
-does the LAM thing as a 64bit syscamm but then goes run 32bit code?
+These constants will be also used in C file.
 
-> +
-> +		ret = enable_lam(task, features);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
->  	task->thread.features |= features;
->  out:
-> +	/* Update CR3 to get LAM active */
-> +	switch_mm(task->mm, task->mm, task);
-> +
->  	return task->thread.features;
->  }
->  
+Move them to arch/x86/include/asm/processor-flags.h which already has
+a kin X86_CR3_PTI_PCID_USER_BIT defined in it.
+
+Remove PTI_PGTABLE_SWITCH_BIT and replace it with PTI_USER_PGTABLE_BIT
+since they are the same in meaning and value.
+
+Remove kernel_to_user_p4dp() and user_to_kernel_p4dp() since they
+are using the removed PTI_PGTABLE_SWITCH_BIT and they have no caller.
+
+Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+---
+ arch/x86/entry/calling.h               | 10 ----------
+ arch/x86/include/asm/pgtable.h         | 23 +++--------------------
+ arch/x86/include/asm/processor-flags.h | 15 +++++++++++++++
+ 3 files changed, 18 insertions(+), 30 deletions(-)
+
+diff --git a/arch/x86/entry/calling.h b/arch/x86/entry/calling.h
+index a97cc78ecb92..f0f60810aee7 100644
+--- a/arch/x86/entry/calling.h
++++ b/arch/x86/entry/calling.h
+@@ -142,16 +142,6 @@ For 32-bit we have the following conventions - kernel is built with
+ 
+ #ifdef CONFIG_PAGE_TABLE_ISOLATION
+ 
+-/*
+- * PAGE_TABLE_ISOLATION PGDs are 8k.  Flip bit 12 to switch between the two
+- * halves:
+- */
+-#define PTI_USER_PGTABLE_BIT		PAGE_SHIFT
+-#define PTI_USER_PGTABLE_MASK		(1 << PTI_USER_PGTABLE_BIT)
+-#define PTI_USER_PCID_BIT		X86_CR3_PTI_PCID_USER_BIT
+-#define PTI_USER_PCID_MASK		(1 << PTI_USER_PCID_BIT)
+-#define PTI_USER_PGTABLE_AND_PCID_MASK  (PTI_USER_PCID_MASK | PTI_USER_PGTABLE_MASK)
+-
+ .macro SET_NOFLUSH_BIT	reg:req
+ 	bts	$X86_CR3_PCID_NOFLUSH_BIT, \reg
+ .endm
+diff --git a/arch/x86/include/asm/pgtable.h b/arch/x86/include/asm/pgtable.h
+index 62ab07e24aef..19095f7a0840 100644
+--- a/arch/x86/include/asm/pgtable.h
++++ b/arch/x86/include/asm/pgtable.h
+@@ -5,6 +5,7 @@
+ #include <linux/mem_encrypt.h>
+ #include <asm/page.h>
+ #include <asm/pgtable_types.h>
++#include <asm/processor-flags.h>
+ 
+ /*
+  * Macro to mark a page protection value as UC-
+@@ -1191,14 +1192,6 @@ static inline bool pgdp_maps_userspace(void *__ptr)
+ static inline int pgd_large(pgd_t pgd) { return 0; }
+ 
+ #ifdef CONFIG_PAGE_TABLE_ISOLATION
+-/*
+- * All top-level PAGE_TABLE_ISOLATION page tables are order-1 pages
+- * (8k-aligned and 8k in size).  The kernel one is at the beginning 4k and
+- * the user one is in the last 4k.  To switch between them, you
+- * just need to flip the 12th bit in their addresses.
+- */
+-#define PTI_PGTABLE_SWITCH_BIT	PAGE_SHIFT
+-
+ /*
+  * This generates better code than the inline assembly in
+  * __set_bit().
+@@ -1220,22 +1213,12 @@ static inline void *ptr_clear_bit(void *ptr, int bit)
+ 
+ static inline pgd_t *kernel_to_user_pgdp(pgd_t *pgdp)
+ {
+-	return ptr_set_bit(pgdp, PTI_PGTABLE_SWITCH_BIT);
++	return ptr_set_bit(pgdp, PTI_USER_PGTABLE_BIT);
+ }
+ 
+ static inline pgd_t *user_to_kernel_pgdp(pgd_t *pgdp)
+ {
+-	return ptr_clear_bit(pgdp, PTI_PGTABLE_SWITCH_BIT);
+-}
+-
+-static inline p4d_t *kernel_to_user_p4dp(p4d_t *p4dp)
+-{
+-	return ptr_set_bit(p4dp, PTI_PGTABLE_SWITCH_BIT);
+-}
+-
+-static inline p4d_t *user_to_kernel_p4dp(p4d_t *p4dp)
+-{
+-	return ptr_clear_bit(p4dp, PTI_PGTABLE_SWITCH_BIT);
++	return ptr_clear_bit(pgdp, PTI_USER_PGTABLE_BIT);
+ }
+ #endif /* CONFIG_PAGE_TABLE_ISOLATION */
+ 
+diff --git a/arch/x86/include/asm/processor-flags.h b/arch/x86/include/asm/processor-flags.h
+index 02c2cbda4a74..4dd2fbbc861a 100644
+--- a/arch/x86/include/asm/processor-flags.h
++++ b/arch/x86/include/asm/processor-flags.h
+@@ -4,6 +4,7 @@
+ 
+ #include <uapi/asm/processor-flags.h>
+ #include <linux/mem_encrypt.h>
++#include <asm/page_types.h>
+ 
+ #ifdef CONFIG_VM86
+ #define X86_VM_MASK	X86_EFLAGS_VM
+@@ -50,7 +51,21 @@
+ #endif
+ 
+ #ifdef CONFIG_PAGE_TABLE_ISOLATION
++
+ # define X86_CR3_PTI_PCID_USER_BIT	11
++
++#ifdef CONFIG_X86_64
++/*
++ * PAGE_TABLE_ISOLATION PGDs are 8k.  Flip bit 12 to switch between the two
++ * halves:
++ */
++#define PTI_USER_PGTABLE_BIT		PAGE_SHIFT
++#define PTI_USER_PGTABLE_MASK		(1 << PTI_USER_PGTABLE_BIT)
++#define PTI_USER_PCID_BIT		X86_CR3_PTI_PCID_USER_BIT
++#define PTI_USER_PCID_MASK		(1 << PTI_USER_PCID_BIT)
++#define PTI_USER_PGTABLE_AND_PCID_MASK  (PTI_USER_PCID_MASK | PTI_USER_PGTABLE_MASK)
++#endif
++
+ #endif
+ 
+ #endif /* _ASM_X86_PROCESSOR_FLAGS_H */
+-- 
+2.19.1.6.gb485710b
+
