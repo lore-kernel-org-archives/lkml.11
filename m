@@ -2,122 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63719C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 13:55:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03507C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 13:56:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243982AbiEKNzl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 09:55:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34294 "EHLO
+        id S244370AbiEKN44 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 09:56:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244224AbiEKNza (ORCPT
+        with ESMTP id S244345AbiEKN4t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 09:55:30 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD35934B95
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 06:55:27 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nomoF-0004ZM-Uv; Wed, 11 May 2022 15:55:23 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id AFAD17BD65;
-        Wed, 11 May 2022 13:55:22 +0000 (UTC)
-Date:   Wed, 11 May 2022 15:55:22 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Oliver Hartkopp <socketcan@hartkopp.net>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Devid Antonio Filoni <devid.filoni@egluetechnologies.com>,
-        kernel@pengutronix.de, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        David Jander <david@protonic.nl>
-Subject: Re: [PATCH 1/1] can: skb: add and set local_origin flag
-Message-ID: <20220511135522.2qvhtokb4j5qvr3j@pengutronix.de>
-References: <20220511121913.2696181-1-o.rempel@pengutronix.de>
- <b631b022-72d5-9160-fd13-f33c80dbbe59@hartkopp.net>
- <20220511130540.yowjdvzftq2jutiw@pengutronix.de>
- <6f541d66-f52e-13e0-bfe9-91918af11503@hartkopp.net>
+        Wed, 11 May 2022 09:56:49 -0400
+Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com [209.85.210.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 760473B3C3;
+        Wed, 11 May 2022 06:56:48 -0700 (PDT)
+Received: by mail-ot1-f43.google.com with SMTP id i25-20020a9d6259000000b00605df9afea7so501155otk.1;
+        Wed, 11 May 2022 06:56:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FmFrvxE6312OeOvyzkNliAzUqs60yDfGcYWJC7EnaQw=;
+        b=xCnckxXYGjkINDJa8eQzw4mJkX8nW0kKoGiZhT/NGjbTQn4aD6OE5T9bO7eRYYjuIY
+         0oLqcTn+D1FJ/zdAyjXAxKhXvulfGcxilTLOH0/VVasbwEO4e598Un5qOCy6wSboAIdd
+         TjT0cwlncf8RgncN4XuKe2mZJH2t+1VshBGDQG+WY8tledPPTVEGWEv3t0Hn7111VSCr
+         CjuibE/9m0Ksh4rYxj5UN5EBmj9dtcT0QpgUQsykH8MhllcimakKy5bDAzrHf5j5ioRe
+         DuBBKTNk36xHn6YGF6dPGtFo/MN3rUCRFQn5HjwaiT3UoovKKJa++FLU0iL4m7KbuewP
+         WafA==
+X-Gm-Message-State: AOAM531LMrpaS/sAtMPXbTjcC3LHwmy2ABzU7F/RjM5EQDC8NVdX5t8I
+        fbabu8+GkRklRjy0G/vGO9iCm9eegg==
+X-Google-Smtp-Source: ABdhPJwj+o0HkYjvdeMLQ8/kpoKCvhaXE7BYvxIFSHwmVpC7e1YGvstoLqaZOtoHLCf62AdfOBaMuw==
+X-Received: by 2002:a9d:6853:0:b0:606:aa1e:1181 with SMTP id c19-20020a9d6853000000b00606aa1e1181mr3594176oto.192.1652277407566;
+        Wed, 11 May 2022 06:56:47 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id w11-20020a4aaf0b000000b0035eb4e5a6c0sm973530oon.22.2022.05.11.06.56.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 May 2022 06:56:47 -0700 (PDT)
+Received: (nullmailer pid 212975 invoked by uid 1000);
+        Wed, 11 May 2022 13:56:46 -0000
+Date:   Wed, 11 May 2022 08:56:46 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+Cc:     linux-iio@vger.kernel.org, lars@metafoo.de,
+        andy.shevchenko@gmail.com, tomas.melin@vaisala.com,
+        linux-kernel@vger.kernel.org, robh+dt@kernel.org, jic23@kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH V4 1/5] dt-bindings: iio: accel: sca3300: Document
+ murata,scl3300
+Message-ID: <20220511135646.GA212868-robh@kernel.org>
+References: <20220509064928.2352796-1-Qing-wu.Li@leica-geosystems.com.cn>
+ <20220509064928.2352796-2-Qing-wu.Li@leica-geosystems.com.cn>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="khciasqr7ullk2e4"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <6f541d66-f52e-13e0-bfe9-91918af11503@hartkopp.net>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+In-Reply-To: <20220509064928.2352796-2-Qing-wu.Li@leica-geosystems.com.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, 09 May 2022 06:49:24 +0000, LI Qingwu wrote:
+> Add DT bindings for Murata scl3300 inclinometer.
+> 
+> Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+> ---
+>  Documentation/devicetree/bindings/iio/accel/murata,sca3300.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
---khciasqr7ullk2e4
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On 11.05.2022 15:24:00, Oliver Hartkopp wrote:
-> > Another use where skb->sk breaks is sending CAN frames with SO_TXTIME
-> > with the sched_etf.
-> >=20
-> > I have a patched version of cangen that uses SO_TXTIME. It attaches a
-> > time to transmit to a CAN frame when sending it. If you send 10 frames,
-> > each 100ms after the other and then exit the program, the first CAN
-> > frames show up as TX'ed while the others (after closing the socket) show
-> > up as RX'ed CAN frames in candump.
->=20
-> Hm, this could be an argument for the origin flag.
->=20
-> But I'm more scared about your described behaviour. What happens if
-> the socket is still open?
+Please add Acked-by/Reviewed-by tags when posting new versions. However,
+there's no need to repost patches *only* to add the tags. The upstream
+maintainer will do that for acks received on the version they apply.
 
-SO_TXTIME makes an existing race window really, really, really wide.
+If a tag was not added on purpose, please state why and what changed.
 
-The race window is between sendmsg() returning to user space and
-can_put_echo_skb() -> can_create_echo_skb() -> can_skb_set_owner(). In
-can_skb_set_owner() a reference to the socket is taken, if the socket is
-not closed:
-
-| https://elixir.bootlin.com/linux/v5.17.6/source/include/linux/can/skb.h#L=
-75
-
-If the socket closes _after_ sendmsg(), but _before_ the driver calls
-can_put_echo_skb() the CAN frame will have no socket reference and show
-up as RX'ed.
-
-> There obviously must be some instance removing the sk reference, right??
-
-No. That's all fine. We fixes that in:
-
-| https://lore.kernel.org/all/20210226092456.27126-1-o.rempel@pengutronix.d=
-e/
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---khciasqr7ullk2e4
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmJ7wEcACgkQrX5LkNig
-0105rAf/QPg7zb8QkTDLqj1iZbifsl8tCH6+c1va4al8KU+2e3N/+c+3RnUDWMdv
-ZoQuH7xMhwp2EbWkz7dWtuJa3TCwUk6YdLrBeQrUM5hHJP9KPR9tSolTgdBQTNaS
-U54XE/8kTB+aeMqVwuUlql0GhoRbEPTXPeLEdM1R7cHDhgM0y/O++na6w+DkeFgD
-WwJvKuCjCdpL+spbYr1hhk87BC66ScPkLu0amIlfyRalf2sPFXxfWQ0VjVTbKjeO
-4ltvGceoZi+SIXIgTHiys5rXcjlQTr++CnUf2/6LWyYwgZJeBCeIznn15VEDEoqB
-Ha4GZtxGwjAOpMAsevwZDsOt/27uwQ==
-=PeBy
------END PGP SIGNATURE-----
-
---khciasqr7ullk2e4--
