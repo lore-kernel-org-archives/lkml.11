@@ -2,92 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 169AAC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 07:29:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F2A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 07:31:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238926AbiEKH3J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 03:29:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60990 "EHLO
+        id S236208AbiEKHbp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 03:31:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237592AbiEKH3G (ORCPT
+        with ESMTP id S234832AbiEKHbg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 03:29:06 -0400
-X-Greylist: delayed 64 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 11 May 2022 00:29:04 PDT
-Received: from esa2.hc1455-7.c3s2.iphmx.com (esa2.hc1455-7.c3s2.iphmx.com [207.54.90.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8B9F1DEC49
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 00:29:03 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="72307277"
-X-IronPort-AV: E=Sophos;i="5.91,216,1647270000"; 
-   d="scan'208";a="72307277"
-Received: from unknown (HELO oym-r3.gw.nic.fujitsu.com) ([210.162.30.91])
-  by esa2.hc1455-7.c3s2.iphmx.com with ESMTP; 11 May 2022 16:27:59 +0900
-Received: from oym-m2.gw.nic.fujitsu.com (oym-nat-oym-m2.gw.nic.fujitsu.com [192.168.87.59])
-        by oym-r3.gw.nic.fujitsu.com (Postfix) with ESMTP id F2B8CD646B
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 16:27:57 +0900 (JST)
-Received: from m3002.s.css.fujitsu.com (msm3.b.css.fujitsu.com [10.128.233.104])
-        by oym-m2.gw.nic.fujitsu.com (Postfix) with ESMTP id 43885BDC5F
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 16:27:57 +0900 (JST)
-Received: from localhost.localdomain (unknown [10.125.5.220])
-        by m3002.s.css.fujitsu.com (Postfix) with ESMTP id ECF07200B31F;
-        Wed, 11 May 2022 16:27:56 +0900 (JST)
-From:   Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>
-To:     linmiaohe@huawei.com
-Cc:     akpm@linux-foundation.org, aquini@redhat.com, ddutile@redhat.com,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        mgorman@techsingularity.net, vvghjk1234@gmail.com,
-        yamamoto.rei@jp.fujitsu.com
-Subject: Re: [PATCH] mm, compaction: fast_find_migrateblock() should return pfn in the target zone
-Date:   Wed, 11 May 2022 16:07:10 +0900
-Message-Id: <20220511070710.5576-1-yamamoto.rei@jp.fujitsu.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <2c2900eb-886a-5bbe-f7c7-9d74a6399893@huawei.com>
-References: <2c2900eb-886a-5bbe-f7c7-9d74a6399893@huawei.com>
+        Wed, 11 May 2022 03:31:36 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2AD96543D;
+        Wed, 11 May 2022 00:31:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652254295; x=1683790295;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=TzmIUvS+MtG9JtLBVwtHktGy8iBnVLxd6nF8f6yLGKQ=;
+  b=XJ3vsOgspazxtyGGnKyHhqQsBKXYqMnA4CYEFnXfCBHXTfF0dT6mIe9Y
+   sAuELM8LuukLWyG+0bESq/Knh9R0gX4PV2UsLs0rIMzaa+V/OzDvjKQRw
+   VO5uVtsCgwmAUw6I1iC1AbiLNqYevoqeDq8pudfvq5reu5o2j7AGNMigP
+   sWpWG8RGE/6pLaw1A6Q8oKqFOWpY2k+fz0GJ1zSzI9sAHMDjPbYw4u/0c
+   xfeAG58ZsxEkR7Ir+tYLPmnl3HPTNDWzdZ6urYyqMQLXoh55zJEUj3ULM
+   Cchd7qdy4NFrvkp1nzVwFlyCgnvXlkY3sx00uIyeWe9oHjpBHiPV1Lka8
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="356041187"
+X-IronPort-AV: E=Sophos;i="5.91,216,1647327600"; 
+   d="scan'208";a="356041187"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 00:31:34 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,216,1647327600"; 
+   d="scan'208";a="520405839"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 11 May 2022 00:31:32 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nogom-000IqI-8Y;
+        Wed, 11 May 2022 07:31:32 +0000
+Date:   Wed, 11 May 2022 15:31:22 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Kees Cook <keescook@chromium.org>,
+        Alexander Popov <alex.popov@linux.com>
+Cc:     kbuild-all@lists.01.org, Kees Cook <keescook@chromium.org>,
+        linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] gcc-plugins: Change all version strings match kernel
+Message-ID: <202205111547.BDAL0Z0h-lkp@intel.com>
+References: <20220510235412.3627034-1-keescook@chromium.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220510235412.3627034-1-keescook@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 11 May 2022 14:25:34 Miaohe Lin wrote:
-> On 2022/5/11 12:43, Rei Yamamoto wrote:
->> Prevent returning a pfn outside the target zone in case that not
->> aligned with pageblock boundary.
->> Otherwise isolate_migratepages_block() would handle pages not in
->> the target zone.
->> 
->
-> IIUC, the sole caller isolate_migratepages will ensure the pfn won't outside
-> the target zone. So the below code change might not be necessary. Or am I miss
-> something ?
+Hi Kees,
 
-While block_start_pfn is ensured, this variable is not used as the argument for 
-isolate_migratepages_block():
-  -----
-  static isolate_migrate_t isolate_migratepages(struct compact_control *cc)
-  {
-  :
-          low_pfn = fast_find_migrateblock(cc);
-          block_start_pfn = pageblock_start_pfn(low_pfn);
-          if (block_start_pfn < cc->zone->zone_start_pfn)
-                  block_start_pfn = cc->zone->zone_start_pfn;  <--- block_start_pfn is ensured not outside 
-                                                                    the target zone
-  :
-          block_end_pfn = pageblock_end_pfn(low_pfn);
-  :
-          for (; block_end_pfn <= cc->free_pfn;
-                          fast_find_block = false,
-                          cc->migrate_pfn = low_pfn = block_end_pfn,
-                          block_start_pfn = block_end_pfn,
-                          block_end_pfn += pageblock_nr_pages) {
-  :
-                  if (isolate_migratepages_block(cc, low_pfn, block_end_pfn,  <--- low_pfn is passed as 
-                                                                                   the argument
-                                                  isolate_mode))
-                          return ISOLATE_ABORT;
-  -----
+I love your patch! Yet something to improve:
 
-So, the low_pfn passed to isolate_migratepages_block() can be outside the target zone.
+[auto build test ERROR on kees/for-next/pstore]
+[also build test ERROR on linux/master linus/master v5.18-rc6 next-20220510]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Thanks,
-Rei
+url:    https://github.com/intel-lab-lkp/linux/commits/Kees-Cook/gcc-plugins-Change-all-version-strings-match-kernel/20220511-075434
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/pstore
+config: i386-randconfig-m021-20220509 (https://download.01.org/0day-ci/archive/20220511/202205111547.BDAL0Z0h-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/020fffc667a0f0414fc7f807e6a5f565444eb5e4
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Kees-Cook/gcc-plugins-Change-all-version-strings-match-kernel/20220511-075434
+        git checkout 020fffc667a0f0414fc7f807e6a5f565444eb5e4
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=i386 prepare
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> <command-line>: fatal error: ./include/generated/utsrelease.h: No such file or directory
+   compilation terminated.
+   make[3]: *** [scripts/gcc-plugins/Makefile:49: scripts/gcc-plugins/latent_entropy_plugin.so] Error 1
+>> <command-line>: fatal error: ./include/generated/utsrelease.h: No such file or directory
+   compilation terminated.
+   make[3]: *** [scripts/gcc-plugins/Makefile:49: scripts/gcc-plugins/structleak_plugin.so] Error 1
+   make[3]: Target '__build' not remade because of errors.
+   make[2]: *** [scripts/Makefile.build:550: scripts/gcc-plugins] Error 2
+   make[2]: Target '__build' not remade because of errors.
+   make[1]: *** [Makefile:1175: scripts] Error 2
+   make[1]: Target 'prepare' not remade because of errors.
+   make: *** [Makefile:219: __sub-make] Error 2
+   make: Target 'prepare' not remade because of errors.
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
