@@ -2,200 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4918BC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 00:05:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99738C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 00:06:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239096AbiEKAFF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 20:05:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47932 "EHLO
+        id S239105AbiEKAGd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 20:06:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231839AbiEKAFA (ORCPT
+        with ESMTP id S239291AbiEKAGJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 20:05:00 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 433D1248E3A
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 17:04:59 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id q18so260107pln.12
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 17:04:59 -0700 (PDT)
+        Tue, 10 May 2022 20:06:09 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA2DD39692
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 17:06:06 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id v11so530321pff.6
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 17:06:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZchoqzQKbQQ0HkN8pkgXJH0p5sZcEYr4VEaC4c3fZv0=;
-        b=Tm4Ct/yLf05DymgN6mV0U11Xeko5sOECiRgXCosO/olG5NK32Q/dzN+FXG3OMMYauZ
-         7+Irsp9mnIlzsxodeL14fWjKfV8MdCVM++HPh+a9HMHBEAOAKBCe723qvaq8RN9ZLe66
-         kX6gg57f7qsbux6WOtEvbFTvd9cwXIVQdYUfE=
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=QoRYyZFYqOCYeEPoaKoS4IMRtm0mxY9WhxzlW1K9FLc=;
+        b=VkYVMjzV+TPFdj749OMz9tAsMC9F7OhhKUI0/CMtRoMYSVPKVul3/+ISEV21Mt5BCC
+         pwC+DUHIKQ27hcE7kQQpzRU+wGjn4TURxgbNXhRNzncYnXPesuBtmAKnpeCv0fGPTxS7
+         lAtWhW4FzNw86082+A8zazgWG+eB6EW5FMlhXFzbBqwntYtE8uSpHqCu4FJV4ykEJzDx
+         iQid2t3QiuflehZ084uHNE9gelqudoj59Et/hWywVm2B9IPCd6Pxp2RhvhtA5AKUAyjB
+         ycqjppbk9los2XHgpwkhET4QfUR4Qg3w/Em6LJ/msZWqjJnAJxD3xuXWa74VjjDhqrGE
+         42bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=ZchoqzQKbQQ0HkN8pkgXJH0p5sZcEYr4VEaC4c3fZv0=;
-        b=UA1B06At/GXRSIAHUOU6TennAV3ER9CG+R8JPBRvj4mYoAPXKFDPnqkmyVa3vGCjQk
-         r6GB2rNL25C39vmYK6fZ5Ts11IzPI2/5TCjMh1pwDPLI2tnFj1rMa6MorSgOtLvPu4BB
-         lh+KjjRVQFvYRnaiev1y+0DyI6L0YaPDDjKVCUw+Z9/20QM+SMCX01VS9/M7l2MGsXo5
-         u5LceT5sACZFKstAfTa2yCgN5wE7lSYhLeHHEg9g3yOUtSkyDrpEFDu9KskBM6dXcjgk
-         QuO3hxV71cPoqPlUo9gVByeHYshQZayYzSQDq8vCcAypg19XGmo5QlL/319Z4RBjKkjw
-         dmCg==
-X-Gm-Message-State: AOAM5319JwnSsL7TSz+L/VyW5sC2DHk/UP+5QjCRwNIQePmwcP4dYAXu
-        z1sqU0Z9GX4N7FB356WoR2dTzQ==
-X-Google-Smtp-Source: ABdhPJzYKPRjsS265QVn9SJMMbFfgmvXxQIW1Nk7jN2bzvqGgd+9VottH0k7ZuOcUwn0zEbmbuhd6Q==
-X-Received: by 2002:a17:90b:1b0d:b0:1dc:672e:c8c2 with SMTP id nu13-20020a17090b1b0d00b001dc672ec8c2mr2413297pjb.96.1652227498758;
-        Tue, 10 May 2022 17:04:58 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id v1-20020aa78081000000b0050dc7628191sm130081pff.107.2022.05.10.17.04.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 17:04:58 -0700 (PDT)
-From:   Kees Cook <keescook@chromium.org>
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Kees Cook <keescook@chromium.org>, linux-hardening@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] gcc-plugins: randstruct: Remove cast exception handling
-Date:   Tue, 10 May 2022 17:04:56 -0700
-Message-Id: <20220511000456.3628751-1-keescook@chromium.org>
-X-Mailer: git-send-email 2.32.0
+        bh=QoRYyZFYqOCYeEPoaKoS4IMRtm0mxY9WhxzlW1K9FLc=;
+        b=cLlc76jtzQMAg4u1C0jfj2mJXEwjhaRPJKOKhHFFdNcO2URHPvm6JSdUceqAayIEBl
+         WV5FKmSHPokKvpBAmcpzwuHW8ZCT1xiyM0BdpRJEqzfT7JH40hje6Pt94JCSRFvra03g
+         LzGKluGX/pip971N+bDgWE6BYEgWwhR8+uGXcshH9Ar1G/brxg7P7Tn73p5nSs6W0fiA
+         aEUYO2e1GJusLcDBvDVbuVvQVZbPhP0TLw+Q6H9tFu7V34LqFlIYobqswsKH3knk/2aG
+         U878fnNLJkQSOytqD5R5/ggCaF3L0BItpbC+vetNapFfv99nNgtdCEzv3Th7zkCPDqTK
+         vLGQ==
+X-Gm-Message-State: AOAM5301XaDaG97JLja3Nzn84dVYrkESUPySPOCx9sXpqwMl6ctole2e
+        Wyju8JNiJJUHX/nF87OlFqUr8Q==
+X-Google-Smtp-Source: ABdhPJymSIxMmHAzXsVLUOe9z+7vsY1KbCrEE3tZ9MEhiemiYYcHvtEYR6p0zSkPWjjgpUUtD3e4ag==
+X-Received: by 2002:a65:6451:0:b0:3c1:cb83:8e4 with SMTP id s17-20020a656451000000b003c1cb8308e4mr18668161pgv.339.1652227566423;
+        Tue, 10 May 2022 17:06:06 -0700 (PDT)
+Received: from [10.255.89.252] ([139.177.225.255])
+        by smtp.gmail.com with ESMTPSA id c14-20020a62f84e000000b0050dc76281e8sm116517pfm.194.2022.05.10.17.06.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 May 2022 17:06:05 -0700 (PDT)
+Message-ID: <21bb1776-6ee9-c32d-0049-cd52b14fd133@bytedance.com>
+Date:   Wed, 11 May 2022 08:02:11 +0800
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4672; h=from:subject; bh=sxL2eDYL0WKROpn9RSAKksfRkZnvvnEFvCZ/CKvb7mk=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBiev2oabvR4A3+JQQt/oBAOfuC7eY8RMBUyosqzaYa LPbHKf2JAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYnr9qAAKCRCJcvTf3G3AJsxqD/ wNW8LHqJ04IT2OIsBy0JnUcUK59JPeTHe+dz+4Bep+SE4VzFi2arz0x1JRYdv3QZ4scpIyBAg2/of7 WoHnmJG+9DA4gyUz+RWk877MdDAbnpebI0qB/Q9Z7QkONT9FbGaFywqHSG4J2T1A3K+hmoOvSKWAGM cx6+Ka1UYjYlOjBUSj4MCqDW+t2Yz4iOY85nNTHXkbh8WCKgwK7rF02xlki87zH/23uyBeu6On6bQo BimMMSG3fnTy1BBmniUzrKzjA/QGve7buUVaAesDVY1cJRyCMJk7t9uAzsvJ/Izl+jEzFvmYtoarlp naydl6DkGBsgytwU+OlOFNPsqK6kRUWL0uoJfAQDWVu3Vzu82pkMQdc09UyWtiUFQiR/fbVGdTTbW/ p8qj0DnUhUZOoW77d58d90nhjL9UVzbjexj4os/2ifIrukOAV8HRBrbxUCspV6ePXkDZEYbM6E6f6w 9l8emKJHZ3rGA2X+XINHOHc3Dh8+5YS8ydLAPsvbhKicjUD/klxnzoUTA+FMYA6wGS1u+WLfKHrgb6 Tfj4TL92vXCJ4VS0LrYo9z+GN7BjAuCqYSrlZ9vJR+wFr36sOahRUeHK51C+mXeKDvapboK8GCdrkG rww0XJEswFgE7mVFi+fp3ZPkZ8lz9gynh8GH1FKwKwe1rMtstYH8SiUHOwmQ==
-X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: Re: [PATCH 0/3] nvme: enable smart AEN
+Content-Language: en-US
+To:     Sagi Grimberg <sagi@grimberg.me>
+Cc:     axboe@fb.com, linux-nvme@lists.infradead.org, kbusch@kernel.org,
+        hch@lst.de, linux-kernel@vger.kernel.org
+References: <20220507065026.260306-1-pizhenwei@bytedance.com>
+ <3c233d71-af16-d230-c207-b9c2ae38afbb@grimberg.me>
+From:   zhenwei pi <pizhenwei@bytedance.com>
+In-Reply-To: <3c233d71-af16-d230-c207-b9c2ae38afbb@grimberg.me>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With all randstruct exceptions removed, remove all the exception
-handling code. Any future warnings are likely to be shared between
-this plugin and Clang randstruct, and will need to be addressed in a
-more wholistic fashion.
 
-Cc: Christoph Hellwig <hch@infradead.org>
-Cc: linux-hardening@vger.kernel.org
-Signed-off-by: Kees Cook <keescook@chromium.org>
----
-This depends on the other patches that remove the exception entries:
-https://lore.kernel.org/linux-hardening/20220510235817.3627784-1-keescook@chromium.org/
-https://lore.kernel.org/linux-hardening/20220510205729.3574400-1-keescook@chromium.org/
-https://lore.kernel.org/linux-hardening/20220511000109.3628404-1-keescook@chromium.org/
----
- scripts/gcc-plugins/randomize_layout_plugin.c | 79 +------------------
- 1 file changed, 3 insertions(+), 76 deletions(-)
 
-diff --git a/scripts/gcc-plugins/randomize_layout_plugin.c b/scripts/gcc-plugins/randomize_layout_plugin.c
-index 2ca768d88a68..ea2aea570404 100644
---- a/scripts/gcc-plugins/randomize_layout_plugin.c
-+++ b/scripts/gcc-plugins/randomize_layout_plugin.c
-@@ -39,16 +39,6 @@ static struct plugin_info randomize_layout_plugin_info = {
- 			  "performance-mode\tenable cacheline-aware layout randomization\n"
- };
- 
--struct whitelist_entry {
--	const char *pathname;
--	const char *lhs;
--	const char *rhs;
--};
--
--static const struct whitelist_entry whitelist[] = {
--	{ }
--};
--
- /* from old Linux dcache.h */
- static inline unsigned long
- partial_name_hash(unsigned long c, unsigned long prevhash)
-@@ -734,60 +724,6 @@ static void handle_local_var_initializers(void)
- 	}
- }
- 
--static bool type_name_eq(gimple stmt, const_tree type_tree, const char *wanted_name)
--{
--	const char *type_name;
--
--	if (type_tree == NULL_TREE)
--		return false;
--
--	switch (TREE_CODE(type_tree)) {
--	case RECORD_TYPE:
--		type_name = TYPE_NAME_POINTER(type_tree);
--		break;
--	case INTEGER_TYPE:
--		if (TYPE_PRECISION(type_tree) == CHAR_TYPE_SIZE)
--			type_name = "char";
--		else {
--			INFORM(gimple_location(stmt), "found non-char INTEGER_TYPE cast comparison: %qT\n", type_tree);
--			debug_tree(type_tree);
--			return false;
--		}
--		break;
--	case POINTER_TYPE:
--		if (TREE_CODE(TREE_TYPE(type_tree)) == VOID_TYPE) {
--			type_name = "void *";
--			break;
--		} else {
--			INFORM(gimple_location(stmt), "found non-void POINTER_TYPE cast comparison %qT\n", type_tree);
--			debug_tree(type_tree);
--			return false;
--		}
--	default:
--		INFORM(gimple_location(stmt), "unhandled cast comparison: %qT\n", type_tree);
--		debug_tree(type_tree);
--		return false;
--	}
--
--	return strcmp(type_name, wanted_name) == 0;
--}
--
--static bool whitelisted_cast(gimple stmt, const_tree lhs_tree, const_tree rhs_tree)
--{
--	const struct whitelist_entry *entry;
--	expanded_location xloc = expand_location(gimple_location(stmt));
--
--	for (entry = whitelist; entry->pathname; entry++) {
--		if (!strstr(xloc.file, entry->pathname))
--			continue;
--
--		if (type_name_eq(stmt, lhs_tree, entry->lhs) && type_name_eq(stmt, rhs_tree, entry->rhs))
--			return true;
--	}
--
--	return false;
--}
--
- /*
-  * iterate over all statements to find "bad" casts:
-  * those where the address of the start of a structure is cast
-@@ -864,10 +800,7 @@ static unsigned int find_bad_casts_execute(void)
- #ifndef __DEBUG_PLUGIN
- 				if (lookup_attribute("randomize_performed", TYPE_ATTRIBUTES(ptr_lhs_type)))
- #endif
--				{
--					if (!whitelisted_cast(stmt, ptr_lhs_type, ptr_rhs_type))
--						MISMATCH(gimple_location(stmt), "rhs", ptr_lhs_type, ptr_rhs_type);
--				}
-+				MISMATCH(gimple_location(stmt), "rhs", ptr_lhs_type, ptr_rhs_type);
- 				continue;
- 			}
- 
-@@ -890,10 +823,7 @@ static unsigned int find_bad_casts_execute(void)
- #ifndef __DEBUG_PLUGIN
- 				if (lookup_attribute("randomize_performed", TYPE_ATTRIBUTES(op0_type)))
- #endif
--				{
--					if (!whitelisted_cast(stmt, ptr_lhs_type, op0_type))
--						MISMATCH(gimple_location(stmt), "op0", ptr_lhs_type, op0_type);
--				}
-+				MISMATCH(gimple_location(stmt), "op0", ptr_lhs_type, op0_type);
- 			} else {
- 				const_tree ssa_name_var = SSA_NAME_VAR(rhs1);
- 				/* skip bogus type casts introduced by container_of */
-@@ -903,10 +833,7 @@ static unsigned int find_bad_casts_execute(void)
- #ifndef __DEBUG_PLUGIN
- 				if (lookup_attribute("randomize_performed", TYPE_ATTRIBUTES(ptr_rhs_type)))
- #endif
--				{
--					if (!whitelisted_cast(stmt, ptr_lhs_type, ptr_rhs_type))
--						MISMATCH(gimple_location(stmt), "ssa", ptr_lhs_type, ptr_rhs_type);
--				}
-+				MISMATCH(gimple_location(stmt), "ssa", ptr_lhs_type, ptr_rhs_type);
- 			}
- 
- 		}
+On 5/11/22 03:13, Sagi Grimberg wrote:
+> 
+>> Hi,
+>>
+>> There are several changes in this series:
+>> - Add missing NVME_SMART_CRIT_PMR_UNRELIABLE enum type.
+>> - Add missing NVME_AEN_CFG_SMART_CRIT_* enum types.
+>> - Enable smart AEN.
+> 
+> Is there another side to this patchset? meaning some userland agent
+> that listens to these events and does something with these?
+
+I tried to test SMART AEN end to end by QEMU NVMe emulation. I did not 
+realize that the SMART AEN CFG is not optional.
+
+Also sent this to QEMU(Klaus corrected me):
+https://patchwork.kernel.org/project/qemu-devel/cover/20220507072644.263105-1-pizhenwei@bytedance.com/
+
 -- 
-2.32.0
-
+zhenwei pi
