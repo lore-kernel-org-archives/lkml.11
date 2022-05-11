@@ -2,136 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFF8EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 18:36:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8C31C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 18:37:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346369AbiEKSgo (ORCPT
+        id S1346407AbiEKShG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 14:36:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43442 "EHLO
+        Wed, 11 May 2022 14:37:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346370AbiEKSgi (ORCPT
+        with ESMTP id S1346357AbiEKSgz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 14:36:38 -0400
-Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 854C02899C
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 11:36:35 -0700 (PDT)
-Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-e93bbb54f9so3819324fac.12
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 11:36:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=c24hMS7WpiIOCU2zBlghi9w7iiPETthn8Oys+Y9A4/M=;
-        b=RVrvvjyYi6+uwGJshrvP26QBJ/UhS/zOMuVWL2YjmVKpp2xtdtezDiLcExQZmwZHQV
-         ZXtEc4GRUn6P5ti1v/sUPlehQqCSa1c7PaCBjcwcoot1lttaoYfHuQ0Mq3CqGhkymJ90
-         SCyCD0WPdPWIELtR0H+QJL2DPJ7pymcVe76xHh9JC+qcXmNgHxJ9wMSWPk7bWXMwVuae
-         59oQ5eHqpVgBQrUs8LofWYBlVup3QkNrZ2JddkjsgLaxOIoJnC2goUXoHxrj6PUQPQh+
-         7x2fv+8m1lQmE263riUnFnXz30Fwot93EFqfuM1/C0UsRgygFchQMTFpY6UQ48D2emGE
-         vRcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=c24hMS7WpiIOCU2zBlghi9w7iiPETthn8Oys+Y9A4/M=;
-        b=bAOq/gjq0Pq8wr1wLchSfkn76TLwPuJo8ZZRHUkUV4mk/Qm7buHRg5AOVcFP+TmhIh
-         Jd7pVwuu11yoswwLslcPPiSqsTez1mg6sdh6/3R9D6WZuyguTzWBbQhicgMaLlYUrf+u
-         /Guhu0dfMPdaPDWKGA6UbsA46M2SWiTvKss0KCJY8Sbjjs3zWOv+0K8v1iLSabisuBKb
-         PvpDUnqUWstvZ3GDp4UNdeuevuub8g4JrEHd+SXWj/V3hjv83/kQFwz6Sm1Gd/GwCOd9
-         EKRWZOuA6IpDQBrbM6tXp8h/S4Dxgsr/PR0z2q23cvq5VqqxXcCA9luD5XcZbkrG8nlu
-         tmAw==
-X-Gm-Message-State: AOAM5321pK3j9dLnbUl+YBrj1wMLWCZ9NwsPF7l/t2lqLWeeqA3Yu39T
-        ne6SOfYpmdqSTI1E2rNFjEa6wkuX/TnghPiFCHo=
-X-Google-Smtp-Source: ABdhPJxYls/DZkm0AwI7Mcf85JV3K1161l411LCMOeOvx4/neBkQknKQa22bMjyYmKnal6BpYKfScOVBIl1HTjRCRaE=
-X-Received: by 2002:a05:6870:311d:b0:de:9b6c:362b with SMTP id
- v29-20020a056870311d00b000de9b6c362bmr3285781oaa.200.1652294194845; Wed, 11
- May 2022 11:36:34 -0700 (PDT)
+        Wed, 11 May 2022 14:36:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0004D1FCEF;
+        Wed, 11 May 2022 11:36:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1C72B825FA;
+        Wed, 11 May 2022 18:36:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0704AC340EE;
+        Wed, 11 May 2022 18:36:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652294211;
+        bh=9dgk5MMfcSNFnaS9xDsRuvP7ApuSvlKIV/AhUIRrM5M=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=ayL0/cxgvhOeHusF0CD32lm4iAN55yhdjRh8HYDDLCUFllMtno2DQhW+WShYRZSyo
+         NmqdgJNCxmSwJVBMU6iHIFZnLg70bCHID+F7uiNt9wupxI95RcISY7SSBk4L4+p01H
+         KYSbUraQlZQYzuwznmAv24/bT3riF9fRjyzVqHc2aQ+gn6nV9TGJ3sf67WsjSjZW2h
+         YSl0Kvk3DnmvR0TcEkusO1HUzJNICEg9cdx3IM5oBErOZ7JmTpQLT5j89swbubiG0n
+         M6XqBLn0XXewlGbt0xGEGs6mKXpemojhfXr/lZrOtxYpeVQXnCbgDsbNeRFxovFGyE
+         QLkEbNjPqUgmA==
+Date:   Wed, 11 May 2022 13:36:48 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Jeffrey Hugo <quic_jhugo@quicinc.com>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, lorenzo.pieralisi@arm.com,
+        robh@kernel.org, kw@linux.com, bhelgaas@google.com,
+        jakeo@microsoft.com, dazhan@microsoft.com,
+        linux-hyperv@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] PCI: hv: Fix interrupt mapping for multi-MSI
+Message-ID: <20220511183648.GA798565@bhelgaas>
 MIME-Version: 1.0
-References: <20220511181935.810735-1-lyude@redhat.com>
-In-Reply-To: <20220511181935.810735-1-lyude@redhat.com>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Wed, 11 May 2022 14:36:23 -0400
-Message-ID: <CADnq5_OWH-Bat3OyCmHz6hTE++7hPLXqqMgg2=Nk6HB_Qk61JA@mail.gmail.com>
-Subject: Re: [PATCH] drm/amdgpu: Add 'modeset' module parameter
-To:     Lyude Paul <lyude@redhat.com>
-Cc:     amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
-        Solomon Chiu <solomon.chiu@amd.com>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Evan Quan <evan.quan@amd.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1652282599-21643-1-git-send-email-quic_jhugo@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 2:20 PM Lyude Paul <lyude@redhat.com> wrote:
->
-> Many DRM drivers feature a 'modeset' argument, which can be used to
-> enable/disable the entire driver (as opposed to passing nomodeset to the
-> kernel, which would disable modesetting globally and make it difficult to
-> load amdgpu afterwards). Apparently amdgpu is actually missing this
-> however, so let's add it!
+In the subject, "Fix interrupt mapping ..." is too general.  Almost
+all patches "fix" something, so all we learn is that this is something
+to do with multi-MSI.  It's better if you can say something specific,
+like the fact that you now ensure that multi-MSI vectors are aligned
+and consecutive.
 
-You can already do that by passing modprobe.blacklist=amdgpu on the
-kernel command line.  I don't think we need another option to do that.
+On Wed, May 11, 2022 at 09:23:19AM -0600, Jeffrey Hugo wrote:
+> According to Dexuan, the hypervisor folks beleive that multi-msi
+> allocations are not correct.  compose_msi_msg() will allocate multi-msi
+> one by one.  However, multi-msi is a block of related MSIs, with alignment
+> requirements.  In order for the hypervisor to allocate properly aligned
+> and consecutive entries in the IOMMU Interrupt Remapping Table, there
+> should be a single mapping request that requests all of the multi-msi
+> vectors in one shot.
 
+s/beleive/believe/
+s/multi-msi/multi-MSI/ (several, and below, and in code comments)
 
->
-> Keep in mind that this currently just lets one enable or disable amdgpu, I
-> haven't bothered adding a headless mode like nouveau has - however I'm sure
-> someone else can add this if needed.
+But we don't really need the context of "According to Dexuan, the
+hypervisor folks believe ..."  Just describe what this patch does and
+why.  Apparently we previously didn't allocate aligned and consecutive
+MSI vectors, and presumably that broke something.
 
-You can do this as well by passing an IP block mask which disables the
-display IP, or media IP, etc.
-
-Alex
-
->
-> Signed-off-by: Lyude Paul <lyude@redhat.com>
+> Dexuan suggests detecting the multi-msi case and composing a single
+> request related to the first MSI.  Then for the other MSIs in the same
+> block, use the cached information.  This appears to be viable, so do it.
+> 
+> Suggested-by: Dexuan Cui <decui@microsoft.com>
+> Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
+> Reviewed-by: Dexuan Cui <decui@microsoft.com>
+> Tested-by: Michael Kelley <mikelley@microsoft.com>
 > ---
->  drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c | 14 ++++++++++++++
->  1 file changed, 14 insertions(+)
->
-> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-> index ebd37fb19cdb..24e6fb4517cc 100644
-> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-> @@ -872,6 +872,15 @@ MODULE_PARM_DESC(smu_pptable_id,
->         "specify pptable id to be used (-1 = auto(default) value, 0 = use pptable from vbios, > 0 = soft pptable id)");
->  module_param_named(smu_pptable_id, amdgpu_smu_pptable_id, int, 0444);
->
-> +/**
-> + * DOC: modeset (int)
-> + * Used to enable/disable modesetting for amdgpu exclusively.
-> + */
-> +bool amdgpu_enable_modeset = true;
-> +MODULE_PARM_DESC(modeset,
-> +                "Enable or disable display driver (1 = on (default), 0 = off");
-> +module_param_named(modeset, amdgpu_enable_modeset, bool, 0444);
+>  drivers/pci/controller/pci-hyperv.c | 60 ++++++++++++++++++++++++++++++-------
+>  1 file changed, 50 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
+> index 5e2e637..e439b81 100644
+> --- a/drivers/pci/controller/pci-hyperv.c
+> +++ b/drivers/pci/controller/pci-hyperv.c
+> @@ -1525,6 +1525,10 @@ static void hv_int_desc_free(struct hv_pci_dev *hpdev,
+>  		u8 buffer[sizeof(struct pci_delete_interrupt)];
+>  	} ctxt;
+>  
+> +	if (!int_desc->vector_count) {
+> +		kfree(int_desc);
+> +		return;
+> +	}
+>  	memset(&ctxt, 0, sizeof(ctxt));
+>  	int_pkt = (struct pci_delete_interrupt *)&ctxt.pkt.message;
+>  	int_pkt->message_type.type =
+> @@ -1609,12 +1613,12 @@ static void hv_pci_compose_compl(void *context, struct pci_response *resp,
+>  
+>  static u32 hv_compose_msi_req_v1(
+>  	struct pci_create_interrupt *int_pkt, struct cpumask *affinity,
+> -	u32 slot, u8 vector)
+> +	u32 slot, u8 vector, u8 vector_count)
+>  {
+>  	int_pkt->message_type.type = PCI_CREATE_INTERRUPT_MESSAGE;
+>  	int_pkt->wslot.slot = slot;
+>  	int_pkt->int_desc.vector = vector;
+> -	int_pkt->int_desc.vector_count = 1;
+> +	int_pkt->int_desc.vector_count = vector_count;
+>  	int_pkt->int_desc.delivery_mode = DELIVERY_MODE;
+>  
+>  	/*
+> @@ -1637,14 +1641,14 @@ static int hv_compose_msi_req_get_cpu(struct cpumask *affinity)
+>  
+>  static u32 hv_compose_msi_req_v2(
+>  	struct pci_create_interrupt2 *int_pkt, struct cpumask *affinity,
+> -	u32 slot, u8 vector)
+> +	u32 slot, u8 vector, u8 vector_count)
+>  {
+>  	int cpu;
+>  
+>  	int_pkt->message_type.type = PCI_CREATE_INTERRUPT_MESSAGE2;
+>  	int_pkt->wslot.slot = slot;
+>  	int_pkt->int_desc.vector = vector;
+> -	int_pkt->int_desc.vector_count = 1;
+> +	int_pkt->int_desc.vector_count = vector_count;
+>  	int_pkt->int_desc.delivery_mode = DELIVERY_MODE;
+>  	cpu = hv_compose_msi_req_get_cpu(affinity);
+>  	int_pkt->int_desc.processor_array[0] =
+> @@ -1656,7 +1660,7 @@ static u32 hv_compose_msi_req_v2(
+>  
+>  static u32 hv_compose_msi_req_v3(
+>  	struct pci_create_interrupt3 *int_pkt, struct cpumask *affinity,
+> -	u32 slot, u32 vector)
+> +	u32 slot, u32 vector, u8 vector_count)
+>  {
+>  	int cpu;
+>  
+> @@ -1664,7 +1668,7 @@ static u32 hv_compose_msi_req_v3(
+>  	int_pkt->wslot.slot = slot;
+>  	int_pkt->int_desc.vector = vector;
+>  	int_pkt->int_desc.reserved = 0;
+> -	int_pkt->int_desc.vector_count = 1;
+> +	int_pkt->int_desc.vector_count = vector_count;
+>  	int_pkt->int_desc.delivery_mode = DELIVERY_MODE;
+>  	cpu = hv_compose_msi_req_get_cpu(affinity);
+>  	int_pkt->int_desc.processor_array[0] =
+> @@ -1695,6 +1699,8 @@ static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
+>  	struct cpumask *dest;
+>  	struct compose_comp_ctxt comp;
+>  	struct tran_int_desc *int_desc;
+> +	struct msi_desc *msi_desc;
+> +	u8 vector, vector_count;
+>  	struct {
+>  		struct pci_packet pci_pkt;
+>  		union {
+> @@ -1716,7 +1722,8 @@ static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
+>  		return;
+>  	}
+>  
+> -	pdev = msi_desc_to_pci_dev(irq_data_get_msi_desc(data));
+> +	msi_desc  = irq_data_get_msi_desc(data);
+> +	pdev = msi_desc_to_pci_dev(msi_desc);
+>  	dest = irq_data_get_effective_affinity_mask(data);
+>  	pbus = pdev->bus;
+>  	hbus = container_of(pbus->sysdata, struct hv_pcibus_device, sysdata);
+> @@ -1729,6 +1736,36 @@ static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
+>  	if (!int_desc)
+>  		goto drop_reference;
+>  
+> +	if (!msi_desc->pci.msi_attrib.is_msix && msi_desc->nvec_used > 1) {
+> +		/*
+> +		 * If this is not the first MSI of Multi MSI, we already have
+> +		 * a mapping.  Can exit early.
+> +		 */
+> +		if (msi_desc->irq != data->irq) {
+> +			data->chip_data = int_desc;
+> +			int_desc->address = msi_desc->msg.address_lo |
+> +					    (u64)msi_desc->msg.address_hi << 32;
+> +			int_desc->data = msi_desc->msg.data +
+> +					 (data->irq - msi_desc->irq);
+> +			msg->address_hi = msi_desc->msg.address_hi;
+> +			msg->address_lo = msi_desc->msg.address_lo;
+> +			msg->data = int_desc->data;
+> +			put_pcichild(hpdev);
+> +			return;
+> +		}
+> +		/*
+> +		 * The vector we select here is a dummy value.  The correct
+> +		 * value gets sent to the hypervisor in unmask().  This needs
+> +		 * to be aligned with the count, and also not zero.  Multi-msi
+> +		 * is powers of 2 up to 32, so 32 will always work here.
+> +		 */
+> +		vector = 32;
+> +		vector_count = msi_desc->nvec_used;
+> +	} else {
+> +		vector = hv_msi_get_int_vector(data);
+> +		vector_count = 1;
+> +	}
 > +
->  /* These devices are not supported by amdgpu.
->   * They are supported by the mach64, r128, radeon drivers
->   */
-> @@ -2003,6 +2012,11 @@ static int amdgpu_pci_probe(struct pci_dev *pdev,
->         bool is_fw_fb;
->         resource_size_t base, size;
->
-> +       if (!amdgpu_enable_modeset) {
-> +               DRM_INFO("modeset=0 passed to amdgpu, driver will not be enabled\n");
-> +               return -ENODEV;
-> +       }
-> +
->         /* skip devices which are owned by radeon */
->         for (i = 0; i < ARRAY_SIZE(amdgpu_unsupported_pciidlist); i++) {
->                 if (amdgpu_unsupported_pciidlist[i] == pdev->device)
-> --
-> 2.35.1
->
+>  	memset(&ctxt, 0, sizeof(ctxt));
+>  	init_completion(&comp.comp_pkt.host_event);
+>  	ctxt.pci_pkt.completion_func = hv_pci_compose_compl;
+> @@ -1739,7 +1776,8 @@ static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
+>  		size = hv_compose_msi_req_v1(&ctxt.int_pkts.v1,
+>  					dest,
+>  					hpdev->desc.win_slot.slot,
+> -					hv_msi_get_int_vector(data));
+> +					vector,
+> +					vector_count);
+>  		break;
+>  
+>  	case PCI_PROTOCOL_VERSION_1_2:
+> @@ -1747,14 +1785,16 @@ static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
+>  		size = hv_compose_msi_req_v2(&ctxt.int_pkts.v2,
+>  					dest,
+>  					hpdev->desc.win_slot.slot,
+> -					hv_msi_get_int_vector(data));
+> +					vector,
+> +					vector_count);
+>  		break;
+>  
+>  	case PCI_PROTOCOL_VERSION_1_4:
+>  		size = hv_compose_msi_req_v3(&ctxt.int_pkts.v3,
+>  					dest,
+>  					hpdev->desc.win_slot.slot,
+> -					hv_msi_get_int_vector(data));
+> +					vector,
+> +					vector_count);
+>  		break;
+>  
+>  	default:
+> -- 
+> 2.7.4
+> 
