@@ -2,119 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CB18C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 12:19:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A4E0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 12:21:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242410AbiEKMTu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 08:19:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33668 "EHLO
+        id S235313AbiEKMVG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 08:21:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242347AbiEKMTb (ORCPT
+        with ESMTP id S229484AbiEKMVC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 08:19:31 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17BBA73578
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 05:19:27 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nolJH-0000qE-Ql; Wed, 11 May 2022 14:19:19 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nolJI-001gNu-8e; Wed, 11 May 2022 14:19:18 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nolJG-00BJXp-Bi; Wed, 11 May 2022 14:19:18 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Oliver Hartkopp <socketcan@hartkopp.net>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Devid Antonio Filoni <devid.filoni@egluetechnologies.com>,
-        kernel@pengutronix.de, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        David Jander <david@protonic.nl>
-Subject: [PATCH 1/1] can: skb: add and set local_origin flag
-Date:   Wed, 11 May 2022 14:19:13 +0200
-Message-Id: <20220511121913.2696181-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        Wed, 11 May 2022 08:21:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 598FD517EB;
+        Wed, 11 May 2022 05:21:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1B6E7B82346;
+        Wed, 11 May 2022 12:20:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33212C340F2;
+        Wed, 11 May 2022 12:20:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652271657;
+        bh=cUMLjJflIOfZrDUwXHRIoEjaf+o1/RjF/ghlAYMkhz0=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=MCQ+p3dayIVOo8hzCseOeYoDSIPRdyI3MInbx2okCDtw6v2RgdZUQrNxpHuXkx9wL
+         3DY7uhF5P3A6cIP9NAaCAaxbG9QZ9/Yb4f47px5sQMhn+SYaRP0uSupxoB7TLqwUDR
+         EA+/XKbFHvAFJ0j/SkmrrCEYX0gvV/lVMpkN2vbszdVczsDUUCmf1LMnTCqookeuSr
+         HvzeFvoFYUo0cfcNiDA6+Ow9vWy5NMnq9iuAwbsC0lk4fsFATZImePk74VK4c8h9lF
+         aIGLw2EsY00GJRDAkhPFDBn1fMggqer9gGXe+6IxQJ9WQNeUTa2ZI/Sb7bWOeb2Pzt
+         U4l/UcIBMuSlA==
+Date:   Wed, 11 May 2022 14:20:53 +0200 (CEST)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     =?ISO-8859-15?Q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>
+cc:     benjamin.tissoires@redhat.com, spbnick@gmail.com,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stefanberzl@gmail.com, albertofanjul@gmail.com
+Subject: Re: [PATCH for-5.19/uclogic 0/7] DIGImend patches, part VI
+In-Reply-To: <20220508160146.13004-1-jose.exposito89@gmail.com>
+Message-ID: <nycvar.YFH.7.76.2205111420210.28985@cbobk.fhfr.pm>
+References: <20220508160146.13004-1-jose.exposito89@gmail.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add new can_skb_priv::local_origin flag to be able detect egress
-packages even if they was sent directly from kernel and not assigned to
-some socket.
+On Sun, 8 May 2022, José Expósito wrote:
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Cc: Devid Antonio Filoni <devid.filoni@egluetechnologies.com>
----
- drivers/net/can/dev/skb.c | 3 +++
- include/linux/can/skb.h   | 1 +
- net/can/raw.c             | 2 +-
- 3 files changed, 5 insertions(+), 1 deletion(-)
+> Hi everyone,
+> 
+> This series is a follow up to [1], [2], [3], [4] and [5] upstreaming
+> 7 more patches from the DIGImend project.
+> 
+> After 3 months, I'm happy to write that this is the last batch of
+> patches :) Once the patchset is applied, DIGImend and the mainline
+> kernel will have the same code... And I'll finally add support for my
+> tablet. This should also allow Stefan and Alberto to continue with
+> their work.
 
-diff --git a/drivers/net/can/dev/skb.c b/drivers/net/can/dev/skb.c
-index 61660248c69e..3e2357fb387e 100644
---- a/drivers/net/can/dev/skb.c
-+++ b/drivers/net/can/dev/skb.c
-@@ -63,6 +63,7 @@ int can_put_echo_skb(struct sk_buff *skb, struct net_device *dev,
- 
- 		/* save frame_len to reuse it when transmission is completed */
- 		can_skb_prv(skb)->frame_len = frame_len;
-+		can_skb_prv(skb)->local_origin = true;
- 
- 		skb_tx_timestamp(skb);
- 
-@@ -200,6 +201,7 @@ struct sk_buff *alloc_can_skb(struct net_device *dev, struct can_frame **cf)
- 	can_skb_reserve(skb);
- 	can_skb_prv(skb)->ifindex = dev->ifindex;
- 	can_skb_prv(skb)->skbcnt = 0;
-+	can_skb_prv(skb)->local_origin = false;
- 
- 	*cf = skb_put_zero(skb, sizeof(struct can_frame));
- 
-@@ -231,6 +233,7 @@ struct sk_buff *alloc_canfd_skb(struct net_device *dev,
- 	can_skb_reserve(skb);
- 	can_skb_prv(skb)->ifindex = dev->ifindex;
- 	can_skb_prv(skb)->skbcnt = 0;
-+	can_skb_prv(skb)->local_origin = false;
- 
- 	*cfd = skb_put_zero(skb, sizeof(struct canfd_frame));
- 
-diff --git a/include/linux/can/skb.h b/include/linux/can/skb.h
-index fdb22b00674a..1b8a8cf2b13b 100644
---- a/include/linux/can/skb.h
-+++ b/include/linux/can/skb.h
-@@ -52,6 +52,7 @@ struct can_skb_priv {
- 	int ifindex;
- 	int skbcnt;
- 	unsigned int frame_len;
-+	bool local_origin;
- 	struct can_frame cf[];
- };
- 
-diff --git a/net/can/raw.c b/net/can/raw.c
-index b7dbb57557f3..df2d9334b395 100644
---- a/net/can/raw.c
-+++ b/net/can/raw.c
-@@ -173,7 +173,7 @@ static void raw_rcv(struct sk_buff *oskb, void *data)
- 	/* add CAN specific message flags for raw_recvmsg() */
- 	pflags = raw_flags(skb);
- 	*pflags = 0;
--	if (oskb->sk)
-+	if (can_skb_prv(skb)->local_origin)
- 		*pflags |= MSG_DONTROUTE;
- 	if (oskb->sk == sk)
- 		*pflags |= MSG_CONFIRM;
+This is now in hid.git#for-5.19/uclogic. Thanks for all the work,
+
 -- 
-2.30.2
+Jiri Kosina
+SUSE Labs
 
