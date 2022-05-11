@@ -2,96 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9BA4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 11:35:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D91E9C43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 11:35:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237005AbiEKLfS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 07:35:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39844 "EHLO
+        id S237363AbiEKLfa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 07:35:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232991AbiEKLfP (ORCPT
+        with ESMTP id S240197AbiEKLfY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 07:35:15 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81E7863380
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 04:35:14 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id 31so1541652pgp.8
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 04:35:14 -0700 (PDT)
+        Wed, 11 May 2022 07:35:24 -0400
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A63721A959;
+        Wed, 11 May 2022 04:35:22 -0700 (PDT)
+Received: by mail-qk1-x72f.google.com with SMTP id j6so2010600qkp.9;
+        Wed, 11 May 2022 04:35:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8MZ56pDFwVnKOXfifpZSPr/1GPpet0KvHNF4wyHnxkM=;
-        b=kqXr5s4dDIf9h5PnDYgt2/AU2H37ORdYS7RRO+BDROwYpLNWtj0EwKL7BDMfiaG81o
-         6DAsreuSeFa96GQqEyYYi2STqkMUfcaqz200VYX39t4vOyJWK8JrZ78gvz6eh6Os9aB4
-         UhnvG9wzD+6UoyG7qOCim2SKGqbtSzcDPmoc/T9k71tT2IMAMtgjYsZTkku5jzCFBoK2
-         XjmZ8GIs5oz2VKCH9+5SetlGLh86g5SLntGL9RENCMBK0hjaxHtq/TPuQIdzzfU60LCG
-         AtT88GzsslyN5ekx0a0P2MIsfRQrk6ZSvrkd8gqNKHTe0f+G5jOlDunorJXjlz51p5BN
-         qCLg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=g2dieohjKJl3LRE3v0qEPyCNFBVg0n7LQ+TeFcHI+fU=;
+        b=JLISchbWbGmgePFdtjCGDZEIifvBjm7I2Nx32rbSTcMIy3DXwdp6bvLxRowwcaRGxn
+         MuqAjFikGzI5MArfUMGNkFDB+2+X8SsHbDKXrl8Fqa30LF75JxCBJ8GG1VPyzPS06YVW
+         tO7s4D+AXuTZ/j5s1wNiCeSD5QxVE049VdGgxLTsiX4lP39Zc75M9ThwMYfc2FqEMS5W
+         H5BND9luFZHGweAfMY/+GtFaHv+XJLxB4G3cQcLx1qNK/TQ2Wqvz15ZRRT5vCgumwZCD
+         7sqo8XL54qD2EHxiQN0K2Ik1MFb1jFKgtuwC2ZQI4Y6AQYBW7RW2vIeKZ0l+FxsaPKcB
+         rotw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8MZ56pDFwVnKOXfifpZSPr/1GPpet0KvHNF4wyHnxkM=;
-        b=zl+HXU798+rzq0RReh26ckZ9QFzxAl5eenviURsYHcnxFU6MMME+BviAyvCjfx2ho2
-         QGb9o9Rrfb4nanWnwhYi3oC1XBr5yC5wpttkwNWlfTJxY8vn95c+Je4ewCoPgpp6ojzk
-         KZXZaGtWsMpkGw9gApsmxINA4ZbX0RSx0rKFtpwrwlQVYayDT0i5fW0lJt4l9UbZvHZK
-         rHPQloV/txd8l9gnfrNvWbhzvBT/odhoBFf7rVMBi7cErqCwrxo9UxDQlfHucBJ9uv3D
-         H7aFAAkgR9G6hXtuIFb7qVjaJVsdD81/jPVgJd2gSWuy92r6/kEMxRRrJQhrU97iM0Bt
-         6QwQ==
-X-Gm-Message-State: AOAM531byZcDl/vLx9z2WH3akhCX+5VkeUcptUkHrCRTLPZmKE1fFQtE
-        KFgeo3/uMuWlffVmEWfzDv4=
-X-Google-Smtp-Source: ABdhPJxW6/PVUjOeQiDdk0es/i/xNSOdHBeITEkkMZvP6SketwG4tsot6BkXexicQMVtkZjPNXSzUQ==
-X-Received: by 2002:a65:6d09:0:b0:3aa:1ecf:8848 with SMTP id bf9-20020a656d09000000b003aa1ecf8848mr20722322pgb.55.1652268914012;
-        Wed, 11 May 2022 04:35:14 -0700 (PDT)
-Received: from localhost.localdomain ([202.120.234.246])
-        by smtp.googlemail.com with ESMTPSA id s2-20020a17090302c200b0015e8d4eb23esm1584594plk.136.2022.05.11.04.35.11
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=g2dieohjKJl3LRE3v0qEPyCNFBVg0n7LQ+TeFcHI+fU=;
+        b=7dFHtxztu/5ExIFlNejTmqdMOI0EFXXV94HDYBfreE5LVuNVjOBBR36jPYa/ruA8iJ
+         y8yqJ2H0Md+cV8iZo3lNrAKxc7cJVrsaoE5ujNR1Z0I9HcEJOh0Jui2dwZeyeIw30ecx
+         gHOb1X2Untv+H6LnjDcYgYrNLYNJEIv2+UM/kJoKR2KPTw4vQGG0jIR2Jo/JKIMulv9N
+         RkUn9olmCh79PKQlN+XEE6ngBX9vLdk1z6z4/zFpG8LJPbIWyjrPQFxCmfGHTr38Qh93
+         BJE/1LLpL3lvz71MBVq+9VQVqQOwUKn5zCF6ZU5M1A3N3pf+6W+DWlb9+QpohsxozZg6
+         2F3g==
+X-Gm-Message-State: AOAM5329F9LFHK3sHSClS4+a32dXkIi1qNFWNvvNxWy2GKWRxb1Csb63
+        PtTqIgon++adnH05mte8A9E=
+X-Google-Smtp-Source: ABdhPJzL+T1CaXI7PLHaqwNmp5VdAf/xHGHpPqT6b/rkgiogHkmm9AYlEj1W+JT7TF0qhCvUdXzqqA==
+X-Received: by 2002:a37:9ace:0:b0:69f:b424:25b4 with SMTP id c197-20020a379ace000000b0069fb42425b4mr18428024qke.250.1652268920787;
+        Wed, 11 May 2022 04:35:20 -0700 (PDT)
+Received: from master-x64.sparksnet ([2601:153:980:85b1::10])
+        by smtp.gmail.com with ESMTPSA id bw26-20020a05622a099a00b002f39b99f6basm953377qtb.84.2022.05.11.04.35.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 04:35:13 -0700 (PDT)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Robin Gong <b38343@freescale.com>, linux-kernel@vger.kernel.org
-Cc:     linmq006@gmail.com
-Subject: [PATCH] regulator: pfuze100: Fix refcount leak in pfuze_parse_regulators_dt
-Date:   Wed, 11 May 2022 15:35:05 +0400
-Message-Id: <20220511113506.45185-1-linmq006@gmail.com>
+        Wed, 11 May 2022 04:35:20 -0700 (PDT)
+From:   Peter Geis <pgwipeout@gmail.com>
+To:     linux-rockchip@lists.infradead.org,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     Heiko Stuebner <heiko@sntech.de>, dri-devel@lists.freedesktop.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Peter Geis <pgwipeout@gmail.com>, Rob Herring <robh@kernel.org>
+Subject: [PATCH v2 1/3] dt-bindings: display: panel: feiyang, fy07024di26a30d: make reset gpio optional
+Date:   Wed, 11 May 2022 07:35:14 -0400
+Message-Id: <20220511113517.4172962-2-pgwipeout@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220511113517.4172962-1-pgwipeout@gmail.com>
+References: <20220511113517.4172962-1-pgwipeout@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-of_node_get() returns a node with refcount incremented.
-Calling of_node_put() to drop the reference when not needed anymore.
+Some implementations do not use the reset signal, instead tying it to dvdd.
+Make the reset gpio optional to permit this.
 
-Fixes: 3784b6d64dc5 ("regulator: pfuze100: add pfuze100 regulator driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+Acked-by: Rob Herring <robh@kernel.org>
 ---
- drivers/regulator/pfuze100-regulator.c | 2 ++
- 1 file changed, 2 insertions(+)
+ .../bindings/display/panel/feiyang,fy07024di26a30d.yaml          | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/regulator/pfuze100-regulator.c b/drivers/regulator/pfuze100-regulator.c
-index d60d7d1b7fa2..aa55cfca9e40 100644
---- a/drivers/regulator/pfuze100-regulator.c
-+++ b/drivers/regulator/pfuze100-regulator.c
-@@ -521,6 +521,7 @@ static int pfuze_parse_regulators_dt(struct pfuze_chip *chip)
- 	parent = of_get_child_by_name(np, "regulators");
- 	if (!parent) {
- 		dev_err(dev, "regulators node not found\n");
-+		of_node_put(np);
- 		return -EINVAL;
- 	}
+diff --git a/Documentation/devicetree/bindings/display/panel/feiyang,fy07024di26a30d.yaml b/Documentation/devicetree/bindings/display/panel/feiyang,fy07024di26a30d.yaml
+index 95acf9e96f1c..1cf84c8dd85e 100644
+--- a/Documentation/devicetree/bindings/display/panel/feiyang,fy07024di26a30d.yaml
++++ b/Documentation/devicetree/bindings/display/panel/feiyang,fy07024di26a30d.yaml
+@@ -35,7 +35,6 @@ required:
+   - reg
+   - avdd-supply
+   - dvdd-supply
+-  - reset-gpios
  
-@@ -550,6 +551,7 @@ static int pfuze_parse_regulators_dt(struct pfuze_chip *chip)
- 	}
+ additionalProperties: false
  
- 	of_node_put(parent);
-+	of_node_put(np);
- 	if (ret < 0) {
- 		dev_err(dev, "Error parsing regulator init data: %d\n",
- 			ret);
 -- 
 2.25.1
 
