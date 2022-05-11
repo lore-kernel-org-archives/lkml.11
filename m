@@ -2,153 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD249C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 13:20:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5F5FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 13:20:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243401AbiEKNUR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 09:20:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41112 "EHLO
+        id S231725AbiEKNUb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 09:20:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243738AbiEKNTa (ORCPT
+        with ESMTP id S243733AbiEKNTy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 09:19:30 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 547CA2469CF;
-        Wed, 11 May 2022 06:19:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1652275167; x=1683811167;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=WCxOupJ7jOWivGIb7XUrdsY4tpQco+HSUEbzzGV3I7E=;
-  b=fR3IcI6IGf50QhN6BvFcToaqQ1uajW6hy1xiJcIHL5bL6+NDIsL3v2oH
-   FV758P7OFCfNRp9GEwvU5KhnN9//8JbGl/4nQN84TJJ3p40TSVVk+PFFw
-   5PGAZn2ySAoGXAvsWYPwbB2zB4zCppJWew9AYmh5Q/v41g/JMSjcNqzyg
-   k=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 11 May 2022 06:19:26 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 06:19:26 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 11 May 2022 06:19:26 -0700
-Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 11 May 2022 06:19:21 -0700
-From:   Satya Priya <quic_c_skakit@quicinc.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
-        <quic_jprakash@quicinc.com>,
-        Satya Priya <quic_c_skakit@quicinc.com>
-Subject: [PATCH V12 8/9] arm64: dts: qcom: pm8008: Add base dts file
-Date:   Wed, 11 May 2022 18:48:32 +0530
-Message-ID: <1652275113-10277-9-git-send-email-quic_c_skakit@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1652275113-10277-1-git-send-email-quic_c_skakit@quicinc.com>
-References: <1652275113-10277-1-git-send-email-quic_c_skakit@quicinc.com>
+        Wed, 11 May 2022 09:19:54 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 078742375C5;
+        Wed, 11 May 2022 06:19:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652275191; x=1683811191;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=BDtuOCfS6C3Ia8cLwl8KAUdYzlIUCpcNho6y1uVXns4=;
+  b=Oz2yPJU7ytKS8zZJOrxjM0aj0SyGK3AFuTQ8v3NC3DsDP89NptRhppYy
+   w8kLv9dNR98TD+7qzQN+r6wLvDl8uZFT0K38JOgRL0zK2hoIMVppZU0X/
+   QxO5qgL784Rwcpn2tF6B+ufEOl0rMG5cq9iUpFqQfus590VPeRE7idvBT
+   zUdvH83+DfTX5Xap+XB8BCZQp3TCT2OWNwQeeagmnE6OLbQ4ziLORdq44
+   oR3MxzkKo0U65Aadu0k3+suKn+izXDYZR3kTkfrjGgRRHUYHVApUpILyU
+   tmPwHSvIWxEXmtR2mrtoRxN3j4/GU2F4q5gvQWYqcYhj6yH6m2m/YhqGc
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="330293914"
+X-IronPort-AV: E=Sophos;i="5.91,217,1647327600"; 
+   d="scan'208";a="330293914"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 06:19:50 -0700
+X-IronPort-AV: E=Sophos;i="5.91,217,1647327600"; 
+   d="scan'208";a="658155336"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 06:19:48 -0700
+Received: by lahna (sSMTP sendmail emulation); Wed, 11 May 2022 16:18:41 +0300
+Date:   Wed, 11 May 2022 16:18:41 +0300
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andy@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v1 1/1] pinctrl: broxton: Add module alias for Intel
+ Apollo Lake
+Message-ID: <Ynu3sbnWwQgOUK4H@lahna>
+References: <20220511123421.88439-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220511123421.88439-1-andriy.shevchenko@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add base DTS file for pm8008.
+On Wed, May 11, 2022 at 03:34:21PM +0300, Andy Shevchenko wrote:
+> We have platform device IDs for Broxton and Apollo Lake, but
+> module alias is provided only for the former. Make it consistent
+> by providing an alias for Apollo Lake.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
----
-Changes in V12:
- - None.
-
-Changes in V11:
- - Remove intermediate regulators node and add the ldos under
-   pm8008@8 node.
- - change the address cells as 2 for pm8008 parent mfd node.
- - add compatible to register the ldos.
- - add reg with i2c client offset and address.
-
-Changes in V10:
- - Add regulators under pm8008@8 i.e main mfd node.
-
-Changes in V9:
- - Add single dt file for pm8008 instead of adding files like in V8.
-
- arch/arm64/boot/dts/qcom/pm8008.dtsi | 54 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 54 insertions(+)
- create mode 100644 arch/arm64/boot/dts/qcom/pm8008.dtsi
-
-diff --git a/arch/arm64/boot/dts/qcom/pm8008.dtsi b/arch/arm64/boot/dts/qcom/pm8008.dtsi
-new file mode 100644
-index 0000000..5606344
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/pm8008.dtsi
-@@ -0,0 +1,54 @@
-+// SPDX-License-Identifier: BSD-3-Clause
-+// Copyright (c) 2022, The Linux Foundation. All rights reserved.
-+
-+&pm8008_bus {
-+	pm8008: pmic@8 {
-+		compatible = "qcom,pm8008";
-+		reg = <0x8>;
-+		#address-cells = <2>;
-+		#size-cells = <0>;
-+		#interrupt-cells = <2>;
-+
-+		pm8008_l1: ldo1@1,4000 {
-+			compatible = "qcom,pm8008-regulator";
-+			reg = <0x1 0x4000>;
-+			regulator-name = "pm8008_ldo1";
-+		};
-+
-+		pm8008_l2: ldo2@1,4100 {
-+			compatible = "qcom,pm8008-regulator";
-+			reg = <0x1 0x4100>;
-+			regulator-name = "pm8008_ldo2";
-+		};
-+
-+		pm8008_l3: ldo3@1,4200 {
-+			compatible = "qcom,pm8008-regulator";
-+			reg = <0x1 0x4200>;
-+			regulator-name = "pm8008_ldo3";
-+		};
-+
-+		pm8008_l4: ldo4@1,4300 {
-+			compatible = "qcom,pm8008-regulator";
-+			reg = <0x1 0x4300>;
-+			regulator-name = "pm8008_ldo4";
-+		};
-+
-+		pm8008_l5: ldo5@1,4400 {
-+			compatible = "qcom,pm8008-regulator";
-+			reg = <0x1 0x4400>;
-+			regulator-name = "pm8008_ldo5";
-+		};
-+
-+		pm8008_l6: ldo6@1,4500 {
-+			compatible = "qcom,pm8008-regulator";
-+			reg = <0x1 0x4500>;
-+			regulator-name = "pm8008_ldo6";
-+		};
-+
-+		pm8008_l7: ldo7@1,4600 {
-+			compatible = "qcom,pm8008-regulator";
-+			reg = <0x1 0x4600>;
-+			regulator-name = "pm8008_ldo7";
-+		};
-+	};
-+};
--- 
-2.7.4
-
+Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
