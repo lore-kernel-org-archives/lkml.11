@@ -2,145 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27A5CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 00:19:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A77B4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 00:20:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235611AbiEKAT3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 20:19:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49134 "EHLO
+        id S237899AbiEKAUv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 20:20:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237296AbiEKAT0 (ORCPT
+        with ESMTP id S235364AbiEKAUt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 20:19:26 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71E5427E3EA;
-        Tue, 10 May 2022 17:19:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652228364; x=1683764364;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=LNZ2ZyGFyAlorvMsKBypZZXVIJmC3rzFpuJmCI9ge4U=;
-  b=MH8DUCQmxnxkaw1P4wEbP5x5QcWjRj+mFjD6IqWXRDm0YJZnKYe8pTD1
-   c0yDGjyRS07Hkfe1YkE5OEO+C9s+xYf/+QEm6YOtbHdqljKp5f8JJuXcW
-   32APze3XaBglKCEibGd4WMbyw/q/s7ax8+4iKQvrI03V/WeXnB6wzkv9D
-   64g2AkYLXZCypcNHFppj1LottG3lbNHwfLr80m4F94pYXc9bNrjXsikWi
-   1qPT2eMgD4Zsf5YbZRjD8GqgEYtMjHK8511Gf4HlQECF67m4bgPsaciI2
-   jk10gwbXvl1OC57rE9924/ew15DWhRN11YUCq889EjxNA9oiyzW0M6qkj
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="269675101"
-X-IronPort-AV: E=Sophos;i="5.91,215,1647327600"; 
-   d="scan'208";a="269675101"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 17:19:24 -0700
-X-IronPort-AV: E=Sophos;i="5.91,215,1647327600"; 
-   d="scan'208";a="738965315"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 17:19:23 -0700
-Date:   Tue, 10 May 2022 17:23:09 -0700
-From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     iommu@lists.linux-foundation.org,
-        LKML <linux-kernel@vger.kernel.org>, dmaengine@vger.kernel.org,
-        Joerg Roedel <joro@8bytes.org>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>, vkoul@kernel.org,
-        robin.murphy@arm.com, will@kernel.org, Yi Liu <yi.l.liu@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        "Tian, Kevin" <kevin.tian@intel.com>,
-        Raj Ashok <ashok.raj@intel.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v3 1/4] iommu/vt-d: Implement domain ops for
- attach_dev_pasid
-Message-ID: <20220510172309.3c4e7512@jacob-builder>
-In-Reply-To: <20220510232121.GP49344@nvidia.com>
-References: <20220510210704.3539577-1-jacob.jun.pan@linux.intel.com>
-        <20220510210704.3539577-2-jacob.jun.pan@linux.intel.com>
-        <20220510232121.GP49344@nvidia.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Tue, 10 May 2022 20:20:49 -0400
+Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07CEB11163
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 17:20:47 -0700 (PDT)
+Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-2ef5380669cso3609757b3.9
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 17:20:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6vpXpw5XZq/WrbDVmy+tJWQcUF77jv1N0UbvJAonvnU=;
+        b=w7tblpXNjCpAdHrXR8Vsnj84FjFr91Zp7XFGp6hW6GdlcUctB8YZYvWN7+FqJhUsWp
+         Lfa9hz5DunLQMwkY2ijmdSDjEK+cvJE4bQLfuudysuE6TGFtxDwybpYoyjbSd0rfiLCB
+         ysPvqVgG3peWvDc+qujiXzaPwuf10GS1B55GhkPDJucFdnHiVI5R7+wLSoL9lW8bnBVP
+         z7GHP9+5NduIv82dOfKwrJYFFZZiOkMLJfZCowmQJFAVpkHmm0div0lp7B2unJ4Af4v5
+         bQnCGd3mcPkUpVgnxRgKCOIeTv14KQTG8EzBpPW8feDLdK1iMlzNYQcSBnRl3CzFdszT
+         yvzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6vpXpw5XZq/WrbDVmy+tJWQcUF77jv1N0UbvJAonvnU=;
+        b=ihafoEyVynFM85k0eaUm9BFsHPCTFdbwB2eWdFHB3t/0cQSaZqYwyLiAWNFxkO4gKo
+         4AhR3Zwt9vzPgbfV+Akzd2c99BtcI5nZUkkbkN0fUrGQw1WXdbYFtjvOzTkyA9o2xcYa
+         qHSug6BFkpe2rifAl2gd4UAGaV2jgXCDzcOeqwEYkLSe23YtzmeI8pWUggiOCMTQWSIw
+         6u6y2AoJVvcCYq10BnEoxpCv9/EWavOr5f7M5NsMyETA9LBlryfaxByLcMJWbOiWoZQN
+         lcYkPaq37LmIalA2oqN4LbJ/6oKp5FD9NsqGlWkZ7mGMQwlxOcY1aJkd7nxPQlmRPEip
+         Ml8Q==
+X-Gm-Message-State: AOAM533e+pOaigkSG0ScX1P/505B5JBIxX4eVriajbH+zGekG98/pM6X
+        w5j+kW+YvShjKjwtomY2BJbFR4bQgoOOnntAa41XZQ==
+X-Google-Smtp-Source: ABdhPJxvhAkk2Km4fbuCctbq2xFMtEja6/plgDD2L2i2wt+jmqVRruARk+Pto0kZ1tDyHEnHY8br6RxGTF6LJx15PkY=
+X-Received: by 2002:a0d:db8f:0:b0:2fb:958c:594f with SMTP id
+ d137-20020a0ddb8f000000b002fb958c594fmr1290258ywe.490.1652228446267; Tue, 10
+ May 2022 17:20:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220510192944.2408515-1-dianders@chromium.org> <20220510122726.v3.1.Ia91f4849adfc5eb9da1eb37ba79aa65fb3c95a0f@changeid>
+In-Reply-To: <20220510122726.v3.1.Ia91f4849adfc5eb9da1eb37ba79aa65fb3c95a0f@changeid>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date:   Wed, 11 May 2022 03:20:35 +0300
+Message-ID: <CAA8EJpoWA3sFDpAESp7XoZ279uTk25cxTcr9Chjp=0vrBaNmtA@mail.gmail.com>
+Subject: Re: [PATCH v3 1/4] drm/dp: Export symbol / kerneldoc fixes for DP AUX bus
+To:     Douglas Anderson <dianders@chromium.org>
+Cc:     dri-devel@lists.freedesktop.org,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Philip Chen <philipchen@chromium.org>,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        Stephen Boyd <swboyd@chromium.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Lyude Paul <lyude@redhat.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jason,
+On Tue, 10 May 2022 at 22:29, Douglas Anderson <dianders@chromium.org> wrote:
+>
+> While working on the DP AUX bus code I found a few small things that
+> should be fixed. Namely the non-devm version of
+> of_dp_aux_populate_ep_devices() was missing an export. There was also
+> an extra blank line in a kerneldoc and a kerneldoc that incorrectly
+> documented a return value. Fix these.
+>
+> Fixes: aeb33699fc2c ("drm: Introduce the DP AUX bus")
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
 
-On Tue, 10 May 2022 20:21:21 -0300, Jason Gunthorpe <jgg@nvidia.com> wrote:
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-> On Tue, May 10, 2022 at 02:07:01PM -0700, Jacob Pan wrote:
-> > +static int intel_iommu_attach_dev_pasid(struct iommu_domain *domain,
-> > +					struct device *dev,
-> > +					ioasid_t pasid)
-> > +{
-> > +	struct device_domain_info *info = dev_iommu_priv_get(dev);
-> > +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-> > +	struct intel_iommu *iommu = info->iommu;
-> > +	unsigned long flags;
-> > +	int ret = 0;
-> > +
-> > +	if (!sm_supported(iommu) || !info)
-> > +		return -ENODEV;
-> > +
-> > +	spin_lock_irqsave(&device_domain_lock, flags);
-> > +	/*
-> > +	 * If the same device already has a PASID attached, just
-> > return.
-> > +	 * DMA layer will return the PASID value to the caller.
-> > +	 */
-> > +	if (pasid != PASID_RID2PASID && info->pasid) {  
-> 
-> Why check for PASID == 0 like this? Shouldn't pasid == 0 be rejected
-> as an invalid argument?
-Right, I was planning on reuse the attach function for RIDPASID as clean
-up, but didn't include here. Will fix.
+> ---
+> None of these seem critical, so my plan is to land this in
+> drm-misc-next and not drm-misc-fixes. This will avoid merge conflicts
+> with future patches.
+>
+> Changes in v3:
+> - Patch ("drm/dp: Export symbol / kerneldoc fixes...") split for v3.
+>
+>  drivers/gpu/drm/display/drm_dp_aux_bus.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/display/drm_dp_aux_bus.c b/drivers/gpu/drm/display/drm_dp_aux_bus.c
+> index dccf3e2ea323..552f949cff59 100644
+> --- a/drivers/gpu/drm/display/drm_dp_aux_bus.c
+> +++ b/drivers/gpu/drm/display/drm_dp_aux_bus.c
+> @@ -66,7 +66,6 @@ static int dp_aux_ep_probe(struct device *dev)
+>   * @dev: The device to remove.
+>   *
+>   * Calls through to the endpoint driver remove.
+> - *
+>   */
+>  static void dp_aux_ep_remove(struct device *dev)
+>  {
+> @@ -120,8 +119,6 @@ ATTRIBUTE_GROUPS(dp_aux_ep_dev);
+>  /**
+>   * dp_aux_ep_dev_release() - Free memory for the dp_aux_ep device
+>   * @dev: The device to free.
+> - *
+> - * Return: 0 if no error or negative error code.
+>   */
+>  static void dp_aux_ep_dev_release(struct device *dev)
+>  {
+> @@ -256,6 +253,7 @@ int of_dp_aux_populate_ep_devices(struct drm_dp_aux *aux)
+>
+>         return 0;
+>  }
+> +EXPORT_SYMBOL_GPL(of_dp_aux_populate_ep_devices);
+>
+>  static void of_dp_aux_depopulate_ep_devices_void(void *data)
+>  {
+> --
+> 2.36.0.550.gb090851708-goog
+>
 
-> 
-> > +		if (info->pasid == pasid)
-> > +			ret = 0;  
-> 
-> Doesn't this need to check that the current domain is the requested
-> domain as well? How can this happen anyhow - isn't it an error to
-> double attach?
-> 
-> > diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-> > index 5af24befc9f1..55845a8c4f4d 100644
-> > +++ b/include/linux/intel-iommu.h
-> > @@ -627,6 +627,7 @@ struct device_domain_info {
-> >  	struct intel_iommu *iommu; /* IOMMU used by this device */
-> >  	struct dmar_domain *domain; /* pointer to domain */
-> >  	struct pasid_table *pasid_table; /* pasid table */
-> > +	ioasid_t pasid; /* DMA request with PASID */  
-> 
-> And this seems wrong - the DMA API is not the only user of
-> attach_dev_pasid, so there should not be any global pasid for the
-> device.
-> 
-True but the attach_dev_pasid() op is domain type specific. i.e. DMA API
-has its own attach_dev_pasid which is different than sva domain
-attach_dev_pasid().
-device_domain_info is only used by DMA API.
 
-> I suspect this should be a counter of # of pasid domains attached so
-> that the special flush logic triggers
-> 
-This field is only used for devTLB, so it is per domain-device. struct
-device_domain_info is allocated per device-domain as well. Sorry, I might
-have totally missed your point.
-
-> And rely on the core code to worry about assigning only one domain per
-> pasid - this should really be a 'set' function.
-> 
-Yes, in this set the core code (in dma-iommu.c) only assign one PASID per
-DMA domain type.
-
-Are you suggesting the dma-iommu API should be called
-iommu_set_dma_pasid instead of iommu_attach_dma_pasid?
-
-Thanks a lot for the quick review!
-
-Jacob
+-- 
+With best wishes
+Dmitry
