@@ -2,96 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60186C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 17:57:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E1BFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 17:59:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345949AbiEKR5s (ORCPT
+        id S1345953AbiEKR7b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 13:57:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54424 "EHLO
+        Wed, 11 May 2022 13:59:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241439AbiEKR5p (ORCPT
+        with ESMTP id S1345952AbiEKR72 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 13:57:45 -0400
-X-Greylist: delayed 174 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 11 May 2022 10:57:44 PDT
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31013694A2;
-        Wed, 11 May 2022 10:57:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1652291501;
-    s=strato-dkim-0002; d=gerhold.net;
-    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
-    From:Subject:Sender;
-    bh=yDhDyiG143+NERzD1Q8ObYJHTt8duWx1100elYLk5Lw=;
-    b=r8NeX8j4jl8lZZEDENr2QyYz9IuHVl07+1svJVb03mdDMKhJIiCJebebK6r1SdasDL
-    wCKoyTZalQ6afuDiXvQLs8Jh0AzhRv1mTTPPtIIMhSZogPMPymE7HoSDVLloF3YvgZai
-    AjYGwIOPvTakRCmeJemsat+wwM9rLUgCIn5gTvXBb1fnon2l6m7gQQlsJL4W0gnatZsa
-    w5l5aM87bRodTTMOB4oJfY0FvG9YLL9ZXgvNtw0b7g1XOtNPA0NIx5BgHiqT1yyutoZ8
-    Lex2gFOxdj5C0drn/K6S2xPFFNEpq8H+kclxF/mAzVKUm0HIYtgs5EEgIJiTpnZ7zNtZ
-    myTg==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVOQ/OcYgojyw4j34+u267FZF9PwpcNKLUrK88/6Y="
-X-RZG-CLASS-ID: mo00
-Received: from gerhold.net
-    by smtp.strato.de (RZmta 47.42.2 AUTH)
-    with ESMTPSA id u05e50y4BHpf2o2
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Wed, 11 May 2022 19:51:41 +0200 (CEST)
-Date:   Wed, 11 May 2022 19:51:32 +0200
-From:   Stephan Gerhold <stephan@gerhold.net>
-To:     Sireesh Kodali <sireeshkodali1@gmail.com>
-Cc:     devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, bjorn.andersson@linaro.org,
-        Andy Gross <agross@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/2] arm64: dts: qcom: msm8916: Fix typo in pronto
- remoteproc node
-Message-ID: <Ynv3pE3gkLW39jNk@gerhold.net>
-References: <20220510042654.71152-1-sireeshkodali1@gmail.com>
- <20220510042654.71152-3-sireeshkodali1@gmail.com>
+        Wed, 11 May 2022 13:59:28 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FE156FA29
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 10:59:27 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id k27so3490553edk.4
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 10:59:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vpvF/G4xuVb2lXY63PSPtbidovxryyw3Az5XWwC60vo=;
+        b=RbK3zt9fAFVilHkcwWN9jceetynxrMvtlrXzPTlVar2ZD6mqSxmFHhHsJvVdGdj8oI
+         BdUObZOYI75NcJ2SSDoRa5dgZGU0KHn4S4ony/g70hsqCPjT2fqxPmixaO08qir+9s1k
+         sMGXhofMo+yhDn2YS7Eyv334cFNRehtrMjd18=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vpvF/G4xuVb2lXY63PSPtbidovxryyw3Az5XWwC60vo=;
+        b=4kRnqRY7/D3hYL98N8feQJ+Xvbf8t/rsetILEVy2K/pZfuWEZEl/FtgsrBQPbYxxEA
+         xPia7BVphGlb+1K7QHFb9WtLWKYdEKm2I/c7rzMrk08BuHQJKlyX294RUrf6I8YCfJUM
+         NMsI6UjFvQ8RrQsATMW5f3Vpi8YpvnL9KlzVXk480ZU5Yi2jyXXFm4+mvI1MYv1GO2G1
+         ipsULJcBwdBOJDsU2z73WUJFfPVS7+4FR71TWmhmuLxLPjiG3Gf9FEn8FEwBtIbZqZsh
+         B0rftZnNVoCJRRWXHbupvkkQQddSuBUeMyhThv/NKcyNylP3swBfqVJzCVUZjhlIuovt
+         ptGw==
+X-Gm-Message-State: AOAM532cpMOJEsPg+foMQo3U6CqdmB6OkyGXJ/zPdNcOHoqk2/neJgfX
+        6zT3C/qmGwSGNp+1KJvi2R+PXt0XnzsnH9632EE=
+X-Google-Smtp-Source: ABdhPJxZFOVdeyeCTnq0I7hZUgkq3Cotg/sz93oOxDq151WE8TIyOxTWLOY8aKddFtcMaf6/co4cBw==
+X-Received: by 2002:aa7:c418:0:b0:428:44a0:9967 with SMTP id j24-20020aa7c418000000b0042844a09967mr30668232edq.342.1652291965505;
+        Wed, 11 May 2022 10:59:25 -0700 (PDT)
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com. [209.85.128.42])
+        by smtp.gmail.com with ESMTPSA id m11-20020a50cc0b000000b0042617ba63a9sm1436908edi.51.2022.05.11.10.59.24
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 May 2022 10:59:24 -0700 (PDT)
+Received: by mail-wm1-f42.google.com with SMTP id q20so1680850wmq.1
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 10:59:24 -0700 (PDT)
+X-Received: by 2002:a7b:c8d6:0:b0:394:25ff:2de with SMTP id
+ f22-20020a7bc8d6000000b0039425ff02demr5994279wml.154.1652291964221; Wed, 11
+ May 2022 10:59:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220510042654.71152-3-sireeshkodali1@gmail.com>
+References: <CANpfEhOnNZa5d_G3e0dzzbbEtSuqxWY-fUCqzSiFpiQ2k0hJyw@mail.gmail.com>
+ <CAHk-=wjfecvcUk2vNQM1GiUz_G=WQEJ8i8JS7yjnxjq_f-OgKw@mail.gmail.com>
+ <87a6czifo7.fsf@email.froward.int.ebiederm.org> <CAHk-=wj=EHvH-DEUHbkoB3vDZJ1xRzrk44JibtNOepNkachxPw@mail.gmail.com>
+ <87ilrn1drx.ffs@tglx> <877d7zk1cf.ffs@tglx> <CAHk-=wiJPeANKYU4imYaeEuV6sNP+EDR=rWURSKv=y4Mhcn1hA@mail.gmail.com>
+ <87y20fid4d.ffs@tglx> <87bkx5q3pk.fsf_-_@email.froward.int.ebiederm.org>
+ <87mtfu4up3.fsf@email.froward.int.ebiederm.org> <87r150ug1l.fsf_-_@email.froward.int.ebiederm.org>
+ <CAHk-=whUy_cuJsVeob4zDnK5sWpE3U2EjVbnR2xobqgx7DOp4g@mail.gmail.com> <87zgjot0qr.fsf@email.froward.int.ebiederm.org>
+In-Reply-To: <87zgjot0qr.fsf@email.froward.int.ebiederm.org>
+From:   Linus Torvalds <torvalds@linuxfoundation.org>
+Date:   Wed, 11 May 2022 10:59:08 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgT7XdnjJhJmsc342ouHiDu2oxcguziHSL21UH3jsnrCw@mail.gmail.com>
+Message-ID: <CAHk-=wgT7XdnjJhJmsc342ouHiDu2oxcguziHSL21UH3jsnrCw@mail.gmail.com>
+Subject: Re: [PATCH 8/7] sched: Update task_tick_numa to ignore tasks without
+ an mm
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     linux-arch <linux-arch@vger.kernel.org>, Tejun Heo <tj@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 09:56:54AM +0530, Sireesh Kodali wrote:
-> The smem-state properties for the pronto node were incorrectly labelled,
-> reading `qcom,state*` rather than `qcom,smem-state*`. Fix that, allowing
-> the stop state to be used.
-> 
-> Fixes: 88106096cbf8 ("ARM: dts: msm8916: Add and enable wcnss node")
-> 
-> Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
+On Wed, May 11, 2022 at 10:53 AM Eric W. Biederman
+<ebiederm@xmission.com> wrote:
+>
+> I do have it in a public git branch.  The testing in linux-next
+> is what revealed this.
+>
+> However it is a topic branch that as far as I know no one depends
+> on so I should be able to rebase it.
 
-Thanks for finding this!
+Not a big deal, since it needs to not just bisect into that small
+series, you also need a certain amount of bad luck to then hit the
+issue.
 
-Reviewed-by: Stephan Gerhold <stephan@gerhold.net>
+So I don't think you should rebase unless you have other reasons to do
+so, but if you do, just put this commit either first, or fold it into
+the commit that removes PF_KTHREAD for threads that will become user
+threads.
 
-> ---
->  arch/arm64/boot/dts/qcom/msm8916.dtsi | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/msm8916.dtsi b/arch/arm64/boot/dts/qcom/msm8916.dtsi
-> index e34963505e07..7ecd747dc624 100644
-> --- a/arch/arm64/boot/dts/qcom/msm8916.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/msm8916.dtsi
-> @@ -1758,8 +1758,8 @@ pronto: remoteproc@a21b000 {
->  					<&rpmpd MSM8916_VDDMX>;
->  			power-domain-names = "cx", "mx";
->  
-> -			qcom,state = <&wcnss_smp2p_out 0>;
-> -			qcom,state-names = "stop";
-> +			qcom,smem-states = <&wcnss_smp2p_out 0>;
-> +			qcom,smem-state-names = "stop";
->  
->  			pinctrl-names = "default";
->  			pinctrl-0 = <&wcnss_pin_a>;
-> -- 
-> 2.36.0
-> 
+                  Linus
