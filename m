@@ -2,174 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 044A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 10:02:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F592C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 10:03:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231202AbiEKKCJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 06:02:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50538 "EHLO
+        id S234689AbiEKKDG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 06:03:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239385AbiEKKBB (ORCPT
+        with ESMTP id S233237AbiEKKCu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 06:01:01 -0400
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 218FDDF3B
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 03:00:57 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id EA6415C003F;
-        Wed, 11 May 2022 06:00:54 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Wed, 11 May 2022 06:00:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm2; t=1652263254; x=
-        1652349654; bh=CTXGRB6J4UHHbNMGL8dlUECvcdCemTh+syQxorNFVlw=; b=W
-        Tlf7lfchZr6MIQCALPkhb0QuqeQ/GU5qWpPfBypfWy+w4/QAI8stDg1tuSzosU+q
-        fN9dXyZxORZn6YOdmr88sSN+5dMMg4TfdhwHodMEOfqMuhQjnpvURuBcFoStEH6s
-        DmLfiTqvgemtlRTSp0Ou+UzX0sTj2oOncK/uH8CEJTBxRzfffQn+UayzVSKV3h8O
-        YE+EJFTI95Nzo7yEG6v281RvWxEug8YRmOuXwHLpjv1O3qTbGUoCcERi3pxg3Af1
-        nhWB8qPxQzFSJg0E5O70OVE+sFLPfrobZKSE/dTwHb8gAg7jf7pWoxLVSR2C7beE
-        MZU3FmCKdtZELS/0iBwhA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; t=1652263254; x=1652349654; bh=CTXGRB6J4UHHb
-        NMGL8dlUECvcdCemTh+syQxorNFVlw=; b=xJh9VccWyAyxpC4q4eFJF0IqR3yUH
-        Q1DgGClFBKUHJiYl+E2bcJktxP0X5LNDielnCaZMZIZj/N761NnGJHmeT6wPVP9p
-        frt+4gg1E0kHtCEXZVG7CHSb+MqnYEyDcju0EtqJlJd68LIDaaDOOt1/v7YqwWS5
-        M7rVSsxxTfGQp7T4y0Ar7VnB5V9wxh5ahplumivLSRfHWbu2RqW7Anul10HQ/cO7
-        L9tw3N02N8zWPyc70ElZWK+oMcXaq2xj979KFlcYmG5uqGnSojHmtZ5VpSOILrDS
-        xlI8Vt1GFV+Xqh1R1buatRzA6T8KVO4hy3tR2mAE3qPgPShNu4ycbaEbg==
-X-ME-Sender: <xms:VYl7YqFf9oeWr8ePgcHY9WDYJ4gVwbYw20wR6Cj6_uU8eImCR1uEyA>
-    <xme:VYl7YrV5M0wsUxkC_mTI5w8wmuQL8k83y3WcCg0DTk7G2VHMVPWMNX2B5hzdNk6mX
-    7aRwZ8ZK3xy4ViP7g>
-X-ME-Received: <xmr:VYl7YkLIf9GvKYmjI3rX4UoQJI5C3MRweS67MgCS-w6PjjaRJmxPehvK_Dw6tfyfRgIoEj5-zoLLLyor2STlHyQpVYx8G-A7Zl6uHf99YI_jqgdJ8RPx2UWd8w>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrgeehgddvtdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefuvfevfhfhkffffgggjggtgfesthejredttdefjeenucfhrhhomhepufgrmhhu
-    vghlucfjohhllhgrnhguuceoshgrmhhuvghlsehshhholhhlrghnugdrohhrgheqnecugg
-    ftrfgrthhtvghrnhepieetvdfhjefhvdejgfeguedtgeetjeffgfevtdejudekgfeukedt
-    tddvgeeftdfgnecuffhomhgrihhnpehgihhthhhusgdrtghomhenucevlhhushhtvghruf
-    hiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehsrghmuhgvlhesshhhohhllhgr
-    nhgurdhorhhg
-X-ME-Proxy: <xmx:VYl7YkH8Dh-U1u4uJWySu0DaMwYIEh7lYzpV9oM8A8ZikyDL68Mbvw>
-    <xmx:VYl7YgWSM9bVnI2kXiPyi1FqoTnAAxaa8dATNrw44dag6Dny71TKmA>
-    <xmx:VYl7YnNGqPyPgyZxc8T1cCghtvJq1l3w8F1BXoDqQXXrOiRmIMI66w>
-    <xmx:Vol7Yht8YJOmetYn8KxVwAVLbBHq-geXImqAfk1mKLOevLO4UazNfw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 11 May 2022 06:00:52 -0400 (EDT)
-Subject: Re: [PATCH 5/5] irqchip/sifive-plic: Separate the enable and mask
- operations
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Guo Ren <guoren@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Wei Xu <xuwei5@hisilicon.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org
-References: <20220509034333.60017-1-samuel@sholland.org>
- <20220509034333.60017-6-samuel@sholland.org> <87a6bp7ke2.wl-maz@kernel.org>
-From:   Samuel Holland <samuel@sholland.org>
-Message-ID: <2b063917-17c8-0add-fadf-5aa42532fbbf@sholland.org>
-Date:   Wed, 11 May 2022 05:00:51 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        Wed, 11 May 2022 06:02:50 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAA93496AD
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 03:02:26 -0700 (PDT)
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24B4xHqN029588;
+        Wed, 11 May 2022 05:02:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=PODMain02222019;
+ bh=QOowDymuoE5isrlzSz64tadHGsP3EKcEW5g/m3Fkrnc=;
+ b=brMeggz9EtCElv4xgAPVJItPoLE+ezflt37E2eyDl/UhJhGc8WIpN4tv7ZUM0JxClkGJ
+ Kl7LZd7iSbcn4F5qNWKpp1GdLcGHfI4jlbiQlJLakUUYOwWe6OnaCUl+H4n810M4w1Rt
+ 7qm/KV+1hWvZfKUd5cFs8G2Ifs/opnzixgpR06wRlb9TxiiZk13cL0O5wjgBICaU8jiC
+ LxdqYcQan6GqymkwPFq9nP7VVbMi5hVBHN2yAJZS1wGvw0U16zy94cZXXTQEEkLIGoSP
+ KjFOw+6qYhD3YEzaeZFV4dC+uYndHxfrFDTwLK7rJLdclDxapcJNoGddD2fsc7uy0vsO Kw== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3fwn6nwt0g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 11 May 2022 05:02:14 -0500
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 11 May
+ 2022 11:02:13 +0100
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
+ Transport; Wed, 11 May 2022 11:02:13 +0100
+Received: from sbinding-cirrus-dsktp.ad.cirrus.com (unknown [198.90.238.24])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id C955FB10;
+        Wed, 11 May 2022 10:02:12 +0000 (UTC)
+From:   Stefan Binding <sbinding@opensource.cirrus.com>
+To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+CC:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
+        <patches@opensource.cirrus.com>,
+        Stefan Binding <sbinding@opensource.cirrus.com>
+Subject: [PATCH v2 1/3] ALSA: hda/cs8409: Support new Odin Variants
+Date:   Wed, 11 May 2022 11:02:05 +0100
+Message-ID: <20220511100207.1268321-2-sbinding@opensource.cirrus.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220511100207.1268321-1-sbinding@opensource.cirrus.com>
+References: <20220511100207.1268321-1-sbinding@opensource.cirrus.com>
 MIME-Version: 1.0
-In-Reply-To: <87a6bp7ke2.wl-maz@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: V0AXwz_KPgBenLCIe8ez0lL_WGfvafc8
+X-Proofpoint-GUID: V0AXwz_KPgBenLCIe8ez0lL_WGfvafc8
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/10/22 5:27 AM, Marc Zyngier wrote:
-> On Mon, 09 May 2022 04:43:33 +0100,
-> Samuel Holland <samuel@sholland.org> wrote:
->>
->> The PLIC has two per-IRQ checks before sending an IRQ to a hart context.
->> First, it checks that the IRQ's priority is nonzero. Then, it checks
->> that the enable bit is set for that combination of IRQ and context.
->>
->> Currently, the PLIC driver sets both the priority value and the enable
->> bit in its (un)mask operations. However, modifying the enable bit is
->> problematic for two reasons:
->>   1) The enable bits are packed, so changes are not atomic and require
->>      taking a spinlock.
->>   2) The following requirememnt from the PLIC spec, which explains the
->>      racy (un)mask operations in plic_irq_eoi():
->>
->>        If the completion ID does not match an interrupt source
->>        that is currently enabled for the target, the completion
->>        is silently ignored.
->>
->> Both of these problems are solved by using the priority value to mask
->> IRQs. Each IRQ has a separate priority register, so writing the priority
->> value is atomic. And since the enable bit remains set while an IRQ is
->> masked, the EOI operation works normally. The enable bits are still used
->> to control the IRQ's affinity.
-> 
-> This is pretty neat.
-> 
-> My only concern is around whether implementations do when changing
-> priority of enabled interrupts. The PLIC architecture is conveniently
-> silent on the subject, but that's certainly something that can result
-> in total crap with the ARM GICs, for example, because an
-> implementation is free to apply this priority change on an already
-> pending interrupt, or not. But the kernel really wants the interrupt
-> to be masked once it tells the HW to do so.
+Odin Variants have the internal mic connected
+directly to the CPU rather than codec.
 
-I think this can be expected based on this comment from the PLIC spec, which is
-the only place using the word "mask":
+Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
+---
+ sound/pci/hda/patch_cs8409-tables.c | 19 +++++++++++++++++++
+ sound/pci/hda/patch_cs8409.c        | 12 +++++++++---
+ sound/pci/hda/patch_cs8409.h        |  1 +
+ 3 files changed, 29 insertions(+), 3 deletions(-)
 
-"The PLIC will mask all PLIC interrupts of a priority less than or equal to
-threshold. For example, a`threshold` value of zero permits all interrupts with
-non-zero priority."
-
-> Could anyone please check the RTL for some common implementations?
-
-The C9xx PLIC explicitly checks for priority 0 in each gateway:
-
-https://github.com/T-head-Semi/openc906/blob/main/C906_RTL_FACTORY/gen_rtl/plic/rtl/plic_int_kid.v#L152
-
-and also continuously updates the IRQ outputs based on comparing the arbitrated
-highest priority interrupt with the target's threshold:
-
-https://github.com/T-head-Semi/openc906/blob/main/C906_RTL_FACTORY/gen_rtl/plic/rtl/plic_arb_ctrl.v#L295
-
-
-Other implementations appear to do something similar, continuously computing the
-highest priority interrupt, and comparing that to the target threshold:
-
-https://github.com/chipsalliance/rocket-chip/blob/master/src/main/scala/devices/tilelink/Plic.scala#L187
-https://github.com/lowRISC/rv_plic/blob/master/rtl/rv_plic_target.sv#L92
-https://github.com/lowRISC/opentitan/blob/master/hw/ip_templates/rv_plic/rtl/rv_plic_target.sv.tpl#L58
-https://github.com/pulp-platform/rv_plic/blob/master/rtl/rv_plic_target.sv#L92
-https://github.com/RoaLogic/plic/blob/master/rtl/verilog/core/plic_target.sv#L126
-https://github.com/qemu/qemu/blob/master/hw/intc/sifive_plic.c#L96
-
-Those are the implementations I could find. Others may know about non-public
-implementations.
-
-Regards,
-Samuel
-
-> A way to avoid the above trouble (should it exist) would be to
-> disable the interrupt when changing the priority, and then reenable
-> it. You'd still get the simpler EOI, which is what you really want.
-> 
-> Thanks,
-> 
-> 	M.
-> 
+diff --git a/sound/pci/hda/patch_cs8409-tables.c b/sound/pci/hda/patch_cs8409-tables.c
+index 0d11b24a1317..4f4cc8215917 100644
+--- a/sound/pci/hda/patch_cs8409-tables.c
++++ b/sound/pci/hda/patch_cs8409-tables.c
+@@ -76,6 +76,13 @@ const struct hda_pintbl cs8409_cs42l42_pincfgs[] = {
+ 	{} /* terminator */
+ };
+ 
++const struct hda_pintbl cs8409_cs42l42_pincfgs_no_dmic[] = {
++	{ CS8409_PIN_ASP1_TRANSMITTER_A, 0x042120f0 },	/* ASP-1-TX */
++	{ CS8409_PIN_ASP1_RECEIVER_A, 0x04a12050 },	/* ASP-1-RX */
++	{ CS8409_PIN_ASP2_TRANSMITTER_A, 0x901000f0 },	/* ASP-2-TX */
++	{} /* terminator */
++};
++
+ /* Vendor specific HW configuration for CS42L42 */
+ static const struct cs8409_i2c_param cs42l42_init_reg_seq[] = {
+ 	{ CS42L42_I2C_TIMEOUT, 0xB0 },
+@@ -518,6 +525,11 @@ const struct snd_pci_quirk cs8409_fixup_tbl[] = {
+ 	SND_PCI_QUIRK(0x1028, 0x0B95, "Warlock MLK Dual Mic", CS8409_WARLOCK_MLK_DUAL_MIC),
+ 	SND_PCI_QUIRK(0x1028, 0x0B96, "Warlock MLK", CS8409_WARLOCK_MLK),
+ 	SND_PCI_QUIRK(0x1028, 0x0B97, "Warlock MLK Dual Mic", CS8409_WARLOCK_MLK_DUAL_MIC),
++	SND_PCI_QUIRK(0x1028, 0x0BA5, "Odin", CS8409_ODIN),
++	SND_PCI_QUIRK(0x1028, 0x0BA6, "Odin", CS8409_ODIN),
++	SND_PCI_QUIRK(0x1028, 0x0BA8, "Odin", CS8409_ODIN),
++	SND_PCI_QUIRK(0x1028, 0x0BAA, "Odin", CS8409_ODIN),
++	SND_PCI_QUIRK(0x1028, 0x0BAE, "Odin", CS8409_ODIN),
+ 	SND_PCI_QUIRK(0x1028, 0x0BB2, "Warlock MLK", CS8409_WARLOCK_MLK),
+ 	SND_PCI_QUIRK(0x1028, 0x0BB3, "Warlock MLK", CS8409_WARLOCK_MLK),
+ 	SND_PCI_QUIRK(0x1028, 0x0BB4, "Warlock MLK", CS8409_WARLOCK_MLK),
+@@ -545,6 +557,7 @@ const struct hda_model_fixup cs8409_models[] = {
+ 	{ .id = CS8409_WARLOCK_MLK_DUAL_MIC, .name = "warlock mlk dual mic" },
+ 	{ .id = CS8409_CYBORG, .name = "cyborg" },
+ 	{ .id = CS8409_DOLPHIN, .name = "dolphin" },
++	{ .id = CS8409_ODIN, .name = "odin" },
+ 	{}
+ };
+ 
+@@ -593,4 +606,10 @@ const struct hda_fixup cs8409_fixups[] = {
+ 		.type = HDA_FIXUP_FUNC,
+ 		.v.func = dolphin_fixups,
+ 	},
++	[CS8409_ODIN] = {
++		.type = HDA_FIXUP_PINS,
++		.v.pins = cs8409_cs42l42_pincfgs_no_dmic,
++		.chained = true,
++		.chain_id = CS8409_FIXUPS,
++	},
+ };
+diff --git a/sound/pci/hda/patch_cs8409.c b/sound/pci/hda/patch_cs8409.c
+index c3a8b04c71d8..91571e82d148 100644
+--- a/sound/pci/hda/patch_cs8409.c
++++ b/sound/pci/hda/patch_cs8409.c
+@@ -1027,6 +1027,10 @@ static void cs8409_cs42l42_hw_init(struct hda_codec *codec)
+ 		/* DMIC1_MO=00b, DMIC1/2_SR=1 */
+ 		cs8409_vendor_coef_set(codec, CS8409_DMIC_CFG, 0x0003);
+ 		break;
++	case CS8409_ODIN:
++		/* ASP1/2_xxx_EN=1, ASP1/2_MCLK_EN=0, DMIC1_SCL_EN=0 */
++		cs8409_vendor_coef_set(codec, CS8409_PAD_CFG_SLW_RATE_CTRL, 0xfc00);
++		break;
+ 	default:
+ 		break;
+ 	}
+@@ -1116,6 +1120,7 @@ void cs8409_cs42l42_fixups(struct hda_codec *codec, const struct hda_fixup *fix,
+ 
+ 		/* Set HSBIAS_SENSE_EN and Full Scale volume for some variants. */
+ 		switch (codec->fixup_id) {
++		case CS8409_ODIN:
+ 		case CS8409_WARLOCK_MLK:
+ 		case CS8409_WARLOCK_MLK_DUAL_MIC:
+ 			spec->scodecs[CS8409_CODEC0]->hsbias_hiz = 0x0020;
+@@ -1136,9 +1141,10 @@ void cs8409_cs42l42_fixups(struct hda_codec *codec, const struct hda_fixup *fix,
+ 		/* add hooks */
+ 		spec->gen.pcm_playback_hook = cs42l42_playback_pcm_hook;
+ 		spec->gen.pcm_capture_hook = cs42l42_capture_pcm_hook;
+-		/* Set initial DMIC volume to -26 dB */
+-		snd_hda_codec_amp_init_stereo(codec, CS8409_CS42L42_DMIC_ADC_PIN_NID,
+-					      HDA_INPUT, 0, 0xff, 0x19);
++		if (codec->fixup_id != CS8409_ODIN)
++			/* Set initial DMIC volume to -26 dB */
++			snd_hda_codec_amp_init_stereo(codec, CS8409_CS42L42_DMIC_ADC_PIN_NID,
++						      HDA_INPUT, 0, 0xff, 0x19);
+ 		snd_hda_gen_add_kctl(&spec->gen, "Headphone Playback Volume",
+ 				&cs42l42_dac_volume_mixer);
+ 		snd_hda_gen_add_kctl(&spec->gen, "Mic Capture Volume",
+diff --git a/sound/pci/hda/patch_cs8409.h b/sound/pci/hda/patch_cs8409.h
+index ebf473a3f109..9852dc4234b4 100644
+--- a/sound/pci/hda/patch_cs8409.h
++++ b/sound/pci/hda/patch_cs8409.h
+@@ -267,6 +267,7 @@ enum {
+ 	CS8409_FIXUPS,
+ 	CS8409_DOLPHIN,
+ 	CS8409_DOLPHIN_FIXUPS,
++	CS8409_ODIN,
+ };
+ 
+ enum {
+-- 
+2.25.1
 
