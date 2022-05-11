@@ -2,188 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D505C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 16:04:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3FECC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 16:04:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344295AbiEKQET (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 12:04:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46110 "EHLO
+        id S229622AbiEKQE0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 12:04:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344256AbiEKQEM (ORCPT
+        with ESMTP id S1344241AbiEKQEJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 12:04:12 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2700E19C3AA
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 09:04:09 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id a19so1966860pgw.6
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 09:04:09 -0700 (PDT)
+        Wed, 11 May 2022 12:04:09 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79E0719C3A4
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 09:04:08 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id bv19so5011357ejb.6
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 09:04:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Ia+/x8MZ9E6VPhirjhPy6yDuf0hwRPmpcA5xcDM4PWc=;
-        b=GrAs7bFYRhllSkDU1AB4GkixpiQjuApCo3+JdF+OkbWvQVUM/s4MB4LEm/3A2fwumk
-         Or6ebC96Eobbz4ZkeZdIauQAWhZ1j7wKcooIg9jBl3T5rj+6it/3UxmtldYjyB4AzSSQ
-         pjmAEYYytKjs55ZJHMAPN0arbZiJtHQgYXKSdaF8kJzlwobKQbqdiXIpyJx7xS9eekJF
-         ECFiI/82/12BOUH1csVQGDmw4PqC99ERrc/mA5YoWE1Mg4SDQ2qvqZd3N2bzeRsJeNsx
-         HGPO/ABm+LhhRSfwG2cVkWjl01/MEgMCnErWELrIdRD/D0zVucdiZhmQDGO2vsxugJ/S
-         gedw==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=wQ+4WhV6k9PLSLRu2ycXl8Jd/rTXVtAwxYwfDpJmHeQ=;
+        b=FQkLZaRRby2FjgefqVXwZG5cd45AVoW5mBxIPs4/ACAjlfIUckJBfr7AgNJi1sA2PE
+         ReehVHy+e71raZyAeffWYbk7GbIefoArYARSe77wZVjnD+2Lo9wxrNlVlhwG9W+YXezH
+         UKayJlTm+Q5LNRo3yWmDq1Oe0fUV42F59X2waMA6k5OADRwy1mCKDOztRyTvlDazQtKy
+         ipFNeMcr3uMJvngEOqbq68KVUZ8xU9bvzXIeGbWMwzpaDofS6Snx/XEqAJgtqn44AU6+
+         aUfO0pbfTmbtc5tf0dsM3GASHxBAoc1kg8Og7SFY40rubqtkzTDwV9bZQnurARlWEfaf
+         rcdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=Ia+/x8MZ9E6VPhirjhPy6yDuf0hwRPmpcA5xcDM4PWc=;
-        b=MhtacQm3N9v9QL7AlbWDRbGjQx6k/s9ZiwDVoFE0pWYC34AaslPrEJQ8yKcOeAJ/Be
-         yh6B0CosoyPPTyNPAEGkKp6q6ht8kW+AzeqzQ/KzKZoR3ljvzfxajp27PcJCtbPDG0ye
-         K1EzfUVi26WWTSnPUJEJo880V7ZOGg1HsDSWQ/E/9/loGJydSGS4hgZXbwF9LCrU0Nq/
-         CFThJOtNHqn7GUXpTb6+7wiFrpb8vIvbNL13yrXttcuD+adkJRNMjVBWQxPVm//mWE+W
-         qtpvVhmHYnlXza7/rd9/gnSSO0HWvf/tv0Oz4zbJfzQRj5zMK8NYsxQr0YL41LgPQCpj
-         Hvtw==
-X-Gm-Message-State: AOAM530vk9Lz/tib2HFxeelGWSGfeJA9WNEHWvkfS61+ErIRpcP81mGm
-        92usnSYmokI3EnPQuLHpzp9P0cuqdlkz5DhJ
-X-Google-Smtp-Source: ABdhPJygAUxl6K/K6Rudkipc4SNLTGDQMpOuCCcX3+DgENy853haMZz3csLQwlj4mQrXrARdCIQh0Q==
-X-Received: by 2002:a05:6a00:158c:b0:50f:83c5:c147 with SMTP id u12-20020a056a00158c00b0050f83c5c147mr25398144pfk.44.1652285048355;
-        Wed, 11 May 2022 09:04:08 -0700 (PDT)
-Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
-        by smtp.gmail.com with ESMTPSA id w11-20020a63c10b000000b003c14af50624sm42825pgf.60.2022.05.11.09.04.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 09:04:08 -0700 (PDT)
-Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
-From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-To:     Nick Desaulniers <ndesaulniers@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, David Howells <dhowells@redhat.com>,
-        Jan Beulich <JBeulich@suse.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH v2 2/2] x86/asm/bitops: __ffs,ffz: use __builtin_ctzl to evaluate constant expressions
-Date:   Thu, 12 May 2022 01:03:19 +0900
-Message-Id: <20220511160319.1045812-3-mailhol.vincent@wanadoo.fr>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220511160319.1045812-1-mailhol.vincent@wanadoo.fr>
-References: <20220511160319.1045812-1-mailhol.vincent@wanadoo.fr>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=wQ+4WhV6k9PLSLRu2ycXl8Jd/rTXVtAwxYwfDpJmHeQ=;
+        b=GbDQbHAPNd5P8ZFku5IWEZCPkIkN2ujw2m1japUadDpJWbOP1KEHR7L3JbDkPDFD5S
+         GDAF/4bnYgFZ17QGjuFoXgECxd2JF+2Dw0Z1GuvYsWeneZXm3Xa34PH/6fAUfD2H0fzo
+         zPZqbeUzxLp8UUi2yIrPtbRiXAdYgTgn2wPEIQF73IWhKWTvjXZXo+3poTy/RjQFbVfU
+         h81x5TgfiLTC8cXDe/NnwuS7Nlvy2kkwDhe5jLWvu5CX9jmU/lOIlI6W6l36qmGOXXOq
+         bDhp56xL6FUW4vqkNio+4hzwsdRvlTyjMzLjqYJKcAnUKNF3AV2d1cQjNmuUb+QW8Xma
+         +RRA==
+X-Gm-Message-State: AOAM530iFIS9GYsQqW964fn/cwebK4EPQB/aU4SEA7ikSrIWSGbUO1ar
+        zVbCPthhAhBIhiJmw7N4h1CqPA==
+X-Google-Smtp-Source: ABdhPJyzXUV5jsqnDfWfN4VVucH3ddXpg1wmvj8zlxv9ouygUIznS3UcqdagiJVmiKJiJn3K6R3VJA==
+X-Received: by 2002:a17:906:dc93:b0:6f4:6a27:41ed with SMTP id cs19-20020a170906dc9300b006f46a2741edmr25797324ejc.36.1652285047009;
+        Wed, 11 May 2022 09:04:07 -0700 (PDT)
+Received: from [192.168.0.155] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id f19-20020a50ee93000000b0042617ba63b1sm1325703edr.59.2022.05.11.09.04.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 May 2022 09:04:06 -0700 (PDT)
+Message-ID: <9dd9d22c-6933-3790-35e8-8de197d05d39@linaro.org>
+Date:   Wed, 11 May 2022 18:04:05 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 2/3] MIPS: Loongson64: DTS: Add Loongson-2K1000 DTS
+ related smp support
+Content-Language: en-US
+To:     Qing Zhang <zhangqing@loongson.cn>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>
+Cc:     devicetree@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, yangtiezhu@loongson.cn
+References: <20220511083007.17700-1-zhangqing@loongson.cn>
+ <20220511083007.17700-2-zhangqing@loongson.cn>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220511083007.17700-2-zhangqing@loongson.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-__ffs(x) is equivalent to (unsigned long)__builtin_ctzl(x) and ffz(x)
-is equivalent to (unsigned long)__builtin_ctzl(~x). Because
-__builting_ctzl() returns an int, a cast to (unsigned long) is
-necessary to avoid potential warnings on implicit casts.
+On 11/05/2022 10:30, Qing Zhang wrote:
+> Add the device tree node and connect it to the CPU nodes.
 
-For x86_64, the current __ffs() and ffz() implementations do not
-produce optimized code when called with a constant expression. On the
-contrary, the __builtin_ctzl() gets simplified into a single
-instruction.
+>  
+> +	ipi: interrupt-controller@1fe11000 {
+> +		compatible = "loongson, mmio-ipi";
 
-However, for non constant expressions, the __ffs() and ffz() asm
-versions of the kernel remains slightly better than the code produced
-by GCC (it produces a useless instruction to clear eax).
+No spaces in compatibles. The compatible needs bindings.
 
-This patch uses the __builtin_constant_p() to select between the
-kernel's __ffs()/ffz() and the __builtin_ctzl() depending on whether
-the argument is constant or not.
 
-** Statistics **
-
-On a allyesconfig, before applying this patch...:
-
-| $ objdump -d vmlinux.o | grep tzcnt | wc -l
-| 3607
-
-...and after:
-
-| $ objdump -d vmlinux.o | grep tzcnt | wc -l
-| 2600
-
-So, roughly 27.9% of the call to either __ffs() or ffz() were using
-constant expression and were optimized out.
-
-(tests done on linux v5.18-rc5 x86_64 using GCC 11.2.1)
-
-Note: on x86_64, the asm bsf instruction produces tzcnt when used with
-the ret prefix (which is why we grep tzcnt instead of bsf in above
-benchmark). c.f. [1]
-
-[1] commit e26a44a2d618 ("x86: Use REP BSF unconditionally")
-http://lkml.kernel.org/r/5058741E020000780009C014@nat28.tlf.novell.com
-
-CC: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
----
- arch/x86/include/asm/bitops.h | 38 ++++++++++++++++++++++-------------
- 1 file changed, 24 insertions(+), 14 deletions(-)
-
-diff --git a/arch/x86/include/asm/bitops.h b/arch/x86/include/asm/bitops.h
-index 6ed979547086..7cf5374ce403 100644
---- a/arch/x86/include/asm/bitops.h
-+++ b/arch/x86/include/asm/bitops.h
-@@ -224,13 +224,7 @@ static __always_inline bool variable_test_bit(long nr, volatile const unsigned l
- 	 ? constant_test_bit((nr), (addr))	\
- 	 : variable_test_bit((nr), (addr)))
- 
--/**
-- * __ffs - find first set bit in word
-- * @word: The word to search
-- *
-- * Undefined if no bit exists, so code should check against 0 first.
-- */
--static __always_inline unsigned long __ffs(unsigned long word)
-+static __always_inline unsigned long __variable_ffs(unsigned long word)
- {
- 	asm("rep; bsf %1,%0"
- 		: "=r" (word)
-@@ -238,13 +232,18 @@ static __always_inline unsigned long __ffs(unsigned long word)
- 	return word;
- }
- 
--/**
-- * ffz - find first zero bit in word
-- * @word: The word to search
-- *
-- * Undefined if no zero exists, so code should check against ~0UL first.
-- */
--static __always_inline unsigned long ffz(unsigned long word)
-+/**
-+ * __ffs - find first set bit in word
-+ * @word: The word to search
-+ *
-+ * Undefined if no bit exists, so code should check against 0 first.
-+ */
-+#define __ffs(word)				\
-+	(__builtin_constant_p(word) ?		\
-+	 (unsigned long)__builtin_ctzl(word) :	\
-+	 __variable_ffs(word))
-+
-+static __always_inline unsigned long __variable_ffz(unsigned long word)
- {
- 	asm("rep; bsf %1,%0"
- 		: "=r" (word)
-@@ -252,6 +251,17 @@ static __always_inline unsigned long ffz(unsigned long word)
- 	return word;
- }
- 
-+/**
-+ * ffz - find first zero bit in word
-+ * @word: The word to search
-+ *
-+ * Undefined if no zero exists, so code should check against ~0UL first.
-+ */
-+#define ffz(word)				\
-+	(__builtin_constant_p(word) ?		\
-+	 (unsigned long)__builtin_ctzl(~word) :	\
-+	 __variable_ffz(word))
-+
- /*
-  * __fls: find last set bit in word
-  * @word: The word to search
--- 
-2.35.1
-
+Best regards,
+Krzysztof
