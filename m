@@ -2,157 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDCCEC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:47:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA687C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:47:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241552AbiEKCri (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 22:47:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59330 "EHLO
+        id S237195AbiEKCrq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 22:47:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243072AbiEKCjZ (ORCPT
+        with ESMTP id S243334AbiEKCkf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 22:39:25 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2532D20F4C4;
-        Tue, 10 May 2022 19:39:24 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id e24so939697pjt.2;
-        Tue, 10 May 2022 19:39:24 -0700 (PDT)
+        Tue, 10 May 2022 22:40:35 -0400
+Received: from mail-oo1-xc32.google.com (mail-oo1-xc32.google.com [IPv6:2607:f8b0:4864:20::c32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B91C20F4C6
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:40:32 -0700 (PDT)
+Received: by mail-oo1-xc32.google.com with SMTP id f6-20020a4ace86000000b0035f083d2216so746291oos.4
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:40:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=9kjW2+BUaG5dAg75KTS2BoQJOyztH7zdTTB6sE8wkvg=;
-        b=e2RpEO+Xb16iJPf82bSyFSpgb5tCllYsjaWUlqEGAyfYnwxN+CVVQGcWMfEZgeE26e
-         mxQMKFb7e+m2Oa/H5PtSAVUqygiW7sx8bu4AylbOlYMVpIlL6NrlTXPmDmnMxBvouWoF
-         P3rkbWtKb1JtuHSi0a3cQe40GXEQqhGXhf7riIO4CDSt1GIYkS43manuSiX63yZCG3Ia
-         8venfR0zWEQ7A5KsIaFc4U6M+T8zwdqCVLLeUuOGVMKyTpKE3iT9aUzyvJbZln2EHMEK
-         4h/p1K33Ifpb9EbrJiqETTNp4CqcqfJ5cQL0kFTKYhKg8xa/EHA81tE9xZwipRWf97WW
-         yNxQ==
+        d=endlessos.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=jtaiydWG/wHEMbYT/FSFofg9mXlu8btSO46ZLTfW2rA=;
+        b=eGyFVrO10lmw+zfaf5pcltLktNJ/1CbPOHymz7tN2r3TOcOAfeRKz40YqA963vP6Sj
+         4+pnLx6kifsxT1QTpSkWWCvT4wJFDRgxVEoNYJTNnEUcNXwtYAow1ohLI7MDL0WpObqn
+         gZ1nDsuhO86xqC+aFz2sB7vp0Ouj/1FMnmCy72wpLNUxqg+7C/l6Mo2WdgmQGLgSzuZk
+         OFFxkfvg12/OVpCkcbcp4SILs5YLxNRAHP7/XiWcAZIdRMXK7xsXq8bAqaFQKeaBgyhA
+         +uf0OmAUGoclt2ZWaXD3s1vaf6OuMtxkT6nDPaBm+PzUVYwoyq1a668E06SVvS8yzasc
+         AVlg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=9kjW2+BUaG5dAg75KTS2BoQJOyztH7zdTTB6sE8wkvg=;
-        b=lM/Dykjt64anyHxaXpdlgW4hFOmIdV1OFFEYlnmAUMtvWcbPo1vvQor93Ut2A0M21X
-         EmQwGKM9BXcCuFZT0p0hiFQBzBzG6ZVkKISsk40WgEFqTgYMH0KF+6CWMcFaeYrRxBGu
-         D4RNvyv2HUBIt5JCaqCfv/ee3PNvhaznoErEYcWBvFUtcLI3Upyi1aZf8KmNrztoaG8w
-         FVrRZyvj0XyKDG/27joueqR0qp016KybPcqkCkWJxhM66+eV1x5zWHpB9yHVUaBCLraa
-         YY8v50qt6TtPu2OBtJSmRXuIsUm59KSItN8sJmiRPswEeo53YSSyNrNUB5jNT5m8rO8O
-         o2WA==
-X-Gm-Message-State: AOAM530fUjRfKoZiWqnJNMk02+F501RJght3/cakLo7pS+nEODQWIjSq
-        vBUEz1oQmAGEwRlyWrtIkVcOH0wiFpk=
-X-Google-Smtp-Source: ABdhPJzXfRKcIKSYQxNUXDidC6u9nRCrN+fGn47n/Q+lLQ+Y3tiaUSsBNzuhz3575/vCBC3yYhkF5Q==
-X-Received: by 2002:a17:902:ee93:b0:15f:186a:6a13 with SMTP id a19-20020a170902ee9300b0015f186a6a13mr9959166pld.7.1652236763422;
-        Tue, 10 May 2022 19:39:23 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.119])
-        by smtp.googlemail.com with ESMTPSA id j64-20020a638b43000000b003c659b92b8fsm425610pge.32.2022.05.10.19.39.21
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 10 May 2022 19:39:23 -0700 (PDT)
-From:   Wanpeng Li <kernellwp@gmail.com>
-X-Google-Original-From: Wanpeng Li <wanpengli@tencent.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH v2 2/2] x86/kvm: handle the failure of __pv_cpu_mask allocation
-Date:   Tue, 10 May 2022 19:38:30 -0700
-Message-Id: <1652236710-36524-2-git-send-email-wanpengli@tencent.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1652236710-36524-1-git-send-email-wanpengli@tencent.com>
-References: <1652236710-36524-1-git-send-email-wanpengli@tencent.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=jtaiydWG/wHEMbYT/FSFofg9mXlu8btSO46ZLTfW2rA=;
+        b=alsI+gWaaoaRGChDRTy6L0hfyC97zpwoBiZxlsELApeER2618fIGdAFfCDD+F3NJp/
+         AbsskwfebhAU+yJT8Km76mlJjCmZ4xp2kdMEU6e1+rASVuYEtrFe21hZd72QWI3Eb/xx
+         8yR9ek8Cfx/0yeDu6J2fgY+F2iwcoxqLmQjnlx9TqVA7k49f93xWhmIH0/Ye28ia+nrf
+         KCqJyb3nFm8d1LPptiywcL3S6w8XAN+1Ek/eFr8R9L4ve0Dl9CbsPpKs5GYDyx9xpjKo
+         8cm2gbrrQI2tQnRt/cwz1+kxMpGxZulfB8ZVWPZJIKy+T7ZrwEsuvlKZYMsTWQGJrH6n
+         i4NQ==
+X-Gm-Message-State: AOAM533zoNgGajxzB8+GtFhx1knaI4luIotQjHk3lnrVW3+LCVzDnAaF
+        oC1xJvG1tLcQus9cVsyettrWc/Zess7CkueptYILZg==
+X-Google-Smtp-Source: ABdhPJz+ei/hQMAcBiVGCP/disKXAMzLMiX0vJBayUYqAiRMua51m3bNh5IsKSq1ogoNfL8nyG0RKn+rtIE9XjUvhAU=
+X-Received: by 2002:a05:6830:246f:b0:606:bbb:f613 with SMTP id
+ x47-20020a056830246f00b006060bbbf613mr8997032otr.102.1652236831957; Tue, 10
+ May 2022 19:40:31 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220510131136.1103-1-mario.limonciello@amd.com>
+In-Reply-To: <20220510131136.1103-1-mario.limonciello@amd.com>
+From:   Jian-Hong Pan <jhp@endlessos.org>
+Date:   Wed, 11 May 2022 10:39:25 +0800
+Message-ID: <CAPpJ_efn1YiLRtbhNwDEr8j+jJfZrHBM9fukDJpuH0czJpgRTQ@mail.gmail.com>
+Subject: Re: [PATCH] ACPI: PM: Block ASUS B1400CEAE from suspend to idle by default
+To:     Mario Limonciello <mario.limonciello@amd.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        "open list:ACPI" <linux-acpi@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wanpeng Li <wanpengli@tencent.com>
+Mario Limonciello <mario.limonciello@amd.com> =E6=96=BC 2022=E5=B9=B45=E6=
+=9C=8810=E6=97=A5 =E9=80=B1=E4=BA=8C =E4=B8=8B=E5=8D=889:11=E5=AF=AB=E9=81=
+=93=EF=BC=9A
+>
+> ASUS B1400CEAE fails to resume from suspend to idle by default.  This was
+> bisected back to commit df4f9bc4fb9c ("nvme-pci: add support for ACPI
+> StorageD3Enable property") but this is a red herring to the problem.
+>
+> Before this commit the system wasn't getting into deepest sleep state.
+> Presumably this commit is allowing entry into deepest sleep state as
+> advertised by firmware, but there are some other problems related to
+> the wakeup.
+>
+> As it is confirmed the system works properly with S3, set the default for
+> this system to S3.
+>
+> Reported-by: Jian-Hong Pan <jhp@endlessos.org>
+> Link: https://bugzilla.kernel.org/show_bug.cgi?id=3D215742
+> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+> ---
+>  drivers/acpi/sleep.c | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+>
+> diff --git a/drivers/acpi/sleep.c b/drivers/acpi/sleep.c
+> index c992e57b2c79..3147702710af 100644
+> --- a/drivers/acpi/sleep.c
+> +++ b/drivers/acpi/sleep.c
+> @@ -373,6 +373,18 @@ static const struct dmi_system_id acpisleep_dmi_tabl=
+e[] __initconst =3D {
+>                 DMI_MATCH(DMI_PRODUCT_NAME, "20GGA00L00"),
+>                 },
+>         },
+> +       /*
+> +        * ASUS B1400CEAE hangs on resume from suspend (see
+> +        * https://bugzilla.kernel.org/show_bug.cgi?id=3D215742).
+> +        */
+> +       {
+> +       .callback =3D init_default_s3,
+> +       .ident =3D "ASUS B1400CEAE",
+> +       .matches =3D {
+> +               DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+> +               DMI_MATCH(DMI_PRODUCT_NAME, "ASUS EXPERTBOOK B1400CEAE"),
+> +               },
+> +       },
+>         {},
+>  };
+>
+> --
+> 2.34.1
+>
 
-Fallback to native ipis/tlb flush if fails to allocate __pv_cpu_mask.
-
-Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
----
-v1 -> v2:
- * move orig_apic under CONFIG_SMP
-
- arch/x86/kernel/kvm.c | 26 ++++++++++++++++++++++++--
- 1 file changed, 24 insertions(+), 2 deletions(-)
-
-diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
-index 8b1c45c9cda8..ce03121d038b 100644
---- a/arch/x86/kernel/kvm.c
-+++ b/arch/x86/kernel/kvm.c
-@@ -457,6 +457,7 @@ static int kvm_cpu_online(unsigned int cpu)
- 
- #ifdef CONFIG_SMP
- 
-+static struct apic orig_apic;
- static DEFINE_PER_CPU(cpumask_var_t, __pv_cpu_mask);
- 
- static bool pv_tlb_flush_supported(void)
-@@ -543,6 +544,11 @@ static void __send_ipi_mask(const struct cpumask *mask, int vector)
- 
- static void kvm_send_ipi_mask(const struct cpumask *mask, int vector)
- {
-+	if (unlikely(!this_cpu_cpumask_var_ptr(__pv_cpu_mask))) {
-+		orig_apic.send_IPI_mask(mask, vector);
-+		return;
-+	}
-+
- 	__send_ipi_mask(mask, vector);
- }
- 
-@@ -552,6 +558,11 @@ static void kvm_send_ipi_mask_allbutself(const struct cpumask *mask, int vector)
- 	struct cpumask *new_mask = this_cpu_cpumask_var_ptr(__pv_cpu_mask);
- 	const struct cpumask *local_mask;
- 
-+	if (unlikely(!new_mask)) {
-+		orig_apic.send_IPI_mask_allbutself(mask, vector);
-+		return;
-+	}
-+
- 	cpumask_copy(new_mask, mask);
- 	cpumask_clear_cpu(this_cpu, new_mask);
- 	local_mask = new_mask;
-@@ -612,6 +623,7 @@ late_initcall(setup_efi_kvm_sev_migration);
-  */
- static void kvm_setup_pv_ipi(void)
- {
-+	orig_apic = *apic;
- 	apic->send_IPI_mask = kvm_send_ipi_mask;
- 	apic->send_IPI_mask_allbutself = kvm_send_ipi_mask_allbutself;
- 	pr_info("setup PV IPIs\n");
-@@ -640,6 +652,11 @@ static void kvm_flush_tlb_multi(const struct cpumask *cpumask,
- 	struct kvm_steal_time *src;
- 	struct cpumask *flushmask = this_cpu_cpumask_var_ptr(__pv_cpu_mask);
- 
-+	if (unlikely(!flushmask)) {
-+		native_flush_tlb_multi(cpumask, info);
-+		return;
-+	}
-+
- 	cpumask_copy(flushmask, cpumask);
- 	/*
- 	 * We have to call flush only on online vCPUs. And
-@@ -672,11 +689,16 @@ static __init int kvm_alloc_cpumask(void)
- 
- 	if (pv_tlb_flush_supported() || pv_ipi_supported())
- 		for_each_possible_cpu(cpu) {
--			zalloc_cpumask_var_node(per_cpu_ptr(&__pv_cpu_mask, cpu),
--				GFP_KERNEL, cpu_to_node(cpu));
-+			if (!zalloc_cpumask_var_node(&per_cpu(__pv_cpu_mask, cpu),
-+				GFP_KERNEL, cpu_to_node(cpu)))
-+				goto err_out;
- 		}
- 
- 	return 0;
-+err_out:
-+	for_each_possible_cpu(cpu)
-+		free_cpumask_var(per_cpu(__pv_cpu_mask, cpu));
-+	return -ENOMEM;
- }
- arch_initcall(kvm_alloc_cpumask);
- 
--- 
-2.25.1
-
+Tested-by: Jian-Hong Pan <jhp@endlessos.org>
