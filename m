@@ -2,259 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D3AEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 12:06:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D6F3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 12:07:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241394AbiEKMGy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 08:06:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35938 "EHLO
+        id S231384AbiEKMHJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 08:07:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241923AbiEKMGC (ORCPT
+        with ESMTP id S241942AbiEKMGC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 11 May 2022 08:06:02 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9007C1D0CA
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 05:05:55 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id q76so1597424pgq.10
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 05:05:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=EUeoFaHcdNp2/XWyexfdIxcC8AKpt3b8FPhNHmNGojs=;
-        b=RtfzsgVzrcRF+9kn3ogyVY2RxwH/gM+JFOkNeZPOp9Bk5GD3ZqNLQoa15Hd4+NU0Sk
-         Eu6Ugf5Phtk7HuJOag4X32+5rvT9dX+KKsbQWO38gIQ4Vk3Flv/MZqdlmZ9quWTb2pHO
-         tGGD+ehjrBTUEXAuPq8P+QLmx7wfKuBcZ9KrYr8FsgY/TlB8iXRkAxXdws7bHu4jzyg6
-         vio1HhNGN02VDxZG8bP7uDH4uS67rBuHrrHJU/EiDJAS0ugnzJZXjksnkIVXM0soGFxJ
-         XjNBVjCLtcIbQZ808LJeUpJdTBELrbh9aWqGE35Ad3Y7wZY30+a6cbDLah070LoRiikC
-         LzXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=EUeoFaHcdNp2/XWyexfdIxcC8AKpt3b8FPhNHmNGojs=;
-        b=X8DMDIOiX2labpGf7RuBiq9FsMnQWeAsfMBrsWTl14rNlhctwHHEQFOJTsuYZrvJor
-         j6wcZUch1flEL7sYXcJ/QJrVFr2BiuiaY1RlJqoa4UgIM0l0l0Asrp45sxS+VN7htxag
-         f0UnwhHeJzoKJ+Cp06pZfTU5ZsqSwFLChATpx5VMVQL4anTNlzZLJMVlPrt0h/TGp5BV
-         POz2ttqNH3FLlMs5Xn6p8XkhD4qSmhYvzd9rrtpqdryoSaSWR9kzeG+3Adw51NkmdOJ9
-         AFbim08wYX82G0TrMiWou4fwjakD8J4dXiAPgoYJmxK5nMLBlBcBTBHcxmRepkm627J2
-         szDg==
-X-Gm-Message-State: AOAM530t7oSKyv7gt8lLLr7dQHGZqxn/hoECGJ57kGyRx610GX8T2nZd
-        MwoHtmpMk7xcgrjXpJkwtHj/lg==
-X-Google-Smtp-Source: ABdhPJy6UZgaU2Bph/hLlzaXes5fGZusFXn1+11hDb5/EzdfDCIBWKmn9vAbDHyyUvmZeETg/8zEfQ==
-X-Received: by 2002:a05:6a00:882:b0:510:a043:d4bc with SMTP id q2-20020a056a00088200b00510a043d4bcmr15631078pfj.64.1652270754483;
-        Wed, 11 May 2022 05:05:54 -0700 (PDT)
-Received: from [10.70.253.117] ([139.177.225.250])
-        by smtp.gmail.com with ESMTPSA id v4-20020a17090331c400b0015e8d4eb27esm1635122ple.200.2022.05.11.05.05.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 May 2022 05:05:54 -0700 (PDT)
-Message-ID: <4f04f101-53c1-0ac8-c7e8-ff2999ed35ba@bytedance.com>
-Date:   Wed, 11 May 2022 20:05:47 +0800
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D876815721;
+        Wed, 11 May 2022 05:05:49 -0700 (PDT)
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24BBU3g4031186;
+        Wed, 11 May 2022 12:05:48 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=TExYozb6mygXwsguxxUT/z3UiHJ6Se3ufGdH6QQizqo=;
+ b=AlU3J13JXDJ8wanEzDP1e3JcNEjpyq6ysEnGzpL2J+KnlsclxYozjn9kAU9UI4labIG4
+ 8fd96YIe809LYlHSIpigslXeApAG5mlvh+t6ukRdssr5R+vy7JvOWgieVAOnPX6ZHI6C
+ GWhEtTHkTNjMn+1K6lJnT9BTVGb0iPt0yJVcLaemdTS9w0W6C0ojEeSvCJkMZ8w03ITI
+ WgThOXmaf2yuI91vfTmOnvX2m3QWtFXvM58mwODOZ7Bz7xOxkb6TuJRUl8gkPzejmbBB
+ JeeNP3KVR3O2PHwJe5bb4BIYdBQe74N9RgoCSvecPWYbhDoshH9caxbuv5G6RChja7lG kA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g096y46qh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 11 May 2022 12:05:42 +0000
+Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24BBsfvV019810;
+        Wed, 11 May 2022 12:05:42 GMT
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g096y46ph-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 11 May 2022 12:05:42 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24BC3cZe022265;
+        Wed, 11 May 2022 12:05:40 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma01fra.de.ibm.com with ESMTP id 3fwgd8m7hn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 11 May 2022 12:05:39 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24BC5ZjO39911736
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 11 May 2022 12:05:35 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7A5AEA4040;
+        Wed, 11 May 2022 12:05:35 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 23C16A4051;
+        Wed, 11 May 2022 12:05:35 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 11 May 2022 12:05:35 +0000 (GMT)
+From:   Heiko Carstens <hca@linux.ibm.com>
+To:     Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Jonas Paulsson <paulsson@linux.vnet.ibm.com>,
+        Ulrich Weigand <ulrich.weigand@de.ibm.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Alexander Egorenkov <egorenar@linux.ibm.com>
+Cc:     Sven Schnelle <svens@linux.ibm.com>,
+        Andreas Krebbel <krebbel@linux.ibm.com>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
+Subject: [PATCH 5/8] s390/purgatory: workaround llvm's IAS limitations
+Date:   Wed, 11 May 2022 14:05:29 +0200
+Message-Id: <20220511120532.2228616-6-hca@linux.ibm.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220511120532.2228616-1-hca@linux.ibm.com>
+References: <20220511120532.2228616-1-hca@linux.ibm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.8.1
-Subject: Re: [PATCH] sched/fair: optimize and simplify rq leaf_cfs_rq_list
-Content-Language: en-US
-To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com
-Cc:     linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
-        songmuchun@bytedance.com, zhengqi.arch@bytedance.com
-References: <20220427160544.40309-1-zhouchengming@bytedance.com>
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-In-Reply-To: <20220427160544.40309-1-zhouchengming@bytedance.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: blPOUT8fxAgzGvo8RWHqcyGSfs0TQzYK
+X-Proofpoint-ORIG-GUID: veuql7yuWG9Y9qKJzQkFtv-U05bKs9Mo
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-11_03,2022-05-11_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ bulkscore=0 adultscore=0 suspectscore=0 lowpriorityscore=0 malwarescore=0
+ phishscore=0 spamscore=0 impostorscore=0 clxscore=1015 mlxscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205110056
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello, friendly ping...
+llvm's integrated assembler cannot handle immediate values which are
+calculated with two local labels:
 
+arch/s390/purgatory/head.S:139:11: error: invalid operand for instruction
+ aghi %r8,-(.base_crash-purgatory_start)
 
-On 2022/4/28 00:05, Chengming Zhou wrote:
-> We notice the rq leaf_cfs_rq_list has two problems when do bugfix
-> backports and some test profiling.
-> 
-> 1. cfs_rqs under throttled subtree could be added to the list, and
->    make their fully decayed ancestors on the list, even though not needed.
-> 
-> 2. #1 also make the leaf_cfs_rq_list management complex and error prone,
->    this is the list of related bugfix so far:
-> 
->    commit 31bc6aeaab1d ("sched/fair: Optimize update_blocked_averages()")
->    commit fe61468b2cbc ("sched/fair: Fix enqueue_task_fair warning")
->    commit b34cb07dde7c ("sched/fair: Fix enqueue_task_fair() warning some more")
->    commit 39f23ce07b93 ("sched/fair: Fix unthrottle_cfs_rq() for leaf_cfs_rq list")
->    commit 0258bdfaff5b ("sched/fair: Fix unfairness caused by missing load decay")
->    commit a7b359fc6a37 ("sched/fair: Correctly insert cfs_rq's to list on unthrottle")
->    commit fdaba61ef8a2 ("sched/fair: Ensure that the CFS parent is added after unthrottling")
->    commit 2630cde26711 ("sched/fair: Add ancestors of unthrottled undecayed cfs_rq")
-> 
-> commit 31bc6aeaab1d ("sched/fair: Optimize update_blocked_averages()")
-> delete every cfs_rq under throttled subtree from rq->leaf_cfs_rq_list,
-> and delete the throttled_hierarchy() test in update_blocked_averages(),
-> which optimized update_blocked_averages().
-> 
-> But those later bugfix add cfs_rqs under throttled subtree back to
-> rq->leaf_cfs_rq_list again, with their fully decayed ancestors, for
-> the integrity of rq->leaf_cfs_rq_list.
-> 
-> This patch takes another method, skip all cfs_rqs under throttled
-> hierarchy when list_add_leaf_cfs_rq(), to completely make cfs_rqs
-> under throttled subtree off the leaf_cfs_rq_list.
-> 
-> So we don't need to consider throttled related things in
-> enqueue_entity(), unthrottle_cfs_rq() and enqueue_task_fair(),
-> which simplify the code a lot. Also optimize update_blocked_averages()
-> since cfs_rqs under throttled hierarchy and their ancestors
-> won't be on the leaf_cfs_rq_list.
-> 
-> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-> ---
->  kernel/sched/fair.c | 72 ++++++++++-----------------------------------
->  1 file changed, 16 insertions(+), 56 deletions(-)
-> 
-> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> index 1ad18b5cc1b8..083c3d32c899 100644
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -309,6 +309,8 @@ const struct sched_class fair_sched_class;
->  
->  #ifdef CONFIG_FAIR_GROUP_SCHED
->  
-> +static inline int throttled_hierarchy(struct cfs_rq *cfs_rq);
-> +
->  /* Walk up scheduling entities hierarchy */
->  #define for_each_sched_entity(se) \
->  		for (; se; se = se->parent)
-> @@ -331,7 +333,7 @@ static inline bool list_add_leaf_cfs_rq(struct cfs_rq *cfs_rq)
->  	struct rq *rq = rq_of(cfs_rq);
->  	int cpu = cpu_of(rq);
->  
-> -	if (cfs_rq->on_list)
-> +	if (cfs_rq->on_list || throttled_hierarchy(cfs_rq))
->  		return rq->tmp_alone_branch == &rq->leaf_cfs_rq_list;
->  
->  	cfs_rq->on_list = 1;
-> @@ -3242,8 +3244,6 @@ static long calc_group_shares(struct cfs_rq *cfs_rq)
->  }
->  #endif /* CONFIG_SMP */
->  
-> -static inline int throttled_hierarchy(struct cfs_rq *cfs_rq);
-> -
->  /*
->   * Recomputes the group entity based on the current state of its group
->   * runqueue.
-> @@ -4356,16 +4356,10 @@ enqueue_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
->  		__enqueue_entity(cfs_rq, se);
->  	se->on_rq = 1;
->  
-> -	/*
-> -	 * When bandwidth control is enabled, cfs might have been removed
-> -	 * because of a parent been throttled but cfs->nr_running > 1. Try to
-> -	 * add it unconditionally.
-> -	 */
-> -	if (cfs_rq->nr_running == 1 || cfs_bandwidth_used())
-> +	if (cfs_rq->nr_running == 1) {
->  		list_add_leaf_cfs_rq(cfs_rq);
-> -
-> -	if (cfs_rq->nr_running == 1)
->  		check_enqueue_throttle(cfs_rq);
-> +	}
->  }
->  
->  static void __clear_buddies_last(struct sched_entity *se)
-> @@ -4980,11 +4974,18 @@ void unthrottle_cfs_rq(struct cfs_rq *cfs_rq)
->  	/* update hierarchical throttle state */
->  	walk_tg_tree_from(cfs_rq->tg, tg_nop, tg_unthrottle_up, (void *)rq);
->  
-> -	/* Nothing to run but something to decay (on_list)? Complete the branch */
->  	if (!cfs_rq->load.weight) {
-> -		if (cfs_rq->on_list)
-> -			goto unthrottle_throttle;
-> -		return;
-> +		if (!cfs_rq->on_list)
-> +			return;
-> +		/*
-> +		 * Nothing to run but something to decay (on_list)?
-> +		 * Complete the branch.
-> +		 */
-> +		for_each_sched_entity(se) {
-> +			if (list_add_leaf_cfs_rq(cfs_rq_of(se)))
-> +				break;
-> +		}
-> +		goto unthrottle_throttle;
->  	}
->  
->  	task_delta = cfs_rq->h_nr_running;
-> @@ -5022,31 +5023,12 @@ void unthrottle_cfs_rq(struct cfs_rq *cfs_rq)
->  		/* end evaluation on encountering a throttled cfs_rq */
->  		if (cfs_rq_throttled(qcfs_rq))
->  			goto unthrottle_throttle;
-> -
-> -		/*
-> -		 * One parent has been throttled and cfs_rq removed from the
-> -		 * list. Add it back to not break the leaf list.
-> -		 */
-> -		if (throttled_hierarchy(qcfs_rq))
-> -			list_add_leaf_cfs_rq(qcfs_rq);
->  	}
->  
->  	/* At this point se is NULL and we are at root level*/
->  	add_nr_running(rq, task_delta);
->  
->  unthrottle_throttle:
-> -	/*
-> -	 * The cfs_rq_throttled() breaks in the above iteration can result in
-> -	 * incomplete leaf list maintenance, resulting in triggering the
-> -	 * assertion below.
-> -	 */
-> -	for_each_sched_entity(se) {
-> -		struct cfs_rq *qcfs_rq = cfs_rq_of(se);
-> -
-> -		if (list_add_leaf_cfs_rq(qcfs_rq))
-> -			break;
-> -	}
-> -
->  	assert_list_leaf_cfs_rq(rq);
->  
->  	/* Determine whether we need to wake up potentially idle CPU: */
-> @@ -5701,13 +5683,6 @@ enqueue_task_fair(struct rq *rq, struct task_struct *p, int flags)
->  		/* end evaluation on encountering a throttled cfs_rq */
->  		if (cfs_rq_throttled(cfs_rq))
->  			goto enqueue_throttle;
-> -
-> -               /*
-> -                * One parent has been throttled and cfs_rq removed from the
-> -                * list. Add it back to not break the leaf list.
-> -                */
-> -               if (throttled_hierarchy(cfs_rq))
-> -                       list_add_leaf_cfs_rq(cfs_rq);
->  	}
->  
->  	/* At this point se is NULL and we are at root level*/
-> @@ -5731,21 +5706,6 @@ enqueue_task_fair(struct rq *rq, struct task_struct *p, int flags)
->  		update_overutilized_status(rq);
->  
->  enqueue_throttle:
-> -	if (cfs_bandwidth_used()) {
-> -		/*
-> -		 * When bandwidth control is enabled; the cfs_rq_throttled()
-> -		 * breaks in the above iteration can result in incomplete
-> -		 * leaf list maintenance, resulting in triggering the assertion
-> -		 * below.
-> -		 */
-> -		for_each_sched_entity(se) {
-> -			cfs_rq = cfs_rq_of(se);
-> -
-> -			if (list_add_leaf_cfs_rq(cfs_rq))
-> -				break;
-> -		}
-> -	}
-> -
->  	assert_list_leaf_cfs_rq(rq);
->  
->  	hrtick_update(rq);
+Workaround this by partially rewriting the code.
+
+Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+---
+ arch/s390/purgatory/head.S | 29 ++++++++++++++++++++++-------
+ 1 file changed, 22 insertions(+), 7 deletions(-)
+
+diff --git a/arch/s390/purgatory/head.S b/arch/s390/purgatory/head.S
+index 3d1c31e0cf3d..ac1a27a20b66 100644
+--- a/arch/s390/purgatory/head.S
++++ b/arch/s390/purgatory/head.S
+@@ -44,11 +44,14 @@
+ .endm
+ 
+ .macro MEMSWAP dst,src,buf,len
+-10:	cghi	\len,bufsz
++10:	larl	%r0,purgatory_end
++	larl	%r1,stack
++	slgr	%r0,%r1
++	cgr	\len,%r0
+ 	jh	11f
+ 	lgr	%r4,\len
+ 	j	12f
+-11:	lghi	%r4,bufsz
++11:	lgr	%r4,%r0
+ 
+ 12:	MEMCPY	\buf,\dst,%r4
+ 	MEMCPY	\dst,\src,%r4
+@@ -135,12 +138,18 @@ ENTRY(purgatory_start)
+ 
+ .start_crash_kernel:
+ 	/* Location of purgatory_start in crash memory */
++	larl	%r0,.base_crash
++	larl	%r1,purgatory_start
++	slgr	%r0,%r1
+ 	lgr	%r8,%r13
+-	aghi	%r8,-(.base_crash-purgatory_start)
++	sgr	%r8,%r0
+ 
+ 	/* Destination for this code i.e. end of memory to be swapped. */
++	larl	%r0,purgatory_end
++	larl	%r1,purgatory_start
++	slgr	%r0,%r1
+ 	lg	%r9,crash_size-.base_crash(%r13)
+-	aghi	%r9,-(purgatory_end-purgatory_start)
++	sgr	%r9,%r0
+ 
+ 	/* Destination in crash memory, i.e. same as r9 but in crash memory. */
+ 	lg	%r10,crash_start-.base_crash(%r13)
+@@ -149,15 +158,19 @@ ENTRY(purgatory_start)
+ 	/* Buffer location (in crash memory) and size. As the purgatory is
+ 	 * behind the point of no return it can re-use the stack as buffer.
+ 	 */
+-	lghi	%r11,bufsz
++	larl	%r11,purgatory_end
+ 	larl	%r12,stack
++	slgr	%r11,%r12
+ 
+ 	MEMCPY	%r12,%r9,%r11	/* dst	-> (crash) buf */
+ 	MEMCPY	%r9,%r8,%r11	/* self -> dst */
+ 
+ 	/* Jump to new location. */
+ 	lgr	%r7,%r9
+-	aghi	%r7,.jump_to_dst-purgatory_start
++	larl	%r0,.jump_to_dst
++	larl	%r1,purgatory_start
++	slgr	%r0,%r1
++	agr	%r7,%r0
+ 	br	%r7
+ 
+ .jump_to_dst:
+@@ -169,7 +182,9 @@ ENTRY(purgatory_start)
+ 
+ 	/* Load new buffer location after jump */
+ 	larl	%r7,stack
+-	aghi	%r10,stack-purgatory_start
++	larl	%r0,purgatory_start
++	slgrk	%r0,%r7,%r0
++	agr	%r10,%r0
+ 	MEMCPY	%r10,%r7,%r11	/* (new) buf -> (crash) buf */
+ 
+ 	/* Now the code is set up to run from its designated location. Start
+-- 
+2.32.0
+
