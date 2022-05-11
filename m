@@ -2,179 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3CA4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:49:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4FDEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:49:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235074AbiEKCtq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 22:49:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49952 "EHLO
+        id S238604AbiEKCtx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 22:49:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242503AbiEKCgy (ORCPT
+        with ESMTP id S243921AbiEKCmp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 22:36:54 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 354DEEABB9
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:36:53 -0700 (PDT)
-X-UUID: 491800d553344b9fa324c7060f489547-20220511
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:2e8e4a9d-2afd-4d09-81a0-d85c7547461a,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:100
-X-CID-INFO: VERSION:1.1.4,REQID:2e8e4a9d-2afd-4d09-81a0-d85c7547461a,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,AC
-        TION:quarantine,TS:100
-X-CID-META: VersionHash:faefae9,CLOUDID:315659b3-56b5-4c9e-8d83-0070b288eb6a,C
-        OID:e6e12cd12093,Recheck:0,SF:28|16|19|48,TC:nil,Content:0,EDM:-3,File:nil
-        ,QS:0,BEC:nil
-X-UUID: 491800d553344b9fa324c7060f489547-20220511
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
-        (envelope-from <xinlei.lee@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1785914163; Wed, 11 May 2022 10:36:47 +0800
-Received: from MTKMBS07N2.mediatek.inc (172.21.101.141) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Wed, 11 May 2022 10:36:46 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 11 May 2022 10:36:45 +0800
-Received: from mszsdaap41.gcn.mediatek.inc (10.16.6.141) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Wed, 11 May 2022 10:36:45 +0800
-From:   <xinlei.lee@mediatek.com>
-To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
-        <airlied@linux.ie>, <daniel@ffwll.ch>, <matthias.bgg@gmail.com>
-CC:     <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <rex-bc.chen@mediatek.com>, <jitao.shi@mediatek.com>,
-        Xinlei Lee <xinlei.lee@mediatek.com>
-Subject: [PATCH v5,3/5] drm/mediatek: Separate poweron/poweroff from enable/disable and define new funcs
-Date:   Wed, 11 May 2022 10:36:34 +0800
-Message-ID: <1652236596-21648-4-git-send-email-xinlei.lee@mediatek.com>
-X-Mailer: git-send-email 2.6.4
-In-Reply-To: <1652236596-21648-1-git-send-email-xinlei.lee@mediatek.com>
-References: <1652236596-21648-1-git-send-email-xinlei.lee@mediatek.com>
+        Tue, 10 May 2022 22:42:45 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B4CC4B1DA;
+        Tue, 10 May 2022 19:42:44 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KyfMd67QZz4xXk;
+        Wed, 11 May 2022 12:42:37 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1652236959;
+        bh=7U8d2nd8kvxYZMwA9b1E2WYw3yF7FQaI+m4Vctsp3PA=;
+        h=Date:From:To:Cc:Subject:From;
+        b=e+u55ALlgkiV6lxArCQbr8iF9+xpqCvKUxLUUhrthRnY7CzGSJB4r4Ty4MDYgCr2j
+         sHYysaqgggY7qZA9KAF9XliS9B95kvfdxThk4yijiWKhd5R1pP/BWBropiqQ7GLS7C
+         8KuIxKqykBVcvWCp0ytnDq+Cj/21cQF3TDRWAfa+yHGTeVyBwJPwau+RuP6qP08ThP
+         /bpw9xSGw4+EIgJP+JMlPSqaoTxvj1mG0MeXDHc8G6l9/D+b5VnWoBu20Vgk6MFxXP
+         eFP+Lp4kTRFYFPiul4inpviM/32eDdez5KJlDDYYfPbnlNXjD/8LevZc8GC36bq/eL
+         vr2v7bdFNNKbg==
+Date:   Wed, 11 May 2022 12:42:36 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Ulf Hansson <ulf.hansson@linaro.org>, Jens Axboe <axboe@kernel.dk>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>
+Subject: linux-next: manual merge of the mmc tree with the block tree
+Message-ID: <20220511124236.75288a29@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: multipart/signed; boundary="Sig_/AY/TGiAsgSBewv4H9F3onqL";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jitao Shi <jitao.shi@mediatek.com>
+--Sig_/AY/TGiAsgSBewv4H9F3onqL
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-In order to match the changes of "Use the drm_panel_bridge API",
-the poweron/poweroff of dsi is extracted from enable/disable and
-defined as new funcs (atomic_pre_enable/atomic_post_disable).
+Hi all,
 
-Fixes: 2dd8075d2185 ("drm/mediatek: mtk_dsi: Use the drm_panel_bridge API")
+Today's linux-next merge of the mmc tree got a conflict in:
 
-Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
----
- drivers/gpu/drm/mediatek/mtk_dsi.c | 53 +++++++++++++++++++-----------
- 1 file changed, 34 insertions(+), 19 deletions(-)
+  drivers/mmc/core/queue.c
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-index 82a811801c9f..2dee6632a541 100644
---- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-@@ -691,16 +691,6 @@ static void mtk_dsi_poweroff(struct mtk_dsi *dsi)
- 	if (--dsi->refcount != 0)
- 		return;
- 
--	/*
--	 * mtk_dsi_stop() and mtk_dsi_start() is asymmetric, since
--	 * mtk_dsi_stop() should be called after mtk_drm_crtc_atomic_disable(),
--	 * which needs irq for vblank, and mtk_dsi_stop() will disable irq.
--	 * mtk_dsi_start() needs to be called in mtk_output_dsi_enable(),
--	 * after dsi is fully set.
--	 */
--	mtk_dsi_stop(dsi);
--
--	mtk_dsi_switch_to_cmd_mode(dsi, VM_DONE_INT_FLAG, 500);
- 	mtk_dsi_reset_engine(dsi);
- 	mtk_dsi_lane0_ulp_mode_enter(dsi);
- 	mtk_dsi_clk_ulp_mode_enter(dsi);
-@@ -715,17 +705,9 @@ static void mtk_dsi_poweroff(struct mtk_dsi *dsi)
- 
- static void mtk_output_dsi_enable(struct mtk_dsi *dsi)
- {
--	int ret;
--
- 	if (dsi->enabled)
- 		return;
- 
--	ret = mtk_dsi_poweron(dsi);
--	if (ret < 0) {
--		DRM_ERROR("failed to power on dsi\n");
--		return;
--	}
--
- 	mtk_dsi_set_mode(dsi);
- 	mtk_dsi_clk_hs_mode(dsi, 1);
- 
-@@ -739,7 +721,16 @@ static void mtk_output_dsi_disable(struct mtk_dsi *dsi)
- 	if (!dsi->enabled)
- 		return;
- 
--	mtk_dsi_poweroff(dsi);
-+	/*
-+	 * mtk_dsi_stop() and mtk_dsi_start() is asymmetric, since
-+	 * mtk_dsi_stop() should be called after mtk_drm_crtc_atomic_disable(),
-+	 * which needs irq for vblank, and mtk_dsi_stop() will disable irq.
-+	 * mtk_dsi_start() needs to be called in mtk_output_dsi_enable(),
-+	 * after dsi is fully set.
-+	 */
-+	mtk_dsi_stop(dsi);
-+
-+	mtk_dsi_switch_to_cmd_mode(dsi, VM_DONE_INT_FLAG, 500);
- 
- 	dsi->enabled = false;
- }
-@@ -776,13 +767,37 @@ static void mtk_dsi_bridge_atomic_enable(struct drm_bridge *bridge,
- {
- 	struct mtk_dsi *dsi = bridge_to_dsi(bridge);
- 
-+	if (dsi->refcount == 0)
-+		return;
-+
- 	mtk_output_dsi_enable(dsi);
- }
- 
-+static void mtk_dsi_bridge_atomic_pre_enable(struct drm_bridge *bridge,
-+					     struct drm_bridge_state *old_bridge_state)
-+{
-+	struct mtk_dsi *dsi = bridge_to_dsi(bridge);
-+	int ret;
-+
-+	ret = mtk_dsi_poweron(dsi);
-+	if (ret < 0)
-+		DRM_ERROR("failed to power on dsi\n");
-+}
-+
-+static void mtk_dsi_bridge_atomic_post_disable(struct drm_bridge *bridge,
-+					       struct drm_bridge_state *old_bridge_state)
-+{
-+	struct mtk_dsi *dsi = bridge_to_dsi(bridge);
-+
-+	mtk_dsi_poweroff(dsi);
-+}
-+
- static const struct drm_bridge_funcs mtk_dsi_bridge_funcs = {
- 	.attach = mtk_dsi_bridge_attach,
- 	.atomic_disable = mtk_dsi_bridge_atomic_disable,
- 	.atomic_enable = mtk_dsi_bridge_atomic_enable,
-+	.atomic_pre_enable = mtk_dsi_bridge_atomic_pre_enable,
-+	.atomic_post_disable = mtk_dsi_bridge_atomic_post_disable,
- 	.mode_set = mtk_dsi_bridge_mode_set,
- };
- 
--- 
-2.18.0
+between commit:
 
+  44abff2c0b97 ("block: decouple REQ_OP_SECURE_ERASE from REQ_OP_DISCARD")
+
+from the block tree and commit:
+
+  f7b6fc327327 ("mmc: core: Support zeroout using TRIM for eMMC")
+
+from the mmc tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc drivers/mmc/core/queue.c
+index a3d446005571,bbe2ea829ea7..000000000000
+--- a/drivers/mmc/core/queue.c
++++ b/drivers/mmc/core/queue.c
+@@@ -189,7 -190,9 +189,9 @@@ static void mmc_queue_setup_discard(str
+  	if (card->pref_erase > max_discard)
+  		q->limits.discard_granularity =3D SECTOR_SIZE;
+  	if (mmc_can_secure_erase_trim(card))
+ -		blk_queue_flag_set(QUEUE_FLAG_SECERASE, q);
+ +		blk_queue_max_secure_erase_sectors(q, max_discard);
++ 	if (mmc_can_trim(card) && card->erased_byte =3D=3D 0)
++ 		blk_queue_max_write_zeroes_sectors(q, max_discard);
+  }
+ =20
+  static unsigned short mmc_get_max_segments(struct mmc_host *host)
+
+--Sig_/AY/TGiAsgSBewv4H9F3onqL
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJ7IpwACgkQAVBC80lX
+0GwQWwf/SNdvQF0rujCDPnAd0Bz2LV3mr0YZAdr83mXexUdu0zHw13o/fGnJfa2m
+x8n7mI3+IZ8ME6Kp1Q/t6ljk6fwyIaPnEnMKAFAW1i6rsh3d62auR/+hb44ELW7g
++xa2QHzYb+Nybu3iHDeDE+nG199nliruGa7RCnm22qvnn7Mxbx4dJQJjVwz/vP5Q
+XcGH5RRnPvz9l+/esC8LF2M4wR61LecUi1yzJtuXDdMCt1SZBcHp25bzZfEZderI
+cJqcoqzGabIGyU8m9KmH/20gHnQ26TWEyA+9symosqyALzpzBTOjW/FK6WESeXji
+EvaIe3r/Bp/hJoi7fbluRe56Ne0F3A==
+=EF25
+-----END PGP SIGNATURE-----
+
+--Sig_/AY/TGiAsgSBewv4H9F3onqL--
