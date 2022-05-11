@@ -2,95 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DB71C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 01:55:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D7C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 01:56:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240825AbiEKBzj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 21:55:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40100 "EHLO
+        id S240859AbiEKB4X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 21:56:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240843AbiEKBzg (ORCPT
+        with ESMTP id S240919AbiEKB4G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 21:55:36 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 914EE18C063
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 18:55:35 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id gj17-20020a17090b109100b001d8b390f77bso3546994pjb.1
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 18:55:35 -0700 (PDT)
+        Tue, 10 May 2022 21:56:06 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65B0823144
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 18:56:02 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id 15so516403pgf.4
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 18:56:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=2ba9RlsMQZXWIx36Z7u38zcXmSCVXQjEy1o7bWz6s8w=;
-        b=Yf0OpUrx+nfUoeezT84Ho8jYoJAtvR8bMUSrPF3q+WTRu6Ojay2B4dj6RtDYjvaror
-         vetcXq+m1RFeUa2gXq0i8ncujVkNNI5wScGQZ+j5D8fsb5aeLgzfnl4eRVK5S8cPRRtv
-         m2cck0UeO9+0JSlBuQxaTFfxD20DXCW/FzuKwWD4cNp8w8HtZIMS4jX/sWjjTE6yb2Qr
-         e9VRzGOsNBuBOJ5I4gCg8KX0Ff5oXJ65u5xRBJpYerfPiyXjaNfNH3KQD+ZEC48GjlgI
-         0ek7wC2HHcwTIgOMmqGkhoq6/i1lme5dq07X39Xm9TyjLxaxIP7a/rQN4UlBb9F4EwEw
-         8YHw==
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TkVkCo+AEqF0i40htkHNCtoH0Rbet/ikc5+1DL9KmSo=;
+        b=Hi5aqq1+m/Ej+vEenvxjgpdjskjWHa8HcLWWVrtyiqSRIgdPRYcdyTMaLzlDyQMAKz
+         hlTV9+BhNIFpEMn3zSVZWxWdrXpT2fH5AFkxhKaw3lHtgS3Vux29n80lupydfOUZD67S
+         xaDCcCpZYZmO17Upd/ga/rOBpLackfaJj+oiKTcWZ53uEetfaIi+btgGotGImVV69IqN
+         lnv4N0Kx2TQayXO2t/IA1LNXLRMllhs2tpW1+kEDqvGIhc7+Tv6Qybg1MjvOZV1bQFuR
+         L/6GLMXKGmf8Cn5kzsJLn2NNPN3ugYfuVN51A5bMRmdo5/VQf2sfe9fivmRpGFtiIjB2
+         po6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=2ba9RlsMQZXWIx36Z7u38zcXmSCVXQjEy1o7bWz6s8w=;
-        b=bkfMFkT8HhYB0dU3EeYeyZZYNd1DO6xPGKpAB32Ef61KyJ4zEhg3DkrDX63LxfhgSv
-         tQriEZ7pQBf/WoHiH2VeYcyNEexOY80i7sL+dk2CGkdZx2NJ66Yqnix+Jn6qUhi7p/SH
-         zXxvHV48Ihdqwd8aAP8pJAZdRq92G3jc/l6mROYF3vZwAUPdgb7YhC9g9Vzw/06u4DjY
-         0shnJGGftuJdKZ9pZA/cG8T3hZ8dQ3ffwmn6ZHI6LykAcaqnchmFlRmV7HbJIemCcxFC
-         Lxcp/XTHn/MvBqoB9SAEJ4VQFWrRckEP1PRyevodcfHte6F0EXpqv33Z2j0aUufJgDrh
-         lNiw==
-X-Gm-Message-State: AOAM532HpyM9ZSG5lnmwp7kJ6PXnBDD9PGaXBiOANW4Ke9BRFw3/um64
-        XJJQEUAe221CN1IOLkf4k7h1SiifezMnK1o=
-X-Google-Smtp-Source: ABdhPJxoDtoqqDlHuOkZKONoO7zzvmWFvWXx00E4kWjd9G64OYb3ea98eE0UH2enSRVwLWVdAFpW5Q==
-X-Received: by 2002:a17:902:fe01:b0:15e:e178:e2e3 with SMTP id g1-20020a170902fe0100b0015ee178e2e3mr22853345plj.40.1652234134968;
-        Tue, 10 May 2022 18:55:34 -0700 (PDT)
-Received: from localhost.localdomain ([144.202.91.207])
-        by smtp.gmail.com with ESMTPSA id f12-20020aa79d8c000000b0050dc76281f2sm207807pfq.204.2022.05.10.18.55.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 18:55:34 -0700 (PDT)
-From:   Zheyu Ma <zheyuma97@gmail.com>
-To:     james.schulman@cirrus.com, david.rhodes@cirrus.com,
-        tanureal@opensource.cirrus.com, rf@opensource.cirrus.com,
-        lgirdwood@gmail.com, broonie@kernel.org, perex@perex.cz,
-        tiwai@suse.com, ckeepax@opensource.cirrus.com,
-        alsa-devel@alsa-project.org, patches@opensource.cirrus.com,
-        linux-kernel@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>
-Subject: [PATCH v2] ASoC: cs42l56: Fix the error handling of cs42l56_i2c_probe()
-Date:   Wed, 11 May 2022 09:55:14 +0800
-Message-Id: <20220511015514.1777923-1-zheyuma97@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220510155410.GC38351@ediswmail.ad.cirrus.com>
-References: <20220510155410.GC38351@ediswmail.ad.cirrus.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TkVkCo+AEqF0i40htkHNCtoH0Rbet/ikc5+1DL9KmSo=;
+        b=jIXxiISPWuxgyDsj04VzlHRLBruRFCMojKB87FUMdJrYRKYXtp6quEemCNIDFZhaD0
+         3YfQ+xpsP8+3wygiqyfofyyb7dwkcaauBEFrxRX7q9KYc3fobKx9GEWt3XR6S3Yh4vq4
+         i2Zv/qpTdERGME+fh2Rb4WTTxxBNBxDi9R7mDhljB6bOn+HHlzij80FrdqXv0ukIKeNL
+         WNrfrU0zA0Ke6xwuretjVKx9MIDn1CReqGbxQRz57z+7LG+87cM4DwLjUePWxN+BS6rT
+         Iguf673IomkjyecKJn8sCPvAOac743gsvU1yU0YI/3UaZuJs+2Ul4MapWnK4uwlMwqbL
+         y/CQ==
+X-Gm-Message-State: AOAM532Zn4lXHsR3ThhBlU01AkNP8FlwDD/R38SiTf+MySwx0OTvafDZ
+        z6A+IYUl+wOkpr3uNJOP0ZIwHzXrw0frWoj7QiGo8g==
+X-Google-Smtp-Source: ABdhPJxTwIrZK3os2Y5Gy2M9XbVTxVNnvEv6gF+cVyLYFsVX8OyNesDt7qGu7dcx91JA1iqzYWRqknggbdHvQFq8KGg=
+X-Received: by 2002:a05:6a00:22d4:b0:510:6d75:e3da with SMTP id
+ f20-20020a056a0022d400b005106d75e3damr23281842pfj.3.1652234161869; Tue, 10
+ May 2022 18:56:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220508143620.1775214-1-ruansy.fnst@fujitsu.com>
+ <20220511000352.GY27195@magnolia> <20220511014818.GE1098723@dread.disaster.area>
+In-Reply-To: <20220511014818.GE1098723@dread.disaster.area>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Tue, 10 May 2022 18:55:50 -0700
+Message-ID: <CAPcyv4h0a3aT3XH9qCBW3nbT4K3EwQvBSD_oX5W=55_x24-wFA@mail.gmail.com>
+Subject: Re: [PATCHSETS] v14 fsdax-rmap + v11 fsdax-reflink
+To:     Dave Chinner <david@fromorbit.com>
+Cc:     "Darrick J. Wong" <djwong@kernel.org>,
+        Shiyang Ruan <ruansy.fnst@fujitsu.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-xfs <linux-xfs@vger.kernel.org>,
+        Linux NVDIMM <nvdimm@lists.linux.dev>,
+        Linux MM <linux-mm@kvack.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jane Chu <jane.chu@oracle.com>,
+        Goldwyn Rodrigues <rgoldwyn@suse.de>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Matthew Wilcox <willy@infradead.org>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        linmiaohe@huawei.com, Andrew Morton <akpm@linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The driver should goto label 'err_enable' when failing at regmap_read().
+[ add Andrew ]
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
----
-Changes in v2:
-    - Fix the typo in the subject
----
- sound/soc/codecs/cs42l56.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/cs42l56.c b/sound/soc/codecs/cs42l56.c
-index 2c4e09b43199..dc23007336c5 100644
---- a/sound/soc/codecs/cs42l56.c
-+++ b/sound/soc/codecs/cs42l56.c
-@@ -1245,7 +1245,7 @@ static int cs42l56_i2c_probe(struct i2c_client *i2c_client)
- 	ret = regmap_read(cs42l56->regmap, CS42L56_CHIP_ID_1, &reg);
- 	if (ret) {
- 		dev_err(&i2c_client->dev, "Failed to read chip ID: %d\n", ret);
--		return ret;
-+		goto err_enable;
- 	}
- 
- 	devid = reg & CS42L56_CHIP_ID_MASK;
--- 
-2.25.1
+On Tue, May 10, 2022 at 6:49 PM Dave Chinner <david@fromorbit.com> wrote:
+>
+> On Tue, May 10, 2022 at 05:03:52PM -0700, Darrick J. Wong wrote:
+> > On Sun, May 08, 2022 at 10:36:06PM +0800, Shiyang Ruan wrote:
+> > > This is a combination of two patchsets:
+> > >  1.fsdax-rmap: https://lore.kernel.org/linux-xfs/20220419045045.1664996-1-ruansy.fnst@fujitsu.com/
+> > >  2.fsdax-reflink: https://lore.kernel.org/linux-xfs/20210928062311.4012070-1-ruansy.fnst@fujitsu.com/
+> > >
+> > >  Changes since v13 of fsdax-rmap:
+> > >   1. Fixed mistakes during rebasing code to latest next-
+> > >   2. Rebased to next-20220504
+> > >
+> > >  Changes since v10 of fsdax-reflink:
+> > >   1. Rebased to next-20220504 and fsdax-rmap
+> > >   2. Dropped a needless cleanup patch: 'fsdax: Convert dax_iomap_zero to
+> > >       iter model'
+> > >   3. Fixed many conflicts during rebasing
+> > >   4. Fixed a dedupe bug in Patch 05: the actuall length to compare could be
+> > >       shorter than smap->length or dmap->length.
+> > >   PS: There are many changes during rebasing.  I think it's better to
+> > >       review again.
+> > >
+> > > ==
+> > > Shiyang Ruan (14):
+> > >   fsdax-rmap:
+> > >     dax: Introduce holder for dax_device
+> > >     mm: factor helpers for memory_failure_dev_pagemap
+> > >     pagemap,pmem: Introduce ->memory_failure()
+> > >     fsdax: Introduce dax_lock_mapping_entry()
+> > >     mm: Introduce mf_dax_kill_procs() for fsdax case
+> >
+> > Hmm.  This patchset touches at least the dax, pagecache, and xfs
+> > subsystems.  Assuming it's too late for 5.19, how should we stage this
+> > for 5.20?
+>
+> Yeah, it's past my "last date for this merge cycle" which was
+> -rc6. I expected stuff might slip a little - as it has with the LARP
+> code - but I don't have the time and bandwidth to start working
+> on merging another feature from scratch before the merge window
+> comes around.
+>
+> Getting the dax+reflink stuff in this cycle was always an optimistic
+> stretch, but I wanted to try so that there was no doubt it would be
+> ready for merge in the next cycle...
+>
+> > I could just add the entire series to iomap-5.20-merge and base the
+> > xfs-5.20-merge off of that?  But I'm not sure what else might be landing
+> > in the other subsystems, so I'm open to input.
+>
+> It'll need to be a stable branch somewhere, but I don't think it
+> really matters where al long as it's merged into the xfs for-next
+> tree so it gets filesystem test coverage...
 
+So how about let the notify_failure() bits go through -mm this cycle,
+if Andrew will have it, and then the reflnk work has a clean v5.19-rc1
+baseline to build from?
