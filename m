@@ -2,187 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDD11C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 03:18:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9243C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 03:22:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230186AbiEKDSV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 23:18:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50348 "EHLO
+        id S229985AbiEKDWy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 23:22:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241648AbiEKDSP (ORCPT
+        with ESMTP id S240661AbiEKDWV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 23:18:15 -0400
+        Tue, 10 May 2022 23:22:21 -0400
 Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB544B874;
-        Tue, 10 May 2022 20:18:14 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kyg7w6SPZzhZ4Q;
-        Wed, 11 May 2022 11:17:32 +0800 (CST)
-Received: from [10.67.111.192] (10.67.111.192) by
- kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 11 May 2022 11:18:10 +0800
-Message-ID: <f8c3f048-9d59-7249-a1d7-31616556e931@huawei.com>
-Date:   Wed, 11 May 2022 11:18:09 +0800
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E25F2CCA9
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 20:21:16 -0700 (PDT)
+Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kyg8x6TzszGpm6;
+        Wed, 11 May 2022 11:18:25 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by kwepemi500015.china.huawei.com
+ (7.221.188.92) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 11 May
+ 2022 11:21:13 +0800
+From:   Zheng Bin <zhengbin13@huawei.com>
+To:     <mpe@ellerman.id.au>, <benh@kernel.crashing.org>,
+        <paulus@samba.org>, <haren@linux.ibm.com>,
+        <gregkh@linuxfoundation.org>, <npiggin@gmail.com>,
+        <linuxppc-dev@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>
+CC:     <zhengbin13@huawei.com>, <gaochao49@huawei.com>
+Subject: [PATCH -next] powerpc/pseries/vas: Call misc_deregister if sysfs init fails
+Date:   Wed, 11 May 2022 11:35:07 +0800
+Message-ID: <20220511033507.2745992-1-zhengbin13@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH bpf-next v3 4/7] bpf, arm64: Impelment
- bpf_arch_text_poke() for arm64
-Content-Language: en-US
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-CC:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        <hpa@zytor.com>, Shuah Khan <shuah@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Daniel Kiss <daniel.kiss@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Mark Brown <broonie@kernel.org>,
-        Delyan Kratunov <delyank@fb.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>
-References: <20220424154028.1698685-1-xukuohai@huawei.com>
- <20220424154028.1698685-5-xukuohai@huawei.com>
- <87ee11obih.fsf@cloudflare.com>
-From:   Xu Kuohai <xukuohai@huawei.com>
-In-Reply-To: <87ee11obih.fsf@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.111.192]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemi500013.china.huawei.com (7.221.188.120)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemi500015.china.huawei.com (7.221.188.92)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/10/2022 7:45 PM, Jakub Sitnicki wrote:
-> On Sun, Apr 24, 2022 at 11:40 AM -04, Xu Kuohai wrote:
->> Impelment bpf_arch_text_poke() for arm64, so bpf trampoline code can use
->> it to replace nop with jump, or replace jump with nop.
->>
->> Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
->> Acked-by: Song Liu <songliubraving@fb.com>
->> ---
->>  arch/arm64/net/bpf_jit_comp.c | 63 +++++++++++++++++++++++++++++++++++
->>  1 file changed, 63 insertions(+)
->>
->> diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
->> index 8ab4035dea27..3f9bdfec54c4 100644
->> --- a/arch/arm64/net/bpf_jit_comp.c
->> +++ b/arch/arm64/net/bpf_jit_comp.c
->> @@ -9,6 +9,7 @@
->>  
->>  #include <linux/bitfield.h>
->>  #include <linux/bpf.h>
->> +#include <linux/memory.h>
->>  #include <linux/filter.h>
->>  #include <linux/printk.h>
->>  #include <linux/slab.h>
->> @@ -18,6 +19,7 @@
->>  #include <asm/cacheflush.h>
->>  #include <asm/debug-monitors.h>
->>  #include <asm/insn.h>
->> +#include <asm/patching.h>
->>  #include <asm/set_memory.h>
->>  
->>  #include "bpf_jit.h"
->> @@ -1529,3 +1531,64 @@ void bpf_jit_free_exec(void *addr)
->>  {
->>  	return vfree(addr);
->>  }
->> +
->> +static int gen_branch_or_nop(enum aarch64_insn_branch_type type, void *ip,
->> +			     void *addr, u32 *insn)
->> +{
->> +	if (!addr)
->> +		*insn = aarch64_insn_gen_nop();
->> +	else
->> +		*insn = aarch64_insn_gen_branch_imm((unsigned long)ip,
->> +						    (unsigned long)addr,
->> +						    type);
->> +
->> +	return *insn != AARCH64_BREAK_FAULT ? 0 : -EFAULT;
->> +}
->> +
->> +int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type poke_type,
->> +		       void *old_addr, void *new_addr)
->> +{
->> +	int ret;
->> +	u32 old_insn;
->> +	u32 new_insn;
->> +	u32 replaced;
->> +	enum aarch64_insn_branch_type branch_type;
->> +
->> +	if (!is_bpf_text_address((long)ip))
->> +		/* Only poking bpf text is supported. Since kernel function
->> +		 * entry is set up by ftrace, we reply on ftrace to poke kernel
->> +		 * functions. For kernel funcitons, bpf_arch_text_poke() is only
-> 
-> Nit: s/funcitons/functions/
-> 
->> +		 * called after a failed poke with ftrace. In this case, there
->> +		 * is probably something wrong with fentry, so there is nothing
->> +		 * we can do here. See register_fentry, unregister_fentry and
->> +		 * modify_fentry for details.
->> +		 */
->> +		return -EINVAL;
->> +
->> +	if (poke_type == BPF_MOD_CALL)
->> +		branch_type = AARCH64_INSN_BRANCH_LINK;
->> +	else
->> +		branch_type = AARCH64_INSN_BRANCH_NOLINK;
->> +
->> +	if (gen_branch_or_nop(branch_type, ip, old_addr, &old_insn) < 0)
->> +		return -EFAULT;
->> +
->> +	if (gen_branch_or_nop(branch_type, ip, new_addr, &new_insn) < 0)
->> +		return -EFAULT;
->> +
->> +	mutex_lock(&text_mutex);
->> +	if (aarch64_insn_read(ip, &replaced)) {
->> +		ret = -EFAULT;
->> +		goto out;
->> +	}
->> +
->> +	if (replaced != old_insn) {
->> +		ret = -EFAULT;
->> +		goto out;
->> +	}
->> +
->> +	ret = aarch64_insn_patch_text_nosync((void *)ip, new_insn);
-> 
-> Nit: No need for the explicit cast to void *. Type already matches.
-> 
->> +out:
->> +	mutex_unlock(&text_mutex);
->> +	return ret;
->> +}
-> 
-> .
-will fix in v4, thanks!
+Undo effects of misc_register if sysfs init fails after
+misc_register.
+
+Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
+---
+ arch/powerpc/platforms/pseries/vas-sysfs.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/powerpc/platforms/pseries/vas-sysfs.c b/arch/powerpc/platforms/pseries/vas-sysfs.c
+index ec65586cbeb3..89ed64d61da7 100644
+--- a/arch/powerpc/platforms/pseries/vas-sysfs.c
++++ b/arch/powerpc/platforms/pseries/vas-sysfs.c
+@@ -248,6 +248,7 @@ int __init sysfs_pseries_vas_init(struct vas_all_caps *vas_caps)
+ 	pseries_vas_kobj = kobject_create_and_add("vas0",
+ 					&vas_miscdev.this_device->kobj);
+ 	if (!pseries_vas_kobj) {
++		misc_deregister(&vas_miscdev);
+ 		pr_err("Failed to create VAS sysfs entry\n");
+ 		return -ENOMEM;
+ 	}
+@@ -259,6 +260,7 @@ int __init sysfs_pseries_vas_init(struct vas_all_caps *vas_caps)
+ 		if (!gzip_caps_kobj) {
+ 			pr_err("Failed to create VAS GZIP capability entry\n");
+ 			kobject_put(pseries_vas_kobj);
++			misc_deregister(&vas_miscdev);
+ 			return -ENOMEM;
+ 		}
+ 	}
+--
+2.31.1
+
