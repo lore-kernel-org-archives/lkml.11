@@ -2,264 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E6B1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 08:33:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E09FAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 08:33:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244028AbiEKIdK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 04:33:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54960 "EHLO
+        id S243981AbiEKIdS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 04:33:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243754AbiEKIbv (ORCPT
+        with ESMTP id S243779AbiEKIbw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 04:31:51 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F3C04093F
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 01:31:49 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id l11so1158766pgt.13
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 01:31:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=from:to:subject:date:message-id:in-reply-to:references:in-reply-to
-         :references;
-        bh=d5eGDjeX0WtjJYLoK9lC54oqBkAZccKKssb+x5eT3io=;
-        b=iYnGe0exDgqdywSyQuhIdvBf1RHggnu0dObhEnYBHQQbM+yKgqsGRyX/Atehe9eZvg
-         esCKpjWakevIWleCN227lTxkCCAVereCYJU+L7wzGM043jalATLmQoLyINCAqdRMalAe
-         lKcOdAP/C1kCxzQysxFlKZTCkSmIO1Mr37aBmjfJdnrDbi8dr5Y7P+xLPCrw03+tladG
-         5ceOWLZ5L0q2roUvAcxbpplc/DFLtkTyo8a/c7+q/XIG5BNzLk2lKfWPODtJQFdfVZZH
-         ti81Nt7aUw+u7q7y5K61cSzyd7fCKO5Gsq6ilottjhhOVApowJXqVoCMK3pJkMduhbAU
-         Mk4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:in-reply-to:references;
-        bh=d5eGDjeX0WtjJYLoK9lC54oqBkAZccKKssb+x5eT3io=;
-        b=NODVr4VErlzZ2bC2IOPcCMnPz+xCOOweHA0jWfoGSyMds0gVoiKZsoIRvANUYcU1CM
-         VqDEZRQBenNoWziIlRPK89wyRmDLIPe8p5CMZ7hB+dk52OFijddxkGgWHMgiUlEQh0GY
-         DszP35FgA2HO+seDJGVUM3XmdN1LQSt+rN16baWOjD4Aet5/zXkxNJNDS/ttnRyjYoM3
-         1MyonbwJxmZ7IMcJCEHjKIUNIziroAGuw9MxUlGOMjn3oPrlx/LOp1eQ/GaRDbZh2Nlk
-         o8HvXHg/K1O1XbRb3S/3aGDUEgx1u4cMgZVNTZ7N6h34qB0HC9CmJ9RgLiT/epjePmBR
-         npnA==
-X-Gm-Message-State: AOAM533L0DRuazYrfI9e4bVll78VvRjcGafXh8MdXhtZjbX5Mk+aVH9k
-        2yFJHTJ4Saub8/MJM5PVMfssZQ==
-X-Google-Smtp-Source: ABdhPJwnl1e2LpNP9+Zb6r9uJS8eacajAP/kxi21W/XBa1rqykPdAQz9wzaoJJVrVjjhqftovsXiYQ==
-X-Received: by 2002:a65:6946:0:b0:39d:a0c3:71f with SMTP id w6-20020a656946000000b0039da0c3071fmr19681317pgq.160.1652257909109;
-        Wed, 11 May 2022 01:31:49 -0700 (PDT)
-Received: from localhost.localdomain (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
-        by smtp.gmail.com with ESMTPSA id m10-20020aa7900a000000b0050dc7628170sm1020202pfo.74.2022.05.11.01.31.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 May 2022 04:31:52 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D14273190F;
         Wed, 11 May 2022 01:31:48 -0700 (PDT)
-From:   Greentime Hu <greentime.hu@sifive.com>
-To:     palmer@dabbelt.com, paul.walmsley@sifive.com,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        aou@eecs.berkeley.edu
-Subject: [PATCH v10 12/16] riscv: Add support for kernel mode vector
-Date:   Wed, 11 May 2022 08:31:22 +0000
-Message-Id: <444ffca9e0697166191f2d3d37522038574f3e39.1652257230.git.greentime.hu@sifive.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <cover.1652257230.git.greentime.hu@sifive.com>
-References: <cover.1652257230.git.greentime.hu@sifive.com>
-In-Reply-To: <cover.1652257230.git.greentime.hu@sifive.com>
-References: <cover.1652257230.git.greentime.hu@sifive.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=v6LTVQjeDFrw6vdK4w8luloTEFL+fsitDmR6W5fFJig=; b=IZ8CZmlPJlqOJneX1ygZtZH9XC
+        3O4wLrlBJTUiSsQ7Wn4piNtq66RatOWmjhgxOKeLdSi/UU/ygJU2swRImRifc+taFT25hqRbjQX4Z
+        oWxPzaMZOEUW6AYTlQ5v+wNTWmgeUfQvPh6nyxty8+fhr7S5FCw7n5qtRCWwtHpWC1mXbm/HwSjld
+        ODjjNirmL4WaUSW+odUmMSpD2S3wa+stlWW94jiP+O6lgW0ixEbsQ8p2YgPFaCPIwwNSVSpmgkqV1
+        ox4chKK7R/t5IycO3qu+lPIw1m+Opdn73RKY2cRGTuOMnM4qOIMqFuGnMMdE8ruXVY/iJdsxH+/kb
+        9ytKpZlQ==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nohku-005xEt-Te; Wed, 11 May 2022 08:31:36 +0000
+Date:   Wed, 11 May 2022 01:31:36 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     John Garry <john.garry@huawei.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        "Ewan D. Milne" <emilne@redhat.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        Doug Gilbert <dgilbert@interlog.com>,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        james.smart@broadcom.com
+Subject: Re: [PATCH 1/4] scsi: core: constify pointer to scsi_host_template
+Message-ID: <Ynt0aFMX+z/UhGJ2@infradead.org>
+References: <c121430b1b5c8f5816b2b42b9178d00889260c90.camel@redhat.com>
+ <b6af3fe8-db9a-b5dc-199f-21c05d7664a2@huawei.com>
+ <Yl+wJ7xSHzWmR+bR@infradead.org>
+ <d09faf74-a52e-8d93-cf26-08b43b12c564@huawei.com>
+ <24bfb681-faec-3567-3089-9cd5ee182710@linaro.org>
+ <1bb53912-c5c3-7690-e82f-cf356ca87404@huawei.com>
+ <6f28acde-2177-0bc7-b06d-c704153489c0@linaro.org>
+ <4510c5dc-3d7d-fc5f-cb80-34da7dbaaa8e@huawei.com>
+ <d01c29c1-bb5a-281d-ef71-9c7b39e28d23@linaro.org>
+ <fd2cdc06-5d88-306a-3ee1-7aef3e3b8921@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fd2cdc06-5d88-306a-3ee1-7aef3e3b8921@huawei.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add kernel_rvv_begin() and kernel_rvv_end() function declarations
-and corresponding definitions in kernel_mode_vector.c
+On Mon, May 09, 2022 at 03:50:33PM +0100, John Garry wrote:
+> If you check scsi_device_dev_release(), we try to do a 'get' - if it fails,
+> then we nullify hostt->module. I think that is important as then we call
+> execute_in_process_context(), whose worker does the 'put'. However, the
+> 'put' will get upset if the refcnt was 0, which it would be if the earlier
+> 'get' fails - hence the nullify is to avoid that possibility. So whatever
+> you do needs to handle that. Details are in f2b85040
 
-These are needed to wrap uses of vector in kernel mode.
-
-Co-developed-by: Vincent Chen <vincent.chen@sifive.com>
-Signed-off-by: Vincent Chen <vincent.chen@sifive.com>
-Signed-off-by: Greentime Hu <greentime.hu@sifive.com>
----
- arch/riscv/include/asm/vector.h        |   3 +
- arch/riscv/kernel/Makefile             |   1 +
- arch/riscv/kernel/kernel_mode_vector.c | 132 +++++++++++++++++++++++++
- arch/riscv/kernel/vector.S             |   9 ++
- 4 files changed, 145 insertions(+)
- create mode 100644 arch/riscv/kernel/kernel_mode_vector.c
-
-diff --git a/arch/riscv/include/asm/vector.h b/arch/riscv/include/asm/vector.h
-index 16304b0c6a6f..a59841cc81fb 100644
---- a/arch/riscv/include/asm/vector.h
-+++ b/arch/riscv/include/asm/vector.h
-@@ -10,5 +10,8 @@
- 
- void rvv_enable(void);
- void rvv_disable(void);
-+void kernel_rvv_begin(void);
-+void kernel_rvv_end(void);
-+void vector_flush_cpu_state(void);
- 
- #endif /* ! __ASM_RISCV_VECTOR_H */
-diff --git a/arch/riscv/kernel/Makefile b/arch/riscv/kernel/Makefile
-index 5dc550a9fb45..68a6fb0fdac8 100644
---- a/arch/riscv/kernel/Makefile
-+++ b/arch/riscv/kernel/Makefile
-@@ -41,6 +41,7 @@ obj-$(CONFIG_MMU) += vdso.o vdso/
- obj-$(CONFIG_RISCV_M_MODE)	+= traps_misaligned.o
- obj-$(CONFIG_FPU)		+= fpu.o
- obj-$(CONFIG_VECTOR)		+= vector.o
-+obj-$(CONFIG_VECTOR)		+= kernel_mode_vector.o
- obj-$(CONFIG_SMP)		+= smpboot.o
- obj-$(CONFIG_SMP)		+= smp.o
- obj-$(CONFIG_SMP)		+= cpu_ops.o
-diff --git a/arch/riscv/kernel/kernel_mode_vector.c b/arch/riscv/kernel/kernel_mode_vector.c
-new file mode 100644
-index 000000000000..0277168af0c5
---- /dev/null
-+++ b/arch/riscv/kernel/kernel_mode_vector.c
-@@ -0,0 +1,132 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Copyright (C) 2012 ARM Ltd.
-+ * Author: Catalin Marinas <catalin.marinas@arm.com>
-+ * Copyright (C) 2017 Linaro Ltd. <ard.biesheuvel@linaro.org>
-+ * Copyright (C) 2021 SiFive
-+ */
-+#include <linux/compiler.h>
-+#include <linux/irqflags.h>
-+#include <linux/percpu.h>
-+#include <linux/preempt.h>
-+#include <linux/types.h>
-+
-+#include <asm/vector.h>
-+#include <asm/switch_to.h>
-+
-+DECLARE_PER_CPU(bool, vector_context_busy);
-+DEFINE_PER_CPU(bool, vector_context_busy);
-+
-+/*
-+ * may_use_vector - whether it is allowable at this time to issue vector
-+ *                instructions or access the vector register file
-+ *
-+ * Callers must not assume that the result remains true beyond the next
-+ * preempt_enable() or return from softirq context.
-+ */
-+static __must_check inline bool may_use_vector(void)
-+{
-+	/*
-+	 * vector_context_busy is only set while preemption is disabled,
-+	 * and is clear whenever preemption is enabled. Since
-+	 * this_cpu_read() is atomic w.r.t. preemption, vector_context_busy
-+	 * cannot change under our feet -- if it's set we cannot be
-+	 * migrated, and if it's clear we cannot be migrated to a CPU
-+	 * where it is set.
-+	 */
-+	return !in_irq() && !irqs_disabled() && !in_nmi() &&
-+	       !this_cpu_read(vector_context_busy);
-+}
-+
-+/*
-+ * Claim ownership of the CPU vector context for use by the calling context.
-+ *
-+ * The caller may freely manipulate the vector context metadata until
-+ * put_cpu_vector_context() is called.
-+ */
-+static void get_cpu_vector_context(void)
-+{
-+	bool busy;
-+
-+	preempt_disable();
-+	busy = __this_cpu_xchg(vector_context_busy, true);
-+
-+	WARN_ON(busy);
-+}
-+
-+/*
-+ * Release the CPU vector context.
-+ *
-+ * Must be called from a context in which get_cpu_vector_context() was
-+ * previously called, with no call to put_cpu_vector_context() in the
-+ * meantime.
-+ */
-+static void put_cpu_vector_context(void)
-+{
-+	bool busy = __this_cpu_xchg(vector_context_busy, false);
-+
-+	WARN_ON(!busy);
-+	preempt_enable();
-+}
-+
-+/*
-+ * kernel_rvv_begin(): obtain the CPU vector registers for use by the calling
-+ * context
-+ *
-+ * Must not be called unless may_use_vector() returns true.
-+ * Task context in the vector registers is saved back to memory as necessary.
-+ *
-+ * A matching call to kernel_rvv_end() must be made before returning from the
-+ * calling context.
-+ *
-+ * The caller may freely use the vector registers until kernel_rvv_end() is
-+ * called.
-+ */
-+void kernel_rvv_begin(void)
-+{
-+	if (WARN_ON(!has_vector()))
-+		return;
-+
-+	WARN_ON(!may_use_vector());
-+
-+	/* Acquire kernel mode vector */
-+	get_cpu_vector_context();
-+
-+	/* Save vector state, if any */
-+	vstate_save(current, task_pt_regs(current));
-+
-+	/* Enable vector */
-+	rvv_enable();
-+
-+	/* Invalidate vector regs */
-+	vector_flush_cpu_state();
-+}
-+EXPORT_SYMBOL_GPL(kernel_rvv_begin);
-+
-+/*
-+ * kernel_rvv_end(): give the CPU vector registers back to the current task
-+ *
-+ * Must be called from a context in which kernel_rvv_begin() was previously
-+ * called, with no call to kernel_rvv_end() in the meantime.
-+ *
-+ * The caller must not use the vector registers after this function is called,
-+ * unless kernel_rvv_begin() is called again in the meantime.
-+ */
-+void kernel_rvv_end(void)
-+{
-+	if (WARN_ON(!has_vector()))
-+		return;
-+
-+	/* Invalidate vector regs */
-+	vector_flush_cpu_state();
-+
-+	/* Restore vector state, if any */
-+	vstate_restore(current, task_pt_regs(current));
-+
-+	/* disable vector */
-+	rvv_disable();
-+
-+	/* release kernel mode vector */
-+	put_cpu_vector_context();
-+}
-+EXPORT_SYMBOL_GPL(kernel_rvv_end);
-diff --git a/arch/riscv/kernel/vector.S b/arch/riscv/kernel/vector.S
-index 9f7dc70c4443..9c2de823c0d9 100644
---- a/arch/riscv/kernel/vector.S
-+++ b/arch/riscv/kernel/vector.S
-@@ -91,3 +91,12 @@ ENTRY(rvv_disable)
- 	csrc	CSR_STATUS, status
- 	ret
- ENDPROC(rvv_disable)
-+
-+ENTRY(vector_flush_cpu_state)
-+	vsetvli t0, x0, e8, m8, ta, ma
-+	vmv.v.i v0, 0
-+	vmv.v.i v8, 0
-+	vmv.v.i v16, 0
-+	vmv.v.i v24, 0
-+	ret
-+ENDPROC(vector_flush_cpu_state)
--- 
-2.17.1
-
+Yikes, that code is completely and utterly buggy and does not account
+for all the cases why try_module_get can fail.  I think we always have
+a reference here and could use __module_get, but what we have is
+certainly unsafe and a good reason why the host template should be
+constifyed.
