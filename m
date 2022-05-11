@@ -2,98 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16534C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 20:09:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 816E7C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 20:11:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345513AbiEKUJZ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 16:09:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60372 "EHLO
+        id S239228AbiEKULn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 16:11:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235778AbiEKUJV (ORCPT
+        with ESMTP id S1347631AbiEKULN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 16:09:21 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5935B73544
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 13:09:20 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1652299758;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=a7NawlKYu3QodR35FTRzKw5nCCPq3TD4KSebWdKcyUQ=;
-        b=UCJy6hzaYRsCePyxYTKoqSPy/eU76DBtKjgBlQViGRhYk+RyKQMHzirUQTZJReKrek4Zv1
-        AuxcBooAjPvk3IQFtipJXU2yJe63ZsRDH6K0kP/216+1TUnkFP+95k/Pt8ypv0kaPnj0Mg
-        WnkoRSxE5N/51xY3YCA8PW2HHwD6kXqxeTlkPOAdiLFo3cEaRPZAsDTWRFwcGQB7Nne/lR
-        362MJRSGvpMapeU/75NYRYJdMbD5V6gy3cKLmeuTomlD910O6PWbtD8LhnQ2ZUxAIwpSQl
-        l1c3DEpC8iY3VdPr2pysLdHsoTQ4I1FhLl8X7AONGYvvlrG5bN9YvcOmELC4Fg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1652299758;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=a7NawlKYu3QodR35FTRzKw5nCCPq3TD4KSebWdKcyUQ=;
-        b=uf5NxaIs4bnOj4TuXkHxTZTpVVAeXu4vdNYYIg8ulJy7MYbrFRtaoo4kFuqWOR6BxZ0sqy
-        IJi4kfKPCG2jcZBg==
-To:     Nick Desaulniers <ndesaulniers@google.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, Borislav Petkov <bp@alien8.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Andy Lutomirski <luto@kernel.org>, x86@kernel.org,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Joerg Roedel <jroedel@suse.de>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Marco Elver <elver@google.com>, Hao Luo <haoluo@google.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: Re: [PATCH 1/7] x86/entry: Introduce __entry_text for entry code
- written in C
-In-Reply-To: <CAKwvOdmF_5KudQbC8j5hJT1CqxvYtMneZxb1Si3A2uNxopk3yQ@mail.gmail.com>
-References: <20220511072747.3960-1-jiangshanlai@gmail.com>
- <20220511072747.3960-2-jiangshanlai@gmail.com>
- <CAKwvOdmF_5KudQbC8j5hJT1CqxvYtMneZxb1Si3A2uNxopk3yQ@mail.gmail.com>
-Date:   Wed, 11 May 2022 22:09:18 +0200
-Message-ID: <87bkw3hlw1.ffs@tglx>
+        Wed, 11 May 2022 16:11:13 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62E7941333
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 13:11:13 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id p8so2898868pfh.8
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 13:11:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uHI42L1gavukyJJ1KaKxOCH5Tc7LTCJwrgzmo7gt+ic=;
+        b=CEnMlJz8RXwI1S1rRNYUHG8Wa9Fd9wdk3GcqUX3T6ZUKNP1zj6Bmc1A+yJqZswX752
+         RqFVwmq5HfEaZdJ4WhyLAsjibiPeAkeBU1i0NWItqFrCO4QR2sfXQ1YpkyqCz+HXemLv
+         GH1RZhqVGNf11iQygLdb3UoSuoJSgpztZscPBUZhUsDPh6KAjL+8YaL6fo2CzZEXClrE
+         P+F8ulhEdJrmMXuGqfHTt5MU27wE3NF+LSzQS2hvtyESprlM1nUt2KJt43fNzqKuF/YM
+         fUhILt1tkCXbj6Nj1W4JBnSz2rULdW0pbRqTKw9ZOYXtOCM1Ef3/e1Ukq3rgVBHEBw1y
+         ShMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uHI42L1gavukyJJ1KaKxOCH5Tc7LTCJwrgzmo7gt+ic=;
+        b=7a4lIHmKbe+VunZMmg5jXoPJOpRJ7CJvzNZCyn6ne8Hh2zvi5gTXyuGeKdXl37ApD1
+         AtAJb3AEn0RlRFZA0rjqEXANdya/slH1JJSGBbllunQY2Bc8/ldlhu2ZeZIlPGsHNUc9
+         7r0MsmNFcgrWN9NGbesaMhcS5Ey/eO1+Ucr5uw9KHslwR0/dPfiZ3rrNT9Ul+EWpxsQ5
+         2ukqbbm+AePJe8MWvhTP0H+mWoPFegGkdh554MKCzzZfYxR0ZOSJoD49wi2O4ap7qNek
+         OqI5MjazaP+vRm8ZwrKcu4DAt+Ct0tRN91DGC1NIGKUGuJd3QKpYcBia3JOAVqsPYJdu
+         u2hw==
+X-Gm-Message-State: AOAM530GuUqWep2wQ/MZWZP2sHq68i6vMuzFbiTuS4QQ1RNADkUHWv11
+        i3c6GaMqTs4a8jsZo3472TjXB1LD0pejOw==
+X-Google-Smtp-Source: ABdhPJxZo3l4QSHHKIjLb5Kep83BUBaCLt4ROcFAozCa4OPaPAafueGKZdyhwYYs+u+RkiK76fP3Ug==
+X-Received: by 2002:a63:6886:0:b0:3c5:11f4:f055 with SMTP id d128-20020a636886000000b003c511f4f055mr22407664pgc.44.1652299872589;
+        Wed, 11 May 2022 13:11:12 -0700 (PDT)
+Received: from atishp.ba.rivosinc.com ([66.220.2.162])
+        by smtp.gmail.com with ESMTPSA id c13-20020a170902c2cd00b0015e8d4eb2e5sm2259005pla.303.2022.05.11.13.11.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 May 2022 13:11:12 -0700 (PDT)
+From:   Atish Patra <atishp@rivosinc.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Atish Patra <atishp@rivosinc.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Atish Patra <atishp@atishpatra.org>,
+        Anup Patel <anup@brainfault.org>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        devicetree@vger.kernel.org, Jisheng Zhang <jszhang@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        linux-riscv@lists.infradead.org,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: [PATCH 1/2] RISC-V: Fix counter restart during overflow for RV32
+Date:   Wed, 11 May 2022 13:11:06 -0700
+Message-Id: <20220511201107.2311757-1-atishp@rivosinc.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11 2022 at 11:01, Nick Desaulniers wrote:
-> On Wed, May 11, 2022 at 12:27 AM Lai Jiangshan <jiangshanlai@gmail.com> wrote:
->>  /* Section for code which can't be instrumented at all */
->> -#define noinstr                                                                \
->> -       noinline notrace __attribute((__section__(".noinstr.text")))    \
->> -       __no_kcsan __no_sanitize_address __no_profile __no_sanitize_coverage
->> +#define __noinstr_section(section)                             \
->> +       noinline notrace __section(section) __no_profile        \
->> +       __no_kcsan __no_sanitize_address __no_sanitize_coverage
->> +
->> +#define noinstr __noinstr_section(".noinstr.text")
->
-> I haven't looked at the rest of the series, but isn't `noinstr` used
-> in a bunch of places? Wont this commit break all those uses or at
-> least make it break bisection?
+Pass the upper half of the initial value of the counter correctly
+for RV32.
 
-Why so?
+Fixes: 4905ec2fb7e6 ("RISC-V: Add sscofpmf extension support")
 
-This is still applying all the 'no' annotations and puts the code in
-the very same section as before, no?
+Signed-off-by: Atish Patra <atishp@rivosinc.com>
+---
+ drivers/perf/riscv_pmu_sbi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
-
-        tglx
-
+diff --git a/drivers/perf/riscv_pmu_sbi.c b/drivers/perf/riscv_pmu_sbi.c
+index a1317a483512..24cea59612be 100644
+--- a/drivers/perf/riscv_pmu_sbi.c
++++ b/drivers/perf/riscv_pmu_sbi.c
+@@ -526,7 +526,7 @@ static inline void pmu_sbi_start_overflow_mask(struct riscv_pmu *pmu,
+ 			max_period = riscv_pmu_ctr_get_width_mask(event);
+ 			init_val = local64_read(&hwc->prev_count) & max_period;
+ 			sbi_ecall(SBI_EXT_PMU, SBI_EXT_PMU_COUNTER_START, idx, 1,
+-				  flag, init_val, 0, 0);
++				  flag, init_val, init_val >> 32, 0);
+ 		}
+ 		ctr_ovf_mask = ctr_ovf_mask >> 1;
+ 		idx++;
+-- 
+2.25.1
 
