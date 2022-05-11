@@ -2,80 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E822C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 17:56:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60186C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 17:57:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345903AbiEKR4m (ORCPT
+        id S1345949AbiEKR5s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 13:56:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50298 "EHLO
+        Wed, 11 May 2022 13:57:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241439AbiEKR4j (ORCPT
+        with ESMTP id S241439AbiEKR5p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 13:56:39 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD9F33B57F;
-        Wed, 11 May 2022 10:56:27 -0700 (PDT)
-Received: from zn.tnic (p5de8eeb4.dip0.t-ipconnect.de [93.232.238.180])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id DE9501EC0535;
-        Wed, 11 May 2022 19:56:21 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1652291781;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=GTg1ZSG8tdoJ8Un5Pa70eoBMG9Ax/ldvlvlcyKKfV3E=;
-        b=iPODDOIc6RyWxTpJtBxT6AOjKo1uKlPx/uJZXQ5buY/OjTjFmQwMZhL6xJZqi1io4AGQZ5
-        bQIJ/ZLLzJNVJZcJSVVO20knOmJrvqvhSuhCT8/RA3afOAXcz8GlWaGGgsZM8WKVLRA5cN
-        KUGuXK6u/kDptGOdv2/CUS2phVFg17w=
-Date:   Wed, 11 May 2022 19:56:28 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Mimi Zohar <zohar@linux.ibm.com>
-Cc:     Jonathan McDowell <noodles@fb.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>
-Subject: Re: [PATCH v3] x86/kexec: Carry forward IMA measurement log on kexec
-Message-ID: <Ynv4zBnLvbMKrwrq@zn.tnic>
-References: <YmKyvlF3my1yWTvK@noodles-fedora-PC23Y6EG>
- <YmgjXZphkmDKgaOA@noodles-fedora-PC23Y6EG>
- <YnuJCH75GrhVm0Tp@noodles-fedora.dhcp.thefacebook.com>
- <67f0fe5874638241bc2f2401dc2bc12c51becc0b.camel@linux.ibm.com>
+        Wed, 11 May 2022 13:57:45 -0400
+X-Greylist: delayed 174 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 11 May 2022 10:57:44 PDT
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31013694A2;
+        Wed, 11 May 2022 10:57:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1652291501;
+    s=strato-dkim-0002; d=gerhold.net;
+    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
+    From:Subject:Sender;
+    bh=yDhDyiG143+NERzD1Q8ObYJHTt8duWx1100elYLk5Lw=;
+    b=r8NeX8j4jl8lZZEDENr2QyYz9IuHVl07+1svJVb03mdDMKhJIiCJebebK6r1SdasDL
+    wCKoyTZalQ6afuDiXvQLs8Jh0AzhRv1mTTPPtIIMhSZogPMPymE7HoSDVLloF3YvgZai
+    AjYGwIOPvTakRCmeJemsat+wwM9rLUgCIn5gTvXBb1fnon2l6m7gQQlsJL4W0gnatZsa
+    w5l5aM87bRodTTMOB4oJfY0FvG9YLL9ZXgvNtw0b7g1XOtNPA0NIx5BgHiqT1yyutoZ8
+    Lex2gFOxdj5C0drn/K6S2xPFFNEpq8H+kclxF/mAzVKUm0HIYtgs5EEgIJiTpnZ7zNtZ
+    myTg==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVOQ/OcYgojyw4j34+u267FZF9PwpcNKLUrK88/6Y="
+X-RZG-CLASS-ID: mo00
+Received: from gerhold.net
+    by smtp.strato.de (RZmta 47.42.2 AUTH)
+    with ESMTPSA id u05e50y4BHpf2o2
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Wed, 11 May 2022 19:51:41 +0200 (CEST)
+Date:   Wed, 11 May 2022 19:51:32 +0200
+From:   Stephan Gerhold <stephan@gerhold.net>
+To:     Sireesh Kodali <sireeshkodali1@gmail.com>
+Cc:     devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, bjorn.andersson@linaro.org,
+        Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/2] arm64: dts: qcom: msm8916: Fix typo in pronto
+ remoteproc node
+Message-ID: <Ynv3pE3gkLW39jNk@gerhold.net>
+References: <20220510042654.71152-1-sireeshkodali1@gmail.com>
+ <20220510042654.71152-3-sireeshkodali1@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <67f0fe5874638241bc2f2401dc2bc12c51becc0b.camel@linux.ibm.com>
+In-Reply-To: <20220510042654.71152-3-sireeshkodali1@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 01:53:23PM -0400, Mimi Zohar wrote:
-> This patch doesn't apply to Linus' master branch.  Which tip/master
-> branch?
+On Tue, May 10, 2022 at 09:56:54AM +0530, Sireesh Kodali wrote:
+> The smem-state properties for the pronto node were incorrectly labelled,
+> reading `qcom,state*` rather than `qcom,smem-state*`. Fix that, allowing
+> the stop state to be used.
+> 
+> Fixes: 88106096cbf8 ("ARM: dts: msm8916: Add and enable wcnss node")
+> 
+> Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
 
-This one:
+Thanks for finding this!
 
-https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/log/
+Reviewed-by: Stephan Gerhold <stephan@gerhold.net>
 
-Considering how the majority of the changes are x86-specific, I was
-thinking I'd carry it through the tip tree after getting your ACK for
-the IMA side of things?
-
-Thx.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+> ---
+>  arch/arm64/boot/dts/qcom/msm8916.dtsi | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/msm8916.dtsi b/arch/arm64/boot/dts/qcom/msm8916.dtsi
+> index e34963505e07..7ecd747dc624 100644
+> --- a/arch/arm64/boot/dts/qcom/msm8916.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/msm8916.dtsi
+> @@ -1758,8 +1758,8 @@ pronto: remoteproc@a21b000 {
+>  					<&rpmpd MSM8916_VDDMX>;
+>  			power-domain-names = "cx", "mx";
+>  
+> -			qcom,state = <&wcnss_smp2p_out 0>;
+> -			qcom,state-names = "stop";
+> +			qcom,smem-states = <&wcnss_smp2p_out 0>;
+> +			qcom,smem-state-names = "stop";
+>  
+>  			pinctrl-names = "default";
+>  			pinctrl-0 = <&wcnss_pin_a>;
+> -- 
+> 2.36.0
+> 
