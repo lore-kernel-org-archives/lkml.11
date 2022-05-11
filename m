@@ -2,2354 +2,527 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9B86C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 14:28:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37874C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 14:28:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240569AbiEKO17 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 10:27:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57184 "EHLO
+        id S240800AbiEKO2i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 10:28:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244965AbiEKO0g (ORCPT
+        with ESMTP id S242519AbiEKO22 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 10:26:36 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F16014C780;
-        Wed, 11 May 2022 07:26:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652279193; x=1683815193;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=DAKwIwvr3fu46e6SUqaVnv23ckfMjeXFyGAoSQMGcbk=;
-  b=mFESleq8FPazv7icoEwH4Vfzv0JHGRnKoniKVLUG8Ze1yctIH7dLKYtH
-   sS6XBg9Liodqk+Hk60DIzg3dkFbnJwkQyfi0gbw4cm3j+SXTEyvLczFh3
-   S587Xf7sBJ7W+4EOmukxGz3+de47mbXze5kAs94zmvrZ/aT2V6KUf1ip8
-   GC9+BHZoKgbrOMMJxSxu9mFONhog9bhFoVHMC7iyGoJhki0CqSEdbAb0+
-   iNzmxkk1e8uu5xRfQRPI672hkYiaWg8kd17maumEyU5rAEhTY7QRzvktg
-   RY0c5Qtepl8gZYrTyafcDkBal9tcqgrRjGmbnrDgScp4saEr4Vc0MzEnj
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="269648181"
+        Wed, 11 May 2022 10:28:28 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB5F07983F;
+        Wed, 11 May 2022 07:28:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1652279302; x=1683815302;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=Ft5VhS5DbLxrymTKMwyfE6YStIZ1SKgWNbefUwTjTVs=;
+  b=jRVl7/2R2mUGERQsErMeJmLwnpczG8RV/RwDFp08AH0WuhMSoIECN8pE
+   s/IkuDX893rV090azr+g/Cl0TBIEMeh7ZZFXK+l4sRq/9cyMn6s570rYM
+   sdnitS+G3bNXALDLY0Ucb8yk2LLAp85l7wWdjjYwLk3juGe+o5I8+2guI
+   ifGnBo+nDVT0ac05+usTFNfPJpgsz18oqhLI6mrqrbU+KY320zqzbcC30
+   tsMQjpCwJDd0QyF0WMcUH+lmg+zHwi2B9U8NVpVY9NzoF4iHywsGvgdIY
+   z5cwPBTJAN+4tVH1cl+Y+2HpjkFkXljgLUj8DvZup/0dgjwFyS2S3hauv
+   g==;
 X-IronPort-AV: E=Sophos;i="5.91,217,1647327600"; 
-   d="scan'208";a="269648181"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 07:26:32 -0700
-X-IronPort-AV: E=Sophos;i="5.91,217,1647327600"; 
-   d="scan'208";a="542328237"
-Received: from kniesyn-mobl1.ger.corp.intel.com (HELO localhost) ([10.249.131.79])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 07:26:26 -0700
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>
-Cc:     Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        linux-doc@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org,
-        Petri Latvala <petri.latvala@intel.com>,
-        Arkadiusz Hiler <arek@hiler.eu>
-Subject: Re: [RFC] drm/msm: Add initial ci/ subdirectory
-In-Reply-To: <20220510070140.45407-1-tomeu.vizoso@collabora.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20220510070140.45407-1-tomeu.vizoso@collabora.com>
-Date:   Wed, 11 May 2022 17:26:23 +0300
-Message-ID: <87mtfoi1rk.fsf@intel.com>
+   d="scan'208";a="163612593"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 May 2022 07:28:21 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 11 May 2022 07:28:21 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.71) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17 via Frontend
+ Transport; Wed, 11 May 2022 07:28:21 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IYPTalb9vBdY5Ea5Dxk9xshRiXRk9YEPFwmedYTN4Fur+IPP8f3759vpCjPYN6gvz2idGaqAr2sJJJ5xj5g6nwstlSpdpfL/hwXwrUlKzk8UDIITm5wtMo0q62iu4nIYTJdGYJ24OyUMJFqfwrE2D/K+2qouppoD+A5QiZgzHplJk5WTkXWGApIQPUnh5EP14gQrsyx9PG62YOXIJqLGq6+W9caIMRJRGRa0B400LbOwyK6JRJ8S6248WpkyDZIVTH+Wtgu1Ae0rBsDNqoYGGqj2lGQlxO4zC81Hn2/YY9oXAisvZwuiEb9WGMFmayIfdrjcJKmHL36RkPhE6xffvg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Ft5VhS5DbLxrymTKMwyfE6YStIZ1SKgWNbefUwTjTVs=;
+ b=hHzClRDbn+DQYira4bi+cnYl3cat3iXcMdOHr0aZ7sWJCaaqGfKo5EgB+9hQfqqLDU058DBq7drnfhEEZqpH2iAiXQ1NUF/aM75DOl8lu7DdaaiQLxKLMXQ4+SxHGDhuyCAD74y3JdV1CiazO8oQIt3SqZp/UUh2wRaDXkl4h1FMlecq6CwRu4yQU2vnXjsJJRt+FumhpOwLZ4xoPAF+lYK+QTp6kxxftFHCMpePY0nIVcE0pgh2D1Xuz95ft1MBdqpVIKbshX5W4uUsjEN7dmmdWd5fA193h6LqkFpZmhWf8OAHZzdPjw8P482uC24j2kbhXXGRjBXLzWEiPlOcgQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ft5VhS5DbLxrymTKMwyfE6YStIZ1SKgWNbefUwTjTVs=;
+ b=K7fxMKo2gVos+2ZoIVW/2H7UQUnDiRQCRD9M8OHiAhFhDdQ2VDBPuL5MkyszQdQWTMI5EUyDiI5xF+h8FKUnEhoJn2G+tOB3R363vQDNCNek/00t/jzrt6/RHuIyJW0E5LDjRf1VcrMe85O+PBeHIEHGiqYm5A2vtt0e8OX/KzA=
+Received: from CO1PR11MB4865.namprd11.prod.outlook.com (2603:10b6:303:9c::9)
+ by DM6PR11MB2922.namprd11.prod.outlook.com (2603:10b6:5:63::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23; Wed, 11 May
+ 2022 14:28:12 +0000
+Received: from CO1PR11MB4865.namprd11.prod.outlook.com
+ ([fe80::fc22:2f34:4590:7b78]) by CO1PR11MB4865.namprd11.prod.outlook.com
+ ([fe80::fc22:2f34:4590:7b78%2]) with mapi id 15.20.5227.023; Wed, 11 May 2022
+ 14:28:12 +0000
+From:   <Kavyasree.Kotagiri@microchip.com>
+To:     <peda@axentia.se>
+CC:     <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <lee.jones@linaro.org>,
+        <linux@armlinux.org.uk>, <Manohar.Puri@microchip.com>,
+        <UNGLinuxDriver@microchip.com>,
+        <krzysztof.kozlowski+dt@linaro.org>, <Nicolas.Ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <Claudiu.Beznea@microchip.com>
+Subject: RE: [PATCH v2 4/4] mux: lan966: Add support for flexcom mux
+ controller
+Thread-Topic: [PATCH v2 4/4] mux: lan966: Add support for flexcom mux
+ controller
+Thread-Index: AQHYY4HD8kPvWd0rOEOlE7g5upEelq0Wa3OAgAG+DsCAAFprgIAAuvQA
+Date:   Wed, 11 May 2022 14:28:12 +0000
+Message-ID: <CO1PR11MB486567066BE4499BA5D31DB892C89@CO1PR11MB4865.namprd11.prod.outlook.com>
+References: <20220509084920.14529-1-kavyasree.kotagiri@microchip.com>
+ <20220509084920.14529-5-kavyasree.kotagiri@microchip.com>
+ <e43d766f-ec63-93d7-6b19-05b32579e6e3@axentia.se>
+ <CO1PR11MB4865915CFCBA2AA765B932A292C99@CO1PR11MB4865.namprd11.prod.outlook.com>
+ <59288dbf-bea2-a12e-93d2-c7c95f5568f6@axentia.se>
+In-Reply-To: <59288dbf-bea2-a12e-93d2-c7c95f5568f6@axentia.se>
+Accept-Language: en-IN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: cae4660e-7b77-4439-b82e-08da335a7aca
+x-ms-traffictypediagnostic: DM6PR11MB2922:EE_
+x-microsoft-antispam-prvs: <DM6PR11MB29225DF8EB92D12BC3289A8292C89@DM6PR11MB2922.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 0M6nNJMZMvMUX0BGykXT+ht1Da9gbHMXOiNtMNEWmNjNIUUVU66LqdoxQFXWJSgycLuc7mbdFwmTrVDBjqF4kKNcTrUvUz7o3qtblHK5/RSjyGkzZko6noqEQGPTzX2Leb+4IHlMeeYU64zVT47fQx/KuGG6y4Xc88cHmDZdyZYCDRKjhO6fyQOsGmWtnKNJcqUh0OJ8Ms0wNL1DqwVDEfq/6ztEd5nq1H7xhgd+VHY83Uni6ACiunTf5PDSOkHxBAJKgaz2zKQ0hX/0sd6gr9tlmnf4AdwdqOJE4JSRUTh0BrEIfyvqcKEBfIk56LKgCeRFlcj1oJaFOBqcDB6NZDLBG2w12Cs1OolvFTMmdJ8RfF1WL5Lx/liY0XTODNNrTRYiI3vsuKXdhs6UjejbRZkzn28MBr68Ze23FrIuTN/350StrM3IQ/P1m0nVMXLkOok1onJW9EqkwbqkFUsU+8vNCjCtM6SdStYImzfH5KR/53naThpayCL40vCdMoo44nup0nb8IORpOfRZusVw37VDrtSN7tyTJiL1O3Mn1pGUEOjAtbZYZlYQMmpQu89cxkzaspH5vfFobPPwUgFEJtL9N7uKF2nM14d7cazS2RiZHadIZefti3r6OMxwi8uqbpDpeXXmxQrOPUc8jW5gTTwlai3+bkpGFF6lFT8xUKTtT1LATmQFrj03C86UeI8+9MHsFSfkyZxnOKQL4eabvA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4865.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(508600001)(86362001)(38100700002)(122000001)(71200400001)(5660300002)(8936002)(38070700005)(9686003)(6506007)(316002)(76116006)(6916009)(66946007)(64756008)(54906003)(66556008)(66476007)(66446008)(8676002)(4326008)(52536014)(33656002)(7696005)(83380400001)(186003)(55016003)(30864003)(26005)(107886003)(2906002)(579004);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?ZUhidEs0ZmRTOFhxdjBYTlBtNHBuUzlLVW5UUTRXb2RGb1JnTmVQRDdndmdw?=
+ =?utf-8?B?YmdrVTBOMFNkY3ExMlBIM2RZNTRCeGFIZ08rMUEvT091dUhJd0d4aFhYdWMw?=
+ =?utf-8?B?RUViRVRsTHZWLytDMFR0ZlY4QlhkOXhFd051dUpZcVBzcjM2aVZVblJmU1gy?=
+ =?utf-8?B?YTdSbVEvZG1CV0p5WkdBcFZSRzlsZVJ4T3JhL25XQXArVDBmNk5kcUhlTG9O?=
+ =?utf-8?B?Mi9RVGYvME13dks0amprZC8zK20vSisvQzRMM2txTm9iY05tVUg4dWVFNkll?=
+ =?utf-8?B?YWpud3MrUExiazhZcHpHSUFKZ3JYZERhaHI2VnFXYlBGY2EwaEhWNkVjczZh?=
+ =?utf-8?B?THVIWGRjT2pDS1M5N09pYXNBOGI4c3Ixd29TTE56YVZCWUN6RFVFdXQyQjVa?=
+ =?utf-8?B?Q2FkM0xBMzZrK2xlNFZXUjZDUVdLWlI0SDBiY0hzM1NEOU9JU1BzbTZDNmlx?=
+ =?utf-8?B?MkU1WnI0YnNxQU9wK3dPYXBFNWROV2ppaEErK3RNUW0rQTVmYkRNVWpXNnJk?=
+ =?utf-8?B?Q1gwQUlqbDIyT3I4eFV0dEl3NUlVbFBsSlRrbjlrQnlORmNtd3g0d0ZZN1d3?=
+ =?utf-8?B?Y084U2NKS3RkZi9iZ2J5N1A2b2tlZTJlVkRpNzhPTlZTK1orSVA3RUpDQWg0?=
+ =?utf-8?B?OXpyNmxVWGFxU3dFVkhsWlJjWWE5NU9UTTR1a1ZTTjk5OVJHVGxuZXJJQmth?=
+ =?utf-8?B?RHRObHMraHcyc05CUUtiM0s5SVRGSWRtVjdGNFFKSVVzdzU1ZEFWUnVMMGs5?=
+ =?utf-8?B?cXRRUG5STGVXbXY1Y2EwL21GSys4azc2RS94clBsYU0wb25yRDI1L0hRZFk2?=
+ =?utf-8?B?K2VvOEhmSW50aXVTU2xIaFQ0L0RSb2tTL1lKTU9PZ2t0UEhRaTg2VUhmSktm?=
+ =?utf-8?B?M3ZiR0t0MmVpS1NqenZpTDJ6YWNDb0s4aTgveU1HNFA0ZXVqbkt3V2RwdkVC?=
+ =?utf-8?B?OVF5ekpOcStyZXFlWnZWUWJlWXFaMjVJVHhKcmZSU3QyVEd6ZXMwWG5WYUpS?=
+ =?utf-8?B?K3pnbVgzZjdyYVlhQTRSSytMemdsOUZpMnR3K2hHSGloY3M4eEVFN0RGL2pj?=
+ =?utf-8?B?TDZtclAzaUZoYkV4MEVWcDF6ekJWT3BaeTQ4MkEvT2JJU3I0cU1IdnZVK2do?=
+ =?utf-8?B?MVN5TVRCUXlUb0Y2THF0WFR4ZWZzbFFvV01xOUR0QTh1eEp2YkZleVhwZWtj?=
+ =?utf-8?B?SE9saWdoMlNIWHQ2b2pPSlQ0akx1cVVtaU9lSTk5L0xUUFVVSUtGZkZnbnM4?=
+ =?utf-8?B?b3pxY0tSa0UzanBkZDczWXUrZW55RnpQZXozcHZkd0VORm9lTnFBWW9HZzJR?=
+ =?utf-8?B?R3B6UkR2TS9hQ0xEbmpYbmVQWWM5a3p5dVpVTitqUTZlWktrb2szeE9jeWx5?=
+ =?utf-8?B?bzhxUFI0aXJWZkV2bm5heXBnelBtQUF6dU1zMGhBUllYczlBakdJRDJwNGFm?=
+ =?utf-8?B?dVpOdXcyWWVUTHhDT0JMeDFoemFNdWJYTXFoQlptOUhQVzN4Z0JPS2VEUXd2?=
+ =?utf-8?B?K3R6LzRSRGRGLy9wcVREMGRHa3pIYjJDV1ZzV3FVRGtoZWdBbDNFSTNrZmJl?=
+ =?utf-8?B?dnZuYnJmQXlDbGJMcVk3T1poVVM5czBzQVROcjUzT0NVT3MzR2tFRUNIc0o5?=
+ =?utf-8?B?UGNHV3llYU9lNDNYS080a2lzMll4LzhGM2JaUC8vcGxJTjZIUzNlcTZ0bVBO?=
+ =?utf-8?B?WlJnK3NxRWNCRmZ2T1J1alRHK3ZRZDlaRFQ1Z2dQQllvTVV5YkI3SXdtR1Qx?=
+ =?utf-8?B?M25rSDY3eVB6UzMyMVFhbVpjNWVjandjWi85d2kvRjVRSTcwNVVTMHpvYytC?=
+ =?utf-8?B?RWMwMkIyVUdxdnJUQWpPVHF5dXdkTnV5eGE5OHA5MDlqQjFMWFV0ZmlSL0dB?=
+ =?utf-8?B?M3ZWaHNZQm5vZVFhWmMrZ0N0NUVZZmZOd29KSlBkcGpEUFdjdDFUdUYyYWYw?=
+ =?utf-8?B?aUJYZlR1eVJCak9UdnBVZEYzM2xPd20yZ1hqS0pqR1pPSE9VZWxNa2lOdDBX?=
+ =?utf-8?B?RGQrM2JFWjZpaUVhaDV0RDRKU3RkTXl0eUg0VXRXM1VZeTBINzNlL1k1VGda?=
+ =?utf-8?B?dTQ0SGU2aFArYTZ5QW9FU0d5TFIxcmc1QmxDaDhaUnlJbWRlRWIxcHNkcVFk?=
+ =?utf-8?B?MklXOG5KcEUvbVFBbXFlMlhxSkJyV3R6V0d1aCthSFd1R01yaTJ6Mm4yZ3Yx?=
+ =?utf-8?B?OVgrUHJuR2x6WTRVUks2MVlHdlRHdjVoalVyM0hnN1hMTTVPZEd3aVdDTFh4?=
+ =?utf-8?B?WXJFam1HeUFlMzJKdkYrU1JTcGg5VnM0dGt4Tks0Vm43T2ZsU0I3VmRqUVFh?=
+ =?utf-8?B?bW9rbGZ6dlpGTkN1L2F0Z2EyWEMwRkdaY3dLeFpRTE5idUFOT2VHTmxaSzB4?=
+ =?utf-8?Q?5fICARM+WJWio51k=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4865.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cae4660e-7b77-4439-b82e-08da335a7aca
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 May 2022 14:28:12.6369
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: kcB1Od38uIVPWTCZ4uGnuUxTS8dVXF9ygk5NUE5dqxen7rLXf0UsMV07tSzcMifH0I+t53xW8M4u0veLnyU1w5MI4SJxFR72UmWNwaTNIJws8LAM4wu1yu3w6Y4ulpvd
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB2922
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 10 May 2022, Tomeu Vizoso <tomeu.vizoso@collabora.com> wrote:
-> And use it to store expectations about what the drm/msm driver is
-> supposed to pass in the IGT test suite.
->
-> Also include a configuration file that points to the out-of-tree CI
-> scripts.
->
-> By storing the test expectations along the code we can make sure both
-> stay in sync with each other, and so we can know when a code change
-> breaks those expectations.
->
-> This will allow all contributors to drm/msm to reuse the infrastructure
-> already in gitlab.freedesktop.org to test the driver on several
-> generations of the hardware.
-
-Cc: Petri and Arek
-
-The tests and subtests and their names are inevitably going to change
-over time. I don't think there are any guarantees that they're
-stable. How are you going to handle such changes with the test names and
-results committed to the kernel tree?
-
-
-BR,
-Jani.
-
-
->
-> Signed-off-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
-> ---
->  Documentation/gpu/msm_automated_testing.rst |  70 ++++
->  drivers/gpu/drm/msm/ci/gitlab-ci.yml        |  11 +
->  drivers/gpu/drm/msm/ci/msm.testlist         | 429 ++++++++++++++++++++
->  drivers/gpu/drm/msm/ci/msm_a360_results.txt | 421 +++++++++++++++++++
->  drivers/gpu/drm/msm/ci/msm_a530_results.txt | 421 +++++++++++++++++++
->  drivers/gpu/drm/msm/ci/msm_a618_results.txt | 422 +++++++++++++++++++
->  drivers/gpu/drm/msm/ci/msm_a630_results.txt | 422 +++++++++++++++++++
->  7 files changed, 2196 insertions(+)
->  create mode 100644 Documentation/gpu/msm_automated_testing.rst
->  create mode 100644 drivers/gpu/drm/msm/ci/gitlab-ci.yml
->  create mode 100644 drivers/gpu/drm/msm/ci/msm.testlist
->  create mode 100644 drivers/gpu/drm/msm/ci/msm_a360_results.txt
->  create mode 100644 drivers/gpu/drm/msm/ci/msm_a530_results.txt
->  create mode 100644 drivers/gpu/drm/msm/ci/msm_a618_results.txt
->  create mode 100644 drivers/gpu/drm/msm/ci/msm_a630_results.txt
->
-> diff --git a/Documentation/gpu/msm_automated_testing.rst b/Documentation/gpu/msm_automated_testing.rst
-> new file mode 100644
-> index 000000000000..fe59474569c2
-> --- /dev/null
-> +++ b/Documentation/gpu/msm_automated_testing.rst
-> @@ -0,0 +1,70 @@
-> +.. SPDX-License-Identifier: GPL-2.0+
-> +
-> +=========================================
-> +Automated testing of MSM DRM driver
-> +=========================================
-> +
-> +
-> +Introduction
-> +============
-> +
-> +Making sure that changes to a driver don't introduce regressions can be very time consuming when lots of different hardware configurations need to be tested. Moreover, it isn't practical for each person interested in this testing to have to acquire and maintain what can be a considerable amount of hardware.
-> +
-> +Also, it is desirable for developers to check for regressions in their code by themselves, instead of relying on the maintainer finding them and then reporting back.
-> +
-> +There are facilities in gitlab.freedesktop.org to automatically test Mesa that can be used as well for testing DRM drivers such as drm/msm. This document explains how people interested in testing the drm/msm driver can use this shared infrastructure to save quite some time and effort.
-> +
-> +
-> +Relevant files
-> +==============
-> +
-> +drivers/gpu/drm/msm/ci/gitlab-ci.yml
-> +------------------------------------
-> +
-> +Specifies the specific version of the scripts to be used. GitLab CI will use the values defined in this file to fetch the right scripts.
-> +
-> +
-> +drivers/gpu/drm/msm/ci/msm.testlist
-> +-----------------------------------
-> +
-> +Specifies the tests that the current code is expected to be able to reliably run. These tests are expected to not hang the DUT (device under testing) when running on the revision they belong to, and to give consistent results.
-> +
-> +
-> +drivers/gpu/drm/msm/ci/msm_*_results.txt
-> +----------------------------------------
-> +
-> +Specifies the expected results of running this specific kernel revision on a given hardware configuration.
-> +
-> +
-> +How to enable automated testing on your tree
-> +============================================
-> +
-> +1. Create a Linux tree in https://gitlab.freedesktop.org/ if you don't have one yet
-> +
-> +2. In your kernel repo's configuration (eg. https://gitlab.freedesktop.org/tomeu/linux/-/settings/ci_cd), change the CI/CD configuration file from .gitlab-ci.yml to drivers/gpu/drm/msm/ci/gitlab-ci.yml.
-> +
-> +3. Next time you push to this repository, you will see a CI pipeline being created (eg. https://gitlab.freedesktop.org/tomeu/linux/-/pipelines)
-> +
-> +4. The various jobs will be run and when the pipeline is finished, all jobs should be green unless a regression has been found.
-> +
-> +
-> +How to update test expectations
-> +===============================
-> +
-> +If your changes to the code fix any tests, you will have to update one or more of the files in drivers/gpu/drm/msm/ci/msm_*_results.txt, for each of the test platforms affected by the change.
-> +
-> +If you have run a pipeline and it failed because of a mismatched test result, you will have been offered a patch at the end of the run that you can apply after reviewing it.
-> +
-> +
-> +How to expand coverage
-> +======================
-> +
-> +If your code changes makes it possible to run more tests (by solving reliability issues, for example), more tests can be added to this list, and then the expected results updated with the patch file that will be printed at the end of each job.
-> +
-> +If there is a need for updating the version of IGT being used (maybe you have added more tests to it), follow the instructions at https://gitlab.freedesktop.org/gfx-ci/drm-ci/-/tree/msm#upreving-igt.
-> +
-> +
-> +How to test your changes to the scripts
-> +==========================================
-> +
-> +For testing changes to the scripts in the drm-ci repo, change the DRM_CI_PROJECT_PATH variable in drivers/gpu/drm/msm/ci/gitlab-ci.yml to match your fork of the project (eg. tomeu/drm-ci). This fork needs to be in https://gitlab.freedesktop.org/.
-> \ No newline at end of file
-> diff --git a/drivers/gpu/drm/msm/ci/gitlab-ci.yml b/drivers/gpu/drm/msm/ci/gitlab-ci.yml
-> new file mode 100644
-> index 000000000000..9b7caa7fcab2
-> --- /dev/null
-> +++ b/drivers/gpu/drm/msm/ci/gitlab-ci.yml
-> @@ -0,0 +1,11 @@
-> +variables:
-> +  # Change this to use your fork of drm-ci
-> +  DRM_CI_PROJECT_PATH: &drm-ci-project-path gfx-ci/drm-ci
-> +  DRM_CI_COMMIT_SHA: &drm-ci-commit-sha msm
-> +
-> +include:
-> +  - project: *drm-ci-project-path
-> +    ref: *drm-ci-commit-sha
-> +    file:
-> +      - '.msm-gitlab-ci.yml'
-> +      - '.gitlab-ci.yml'
-> diff --git a/drivers/gpu/drm/msm/ci/msm.testlist b/drivers/gpu/drm/msm/ci/msm.testlist
-> new file mode 100644
-> index 000000000000..7c771471dfa2
-> --- /dev/null
-> +++ b/drivers/gpu/drm/msm/ci/msm.testlist
-> @@ -0,0 +1,429 @@
-> +# Keep alphabetically sorted by default
-> +
-> +igt@core_auth@getclient-simple
-> +igt@core_auth@getclient-master-drop
-> +igt@core_auth@basic-auth
-> +igt@core_auth@many-magics
-> +igt@core_getclient
-> +igt@core_getstats
-> +igt@core_getversion
-> +igt@core_setmaster_vs_auth
-> +igt@drm_read@invalid-buffer
-> +igt@drm_read@fault-buffer
-> +igt@drm_read@empty-block
-> +igt@drm_read@empty-nonblock
-> +igt@drm_read@short-buffer-block
-> +igt@drm_read@short-buffer-nonblock
-> +igt@drm_read@short-buffer-wakeup
-> +igt@kms_addfb_basic@unused-handle
-> +igt@kms_addfb_basic@unused-pitches
-> +igt@kms_addfb_basic@unused-offsets
-> +igt@kms_addfb_basic@unused-modifier
-> +igt@kms_addfb_basic@clobberred-modifier
-> +igt@kms_addfb_basic@invalid-smem-bo-on-discrete
-> +igt@kms_addfb_basic@legacy-format
-> +igt@kms_addfb_basic@no-handle
-> +igt@kms_addfb_basic@basic
-> +igt@kms_addfb_basic@bad-pitch-0
-> +igt@kms_addfb_basic@bad-pitch-32
-> +igt@kms_addfb_basic@bad-pitch-63
-> +igt@kms_addfb_basic@bad-pitch-128
-> +igt@kms_addfb_basic@bad-pitch-256
-> +igt@kms_addfb_basic@bad-pitch-1024
-> +igt@kms_addfb_basic@bad-pitch-999
-> +igt@kms_addfb_basic@bad-pitch-65536
-> +igt@kms_addfb_basic@size-max
-> +igt@kms_addfb_basic@too-wide
-> +igt@kms_addfb_basic@too-high
-> +igt@kms_addfb_basic@bo-too-small
-> +igt@kms_addfb_basic@small-bo
-> +igt@kms_addfb_basic@bo-too-small-due-to-tiling
-> +igt@kms_addfb_basic@addfb25-modifier-no-flag
-> +igt@kms_addfb_basic@addfb25-bad-modifier
-> +igt@kms_addfb_basic@addfb25-x-tiled-mismatch-legacy
-> +igt@kms_addfb_basic@addfb25-x-tiled-legacy
-> +igt@kms_addfb_basic@addfb25-framebuffer-vs-set-tiling
-> +igt@kms_addfb_basic@addfb25-y-tiled-legacy
-> +igt@kms_addfb_basic@addfb25-yf-tiled-legacy
-> +igt@kms_addfb_basic@addfb25-y-tiled-small-legacy
-> +igt@kms_addfb_basic@addfb25-4-tiled
-> +igt@kms_addfb_basic@basic-x-tiled-legacy
-> +igt@kms_addfb_basic@framebuffer-vs-set-tiling
-> +igt@kms_addfb_basic@tile-pitch-mismatch
-> +igt@kms_addfb_basic@basic-y-tiled-legacy
-> +igt@kms_addfb_basic@invalid-get-prop-any
-> +igt@kms_addfb_basic@invalid-get-prop
-> +igt@kms_addfb_basic@invalid-set-prop-any
-> +igt@kms_addfb_basic@invalid-set-prop
-> +igt@kms_addfb_basic@master-rmfb
-> +igt@kms_atomic@plane-overlay-legacy
-> +igt@kms_atomic@plane-primary-legacy
-> +igt@kms_atomic@plane-primary-overlay-mutable-zpos
-> +igt@kms_atomic@plane-immutable-zpos
-> +igt@kms_atomic@test-only
-> +igt@kms_atomic@plane-cursor-legacy
-> +igt@kms_atomic@plane-invalid-params
-> +igt@kms_atomic@plane-invalid-params-fence
-> +igt@kms_atomic@crtc-invalid-params
-> +igt@kms_atomic@crtc-invalid-params-fence
-> +igt@kms_atomic@atomic-invalid-params
-> +igt@kms_atomic@atomic_plane_damage
-> +igt@kms_atomic_interruptible@legacy-setmode@pipe-a-edp-1
-> +igt@kms_atomic_interruptible@atomic-setmode@pipe-a-edp-1
-> +igt@kms_atomic_interruptible@legacy-dpms@pipe-a-edp-1
-> +igt@kms_atomic_interruptible@legacy-pageflip@pipe-a-edp-1
-> +igt@kms_atomic_interruptible@legacy-cursor@pipe-a-edp-1
-> +igt@kms_atomic_interruptible@universal-setplane-primary@pipe-a-edp-1
-> +igt@kms_atomic_interruptible@universal-setplane-cursor@pipe-a-edp-1
-> +igt@kms_content_protection@legacy
-> +igt@kms_content_protection@atomic
-> +igt@kms_content_protection@atomic-dpms
-> +igt@kms_content_protection@LIC
-> +igt@kms_content_protection@type1
-> +igt@kms_content_protection@mei_interface
-> +igt@kms_content_protection@content_type_change
-> +igt@kms_content_protection@uevent
-> +igt@kms_content_protection@srm
-> +igt@kms_content_protection@dp-mst-type-0
-> +igt@kms_content_protection@dp-mst-lic-type-0
-> +igt@kms_content_protection@dp-mst-type-1
-> +igt@kms_content_protection@dp-mst-lic-type-1
-> +igt@kms_dp_aux_dev
-> +igt@kms_flip_event_leak
-> +igt@kms_getfb@getfb-handle-zero
-> +igt@kms_getfb@getfb-handle-valid
-> +igt@kms_getfb@getfb-handle-closed
-> +igt@kms_getfb@getfb-handle-not-fb
-> +igt@kms_getfb@getfb-addfb-different-handles
-> +igt@kms_getfb@getfb-repeated-different-handles
-> +igt@kms_getfb@getfb-reject-ccs
-> +igt@kms_getfb@getfb2-handle-zero
-> +igt@kms_getfb@getfb2-handle-closed
-> +igt@kms_getfb@getfb2-handle-not-fb
-> +igt@kms_getfb@getfb2-accept-ccs
-> +igt@kms_getfb@getfb2-into-addfb2
-> +igt@kms_getfb@getfb-handle-protection
-> +igt@kms_getfb@getfb2-handle-protection
-> +igt@kms_hdmi_inject@inject-4k
-> +igt@kms_hdmi_inject@inject-audio
-> +igt@kms_hdr@bpc-switch
-> +igt@kms_hdr@bpc-switch-dpms
-> +igt@kms_hdr@static-toggle
-> +igt@kms_hdr@static-toggle-dpms
-> +igt@kms_hdr@static-swap
-> +igt@kms_multipipe_modeset@basic-max-pipe-crc-check
-> +igt@kms_pipe_crc_basic@bad-source
-> +igt@kms_pipe_crc_basic@read-crc-pipe-a
-> +igt@kms_pipe_crc_basic@read-crc-pipe-a-frame-sequence
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a-frame-sequence
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-a
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-a
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-a
-> +igt@kms_pipe_crc_basic@read-crc-pipe-b
-> +igt@kms_pipe_crc_basic@read-crc-pipe-b-frame-sequence
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b-frame-sequence
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-b
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-b
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-b
-> +igt@kms_pipe_crc_basic@read-crc-pipe-c
-> +igt@kms_pipe_crc_basic@read-crc-pipe-c-frame-sequence
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c-frame-sequence
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-c
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-c
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-c
-> +igt@kms_pipe_crc_basic@read-crc-pipe-d
-> +igt@kms_pipe_crc_basic@read-crc-pipe-d-frame-sequence
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d-frame-sequence
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-d
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-d
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-d
-> +igt@kms_pipe_crc_basic@read-crc-pipe-e
-> +igt@kms_pipe_crc_basic@read-crc-pipe-e-frame-sequence
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e-frame-sequence
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-e
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-e
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-e
-> +igt@kms_pipe_crc_basic@read-crc-pipe-f
-> +igt@kms_pipe_crc_basic@read-crc-pipe-f-frame-sequence
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f-frame-sequence
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-f
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-f
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-f
-> +igt@kms_plane_lowres@pipe-a-tiling-none
-> +igt@kms_plane_lowres@pipe-a-tiling-x
-> +igt@kms_plane_lowres@pipe-a-tiling-y
-> +igt@kms_plane_lowres@pipe-a-tiling-yf
-> +igt@kms_plane_lowres@pipe-a-tiling-4
-> +igt@kms_plane_lowres@pipe-b-tiling-none
-> +igt@kms_plane_lowres@pipe-b-tiling-x
-> +igt@kms_plane_lowres@pipe-b-tiling-y
-> +igt@kms_plane_lowres@pipe-b-tiling-yf
-> +igt@kms_plane_lowres@pipe-b-tiling-4
-> +igt@kms_plane_lowres@pipe-c-tiling-none
-> +igt@kms_plane_lowres@pipe-c-tiling-x
-> +igt@kms_plane_lowres@pipe-c-tiling-y
-> +igt@kms_plane_lowres@pipe-c-tiling-yf
-> +igt@kms_plane_lowres@pipe-c-tiling-4
-> +igt@kms_plane_lowres@pipe-d-tiling-none
-> +igt@kms_plane_lowres@pipe-d-tiling-x
-> +igt@kms_plane_lowres@pipe-d-tiling-y
-> +igt@kms_plane_lowres@pipe-d-tiling-yf
-> +igt@kms_plane_lowres@pipe-d-tiling-4
-> +igt@kms_plane_lowres@pipe-e-tiling-none
-> +igt@kms_plane_lowres@pipe-e-tiling-x
-> +igt@kms_plane_lowres@pipe-e-tiling-y
-> +igt@kms_plane_lowres@pipe-e-tiling-yf
-> +igt@kms_plane_lowres@pipe-e-tiling-4
-> +igt@kms_plane_lowres@pipe-f-tiling-none
-> +igt@kms_plane_lowres@pipe-f-tiling-x
-> +igt@kms_plane_lowres@pipe-f-tiling-y
-> +igt@kms_plane_lowres@pipe-f-tiling-yf
-> +igt@kms_plane_lowres@pipe-f-tiling-4
-> +igt@kms_prop_blob@basic
-> +igt@kms_prop_blob@blob-prop-core
-> +igt@kms_prop_blob@blob-prop-validate
-> +igt@kms_prop_blob@blob-prop-lifetime
-> +igt@kms_prop_blob@blob-multiple
-> +igt@kms_prop_blob@invalid-get-prop-any
-> +igt@kms_prop_blob@invalid-get-prop
-> +igt@kms_prop_blob@invalid-set-prop-any
-> +igt@kms_prop_blob@invalid-set-prop
-> +igt@kms_rmfb@rmfb-ioctl
-> +igt@kms_rmfb@close-fd
-> +igt@kms_rotation_crc@primary-rotation-90
-> +igt@kms_rotation_crc@primary-rotation-180
-> +igt@kms_rotation_crc@primary-rotation-270
-> +igt@kms_rotation_crc@sprite-rotation-90
-> +igt@kms_rotation_crc@sprite-rotation-180
-> +igt@kms_rotation_crc@sprite-rotation-270
-> +igt@kms_rotation_crc@cursor-rotation-180
-> +igt@kms_rotation_crc@sprite-rotation-90-pos-100-0
-> +igt@kms_rotation_crc@bad-pixel-format
-> +igt@kms_rotation_crc@bad-tiling
-> +igt@kms_rotation_crc@primary-x-tiled-reflect-x-0
-> +igt@kms_rotation_crc@primary-x-tiled-reflect-x-180
-> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-0
-> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-90
-> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-180
-> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-270
-> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-0
-> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-90
-> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-180
-> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-270
-> +igt@kms_rotation_crc@primary-4-tiled-reflect-x-0
-> +igt@kms_rotation_crc@primary-4-tiled-reflect-x-180
-> +igt@kms_rotation_crc@multiplane-rotation
-> +igt@kms_rotation_crc@multiplane-rotation-cropping-top
-> +igt@kms_rotation_crc@multiplane-rotation-cropping-bottom
-> +igt@kms_rotation_crc@exhaust-fences
-> +igt@kms_selftest@all
-> +igt@kms_setmode@basic@pipe-a-edp-1
-> +igt@kms_setmode@basic@pipe-b-edp-1
-> +igt@kms_setmode@basic-clone-single-crtc
-> +igt@kms_setmode@invalid-clone-single-crtc
-> +igt@kms_setmode@invalid-clone-exclusive-crtc
-> +igt@kms_setmode@clone-exclusive-crtc
-> +igt@kms_setmode@invalid-clone-single-crtc-stealing
-> +
-> +# Flakes on a530 with:
-> +# arm-smmu b40000.iommu: Unhandled context fault: fsr=0x408, iova=0x01003000, fsynr=0x13, cbfrsynra=0x0, cb=0
-> +# igt@msm_mapping@ring
-> +
-> +igt@msm_mapping@sqefw
-> +igt@msm_mapping@shadow
-> +igt@msm_recovery@hangcheck
-> +igt@msm_recovery@gpu-fault
-> +igt@msm_recovery@iova-fault
-> +igt@msm_submit@empty-submit
-> +igt@msm_submit@invalid-queue-submit
-> +igt@msm_submit@invalid-flags-submit
-> +igt@msm_submit@invalid-in-fence-submit
-> +igt@msm_submit@invalid-duplicate-bo-submit
-> +igt@msm_submit@invalid-cmd-idx-submit
-> +igt@msm_submit@invalid-cmd-type-submit
-> +igt@msm_submit@valid-submit
-> +igt@kms_sysfs_edid_timing
-> +igt@kms_universal_plane@universal-plane-pipe-a-functional
-> +igt@kms_universal_plane@universal-plane-pipe-a-sanity
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-a
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-a
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-a
-> +igt@kms_universal_plane@universal-plane-pipe-b-functional
-> +igt@kms_universal_plane@universal-plane-pipe-b-sanity
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-b
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-b
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-b
-> +igt@kms_universal_plane@universal-plane-pipe-c-functional
-> +igt@kms_universal_plane@universal-plane-pipe-c-sanity
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-c
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-c
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-c
-> +igt@kms_universal_plane@universal-plane-pipe-d-functional
-> +igt@kms_universal_plane@universal-plane-pipe-d-sanity
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-d
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-d
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-d
-> +igt@kms_universal_plane@universal-plane-pipe-e-functional
-> +igt@kms_universal_plane@universal-plane-pipe-e-sanity
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-e
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-e
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-e
-> +igt@kms_universal_plane@universal-plane-pipe-f-functional
-> +igt@kms_universal_plane@universal-plane-pipe-f-sanity
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-f
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-f
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-f
-> +igt@kms_vblank@invalid
-> +igt@kms_vblank@crtc-id
-> +igt@kms_vblank@pipe-a-query-idle
-> +igt@kms_vblank@pipe-a-query-idle-hang
-> +igt@kms_vblank@pipe-a-query-forked
-> +igt@kms_vblank@pipe-a-query-forked-hang
-> +igt@kms_vblank@pipe-a-query-busy
-> +igt@kms_vblank@pipe-a-query-busy-hang
-> +igt@kms_vblank@pipe-a-query-forked-busy
-> +igt@kms_vblank@pipe-a-query-forked-busy-hang
-> +igt@kms_vblank@pipe-a-wait-idle
-> +igt@kms_vblank@pipe-a-wait-idle-hang
-> +igt@kms_vblank@pipe-a-wait-forked
-> +igt@kms_vblank@pipe-a-wait-forked-hang
-> +igt@kms_vblank@pipe-a-wait-busy
-> +igt@kms_vblank@pipe-a-wait-busy-hang
-> +igt@kms_vblank@pipe-a-wait-forked-busy
-> +igt@kms_vblank@pipe-a-wait-forked-busy-hang
-> +igt@kms_vblank@pipe-a-ts-continuation-idle
-> +igt@kms_vblank@pipe-a-ts-continuation-idle-hang
-> +igt@kms_vblank@pipe-a-ts-continuation-dpms-rpm
-> +igt@kms_vblank@pipe-a-ts-continuation-modeset
-> +igt@kms_vblank@pipe-a-ts-continuation-modeset-hang
-> +igt@kms_vblank@pipe-a-ts-continuation-modeset-rpm
-> +igt@kms_vblank@pipe-b-accuracy-idle
-> +igt@kms_vblank@pipe-b-query-idle
-> +igt@kms_vblank@pipe-b-query-idle-hang
-> +igt@kms_vblank@pipe-b-query-forked
-> +igt@kms_vblank@pipe-b-query-forked-hang
-> +igt@kms_vblank@pipe-b-query-busy
-> +igt@kms_vblank@pipe-b-query-busy-hang
-> +igt@kms_vblank@pipe-b-query-forked-busy
-> +igt@kms_vblank@pipe-b-query-forked-busy-hang
-> +igt@kms_vblank@pipe-b-wait-idle
-> +igt@kms_vblank@pipe-b-wait-idle-hang
-> +igt@kms_vblank@pipe-b-wait-forked
-> +igt@kms_vblank@pipe-b-wait-forked-hang
-> +igt@kms_vblank@pipe-b-wait-busy
-> +igt@kms_vblank@pipe-b-wait-busy-hang
-> +igt@kms_vblank@pipe-b-wait-forked-busy
-> +igt@kms_vblank@pipe-b-wait-forked-busy-hang
-> +igt@kms_vblank@pipe-b-ts-continuation-idle
-> +igt@kms_vblank@pipe-b-ts-continuation-idle-hang
-> +igt@kms_vblank@pipe-b-ts-continuation-dpms-rpm
-> +igt@kms_vblank@pipe-b-ts-continuation-modeset
-> +igt@kms_vblank@pipe-b-ts-continuation-modeset-hang
-> +igt@kms_vblank@pipe-b-ts-continuation-modeset-rpm
-> +igt@kms_vblank@pipe-c-accuracy-idle
-> +igt@kms_vblank@pipe-c-query-idle
-> +igt@kms_vblank@pipe-c-query-idle-hang
-> +igt@kms_vblank@pipe-c-query-forked
-> +igt@kms_vblank@pipe-c-query-forked-hang
-> +igt@kms_vblank@pipe-c-query-busy
-> +igt@kms_vblank@pipe-c-query-busy-hang
-> +igt@kms_vblank@pipe-c-query-forked-busy
-> +igt@kms_vblank@pipe-c-query-forked-busy-hang
-> +igt@kms_vblank@pipe-c-wait-idle
-> +igt@kms_vblank@pipe-c-wait-idle-hang
-> +igt@kms_vblank@pipe-c-wait-forked
-> +igt@kms_vblank@pipe-c-wait-forked-hang
-> +igt@kms_vblank@pipe-c-wait-busy
-> +igt@kms_vblank@pipe-c-wait-busy-hang
-> +igt@kms_vblank@pipe-c-wait-forked-busy
-> +igt@kms_vblank@pipe-c-wait-forked-busy-hang
-> +igt@kms_vblank@pipe-c-ts-continuation-idle
-> +igt@kms_vblank@pipe-c-ts-continuation-idle-hang
-> +igt@kms_vblank@pipe-c-ts-continuation-dpms-rpm
-> +igt@kms_vblank@pipe-c-ts-continuation-modeset
-> +igt@kms_vblank@pipe-c-ts-continuation-modeset-hang
-> +igt@kms_vblank@pipe-c-ts-continuation-modeset-rpm
-> +igt@kms_vblank@pipe-d-accuracy-idle
-> +igt@kms_vblank@pipe-d-query-idle
-> +igt@kms_vblank@pipe-d-query-idle-hang
-> +igt@kms_vblank@pipe-d-query-forked
-> +igt@kms_vblank@pipe-d-query-forked-hang
-> +igt@kms_vblank@pipe-d-query-busy
-> +igt@kms_vblank@pipe-d-query-busy-hang
-> +igt@kms_vblank@pipe-d-query-forked-busy
-> +igt@kms_vblank@pipe-d-query-forked-busy-hang
-> +igt@kms_vblank@pipe-d-wait-idle
-> +igt@kms_vblank@pipe-d-wait-idle-hang
-> +igt@kms_vblank@pipe-d-wait-forked
-> +igt@kms_vblank@pipe-d-wait-forked-hang
-> +igt@kms_vblank@pipe-d-wait-busy
-> +igt@kms_vblank@pipe-d-wait-busy-hang
-> +igt@kms_vblank@pipe-d-wait-forked-busy
-> +igt@kms_vblank@pipe-d-wait-forked-busy-hang
-> +igt@kms_vblank@pipe-d-ts-continuation-idle
-> +igt@kms_vblank@pipe-d-ts-continuation-idle-hang
-> +igt@kms_vblank@pipe-d-ts-continuation-dpms-rpm
-> +igt@kms_vblank@pipe-d-ts-continuation-modeset
-> +igt@kms_vblank@pipe-d-ts-continuation-modeset-hang
-> +igt@kms_vblank@pipe-d-ts-continuation-modeset-rpm
-> +igt@kms_vblank@pipe-e-accuracy-idle
-> +igt@kms_vblank@pipe-e-query-idle
-> +igt@kms_vblank@pipe-e-query-idle-hang
-> +igt@kms_vblank@pipe-e-query-forked
-> +igt@kms_vblank@pipe-e-query-forked-hang
-> +igt@kms_vblank@pipe-e-query-busy
-> +igt@kms_vblank@pipe-e-query-busy-hang
-> +igt@kms_vblank@pipe-e-query-forked-busy
-> +igt@kms_vblank@pipe-e-query-forked-busy-hang
-> +igt@kms_vblank@pipe-e-wait-idle
-> +igt@kms_vblank@pipe-e-wait-idle-hang
-> +igt@kms_vblank@pipe-e-wait-forked
-> +igt@kms_vblank@pipe-e-wait-forked-hang
-> +igt@kms_vblank@pipe-e-wait-busy
-> +igt@kms_vblank@pipe-e-wait-busy-hang
-> +igt@kms_vblank@pipe-e-wait-forked-busy
-> +igt@kms_vblank@pipe-e-wait-forked-busy-hang
-> +igt@kms_vblank@pipe-e-ts-continuation-idle
-> +igt@kms_vblank@pipe-e-ts-continuation-idle-hang
-> +igt@kms_vblank@pipe-e-ts-continuation-dpms-rpm
-> +igt@kms_vblank@pipe-e-ts-continuation-modeset
-> +igt@kms_vblank@pipe-e-ts-continuation-modeset-hang
-> +igt@kms_vblank@pipe-e-ts-continuation-modeset-rpm
-> +igt@kms_vblank@pipe-f-accuracy-idle
-> +igt@kms_vblank@pipe-f-query-idle
-> +igt@kms_vblank@pipe-f-query-idle-hang
-> +igt@kms_vblank@pipe-f-query-forked
-> +igt@kms_vblank@pipe-f-query-forked-hang
-> +igt@kms_vblank@pipe-f-query-busy
-> +igt@kms_vblank@pipe-f-query-busy-hang
-> +igt@kms_vblank@pipe-f-query-forked-busy
-> +igt@kms_vblank@pipe-f-query-forked-busy-hang
-> +igt@kms_vblank@pipe-f-wait-idle
-> +igt@kms_vblank@pipe-f-wait-idle-hang
-> +igt@kms_vblank@pipe-f-wait-forked
-> +igt@kms_vblank@pipe-f-wait-forked-hang
-> +igt@kms_vblank@pipe-f-wait-busy
-> +igt@kms_vblank@pipe-f-wait-busy-hang
-> +igt@kms_vblank@pipe-f-wait-forked-busy
-> +igt@kms_vblank@pipe-f-wait-forked-busy-hang
-> +igt@kms_vblank@pipe-f-ts-continuation-idle
-> +igt@kms_vblank@pipe-f-ts-continuation-idle-hang
-> +igt@kms_vblank@pipe-f-ts-continuation-dpms-rpm
-> +igt@kms_vblank@pipe-f-ts-continuation-modeset
-> +igt@kms_vblank@pipe-f-ts-continuation-modeset-hang
-> +igt@kms_vblank@pipe-f-ts-continuation-modeset-rpm
-> +igt@kms_vrr@flip-basic
-> +igt@kms_vrr@flip-dpms
-> +igt@kms_vrr@flipline
-> +igt@kms_async_flip@async-flip-with-page-flip-events
-> +igt@kms_async_flip@alternate-sync-async-flip
-> +igt@kms_async_flip@test-time-stamp
-> +igt@kms_async_flip@test-cursor
-> +igt@kms_async_flip@invalid-async-flip
-> +igt@kms_async_flip@crc
-> diff --git a/drivers/gpu/drm/msm/ci/msm_a360_results.txt b/drivers/gpu/drm/msm/ci/msm_a360_results.txt
-> new file mode 100644
-> index 000000000000..fd80d2bf2bcb
-> --- /dev/null
-> +++ b/drivers/gpu/drm/msm/ci/msm_a360_results.txt
-> @@ -0,0 +1,421 @@
-> +igt@core_auth@getclient-simple,pass
-> +igt@core_auth@getclient-master-drop,pass
-> +igt@core_auth@basic-auth,pass
-> +igt@core_auth@many-magics,pass
-> +igt@core_getclient,pass
-> +igt@core_getstats,pass
-> +igt@core_getversion,pass
-> +igt@core_setmaster_vs_auth,pass
-> +igt@drm_read@invalid-buffer,skip
-> +igt@drm_read@fault-buffer,skip
-> +igt@drm_read@empty-block,skip
-> +igt@drm_read@empty-nonblock,skip
-> +igt@drm_read@short-buffer-block,skip
-> +igt@drm_read@short-buffer-nonblock,skip
-> +igt@drm_read@short-buffer-wakeup,skip
-> +igt@kms_addfb_basic@unused-handle,pass
-> +igt@kms_addfb_basic@unused-pitches,pass
-> +igt@kms_addfb_basic@unused-offsets,pass
-> +igt@kms_addfb_basic@unused-modifier,pass
-> +igt@kms_addfb_basic@clobberred-modifier,skip
-> +igt@kms_addfb_basic@invalid-smem-bo-on-discrete,skip
-> +igt@kms_addfb_basic@legacy-format,dmesg-warn
-> +igt@kms_addfb_basic@no-handle,pass
-> +igt@kms_addfb_basic@basic,pass
-> +igt@kms_addfb_basic@bad-pitch-0,pass
-> +igt@kms_addfb_basic@bad-pitch-32,pass
-> +igt@kms_addfb_basic@bad-pitch-63,pass
-> +igt@kms_addfb_basic@bad-pitch-128,pass
-> +igt@kms_addfb_basic@bad-pitch-256,pass
-> +igt@kms_addfb_basic@bad-pitch-1024,pass
-> +igt@kms_addfb_basic@bad-pitch-999,pass
-> +igt@kms_addfb_basic@bad-pitch-65536,pass
-> +igt@kms_addfb_basic@size-max,pass
-> +igt@kms_addfb_basic@too-wide,pass
-> +igt@kms_addfb_basic@too-high,dmesg-warn
-> +igt@kms_addfb_basic@bo-too-small,pass
-> +igt@kms_addfb_basic@small-bo,pass
-> +igt@kms_addfb_basic@bo-too-small-due-to-tiling,skip
-> +igt@kms_addfb_basic@addfb25-modifier-no-flag,pass
-> +igt@kms_addfb_basic@addfb25-bad-modifier,fail
-> +igt@kms_addfb_basic@addfb25-x-tiled-mismatch-legacy,skip
-> +igt@kms_addfb_basic@addfb25-x-tiled-legacy,skip
-> +igt@kms_addfb_basic@addfb25-framebuffer-vs-set-tiling,skip
-> +igt@kms_addfb_basic@addfb25-y-tiled-legacy,skip
-> +igt@kms_addfb_basic@addfb25-yf-tiled-legacy,skip
-> +igt@kms_addfb_basic@addfb25-y-tiled-small-legacy,skip
-> +igt@kms_addfb_basic@addfb25-4-tiled,skip
-> +igt@kms_addfb_basic@basic-x-tiled-legacy,skip
-> +igt@kms_addfb_basic@framebuffer-vs-set-tiling,skip
-> +igt@kms_addfb_basic@tile-pitch-mismatch,skip
-> +igt@kms_addfb_basic@basic-y-tiled-legacy,skip
-> +igt@kms_addfb_basic@invalid-get-prop-any,pass
-> +igt@kms_addfb_basic@invalid-get-prop,pass
-> +igt@kms_addfb_basic@invalid-set-prop-any,pass
-> +igt@kms_addfb_basic@invalid-set-prop,pass
-> +igt@kms_addfb_basic@master-rmfb,pass
-> +igt@kms_atomic@plane-overlay-legacy,skip
-> +igt@kms_atomic@plane-primary-legacy,skip
-> +igt@kms_atomic@plane-primary-overlay-mutable-zpos,skip
-> +igt@kms_atomic@plane-immutable-zpos,skip
-> +igt@kms_atomic@test-only,skip
-> +igt@kms_atomic@plane-cursor-legacy,skip
-> +igt@kms_atomic@plane-invalid-params,skip
-> +igt@kms_atomic@plane-invalid-params-fence,skip
-> +igt@kms_atomic@crtc-invalid-params,skip
-> +igt@kms_atomic@crtc-invalid-params-fence,skip
-> +igt@kms_atomic@atomic-invalid-params,skip
-> +igt@kms_atomic@atomic_plane_damage,skip
-> +igt@kms_atomic_interruptible@legacy-setmode,skip
-> +igt@kms_atomic_interruptible@atomic-setmode,skip
-> +igt@kms_atomic_interruptible@legacy-dpms,skip
-> +igt@kms_atomic_interruptible@legacy-pageflip,skip
-> +igt@kms_atomic_interruptible@legacy-cursor,skip
-> +igt@kms_atomic_interruptible@universal-setplane-primary,skip
-> +igt@kms_atomic_interruptible@universal-setplane-cursor,skip
-> +igt@kms_content_protection@legacy,skip
-> +igt@kms_content_protection@atomic,skip
-> +igt@kms_content_protection@atomic-dpms,skip
-> +igt@kms_content_protection@lic,skip
-> +igt@kms_content_protection@type1,skip
-> +igt@kms_content_protection@mei_interface,skip
-> +igt@kms_content_protection@content_type_change,skip
-> +igt@kms_content_protection@uevent,skip
-> +igt@kms_content_protection@srm,skip
-> +igt@kms_content_protection@dp-mst-type-0,skip
-> +igt@kms_content_protection@dp-mst-lic-type-0,skip
-> +igt@kms_content_protection@dp-mst-type-1,skip
-> +igt@kms_content_protection@dp-mst-lic-type-1,skip
-> +igt@kms_dp_aux_dev,skip
-> +igt@kms_flip_event_leak,skip
-> +igt@kms_getfb@getfb-handle-zero,pass
-> +igt@kms_getfb@getfb-handle-valid,pass
-> +igt@kms_getfb@getfb-handle-closed,pass
-> +igt@kms_getfb@getfb-handle-not-fb,pass
-> +igt@kms_getfb@getfb-addfb-different-handles,pass
-> +igt@kms_getfb@getfb-repeated-different-handles,pass
-> +igt@kms_getfb@getfb-reject-ccs,skip
-> +igt@kms_getfb@getfb2-handle-zero,pass
-> +igt@kms_getfb@getfb2-handle-closed,pass
-> +igt@kms_getfb@getfb2-handle-not-fb,pass
-> +igt@kms_getfb@getfb2-accept-ccs,skip
-> +igt@kms_getfb@getfb2-into-addfb2,pass
-> +igt@kms_getfb@getfb-handle-protection,pass
-> +igt@kms_getfb@getfb2-handle-protection,pass
-> +igt@kms_hdmi_inject@inject-4k,fail
-> +igt@kms_hdmi_inject@inject-audio,skip
-> +igt@kms_hdr@bpc-switch,skip
-> +igt@kms_hdr@bpc-switch-dpms,skip
-> +igt@kms_hdr@static-toggle,skip
-> +igt@kms_hdr@static-toggle-dpms,skip
-> +igt@kms_hdr@static-swap,skip
-> +igt@kms_multipipe_modeset@basic-max-pipe-crc-check,skip
-> +igt@kms_pipe_crc_basic@bad-source,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-a,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-a-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-a,skip
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-a,skip
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-a,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-b,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-b-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-b,skip
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-b,skip
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-b,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-c,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-c-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-c,skip
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-c,skip
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-c,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-d,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-d-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-d,skip
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-d,skip
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-d,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-e,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-e-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-e,skip
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-e,skip
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-e,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-f,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-f-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-f,skip
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-f,skip
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-f,skip
-> +igt@kms_plane_lowres@pipe-a-tiling-none,skip
-> +igt@kms_plane_lowres@pipe-a-tiling-x,skip
-> +igt@kms_plane_lowres@pipe-a-tiling-y,skip
-> +igt@kms_plane_lowres@pipe-a-tiling-yf,skip
-> +igt@kms_plane_lowres@pipe-a-tiling-4,skip
-> +igt@kms_plane_lowres@pipe-b-tiling-none,skip
-> +igt@kms_plane_lowres@pipe-b-tiling-x,skip
-> +igt@kms_plane_lowres@pipe-b-tiling-y,skip
-> +igt@kms_plane_lowres@pipe-b-tiling-yf,skip
-> +igt@kms_plane_lowres@pipe-b-tiling-4,skip
-> +igt@kms_plane_lowres@pipe-c-tiling-none,skip
-> +igt@kms_plane_lowres@pipe-c-tiling-x,skip
-> +igt@kms_plane_lowres@pipe-c-tiling-y,skip
-> +igt@kms_plane_lowres@pipe-c-tiling-yf,skip
-> +igt@kms_plane_lowres@pipe-c-tiling-4,skip
-> +igt@kms_plane_lowres@pipe-d-tiling-none,skip
-> +igt@kms_plane_lowres@pipe-d-tiling-x,skip
-> +igt@kms_plane_lowres@pipe-d-tiling-y,skip
-> +igt@kms_plane_lowres@pipe-d-tiling-yf,skip
-> +igt@kms_plane_lowres@pipe-d-tiling-4,skip
-> +igt@kms_plane_lowres@pipe-e-tiling-none,skip
-> +igt@kms_plane_lowres@pipe-e-tiling-x,skip
-> +igt@kms_plane_lowres@pipe-e-tiling-y,skip
-> +igt@kms_plane_lowres@pipe-e-tiling-yf,skip
-> +igt@kms_plane_lowres@pipe-e-tiling-4,skip
-> +igt@kms_plane_lowres@pipe-f-tiling-none,skip
-> +igt@kms_plane_lowres@pipe-f-tiling-x,skip
-> +igt@kms_plane_lowres@pipe-f-tiling-y,skip
-> +igt@kms_plane_lowres@pipe-f-tiling-yf,skip
-> +igt@kms_plane_lowres@pipe-f-tiling-4,skip
-> +igt@kms_prop_blob@basic,pass
-> +igt@kms_prop_blob@blob-prop-core,pass
-> +igt@kms_prop_blob@blob-prop-validate,pass
-> +igt@kms_prop_blob@blob-prop-lifetime,pass
-> +igt@kms_prop_blob@blob-multiple,pass
-> +igt@kms_prop_blob@invalid-get-prop-any,pass
-> +igt@kms_prop_blob@invalid-get-prop,pass
-> +igt@kms_prop_blob@invalid-set-prop-any,pass
-> +igt@kms_prop_blob@invalid-set-prop,pass
-> +igt@kms_rmfb@rmfb-ioctl,skip
-> +igt@kms_rmfb@close-fd,skip
-> +igt@kms_rotation_crc@primary-rotation-90,skip
-> +igt@kms_rotation_crc@primary-rotation-180,skip
-> +igt@kms_rotation_crc@primary-rotation-270,skip
-> +igt@kms_rotation_crc@sprite-rotation-90,skip
-> +igt@kms_rotation_crc@sprite-rotation-180,skip
-> +igt@kms_rotation_crc@sprite-rotation-270,skip
-> +igt@kms_rotation_crc@cursor-rotation-180,skip
-> +igt@kms_rotation_crc@sprite-rotation-90-pos-100-0,skip
-> +igt@kms_rotation_crc@bad-pixel-format,skip
-> +igt@kms_rotation_crc@bad-tiling,skip
-> +igt@kms_rotation_crc@primary-x-tiled-reflect-x-0,skip
-> +igt@kms_rotation_crc@primary-x-tiled-reflect-x-180,skip
-> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-0,skip
-> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-90,skip
-> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-180,skip
-> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-270,skip
-> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-0,skip
-> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-90,skip
-> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-180,skip
-> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-270,skip
-> +igt@kms_rotation_crc@primary-4-tiled-reflect-x-0,skip
-> +igt@kms_rotation_crc@primary-4-tiled-reflect-x-180,skip
-> +igt@kms_rotation_crc@multiplane-rotation,skip
-> +igt@kms_rotation_crc@multiplane-rotation-cropping-top,skip
-> +igt@kms_rotation_crc@multiplane-rotation-cropping-bottom,skip
-> +igt@kms_rotation_crc@exhaust-fences,skip
-> +igt@kms_selftest@all,skip
-> +igt@kms_setmode@basic,skip
-> +igt@kms_setmode@basic-clone-single-crtc,skip
-> +igt@kms_setmode@invalid-clone-single-crtc,skip
-> +igt@kms_setmode@invalid-clone-exclusive-crtc,skip
-> +igt@kms_setmode@clone-exclusive-crtc,skip
-> +igt@kms_setmode@invalid-clone-single-crtc-stealing,skip
-> +igt@msm_mapping@sqefw,skip
-> +igt@msm_mapping@shadow,skip
-> +igt@msm_recovery@hangcheck,skip
-> +igt@msm_recovery@gpu-fault,skip
-> +igt@msm_recovery@iova-fault,skip
-> +igt@msm_submit@empty-submit,pass
-> +igt@msm_submit@invalid-queue-submit,pass
-> +igt@msm_submit@invalid-flags-submit,pass
-> +igt@msm_submit@invalid-in-fence-submit,pass
-> +igt@msm_submit@invalid-duplicate-bo-submit,dmesg-warn
-> +igt@msm_submit@invalid-cmd-idx-submit,dmesg-warn
-> +igt@msm_submit@invalid-cmd-type-submit,dmesg-warn
-> +igt@msm_submit@valid-submit,pass
-> +igt@kms_sysfs_edid_timing,pass
-> +igt@kms_universal_plane@universal-plane-pipe-a-functional,skip
-> +igt@kms_universal_plane@universal-plane-pipe-a-sanity,skip
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-a,skip
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-a,skip
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-a,skip
-> +igt@kms_universal_plane@universal-plane-pipe-b-functional,skip
-> +igt@kms_universal_plane@universal-plane-pipe-b-sanity,skip
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-b,skip
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-b,skip
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-b,skip
-> +igt@kms_universal_plane@universal-plane-pipe-c-functional,skip
-> +igt@kms_universal_plane@universal-plane-pipe-c-sanity,skip
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-c,skip
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-c,skip
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-c,skip
-> +igt@kms_universal_plane@universal-plane-pipe-d-functional,skip
-> +igt@kms_universal_plane@universal-plane-pipe-d-sanity,skip
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-d,skip
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-d,skip
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-d,skip
-> +igt@kms_universal_plane@universal-plane-pipe-e-functional,skip
-> +igt@kms_universal_plane@universal-plane-pipe-e-sanity,skip
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-e,skip
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-e,skip
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-e,skip
-> +igt@kms_universal_plane@universal-plane-pipe-f-functional,skip
-> +igt@kms_universal_plane@universal-plane-pipe-f-sanity,skip
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-f,skip
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-f,skip
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-f,skip
-> +igt@kms_vblank@invalid,skip
-> +igt@kms_vblank@crtc-id,skip
-> +igt@kms_vblank@pipe-a-query-idle,skip
-> +igt@kms_vblank@pipe-a-query-idle-hang,skip
-> +igt@kms_vblank@pipe-a-query-forked,skip
-> +igt@kms_vblank@pipe-a-query-forked-hang,skip
-> +igt@kms_vblank@pipe-a-query-busy,skip
-> +igt@kms_vblank@pipe-a-query-busy-hang,skip
-> +igt@kms_vblank@pipe-a-query-forked-busy,skip
-> +igt@kms_vblank@pipe-a-query-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-a-wait-idle,skip
-> +igt@kms_vblank@pipe-a-wait-idle-hang,skip
-> +igt@kms_vblank@pipe-a-wait-forked,skip
-> +igt@kms_vblank@pipe-a-wait-forked-hang,skip
-> +igt@kms_vblank@pipe-a-wait-busy,skip
-> +igt@kms_vblank@pipe-a-wait-busy-hang,skip
-> +igt@kms_vblank@pipe-a-wait-forked-busy,skip
-> +igt@kms_vblank@pipe-a-wait-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-a-ts-continuation-idle,skip
-> +igt@kms_vblank@pipe-a-ts-continuation-idle-hang,skip
-> +igt@kms_vblank@pipe-a-ts-continuation-dpms-rpm,skip
-> +igt@kms_vblank@pipe-a-ts-continuation-modeset,skip
-> +igt@kms_vblank@pipe-a-ts-continuation-modeset-hang,skip
-> +igt@kms_vblank@pipe-a-ts-continuation-modeset-rpm,skip
-> +igt@kms_vblank@pipe-b-accuracy-idle,skip
-> +igt@kms_vblank@pipe-b-query-idle,skip
-> +igt@kms_vblank@pipe-b-query-idle-hang,skip
-> +igt@kms_vblank@pipe-b-query-forked,skip
-> +igt@kms_vblank@pipe-b-query-forked-hang,skip
-> +igt@kms_vblank@pipe-b-query-busy,skip
-> +igt@kms_vblank@pipe-b-query-busy-hang,skip
-> +igt@kms_vblank@pipe-b-query-forked-busy,skip
-> +igt@kms_vblank@pipe-b-query-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-b-wait-idle,skip
-> +igt@kms_vblank@pipe-b-wait-idle-hang,skip
-> +igt@kms_vblank@pipe-b-wait-forked,skip
-> +igt@kms_vblank@pipe-b-wait-forked-hang,skip
-> +igt@kms_vblank@pipe-b-wait-busy,skip
-> +igt@kms_vblank@pipe-b-wait-busy-hang,skip
-> +igt@kms_vblank@pipe-b-wait-forked-busy,skip
-> +igt@kms_vblank@pipe-b-wait-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-b-ts-continuation-idle,skip
-> +igt@kms_vblank@pipe-b-ts-continuation-idle-hang,skip
-> +igt@kms_vblank@pipe-b-ts-continuation-dpms-rpm,skip
-> +igt@kms_vblank@pipe-b-ts-continuation-modeset,skip
-> +igt@kms_vblank@pipe-b-ts-continuation-modeset-hang,skip
-> +igt@kms_vblank@pipe-b-ts-continuation-modeset-rpm,skip
-> +igt@kms_vblank@pipe-c-accuracy-idle,skip
-> +igt@kms_vblank@pipe-c-query-idle,skip
-> +igt@kms_vblank@pipe-c-query-idle-hang,skip
-> +igt@kms_vblank@pipe-c-query-forked,skip
-> +igt@kms_vblank@pipe-c-query-forked-hang,skip
-> +igt@kms_vblank@pipe-c-query-busy,skip
-> +igt@kms_vblank@pipe-c-query-busy-hang,skip
-> +igt@kms_vblank@pipe-c-query-forked-busy,skip
-> +igt@kms_vblank@pipe-c-query-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-c-wait-idle,skip
-> +igt@kms_vblank@pipe-c-wait-idle-hang,skip
-> +igt@kms_vblank@pipe-c-wait-forked,skip
-> +igt@kms_vblank@pipe-c-wait-forked-hang,skip
-> +igt@kms_vblank@pipe-c-wait-busy,skip
-> +igt@kms_vblank@pipe-c-wait-busy-hang,skip
-> +igt@kms_vblank@pipe-c-wait-forked-busy,skip
-> +igt@kms_vblank@pipe-c-wait-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-c-ts-continuation-idle,skip
-> +igt@kms_vblank@pipe-c-ts-continuation-idle-hang,skip
-> +igt@kms_vblank@pipe-c-ts-continuation-dpms-rpm,skip
-> +igt@kms_vblank@pipe-c-ts-continuation-modeset,skip
-> +igt@kms_vblank@pipe-c-ts-continuation-modeset-hang,skip
-> +igt@kms_vblank@pipe-c-ts-continuation-modeset-rpm,skip
-> +igt@kms_vblank@pipe-d-accuracy-idle,skip
-> +igt@kms_vblank@pipe-d-query-idle,skip
-> +igt@kms_vblank@pipe-d-query-idle-hang,skip
-> +igt@kms_vblank@pipe-d-query-forked,skip
-> +igt@kms_vblank@pipe-d-query-forked-hang,skip
-> +igt@kms_vblank@pipe-d-query-busy,skip
-> +igt@kms_vblank@pipe-d-query-busy-hang,skip
-> +igt@kms_vblank@pipe-d-query-forked-busy,skip
-> +igt@kms_vblank@pipe-d-query-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-d-wait-idle,skip
-> +igt@kms_vblank@pipe-d-wait-idle-hang,skip
-> +igt@kms_vblank@pipe-d-wait-forked,skip
-> +igt@kms_vblank@pipe-d-wait-forked-hang,skip
-> +igt@kms_vblank@pipe-d-wait-busy,skip
-> +igt@kms_vblank@pipe-d-wait-busy-hang,skip
-> +igt@kms_vblank@pipe-d-wait-forked-busy,skip
-> +igt@kms_vblank@pipe-d-wait-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-d-ts-continuation-idle,skip
-> +igt@kms_vblank@pipe-d-ts-continuation-idle-hang,skip
-> +igt@kms_vblank@pipe-d-ts-continuation-dpms-rpm,skip
-> +igt@kms_vblank@pipe-d-ts-continuation-modeset,skip
-> +igt@kms_vblank@pipe-d-ts-continuation-modeset-hang,skip
-> +igt@kms_vblank@pipe-d-ts-continuation-modeset-rpm,skip
-> +igt@kms_vblank@pipe-e-accuracy-idle,skip
-> +igt@kms_vblank@pipe-e-query-idle,skip
-> +igt@kms_vblank@pipe-e-query-idle-hang,skip
-> +igt@kms_vblank@pipe-e-query-forked,skip
-> +igt@kms_vblank@pipe-e-query-forked-hang,skip
-> +igt@kms_vblank@pipe-e-query-busy,skip
-> +igt@kms_vblank@pipe-e-query-busy-hang,skip
-> +igt@kms_vblank@pipe-e-query-forked-busy,skip
-> +igt@kms_vblank@pipe-e-query-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-e-wait-idle,skip
-> +igt@kms_vblank@pipe-e-wait-idle-hang,skip
-> +igt@kms_vblank@pipe-e-wait-forked,skip
-> +igt@kms_vblank@pipe-e-wait-forked-hang,skip
-> +igt@kms_vblank@pipe-e-wait-busy,skip
-> +igt@kms_vblank@pipe-e-wait-busy-hang,skip
-> +igt@kms_vblank@pipe-e-wait-forked-busy,skip
-> +igt@kms_vblank@pipe-e-wait-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-e-ts-continuation-idle,skip
-> +igt@kms_vblank@pipe-e-ts-continuation-idle-hang,skip
-> +igt@kms_vblank@pipe-e-ts-continuation-dpms-rpm,skip
-> +igt@kms_vblank@pipe-e-ts-continuation-modeset,skip
-> +igt@kms_vblank@pipe-e-ts-continuation-modeset-hang,skip
-> +igt@kms_vblank@pipe-e-ts-continuation-modeset-rpm,skip
-> +igt@kms_vblank@pipe-f-accuracy-idle,skip
-> +igt@kms_vblank@pipe-f-query-idle,skip
-> +igt@kms_vblank@pipe-f-query-idle-hang,skip
-> +igt@kms_vblank@pipe-f-query-forked,skip
-> +igt@kms_vblank@pipe-f-query-forked-hang,skip
-> +igt@kms_vblank@pipe-f-query-busy,skip
-> +igt@kms_vblank@pipe-f-query-busy-hang,skip
-> +igt@kms_vblank@pipe-f-query-forked-busy,skip
-> +igt@kms_vblank@pipe-f-query-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-f-wait-idle,skip
-> +igt@kms_vblank@pipe-f-wait-idle-hang,skip
-> +igt@kms_vblank@pipe-f-wait-forked,skip
-> +igt@kms_vblank@pipe-f-wait-forked-hang,skip
-> +igt@kms_vblank@pipe-f-wait-busy,skip
-> +igt@kms_vblank@pipe-f-wait-busy-hang,skip
-> +igt@kms_vblank@pipe-f-wait-forked-busy,skip
-> +igt@kms_vblank@pipe-f-wait-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-f-ts-continuation-idle,skip
-> +igt@kms_vblank@pipe-f-ts-continuation-idle-hang,skip
-> +igt@kms_vblank@pipe-f-ts-continuation-dpms-rpm,skip
-> +igt@kms_vblank@pipe-f-ts-continuation-modeset,skip
-> +igt@kms_vblank@pipe-f-ts-continuation-modeset-hang,skip
-> +igt@kms_vblank@pipe-f-ts-continuation-modeset-rpm,skip
-> +igt@kms_vrr@flip-basic,skip
-> +igt@kms_vrr@flip-dpms,skip
-> +igt@kms_vrr@flipline,skip
-> +igt@kms_async_flip@async-flip-with-page-flip-events,skip
-> +igt@kms_async_flip@alternate-sync-async-flip,skip
-> +igt@kms_async_flip@test-time-stamp,skip
-> +igt@kms_async_flip@test-cursor,skip
-> +igt@kms_async_flip@invalid-async-flip,skip
-> +igt@kms_async_flip@crc,skip
-> diff --git a/drivers/gpu/drm/msm/ci/msm_a530_results.txt b/drivers/gpu/drm/msm/ci/msm_a530_results.txt
-> new file mode 100644
-> index 000000000000..d5bf402f830c
-> --- /dev/null
-> +++ b/drivers/gpu/drm/msm/ci/msm_a530_results.txt
-> @@ -0,0 +1,421 @@
-> +igt@core_auth@getclient-simple,pass
-> +igt@core_auth@getclient-master-drop,pass
-> +igt@core_auth@basic-auth,pass
-> +igt@core_auth@many-magics,pass
-> +igt@core_getclient,pass
-> +igt@core_getstats,pass
-> +igt@core_getversion,pass
-> +igt@core_setmaster_vs_auth,pass
-> +igt@drm_read@invalid-buffer,skip
-> +igt@drm_read@fault-buffer,skip
-> +igt@drm_read@empty-block,skip
-> +igt@drm_read@empty-nonblock,skip
-> +igt@drm_read@short-buffer-block,skip
-> +igt@drm_read@short-buffer-nonblock,skip
-> +igt@drm_read@short-buffer-wakeup,skip
-> +igt@kms_addfb_basic@unused-handle,pass
-> +igt@kms_addfb_basic@unused-pitches,pass
-> +igt@kms_addfb_basic@unused-offsets,pass
-> +igt@kms_addfb_basic@unused-modifier,pass
-> +igt@kms_addfb_basic@clobberred-modifier,skip
-> +igt@kms_addfb_basic@invalid-smem-bo-on-discrete,skip
-> +igt@kms_addfb_basic@legacy-format,dmesg-warn
-> +igt@kms_addfb_basic@no-handle,pass
-> +igt@kms_addfb_basic@basic,pass
-> +igt@kms_addfb_basic@bad-pitch-0,pass
-> +igt@kms_addfb_basic@bad-pitch-32,pass
-> +igt@kms_addfb_basic@bad-pitch-63,pass
-> +igt@kms_addfb_basic@bad-pitch-128,pass
-> +igt@kms_addfb_basic@bad-pitch-256,pass
-> +igt@kms_addfb_basic@bad-pitch-1024,pass
-> +igt@kms_addfb_basic@bad-pitch-999,pass
-> +igt@kms_addfb_basic@bad-pitch-65536,pass
-> +igt@kms_addfb_basic@size-max,pass
-> +igt@kms_addfb_basic@too-wide,pass
-> +igt@kms_addfb_basic@too-high,dmesg-warn
-> +igt@kms_addfb_basic@bo-too-small,pass
-> +igt@kms_addfb_basic@small-bo,pass
-> +igt@kms_addfb_basic@bo-too-small-due-to-tiling,skip
-> +igt@kms_addfb_basic@addfb25-modifier-no-flag,pass
-> +igt@kms_addfb_basic@addfb25-bad-modifier,fail
-> +igt@kms_addfb_basic@addfb25-x-tiled-mismatch-legacy,skip
-> +igt@kms_addfb_basic@addfb25-x-tiled-legacy,skip
-> +igt@kms_addfb_basic@addfb25-framebuffer-vs-set-tiling,skip
-> +igt@kms_addfb_basic@addfb25-y-tiled-legacy,skip
-> +igt@kms_addfb_basic@addfb25-yf-tiled-legacy,skip
-> +igt@kms_addfb_basic@addfb25-y-tiled-small-legacy,skip
-> +igt@kms_addfb_basic@addfb25-4-tiled,skip
-> +igt@kms_addfb_basic@basic-x-tiled-legacy,skip
-> +igt@kms_addfb_basic@framebuffer-vs-set-tiling,skip
-> +igt@kms_addfb_basic@tile-pitch-mismatch,skip
-> +igt@kms_addfb_basic@basic-y-tiled-legacy,skip
-> +igt@kms_addfb_basic@invalid-get-prop-any,pass
-> +igt@kms_addfb_basic@invalid-get-prop,pass
-> +igt@kms_addfb_basic@invalid-set-prop-any,pass
-> +igt@kms_addfb_basic@invalid-set-prop,pass
-> +igt@kms_addfb_basic@master-rmfb,pass
-> +igt@kms_atomic@plane-overlay-legacy,skip
-> +igt@kms_atomic@plane-primary-legacy,skip
-> +igt@kms_atomic@plane-primary-overlay-mutable-zpos,skip
-> +igt@kms_atomic@plane-immutable-zpos,skip
-> +igt@kms_atomic@test-only,skip
-> +igt@kms_atomic@plane-cursor-legacy,skip
-> +igt@kms_atomic@plane-invalid-params,skip
-> +igt@kms_atomic@plane-invalid-params-fence,skip
-> +igt@kms_atomic@crtc-invalid-params,skip
-> +igt@kms_atomic@crtc-invalid-params-fence,skip
-> +igt@kms_atomic@atomic-invalid-params,skip
-> +igt@kms_atomic@atomic_plane_damage,skip
-> +igt@kms_atomic_interruptible@legacy-setmode,skip
-> +igt@kms_atomic_interruptible@atomic-setmode,skip
-> +igt@kms_atomic_interruptible@legacy-dpms,skip
-> +igt@kms_atomic_interruptible@legacy-pageflip,skip
-> +igt@kms_atomic_interruptible@legacy-cursor,skip
-> +igt@kms_atomic_interruptible@universal-setplane-primary,skip
-> +igt@kms_atomic_interruptible@universal-setplane-cursor,skip
-> +igt@kms_content_protection@legacy,skip
-> +igt@kms_content_protection@atomic,skip
-> +igt@kms_content_protection@atomic-dpms,skip
-> +igt@kms_content_protection@lic,skip
-> +igt@kms_content_protection@type1,skip
-> +igt@kms_content_protection@mei_interface,skip
-> +igt@kms_content_protection@content_type_change,skip
-> +igt@kms_content_protection@uevent,skip
-> +igt@kms_content_protection@srm,skip
-> +igt@kms_content_protection@dp-mst-type-0,skip
-> +igt@kms_content_protection@dp-mst-lic-type-0,skip
-> +igt@kms_content_protection@dp-mst-type-1,skip
-> +igt@kms_content_protection@dp-mst-lic-type-1,skip
-> +igt@kms_dp_aux_dev,skip
-> +igt@kms_flip_event_leak,skip
-> +igt@kms_getfb@getfb-handle-zero,pass
-> +igt@kms_getfb@getfb-handle-valid,pass
-> +igt@kms_getfb@getfb-handle-closed,pass
-> +igt@kms_getfb@getfb-handle-not-fb,pass
-> +igt@kms_getfb@getfb-addfb-different-handles,pass
-> +igt@kms_getfb@getfb-repeated-different-handles,pass
-> +igt@kms_getfb@getfb-reject-ccs,skip
-> +igt@kms_getfb@getfb2-handle-zero,pass
-> +igt@kms_getfb@getfb2-handle-closed,pass
-> +igt@kms_getfb@getfb2-handle-not-fb,pass
-> +igt@kms_getfb@getfb2-accept-ccs,skip
-> +igt@kms_getfb@getfb2-into-addfb2,pass
-> +igt@kms_getfb@getfb-handle-protection,pass
-> +igt@kms_getfb@getfb2-handle-protection,pass
-> +igt@kms_hdmi_inject@inject-4k,dmesg-warn
-> +igt@kms_hdmi_inject@inject-audio,skip
-> +igt@kms_hdr@bpc-switch,skip
-> +igt@kms_hdr@bpc-switch-dpms,skip
-> +igt@kms_hdr@static-toggle,skip
-> +igt@kms_hdr@static-toggle-dpms,skip
-> +igt@kms_hdr@static-swap,skip
-> +igt@kms_multipipe_modeset@basic-max-pipe-crc-check,skip
-> +igt@kms_pipe_crc_basic@bad-source,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-a,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-a-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-a,skip
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-a,skip
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-a,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-b,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-b-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-b,skip
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-b,skip
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-b,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-c,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-c-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-c,skip
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-c,skip
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-c,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-d,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-d-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-d,skip
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-d,skip
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-d,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-e,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-e-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-e,skip
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-e,skip
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-e,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-f,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-f-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-f,skip
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-f,skip
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-f,skip
-> +igt@kms_plane_lowres@pipe-a-tiling-none,skip
-> +igt@kms_plane_lowres@pipe-a-tiling-x,skip
-> +igt@kms_plane_lowres@pipe-a-tiling-y,skip
-> +igt@kms_plane_lowres@pipe-a-tiling-yf,skip
-> +igt@kms_plane_lowres@pipe-a-tiling-4,skip
-> +igt@kms_plane_lowres@pipe-b-tiling-none,skip
-> +igt@kms_plane_lowres@pipe-b-tiling-x,skip
-> +igt@kms_plane_lowres@pipe-b-tiling-y,skip
-> +igt@kms_plane_lowres@pipe-b-tiling-yf,skip
-> +igt@kms_plane_lowres@pipe-b-tiling-4,skip
-> +igt@kms_plane_lowres@pipe-c-tiling-none,skip
-> +igt@kms_plane_lowres@pipe-c-tiling-x,skip
-> +igt@kms_plane_lowres@pipe-c-tiling-y,skip
-> +igt@kms_plane_lowres@pipe-c-tiling-yf,skip
-> +igt@kms_plane_lowres@pipe-c-tiling-4,skip
-> +igt@kms_plane_lowres@pipe-d-tiling-none,skip
-> +igt@kms_plane_lowres@pipe-d-tiling-x,skip
-> +igt@kms_plane_lowres@pipe-d-tiling-y,skip
-> +igt@kms_plane_lowres@pipe-d-tiling-yf,skip
-> +igt@kms_plane_lowres@pipe-d-tiling-4,skip
-> +igt@kms_plane_lowres@pipe-e-tiling-none,skip
-> +igt@kms_plane_lowres@pipe-e-tiling-x,skip
-> +igt@kms_plane_lowres@pipe-e-tiling-y,skip
-> +igt@kms_plane_lowres@pipe-e-tiling-yf,skip
-> +igt@kms_plane_lowres@pipe-e-tiling-4,skip
-> +igt@kms_plane_lowres@pipe-f-tiling-none,skip
-> +igt@kms_plane_lowres@pipe-f-tiling-x,skip
-> +igt@kms_plane_lowres@pipe-f-tiling-y,skip
-> +igt@kms_plane_lowres@pipe-f-tiling-yf,skip
-> +igt@kms_plane_lowres@pipe-f-tiling-4,skip
-> +igt@kms_prop_blob@basic,pass
-> +igt@kms_prop_blob@blob-prop-core,pass
-> +igt@kms_prop_blob@blob-prop-validate,pass
-> +igt@kms_prop_blob@blob-prop-lifetime,pass
-> +igt@kms_prop_blob@blob-multiple,pass
-> +igt@kms_prop_blob@invalid-get-prop-any,pass
-> +igt@kms_prop_blob@invalid-get-prop,pass
-> +igt@kms_prop_blob@invalid-set-prop-any,pass
-> +igt@kms_prop_blob@invalid-set-prop,pass
-> +igt@kms_rmfb@rmfb-ioctl,skip
-> +igt@kms_rmfb@close-fd,skip
-> +igt@kms_rotation_crc@primary-rotation-90,skip
-> +igt@kms_rotation_crc@primary-rotation-180,skip
-> +igt@kms_rotation_crc@primary-rotation-270,skip
-> +igt@kms_rotation_crc@sprite-rotation-90,skip
-> +igt@kms_rotation_crc@sprite-rotation-180,skip
-> +igt@kms_rotation_crc@sprite-rotation-270,skip
-> +igt@kms_rotation_crc@cursor-rotation-180,skip
-> +igt@kms_rotation_crc@sprite-rotation-90-pos-100-0,skip
-> +igt@kms_rotation_crc@bad-pixel-format,skip
-> +igt@kms_rotation_crc@bad-tiling,skip
-> +igt@kms_rotation_crc@primary-x-tiled-reflect-x-0,skip
-> +igt@kms_rotation_crc@primary-x-tiled-reflect-x-180,skip
-> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-0,skip
-> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-90,skip
-> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-180,skip
-> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-270,skip
-> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-0,skip
-> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-90,skip
-> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-180,skip
-> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-270,skip
-> +igt@kms_rotation_crc@primary-4-tiled-reflect-x-0,skip
-> +igt@kms_rotation_crc@primary-4-tiled-reflect-x-180,skip
-> +igt@kms_rotation_crc@multiplane-rotation,skip
-> +igt@kms_rotation_crc@multiplane-rotation-cropping-top,skip
-> +igt@kms_rotation_crc@multiplane-rotation-cropping-bottom,skip
-> +igt@kms_rotation_crc@exhaust-fences,skip
-> +igt@kms_selftest@all,skip
-> +igt@kms_setmode@basic,skip
-> +igt@kms_setmode@basic-clone-single-crtc,skip
-> +igt@kms_setmode@invalid-clone-single-crtc,skip
-> +igt@kms_setmode@invalid-clone-exclusive-crtc,skip
-> +igt@kms_setmode@clone-exclusive-crtc,skip
-> +igt@kms_setmode@invalid-clone-single-crtc-stealing,skip
-> +igt@msm_mapping@sqefw,skip
-> +igt@msm_mapping@shadow,skip
-> +igt@msm_recovery@hangcheck,skip
-> +igt@msm_recovery@gpu-fault,skip
-> +igt@msm_recovery@iova-fault,skip
-> +igt@msm_submit@empty-submit,pass
-> +igt@msm_submit@invalid-queue-submit,pass
-> +igt@msm_submit@invalid-flags-submit,pass
-> +igt@msm_submit@invalid-in-fence-submit,pass
-> +igt@msm_submit@invalid-duplicate-bo-submit,dmesg-warn
-> +igt@msm_submit@invalid-cmd-idx-submit,dmesg-warn
-> +igt@msm_submit@invalid-cmd-type-submit,dmesg-warn
-> +igt@msm_submit@valid-submit,pass
-> +igt@kms_sysfs_edid_timing,pass
-> +igt@kms_universal_plane@universal-plane-pipe-a-functional,skip
-> +igt@kms_universal_plane@universal-plane-pipe-a-sanity,skip
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-a,skip
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-a,skip
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-a,skip
-> +igt@kms_universal_plane@universal-plane-pipe-b-functional,skip
-> +igt@kms_universal_plane@universal-plane-pipe-b-sanity,skip
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-b,skip
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-b,skip
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-b,skip
-> +igt@kms_universal_plane@universal-plane-pipe-c-functional,skip
-> +igt@kms_universal_plane@universal-plane-pipe-c-sanity,skip
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-c,skip
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-c,skip
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-c,skip
-> +igt@kms_universal_plane@universal-plane-pipe-d-functional,skip
-> +igt@kms_universal_plane@universal-plane-pipe-d-sanity,skip
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-d,skip
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-d,skip
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-d,skip
-> +igt@kms_universal_plane@universal-plane-pipe-e-functional,skip
-> +igt@kms_universal_plane@universal-plane-pipe-e-sanity,skip
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-e,skip
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-e,skip
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-e,skip
-> +igt@kms_universal_plane@universal-plane-pipe-f-functional,skip
-> +igt@kms_universal_plane@universal-plane-pipe-f-sanity,skip
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-f,skip
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-f,skip
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-f,skip
-> +igt@kms_vblank@invalid,skip
-> +igt@kms_vblank@crtc-id,skip
-> +igt@kms_vblank@pipe-a-query-idle,skip
-> +igt@kms_vblank@pipe-a-query-idle-hang,skip
-> +igt@kms_vblank@pipe-a-query-forked,skip
-> +igt@kms_vblank@pipe-a-query-forked-hang,skip
-> +igt@kms_vblank@pipe-a-query-busy,skip
-> +igt@kms_vblank@pipe-a-query-busy-hang,skip
-> +igt@kms_vblank@pipe-a-query-forked-busy,skip
-> +igt@kms_vblank@pipe-a-query-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-a-wait-idle,skip
-> +igt@kms_vblank@pipe-a-wait-idle-hang,skip
-> +igt@kms_vblank@pipe-a-wait-forked,skip
-> +igt@kms_vblank@pipe-a-wait-forked-hang,skip
-> +igt@kms_vblank@pipe-a-wait-busy,skip
-> +igt@kms_vblank@pipe-a-wait-busy-hang,skip
-> +igt@kms_vblank@pipe-a-wait-forked-busy,skip
-> +igt@kms_vblank@pipe-a-wait-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-a-ts-continuation-idle,skip
-> +igt@kms_vblank@pipe-a-ts-continuation-idle-hang,skip
-> +igt@kms_vblank@pipe-a-ts-continuation-dpms-rpm,skip
-> +igt@kms_vblank@pipe-a-ts-continuation-modeset,skip
-> +igt@kms_vblank@pipe-a-ts-continuation-modeset-hang,skip
-> +igt@kms_vblank@pipe-a-ts-continuation-modeset-rpm,skip
-> +igt@kms_vblank@pipe-b-accuracy-idle,skip
-> +igt@kms_vblank@pipe-b-query-idle,skip
-> +igt@kms_vblank@pipe-b-query-idle-hang,skip
-> +igt@kms_vblank@pipe-b-query-forked,skip
-> +igt@kms_vblank@pipe-b-query-forked-hang,skip
-> +igt@kms_vblank@pipe-b-query-busy,skip
-> +igt@kms_vblank@pipe-b-query-busy-hang,skip
-> +igt@kms_vblank@pipe-b-query-forked-busy,skip
-> +igt@kms_vblank@pipe-b-query-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-b-wait-idle,skip
-> +igt@kms_vblank@pipe-b-wait-idle-hang,skip
-> +igt@kms_vblank@pipe-b-wait-forked,skip
-> +igt@kms_vblank@pipe-b-wait-forked-hang,skip
-> +igt@kms_vblank@pipe-b-wait-busy,skip
-> +igt@kms_vblank@pipe-b-wait-busy-hang,skip
-> +igt@kms_vblank@pipe-b-wait-forked-busy,skip
-> +igt@kms_vblank@pipe-b-wait-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-b-ts-continuation-idle,skip
-> +igt@kms_vblank@pipe-b-ts-continuation-idle-hang,skip
-> +igt@kms_vblank@pipe-b-ts-continuation-dpms-rpm,skip
-> +igt@kms_vblank@pipe-b-ts-continuation-modeset,skip
-> +igt@kms_vblank@pipe-b-ts-continuation-modeset-hang,skip
-> +igt@kms_vblank@pipe-b-ts-continuation-modeset-rpm,skip
-> +igt@kms_vblank@pipe-c-accuracy-idle,skip
-> +igt@kms_vblank@pipe-c-query-idle,skip
-> +igt@kms_vblank@pipe-c-query-idle-hang,skip
-> +igt@kms_vblank@pipe-c-query-forked,skip
-> +igt@kms_vblank@pipe-c-query-forked-hang,skip
-> +igt@kms_vblank@pipe-c-query-busy,skip
-> +igt@kms_vblank@pipe-c-query-busy-hang,skip
-> +igt@kms_vblank@pipe-c-query-forked-busy,skip
-> +igt@kms_vblank@pipe-c-query-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-c-wait-idle,skip
-> +igt@kms_vblank@pipe-c-wait-idle-hang,skip
-> +igt@kms_vblank@pipe-c-wait-forked,skip
-> +igt@kms_vblank@pipe-c-wait-forked-hang,skip
-> +igt@kms_vblank@pipe-c-wait-busy,skip
-> +igt@kms_vblank@pipe-c-wait-busy-hang,skip
-> +igt@kms_vblank@pipe-c-wait-forked-busy,skip
-> +igt@kms_vblank@pipe-c-wait-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-c-ts-continuation-idle,skip
-> +igt@kms_vblank@pipe-c-ts-continuation-idle-hang,skip
-> +igt@kms_vblank@pipe-c-ts-continuation-dpms-rpm,skip
-> +igt@kms_vblank@pipe-c-ts-continuation-modeset,skip
-> +igt@kms_vblank@pipe-c-ts-continuation-modeset-hang,skip
-> +igt@kms_vblank@pipe-c-ts-continuation-modeset-rpm,skip
-> +igt@kms_vblank@pipe-d-accuracy-idle,skip
-> +igt@kms_vblank@pipe-d-query-idle,skip
-> +igt@kms_vblank@pipe-d-query-idle-hang,skip
-> +igt@kms_vblank@pipe-d-query-forked,skip
-> +igt@kms_vblank@pipe-d-query-forked-hang,skip
-> +igt@kms_vblank@pipe-d-query-busy,skip
-> +igt@kms_vblank@pipe-d-query-busy-hang,skip
-> +igt@kms_vblank@pipe-d-query-forked-busy,skip
-> +igt@kms_vblank@pipe-d-query-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-d-wait-idle,skip
-> +igt@kms_vblank@pipe-d-wait-idle-hang,skip
-> +igt@kms_vblank@pipe-d-wait-forked,skip
-> +igt@kms_vblank@pipe-d-wait-forked-hang,skip
-> +igt@kms_vblank@pipe-d-wait-busy,skip
-> +igt@kms_vblank@pipe-d-wait-busy-hang,skip
-> +igt@kms_vblank@pipe-d-wait-forked-busy,skip
-> +igt@kms_vblank@pipe-d-wait-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-d-ts-continuation-idle,skip
-> +igt@kms_vblank@pipe-d-ts-continuation-idle-hang,skip
-> +igt@kms_vblank@pipe-d-ts-continuation-dpms-rpm,skip
-> +igt@kms_vblank@pipe-d-ts-continuation-modeset,skip
-> +igt@kms_vblank@pipe-d-ts-continuation-modeset-hang,skip
-> +igt@kms_vblank@pipe-d-ts-continuation-modeset-rpm,skip
-> +igt@kms_vblank@pipe-e-accuracy-idle,skip
-> +igt@kms_vblank@pipe-e-query-idle,skip
-> +igt@kms_vblank@pipe-e-query-idle-hang,skip
-> +igt@kms_vblank@pipe-e-query-forked,skip
-> +igt@kms_vblank@pipe-e-query-forked-hang,skip
-> +igt@kms_vblank@pipe-e-query-busy,skip
-> +igt@kms_vblank@pipe-e-query-busy-hang,skip
-> +igt@kms_vblank@pipe-e-query-forked-busy,skip
-> +igt@kms_vblank@pipe-e-query-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-e-wait-idle,skip
-> +igt@kms_vblank@pipe-e-wait-idle-hang,skip
-> +igt@kms_vblank@pipe-e-wait-forked,skip
-> +igt@kms_vblank@pipe-e-wait-forked-hang,skip
-> +igt@kms_vblank@pipe-e-wait-busy,skip
-> +igt@kms_vblank@pipe-e-wait-busy-hang,skip
-> +igt@kms_vblank@pipe-e-wait-forked-busy,skip
-> +igt@kms_vblank@pipe-e-wait-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-e-ts-continuation-idle,skip
-> +igt@kms_vblank@pipe-e-ts-continuation-idle-hang,skip
-> +igt@kms_vblank@pipe-e-ts-continuation-dpms-rpm,skip
-> +igt@kms_vblank@pipe-e-ts-continuation-modeset,skip
-> +igt@kms_vblank@pipe-e-ts-continuation-modeset-hang,skip
-> +igt@kms_vblank@pipe-e-ts-continuation-modeset-rpm,skip
-> +igt@kms_vblank@pipe-f-accuracy-idle,skip
-> +igt@kms_vblank@pipe-f-query-idle,skip
-> +igt@kms_vblank@pipe-f-query-idle-hang,skip
-> +igt@kms_vblank@pipe-f-query-forked,skip
-> +igt@kms_vblank@pipe-f-query-forked-hang,skip
-> +igt@kms_vblank@pipe-f-query-busy,skip
-> +igt@kms_vblank@pipe-f-query-busy-hang,skip
-> +igt@kms_vblank@pipe-f-query-forked-busy,skip
-> +igt@kms_vblank@pipe-f-query-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-f-wait-idle,skip
-> +igt@kms_vblank@pipe-f-wait-idle-hang,skip
-> +igt@kms_vblank@pipe-f-wait-forked,skip
-> +igt@kms_vblank@pipe-f-wait-forked-hang,skip
-> +igt@kms_vblank@pipe-f-wait-busy,skip
-> +igt@kms_vblank@pipe-f-wait-busy-hang,skip
-> +igt@kms_vblank@pipe-f-wait-forked-busy,skip
-> +igt@kms_vblank@pipe-f-wait-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-f-ts-continuation-idle,skip
-> +igt@kms_vblank@pipe-f-ts-continuation-idle-hang,skip
-> +igt@kms_vblank@pipe-f-ts-continuation-dpms-rpm,skip
-> +igt@kms_vblank@pipe-f-ts-continuation-modeset,skip
-> +igt@kms_vblank@pipe-f-ts-continuation-modeset-hang,skip
-> +igt@kms_vblank@pipe-f-ts-continuation-modeset-rpm,skip
-> +igt@kms_vrr@flip-basic,skip
-> +igt@kms_vrr@flip-dpms,skip
-> +igt@kms_vrr@flipline,skip
-> +igt@kms_async_flip@async-flip-with-page-flip-events,skip
-> +igt@kms_async_flip@alternate-sync-async-flip,skip
-> +igt@kms_async_flip@test-time-stamp,skip
-> +igt@kms_async_flip@test-cursor,skip
-> +igt@kms_async_flip@invalid-async-flip,skip
-> +igt@kms_async_flip@crc,skip
-> diff --git a/drivers/gpu/drm/msm/ci/msm_a618_results.txt b/drivers/gpu/drm/msm/ci/msm_a618_results.txt
-> new file mode 100644
-> index 000000000000..6e42262bf61b
-> --- /dev/null
-> +++ b/drivers/gpu/drm/msm/ci/msm_a618_results.txt
-> @@ -0,0 +1,422 @@
-> +igt@core_auth@getclient-simple,dmesg-warn
-> +igt@core_auth@getclient-master-drop,pass
-> +igt@core_auth@basic-auth,pass
-> +igt@core_auth@many-magics,pass
-> +igt@core_getclient,pass
-> +igt@core_getstats,pass
-> +igt@core_getversion,pass
-> +igt@core_setmaster_vs_auth,pass
-> +igt@drm_read@invalid-buffer,pass
-> +igt@drm_read@fault-buffer,pass
-> +igt@drm_read@empty-block,pass
-> +igt@drm_read@empty-nonblock,pass
-> +igt@drm_read@short-buffer-block,pass
-> +igt@drm_read@short-buffer-nonblock,pass
-> +igt@drm_read@short-buffer-wakeup,pass
-> +igt@kms_addfb_basic@unused-handle,pass
-> +igt@kms_addfb_basic@unused-pitches,pass
-> +igt@kms_addfb_basic@unused-offsets,pass
-> +igt@kms_addfb_basic@unused-modifier,pass
-> +igt@kms_addfb_basic@clobberred-modifier,skip
-> +igt@kms_addfb_basic@invalid-smem-bo-on-discrete,skip
-> +igt@kms_addfb_basic@legacy-format,dmesg-warn
-> +igt@kms_addfb_basic@no-handle,pass
-> +igt@kms_addfb_basic@basic,pass
-> +igt@kms_addfb_basic@bad-pitch-0,pass
-> +igt@kms_addfb_basic@bad-pitch-32,pass
-> +igt@kms_addfb_basic@bad-pitch-63,pass
-> +igt@kms_addfb_basic@bad-pitch-128,pass
-> +igt@kms_addfb_basic@bad-pitch-256,pass
-> +igt@kms_addfb_basic@bad-pitch-1024,pass
-> +igt@kms_addfb_basic@bad-pitch-999,pass
-> +igt@kms_addfb_basic@bad-pitch-65536,pass
-> +igt@kms_addfb_basic@size-max,pass
-> +igt@kms_addfb_basic@too-wide,pass
-> +igt@kms_addfb_basic@too-high,dmesg-warn
-> +igt@kms_addfb_basic@bo-too-small,pass
-> +igt@kms_addfb_basic@small-bo,pass
-> +igt@kms_addfb_basic@bo-too-small-due-to-tiling,skip
-> +igt@kms_addfb_basic@addfb25-modifier-no-flag,pass
-> +igt@kms_addfb_basic@addfb25-bad-modifier,dmesg-warn
-> +igt@kms_addfb_basic@addfb25-x-tiled-mismatch-legacy,skip
-> +igt@kms_addfb_basic@addfb25-x-tiled-legacy,skip
-> +igt@kms_addfb_basic@addfb25-framebuffer-vs-set-tiling,skip
-> +igt@kms_addfb_basic@addfb25-y-tiled-legacy,skip
-> +igt@kms_addfb_basic@addfb25-yf-tiled-legacy,skip
-> +igt@kms_addfb_basic@addfb25-y-tiled-small-legacy,skip
-> +igt@kms_addfb_basic@addfb25-4-tiled,skip
-> +igt@kms_addfb_basic@basic-x-tiled-legacy,skip
-> +igt@kms_addfb_basic@framebuffer-vs-set-tiling,skip
-> +igt@kms_addfb_basic@tile-pitch-mismatch,skip
-> +igt@kms_addfb_basic@basic-y-tiled-legacy,skip
-> +igt@kms_addfb_basic@invalid-get-prop-any,pass
-> +igt@kms_addfb_basic@invalid-get-prop,pass
-> +igt@kms_addfb_basic@invalid-set-prop-any,pass
-> +igt@kms_addfb_basic@invalid-set-prop,pass
-> +igt@kms_addfb_basic@master-rmfb,pass
-> +igt@kms_atomic@plane-overlay-legacy,skip
-> +igt@kms_atomic@plane-primary-legacy,pass
-> +igt@kms_atomic@plane-primary-overlay-mutable-zpos,skip
-> +igt@kms_atomic@plane-immutable-zpos,pass
-> +igt@kms_atomic@test-only,pass
-> +igt@kms_atomic@plane-cursor-legacy,pass
-> +igt@kms_atomic@plane-invalid-params,pass
-> +igt@kms_atomic@plane-invalid-params-fence,skip
-> +igt@kms_atomic@crtc-invalid-params,pass
-> +igt@kms_atomic@crtc-invalid-params-fence,skip
-> +igt@kms_atomic@atomic-invalid-params,pass
-> +igt@kms_atomic@atomic_plane_damage,pass
-> +igt@kms_atomic_interruptible@legacy-setmode,skip
-> +igt@kms_atomic_interruptible@atomic-setmode,skip
-> +igt@kms_atomic_interruptible@legacy-dpms,skip
-> +igt@kms_atomic_interruptible@legacy-pageflip,skip
-> +igt@kms_atomic_interruptible@legacy-cursor,skip
-> +igt@kms_atomic_interruptible@universal-setplane-primary,skip
-> +igt@kms_atomic_interruptible@universal-setplane-cursor,skip
-> +igt@kms_content_protection@legacy,skip
-> +igt@kms_content_protection@atomic,skip
-> +igt@kms_content_protection@atomic-dpms,skip
-> +igt@kms_content_protection@lic,skip
-> +igt@kms_content_protection@type1,skip
-> +igt@kms_content_protection@mei_interface,skip
-> +igt@kms_content_protection@content_type_change,skip
-> +igt@kms_content_protection@uevent,skip
-> +igt@kms_content_protection@srm,skip
-> +igt@kms_content_protection@dp-mst-type-0,skip
-> +igt@kms_content_protection@dp-mst-lic-type-0,skip
-> +igt@kms_content_protection@dp-mst-type-1,skip
-> +igt@kms_content_protection@dp-mst-lic-type-1,skip
-> +igt@kms_dp_aux_dev,skip
-> +igt@kms_flip_event_leak,pass
-> +igt@kms_getfb@getfb-handle-zero,pass
-> +igt@kms_getfb@getfb-handle-valid,pass
-> +igt@kms_getfb@getfb-handle-closed,pass
-> +igt@kms_getfb@getfb-handle-not-fb,pass
-> +igt@kms_getfb@getfb-addfb-different-handles,pass
-> +igt@kms_getfb@getfb-repeated-different-handles,pass
-> +igt@kms_getfb@getfb-reject-ccs,skip
-> +igt@kms_getfb@getfb2-handle-zero,pass
-> +igt@kms_getfb@getfb2-handle-closed,pass
-> +igt@kms_getfb@getfb2-handle-not-fb,pass
-> +igt@kms_getfb@getfb2-accept-ccs,skip
-> +igt@kms_getfb@getfb2-into-addfb2,pass
-> +igt@kms_getfb@getfb-handle-protection,pass
-> +igt@kms_getfb@getfb2-handle-protection,pass
-> +igt@kms_hdmi_inject@inject-4k,skip
-> +igt@kms_hdmi_inject@inject-audio,skip
-> +igt@kms_hdr@bpc-switch,skip
-> +igt@kms_hdr@bpc-switch-dpms,skip
-> +igt@kms_hdr@static-toggle,skip
-> +igt@kms_hdr@static-toggle-dpms,skip
-> +igt@kms_hdr@static-swap,skip
-> +igt@kms_multipipe_modeset@basic-max-pipe-crc-check,skip
-> +igt@kms_pipe_crc_basic@bad-source,pass
-> +igt@kms_pipe_crc_basic@read-crc-pipe-a,pass
-> +igt@kms_pipe_crc_basic@read-crc-pipe-a-frame-sequence,pass
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a,pass
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a-frame-sequence,pass
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-a,pass
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-a,skip
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-a,pass
-> +igt@kms_pipe_crc_basic@read-crc-pipe-b,pass
-> +igt@kms_pipe_crc_basic@read-crc-pipe-b-frame-sequence,pass
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b,pass
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b-frame-sequence,pass
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-b,pass
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-b,skip
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-b,pass
-> +igt@kms_pipe_crc_basic@read-crc-pipe-c,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-c-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-c,skip
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-c,skip
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-c,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-d,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-d-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-d,skip
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-d,skip
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-d,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-e,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-e-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-e,skip
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-e,skip
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-e,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-f,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-f-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-f,skip
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-f,skip
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-f,skip
-> +igt@kms_plane_lowres@pipe-a-tiling-none,skip
-> +igt@kms_plane_lowres@pipe-a-tiling-x,skip
-> +igt@kms_plane_lowres@pipe-a-tiling-y,skip
-> +igt@kms_plane_lowres@pipe-a-tiling-yf,skip
-> +igt@kms_plane_lowres@pipe-a-tiling-4,skip
-> +igt@kms_plane_lowres@pipe-b-tiling-none,skip
-> +igt@kms_plane_lowres@pipe-b-tiling-x,skip
-> +igt@kms_plane_lowres@pipe-b-tiling-y,skip
-> +igt@kms_plane_lowres@pipe-b-tiling-yf,skip
-> +igt@kms_plane_lowres@pipe-b-tiling-4,skip
-> +igt@kms_plane_lowres@pipe-c-tiling-none,skip
-> +igt@kms_plane_lowres@pipe-c-tiling-x,skip
-> +igt@kms_plane_lowres@pipe-c-tiling-y,skip
-> +igt@kms_plane_lowres@pipe-c-tiling-yf,skip
-> +igt@kms_plane_lowres@pipe-c-tiling-4,skip
-> +igt@kms_plane_lowres@pipe-d-tiling-none,skip
-> +igt@kms_plane_lowres@pipe-d-tiling-x,skip
-> +igt@kms_plane_lowres@pipe-d-tiling-y,skip
-> +igt@kms_plane_lowres@pipe-d-tiling-yf,skip
-> +igt@kms_plane_lowres@pipe-d-tiling-4,skip
-> +igt@kms_plane_lowres@pipe-e-tiling-none,skip
-> +igt@kms_plane_lowres@pipe-e-tiling-x,skip
-> +igt@kms_plane_lowres@pipe-e-tiling-y,skip
-> +igt@kms_plane_lowres@pipe-e-tiling-yf,skip
-> +igt@kms_plane_lowres@pipe-e-tiling-4,skip
-> +igt@kms_plane_lowres@pipe-f-tiling-none,skip
-> +igt@kms_plane_lowres@pipe-f-tiling-x,skip
-> +igt@kms_plane_lowres@pipe-f-tiling-y,skip
-> +igt@kms_plane_lowres@pipe-f-tiling-yf,skip
-> +igt@kms_plane_lowres@pipe-f-tiling-4,skip
-> +igt@kms_prop_blob@basic,pass
-> +igt@kms_prop_blob@blob-prop-core,pass
-> +igt@kms_prop_blob@blob-prop-validate,pass
-> +igt@kms_prop_blob@blob-prop-lifetime,pass
-> +igt@kms_prop_blob@blob-multiple,pass
-> +igt@kms_prop_blob@invalid-get-prop-any,pass
-> +igt@kms_prop_blob@invalid-get-prop,pass
-> +igt@kms_prop_blob@invalid-set-prop-any,pass
-> +igt@kms_prop_blob@invalid-set-prop,pass
-> +igt@kms_rmfb@rmfb-ioctl,pass
-> +igt@kms_rmfb@close-fd,fail
-> +igt@kms_rotation_crc@primary-rotation-90,skip
-> +igt@kms_rotation_crc@primary-rotation-180,skip
-> +igt@kms_rotation_crc@primary-rotation-270,skip
-> +igt@kms_rotation_crc@sprite-rotation-90,skip
-> +igt@kms_rotation_crc@sprite-rotation-180,skip
-> +igt@kms_rotation_crc@sprite-rotation-270,skip
-> +igt@kms_rotation_crc@cursor-rotation-180,skip
-> +igt@kms_rotation_crc@sprite-rotation-90-pos-100-0,skip
-> +igt@kms_rotation_crc@bad-pixel-format,skip
-> +igt@kms_rotation_crc@bad-tiling,skip
-> +igt@kms_rotation_crc@primary-x-tiled-reflect-x-0,skip
-> +igt@kms_rotation_crc@primary-x-tiled-reflect-x-180,skip
-> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-0,skip
-> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-90,skip
-> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-180,skip
-> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-270,skip
-> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-0,skip
-> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-90,skip
-> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-180,skip
-> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-270,skip
-> +igt@kms_rotation_crc@primary-4-tiled-reflect-x-0,skip
-> +igt@kms_rotation_crc@primary-4-tiled-reflect-x-180,skip
-> +igt@kms_rotation_crc@multiplane-rotation,skip
-> +igt@kms_rotation_crc@multiplane-rotation-cropping-top,skip
-> +igt@kms_rotation_crc@multiplane-rotation-cropping-bottom,skip
-> +igt@kms_rotation_crc@exhaust-fences,skip
-> +igt@kms_selftest@all,skip
-> +igt@kms_setmode@basic@pipe-a-edp-1,pass
-> +igt@kms_setmode@basic@pipe-b-edp-1,pass
-> +igt@kms_setmode@basic-clone-single-crtc,skip
-> +igt@kms_setmode@invalid-clone-single-crtc,skip
-> +igt@kms_setmode@invalid-clone-exclusive-crtc,skip
-> +igt@kms_setmode@clone-exclusive-crtc,skip
-> +igt@kms_setmode@invalid-clone-single-crtc-stealing,skip
-> +igt@msm_mapping@sqefw,dmesg-fail
-> +igt@msm_mapping@shadow,dmesg-fail
-> +igt@msm_recovery@hangcheck,dmesg-warn
-> +igt@msm_recovery@gpu-fault,dmesg-warn
-> +igt@msm_recovery@iova-fault,dmesg-warn
-> +igt@msm_submit@empty-submit,pass
-> +igt@msm_submit@invalid-queue-submit,pass
-> +igt@msm_submit@invalid-flags-submit,pass
-> +igt@msm_submit@invalid-in-fence-submit,pass
-> +igt@msm_submit@invalid-duplicate-bo-submit,dmesg-warn
-> +igt@msm_submit@invalid-cmd-idx-submit,dmesg-warn
-> +igt@msm_submit@invalid-cmd-type-submit,dmesg-warn
-> +igt@msm_submit@valid-submit,pass
-> +igt@kms_sysfs_edid_timing,pass
-> +igt@kms_universal_plane@universal-plane-pipe-a-functional,skip
-> +igt@kms_universal_plane@universal-plane-pipe-a-sanity,skip
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-a,pass
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-a,skip
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-a,skip
-> +igt@kms_universal_plane@universal-plane-pipe-b-functional,skip
-> +igt@kms_universal_plane@universal-plane-pipe-b-sanity,skip
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-b,fail
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-b,skip
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-b,skip
-> +igt@kms_universal_plane@universal-plane-pipe-c-functional,skip
-> +igt@kms_universal_plane@universal-plane-pipe-c-sanity,skip
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-c,skip
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-c,skip
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-c,skip
-> +igt@kms_universal_plane@universal-plane-pipe-d-functional,skip
-> +igt@kms_universal_plane@universal-plane-pipe-d-sanity,skip
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-d,skip
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-d,skip
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-d,skip
-> +igt@kms_universal_plane@universal-plane-pipe-e-functional,skip
-> +igt@kms_universal_plane@universal-plane-pipe-e-sanity,skip
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-e,skip
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-e,skip
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-e,skip
-> +igt@kms_universal_plane@universal-plane-pipe-f-functional,skip
-> +igt@kms_universal_plane@universal-plane-pipe-f-sanity,skip
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-f,skip
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-f,skip
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-f,skip
-> +igt@kms_vblank@invalid,pass
-> +igt@kms_vblank@crtc-id,pass
-> +igt@kms_vblank@pipe-a-query-idle,pass
-> +igt@kms_vblank@pipe-a-query-idle-hang,skip
-> +igt@kms_vblank@pipe-a-query-forked,pass
-> +igt@kms_vblank@pipe-a-query-forked-hang,skip
-> +igt@kms_vblank@pipe-a-query-busy,pass
-> +igt@kms_vblank@pipe-a-query-busy-hang,skip
-> +igt@kms_vblank@pipe-a-query-forked-busy,pass
-> +igt@kms_vblank@pipe-a-query-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-a-wait-idle,pass
-> +igt@kms_vblank@pipe-a-wait-idle-hang,skip
-> +igt@kms_vblank@pipe-a-wait-forked,pass
-> +igt@kms_vblank@pipe-a-wait-forked-hang,skip
-> +igt@kms_vblank@pipe-a-wait-busy,pass
-> +igt@kms_vblank@pipe-a-wait-busy-hang,skip
-> +igt@kms_vblank@pipe-a-wait-forked-busy,pass
-> +igt@kms_vblank@pipe-a-wait-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-a-ts-continuation-idle,pass
-> +igt@kms_vblank@pipe-a-ts-continuation-idle-hang,skip
-> +igt@kms_vblank@pipe-a-ts-continuation-dpms-rpm,skip
-> +igt@kms_vblank@pipe-a-ts-continuation-modeset,pass
-> +igt@kms_vblank@pipe-a-ts-continuation-modeset-hang,skip
-> +igt@kms_vblank@pipe-a-ts-continuation-modeset-rpm,skip
-> +igt@kms_vblank@pipe-b-accuracy-idle,pass
-> +igt@kms_vblank@pipe-b-query-idle,pass
-> +igt@kms_vblank@pipe-b-query-idle-hang,skip
-> +igt@kms_vblank@pipe-b-query-forked,pass
-> +igt@kms_vblank@pipe-b-query-forked-hang,skip
-> +igt@kms_vblank@pipe-b-query-busy,pass
-> +igt@kms_vblank@pipe-b-query-busy-hang,skip
-> +igt@kms_vblank@pipe-b-query-forked-busy,pass
-> +igt@kms_vblank@pipe-b-query-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-b-wait-idle,pass
-> +igt@kms_vblank@pipe-b-wait-idle-hang,skip
-> +igt@kms_vblank@pipe-b-wait-forked,pass
-> +igt@kms_vblank@pipe-b-wait-forked-hang,skip
-> +igt@kms_vblank@pipe-b-wait-busy,pass
-> +igt@kms_vblank@pipe-b-wait-busy-hang,skip
-> +igt@kms_vblank@pipe-b-wait-forked-busy,pass
-> +igt@kms_vblank@pipe-b-wait-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-b-ts-continuation-idle,pass
-> +igt@kms_vblank@pipe-b-ts-continuation-idle-hang,skip
-> +igt@kms_vblank@pipe-b-ts-continuation-dpms-rpm,skip
-> +igt@kms_vblank@pipe-b-ts-continuation-modeset,pass
-> +igt@kms_vblank@pipe-b-ts-continuation-modeset-hang,skip
-> +igt@kms_vblank@pipe-b-ts-continuation-modeset-rpm,skip
-> +igt@kms_vblank@pipe-c-accuracy-idle,skip
-> +igt@kms_vblank@pipe-c-query-idle,skip
-> +igt@kms_vblank@pipe-c-query-idle-hang,skip
-> +igt@kms_vblank@pipe-c-query-forked,skip
-> +igt@kms_vblank@pipe-c-query-forked-hang,skip
-> +igt@kms_vblank@pipe-c-query-busy,skip
-> +igt@kms_vblank@pipe-c-query-busy-hang,skip
-> +igt@kms_vblank@pipe-c-query-forked-busy,skip
-> +igt@kms_vblank@pipe-c-query-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-c-wait-idle,skip
-> +igt@kms_vblank@pipe-c-wait-idle-hang,skip
-> +igt@kms_vblank@pipe-c-wait-forked,skip
-> +igt@kms_vblank@pipe-c-wait-forked-hang,skip
-> +igt@kms_vblank@pipe-c-wait-busy,skip
-> +igt@kms_vblank@pipe-c-wait-busy-hang,skip
-> +igt@kms_vblank@pipe-c-wait-forked-busy,skip
-> +igt@kms_vblank@pipe-c-wait-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-c-ts-continuation-idle,skip
-> +igt@kms_vblank@pipe-c-ts-continuation-idle-hang,skip
-> +igt@kms_vblank@pipe-c-ts-continuation-dpms-rpm,skip
-> +igt@kms_vblank@pipe-c-ts-continuation-modeset,skip
-> +igt@kms_vblank@pipe-c-ts-continuation-modeset-hang,skip
-> +igt@kms_vblank@pipe-c-ts-continuation-modeset-rpm,skip
-> +igt@kms_vblank@pipe-d-accuracy-idle,skip
-> +igt@kms_vblank@pipe-d-query-idle,skip
-> +igt@kms_vblank@pipe-d-query-idle-hang,skip
-> +igt@kms_vblank@pipe-d-query-forked,skip
-> +igt@kms_vblank@pipe-d-query-forked-hang,skip
-> +igt@kms_vblank@pipe-d-query-busy,skip
-> +igt@kms_vblank@pipe-d-query-busy-hang,skip
-> +igt@kms_vblank@pipe-d-query-forked-busy,skip
-> +igt@kms_vblank@pipe-d-query-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-d-wait-idle,skip
-> +igt@kms_vblank@pipe-d-wait-idle-hang,skip
-> +igt@kms_vblank@pipe-d-wait-forked,skip
-> +igt@kms_vblank@pipe-d-wait-forked-hang,skip
-> +igt@kms_vblank@pipe-d-wait-busy,skip
-> +igt@kms_vblank@pipe-d-wait-busy-hang,skip
-> +igt@kms_vblank@pipe-d-wait-forked-busy,skip
-> +igt@kms_vblank@pipe-d-wait-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-d-ts-continuation-idle,skip
-> +igt@kms_vblank@pipe-d-ts-continuation-idle-hang,skip
-> +igt@kms_vblank@pipe-d-ts-continuation-dpms-rpm,skip
-> +igt@kms_vblank@pipe-d-ts-continuation-modeset,skip
-> +igt@kms_vblank@pipe-d-ts-continuation-modeset-hang,skip
-> +igt@kms_vblank@pipe-d-ts-continuation-modeset-rpm,skip
-> +igt@kms_vblank@pipe-e-accuracy-idle,skip
-> +igt@kms_vblank@pipe-e-query-idle,skip
-> +igt@kms_vblank@pipe-e-query-idle-hang,skip
-> +igt@kms_vblank@pipe-e-query-forked,skip
-> +igt@kms_vblank@pipe-e-query-forked-hang,skip
-> +igt@kms_vblank@pipe-e-query-busy,skip
-> +igt@kms_vblank@pipe-e-query-busy-hang,skip
-> +igt@kms_vblank@pipe-e-query-forked-busy,skip
-> +igt@kms_vblank@pipe-e-query-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-e-wait-idle,skip
-> +igt@kms_vblank@pipe-e-wait-idle-hang,skip
-> +igt@kms_vblank@pipe-e-wait-forked,skip
-> +igt@kms_vblank@pipe-e-wait-forked-hang,skip
-> +igt@kms_vblank@pipe-e-wait-busy,skip
-> +igt@kms_vblank@pipe-e-wait-busy-hang,skip
-> +igt@kms_vblank@pipe-e-wait-forked-busy,skip
-> +igt@kms_vblank@pipe-e-wait-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-e-ts-continuation-idle,skip
-> +igt@kms_vblank@pipe-e-ts-continuation-idle-hang,skip
-> +igt@kms_vblank@pipe-e-ts-continuation-dpms-rpm,skip
-> +igt@kms_vblank@pipe-e-ts-continuation-modeset,skip
-> +igt@kms_vblank@pipe-e-ts-continuation-modeset-hang,skip
-> +igt@kms_vblank@pipe-e-ts-continuation-modeset-rpm,skip
-> +igt@kms_vblank@pipe-f-accuracy-idle,skip
-> +igt@kms_vblank@pipe-f-query-idle,skip
-> +igt@kms_vblank@pipe-f-query-idle-hang,skip
-> +igt@kms_vblank@pipe-f-query-forked,skip
-> +igt@kms_vblank@pipe-f-query-forked-hang,skip
-> +igt@kms_vblank@pipe-f-query-busy,skip
-> +igt@kms_vblank@pipe-f-query-busy-hang,skip
-> +igt@kms_vblank@pipe-f-query-forked-busy,skip
-> +igt@kms_vblank@pipe-f-query-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-f-wait-idle,skip
-> +igt@kms_vblank@pipe-f-wait-idle-hang,skip
-> +igt@kms_vblank@pipe-f-wait-forked,skip
-> +igt@kms_vblank@pipe-f-wait-forked-hang,skip
-> +igt@kms_vblank@pipe-f-wait-busy,skip
-> +igt@kms_vblank@pipe-f-wait-busy-hang,skip
-> +igt@kms_vblank@pipe-f-wait-forked-busy,skip
-> +igt@kms_vblank@pipe-f-wait-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-f-ts-continuation-idle,skip
-> +igt@kms_vblank@pipe-f-ts-continuation-idle-hang,skip
-> +igt@kms_vblank@pipe-f-ts-continuation-dpms-rpm,skip
-> +igt@kms_vblank@pipe-f-ts-continuation-modeset,skip
-> +igt@kms_vblank@pipe-f-ts-continuation-modeset-hang,skip
-> +igt@kms_vblank@pipe-f-ts-continuation-modeset-rpm,skip
-> +igt@kms_vrr@flip-basic,skip
-> +igt@kms_vrr@flip-dpms,skip
-> +igt@kms_vrr@flipline,skip
-> +igt@kms_async_flip@async-flip-with-page-flip-events,skip
-> +igt@kms_async_flip@alternate-sync-async-flip,skip
-> +igt@kms_async_flip@test-time-stamp,skip
-> +igt@kms_async_flip@test-cursor,skip
-> +igt@kms_async_flip@invalid-async-flip,skip
-> +igt@kms_async_flip@crc,skip
-> diff --git a/drivers/gpu/drm/msm/ci/msm_a630_results.txt b/drivers/gpu/drm/msm/ci/msm_a630_results.txt
-> new file mode 100644
-> index 000000000000..18ebfae09f1a
-> --- /dev/null
-> +++ b/drivers/gpu/drm/msm/ci/msm_a630_results.txt
-> @@ -0,0 +1,422 @@
-> +igt@core_auth@getclient-simple,dmesg-warn
-> +igt@core_auth@getclient-master-drop,pass
-> +igt@core_auth@basic-auth,pass
-> +igt@core_auth@many-magics,pass
-> +igt@core_getclient,pass
-> +igt@core_getstats,pass
-> +igt@core_getversion,pass
-> +igt@core_setmaster_vs_auth,pass
-> +igt@drm_read@invalid-buffer,pass
-> +igt@drm_read@fault-buffer,pass
-> +igt@drm_read@empty-block,pass
-> +igt@drm_read@empty-nonblock,pass
-> +igt@drm_read@short-buffer-block,pass
-> +igt@drm_read@short-buffer-nonblock,pass
-> +igt@drm_read@short-buffer-wakeup,pass
-> +igt@kms_addfb_basic@unused-handle,pass
-> +igt@kms_addfb_basic@unused-pitches,pass
-> +igt@kms_addfb_basic@unused-offsets,pass
-> +igt@kms_addfb_basic@unused-modifier,pass
-> +igt@kms_addfb_basic@clobberred-modifier,skip
-> +igt@kms_addfb_basic@invalid-smem-bo-on-discrete,skip
-> +igt@kms_addfb_basic@legacy-format,dmesg-warn
-> +igt@kms_addfb_basic@no-handle,pass
-> +igt@kms_addfb_basic@basic,pass
-> +igt@kms_addfb_basic@bad-pitch-0,pass
-> +igt@kms_addfb_basic@bad-pitch-32,pass
-> +igt@kms_addfb_basic@bad-pitch-63,pass
-> +igt@kms_addfb_basic@bad-pitch-128,pass
-> +igt@kms_addfb_basic@bad-pitch-256,pass
-> +igt@kms_addfb_basic@bad-pitch-1024,pass
-> +igt@kms_addfb_basic@bad-pitch-999,pass
-> +igt@kms_addfb_basic@bad-pitch-65536,pass
-> +igt@kms_addfb_basic@size-max,pass
-> +igt@kms_addfb_basic@too-wide,pass
-> +igt@kms_addfb_basic@too-high,dmesg-warn
-> +igt@kms_addfb_basic@bo-too-small,pass
-> +igt@kms_addfb_basic@small-bo,pass
-> +igt@kms_addfb_basic@bo-too-small-due-to-tiling,skip
-> +igt@kms_addfb_basic@addfb25-modifier-no-flag,pass
-> +igt@kms_addfb_basic@addfb25-bad-modifier,dmesg-warn
-> +igt@kms_addfb_basic@addfb25-x-tiled-mismatch-legacy,skip
-> +igt@kms_addfb_basic@addfb25-x-tiled-legacy,skip
-> +igt@kms_addfb_basic@addfb25-framebuffer-vs-set-tiling,skip
-> +igt@kms_addfb_basic@addfb25-y-tiled-legacy,skip
-> +igt@kms_addfb_basic@addfb25-yf-tiled-legacy,skip
-> +igt@kms_addfb_basic@addfb25-y-tiled-small-legacy,skip
-> +igt@kms_addfb_basic@addfb25-4-tiled,skip
-> +igt@kms_addfb_basic@basic-x-tiled-legacy,skip
-> +igt@kms_addfb_basic@framebuffer-vs-set-tiling,skip
-> +igt@kms_addfb_basic@tile-pitch-mismatch,skip
-> +igt@kms_addfb_basic@basic-y-tiled-legacy,skip
-> +igt@kms_addfb_basic@invalid-get-prop-any,pass
-> +igt@kms_addfb_basic@invalid-get-prop,pass
-> +igt@kms_addfb_basic@invalid-set-prop-any,pass
-> +igt@kms_addfb_basic@invalid-set-prop,pass
-> +igt@kms_addfb_basic@master-rmfb,pass
-> +igt@kms_atomic@plane-overlay-legacy,dmesg-warn
-> +igt@kms_atomic@plane-primary-legacy,dmesg-warn
-> +igt@kms_atomic@plane-primary-overlay-mutable-zpos,dmesg-warn
-> +igt@kms_atomic@plane-immutable-zpos,dmesg-warn
-> +igt@kms_atomic@test-only,dmesg-warn
-> +igt@kms_atomic@plane-cursor-legacy,dmesg-warn
-> +igt@kms_atomic@plane-invalid-params,dmesg-warn
-> +igt@kms_atomic@plane-invalid-params-fence,skip
-> +igt@kms_atomic@crtc-invalid-params,dmesg-warn
-> +igt@kms_atomic@crtc-invalid-params-fence,skip
-> +igt@kms_atomic@atomic-invalid-params,dmesg-warn
-> +igt@kms_atomic@atomic_plane_damage,dmesg-warn
-> +igt@kms_atomic_interruptible@legacy-setmode,skip
-> +igt@kms_atomic_interruptible@atomic-setmode,skip
-> +igt@kms_atomic_interruptible@legacy-dpms,skip
-> +igt@kms_atomic_interruptible@legacy-pageflip,skip
-> +igt@kms_atomic_interruptible@legacy-cursor,skip
-> +igt@kms_atomic_interruptible@universal-setplane-primary,skip
-> +igt@kms_atomic_interruptible@universal-setplane-cursor,skip
-> +igt@kms_content_protection@legacy,skip
-> +igt@kms_content_protection@atomic,skip
-> +igt@kms_content_protection@atomic-dpms,skip
-> +igt@kms_content_protection@lic,skip
-> +igt@kms_content_protection@type1,skip
-> +igt@kms_content_protection@mei_interface,skip
-> +igt@kms_content_protection@content_type_change,skip
-> +igt@kms_content_protection@uevent,skip
-> +igt@kms_content_protection@srm,skip
-> +igt@kms_content_protection@dp-mst-type-0,skip
-> +igt@kms_content_protection@dp-mst-lic-type-0,skip
-> +igt@kms_content_protection@dp-mst-type-1,skip
-> +igt@kms_content_protection@dp-mst-lic-type-1,skip
-> +igt@kms_dp_aux_dev,skip
-> +igt@kms_flip_event_leak,dmesg-warn
-> +igt@kms_getfb@getfb-handle-zero,pass
-> +igt@kms_getfb@getfb-handle-valid,pass
-> +igt@kms_getfb@getfb-handle-closed,pass
-> +igt@kms_getfb@getfb-handle-not-fb,pass
-> +igt@kms_getfb@getfb-addfb-different-handles,pass
-> +igt@kms_getfb@getfb-repeated-different-handles,pass
-> +igt@kms_getfb@getfb-reject-ccs,skip
-> +igt@kms_getfb@getfb2-handle-zero,pass
-> +igt@kms_getfb@getfb2-handle-closed,pass
-> +igt@kms_getfb@getfb2-handle-not-fb,pass
-> +igt@kms_getfb@getfb2-accept-ccs,skip
-> +igt@kms_getfb@getfb2-into-addfb2,pass
-> +igt@kms_getfb@getfb-handle-protection,pass
-> +igt@kms_getfb@getfb2-handle-protection,pass
-> +igt@kms_hdmi_inject@inject-4k,skip
-> +igt@kms_hdmi_inject@inject-audio,skip
-> +igt@kms_hdr@bpc-switch,skip
-> +igt@kms_hdr@bpc-switch-dpms,skip
-> +igt@kms_hdr@static-toggle,skip
-> +igt@kms_hdr@static-toggle-dpms,skip
-> +igt@kms_hdr@static-swap,skip
-> +igt@kms_multipipe_modeset@basic-max-pipe-crc-check,pass
-> +igt@kms_pipe_crc_basic@bad-source,pass
-> +igt@kms_pipe_crc_basic@read-crc-pipe-a,pass
-> +igt@kms_pipe_crc_basic@read-crc-pipe-a-frame-sequence,pass
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a,pass
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-a-frame-sequence,pass
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-a,dmesg-warn
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-a,skip
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-a,dmesg-warn
-> +igt@kms_pipe_crc_basic@read-crc-pipe-b,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-b-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-b-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-b,skip
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-b,skip
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-b,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-c,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-c-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-c-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-c,skip
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-c,skip
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-c,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-d,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-d-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-d-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-d,skip
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-d,skip
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-d,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-e,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-e-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-e-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-e,skip
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-e,skip
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-e,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-f,skip
-> +igt@kms_pipe_crc_basic@read-crc-pipe-f-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f,skip
-> +igt@kms_pipe_crc_basic@nonblocking-crc-pipe-f-frame-sequence,skip
-> +igt@kms_pipe_crc_basic@disable-crc-after-crtc-pipe-f,skip
-> +igt@kms_pipe_crc_basic@hang-read-crc-pipe-f,skip
-> +igt@kms_pipe_crc_basic@compare-crc-sanitycheck-pipe-f,skip
-> +igt@kms_plane_lowres@pipe-a-tiling-none,skip
-> +igt@kms_plane_lowres@pipe-a-tiling-x,skip
-> +igt@kms_plane_lowres@pipe-a-tiling-y,skip
-> +igt@kms_plane_lowres@pipe-a-tiling-yf,skip
-> +igt@kms_plane_lowres@pipe-a-tiling-4,skip
-> +igt@kms_plane_lowres@pipe-b-tiling-none,skip
-> +igt@kms_plane_lowres@pipe-b-tiling-x,skip
-> +igt@kms_plane_lowres@pipe-b-tiling-y,skip
-> +igt@kms_plane_lowres@pipe-b-tiling-yf,skip
-> +igt@kms_plane_lowres@pipe-b-tiling-4,skip
-> +igt@kms_plane_lowres@pipe-c-tiling-none,skip
-> +igt@kms_plane_lowres@pipe-c-tiling-x,skip
-> +igt@kms_plane_lowres@pipe-c-tiling-y,skip
-> +igt@kms_plane_lowres@pipe-c-tiling-yf,skip
-> +igt@kms_plane_lowres@pipe-c-tiling-4,skip
-> +igt@kms_plane_lowres@pipe-d-tiling-none,skip
-> +igt@kms_plane_lowres@pipe-d-tiling-x,skip
-> +igt@kms_plane_lowres@pipe-d-tiling-y,skip
-> +igt@kms_plane_lowres@pipe-d-tiling-yf,skip
-> +igt@kms_plane_lowres@pipe-d-tiling-4,skip
-> +igt@kms_plane_lowres@pipe-e-tiling-none,skip
-> +igt@kms_plane_lowres@pipe-e-tiling-x,skip
-> +igt@kms_plane_lowres@pipe-e-tiling-y,skip
-> +igt@kms_plane_lowres@pipe-e-tiling-yf,skip
-> +igt@kms_plane_lowres@pipe-e-tiling-4,skip
-> +igt@kms_plane_lowres@pipe-f-tiling-none,skip
-> +igt@kms_plane_lowres@pipe-f-tiling-x,skip
-> +igt@kms_plane_lowres@pipe-f-tiling-y,skip
-> +igt@kms_plane_lowres@pipe-f-tiling-yf,skip
-> +igt@kms_plane_lowres@pipe-f-tiling-4,skip
-> +igt@kms_prop_blob@basic,pass
-> +igt@kms_prop_blob@blob-prop-core,pass
-> +igt@kms_prop_blob@blob-prop-validate,pass
-> +igt@kms_prop_blob@blob-prop-lifetime,pass
-> +igt@kms_prop_blob@blob-multiple,pass
-> +igt@kms_prop_blob@invalid-get-prop-any,pass
-> +igt@kms_prop_blob@invalid-get-prop,pass
-> +igt@kms_prop_blob@invalid-set-prop-any,pass
-> +igt@kms_prop_blob@invalid-set-prop,pass
-> +igt@kms_rmfb@rmfb-ioctl,pass
-> +igt@kms_rmfb@close-fd,fail
-> +igt@kms_rotation_crc@primary-rotation-90,skip
-> +igt@kms_rotation_crc@primary-rotation-180,skip
-> +igt@kms_rotation_crc@primary-rotation-270,skip
-> +igt@kms_rotation_crc@sprite-rotation-90,skip
-> +igt@kms_rotation_crc@sprite-rotation-180,skip
-> +igt@kms_rotation_crc@sprite-rotation-270,skip
-> +igt@kms_rotation_crc@cursor-rotation-180,skip
-> +igt@kms_rotation_crc@sprite-rotation-90-pos-100-0,skip
-> +igt@kms_rotation_crc@bad-pixel-format,skip
-> +igt@kms_rotation_crc@bad-tiling,skip
-> +igt@kms_rotation_crc@primary-x-tiled-reflect-x-0,skip
-> +igt@kms_rotation_crc@primary-x-tiled-reflect-x-180,skip
-> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-0,skip
-> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-90,skip
-> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-180,skip
-> +igt@kms_rotation_crc@primary-y-tiled-reflect-x-270,skip
-> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-0,skip
-> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-90,skip
-> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-180,skip
-> +igt@kms_rotation_crc@primary-yf-tiled-reflect-x-270,skip
-> +igt@kms_rotation_crc@primary-4-tiled-reflect-x-0,skip
-> +igt@kms_rotation_crc@primary-4-tiled-reflect-x-180,skip
-> +igt@kms_rotation_crc@multiplane-rotation,skip
-> +igt@kms_rotation_crc@multiplane-rotation-cropping-top,skip
-> +igt@kms_rotation_crc@multiplane-rotation-cropping-bottom,skip
-> +igt@kms_rotation_crc@exhaust-fences,skip
-> +igt@kms_selftest@all,skip
-> +igt@kms_setmode@basic@pipe-a-edp-1,dmesg-warn
-> +igt@kms_setmode@basic,skip
-> +igt@kms_setmode@basic-clone-single-crtc,skip
-> +igt@kms_setmode@invalid-clone-single-crtc,skip
-> +igt@kms_setmode@invalid-clone-exclusive-crtc,skip
-> +igt@kms_setmode@clone-exclusive-crtc,skip
-> +igt@kms_setmode@invalid-clone-single-crtc-stealing,skip
-> +igt@msm_mapping@sqefw,dmesg-fail
-> +igt@msm_mapping@shadow,dmesg-fail
-> +igt@msm_recovery@hangcheck,dmesg-warn
-> +igt@msm_recovery@gpu-fault,dmesg-warn
-> +igt@msm_recovery@iova-fault,dmesg-warn
-> +igt@msm_submit@empty-submit,pass
-> +igt@msm_submit@invalid-queue-submit,pass
-> +igt@msm_submit@invalid-flags-submit,pass
-> +igt@msm_submit@invalid-in-fence-submit,pass
-> +igt@msm_submit@invalid-duplicate-bo-submit,dmesg-warn
-> +igt@msm_submit@invalid-cmd-idx-submit,dmesg-warn
-> +igt@msm_submit@invalid-cmd-type-submit,dmesg-warn
-> +igt@msm_submit@valid-submit,pass
-> +igt@kms_sysfs_edid_timing,pass
-> +igt@kms_universal_plane@universal-plane-pipe-a-functional,dmesg-fail
-> +igt@kms_universal_plane@universal-plane-pipe-a-sanity,skip
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-a,dmesg-warn
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-a,skip
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-a,skip
-> +igt@kms_universal_plane@universal-plane-pipe-b-functional,skip
-> +igt@kms_universal_plane@universal-plane-pipe-b-sanity,skip
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-b,skip
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-b,skip
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-b,skip
-> +igt@kms_universal_plane@universal-plane-pipe-c-functional,skip
-> +igt@kms_universal_plane@universal-plane-pipe-c-sanity,skip
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-c,skip
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-c,skip
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-c,skip
-> +igt@kms_universal_plane@universal-plane-pipe-d-functional,skip
-> +igt@kms_universal_plane@universal-plane-pipe-d-sanity,skip
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-d,skip
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-d,skip
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-d,skip
-> +igt@kms_universal_plane@universal-plane-pipe-e-functional,skip
-> +igt@kms_universal_plane@universal-plane-pipe-e-sanity,skip
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-e,skip
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-e,skip
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-e,skip
-> +igt@kms_universal_plane@universal-plane-pipe-f-functional,skip
-> +igt@kms_universal_plane@universal-plane-pipe-f-sanity,skip
-> +igt@kms_universal_plane@disable-primary-vs-flip-pipe-f,skip
-> +igt@kms_universal_plane@cursor-fb-leak-pipe-f,skip
-> +igt@kms_universal_plane@universal-plane-gen9-features-pipe-f,skip
-> +igt@kms_vblank@invalid,dmesg-warn
-> +igt@kms_vblank@crtc-id,dmesg-warn
-> +igt@kms_vblank@pipe-a-query-idle,dmesg-warn
-> +igt@kms_vblank@pipe-a-query-idle-hang,skip
-> +igt@kms_vblank@pipe-a-query-forked,dmesg-warn
-> +igt@kms_vblank@pipe-a-query-forked-hang,skip
-> +igt@kms_vblank@pipe-a-query-busy,dmesg-warn
-> +igt@kms_vblank@pipe-a-query-busy-hang,skip
-> +igt@kms_vblank@pipe-a-query-forked-busy,dmesg-warn
-> +igt@kms_vblank@pipe-a-query-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-a-wait-idle,dmesg-warn
-> +igt@kms_vblank@pipe-a-wait-idle-hang,skip
-> +igt@kms_vblank@pipe-a-wait-forked,dmesg-warn
-> +igt@kms_vblank@pipe-a-wait-forked-hang,skip
-> +igt@kms_vblank@pipe-a-wait-busy,dmesg-warn
-> +igt@kms_vblank@pipe-a-wait-busy-hang,skip
-> +igt@kms_vblank@pipe-a-wait-forked-busy,dmesg-warn
-> +igt@kms_vblank@pipe-a-wait-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-a-ts-continuation-idle,dmesg-warn
-> +igt@kms_vblank@pipe-a-ts-continuation-idle-hang,skip
-> +igt@kms_vblank@pipe-a-ts-continuation-dpms-rpm,skip
-> +igt@kms_vblank@pipe-a-ts-continuation-modeset,dmesg-warn
-> +igt@kms_vblank@pipe-a-ts-continuation-modeset-hang,skip
-> +igt@kms_vblank@pipe-a-ts-continuation-modeset-rpm,skip
-> +igt@kms_vblank@pipe-b-accuracy-idle,skip
-> +igt@kms_vblank@pipe-b-query-idle,skip
-> +igt@kms_vblank@pipe-b-query-idle-hang,skip
-> +igt@kms_vblank@pipe-b-query-forked,skip
-> +igt@kms_vblank@pipe-b-query-forked-hang,skip
-> +igt@kms_vblank@pipe-b-query-busy,skip
-> +igt@kms_vblank@pipe-b-query-busy-hang,skip
-> +igt@kms_vblank@pipe-b-query-forked-busy,skip
-> +igt@kms_vblank@pipe-b-query-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-b-wait-idle,skip
-> +igt@kms_vblank@pipe-b-wait-idle-hang,skip
-> +igt@kms_vblank@pipe-b-wait-forked,skip
-> +igt@kms_vblank@pipe-b-wait-forked-hang,skip
-> +igt@kms_vblank@pipe-b-wait-busy,skip
-> +igt@kms_vblank@pipe-b-wait-busy-hang,skip
-> +igt@kms_vblank@pipe-b-wait-forked-busy,skip
-> +igt@kms_vblank@pipe-b-wait-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-b-ts-continuation-idle,skip
-> +igt@kms_vblank@pipe-b-ts-continuation-idle-hang,skip
-> +igt@kms_vblank@pipe-b-ts-continuation-dpms-rpm,skip
-> +igt@kms_vblank@pipe-b-ts-continuation-modeset,skip
-> +igt@kms_vblank@pipe-b-ts-continuation-modeset-hang,skip
-> +igt@kms_vblank@pipe-b-ts-continuation-modeset-rpm,skip
-> +igt@kms_vblank@pipe-c-accuracy-idle,skip
-> +igt@kms_vblank@pipe-c-query-idle,skip
-> +igt@kms_vblank@pipe-c-query-idle-hang,skip
-> +igt@kms_vblank@pipe-c-query-forked,skip
-> +igt@kms_vblank@pipe-c-query-forked-hang,skip
-> +igt@kms_vblank@pipe-c-query-busy,skip
-> +igt@kms_vblank@pipe-c-query-busy-hang,skip
-> +igt@kms_vblank@pipe-c-query-forked-busy,skip
-> +igt@kms_vblank@pipe-c-query-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-c-wait-idle,skip
-> +igt@kms_vblank@pipe-c-wait-idle-hang,skip
-> +igt@kms_vblank@pipe-c-wait-forked,skip
-> +igt@kms_vblank@pipe-c-wait-forked-hang,skip
-> +igt@kms_vblank@pipe-c-wait-busy,skip
-> +igt@kms_vblank@pipe-c-wait-busy-hang,skip
-> +igt@kms_vblank@pipe-c-wait-forked-busy,skip
-> +igt@kms_vblank@pipe-c-wait-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-c-ts-continuation-idle,skip
-> +igt@kms_vblank@pipe-c-ts-continuation-idle-hang,skip
-> +igt@kms_vblank@pipe-c-ts-continuation-dpms-rpm,skip
-> +igt@kms_vblank@pipe-c-ts-continuation-modeset,skip
-> +igt@kms_vblank@pipe-c-ts-continuation-modeset-hang,skip
-> +igt@kms_vblank@pipe-c-ts-continuation-modeset-rpm,skip
-> +igt@kms_vblank@pipe-d-accuracy-idle,skip
-> +igt@kms_vblank@pipe-d-query-idle,skip
-> +igt@kms_vblank@pipe-d-query-idle-hang,skip
-> +igt@kms_vblank@pipe-d-query-forked,skip
-> +igt@kms_vblank@pipe-d-query-forked-hang,skip
-> +igt@kms_vblank@pipe-d-query-busy,skip
-> +igt@kms_vblank@pipe-d-query-busy-hang,skip
-> +igt@kms_vblank@pipe-d-query-forked-busy,skip
-> +igt@kms_vblank@pipe-d-query-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-d-wait-idle,skip
-> +igt@kms_vblank@pipe-d-wait-idle-hang,skip
-> +igt@kms_vblank@pipe-d-wait-forked,skip
-> +igt@kms_vblank@pipe-d-wait-forked-hang,skip
-> +igt@kms_vblank@pipe-d-wait-busy,skip
-> +igt@kms_vblank@pipe-d-wait-busy-hang,skip
-> +igt@kms_vblank@pipe-d-wait-forked-busy,skip
-> +igt@kms_vblank@pipe-d-wait-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-d-ts-continuation-idle,skip
-> +igt@kms_vblank@pipe-d-ts-continuation-idle-hang,skip
-> +igt@kms_vblank@pipe-d-ts-continuation-dpms-rpm,skip
-> +igt@kms_vblank@pipe-d-ts-continuation-modeset,skip
-> +igt@kms_vblank@pipe-d-ts-continuation-modeset-hang,skip
-> +igt@kms_vblank@pipe-d-ts-continuation-modeset-rpm,skip
-> +igt@kms_vblank@pipe-e-accuracy-idle,skip
-> +igt@kms_vblank@pipe-e-query-idle,skip
-> +igt@kms_vblank@pipe-e-query-idle-hang,skip
-> +igt@kms_vblank@pipe-e-query-forked,skip
-> +igt@kms_vblank@pipe-e-query-forked-hang,skip
-> +igt@kms_vblank@pipe-e-query-busy,skip
-> +igt@kms_vblank@pipe-e-query-busy-hang,skip
-> +igt@kms_vblank@pipe-e-query-forked-busy,skip
-> +igt@kms_vblank@pipe-e-query-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-e-wait-idle,skip
-> +igt@kms_vblank@pipe-e-wait-idle-hang,skip
-> +igt@kms_vblank@pipe-e-wait-forked,skip
-> +igt@kms_vblank@pipe-e-wait-forked-hang,skip
-> +igt@kms_vblank@pipe-e-wait-busy,skip
-> +igt@kms_vblank@pipe-e-wait-busy-hang,skip
-> +igt@kms_vblank@pipe-e-wait-forked-busy,skip
-> +igt@kms_vblank@pipe-e-wait-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-e-ts-continuation-idle,skip
-> +igt@kms_vblank@pipe-e-ts-continuation-idle-hang,skip
-> +igt@kms_vblank@pipe-e-ts-continuation-dpms-rpm,skip
-> +igt@kms_vblank@pipe-e-ts-continuation-modeset,skip
-> +igt@kms_vblank@pipe-e-ts-continuation-modeset-hang,skip
-> +igt@kms_vblank@pipe-e-ts-continuation-modeset-rpm,skip
-> +igt@kms_vblank@pipe-f-accuracy-idle,skip
-> +igt@kms_vblank@pipe-f-query-idle,skip
-> +igt@kms_vblank@pipe-f-query-idle-hang,skip
-> +igt@kms_vblank@pipe-f-query-forked,skip
-> +igt@kms_vblank@pipe-f-query-forked-hang,skip
-> +igt@kms_vblank@pipe-f-query-busy,skip
-> +igt@kms_vblank@pipe-f-query-busy-hang,skip
-> +igt@kms_vblank@pipe-f-query-forked-busy,skip
-> +igt@kms_vblank@pipe-f-query-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-f-wait-idle,skip
-> +igt@kms_vblank@pipe-f-wait-idle-hang,skip
-> +igt@kms_vblank@pipe-f-wait-forked,skip
-> +igt@kms_vblank@pipe-f-wait-forked-hang,skip
-> +igt@kms_vblank@pipe-f-wait-busy,skip
-> +igt@kms_vblank@pipe-f-wait-busy-hang,skip
-> +igt@kms_vblank@pipe-f-wait-forked-busy,skip
-> +igt@kms_vblank@pipe-f-wait-forked-busy-hang,skip
-> +igt@kms_vblank@pipe-f-ts-continuation-idle,skip
-> +igt@kms_vblank@pipe-f-ts-continuation-idle-hang,skip
-> +igt@kms_vblank@pipe-f-ts-continuation-dpms-rpm,skip
-> +igt@kms_vblank@pipe-f-ts-continuation-modeset,skip
-> +igt@kms_vblank@pipe-f-ts-continuation-modeset-hang,skip
-> +igt@kms_vblank@pipe-f-ts-continuation-modeset-rpm,skip
-> +igt@kms_vrr@flip-basic,skip
-> +igt@kms_vrr@flip-dpms,skip
-> +igt@kms_vrr@flipline,skip
-> +igt@kms_async_flip@async-flip-with-page-flip-events,skip
-> +igt@kms_async_flip@alternate-sync-async-flip,skip
-> +igt@kms_async_flip@test-time-stamp,skip
-> +igt@kms_async_flip@test-cursor,skip
-> +igt@kms_async_flip@invalid-async-flip,skip
-> +igt@kms_async_flip@crc,skip
-
--- 
-Jani Nikula, Intel Open Source Graphics Center
+PiAyMDIyLTA1LTEwIGF0IDE2OjU5LCBLYXZ5YXNyZWUuS290YWdpcmlAbWljcm9jaGlwLmNvbSB3
+cm90ZToNCj4gPj4+IExBTjk2NiBTb0MgaGF2ZSA1IGZsZXhjb21zLiBFYWNoIGZsZXhjb20gaGFz
+IDIgY2hpcC1zZWxlY3RzLg0KPiA+Pj4gRm9yIGVhY2ggY2hpcCBzZWxlY3Qgb2YgZWFjaCBmbGV4
+Y29tIHRoZXJlIGlzIGEgY29uZmlndXJhdGlvbg0KPiA+Pj4gcmVnaXN0ZXIgRkxFWENPTV9TSEFS
+RURbMC00XTpTU19NQVNLWzAtMV0uIFRoZSB3aWR0aCBvZg0KPiA+Pj4gY29uZmlndXJhdGlvbiBy
+ZWdpc3RlciBpcyAyMSBiZWNhdXNlIHRoZXJlIGFyZSAyMSBzaGFyZWQgcGlucw0KPiA+Pj4gb24g
+ZWFjaCBvZiB3aGljaCB0aGUgY2hpcCBzZWxlY3QgY2FuIGJlIG1hcHBlZC4gRWFjaCBiaXQgb2Yg
+dGhlDQo+ID4+PiByZWdpc3RlciByZXByZXNlbnRzIGEgZGlmZmVyZW50IEZMRVhDT01fU0hBUkVE
+IHBpbi4NCj4gPj4+DQo+ID4+PiBTaWduZWQtb2ZmLWJ5OiBLYXZ5YXNyZWUgS290YWdpcmkgPGth
+dnlhc3JlZS5rb3RhZ2lyaUBtaWNyb2NoaXAuY29tPg0KPiA+Pj4gLS0tDQo+ID4+PiAgYXJjaC9h
+cm0vbWFjaC1hdDkxL0tjb25maWcgIHwgICAyICsNCj4gPj4+ICBkcml2ZXJzL21mZC9hdG1lbC1m
+bGV4Y29tLmMgfCAgNTUgKysrKysrKysrKysrKysrLQ0KPiA+Pj4gIGRyaXZlcnMvbXV4L0tjb25m
+aWcgICAgICAgICB8ICAxMiArKysrDQo+ID4+PiAgZHJpdmVycy9tdXgvTWFrZWZpbGUgICAgICAg
+IHwgICAyICsNCj4gPj4+ICBkcml2ZXJzL211eC9sYW45NjYtZmx4LmMgICAgfCAxMjENCj4gPj4g
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrDQo+ID4+PiAgNSBmaWxlcyBjaGFu
+Z2VkLCAxOTEgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQ0KPiA+Pj4gIGNyZWF0ZSBtb2Rl
+IDEwMDY0NCBkcml2ZXJzL211eC9sYW45NjYtZmx4LmMNCj4gPj4+DQo+ID4+PiBkaWZmIC0tZ2l0
+IGEvYXJjaC9hcm0vbWFjaC1hdDkxL0tjb25maWcgYi9hcmNoL2FybS9tYWNoLWF0OTEvS2NvbmZp
+Zw0KPiA+Pj4gaW5kZXggMjc5ODEwMzgxMjU2Li4yNmZiMGY0ZTFiNzkgMTAwNjQ0DQo+ID4+PiAt
+LS0gYS9hcmNoL2FybS9tYWNoLWF0OTEvS2NvbmZpZw0KPiA+Pj4gKysrIGIvYXJjaC9hcm0vbWFj
+aC1hdDkxL0tjb25maWcNCj4gPj4+IEBAIC03NCw2ICs3NCw4IEBAIGNvbmZpZyBTT0NfTEFOOTY2
+DQo+ID4+PiAgICAgICBzZWxlY3QgRFdfQVBCX1RJTUVSX09GDQo+ID4+PiAgICAgICBzZWxlY3Qg
+QVJNX0dJQw0KPiA+Pj4gICAgICAgc2VsZWN0IE1FTU9SWQ0KPiA+Pj4gKyAgICAgc2VsZWN0IE1V
+TFRJUExFWEVSDQo+ID4+PiArICAgICBzZWxlY3QgTVVYX0xBTjk2Ng0KPiA+Pj4gICAgICAgaGVs
+cA0KPiA+Pj4gICAgICAgICBUaGlzIGVuYWJsZXMgc3VwcG9ydCBmb3IgQVJNdjcgYmFzZWQgTWlj
+cm9jaGlwIExBTjk2NiBTb0MNCj4gZmFtaWx5Lg0KPiA+Pj4NCj4gPj4+IGRpZmYgLS1naXQgYS9k
+cml2ZXJzL21mZC9hdG1lbC1mbGV4Y29tLmMgYi9kcml2ZXJzL21mZC9hdG1lbC1mbGV4Y29tLmMN
+Cj4gPj4+IGluZGV4IDU1OWViNGQzNTJiNi4uN2NmZDBmYzNmNGYwIDEwMDY0NA0KPiA+Pj4gLS0t
+IGEvZHJpdmVycy9tZmQvYXRtZWwtZmxleGNvbS5jDQo+ID4+PiArKysgYi9kcml2ZXJzL21mZC9h
+dG1lbC1mbGV4Y29tLmMNCj4gPj4+IEBAIC0xNyw2ICsxNyw3IEBADQo+ID4+PiAgI2luY2x1ZGUg
+PGxpbnV4L2lvLmg+DQo+ID4+PiAgI2luY2x1ZGUgPGxpbnV4L2Nsay5oPg0KPiA+Pj4gICNpbmNs
+dWRlIDxkdC1iaW5kaW5ncy9tZmQvYXRtZWwtZmxleGNvbS5oPg0KPiA+Pj4gKyNpbmNsdWRlIDxs
+aW51eC9tdXgvY29uc3VtZXIuaD4NCj4gPj4+DQo+ID4+PiAgLyogSS9PIHJlZ2lzdGVyIG9mZnNl
+dHMgKi8NCj4gPj4+ICAjZGVmaW5lIEZMRVhfTVIgICAgICAgICAgICAgIDB4MCAgICAgLyogTW9k
+ZSBSZWdpc3RlciAqLw0KPiA+Pj4gQEAgLTI4LDYgKzI5LDEwIEBADQo+ID4+PiAgI2RlZmluZSBG
+TEVYX01SX09QTU9ERShvcG1vZGUpICAgICAgICgoKG9wbW9kZSkgPDwNCj4gPj4gRkxFWF9NUl9P
+UE1PREVfT0ZGU0VUKSAmICBcDQo+ID4+PiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+RkxFWF9NUl9PUE1PREVfTUFTSykNCj4gPj4+DQo+ID4+PiArc3RydWN0IGF0bWVsX2ZsZXhfY2Fw
+cyB7DQo+ID4+PiArICAgICBib29sIGhhc19mbHhfbXV4Ow0KPiA+Pj4gK307DQo+ID4+PiArDQo+
+ID4+PiAgc3RydWN0IGF0bWVsX2ZsZXhjb20gew0KPiA+Pj4gICAgICAgdm9pZCBfX2lvbWVtICpi
+YXNlOw0KPiA+Pj4gICAgICAgdTMyIG9wbW9kZTsNCj4gPj4+IEBAIC0zNyw2ICs0Miw3IEBAIHN0
+cnVjdCBhdG1lbF9mbGV4Y29tIHsNCj4gPj4+ICBzdGF0aWMgaW50IGF0bWVsX2ZsZXhjb21fcHJv
+YmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikNCj4gPj4+ICB7DQo+ID4+PiAgICAgICBz
+dHJ1Y3QgZGV2aWNlX25vZGUgKm5wID0gcGRldi0+ZGV2Lm9mX25vZGU7DQo+ID4+PiArICAgICBj
+b25zdCBzdHJ1Y3QgYXRtZWxfZmxleF9jYXBzICpjYXBzOw0KPiA+Pj4gICAgICAgc3RydWN0IHJl
+c291cmNlICpyZXM7DQo+ID4+PiAgICAgICBzdHJ1Y3QgYXRtZWxfZmxleGNvbSAqZGRhdGE7DQo+
+ID4+PiAgICAgICBpbnQgZXJyOw0KPiA+Pj4gQEAgLTc2LDEzICs4Miw2MCBAQCBzdGF0aWMgaW50
+IGF0bWVsX2ZsZXhjb21fcHJvYmUoc3RydWN0DQo+ID4+IHBsYXRmb3JtX2RldmljZSAqcGRldikN
+Cj4gPj4+ICAgICAgICAqLw0KPiA+Pj4gICAgICAgd3JpdGVsKEZMRVhfTVJfT1BNT0RFKGRkYXRh
+LT5vcG1vZGUpLCBkZGF0YS0+YmFzZSArDQo+IEZMRVhfTVIpOw0KPiA+Pj4NCj4gPj4+ICsgICAg
+IGNhcHMgPSBvZl9kZXZpY2VfZ2V0X21hdGNoX2RhdGEoJnBkZXYtPmRldik7DQo+ID4+PiArICAg
+ICBpZiAoIWNhcHMpIHsNCj4gPj4+ICsgICAgICAgICAgICAgZGV2X2VycigmcGRldi0+ZGV2LCAi
+Q291bGQgbm90IHJldHJpZXZlIGZsZXhjb20gY2Fwc1xuIik7DQo+ID4+PiArICAgICAgICAgICAg
+IHJldHVybiAtRUlOVkFMOw0KPiA+Pj4gKyAgICAgfQ0KPiA+Pj4gKw0KPiA+Pj4gKyAgICAgLyog
+RmxleGNvbSBNdXggKi8NCj4gPj4+ICsgICAgIGlmIChjYXBzLT5oYXNfZmx4X211eCAmJiBvZl9w
+cm9wZXJ0eV9yZWFkX2Jvb2wobnAsICJtdXgtDQo+IGNvbnRyb2xzIikpDQo+ID4+IHsNCj4gPj4+
+ICsgICAgICAgICAgICAgc3RydWN0IG11eF9jb250cm9sICpmbHhfbXV4Ow0KPiA+Pj4gKyAgICAg
+ICAgICAgICBzdHJ1Y3Qgb2ZfcGhhbmRsZV9hcmdzIGFyZ3M7DQo+ID4+PiArICAgICAgICAgICAg
+IGludCBpLCBjb3VudDsNCj4gPj4+ICsNCj4gPj4+ICsgICAgICAgICAgICAgZmx4X211eCA9IGRl
+dm1fbXV4X2NvbnRyb2xfZ2V0KCZwZGV2LT5kZXYsIE5VTEwpOw0KPiA+Pj4gKyAgICAgICAgICAg
+ICBpZiAoSVNfRVJSKGZseF9tdXgpKQ0KPiA+Pj4gKyAgICAgICAgICAgICAgICAgICAgIHJldHVy
+biBQVFJfRVJSKGZseF9tdXgpOw0KPiA+Pj4gKw0KPiA+Pj4gKyAgICAgICAgICAgICBjb3VudCA9
+IG9mX3Byb3BlcnR5X2NvdW50X3N0cmluZ3MobnAsICJtdXgtY29udHJvbC1uYW1lcyIpOw0KPiA+
+Pj4gKyAgICAgICAgICAgICBmb3IgKGkgPSAwOyBpIDwgY291bnQ7IGkrKykgew0KPiA+Pj4gKyAg
+ICAgICAgICAgICAgICAgICAgIGVyciA9IG9mX3BhcnNlX3BoYW5kbGVfd2l0aF9maXhlZF9hcmdz
+KG5wLCAibXV4LQ0KPiBjb250cm9scyIsDQo+ID4+IDEsIGksICZhcmdzKTsNCj4gPj4+ICsgICAg
+ICAgICAgICAgICAgICAgICBpZiAoZXJyKQ0KPiA+Pj4gKyAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgYnJlYWs7DQo+ID4+PiArDQo+ID4+PiArICAgICAgICAgICAgICAgICAgICAgZXJyID0g
+bXV4X2NvbnRyb2xfc2VsZWN0KGZseF9tdXgsIGFyZ3MuYXJnc1swXSk7DQo+ID4+PiArICAgICAg
+ICAgICAgICAgICAgICAgaWYgKCFlcnIpIHsNCj4gPj4+ICsgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgIG11eF9jb250cm9sX2Rlc2VsZWN0KGZseF9tdXgpOw0KPiA+Pg0KPiA+PiBUaGlzIGlz
+IHN1c3BlY3QuIFdoZW4geW91IGRlc2VsZWN0IHRoZSBtdXggeW91IHJlbHkgb24gdGhlIG11eCB0
+byBiZQ0KPiA+PiBjb25maWd1cmVkIHdpdGggImFzLWlzIiBhcyB0aGUgaWRsZSBzdGF0ZS4gQnV0
+IHlvdSBkbyBub3QgZG9jdW1lbnQgdGhhdC4NCj4gPj4gVGhpcyBpcyBhbHNvIGZyYWdpbGUgaW4g
+dGhhdCB5b3Ugc2lsZW50bHkgcmVseSBvbiBub29uZSBlbHNlIHNlbGVjdGluZw0KPiA+PiB0aGUg
+bXV4IHRvIHNvbWUgdW53YW50ZWQgc3RhdGUgYmVoaW5kIHlvdXIgYmFjayAobXV4IGNvbnRyb2xz
+IGFyZSBub3QNCj4gPj4gZXhjbHVzaXZlIHRoZSB3YXkgZS5nLiBncGlvIHBpbnMgb3IgcHdtcyBh
+cmUpLiBUaGUgcHJvdG9jb2wgaXMgdGhhdA0KPiA+PiBvdGhlcnMgbWF5IGdldCBhIHJlZiB0byB0
+aGUgbXV4IGNvbnRyb2wgYW5kIHNlbGVjdCBpdCBhcyBsb25nIGFzIG5vb25lDQo+ID4+IGVsc2Ug
+aGFzIHNlbGVjdGVkIGl0Lg0KPiA+Pg0KPiA+PiBUaGUgb25seSBzYW5lIHRoaW5nIHRvIGRvIGlz
+IHRvIGtlZXAgdGhlIG11eCBzZWxlY3RlZCBmb3IgdGhlIHdob2xlDQo+ID4+IGR1cmF0aW9uIHdo
+ZW4geW91IHJlbHkgb24gaXQgdG8gYmUgaW4geW91ciBkZXNpcmVkIHN0YXRlLg0KPiA+Pg0KPiA+
+DQo+ID4gWWVzLCBtdXggaXMga2VwdCBzZWxlY3RlZCB1bnRpbCBjb25maWd1cmluZyByZWdpc3Rl
+ciBpcyBkb25lLiBQbGVhc2Ugc2VlDQo+IGJlbG93IGxvZyB3aGVyZQ0KPiA+IEkgYWRkZWQgZGVi
+dWcgcHJpbnRzIGp1c3QgZm9yIHVuZGVyc3RhbmRpbmc6DQo+ID4gIyBkbWVzZyB8IGdyZXAgS0sN
+Cj4gPiAgWyAgICAwLjc3OTgyN10gS0s6IEZ1bmM6IGF0bWVsX2ZsZXhjb21fcHJvYmUgKioqKiog
+W1NUQVJUIGZseCBtdXhpbmddDQo+ICoqKioqKioqDQo+ID4gWyAgICAwLjc3OTg3NV0gS0s6IEZ1
+bmM6IGF0bWVsX2ZsZXhjb21fcHJvYmUgaSA9IDAgYXJnc1swXSA9IDANCj4gPiBbICAgIDAuNzc5
+ODkwXSBLSzogRnVuYzogbXV4X2NvbnRyb2xfc2VsZWN0IFtFbnRlcmVkXQ0KPiA+IFsgICAgMC43
+Nzk5MDJdIEtLOiBGdW5jOiBtdXhfbGFuOTY2eF9zZXQgW0VudGVyZWRdIHN0YXRlID0gMA0KPiA+
+IFsgICAgMC43Nzk5NzddIEtLOiBGdW5jOiBtdXhfbGFuOTY2eF9zZXQgW1JlYWRdID0gMHgxZmZm
+ZWYgICA8PDwtLS0tLSBzZXR0aW5nDQo+IG11eF9sYW45NjZ4W3N0YXRlXS5zc19waW4gIjQiIHdo
+aWNoIGlzIHBhc3NlZCBmcm9tIGR0cw0KPiA+IFsgICAgMC43Nzk5OTJdIEtLOiBGdW5jOiBtdXhf
+bGFuOTY2eF9zZXQgW0V4aXRdDQo+ID4gWyAgICAwLjc4MDAwMl0gS0s6IEZ1bmM6IG11eF9jb250
+cm9sX3NlbGVjdCBbRXhpdF0NCj4gPiBbICAgIDAuNzgwMDExXSBLSzogRnVuYzogbXV4X2NvbnRy
+b2xfZGVzZWxlY3QgW0VudGVyZWRdDQo+ID4gWyAgICAwLjc4MDAyMV0gS0s6IEZ1bmM6IG11eF9j
+b250cm9sX2Rlc2VsZWN0IFtFeGl0XQ0KPiANCj4gWW91IG1pc3VuZGVyc3RhbmQuIFRoZSBtdXgg
+Y29udHJvbCBpcyBvbmx5ICJzZWxlY3RlZCIgYmV0d2VlbiB0aGUgY2FsbA0KPiB0byBtdXhfY29u
+dHJvbF9zZWxlY3QoKSBhbmQgdGhlIGZvbGxvd2luZyBjYWxsIHRvDQo+IG11eF9jb250cm9sX2Rl
+c2VsZWN0KCkuDQo+IA0KPiBBZnRlciB0aGF0LCB0aGUgbXV4IGNvbnRyb2wgaXMgImlkbGUiLiBI
+b3dldmVyLCBpbiB5b3VyIGNhc2UgdGhlDQo+ICJpZGxlLXN0YXRlIiBpcyBjb25maWd1cmVkIHRv
+ICJhcy1pcyIgKHdoaWNoIGlzIHRoZSBkZWZhdWx0KSwgc28gdGhlDQo+IG11eCBjb250cm9sIChu
+YXR1cmFsbHkpIHJlbWFpbnMgaW4gdGhlIHByZXZpb3VzbHkgc2VsZWN0ZWQgc3RhdGUgd2hpbGUN
+Cj4gaWRsZS4gQnV0IHlvdSBhcmUgbm90IGRvY3VtZW50aW5nIHRoYXQgbGltaXRhdGlvbiwgYW5k
+IHdpdGggdGhpcw0KPiBpbXBsZW1lbnRhdGlvbiB5b3UgKm11c3QqIGhhdmUgYSBtdXggY29udHJv
+bCB0aGF0IHVzZXMgImFzLWlzIiBhcyBpdHMNCj4gaWRsZSBzdGF0ZS4gQnV0IHRoYXQgaXMgYW4g
+dW5leHBlY3RlZCBhbmQgYnJva2VuIGxpbWl0YXRpb24sIGFuZCBhDQo+IG11Y2ggYmV0dGVyIHNv
+bHV0aW9uIGlzIHRvIHNpbXBseSBrZWVwIHRoZSBtdXggY29udHJvbCAic2VsZWN0ZWQiIGZvcg0K
+PiB0aGUgY29tcGxldGUgZHVyYXRpb24gd2hlbiB5b3UgcmVseSBvbiBpdCB0byBiZSBpbiB3aGF0
+ZXZlciBzdGF0ZSB5b3UNCj4gbmVlZCBpdCB0byBiZSBpbi4NCj4gDQpJIGFtIG5ldyB0byBtdXgg
+ZHJpdmVycy4NCkxldCBtZSB0cnkgdG8gZXhwbGFpbiB3aHkgSSBoYXZlIG11eF9jb250cm9sX2Rl
+c2VsZWN0IGlmIHRoZXJlIGlzIG5vIGVyciBmcm9tIG11eF9jb250cm9sX3NlbGVjdCgpDQpGb3Ig
+ZXhhbXBsZSwgDQoxLiBXaGVuIEkgaGF2ZSBvbmUgb25seSBjaGlwLXNlbGVjdCBDUzAgZm9yIGZs
+ZXhjb20zIHRvIGJlIG1hcHBlZCB0byBmbGV4Y29tIHNoYXJlZCBwaW4gOToNCkFzIHBlciBwcmV2
+aW91c2x5IHNoYXJlZCBsb2csIEZMRVhDT01fU0hBUkVEWzNdOlNTX01BU0tbMF0gaXMgYmVpbmcg
+Y29uZmlndXJlZCB0byBleHBlY3RlZCB2YWx1ZSANCmV2ZW4gYmVmb3JlIG11eF9jb250cm9sX2Rl
+c2VsZXRjKCkuDQoyLiBXaGVuIEkgaGF2ZSB0byBtYXAgdHdvIGNoaXAtc2VsZWN0cyBvZiBmbHgz
+IC0gQ1MwIHRvIGZsZXhjb20gc2hhcmVkIDkNCgkJCQkJCUNTMSB0byBmbGV4Y29tIHNoYXJlZCBw
+aW4gNw0KRkxFWENPTV9TSEFSRURbM106U1NfTUFTS1swXSBpcyBzZXQgdG8gZXhwZWN0ZWQgdmFs
+dWUgMHgxZmZmZWYNCkkgc2VlIGNvbnNvbGUgaGFuZ3MgYXQgbXV4X2NvbnRyb2xfc2VsZWN0KCkg
+aWYgSSBkb27igJl0IGNhbGwgbXV4X2NvbnRyb2xfZGVzZWxlY3QgDQp3aGlsZSBtYXBwaW5nIHNl
+Y29uZCBjaGlwLXNlbGVjdCBGTEVYQ09NX1NIQVJFRFszXTpTU19NQVNLWzFdLg0KQWZ0ZXIgcmVh
+ZGluZyBiZWxvdyBkZXNjcmlwdGlvbiBmcm9tIG11eF9jb250cm9sX3NlbGVjdCgpIDoNCiIgKiBP
+biBzdWNjZXNzZnVsbHkgc2VsZWN0aW5nIHRoZSBtdXgtY29udHJvbCBzdGF0ZSwgaXQgd2lsbCBi
+ZSBsb2NrZWQgdW50aWwNCiAqIHRoZXJlIGlzIGEgY2FsbCB0byBtdXhfY29udHJvbF9kZXNlbGVj
+dCgpLiINCkZvbGxvd2luZyB0aGlzIGhlbHAgdGV4dCwgSSBjYWxsZWQgbXV4X2NvbnRyb2xfZGVz
+ZWxlY3QoKSBpZiB0aGVyZSBpcyBubyBlcnJvciBmcm9tIG11eF9jb250cm9sX3NlbGVjdCgpIA0K
+YW5kIHRoZW4gaXQgd29ya2VkLiBGTEVYQ09NX1NIQVJFRFszXTpTU19NQVNLWzFdIGlzIG5vdyBz
+ZXQgdG8gZXhwZWN0ZWQgdmFsdWUgMHgxZmZmYmYuDQoNClBsZWFzZSBleHBsYWluIG1lIGlmIEkg
+YW0gbWlzc2luZyBzb21ldGhpbmcuDQoNCj4gPj4+ICsgICAgICAgICAgICAgICAgICAgICB9IGVs
+c2Ugew0KPiA+Pj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZGV2X2VycigmcGRldi0+
+ZGV2LCAiRmFpbGVkIHRvIHNlbGVjdCBGTEVYQ09NDQo+IG11eFxuIik7DQo+ID4+PiArICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICByZXR1cm4gZXJyOw0KPiA+Pj4gKyAgICAgICAgICAgICAg
+ICAgICAgIH0NCj4gPj4+ICsgICAgICAgICAgICAgfQ0KPiA+Pj4gKyAgICAgfQ0KPiA+Pj4gKw0K
+PiA+Pj4gICAgICAgY2xrX2Rpc2FibGVfdW5wcmVwYXJlKGRkYXRhLT5jbGspOw0KPiA+Pj4NCj4g
+Pj4+ICAgICAgIHJldHVybiBkZXZtX29mX3BsYXRmb3JtX3BvcHVsYXRlKCZwZGV2LT5kZXYpOw0K
+PiA+Pj4gIH0NCj4gPj4+DQo+ID4+PiArc3RhdGljIGNvbnN0IHN0cnVjdCBhdG1lbF9mbGV4X2Nh
+cHMgYXRtZWxfZmxleGNvbV9jYXBzID0ge307DQo+ID4+PiArDQo+ID4+PiArc3RhdGljIGNvbnN0
+IHN0cnVjdCBhdG1lbF9mbGV4X2NhcHMgbGFuOTY2eF9mbGV4Y29tX2NhcHMgPSB7DQo+ID4+PiAr
+ICAgICAuaGFzX2ZseF9tdXggPSB0cnVlLA0KPiA+Pj4gK307DQo+ID4+PiArDQo+ID4+PiAgc3Rh
+dGljIGNvbnN0IHN0cnVjdCBvZl9kZXZpY2VfaWQgYXRtZWxfZmxleGNvbV9vZl9tYXRjaFtdID0g
+ew0KPiA+Pj4gLSAgICAgeyAuY29tcGF0aWJsZSA9ICJhdG1lbCxzYW1hNWQyLWZsZXhjb20iIH0s
+DQo+ID4+PiArICAgICB7DQo+ID4+PiArICAgICAgICAgICAgIC5jb21wYXRpYmxlID0gImF0bWVs
+LHNhbWE1ZDItZmxleGNvbSIsDQo+ID4+PiArICAgICAgICAgICAgIC5kYXRhID0gJmF0bWVsX2Zs
+ZXhjb21fY2FwcywNCj4gPj4+ICsgICAgIH0sDQo+ID4+PiArDQo+ID4+PiArICAgICB7DQo+ID4+
+PiArICAgICAgICAgICAgIC5jb21wYXRpYmxlID0gIm1pY3JvY2hpcCxsYW45NjYtZmxleGNvbSIs
+DQo+ID4+PiArICAgICAgICAgICAgIC5kYXRhID0gJmxhbjk2NnhfZmxleGNvbV9jYXBzLA0KPiA+
+Pj4gKyAgICAgfSwNCj4gPj4+ICsNCj4gPj4+ICAgICAgIHsgLyogc2VudGluZWwgKi8gfQ0KPiA+
+Pj4gIH07DQo+ID4+PiAgTU9EVUxFX0RFVklDRV9UQUJMRShvZiwgYXRtZWxfZmxleGNvbV9vZl9t
+YXRjaCk7DQo+ID4+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9tdXgvS2NvbmZpZyBiL2RyaXZlcnMv
+bXV4L0tjb25maWcNCj4gPj4+IGluZGV4IGU1YzU3MWZkMjMyYy4uZWEwOWY0NzRiYzJmIDEwMDY0
+NA0KPiA+Pj4gLS0tIGEvZHJpdmVycy9tdXgvS2NvbmZpZw0KPiA+Pj4gKysrIGIvZHJpdmVycy9t
+dXgvS2NvbmZpZw0KPiA+Pj4gQEAgLTQ1LDYgKzQ1LDE4IEBAIGNvbmZpZyBNVVhfR1BJTw0KPiA+
+Pj4gICAgICAgICBUbyBjb21waWxlIHRoZSBkcml2ZXIgYXMgYSBtb2R1bGUsIGNob29zZSBNIGhl
+cmU6IHRoZSBtb2R1bGUgd2lsbA0KPiA+Pj4gICAgICAgICBiZSBjYWxsZWQgbXV4LWdwaW8uDQo+
+ID4+Pg0KPiA+Pj4gK2NvbmZpZyBNVVhfTEFOOTY2DQo+ID4+PiArICAgICB0cmlzdGF0ZSAiTEFO
+OTY2IEZsZXhjb20gbXVsdGlwbGV4ZXIiDQo+ID4+PiArICAgICBkZXBlbmRzIG9uIE9GIHx8IENP
+TVBJTEVfVEVTVA0KPiA+Pj4gKyAgICAgaGVscA0KPiA+Pj4gKyAgICAgTGFuOTY2IEZsZXhjb20g
+TXVsdGlwbGV4ZXIgY29udHJvbGxlci4NCj4gPj4+ICsNCj4gPj4+ICsgICAgIFRoZSBkcml2ZXIg
+c3VwcG9ydHMgbWFwcGluZyAyIGNoaXAtc2VsZWN0cyBvZiBlYWNoIG9mIHRoZSBsYW45NjYNCj4g
+Pj4+ICsgICAgIGZsZXhjb21zIHRvIDIxIGZsZXhjb20gc2hhcmVkIHBpbnMuDQo+ID4+PiArDQo+
+ID4+PiArICAgICBUbyBjb21waWxlIHRoZSBkcml2ZXIgYXMgYSBtb2R1bGUsIGNob29zZSBNIGhl
+cmU6IHRoZSBtb2R1bGUgd2lsbA0KPiA+Pj4gKyAgICAgYmUgY2FsbGVkIG11eC1sYW45NjYuDQo+
+ID4+PiArDQo+ID4+PiAgY29uZmlnIE1VWF9NTUlPDQo+ID4+PiAgICAgICB0cmlzdGF0ZSAiTU1J
+Ty9SZWdtYXAgcmVnaXN0ZXIgYml0ZmllbGQtY29udHJvbGxlZCBNdWx0aXBsZXhlciINCj4gPj4+
+ICAgICAgIGRlcGVuZHMgb24gT0YgfHwgQ09NUElMRV9URVNUDQo+ID4+PiBkaWZmIC0tZ2l0IGEv
+ZHJpdmVycy9tdXgvTWFrZWZpbGUgYi9kcml2ZXJzL211eC9NYWtlZmlsZQ0KPiA+Pj4gaW5kZXgg
+NmU5ZmE0N2RhZjU2Li41M2E5ODQwZDk2ZmEgMTAwNjQ0DQo+ID4+PiAtLS0gYS9kcml2ZXJzL211
+eC9NYWtlZmlsZQ0KPiA+Pj4gKysrIGIvZHJpdmVycy9tdXgvTWFrZWZpbGUNCj4gPj4+IEBAIC03
+LDEwICs3LDEyIEBAIG11eC1jb3JlLW9ianMgICAgICAgICAgICAgICAgICAgICAgIDo9IGNvcmUu
+bw0KPiA+Pj4gIG11eC1hZGc3OTJhLW9ianMgICAgICAgICAgICAgOj0gYWRnNzkyYS5vDQo+ID4+
+PiAgbXV4LWFkZ3MxNDA4LW9ianMgICAgICAgICAgICA6PSBhZGdzMTQwOC5vDQo+ID4+PiAgbXV4
+LWdwaW8tb2JqcyAgICAgICAgICAgICAgICAgICAgICAgIDo9IGdwaW8ubw0KPiA+Pj4gK211eC1s
+YW45NjYtb2JqcyAgICAgICAgICAgICAgICAgICAgICA6PSBsYW45NjYtZmx4Lm8NCj4gPj4+ICBt
+dXgtbW1pby1vYmpzICAgICAgICAgICAgICAgICAgICAgICAgOj0gbW1pby5vDQo+ID4+Pg0KPiA+
+Pj4gIG9iai0kKENPTkZJR19NVUxUSVBMRVhFUikgICAgKz0gbXV4LWNvcmUubw0KPiA+Pj4gIG9i
+ai0kKENPTkZJR19NVVhfQURHNzkyQSkgICAgKz0gbXV4LWFkZzc5MmEubw0KPiA+Pj4gIG9iai0k
+KENPTkZJR19NVVhfQURHUzE0MDgpICAgKz0gbXV4LWFkZ3MxNDA4Lm8NCj4gPj4+ICBvYmotJChD
+T05GSUdfTVVYX0dQSU8pICAgICAgICAgICAgICAgKz0gbXV4LWdwaW8ubw0KPiA+Pj4gK29iai0k
+KENPTkZJR19NVVhfTEFOOTY2KSAgICAgKz0gbXV4LWxhbjk2Ni5vDQo+ID4+PiAgb2JqLSQoQ09O
+RklHX01VWF9NTUlPKSAgICAgICAgICAgICAgICs9IG11eC1tbWlvLm8NCj4gPj4+IGRpZmYgLS1n
+aXQgYS9kcml2ZXJzL211eC9sYW45NjYtZmx4LmMgYi9kcml2ZXJzL211eC9sYW45NjYtZmx4LmMN
+Cj4gPj4+IG5ldyBmaWxlIG1vZGUgMTAwNjQ0DQo+ID4+PiBpbmRleCAwMDAwMDAwMDAwMDAuLjJj
+N2RhYjYxNmE2YQ0KPiA+Pj4gLS0tIC9kZXYvbnVsbA0KPiA+Pj4gKysrIGIvZHJpdmVycy9tdXgv
+bGFuOTY2LWZseC5jDQo+ID4+PiBAQCAtMCwwICsxLDEyMSBAQA0KPiA+Pj4gKy8vIFNQRFgtTGlj
+ZW5zZS1JZGVudGlmaWVyOiBHUEwtMi4wDQo+ID4+PiArLyoNCj4gPj4+ICsgKiBMQU45NjYgRmxl
+eGNvbSBNVVggZHJpdmVyDQo+ID4+PiArICoNCj4gPj4+ICsgKiBDb3B5cmlnaHQgKGMpIDIwMjIg
+TWljcm9jaGlwIEluYy4NCj4gPj4+ICsgKg0KPiA+Pj4gKyAqIEF1dGhvcjogS2F2eWFzcmVlIEtv
+dGFnaXJpIDxrYXZ5YXNyZWUua290YWdpcmlAbWljcm9jaGlwLmNvbT4NCj4gPj4NCj4gPj4gTG9v
+a3MgbGlrZSBpdCBpcyBiYXNlZCBvbiBtbWlvLmM/DQo+ID4+DQo+ID4gWWVzLCBJIHRvb2sgbW1p
+by5jICBkcml2ZXIgYXMgcmVmZXJlbmNlLg0KPiA+DQo+IA0KPiBTbywgdGhlbiB0aGUgYWJvdmUg
+Y29weXJpZ2h0IGFuZCBhdXRob3JzaGlwIGluZm8gaXMgbm90IGNvbXBsZXRlLg0KPiANCj4gPj4+
+ICsgKi8NCj4gPj4+ICsNCj4gPj4+ICsjaW5jbHVkZSA8bGludXgvZXJyLmg+DQo+ID4+PiArI2lu
+Y2x1ZGUgPGxpbnV4L21vZHVsZS5oPg0KPiA+Pj4gKyNpbmNsdWRlIDxsaW51eC9vZl9wbGF0Zm9y
+bS5oPg0KPiA+Pj4gKyNpbmNsdWRlIDxsaW51eC9wbGF0Zm9ybV9kZXZpY2UuaD4NCj4gPj4+ICsj
+aW5jbHVkZSA8bGludXgvcHJvcGVydHkuaD4NCj4gPj4+ICsjaW5jbHVkZSA8bGludXgvbXV4L2Ry
+aXZlci5oPg0KPiA+Pj4gKyNpbmNsdWRlIDxsaW51eC9pby5oPg0KPiA+Pj4gKw0KPiA+Pj4gKyNk
+ZWZpbmUgRkxFWF9TSFJEX01BU0sgICAgICAgICAgICAgICAweDFGRkZGRg0KPiA+Pj4gKyNkZWZp
+bmUgTEFOOTY2X01BWF9DUyAgICAgICAgICAgICAgICAyMQ0KPiA+Pj4gKw0KPiA+Pj4gK3N0YXRp
+YyB2b2lkIF9faW9tZW0gKmZseF9zaGFyZWRfYmFzZTsNCj4gPj4NCj4gPj4gSSB3b3VsZCBtdWNo
+IHByZWZlciB0byBzdG9yZSB0aGUgY29tYmluZWQgYWRkcmVzcyAoYmFzZStvZmZzZXQpDQo+ID4+
+IGluIHRoZSBtdXggcHJpdmF0ZSBkYXRhIGluc3RlYWQgb2Ygb25seSBzdG9yaW5nIHRoZSBvZmZz
+ZXQgYW5kDQo+ID4+IHRoZW4gdW5uZWNlc3NhcmlseSByZWx5IG9uIHNvbWUgcGllY2Ugb2YgZ2xv
+YmFsIHN0YXRlICh0aGF0DQo+ID4+IHdpbGwgYmUgY2xvYmJlcmVkIGJ5IG90aGVyIGluc3RhbmNl
+cykuDQo+ID4+DQo+ID4gT2suIEkgd2lsbCB0cnkgdG8gc2VlIGlmIHRoaXMgaXMgcmVsZXZhbnQg
+YW5kIGNoYW5nZSBhY2NvcmRpbmdseS4NCj4gPg0KPiA+Pj4gK3N0cnVjdCBtdXhfbGFuOTY2eCB7
+DQo+ID4+DQo+ID4+IFdoeSBpcyB0aGUgZmlsZSBuYW1lZCBsYW45NjYsIGJ1dCB0aGVuIGV2ZXJ5
+dGhpbmcgaW5zaWRlIGxhbjk2Nng/DQo+ID4+DQo+ID4+PiArICAgICB1MzIgb2Zmc2V0Ow0KPiA+
+Pj4gKyAgICAgdTMyIHNzX3BpbjsNCj4gPj4+ICt9Ow0KPiA+Pj4gKw0KPiA+Pj4gK3N0YXRpYyBp
+bnQgbXV4X2xhbjk2Nnhfc2V0KHN0cnVjdCBtdXhfY29udHJvbCAqbXV4LCBpbnQgc3RhdGUpDQo+
+ID4+PiArew0KPiA+Pj4gKyAgICAgc3RydWN0IG11eF9sYW45NjZ4ICptdXhfbGFuOTY2eCA9IG11
+eF9jaGlwX3ByaXYobXV4LT5jaGlwKTsNCj4gPj4+ICsgICAgIHUzMiB2YWw7DQo+ID4+PiArDQo+
+ID4+PiArICAgICB2YWwgPSB+KDEgPDwgbXV4X2xhbjk2Nnhbc3RhdGVdLnNzX3BpbikgJiBGTEVY
+X1NIUkRfTUFTSzsNCj4gPj4+ICsgICAgIHdyaXRlbCh2YWwsIGZseF9zaGFyZWRfYmFzZSArIG11
+eF9sYW45NjZ4W3N0YXRlXS5vZmZzZXQpOw0KPiA+Pg0KPiA+PiBUaGlzIHJlYWRzIG1lbW9yeSB5
+b3UgaGF2ZSBub3QgYWxsb2NhdGVkLCBpZiB5b3Ugc2VsZWN0IGEgc3RhdGUNCj4gPj4gb3RoZXIg
+dGhhbiB6ZXJvLg0KPiA+Pg0KPiA+IE9rLiBJIHdpbGwgcmV0dXJuIGVycm9yIGNvbmRpdGlvbiBp
+biBjYXNlIG9mIHRyeWluZyB0byBhY2Nlc3Mgbm9uZSBleGlzdGluZw0KPiBlbnRyeS4NCj4gPj4+
+ICsNCj4gPj4+ICsgICAgIHJldHVybiAwOw0KPiA+Pj4gK30NCj4gPj4+ICsNCj4gPj4+ICtzdGF0
+aWMgY29uc3Qgc3RydWN0IG11eF9jb250cm9sX29wcyBtdXhfbGFuOTY2eF9vcHMgPSB7DQo+ID4+
+PiArICAgICAuc2V0ID0gbXV4X2xhbjk2Nnhfc2V0LA0KPiA+Pj4gK307DQo+ID4+PiArDQo+ID4+
+PiArc3RhdGljIGNvbnN0IHN0cnVjdCBvZl9kZXZpY2VfaWQgbXV4X2xhbjk2NnhfZHRfaWRzW10g
+PSB7DQo+ID4+PiArICAgICB7IC5jb21wYXRpYmxlID0gIm1pY3JvY2hpcCxsYW45NjYtZmx4LW11
+eCIsIH0sDQo+ID4+PiArICAgICB7IC8qIHNlbnRpbmVsICovIH0NCj4gPj4+ICt9Ow0KPiA+Pj4g
+K01PRFVMRV9ERVZJQ0VfVEFCTEUob2YsIG11eF9sYW45NjZ4X2R0X2lkcyk7DQo+ID4+PiArDQo+
+ID4+PiArc3RhdGljIGludCBtdXhfbGFuOTY2eF9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNl
+ICpwZGV2KQ0KPiA+Pj4gK3sNCj4gPj4+ICsgICAgIHN0cnVjdCBkZXZpY2Vfbm9kZSAqbnAgPSBw
+ZGV2LT5kZXYub2Zfbm9kZTsNCj4gPj4+ICsgICAgIHN0cnVjdCBkZXZpY2UgKmRldiA9ICZwZGV2
+LT5kZXY7DQo+ID4+PiArICAgICBzdHJ1Y3QgbXV4X2xhbjk2NnggKm11eF9sYW45NjZ4Ow0KPiA+
+Pj4gKyAgICAgc3RydWN0IG11eF9jaGlwICptdXhfY2hpcDsNCj4gPj4+ICsgICAgIGludCByZXQs
+IG51bV9maWVsZHMsIGk7DQo+ID4+PiArDQo+ID4+PiArICAgICByZXQgPSBvZl9wcm9wZXJ0eV9j
+b3VudF91MzJfZWxlbXMobnAsICJtdXgtb2Zmc2V0LXBpbiIpOw0KPiA+Pj4gKyAgICAgaWYgKHJl
+dCA9PSAwIHx8IHJldCAlIDIpDQo+ID4+PiArICAgICAgICAgICAgIHJldCA9IC1FSU5WQUw7DQo+
+ID4+PiArICAgICBpZiAocmV0IDwgMCkNCj4gPj4+ICsgICAgICAgICAgICAgcmV0dXJuIGRldl9l
+cnJfcHJvYmUoZGV2LCByZXQsDQo+ID4+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICJtdXgtb2Zmc2V0LXBpbiBwcm9wZXJ0eSBtaXNzaW5nIG9yIGludmFsaWQiKTsNCj4gPj4+
+ICsgICAgIG51bV9maWVsZHMgPSByZXQgLyAyOw0KPiA+Pj4gKw0KPiA+Pj4gKyAgICAgbXV4X2No
+aXAgPSBkZXZtX211eF9jaGlwX2FsbG9jKGRldiwgbnVtX2ZpZWxkcywNCj4gPj4gc2l6ZW9mKCpt
+dXhfbGFuOTY2eCkpOw0KPiA+Pg0KPiA+PiBJIG1pZ2h0IGJlIHRob3JvdWdobHkgbWlzdGFrZW4g
+YW5kIGNvbmZ1c2VkIGJ5IHRoZSBjb2RlLCBidXQgaXQgc2VlbXMNCj4gPj4gdmVyeSBzdHJhbmdl
+IHRoYXQgYSBzdWJzZXF1ZW5jdCBzZWxlY3QgaXMgbm90IHVuZG9pbmcgd2hhdCBhIHByZXZpb3Vz
+DQo+ID4+IHNlbGVjdCBvbmNlIGRpZC4gRWFjaCBzdGF0ZSBzZWVtcyB0byB3cml0ZSB0byBpdHMg
+b3duIHJlZ2lzdGVyIG9mZnNldCwNCj4gPj4gYW5kIHRoZXJlIGlzIG5vdGhpbmcgdGhhdCByZXN0
+b3JlcyB0aGUgZmlyc3QgcmVnaXN0ZXIgb2Zmc2V0IHdpdGggeW91DQo+ID4+IHN3aXRjaCBzdGF0
+ZXMuDQo+ID4+DQo+ID4+IENhcmUgdG8gZXhwbGFpbiBob3cgbXV4aW5nIHdvcmtzIGFuZCB3aGF0
+IHlvdSBhcmUgZXhwZWN0ZWQgdG8gZG8gdG8NCj4gPj4gbWFuaXB1bGF0ZSB0aGUgbXV4PyBJcyB0
+aGVyZSBzb21lIGxpbmsgdG8gcHVibGljIGRvY3VtZW50YXRpb24/IEkgZGlkDQo+ID4+IGEgcXVp
+Y2sgc2VhcmNoIGZvciBsYW45NjYgYnV0IGNhbWUgdXAgd2l0aCBub3RoaW5nIHJlbGV2YW50Lg0K
+PiA+Pg0KPiA+IExBTjk2NiBoYXMgNSBmbGV4Y29tcyh3aGljaCBjYW4gYmUgdXNlZCBhcyBVU0FS
+VC9TUEkvSTJDIGludGVyZmFjZSkuDQo+ID4gRkxFWENPTSBoYXMgdHdvIGNoaXAtc2VsZWN0IEkv
+TyBsaW5lcyBuYW1lbHkgQ1MwIGFuZCBDUzENCj4gPiBpbiBTUEkgbW9kZSwgQ1RTIGFuZCBSVFMg
+aW4gVVNBUlQgbW9kZS4gVGhlc2UgRkxFWENPTSBwaW5zIGFyZQ0KPiBvcHRpb25hbC4NCj4gPiBU
+aGVzZSBjaGlwLXNlbGVjdHMgY2FuIGJlIG1hcHBlZCB0byBmbGV4Y29tIHNoYXJlZCBwaW4gWzAt
+MjFdIHdoaWNoIGNhbg0KPiBiZQ0KPiA+IGRvbmUgYnkgY29uZmlndXJpbmcgZmxleGNvbSBtdWx0
+aXBsZXhlciByZWdpc3RlcihGTEVYQ09NX1NIQVJFRFswLQ0KPiA0XTpTU19NQVNLWzAtMV0pDQo+
+ID4gRHJpdmVyIGV4cGxhbmF0aW9uOg0KPiA+ICJmbHhfc2hhcmVkX2Jhc2UiIGlzIHVzZWQgdG8g
+Z2V0IGJhc2UgYWRkcmVzcyBvZiBGbGV4Y29tIHNoYXJlZA0KPiBtdWx0aXBsZXhlcg0KPiA+ICJt
+dXgtb2Zmc2V0LXBpbiIgcHJvcGVydHkgaXMgdXNlZCB0byBnZXQgY3MwL2NzMSBvZmZzZXQgYW5k
+IGZsZXhjb20gc2hhcmVkDQo+IHBpblswLTIxXSBvZiBhIGZsZXhjb20uDQo+ID4gc3RhdGUgdmFs
+dWUgcGFzc2VkIGZyb20gYXRtZWwtZmxleGNvbSBpcyB1c2VkIHRvIGNvbmZpZ3VyZSByZXNwZWN0
+aXZlDQo+ID4gRkxFWENPTV9TSEFSRURbMC00XTpTU19NQVNLWzAtMV0gcmVnaXN0ZXIgd2l0aCBv
+ZmZzZXQgYW5kIGZsZXhjb20NCj4gc2hhcmVkIHBpbi4NCj4gDQo+IE9rLCBsZXQgbWUgdHJ5IHRv
+IGludGVycHJldCB0aGF0LiBZb3Ugd2lzaCBlbmFibGUgYSAiZmFuIG91dCIgb2YgdGhlc2UNCj4g
+dHdvIGNoaXAtc2VsZWN0cyBmb3IgYW55IG9mIHRoZSA1IGZsZXhjb21zIChpbiBTUEkgbW9kZT8p
+IHN1Y2ggdGhhdA0KPiB0aGVzZSAxMCBpbnRlcm5hbCBjaGlwLXNlbGVjdHMgY2FuIGJlIGNvbm5l
+Y3RlZCB0byBhbnkgb2YgMjEgZXh0ZXJuYWwNCj4gcGlucz8NCj4gDQo+IElmIHRoYXQncyBjb3Jy
+ZWN0IGFuZCBpZiB5b3Ugd2lzaCB0byBpbnRlcmZhY2Ugd2l0aCBlLmcuIDIwIGNoaXBzLA0KPiB0
+aGVuIGl0IHdvdWxkIGJlIHBvc3NpYmxlIHRvIGhhdmUgMjAgc3RhdGVzIGZvciBvbmUgbXV4IGNv
+bnRyb2wgYW5kDQo+IHRoZW4gcmVhY2ggdGhlIDIwIGNoaXBzIHVzaW5nIG9ubHkgQ1MwIGZyb20g
+RkxFWENPTTAsIG9yIGl0IHdvdWxkIGJlDQo+IHBvc3NpYmxlIHRvIGhhdmUgMiBzdGF0ZXMgZm9y
+IDEwIG11eCBjb250cm9scywgb25lIGVhY2ggZm9yIENTMC9DUzEgb2YNCj4gYWxsIGZpdmUgZmxl
+eGNvbXMgYW5kIGFsc28gcmVhY2ggMjAgY2hpcHMuIE9yIGFueSB3aWxkIGNvbWJvIHlvdQ0KPiBp
+bWFnaW5lIGlzIHVzZWZ1bC4NCj4gDQo+IElzIHRoYXQgY29ycmVjdGx5IHVuZGVyc3Rvb2Q/DQo+
+IA0KPiBBc3N1bWluZyBzbywgdGhlbiB5b3UgY2FuIGhhdmUgYSBtYXhpbXVtIG9mIDEwIG11eCBj
+b250cm9scywgYW5kIGZvcg0KPiBlYWNoIG11eCBjb250cm9sIHlvdSBuZWVkIGEgdmFyaWFibGUg
+bnVtYmVyIG9mIGxlZ2l0aW1hdGUgc3RhdGVzLiBFYWNoDQo+IG11eCBjb250cm9sIHdvdWxkIGFs
+c28gbmVlZCB0byBrbm93IGF0IHdoYXQgYWRkcmVzcy9vZmZzZXQgaXRzIFNTX01BU0sNCj4gcmVn
+aXN0ZXIgaXMgYXQgYW5kIHdoYXQgcGlucy9zdGF0ZXMgYXJlIHZhbGlkLg0KPiANCj4gQnV0IHlv
+dXIgY29kZSBkb2VzIG5vdCBpbXBsZW1uZW50IHRoZSBhYm92ZS4gWW91IGFsbG9jYXRlIG51bV9m
+aWVsZHMNCj4gbXV4IGNvbnRyb2xzLCB3aGljaCBpcyB3aGF0IGNvbmZ1c2VzIHRoZSBoZWxsIG91
+dCBvZiBtZS4gbnVtX2ZpZWxkcyBpcw0KPiB0aGUgbnVtYmVyIG9mIHN0YXRlcywgbm90IHRoZSBu
+dW1iZXIgb2YgbXV4IGNvbnRyb2xzISBBbmQgeW91IGFsc28NCj4gbmVlZCB0byBzcGVjaWZ5IGFu
+IGluZGl2aWR1YWwgb2Zmc2V0IGZvciBlYWNoIHN0YXRlLCBhbmQgdGhhdCBtYWtlcyBubw0KPiBz
+ZW5zZSBhdCBhbGwsIGF0IGxlYXN0IG5vdCB0byBtZS4NCj4gDQo+IFNvLCBpbnN0ZWFkLCBJIHRo
+aW5rIHlvdSB3YW50IHRvIGhhdmU6DQo+IA0KPiBzdHJ1Y3QgbXV4X2xhbjk2Nnggew0KPiAgICAg
+ICAgIHUzMiBzc19tYXNrOw0KPiAgICAgICAgIGludCBudW1fcGluczsNCj4gICAgICAgICB1MzIg
+c3NfcGluW107DQo+IH07DQo+IA0KPiBBbmQgdGhlbiBkbzoNCj4gDQo+ICAgICAgICAgbXV4X2No
+aXAgPSBkZXZtX211eF9jaGlwX2FsbG9jKGRldiwgMSwgc2l6ZW9mKCptdXhfbGFuOTY2eCkgKw0K
+PiBudW1fcGlucyAqIHNpemVvZih1MzIpKTsNCj4gDQo+IChvciBob3dldmVyIHRoYXQgc2l6ZSBp
+cyBiZXN0IHNwZWxsZWQsIEkgaGF2ZW4ndCBrZXB0IHVwKQ0KPiANCj4gVGhlIHNldCBvcGVyYXRp
+b24gd291bGQgYmUgYWxvbmcgdGhlIGxpbmVzIG9mOg0KPg0KPiBzdGF0aWMgaW50IG11eF9sYW45
+NjZ4X3NldChzdHJ1Y3QgbXV4X2NvbnRyb2wgKm11eCwgaW50IHN0YXRlKQ0KPiB7DQo+ICAgICAg
+ICAgc3RydWN0IG11eF9sYW45NjZ4ICptdXhfbGFuOTY2eCA9IG11eF9jaGlwX3ByaXYobXV4LT5j
+aGlwKTsNCj4gICAgICAgICB1MzIgdmFsOw0KPiANCj4gICAgICAgICBpZiAoc3RhdGUgPCAwIHx8
+IHN0YXRlID49IG11eF9sYW45NjZ4LT5udW1fcGlucykNCj4gICAgICAgICAgICAgICAgIHJldHVy
+biAtMTsNCj4gDQo+ICAgICAgICAgdmFsID0gfigxIDw8IG11eF9sYW45NjZ4LT5zc19waW5bc3Rh
+dGVdKSAmIEZMRVhfU0hSRF9NQVNLOw0KPiAgICAgICAgIHdyaXRlbCh2YWwsIGZseF9zaGFyZWRf
+YmFzZSArIG11eF9sYW45NjZ4LT5zc19tYXNrKTsNCj4gDQo+ICAgICAgICAgcmV0dXJuIDA7DQo+
+IH0NCj4gDQo+IEJlY2F1c2UsIG9uZSBtdXggY29udHJvbCBzaG91bGQgb25seSBldmVyIG5lZWQg
+dG8ga25vdyBhYm91dCBvbmUgb2Zmc2V0LA0KPiBhcyBpdCBzaG91bGQgb25seSBldmVyIHdyaXRl
+IHRvIGl0cyBvd24gU1NfTUFTSyByZWdpc3Rlci4gQW5kIHlvdSB3aWxsDQo+IG5lZWQgc29tZSBw
+cml2YXRlIHNwYWNlIHN1Y2ggdGhhdCB5b3UgY2FuIGtlZXAgdHJhY2sgb2Ygd2hpY2ggc3RhdGVz
+DQo+IGFyZSBsZWdpdC4NCj4gDQo+IEkgd291bGQgYWxzbyBzZXBhcmF0ZSBvdXQgdGhlIFNTX01B
+U0sgb2Zmc2V0IGZyb20gdGhlIG11eC1vZmZzZXQtcGluDQo+IHByb3BlcnR5IGFuZCBoYXZlIG9u
+ZSBwcm9wZXJ0eSBmb3IgdGhhdCB2YWx1ZSBhbmQgdGhlbiBhIHN0cmFpZ2h0DQo+IGFycmF5IGZv
+ciB0aGUgdmFsaWQgcGluIG51bWJlcnMgaW4gYW5vdGhlciBwcm9wZXJ0eSAobm8gbG9uZ2VyIG5h
+bWVkDQo+IG11eC1vZmZzZXQtcGluIG9mIGNvdXJzZSkuDQo+IA0KPiBPciBzb21ldGhpbmcgbGlr
+ZSB0aGF0IGFuZCBhc3N1bWluZyBJIHVuZGVyc3RhbmQgaG93IHRoZSBGTEVYQ09NcyB3b3JrDQo+
+IGFuZCB3aGF0IHlvdSB3YW50IHRvIGRvIGV0Yy4NCj4gDQoNClRoYW5rIHlvdSBmb3IgeW91ciBj
+b21tZW50cw0KSSBhZ3JlZSwgSSB3aWxsIGNoYW5nZSBudW1iZXIgb2YgbXV4IGNvbnRyb2xzIHRv
+IDEgaW4gZGV2bV9tdXhfY2hpcF9hbGxvYygpDQpJIHdvdWxkIGxpa2UgdG8gdXNlIG11eC1vZmZz
+ZXQtcGluIHByb3BlcnR5IGJlY2F1c2UgDQplYWNoIGNoaXAtc2VsZWN0IG11c3QgYmUgbWFwcGVk
+IHRvIGEgdW5pcXVlIGZsZXhjb20gc2hhcmVkIHBpbi4NCkZvciBleGFtcGxlLCANCm11eC1vZmZz
+ZXQtcGluID0gPDB4MTggOT4sIC8qIDA6IGZsZXhjb20zIENTMCBtYXBwZWQgdG8gcGluLTkgKi8N
+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA8MHgxYyA3PiwgLyogMTogZmxleGNvbTMg
+Q1MxIG1hcHBlZCB0byBwaW4tNyAqLw0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDww
+eDIwIDQ+OyAvKiAyOiBmbGV4Y29tNCBDUzAgbWFwcGVkIHRvIHBpbi00ICovfTsNCkkgd2FudCB0
+byB1c2UgbXV4LW9mZnNldC1waW4gcHJvcGVydHkgdG8gYmUgY2xlYXIgYWJvdXQgd2hpY2ggb2Zm
+c2V0IGlzIG1hcHBlZCB0byB3aGljaA0KZmxleGNvbSBzaGFyZWQgcGluLiBIZXJlLCAwLCAxLCAy
+Li4gZW50cmllcyByZXByZXNlbnRzIHN0YXRlIHBhc3NlZCBmcm9tIG11eF9jb250cm9sX3NlbGVj
+dChtdXgsIHN0YXRlKS4NCg0KUGxlYXNlIHByb3ZpZGUgeW91ciBjb21tZW50cy4NCg0KPiBDaGVl
+cnMsDQo+IFBldGVyDQo+IA0KPiANCj4gPj4+ICsgICAgIGlmIChJU19FUlIobXV4X2NoaXApKQ0K
+PiA+Pj4gKyAgICAgICAgICAgICByZXR1cm4gZGV2X2Vycl9wcm9iZShkZXYsIFBUUl9FUlIobXV4
+X2NoaXApLA0KPiA+Pj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAiZmFpbGVk
+IHRvIGFsbG9jYXRlIG11eF9jaGlwc1xuIik7DQo+ID4+PiArDQo+ID4+PiArICAgICBtdXhfbGFu
+OTY2eCA9IG11eF9jaGlwX3ByaXYobXV4X2NoaXApOw0KPiA+Pj4gKw0KPiA+Pj4gKyAgICAgZmx4
+X3NoYXJlZF9iYXNlID0NCj4gZGV2bV9wbGF0Zm9ybV9nZXRfYW5kX2lvcmVtYXBfcmVzb3VyY2Uo
+cGRldiwNCj4gPj4gMCwgTlVMTCk7DQo+ID4+PiArICAgICBpZiAoSVNfRVJSKGZseF9zaGFyZWRf
+YmFzZSkpDQo+ID4+PiArICAgICAgICAgICAgIHJldHVybiBkZXZfZXJyX3Byb2JlKGRldiwgUFRS
+X0VSUihmbHhfc2hhcmVkX2Jhc2UpLA0KPiA+Pj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAiZmFpbGVkIHRvIGdldCBmbGV4Y29tIHNoYXJlZCBiYXNlIGFkZHJlc3NcbiIpOw0K
+PiA+Pj4gKw0KPiA+Pj4gKyAgICAgZm9yIChpID0gMDsgaSA8IG51bV9maWVsZHM7IGkrKykgew0K
+PiA+Pj4gKyAgICAgICAgICAgICBzdHJ1Y3QgbXV4X2NvbnRyb2wgKm11eCA9ICZtdXhfY2hpcC0+
+bXV4W2ldOw0KPiA+Pj4gKyAgICAgICAgICAgICB1MzIgb2Zmc2V0LCBzaGFyZWRfcGluOw0KPiA+
+Pj4gKw0KPiA+Pj4gKyAgICAgICAgICAgICByZXQgPSBvZl9wcm9wZXJ0eV9yZWFkX3UzMl9pbmRl
+eChucCwgIm11eC1vZmZzZXQtcGluIiwNCj4gPj4+ICsgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgMiAqIGksICZvZmZzZXQpOw0KPiA+Pj4gKyAgICAgICAgICAg
+ICBpZiAocmV0ID09IDApDQo+ID4+PiArICAgICAgICAgICAgICAgICAgICAgcmV0ID0gb2ZfcHJv
+cGVydHlfcmVhZF91MzJfaW5kZXgobnAsICJtdXgtb2Zmc2V0LXBpbiIsDQo+ID4+PiArICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgMiAqIGkgKyAx
+LA0KPiA+Pj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICZzaGFyZWRfcGluKTsNCj4gPj4+ICsgICAgICAgICAgICAgaWYgKHJldCA8IDApDQo+
+ID4+PiArICAgICAgICAgICAgICAgICAgICAgcmV0dXJuIGRldl9lcnJfcHJvYmUoZGV2LCByZXQs
+DQo+ID4+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgImZhaWxl
+ZCB0byByZWFkIG11eC1vZmZzZXQtcGluIHByb3BlcnR5OiAlZCIsIGkpOw0KPiA+Pj4gKw0KPiA+
+Pj4gKyAgICAgICAgICAgICBpZiAoc2hhcmVkX3BpbiA+PSBMQU45NjZfTUFYX0NTKQ0KPiA+Pj4g
+KyAgICAgICAgICAgICAgICAgICAgIHJldHVybiAtRUlOVkFMOw0KPiA+Pj4gKw0KPiA+Pj4gKyAg
+ICAgICAgICAgICBtdXhfbGFuOTY2eFtpXS5vZmZzZXQgPSBvZmZzZXQ7DQo+ID4+PiArICAgICAg
+ICAgICAgIG11eF9sYW45NjZ4W2ldLnNzX3BpbiA9IHNoYXJlZF9waW47DQo+ID4+DQo+ID4+IFRo
+aXMgY2xvYmJlcnMgbWVtb3J5IHlvdSBoYXZlIG5vdCBhbGxvY2F0ZWQsIGlmIG51bV9maWVsZHMg
+Pj0gMS4NCj4gPj4NCj4gPj4gQ2hlZXJzLA0KPiA+PiBQZXRlcg0KPiA+Pg0KPiA+Pj4gKw0KPiA+
+Pj4gKyAgICAgICAgICAgICBtdXgtPnN0YXRlcyA9IExBTjk2Nl9NQVhfQ1M7DQo+ID4+PiArICAg
+ICB9DQo+ID4+PiArDQo+ID4+PiArICAgICBtdXhfY2hpcC0+b3BzID0gJm11eF9sYW45NjZ4X29w
+czsNCj4gPj4+ICsNCj4gPj4+ICsgICAgIHJldCA9IGRldm1fbXV4X2NoaXBfcmVnaXN0ZXIoZGV2
+LCBtdXhfY2hpcCk7DQo+ID4+PiArICAgICBpZiAocmV0IDwgMCkNCj4gPj4+ICsgICAgICAgICAg
+ICAgcmV0dXJuIHJldDsNCj4gPj4+ICsNCj4gPj4+ICsgICAgIHJldHVybiAwOw0KPiA+Pj4gK30N
+Cj4gPj4+ICsNCj4gPj4+ICtzdGF0aWMgc3RydWN0IHBsYXRmb3JtX2RyaXZlciBtdXhfbGFuOTY2
+eF9kcml2ZXIgPSB7DQo+ID4+PiArICAgICAuZHJpdmVyID0gew0KPiA+Pj4gKyAgICAgICAgICAg
+ICAubmFtZSA9ICJsYW45NjYtbXV4IiwNCj4gPj4+ICsgICAgICAgICAgICAgLm9mX21hdGNoX3Rh
+YmxlID0gb2ZfbWF0Y2hfcHRyKG11eF9sYW45NjZ4X2R0X2lkcyksDQo+ID4+PiArICAgICB9LA0K
+PiA+Pj4gKyAgICAgLnByb2JlID0gbXV4X2xhbjk2NnhfcHJvYmUsDQo+ID4+PiArfTsNCj4gPj4+
+ICsNCj4gPj4+ICttb2R1bGVfcGxhdGZvcm1fZHJpdmVyKG11eF9sYW45NjZ4X2RyaXZlcik7DQo+
+ID4+PiArDQo+ID4+PiArTU9EVUxFX0RFU0NSSVBUSU9OKCJMQU45NjYgRmxleGNvbSBtdWx0aXBs
+ZXhlciBkcml2ZXIiKTsNCj4gPj4+ICtNT0RVTEVfQVVUSE9SKCJLYXZ5YXNyZWUgS290YWdpcmkN
+Cj4gPj4gPGthdnlhc3JlZS5rb3RhZ2lyaUBtaWNyb2NoaXAuY29tPiIpOw0KPiA+Pj4gK01PRFVM
+RV9MSUNFTlNFKCJHUEwgdjIiKTsNCj4gPj4+ICsNCg==
