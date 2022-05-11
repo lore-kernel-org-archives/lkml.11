@@ -2,88 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82C34C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:23:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 824E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:23:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343551AbiEKPXG (ORCPT
+        id S1343575AbiEKPXW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 11:23:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39482 "EHLO
+        Wed, 11 May 2022 11:23:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242665AbiEKPXB (ORCPT
+        with ESMTP id S242665AbiEKPXU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 11:23:01 -0400
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B80F54BCA
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 08:23:00 -0700 (PDT)
-Received: by mail-qt1-x82c.google.com with SMTP id fu47so2229998qtb.5
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 08:23:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=w9MfWQzcSMrfAB8m54hQ3mQgRCuKTad5K055CRIl8Vo=;
-        b=QHywmB7fZKi72sdflTBtW+kFZJRQSuZqWDaMwXqm9WlGt+siby1JuJMbb4mVAD3aS5
-         iejYTkI59BMc6y/oIXBVWa/9MeazGxDgdZ6JnQ4acVJEzufjZQsDtznMDuu+1warN0qK
-         MYfH0+Of2lno/uFNjSHx3f2rOG+DoVkqmq+h1Yo5O5S0KFbMpMU866O+NGrpTpFVmwIo
-         rZFIV/+obJD9S6I2t67nE7tVzhD3t8tjCZrDfcCgTj2X/3gaPOBFQPCIDW6o9dE/fle5
-         3WnODSV3b58gj79dPkcuaodpP+ksbzv8GPwBbBm1Po7hU8tSatFR5ZUjnyObXnudlq7S
-         4jDw==
+        Wed, 11 May 2022 11:23:20 -0400
+Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93ED54EDE2;
+        Wed, 11 May 2022 08:23:19 -0700 (PDT)
+Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-edf9ddb312so3190331fac.8;
+        Wed, 11 May 2022 08:23:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=w9MfWQzcSMrfAB8m54hQ3mQgRCuKTad5K055CRIl8Vo=;
-        b=KXWOw4HrafsOBi/x25t3DJLhRvpL22792w6/vpwULVVZIqo55i3VIpXKmll+1ONpcO
-         gV8okZxgo2UdaThmyr5cWBJRKHtR9WLPPABG3Rl+dm89x7RnfWndaubn8SEZWS8oDnS/
-         ufnPwKte+aoM4wrwiMqzyLt+oMjQrKNZ52LEqcwjaA3nDS65haEBhnfEAthtTpUgdrw0
-         bGxSN9KaYa2GPzSD33BWoj8bwYOGpm9V033G5CUdjuxUmbJNOHwg2sZLoSUZ5P3OBLKs
-         qB/0Tl48f8GgIOguCOIYuEYBoahzbr274Ie6Lt0RgDHgllw+YOORnWY1J20khSO7tGBw
-         Zd9g==
-X-Gm-Message-State: AOAM531BBBUknB5PjxMHgP+OezyQwee0ojKeQg1PlgOMa5ogYEVuQBAt
-        EYFGt9rqJWzF00ipRpa4VPpTAL77j6UZbQ==
-X-Google-Smtp-Source: ABdhPJygx90TKioxIedyEuaaHYWfH4OHP1lN+qlpZAjVyMK6tPk/6Hw911lnpLax7mo7cs7O9mkw+g==
-X-Received: by 2002:a05:622a:355:b0:2f3:b955:fa2d with SMTP id r21-20020a05622a035500b002f3b955fa2dmr24143416qtw.132.1652282579247;
-        Wed, 11 May 2022 08:22:59 -0700 (PDT)
-Received: from localhost ([2620:10d:c091:480::1:14fe])
-        by smtp.gmail.com with ESMTPSA id bl34-20020a05620a1aa200b0069fc13ce1f3sm1468229qkb.36.2022.05.11.08.22.58
+        bh=5zNISZaXlYvmRc3tMtVlWkswi785e/B+9/uY5oE6YAQ=;
+        b=qeMnAmAJokulvB1pYIRpLATzJ+WX2Pr91CYsHYvGhLzKlJG6NdkQ7ukU+DQjRgpv6D
+         VzEZlap5B8+B8WzYVvHGE6hHeHZmc+OvQPxhGKTlU0DKrM+6BgoVchGJwyu6ylx9voth
+         aCGeMaLEXqddnN9Bi8lQ5Oz1Jy3QvEdO1wYvgjtsffAI0ThmZUBcr2YFxJqKggqJo+Zg
+         HAbR7wdHXSBItvK4ZR+XBbvT7Kfh9gKBEjyjqCR2XsN6bBlfLrq9eGpiqBNcOBidvPfp
+         7qfepk4foWiJMzpb1W74JUEkbScUHbltHQbPo+faDQrdFNpuQjPM8gnzod9Z3lsEOYwN
+         EO9A==
+X-Gm-Message-State: AOAM530R2ADdSXA2Cap5lYwhsXKyREpR8+vthQ/sH0E9XxYYlsTUMxI3
+        1Rk+xKQhhfRYJMhAaXAAog==
+X-Google-Smtp-Source: ABdhPJz8rVBN06gIFVAn3YY+UTbDRGhzGs7/A3hZxVp8AZpNRgriF0sbM0SVBw8RFbySvGxuvEdMuQ==
+X-Received: by 2002:a05:6870:61cd:b0:e9:8de7:9c51 with SMTP id b13-20020a05687061cd00b000e98de79c51mr2953718oah.50.1652282598896;
+        Wed, 11 May 2022 08:23:18 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id bk14-20020a056820190e00b0035ec65ac944sm1036801oob.16.2022.05.11.08.23.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 08:22:58 -0700 (PDT)
-Date:   Wed, 11 May 2022 11:22:58 -0400
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Seth Jennings <sjenning@redhat.com>,
-        Dan Streetman <ddstreet@ieee.org>,
-        Minchan Kim <minchan@kernel.org>, linux-mm@kvack.org,
-        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-team@fb.com
-Subject: Re: [PATCH v2 3/6] mm: Kconfig: group swap, slab, hotplug and thp
- options into submenus
-Message-ID: <YnvU0hwCfQ11P8Ce@cmpxchg.org>
-References: <20220510152847.230957-1-hannes@cmpxchg.org>
- <20220510152847.230957-4-hannes@cmpxchg.org>
- <20220510154037.c7916ee9d7de90eedd12f92c@linux-foundation.org>
+        Wed, 11 May 2022 08:23:18 -0700 (PDT)
+Received: (nullmailer pid 337784 invoked by uid 1000);
+        Wed, 11 May 2022 15:23:17 -0000
+Date:   Wed, 11 May 2022 10:23:17 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Jacky Huang <ychuang3@nuvoton.com>
+Cc:     linux-kernel@vger.kernel.org, ychuang570808@gmail.com,
+        cfli0@nuvoton.com, devicetree@vger.kernel.org, soc@kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
+        catalin.marinas@arm.com, sboyd@kernel.org, robh+dt@kernel.org,
+        arnd@arndb.de, krzk+dt@kernel.org, will@kernel.org, olof@lixom.net
+Subject: Re: [PATCH V4 5/5] dt-bindings: arm: Add initial bindings for
+ Nuvoton Platform
+Message-ID: <20220511152317.GA337729-robh@kernel.org>
+References: <20220510032558.10304-1-ychuang3@nuvoton.com>
+ <20220510032558.10304-6-ychuang3@nuvoton.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220510154037.c7916ee9d7de90eedd12f92c@linux-foundation.org>
+In-Reply-To: <20220510032558.10304-6-ychuang3@nuvoton.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 03:40:37PM -0700, Andrew Morton wrote:
-> On Tue, 10 May 2022 11:28:44 -0400 Johannes Weiner <hannes@cmpxchg.org> wrote:
+On Tue, 10 May 2022 11:25:58 +0800, Jacky Huang wrote:
+> Add binding for ARMv8 based Nuvotn SoCs and platform boards.
+> Add initial bindings for MA35D1 series development boards.
 > 
-> > There are several clusters of related config options spread throughout
-> > the mostly flat MM submenu. Group them together and put specialization
-> > options into further subdirectories to make the MM submenu a bit more
-> > organized and easier to navigate.
+> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
+> ---
+>  .../devicetree/bindings/arm/nuvoton.yaml      | 31 +++++++++++++++++++
+>  1 file changed, 31 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/arm/nuvoton.yaml
 > 
-> Causes
-> 
-> hp2:/usr/src/25> make allnoconfig
 
-My bad. I'll respin those on top of the others and add allnoconfig
-builds to my testing routine. Thanks.
+Reviewed-by: Rob Herring <robh@kernel.org>
