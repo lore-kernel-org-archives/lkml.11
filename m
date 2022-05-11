@@ -2,106 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1511C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:13:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C459C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:13:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245610AbiEKPND (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 11:13:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59406 "EHLO
+        id S245604AbiEKPNV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 11:13:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245548AbiEKPMj (ORCPT
+        with ESMTP id S245590AbiEKPND (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 11:12:39 -0400
-Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99E175F8D0;
-        Wed, 11 May 2022 08:12:38 -0700 (PDT)
-Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-ed8a3962f8so3174698fac.4;
-        Wed, 11 May 2022 08:12:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=lWVV90oYpi4dWYDQ2mZpGM9vUZygMcQs9ZQl2WC1Reo=;
-        b=YMSModPq/NltiVm3CaGLRZJ5MvAnSy6N4eoa4dSUqfmOSzFgoOKcm3D3NcjIxBM+jP
-         WD6+i7dU4d5OIi48RAhaspZ2VRTheb6NdyVbmwYEk64kIb32KgqJQ2LMKaWPu904Sh/q
-         vO8K7Z0pF0OyKhfBZBNETu03BttIXSUaaeKAgD0uZV3UZdjoK8Y5UrdxhW270e8hU4jj
-         vIlte5TKL3UukZvAb5pfHIlzZ5hlU5nKurwMvldxNGaHMPx4taux94vLtsJUmO8Ore0o
-         mZjsnNILOZF06oS7QRyk1NfO2wM6wO1UVfk3SsHGMs6LWNDklWAL75Nh6VUSP22jTYnx
-         fESQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=lWVV90oYpi4dWYDQ2mZpGM9vUZygMcQs9ZQl2WC1Reo=;
-        b=hIv9MUkxbrxkUKVGYxFRGJzBNVyXSl7PJNshegKLfH15mFPxZ6LC+KQ3FN05RopHKE
-         i6FNR685Ego229EQuamaeQRhiK3F6zt7gxWo55iQO4v8hAP84bQFTDgPJd7fKadk5hKg
-         6pqqUgjcohMFwgfD4PjNe9hkY9YryYPgLp0tr8kcfIxo8xDsJAoK+pmfWoT6WHlDemiq
-         pcSNCV216lvdnBE4xF692rBBU34/3uPuVXx0mmXiin3FiOPWD1yUxk6WG/yS4JfcT1WP
-         jesneedC7Z47qVXB8+BBIEtyic/h08pOv0DuLVecUCSrrgwzDDItFrkehHk/BTVyI5Mo
-         JOpw==
-X-Gm-Message-State: AOAM533JVcGtcVdlSK0WFmb+PTjkyM6QmMcoUbvaN5oNTPX+t29pARCk
-        nkzriTG16NdQuU3qhUhkh9o=
-X-Google-Smtp-Source: ABdhPJyZtfT41OEAJN7SYN5skLyaan98nvwQQQ/N3h5pVIAPPFAsizBEODUCEvyMM005MmhHpQoHRg==
-X-Received: by 2002:a05:6870:2301:b0:e2:d57e:1c22 with SMTP id w1-20020a056870230100b000e2d57e1c22mr3067987oao.244.1652281957985;
-        Wed, 11 May 2022 08:12:37 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id t13-20020a4adbcd000000b0035eb4e5a6b8sm1006421oou.14.2022.05.11.08.12.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 08:12:37 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     "Rafael J . Wysocki" <rafael@kernel.org>
-Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>, linux-hwmon@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH 2/3] thermal/drivers/thermal_hwmon: Use hwmon_device_register_for_thermal()
-Date:   Wed, 11 May 2022 08:12:29 -0700
-Message-Id: <20220511151230.2983227-3-linux@roeck-us.net>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220511151230.2983227-1-linux@roeck-us.net>
-References: <20220511151230.2983227-1-linux@roeck-us.net>
+        Wed, 11 May 2022 11:13:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D74F110115D;
+        Wed, 11 May 2022 08:12:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8137DB8249B;
+        Wed, 11 May 2022 15:12:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D845BC340EE;
+        Wed, 11 May 2022 15:12:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652281973;
+        bh=xL0TzVaiEO5aQMaeWan8rwYgo0MOQI+Fp4FxzLjw2tk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=aKx+R2rdSnRCoaCHf9GcU1Xyf/iunPrgmyeh+ui8m1c9GlxKAgwv9joZXeECdC+fT
+         NMbPxGFMb1oRXC/E7Mtqey0wDXb1wJ7zndfRptQNYcbNI4mlMcPizJpZgm0KQEFTDl
+         IAY+5g3jvqN+N6U+GTiOjEnIUBTUqyiMr34Yzqq8EZiCww6tXlUsYWkx6p7YMVfRrW
+         1JilVx2utCxQ2cOj5HWMez3mRG+OPR0ljhHJ914Vj5dvBskurJcBkIoTKDARvg7S8N
+         cyte0dyNmz6J1Y30wXLEiazZGvHivPNjaZmgcHjMucEp2io+EK+L9lSUajIHxY1Aic
+         cf9MJtoe/X7Cg==
+Date:   Wed, 11 May 2022 18:11:23 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
+Cc:     Marten.Lindahl@axis.com, jgg@ziepe.ca,
+        johannes.holland@infineon.com, jsnitsel@redhat.com,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        martenli@axis.com, nayna@linux.vnet.ibm.com, peterhuewe@gmx.de,
+        stable@vger.kernel.org
+Subject: Re: [PATCH 1/2] tpm: Fix buffer access in tpm2_get_tpm_pt()
+Message-ID: <YnvSG0hfjqEe92v6@kernel.org>
+References: <YnbL2R/a3SwA3fMC@iki.fi>
+ <20220509114809.245621-1-stefan.mahnke-hartmann@infineon.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220509114809.245621-1-stefan.mahnke-hartmann@infineon.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The thermal subsystem registers a hwmon device without providing chip
-information or sysfs attribute groups. While undesirable, it would be
-difficult to change. On the other side, it abuses the
-hwmon_device_register_with_info API by not providing that information.
-Use new API specifically created for the thermal subsystem instead to
-let us enforce the 'chip' parameter for other callers of
-hwmon_device_register_with_info().
+On Mon, May 09, 2022 at 01:48:09PM +0200, Stefan Mahnke-Hartmann wrote:
+> On 07.05.22 21:43, Jarkko Sakkinen wrote:
+> > On Fri, May 06, 2022 at 02:31:46PM +0200, Stefan Mahnke-Hartmann wrote:
+> >> Under certain conditions uninitialized memory will be accessed.
+> >> As described by TCG Trusted Platform Module Library Specification,
+> >> rev. 1.59 (Part 3: Commands), if a TPM2_GetCapability is received,
+> >> requesting a capability, the TPM in Field Upgrade mode may return a
+> >                                       ~~~~~~~~~~~~~~~~~~
+> >
+> > Looks like random picks for casing: two words with upper case letter and
+> > one with lowe case.
+> 
+> In the TCG specification it is unfortunately also inconsistent.
+> I will change it to lower case then.
+> 
+> >
+> >> zero length list.
+> >> Check the property count in tpm2_get_tpm_pt().
+> >>
+> >> Fixes: 2ab3241161b3 ("tpm: migrate tpm2_get_tpm_pt() to use struct tpm_buf")
+> >> Cc: stable@vger.kernel.org
+> >> Signed-off-by: Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
+> >
+> > Which section is this in that specification documented?
+> 
+> It is described in the TCG Trusted Platform Module Library Specification,
+> rev. 1.59 (Part 3: Commands) in Chapter 30.2.1, Example 3. This example
+> describes the behavior in failure mode, but it may occur in other
+> circumstances, such as field upgrade mode.
+> 
+> >
+> > I looked into section 30.2 but could not find the part that documents this
+> > behaviour, i.e. returning success in FW upgrade mode. Why it wouldn't just
+> > return TPM_RC_UPGRADE?
+> 
+> Since some computer system failed booting up in case the TPM returned
+> anything else than SUCCESS, therefore Infineon decided to return SUCCESS
+> when TPM is in field upgrade mode.
 
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
----
- drivers/thermal/thermal_hwmon.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+OK, fair enough. This would be a place for inline comment though, given
+that it is not obvious by intuition.
 
-diff --git a/drivers/thermal/thermal_hwmon.c b/drivers/thermal/thermal_hwmon.c
-index ad03262cca56..09e49ec8b6f4 100644
---- a/drivers/thermal/thermal_hwmon.c
-+++ b/drivers/thermal/thermal_hwmon.c
-@@ -149,8 +149,8 @@ int thermal_add_hwmon_sysfs(struct thermal_zone_device *tz)
- 	INIT_LIST_HEAD(&hwmon->tz_list);
- 	strlcpy(hwmon->type, tz->type, THERMAL_NAME_LENGTH);
- 	strreplace(hwmon->type, '-', '_');
--	hwmon->device = hwmon_device_register_with_info(&tz->device, hwmon->type,
--							hwmon, NULL, NULL);
-+	hwmon->device = hwmon_device_register_for_thermal(&tz->device,
-+							  hwmon->type, hwmon);
- 	if (IS_ERR(hwmon->device)) {
- 		result = PTR_ERR(hwmon->device);
- 		goto free_mem;
-@@ -277,3 +277,5 @@ int devm_thermal_add_hwmon_sysfs(struct thermal_zone_device *tz)
- 	return ret;
- }
- EXPORT_SYMBOL_GPL(devm_thermal_add_hwmon_sysfs);
-+
-+MODULE_IMPORT_NS(HWMON_THERMAL);
--- 
-2.35.1
-
+BR, Jarkko
