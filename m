@@ -2,75 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3209BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:51:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB898C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:52:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343972AbiEKPvB (ORCPT
+        id S1343987AbiEKPwB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 11:51:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52262 "EHLO
+        Wed, 11 May 2022 11:52:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343928AbiEKPu4 (ORCPT
+        with ESMTP id S232122AbiEKPv7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 11:50:56 -0400
-Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 922E0393CD
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 08:50:53 -0700 (PDT)
-Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 24BFo7FH016599
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 11 May 2022 11:50:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
-        t=1652284211; bh=vHauuC4he3d+QFIOnFA1W77VZ/VSJaURJ/FYW/LG53s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=j2rBf0BYbvuquAYZa9zhFrTyEk4I4iEUgOri9p5Rlfya50DlbGELYChMbolG62MNk
-         S094Su3UP4yBR5beBZsM9RN3hvUkaCeiBOW5llGsH16MsueYycWETes7y0lkKYw1NO
-         G4KRkBlxwkneLAI/pKxaprXUK68hodcbdSI3G8kF95evaaa2a2apL0rihkrFppxoK6
-         5ei7i63OaKEOkGCWotNi6oAY99WPTUeyxCeOOeb1+3FvbuVjaZpgeypDOM1rGTEVxm
-         7pI+QJLllKCW1OaXZ4SVkWfyjvchMx45CdL+BcLI4Yc59aw9SA9Z48rzBr0tqvWBJE
-         WRzC+nIg/Z0kQ==
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id 2330115C3F0C; Wed, 11 May 2022 11:50:07 -0400 (EDT)
-Date:   Wed, 11 May 2022 11:50:07 -0400
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Thorsten Leemhuis <linux@leemhuis.info>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Zhangfei Gao <zhangfei.gao@foxmail.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        the arch/x86 maintainers <x86@kernel.org>
-Subject: Re: Link: tag and links to submission and reports (was: Re: [GIT
- pull] core/urgent for v5.18-rc6)
-Message-ID: <YnvbLx9FKgQwZJ/F@mit.edu>
-References: <165201148069.536527.1960632033331546251.tglx@xen13>
- <CAHk-=wjMmSZzMJ3Xnskdg4+GGz=5p5p+GSYyFBTh0f-DgvdBWg@mail.gmail.com>
- <ff841fdc-4db7-7a3d-8caf-d0cddd0dfa31@leemhuis.info>
- <Ynt1z0eZ19eMqp8I@zn.tnic>
+        Wed, 11 May 2022 11:51:59 -0400
+Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B65B263BDC;
+        Wed, 11 May 2022 08:51:57 -0700 (PDT)
+Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
+ by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
+ id d8280e60ce8cbe7d; Wed, 11 May 2022 17:51:55 +0200
+Received: from kreacher.localnet (unknown [213.134.181.161])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by v370.home.net.pl (Postfix) with ESMTPSA id E7F4066C3E6;
+        Wed, 11 May 2022 17:51:54 +0200 (CEST)
+From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
+To:     Linux PM <linux-pm@vger.kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>
+Subject: [PATCH v1 3/3] cpufreq: Rearrange locking in cpufreq_remove_dev()
+Date:   Wed, 11 May 2022 17:51:39 +0200
+Message-ID: <1836239.tdWV9SEqCh@kreacher>
+In-Reply-To: <5585781.DvuYhMxLoT@kreacher>
+References: <5585781.DvuYhMxLoT@kreacher>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ynt1z0eZ19eMqp8I@zn.tnic>
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="UTF-8"
+X-CLIENT-IP: 213.134.181.161
+X-CLIENT-HOSTNAME: 213.134.181.161
+X-VADE-SPAMSTATE: clean
+X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrgeehgdeltdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfjqffogffrnfdpggftiffpkfenuceurghilhhouhhtmecuudehtdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefufffkjghfggfgtgesthfuredttddtjeenucfhrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqeenucggtffrrghtthgvrhhnpedvffeuiedtgfdvtddugeeujedtffetteegfeekffdvfedttddtuefhgeefvdejhfenucfkphepvddufedrudefgedrudekuddrudeiudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvudefrddufeegrddukedurdduiedupdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeefpdhrtghpthhtoheplhhinhhugidqphhmsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtohepvhhirhgvshhhrdhkuhhmrghrsehlihhnrghrohdrohhrgh
+X-DCC--Metrics: v370.home.net.pl 1024; Body=3 Fuz1=3 Fuz2=3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 10:37:35AM +0200, Borislav Petkov wrote:
-> - The problem is when the discussion happened somewhere and the patch
-> got submitted separately. I can't think of a good way to automate
-> that so we have to pay attention and fix the link tag by hand and add
-> the relevant one. And I try to do that when I'm especially awake when
-> applying the patch.
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-I would argue that it should be the patch submitter's responsibility
-to explicitly add a URL to the problem report.  In some cases this
-might be a pointer to a bug tracking system; in other cases it might
-be a URL to lore.kernel.org.
+Currently, cpufreq_remove_dev() invokes the ->exit() driver callback
+without holding the policy rwsem which is inconsistent with what
+happens if ->exit() is invoked directly from cpufreq_offline().
 
-					- Ted
+It also manipulates the real_cpus mask and removes the CPU device
+symlink without holding the policy rwsem, but cpufreq_offline() holds
+the rwsem around the modifications thereof.
+
+For consistency, modify cpufreq_remove_dev() to hold the policy rwsem
+until the ->exit() callback has been called (or it has been determined
+that it is not necessary to call it).
+
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+---
+ drivers/cpufreq/cpufreq.c |   21 ++++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
+
+Index: linux-pm/drivers/cpufreq/cpufreq.c
+===================================================================
+--- linux-pm.orig/drivers/cpufreq/cpufreq.c
++++ linux-pm/drivers/cpufreq/cpufreq.c
+@@ -1659,19 +1659,26 @@ static void cpufreq_remove_dev(struct de
+ 	if (!policy)
+ 		return;
+ 
++	down_write(&policy->rwsem);
++
+ 	if (cpu_online(cpu))
+-		cpufreq_offline(cpu);
++		__cpufreq_offline(cpu, policy);
+ 
+ 	cpumask_clear_cpu(cpu, policy->real_cpus);
+ 	remove_cpu_dev_symlink(policy, dev);
+ 
+-	if (cpumask_empty(policy->real_cpus)) {
+-		/* We did light-weight exit earlier, do full tear down now */
+-		if (cpufreq_driver->offline)
+-			cpufreq_driver->exit(policy);
+-
+-		cpufreq_policy_free(policy);
++	if (!cpumask_empty(policy->real_cpus)) {
++		up_write(&policy->rwsem);
++		return;
+ 	}
++
++	/* We did light-weight exit earlier, do full tear down now */
++	if (cpufreq_driver->offline)
++		cpufreq_driver->exit(policy);
++
++	up_write(&policy->rwsem);
++
++	cpufreq_policy_free(policy);
+ }
+ 
+ /**
+
+
+
