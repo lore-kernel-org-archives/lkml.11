@@ -2,77 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1916FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 00:27:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA726C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 00:27:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234278AbiEKA1Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 20:27:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47080 "EHLO
+        id S239300AbiEKA1l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 20:27:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239632AbiEKA1M (ORCPT
+        with ESMTP id S232114AbiEKA1i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 20:27:12 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B9B35D5DA;
-        Tue, 10 May 2022 17:27:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652228828; x=1683764828;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=7fKtwrfJNrDGyLYQn9wBN96rXyqJr09OQezQokT2Rws=;
-  b=kVG0eh1JAuJ4Ft+pqKTJD8mVDDtzOZSzRNxY8Gi0VkwbRuhuOxa0ivZu
-   F8h+9U0wMzK7yqGR8OhMUn7hM9cAZ3WJ+cV7KWZoUXhtHx1EdHzJ83d9o
-   A3dIHvnJlymxMok+Pt77Bj0TKPT0EBOtr5U1HTpDGBYjZikcdyzFG5DfX
-   72H6B5Z7HyoIDcX6XyePYGNn6f5XzP4+s1ua2frao9k/Z9gLJSMe16zy4
-   fTuR9PqVQLbU+9o9z467df87O+e+ANSuNlam7sjdPZINHQ3ROvfGfLdLp
-   jm9/ADUUPjJ6qTVS3NpoVVSCCGdpgcluy9USXPtTpj36ga7hcfPwhc1sd
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="269676205"
-X-IronPort-AV: E=Sophos;i="5.91,215,1647327600"; 
-   d="scan'208";a="269676205"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 17:27:07 -0700
-X-IronPort-AV: E=Sophos;i="5.91,215,1647327600"; 
-   d="scan'208";a="657899142"
-Received: from yangweij-mobl.ccr.corp.intel.com (HELO [10.249.171.95]) ([10.249.171.95])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 17:27:05 -0700
-Message-ID: <fcec0903-69ed-078a-5abd-c9d4198eca4b@intel.com>
-Date:   Wed, 11 May 2022 08:26:53 +0800
+        Tue, 10 May 2022 20:27:38 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C52BD5D1BE;
+        Tue, 10 May 2022 17:27:37 -0700 (PDT)
+Date:   Wed, 11 May 2022 00:27:34 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1652228856;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NuL0QXGzQE4f61TV1wvzJ0QEqgqQg7LnaavuAtJN2XM=;
+        b=xbxpE/aueQ3SRa2csZeVrfQOrc6Y188CB4332pQlSguKFf2sIOlXxLgjcnljIlrz6J44Yh
+        V9dEJTitZie1K4mwgdI0LMMM42IGMK4iOpx6Ry+BGinnkDmnHPpf6mdxEnQlhiHDg0Bmbu
+        W5Bu7Kt7KE6lhNIYL8jgUixJmJX1ehSWLPjZoFlTQ9FMUyPKPXhKhgcIxRp6Sk6/7M+QIk
+        DqYhOkkqA5ahSz6fMIbZZhj/0gOoF57xF+g2eFy/l13oHTRD2au+ahrmaqL4AxrehPnYvT
+        xsZMG27zCnKX8VtBT3MgQrHN4YvqNzgJZylwYlzDsRIGp+ieXw+g/S+mVqO3zQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1652228856;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NuL0QXGzQE4f61TV1wvzJ0QEqgqQg7LnaavuAtJN2XM=;
+        b=S/EkPhEC+g44LnTYgM55PntsA1YCK8U2IFcPqXtNdXoqgLuAo38jv1wMwO75fGpx8KaDa6
+        kuNfdEIZta97pCAw==
+From:   "tip-bot2 for Lukas Wunner" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: irq/urgent] genirq: Remove WARN_ON_ONCE() in
+ generic_handle_domain_irq()
+Cc:     Lukas Wunner <lukas@wunner.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Octavian Purdila <octavian.purdila@nxp.com>,
+        stable@vger.kernel.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220505113207.487861b2@kernel.org>
+References: <20220505113207.487861b2@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] KVM: selftests: x86: Skip unsupported test when Arch LBR
- is available
-Content-Language: en-US
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     "likexu@tencent.com" <likexu@tencent.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>
-References: <20220510150637.1774645-1-pbonzini@redhat.com>
-From:   "Yang, Weijiang" <weijiang.yang@intel.com>
-In-Reply-To: <20220510150637.1774645-1-pbonzini@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Message-ID: <165222885472.4207.9060710349562031230.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The following commit has been merged into the irq/urgent branch of tip:
 
-On 5/10/2022 11:06 PM, Paolo Bonzini wrote:
-> Hi,
->
->> -	ret = _vcpu_set_msr(vm, 0, MSR_IA32_PERF_CAPABILITIES, PMU_CAP_LBR_FMT);
->> -	TEST_ASSERT(ret == 0, "Bad PERF_CAPABILITIES didn't fail.");
->> +	/* Note, on Arch LBR capable platforms, LBR_FMT in perf capability msr is 0x3f,
->> +	 * so skip below test if running on these platforms. */
->> +	if (host_cap.lbr_format != PMU_CAP_LBR_FMT) {
->> +		ret = _vcpu_set_msr(vm, 0, MSR_IA32_PERF_CAPABILITIES, PMU_CAP_LBR_FMT);
->> +		TEST_ASSERT(ret == 0, "Bad PERF_CAPABILITIES didn't fail.");
->> +	}
-> Why not try a different value?
-OK, I'll select a "real" invalid format and re-post the patch, thanks!
->
-> Paolo
->
->
+Commit-ID:     792ea6a074ae7ea5ab6f1b8b31f76bb0297de66c
+Gitweb:        https://git.kernel.org/tip/792ea6a074ae7ea5ab6f1b8b31f76bb0297de66c
+Author:        Lukas Wunner <lukas@wunner.de>
+AuthorDate:    Tue, 10 May 2022 09:56:05 +02:00
+Committer:     Thomas Gleixner <tglx@linutronix.de>
+CommitterDate: Wed, 11 May 2022 02:22:52 +02:00
+
+genirq: Remove WARN_ON_ONCE() in generic_handle_domain_irq()
+
+Since commit 0953fb263714 ("irq: remove handle_domain_{irq,nmi}()"),
+generic_handle_domain_irq() warns if called outside hardirq context, even
+though the function calls down to handle_irq_desc(), which warns about the
+same, but conditionally on handle_enforce_irqctx().
+
+The newly added warning is a false positive if the interrupt originates
+from any other irqchip than x86 APIC or ARM GIC/GICv3.  Those are the only
+ones for which handle_enforce_irqctx() returns true.  Per commit
+c16816acd086 ("genirq: Add protection against unsafe usage of
+generic_handle_irq()"):
+
+ "In general calling generic_handle_irq() with interrupts disabled from non
+  interrupt context is harmless. For some interrupt controllers like the
+  x86 trainwrecks this is outright dangerous as it might corrupt state if
+  an interrupt affinity change is pending."
+
+Examples for interrupt chips where the warning is a false positive are
+USB-attached GPIO controllers such as drivers/gpio/gpio-dln2.c:
+
+  USB gadgets are incapable of directly signaling an interrupt because they
+  cannot initiate a bus transaction by themselves.  All communication on
+  the bus is initiated by the host controller, which polls a gadget's
+  Interrupt Endpoint in regular intervals.  If an interrupt is pending,
+  that information is passed up the stack in softirq context, from which a
+  hardirq is synthesized via generic_handle_domain_irq().
+
+Remove the warning to eliminate such false positives.
+
+Fixes: 0953fb263714 ("irq: remove handle_domain_{irq,nmi}()")
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+CC: Linus Walleij <linus.walleij@linaro.org>
+Cc: Bartosz Golaszewski <brgl@bgdev.pl>
+Cc: Octavian Purdila <octavian.purdila@nxp.com>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220505113207.487861b2@kernel.org
+Link: https://lore.kernel.org/r/20220506203242.GA1855@wunner.de
+Link: https://lore.kernel.org/r/c3caf60bfa78e5fdbdf483096b7174da65d1813a.1652168866.git.lukas@wunner.de
+---
+ kernel/irq/irqdesc.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/kernel/irq/irqdesc.c b/kernel/irq/irqdesc.c
+index 0099b87..d323b18 100644
+--- a/kernel/irq/irqdesc.c
++++ b/kernel/irq/irqdesc.c
+@@ -701,7 +701,6 @@ EXPORT_SYMBOL_GPL(generic_handle_irq_safe);
+  */
+ int generic_handle_domain_irq(struct irq_domain *domain, unsigned int hwirq)
+ {
+-	WARN_ON_ONCE(!in_hardirq());
+ 	return handle_irq_desc(irq_resolve_mapping(domain, hwirq));
+ }
+ EXPORT_SYMBOL_GPL(generic_handle_domain_irq);
