@@ -2,105 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 039C5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 05:34:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83C9AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 05:36:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241542AbiEKFea (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 01:34:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55758 "EHLO
+        id S241751AbiEKFgc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 01:36:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240862AbiEKFe0 (ORCPT
+        with ESMTP id S241383AbiEKFf5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 01:34:26 -0400
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B81244F12
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 22:34:24 -0700 (PDT)
-Received: by mail-il1-f199.google.com with SMTP id i24-20020a056e021d1800b002cf0541f514so732220ila.13
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 22:34:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=aFQgjH47dbDj5aNlTIcru9pTtYzNioptBNbSqlWWCQs=;
-        b=0rHLEQvfoIKV/R/icKBq17em5ps//Ebj8qBody/DgtSrKJjzWnyQUzE954OL+j17EO
-         q+V0MXgyEPtnJx/AYbKj52tQtdpMoMBTnrqY8/w4tBSdxYc9px1v4GcGRqQSAxjvdol4
-         OloSoOCzulRcM/7a+His5d8Rb/Jre3YoCYmSL28HwW5Iy7j8qsPuZ0t/1Wwsln8THSe+
-         8Iyxz+o9/df/u+YkXMdFpYwU2Lp/Iq2beWchWgpw8b81oLPps7TDI6JR/nfjMt7lyYwu
-         JeidiYMUW1GJKiIDwN4UuohoYIKk1w8Nq7wwQ92kdbdfk7om00OD+hYIvyVCnd1wW7ch
-         B3ng==
-X-Gm-Message-State: AOAM532FPvvInqlnMMcQQgVoPHglXMquxf2xxjYpt3qkPZbpNMD/jmWp
-        JHlGzTf3C+HcdQCLgTv075hNXBibA1T5mCmdSlaA0NXJEh5q
-X-Google-Smtp-Source: ABdhPJwTVsHq2aqZS5Ayf8vNemcKQ6F5l3+d4V/7OJEc4u2Ch8TFVZHMiN+gW/Gj8eoElw5dJksmF5Iid3mzzRCOAFXaifOKJzuC
+        Wed, 11 May 2022 01:35:57 -0400
+Received: from nksmu.kylinos.cn (mailgw.kylinos.cn [123.150.8.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60CC6120B7;
+        Tue, 10 May 2022 22:35:51 -0700 (PDT)
+X-UUID: c15df73932a042b48c13c870fdd5a331-20220511
+X-UUID: c15df73932a042b48c13c870fdd5a331-20220511
+Received: from cs2c.com.cn [(172.17.111.24)] by nksmu.kylinos.cn
+        (envelope-from <jianghaoran@kylinos.cn>)
+        (Generic MTA)
+        with ESMTP id 1227716475; Wed, 11 May 2022 13:38:53 +0800
+X-ns-mid: postfix-627B4B26-356447265
+Received: from [172.30.60.211] (unknown [172.30.60.211])
+        by cs2c.com.cn (NSMail) with ESMTPSA id 4ED52384867C;
+        Wed, 11 May 2022 05:35:34 +0000 (UTC)
+Subject: Re: [PATCH] irqchip/loongson-liointc: 4 cores correspond to different
+ interrupt status registers
+To:     Jiaxun Yang <jiaxun.yang@flygoat.com>, chenhuacai@kernel.org
+Cc:     tglx@linutronix.de, maz@kernel.org, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220510055303.1907165-1-jianghaoran@kylinos.cn>
+ <21bb46ea-6a36-b426-2ca9-4471af5879a1@flygoat.com>
+From:   jianghaoran <jianghaoran@kylinos.cn>
+Message-ID: <833ade5f-ab35-1d69-28b1-b50ae41df2f5@kylinos.cn>
+Date:   Wed, 11 May 2022 13:33:12 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:1608:b0:65a:d365:c220 with SMTP id
- x8-20020a056602160800b0065ad365c220mr7974969iow.69.1652247264100; Tue, 10 May
- 2022 22:34:24 -0700 (PDT)
-Date:   Tue, 10 May 2022 22:34:24 -0700
-In-Reply-To: <00000000000042b02105d0db5037@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000004206f505deb5cb12@google.com>
-Subject: Re: [syzbot] WARNING in mntput_no_expire (3)
-From:   syzbot <syzbot+5b1e53987f858500ec00@syzkaller.appspotmail.com>
-To:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        viro@zeniv.linux.org.uk
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <21bb46ea-6a36-b426-2ca9-4471af5879a1@flygoat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
 
-HEAD commit:    feb9c5e19e91 Merge tag 'for_linus' of git://git.kernel.org..
-git tree:       upstream
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=10ea9d8ef00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=79caa0035f59d385
-dashboard link: https://syzkaller.appspot.com/bug?extid=5b1e53987f858500ec00
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=125039fef00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17a27b71f00000
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+5b1e53987f858500ec00@syzkaller.appspotmail.com
+在 2022/5/10 下午8:15, Jiaxun Yang 写道:
+> 
+> 
+> 在 2022/5/10 6:53, Haoran Jiang 写道:
+>> According to the loongson cpu manual,different cpu cores
+>> correspond to different interrupt status registers
+> NAK!
+> 
+> It is intentional to do so.
+> 
+> The per-core ISR register is broken on 3B1500. So we use general ISR 
+> register here.
+> The per-core variable is left for LS2K.
+> 
+> Thanks
+> - Jiaxun
+>>
+>> Signed-off-by: Haoran Jiang <jianghaoran@kylinos.cn>
+>> ---
+>>   drivers/irqchip/irq-loongson-liointc.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/irqchip/irq-loongson-liointc.c 
+>> b/drivers/irqchip/irq-loongson-liointc.c
+>> index 649c58391618..f4e015b50af0 100644
+>> --- a/drivers/irqchip/irq-loongson-liointc.c
+>> +++ b/drivers/irqchip/irq-loongson-liointc.c
+>> @@ -195,7 +195,7 @@ static int __init liointc_of_init(struct 
+>> device_node *node,
+>>           }
+>>           for (i = 0; i < LIOINTC_NUM_CORES; i++)
+>> -            priv->core_isr[i] = base + LIOINTC_REG_INTC_STATUS;
+>> +            priv->core_isr[i] = base + LIOINTC_REG_INTC_STATUS + i*8;
+>>       }
+>>       for (i = 0; i < LIOINTC_NUM_PARENT; i++) {
+> 
 
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 3608 at fs/namespace.c:1236 mntput_no_expire+0xada/0xcd0 fs/namespace.c:1236
-Modules linked in:
-
-CPU: 0 PID: 3608 Comm: syz-executor314 Not tainted 5.18.0-rc6-syzkaller-00009-gfeb9c5e19e91 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:mntput_no_expire+0xada/0xcd0 fs/namespace.c:1236
-Code: 30 84 c0 0f 84 b9 fe ff ff 3c 03 0f 8f b1 fe ff ff 4c 89 44 24 10 e8 45 50 e9 ff 4c 8b 44 24 10 e9 9d fe ff ff e8 56 bf 9d ff <0f> 0b e9 19 fd ff ff e8 4a bf 9d ff e8 b5 cf 91 07 31 ff 89 c5 89
-RSP: 0018:ffffc900030ffcf0 EFLAGS: 00010293
-
-RAX: 0000000000000000 RBX: 1ffff9200061ffa4 RCX: 0000000000000000
-RDX: ffff88807c859d80 RSI: ffffffff81db815a RDI: 0000000000000003
-RBP: ffff88801bcbca80 R08: 0000000000000000 R09: ffffffff9006d90f
-R10: ffffffff81db7e71 R11: 0000000000000001 R12: 0000000000000008
-R13: ffffc900030ffd40 R14: 00000000ffffffff R15: 0000000000000002
-FS:  0000555556a0e300(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000555556a17628 CR3: 0000000071c9d000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- path_umount+0x7d4/0x1260 fs/namespace.c:1806
- ksys_umount fs/namespace.c:1825 [inline]
- __do_sys_umount fs/namespace.c:1830 [inline]
- __se_sys_umount fs/namespace.c:1828 [inline]
- __x64_sys_umount+0x159/0x180 fs/namespace.c:1828
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7fcc5b9cc2c7
-Code: 00 00 00 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 31 f6 e9 09 00 00 00 66 0f 1f 84 00 00 00 00 00 b8 a6 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffcb4fdf1a8 EFLAGS: 00000202 ORIG_RAX: 00000000000000a6
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fcc5b9cc2c7
-RDX: 00007ffcb4fdf269 RSI: 000000000000000a RDI: 00007ffcb4fdf260
-RBP: 00007ffcb4fdf260 R08: 00000000ffffffff R09: 00007ffcb4fdf040
-R10: 0000555556a0f693 R11: 0000000000000202 R12: 00007ffcb4fe02e0
-R13: 0000555556a0f5f0 R14: 00007ffcb4fdf1d0 R15: 0000000000000002
- </TASK>
-
+Thank you for your review!
