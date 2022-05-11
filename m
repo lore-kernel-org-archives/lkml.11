@@ -2,97 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40EE9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 06:44:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BFD1C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 06:44:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242247AbiEKGoS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 02:44:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40566 "EHLO
+        id S242260AbiEKGof (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 02:44:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242238AbiEKGoL (ORCPT
+        with ESMTP id S242238AbiEKGoZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 02:44:11 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68AEF6C0C0;
-        Tue, 10 May 2022 23:44:10 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id i24so1164699pfa.7;
-        Tue, 10 May 2022 23:44:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EmHkqlWr7c4QFgT4EmfZ9lldeIHOaKWpbWlbDUJ786E=;
-        b=Xie9XphIFkYPUZEie/Egz6ibA1CeJIe4XjLyItsFWpUS85J9v+hVZGpZ5dPmH2DxrW
-         p8Y+/oNNubymXLVYOnrO9YyCdAF2lXqIyuXH9dqn/5OQ0zwq8djccpTv66HhHK2YtKd/
-         hNXhA/XcGMIUvp6NpmMyhgGOan2MUmaeiQBt9GzJnTRPa4u7UvCKyt+5JSv4SouDtdJU
-         uzeSFLzZNYW+Vajx9EHEs/uR9GOVEu/gWTcGs788/nZS7klvKLZcs+jMaAqsJEPXG70w
-         Vf1Qn75mR4hmzAU3XM2Qi54gRUxLyBzM/7qxoV3Zg617vFLzOTB95HB7HgjfGFh/uz8R
-         FRYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EmHkqlWr7c4QFgT4EmfZ9lldeIHOaKWpbWlbDUJ786E=;
-        b=gTdUEGx6QR+oy/27l+jJWjxiFdjuLsgerjBRyBklf4ukYOhNlymArf2Q3j+h7mgIJH
-         mQt5retpmatEpQbjRfogQmWqpe2kszia2oYxOr9FmaFy1xNQmHVAhWiBoOZ8GNvZTXsV
-         1VX3bqt+19+08zJ9loVoVrfMT+/ZVbjvamgI5Vx8/fHPg6d5eoyeGSRmBZox8Zz3Ctc7
-         thsUgRKAWSK5SgWbGsgLdHf0SlP3XBLUFr47zgt/XWHAVRE1IM8VrS4R9ofcDvRBaYDR
-         7pLS/BT4Oh9vm73AMehHCprGQuD00qLS6wv83E3+Sj6dT/tXIyzcfVc3k7ulzb4OFT7I
-         6UnQ==
-X-Gm-Message-State: AOAM533G4z/W9iw9HaOCC2kapkbNgiUaQqC1MTXg5WXenX01rSiYPk1s
-        TbmHgGq8laNF/DQROsidTQFHdzabRWTupsZjgOo=
-X-Google-Smtp-Source: ABdhPJz4gMyxezuz3NNsXZsooFJpcRZR+boVRmrZ1TbuIvUZm0lsMkMbXWpFXPUPR7twYVbJF5IOHQ==
-X-Received: by 2002:a63:c015:0:b0:385:fe06:eb86 with SMTP id h21-20020a63c015000000b00385fe06eb86mr19418244pgg.132.1652251449932;
-        Tue, 10 May 2022 23:44:09 -0700 (PDT)
-Received: from localhost.localdomain ([202.120.234.246])
-        by smtp.googlemail.com with ESMTPSA id c23-20020a63da17000000b003c14af50639sm858113pgh.81.2022.05.10.23.44.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 23:44:09 -0700 (PDT)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Wu Hao <hao.wu@intel.com>, Tom Rix <trix@redhat.com>,
-        Moritz Fischer <mdf@kernel.org>, Xu Yilun <yilun.xu@intel.com>,
-        Tim Whisonant <tim.whisonant@intel.com>,
-        Enno Luebbers <enno.luebbers@intel.com>,
-        Alan Tull <atull@kernel.org>, Shiva Rao <shiva.rao@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     linmq006@gmail.com
-Subject: [PATCH] fpga: Fix memory leak in build_info_create_dev
-Date:   Wed, 11 May 2022 10:44:00 +0400
-Message-Id: <20220511064400.63518-1-linmq006@gmail.com>
+        Wed, 11 May 2022 02:44:25 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E20C16ABF5;
+        Tue, 10 May 2022 23:44:23 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KylgK1ngCzGpfg;
+        Wed, 11 May 2022 14:41:33 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 11 May 2022 14:44:21 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 11 May
+ 2022 14:44:21 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-media@vger.kernel.org>
+CC:     <mchehab@kernel.org>, <prabhakar.csengg@gmail.com>
+Subject: [PATCH] media: davinci: vpif: add missing of_node_put() in vpif_probe()
+Date:   Wed, 11 May 2022 14:55:48 +0800
+Message-ID: <20220511065548.3402408-1-yangyingliang@huawei.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-platform_device_alloc() create a platform device object.
-we should call platform_device_put() in error path to
-release the resource.
+of_graph_get_next_endpoint() returns an 'endpoint' node pointer
+with refcount incremented. The refcount should be decremented
+before returning from vpif_probe().
 
-Fixes: 543be3d8c999 ("fpga: add device feature list support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- drivers/fpga/dfl.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/media/platform/ti/davinci/vpif.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
-index 599bb21d86af..f0b945bd975f 100644
---- a/drivers/fpga/dfl.c
-+++ b/drivers/fpga/dfl.c
-@@ -879,8 +879,10 @@ build_info_create_dev(struct build_feature_devs_info *binfo,
- 	INIT_LIST_HEAD(&binfo->sub_features);
+diff --git a/drivers/media/platform/ti/davinci/vpif.c b/drivers/media/platform/ti/davinci/vpif.c
+index 97ef770266af..da27da4c165a 100644
+--- a/drivers/media/platform/ti/davinci/vpif.c
++++ b/drivers/media/platform/ti/davinci/vpif.c
+@@ -469,6 +469,7 @@ static int vpif_probe(struct platform_device *pdev)
+ 					      endpoint);
+ 	if (!endpoint)
+ 		return 0;
++	of_node_put(endpoint);
  
- 	fdev->id = dfl_id_alloc(type, &fdev->dev);
--	if (fdev->id < 0)
-+	if (fdev->id < 0) {
-+		platform_device_put(fdev);
- 		return fdev->id;
-+	}
- 
- 	fdev->dev.parent = &binfo->cdev->region->dev;
- 	fdev->dev.devt = dfl_get_devt(dfl_devs[type].devt_type, fdev->id);
+ 	/*
+ 	 * For DT platforms, manually create platform_devices for
 -- 
 2.25.1
 
