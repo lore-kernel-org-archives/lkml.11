@@ -2,268 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFB45C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 14:57:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF61EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 14:57:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236636AbiEKO5X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 10:57:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33434 "EHLO
+        id S245278AbiEKO5b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 10:57:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235418AbiEKO5F (ORCPT
+        with ESMTP id S245243AbiEKO5W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 10:57:05 -0400
-Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA02A67D3D;
-        Wed, 11 May 2022 07:57:03 -0700 (PDT)
-Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-edf9ddb312so3096601fac.8;
-        Wed, 11 May 2022 07:57:03 -0700 (PDT)
+        Wed, 11 May 2022 10:57:22 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9432968F99
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 07:57:21 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id q130so2955253ljb.5
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 07:57:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FXhU4C+XFzjEf7MapqS6QgArPbwtn+GG7z2RycgMf0k=;
-        b=UjzzQfUO58qjnFjN+MdwmL5YRrb+nD0gqEAn4zFAYvz21P+a4sGW+98mT7AZMgp/lM
-         zpdZi5GWLDTJyJf+QBDM5uvNkT2b3AB5pLRXMPungGgwizNHOpulia2UtmTxOr8goQ8E
-         p6/W9KZ1nT4dXdw8vw8Z8NBkn48Jq0khdTQuLLtNwb77aV+OJyDM2N2juzY5H2D7eoZr
-         5bVcsux9/kp6V9T4EfqrDvmR1+bb8oVQnMsYy8qXajLYPEp7iV4so5ATp5HxY06f62H/
-         TH7baXxeC+WXIJRknSUXU9L4xCAALjHKRufSjmRgIy+eAbKZaNy7vkGxydPO4nkHr7Vg
-         lk0g==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=5o32wUvvQH//2mVRnrNn2QEStbroChjE5Xk/XzAuRBk=;
+        b=dki0vUPuO6N2MH4IL3ZTgEaxHGtGP6p6K0m8Q72dfkfKBbFT0OwqRrUiuBrl3lXLgZ
+         JFjAobUlKptUEqnzST5BCRTsTA/rZijsUSqp69imeyxWu9csCASx04zP2ecPcCxgtG29
+         SEmcuQQFzv+jHpS16Oml5yWyakl16G2yDbL598oH0xaLD25bYYNYmY35usC091wBaR97
+         d5YeKaCQ7WmbxTgul/MLdJgLW9GdTi2tlX77R14DOyZ7VpC+5Y0IiIgtn5XFhIrNNUS6
+         fdD2XyMqPjitot5O893/T4TZDMsiuEanmcy0qR0CybUhE0Bs2o3a9vnlxr12ytHgUslf
+         DDaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=FXhU4C+XFzjEf7MapqS6QgArPbwtn+GG7z2RycgMf0k=;
-        b=aPW1ZuKDKX3A2Gjv/HRfqeshbXNUZ05FzYueYd7NpBkdbpPdrceurk6QIfWwegvKOa
-         g/XffWceHbwsky3CcV0+HzPjz8BYLedQbxvlhboiFH73CwsShJkfWxJ5O3R3Q3LOVhKf
-         OL7db3MO16pLGavvOM7CXswii4movZXF5jiEUOK03+N4gidYsOOZ4oT8ho3AHrGWZWB8
-         hEtiZjJRrE4H39VF41PFhmFOF5W0mIGPi+1A6dsKIzw/rxErvsqwGqdVb+hJE5AY1BRC
-         T3j9eOdiaqNGYupm6vxdFSYaR7FjFh5+iwK/l76mhDvuZCEzgj94ZJFd+id8h3Xyma2n
-         ja0g==
-X-Gm-Message-State: AOAM531XwXh9abxUxZ7GNTgnbuPgytvw0eKS2PoVU3eXRi1FbQgZ8mzp
-        ZHNpvLoTn15ohFu5PzuAaJhPP/TzOQHC2g==
-X-Google-Smtp-Source: ABdhPJzUqipn5lG6D+WbLJ8OGfyF8kehzF1R6MRpEJUeoyqU60+Ufdlk0gA3xjOoQhMmWF0ieGuJ1A==
-X-Received: by 2002:a05:6871:80e:b0:ed:895a:ae92 with SMTP id q14-20020a056871080e00b000ed895aae92mr2745692oap.187.1652281022748;
-        Wed, 11 May 2022 07:57:02 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id g10-20020a056870d20a00b000e9364288bfsm619083oac.45.2022.05.11.07.57.01
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=5o32wUvvQH//2mVRnrNn2QEStbroChjE5Xk/XzAuRBk=;
+        b=UpZZimiSMyddu5JEDOQ2e4yWP3vUkxpo5WMrIjtudw8lJC0uCNG3ntEgp+xqjGPEUe
+         o6j+PxC8trSCtXXjsyYHVWMwOKV+K5rGFLw3kGEN+DBFhAueAsqxQXNa0aAjJwgm+aX7
+         N1UfeGdPriOeSxkUvkJl05Ix089BzsHYsX4gjr38Un2vuYV0uQGlhkIm98B/nYjCkLGG
+         HZijqjmKMmj+GJST4zuaesorrDsNSae6wOEwVA5qo6WmTOjhJJd8z6il3nEtJY1KnndL
+         AR1Tq7Y9iVAhuswN2tk7E92od31/V5Zf7wGpAUk6WKxGPB8/Hby8fXW+5EG8B0Ume5/6
+         SGaQ==
+X-Gm-Message-State: AOAM530WgDsKn0Rd/68BQyLnVaoBf/uByX4CPGO0oWYuw5R6uzDyfgmc
+        5+OUWnwl/Gzt3sqju2puol+ScQ==
+X-Google-Smtp-Source: ABdhPJxN7/QyIiPpFUbdwfUHavikSQxiBF96wJKrFR+5weGOmkPZiZowCNcAmTYK4Y2f75InPhl2lQ==
+X-Received: by 2002:a05:651c:b90:b0:250:7fa3:b234 with SMTP id bg16-20020a05651c0b9000b002507fa3b234mr17825253ljb.188.1652281039986;
+        Wed, 11 May 2022 07:57:19 -0700 (PDT)
+Received: from localhost.localdomain (h-98-128-181-154.NA.cust.bahnhof.se. [98.128.181.154])
+        by smtp.gmail.com with ESMTPSA id z26-20020a19f71a000000b0047255d210f3sm320793lfe.34.2022.05.11.07.57.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 07:57:02 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Huacai Chen <chenhuacai@kernel.org>
-Cc:     Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        Zhi Li <lizhi01@loongson.cn>
-Subject: [PATCH] MIPS: Loongson: Use hwmon_device_register_with_groups() to register hwmon
-Date:   Wed, 11 May 2022 07:56:59 -0700
-Message-Id: <20220511145659.2976950-1-linux@roeck-us.net>
-X-Mailer: git-send-email 2.35.1
+        Wed, 11 May 2022 07:57:19 -0700 (PDT)
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+To:     "Rafael J . Wysocki" <rafael@kernel.org>, linux-pm@vger.kernel.org
+Cc:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Maulik Shah <quic_mkshah@quicinc.com>,
+        Gabriel Fernandez <gabriel.fernandez@foss.st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Kevin Hilman <khilman@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 01/14] PM: domains: Add GENPD_FLAG_RPM_ALWAYS_ON for the always-on governor
+Date:   Wed, 11 May 2022 16:56:51 +0200
+Message-Id: <20220511145704.698189-2-ulf.hansson@linaro.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220511145704.698189-1-ulf.hansson@linaro.org>
+References: <20220511145704.698189-1-ulf.hansson@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Calling hwmon_device_register_with_info() with NULL dev and/or chip
-information parameters is an ABI abuse and not a real conversion to
-the new API. Also, the code creates sysfs attributes _after_ creating
-the hwmon device, which is racy and unsupported to start with. On top
-of that, the removal code tries to remove the name attribute which is
-owned by the hwmon core.
+Rather than relying on the genpd provider to set the corresponding flag,
+GENPD_FLAG_RPM_ALWAYS_ON, when the always-on governor is being used, let's
+add it in pm_genpd_init(). In this way, it starts to benefits all genpd
+providers immediately.
 
-Use hwmon_device_register_with_groups() to register the hwmon device
-instead.
-
-In the future, the hwmon subsystem will reject calls to
-hwmon_device_register_with_info with NULL dev or chip/info parameters.
-Without this patch, the hwmon device will fail to register.
-
-Fixes: f59dc5119192 ("MIPS: Loongson: Fix boot warning about hwmon_device_register()")
-Cc: Zhi Li <lizhi01@loongson.cn>
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 ---
- drivers/platform/mips/cpu_hwmon.c | 127 ++++++++++--------------------
- 1 file changed, 41 insertions(+), 86 deletions(-)
+ drivers/base/power/domain.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/platform/mips/cpu_hwmon.c b/drivers/platform/mips/cpu_hwmon.c
-index 386389ffec41..d8c5f9195f85 100644
---- a/drivers/platform/mips/cpu_hwmon.c
-+++ b/drivers/platform/mips/cpu_hwmon.c
-@@ -55,55 +55,6 @@ int loongson3_cpu_temp(int cpu)
- static int nr_packages;
- static struct device *cpu_hwmon_dev;
- 
--static SENSOR_DEVICE_ATTR(name, 0444, NULL, NULL, 0);
--
--static struct attribute *cpu_hwmon_attributes[] = {
--	&sensor_dev_attr_name.dev_attr.attr,
--	NULL
--};
--
--/* Hwmon device attribute group */
--static struct attribute_group cpu_hwmon_attribute_group = {
--	.attrs = cpu_hwmon_attributes,
--};
--
--static ssize_t get_cpu_temp(struct device *dev,
--			struct device_attribute *attr, char *buf);
--static ssize_t cpu_temp_label(struct device *dev,
--			struct device_attribute *attr, char *buf);
--
--static SENSOR_DEVICE_ATTR(temp1_input, 0444, get_cpu_temp, NULL, 1);
--static SENSOR_DEVICE_ATTR(temp1_label, 0444, cpu_temp_label, NULL, 1);
--static SENSOR_DEVICE_ATTR(temp2_input, 0444, get_cpu_temp, NULL, 2);
--static SENSOR_DEVICE_ATTR(temp2_label, 0444, cpu_temp_label, NULL, 2);
--static SENSOR_DEVICE_ATTR(temp3_input, 0444, get_cpu_temp, NULL, 3);
--static SENSOR_DEVICE_ATTR(temp3_label, 0444, cpu_temp_label, NULL, 3);
--static SENSOR_DEVICE_ATTR(temp4_input, 0444, get_cpu_temp, NULL, 4);
--static SENSOR_DEVICE_ATTR(temp4_label, 0444, cpu_temp_label, NULL, 4);
--
--static const struct attribute *hwmon_cputemp[4][3] = {
--	{
--		&sensor_dev_attr_temp1_input.dev_attr.attr,
--		&sensor_dev_attr_temp1_label.dev_attr.attr,
--		NULL
--	},
--	{
--		&sensor_dev_attr_temp2_input.dev_attr.attr,
--		&sensor_dev_attr_temp2_label.dev_attr.attr,
--		NULL
--	},
--	{
--		&sensor_dev_attr_temp3_input.dev_attr.attr,
--		&sensor_dev_attr_temp3_label.dev_attr.attr,
--		NULL
--	},
--	{
--		&sensor_dev_attr_temp4_input.dev_attr.attr,
--		&sensor_dev_attr_temp4_label.dev_attr.attr,
--		NULL
--	}
--};
--
- static ssize_t cpu_temp_label(struct device *dev,
- 			struct device_attribute *attr, char *buf)
- {
-@@ -121,24 +72,47 @@ static ssize_t get_cpu_temp(struct device *dev,
- 	return sprintf(buf, "%d\n", value);
- }
- 
--static int create_sysfs_cputemp_files(struct kobject *kobj)
--{
--	int i, ret = 0;
--
--	for (i = 0; i < nr_packages; i++)
--		ret = sysfs_create_files(kobj, hwmon_cputemp[i]);
-+static SENSOR_DEVICE_ATTR(temp1_input, 0444, get_cpu_temp, NULL, 1);
-+static SENSOR_DEVICE_ATTR(temp1_label, 0444, cpu_temp_label, NULL, 1);
-+static SENSOR_DEVICE_ATTR(temp2_input, 0444, get_cpu_temp, NULL, 2);
-+static SENSOR_DEVICE_ATTR(temp2_label, 0444, cpu_temp_label, NULL, 2);
-+static SENSOR_DEVICE_ATTR(temp3_input, 0444, get_cpu_temp, NULL, 3);
-+static SENSOR_DEVICE_ATTR(temp3_label, 0444, cpu_temp_label, NULL, 3);
-+static SENSOR_DEVICE_ATTR(temp4_input, 0444, get_cpu_temp, NULL, 4);
-+static SENSOR_DEVICE_ATTR(temp4_label, 0444, cpu_temp_label, NULL, 4);
- 
--	return ret;
--}
-+static struct attribute *cpu_hwmon_attributes[] = {
-+	&sensor_dev_attr_temp1_input.dev_attr.attr,
-+	&sensor_dev_attr_temp1_label.dev_attr.attr,
-+	&sensor_dev_attr_temp2_input.dev_attr.attr,
-+	&sensor_dev_attr_temp2_label.dev_attr.attr,
-+	&sensor_dev_attr_temp3_input.dev_attr.attr,
-+	&sensor_dev_attr_temp3_label.dev_attr.attr,
-+	&sensor_dev_attr_temp4_input.dev_attr.attr,
-+	&sensor_dev_attr_temp4_label.dev_attr.attr,
-+	NULL
-+};
- 
--static void remove_sysfs_cputemp_files(struct kobject *kobj)
-+static umode_t cpu_hwmon_is_visible(struct kobject *kobj,
-+				    struct attribute *attr, int i)
- {
--	int i;
-+	int id = i / 2;
- 
--	for (i = 0; i < nr_packages; i++)
--		sysfs_remove_files(kobj, hwmon_cputemp[i]);
-+	if (id < nr_packages)
-+		return attr->mode;
-+	return 0;
- }
- 
-+static struct attribute_group cpu_hwmon_group = {
-+	.attrs = cpu_hwmon_attributes,
-+	.is_visible = cpu_hwmon_is_visible,
-+};
-+
-+static const struct attribute_group *cpu_hwmon_groups[] = {
-+	&cpu_hwmon_group,
-+	NULL
-+};
-+
- #define CPU_THERMAL_THRESHOLD 90000
- static struct delayed_work thermal_work;
- 
-@@ -159,50 +133,31 @@ static void do_thermal_timer(struct work_struct *work)
- 
- static int __init loongson_hwmon_init(void)
- {
--	int ret;
--
- 	pr_info("Loongson Hwmon Enter...\n");
- 
- 	if (cpu_has_csr())
- 		csr_temp_enable = csr_readl(LOONGSON_CSR_FEATURES) &
- 				  LOONGSON_CSRF_TEMP;
- 
--	cpu_hwmon_dev = hwmon_device_register_with_info(NULL, "cpu_hwmon", NULL, NULL, NULL);
--	if (IS_ERR(cpu_hwmon_dev)) {
--		ret = PTR_ERR(cpu_hwmon_dev);
--		pr_err("hwmon_device_register fail!\n");
--		goto fail_hwmon_device_register;
--	}
--
- 	nr_packages = loongson_sysconf.nr_cpus /
- 		loongson_sysconf.cores_per_package;
- 
--	ret = create_sysfs_cputemp_files(&cpu_hwmon_dev->kobj);
--	if (ret) {
--		pr_err("fail to create cpu temperature interface!\n");
--		goto fail_create_sysfs_cputemp_files;
-+	cpu_hwmon_dev = hwmon_device_register_with_groups(NULL, "cpu_hwmon",
-+							  NULL, cpu_hwmon_groups);
-+	if (IS_ERR(cpu_hwmon_dev)) {
-+		pr_err("hwmon_device_register fail!\n");
-+		return PTR_ERR(cpu_hwmon_dev);
+diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
+index 18cd7965e5d6..262bda9b56ef 100644
+--- a/drivers/base/power/domain.c
++++ b/drivers/base/power/domain.c
+@@ -2016,6 +2016,10 @@ int pm_genpd_init(struct generic_pm_domain *genpd,
+ 		genpd->dev_ops.start = pm_clk_resume;
  	}
  
- 	INIT_DEFERRABLE_WORK(&thermal_work, do_thermal_timer);
- 	schedule_delayed_work(&thermal_work, msecs_to_jiffies(20000));
- 
--	return ret;
--
--fail_create_sysfs_cputemp_files:
--	sysfs_remove_group(&cpu_hwmon_dev->kobj,
--				&cpu_hwmon_attribute_group);
--	hwmon_device_unregister(cpu_hwmon_dev);
--
--fail_hwmon_device_register:
--	return ret;
-+	return 0;
- }
- 
- static void __exit loongson_hwmon_exit(void)
- {
- 	cancel_delayed_work_sync(&thermal_work);
--	remove_sysfs_cputemp_files(&cpu_hwmon_dev->kobj);
--	sysfs_remove_group(&cpu_hwmon_dev->kobj,
--				&cpu_hwmon_attribute_group);
- 	hwmon_device_unregister(cpu_hwmon_dev);
- }
- 
++	/* The always-on governor works better with the corresponding flag. */
++	if (gov == &pm_domain_always_on_gov)
++		genpd->flags |= GENPD_FLAG_RPM_ALWAYS_ON;
++
+ 	/* Always-on domains must be powered on at initialization. */
+ 	if ((genpd_is_always_on(genpd) || genpd_is_rpm_always_on(genpd)) &&
+ 			!genpd_status_on(genpd))
 -- 
-2.35.1
+2.25.1
 
