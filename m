@@ -2,94 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30511C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 19:55:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6919C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 19:57:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347392AbiEKTzY (ORCPT
+        id S1347374AbiEKT5H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 15:55:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36708 "EHLO
+        Wed, 11 May 2022 15:57:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347338AbiEKTzE (ORCPT
+        with ESMTP id S1347567AbiEKT44 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 15:55:04 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 624C893982;
-        Wed, 11 May 2022 12:55:03 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: nfraprado)
-        with ESMTPSA id 5BD6F1F42D8E
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1652298902;
-        bh=zQZ+FBCWSprK14b9f7+B4iUx3u3Er37+OdCYjvtcX5s=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A2is1EEeIztWNbTHLyTN0kLL+MyA0BsJpq3tgeiSI8YhXOYDtkaZwh2onLuFzL0P4
-         VL1j/FuYTtMRhK8jc6W7RSChLYNYB8Az7CIaNw2CTOd5bRkKFrDywjoSuzevAlvYJ6
-         hHt86mDxne/Rt67YPPP3t90ACYCpbGeHR7TXLmOi03ivgaPXGX2qCL0W9STx6nM5F3
-         lavThUrHAQdGlzbyKXHMK8kgyTWijFZugM1c64hhcN7TSQaMPof5wQOmuJ3a8xqnk5
-         RTfrdv816BOvukNl6FURkBLWbHVzR5QktOi3HEoNdHX82lIabJlBlH14gRwbhbBWlh
-         GnUAcqXJeuJjA==
-From:   =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
-        <nfraprado@collabora.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     kernel@collabora.com,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
-        <nfraprado@collabora.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Tinghan Shen <tinghan.shen@mediatek.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-remoteproc@vger.kernel.org
-Subject: [PATCH v5 2/2] dt-bindings: remoteproc: mediatek: Add optional memory-region to mtk,scp
-Date:   Wed, 11 May 2022 15:54:52 -0400
-Message-Id: <20220511195452.871897-3-nfraprado@collabora.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220511195452.871897-1-nfraprado@collabora.com>
-References: <20220511195452.871897-1-nfraprado@collabora.com>
+        Wed, 11 May 2022 15:56:56 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 841E21FE3CC;
+        Wed, 11 May 2022 12:56:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652299014; x=1683835014;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=hdmaA0JO9RX4G9B68I/UPWOzRHdrUFjj2Fwc/fmnq2M=;
+  b=I2jjXZmxRPRafMwtNp6svqGCmy4V62aXhDDPODc4Hxj2iTAoIgt4sroj
+   hm8F+dR+5XthhgVQIuBzXLX5swctq8VimPDLOqwS5bEfy7zd0L5SY9aUG
+   jXBF2XFK97hHARWJtNImYoHQud5DTNZkbf6yuS9AIPVzZsq3m87prNVLQ
+   O8tshSKMv6EQru7JEUVw7VQ5CwlLuse90Ji46h1K4dtSaSTMZh1SkhMbG
+   FvWQqbe7Iir2kkVGnSsqRUKlELbEdtuKGg2cByPzFKsmP4eDr6RVpRU6v
+   NFFbX3+Ztng+x7ToVQYlGWADjcZZhfotIoi1Qt4KGtZYxwu2YOGlhlO+U
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="332836762"
+X-IronPort-AV: E=Sophos;i="5.91,218,1647327600"; 
+   d="scan'208";a="332836762"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 12:56:54 -0700
+X-IronPort-AV: E=Sophos;i="5.91,218,1647327600"; 
+   d="scan'208";a="553465705"
+Received: from abynum-mobl.amr.corp.intel.com (HELO spandruv-desk1.amr.corp.intel.com) ([10.209.66.243])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 12:56:53 -0700
+Message-ID: <408701ca2c7704c146c806740eabb5a99f30c945.camel@linux.intel.com>
+Subject: Re: [UPDATE][PATCH] thermal: int340x: Mode setting with new OS
+ handshake
+From:   srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        "Zhang, Rui" <rui.zhang@intel.com>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Stable <stable@vger.kernel.org>
+Date:   Wed, 11 May 2022 12:56:53 -0700
+In-Reply-To: <CAJZ5v0hDN=iGBQei6XeJ1b3qLiRxPDm+ZFtKU1PcHbBcyxGpZw@mail.gmail.com>
+References: <20220510182221.3990256-1-srinivas.pandruvada@linux.intel.com>
+         <CAJZ5v0hDN=iGBQei6XeJ1b3qLiRxPDm+ZFtKU1PcHbBcyxGpZw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The SCP co-processor can optionally be passed a reserved memory region
-to use. Add this property in the dt-binding.
+On Wed, 2022-05-11 at 20:14 +0200, Rafael J. Wysocki wrote:
+> On Tue, May 10, 2022 at 8:22 PM Srinivas Pandruvada
+> <srinivas.pandruvada@linux.intel.com> wrote:
+> > 
+> > With the new OS handshake introduced with the commit: "c7ff29763989
+> > ("thermal: int340x: Update OS policy capability handshake")",
+> > thermal zone mode "enabled" doesn't work in the same way as the
+> > legacy
+> > handshake. The mode "enabled" fails with -EINVAL using new
+> > handshake.
+> > 
+> > To address this issue, when the new OS UUID mask is set:
+> > - When mode is "enabled", return 0 as the firmware already has the
+> > latest policy mask.
+> > - When mode is "disabled", update the firmware with UUID mask of
+> > zero.
+> > In this way firmware can take control of the thermal control. Also
+> > reset the OS UUID mask. This allows user space to update with new
+> > set of policies.
+> > 
+> > Fixes: c7ff29763989 ("thermal: int340x: Update OS policy capability
+> > handshake")
+> > Signed-off-by: Srinivas Pandruvada
+> > <srinivas.pandruvada@linux.intel.com>
+> > Cc: stable@vger.kernel.org
+> 
+> This is not -stable material yet.
+I thought it will wait for 5.19 merge window.
 
-Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Acked-by: Rob Herring <robh@kernel.org>
+> 
+> > ---
+> > update:
+> > Added Fixes tag
+> > 
+> > 
 
----
+[...]
 
-(no changes since v2)
+> > +               if (priv->os_uuid_mask) {
+> > +                       if (!enabled) {
+> > +                               priv->os_uuid_mask = 0;
+> > +                               result = set_os_uuid_mask(priv,
+> > priv->os_uuid_mask);
+> 
+> This change worries me a bit, because it means replaying an already
+> established _OSC handshake which shouldn't be done by the spec.
+> 
+I checked with the firmware team. The _OSC changes dynamically is
+validated and is recommended when enable/disable user space thermal
+control.
+Looking at ACPI Spec
+"OSPM may evaluate _OSC multiple times to indicate changes in OSPM
+capability to the device but this may be precluded by specific device
+requirements"
 
-Changes in v2:
-- Dropped type and description since it's a well-known property
-- Set maxItems to 1
 
- Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml | 3 +++
- 1 file changed, 3 insertions(+)
+> But I suppose you have tested this?
+I tested on TigerLake system.
 
-diff --git a/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml b/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml
-index 832064d635b3..eec3b9c4c713 100644
---- a/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml
-+++ b/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml
-@@ -54,6 +54,9 @@ properties:
-       firmware search path containing the firmware image used when
-       initializing SCP.
- 
-+  memory-region:
-+    maxItems: 1
-+
- required:
-   - compatible
-   - reg
--- 
-2.36.1
+> 
+> > +                       }
+> > +    
+
+[...]
+
+> 
+> Patch applied as 5.18-rc material, but I've removed some unneeded
+> parens from the new code, so please double check the result in
+> bleeding-edge.
+I tested the patch from bleeding edge.
+Works fine.
+
+Thanks,
+Srinivas
+
+> 
+> Thanks!
 
