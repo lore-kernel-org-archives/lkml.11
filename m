@@ -2,70 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B88CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 22:36:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D612C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 22:36:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347829AbiEKWgZ (ORCPT
+        id S1348781AbiEKWgp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 18:36:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45808 "EHLO
+        Wed, 11 May 2022 18:36:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231575AbiEKWgX (ORCPT
+        with ESMTP id S1348805AbiEKWgm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 18:36:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EDDF1FCF7
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 15:36:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B44FBB82526
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 22:36:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56E45C34114;
-        Wed, 11 May 2022 22:36:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1652308577;
-        bh=iGqwGob0xieaSqpzSVhKd2KCpJBi2vPIuWbYJf0XuHM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ARW7VKdh4O4YQnkdv5yrHMpHqsurm9kG3S8TB4zU1xJXGgKF0qnFNpfk6LOigv2OK
-         ZJW2DHWsaXKwk3aW3zYuyj5BCc/iMfMpBkDEjmrNwDYSqlwygahpyxcdrZq9Ezuxbr
-         dRFHMjZaw1wfjsg/A+gTEPOlJWdq//AkGcTajxyk=
-Date:   Wed, 11 May 2022 15:36:16 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Eddie James <eajames@linux.ibm.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm: Add config option for default panic_on_oom value
-Message-Id: <20220511153616.9298d246adb1c7fea9ab453b@linux-foundation.org>
-In-Reply-To: <b597cc79-0f8a-c32d-397e-0c04777e9491@linux.ibm.com>
-References: <20220511183400.47940-1-eajames@linux.ibm.com>
-        <20220511145648.3c421ff592df32766319ea2d@linux-foundation.org>
-        <b597cc79-0f8a-c32d-397e-0c04777e9491@linux.ibm.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Wed, 11 May 2022 18:36:42 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4CA833E9B
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 15:36:41 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id d22so3198867plr.9
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 15:36:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=3LgIZ0Arn9MkMe+G5lqDiZbm3hHu7bc+acHfe0jeV+M=;
+        b=VDy+LOB5Z24b+YX3YR2qPfyhpZhwjj+zl5gA8W9DjUbiPmsJqFeCNh/FEGU8is2nZS
+         5T0Gv1b++G/SOWBt0QZk8VTs3b059pW74ffkw7bsAiVHm4MPNXY91nbWtfv4R2tDA8QD
+         4aUV7TV2Z62wth/sY1QRDONqUhpGeoInAeU4Y=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=3LgIZ0Arn9MkMe+G5lqDiZbm3hHu7bc+acHfe0jeV+M=;
+        b=DWSEP1JVFSF5k4e02ryGsA3eBkir09S7H2zsCr1FohCBhIrIFiiTcg4MjQd3g7+FwB
+         SO2SHXw2JwgqwkMKf9y48+XQuvrS8oSrr9uLFYaoFzmbGhKZwvK17th85y/thjPd7lAO
+         YtiHgN7vswxOGTrUfTuHtvn1UsAZYafppknQcFAOLBPvZ05gEBAbtVzupt2KrX7fzD6a
+         UyXuhFN18rwhVDnvZJOoOqowGlROU5XDRVkCjrCpT+z8KApCjqfYhYFIPXJOpcjIbq7A
+         KwqwVV9ZYf5uUxZFYkAYgm+nwvVjl7Uf2k7Jl90csxobXTfxJoya3Nos4VH6j8iRDbDS
+         clYA==
+X-Gm-Message-State: AOAM531kEPZim0eIbwbCLNjbY86wbqVdcakPYy7UbdPbckLN3amTiAz4
+        0+BNOyl04qdtTw14douMLncv7w==
+X-Google-Smtp-Source: ABdhPJx6vfq7aEC09BQ58hiwA5FJut82riYhIGIWThRCuhraVQ0ru9FIWmizgQdmmiA3pDWV6KGEVQ==
+X-Received: by 2002:a17:90a:bf0a:b0:1db:d98d:7ce9 with SMTP id c10-20020a17090abf0a00b001dbd98d7ce9mr7562374pjs.155.1652308601400;
+        Wed, 11 May 2022 15:36:41 -0700 (PDT)
+Received: from dlunevwfh.roam.corp.google.com (n122-107-196-14.sbr2.nsw.optusnet.com.au. [122.107.196.14])
+        by smtp.gmail.com with ESMTPSA id d5-20020a170902c18500b0015e8d4eb1d2sm2391855pld.28.2022.05.11.15.36.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 May 2022 15:36:41 -0700 (PDT)
+From:   Daniil Lunev <dlunev@chromium.org>
+To:     linux-fsdevel@vger.kernel.org
+Cc:     hch@infradead.org, fuse-devel@lists.sourceforge.net, tytso@mit.edu,
+        miklos@szeredi.hu, viro@zeniv.linux.org.uk,
+        linux-kernel@vger.kernel.org, Daniil Lunev <dlunev@chromium.org>
+Subject: [PATCH v2 1/2] fs/super: function to prevent super re-use
+Date:   Thu, 12 May 2022 08:29:09 +1000
+Message-Id: <20220512082832.v2.1.I0e579520b03aa244906b8fe2ef1ec63f2ab7eecf@changeid>
+X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20220511222910.635307-1-dlunev@chromium.org>
+References: <20220511222910.635307-1-dlunev@chromium.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 11 May 2022 17:06:35 -0500 Eddie James <eajames@linux.ibm.com> wrote:
+The function is called from generic_shutdown_super upon super
+destruction, but also can be called by a filesystem during unmount to
+ensure a new superblock is created upon the next mount. This is
+necessary for the cases, where force unmount of a filesystem renders
+superblock disfunctional, in a state that can not be re-used (e.g. FUSE
+severes the connection of the userspace daemon to the superblock which
+prevents any further communications between them).
 
-> 
-> On 5/11/22 16:56, Andrew Morton wrote:
-> > On Wed, 11 May 2022 13:34:00 -0500 Eddie James <eajames@linux.ibm.com> wrote:
-> >
-> >> Add the option to kconfig and set the default panic_on_value.
-> > Why?  What are the use-cases and how does this benefit our users?
-> 
-> If a distribution (for example some embedded system distribution) wants 
-> the system to always panic when OOM, they may as well configure their 
-> kernel to do it by default, rather than writing to 
-> /proc/sys/vm/panic_on_oom every boot. Maybe I'm missing another way to 
-> do what I want here?
+Signed-off-by: Daniil Lunev <dlunev@chromium.org>
+---
 
-Presumably such a distribution would do this in initramfs initscripts
-and forget about it.
+Changes in v2:
+- Remove super from list of superblocks instead of using a flag
 
-What inspired the patch?  Have you seen a situation which was best
-solved with this change?
+ fs/super.c         | 51 ++++++++++++++++++++++++++++++++++++----------
+ include/linux/fs.h |  1 +
+ 2 files changed, 41 insertions(+), 11 deletions(-)
+
+diff --git a/fs/super.c b/fs/super.c
+index f1d4a193602d6..f23e45434de15 100644
+--- a/fs/super.c
++++ b/fs/super.c
+@@ -422,6 +422,45 @@ bool trylock_super(struct super_block *sb)
+ 	return false;
+ }
+ 
++/**
++ *	retire_locked_super	-	prevent superblock from re-use
++ *	@sb: superblock that shouldn't be re-used
++ *
++ *	retire_locked_super excludes the super from the list of superblocks and
++ *	removes the link between superblock and it bdi. After a call to this
++ *	function, any subsequent mount will allocate a new superblock, even if
++ *	the retired one would have been re-used otherwise. It is safe to call
++ *	the function multiple times for the same superblock, any subsequent
++ *	invocations after the first one have no effect.
++ */
++static void retire_locked_super(struct super_block *sb)
++{
++	spin_lock(&sb_lock);
++	hlist_del_init(&sb->s_instances);
++	spin_unlock(&sb_lock);
++	up_write(&sb->s_umount);
++	if (sb->s_bdi != &noop_backing_dev_info) {
++		if (sb->s_iflags & SB_I_PERSB_BDI)
++			bdi_unregister(sb->s_bdi);
++		bdi_put(sb->s_bdi);
++		sb->s_bdi = &noop_backing_dev_info;
++	}
++}
++
++/**
++ *	retire_super	-	prevent superblock from re-use
++ *	@sb: superblock that shouldn't be re-used
++ *
++ *	Variant of retire_locked_super, except that superblock is *not* locked
++ *	by caller.
++ */
++void retire_super(struct super_block *sb)
++{
++	down_write(&sb->s_umount);
++	retire_locked_super(sb);
++}
++EXPORT_SYMBOL(retire_super);
++
+ /**
+  *	generic_shutdown_super	-	common helper for ->kill_sb()
+  *	@sb: superblock to kill
+@@ -467,17 +506,7 @@ void generic_shutdown_super(struct super_block *sb)
+ 			   sb->s_id);
+ 		}
+ 	}
+-	spin_lock(&sb_lock);
+-	/* should be initialized for __put_super_and_need_restart() */
+-	hlist_del_init(&sb->s_instances);
+-	spin_unlock(&sb_lock);
+-	up_write(&sb->s_umount);
+-	if (sb->s_bdi != &noop_backing_dev_info) {
+-		if (sb->s_iflags & SB_I_PERSB_BDI)
+-			bdi_unregister(sb->s_bdi);
+-		bdi_put(sb->s_bdi);
+-		sb->s_bdi = &noop_backing_dev_info;
+-	}
++	retire_locked_super(sb);
+ }
+ 
+ EXPORT_SYMBOL(generic_shutdown_super);
+diff --git a/include/linux/fs.h b/include/linux/fs.h
+index bbde95387a23a..dc9151b7f0102 100644
+--- a/include/linux/fs.h
++++ b/include/linux/fs.h
+@@ -2424,6 +2424,7 @@ extern struct dentry *mount_nodev(struct file_system_type *fs_type,
+ 	int flags, void *data,
+ 	int (*fill_super)(struct super_block *, void *, int));
+ extern struct dentry *mount_subtree(struct vfsmount *mnt, const char *path);
++void retire_super(struct super_block *sb);
+ void generic_shutdown_super(struct super_block *sb);
+ void kill_block_super(struct super_block *sb);
+ void kill_anon_super(struct super_block *sb);
+-- 
+2.31.0
 
