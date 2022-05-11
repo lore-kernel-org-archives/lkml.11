@@ -2,197 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D22EDC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 07:22:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6198AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 07:22:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242863AbiEKHWL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 03:22:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34216 "EHLO
+        id S242860AbiEKHWQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 03:22:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242819AbiEKHVq (ORCPT
+        with ESMTP id S242816AbiEKHV5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 03:21:46 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A05C1EAD5
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 00:21:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652253701; x=1683789701;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=WRk+Mj38yZ5XuDxKKjAT+LROx+EdfwdtEsjJvOuTgP4=;
-  b=GtZ5GGi9V0OvqJNrsGS/uNcTHWG0E4bedA5S0HkFzE5zNwh2p9QlOyPF
-   cmg6w63YljZgUIzT0skLRsGYpjwz6w05JhaWo+q1Lo9ctRrtkYcqOaD5Q
-   UxVZp4J6SUfP3TSZb2n6U2v6zNW4pX8Q+727oCp8uwM1a/PBYznEypYO7
-   in1trTW12LxpledMz2V5EjepSzWYRo3SRA+mFl/Ao1XVTJfPnAaP6r5jf
-   GCAFFrvLHBrGuzQmhmYs1t5cp8ZRe08wHG7ly39rK1dVpxxdsWFS2oKvU
-   CQYc+G0uBPOa0N81knCI81S+0wEW0ijLxGVQgeCP9jLJ/ZkadLHyVC99S
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="249512766"
-X-IronPort-AV: E=Sophos;i="5.91,216,1647327600"; 
-   d="scan'208";a="249512766"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 00:21:39 -0700
-X-IronPort-AV: E=Sophos;i="5.91,216,1647327600"; 
-   d="scan'208";a="542180435"
-Received: from chenji3x-mobl1.ccr.corp.intel.com (HELO [10.255.30.10]) ([10.255.30.10])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 00:21:35 -0700
-Message-ID: <749a7d62-3e6c-ef5c-beaf-6b7add495740@linux.intel.com>
-Date:   Wed, 11 May 2022 15:21:31 +0800
+        Wed, 11 May 2022 03:21:57 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6138A4BFC9;
+        Wed, 11 May 2022 00:21:56 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 0E5521F8FA;
+        Wed, 11 May 2022 07:21:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1652253715; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=oPT7y3vtMr9hrPGl5KbXi6Udsxr9fQRC1iNa9w9V8TY=;
+        b=cxU4a2s88K5U+Lf0tA0v8r+T4GnaUuAC/B1HkF4OQxBRySnalhHSOl+sexwH0SSsLMsyBe
+        NDG/A+Le+GpX3XoULZqJJM4maXRrpUufl9aMyUGBKwFcKKuvCGC19Bn0LMIEBSOge1PgJM
+        KEty8LVfXNuk0DhuHnGvY6VS15VD/Qs=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id E24DF2C141;
+        Wed, 11 May 2022 07:21:53 +0000 (UTC)
+Date:   Wed, 11 May 2022 09:21:53 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     CGEL <cgel.zte@gmail.com>
+Cc:     akpm@linux-foundation.org, hannes@cmpxchg.org, willy@infradead.org,
+        shy828301@gmail.com, roman.gushchin@linux.dev, shakeelb@google.com,
+        linmiaohe@huawei.com, william.kucharski@oracle.com,
+        peterx@redhat.com, hughd@google.com, vbabka@suse.cz,
+        songmuchun@bytedance.com, surenb@google.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        cgroups@vger.kernel.org, Yang Yang <yang.yang29@zte.com.cn>
+Subject: Re: [PATCH] mm/memcg: support control THP behaviour in cgroup
+Message-ID: <YntkEUKPquTbBjMu@dhcp22.suse.cz>
+References: <YnUlntNFR4zeD+qa@dhcp22.suse.cz>
+ <6275d3e7.1c69fb81.1d62.4504@mx.google.com>
+ <YnjmPAToTR0C5o8x@dhcp22.suse.cz>
+ <6278fa75.1c69fb81.9c598.f794@mx.google.com>
+ <Ynj/l+pyFJxKfcbQ@dhcp22.suse.cz>
+ <6279c354.1c69fb81.7f6c1.15e0@mx.google.com>
+ <Yno3pNQOn1lAMPnu@dhcp22.suse.cz>
+ <627a5214.1c69fb81.1b7fb.47be@mx.google.com>
+ <YnpqYte2jLdcBiPg@dhcp22.suse.cz>
+ <627b1899.1c69fb81.cd831.12d9@mx.google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v6 08/12] iommu/sva: Use attach/detach_pasid_dev in SVA
- interfaces
-Content-Language: en-US
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Joerg Roedel <joro@8bytes.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-References: <20220510061738.2761430-1-baolu.lu@linux.intel.com>
- <20220510061738.2761430-9-baolu.lu@linux.intel.com>
- <20220510152330.GG49344@nvidia.com>
-From:   Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220510152330.GG49344@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <627b1899.1c69fb81.cd831.12d9@mx.google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/10 23:23, Jason Gunthorpe wrote:
-> On Tue, May 10, 2022 at 02:17:34PM +0800, Lu Baolu wrote:
+On Wed 11-05-22 01:59:52, CGEL wrote:
+> On Tue, May 10, 2022 at 03:36:34PM +0200, Michal Hocko wrote:
+[...]
+> > Can you come up with a sane hierarchical behavior?
+> >
 > 
->> +/**
->> + * iommu_sva_bind_device() - Bind a process address space to a device
->> + * @dev: the device
->> + * @mm: the mm to bind, caller must hold a reference to mm_users
->> + * @drvdata: opaque data pointer to pass to bind callback
->> + *
->> + * Create a bond between device and address space, allowing the device to access
->> + * the mm using the returned PASID. If a bond already exists between @device and
->> + * @mm, it is returned and an additional reference is taken. Caller must call
->> + * iommu_sva_unbind_device() to release each reference.
->> + *
->> + * iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA) must be called first, to
->> + * initialize the required SVA features.
->> + *
->> + * On error, returns an ERR_PTR value.
->> + */
->> +struct iommu_sva *
->> +iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void *drvdata)
->> +{
->> +	int ret = -EINVAL;
->> +	struct iommu_sva *handle;
->> +	struct iommu_domain *domain;
->> +
->> +	/*
->> +	 * TODO: Remove the drvdata parameter after kernel PASID support is
->> +	 * enabled for the idxd driver.
->> +	 */
->> +	if (drvdata)
->> +		return ERR_PTR(-EOPNOTSUPP);
-> 
-> Why is this being left behind? Clean up the callers too please.
+> I think this new interface better be independent not hierarchical anyway. Especially
+> when we treat container as lightweight virtual machine.
 
-Okay, let me try to.
+I suspect you are focusing too much on your usecase and do not realize
+wider consequences of this being an user interface that still has to be
+sensible for other usecases. Take a delagation of the control to
+subgroups as an example. If this is a per memcg knob (like swappiness)
+then children can override parent's THP policy. This might be a less of
+the deal for swappiness because the anon/file reclaim balancing should
+be mostly an internal thing. But THP policy is different because it has
+other effects to workloads running outside of the said cgroup - higher
+memory demand, higher contention for high-order memory etc.
+
+I do not really see how this could be a sensible per-memcg policy
+without being fully hierarchical.
 
 > 
->> +	/* Allocate mm->pasid if necessary. */
->> +	ret = iommu_sva_alloc_pasid(mm, 1, (1U << dev->iommu->pasid_bits) - 1);
->> +	if (ret)
->> +		return ERR_PTR(ret);
->> +
->> +	mutex_lock(&iommu_sva_lock);
->> +	/* Search for an existing bond. */
->> +	handle = xa_load(&dev->iommu->sva_bonds, mm->pasid);
->> +	if (handle) {
->> +		refcount_inc(&handle->users);
->> +		goto out_success;
->> +	}
+> > [...]
+> > > > > For micro-service architecture, the application in one container is not a
+> > > > > set of loosely tight processes, it's aim at provide one certain service,
+> > > > > so different containers means different service, and different service
+> > > > > has different QoS demand. 
+> > > > 
+> > > > OK, if they are tightly coupled you could apply the same THP policy by
+> > > > an existing prctl interface. Why is that not feasible. As you are noting
+> > > > below...
+> > > > 
+> > > > >     5.containers usually managed by compose software, which treats container as
+> > > > > base management unit;
+> > > > 
+> > > > ..so the compose software can easily start up the workload by using prctl
+> > > > to disable THP for whatever workloads it is not suitable for.
+> > > 
+> > > prctl(PR_SET_THP_DISABLE..) can not be elegance to support the semantic we
+> > > need. If only some containers needs THP, other containers and host do not need
+> > > THP. We must set host THP to always first, and call prctl() to close THP for
+> > > host tasks and other containers one by one,
+> > 
+> > It might not be the most elegant solution but it should work.
 > 
-> How can there be an existing bond?
-> 
-> dev->iommu is per-device
-> 
-> The device_group_immutable_singleton() insists on a single device
-> group
-> 
-> Basically 'sva_bonds' is the same thing as the group->pasid_array.
+> So you agree it's reasonable to set THP policy for process in container, right?
 
-Yes, really.
+Yes, like in any other processes.
 
-> 
-> Assuming we leave room for multi-device groups this logic should just
-> be
-> 
-> 	group = iommu_group_get(dev);
-> 	if (!group)
-> 		return -ENODEV;
-> 
-> 	mutex_lock(&group->mutex);
-> 	domain = xa_load(&group->pasid_array, mm->pasid);
-> 	if (!domain || domain->type != IOMMU_DOMAIN_SVA || domain->mm != mm)
-> 		domain = iommu_sva_alloc_domain(dev, mm);
-> 
-> ?
+> If so, IMHO, when there are thousands of processes launch and die on the machine,
+> it will be horrible to do so by calling prctl(), I don't see the reasonability.
 
-Agreed. As a helper in iommu core, how about making it more generic like
-below?
+Could you be more specific? The usual prctl use would be normally
+handled by the launcher and rely on the per-process policy to be
+inherited down the road.
 
-+struct iommu_domain *iommu_get_domain_for_dev_pasid(struct device *dev,
-+                                                   iosid_t pasid,
-+                                                   unsigned int type)
-+{
-+       struct iommu_domain *domain;
-+       struct iommu_group *group;
-+
-+       if (!pasid_valid(pasid))
-+               return NULL;
-+
-+       group = iommu_group_get(dev);
-+       if (!group)
-+               return NULL;
-+
-+       mutex_lock(&group->mutex);
-+       domain = xa_load(&group->pasid_array, pasid);
-+       if (domain && domain->type != type)
-+               domain = NULL;
-+       mutex_unlock(&group->mutex);
-+       iommu_group_put(group);
-+
-+       return domain;
-+}
-
-> 
-> And stick the refcount in the sva_domain
-> 
-> Also, given the current arrangement it might make sense to have a
-> struct iommu_domain_sva given that no driver is wrappering this in
-> something else.
-
-Fair enough. How about below wrapper?
-
-+struct iommu_sva_domain {
-+       /*
-+        * Common iommu domain header, *must* be put at the top
-+        * of the structure.
-+        */
-+       struct iommu_domain domain;
-+       struct mm_struct *mm;
-+       struct iommu_sva bond;
-+}
-
-The refcount is wrapped in bond.
-
-Best regards,
-baolu
+-- 
+Michal Hocko
+SUSE Labs
