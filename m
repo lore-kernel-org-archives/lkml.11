@@ -2,98 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EAA5C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 03:29:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2264C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 03:30:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239747AbiEKD3d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 23:29:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33538 "EHLO
+        id S240668AbiEKDaX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 23:30:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231142AbiEKD3a (ORCPT
+        with ESMTP id S231142AbiEKDaU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 23:29:30 -0400
-Received: from mail.tkos.co.il (wiki.tkos.co.il [84.110.109.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C732415F6D9;
-        Tue, 10 May 2022 20:29:27 -0700 (PDT)
-Received: from tarshish (unknown [10.0.8.3])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.tkos.co.il (Postfix) with ESMTPS id B75EC4405D7;
-        Wed, 11 May 2022 06:28:13 +0300 (IDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tkos.co.il;
-        s=default; t=1652239705;
-        bh=hLkOr9Q3wOOxVxVqfRPVJC9npyiSf6OayQQDHuAhlug=;
-        h=References:From:To:Cc:Subject:Date:In-reply-to:From;
-        b=rVQoBExujuCZYosFgWxBdp2r/XDI/UPoL+0AslXUaS0tcPrBtQZlOFULsi5kGucjQ
-         GRrjAZ2qOrIiD+38mxyDTCLvsBtdrd59kZPin/o7C2FCrtUArzqujf3P9QwCiXKleQ
-         vXi4P47nmvBRYZY2DI65/4nLroL0/TEwdnu0e4EQs3HOVsD0wHujStZt3Oxff98PNr
-         /xVHSoUPDJXjkHqWZYQs+WNyxIsEuiaFlXQCBA24sQv0yifez2uifHdCKtltaWB9h0
-         2vXSKiwW4Ye1KJ+HqGuPz6pbUvQkINHvXe+u2ySUZnpF62ERotkcyX5Aql1Q+xJm/F
-         9+ppGVxEoqZqg==
-References: <20220510171003.952873904@linutronix.de>
- <20220510171254.655035023@linutronix.de>
-User-agent: mu4e 1.6.10; emacs 27.1
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>, linux-spdx@vger.kernel.org,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [patch 05/10] clocksource/drivers/digicolor: Convert to SPDX
- identifier
-Date:   Wed, 11 May 2022 06:28:23 +0300
-In-reply-to: <20220510171254.655035023@linutronix.de>
-Message-ID: <87h75w9285.fsf@tarshish>
+        Tue, 10 May 2022 23:30:20 -0400
+Received: from mail.giordona-me.com (mail.giordona-me.com [2.56.59.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DFA518B12A
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 20:30:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=giordona-me.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        MIME-Version:Message-ID:Date:Subject:To:From:Reply-To:Sender:Cc:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=5zqKA6JLZ6OviX3mmsH55RIlUog6kavbDch01U+0u3Y=; b=sYWaAeylF3vlJIxxWsj2xx+zTb
+        j3qzaOoNdMVE+DN+2sZHAiDtTce9ChSI+QLNViIRRmLHiODlqePnWHXgmixC29ntCSo8MdY95IL7x
+        fflxFOSX11/NsST5Q/6MNBIlP4wxr41UEy/ijNGAcRxFC4QiLr7jUzGDnpk8C68S4urSdV4/C6B1O
+        Dm1yN8U5qLVtHMt0Aps8AROkS2ZNdSV6OpKD/H91czDxxrdoNIv4okDe0t8kFgNy9ezJgz2+Xy53N
+        QXexaM2jeB+VFqv7P3iqjiJBPqaqRDONnLCFEynIkw6DYgbRl27yQi+9XTqG1/iqAGNbFchnxBxPC
+        gy4FlC4w==;
+Received: from ec2-35-86-146-187.us-west-2.compute.amazonaws.com ([35.86.146.187]:53029)
+        by mail.giordona-me.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <info.kleve@kci-world.com>)
+        id 1nod3H-0007L7-Og
+        for linux-kernel@vger.kernel.org;
+        Tue, 10 May 2022 23:30:15 -0400
+Reply-To: "Karl Hoffmann" <karlhoffmann022@gmail.com>
+From:   "Karl Hoffmann" <info.kleve@kci-world.com>
+To:     linux-kernel@vger.kernel.org
+Subject: Investment Corporation
+Date:   11 May 2022 03:30:19 +0000
+Message-ID: <20220511033019.9FE2C224B1CC4795@kci-world.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - mail.giordona-me.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - kci-world.com
+X-Get-Message-Sender-Via: mail.giordona-me.com: authenticated_id: admin@giordona-me.com
+X-Authenticated-Sender: mail.giordona-me.com: admin@giordona-me.com
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Thomas,
+Hello Dear,
 
-On Tue, May 10 2022, Thomas Gleixner wrote:
+My name is Mr. Karl Hoffmann.
+I am certified Senior consultant for an Investor.
+I manage investor funds into profitable projects.
+It will be a pleasure to discuss possible business investment
+with you, Debt funding, Project Funding, Loan, Joint Venture and=20
+Treasure
+markets.
 
-> The license information clearly states GPL version 2 only. The extra text
-> which excludes warranties is an excerpt of the corresponding GPLv2 clause
-> 11.
->
-> So the SPDX identifier covers it completely.
->
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-> Cc: Baruch Siach <baruch@tkos.co.il>
-> Cc: linux-arm-kernel@lists.infradead.org
+Please kindly contact me with my email karlhoffmann022@gmail.com
+for more details and enlightenment.
 
-Acked-by: Baruch Siach <baruch@tkos.co.il>
+Regards
 
-Thanks,
-baruch
-
-> ---
->  drivers/clocksource/timer-digicolor.c |    5 +----
->  1 file changed, 1 insertion(+), 4 deletions(-)
->
-> --- a/drivers/clocksource/timer-digicolor.c
-> +++ b/drivers/clocksource/timer-digicolor.c
-> @@ -1,3 +1,4 @@
-> +// SPDX-License-Identifier: GPL-2.0
->  /*
->   * Conexant Digicolor timer driver
->   *
-> @@ -11,10 +12,6 @@
->   * Copyright (C) 2013 Maxime Ripard
->   *
->   * Maxime Ripard <maxime.ripard@free-electrons.com>
-> - *
-> - * This file is licensed under the terms of the GNU General Public
-> - * License version 2.  This program is licensed "as is" without any
-> - * warranty of any kind, whether express or implied.
->   */
->  
->  /*
-
-
--- 
-                                                     ~. .~   Tk Open Systems
-=}------------------------------------------------ooO--U--Ooo------------{=
-   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
+Karl Hoffmann
