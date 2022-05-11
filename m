@@ -2,86 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9734C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 11:25:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B3B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 11:25:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237737AbiEKLZd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 07:25:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54690 "EHLO
+        id S239249AbiEKLZi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 07:25:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229933AbiEKLY7 (ORCPT
+        with ESMTP id S240040AbiEKLYu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 07:24:59 -0400
-Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C138D233A7C
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 04:24:21 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R331e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=19;SR=0;TI=SMTPD_---0VCvu-9A_1652268255;
-Received: from localhost(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0VCvu-9A_1652268255)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 11 May 2022 19:24:16 +0800
-From:   Xianting Tian <xianting.tian@linux.alibaba.com>
-To:     paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, akpm@linux-foundation.org,
-        anup@brainfault.org, wangkefeng.wang@huawei.com, rppt@kernel.org,
-        alex@ghiti.fr, twd2.me@gmail.com, david@redhat.com,
-        seanjc@google.com, petr.pavlu@suse.com, atishp@rivosinc.com
-Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        guoren@kernel.org, jianghuaming.jhm@alibaba-inc.com,
-        Xianting Tian <xianting.tian@linux.alibaba.com>,
-        Nick Kossifidis <mick@ics.forth.gr>
-Subject: [PATCH] RISC-V: Remove IORESOURCE_BUSY flag for no-map reserved memory
-Date:   Wed, 11 May 2022 19:24:13 +0800
-Message-Id: <20220511112413.559734-1-xianting.tian@linux.alibaba.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 11 May 2022 07:24:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76895231CBD;
+        Wed, 11 May 2022 04:24:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2EB35B82217;
+        Wed, 11 May 2022 11:24:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64379C340F3;
+        Wed, 11 May 2022 11:24:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652268250;
+        bh=NQicI0jcyEUR6Fudb4tAuvnUgZQIKvtt0icfl6gJwCQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pnBq/HSTjd3IX5sroatFQhgvdbBjXhvbHffVsFtilrhkEoDFaahS2RpfiISzkj9/q
+         +70G4JvExSROBu6aP+NSwstIiLgpTbYMT8BrQLnif2MjgAO2CXa/8bCodBzIb2mwlP
+         UAJzOlOVQ8Weqw0AxA7sibne2diwYozkBr+xd8D6pzOMtsXfnkTMD9RXOYtTlVMvRz
+         BekSrBKVaehn0qCWxIpqo1wKNaTHp6Re5mKd2BfZ8UfKC7o9zuwn5CC7zzOZYye3TV
+         0TAppL932+y9djCzIN2auQEGWZNnTrA+womq4ZDhZ0zc3vy/40sjrPpASg8101A92d
+         pvr1Q1EHNsd5Q==
+Date:   Wed, 11 May 2022 14:22:40 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Cc:     peterhuewe@gmx.de, jgg@ziepe.ca, stefanb@linux.vnet.ibm.com,
+        linux@mniewoehner.de, linux-integrity@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lukas@wunner.de,
+        p.rosenberger@kunbus.com, Lino Sanfilippo <l.sanfilippo@kunbus.com>
+Subject: Re: [PATCH v4 1/6] tpm, tpm_tis_spi: Request threaded irq
+Message-ID: <YnucgDH3I87RI8PN@kernel.org>
+References: <20220509080559.4381-1-LinoSanfilippo@gmx.de>
+ <20220509080559.4381-2-LinoSanfilippo@gmx.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220509080559.4381-2-LinoSanfilippo@gmx.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 00ab027a3b82 ("RISC-V: Add kernel image sections to the resource tree")
-added IORESOURCE_BUSY flag for no-map reserved memory, this casued
-devm_ioremap_resource() failed for the no-map reserved memory in subsequent
-operations of related driver, so remove the IORESOURCE_BUSY flag.
+On Mon, May 09, 2022 at 10:05:54AM +0200, Lino Sanfilippo wrote:
+> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+> 
+> Interrupt handling at least includes reading and writing the interrupt
+> status register within the interrupt routine. Since accesses over the SPI
+> bus are synchronized by a mutex, request a threaded interrupt handler to
+> ensure a sleepable context during interrupt processing.
+> 
+> Fixes: 1a339b658d9d ("tpm_tis_spi: Pass the SPI IRQ down to the driver")
+> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
 
-The code to reproduce the issue,
-dts:
-	mem0: memory@a0000000 {
-                reg = <0x0 0xa0000000 0 0x1000000>;
-                no-map;
-        };
+When you state that it needs a sleepable context, you should bring a
+context why it needs it. This not to disregard the code change overally but
+you cannot make even the most obvious claim without backing data.
 
-	&test {
-		status = "okay";
-		memory-region = <&mem0>;
-	};
+> ---
+>  drivers/char/tpm/tpm_tis_core.c     | 15 +++++++++++++--
+>  drivers/char/tpm/tpm_tis_core.h     |  1 +
+>  drivers/char/tpm/tpm_tis_spi_main.c |  5 +++--
+>  3 files changed, 17 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/char/tpm/tpm_tis_core.c b/drivers/char/tpm/tpm_tis_core.c
+> index dc56b976d816..52369ef39b03 100644
+> --- a/drivers/char/tpm/tpm_tis_core.c
+> +++ b/drivers/char/tpm/tpm_tis_core.c
+> @@ -747,8 +747,19 @@ static int tpm_tis_probe_irq_single(struct tpm_chip *chip, u32 intmask,
+>  	int rc;
+>  	u32 int_status;
+>  
+> -	if (devm_request_irq(chip->dev.parent, irq, tis_int_handler, flags,
+> -			     dev_name(&chip->dev), chip) != 0) {
+> +
+> +	if (priv->flags & TPM_TIS_USE_THREADED_IRQ) {
+> +		rc = devm_request_threaded_irq(chip->dev.parent, irq, NULL,
+> +					       tis_int_handler,
+> +					       IRQF_ONESHOT | flags,
+> +					       dev_name(&chip->dev),
+> +					       chip);
+> +	} else {
+> +		rc = devm_request_irq(chip->dev.parent, irq, tis_int_handler,
+> +				      flags, dev_name(&chip->dev), chip);
+> +	}
+> +
+> +	if (rc) {
+>  		dev_info(&chip->dev, "Unable to request irq: %d for probe\n",
+>  			 irq);
+>  		return -1;
+> diff --git a/drivers/char/tpm/tpm_tis_core.h b/drivers/char/tpm/tpm_tis_core.h
+> index 3be24f221e32..43b724e55192 100644
+> --- a/drivers/char/tpm/tpm_tis_core.h
+> +++ b/drivers/char/tpm/tpm_tis_core.h
+> @@ -86,6 +86,7 @@ enum tis_defaults {
+>  enum tpm_tis_flags {
+>  	TPM_TIS_ITPM_WORKAROUND		= BIT(0),
+>  	TPM_TIS_INVALID_STATUS		= BIT(1),
+> +	TPM_TIS_USE_THREADED_IRQ	= BIT(2),
+>  };
+>  
+>  struct tpm_tis_data {
+> diff --git a/drivers/char/tpm/tpm_tis_spi_main.c b/drivers/char/tpm/tpm_tis_spi_main.c
+> index 184396b3af50..f56613f2946f 100644
+> --- a/drivers/char/tpm/tpm_tis_spi_main.c
+> +++ b/drivers/char/tpm/tpm_tis_spi_main.c
+> @@ -223,9 +223,10 @@ static int tpm_tis_spi_probe(struct spi_device *dev)
+>  	phy->flow_control = tpm_tis_spi_flow_control;
+>  
+>  	/* If the SPI device has an IRQ then use that */
+> -	if (dev->irq > 0)
+> +	if (dev->irq > 0) {
+>  		irq = dev->irq;
+> -	else
+> +		phy->priv.flags |= TPM_TIS_USE_THREADED_IRQ;
+> +	} else
+>  		irq = -1;
+>  
+>  	init_completion(&phy->ready);
+> -- 
+> 2.36.0
+> 
 
-code:
-	np = of_parse_phandle(pdev->dev.of_node, "memory-region", 0);
-	ret = of_address_to_resource(np, 0, &r);
-	base = devm_ioremap_resource(&pdev->dev, &r);
-	// base = -EBUSY
 
-Fixes: 00ab027a3b82 ("RISC-V: Add kernel image sections to the resource tree")
-Reported-by: Huaming Jiang <jianghuaming.jhm@alibaba-inc.com>
-Reviewed-by: Guo Ren <guoren@kernel.org>
-CC: Nick Kossifidis <mick@ics.forth.gr>
-Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
----
- arch/riscv/kernel/setup.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/riscv/kernel/setup.c b/arch/riscv/kernel/setup.c
-index 834eb652a7b9..71f2966b1474 100644
---- a/arch/riscv/kernel/setup.c
-+++ b/arch/riscv/kernel/setup.c
-@@ -214,7 +214,7 @@ static void __init init_resources(void)
- 
- 		if (unlikely(memblock_is_nomap(region))) {
- 			res->name = "Reserved";
--			res->flags = IORESOURCE_MEM | IORESOURCE_BUSY;
-+			res->flags = IORESOURCE_MEM;
- 		} else {
- 			res->name = "System RAM";
- 			res->flags = IORESOURCE_SYSTEM_RAM | IORESOURCE_BUSY;
--- 
-2.17.1
-
+BR, Jarkko
