@@ -2,205 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B404C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:48:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 796ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:48:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239219AbiEKCsn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 22:48:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36606 "EHLO
+        id S236358AbiEKCst (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 22:48:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243775AbiEKCmN (ORCPT
+        with ESMTP id S243183AbiEKCjz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 22:42:13 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A625A4C40E
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:42:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652236930;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4nGkvcvFWz+odk5yhwLYeDyIG2eWn1ClUMoDKPyJdBk=;
-        b=GSklQrxnk4oJqeDhQkPUD4cW23eZuuXShA899Dudk4vcn4NGUx345Z3ONrM4+Xxs8moKOH
-        vDEDUQZ+NE4rqNmgnf5VLjTA74b/gjIGl3jLOWASkp56OHnfsQDvJZOXiyX9v2BORLN+kh
-        0qwnPRjlCou9+hlQcglU02xbpF7mZKo=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-649-hiCtTezCPaWz2zOrOMD6CA-1; Tue, 10 May 2022 22:42:09 -0400
-X-MC-Unique: hiCtTezCPaWz2zOrOMD6CA-1
-Received: by mail-lf1-f71.google.com with SMTP id x36-20020a056512132400b0044b07b24746so287203lfu.8
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:42:09 -0700 (PDT)
+        Tue, 10 May 2022 22:39:55 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8282920F4C4
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:39:54 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id k2so1003380wrd.5
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:39:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=KimymyJktXOor657BlbrRRjA7HWKVOcx61gbNhrB/7o=;
+        b=ZTskdwHe7UUDxCjjzUIP50Srj0RKN2OBSf66044H+HXptMv9A605OSh25vJ7YOdG+P
+         8CWFNQSjC2CX4AMryGeDeVV/PLLXxV1NLtCivoeweCvK1w2iEyV8sdWQ666XzLfFtrY+
+         67SgDnkPzBDpl5rbl639zMJ/yn2uOnWvm9s5Q=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4nGkvcvFWz+odk5yhwLYeDyIG2eWn1ClUMoDKPyJdBk=;
-        b=ZSP/eMlFHtc8446fN1uO3aHximkgn9+u/NUhYjf0iEScSwoVQzxmwWeoJHKKuI3gD8
-         kLF17UzLWaaCWIk0KtTjhBES1vsINIJrn8LTqAY3ied0bKKOW/bxfqBb5jbsZb+WCLC/
-         crCQH1Tq32uRRNyHkKVv6S4m5lUYI+lcyRyBQnn3oimS8hURSAUv6kK9sUiC7IrIc3MP
-         jdU0cqfc3vXfjVoAs0b6OArlnWoTJEX39CtoRIsviQktSGcDJcTWUxjL3ffC6wytRmP4
-         FfSuHs69iNXGdhLYacoE3KSkTAVW6vB2HdoG/FhcRvnfaz09e1b8ZmErgDugo/WF/g++
-         2zLA==
-X-Gm-Message-State: AOAM530nm0B8MHmLwxWBU1RFn8j63FD+8V7W4P4jE2VQ6dkAZu0egNA2
-        qKxdu17YKePREggLimtMPtxfm5vxUFmK1vbqRB7otNjhPMO5C+kUC1VS0JvZLEQ5rnS3XSoaeX/
-        Sjjco5FDUHXypTuLmA3dBPcV9AlN3uKki42S7+066
-X-Received: by 2002:a19:ca50:0:b0:471:f556:92b with SMTP id h16-20020a19ca50000000b00471f556092bmr18230633lfj.587.1652236927983;
-        Tue, 10 May 2022 19:42:07 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyHTIitvlKBo9gntoR+9nuIVQxt66PfDgGM8uDAMiSrYJWVeqcsjWShA2gwMUq9hVPezrkTWEGfgTI37LaNx88=
-X-Received: by 2002:a19:ca50:0:b0:471:f556:92b with SMTP id
- h16-20020a19ca50000000b00471f556092bmr18230621lfj.587.1652236927813; Tue, 10
- May 2022 19:42:07 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=KimymyJktXOor657BlbrRRjA7HWKVOcx61gbNhrB/7o=;
+        b=ht+DzSMSAcecn+tpIF/Evj0/UrsKKP+ck7dOqOEmCuDmge/a9CGIHs7zKqZaU56YCM
+         GZwmoyT5zx0JunvykfjE3hAcwB7lmmoHj8XdhUfKWeJOM4W/JFpqySoKzMWQuVDTcsJT
+         OPwgtPUFQiZo7eNY2IWek4hAp3Qw4aJkptO4yqh8udiKgoFs5x4lr42oci1eO76IUHqG
+         1ZYISxWtT6iKNsk3fEkBgM3rCqTumWc6H9135w1TL3NcvoBA1KHh7j/w7Be9iQTiIsBH
+         VsyZ9GatAwWiU69kRcSAcATGH4pDihw00+5f7TGM2TUnKd9sKylj0h7tr1LGf7Btqqv2
+         Rgtw==
+X-Gm-Message-State: AOAM530+EcNZw+E4mkCD1J17Rmm5NO5Sf4IdFhfYM1BZWZRca5srrDpM
+        QgCvd0yIM2sKm5WZFxArXPsBq8fvrcUmTLN4at6u6g==
+X-Google-Smtp-Source: ABdhPJyE21AqoP29m/WgP+FLL3uuTZ5ahlHZq51uPrAhbthHgig5xYN633m5PWpnaxVRM9I3YPxOQ1caQeVnDqhrN+Y=
+X-Received: by 2002:adf:fb03:0:b0:20a:e253:b8c7 with SMTP id
+ c3-20020adffb03000000b0020ae253b8c7mr20282047wrr.119.1652236792930; Tue, 10
+ May 2022 19:39:52 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220507071954.14455-1-jasowang@redhat.com> <20220507071954.14455-7-jasowang@redhat.com>
- <20220510072451-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20220510072451-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Wed, 11 May 2022 10:41:56 +0800
-Message-ID: <CACGkMEvWFyEqeeXYEmbU4TWtnj9Ku6J7jLK_7MueuFvpR7FiGg@mail.gmail.com>
-Subject: Re: [PATCH V4 6/9] virtio-ccw: implement synchronize_cbs()
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        eperezma <eperezma@redhat.com>, Cindy Lu <lulu@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+References: <20220330090947.9100-1-chenxiangrui@huaqin.corp-partner.google.com>
+ <a0eb6bf9-256a-29b1-2211-496df710f531@linaro.org> <CAD=FV=UjyLofXZqnj=bL89fza5JS6O5Np9W-A4V4WK+na0hdrw@mail.gmail.com>
+ <b7ff08b8-60fb-7629-9399-3d5cca46ab9e@linaro.org> <CAD=FV=Vx5g_xTRZGc9wW=ZLnfsOcubTYFcnYQRC5jLm+n3en0w@mail.gmail.com>
+ <606cc762-a0c2-49a4-3e5d-d2dbd4595bc7@linaro.org> <CAD=FV=W_SA-3PfDFi-Gkjk9pew5bchFNjQhXX8MkZyuy5UohEQ@mail.gmail.com>
+ <CAJKOXPdt5WTg4VU-TEW3dmPHR76dKg63XVxRQfa7ZSKc_jz6Ag@mail.gmail.com>
+ <CAD=FV=XQqQSQDNh-zXqEQkwsrax5Qb3OtfKZoQLkncJj_4mcQw@mail.gmail.com>
+ <daf66d41-42ac-50dc-3f8d-c261da8e452d@linaro.org> <CAD=FV=WhA=n_=Ys6NfedPtNPddL81HnG6Qws_R+vq9w8Nrsn5A@mail.gmail.com>
+ <ce2ea308-b63d-ad27-4cea-7353268f8ebb@linaro.org>
+In-Reply-To: <ce2ea308-b63d-ad27-4cea-7353268f8ebb@linaro.org>
+From:   Julius Werner <jwerner@chromium.org>
+Date:   Tue, 10 May 2022 19:39:41 -0700
+Message-ID: <CAODwPW857CkH0+ZnBaUeowW4te-hSy6nrdeeX6-OLPOs5TptsQ@mail.gmail.com>
+Subject: Re: [PATCH] CHROMIUM: arm64: dts: qcom: Add sc7180-gelarshie
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Doug Anderson <dianders@chromium.org>,
+        =?UTF-8?Q?Krzysztof_Koz=C5=82owski?= <k.kozlowski.k@gmail.com>,
+        Mars Chen <chenxiangrui@huaqin.corp-partner.google.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Julius Werner <jwerner@chromium.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 7:28 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Sat, May 07, 2022 at 03:19:51PM +0800, Jason Wang wrote:
-> > This patch tries to implement the synchronize_cbs() for ccw. For the
-> > vring_interrupt() that is called via virtio_airq_handler(), the
-> > synchronization is simply done via the airq_info's lock. For the
-> > vring_interrupt() that is called via virtio_ccw_int_handler(), a per
-> > device spinlock for irq is introduced ans used in the synchronization
-> > method.
-> >
-> > Cc: Thomas Gleixner <tglx@linutronix.de>
-> > Cc: Peter Zijlstra <peterz@infradead.org>
-> > Cc: "Paul E. McKenney" <paulmck@kernel.org>
-> > Cc: Marc Zyngier <maz@kernel.org>
-> > Cc: Halil Pasic <pasic@linux.ibm.com>
-> > Cc: Cornelia Huck <cohuck@redhat.com>
-> > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > ---
-> >  drivers/s390/virtio/virtio_ccw.c | 27 +++++++++++++++++++++++++++
-> >  1 file changed, 27 insertions(+)
-> >
-> > diff --git a/drivers/s390/virtio/virtio_ccw.c b/drivers/s390/virtio/virtio_ccw.c
-> > index d35e7a3f7067..001e1f0e6037 100644
-> > --- a/drivers/s390/virtio/virtio_ccw.c
-> > +++ b/drivers/s390/virtio/virtio_ccw.c
-> > @@ -62,6 +62,7 @@ struct virtio_ccw_device {
-> >       unsigned int revision; /* Transport revision */
-> >       wait_queue_head_t wait_q;
-> >       spinlock_t lock;
-> > +     rwlock_t irq_lock;
-> >       struct mutex io_lock; /* Serializes I/O requests */
-> >       struct list_head virtqueues;
-> >       bool is_thinint;
-> > @@ -984,6 +985,27 @@ static const char *virtio_ccw_bus_name(struct virtio_device *vdev)
-> >       return dev_name(&vcdev->cdev->dev);
-> >  }
-> >
-> > +static void virtio_ccw_synchronize_cbs(struct virtio_device *vdev)
-> > +{
-> > +     struct virtio_ccw_device *vcdev = to_vc_device(vdev);
-> > +     struct airq_info *info = vcdev->airq_info;
-> > +
-> > +     if (info) {
-> > +             /*
-> > +              * Synchronize with the vring_interrupt() with airq indicator
-> > +              */
-> > +             write_lock(&info->lock);
-> > +             write_unlock(&info->lock);
-> > +     } else {
-> > +             /*
-> > +              * Synchronize with the vring_interrupt() called by
-> > +              * virtio_ccw_int_handler().
-> > +              */
-> > +             write_lock(&vcdev->irq_lock);
-> > +             write_unlock(&vcdev->irq_lock);
-> > +     }
-> > +}
-> > +
-> >  static const struct virtio_config_ops virtio_ccw_config_ops = {
-> >       .get_features = virtio_ccw_get_features,
-> >       .finalize_features = virtio_ccw_finalize_features,
-> > @@ -995,6 +1017,7 @@ static const struct virtio_config_ops virtio_ccw_config_ops = {
-> >       .find_vqs = virtio_ccw_find_vqs,
-> >       .del_vqs = virtio_ccw_del_vqs,
-> >       .bus_name = virtio_ccw_bus_name,
-> > +     .synchronize_cbs = virtio_ccw_synchronize_cbs,
-> >  };
-> >
-> >
-> > @@ -1079,6 +1102,7 @@ static void virtio_ccw_int_handler(struct ccw_device *cdev,
-> >  {
-> >       __u32 activity = intparm & VIRTIO_CCW_INTPARM_MASK;
-> >       struct virtio_ccw_device *vcdev = dev_get_drvdata(&cdev->dev);
-> > +     unsigned long flags;
-> >       int i;
-> >       struct virtqueue *vq;
-> >
-> > @@ -1106,6 +1130,7 @@ static void virtio_ccw_int_handler(struct ccw_device *cdev,
-> >                       vcdev->err = -EIO;
-> >       }
-> >       virtio_ccw_check_activity(vcdev, activity);
-> > +     read_lock_irqsave(&vcdev->irq_lock, flags);
-> >       for_each_set_bit(i, indicators(vcdev),
-> >                        sizeof(*indicators(vcdev)) * BITS_PER_BYTE) {
-> >               /* The bit clear must happen before the vring kick. */
->
-> Cornelia sent a lockdep trace on this.
->
-> Basically I think this gets the irqsave/restore logic wrong.
-> It attempts to disable irqs in the handler (which is an interrupt
-> anyway).
+> Wait, we agreed that you don't consider them identical, didn't we? If
+> they are identical, you do not need rev4 at all. So they are not
+> identical...
 
-The reason I use irqsave/restore is that it can be called from process
-context (if I was not wrong), e.g from io_subchannel_quiesce().
+Well, they are identical until they're not. We intend them to be
+identical. But for practical purposes it does sometimes happen that
+two board revisions which were meant to be indistinguishable by
+software end up needing to be distinguished at a later point, when
+both the hardware and firmware can no longer be changed. We need to
+allow an escape hatch for that case. It does not happen often, so just
+treating them all as separate boards from the start is not a scalable
+solution. DTBs are not free when they all need to be packaged in the
+same kernel image.
 
-> And it does not disable irqs in the synchronize_cbs.
->
-> As a result in interrupt might try to take a read lock while
-> .synchronize_cbs has the writer lock, resulting in a deadlock.
->
-> I think you want regular read_lock + write_lock_irq.
+> Right now it's not possible to validate QCOM DTSes against DT bindings
+> because they throw big fat warnings about undocumented top compatibles.
+> This is a downside for us.
 
-Yes.
+But that's a solvable problem, right? As I understand, what Doug was
+initially just asking was whether it made _sense_ to document all of
+these... not that we couldn't do it. Then this whole thread went down
+a rabbit hole of whether our compatible assignments are allowed in the
+first place. If we can compromise on this discussion by just doing
+whatever needs to be done to make the tool happy, I think(?) we can
+provide that.
 
-Thanks
+> Remember, you do not have to use Devicetree or Linux at all if it causes
+> you some downsides... No one is forced. :) If you choose to use it,
+> sorry, it comes with some requirements like being following Devicetree
+> specification or the binding guidelines.
 
->
->
-> > @@ -1114,6 +1139,7 @@ static void virtio_ccw_int_handler(struct ccw_device *cdev,
-> >               vq = virtio_ccw_vq_by_ind(vcdev, i);
-> >               vring_interrupt(0, vq);
-> >       }
-> > +     read_unlock_irqrestore(&vcdev->irq_lock, flags);
-> >       if (test_bit(0, indicators2(vcdev))) {
-> >               virtio_config_changed(&vcdev->vdev);
-> >               clear_bit(0, indicators2(vcdev));
-> > @@ -1284,6 +1310,7 @@ static int virtio_ccw_online(struct ccw_device *cdev)
-> >       init_waitqueue_head(&vcdev->wait_q);
-> >       INIT_LIST_HEAD(&vcdev->virtqueues);
-> >       spin_lock_init(&vcdev->lock);
-> > +     rwlock_init(&vcdev->irq_lock);
-> >       mutex_init(&vcdev->io_lock);
-> >
-> >       spin_lock_irqsave(get_ccwdev_lock(cdev), flags);
-> > --
-> > 2.25.1
->
+Woah... that is maybe a bit extreme, don't you think? My understanding
+was that Linux tries to support a wide variety of platforms and
+devices and can make the necessary compromises where needed to stay
+practical. I'm sure you are aware of the numerous hacks, workarounds
+and special cases throughout the kernel that enthusiasts put in there
+to get their favorite platform working, even if the original
+manufacturer never bothered to test with anything but Windows and
+blatantly violates common standards. Or how the USB stack has a file
+listing custom quirks for hundreds of individual device IDs just to
+make hardware work that didn't put any effort into following the spec.
 
+We're not even asking for any of that -- we're here, engaging with you
+and trying to find the best way for our platforms to fit cleanly into
+your model. All we're asking is to please offer some way that makes
+accommodations for the necessary practical concerns that come up when
+building devices at our scale. We're open for new suggestions, but
+they need to stay within the realm of what we can practically do (e.g.
+not ship a wholly separate DTB for each board revision, because that
+would grow the kernel image beyond what can fit in the kernel
+partitions on our platforms, and would create a notable extra cost in
+boot time for our users).
+
+Besides, I don't actually see how this violates the Device Tree
+specification? All I see it say about the toplevel compatible property
+is that it
+
+> Specifies a list of platform architectures with which this platform is co=
+mpatible. This property can be used by operating systems in selecting platf=
+orm specific code.
+
+It doesn't say anything about having to uniquely identify the platform
+architecture even if a more generic identifier is good enough to make
+all necessary platform-specific code choices for the operating system.
+In fact, about compatible properties in general the specification says
+
+> The property value consists of a concatenated list of null terminated str=
+ings, from most specific to most general. They allow a device to express it=
+s compatibility with a family of similar devices, potentially allowing a si=
+ngle device driver to match against several devices.
+
+Which implies that using a more generic string to cover multiple cases
+at once is an intentionally allowed use case.
