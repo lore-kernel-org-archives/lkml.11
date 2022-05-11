@@ -2,79 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0122C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 14:31:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F421C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 14:31:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244788AbiEKObX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 10:31:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45444 "EHLO
+        id S244797AbiEKOb3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 10:31:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244700AbiEKOa6 (ORCPT
+        with ESMTP id S244746AbiEKObF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 10:30:58 -0400
-Received: from mail-oa1-f46.google.com (mail-oa1-f46.google.com [209.85.160.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF01D53B66;
-        Wed, 11 May 2022 07:30:56 -0700 (PDT)
-Received: by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-ed9ac77cbbso3041160fac.1;
-        Wed, 11 May 2022 07:30:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Mp6dTbokvQGCqhdm89KjWBFi8stC9bHFTBWdjBNBqBw=;
-        b=hP9hCRHNFua4ZCvi6c0rVeP2fEfLZ3Y1zqxuY86oPfL6JDJtjWwaK267BVWNqxkuxK
-         dnWlsVRC2bsKR9X+NHO0h9bvObkxiNoCkEFwavhQP4ceY0n7+YVhf4j4u7InjNl+zJjX
-         lgdmWKZu+9tGaDIPJBSpslt2Je65ni7p0wu40eKyTsHz0/qzGZbtBY4FNfT0y5eE6KfQ
-         Bm8nqPQUzt/J6mXVFc9qiTe4xUGLelqBNnuxALBHRfo7pydDT0/erhh9HwVOjijXn8hr
-         sAi8RFmJBolGoe4jyEefJQT93BHedZTHSB2IHEC+7Uv7D1mSijHiLHBKN7inSnDaPLBl
-         dkbA==
-X-Gm-Message-State: AOAM533AWLttiZ44V3LvcZ0nvFEwN5cFy4Fx0OtpfnHht8DoQyHdZREi
-        hBpIt55YAdyLsm31JtICZQ==
-X-Google-Smtp-Source: ABdhPJzrzFc0fZ7+LrYKUTYDibPYbzEg//RObkHsFf1tLCR7BDw2r72XuTFEFO0zWdV4Qjlt6iDktg==
-X-Received: by 2002:a05:6870:2e06:b0:ee:e90:7e65 with SMTP id oi6-20020a0568702e0600b000ee0e907e65mr2780364oab.49.1652279456231;
-        Wed, 11 May 2022 07:30:56 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id 22-20020aca2116000000b00325cda1ff8esm803219oiz.13.2022.05.11.07.30.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 07:30:55 -0700 (PDT)
-Received: (nullmailer pid 263258 invoked by uid 1000);
-        Wed, 11 May 2022 14:30:54 -0000
-Date:   Wed, 11 May 2022 09:30:54 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>
-Cc:     p.zabel@pengutronix.de, daniel@ffwll.ch, robh+dt@kernel.org,
-        linux-arm-kernel@lists.infradead.org, chunkuang.hu@kernel.org,
-        xinlei.lee@mediatek.com, dri-devel@lists.freedesktop.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        krzysztof.kozlowski+dt@linaro.org, linux-kernel@vger.kernel.org,
-        airlied@linux.ie, matthias.bgg@gmail.com, jitao.shi@mediatek.com,
-        devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH v6 1/4] dt-bindings: display: mediatek: dsi: Convert
- dsi_dtbinding to .yaml
-Message-ID: <20220511143054.GA263204-robh@kernel.org>
-References: <20220504091923.2219-1-rex-bc.chen@mediatek.com>
- <20220504091923.2219-2-rex-bc.chen@mediatek.com>
+        Wed, 11 May 2022 10:31:05 -0400
+Received: from outbound-smtp15.blacknight.com (outbound-smtp15.blacknight.com [46.22.139.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D56C527CF1
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 07:31:02 -0700 (PDT)
+Received: from mail.blacknight.com (pemlinmail03.blacknight.ie [81.17.254.16])
+        by outbound-smtp15.blacknight.com (Postfix) with ESMTPS id D62141C4E62
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 15:31:00 +0100 (IST)
+Received: (qmail 6634 invoked from network); 11 May 2022 14:31:00 -0000
+Received: from unknown (HELO morpheus.112glenside.lan) (mgorman@techsingularity.net@[84.203.198.246])
+  by 81.17.254.9 with ESMTPA; 11 May 2022 14:31:00 -0000
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Aubrey Li <aubrey.li@linux.intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Mel Gorman <mgorman@techsingularity.net>
+Subject: [PATCH 1/4] sched/numa: Initialise numa_migrate_retry
+Date:   Wed, 11 May 2022 15:30:35 +0100
+Message-Id: <20220511143038.4620-2-mgorman@techsingularity.net>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220511143038.4620-1-mgorman@techsingularity.net>
+References: <20220511143038.4620-1-mgorman@techsingularity.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220504091923.2219-2-rex-bc.chen@mediatek.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 04 May 2022 17:19:20 +0800, Rex-BC Chen wrote:
-> From: Xinlei Lee <xinlei.lee@mediatek.com>
-> 
-> Convert mediatek,dsi.txt to mediatek,dsi.yaml format
-> 
-> Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
-> Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-> ---
->  .../display/mediatek/mediatek,dsi.txt         |  62 ----------
->  .../display/mediatek/mediatek,dsi.yaml        | 115 ++++++++++++++++++
->  2 files changed, 115 insertions(+), 62 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.txt
->  create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yaml
-> 
+On clone, numa_migrate_retry is inherited from the parent which means
+that the first NUMA placement of a task is non-deterministic. This
+affects when load balancing recognises numa tasks and whether to
+migrate "regular", "remote" or "all" tasks between NUMA scheduler
+domains.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+---
+ kernel/sched/fair.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index d4bd299d67ab..867806a57119 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -2873,6 +2873,7 @@ void init_numa_balancing(unsigned long clone_flags, struct task_struct *p)
+ 	p->node_stamp			= 0;
+ 	p->numa_scan_seq		= mm ? mm->numa_scan_seq : 0;
+ 	p->numa_scan_period		= sysctl_numa_balancing_scan_delay;
++	p->numa_migrate_retry		= 0;
+ 	/* Protect against double add, see task_tick_numa and task_numa_work */
+ 	p->numa_work.next		= &p->numa_work;
+ 	p->numa_faults			= NULL;
+-- 
+2.34.1
+
