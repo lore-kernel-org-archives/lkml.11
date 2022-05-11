@@ -2,111 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53888C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 17:21:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7A1FC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 17:21:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345451AbiEKRVW (ORCPT
+        id S1345458AbiEKRVm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 13:21:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36336 "EHLO
+        Wed, 11 May 2022 13:21:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240438AbiEKRVT (ORCPT
+        with ESMTP id S1345453AbiEKRVi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 13:21:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7E5EA2016C7
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 10:21:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652289676;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=kriPN3St3WJzr3K/vgIhsu3qaI3q8csTyZqCy+0mias=;
-        b=Lx0XnctE0Wt6k/jNm1WhCKnAeYsgXeVjxx2hT5o+J0KXkDyqrSshjWeeyw04YM7ZvfDAs7
-        pYr63hY1DZC1BNRo2//x4byizuxQ2jioF2vNNiNZiCgdCDUZnmxry8KU216ya4q40qAoxM
-        fAXA6CJZLxR0//LFuH+4Gz44pTIFO30=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-187-dyuBveCGMUCIFfZlJaWKLA-1; Wed, 11 May 2022 13:21:15 -0400
-X-MC-Unique: dyuBveCGMUCIFfZlJaWKLA-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8AF9A185A7BA;
-        Wed, 11 May 2022 17:21:14 +0000 (UTC)
-Received: from horse.redhat.com (unknown [10.22.18.223])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F2C2A54CE52;
-        Wed, 11 May 2022 17:21:13 +0000 (UTC)
-Received: by horse.redhat.com (Postfix, from userid 10451)
-        id A6CA3220463; Wed, 11 May 2022 13:21:13 -0400 (EDT)
-Date:   Wed, 11 May 2022 13:21:13 -0400
-From:   Vivek Goyal <vgoyal@redhat.com>
-To:     Miklos Szeredi <miklos@szeredi.hu>
-Cc:     Bernd Schubert <bschubert@ddn.com>,
-        Dharmendra Hans <dharamhans87@gmail.com>,
-        linux-fsdevel@vger.kernel.org,
-        fuse-devel <fuse-devel@lists.sourceforge.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 0/3] FUSE: Implement atomic lookup + open/create
-Message-ID: <YnvwiZ+s+y3VDUMW@redhat.com>
-References: <20220502102521.22875-1-dharamhans87@gmail.com>
- <YnLRnR3Xqu0cYPdb@redhat.com>
- <CACUYsyEsRph+iFC_fj3F6Ceqhq7NCTuFPH3up8R6C+_bGHktZg@mail.gmail.com>
- <YnPI6f2fRZUXbCFP@redhat.com>
- <882fbf7f-a56b-1e82-a158-9e2186ec7c4c@ddn.com>
- <YnQsizX5Q1sMnlI2@redhat.com>
- <CAJfpegseGaWHkjdQj7XiR=TQNFpPZzDF_rTXces2oRz=x0N7OA@mail.gmail.com>
+        Wed, 11 May 2022 13:21:38 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CFDD20CA6A;
+        Wed, 11 May 2022 10:21:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652289696; x=1683825696;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Qy7t1Ypki7j0iCcWaRmk0ORRY2L4RZAMrStqlHAMWPM=;
+  b=JZrxJKtUf3/f9ogFmZ8/3Xplvg6R7xVTjm1JSrqMyiJTB6c5rsvdxfX+
+   ZAhR+lfN0o7LGyQFnnvPd3fkMpEsItTDUar7PGCVp0BTH1blTfj6Kb2SH
+   1QphgxhhlNKTRR2M5np2MoIBAaAyB7tlawIQqTK1UaQ8hagqeGdRPcV24
+   +ev2PTftH+6vLi+AgqpssadXZFg5SkVgIX0fzG6h+wtE5yw4x0jABzkHM
+   5TAgwJiTrhBDc2A5Mvyr838LBvqupOAoWGwPOkXRAVh6cOibxoTcuSonV
+   mD4pDJbEAA1wa2C61OTWakwT57goDRxPYPuulO0rnJcjmmAQ907kgOXCm
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="249658522"
+X-IronPort-AV: E=Sophos;i="5.91,217,1647327600"; 
+   d="scan'208";a="249658522"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 10:21:35 -0700
+X-IronPort-AV: E=Sophos;i="5.91,217,1647327600"; 
+   d="scan'208";a="553414882"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 10:21:35 -0700
+Date:   Wed, 11 May 2022 10:25:21 -0700
+From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     iommu@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>, dmaengine@vger.kernel.org,
+        Joerg Roedel <joro@8bytes.org>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>, vkoul@kernel.org,
+        robin.murphy@arm.com, will@kernel.org, Yi Liu <yi.l.liu@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        "Tian, Kevin" <kevin.tian@intel.com>,
+        Raj Ashok <ashok.raj@intel.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v3 1/4] iommu/vt-d: Implement domain ops for
+ attach_dev_pasid
+Message-ID: <20220511102521.6b7c578c@jacob-builder>
+In-Reply-To: <20220511170025.GF49344@nvidia.com>
+References: <20220510210704.3539577-1-jacob.jun.pan@linux.intel.com>
+        <20220510210704.3539577-2-jacob.jun.pan@linux.intel.com>
+        <20220510232121.GP49344@nvidia.com>
+        <20220510172309.3c4e7512@jacob-builder>
+        <20220511115427.GU49344@nvidia.com>
+        <20220511082958.79d5d8ee@jacob-builder>
+        <20220511161237.GB49344@nvidia.com>
+        <20220511100216.7615e288@jacob-builder>
+        <20220511170025.GF49344@nvidia.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJfpegseGaWHkjdQj7XiR=TQNFpPZzDF_rTXces2oRz=x0N7OA@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 11:40:59AM +0200, Miklos Szeredi wrote:
-> On Thu, 5 May 2022 at 21:59, Vivek Goyal <vgoyal@redhat.com> wrote:
+Hi Jason,
+
+On Wed, 11 May 2022 14:00:25 -0300, Jason Gunthorpe <jgg@nvidia.com> wrote:
+
+> On Wed, May 11, 2022 at 10:02:16AM -0700, Jacob Pan wrote:
+> > > > If not global, perhaps we could have a list of pasids (e.g. xarray)
+> > > > attached to the device_domain_info. The TLB flush logic would just
+> > > > go through the list w/o caring what the PASIDs are for. Does it
+> > > > make sense to you?    
+> > > 
+> > > Sort of, but we shouldn't duplicate xarrays - the group already has
+> > > this xarray - need to find some way to allow access to it from the
+> > > driver.
+> > >   
+> > I am not following,  here are the PASIDs for devTLB flush which is per
+> > device. Why group?  
 > 
-> > Oh, I have no issues with the intent. I will like to see cut in network
-> > traffic too (if we can do this without introducing problems). My primary
-> > interest is that this kind of change should benefit virtiofs as well.
+> Because group is where the core code stores it.
+I see, with singleton group. I guess I can let dma-iommu code call
+
+iommu_attach_dma_pasid {
+	iommu_attach_device_pasid();
+Then the PASID will be stored in the group xa.
+The flush code can retrieve PASIDs from device_domain_info.device -> group
+-> pasid_array.
+Thanks for pointing it out, I missed the new pasid_array.
 > 
-> One issue with that appears to be checking permissions.   AFAIU this
-> patchset only enables the optimization if default_permissions is
-> turned off (i.e. all permission checking is done by the server).  But
-> virtiofs uses the default_permissions model.
-
-IIUC, only 3rd patch mentions that default_permission should be turned
-off. IOW, first patch where lookup + create + open is a single operation
-and second patch which does "lookup + open" in a single operation does
-not seem to require that default_permissions are not in effect.
-
-So if first two patches work fine, I think virtiofs should benefit too.
-(IMHO, 3rd patch is too hacky anyway)
-
-W.r.t permission checks, looks like may_open() will finally be called
-after ->atomic_open(). So even if we open the file, we should still be
-able to check whether we have permissions to open the file or not
-after the fact.
-
-fs/namei.c
-
-path_openat()
-{
-	open_last_lookups()  <--- This calls ->atomic_open()
-	do_open()  <--- This calls may_open()
-}
-
-Thanks
-Vivek
-
+> > We could retrieve PASIDs from the device PASID table but xa would be
+> > more efficient.
+> >   
+> > > > > > Are you suggesting the dma-iommu API should be called
+> > > > > > iommu_set_dma_pasid instead of iommu_attach_dma_pasid?      
+> > > > > 
+> > > > > No that API is Ok - the driver ops API should be 'set' not
+> > > > > attach/detach   
+> > > > Sounds good, this operation has little in common with
+> > > > domain_ops.dev_attach_pasid() used by SVA domain. So I will add a
+> > > > new domain_ops.dev_set_pasid()    
+> > > 
+> > > What? No, their should only be one operation, 'dev_set_pasid' and it
+> > > is exactly the same as the SVA operation. It configures things so that
+> > > any existing translation on the PASID is removed and the PASID
+> > > translates according to the given domain.
+> > > 
+> > > SVA given domain or UNMANAGED given domain doesn't matter to the
+> > > higher level code. The driver should implement per-domain ops as
+> > > required to get the different behaviors.  
+> > Perhaps some code to clarify, we have
+> > sva_domain_ops.dev_attach_pasid() = intel_svm_attach_dev_pasid;
+> > default_domain_ops.dev_attach_pasid() = intel_iommu_attach_dev_pasid;  
 > 
-> I'm not quite sure about this limitation, guessing that it's related
-> to the fact that the permissions may be stale at the time of checking?
+> Yes, keep that structure
+>  
+> > Consolidate pasid programming into dev_set_pasid() then called by both
+> > intel_svm_attach_dev_pasid() and intel_iommu_attach_dev_pasid(), right?
+> >  
 > 
-> Thanks,
-> Miklos
+> I was only suggesting that really dev_attach_pasid() op is misnamed,
+> it should be called set_dev_pasid() and act like a set, not a paired
+> attach/detach - same as the non-PASID ops.
 > 
+Got it. Perhaps another patch to rename, Baolu?
 
+
+Thanks,
+
+Jacob
