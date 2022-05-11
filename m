@@ -2,119 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A979EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:32:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28D41C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:32:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241312AbiEKCc0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 22:32:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54094 "EHLO
+        id S241423AbiEKCcb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 22:32:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242343AbiEKCcI (ORCPT
+        with ESMTP id S242402AbiEKCcK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 22:32:08 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C10ED5C66D;
-        Tue, 10 May 2022 19:31:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1652236280; x=1683772280;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=RlxOaNZc/4I0mSrTZJv3nct2D80p9NBIlZoZaPymPRc=;
-  b=qQzeNiSziR5cFz//AeO52+HaHuUi0Bf5dqItdhHTaGbzcIdoRcR7Yqt8
-   /9FxxsIzgCGzefM29rcdx26JzGuF7sUTyvQPDEkG0/h2pUJ4UzE32YZYu
-   2LrPu7pHahUepzyiny883PkFz1MYOYqtXllhl/JpEgtKWmIjAal9YVd3h
-   M=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 10 May 2022 19:31:20 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 19:31:19 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 10 May 2022 19:31:19 -0700
-Received: from hu-pkondeti-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 10 May 2022 19:31:13 -0700
-Date:   Wed, 11 May 2022 08:01:09 +0530
-From:   Pavan Kondeti <quic_pkondeti@quicinc.com>
-To:     Krishna Kurapati PSSNV <quic_kriskura@quicinc.com>
-CC:     Pavan Kondeti <quic_pkondeti@quicinc.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Andy Gross" <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Tue, 10 May 2022 22:32:10 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9510D61;
+        Tue, 10 May 2022 19:32:03 -0700 (PDT)
+X-UUID: 11e877910c1946a597159a7bcca16928-20220511
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:590066e2-11a0-4e58-852f-3e911ec78f9e,OB:0,LO
+        B:0,IP:0,URL:8,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:8
+X-CID-META: VersionHash:faefae9,CLOUDID:8d1d59b3-56b5-4c9e-8d83-0070b288eb6a,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: 11e877910c1946a597159a7bcca16928-20220511
+Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
+        (envelope-from <macpaul.lin@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1607058286; Wed, 11 May 2022 10:31:58 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Wed, 11 May 2022 10:31:57 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Wed, 11 May 2022 10:31:57 +0800
+Message-ID: <3c2dd0f91c0ce007151093f1f3cb5bf8f49cd248.camel@mediatek.com>
+Subject: Re: [PATCH next v3 2/2] arm64: dts: mediatek: mt8195: enable usb
+ remote wakeup
+From:   Macpaul Lin <macpaul.lin@mediatek.com>
+To:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        "Matthias Kaehlcke" <mka@chromium.org>,
-        Wesley Cheng <wcheng@codeaurora.org>,
-        <devicetree@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-phy@lists.infradead.org>, <quic_ppratap@quicinc.com>,
-        <quic_vpulyala@quicinc.com>
-Subject: Re: [v3 3/3] arm64: dts: qcom: sc7280: Update SNPS Phy params for
- SC7280 IDP device
-Message-ID: <20220511023109.GA13360@hu-pkondeti-hyd.qualcomm.com>
-References: <1652011947-18575-1-git-send-email-quic_kriskura@quicinc.com>
- <1652011947-18575-4-git-send-email-quic_kriskura@quicinc.com>
- <20220509032005.GJ4640@hu-pkondeti-hyd.qualcomm.com>
- <7ef88262-4292-3077-00a1-dc06b2483b10@quicinc.com>
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Fabien Parent <fparent@baylibre.com>,
+        Pablo Sun <pablo.sun@mediatek.com>,
+        Bear Wang <bear.wang@mediatek.com>
+Date:   Wed, 11 May 2022 10:31:57 +0800
+In-Reply-To: <20220510121027.19041-2-chunfeng.yun@mediatek.com>
+References: <20220510121027.19041-1-chunfeng.yun@mediatek.com>
+         <20220510121027.19041-2-chunfeng.yun@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <7ef88262-4292-3077-00a1-dc06b2483b10@quicinc.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 11:05:42PM +0530, Krishna Kurapati PSSNV wrote:
+On Tue, 2022-05-10 at 20:10 +0800, Chunfeng Yun wrote:
+> Enable USB remote wakeup of all four xHCI controller
 > 
-> On 5/9/2022 8:50 AM, Pavan Kondeti wrote:
-> >Hi Krishna,
-> >
-> >On Sun, May 08, 2022 at 05:42:27PM +0530, Krishna Kurapati wrote:
-> >>Overriding the SNPS Phy tuning parameters for SC7280 IDP device.
-> >>
-> >>Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-> >>Signed-off-by: Krishna Kurapati <quic_kriskura@quicinc.com>
-> >>---
-> >>  arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 6 ++++++
-> >>  1 file changed, 6 insertions(+)
-> >>
-> >>diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> >>index 5eb6689..ad85ffb 100644
-> >>--- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> >>+++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> >>@@ -325,6 +325,12 @@
-> >>  	vdda-pll-supply = <&vreg_l10c_0p8>;
-> >>  	vdda33-supply = <&vreg_l2b_3p0>;
-> >>  	vdda18-supply = <&vreg_l1c_1p8>;
-> >>+	qcom,hs-rise-fall-time-bps = <0>;
-> >>+	qcom,squelch-detector-bps = <(-2090)>;
-> >>+	qcom,hs-disconnect-bps = <1743>;
-> >>+	qcom,hs-amplitude-bps = <1780>;
-> >>+	qcom,hs-crossover-voltage = <(-31)>;
-> >>+	qcom,hs-output-impedance = <2600>;
-> >>  };
-> >Is this an example change or do we see any HS electrical compliance failures
-> >on SC7280 IDP that will get fixed with these override sequence?
-> >
-> >Thanks,
-> >Pavan
+> Reviewed-by: AngeloGioacchino Del Regno <
+> angelogioacchino.delregno@collabora.com>
+> Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+> ---
+> v3: add reviewed-by AngeloGioacchino;
 > 
-> Hi Pavan,
+> NOTE:
+>   based on v5.18-next/dts64 of matthias.bgg's branch
 > 
-> These results were based on compliance testing results.
+> v2: no changes, based on new version of mt8195.dtsi
+> ---
+>  arch/arm64/boot/dts/mediatek/mt8195.dtsi | 8 ++++++++
+>  1 file changed, 8 insertions(+)
 > 
-Ok, Do we know what tests are failing and getting fixed with these settings?
-Can you mention it in the changelog?
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+> b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+> index d5bc4cf5f4ac..3ad14e0e0956 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+> @@ -573,6 +573,8 @@
+>  				 <&apmixedsys CLK_APMIXED_USB1PLL>,
+>  				 <&infracfg_ao
+> CLK_INFRA_AO_SSUSB_XHCI>;
+>  			clock-names = "sys_ck", "ref_ck", "mcu_ck",
+> "xhci_ck";
+> +			mediatek,syscon-wakeup = <&pericfg 0x400 103>;
+> +			wakeup-source;
+>  			status = "disabled";
+>  		};
+>  
+> @@ -636,6 +638,8 @@
+>  				 <&apmixedsys CLK_APMIXED_USB1PLL>,
+>  				 <&pericfg_ao
+> CLK_PERI_AO_SSUSB_1P_XHCI>;
+>  			clock-names = "sys_ck", "ref_ck",
+> "mcu_ck","xhci_ck";
+> +			mediatek,syscon-wakeup = <&pericfg 0x400 104>;
+> +			wakeup-source;
+>  			status = "disabled";
+>  		};
+>  
+> @@ -655,6 +659,8 @@
+>  				 <&topckgen CLK_TOP_SSUSB_P2_REF>,
+>  				 <&pericfg_ao
+> CLK_PERI_AO_SSUSB_2P_XHCI>;
+>  			clock-names = "sys_ck", "ref_ck", "xhci_ck";
+> +			mediatek,syscon-wakeup = <&pericfg 0x400 105>;
+> +			wakeup-source;
+>  			status = "disabled";
+>  		};
+>  
+> @@ -674,6 +680,8 @@
+>  				 <&topckgen CLK_TOP_SSUSB_P3_REF>,
+>  				 <&pericfg_ao
+> CLK_PERI_AO_SSUSB_3P_XHCI>;
+>  			clock-names = "sys_ck", "ref_ck", "xhci_ck";
+> +			mediatek,syscon-wakeup = <&pericfg 0x400 106>;
+> +			wakeup-source;
+>  			status = "disabled";
+>  		};
+>  
 
-Thanks,
-Pavan
+Tested-by: Macpaul Lin <macpaul.lin@mediatek.com>
+
+Test method: test build pass and boot pass based on 'for-next' branch.
+
+N
+ote:
+System suspend and resume of MT8195 has not been ready or enabled
+on mainline. We cannot verify USB Host remote wake-up on mainline code,
+but the settings and function works when applied to MediaTek's internal
+working tree.
+
+Regards,
+Macpaul Lin
+
+
