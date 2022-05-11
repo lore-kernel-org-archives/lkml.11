@@ -2,113 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37BA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 00:28:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DD4BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 00:29:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239589AbiEKA2u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 20:28:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54678 "EHLO
+        id S239689AbiEKA3D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 20:29:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231863AbiEKA2r (ORCPT
+        with ESMTP id S239649AbiEKA2y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 20:28:47 -0400
-Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39005266078;
-        Tue, 10 May 2022 17:28:46 -0700 (PDT)
-Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181]) (authenticated)
-        by conssluserg-03.nifty.com with ESMTP id 24B0SCDT013623;
-        Wed, 11 May 2022 09:28:13 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 24B0SCDT013623
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1652228893;
-        bh=eoeQyILNpAXHdNEnfGHfs11GuDgXL7bPchGKRjAAw/A=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Oa4CHnFgoUwqh5qOVwUo7M6QWN9GHHmtQKsTUHfEPvHDmgdBy9erJ8R6yUI9CQp69
-         ZEKru8cY/Ah9GPAxx0HymBHPP5+YGFTTiag8lRfgd2EtNz+EDItvNC35z1FjA4c6KC
-         czGUB25WM5WQxJkbp0AkDnfkKYfWiOwwB9jltJspfK2C5O/+WNTTlvWM5WWTMqyXRX
-         vgkMXh8usu4z8E4PUrM9wJ89F2spVkg8km5CvBakcbpT+VNWi4y7eLVe23VlfGtil8
-         ZNGV9nOEdgiEpN8xCS8vNA7vX6lDJUQnOBk6F9oMOIWHUeYBzyhOhzE0EVFPZ4xTbm
-         Ri/fg9XbNwDsw==
-X-Nifty-SrcIP: [209.85.210.181]
-Received: by mail-pf1-f181.google.com with SMTP id g8so576415pfh.5;
-        Tue, 10 May 2022 17:28:12 -0700 (PDT)
-X-Gm-Message-State: AOAM532wF7tTKHUpbMdICM30s1Vsyrv1OiXjcO1Dd06SL2mRluO5j7+Y
-        d17axDOtOnzIUVxiDV8fBIjZShoFt/Ghm8+zPKQ=
-X-Google-Smtp-Source: ABdhPJxTv910Z4TUpWxaA3EipGYAci26TlKtfsPlxzRcDpkrWHv54gLEcM88SqMzPFqOcFjQPgqLbgGADw0M7Ww93W4=
-X-Received: by 2002:a05:6a00:234f:b0:4fa:f52b:46a1 with SMTP id
- j15-20020a056a00234f00b004faf52b46a1mr22970054pfj.32.1652228892080; Tue, 10
- May 2022 17:28:12 -0700 (PDT)
+        Tue, 10 May 2022 20:28:54 -0400
+Received: from mail-vs1-xe2c.google.com (mail-vs1-xe2c.google.com [IPv6:2607:f8b0:4864:20::e2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAD80266C93;
+        Tue, 10 May 2022 17:28:53 -0700 (PDT)
+Received: by mail-vs1-xe2c.google.com with SMTP id z144so390564vsz.13;
+        Tue, 10 May 2022 17:28:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=ArJ+P0yP41IspvL16vZgXyp5wGPDg81O0e5eE6H/vks=;
+        b=TmeVRx9py0dFnEm1+1TQ/UZnrTgHHdOLlw2Hg/DmfL9RPjUBspUNsO6IaFp9AHo04x
+         CyrG9eP8kVS+Q0M5scz+SpJ+oPm5ftB+uKdpygdqfsG5TGs2lgT5BbmFpW6uig2eAc+x
+         L92C4Sl0SGJgJ1RqYttF7dIj/CbeT/+aEjlFJKtUYsjG3bSf19nn3hxMK5psMj/Kdyev
+         vwUkLPp4Sd6DoHsVVgWFTywVAA93pVhPOmL2jh0RvBmDjYLuHXHeN/8moU7QoL1dXddI
+         dO9j3yGjXudx0e7cszWgN7B/Rupgac9uvTPYxwqmewbBjQww9y8hsZGjGVohCqNKHbsE
+         YuIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=ArJ+P0yP41IspvL16vZgXyp5wGPDg81O0e5eE6H/vks=;
+        b=DFdvEJsmn8t3ZysHbhyEcfUMMbwdnGXZCqGXFA8T8sOT9rgyc8WbfrFkr9076BNVqm
+         zVFNeCe963tFF7+TOrJ0R5IkyYBzg0KXxGOJb7pRviJh+Uh3Es3LjuJpHRNN00N1U9YD
+         nvMkOxu4MIs+T37Uz2Jd1NjD7Qj6NwdCY8ohDJzhMukQMnf2yl4UZaCwKZNrc+0lo97O
+         sgyTg/Ujszq5QH4TxBsJVxx93ikiNIAP/gnVi2kqPtR2VofPf/mD54ahHJa/h2yNgOqO
+         BP0UL+UYNSOWmQGZ2qTq+q+yjDNBnwWB61JRitWNFN92+UgOLoHc7b0J1j9QjuyXYH7Y
+         NJDQ==
+X-Gm-Message-State: AOAM530W6OkLaTm5XKx30KsPggVdnn9HuuUwOnVnAiD6UNrdogZXaQxy
+        7yn2LJxDy4nO2wHV32jhoTC8MUvDARDY6LV5AQ==
+X-Google-Smtp-Source: ABdhPJxhZxAx7pGH4pYIhNGd5w1vurCriRZkY02XBkZ32jUrSC70/SiZ/pB1dgdPFtRowcflumM3uWIdxBgBCnQZs4Q=
+X-Received: by 2002:a67:ec48:0:b0:32c:e56b:6e85 with SMTP id
+ z8-20020a67ec48000000b0032ce56b6e85mr12394926vso.50.1652228932835; Tue, 10
+ May 2022 17:28:52 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220510221333.2770571-1-robh@kernel.org>
-In-Reply-To: <20220510221333.2770571-1-robh@kernel.org>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Wed, 11 May 2022 09:27:00 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAQYL7rkqsWfNSdS53_sf-SLqpuVeoSmZuGqRNNtScT6Hw@mail.gmail.com>
-Message-ID: <CAK7LNAQYL7rkqsWfNSdS53_sf-SLqpuVeoSmZuGqRNNtScT6Hw@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: Remove example file on dt-extract-example error
-To:     Rob Herring <robh@kernel.org>
-Cc:     Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220510100328.9191-1-warp5tw@gmail.com> <20220510100328.9191-2-warp5tw@gmail.com>
+ <28029d30-6d18-d28c-a7d2-d86b9ab9ad35@linaro.org> <CACD3sJa6qEPDD58NqiXJ+hHHSSbB6BRqEPXuX+m49ei8HrHF+g@mail.gmail.com>
+In-Reply-To: <CACD3sJa6qEPDD58NqiXJ+hHHSSbB6BRqEPXuX+m49ei8HrHF+g@mail.gmail.com>
+From:   Tyrone Ting <warp5tw@gmail.com>
+Date:   Wed, 11 May 2022 08:28:40 +0800
+Message-ID: <CACD3sJa2qdocMXX3QFj5OdjFGd95M5nArJqPpEMjCYmb2ZvgHA@mail.gmail.com>
+Subject: Re: [PATCH v4 1/9] dt-bindings: i2c: npcm: support NPCM845
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        avifishman70@gmail.com, Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>, robh+dt@kernel.org,
+        Wolfram Sang <wsa@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        jarkko.nikula@linux.intel.com, semen.protsenko@linaro.org,
+        sven@svenpeter.dev, jsd@semihalf.com, lukas.bulwahn@gmail.com,
+        olof@lixom.net, arnd@arndb.de, Tyrone Ting <warp5tw@gmail.com>,
+        tali.perry@nuvoton.com, Avi.Fishman@nuvoton.com,
+        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
+        kfting <kfting@nuvoton.com>
+Cc:     openbmc@lists.ozlabs.org, linux-i2c@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 7:13 AM Rob Herring <robh@kernel.org> wrote:
+Tyrone Ting <warp5tw@gmail.com> =E6=96=BC 2022=E5=B9=B45=E6=9C=8811=E6=97=
+=A5 =E9=80=B1=E4=B8=89 =E4=B8=8A=E5=8D=888:25=E5=AF=AB=E9=81=93=EF=BC=9A
 >
-> As 'dt-extract-example' writes the example dts files to stdout, a file
-> is always created even on an error such as Ctrl-C. The resulting empty
-> file(s) then cause unexpected errors on subsequent builds. Fix this by
-> removing the output file on any error.
+> Hi Krzysztof:
 >
-
-
-Did you really set it?
-
-
-The target deletion on interrupt is automatic
-since the following commit:
-
-
-
-commit 9c2af1c7377a8a6ef86e5cabf80978f3dbbb25c0
-Author: Masahiro Yamada <yamada.masahiro@socionext.com>
-Date:   Fri Jul 20 16:46:33 2018 +0900
-
-    kbuild: add .DELETE_ON_ERROR special target
-
-
-
-
-
-
-
-
-
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
->  Documentation/devicetree/bindings/Makefile | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Thank you for your review and it will be addressed.
 >
-> diff --git a/Documentation/devicetree/bindings/Makefile b/Documentation/devicetree/bindings/Makefile
-> index c9953f86b19d..c9fadff3dd74 100644
-> --- a/Documentation/devicetree/bindings/Makefile
-> +++ b/Documentation/devicetree/bindings/Makefile
-> @@ -20,7 +20,7 @@ check_dtschema_version:
->         { echo "ERROR: dtschema minimum version is v$(DT_SCHEMA_MIN_VERSION)" >&2; false; }
+> Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> =E6=96=BC 2022=E5=B9=
+=B45=E6=9C=8810=E6=97=A5 =E9=80=B1=E4=BA=8C =E4=B8=8B=E5=8D=886:59=E5=AF=AB=
+=E9=81=93=EF=BC=9A
+> >
+> > On 10/05/2022 12:03, Tyrone Ting wrote:
+> > >
+> > >  maintainers:
+> > >    - Tali Perry <tali.perry1@gmail.com>
+> > >
+> > >  properties:
+> > >    compatible:
+> > > -    const: nuvoton,npcm750-i2c
+> > > +    enum:
+> > > +      - nuvoton,npcm750-i2c
+> > > +      - nuvoton,npcm845-i2c
+> > >
+> > >    reg:
+> > >      maxItems: 1
+> > > @@ -36,6 +37,10 @@ properties:
+> > >      default: 100000
+> > >      enum: [100000, 400000, 1000000]
+> > >
+> > > +  nuvoton,sys-mgr:
+> > > +    $ref: "/schemas/types.yaml#/definitions/phandle"
+> >
+> > Minor nit: No quotes. The other places don't have it.
+> >
+> >
+> > Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> >
+> >
+> > Best regards,
+> > Krzysztof
 >
->  quiet_cmd_extract_ex = DTEX    $@
-> -      cmd_extract_ex = $(DT_EXTRACT_EX) $< > $@
-> +      cmd_extract_ex = $(DT_EXTRACT_EX) $< > $@ || rm $@
->
->  $(obj)/%.example.dts: $(src)/%.yaml check_dtschema_version FORCE
->         $(call if_changed,extract_ex)
-> --
-> 2.34.1
->
-
-
--- 
-Best Regards
-Masahiro Yamada
+> Best regards,
+> Tyrone
