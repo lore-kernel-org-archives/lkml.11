@@ -2,143 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B498C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 16:52:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94637C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 16:52:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238100AbiEKQwS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 12:52:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48706 "EHLO
+        id S1345097AbiEKQwv (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 12:52:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345209AbiEKQwC (ORCPT
+        with ESMTP id S242375AbiEKQws (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 12:52:02 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C359CB1D9
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 09:51:50 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id w19so4573763lfu.11
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 09:51:50 -0700 (PDT)
+        Wed, 11 May 2022 12:52:48 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E8E63BD
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 09:52:46 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id ch13so5221756ejb.12
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 09:52:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=DNkekimpIZPrOqKWBuNc12AOJ0kosP8VwwiWI0Gdmgs=;
-        b=XbjPsW2X4c3cWRAmMZeaDnd+4gaQND1dM5AwXYIk2nHeIjR1E8SC+V/2EV15p1tHLp
-         eIHQbe3Tkc4lqfw+p6mGlYK6fHJwAy8QS/F8hyNIRJSNoEC/DZJ7nmL2qXLu/7P3KeZM
-         7zUJnviG6EUWIqQlz9puheZ0J07I38TUzTI/CzOFl/W+h65zQl9LdUykR4ef1OU7cHfH
-         OC3UDJBhBI0HQzQ77L2DKypCm7bWOuevTFnLYsONb4qai5NDXV4svHVN7QO8I9dCUSks
-         SkBLNFYQHKAVu5vviDrmyjgZJmyKCiWHiopm6Bekr9jAyVQtn+nHH+PuLWOqLZyXTzC2
-         K1DQ==
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=fJMrUxecDMgBluXgdeiExZun38GRKFbcmLUZIGmMcu4=;
+        b=GH1/AcFtV52HHv73C7PZgBr3qe/HUYqY2Tv4q8Dco12i8SqISC3UcXhGwcytiZXbal
+         bScMqGXMYhiE0jlT1IFCSq9UFJvss9iXv5HFeI1VdH8JaCL1hPYbn2w2iz3WlS0JbqW7
+         rqIT9exhQjO99SPDqT6uTMUGH/vW6q6QURdtcTL/bQ1jFhmNqPUvKol2F7T3RHljJKME
+         shI+UnDSLzGgET18G6hpyrV5tdV82V+/fL4iwcXLq3MJy7m7N4QiJNoF2hPlcPHiq5Zs
+         +ufpVOyXt21mywbFg3M11Msv9vWRvjgtFov2QLDIfN2uTIIcGyKB+iFQmad73luqcXJK
+         vvdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+         :content-language:to:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=DNkekimpIZPrOqKWBuNc12AOJ0kosP8VwwiWI0Gdmgs=;
-        b=5Gvfe45j4uq05bNcVjErgVUACZWL/7pUEfvCcjHZ+xN/TvzLKA368DxhFsXkclXuIA
-         tDRg0ARPlg65ah6C/NcXCRXJdkNNWMX4RlT8G9+KrfaITkk/BZDzBho7mYJRIAv0UQvq
-         2aIBe/07ioMe2Qpy54ykdk8XJGnF82N5dJp9m/uqwMf9YnQz9sV3liYdDbJSUWdrUqy9
-         P+0uE8OUP1LIxVfZo0S9n34P+WWA9q1YXyUl/gsRi196oAmPLW9y7RUU0wApGOIn7WOy
-         NcTzsNjMDHNtCD3tdbbMi+IDqIjq8WX8IKLT/F4fo0jsVr1bdqQ/ngjCEiXmTROhgBOE
-         d3/w==
-X-Gm-Message-State: AOAM531lHrY8Fx9PV3RA92lIOnM6qJLUKwfsfSyjyg4f7wUB31P76Fa+
-        EU+ZxnGJaSIeugFnfBcIwHBcYg==
-X-Google-Smtp-Source: ABdhPJyLo9G6Tmvo0r462l0cfgtq61tw6rmcLQx9lsfbYrcnKqfnS2XsjvfRAIVGvecfyJ0vfRpAmQ==
-X-Received: by 2002:a05:6512:3f88:b0:44f:567f:8715 with SMTP id x8-20020a0565123f8800b0044f567f8715mr19977138lfa.609.1652287909157;
-        Wed, 11 May 2022 09:51:49 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id k34-20020a05651c062200b0024f3d1daeb1sm437515lje.57.2022.05.11.09.51.48
+        bh=fJMrUxecDMgBluXgdeiExZun38GRKFbcmLUZIGmMcu4=;
+        b=PMBBCKWPr80gNcXhhR9Pkcb6g8ymSXY+JugbaRMg7IiQUWOkamDfygGFSOHThs+vxa
+         QZrJL5jzvqeVSEXej8z1d0qyop8e1OpXwv3uxzj6JrKDXgNBgGCE6MStCIw24oKnig9q
+         r2+MZRqtKKijZ0OBBGIbdTnpHhuKJg55+erdF1gTAE27MhMr0w2u++ydQNMIbQCM/Vzl
+         MjE1C3X+7/ryD5+F4SqbgO4Z92FGUknkSyaeAq4LkGYVHHI4GK1HiCcMliPqrgdUv5DJ
+         Cx3ZRwXrRda+YXJTA/dwtMsDTdqpUPu8i/DnL7dL02uHpm3BsH/VYNLJNC6rJ2ZO+/D1
+         XmVg==
+X-Gm-Message-State: AOAM533XXNDk1c3Nzi59dZHcUmvJShDDfr668zw0KUP2LVGlQ24MgSQg
+        N0Id4jygzMc/gns7ga+PzibiRg==
+X-Google-Smtp-Source: ABdhPJwcAGyOx0j3QQFP2Vd5OOE0tFXzzlUpfWzLlZ6E4ig9i5LV4PCs8o3lbJzhmp1a4Vv9V7lJDA==
+X-Received: by 2002:a17:907:3e04:b0:6f5:1132:59de with SMTP id hp4-20020a1709073e0400b006f5113259demr26862519ejc.755.1652287965166;
+        Wed, 11 May 2022 09:52:45 -0700 (PDT)
+Received: from [192.168.0.155] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id y13-20020a056402134d00b0042617ba63d6sm1405282edw.96.2022.05.11.09.52.44
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 May 2022 09:51:48 -0700 (PDT)
-Message-ID: <b86b5ba5-91ab-592a-5b4b-10dc738116ca@linaro.org>
-Date:   Wed, 11 May 2022 19:51:48 +0300
+        Wed, 11 May 2022 09:52:44 -0700 (PDT)
+Message-ID: <0815f581-ca5b-6fb6-a59e-f5d0a3686caa@linaro.org>
+Date:   Wed, 11 May 2022 18:52:43 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: Re: [PATCH 1/9] remoteproc: qcom: pas: Add MSM8953 ADSP PIL support
-Content-Language: en-GB
-To:     Sireesh Kodali <sireeshkodali1@gmail.com>,
-        linux-remoteproc@vger.kernel.org
-Cc:     linux-arm-msm@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, bjorn.andersson@linaro.org,
-        devicetree@vger.kernel.org, phone-devel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Andy Gross <agross@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-References: <20220511161602.117772-1-sireeshkodali1@gmail.com>
- <20220511161602.117772-2-sireeshkodali1@gmail.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20220511161602.117772-2-sireeshkodali1@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Subject: Re: [PATCH v2 02/11] dt-bindings: marvell: convert Armada 37xx
+ compatibles to YAML
+Content-Language: en-US
+To:     Robert Marko <robert.marko@sartura.hr>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, andrew@lunn.ch,
+        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
+        kostap@marvell.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        pali@kernel.org, marek.behun@nic.cz
+References: <20220510124929.91000-1-robert.marko@sartura.hr>
+ <20220510124929.91000-2-robert.marko@sartura.hr>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220510124929.91000-2-robert.marko@sartura.hr>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/05/2022 19:15, Sireesh Kodali wrote:
-> Add support for the Audio DSP PIL found on the Qualcomm MSM8953
-> platform. The same configuration is used on all SoCs based on the
-> MSM8953 platform (SDM450, SDA450, SDM625, SDM632, APQ8053).
-> 
-> Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
-> ---
->   drivers/remoteproc/qcom_q6v5_pas.c | 31 ++++++++++++++++++++++++++++++
->   1 file changed, 31 insertions(+)
-> 
-> diff --git a/drivers/remoteproc/qcom_q6v5_pas.c b/drivers/remoteproc/qcom_q6v5_pas.c
-> index 1ae47cc153e5..4dcb714a1468 100644
-> --- a/drivers/remoteproc/qcom_q6v5_pas.c
-> +++ b/drivers/remoteproc/qcom_q6v5_pas.c
-> @@ -617,7 +617,37 @@ static const struct adsp_data sm8350_adsp_resource = {
->   	.ssctl_id = 0x14,
->   };
->   
-> +static const struct adsp_data msm8953_adsp_resource = {
-> +	.crash_reason_smem = 423,
-> +	.firmware_name = "adsp.mdt",
-> +	.pas_id = 1,
-> +	.has_aggre2_clk = false,
-> +	.auto_boot = true,
-> +	.proxy_pd_names = (char*[]){
-> +		"cx",
-> +		NULL,
-> +	},
-> +	.ssr_name = "lpass",
-> +	.sysmon_name = "adsp",
-> +	.ssctl_id = 0x14,
-> +};
+On 10/05/2022 14:49, Robert Marko wrote:
+
+Thank you for your patch. There is something to discuss/improve.
+
+> -
+> - - compatible: must contain "cznic,turris-mox"
+> diff --git a/Documentation/devicetree/bindings/arm/marvell/armada-37xx.yaml b/Documentation/devicetree/bindings/arm/marvell/armada-37xx.yaml
+> new file mode 100644
+> index 000000000000..3f41ef2c6f3e
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/arm/marvell/armada-37xx.yaml
+> @@ -0,0 +1,50 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/arm/marvell/armada-37xx.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
-
-Also it looks like this item is identical to msm8996_adsp_resources. So 
-you can existing structure instead.
-
->   static const struct adsp_data msm8996_adsp_resource = {
-> +	.crash_reason_smem = 423,
-> +	.firmware_name = "adsp.mdt",
-> +	.pas_id = 1,
-> +	.has_aggre2_clk = false,
-> +	.auto_boot = true,
-> +	.proxy_pd_names = (char*[]){
-> +		"cx",
-> +		NULL,
-> +	},
-> +	.ssr_name = "lpass",
-> +	.sysmon_name = "adsp",
-> +	.ssctl_id = 0x14,
-> +};
+> +title: Marvell Armada 37xx Platforms Device Tree Bindings
 > +
-> +static const struct adsp_data msm8998_adsp_resource = {
->   		.crash_reason_smem = 423,
->   		.firmware_name = "adsp.mdt",
->   		.pas_id = 1,
-> @@ -850,6 +880,7 @@ static const struct adsp_data sdx55_mpss_resource = {
->   static const struct of_device_id adsp_of_match[] = {
->   	{ .compatible = "qcom,msm8974-adsp-pil", .data = &adsp_resource_init},
->   	{ .compatible = "qcom,msm8996-adsp-pil", .data = &msm8996_adsp_resource},
-> +	{ .compatible = "qcom,msm8953-adsp-pil", .data = &msm8953_adsp_resource},
->   	{ .compatible = "qcom,msm8996-slpi-pil", .data = &slpi_resource_init},
->   	{ .compatible = "qcom,msm8998-adsp-pas", .data = &msm8996_adsp_resource},
->   	{ .compatible = "qcom,msm8998-slpi-pas", .data = &slpi_resource_init},
+> +maintainers:
+> +  - Robert Marko <robert.marko@sartura.hr>
+> +
+> +properties:
+> +  $nodename:
+> +    const: '/'
+> +  compatible:
+> +    oneOf:
+> +      - description: Armada 3710 SoC
+> +        items:
+> +          - const: marvell,armada3710
+
+This does not look correct. The SoC usually cannot be used by itself,
+it's always a part of some product, SoM, board.
+
+> +
+> +      - description: Armada 3720 SoC
+> +        items:
+> +          - enum:
+> +              - marvell,armada-3720-db
+> +              - globalscale,espressobin
+> +              - cznic,turris-mox
+> +              - methode,udpu
+
+Order by name.
+
+> +          - const: marvell,armada3720
+> +          - const: marvell,armada3710
+> +
+> +      - description: Globalscale Espressobin boards
+> +        items:
+> +          - enum:
+> +              - globalscale,espressobin-emmc
+> +              - globalscale,espressobin-ultra
+> +              - globalscale,espressobin-v7
+> +          - const: globalscale,espressobin
+> +          - const: marvell,armada3720
+> +          - const: marvell,armada3710
+> +
+> +      - description: Globalscale Espressobin V7 boards
+> +        items:
+> +          - enum:
+> +              - globalscale,espressobin-v7-emmc
+> +          - const: globalscale,espressobin-v7
+> +          - const: globalscale,espressobin
+> +          - const: marvell,armada3720
+> +          - const: marvell,armada3710
+> +
+> +additionalProperties: true
 
 
--- 
-With best wishes
-Dmitry
+Best regards,
+Krzysztof
