@@ -2,89 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93D09C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:12:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BEE0C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:12:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245543AbiEKPMQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 11:12:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57452 "EHLO
+        id S245433AbiEKPMq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 11:12:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245505AbiEKPMO (ORCPT
+        with ESMTP id S245540AbiEKPMf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 11:12:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3C6A6211B
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 08:12:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C1BE6186A
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 15:12:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AB63C340EE;
-        Wed, 11 May 2022 15:12:09 +0000 (UTC)
-Date:   Wed, 11 May 2022 11:12:07 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Wang ShaoBo <bobo.shaobowang@huawei.com>,
-        cj.chengjian@huawei.com, huawei.libin@huawei.com,
-        xiexiuqi@huawei.com, liwei391@huawei.com,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        catalin.marinas@arm.com, will@kernel.org, zengshun.wu@outlook.com,
-        Jiri Olsa <jolsa@kernel.org>
-Subject: Re: [RFC PATCH -next v2 3/4] arm64/ftrace: support dynamically
- allocated trampolines
-Message-ID: <20220511111207.25d1a693@gandalf.local.home>
-In-Reply-To: <20220511233450.40136cdf6a53eb32cd825be8@kernel.org>
-References: <YmFXrBG5AmX3+4f8@lakrids>
-        <20220421100639.03c0d123@gandalf.local.home>
-        <YmF0xYpTMoWOIl00@lakrids>
-        <20220421114201.21228eeb@gandalf.local.home>
-        <YmGF/OpIhAF8YeVq@lakrids>
-        <20220421130648.56b21951@gandalf.local.home>
-        <YmJ/l4vJoEpFt68l@FVFF77S0Q05N>
-        <20220422114541.34d71ad9@gandalf.local.home>
-        <YmLlmaXF00hPkOID@lakrids>
-        <20220426174749.b5372c5769af7bf901649a05@kernel.org>
-        <YnJUTuOIX9YoJq23@FVFF77S0Q05N>
-        <20220505121538.04773ac98e2a8ba17f675d39@kernel.org>
-        <20220509142203.6c4f2913@gandalf.local.home>
-        <20220510181012.d5cba23a2547f14d14f016b9@kernel.org>
-        <20220510104446.6d23b596@gandalf.local.home>
-        <20220511233450.40136cdf6a53eb32cd825be8@kernel.org>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Wed, 11 May 2022 11:12:35 -0400
+Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D27426211B;
+        Wed, 11 May 2022 08:12:34 -0700 (PDT)
+Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-e93bbb54f9so3125324fac.12;
+        Wed, 11 May 2022 08:12:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+bHIvRwbZy2PU2tVG2MsolIs4vwnuxHm9cCZ7s9+0ag=;
+        b=h/qSCPk7bxX2NqGK8OaRIVXDvJuBiq0CsuQWDMquStjFRfFsc0gahwRh0gxctRtK4D
+         OGUT81NVBOzRes8TQJQyvzIRQZ1SNsNxblFnupyjKVUpIGnv2aKHHTckBDafFhcMW1aB
+         nMkNQT1mglT+xuY1rHJfW5iJPmS31XTnzF5JVISLpz5/7tYTS8iVTUDMdjqkLrmwDN0x
+         o43TdIJ3D/QqygEsWPc82LzQLKOuvS+1GF/fjF+nN2NKSeBZ1lea9yvvLkX3OeBdkncm
+         0SRSyhAqNkGOVwcui0MRBwcqKVKs488x4+nIu9KfSCnteVu+BB+dP4TtyQFAzzcz+zDc
+         f9sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=+bHIvRwbZy2PU2tVG2MsolIs4vwnuxHm9cCZ7s9+0ag=;
+        b=rYlHjOMzlBuSNm4lp8KbX549/J4y9zva2r6vmwVPHT7EEb9iynyMRFCqj1OSfjJUJs
+         fuZf87eQyC5AlpFCSsLS4wDgDocJV9hDGJ/AWjZVUa5zIBRh6Pi9BgqwR0RtkqgI6yzn
+         gMlxzzoZ81Kr3yu0E+ikFSex6qdhmiUgLuCpXEnZ+0tlajUcdkkvIWF2+o5O3Xpf+U0B
+         /q4w7lTJMV7P3CK9d/AoPTGedZgCxlLLc2qFDoiLleTA5d+8QfbEEzHIKOiKTWlFg39G
+         F9AuEMn7loaE5grXI0LYlMfZ/EJvFffue6bDUko8MsUS1qcbAV8s3rwrcaHhOqR4SO12
+         JmJQ==
+X-Gm-Message-State: AOAM533MkKw6aTj2IqiBpnEYFAe1knqU4pXeOL9vt9oca34IEhXqZta6
+        5UFvHmvvrVl76RQ6VrLxBHs=
+X-Google-Smtp-Source: ABdhPJyPGhcynPWtpfjk8Hqhg2tYOLdv7xwnSqCnr8ZN1EmY6T3rWTO0jq87FeL7LHsJHqRGe/Iovg==
+X-Received: by 2002:a05:6870:3488:b0:de:eaa5:260b with SMTP id n8-20020a056870348800b000deeaa5260bmr2942141oah.281.1652281954175;
+        Wed, 11 May 2022 08:12:34 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id b42-20020a056870392a00b000e686d13887sm641007oap.33.2022.05.11.08.12.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 May 2022 08:12:33 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     "Rafael J . Wysocki" <rafael@kernel.org>
+Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 0/3] hwmon: Introduce and use hwmon_device_register_for_thermal
+Date:   Wed, 11 May 2022 08:12:27 -0700
+Message-Id: <20220511151230.2983227-1-linux@roeck-us.net>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 11 May 2022 23:34:50 +0900
-Masami Hiramatsu <mhiramat@kernel.org> wrote:
+The thermal subsystem registers a hwmon driver without providing
+chip information or sysfs group information. This is for legacy reasons
+and would be difficult to change.
 
-> OK, so fregs::regs will have a subset of pt_regs, and accessibility of
-> the registers depends on the architecture. If we can have a checker like
-> 
-> ftrace_regs_exist(fregs, reg_offset)
+At the same time, several attempts have been made to convert hwmon
+drivers using the deprecated hwmon_device_register() to use
+hwmon_device_register_with_info() by just providing NULL parameters.
+This is an abuse of the hwmon API. To prevent this abuse, we want to
+enforce that a parent device pointer as well as chip information is
+provided when registering a hwmon device using
+hwmon_device_register_with_info().
 
-Or something. I'd have to see the use case.
+To be able to do this, introduce and use a special API for use only by
+the thermal subsystem (patches 1 and 2). Patch 3 makes the 'dev' and 'chip'
+parameters of hwmon_device_register_with_info() mandatory.
 
-> 
-> kprobe on ftrace or fprobe user (BPF) can filter user's requests.
-> I think I can introduce a flag for kprobes so that user can make a
-> kprobe handler only using a subset of registers. 
-> Maybe similar filter code is also needed for BPF 'user space' library
-> because this check must be done when compiling BPF.
+----------------------------------------------------------------
+Guenter Roeck (3):
+      hwmon: Introduce hwmon_device_register_for_thermal
+      thermal/drivers/thermal_hwmon: Use hwmon_device_register_for_thermal()
+      hwmon: Make chip parameter for with_info API mandatory
 
-Is there any other case without full regs that the user would want anything
-other than the args, stack pointer and instruction pointer?
-
-That is, have a flag that says "only_args" or something, that says they
-will only get the registers for arguments, a stack pointer, and the
-instruction pointer (note, the fregs may not have the instruction pointer
-as that is passed to the the caller via the "ip" parameter. If the fregs
-needs that, we can add a "ftrace_regs_set_ip()" before calling the
-callback registered to the fprobe).
-
--- Steve
+ Documentation/hwmon/hwmon-kernel-api.rst |  2 +-
+ drivers/hwmon/hwmon.c                    | 41 ++++++++++++++++++++++++++++++++---------
+ drivers/thermal/thermal_hwmon.c          |  6 ++++--
+ include/linux/hwmon.h                    |  3 +++
+ 4 files changed, 40 insertions(+), 12 deletions(-)
