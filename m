@@ -2,117 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B156EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 10:52:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1074C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 10:53:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236784AbiEKKws (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 06:52:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54832 "EHLO
+        id S237544AbiEKKxH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 06:53:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229819AbiEKKwl (ORCPT
+        with ESMTP id S229819AbiEKKxF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 06:52:41 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B21C6FD3E;
-        Wed, 11 May 2022 03:52:40 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id a191so1474856pge.2;
-        Wed, 11 May 2022 03:52:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :references:content-language:in-reply-to:content-transfer-encoding;
-        bh=D69fYPxCw8BUOIfDJnOY3FdNP+e1YOgJF/XqPjbFoNo=;
-        b=dXKO8FRy1Gx9Bi+ilR6bwSQQKTQD1+W+fYClXKMXcZFbRCqU19eBjOL+zMisq48KHQ
-         p/3UmgbEy9anVL+cuX+/tcSzt9K8kR/wKnpsCqTC1cpLgubJUzRci7ub6xOZmzCnJbxW
-         oN8vabwCdI/1z6HNsxW015J8kNcdPzdnwtHmft2RyuezRS0b9HXVR/lMsYfDHge7ptEZ
-         DuZPiRHq0Ame6ledlaatKVyZ2BX5cut0fVvzrCNuazazV5p9LaNiDwFsVbd7Z8qEFk/x
-         W80BKDKKxfACVsPZ7iE7/Ihsi/AhtAp0cxDQieV/K2NTiMZWuqU22+GlZaLe2+6IcV+/
-         25Aw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:references:content-language:in-reply-to
-         :content-transfer-encoding;
-        bh=D69fYPxCw8BUOIfDJnOY3FdNP+e1YOgJF/XqPjbFoNo=;
-        b=VmmZ3+8g/tSHMsPc5ZD7H+LiDOz4iydZPc4mFRCjKGLfuPMb16o0q6XPj0JgMUDCIi
-         UoB4L9Kvt5VhsD+v6xLLtfoNheTR82nV+jsM0Ja85A92zxXpS4al5TLWN2tmCB/Wx44O
-         EjfwWxo2qcHDAAlJWo3fS+6sW1LMXnrq+qeX8QhZQWzUYiayffmqROcl8ti7eRMMG/I3
-         NEDelzfdD6WouQA4Ot1T5iGZXNb6Igd9eF9eBqh/vdeXmpgBK0UPl4Wh00fpKcWi0t7E
-         wnG92ZJ53Dw9QZWRbz1loSK+leWU/hHNcAlKOipikzJ6AnPcEAdJx9bwetAP4G0OvgfF
-         JrQw==
-X-Gm-Message-State: AOAM530hqm8hcIlsEi+gdj9dc3vhkGPbWRSK0W+eTClJC1fQi/vm09ga
-        lHc7kAPp++uavPT3VC//VuE=
-X-Google-Smtp-Source: ABdhPJz/1MRji99fbx2kQ84bnyYlvpn5iJ9qHzZyPRhLDMiNAH4pha7e5uayS0kg5Cyw349r6OQFcw==
-X-Received: by 2002:a05:6a00:1a49:b0:510:a1d9:7d73 with SMTP id h9-20020a056a001a4900b00510a1d97d73mr15057408pfv.53.1652266359838;
-        Wed, 11 May 2022 03:52:39 -0700 (PDT)
-Received: from [192.168.11.5] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
-        by smtp.gmail.com with ESMTPSA id d5-20020a170902c18500b0015e8d4eb1d2sm1487774pld.28.2022.05.11.03.52.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 May 2022 03:52:39 -0700 (PDT)
-Message-ID: <ec431b19-520f-b202-33f6-4ba336743ee3@gmail.com>
-Date:   Wed, 11 May 2022 19:52:35 +0900
+        Wed, 11 May 2022 06:53:05 -0400
+X-Greylist: delayed 1804 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 11 May 2022 03:53:02 PDT
+Received: from connect2.vanmierlo.com (fieber.vanmierlo.com [84.243.197.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 618A0880EC;
+        Wed, 11 May 2022 03:53:02 -0700 (PDT)
+X-Footer: dmFubWllcmxvLmNvbQ==
+Received: from roundcube.vanmierlo.com ([192.168.37.37])
+        (authenticated user m.brock@vanmierlo.com)
+        by connect2.vanmierlo.com (Kerio Connect 9.4.0) with ESMTPA;
+        Wed, 11 May 2022 12:22:16 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-From:   Akira Yokosawa <akiyks@gmail.com>
-Subject: Re: [PATCH net-next] docs: ctucanfd: Use 'kernel-figure' directive
- instead of 'figure'
-To:     Bagas Sanjaya <bagasdotme@gmail.com>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        Pavel Pisa <pisa@cmp.felk.cvut.cz>,
-        Martin Jerabek <martin.jerabek01@gmail.com>,
-        Ondrej Ille <ondrej.ille@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <05d491d4-c498-9bab-7085-9c892b636d68@gmail.com>
- <YntZqxuLSci6f8Z+@debian.me>
-Content-Language: en-US
-In-Reply-To: <YntZqxuLSci6f8Z+@debian.me>
-Content-Type: text/plain; charset=UTF-8
+Date:   Wed, 11 May 2022 12:22:16 +0200
+From:   m.brock@vanmierlo.com
+To:     David Laight <David.Laight@aculab.com>
+Cc:     'Matthias Schiffer' <matthias.schiffer@ew.tq-group.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Lukas Wunner <lukas@wunner.de>
+Subject: Re: [PATCH] serial: Revert RS485 polarity change on UART open
+In-Reply-To: <df0034da2db14b6b9993c37422a6711d@AcuMS.aculab.com>
+References: <20220329085050.311408-1-matthias.schiffer@ew.tq-group.com>
+ <20220329100328.GA2090@wunner.de>
+ <b2f29129f966685105e09781620b85c8f4f1a88e.camel@ew.tq-group.com>
+ <749eee7dd2c7464a8c4d9ea5972205fa@AcuMS.aculab.com>
+ <82266d339e09ad16963e16014cd836fa670b3a0c.camel@ew.tq-group.com>
+ <df0034da2db14b6b9993c37422a6711d@AcuMS.aculab.com>
+Message-ID: <8f44fa843e3053f19e3ec749e3083a5a@vanmierlo.com>
+X-Sender: m.brock@vanmierlo.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 11 May 2022 13:37:31 +0700,
-Bagas Sanjaya wrote:
-> On Tue, May 10, 2022 at 06:34:37PM +0900, Akira Yokosawa wrote:
->> Two issues were observed in the ReST doc added by commit c3a0addefbde
->> ("docs: ctucanfd: CTU CAN FD open-source IP core documentation.").
->>
->> The plain "figure" directive broke "make pdfdocs" due to a missing
->> PDF figure.  For conversion of SVG -> PDF to work, the "kernel-figure"
->> directive, which is an extension for kernel documentations, should
->> be used instead.
->>
->
-> Does plain "figure" directive not currently support SVG file argument?
-> Because when I see reST documentation ([1]), it doesn't explicitly
-> mentioned supported image formats.
->
-> [1]: https://docutils.sourceforge.io/docs/ref/rst/directives.html#figure
->
+David Laight wrote on 2022-03-29 15:19:
+> From: Matthias Schiffer
+>> Sent: 29 March 2022 14:03
+>> 
+>> On Tue, 2022-03-29 at 12:55 +0000, David Laight wrote:
+>> > From: Matthias Schiffer
+>> > > Sent: 29 March 2022 11:39
+>> > ...
+>> > > I guess that would work. The fact that even the different
+>> > > variants of the 8250 are implemented inconsistently makes this
+>> > > especially ugly... It certainly puts a damper on the efforts to
+>> > > make the handling of RS485 in serial drivers more generic.
+>> >
+>> > One thing to remember is that RS232 (IIRC really V.38) line driver
+>> > chips are typically inverting.
+>> >
+>> > So the modem signals on a TTL level output will have the
+>> > opposite polarity to that required on the actual connector.
+>> >
+>> > Normally a UART will have an 'active high' register bit for
+>> > a modem signal that drives and 'active low' pin so you get
+>> > the correct polarity with an inverting line driver.
+>> >
+>> > 	David
+>> >
+>> 
+>> Indeed. As far as I can tell, this property of UARTs is what got us
+>> into this mess: Some people interpreted SER_RS485_RTS_ON_SEND as "set
+>> the RTS flag in the MCR register on send", while other thought it
+>> should mean "set the RTS pin to high on send", leading to opposite
+>> behaviours in different UART drivers (and even different UART variants
+>> in the same driver, in the case of the 8250 family).
+> 
+> Hmmm... A complete mess.
+> The 'RTS pin' that needs to go high is the one on the (typically) 'D'
+> connector after the inverting line driver.
+> Not the pin on the uart package.
+> I'd expect TTL level serial interfaces to require active low
+> modem signals.
 
-Close!
+A typical 'D' connector for RS485? I've seen all sorts of connectors
+and I can't say one of them is typical. You're assuming there are
+RS232 level shifters in play, but usually there aren't and the TTL
+UART signals are directly connected to an RS485 transceiver. For
+RS485 there is no outside RTS pin, so you will have to talk about
+the UART TTL pin.
 
-See:
-    https://docutils.sourceforge.io/docs/ref/rst/directives.html#images
+https://www.kernel.org/doc/Documentation/serial/serial-rs485.txt
+is unfortunately not entirely clear:
+	/* Set logical level for RTS pin equal to 1 when sending: */
+	rs485conf.flags |= SER_RS485_RTS_ON_SEND;
 
-There you see the compatibility table of image format vs
-output format/user agent.  The argument (URI) can be in any
-format a consumer of generated document can render.
-It's user's (read: kernel-documentation tool's) responsibility
-to prepare images in suitable formats.
+Most (all?) UART chips have an RTSn, RTS# or /RTS pin which means RTS
+inverted. So the "RTS pin" can't be set to logic level 1, but RTS can.
 
-For kernel documentation, the "kernel-figure" directive triggers
-the conversion of images depending on the output format, so that
-compatible images can be used in the generated documents.
+IMHO it would be best to let SER_RS485_RTS_ON_SEND mean that RTS is
+asserted during sending. That means that RTSn should be 0V.
 
-Those conversions are independent of what you write in .rst files.
-If there emerges another output target which prefers a different
-image format, you can always modify the extension code in
-kfigure.py.
+When the UART chip is connected directly to an RS485 driver with RTSn
+connected to DE, you need SER_RS485_RTS_AFTER_SEND so RTS=0 and
+RTSn=DE=1 during sending.
 
-        Thanks, Akira
+When a UART is not in RS485 mode and unopened it usually has RTS=0,
+RTSn=1 which would make any directly connected RS485 driver claim
+the bus. This is probably undesired behaviour and thus asks for an
+extra inverter between RTSn and DE. With this added inverter one
+would need SER_RS485_RTS_ON_SEND.
+
+https://github.com/torvalds/linux/blob/master/Documentation/devicetree/bindings/serial/rs485.yaml
+isn't much better either:
+  rs485-rts-active-low:
+     description: drive RTS low when sending (default is high).
+
+Was this meant as "drive the RTSn pin low when sending"?
+
+Finally, can these two methods be synchronized in their wording?
+E.g. can we just drop "rs485-rts-active-low" and replace it with
+"rs485-rts-on-send" and "rs485-rts-after-send"?
+
+Maarten
 
