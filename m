@@ -2,197 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9053AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 14:24:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A170C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 14:25:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244557AbiEKOYl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 10:24:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52702 "EHLO
+        id S244568AbiEKOZX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 10:25:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229790AbiEKOYe (ORCPT
+        with ESMTP id S229790AbiEKOZT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 10:24:34 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 050DE40A3B
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 07:24:33 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id p4so2839390edx.0
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 07:24:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=HUH8tlT8lXb3CWmwqvN7Ydrh8IaXMTb4spsD3mLnS/M=;
-        b=jivEDiDmye/lS2mIg5KIOd28OXyk0tDDk1D9yKGnX3e7kdSIn9gpcF88poaTeqO8gN
-         KYPbfd15Gq17qIsUtNd9VRmIF3hmjexpQymV6U0TSPh63o5u5v+vhm198WOrns1zGWS5
-         y6DnGlfigABwDrjDTHGczff9WESSOKgJrcl4MXZjydmZm8Kkz6/VzfspBtLcBsun7Ctf
-         d8Q1EtgS9P2wCO5uJQ8glu5y/MTD34sss/qe8vupZMHlBA+27LcqVitWOqXWhjnZbtPb
-         hSZq6kZEIQ2BgV2IIKt1I2Y0urCQk0NrAJrMr3oQoRYyGhD9xBRaFOZRlVBi/HqUxOvk
-         U+fA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=HUH8tlT8lXb3CWmwqvN7Ydrh8IaXMTb4spsD3mLnS/M=;
-        b=q5ai3cPGWZGnIRox1q/YUKCu9E+NFOKMB0SSqrrVyimDuJBDdywVHKHIsSPx7TLtGk
-         vnBpRQEhq9lgWRgqlV47JZQuStmhQAGT1upLul83lcrre7FwCEhW8BjvM2YCfcHHJZGE
-         oNGm7ylfOAKimVzHTDij5l3OKSchv0Q5b5sC4v735r14GiWGlc/DK2+1Wtq4JSra2xdT
-         6I7kuGsyxzeXi9JnsREvwC/gEKyNOdMb6uG0JJjiUOM7mXK8czActKcJ2eKs05MYorVr
-         vSf4N2dh0HAC0xYj1+hikQPFfT6u2f8qTzu94mSyfIzrpuQrSGvVbnhYRm49vWqhPQTf
-         +fFw==
-X-Gm-Message-State: AOAM530BLT+1aIcxnDzLWNNKVQEeuJuhLCUkkzWNX4d4bkY/1m0TI5UT
-        1PbFC2XFXmMGLkurqOqCgkA=
-X-Google-Smtp-Source: ABdhPJwOtFlq1WvW0FIuRkxOJG81MM65TGKej/9Xy0UZB1RQWBaSIHnO89v4XF1WhilLEyiZ/4Pteg==
-X-Received: by 2002:a05:6402:1f0b:b0:427:b390:2020 with SMTP id b11-20020a0564021f0b00b00427b3902020mr29095143edb.70.1652279071366;
-        Wed, 11 May 2022 07:24:31 -0700 (PDT)
-Received: from ?IPV6:2a02:908:1256:79a0:9503:dbd2:a019:fe23? ([2a02:908:1256:79a0:9503:dbd2:a019:fe23])
-        by smtp.gmail.com with ESMTPSA id ot17-20020a170906ccd100b006f3ef214e3bsm973652ejb.161.2022.05.11.07.24.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 May 2022 07:24:30 -0700 (PDT)
-Message-ID: <56787b70-fb64-64da-6006-d3aa3ed59d12@gmail.com>
-Date:   Wed, 11 May 2022 16:24:28 +0200
+        Wed, 11 May 2022 10:25:19 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9BD640A3B
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 07:25:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
+        Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:In-Reply-To;
+        bh=rLl5J2DLGbXLQLGLVKmwEFUM1mLMY8M0xRVjlffGnsU=; b=q9t0EthDCuaahUXWGXSW15D4rB
+        Nx39cShAfuD3IONFAluhd2In0ym90Ye6I9rTyDBakNP4GacdJGA1ARxYA3D3smwR2F8aIzR1CshR9
+        lN29Znudh3Zhg9X9MY87VoOl06vPZSsXftzubIjR+i3kSfShSUKwR84lYsermWQk0SmMVlJYty2X7
+        HXN7V+/GykB+K5KkQPYjDugFq2ys4E262veU4867ihtjESl+XoXxhGBIyIYqL/j0WsZhFMfzZon2S
+        Lw0hEfLDeOxgovZXnqMM3sSCBCQvkskTg/KsOdZc0LA7ii1fQ4Q3BUEqv815uzIG4UZSpEBi9e5/+
+        lhnyXCHw==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nonH5-005VvF-21; Wed, 11 May 2022 14:25:11 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 45E2D30080B;
+        Wed, 11 May 2022 16:25:09 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
+        id 2B7BA203BFA31; Wed, 11 May 2022 16:25:09 +0200 (CEST)
+Message-ID: <20220511142345.289907761@infradead.org>
+User-Agent: quilt/0.66
+Date:   Wed, 11 May 2022 16:20:41 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     x86@kernel.org, kan.liang@linux.intel.com, eranian@google.com
+Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
+        acme@kernel.org, mark.rutland@arm.com,
+        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
+        namhyung@kernel.org
+Subject: [PATCH 4/5] perf/x86: Change x86_pmu::limit_period signature
+References: <20220511142037.353492804@infradead.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v4 10/15] drm/shmem-helper: Take reservation lock instead
- of drm_gem_shmem locks
-Content-Language: en-US
-To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Stone <daniel@fooishbar.org>,
-        David Airlie <airlied@linux.ie>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>,
-        Daniel Almeida <daniel.almeida@collabora.com>,
-        Gert Wollny <gert.wollny@collabora.com>,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Emil Velikov <emil.l.velikov@gmail.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        virtualization@lists.linux-foundation.org
-References: <248083d2-b8f2-a4d7-099d-70a7e7859c11@suse.de>
- <d9e7bec1-fffb-e0c4-8659-ef3ce2c31280@collabora.com>
- <YmlYHNlcmNMfOeyy@phenom.ffwll.local>
- <8f932ab0-bb72-8fea-4078-dc59e9164bd4@collabora.com>
- <YnI3lE0TxLfZaQjE@phenom.ffwll.local>
- <01506516-ab2f-cb6e-7507-f2a3295efb59@collabora.com>
- <YnOHAh9I1ds4+1J+@phenom.ffwll.local>
- <83e68918-68de-c0c6-6f9b-e94d34b19383@collabora.com>
- <YnkaUk0mZNuPsZ5r@phenom.ffwll.local>
- <4d08b382-0076-1ea2-b565-893d50b453cb@collabora.com>
- <YnuziJDmXVR09UzP@phenom.ffwll.local>
-From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>
-In-Reply-To: <YnuziJDmXVR09UzP@phenom.ffwll.local>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 11.05.22 um 15:00 schrieb Daniel Vetter:
-> On Tue, May 10, 2022 at 04:39:53PM +0300, Dmitry Osipenko wrote:
->> [SNIP]
->> Since vmapping implies implicit pinning, we can't use a separate lock in
->> drm_gem_shmem_vmap() because we need to protect the
->> drm_gem_shmem_get_pages(), which is invoked by drm_gem_shmem_vmap() to
->> pin the pages and requires the dma_resv_lock to be locked.
->>
->> Hence the problem is:
->>
->> 1. If dma-buf importer holds the dma_resv_lock and invokes
->> dma_buf_vmap() -> drm_gem_shmem_vmap(), then drm_gem_shmem_vmap() shall
->> not take the dma_resv_lock.
->>
->> 2. Since dma-buf locking convention isn't specified, we can't assume
->> that dma-buf importer holds the dma_resv_lock around dma_buf_vmap().
->>
->> The possible solutions are:
->>
->> 1. Specify the dma_resv_lock convention for dma-bufs and make all
->> drivers to follow it.
->>
->> 2. Make only DRM drivers to hold dma_resv_lock around dma_buf_vmap().
->> Other non-DRM drivers will get the lockdep warning.
->>
->> 3. Make drm_gem_shmem_vmap() to take the dma_resv_lock and get deadlock
->> if dma-buf importer holds the lock.
->>
->> ...
-> Yeah this is all very annoying.
+In preparation for making it a static_call, change the signature.
 
-Ah, yes that topic again :)
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+---
+ arch/x86/events/amd/core.c   |    8 +++-----
+ arch/x86/events/core.c       |   18 ++++++++----------
+ arch/x86/events/intel/core.c |   19 ++++++++-----------
+ arch/x86/events/perf_event.h |    2 +-
+ 4 files changed, 20 insertions(+), 27 deletions(-)
 
-I think we could relatively easily fix that by just defining and 
-enforcing that the dma_resv_lock must have be taken by the caller when 
-dma_buf_vmap() is called.
+--- a/arch/x86/events/amd/core.c
++++ b/arch/x86/events/amd/core.c
+@@ -1258,16 +1258,14 @@ static void amd_pmu_sched_task(struct pe
+ 		amd_pmu_brs_sched_task(ctx, sched_in);
+ }
+ 
+-static u64 amd_pmu_limit_period(struct perf_event *event, u64 left)
++static void amd_pmu_limit_period(struct perf_event *event, s64 *left)
+ {
+ 	/*
+ 	 * Decrease period by the depth of the BRS feature to get the last N
+ 	 * taken branches and approximate the desired period
+ 	 */
+-	if (has_branch_stack(event) && left > x86_pmu.lbr_nr)
+-		left -= x86_pmu.lbr_nr;
+-
+-	return left;
++	if (has_branch_stack(event) && *left > x86_pmu.lbr_nr)
++		*left -= x86_pmu.lbr_nr;
+ }
+ 
+ static __initconst const struct x86_pmu amd_pmu = {
+--- a/arch/x86/events/core.c
++++ b/arch/x86/events/core.c
+@@ -621,8 +621,9 @@ int x86_pmu_hw_config(struct perf_event
+ 		event->hw.config |= event->attr.config & X86_RAW_EVENT_MASK;
+ 
+ 	if (event->attr.sample_period && x86_pmu.limit_period) {
+-		if (x86_pmu.limit_period(event, event->attr.sample_period) >
+-				event->attr.sample_period)
++		s64 left = event->attr.sample_period;
++		x86_pmu.limit_period(event, &left);
++		if (left > event->attr.sample_period)
+ 			return -EINVAL;
+ 	}
+ 
+@@ -1386,19 +1387,14 @@ int x86_perf_event_set_period(struct per
+ 		hwc->last_period = period;
+ 		ret = 1;
+ 	}
+-	/*
+-	 * Quirk: certain CPUs dont like it if just 1 hw_event is left:
+-	 */
+-	if (unlikely(left < 2))
+-		left = 2;
+ 
+ 	if (left > x86_pmu.max_period)
+ 		left = x86_pmu.max_period;
+ 
+ 	if (x86_pmu.limit_period)
+-		left = x86_pmu.limit_period(event, left);
++		x86_pmu.limit_period(event, &left);
+ 
+-	per_cpu(pmc_prev_left[idx], smp_processor_id()) = left;
++	this_cpu_write(pmc_prev_left[idx], left);
+ 
+ 	/*
+ 	 * The hw event starts counting from this event offset,
+@@ -2672,7 +2668,9 @@ static int x86_pmu_check_period(struct p
+ 		return -EINVAL;
+ 
+ 	if (value && x86_pmu.limit_period) {
+-		if (x86_pmu.limit_period(event, value) > value)
++		s64 left = value;
++		x86_pmu.limit_period(event, &left);
++		if (left > value)
+ 			return -EINVAL;
+ 	}
+ 
+--- a/arch/x86/events/intel/core.c
++++ b/arch/x86/events/intel/core.c
+@@ -4244,28 +4244,25 @@ static u8 adl_get_hybrid_cpu_type(void)
+  * Therefore the effective (average) period matches the requested period,
+  * despite coarser hardware granularity.
+  */
+-static u64 bdw_limit_period(struct perf_event *event, u64 left)
++static void bdw_limit_period(struct perf_event *event, s64 *left)
+ {
+ 	if ((event->hw.config & INTEL_ARCH_EVENT_MASK) ==
+ 			X86_CONFIG(.event=0xc0, .umask=0x01)) {
+-		if (left < 128)
+-			left = 128;
+-		left &= ~0x3fULL;
++		if (*left < 128)
++			*left = 128;
++		*left &= ~0x3fULL;
+ 	}
+-	return left;
+ }
+ 
+-static u64 nhm_limit_period(struct perf_event *event, u64 left)
++static void nhm_limit_period(struct perf_event *event, s64 *left)
+ {
+-	return max(left, 32ULL);
++	*left = max(*left, 32LL);
+ }
+ 
+-static u64 spr_limit_period(struct perf_event *event, u64 left)
++static void spr_limit_period(struct perf_event *event, s64 *left)
+ {
+ 	if (event->attr.precise_ip == 3)
+-		return max(left, 128ULL);
+-
+-	return left;
++		*left = max(*left, 128LL);
+ }
+ 
+ PMU_FORMAT_ATTR(event,	"config:0-7"	);
+--- a/arch/x86/events/perf_event.h
++++ b/arch/x86/events/perf_event.h
+@@ -773,7 +773,7 @@ struct x86_pmu {
+ 	struct event_constraint *event_constraints;
+ 	struct x86_pmu_quirk *quirks;
+ 	int		perfctr_second_write;
+-	u64		(*limit_period)(struct perf_event *event, u64 l);
++	void		(*limit_period)(struct perf_event *event, s64 *l);
+ 
+ 	/* PMI handler bits */
+ 	unsigned int	late_ack		:1,
 
-A two step approach should work:
-1. Move the call to dma_resv_lock() into the dma_buf_vmap() function and 
-remove all lock taking from the vmap callback implementations.
-2. Move the call to dma_resv_lock() into the callers of dma_buf_vmap() 
-and enforce that the function is called with the lock held.
-
-It shouldn't be that hard to clean up. The last time I looked into it my 
-main problem was that we didn't had any easy unit test for it.
-
-Regards,
-Christian.
-
->
->> There are actually very few drivers in kernel that use dma_buf_vmap()
->> [1], so perhaps it's not really a big deal to first try to define the
->> locking and pinning convention for the dma-bufs? At least for
->> dma_buf_vmap()? Let me try to do this.
->>
->> [1] https://elixir.bootlin.com/linux/v5.18-rc6/C/ident/dma_buf_vmap
-> Yeah looking through the code there's largely two classes of drivers that
-> need vmap:
->
-> - display drivers that need to do cpu upload (usb, spi, i2c displays).
->    Those generally set up the vmap at import time or when creating the
->    drm_framebuffer object (e.g. see
->    drm_gem_cma_prime_import_sg_table_vmap()), because that's really the
->    only place where you can safely do that without running into locking
->    inversion issues sooner or later
->
-> - lots of other drivers (and shmem helpers) seem to do dma_buf_vmap just
->    because they can, but only actually ever use vmap on native objects,
->    never on imported objects. Or at least I think so.
->
-> So maybe another approach here:
->
-> 1. In general drivers which need a vmap need to set that up at dma_buf
-> import time - the same way we pin the buffers at import time for
-> non-dynamic importers because that's the only place where across all
-> drivers it's ok to just take dma_resv_lock.
->
-> 2. We remove the "just because we can" dma_buf_vmap support from
-> helpers/drivers - the paths all already can cope with NULL since
-> dma_buf_vmap can fail. vmap will only work on native objects, not imported
-> ones.
->
-> 3. If there is any driver using shmem helpers that absolutely needs vmap
-> to also work on imported it needs a special import function (like cma
-> helpers) which sets up the vmap at import time.
->
-> So since this is all very tricky ... what did I miss this time around?
->
->> I envision that the extra dma_resv_locks for dma-bufs potentially may
->> create unnecessary bottlenecks for some drivers if locking isn't really
->> necessary by a specific driver, so drivers will need to keep this in
->> mind. On the other hand, I don't think that any of the today's drivers
->> will notice the additional resv locks in practice.
-> Nah I don't think the extra locking will ever create a bottleneck,
-> especially not for vmap. Generally vmap is a fallback or at least cpu
-> operation, so at that point you're already going very slow.
-> -Daniel
 
