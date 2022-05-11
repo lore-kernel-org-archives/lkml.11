@@ -2,213 +2,298 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D63DC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 07:24:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC574C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 07:24:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242884AbiEKHYe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 03:24:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45038 "EHLO
+        id S242912AbiEKHYv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 03:24:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242867AbiEKHY3 (ORCPT
+        with ESMTP id S242867AbiEKHYo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 03:24:29 -0400
-Received: from mailgw.felk.cvut.cz (mailgw.felk.cvut.cz [147.32.82.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FFCD1C0F25;
-        Wed, 11 May 2022 00:24:27 -0700 (PDT)
-Received: from mailgw.felk.cvut.cz (localhost.localdomain [127.0.0.1])
-        by mailgw.felk.cvut.cz (Proxmox) with ESMTP id D7A8930322EA;
-        Wed, 11 May 2022 09:23:55 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        cmp.felk.cvut.cz; h=cc:cc:content-transfer-encoding:content-type
-        :content-type:date:from:from:in-reply-to:message-id:mime-version
-        :references:reply-to:subject:subject:to:to; s=felkmail; bh=noksS
-        6avucQChdNExBN5UJBtftQ5wnHW8uU3NUv5UFE=; b=PE6+UwTWyGs26TfPsDLKq
-        a0T3t7uh5yN/A69uWtzKAAaKnjZwpSreGL3ooSQLpImH/Uq9EFSpkudO9f9JlK4Z
-        Vw13M+68LotaYaytGCnuqQSzvAnHL7POSZfEEolfyz2VBRDobJNVqyqZMf0sObk0
-        RB8ij9cnj+qfE4wKYZA2hMVS6J7YiXw72OMBPoCABD3U6fkOHjHobBv98lI4VS0r
-        FgnbwlVq0Eqmv4oFfdGqIzihd6gH81+QF22iwFdWMXbiUTy+wAKZLQR/vEoeFd8a
-        qBUQoB8AwFxOKGHq0iJW33FiEvNUQ9yJJtxDwm+0xKi8Gh23e88N3w5ECgQQVn2r
-        Q==
-Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
-        by mailgw.felk.cvut.cz (Proxmox) with ESMTPS id DDF8F30322D3;
-        Wed, 11 May 2022 09:23:54 +0200 (CEST)
-Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
-        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 24B7NsBG027064;
-        Wed, 11 May 2022 09:23:54 +0200
-Received: (from pisa@localhost)
-        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 24B7Nshg027063;
-        Wed, 11 May 2022 09:23:54 +0200
-X-Authentication-Warning: haar.felk.cvut.cz: pisa set sender to pisa@cmp.felk.cvut.cz using -f
-From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
-To:     Akira Yokosawa <akiyks@gmail.com>
-Subject: Re: [PATCH net-next] docs: ctucanfd: Use 'kernel-figure' directive instead of 'figure'
-Date:   Wed, 11 May 2022 09:23:24 +0200
-User-Agent: KMail/1.9.10
-Cc:     "Marc Kleine-Budde" <mkl@pengutronix.de>,
-        Martin Jerabek <martin.jerabek01@gmail.com>,
-        Ondrej Ille <ondrej.ille@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <05d491d4-c498-9bab-7085-9c892b636d68@gmail.com> <202205101825.15126.pisa@cmp.felk.cvut.cz> <268372a9-2f6a-74f3-29ea-c51536a73dba@gmail.com>
-In-Reply-To: <268372a9-2f6a-74f3-29ea-c51536a73dba@gmail.com>
-X-KMail-QuotePrefix: > 
+        Wed, 11 May 2022 03:24:44 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECFF71C0F25;
+        Wed, 11 May 2022 00:24:42 -0700 (PDT)
+X-UUID: 062f61a4c6f545a6a4c6c5ce4d8f4706-20220511
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:d93bf4d0-0df6-4f88-9fe5-922e079b5d82,OB:0,LO
+        B:0,IP:0,URL:25,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:25
+X-CID-META: VersionHash:faefae9,CLOUDID:c0ea10e6-38f2-431d-8de7-bf8fac490b0a,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: 062f61a4c6f545a6a4c6c5ce4d8f4706-20220511
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1363951636; Wed, 11 May 2022 15:24:35 +0800
+Received: from MTKMBS07N2.mediatek.inc (172.21.101.141) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 11 May 2022 15:24:34 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 11 May 2022 15:24:33 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 11 May 2022 15:24:33 +0800
+Message-ID: <e45e68c76775edbf935418ca4f75dc83591805cd.camel@mediatek.com>
+Subject: Re: [PATCH v6 1/4] dt-bindings: display: mediatek: dsi: Convert
+ dsi_dtbinding to .yaml
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>
+CC:     <airlied@linux.ie>, <daniel@ffwll.ch>, <matthias.bgg@gmail.com>,
+        <jitao.shi@mediatek.com>, <xinlei.lee@mediatek.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Wed, 11 May 2022 15:24:33 +0800
+In-Reply-To: <20220504091923.2219-2-rex-bc.chen@mediatek.com>
+References: <20220504091923.2219-1-rex-bc.chen@mediatek.com>
+         <20220504091923.2219-2-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Message-Id: <202205110923.24202.pisa@cmp.felk.cvut.cz>
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Akira,
+On Wed, 2022-05-04 at 17:19 +0800, Rex-BC Chen wrote:
+> From: Xinlei Lee <xinlei.lee@mediatek.com>
+> 
+> Convert mediatek,dsi.txt to mediatek,dsi.yaml format
+> 
+> Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+> Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+> ---
+>  .../display/mediatek/mediatek,dsi.txt         |  62 ----------
+>  .../display/mediatek/mediatek,dsi.yaml        | 115
+> ++++++++++++++++++
+>  2 files changed, 115 insertions(+), 62 deletions(-)
+>  delete mode 100644
+> Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.txt
+>  create mode 100644
+> Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yaml
+> 
+> diff --git
+> a/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.txt
+> b/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.txt
+> deleted file mode 100644
+> index 36b01458f45c..000000000000
+> ---
+> a/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.txt
+> +++ /dev/null
+> @@ -1,62 +0,0 @@
+> -Mediatek DSI Device
+> -===================
+> -
+> -The Mediatek DSI function block is a sink of the display subsystem
+> and can
+> -drive up to 4-lane MIPI DSI output. Two DSIs can be synchronized for
+> dual-
+> -channel output.
+> -
+> -Required properties:
+> -- compatible: "mediatek,<chip>-dsi"
+> -- the supported chips are mt2701, mt7623, mt8167, mt8173 and mt8183.
+> -- reg: Physical base address and length of the controller's
+> registers
+> -- interrupts: The interrupt signal from the function block.
+> -- clocks: device clocks
+> -  See Documentation/devicetree/bindings/clock/clock-bindings.txt for
+> details.
+> -- clock-names: must contain "engine", "digital", and "hs"
+> -- phys: phandle link to the MIPI D-PHY controller.
+> -- phy-names: must contain "dphy"
+> -- port: Output port node with endpoint definitions as described in
+> -  Documentation/devicetree/bindings/graph.txt. This port should be
+> connected
+> -  to the input port of an attached DSI panel or DSI-to-eDP encoder
+> chip.
+> -
+> -Optional properties:
+> -- resets: list of phandle + reset specifier pair, as described in
+> [1].
+> -
+> -[1] Documentation/devicetree/bindings/reset/reset.txt
+> -
+> -MIPI TX Configuration Module
+> -============================
+> -
+> -See phy/mediatek,dsi-phy.yaml
+> -
+> -Example:
+> -
+> -mipi_tx0: mipi-dphy@10215000 {
+> -	compatible = "mediatek,mt8173-mipi-tx";
+> -	reg = <0 0x10215000 0 0x1000>;
+> -	clocks = <&clk26m>;
+> -	clock-output-names = "mipi_tx0_pll";
+> -	#clock-cells = <0>;
+> -	#phy-cells = <0>;
+> -	drive-strength-microamp = <4600>;
+> -	nvmem-cells= <&mipi_tx_calibration>;
+> -	nvmem-cell-names = "calibration-data";
+> -};
+> -
+> -dsi0: dsi@1401b000 {
+> -	compatible = "mediatek,mt8173-dsi";
+> -	reg = <0 0x1401b000 0 0x1000>;
+> -	interrupts = <GIC_SPI 192 IRQ_TYPE_LEVEL_LOW>;
+> -	clocks = <&mmsys MM_DSI0_ENGINE>, <&mmsys MM_DSI0_DIGITAL>,
+> -		 <&mipi_tx0>;
+> -	clock-names = "engine", "digital", "hs";
+> -	resets = <&mmsys MT8173_MMSYS_SW0_RST_B_DISP_DSI0>;
+> -	phys = <&mipi_tx0>;
+> -	phy-names = "dphy";
+> -
+> -	port {
+> -		dsi0_out: endpoint {
+> -			remote-endpoint = <&panel_in>;
+> -		};
+> -	};
+> -};
+> diff --git
+> a/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yam
+> l
+> b/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yam
+> l
+> new file mode 100644
+> index 000000000000..fa5bdf28668a
+> --- /dev/null
+> +++
+> b/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yam
+> l
+> @@ -0,0 +1,115 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: 
+> http://devicetree.org/schemas/display/mediatek/mediatek,dsi.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: MediaTek DSI Controller Device Tree Bindings
+> +
+> +maintainers:
+> +  - Chun-Kuang Hu <chunkuang.hu@kernel.org>
+> +  - Philipp Zabel <p.zabel@pengutronix.de>
+> +  - Jitao Shi <jitao.shi@mediatek.com>
+> +  - Xinlei Lee <xinlei.lee@mediatek.com>
+> +
+> +description: |
+> +  The MediaTek DSI function block is a sink of the display subsystem
+> and can
+> +  drive up to 4-lane MIPI DSI output. Two DSIs can be synchronized
+> for dual-
+> +  channel output.
+> +
+> +allOf:
+> +  - $ref: /schemas/display/dsi-controller.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - mediatek,mt2701-dsi
+> +      - mediatek,mt7623-dsi
+> +      - mediatek,mt8167-dsi
+> +      - mediatek,mt8173-dsi
+> +      - mediatek,mt8183-dsi
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  power-domains:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    items:
+> +      - description: Engine Clock
+> +      - description: Digital Clock
+> +      - description: HS Clock
+> +
+> +  clock-names:
+> +    items:
+> +      - const: engine
+> +      - const: digital
+> +      - const: hs
+> +
+> +  resets:
+> +    maxItems: 1
+> +
+> +  phys:
+> +    maxItems: 1
+> +
+> +  phy-names:
+> +    items:
+> +      - const: dphy
+> +
+> +  port:
+> +    $ref: /schemas/graph.yaml#/properties/port
+> +    description:
+> +      Output port node. This port should be connected to the input
+> +      port of an attached DSI panel or DSI-to-eDP encoder chip.
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - power-domains
+> +  - clocks
+> +  - clock-names
+> +  - phys
+> +  - phy-names
+> +  - port
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/clock/mt8183-clk.h>
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    #include <dt-bindings/power/mt8183-power.h>
+> +    #include <dt-bindings/phy/phy.h>
+> +    #include <dt-bindings/reset/mt8183-resets.h>
+> +
+> +    soc {
+> +        #address-cells = <2>;
+> +        #size-cells = <2>;
+> +
+> +        dsi0: dsi@14014000 {
+> +            compatible = "mediatek,mt8183-dsi";
+> +            reg = <0 0x14014000 0 0x1000>;
+> +            interrupts = <GIC_SPI 236 IRQ_TYPE_LEVEL_LOW>;
+> +            power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
+> +            clocks = <&mmsys CLK_MM_DSI0_MM>,
+> +                <&mmsys CLK_MM_DSI0_IF>,
+> +                <&mipi_tx0>;
+> +            clock-names = "engine", "digital", "hs";
+> +            resets = <&mmsys MT8183_MMSYS_SW0_RST_B_DISP_DSI0>;
+> +            phys = <&mipi_tx0>;
+> +            phy-names = "dphy";
+> +            port {
+> +                dsi0_out: endpoint {
+> +                    remote-endpoint = <&panel_in>;
+> +                };
+> +            };
+> +        };
+> +    };
+> +
+> +...
 
-On Wednesday 11 of May 2022 01:34:58 Akira Yokosawa wrote:
-> On Tue, 10 May 2022 18:25:15 +0200,
->
-> Pavel Pisa wrote:
-> > Hello Akira,
-=2E..
-> > I have not noticed that there is kernel-figure
-> > option. We have setup own Sphinx 1.4.9 based build for driver
-> > documentation out of the tree compilation, I am not sure if that
-> > would work with this option but if not we keep this version
-> > modified. There are required modification for sources location anyway...
-> >
-> > https://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/doc/linux_driver/buil=
-d/
-> >ctucanfd-driver.html
->
-> You might want to see kernel's doc-guide at
->
->     https://www.kernel.org/doc/html/latest/doc-guide/sphinx.html
->
-> , or its source
->
->     Documentation/doc-guide/sphinx.rst
+Hello Rob and Krzysztof,
 
-I think I have read it in 2019 when I have managed to switch
-to kernel format documentation in out of the tree driver build
+Can you give us some suggestions for this conversion patch?
+Thanks!
 
-https://gitlab.fel.cvut.cz/canbus/ctucanfd_ip_core/-/commit/09983d11ab34977=
-104d2be0b1376d4c93d9a01cb
-
-Then I have enhanced documentation text and picture
-from Martin Jerabek's thesis etc..
-
-> >> The directive of "code:: raw" causes a warning from both
-> >> "make htmldocs" and "make pdfdocs", which reads:
-> >>
-> >>     [...]/can/ctu/ctucanfd-driver.rst:75: WARNING: Pygments lexer name
-> >>     'raw' is not known
-> >
-> > Strange I have not seen any warning when building htmldocs
-> > in my actual linux kernel tree. I have cleaned docs to be warnings
-> > free, but it is possible that I have another tools versions.
->
-> Well, I don't think "make htmldocs" runs with Sphinx 1.4.9.
-
-This is Sphinx version reported by out of tree documentation build.
-It can be hidden in one of dockers which are used by gitlabrunner
-for CI. When I find some time I can look for update.
-
-> You mean 1.7.9?
-
-My local net-next make htmldocs generated pages report Sphinx version 1.8.4.
-
-So this seems to be a mix, but I agree that it is important to clean
-docs in the state when it works for each not totally archaic setup.
-
-Thanks for the feedback,
-
-                Pavel
-=2D-=20
-                Pavel Pisa
-    phone:      +420 603531357
-    e-mail:     pisa@cmp.felk.cvut.cz
-    Department of Control Engineering FEE CVUT
-    Karlovo namesti 13, 121 35, Prague 2
-    university: http://control.fel.cvut.cz/
-    personal:   http://cmp.felk.cvut.cz/~pisa
-    projects:   https://www.openhub.net/accounts/ppisa
-    CAN related:http://canbus.pages.fel.cvut.cz/
-    Open Technologies Research Education and Exchange Services
-    https://gitlab.fel.cvut.cz/otrees/org/-/wikis/home
-
-=20
-
-> Then the above mentioned warning is not shown.
-> I see the warning with Sphinx versions 2.4.4. and 4.5.0.
->
-> I'll amend the changelog to mention the Sphinx versions and
-> post as v2.
->
->         Thanks, Akira
->
-> > Anyway thanks for cleanup.
-> >
-> >> A plain literal-block marker should suffice where no syntax
-> >> highlighting is intended.
-> >>
-> >> Fix the issues by using suitable directive and marker.
-> >>
-> >> Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
-> >> Fixes: c3a0addefbde ("docs: ctucanfd: CTU CAN FD open-source IP core
-> >> documentation.") Cc: Pavel Pisa <pisa@cmp.felk.cvut.cz>
-> >> Cc: Martin Jerabek <martin.jerabek01@gmail.com>
-> >> Cc: Ondrej Ille <ondrej.ille@gmail.com>
-> >> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
-> >
-> > Acked-by: Pavel Pisa <pisa@cmp.felk.cvut.cz>
-> >
-> >> ---
-> >>  .../networking/device_drivers/can/ctu/ctucanfd-driver.rst     | 4 ++--
-> >>  1 file changed, 2 insertions(+), 2 deletions(-)
-> >>
-> >> diff --git
-> >> a/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst
-> >> b/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst
-> >> index 2fde5551e756..40c92ea272af 100644
-> >> ---
-> >> a/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst
-> >> +++
-> >> b/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst =
-@@
-> >> -72,7 +72,7 @@ it is reachable (on which bus it resides) and its
-> >> configuration =E2=80=93 registers address, interrupts and so on. An ex=
-ample of
-> >> such a device tree is given in .
-> >>
-> >> -.. code:: raw
-> >> +::
-> >>
-> >>             / {
-> >>                 /* ... */
-> >> @@ -451,7 +451,7 @@ the FIFO is maintained, together with priority
-> >> rotation, is depicted in
-> >>
-> >>
-> >>
-> >> -.. figure:: fsm_txt_buffer_user.svg
-> >> +.. kernel-figure:: fsm_txt_buffer_user.svg
-> >>
-> >>     TX Buffer states with possible transitions
-
-
-=2D-=20
-Yours sincerely
-
-                Pavel Pisa
-    phone:      +420 603531357
-    e-mail:     pisa@cmp.felk.cvut.cz
-    Department of Control Engineering FEE CVUT
-    Karlovo namesti 13, 121 35, Prague 2
-    university: http://control.fel.cvut.cz/
-    personal:   http://cmp.felk.cvut.cz/~pisa
-    projects:   https://www.openhub.net/accounts/ppisa
-    CAN related:http://canbus.pages.fel.cvut.cz/
-    Open Technologies Research Education and Exchange Services
-    https://gitlab.fel.cvut.cz/otrees/org/-/wikis/home
+BRs,
+Rex
 
