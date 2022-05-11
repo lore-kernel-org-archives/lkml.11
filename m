@@ -2,118 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0C13C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 17:02:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32391C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 17:02:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345272AbiEKRCP (ORCPT
+        id S1345276AbiEKRCn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 13:02:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57736 "EHLO
+        Wed, 11 May 2022 13:02:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237247AbiEKRCO (ORCPT
+        with ESMTP id S237247AbiEKRCm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 13:02:14 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73F4862BC8;
-        Wed, 11 May 2022 10:02:13 -0700 (PDT)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24BESnxr027991;
-        Wed, 11 May 2022 17:02:10 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=8s5rkaVXoRu/HCmOcYXClgG+6sD0OJWx7GGHwkIIgm0=;
- b=f9UzhAhf+kHnRKGIdlG11bHT9Npf9wMLUhNwQAWXuxDqiQCyIlC69cblQpSJXllQeM1T
- QeIPZ2ohqV4tS1PP92x5ve6DgN/oA4Iaykvn6UjHF9/YEkTafZlQ0RvG/0mFkQDrd4c0
- g6FaXBlB0Ht2PH8R2J8Z+j8FvxzL47auuU6eCAHxacoLjy5c+DSTgIOW+ZDOsV3nn8RD
- fwpRo9Nz7jXrLe0y2pEiSPiSvqdEKo7IJUNPRxSQq3sd5g6PC0cZCRiHJNF8eNj4nBBI
- Z707lwpWWTKrhXc7Dhgb0jz0eZGP1lqhss+wNslMcUmEkgYMfgnsH0Neg8gvgJi80NSs 9Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g0etx3e1e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 11 May 2022 17:02:10 +0000
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24BGSjap012046;
-        Wed, 11 May 2022 17:02:09 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g0etx3e07-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 11 May 2022 17:02:09 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24BGpT1q031504;
-        Wed, 11 May 2022 17:02:06 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma06ams.nl.ibm.com with ESMTP id 3fyrkk1p4w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 11 May 2022 17:02:06 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24BH22nM42991896
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 11 May 2022 17:02:02 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 214A611C052;
-        Wed, 11 May 2022 17:02:02 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 989BF11C04C;
-        Wed, 11 May 2022 17:02:01 +0000 (GMT)
-Received: from osiris (unknown [9.145.80.150])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Wed, 11 May 2022 17:02:01 +0000 (GMT)
-Date:   Wed, 11 May 2022 19:02:00 +0200
-From:   Heiko Carstens <hca@linux.ibm.com>
-To:     Heiko Carstens <hca@linux.ibm.com>
-Cc:     Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Jonas Paulsson <paulsson@linux.vnet.ibm.com>,
-        Ulrich Weigand <ulrich.weigand@de.ibm.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Alexander Egorenkov <egorenar@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Andreas Krebbel <krebbel@linux.ibm.com>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
-Subject: Re: [PATCH 2/8] s390/alternatives: remove padding generation code
-Message-ID: <YnvsCPIXmCmzlDlX@osiris>
-References: <20220511120532.2228616-1-hca@linux.ibm.com>
- <20220511120532.2228616-3-hca@linux.ibm.com>
+        Wed, 11 May 2022 13:02:42 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0A0264733;
+        Wed, 11 May 2022 10:02:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=qGbO2F4BgGoDa01K+lTe/8HxmdXnwujci0ArhS0FRT8=; b=JUpmsc/qHSdRlsIfTcfeWYxkEZ
+        3iA/qnwVbuw8FHxZlWbCoFb5V7vwvxiTxAExDI4kh6ejcKLyu1FpD6K9ZDF+ZgmT7Q5cub6NdzCJt
+        2Nwj6wToecfx/xGR1mZiDtjyBTAoP6lLKBFmMcTKMHDVpbKwPaV/8MmlZaGQ6OUsZYck=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nopjG-002Ko2-Cq; Wed, 11 May 2022 19:02:26 +0200
+Date:   Wed, 11 May 2022 19:02:26 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Chris Packham <chris.packham@alliedtelesis.co.nz>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        catalin.marinas@arm.com, will@kernel.org,
+        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
+        kostap@marvell.com, robert.marko@sartura.hr,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v6 1/3] dt-bindings: marvell: Document the AC5/AC5X
+ compatibles
+Message-ID: <YnvsInrh03BVh7lN@lunn.ch>
+References: <20220510231002.1160798-1-chris.packham@alliedtelesis.co.nz>
+ <20220510231002.1160798-2-chris.packham@alliedtelesis.co.nz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220511120532.2228616-3-hca@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: y3pLf4oX4VlR0d1A5vV4-CIkXXhZXjdl
-X-Proofpoint-ORIG-GUID: SsEsAkTMGBmucMXo4udQSFa5IEc14j85
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-11_07,2022-05-11_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- clxscore=1015 malwarescore=0 phishscore=0 mlxscore=0 adultscore=0
- suspectscore=0 mlxlogscore=703 bulkscore=0 impostorscore=0
- priorityscore=1501 spamscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2202240000 definitions=main-2205110078
+In-Reply-To: <20220510231002.1160798-2-chris.packham@alliedtelesis.co.nz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 02:05:26PM +0200, Heiko Carstens wrote:
-> clang fails to handle ".if" statements in inline assembly which are heavily
-> used in the alternatives code.
+On Wed, May 11, 2022 at 11:10:00AM +1200, Chris Packham wrote:
+> Describe the compatible properties for the Marvell Alleycat5/5X switches
+> with integrated CPUs.
+> 
+> Alleycat5:
+> * 98DX2538: 24x1G + 2x10G + 2x10G Stack
+> * 98DX2535: 24x1G + 4x1G Stack
+> * 98DX2532: 8x1G + 2x10G + 2x1G Stack
+> * 98DX2531: 8x1G + 4x1G Stack
+> * 98DX2528: 24x1G + 2x10G + 2x10G Stack
+> * 98DX2525: 24x1G + 4x1G Stack
+> * 98DX2522: 8x1G + 2x10G + 2x1G Stack
+> * 98DX2521: 8x1G + 4x1G Stack
+> * 98DX2518: 24x1G + 2x10G + 2x10G Stack
+> * 98DX2515: 24x1G + 4x1G Stack
+> * 98DX2512: 8x1G + 2x10G + 2x1G Stack
+> * 98DX2511: 8x1G + 4x1G Stack
+> 
+> Alleycat5X:
+> * 98DX3500: 24x1G + 6x25G
+> * 98DX3501: 16x1G + 6x10G
+> * 98DX3510: 48x1G + 6x25G
+> * 98DX3520: 24x2.5G + 6x25G
+> * 98DX3530: 48x2.5G + 6x25G
+> * 98DX3540: 12x5G/6x10G + 6x25G
+> * 98DX3550: 24x5G/12x10G + 6x25G
 
-FWIW, I missed to add error message(s) to the changelog:
+Hi Chris
 
-In file included from ./include/linux/spinlock.h:93:
-./arch/s390/include/asm/spinlock.h:81:3: error: expected absolute expression
-                ALTERNATIVE("", ".insn rre,0xb2fa0000,7,0", 49) /* NIAI 7 */
-                ^
-./arch/s390/include/asm/alternative.h:118:2: note: expanded from macro 'ALTERNATIVE'
-        ALTINSTR_REPLACEMENT(altinstr, 1)                               \
-        ^
-./arch/s390/include/asm/alternative.h:113:2: note: expanded from macro 'ALTINSTR_REPLACEMENT'
-        INSTR_LEN_SANITY_CHECK(altinstr_len(num))
-        ^
-./arch/s390/include/asm/alternative.h:62:3: note: expanded from macro 'INSTR_LEN_SANITY_CHECK'
-        ".if " len " > 254\n"                                           \
-         ^
-<inline asm>:5:5: note: instantiated into assembly here
-.if 6651b-6641b > 254
-    ^
+When looking at this list, is it just the switch which changes, and
+everything else in the package stays the same?
+
+I'm thinking back to plain Kirkwood. There were 3 Kirkwood SoCs. We
+had kirkwood.dtsi which described everything common to all three
+SoCs. And then kirkwood-6192.dtsi, kirkwood-6281.dtsi,
+kirkwood-6282.dtsi which extended that base with whatever additional
+things each SoC had.
+
+I'm wondering if something similar is needed here?
+
+armada-98DX25xx.dtsi which describes everything common to Alleycat5.
+
+armada-98DX35xx.dtsi which describes everything common to Alleycat5X,
+maybe making use of armada-98DX25xx.dtsi?.
+
+armada-98DX2538.dtsi which extends armada-98DX25xx.dtsi
+
+And then a board file which includes armada-98DX2538.dtsi and add the
+board specific bits?
+
+I've no idea how these different devices differ, so i don't know what
+the correct hierarchy should be.
+
+    Andrew
