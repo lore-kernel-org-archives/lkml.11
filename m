@@ -2,69 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C7ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 07:23:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65E25C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 07:24:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239141AbiEKHXY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 03:23:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41344 "EHLO
+        id S231971AbiEKHYH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 03:24:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231971AbiEKHXU (ORCPT
+        with ESMTP id S241439AbiEKHYD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 03:23:20 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8421515E760
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 00:23:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=mX/LPDRiM2kjAACGQpTgwsVpipKtiyAP/j4T+KMpNkM=; b=H2/3L8F7yOeN39Y9I52eNdrzPI
-        6WJJqorodqUEV1tadzEdsg+pmg6ApMstzoETm5LYfYIBf3jRFe8ZM1oLQaOn9g5/nU+BYx+jZmCtV
-        ApK+n2Bs6quvnCfX3491X21sptzS+5fRS7wH70EJWI3PM9Vr6l8PHIFBC41q+6VGbMKkzmqzVSSIh
-        TJCgpvJIGzzZw7tB91z4c6ujByRcMa6t3HzePMVu95nTb6jdQkB5t2CSmI6cNNONuOmEEWC8gbhen
-        5hWhj7bZa6MMBdMpkYJ0YtnTQ/ORRuQeE0mXNJ7dfgu9vJCcxc+9kX7K9Le2UDRskwC0u73X4T4p2
-        WSpasbIA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1noggg-005EEx-Kt; Wed, 11 May 2022 07:23:10 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 445C3980E3A; Wed, 11 May 2022 09:23:10 +0200 (CEST)
-Date:   Wed, 11 May 2022 09:23:10 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>, x86@kernel.org,
-        Andrey Ryabinin <aryabinin@virtuozzo.com>,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "H . J . Lu" <hjl.tools@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFCv2 07/10] x86/mm: Handle tagged memory accesses from kernel
- threads
-Message-ID: <20220511072310.GU76023@worktop.programming.kicks-ass.net>
-References: <20220511022751.65540-1-kirill.shutemov@linux.intel.com>
- <20220511022751.65540-9-kirill.shutemov@linux.intel.com>
+        Wed, 11 May 2022 03:24:03 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CC211B093F
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 00:24:00 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id ba17so1453357edb.5
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 00:24:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=cCXXWwJzIMdAZKFOw/mKJ0j8XdlH3CZr6xlDP/lClgM=;
+        b=MGS8DP7QyP0OM8eXixWMdJDSacfGLRKfeKa8pHid+EQsK5/L/vC91MQ1DquPtnDlDO
+         tE7wI6UN1Lt8uLv0EGczgwwWsF23scuc2CMh7ReucyBPjfRV/XlSL9kuWjljTtMc8TwR
+         41cZ4XxvubKLrUVusIxYlq5WLYSLzjUscSPIFbbx1Yc5S3GRiYUgWeLtitYEdpbsRTPv
+         QclNJGyyCuMFp6e+nku1Gz6J+b32FlgbqA9qFGoCRJEjEEclRF34tfBUH6vlvzuPIDf6
+         4NBok55o2Ndro11jMCz1p+ITNXYepTQT6huIkWKbs1CtXp6IAAO6kJ1lAOOTXRAvlFgy
+         a/dw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=cCXXWwJzIMdAZKFOw/mKJ0j8XdlH3CZr6xlDP/lClgM=;
+        b=UfAmGgxu+E5feoMD4YSKFSc/dIH7mLFF0M5KK/T0tFlxWjVWRmanHD0feV8i9aP52w
+         SX4KA/q4xf9N2xEeuRHl3kIgZ4nSyE/+qgwsbXDhe1Xfp1Rleu7dM6WatXjTuMuJR2c7
+         /1wc12vxDI9f6WbJogvF5K7xCUs1Sm5xlYvygtqxldfzDOJMX/AlRbaDfVPhK//5sYMv
+         HBsJzgNUiAIDPuEAI1K9v6N/uqg7SSUykOYiA2FuDHf2mm17B0yfTLoqwSoW4teEBUvI
+         1ziOf6Zj3b4/FSV8xZulJJXS2/1R23eHh1HGp4A0Vu94utJNIF3oxeA4oc+/kJKicH6b
+         4Ihg==
+X-Gm-Message-State: AOAM530iy2e3eNP81TeyvGb5SUrlJrkGLfTuA7oxFOEbwNFCf67J3VAA
+        4tbwEC1XyKZ4Djk1gb9XfAWcEw==
+X-Google-Smtp-Source: ABdhPJyBEz8ER0lMbS2x4R8+BOYqgNo0DIdwGqHile4MHvdF4zsqCX08J9gREnSEPHC5no2E7MFIXA==
+X-Received: by 2002:a05:6402:4304:b0:427:cb08:b085 with SMTP id m4-20020a056402430400b00427cb08b085mr27485799edc.194.1652253839068;
+        Wed, 11 May 2022 00:23:59 -0700 (PDT)
+Received: from [192.168.0.253] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id c6-20020aa7c746000000b0042617ba63b9sm717411eds.67.2022.05.11.00.23.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 May 2022 00:23:58 -0700 (PDT)
+Message-ID: <7376f263-3443-06a0-5ef6-d11be1acd836@linaro.org>
+Date:   Wed, 11 May 2022 09:23:57 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220511022751.65540-9-kirill.shutemov@linux.intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] dt-bindings: gpio: gpio-mvebu: convert txt binding to
+ YAML
+Content-Language: en-US
+To:     Chris Packham <Chris.Packham@alliedtelesis.co.nz>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+        "brgl@bgdev.pl" <brgl@bgdev.pl>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
+        "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>,
+        "lee.jones@linaro.org" <lee.jones@linaro.org>
+Cc:     "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
+References: <20220510094404.1020307-1-chris.packham@alliedtelesis.co.nz>
+ <6db35313-5dcd-c9f2-724c-d157a835c9fc@linaro.org>
+ <eaea4c27-05b3-d26f-d091-99e07d14aae6@alliedtelesis.co.nz>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <eaea4c27-05b3-d26f-d091-99e07d14aae6@alliedtelesis.co.nz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 05:27:48AM +0300, Kirill A. Shutemov wrote:
-> When a kernel thread performs memory access on behalf of a process (like
-> in async I/O, io_uring, etc.) it has to respect tagging setup of the
-> process as user addresses can include tags.
+On 10/05/2022 22:55, Chris Packham wrote:
+> (sigh resend, Thunderbird decided that this needed html)
 > 
-> Normally, LAM setup is per-thread and recorded in thread features, but
-> for this use case kernel also tracks LAM setup per-mm. mm->context.lam
-> would record LAM that allows the most tag bits among the threads of
-> the mm.
+> On 11/05/22 01:40, Krzysztof Kozlowski wrote:
+>>> +  marvell,pwm-offset:
+>>> +    $ref: /schemas/types.yaml#/definitions/uint32
+>>> +    description: Offset in the register map for the pwm registers (in bytes)
+>> It's the same as offset. Why allowing both? Isn't one deprecated?
+>>
+> This one is in addition to offset. The "offset" is for the gpio 
+> registers "marvell,pwm-offset" is for a separate pwm related register 
+> that is not in the same contiguous block.
 
-Then why does it *ever* make sense to track it per thread? It's not like
-it makes heaps of sense to allow one thread in a process to use LAM but
-not the others.
+I see now different in the description. Egh, confusing. But the
+confusion was done earlier, so let it be.
+
+Best regards,
+Krzysztof
