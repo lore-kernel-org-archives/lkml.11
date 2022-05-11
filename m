@@ -2,158 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03A9EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 06:50:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D991DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 06:51:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241258AbiEKGuf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 02:50:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36352 "EHLO
+        id S242392AbiEKGvl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 02:51:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242392AbiEKGuX (ORCPT
+        with ESMTP id S242683AbiEKGvP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 02:50:23 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EFF75DA53
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 23:50:21 -0700 (PDT)
-X-UUID: eaa8c6051d684a3c9af820dbd46d9813-20220511
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:e6b004a1-2358-496b-a84f-2d1f9671fbdb,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:faefae9,CLOUDID:74920fe6-38f2-431d-8de7-bf8fac490b0a,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: eaa8c6051d684a3c9af820dbd46d9813-20220511
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <yong.wu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 245592724; Wed, 11 May 2022 14:50:15 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Wed, 11 May 2022 14:50:12 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 11 May 2022 14:50:11 +0800
-From:   Yong Wu <yong.wu@mediatek.com>
-To:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>
-CC:     <iommu@lists.linux-foundation.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, "Yong Wu" <yong.wu@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
-        <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>,
-        <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
-        <xueqi.zhang@mediatek.com>, Guenter Roeck <groeck@chromium.org>,
-        "Dan Carpenter" <dan.carpenter@oracle.com>
-Subject: [PATCH 4/4] iommu/mediatek: Improve safety for mediatek,smi property in larb nodes
-Date:   Wed, 11 May 2022 14:49:20 +0800
-Message-ID: <20220511064920.18455-5-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220511064920.18455-1-yong.wu@mediatek.com>
-References: <20220511064920.18455-1-yong.wu@mediatek.com>
+        Wed, 11 May 2022 02:51:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 151AB263A
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 23:50:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 51682617FE
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 06:50:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55530C385DB;
+        Wed, 11 May 2022 06:50:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652251848;
+        bh=EPtahW9l/Zi0zg2ZV5hZKf+m/NZbM7cRdmVPxgPKIEM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=warw4ZV9i+HysSVjSdhNrjzEae4jlsW9+PDmVi2v5/q3+ZItWy8I/CE71a2exbAnd
+         DJZIaKkmWhmUIBby4O+XH/Qp5Mv1y+s2NOiPu4bgqvkzUeiYcUoQQKHVhL/V0KweLW
+         lNO/mBZIdbh+pB+8ucK6ZjSCuxAxlkoHlwCy3sa8=
+Date:   Wed, 11 May 2022 08:50:45 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Qi Zheng <zhengqi.arch@bytedance.com>
+Cc:     akpm@linux-foundation.org, jirislaby@kernel.org,
+        akinobu.mita@gmail.com, vbabka@suse.cz, rostedt@goodmis.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH v2 2/2] tty: fix deadlock caused by calling printk()
+ under tty_port->lock
+Message-ID: <YntcxUckMqEp1a2c@kroah.com>
+References: <20220511061951.1114-1-zhengqi.arch@bytedance.com>
+ <20220511061951.1114-2-zhengqi.arch@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220511061951.1114-2-zhengqi.arch@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-No functional change. Just improve safety from dts.
+On Wed, May 11, 2022 at 02:19:51PM +0800, Qi Zheng wrote:
+> The pty_write() invokes kmalloc() which may invoke a normal printk() to
+> print failure message. This can cause a deadlock in the scenario reported
+> by syz-bot below:
+> 
+>        CPU0              CPU1                    CPU2
+>        ----              ----                    ----
+>                          lock(console_owner);
+>                                                  lock(&port_lock_key);
+>   lock(&port->lock);
+>                          lock(&port_lock_key);
+>                                                  lock(&port->lock);
+>   lock(console_owner);
+> 
+> As commit dbdda842fe96 ("printk: Add console owner and waiter logic to
+> load balance console writes") said, such deadlock can be prevented by
+> using printk_deferred() in kmalloc() (which is invoked in the section
+> guarded by the port->lock). But there are too many printk() on the
+> kmalloc() path, and kmalloc() can be called from anywhere, so changing
+> printk() to printk_deferred() is too complicated and inelegant.
+> 
+> Therefore, this patch chooses to specify __GFP_NOWARN to kmalloc(), so
+> that printk() will not be called, and this deadlock problem can be avoided.
+> 
+> Syz-bot reported the following lockdep error:
+> 
+> ======================================================
+> WARNING: possible circular locking dependency detected
+> 5.4.143-00237-g08ccc19a-dirty #10 Not tainted
+> ------------------------------------------------------
+> syz-executor.4/29420 is trying to acquire lock:
+> ffffffff8aedb2a0 (console_owner){....}-{0:0}, at: console_trylock_spinning kernel/printk/printk.c:1752 [inline]
+> ffffffff8aedb2a0 (console_owner){....}-{0:0}, at: vprintk_emit+0x2ca/0x470 kernel/printk/printk.c:2023
+> 
+> but task is already holding lock:
+> ffff8880119c9158 (&port->lock){-.-.}-{2:2}, at: pty_write+0xf4/0x1f0 drivers/tty/pty.c:120
+> 
+> which lock already depends on the new lock.
+> 
+> the existing dependency chain (in reverse order) is:
+> 
+> -> #2 (&port->lock){-.-.}-{2:2}:
+>        __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+>        _raw_spin_lock_irqsave+0x35/0x50 kernel/locking/spinlock.c:159
+>        tty_port_tty_get drivers/tty/tty_port.c:288 [inline]          		<-- lock(&port->lock);
+>        tty_port_default_wakeup+0x1d/0xb0 drivers/tty/tty_port.c:47
+>        serial8250_tx_chars+0x530/0xa80 drivers/tty/serial/8250/8250_port.c:1767
+>        serial8250_handle_irq.part.0+0x31f/0x3d0 drivers/tty/serial/8250/8250_port.c:1854
+>        serial8250_handle_irq drivers/tty/serial/8250/8250_port.c:1827 [inline] 	<-- lock(&port_lock_key);
+>        serial8250_default_handle_irq+0xb2/0x220 drivers/tty/serial/8250/8250_port.c:1870
+>        serial8250_interrupt+0xfd/0x200 drivers/tty/serial/8250/8250_core.c:126
+>        __handle_irq_event_percpu+0x109/0xa50 kernel/irq/handle.c:156
+>        [...]
+> 
+> -> #1 (&port_lock_key){-.-.}-{2:2}:
+>        __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+>        _raw_spin_lock_irqsave+0x35/0x50 kernel/locking/spinlock.c:159
+>        serial8250_console_write+0x184/0xa40 drivers/tty/serial/8250/8250_port.c:3198
+> 										<-- lock(&port_lock_key);
+>        call_console_drivers kernel/printk/printk.c:1819 [inline]
+>        console_unlock+0x8cb/0xd00 kernel/printk/printk.c:2504
+>        vprintk_emit+0x1b5/0x470 kernel/printk/printk.c:2024			<-- lock(console_owner);
+>        vprintk_func+0x8d/0x250 kernel/printk/printk_safe.c:394
+>        printk+0xba/0xed kernel/printk/printk.c:2084
+>        register_console+0x8b3/0xc10 kernel/printk/printk.c:2829
+>        univ8250_console_init+0x3a/0x46 drivers/tty/serial/8250/8250_core.c:681
+>        console_init+0x49d/0x6d3 kernel/printk/printk.c:2915
+>        start_kernel+0x5e9/0x879 init/main.c:713
+>        secondary_startup_64+0xa4/0xb0 arch/x86/kernel/head_64.S:241
+> 
+> -> #0 (console_owner){....}-{0:0}:
+>        [...]
+>        lock_acquire+0x127/0x340 kernel/locking/lockdep.c:4734
+>        console_trylock_spinning kernel/printk/printk.c:1773 [inline]		<-- lock(console_owner);
+>        vprintk_emit+0x307/0x470 kernel/printk/printk.c:2023
+>        vprintk_func+0x8d/0x250 kernel/printk/printk_safe.c:394
+>        printk+0xba/0xed kernel/printk/printk.c:2084
+>        fail_dump lib/fault-inject.c:45 [inline]
+>        should_fail+0x67b/0x7c0 lib/fault-inject.c:144
+>        __should_failslab+0x152/0x1c0 mm/failslab.c:33
+>        should_failslab+0x5/0x10 mm/slab_common.c:1224
+>        slab_pre_alloc_hook mm/slab.h:468 [inline]
+>        slab_alloc_node mm/slub.c:2723 [inline]
+>        slab_alloc mm/slub.c:2807 [inline]
+>        __kmalloc+0x72/0x300 mm/slub.c:3871
+>        kmalloc include/linux/slab.h:582 [inline]
+>        tty_buffer_alloc+0x23f/0x2a0 drivers/tty/tty_buffer.c:175
+>        __tty_buffer_request_room+0x156/0x2a0 drivers/tty/tty_buffer.c:273
+>        tty_insert_flip_string_fixed_flag+0x93/0x250 drivers/tty/tty_buffer.c:318
+>        tty_insert_flip_string include/linux/tty_flip.h:37 [inline]
+>        pty_write+0x126/0x1f0 drivers/tty/pty.c:122				<-- lock(&port->lock);
+>        n_tty_write+0xa7a/0xfc0 drivers/tty/n_tty.c:2356
+>        do_tty_write drivers/tty/tty_io.c:961 [inline]
+>        tty_write+0x512/0x930 drivers/tty/tty_io.c:1045
+>        __vfs_write+0x76/0x100 fs/read_write.c:494
+>        [...]
+> 
+> other info that might help us debug this:
+> 
+> Chain exists of:
+>   console_owner --> &port_lock_key --> &port->lock
+> 
+> Fixes: b6da31b2c07c ("tty: Fix data race in tty_insert_flip_string_fixed_flag")
+> Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
+> Acked-by: Jiri Slaby <jirislaby@kernel.org>
 
-All the larbs that connect to one IOMMU must connect with the same
-smi-common. This patch checks all the mediatek,smi property for each
-larb, If their mediatek,smi are different, it will return fails.
-Also avoid there is no available smi-larb nodes.
-
-Suggested-by: Guenter Roeck <groeck@chromium.org>
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
----
- drivers/iommu/mtk_iommu.c | 49 ++++++++++++++++++++++++++-------------
- 1 file changed, 33 insertions(+), 16 deletions(-)
-
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 1ba92751e9df..75b9ede45a1a 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -1038,7 +1038,7 @@ static const struct component_master_ops mtk_iommu_com_ops = {
- static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **match,
- 				  struct mtk_iommu_data *data)
- {
--	struct device_node *larbnode, *smicomm_node, *smi_subcomm_node;
-+	struct device_node *larbnode, *frst_avail_smicomm_node = NULL;
- 	struct platform_device *plarbdev;
- 	struct device_link *link;
- 	int i, larb_nr, ret;
-@@ -1050,6 +1050,7 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
- 		return -EINVAL;
- 
- 	for (i = 0; i < larb_nr; i++) {
-+		struct device_node *smicomm_node, *smi_subcomm_node;
- 		u32 id;
- 
- 		larbnode = of_parse_phandle(dev->of_node, "mediatek,larbs", i);
-@@ -1085,27 +1086,43 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
- 		}
- 		data->larb_imu[id].dev = &plarbdev->dev;
- 
-+		/* Get smi-(sub)-common dev from the last larb. */
-+		smi_subcomm_node = of_parse_phandle(larbnode, "mediatek,smi", 0);
-+		if (!smi_subcomm_node) {
-+			ret = -EINVAL;
-+			goto err_larbnode_put;
-+		}
-+
-+		/*
-+		 * It may have two level smi-common. the node is smi-sub-common if it
-+		 * has a new mediatek,smi property. otherwise it is smi-commmon.
-+		 */
-+		smicomm_node = of_parse_phandle(smi_subcomm_node, "mediatek,smi", 0);
-+		if (smicomm_node)
-+			of_node_put(smi_subcomm_node);
-+		else
-+			smicomm_node = smi_subcomm_node;
-+
-+		if (!frst_avail_smicomm_node) {
-+			frst_avail_smicomm_node = smicomm_node;
-+		} else if (frst_avail_smicomm_node != smicomm_node) {
-+			dev_err(dev, "mediatek,smi is not right @larb%d.", id);
-+			of_node_put(smicomm_node);
-+			ret = -EINVAL;
-+			goto err_larbnode_put;
-+		} else {
-+			of_node_put(smicomm_node);
-+		}
-+
- 		component_match_add_release(dev, match, component_release_of,
- 					    component_compare_of, larbnode);
- 	}
- 
--	/* Get smi-(sub)-common dev from the last larb. */
--	smi_subcomm_node = of_parse_phandle(larbnode, "mediatek,smi", 0);
--	if (!smi_subcomm_node)
-+	if (!frst_avail_smicomm_node)
- 		return -EINVAL;
- 
--	/*
--	 * It may have two level smi-common. the node is smi-sub-common if it
--	 * has a new mediatek,smi property. otherwise it is smi-commmon.
--	 */
--	smicomm_node = of_parse_phandle(smi_subcomm_node, "mediatek,smi", 0);
--	if (smicomm_node)
--		of_node_put(smi_subcomm_node);
--	else
--		smicomm_node = smi_subcomm_node;
--
--	plarbdev = of_find_device_by_node(smicomm_node);
--	of_node_put(smicomm_node);
-+	plarbdev = of_find_device_by_node(frst_avail_smicomm_node);
-+	of_node_put(frst_avail_smicomm_node);
- 	data->smicomm_dev = &plarbdev->dev;
- 
- 	link = device_link_add(data->smicomm_dev, dev,
--- 
-2.18.0
-
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
