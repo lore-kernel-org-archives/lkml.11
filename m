@@ -2,132 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8951C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:58:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD443C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:59:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344136AbiEKP6E (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 11:58:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41566 "EHLO
+        id S233721AbiEKP7B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 11:59:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344157AbiEKP4A (ORCPT
+        with ESMTP id S239167AbiEKP66 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 11:56:00 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC9D617E1A
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 08:55:58 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id i27so4937216ejd.9
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 08:55:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=NCe9eepcmm5pM5STfrqjZwU8j89Uv9lHGyRkx9Iwq7c=;
-        b=Zf8SCCkecXCCgEpaj2bLTJnzLOAmeR7CkZ7qOrUm2VO2kmUIAyKx+F+AeNYE+hpIQx
-         JmcJte49LifGKo1REd5LPpB9yjV+Wikmg6YEInDyICKBVxrljhKGKuvd6h5VDoltLs67
-         9lfvO1SZbo645yyeoFeJ8SxtbSTXYgXVCZXlMWVqLhRJm0W6QD0rRfO8Y3l/nfxeSxJD
-         s8/06VJGXUTALB4Idse2+Qy3zm0XwjY8OV3VduGeuqaAaJVUOzqYMcHVGOZhzkf6P3Ap
-         mB892jCfGIVU/rzrsFIrST1Cu37urTZsLq6mCx9NhrKcYQOoNFm8YC/UvOmDe944YAmP
-         48gQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=NCe9eepcmm5pM5STfrqjZwU8j89Uv9lHGyRkx9Iwq7c=;
-        b=P2R+08Wd7mlTG7Q/0vZg2GW0gxBR1TaK/lHu7QzWrsDyYTPb6Wsujv9CSWyaQMHX4L
-         51oajosClKlzCvCG/cdy1y7dhmCoEv0w0RQ0ioJywr+yFQIQpGCW8EJk1fAGFhxJ77b+
-         SqKm7c5Rfser5dCdO/L0sIjrKCdou38lDa1HP5nzx0vb7PhJ7wkxae7+DVvAm6LtNFYG
-         vypkL3z0pGn9fEpu9CKLeYN8NM6pSYg2Px2aP+amyUtEXPdypI+44r5cHhqYzH08hfN0
-         IHI6Xr/7L/k7qFY/oo1B7imid97WIguVm0LdBGvW21Hg9ysVd/9npzASwYmj+e+od/i7
-         0gQw==
-X-Gm-Message-State: AOAM532MrP3IBqiorend4DDxklcykFOxJH+b2BgFUzQ4P2iW2U3mL0S5
-        okvLMenv5NHHMVzT2XXx4D5y8w==
-X-Google-Smtp-Source: ABdhPJwMm4BtwRwLHiFzR5GYSDOEL//zHF9zXAAhO7EeCdx/TbOGi5w/JLyVYJRIx/zVNYSRsIIgQQ==
-X-Received: by 2002:a17:906:794e:b0:6f5:2072:b00a with SMTP id l14-20020a170906794e00b006f52072b00amr25202218ejo.277.1652284556612;
-        Wed, 11 May 2022 08:55:56 -0700 (PDT)
-Received: from [192.168.0.155] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id fl20-20020a1709072a9400b006f3ef214e13sm1078644ejc.121.2022.05.11.08.55.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 May 2022 08:55:56 -0700 (PDT)
-Message-ID: <59d23590-0b1e-39f0-80f1-d875081a276c@linaro.org>
-Date:   Wed, 11 May 2022 17:55:55 +0200
+        Wed, 11 May 2022 11:58:58 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F4EC1505CF;
+        Wed, 11 May 2022 08:58:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=kqE02dzRDRl7y2hgIY6W5nVbBS7sf7V+wbQ6b8v+gJ4=; b=vhAiG6IbQmevUMxUAN1yhan8tW
+        TQZT32pMZ4EJw3FKFbL+aCbeAGhRfWxCJg6N+4E/ZAACkM36RAO5ZV2H8/HfToxP8RmDsuBlLSkhJ
+        oCP639Pt/VSPnuGF81eSGXaoP+0o9afSBYunOzV8NoeJ6Cum9FWEjLn9Xmf4V8WJgJMr5h5ZlkDmz
+        JgBi8mwBumCFkp9OvSpl/gfS65rtNCOdVvdaWNfJkx/nKpYy6fWhmhCa2Oa7bXg2WmzULLyAgLLM4
+        gD4UdRK+5WNOyk4efWNgM1Pyu9SQTIiDiYukoMcyhGxDI5Lcu60Qt7O2dRJ9dkjt+vjI1BOZsJTnb
+        VrKvxQxg==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1noojg-007gQb-4R; Wed, 11 May 2022 15:58:48 +0000
+Date:   Wed, 11 May 2022 08:58:48 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     ast@kernel.org, daniel@iogearbox.net
+Cc:     songliubraving@fb.com, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+Subject: Re: [PATCH] bpf.h: fix clang compiler warning with
+ unpriv_ebpf_notify()
+Message-ID: <YnvdOAaYmhNiA5WN@bombadil.infradead.org>
+References: <20220509203623.3856965-1-mcgrof@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2] dt-bindings: gpio: gpio-mvebu: convert txt binding to
- YAML
-Content-Language: en-US
-To:     Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        linus.walleij@linaro.org, brgl@bgdev.pl, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, thierry.reding@gmail.com,
-        u.kleine-koenig@pengutronix.de, lee.jones@linaro.org
-Cc:     linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
-References: <20220511013737.1194344-1-chris.packham@alliedtelesis.co.nz>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220511013737.1194344-1-chris.packham@alliedtelesis.co.nz>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220509203623.3856965-1-mcgrof@kernel.org>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/05/2022 03:37, Chris Packham wrote:
-> Convert the existing device tree binding to YAML format.
+On Mon, May 09, 2022 at 01:36:23PM -0700, Luis Chamberlain wrote:
+> The recent commit "bpf: Move BPF sysctls from kernel/sysctl.c to BPF core"
+> triggered 0-day to issue an email for what seems to have been an old
+> clang warning. So this issue should have existed before as well, from
+> what I can tell. The issue is that clang expects a forward declaration
+> for routines declared as weak while gcc does not.
 > 
-> The old binding listed the interrupt-controller and related properties
-> as required but there are sufficiently many existing usages without it
-> that the YAML binding does not make the interrupt properties required.
+> This can be reproduced with 0-day's x86_64-randconfig-c007
+> https://download.01.org/0day-ci/archive/20220424/202204240008.JDntM9cU-lkp@intel.com/config
 > 
-> The offset and marvell,pwm-offset properties weren't in the old binding
-> and are added to the YAML binding. The offset property is required when
-> the marvell,armada-8k-gpio compatible is used.
+> And using:
+> 
+> COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 ARCH=x86_64 SHELL=/bin/bash kernel/bpf/syscall.o
+> Compiler will be installed in /home/mcgrof/0day
+> make --keep-going HOSTCC=/home/mcgrof/0day/clang/bin/clang CC=/home/mcgrof/0day/clang/bin/clang LD=/home/mcgrof/0day/clang/bin/ld.lld HOSTLD=/home/mcgrof/0day/clang/bin/ld.lld AR=llvm-ar NM=llvm-nm STRIP=llvm-strip OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump OBJSIZE=llvm-size READELF=llvm-readelf HOSTCXX=clang++ HOSTAR=llvm-ar CROSS_COMPILE=x86_64-linux-gnu- --jobs=24 W=1 ARCH=x86_64 SHELL=/bin/bash kernel/bpf/syscall.o
+>   DESCEND objtool
+>   CALL    scripts/atomic/check-atomics.sh
+>   CALL    scripts/checksyscalls.sh
+>   CC      kernel/bpf/syscall.o
+> kernel/bpf/syscall.c:4944:13: warning: no previous prototype for function 'unpriv_ebpf_notify' [-Wmissing-prototypes]
+> void __weak unpriv_ebpf_notify(int new_state)
+>             ^
+> kernel/bpf/syscall.c:4944:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+> void __weak unpriv_ebpf_notify(int new_state)
+> ^
+> static
+> 
+> Fixes: 2900005ea287 ("bpf: Move BPF sysctls from kernel/sysctl.c to BPF core")
+> Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+> ---
+> 
+> Daniel,
+> 
+> Given what we did fore 2900005ea287 ("bpf: Move BPF sysctls from
+> kernel/sysctl.c to BPF core") where I had pulled pr/bpf-sysctl a
+> while ago into sysctl-next and then merged the patch in question,
+> should I just safely carry this patch onto sysctl-next? Let me know
+> how you'd like to proceed.
+> 
+> Also, it wasn't clear if putting this forward declaration on
+> bpf.h was your ideal preference.
 
-These properties do not look correct. It's some hacky design. As I see
-in the driver, there is no reason to model the gpio under the syscon at
-all. The GPIO has its own address space, which is for example in
-armada-ap80x.dtsi 0x6f4000+0x1040.
+After testing this on sysctl-testing without issues going to move this
+to sysctl-next now.
 
-Instead of describing it as a separate device under that address,
-someone created a syscon node for entire address space, put the GPIO as
-a fake child and added some new property "offset" indicating address
-offset. Wait, what, why?
-
-Why this cannot be a child of SoC, just like all other nodes are?
-
-Since this is a conversion and offset was never previously accepted in
-the bindings, it has to go to separate patch where you will need to get
-Rob's ack on documenting offset.
-
-(...)
-
-> +    then:
-> +      properties:
-> +        reg:
-> +          minItems: 2
-> +
-> +unevaluatedProperties: true
-> +
-> +examples:
-> +  - |
-> +      gpio@d0018100 {
-
-Wrong indentation. See example schema.
-
-
-> +        compatible = "marvell,armadaxp-gpio", "marvell,orion-gpio";
-> +        reg = <0xd0018100 0x40>, <0xd0018800 0x30>;
-> +        ngpios = <32>;
-> +        gpio-controller;
-> +        #gpio-cells = <2>;
-> +        interrupt-controller;
-> +        #interrupt-cells = <2>;
-> +        interrupts = <16>, <17>, <18>, <19>;
-> +      };
-> +
-> +  - |
-> +      gpio@18140 {
-
-Best regards,
-Krzysztof
+  Luis
