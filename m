@@ -2,138 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AB9AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 12:27:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56899C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 12:28:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237797AbiEKM1m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 08:27:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37378 "EHLO
+        id S240966AbiEKM2w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 08:28:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233215AbiEKM1j (ORCPT
+        with ESMTP id S233215AbiEKM2t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 08:27:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 20A835B3E7
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 05:27:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652272058;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hUCEDpMcELwjroIKSRZI8OB/5UA+ogwez3KA5XNPQjQ=;
-        b=Uv0jQgSBBYzYTD9fivkBz3+wvabC4ZvBqKCobTMgArmk0XBI/wE04iRrGcPdfs5B4EZbW2
-        bH6JldM77k0AoZEWqRfV1H6jU2ZmJBDOGuz9U1Vk7ca/cyMk5HCtoE8YhhpI+bI3a6iEkL
-        6w/BOxKflUPwdv+FCPG097RLzAaCzlY=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-542-z0tXYCCFO3SyQJ1AgNzBzg-1; Wed, 11 May 2022 08:27:37 -0400
-X-MC-Unique: z0tXYCCFO3SyQJ1AgNzBzg-1
-Received: by mail-wm1-f72.google.com with SMTP id v124-20020a1cac82000000b003948b870a8dso2773590wme.2
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 05:27:36 -0700 (PDT)
+        Wed, 11 May 2022 08:28:49 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C08851FD1F7
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 05:28:47 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id w24so2371799edx.3
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 05:28:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=szeredi.hu; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kFb+oOKVfdSFM1Ynmw5DXLEBb4aXz2rTDwsxTr/WZTY=;
+        b=NMCM6+TD98zvp/GBsWlY0VX5iKuGvLvXshRG/+mChWR+yPtiyUxxkqNbNdNQwQy9GP
+         PN3IUiJhfvNF/g3HU9LTgvzYpKgbXg6bGECeapdUNYAeGRYouWfhaasrBhujsqaUi26v
+         DkvNhaWJwMwbVG3NJnmWRoCCsPgXwQBw1SwCE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=hUCEDpMcELwjroIKSRZI8OB/5UA+ogwez3KA5XNPQjQ=;
-        b=vKUH0eej0DCVpvrb5n/tp+DTKXGpGPglNDXM6Nf3UNubSUiQih2BxNvifGct0L8x9D
-         l9G2PCF6CraRwTeP7olYoKzXgt68/PkSNFMLgOcKH+ZTpXR4vbdTGK0LqjF1HAmE0EhX
-         5QXqUR7AXhcwas8YeXtmz+62sL0b4yGXFLVAFjkCYNsSxGJZjUF9G0rpzj0RtuIkRcv3
-         +ufuRXUHcnrxEP9qcjUrQAQeqM9hd3LH7o4/Ot3eVphEdxQDo6oUNOrWHC83sYKfF1lZ
-         zq7I628SAZ91LH1Uadnh3sQaO7fBszLts1tIXmFRjDwqPiguwq2/HcmOUkQiBwCSm8/t
-         nJ3Q==
-X-Gm-Message-State: AOAM533q2bmdKd7IGGa0xazb3XGgDE7KYghJ72ieKxbfKqj/DOStaZDW
-        32YNKEauhtTqjYemiHHBLHvk9kitgy7KzzJWDhy7sdLGK7ovMurxAsjbwvPOFpKtEOl5QYzmdYt
-        cfj//7072cIiis7NkqC3JozED
-X-Received: by 2002:adf:f809:0:b0:20a:c40d:ae9a with SMTP id s9-20020adff809000000b0020ac40dae9amr22633087wrp.609.1652272055888;
-        Wed, 11 May 2022 05:27:35 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx4vhxqnTmWHdFk3+Z1Bppcfdj6GdhkeCnzL/pWI2XiCnosbdMq+/Y1YjqIsk754DQqSlF42g==
-X-Received: by 2002:adf:f809:0:b0:20a:c40d:ae9a with SMTP id s9-20020adff809000000b0020ac40dae9amr22633063wrp.609.1652272055618;
-        Wed, 11 May 2022 05:27:35 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c701:700:2393:b0f4:ef08:bd51? (p200300cbc70107002393b0f4ef08bd51.dip0.t-ipconnect.de. [2003:cb:c701:700:2393:b0f4:ef08:bd51])
-        by smtp.gmail.com with ESMTPSA id u10-20020a5d6aca000000b0020c5253d925sm1534898wrw.113.2022.05.11.05.27.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 May 2022 05:27:35 -0700 (PDT)
-Message-ID: <4407c84b-a64f-51b0-fa96-388aaf3b3e35@redhat.com>
-Date:   Wed, 11 May 2022 14:27:34 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kFb+oOKVfdSFM1Ynmw5DXLEBb4aXz2rTDwsxTr/WZTY=;
+        b=y4IX2b+ekSNBrKDjOKRdijbJZm2FU2pmHJ+AM1XVF7P16Pve4zLpXVDSRuDAytxjO5
+         JS27WVun7ASXqRJKEisNreG4xM8W33GwOuwMvV06Ist4Ex37vfSNdFVYO0Fq1YX826jI
+         hTzqrcJCGapGK9Hf3IBgXZAG5S9rx6w2RvtxjCRE3T69DS7NcQsbFRod3SbIVJAxxFsW
+         tnetg/nVVX+T2Ahwp94pIZMV57RhIGe9PljJ81bwmAoe7f1mEI0fDocotDdiLLadqtqv
+         kNM0OiNm9RM8FbIAvbcH0OT3TEmny9ZyhtYo78TmTJOXFFDtTTYvQWof0sABNMkABQpH
+         V7Rg==
+X-Gm-Message-State: AOAM532F4Kn3vIUpbfUd5kTV4ZmfFHRKkW/iu99Ri9w2zkj7ZOneN09V
+        TgsL4xRFdwOfvYWPWI1AAIspBX/HJ7tkKJ7m9wonHw==
+X-Google-Smtp-Source: ABdhPJxWwXgnhSYbvRQaaYX1wNi+xzJf+PXffIjqvgi6cI+87AjF12g3Yk81vqxwbS8t9950B4c6Nykxk7whoJ/HDX0=
+X-Received: by 2002:aa7:cb18:0:b0:428:af6e:a2a0 with SMTP id
+ s24-20020aa7cb18000000b00428af6ea2a0mr10254026edt.154.1652272126351; Wed, 11
+ May 2022 05:28:46 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] RISC-V: Remove IORESOURCE_BUSY flag for no-map reserved
- memory
-Content-Language: en-US
-To:     Xianting Tian <xianting.tian@linux.alibaba.com>,
-        paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, akpm@linux-foundation.org,
-        anup@brainfault.org, wangkefeng.wang@huawei.com, rppt@kernel.org,
-        alex@ghiti.fr, twd2.me@gmail.com, seanjc@google.com,
-        petr.pavlu@suse.com, atishp@rivosinc.com
-Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        guoren@kernel.org, jianghuaming.jhm@alibaba-inc.com,
-        Nick Kossifidis <mick@ics.forth.gr>
-References: <20220511112413.559734-1-xianting.tian@linux.alibaba.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220511112413.559734-1-xianting.tian@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220511013057.245827-1-dlunev@chromium.org> <CAJfpegsmyY+D4kK3ov51FLGA=RkyGDKMcYiMo2zBqYuFNs78JQ@mail.gmail.com>
+ <CAONX=-dqY64VkqF6cNYvm8t-ad8XRqDhELP9icfPTPD2iLobLA@mail.gmail.com>
+ <CAJfpegvUZheWb3eJwVrpBDYzwQH=zQsuq9R8mpcXb3fqzzEdiQ@mail.gmail.com>
+ <CAONX=-cxA-tZOSo33WK9iJU61yeDX8Ct_PwOMD=5WXLYTJ-Mjg@mail.gmail.com>
+ <CAJfpegsNwsWJC+x8jL6kDzYhENQQ+aUYAV9wkdpQNT-FNMXyAg@mail.gmail.com> <CAONX=-d9nfYpPkbiVcaEsCQT1ZpwAN5ry8BYKBA6YoBvm7tPfg@mail.gmail.com>
+In-Reply-To: <CAONX=-d9nfYpPkbiVcaEsCQT1ZpwAN5ry8BYKBA6YoBvm7tPfg@mail.gmail.com>
+From:   Miklos Szeredi <miklos@szeredi.hu>
+Date:   Wed, 11 May 2022 14:28:34 +0200
+Message-ID: <CAJfpegtTP==oMm+LhvOkrxkPB973-Y80chbwYpXSiOAXBDhHJw@mail.gmail.com>
+Subject: Re: [PATCH 0/2] Prevent re-use of FUSE superblock after force unmount
+To:     Daniil Lunev <dlunev@chromium.org>
+Cc:     linux-fsdevel@vger.kernel.org,
+        fuse-devel <fuse-devel@lists.sourceforge.net>,
+        linux-kernel@vger.kernel.org,
+        Alexander Viro <viro@zeniv.linux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11.05.22 13:24, Xianting Tian wrote:
-> Commit 00ab027a3b82 ("RISC-V: Add kernel image sections to the resource tree")
-> added IORESOURCE_BUSY flag for no-map reserved memory, this casued
-> devm_ioremap_resource() failed for the no-map reserved memory in subsequent
-> operations of related driver, so remove the IORESOURCE_BUSY flag.
-> 
-> The code to reproduce the issue,
-> dts:
-> 	mem0: memory@a0000000 {
->                 reg = <0x0 0xa0000000 0 0x1000000>;
->                 no-map;
->         };
-> 
-> 	&test {
-> 		status = "okay";
-> 		memory-region = <&mem0>;
-> 	};
-> 
-> code:
-> 	np = of_parse_phandle(pdev->dev.of_node, "memory-region", 0);
-> 	ret = of_address_to_resource(np, 0, &r);
-> 	base = devm_ioremap_resource(&pdev->dev, &r);
-> 	// base = -EBUSY
-> 
-> Fixes: 00ab027a3b82 ("RISC-V: Add kernel image sections to the resource tree")
-> Reported-by: Huaming Jiang <jianghuaming.jhm@alibaba-inc.com>
-> Reviewed-by: Guo Ren <guoren@kernel.org>
-> CC: Nick Kossifidis <mick@ics.forth.gr>
-> Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
-> ---
->  arch/riscv/kernel/setup.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/arch/riscv/kernel/setup.c b/arch/riscv/kernel/setup.c
-> index 834eb652a7b9..71f2966b1474 100644
-> --- a/arch/riscv/kernel/setup.c
-> +++ b/arch/riscv/kernel/setup.c
-> @@ -214,7 +214,7 @@ static void __init init_resources(void)
->  
->  		if (unlikely(memblock_is_nomap(region))) {
->  			res->name = "Reserved";
-> -			res->flags = IORESOURCE_MEM | IORESOURCE_BUSY;
-> +			res->flags = IORESOURCE_MEM;
->  		} else {
->  			res->name = "System RAM";
->  			res->flags = IORESOURCE_SYSTEM_RAM | IORESOURCE_BUSY;
+On Wed, 11 May 2022 at 13:19, Daniil Lunev <dlunev@chromium.org> wrote:
+>
+> > At a glance it's a gross hack.   I can think of more than one way in
+> > which this could be achieved without adding a new field to struct
+> > super_block.
+> Can you advise what would be a better way to achieve that?
 
-I assume the "Reserved" part is essentially unused by the kernel correct?
+I think it would be easiest to remove the super block from the
+type->fs_supers list.
 
--- 
 Thanks,
-
-David / dhildenb
-
+Miklos
