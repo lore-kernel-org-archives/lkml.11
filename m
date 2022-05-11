@@ -2,193 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CABC8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 08:18:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2B42C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 08:18:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243458AbiEKISj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 04:18:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36384 "EHLO
+        id S242517AbiEKISy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 04:18:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242271AbiEKISh (ORCPT
+        with ESMTP id S243478AbiEKISr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 04:18:37 -0400
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41801E732F;
-        Wed, 11 May 2022 01:18:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-type:in-reply-to:
-         references;
-        bh=3cLMDtKi++EGcvFgiDpFbyfN0+A359izanQW4847Ev8=;
-        b=gZT5C4/+vjvZjryP12QuG8YceC5rhHmll3ZnjxuIZnSi654JWFsmN5svc/VU3+dGf04SIJG/kVIUQ
-         IrdaJqudf49vLrEcqzmt0LPCJyt0yU27PMLv1YEVk640bQBA2I4QHZ0hAJndNJhY0WPzJ169wOePEx
-         2O4NQdZtmq6GLOT2A1Nxf0fRfJ5GBywHn6rhBa2KdR8h4YJEZ/01YM2f2get4VbySyO1xcpZBRu2mQ
-         ATQX8+dbvqIL88X4wCvRdBIN79YZbK770pW5mCQHC19VmD4At8vpuFxEjaWDvLb5WxlEn9Dl7WgQCB
-         BdFkutGExej8kbOdvcBqcu5PVs5+6rw==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1422, Stamp: 3], Multi: [Enabled, t: (0.000010,0.017725)], BW: [Enabled, t: (0.000013,0.000001)], RTDA: [Enabled, t: (0.071522), Hit: No, Details: v2.39.0; Id: 15.52k9n0.1g2p35fnb.1p3ve; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from h-e2.ddg ([85.143.252.66])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Wed, 11 May 2022 11:18:30 +0300
-Date:   Wed, 11 May 2022 11:18:10 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-To:     Conor Dooley <mail@conchuod.ie>
-Cc:     Conor.Dooley@microchip.com, mdf@kernel.org, hao.wu@intel.com,
-        yilun.xu@intel.com, trix@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        system@metrotek.ru
-Subject: Re: [PATCH v11 2/3] fpga: microchip-spi: add Microchip MPF FPGA
- manager
-Message-ID: <20220511081810.bwxjkhfuzfvov4iw@h-e2.ddg>
-References: <20220507074304.11144-1-i.bornyakov@metrotek.ru>
- <20220507074304.11144-3-i.bornyakov@metrotek.ru>
- <bd5cb37b-ee56-f6d5-2d98-c08566b60728@microchip.com>
- <20220509171621.zk4owxwlngxjodgz@x260>
- <da1e5125-de6b-11a8-a52d-7e6e5f45ab70@conchuod.ie>
- <4b752147-1a09-a4af-bc5d-3b132b84ef49@conchuod.ie>
- <20220511081532.7gkmz3uumzxgwfaf@h-e2.ddg>
+        Wed, 11 May 2022 04:18:47 -0400
+Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on2040.outbound.protection.outlook.com [40.107.113.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 274A6E5294
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 01:18:45 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=c57olqj37nRIeR3JnZsrBw+/uFAkbBFRygtF8OATPfNabacDdzUuWHx3/7MHPvEzgeVFW6Q3d8Gwnb7x2kWrFGOYAWmIwfEoYgNWAFaUxii+4gJVmA5J2kIp9JzURC20IRqe5C+Ilc1SyzB4QQ0/SNR99ZoPisUdPhAJw912d+6A0i02JK0fjlQOZPLy0jEN+6Q0BZ9kdFpLUk2xJazn3cqcmxY9So7gbb7yg+p8D8bPZyV18N1YQL1Z5tX01IL0LqEudELlTqXaA3e1TZ0g6ymK1dEgy1ZmtMIE/8jWuhPfi9T+ZhKpS0+0G66KvDtDl83GfJOzvxk/RkNkIRP5MA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qkJ5+89vozbTbXxhquitIgYWs0F4ZotaBbZngtusEqY=;
+ b=JR6PeO4fAfkGjhVsNoNtcyA3KQVtHqUR2FY+wiEtLuG9M4lh5q7AawzrWpjJ6xumjNj9BsPpEx/pcpqby8Aqmq8FhgV38ud2/83SSIXSQ39h3C0e6htNbpUa5JCAUWWn2XtoGhpvv8v/Jt4LRv/D+FHqePOWPs4IPRqddD8ofJrF7tTCq1Q0D4wm+6uXpf9uWg1/KNl1xMhswwuIm5xFiskqInbp5jdzdi8fH1UwymazX7yx50JWchSJH7oy7YzUp1EMHSvX+suBqtBL+cU7smaZbVdvDdglE7Zl2w+Swoju3TtjTSP2rCQ5PphhN8PoJYBo3z2sXVXM58+MDaEdOw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nec.com; dmarc=pass action=none header.from=nec.com; dkim=pass
+ header.d=nec.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nec.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qkJ5+89vozbTbXxhquitIgYWs0F4ZotaBbZngtusEqY=;
+ b=RqwEfU72d8cQcLv99tRPuDCWBPRi8f9y0yNi3uuZKUxC7uX9CUjnCkoL1a5cmNZhOkmxZ/0eHGMahbFAhn1qfqK4Ws/E/207R2jD/b3cLUedF59DaOuKKfw4+VPclRlYdgHWSmC7+AtkfRTFgMMVeRbphrbb5osjBaVae/GF3HY=
+Received: from TYWPR01MB8591.jpnprd01.prod.outlook.com (2603:1096:400:13c::10)
+ by TYWPR01MB9772.jpnprd01.prod.outlook.com (2603:1096:400:224::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13; Wed, 11 May
+ 2022 08:18:42 +0000
+Received: from TYWPR01MB8591.jpnprd01.prod.outlook.com
+ ([fe80::5d51:985:b999:96b8]) by TYWPR01MB8591.jpnprd01.prod.outlook.com
+ ([fe80::5d51:985:b999:96b8%6]) with mapi id 15.20.5227.023; Wed, 11 May 2022
+ 08:18:42 +0000
+From:   =?utf-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPo+OAgOebtOS5nyk=?= 
+        <naoya.horiguchi@nec.com>
+To:     zhenwei pi <pizhenwei@bytedance.com>
+CC:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 3/5] mm/memory-failure.c: add hwpoison_filter for soft
+ offline
+Thread-Topic: [PATCH v2 3/5] mm/memory-failure.c: add hwpoison_filter for soft
+ offline
+Thread-Index: AQHYY5Qa/g+4/gc4Kk6YZoMBiiXf0q0ZWEoA
+Date:   Wed, 11 May 2022 08:18:42 +0000
+Message-ID: <20220511081842.GA211620@hori.linux.bs1.fc.nec.co.jp>
+References: <20220509105641.491313-1-pizhenwei@bytedance.com>
+ <20220509105641.491313-4-pizhenwei@bytedance.com>
+In-Reply-To: <20220509105641.491313-4-pizhenwei@bytedance.com>
+Accept-Language: ja-JP, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nec.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 772249d4-2ae4-4d47-456e-08da3326dc8c
+x-ms-traffictypediagnostic: TYWPR01MB9772:EE_
+x-microsoft-antispam-prvs: <TYWPR01MB97720094E57ABCCAE0A832D2E7C89@TYWPR01MB9772.jpnprd01.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Hlep+EHL9QsSybdiN/tgKIivP0q/31rmwLYDKRog3FdwvSUdQCGPjR/A6nE2k8fkvmHM7cedUTnJ8OoiuVSpUmHRdIfF4VI3pcS8VTfnt/zYycjYYnKIPs0nu3TpqfWIJIXo2DMabp9tCjSejT7kOFl3tc/ceFML2/Lhhzw33Syqi8Vfs8nR7ne2Z4VcsABZxoU0lm2X4InYTE87+SOs2Vksgb0PGRhkYSODSfIBYk9pT/6/pVtG0CXXOQwpGEFXtsSn8NkoomBxyryXzAetbQzR/ZQ198M9PGzFTkK6/Z05IYg0KeqxK4Nodgqt9cPtJ5e3jUSaNSCC4uq7sLPm3CUpjqImc1jxFfwiJQrbCFZSjCHk0rE1B+Ic1WIN1eZA2+zM7Y4zEUupWS1FIsbwCCtAhWUX9Ab02TpgJk7pdodAo9EBiI9FZktSsHcZ7QZ3+5mZtL6vdTtiCNK95+j1k4CuAlouIDThqSkV9oGVZ8ss65UILR+AGs77WizimH84zuWE28qAFKpZ9DDG5lEsEx7b6MG5/8/cCIvmb/hetbxvLGjOs46w2Z21v4TN0PB8pQ+bdI3Zm1PwIUdTawesUvCw7C6AKQRL0hILW1octSxWKb68PpQB1j6ehUGKSnjbwoqZEQjSfqrftEtZOjpHvpBTeqI0vdQMsGDUBd8tq6bm22gekyYWx2wTWfjyhTHQhpKkLS+uzTEa8QWT5XFXKA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYWPR01MB8591.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6486002)(4326008)(5660300002)(64756008)(4744005)(6506007)(76116006)(8936002)(26005)(6512007)(66946007)(9686003)(66476007)(55236004)(66446008)(66556008)(82960400001)(122000001)(508600001)(38100700002)(38070700005)(83380400001)(8676002)(71200400001)(54906003)(86362001)(1076003)(6916009)(316002)(186003)(2906002)(85182001)(33656002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?L2V0RzJtR0YrU2VuWDVtQ0hiRnBPb2FKT09vdXZpNkZXdUoyY3VTT0Q0dCtq?=
+ =?utf-8?B?YmF2bXhFUE15RXV1ZUpWbEw4YjN2aWRodHlMNHM0dzdobXlqUWtKb21SZlpO?=
+ =?utf-8?B?WW9xV1RzLzU5a3E4Y3Rzcy9MNHhscUNZeUxsY3dNMStwN3hrOHdrUFY3QVZN?=
+ =?utf-8?B?d3EzSU1xeU9BU3hPbHZpVHhxajR3YWE5YjMxZCtuZEhETEdkWGxTREdBYzUz?=
+ =?utf-8?B?OVhUMERJbWl1ZEFkWkU3eDkxQmtuZjk1MnVRTGNPdjBTWnl2M09JRkRNVWxO?=
+ =?utf-8?B?V1lnUWZvNkFaNTIycUV3Q0d3aFdOempIVnc3QXlvZUVicFg3ckpnYVB0ZTBq?=
+ =?utf-8?B?ZFZJcE5SYngyTzlHMEcwZzNSRmtIbm5oQVRNL3FRTzh6Ly9BZ2wwTndQajJs?=
+ =?utf-8?B?KzFrNFBCWTZBR1RZMjQ2VG9idGNCLzhRS0lYV3IwN0ZzSUNsQStoanVrREww?=
+ =?utf-8?B?QXh1eWp5MjMzcFlNa2dhbDVCeTJWaDJVaVdJU3VsQ2MwUk9DMjEwL2xwaXJM?=
+ =?utf-8?B?THRWc2lOTEdZM2x0SCtSZi9xR0NRRWNZU0s5QkJORWw0SDNFaVpDVXlLV0cw?=
+ =?utf-8?B?VnZZNE1rc0RGMFI3OFFzUWluSDg2NE14NGVNd1hWODgzT0xwQkVRSUdvMkMy?=
+ =?utf-8?B?SWZPUlMzR2ErbHc5WWZnaW5uNWdkWUJBV2JXbFRWRWNMVVdzS1hCSDBKMnBh?=
+ =?utf-8?B?ejQ5MGFKam80T0lMck9OaEFtd1pWR0ZiT0JjSm9ic2hIS3c2WndiaFUrSFF2?=
+ =?utf-8?B?UVFwWFpJRDFMMEhyeHo3TWROMWIxV0VZakJMNDZjc1FXYVNVYWppNG9DeDg1?=
+ =?utf-8?B?V3pVcE05Ny9kWnEyTGxuejV3Y3FEMTlaNml3NnNmcFZZZlg2Y0c3QVVnRDB3?=
+ =?utf-8?B?RVRrMmQwTVo0NUwyZEd6NlRIYzBEamtFc0poS05SM01mWVBTMUFtVldUbExC?=
+ =?utf-8?B?Z3FYL1dTa3puaDhJZ3NUaVdoY2QyTFVPYTVnTjRma3VXS2E5UEpUZGNRbC85?=
+ =?utf-8?B?Q21uaGo2SUNlYndBMTZlMVZ6NkY3WVdkL1hRZXl0VFhzQTVUdUxoMGR0VjNG?=
+ =?utf-8?B?UVNlcEJsL3puYjVNbm9YU2h5N0h6YkVoZndGSjIyM29sYXI5akFhdlhxWkFq?=
+ =?utf-8?B?TnlqSk9uanJxNlJ0TGNtelhlRXNqQ0J3dkp1cWZCZEErbmltcUFhSGJkKzdL?=
+ =?utf-8?B?VFR5c21FU3BCNGtSVWJIOXNwekpEZFVJZml2eFdsNFZGQm4yckdVMWJHbXgy?=
+ =?utf-8?B?cDJDS0lvN2FOdFFjODdTeXpqaXhodVkzbjZyd2hPRUIzVEJkSjFLSk0zUzFR?=
+ =?utf-8?B?ZFVMNnVyYmhFcFlHTW1seWNHWUd1UzlhYllUemRDYkFBYXJJS1hPLzkzMklo?=
+ =?utf-8?B?d2JGU25SV2tUcVVSZFo1ZEdaT1BjaEZ6aUVEQ2FUTXpTcHMrY20xaGtldklk?=
+ =?utf-8?B?bUFCaW5pbmROVERRQzJKMVMxZS9EQW1nTUNaeU16S3NnOFlBUFV1NWJjOENQ?=
+ =?utf-8?B?TUtUb0YxdE1zT0YycGdiVCtqNmVNNGNnMFh2RUVGOFA2RVp6QUJMYU1IcURh?=
+ =?utf-8?B?aFE4R3l0M2ZXT3RIWWtkS1ZRRkJEZXc5em1RZ2JKSDdRTVJIZnZ1NEFBemlp?=
+ =?utf-8?B?M2RnQUFyOE05ZEpLL2R0bE0xaS9sZXpTMW9UMW1ZbXZoWFVrUStubDg4TnNL?=
+ =?utf-8?B?T1V5U1J0eEtWRE5XSVordm1GanNEQUs1TkdXYTFCZnVzTi9hMVBDZUJmKzNo?=
+ =?utf-8?B?SFU2alg1aDljUkRFRFNoaFRQTmRYS3FOU0dDMDArc3preGdJRXhxQTNWQmdC?=
+ =?utf-8?B?eUlGNXd6YWdNV2tpeVQ4UkJLNkFodUxGNm14TmF0ZWZqTDhSSEdQTEhUVTZn?=
+ =?utf-8?B?UFQrZ0N2NkRjNDB2d1VJNUN0c2ZwUU5YcE0wSW0xR2NwN2dyMzU5M0lMc3Nw?=
+ =?utf-8?B?ZU93NnEybzhKaXFCY0ZhTEQrVGV1Ulh0Z0xzODVPVTN6RytKdkRWeUdrc1Qy?=
+ =?utf-8?B?VWh0NE41d1YrSG0wMGdsSE1TWXpOWFUzN2tCY0xSY1VVdFhYV2ZEVjg5WWhp?=
+ =?utf-8?B?MEVsU051KzZxOTFrWE4xWFpzdG1PMm44cTYxNDJLelhmbU5NVHRsaU1xSVZN?=
+ =?utf-8?B?SUhQMEx2ajNkRUtKUXh2WVVVbWVtTUdxWTJ5VTU5Z0RRVi9wYkZ4MmFjZjM3?=
+ =?utf-8?B?Q2k4N2w0dERjTU4wSEZ4MHdUNCtQemhLbUNRL05zQis2UFpMcjV2R0RrcVlX?=
+ =?utf-8?B?cXJPbWEzdlgydW1vaUVtU2ovUEJIVFJBUEpVY1Zha3ZNN0Q5WTNYam9KcCtG?=
+ =?utf-8?B?Y1oxZFBqQTQvR0ZZcW9Iclhlb2Y2ZVJrYkh4a2hwTjQ2N05HRXFObHZRdkVN?=
+ =?utf-8?Q?6vSHB8YttzZ2Ilm8=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <2396539EB97F7245A48F9174EA4E3553@jpnprd01.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220511081532.7gkmz3uumzxgwfaf@h-e2.ddg>
+X-OriginatorOrg: nec.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TYWPR01MB8591.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 772249d4-2ae4-4d47-456e-08da3326dc8c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 May 2022 08:18:42.7675
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: e67df547-9d0d-4f4d-9161-51c6ed1f7d11
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: DSDR9bEwBIcOCQxW9/23sn3TeAzOwbZXXnDqUWvL/TRuLhupfZeCazzXKwhkJjFFx0712iPpXLLufm3EziT4gA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYWPR01MB9772
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 11:15:32AM +0300, Ivan Bornyakov wrote:
-> On Tue, May 10, 2022 at 12:29:54PM +0100, Conor Dooley wrote:
-> > On 09/05/2022 19:56, Conor Dooley wrote:
-> > > On 09/05/2022 18:16, Ivan Bornyakov wrote:
-> > > > On Mon, May 09, 2022 at 11:41:18AM +0000, Conor.Dooley@microchip.com wrote:
-> > > > > Hey Ivan, one comment below.
-> > > > > Thanks,
-> > > > > Conor.
-> > > > > 
-> > > > > On 07/05/2022 08:43, Ivan Bornyakov wrote:
-> > > > > > ... snip ...
-> > > > > > +static int mpf_read_status(struct spi_device *spi)
-> > > > > > +{
-> > > > > > +       u8 status, status_command = MPF_SPI_READ_STATUS;
-> > > > > > +       struct spi_transfer xfer = {
-> > > > > > +               .tx_buf = &status_command,
-> > > > > > +               .rx_buf = &status,
-> > > > > > +               .len = 1,
-> > > > > > +       };
-> > > > > > +       int ret = spi_sync_transfer(spi, &xfer, 1);
-> > > > > > +
-> > > > > > +       if ((status & MPF_STATUS_SPI_VIOLATION) ||
-> > > > > > +           (status & MPF_STATUS_SPI_ERROR))
-> > > > > > +               ret = -EIO;
-> > > > > > +
-> > > > > > +       return ret ? : status;
-> > > > > > +}
-> > > > > > +
-> > > > > > ... snip ...
-> > > > > > +
-> > > > > > +static int poll_status_not_busy(struct spi_device *spi, u8 mask)
-> > > > > > +{
-> > > > > > +       int status, timeout = MPF_STATUS_POLL_TIMEOUT;
-> > > > > > +
-> > > > > > +       while (timeout--) {
-> > > > > > +               status = mpf_read_status(spi);
-> > > > > > +               if (status < 0 ||
-> > > > > > +                   (!(status & MPF_STATUS_BUSY) && (!mask || (status & mask))))
-> > > > > > +                       return status;
-> > > > > > +
-> > > > > > +               usleep_range(1000, 2000);
-> > > > > > +       }
-> > > > > > +
-> > > > > > +       return -EBUSY;
-> > > > > > +}
-> > > > > 
-> > > > > Is there a reason you changed this from the snippet you sent me
-> > > > > in the responses to version 8:
-> > > > > static int poll_status_not_busy(struct spi_device *spi, u8 mask)
-> > > > > {
-> > > > > 	u8 status, status_command = MPF_SPI_READ_STATUS;
-> > > > > 	int ret, timeout = MPF_STATUS_POLL_TIMEOUT;
-> > > > > 	struct spi_transfer xfer = {
-> > > > > 		.tx_buf = &status_command,
-> > > > > 		.rx_buf = &status,
-> > > > > 		.len = 1,
-> > > > > 	};
-> > > > > 
-> > > > > 	while (timeout--) {
-> > > > > 		ret = spi_sync_transfer(spi, &xfer, 1);
-> > > > > 		if (ret < 0)
-> > > > > 			return ret;
-> > > > > 
-> > > > > 		if (!(status & MPF_STATUS_BUSY) && (!mask || (status & mask)))
-> > > > > 			return status;
-> > > > > 
-> > > > > 		usleep_range(1000, 2000);
-> > > > > 	}
-> > > > > 
-> > > > > 	return -EBUSY;
-> > > > > }
-> > > > > 
-> > > > > With the current version, I hit the "Failed to write bitstream
-> > > > > frame" check in mpf_ops_write at random points in the transfer.
-> > > > > Replacing poll_status_not_busy with the above allows it to run
-> > > > > to completion.
-> > > > 
-> > > > In my eyes they are equivalent, aren't they?
-> > > > 
-> > > 
-> > > I was in a bit of a rush today & didn't have time to do proper
-> > > debugging, I'll put some debug code in tomorrow and try to find
-> > > exactly what is different between the two.
-> > > 
-> > > Off the top of my head, since I don't have a board on me to test,
-> > > the only difference I can see is that with the snippet you only
-> > > checked if spi_sync_transfer was negative whereas now you check
-> > > if it has a value at all w/ that ternary operator.
-> > > 
-> > > But even that seems like it *shouldn't* be the problem, since ret
-> > > should contain -errno or zero, right?
-> > > Either way, I will do some digging tomorrow.
-> > 
-> > I put a printk("status %x, ret %d", status, ret); into the failure
-> > path of mpf_read_status() & it looks like a status 0xA is being
-> > returned - error & ready? That seems like a very odd combo to be
-> > getting back out of it. It shouldn't be dodgy driver/connection
-> > either, b/c that's what I see if I connect my protocol analyser:
-> > https://i.imgur.com/VbjgfCk.png
-> > 
-> > That's mosi (hex), ss, sclk, mosi, miso (hex), miso in descending
-> > order.
-> > 
-> > I think what was happening was with the snippet you returned one
-> > of the following: -EBUSY, ret (aka -errno) or status. Since status
-> > is positive, the checks in mpf_spi_write.*() saw nothing wrong at
-> > all and programming continued despite there being a problem.
-> > 
-> > The new version fixes this by returning -EIO rather than status from
-> > poll_status_not_busy().
-> > 
-> > I wish I had a socketable PolarFire so I could investigate further,
-> > but this looks like it might a be hardware issue somewhere on my
-> > end?
-> > 
-> > So ye, sorry for the noise and carry on! I'll try tofind what is to
-> > blame for it.
-> > 
-> > Thanks,
-> > Conor.
-> > 
-> 
-> Hi, Conor.
-> 
-> I've just noticed in SPI-DirectC User Guide [1] ch. 9 SmartFusion2 and
-> IGLOO2 SPI-Slave Programming Waveform Analysis, that hw status checked
-> two times every time. Does MPF family also need double check hw status?
-> Does adding second mpf_read_status() to poll_status_not_busy() routine
-> help with your issue?
-
-Sorry, forgot to insert link to SPI-DirectC User Guide. Here it is:
-
-  [1] https://coredocs.s3.amazonaws.com/DirectC/2021_2/spi_directc.pdf
-
+T24gTW9uLCBNYXkgMDksIDIwMjIgYXQgMDY6NTY6MzlQTSArMDgwMCwgemhlbndlaSBwaSB3cm90
+ZToNCj4gaHdwb2lzb25fZmlsdGVyIGlzIG1pc3NpbmcgaW4gdGhlIHNvZnQgb2ZmbGluZSBwYXRo
+LCB0aGlzIGxlYWRzIGFuDQo+IGlzc3VlOiBhZnRlciBlbmFibGluZyB0aGUgY29ycnVwdCBmaWx0
+ZXIsIHRoZSB1c2VyIHByb2Nlc3Mgc3RpbGwgaGFzDQo+IGEgY2hhbmNlIHRvIGluamVjdCBod3Bv
+aXNvbiBmYXVsdCBieQ0KPiBtYWR2aXNlKGFkZHIsIGxlbiwgTUFEVl9TT0ZUX09GRkxJTkUpIGF0
+IFBGTiB3aGljaCBpcyBleHBlY3RlZCB0bw0KPiByZWplY3QuDQo+IA0KPiBBbHNvIGRvIGEgbWlu
+b3IgY2hhbmdlIGluIGNvbW1lbnQgb2YgbWVtb3J5X2ZhaWx1cmUoKS4NCj4gDQo+IFNpZ25lZC1v
+ZmYtYnk6IHpoZW53ZWkgcGkgPHBpemhlbndlaUBieXRlZGFuY2UuY29tPg0KDQpMb29rcyBnb29k
+IHRvIG1lLCB0aGFuayB5b3UuDQoNCkFja2VkLWJ5OiBOYW95YSBIb3JpZ3VjaGkgPG5hb3lhLmhv
+cmlndWNoaUBuZWMuY29tPg==
