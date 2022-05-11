@@ -2,211 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B05BCC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 19:40:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 933D9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 19:40:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232583AbiEKTkB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 15:40:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37660 "EHLO
+        id S1347048AbiEKTkF (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 15:40:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238794AbiEKTjv (ORCPT
+        with ESMTP id S1347045AbiEKTjx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 15:39:51 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D11C521935B;
+        Wed, 11 May 2022 15:39:53 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52E5D219F69
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 12:39:52 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id d6so3760595ede.8
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 12:39:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KUjfW/kaHDRwhWp5Rt/2AgtSuQq/hXyzExdN5I7ro90=;
+        b=N5Sewa0q9eHV45UM94+DzpGvQdCTPLlQVm2dEzNxjvomA5nCkkBrjpYNctI7qVfxDw
+         zTTnnDEJyOsSB1lBbLOg8zLzUazdA4CE5/w+5mlE77v9ce3pHkQQltOb3x41srT+4OrW
+         xrFq9MjViOUDiGbXn7gV83kszXNflH/WBLH4k=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to;
+        bh=KUjfW/kaHDRwhWp5Rt/2AgtSuQq/hXyzExdN5I7ro90=;
+        b=24LVyffeAyNkIXrczj+FkjdoouvcBefRRtHwFeT5UPBegu3owQ0H+GdrHkSLkLUp7t
+         Yy0fYA8Et9wQJM4am5G1O/9Xyc0mVw0sN1UqNEZm0pM8EBS7S20IE0l8ZdKD3B5QHkYN
+         mYdtj9XZDp/q6877TLHLLku5PP9TEw+g/YJfWgGhwdBea6rFq/NVh8ixdBZcHBOgcQ/w
+         fO6plsMoD/FhRbLkazpKx/okVgXxJfkBg5BJsPH0rGr1QcKGNf8jZBrxhrqM2yF7xctO
+         /t2nNFEMxbR6ToM5EiVQIo//6im9EGAEH5TwGsyIhgUmLe4psYK20+DPKYQ/FCKI2NSk
+         fOlg==
+X-Gm-Message-State: AOAM532Td4skQfArc0O5D1XNKlmyjD5CLaolM1IBfWlLzipQIOyRKqon
+        4l57U8Y/UFmLM4K5jhabrduRhg==
+X-Google-Smtp-Source: ABdhPJzWesYTj8gmkcmegNXLf0uSlKr9mITbAOCF+I6/YdvNNo+sGdi8tvr8Vq30B8lkClQ7lWiONw==
+X-Received: by 2002:a05:6402:2932:b0:425:d7b3:e0d1 with SMTP id ee50-20020a056402293200b00425d7b3e0d1mr30745307edb.141.1652297990866;
         Wed, 11 May 2022 12:39:50 -0700 (PDT)
-Date:   Wed, 11 May 2022 19:39:46 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1652297988;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gtjhm2Qopr1pOkpO3sJ7IVaQ1F1/Ar9jAqBHwEGkM+E=;
-        b=k71UFmE5Aa+SmDaaWS6DKfSMHat0+ukbJ1BbloB6Vi+yWoopj2e4gIuYs977rhJfq6O+9m
-        ZVuC+jqtIZ6HsZ8zp2pplimffomb42r5AnjwOe7K/CxZdRLB9Z+o51WIsvBQTJwNQYaf2w
-        2/E0dRY+1svfjAcIOHuwIK2e2ZXjyDvXjnm+wL3Flc6qj4Gd+bBfRC98V4hjoH19J8Iogk
-        8u+MC6IDZpaIwP2pnq5MdyZWywK3hkBdBTjLJQEoVn4qwwFusWqVYe3Iqh2DYmrCKsArIb
-        5HrR2EsEa/3COkmKA7ZLTLnCBh059hDo4WGp7w+M7qog+DuTHxaLrMLrxbuspw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1652297988;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gtjhm2Qopr1pOkpO3sJ7IVaQ1F1/Ar9jAqBHwEGkM+E=;
-        b=GVuFSRgke8Bz8VTz/RGSwXnJntqn2tlxSx7Hj5w7d9DADBl0OGrS3RMlYDR24v+1IO0bUb
-        K1W01xasRey4CdDQ==
-From:   "tip-bot2 for Waiman Long" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: locking/core] locking/qrwlock: Change "queue rwlock" to "queued rwlock"
-Cc:     Waiman Long <longman@redhat.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220510192134.434753-1-longman@redhat.com>
-References: <20220510192134.434753-1-longman@redhat.com>
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id h11-20020a170906828b00b006f3ef214e44sm1295729ejx.170.2022.05.11.12.39.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 May 2022 12:39:50 -0700 (PDT)
+Date:   Wed, 11 May 2022 21:39:48 +0200
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Dave Airlie <airlied@gmail.com>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        freedreno <freedreno@lists.freedesktop.org>
+Subject: Re: Adding CI results to the kernel tree was Re: [RFC v2] drm/msm:
+ Add initial ci/ subdirectory
+Message-ID: <YnwRBFNyygB0Ub6S@phenom.ffwll.local>
+Mail-Followup-To: Linus Torvalds <torvalds@linux-foundation.org>,
+        Dave Airlie <airlied@gmail.com>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Jonathan Corbet <corbet@lwn.net>, Rob Clark <robdclark@gmail.com>,
+        Sean Paul <sean@poorly.run>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        freedreno <freedreno@lists.freedesktop.org>
+References: <20220510070140.45407-1-tomeu.vizoso@collabora.com>
+ <20220510141329.54414-1-tomeu.vizoso@collabora.com>
+ <CAPM=9tzLR-wsLhg2ikGjoK06s-ju5XWa1rtPPiUpN=pwD1vgtA@mail.gmail.com>
+ <CAHk-=wg8YgH1h3wrm9CtXff7rSewa+NE0Z5upb1GOE8XiTL9HA@mail.gmail.com>
 MIME-Version: 1.0
-Message-ID: <165229798674.4207.16819963844601228510.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wg8YgH1h3wrm9CtXff7rSewa+NE0Z5upb1GOE8XiTL9HA@mail.gmail.com>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the locking/core branch of tip:
+On Wed, May 11, 2022 at 10:33:06AM -0700, Linus Torvalds wrote:
+> On Tue, May 10, 2022 at 10:07 PM Dave Airlie <airlied@gmail.com> wrote:
+> >
+> > > And use it to store expectations about what the drm/msm driver is
+> > > supposed to pass in the IGT test suite.
+> >
+> > I wanted to loop in Linus/Greg to see if there are any issues raised
+> > by adding CI results file to the tree in their minds, or if any other
+> > subsystem has done this already, and it's all fine.
+> >
+> > I think this is a good thing after our Mesa experience, but Mesa has a
+> > lot tighter integration here, so I want to get some more opinions
+> > outside the group.
+> 
+> Honestly, my immediate reaction is that I think it might be ok, but
+> 
+>  (a) are these things going to absolutely balloon over time?
+> 
+>  (b) should these not be separated out?
+> 
+> Those two issues kind of interact.
+> 
+> If it's a small and targeted test-suite, by all means keep it in the
+> kernel, but why not make it part of "tools/testing/selftests"
+> 
+> But if people expect this to balloon and we end up having megabytes of
+> test output, then I really think it should be a separate git tree.
+> 
+> A diffstat like this:
+> 
+> >  7 files changed, 791 insertions(+)
 
-Commit-ID:     434e09e7575b02e014931bc5672289fabd7a825c
-Gitweb:        https://git.kernel.org/tip/434e09e7575b02e014931bc5672289fabd7a825c
-Author:        Waiman Long <longman@redhat.com>
-AuthorDate:    Tue, 10 May 2022 15:21:33 -04:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Wed, 11 May 2022 16:27:04 +02:00
+Yeah I guess it's good to have some numbers for where this might go. Good
+comparison is probably mesa3d, since it's the same-ish people doing the
+same-ish ci on the same-ish infrastructure, just the userspace part of it.
 
-locking/qrwlock: Change "queue rwlock" to "queued rwlock"
+mesa$ git ls-files | grep ci | xargs cat | wc -l
+123077
 
-Queued rwlock was originally named "queue rwlock" which wasn't quite
-grammatically correct. However there are still some "queue rwlock"
-references in the code. Change those to "queued rwlock" for consistency.
+mesa$ git ls-files | grep ci | wc -l
+421
 
-Signed-off-by: Waiman Long <longman@redhat.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220510192134.434753-1-longman@redhat.com
----
- include/asm-generic/qrwlock.h       | 28 ++++++++++++++--------------
- include/asm-generic/qrwlock_types.h |  2 +-
- kernel/locking/qrwlock.c            |  8 ++++----
- 3 files changed, 19 insertions(+), 19 deletions(-)
+Compared to drivers/gpu it's really not much, and mesa is about the size
+of drivers/gpu if you exclude the massive amount of register headers from
+amd.
 
-diff --git a/include/asm-generic/qrwlock.h b/include/asm-generic/qrwlock.h
-index 7ae0ece..d4cd4cc 100644
---- a/include/asm-generic/qrwlock.h
-+++ b/include/asm-generic/qrwlock.h
-@@ -33,8 +33,8 @@ extern void queued_read_lock_slowpath(struct qrwlock *lock);
- extern void queued_write_lock_slowpath(struct qrwlock *lock);
- 
- /**
-- * queued_read_trylock - try to acquire read lock of a queue rwlock
-- * @lock : Pointer to queue rwlock structure
-+ * queued_read_trylock - try to acquire read lock of a queued rwlock
-+ * @lock : Pointer to queued rwlock structure
-  * Return: 1 if lock acquired, 0 if failed
-  */
- static inline int queued_read_trylock(struct qrwlock *lock)
-@@ -52,8 +52,8 @@ static inline int queued_read_trylock(struct qrwlock *lock)
- }
- 
- /**
-- * queued_write_trylock - try to acquire write lock of a queue rwlock
-- * @lock : Pointer to queue rwlock structure
-+ * queued_write_trylock - try to acquire write lock of a queued rwlock
-+ * @lock : Pointer to queued rwlock structure
-  * Return: 1 if lock acquired, 0 if failed
-  */
- static inline int queued_write_trylock(struct qrwlock *lock)
-@@ -68,8 +68,8 @@ static inline int queued_write_trylock(struct qrwlock *lock)
- 				_QW_LOCKED));
- }
- /**
-- * queued_read_lock - acquire read lock of a queue rwlock
-- * @lock: Pointer to queue rwlock structure
-+ * queued_read_lock - acquire read lock of a queued rwlock
-+ * @lock: Pointer to queued rwlock structure
-  */
- static inline void queued_read_lock(struct qrwlock *lock)
- {
-@@ -84,8 +84,8 @@ static inline void queued_read_lock(struct qrwlock *lock)
- }
- 
- /**
-- * queued_write_lock - acquire write lock of a queue rwlock
-- * @lock : Pointer to queue rwlock structure
-+ * queued_write_lock - acquire write lock of a queued rwlock
-+ * @lock : Pointer to queued rwlock structure
-  */
- static inline void queued_write_lock(struct qrwlock *lock)
- {
-@@ -98,8 +98,8 @@ static inline void queued_write_lock(struct qrwlock *lock)
- }
- 
- /**
-- * queued_read_unlock - release read lock of a queue rwlock
-- * @lock : Pointer to queue rwlock structure
-+ * queued_read_unlock - release read lock of a queued rwlock
-+ * @lock : Pointer to queued rwlock structure
-  */
- static inline void queued_read_unlock(struct qrwlock *lock)
- {
-@@ -110,8 +110,8 @@ static inline void queued_read_unlock(struct qrwlock *lock)
- }
- 
- /**
-- * queued_write_unlock - release write lock of a queue rwlock
-- * @lock : Pointer to queue rwlock structure
-+ * queued_write_unlock - release write lock of a queued rwlock
-+ * @lock : Pointer to queued rwlock structure
-  */
- static inline void queued_write_unlock(struct qrwlock *lock)
- {
-@@ -120,7 +120,7 @@ static inline void queued_write_unlock(struct qrwlock *lock)
- 
- /**
-  * queued_rwlock_is_contended - check if the lock is contended
-- * @lock : Pointer to queue rwlock structure
-+ * @lock : Pointer to queued rwlock structure
-  * Return: 1 if lock contended, 0 otherwise
-  */
- static inline int queued_rwlock_is_contended(struct qrwlock *lock)
-@@ -130,7 +130,7 @@ static inline int queued_rwlock_is_contended(struct qrwlock *lock)
- 
- /*
-  * Remapping rwlock architecture specific functions to the corresponding
-- * queue rwlock functions.
-+ * queued rwlock functions.
-  */
- #define arch_read_lock(l)		queued_read_lock(l)
- #define arch_write_lock(l)		queued_write_lock(l)
-diff --git a/include/asm-generic/qrwlock_types.h b/include/asm-generic/qrwlock_types.h
-index c36f1d5..12392c1 100644
---- a/include/asm-generic/qrwlock_types.h
-+++ b/include/asm-generic/qrwlock_types.h
-@@ -7,7 +7,7 @@
- #include <asm/spinlock_types.h>
- 
- /*
-- * The queue read/write lock data structure
-+ * The queued read/write lock data structure
-  */
- 
- typedef struct qrwlock {
-diff --git a/kernel/locking/qrwlock.c b/kernel/locking/qrwlock.c
-index 7f42e52..2e16009 100644
---- a/kernel/locking/qrwlock.c
-+++ b/kernel/locking/qrwlock.c
-@@ -15,8 +15,8 @@
- #include <trace/events/lock.h>
- 
- /**
-- * queued_read_lock_slowpath - acquire read lock of a queue rwlock
-- * @lock: Pointer to queue rwlock structure
-+ * queued_read_lock_slowpath - acquire read lock of a queued rwlock
-+ * @lock: Pointer to queued rwlock structure
-  */
- void queued_read_lock_slowpath(struct qrwlock *lock)
- {
-@@ -60,8 +60,8 @@ void queued_read_lock_slowpath(struct qrwlock *lock)
- EXPORT_SYMBOL(queued_read_lock_slowpath);
- 
- /**
-- * queued_write_lock_slowpath - acquire write lock of a queue rwlock
-- * @lock : Pointer to queue rwlock structure
-+ * queued_write_lock_slowpath - acquire write lock of a queued rwlock
-+ * @lock : Pointer to queued rwlock structure
-  */
- void queued_write_lock_slowpath(struct qrwlock *lock)
- {
+And I guess if we do stuff like result file compression like you mentioned
+it should be quite a bit less even.
+
+So yeah if this does take off it wil be substantially more, but I don't
+think it'll ever get to a point where it'll swamp code changes. And if it
+does that's kinda a solid indicator that something really wrong is going
+on.
+
+> is not a problem at all. But I get the feeling that this is just the
+> tip of the iceberg, and people will want to not just have the result
+> files, but start adding actual *input* files that may be largely
+> automated stuff and may be tens of megabytes in size.
+> 
+> Because the result files on their own aren't really self-contained,
+> and then people will want to keep them in sync with the test-files
+> themselves, and start adding those, and now it *really* is likely very
+> unwieldy.
+> 
+> Or if that doesn't happen, and the actual input test files stay in a
+> separate CI repo, and then you end up having random coherency issues
+> with that CI repo, and it all gets to be either horribly messy, or the
+> result files in the kernel end up really stale.
+> 
+> So honestly, I personally don't see a good end result here.  This
+> particular small patch? *This* one looks fine to me, except I really
+> think tools/testing/selftests/gpu would be a much more logical place
+> for it.
+> 
+> But I don't see a way forward that is sane.
+> 
+> Can somebody argue otherwise?
+
+I do personally think we should add a bunch more things here, radically
+putting everything into the drm-ci repo feels a bit much like appeasement
+to get the foot in the door. Like some of the scripts are definitely
+specific to the ci infra on freedesktop.org (or specific hw runners for
+the drivers), and that makes sense to keep in that drm/fd ci repo. But
+other scripts should probably migrate to scripts/ and at least start out
+in a ci/ folder in the kernel.
+
+igt itself might eventually move to tools/testing/selftests/gpu or
+whatever, but that's kinda a huge discussion onto itself. And I haven't
+seen a clear consensus yet among subsystem that these kind of tests (like
+xfs-tests, and I think pretty much ever bigger subsystem that is old
+enough to predate selftests has them somewhere) should all move into
+tools/testing/selftest. Maybe they should, but feels like this is
+orthogonal to ci integration.
+
+Note that mesa3d has the exact same issue going that you're raising, and
+some of those are unfixable because the opengl/vulkan conformance test
+suites are maintained entirely externally by Khronos (and you have to use
+those or you're not conformant to the spec, which renders the point of
+having a shared spec a bit moot). It's messy but workable, and the CI you
+get seems very much to be worth the price.
+
+One idea I tossed out on irc is to move this all under drivers/gpu/ci.
+There's driver specific stuff like the test result/fail lists, and maybe
+those could eventually move out to drivers. But for starting out it might
+be better to keep it all in one place so it's a bit better under control
+and doesn't accidentally become a kranken of some kind. And then make sure
+pieces move to scripts/ or tools/testing/ appropriately.
+
+In general I think any mess this causes is a pretty good indicator that
+something is amiss, like if this causes messy history due to tests
+flipping too much and causing issues then that also indicates an issue
+with the kernel or testcase quality itself. And it might be good to shine
+more light on that stuff.
+
+Cheers, Daniel
+-- 
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
