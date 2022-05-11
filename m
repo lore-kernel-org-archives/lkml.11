@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA60FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 10:40:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7701C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 10:40:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234442AbiEKKk1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 06:40:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37224 "EHLO
+        id S240963AbiEKKko (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 06:40:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240428AbiEKKi7 (ORCPT
+        with ESMTP id S239173AbiEKKiu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 06:38:59 -0400
+        Wed, 11 May 2022 06:38:50 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D4F598090;
-        Wed, 11 May 2022 03:38:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D83A398594;
+        Wed, 11 May 2022 03:38:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1652265527; x=1683801527;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=TQe4zdkkpi1QGUPdXqGLkUUkQ590vFUIeNMlbSIW9Aw=;
-  b=HVSY5PaY1w0nZCKnLE7ZPTlEdWQzggjfPaxShpK/Nz36abV7RzxEfT8w
-   OlOxD5WhRnfAW8kYe8sZ/FKPKkHlVXWMTvZqh4p6igHhXaBaxsG9mEAVy
-   0WoDnwszl7e+oVOUPTc/0JBkmkgovvpTi0mW1AfGH9nllfRVTjCx4LENx
-   fP6KsFFpRJFe/RZ9VgXq7xv+8KaMnN3rhwZyh2ySUdSDVb8V5znFjY8WP
-   oJCVAXrwsRkAIHAySUINRdGAfC3+Z4iOdRVQ60ytuTNIibx2X9avhxSi4
-   qrkWZ200HMJkIvwMkaZtFnVod+3gY32ak2AWd5x+/t1C1vbqI2rp7OvMx
-   A==;
+  t=1652265501; x=1683801501;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=eJcORp5K8rg50jt7c2WyWJJ6ztxAxXlwjFtxo7BVTco=;
+  b=CuUY3NFXAPEKuKDxUZs4DB93HtYc32Sabv5CJFIP1RKxzbV8eul5iKRe
+   rQ7JtxWyOjf1hfwaYByIESYWvbVv8Hks2gueDrPzjim5r2+ShMNsIFmMv
+   9f3XSxVjqjAkSA+TTTk9QJsKNVXCIZ3buq/gWJoP3bPrv9aZdt379q4ed
+   niXAW/ZfGWW9U8Aj2zTwg5zVbssX3UvoqwktaeTpLTJYJkTWWhOEt7N7O
+   I9RLPcn3SEeSrbl36q+BlJwf0xsRzQIixP91Dd8ge2iApCxzgCr73hHii
+   DyKhzYmW7KbWMeZZec4JDtXrOcQ8rynoBAIw+BIkR2rBUbHsqv7D6Wb3+
+   g==;
 X-IronPort-AV: E=Sophos;i="5.91,216,1647327600"; 
-   d="scan'208";a="158596668"
+   d="scan'208";a="155586461"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 May 2022 03:38:47 -0700
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 May 2022 03:38:19 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 11 May 2022 03:38:47 -0700
+ 15.1.2375.17; Wed, 11 May 2022 03:38:19 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 11 May 2022 03:38:41 -0700
+ 15.1.2375.17 via Frontend Transport; Wed, 11 May 2022 03:38:13 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     Russell King <linux@armlinux.org.uk>,
@@ -54,12 +54,10 @@ CC:     Russell King <linux@armlinux.org.uk>,
         Oleksij Rempel <linux@rempel-privat.de>,
         Marek Vasut <marex@denx.de>,
         Michael Grzeschik <m.grzeschik@pengutronix.de>
-Subject: [RFC Patch net-next 4/9] net: dsa: microchip: move port memory allocation to ksz_common
-Date:   Wed, 11 May 2022 16:07:50 +0530
-Message-ID: <20220511103755.12553-5-arun.ramadoss@microchip.com>
+Subject: [RFC Patch net-next 0/9] net: dsa: microchip: refactor the ksz switch init function
+Date:   Wed, 11 May 2022 16:07:46 +0530
+Message-ID: <20220511103755.12553-1-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220511103755.12553-1-arun.ramadoss@microchip.com>
-References: <20220511103755.12553-1-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -67,90 +65,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ksz8795 and ksz9477 init function initializes the memory to dev->ports
-and assigns the ds real number of ports. Since both the routines are
-same, moved the allocation of port memory to ksz_switch_register after
-init.
+During the ksz_switch_register function, it calls the individual switches init
+functions (ksz8795.c and ksz9477.c). Both these functions have few things in
+common like, copying the chip specific data to struct ksz_dev, allocating
+ksz_port memory and mib_names memory & cnt. And to add the new LAN937x series
+switch, these allocations has to be replicated.
+Based on the review feedback of LAN937x part support patch, refactored the
+switch init function to move allocations to switch register.
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
----
- drivers/net/dsa/microchip/ksz8795.c    | 8 --------
- drivers/net/dsa/microchip/ksz9477.c    | 8 --------
- drivers/net/dsa/microchip/ksz_common.c | 9 +++++++++
- 3 files changed, 9 insertions(+), 16 deletions(-)
+Link:https://patchwork.kernel.org/project/netdevbpf/patch/20220504151755.11737-8-arun.ramadoss@microchip.com/
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index b6032b65afc2..91f29ff7256c 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -1599,11 +1599,6 @@ static int ksz8_switch_init(struct ksz_device *dev)
- 
- 	dev->reg_mib_cnt = MIB_COUNTER_NUM;
- 
--	dev->ports = devm_kzalloc(dev->dev,
--				  dev->info->port_cnt * sizeof(struct ksz_port),
--				  GFP_KERNEL);
--	if (!dev->ports)
--		return -ENOMEM;
- 	for (i = 0; i < dev->info->port_cnt; i++) {
- 		mutex_init(&dev->ports[i].mib.cnt_mutex);
- 		dev->ports[i].mib.counters =
-@@ -1615,9 +1610,6 @@ static int ksz8_switch_init(struct ksz_device *dev)
- 			return -ENOMEM;
- 	}
- 
--	/* set the real number of ports */
--	dev->ds->num_ports = dev->info->port_cnt;
--
- 	/* We rely on software untagging on the CPU port, so that we
- 	 * can support both tagged and untagged VLANs
- 	 */
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index c712a0011367..1a0fd36e180e 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -1482,11 +1482,6 @@ static int ksz9477_switch_init(struct ksz_device *dev)
- 	dev->reg_mib_cnt = SWITCH_COUNTER_NUM;
- 	dev->mib_cnt = TOTAL_SWITCH_COUNTER_NUM;
- 
--	dev->ports = devm_kzalloc(dev->dev,
--				  dev->info->port_cnt * sizeof(struct ksz_port),
--				  GFP_KERNEL);
--	if (!dev->ports)
--		return -ENOMEM;
- 	for (i = 0; i < dev->info->port_cnt; i++) {
- 		spin_lock_init(&dev->ports[i].mib.stats64_lock);
- 		mutex_init(&dev->ports[i].mib.cnt_mutex);
-@@ -1499,9 +1494,6 @@ static int ksz9477_switch_init(struct ksz_device *dev)
- 			return -ENOMEM;
- 	}
- 
--	/* set the real number of ports */
--	dev->ds->num_ports = dev->info->port_cnt;
--
- 	return 0;
- }
- 
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 4b5c2df4ae18..59af4142cb6d 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -767,6 +767,15 @@ int ksz_switch_register(struct ksz_device *dev,
- 	if (ret)
- 		return ret;
- 
-+	dev->ports = devm_kzalloc(dev->dev,
-+				  dev->info->port_cnt * sizeof(struct ksz_port),
-+				  GFP_KERNEL);
-+	if (!dev->ports)
-+		return -ENOMEM;
-+
-+	/* set the real number of ports */
-+	dev->ds->num_ports = dev->info->port_cnt;
-+
- 	/* Host port interface will be self detected, or specifically set in
- 	 * device tree.
- 	 */
+Arun Ramadoss (8):
+  net: dsa: microchip: ksz8795: update the port_cnt value in
+    ksz_chip_data
+  net: dsa: microchip: move ksz_chip_data to ksz_common
+  net: dsa: microchip: perform the compatibility check for dev probed
+  net: dsa: microchip: move port memory allocation to ksz_common
+  net: dsa: microchip: move struct mib_names to ksz_chip_data
+  net: dsa: microchip: move get_strings to ksz_common
+  net: dsa: microchip: remove unused members in ksz_device
+  net: dsa: microchip: add the phylink get_caps
+
+Prasanna Vengateshan (1):
+  net: dsa: move mib->cnt_ptr reset code to ksz_common.c
+
+ drivers/net/dsa/microchip/ksz8795.c     | 251 +-----------
+ drivers/net/dsa/microchip/ksz8795_spi.c |  37 +-
+ drivers/net/dsa/microchip/ksz9477.c     | 200 ++--------
+ drivers/net/dsa/microchip/ksz9477_i2c.c |  30 +-
+ drivers/net/dsa/microchip/ksz9477_spi.c |  30 +-
+ drivers/net/dsa/microchip/ksz_common.c  | 484 +++++++++++++++++++++++-
+ drivers/net/dsa/microchip/ksz_common.h  |  62 ++-
+ 7 files changed, 641 insertions(+), 453 deletions(-)
+
+
+base-commit: c908565eecf2d310edddaecea6166015abe9df08
 -- 
 2.33.0
 
