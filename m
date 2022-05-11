@@ -2,71 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21060C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 17:55:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D88FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 17:56:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345924AbiEKRzi (ORCPT
+        id S1345939AbiEKR4V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 13:55:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46956 "EHLO
+        Wed, 11 May 2022 13:56:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234595AbiEKRzd (ORCPT
+        with ESMTP id S1345966AbiEKR4M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 13:55:33 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F474231C8F
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 10:55:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=4jwM5L3zKIPu85/e5wVXWEuEngueu1nP+mnBsxsDvuk=; b=Ow19ahrcTFf8cNcG3HOK+trhHk
-        Cc/3i8jaNCcXp5bWQ4GN9V/XDZAtGRV4Mnj5WSyOGjDVOcex75CaKyy7z03vqymZa23HfJ6CtMLyk
-        1QvJFJAoyJOcQoUkkVinEXsBYQxfAPqs401AYzcGUU+xvNUDo2KWrs3Hv4mmU01keZBzXmTdmRQhN
-        uvrIOpzo6ZPBavFPxigITxc/hukh6/ykw0ZCIwqkWQ9UFX3lVjaGcL115P+ydbzQapIkBlJvZI+G3
-        Xic3RD5XTUr0bdG/8oKUGFjwRhlY96imnspvElaoNaWbjfMI38i0QmjeeANPOWj38iNQPhMHxJt5j
-        oIwwSqzQ==;
-Received: from [189.38.168.23] (helo=[192.168.15.109])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1noqYC-000BXd-TX; Wed, 11 May 2022 19:55:05 +0200
-Message-ID: <b8022e35-57ee-91c2-d5cc-dc124e1ce6dc@igalia.com>
-Date:   Wed, 11 May 2022 14:54:42 -0300
+        Wed, 11 May 2022 13:56:12 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88A8A2B1B9;
+        Wed, 11 May 2022 10:56:10 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id bv19so5597307ejb.6;
+        Wed, 11 May 2022 10:56:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Y4/SAPsJ9f4OXJYDdFhUA/nd1PhxlZKu/Ys21YszRaA=;
+        b=lZEjE+zhrFuarohgPN3uPPp3/1ifjXsr/pHVEE0WklPDTG0muYg+gRfQm2JpIVeLvD
+         clhRYNK89WLQOLEF94OpOfecWz2CWB13B5z9QOXm+oktp5meLYxiZUPtVY4RmjBvnbU3
+         /6S+aX7/uBWmn4YPi3VlznZnHBTIcH+uzmAH44/GYOmx5EzjXaGqEnaUCkbHSsCQfOwQ
+         uiJKgh0Zk6QECVwJKFJJXrHJmbV0GCiYQ1QJ1kjzTUF0Ipw3OmLJmYyhewMiTpW0KmUe
+         lVtK3VEzSqYqWOLRlsoGOs41WyZV7byxDZ95xdgEm5bo3p5E1r9aBwsJMQlreZFFRNUx
+         DGSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Y4/SAPsJ9f4OXJYDdFhUA/nd1PhxlZKu/Ys21YszRaA=;
+        b=XPQ5w/QMa1DkjJQUWuoW3k+gKvWb4tReBAn6K3+fe2/8i2/3xBme3QcLF3l1RraWQT
+         OGKdulsC78ISGHj6XAodhZ/E621PSAlJFJf0KSwbRLH1MrDJp8BCFbaQI5/PJybEWkuI
+         aeE/HpABFEMaIKp2nE18QuoRWFlwccSOzeTtzZz8x3Wvml3hnIyUGEVVEEK0WtKddhHo
+         CHuBKh0HEDuVFZ39H5Npcpe9y/GTz6Lb9qmvuhpRlL3gVAr/s5oa3sSwByKMtjYsFIc9
+         iRII3k15g6ZRHYJUjjXOPMcnqXZWmfvso1+Z7fYs4pYWXNmy0w7R3SFBAd87JAVS0RsP
+         EujA==
+X-Gm-Message-State: AOAM533AgeaBPqGZVtsnNGhXnT6H4S7PDIaeoJ47MQJVkoSWyVerstaQ
+        EsINZ0PVmZCR7aJm2c1Icsv3BHdZRmiB4KEOUamTjPO9mZeA4Q==
+X-Google-Smtp-Source: ABdhPJwVD3U070rN+XeenMtclJ09vcrP7AYcNnGmrmWjBeX2VPQ+rXyde6ML2tgSNrC70rjKc3pedg9gQgeK2xdVdq8=
+X-Received: by 2002:a17:906:c10d:b0:6f4:a770:846e with SMTP id
+ do13-20020a170906c10d00b006f4a770846emr26455803ejc.497.1652291768721; Wed, 11
+ May 2022 10:56:08 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] futex: Remove a PREEMPT_RT_FULL reference.
-Content-Language: en-US
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     Darren Hart <dvhart@infradead.org>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org
-References: <YnvWUvq1vpqCfCU7@linutronix.de>
-From:   =?UTF-8?Q?Andr=c3=a9_Almeida?= <andrealmeid@igalia.com>
-In-Reply-To: <YnvWUvq1vpqCfCU7@linutronix.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220511153905.13980-1-henning.schild@siemens.com>
+In-Reply-To: <20220511153905.13980-1-henning.schild@siemens.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 11 May 2022 19:55:30 +0200
+Message-ID: <CAHp75Vc6imwy0faWEtmnnsNh6WfccA2KuJuy2e7+VHuxhQ8VbA@mail.gmail.com>
+Subject: Re: [PATCH v2 0/4] simatic-ipc additions to p2sb apl lake gpio
+To:     Henning Schild <henning.schild@siemens.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Mark Gross <markgross@kernel.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux LED Subsystem <linux-leds@vger.kernel.org>,
+        Platform Driver <platform-driver-x86@vger.kernel.org>,
+        linux-watchdog@vger.kernel.org, Enrico Weigelt <lkml@metux.net>,
+        Gerd Haeussler <gerd.haeussler.ext@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Às 12:29 de 11/05/22, Sebastian Andrzej Siewior escreveu:
-> Earlier the PREEMPT_RT patch had a PREEMPT_RT_FULL and PREEMPT_RT_BASE
-> Kconfig option. The latter was a subset the functionality that was
-> enabled with PREEMPT_RT_FULL and was mainly useful for debugging.
-> 
-> During the merging efforts the two Kconfig options were abandoned in the
-> v5.4.3-rt1 release and since then there is only PREEMPT_RT which enables
-> the full features set (as PREEMPT_RT_FULL did in earlier releases).
-> 
-> Replace the PREEMPT_RT_FULL reference with PREEMPT_RT.
-> 
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> ---
+On Wed, May 11, 2022 at 6:50 PM Henning Schild
+<henning.schild@siemens.com> wrote:
+>
+> changed since v1:
+>  - rebased
+>  - split p1 into p1-3
+>
+> This switches the simatic-ipc modules to using the p2sb interface
+> introduced by Andy with "platform/x86: introduce p2sb_bar() helper".
+>
+> It also switches to one apollo lake device to using gpio leds.
+>
+> I am kind of hoping Andy will take this on top and propose it in his
+> series.
 
-Reviewed-by: André Almeida <andrealmeid@igalia.com>
+Yes, I will. Since it seems it requires a v6 of my series after
+v5.19-rc1 and will be material for v5.20... we have time.
+
+-- 
+With Best Regards,
+Andy Shevchenko
