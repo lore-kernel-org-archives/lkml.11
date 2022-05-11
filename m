@@ -2,146 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CD59C43217
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 16:56:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53220C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 16:58:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345271AbiEKQ4d (ORCPT
+        id S1345234AbiEKQ6d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 12:56:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37070 "EHLO
+        Wed, 11 May 2022 12:58:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345194AbiEKQz7 (ORCPT
+        with ESMTP id S233678AbiEKQ6b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 12:55:59 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A172C24BFE
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 09:55:57 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id ch13so5238138ejb.12
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 09:55:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Xq2Zvl0y6W/DywjzfFwT3mSGvp4ssDiPwloRauJoX+Y=;
-        b=LYCqyvwZoP1ifve9OGWqcvp+t/dcnM6DtUoRIXPVXMT1ea9ysYZc463wV4AwwCZNHO
-         l1FAUIS97PmXZGll9Nk2/ZnDo+NRe6D7PPe/hZaa6uzjaQfEyh9r6kEVj2gkxD9oFrqX
-         Vv1QHiweCi6MxLBPeh+eh0wvIp9p3qH5sHVp9hR/UFWul5jDzx/v0eBn98xqFJtixPC2
-         Tx8ocdDvbf3f6me0rgKC4lO9llQSwZed67AILcMiDqMIrEdYzGbhdRhChvCOMI5wzfzK
-         w3abenRg1FSLjvCOvncaK2bALCQmePLQHGiFukoe+p8FTpubTrRQTtkNws9CFUe6GRJA
-         2QDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Xq2Zvl0y6W/DywjzfFwT3mSGvp4ssDiPwloRauJoX+Y=;
-        b=7mMK31gzHpxZzrMnZO9E6MJI+JBlGSMp79qJoiwD/rTDjv9CkLBzso16E0aL7Goxqd
-         OiIDXCTbYlmj1qVZAG/wWESur8KoMe9TSToIPdji7tLpKFiUVqrfgeKheYafdZWfbFr8
-         ht5Vg7TJCU09VvbfTZ2bxUJSekD7iRppeuOS7Wf4i+GV5LxUtIGuEFeC8S0nwUTQoi0f
-         23W1KefFSJSE04eGFCgQQUQbdBXufMoPLGJXs+oS3CFudfLMLKbeUcgQWFEEqnZlU+kg
-         gAQhXr3mlN6OZ+wERcMAODt9EiUXK8DAyJLlyA8AuG4/WnjkWn15Y3hge4++bFQfjbbq
-         ZMww==
-X-Gm-Message-State: AOAM530YEF+bYdlwcNp6ciksZe+Ai1EttUD46SfZ/bqyujm2VLXQUdQ9
-        +3BLiqeBXpyHTub9yHc4WV3T3Q==
-X-Google-Smtp-Source: ABdhPJwN1LNE3bePB/EDGUDvrgMui6lW6wUTzRmjoN4KSjSNpgMURLIriwixt/6bkZIOOsSNDa8poA==
-X-Received: by 2002:a17:906:7751:b0:6ce:e3c:81a6 with SMTP id o17-20020a170906775100b006ce0e3c81a6mr24463186ejn.278.1652288151530;
-        Wed, 11 May 2022 09:55:51 -0700 (PDT)
-Received: from [192.168.0.155] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id b19-20020a170906195300b006f3ef214dbdsm1169111eje.35.2022.05.11.09.55.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 May 2022 09:55:49 -0700 (PDT)
-Message-ID: <ce75d018-1ecd-32ab-55a3-da24ec0d4947@linaro.org>
-Date:   Wed, 11 May 2022 18:55:46 +0200
+        Wed, 11 May 2022 12:58:31 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DB6713C377;
+        Wed, 11 May 2022 09:58:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652288310; x=1683824310;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=L+SbLcoPf9zuYRgUS6mcapuzb8rI2aXPD90HpmL4jgs=;
+  b=Zs6M85aKbq3gRwBYFFZcQp+0/T4/FCaZ/zPEZ39so5DS6eD6ddLyzP13
+   fOVwnu6Cb8XWBPQm5Jyc2tI0tIhMSqRvbNRwTK1AC8mwugVCyv23xkco/
+   DP5grrASN0f1DXpIXlXfFVD7K0Uxh23Z/OphJX3U0ZSkb1M1P0J8tmbCQ
+   mcsO0SDmwnP4/CSKoND+e9aJQLyXr3izE8kmHFx7IVQiS9einbwGQMrbJ
+   DzE+KRmSZG/ij2RZtdcwZTMbn2RzAF0pDMWTdZiyhLkYOk0YoEpT038oW
+   TrniUmwIiTx/2maTjg7ndeam3DvEjxqnfqWatop3azIvR9FACNSQ4XjXy
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="269887278"
+X-IronPort-AV: E=Sophos;i="5.91,217,1647327600"; 
+   d="scan'208";a="269887278"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 09:58:30 -0700
+X-IronPort-AV: E=Sophos;i="5.91,217,1647327600"; 
+   d="scan'208";a="520594260"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 09:58:29 -0700
+Date:   Wed, 11 May 2022 10:02:16 -0700
+From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     iommu@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>, dmaengine@vger.kernel.org,
+        Joerg Roedel <joro@8bytes.org>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>, vkoul@kernel.org,
+        robin.murphy@arm.com, will@kernel.org, Yi Liu <yi.l.liu@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        "Tian, Kevin" <kevin.tian@intel.com>,
+        Raj Ashok <ashok.raj@intel.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v3 1/4] iommu/vt-d: Implement domain ops for
+ attach_dev_pasid
+Message-ID: <20220511100216.7615e288@jacob-builder>
+In-Reply-To: <20220511161237.GB49344@nvidia.com>
+References: <20220510210704.3539577-1-jacob.jun.pan@linux.intel.com>
+        <20220510210704.3539577-2-jacob.jun.pan@linux.intel.com>
+        <20220510232121.GP49344@nvidia.com>
+        <20220510172309.3c4e7512@jacob-builder>
+        <20220511115427.GU49344@nvidia.com>
+        <20220511082958.79d5d8ee@jacob-builder>
+        <20220511161237.GB49344@nvidia.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v3 1/3] dt-bindings: media: rockchip-vpu: Add RK3568 VEPU
- compatible
-Content-Language: en-US
-To:     Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>
-Cc:     Ezequiel Garcia <ezequiel@collabora.com>,
-        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-References: <20220511155309.2637-1-frattaroli.nicolas@gmail.com>
- <20220511155309.2637-2-frattaroli.nicolas@gmail.com>
- <bc4c395d-4e21-1d15-96be-00a5cad1d6f7@linaro.org>
- <2486415.XAZu0pfo7u@archbook>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <2486415.XAZu0pfo7u@archbook>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/05/2022 18:37, Nicolas Frattaroli wrote:
-> On Mittwoch, 11. Mai 2022 18:00:09 CEST Krzysztof Kozlowski wrote:
->> On 11/05/2022 17:53, Nicolas Frattaroli wrote:
->>> The RK3568 and RK3566 have a Hantro VPU node solely dedicated to
->>> encoding. This patch adds a compatible for it, and also allows
->>> the bindings to only come with a vepu interrupt.
->>>
->>> Signed-off-by: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
->>> ---
->>>  .../devicetree/bindings/media/rockchip-vpu.yaml | 17 ++++++++++++++++-
->>>  1 file changed, 16 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/Documentation/devicetree/bindings/media/rockchip-vpu.yaml b/Documentation/devicetree/bindings/media/rockchip-vpu.yaml
->>> index bacb60a34989..965ca80b5cea 100644
->>> --- a/Documentation/devicetree/bindings/media/rockchip-vpu.yaml
->>> +++ b/Documentation/devicetree/bindings/media/rockchip-vpu.yaml
->>> @@ -22,6 +22,7 @@ properties:
->>>            - rockchip,rk3288-vpu
->>>            - rockchip,rk3328-vpu
->>>            - rockchip,rk3399-vpu
->>> +          - rockchip,rk3568-vepu
->>>            - rockchip,px30-vpu
->>>        - items:
->>>            - const: rockchip,rk3188-vpu
->>> @@ -39,7 +40,9 @@ properties:
->>>  
->>>    interrupt-names:
->>>      oneOf:
->>> -      - const: vdpu
->>> +      - enum:
->>> +          - vdpu
->>> +          - vepu
->>>        - items:
->>>            - const: vepu
->>>            - const: vdpu
->>> @@ -76,6 +79,18 @@ required:
->>>  
->>>  additionalProperties: false
->>>  
->>> +allOf:
->>> +  # compatibles that end in -vepu should only have the vepu interrupt
->>> +  - if:
->>> +      properties:
->>> +        compatible:
->>> +          contains:
->>> +            pattern: "^[a-zA-Z0-9\\-,_.]+\\-vepu$"
->>
->> Why not listing the compatible how I asked? This is the common way of
->> handling allOf:if:then per variant.
+Hi Jason,
+
+On Wed, 11 May 2022 13:12:37 -0300, Jason Gunthorpe <jgg@nvidia.com> wrote:
+
+> On Wed, May 11, 2022 at 08:35:18AM -0700, Jacob Pan wrote:
 > 
-> Because I was afraid that if this wasn't general enough to apply to all
-> future vepu-only instances of Hantro, then my patch might be bikeshed
-> into requiring a v4. Clearly, my worries had the opposite effect.
+> > > Huh? The intel driver shares the same ops between UNMANAGED and DMA -
+> > > and in general I do not think we should be putting special knowledge
+> > > about the DMA domains in the drivers. Drivers should continue to treat
+> > > them identically to UNMANAGED.
+> > >   
+> > OK, other than SVA domain, the rest domain types share the same default
+> > ops. I agree that the default ops should be the same for UNMANAGED,
+> > IDENTITY, and DMA domain types. Minor detail is that we need to treat
+> > IDENTITY domain slightly different when it comes down to PASID entry
+> > programming.  
 > 
-> Also because I thought it was cool to use a pattern for this to enforce
-> consistent naming in the bindings.
+> I would be happy if IDENTITY had its own ops, if that makes sense
+> 
+I have tried to have its own ops but there are complications around
+checking if a domain has ops. It would be a logic thing to clean up next.
 
-Until it does not match for some reason. :) Just list the compatible
-under enum and it is expected the list to grow over time (if needed).
+> > If not global, perhaps we could have a list of pasids (e.g. xarray)
+> > attached to the device_domain_info. The TLB flush logic would just go
+> > through the list w/o caring what the PASIDs are for. Does it make sense
+> > to you?  
+> 
+> Sort of, but we shouldn't duplicate xarrays - the group already has
+> this xarray - need to find some way to allow access to it from the
+> driver.
+> 
+I am not following,  here are the PASIDs for devTLB flush which is per
+device. Why group?
+We could retrieve PASIDs from the device PASID table but xa would be more
+efficient.
+
+> > > > Are you suggesting the dma-iommu API should be called
+> > > > iommu_set_dma_pasid instead of iommu_attach_dma_pasid?    
+> > > 
+> > > No that API is Ok - the driver ops API should be 'set' not
+> > > attach/detach 
+> > Sounds good, this operation has little in common with
+> > domain_ops.dev_attach_pasid() used by SVA domain. So I will add a new
+> > domain_ops.dev_set_pasid()  
+> 
+> What? No, their should only be one operation, 'dev_set_pasid' and it
+> is exactly the same as the SVA operation. It configures things so that
+> any existing translation on the PASID is removed and the PASID
+> translates according to the given domain.
+> 
+> SVA given domain or UNMANAGED given domain doesn't matter to the
+> higher level code. The driver should implement per-domain ops as
+> required to get the different behaviors.
+Perhaps some code to clarify, we have
+sva_domain_ops.dev_attach_pasid() = intel_svm_attach_dev_pasid;
+default_domain_ops.dev_attach_pasid() = intel_iommu_attach_dev_pasid;
+
+Consolidate pasid programming into dev_set_pasid() then called by both
+intel_svm_attach_dev_pasid() and intel_iommu_attach_dev_pasid(), right?
 
 
+Thanks,
 
-Best regards,
-Krzysztof
+Jacob
