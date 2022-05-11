@@ -2,325 +2,536 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF6C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 17:24:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FCB2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 17:26:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345502AbiEKRY1 (ORCPT
+        id S1345515AbiEKR0S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 13:24:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47816 "EHLO
+        Wed, 11 May 2022 13:26:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345488AbiEKRYY (ORCPT
+        with ESMTP id S1345552AbiEKR0P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 13:24:24 -0400
-Received: from email.studentenwerk.mhn.de (mailin.studentenwerk.mhn.de [141.84.225.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98FD1222C34;
-        Wed, 11 May 2022 10:24:21 -0700 (PDT)
-Received: from mailhub.studentenwerk.mhn.de (mailhub.studentenwerk.mhn.de [127.0.0.1])
-        by email.studentenwerk.mhn.de (Postfix) with ESMTPS id 4Kz1wz5snLzRhSb;
-        Wed, 11 May 2022 19:24:19 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stwm.de; s=stwm-20170627;
-        t=1652289859;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=k9eVYnLGKtxWt0XhKi1KPXkzEnwSkp1Vm3+xg83qKvc=;
-        b=apTvmq+SUkRjjgX3IG1vu73T9oJ7ZaqTWmcCQNwI3CJUsZyQyc8ybomItHJny1lwrqtKtg
-        HMi93IgbVqM8psuf5uaGPbFtebP6WoBpbnjFpcHbzvoYUIxNjDql0me9KoIcOaiM1YB8SF
-        ONR9KhC4Q73WvVy9eo21hOg30eXwuMBhWMS1NaXNRsJ8ckYWQaWN4BvQFX5WEYmfNI7dTm
-        kMpjjfSrp2Fv33Y/D+ThGbl6I4zxPbhqArXs2kiBSfsbmnpMKdtVsreqYs/5oM41r3aU/U
-        N40FCMpmuJoSlDYlRthAI6AqGCok4KPqo89EKGbf4cAmQoT5uEXrThw8d4fFnQ==
+        Wed, 11 May 2022 13:26:15 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 408301D0E8
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 10:26:11 -0700 (PDT)
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24BH3osm010445;
+        Wed, 11 May 2022 17:26:07 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2021-07-09;
+ bh=VhpiXzgoExJHoMXufXpjJwWYxLIHN1bOkMjL5hBoE74=;
+ b=xGd/zNSGuhRYCAOHZR2BAkK//BuRnFOIxPOm5L7tQk7vcUl56G4Mi79kiJHDMe6IRuIj
+ xRPwfvyEB3wUfbhhv5WgyY+UYFmYkn2jJ2IO57kPLKfvefRpYGSGGRmxxRW+Zrm5An7i
+ /QsVI2j0bKDsGU9v/+iEONzhaYJFGub60q4YqP5KTsKJRF9dKzje7x1ZPBGCmZfXF7eE
+ kQccLdDqFQQtUoe3n/vo3JTuLfR2coHMbEQSbrTcGl8sdVQHk2wKPoQQprse2xJ6kRsi
+ Ap8hV6yNOs2XhYzHLZRWIrN2geeLoL7OJrw9Sxi5kWIh7wsvVZSrgU9O6gN8Pdhh5rYE zg== 
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3fwf6ca8xe-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 11 May 2022 17:26:06 +0000
+Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 24BH5VRB011988;
+        Wed, 11 May 2022 17:26:05 GMT
+Received: from nam02-bn1-obe.outbound.protection.outlook.com (mail-bn1nam07lp2040.outbound.protection.outlook.com [104.47.51.40])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3fwf73vwpf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 11 May 2022 17:26:05 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iW+ER1Em/JaE56S8AoFccowLwgweBPnsd93quNGQhFekpkAlhZv6ZB2UuWFvmWPBC7rhnvJC/Q6HobBh3IOg5Uqi0dgkCvx4WkZ2G+MyZFQq3Gx/QoFDJtDlPo+545BeaJJyPOWfb+foaUpmmVIj5O2gbfIkXQYd9dti77ieO+ciSmSMxCEf5/27N27Gc+w3J1Eq1gLbMlZIb44sBKJtTRdPH7j40tFdwHaGX4/8AufPKXuXMvthO1R+O3IO2S6pDVcEk1I03XQGS25RVMnuBseMGK4/eBA8ESXs8hIfu5GqiBKzSxdLjQ6A9LlPD/ntP9Rk7wFNXaFvGIWmNei6OA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=VhpiXzgoExJHoMXufXpjJwWYxLIHN1bOkMjL5hBoE74=;
+ b=LHLdi9x6JIRNCuPu9N9zvJLs5/N/w3DHQI+JYyZfTdZ+gr8zCznPf1YUt8Cl0odjOTvXfGPRv0jDujkN1hvB1X9u91B2XMZzOIl21oOAo7L1EQrVmTm7QIP/0tQrgkz25HZnUYitymwyG7qdbGEg1Ut/4Nqrz0ceAfIGOSqdQ1NfyC80gNQDjLk4F7FM7DUoT/b3kF4mK4dU0XWTAx2f1dEL0ZEtf87Shnpo/10Q0ynK/Pn62Z4ETGMLgMunFRkib5wFNQ1IDFMtF9U3ibAXgBYAhSHD/vMPDasU5Y4jY4vActiUu83XPxTGDumWuuJdMfGVWmPF3+WNhxgLMdCUug==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VhpiXzgoExJHoMXufXpjJwWYxLIHN1bOkMjL5hBoE74=;
+ b=ZaokFfDm2FI9BF2kIUxC8hojSveofYee9s522nzFo22Dkb0FJ5OGUrHQ6Vbq2s2Ao1p7tRscLkOh6Krp/957X++HPn0T/aOhbDKYgIvtUqysxWJQQKgWGdLiDS2ZrsufdaY+Bfj12OqWYdBK1RSgzoY/jhcc3/i7kHd4Shwrs5U=
+Received: from BYAPR10MB3287.namprd10.prod.outlook.com (2603:10b6:a03:15c::11)
+ by BYAPR10MB3272.namprd10.prod.outlook.com (2603:10b6:a03:157::28) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23; Wed, 11 May
+ 2022 17:26:03 +0000
+Received: from BYAPR10MB3287.namprd10.prod.outlook.com
+ ([fe80::c89:e3f5:ea4a:8d30]) by BYAPR10MB3287.namprd10.prod.outlook.com
+ ([fe80::c89:e3f5:ea4a:8d30%2]) with mapi id 15.20.5250.013; Wed, 11 May 2022
+ 17:26:03 +0000
+Message-ID: <eda33c78-fd39-a5bb-9e9e-06b2c37d3fe5@oracle.com>
+Date:   Wed, 11 May 2022 10:25:58 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v5 3/3] vdpa/mlx5: Add support for reading descriptor
+ statistics
+Content-Language: en-US
+To:     Eli Cohen <elic@nvidia.com>, mst@redhat.com, jasowang@redhat.com
+Cc:     virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
+References: <20220510112734.205669-1-elic@nvidia.com>
+ <20220510112734.205669-4-elic@nvidia.com>
+From:   Si-Wei Liu <si-wei.liu@oracle.com>
+Organization: Oracle Corporation
+In-Reply-To: <20220510112734.205669-4-elic@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BYAPR05CA0064.namprd05.prod.outlook.com
+ (2603:10b6:a03:74::41) To BYAPR10MB3287.namprd10.prod.outlook.com
+ (2603:10b6:a03:15c::11)
 MIME-Version: 1.0
-Date:   Wed, 11 May 2022 19:24:23 +0200
-From:   Wolfgang Walter <linux@stwm.de>
-To:     Chuck Lever III <chuck.lever@oracle.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        linux-stable <stable@vger.kernel.org>,
-        Trond Myklebust <trondmy@gmail.com>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: 5.4.188 and later: massive performance regression with nfsd
-In-Reply-To: <FC5DF233-1165-4733-8651-709BA021871E@oracle.com>
-References: <f8d9b9112607df4807fba8948ac6e145@stwm.de>
- <YnuuLZe6h80KCNhd@kroah.com>
- <6A15DEE1-CAC9-4C64-8643-AD28EA423046@oracle.com>
- <YnvG71v4Ay560D+X@kroah.com>
- <0F5EA15D-08A0-4D3E-B5A9-D62C49BF2B56@oracle.com>
- <88e7fae3578052ba70eb3e8a3b929c54@stwm.de>
- <FC5DF233-1165-4733-8651-709BA021871E@oracle.com>
-Message-ID: <8efeb7dde2bba548dc5b04787630dda3@stwm.de>
-X-Sender: linux@stwm.de
-Organization: =?UTF-8?Q?Studentenwerk_M=C3=BCnchen?=
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4484b372-a8c1-4ff9-e212-08da337352ac
+X-MS-TrafficTypeDiagnostic: BYAPR10MB3272:EE_
+X-Microsoft-Antispam-PRVS: <BYAPR10MB32720E8AF3153E68E8352E0CB1C89@BYAPR10MB3272.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ihAEpDXsAm83O/q8QiP8vll9L7keiZlhrTCSXMs+D+PFWuyfpa4tYYPrzv6MzNes1rg0s0nl+fWmk7Ean9hVhPgJOuBn+3ZvpeZFv6t3OOFhUFRkCEzPz1dOPTF1cnKIdSLGyiQWXaq6GwovQQ88BtTrdseht94pXLGz/aP01CADuIlmuc0hES7h0ymMm407hghSZoFefpiBLL4HN229uDcWKjU3z2SAxM3G/vdoWabM+UQzPWccg1r9/ll5MUZ/BWmaAwvkiu7UmcHlu+n8nzQGKPsENJ90V/gRBF5/DP4dUICEOhoFbFm4v5knd7YR/XxNBjdL13jpm8MPXMxUPGzm/UrA69DAJxfGEfsCJEkufDQ+Vc9ePMq6Ys9jN8+hRPx3PJpKWFuUcgtCOOTEsrjgJU/uFs9XtMvRtxS5Q3bmruTsKphoeKeraGkQXDbx1jumXBm6W1ZjpN3ZibbP3aJFSMLn6Qo2HQ2JYNSPo7lyWQdc1j07BAD3GQk7HIpVasbKYe3sIKPo08wJtmyoGRvjFeaJ0sptT5pdx8BMV2SW+JySKJFwkMT4qWoQ2VyZEMlk2abOjFjvqheQLO6S7Ec6YGkgrwUQarE/owrf7cp6/rH/pZVkWlBGvFWH51OuvbwNQeTJgKXdt3umAChSWNF+w95cYbd7Z1I+41Ts7tHcagxUddFaf30m16qY8IT+lqk+POK3/tfTtcqyA65gvDchnkoPovgIhl04RTb/S0QOZ4mFzz8QDQT+0nV5bx25
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR10MB3287.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(6512007)(26005)(8936002)(2616005)(186003)(66476007)(66946007)(4326008)(66556008)(31686004)(30864003)(8676002)(5660300002)(36756003)(2906002)(316002)(86362001)(36916002)(508600001)(6506007)(31696002)(38100700002)(6666004)(6486002)(53546011)(83380400001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UldBRjNFd0VzK2Y5bWtPeUxqN1JVU0wrV0dKQzkyUEN3YUZmcmFPMXdudmFO?=
+ =?utf-8?B?ZjV2NjQ5Z1c3RThpcVZ1S0Rqb3h1U2dnbVlranZSVzBoUytqNDZ1UG8yTXM2?=
+ =?utf-8?B?U3preW5Va1JKeW1XanJVSm1pdWRncVV1eW9VbTRlWGdRRW1xT0V4a2pwaXFs?=
+ =?utf-8?B?WXJaUHkvbS8rTXhISjk5VThyejBvY3RxaU1uOXRycTE4TStNSzA2cGVJa293?=
+ =?utf-8?B?Ykx5cEUwaGtPblJYT1A1QnNFb3Q1OVlhdjNvZDVUbDlnR2NJLy9lVFR2bnV0?=
+ =?utf-8?B?VE5LS3hWN0lZeUIxc1FSQXJGdzE2dFhKSjVzNDdxZ1JLUWtFc3Bud2VQYy9U?=
+ =?utf-8?B?M2V6Ukh6Vnlya09lc1VHZDJ0WmRvbVJ4OHY0ZEtmckRpZFBqeWNKVWttZm9E?=
+ =?utf-8?B?TVlwYTAwYU1QSU9Ld3FvWHArdUQzYnJQY0hWOCtvT1JIRDhDVERvWmZSQnpI?=
+ =?utf-8?B?cDk0NFRqY1RnVFEzZWNaWU5jRjIrUkcwck80a0drVkJsdWVtODZ1MUlFc3Rh?=
+ =?utf-8?B?eDlXcmYrVGw5NzZYNmNtTy9XczM4SzBGWXI4dkhaZ0V0U2x0dkt5RWVuNlJ2?=
+ =?utf-8?B?ZFFYTFpVcUJuMFVMSEFLQWRTVTdoM3phTHZtamp4Ni9tRkF0R3c4ZitpTEd5?=
+ =?utf-8?B?LzlWdnE5RWhldlR4YUdPTis4RjJ5bU5EbkFzdmlhUDBnQkNlRlgzR2krN2c1?=
+ =?utf-8?B?WFN6clhTb0xoK3VKZXQvSHVvSUNVb29vYmIyMEhhWXgzSDVWZVpuSnV0bW91?=
+ =?utf-8?B?cFdFemNLWTN2dWhGZHdUalZrSGdJSHFuUXdzT0cyOWQ0VVdQaFBxNGd2TDZ1?=
+ =?utf-8?B?YXNMK0xhc3lKOWJ3WWY3ZG0rYVFzbnVlYkZ6ME5wZGd3WWFmdk1FWE9PN1lw?=
+ =?utf-8?B?VnduYUR1NTM0aDk3MnZGMG1VemZyWjNQeGFSWkJhMHltTUV0M01JL05MaVdu?=
+ =?utf-8?B?TGlXN2pJRXlQOGlIZGhTTkErekExQjJGaUtvWlZZT2NqdW9WWml4TjlGb3Zi?=
+ =?utf-8?B?bTdidy9UUm5sZHhlRzB2UFVoeVhxSlVxdGI4Q0d4QzZrRDJxMjVKMkxzVHFl?=
+ =?utf-8?B?Z3A1a20rQTRpZkdnckpXdGlSVERmY0NjaWtoTkhNTjMycEhhWGJpV2VJNlNJ?=
+ =?utf-8?B?aGxCU1RNdGhRUFJXc3JvdWN3MlZ5KzZxZ0pYM3ZabGVvRnhEOUZ0TjBDTk9h?=
+ =?utf-8?B?QVFtNWJSWjZzQjdFZWpmdUE2MGM1aHVnbTEwdWl2NzMzam9GREdoZXVsMWJI?=
+ =?utf-8?B?Z1VDSWNjZ2U1cytpV0xIL3ZHclJ5bFRWcjhlTjlrTldQMzVKSEVBU1B6YmRa?=
+ =?utf-8?B?NHZ5S0hEdmdGV1ZVamtjeW9uamt5cWtNZ0E0SEpnTE9YU25XaCs4WGpGWS9S?=
+ =?utf-8?B?cW1DZTdueTNNMXlnUlZPaXU5dkdHaXM3Ny93S1NFc0s5QStVbWx0QUl2QnNH?=
+ =?utf-8?B?MEJIaVJVODROV1ozWVJkbHdlYjlzcHdSUFpHSUEyZmhDRGczSFl3czU4d0VI?=
+ =?utf-8?B?bUFuK3ZzZDBTaXVxRllzY2FudDB0OHlYd1dvSjRpMFB0RjlrWHN5TTJGN0M4?=
+ =?utf-8?B?S3BrOHlVQ3ZML3pmUnZ3Y3QvbVNLUU0vUFBnY1VrQzg3dTlzYmpSOEVzOTZz?=
+ =?utf-8?B?cnI0TXRlOVhDV1RUWkRhZFYwQTF2MEgwS0VYNHprZU14UmVBUEI1TUxkN295?=
+ =?utf-8?B?QTRJWHNtOER3bXhaZHZ2RUJGSXAwYXBQWFM3OW53cE9qV3hGQ2RYdVJucEF1?=
+ =?utf-8?B?YkxOQVcrZUplVXRPREFjUVppd09GTzl4clFOcXJmOXg1T25sbVpNV1lPbERl?=
+ =?utf-8?B?ODl4Q1Qzc0dvRSs3cURPeU91eExWOHRoaG1TV2FoMEJpRUZneUo5V0ZMelg0?=
+ =?utf-8?B?YUgvQ0hVNGZjNHNhbUZxdEZ4SzFaaTZRWVErOHBNTFlrNURzYVVDYnE3dGow?=
+ =?utf-8?B?NW5ESmlZanloS01BVFd6OEcxRFErRnF5RU0xMW9MMHVYRVgwRXR3QVd2dXpL?=
+ =?utf-8?B?Nm5wMWpiOGZzbStzQWZ5ZitaaUVVMzFWTG95QnY5VTN3aWZ0NXlndWdpM3Rq?=
+ =?utf-8?B?Q1hyaE9rNHlMblVBQVJtb1VXQWJMMUZDMXplNUN2aHZ3Kys4ZjB5V0VIREtP?=
+ =?utf-8?B?cDV4Y3lxbE1SWXRxZHczaktvZ1RTVVJVS2UvRmdDb25DNXQ3WjJHc0lXeUxX?=
+ =?utf-8?B?WGtvSkZOdmpKNkZHTTN6ZzZjbFNCc1dHcGlLS0I5SlArRE45RlRhY0xTUHk4?=
+ =?utf-8?B?bGhwbzRNek45Tk9LWkJaVmk4UUM0OEdrSnpVRCtuY3hyV2FqTitYSC9QcjNO?=
+ =?utf-8?B?V2txVjltZHVtcjliUG9maGYwNDlqcnNVVnl3VStPSkhXTUE4cWhZaHJJVUxk?=
+ =?utf-8?Q?BqkwA/WJ0J8/BwsU=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4484b372-a8c1-4ff9-e212-08da337352ac
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR10MB3287.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2022 17:26:03.0163
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: NAm50Mn6Y2gvvxC/AKwToLnjHDX+DmboB7JAFhR5TMjKwGYAQrhRajfzslUgaKqNKd/XNA84YOR1SzMWalSsuA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR10MB3272
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.858
+ definitions=2022-05-11_07:2022-05-11,2022-05-11 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 phishscore=0
+ adultscore=0 bulkscore=0 malwarescore=0 mlxscore=0 mlxlogscore=999
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205110078
+X-Proofpoint-ORIG-GUID: _VeKQpWKU-UhBVUKUV6jWNikSUtjcUaY
+X-Proofpoint-GUID: _VeKQpWKU-UhBVUKUV6jWNikSUtjcUaY
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-05-11 17:50, schrieb Chuck Lever III:
->> On May 11, 2022, at 11:30 AM, Wolfgang Walter <linux@stwm.de> wrote:
->> 
->> Am 2022-05-11 16:36, schrieb Chuck Lever III:
->>>> On May 11, 2022, at 10:23 AM, Greg KH <gregkh@linuxfoundation.org> 
->>>> wrote:
->>>> On Wed, May 11, 2022 at 02:16:19PM +0000, Chuck Lever III wrote:
->>>>>> On May 11, 2022, at 8:38 AM, Greg KH <gregkh@linuxfoundation.org> 
->>>>>> wrote:
->>>>>> On Wed, May 11, 2022 at 12:03:13PM +0200, Wolfgang Walter wrote:
->>>>>>> Hi,
->>>>>>> starting with 5.4.188 wie see a massive performance regression on 
->>>>>>> our
->>>>>>> nfs-server. It basically is serving requests very very slowly 
->>>>>>> with cpu
->>>>>>> utilization of 100% (with 5.4.187 and earlier it is 10%) so that 
->>>>>>> it is
->>>>>>> unusable as a fileserver.
->>>>>>> The culprit are commits (or one of it):
->>>>>>> c32f1041382a88b17da5736886da4a492353a1bb "nfsd: cleanup
->>>>>>> nfsd_file_lru_dispose()"
->>>>>>> 628adfa21815f74c04724abc85847f24b5dd1645 "nfsd: Containerise 
->>>>>>> filecache
->>>>>>> laundrette"
->>>>>>> (upstream 36ebbdb96b694dd9c6b25ad98f2bbd263d022b63 and
->>>>>>> 9542e6a643fc69d528dfb3303f145719c61d3050)
->>>>>>> If I revert them in v5.4.192 the kernel works as before and 
->>>>>>> performance is
->>>>>>> ok again.
->>>>>>> I did not try to revert them one by one as any disruption of our 
->>>>>>> nfs-server
->>>>>>> is a severe problem for us and I'm not sure if they are related.
->>>>>>> 5.10 and 5.15 both always performed very badly on our nfs-server 
->>>>>>> in a
->>>>>>> similar way so we were stuck with 5.4.
->>>>>>> I now think this is because of 
->>>>>>> 36ebbdb96b694dd9c6b25ad98f2bbd263d022b63
->>>>>>> and/or 9542e6a643fc69d528dfb3303f145719c61d3050 though I didn't 
->>>>>>> tried to
->>>>>>> revert them in 5.15 yet.
->>>>>> Odds are 5.18-rc6 is also a problem?
->>>>> We believe that
->>>>> 6b8a94332ee4 ("nfsd: Fix a write performance regression")
->>>>> addresses the performance regression. It was merged into 5.18-rc.
->>>> And into 5.17.4 if someone wants to try that release.
->>> I don't have a lot of time to backport this one myself, so
->>> I welcome anyone who wants to apply that commit to their
->>> favorite LTS kernel and test it for us.
->>>>>> If so, I'll just wait for the fix to get into Linus's tree as this 
->>>>>> does
->>>>>> not seem to be a stable-tree-only issue.
->>>>> Unfortunately I've received a recent report that the fix introduces
->>>>> a "sleep while spinlock is held" for NFSv4.0 in rare cases.
->>>> Ick, not good, any potential fixes for that?
->>> Not yet. I was at LSF last week, so I've just started digging
->>> into this one. I've confirmed that the report is a real bug,
->>> but we still don't know how hard it is to hit it with real
->>> workloads.
->>> --
->>> Chuck Lever
->> 
->> This maybe unrelated: when I used 5.4.188 for the first time I got 
->> this:
->> 
->> [Mon Apr 11 09:20:23 2022] ------------[ cut here ]------------
->> [Mon Apr 11 09:20:23 2022] refcount_t: underflow; use-after-free.
-> 
-> I don't believe this is the same issue as the performance
-> regression. Hard to say more without knowing what the
-> server's workload was when this occurred.
-> 
-> The only two NFSD-related patches that appear between
-> v5.4.187 and v5.4.188 are Trond's filecache. It's implausible
-> that a callback reference count issue would be related.
 
 
-Maybe it is because of the high cpu load with these two patches. Whereas 
-there are usually only 10 nfsd threads in R state even under high load 
-and only for short times, with these two patches there are periods where 
-there are 50 or more.
+On 5/10/2022 4:27 AM, Eli Cohen wrote:
+> Implement the get_vq_stats calback of vdpa_config_ops to return the
+> statistics for a virtqueue.
+>
+> The statistics are provided as vendor specific statistics where the
+> driver provides a pair of attribute name and attribute value.
+>
+> In addition to the attribute name/attribute value pair, the driver
+> returns the negotiated features and max virtqueue pairs for userspace
+> can decide for a given queue index whether it is a data or control
+> virtqueue.
+>
+> Currently supported are received descriptors and completed descriptors.
+>
+> Acked-by: Jason Wang <jasowang@redhat.com>
+> Signed-off-by: Eli Cohen <elic@nvidia.com>
+> ---
+> v4 -> v5:
+>   Remove numq_lock mutex. Use reslock instread.
+>
+>
+>   drivers/vdpa/mlx5/core/mlx5_vdpa.h |   2 +
+>   drivers/vdpa/mlx5/net/mlx5_vnet.c  | 165 +++++++++++++++++++++++++++++
+>   include/linux/mlx5/mlx5_ifc.h      |   1 +
+>   include/linux/mlx5/mlx5_ifc_vdpa.h |  39 +++++++
+>   4 files changed, 207 insertions(+)
+>
+> diff --git a/drivers/vdpa/mlx5/core/mlx5_vdpa.h b/drivers/vdpa/mlx5/core/mlx5_vdpa.h
+> index daaf7b503677..44104093163b 100644
+> --- a/drivers/vdpa/mlx5/core/mlx5_vdpa.h
+> +++ b/drivers/vdpa/mlx5/core/mlx5_vdpa.h
+> @@ -61,6 +61,8 @@ struct mlx5_control_vq {
+>   	struct vringh_kiov riov;
+>   	struct vringh_kiov wiov;
+>   	unsigned short head;
+> +	unsigned int received_desc;
+> +	unsigned int completed_desc;
+>   };
+>   
+>   struct mlx5_vdpa_wq_ent {
+> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> index 79001301b383..99b0621e7a87 100644
+> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> @@ -119,6 +119,7 @@ struct mlx5_vdpa_virtqueue {
+>   	struct mlx5_vdpa_umem umem2;
+>   	struct mlx5_vdpa_umem umem3;
+>   
+> +	u32 counter_set_id;
+>   	bool initialized;
+>   	int index;
+>   	u32 virtq_id;
+> @@ -164,6 +165,7 @@ struct mlx5_vdpa_net {
+>   	struct notifier_block nb;
+>   	struct vdpa_callback config_cb;
+>   	struct mlx5_vdpa_wq_ent cvq_ent;
+> +	/* sync access to virtqueues statistics */
+Dangling code change?
 
-Our monitoring says that the load on average (1m) is < 1, with these two 
-patches it was 18. So there is more parallelism.
+>   };
+>   
+>   static void free_resources(struct mlx5_vdpa_net *ndev);
+> @@ -822,6 +824,12 @@ static u16 get_features_12_3(u64 features)
+>   	       (!!(features & BIT_ULL(VIRTIO_NET_F_GUEST_CSUM)) << 6);
+>   }
+>   
+> +static bool counters_supported(const struct mlx5_vdpa_dev *mvdev)
+> +{
+> +	return MLX5_CAP_GEN_64(mvdev->mdev, general_obj_types) &
+> +	       BIT_ULL(MLX5_OBJ_TYPE_VIRTIO_Q_COUNTERS);
+> +}
+> +
+>   static int create_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq)
+>   {
+>   	int inlen = MLX5_ST_SZ_BYTES(create_virtio_net_q_in);
+> @@ -876,6 +884,8 @@ static int create_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtque
+>   	MLX5_SET(virtio_q, vq_ctx, umem_3_id, mvq->umem3.id);
+>   	MLX5_SET(virtio_q, vq_ctx, umem_3_size, mvq->umem3.size);
+>   	MLX5_SET(virtio_q, vq_ctx, pd, ndev->mvdev.res.pdn);
+> +	if (counters_supported(&ndev->mvdev))
+> +		MLX5_SET(virtio_q, vq_ctx, counter_set_id, mvq->counter_set_id);
+>   
+>   	err = mlx5_cmd_exec(ndev->mvdev.mdev, in, inlen, out, sizeof(out));
+>   	if (err)
+> @@ -1139,6 +1149,47 @@ static int modify_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtque
+>   	return err;
+>   }
+>   
+> +static int counter_set_alloc(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq)
+> +{
+> +	u32 in[MLX5_ST_SZ_DW(create_virtio_q_counters_in)] = {};
+> +	u32 out[MLX5_ST_SZ_DW(create_virtio_q_counters_out)] = {};
+> +	void *cmd_hdr;
+> +	int err;
+> +
+> +	if (!counters_supported(&ndev->mvdev))
+> +		return 0;
+> +
+> +	cmd_hdr = MLX5_ADDR_OF(create_virtio_q_counters_in, in, hdr);
+> +
+> +	MLX5_SET(general_obj_in_cmd_hdr, cmd_hdr, opcode, MLX5_CMD_OP_CREATE_GENERAL_OBJECT);
+> +	MLX5_SET(general_obj_in_cmd_hdr, cmd_hdr, obj_type, MLX5_OBJ_TYPE_VIRTIO_Q_COUNTERS);
+> +	MLX5_SET(general_obj_in_cmd_hdr, cmd_hdr, uid, ndev->mvdev.res.uid);
+> +
+> +	err = mlx5_cmd_exec(ndev->mvdev.mdev, in, sizeof(in), out, sizeof(out));
+> +	if (err)
+> +		return err;
+> +
+> +	mvq->counter_set_id = MLX5_GET(general_obj_out_cmd_hdr, out, obj_id);
+> +
+> +	return 0;
+> +}
+> +
+> +static void counter_set_dealloc(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq)
+> +{
+> +	u32 in[MLX5_ST_SZ_DW(destroy_virtio_q_counters_in)] = {};
+> +	u32 out[MLX5_ST_SZ_DW(destroy_virtio_q_counters_out)] = {};
+> +
+> +	if (!counters_supported(&ndev->mvdev))
+> +		return;
+> +
+> +	MLX5_SET(destroy_virtio_q_counters_in, in, hdr.opcode, MLX5_CMD_OP_DESTROY_GENERAL_OBJECT);
+> +	MLX5_SET(destroy_virtio_q_counters_in, in, hdr.obj_id, mvq->counter_set_id);
+> +	MLX5_SET(destroy_virtio_q_counters_in, in, hdr.uid, ndev->mvdev.res.uid);
+> +	MLX5_SET(destroy_virtio_q_counters_in, in, hdr.obj_type, MLX5_OBJ_TYPE_VIRTIO_Q_COUNTERS);
+> +	if (mlx5_cmd_exec(ndev->mvdev.mdev, in, sizeof(in), out, sizeof(out)))
+> +		mlx5_vdpa_warn(&ndev->mvdev, "dealloc counter set 0x%x\n", mvq->counter_set_id);
+> +}
+> +
+>   static int setup_vq(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq)
+>   {
+>   	u16 idx = mvq->index;
+> @@ -1166,6 +1217,10 @@ static int setup_vq(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq)
+>   	if (err)
+>   		goto err_connect;
+>   
+> +	err = counter_set_alloc(ndev, mvq);
+> +	if (err)
+> +		goto err_counter;
+> +
+>   	err = create_virtqueue(ndev, mvq);
+>   	if (err)
+>   		goto err_connect;
+> @@ -1183,6 +1238,8 @@ static int setup_vq(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq)
+>   	return 0;
+>   
+>   err_connect:
+> +	counter_set_dealloc(ndev, mvq);
+> +err_counter:
+>   	qp_destroy(ndev, &mvq->vqqp);
+>   err_vqqp:
+>   	qp_destroy(ndev, &mvq->fwqp);
+> @@ -1227,6 +1284,7 @@ static void teardown_vq(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *
+>   
+>   	suspend_vq(ndev, mvq);
+>   	destroy_virtqueue(ndev, mvq);
+> +	counter_set_dealloc(ndev, mvq);
+>   	qp_destroy(ndev, &mvq->vqqp);
+>   	qp_destroy(ndev, &mvq->fwqp);
+>   	cq_destroy(ndev, mvq->index);
+> @@ -1681,6 +1739,7 @@ static void mlx5_cvq_kick_handler(struct work_struct *work)
+>   		if (read != sizeof(ctrl))
+>   			break;
+>   
+> +		cvq->received_desc++;
+>   		switch (ctrl.class) {
+>   		case VIRTIO_NET_CTRL_MAC:
+>   			status = handle_ctrl_mac(mvdev, ctrl.cmd);
+> @@ -1704,6 +1763,7 @@ static void mlx5_cvq_kick_handler(struct work_struct *work)
+>   		if (vringh_need_notify_iotlb(&cvq->vring))
+>   			vringh_notify(&cvq->vring);
+>   
+> +		cvq->completed_desc++;
+>   		queue_work(mvdev->wq, &wqent->work);
+>   		break;
+>   	}
+> @@ -2323,6 +2383,8 @@ static int mlx5_vdpa_reset(struct vdpa_device *vdev)
+>   	mlx5_vdpa_destroy_mr(&ndev->mvdev);
+>   	ndev->mvdev.status = 0;
+>   	ndev->cur_num_vqs = 0;
+> +	ndev->mvdev.cvq.received_desc = 0;
+> +	ndev->mvdev.cvq.completed_desc = 0;
+>   	memset(ndev->event_cbs, 0, sizeof(*ndev->event_cbs) * (mvdev->max_vqs + 1));
+>   	ndev->mvdev.actual_features = 0;
+>   	++mvdev->generation;
+> @@ -2442,6 +2504,108 @@ static u64 mlx5_vdpa_get_driver_features(struct vdpa_device *vdev)
+>   	return mvdev->actual_features;
+>   }
+>   
+> +static int counter_set_query(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq,
+> +			     u64 *received_desc, u64 *completed_desc)
+> +{
+> +	u32 in[MLX5_ST_SZ_DW(query_virtio_q_counters_in)] = {};
+> +	u32 out[MLX5_ST_SZ_DW(query_virtio_q_counters_out)] = {};
+> +	void *cmd_hdr;
+> +	void *ctx;
+> +	int err;
+> +
+> +	if (!counters_supported(&ndev->mvdev))
+> +		return -EOPNOTSUPP;
+> +
+> +	if (mvq->fw_state != MLX5_VIRTIO_NET_Q_OBJECT_STATE_RDY)
+> +		return -EAGAIN;
+> +
+> +	cmd_hdr = MLX5_ADDR_OF(query_virtio_q_counters_in, in, hdr);
+> +
+> +	MLX5_SET(general_obj_in_cmd_hdr, cmd_hdr, opcode, MLX5_CMD_OP_QUERY_GENERAL_OBJECT);
+> +	MLX5_SET(general_obj_in_cmd_hdr, cmd_hdr, obj_type, MLX5_OBJ_TYPE_VIRTIO_Q_COUNTERS);
+> +	MLX5_SET(general_obj_in_cmd_hdr, cmd_hdr, uid, ndev->mvdev.res.uid);
+> +	MLX5_SET(general_obj_in_cmd_hdr, cmd_hdr, obj_id, mvq->counter_set_id);
+> +
+> +	err = mlx5_cmd_exec(ndev->mvdev.mdev, in, sizeof(in), out, sizeof(out));
+> +	if (err)
+> +		return err;
+> +
+> +	ctx = MLX5_ADDR_OF(query_virtio_q_counters_out, out, counters);
+> +	*received_desc = MLX5_GET64(virtio_q_counters, ctx, received_desc);
+> +	*completed_desc = MLX5_GET64(virtio_q_counters, ctx, completed_desc);
+> +	return 0;
+> +}
+> +
+> +static int mlx5_vdpa_get_vendor_vq_stats(struct vdpa_device *vdev, u16 idx,
+> +					 struct sk_buff *msg,
+> +					 struct netlink_ext_ack *extack)
+> +{
+> +	struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
+> +	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
+> +	struct mlx5_vdpa_virtqueue *mvq;
+> +	struct mlx5_control_vq *cvq;
+> +	u64 received_desc;
+> +	u64 completed_desc;
+> +	int err = 0;
+> +	u16 max_vqp;
+> +
+> +	mutex_lock(&ndev->reslock);
+I wonder if we can change this lock to r/w semaphore too, otherwise it 
+almost defeats the merit of converting vdpa_dev_mutex to the same. This 
+change would benefit multiple parallel readers.
+> +	if (!(ndev->mvdev.status & VIRTIO_CONFIG_S_FEATURES_OK)) {
+> +		NL_SET_ERR_MSG_MOD(extack, "feature negotiation not complete");
+> +		err = -EAGAIN;
+> +		goto out_err;
+> +	}
+> +
+> +	if (!is_index_valid(mvdev, idx)) {
+> +		NL_SET_ERR_MSG_MOD(extack, "virtqueue index is not valid");
+> +		err = -EINVAL;
+> +		goto out_err;
+> +	}
+> +
+> +	if (idx == ctrl_vq_idx(mvdev)) {
+> +		cvq = &mvdev->cvq;
+> +		received_desc = cvq->received_desc;
+> +		completed_desc = cvq->completed_desc;
+> +		goto out;
+> +	}
+> +
+> +	mvq = &ndev->vqs[idx];
+> +	err = counter_set_query(ndev, mvq, &received_desc, &completed_desc);
+> +	if (err) {
+> +		NL_SET_ERR_MSG_MOD(extack, "failed to query hardware");
+> +		goto out_err;
+> +	}
+> +
+> +out:
+> +	err = -EMSGSIZE;
+> +	if (nla_put_u64_64bit(msg, VDPA_ATTR_DEV_NEGOTIATED_FEATURES,
+> +			      mvdev->actual_features, VDPA_ATTR_PAD))
+> +		goto out_err;
+> +
+> +	max_vqp = mlx5vdpa16_to_cpu(mvdev, ndev->config.max_virtqueue_pairs);
+> +	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MAX_VQP, max_vqp))
+> +		goto out_err;
+Your userspace reference patch doesn't actually use this attribute, but 
+instead calls the VDPA_CMD_DEV_CONFIG_GET in prior to get this 
+information, which will break consistency. Is it your plan to change the 
+userspace code to accommodate what's already piggybacked here and 
+display stat query in just one atomic call? Hope all the available attrs 
+here would satisfy the userspace need.
 
-> 
-> 
->> [Mon Apr 11 09:20:23 2022] WARNING: CPU: 18 PID: 7443 at 
->> lib/refcount.c:190 refcount_sub_and_test_checked+0x48/0x50
->> [Mon Apr 11 09:20:23 2022] Modules linked in: rpcsec_gss_krb5(E) 
->> msr(E) 8021q(E) garp(E) stp(E) mrp(E) llc(E) dm_cache_smq(E) 
->> binfmt_misc(E) dm_cache(E) dm_persistent_data(E) dm_bio_prison(E) 
->> dm_bufio(E) ipmi_ssif(E) intel_rapl_ms
->> r(E) intel_rapl_common(E) sb_edac(E) x86_pkg_temp_thermal(E) 
->> intel_powerclamp(E) coretemp(E) kvm_intel(E) kvm(E) irqbypass(E) 
->> crct10dif_pclmul(E) crc32_pclmul(E) ast(E) snd_pcm(E) 
->> drm_vram_helper(E) ttm(E) ghash_clmulni_intel(E) s
->> nd_timer(E) rapl(E) snd(E) soundcore(E) drm_kms_helper(E) 
->> intel_cstate(E) pcspkr(E) iTCO_wdt(E) intel_uncore(E) drm(E) 
->> iTCO_vendor_support(E) mei_me(E) joydev(E) i2c_algo_bit(E) watchdog(E) 
->> mei(E) ioatdma(E) evdev(E) sg(E) ipmi_si
->> (E) ipmi_devintf(E) ipmi_msghandler(E) acpi_power_meter(E) acpi_pad(E) 
->> button(E) poly1305_x86_64(E) poly1305_generic(E) sha256_ssse3(E) 
->> sha1_ssse3(E) chacha_generic(E) chacha20poly1305(E) aesni_intel(E) 
->> crypto_simd(E) glue_helper(
->> E) cryptd(E) drbd(E) lru_cache(E) nfsd(E) nfs_acl(E) lockd(E) grace(E) 
->> auth_rpcgss(E) sunrpc(E)
->> [Mon Apr 11 09:20:23 2022]  ip_tables(E) x_tables(E) autofs4(E) 
->> ext4(E) crc16(E) mbcache(E) jbd2(E) dm_mod(E) raid10(E) raid456(E) 
->> async_raid6_recov(E) async_memcpy(E) async_pq(E) async_xor(E) 
->> async_tx(E) xor(E) raid6_pq(E) libcrc
->> 32c(E) crc32c_generic(E) raid0(E) multipath(E) linear(E) ses(E) 
->> enclosure(E) hid_generic(E) usbhid(E) hid(E) raid1(E) md_mod(E) 
->> sd_mod(E) crc32c_intel(E) ixgbe(E) ahci(E) xhci_pci(E) libahci(E) 
->> ehci_pci(E) xfrm_algo(E) mpt3sas(E)
->> xhci_hcd(E) ehci_hcd(E) dca(E) raid_class(E) libata(E) libphy(E) 
->> usbcore(E) scsi_transport_sas(E) lpc_ich(E) ptp(E) i2c_i801(E) 
->> mfd_core(E) usb_common(E) pps_core(E) scsi_mod(E) mdio(E) wmi(E)
->> [Mon Apr 11 09:20:23 2022] CPU: 18 PID: 7443 Comm: kworker/u50:1 
->> Tainted: G        W   E     5.4.188-debian64.all+1.2 #1
->> [Mon Apr 11 09:20:23 2022] Hardware name: Supermicro X10DRi/X10DRI-T, 
->> BIOS 1.1a 10/16/2015
->> [Mon Apr 11 09:20:23 2022] Workqueue: rpciod rpc_async_schedule 
->> [sunrpc]
->> [Mon Apr 11 09:20:23 2022] RIP: 
->> 0010:refcount_sub_and_test_checked+0x48/0x50
->> [Mon Apr 11 09:20:23 2022] Code: 31 e4 44 89 e0 41 5c c3 eb f8 44 0f 
->> b6 25 7c ee ce 00 45 84 e4 75 e8 48 c7 c7 80 97 8b b1 c6 05 69 ee ce 
->> 00 01 e8 78 3f 3a 00 <0f> 0b eb d4 0f 1f 40 00 48 89 fe bf 01 00 00 00 
->> eb a6 66 0f 1f 44
->> [Mon Apr 11 09:20:23 2022] RSP: 0018:ffffad8a8d01fe48 EFLAGS: 00010286
->> [Mon Apr 11 09:20:23 2022] RAX: 0000000000000000 RBX: 0000000000002a81 
->> RCX: 0000000000000000
->> [Mon Apr 11 09:20:23 2022] RDX: 0000000000000001 RSI: 0000000000000082 
->> RDI: 00000000ffffffff
->> [Mon Apr 11 09:20:23 2022] RBP: ffff9fb4a2394400 R08: 0000000000000001 
->> R09: 000000000000085b
->> [Mon Apr 11 09:20:23 2022] R10: 0000000000030f5c R11: 0000000000000004 
->> R12: 0000000000000000
->> [Mon Apr 11 09:20:23 2022] R13: ffff9feaf358d400 R14: 0000000000000000 
->> R15: ffff9fb7e1b25148
->> [Mon Apr 11 09:20:23 2022] FS:  0000000000000000(0000) 
->> GS:ffff9feaff980000(0000) knlGS:0000000000000000
->> [Mon Apr 11 09:20:23 2022] CS:  0010 DS: 0000 ES: 0000 CR0: 
->> 0000000080050033
->> [Mon Apr 11 09:20:23 2022] CR2: 00007ffe62ca3080 CR3: 000000350880a002 
->> CR4: 00000000001606e0
->> [Mon Apr 11 09:20:23 2022] Call Trace:
->> [Mon Apr 11 09:20:23 2022]  nfsd4_cb_offload_release+0x16/0x30 [nfsd]
->> [Mon Apr 11 09:20:23 2022]  rpc_free_task+0x39/0x70 [sunrpc]
->> [Mon Apr 11 09:20:23 2022]  rpc_async_schedule+0x29/0x40 [sunrpc]
->> [Mon Apr 11 09:20:23 2022]  process_one_work+0x1ab/0x390
->> [Mon Apr 11 09:20:23 2022]  worker_thread+0x50/0x3c0
->> [Mon Apr 11 09:20:23 2022]  ? rescuer_thread+0x370/0x370
->> [Mon Apr 11 09:20:23 2022]  kthread+0x13c/0x160
->> [Mon Apr 11 09:20:23 2022]  ? __kthread_bind_mask+0x60/0x60
->> [Mon Apr 11 09:20:23 2022]  ret_from_fork+0x1f/0x40
->> [Mon Apr 11 09:20:23 2022] ---[ end trace c58c1aaca9be5d21 ]---
->> [Mon Apr 11 09:56:32 2022] perf: interrupt took too long (6293 > 
->> 6228), lowering kernel.perf_event_max_sample_rate to 31750
->> [Mon Apr 11 09:59:17 2022] ------------[ cut here ]------------
-> 
-> 
-> 
->> [Mon Apr 11 09:59:17 2022] nfsd4_process_open2 failed to open 
->> newly-created file! status=10008
-> 
-> This is definitely not the same problem. This is a failure
-> to open a freshly created file. Maybe due to a memory shortage?
+Thanks,
+-Siwei
 
-No, I don't think so, there was about 100G available.
+> +
+> +	if (nla_put_string(msg, VDPA_ATTR_DEV_VENDOR_ATTR_NAME, "received_desc"))
+> +		goto out_err;
+> +
+> +	if (nla_put_u64_64bit(msg, VDPA_ATTR_DEV_VENDOR_ATTR_VALUE, received_desc,
+> +			      VDPA_ATTR_PAD))
+> +		goto out_err;
+> +
+> +	if (nla_put_string(msg, VDPA_ATTR_DEV_VENDOR_ATTR_NAME, "completed_desc"))
+> +		goto out_err;
+> +
+> +	if (nla_put_u64_64bit(msg, VDPA_ATTR_DEV_VENDOR_ATTR_VALUE, completed_desc,
+> +			      VDPA_ATTR_PAD))
+> +		goto out_err;
+> +
+> +	err = 0;
+> +out_err:
+> +	mutex_unlock(&ndev->reslock);
+> +	return err;
+> +}
+> +
+>   static const struct vdpa_config_ops mlx5_vdpa_ops = {
+>   	.set_vq_address = mlx5_vdpa_set_vq_address,
+>   	.set_vq_num = mlx5_vdpa_set_vq_num,
+> @@ -2451,6 +2615,7 @@ static const struct vdpa_config_ops mlx5_vdpa_ops = {
+>   	.get_vq_ready = mlx5_vdpa_get_vq_ready,
+>   	.set_vq_state = mlx5_vdpa_set_vq_state,
+>   	.get_vq_state = mlx5_vdpa_get_vq_state,
+> +	.get_vendor_vq_stats = mlx5_vdpa_get_vendor_vq_stats,
+>   	.get_vq_notification = mlx5_get_vq_notification,
+>   	.get_vq_irq = mlx5_get_vq_irq,
+>   	.get_vq_align = mlx5_vdpa_get_vq_align,
+> diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+> index 49a48d7709ac..1d193d9b6029 100644
+> --- a/include/linux/mlx5/mlx5_ifc.h
+> +++ b/include/linux/mlx5/mlx5_ifc.h
+> @@ -94,6 +94,7 @@ enum {
+>   enum {
+>   	MLX5_OBJ_TYPE_GENEVE_TLV_OPT = 0x000b,
+>   	MLX5_OBJ_TYPE_VIRTIO_NET_Q = 0x000d,
+> +	MLX5_OBJ_TYPE_VIRTIO_Q_COUNTERS = 0x001c,
+>   	MLX5_OBJ_TYPE_MATCH_DEFINER = 0x0018,
+>   	MLX5_OBJ_TYPE_MKEY = 0xff01,
+>   	MLX5_OBJ_TYPE_QP = 0xff02,
+> diff --git a/include/linux/mlx5/mlx5_ifc_vdpa.h b/include/linux/mlx5/mlx5_ifc_vdpa.h
+> index 1a9c9d94cb59..4414ed5b6ed2 100644
+> --- a/include/linux/mlx5/mlx5_ifc_vdpa.h
+> +++ b/include/linux/mlx5/mlx5_ifc_vdpa.h
+> @@ -165,4 +165,43 @@ struct mlx5_ifc_modify_virtio_net_q_out_bits {
+>   	struct mlx5_ifc_general_obj_out_cmd_hdr_bits general_obj_out_cmd_hdr;
+>   };
+>   
+> +struct mlx5_ifc_virtio_q_counters_bits {
+> +	u8    modify_field_select[0x40];
+> +	u8    reserved_at_40[0x40];
+> +	u8    received_desc[0x40];
+> +	u8    completed_desc[0x40];
+> +	u8    error_cqes[0x20];
+> +	u8    bad_desc_errors[0x20];
+> +	u8    exceed_max_chain[0x20];
+> +	u8    invalid_buffer[0x20];
+> +	u8    reserved_at_180[0x280];
+> +};
+> +
+> +struct mlx5_ifc_create_virtio_q_counters_in_bits {
+> +	struct mlx5_ifc_general_obj_in_cmd_hdr_bits hdr;
+> +	struct mlx5_ifc_virtio_q_counters_bits virtio_q_counters;
+> +};
+> +
+> +struct mlx5_ifc_create_virtio_q_counters_out_bits {
+> +	struct mlx5_ifc_general_obj_in_cmd_hdr_bits hdr;
+> +	struct mlx5_ifc_virtio_q_counters_bits virtio_q_counters;
+> +};
+> +
+> +struct mlx5_ifc_destroy_virtio_q_counters_in_bits {
+> +	struct mlx5_ifc_general_obj_in_cmd_hdr_bits hdr;
+> +};
+> +
+> +struct mlx5_ifc_destroy_virtio_q_counters_out_bits {
+> +	struct mlx5_ifc_general_obj_out_cmd_hdr_bits hdr;
+> +};
+> +
+> +struct mlx5_ifc_query_virtio_q_counters_in_bits {
+> +	struct mlx5_ifc_general_obj_in_cmd_hdr_bits hdr;
+> +};
+> +
+> +struct mlx5_ifc_query_virtio_q_counters_out_bits {
+> +	struct mlx5_ifc_general_obj_in_cmd_hdr_bits hdr;
+> +	struct mlx5_ifc_virtio_q_counters_bits counters;
+> +};
+> +
+>   #endif /* __MLX5_IFC_VDPA_H_ */
 
-
-> But this area has been a problem for a long time.
-> 
-> I have some patches going into 5.19 that might help in this
-> area by making NFSv4 OPEN(CREATE) atomic.
-> 
-> 
->> [Mon Apr 11 09:59:17 2022] WARNING: CPU: 2 PID: 3061 at 
->> fs/nfsd/nfs4proc.c:456 nfsd4_open+0x39a/0x710 [nfsd]
->> [Mon Apr 11 09:59:17 2022] Modules linked in: rpcsec_gss_krb5(E) 
->> msr(E) 8021q(E) garp(E) stp(E) mrp(E) llc(E) dm_cache_smq(E) 
->> binfmt_misc(E) dm_cache(E) dm_persistent_data(E) dm_bio_prison(E) 
->> dm_bufio(E) ipmi_ssif(E) intel_rapl_msr(E) intel_rapl_common(E) 
->> sb_edac(E) x86_pkg_temp_thermal(E) intel_powerclamp(E) coretemp(E) 
->> kvm_intel(E) kvm(E) irqbypass(E) crct10dif_pclmul(E) crc32_pclmul(E) 
->> ast(E) snd_pcm(E) drm_vram_helper(E) ttm(E) ghash_clmulni_intel(E) 
->> snd_timer(E) rapl(E) snd(E) soundcore(E) drm_kms_helper(E) 
->> intel_cstate(E) pcspkr(E) iTCO_wdt(E) intel_uncore(E) drm(E) 
->> iTCO_vendor_support(E) mei_me(E) joydev(E) i2c_algo_bit(E) watchdog(E) 
->> mei(E) ioatdma(E) evdev(E) sg(E) ipmi_si(E) ipmi_devintf(E) 
->> ipmi_msghandler(E) acpi_power_meter(E) acpi_pad(E) button(E) 
->> poly1305_x86_64(E) poly1305_generic(E) sha256_ssse3(E) sha1_ssse3(E) 
->> chacha_generic(E) chacha20poly1305(E) aesni_intel(E) crypto_simd(E) 
->> glue_helper(E) cryptd(E) drbd(E) lru_cache(E) nfsd(E) nfs_acl(E) 
->> lockd(E) grace(E) auth_rpcgss(E) sunrpc(E)
->> [Mon Apr 11 09:59:17 2022]  ip_tables(E) x_tables(E) autofs4(E) 
->> ext4(E) crc16(E) mbcache(E) jbd2(E) dm_mod(E) raid10(E) raid456(E) 
->> async_raid6_recov(E) async_memcpy(E) async_pq(E) async_xor(E) 
->> async_tx(E) xor(E) raid6_pq(E) libcrc32c(E) crc32c_generic(E) raid0(E) 
->> multipath(E) linear(E) ses(E) enclosure(E) hid_generic(E) usbhid(E) 
->> hid(E) raid1(E) md_mod(E) sd_mod(E) crc32c_intel(E) ixgbe(E) ahci(E) 
->> xhci_pci(E) libahci(E) ehci_pci(E) xfrm_algo(E) mpt3sas(E) xhci_hcd(E) 
->> ehci_hcd(E) dca(E) raid_class(E) libata(E) libphy(E) usbcore(E) 
->> scsi_transport_sas(E) lpc_ich(E) ptp(E) i2c_i801(E) mfd_core(E) 
->> usb_common(E) pps_core(E) scsi_mod(E) mdio(E) wmi(E)
->> [Mon Apr 11 09:59:17 2022] CPU: 2 PID: 3061 Comm: nfsd Tainted: G      
->>   W   E     5.4.188-debian64.all+1.2 #1
->> [Mon Apr 11 09:59:17 2022] Hardware name: Supermicro X10DRi/X10DRI-T, 
->> BIOS 1.1a 10/16/2015
->> [Mon Apr 11 09:59:17 2022] RIP: 0010:nfsd4_open+0x39a/0x710 [nfsd]
->> [Mon Apr 11 09:59:17 2022] Code: e8 db 0f 01 00 41 89 c5 85 c0 0f 84 
->> 5e 01 00 00 80 bd 15 01 00 00 00 74 13 44 89 ee 48 c7 c7 a8 08 6f c0 
->> 0f ce e8 b6 f8 ae f0 <0f> 0b 4d 85 ff 0f 84 58 fd ff ff 4d 39 fc 0f 84 
->> 4f fd ff ff 4c 89
->> [Mon Apr 11 09:59:17 2022] RSP: 0018:ffffad8ab09c7db8 EFLAGS: 00010286
->> [Mon Apr 11 09:59:17 2022] RAX: 0000000000000000 RBX: ffff9feaaf7cb000 
->> RCX: 0000000000000000
->> [Mon Apr 11 09:59:17 2022] RDX: 0000000000000001 RSI: 0000000000000082 
->> RDI: 00000000ffffffff
->> [Mon Apr 11 09:59:17 2022] RBP: ffff9feaae54f460 R08: 0000000000000001 
->> R09: 000000000000087a
->> [Mon Apr 11 09:59:17 2022] R10: 0000000000031e00 R11: 0000000000000004 
->> R12: ffff9feaae550070
->> [Mon Apr 11 09:59:17 2022] R13: 0000000018270000 R14: ffff9feaae5ae000 
->> R15: ffff9fc07ccfd400
->> [Mon Apr 11 09:59:17 2022] FS:  0000000000000000(0000) 
->> GS:ffff9fcb1f880000(0000) knlGS:0000000000000000
->> [Mon Apr 11 09:59:17 2022] CS:  0010 DS: 0000 ES: 0000 CR0: 
->> 0000000080050033
->> [Mon Apr 11 09:59:17 2022] CR2: 00007fdae60db000 CR3: 00000037e87fe005 
->> CR4: 00000000001606e0
->> [Mon Apr 11 09:59:17 2022] Call Trace:
->> [Mon Apr 11 09:59:17 2022]  nfsd4_proc_compound+0x45d/0x730 [nfsd]
->> [Mon Apr 11 09:59:17 2022]  nfsd_dispatch+0xc1/0x200 [nfsd]
->> [Mon Apr 11 09:59:17 2022]  svc_process_common+0x399/0x6e0 [sunrpc]
->> [Mon Apr 11 09:59:17 2022]  ? svc_recv+0x312/0x9f0 [sunrpc]
->> [Mon Apr 11 09:59:17 2022]  ? nfsd_svc+0x2f0/0x2f0 [nfsd]
->> [Mon Apr 11 09:59:17 2022]  ? nfsd_destroy+0x60/0x60 [nfsd]
->> [Mon Apr 11 09:59:17 2022]  svc_process+0xd4/0x110 [sunrpc]
->> [Mon Apr 11 09:59:17 2022]  nfsd+0xed/0x150 [nfsd]
->> [Mon Apr 11 09:59:17 2022]  kthread+0x13c/0x160
->> [Mon Apr 11 09:59:17 2022]  ? __kthread_bind_mask+0x60/0x60
->> [Mon Apr 11 09:59:17 2022]  ret_from_fork+0x1f/0x40
->> [Mon Apr 11 09:59:17 2022] ---[ end trace c58c1aaca9be5d22 ]---
->> 
->> I never saw this with an earlier kernel (and we use 5.4 since a long 
->> time).
->> 
->> I did not see this with the unchanged 5.4.192, though, which I tested 
->> before running 5.4.192 with the above mentioned patches reverted.
->> 
->> Regards,
->> --
->> Wolfgang Walter
->> Studentenwerk München
->> Anstalt des öffentlichen Rechts
-> 
-> --
-> Chuck Lever
-
--- 
-Wolfgang Walter
-Studentenwerk München
-Anstalt des öffentlichen Rechts
