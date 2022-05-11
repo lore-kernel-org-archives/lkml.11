@@ -2,94 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74089C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 13:35:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D8A3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 13:35:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243800AbiEKNfW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 09:35:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46856 "EHLO
+        id S243829AbiEKNfk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 09:35:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229591AbiEKNfU (ORCPT
+        with ESMTP id S230257AbiEKNff (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 09:35:20 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C66E018AABF
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 06:35:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=11UTZ+quzH0SN0pcT+pV2U1BMSV8hfaYXX76Jhby3b8=; b=XPH88GZU9Ke9hJFvogGD70ml9o
-        aHx0IwApx4Yzgoc5xjmFFpCrGUJ2UAtgO1dtBP2UjiLY0w7+C63mo9xjXReE1Y3Q4/tjEOMKZsrzy
-        Hq5+I+qwsUFD2og9wmLTyLid3LJk3Q95kRl0WzCbD0hDd3G4SpxSpHXd8ypUCu+4aSPf0HATtZ13J
-        EfQMeTUFYKaTNtsZM3UecqhUkiBGqxmZcIDw/onxgNnOvortoFAeyqKKALnZNj4RJW/IvdUTMRVcF
-        MX4MaPY4tnEqlTu2sMweHnT3yTGHcb+/dGcrMhnbH/bYt8+XBdi484O4DV0weZdyOmGjtfzdow3G+
-        hjy7Eyig==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nomUY-00DBEG-12; Wed, 11 May 2022 13:35:02 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 0C89D980E5D; Wed, 11 May 2022 15:35:00 +0200 (CEST)
-Date:   Wed, 11 May 2022 15:34:59 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] locking/qrwlock: Reduce cacheline contention for
- rwlocks used in interrupt context
-Message-ID: <20220511133459.GZ76023@worktop.programming.kicks-ass.net>
-References: <20220510192134.434753-1-longman@redhat.com>
- <20220510192134.434753-2-longman@redhat.com>
- <20220511083036.GY76023@worktop.programming.kicks-ass.net>
- <7eff9889-56fe-503c-94ea-376054c6579b@redhat.com>
+        Wed, 11 May 2022 09:35:35 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D27F01A4D3D;
+        Wed, 11 May 2022 06:35:34 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id dk23so4090357ejb.8;
+        Wed, 11 May 2022 06:35:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ms4IDLqZyPZEHxNrMd0btLhoMLeIHNUPT9ze1DMC0rY=;
+        b=b6PqNPlOT1b5n0ZwMSJFTOWuIVZybJXt7gUtC32lfxydPEwh8eTC/LgwvVWE/S0YoO
+         z/RvEfLIOhASm7OpJiz0iqKj8nap0nKnyh2+32Ej6sur1kmI5NH6ivKXO/cVEeSkfmBt
+         eOPtXXafMPkPhN0ozaoPgjbl4KgX46Kqe6tbD6Isu+jwUxF9v6jdjkDD+AyodduLapA0
+         Hobs6Vq0yDDLibD0QzWiK40cgI9Lj9b/03XNgKFokA7r4o0FiW/z4Wsjna8IC1KKgyV7
+         IAQxy+Y5z8vGSuq1/ez7/ROSlVUTjKQDoBgo3+HwsYmYLZ2H5aEYc+1zFaUQOL0LUVlJ
+         9apw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ms4IDLqZyPZEHxNrMd0btLhoMLeIHNUPT9ze1DMC0rY=;
+        b=nqsID0vInnUeIiY7hvuC3gXM5T9WRrQlX3Q70tvEBXTtdLKqzJAb3Dh8Z2NBbKv4hC
+         K5FfeiboI68LkovPWzO8xJzsjulnFehOhLvAbb5Icx//Y6SfxpBNOIVxiY2OssQJUOWl
+         xXqr4/xBFGWNs2EZ1JVLcp0puwupNvNt0OVZTOXgsUjVhpiAkWaW6d9LZqRnia6lffF+
+         cCToPzwmbEcGDs/peyKhOrUuc4bafBAscYi3pnf1QEH9iBvZm0pehuY1v1BT/tN+nDjv
+         5/eZTL62NRopmZ/yOhz/US/eq1rDeusEETLl778ZdnmDS+78B5FJSR1U1gjRrC4Xa37R
+         7N7w==
+X-Gm-Message-State: AOAM533q8+tFJxNvZtBjTVCjHrPWhPMD80758u6IbpkHZ1EztRIDP6O0
+        UqsVQOVmsX0YpfTF4HMOQvZskxZf8RLTUeER85w=
+X-Google-Smtp-Source: ABdhPJwm48w9xaikhsGpSBVYiaDfH3RoQAMGR695rlQUewHzVEO1FE9SMr/7XxcFVYHqMbN3+K6odlfP/wdn05UafQs=
+X-Received: by 2002:a17:907:9720:b0:6f4:31d4:925f with SMTP id
+ jg32-20020a170907972000b006f431d4925fmr24761326ejc.658.1652276133336; Wed, 11
+ May 2022 06:35:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7eff9889-56fe-503c-94ea-376054c6579b@redhat.com>
+References: <20220511115911.54960-1-max.oss.09@gmail.com> <20220511115911.54960-4-max.oss.09@gmail.com>
+ <CAOMZO5AboNfb_E-4QVurZ6UTYephsOakW0QrAU8xRAMe8_zRow@mail.gmail.com> <CAEHkU3U=58qittoNazqXrkYKO9gs7VU3VW_67823fs+dt6r6eA@mail.gmail.com>
+In-Reply-To: <CAEHkU3U=58qittoNazqXrkYKO9gs7VU3VW_67823fs+dt6r6eA@mail.gmail.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Wed, 11 May 2022 10:35:20 -0300
+Message-ID: <CAOMZO5BkcpNN+UVLTq+1-y7KdqDC9GAX5_FFqb930OaCewT_jg@mail.gmail.com>
+Subject: Re: [PATCH v2 3/4] ARM: dts: imx6qdl-colibri: backlight pwm: Simplify
+ inverted backlight
+To:     Max Krummenacher <max.oss.09@gmail.com>
+Cc:     Max Krummenacher <max.krummenacher@toradex.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 08:44:55AM -0400, Waiman Long wrote:
+On Wed, May 11, 2022 at 10:32 AM Max Krummenacher <max.oss.09@gmail.com> wrote:
 
-> > I'm confused; prior to this change:
-> > 
-> > 	CPU0			CPU1
-> > 
-> > 	write_lock_irq(&l)
-> > 				read_lock(&l)
-> > 				<INRQ>
-> > 				  read_lock(&l)
-> > 				  ...
-> > 
-> > was not deadlock, but now it would AFAICT.
-> 
-> Oh you are right. I missed that scenario in my analysis. My bad.
+> I disagree. Just setting the invert without at the same changing the
+> brightness-levels does
+> change the user experience way more than when one adapts the available
+> duty cycles
+> at the same time.
+>
+> With the change to use the PWM with inverted polarity the PWM signals
+> is inverted to
+> how it was before this patch. Keeping the brightness-levels will then
+> have a big brightness
+> jump from 0 to 127 duty cycle, the other 6 steps will then be barely noticable.
+>
+> I.e. before the change the brightness for level [0..7] was
+> ['off', 128/255, 64/255, 32/255, 16/255, 8/255, 4/255, 'off'],
+> if one only inverts the polarity it will be
+> ['off', 128/255, 191/255, 223/255, 239/255, 247/255, 255/255].
+> With the proposed patch it will be
+> ['off', 4/255, 8/255, 16/255, 32/255, 64/255, 128/255, 255/255].
 
-No worries; I suppose we can also still do something like:
-
-void queued_read_lock_slowpath(struct qrwlock *lock, int cnts)
-{
-	/*
-	 * the big comment
-	 */
-	if (unlikely(in_interrupt())) {
-		/*
-		 * If not write-locked, insta-grant the reader
-		 */
-		if (!(cnts & _QW_LOCKED))
-			return;
-
-		/*
-		 * otherwise, wait for the writer to go away.
-		 */
-		atomic_cond_read_acquire(&lock->cnts, !(VAL & _QW_LOCKED));
-		return;
-	}
-
-	...
-}
-
-Which saves one load in some cases... not sure it's worth it though.
-
+Ok, please add an explanation to the commit log as to why you are
+changing the brightness levels
+like you did here. Thanks
