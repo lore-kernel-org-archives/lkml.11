@@ -2,130 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83890C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 05:31:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95E98C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 05:32:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240906AbiEKFbo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 01:31:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37886 "EHLO
+        id S238620AbiEKFcR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 01:32:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240294AbiEKFaf (ORCPT
+        with ESMTP id S229532AbiEKFcM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 01:30:35 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92110245C77;
-        Tue, 10 May 2022 22:29:45 -0700 (PDT)
-X-UUID: d2382189dd4b4fe8a38e3188572b15fa-20220511
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:7505f239-8e5a-4c67-a443-71c57204b4ec,OB:0,LO
-        B:0,IP:0,URL:8,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:8
-X-CID-META: VersionHash:faefae9,CLOUDID:edcc60b3-56b5-4c9e-8d83-0070b288eb6a,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: d2382189dd4b4fe8a38e3188572b15fa-20220511
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
-        (envelope-from <johnson.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 857401825; Wed, 11 May 2022 13:29:40 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Wed, 11 May 2022 13:29:39 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 11 May 2022 13:29:39 +0800
-Message-ID: <3dc832f47406c835ccdb0076edad58c180881134.camel@mediatek.com>
-Subject: Re: [PATCH v3 0/4] PM / devfreq: Add cpu based scaling support to
- passive governor
-From:   Johnson Wang <johnson.wang@mediatek.com>
-To:     Chanwoo Choi <cwchoi00@gmail.com>, <linux-pm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <mka@chromium.org>, <wenst@chromium.org>,
-        <jia-wei.chang@mediatek.com>, <andrew-sh.cheng@mediatek.com>,
-        <hsinyi@chromium.org>, <saravanak@google.com>,
-        <cw00.choi@samsung.com>, <myungjoo.ham@samsung.com>,
-        <kyungmin.park@samsung.com>
-Date:   Wed, 11 May 2022 13:29:38 +0800
-In-Reply-To: <20220509120337.92472-1-cw00.choi@samsung.com>
-References: <20220509120337.92472-1-cw00.choi@samsung.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Wed, 11 May 2022 01:32:12 -0400
+Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9925A1D0E0;
+        Tue, 10 May 2022 22:32:10 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id 3EE253200958;
+        Wed, 11 May 2022 01:32:07 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Wed, 11 May 2022 01:32:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm1; t=1652247126; x=1652333526; bh=QqiWjdgXow
+        1Gr1FgSKtpsEjOWoGYjEoKm4LJaqxtXFc=; b=MroINcgE/mOl9bRaitB3C7IUg0
+        TTe5ch1j+jROCjp9Dh9OHm1GQFsQu/b7Fba1utdqlji3BxHk2LnQ0ZeoBXet6ZDs
+        +iF1a2s2qkxAe9Fk2ttJl/03jJs973I7K2/9Iqo4m7vDTebqYPEdA4x5eACz99ok
+        e6iTSl6/sQRcn6M2IcWYI93A0vIZwdNhSZ1diWgaZMPDVlOv1La8MZRDaoKRDd1Q
+        ur3JPIBo3l7DsiiIRLho2EBT8FdRt7GGgzdJzJh5rKuaPs70+DAtzFYKuwHIo+jG
+        Ph9/N5NG01BYw33AcVOPYxpP2+PQivyWvT63QcVFuyKhXnwKptsumQkOjWKw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1652247126; x=
+        1652333526; bh=QqiWjdgXow1Gr1FgSKtpsEjOWoGYjEoKm4LJaqxtXFc=; b=o
+        yUh4AmxkqM/0NaLDH5WSzGM3Zz/LfTJ9civsecTmovFXtPYBN1GmTc1tyK3bbzTJ
+        Wl6whsC7405J63ruIXZQpb3WVj+vany00lZSSZQVDjHR5EVKP2v5Prw8n4CdNMwG
+        RoTUpK8oJdlz15z4PjGCwWoFrNJMnjoZG519jNI0dHFC0quvaFKO6eV44zU+OnNp
+        cyIGuOqFV8Zuy+Hw1Fkb0NCtClbJguxH7bnyJvX8yzO5lrDes7t/NBtAHdq566wN
+        nOdCCI48peHXsfmi88DZB67Gvi/IP/bGnGsoBWXjumylKb4ihGh5MGaSQIGapBM3
+        zcmuvZQlP0kOuUcvYP0KQ==
+X-ME-Sender: <xms:Vkp7YlJOTtMIA0GjlRdU3XBWEHrMJpf4uLgy4_B3kiYCezgLu5Ev-g>
+    <xme:Vkp7YhIhQ-puP6hfLsv-urgVbppwU2yX28jlulwOtKa59c0TzKCEKwRTrRQQuQCWY
+    djIwyAN6uhYCw>
+X-ME-Received: <xmr:Vkp7YtuYQx7S5yI-Ld5a_riz-jBDnCGHv90yMAWZJw4c7-cYXbCvjMZsz83PxK0drDgl2CXV5RtuqBylFSG0r6oi2WpIj8Pq>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrgeeggdelgecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcu
+    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeehgedvve
+    dvleejuefgtdduudfhkeeltdeihfevjeekjeeuhfdtueefhffgheekteenucevlhhushht
+    vghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhh
+    drtghomh
+X-ME-Proxy: <xmx:Vkp7YmZD5LYK3ga4LY42UNVgRlwIvO9gk50olXIWJprZc7vwqQL-gQ>
+    <xmx:Vkp7YsYaCsYj8Ff5rrptou009Daa9ogfmLM9j8cuI7KPhw73EWLmhg>
+    <xmx:Vkp7YqDmyUn5atrgz1TqunmBHpGW-aBEQZLdp7bVyGOu5K432zBisg>
+    <xmx:Vkp7YhPsEywn1sX4nGl2lZ3PERMT_dkd3MxCzs4aZ_WgMCpHi_Twjw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 11 May 2022 01:32:05 -0400 (EDT)
+Date:   Wed, 11 May 2022 07:32:02 +0200
+From:   Greg KH <greg@kroah.com>
+To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build warnings after merge of the tty tree
+Message-ID: <YntKUn8AZKpLbBTp@kroah.com>
+References: <20220511075804.79c5b697@canb.auug.org.au>
+ <alpine.DEB.2.21.2205102341030.52331@angie.orcam.me.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.21.2205102341030.52331@angie.orcam.me.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-05-09 at 21:03 +0900, Chanwoo Choi wrote:
-> The devfreq passive governor has already supported the devfreq parent
-> device
-> for coupling the frequency change if some hardware have the
-> constraints
-> such as power sharing and so on.
+On Tue, May 10, 2022 at 11:46:26PM +0100, Maciej W. Rozycki wrote:
+> On Wed, 11 May 2022, Stephen Rothwell wrote:
 > 
-> Add cpu based scaling support to passive governor with required-opp
-> property.
-> It uses the cpufreq notifier to catch the frequency change timing of
-> cpufreq
-> and get the next frequency according to new cpu frequency by using
-> required-opp
-> property. It is based on patch[1] and then just code clean-up by
-> myself.
+> > After merging the tty tree, yesterday's linux-next build (htmldocs) produced
+> > these warnings:
 > 
-> Make the common code for both passive_devfreq and passive_cpufreq
-> parent type to remove the duplicate code.
+>  Umm, sorry about that.  I wasn't even aware files under Documentation/ 
+> are meant to be processed somehow other than through eyeballs nowadays!
 > 
-> [1] [RFC,v2] PM / devfreq: Add cpu based scaling support to
-> passive_governor
-> - https://lore.kernel.org/patchwork/patch/1101049/
-> 
-> Changes from v2:
-> : 
-> https://urldefense.com/v3/__https://patchwork.kernel.org/project/linux-pm/cover/20220507150145.531864-1-cw00.choi@samsung.com/__;!!CTRNKA9wMg0ARbw!x-hPdV1M41ovWuBCw3cVvayFBaqFZRCtLLqDHeX_iNnzvwmOKQYOVQeD9mBfi7n8okEj$
->  
-> - Drop the following patch ("PM / devfreq: passive: Update frequency
-> when start governor")
-> - Move p_data->this initialization into
-> cpufreq_passive_regiser_notifier()
-> 
-> Changes from v1:
-> : 
-> https://urldefense.com/v3/__https://patchwork.kernel.org/project/linux-pm/cover/20210617060546.26933-1-cw00.choi@samsung.com/__;!!CTRNKA9wMg0ARbw!x-hPdV1M41ovWuBCw3cVvayFBaqFZRCtLLqDHeX_iNnzvwmOKQYOVQeD9mBfiw3rUNcX$
->  
-> - Rename cpu_data variable to parent_cpu_data to avoid build fail
-> - Use for_each_possible_cpu macro when register cpufreq transition
-> notifier
-> - Add missing exception handling when
-> cpufreq_passive_register_notifier is failed
-> - Keep cpufreq_policy for posible cpus instead of NR_CPU in order to
-> avoid
->   the memory waste when NR_CPU is too high.
-> - Add reviewed-by tag of Matthias Kaehlcke for patch1
-> 
-> 
-> Chanwoo Choi (3):
->   PM / devfreq: Export devfreq_get_freq_range symbol within devfreq
->   PM / devfreq: passive: Reduce duplicate code when passive_devfreq
-> case
->   PM / devfreq: passive: Keep cpufreq_policy for possible cpus
-> 
-> Saravana Kannan (1):
->   PM / devfreq: Add cpu based scaling support to passive governor
-> 
->  drivers/devfreq/devfreq.c          |  20 +-
->  drivers/devfreq/governor.h         |  27 ++
->  drivers/devfreq/governor_passive.c | 400 ++++++++++++++++++++++++---
-> --
->  include/linux/devfreq.h            |  17 +-
->  4 files changed, 387 insertions(+), 77 deletions(-)
-> 
+>  I'll see how to fix the file up and will make the necessary corrections, 
+> but how shall I post the update?  A replacement patch or an incremental 
+> change?
 
-For this serie:
+Incremental change as I can't rebase my tree.
 
-Tested-by: Johnson Wang <johnson.wang@mediatek.com>
+thanks,
 
-
-BRs,
-Johnson Wang
-
+greg k-h
