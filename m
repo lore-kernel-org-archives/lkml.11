@@ -2,64 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 839DAC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 18:38:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 469C8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 18:39:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232209AbiEKSi5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 14:38:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52842 "EHLO
+        id S1346411AbiEKSjV (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 14:39:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240757AbiEKSiy (ORCPT
+        with ESMTP id S1346402AbiEKSjS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 14:38:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D65A22B3B8;
-        Wed, 11 May 2022 11:38:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Wed, 11 May 2022 14:39:18 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A78F22D62D
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 11:39:16 -0700 (PDT)
+Received: from zn.tnic (p5de8eeb4.dip0.t-ipconnect.de [93.232.238.180])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DC322B825E6;
-        Wed, 11 May 2022 18:38:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27B8FC340EE;
-        Wed, 11 May 2022 18:38:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652294331;
-        bh=zqtCXcatsQ6oru5GteLWJ80i2MWI/ZO4C3h0EgKR9Gc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=pFDfIuloX6eZIM9O7ibM1bEL2xfNWeHyINsNppS+RvnCEHfVOjmlvJ+OA3RcoDaaJ
-         luj23Sl7S94EQe8CA9XM0hjy++NA6dw5dqVj4HZqUXvhyFZYxwfSUeMSjXnKDIMU8m
-         Lx6SUg4mGtx/n+d1IBkmz/k1SsNQJQy+jeSjh3khy4lFrJRWd+xX+ZymJ4eBIqHo8e
-         iDwwCM70NL7LfEY+MJav4Jk90St/NLlqHA7TsQkGsCuhZ/jXKQJY3Cdndl4ZiLgxr1
-         G3kWfRavi//vtQgucO7nYKdE54bpVcb8Q519S4eTZh5aVMCQZ1g0WruOzpFcv+LGvB
-         Wuvqb+3NTR5+Q==
-Date:   Wed, 11 May 2022 13:38:48 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Jeffrey Hugo <quic_jhugo@quicinc.com>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, lorenzo.pieralisi@arm.com,
-        robh@kernel.org, kw@linux.com, bhelgaas@google.com,
-        jakeo@microsoft.com, dazhan@microsoft.com,
-        linux-hyperv@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] PCI: hv: Fix interrupt mapping for multi-MSI
-Message-ID: <20220511183848.GA799494@bhelgaas>
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 9BFA91EC0535;
+        Wed, 11 May 2022 20:39:11 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1652294351;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=6dzFyppSmZn6zt5heGuDm0dKQ5cdEeD5FQNjKL9s0ew=;
+        b=eohVfNTC5a4FhpqxxYH2HNi614lMl9DCVCoCie+4F7UgiCrkFP/1OQddkg7WQctGI71OAQ
+        I4gEojz9hXx41fL2Fm/CdHzI618GsGRkgI22pDrv+I7yUgZdL6NIjuG4cQq1yV2mApycXv
+        1gov8IS5ZZ9NaHWHVWY23ie0RbykaLE=
+Date:   Wed, 11 May 2022 20:39:18 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Florian Weimer <fweimer@redhat.com>
+Cc:     Andy Lutomirski <luto@kernel.org>, x86@kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>
+Subject: Re: [PATCH] x86/vsyscall: Remove CONFIG_LEGACY_VSYSCALL_EMULATE
+Message-ID: <YnwC1qOVmh6zOwrU@zn.tnic>
+References: <898932fe61db6a9d61bc2458fa2f6049f1ca9f5c.1652290558.git.luto@kernel.org>
+ <87o803dijt.fsf@oldenburg.str.redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220511183648.GA798565@bhelgaas>
+In-Reply-To: <87o803dijt.fsf@oldenburg.str.redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 01:36:51PM -0500, Bjorn Helgaas wrote:
-> In the subject, "Fix interrupt mapping ..." is too general.  Almost
-> all patches "fix" something, so all we learn is that this is something
-> to do with multi-MSI.  It's better if you can say something specific,
-> like the fact that you now ensure that multi-MSI vectors are aligned
-> and consecutive.
+On Wed, May 11, 2022 at 08:35:02PM +0200, Florian Weimer wrote:
+> Regarding the mechanics, is it customary to remove the actual code (the
+> EMULATE enum constant) in later commits?
 
-I see that the message threading was messed up (ideally each of the
-patches would be a response to the [0/2] cover letter), so I didn't
-see that this has already been applied.  Sorry for the noise.
+It is still needed for
 
-Bjorn
+"Emulate mode is deprecated and can only be enabled using the kernel
+command line."
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
