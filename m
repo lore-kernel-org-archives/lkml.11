@@ -2,105 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59166C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 19:31:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E150AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 19:31:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346998AbiEKTbX (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 15:31:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60090 "EHLO
+        id S245560AbiEKTbm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 15:31:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347010AbiEKTac (ORCPT
+        with ESMTP id S1343611AbiEKTbL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 15:30:32 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3342F22A89D;
-        Wed, 11 May 2022 12:30:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1652297398;
-        bh=98QCBOcQyax0rGKmfG1kKzuqMy3EQ5X/r9nNeTERjGw=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=Lt1AvZjrVOMyp25OcqHr85pprH8GUfXFLfSZnurYomAjLxyJD1MRCX8CHKoKnfsnS
-         CApFQsNA1JkKMErq0wcA/GfAQBYoHWpmVspFvcYHnvPhYKYH1Ea/tTcIfY7jWzqx7P
-         VauliNMZdt+YBkmNuq8di4kLL8WU6UuqlHmV9/aE=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.0.33] ([46.223.3.12]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MFsYx-1nZEYz2JbD-00HMzQ; Wed, 11
- May 2022 21:29:58 +0200
-Subject: Re: [PATCH v4 2/6] tpm, tpm_tis: Claim and release locality only once
-To:     Jarkko Sakkinen <jarkko@kernel.org>
-Cc:     peterhuewe@gmx.de, jgg@ziepe.ca, stefanb@linux.vnet.ibm.com,
-        linux@mniewoehner.de, linux-integrity@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lukas@wunner.de,
-        p.rosenberger@kunbus.com, Lino Sanfilippo <l.sanfilippo@kunbus.com>
-References: <20220509080559.4381-1-LinoSanfilippo@gmx.de>
- <20220509080559.4381-3-LinoSanfilippo@gmx.de> <YnudhZZGXf87U3bd@kernel.org>
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Message-ID: <f576a24d-d175-0153-9992-f6dd80d57b62@gmx.de>
-Date:   Wed, 11 May 2022 21:29:57 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Wed, 11 May 2022 15:31:11 -0400
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A34960D6
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 12:31:09 -0700 (PDT)
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
+        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <heiko@sntech.de>)
+        id 1nos1m-0004fe-Lr; Wed, 11 May 2022 21:29:42 +0200
+From:   Heiko Stuebner <heiko@sntech.de>
+To:     palmer@dabbelt.com, paul.walmsley@sifive.com, aou@eecs.berkeley.edu
+Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        wefu@redhat.com, liush@allwinnertech.com, guoren@kernel.org,
+        atishp@atishpatra.org, anup@brainfault.org, drew@beagleboard.org,
+        hch@lst.de, arnd@arndb.de, wens@csie.org, maxime@cerno.tech,
+        gfavor@ventanamicro.com, andrea.mondelli@huawei.com,
+        behrensj@mit.edu, xinhaoqu@huawei.com, mick@ics.forth.gr,
+        allen.baum@esperantotech.com, jscheid@ventanamicro.com,
+        rtrauben@gmail.com, samuel@sholland.org, cmuellner@linux.com,
+        philipp.tomsich@vrull.eu, Heiko Stuebner <heiko@sntech.de>
+Subject: [PATCH 11/12] riscv: don't use global static vars to store alternative data
+Date:   Wed, 11 May 2022 21:29:20 +0200
+Message-Id: <20220511192921.2223629-12-heiko@sntech.de>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220511192921.2223629-1-heiko@sntech.de>
+References: <20220511192921.2223629-1-heiko@sntech.de>
 MIME-Version: 1.0
-In-Reply-To: <YnudhZZGXf87U3bd@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:2YM3NlkX/0sMI9zCc5RY9WsR+sxWJN0JqQrDj/YQAw0LZLxmRJn
- rY4U4x7LZQZf6s0BzWRcDDv1qH2TZ5TnzkcqBCFG6vTO7tADVUDTp4L2NjT4Z6ZYiwQW3gF
- pSfzJ3EosYa4IU5B70bFu5AC3vXEBPpk28KGklYf9P5d8sjj93ERAnNUSqjwCo8tPA+Ok7u
- 2ISBD5k61TChIUtU77MOA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:zVd0z/W2Nv0=:Rrx1YWBizcmRz3bHpDaJsH
- 1ZBBQIvNHn6VlEOjcIVdXoeA1LdUrBsp5zjreoPVJkoRZoQL6r73djGhy3clnwDWhrTlzKB+x
- ajCkdzhzp3sEE6H5C9F5/gDfvttu0OkGmFHtBZOEkzcl/RpvwO7D7lcrDidScg6w598E0WF+3
- 0NvLCRZw/xVIPuU7L4pe/mSbpicdwAGVnge+tgW236lHJQeNYyjhWgXa9ZTsApFHSPgfzI+In
- JWyMSBQScSPasWnUXVi+1W+S8t5KhRRw+qO5PnN0TZ0cg2fTTFZj+arMN2MTEr2ZGX9V9DNCY
- /rBmfnR1NPaXMIxanTMxvv+KxatY4BEAA/xwJT4HkPQMEvcjCN0odNvtHMSvV0om1tpbpPxwD
- p7ujpnbuRFWRrCTeCM3InK2rs0ax6eokX4/hNB035MJuudkIXISGyjTDFsDmC5c2lQ7KSQ/pH
- VEpTbyMJq3lChQ0Z7KhLufoEcF9GMEe/7wCgEolyXSFXiRStoffd7hU93nl/i0ES1yPUXLqbW
- PvBmToubPg74cS5OaQzABqneV1f6kiBcbLCDKeacFPsDQXG/PKcr02r7Z0YnZSWag3h4PZMGG
- 0isuJiu5lC5HReqVoUNv55pfwOiK2UkOFnvMdJnQd4buFYEozByjasJ/aMK33oo+WKvjuzt/0
- ANljAWK/iwfaR1WYCaD1J8ta0uazkgQZPnbNkWlNqoIsjq/04WDJBJZm3Jb3Xmnoh9uuE4PxU
- lQvy19UD6R+jqJwZPdoUWCMo0rkHHK/3uqr1Jiru5Fnikw2bLeQOLdwPWrjd5UJgFVorEMsyw
- nkaKulBX2MUP2qlyeav0THQTOQVE9AKq4QFD8iWkB/zrxXUEopqd7gMYLdJJ1lqsKxqSq0hRT
- ty8MWdziaDvib4VjeUp3Bvhs82eL5mGrYzwoAypl12GvSvewU8zIDGutBCADbtBP0CAruvqbi
- HHnynzQrsGLqPbsP+P3ASOphbY4gA1fGRQyhJMPL2ImuXqkX9+DrM0uygEPIxZXWhN+x8Bdrn
- 5CR6kJpumQjqJ0gVX+TTElTkm737Fc110nTSak7w9QSXpj9S5nQUcYAY7hjSZhapG4oF4ycNf
- qrWvWXuLeAG8G02hp7rgxyMRKPmh8HSX06izxMD2qd5j/Fvmj5Hv4I3AA==
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Right now the code uses a global struct to store vendor-ids
+and another global variable to store the vendor-patch-function.
 
+There exist specific cases where we'll need to patch the kernel
+at an even earlier stage, where trying to write to a static
+variable might actually result in hangs.
 
-On 11.05.22 at 13:27, Jarkko Sakkinen wrote:
-> On Mon, May 09, 2022 at 10:05:55AM +0200, Lino Sanfilippo wrote:
->> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
->>
->> It is not necessary to claim and release the default locality for each =
-TPM
->> command. Instead claim the locality once at driver startup and release =
-it
->> at driver shutdown.
->>
->> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
->
-> We are doing what we're being because of Intel TXT:
->
-> https://lore.kernel.org/tpmdd-devel/20170315055738.11088-1-jarkko.sakkin=
-en@iki.fi/
->
-> Unfortunately cannot accept this change.
->
+Also collecting the vendor-information consists of 3 sbi-ecalls
+(or csr-reads) which is pretty negligible in the context of
+booting a kernel.
 
-I do not see how the patch affects the crb code since the only changes con=
-cern the
-tpm_class_ops of the tis core. AFAICS crb uses its own set of tpm_class_op=
-s
-which are still used to claim and release the locality.
+So rework the code to not rely on static variables and instead
+collect the vendor-information when a round of alternatives is
+to be applied.
 
-Or do I miss something?
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Reviewed-by: Guo Ren <guoren@kernel.org>
+Reviewed-by: Philipp Tomsich <philipp.tomsich@vrull.eu>
+---
+ arch/riscv/kernel/alternative.c | 51 ++++++++++++++++-----------------
+ 1 file changed, 24 insertions(+), 27 deletions(-)
 
-Regards,
-Lino
-
+diff --git a/arch/riscv/kernel/alternative.c b/arch/riscv/kernel/alternative.c
+index e6c9de9f9ba6..27f722ae452b 100644
+--- a/arch/riscv/kernel/alternative.c
++++ b/arch/riscv/kernel/alternative.c
+@@ -16,41 +16,35 @@
+ #include <asm/sbi.h>
+ #include <asm/csr.h>
+ 
+-static struct cpu_manufacturer_info_t {
++struct cpu_manufacturer_info_t {
+ 	unsigned long vendor_id;
+ 	unsigned long arch_id;
+ 	unsigned long imp_id;
+-} cpu_mfr_info;
++	void (*vendor_patch_func)(struct alt_entry *begin, struct alt_entry *end,
++				  unsigned long archid, unsigned long impid,
++				  unsigned int stage);
++};
+ 
+-static void (*vendor_patch_func)(struct alt_entry *begin, struct alt_entry *end,
+-				 unsigned long archid, unsigned long impid,
+-				 unsigned int stage) __initdata_or_module;
+-
+-static inline void __init riscv_fill_cpu_mfr_info(void)
++static void __init_or_module riscv_fill_cpu_mfr_info(struct cpu_manufacturer_info_t *cpu_mfr_info)
+ {
+ #ifdef CONFIG_RISCV_M_MODE
+-	cpu_mfr_info.vendor_id = csr_read(CSR_MVENDORID);
+-	cpu_mfr_info.arch_id = csr_read(CSR_MARCHID);
+-	cpu_mfr_info.imp_id = csr_read(CSR_MIMPID);
++	cpu_mfr_info->vendor_id = csr_read(CSR_MVENDORID);
++	cpu_mfr_info->arch_id = csr_read(CSR_MARCHID);
++	cpu_mfr_info->imp_id = csr_read(CSR_MIMPID);
+ #else
+-	cpu_mfr_info.vendor_id = sbi_get_mvendorid();
+-	cpu_mfr_info.arch_id = sbi_get_marchid();
+-	cpu_mfr_info.imp_id = sbi_get_mimpid();
++	cpu_mfr_info->vendor_id = sbi_get_mvendorid();
++	cpu_mfr_info->arch_id = sbi_get_marchid();
++	cpu_mfr_info->imp_id = sbi_get_mimpid();
+ #endif
+-}
+-
+-static void __init init_alternative(void)
+-{
+-	riscv_fill_cpu_mfr_info();
+ 
+-	switch (cpu_mfr_info.vendor_id) {
++	switch (cpu_mfr_info->vendor_id) {
+ #ifdef CONFIG_ERRATA_SIFIVE
+ 	case SIFIVE_VENDOR_ID:
+-		vendor_patch_func = sifive_errata_patch_func;
++		cpu_mfr_info->vendor_patch_func = sifive_errata_patch_func;
+ 		break;
+ #endif
+ 	default:
+-		vendor_patch_func = NULL;
++		cpu_mfr_info->vendor_patch_func = NULL;
+ 	}
+ }
+ 
+@@ -63,14 +57,19 @@ static void __init_or_module _apply_alternatives(struct alt_entry *begin,
+ 						 struct alt_entry *end,
+ 						 unsigned int stage)
+ {
++	struct cpu_manufacturer_info_t cpu_mfr_info;
++
++	riscv_fill_cpu_mfr_info(&cpu_mfr_info);
++
+ 	riscv_cpufeature_patch_func(begin, end, stage);
+ 
+-	if (!vendor_patch_func)
++	if (!cpu_mfr_info.vendor_patch_func)
+ 		return;
+ 
+-	vendor_patch_func(begin, end,
+-			  cpu_mfr_info.arch_id, cpu_mfr_info.imp_id,
+-			  stage);
++	cpu_mfr_info.vendor_patch_func(begin, end,
++				   cpu_mfr_info.arch_id,
++				   cpu_mfr_info.imp_id,
++				   stage);
+ }
+ 
+ void __init apply_boot_alternatives(void)
+@@ -78,8 +77,6 @@ void __init apply_boot_alternatives(void)
+ 	/* If called on non-boot cpu things could go wrong */
+ 	WARN_ON(smp_processor_id() != 0);
+ 
+-	init_alternative();
+-
+ 	_apply_alternatives((struct alt_entry *)__alt_start,
+ 			    (struct alt_entry *)__alt_end,
+ 			    RISCV_ALTERNATIVES_BOOT);
+-- 
+2.35.1
 
