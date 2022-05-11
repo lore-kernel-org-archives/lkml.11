@@ -2,141 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1573FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 19:16:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6DA1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 19:17:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346725AbiEKTQQ (ORCPT
+        id S1346729AbiEKTRn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 15:16:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41654 "EHLO
+        Wed, 11 May 2022 15:17:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242629AbiEKTQJ (ORCPT
+        with ESMTP id S242629AbiEKTRl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 15:16:09 -0400
-Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF02E2497F;
-        Wed, 11 May 2022 12:16:03 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id E434F32008FA;
-        Wed, 11 May 2022 15:15:59 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Wed, 11 May 2022 15:16:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stwcx.xyz; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; t=1652296559; x=1652382959; bh=uR1UqOSmk8
-        pEMKPCLyKsAhbJdVyUpDr+WJgxE/2DLik=; b=K2KdYiDqASFoaViNgGxA21rYyO
-        oQ3PBAAsNzLo4rhEcmnqsEvTqunBjKJn0soV6vJ8p64rBwGbljOGzrBqg6mWapOy
-        dobg2WaPcuUGOiIotJKb3Ga34S0JQdVu9QzR/5GBFphrMtFoBqqs4V/qnaFAzjYo
-        cKTvv7BY9CZ8XsaW5bzDa/5gvXbi+OZwWLUZTGFL7Pa05gRbnp2j94cDyBjpaS1J
-        pBZvufJl4JHnyscSeT2E6uvqaWa5zj2RHlmxwRG/HBZI8yl16Wll0yoh0v5Pn8o/
-        YFoK6gNM7XYkXWTCA6F1O1ihqyCTqM3awncfKeqivgJp7zBP5DWBXkO99uJQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1652296559; x=
-        1652382959; bh=uR1UqOSmk8pEMKPCLyKsAhbJdVyUpDr+WJgxE/2DLik=; b=u
-        6yYvWA2Iou103Gdtfgum2YuMD+Ic99qGCRkXeTqw0ma4slv/+V5Ds2MmoObjBUww
-        kymv4/GA28FIEGtTuThp70cLJKog21mlPFOU6pn2WhWZIr6gWrrshnMP32Nxqz2T
-        BG6LdiZJW7hSvkhhGI8R/7hHoFe8Rm5i4R905UM+AaUHOniQgsGBByWpmBYburto
-        6rkNIoVGLf8pb3A5aOdfrcUknWhfYrfKeEexhRLKaYjcvkPcCyq1tkbAcESa4CST
-        N8Ft1HrZQLbSSG+CxnnYVjcfG3iaUOJ5q385le9J6CIHG/5AM2cywjuBd2212B1k
-        qSLaR7CBOKoWx1Z0GMong==
-X-ME-Sender: <xms:bgt8YsWM_VJtAE4nZYsHBBstAuFjykkfgCewtGyTnoQVoBhIsjhwEg>
-    <xme:bgt8YgkKAAbANkR-JXdytbXTToau8IRN-JJST1Xw7GamMkKMno9UyTbLQt9kW1K99
-    LhPnhUIMXhRJEKj2PA>
-X-ME-Received: <xmr:bgt8Yga0tJz-groxhW0sf670pA2OeCAObsi5Cp-x0BD6GZgpqaBvqI5BFkRZATZGO_ctZVZ_t16X2TZSnyaale3wnRykqqgEt8I>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrgeehgddufeduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    gfrhhlucfvnfffucdludejmdenucfjughrpeffhffvvefukfhfgggtuggjsehgtderredt
-    tddvnecuhfhrohhmpefrrghtrhhitghkucghihhllhhirghmshcuoehprghtrhhitghkse
-    hsthiftgigrdighiiiqeenucggtffrrghtthgvrhhnpeehfeejheeftdejiedvfeekffeh
-    ledukeduleelffekgfdtleduledvtdegtdehkeenucevlhhushhtvghrufhiiigvpedtne
-    curfgrrhgrmhepmhgrihhlfhhrohhmpehprghtrhhitghksehsthiftgigrdighiii
-X-ME-Proxy: <xmx:bgt8YrV2GYH1XD2qnzzR7pCNnjN3r0maDoqBi1bQA-nAB4qLaBjn2A>
-    <xmx:bgt8YmntnXkH6NCuyl9-8XFhCDCLPUIvRtpFrpJoNwg1Qsi6-Wu3iA>
-    <xmx:bgt8YgcIPReim2vby8WDDhNs_72a1wYyHNnUFSZeBEz8H2YnSEK0XQ>
-    <xmx:bwt8YkatK2K9uVgK-OZ2i9N8kemoCHSBVNe9WAkphGl-vd4wWDk18w>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 11 May 2022 15:15:58 -0400 (EDT)
-Date:   Wed, 11 May 2022 14:15:56 -0500
-From:   Patrick Williams <patrick@stwcx.xyz>
-To:     Joel Stanley <joel@jms.id.au>
-Cc:     Potin Lai <potin.lai.pt@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 0/6] ARM: dts: aspeed: bletchley: update dts file base on
- DVT schematic
-Message-ID: <YnwLbOOq3MnfKaX0@heinlein.stwcx.org.github.beta.tailscale.net>
-References: <20220509151118.4899-1-potin.lai.pt@gmail.com>
- <CACPK8XfXbay7u5kMDgMoyDTO_Le2i4okNUG8sb8_NDepbPRjxA@mail.gmail.com>
+        Wed, 11 May 2022 15:17:41 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E353D493
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 12:17:39 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id w24so3717460edx.3
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 12:17:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=m0rLYZTGM9tABUfYW7kAK/fqq3Ax7YNevFHH/XCjFGs=;
+        b=eCbRkCpG+1uv8o7qRy4S8ofMtbzrfrNObimViXJYOfvi54JNTAr6JFhhlnpgtpAcS+
+         VN1OH3CnIDFz9Ap8QJJbmVusIA88+j05i4dmbpolhuHRtJjOf6pV7NrV6W8AIKtloJuO
+         Epo1XPPLAfd3d4t/rIpKYoMleVpcQa62xi+gI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=m0rLYZTGM9tABUfYW7kAK/fqq3Ax7YNevFHH/XCjFGs=;
+        b=L9JtPLpzeoximmVC2GzimFBO8hk1UkWKpTcOqrStYgyfBFRxvFu9nPJOv600CTMWKr
+         9eDng2enM0sCBaVD2XjCqDSEP3Gv4rfa4KdT5s1rJRNx4AI+thCk8ge7mi9KvdZLdvUR
+         66COKGeq+zLn3jOY8B2T2EiHwdAXwTQg/YZLHYMUBT9cc+EI0f7YbWx+hKbbF1L8id/Q
+         2x1lqzeDgtpv8SqCHfU9lKJLWueM1xPq96GrGMwD3lA6iilyjTCvp2ypyb7xITaXAhV8
+         Y1OuwjuKMn9UbI7g1g4AuX/gODEbLx54E4chxguk4tle3G8VT+GfRAt0aLeA9tCb6smZ
+         L61Q==
+X-Gm-Message-State: AOAM533MEugwkFFCLRoJPsr3ra64dPfz/1y304/thaAy4DXCEYsdOu8x
+        nHkc27qqXdNGM0LxuTyB/LLdaEl0SNS4ceElRVw=
+X-Google-Smtp-Source: ABdhPJxPbkUXEOcWc6CxCHwFmjYe4sg8Oogrm+XfoPnYE12Hd5DuXzdlTAA7tX+Xg6uuHpq9oyn4Aw==
+X-Received: by 2002:a05:6402:1941:b0:413:2b5f:9074 with SMTP id f1-20020a056402194100b004132b5f9074mr30455131edz.414.1652296657945;
+        Wed, 11 May 2022 12:17:37 -0700 (PDT)
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com. [209.85.221.51])
+        by smtp.gmail.com with ESMTPSA id j23-20020a1709064b5700b006f3ef214e6esm1272869ejv.212.2022.05.11.12.17.37
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 May 2022 12:17:37 -0700 (PDT)
+Received: by mail-wr1-f51.google.com with SMTP id v12so4270299wrv.10
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 12:17:37 -0700 (PDT)
+X-Received: by 2002:a5d:6dad:0:b0:20c:4dc1:e247 with SMTP id
+ u13-20020a5d6dad000000b0020c4dc1e247mr24044515wrs.274.1652296354621; Wed, 11
+ May 2022 12:12:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="13cpD+Gj1qD2RKVb"
-Content-Disposition: inline
-In-Reply-To: <CACPK8XfXbay7u5kMDgMoyDTO_Le2i4okNUG8sb8_NDepbPRjxA@mail.gmail.com>
+References: <20220510070140.45407-1-tomeu.vizoso@collabora.com>
+ <20220510141329.54414-1-tomeu.vizoso@collabora.com> <CAPM=9tzLR-wsLhg2ikGjoK06s-ju5XWa1rtPPiUpN=pwD1vgtA@mail.gmail.com>
+ <CAHk-=wg8YgH1h3wrm9CtXff7rSewa+NE0Z5upb1GOE8XiTL9HA@mail.gmail.com>
+ <CAF6AEGusO9XAqHNatJLgV+wpVoyyLg1vHtUsnSkAxJeV7n3WNg@mail.gmail.com> <CAHk-=wjbE0f2AGroB1Hy=fx2fh7cRpS0wNdB46Ybk14Mb0b5Jw@mail.gmail.com>
+In-Reply-To: <CAHk-=wjbE0f2AGroB1Hy=fx2fh7cRpS0wNdB46Ybk14Mb0b5Jw@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 11 May 2022 12:12:18 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjy4DY_ya8TBs9W2wLWHibBiHMQW2T43DQR1SGRkqD=gw@mail.gmail.com>
+Message-ID: <CAHk-=wjy4DY_ya8TBs9W2wLWHibBiHMQW2T43DQR1SGRkqD=gw@mail.gmail.com>
+Subject: Re: Adding CI results to the kernel tree was Re: [RFC v2] drm/msm:
+ Add initial ci/ subdirectory
+To:     Rob Clark <robdclark@gmail.com>
+Cc:     Dave Airlie <airlied@gmail.com>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Corbet <corbet@lwn.net>, Sean Paul <sean@poorly.run>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        freedreno <freedreno@lists.freedesktop.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, May 11, 2022 at 12:08 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> The kernel tree might have just the expected *failures* listed, if
+> there are any. Presumably the ci tree has to have the expected results
+> anyway, so what's the advantage of listing non-failures?
 
---13cpD+Gj1qD2RKVb
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+.. put another way: I think a list of "we are aware that these
+currently fail" is quite reasonable for a development tree, maybe even
+with a comment in the commit that created them about why they
+currently fail.
 
-On Wed, May 11, 2022 at 06:09:33AM +0000, Joel Stanley wrote:
-> On Mon, 9 May 2022 at 15:14, Potin Lai <potin.lai.pt@gmail.com> wrote:
-> >
-> > This patch series update Facebook Bletchley BMC devicetree base on DVT
-> > schematic.
-> >
-> > - EHCI: enable ehci0 for detecting and accessing usb device on sled
-> > - MDIO Bus: enable mdio0 for accessing switch registers
-> > - SPI2 Flash: switch spi driver back to aspeed-smc to improve performan=
-ce
-> > - EEPROM: add eeprom node on each sled
-> > - GPIO:
-> >   - add PCA9536 IOEPX node on each sled
-> >   - update gpio line names
->=20
-> These look fine to me.
->=20
-> Reviewed-by: Joel Stanley <joel@jms.id.au>
->=20
-> Patrick, did you want to review them before I merge?
+That also ends up being very nice if you fix a problem, and the fix
+commit might then remove the failure for the list, and that all makes
+perfect sense.
 
-Yes, also...
+But having just the raw output of "these are the expected CI results"
+that is being done and specified by some other tree entirely - that
+seems pointless and just noise to me. There's no actual reason to have
+that kind of noise - and update that kind of noise - that I really
+see.
 
-Reviewed-by: Patrick Williams <patrick@stwcx.xyz>
-
---=20
-Patrick Williams
-
---13cpD+Gj1qD2RKVb
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEBGD9ii4LE9cNbqJBqwNHzC0AwRkFAmJ8C2oACgkQqwNHzC0A
-wRklZRAAiA6+18+skbpmSRL9kIJ0YGdTR0eF9/lZlFT8e7QprxDuKZabiKsJN7GV
-Vby90wG4AGa7YT6TxkdRtLErxNMaKOVnWwQIMw+7Zdt7mwHYIfrS4Pv6763UfheA
-GEx8atnbs1F1dYRPv+fbfTqvX9cImLHUzMZ5ekXa10L5mhTGYggaQtfcsPgvMq8v
-NyeNzbwyBezF1v1LOiWdiHhmyv8DTSgueJ3vEbRYUWlkPcMzIgNTnnaIkZS2Yras
-6s+fDO6jn11mV10Fe5pGMFu5tYMYDUTnQZ27yu1c0XGZcAHp29NldSmp0OGLdsQo
-8tQ5rQSDekUTld9fJ6nLyAhimIRyNHyUj97l1g3jbtb4mDnCHObRu7rTK2b8v4hE
-THdyNtL59+IVE0hw6raXK7vXyyICrCoXNUu1ZON4Wu1FjrcDaReyuBKj6QcjHwzI
-dLuVRM9A10BYsSCx/g2W+7ZhbK6IyzLycyVVNMvmO4meOvuonBB9Q0D//BVQA6Ug
-1vZ9M6Oom158xAditHOjTzL8kR9TXYbMaCC/JBeLZ50TWYDpbDM0dhhL1EgUIPd1
-9oRuZJbImndgdA4leVyBbgUD4Xdg4rEyIvERnOfcJbXsGUwArrzVXp5UNdnG4txf
-5d+LVZBrFYuafH+sn961jtuX9D5TiJH40Ev7HZI29Z0xVj5+j3M=
-=3yWb
------END PGP SIGNATURE-----
-
---13cpD+Gj1qD2RKVb--
+                Linus
