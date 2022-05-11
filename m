@@ -2,103 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6609C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 09:26:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06FAEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 09:28:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240813AbiEKJ0Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 05:26:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47656 "EHLO
+        id S235409AbiEKJ2F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 05:28:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240576AbiEKJ0V (ORCPT
+        with ESMTP id S232031AbiEKJ2D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 05:26:21 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 434032A269
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 02:26:19 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KyqG90H87zGpg6;
-        Wed, 11 May 2022 17:23:29 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 11 May 2022 17:26:17 +0800
-Subject: Re: [PATCH] mm, compaction: fast_find_migrateblock() should return
- pfn in the target zone
-To:     Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>
-CC:     <akpm@linux-foundation.org>, <aquini@redhat.com>,
-        <ddutile@redhat.com>, <linux-kernel@vger.kernel.org>,
-        <linux-mm@kvack.org>, <mgorman@techsingularity.net>,
-        <vvghjk1234@gmail.com>
-References: <2c2900eb-886a-5bbe-f7c7-9d74a6399893@huawei.com>
- <20220511070710.5576-1-yamamoto.rei@jp.fujitsu.com>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <07e0ceb8-a637-b011-bbf6-ba760a0b12e4@huawei.com>
-Date:   Wed, 11 May 2022 17:26:16 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Wed, 11 May 2022 05:28:03 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 08E5547545;
+        Wed, 11 May 2022 02:28:01 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B71611FB;
+        Wed, 11 May 2022 02:28:00 -0700 (PDT)
+Received: from FVFF77S0Q05N (unknown [10.57.3.187])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C1EC73F73D;
+        Wed, 11 May 2022 02:27:56 -0700 (PDT)
+Date:   Wed, 11 May 2022 10:27:47 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, maz@kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        linux-gpio@vger.kernel.org,
+        Octavian Purdila <octavian.purdila@nxp.com>,
+        linux-kernel@vger.kernel.org, aou@eecs.berkeley.edu,
+        catalin.marinas@arm.com, deanbo422@gmail.com, green.hu@gmail.com,
+        guoren@kernel.org, jonas@southpole.se, kernelfans@gmail.com,
+        linux-arm-kernel@lists.infradead.org, linux@armlinux.org.uk,
+        nickhu@andestech.com, palmer@dabbelt.com, paul.walmsley@sifive.com,
+        shorne@gmail.com, stefan.kristiansson@saunalahti.fi,
+        tsbogend@alpha.franken.de, vgupta@kernel.org,
+        vladimir.murzin@arm.com, will@kernel.org,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH v2 17/17] irq: remove handle_domain_{irq,nmi}()
+Message-ID: <YnuBk5dP89w6lvhB@FVFF77S0Q05N>
+References: <20211026092504.27071-1-mark.rutland@arm.com>
+ <20211026092504.27071-18-mark.rutland@arm.com>
+ <20220506203242.GA1855@wunner.de>
+ <YnjWvbzn8ox+f2Y2@FVFF77S0Q05N>
+ <20220510121320.GA3020@wunner.de>
+ <Ynpzb5L53iGex14D@FVFF77S0Q05N>
+ <87a6bpov9u.ffs@tglx>
+ <YntynKK5Jjw2Q1rX@FVFF77S0Q05N>
+ <20220511085741.GA6558@wunner.de>
 MIME-Version: 1.0
-In-Reply-To: <20220511070710.5576-1-yamamoto.rei@jp.fujitsu.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220511085741.GA6558@wunner.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/5/11 15:07, Rei Yamamoto wrote:
-> On Wed, 11 May 2022 14:25:34 Miaohe Lin wrote:
->> On 2022/5/11 12:43, Rei Yamamoto wrote:
->>> Prevent returning a pfn outside the target zone in case that not
->>> aligned with pageblock boundary.
->>> Otherwise isolate_migratepages_block() would handle pages not in
->>> the target zone.
->>>
->>
->> IIUC, the sole caller isolate_migratepages will ensure the pfn won't outside
->> the target zone. So the below code change might not be necessary. Or am I miss
->> something ?
+On Wed, May 11, 2022 at 10:57:41AM +0200, Lukas Wunner wrote:
+> On Wed, May 11, 2022 at 09:23:56AM +0100, Mark Rutland wrote:
+> > On Wed, May 11, 2022 at 12:52:29AM +0200, Thomas Gleixner wrote:
+> > > +	/* USB interrupts are received in softirq (tasklet) context.
+> > > +	 * Switch to hardirq context to make genirq code happy.
+> > > +	 */
+> > > +	local_irq_save(flags);
+> > > +	__irq_enter_raw();
+> > > +
+> > >  	if (intdata & INT_ENP_PHY_INT_)
+> > > -		;
+> > > +		generic_handle_domain_irq(pdata->irqdomain, PHY_HWIRQ);
+> > 
+> > Agreed. IIUC everyone agrees the __irq_enter_raw() usage is a hack,
+> > but what's not clear is what we *should* do
+> > 
+> > I suspect that given we have generic_handle_irq_safe() for situations
+> > like this we should add a generic_handle_domain_irq_safe(), and use
+> > that in this driver?
+> > That way we can keep the `WARN_ON_ONCE(!in_hardirq())` in
+> > generic_handle_domain_irq().
 > 
-> While block_start_pfn is ensured, this variable is not used as the argument for 
-> isolate_migratepages_block():
->   -----
->   static isolate_migrate_t isolate_migratepages(struct compact_control *cc)
->   {
->   :
->           low_pfn = fast_find_migrateblock(cc);
->           block_start_pfn = pageblock_start_pfn(low_pfn);
->           if (block_start_pfn < cc->zone->zone_start_pfn)
->                   block_start_pfn = cc->zone->zone_start_pfn;  <--- block_start_pfn is ensured not outside 
->                                                                     the target zone
->   :
->           block_end_pfn = pageblock_end_pfn(low_pfn);
->   :
->           for (; block_end_pfn <= cc->free_pfn;
->                           fast_find_block = false,
->                           cc->migrate_pfn = low_pfn = block_end_pfn,
->                           block_start_pfn = block_end_pfn,
->                           block_end_pfn += pageblock_nr_pages) {
->   :
->                   if (isolate_migratepages_block(cc, low_pfn, block_end_pfn,  <--- low_pfn is passed as 
->                                                                                    the argument
-
-Sorry, I think you're right. And could you please add the runtime effect of this issue?
-
-Anyway, this patch looks good to me now. Thanks!
-
-Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
-
->                                                   isolate_mode))
->                           return ISOLATE_ABORT;
->   -----
+> Thomas applied 792ea6a074ae ("genirq: Remove WARN_ON_ONCE() in
+> generic_handle_domain_irq()") tonight:
 > 
-> So, the low_pfn passed to isolate_migratepages_block() can be outside the target zone.
-> 
-> Thanks,
-> Rei
-> .
-> 
+> http://git.kernel.org/tip/tip/c/792ea6a074ae
 
+Ah; I missed that. Sorry for the noise!
+
+> That allows me to drop the controversial __irq_enter_raw()
+> and thus unblock my smsc95xx series.
+> 
+> generic_handle_domain_irq_safe() would merely be a wrapper for
+> generic_handle_domain_irq() which disables local interrupts.
+> Then I wouldn't have to do that in smsc95xx.c.  IMHO that's a
+> cosmetic improvement, though I'll be happy to provide a patch
+> if desired?
+
+I think it's a nice-to-have, but I don't have a strong feelings about it, so I
+think we can forget about it for now unless Marc or Thomas want it.
+
+Thanks,
+Mark.
