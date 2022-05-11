@@ -2,251 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A64EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 11:47:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A061C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 11:47:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239043AbiEKLrI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 07:47:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55342 "EHLO
+        id S239559AbiEKLrN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 07:47:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238766AbiEKLrE (ORCPT
+        with ESMTP id S238942AbiEKLrH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 07:47:04 -0400
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B9CD237BAE;
-        Wed, 11 May 2022 04:46:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-type:in-reply-to:
-         references;
-        bh=vjcn2vGwiDQayBSUK5MyFT9LXkL0XQOenn0k4ZdaLhM=;
-        b=HCGEUTBqS5y/AWVzcxewO6i+TC9ckOpKQ67WnjztqtHr/+AOULK8eMWKOxKh8M1zbelhng0jUgYX4
-         wE9NF5PRLsi9YGurxDm+d8EhoCuuhr84eBpWdUHg1xIk79ZnVIMzQhFyON3inDmYbSBWqhH4QBe11W
-         3gZ+i+npYHPaQE4GhZpUzGFBxBd+lGTkhZpQCBhmzG4iqJ+ZKsXf3Wbr2zju+f7de3wtVM/mAPmtI2
-         vwgwPF/cSeefpt5CW/usiGHMn9RdcFV5zPAZEppxMmlua4ZNaFucxg90HCaMjxFF8EZbwFnY/sgZuS
-         PpxXXBGDr2G4WYtQjsHpXXvoLL7+aYg==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1422, Stamp: 3], Multi: [Enabled, t: (0.000009,0.024232)], BW: [Enabled, t: (0.000018,0.000001)], RTDA: [Enabled, t: (0.070885), Hit: No, Details: v2.39.0; Id: 15.52k9mu.1g2pf2ked.1utsm; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from h-e2.ddg ([85.143.252.66])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Wed, 11 May 2022 14:46:39 +0300
-Date:   Wed, 11 May 2022 14:46:27 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-To:     Conor.Dooley@microchip.com
-Cc:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
-        trix@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        system@metrotek.ru
-Subject: Re: [PATCH v11 2/3] fpga: microchip-spi: add Microchip MPF FPGA
- manager
-Message-ID: <20220511114627.txon23yigcaxzumx@h-e2.ddg>
-References: <20220507074304.11144-1-i.bornyakov@metrotek.ru>
- <20220507074304.11144-3-i.bornyakov@metrotek.ru>
- <bd5cb37b-ee56-f6d5-2d98-c08566b60728@microchip.com>
- <20220509171621.zk4owxwlngxjodgz@x260>
- <da1e5125-de6b-11a8-a52d-7e6e5f45ab70@conchuod.ie>
- <4b752147-1a09-a4af-bc5d-3b132b84ef49@conchuod.ie>
- <20220511081532.7gkmz3uumzxgwfaf@h-e2.ddg>
- <f1557776-36c9-083f-2101-db84ca9a9cfa@microchip.com>
+        Wed, 11 May 2022 07:47:07 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C28AA3CFD0;
+        Wed, 11 May 2022 04:47:05 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 7BF9521AC9;
+        Wed, 11 May 2022 11:47:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1652269624; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=p6NLoTKB8Il+u9luomrPN0D4Cl37+hCGKl4EXFFIq6Y=;
+        b=xi6Ne0MBikiNODvnogcM6BPEc2k8noY0D5ylkiRXqXwBm8nJMRWocrbqe0rPJphFkqjfau
+        rSwFRmC77XPStmXXv9C70S4mRJ6CXB1bRqBL5JZkbN9sFeuCeoiOEYFMKCEsI3tblhOBer
+        xHYOoNCRlXShV5dmLKqeDJgl354BEtI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1652269624;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=p6NLoTKB8Il+u9luomrPN0D4Cl37+hCGKl4EXFFIq6Y=;
+        b=QVvK59WM/NzTRyWeuSGzu6FNJYvr0pBDFcQEvtaNyRxK8lJcldArRgWdo/x6Yy/mB8EYJz
+        JDNjNAVD15tf0bAA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 51DDC13A76;
+        Wed, 11 May 2022 11:47:04 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id OqTQEjiie2JgUQAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Wed, 11 May 2022 11:47:04 +0000
+Message-ID: <2156c28c-9c9c-555e-ce19-933cdc8d5e74@suse.de>
+Date:   Wed, 11 May 2022 13:47:03 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f1557776-36c9-083f-2101-db84ca9a9cfa@microchip.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v5 3/7] fbdev: Restart conflicting fb removal loop when
+ unregistering devices
+Content-Language: en-US
+To:     Javier Martinez Canillas <javierm@redhat.com>,
+        linux-kernel@vger.kernel.org
+Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Helge Deller <deller@gmx.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+References: <20220511112438.1251024-1-javierm@redhat.com>
+ <20220511113039.1252432-1-javierm@redhat.com>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <20220511113039.1252432-1-javierm@redhat.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------b8iWiyNXe9nSujOxcj9Ba96G"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 11:36:33AM +0000, Conor.Dooley@microchip.com wrote:
-> On 11/05/2022 09:15, Ivan Bornyakov wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> > 
-> > On Tue, May 10, 2022 at 12:29:54PM +0100, Conor Dooley wrote:
-> >> On 09/05/2022 19:56, Conor Dooley wrote:
-> >>> On 09/05/2022 18:16, Ivan Bornyakov wrote:
-> >>>> On Mon, May 09, 2022 at 11:41:18AM +0000, Conor.Dooley@microchip.com wrote:
-> >>>>> Hey Ivan, one comment below.
-> >>>>> Thanks,
-> >>>>> Conor.
-> >>>>>
-> >>>>> On 07/05/2022 08:43, Ivan Bornyakov wrote:
-> >>>>>> ... snip ...
-> >>>>>> +static int mpf_read_status(struct spi_device *spi)
-> >>>>>> +{
-> >>>>>> +       u8 status, status_command = MPF_SPI_READ_STATUS;
-> >>>>>> +       struct spi_transfer xfer = {
-> >>>>>> +               .tx_buf = &status_command,
-> >>>>>> +               .rx_buf = &status,
-> >>>>>> +               .len = 1,
-> >>>>>> +       };
-> >>>>>> +       int ret = spi_sync_transfer(spi, &xfer, 1);
-> >>>>>> +
-> >>>>>> +       if ((status & MPF_STATUS_SPI_VIOLATION) ||
-> >>>>>> +           (status & MPF_STATUS_SPI_ERROR))
-> >>>>>> +               ret = -EIO;
-> >>>>>> +
-> >>>>>> +       return ret ? : status;
-> >>>>>> +}
-> >>>>>> +
-> >>>>>> ... snip ...
-> >>>>>> +
-> >>>>>> +static int poll_status_not_busy(struct spi_device *spi, u8 mask)
-> >>>>>> +{
-> >>>>>> +       int status, timeout = MPF_STATUS_POLL_TIMEOUT;
-> >>>>>> +
-> >>>>>> +       while (timeout--) {
-> >>>>>> +               status = mpf_read_status(spi);
-> >>>>>> +               if (status < 0 ||
-> >>>>>> +                   (!(status & MPF_STATUS_BUSY) && (!mask || (status & mask))))
-> >>>>>> +                       return status;
-> >>>>>> +
-> >>>>>> +               usleep_range(1000, 2000);
-> >>>>>> +       }
-> >>>>>> +
-> >>>>>> +       return -EBUSY;
-> >>>>>> +}
-> >>>>>
-> >>>>> Is there a reason you changed this from the snippet you sent me
-> >>>>> in the responses to version 8:
-> >>>>> static int poll_status_not_busy(struct spi_device *spi, u8 mask)
-> >>>>> {
-> >>>>>          u8 status, status_command = MPF_SPI_READ_STATUS;
-> >>>>>          int ret, timeout = MPF_STATUS_POLL_TIMEOUT;
-> >>>>>          struct spi_transfer xfer = {
-> >>>>>                  .tx_buf = &status_command,
-> >>>>>                  .rx_buf = &status,
-> >>>>>                  .len = 1,
-> >>>>>          };
-> >>>>>
-> >>>>>          while (timeout--) {
-> >>>>>                  ret = spi_sync_transfer(spi, &xfer, 1);
-> >>>>>                  if (ret < 0)
-> >>>>>                          return ret;
-> >>>>>
-> >>>>>                  if (!(status & MPF_STATUS_BUSY) && (!mask || (status & mask)))
-> >>>>>                          return status;
-> >>>>>
-> >>>>>                  usleep_range(1000, 2000);
-> >>>>>          }
-> >>>>>
-> >>>>>          return -EBUSY;
-> >>>>> }
-> >>>>>
-> >>>>> With the current version, I hit the "Failed to write bitstream
-> >>>>> frame" check in mpf_ops_write at random points in the transfer.
-> >>>>> Replacing poll_status_not_busy with the above allows it to run
-> >>>>> to completion.
-> >>>>
-> >>>> In my eyes they are equivalent, aren't they?
-> >>>>
-> >>>
-> >>> I was in a bit of a rush today & didn't have time to do proper
-> >>> debugging, I'll put some debug code in tomorrow and try to find
-> >>> exactly what is different between the two.
-> >>>
-> >>> Off the top of my head, since I don't have a board on me to test,
-> >>> the only difference I can see is that with the snippet you only
-> >>> checked if spi_sync_transfer was negative whereas now you check
-> >>> if it has a value at all w/ that ternary operator.
-> >>>
-> >>> But even that seems like it *shouldn't* be the problem, since ret
-> >>> should contain -errno or zero, right?
-> >>> Either way, I will do some digging tomorrow.
-> >>
-> >> I put a printk("status %x, ret %d", status, ret); into the failure
-> >> path of mpf_read_status() & it looks like a status 0xA is being
-> >> returned - error & ready? That seems like a very odd combo to be
-> >> getting back out of it. It shouldn't be dodgy driver/connection
-> >> either, b/c that's what I see if I connect my protocol analyser:
-> >> https://i.imgur.com/VbjgfCk.png
-> >>
-> >> That's mosi (hex), ss, sclk, mosi, miso (hex), miso in descending
-> >> order.
-> >>
-> >> I think what was happening was with the snippet you returned one
-> >> of the following: -EBUSY, ret (aka -errno) or status. Since status
-> >> is positive, the checks in mpf_spi_write.*() saw nothing wrong at
-> >> all and programming continued despite there being a problem.
-> >>
-> >> The new version fixes this by returning -EIO rather than status from
-> >> poll_status_not_busy().
-> >>
-> >> I wish I had a socketable PolarFire so I could investigate further,
-> >> but this looks like it might a be hardware issue somewhere on my
-> >> end?
-> >>
-> >> So ye, sorry for the noise and carry on! I'll try tofind what is to
-> >> blame for it.
-> >>
-> >> Thanks,
-> >> Conor.
-> >>
-> > 
-> > Hi, Conor.
-> > 
-> > I've just noticed in SPI-DirectC User Guide [1] ch. 9 SmartFusion2 and
-> > IGLOO2 SPI-Slave Programming Waveform Analysis, that hw status checked
-> > two times every time. Does MPF family also need double check hw status?
-> > Does adding second mpf_read_status() to poll_status_not_busy() routine
-> > help with your issue?
-> 
-> Hey Ivan,
-> Tried your suggestion. Previously I was failing quite consistently at
-> transfer 34 of 590k, and sometimes making it a further. With your
-> suggestion, I was making it significantly further (100k+) but still
-> running into some of the 0xA status.
-> Decided to move the double check into mpfs_read_status (see the below
-> diff) did not run into any the 0xA statuses.
-> It's worth pointing out that this is the *first* time I have seen
-> Flash Pro Express report that the FPGA array has been enabled after
-> programming!
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------b8iWiyNXe9nSujOxcj9Ba96G
+Content-Type: multipart/mixed; boundary="------------SyppV0A1JoTzJozJoTIp9Vb2";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: Javier Martinez Canillas <javierm@redhat.com>,
+ linux-kernel@vger.kernel.org
+Cc: dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+ Daniel Vetter <daniel.vetter@ffwll.ch>, Helge Deller <deller@gmx.de>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Message-ID: <2156c28c-9c9c-555e-ce19-933cdc8d5e74@suse.de>
+Subject: Re: [PATCH v5 3/7] fbdev: Restart conflicting fb removal loop when
+ unregistering devices
+References: <20220511112438.1251024-1-javierm@redhat.com>
+ <20220511113039.1252432-1-javierm@redhat.com>
+In-Reply-To: <20220511113039.1252432-1-javierm@redhat.com>
 
-That's good news!
+--------------SyppV0A1JoTzJozJoTIp9Vb2
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-> Seems like at the very least this (hacky) diff is not harmful?
-> Please give it a try yourself and check that things still work for
-> you.
-> 
-> diff --git a/drivers/fpga/microchip-spi.c b/drivers/fpga/microchip-spi.c
-> index 63b75dff2522..183cdfc05c4a 100644
-> --- a/drivers/fpga/microchip-spi.c
-> +++ b/drivers/fpga/microchip-spi.c
-> @@ -47,18 +47,30 @@ struct mpf_priv {
->   static int mpf_read_status(struct spi_device *spi)
->   {
->          u8 status, status_command = MPF_SPI_READ_STATUS;
-> +       u8 status_repeat;
->          struct spi_transfer xfer = {
->                  .tx_buf = &status_command,
->                  .rx_buf = &status,
->                  .len = 1,
->          };
-> +       struct spi_transfer xfer_repeat = {
-> +               .tx_buf = &status_command,
-> +               .rx_buf = &status_repeat,
-> +               .len = 1,
-> +       };
->          int ret = spi_sync_transfer(spi, &xfer, 1);
-> +       int ret_repeat = spi_sync_transfer(spi, &xfer_repeat, 1);
-> +
-> +       if (ret || ret_repeat)
-> +               return -EIO;
->   
-> -       if ((status & MPF_STATUS_SPI_VIOLATION) ||
-> -           (status & MPF_STATUS_SPI_ERROR))
-> +       if (status != status_repeat)
-> +               printk("status disagreement %x %x", status, status_repeat);
-> +       if ((status_repeat & MPF_STATUS_SPI_VIOLATION) ||
-> +           (status_repeat & MPF_STATUS_SPI_ERROR))
->                  ret = -EIO;
->   
-> -       return ret ? : status;
-> +       return ret ?: status_repeat;
->   }
->   
->   static enum fpga_mgr_states mpf_ops_state(struct fpga_manager *mgr)
+SGkgSmF2aWVyDQoNCkFtIDExLjA1LjIyIHVtIDEzOjMwIHNjaHJpZWIgSmF2aWVyIE1hcnRp
+bmV6IENhbmlsbGFzOg0KPiBEcml2ZXJzIHRoYXQgd2FudCB0byByZW1vdmUgcmVnaXN0ZXJl
+ZCBjb25mbGljdGluZyBmcmFtZWJ1ZmZlcnMgcHJpb3IgdG8NCj4gcmVnaXN0ZXIgdGhlaXIg
+b3duIGZyYW1lYnVmZmVyLCBjYWxscyByZW1vdmVfY29uZmxpY3RpbmdfZnJhbWVidWZmZXJz
+KCkuDQo+IA0KPiBUaGlzIGZ1bmN0aW9uIHRha2VzIHRoZSByZWdpc3RyYXRpb25fbG9jayBt
+dXRleCwgdG8gcHJldmVudCBhIHJhY2VzIHdoZW4NCj4gZHJpdmVycyByZWdpc3RlciBmcmFt
+ZWJ1ZmZlciBkZXZpY2VzLiBCdXQgaWYgYSBjb25mbGljdGluZyBmcmFtZWJ1ZmZlcg0KPiBk
+ZXZpY2UgaXMgZm91bmQsIHRoZSB1bmRlcmxheWluZyBwbGF0Zm9ybSBkZXZpY2UgaXMgdW5y
+ZWdpc3RlcmVkIGFuZCB0aGlzDQo+IHdpbGwgbGVhZCB0byB0aGUgcGxhdGZvcm0gZHJpdmVy
+IC5yZW1vdmUgY2FsbGJhY2sgdG8gYmUgY2FsbGVkLCB3aGljaCBpbg0KPiB0dXJuIHdpbGwg
+Y2FsbCB0byB0aGUgdW5yZWdpc3Rlcl9mcmFtZWJ1ZmZlcigpIHRoYXQgdGFrZXMgdGhlIHNh
+bWUgbG9jay4NCj4gDQo+IFRvIHByZXZlbnQgdGhpcywgYSBzdHJ1Y3QgZmJfaW5mby5mb3Jj
+ZWRfb3V0IGZpZWxkIHdhcyB1c2VkIGFzIGluZGljYXRpb24NCj4gdG8gdW5yZWdpc3Rlcl9m
+cmFtZWJ1ZmZlcigpIHdoZXRoZXIgdGhlIG11dGV4IGhhcyB0byBiZSBncmFiYmVkIG9yIG5v
+dC4NCj4gDQo+IEEgY2xlYW5lciBzb2x1dGlvbiBpcyB0byBkcm9wIHRoZSBsb2NrIGJlZm9y
+ZSBwbGF0Zm9ybV9kZXZpY2VfdW5yZWdpc3RlcigpDQo+IHNvIHVucmVnaXN0ZXJfZnJhbWVi
+dWZmZXIoKSBjYW4gdGFrZSBpdCB3aGVuIGNhbGxlZCBmcm9tIHRoZSBmYmRldiBkcml2ZXIs
+DQo+IGFuZCBqdXN0IGdyYWIgdGhlIGxvY2sgYWdhaW4gYWZ0ZXIgdGhlIGRldmljZSBoYXMg
+YmVlbiByZWdpc3RlcmVkIGFuZCBkbw0KPiBhIHJlbW92YWwgbG9vcCByZXN0YXJ0Lg0KPiAN
+Cj4gU2luY2UgdGhlIGZyYW1lYnVmZmVyIGRldmljZXMgd2lsbCBhbHJlYWR5IGJlIHJlbW92
+ZWQsIHRoZSBsb29wIHdvdWxkIGp1c3QNCj4gZmluaXNoIHdoZW4gbm8gbW9yZSBjb25mbGlj
+dGluZyBmcmFtZWJ1ZmZlcnMgYXJlIGZvdW5kLg0KPiANCj4gU3VnZ2VzdGVkLWJ5OiBEYW5p
+ZWwgVmV0dGVyIDxkYW5pZWwudmV0dGVyQGZmd2xsLmNoPg0KPiBTaWduZWQtb2ZmLWJ5OiBK
+YXZpZXIgTWFydGluZXogQ2FuaWxsYXMgPGphdmllcm1AcmVkaGF0LmNvbT4NCj4gUmV2aWV3
+ZWQtYnk6IERhbmllbCBWZXR0ZXIgPGRhbmllbC52ZXR0ZXJAZmZ3bGwuY2g+DQoNCkknZCBs
+aWtlIHRvIHNocmluayB0aGlzIHBhdGNoc2V0LiBUaGlzIGxvb2tzIGxpa2UgaXQgY2FuIGJl
+IG1lcmdlZCANCmltbWVkaWF0ZWx5Pw0KDQpCZXN0IHJlZ2FyZHMNClRob21hcw0KDQo+IC0t
+LQ0KPiANCj4gKG5vIGNoYW5nZXMgc2luY2UgdjEpDQo+IA0KPiAgIGRyaXZlcnMvdmlkZW8v
+ZmJkZXYvY29yZS9mYm1lbS5jIHwgMjIgKysrKysrKysrKysrKysrLS0tLS0tLQ0KPiAgIGlu
+Y2x1ZGUvbGludXgvZmIuaCAgICAgICAgICAgICAgIHwgIDEgLQ0KPiAgIDIgZmlsZXMgY2hh
+bmdlZCwgMTUgaW5zZXJ0aW9ucygrKSwgOCBkZWxldGlvbnMoLSkNCj4gDQo+IGRpZmYgLS1n
+aXQgYS9kcml2ZXJzL3ZpZGVvL2ZiZGV2L2NvcmUvZmJtZW0uYyBiL2RyaXZlcnMvdmlkZW8v
+ZmJkZXYvY29yZS9mYm1lbS5jDQo+IGluZGV4IGI0NDVhN2EwMGRlZi4uMmZkYTU5MTdjMjEy
+IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL3ZpZGVvL2ZiZGV2L2NvcmUvZmJtZW0uYw0KPiAr
+KysgYi9kcml2ZXJzL3ZpZGVvL2ZiZGV2L2NvcmUvZmJtZW0uYw0KPiBAQCAtMTU1NSw2ICsx
+NTU1LDcgQEAgc3RhdGljIHZvaWQgZG9fcmVtb3ZlX2NvbmZsaWN0aW5nX2ZyYW1lYnVmZmVy
+cyhzdHJ1Y3QgYXBlcnR1cmVzX3N0cnVjdCAqYSwNCj4gICB7DQo+ICAgCWludCBpOw0KPiAg
+IA0KPiArcmVzdGFydF9yZW1vdmFsOg0KPiAgIAkvKiBjaGVjayBhbGwgZmlybXdhcmUgZmJz
+IGFuZCBraWNrIG9mZiBpZiB0aGUgYmFzZSBhZGRyIG92ZXJsYXBzICovDQo+ICAgCWZvcl9l
+YWNoX3JlZ2lzdGVyZWRfZmIoaSkgew0KPiAgIAkJc3RydWN0IGFwZXJ0dXJlc19zdHJ1Y3Qg
+Kmdlbl9hcGVyOw0KPiBAQCAtMTU4NywxMiArMTU4OCwyMyBAQCBzdGF0aWMgdm9pZCBkb19y
+ZW1vdmVfY29uZmxpY3RpbmdfZnJhbWVidWZmZXJzKHN0cnVjdCBhcGVydHVyZXNfc3RydWN0
+ICphLA0KPiAgIAkJCQlwcl93YXJuKCJmYiVkOiBubyBkZXZpY2Ugc2V0XG4iLCBpKTsNCj4g
+ICAJCQkJZG9fdW5yZWdpc3Rlcl9mcmFtZWJ1ZmZlcihyZWdpc3RlcmVkX2ZiW2ldKTsNCj4g
+ICAJCQl9IGVsc2UgaWYgKGRldl9pc19wbGF0Zm9ybShkZXZpY2UpKSB7DQo+IC0JCQkJcmVn
+aXN0ZXJlZF9mYltpXS0+Zm9yY2VkX291dCA9IHRydWU7DQo+ICsJCQkJLyoNCj4gKwkJCQkg
+KiBEcm9wIHRoZSBsb2NrIGJlY2F1c2UgaWYgdGhlIGRldmljZSBpcyB1bnJlZ2lzdGVyZWQs
+IGl0cw0KPiArCQkJCSAqIGRyaXZlciB3aWxsIGNhbGwgdG8gdW5yZWdpc3Rlcl9mcmFtZWJ1
+ZmZlcigpLCB0aGF0IHRha2VzDQo+ICsJCQkJICogdGhpcyBsb2NrLg0KPiArCQkJCSAqLw0K
+PiArCQkJCW11dGV4X3VubG9jaygmcmVnaXN0cmF0aW9uX2xvY2spOw0KPiAgIAkJCQlwbGF0
+Zm9ybV9kZXZpY2VfdW5yZWdpc3Rlcih0b19wbGF0Zm9ybV9kZXZpY2UoZGV2aWNlKSk7DQo+
+ICsJCQkJbXV0ZXhfbG9jaygmcmVnaXN0cmF0aW9uX2xvY2spOw0KPiAgIAkJCX0gZWxzZSB7
+DQo+ICAgCQkJCXByX3dhcm4oImZiJWQ6IGNhbm5vdCByZW1vdmUgZGV2aWNlXG4iLCBpKTsN
+Cj4gICAJCQkJZG9fdW5yZWdpc3Rlcl9mcmFtZWJ1ZmZlcihyZWdpc3RlcmVkX2ZiW2ldKTsN
+Cj4gICAJCQl9DQo+ICsJCQkvKg0KPiArCQkJICogUmVzdGFydCB0aGUgcmVtb3ZhbCBsb29w
+IG5vdyB0aGF0IHRoZSBkZXZpY2UgaGFzIGJlZW4NCj4gKwkJCSAqIHVucmVnaXN0ZXJlZCBh
+bmQgaXRzIGFzc29jaWF0ZWQgZnJhbWVidWZmZXIgZ29uZS4NCj4gKwkJCSAqLw0KPiArCQkJ
+Z290byByZXN0YXJ0X3JlbW92YWw7DQo+ICAgCQl9DQo+ICAgCX0NCj4gICB9DQo+IEBAIC0x
+ODk5LDEzICsxOTExLDkgQEAgRVhQT1JUX1NZTUJPTChyZWdpc3Rlcl9mcmFtZWJ1ZmZlcik7
+DQo+ICAgdm9pZA0KPiAgIHVucmVnaXN0ZXJfZnJhbWVidWZmZXIoc3RydWN0IGZiX2luZm8g
+KmZiX2luZm8pDQo+ICAgew0KPiAtCWJvb2wgZm9yY2VkX291dCA9IGZiX2luZm8tPmZvcmNl
+ZF9vdXQ7DQo+IC0NCj4gLQlpZiAoIWZvcmNlZF9vdXQpDQo+IC0JCW11dGV4X2xvY2soJnJl
+Z2lzdHJhdGlvbl9sb2NrKTsNCj4gKwltdXRleF9sb2NrKCZyZWdpc3RyYXRpb25fbG9jayk7
+DQo+ICAgCWRvX3VucmVnaXN0ZXJfZnJhbWVidWZmZXIoZmJfaW5mbyk7DQo+IC0JaWYgKCFm
+b3JjZWRfb3V0KQ0KPiAtCQltdXRleF91bmxvY2soJnJlZ2lzdHJhdGlvbl9sb2NrKTsNCj4g
+KwltdXRleF91bmxvY2soJnJlZ2lzdHJhdGlvbl9sb2NrKTsNCj4gICB9DQo+ICAgRVhQT1JU
+X1NZTUJPTCh1bnJlZ2lzdGVyX2ZyYW1lYnVmZmVyKTsNCj4gICANCj4gZGlmZiAtLWdpdCBh
+L2luY2x1ZGUvbGludXgvZmIuaCBiL2luY2x1ZGUvbGludXgvZmIuaA0KPiBpbmRleCA2OWM2
+N2M3MGZhNzguLmJiZTFlNDU3MTg5OSAxMDA2NDQNCj4gLS0tIGEvaW5jbHVkZS9saW51eC9m
+Yi5oDQo+ICsrKyBiL2luY2x1ZGUvbGludXgvZmIuaA0KPiBAQCAtNTExLDcgKzUxMSw2IEBA
+IHN0cnVjdCBmYl9pbmZvIHsNCj4gICAJfSAqYXBlcnR1cmVzOw0KPiAgIA0KPiAgIAlib29s
+IHNraXBfdnRfc3dpdGNoOyAvKiBubyBWVCBzd2l0Y2ggb24gc3VzcGVuZC9yZXN1bWUgcmVx
+dWlyZWQgKi8NCj4gLQlib29sIGZvcmNlZF9vdXQ7IC8qIHNldCB3aGVuIGJlaW5nIHJlbW92
+ZWQgYnkgYW5vdGhlciBkcml2ZXIgKi8NCj4gICB9Ow0KPiAgIA0KPiAgIHN0YXRpYyBpbmxp
+bmUgc3RydWN0IGFwZXJ0dXJlc19zdHJ1Y3QgKmFsbG9jX2FwZXJ0dXJlcyh1bnNpZ25lZCBp
+bnQgbWF4X251bSkgew0KDQotLSANClRob21hcyBaaW1tZXJtYW5uDQpHcmFwaGljcyBEcml2
+ZXIgRGV2ZWxvcGVyDQpTVVNFIFNvZnR3YXJlIFNvbHV0aW9ucyBHZXJtYW55IEdtYkgNCk1h
+eGZlbGRzdHIuIDUsIDkwNDA5IE7DvHJuYmVyZywgR2VybWFueQ0KKEhSQiAzNjgwOSwgQUcg
+TsO8cm5iZXJnKQ0KR2VzY2jDpGZ0c2bDvGhyZXI6IEl2byBUb3Rldg0K
 
-I'll check that and send out v12 if it's all rigth in the near future.
+--------------SyppV0A1JoTzJozJoTIp9Vb2--
 
+--------------b8iWiyNXe9nSujOxcj9Ba96G
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmJ7ojcFAwAAAAAACgkQlh/E3EQov+CU
+WBAAkEaItcvdzg273rLKVt/jQAP9+QwE14Se+zrQRJqgqNtxhcheX93S4kKmNGi2YjTnqJvuwhM0
+lNqocETHg+JhWgupdEOET/iO8VuO92UBizbIf7h/QBP9+vRAPQtBgP1J+isSG8XF7Bd5mStRu0cG
+I7aCvFg8ul2mk+BjlxDQbPMWMa7avM1uxDJ+0Ozr0B2vuMOa18d0aRViD9V41EcIr+G1T1tCUpsc
+MiltlsaZKecfjnraZnRi2NubMcMkxwggGZ+dUYzAz2Ck+3Z5KUsetPmejJJX4xTT34v6ZUfm510q
+k5yld8N47e/K2s31subn3ecypaHsyk8oG5e3hkKo1HgqcFkovmXRvuUA2rIUkivHxqArPngixAig
+Yhzul7YqMbChPc5TAAEJYp6YHBGRwbcereRcwt1xOKRyLEUfIU+d8VhOP4Vbh77OxYqH0MPMk7Ov
+S1uurA3Ca4RdJe5V7npDCSJu2m3GC25r+wz+afl3fGeF80J6YboZYsF+7gxS7HtbocsoEjpckkk6
+eP9PVukN+16IrHLGkC+jgLwAW6Biv/b6tkOdmYBZV45j3j3R44rLd1X9LWzhVRMfAlWwt8xM0Tp1
+jGyBcLwI/dEq3yeQ2N8j6WQ6daRywT5hhTa9uxxe1f3RYjbQFPRBrMcSs2ZA7ver3Fct9wHSmfbu
+slc=
+=lJOK
+-----END PGP SIGNATURE-----
+
+--------------b8iWiyNXe9nSujOxcj9Ba96G--
