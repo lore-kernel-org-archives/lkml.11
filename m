@@ -2,76 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56899C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 12:28:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C3BAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 12:29:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240966AbiEKM2w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 08:28:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42530 "EHLO
+        id S242270AbiEKM3L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 08:29:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233215AbiEKM2t (ORCPT
+        with ESMTP id S229927AbiEKM3J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 08:28:49 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C08851FD1F7
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 05:28:47 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id w24so2371799edx.3
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 05:28:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=szeredi.hu; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kFb+oOKVfdSFM1Ynmw5DXLEBb4aXz2rTDwsxTr/WZTY=;
-        b=NMCM6+TD98zvp/GBsWlY0VX5iKuGvLvXshRG/+mChWR+yPtiyUxxkqNbNdNQwQy9GP
-         PN3IUiJhfvNF/g3HU9LTgvzYpKgbXg6bGECeapdUNYAeGRYouWfhaasrBhujsqaUi26v
-         DkvNhaWJwMwbVG3NJnmWRoCCsPgXwQBw1SwCE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kFb+oOKVfdSFM1Ynmw5DXLEBb4aXz2rTDwsxTr/WZTY=;
-        b=y4IX2b+ekSNBrKDjOKRdijbJZm2FU2pmHJ+AM1XVF7P16Pve4zLpXVDSRuDAytxjO5
-         JS27WVun7ASXqRJKEisNreG4xM8W33GwOuwMvV06Ist4Ex37vfSNdFVYO0Fq1YX826jI
-         hTzqrcJCGapGK9Hf3IBgXZAG5S9rx6w2RvtxjCRE3T69DS7NcQsbFRod3SbIVJAxxFsW
-         tnetg/nVVX+T2Ahwp94pIZMV57RhIGe9PljJ81bwmAoe7f1mEI0fDocotDdiLLadqtqv
-         kNM0OiNm9RM8FbIAvbcH0OT3TEmny9ZyhtYo78TmTJOXFFDtTTYvQWof0sABNMkABQpH
-         V7Rg==
-X-Gm-Message-State: AOAM532F4Kn3vIUpbfUd5kTV4ZmfFHRKkW/iu99Ri9w2zkj7ZOneN09V
-        TgsL4xRFdwOfvYWPWI1AAIspBX/HJ7tkKJ7m9wonHw==
-X-Google-Smtp-Source: ABdhPJxWwXgnhSYbvRQaaYX1wNi+xzJf+PXffIjqvgi6cI+87AjF12g3Yk81vqxwbS8t9950B4c6Nykxk7whoJ/HDX0=
-X-Received: by 2002:aa7:cb18:0:b0:428:af6e:a2a0 with SMTP id
- s24-20020aa7cb18000000b00428af6ea2a0mr10254026edt.154.1652272126351; Wed, 11
- May 2022 05:28:46 -0700 (PDT)
+        Wed, 11 May 2022 08:29:09 -0400
+Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95B551FD847;
+        Wed, 11 May 2022 05:29:05 -0700 (PDT)
+Received: from localhost.localdomain (unknown [10.101.196.174])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id E29D83F616;
+        Wed, 11 May 2022 12:28:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1652272143;
+        bh=BmDFlIfQNeKeHtrDmolTavZYGTvT+TUesJSYirKtAaI=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=ERQih4Y3mFWFLZjpVZZlfw3n4PzKo5NAB/s8126P5SHo+sXYQ1blcPlSPNR+suBUM
+         Za5ott4oG9OtIZkfIXF0/pPjYbhu2qIvRiRCush0P4RWmhsgQNmOAFbD7Qt4l4cTEn
+         tQVLI8nyCBY8uYzamON/EI/TX1jPYhosRV2hxfBnCUxJ1UfWrMln9V/3Fy+f9IVqap
+         5EDnPcKXnCyKtsEN5xrzmVCVgI9SoHNrwLqYlswCgKpLyr3RuK8fio3CqV+zyhf5X4
+         lnOACtB0VjI033GbmDPLeHlVcIC1eSzVFpz/OcHg2G9qYjd6gKCR2GbUNojGCryHoL
+         laBC9RbMCbMLA==
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com
+Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] igb: Remove duplicate defines
+Date:   Wed, 11 May 2022 20:28:04 +0800
+Message-Id: <20220511122806.2146847-1-kai.heng.feng@canonical.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220511013057.245827-1-dlunev@chromium.org> <CAJfpegsmyY+D4kK3ov51FLGA=RkyGDKMcYiMo2zBqYuFNs78JQ@mail.gmail.com>
- <CAONX=-dqY64VkqF6cNYvm8t-ad8XRqDhELP9icfPTPD2iLobLA@mail.gmail.com>
- <CAJfpegvUZheWb3eJwVrpBDYzwQH=zQsuq9R8mpcXb3fqzzEdiQ@mail.gmail.com>
- <CAONX=-cxA-tZOSo33WK9iJU61yeDX8Ct_PwOMD=5WXLYTJ-Mjg@mail.gmail.com>
- <CAJfpegsNwsWJC+x8jL6kDzYhENQQ+aUYAV9wkdpQNT-FNMXyAg@mail.gmail.com> <CAONX=-d9nfYpPkbiVcaEsCQT1ZpwAN5ry8BYKBA6YoBvm7tPfg@mail.gmail.com>
-In-Reply-To: <CAONX=-d9nfYpPkbiVcaEsCQT1ZpwAN5ry8BYKBA6YoBvm7tPfg@mail.gmail.com>
-From:   Miklos Szeredi <miklos@szeredi.hu>
-Date:   Wed, 11 May 2022 14:28:34 +0200
-Message-ID: <CAJfpegtTP==oMm+LhvOkrxkPB973-Y80chbwYpXSiOAXBDhHJw@mail.gmail.com>
-Subject: Re: [PATCH 0/2] Prevent re-use of FUSE superblock after force unmount
-To:     Daniil Lunev <dlunev@chromium.org>
-Cc:     linux-fsdevel@vger.kernel.org,
-        fuse-devel <fuse-devel@lists.sourceforge.net>,
-        linux-kernel@vger.kernel.org,
-        Alexander Viro <viro@zeniv.linux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 11 May 2022 at 13:19, Daniil Lunev <dlunev@chromium.org> wrote:
->
-> > At a glance it's a gross hack.   I can think of more than one way in
-> > which this could be achieved without adding a new field to struct
-> > super_block.
-> Can you advise what would be a better way to achieve that?
+There's no need to define same thing twice.
 
-I think it would be easiest to remove the super block from the
-type->fs_supers list.
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+---
+ drivers/net/ethernet/intel/igb/e1000_defines.h | 3 ---
+ drivers/net/ethernet/intel/igb/e1000_regs.h    | 1 -
+ 2 files changed, 4 deletions(-)
 
-Thanks,
-Miklos
+diff --git a/drivers/net/ethernet/intel/igb/e1000_defines.h b/drivers/net/ethernet/intel/igb/e1000_defines.h
+index ca5429774994e..fa028928482fc 100644
+--- a/drivers/net/ethernet/intel/igb/e1000_defines.h
++++ b/drivers/net/ethernet/intel/igb/e1000_defines.h
+@@ -1033,9 +1033,6 @@
+ #define E1000_VFTA_ENTRY_MASK                0x7F
+ #define E1000_VFTA_ENTRY_BIT_SHIFT_MASK      0x1F
+ 
+-/* DMA Coalescing register fields */
+-#define E1000_PCIEMISC_LX_DECISION      0x00000080 /* Lx power on DMA coal */
+-
+ /* Tx Rate-Scheduler Config fields */
+ #define E1000_RTTBCNRC_RS_ENA		0x80000000
+ #define E1000_RTTBCNRC_RF_DEC_MASK	0x00003FFF
+diff --git a/drivers/net/ethernet/intel/igb/e1000_regs.h b/drivers/net/ethernet/intel/igb/e1000_regs.h
+index 9cb49980ec2d1..eb9f6da9208a6 100644
+--- a/drivers/net/ethernet/intel/igb/e1000_regs.h
++++ b/drivers/net/ethernet/intel/igb/e1000_regs.h
+@@ -116,7 +116,6 @@
+ #define E1000_DMCRTRH	0x05DD0 /* Receive Packet Rate Threshold */
+ #define E1000_DMCCNT	0x05DD4 /* Current Rx Count */
+ #define E1000_FCRTC	0x02170 /* Flow Control Rx high watermark */
+-#define E1000_PCIEMISC	0x05BB8 /* PCIE misc config register */
+ 
+ /* TX Rate Limit Registers */
+ #define E1000_RTTDQSEL	0x3604 /* Tx Desc Plane Queue Select - WO */
+-- 
+2.34.1
+
