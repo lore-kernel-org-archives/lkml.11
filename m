@@ -2,112 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDF56C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:48:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C25FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:48:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237481AbiEKCsW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 22:48:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49864 "EHLO
+        id S235127AbiEKCse (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 22:48:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242489AbiEKCgw (ORCPT
+        with ESMTP id S240221AbiEKCd2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 22:36:52 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74C31E6CD9
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:36:51 -0700 (PDT)
-X-UUID: 65fd1e3900be48fea4919c5df0c77a90-20220511
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:33a27f1f-b045-4d14-927d-6ff903ff071d,OB:10,L
-        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,A
-        CTION:release,TS:100
-X-CID-INFO: VERSION:1.1.4,REQID:33a27f1f-b045-4d14-927d-6ff903ff071d,OB:10,LOB
-        :0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,A
-        CTION:quarantine,TS:100
-X-CID-META: VersionHash:faefae9,CLOUDID:b25559b3-56b5-4c9e-8d83-0070b288eb6a,C
-        OID:d08304f0cc1c,Recheck:0,SF:28|16|19|48,TC:nil,Content:0,EDM:-3,File:nil
-        ,QS:0,BEC:nil
-X-UUID: 65fd1e3900be48fea4919c5df0c77a90-20220511
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
-        (envelope-from <xinlei.lee@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1960522997; Wed, 11 May 2022 10:36:45 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Wed, 11 May 2022 10:36:44 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 11 May 2022 10:36:43 +0800
-Received: from mszsdaap41.gcn.mediatek.inc (10.16.6.141) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Wed, 11 May 2022 10:36:43 +0800
-From:   <xinlei.lee@mediatek.com>
-To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
-        <airlied@linux.ie>, <daniel@ffwll.ch>, <matthias.bgg@gmail.com>
-CC:     <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <rex-bc.chen@mediatek.com>, <jitao.shi@mediatek.com>,
-        Xinlei Lee <xinlei.lee@mediatek.com>
-Subject: [PATCH v5,2/5] drm/mediatek: Modify dsi funcs to atomic operations
-Date:   Wed, 11 May 2022 10:36:33 +0800
-Message-ID: <1652236596-21648-3-git-send-email-xinlei.lee@mediatek.com>
-X-Mailer: git-send-email 2.6.4
-In-Reply-To: <1652236596-21648-1-git-send-email-xinlei.lee@mediatek.com>
-References: <1652236596-21648-1-git-send-email-xinlei.lee@mediatek.com>
+        Tue, 10 May 2022 22:33:28 -0400
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E69D994EA;
+        Tue, 10 May 2022 19:33:26 -0700 (PDT)
+Date:   Tue, 10 May 2022 19:33:17 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1652236405;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=A/7S2Nfdl9mg+NTUlm8YRagGmVcuRP9spTCxvE0H5V8=;
+        b=vBWdSRKNrRSnj63/2q34r3/NwsV2orkeonfypPwEqGznWLw2L0Fz8zfCr/hxvZ99MgLFvr
+        WXMEKbGUubwgtQ2jbWiF1CSeAE8kxPdzTlzkXm3kZhuot9A3XTqfPMRehOC6DjskJh353p
+        ILl2YaVkng/sfDDk+asuaFioScNzVjo=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Roman Gushchin <roman.gushchin@linux.dev>
+To:     Vasily Averin <vvs@openvz.org>
+Cc:     Shakeel Butt <shakeelb@google.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, kernel@openvz.org,
+        linux-kernel@vger.kernel.org, Vlastimil Babka <vbabka@suse.cz>,
+        Michal Hocko <mhocko@suse.com>, cgroups@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Dennis Zhou <dennis@kernel.org>, Tejun Heo <tj@kernel.org>,
+        Christoph Lameter <cl@linux.com>, linux-mm@kvack.org
+Subject: Re: [PATCH v2] percpu: improve percpu_alloc_percpu event trace
+Message-ID: <YnsgbXKiNNSF+1ZO@carbon>
+References: <2b388d09-940e-990f-1f8a-2fdaa9210fa0@openvz.org>
+ <a07be858-c8a3-7851-9086-e3262cbcf707@openvz.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a07be858-c8a3-7851-9086-e3262cbcf707@openvz.org>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xinlei Lee <xinlei.lee@mediatek.com>
+On Fri, May 06, 2022 at 10:29:25PM +0300, Vasily Averin wrote:
+> Added call_site, bytes_alloc and gfp_flags fields to the output
+> of the percpu_alloc_percpu ftrace event:
+> 
+> mkdir-4393  [001]   169.334788: percpu_alloc_percpu:
+>  call_site=mem_cgroup_css_alloc+0xa6 reserved=0 is_atomic=0 size=2408 align=8
+>   base_addr=0xffffc7117fc00000 off=402176 ptr=0x3dc867a62300 bytes_alloc=14448
+>    gfp_flags=GFP_KERNEL_ACCOUNT
+> 
+> This is required to track memcg-accounted percpu allocations.
+> 
+> Signed-off-by: Vasily Averin <vvs@openvz.org>
 
-Modify dsi_enable & dsi_disable to dsi_atomic_enable & dsi_atomic_disable funcs.
+Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
 
-Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
----
- drivers/gpu/drm/mediatek/mtk_dsi.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+LGTM, thanks Vasily!
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-index 02e31a7d9257..82a811801c9f 100644
---- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-@@ -763,14 +763,16 @@ static void mtk_dsi_bridge_mode_set(struct drm_bridge *bridge,
- 	drm_display_mode_to_videomode(adjusted, &dsi->vm);
- }
- 
--static void mtk_dsi_bridge_disable(struct drm_bridge *bridge)
-+static void mtk_dsi_bridge_atomic_disable(struct drm_bridge *bridge,
-+					  struct drm_bridge_state *old_bridge_state)
- {
- 	struct mtk_dsi *dsi = bridge_to_dsi(bridge);
- 
- 	mtk_output_dsi_disable(dsi);
- }
- 
--static void mtk_dsi_bridge_enable(struct drm_bridge *bridge)
-+static void mtk_dsi_bridge_atomic_enable(struct drm_bridge *bridge,
-+					 struct drm_bridge_state *old_bridge_state)
- {
- 	struct mtk_dsi *dsi = bridge_to_dsi(bridge);
- 
-@@ -779,8 +781,8 @@ static void mtk_dsi_bridge_enable(struct drm_bridge *bridge)
- 
- static const struct drm_bridge_funcs mtk_dsi_bridge_funcs = {
- 	.attach = mtk_dsi_bridge_attach,
--	.disable = mtk_dsi_bridge_disable,
--	.enable = mtk_dsi_bridge_enable,
-+	.atomic_disable = mtk_dsi_bridge_atomic_disable,
-+	.atomic_enable = mtk_dsi_bridge_atomic_enable,
- 	.mode_set = mtk_dsi_bridge_mode_set,
- };
- 
--- 
-2.18.0
+One minor thing below.
 
+> ---
+> v2: added call_site, improved patch description
+> ---
+>  include/trace/events/percpu.h | 23 +++++++++++++++++------
+>  mm/percpu-internal.h          |  8 ++++----
+>  mm/percpu.c                   |  5 +++--
+>  3 files changed, 24 insertions(+), 12 deletions(-)
+> 
+> diff --git a/include/trace/events/percpu.h b/include/trace/events/percpu.h
+> index df112a64f6c9..e989cefc0def 100644
+> --- a/include/trace/events/percpu.h
+> +++ b/include/trace/events/percpu.h
+> @@ -6,15 +6,20 @@
+>  #define _TRACE_PERCPU_H
+>  
+>  #include <linux/tracepoint.h>
+> +#include <trace/events/mmflags.h>
+>  
+>  TRACE_EVENT(percpu_alloc_percpu,
+>  
+> -	TP_PROTO(bool reserved, bool is_atomic, size_t size,
+> -		 size_t align, void *base_addr, int off, void __percpu *ptr),
+> +	TP_PROTO(unsigned long call_site,
+> +		 bool reserved, bool is_atomic, size_t size,
+> +		 size_t align, void *base_addr, int off,
+> +		 void __percpu *ptr, size_t bytes_alloc, gfp_t gfp_flags),
+
+Don't we want to preserve the order and add the call_site at the end?
+Trace events are not ABI, but if we don't have a strong reason to break it,
+I'd preserve the old order.
+
+Thanks!
