@@ -2,141 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F3F5C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 21:46:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACA20C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 21:47:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348285AbiEKVqU (ORCPT
+        id S1348297AbiEKVrg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 17:46:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47400 "EHLO
+        Wed, 11 May 2022 17:47:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244741AbiEKVqR (ORCPT
+        with ESMTP id S232214AbiEKVra (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 17:46:17 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C3901A80A
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 14:46:15 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id c14so3103022pfn.2
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 14:46:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=fmAQGXykxhi3NepF05zy14Lr44K9yKjrDKoSJAz3/FY=;
-        b=JBqMvOVBN2rq0FFfHUFV1lH1c5cMiSL4usNhYXtUzFbudxKFr2HaFM5NBw15FMmZUh
-         Ter7iPSqzb3NC1djJOjvaG7MuwkULz9LF6jXij8HFiTi861C/PXgJR9ewcrjdKwUEn6B
-         GfIP+XhnBY3DfMFyMK9RlfwMomDKCjtLznNeqpElUkYWYTkcYZ8F2M+3eyQr8ACUC2MM
-         +VE0n7soq5lesWTF9FQ86gGacuwnK0LMNHS8BpRLu1lQpc0B4RUUnV3WxsiRu3ENkFBo
-         VBJBE5fu8hj9w2JxBu1OsvZbcaX44HrTnvrxlui7Lkaiw2s2GRAlzzf1L4aBlb7F76rX
-         3Uyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=fmAQGXykxhi3NepF05zy14Lr44K9yKjrDKoSJAz3/FY=;
-        b=0AJ6NJk0ClH0Pqy/7mFfH5X+V8iGAD1z5l8oaWnQzoO2HO/BXE39bjmcQgNZice0xH
-         gfJr46e6Hk9qKwNWVijeJclh+PFF9XyeLydhtdSDanGJzYICDJT2wgoLqs6tQa38odPR
-         D2OEPrXVEsekUY49tEUno8Gc5rqMa/XX9zD5UMBY/Fxli3KVo5dr67RIzYr+pgiKvY20
-         sfCXA06MrksHH8/jG6v1/W4kvd88HAmCYFEjTS9zr3HgzewiFlu7pkmhTk9krfqnuVUV
-         BDXm4Sm8RXLxC3idS7qm6YPMzeWg9bmHkttEuw6gq2u6xU+pixcgiITHhwRZRIDWHSsR
-         3Gpw==
-X-Gm-Message-State: AOAM533yf2QifF+BIFXVSbnsWIeNoTyV4STI60yxxy7ryQP19041t2Ps
-        pnynqiDrBJJB9AFfatrYbL6GRVJLosc=
-X-Google-Smtp-Source: ABdhPJzltmz0RDNNi+ko+midxpZBcyYw7TrYspnUZofQpPSidhOETlVnZ7Lgi9ltztlvJicJhn5sYQ==
-X-Received: by 2002:a63:381e:0:b0:3c6:d5e4:fed9 with SMTP id f30-20020a63381e000000b003c6d5e4fed9mr11305562pga.553.1652305574817;
-        Wed, 11 May 2022 14:46:14 -0700 (PDT)
-Received: from google.com ([2620:15c:211:201:69ef:9c87:7816:4f74])
-        by smtp.gmail.com with ESMTPSA id x18-20020a170902b41200b0015e8d4eb26asm2345293plr.180.2022.05.11.14.46.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 14:46:14 -0700 (PDT)
-Sender: Minchan Kim <minchan.kim@gmail.com>
-Date:   Wed, 11 May 2022 14:46:12 -0700
-From:   Minchan Kim <minchan@kernel.org>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        linux-mm <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        John Dias <joaodias@google.com>,
-        David Hildenbrand <david@redhat.com>
-Subject: Re: [PATCH v4] mm: fix is_pinnable_page against on cma page
-Message-ID: <YnwupNzDNv7IbjRQ@google.com>
-References: <20220510211743.95831-1-minchan@kernel.org>
- <857d21da-5de2-fa3e-b1ce-41cc1cfb0191@nvidia.com>
- <Ynr10y6pkH6WwbQo@google.com>
- <bb6e76f1-2cbc-893d-c8ab-3ecd3fcae2a5@nvidia.com>
- <Ynr+wTCQpyh8+vOD@google.com>
- <2ffa7670-04ea-bb28-28f8-93a9b9eea7e8@nvidia.com>
+        Wed, 11 May 2022 17:47:30 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EDC2286F3;
+        Wed, 11 May 2022 14:47:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652305649; x=1683841649;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=K5vUYX7cPworJBAWBFM83vOSyWXHdl4K9zNHAtvVvDI=;
+  b=QTdDc/sNEhHY4m7vFFOpM9uyOKll4nqK9JpqvS+Gx3I33A0RogtgCyH8
+   hxLxeGMyExisGfF81KxOwONn0W8XexAii6+Vvh8JxNj2PPE891sJEnn+R
+   4tAYcq0yhfnlIlnpxlyfHwcKEE+IwpIdnN+nTGs9zl2MbI8ykpfMSn9Wn
+   fl/SQs5ur3O6dPypsZ/27I3LtpNfFDOFhRCWoMFLHY6Yg3yVCjW8Mn4kc
+   urVBnMpumiBI+uOGfv/n2FZZpInns9OennrRsevh0q3uubVuupfwHjvw2
+   l2hQeYEVeQvPw/dfnp8Q0Waeng+ZrcgIMupklArWOawHLpYNLUvJKCa/X
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="269493744"
+X-IronPort-AV: E=Sophos;i="5.91,218,1647327600"; 
+   d="scan'208";a="269493744"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 14:47:28 -0700
+X-IronPort-AV: E=Sophos;i="5.91,218,1647327600"; 
+   d="scan'208";a="636586943"
+Received: from akleen-mobl1.amr.corp.intel.com (HELO [10.212.146.202]) ([10.212.146.202])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 14:47:26 -0700
+Message-ID: <96ad6825-7607-92ef-566c-3e7a54c397bb@linux.intel.com>
+Date:   Wed, 11 May 2022 14:47:22 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2ffa7670-04ea-bb28-28f8-93a9b9eea7e8@nvidia.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v2 5/7] perf jevents: Add python converter script
+Content-Language: en-US
+To:     Ian Rogers <irogers@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Felix Fietkau <nbd@nbd.name>, Qi Liu <liuqi115@huawei.com>,
+        Like Xu <likexu@tencent.com>, linux-kernel@vger.kernel.org,
+        linux-perf-users@vger.kernel.org,
+        Nick Forrington <nick.forrington@arm.com>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        James Clark <james.clark@arm.com>,
+        Andrew Kilroy <andrew.kilroy@arm.com>,
+        "Paul A . Clarke" <pc@us.ibm.com>, Will Deacon <will@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        ananth.narayan@amd.com, ravi.bangoria@amd.com,
+        santosh.shukla@amd.com, sandipan.das@amd.com,
+        Caleb Biggers <caleb.biggers@intel.com>,
+        Perry Taylor <perry.taylor@intel.com>,
+        Kshipra Bopardikar <kshipra.bopardikar@intel.com>
+Cc:     Stephane Eranian <eranian@google.com>
+References: <20220511211526.1021908-1-irogers@google.com>
+ <20220511211526.1021908-6-irogers@google.com>
+From:   Andi Kleen <ak@linux.intel.com>
+In-Reply-To: <20220511211526.1021908-6-irogers@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 09:32:05PM -0700, John Hubbard wrote:
-> On 5/10/22 17:09, Minchan Kim wrote:
-> > On Tue, May 10, 2022 at 04:58:13PM -0700, John Hubbard wrote:
-> > > On 5/10/22 4:31 PM, Minchan Kim wrote:
-> > > > > > +	int __mt = get_pageblock_migratetype(page);
-> > > > > > +	int mt = __READ_ONCE(__mt);
-> > > > > 
-> > > > > Although I saw the email discussion about this in v2, that discussion
-> > > > > didn't go far enough. It started with "don't use volatile", and went
-> > > > > on to "try __READ_ONCE() instead", but it should have continued on
-> > > > > to "you don't need this at all".
-> > > > 
-> > > > That's really what I want to hear from experts so wanted to learn
-> > > > "Why". How could we prevent refetching of the mt if we don't use
-> > > > __READ_ONCE or volatile there?
-> > > > 
-> > > > > 
-> > > > > Because you don't. There is nothing you are racing with, and adding
-> > > > > __READ_ONCE() in order to avoid a completely not-going-to-happen
-> > > > > compiler re-invocation of a significant code block is just very wrong.
-> > > > > 
-> > > > > So let's just let it go entirely. :)
-> > > > 
-> > > > Yeah, once it's clear for everyone, I am happy to remove the
-> > > > unnecessary lines.
-> > > > 
-> > > > > 
-> > > > > > +
-> > > > > > +	if (mt == MIGRATE_CMA || mt == MIGRATE_ISOLATE)
-> > > > > 
-> > > 
-> > > With or without __READ_ONCE() or volatile or anything else,
-> > > this code will do what you want. Which is: loosely check
-> > > for either of the above.
-> > > 
-> > > What functional problem do you think you are preventing
-> > > with __READ_ONCE()? Because I don't see one.
-> > 
-> > I discussed the issue at v1 so please take a look.
-> > 
-> > https://lore.kernel.org/all/YnFvmc+eMoXvLCWf@google.com/
-> 
-> I read that, but there was never any real justification there for needing
-> to prevent a re-read of mt, just a preference: "I'd like to keep use the local
-> variable mt's value in folloing conditions checks instead of refetching
-> the value from get_pageblock_migratetype."
-> 
-> But I don't believe that there is any combination of values of mt that
-> will cause a problem here.
-> 
-> I also think that once we pull in experts, they will tell us that the
-> compiler is not going to re-run a non-trivial function to re-fetch a
-> value, but I'm not one of those experts, so that's still arguable. But
-> imagine what the kernel code would look like if every time we call
-> a large function, we have to consider if it actually gets called some
-> arbitrary number of times, due to (anti-) optimizations by the compiler.
-> This seems like something that is not really happening.
 
-Maybe, I might be paranoid since I have heard too subtle things
-about how compiler could changes high level language code so wanted
-be careful especially when we do lockless-stuff.
+On 5/11/2022 2:15 PM, Ian Rogers wrote:
+> jevents.c is large, has a dependency on an old forked version of jsmn,
+> and is challenging to work upon. A lot of jevents.c's complexity comes
+> from needing to write json and csv parsing from first principles. In
+> contrast python has this functionality in standard libraries and is
+> already a build pre-requisite for tools like asciidoc (that builds all
+> of the perf man pages).
 
-Who cares when we change the large(?) function to small(?) function
-later on? I'd like to hear from experts to decide it.
+
+Well I was still hoping at some point we could have run time loading of 
+events. But yes if that's not
+
+happening then this probably the right approach.
+
+-Andi
+
 
