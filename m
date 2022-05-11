@@ -2,174 +2,418 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75646C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:00:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EE34C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:03:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240877AbiEKB77 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 21:59:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57314 "EHLO
+        id S233328AbiEKCDB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 22:03:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233219AbiEKB74 (ORCPT
+        with ESMTP id S229823AbiEKCC4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 21:59:56 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18B8C4ECDF;
-        Tue, 10 May 2022 18:59:55 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id m12so486016plb.4;
-        Tue, 10 May 2022 18:59:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ygRJwU53ypBYWb0ipajvfg9wu8BsJDcxou4i7b0FONY=;
-        b=AC0/bjCtvdumOBQpoatC2IVwm5A2dJuUre1XwUktN/jPod+nsh1Qg7qpzwCPVU6ilk
-         abDUXuerlgxYt8a4AVPN3MTA5VcA8x5Q++NxwSevkqbdTbpdVIKJLQ7zFOf5vo7BohOj
-         ev5UZepOZO/gSCuseNeREznvCgsHrov54w7j+92CDKqhK3q/fenS0pRYjexAGiZDs7wi
-         QrQG65AnY78uCLRmGQUM24zwdctL84RC1o1+iqaXVI432IWUbOP5J0GbIFCPlb2OJ87n
-         lxVk5K8DgOLb7QJHbPC/9sARdOUrI9NmPh9NE8beeIBmSx9CABeUVdN73Ne0QhbjhfAy
-         KYzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ygRJwU53ypBYWb0ipajvfg9wu8BsJDcxou4i7b0FONY=;
-        b=6EAVY64rtB3TCfmw/Gjsj0iTMUKOgdWZf9w3EZeTzepFzDNkqTlRWCBTlOSgqHJcSq
-         fpwWGgywhtZ4jfDPHspblZKQcgr3Utu3N6nnU3e//Qqf/ysYPCvb/ROO9XFNJnlSh8VS
-         3jYLArx6sppSUooGbQmAQdJON3he4nymcs7cqMx0z4Gb1AsDC7ZJO26VKGfwYfdgqxfs
-         BwS0u8ycIpFNF6E9Ej+Jr9wSYqm7JhplqAq4HcjlaGhLUxT+czLATK0a325A5YgI5QTb
-         A7PMJ0O8PHUE/JHnVlVJa9EVWvBqjs7xyFWhOs1srQ5TipeGZuM5FYHeNGM/HtbnslP2
-         x38g==
-X-Gm-Message-State: AOAM531YVKrJWS6jr8Sn0u6JrbI4ze7nhznGXPJOmEkVkxLln2yLWiTL
-        i8jebiR9fHZF8INb5p/W4/8=
-X-Google-Smtp-Source: ABdhPJz6SJazp2lQsRReL6XYXSBvynMV1jL0WCwdK6U711v08I70fN/Tk7cykMKTwI8/8EFo+qCUew==
-X-Received: by 2002:a17:90a:94c2:b0:1d9:3fbd:bbe1 with SMTP id j2-20020a17090a94c200b001d93fbdbbe1mr2766800pjw.59.1652234394526;
-        Tue, 10 May 2022 18:59:54 -0700 (PDT)
-Received: from localhost ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id d7-20020a170903230700b0015e8d4eb1f7sm304835plh.65.2022.05.10.18.59.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 18:59:53 -0700 (PDT)
-Message-ID: <627b1899.1c69fb81.cd831.12d9@mx.google.com>
-X-Google-Original-Message-ID: <20220511015952.GA1482876@cgel.zte@gmail.com>
-Date:   Wed, 11 May 2022 01:59:52 +0000
-From:   CGEL <cgel.zte@gmail.com>
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     akpm@linux-foundation.org, hannes@cmpxchg.org, willy@infradead.org,
-        shy828301@gmail.com, roman.gushchin@linux.dev, shakeelb@google.com,
-        linmiaohe@huawei.com, william.kucharski@oracle.com,
-        peterx@redhat.com, hughd@google.com, vbabka@suse.cz,
-        songmuchun@bytedance.com, surenb@google.com,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        cgroups@vger.kernel.org, Yang Yang <yang.yang29@zte.com.cn>
-Subject: Re: [PATCH] mm/memcg: support control THP behaviour in cgroup
-References: <20220505033814.103256-1-xu.xin16@zte.com.cn>
- <YnUlntNFR4zeD+qa@dhcp22.suse.cz>
- <6275d3e7.1c69fb81.1d62.4504@mx.google.com>
- <YnjmPAToTR0C5o8x@dhcp22.suse.cz>
- <6278fa75.1c69fb81.9c598.f794@mx.google.com>
- <Ynj/l+pyFJxKfcbQ@dhcp22.suse.cz>
- <6279c354.1c69fb81.7f6c1.15e0@mx.google.com>
- <Yno3pNQOn1lAMPnu@dhcp22.suse.cz>
- <627a5214.1c69fb81.1b7fb.47be@mx.google.com>
- <YnpqYte2jLdcBiPg@dhcp22.suse.cz>
+        Tue, 10 May 2022 22:02:56 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85C864E3BB;
+        Tue, 10 May 2022 19:02:54 -0700 (PDT)
+Received: from kwepemi100001.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KydSN3Xktz1JC00;
+        Wed, 11 May 2022 10:01:40 +0800 (CST)
+Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
+ kwepemi100001.china.huawei.com (7.221.188.215) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 11 May 2022 10:02:52 +0800
+Received: from [10.67.101.67] (10.67.101.67) by kwepemm600003.china.huawei.com
+ (7.193.23.202) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 11 May
+ 2022 10:02:51 +0800
+Subject: Re: [PATCH v7 5/7] perf tool: Add support for HiSilicon PCIe Tune and
+ Trace device driver
+To:     James Clark <james.clark@arm.com>,
+        Yicong Yang <yangyicong@hisilicon.com>,
+        Leo Yan <leo.yan@linaro.org>
+CC:     <prime.zeng@huawei.com>, <zhangshaokun@hisilicon.com>,
+        <linuxarm@huawei.com>, <gregkh@linuxfoundation.org>,
+        <helgaas@kernel.org>, <alexander.shishkin@linux.intel.com>,
+        <lorenzo.pieralisi@arm.com>, <will@kernel.org>,
+        <mark.rutland@arm.com>, <mathieu.poirier@linaro.org>,
+        <suzuki.poulose@arm.com>, <mike.leach@linaro.org>,
+        <jonathan.cameron@huawei.com>, <daniel.thompson@linaro.org>,
+        <joro@8bytes.org>, <john.garry@huawei.com>,
+        <shameerali.kolothum.thodi@huawei.com>, <robin.murphy@arm.com>,
+        <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
+        <linux-perf-users@vger.kernel.org>,
+        <iommu@lists.linux-foundation.org>
+References: <20220407125841.3678-1-yangyicong@hisilicon.com>
+ <20220407125841.3678-6-yangyicong@hisilicon.com>
+ <ace5aa71-a7f9-cb3a-ee80-b56c71df343b@arm.com>
+From:   "liuqi (BA)" <liuqi115@huawei.com>
+Message-ID: <7fe57ed2-c583-1ada-ea5d-324d8de078bc@huawei.com>
+Date:   Wed, 11 May 2022 10:02:50 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YnpqYte2jLdcBiPg@dhcp22.suse.cz>
+In-Reply-To: <ace5aa71-a7f9-cb3a-ee80-b56c71df343b@arm.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.101.67]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 03:36:34PM +0200, Michal Hocko wrote:
-> On Tue 10-05-22 11:52:51, CGEL wrote:
-> > On Tue, May 10, 2022 at 12:00:04PM +0200, Michal Hocko wrote:
-> > > On Tue 10-05-22 01:43:38, CGEL wrote:
-> > > > On Mon, May 09, 2022 at 01:48:39PM +0200, Michal Hocko wrote:
-> > > > > On Mon 09-05-22 11:26:43, CGEL wrote:
-> > > > > > On Mon, May 09, 2022 at 12:00:28PM +0200, Michal Hocko wrote:
-> > > > > > > On Sat 07-05-22 02:05:25, CGEL wrote:
-> > > > > > > [...]
-> > > > > > > > If there are many containers to run on one host, and some of them have high
-> > > > > > > > performance requirements, administrator could turn on thp for them:
-> > > > > > > > # docker run -it --thp-enabled=always
-> > > > > > > > Then all the processes in those containers will always use thp.
-> > > > > > > > While other containers turn off thp by:
-> > > > > > > > # docker run -it --thp-enabled=never
-> > > > > > > 
-> > > > > > > I do not know. The THP config space is already too confusing and complex
-> > > > > > > and this just adds on top. E.g. is the behavior of the knob
-> > > > > > > hierarchical? What is the policy if parent memcg says madivise while
-> > > > > > > child says always? How does the per-application configuration aligns
-> > > > > > > with all that (e.g. memcg policy madivise but application says never via
-> > > > > > > prctl while still uses some madvised - e.g. via library).
-> > > > > > >
-> > > > > > 
-> > > > > > The cgroup THP behavior is align to host and totally independent just likes
-> > > > > > /sys/fs/cgroup/memory.swappiness. That means if one cgroup config 'always'
-> > > > > > for thp, it has no matter with host or other cgroup. This make it simple for
-> > > > > > user to understand or control.
-> > > > > 
-> > > > > All controls in cgroup v2 should be hierarchical. This is really
-> > > > > required for a proper delegation semantic.
-> > > > >
-> > > > 
-> > > > Could we align to the semantic of /sys/fs/cgroup/memory.swappiness?
-> > > > Some distributions like Ubuntu is still using cgroup v1.
-> > > 
-> > > cgroup v1 interface is mostly frozen. All new features are added to the
-> > > v2 interface.
-> > >
-> > 
-> > So what about we add this interface to cgroup v2?
-> 
-> Can you come up with a sane hierarchical behavior?
->
 
-I think this new interface better be independent not hierarchical anyway. Especially
-when we treat container as lightweight virtual machine.
+Hi James,
 
-> [...]
-> > > > For micro-service architecture, the application in one container is not a
-> > > > set of loosely tight processes, it's aim at provide one certain service,
-> > > > so different containers means different service, and different service
-> > > > has different QoS demand. 
-> > > 
-> > > OK, if they are tightly coupled you could apply the same THP policy by
-> > > an existing prctl interface. Why is that not feasible. As you are noting
-> > > below...
-> > > 
-> > > >     5.containers usually managed by compose software, which treats container as
-> > > > base management unit;
-> > > 
-> > > ..so the compose software can easily start up the workload by using prctl
-> > > to disable THP for whatever workloads it is not suitable for.
-> > 
-> > prctl(PR_SET_THP_DISABLE..) can not be elegance to support the semantic we
-> > need. If only some containers needs THP, other containers and host do not need
-> > THP. We must set host THP to always first, and call prctl() to close THP for
-> > host tasks and other containers one by one,
+On 2022/5/10 18:14, James Clark wrote:
 > 
-> It might not be the most elegant solution but it should work.
+> 
+> On 07/04/2022 13:58, Yicong Yang wrote:
+>> From: Qi Liu <liuqi115@huawei.com>
+>>
+[...]
+>>   struct auxtrace_record
+>>   *auxtrace_record__init(struct evlist *evlist, int *err)
+>>   {
+>> @@ -57,8 +112,12 @@ struct auxtrace_record
+>>   	struct evsel *evsel;
+>>   	bool found_etm = false;
+>>   	struct perf_pmu *found_spe = NULL;
+>> +	struct perf_pmu *found_ptt = NULL;
+>>   	struct perf_pmu **arm_spe_pmus = NULL;
+>> +	struct perf_pmu **hisi_ptt_pmus = NULL;
+>> +
+>>   	int nr_spes = 0;
+>> +	int nr_ptts = 0;
+>>   	int i = 0;
+>>   
+>>   	if (!evlist)
+>> @@ -66,13 +125,14 @@ struct auxtrace_record
+>>   
+>>   	cs_etm_pmu = perf_pmu__find(CORESIGHT_ETM_PMU_NAME);
+>>   	arm_spe_pmus = find_all_arm_spe_pmus(&nr_spes, err);
+>> +	hisi_ptt_pmus = find_all_hisi_ptt_pmus(&nr_ptts, err);
+>>   
+>>   	evlist__for_each_entry(evlist, evsel) {
+>>   		if (cs_etm_pmu &&
+>>   		    evsel->core.attr.type == cs_etm_pmu->type)
+>>   			found_etm = true;
+>>   
+>> -		if (!nr_spes || found_spe)
+>> +		if ((!nr_spes || found_spe) && (!nr_ptts || found_ptt))
+>>   			continue;
+>>   
+>>   		for (i = 0; i < nr_spes; i++) {
+>> @@ -81,11 +141,18 @@ struct auxtrace_record
+>>   				break;
+>>   			}
+>>   		}
+>> +
+>> +		for (i = 0; i < nr_ptts; i++) {
+>> +			if (evsel->core.attr.type == hisi_ptt_pmus[i]->type) {
+>> +				found_ptt = hisi_ptt_pmus[i];
+>> +				break;
+>> +			}
+>> +		}
+>>   	}
+>>   	free(arm_spe_pmus);
+>>   
+>> -	if (found_etm && found_spe) {
+>> -		pr_err("Concurrent ARM Coresight ETM and SPE operation not currently supported\n");
+>> +	if (found_etm && found_spe && found_ptt) {
+>> +		pr_err("Concurrent ARM Coresight ETM ,SPE and HiSilicon PCIe Trace operation not currently supported\n");
+> 
+> Hi Yicong,
+> 
+> Is that actually a limitation? I don't see why they couldn't work concurrently.
 
-So you agree it's reasonable to set THP policy for process in container, right?
-If so, IMHO, when there are thousands of processes launch and die on the machine,
-it will be horrible to do so by calling prctl(), I don't see the reasonability. 
+As Leo said, the logic here should be like this:
 
-> Maintaining user interfaces for ever has some cost and the THP
-> configuration space is quite large already. So I would rather not add
-> more complication in unless that is absolutely necessary.
-> 
-> > in this process some tasks that start before we call prctl() may
-> > already use THP with no need.
-> 
-> As long as all those processes have a common ancestor I do not see how
-> that would be possible.
-> 
-For example:
-1) userspace set THP policy to always
-2) then one unrelated processe A may launch automatic by a script maybe
-3) call prctl() to disable THP for A
-process A may already use THP with no need.
+         int auxtrace_event_cnt = 0;
+         if (found_etm)
+                 auxtrace_event_cnt++;
+         if (found_spe)
+                 auxtrace_event_cnt++;
+         if (found_ptt)
+                 auxtrace_event_cnt++;
 
-> -- 
-> Michal Hocko
-> SUSE Labs
+         if (auxtrace_event_cnt > 1) {
+                 pr_err("Concurrent AUX trace operation isn't supported: 
+found etm %d spe %d ptt %d\n",
+                        found_etm, found_spe, found_ptt);
+                 *err = -EOPNOTSUPP;
+                 return NULL;
+         }
+
+which means perf doesn't allow more than one auxtrace event recording at 
+the same time.
+
+> 
+> 
+>>   		*err = -EOPNOTSUPP;
+>>   		return NULL;
+>>   	}
+>> @@ -96,6 +163,9 @@ struct auxtrace_record
+>>   #if defined(__aarch64__)
+>>   	if (found_spe)
+>>   		return arm_spe_recording_init(err, found_spe);
+>> +
+>> +	if (found_ptt)
+>> +		return hisi_ptt_recording_init(err, found_ptt);
+>>   #endif
+>>   
+>>   	/*
+
+[...]
+>> +
+>> +static int hisi_ptt_recording_options(struct auxtrace_record *itr,
+>> +				      struct evlist *evlist,
+>> +				      struct record_opts *opts)
+>> +{
+>> +	struct hisi_ptt_recording *pttr =
+>> +			container_of(itr, struct hisi_ptt_recording, itr);
+>> +	struct perf_pmu *hisi_ptt_pmu = pttr->hisi_ptt_pmu;
+>> +	struct perf_cpu_map *cpus = evlist->core.cpus;
+>> +	struct evsel *evsel, *hisi_ptt_evsel = NULL;
+>> +	struct evsel *tracking_evsel;
+>> +	int err;
+>> +
+>> +	pttr->evlist = evlist;
+>> +	evlist__for_each_entry(evlist, evsel) {
+>> +		if (evsel->core.attr.type == hisi_ptt_pmu->type) {
+>> +			if (hisi_ptt_evsel) {
+>> +				pr_err("There may be only one " HISI_PTT_PMU_NAME "x event\n");
+>> +				return -EINVAL;
+>> +			}
+>> +			evsel->core.attr.freq = 0;
+>> +			evsel->core.attr.sample_period = 1;
+>> +			hisi_ptt_evsel = evsel;
+>> +			opts->full_auxtrace = true;
+>> +		}
+>> +	}
+>> +
+>> +	err = hisi_ptt_set_auxtrace_mmap_page(opts);
+>> +	if (err)
+>> +		return err;
+>> +	/*
+>> +	 * To obtain the auxtrace buffer file descriptor, the auxtrace event
+>> +	 * must come first.
+>> +	 */
+>> +	evlist__to_front(evlist, hisi_ptt_evsel);
+>> +
+>> +	if (!perf_cpu_map__empty(cpus)) {
+>> +		evsel__set_sample_bit(hisi_ptt_evsel, TIME);
+>> +		evsel__set_sample_bit(hisi_ptt_evsel, CPU);
+>> +	}
+> 
+> Similar to Leo's comment: CPU isn't required if it's uncore,
+> and if TIME is useful then add it regardless of whether the
+> event is opened per-cpu or on a task.
+> 
+got it, will fix this next time.
+
+>> +
+>> +	/* Add dummy event to keep tracking */
+>> +	err = parse_events(evlist, "dummy:u", NULL);
+>> +	if (err)
+>> +		return err;
+>> +
+>> +	tracking_evsel = evlist__last(evlist);
+>> +	evlist__set_tracking_event(evlist, tracking_evsel);
+>> +
+>> +	tracking_evsel->core.attr.freq = 0;
+>> +	tracking_evsel->core.attr.sample_period = 1;
+>> +
+>> +	if (!perf_cpu_map__empty(cpus))
+>> +		evsel__set_sample_bit(tracking_evsel, TIME);
+> 
+> Same comment as above.
+> 
+got it, thanks.
+>> +
+>> +	return 0;
+>> +}
+>> +
+
+
+>> +
+>> +static int hisi_ptt_process_auxtrace_event(struct perf_session *session,
+>> +					   union perf_event *event,
+>> +					   struct perf_tool *tool __maybe_unused)
+>> +{
+>> +	struct hisi_ptt *ptt = container_of(session->auxtrace, struct hisi_ptt,
+>> +					    auxtrace);
+>> +	struct auxtrace_buffer *buffer;
+>> +	off_t data_offset;
+>> +	int fd = perf_data__fd(session->data);
+>> +	int err;
+>> +
+>> +	if (perf_data__is_pipe(session->data)) {
+>> +		data_offset = 0;
+>> +	} else {
+>> +		data_offset = lseek(fd, 0, SEEK_CUR);
+>> +		if (data_offset == -1)
+>> +			return -errno;
+>> +	}
+>> +
+>> +	err = auxtrace_queues__add_event(&ptt->queues, session, event,
+>> +					 data_offset, &buffer);
+>> +	if (err)
+>> +		return err;
+>> +
+>> +	if (dump_trace) {
+>> +		if (auxtrace_buffer__get_data(buffer, fd)) {
+>> +			hisi_ptt_dump_event(ptt, buffer->data, buffer->size);
+>> +			auxtrace_buffer__put_data(buffer);
+>> +		}
+> 
+> Technically auxtrace_queues aren't required here because they are more for
+> supporting trace from multiple CPUs and sorting and re-ordering between them.
+> 
+> If this is new device is uncore and always from a single source you could
+> just go straight to  hisi_ptt_dump_event() with data_offset and size of the
+> auxtrace event.
+> 
+> But I suppose it also doesn't hurt to use some of the existing framework
+> like you have done.
+> 
+ok, I'll delete the auxtrace_queues next time, thanks.
+
+Qi
+
+>> +	}
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int hisi_ptt_flush(struct perf_session *session __maybe_unused,
+>> +			  struct perf_tool *tool __maybe_unused)
+>> +{
+>> +	return 0;
+>> +}
+>> +
+>> +static void hisi_ptt_free_events(struct perf_session *session)
+>> +{
+>> +	struct hisi_ptt *ptt = container_of(session->auxtrace, struct hisi_ptt,
+>> +					    auxtrace);
+>> +	struct auxtrace_queues *queues = &ptt->queues;
+>> +	unsigned int i;
+>> +
+>> +	for (i = 0; i < queues->nr_queues; i++) {
+>> +		free(queues->queue_array[i].priv);
+>> +		queues->queue_array[i].priv = NULL;
+>> +	}
+>> +	auxtrace_queues__free(queues);
+>> +}
+>> +
+>> +static void hisi_ptt_free(struct perf_session *session)
+>> +{
+>> +	struct hisi_ptt *ptt = container_of(session->auxtrace, struct hisi_ptt,
+>> +					    auxtrace);
+>> +
+>> +	hisi_ptt_free_events(session);
+>> +	session->auxtrace = NULL;
+>> +	free(ptt);
+>> +}
+>> +
+>> +static bool hisi_ptt_evsel_is_auxtrace(struct perf_session *session,
+>> +				       struct evsel *evsel)
+>> +{
+>> +	struct hisi_ptt *ptt = container_of(session->auxtrace, struct hisi_ptt, auxtrace);
+>> +
+>> +	return evsel->core.attr.type == ptt->pmu_type;
+>> +}
+>> +
+>> +static const char * const hisi_ptt_info_fmts[] = {
+>> +	[HISI_PTT_PMU_TYPE]		= "  PMU Type           %" PRId64 "\n",
+>> +};
+>> +
+>> +static void hisi_ptt_print_info(__u64 *arr)
+>> +{
+>> +	if (!dump_trace)
+>> +		return;
+>> +
+>> +	fprintf(stdout, hisi_ptt_info_fmts[HISI_PTT_PMU_TYPE], arr[HISI_PTT_PMU_TYPE]);
+>> +}
+>> +
+>> +int hisi_ptt_process_auxtrace_info(union perf_event *event,
+>> +				   struct perf_session *session)
+>> +{
+>> +	struct perf_record_auxtrace_info *auxtrace_info = &event->auxtrace_info;
+>> +	struct hisi_ptt *ptt;
+>> +	int err;
+>> +
+>> +	if (auxtrace_info->header.size < HISI_PTT_AUXTRACE_PRIV_SIZE +
+>> +				sizeof(struct perf_record_auxtrace_info))
+>> +		return -EINVAL;
+>> +
+>> +	ptt = zalloc(sizeof(struct hisi_ptt));
+>> +	if (!ptt)
+>> +		return -ENOMEM;
+>> +
+>> +	err = auxtrace_queues__init(&ptt->queues);
+>> +	if (err)
+>> +		goto err_free;
+>> +
+>> +	ptt->session = session;
+>> +	ptt->machine = &session->machines.host; /* No kvm support */
+>> +	ptt->auxtrace_type = auxtrace_info->type;
+>> +	ptt->pmu_type = auxtrace_info->priv[HISI_PTT_PMU_TYPE];
+>> +
+>> +	ptt->auxtrace.process_event = hisi_ptt_process_event;
+>> +	ptt->auxtrace.process_auxtrace_event = hisi_ptt_process_auxtrace_event;
+>> +	ptt->auxtrace.flush_events = hisi_ptt_flush;
+>> +	ptt->auxtrace.free_events = hisi_ptt_free_events;
+>> +	ptt->auxtrace.free = hisi_ptt_free;
+>> +	ptt->auxtrace.evsel_is_auxtrace = hisi_ptt_evsel_is_auxtrace;
+>> +	session->auxtrace = &ptt->auxtrace;
+>> +
+>> +	hisi_ptt_print_info(&auxtrace_info->priv[0]);
+>> +
+>> +	return 0;
+>> +
+>> +err_free:
+>> +	free(ptt);
+>> +	return err;
+>> +}
+>> diff --git a/tools/perf/util/hisi_ptt.h b/tools/perf/util/hisi_ptt.h
+>> new file mode 100644
+>> index 000000000000..c0b6cbde1221
+>> --- /dev/null
+>> +++ b/tools/perf/util/hisi_ptt.h
+>> @@ -0,0 +1,28 @@
+>> +/* SPDX-License-Identifier: GPL-2.0 */
+>> +/*
+>> + * HiSilicon PCIe Trace and Tuning (PTT) support
+>> + * Copyright (c) 2022 HiSilicon Technologies Co., Ltd.
+>> + */
+>> +
+>> +#ifndef INCLUDE__PERF_HISI_PTT_H__
+>> +#define INCLUDE__PERF_HISI_PTT_H__
+>> +
+>> +#define HISI_PTT_PMU_NAME "hisi_ptt"
+>> +enum {
+>> +	HISI_PTT_PMU_TYPE,
+>> +	HISI_PTT_PER_CPU_MMAPS,
+>> +	HISI_PTT_AUXTRACE_PRIV_MAX,
+>> +};
+>> +
+>> +#define HISI_PTT_AUXTRACE_PRIV_SIZE (HISI_PTT_AUXTRACE_PRIV_MAX * sizeof(u64))
+>> +union perf_event;
+>> +struct perf_session;
+>> +struct perf_pmu;
+>> +
+>> +struct auxtrace_record *hisi_ptt_recording_init(int *err,
+>> +						struct perf_pmu *hisi_ptt_pmu);
+>> +
+>> +int hisi_ptt_process_auxtrace_info(union perf_event *event,
+>> +				   struct perf_session *session);
+>> +
+>> +#endif
+> .
+> 
