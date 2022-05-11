@@ -2,184 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEB9BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:20:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DB26C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:21:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245742AbiEKPUy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 11:20:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59034 "EHLO
+        id S1343513AbiEKPVe (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 11:21:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343509AbiEKPUm (ORCPT
+        with ESMTP id S1343529AbiEKPVA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 11:20:42 -0400
-Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53237224066;
-        Wed, 11 May 2022 08:20:32 -0700 (PDT)
-Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-ed9a75c453so3159779fac.11;
-        Wed, 11 May 2022 08:20:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=5ZJJEi0T6avsQcNuZ76OzoU8pxCTrsB//m+bCucO+9U=;
-        b=NFSxyyvOEp4jn7x6TxNuF5z/tIPDEPmNR2u+m7Qw62L1ds/YtrBGl5vTJunHjtuTyR
-         zfUvvXWWmaxoScee4LtOa9FzDVmEIUuXKbrQNizI0oaGtKFVl6VTnTPYzn5156RmowOn
-         PmH8pT5Qy8Cwlz7v2KNswHmz/gNwaUlrhEYSJTMjKUuZJSMLOIyfh5EeUPhA2YRCA1UH
-         UjQhVWKjKPwNWJdAv+Yef5KCiiWQRkme49+zHf1Ds7THFU6wxUICj4PtthI6tZf78Rv5
-         /Yqe8WoRbgTtfARxfj3HwW23jvW+DfGNHseiCJcsOtcUXIpGGuH/AhmYDG2yC3eZVdbr
-         JAJA==
-X-Gm-Message-State: AOAM5327wIeMvKv6ChIBMx8/0K8X2Vwt1KYbYU5RcWybMr8gyr7UutIo
-        B1okarzWc20YAdRDZtiKPQ==
-X-Google-Smtp-Source: ABdhPJzHG2G6iJ/w1YHF54ZZrwalnAdU7u6SfKtXTyPPxCiPfEfPDWLIDd8rgbeHklBkkzoPAseC1A==
-X-Received: by 2002:a05:6870:818a:b0:f1:1223:3afd with SMTP id k10-20020a056870818a00b000f112233afdmr1711883oae.271.1652282431852;
-        Wed, 11 May 2022 08:20:31 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id q2-20020a4adc42000000b0035eb4e5a6b3sm1031492oov.9.2022.05.11.08.20.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 08:20:31 -0700 (PDT)
-Received: (nullmailer pid 333836 invoked by uid 1000);
-        Wed, 11 May 2022 15:20:29 -0000
-Date:   Wed, 11 May 2022 10:20:29 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?iso-8859-1?Q?Miqu=E8l?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v4 03/12] dt-bindings: net: pcs: add bindings
- for Renesas RZ/N1 MII converter
-Message-ID: <20220511152029.GA330075-robh@kernel.org>
-References: <20220509131900.7840-1-clement.leger@bootlin.com>
- <20220509131900.7840-4-clement.leger@bootlin.com>
+        Wed, 11 May 2022 11:21:00 -0400
+Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B16A451596
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 08:20:54 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1652282452;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Rzhs0+3mpYIaNiRF6hUvhEnCu4nhoi9lUCf4jFRkxqs=;
+        b=CXVZc00cgUB5mP2z2C//gZiNEYZesk2gn1jH84J3hYPq2tlrNWvtaMvso1E+I0m23bUOWY
+        AfgXDXxJmW6QU1bMFd7bA/mK71q2PLGQN0Vlc2v1h9o9MueEj9asDZh9wW6L9DimhTthIx
+        3iqkVbXnEJnGB5QBv+ADtB7bzxoZiIM=
+From:   Naoya Horiguchi <naoya.horiguchi@linux.dev>
+To:     linux-mm@kvack.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        zhenwei pi <pizhenwei@bytedance.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v1] mm,hwpoison: set PG_hwpoison for busy hugetlb pages
+Date:   Thu, 12 May 2022 00:19:55 +0900
+Message-Id: <20220511151955.3951352-1-naoya.horiguchi@linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220509131900.7840-4-clement.leger@bootlin.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 09, 2022 at 03:18:51PM +0200, Clément Léger wrote:
-> This MII converter can be found on the RZ/N1 processor family. The MII
-> converter ports are declared as subnodes which are then referenced by
-> users of the PCS driver such as the switch.
-> 
-> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
-> ---
->  .../bindings/net/pcs/renesas,rzn1-miic.yaml   | 162 ++++++++++++++++++
->  include/dt-bindings/net/pcs-rzn1-miic.h       |  33 ++++
->  2 files changed, 195 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/pcs/renesas,rzn1-miic.yaml
->  create mode 100644 include/dt-bindings/net/pcs-rzn1-miic.h
-> 
-> diff --git a/Documentation/devicetree/bindings/net/pcs/renesas,rzn1-miic.yaml b/Documentation/devicetree/bindings/net/pcs/renesas,rzn1-miic.yaml
-> new file mode 100644
-> index 000000000000..c3f5f772c885
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/pcs/renesas,rzn1-miic.yaml
-> @@ -0,0 +1,162 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/pcs/renesas,rzn1-miic.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Renesas RZ/N1 MII converter
-> +
-> +maintainers:
-> +  - Clément Léger <clement.leger@bootlin.com>
-> +
-> +description: |
-> +  This MII converter is present on the Renesas RZ/N1 SoC family. It is
-> +  responsible to do MII passthrough or convert it to RMII/RGMII.
-> +
-> +properties:
-> +  '#address-cells':
-> +    const: 1
-> +
-> +  '#size-cells':
-> +    const: 0
-> +
-> +  compatible:
-> +    items:
-> +      - enum:
-> +          - renesas,r9a06g032-miic
-> +      - const: renesas,rzn1-miic
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    items:
-> +      - description: MII reference clock
-> +      - description: RGMII reference clock
-> +      - description: RMII reference clock
-> +      - description: AHB clock used for the MII converter register interface
-> +
-> +  renesas,miic-switch-portin:
-> +    description: MII Switch PORTIN configuration. This value should use one of
-> +      the values defined in dt-bindings/net/pcs-rzn1-miic.h.
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    enum: [1, 2]
-> +
-> +  power-domains:
-> +    maxItems: 1
-> +
-> +patternProperties:
-> +  "^mii-conv@[0-9]+$":
+From: Naoya Horiguchi <naoya.horiguchi@nec.com>
 
-^mii-conv@[0-5]$
+If memory_failure() fails to grab page refcount on a hugetlb page
+because it's busy, it returns without setting PG_hwpoison on it.
+This not only loses a chance of error containment, but breaks the rule
+that action_result() should be called only when memory_failure() do
+any of handling work (even if that's just setting PG_hwpoison).
+This inconsistency could harm code maintainability.
 
-> +    type: object
-> +    description: MII converter port
-> +
-> +    properties:
-> +      reg:
-> +        description: MII Converter port number.
-> +        enum: [1, 2, 3, 4, 5]
-> +
-> +      renesas,miic-input:
-> +        description: Converter input port configuration. This value should use
-> +          one of the values defined in dt-bindings/net/pcs-rzn1-miic.h.
-> +        $ref: /schemas/types.yaml#/definitions/uint32
-> +
-> +    required:
-> +      - reg
-> +      - renesas,miic-input
-> +
-> +    additionalProperties: false
-> +
-> +    allOf:
-> +      - if:
-> +          properties:
-> +            reg:
-> +              const: 1
-> +        then:
-> +          properties:
-> +            renesas,miic-input:
-> +              enum: [0]
+So set PG_hwpoison and call hugetlb_set_page_hwpoison() for such a case.
 
-const: 0
+Fixes: 405ce051236c ("mm/hwpoison: fix race between hugetlb free/demotion and memory_failure_hugetlb()")
+Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+---
+ include/linux/mm.h  | 1 +
+ mm/memory-failure.c | 8 ++++----
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
-With those fixes,
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index d446e834a3e5..04de0c3e4f9f 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -3187,6 +3187,7 @@ enum mf_flags {
+ 	MF_MUST_KILL = 1 << 2,
+ 	MF_SOFT_OFFLINE = 1 << 3,
+ 	MF_UNPOISON = 1 << 4,
++	MF_NO_RETRY = 1 << 5,
+ };
+ extern int memory_failure(unsigned long pfn, int flags);
+ extern void memory_failure_queue(unsigned long pfn, int flags);
+diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+index 6a28d020a4da..e3269b991016 100644
+--- a/mm/memory-failure.c
++++ b/mm/memory-failure.c
+@@ -1526,7 +1526,8 @@ int __get_huge_page_for_hwpoison(unsigned long pfn, int flags)
+ 			count_increased = true;
+ 	} else {
+ 		ret = -EBUSY;
+-		goto out;
++		if (!(flags & MF_NO_RETRY))
++			goto out;
+ 	}
+ 
+ 	if (TestSetPageHWPoison(head)) {
+@@ -1556,7 +1557,6 @@ static int try_memory_failure_hugetlb(unsigned long pfn, int flags, int *hugetlb
+ 	struct page *p = pfn_to_page(pfn);
+ 	struct page *head;
+ 	unsigned long page_flags;
+-	bool retry = true;
+ 
+ 	*hugetlb = 1;
+ retry:
+@@ -1572,8 +1572,8 @@ static int try_memory_failure_hugetlb(unsigned long pfn, int flags, int *hugetlb
+ 		}
+ 		return res;
+ 	} else if (res == -EBUSY) {
+-		if (retry) {
+-			retry = false;
++		if (!(flags & MF_NO_RETRY)) {
++			flags |= MF_NO_RETRY;
+ 			goto retry;
+ 		}
+ 		action_result(pfn, MF_MSG_UNKNOWN, MF_IGNORED);
+-- 
+2.25.1
 
-Reviewed-by: Rob Herring <robh@kernel.org>
