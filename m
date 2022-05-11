@@ -2,85 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13112C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 10:09:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 620B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 10:10:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232831AbiEKKJc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 06:09:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50576 "EHLO
+        id S240942AbiEKKJ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 06:09:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241014AbiEKKJX (ORCPT
+        with ESMTP id S240419AbiEKKJk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 06:09:23 -0400
-X-Greylist: delayed 359 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 11 May 2022 03:09:13 PDT
-Received: from email.studentenwerk.mhn.de (dresden.studentenwerk.mhn.de [141.84.225.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B2C17A828;
-        Wed, 11 May 2022 03:09:12 -0700 (PDT)
-Received: from mailhub.studentenwerk.mhn.de (mailhub.studentenwerk.mhn.de [127.0.0.1])
-        by email.studentenwerk.mhn.de (Postfix) with ESMTPS id 4Kyr7z1hfMzRhSb;
-        Wed, 11 May 2022 12:03:11 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stwm.de; s=stwm-20170627;
-        t=1652263391;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=paHzsJSUUUK2l3doauEwUmwh24Gg8aqJ/AhHP760snk=;
-        b=Qp5JKFdwGYj8Gar70vooSb2H3bWE0kAS4UYpnePxXIykfKcymrLtiBPn/7Ux5zAKL6MUkD
-        ZQbx+twkue0/4TpKQl+UbCjWIAhbGkX6L7mJez7jwUQ3ySD+cHYwwnoXfiD8AE1LOuOXQF
-        Zd7zp0mc3Mly/9duv2GsTMfspRsupIUj6nD0hh1E8R6zFyKO7xT4YuwGVAu0nTbjIhkNX+
-        wIh40zOoBSCvn/PcE2sAQ6dtDR+0Ykq37clezF892Ak+iW4Wx0FJQbG6s7HPqFy0oFLvA3
-        KIZt83R8J7V2qEt62wEKmWbS5H+O557uF9Vpg08ivGGLStoz+ej7h+LWGyviYA==
+        Wed, 11 May 2022 06:09:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8380983030;
+        Wed, 11 May 2022 03:09:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EC7E614FB;
+        Wed, 11 May 2022 10:09:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB001C340ED;
+        Wed, 11 May 2022 10:09:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652263776;
+        bh=Az7KghA1K1FqtzlIeR2ZSVJbO3Qd9hiek6Rayqy2SXI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KAfyyUFMRyTcwHJtjpKhA0wviVF4xIq7ed1TBkPpgwzEBowjZ8erykABk6KszpRpo
+         meKTyOR/6C/fWl/uIJkFioOhTCDCBBIB97Fz4XXvZgiG6ZA7NY4e28ItHZx4mmSxLO
+         PQQimceoELvHoRr92n6G6UsSYvyW8GRpT57fXtdQ=
+Date:   Wed, 11 May 2022 12:09:33 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "zhanghongtao (A)" <zhanghongtao22@huawei.com>
+Cc:     akpm@linux-foundation.org, linfeilong@huawei.com,
+        suweifeng1@huawei.com, linux-kernel@vger.kernel.org,
+        io-uring@vger.kernel.org
+Subject: Re: [PATCH] drivers:uio: Fix system crashes during driver switchover
+Message-ID: <YnuLXTu1wXvCbP/x@kroah.com>
+References: <d204cc88-887c-b203-5a5b-01c307fda4fb@huawei.com>
+ <YntcNunjPdb3Clry@kroah.com>
+ <889918de-e0b8-1ee1-ab86-ca02c8aa35b9@huawei.com>
 MIME-Version: 1.0
-Date:   Wed, 11 May 2022 12:03:13 +0200
-From:   Wolfgang Walter <linux@stwm.de>
-To:     stable@vger.kernel.org, Trond Myklebust <trondmy@gmail.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        linux-nfs@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: 5.4.188 and later: massive performance regression with nfsd
-Message-ID: <f8d9b9112607df4807fba8948ac6e145@stwm.de>
-X-Sender: linux@stwm.de
-Organization: =?UTF-8?Q?Studentenwerk_M=C3=BCnchen?=
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <889918de-e0b8-1ee1-ab86-ca02c8aa35b9@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+A: http://en.wikipedia.org/wiki/Top_post
+Q: Were do I find info about this thing called top-posting?
+A: Because it messes up the order in which people normally read text.
+Q: Why is top-posting such a bad thing?
+A: Top-posting.
+Q: What is the most annoying thing in e-mail?
 
-starting with 5.4.188 wie see a massive performance regression on our 
-nfs-server. It basically is serving requests very very slowly with cpu 
-utilization of 100% (with 5.4.187 and earlier it is 10%) so that it is 
-unusable as a fileserver.
+A: No.
+Q: Should I include quotations after my reply?
 
-The culprit are commits (or one of it):
+http://daringfireball.net/2007/07/on_top
 
-c32f1041382a88b17da5736886da4a492353a1bb "nfsd: cleanup 
-nfsd_file_lru_dispose()"
-628adfa21815f74c04724abc85847f24b5dd1645 "nfsd: Containerise filecache 
-laundrette"
+On Wed, May 11, 2022 at 04:51:11PM +0800, zhanghongtao (A) wrote:
+> Thanks for your reply.
+> I looked through the historical emails and thought I was not the
+> same problem as his.
+> After the driver is switched, the application can still operate
+> on the mapped address, which causes the system to crash.
+> The application is not aware of the driver's switchover.
+> The solution I can think of is to block the switch and wait for
+> the application to release before switching, as shown in the patch.
+> So want to seek help from the community, how to solve it better?
+> Is there a better way?
 
-(upstream 36ebbdb96b694dd9c6b25ad98f2bbd263d022b63 and 
-9542e6a643fc69d528dfb3303f145719c61d3050)
+A better way to do what?  I have no context here at all, sorry.
 
-If I revert them in v5.4.192 the kernel works as before and performance 
-is ok again.
+What is "switching" the driver?  If it is root by doing a bind/unbind,
+then you are on your own and have to do that very carefully, right?
 
-I did not try to revert them one by one as any disruption of our 
-nfs-server is a severe problem for us and I'm not sure if they are 
-related.
+thanks,
 
-5.10 and 5.15 both always performed very badly on our nfs-server in a 
-similar way so we were stuck with 5.4.
-
-I now think this is because of 36ebbdb96b694dd9c6b25ad98f2bbd263d022b63 
-and/or 9542e6a643fc69d528dfb3303f145719c61d3050 though I didn't tried to 
-revert them in 5.15 yet.
-
-
-Regards,
--- 
-Wolfgang Walter
-Studentenwerk München
-Anstalt des öffentlichen Rechts
+greg k-h
