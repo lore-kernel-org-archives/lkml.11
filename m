@@ -2,94 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B4C9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 03:11:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78DBBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 03:12:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239113AbiEKDLj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 23:11:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54344 "EHLO
+        id S239220AbiEKDML (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 23:12:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232409AbiEKDL2 (ORCPT
+        with ESMTP id S237572AbiEKDMG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 23:11:28 -0400
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8CAE45530;
-        Tue, 10 May 2022 20:11:24 -0700 (PDT)
-Date:   Tue, 10 May 2022 20:11:16 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1652238682;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=8UHed0uiQg7plMIS+d8Hr/ojdF24QkSbiog6M6TLs1U=;
-        b=gnnizCg1quxOzlHtzeLqGl0Sze8T7KWis2CGpHRM6kBbVTfG4LZYN8pexQWnSjQ5FP8acs
-        PYMS/zpRaeE4pP/ZWDRExv0v1tbxT+qGew/WOAapbTGo/H4cqYJPy8VIUFMJAGJRe32XWn
-        zM0jfZ40CAm485b9ybWd/ObltE7aI4U=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     CGEL <cgel.zte@gmail.com>, Yang Shi <shy828301@gmail.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        William Kucharski <william.kucharski@oracle.com>,
-        Peter Xu <peterx@redhat.com>, Hugh Dickins <hughd@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>,
-        Cgroups <cgroups@vger.kernel.org>,
-        Yang Yang <yang.yang29@zte.com.cn>
-Subject: Re: [PATCH] mm/memcg: support control THP behaviour in cgroup
-Message-ID: <YnspVPGOtzlo5n+7@carbon>
-References: <20220505033814.103256-1-xu.xin16@zte.com.cn>
- <YnUlntNFR4zeD+qa@dhcp22.suse.cz>
- <6275d3e7.1c69fb81.1d62.4504@mx.google.com>
- <YnjmPAToTR0C5o8x@dhcp22.suse.cz>
- <6278fa75.1c69fb81.9c598.f794@mx.google.com>
- <Ynj/l+pyFJxKfcbQ@dhcp22.suse.cz>
- <6279c354.1c69fb81.7f6c1.15e0@mx.google.com>
- <CAHbLzkqztB+NXVcxtd7bVo7onH6AcMJ3JWCAHHqH3OAdbZsMOQ@mail.gmail.com>
- <627b1d39.1c69fb81.fe952.6426@mx.google.com>
- <CALvZod5aqZjUE8BBQZxwHDBuSWOSEAOqW4_xE22Am0sGZZs4sw@mail.gmail.com>
+        Tue, 10 May 2022 23:12:06 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8034A45796;
+        Tue, 10 May 2022 20:12:05 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id 137so635879pgb.5;
+        Tue, 10 May 2022 20:12:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=2MBN0zAn4D9ezzvtFqR3BrhbtifUhq904sSLoPSl8Gg=;
+        b=OH3/AiTSfdYV426FLwS5odKSvQ6zAXUDpYal67qusApQXatvj5YUhB8Xnzkd5Uga2N
+         92qc2Y4cFUAupDnI6aiuK7qkkafx62Vla7PRAn9lwS6+9URIwNp7HZVdbtBazgz4o80X
+         702IC20TiPakyeONU3K8nSb3lXh4zK+hk+249Js2WkAwTcAPLwPbg/69XDN4YQEOQasT
+         mgYGge8LN8TLkmTT9buWJiZez7aFG34mWAz/Ticup+afm9L+/VIF/UAz7yBx3d5nFnTN
+         rMhZ5FuQ2YZdIpOqulGf9EcKKZuCC4WAaU6uuAtBrJBEmZpcmRpiPrIgFvoCqxSdF+1i
+         lbtA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=2MBN0zAn4D9ezzvtFqR3BrhbtifUhq904sSLoPSl8Gg=;
+        b=OobcuAgA8BYC1Zi0K+qoXu7fSxgM+4+nIQjK1N/9lw77pvEw+NrFP02bgcyjZtavc5
+         h542pWNWsBNRx5tkZzLzThRk/VYK4GqezadlI2bCXK6Z7xG3KHflurMT5cxn+Pd4ppZ7
+         AFBlq4qGWMghb/n/5Bkq+8PttolqbY3hbYUf12n0MeeYf+nFCG5bNHgQKvHJkry8W2gp
+         AE8zCRrpeihTjSmAgm5nbUoJrXG1UBGCsAAUJT85UighSsu41JsOsSnUbBpHjpz03v/O
+         +KMjkLljow1K+x8HL8XM9awti3yycb+uhBFbr38UBJxJ9bXLGhor83vHYag7+aXE90Ct
+         X2ig==
+X-Gm-Message-State: AOAM532oXgyy3OxgSkmbPO0ADQ1b9T2wLltf9Ft9bc3UV0oJiibPbvXK
+        Cq/THsFNThKj2KimIPc/Z/0=
+X-Google-Smtp-Source: ABdhPJwUnDTfZUFHgHXqErgtlhY8Q79APm2Ey84kG+KC6CvYcMygKomgghJWTa+Yd+LiAI0zaxqmEg==
+X-Received: by 2002:a05:6a00:1a8d:b0:510:510f:d8e1 with SMTP id e13-20020a056a001a8d00b00510510fd8e1mr22928042pfv.83.1652238725019;
+        Tue, 10 May 2022 20:12:05 -0700 (PDT)
+Received: from localhost ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id d5-20020a170902c18500b0015e8d4eb1d2sm389038pld.28.2022.05.10.20.12.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 20:12:04 -0700 (PDT)
+Message-ID: <627b2984.1c69fb81.9002b.15f9@mx.google.com>
+X-Google-Original-Message-ID: <20220511031203.GA1492365@cgel.zte@gmail.com>
+Date:   Wed, 11 May 2022 03:12:03 +0000
+From:   CGEL <cgel.zte@gmail.com>
+To:     Oleksandr Natalenko <oleksandr@natalenko.name>
+Cc:     akpm@linux-foundation.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org, corbet@lwn.net,
+        xu xin <xu.xin16@zte.com.cn>,
+        Yang Yang <yang.yang29@zte.com.cn>,
+        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
+        wangyong <wang.yong12@zte.com.cn>,
+        Yunkai Zhang <zhang.yunkai@zte.com.cn>,
+        Matthew Wilcox <willy@infradead.org>
+Subject: Re: [PATCH v6] mm/ksm: introduce ksm_force for each process
+References: <20220510122242.1380536-1-xu.xin16@zte.com.cn>
+ <5820954.lOV4Wx5bFT@natalenko.name>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CALvZod5aqZjUE8BBQZxwHDBuSWOSEAOqW4_xE22Am0sGZZs4sw@mail.gmail.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <5820954.lOV4Wx5bFT@natalenko.name>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 07:47:29PM -0700, Shakeel Butt wrote:
-> On Tue, May 10, 2022 at 7:19 PM CGEL <cgel.zte@gmail.com> wrote:
-> >
-> [...]
-> > > > >
-> > > > > All controls in cgroup v2 should be hierarchical. This is really
-> > > > > required for a proper delegation semantic.
-> > > > >
-> > > >
-> > > > Could we align to the semantic of /sys/fs/cgroup/memory.swappiness?
-> > > > Some distributions like Ubuntu is still using cgroup v1.
-> > >
-> > > Other than enable flag, how would you handle the defrag flag
-> > > hierarchically? It is much more complicated.
-> >
-> > Refer to memory.swappiness for cgroup, this new interface better be independent.
+On Tue, May 10, 2022 at 03:30:36PM +0200, Oleksandr Natalenko wrote:
+> Hello.
 > 
-> Let me give my 0.02. I buy the use-case of Admin restricting THPs to
-> low priority jobs but I don't think memory controller is the right
-> place to enforce that policy. Michal gave one way (prctl()) to enforce
-> that policy. Have you explored the BPF way to enforce this policy?
+> On úterý 10. května 2022 14:22:42 CEST cgel.zte@gmail.com wrote:
+> > From: xu xin <xu.xin16@zte.com.cn>
+> > 
+> > To use KSM, we have to explicitly call madvise() in application code,
+> > which means installed apps on OS needs to be uninstall and source code
+> > needs to be modified. It is inconvenient.
+> > 
+> > In order to change this situation, We add a new proc file ksm_force
+> > under /proc/<pid>/ to support turning on/off KSM scanning of a
+> > process's mm dynamically.
+> > 
+> > If ksm_force is set to 1, force all anonymous and 'qualified' VMAs
+> > of this mm to be involved in KSM scanning without explicitly calling
+> > madvise to mark VMA as MADV_MERGEABLE. But It is effective only when
+> > the klob of /sys/kernel/mm/ksm/run is set as 1.
+> > 
+> > If ksm_force is set to 0, cancel the feature of ksm_force of this
+> > process (fallback to the default state) and unmerge those merged pages
+> > belonging to VMAs which is not madvised as MADV_MERGEABLE of this process,
+> > but still leave MADV_MERGEABLE areas merged.
+> 
+> To my best knowledge, last time a forcible KSM was discussed (see threads [1], [2], [3] and probably others) it was concluded that a) procfs was a horrible interface for things like this one; and b) process_madvise() syscall was among the best suggested places to implement this (which would require a more tricky handling from userspace, but still).
+> 
+> So, what changed since that discussion?
+>
 
-+1 for bpf
+Thanks a lot for your information. 
+However, the patch here is slightly different from your previous discussion: 
 
-I think these THP hints are too implementation-dependent and unstable to become
-a part of cgroup API.
+your patch focuses on using procfs to change the madvise behaviour of another process,
+but this patch will not modify the flag of all VMAs of the process. It introduces
+a new bool ksm_force to represent this forcible feature of KSM based on process,
+which is independent of madvise. the same way, process_madvise is a kind of
+madvise in essence.
 
-Thanks!
+> P.S. For now I do it via dedicated syscall, but I'm not trying to upstream this approach.
+> 
+> [1] https://lore.kernel.org/lkml/2a66abd8-4103-f11b-06d1-07762667eee6@suse.cz/
+> [2] https://lore.kernel.org/all/20190515145151.GG16651@dhcp22.suse.cz/T/#u
+> [3] https://lore.kernel.org/lkml/20190516172452.GA2106@avx2/
+> [4] https://gitlab.com/post-factum/pf-kernel/-/commits/ksm-5.17/
+> 
+> Oleksandr Natalenko (post-factum)
+> 
