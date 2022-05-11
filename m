@@ -2,187 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D02DC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 05:38:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FA20C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 05:41:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241906AbiEKFiB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 01:38:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40486 "EHLO
+        id S241943AbiEKFlp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 01:41:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233701AbiEKFh6 (ORCPT
+        with ESMTP id S241952AbiEKFlG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 01:37:58 -0400
-Received: from mail-vs1-xe33.google.com (mail-vs1-xe33.google.com [IPv6:2607:f8b0:4864:20::e33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B5133B2AF;
-        Tue, 10 May 2022 22:37:56 -0700 (PDT)
-Received: by mail-vs1-xe33.google.com with SMTP id a127so907543vsa.3;
-        Tue, 10 May 2022 22:37:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=99+74zi/ugqpPP/H1BYx5mgxsw+MDJDahwiZMO6/fXg=;
-        b=iSXjFtVdoulAW6NWsq1PlmfC+Qc6T0H6RCPJgN+0OIjZRODULDLwlVSQfCwx2mvpu4
-         LeRNFlmImRZYhJo2Gipt91G9tXQlMJR6esNrSwjqvBDd218CuRg2Ct7WOxdYUoxA3dcy
-         mma0bmpQdUAuxDWaBP4/vx2EshnDFGylyHaeVxK5KWWuW4mZpSOOy0Ogmyd1JaSkxuQg
-         unlANkeTyEalXxWZMCJnsK2WG+XLkJJnMllmD17jQf2zbwj1Yl6Hn4s8ySOGuNUBoc3i
-         si4s7/48IlQJ+tsGWUao50RjPAMdunVkiXKe6wmV9pUS/if4BYYIxycPZe5AqxByEjUE
-         b69g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=99+74zi/ugqpPP/H1BYx5mgxsw+MDJDahwiZMO6/fXg=;
-        b=OoaaEcky3UIAORh7nPF1TaVbpVZW7xQLx+xq6V+GGcybSM/d9lDoSe0fqCWbQYooOl
-         Hpx68uT7zbGA88XX8m0jNBp3ag/8KhKQYSwB6+S+IMeSg70lSNLmQk167RHokcwiXCdK
-         R57lIW+2Gsb/OsqqGD20dBKny+BUNBFJDzyLxqa8rI36GZgGbmy3hJprm2uXaBA9IHnf
-         rIpsx+HfOlrnhKtn38TiKUhyKQkdVlxBsrSbKUgRqQGEoKthQwVKKm8MZrSLytu6+aeM
-         Pg8j9Qc9WFtHq1Zx3Ecf5lQjpCHv+ttWDp5SP9vw9M7uW4VxmdoZ8vOnN9jK7Gh0L6cz
-         Xnsg==
-X-Gm-Message-State: AOAM533qJrhLcYRcMA3k9x9K3uHUkh92JpYZukj/GdJUMRlvpqAs+8AE
-        bXtL0iP9Pvmx/QT2GfkGtu2yocK3z4hfl8YnRg==
-X-Google-Smtp-Source: ABdhPJzGI4xLPZN4cIpW61gkAg41dLMEipuG1mmnFJBEpFDmP97YmzjtAqLMeg6hmzlp8t4UkpaMK8VUfoOjgxnHaNs=
-X-Received: by 2002:a67:b60b:0:b0:32c:e69e:15b3 with SMTP id
- d11-20020a67b60b000000b0032ce69e15b3mr13088417vsm.2.1652247475469; Tue, 10
- May 2022 22:37:55 -0700 (PDT)
+        Wed, 11 May 2022 01:41:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8331815714;
+        Tue, 10 May 2022 22:41:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FDE2616E2;
+        Wed, 11 May 2022 05:41:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2B4EC385DB;
+        Wed, 11 May 2022 05:40:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652247659;
+        bh=P+aYvgp7Upklf6ZVYjoCa+XwYgleSzcjiOjK6PSc6Bg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=GmrF3I4lK1lgms2ATcSRQCZ52K/j689iod3SRVlIatCZpFDzvcLhbjvr6PnfrtMmp
+         /OqI1VALYrJyA58bIkQnZEnQgIqnpec3yIdeSMwljo+gDcWXSiODY7Dr/Gbxy0TlYw
+         nN2FZQcgLq8LXnDk6IQ5XhVk+uHT9CfENBXjaPP4=
+Date:   Wed, 11 May 2022 07:40:56 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
+        Stable <stable@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Florian Fainelli <f.fainelli@gmail.com>, slade@sladewatkins.com
+Subject: Re: [PATCH 4.19 00/88] 4.19.242-rc1 review
+Message-ID: <YntMaNodADlwRtMH@kroah.com>
+References: <20220510130733.735278074@linuxfoundation.org>
+ <CADVatmOK41UB0dNQim7h5LwL3DaG4RWQ8zMge9WKn18c_jJa=w@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220510091654.8498-1-warp5tw@gmail.com> <20220510091654.8498-8-warp5tw@gmail.com>
- <Yno7IaBNnR5U2GuF@smile.fi.intel.com>
-In-Reply-To: <Yno7IaBNnR5U2GuF@smile.fi.intel.com>
-From:   Tyrone Ting <warp5tw@gmail.com>
-Date:   Wed, 11 May 2022 13:37:43 +0800
-Message-ID: <CACD3sJYPrQoWzOkOKM5tWuTWS0uEertBSrwMa5QmX0cMAPF4EQ@mail.gmail.com>
-Subject: Re: [PATCH v4 7/9] i2c: npcm: Handle spurious interrupts
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
-        venture@google.com, yuenn@google.com, benjaminfair@google.com,
-        robh+dt@kernel.org, wsa@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, jarkko.nikula@linux.intel.com,
-        semen.protsenko@linaro.org, sven@svenpeter.dev, jsd@semihalf.com,
-        lukas.bulwahn@gmail.com, olof@lixom.net, arnd@arndb.de,
-        tali.perry@nuvoton.com, Avi.Fishman@nuvoton.com,
-        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
-        kfting@nuvoton.com, openbmc@lists.ozlabs.org,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CADVatmOK41UB0dNQim7h5LwL3DaG4RWQ8zMge9WKn18c_jJa=w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andy:
+On Tue, May 10, 2022 at 09:34:21PM +0100, Sudip Mukherjee wrote:
+> Hi Greg,
+> 
+> On Tue, May 10, 2022 at 2:18 PM Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+> >
+> > This is the start of the stable review cycle for the 4.19.242 release.
+> > There are 88 patches in this series, all will be posted as a response
+> > to this one.  If anyone has any issues with these being applied, please
+> > let me know.
+> >
+> > Responses should be made by Thu, 12 May 2022 13:07:16 +0000.
+> > Anything received after that time might be too late.
+> 
+> Just some initial report for you,
+> 
+> I just moved to gcc-12 and many mips builds are failing with errors like:
+> arch/mips/lantiq/prom.c: In function 'plat_mem_setup':
+> arch/mips/lantiq/prom.c:82:30: error: comparison between two arrays
+> [-Werror=array-compare]
+>    82 |         else if (__dtb_start != __dtb_end)
+> 
+> It will need d422c6c0644b ("MIPS: Use address-of operator on section
+> symbols")  for all branches upto v5.10-stable.
 
-Thank you for your comments and they will be addressed.
+But gcc-11 still works, right?  We really haven't started adding the
+needed changes for gcc-12 to all of the branches yet.
 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> =E6=96=BC 2022=E5=B9=B4=
-5=E6=9C=8810=E6=97=A5 =E9=80=B1=E4=BA=8C =E4=B8=8B=E5=8D=886:15=E5=AF=AB=E9=
-=81=93=EF=BC=9A
->
-> On Tue, May 10, 2022 at 05:16:52PM +0800, Tyrone Ting wrote:
-> > From: Tali Perry <tali.perry1@gmail.com>
-> >
-> > On some platforms in rare cases (1 to 100,000 transactions),
-> > the i2c gets a spurious interrupt which means that we enter an interrup=
-t
-> > but in the interrupt handler we don't find any status bit that points t=
-o
-> > the reason we got this interrupt.
-> >
-> > This may be a case of a rare HW issue or signal integrity issue that is
-> > still under investigation.
-> >
-> > In order to overcome this we are doing the following:
-> > 1. Disable incoming interrupts in master mode only when slave mode is n=
-ot
-> >    enabled.
-> > 2. Clear end of busy (EOB) after every interrupt.
-> > 3. Clear other status bits (just in case since we found them cleared)
-> > 4. Return correct status during the interrupt that will finish the
-> >    transaction.
-> >
-> > On next xmit transaction if the bus is still busy the master will issue=
- a
-> > recovery process before issuing the new transaction.
->
-> ...
->
-> > +     /* clear status bits for spurious interrupts */
->
-> Clear
->
-> ...
->
-> > +     /*
-> > +      * if irq is not one of the above, make sure EOB is disabled and =
-all
->
-> If
->
-> > +      * status bits are cleared.
-> > +      */
->
-> ...
->
-> > +             /* verify no status bits are still set after bus is relea=
-sed */
->
-> Verify
->
-> ...
->
-> > +     /* check HW is OK: SDA and SCL should be high at this point. */
->
-> Check
->
-> ...
->
-> > +     if ((npcm_i2c_get_SDA(&bus->adap) =3D=3D 0) ||
-> > +         (npcm_i2c_get_SCL(&bus->adap) =3D=3D 0)) {
->
-> This fits one line
->
-> > +             dev_err(bus->dev, "I2C%d init fail: lines are low", bus->=
-num);
-> > +             dev_err(bus->dev, "SDA=3D%d SCL=3D%d", npcm_i2c_get_SDA(&=
-bus->adap),
-> > +                     npcm_i2c_get_SCL(&bus->adap));
->
-> No '\n' at the end of each?!
->
-> > +             return -ENXIO;
-> > +     }
->
-> ...
->
-> > +     /* clear status bits for spurious interrupts */
->
-> Clear
->
-> ...
->
-> > +     /* after any xfer, successful or not, stall and EOB must be disab=
-led */
->
-> After
->
-> ...
->
-> Maybe you chose the small letter for one-liner comments, but I see even i=
-n the
-> original code the inconsistent style. Please, add an explanation to the c=
-over
-> letter and follow it, assuming you add the patch at the end of the series=
- that
-> makes comment style consistent (for the one-liners, for the multi-line co=
-mments
-> we have a clear understanding about the style).
->
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
+thanks,
 
-Best Regards,
-Tyrone
+greg k-h
