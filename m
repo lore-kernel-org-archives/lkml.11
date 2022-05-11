@@ -2,94 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51B3EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 12:01:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9138C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 12:01:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240563AbiEKMBs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 08:01:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46308 "EHLO
+        id S240812AbiEKMBy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 08:01:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236601AbiEKMBm (ORCPT
+        with ESMTP id S240935AbiEKMBs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 08:01:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0121153E02
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 05:01:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652270497;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wi7tUBG+u292GRef9SBFymEZGOLQSxAzizn9GnHgqZI=;
-        b=SyqjYylgnsRq4/uHRiz7yaf2cwprGD1Hdhs+E5RwUJBKRuNn4F/Vl7d4zMrEdPrKkNxjgP
-        jHwm17y1eZk/jGnul6DRnPpQQT72pD94Q2VMosgqXGswYtmQk4e6Vq7sRpKT2ToWvz+Cqy
-        hSBQaJ1aVRXauyk383kgdOFMcgIpUSg=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-577-zxBfwwiKPwmjlg2eYPRBvw-1; Wed, 11 May 2022 08:01:32 -0400
-X-MC-Unique: zxBfwwiKPwmjlg2eYPRBvw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3BC2E8015BA;
-        Wed, 11 May 2022 12:01:25 +0000 (UTC)
-Received: from [10.22.16.235] (unknown [10.22.16.235])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 01F86400E122;
-        Wed, 11 May 2022 12:01:24 +0000 (UTC)
-Message-ID: <8f047351-c53e-ae9a-2d5e-f7c37f6bbdff@redhat.com>
-Date:   Wed, 11 May 2022 08:01:24 -0400
+        Wed, 11 May 2022 08:01:48 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9C995C777;
+        Wed, 11 May 2022 05:01:46 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id p4so2333966edx.0;
+        Wed, 11 May 2022 05:01:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EroBR+4+YzZMdvpx+IxguHWCfHlYcF1IYuyCJnsnDAI=;
+        b=pfWDHzS7ykxH1pvFB87xvTzxU09EpYY13dpXQyvt/COtYaDkrUy2lvdu5izEQ++Vfq
+         8GL1RcnMzPgIpOWq8NERKzhAie6Pzv5F8ywcjcCDBeMNcvLKcyntIXwtWxWPCqy/chen
+         rO7+tDPl++qHdOZ5z9Z0vbAQkeld7FZgqlOLaWsNA99mkdzG8uUs9CTTfXNRDVifb4Lf
+         rNO6izn3Ih/zKsayi12MqXaBQs98lwKkw4E6apUtmNWrRcxm3U8eK7Pes4VbBjzAjRfH
+         PZhlY/MU0WdDIlqRS/aiJuuj/WV09wPMooUJlsTiqEghRSjrT1m8rP+YEFx8tR+ntcAA
+         3zsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EroBR+4+YzZMdvpx+IxguHWCfHlYcF1IYuyCJnsnDAI=;
+        b=vsZaGux/iufpYGYgXSr55B7Q/IV29JoSwx5xj3hiNpXdxqjFFOXN3cpyGfG4HUvjfC
+         VyCL1OJ8hODUQ8xYBgWk/XQgZ71nezhLTymSh8RLcfwf013vQugM8o29UZ93lcxP7kHU
+         iLy/9TbMeCdgTZi8knx1qvGmUGZPiw1z6vixh7G+k7k6TM+YAVZdsP4kjjxefPERfqY3
+         /NFQ0a/LyACrwv042Ni7Yzgr5OlExiIuNaayO9TuCOtBbTNcwS/1CN8lxcXetCAWC6Wr
+         rZU9/X6LQCDLJNl+AhHAGU6h8Ouk51JBxaRZdr3hYtHnZeL9vh4HTJIUggKhmJlok+wH
+         gGNg==
+X-Gm-Message-State: AOAM531dOREsTFnVIbbOMMR6MLLACcqxjVLajxWLlUV7o0XcQ3EugRo4
+        fboKxHH1GTZH5HrivWxiehwQc/HoUYp3aX9Pju4=
+X-Google-Smtp-Source: ABdhPJwT6JxShg8oQEXTsxn18s9w/KmTzoY1hjJlh96DQnYfWvsSMak+R4mUBWUoEFxvJIF5GpLZoPr9LNF6aTY3ros=
+X-Received: by 2002:a05:6402:35d4:b0:427:f36b:66dc with SMTP id
+ z20-20020a05640235d400b00427f36b66dcmr28804690edc.77.1652270505058; Wed, 11
+ May 2022 05:01:45 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 2/2] locking/qrwlock: Reduce cacheline contention for
- rwlocks used in interrupt context
-Content-Language: en-US
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220510192134.434753-1-longman@redhat.com>
- <20220510192134.434753-2-longman@redhat.com>
- <CAK8P3a3APecwzfS24Cc2f7rPdZXKU0Y9FB3RZNFTnRYnVXVQzg@mail.gmail.com>
-From:   Waiman Long <longman@redhat.com>
-In-Reply-To: <CAK8P3a3APecwzfS24Cc2f7rPdZXKU0Y9FB3RZNFTnRYnVXVQzg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+References: <20220511115911.54960-1-max.oss.09@gmail.com> <20220511115911.54960-5-max.oss.09@gmail.com>
+In-Reply-To: <20220511115911.54960-5-max.oss.09@gmail.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Wed, 11 May 2022 09:01:33 -0300
+Message-ID: <CAOMZO5Chf=SAdEpPc9PnNqkEB+EP=STp3DDd6cQT_67fcc_JTQ@mail.gmail.com>
+Subject: Re: [PATCH v2 4/4] ARM: dts: imx6qdl-colibri: backlight pwm: Adapt
+ brightness steps
+To:     Max Krummenacher <max.oss.09@gmail.com>
+Cc:     Max Krummenacher <max.krummenacher@toradex.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/11/22 03:20, Arnd Bergmann wrote:
-> On Tue, May 10, 2022 at 9:21 PM Waiman Long <longman@redhat.com> wrote:
->> Even though qrwlock is supposed to be a fair lock, it does allow readers
->> from interrupt context to spin on the lock until it can acquire it making
->> it not as fair. This exception was added due to the requirement to allow
->> recursive read lock in interrupt context. This can also be achieved by
->> just ignoring the writer waiting bit without spinning on the lock.
->>
->> By making this change, we make qrwlock a bit more fair and eliminating
->> the problem of cacheline bouncing for rwlocks that are used heavily in
->> interrupt context, like the networking stack. This should also reduce
->> the chance of lock starvation for those interrupt context rwlocks.
->>
->> Signed-off-by: Waiman Long <longman@redhat.com>
->> ---
->>   include/asm-generic/qrwlock.h |  6 +++---
->>   kernel/locking/qrwlock.c      | 17 ++++++-----------
->>   2 files changed, 9 insertions(+), 14 deletions(-)
-> I have no opinion on the change itself, but I made sure this does
-> not conflict with the generic ticket spinlock changes that I merged
-> in the asm-generic tree, since those also touch the comments in
-> qrwlock.h [1]
+On Wed, May 11, 2022 at 8:59 AM Max Krummenacher <max.oss.09@gmail.com> wrote:
 >
-> I assume you are merging both patches through the tip tree, so
+> From: Max Krummenacher <max.krummenacher@toradex.com>
+>
+> Adapt the brightness steps as the backlight doesn't light up
+> for very low duty cycles.
+>
+> Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
 
-Yes, it is based on the latest tip tree.
-
-Cheers,
-Longman
-
+Reviewed-by: Fabio Estevam <festevam@gmail.com>
