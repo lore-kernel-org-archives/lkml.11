@@ -2,67 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAC6DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 01:23:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87949C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 01:25:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234986AbiEKBXl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 21:23:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43468 "EHLO
+        id S240284AbiEKBZX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 21:25:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229595AbiEKBXj (ORCPT
+        with ESMTP id S229595AbiEKBZU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 21:23:39 -0400
-Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CEF9994C4
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 18:23:35 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R421e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VCt7iBt_1652232209;
-Received: from 30.30.99.144(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VCt7iBt_1652232209)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 11 May 2022 09:23:31 +0800
-Message-ID: <278d1d30-a7ad-11df-5242-5472a841a3b3@linux.alibaba.com>
-Date:   Wed, 11 May 2022 09:24:09 +0800
+        Tue, 10 May 2022 21:25:20 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5DDFD80B5
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 18:25:18 -0700 (PDT)
+Received: from kwepemi500014.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kycb83lvKzGpl2;
+        Wed, 11 May 2022 09:22:28 +0800 (CST)
+Received: from kwepemm600005.china.huawei.com (7.193.23.191) by
+ kwepemi500014.china.huawei.com (7.221.188.232) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 11 May 2022 09:25:16 +0800
+Received: from ubuntu1804.huawei.com (10.67.175.30) by
+ kwepemm600005.china.huawei.com (7.193.23.191) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 11 May 2022 09:25:16 +0800
+From:   Hui Tang <tanghui20@huawei.com>
+To:     <lgirdwood@gmail.com>
+CC:     <broonie@kernel.org>, <perex@perex.cz>, <tiwai@suse.com>,
+        <ryan.lee.analog@gmail.com>, <ricardw@axis.com>, <steve@sk2.org>,
+        <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
+        <tanghui20@huawei.com>
+Subject: [PATCH -next 0/2] ASoC: codecs: Fix build error
+Date:   Wed, 11 May 2022 09:23:46 +0800
+Message-ID: <20220511012348.94288-1-tanghui20@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 1/2] arm64/hugetlb: Use ptep_get() to get the pte value of
- a huge page
-To:     Muchun Song <songmuchun@bytedance.com>
-Cc:     catalin.marinas@arm.com, will@kernel.org, mike.kravetz@oracle.com,
-        akpm@linux-foundation.org, willy@infradead.org,
-        anshuman.khandual@arm.com, christophe.leroy@csgroup.eu,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-References: <cover.1652180088.git.baolin.wang@linux.alibaba.com>
- <6aabddaf4cae5ae2205c3a7df9b9e15dbd61b641.1652180088.git.baolin.wang@linux.alibaba.com>
- <YnqK+Hah0wzMvT1p@FVFYT0MHHV2J.usts.net>
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-In-Reply-To: <YnqK+Hah0wzMvT1p@FVFYT0MHHV2J.usts.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.175.30]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600005.china.huawei.com (7.193.23.191)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Fix two build error, as follows:
 
+tanghui (2):
+  ASoC: max98396: Fix build error for implicit function declaration
+  ASoC: tlv320adc3xxx: Fix build error for implicit function declaration
 
-On 5/10/2022 11:55 PM, Muchun Song wrote:
-> On Tue, May 10, 2022 at 07:12:52PM +0800, Baolin Wang wrote:
->> The original huge_ptep_get() on ARM64 is just a wrapper of ptep_get(),
->> which will not take into account any contig-PTEs dirty and access bits.
->> Meanwhile we will implement a new ARM64-specific huge_ptep_get()
->> interface in following patch, which will take into account any contig-PTEs
->> dirty and access bits and only be allowed to pass the head pte of
->> a contig-PTE/PMD size page.
-> 
-> IIUC, the huge_ptep_get() you have implemented in patch 2 could
-> handle non-head pte. It'll return the original pte without potential
-> AD bit. I admit it is more efficeent to use ptep_get() directly,
-> but the judgement here should be updated.
+ sound/soc/codecs/Kconfig | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Ah, right. I missed the 'ncontig' will be 0 if a non-head pte passed. 
-Will update the commit message in next version. Thanks for reviewing.
+-- 
+2.17.1
 
-> 
-> With this update.
-> 
-> Reviewed-by: Muchun Song <songmuchun@bytedance.com>
