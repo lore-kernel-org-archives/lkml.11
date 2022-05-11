@@ -2,108 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46365C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 20:03:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B811C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 20:04:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347529AbiEKUDo (ORCPT
+        id S1347540AbiEKUEO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 16:03:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36600 "EHLO
+        Wed, 11 May 2022 16:04:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347496AbiEKUDl (ORCPT
+        with ESMTP id S1347496AbiEKUEH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 16:03:41 -0400
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 392072311F3;
-        Wed, 11 May 2022 13:03:34 -0700 (PDT)
-Received: from in02.mta.xmission.com ([166.70.13.52]:40998)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nosYV-00G91D-6r; Wed, 11 May 2022 14:03:31 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:37876 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nosYT-003AbW-14; Wed, 11 May 2022 14:03:30 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Oleg Nesterov <oleg@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net, mingo@kernel.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
-        Will Deacon <will@kernel.org>, tj@kernel.org,
-        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Jann Horn <jannh@google.com>,
-        Kees Cook <keescook@chromium.org>, linux-ia64@vger.kernel.org
-References: <20220421150248.667412396@infradead.org>
-        <20220421150654.817117821@infradead.org>
-        <87czhap9dy.fsf@email.froward.int.ebiederm.org>
-        <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
-        <87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>
-        <87k0b0apne.fsf_-_@email.froward.int.ebiederm.org>
-        <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
-        <20220510141119.GA23277@redhat.com>
-        <87lev9xy3n.fsf@email.froward.int.ebiederm.org>
-Date:   Wed, 11 May 2022 15:00:12 -0500
-In-Reply-To: <87lev9xy3n.fsf@email.froward.int.ebiederm.org> (Eric
-        W. Biederman's message of "Tue, 10 May 2022 09:26:36 -0500")
-Message-ID: <87zgjnsuur.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Wed, 11 May 2022 16:04:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4626F2317D5;
+        Wed, 11 May 2022 13:04:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE0B2B8261E;
+        Wed, 11 May 2022 20:04:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E272C340EE;
+        Wed, 11 May 2022 20:04:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652299443;
+        bh=QECFIEHeP/akX/1+3OaCSi9J5B/pyZpp7SXlX0Z6nz0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=n3Fj/G3MKPzS6rMAsbssX2HaIxxOk+A5/lQ0DznlPwU6NTQUz+Xq7IKOPR2iyOko5
+         Hv1B1q7FeZV2nPk0CSQ4PJi8oY9TDOxSEuNXuCs5U6OMKlV9JwnDpPn53VcafyLyex
+         21tSGxJ2MNcCSD0W3vDSdQylmuHWqhxujIy8noIFI+yWr0bxj4v6s/ek/TxpELzymB
+         4OafBMH1wxK67FmKKfv78D0lmdSD9bEhyBMGgovIFRnlBbVreX94uj5ICcNs9cfW37
+         ieRpRbWgy1sc1xk8qGARVWPv0LZM8qXp1/hNvCWOosNTiRntZh+FgLyXI0NiuBCMyB
+         Doh9lNyrtUtRA==
+Date:   Wed, 11 May 2022 13:04:01 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nicolas Schier <nicolas@fjasle.eu>,
+        Peter Zijlstra <peterz@infradead.org>,
+        linux-modules@vger.kernel.org, llvm@lists.linux.dev,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Sami Tolvanen <samitolvanen@google.com>
+Subject: Re: [PATCH v5 00/12] kbuild: yet another series of cleanups
+ (modpost, LTO, MODULE_REL_CRCS, export.h)
+Message-ID: <YnwWsYdL2khCikSY@dev-arch.thelio-3990X>
+References: <20220511164514.2741934-1-masahiroy@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nosYT-003AbW-14;;;mid=<87zgjnsuur.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX18ah17+fWlXXydck23OvW2XhGaBfirtO18=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH v4 0/12] ptrace: cleaning up ptrace_stop
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220511164514.2741934-1-masahiroy@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"Eric W. Biederman" <ebiederm@xmission.com> writes:
+Hi Masahiro,
 
-> Oleg Nesterov <oleg@redhat.com> writes:
->
->> On 05/05, Eric W. Biederman wrote:
->>>
->>> Eric W. Biederman (11):
->>>       signal: Rename send_signal send_signal_locked
->>>       signal: Replace __group_send_sig_info with send_signal_locked
->>>       ptrace/um: Replace PT_DTRACE with TIF_SINGLESTEP
->>>       ptrace/xtensa: Replace PT_SINGLESTEP with TIF_SINGLESTEP
->>>       ptrace: Remove arch_ptrace_attach
->>>       signal: Use lockdep_assert_held instead of assert_spin_locked
->>>       ptrace: Reimplement PTRACE_KILL by always sending SIGKILL
->>>       ptrace: Document that wait_task_inactive can't fail
->>>       ptrace: Admit ptrace_stop can generate spuriuos SIGTRAPs
->>>       ptrace: Don't change __state
->>>       ptrace: Always take siglock in ptrace_resume
->>>
->>> Peter Zijlstra (1):
->>>       sched,signal,ptrace: Rework TASK_TRACED, TASK_STOPPED state
->>
->> OK, lgtm.
->>
->> Reviewed-by: Oleg Nesterov <oleg@redhat.com>
->>
->>
->> I still dislike you removed TASK_WAKEKILL from TASK_TRACED, but I can't
->> find a good argument against it ;) and yes, this is subjective.
->
-> Does anyone else have any comments on this patchset?
->
-> If not I am going to apply this to a branch and get it into linux-next.
+On Thu, May 12, 2022 at 01:45:02AM +0900, Masahiro Yamada wrote:
+> 
+> This is the third batch of cleanups in this development cycle.
+> 
+> Major changes in v5:
+>  - Fix build errors
+>  - More cleanups
+> 
+> Major changes in v4:
+>  - Move static EXPORT_SYMBOL check to a script
+>  - Some refactoring
+> 
+> Major changes in v3:
+> 
+>  - Generate symbol CRCs as C code, and remove CONFIG_MODULE_REL_CRCS.
+> 
+> Major changes in v2:
+> 
+>  - V1 did not work with CONFIG_MODULE_REL_CRCS.
+>    I fixed this for v2.
+> 
+>  - Reflect some review comments in v1
+> 
+>  - Refactor the code more
+> 
+>  - Avoid too long argument error
+> 
+> 
+> 
+> Masahiro Yamada (12):
+>   modpost: split the section mismatch checks into section-check.c
+>   modpost: add sym_find_with_module() helper
+>   modpost: extract symbol versions from *.cmd files
+>   kbuild: link symbol CRCs at final link, removing
+>     CONFIG_MODULE_REL_CRCS
+>   kbuild: stop merging *.symversions
+>   genksyms: adjust the output format to modpost
+>   kbuild: do not create *.prelink.o for Clang LTO or IBT
+>   kbuild: check static EXPORT_SYMBOL* by script instead of modpost
+>   kbuild: make built-in.a rule robust against too long argument error
+>   kbuild: make *.mod rule robust against too long argument error
+>   kbuild: add cmd_and_savecmd macro
+>   kbuild: rebuild multi-object modules when objtool is updated
 
-Thank you all.
+I applied this series to your latest kbuild branch, built an Arch
+Linux x86_64 config and Fedora aarch64 config with
+CONFIG_LTO_CLANG_FULL=y then CONFIG_LTO_CLANG_THIN=y, and boot tested
+each kernel in QEMU with a full userspace. I did not notice any new
+warnings/errors and everything appears to work fine.
 
-I have pushed this to my ptrace_stop-cleanup-for-v5.19 branch
-and placed the branch in linux-next.
+Tested-by: Nathan Chancellor <nathan@kernel.org>
 
-Eric
+Cheers,
+Nathan
