@@ -2,94 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E9C7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 08:17:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E783C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 08:18:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241540AbiEKIRe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 04:17:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59862 "EHLO
+        id S243446AbiEKIS0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 04:18:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229625AbiEKIRc (ORCPT
+        with ESMTP id S243432AbiEKISW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 04:17:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 931EF3FBCB
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 01:17:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652257048;
+        Wed, 11 May 2022 04:18:22 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7098585656
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 01:18:20 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1652257098;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=0WhNG2BFNpm3DlKnvpsKok4cmCLeGV6XphB375cBO7U=;
-        b=VGRPrHzB9zM1+Gsk9omPkYIV0xG2XTHx5n5kgEPAN+St1ULf8QdMbOLwsuDeuh1l0vsz2h
-        aTHwDAvMnH3bD3yJTU58bY9pIQc51aQSfxvj6k/w0VXSY7zvzyBxQFlsgqclUy9C6tQt/M
-        emBn3P9eFahkvss5q09OFiU9QC9plLc=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-362-naHtCBJcPk6b1wVTF8gDJg-1; Wed, 11 May 2022 04:17:25 -0400
-X-MC-Unique: naHtCBJcPk6b1wVTF8gDJg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 05E3D185A794;
-        Wed, 11 May 2022 08:17:25 +0000 (UTC)
-Received: from localhost (unknown [10.39.193.115])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 73F97145BF03;
-        Wed, 11 May 2022 08:17:24 +0000 (UTC)
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
+        bh=3iVgEwbMFJsyJvWT1hDaew/TfQ/jheJPXp7YQRJh8/Q=;
+        b=Or5fbemMvJUAC2o0AxwvWrsMzFV4C8MiFrqqEs67QaGb8tI538GPqyycaWA9BBqN2Rxm7P
+        FZ6CnBBeCQuiSNuRR+YwzL905DKVwMk9dVWwjGDq5BXHLX78+M4/xA2ZMBIxcln9i5lu/2
+        36WDvLebhy9MpKp8nfXGVN1VLKglQY8pMkVTyLQSIghiYkAyW8Lw5FkuNxv1dkQRZpj+bF
+        iVR5srnVhKK2qFFr7nBJB61RPZBpwabJjFTIdN5orna4SXMnRofsnEug1oMJdlNOMqzffS
+        BVhEWQrI+aN7FbBkMpDlUtT1uPsjRtnhWNRWcwpfEGK7Cz2oP16MUg95ZK1gYg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1652257098;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=3iVgEwbMFJsyJvWT1hDaew/TfQ/jheJPXp7YQRJh8/Q=;
+        b=DsAJitHjBEUOodkfnfk/eNDXuMTtYNAe/+z/tvmkQDIwN1MR8rzU6XoBguFAIhOXtlLI+u
+        0WD8ErhteDNN46Bw==
+To:     Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        David Laight <David.Laight@ACULAB.COM>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Joe Perches <joe@perches.com>,
+        Julia Lawall <Julia.Lawall@inria.fr>,
+        =?utf-8?Q?Micha=C5=82_Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Nicolas Palix <nicolas.palix@imag.fr>,
         Peter Zijlstra <peterz@infradead.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        eperezma <eperezma@redhat.com>, Cindy Lu <lulu@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH V4 6/9] virtio-ccw: implement synchronize_cbs()
-In-Reply-To: <CACGkMEvWFyEqeeXYEmbU4TWtnj9Ku6J7jLK_7MueuFvpR7FiGg@mail.gmail.com>
-Organization: Red Hat GmbH
-References: <20220507071954.14455-1-jasowang@redhat.com>
- <20220507071954.14455-7-jasowang@redhat.com>
- <20220510072451-mutt-send-email-mst@kernel.org>
- <CACGkMEvWFyEqeeXYEmbU4TWtnj9Ku6J7jLK_7MueuFvpR7FiGg@mail.gmail.com>
-User-Agent: Notmuch/0.34 (https://notmuchmail.org)
-Date:   Wed, 11 May 2022 10:17:22 +0200
-Message-ID: <87r150bi0d.fsf@redhat.com>
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Matti Vaittinen <Matti.Vaittinen@fi.rohmeurope.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Yury Norov <yury.norov@gmail.com>
+Subject: Re: [PATCH 22/22] clockevents: use cpumask_weight_eq() in
+ tick_cleanup_dead_cpu()
+In-Reply-To: <20220510154750.212913-23-yury.norov@gmail.com>
+References: <20220510154750.212913-1-yury.norov@gmail.com>
+ <20220510154750.212913-23-yury.norov@gmail.com>
+Date:   Wed, 11 May 2022 10:18:17 +0200
+Message-ID: <87mtfoh48m.ffs@tglx>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11 2022, Jason Wang <jasowang@redhat.com> wrote:
+On Tue, May 10 2022 at 08:47, Yury Norov wrote:
+> Replace cpumask_weight() with cpumask_weight_eq(..., 1) because the it may
+> return earlier.
 
-> On Tue, May 10, 2022 at 7:28 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->>
->> On Sat, May 07, 2022 at 03:19:51PM +0800, Jason Wang wrote:
->> > @@ -1106,6 +1130,7 @@ static void virtio_ccw_int_handler(struct ccw_device *cdev,
->> >                       vcdev->err = -EIO;
->> >       }
->> >       virtio_ccw_check_activity(vcdev, activity);
->> > +     read_lock_irqsave(&vcdev->irq_lock, flags);
->> >       for_each_set_bit(i, indicators(vcdev),
->> >                        sizeof(*indicators(vcdev)) * BITS_PER_BYTE) {
->> >               /* The bit clear must happen before the vring kick. */
->>
->> Cornelia sent a lockdep trace on this.
->>
->> Basically I think this gets the irqsave/restore logic wrong.
->> It attempts to disable irqs in the handler (which is an interrupt
->> anyway).
->
-> The reason I use irqsave/restore is that it can be called from process
-> context (if I was not wrong), e.g from io_subchannel_quiesce().
-
-io_subchannel_quiesce() should disable interrupts, though? Otherwise, it
-would be a bug.
+'because the it'?
 
