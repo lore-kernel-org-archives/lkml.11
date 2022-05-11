@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4635C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 14:59:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A8B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 14:59:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245466AbiEKO7B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 10:59:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36024 "EHLO
+        id S245276AbiEKO7J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 10:59:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245377AbiEKO5o (ORCPT
+        with ESMTP id S245354AbiEKO5l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 10:57:44 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2BB56AA54
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 07:57:42 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id j4so4030291lfh.8
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 07:57:42 -0700 (PDT)
+        Wed, 11 May 2022 10:57:41 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F231EABA0
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 07:57:39 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id 16so2916673lju.13
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 07:57:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=wm0nSY0tUggN6kcNzdaUXf+PYrABsccvOtQau2Ce9iQ=;
-        b=WQtq5qfYkLwVtGKAcl9QF1e5Pr8UIw3GYZ58KZoTRibMv5wSoX0SUfJS+o3HfCsJPG
-         tRK9mXg48ZI6JzeY0m2xpWbo6wBs/K/zoS49qwOnms03hOPGJd6OZzzCw2gMqWH5vqmY
-         vRp+5a+S+CZh21KgW3Nw8LIauUwfaWNxkUlbe60XWltx7jandBZW4NAFt/W9v6brov39
-         YJ5j/9/l9ce0EzqirfhoEG07KESvaBVSgWo/j3QlYv1ezdxEZOw5cdKqz79VMY58eIhL
-         h/wTSbaZRPoDwsbDMTyhdFzKXWZ6SZImJo6b59RjOql2MMjyH/QvTLvm7WtmGOQVeLoh
-         BuMQ==
+        bh=03vwMXkNSh1Yi/ACwjbmjbNGWKBFAPs5qBvgCoLQeEk=;
+        b=AGjrrVJCLBarjIjTSR4m++R4rn4Nqfv0gx/0iKgijlo/HyHKY4TU9boFbkOMdNQr+v
+         0nh+AUV9zFAuU2hJpx8BbRRJ/RQWYTglsMMWiZZOOLd9UPYWZNziBgy8ui4Z0DaPTDlM
+         ixVWOHtmkHmIVNkiuQ9p1dmc+TQK6GmJjoF4cDpmW4HKjKC3+mp09EE1HpSJ+QJpG1Sr
+         rFgRKP4AKv+Wkilh1NaQRPxMSp1jPU/2PDoftAuQb5IxRJJTABh/XkcV/GcMD2F3dGst
+         6AuskXb4OOwjt5HaH4WwBhx/TTMtZz7gT0HB0+sJ+o8HJQA8yYlHSbGwaTN0zZdMJvvu
+         sf8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=wm0nSY0tUggN6kcNzdaUXf+PYrABsccvOtQau2Ce9iQ=;
-        b=lwDXdXgoGFA+wEi58j0RtYcV+p5VJ0qolPp5AWqYEoQEnDKRQq1k4MeQBXdA4NnBZb
-         i3XcW4beQW9FptkhPtUxSGOstW99b5YUae5PproP6Us+zX2Yuet7XmwrcKSPv6djA17I
-         GemmAr2PSbO7jfoWkrbLLpXAqFKAOEmQ8L3+6/e83M+e5oObd4NTehkBBfCYbGb/S3+8
-         suUWpbWG8rXMYYtDAUcmhSOPjC0Tpiz6UprcMLHDnZiGWCIXxRGty21kJ8z37fToDSJt
-         scqdhtz5g5Bg7WuZ5RB2YU/qLaY1jr5k9tV7s0QsBJWi0+aBB2cPZv6V/FTe8YtvIJXU
-         QA2g==
-X-Gm-Message-State: AOAM532YXi87e3q5a/8zNWNVrTt4nXQYFteWYYWXNGPMg/rqp5AFej/Z
-        R0ozdNOWN93mtVOYY0WtPLO26w==
-X-Google-Smtp-Source: ABdhPJwdyvaKZNp8WowmGL6vZ5f9jKJU+XH0dBAIFAYhbjyLPuTOl6U9uoiXJcg0+r2v8LKzMOg75w==
-X-Received: by 2002:a05:6512:1148:b0:448:39c8:89d with SMTP id m8-20020a056512114800b0044839c8089dmr20435225lfg.644.1652281061305;
-        Wed, 11 May 2022 07:57:41 -0700 (PDT)
+        bh=03vwMXkNSh1Yi/ACwjbmjbNGWKBFAPs5qBvgCoLQeEk=;
+        b=sjfPhMgI0n9e0kD7TRtLWf+P9BJkyxP9jOTVK1LIkYibz1KRdGAl8OfjjsKOAG9Lkk
+         FIdvlLCwZOZ6yTpNg220qyYqjHLhtIlqgxSlhNa4Jsbq8+/ypl3eM3KIJOh4s9ws42hH
+         XipBxUSyb2AhDkcWnfOPXoyNas6Rvgra11g3cP+lTuPRkCUqic9BH6jbdWfLQgN35lEx
+         nwZEH6vtJXMAnkQ52xh13TkJ0YGptAV9rVz3zBd2SIjmtdPy4/q0CoZUnuFMDpCO2Rjx
+         12ltGi2IjaJ5vgofLQbbOzr5Ii4tRwx9Ji0T4OlwkElA1zrjn1z5Nr1WgcCJYe46ESBT
+         vNJg==
+X-Gm-Message-State: AOAM533J5XNS1b9/F26VNxJ0SCc7eud3xhGuAAXT2cc+8mcXzKQYbO65
+        8CpDa5Wl5H68Xhm91kSUdFxbKw==
+X-Google-Smtp-Source: ABdhPJwVzMZbFVWKNFxTrZgdyNeO0VWVLulqT/QD/hKAzX3rlaU1s0usPzyUT3MXIIuzEBhg1WmgVg==
+X-Received: by 2002:a05:651c:1792:b0:235:1df3:7b8e with SMTP id bn18-20020a05651c179200b002351df37b8emr17300088ljb.464.1652281058272;
+        Wed, 11 May 2022 07:57:38 -0700 (PDT)
 Received: from localhost.localdomain (h-98-128-181-154.NA.cust.bahnhof.se. [98.128.181.154])
-        by smtp.gmail.com with ESMTPSA id z26-20020a19f71a000000b0047255d210f3sm320793lfe.34.2022.05.11.07.57.39
+        by smtp.gmail.com with ESMTPSA id z26-20020a19f71a000000b0047255d210f3sm320793lfe.34.2022.05.11.07.57.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 07:57:40 -0700 (PDT)
+        Wed, 11 May 2022 07:57:37 -0700 (PDT)
 From:   Ulf Hansson <ulf.hansson@linaro.org>
 To:     "Rafael J . Wysocki" <rafael@kernel.org>, linux-pm@vger.kernel.org
 Cc:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
@@ -59,9 +59,9 @@ Cc:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
         Kevin Hilman <khilman@kernel.org>,
         Ulf Hansson <ulf.hansson@linaro.org>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 13/14] PM: domains: Measure power-on/off latencies in genpd based on a governor
-Date:   Wed, 11 May 2022 16:57:03 +0200
-Message-Id: <20220511145704.698189-14-ulf.hansson@linaro.org>
+Subject: [PATCH 11/14] PM: domains: Clean up some code in pm_genpd_init() and genpd_remove()
+Date:   Wed, 11 May 2022 16:57:01 +0200
+Message-Id: <20220511145704.698189-12-ulf.hansson@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220511145704.698189-1-ulf.hansson@linaro.org>
 References: <20220511145704.698189-1-ulf.hansson@linaro.org>
@@ -71,57 +71,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The measurements of the power-on|off latencies in genpd for a PM domain are
-superfluous, unless the corresponding genpd has a governor assigned to it,
-which would make use of the data.
-
-Therefore, let's improve the behaviour in genpd by making the measurements
-conditional, based upon if there's a governor assigned.
+To improve the readability of the code, let's move the parts that deals
+with allocation/freeing of data, into two separate functions.
 
 Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 ---
- drivers/base/power/domain.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/base/power/domain.c | 56 +++++++++++++++++++++++++------------
+ 1 file changed, 38 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
-index a7de5fb8f073..83b073cdd0ed 100644
+index 9922fd763739..ac1eb7d2470b 100644
 --- a/drivers/base/power/domain.c
 +++ b/drivers/base/power/domain.c
-@@ -509,6 +509,7 @@ static int _genpd_power_on(struct generic_pm_domain *genpd, bool timed)
- 	if (!genpd->power_on)
- 		goto out;
+@@ -1968,6 +1968,37 @@ static int genpd_set_default_power_state(struct generic_pm_domain *genpd)
+ 	return 0;
+ }
  
-+	timed = timed && genpd->gd;
- 	if (!timed) {
- 		ret = genpd->power_on(genpd);
- 		if (ret)
-@@ -527,8 +528,7 @@ static int _genpd_power_on(struct generic_pm_domain *genpd, bool timed)
- 		goto out;
++static int genpd_alloc_data(struct generic_pm_domain *genpd)
++{
++	int ret;
++
++	if (genpd_is_cpu_domain(genpd) &&
++	    !zalloc_cpumask_var(&genpd->cpus, GFP_KERNEL))
++		return -ENOMEM;
++
++	/* Use only one "off" state if there were no states declared */
++	if (genpd->state_count == 0) {
++		ret = genpd_set_default_power_state(genpd);
++		if (ret)
++			goto free;
++	}
++
++	return 0;
++
++free:
++	if (genpd_is_cpu_domain(genpd))
++		free_cpumask_var(genpd->cpus);
++	return ret;
++}
++
++static void genpd_free_data(struct generic_pm_domain *genpd)
++{
++	if (genpd_is_cpu_domain(genpd))
++		free_cpumask_var(genpd->cpus);
++	if (genpd->free_states)
++		genpd->free_states(genpd->states, genpd->state_count);
++}
++
+ static void genpd_lock_init(struct generic_pm_domain *genpd)
+ {
+ 	if (genpd->flags & GENPD_FLAG_IRQ_SAFE) {
+@@ -2037,21 +2068,13 @@ int pm_genpd_init(struct generic_pm_domain *genpd,
+ 			!genpd_status_on(genpd))
+ 		return -EINVAL;
  
- 	genpd->states[state_idx].power_on_latency_ns = elapsed_ns;
--	if (genpd->gd)
--		genpd->gd->max_off_time_changed = true;
-+	genpd->gd->max_off_time_changed = true;
- 	pr_debug("%s: Power-%s latency exceeded, new value %lld ns\n",
- 		 genpd->name, "on", elapsed_ns);
+-	if (genpd_is_cpu_domain(genpd) &&
+-	    !zalloc_cpumask_var(&genpd->cpus, GFP_KERNEL))
+-		return -ENOMEM;
+-
+-	/* Use only one "off" state if there were no states declared */
+-	if (genpd->state_count == 0) {
+-		ret = genpd_set_default_power_state(genpd);
+-		if (ret) {
+-			if (genpd_is_cpu_domain(genpd))
+-				free_cpumask_var(genpd->cpus);
+-			return ret;
+-		}
+-	} else if (!gov && genpd->state_count > 1) {
++	/* Multiple states but no governor doesn't make sense. */
++	if (!gov && genpd->state_count > 1)
+ 		pr_warn("%s: no governor for states\n", genpd->name);
+-	}
++
++	ret = genpd_alloc_data(genpd);
++	if (ret)
++		return ret;
  
-@@ -559,6 +559,7 @@ static int _genpd_power_off(struct generic_pm_domain *genpd, bool timed)
- 	if (!genpd->power_off)
- 		goto out;
+ 	device_initialize(&genpd->dev);
+ 	dev_set_name(&genpd->dev, "%s", genpd->name);
+@@ -2096,10 +2119,7 @@ static int genpd_remove(struct generic_pm_domain *genpd)
+ 	genpd_unlock(genpd);
+ 	genpd_debug_remove(genpd);
+ 	cancel_work_sync(&genpd->power_off_work);
+-	if (genpd_is_cpu_domain(genpd))
+-		free_cpumask_var(genpd->cpus);
+-	if (genpd->free_states)
+-		genpd->free_states(genpd->states, genpd->state_count);
++	genpd_free_data(genpd);
  
-+	timed = timed && genpd->gd;
- 	if (!timed) {
- 		ret = genpd->power_off(genpd);
- 		if (ret)
-@@ -577,8 +578,7 @@ static int _genpd_power_off(struct generic_pm_domain *genpd, bool timed)
- 		goto out;
- 
- 	genpd->states[state_idx].power_off_latency_ns = elapsed_ns;
--	if (genpd->gd)
--		genpd->gd->max_off_time_changed = true;
-+	genpd->gd->max_off_time_changed = true;
- 	pr_debug("%s: Power-%s latency exceeded, new value %lld ns\n",
- 		 genpd->name, "off", elapsed_ns);
+ 	pr_debug("%s: removed %s\n", __func__, genpd->name);
  
 -- 
 2.25.1
