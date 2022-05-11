@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 672F9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 09:18:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFA8DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 09:19:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233657AbiEKJS3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 05:18:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48232 "EHLO
+        id S239521AbiEKJT6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 05:19:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239356AbiEKJSZ (ORCPT
+        with ESMTP id S231270AbiEKJTz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 05:18:25 -0400
+        Wed, 11 May 2022 05:19:55 -0400
 Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1F259BAC7;
-        Wed, 11 May 2022 02:18:21 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id ba17so1784550edb.5;
-        Wed, 11 May 2022 02:18:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55EAF994FA;
+        Wed, 11 May 2022 02:19:54 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id c12so1761267edv.10;
+        Wed, 11 May 2022 02:19:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=aXS0yW+0IcDdjRjEe31czGkw0Rugc3CtPkAGtXZ/h6g=;
-        b=LU7MyaWJehUmZPza+nAsaCsl9u26dN3RvR3uVdlxck2gt6nXab6l8upNIFrWPKJyZP
-         VhLLyF4wngqY+bcK6NxToHLdrdsSgMBPhMoTQ+Di9uaVTXkLaM3smW99KS+hDlrNMRuX
-         U3Qy+2hQWABEOhLearPTRiI5lnJsEUVbaFC9MHm/4h2IzH7QlepQjQjE57OOf2PJ/X4C
-         BZSax/i3CvSP7+NDK9YJpGtL6H+3z196y5V4uNKkU4VPRbROAWbSP16zyEYX6thlP2Wd
-         UNUPhC79bd/PAuS048Va2Kb/7SWjb9HgxbK8zFIdjP6X9YPXElSRFV3B1OHhXlPRDoU8
-         yEJQ==
+        bh=0FWrA/1HzsR1Fw7JiPrCjDIP8RO6iLoamwA8NVbBFUo=;
+        b=Kh6KdaD3Nhovfjm7JjbOXwHoQ0DWkIiuyZ9Ryxi3zqwlh2155hYLOYHNjSdCulB6rM
+         mLwubuJGzueqRvehPlqLSJcbWilLD5nDJe8cM7MMpV2tqtzmwnkYq0KPDa4XB87BLU+b
+         Ih35NwEYpri6s3gzhIaxoicAlqeGe6xluEnB1NTg3aPmGVRasxlqrBEjhKjGAqQ6A7my
+         0miUYrGrITe+fH7qExkXsYgN5X4zoGPFlfRulnBSa60vPo7DHkMKPrH45I5aJbtl3Icy
+         WZrKo2mpbBU/GIErsrDThWA8VzpYsN1t6z1+atKnyYGvz2Lsn+nfY9ZlVxrVYJeq0cP0
+         WahQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=aXS0yW+0IcDdjRjEe31czGkw0Rugc3CtPkAGtXZ/h6g=;
-        b=pyG6LiaEXCKAPCQYH2CCgk/P1U+Qj7Mknz+KkYHEvOCzuTrxaZLfSbAMQDLKq/XLqC
-         h9NFLFyz96gDhUScHk20c6c2hNmDmcVSuycHx2694EFuCOG3Up9buyG0MBb137w4z8ok
-         Igf0lVmZej/ArpmWGdZbPLJR1f+TAlh/WoO6di8Qznt7F8W2nW/m+LNLkZeBcnGpx5+0
-         9dwexCiubpAyQc2Pw/KiPzBrvA2n/n3ve4TmzT/q8AA7778btefnJQxDjydBVBy8cVR8
-         ahYYAqX9x1DSb2LaMeeInOIZ9v4TEQi5aBFJqgoYR4pzTTJyARGJkitmI3cGwpa/1Edw
-         ETiA==
-X-Gm-Message-State: AOAM5327ozxb1vJOUYB4indsIdvq1DXGQWjgpNl+QQ3cCsgqX3rccNK7
-        CKZg9nrH9gRrz8ZRrKT45fnfME/F1uGoyhf7Kgo=
-X-Google-Smtp-Source: ABdhPJyl/VOXNYLums4ReuHqmBuwnb6C5RopKopIqITvRa12z6BjZTB1VGi7oQ+cUO2/oD36q46W83YIl1Km36m1LsQ=
-X-Received: by 2002:a05:6402:d51:b0:425:d5e1:e9f0 with SMTP id
- ec17-20020a0564020d5100b00425d5e1e9f0mr27625201edb.125.1652260700381; Wed, 11
- May 2022 02:18:20 -0700 (PDT)
+        bh=0FWrA/1HzsR1Fw7JiPrCjDIP8RO6iLoamwA8NVbBFUo=;
+        b=r6whHcXXYnhV1sgC9yvQmhSrcS8OITm6QDK4Mm0P7SvdDjI9KDewP5pH+D7VdXU3Qb
+         na437s03B03nB2I9YqMWL/kjUZliZJUMNnh9gz36aXp3udvohEYWGo6YvbBL+UUak5Ta
+         1OOlVp2lghDh1IK77fnhjR+NlPHCmm2ZGa4jl8xF/fXBLIT+kQRLyusyVftVR4RyHbVi
+         kBaNaHiYgJq4nVJqRNvziCnZFtslaJEMnDKys4FSiePT3AtUgbh43qE2p8PDZurTgYHD
+         gmWhBKJLxIHn5lmrWXxbNVi1KsRZnRQt3Rv0LTiVCTHNGgaZ/0OJchoRsJU77c0+a8vd
+         NnoA==
+X-Gm-Message-State: AOAM531z4TFpcrNVtCB7skboD82itEy1Sqhi+s033BsmGPFt2y1udcxi
+        +nBg34DwzZL1vHIg+TcrZ2+OH1kH7iMCThX1UeI=
+X-Google-Smtp-Source: ABdhPJyAjMMACQ/bMvn1oWN7KSjTqhuM5w1KxcOEaFqspEIDacs06uc3fJkNWxX1AYsfrzNZC7aM8vxNcKf/ufHeAbg=
+X-Received: by 2002:aa7:d350:0:b0:425:e029:da56 with SMTP id
+ m16-20020aa7d350000000b00425e029da56mr27783655edr.296.1652260792848; Wed, 11
+ May 2022 02:19:52 -0700 (PDT)
 MIME-Version: 1.0
-References: <CAHp75Vc+G1JNkxBcpyXge9qsGpT0m4erBV1aEi4bMHDYfE-JOw@mail.gmail.com>
- <20220511021522.1488373-1-chi.minghao@zte.com.cn>
-In-Reply-To: <20220511021522.1488373-1-chi.minghao@zte.com.cn>
+References: <CAHp75VfzbWAS6phV3eB7ehe50NrXitkuS54sYjdVK-OqqYVieA@mail.gmail.com>
+ <20220511021638.1488650-1-chi.minghao@zte.com.cn>
+In-Reply-To: <20220511021638.1488650-1-chi.minghao@zte.com.cn>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 11 May 2022 11:17:43 +0200
-Message-ID: <CAHp75Vcna-XZVxBn900CfOCC0V2To3OTpT6_aKYQVEToNGQKVA@mail.gmail.com>
-Subject: Re: [PATCH V2] samsung-laptop: use kobj_to_dev()
+Date:   Wed, 11 May 2022 11:19:16 +0200
+Message-ID: <CAHp75Ve3ur6_jpd_wOP29CEJF8VvyG+e_Wn7dfa8N=vRHedoKQ@mail.gmail.com>
+Subject: Re: [PATCH V2] toshiba_acpi: use kobj_to_dev()
 To:     cgel.zte@gmail.com
 Cc:     Minghao Chi <chi.minghao@zte.com.cn>,
-        Corentin Chary <corentin.chary@gmail.com>,
+        Azael Avalos <coproscefalo@gmail.com>,
         Hans de Goede <hdegoede@redhat.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Mark Gross <markgross@kernel.org>,
@@ -66,7 +66,7 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 4:15 AM <cgel.zte@gmail.com> wrote:
+On Wed, May 11, 2022 at 4:16 AM <cgel.zte@gmail.com> wrote:
 >
 > From: Minghao Chi <chi.minghao@zte.com.cn>
 >
@@ -78,26 +78,23 @@ Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 > ---
 > v1->v2:
 >         remove Reported-by: Zeal Robot <zealci@zte.com.cn>
-
-I believe you want to give credit to the bot in the future patches
-like this. You may use commit message to add something like "The
-suggestion has been given by Zeal Robot."
-
->  drivers/platform/x86/samsung-laptop.c | 2 +-
+>
+>  drivers/platform/x86/toshiba_acpi.c | 2 +-
 >  1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> diff --git a/drivers/platform/x86/samsung-laptop.c b/drivers/platform/x86/samsung-laptop.c
-> index 19f6b456234f..c187dcdf82f0 100644
-> --- a/drivers/platform/x86/samsung-laptop.c
-> +++ b/drivers/platform/x86/samsung-laptop.c
-> @@ -1208,7 +1208,7 @@ static int __init samsung_backlight_init(struct samsung_laptop *samsung)
->  static umode_t samsung_sysfs_is_visible(struct kobject *kobj,
+> diff --git a/drivers/platform/x86/toshiba_acpi.c
+> b/drivers/platform/x86/toshiba_acpi.c
+> index f113dec98e21..0fc9e8b8827b 100644
+> --- a/drivers/platform/x86/toshiba_acpi.c
+> +++ b/drivers/platform/x86/toshiba_acpi.c
+> @@ -2353,7 +2353,7 @@ static struct attribute *toshiba_attributes[] = {
+>  static umode_t toshiba_sysfs_is_visible(struct kobject *kobj,
 >                                         struct attribute *attr, int idx)
 >  {
 > -       struct device *dev = container_of(kobj, struct device, kobj);
 > +       struct device *dev = kobj_to_dev(kobj);
->         struct samsung_laptop *samsung = dev_get_drvdata(dev);
->         bool ok = true;
+>         struct toshiba_acpi_dev *drv = dev_get_drvdata(dev);
+>         bool exists = true;
 >
 > --
 > 2.25.1
