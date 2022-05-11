@@ -2,155 +2,382 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1590C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 17:54:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C054C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 17:55:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345905AbiEKRyO (ORCPT
+        id S1345917AbiEKRzJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 13:54:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40760 "EHLO
+        Wed, 11 May 2022 13:55:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345897AbiEKRyK (ORCPT
+        with ESMTP id S233896AbiEKRzF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 13:54:10 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3378B2397B8;
-        Wed, 11 May 2022 10:54:06 -0700 (PDT)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24BHlT8l021278;
-        Wed, 11 May 2022 17:53:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=4SLmQyqszjt2p+ae6ineFhLKxmIsl1XWGzlafjcS7jo=;
- b=k6HBStuluXp9J96Lq1Yuf5gG0XOC2RQvy2cvEdwvtFRKAdsLnOBPBkSrL+qiZfyyjYcd
- s8YWeuX5mqm59AhPxB/asQE6lEBCOV8Z9n70BkwVVwr8RPUnqsblw6MkkY4veXErfiHi
- dYZjLy0ouWkFi8Jk+ECeCNmBZalBmnbh5dm9V9A7THAYiRRrJjH4Srp0+bjcHwhs5xU/
- RYfsVU2DF0jaT4DW4NQABwoJk9GkjC3sxllaeWpSMXI7TJhsT6MwYFVcpyc3E/xacJYB
- j40bGqQ76udrwKHs9JQmKGhjZF9cg3lTysYP0iLREjXw69vz16xnUfCWoapXyoLMrnDk kQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g0fedubtf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 11 May 2022 17:53:30 +0000
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24BHfoq0014511;
-        Wed, 11 May 2022 17:53:29 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g0fedubt0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 11 May 2022 17:53:29 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24BHXcE9010978;
-        Wed, 11 May 2022 17:53:28 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma06ams.nl.ibm.com with ESMTP id 3fyrkk1qen-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 11 May 2022 17:53:27 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24BHrPm548300534
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 11 May 2022 17:53:25 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id AD407A405C;
-        Wed, 11 May 2022 17:53:25 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1F50CA4054;
-        Wed, 11 May 2022 17:53:24 +0000 (GMT)
-Received: from sig-9-65-89-202.ibm.com (unknown [9.65.89.202])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 11 May 2022 17:53:23 +0000 (GMT)
-Message-ID: <67f0fe5874638241bc2f2401dc2bc12c51becc0b.camel@linux.ibm.com>
-Subject: Re: [PATCH v3] x86/kexec: Carry forward IMA measurement log on kexec
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Jonathan McDowell <noodles@fb.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>
-Date:   Wed, 11 May 2022 13:53:23 -0400
-In-Reply-To: <YnuJCH75GrhVm0Tp@noodles-fedora.dhcp.thefacebook.com>
-References: <YmKyvlF3my1yWTvK@noodles-fedora-PC23Y6EG>
-         <YmgjXZphkmDKgaOA@noodles-fedora-PC23Y6EG>
-         <YnuJCH75GrhVm0Tp@noodles-fedora.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
+        Wed, 11 May 2022 13:55:05 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0D9121A952
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 10:55:02 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id be20so3407910edb.12
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 10:55:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=vRxXDx59BwVAdE/yeHzMrpA2E8oV/k7BSRSKcJYdNfA=;
+        b=j0bCP9Ac9nsbSjZPAcD6tdqqrZV4sDP3RbsQMgYi2x5TCCiRzj83bEfxfyxjpposIi
+         fXlRRRYWSmtJrhuCCbQTE8MTt2iT63WqGTsfMYSiRzrOcvRnRstfaMJuyuI7qhwZFzCQ
+         IQSgpSI6eD/1J1MZTTlrLce8q7RLHtNE0FaYZ5n7rAF6EmLhc53FInghMRjL5oujH9Tk
+         y9a67Ng8mpZ4/DrSbm3cdv16kis8MutYiRMCgNtajxWIGOxIzXSQWK2PqhH8IipabXgs
+         k1sYGaINvDPdY68wqd79jP1OY9Tnu9eRJD/0Hv+P8Jfi32tbvvPlLXVUHavjm2Zv38f+
+         5zGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=vRxXDx59BwVAdE/yeHzMrpA2E8oV/k7BSRSKcJYdNfA=;
+        b=24dMCGt6FTyFh/paFOttV0UnFlJXpkaDhf6YewvKQII20+y1qB3+o/zpMDWiH8MI1b
+         4xcUP+VcsoA7nZKFMcEkrBpy3K3luJMI/GQLn4ranD3P2R/bhzgcIv7Dqv/KHGdIHGhk
+         KGd+p9SzF8j3tLb+BKW868NPIwJ+uFEYqOkc/M57JeNzdP6kynFVWOZHQ2d685LaJ4+K
+         Jjlqj0gntGvelV13Mv9IMy7DdJd+0M3Y/87h1TDn/vriZCS2GK9XBzoYyPOxfNShFAff
+         35CmEWgwiKrYSsnONJhV9XQVsC2CVMvWd46mD7haen5pv/4q3hOw7uwYs89aRsBasMw8
+         Ta4w==
+X-Gm-Message-State: AOAM531IaHt6W5NKgYvNFEEou1VyRqBCYHHl9u0uXTdD50P8Bk9zRe2e
+        yJr6eZi1dmo0dTHGKWHHjnoflg==
+X-Google-Smtp-Source: ABdhPJxhoebCeo/8aCGNu+Eiiq15xXHJ5M3E/dBl0X+mb8fVJ9xZI1u4poNv7tbPbiIiBRgXjNfWmA==
+X-Received: by 2002:a05:6402:50d1:b0:42a:2e52:c286 with SMTP id h17-20020a05640250d100b0042a2e52c286mr1328969edb.390.1652291701427;
+        Wed, 11 May 2022 10:55:01 -0700 (PDT)
+Received: from [192.168.0.155] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id q21-20020aa7d455000000b0042617ba63d3sm1448654edr.93.2022.05.11.10.55.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 May 2022 10:55:01 -0700 (PDT)
+Message-ID: <2d68e610-e8ae-9e08-257a-3c94c3697334@linaro.org>
+Date:   Wed, 11 May 2022 19:55:00 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 9/9] arm64: dts: qcom: msm8953: Add remote processor nodes
+Content-Language: en-US
+To:     Sireesh Kodali <sireeshkodali1@gmail.com>,
+        linux-remoteproc@vger.kernel.org
+Cc:     linux-arm-msm@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, bjorn.andersson@linaro.org,
+        devicetree@vger.kernel.org, phone-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+References: <20220511161602.117772-1-sireeshkodali1@gmail.com>
+ <20220511161602.117772-10-sireeshkodali1@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220511161602.117772-10-sireeshkodali1@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: XW9Ou39NMN7PD1z31LkZlt_gDovVfq9T
-X-Proofpoint-ORIG-GUID: RelXZCHM90nzvBUJrnLsrxcR57rxZfMu
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-11_07,2022-05-11_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 adultscore=0
- malwarescore=0 mlxscore=0 priorityscore=1501 impostorscore=0
- mlxlogscore=999 clxscore=1015 suspectscore=0 lowpriorityscore=0
- bulkscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205110079
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jonathan,
-
-On Wed, 2022-05-11 at 09:59 +0000, Jonathan McDowell wrote:
-> On kexec file load Integrity Measurement Architecture (IMA) subsystem
-> may verify the IMA signature of the kernel and initramfs, and measure
-> it. The command line parameters passed to the kernel in the kexec call
-> may also be measured by IMA. A remote attestation service can verify
-> a TPM quote based on the TPM event log, the IMA measurement list, and
-> the TPM PCR data. This can be achieved only if the IMA measurement log
-> is carried over from the current kernel to the next kernel across
-> the kexec call.
+On 11/05/2022 18:16, Sireesh Kodali wrote:
+> This commit adds the modem (q6v5_mss), WiFi (wcnss-pil) and audio DSP
+> (q6v5_pas) remote processor nodes for the MSM8953 platform. It also adds
+> the coresponding SMP2P, SMSM and pinctrl nodes that are needed by these
+> remote processors.
 > 
-> powerpc and ARM64 both achieve this using device tree with a
-> "linux,ima-kexec-buffer" node. x86 platforms generally don't make use of
-> device tree, so use the setup_data mechanism to pass the IMA buffer to
-> the new kernel.
-> 
-> Signed-off-by: Jonathan McDowell <noodles@fb.com>
-> ---
-> v3:
->  - Rebase on tip/master
+> Signed-off-by: Sireesh Kodali <sireeshkodali1@gmail.com>
+> +			};
+> +
+> +			wcnss_sleep: wcnss-sleep-pins {
+> +				wcss_wlan2 {
 
-This patch doesn't apply to Linus' master branch.  Which tip/master
-branch?  In the future, please use the git format-patch "--base=auto"
-option.
+No underscores in node names, unless something needs it?
 
->  - Pull ima_(free|get)_kexec_buffer into x86 code
->  - Push ifdefs into functions where possible
->  - Reverse fir tree variable declarations
->  - Fix section annotation on ima_free_kexec_buffer (__meminit)
->  - Only allocate ima_setup_data space when IMA_KEXEC is enabled
-
-IMA_KEXEC only controls whether the current measurement list should be
-carried across kexec, not restoring the previous measurement list.
-
-> v2:
->  - Fix operation with EFI systems
-> ---
-
-> +++ b/include/linux/ima.h
-> @@ -140,6 +140,9 @@ static inline int ima_measure_critical_data(const char *event_label,
+> +					pins = "gpio76";
+> +					function = "wcss_wlan2";
+> +				};
+> +				wcss_wlan1 {
+> +					pins = "gpio77";
+> +					function = "wcss_wlan1";
+> +				};
+> +				wcss_wlan0 {
+> +					pins = "gpio78";
+> +					function = "wcss_wlan0";
+> +				};
+> +				wcss_wlan {
+> +					pins = "gpio79", "gpio80";
+> +					function = "wcss_wlan";
+> +				};
+> +
+> +				pinconf {
+> +					pins = "gpio76", "gpio77",
+> +					     "gpio78", "gpio79",
+> +					     "gpio80";
+> +					drive-strength = <2>;
+> +					bias-pull-down;
+> +				};
+> +			};
+>  		};
 >  
->  #endif /* CONFIG_IMA */
+>  		gcc: clock-controller@1800000 {
+> @@ -745,6 +892,59 @@ spmi_bus: spmi@200f000 {
+>  			#size-cells = <0>;
+>  		};
 >  
-> +int ima_free_kexec_buffer(void);
-> +int ima_get_kexec_buffer(void **addr, size_t *size);
+> +		modem: remoteproc@4080000 {
+> +			compatible = "qcom,msm8953-mss-pil";
+> +			reg = <0x4080000 0x100>,
+> +			    <0x4020000 0x040>;
+> +
+> +			reg-names = "qdsp6", "rmb";
+> +
+> +			interrupts-extended = <&intc 0 24 1>,
+> +					      <&modem_smp2p_in 0 0>,
+> +					      <&modem_smp2p_in 1 0>,
+> +					      <&modem_smp2p_in 2 0>,
+> +					      <&modem_smp2p_in 3 0>;
+> +			interrupt-names = "wdog", "fatal", "ready",
+> +					  "handover", "stop-ack";
+> +
+> +			clocks = <&gcc GCC_MSS_CFG_AHB_CLK>,
+> +				 <&gcc GCC_MSS_Q6_BIMC_AXI_CLK>,
+> +				 <&gcc GCC_BOOT_ROM_AHB_CLK>,
+> +				 <&xo_board>;
+> +			clock-names = "iface", "bus", "mem", "xo";
+> +
+> +			power-domains = <&rpmpd MSM8953_VDDCX>, <&rpmpd MSM8953_VDDMX>;
+> +			power-domain-names = "cx", "mx";
+> +
+> +			qcom,smem-states = <&modem_smp2p_out 0>;
+> +			qcom,smem-state-names = "stop";
+> +
+> +			resets = <&gcc GCC_MSS_BCR>;
+> +			reset-names = "mss_restart";
+> +
+> +			qcom,halt-regs = <&tcsr 0x18000 0x19000 0x1a000>;
+> +
+> +			status = "okay";
 
-Wouldn't moving these function definitions here imply they are
-implemented on all architectures or are using the version in
-drivers/of/kexec.c.
+No need for okay.
 
-thanks,
+> +
+> +			mba {
+> +				memory-region = <&mba_mem>;
+> +			};
+> +
+> +			mpss {
+> +				memory-region = <&mpss_mem>;
+> +			};
+> +
+> +			smd-edge {
+> +				interrupts = <GIC_SPI 25 IRQ_TYPE_EDGE_RISING>;
+> +
+> +				qcom,smd-edge = <0>;
+> +				qcom,ipc = <&apcs 8 12>;
+> +				qcom,remote-pid = <1>;
+> +
+> +				label = "modem";
+> +			};
+> +		};
+> +
+>  		usb3: usb@70f8800 {
+>  			compatible = "qcom,msm8953-dwc3", "qcom,dwc3";
+>  			reg = <0x70f8800 0x400>;
+> @@ -1057,6 +1257,74 @@ i2c_8: i2c@7af8000 {
+>  			status = "disabled";
+>  		};
+>  
+> +		pronto: remoteproc@a21b000 {
+> +			compatible = "qcom,pronto-v3-pil", "qcom,pronto";
+> +			reg = <0xa204000 0x2000>,
+> +			      <0xa202000 0x1000>,
+> +			      <0xa21b000 0x3000>;
+> +			reg-names = "ccu", "dxe", "pmu";
+> +
+> +			memory-region = <&wcnss_fw_mem>;
+> +
+> +			interrupts-extended = <&intc 0 149 IRQ_TYPE_EDGE_RISING>,
+> +					      <&wcnss_smp2p_in 0 IRQ_TYPE_EDGE_RISING>,
+> +					      <&wcnss_smp2p_in 1 IRQ_TYPE_EDGE_RISING>,
+> +					      <&wcnss_smp2p_in 2 IRQ_TYPE_EDGE_RISING>,
+> +					      <&wcnss_smp2p_in 3 IRQ_TYPE_EDGE_RISING>;
+> +			interrupt-names = "wdog", "fatal", "ready", "handover", "stop-ack";
+> +
+> +			power-domains = <&rpmpd MSM8953_VDDCX>, <&rpmpd MSM8953_VDDMX>;
+> +			power-domain-names = "cx", "mx";
+> +
+> +			qcom,state = <&wcnss_smp2p_out 0>;
+> +			qcom,state-names = "stop";
+> +
+> +			pinctrl-names = "default", "sleep";
+> +			pinctrl-0 = <&wcnss_default>;
+> +			pinctrl-1 = <&wcnss_sleep>;
+> +
+> +			status = "okay";
 
-Mimi
+No need for status.
 
+> +
+> +			iris: iris {
+> +				compatible = "qcom,wcn3660b";
+> +
+> +				clocks = <&rpmcc RPM_SMD_RF_CLK2>;
+> +				clock-names = "xo";
+> +			};
+> +
+> +			smd-edge {
+> +				interrupts = <GIC_SPI 142 IRQ_TYPE_EDGE_RISING>;
+> +
+> +				qcom,ipc = <&apcs 8 17>;
+> +				qcom,smd-edge = <6>;
+> +				qcom,remote-pid = <4>;
+> +
+> +				label = "pronto";
+> +
+> +				wcnss {
+> +					compatible = "qcom,wcnss";
+> +					qcom,smd-channels = "WCNSS_CTRL";
+> +
+> +					qcom,mmio = <&pronto>;
+> +
+> +					bt {
+> +						compatible = "qcom,wcnss-bt";
+> +					};
+> +
+> +					wifi {
+> +						compatible = "qcom,wcnss-wlan";
+> +
+> +						interrupts = <GIC_SPI 145 IRQ_TYPE_LEVEL_HIGH>,
+> +							     <GIC_SPI 146 IRQ_TYPE_LEVEL_HIGH>;
+> +						interrupt-names = "tx", "rx";
+> +
+> +						qcom,smem-states = <&apps_smsm 10>, <&apps_smsm 9>;
+> +						qcom,smem-state-names = "tx-enable", "tx-rings-empty";
+> +					};
+> +				};
+> +			};
+> +		};
+> +
+>  		intc: interrupt-controller@b000000 {
+>  			compatible = "qcom,msm-qgic2";
+>  			interrupt-controller;
+> @@ -1070,6 +1338,116 @@ apcs: mailbox@b011000 {
+>  			#mbox-cells = <1>;
+>  		};
+>  
+> +		lpass: remoteproc@c200000 {
+> +			compatible = "qcom,msm8953-adsp-pil";
+> +			reg = <0xc200000 0x100>;
+> +
+> +			interrupts-extended = <&intc 0 293 IRQ_TYPE_EDGE_RISING>,
+> +					      <&smp2p_adsp_in 0 IRQ_TYPE_EDGE_RISING>,
+> +					      <&smp2p_adsp_in 1 IRQ_TYPE_EDGE_RISING>,
+> +					      <&smp2p_adsp_in 2 IRQ_TYPE_EDGE_RISING>,
+> +					      <&smp2p_adsp_in 3 IRQ_TYPE_EDGE_RISING>;
+> +			interrupt-names = "wdog", "fatal", "ready",
+> +					  "handover", "stop-ack";
+> +			clocks = <&xo_board>;
+> +			clock-names = "xo";
+> +
+> +			power-domains = <&rpmpd MSM8953_VDDCX>;
+> +			power-domain-names = "cx";
+> +
+> +			memory-region = <&adsp_fw_mem>;
+> +
+> +			qcom,smem-states = <&smp2p_adsp_out 0>;
+> +			qcom,smem-state-names = "stop";
+> +
+> +			smd-edge {
+> +				interrupts = <GIC_SPI 289 IRQ_TYPE_EDGE_RISING>;
+> +
+> +				label = "lpass";
+> +				mboxes = <&apcs 8>;
+> +				qcom,smd-edge = <1>;
+> +				qcom,remote-pid = <2>;
+> +				#address-cells = <1>;
+> +				#size-cells = <0>;
+> +
+> +				apr {
+> +					compatible = "qcom,apr-v2";
+> +					qcom,smd-channels = "apr_audio_svc";
+> +					qcom,apr-domain = <APR_DOMAIN_ADSP>;
+> +					#address-cells = <1>;
+> +					#size-cells = <0>;
+> +
+> +					q6core {
+> +						reg = <APR_SVC_ADSP_CORE>;
+> +						compatible = "qcom,q6core";
+> +					};
+> +
+> +					q6afe: q6afe {
+> +						compatible = "qcom,q6afe";
+> +						reg = <APR_SVC_AFE>;
+> +						q6afedai: dais {
+> +							compatible = "qcom,q6afe-dais";
+> +							#address-cells = <1>;
+> +							#size-cells = <0>;
+> +							#sound-dai-cells = <1>;
+> +
+> +							dai@16 {
+> +								reg = <PRIMARY_MI2S_RX>;
+> +								qcom,sd-lines = <0 1>;
+> +							};
+> +
+> +							dai@21 {
+> +								reg = <TERTIARY_MI2S_TX>;
+> +								qcom,sd-lines = <0 1>;
+> +							};
+> +						};
+> +						q6afecc: clock-controller {
+> +							compatible = "qcom,q6afe-clocks";
+> +							#clock-cells = <2>;
+> +						};
+> +					};
+> +
+> +					q6asm: q6asm {
+> +						compatible = "qcom,q6asm";
+> +						reg = <APR_SVC_ASM>;
+> +						q6asmdai: dais {
+> +							compatible = "qcom,q6asm-dais";
+> +							#address-cells = <1>;
+> +							#size-cells = <0>;
+> +							#sound-dai-cells = <1>;
+> +
+> +							dai@0 {
+> +								reg = <MSM_FRONTEND_DAI_MULTIMEDIA1>;
+> +							};
+> +
+> +							dai@1 {
+> +								reg = <MSM_FRONTEND_DAI_MULTIMEDIA2>;
+> +							};
+> +
+> +							dai@2 {
+> +								reg = <MSM_FRONTEND_DAI_MULTIMEDIA3>;
+> +							};
+> +
+> +							dai@3 {
+> +								reg = <MSM_FRONTEND_DAI_MULTIMEDIA4>;
+> +								is-compress-dai;
+> +							};
+> +						};
+> +					};
+> +
+> +					q6adm: q6adm {
+> +						compatible = "qcom,q6adm";
+> +						reg = <APR_SVC_ADM>;
+> +						q6routing: routing {
+> +							compatible = "qcom,q6adm-routing";
+> +							#sound-dai-cells = <0>;
+> +						};
+> +					};
+> +				};
+> +			};
+> +
+
+Remove unneeded blank lines.
+
+> +		};
+> +
+>  		timer@b120000 {
+>  			compatible = "arm,armv7-timer-mem";
+>  			reg = <0xb120000 0x1000>;
+
+
+Best regards,
+Krzysztof
