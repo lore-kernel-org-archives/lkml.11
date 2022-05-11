@@ -2,122 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA58BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:01:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D82BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:02:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245431AbiEKPBq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 11:01:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50360 "EHLO
+        id S245409AbiEKPB4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 11:01:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244143AbiEKPA6 (ORCPT
+        with ESMTP id S245506AbiEKPBX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 11:00:58 -0400
-X-Greylist: delayed 179 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 11 May 2022 08:00:55 PDT
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [81.169.146.166])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 502C3BD5
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 08:00:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1652281071;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
-    From:Subject:Sender;
-    bh=xaR6s5/QWptKMXOs5sooqJ3794ArNGAXxaZwjDyLBPo=;
-    b=LEDCh8kMG+ELS3FDK2MfiSK2mxTqus3ky7xLwfN9SLuEW8lTukm9YjP1F8TNol+ZK1
-    1JFPZH/+nFX+AbmC3+g8N1qUME4meOPEeOaiNLJUvO5koaHRGOLVW3UEk3+Z3qd7Ws1c
-    XcraidpU/1W9+jWegmV/JFayi2nf023bKy4agL0yWkng2L9L/4rsLiW3i9TAt5+54GNr
-    MLVFDHR7KB4cjJc6eVNkoROSZ2JDhbFhwXL2jmNQ859QdqfCNo9KGrhISqfuVITkEoOW
-    ZnQgi9SNtX4k3HqrOdBYImwDTV7QI1Lg5HeQlaMH3n1wV6h+r0GGaJZFR2CmJqry27H0
-    lj2Q==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdBqPeOuh2koeKQvJnLjhchY2TXGXhEF98MlNg=="
-X-RZG-CLASS-ID: mo00
-Received: from [IPV6:2a00:6020:1cff:5b00:9642:f755:5daa:777e]
-    by smtp.strato.de (RZmta 47.42.2 AUTH)
-    with ESMTPSA id 4544c9y4BEvoybs
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Wed, 11 May 2022 16:57:50 +0200 (CEST)
-Message-ID: <3c6bf83c-0d91-ea43-1a5d-27df7db1fb08@hartkopp.net>
-Date:   Wed, 11 May 2022 16:57:50 +0200
+        Wed, 11 May 2022 11:01:23 -0400
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED73032061;
+        Wed, 11 May 2022 08:01:21 -0700 (PDT)
+Received: by mail-qv1-xf35.google.com with SMTP id c8so2255491qvh.10;
+        Wed, 11 May 2022 08:01:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BpLpbA3cEdZdB5NVHaxdX/JjV/xBP+7WcQWXCx8dzmk=;
+        b=dfkMKQIkw1w9JLBk+Cr9V+7ivJKDpHfFtDTkU6lDsIntJczt3c5Xz5BafK1gXJTWpz
+         TyTzxFQjmXdpFvjA/VHnhH44E/xZD70Iy19Iv2NzZMhOpjefhYxyk544Wk+KSjkee1Hw
+         LAz/R00EkZVzbntXyEvPycJCSuc8vx0vGwgep51yVYHlNdLzmbhePKhUmTC9wTIZ7PdY
+         VZzaInuDI66tSv1I4g6gub1uYBQjYorE9s2AE6z5c8qVDGhe7zz8P4SpWcOBKZuFyVbd
+         Myopgc8sGJj00qUA/IZtilWM6AHrTbOMNGAQqls5aMn0ZYMaiiLrfYOkNveLEhRljUNh
+         AeLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BpLpbA3cEdZdB5NVHaxdX/JjV/xBP+7WcQWXCx8dzmk=;
+        b=PQiZ6/QU431N+AqSIkasYbMlSHppL1Loty7Hl8vfKQ3A11xztrjaefMscT0s0CJgbZ
+         +ZUDC/NnNbK3WzkfeR1lGvKQ+Ea6ph+aONnXRoLHYWHtXo31qA0m7NHKj3EXr8FWLIBF
+         u43ryUQA+RoSTBMCmo0Kbgp/YyhNrPomg7cPgp7C+QrHY/Ilrs4dGaP1ow/3te/xwna6
+         szE4aW7x9tqQlFy9hY0wzBB4zBkUp+6gz1Kxa99pcU/kNL5X9Pu7DxetFllfnOnmGqrW
+         Zh/QvgLsLsAFUAbr0CLw4DEEPTVDaxc/JPdFyvl2RDwYMRtdwyEL9jNta/cmzqcPg0uj
+         G1ZQ==
+X-Gm-Message-State: AOAM533jCoBEl50Qn04AZvl00tkA5ddW6kohcai13DNHXH+SZ2w2NxJX
+        gy8Xk8QdSfxAQ2a0c/hp4CqZTpAh9nfvxA==
+X-Google-Smtp-Source: ABdhPJx/cQGDrjrK51ktGYIyT1LOfezAIwxXLFpQqnqz5Dd76YXXs+eGPAvYc8cCr3FI5YI5X+yk6A==
+X-Received: by 2002:a05:6214:1bcb:b0:45a:afd7:6f72 with SMTP id m11-20020a0562141bcb00b0045aafd76f72mr22702167qvc.20.1652281279783;
+        Wed, 11 May 2022 08:01:19 -0700 (PDT)
+Received: from master-x64.sparksnet ([2601:153:980:85b1::10])
+        by smtp.gmail.com with ESMTPSA id h1-20020a05620a244100b0069fc6484c06sm1487134qkn.23.2022.05.11.08.01.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 May 2022 08:01:19 -0700 (PDT)
+From:   Peter Geis <pgwipeout@gmail.com>
+To:     linux-rockchip@lists.infradead.org
+Cc:     Heiko Stuebner <heiko@sntech.de>, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Peter Geis <pgwipeout@gmail.com>
+Subject: [PATCH v1 0/6] Cleanups and enablement for Quartz64-A
+Date:   Wed, 11 May 2022 11:01:11 -0400
+Message-Id: <20220511150117.113070-1-pgwipeout@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 1/1] can: skb: add and set local_origin flag
-Content-Language: en-US
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Devid Antonio Filoni <devid.filoni@egluetechnologies.com>,
-        kernel@pengutronix.de, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        David Jander <david@protonic.nl>
-References: <20220511121913.2696181-1-o.rempel@pengutronix.de>
- <b631b022-72d5-9160-fd13-f33c80dbbe59@hartkopp.net>
- <20220511132421.7o5a3po32l3w2wcr@pengutronix.de>
- <20220511143620.kphwgp2vhjyoecs5@pengutronix.de>
- <002d234f-a7d6-7b1a-72f4-157d7a283446@hartkopp.net>
- <20220511145437.oezwkcprqiv5lfda@pengutronix.de>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-In-Reply-To: <20220511145437.oezwkcprqiv5lfda@pengutronix.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Good Morning,
+
+The following patches clean up some dtbs_check warnings, fixup the
+Quartz64-A dts, and enable some additional functionality on the
+Quartz64-A.
+
+With this series the only remaining dtbs_check warnings are due to
+unconverted bindings.
+
+Patch 6 is dependent on:
+13e0ee34f39c arm64: dts: rockchip: add rk356x sfc support
+currently in linux-next.
 
 
-On 5/11/22 16:54, Marc Kleine-Budde wrote:
-> On 11.05.2022 16:50:06, Oliver Hartkopp wrote:
->>
->>
->> On 5/11/22 16:36, Marc Kleine-Budde wrote:
->>> On 11.05.2022 15:24:21, Marc Kleine-Budde wrote:
->>>> On 11.05.2022 14:38:32, Oliver Hartkopp wrote:
->>>>> IMO this patch does not work as intended.
->>>>>
->>>>> You probably need to revisit every place where can_skb_reserve() is used,
->>>>> e.g. in raw_sendmsg().
->>>>
->>>> And the loopback for devices that don't support IFF_ECHO:
->>>>
->>>> | https://elixir.bootlin.com/linux/latest/source/net/can/af_can.c#L257
->>>
->>> BTW: There is a bug with interfaces that don't support IFF_ECHO.
->>>
->>> Assume an invalid CAN frame is passed to can_send() on an interface that
->>> doesn't support IFF_ECHO. The above mentioned code does happily generate
->>> an echo frame and it's send, even if the driver drops it, due to
->>> can_dropped_invalid_skb(dev, skb).
->>>
->>> The echoed back CAN frame is treated in raw_rcv() as if the headroom is valid:
->>>
->>> | https://elixir.bootlin.com/linux/v5.17.6/source/net/can/raw.c#L138
->>>
->>> But as far as I can see the can_skb_headroom_valid() check never has
->>> been done. What about this patch?
->>>
->>> index 1fb49d51b25d..fda4807ad165 100644
->>> --- a/net/can/af_can.c
->>> +++ b/net/can/af_can.c
->>> @@ -255,6 +255,9 @@ int can_send(struct sk_buff *skb, int loop)
->>>                    */
->>>                   if (!(skb->dev->flags & IFF_ECHO)) {
->>> +                       if (can_dropped_invalid_skb(dev, skb))
->>> +                               return -EINVAL;
->>> +
->>
->> Good point!
->>
->> But please check the rest of the code.
->> You need 'goto inval_skb;' instead of the return ;-)
-> 
-> Why? To free the skb? That's what can_dropped_invalid_skb() does, too:
-> 
-> | https://elixir.bootlin.com/linux/v5.17.6/source/include/linux/can/skb.h#L130
-> 
+Patches 1 and 2 add some missing bindings to the rk3568 cru.
+Patch 3 renames the bluetooth gpios on Quartz64-A.
+Patch 4 adds the fan gpio pinctrl on Quartz64-A.
+Patch 5 enables sdr-104 on Quartz64-A.
+Patch 6 adds the disabled by default sfc controller to Quartz64-A.
 
-My bad!
+Peter Geis (6):
+  dt-binding: clock: Add missing rk3568 cru bindings
+  arm64: dts: rockchip: add clocks to rk356x cru
+  arm64: dts: rockchip: rename Quartz64-A bluetooth gpios
+  arm64: dts: rockchip: add Quartz64-A fan pinctrl
+  arm64: dts: rockchip: enable sdr-104 on sdmmc
+  arm64: dts: rockchip: enable sfc controller on Quartz64 Model A
 
-Pointing you not reading the code ... should better have looked myself :-D
+ .../bindings/clock/rockchip,rk3568-cru.yaml   | 13 +++++++++
+ .../boot/dts/rockchip/rk3566-quartz64-a.dts   | 29 +++++++++++++++++--
+ arch/arm64/boot/dts/rockchip/rk356x.dtsi      |  2 ++
+ 3 files changed, 42 insertions(+), 2 deletions(-)
+
+-- 
+2.25.1
 
