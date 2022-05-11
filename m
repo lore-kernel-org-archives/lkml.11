@@ -2,199 +2,231 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1E80C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 23:21:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E2CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 23:24:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349335AbiEKXVe (ORCPT
+        id S1349447AbiEKXYP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 19:21:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48426 "EHLO
+        Wed, 11 May 2022 19:24:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349166AbiEKXTD (ORCPT
+        with ESMTP id S1349491AbiEKXYF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 19:19:03 -0400
-Received: from mail.baikalelectronics.ru (mail.baikalelectronics.com [87.245.175.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 33DC419CB70;
-        Wed, 11 May 2022 16:18:39 -0700 (PDT)
-Received: from mail.baikalelectronics.ru (unknown [192.168.51.25])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id 1307EBAA;
-        Thu, 12 May 2022 02:19:26 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru 1307EBAA
+        Wed, 11 May 2022 19:24:05 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 788215640C;
+        Wed, 11 May 2022 16:21:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1652311166;
-        bh=0oMK30WdtHcOYdp8lm9r9navitmXPLaU64ebdlFu5B0=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=PQWn75V0P2YD2KSr3PwGw8PY+VYycMwyFxMcW5J1886hUZ0xpksVAzHU0o2K2xbqP
-         oGUoQ1e4S3nbBeUhHyHW6MA6XTCG4JeVgWXrVLs5p5g/PpqhNL36I2kXH2yz+RuZfg
-         jXbA8EHWFgjlz9b7OlVuIjS5nowwb56IFOlnMYjA=
-Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 12 May 2022 02:18:38 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Serge Semin <fancer.lancer@gmail.com>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Rob Herring <robh+dt@kernel.org>, <linux-ide@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
-Subject: [PATCH v3 21/23] ata: ahci-dwc: Add platform-specific quirks support
-Date:   Thu, 12 May 2022 02:18:08 +0300
-Message-ID: <20220511231810.4928-22-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20220511231810.4928-1-Sergey.Semin@baikalelectronics.ru>
-References: <20220511231810.4928-1-Sergey.Semin@baikalelectronics.ru>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1652311317; x=1683847317;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=wc57Na2pTCiNNEmqE67S/Gi8zz7NqysL4NMydfAAhNo=;
+  b=iv9EV504fRKEZTyCz5Vp5MLP476UsZmjD1ByD/wI1DB1/UpFvy1PfymI
+   DlJPHWAgRWWtNycG5Y6AVo7764nmqPX562k1gwcGTbw/i9G31GLVlhY76
+   I37Kk9DT+I1MsqwzpaPs2Gx3S1MAiMdTtzFkpid/Ihpkggo+SBjEFwtT2
+   s=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 11 May 2022 16:21:57 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 16:21:56 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 11 May 2022 16:21:55 -0700
+Received: from [10.110.21.19] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 11 May
+ 2022 16:21:54 -0700
+Message-ID: <89ac42c5-76a3-dfb4-16cf-18a2efbf8c6e@quicinc.com>
+Date:   Wed, 11 May 2022 16:21:54 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v4] drm/msm/dp: Always clear mask bits to disable
+ interrupts at dp_ctrl_reset_irq_ctrl()
+Content-Language: en-US
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        <robdclark@gmail.com>, <sean@poorly.run>, <swboyd@chromium.org>,
+        <dianders@chromium.org>, <vkoul@kernel.org>, <daniel@ffwll.ch>,
+        <airlied@linux.ie>, <agross@kernel.org>,
+        <bjorn.andersson@linaro.org>
+CC:     <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
+        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <1652305225-1048-1-git-send-email-quic_khsieh@quicinc.com>
+ <e12933c9-0439-410b-e691-0fa444c71011@linaro.org>
+From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
+In-Reply-To: <e12933c9-0439-410b-e691-0fa444c71011@linaro.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some DWC AHCI SATA IP-core derivatives require to perform small platform
-or IP-core specific setups. They are too small to be placed in a dedicated
-driver. It's just much easier to have a set of quirks for them right in
-the DWC AHCI driver code. Since we are about to add such platform support,
-as a pre-requisite we introduce a platform-data based DWC AHCI quirks API.
-The platform data can be used to define the flags passed to the
-ahci_platform_get_resources() method, additional AHCI host-flags and a set
-of callbacks to initialize, re-initialize and clear the platform settings.
 
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+On 5/11/2022 2:47 PM, Dmitry Baryshkov wrote:
+> On 12/05/2022 00:40, Kuogee Hsieh wrote:
+>> dp_catalog_ctrl_reset() will software reset DP controller. But it will
+>> not reset programmable registers to default value. DP driver still have
+>> to clear mask bits to interrupt status registers to disable interrupts
+>> after software reset of controller. This patch removes the enable flag
+>> condition checking to always clear mask bits of interrupt status
+>> registers to disable interrupts if enable flag is false.
+>>
+>> This patch also will fix the potential problem happen at system 
+>> suspend where
+>> dp_ctrl_reset_irq_ctrl() was called to try to disable HPD related 
+>> irqs but
+>> the irq is still unmasked unexpectedly
+>
+> Why is it unmasked? Especially unexpectedly.
 
----
+due to dp_catalog_ctrl_reset() does not clear hpd interrupt mask bits.
 
-Changelog v2:
-- Change the local objects prefix from 'dwc_ahci_' to 'ahci_dwc_'.
-  (@Damien)
----
- drivers/ata/ahci_dwc.c | 52 ++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 48 insertions(+), 4 deletions(-)
+This is the problem this patch try to fix it.
 
-diff --git a/drivers/ata/ahci_dwc.c b/drivers/ata/ahci_dwc.c
-index 73380aaaebab..f987efa1ad59 100644
---- a/drivers/ata/ahci_dwc.c
-+++ b/drivers/ata/ahci_dwc.c
-@@ -90,7 +90,16 @@
- #define AHCI_DWC_PORT_PHYCR		0x74
- #define AHCI_DWC_PORT_PHYSR		0x78
- 
-+struct ahci_dwc_plat_data {
-+	unsigned int pflags;
-+	unsigned int hflags;
-+	int (*init)(struct ahci_host_priv *hpriv);
-+	int (*reinit)(struct ahci_host_priv *hpriv);
-+	void (*clear)(struct ahci_host_priv *hpriv);
-+};
-+
- struct ahci_dwc_host_priv {
-+	const struct ahci_dwc_plat_data *pdata;
- 	struct platform_device *pdev;
- 
- 	u32 timv;
-@@ -107,11 +116,15 @@ static struct ahci_host_priv *ahci_dwc_get_resources(struct platform_device *pde
- 		return ERR_PTR(-ENOMEM);
- 
- 	dpriv->pdev = pdev;
-+	dpriv->pdata = device_get_match_data(&pdev->dev);
-+	if (!dpriv->pdata)
-+		return ERR_PTR(-EINVAL);
- 
--	hpriv = ahci_platform_get_resources(pdev, AHCI_PLATFORM_GET_RESETS);
-+	hpriv = ahci_platform_get_resources(pdev, dpriv->pdata->pflags);
- 	if (IS_ERR(hpriv))
- 		return hpriv;
- 
-+	hpriv->flags |= dpriv->pdata->hflags;
- 	hpriv->plat_data = (void *)dpriv;
- 
- 	return hpriv;
-@@ -242,22 +255,33 @@ static int ahci_dwc_init_dmacr(struct ahci_host_priv *hpriv)
- 
- static int ahci_dwc_init_host(struct ahci_host_priv *hpriv)
- {
-+	struct ahci_dwc_host_priv *dpriv = hpriv->plat_data;
- 	int rc;
- 
- 	rc = ahci_platform_enable_resources(hpriv);
- 	if (rc)
- 		return rc;
- 
-+	if (dpriv->pdata->init) {
-+		rc = dpriv->pdata->init(hpriv);
-+		if (rc)
-+			goto err_disable_resources;
-+	}
-+
- 	ahci_dwc_check_cap(hpriv);
- 
- 	ahci_dwc_init_timer(hpriv);
- 
- 	rc = ahci_dwc_init_dmacr(hpriv);
- 	if (rc)
--		goto err_disable_resources;
-+		goto err_clear_platform;
- 
- 	return 0;
- 
-+err_clear_platform:
-+	if (dpriv->pdata->clear)
-+		dpriv->pdata->clear(hpriv);
-+
- err_disable_resources:
- 	ahci_platform_disable_resources(hpriv);
- 
-@@ -275,6 +299,12 @@ static int ahci_dwc_reinit_host(struct ahci_host_priv *hpriv)
- 	if (rc)
- 		return rc;
- 
-+	if (dpriv->pdata->reinit) {
-+		rc = dpriv->pdata->reinit(hpriv);
-+		if (rc)
-+			goto err_disable_resources;
-+	}
-+
- 	writel(dpriv->timv, hpriv->mmio + AHCI_DWC_HOST_TIMER1MS);
- 
- 	for_each_set_bit(i, &port_map, AHCI_MAX_PORTS) {
-@@ -283,10 +313,20 @@ static int ahci_dwc_reinit_host(struct ahci_host_priv *hpriv)
- 	}
- 
- 	return 0;
-+
-+err_disable_resources:
-+	ahci_platform_disable_resources(hpriv);
-+
-+	return rc;
- }
- 
- static void ahci_dwc_clear_host(struct ahci_host_priv *hpriv)
- {
-+	struct ahci_dwc_host_priv *dpriv = hpriv->plat_data;
-+
-+	if (dpriv->pdata->clear)
-+		dpriv->pdata->clear(hpriv);
-+
- 	ahci_platform_disable_resources(hpriv);
- }
- 
-@@ -371,9 +411,13 @@ static int ahci_dwc_resume(struct device *dev)
- 
- static SIMPLE_DEV_PM_OPS(ahci_dwc_pm_ops, ahci_dwc_suspend, ahci_dwc_resume);
- 
-+struct ahci_dwc_plat_data ahci_dwc_plat = {
-+	.pflags = AHCI_PLATFORM_GET_RESETS,
-+};
-+
- static const struct of_device_id ahci_dwc_of_match[] = {
--	{ .compatible = "snps,dwc-ahci", },
--	{ .compatible = "snps,spear-ahci", },
-+	{ .compatible = "snps,dwc-ahci", &ahci_dwc_plat },
-+	{ .compatible = "snps,spear-ahci", &ahci_dwc_plat },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, ahci_dwc_of_match);
--- 
-2.35.1
+I will revise commit text to explain more.
 
+>
+>> and can come in while system are
+>> suspending. This leads to bus hangs if the irq is handled after we 
+>> power down
+>> the DP hardware because we run the irq handler and access a device 
+>> register
+>> assuming that no irq could ever come in if we powered down the 
+>> device. We
+>> don't know when the irq will be handled though, so it's possible the 
+>> irq is
+>> pending from before we disable the irq in the hardware.
+>
+> Please split into two patches.
+
+this is just the same problem mention above.
+
+>
+>>
+>> Changes in v2:
+>> -- add more details commit text
+>>
+>> Changes in v3:
+>> -- add synchrons_irq()
+>> -- add atomic_t suspended
+>>
+>> Changes in v4:
+>> -- correct Fixes's commit ID
+>>
+>> Fixes: 989ebe7bc446 ("drm/msm/dp: do not initialize phy until plugin 
+>> interrupt received")
+>> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+>> ---
+>>   drivers/gpu/drm/msm/dp/dp_ctrl.c    |  9 +++++++--
+>>   drivers/gpu/drm/msm/dp/dp_display.c | 18 ++++++++++++++++++
+>>   2 files changed, 25 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c 
+>> b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+>> index af7a80c..f3e333e 100644
+>> --- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
+>> +++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+>> @@ -1389,8 +1389,13 @@ void dp_ctrl_reset_irq_ctrl(struct dp_ctrl 
+>> *dp_ctrl, bool enable)
+>>         dp_catalog_ctrl_reset(ctrl->catalog);
+>>   -    if (enable)
+>> -        dp_catalog_ctrl_enable_irq(ctrl->catalog, enable);
+>> +    /*
+>> +     * all dp controller programmable registers will not
+>> +     * be reset to default value after DP_SW_RESET
+>> +     * therefore interrupt mask bits have to be updated
+>> +     * to enable/disable interrupts
+>> +     */
+>> +    dp_catalog_ctrl_enable_irq(ctrl->catalog, enable);
+>>   }
+>>     void dp_ctrl_phy_init(struct dp_ctrl *dp_ctrl)
+>> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c 
+>> b/drivers/gpu/drm/msm/dp/dp_display.c
+>> index c388323..c34dbfc 100644
+>> --- a/drivers/gpu/drm/msm/dp/dp_display.c
+>> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
+>> @@ -98,6 +98,8 @@ struct dp_display_private {
+>>       struct dp_ctrl    *ctrl;
+>>       struct dp_debug   *debug;
+>>   +    atomic_t suspended;
+>
+> Usage of atomic_t signifies that something is wrong here. Bool should 
+> be enough here.
+
+suspended flag are shared by both event_thread and display_irq_handler, 
+i think it need either atomic
+
+or protected by spinlock.
+
+>
+>> +
+>>       struct dp_usbpd_cb usbpd_cb;
+>>       struct dp_display_mode dp_mode;
+>>       struct msm_dp dp_display;
+>> @@ -187,6 +189,11 @@ static int dp_add_event(struct 
+>> dp_display_private *dp_priv, u32 event,
+>>       int pndx;
+>>         spin_lock_irqsave(&dp_priv->event_lock, flag);
+>> +    if (atomic_read(&dp_priv->suspended)) {
+>> +        spin_unlock_irqrestore(&dp_priv->event_lock, flag);
+>> +        return -EPERM;
+>
+> Why EPERM?
+>
+>> +    }
+>> +
+>>       pndx = dp_priv->event_pndx + 1;
+>>       pndx %= DP_EVENT_Q_MAX;
+>>       if (pndx == dp_priv->event_gndx) {
+>> @@ -454,6 +461,13 @@ static void dp_display_host_deinit(struct 
+>> dp_display_private *dp)
+>>           dp->dp_display.connector_type, dp->core_initialized,
+>>           dp->phy_initialized);
+>>   +    if (!dp->core_initialized) {
+>
+> Can this happen?
+
+not likely,
+
+but It should not in this patch. will double check.
+
+>
+>> +        DRM_DEBUG_DP("DP core not initialized\n");
+>> +        return;
+>> +    }
+>> +
+>> +    synchronize_irq(dp->irq);
+>
+> Why? If you need to run with IRQs disabled, you can use 
+> suspend_late/early_resume. But generally it should be enough to check 
+> for the !suspended in the IRQ.
+>
+>> +
+>>       dp_ctrl_reset_irq_ctrl(dp->ctrl, false);
+>>       dp_aux_deinit(dp->aux);
+>>       dp_power_deinit(dp->power);
+>> @@ -1362,6 +1376,8 @@ static int dp_pm_resume(struct device *dev)
+>>           dp->dp_display.connector_type, dp->core_initialized,
+>>           dp->phy_initialized, dp_display->power_on);
+>>   +    atomic_set(&dp->suspended, 0);
+>> +
+>>       /* start from disconnected state */
+>>       dp->hpd_state = ST_DISCONNECTED;
+>>   @@ -1431,6 +1447,8 @@ static int dp_pm_suspend(struct device *dev)
+>>           dp->dp_display.connector_type, dp->core_initialized,
+>>           dp->phy_initialized, dp_display->power_on);
+>>   +    atomic_inc(&dp->suspended);
+>> +
+>>       /* mainlink enabled */
+>>       if (dp_power_clk_status(dp->power, DP_CTRL_PM))
+>>           dp_ctrl_off_link_stream(dp->ctrl);
+>
+>
