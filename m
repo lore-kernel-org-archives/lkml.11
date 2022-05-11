@@ -2,116 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28C8FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 12:01:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07031C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 12:01:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233350AbiEKMBb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 08:01:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45790 "EHLO
+        id S238494AbiEKMBn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 08:01:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230117AbiEKMB2 (ORCPT
+        with ESMTP id S235036AbiEKMBd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 08:01:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4BD5544A2F
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 05:01:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652270484;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dvJz3kIQp6oFZy6gEtQUxT64p3T3zR43kmgls6fwHwE=;
-        b=dHg7jB+Im07ZE2h1IuauFAVghftTdyQvJE6++ABC+2qfRKmJn/VEg+SrkC/SLGR42x6bko
-        oQ96DDCsvHGKcoegJoEg+opmLOaTuTLFqeS7RdhcyeLH8uH7letvyICieEm07VzHuhkNIZ
-        jwSs++wEGJAFIh7mjhKU7YAPjVqrn50=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-21-naYuVxaAMNmhdXpAFVknGQ-1; Wed, 11 May 2022 08:01:22 -0400
-X-MC-Unique: naYuVxaAMNmhdXpAFVknGQ-1
-Received: by mail-wm1-f72.google.com with SMTP id g3-20020a7bc4c3000000b0039409519611so619363wmk.9
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 05:01:21 -0700 (PDT)
+        Wed, 11 May 2022 08:01:33 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97BDA4EDD6
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 05:01:31 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id ks9so3602510ejb.2
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 05:01:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=u0tXYiSeuXA4FVwlCLUjj/6hu6YWAxriDMO2+yxPWNc=;
+        b=ZrTmlykHSj+S0huxirDYojqYGuVzHoCYaHH91i7yN0mM5h+M56A12TUvN8Skjs6vPm
+         PwWe71+c7ULDUNOD5k6JxDhkDP7ruDyIHNcFPy2cy+YbEVlvQ671sN7JEdGqFGshdvwL
+         ZvG2qjbPQ6u9wmSZmmlgezObYMdfJddPQqSxr7kiRcZnwewNpivHI8UF/mii8FdmHHmZ
+         V04GU6Ti6LaRLCCcBtSanblCaOZ85U113K6kJeniqfcDhDiG/UIdaPzFqTiyOxS/mX3+
+         arUQmzNrq7YdNOLjxrkJd3UeSqYa/Kui04hUX0kZOAR5lbYCo9ZNA+wXDrrx05AnpP/T
+         il1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=dvJz3kIQp6oFZy6gEtQUxT64p3T3zR43kmgls6fwHwE=;
-        b=e/l/Rz14GsdCr8TnieR7ZvB+9p9dYkIggmmN9KGcwrr6PSbZrtXvKHZgGpBTMpfb4r
-         UfKio5KgcZX4fBQAnLeoA10MJX36PFURfxATnZls1WtdHP8qezf1mITVjZr47vtoIn7d
-         Dy+bnSSShul258ngWBY4ecLMGH2qtiHOXyidG/XhRUzg+HMBZfHDNBZMnxAjre2CFce3
-         Dk5O5tKtcE0fIXWpjD8/01OAEvI+tim8nwhFWHkDbiOvHZ1syh9nSk9O6W5boy7H3Jkc
-         U0/G0ylVSFU1wUQtvBadZo4fPCgiDrZvMxtur70mY+D5JvgvDb1P3VLsCCyBW8E7ZuCW
-         rZIw==
-X-Gm-Message-State: AOAM530cM2L+5CeqqjMzkJrH3FMwfrbvUFQ6ENObBmXuVQmHFVDdGfB7
-        CykcMJaSLkfnyfBJWM9/c//Y9t3QIEwKRzMSSSIF43DILZ/lRwQ4vOF2QPX5rK1SnATUfz1orTN
-        NnfAWVB0m6vcrxR8HpW3xERel
-X-Received: by 2002:a7b:c186:0:b0:394:bed:e0cf with SMTP id y6-20020a7bc186000000b003940bede0cfmr4401626wmi.162.1652270480808;
-        Wed, 11 May 2022 05:01:20 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyJU9TiluFpK/8RtXUWSj8BNNT56qPPeY24uIkteINdDQBh7GlSAISg5cd1QveK6E+uS7WTog==
-X-Received: by 2002:a7b:c186:0:b0:394:bed:e0cf with SMTP id y6-20020a7bc186000000b003940bede0cfmr4401600wmi.162.1652270480623;
-        Wed, 11 May 2022 05:01:20 -0700 (PDT)
-Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id z19-20020a05600c221300b003942a244ec5sm1925339wml.10.2022.05.11.05.01.19
+        bh=u0tXYiSeuXA4FVwlCLUjj/6hu6YWAxriDMO2+yxPWNc=;
+        b=U3mUZ3jQ+7l774Ft1qV2fa1wmLdcYY6A9fcIW3soTqS6OZLZ2ojb3kH9quqyPqX59B
+         I6VEcxbtvjAIaB6zJsVqeWboJG9179DF8tYu0+myAhYL8Sao1lDGA5mKdvPzygBZY/M9
+         czBnePAwDY6Ue2jcVj7uu/g4L6Y56Asx4rvhiksKUFFN5cvaJchq2kLQg3VmcF2EKr1H
+         cn8y8jJ7BMO0wYJNG3lCZbh5b/pnKsTIdFToJYOPo6qBrHa+21zSaIt1oFD2sK8Ppnhd
+         x2qJXxfqmRZ8dAIiESJ9TQK0OqfE/fVfVzQKPbi8T4Oej+912s35xiykeu1TXWcMDehS
+         CfeA==
+X-Gm-Message-State: AOAM530XgaBrpI2Rwvj0//zteVX+xiaJb4zaes1PyE+tT6JdpU93WfTC
+        Fyn65Qc7V0HJu8Y1CChF3qA=
+X-Google-Smtp-Source: ABdhPJzAFZ+vxEQu3OHLMnECL3HYa9cUsTXIROH8hc9i7mPtTAEXu+GpE2VIzruTOuwuOMr6lj0rQw==
+X-Received: by 2002:a17:907:6d94:b0:6f4:531d:742 with SMTP id sb20-20020a1709076d9400b006f4531d0742mr24195945ejc.202.1652270490073;
+        Wed, 11 May 2022 05:01:30 -0700 (PDT)
+Received: from [192.168.178.21] (p57b0be56.dip0.t-ipconnect.de. [87.176.190.86])
+        by smtp.gmail.com with ESMTPSA id t9-20020a170906608900b006f3ef214e35sm918539ejj.155.2022.05.11.05.01.28
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 May 2022 05:01:20 -0700 (PDT)
-Message-ID: <7d9f44e6-ae45-1747-366a-15cf2941dc2f@redhat.com>
-Date:   Wed, 11 May 2022 14:01:19 +0200
+        Wed, 11 May 2022 05:01:29 -0700 (PDT)
+Message-ID: <8e54ec49-09da-f345-35cd-430712f5a6ad@gmail.com>
+Date:   Wed, 11 May 2022 14:01:28 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v5 2/7] firmware: sysfb: Add helpers to unregister a pdev
- and disable registration
+ Thunderbird/91.7.0
+Subject: Re: [Bug][5.18-rc0] Between commits ed4643521e6a and 34af78c4e616,
+ appears warning "WARNING: CPU: 31 PID: 51848 at
+ drivers/dma-buf/dma-fence-array.c:191 dma_fence_array_create+0x101/0x120" and
+ some games stopped working.
 Content-Language: en-US
-To:     Thomas Zimmermann <tzimmermann@suse.de>,
-        linux-kernel@vger.kernel.org
-Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        dri-devel@lists.freedesktop.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org
-References: <20220511112438.1251024-1-javierm@redhat.com>
- <20220511112438.1251024-3-javierm@redhat.com>
- <09cc267d-ead4-dd63-07dd-dfa347cbcee1@suse.de>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <09cc267d-ead4-dd63-07dd-dfa347cbcee1@suse.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
+Cc:     Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>
+References: <CABXGCsNVp=R5zC9B3PXWJ5nddtt3gkRzDsAsRKvhXq7exGjSAg@mail.gmail.com>
+ <f3bc34e1-0eaf-84ef-486e-b7759e60b792@amd.com>
+ <CABXGCsOD+tDdFcM37NP_1nS9eLym7qC=jUQy3iqYkc1m2iQgxw@mail.gmail.com>
+ <0d5f66d8-9852-b6a9-0e27-9eb9e736d698@amd.com>
+ <CABXGCsPi68Lyvg+6UjTK2aJm6PVBs83YJuP6x68mcrzAQgpuZg@mail.gmail.com>
+ <eef04fc4-741d-606c-c2c6-f054e4e3fffd@amd.com>
+ <CABXGCsNNwEjo_dvWJL7GLULBPy+RmwsC9ObpowR_M1nQ3fKt3g@mail.gmail.com>
+ <4d0cbb79-4955-a3ed-4aa2-7f6cdaa00481@gmail.com>
+ <CABXGCsP19VFRgTx5yGn68iCK3NxPxi_b9MTq=AmHtFPv9xR5sA@mail.gmail.com>
+ <675a2d33-b286-d1d0-e4e7-05d6516026c0@gmail.com>
+ <CABXGCsOqrB5zPFCeLw-VQjePikwDq4EKFQGc9hbOb5f7tGLDgg@mail.gmail.com>
+From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>
+In-Reply-To: <CABXGCsOqrB5zPFCeLw-VQjePikwDq4EKFQGc9hbOb5f7tGLDgg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Thomas,
-
-On 5/11/22 13:54, Thomas Zimmermann wrote:
-> Hi
-> 
-> Am 11.05.22 um 13:24 schrieb Javier Martinez Canillas:
->> These can be used by subsystems to unregister a platform device registered
->> by sysfb and also to disable future platform device registration in sysfb.
+Am 11.05.22 um 11:05 schrieb Mikhail Gavrilov:
+> On Fri, Apr 15, 2022 at 1:04 PM Christian König
+> <ckoenig.leichtzumerken@gmail.com> wrote:
+>> No, I just couldn't find time during all that bug fixing :)
 >>
-> 
-> I find it very hard to review these patches, as related things are put 
-> into separate patches.
-> 
-> I suggest to put the sysfb_disable() stuff into patch 5 and the rest 
-> into patch 4.
->
+>> Sorry for the delay, going to take a look after the eastern holiday here.
+>>
+>> Christian.
+> The message is just for history. The issue was fixed between
+> b253435746d9a4a and 5.18rc4.
 
-Ok, you then want in the same patch to have both the helper definition
-and first usage.
+We have implemented a workaround, but still don't know the exact root cause.
 
-Other subsystems ask you to do the opposite, to split the definition and
-usage in separate patches. But I'm fine with merging those if you prefer.
- 
-> Best regards
-> Thomas
-> 
-> 
--- 
-Best regards,
+If anybody wants to look into this it would be rather helpful to be able 
+to reproduce the issue.
 
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
-
+Regards,
+Christian.
