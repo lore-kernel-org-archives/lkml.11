@@ -2,208 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB8C6C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:29:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 964E2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:29:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343657AbiEKP3g (ORCPT
+        id S1343668AbiEKP34 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 11:29:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38698 "EHLO
+        Wed, 11 May 2022 11:29:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232535AbiEKP31 (ORCPT
+        with ESMTP id S1343663AbiEKP3r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 11:29:27 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ABF5506FC
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 08:29:26 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id j6so4754818ejc.13
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 08:29:26 -0700 (PDT)
+        Wed, 11 May 2022 11:29:47 -0400
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FBDC21551E
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 08:29:45 -0700 (PDT)
+Received: by mail-io1-xd30.google.com with SMTP id h85so2403944iof.12
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 08:29:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=s+PYKCP0VxPrhof8W+toqvnXxAanU57RHAbD7l77DgI=;
-        b=IWTe7UipHXQkBN8PdQfhJC1eMRMEYnSbXPR8Gdz7PRuj3FyFpxp/OcxjNKk1YOUxPC
-         Sh88iSHptcwPaLwBscMWki+R+mE7FH3earfGNcNIjBpBaTU+jR9FL/RV4MJGuV91A3B+
-         P9NN3stKCccQpdjCLGt03mky+yGrtKPQFXvgk=
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=CtdNPcv9Xs9pvNuMfHH4clvaHcmZY+jRmMu+Z0g00OI=;
+        b=FXyxzi6wVDNzYPNCgOTZK6DWrWW/t2C/I/HWs2S8QRaoWcmdq1/O3iZv5q12z7/qMK
+         /mbSq+jDpBY+KphoLfTI+DM1Jpp/cx3qqnLw6hJbl91aAZWIkhmWF/9P4U0TroFCbqmf
+         DfYmAdFaSP/aawKG9M/PL1pI/wZnmIrKWj9TdqQjVINq8SA0rI4H8648VOiHq8Yx32+w
+         P6lajvFaoltfkAhlLfoG+sR8+bgFjakZf7A/7zBtiXTQy5RQ7Bgw9PJ2wNHK5zzu1CSq
+         DppCrezZzMlWJGUQ61u+myWyE2ssCiyMW/C34eAhvzbS1WKfgStC6jfxYeqVaCQKaKJj
+         YzWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :content-transfer-encoding:in-reply-to;
-        bh=s+PYKCP0VxPrhof8W+toqvnXxAanU57RHAbD7l77DgI=;
-        b=7Ukiydi5k+R5vZfnTBP/AhWDnNTmcSVQjXXIK7fDVwzOzAIdru7BP3vour3UObnUDZ
-         DsqXYSu4qSJtnRXCFEDFmdwZYGMdAmW6EQ3OiD/x46lyF25udgcnfKVhxN/7Uhy8GeOg
-         CUCYUcK/Wp12SrHrYwTP+gQbcGYBfMXFZHDFrtLZUR+PH+go6fAbaOl8jJ2hiOfGeqmz
-         DX79RkfQowxhpNTJqKwE6Fpkf8nWKIpmf4uk2Rvt9P/UoLaBsBo3QtIxH2wYYFPt+kpU
-         iK9lnkbghrQUAEBYN60iyorEvjXzjXx4XvhJBWgltzUgZZel7T8UzL+G26L2qVeOQgi+
-         5bbg==
-X-Gm-Message-State: AOAM532NRMxAW0FJ7vYJ7IYQwVS4n/riFQ5VywtGE9TZL46SwCa2kQ0H
-        CdATDK6nX71ziA8etG8RgTUmyw==
-X-Google-Smtp-Source: ABdhPJzmlpdWZcTGU3RHeV4fO0NfsUHwc/ReUopPeDyKHr8b/GmCISDJ3mmVCUJ5IGl+9IXtrW0lxQ==
-X-Received: by 2002:a17:906:a888:b0:6f3:e990:e554 with SMTP id ha8-20020a170906a88800b006f3e990e554mr25472357ejb.19.1652282964566;
-        Wed, 11 May 2022 08:29:24 -0700 (PDT)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id p22-20020a1709060e9600b006f3ef214dd0sm1106685ejf.54.2022.05.11.08.29.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 08:29:23 -0700 (PDT)
-Date:   Wed, 11 May 2022 17:29:21 +0200
-From:   Daniel Vetter <daniel@ffwll.ch>
-To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Cc:     Christian =?iso-8859-1?Q?K=F6nig?= 
-        <ckoenig.leichtzumerken@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Stone <daniel@fooishbar.org>,
-        David Airlie <airlied@linux.ie>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>,
-        Daniel Almeida <daniel.almeida@collabora.com>,
-        Gert Wollny <gert.wollny@collabora.com>,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Emil Velikov <emil.l.velikov@gmail.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH v4 10/15] drm/shmem-helper: Take reservation lock instead
- of drm_gem_shmem locks
-Message-ID: <YnvWUbh5QDDs6u2B@phenom.ffwll.local>
-Mail-Followup-To: Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <ckoenig.leichtzumerken@gmail.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Stone <daniel@fooishbar.org>,
-        David Airlie <airlied@linux.ie>, Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>,
-        Daniel Almeida <daniel.almeida@collabora.com>,
-        Gert Wollny <gert.wollny@collabora.com>,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>, Rob Herring <robh@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Emil Velikov <emil.l.velikov@gmail.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Dmitry Osipenko <digetx@gmail.com>, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        virtualization@lists.linux-foundation.org
-References: <8f932ab0-bb72-8fea-4078-dc59e9164bd4@collabora.com>
- <YnI3lE0TxLfZaQjE@phenom.ffwll.local>
- <01506516-ab2f-cb6e-7507-f2a3295efb59@collabora.com>
- <YnOHAh9I1ds4+1J+@phenom.ffwll.local>
- <83e68918-68de-c0c6-6f9b-e94d34b19383@collabora.com>
- <YnkaUk0mZNuPsZ5r@phenom.ffwll.local>
- <4d08b382-0076-1ea2-b565-893d50b453cb@collabora.com>
- <YnuziJDmXVR09UzP@phenom.ffwll.local>
- <56787b70-fb64-64da-6006-d3aa3ed59d12@gmail.com>
- <3a362c32-870c-1d73-bba6-bbdcd62dc326@collabora.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=CtdNPcv9Xs9pvNuMfHH4clvaHcmZY+jRmMu+Z0g00OI=;
+        b=YQxWtAMWx6nAu7uv9WL+nqvtwmikNPqT8BqQjI1H1UqmsKelTDx64TpqnI+AEqahSC
+         CqPGtXv8BE16f09VC/xQs7DiV628ykOpQmLX2e20RyvbcO5g9wcKeUmNSp8W87+ZrUHn
+         uNgTC1rWCGgM0RChWthKE4HXBKHkFTRHNTO3V1OZHNtDspuOn+NV4lnQGT8ng2V+FTfR
+         xFWLfwVUFAbccxIINlhd9GkpNQRjmJVHHPGe9Oco9uKPn0KmG5utWIY+HeJM/+Vmt4Z+
+         s6uWNUGHwutcIrfITeWYcizRiemG0uDahEluC95JVS9+HH3PgqRvJSHn8OxQcOprnUKn
+         856w==
+X-Gm-Message-State: AOAM533QzRQaOANsJh2m44u46SlO6SoZkwbc/6BlBHYDZOJX6dy6X/fg
+        ZFMsPV1TmAD4ekBxqsi8xwa9zyJ/dOKQ4ozM4XVs8jqr
+X-Google-Smtp-Source: ABdhPJw0enMBLm4i62iaBVoiXBvnTDT7dfPXX7omlqXOgjhfI4Tp7zPydctZejKfLHlp/69sQJwFC7rxsWL0yWC++B4=
+X-Received: by 2002:a05:6602:2d90:b0:63d:b41e:e4e4 with SMTP id
+ k16-20020a0566022d9000b0063db41ee4e4mr11011603iow.172.1652282984563; Wed, 11
+ May 2022 08:29:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <3a362c32-870c-1d73-bba6-bbdcd62dc326@collabora.com>
-X-Operating-System: Linux phenom 5.10.0-8-amd64 
+References: <20220506160106.522341-1-mic@digikod.net> <152da06a-330d-3125-6f41-262e0751f41b@digikod.net>
+In-Reply-To: <152da06a-330d-3125-6f41-262e0751f41b@digikod.net>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Wed, 11 May 2022 17:29:33 +0200
+Message-ID: <CANiq72mST6rfJDVGGT2+=_FUCXwms6N8mo2eoLzQ6KW64M9BtQ@mail.gmail.com>
+Subject: Re: [PATCH v2 0/5] Fix clang-format configuration according to checkpatch.pl
+To:     =?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mic@digikod.net>,
+        Brian Norris <briannorris@chromium.org>
+Cc:     Miguel Ojeda <ojeda@kernel.org>,
+        Andy Whitcroft <apw@canonical.com>,
+        Dwaipayan Ray <dwaipayanray1@gmail.com>,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>,
+        Joe Perches <joe@perches.com>,
+        Kees Cook <keescook@chromium.org>,
+        Konstantin Meskhidze <konstantin.meskhidze@huawei.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Paul Moore <paul@paul-moore.com>, Tom Rix <trix@redhat.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 06:14:00PM +0300, Dmitry Osipenko wrote:
-> On 5/11/22 17:24, Christian König wrote:
-> > Am 11.05.22 um 15:00 schrieb Daniel Vetter:
-> >> On Tue, May 10, 2022 at 04:39:53PM +0300, Dmitry Osipenko wrote:
-> >>> [SNIP]
-> >>> Since vmapping implies implicit pinning, we can't use a separate lock in
-> >>> drm_gem_shmem_vmap() because we need to protect the
-> >>> drm_gem_shmem_get_pages(), which is invoked by drm_gem_shmem_vmap() to
-> >>> pin the pages and requires the dma_resv_lock to be locked.
-> >>>
-> >>> Hence the problem is:
-> >>>
-> >>> 1. If dma-buf importer holds the dma_resv_lock and invokes
-> >>> dma_buf_vmap() -> drm_gem_shmem_vmap(), then drm_gem_shmem_vmap() shall
-> >>> not take the dma_resv_lock.
-> >>>
-> >>> 2. Since dma-buf locking convention isn't specified, we can't assume
-> >>> that dma-buf importer holds the dma_resv_lock around dma_buf_vmap().
-> >>>
-> >>> The possible solutions are:
-> >>>
-> >>> 1. Specify the dma_resv_lock convention for dma-bufs and make all
-> >>> drivers to follow it.
-> >>>
-> >>> 2. Make only DRM drivers to hold dma_resv_lock around dma_buf_vmap().
-> >>> Other non-DRM drivers will get the lockdep warning.
-> >>>
-> >>> 3. Make drm_gem_shmem_vmap() to take the dma_resv_lock and get deadlock
-> >>> if dma-buf importer holds the lock.
-> >>>
-> >>> ...
-> >> Yeah this is all very annoying.
-> > 
-> > Ah, yes that topic again :)
-> > 
-> > I think we could relatively easily fix that by just defining and
-> > enforcing that the dma_resv_lock must have be taken by the caller when
-> > dma_buf_vmap() is called.
-> > 
-> > A two step approach should work:
-> > 1. Move the call to dma_resv_lock() into the dma_buf_vmap() function and
-> > remove all lock taking from the vmap callback implementations.
-> > 2. Move the call to dma_resv_lock() into the callers of dma_buf_vmap()
-> > and enforce that the function is called with the lock held.
-> 
-> I've doubts about the need to move out the dma_resv_lock() into the
-> callers of dma_buf_vmap()..
-> 
-> I looked through all the dma_buf_vmap() users and neither of them
-> interacts with dma_resv_lock() at all, i.e. nobody takes the lock
-> in/outside of dma_buf_vmap(). Hence it's easy and more practical to make
-> dma_buf_mmap/vmap() to take the dma_resv_lock by themselves.
+Hi Micka=C3=ABl,
 
-i915_gem_dmabuf_vmap -> i915_gem_object_pin_map_unlocked ->
-  i915_gem_object_lock -> dma_resv_lock
+On Wed, May 11, 2022 at 4:19 PM Micka=C3=ABl Sala=C3=BCn <mic@digikod.net> =
+wrote:
+>
+> Miguel, what do you think about this series? Do you plan to take it for
+> the next merge window? FYI, I plan to use it for Landlock [1] and send
+> it for the next merge window. Could you publish your pending
+> clang-format changes so that I can make sure everything is OK?
 
-And all the ttm drivers should work similarly. So there's definitely
-drivers which grab dma_resv_lock from their vmap callback.
+It looked good to me overall (though it indeed conflicts with what I
+was doing) -- I will take it for the next merge window. I am thinking
+of putting Brian as author and you as Co-developed-by for the last one
+to be fair (Brian: is this OK with you too?). Thanks!
 
-> It's unclear to me which driver may ever want to do the mapping under
-> the dma_resv_lock. But if we will ever have such a driver that will need
-> to map imported buffer under dma_resv_lock, then we could always add the
-> dma_buf_vmap_locked() variant of the function. In this case the locking
-> rule will sound like this:
-> 
-> "All dma-buf importers are responsible for holding the dma-reservation
-> lock around the dmabuf->ops->mmap/vmap() calls."
-> 
-> > It shouldn't be that hard to clean up. The last time I looked into it my
-> > main problem was that we didn't had any easy unit test for it.
-> 
-> Do we have any tests for dma-bufs at all? It's unclear to me what you
-> are going to test in regards to the reservation locks, could you please
-> clarify?
-
-Unfortunately not really :-/ Only way really is to grab a driver which
-needs vmap (those are mostly display drivers) on an imported buffer, and
-see what happens.
-
-2nd best is liberally sprinkling lockdep annotations all over the place
-and throwing it at intel ci (not sure amd ci is accessible to the public)
-and then hoping that's good enough. Stuff like might_lock and
-dma_resv_assert_held.
--Daniel
--- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+Cheers,
+Miguel
