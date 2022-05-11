@@ -2,81 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B34D4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 17:51:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27C87C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 17:53:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345832AbiEKRvf (ORCPT
+        id S1345856AbiEKRxP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 13:51:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58360 "EHLO
+        Wed, 11 May 2022 13:53:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345812AbiEKRvb (ORCPT
+        with ESMTP id S1345835AbiEKRxJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 13:51:31 -0400
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B4D4839F;
-        Wed, 11 May 2022 10:51:30 -0700 (PDT)
-Received: by mail-wm1-f42.google.com with SMTP id k126-20020a1ca184000000b003943fd07180so1652670wme.3;
-        Wed, 11 May 2022 10:51:29 -0700 (PDT)
+        Wed, 11 May 2022 13:53:09 -0400
+Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD5226D4F0
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 10:53:07 -0700 (PDT)
+Received: by mail-qt1-x830.google.com with SMTP id hh4so2550888qtb.10
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 10:53:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=+98S328gIXASjWyIOnT/blA4Tt4P6OykWVYnviKs3ME=;
+        b=ZdCacF6byBtXl0QQmIVcjdBoxeabZgc7+C/W2V36nSNHaMGPgCqRtaTvGz6pJBRZow
+         iblsDw9rPzOZJH00cABZEDopiWvSeJIFXA7B6daZ038Ke4gPcoy+14pjwEKB8l9WOdk2
+         r22vYuPanMwnpackRyxW8GWj08pIuMQlFcJyBYnVFdw4GmG9s1dslt7Igfa9SzYVHoyn
+         h4qjQE4G07yKMl0JjI3iY7EUCMUkFG1IHeT6azlmb0L53M8Y/katJirJbyC74MrmXVsY
+         Sk8boCp6GYKLKRZUT1BdYQVu6Yy5uWLMBFWqw508lYzne1rA3Cewns5YAGuxR9CWY6yb
+         Ol1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=WQGxLtNoh2A/ECrPGH0MG2WOSwIRhsRl05qWLoUIhKc=;
-        b=B8V0XQ8Cg2dWrsPzvWCpgHYnWDsBL+V6f1lY389lJW5m8hubKSZ6D1uuzAimSf6tpY
-         7t2eDTfMZSeaVOEOj723+LuQOHrmZkkGbmtroduY00CXphLRofGH000xeC/+uFFNS86X
-         7BWGwLxI+rRXKmMafqpmhZXVYpqTATWb/qUNVE4OHa4yT/rUm0xEkxkERqTU7/k3lQc7
-         qMOwJHNlmJHW4nuxcd6rZhal8KNUOp3Qq+3wJ9FHTzGfKLdeK8pBZYJk3LGjgInSNt07
-         5kPmDo+CuypZfCEZNPYlIbtlSXfpujjAmvDTsro/3sRv7vlvgvIQeTI8SxUfRE/rllcc
-         QHGw==
-X-Gm-Message-State: AOAM533vDD0yrFRRwbVKW5fgyVKhc351xx67otoAMGl5Q9B2wTG0kaZq
-        9ZLXk1PuMfanHscHyJxVu8+eTedQJ6c=
-X-Google-Smtp-Source: ABdhPJzzYvMP2x6heJp40ACS+Y59uZMrdJ58/WzlFFCkCHpOK55xWUK1YSFC+WBM3UBpA7NQrop7cw==
-X-Received: by 2002:a7b:c350:0:b0:38c:6d3c:6c8 with SMTP id l16-20020a7bc350000000b0038c6d3c06c8mr5990227wmj.45.1652291488581;
-        Wed, 11 May 2022 10:51:28 -0700 (PDT)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id d10-20020a5d6dca000000b0020cd0762f37sm2236906wrz.107.2022.05.11.10.51.27
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=+98S328gIXASjWyIOnT/blA4Tt4P6OykWVYnviKs3ME=;
+        b=66PZ5HRBDTFxUxAwJE6urf5NsPACZyHRG949XPo1/p7viyd3VN8gnwQZ7jtNy30LRa
+         KJ7HvhhkMF6y5Q01mHr7qdRJTWVjf4fFpI5jSXPdtoAmk+orGufZwWt9skEPiGHaJkve
+         WA/D6BFyu8wgaGWNqPVj+Gic+BfsgC94IRdGX2yYCvC0z7LKuYmTdl1AqSG2aBm1x8Ed
+         xHYX+WhBNbP4ixFiKXnK8JCLrIrgORN460fjQ5KURvo1j44IjMRLZHki4Y6jNoymiW12
+         2SmvEiVu6jWUjJNh3ZkPBaU+IKJ6EdObWtxfo+Fs1b9pEm2pX6jeMuwCnnAMH5F9w1Rj
+         ZeAQ==
+X-Gm-Message-State: AOAM530LitkP8nPFqZEJ8tgp9HEtgnKQRG76I2swRrPQOAFo32Hta/CK
+        B+NzvtxJqx4/mH91o31mvzmPxw==
+X-Google-Smtp-Source: ABdhPJxi4Nl8pTf7fTdo9YDS9qc45Ph/BFwmULDBZVmNVr9oBfAm1mwPvt6MNTWQqTtGl64tD7wXmg==
+X-Received: by 2002:a05:622a:1982:b0:2f3:b7c1:4426 with SMTP id u2-20020a05622a198200b002f3b7c14426mr25436047qtc.347.1652291586832;
+        Wed, 11 May 2022 10:53:06 -0700 (PDT)
+Received: from localhost ([2620:10d:c091:480::1:14fe])
+        by smtp.gmail.com with ESMTPSA id m185-20020a378ac2000000b0069fc13ce24dsm1577060qkd.126.2022.05.11.10.53.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 10:51:27 -0700 (PDT)
-Date:   Wed, 11 May 2022 17:51:26 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Jeffrey Hugo <quic_jhugo@quicinc.com>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, lorenzo.pieralisi@arm.com,
-        robh@kernel.org, kw@linux.com, bhelgaas@google.com,
-        jakeo@microsoft.com, dazhan@microsoft.com,
-        linux-hyperv@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/2] hyperv compose_msi_msg fixups
-Message-ID: <20220511175126.ezrayygwqmrvm7ql@liuwe-devbox-debian-v2>
-References: <1652282533-21502-1-git-send-email-quic_jhugo@quicinc.com>
+        Wed, 11 May 2022 10:53:06 -0700 (PDT)
+Date:   Wed, 11 May 2022 13:53:05 -0400
+From:   Johannes Weiner <hannes@cmpxchg.org>
+To:     Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        David Vernet <void@manifault.com>, tj@kernel.org,
+        roman.gushchin@linux.dev, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, cgroups@vger.kernel.org, mhocko@kernel.org,
+        shakeelb@google.com, kernel-team@fb.com,
+        Richard Palethorpe <rpalethorpe@suse.com>,
+        Chris Down <chris@chrisdown.name>
+Subject: Re: [PATCH v2 2/5] cgroup: Account for memory_recursiveprot in
+ test_memcg_low()
+Message-ID: <Ynv4AdjeVjptnjrH@cmpxchg.org>
+References: <20220423155619.3669555-1-void@manifault.com>
+ <20220423155619.3669555-3-void@manifault.com>
+ <20220427140928.GD9823@blackbody.suse.cz>
+ <20220429010333.5rt2jwpiumnbuapf@dev0025.ash9.facebook.com>
+ <20220429092620.GA23621@blackbody.suse.cz>
+ <20220506164015.fsdsuv226nhllos5@dev0025.ash9.facebook.com>
+ <Ynkum8DeJIAtGi9y@cmpxchg.org>
+ <20220509174424.e43e695ffe0f7333c187fba8@linux-foundation.org>
+ <20220510174341.GC24172@blackbody.suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <1652282533-21502-1-git-send-email-quic_jhugo@quicinc.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220510174341.GC24172@blackbody.suse.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 09:22:11AM -0600, Jeffrey Hugo wrote:
-> While multi-MSI appears to work with pci-hyperv.c, there was a concern about
-> how linux was doing the ITRE allocations.  Patch 2 addresses the concern.
-> 
-> However, patch 2 exposed an issue with how compose_msi_msg() was freeing a
-> previous allocation when called for the Nth time.  Imagine a driver using
-> pci_alloc_irq_vectors() to request 32 MSIs.  This would cause compose_msi_msg()
-> to be called 32 times, once for each MSI.  With patch 2, MSI0 would allocate
-> the ITREs needed, and MSI1-31 would use the cached information.  Then the driver
-> uses request_irq() on MSI1-17.  This would call compose_msi_msg() again on those
-> MSIs, which would again use the cached information.  Then unmask() would be
-> called to retarget the MSIs to the right VCPU vectors.  Finally, the driver
-> calls request_irq() on MSI0.  This would call conpose_msi_msg(), which would
-> free the block of 32 MSIs, and allocate a new block.  This would undo the
-> retarget of MSI1-17, and likely leave those MSIs targeting invalid VCPU vectors.
-> This is addressed by patch 1, which is introduced first to prevent a regression.
-> 
-> Jeffrey Hugo (2):
->   PCI: hv: Reuse existing ITRE allocation in compose_msi_msg()
->   PCI: hv: Fix interrupt mapping for multi-MSI
+Hi Michal,
 
-Applied this version to hyperv-next. Thanks.
+On Tue, May 10, 2022 at 07:43:41PM +0200, Michal Koutný wrote:
+> On Mon, May 09, 2022 at 05:44:24PM -0700, Andrew Morton <akpm@linux-foundation.org> wrote:
+> > So I think we're OK with [2/5] now.  Unless there be objections, I'll
+> > be looking to get this series into mm-stable later this week.
+> 
+> I'm sorry, I think the current form of the test reveals an unexpected
+> behavior of reclaim and silencing the test is not the way to go.
+> Although, I may be convinced that my understanding is wrong.
+
+Looking through your demo results again, I agree with you. It's a tiny
+error, but it compounds and systematically robs the protected group
+over and over, to the point where its protection becomes worthless -
+at least in idle groups, which isn't super common but does happen.
+
+Let's keep the test as-is and fix reclaim to make it pass ;)
+
+> The obvious fix is at the end of this message, it resolves the case I
+> posted earlier (with memory_recursiveprot), however, it "breaks"
+> memory.events:low accounting inside recursive children, hence I'm not
+> considering it finished. (I may elaborate on the breaking case if
+> interested, I also need to look more into that myself).
+
+Can you indeed elaborate on the problem you see with low events?
+
+> @@ -2798,13 +2798,6 @@ static void get_scan_count(struct lruvec *lruvec, struct scan_control *sc,
+>  
+>  			scan = lruvec_size - lruvec_size * protection /
+>  				(cgroup_size + 1);
+> -
+> -			/*
+> -			 * Minimally target SWAP_CLUSTER_MAX pages to keep
+> -			 * reclaim moving forwards, avoiding decrementing
+> -			 * sc->priority further than desirable.
+> -			 */
+> -			scan = max(scan, SWAP_CLUSTER_MAX);
+
+IIRC this was added due to premature OOMs in synthetic testing (Chris
+may remember more details).
+
+However, in practice it wasn't enough anyway, and was followed up by
+f56ce412a59d ("mm: memcontrol: fix occasional OOMs due to proportional
+memory.low reclaim"). Now, reclaim retries the whole cycle if
+proportional protection was in place and it didn't manage to make
+progress. The rounding for progress doesn't seem to matter anymore.
+
+So your proposed patch looks like the right thing to do to me. And I
+would ack it, but please do explain your concerns around low event
+reporting after it.
+
+Thanks!
