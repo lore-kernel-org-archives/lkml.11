@@ -2,72 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A62DCC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 09:37:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82B74C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 09:39:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241096AbiEKJhg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 05:37:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54052 "EHLO
+        id S230346AbiEKJjP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 05:39:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239931AbiEKJgt (ORCPT
+        with ESMTP id S242976AbiEKJjC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 05:36:49 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D23D15A1E;
-        Wed, 11 May 2022 02:36:45 -0700 (PDT)
-Date:   Wed, 11 May 2022 11:36:41 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1652261803;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=YsRk0Y52ceB53mzi0WU1URp8hY6d/Zh5KcVXn1JeIso=;
-        b=RzKx2A3OwQ0esNe35M1hejmwml8x/rR0nFzylwQ7NubQ11bIXJNDXkPvWMmMPPjrzFhqON
-        xvZtTRXTaBM2D5UrDKf1fmOSUTaRQ5CvwPYChu9fqbtISYp1EvgbzD01Px28623JbGIiJZ
-        blK+h+IqPi0k1FR05u82nU3Wxjt8Dzxu6DQT7H0fvVnSJ0g6PsYEhtfHXw4FNZrAbmnSWx
-        SSaMQJ99GgsIev7uBtvkNG0QmYIGErZBWIreJzF/m1bxCZBrGIKDvjWHhzewWj5pZ38pKE
-        vNJmF2kJoAtP6oUYmuTHcW3lN8OvLtMUIHP7YHvrY67rw4i1LxED2VzOI6Avuw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1652261803;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=YsRk0Y52ceB53mzi0WU1URp8hY6d/Zh5KcVXn1JeIso=;
-        b=ctQINjeHT9J5/fntc05J4Ji+uvR/PxE6gNX9a3kvgxJvwo1mTpy46Pk9yGgxiN9UClUQKD
-        vR0hjYwsnPvIbBBQ==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     "zhaoyang.huang" <zhaoyang.huang@unisoc.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Zhaoyang Huang <huangzhaoyang@gmail.com>,
-        linux-kernel@vger.kernel.org, xuewen.yan@unisoc.com,
-        ke.wang@unisoc.com, ben.dai@unisoc.com, shian.wang@unisoc.com,
-        linux-rt-users@vger.kernel.org
-Subject: Re: [RFC PATCH] kernel: locking: rwsem optimization for rtlinux
-Message-ID: <YnuDqYz5vlFw3lZy@linutronix.de>
-References: <1652257281-11494-1-git-send-email-zhaoyang.huang@unisoc.com>
+        Wed, 11 May 2022 05:39:02 -0400
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 573F860B8B;
+        Wed, 11 May 2022 02:38:27 -0700 (PDT)
+Received: by mail-wr1-f43.google.com with SMTP id h16so1443013wrb.2;
+        Wed, 11 May 2022 02:38:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=lzACg4GskWgzpiC8FnJ6syyhmXEEgXE0lIGs/KbCq9o=;
+        b=jtKfFP1lCqOriGDRrs8EeuSS2fvWnHaFJLntOm0zScTV/rPmrps6rxl3v72KDTi7LO
+         vEh9zC+0vOsL3pEwj0192VQcqij+iraKlP01ZaMcaoW6JRO/IOk32pTaTpxNLqegF0+R
+         WEOEdObBj/buvrnpFVkee+nfPmdtk3D+fkdhRVr5fWpjWcVdMbRpcKR6fRzF+s0M/tt+
+         PD00mRDywuk+RjbH+mh2icRjJXpFk6spKIkXGyWNLyOG1R0vK+vjzuSdIux5Vxv17e1i
+         me9gnlL/jNI2xTosySaSv7087/YcyppdBeo51tZ4z8lrHlbahZNZvYj5pBEorz9Hha3c
+         dXGw==
+X-Gm-Message-State: AOAM531PApvYR3wH8V19cW7kGH/DK8AzoptiEUGpS2SMtTj+ZX2NW3zP
+        X0AaK8wyApdlcVdqe0r9Pf4NtdwHnwE=
+X-Google-Smtp-Source: ABdhPJwoJ97JtoBiACfuZa0lRu3jF4CuA/9qZMyWjZsGxIHdriTf72Obw5v7nF1vuabJn1bt50PEUw==
+X-Received: by 2002:a5d:4b48:0:b0:207:9abd:792a with SMTP id w8-20020a5d4b48000000b002079abd792amr11189756wrs.118.1652261905757;
+        Wed, 11 May 2022 02:38:25 -0700 (PDT)
+Received: from [192.168.1.49] (185-219-167-24-static.vivo.cz. [185.219.167.24])
+        by smtp.gmail.com with ESMTPSA id e8-20020a5d5308000000b0020c5253d8c2sm1209516wrv.14.2022.05.11.02.38.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 May 2022 02:38:25 -0700 (PDT)
+Message-ID: <cc73ed8b-b51f-59bc-ef4b-5f7e4ab26828@kernel.org>
+Date:   Wed, 11 May 2022 11:38:24 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <1652257281-11494-1-git-send-email-zhaoyang.huang@unisoc.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH -next] tty: serial: max3100: Add missing
+ uart_unregister_driver in max3100_probe
+Content-Language: en-US
+To:     Zheng Bin <zhengbin13@huawei.com>, gregkh@linuxfoundation.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     gaochao49@huawei.com
+References: <20220511071523.3128725-1-zhengbin13@huawei.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220511071523.3128725-1-zhengbin13@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-05-11 16:21:21 [+0800], zhaoyang.huang wrote:
-> From: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
+On 11. 05. 22, 9:15, Zheng Bin wrote:
+> max3100_probe misses a call uart_unregister_driver in error path,
+> this patch fixes that.
+
+I believe, that's intentional. Cf. uart_driver_registered.
+
+> Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
+> ---
+>   drivers/tty/serial/max3100.c | 2 ++
+>   1 file changed, 2 insertions(+)
 > 
-> With regard to rtlinux, releasing the lock to RT waiter could be helpful to
-> increase its responding time even if cfs writer listed at the head of the
-> wait_list.
+> diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
+> index 0b5f21fbb53d..6d34ca2a3f7b 100644
+> --- a/drivers/tty/serial/max3100.c
+> +++ b/drivers/tty/serial/max3100.c
+> @@ -752,6 +752,7 @@ static int max3100_probe(struct spi_device *spi)
+>   		if (!max3100s[i])
+>   			break;
+>   	if (i == MAX_MAX3100) {
+> +		uart_unregister_driver(&max3100_uart_driver);
+>   		dev_warn(&spi->dev, "too many MAX3100 chips\n");
+>   		mutex_unlock(&max3100s_lock);
+>   		return -ENOMEM;
+> @@ -759,6 +760,7 @@ static int max3100_probe(struct spi_device *spi)
+> 
+>   	max3100s[i] = kzalloc(sizeof(struct max3100_port), GFP_KERNEL);
+>   	if (!max3100s[i]) {
+> +		uart_unregister_driver(&max3100_uart_driver);
+>   		dev_warn(&spi->dev,
+>   			 "kmalloc for max3100 structure %d failed!\n", i);
+>   		mutex_unlock(&max3100s_lock);
+> --
+> 2.31.1
+> 
 
-This does not apply to current kernel (v5.18-rc6). If you need want to
-apply some thing to an older kernel, I suggest a backport and reasoning
-why this backport is needed.
-So first you need address the issue, that you are facing, in the current
-development kernel.
-Also it would be good to know if "rtlinux" is PREEMPT_RT or something
-else. The latter uses a different mechanism.
 
-> Signed-off-by: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
-
-Sebastian
+-- 
+js
+suse labs
