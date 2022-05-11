@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9CCDC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:30:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F703C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:30:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241302AbiEKCaX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 22:30:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50860 "EHLO
+        id S241421AbiEKCaZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 22:30:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241257AbiEKC3p (ORCPT
+        with ESMTP id S241263AbiEKC3p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 10 May 2022 22:29:45 -0400
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9E4421AAA6
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:29:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EFDA21B140
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 19:29:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652236183; x=1683772183;
+  t=1652236184; x=1683772184;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=/zG/vU7kvADc4pg2W2FY9O2Nfewu2j+VHOpdujenCaM=;
-  b=gmk2r5wBt/7PsfYhVYBG67UJ0PRmh76OD0ED3YZH/6eYgHewzckcHqY4
-   ZRl7HAltD6SqAzYsbBvtqncgMLArj05PzTG0y3BBOWqHTlK8mKosnP38u
-   sZ/56wz2+9SiS8eiq/3pnQNjIX7TlkrCmwuxLBh4lzbfmVVp1J3xbZp2G
-   UgGOzGdD+eUfxCjq9B7yNaEd6iY3d53aBb84h7yf7knZnNltr7fZq1lF9
-   EOAuDdaiaD8RLguoh7ESPyD+U5ussBoey1kj7DKd8Xk6ngh88w5fjSEdX
-   tYUl+WkX6RLHTve9kDFANmVlhnmH2Ui/aIl/APDrsoztftpnFWlHuBrDw
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="250093485"
+  bh=Gd+nZWXT2Vj5sId1tBKnAzjGgf10Zdvpv1KhXHK183k=;
+  b=Zx6av7+RxIk25NKdtYZHace8dWbp+R9syyquj262x8RQyA5SXdO8ihen
+   eBlJV87l2ddRe2+I2x2rjzKj7LZGHq6JUYJFKT2yQbntxUtgw/9Yi4C8I
+   Rg1LcTvc7tM8Ro7Boi75cUPQu9uffxgWQ7hX3wkzcplgwYQqxj97nwTJ5
+   AtWpfn+WRpWLPW512kjOozI10u2epzgJ575oSfYoqci59jNHIQlZNTE1P
+   mkcomXyRMqv/scXUQ3KzW6zz5jyMDZLSoUkc1qxpJJzVmqpiPOoiiWNhv
+   7EXlpfRmivMBngMxrZxYKZZ/URj+miR7jelODqAsdVSVTk5Hlh9ZDNCcL
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="250093488"
 X-IronPort-AV: E=Sophos;i="5.91,215,1647327600"; 
-   d="scan'208";a="250093485"
+   d="scan'208";a="250093488"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 19:29:43 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 19:29:44 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,215,1647327600"; 
-   d="scan'208";a="670166554"
+   d="scan'208";a="670166557"
 Received: from black.fi.intel.com ([10.237.72.28])
   by fmsmga002.fm.intel.com with ESMTP; 10 May 2022 19:29:40 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 53BBA5D0; Wed, 11 May 2022 05:28:01 +0300 (EEST)
+        id 69FD1646; Wed, 11 May 2022 05:28:01 +0300 (EEST)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         Andy Lutomirski <luto@kernel.org>,
@@ -52,9 +52,9 @@ Cc:     x86@kernel.org, Andrey Ryabinin <aryabinin@virtuozzo.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         linux-mm@kvack.org, linux-kernel@vger.kernel.org,
         "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [RFCv2 07/10] x86/mm: Handle tagged memory accesses from kernel threads
-Date:   Wed, 11 May 2022 05:27:48 +0300
-Message-Id: <20220511022751.65540-9-kirill.shutemov@linux.intel.com>
+Subject: [RFCv2 09/10] x86/mm: Add userspace API to enable Linear Address Masking
+Date:   Wed, 11 May 2022 05:27:50 +0300
+Message-Id: <20220511022751.65540-11-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220511022751.65540-1-kirill.shutemov@linux.intel.com>
 References: <20220511022751.65540-1-kirill.shutemov@linux.intel.com>
@@ -64,77 +64,134 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a kernel thread performs memory access on behalf of a process (like
-in async I/O, io_uring, etc.) it has to respect tagging setup of the
-process as user addresses can include tags.
-
-Normally, LAM setup is per-thread and recorded in thread features, but
-for this use case kernel also tracks LAM setup per-mm. mm->context.lam
-would record LAM that allows the most tag bits among the threads of
-the mm.
-
-The info used by switch_mm_irqs_off() to construct CR3 if the task is
-kernel thread. Thread featrues of the kernel thread get updated
-according to mm->context.lam. It allows untagged_addr() to work
-correctly.
+Allow to enable Linear Address Masking via ARCH_THREAD_FEATURE_ENABLE
+arch_prctl(2).
 
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 ---
- arch/x86/include/asm/mmu.h |  1 +
- arch/x86/mm/tlb.c          | 28 ++++++++++++++++++++++++++++
- 2 files changed, 29 insertions(+)
+ arch/x86/kernel/process.c    | 21 +++++++++++++++-
+ arch/x86/kernel/process.h    |  2 ++
+ arch/x86/kernel/process_64.c | 46 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 68 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/mmu.h b/arch/x86/include/asm/mmu.h
-index 5d7494631ea9..52f3749f14e8 100644
---- a/arch/x86/include/asm/mmu.h
-+++ b/arch/x86/include/asm/mmu.h
-@@ -40,6 +40,7 @@ typedef struct {
+diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
+index cb8fc28f2eae..911c24321312 100644
+--- a/arch/x86/kernel/process.c
++++ b/arch/x86/kernel/process.c
+@@ -46,6 +46,8 @@
+ #include <asm/proto.h>
+ #include <asm/frame.h>
+ #include <asm/unwind.h>
++#include <asm/mmu_context.h>
++#include <asm/compat.h>
  
- #ifdef CONFIG_X86_64
- 	unsigned short flags;
-+	u8 lam;
- #endif
+ #include "process.h"
  
- 	struct mutex lock;
-diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
-index f9fe71d1f42c..b320556e1c22 100644
---- a/arch/x86/mm/tlb.c
-+++ b/arch/x86/mm/tlb.c
-@@ -185,6 +185,34 @@ static u8 gen_lam(struct task_struct *tsk, struct mm_struct *mm)
- 	if (!tsk)
- 		return LAM_NONE;
+@@ -992,7 +994,9 @@ unsigned long __get_wchan(struct task_struct *p)
+ static long thread_feature_prctl(struct task_struct *task, int option,
+ 				 unsigned long features)
+ {
+-	const unsigned long known_features = 0;
++	const unsigned long known_features =
++		X86_THREAD_LAM_U48 |
++		X86_THREAD_LAM_U57;
  
-+	if (tsk->flags & PF_KTHREAD) {
-+		/*
-+		 * For kernel thread use the most permissive LAM
-+		 * used by the mm. It's required to handle kernel thread
-+		 * memory accesses on behalf of a process.
-+		 *
-+		 * Adjust thread flags accodringly, so untagged_addr() would
-+		 * work correctly.
-+		 */
+ 	if (features & ~known_features)
+ 		return -EINVAL;
+@@ -1013,8 +1017,23 @@ static long thread_feature_prctl(struct task_struct *task, int option,
+ 
+ 	/* Handle ARCH_THREAD_FEATURE_ENABLE */
+ 
++	if (features & (X86_THREAD_LAM_U48 | X86_THREAD_LAM_U57)) {
++		long ret;
 +
-+		tsk->thread.features &= ~(X86_THREAD_LAM_U48 |
-+					  X86_THREAD_LAM_U57);
++		/* LAM is only available in long mode */
++		if (in_32bit_syscall())
++			return -EINVAL;
 +
-+		switch (mm->context.lam) {
-+		case LAM_NONE:
-+			return LAM_NONE;
-+		case LAM_U57:
-+			tsk->thread.features |= X86_THREAD_LAM_U57;
-+			return LAM_U57;
-+		case LAM_U48:
-+			tsk->thread.features |= X86_THREAD_LAM_U48;
-+			return LAM_U48;
-+		default:
-+			WARN_ON_ONCE(1);
-+			return LAM_NONE;
-+		}
++		ret = enable_lam(task, features);
++		if (ret)
++			return ret;
 +	}
 +
- 	if (tsk->thread.features & X86_THREAD_LAM_U57)
- 		return LAM_U57;
- 	if (tsk->thread.features & X86_THREAD_LAM_U48)
+ 	task->thread.features |= features;
+ out:
++	/* Update CR3 to get LAM active */
++	switch_mm(task->mm, task->mm, task);
++
+ 	return task->thread.features;
+ }
+ 
+diff --git a/arch/x86/kernel/process.h b/arch/x86/kernel/process.h
+index 76b547b83232..b8fa0e599c6e 100644
+--- a/arch/x86/kernel/process.h
++++ b/arch/x86/kernel/process.h
+@@ -4,6 +4,8 @@
+ 
+ #include <asm/spec-ctrl.h>
+ 
++long enable_lam(struct task_struct *task, unsigned long features);
++
+ void __switch_to_xtra(struct task_struct *prev_p, struct task_struct *next_p);
+ 
+ /*
+diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
+index e459253649be..a25c51da7005 100644
+--- a/arch/x86/kernel/process_64.c
++++ b/arch/x86/kernel/process_64.c
+@@ -729,6 +729,52 @@ void set_personality_ia32(bool x32)
+ }
+ EXPORT_SYMBOL_GPL(set_personality_ia32);
+ 
++static bool lam_u48_allowed(void)
++{
++	struct mm_struct *mm = current->mm;
++
++	if (!full_va_allowed(mm))
++		return true;
++
++	return find_vma(mm, DEFAULT_MAP_WINDOW) == NULL;
++}
++
++long enable_lam(struct task_struct *task, unsigned long features)
++{
++	features |= task->thread.features;
++
++	/* LAM_U48 and LAM_U57 are mutually exclusive */
++	if ((features & X86_THREAD_LAM_U48) && (features & X86_THREAD_LAM_U57))
++		return -EINVAL;
++
++	if (!cpu_feature_enabled(X86_FEATURE_LAM))
++		return -ENXIO;
++
++	if (mmap_write_lock_killable(task->mm))
++		return -EINTR;
++
++	if ((features & X86_THREAD_LAM_U48) && !lam_u48_allowed()) {
++		mmap_write_unlock(task->mm);
++		return -EINVAL;
++	}
++
++	/*
++	 * Record the most permissive (allowing the widest tags) LAM
++	 * mode to the mm context. It determinates if a mappings above
++	 * 47 bit is allowed for the process.
++	 *
++	 * The mode is also used by a kernel thread when it does work
++	 * on behalf of the process (like async I/O, io_uring, etc.)
++	 */
++	if (features & X86_THREAD_LAM_U48)
++		current->mm->context.lam = LAM_U48;
++	else if (current->mm->context.lam == LAM_NONE)
++		current->mm->context.lam = LAM_U57;
++
++	mmap_write_unlock(task->mm);
++	return 0;
++}
++
+ #ifdef CONFIG_CHECKPOINT_RESTORE
+ static long prctl_map_vdso(const struct vdso_image *image, unsigned long addr)
+ {
 -- 
 2.35.1
 
