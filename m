@@ -2,193 +2,412 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F870C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 09:17:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D98CC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 09:18:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237942AbiEKJRm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 05:17:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43792 "EHLO
+        id S238470AbiEKJSO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 05:18:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240329AbiEKJRK (ORCPT
+        with ESMTP id S238072AbiEKJSK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 05:17:10 -0400
-Received: from EUR02-VE1-obe.outbound.protection.outlook.com (mail-eopbgr20080.outbound.protection.outlook.com [40.107.2.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7301C5EBD8;
-        Wed, 11 May 2022 02:16:58 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KaBfZm7NoIM/d11InIQ+vWJXOV9K+qBZHqCBlDcy4AxjFXPwn9rR22g2XC93zprinIEJhX8DtJ64Tp8/p1eSLqnJ1JdTBOjYJpJw2O6JM0brapYWr21mJJO2OEyhbVQLX/Ya2m3s9Tw5ehdlyfE2n8ZRrdP6pXp6HM9CrKTiY8fsNR+a3UG5K6ZD1gwlAo9nKfYmioN0LFvIrrzVlObOO0Ok7fgF0Q7wlkWo2SX980GPYCh4lhvOQ5azk9UEglzJmX/804RVLIJmCd11ACSEFcboFmZMROxPx5nM6YVi7WvB3F11i9zBmH/H5Mhhvaac1MLp355djXUI1K5oh3wX+A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ecGj0Wzday1OZHRx3U12Wb/KmsHKwp7qfRhlmF8aBCg=;
- b=O60s6x924mZpPPCzTIbaEN/l+kTUqvzNMbRiJQEMWb2atNVDGCPLVzNy1Y+2ODWz0MBUtaRbIbgws13kIUTm1vFOsnKv4cbAWml3cxM/SARgeFgBi2ADPBRDHdcQ86QokkeGniAl8HNkJ5O5sVIm5RAhqDhjUtgelMzJPFhc1THDOHlANWVPxItk+zvwNg4xu5cv33kxVdsLN55gX2wVUydWdhW777ZpZ3WW8LSurY2uswD03R3jxbKifgYconaNs30eu9x65izPuoASFhrRgbHKPW60HY40JwMzJlladtx3ZQVQxLgFxp0vFDKd2iwYzW/e/uxrtA+sy8RC2nh8UA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ecGj0Wzday1OZHRx3U12Wb/KmsHKwp7qfRhlmF8aBCg=;
- b=WNHNLGx/8RspWkYYDVs9diZ18z74GqLXjUf7FylnDaRDdQWDlCIpmIAmnctqJvW5qZzYgepcZ7j4IZ7rBbyLXv5M0hfjg6hAQB5w92DJZqL3+JE/FjOchIAaQv+wIIMIiU+WK8/qXeOpDt5BY/vT2fTOJICCeQmNUSnyvRdOx1Y=
-Received: from DU2PR04MB8630.eurprd04.prod.outlook.com (2603:10a6:10:2dd::15)
- by PAXPR04MB8286.eurprd04.prod.outlook.com (2603:10a6:102:1cd::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13; Wed, 11 May
- 2022 09:16:55 +0000
-Received: from DU2PR04MB8630.eurprd04.prod.outlook.com
- ([fe80::b454:80f3:ce2c:6fbc]) by DU2PR04MB8630.eurprd04.prod.outlook.com
- ([fe80::b454:80f3:ce2c:6fbc%4]) with mapi id 15.20.5250.013; Wed, 11 May 2022
- 09:16:55 +0000
-From:   Pankaj Gupta <pankaj.gupta@nxp.com>
-To:     Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Horia Geanta <horia.geanta@nxp.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>
-CC:     "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        Michael Walle <michael@walle.cc>,
-        James Bottomley <jejb@linux.ibm.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        David Howells <dhowells@redhat.com>,
-        James Morris <jmorris@namei.org>,
-        Eric Biggers <ebiggers@kernel.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Jan Luebbe <j.luebbe@pengutronix.de>,
-        David Gstir <david@sigma-star.at>,
-        Richard Weinberger <richard@nod.at>,
-        Franck Lenormand <franck.lenormand@nxp.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Sumit Garg <sumit.garg@linaro.org>,
-        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>
-Subject: RE: [EXT] [PATCH v9 3/7] crypto: caam - determine whether CAAM
- supports blob encap/decap
-Thread-Topic: [EXT] [PATCH v9 3/7] crypto: caam - determine whether CAAM
- supports blob encap/decap
-Thread-Index: AQHYYRI97Pupc5Ww9UOAxVboSwK5L60WgJwggAAH1wCAAuOogA==
-Date:   Wed, 11 May 2022 09:16:55 +0000
-Message-ID: <DU2PR04MB8630A6F925454E5C007FA3EA95C89@DU2PR04MB8630.eurprd04.prod.outlook.com>
-References: <20220506062553.1068296-1-a.fatoum@pengutronix.de>
-         <20220506062553.1068296-4-a.fatoum@pengutronix.de>
-         <DU2PR04MB8630501008F661C596C0106295C69@DU2PR04MB8630.eurprd04.prod.outlook.com>
- <5e7c0b3c9bc285f1cf9f7b20f055aa376e1688cc.camel@pengutronix.de>
-In-Reply-To: <5e7c0b3c9bc285f1cf9f7b20f055aa376e1688cc.camel@pengutronix.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: efb53979-30d8-4151-060a-08da332efe6f
-x-ms-traffictypediagnostic: PAXPR04MB8286:EE_
-x-microsoft-antispam-prvs: <PAXPR04MB8286A698173B77C9E991F9D795C89@PAXPR04MB8286.eurprd04.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: So4EBMlvN4QiMbMEwxg6/BFxBqS4gjCmOnqtFfVwj1iYJvSjgaVP855C6a2JlayYjfvMdPu9FAisVzGvO5EsuujZfNXcRXGGSmvJBvh9ewJniCJ/JeVc6+8ty1Xutv/WCvDJksxup3qT2Uv93IenTCtZ1WCiBp/cLdkeEarPdcAfeU3CPowIGTPwX60uwTViFJK4epRedM8fMs7QxT8UfxpemcLe1dJnQW1oFmCw8Vwf7e1vsuqn6vqPm1Qwe5Pg5Zv6nvSbfx0VGGZ/mE4d2Cc1VEG7dj6i228JsOl7AabOyamdgVhjooGOHrWGM4VAEPQP6nU4rFdG7RRIvBm1CRKrzq5QCiiu7qwEE/PtE/zqBP21lvuGHOCWkQ8e5xoB0KG2oQ2fmpuZTkSjdnFrrdXMELHQC3Rlai5I40XWSyDhFQZQEMC+Bs6/2KtGk7FYQTgq5cUkV6R3zFnprxfPgf6uczcQH4PUJlikbuuWrjdx4Xix9oUrmlRXCM38c9l0ePn10C+TvQMjXNcqNTkEKZE+VMmYPT/eUjXS43l8YWAUrXrZv7jg4IhHHYYijlXxCwHoIHboGEpYPG+ntLfTEHXc20zmu37JAWxNfsdm1J81pM+y5vD0RWJ/2XCPwlIY8/+UDvcVQ5RKAMCzQdJcTGG9SSFfJfcea+K++FK7atVPNnqQU/WhD4vqTQ+ZF93qb9F3N3Wp0HBp41ztM7BPXw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU2PR04MB8630.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(71200400001)(4326008)(9686003)(64756008)(66446008)(66476007)(66556008)(76116006)(2906002)(83380400001)(8676002)(5660300002)(52536014)(8936002)(33656002)(186003)(7416002)(508600001)(66946007)(110136005)(53546011)(54906003)(6506007)(122000001)(55016003)(316002)(38100700002)(38070700005)(26005)(7696005)(86362001)(55236004)(44832011);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?Q0NGSU12c0dpZFJ3c3ltaXlSUW5Cb2tuMmJzeGx6bW0rMWtueERtNit0WVBS?=
- =?utf-8?B?Z0RXTGliamNRKzltSTZZeDlwK3Z6RTJaYmhGaUdLMDlNWWRQaW5ZWVkyc0RI?=
- =?utf-8?B?MUlITzk4cmJTbFQ5R29xNWhwNlFTM2R0cFZieVJpU2w5MnZQWTluSW9mc0I1?=
- =?utf-8?B?OVR5bWk3SHRMcStjVGJ3ZmNsN2I0SXIzbWZodmlRbEM0VWt4RGtjM2JucENM?=
- =?utf-8?B?Y3MxVDlMR0NkcjRKeUQvRWVseFBabERuU3RyaVFBdGR2SG5yRkFrdXA0S09x?=
- =?utf-8?B?ODZCaEpqWm5QMThLZlFteEV4UEdlNjlRcyswN3FYSEhzME5uSEk5S3dNNzR1?=
- =?utf-8?B?czJCTE5qWUtwTmNKMDF0QnRSUVlVcmk3VmZkQklkNkoxNTIrYVZkQ2Q0QTht?=
- =?utf-8?B?aDdBcFpyYk0wWW56anFKd2h5SktwWllyZDFsd1ZmRzQ3TXk0L2V0bEJJVzhz?=
- =?utf-8?B?SmpEZDdjYnpqdmhRL0VXeVNzaEdTMHFJZzVCSkhwRmpVYzkrdEJneDM4QnVs?=
- =?utf-8?B?cW1KUGtGWFRnT2Q0Y2RqZ2NoZDQ2aFF0MHFhcEJ4QkttS3NFWjFkaGNWeDJn?=
- =?utf-8?B?c0d4bUZLTnZqMmM3MEcwd0tJclJrZGpjb21oK3VHaWlCTnNNcEJCa2tHSUho?=
- =?utf-8?B?b2gwbnRhdXNaMzg4QWJLRFFjb3dta005Y2I3Nm5RYkNpZUNxVnlwd2NCM3Bt?=
- =?utf-8?B?VFhyOGlaNVhuQUMxRUkvWUxqWHlDM1cxaVl2b3AyZy9tUllXRGtoM0c5TlBN?=
- =?utf-8?B?bFZsRkpld3NvR0ZhUUdMS2tsZHAzRFFlaDJUMG1IN1p6MXh1VWcwQVhyWlov?=
- =?utf-8?B?dnh1Myt0Q1g5WkZRSWZsVk9Bek1OMEtsZzN4LzkwR0NHMVo3Y0Y2Vy9Ueldh?=
- =?utf-8?B?aUdhOXRvTmRIVkpqSFFpTVA4TGJJalphKzJzRitvZFo5ME1TOTIxTm8yQ04y?=
- =?utf-8?B?YTRFVk9qaEJCQ1UxM3hHdjh6dU1DSVB3dnFjQ3IvRm05cmU5eHlua0RQMzJ4?=
- =?utf-8?B?YzJ6dXp4bnhXQmVjT3U5N3FCWlJvcHdoTU4yeWdLV1NSSFpISml5WUtkc2hm?=
- =?utf-8?B?YjYySG1kNGxnV3VVeWZCOWVEUlU0c3hrS1lRRVExYk1vUmhZWmM2cVhxUXFP?=
- =?utf-8?B?cXBoc0N3V0lWSXJtcm5hQnZyZ29ueUY0RlAzbFdZM3RCdTduQlIwZ2JvaFlC?=
- =?utf-8?B?RlVoeW9SZkZJc3F0WTFFdXYxRUdMZUF0OENjNDFqclFadXJGdjZ5emFNc3kr?=
- =?utf-8?B?R1JnQU1NNURVakwxTWFrbnl0NncxRVV3Nm95V2tOSnorR3o4cUFwbFRqcWJT?=
- =?utf-8?B?V3BoS3JRcHkrNTVFc09uYlNxYXlUSk9VZ3RpSEowUjVIZmdDbEswd0F5YXFX?=
- =?utf-8?B?d2RWVGNyV1QxRGFDOUhTbXVxUFhjaVkyTDBXM1UrQTg5SVZheGdvc1ZwQ0Nu?=
- =?utf-8?B?YkJPSzdndHEzYW54aVJLSEQ4ejlrbTI1UnJWaVZKaDlaNEh1R0UrL0hWR0Z6?=
- =?utf-8?B?L1U3d2Q2STZkakQ2SWFZM0hhWnJHN1hhTzMyMVVPMzFHU2kxZUNlQVJYdkd6?=
- =?utf-8?B?Zm16c0NHVXl0anJtVFpBbU50VzBuZjJFVnF6VXV6Z0JtSUhhMEdzTWxzbXd4?=
- =?utf-8?B?RFZLOHovbVpHdG9mZXZBaFIzdVEzSit1c1ZnQUMyU3VoK1pkWEp1VjZYRVY0?=
- =?utf-8?B?M3RTdmI4dWNERFE3YXFyRUZaalBxNDB3WkdWQ3ptNWNoMHkvRXg5L3QvaUNp?=
- =?utf-8?B?anUrazdYYzg0OUdCbGpxQnJLTzByRkRaVjg4MVdQOHBwUmwwckNrZ0VvYkFa?=
- =?utf-8?B?TkxDczJzamNXYVhpWktNUGZrUFRSckJsYmxaV3ZsQitYVFhQdE8vaVJSS2Jp?=
- =?utf-8?B?bDRhbjNadVdVTHl4YnFpTzdGbFhvSU1ybHhMaGJXR2Q4ZGNpOTdXQjh3YnJU?=
- =?utf-8?B?ZTEyaXd4S3c5KzBoWHZjVnJqZHhrUmxTU055TDA0RDY0USswUXZFQklWaGUr?=
- =?utf-8?B?ekRxc29hL3FZZjN2cGZZSlhuQzlxQVAwR1U5WEp1clMvQ3BaL1dZTVV5cGdz?=
- =?utf-8?B?eVEyWEdPRFc0THBPOUliVXh1Z2NRZzQra21OZXRUb2lUMXhxK0ZqcklmeHNL?=
- =?utf-8?B?Z0hObGFqVXMyZzQxL3RRN1drSzVEbE0ySTQ3OWZiVDhxVmNHeExrSllIK0Np?=
- =?utf-8?B?eS84enRCY3hHUk1hVWd6endLbmFQT2IySms3My84Tis4M20wUE1CMjNyRmhv?=
- =?utf-8?B?MURWY2pxdEFmNE91ZDNqc1ExZE8yNmdLNGZIVEpxOWNTR1d6WkljKzFxL1hk?=
- =?utf-8?B?QklvTXYvNHN0YVQ5TzBYSkNXQnNFNEFZajIyZHJ6NkdoNzRQTkVBdz09?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Wed, 11 May 2022 05:18:10 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1A5AF201300;
+        Wed, 11 May 2022 02:18:08 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D244A1FB;
+        Wed, 11 May 2022 02:18:07 -0700 (PDT)
+Received: from [10.57.2.55] (unknown [10.57.2.55])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8B9613F73D;
+        Wed, 11 May 2022 02:18:03 -0700 (PDT)
+Message-ID: <1b6d1ed3-fdec-3fef-cbf6-735ba5104a94@arm.com>
+Date:   Wed, 11 May 2022 10:18:02 +0100
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DU2PR04MB8630.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: efb53979-30d8-4151-060a-08da332efe6f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 May 2022 09:16:55.6234
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: cgcHocwHUYYYpW0ql79rbzwkpV2D+Lla+Ot4IcZ4SG7LI83tbThmGtCSBXRWWqk1j/XCgs9mCkeyycfOr0s/5w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8286
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v7 5/7] perf tool: Add support for HiSilicon PCIe Tune and
+ Trace device driver
+Content-Language: en-US
+To:     "liuqi (BA)" <liuqi115@huawei.com>,
+        Yicong Yang <yangyicong@hisilicon.com>,
+        Leo Yan <leo.yan@linaro.org>
+Cc:     prime.zeng@huawei.com, zhangshaokun@hisilicon.com,
+        linuxarm@huawei.com, gregkh@linuxfoundation.org,
+        helgaas@kernel.org, alexander.shishkin@linux.intel.com,
+        lorenzo.pieralisi@arm.com, will@kernel.org, mark.rutland@arm.com,
+        mathieu.poirier@linaro.org, suzuki.poulose@arm.com,
+        mike.leach@linaro.org, jonathan.cameron@huawei.com,
+        daniel.thompson@linaro.org, joro@8bytes.org, john.garry@huawei.com,
+        shameerali.kolothum.thodi@huawei.com, robin.murphy@arm.com,
+        peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        coresight@lists.linaro.org, linux-pci@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, iommu@lists.linux-foundation.org
+References: <20220407125841.3678-1-yangyicong@hisilicon.com>
+ <20220407125841.3678-6-yangyicong@hisilicon.com>
+ <ace5aa71-a7f9-cb3a-ee80-b56c71df343b@arm.com>
+ <7fe57ed2-c583-1ada-ea5d-324d8de078bc@huawei.com>
+From:   James Clark <james.clark@arm.com>
+In-Reply-To: <7fe57ed2-c583-1ada-ea5d-324d8de078bc@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGkgQWhtYWQsDQoNCkNvbW1lbnRzIGluLWxpbmUuDQoNClJlZ2FyZHMNClBhbmthag0KDQo+IC0t
-LS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IEFobWFkIEZhdG91bSA8YS5mYXRvdW1A
-cGVuZ3V0cm9uaXguZGU+DQo+IFNlbnQ6IE1vbmRheSwgTWF5IDksIDIwMjIgNjozNCBQTQ0KPiBU
-bzogUGFua2FqIEd1cHRhIDxwYW5rYWouZ3VwdGFAbnhwLmNvbT47IEhvcmlhIEdlYW50YQ0KPiA8
-aG9yaWEuZ2VhbnRhQG54cC5jb20+OyBIZXJiZXJ0IFh1IDxoZXJiZXJ0QGdvbmRvci5hcGFuYS5v
-cmcuYXU+OyBEYXZpZCBTLg0KPiBNaWxsZXIgPGRhdmVtQGRhdmVtbG9mdC5uZXQ+DQo+IENjOiBr
-ZXJuZWxAcGVuZ3V0cm9uaXguZGU7IE1pY2hhZWwgV2FsbGUgPG1pY2hhZWxAd2FsbGUuY2M+OyBK
-YW1lcw0KPiBCb3R0b21sZXkgPGplamJAbGludXguaWJtLmNvbT47IEphcmtrbyBTYWtraW5lbiA8
-amFya2tvQGtlcm5lbC5vcmc+OyBNaW1pDQo+IFpvaGFyIDx6b2hhckBsaW51eC5pYm0uY29tPjsg
-RGF2aWQgSG93ZWxscyA8ZGhvd2VsbHNAcmVkaGF0LmNvbT47IEphbWVzDQo+IE1vcnJpcyA8am1v
-cnJpc0BuYW1laS5vcmc+OyBFcmljIEJpZ2dlcnMgPGViaWdnZXJzQGtlcm5lbC5vcmc+OyBTZXJn
-ZSBFLg0KPiBIYWxseW4gPHNlcmdlQGhhbGx5bi5jb20+OyBKYW4gTHVlYmJlIDxqLmx1ZWJiZUBw
-ZW5ndXRyb25peC5kZT47IERhdmlkIEdzdGlyDQo+IDxkYXZpZEBzaWdtYS1zdGFyLmF0PjsgUmlj
-aGFyZCBXZWluYmVyZ2VyIDxyaWNoYXJkQG5vZC5hdD47IEZyYW5jaw0KPiBMZW5vcm1hbmQgPGZy
-YW5jay5sZW5vcm1hbmRAbnhwLmNvbT47IE1hdHRoaWFzIFNjaGlmZmVyDQo+IDxtYXR0aGlhcy5z
-Y2hpZmZlckBldy50cS1ncm91cC5jb20+OyBTdW1pdCBHYXJnIDxzdW1pdC5nYXJnQGxpbmFyby5v
-cmc+Ow0KPiBsaW51eC1pbnRlZ3JpdHlAdmdlci5rZXJuZWwub3JnOyBrZXlyaW5nc0B2Z2VyLmtl
-cm5lbC5vcmc7IGxpbnV4LQ0KPiBjcnlwdG9Admdlci5rZXJuZWwub3JnOyBsaW51eC1rZXJuZWxA
-dmdlci5rZXJuZWwub3JnOyBsaW51eC1zZWN1cml0eS0NCj4gbW9kdWxlQHZnZXIua2VybmVsLm9y
-Zw0KPiBTdWJqZWN0OiBSZTogW0VYVF0gW1BBVENIIHY5IDMvN10gY3J5cHRvOiBjYWFtIC0gZGV0
-ZXJtaW5lIHdoZXRoZXIgQ0FBTQ0KPiBzdXBwb3J0cyBibG9iIGVuY2FwL2RlY2FwDQo+IA0KPiBD
-YXV0aW9uOiBFWFQgRW1haWwNCj4gDQo+IEhlbGxvIFBhbmthaiwNCj4gDQo+IE9uIE1vbiwgMjAy
-Mi0wNS0wOSBhdCAxMjozOSArMDAwMCwgUGFua2FqIEd1cHRhIHdyb3RlOg0KPiA+ID4gLSAgICAg
-ICBpZiAoY3RybHByaXYtPmVyYSA8IDEwKQ0KPiA+ID4gKyAgICAgICBjb21wX3BhcmFtcyA9IHJk
-X3JlZzMyKCZjdHJsLT5wZXJmbW9uLmNvbXBfcGFybXNfbHMpOw0KPiA+ID4gKyAgICAgICBjdHJs
-cHJpdi0+YmxvYl9wcmVzZW50ID0gISEoY29tcF9wYXJhbXMgJiBDVFBSX0xTX0JMT0IpOw0KPiA+
-ID4gKw0KPiA+ID4gKyAgICAgICBpZiAoY3RybHByaXYtPmVyYSA8IDEwKSB7DQo+ID4gPiAgICAg
-ICAgICAgICAgICAgcm5nX3ZpZCA9IChyZF9yZWczMigmY3RybC0+cGVyZm1vbi5jaGFfaWRfbHMp
-ICYNCj4gPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIENIQV9JRF9MU19STkdfTUFTSykg
-Pj4NCj4gPiA+IENIQV9JRF9MU19STkdfU0hJRlQ7DQo+ID4NCj4gPiBDaGVjayBmb3IgQUVTIENI
-QXMgZm9yIEVyYSA8IDEwLCBzaG91bGQgYmUgYWRkZWQuDQo+IA0KPiBEbyBJIG5lZWQgdGhpcz8g
-SSBvbmx5IGRvIHRoaXMgY2hlY2sgZm9yIEVyYSA+PSAxMCwgYmVjYXVzZSBhcHBhcmVudGx5IHRo
-ZXJlIGFyZQ0KPiBMYXllcnNjYXBlIG5vbi1FIHByb2Nlc3NvcnMgdGhhdCBpbmRpY2F0ZSBCTE9C
-IHN1cHBvcnQgdmlhIENUUFJfTFNfQkxPQiwgYnV0DQo+IGZhaWwgYXQgcnVudGltZS4gQXJlIHRo
-ZXJlIGFueSBFcmEgPCAxMCBTb0NzIHRoYXQgYXJlIHNpbWlsYXJseSBicm9rZW4/DQo+IA0KDQpG
-b3Igbm9uLUUgdmFyaWFudHMsIGl0IG1pZ2h0IGhhcHBlbiB0aGF0IEJsb2IgcHJvdG9jb2wgaXMg
-ZW5hYmxlZCwgYnV0IG51bWJlciBvZiBBRVMgQ0hBIGFyZSB6ZXJvLg0KSWYgdGhlIG91dHB1dCBv
-ZiBiZWxvdyBleHByZXNzaW9uIGlzID4gMCwgdGhlbiBvbmx5IGJsb2JfcHJlc2VudCBzaG91bGQg
-YmUgbWFya2VkIHByZXNlbnQgb3IgdHJ1ZS4NCkZvciBlcmEgPiAxMCwgeW91IGhhbmRsZWQuIEJ1
-dCBmb3IgZXJhIDwgMTAsIHBsZWFzZSBhZGQgdGhlIGJlbG93IGNvZGUuDQoJDQoocmRfcmVnMzIo
-JnByaXYtPmN0cmwtPnBlcmZtb24uY2hhX251bV9scykgJg0KICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgQ0hBX0lEX0xTX0FFU19NQVNLKSA+PiBDSEFfSURfTFNfQUVTX1NISUZUOw0KDQo+IENo
-ZWVycywNCj4gQWhtYWQNCg0K
+
+
+On 11/05/2022 03:02, liuqi (BA) wrote:
+> 
+> Hi James,
+> 
+> On 2022/5/10 18:14, James Clark wrote:
+>>
+>>
+>> On 07/04/2022 13:58, Yicong Yang wrote:
+>>> From: Qi Liu <liuqi115@huawei.com>
+>>>
+> [...]
+>>>   struct auxtrace_record
+>>>   *auxtrace_record__init(struct evlist *evlist, int *err)
+>>>   {
+>>> @@ -57,8 +112,12 @@ struct auxtrace_record
+>>>       struct evsel *evsel;
+>>>       bool found_etm = false;
+>>>       struct perf_pmu *found_spe = NULL;
+>>> +    struct perf_pmu *found_ptt = NULL;
+>>>       struct perf_pmu **arm_spe_pmus = NULL;
+>>> +    struct perf_pmu **hisi_ptt_pmus = NULL;
+>>> +
+>>>       int nr_spes = 0;
+>>> +    int nr_ptts = 0;
+>>>       int i = 0;
+>>>         if (!evlist)
+>>> @@ -66,13 +125,14 @@ struct auxtrace_record
+>>>         cs_etm_pmu = perf_pmu__find(CORESIGHT_ETM_PMU_NAME);
+>>>       arm_spe_pmus = find_all_arm_spe_pmus(&nr_spes, err);
+>>> +    hisi_ptt_pmus = find_all_hisi_ptt_pmus(&nr_ptts, err);
+>>>         evlist__for_each_entry(evlist, evsel) {
+>>>           if (cs_etm_pmu &&
+>>>               evsel->core.attr.type == cs_etm_pmu->type)
+>>>               found_etm = true;
+>>>   -        if (!nr_spes || found_spe)
+>>> +        if ((!nr_spes || found_spe) && (!nr_ptts || found_ptt))
+>>>               continue;
+>>>             for (i = 0; i < nr_spes; i++) {
+>>> @@ -81,11 +141,18 @@ struct auxtrace_record
+>>>                   break;
+>>>               }
+>>>           }
+>>> +
+>>> +        for (i = 0; i < nr_ptts; i++) {
+>>> +            if (evsel->core.attr.type == hisi_ptt_pmus[i]->type) {
+>>> +                found_ptt = hisi_ptt_pmus[i];
+>>> +                break;
+>>> +            }
+>>> +        }
+>>>       }
+>>>       free(arm_spe_pmus);
+>>>   -    if (found_etm && found_spe) {
+>>> -        pr_err("Concurrent ARM Coresight ETM and SPE operation not currently supported\n");
+>>> +    if (found_etm && found_spe && found_ptt) {
+>>> +        pr_err("Concurrent ARM Coresight ETM ,SPE and HiSilicon PCIe Trace operation not currently supported\n");
+>>
+>> Hi Yicong,
+>>
+>> Is that actually a limitation? I don't see why they couldn't work concurrently.
+> 
+> As Leo said, the logic here should be like this:
+> 
+>         int auxtrace_event_cnt = 0;
+>         if (found_etm)
+>                 auxtrace_event_cnt++;
+>         if (found_spe)
+>                 auxtrace_event_cnt++;
+>         if (found_ptt)
+>                 auxtrace_event_cnt++;
+> 
+>         if (auxtrace_event_cnt > 1) {
+>                 pr_err("Concurrent AUX trace operation isn't supported: found etm %d spe %d ptt %d\n",
+>                        found_etm, found_spe, found_ptt);
+>                 *err = -EOPNOTSUPP;
+>                 return NULL;
+>         }
+> 
+> which means perf doesn't allow more than one auxtrace event recording at the same time.
+
+Oh I see that the limitation is actually in perf when decoding the data. I thought it meant
+that it wasn't possible to open multiple aux events at the same time, which I think should
+work in theory. Makes sense.
+
+> 
+>>
+>>
+>>>           *err = -EOPNOTSUPP;
+>>>           return NULL;
+>>>       }
+>>> @@ -96,6 +163,9 @@ struct auxtrace_record
+>>>   #if defined(__aarch64__)
+>>>       if (found_spe)
+>>>           return arm_spe_recording_init(err, found_spe);
+>>> +
+>>> +    if (found_ptt)
+>>> +        return hisi_ptt_recording_init(err, found_ptt);
+>>>   #endif
+>>>         /*
+> 
+> [...]
+>>> +
+>>> +static int hisi_ptt_recording_options(struct auxtrace_record *itr,
+>>> +                      struct evlist *evlist,
+>>> +                      struct record_opts *opts)
+>>> +{
+>>> +    struct hisi_ptt_recording *pttr =
+>>> +            container_of(itr, struct hisi_ptt_recording, itr);
+>>> +    struct perf_pmu *hisi_ptt_pmu = pttr->hisi_ptt_pmu;
+>>> +    struct perf_cpu_map *cpus = evlist->core.cpus;
+>>> +    struct evsel *evsel, *hisi_ptt_evsel = NULL;
+>>> +    struct evsel *tracking_evsel;
+>>> +    int err;
+>>> +
+>>> +    pttr->evlist = evlist;
+>>> +    evlist__for_each_entry(evlist, evsel) {
+>>> +        if (evsel->core.attr.type == hisi_ptt_pmu->type) {
+>>> +            if (hisi_ptt_evsel) {
+>>> +                pr_err("There may be only one " HISI_PTT_PMU_NAME "x event\n");
+>>> +                return -EINVAL;
+>>> +            }
+>>> +            evsel->core.attr.freq = 0;
+>>> +            evsel->core.attr.sample_period = 1;
+>>> +            hisi_ptt_evsel = evsel;
+>>> +            opts->full_auxtrace = true;
+>>> +        }
+>>> +    }
+>>> +
+>>> +    err = hisi_ptt_set_auxtrace_mmap_page(opts);
+>>> +    if (err)
+>>> +        return err;
+>>> +    /*
+>>> +     * To obtain the auxtrace buffer file descriptor, the auxtrace event
+>>> +     * must come first.
+>>> +     */
+>>> +    evlist__to_front(evlist, hisi_ptt_evsel);
+>>> +
+>>> +    if (!perf_cpu_map__empty(cpus)) {
+>>> +        evsel__set_sample_bit(hisi_ptt_evsel, TIME);
+>>> +        evsel__set_sample_bit(hisi_ptt_evsel, CPU);
+>>> +    }
+>>
+>> Similar to Leo's comment: CPU isn't required if it's uncore,
+>> and if TIME is useful then add it regardless of whether the
+>> event is opened per-cpu or on a task.
+>>
+> got it, will fix this next time.
+> 
+>>> +
+>>> +    /* Add dummy event to keep tracking */
+>>> +    err = parse_events(evlist, "dummy:u", NULL);
+>>> +    if (err)
+>>> +        return err;
+>>> +
+>>> +    tracking_evsel = evlist__last(evlist);
+>>> +    evlist__set_tracking_event(evlist, tracking_evsel);
+>>> +
+>>> +    tracking_evsel->core.attr.freq = 0;
+>>> +    tracking_evsel->core.attr.sample_period = 1;
+>>> +
+>>> +    if (!perf_cpu_map__empty(cpus))
+>>> +        evsel__set_sample_bit(tracking_evsel, TIME);
+>>
+>> Same comment as above.
+>>
+> got it, thanks.
+>>> +
+>>> +    return 0;
+>>> +}
+>>> +
+> 
+> 
+>>> +
+>>> +static int hisi_ptt_process_auxtrace_event(struct perf_session *session,
+>>> +                       union perf_event *event,
+>>> +                       struct perf_tool *tool __maybe_unused)
+>>> +{
+>>> +    struct hisi_ptt *ptt = container_of(session->auxtrace, struct hisi_ptt,
+>>> +                        auxtrace);
+>>> +    struct auxtrace_buffer *buffer;
+>>> +    off_t data_offset;
+>>> +    int fd = perf_data__fd(session->data);
+>>> +    int err;
+>>> +
+>>> +    if (perf_data__is_pipe(session->data)) {
+>>> +        data_offset = 0;
+>>> +    } else {
+>>> +        data_offset = lseek(fd, 0, SEEK_CUR);
+>>> +        if (data_offset == -1)
+>>> +            return -errno;
+>>> +    }
+>>> +
+>>> +    err = auxtrace_queues__add_event(&ptt->queues, session, event,
+>>> +                     data_offset, &buffer);
+>>> +    if (err)
+>>> +        return err;
+>>> +
+>>> +    if (dump_trace) {
+>>> +        if (auxtrace_buffer__get_data(buffer, fd)) {
+>>> +            hisi_ptt_dump_event(ptt, buffer->data, buffer->size);
+>>> +            auxtrace_buffer__put_data(buffer);
+>>> +        }
+>>
+>> Technically auxtrace_queues aren't required here because they are more for
+>> supporting trace from multiple CPUs and sorting and re-ordering between them.
+>>
+>> If this is new device is uncore and always from a single source you could
+>> just go straight to  hisi_ptt_dump_event() with data_offset and size of the
+>> auxtrace event.
+>>
+>> But I suppose it also doesn't hurt to use some of the existing framework
+>> like you have done.
+>>
+> ok, I'll delete the auxtrace_queues next time, thanks.
+
+It's up to you, it might be more work and it's best to leave it as it is now
+that you have it working already.
+
+James
+
+> 
+> Qi
+> 
+>>> +    }
+>>> +
+>>> +    return 0;
+>>> +}
+>>> +
+>>> +static int hisi_ptt_flush(struct perf_session *session __maybe_unused,
+>>> +              struct perf_tool *tool __maybe_unused)
+>>> +{
+>>> +    return 0;
+>>> +}
+>>> +
+>>> +static void hisi_ptt_free_events(struct perf_session *session)
+>>> +{
+>>> +    struct hisi_ptt *ptt = container_of(session->auxtrace, struct hisi_ptt,
+>>> +                        auxtrace);
+>>> +    struct auxtrace_queues *queues = &ptt->queues;
+>>> +    unsigned int i;
+>>> +
+>>> +    for (i = 0; i < queues->nr_queues; i++) {
+>>> +        free(queues->queue_array[i].priv);
+>>> +        queues->queue_array[i].priv = NULL;
+>>> +    }
+>>> +    auxtrace_queues__free(queues);
+>>> +}
+>>> +
+>>> +static void hisi_ptt_free(struct perf_session *session)
+>>> +{
+>>> +    struct hisi_ptt *ptt = container_of(session->auxtrace, struct hisi_ptt,
+>>> +                        auxtrace);
+>>> +
+>>> +    hisi_ptt_free_events(session);
+>>> +    session->auxtrace = NULL;
+>>> +    free(ptt);
+>>> +}
+>>> +
+>>> +static bool hisi_ptt_evsel_is_auxtrace(struct perf_session *session,
+>>> +                       struct evsel *evsel)
+>>> +{
+>>> +    struct hisi_ptt *ptt = container_of(session->auxtrace, struct hisi_ptt, auxtrace);
+>>> +
+>>> +    return evsel->core.attr.type == ptt->pmu_type;
+>>> +}
+>>> +
+>>> +static const char * const hisi_ptt_info_fmts[] = {
+>>> +    [HISI_PTT_PMU_TYPE]        = "  PMU Type           %" PRId64 "\n",
+>>> +};
+>>> +
+>>> +static void hisi_ptt_print_info(__u64 *arr)
+>>> +{
+>>> +    if (!dump_trace)
+>>> +        return;
+>>> +
+>>> +    fprintf(stdout, hisi_ptt_info_fmts[HISI_PTT_PMU_TYPE], arr[HISI_PTT_PMU_TYPE]);
+>>> +}
+>>> +
+>>> +int hisi_ptt_process_auxtrace_info(union perf_event *event,
+>>> +                   struct perf_session *session)
+>>> +{
+>>> +    struct perf_record_auxtrace_info *auxtrace_info = &event->auxtrace_info;
+>>> +    struct hisi_ptt *ptt;
+>>> +    int err;
+>>> +
+>>> +    if (auxtrace_info->header.size < HISI_PTT_AUXTRACE_PRIV_SIZE +
+>>> +                sizeof(struct perf_record_auxtrace_info))
+>>> +        return -EINVAL;
+>>> +
+>>> +    ptt = zalloc(sizeof(struct hisi_ptt));
+>>> +    if (!ptt)
+>>> +        return -ENOMEM;
+>>> +
+>>> +    err = auxtrace_queues__init(&ptt->queues);
+>>> +    if (err)
+>>> +        goto err_free;
+>>> +
+>>> +    ptt->session = session;
+>>> +    ptt->machine = &session->machines.host; /* No kvm support */
+>>> +    ptt->auxtrace_type = auxtrace_info->type;
+>>> +    ptt->pmu_type = auxtrace_info->priv[HISI_PTT_PMU_TYPE];
+>>> +
+>>> +    ptt->auxtrace.process_event = hisi_ptt_process_event;
+>>> +    ptt->auxtrace.process_auxtrace_event = hisi_ptt_process_auxtrace_event;
+>>> +    ptt->auxtrace.flush_events = hisi_ptt_flush;
+>>> +    ptt->auxtrace.free_events = hisi_ptt_free_events;
+>>> +    ptt->auxtrace.free = hisi_ptt_free;
+>>> +    ptt->auxtrace.evsel_is_auxtrace = hisi_ptt_evsel_is_auxtrace;
+>>> +    session->auxtrace = &ptt->auxtrace;
+>>> +
+>>> +    hisi_ptt_print_info(&auxtrace_info->priv[0]);
+>>> +
+>>> +    return 0;
+>>> +
+>>> +err_free:
+>>> +    free(ptt);
+>>> +    return err;
+>>> +}
+>>> diff --git a/tools/perf/util/hisi_ptt.h b/tools/perf/util/hisi_ptt.h
+>>> new file mode 100644
+>>> index 000000000000..c0b6cbde1221
+>>> --- /dev/null
+>>> +++ b/tools/perf/util/hisi_ptt.h
+>>> @@ -0,0 +1,28 @@
+>>> +/* SPDX-License-Identifier: GPL-2.0 */
+>>> +/*
+>>> + * HiSilicon PCIe Trace and Tuning (PTT) support
+>>> + * Copyright (c) 2022 HiSilicon Technologies Co., Ltd.
+>>> + */
+>>> +
+>>> +#ifndef INCLUDE__PERF_HISI_PTT_H__
+>>> +#define INCLUDE__PERF_HISI_PTT_H__
+>>> +
+>>> +#define HISI_PTT_PMU_NAME "hisi_ptt"
+>>> +enum {
+>>> +    HISI_PTT_PMU_TYPE,
+>>> +    HISI_PTT_PER_CPU_MMAPS,
+>>> +    HISI_PTT_AUXTRACE_PRIV_MAX,
+>>> +};
+>>> +
+>>> +#define HISI_PTT_AUXTRACE_PRIV_SIZE (HISI_PTT_AUXTRACE_PRIV_MAX * sizeof(u64))
+>>> +union perf_event;
+>>> +struct perf_session;
+>>> +struct perf_pmu;
+>>> +
+>>> +struct auxtrace_record *hisi_ptt_recording_init(int *err,
+>>> +                        struct perf_pmu *hisi_ptt_pmu);
+>>> +
+>>> +int hisi_ptt_process_auxtrace_info(union perf_event *event,
+>>> +                   struct perf_session *session);
+>>> +
+>>> +#endif
+>> .
+>>
