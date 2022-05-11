@@ -2,142 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67501C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 21:48:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E17AC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 21:55:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348454AbiEKVse (ORCPT
+        id S1345860AbiEKVzV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 17:48:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55560 "EHLO
+        Wed, 11 May 2022 17:55:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348382AbiEKVsU (ORCPT
+        with ESMTP id S230306AbiEKVzS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 17:48:20 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71AD6515B0;
-        Wed, 11 May 2022 14:48:10 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id d15so5854697lfk.5;
-        Wed, 11 May 2022 14:48:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qjFTO1D1EZDKKiJccbHJv6i5BuHy5bt8K51ddMuen78=;
-        b=gXg11SMVbS7MdGdULt0/Q2dwr+lb6VgC7aQA1IJ7Lz0N+iATdF4knANd0/t3M28n5m
-         27Rk+OdfyoNSV56ollhWuGjeOcp86A0fl8L0MUVaILWc9NSyrFA38ssX11IURCZmbHFK
-         gSYxLBNLZoDj7L3UKIB2NSCCytNtSVkU1wcGKFnbrSs/H+2x/QjdGAsSijB/4TRQQCfR
-         DzsYUSa1hLUgh6q8HxRHyDhNa8WQKW8kS26s7BCf8tEB09kBxnumEZtN9S7mJMudlVXJ
-         kOE/KmcVR14QrlgDbPAjfX1ow3cK67Q1Rn32FUg5EFywEmIHU9Pit656mZ+aTxVkcPX0
-         8rmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qjFTO1D1EZDKKiJccbHJv6i5BuHy5bt8K51ddMuen78=;
-        b=5jPBqL/LyiRojauO/1raxB3kxc6gR7dLpKXCMQFr5+sYF2xGJVYYwWdRqxOjfMIZsG
-         5T/QuojPEoOp/QrFivxiTIKb6SBN352cB6dGr32HyaUj1TLHMUikIKepfipNCn2Pb3OH
-         rrie40YDB8OkiG2QwoGT47ZEhPXCtJgfhW7G0ndbfN6im6oENuN0h/JNqUo29sAjAidR
-         0PAUu5KXyelJ+6xMyoLlWZkF3+3D+l/SdBoTLWYVSpVrpViXUDIS4bEjCPdWgUohf33m
-         DNVM2Xk5WhJsI4dRjzhu/KIVp/asw4uwLfjWnApbe4cPqJ9fll/h+Oza/wwcu1QFQpzg
-         dBnQ==
-X-Gm-Message-State: AOAM531PJA+5ls2dRzbEc72M2GT7EQYxR1yUFNnha+vAshDyK/6EkBhC
-        ASsmRkg4R57I/bYiVgI9i+ZyToM/bFRrIQ==
-X-Google-Smtp-Source: ABdhPJyYNFiN9PteQqRh87oyzawDjvUiMWjw4JDEft2h/aD+ItAVOoshpTcGYPYGo7KqG2JM6BlLZQ==
-X-Received: by 2002:a05:6512:12c3:b0:473:c7e2:b46b with SMTP id p3-20020a05651212c300b00473c7e2b46bmr21650100lfg.382.1652305688674;
-        Wed, 11 May 2022 14:48:08 -0700 (PDT)
-Received: from nergzd-desktop.localdomain ([194.39.226.133])
-        by smtp.gmail.com with ESMTPSA id 7-20020ac25687000000b0047255d211afsm458891lfr.222.2022.05.11.14.48.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 14:48:08 -0700 (PDT)
-From:   Markuss Broks <markuss.broks@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Markuss Broks <markuss.broks@gmail.com>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        Song Qiang <songqiang1304521@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: [PATCH v2 5/5] arm64: dts: qcom: msm8998-xperia: Introduce ToF sensor support
-Date:   Thu, 12 May 2022 00:47:17 +0300
-Message-Id: <20220511214718.50879-6-markuss.broks@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220511214718.50879-1-markuss.broks@gmail.com>
-References: <20220511214718.50879-1-markuss.broks@gmail.com>
+        Wed, 11 May 2022 17:55:18 -0400
+Received: from mail.sf-mail.de (mail.sf-mail.de [IPv6:2a01:4f8:1c17:6fae:616d:6c69:616d:6c69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1159416ABE9
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 14:55:17 -0700 (PDT)
+Received: (qmail 13869 invoked from network); 11 May 2022 21:55:07 -0000
+Received: from p200300cf0714e800cc89edd9cd300843.dip0.t-ipconnect.de ([2003:cf:714:e800:cc89:edd9:cd30:843]:36748 HELO daneel.sf-tec.de) (auth=eike@sf-mail.de)
+        by mail.sf-mail.de (Qsmtpd 0.38dev) with (TLS_AES_256_GCM_SHA384 encrypted) ESMTPSA
+        for <kuba@kernel.org>; Wed, 11 May 2022 23:55:07 +0200
+From:   Rolf Eike Beer <eike-kernel@sf-tec.de>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
+        netdev@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        davem@davemloft.net, edumazet@google.com
+Subject: Re: [PATCH] ethernet: tulip: fix missing pci_disable_device() on error in tulip_init_one()
+Date:   Wed, 11 May 2022 23:55:04 +0200
+Message-ID: <5568353.DvuYhMxLoT@daneel.sf-tec.de>
+In-Reply-To: <20220506092152.405ce691@kernel.org>
+References: <20220506094250.3630615-1-yangyingliang@huawei.com> <5564948.DvuYhMxLoT@eto.sf-tec.de> <20220506092152.405ce691@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="nextPart5823012.lOV4Wx5bFT"; micalg="pgp-sha1"; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds device tree support for the VL53L0X ToF sensor
-found on all Yoshino devices.
+--nextPart5823012.lOV4Wx5bFT
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 
-Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
----
- .../dts/qcom/msm8998-sony-xperia-yoshino.dtsi | 33 +++++++++++++++++++
- 1 file changed, 33 insertions(+)
+Am Freitag, 6. Mai 2022, 18:21:52 CEST schrieb Jakub Kicinski:
+> On Fri, 06 May 2022 12:11:56 +0200 Rolf Eike Beer wrote:
+> > Am Freitag, 6. Mai 2022, 11:42:50 CEST schrieb Yang Yingliang:
+> > > Fix the missing pci_disable_device() before return
+> > > from tulip_init_one() in the error handling case.
+> > 
+> > I would suggest removing the pci_disable_device() from tulip_remove_one()
+> > instead and using pcim_enable_device(), i.e. devres, and let the driver
+> > core handle all these things. Of course more of the used functions could
+> > be converted them, e.g. using devm_alloc_etherdev() and so on.
+> 
+> Let's not rewrite the error handling in this dinosaur of a driver
+> any more than absolutely necessary, please.
 
-diff --git a/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino.dtsi b/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino.dtsi
-index 47488a1aecae..a95fa29aa18b 100644
---- a/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino.dtsi
-@@ -245,6 +245,24 @@ &blsp2_uart1 {
- 	status = "okay";
- };
- 
-+&blsp2_i2c2 {
-+	status = "okay";
-+
-+	proximity@29 {
-+		compatible = "st,vl53l0x";
-+		reg = <0x29>;
-+
-+		interrupt-parent = <&tlmm>;
-+		interrupts = <22 IRQ_TYPE_EDGE_FALLING>;
-+
-+		reset-gpios = <&tlmm 27 GPIO_ACTIVE_LOW>;
-+		vdd-supply = <&cam_vio_vreg>;
-+
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&tof_int &tof_reset>;
-+	};
-+};
-+
- &ibb {
- 	regulator-min-microamp = <800000>;
- 	regulator-max-microamp = <800000>;
-@@ -621,6 +639,21 @@ hall_sensor0_default: acc-cover-open {
- 		input-enable;
- 	};
- 
-+	tof_int: tof-int {
-+		pins = "gpio22";
-+		function = "gpio";
-+		bias-pull-up;
-+		drive-strength = <2>;
-+		input-enable;
-+	};
-+
-+	tof_reset: tof-reset {
-+		pins = "gpio27";
-+		function = "gpio";
-+		bias-disable;
-+		drive-strength = <2>;
-+	};
-+
- 	ts_int_n: ts-int-n {
- 		pins = "gpio125";
- 		function = "gpio";
--- 
-2.36.1
+Challenge accepted ;)
+
+[  274.452394] tulip0: no phy info, aborting mtable build
+[  274.499041] tulip0:  MII transceiver #1 config 1000 status 782d advertising 01e1
+[  274.750691] net eth0: Digital DS21142/43 Tulip rev 65 at MMIO 0xf4008000, 00:30:6e:08:7d:21, IRQ 17
+[  283.104520] net eth0: Setting full-duplex based on MII#1 link partner capability of c1e1
+
+Works fine, patch in a minute.
+--nextPart5823012.lOV4Wx5bFT
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQSaYVDeqwKa3fTXNeNcpIk+abn8TgUCYnwwuAAKCRBcpIk+abn8
+Ti85AJ9kQ7SD83xxU6gnW4mBa4gibh6QfgCeLiMiLBwYV6WZOMq/2YAj4ZVKgf4=
+=pjR/
+-----END PGP SIGNATURE-----
+
+--nextPart5823012.lOV4Wx5bFT--
+
+
 
