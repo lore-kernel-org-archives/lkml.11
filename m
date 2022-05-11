@@ -2,69 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8898C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:44:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE6BEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 15:47:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343894AbiEKPoN (ORCPT
+        id S1343895AbiEKPrJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 11:44:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59518 "EHLO
+        Wed, 11 May 2022 11:47:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229713AbiEKPoH (ORCPT
+        with ESMTP id S239299AbiEKPrE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 11:44:07 -0400
-Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDEF4E44F2;
-        Wed, 11 May 2022 08:44:05 -0700 (PDT)
-Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 24BFhwM7013033
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 11 May 2022 11:43:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
-        t=1652283840; bh=rGR9lBAoNm8DMktTwLsasf+2wJML9uFzVwn56HBtvLo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=OplIdzmF3KpKKauL2SgRFX8Zhb9Grayd4vaRcj89GGOOTj9lBiVgwb3aQcsVzF8az
-         dwEMzbpx0hKA+G/WUFmEyPWdGtlbN85wd4GmDe3dLeZl5EcG8JWmNoItOxgZgID9HQ
-         z7B0/eHgbUpayf2y54IqOHf6CQIyE2SKAi5YRghvnt1B3ApNbMgPL7iCtcDjnNcrpt
-         ozULwEyd/HdzkUs2WypXV4H940besupCLegvz8IvczNszl0mFyCjFeEc0PFN1TBj4S
-         pCA8TuBYmmh071ZscT/TsJvrBEneGq/k+RcCMm4irawZowZWKWDZnCndDQfz+6wWut
-         jixdOfJT4teOw==
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id 2AFE415C3F0C; Wed, 11 May 2022 11:43:58 -0400 (EDT)
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     adilger.kernel@dilger.ca, Jinke Han <hanjinke.666@bytedance.com>
-Cc:     "Theodore Ts'o" <tytso@mit.edu>, linux-ext4@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ext4: remove unnecessary code in __mb_check_buddy
-Date:   Wed, 11 May 2022 11:43:53 -0400
-Message-Id: <165228380205.403983.14257203487141722033.b4-ty@mit.edu>
-X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20220404152243.13556-1-hanjinke.666@bytedance.com>
-References: <20220404152243.13556-1-hanjinke.666@bytedance.com>
+        Wed, 11 May 2022 11:47:04 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EF0444A05
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 08:47:02 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id iq10so2649138pjb.0
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 08:47:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zoGgk2kWCSBtnI2kB77KiBaGWej6XbWC5/VEwo6RBHk=;
+        b=UqYYm4C2fW4mDDQmf6XLxKC/brLgrS9dhVDWviBXTaq7FGn78m3bKsJeMNJHx2wk3+
+         rULMOiRS+P0ZWx8dLnN2gYJeg71wDglfQFgm5wJHMj2qg5/Je0FPLtro+JJ6iV9Lob+J
+         IfdmTH9vDGh3EOK9znhgho9UvGmGaFbGdjwMUbVl29Q5hQzDGDMzzgme//fpmJKfSdEI
+         SgE4NoSwVXXKTDiY9+FrBKb4FfRMkGv3/Z2uTE8/r0rYGZMyexdZWg0vAeis9xPQ/jRV
+         7K3vxdq6GuFpZBRpOMVOPe+7txqriPUqd25KBoLnRqz1lSlh2qUpWn2idi6g4DJR4Bsb
+         UR7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zoGgk2kWCSBtnI2kB77KiBaGWej6XbWC5/VEwo6RBHk=;
+        b=7sSG5BOtNrZjBA4sx+OK8yAcT2GF0+Hq9t9Z5d0m1whpcQeVIzGpt7QkPbnMZeiYia
+         51nbW6OAHFpKyEyPrxe4WEU6o5cBX9pm/p564ivHktypJ1E0WPmv1EWzJ4z1oiddmQei
+         ss0yA5TRcTZVeiGe9ldO76ornTJ3Ml30fXocCpubN249/3w4V6pMqccF4lXf4wezGr+U
+         zcjI1VHEvn7kL0DrjtMzgnqzen48CIIMXBJEQE8Er+7X1YcXVxEblD1VOdT8YJI6TfeZ
+         tAfQEXZi1mHTy3lxK2NTWCid4nTLgaRXEZEX2GxTR5d6/kPWdXJqD158dmkug2X4+CuH
+         fWfg==
+X-Gm-Message-State: AOAM530l6YAYf/1QHFvyjz7ohK0B6AIVHD0HTzEx6NQfxGtaYbDFJppE
+        QYvnVL1ELMtrMm0MAcSUhHiJXMs6ELFXDDX5wlJ0BQ==
+X-Google-Smtp-Source: ABdhPJzb8nRTew8x8xkS/1yBjApTvNis41Up/0XXYEsHQ3BPsgO0HbXOB1SZHhshqbsoueRXOJsPthjQCb9zCs/wlcY=
+X-Received: by 2002:a17:90b:4c85:b0:1dc:5778:5344 with SMTP id
+ my5-20020a17090b4c8500b001dc57785344mr6055143pjb.8.1652284021808; Wed, 11 May
+ 2022 08:47:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+References: <20220508143620.1775214-1-ruansy.fnst@fujitsu.com>
+ <20220511000352.GY27195@magnolia> <20220511014818.GE1098723@dread.disaster.area>
+ <CAPcyv4h0a3aT3XH9qCBW3nbT4K3EwQvBSD_oX5W=55_x24-wFA@mail.gmail.com>
+ <20220510192853.410ea7587f04694038cd01de@linux-foundation.org>
+ <20220511024301.GD27195@magnolia> <20220510222428.0cc8a50bd007474c97b050b2@linux-foundation.org>
+ <20220511151955.GC27212@magnolia>
+In-Reply-To: <20220511151955.GC27212@magnolia>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Wed, 11 May 2022 08:46:50 -0700
+Message-ID: <CAPcyv4gwV5ReuCUbJHZPVPUJjnaGFWibCLLsH-XEgyvbn9RkWA@mail.gmail.com>
+Subject: Re: [PATCHSETS] v14 fsdax-rmap + v11 fsdax-reflink
+To:     "Darrick J. Wong" <djwong@kernel.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Dave Chinner <david@fromorbit.com>,
+        Shiyang Ruan <ruansy.fnst@fujitsu.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-xfs <linux-xfs@vger.kernel.org>,
+        Linux NVDIMM <nvdimm@lists.linux.dev>,
+        Linux MM <linux-mm@kvack.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jane Chu <jane.chu@oracle.com>,
+        Goldwyn Rodrigues <rgoldwyn@suse.de>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Matthew Wilcox <willy@infradead.org>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>, linmiaohe@huawei.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 4 Apr 2022 23:22:43 +0800, Jinke Han wrote:
-> From: Jinke Han <hanjinke.666@bytedance.com>
-> 
-> When enter elseif branch, the the MB_CHECK_ASSERT will never fail.
-> In addtion, the only illegal combination is 0/0, which can be caught
-> by the first if branch.
-> 
-> 
-> [...]
+On Wed, May 11, 2022 at 8:21 AM Darrick J. Wong <djwong@kernel.org> wrote:
+>
+> Oan Tue, May 10, 2022 at 10:24:28PM -0700, Andrew Morton wrote:
+> > On Tue, 10 May 2022 19:43:01 -0700 "Darrick J. Wong" <djwong@kernel.org> wrote:
+> >
+> > > On Tue, May 10, 2022 at 07:28:53PM -0700, Andrew Morton wrote:
+> > > > On Tue, 10 May 2022 18:55:50 -0700 Dan Williams <dan.j.williams@intel.com> wrote:
+> > > >
+> > > > > > It'll need to be a stable branch somewhere, but I don't think it
+> > > > > > really matters where al long as it's merged into the xfs for-next
+> > > > > > tree so it gets filesystem test coverage...
+> > > > >
+> > > > > So how about let the notify_failure() bits go through -mm this cycle,
+> > > > > if Andrew will have it, and then the reflnk work has a clean v5.19-rc1
+> > > > > baseline to build from?
+> > > >
+> > > > What are we referring to here?  I think a minimal thing would be the
+> > > > memremap.h and memory-failure.c changes from
+> > > > https://lkml.kernel.org/r/20220508143620.1775214-4-ruansy.fnst@fujitsu.com ?
+> > > >
+> > > > Sure, I can scoot that into 5.19-rc1 if you think that's best.  It
+> > > > would probably be straining things to slip it into 5.19.
+> > > >
+> > > > The use of EOPNOTSUPP is a bit suspect, btw.  It *sounds* like the
+> > > > right thing, but it's a networking errno.  I suppose livable with if it
+> > > > never escapes the kernel, but if it can get back to userspace then a
+> > > > user would be justified in wondering how the heck a filesystem
+> > > > operation generated a networking errno?
+> > >
+> > > <shrug> most filesystems return EOPNOTSUPP rather enthusiastically when
+> > > they don't know how to do something...
+> >
+> > Can it propagate back to userspace?
+>
+> AFAICT, the new code falls back to the current (mf_generic_kill_procs)
+> failure code if the filesystem doesn't provide a ->memory_failure
+> function or if it returns -EOPNOSUPP.  mf_generic_kill_procs can also
+> return -EOPNOTSUPP, but all the memory_failure() callers (madvise, etc.)
+> convert that to 0 before returning it to userspace.
+>
+> I suppose the weirder question is going to be what happens when madvise
+> starts returning filesystem errors like EIO or EFSCORRUPTED when pmem
+> loses half its brains and even the fs can't deal with it.
 
-Applied, thanks!
-
-[1/1] ext4: remove unnecessary code in __mb_check_buddy
-      commit: 3114e248fcda22f4d9bb149050c22d5efb999899
-
-Best regards,
--- 
-Theodore Ts'o <tytso@mit.edu>
+Even then that notification is not in a system call context so it
+would still result in a SIGBUS notification not a EOPNOTSUPP return
+code. The only potential gap I see are what are the possible error
+codes that MADV_SOFT_OFFLINE might see? The man page is silent on soft
+offline failure codes. Shiyang, that's something to check / update if
+necessary.
