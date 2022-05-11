@@ -2,356 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06219C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 13:19:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 182FAC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 13:20:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243730AbiEKNTy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 09:19:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42136 "EHLO
+        id S239707AbiEKNUG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 09:20:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243735AbiEKNTZ (ORCPT
+        with ESMTP id S243673AbiEKNTn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 09:19:25 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 788CA245796;
-        Wed, 11 May 2022 06:19:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1652275162; x=1683811162;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=imkQ5N7HhoW7Hu6hHKmMQA9MJrZ5APJ6FDyrXBsNq9w=;
-  b=PNU4nnAx42eCHWi+HwR7ik+XZgcgEeq+tNRf+OndIXfiVzeh/IeBc/YT
-   S33BTdCzDulmYIfGOOMWRZ1dLX2TpyDBAFYAmKLB9bnzukYV+OfL3X0Dl
-   o1Y1K7tGaxtuQeQTaJpM5JjoBPc+dHxf+DEApsTrb30mWkKZ4N7RpCKs/
-   0=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 11 May 2022 06:19:22 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 06:19:21 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 11 May 2022 06:19:21 -0700
-Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 11 May 2022 06:19:17 -0700
-From:   Satya Priya <quic_c_skakit@quicinc.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
-        <quic_jprakash@quicinc.com>,
-        Satya Priya <quic_c_skakit@quicinc.com>
-Subject: [PATCH V12 7/9] regulator: Add a regulator driver for the PM8008 PMIC
-Date:   Wed, 11 May 2022 18:48:31 +0530
-Message-ID: <1652275113-10277-8-git-send-email-quic_c_skakit@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1652275113-10277-1-git-send-email-quic_c_skakit@quicinc.com>
-References: <1652275113-10277-1-git-send-email-quic_c_skakit@quicinc.com>
+        Wed, 11 May 2022 09:19:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73FF22415C6;
+        Wed, 11 May 2022 06:19:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 118ED61C5B;
+        Wed, 11 May 2022 13:19:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49CD6C34110;
+        Wed, 11 May 2022 13:19:39 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="fMVgGYxU"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1652275177;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qElqeIMiCpt2DW2B9Regz7BOf6dIMZT/WJ4sQ3WQBvw=;
+        b=fMVgGYxUFK6iCopRRRSiI6YyM7GASILDRoJjK1sZM00zDewPblcXT/pj8IsmQ5NtwL/Lps
+        DB7Ob+zwrrRmKUX7/iCU5dWl+N2rOezLajdWU+PDw0BmNC7Ld36/pfmqtdgq7MsN0xJlbz
+        N4GwxdOgBSoBTKl4O8llQHhS67fZPMs=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id bffa631a (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 11 May 2022 13:19:36 +0000 (UTC)
+Date:   Wed, 11 May 2022 15:19:32 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Simo Sorce <simo@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Alexander Graf <graf@amazon.com>,
+        Colm MacCarthaigh <colmmacc@amazon.com>,
+        Torben Hansen <htorben@amazon.co.uk>,
+        Jann Horn <jannh@google.com>
+Subject: Re: [PATCH 2/2] random: add fork_event sysctl for polling VM forks
+Message-ID: <Ynu35I4KMW7gMZW3@zx2c4.com>
+References: <20220502140602.130373-1-Jason@zx2c4.com>
+ <20220502140602.130373-2-Jason@zx2c4.com>
+ <8f305036248cae1d158c4e567191a957a1965ad1.camel@redhat.com>
+ <YnsO1JGQm5FEkbJt@zx2c4.com>
+ <f6a4a5ccb126053534bebe4b070fc1384839e919.camel@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <f6a4a5ccb126053534bebe4b070fc1384839e919.camel@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Qualcomm Technologies, Inc. PM8008 is an I2C controlled PMIC
-containing 7 LDO regulators.  Add a PM8008 regulator driver to
-support PMIC regulator management via the regulator framework.
+Hi Simo,
 
-Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
----
-Changes in V12:
- - Get base from reg property in DT node.
+On Wed, May 11, 2022 at 08:59:07AM -0400, Simo Sorce wrote:
+> Hi Jason,
+> 
+> On Wed, 2022-05-11 at 03:18 +0200, Jason A. Donenfeld wrote:
+> > My proposal here is made with nonce reuse in mind, for things like
+> > session keys that use sequential nonces.
+> 
+> Although this makes sense the problem is that changing applications to
+> do the right thing based on which situation they are in will never be
+> done right or soon enough. So I would focus on a solution that makes
+> the CSPRNGs in crypto libraries safe.
 
-Changes in V11:
- - Added of_device_id table and compatible to register the ldos.
+Please don't dismiss this. I realize you have your one single use case
+in mind, but there are others, and the distinction you gave for why we
+should dismiss the others to focus on yours doesn't really make any
+sense. Here's why:
 
-Changes in V10:
- - Changed the driver name.
- - Removed unused header.
- - Use get_voltage_sel.
+In my email I pointed out two places where VM forks impact crypto in bad
+ways:
 
-Changes in V9:
- - Nothing has changed.
+- Session keys, wrt nonce reuse.
 
-Changes in V8:
- - Changed the regulators_data struct name to pm8008_regulator_data
+- Random nonces, wrt nonce reuse.
 
- drivers/regulator/Kconfig                 |   9 ++
- drivers/regulator/Makefile                |   1 +
- drivers/regulator/qcom-pm8008-regulator.c | 221 ++++++++++++++++++++++++++++++
- 3 files changed, 231 insertions(+)
- create mode 100644 drivers/regulator/qcom-pm8008-regulator.c
+There are other problems that arise from VM forks too. But these stand
+out because they are both quite catastrophic, whether it's duplicated
+ECDSA random nonces, or whether it's the same session key used with the
+same sequential counter to encrypt different plaintexts with something
+like AES-GCM or ChaCha20Poly1305. These are both very, very bad things.
 
-diff --git a/drivers/regulator/Kconfig b/drivers/regulator/Kconfig
-index cbe0f96..2c6d9c2 100644
---- a/drivers/regulator/Kconfig
-+++ b/drivers/regulator/Kconfig
-@@ -925,6 +925,15 @@ config REGULATOR_PWM
- 	  This driver supports PWM controlled voltage regulators. PWM
- 	  duty cycle can increase or decrease the voltage.
- 
-+config REGULATOR_QCOM_PM8008
-+	tristate "Qualcomm Technologies, Inc. PM8008 PMIC regulators"
-+	depends on MFD_QCOM_PM8008
-+	help
-+	  Select this option to get support for the voltage regulators
-+	  of Qualcomm Technologies, Inc. PM8008 PMIC chip. PM8008 has 7 LDO
-+	  regulators. This driver provides support for basic operations like
-+	  set/get voltage and enable/disable.
-+
- config REGULATOR_QCOM_RPM
- 	tristate "Qualcomm RPM regulator driver"
- 	depends on MFD_QCOM_RPM
-diff --git a/drivers/regulator/Makefile b/drivers/regulator/Makefile
-index 8d3ee8b..169e686 100644
---- a/drivers/regulator/Makefile
-+++ b/drivers/regulator/Makefile
-@@ -101,6 +101,7 @@ obj-$(CONFIG_REGULATOR_MT6380)	+= mt6380-regulator.o
- obj-$(CONFIG_REGULATOR_MT6397)	+= mt6397-regulator.o
- obj-$(CONFIG_REGULATOR_MTK_DVFSRC) += mtk-dvfsrc-regulator.o
- obj-$(CONFIG_REGULATOR_QCOM_LABIBB) += qcom-labibb-regulator.o
-+obj-$(CONFIG_REGULATOR_QCOM_PM8008) += qcom-pm8008-regulator.o
- obj-$(CONFIG_REGULATOR_QCOM_RPM) += qcom_rpm-regulator.o
- obj-$(CONFIG_REGULATOR_QCOM_RPMH) += qcom-rpmh-regulator.o
- obj-$(CONFIG_REGULATOR_QCOM_SMD_RPM) += qcom_smd-regulator.o
-diff --git a/drivers/regulator/qcom-pm8008-regulator.c b/drivers/regulator/qcom-pm8008-regulator.c
-new file mode 100644
-index 0000000..0361f02
---- /dev/null
-+++ b/drivers/regulator/qcom-pm8008-regulator.c
-@@ -0,0 +1,221 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (c) 2022, The Linux Foundation. All rights reserved. */
-+
-+#include <linux/device.h>
-+#include <linux/kernel.h>
-+#include <linux/mfd/qcom_pm8008.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/platform_device.h>
-+#include <linux/regmap.h>
-+#include <linux/regulator/driver.h>
-+#include <linux/regulator/of_regulator.h>
-+
-+#define VSET_STEP_MV			8
-+#define VSET_STEP_UV			(VSET_STEP_MV * 1000)
-+
-+#define LDO_ENABLE_REG(base)		((base) + 0x46)
-+#define ENABLE_BIT			BIT(7)
-+
-+#define LDO_VSET_LB_REG(base)		((base) + 0x40)
-+
-+#define LDO_STEPPER_CTL_REG(base)	((base) + 0x3b)
-+#define DEFAULT_VOLTAGE_STEPPER_RATE	38400
-+#define STEP_RATE_MASK			GENMASK(1, 0)
-+
-+struct pm8008_regulator_data {
-+	const char			*name;
-+	const char			*supply_name;
-+	int				min_uv;
-+	int				max_uv;
-+	int				min_dropout_uv;
-+	const struct linear_range	*voltage_range;
-+};
-+
-+struct pm8008_regulator {
-+	struct device		*dev;
-+	struct regmap		*regmap;
-+	struct regulator_desc	rdesc;
-+	u16			base;
-+	int			step_rate;
-+	int			voltage_selector;
-+};
-+
-+static const struct linear_range nldo_ranges[] = {
-+	REGULATOR_LINEAR_RANGE(528000, 0, 122, 8000),
-+};
-+
-+static const struct linear_range pldo_ranges[] = {
-+	REGULATOR_LINEAR_RANGE(1504000, 0, 237, 8000),
-+};
-+
-+static const struct pm8008_regulator_data reg_data[] = {
-+	/* name  parent       min_uv  max_uv  headroom_uv voltage_range */
-+	{ "ldo1", "vdd_l1_l2", 528000, 1504000, 225000, nldo_ranges, },
-+	{ "ldo2", "vdd_l1_l2", 528000, 1504000, 225000, nldo_ranges, },
-+	{ "ldo3", "vdd_l3_l4", 1504000, 3400000, 300000, pldo_ranges, },
-+	{ "ldo4", "vdd_l3_l4", 1504000, 3400000, 300000, pldo_ranges, },
-+	{ "ldo5", "vdd_l5",    1504000, 3400000, 200000, pldo_ranges, },
-+	{ "ldo6", "vdd_l6",    1504000, 3400000, 200000, pldo_ranges, },
-+	{ "ldo7", "vdd_l7",    1504000, 3400000, 200000, pldo_ranges, },
-+};
-+
-+static int pm8008_regulator_get_voltage(struct regulator_dev *rdev)
-+{
-+	struct pm8008_regulator *pm8008_reg = rdev_get_drvdata(rdev);
-+
-+	return pm8008_reg->voltage_selector;
-+}
-+
-+static inline int pm8008_write_voltage(struct pm8008_regulator *pm8008_reg,
-+							int mV)
-+{
-+	__le16 vset_raw;
-+
-+	vset_raw = cpu_to_le16(mV);
-+
-+	return regmap_bulk_write(pm8008_reg->regmap,
-+			LDO_VSET_LB_REG(pm8008_reg->base),
-+			(const void *)&vset_raw, sizeof(vset_raw));
-+}
-+
-+static int pm8008_regulator_set_voltage_time(struct regulator_dev *rdev,
-+				int old_uV, int new_uv)
-+{
-+	struct pm8008_regulator *pm8008_reg = rdev_get_drvdata(rdev);
-+
-+	return DIV_ROUND_UP(abs(new_uv - old_uV), pm8008_reg->step_rate);
-+}
-+
-+static int pm8008_regulator_set_voltage(struct regulator_dev *rdev,
-+					unsigned int selector)
-+{
-+	struct pm8008_regulator *pm8008_reg = rdev_get_drvdata(rdev);
-+	int rc, mV;
-+
-+	/* voltage control register is set with voltage in millivolts */
-+	mV = DIV_ROUND_UP(regulator_list_voltage_linear_range(rdev, selector),
-+						1000);
-+	if (mV < 0)
-+		return mV;
-+
-+	rc = pm8008_write_voltage(pm8008_reg, mV);
-+	if (rc < 0)
-+		return rc;
-+
-+	pm8008_reg->voltage_selector = selector;
-+	dev_dbg(&rdev->dev, "voltage set to %d\n", mV * 1000);
-+	return 0;
-+}
-+
-+static const struct regulator_ops pm8008_regulator_ops = {
-+	.enable			= regulator_enable_regmap,
-+	.disable		= regulator_disable_regmap,
-+	.is_enabled		= regulator_is_enabled_regmap,
-+	.set_voltage_sel	= pm8008_regulator_set_voltage,
-+	.get_voltage_sel	= pm8008_regulator_get_voltage,
-+	.list_voltage		= regulator_list_voltage_linear,
-+	.set_voltage_time	= pm8008_regulator_set_voltage_time,
-+};
-+
-+static int pm8008_regulator_probe(struct platform_device *pdev)
-+{
-+	int rc, i;
-+	u32 base;
-+	unsigned int reg;
-+	const char *name;
-+	struct device *dev = &pdev->dev;
-+	struct regulator_config reg_config = {};
-+	struct regulator_dev    *rdev;
-+	const struct pm8008_data *chip = dev_get_drvdata(pdev->dev.parent);
-+	struct pm8008_regulator *pm8008_reg;
-+
-+	pm8008_reg = devm_kzalloc(dev, sizeof(*pm8008_reg), GFP_KERNEL);
-+	if (!pm8008_reg)
-+		return -ENOMEM;
-+
-+	pm8008_reg->regmap = pm8008_get_regmap(chip);
-+	if (!pm8008_reg->regmap) {
-+		dev_err(dev, "parent regmap is missing\n");
-+		return -EINVAL;
-+	}
-+
-+	pm8008_reg->dev = dev;
-+
-+	rc = of_property_read_string(dev->of_node, "regulator-name", &name);
-+	if (rc)
-+		return rc;
-+
-+	/* get the required regulator data */
-+	for (i = 0; i < ARRAY_SIZE(reg_data); i++)
-+		if (strstr(name, reg_data[i].name))
-+			break;
-+
-+	rc = of_property_read_u32_index(dev->of_node, "reg", 1, &base);
-+	if (rc < 0) {
-+		dev_err(dev, "%s: failed to get regulator base rc=%d\n", name, rc);
-+		return rc;
-+	}
-+	pm8008_reg->base = base;
-+
-+	/* get slew rate */
-+	rc = regmap_bulk_read(pm8008_reg->regmap,
-+			LDO_STEPPER_CTL_REG(pm8008_reg->base), &reg, 1);
-+	if (rc < 0) {
-+		dev_err(dev, "failed to read step rate configuration rc=%d\n", rc);
-+		return rc;
-+	}
-+	reg &= STEP_RATE_MASK;
-+	pm8008_reg->step_rate = DEFAULT_VOLTAGE_STEPPER_RATE >> reg;
-+
-+	pm8008_reg->rdesc.type = REGULATOR_VOLTAGE;
-+	pm8008_reg->rdesc.ops = &pm8008_regulator_ops;
-+	pm8008_reg->rdesc.name = reg_data[i].name;
-+	pm8008_reg->rdesc.supply_name = reg_data[i].supply_name;
-+	pm8008_reg->rdesc.of_match = reg_data[i].name;
-+	pm8008_reg->rdesc.uV_step = VSET_STEP_UV;
-+	pm8008_reg->rdesc.min_uV = reg_data[i].min_uv;
-+	pm8008_reg->rdesc.n_voltages
-+		= ((reg_data[i].max_uv - reg_data[i].min_uv)
-+			/ pm8008_reg->rdesc.uV_step) + 1;
-+	pm8008_reg->rdesc.linear_ranges = reg_data[i].voltage_range;
-+	pm8008_reg->rdesc.n_linear_ranges = 1;
-+	pm8008_reg->rdesc.enable_reg = LDO_ENABLE_REG(pm8008_reg->base);
-+	pm8008_reg->rdesc.enable_mask = ENABLE_BIT;
-+	pm8008_reg->rdesc.min_dropout_uV = reg_data[i].min_dropout_uv;
-+	pm8008_reg->voltage_selector = -ENOTRECOVERABLE;
-+
-+	reg_config.dev = dev->parent;
-+	reg_config.driver_data = pm8008_reg;
-+	reg_config.regmap = pm8008_reg->regmap;
-+
-+	rdev = devm_regulator_register(dev, &pm8008_reg->rdesc, &reg_config);
-+	if (IS_ERR(rdev)) {
-+		rc = PTR_ERR(rdev);
-+		dev_err(dev, "%s: failed to register regulator rc=%d\n",
-+				reg_data[i].name, rc);
-+		return rc;
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id pm8008_regulator_match_table[] = {
-+	{ .compatible = "qcom,pm8008-regulator", },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, pm8008_regulator_match_table);
-+
-+static struct platform_driver pm8008_regulator_driver = {
-+	.driver	= {
-+		.name		= "qcom-pm8008-regulator",
-+		.of_match_table	= pm8008_regulator_match_table,
-+	},
-+	.probe	= pm8008_regulator_probe,
-+};
-+
-+module_platform_driver(pm8008_regulator_driver);
-+
-+MODULE_DESCRIPTION("Qualcomm PM8008 PMIC Regulator Driver");
-+MODULE_LICENSE("GPL");
--- 
-2.7.4
+And both things happen in:
 
+- Libraries: crypto lib random number generators (e.g. OpenSSL), crypto
+  lib session keys (e.g. any TLS library).
+
+- Applications: application level random number generators (e.g.
+  Bitcoin Core *facepalm*), application level session keys (e.g.
+  OpenSSH).
+
+So I don't think the "library vs application" distinction is really
+meaningful here. Rather, things kind of fall apart all over the place
+for a variety of reasons on VM fork.
+
+> > - https://lore.kernel.org/lkml/YnA5CUJKvqmXJxf2@zx2c4.com/
+> > - https://lore.kernel.org/lkml/Yh4+9+UpanJWAIyZ@zx2c4.com/
+> > - https://lore.kernel.org/lkml/CAHmME9qHGSF8w3DoyCP+ud_N0MAJ5_8zsUWx=rxQB1mFnGcu9w@mail.gmail.com/
+> 
+> 4c does sound like a decent solution, it is semantically identical to
+
+It does, yeah, but realistically it's never going to happen. I don't
+think there's a near- or medium-term chance of changing hypervisor
+semantics again. That means for 4-like solutions, there's 4a and 4b.
+
+By the way, that email of mine has inaccuracy in it. I complain about
+being in irq context, but it turns out not to be the case; we're inside
+of a kthread during the notification, which means we have a lot more
+options on what we can do.
+
+If 4 is the solution that appeals to you most, do you want to try your
+hand at a RFC patch for it? I don't yet know if that's the best
+direction to take, but the devil is kind of in the details, so it might
+be interesting to see how it pans out.
+
+Jason
