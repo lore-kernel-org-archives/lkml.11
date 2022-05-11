@@ -2,76 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F179FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:28:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D82FAC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 02:29:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240764AbiEKC2C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 22:28:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42222 "EHLO
+        id S238747AbiEKC3C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 22:29:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239947AbiEKC16 (ORCPT
+        with ESMTP id S237627AbiEKC27 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 22:27:58 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 453C03056D;
-        Tue, 10 May 2022 19:27:55 -0700 (PDT)
-Received: from kwepemi500004.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KydzP1RpqzGpYV;
-        Wed, 11 May 2022 10:25:05 +0800 (CST)
-Received: from kwepemm600012.china.huawei.com (7.193.23.74) by
- kwepemi500004.china.huawei.com (7.221.188.17) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 11 May 2022 10:27:53 +0800
-Received: from ubuntu1804.huawei.com (10.67.175.29) by
- kwepemm600012.china.huawei.com (7.193.23.74) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 11 May 2022 10:27:53 +0800
-From:   Guan Jing <guanjing6@huawei.com>
-To:     <balbi@kernel.org>, <gregkh@linuxfoundation.org>
-CC:     <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Guan Jing <guanjing6@huawei.com>
-Subject: [PATCH -next v2] usb: dwc3: include extcon.h to fix compile error
-Date:   Wed, 11 May 2022 10:26:22 +0800
-Message-ID: <20220511022622.168486-1-guanjing6@huawei.com>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.175.29]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600012.china.huawei.com (7.193.23.74)
-X-CFilter-Loop: Reflected
+        Tue, 10 May 2022 22:28:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF31B381AF;
+        Tue, 10 May 2022 19:28:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 84E08B81CCA;
+        Wed, 11 May 2022 02:28:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADD4CC385D8;
+        Wed, 11 May 2022 02:28:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1652236135;
+        bh=iY/lEhwjb6LKaL0NjJtVnQB+oNQ+W9132bMfjAgOpIQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Ti4RHrQHQ/IYAqcw5QtmW2G625U1SYwfY3cdLlEt+2LyvMc28jK7OZtuqpAdciO4E
+         A1sDROVPAwe+6g7pxZqpuXEI9pmVEJetL4XvpAT7Oamo0HXuaxWGMgnGEW/sswm6rN
+         OqzYpcJy6JZBzUjuzdr0qi0VLvnA2SIfIfJJZKI0=
+Date:   Tue, 10 May 2022 19:28:53 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Dan Williams <dan.j.williams@intel.com>
+Cc:     Dave Chinner <david@fromorbit.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Shiyang Ruan <ruansy.fnst@fujitsu.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-xfs <linux-xfs@vger.kernel.org>,
+        Linux NVDIMM <nvdimm@lists.linux.dev>,
+        Linux MM <linux-mm@kvack.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jane Chu <jane.chu@oracle.com>,
+        Goldwyn Rodrigues <rgoldwyn@suse.de>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Matthew Wilcox <willy@infradead.org>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>, linmiaohe@huawei.com
+Subject: Re: [PATCHSETS] v14 fsdax-rmap + v11 fsdax-reflink
+Message-Id: <20220510192853.410ea7587f04694038cd01de@linux-foundation.org>
+In-Reply-To: <CAPcyv4h0a3aT3XH9qCBW3nbT4K3EwQvBSD_oX5W=55_x24-wFA@mail.gmail.com>
+References: <20220508143620.1775214-1-ruansy.fnst@fujitsu.com>
+        <20220511000352.GY27195@magnolia>
+        <20220511014818.GE1098723@dread.disaster.area>
+        <CAPcyv4h0a3aT3XH9qCBW3nbT4K3EwQvBSD_oX5W=55_x24-wFA@mail.gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If dwc3 is not include extcon.h, the dwc3 driver
-will fail to link:
+On Tue, 10 May 2022 18:55:50 -0700 Dan Williams <dan.j.williams@intel.com> wrote:
 
-drivers/usb/dwc3/core.o: In function `dwc3_probe':
-core.c:(.text+0x1095): undefined reference to `extcon_get_edev_by_phandle'
-core.c:(.text+0x10bd): undefined reference to `extcon_get_extcon_dev'
+> > It'll need to be a stable branch somewhere, but I don't think it
+> > really matters where al long as it's merged into the xfs for-next
+> > tree so it gets filesystem test coverage...
+> 
+> So how about let the notify_failure() bits go through -mm this cycle,
+> if Andrew will have it, and then the reflnk work has a clean v5.19-rc1
+> baseline to build from?
 
-Add miss #include <linux/extcon.h> to fix this error.
+What are we referring to here?  I think a minimal thing would be the
+memremap.h and memory-failure.c changes from
+https://lkml.kernel.org/r/20220508143620.1775214-4-ruansy.fnst@fujitsu.com ?
 
-Fixes: 0f0101719138 ("usb: dwc3: Don't switch OTG -> peripheral if extcon is present")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Guan Jing <guanjing6@huawei.com>
----
- drivers/usb/dwc3/core.c | 1 +
- 1 file changed, 1 insertion(+)
+Sure, I can scoot that into 5.19-rc1 if you think that's best.  It
+would probably be straining things to slip it into 5.19.
 
-diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
-index 950e238c65bf..e619a3ef6c46 100644
---- a/drivers/usb/dwc3/core.c
-+++ b/drivers/usb/dwc3/core.c
-@@ -28,6 +28,7 @@
- #include <linux/pinctrl/consumer.h>
- #include <linux/reset.h>
- #include <linux/bitfield.h>
-+#include <linux/extcon.h>
- 
- #include <linux/usb/ch9.h>
- #include <linux/usb/gadget.h>
--- 
-2.17.1
+The use of EOPNOTSUPP is a bit suspect, btw.  It *sounds* like the
+right thing, but it's a networking errno.  I suppose livable with if it
+never escapes the kernel, but if it can get back to userspace then a
+user would be justified in wondering how the heck a filesystem
+operation generated a networking errno?
 
