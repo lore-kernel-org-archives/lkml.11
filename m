@@ -2,121 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECFB6C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 08:15:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22D36C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 08:16:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243384AbiEKIPi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 04:15:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52418 "EHLO
+        id S243430AbiEKIP4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 04:15:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238624AbiEKIPg (ORCPT
+        with ESMTP id S243420AbiEKIPv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 04:15:36 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D9C4E529F;
-        Wed, 11 May 2022 01:15:35 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Kynln0N2Kz4xVP;
-        Wed, 11 May 2022 18:15:33 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1652256933;
-        bh=l3GxOLtbw73sYny9t7lVVxAHv0bWf/ZyhbFpCZbGXBk=;
-        h=Date:From:To:Cc:Subject:From;
-        b=RsXkWr6WzQK86RjgqjZZDhrCKhJdo+aRACVIXqRBx3GUDkr8AylOSuemmsscjqEvu
-         o4RyELWTikZN1kwXsi4yKbtTDld/Jl0efDl23WBapJkFwzsuZUrtsykuafpAWhT7ZO
-         pyq+JVY4dzWUr+dlKqPRvJHA0vw9tqi1jK5exCdNfdg+PNIB4mj4A4IAE7+k/3tNrx
-         PB/U5pWuXMNbtz8OWBP1cvq7nrhBHVT3nMr6tcJSjTsQLJJUkPDjsDXokSsG2lnqVl
-         Vrf+2KKIBlgt1ob5ZeXXUdAy97EvUwE72oZeo+rv4CoRTTh5vRWUyCr10swAcE+ya9
-         66IsdmOQgOzpw==
-Date:   Wed, 11 May 2022 18:15:31 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the mm tree
-Message-ID: <20220511181531.7f27a5c1@canb.auug.org.au>
+        Wed, 11 May 2022 04:15:51 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB24E19284
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 01:15:47 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id be20so1527364edb.12
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 01:15:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=nGIPkUoD0VqgRPwmnJdq8aDIQ4mHp9cW//PkaS4eSJQ=;
+        b=v12qa2iTtKx2vdf1vq2PcT9u9GdQ9m9IGKZ4JZ6rG21TQSTvTP4+nmoa9IUpXFBIoo
+         HCXVmFpF11W8kT0P0Be2LQsxp0UEhAcGedjF+gxrswebMy203EvQsuk8q9cnpCIwnDHi
+         hJ8YVa+U5r+jDrQcUeQyDMH67V3MZoI5Ar2zEYMN0FPeklwVUvkTKQfUo/4ly7GB06wU
+         kRRQ0tUqRQcD2ivSDskqB0eOB4fmz9yDyMBGd1Csf8zg4FUVHmZ/jQT1fE9dUvLCxZsg
+         7028VOdrs3AVEHGFcTMMi93816g4PU0rULHhSquz166SszX/Cdl+dslpk2QRxW58Y67l
+         4Kvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nGIPkUoD0VqgRPwmnJdq8aDIQ4mHp9cW//PkaS4eSJQ=;
+        b=3GEkDbCI/OilH20xOmcSkiUAsHvuX5hEV2YFxx7X/cdxHqTnWLvZqYMyA3Gtl0kWKq
+         wTzUfSXJ1OJ0OhwQScGWzb2v4+3iXKAYaxSBAVuGCCGk0zBqDxwzvciW+93q13lmk8cK
+         bU2AC+YSCplZ7ROBd6IVOXnyeQSe2xmMG6NVLMf6mya6VdL20WUFbTleJQDXMNz1jrZA
+         FZCzlvg74GE27v7rMeIPJW5hk60ERNuZZRWwycSNrsNxC7uv9FeZtErAx24ZyWhrlAoA
+         zMTK1rxA4Za/COTO+Zps0HMPGl6d9EEauOL6s3X0bVbv+MBBx0C+/oqcF6Op+v6ohevy
+         /1zw==
+X-Gm-Message-State: AOAM530kA2978aEetusiVP0RTMXDemYLt2G3pMBVr8aildAG/uCJT7f0
+        2ZdvaKzWFrgRfz22AgUIz698rA==
+X-Google-Smtp-Source: ABdhPJyYpUvmHj5wexeKIFtMMhSwQ6w/vOEaR6DABNPdZPWdmBPuhvXzbQ4nDmBN1Iq3dFKuJCdiuw==
+X-Received: by 2002:aa7:c31a:0:b0:425:df3c:de8e with SMTP id l26-20020aa7c31a000000b00425df3cde8emr27001921edq.83.1652256946337;
+        Wed, 11 May 2022 01:15:46 -0700 (PDT)
+Received: from [192.168.0.254] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id n15-20020a05640204cf00b0042617ba63c4sm782288edw.78.2022.05.11.01.15.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 May 2022 01:15:45 -0700 (PDT)
+Message-ID: <091e6619-3341-4a98-90f6-48a6281f6275@linaro.org>
+Date:   Wed, 11 May 2022 10:15:44 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/J+y7q7vuvY==dwLKkKUlYze";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v6 1/4] dt-bindings: thermal: k3-j72xx: Add VTM bindings
+ documentation
+Content-Language: en-US
+To:     "J, KEERTHY" <j-keerthy@ti.com>, robh+dt@kernel.org,
+        daniel.lezcano@linaro.org, rui.zhang@intel.com, amitk@kernel.org,
+        kristo@kernel.org, vigneshr@ti.com
+Cc:     linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220427064635.24898-1-j-keerthy@ti.com>
+ <20220427064635.24898-2-j-keerthy@ti.com>
+ <5859fed0-82b7-95eb-5719-9b0016916c50@ti.com>
+ <eb0745a6-ecf2-4b70-368b-9ad8a322f208@linaro.org>
+ <117f175f-62d1-17b5-742b-bcb250b7866f@ti.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <117f175f-62d1-17b5-742b-bcb250b7866f@ti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/J+y7q7vuvY==dwLKkKUlYze
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On 11/05/2022 09:53, J, KEERTHY wrote:
+>>>
+>>> Any comments on this version?
+>>
+>> You got Rob's review, so you don't need also mine.
+>>
+>> If you want, then in general look okay, except the description for "reg"
+>> you could split per items:
+>>
+>> reg:
+>>    items:
+>>      - description: VTM cfg1 register space
+>>      - description: VTM cfg2 register space
+>>      - description: efuse register space
+>>
+>> It's more obvious what items you expect.
+> 
+> Hi Krzysztof,
+> 
+> DTEX 
+> Documentation/devicetree/bindings/thermal/ti,j72xx-thermal.example.dts
+> Documentation/devicetree/bindings/thermal/ti,j72xx-thermal.yaml: found 
+> duplicate key "description" with value "VTM cfg2 register space" 
+> (original value: "VTM cfg1 register space")
+> Documentation/devicetree/bindings/Makefile:26: recipe for target 
+> 'Documentation/devicetree/bindings/thermal/ti,j72xx-thermal.example.dts' 
+> failed
+> make[1]: *** 
+> [Documentation/devicetree/bindings/thermal/ti,j72xx-thermal.example.dts] Er
+> 
+> I believe multiple instances of description is failing. So can i keep 
+> the description as is?
 
-Hi all,
+It looks weird. Can you share your code (pastebin/github/paste here)?
 
-After merging the mm tree, today's linux-next build (sparc64 defconfig)
-failed like this:
 
-In file included from include/linux/hugetlb.h:757,
-                 from arch/sparc/mm/hugetlbpage.c:11:
-arch/sparc/include/asm/hugetlb.h: In function 'huge_ptep_clear_flush':
-arch/sparc/include/asm/hugetlb.h:27:1: error: no return statement in functi=
-on returning non-void [-Werror=3Dreturn-type]
-   27 | }
-      | ^
-
-(and many more)
-
-Caused by commit
-
-  083af99303b9 ("mm: change huge_ptep_clear_flush() to return the original =
-pte")
-
-I applied the following hack to make it build.
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Wed, 11 May 2022 18:10:56 +1000
-Subject: [PATCH] fix up for "mm: change huge_ptep_clear_flush() to return t=
-he original pte"
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
----
- arch/sparc/include/asm/hugetlb.h | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/sparc/include/asm/hugetlb.h b/arch/sparc/include/asm/huge=
-tlb.h
-index b50aa6f8f9ab..0a26cca24232 100644
---- a/arch/sparc/include/asm/hugetlb.h
-+++ b/arch/sparc/include/asm/hugetlb.h
-@@ -24,6 +24,7 @@ pte_t huge_ptep_get_and_clear(struct mm_struct *mm, unsig=
-ned long addr,
- static inline pte_t huge_ptep_clear_flush(struct vm_area_struct *vma,
- 					  unsigned long addr, pte_t *ptep)
- {
-+	return *ptep;
- }
-=20
- #define __HAVE_ARCH_HUGE_PTEP_SET_WRPROTECT
---=20
-2.35.1
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/J+y7q7vuvY==dwLKkKUlYze
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJ7cKMACgkQAVBC80lX
-0Gym7wf/XNKVY2qjh09VsvjnYKVVrvGP58LiYynPpbjCuwAQrM/o4B/bQy+7jjxJ
-daXgGe5PdGfGzdKhgshQmmm+x5JUyAMZmk7+/ldutnk0g77YJzZOHsRPMZVEAkgd
-rqZxl2W+FOpV9wL9nlI4LZk0ek+bi1icyu1YIgXr+H+I5NmGCzGbCF4a6lJB6McO
-/RycjMgPrNYp6XO6PDWq+IWEIbKX1yEkklveStv8FlTtoznRIDPx9cfTA4lKz/Nh
-025VoADugEXKkLFO6P9Ubg3sOfPzqIDsoO5C+SML3vK67nsvgyk9WlulBpyRYbTr
-CK/Vnh2H47WqAgeoIZSh3mMygtXYgQ==
-=XfcZ
------END PGP SIGNATURE-----
-
---Sig_/J+y7q7vuvY==dwLKkKUlYze--
+Best regards,
+Krzysztof
