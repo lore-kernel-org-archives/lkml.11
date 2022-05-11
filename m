@@ -2,87 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C593C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 18:37:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DE14C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 18:37:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346397AbiEKShQ (ORCPT
+        id S1346374AbiEKShs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 14:37:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45014 "EHLO
+        Wed, 11 May 2022 14:37:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346382AbiEKSg7 (ORCPT
+        with ESMTP id S240757AbiEKShn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 14:36:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D76C82F021
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 11:36:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652294217;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Cne9kzq5J+wUhheKNYyc+FraBMO4jJvb9afeixc7QTk=;
-        b=fkgbbUq+FXs793SRRGiQ2Ysu3q84ykd5C8pQCptCiO3UwAWJD3zr44Hazaphv/ca0bS7SF
-        /CWGOXnNvGk7xnlVZIez3qIPiqzTat4UytSnqunI8DP2reV9+I8L+wj+ObByrJuCV1qPDc
-        hKNPcLVF8TtekqID4CHPOE5jh13e5Kw=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-172-7ee-hStvPHual-hKBg3ydQ-1; Wed, 11 May 2022 14:36:51 -0400
-X-MC-Unique: 7ee-hStvPHual-hKBg3ydQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E5FA0185A794;
-        Wed, 11 May 2022 18:36:50 +0000 (UTC)
-Received: from oldenburg.str.redhat.com (unknown [10.39.192.194])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id CEF1D40C1421;
-        Wed, 11 May 2022 18:36:49 +0000 (UTC)
-From:   Florian Weimer <fweimer@redhat.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Andy Lutomirski <luto@kernel.org>, x86@kernel.org,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] x86/vsyscall: Remove CONFIG_LEGACY_VSYSCALL_EMULATE
-References: <898932fe61db6a9d61bc2458fa2f6049f1ca9f5c.1652290558.git.luto@kernel.org>
-        <202205111104.464A6619@keescook>
-Date:   Wed, 11 May 2022 20:36:48 +0200
-In-Reply-To: <202205111104.464A6619@keescook> (Kees Cook's message of "Wed, 11
-        May 2022 11:04:55 -0700")
-Message-ID: <87k0ardigv.fsf@oldenburg.str.redhat.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
+        Wed, 11 May 2022 14:37:43 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 109A64B1F2;
+        Wed, 11 May 2022 11:37:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=BI1saOr2o22TYZFAvLdljrzElw0LGv3iZn79hoIGbjg=; b=ah5Z5rQNhZ9sru+uOjYIakHJc+
+        cLY2PYPEMQX5zK5sh1iuPa/YWz7lt/vvJRj7gdUK+pntmccrtePyZB0sbCu75482aO8mhch+n/or/
+        CZ2I2UPDYdIMyTaGWQAiQc6fq3gejE97zLCSIEfAZbhuOgyuE2XBgg31a5YJm+8eOkKyq2FPtAY0e
+        FQSHiOUtj7JRIhCRQGBTSDc2ipk0KwYcbRZj7mbIxmeid5ccdtnNVP2prkflVuhOHGuoas+pUHSXX
+        qi6bmqD7nqmDVvLD2+2ohDoPmmnHFP1TRa3lW3bKPnboDBTQ3hR3OnEL3hjuqoiaHeUakkQQBbWvl
+        KiUrzLug==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1norDA-005gSg-4q; Wed, 11 May 2022 18:37:24 +0000
+Date:   Wed, 11 May 2022 19:37:24 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>
+Cc:     Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-mm <linux-mm@kvack.org>, lkft-triage@lists.linaro.org,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Peter Xu <peterx@redhat.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        David Hildenbrand <david@redhat.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jerome Glisse <jglisse@redhat.com>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.vnet.ibm.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [next] sh: hugetlb.h:27:1: error: no return statement in
+ function returning non-void [-Werror=return-type]
+Message-ID: <YnwCZMldIQiQUrKt@casper.infradead.org>
+References: <CA+G9fYtS5fXzbODO3+Rz7VE4VvjY_1c99Da5UhruXi16jcVGbw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+G9fYtS5fXzbODO3+Rz7VE4VvjY_1c99Da5UhruXi16jcVGbw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* Kees Cook:
+On Wed, May 11, 2022 at 09:26:45PM +0530, Naresh Kamboju wrote:
+> arch/sh/include/asm/hugetlb.h: In function 'huge_ptep_clear_flush':
+> arch/sh/include/asm/hugetlb.h:27:1: error: no return statement in
+> function returning non-void [-Werror=return-type]
+>    27 | }
+>       | ^
+> cc1: some warnings being treated as errors
 
-> On Wed, May 11, 2022 at 10:38:53AM -0700, Andy Lutomirski wrote:
->> CONFIG_LEGACY_VSYSCALL_EMULATE is, as far as I know, only needed for the
->> combined use of exotic and outdated debugging mechanisms with outdated
->> binaries.  At this point, no one should be using it.  We would like to
->> implement dynamic switching of vsyscalls, but this is much more
->> complicated to support in EMULATE mode than XONLY mode.
->> 
->> So let's force all the distros off of EMULATE mode.  If anyone actually
->> needs it, they can set vsyscall=emulate, and we can then get away with
->> refusing to support newer security models if that option is set.
->> 
->> Cc: x86@kernel.org
->> Cc: Kees Cook <keescook@chromium.org>
->> Cc: Florian Weimer <fweimer@redhat.com>
->> Signed-off-by: Andy Lutomirski <luto@kernel.org>
->
-> Sounds legit! Can we switch the default to "none" while we're at it?
+It's easy enough to figure out whose patch this was.
 
-I think that's a userspace ABI break?
+$ git log -p next-20220511 arch/sh/include/asm/hugetlb.h
 
-I do not have a *very* strong opinion about this.  For one thing, it
-would be handy example to have that such deliberate  do actually
-happen. 8-)
+commit 083af99303b9
+Author: Baolin Wang <baolin.wang@linux.alibaba.com>
+Date:   Tue May 10 17:47:33 2022 -0700
 
-Thanks,
-Florian
+    mm: change huge_ptep_clear_flush() to return the original pte
 
+You don't have to spray everybody who's ever touched the MM with email.
