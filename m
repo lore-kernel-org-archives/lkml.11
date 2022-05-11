@@ -2,167 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E1A0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 09:13:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 570B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 09:13:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234703AbiEKJM7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 05:12:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57584 "EHLO
+        id S235358AbiEKJNK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 05:13:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231732AbiEKJMv (ORCPT
+        with ESMTP id S232053AbiEKJNH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 05:12:51 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA2B274862
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 02:12:48 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id w24so1776309edx.3
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 02:12:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=iSM4KiWX5xiHYNImgQ6cDdJf0LCKtuaDlzcLfop++Jc=;
-        b=FM/vJ5D6P9x5+MqRB5GdGmrNf9cYDyJXebGhlNhF2u1A7m2Q+A93DNdO8nK1CBEXer
-         zqeo1Rkj7fSn7aO7BsPCAjVkbeq1WnvazQSNJeLEGXJzEr9BrC6MptVVEkqRqLDGqy9R
-         ctQbLtbuvZ0bdkBsXU1A1mkJ5FBorUWEZZI9KYJiL/koaHgU+0cm2wnXhQV0KSO0mq5O
-         rAQnl9p0rTja6EPjoI73YbS2GoLZZ5fKSQBQMDLQRaSLpVa3lHf6+czUrqLjcSkyzkfy
-         90h3XmzZ9y/bIriHXMRqYwCUCiUTbZMVemBEwuFENyHguqz3IH6U79m8+QWZZgn6nEMk
-         WHBg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=iSM4KiWX5xiHYNImgQ6cDdJf0LCKtuaDlzcLfop++Jc=;
-        b=Sd7vsgsla/Oxf1ITcbxJIEG/PkG5eUsnuzfQ9lvLMQXJHVG4G1rj9PZhsFLjsAJAbz
-         ZN2jQhZQfG/e+NdamSMgKJpTZPvVbox1l6bhJZNWxtUpFC1I9QoLHse2ZSFUYgUO2f6q
-         8U7Kwy87kk2NlR4XZ//voxg7OvyrnboxiaWku6l2V27fMxoer2Qljlgq86zh2sRKEIcd
-         Nxy8TdP2YwzG+Mt2dhPLnEHl1dwMa9KZxoLkpHqYiyMZc3UmUod824Woc5uBwrmM3sNQ
-         6lGooKY0JUp4lFyWcZqek5fzLlVLPo/3Kzm6ph+y8IoBuIhlWVp3+LWtt1X5dJWpZ39B
-         3dUg==
-X-Gm-Message-State: AOAM531L5aR1l8WFNXrueqKBTi+xzHLhH6RwTYOoJY3baZny0ysX80v7
-        HCChvG1VFc0WslaRYtdmDaVONQ==
-X-Google-Smtp-Source: ABdhPJwAJshh0pyoM8iVsERACEz5gij6am1vxgOpfUotlGosF/fppxLJBLF71r5SRAXCzg2PJZXhpA==
-X-Received: by 2002:a05:6402:f13:b0:428:a849:d0c1 with SMTP id i19-20020a0564020f1300b00428a849d0c1mr11917128eda.346.1652260367481;
-        Wed, 11 May 2022 02:12:47 -0700 (PDT)
-Received: from [192.168.0.152] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id cb13-20020a0564020b6d00b0042617ba639asm893261edb.36.2022.05.11.02.12.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 May 2022 02:12:46 -0700 (PDT)
-Message-ID: <66796853-efe7-f661-9637-ac6cfefc68e5@linaro.org>
-Date:   Wed, 11 May 2022 11:12:45 +0200
+        Wed, 11 May 2022 05:13:07 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A900A81670;
+        Wed, 11 May 2022 02:13:06 -0700 (PDT)
+Received: from zn.tnic (p5de8eeb4.dip0.t-ipconnect.de [93.232.238.180])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 408B51EC053F;
+        Wed, 11 May 2022 11:13:01 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1652260381;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=Rl96LlwUayMVLB9Ox0K7EFk+HS7SAZNt7K1olPYN8Qo=;
+        b=Duquyg3rKjp+y7ODQUAjIdw8MyLoXi0PtGqN9Uvp4Q6iFjDWDtrtKTTdeGNAvniLJ9Yglw
+        25CwXIBrlMwP35/M1L3iIu0onVeccf45hNzVh0tgHL+95xHX3ecuBTMkr6TQyNcv+z2bui
+        rRAljZNtex98qUrJvHyAQ1/s7zMfbAk=
+Date:   Wed, 11 May 2022 11:13:08 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     "Kirill A. Shutemov" <kirill@shutemov.name>
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Hildenbrand <david@redhat.com>, x86@kernel.org,
+        linux-mm@kvack.org, linux-coco@lists.linux.dev,
+        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv5 10/12] x86/tdx: Unaccepted memory support
+Message-ID: <Ynt+JCu9TP0FetUg@zn.tnic>
+References: <20220425033934.68551-1-kirill.shutemov@linux.intel.com>
+ <20220425033934.68551-11-kirill.shutemov@linux.intel.com>
+ <YnOjJB8h3ZUR9sLX@zn.tnic>
+ <20220506204423.gu6jrb53kmuxze5r@box.shutemov.name>
+ <20220511011906.el4m54fns7ilh7fr@box.shutemov.name>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v4 1/2] dt-bindings: remoteproc: mediatek: Make l1tcm reg
- exclusive to mt819x
-Content-Language: en-US
-To:     =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
-        <nfraprado@collabora.com>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, kernel@collabora.com,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Tinghan Shen <tinghan.shen@mediatek.com>,
-        Tzung-Bi Shih <tzungbi@google.com>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-remoteproc@vger.kernel.org
-References: <20220506213226.257859-1-nfraprado@collabora.com>
- <20220506213226.257859-2-nfraprado@collabora.com>
- <d3e027ca-9ccf-cf91-2414-85d2b9b680f0@linaro.org>
- <20220510165016.r7nyck2abt5m4djp@notapiano>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220510165016.r7nyck2abt5m4djp@notapiano>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220511011906.el4m54fns7ilh7fr@box.shutemov.name>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/05/2022 18:50, Nícolas F. R. A. Prado wrote:
->>> Also I had to add a description to the global reg-names, since it
->>> couldn't be neither missing nor empty.
->>
->> It is possible:
->> https://elixir.bootlin.com/linux/latest/source/Documentation/devicetree/bindings/example-schema.yaml#L91
->>
->> Keep constraints and list of names in properties. Then in allOf:if:then
->> raise minItems or lower maxItems, depending on the variant.
+On Wed, May 11, 2022 at 04:19:06AM +0300, Kirill A. Shutemov wrote:
+> JFYI, I've reworked it as
 > 
-> Hi Krzysztof,
-> 
-> that example only shows setting minItems to override the default value, but the
-> issue here is that it's not possible to override minItems/maxItems (after
-> they're already set, even if implicitly) with a different value in the if.
+> 		accepted = try_accept_one(start, len, PG_LEVEL_1G);
+> 		if (!accepted)
+> 			accepted = try_accept_one(start, len, PG_LEVEL_2M);
+> 		if (!accepted)
+> 			accepted = try_accept_one(start, len, PG_LEVEL_4K);
+> 		if (!accepted)
+> 			return false;
+> 		start += accepted;
 
-No, this example shows exactly what you need in first step - make one
-item on the list optional.
+s/accepted/accpt_size/
 
-There are several other examples for the entire picture or different
-aproach:
-https://elixir.bootlin.com/linux/latest/source/Documentation/devicetree/bindings/example-schema.yaml#L91
+and then it is perfectly clear what that variable contains.
 
-https://elixir.bootlin.com/linux/v5.18-rc2/source/Documentation/devicetree/bindings/clock/samsung,exynos7885-clock.yaml#L53
+But it seems you're preparing a new version so I'll continue looking at
+there.
 
-> 
-> That is:
-> 
-> 	properties:
-> 	  reg-names:
-> 	    items:
-> 	      - const: sram
-> 	      - const: cfg
-> 	      - const: l1tcm
+-- 
+Regards/Gruss,
+    Boris.
 
-You did not use the example I gave you. Where is the minItems?
-
-> 
-> 	if:
-> 	  properties:
-> 	    compatible:
-> 	      enum:
-> 		- mediatek,mt8183-scp
-> 		- mediatek,mt8186-scp
-> 	then:
-> 	  properties:
-> 	    reg-names:
-> 	      minItems: 2
-> 	      maxItems: 2
-> 
-> Generates the error on dtbs_check:
-> 
-> /home/nfraprado/ext/git/linux/arch/arm64/boot/dts/mediatek/mt8183-kukui-kakadu.dtb: scp@10500000: reg-names: ['sram', 'cfg'] is too short
-
-Missing minItems in first properties.
-
-> 
-> I believe the tooling is implicitly adding
-> 
-> 	      minItems: 3
-> 	      maxItems: 3
-> 
-> to the common reg-names, and since it's not possible to override them, the
-> override to 2 doesn't work so they are kept at 3, causing the error.
-> 
-> Moving the minItems/maxItems to the common reg-names as a test gives:
-
-You cannot just. You need it in both places.
-
-> 
-> /home/nfraprado/ext/git/linux/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml: properties:reg-names: {'minItems': 2, 'maxItems': 2, 'items': [{'const': 'sram'}, {'const': 'cfg'}, {'const': 'l1tcm'}]} should not be valid under {'required': ['maxItems']}
-> 	hint: "maxItems" is not needed with an "items" list
-> 
-> That error, plus looking in the items meta-schema, suggests me that maxItems
-> isn't supposed to be set lower then the length of items. So even if the
-> minItems/maxItems override is fixed, there's still this issue. It seems like
-> defining the reg-names list separetely in each if branch is indeed the right way
-> to go.
-
-
-
-Best regards,
-Krzysztof
+https://people.kernel.org/tglx/notes-about-netiquette
