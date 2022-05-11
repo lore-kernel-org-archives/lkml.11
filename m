@@ -2,119 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 665EAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 03:56:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74253C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 03:57:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241896AbiEKDzx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 23:55:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35774 "EHLO
+        id S229448AbiEKD5L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 23:57:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239579AbiEKDzd (ORCPT
+        with ESMTP id S242058AbiEKD4r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 23:55:33 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F34C3213324
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 20:55:32 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id 202so687400pgc.9
-        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 20:55:32 -0700 (PDT)
+        Tue, 10 May 2022 23:56:47 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20FA45DBE7
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 20:56:32 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id i1so666530plg.7
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 20:56:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fastly.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=tkAZPhAkhghXKAcrYQ097N+yUjSoD43IH6MO8WVhkW0=;
-        b=XTIXKAsQLSW9h7YC+Hl0jhrCRlhJoL7ZN43rl4HojAKB6QTZDyKFGdsQ3+/4q11Gf9
-         1yrehn7dms/+YB3orW/WWboVn+fzhaRuXuXvjIXG6v7vC15AgKmlBlD8gilh49cnbXYJ
-         dkZW2WjQK5eGZGAmm374sgwDgQoibYPvNPMlg=
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=elq3ZqCelpCSxkkjk1LXdyA6w9hgB+SCHXKMgxWGx/U=;
+        b=f0WEcC7jjPTFG6Q6v9mT/VTbUk6akakqKqThuRBA10OtcmKjJs4FotEBdprRTmZrZF
+         Kb8j00IvxlaVvxLhVF+olvEM7z068yqNY7DUksi25Wuhc+ittQMbF3sNNuMlrjp0trft
+         jPe+SBWtYADIgBt1U9crcisYDlPyJy9V3ts222QP9S+ZNj9WdGzgEwTfgBNGgl9lTyX0
+         2Fv+/xdOFKMtT6Hvk7/sOzspO4aPku8B/XAFXgUu6zqe5yJcQO9LXB8JSfcNQzqAzBt6
+         y50LLDXRRm0M8Qj3TiD3Vhrh3vbutMS5qxe2s2RBw/glkC+5rS+kVBVhvbLF5i3xYVL7
+         tJ4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=tkAZPhAkhghXKAcrYQ097N+yUjSoD43IH6MO8WVhkW0=;
-        b=t1C/oga0umC6+5Hxn5nWw72jhpEGtS4H38+rS4JdDFD2oJO8sPaLDrdSKErAMfcjK2
-         4EWcyS3XbLtjJnwdR64sT6Kz7UE/Z+/rwJdZTBaQNqmbeVenA5d9dURtdFNM1pBZ2bOG
-         f/b3laMYVADcbTSE+A/MlC+0RlPlBsN8atSa0/nhRasC7lMWh4N8KfCymX9Tid22WgIL
-         1kHA4RW4LDOYR2urqYEmxj94AgNhyClQrXW8uO6zvhTig2e2u18WEPxo3wYS9x+HpED+
-         QR77/ThJi/Zjzftvi9tpx7bs+7YmhLG2Wm/Dgl3BnfRD/Z5Zdcht1pDoTwJlnBgyHmwF
-         HYsw==
-X-Gm-Message-State: AOAM531D25sDMSEsqySnQTAwFr3qANMt05LKKl2wJLDYAnpU8HOkUKi/
-        P3fwQVfIJ2w4amtpjSX45s5ZtA==
-X-Google-Smtp-Source: ABdhPJxYgsPGtWhs7POp5A5xnYfBle+QWXILF7HGaYr8jorK2248KV18yTDhWf6EaGfBzvQ3RnPdig==
-X-Received: by 2002:a05:6a00:10cc:b0:505:ada6:e03e with SMTP id d12-20020a056a0010cc00b00505ada6e03emr23348965pfu.45.1652241332539;
-        Tue, 10 May 2022 20:55:32 -0700 (PDT)
-Received: from localhost.localdomain (c-73-223-190-181.hsd1.ca.comcast.net. [73.223.190.181])
-        by smtp.gmail.com with ESMTPSA id d7-20020a170903230700b0015e8d4eb1f7sm442789plh.65.2022.05.10.20.55.31
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 10 May 2022 20:55:32 -0700 (PDT)
-From:   Joe Damato <jdamato@fastly.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, x86@kernel.org,
-        Alexander Viro <viro@zeniv.linux.org.uk>
-Cc:     Joe Damato <jdamato@fastly.com>
-Subject: [RFC,net-next 3/6] iov_iter: Add a nocache copy iov iterator
-Date:   Tue, 10 May 2022 20:54:24 -0700
-Message-Id: <1652241268-46732-4-git-send-email-jdamato@fastly.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1652241268-46732-1-git-send-email-jdamato@fastly.com>
-References: <1652241268-46732-1-git-send-email-jdamato@fastly.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=elq3ZqCelpCSxkkjk1LXdyA6w9hgB+SCHXKMgxWGx/U=;
+        b=y58oan3DG/eLpXp6HtxMcyRxTHFIV/3iDMZZOwC7lHUq6gGudZbjlvo4dnTtyCR03C
+         Nmk6G3EK++agbak2d8/SemanHT0fQ9eCaGUBFeCQv4Pd/iMhGVh+Py5Z+UL4xr7lb7XU
+         vydhpj5kdP8O8kF2Pu/tfvdcEcnI0QuN1wcibLb19NHF8+sUVaDe9KZoUvF1KrwO2hC/
+         RFKTlHnM1P/r5XlcJ1Ib5/LPZc6W2p5KpMVFRg+9wryJ4gpYkX+bWjoviHK1F+mcrI5y
+         plSJikET6Wx6kRYxqeAseeOgUbjrTUBLctczgbQsUfak0cVaelqNBnj3yYchg7E9pUcX
+         ZNkQ==
+X-Gm-Message-State: AOAM531b9/Mm8PVaF/aGpYiBoYRROvDmq1XfWCBVty+ZSeoYY3hRO38M
+        9KVobs/wdhOh2jApWGWQZLEGUP+9oo9wDLMaY1pQLw==
+X-Google-Smtp-Source: ABdhPJw5n1KJcz8j1FP3c7A6fBBMc1hcuPZsn2gE31BtaT8knvxsmvrFDZQnLCp0J+6DmYbEonpCWUJBRb2zAP6Umfo=
+X-Received: by 2002:a17:902:da8b:b0:15e:c0e8:d846 with SMTP id
+ j11-20020a170902da8b00b0015ec0e8d846mr23539490plx.34.1652241391912; Tue, 10
+ May 2022 20:56:31 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220422224508.440670-1-jane.chu@oracle.com> <20220422224508.440670-4-jane.chu@oracle.com>
+ <CAPcyv4i7xi=5O=HSeBEzvoLvsmBB_GdEncbasMmYKf3vATNy0A@mail.gmail.com>
+In-Reply-To: <CAPcyv4i7xi=5O=HSeBEzvoLvsmBB_GdEncbasMmYKf3vATNy0A@mail.gmail.com>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Tue, 10 May 2022 20:56:21 -0700
+Message-ID: <CAPcyv4id8AbTFpO7ED_DAPren=eJQHwcdY8Mjx18LhW+u4MdNQ@mail.gmail.com>
+Subject: Re: [PATCH v9 3/7] mce: fix set_mce_nospec to always unmap the whole page
+To:     Jane Chu <jane.chu@oracle.com>, Borislav Petkov <bp@alien8.de>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>, david <david@fromorbit.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Linux NVDIMM <nvdimm@lists.linux.dev>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        X86 ML <x86@kernel.org>,
+        Vishal L Verma <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Alasdair Kergon <agk@redhat.com>,
+        Mike Snitzer <snitzer@redhat.com>,
+        device-mapper development <dm-devel@redhat.com>,
+        "Weiny, Ira" <ira.weiny@intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vivek Goyal <vgoyal@redhat.com>,
+        "Luck, Tony" <tony.luck@intel.com>, Jue Wang <juew@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add copy_page_from_iter_nocache, which wraps copy_page_from_iter_iovec and
-passes in a custom copyin function: __copy_from_user_nocache.
+On Fri, Apr 22, 2022 at 4:25 PM Dan Williams <dan.j.williams@intel.com> wrote:
+>
+> [ Add Tony as the originator of the whole_page() logic and Jue who
+> reported the issue that lead to 17fae1294ad9 x86/{mce,mm}: Unmap the
+> entire page if the whole page is affected and poisoned ]
+>
+>
+> On Fri, Apr 22, 2022 at 3:46 PM Jane Chu <jane.chu@oracle.com> wrote:
+> >
+> > The set_memory_uc() approach doesn't work well in all cases.
+> > As Dan pointed out when "The VMM unmapped the bad page from
+> > guest physical space and passed the machine check to the guest."
+> > "The guest gets virtual #MC on an access to that page. When
+> > the guest tries to do set_memory_uc() and instructs cpa_flush()
+> > to do clean caches that results in taking another fault / exception
+> > perhaps because the VMM unmapped the page from the guest."
+> >
+> > Since the driver has special knowledge to handle NP or UC,
+> > mark the poisoned page with NP and let driver handle it when
+> > it comes down to repair.
+> >
+> > Please refer to discussions here for more details.
+> > https://lore.kernel.org/all/CAPcyv4hrXPb1tASBZUg-GgdVs0OOFKXMXLiHmktg_kFi7YBMyQ@mail.gmail.com/
+> >
+> > Now since poisoned page is marked as not-present, in order to
+> > avoid writing to a not-present page and trigger kernel Oops,
+> > also fix pmem_do_write().
+> >
+> > Fixes: 284ce4011ba6 ("x86/memory_failure: Introduce {set, clear}_mce_nospec()")
+> > Reviewed-by: Christoph Hellwig <hch@lst.de>
+> > Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+> > Signed-off-by: Jane Chu <jane.chu@oracle.com>
 
-This allows callers of copy_page_from_iter_nocache to copy data without
-disturbing the CPU cache.
+Boris,
 
-Signed-off-by: Joe Damato <jdamato@fastly.com>
----
- include/linux/uio.h |  2 ++
- lib/iov_iter.c      | 20 ++++++++++++++++++++
- 2 files changed, 22 insertions(+)
-
-diff --git a/include/linux/uio.h b/include/linux/uio.h
-index 739285f..58c7946 100644
---- a/include/linux/uio.h
-+++ b/include/linux/uio.h
-@@ -142,6 +142,8 @@ size_t copy_page_to_iter(struct page *page, size_t offset, size_t bytes,
- 			 struct iov_iter *i);
- size_t copy_page_from_iter(struct page *page, size_t offset, size_t bytes,
- 			 struct iov_iter *i);
-+size_t copy_page_from_iter_nocache(struct page *page, size_t offset, size_t bytes,
-+			 struct iov_iter *i);
- 
- size_t _copy_to_iter(const void *addr, size_t bytes, struct iov_iter *i);
- size_t _copy_from_iter(void *addr, size_t bytes, struct iov_iter *i);
-diff --git a/lib/iov_iter.c b/lib/iov_iter.c
-index ef22ec1..985bf58 100644
---- a/lib/iov_iter.c
-+++ b/lib/iov_iter.c
-@@ -895,6 +895,26 @@ size_t copy_page_to_iter(struct page *page, size_t offset, size_t bytes,
- }
- EXPORT_SYMBOL(copy_page_to_iter);
- 
-+size_t copy_page_from_iter_nocache(struct page *page, size_t offset, size_t
-+		bytes, struct iov_iter *i)
-+{
-+	if (unlikely(!page_copy_sane(page, offset, bytes)))
-+		return 0;
-+	if (unlikely(iov_iter_is_pipe(i) || iov_iter_is_discard(i))) {
-+		WARN_ON(1);
-+		return 0;
-+	}
-+	if (iov_iter_is_bvec(i) || iov_iter_is_kvec(i) || iov_iter_is_xarray(i)) {
-+		void *kaddr = kmap_atomic(page);
-+		size_t wanted = _copy_from_iter_nocache(kaddr + offset, bytes, i);
-+
-+		kunmap_atomic(kaddr);
-+		return wanted;
-+	} else
-+		return copy_page_from_iter_iovec(page, offset, bytes, i,
-+				__copy_from_user_nocache);
-+}
-+
- size_t copy_page_from_iter(struct page *page, size_t offset, size_t bytes,
- 			 struct iov_iter *i)
- {
--- 
-2.7.4
-
+This is the last patch in this set that needs an x86 maintainer ack.
+Since you have been involved in the history for most of this, mind
+giving it an ack so I can pull it in for v5.19? Let me know if you
+want a resend.
