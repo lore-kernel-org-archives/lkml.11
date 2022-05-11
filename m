@@ -2,100 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D448C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 11:35:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 080F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 11:35:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230354AbiEKLfk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 07:35:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40048 "EHLO
+        id S240872AbiEKLfo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 07:35:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240099AbiEKLfX (ORCPT
+        with ESMTP id S240231AbiEKLfZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 07:35:23 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A3B65469C
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 04:35:21 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id BA77E22205;
-        Wed, 11 May 2022 13:35:16 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1652268919;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fBxMjfOO74WU/5onEJvdMPUR6WuIE1EbEvkxKemvch8=;
-        b=LxIwoQmMbD18/LTL1HymORRMKdrt6BMI6A9PZgP48ewHwtu1+8HzJHelfaxd316z5/Mffk
-        8LOQ1lZGALk97YFSIp3XyJhBozStBpUd7ItIpijbqXqgZe9mojO0Q2vtV59UejBeGV6Jbn
-        smtdaC7xn6NaAuTKvJR/S6qYEfi7e/k=
+        Wed, 11 May 2022 07:35:25 -0400
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D6452380FE;
+        Wed, 11 May 2022 04:35:23 -0700 (PDT)
+Received: by mail-qk1-x72e.google.com with SMTP id c1so1995728qkf.13;
+        Wed, 11 May 2022 04:35:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=onb5iDrr9AZU/Apv2XZLPoTcQR9Y3vPO5TDtvXQcOxQ=;
+        b=oVqrjx29MINK52QwG0IJPDvlqXIqV1zPBJuiMpjtBXE/hIPoGg2X0+50kTplBxthYH
+         D8vgtq7PprMfds50WIs0tN7TVvobuqfjnLIvdWXISuIiqeyE14SDl6KP700a2MzxgN9U
+         KmHV6SKRcvfFxc5H0gQFg8kXvtmVCbsfGZAqc8bMksmhSlQaFXrPcvPZBevEYfcwda2m
+         jHnGyRIfPk7F7REPHZz6eG3+tIEv+Cpt7/NgiuVGUr8fWtzNw+WwdCOKvKoZ2RXTTMxv
+         mLVsvIBTP+s6aq5z94/ajvYjXSudDUOeXLMEHNAvjE26Ie5qRTNfXMVAcxU3Li5u7xdI
+         vKbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=onb5iDrr9AZU/Apv2XZLPoTcQR9Y3vPO5TDtvXQcOxQ=;
+        b=NuU9RF1C0pVVsea2jrxmfvc6/78zp5hlimyQuthfzaHwvguWjW8r1UVhiyrBEZpuAB
+         xoK2dwUjGmM9tu3m2I3mYsbFazQWi7vErTNkYavSbLKVwygVHfuohCykxIEeuemrjbtH
+         DId6wSoG/CJn1uDQDgIBw0RtJVOrZ6tXBTqnxWWsrxqsilBQGolBrBjNE1gMNLxDH9qO
+         HGGikg2gij+S6j7KtsIIKNX8BZhxsngTvZsX//+56qsgji1m71/YH7vDo7Y0yITpmWzf
+         aHTGd88nFp49AyAmDEyys7M8+FP/Ex1Z4x/HAEgFhAqm6TvSDEpABNcAy0/o+MW8MsLe
+         /pHA==
+X-Gm-Message-State: AOAM533MxupbtBpNL38jGXokL6amL6cjIiAqb1s1zM+gS2EPeBynp+D1
+        ot2pyvk54br6ubgQZBZGKJk=
+X-Google-Smtp-Source: ABdhPJxvEn0z8OWVAW1knWQ+gSB6bMqF0l8ZwTwgkUjNFMazkzowO+pRO9zxox34S+7OYWmauNF4wg==
+X-Received: by 2002:a05:620a:2407:b0:6a0:5027:f4d5 with SMTP id d7-20020a05620a240700b006a05027f4d5mr16378491qkn.318.1652268922439;
+        Wed, 11 May 2022 04:35:22 -0700 (PDT)
+Received: from master-x64.sparksnet ([2601:153:980:85b1::10])
+        by smtp.gmail.com with ESMTPSA id bw26-20020a05622a099a00b002f39b99f6basm953377qtb.84.2022.05.11.04.35.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 May 2022 04:35:22 -0700 (PDT)
+From:   Peter Geis <pgwipeout@gmail.com>
+To:     linux-rockchip@lists.infradead.org,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     Heiko Stuebner <heiko@sntech.de>, dri-devel@lists.freedesktop.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Peter Geis <pgwipeout@gmail.com>
+Subject: [PATCH v2 2/3] drm/panel: feiyang-fy07024di26a30d: make reset gpio optional
+Date:   Wed, 11 May 2022 07:35:15 -0400
+Message-Id: <20220511113517.4172962-3-pgwipeout@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220511113517.4172962-1-pgwipeout@gmail.com>
+References: <20220511113517.4172962-1-pgwipeout@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Wed, 11 May 2022 13:35:16 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     kbuild@lists.01.org, lkp@intel.com, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Pratyush Yadav <p.yadav@ti.com>
-Subject: Re: [mtd:spi-nor/next 16/18] drivers/mtd/spi-nor/debugfs.c:84
- spi_nor_params_show() warn: '%ph' cannot be followed by 'n'
-In-Reply-To: <202205110320.WNi7ZQaB-lkp@intel.com>
-References: <202205110320.WNi7ZQaB-lkp@intel.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <f1399a5413d8f151e536c7005eca6763@walle.cc>
-X-Sender: michael@walle.cc
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-05-11 12:17, schrieb Dan Carpenter:
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git
-> spi-nor/next
-> head:   cdbc44dbb2c73d8bafa1a8ae0d780608be5dbd40
-> commit: 0257be79fc4a16a3252ce80aa13b3640f728c425 [16/18] mtd: spi-nor:
-> expose internal parameters via debugfs
-> config: x86_64-randconfig-m001-20220509
-> (https://download.01.org/0day-ci/archive/20220511/202205110320.WNi7ZQaB-lkp@intel.com/config)
-> compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> 
-> smatch warnings:
-> drivers/mtd/spi-nor/debugfs.c:84 spi_nor_params_show() warn: '%ph'
-> cannot be followed by 'n'
-> 
-> vim +84 drivers/mtd/spi-nor/debugfs.c
-> 
-> 0257be79fc4a16 Michael Walle 2022-04-29   73  static int
-> spi_nor_params_show(struct seq_file *s, void *data)
-> 0257be79fc4a16 Michael Walle 2022-04-29   74  {
-> 0257be79fc4a16 Michael Walle 2022-04-29   75  	struct spi_nor *nor = 
-> s->private;
-> 0257be79fc4a16 Michael Walle 2022-04-29   76  	struct
-> spi_nor_flash_parameter *params = nor->params;
-> 0257be79fc4a16 Michael Walle 2022-04-29   77  	struct
-> spi_nor_erase_map *erase_map = &params->erase_map;
-> 0257be79fc4a16 Michael Walle 2022-04-29   78  	struct
-> spi_nor_erase_region *region;
-> 0257be79fc4a16 Michael Walle 2022-04-29   79  	const struct flash_info
-> *info = nor->info;
-> 0257be79fc4a16 Michael Walle 2022-04-29   80  	char buf[16], *str;
-> 0257be79fc4a16 Michael Walle 2022-04-29   81  	int i;
-> 0257be79fc4a16 Michael Walle 2022-04-29   82
-> 0257be79fc4a16 Michael Walle 2022-04-29   83  	seq_printf(s,
-> "name\t\t%s\n", info->name);
-> 0257be79fc4a16 Michael Walle 2022-04-29  @84  	seq_printf(s,
-> "id\t\t%*phn\n", info->id_len, info->id);
-> 
-> Maybe N was intended instead of n?  (I have no idea).
+Some implementations do not use the reset signal, instead tying it to dvdd.
+Make the reset gpio optional to permit this.
 
-Thanks for reporting. Yeah I had %*phN previously but then
-I wanted to switch to "xx xx xx" style and i missed checking
-printk-formats.rst. %*phn worked as intended ;) I'll send
-a fixup patch.
+Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+---
+ drivers/gpu/drm/panel/panel-feiyang-fy07024di26a30d.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
--michael
+diff --git a/drivers/gpu/drm/panel/panel-feiyang-fy07024di26a30d.c b/drivers/gpu/drm/panel/panel-feiyang-fy07024di26a30d.c
+index a9cd7135cb51..ee61d60eceae 100644
+--- a/drivers/gpu/drm/panel/panel-feiyang-fy07024di26a30d.c
++++ b/drivers/gpu/drm/panel/panel-feiyang-fy07024di26a30d.c
+@@ -209,7 +209,7 @@ static int feiyang_dsi_probe(struct mipi_dsi_device *dsi)
+ 		return dev_err_probe(&dsi->dev, PTR_ERR(ctx->avdd),
+ 				     "Couldn't get avdd regulator\n");
+ 
+-	ctx->reset = devm_gpiod_get(&dsi->dev, "reset", GPIOD_OUT_LOW);
++	ctx->reset = devm_gpiod_get_optional(&dsi->dev, "reset", GPIOD_OUT_LOW);
+ 	if (IS_ERR(ctx->reset))
+ 		return dev_err_probe(&dsi->dev, PTR_ERR(ctx->reset),
+ 				     "Couldn't get our reset GPIO\n");
+-- 
+2.25.1
+
