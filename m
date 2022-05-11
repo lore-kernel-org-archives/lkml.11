@@ -2,115 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2424C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 03:06:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B658C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 11 May 2022 03:11:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233621AbiEKDGh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 10 May 2022 23:06:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40892 "EHLO
+        id S237523AbiEKDLa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 10 May 2022 23:11:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233983AbiEKDGe (ORCPT
+        with ESMTP id S229535AbiEKDL1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 10 May 2022 23:06:34 -0400
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC25542ED5;
-        Tue, 10 May 2022 20:06:32 -0700 (PDT)
-Date:   Tue, 10 May 2022 20:06:24 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1652238390;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=N9oPpCxajvjGUrmg0f6gckutPEOOPZaEku255Vyx78E=;
-        b=ctkko5zKqXKRqBvkI7AzNbCPvjk+mTf48++bYM8Vcq12dt+8H2aFcWCV2RRm0dO0MO8OB8
-        Ba3SyHMRE06mHqGuEi54JOaGxRgkuyMtv6h+EXp/ar9SvCbnAIfMlnyYueJ9jdGUKnfPKe
-        s3kYwBI2w4ZRgaXnU6KOHUMVmTVg09M=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     Vasily Averin <vvs@openvz.org>
-Cc:     Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Shakeel Butt <shakeelb@google.com>, kernel@openvz.org,
-        Florian Westphal <fw@strlen.de>, linux-kernel@vger.kernel.org,
-        Michal Hocko <mhocko@suse.com>, cgroups@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Tejun Heo <tj@kernel.org>
-Subject: Re: kernfs memcg accounting
-Message-ID: <YnsoMEuWjlpDcmt3@carbon>
-References: <7e867cb0-89d6-402c-33d2-9b9ba0ba1523@openvz.org>
- <20220427140153.GC9823@blackbody.suse.cz>
- <7509fa9f-9d15-2f29-cb2f-ac0e8d99a948@openvz.org>
- <YnBLge4ZQNbbxufc@blackbook>
- <52a9f35b-458b-44c4-7fc8-d05c8db0c73f@openvz.org>
+        Tue, 10 May 2022 23:11:27 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8398B45533
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 20:11:26 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id p12so872592pfn.0
+        for <linux-kernel@vger.kernel.org>; Tue, 10 May 2022 20:11:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=/x6uo1YySXVMLYO/GR/TQls5y6E3sKPi/YP3GhypGFk=;
+        b=Ss4NkiyqC3bq8cAuffyQ0iwYDABhyU2Bmtws0Zju/x5ERdtwcC7kR2Yu87c3VuIEMK
+         Us/T8zJF69f8JhtbzOnWhlkgyDPbnKmb7cAjhTh8x9mOSCQCo54/SoKNIjhP2UWbxKrd
+         OhmjNkM2VQLEoTQxnIH6fIGpsOO/mb887TqU5x4JfO7BkiARzqNWh1dLHMbbjn2AKs2i
+         Yr1nBfWNwwyz0TNZQJlo4nM/SVRIV7C28eZg2asClU6v9zEecf+z/IhjBSBT9IPtjGAC
+         dhEorDpsEc5Q3azs/y6HXiDKqBKwlMiQt7uffoM/b2w3dfq8fDgAgY+sHRq3mFbFG2bx
+         DLSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=/x6uo1YySXVMLYO/GR/TQls5y6E3sKPi/YP3GhypGFk=;
+        b=KRs3Auq+lP3PTavUlfHVLCsTQ2+6VlEy6URohrP8ESheMdCdQWu86/Ona6p80dkWW5
+         OdxVzCP5dxWemespJ9JebE8d7JSI0KFrVpYG4PDyZpnLNq8i4HfXh7IwH2baBdzxN4NF
+         Cp3+7Dirrj6JO6L9NzeOdepEeVWwepPEDV7Yt+IXV5dJoRYgh6Dp13YIIS+gLXsINdGX
+         hVqnSlp8SsE7arKsN9xs9Qe+kpM6NQj7/2SagJ7P7arBf1Y/NSMBCS5hxkNmMuUzzFgx
+         KnH+6fJITPoA/PCHkRzYn2r2zF0JiP5OHraA7WO8gW4rWctJfIvlGg/LpyVODpBpEX7u
+         Brjg==
+X-Gm-Message-State: AOAM531OH+vUqTY9pMaYTfDBX0ClrTdJ2SAnWsGMMVuZq//QaXAtry7B
+        8b6rQQL7oUVfctm0WHlz9AQr5g==
+X-Google-Smtp-Source: ABdhPJxnKGmk6n2YenuG5EAv9qkr4u4nbDHBXiTYS9Yf0cFdI8i1GC36oqUHBwKgp7qcqEn/BpQGzw==
+X-Received: by 2002:a62:6dc3:0:b0:505:895a:d38b with SMTP id i186-20020a626dc3000000b00505895ad38bmr23391446pfc.7.1652238686017;
+        Tue, 10 May 2022 20:11:26 -0700 (PDT)
+Received: from localhost ([122.162.234.2])
+        by smtp.gmail.com with ESMTPSA id 25-20020a17090a191900b001cd4989ff42sm438581pjg.9.2022.05.10.20.11.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 20:11:25 -0700 (PDT)
+Date:   Wed, 11 May 2022 08:41:22 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>
+Cc:     Jiabing Wan <wanjiabing@vivo.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Jia-Wei Chang <jia-wei.chang@mediatek.com>,
+        "Andrew-sh.Cheng" <andrew-sh.cheng@mediatek.com>,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH v2] cpufreq: mediatek: Fix potential deadlock problem in
+ mtk_cpufreq_set_target
+Message-ID: <20220511031122.kkotwq7co2vx5zqp@vireshk-i7>
+References: <20220510090531.12438-1-wanjiabing@vivo.com>
+ <20220510091212.olrvvjlx4jtm7zw2@vireshk-i7>
+ <49566544-e8f2-ef38-288e-fcd276d87d3b@vivo.com>
+ <20220510092822.j3z6bydurg7x5bu4@vireshk-i7>
+ <0181c505dd94c599b270f159ca93442a4afe1760.camel@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <52a9f35b-458b-44c4-7fc8-d05c8db0c73f@openvz.org>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+In-Reply-To: <0181c505dd94c599b270f159ca93442a4afe1760.camel@mediatek.com>
+User-Agent: NeoMutt/20180716-391-311a52
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 04, 2022 at 12:00:18PM +0300, Vasily Averin wrote:
-> On 5/3/22 00:22, Michal Koutný wrote:
-> > When struct mem_cgroup charging was introduced, there was a similar
-> > discussion [1].
+On 10-05-22, 19:23, Rex-BC Chen wrote:
+> I am not sure what's the problem.
+> But I subscribed the linux-arm-kernel mailing list and linux-mediatek.
 > 
-> Thank you, I'm missed this patch, it was very interesting and useful.
-> I would note though, that OpenVZ and LXC have another usecase:
-> we have separate and independent systemd instances inside OS containers.
-> So container's cgroups are created not in host's root memcg but 
-> inside accountable container's root memcg.  
-> 
-> > I can see following aspects here:
-> > 1) absolute size of kernfs_objects,
-> > 2) practical difference between a) and b),
-> > 3) consistency with memcg,
-> > 4) v1 vs v2 behavior.
-> ...
-> > How do these reasonings align with your original intention of net
-> > devices accounting? (Are the creators of net devices inside the
-> > container?)
-> 
-> It is possible to create netdevice in one namespace/container 
-> and then move them to another one, and this possibility is widely used.
-> With my patch memory allocated by these devices will be not accounted
-> to new memcg, however I do not think it is a problem.
-> My patches protect the host mostly from misuse, when someone creates
-> a huge number of nedevices inside a container.
-> 
-> >> Do you think it is incorrect and new kernfs node should be accounted
-> >> to memcg of parent cgroup, as mem_cgroup_css_alloc()-> mem_cgroup_alloc() does?
-> > 
-> > I don't think either variant is incorrect. I'd very much prefer the
-> > consistency with memcg behavior (variant a)) but as I've listed the
-> > arguments above, it seems such a consistency can't be easily justified.
-> 
-> From my point of view it is most important to account allocated memory
-> to any cgroup inside container. Select of proper memcg is a secondary goal here.
-> Frankly speaking I do not see a big difference between memcg of current process,
-> memcg of newly created child and memcg of its parent.
-> 
-> As far as I understand, Roman chose the parent memcg because it was a special
-> case of creating a new memory group. He temporally changed active memcg
-> in mem_cgroup_css_alloc() and properly accounted all required memcg-specific
-> allocations.
+> As for LKML, do you mean subscribe "List: linux-kernel;" in [1]?
 
-My primary goal was to apply the memory pressure on memory cgroups with a lot
-of (dying) children cgroups. On a multi-cpu machine a memory cgroup structure
-is way larger than a page, so a cgroup which looks small can be really large
-if we calculate the amount of memory taken by all children memcg internals.
+Yes, this is one of the most useful email lists and mostly gets cc'd anyway, you
+can disable mail delivery if you don't want to get emails.
 
-Applying this pressure to another cgroup (e.g. the one which contains systemd)
-doesn't help to reclaim any pages which are pinning the dying cgroups.
+I asked because I couldn't find your email in https://lore.kernel.org/lkml, but
+its fine either way.
 
-For other controllers (maybe blkcg aside, idk) it shouldn't matter, because
-there is no such problem there.
-
-For consistency reasons I'd suggest to charge all *large* allocations
-(e.g. percpu) to the parent cgroup. Small allocations can be ignored.
-
-Thanks!
+-- 
+viresh
