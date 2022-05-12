@@ -2,123 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33816C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 12:50:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A80BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 12:50:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353960AbiELMuI (ORCPT
+        id S1353964AbiELMuM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 08:50:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38774 "EHLO
+        Thu, 12 May 2022 08:50:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353976AbiELMta (ORCPT
+        with ESMTP id S1353969AbiELMta (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 12 May 2022 08:49:30 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC49E24E000
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 05:49:21 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id g23so6037184edy.13
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 05:49:21 -0700 (PDT)
+Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D098C24D5BA;
+        Thu, 12 May 2022 05:49:20 -0700 (PDT)
+Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2fb9a85a124so51744587b3.13;
+        Thu, 12 May 2022 05:49:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sartura-hr.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Ko9Su/75NK6EGUguCwaBtbcpvuAyD9W5527i5Vs8bj8=;
-        b=DPtfHdCxQyPjMWiV48UAakFbrVlTVijW71FcHtaln2ZL8t17ZxoszZivDMJ6hnlh9K
-         gpUJC4Eq7pk4YQ244e8UVwwmJxhauhxSooZu84WsiPGPYM040zTYwuACi4rJDoCYKRK8
-         mrvbXTmCqfu9MA794MdXLFZfmMRbdZ4y22nRqnPtdrsZ+7jLiSf5/hOJFTSZghblZ7N+
-         MghE37FekuBDKBWuCd3L0vf2NiGHwH/6YZoj5T1NqihWuMZn0VchJ8xuVZJ3WVNRj98Z
-         gkhTxC9feCyi0b3ZslJELMh7SUmDkVsr1x4IGtN6ze080zOhtG0w0XBAT1p9A9PxvL1g
-         h0pQ==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7DrF5cwoQrpy+nOj+sSKtS5rKw6qKbXX4wWCz3z6jZ8=;
+        b=XEEm8XV4zWeN1/m4PMvtMtMAdviw5CxhEOzn1ytnh1IM04riYkcoUjE0kvHzeKNeEs
+         8Xt+pL1APjslWuydnUY4U00cJgH1WEdhUZriBcwvhgSE+q5IoOq/rfDHoHcaRu8OwsDW
+         nmYBTUhIALP0AvZwAfxxqQj7k6aociLx4m2wxBUe7TV7Dn7B4zmpMLgCszXTonyqU0S+
+         1EQG5fBNblIoO1soU34JR8jDfLLXUfYyIPWhk6/L6ASUTGRMfoBXGOkIBDB1aNjKLnmc
+         XXkDSv3xyjji4R3NkmYZhxQYJ89OVA/ey9SaXgWiPIz94pbBTtqgaqq7xneJPPbsabNs
+         eICw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Ko9Su/75NK6EGUguCwaBtbcpvuAyD9W5527i5Vs8bj8=;
-        b=0PNMBV2rrJ9bi4bAPVZKdWXNwoSk4FNBN9FyWicyBVcesPVgB5FFBGe/BD5UnyBc6Q
-         JO5ReFYm9pRNO9ATks9j3ucSn47BzwI2qjvcpU5h8YF7fGZM+4a2Zhn2kNxqpDspY45g
-         kRsnWWpR6n03Lsr78q8g64kOuXFX/oYEs66gq9SEhIU5+HI4m36nSyX11Ie1aegtLPZX
-         +eCMw8v4EWfv1c3Um8VQ9/Yf+y/Y0ZivM2KLe+a28A8Chiy6QCFx+hztysN32bctN4Tq
-         Qna1XldXeWXOHxq71x23isd5jxzsiUKudtOCeF0WR1UW1w5CRjcWK2Idnuu4+9Saacv1
-         XhuQ==
-X-Gm-Message-State: AOAM530mEvEd10Qt95huWAR/4Z+mxuiwy6ig+dzVpJBkyFZcM7iHyRjv
-        eCAlWAxlWsP58OB2YMa5SjOtCA==
-X-Google-Smtp-Source: ABdhPJxvLFLd/qQ+0VVcM620/Hgm80BrqP2iC39LQgdeotHa7tWzpbNQ2Cwd0iajqVENtmpmdAgFqQ==
-X-Received: by 2002:a50:ab57:0:b0:428:9f9b:d8e3 with SMTP id t23-20020a50ab57000000b004289f9bd8e3mr21884275edc.305.1652359760305;
-        Thu, 12 May 2022 05:49:20 -0700 (PDT)
-Received: from fedora.robimarko.hr (dh207-98-58.xnet.hr. [88.207.98.58])
-        by smtp.googlemail.com with ESMTPSA id h3-20020a170906828300b006f3ef214dc2sm2109475ejx.40.2022.05.12.05.49.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 05:49:19 -0700 (PDT)
-From:   Robert Marko <robert.marko@sartura.hr>
-To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        andrew@lunn.ch, gregory.clement@bootlin.com,
-        sebastian.hesselbarth@gmail.com, kostap@marvell.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Robert Marko <robert.marko@sartura.hr>
-Subject: [PATCH v3 06/11] arm64: dts: marvell: uDPU: align LED-s with bindings
-Date:   Thu, 12 May 2022 14:49:00 +0200
-Message-Id: <20220512124905.49979-6-robert.marko@sartura.hr>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220512124905.49979-1-robert.marko@sartura.hr>
-References: <20220512124905.49979-1-robert.marko@sartura.hr>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7DrF5cwoQrpy+nOj+sSKtS5rKw6qKbXX4wWCz3z6jZ8=;
+        b=ClQqZ20X47PDhjW9klsIJKEiM5NCxv9wz14mXy8wfXctZoETCEeIxrwmfl7Ovw0uNv
+         L2PxcXpJNYzDKai4HcLTTETc9CSBFQ2Pi+lSB0YniJkXuSbTwwRKacgeDZGYy/Fw0540
+         luEn68GwZBGbgi7QR8iXyC3+Ha/CB984yLeLhLNR/LgqbPMIqmtVeYXAjV96AlkjI4WQ
+         MgQJzGc4/iEF3ByUpQBfzX4c7dDHw51HLhswGcH8Msi8D0z/XBvAqR56/Y7xFYcwf71+
+         CfqqpVuv5GVGZVU5bZ+v9XLr5gGjqahd+JqZnUZ94JDgrlIW6YnKz1WsETVNsHxMDkeT
+         d+LA==
+X-Gm-Message-State: AOAM531e6haQlZRK5njDE1oofzQv3MSstoqAx+ij/SCbobLWC8Z25dPf
+        bpS1iyPmlRm+MVbe3V5bsSgO1sDMVsUP4tXeGlQ=
+X-Google-Smtp-Source: ABdhPJzSgMI5UURmQJlSkLt97lQZJ7s/A3CPFHlQP8eFxEnwrx5uT1fvSWZ4F2cWet2S4Rs+ffet0qTWPLH7sFVHGT0=
+X-Received: by 2002:a0d:d491:0:b0:2ef:5485:fca with SMTP id
+ w139-20020a0dd491000000b002ef54850fcamr30261598ywd.16.1652359759761; Thu, 12
+ May 2022 05:49:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220511183210.5248-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220511183210.5248-4-prabhakar.mahadev-lad.rj@bp.renesas.com> <87y1z75770.wl-maz@kernel.org>
+In-Reply-To: <87y1z75770.wl-maz@kernel.org>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Thu, 12 May 2022 13:48:53 +0100
+Message-ID: <CA+V-a8tf1RmT-cX5y807rTAPES2NXLJHp=u1WUG11fLrtt-5Mg@mail.gmail.com>
+Subject: Re: [PATCH v3 3/5] gpio: gpiolib: Allow free() callback to be overridden
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-According to bindings they LED-s should be prefixed with "led" in this
-use case, so fix accordingly.
+Hi Marc,
 
-Signed-off-by: Robert Marko <robert.marko@sartura.hr>
----
- arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+Thank you for the review.
 
-diff --git a/arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts b/arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts
-index 4ae1688e6627..f216777acacc 100644
---- a/arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts
-+++ b/arch/arm64/boot/dts/marvell/armada-3720-uDPU.dts
-@@ -31,32 +31,32 @@ leds {
- 		pinctrl-names = "default";
- 		compatible = "gpio-leds";
- 
--		power1 {
-+		led-power1 {
- 			label = "udpu:green:power";
- 			gpios = <&gpionb 11 GPIO_ACTIVE_LOW>;
- 		};
- 
--		power2 {
-+		led-power2 {
- 			label = "udpu:red:power";
- 			gpios = <&gpionb 12 GPIO_ACTIVE_LOW>;
- 		};
- 
--		network1 {
-+		led-network1 {
- 			label = "udpu:green:network";
- 			gpios = <&gpionb 13 GPIO_ACTIVE_LOW>;
- 		};
- 
--		network2 {
-+		led-network2 {
- 			label = "udpu:red:network";
- 			gpios = <&gpionb 14 GPIO_ACTIVE_LOW>;
- 		};
- 
--		alarm1 {
-+		led-alarm1 {
- 			label = "udpu:green:alarm";
- 			gpios = <&gpionb 15 GPIO_ACTIVE_LOW>;
- 		};
- 
--		alarm2 {
-+		led-alarm2 {
- 			label = "udpu:red:alarm";
- 			gpios = <&gpionb 16 GPIO_ACTIVE_LOW>;
- 		};
--- 
-2.36.1
+On Thu, May 12, 2022 at 12:19 PM Marc Zyngier <maz@kernel.org> wrote:
+>
+> On Wed, 11 May 2022 19:32:08 +0100,
+> Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> >
+> > Allow free() callback to be overridden from irq_domain_ops for
+> > hierarchical chips.
+> >
+> > This allows drivers to free any resources which are allocated during
+> > populate_parent_alloc_arg().
+>
+> Do you mean more than the fwspec? I don't see this being used.
+>
+The free callback is used in patch 5/5 where free is overridden by
+rzg2l_gpio_irq_domain_free. I just gave an example there as an
+populate_parent_alloc_arg()  In actual in the child_to_parent_hwirq
+callback I am using a bitmap [0] to get a free tint slot, this bitmap
+needs freeing up when the GPIO interrupt is released from the driver
+that as when overridden free callback frees the allocated tint slot so
+that its available for re-use.
 
+> There is also the question of why we need to have dynamic allocation
+> for the fwspec itself. Why isn't that a simple stack allocation in the
+> context of gpiochip_hierarchy_irq_domain_alloc()?
+>
+you mean gpio core itself should handle the fwspec allocation/freeing?
+
+[0] https://patchwork.kernel.org/project/linux-renesas-soc/patch/20220511183210.5248-6-prabhakar.mahadev-lad.rj@bp.renesas.com/
+
+Cheers,
+Prabhakar
+
+>         M.
+>
+> >
+> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> > ---
+> >  drivers/gpio/gpiolib.c | 9 ++++++---
+> >  1 file changed, 6 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
+> > index b7694171655c..d36c4a965efc 100644
+> > --- a/drivers/gpio/gpiolib.c
+> > +++ b/drivers/gpio/gpiolib.c
+> > @@ -1187,15 +1187,18 @@ static void gpiochip_hierarchy_setup_domain_ops(struct irq_domain_ops *ops)
+> >       ops->activate = gpiochip_irq_domain_activate;
+> >       ops->deactivate = gpiochip_irq_domain_deactivate;
+> >       ops->alloc = gpiochip_hierarchy_irq_domain_alloc;
+> > -     ops->free = irq_domain_free_irqs_common;
+> >
+> >       /*
+> > -      * We only allow overriding the translate() function for
+> > +      * We only allow overriding the translate() and free() functions for
+> >        * hierarchical chips, and this should only be done if the user
+> > -      * really need something other than 1:1 translation.
+> > +      * really need something other than 1:1 translation for translate()
+> > +      * callback and free if user wants to free up any resources which
+> > +      * were allocated during callbacks, for example populate_parent_alloc_arg.
+> >        */
+> >       if (!ops->translate)
+> >               ops->translate = gpiochip_hierarchy_irq_domain_translate;
+> > +     if (!ops->free)
+> > +             ops->free = irq_domain_free_irqs_common;
+> >  }
+> >
+> >  static int gpiochip_hierarchy_add_domain(struct gpio_chip *gc)
+> > --
+> > 2.25.1
+> >
+> >
+>
+> --
+> Without deviation from the norm, progress is not possible.
