@@ -2,218 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70314C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 03:52:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CC12C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 03:57:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345209AbiELDwg (ORCPT
+        id S1345287AbiELD53 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 23:52:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54146 "EHLO
+        Wed, 11 May 2022 23:57:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345010AbiELDwa (ORCPT
+        with ESMTP id S1345010AbiELD5Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 23:52:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9992436153
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 20:52:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652327548;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=2SKwInTDfwSjGYjczGeCpjDqlYEJ6dRe4uToWw6mvPw=;
-        b=UDF1KfRNeGvrYoOD8wv7fmMcDRc1EtnO6AyKfqYixDbTy4CRYqBiXJd3BdKFiGOOm6VCqo
-        +Mq23A+YkJAqaWJe+acduxGQVCepZHdszMZIKv1XDjg6bQrjPnWftzIrcZ0iyZW7Ui/rhF
-        C2QNcwBT1B1+miFpow9/bLsbatV7xrA=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-644-ZhHGqITBNHqD11DJywYAPA-1; Wed, 11 May 2022 23:52:23 -0400
-X-MC-Unique: ZhHGqITBNHqD11DJywYAPA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Wed, 11 May 2022 23:57:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A6822B26
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 20:57:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id F2F173C01D99;
-        Thu, 12 May 2022 03:52:22 +0000 (UTC)
-Received: from localhost (ovpn-13-226.pek2.redhat.com [10.72.13.226])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id AE0491121314;
-        Thu, 12 May 2022 03:52:12 +0000 (UTC)
-Date:   Thu, 12 May 2022 11:52:09 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Coiby Xu <coxu@redhat.com>
-Cc:     kexec@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
-        Michal Suchanek <msuchanek@suse.de>,
-        Dave Young <dyoung@redhat.com>, Will Deacon <will@kernel.org>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Mimi Zohar <zohar@linux.ibm.com>, Chun-Yi Lee <jlee@suse.com>,
-        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v7 2/4] kexec, KEYS: make the code in
- bzImage64_verify_sig generic
-Message-ID: <YnyEafqEcSh/wRRN@MiWiFi-R3L-srv>
-References: <20220512023402.9913-1-coxu@redhat.com>
- <20220512023402.9913-3-coxu@redhat.com>
- <Ynx1DUvDTL1R4Pj5@MiWiFi-R3L-srv>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ABB8360F47
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 03:57:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBCBFC385B8;
+        Thu, 12 May 2022 03:57:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652327842;
+        bh=53MI5L2TTsXVrR0+maeQDB6x59/snOKRo6bSDL9T59o=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=elZql7crJ753Qa6Q6fe8U2r0/+q0xdzvdkEGMgmS8yzt0Mf1Xn3FDsdZ7k3CuHXoo
+         B09ww8MkDgFtXmnjAHxwUtw9LFqtL670fcLx+eI+PFKmg8Y/8fDUBTj8LAKL9lReAU
+         vq7PO4mH3R3DtXwzjYVRjI4y3GLSXC6UGBXPttn3ttl4XhF49jaz8sq+uH1u2KK0Wa
+         aSNN3rcVSE5cDvgXE5M7on4nTk8X7OlCFDKpmGu6PX6MTReOpC90ZhjfveqWvi+OT6
+         wy+zCBUTFvErK+dFxMez9HVDEYJ/6+CLjH7u/NbuQQyxGG7EJFmZpTnVynVfll0A6a
+         Z/jvEkTiKMu8w==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 5FF835C05FC; Wed, 11 May 2022 20:57:22 -0700 (PDT)
+Date:   Wed, 11 May 2022 20:57:22 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Minchan Kim <minchan@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-mm <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        John Dias <joaodias@google.com>,
+        David Hildenbrand <david@redhat.com>
+Subject: Re: [PATCH v4] mm: fix is_pinnable_page against on cma page
+Message-ID: <20220512035722.GL1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220511234534.GG1790663@paulmck-ThinkPad-P17-Gen-1>
+ <ea64b36c-ecc1-74db-dd2e-909e7e507ef8@nvidia.com>
+ <0d90390c-3624-4f93-f8bd-fb29e92237d3@nvidia.com>
+ <20220512002207.GJ1790663@paulmck-ThinkPad-P17-Gen-1>
+ <YnxUTxnCJ6EsmjEi@google.com>
+ <f7ff4186-e629-a5da-3f4d-ec629b0c8dd9@nvidia.com>
+ <20220512004949.GK1790663@paulmck-ThinkPad-P17-Gen-1>
+ <YnxczoehQJ+x6m9Y@google.com>
+ <0accce46-fac6-cdfb-db7f-d08396bf9d35@nvidia.com>
+ <aafc0954-80df-dceb-03f2-2caea29cbbda@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Ynx1DUvDTL1R4Pj5@MiWiFi-R3L-srv>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+In-Reply-To: <aafc0954-80df-dceb-03f2-2caea29cbbda@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/12/22 at 10:46am, Baoquan He wrote:
-> On 05/12/22 at 10:34am, Coiby Xu wrote:
-> > commit 278311e417be ("kexec, KEYS: Make use of platform keyring for
-> > signature verify") adds platform keyring support on x86 kexec but not
-> > arm64.
+On Wed, May 11, 2022 at 07:18:56PM -0700, John Hubbard wrote:
+> On 5/11/22 18:08, John Hubbard wrote:
+> > On 5/11/22 18:03, Minchan Kim wrote:
+> > > > 
+> > > > Or there might be some code path that really hates a READ_ONCE() in
+> > > > that place.
+> > > 
+> > > My worry about chaning __get_pfnblock_flags_mask is it's called
+> > > multiple hot places in mm codes so I didn't want to add overhead
+> > > to them.
 > > 
-> > The code in bzImage64_verify_sig makes use of system keyrings including
-> > .buitin_trusted_keys, .secondary_trusted_keys and .platform keyring to
-> > verify signed kernel image as PE file. Make it generic so both x86_64
-> > and arm64 can use it.
-> > 
-> > Note this patch is needed by a later patch so Cc it to the stable tree
-> > as well.
-> 
-> This note should not be added in log.
-> 
-> > 
-> > Cc: kexec@lists.infradead.org
-> > Cc: keyrings@vger.kernel.org
-> > Cc: linux-security-module@vger.kernel.org
-> > Cc: stable@vger.kernel.org # 34d5960af253: kexec: clean up arch_kexec_kernel_verify_sig
-
-Hold on, should we CC stable when it's not fixing an issue?
-
-Hi Coiby,
-
-Just to make clear , is this patch fixing an issue, or it's just an
-preparation for later patch's use?
-
-Or I should ask in another way, any problem is solved with this patch?
-
-
-> > Reviewed-by: Michal Suchanek <msuchanek@suse.de>
-> > Signed-off-by: Coiby Xu <coxu@redhat.com>
-> > ---
-> 
-> You can put the note here, it won't be added to commit log when merged.
-> Maybe it can be removed when merged.
-> 
-> Otherwise, LGTM
-> 
-> Acked-by: Baoquan He <bhe@redhat.com>
-> 
-> >  arch/x86/kernel/kexec-bzimage64.c | 20 +-------------------
-> >  include/linux/kexec.h             |  7 +++++++
-> >  kernel/kexec_file.c               | 17 +++++++++++++++++
-> >  3 files changed, 25 insertions(+), 19 deletions(-)
-> > 
-> > diff --git a/arch/x86/kernel/kexec-bzimage64.c b/arch/x86/kernel/kexec-bzimage64.c
-> > index 170d0fd68b1f..f299b48f9c9f 100644
-> > --- a/arch/x86/kernel/kexec-bzimage64.c
-> > +++ b/arch/x86/kernel/kexec-bzimage64.c
-> > @@ -17,7 +17,6 @@
-> >  #include <linux/kernel.h>
-> >  #include <linux/mm.h>
-> >  #include <linux/efi.h>
-> > -#include <linux/verification.h>
-> >  
-> >  #include <asm/bootparam.h>
-> >  #include <asm/setup.h>
-> > @@ -528,28 +527,11 @@ static int bzImage64_cleanup(void *loader_data)
-> >  	return 0;
-> >  }
-> >  
-> > -#ifdef CONFIG_KEXEC_BZIMAGE_VERIFY_SIG
-> > -static int bzImage64_verify_sig(const char *kernel, unsigned long kernel_len)
-> > -{
-> > -	int ret;
-> > -
-> > -	ret = verify_pefile_signature(kernel, kernel_len,
-> > -				      VERIFY_USE_SECONDARY_KEYRING,
-> > -				      VERIFYING_KEXEC_PE_SIGNATURE);
-> > -	if (ret == -ENOKEY && IS_ENABLED(CONFIG_INTEGRITY_PLATFORM_KEYRING)) {
-> > -		ret = verify_pefile_signature(kernel, kernel_len,
-> > -					      VERIFY_USE_PLATFORM_KEYRING,
-> > -					      VERIFYING_KEXEC_PE_SIGNATURE);
-> > -	}
-> > -	return ret;
-> > -}
-> > -#endif
-> > -
-> >  const struct kexec_file_ops kexec_bzImage64_ops = {
-> >  	.probe = bzImage64_probe,
-> >  	.load = bzImage64_load,
-> >  	.cleanup = bzImage64_cleanup,
-> >  #ifdef CONFIG_KEXEC_BZIMAGE_VERIFY_SIG
-> > -	.verify_sig = bzImage64_verify_sig,
-> > +	.verify_sig = kexec_kernel_verify_pe_sig,
-> >  #endif
-> >  };
-> > diff --git a/include/linux/kexec.h b/include/linux/kexec.h
-> > index 413235c6c797..da83abfc628b 100644
-> > --- a/include/linux/kexec.h
-> > +++ b/include/linux/kexec.h
-> > @@ -19,6 +19,7 @@
-> >  #include <asm/io.h>
-> >  
-> >  #include <uapi/linux/kexec.h>
-> > +#include <linux/verification.h>
-> >  
-> >  /* Location of a reserved region to hold the crash kernel.
-> >   */
-> > @@ -202,6 +203,12 @@ int arch_kexec_apply_relocations(struct purgatory_info *pi,
-> >  				 const Elf_Shdr *relsec,
-> >  				 const Elf_Shdr *symtab);
-> >  int arch_kimage_file_post_load_cleanup(struct kimage *image);
-> > +#ifdef CONFIG_KEXEC_SIG
-> > +#ifdef CONFIG_SIGNED_PE_FILE_VERIFICATION
-> > +int kexec_kernel_verify_pe_sig(const char *kernel,
-> > +				    unsigned long kernel_len);
-> > +#endif
-> > +#endif
-> >  int arch_kexec_locate_mem_hole(struct kexec_buf *kbuf);
-> >  
-> >  extern int kexec_add_buffer(struct kexec_buf *kbuf);
-> > diff --git a/kernel/kexec_file.c b/kernel/kexec_file.c
-> > index 3720435807eb..754885b96aab 100644
-> > --- a/kernel/kexec_file.c
-> > +++ b/kernel/kexec_file.c
-> > @@ -165,6 +165,23 @@ void kimage_file_post_load_cleanup(struct kimage *image)
-> >  }
-> >  
-> >  #ifdef CONFIG_KEXEC_SIG
-> > +#ifdef CONFIG_SIGNED_PE_FILE_VERIFICATION
-> > +int kexec_kernel_verify_pe_sig(const char *kernel, unsigned long kernel_len)
-> > +{
-> > +	int ret;
-> > +
-> > +	ret = verify_pefile_signature(kernel, kernel_len,
-> > +				      VERIFY_USE_SECONDARY_KEYRING,
-> > +				      VERIFYING_KEXEC_PE_SIGNATURE);
-> > +	if (ret == -ENOKEY && IS_ENABLED(CONFIG_INTEGRITY_PLATFORM_KEYRING)) {
-> > +		ret = verify_pefile_signature(kernel, kernel_len,
-> > +					      VERIFY_USE_PLATFORM_KEYRING,
-> > +					      VERIFYING_KEXEC_PE_SIGNATURE);
-> > +	}
-> > +	return ret;
-> > +}
-> > +#endif
-> > +
-> >  static int kexec_image_verify_sig(struct kimage *image, void *buf,
-> >  		unsigned long buf_len)
-> >  {
-> > -- 
-> > 2.35.3
+> > ...unless it really does generate the same code as is already there,
+> > right? Let me check that real quick.
 > > 
 > 
+> It does change the generated code slightly. I don't know if this will
+> affect performance here or not. But just for completeness, here you go:
+> 
+> free_one_page() originally has this (just showing the changed parts):
+> 
+>     mov    0x8(%rdx,%rax,8),%rbx
+>     and    $0x3f,%ecx
+>     shr    %cl,%rbx
+>     and    $0x7,
+> 
+> 
+> And after applying this diff:
+> 
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index 0e42038382c1..df1f8e9a294f 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -482,7 +482,7 @@ unsigned long __get_pfnblock_flags_mask(const struct
+> page *page,
+>         word_bitidx = bitidx / BITS_PER_LONG;
+>         bitidx &= (BITS_PER_LONG-1);
+> 
+> -       word = bitmap[word_bitidx];
+> +       word = READ_ONCE(bitmap[word_bitidx]);
+>         return (word >> bitidx) & mask;
+>  }
+> 
+> 
+> ...it now does an extra memory dereference:
+> 
+>     lea    0x8(%rdx,%rax,8),%rax
+>     and    $0x3f,%ecx
+>     mov    (%rax),%rbx
+>     shr    %cl,%rbx
+>     and    $0x7,%ebx
 
+That could indeed be a bad thing on a fastpath.
+
+							Thanx, Paul
