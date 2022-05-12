@@ -2,66 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C61DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 16:12:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9626C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 16:12:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356319AbiELQMI (ORCPT
+        id S1356348AbiELQMO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 12:12:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48910 "EHLO
+        Thu, 12 May 2022 12:12:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356318AbiELQLr (ORCPT
+        with ESMTP id S1356291AbiELQLr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 12 May 2022 12:11:47 -0400
 Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CB39366696;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CB4ED666A6;
         Thu, 12 May 2022 09:11:42 -0700 (PDT)
 Received: from uucp (helo=alpha)
         by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1npBPf-0001Vm-04; Thu, 12 May 2022 18:11:39 +0200
+        id 1npBPf-0001Vm-02; Thu, 12 May 2022 18:11:39 +0200
 Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 5C79DC01DC; Thu, 12 May 2022 18:10:54 +0200 (CEST)
-Date:   Thu, 12 May 2022 18:10:54 +0200
+        id 7F290C01DC; Thu, 12 May 2022 18:09:09 +0200 (CEST)
+Date:   Thu, 12 May 2022 18:09:09 +0200
 From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Tiezhu Yang <yangtiezhu@loongson.cn>
-Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>, linux-mips@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 0/2] Modify some code about kprobe
-Message-ID: <20220512161054.GE14475@alpha.franken.de>
-References: <1651834923-31573-1-git-send-email-yangtiezhu@loongson.cn>
+To:     Jason Wang <wangborong@cdjrlc.com>
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] MIPS: tools: no need to initialise statics to 0
+Message-ID: <20220512160909.GC14475@alpha.franken.de>
+References: <20220508023146.100385-1-wangborong@cdjrlc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1651834923-31573-1-git-send-email-yangtiezhu@loongson.cn>
+In-Reply-To: <20220508023146.100385-1-wangborong@cdjrlc.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, May 06, 2022 at 07:02:01PM +0800, Tiezhu Yang wrote:
-> v3: no need to change post_kprobe_handler() in patch #2 now,
->     sorry for the carelessness.
+On Sun, May 08, 2022 at 10:31:46AM +0800, Jason Wang wrote:
+> Static variables do not need to be initialised to 0, because compiler
+> will initialise all uninitialised statics to 0. Thus, remove the
+> unneeded initializations.
 > 
-> v2:
->   -- only replace __kprobes with NOKPROBE_SYMBOL() in patch #2
->   -- update the commit messages
+> Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+> ---
+>  arch/mips/boot/tools/relocs.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> Tiezhu Yang (2):
->   selftests/ftrace: Save kprobe_events to test log
->   MIPS: Use NOKPROBE_SYMBOL() instead of __kprobes annotation
-> 
->  arch/mips/kernel/kprobes.c                         | 36 ++++++++++++++--------
->  arch/mips/mm/fault.c                               |  6 ++--
->  .../ftrace/test.d/kprobe/multiple_kprobes.tc       |  2 ++
->  3 files changed, 30 insertions(+), 14 deletions(-)
-> 
+> diff --git a/arch/mips/boot/tools/relocs.c b/arch/mips/boot/tools/relocs.c
+> index 1bf53f3524b3..02fc85f3e8ff 100644
+> --- a/arch/mips/boot/tools/relocs.c
+> +++ b/arch/mips/boot/tools/relocs.c
+> @@ -351,7 +351,7 @@ static void read_symtabs(FILE *fp)
+>  
+>  static void read_relocs(FILE *fp)
+>  {
+> -	static unsigned long base = 0;
+> +	static unsigned long base;
+>  	int i, j;
+>  
+>  	if (!base) {
 > -- 
-> 2.1.0
+> 2.35.1
 
-seires applied to mips-next.
+applied to mips-next.
 
 Thomas.
 
