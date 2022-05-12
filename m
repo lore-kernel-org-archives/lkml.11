@@ -2,124 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D71A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 16:20:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75426C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 16:21:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356421AbiELQUx (ORCPT
+        id S1356412AbiELQVj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 12:20:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50838 "EHLO
+        Thu, 12 May 2022 12:21:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356402AbiELQUn (ORCPT
+        with ESMTP id S1356510AbiELQVc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 12:20:43 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D47F4E3BC;
-        Thu, 12 May 2022 09:20:39 -0700 (PDT)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24CGGJ1T011323;
-        Thu, 12 May 2022 16:20:26 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=qlOWqXyfi0rR8T2Ty+QTIJ3Y8i5IUOUaQI1MNmkuf5Y=;
- b=ajCSLZXNoiOzc0MuSoezQqR5LBPSXbM8zcaqPKqq5uZcP2uqXhmRrCt6ZF2cg0XkZWJw
- jgiQYtIwSuD08vmUnUMcW0mwRCPHlyrKsXV3miH8PWvHyYx4XBt9FACXKs6kTp0QYHBr
- Wm6XrnTBVt6oB4tpmTQdoZMC+Q9lP0P9dpb63qS97zny50fwnkFyoDjsKE4caVRh2z5Q
- ZWvUhlJxZEdNgKzFLJP8lbR9NLZHDe9kVnNcSEi+d2H79gbMEEGxyr6WO/wTN9f1SqzJ
- Ba3zl3/GNjt5650uFoyH775l14tTbAx6nFMsO2Eb1IdxLUGR3c70Qu4UcVEntnDK+0Iu JA== 
-Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g15m102qw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 May 2022 16:20:26 +0000
-Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
-        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24CGHGoO008370;
-        Thu, 12 May 2022 16:20:25 GMT
-Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
-        by ppma03wdc.us.ibm.com with ESMTP id 3fwgd9vgwq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 May 2022 16:20:25 +0000
-Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
-        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24CGKOiI7930398
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 12 May 2022 16:20:24 GMT
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3ECFF112064;
-        Thu, 12 May 2022 16:20:24 +0000 (GMT)
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 59CB6112061;
-        Thu, 12 May 2022 16:20:23 +0000 (GMT)
-Received: from v0005c16.aus.stglabs.ibm.com (unknown [9.211.56.168])
-        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
-        Thu, 12 May 2022 16:20:23 +0000 (GMT)
-From:   Eddie James <eajames@linux.ibm.com>
-To:     linux-iio@vger.kernel.org
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
-        lars@metafoo.de, jic23@kernel.org, miltonm@us.ibm.com,
-        eajames@linux.ibm.com
-Subject: [PATCH v2 2/2] iio: humidity: si7020: Check device property for skipping reset in probe
-Date:   Thu, 12 May 2022 11:20:20 -0500
-Message-Id: <20220512162020.33450-3-eajames@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220512162020.33450-1-eajames@linux.ibm.com>
-References: <20220512162020.33450-1-eajames@linux.ibm.com>
+        Thu, 12 May 2022 12:21:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77C9251331;
+        Thu, 12 May 2022 09:21:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9862B61F9C;
+        Thu, 12 May 2022 16:21:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73140C385B8;
+        Thu, 12 May 2022 16:21:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652372489;
+        bh=NDeYtJoOTyZCZ7rH4NHOQS1V70YxoweEBSxhUWIM/zE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=GEZzmykw70nosMdq2UT7qg8LKHXmRTyvKi2MNKMtZZ2CwyO6035MToY/A+CtoWVMY
+         oeSXpYZuUcqissIoGJ61njBawHIw+QDkKvnMrIZZylSUEPuDQKvY08371yKuyZbajk
+         RIXLkYKVZRAfckK8MXp2I3O8tCFEYOIRx+Ti6yrs=
+Date:   Thu, 12 May 2022 18:21:26 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Maximilian Heyne <mheyne@amazon.de>
+Cc:     stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>,
+        Sean Christopherson <sean.j.christopherson@intel.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        xen-devel@lists.xenproject.org, kvm@vger.kernel.org
+Subject: Re: [PATCH 0/4] x86: decode Xen/KVM emulate prefixes
+Message-ID: <Yn00BsSx060gS94o@kroah.com>
+References: <20220512135654.119791-1-mheyne@amazon.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: Sy1-cqgIabPnJkxxmFtJ1oADa_P0uQ2o
-X-Proofpoint-ORIG-GUID: Sy1-cqgIabPnJkxxmFtJ1oADa_P0uQ2o
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-12_13,2022-05-12_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 adultscore=0
- spamscore=0 clxscore=1015 mlxscore=0 phishscore=0 mlxlogscore=999
- lowpriorityscore=0 priorityscore=1501 bulkscore=0 suspectscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205120076
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220512135654.119791-1-mheyne@amazon.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I2C commands issued after the SI7020 is starting up or after reset
-can potentially upset the startup sequence. Therefore, the host
-needs to wait for the startup sequence to finish before issuing
-further i2c commands. This is impractical in cases where the SI7020
-is on a shared bus or behind a mux, which may switch channels at
-any time (generating I2C traffic). Therefore, check for a device
-property that indicates that the driver should skip resetting the
-device when probing.
+On Thu, May 12, 2022 at 01:56:47PM +0000, Maximilian Heyne wrote:
+> This is a backport of a patch series for 5.4.x.
+> 
+> The patch series allows the x86 decoder to decode the Xen and KVM emulate
+> prefixes.
+> 
+> In particular this solves the following issue that appeared when commit
+> db6c6a0df840 ("objtool: Fix noreturn detection for ignored functions") was
+> backported to 5.4.69:
+> 
+>   arch/x86/xen/enlighten_pv.o: warning: objtool: xen_cpuid()+0x25: can't find jump dest instruction at .text+0x9c
+> 
+> Also now that this decoding is possible, also backport the commit which prevents
+> kprobes on probing such prefixed instructions. This was also part of the
+> original series.
+> 
+> The series applied mostly cleanly on 5.4.192 except for a contextual problem in
+> the 3rd patch ("x86: xen: insn: Decode Xen and KVM emulate-prefix signature").
+> 
+> Masami Hiramatsu (4):
+>   x86/asm: Allow to pass macros to __ASM_FORM()
+>   x86: xen: kvm: Gather the definition of emulate prefixes
+>   x86: xen: insn: Decode Xen and KVM emulate-prefix signature
+>   x86: kprobes: Prohibit probing on instruction which has emulate prefix
+> 
+>  arch/x86/include/asm/asm.h                  |  8 +++--
+>  arch/x86/include/asm/emulate_prefix.h       | 14 +++++++++
+>  arch/x86/include/asm/insn.h                 |  6 ++++
+>  arch/x86/include/asm/xen/interface.h        | 11 +++----
+>  arch/x86/kernel/kprobes/core.c              |  4 +++
+>  arch/x86/kvm/x86.c                          |  4 ++-
+>  arch/x86/lib/insn.c                         | 34 +++++++++++++++++++++
+>  tools/arch/x86/include/asm/emulate_prefix.h | 14 +++++++++
+>  tools/arch/x86/include/asm/insn.h           |  6 ++++
+>  tools/arch/x86/lib/insn.c                   | 34 +++++++++++++++++++++
+>  tools/objtool/sync-check.sh                 |  3 +-
+>  tools/perf/check-headers.sh                 |  3 +-
+>  12 files changed, 128 insertions(+), 13 deletions(-)
+>  create mode 100644 arch/x86/include/asm/emulate_prefix.h
+>  create mode 100644 tools/arch/x86/include/asm/emulate_prefix.h
+> 
+> 
+> base-commit: 1d72b776f6dc973211f5d153453cf8955fb3d70a
+> -- 
+> 2.32.0
+> 
+> 
+> 
+> 
+> Amazon Development Center Germany GmbH
+> Krausenstr. 38
+> 10117 Berlin
+> Geschaeftsfuehrung: Christian Schlaeger, Jonathan Weiss
+> Eingetragen am Amtsgericht Charlottenburg unter HRB 149173 B
+> Sitz: Berlin
+> Ust-ID: DE 289 237 879
+> 
+> 
+> 
 
-Signed-off-by: Eddie James <eajames@linux.ibm.com>
----
- drivers/iio/humidity/si7020.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+All now queued up, thanks.
 
-diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
-index ab6537f136ba..49f6a1b1f5c4 100644
---- a/drivers/iio/humidity/si7020.c
-+++ b/drivers/iio/humidity/si7020.c
-@@ -115,12 +115,14 @@ static int si7020_probe(struct i2c_client *client,
- 				     I2C_FUNC_SMBUS_READ_WORD_DATA))
- 		return -EOPNOTSUPP;
- 
--	/* Reset device, loads default settings. */
--	ret = i2c_smbus_write_byte(client, SI7020CMD_RESET);
--	if (ret < 0)
--		return ret;
--	/* Wait the maximum power-up time after software reset. */
--	msleep(15);
-+	if (!device_property_read_bool(&client->dev, "silabs,skip-reset")) {
-+		/* Reset device, loads default settings. */
-+		ret = i2c_smbus_write_byte(client, SI7020CMD_RESET);
-+		if (ret < 0)
-+			return ret;
-+		/* Wait the maximum power-up time after software reset. */
-+		msleep(15);
-+	}
- 
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
- 	if (!indio_dev)
--- 
-2.27.0
-
+greg k-h
