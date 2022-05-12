@@ -2,83 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBDAFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 18:10:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1140C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 18:14:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357499AbiELSKI (ORCPT
+        id S1352415AbiELSOB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 14:10:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43670 "EHLO
+        Thu, 12 May 2022 14:14:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357486AbiELSKD (ORCPT
+        with ESMTP id S241392AbiELSN7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 14:10:03 -0400
-Received: from srv6.fidu.org (srv6.fidu.org [159.69.62.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7148326FA46
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 11:10:00 -0700 (PDT)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by srv6.fidu.org (Postfix) with ESMTP id B7584C800A0;
-        Thu, 12 May 2022 20:09:59 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        tuxedocomputers.com; h=content-transfer-encoding:mime-version
-        :x-mailer:message-id:date:date:subject:subject:from:from; s=
-        default; t=1652378999; x=1654193400; bh=lnzILpdh2K8lGWVaQPF3fcRF
-        vtUVSxBJPnRKUuK178o=; b=V9vBq+2AoWAORWo09hcDuIxXZ2KL8nvT/vS28wQ1
-        gbqzm5HsslAad7b7vFdOySu/UK/LrRBOkWi1EIID+Rk6wsJZ9lZgt77deuD5dOsA
-        jXIKjag/acvjqqnIpagdDJeYR8qURO3+DawvndbSD9L0p10zjac5a2V1xs+g332B
-        hbw=
-X-Virus-Scanned: Debian amavisd-new at srv6.fidu.org
-Received: from srv6.fidu.org ([127.0.0.1])
-        by localhost (srv6.fidu.org [127.0.0.1]) (amavisd-new, port 10026)
-        with LMTP id njhnehTx8C5h; Thu, 12 May 2022 20:09:59 +0200 (CEST)
-Received: from wsembach-tuxedo.fritz.box (host-212-18-30-247.customer.m-online.net [212.18.30.247])
-        (Authenticated sender: wse@tuxedocomputers.com)
-        by srv6.fidu.org (Postfix) with ESMTPA id 1615BC8009E;
-        Thu, 12 May 2022 20:09:59 +0200 (CEST)
-From:   Werner Sembach <wse@tuxedocomputers.com>
-To:     perex@perex.cz, tiwai@suse.com, kai.vehmanen@linux.intel.com,
-        pierre-louis.bossart@linux.intel.com, imre.deak@intel.com,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] ALSA: hda/realtek: Add quirk for TongFang devices with pop noise
-Date:   Thu, 12 May 2022 20:09:56 +0200
-Message-Id: <20220512180956.281804-1-wse@tuxedocomputers.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 12 May 2022 14:13:59 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 343BE20D577
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 11:13:58 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id g28so11239365ybj.10
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 11:13:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cfuve+c5Cwa7UJ0vQNcacC+/40JGpfLbjA8g3t9eIqQ=;
+        b=NZHWcKJjdxGhGeikxnkOyvDffaXBl4vKuicdYIsXaTBG2teHtca2Fd1CjL4dr0p4r/
+         SvpxexJECOuPNbkgeXDSwdkXpodxbGttPU3Kaci3pcsdLf2jEwK61kGImtNXRXYPgqU3
+         WNUD+ic2R0CXvMB+k4ApzwMxZsPVGQ+uaEWtCAsgw40To+8srzWnDv3luZ+MYVEXJiAS
+         VtQrPHcUd0rrtZgelUdW8hafe8DlNNz9fEy1aKh5rJWDNceP9RwH/LBq2pLButUTjICb
+         WupTbkYqQRJdPAfNOjruetejDsm8NzIcHVZcPBy+3V7amKui0xMwNj4JxDG8TqcegZvp
+         Igiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cfuve+c5Cwa7UJ0vQNcacC+/40JGpfLbjA8g3t9eIqQ=;
+        b=ZqBC5KLUaMQ2ObGte7w/w75mADNT51KzPd2IeEF9ZuXpY+nGNyiVltAIudoLq+HzpY
+         DkPzPQdnhfjA29zb3yLi3JRgoBQ+ZclZhaN3gAJpdHnFVR1F/ECUH0ttGVagiHuCozye
+         Q/LLuakCvp4tTw5weuzdO1gLPb+Ez9y01ii7TxFtI6OWT4soTuoOD9MW/1wrzRdXe2Ni
+         H5XSuUYlcUYq06UNCs1Ns4Gveiwt39kdfV7/mGEwwQUnKDdqz+vb2lB8PYJwS+z6a86+
+         bKlunS9Auh2wV+rg/obbKadZEyXCvkFEhRCqWo3713JhbHyA6auPBoUB8d5MQwuVniOJ
+         LoHA==
+X-Gm-Message-State: AOAM53112dpT6WsUVwvIkjYoeetDybPaTL9kLudpq6nNEn+LDAabZ2pf
+        rkxU00GDjK6ucJpNC+LaktDgBiN6G304kM0H76NTVQ==
+X-Google-Smtp-Source: ABdhPJz5a/C03+Ye4a57gqvTMVgbBIihW4avWA5q3KyzdtF9EIDzbqQSeka3lH0aMt0bRVYWn7CcyUoK6mImJaYRlsU=
+X-Received: by 2002:a25:3157:0:b0:649:b216:bb4e with SMTP id
+ x84-20020a253157000000b00649b216bb4emr1062269ybx.387.1652379237164; Thu, 12
+ May 2022 11:13:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <93323bba-476e-f821-045c-9fe942143da9@gmail.com>
+In-Reply-To: <93323bba-476e-f821-045c-9fe942143da9@gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 12 May 2022 11:13:46 -0700
+Message-ID: <CANn89iKjt1wpGk1dqqnYYx3r9UzEc3rwNtvBQ1O2dVToY_7rBQ@mail.gmail.com>
+Subject: Re: BUG: TCP timewait sockets survive across namespace creation in net-next
+To:     Leonard Crestez <cdleonard@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When audio stops playing there is an audible "pop"-noise when using
-headphones on the TongFang GMxMRxx, GKxNRxx, GMxZGxx, GMxTGxx and GMxAGxx.
+On Thu, May 12, 2022 at 11:01 AM Leonard Crestez <cdleonard@gmail.com> wrote:
+>
+> Hello,
+>
+> It appears that in recent net-next versions it is possible for sockets
+> in the timewait state to survive across namespace add/del. Timewait
+> sockets are inserted into a global hash and only the sock_net value is
+> compared when they are enumerated from interfaces like /proc/net/tcp and
+> inet_diag. Old TW sockets are not cleared after namespace delete and
+> namespaces are allocated from a slab and thus their pointers get reused
+> a lot, when that happens timewait sockets from an old namespace will
+> show up in the new one.
+>
+> This can be reproduced by establishing a TCP connection over a veth pair
+> between two namespaces, closing and then recreating those namespaces.
+> Old timewait sockets will be visible and it happens quite reliably,
+> often on the first iteration. I can try to provide a script for this.
+>
+> I can't point to specific bugs outside of tests that explicitly
+> enumerate timewait sockets but letting sk_net be a dangling pointer
+> seems very dangerous. It also violates the idea of network namespaces
+> being independent and isolated.
+>
+> This does not happen in 5.17, I bisected this behavior to commit
+> 0dad4087a86a ("tcp/dccp: get rid of inet_twsk_purge()")
+>
 
-This quirk fixes this mostly.
+Thanks for the report.
 
-Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
-Cc: stable@vger.kernel.org
----
- sound/pci/hda/patch_realtek.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index cf531c1efa132..8003bf7441d6d 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -9290,6 +9290,14 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
- 	SND_PCI_QUIRK(0x1c06, 0x2013, "Lemote A1802", ALC269_FIXUP_LEMOTE_A1802),
- 	SND_PCI_QUIRK(0x1c06, 0x2015, "Lemote A190X", ALC269_FIXUP_LEMOTE_A190X),
- 	SND_PCI_QUIRK(0x1d05, 0x1132, "TongFang PHxTxX1", ALC256_FIXUP_SET_COEF_DEFAULTS),
-+	SND_PCI_QUIRK(0x1d05, 0x1096, "TongFang GMxMRxx", ALC269_FIXUP_NO_SHUTUP),
-+	SND_PCI_QUIRK(0x1d05, 0x1100, "TongFang GKxNRxx", ALC269_FIXUP_NO_SHUTUP),
-+	SND_PCI_QUIRK(0x1d05, 0x1111, "TongFang GMxZGxx", ALC269_FIXUP_NO_SHUTUP),
-+	SND_PCI_QUIRK(0x1d05, 0x1119, "TongFang GMxZGxx", ALC269_FIXUP_NO_SHUTUP),
-+	SND_PCI_QUIRK(0x1d05, 0x1129, "TongFang GMxZGxx", ALC269_FIXUP_NO_SHUTUP),
-+	SND_PCI_QUIRK(0x1d05, 0x1147, "TongFang GMxTGxx", ALC269_FIXUP_NO_SHUTUP),
-+	SND_PCI_QUIRK(0x1d05, 0x115c, "TongFang GMxTGxx", ALC269_FIXUP_NO_SHUTUP),
-+	SND_PCI_QUIRK(0x1d05, 0x121b, "TongFang GMxAGxx", ALC269_FIXUP_NO_SHUTUP),
- 	SND_PCI_QUIRK(0x1d72, 0x1602, "RedmiBook", ALC255_FIXUP_XIAOMI_HEADSET_MIC),
- 	SND_PCI_QUIRK(0x1d72, 0x1701, "XiaomiNotebook Pro", ALC298_FIXUP_DELL1_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1d72, 0x1901, "RedmiBook 14", ALC256_FIXUP_ASUS_HEADSET_MIC),
--- 
-2.25.1
-
+I guess we will need to store the (struct net)->net_cookie to
+disambiguate the case
+where a new 'struct net' is reusing the same storage than an old one.
