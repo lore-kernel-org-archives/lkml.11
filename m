@@ -2,133 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3B27C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 11:12:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1573EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 11:13:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352996AbiELLMt (ORCPT
+        id S1353057AbiELLNK convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 07:12:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46482 "EHLO
+        Thu, 12 May 2022 07:13:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352988AbiELLMp (ORCPT
+        with ESMTP id S1353055AbiELLNB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 07:12:45 -0400
-Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBED7527EC;
-        Thu, 12 May 2022 04:12:42 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R841e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VD-YkUJ_1652353959;
-Received: from 30.39.157.75(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VD-YkUJ_1652353959)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 12 May 2022 19:12:40 +0800
-Message-ID: <188f7cb2-ba21-a53a-828d-7242b17b0c72@linux.alibaba.com>
-Date:   Thu, 12 May 2022 19:13:18 +0800
+        Thu, 12 May 2022 07:13:01 -0400
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11E9462216
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 04:12:56 -0700 (PDT)
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
+        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <heiko@sntech.de>)
+        id 1np6kZ-0001eb-5Y; Thu, 12 May 2022 13:12:55 +0200
+From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To:     linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+Cc:     Dao Lu <daolu@rivosinc.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        "open list:RISC-V ARCHITECTURE" <linux-riscv@lists.infradead.org>,
+        Dao Lu <daolu@rivosinc.com>
+Subject: Re: [PATCH] arch/riscv: Add Zihintpause extension support
+Date:   Thu, 12 May 2022 13:12:54 +0200
+Message-ID: <4061745.1IzOArtZ34@diego>
+In-Reply-To: <20220512033045.1101909-1-daolu@rivosinc.com>
+References: <20220512033045.1101909-1-daolu@rivosinc.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: linux-next: build failure after merge of the mm tree
-To:     Catalin Marinas <catalin.marinas@arm.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Will Deacon <will@kernel.org>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-References: <20220512193855.4f6ce32f@canb.auug.org.au>
- <YnzqffV7STYS24Yn@arm.com>
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-In-Reply-To: <YnzqffV7STYS24Yn@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi,
+
+Am Donnerstag, 12. Mai 2022, 05:30:45 CEST schrieb Dao Lu:
+> This patch:
+>   1. Build with _zihintpause if the toolchain has support for it
+>   2. Detects if the platform supports the extension
+>   3. Use PAUSE for cpu_relax if both toolchain and the platform support it
+
+This simply explains what the patch does, which is also pretty easy to
+see by just reading the patch, so doesn't provide real additional value.
+
+Please use the commit message to provide more background on what
+you want to achieve. I.e. a short explanation what it is.
+
+-----
+Implement support for the ZiHintPause extension.
+
+The PAUSE instruction is a HINT that indicates the current hart’s rate of
+instruction retirement should be temporarily reduced or paused.
+-----
+
+The second sentence obviously comes directly from the riscv-spec pdf ;-)
+
+There is one nit below too and with that fixed
+
+Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+
+On a Qemu build with your extension patch for it, also
+Tested-by: Heiko Stuebner <heiko@sntech.de>
 
 
-On 5/12/2022 7:07 PM, Catalin Marinas wrote:
-> On Thu, May 12, 2022 at 07:38:55PM +1000, Stephen Rothwell wrote:
->> After merging the mm tree, today's linux-next build (arm64 defconfig)
->> failed like this:
->>
->> arch/arm64/mm/hugetlbpage.c: In function 'huge_ptep_clear_flush':
->> arch/arm64/mm/hugetlbpage.c:493:16: error: implicit declaration of function 'get_clear_flush'; did you mean 'ptep_clear_flush'? [-Werror=implicit-function-declaration]
->>    493 |         return get_clear_flush(vma->vm_mm, addr, ptep, pgsize, ncontig);
->>        |                ^~~~~~~~~~~~~~~
->>        |                ptep_clear_flush
->> arch/arm64/mm/hugetlbpage.c:493:16: error: incompatible types when returning type 'int' but 'pte_t' was expected
->>    493 |         return get_clear_flush(vma->vm_mm, addr, ptep, pgsize, ncontig);
->>        |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> arch/arm64/mm/hugetlbpage.c:494:1: error: control reaches end of non-void function [-Werror=return-type]
->>    494 | }
->>        | ^
->>
->> Caused by commit
->>
->>    00df1f1a133b ("mm: change huge_ptep_clear_flush() to return the original pte")
->>
->> interacting with commit
->>
->>    fb396bb459c1 ("arm64/hugetlb: Drop TLB flush from get_clear_flush()")
->>
->> I have applied the following merg fix patch for today.
->>
->> From: Stephen Rothwell <sfr@canb.auug.org.au>
->> Date: Thu, 12 May 2022 19:33:11 +1000
->> Subject: [PATCH] fixup for "mm: change huge_ptep_clear_flush() to return the original pte"
->>
->> It interacts with commit
->>
->>    fb396bb459c1 ("arm64/hugetlb: Drop TLB flush from get_clear_flush()")
->>
->> from the arm64 tree
->>
->> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
->> ---
->>   arch/arm64/mm/hugetlbpage.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/arch/arm64/mm/hugetlbpage.c b/arch/arm64/mm/hugetlbpage.c
->> index 5bdf913dedc7..30f5b76aabe9 100644
->> --- a/arch/arm64/mm/hugetlbpage.c
->> +++ b/arch/arm64/mm/hugetlbpage.c
->> @@ -490,7 +490,7 @@ pte_t huge_ptep_clear_flush(struct vm_area_struct *vma,
->>   		return ptep_clear_flush(vma, addr, ptep);
->>   
->>   	ncontig = find_num_contig(vma->vm_mm, addr, ptep, &pgsize);
->> -	return get_clear_flush(vma->vm_mm, addr, ptep, pgsize, ncontig);
->> +	return get_clear_contig(vma->vm_mm, addr, ptep, pgsize, ncontig);
->>   }
+> Signed-off-by: Dao Lu <daolu@rivosinc.com>
+> ---
+>  arch/riscv/Makefile                     |  4 ++++
+>  arch/riscv/include/asm/hwcap.h          |  1 +
+>  arch/riscv/include/asm/vdso/processor.h | 19 ++++++++++++++++---
+>  arch/riscv/kernel/cpu.c                 |  1 +
+>  arch/riscv/kernel/cpufeature.c          |  7 +++++++
+>  5 files changed, 29 insertions(+), 3 deletions(-)
 > 
-> Note that after the arm64 commit, get_clear_contig() no longer flushes
-> the TLB. So maybe something like:
+> diff --git a/arch/riscv/Makefile b/arch/riscv/Makefile
+> index 7d81102cffd4..900a8fda1a2d 100644
+> --- a/arch/riscv/Makefile
+> +++ b/arch/riscv/Makefile
+> @@ -56,6 +56,10 @@ riscv-march-$(CONFIG_RISCV_ISA_C)	:= $(riscv-march-y)c
+>  toolchain-need-zicsr-zifencei := $(call cc-option-yn, -march=$(riscv-march-y)_zicsr_zifencei)
+>  riscv-march-$(toolchain-need-zicsr-zifencei) := $(riscv-march-y)_zicsr_zifencei
+>  
+> +# Check if the toolchain supports Zihintpause extension
+> +toolchain-supports-zihintpause := $(call cc-option-yn, -march=$(riscv-march-y)_zihintpause)
+> +riscv-march-$(toolchain-supports-zihintpause) := $(riscv-march-y)_zihintpause
+> +
+>  KBUILD_CFLAGS += -march=$(subst fd,,$(riscv-march-y))
+>  KBUILD_AFLAGS += -march=$(riscv-march-y)
+>  
+> diff --git a/arch/riscv/include/asm/hwcap.h b/arch/riscv/include/asm/hwcap.h
+> index 0734e42f74f2..caa9ee5459b4 100644
+> --- a/arch/riscv/include/asm/hwcap.h
+> +++ b/arch/riscv/include/asm/hwcap.h
+> @@ -52,6 +52,7 @@ extern unsigned long elf_hwcap;
+>   */
+>  enum riscv_isa_ext_id {
+>  	RISCV_ISA_EXT_SSCOFPMF = RISCV_ISA_EXT_BASE,
+> +	RISCV_ISA_EXT_ZIHINTPAUSE,
+>  	RISCV_ISA_EXT_ID_MAX = RISCV_ISA_EXT_MAX,
+>  };
+>  
+> diff --git a/arch/riscv/include/asm/vdso/processor.h b/arch/riscv/include/asm/vdso/processor.h
+> index 134388cbaaa1..106b35ba8cac 100644
+> --- a/arch/riscv/include/asm/vdso/processor.h
+> +++ b/arch/riscv/include/asm/vdso/processor.h
+> @@ -4,15 +4,28 @@
+>  
+>  #ifndef __ASSEMBLY__
+>  
+> +#include <linux/jump_label.h>
+>  #include <asm/barrier.h>
+> +#include <asm/hwcap.h>
+>  
+> +extern struct static_key_false riscv_pause_available;
+>  static inline void cpu_relax(void)
+>  {
+> +	if (!static_branch_likely(&riscv_pause_available)) {
+>  #ifdef __riscv_muldiv
+> -	int dummy;
+> -	/* In lieu of a halt instruction, induce a long-latency stall. */
+> -	__asm__ __volatile__ ("div %0, %0, zero" : "=r" (dummy));
+> +		int dummy;
+> +		/* In lieu of a halt instruction, induce a long-latency stall. */
+> +		__asm__ __volatile__ ("div %0, %0, zero" : "=r" (dummy));
+>  #endif
+> +	} else {
+> +#ifdef __riscv_zihintpause
+> +		/*
+> +		 * Reduce instruction retirement.
+> +		 * This assumes the PC changes.
+> +		 */
+> +		__asm__ __volatile__ ("pause");
+> +#endif
+> +	}
+>  	barrier();
+>  }
+>  
+> diff --git a/arch/riscv/kernel/cpu.c b/arch/riscv/kernel/cpu.c
+> index ccb617791e56..89e563e9c4cc 100644
+> --- a/arch/riscv/kernel/cpu.c
+> +++ b/arch/riscv/kernel/cpu.c
+> @@ -88,6 +88,7 @@ int riscv_of_parent_hartid(struct device_node *node)
+>   */
+>  static struct riscv_isa_ext_data isa_ext_arr[] = {
+>  	__RISCV_ISA_EXT_DATA(sscofpmf, RISCV_ISA_EXT_SSCOFPMF),
+> +	__RISCV_ISA_EXT_DATA(zihintpause, RISCV_ISA_EXT_ZIHINTPAUSE),
+>  	__RISCV_ISA_EXT_DATA("", RISCV_ISA_EXT_MAX),
+>  };
+>  
+> diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
+> index 1b2d42d7f589..327c19507dbb 100644
+> --- a/arch/riscv/kernel/cpufeature.c
+> +++ b/arch/riscv/kernel/cpufeature.c
+> @@ -24,6 +24,8 @@ static DECLARE_BITMAP(riscv_isa, RISCV_ISA_EXT_MAX) __read_mostly;
+>  #ifdef CONFIG_FPU
+>  __ro_after_init DEFINE_STATIC_KEY_FALSE(cpu_hwcap_fpu);
+>  #endif
+> +DEFINE_STATIC_KEY_FALSE(riscv_pause_available);
+> +EXPORT_SYMBOL_GPL(riscv_pause_available);
+>  
+>  /**
+>   * riscv_isa_extension_base() - Get base extension word
+> @@ -192,6 +194,7 @@ void __init riscv_fill_hwcap(void)
+>  				set_bit(*ext - 'a', this_isa);
+>  			} else {
+>  				SET_ISA_EXT_MAP("sscofpmf", RISCV_ISA_EXT_SSCOFPMF);
+> +				SET_ISA_EXT_MAP("zihintpause", RISCV_ISA_EXT_ZIHINTPAUSE);
+>  			}
+>  #undef SET_ISA_EXT_MAP
+>  		}
+> @@ -213,6 +216,10 @@ void __init riscv_fill_hwcap(void)
+>  
+>  	}
+>  
+> +	if (__riscv_isa_extension_available(riscv_isa, RISCV_ISA_EXT_ZIHINTPAUSE)) {
+> +		static_branch_enable(&riscv_pause_available);
+> +	}
+> +
+
+You don't really need the braces for the single call to static_branch_enable
+
+
+>  	/* We don't support systems with F but without D, so mask those out
+>  	 * here. */
+>  	if ((elf_hwcap & COMPAT_HWCAP_ISA_F) && !(elf_hwcap & COMPAT_HWCAP_ISA_D)) {
 > 
-> diff --git a/arch/arm64/mm/hugetlbpage.c b/arch/arm64/mm/hugetlbpage.c
-> index 30f5b76aabe9..9a999550df8e 100644
-> --- a/arch/arm64/mm/hugetlbpage.c
-> +++ b/arch/arm64/mm/hugetlbpage.c
-> @@ -485,12 +485,15 @@ pte_t huge_ptep_clear_flush(struct vm_area_struct *vma,
->   {
->   	size_t pgsize;
->   	int ncontig;
-> +	pte_t orig_pte;
-> 
->   	if (!pte_cont(READ_ONCE(*ptep)))
->   		return ptep_clear_flush(vma, addr, ptep);
-> 
->   	ncontig = find_num_contig(vma->vm_mm, addr, ptep, &pgsize);
-> -	return get_clear_contig(vma->vm_mm, addr, ptep, pgsize, ncontig);
-> +	orig_pte = get_clear_contig(vma->vm_mm, addr, ptep, pgsize, ncontig);
-> +	flush_tlb_range(vma, addr, addr + pgsize * ncontig);
-> +	return orig_pte;
->   }
 
-Yes, after checking this fb396bb459c1 ("arm64/hugetlb: Drop TLB flush 
-from get_clear_flush()"), I also realized it will miss TLB flush.
 
-So I am not sure I need send a incremental patch to fix this issue? Or 
-resend my patch set [1] with rebasing on the arm64 changes?
+Heiko
 
-Catalin and Andrew, how do you think? Thanks.
 
-[1] 
-https://lore.kernel.org/all/cover.1652270205.git.baolin.wang@linux.alibaba.com/
+
