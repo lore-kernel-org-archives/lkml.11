@@ -2,70 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C24F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 07:19:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2901AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 07:20:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350903AbiELHTy (ORCPT
+        id S1350904AbiELHT7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 03:19:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42520 "EHLO
+        Thu, 12 May 2022 03:19:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350880AbiELHTr (ORCPT
+        with ESMTP id S245010AbiELHTr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 12 May 2022 03:19:47 -0400
-Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21AD1C5E64
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 00:19:44 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VCzsZQ9_1652339976;
-Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VCzsZQ9_1652339976)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 12 May 2022 15:19:41 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     alexander.deucher@amd.com
-Cc:     christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH] drm/amd/display: clean up some inconsistent indenting
-Date:   Thu, 12 May 2022 15:19:34 +0800
-Message-Id: <20220512071934.119922-1-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+Received: from m12-17.163.com (m12-17.163.com [220.181.12.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4A56FC5E63;
+        Thu, 12 May 2022 00:19:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=bymoT
+        b01r1T+Wm4ZEMiXz/r4v+miJ0K1oL+JDw06UN8=; b=A7yasGqeDwqhbnUkMFSTN
+        oUyGCGpo5JYjwrzVchHgw0DzxfrNDlR1BwvnJnPjp1hYOaUJNwxOf2IXzNxzfL3L
+        GJgb6m6uPHXIXpL8xKOHE+aj80F0cQUvY3u6m4sj4Nq4EVamzQz3R8xm51XDQk47
+        /U3gpivIStKNboCNNkTOek=
+Received: from DESKTOP-B1R4FVG.localdomain (unknown [218.201.129.19])
+        by smtp13 (Coremail) with SMTP id EcCowACHoI3ptHxiu+ySCA--.8205S3;
+        Thu, 12 May 2022 15:19:07 +0800 (CST)
+From:   qianfanguijin@163.com
+To:     linux-sunxi@lists.linux.dev
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        qianfan Zhao <qianfanguijin@163.com>
+Subject: [PATCH v3 2/2] ARM: dts: sun8i-r40: Add "cpu-supply" node for sun8i-r40 based board
+Date:   Thu, 12 May 2022 15:18:58 +0800
+Message-Id: <20220512071858.10805-2-qianfanguijin@163.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220512071858.10805-1-qianfanguijin@163.com>
+References: <20220512071858.10805-1-qianfanguijin@163.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: EcCowACHoI3ptHxiu+ySCA--.8205S3
+X-Coremail-Antispam: 1Uf129KBjvJXoW7ZrWUCryfGw4xZr43JryxZrb_yoW8uryrpw
+        17CrZ7Gwn3WF1rt347WrWDGr1UCFykWw4YvF15C34fJrsrXaykXryftwnakrZ8Xr13J3y0
+        93s5Xr97Xw4DX3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zihIDxUUUUU=
+X-Originating-IP: [218.201.129.19]
+X-CM-SenderInfo: htld0w5dqj3xxmlqqiywtou0bp/1tbiGhP+7VaEBigVVQACsk
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Eliminate the follow smatch warning:
+From: qianfan Zhao <qianfanguijin@163.com>
 
-drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c:9687
-amdgpu_dm_atomic_commit_tail() warn: inconsistent indenting.
+sun8i-r40 actived cpufreq feature now, let's add "cpu-supply" node on
+board.
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Signed-off-by: qianfan Zhao <qianfanguijin@163.com>
 ---
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts | 4 ++++
+ arch/arm/boot/dts/sun8i-r40-feta40i.dtsi          | 4 ++++
+ arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts          | 4 ++++
+ arch/arm/boot/dts/sun8i-v40-bananapi-m2-berry.dts | 4 ++++
+ 4 files changed, 16 insertions(+)
 
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index e2b57cf6506c..a92cfb055c15 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -9681,9 +9681,10 @@ static void amdgpu_dm_atomic_commit_tail(struct drm_atomic_state *state)
- 		dm_enable_per_frame_crtc_master_sync(dc_state);
- 		mutex_lock(&dm->dc_lock);
- 		WARN_ON(!dc_commit_state(dm->dc, dc_state));
--               /* Allow idle optimization when vblank count is 0 for display off */
--               if (dm->active_vblank_irq_count == 0)
--                   dc_allow_idle_optimizations(dm->dc,true);
-+
-+		/* Allow idle optimization when vblank count is 0 for display off */
-+		if (dm->active_vblank_irq_count == 0)
-+			dc_allow_idle_optimizations(dm->dc, true);
- 		mutex_unlock(&dm->dc_lock);
- 	}
+diff --git a/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts b/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
+index a6a1087a0c9b..4f30018ec4a2 100644
+--- a/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
++++ b/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
+@@ -113,6 +113,10 @@ &ahci {
+ 	status = "okay";
+ };
  
++&cpu0 {
++	cpu-supply = <&reg_dcdc2>;
++};
++
+ &de {
+ 	status = "okay";
+ };
+diff --git a/arch/arm/boot/dts/sun8i-r40-feta40i.dtsi b/arch/arm/boot/dts/sun8i-r40-feta40i.dtsi
+index 265e0fa57a32..b872b51a346d 100644
+--- a/arch/arm/boot/dts/sun8i-r40-feta40i.dtsi
++++ b/arch/arm/boot/dts/sun8i-r40-feta40i.dtsi
+@@ -6,6 +6,10 @@
+ 
+ #include "sun8i-r40.dtsi"
+ 
++&cpu0 {
++	cpu-supply = <&reg_dcdc2>;
++};
++
+ &i2c0 {
+ 	status = "okay";
+ 
+diff --git a/arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts b/arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts
+index 6931aaab2382..0eb1990742ff 100644
+--- a/arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts
++++ b/arch/arm/boot/dts/sun8i-t3-cqa3t-bv3.dts
+@@ -88,6 +88,10 @@ &ahci {
+ 	status = "okay";
+ };
+ 
++&cpu0 {
++	cpu-supply = <&reg_dcdc2>;
++};
++
+ &de {
+ 	status = "okay";
+ };
+diff --git a/arch/arm/boot/dts/sun8i-v40-bananapi-m2-berry.dts b/arch/arm/boot/dts/sun8i-v40-bananapi-m2-berry.dts
+index 47954551f573..fdf8bd12faaa 100644
+--- a/arch/arm/boot/dts/sun8i-v40-bananapi-m2-berry.dts
++++ b/arch/arm/boot/dts/sun8i-v40-bananapi-m2-berry.dts
+@@ -107,6 +107,10 @@ &ahci {
+ 	status = "okay";
+ };
+ 
++&cpu0 {
++	cpu-supply = <&reg_dcdc2>;
++};
++
+ &de {
+ 	status = "okay";
+ };
 -- 
-2.20.1.7.g153144c
+2.25.1
 
