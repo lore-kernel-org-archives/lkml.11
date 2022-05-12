@@ -2,94 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BF15C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 16:39:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 273ABC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 16:40:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356584AbiELQjk (ORCPT
+        id S1356593AbiELQkU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 12:39:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33052 "EHLO
+        Thu, 12 May 2022 12:40:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356573AbiELQjU (ORCPT
+        with ESMTP id S1356574AbiELQkO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 12:39:20 -0400
-Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E9A25BA63;
-        Thu, 12 May 2022 09:39:19 -0700 (PDT)
-Received: by mail-io1-xd35.google.com with SMTP id e3so5958658ios.6;
-        Thu, 12 May 2022 09:39:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QUUUj1y74Ts6z0ggwPE80glXrfxyzYtZy0EaDwtm30M=;
-        b=KNwGo5WQC+QM23k6KpFzT9+xdkeCcvMAXvQ4j/1WaWYrh6FJcUGQVrDucdM5MJtpQl
-         n13K9+H3pVcpNceuMg8vT/r9Q7mXXATIrab2YRDcg/myXBpPmobYSMlXRZ9259/iqG8L
-         FiQp8uqXntvCbRU4Qi/n2A/bqcXHFvXw9L3EkvVhIhwi24qxOl9rUctAZkT7AZnbIw8u
-         m92g1uAeDkJZ7W7kUhPHfyJSa6GM2r7WXypBJuqf3VnCUcHW0ij1kjgLhnkUHQy1Kgja
-         hJx8Ofn8+YGHAzDMCKh5sL6o7p46Os0w9oo4hLsFAwE97mh21cP7s7lmQBQsVs0mWMTb
-         faNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QUUUj1y74Ts6z0ggwPE80glXrfxyzYtZy0EaDwtm30M=;
-        b=UYe0Ph3kyGmiuRTTN4Mg4f775hGdCwgOQAl2np/2jixs/R4DNehUb4AQpqnSVUDyuG
-         P1Ve6XXO/HbqAOXMHCVW718Zrltpc9bxCteKP6xqWHUxJBUru8Um9y0RBLFHHF+lt+TL
-         Gboqb0kpgQBln4RLTbj+KvNfbsb0mCM0qpJv5yID6VKz0zDRnLZK08Q+NwZZy/fS8c7N
-         4/NxMfdg2cJ4gR0DhkbS1G2vNKybIYDqKdg5UjG3qgLDbwaScUeYbGewXUCoJOpgwOV9
-         h2K9ULZOkArR11t0zGpIkXcl0gwk7h4zeknMK/YPxbncfpS0q5nS7I8Q8f2O/9d3uqIC
-         VEbw==
-X-Gm-Message-State: AOAM533Z4pED1q3YyUknUsNK0SfCWJbDcfJvsUv/BpwT9+dLCT5/6buf
-        JydtATvF9vST8uUbsjhNfpVFYu/Wdwu2h6C4HPQ=
-X-Google-Smtp-Source: ABdhPJyWY+O694Z/yQU4QnYgU/qjwIAD3uuAlcyt4rA9PLWbtlbtx9UehZcVQGf1ZYwCL+PWL1eIeUN1cxOCxD0L+44=
-X-Received: by 2002:a05:6638:d56:b0:32b:62e4:39be with SMTP id
- d22-20020a0566380d5600b0032b62e439bemr441230jak.308.1652373559064; Thu, 12
- May 2022 09:39:19 -0700 (PDT)
+        Thu, 12 May 2022 12:40:14 -0400
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CDEB25A78B;
+        Thu, 12 May 2022 09:40:13 -0700 (PDT)
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24CCEJsA022848;
+        Thu, 12 May 2022 09:40:13 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : mime-version; s=facebook;
+ bh=x+4Sd57FuLX7168+6+24hltmig4ecSBFvlfoKDP2zuk=;
+ b=Mw5eGerQWa5KNn3ClSveWPpL/FINph6ApPXUdKFowR4Wwq47JSFJ0/7uUqo7JziQWzSM
+ nQb7CnAYYn2o+V90a1fCvtGOgqlJH39uuxurwiz7qXs8e686Ft8iSZaQatpwQUTTwtab
+ 4EnKpWvE/ubk2P8fZSVxk506/w7Hn35XBOM= 
+Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2171.outbound.protection.outlook.com [104.47.57.171])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3g055hutu5-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 12 May 2022 09:40:12 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=S5R3Xj9BLNn57gOlISEVokmdrw9aRrQQNTeXQan9cQxaEJ/KUzHR3cEGkOlGgeIr1lpanv+mgWW0O21q5TqtMQ2bR3sEpp8xLW+i2tf99FqP9TC75NCJd9KbhKobx9c7yvALZmNNkiEAcT0Z6bOn6fp6pc2IFL1jb9Azrljvu86e9JFqyKJf11A9NugDBM0VhDUyLNTIbxcmdmIBUoLlTWbs0qJ+G4RYK6qXzbnrPN4Jm/tAXjGV3VWGSFmynFbyvJYinQcbhUJdb52c2Vx7Pi6E25g+qhyQqpnF0eAlDDoIHIb1KTcHFFJIPi09LeJAXonY3g6jxqE4ApARGxuzJA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qryt685I33NBx554p2iJO9jcO77XX083W+Qu8DFXTIU=;
+ b=eeP6uvSQA5z7UsSDaYtqLh+el4ecnTEudfrZb44bm6JYG7atNU06SGmMiPVSJkRaEtsA16aGWadpS/w6y+WuVO9tLCEPaJCHXieF05vSyteq7zOYDyxzkPFEKpgA/pYH3C1lYFe/EHWcGRRFbp1VdlfSp5u141kI+TLEv6lq52x3PA9+a6km8EWvLOi0L3e3k+cwGfCLJRhbWkRpmviAyML2n0UTf+TM9qEuaqTIqwfmGCcbBO6HdraWyaCNM7+QtMD+hQG1MwU54lC4ehw/PMum/aUKkl9hKXSAFCRUERvGMAMJr1r4Hhf51Gtztyt6VyTgVvi6nZPsp11Ko85iCw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SA1PR15MB5109.namprd15.prod.outlook.com (2603:10b6:806:1dc::10)
+ by DM6PR15MB2345.namprd15.prod.outlook.com (2603:10b6:5:8d::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.14; Thu, 12 May
+ 2022 16:40:09 +0000
+Received: from SA1PR15MB5109.namprd15.prod.outlook.com
+ ([fe80::3061:40ff:2ad:33aa]) by SA1PR15MB5109.namprd15.prod.outlook.com
+ ([fe80::3061:40ff:2ad:33aa%4]) with mapi id 15.20.5227.023; Thu, 12 May 2022
+ 16:40:09 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Wan Jiabing <wanjiabing@vivo.com>
+CC:     Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/3] bpf: use 'error_xxx' tags in
+ bpf_kprobe_multi_link_attach
+Thread-Topic: [PATCH 1/3] bpf: use 'error_xxx' tags in
+ bpf_kprobe_multi_link_attach
+Thread-Index: AQHYZgsIMIVDG4Y66UCqI47+lLAf5q0bccsA
+Date:   Thu, 12 May 2022 16:40:09 +0000
+Message-ID: <97736EC2-A393-4E8C-A7D5-7C6D3CD26CEB@fb.com>
+References: <20220512141710.116135-1-wanjiabing@vivo.com>
+ <20220512141710.116135-2-wanjiabing@vivo.com>
+In-Reply-To: <20220512141710.116135-2-wanjiabing@vivo.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3696.80.82.1.1)
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 20d52d09-b5f2-4a4e-1b4b-08da3436140e
+x-ms-traffictypediagnostic: DM6PR15MB2345:EE_
+x-microsoft-antispam-prvs: <DM6PR15MB23454D1CB3F5B91504AE51E3B3CB9@DM6PR15MB2345.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: G5hSqTCmdfCHwGu65UgkFWa5CZsQfdo3I4e/gnjN8Y/f5ZpeA63RZt3E7n4l694Sh7tB3yoHnIWt+qCX1U7iObflKBR17PDXlVsHOp7wv9+82WArukD45q12g2wheXJCfEx7NJnvwx6ZwyAdnTatdBsUYWYTxT/60FqYl+J6hFx2AJwajrS2e0CuIkW0yoNbJdpWzoz0ihzUcUIy4V93gAwQbLuM1WekSnjKauMEwWjuXBpbhtW68Thown9iGD3VigHw8NXWREE6qDdhfdN6Wcxdh1rvQ+k8kYlDiqEOfryZ6UkPoyA8y+CS2+V6XabP8SnBCvqVtRdrOOlMYR6D59u2CjBySbSA8rsKkFVG8GdPSSTHqOpjeR43Y+eyRcu+zK5DISxmewno5wg160Gr4eUA1FhzKEECc9NSwbEz9Ls9y0jKAcgqo+LlgEpnTGjlkDlQRcsZDFZiYtzaPQQwH5gbjt1t5nMhSW6aF0M3CqTH4s2XhBdpDNSEriuOj+80qFWE98FSurj0Jw2Apdmj50TeZde2/YuhnN4NXtbQRhKOSpPeI1LPsjP+aL/xqVDYBDyxScYr+aihkYhPLv7JuLhTbP8qpgZFGmkIhwsZgrO21J+1oMkw0LYR4ehN6IRWNjpMFLdOIFtCaEkaIEVvtSjWKKgWFR6KC8OQnCEjrDu5OJ5pTc0tjmmoUb6W8TFTkEPZbfK4StCdSX6gb3rotVBBobKP274+URCXXHnB+WR0XMLqw31j+blBaOGwNaS+
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5109.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(54906003)(76116006)(6916009)(91956017)(38070700005)(2616005)(6506007)(6512007)(508600001)(5660300002)(4744005)(53546011)(66446008)(66946007)(36756003)(4326008)(8676002)(66476007)(66556008)(38100700002)(316002)(64756008)(83380400001)(6486002)(186003)(7416002)(71200400001)(2906002)(33656002)(8936002)(122000001)(86362001)(45980500001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?3xWDkRfnJkTuNmLudm+ySepGC7rjv84Dq1S1uuh6DZIMwYbDooUNWMLOsJwC?=
+ =?us-ascii?Q?pSyYWhQQJMtiF1kSY29I6vkAZ2S0hJJVCWXnG3LKzY5hgU/24pmxL0hWRIFK?=
+ =?us-ascii?Q?5fZwLj/4g/UBwFmnDMLS4NXTtRQ0Rl9EPRtMxAl5VsVK0VSjNRItAnuJlQZt?=
+ =?us-ascii?Q?003doIkOE2MmoOy1/k6Z6wqmm35Xc3XUr2iO11sTO8aZ25++KsSOyEBAfLw4?=
+ =?us-ascii?Q?IPjvZC53y2p8V7fFMXayuEjwAfGzn/3MQ/k3umhf9mun8r7nhSXAzyvLss6R?=
+ =?us-ascii?Q?k8v/gLO8Ixi0xC2ILwA5SROc0uz22q3woEh+guaViFwfSeoXn+KU3rbJilLs?=
+ =?us-ascii?Q?2D7bZZKdI26s4k/EjkwTpFmPvuHISgexKI2ogLebBzXu9DaJL2SW+z/udCA7?=
+ =?us-ascii?Q?sbZXRzLyQ91mqUhazwPsRY/I2yhwj7yxekHEHPHb/7SuctO+MCTzIQhlDuGl?=
+ =?us-ascii?Q?Bnyqt3nD09N1f1bE4jjP8tu+g71yhINLCZjNOJzP7KTmqmLB2RQ6c9ru0Xdl?=
+ =?us-ascii?Q?2OY/+8yAVwBeE948y+mHAylRQTw1V5tKjKD8gARfoT18YqnLFU2+fab2F6yG?=
+ =?us-ascii?Q?AeRUHyxnPHiFkAj72Wv6mPielkij6YpmiP+KXzYw/MDh+evTiAO4qNIeDuDu?=
+ =?us-ascii?Q?Oaz3upC0p45VPZvsAiTEZ74gE9E8vVYPA5jzAMQEjzwxEEH5k4SGIX4JQUGY?=
+ =?us-ascii?Q?SBTtNEvuZFPQ0M1Cpm6ZnQtoV5L8BVDveo5gGwiN6+0l5yPG+8Su1ZeeqOAq?=
+ =?us-ascii?Q?ZzMrP09ofoOSYWnYYocQZYSMwEUvA0+mBFfYBI97icXmleYYt7tNCTH3921c?=
+ =?us-ascii?Q?9BWuAT8MNUdkKwX2lQZaZBTFhQxLhVD5rHAaR8pqRRXY4/4+aBDbedHs1zwd?=
+ =?us-ascii?Q?TRRETJp1gMAuv9D6pOqOXO2E0Qzfbdm7eny+TFD+OB5olwCe+5vI+HpxcuPL?=
+ =?us-ascii?Q?8tbu1UX/DIOLEIUq7P6lRc5sgq0KFBBt8kivpzEeOazuvk/y37FsXZ3cq9dc?=
+ =?us-ascii?Q?iwLyL1KQTPbyZvORJwgZdEa8i6hyhYEmf2gG4EGkV9RSezKRTA3sDafEzYV7?=
+ =?us-ascii?Q?uK7gwj2JqMxx2JI2oQATLCzA+26JvRV1zMHT25opEhcVGnMxKv4Oghgk5aYO?=
+ =?us-ascii?Q?y+gU9FsQQqC0ZzytIp3toAyxER1cOtshbgco1oM5LMdif3riDArS9AZUrx1A?=
+ =?us-ascii?Q?5ugSBb/gX8gVjnrSEJZGe1+XL7Dq4g4gkAQiqFp8W0v/IyCz1is2iq0nOZSq?=
+ =?us-ascii?Q?+AGvcjt1UU5JmrRkte58R4s+M6k+r6ZKE/3iWyGPg1eT2wLeZ5ZmpeoG1L7I?=
+ =?us-ascii?Q?hbHYCEPYU0grvrdvVPOJpqUPRHdXXU65cDGR/eLYfvRD6QfMGKm6PPYgRJ+m?=
+ =?us-ascii?Q?1ww0kc+Sm62JvATAYap02wD9mixa7WPRN/wd+hgVvGbUAZ+9hyTNdMiQCWH3?=
+ =?us-ascii?Q?hUbKvkN7AFDXCg8i+3eAtbSuGQ3rA++/Qs2kMHZ0yDmkQ1205q8naBRyB45+?=
+ =?us-ascii?Q?bu15MYZlWrrPRdcvDz79IeFcWHoYPLhBi+ZaaXP6YkI3Ci833hVrb99bXhje?=
+ =?us-ascii?Q?laGYp7pzZrgCETQ35eoJ6Sm4ZzLhV2C5Mr1Qo0+uZPbMC2EC4MpgfzxqOr6s?=
+ =?us-ascii?Q?p9FM2lS2ST2buSxA/PscgiX4JfLXWhiK5b+lq6guj5uUpaNy8Sjug7Vb4gj1?=
+ =?us-ascii?Q?lVgSdorq3z1DlGnXlCDbfcwW8XIIb5u1Sz9t04ko4qT/UBjZ/d7nOZ1Uymlp?=
+ =?us-ascii?Q?cggBFoXtexO7WYwxZbNjh4gR9TWMv9rAwbuKynRgXBftABnXaGYJ?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <DCB5951702674649860595EF9CC188F6@namprd15.prod.outlook.com>
 MIME-Version: 1.0
-References: <20220510172530.29704-1-ojeda@kernel.org> <87r14y4v9c.fsf@meer.lwn.net>
-In-Reply-To: <87r14y4v9c.fsf@meer.lwn.net>
-From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date:   Thu, 12 May 2022 18:39:07 +0200
-Message-ID: <CANiq72nbaSxBwMegiPZwDg2MLW_SA46EV6g11C6xQyYSnbM8dw@mail.gmail.com>
-Subject: Re: [PATCH v1 1/2] docs: move Linux logo into a new `images` folder
-To:     Jonathan Corbet <corbet@lwn.net>
-Cc:     Miguel Ojeda <ojeda@kernel.org>,
-        Garrett LeSage <garrett@lesage.us>,
-        IFo Hancroft <contact@ifohancroft.com>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: fb.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5109.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 20d52d09-b5f2-4a4e-1b4b-08da3436140e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 May 2022 16:40:09.5224
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: GHTyz7S1GlcZng61SX8VGIcY/I2iKq5jiSYO33TXVokO8fusGldQdhFwGWWqMsKUZ9ee98BsmeYScXDIB3fuqA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR15MB2345
+X-Proofpoint-ORIG-GUID: 9v9YAR4acjzkyPFHyz9DayvbKFa8M0Cc
+X-Proofpoint-GUID: 9v9YAR4acjzkyPFHyz9DayvbKFa8M0Cc
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-12_13,2022-05-12_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 5:37 PM Jonathan Corbet <corbet@lwn.net> wrote:
->
-> This will break scripts/spdxcheck-test.sh - which somebody might
-> actually try to run one of these years.  So this patch really needs to
-> update that script to follow the move.
 
-Ah, yes, my bad, will fix.
 
-> As far as I can tell, that's the only reference to logo.gif in the
-> entire tree.  It makes me wonder if we need it at all.  Digging through
-> the history suggests it was added in 2.1.15, but never really used for
-> anything.  It's only role would appear to be to serve as testing
-> material for the SPDX checker..:)
+> On May 12, 2022, at 7:17 AM, Wan Jiabing <wanjiabing@vivo.com> wrote:
+> 
+> Use 'error_addrs', 'error_cookies' and 'error_link' tags to make error
+> handling more efficient.
+> 
+> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+> ---
+> kernel/trace/bpf_trace.c | 20 +++++++++++---------
+> 1 file changed, 11 insertions(+), 9 deletions(-)
 
-If you mean removing the GIF one to replace it with the vector one, I
-can send it that way too.
+I seriously think current version is simpler. 
 
-If you mean removing the logo from the tree, then I think it would be
-useful to have it available in some other stable URL (so that people
-can still fetch it for other purposes), e.g. at kernel.org (not sure
-if there is such a place; in both kernel.org and LF's pages there is
-just a mention). One potential use case for the logo is to use it
-instead of the Rust logo in the Rust docs if the Rust support gets
-merged (i.e. instead of the custom one).
-
-At least I hope the Tasmanian devil got a bit of help thanks to the logo! :)
-
-Cheers,
-Miguel
+Song
