@@ -2,83 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00891C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 18:40:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9743CC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 18:42:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357769AbiELSkX (ORCPT
+        id S1357766AbiELSmP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 14:40:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57532 "EHLO
+        Thu, 12 May 2022 14:42:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357733AbiELSkQ (ORCPT
+        with ESMTP id S1351554AbiELSmM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 14:40:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21EF0270C9C;
-        Thu, 12 May 2022 11:40:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA41BB82AD2;
-        Thu, 12 May 2022 18:40:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 4A916C36AE5;
-        Thu, 12 May 2022 18:40:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652380813;
-        bh=DIkBcwiBP7eLnXH/EArwAiEEFxkhnx85Yfb5gtm5f8o=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=PDfFObaFtUVfU1gyRN4PP0oeaP0eEe5d3UHsZ5okr+c30QraSe0apJoAn6PoYTpbg
-         WyMDoNq2AhDRp4I7YHh6XOF0NeBMwF5z7gqR8Na7sX0ITcIpqUKEFUBTf1fqkMjh85
-         HE/yHPLh3Vs6QKtFyWZDA9qS8hIc6FIFlVXl5AwLWNjXEjOvglL+KDA64Bxl11Jokk
-         HusWQT0l7ABffPiu/EjJn09uxCmRvLmOsOgJyKkpiJ+0TS8fYvmPLKx5dH/t5l9TPe
-         xlwDertn92bhw3I/mtNl5O9IODXcFUrA+QNSJ3MKpV58NxI40L9C5CQesqxMSiKjt6
-         JTmOB+FoHf5AQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 21660F0393D;
-        Thu, 12 May 2022 18:40:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Thu, 12 May 2022 14:42:12 -0400
+Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBC6169702
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 11:42:11 -0700 (PDT)
+Received: by mail-ot1-x335.google.com with SMTP id a22-20020a9d3e16000000b00606aeb12ab6so3326242otd.7
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 11:42:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=2ktEM2WdQXhUkI4WC57ZsgNwZP50FQxfG+aaBGhL1/A=;
+        b=X84dqLkVxAqkq2YriqsNaydX5HWwTZIJ41RwxOz78cFKaBWcUViPGfxQQnUcKxODJU
+         jlRB3Elg852MYIjthVe2hc0onWRbJRVUKA34l44KQTcMpXQgOxe5HdlePDnD7l4gGpmK
+         0I71ECIHGd3G/uPaybBW+PILUaRLuQ7hXCD7A=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=2ktEM2WdQXhUkI4WC57ZsgNwZP50FQxfG+aaBGhL1/A=;
+        b=N1evFnnOPM4Vp3uNlsnTjPWGT0E4sMLuY0dRuVSS8A3vX7oUJEyK2UVeHBYMMkJAxm
+         eq9ayOtCMecIMUliEU3I5xNsYv78MPU2gctsQAU4Utkco53RdvvAiLk+9IgnDPktJOMP
+         Uh+QbbrCXVFy5mL4EbZPLubG0OmXBiSNztG2UxBQDjV+zp+bmNnWzOuU1OUVAh2pX23R
+         IQbnkq+kSewOKvc02PJ6ZTQtxm1zLcS82mfU7oHMzS/Y5jpF+p7Gt4rMgme9ZPjCaHG7
+         nGoDRNYYLfdJRCzPGs4PdsqPtquIcbWaXsXpcZwacLiTKY/gXO+EUlVzay0e5VCDtl8f
+         bj6w==
+X-Gm-Message-State: AOAM53109OBAHkI3JqPD5RvLqvkYv+TTRXV3MBjQxlvteswx5mODzW82
+        50GlL3TvUXcaq5Bo935RCSFizFE0jh30tNbOxkthvw==
+X-Google-Smtp-Source: ABdhPJwYZomkma75bHZi41atC+Y+imFA2JK98Jirq9TfqEF/WaUpsCWBVXGwHAmgE8CNURqOJUtqAkCO4SquH4yYBm0=
+X-Received: by 2002:a9d:63cd:0:b0:606:9e7f:79f8 with SMTP id
+ e13-20020a9d63cd000000b006069e7f79f8mr532146otl.77.1652380930973; Thu, 12 May
+ 2022 11:42:10 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Thu, 12 May 2022 11:42:10 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2] net/smc: non blocking recvmsg() return -EAGAIN when no
- data and signal_pending
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165238081313.29516.9624732494315218204.git-patchwork-notify@kernel.org>
-Date:   Thu, 12 May 2022 18:40:13 +0000
-References: <20220512030820.73848-1-guangguan.wang@linux.alibaba.com>
-In-Reply-To: <20220512030820.73848-1-guangguan.wang@linux.alibaba.com>
-To:     Guangguan Wang <guangguan.wang@linux.alibaba.com>
-Cc:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org,
-        tonylu@linux.alibaba.com, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20220512090429.1.I9804fcd5d6c8552ab25f598dd7a3ea71b15b55f0@changeid>
+References: <20220512090429.1.I9804fcd5d6c8552ab25f598dd7a3ea71b15b55f0@changeid>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Thu, 12 May 2022 11:42:10 -0700
+Message-ID: <CAE-0n51fD6H2+JmFLMWyWuamcXDWzLQaXuWpnanvwO8rDQcuKQ@mail.gmail.com>
+Subject: Re: [PATCH 1/3] dt-bindings: arm: qcom: Add sc7180 Chromebook board bindings
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Rob Herring <robh@kernel.org>
+Cc:     Matthias Kaehlcke <mka@chromium.org>,
+        Alexandru M Stan <amstan@chromium.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rajendra Nayak <quic_rjendra@quicinc.com>,
+        "Joseph S . Barrera III" <joebar@chromium.org>,
+        Julius Werner <jwerner@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Stephen Boyd <sboyd@codeaurora.org>,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Quoting Douglas Anderson (2022-05-12 09:04:45)
+> diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
+> index 5c06d1bfc046..399be67eb5d2 100644
+> --- a/Documentation/devicetree/bindings/arm/qcom.yaml
+> +++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+> @@ -214,11 +214,191 @@ properties:
+>                - qcom,ipq8074-hk10-c2
+>            - const: qcom,ipq8074
+>
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Side note: The top of this file describes a scheme that is basically not
+used by any compatibles in this file. I came up with that scheme many
+years ago so that we could upstream DTS files but still be able to
+generate the magic numbers that the bootloader picked DTBs by. I hope
+nobody assumes that description applies to "google," prefixed
+compatibles.
 
-On Thu, 12 May 2022 11:08:20 +0800 you wrote:
-> Non blocking sendmsg will return -EAGAIN when any signal pending
-> and no send space left, while non blocking recvmsg return -EINTR
-> when signal pending and no data received. This may makes confused.
-> As TCP returns -EAGAIN in the conditions described above. Align the
-> behavior of smc with TCP.
-> 
-> Fixes: 846e344eb722 ("net/smc: add receive timeout check")
-> Signed-off-by: Guangguan Wang <guangguan.wang@linux.alibaba.com>
-> Reviewed-by: Tony Lu <tonylu@linux.alibaba.com>
-> 
-> [...]
+Can the description can be amended to indicate the "google," scheme with
+rev and sku details? Or a bindings/arm/chrome.yaml file could be made
+and all google prefix chromeos board compatibles could be put in there
+regardless of SoC used.
 
-Here is the summary with links:
-  - [net,v2] net/smc: non blocking recvmsg() return -EAGAIN when no data and signal_pending
-    https://git.kernel.org/netdev/net/c/f3c46e41b32b
+> +      # Qualcomm Technologies, Inc. SC7180 IDP
+>        - items:
+>            - enum:
+>                - qcom,sc7180-idp
+>            - const: qcom,sc7180
+>
+> +      # Google CoachZ (rev1 - 2)
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Can we follow the design of rockchip.yaml and also include the marketing
+name (if published)? That helps folks match things up quicker.
