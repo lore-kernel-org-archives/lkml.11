@@ -2,95 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B25F2C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 07:44:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A469C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 07:46:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351140AbiELHoJ (ORCPT
+        id S1351148AbiELHqk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 03:44:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40138 "EHLO
+        Thu, 12 May 2022 03:46:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351099AbiELHoI (ORCPT
+        with ESMTP id S1351086AbiELHqf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 03:44:08 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE0E41A15E5
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 00:44:05 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id c12so5190146edv.10
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 00:44:05 -0700 (PDT)
+        Thu, 12 May 2022 03:46:35 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AC3533363
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 00:46:32 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id s14so4127033plk.8
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 00:46:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DrDbGhLo7XaClO51j9YJvUywtHQ0+/I5lMy5wJbGhKc=;
-        b=DiruNwr0imBp+10H53dtlHhIGwryjAwAWWCxLchPrV+5Ds5esyMWKjS3HAq8f4h/7O
-         VZ8MmEQaRkIYQ8sFGjoZL7WHBNcERhJ9n5ZHJMUFreePm93eQoOr4FDrKr4sWpp1fB4N
-         paupObkAaW1R41KdMj35taLnJ2UhWNnuoOsss=
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=JqKmOBdyvSAB2RQPk7pfmb7qvk5aEFRk658+MP9/8GA=;
+        b=X4zHvSs2OtqDypNXNfmaomwFgwxRLmD9XFu2ESdk4XQ3Uo78qZHFVISztp97Ta0n5C
+         zUvEnltHgHmaGdFZuMmZC4i1jGM+WMi80vrB6Vm7t3uylzs0fyVNgSsiyfuhb8ZSW4X6
+         c0sO9TyaPmS/P1YxVxgltuTIUOiideMbzhVdsJLHSkqYLoryuttMYunBYcna1c0UJwtH
+         cCsR/TuKr+aVNYoZCAszIiEnjCR58xTRjK7W0p/kFsxnxIfktE4pJmvNaRGj8wSfKYv9
+         mWMRe6RySEHVF+qBMm7MZvYjpgOtR164GYbLAE4He+rsh0CQ1XzMfh9Bou6AgBrOh+Fk
+         zQvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DrDbGhLo7XaClO51j9YJvUywtHQ0+/I5lMy5wJbGhKc=;
-        b=g6c+atKDr80rO98lI0qqLjxUsbz8wl9J1kM/XjjLWv/MNApjHslreQALfOVfMVBAXT
-         Q+2zPu+znH4pov9Hi+Dp2Gat5glipMylWNgTWDHPhCvdpCWt8tITwAJPO+kliZxw2cgn
-         EL7ejKJf/0nz8Sdx1oXT/Pl4u5Ksmw0C+7xaxNbS+Q/m8phiRJXkU06WBe/zt1RtJjA3
-         Sgdw/3Ec9S5CUiAq8jeYaJ6o0osryGkXjZjvoNXta6pBsiogGR8I2EjoZ8yBjeS5TFl4
-         UNf529h4GwDafv05UaJTDAUqqaoiGDxl8PRB6IpxzCl+cOk6KqHqXKWlxMbLVIW8yTXR
-         cWyQ==
-X-Gm-Message-State: AOAM533UwyrCqVFd6mM/WfzlxlJlTj+lwYZDV+gVbLO+tr3oRh8cq6yT
-        OFnKj3Xf9UoJuWpk3uzDgvdmzQ==
-X-Google-Smtp-Source: ABdhPJx58tfL7OheWyZCoXsZi7LTgs1k6P5QALJf6eVDOoqqZCFTxJOEZzC3/cKaG5YF/CTWwcEUwg==
-X-Received: by 2002:a05:6402:4241:b0:428:177b:5fd with SMTP id g1-20020a056402424100b00428177b05fdmr32950480edb.193.1652341444209;
-        Thu, 12 May 2022 00:44:04 -0700 (PDT)
-Received: from tom-ThinkPad-T14s-Gen-2i.station (net-188-217-59-245.cust.vodafonedsl.it. [188.217.59.245])
-        by smtp.gmail.com with ESMTPSA id cm10-20020a0564020c8a00b0042617ba63c0sm2192721edb.74.2022.05.12.00.44.03
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=JqKmOBdyvSAB2RQPk7pfmb7qvk5aEFRk658+MP9/8GA=;
+        b=IWPczXIE9gKf9NnYepBtUwRXExMoyy7JC0u3BuuL7SEby5Q5mpSKLM3W6Y43X/5Cue
+         iYYQnVjaBQEgavCmqAg8z0Qa4tTMrvs2ruZpHYtl7AN+CKMEjZ+1Kjr6POKvCEyTEUbR
+         CRueTh00D+HtJT2i/A58rSb8j1lNhCtB0IITLJdNaYRk/2OfdsLHHVtUPR+gmZJtcWz+
+         yzYauaDUrvWBy9pNWS0Ihod2CkLDG0zfu0Wx6UeZg1+qabDhLdZMJyz1f1Dzh0bD+1Xt
+         /bVJvxquzj5VaVmYpB6m+i4EKWCO2kTBB2psAjPUwFV6b8l6SY+VJ0msf4I8jPKZbIff
+         ZZ7Q==
+X-Gm-Message-State: AOAM533PBjRsCxuMQvCIl27ReeHpVrOcHRu9DWixHBS3a0yU7WijPBwQ
+        wiQaaeENM1PoYc/uaTqjq3/4cA==
+X-Google-Smtp-Source: ABdhPJwUqx1pbyIyvspuWNontshAmCuEcq5ZJyBlMDjfIBLljoOQH3ZGhCvC+DWmIKArMfbLLu2iAw==
+X-Received: by 2002:a17:90a:4d04:b0:1d9:3f18:f4dd with SMTP id c4-20020a17090a4d0400b001d93f18f4ddmr9482641pjg.111.1652341592056;
+        Thu, 12 May 2022 00:46:32 -0700 (PDT)
+Received: from localhost ([122.162.234.2])
+        by smtp.gmail.com with ESMTPSA id w8-20020aa78588000000b0050dc76281a8sm3009761pfn.130.2022.05.12.00.46.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 00:44:03 -0700 (PDT)
-From:   Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
-Cc:     tommaso.merciai@amarulasolutions.com,
-        linux-amarula@amarulasolutions.com, linuxfancy@googlegroups.com,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] ASoC: max98088: add support for reg_4a_cfg_bypass reg
-Date:   Thu, 12 May 2022 09:43:58 +0200
-Message-Id: <20220512074359.446999-1-tommaso.merciai@amarulasolutions.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 12 May 2022 00:46:31 -0700 (PDT)
+Date:   Thu, 12 May 2022 13:16:29 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Pierre Gondois <pierre.gondois@arm.com>
+Cc:     linux-kernel@vger.kernel.org, Ionela.Voinescu@arm.com,
+        Dietmar.Eggemann@arm.com, "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Robert Moore <robert.moore@intel.com>,
+        linux-acpi@vger.kernel.org, linux-pm@vger.kernel.org,
+        devel@acpica.org
+Subject: Re: [PATCH v1 4/5] cpufreq: CPPC: Enable fast_switch
+Message-ID: <20220512074629.3cewdk4pu3oydlfg@vireshk-i7>
+References: <20220511134559.1466925-1-pierre.gondois@arm.com>
+ <20220511134559.1466925-4-pierre.gondois@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220511134559.1466925-4-pierre.gondois@arm.com>
+User-Agent: NeoMutt/20180716-391-311a52
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add mixer controls support for M98088_REG_4A_CFG_BYPASS register
+On 11-05-22, 15:45, Pierre Gondois wrote:
+> From: Pierre Gondois <Pierre.Gondois@arm.com>
+> 
+> The communication mean of the _CPC desired performance can be
+> PCC, System Memory, System IO, or Functional Fixed Hardware.
+> 
+> commit b7898fda5bc7 ("cpufreq: Support for fast frequency switching")
+> fast_switching is 'for switching CPU frequencies from interrupt
+> context'.
+> Writes to SystemMemory and SystemIo are fast and suitable this.
+> This is not the case for PCC and might not be the case for FFH.
+> 
+> Enable fast_switching for the cppc_cpufreq driver in above cases.
+> 
+> Add cppc_allow_fast_switch() to check the desired performance
+> register address space and set fast_switching accordingly.
+> 
+> Signed-off-by: Pierre Gondois <pierre.gondois@arm.com>
+> ---
+>  drivers/acpi/cppc_acpi.c       | 17 +++++++++++++++++
+>  drivers/cpufreq/cppc_cpufreq.c | 24 ++++++++++++++++++++++++
+>  include/acpi/cppc_acpi.h       |  5 +++++
+>  3 files changed, 46 insertions(+)
 
-References:
- - https://datasheets.maximintegrated.com/en/ds/MAX98089.pdf p71, p113
+Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
 
-Signed-off-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
----
- sound/soc/codecs/max98088.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/sound/soc/codecs/max98088.c b/sound/soc/codecs/max98088.c
-index 429717d4ac5a..f8ec2f164e08 100644
---- a/sound/soc/codecs/max98088.c
-+++ b/sound/soc/codecs/max98088.c
-@@ -486,6 +486,11 @@ static const struct snd_kcontrol_new max98088_snd_controls[] = {
-        SOC_SINGLE("EQ1 Switch", M98088_REG_49_CFG_LEVEL, 0, 1, 0),
-        SOC_SINGLE("EQ2 Switch", M98088_REG_49_CFG_LEVEL, 1, 1, 0),
- 
-+       SOC_SINGLE("SPK Bypass Switch", M98088_REG_4A_CFG_BYPASS, 0, 1, 0),
-+       SOC_SINGLE("REC Bypass Switch", M98088_REG_4A_CFG_BYPASS, 1, 1, 0),
-+       SOC_SINGLE("MIC2 Bypass Switch", M98088_REG_4A_CFG_BYPASS, 4, 1, 0),
-+       SOC_SINGLE("INA Bypass Switch", M98088_REG_4A_CFG_BYPASS, 7, 1, 0),
-+
-        SOC_ENUM("EX Limiter Mode", max98088_exmode_enum),
-        SOC_ENUM("EX Limiter Threshold", max98088_ex_thresh_enum),
- 
 -- 
-2.25.1
-
+viresh
