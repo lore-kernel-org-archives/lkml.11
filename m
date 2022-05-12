@@ -2,65 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC01BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 09:25:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89874C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 09:25:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351997AbiELJZF (ORCPT
+        id S1351967AbiELJZK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 05:25:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49176 "EHLO
+        Thu, 12 May 2022 05:25:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352001AbiELJY4 (ORCPT
+        with ESMTP id S1351961AbiELJY5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 05:24:56 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2276532F5;
-        Thu, 12 May 2022 02:24:47 -0700 (PDT)
-Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KzRDP0WCtzhYwy;
-        Thu, 12 May 2022 17:24:05 +0800 (CST)
+        Thu, 12 May 2022 05:24:57 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26EF553709;
+        Thu, 12 May 2022 02:24:53 -0700 (PDT)
+Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KzRDk5vv1zgYlp;
+        Thu, 12 May 2022 17:24:22 +0800 (CST)
 Received: from huawei.com (10.175.127.227) by kwepemi500015.china.huawei.com
  (7.221.188.92) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 12 May
- 2022 17:24:44 +0800
+ 2022 17:24:51 +0800
 From:   Zheng Bin <zhengbin13@huawei.com>
-To:     <vburru@marvell.com>, <aayarekar@marvell.com>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+To:     <sre@kernel.org>, <linux-pm@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
 CC:     <zhengbin13@huawei.com>, <gaochao49@huawei.com>
-Subject: [PATCH -next] octeon_ep: add missing destroy_workqueue in octep_init_module
-Date:   Thu, 12 May 2022 17:38:37 +0800
-Message-ID: <20220512093837.1109761-1-zhengbin13@huawei.com>
+Subject: [PATCH -next] power: supply: ab8500: add missing destroy_workqueue in ab8500_charger_bind
+Date:   Thu, 12 May 2022 17:38:44 +0800
+Message-ID: <20220512093844.1109923-1-zhengbin13@huawei.com>
 X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
 X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
  kwepemi500015.china.huawei.com (7.221.188.92)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-octep_init_module misses destroy_workqueue in error path,
+ab8500_charger_bind misses destroy_workqueue in error path,
 this patch fixes that.
 
 Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
 ---
- drivers/net/ethernet/marvell/octeon_ep/octep_main.c | 1 +
+ drivers/power/supply/ab8500_charger.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
-index e020c81f3455..ebf78f6ca82b 100644
---- a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
-+++ b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
-@@ -1149,6 +1149,7 @@ static int __init octep_init_module(void)
- 	if (ret < 0) {
- 		pr_err("%s: Failed to register PCI driver; err=%d\n",
- 		       OCTEP_DRV_NAME, ret);
-+		destroy_workqueue(octep_wq);
+diff --git a/drivers/power/supply/ab8500_charger.c b/drivers/power/supply/ab8500_charger.c
+index d04d087caa50..a5d055a628e7 100644
+--- a/drivers/power/supply/ab8500_charger.c
++++ b/drivers/power/supply/ab8500_charger.c
+@@ -3378,6 +3378,7 @@ static int ab8500_charger_bind(struct device *dev)
+ 	ret = component_bind_all(dev, di);
+ 	if (ret) {
+ 		dev_err(dev, "can't bind component devices\n");
++		destroy_workqueue(di->charger_wq);
  		return ret;
  	}
 
