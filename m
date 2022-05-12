@@ -2,212 +2,294 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E03EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 04:49:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FD31C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 04:49:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348329AbiELEtV (ORCPT
+        id S1348429AbiELEtn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 00:49:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38944 "EHLO
+        Thu, 12 May 2022 00:49:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348630AbiELEsO (ORCPT
+        with ESMTP id S1348673AbiELEt2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 00:48:14 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A25C12E6BB
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 21:48:12 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id fv2so4084842pjb.4
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 21:48:12 -0700 (PDT)
+        Thu, 12 May 2022 00:49:28 -0400
+Received: from mail-ua1-x931.google.com (mail-ua1-x931.google.com [IPv6:2607:f8b0:4864:20::931])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 380EC3818A
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 21:49:27 -0700 (PDT)
+Received: by mail-ua1-x931.google.com with SMTP id p1so1584471uak.1
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 21:49:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=PAkVk8BocAZi8xx5Bbj7xf1f4YzNOFw5okdpKa0iEI4=;
-        b=4bvOJsiJ7H+iMwovOmEJ5MKB1IDLljeiHiJiueX8hJKXz5TRqTUl6cs8YEF5NwkuBJ
-         y/Q476QhqxIldjs/AjjGbcleQyJW7zI5MJOwIcluYLylkV+G5mDdMb4Rwv3732ttjN1H
-         nkkHr15gXUytyH61fQ3gR2anIT8xtgAsjlGqO6IoH9B9A4FvV+ZD5gr9x6WFG64JyrSD
-         HMXC0xlyyXElKGcmcTWZG5JuxuKg1+q6aChs29bRPgrR6ILFtmfzFo/Y9JStvIUNx8Vl
-         UfFlivFPn5pW5Gmr1/B0HO4TNaZtyo6LVt4B4K2nQ3uxbBY2F/2TBU+ebJFIYC8ym15D
-         qgaQ==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dZTDnUWLhC6cjTXpBhDBsxqrgSnxn4/8Ogucz8EU94s=;
+        b=D4JCCyKL+1RD+XHpB+jmPd5St1jxQqq2hTlRXQmLvp/mQplKm2rSHkWSxjslOs/aws
+         DY+FuY8f/UNVG4vnlsFn8uGi6Zly00KYEZ0vGfHnh0zSQcfDdf1Oog+L/d7Lyjkc1YSE
+         gKD5dy6CpL5eamPmyQiuMWPEyvZzOukSrH2t680iP4M9f6idiCrNLgvVct1wNxJGwOzw
+         wuDtLo/aqerLTd5w9SylSJXEukAl0ZLagVCifcsK9rphdylVwfq32iOP5bsgVBWEnBYo
+         xm+8vQEoAHeS2zp2c4gayV1oOyXsPDKdJYTE2mqdA08FGEbcFJ2+Fgbux8asFHByR9MY
+         6iYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=PAkVk8BocAZi8xx5Bbj7xf1f4YzNOFw5okdpKa0iEI4=;
-        b=67r70554dDYYO1mRNkqVnkHHWiCsOf2xGbUjptcJO60TCk70bcyt+MNEedJ6pYwGVt
-         TN5Cgl7r78htmCwlC52qqBzgIvQbYfhSrJCprfQOXBBImvejuI79KrXiKbTF07S5welO
-         TujCpX+NWZgjpcQnuZ9xLZeY1V77AF1gC/T0hNOQ1untmpxn62rcdqg0nuRmvTJ9dRen
-         BfisPrYFQCcrepTk5ctZPEoqVex8OEzmZxNXiXNYVbAtUxBVSjHZSWXByqQ3a3oc5ssx
-         JYZQCQAb1IR76uRJjThCAqdJPyTIVTKvJljDDQCfPAhr+1C2wvR8pH6kgookxUnY+YI6
-         J3xw==
-X-Gm-Message-State: AOAM530O4J235aBYYQVDoK2axscqiaO/KmQfp1wfAgUyvT9OqDi0Wyyh
-        ym9LQcOO32hWR8U0kiuWFq+zSw==
-X-Google-Smtp-Source: ABdhPJwtlc8Y2778hioM4oj564Xo0tmJ8W2pJn6pGvZxfL4ENesOAjEz5OnGrxBVyxU0aRv0Y9pRzA==
-X-Received: by 2002:a17:902:cec7:b0:15e:b8b0:b9c8 with SMTP id d7-20020a170902cec700b0015eb8b0b9c8mr29329217plg.155.1652330891750;
-        Wed, 11 May 2022 21:48:11 -0700 (PDT)
-Received: from localhost.localdomain ([139.177.225.253])
-        by smtp.gmail.com with ESMTPSA id 5-20020a170902e9c500b0015edc07dcf3sm2790824plk.21.2022.05.11.21.47.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 21:48:11 -0700 (PDT)
-From:   Gang Li <ligang.bdlg@bytedance.com>
-To:     akpm@linux-foundation.org
-Cc:     songmuchun@bytedance.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
-        svens@linux.ibm.com, ebiederm@xmission.com, keescook@chromium.org,
-        viro@zeniv.linux.org.uk, rostedt@goodmis.org, mingo@redhat.com,
-        peterz@infradead.org, acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
-        namhyung@kernel.org, david@redhat.com, imbrenda@linux.ibm.com,
-        apopple@nvidia.com, adobriyan@gmail.com,
-        stephen.s.brennan@oracle.com, ohoono.kwon@samsung.com,
-        haolee.swjtu@gmail.com, kaleshsingh@google.com,
-        zhengqi.arch@bytedance.com, peterx@redhat.com, shy828301@gmail.com,
-        surenb@google.com, ccross@google.com, vincent.whitchurch@axis.com,
-        tglx@linutronix.de, bigeasy@linutronix.de, fenghua.yu@intel.com,
-        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org,
-        Gang Li <ligang.bdlg@bytedance.com>
-Subject: [PATCH 4/5 v1] mm: enable per numa node rss_stat count
-Date:   Thu, 12 May 2022 12:46:33 +0800
-Message-Id: <20220512044634.63586-5-ligang.bdlg@bytedance.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220512044634.63586-1-ligang.bdlg@bytedance.com>
-References: <20220512044634.63586-1-ligang.bdlg@bytedance.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dZTDnUWLhC6cjTXpBhDBsxqrgSnxn4/8Ogucz8EU94s=;
+        b=xSmPiKXSCkge9FfpaPJLchNSPK9TgWcOV7mPuAbaRkHrcRGasxN16HJysZpt194MsC
+         8rDmXi/loERC8eRowvqrN0kIINRP4Ps23/zajsRSCMfqtBIAK1gQhwTbvw1u+ijhQ5iW
+         Myg8NBMWbJ9xSXE5/OyGoF8kvvMJv0e3SPJZFNB5jq2+WRRXAzdcXXQJ9WwlVq3InTBN
+         ouFQp04roEGtJ2p+I+tflcYNODS0OcW0m2dnzbRtMzbDmILuc+Mk269ybqcJG8XNtoqp
+         6le8fxqBueRY9lizWYT0iFFA+gFMLqYDvoiqIiGZefhgHtXLJjZ0pZjFvQVQTKS/veOF
+         2MWg==
+X-Gm-Message-State: AOAM533My4EGiZ8WFWVOGCfr0UuJwH2UML5Tl7AfQQRSMVo4V3jVVDgX
+        nxcJUeHEHQ7lOZhxAG8AcsQLv2Xq8b2yGnEH2MLD+w==
+X-Google-Smtp-Source: ABdhPJyQe63+/h17kay1cN4u1mpqQ7Ry8hCjFIfni3c4e/cCLhNVI8Z2+1O3/9TnmtB3OBOySV9qicWJyZxF/e4c4Ps=
+X-Received: by 2002:ab0:e14:0:b0:360:e13:e5d7 with SMTP id g20-20020ab00e14000000b003600e13e5d7mr15545369uak.95.1652330964925;
+ Wed, 11 May 2022 21:49:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAAPL-u9sVx94ACSuCVN8V0tKp+AMxiY89cro0japtyB=xNfNBw@mail.gmail.com>
+ <CAHbLzkq1YXXLMiREpGnzhJjPssu4WpSsnkTmrLJ=hAEhZVUr9w@mail.gmail.com>
+ <CAAPL-u-r2Pc_MaHQmKKNH_icAa_fH1COWb5qSPpr8xffREQ_cQ@mail.gmail.com>
+ <CAHbLzkrit3SDQUWPQ_RtTO_xFqxoqR9LpY=72afERapUgkjxZg@mail.gmail.com>
+ <1642ab64-7957-e1e6-71c5-ceab9c23bf41@huawei.com> <CAHbLzkqBVdaT5wwPuCXUMb8DwLEzHPaQwCKXsjsPBRTgZAAgnw@mail.gmail.com>
+ <c272e43d-47c5-d7d4-cb17-95dc6f28f5cd@huawei.com> <e1bf6346-fd93-13ee-0b38-c1d956df0e99@linux.ibm.com>
+ <CAAPL-u-Q1_19TM-J-QD9QWXGcp6A9xJS126xO54H83u+c569Tg@mail.gmail.com>
+ <87o804r08w.fsf@nvdebian.thelocal> <c6a4db88-b27f-0539-b66d-2b67533e0c9b@linux.ibm.com>
+In-Reply-To: <c6a4db88-b27f-0539-b66d-2b67533e0c9b@linux.ibm.com>
+From:   Wei Xu <weixugc@google.com>
+Date:   Wed, 11 May 2022 21:49:13 -0700
+Message-ID: <CAAPL-u_XHjSqN4gVPmqyqhQuBt_9HOvfj+TveaVp2=75ViN69A@mail.gmail.com>
+Subject: Re: RFC: Memory Tiering Kernel Interfaces
+To:     Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>
+Cc:     Alistair Popple <apopple@nvidia.com>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Huang Ying <ying.huang@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Linux MM <linux-mm@kvack.org>,
+        Greg Thelen <gthelen@google.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Michal Hocko <mhocko@kernel.org>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Tim Chen <tim.c.chen@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now we have all the infrastructure ready. Modify `get/add/inc/dec_mm_counter`,
-`sync_mm_rss`, `add_mm_counter_fast` and `add_mm_rss_vec` to enable per numa
-node rss_stat count.
+On Wed, May 11, 2022 at 9:40 PM Aneesh Kumar K V
+<aneesh.kumar@linux.ibm.com> wrote:
+>
+> On 5/11/22 12:42 PM, Alistair Popple wrote:
+> >
+> > Wei Xu <weixugc@google.com> writes:
+> >
+> >> On Tue, May 10, 2022 at 5:10 AM Aneesh Kumar K V
+> >> <aneesh.kumar@linux.ibm.com> wrote:
+> >>>
+> >>> On 5/10/22 3:29 PM, Hesham Almatary wrote:
+> >>>> Hello Yang,
+> >>>>
+> >>>> On 5/10/2022 4:24 AM, Yang Shi wrote:
+> >>>>> On Mon, May 9, 2022 at 7:32 AM Hesham Almatary
+> >>>>> <hesham.almatary@huawei.com> wrote:
+> >>>
+> >>>
+> >>> ...
+> >>>
+> >>>>>>
+> >>>>>> node 0 has a CPU and DDR memory in tier 0, node 1 has GPU and DDR memory
+> >>>>>> in tier 0,
+> >>>>>> node 2 has NVMM memory in tier 1, node 3 has some sort of bigger memory
+> >>>>>> (could be a bigger DDR or something) in tier 2. The distances are as
+> >>>>>> follows:
+> >>>>>>
+> >>>>>> --------------          --------------
+> >>>>>> |   Node 0   |          |   Node 1   |
+> >>>>>> |  -------   |          |  -------   |
+> >>>>>> | |  DDR  |  |          | |  DDR  |  |
+> >>>>>> |  -------   |          |  -------   |
+> >>>>>> |            |          |            |
+> >>>>>> --------------          --------------
+> >>>>>>           | 20               | 120    |
+> >>>>>>           v                  v        |
+> >>>>>> ----------------------------       |
+> >>>>>> | Node 2     PMEM          |       | 100
+> >>>>>> ----------------------------       |
+> >>>>>>           | 100                       |
+> >>>>>>           v                           v
+> >>>>>> --------------------------------------
+> >>>>>> | Node 3    Large mem                |
+> >>>>>> --------------------------------------
+> >>>>>>
+> >>>>>> node distances:
+> >>>>>> node   0    1    2    3
+> >>>>>>       0  10   20   20  120
+> >>>>>>       1  20   10  120  100
+> >>>>>>       2  20  120   10  100
+> >>>>>>       3  120 100  100   10
+> >>>>>>
+> >>>>>> /sys/devices/system/node/memory_tiers
+> >>>>>> 0-1
+> >>>>>> 2
+> >>>>>> 3
+> >>>>>>
+> >>>>>> N_TOPTIER_MEMORY: 0-1
+> >>>>>>
+> >>>>>>
+> >>>>>> In this case, we want to be able to "skip" the demotion path from Node 1
+> >>>>>> to Node 2,
+> >>>>>>
+> >>>>>> and make demotion go directely to Node 3 as it is closer, distance wise.
+> >>>>>> How can
+> >>>>>>
+> >>>>>> we accommodate this scenario (or at least not rule it out as future
+> >>>>>> work) with the
+> >>>>>>
+> >>>>>> current RFC?
+> >>>>> If I remember correctly NUMA distance is hardcoded in SLIT by the
+> >>>>> firmware, it is supposed to reflect the latency. So I suppose it is
+> >>>>> the firmware's responsibility to have correct information. And the RFC
+> >>>>> assumes higher tier memory has better performance than lower tier
+> >>>>> memory (latency, bandwidth, throughput, etc), so it sounds like a
+> >>>>> buggy firmware to have lower tier memory with shorter distance than
+> >>>>> higher tier memory IMHO.
+> >>>>
+> >>>> You are correct if you're assuming the topology is all hierarchically
+> >>>>
+> >>>> symmetric, but unfortuantely, in real hardware (e.g., my example above)
+> >>>>
+> >>>> it is not. The distance/latency between two nodes in the same tier
+> >>>>
+> >>>> and a third node, is different. The firmware still provides the correct
+> >>>>
+> >>>> latency, but putting a node in a tier is up to the kernel/user, and
+> >>>>
+> >>>> is relative: e.g., Node 3 could belong to tier 1 from Node 1's
+> >>>>
+> >>>> perspective, but to tier 2 from Node 0's.
+> >>>>
+> >>>>
+> >>>> A more detailed example (building on my previous one) is when having
+> >>>>
+> >>>> the GPU connected to a switch:
+> >>>>
+> >>>> ----------------------------
+> >>>> | Node 2     PMEM          |
+> >>>> ----------------------------
+> >>>>         ^
+> >>>>         |
+> >>>> --------------          --------------
+> >>>> |   Node 0   |          |   Node 1   |
+> >>>> |  -------   |          |  -------   |
+> >>>> | |  DDR  |  |          | |  DDR  |  |
+> >>>> |  -------   |          |  -------   |
+> >>>> |    CPU     |          |    GPU     |
+> >>>> --------------          --------------
+> >>>>          |                  |
+> >>>>          v                  v
+> >>>> ----------------------------
+> >>>> |         Switch           |
+> >>>> ----------------------------
+> >>>>          |
+> >>>>          v
+> >>>> --------------------------------------
+> >>>> | Node 3    Large mem                |
+> >>>> --------------------------------------
+> >>>>
+> >>>> Here, demoting from Node 1 to Node 3 directly would be faster as
+> >>>>
+> >>>> it only has to go through one hub, compared to demoting from Node 1
+> >>>>
+> >>>> to Node 2, where it goes through two hubs. I hope that example
+> >>>>
+> >>>> clarifies things a little bit.
+> >>>>
+> >>>
+> >>> Alistair mentioned that we want to consider GPU memory to be expensive
+> >>> and want to demote from GPU to regular DRAM. In that case for the above
+> >>> case we should end up with
+> >>>
+> >>>
+> >>> tier 0 - > Node3
+> >>> tier 1 ->  Node0, Node1
+> >>> tier 2 ->  Node2
+> >
+> > I'm a little bit confused by the tiering here as I don't think it's
+> > quite what we want. As pointed out GPU memory is expensive and therefore
+> > we don't want anything demoting to it. That implies it should be in the
+> > top tier:
+> >
+>
+>
+> I didn't look closely at the topology and assumed that Node3 is the GPU
+> connected to the switch. Hence all the confusion.
+>
+>
+> > tier 0 -> Node1
+> > tier 1 -> Node0, Node3
+> > tier 2 -> Node2
+> >
+> > Hence:
+> >
+> > node 0: allowed=2
+> > node 1: allowed=0,3,2
+> > node 2: allowed=empty
+> > node 3: allowed=2
+>
+> looks good to be default and simple.
+>
+> >
+> > Alternatively Node3 could be put in tier 2 which would prevent demotion
+> > to PMEM via the switch/CPU:
+> >
+> > tier 0 -> Node1
+> > tier 1 -> Node0
+> > tier 2 -> Node2, Node3
+> >
+> > node 0: allowed=2,3
+> > node 1: allowed=0,3,2
+> > node 2: allowed=empty
+> > node 3: allowed=empty
+> >
+>
+> and this can be configured via userspace?
 
-Signed-off-by: Gang Li <ligang.bdlg@bytedance.com>
----
- include/linux/mm.h | 42 +++++++++++++++++++++++++++++++++++-------
- mm/memory.c        | 20 ++++++++++++++++++--
- 2 files changed, 53 insertions(+), 9 deletions(-)
+The per-node tier customization interface that I just mentioned should
+support such reconfigurations.
 
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index cde5529285d6..f0f21065b81b 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -1994,8 +1994,18 @@ static inline bool get_user_page_fast_only(unsigned long addr,
-  */
- static inline unsigned long get_mm_counter(struct mm_struct *mm, int member, int node)
- {
--	long val = atomic_long_read(&mm->rss_stat.count[member]);
-+	long val;
- 
-+	WARN_ON(node == NUMA_NO_NODE && member == MM_NO_TYPE);
-+
-+	if (node == NUMA_NO_NODE)
-+		val = atomic_long_read(&mm->rss_stat.count[member]);
-+	else
-+#ifdef CONFIG_NUMA
-+		val = atomic_long_read(&mm->rss_stat.numa_count[node]);
-+#else
-+		val = 0;
-+#endif
- #ifdef SPLIT_RSS_COUNTING
- 	/*
- 	 * counter is updated in asynchronous manner and may go to minus.
-@@ -2012,23 +2022,41 @@ void mm_trace_rss_stat(struct mm_struct *mm, int member, long member_count, int
- 
- static inline void add_mm_counter(struct mm_struct *mm, int member, long value, int node)
- {
--	long count = atomic_long_add_return(value, &mm->rss_stat.count[member]);
-+	long member_count = 0, numa_count = 0;
- 
--	mm_trace_rss_stat(mm, member, count, NUMA_NO_NODE, 0, value);
-+	if (member != MM_NO_TYPE)
-+		member_count = atomic_long_add_return(value, &mm->rss_stat.count[member]);
-+#ifdef CONFIG_NUMA
-+	if (node != NUMA_NO_NODE)
-+		numa_count = atomic_long_add_return(value, &mm->rss_stat.numa_count[node]);
-+#endif
-+	mm_trace_rss_stat(mm, member, member_count, node, numa_count, value);
- }
- 
- static inline void inc_mm_counter(struct mm_struct *mm, int member, int node)
- {
--	long count = atomic_long_inc_return(&mm->rss_stat.count[member]);
-+	long member_count = 0, numa_count = 0;
- 
--	mm_trace_rss_stat(mm, member, count, NUMA_NO_NODE, 0, 1);
-+	if (member != MM_NO_TYPE)
-+		member_count = atomic_long_inc_return(&mm->rss_stat.count[member]);
-+#ifdef CONFIG_NUMA
-+	if (node != NUMA_NO_NODE)
-+		numa_count = atomic_long_inc_return(&mm->rss_stat.numa_count[node]);
-+#endif
-+	mm_trace_rss_stat(mm, member, member_count, node, numa_count, 1);
- }
- 
- static inline void dec_mm_counter(struct mm_struct *mm, int member, int node)
- {
--	long count = atomic_long_dec_return(&mm->rss_stat.count[member]);
-+	long member_count = 0, numa_count = 0;
- 
--	mm_trace_rss_stat(mm, member, count, NUMA_NO_NODE, 0, -1);
-+	if (member != MM_NO_TYPE)
-+		member_count = atomic_long_dec_return(&mm->rss_stat.count[member]);
-+#ifdef CONFIG_NUMA
-+	if (node != NUMA_NO_NODE)
-+		numa_count = atomic_long_dec_return(&mm->rss_stat.numa_count[node]);
-+#endif
-+	mm_trace_rss_stat(mm, member, member_count, node, numa_count, -1);
- }
- 
- /* Optimized variant when page is already known not to be PageAnon */
-diff --git a/mm/memory.c b/mm/memory.c
-index 2d3040a190f6..f7b67da772b2 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -188,6 +188,14 @@ void sync_mm_rss(struct mm_struct *mm)
- 			current->rss_stat.count[i] = 0;
- 		}
- 	}
-+#ifdef CONFIG_NUMA
-+	for_each_node(i) {
-+		if (current->rss_stat.numa_count[i]) {
-+			add_mm_counter(mm, MM_NO_TYPE, current->rss_stat.numa_count[i], i);
-+			current->rss_stat.numa_count[i] = 0;
-+		}
-+	}
-+#endif
- 	current->rss_stat.events = 0;
- }
- 
-@@ -195,9 +203,12 @@ static void add_mm_counter_fast(struct mm_struct *mm, int member, int val, int n
- {
- 	struct task_struct *task = current;
- 
--	if (likely(task->mm == mm))
-+	if (likely(task->mm == mm)) {
- 		task->rss_stat.count[member] += val;
--	else
-+#ifdef CONFIG_NUMA
-+		task->rss_stat.numa_count[node] += val;
-+#endif
-+	} else
- 		add_mm_counter(mm, member, val, node);
- }
- #define inc_mm_counter_fast(mm, member, node) add_mm_counter_fast(mm, member, 1, node)
-@@ -508,6 +519,11 @@ static inline void add_mm_rss_vec(struct mm_struct *mm, int *rss, int *numa_rss)
- 	for (i = 0; i < NR_MM_COUNTERS; i++)
- 		if (rss[i])
- 			add_mm_counter(mm, i, rss[i], NUMA_NO_NODE);
-+#ifdef CONFIG_NUMA
-+	for_each_node(i)
-+		if (numa_rss[i] != 0)
-+			add_mm_counter(mm, MM_NO_TYPE, numa_rss[i], i);
-+#endif
- }
- 
- /*
--- 
-2.20.1
-
+> > Both of these would be an improvement over the current situation
+> > upstream, which demotes everything to GPU memory and doesn't support
+> > demoting from the GPU (meaning reclaim on GPU memory pages everything to
+> > disk).
+> >
+> >>>
+> >>> Hence
+> >>>
+> >>>    node 0: allowed=2
+> >>>    node 1: allowed=2
+> >>>    node 2: allowed = empty
+> >>>    node 3: allowed = 0-1 , based on fallback order 1, 0
+> >>
+> >> If we have 3 tiers as defined above, then we'd better to have:
+> >>
+> >> node 0: allowed = 2
+> >> node 1: allowed = 2
+> >> node 2: allowed = empty
+> >> node 3: allowed = 0-2, based on fallback order: 1,0,2
+> >>
+> >> The firmware should provide the node distance values to reflect that
+> >> PMEM is slowest and should have the largest distance away from node 3.
+> >
+> > Right. In my above example firmware would have to provide reasonable
+> > distance values to ensure optimal fallback order.
+> >
+> >>> -aneesh
+> >>>
+> >>>
+>
