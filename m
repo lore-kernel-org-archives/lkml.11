@@ -2,131 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF785C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 06:55:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6FD9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 06:56:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350596AbiELGze (ORCPT
+        id S1350666AbiELG4x (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 02:55:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43750 "EHLO
+        Thu, 12 May 2022 02:56:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238889AbiELGz0 (ORCPT
+        with ESMTP id S1350649AbiELG4b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 02:55:26 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E21EE227837
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 23:55:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652338522;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=KIW16efPZTPXF7vXmoAKJ6+LI7vVPqzYCyoW+qf9gM4=;
-        b=ZjNEr+S9uMezBanGXquw8oH2+rmygi6bWJ5XnCe7RZCgW+3fPe9E8meLbTDU4UIM8DP0uQ
-        t1hZEAjd0YgrUsnsGTSoN46XXSKUwrvV9JutkIAuMpmD8hA2QnFidXNBdOPcSaRckZNAj0
-        JUdGWKwsUyTWDFkevejhohgGRXqFtdU=
-Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com
- [209.85.215.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-556-DnAkOJXKMr270pJdMo7Xdw-1; Thu, 12 May 2022 02:55:21 -0400
-X-MC-Unique: DnAkOJXKMr270pJdMo7Xdw-1
-Received: by mail-pg1-f199.google.com with SMTP id f7-20020a6547c7000000b003c600995546so2186402pgs.5
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 23:55:21 -0700 (PDT)
+        Thu, 12 May 2022 02:56:31 -0400
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1260D1AF05;
+        Wed, 11 May 2022 23:56:28 -0700 (PDT)
+Received: by mail-wm1-f42.google.com with SMTP id o12-20020a1c4d0c000000b00393fbe2973dso4529746wmh.2;
+        Wed, 11 May 2022 23:56:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=KIW16efPZTPXF7vXmoAKJ6+LI7vVPqzYCyoW+qf9gM4=;
-        b=U2RGmQbxOomS+aMJV0nzJrmUB7PrdbXufq6ZenMsMSTkVFczDe3oCx0sDphvHKnI4b
-         ghgYtk7E7GL/Fukgi6UwIGvxNQcZ8j6b7xhtyW0M4f3oi6Fym3uMKXfjNHnnQvFkhzg5
-         UXRbua1pU3wuBlMgDypXaAXP3XE8h5vOz0kUggQAdjJaMqj8cdwi+utUaCSWVQvbRgYN
-         jux9zbgR2i+eKvTs23obCW77do/hrSdKS/113N14DXwp2IdokXeN9x3h9v6g7S4TZDa+
-         YayHayK80q8U1JuVSr7EPdINUq4wOvJhI7hkbDBp6wXmsRETwPOmxxjW52UOQx15xLa7
-         zBhA==
-X-Gm-Message-State: AOAM530ypSwPCDn8Z7tgmHXCpNzUDcTsVRmVuaHnVH+TrDE1SSqijLhM
-        oI1iQ3I6gvP789ddjv8HuIKX0TWttwpaEq7TJXMrF3EHzLZGnqINyuHbQ++NCzDYuY5mFtkz/AA
-        flRDX33vY/2ujytCFDpHqAAUw
-X-Received: by 2002:a63:80c6:0:b0:3c2:88f0:9035 with SMTP id j189-20020a6380c6000000b003c288f09035mr24278687pgd.606.1652338520732;
-        Wed, 11 May 2022 23:55:20 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzkdTJ7sQGjP+3Rj3u8vSGTO9HWGPdcwyACt6Ww8UmyQOmDfjVrRB+T+y5XgfYVWwoXO1Gqrg==
-X-Received: by 2002:a63:80c6:0:b0:3c2:88f0:9035 with SMTP id j189-20020a6380c6000000b003c288f09035mr24278669pgd.606.1652338520467;
-        Wed, 11 May 2022 23:55:20 -0700 (PDT)
-Received: from localhost ([240e:3a1:2e9:efa0:e73c:e550:ac9e:58fd])
-        by smtp.gmail.com with ESMTPSA id l12-20020a170902d34c00b0015e8d4eb296sm3022491plk.224.2022.05.11.23.55.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 23:55:20 -0700 (PDT)
-Date:   Thu, 12 May 2022 14:54:09 +0800
-From:   Coiby Xu <coxu@redhat.com>
-To:     Baoquan He <bhe@redhat.com>
-Cc:     kexec@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
-        Michal Suchanek <msuchanek@suse.de>,
-        Dave Young <dyoung@redhat.com>, Will Deacon <will@kernel.org>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Mimi Zohar <zohar@linux.ibm.com>, Chun-Yi Lee <jlee@suse.com>,
-        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v7 2/4] kexec, KEYS: make the code in
- bzImage64_verify_sig generic
-Message-ID: <20220512065409.xxegsttgwfh63fsv@Rk>
-References: <20220512023402.9913-1-coxu@redhat.com>
- <20220512023402.9913-3-coxu@redhat.com>
- <Ynx1DUvDTL1R4Pj5@MiWiFi-R3L-srv>
- <YnyEafqEcSh/wRRN@MiWiFi-R3L-srv>
- <20220512043310.v3e22423ybe4z65e@Rk>
- <Ynynwe7Q0+0DSABQ@MiWiFi-R3L-srv>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mugOzymoMq4dVIDoH9hEwumMUl2ghOS/UvtuYdo5Zns=;
+        b=Nmckd5Sg3CyCsWilcYjNkEDhB06AaNqwy9AmISORBqHVUhJ0u6nzM14hqRT3tzzV2L
+         6gDLHwGV9khFInAQgerI4sXHLatUU2Zewn48XlaQay5T7rdOzV33c2x8St7wZvvpDYMG
+         7lEORhwZsXzGidicyJEd6VuI23YL6vynmqa2pHkDs0OyWZvohQewPZ/PgNYoX4tNVen1
+         K6jLXmr+g8624W6Vv+pBqe2hOoc96CwIBAfw8L6gYgS4UrOjI+lmIPvjsmdslVnJtZb2
+         Vq7H1AvMAbhKUFgpaEA8yNJweWiYg7k5Gg1PpRhprkbAjIRHNWGgTVrj2OocqVDHdJor
+         urbg==
+X-Gm-Message-State: AOAM533mcZFBC2pZvMHG1R1GmvZ7ShEiYmBzZokK+mXPUeseLf5vg4Gu
+        QeuwDsO9TOmDK3CPogm82GFAd7zrXw5ZljYc/SM6uiA42ZMDxZAs
+X-Google-Smtp-Source: ABdhPJzVrw+X68hLS5mQxWV0WiQDF01gEzNjVdQKU8s5VbcI6nntk1RmY5YdZyo/S5xfx7pYfpFzDUgJJxwwKaRWS5k=
+X-Received: by 2002:a05:600c:2e12:b0:395:b6ae:f551 with SMTP id
+ o18-20020a05600c2e1200b00395b6aef551mr6697479wmf.36.1652338586578; Wed, 11
+ May 2022 23:56:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <Ynynwe7Q0+0DSABQ@MiWiFi-R3L-srv>
+References: <20220510162809.5511-1-harini.katakam@xilinx.com> <20220511154024.5e231704@kernel.org>
+In-Reply-To: <20220511154024.5e231704@kernel.org>
+From:   Harini Katakam <harinik@xilinx.com>
+Date:   Thu, 12 May 2022 12:26:15 +0530
+Message-ID: <CAFcVECK2gARjppHjALg4w2v94FPgo6BvqNrZvCY-4x_mJbh7oQ@mail.gmail.com>
+Subject: Re: [PATCH v2] net: macb: Disable macb pad and fcs for fragmented packets
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Harini Katakam <harini.katakam@xilinx.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        David Miller <davem@davemloft.net>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        dumazet@google.com, Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 02:22:57PM +0800, Baoquan He wrote:
->On 05/12/22 at 12:33pm, Coiby Xu wrote:
-[...]
->> > Just to make clear , is this patch fixing an issue, or it's just an
->> > preparation for later patch's use?
->> >
->> > Or I should ask in another way, any problem is solved with this patch?
->>
->> At least it doesn't fix an issue that satisfy the criteria listed in
->> https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+Hi Jakub,
+
+On Thu, May 12, 2022 at 4:10 AM Jakub Kicinski <kuba@kernel.org> wrote:
 >
->Then it should not be CC-ed to stable.
-
-OK, I'll drop "CC:" in next version.
-
+> On Tue, 10 May 2022 21:58:09 +0530 Harini Katakam wrote:
+> > data_len in skbuff represents bytes resident in fragment lists or
+> > unmapped page buffers. For such packets, when data_len is non-zero,
+> > skb_put cannot be used - this will throw a kernel bug. Hence do not
+> > use macb_pad_and_fcs for such fragments.
+> >
+> > Fixes: 653e92a9175e ("net: macb: add support for padding and fcs computation")
+> > Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
+> > Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+> > Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+> > Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 >
->>
->> >
->> >
->> > > > Reviewed-by: Michal Suchanek <msuchanek@suse.de>
->> > > > Signed-off-by: Coiby Xu <coxu@redhat.com>
->> > > > ---
->> > >
->> > > You can put the note here, it won't be added to commit log when merged.
->> > > Maybe it can be removed when merged.
->>
->> Thanks for the suggestion! Shall I send a version to fix this problem or
->> can I just bother the maintainer to remove it?
+> I'm confused. When do we *have to* compute the FCS?
 >
->Better send a clean one, it will save maintainer's time, they can pick
->it directly.
+> This commit seems to indicate that we can't put the FCS so it's okay to
+> ask the HW to do it. But that's backwards. We should ask the HW to
+> compute the FCS whenever possible, to save the CPU cycles.
+>
+> Is there an unstated HW limitation here?
 
-Thanks for the confirmation! I'll simply delete them because,
-1. these notes don't make sense anymore if I don't CC the patches to the stable
-    tree 
-2. I've explained in the cover letter the first two patches
-    are the prerequisite patches for the 3rd patch.
+Thanks for the review. The top level summary is that there CSUM
+offload is enabled by
+via NETIF_F_HW_CSUM (and universally in IP registers) and then
+selectively disabled for
+certain packets (using NOCRC bit in buffer descriptors) where the
+application intentionally
+performs CSUM and HW should not replace it, for ex. forwarding usecases.
+I'm modifying this list of exceptions with this patch.
 
--- 
-Best regards,
-Coiby
+This was due to HW limitation (see
+https://www.spinics.net/lists/netdev/msg505065.html).
+Further to this, Claudiu added macb_pad_and_fcs support. Please see
+comment starting
+with "It was reported in" below:
+https://lists.openwall.net/netdev/2018/10/30/76
 
+Hope this helps.
+I'll fix the nit and send another version.
+
+Regards,
+Harini
