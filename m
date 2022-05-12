@@ -2,120 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A27EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:57:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B97EC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:58:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355621AbiELO5L (ORCPT
+        id S1355653AbiELO6S convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 10:57:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46464 "EHLO
+        Thu, 12 May 2022 10:58:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355261AbiELO46 (ORCPT
+        with ESMTP id S1347344AbiELO6Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 10:56:58 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7F5C62110;
-        Thu, 12 May 2022 07:56:54 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24CDEieF013709;
-        Thu, 12 May 2022 14:56:51 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=OMTehq1XmIz0jvyyrlNCokWf0qJnSvtY2n6I6yV8cJU=;
- b=NCTUgIcBSMWOc7AaVGbIEUo6PV5zTQvVZ+74j7YKZaPgFzNz/WPkC8zumY/vxFaWuz8G
- uJUKseaWoMzbGLjzF5zPTK46VFvbynTDjs3dnsMhy1di8NjbE2VuXVFTioIHdmPcRDtX
- bjr8mUaMCPjHz7q6cmBtJ4KmDyi7TipfQ3Qfxpk3GahiqOQXR/aVO3Hs7UtHrPbi4pVL
- NdUQucyBR6Hg/XcvTI/ickt4bF89EwwN5khFPVDcDozThdtJphafNiHIHXyfleGkUWj4
- fo7JcpokzedK+t0kK7CczxAwLLjLOmJqd6pqlwerucEzG6F1KntfIjKVgwexe+XyOYws 5Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g12xytts5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 May 2022 14:56:50 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24CEmPGL016086;
-        Thu, 12 May 2022 14:56:50 GMT
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g12xyttrc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 May 2022 14:56:50 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24CEnoCX013435;
-        Thu, 12 May 2022 14:56:47 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma04fra.de.ibm.com with ESMTP id 3g0ma1gyjg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 May 2022 14:56:47 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24CEuijo47776016
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 12 May 2022 14:56:44 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6440611C04C;
-        Thu, 12 May 2022 14:56:44 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E7E1B11C04A;
-        Thu, 12 May 2022 14:56:43 +0000 (GMT)
-Received: from sig-9-145-9-18.uk.ibm.com (unknown [9.145.9.18])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 12 May 2022 14:56:43 +0000 (GMT)
-Message-ID: <f34130034637278c9999cf6d430be558cb0c2318.camel@linux.ibm.com>
-Subject: Re: [PATCH RESEND v5 1/4] PCI: Clean up pci_scan_slot()
-From:   Niklas Schnelle <schnelle@linux.ibm.com>
-To:     Bjorn Helgaas <bhelgaas@google.com>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>
-Cc:     linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-s390@vger.kernel.org, linux-pci@vger.kernel.org
-Date:   Thu, 12 May 2022 16:56:42 +0200
-In-Reply-To: <20220505083839.1315705-2-schnelle@linux.ibm.com>
-References: <20220505083839.1315705-1-schnelle@linux.ibm.com>
-         <20220505083839.1315705-2-schnelle@linux.ibm.com>
+        Thu, 12 May 2022 10:58:16 -0400
+Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com [209.85.219.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87DA45DD1A;
+        Thu, 12 May 2022 07:58:15 -0700 (PDT)
+Received: by mail-yb1-f182.google.com with SMTP id y76so10299937ybe.1;
+        Thu, 12 May 2022 07:58:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=4O1k7I/CH4N/aEPXR6lSNVfiMtZH2gmEFshql9wDoQk=;
+        b=E/if2hswEDyBPgftn1NQ926dNZQN02lVNY9JHrDcJXXNYGHjCgxXwCmdI4CRIeHToc
+         qBn32hd3Vp58eEc1p8pGZQtd8o40MAKfCilKE7TLS9TL9jZWGIpGZL8cpfeqANLCrNmV
+         GXh2Nl6ZLIXO1yTV4N0EhVtk3V2I158Z/Bj9F7jWqgVNqY2GfKEOlKXHnLZ5WSWav/m6
+         CbTjhxgum+i4TZXcTqJl/RJOBj5fQVRfvn5NezFUkepY/L3d1ZIdcg8RMcJyHRw+3Ah9
+         kDvM22XAft9Y7Ufiim3e0pUmSTUP4JdLNecVpMofMijhRqmWQsI1T82v0kmW9paqX3OW
+         LiZA==
+X-Gm-Message-State: AOAM53003o+dzSwkgMD+kd6R5CJkrt6XpfuMdUNknZA1kuijR2pjPkSk
+        TZhWEuilI975MMnjGcPEavHGspqjKNEslagxY8E=
+X-Google-Smtp-Source: ABdhPJylzAVZ4tD7vda9G2EjXUeC2XbuORzktWXOI46xz8R/5rp8jCvCD0EwdBJj3k4nCf0F+jmlgu/SFS6MXbcVW70=
+X-Received: by 2002:a25:c0d5:0:b0:64a:c6dd:1a00 with SMTP id
+ c204-20020a25c0d5000000b0064ac6dd1a00mr160093ybf.365.1652367494726; Thu, 12
+ May 2022 07:58:14 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220510131136.1103-1-mario.limonciello@amd.com> <CAPpJ_efn1YiLRtbhNwDEr8j+jJfZrHBM9fukDJpuH0czJpgRTQ@mail.gmail.com>
+In-Reply-To: <CAPpJ_efn1YiLRtbhNwDEr8j+jJfZrHBM9fukDJpuH0czJpgRTQ@mail.gmail.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 12 May 2022 16:58:03 +0200
+Message-ID: <CAJZ5v0iUM0oYxFnRZ9g_UGOY43v9ori=pdO2FWVO+L8hKKYfAw@mail.gmail.com>
+Subject: Re: [PATCH] ACPI: PM: Block ASUS B1400CEAE from suspend to idle by default
+To:     Jian-Hong Pan <jhp@endlessos.org>,
+        Mario Limonciello <mario.limonciello@amd.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        "open list:ACPI" <linux-acpi@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: fOs3S_ad3T-Zy_kK72KB4445G0h2S1dR
-X-Proofpoint-ORIG-GUID: e6GeGN562Lkekf1wksfaStG8ZKiR2OpF
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-12_10,2022-05-12_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
- priorityscore=1501 suspectscore=0 lowpriorityscore=0 adultscore=0
- mlxlogscore=473 spamscore=0 malwarescore=0 clxscore=1015 mlxscore=0
- impostorscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2202240000 definitions=main-2205120067
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-05-05 at 10:38 +0200, Niklas Schnelle wrote:
-> While determining the next PCI function is factored out of
-> pci_scan_slot() into next_fn() the former still handles the first
-> function as a special case. This duplicates the code from the scan loop.
-> 
-> Furthermore the non ARI branch of next_fn() is generally hard to
-> understand and especially the check for multifunction devices is hidden
-> in the handling of NULL devices for non-contiguous multifunction. It
-> also signals that no further functions need to be scanned by returning
-> 0 via wraparound and this is a valid function number.
-> 
-> Improve upon this by transforming the conditions in next_fn() to be
-> easier to understand.
-> 
-> By changing next_fn() to return -ENODEV instead of 0 when there is no
-> next function we can then handle the initial function inside the loop
-> and deduplicate the shared handling. This also makes it more explicit
-> that only function 0 must exist.
-> 
-> No functional change is intended.
-> 
-> Cc: Jan Kiszka <jan.kiszka@siemens.com>
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> ---
+On Wed, May 11, 2022 at 4:40 AM Jian-Hong Pan <jhp@endlessos.org> wrote:
+>
+> Mario Limonciello <mario.limonciello@amd.com> 於 2022年5月10日 週二 下午9:11寫道：
+> >
+> > ASUS B1400CEAE fails to resume from suspend to idle by default.  This was
+> > bisected back to commit df4f9bc4fb9c ("nvme-pci: add support for ACPI
+> > StorageD3Enable property") but this is a red herring to the problem.
+> >
+> > Before this commit the system wasn't getting into deepest sleep state.
+> > Presumably this commit is allowing entry into deepest sleep state as
+> > advertised by firmware, but there are some other problems related to
+> > the wakeup.
+> >
+> > As it is confirmed the system works properly with S3, set the default for
+> > this system to S3.
+> >
+> > Reported-by: Jian-Hong Pan <jhp@endlessos.org>
+> > Link: https://bugzilla.kernel.org/show_bug.cgi?id=215742
+> > Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+> > ---
+> >  drivers/acpi/sleep.c | 12 ++++++++++++
+> >  1 file changed, 12 insertions(+)
+> >
+> > diff --git a/drivers/acpi/sleep.c b/drivers/acpi/sleep.c
+> > index c992e57b2c79..3147702710af 100644
+> > --- a/drivers/acpi/sleep.c
+> > +++ b/drivers/acpi/sleep.c
+> > @@ -373,6 +373,18 @@ static const struct dmi_system_id acpisleep_dmi_table[] __initconst = {
+> >                 DMI_MATCH(DMI_PRODUCT_NAME, "20GGA00L00"),
+> >                 },
+> >         },
+> > +       /*
+> > +        * ASUS B1400CEAE hangs on resume from suspend (see
+> > +        * https://bugzilla.kernel.org/show_bug.cgi?id=215742).
+> > +        */
+> > +       {
+> > +       .callback = init_default_s3,
+> > +       .ident = "ASUS B1400CEAE",
+> > +       .matches = {
+> > +               DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+> > +               DMI_MATCH(DMI_PRODUCT_NAME, "ASUS EXPERTBOOK B1400CEAE"),
+> > +               },
+> > +       },
+> >         {},
+> >  };
+> >
+> > --
+> > 2.34.1
+> >
+>
+> Tested-by: Jian-Hong Pan <jhp@endlessos.org>
 
-Friendly ping :-)
-
+Applied as 5.19 material, thanks!
