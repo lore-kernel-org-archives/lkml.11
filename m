@@ -2,190 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F197CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 07:32:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87607C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 07:33:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351026AbiELHcE (ORCPT
+        id S1351039AbiELHdQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 03:32:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56778 "EHLO
+        Thu, 12 May 2022 03:33:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229502AbiELHcB (ORCPT
+        with ESMTP id S229502AbiELHdI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 03:32:01 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E5E833A3A;
-        Thu, 12 May 2022 00:32:00 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id cu23-20020a17090afa9700b001d98d8e53b7so5544023pjb.0;
-        Thu, 12 May 2022 00:32:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PK+zEjT0FwnfyuqNzIGPbA6J7wMPiAnBkII/UnzliNo=;
-        b=I9ocdOKHMOQzPWcvTeVkMOm3iPrQGP6UTm/mB5DEmvSJsxSwCkmrtMDfYgSuPWKFP5
-         8FvYLhAGh+qlInjBDGuAPwJfxldrH8jQigVYJGDwLlCfzs6pUpmlhfybK78tIGDtG+hC
-         M/a5YLrYlHt3VKZAzXvGR9o1A+eq0kZL6S4tlfnbzbDlrae0K/EjWRmlIlEJNMvelERB
-         2FT3s1ChLewqy9+xI9v4iODVSpU8PvF3FNEcSNhrRsTXthBU5vPV8E9Rw5z0EZ0NLvA9
-         yqLK41Untd+oJaad1jYWBBQ8nd2I6PnaRD5TV3G/D+J9ud1XQVMNkuSLC6IZy/87Vgfj
-         9NeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PK+zEjT0FwnfyuqNzIGPbA6J7wMPiAnBkII/UnzliNo=;
-        b=zFi4xMpG2Hg7YV4sGz483m6vptml3eLOPhvkhXmm9UoTmnVntLoieHseMQDolM+600
-         sTyF3Dw13Qn3ooGW2EgsRSuqTPn2sKtXKleGrvju/vq9i7YIQqj9x9zFY8iSCFVa2fu+
-         6DfdTNqe0SZ/I6OcSoKXKhha/02rIk4XQ6DWTRYzwexKFqiW6CymPXnJc1xVYHDZu75b
-         Ishd3vN0G5Wm0dfSca4hzPCGMfytDmhwoW6r4OwdpRwe5CbUxHTsUhGyqVXtki3bVRDc
-         Us79J+QUNJfj2VkIZ7J+v7JzEQFV5r7tkDZKQsPfPHphkLHbKFs4G0uQu7rfcb4Gl+wu
-         9hOA==
-X-Gm-Message-State: AOAM533mxTs5F9P7jbKNZNWV+TY/Zhgx8v52xr49Ytj18WWtjKsR24cp
-        cL25rUpPPHWde6B0e7Dfe4+0YVURZu3IqahuMNQ=
-X-Google-Smtp-Source: ABdhPJyNy2ltsylm+FZOgVt68fjIenNg5NWdfleHLhcviWLXS4BlU+/cc1KWA/xpzG7S/mnkaEmG/SnQe+e3DclLVeQ=
-X-Received: by 2002:a17:903:20f:b0:158:d86a:f473 with SMTP id
- r15-20020a170903020f00b00158d86af473mr29201585plh.92.1652340719755; Thu, 12
- May 2022 00:31:59 -0700 (PDT)
+        Thu, 12 May 2022 03:33:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA76036E1E;
+        Thu, 12 May 2022 00:33:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 18DE561EAC;
+        Thu, 12 May 2022 07:33:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AF99C385B8;
+        Thu, 12 May 2022 07:33:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652340785;
+        bh=ddtYkLWi+bM8tkL0qc0h+qJ4uhi+fLy4+YkKK0LtHbg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=wV27bUBQBIbBOYhuWHfMGmWDf7fuQPVKdZ14av7tNkdFYnl/u2lO8ebA0WaB2htok
+         RVGNf9JnIoMk73NIyBGm/6aWdJWmVPV8Le+xz/YmhGh3W+OLz5yrdEIamtGtpnEQLN
+         n+BkrZw/qyYzJok9jcempbZproDgzQU9LJ827Wi8=
+Date:   Thu, 12 May 2022 09:33:02 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Albert Wang <albertccwang@google.com>
+Cc:     balbi@kernel.org, quic_jackp@quicinc.com, badhri@google.com,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] usb: dwc3: gadget: Move null pinter check after
+ window closed
+Message-ID: <Yny4LgeQ+r6w0vhJ@kroah.com>
+References: <20220512043739.1234857-1-albertccwang@google.com>
 MIME-Version: 1.0
-References: <20220510141753.3878390-1-Qing-wu.Li@leica-geosystems.com.cn> <20220510141753.3878390-4-Qing-wu.Li@leica-geosystems.com.cn>
-In-Reply-To: <20220510141753.3878390-4-Qing-wu.Li@leica-geosystems.com.cn>
-From:   Alexandru Ardelean <ardeleanalex@gmail.com>
-Date:   Thu, 12 May 2022 10:31:48 +0300
-Message-ID: <CA+U=Dsqu_5JVyhs8juznQ5SyBx1V6Q5yT-fsnYuoYHX9ESE=Tg@mail.gmail.com>
-Subject: Re: [PATCH V2 3/6] iio: accel: bmi088: modified the device name
-To:     LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        mchehab+huawei@kernel.org, linux-iio <linux-iio@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mike Looijmans <mike.looijmans@topic.nl>,
-        devicetree <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220512043739.1234857-1-albertccwang@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 10, 2022 at 5:18 PM LI Qingwu
-<Qing-wu.Li@leica-geosystems.com.cn> wrote:
->
-> It is possible to have multiple sensors connected on the same platform,
-> To support multiple sensors, the commit makes it possible to obtain the
-> device name by reading the chip ID instead of the device-tree name.
-> To be compatible with previous versions, renam bmi088a to bmi088-accel.
-
-// my spellcheck in GMail found this :p
-
-typo: renam -> rename
-
-I also have a comment about a duplication that is highlighted by this change.
-
-You can disregard my comment about the duplication and leave this change as-is.
-
->
-> Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+On Thu, May 12, 2022 at 12:37:39PM +0800, Albert Wang wrote:
+> After inspecting further, we do see the locking is implicit, with the
+> main gotcha being the unlock/re-lock. That creates a window for a race
+> to happen. This change moves the NULL check to be adjacent to where
+> to it's used and after the window is "closed".
+> 
+> Fixes: 26288448120b ("usb: dwc3: gadget: Fix null pointer exception")
+> 
+> Signed-off-by: Albert Wang <albertccwang@google.com>
 > ---
->  drivers/iio/accel/bmi088-accel-core.c | 6 +++---
->  drivers/iio/accel/bmi088-accel-spi.c  | 4 +---
->  drivers/iio/accel/bmi088-accel.h      | 2 +-
->  3 files changed, 5 insertions(+), 7 deletions(-)
->
-> diff --git a/drivers/iio/accel/bmi088-accel-core.c b/drivers/iio/accel/bmi088-accel-core.c
-> index 8fee1d02e773..de2385e4dad5 100644
-> --- a/drivers/iio/accel/bmi088-accel-core.c
-> +++ b/drivers/iio/accel/bmi088-accel-core.c
-> @@ -459,7 +459,7 @@ static const struct iio_chan_spec bmi088_accel_channels[] = {
->
->  static const struct bmi088_accel_chip_info bmi088_accel_chip_info_tbl[] = {
->         [0] = {
-> -               .name = "bmi088a",
-> +               .name = "bmi088-accel",
->                 .chip_id = 0x1E,
->                 .channels = bmi088_accel_channels,
->                 .num_channels = ARRAY_SIZE(bmi088_accel_channels),
-> @@ -524,7 +524,7 @@ static int bmi088_accel_chip_init(struct bmi088_accel_data *data)
->  }
->
->  int bmi088_accel_core_probe(struct device *dev, struct regmap *regmap,
-> -       int irq, const char *name, bool block_supported)
-> +       int irq, bool block_supported)
->  {
->         struct bmi088_accel_data *data;
->         struct iio_dev *indio_dev;
-> @@ -545,7 +545,7 @@ int bmi088_accel_core_probe(struct device *dev, struct regmap *regmap,
->
->         indio_dev->channels = data->chip_info->channels;
->         indio_dev->num_channels = data->chip_info->num_channels;
-> -       indio_dev->name = name ? name : data->chip_info->name;
-> +       indio_dev->name = data->chip_info->name;
+>  drivers/usb/dwc3/gadget.c | 11 ++++++++---
+>  1 file changed, 8 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
+> index 19477f4bbf54..fda58951cf27 100644
+> --- a/drivers/usb/dwc3/gadget.c
+> +++ b/drivers/usb/dwc3/gadget.c
+> @@ -3366,14 +3366,19 @@ static bool dwc3_gadget_endpoint_trbs_complete(struct dwc3_ep *dep,
+>  	struct dwc3		*dwc = dep->dwc;
+>  	bool			no_started_trb = true;
+>  
+> -	if (!dep->endpoint.desc)
+> -		return no_started_trb;
+> -
+> +	/*
+> +	 * This function eventually leads to dwc3_giveback() which unlocks
+> +	 * the dwc->lock and relocks afterwards. This actually creates a
+> +	 * a window for a race to happen.
+> +	 */
+>  	dwc3_gadget_ep_cleanup_completed_requests(dep, event, status);
+>  
+>  	if (dep->flags & DWC3_EP_END_TRANSFER_PENDING)
+>  		goto out;
+>  
+> +	if (!dep->endpoint.desc)
+> +		return no_started_trb;
+> +
+>  	if (usb_endpoint_xfer_isoc(dep->endpoint.desc) &&
+>  		list_empty(&dep->started_list) &&
+>  		(list_empty(&dep->pending_list) || status == -EXDEV))
+> -- 
+> 2.36.0.550.gb090851708-goog
+> 
 
-(with this change) i can better see, a bit of duplication between the
-spi_device table and the chip_info table
+Hi,
 
-this was not introduced by this change, but it was made a bit more
-obvious by this change;
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
 
-one way to address this, is to remove the `const char *name;` and
-continue using the `name` provided as a parameter from
-bmi088_accel_core_probe();
-(apologies if I seem to have changed my mind (from the previous
-changeset), but I did not see it too well before)
+You are receiving this message because of the following common error(s)
+as indicated below:
 
-and we can convert
+- This looks like a new version of a previously submitted patch, but you
+  did not list below the --- line any changes from the previous version.
+  Please read the section entitled "The canonical patch format" in the
+  kernel file, Documentation/SubmittingPatches for what needs to be done
+  here to properly describe this.
 
-enum {
-   ID_BMI088,
-   ID_BMI085,
-   ...
-};
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
 
- static const struct bmi088_accel_chip_info bmi088_accel_chip_info_tbl[] = {
-         [ID_BMI088] = {
-                 .chip_id = 0x1E,
-                 .channels = bmi088_accel_channels,
-                .num_channels = ARRAY_SIZE(bmi088_accel_channels),
-        },
-         [ID_BMI085] = {
-         ........
+thanks,
 
->         indio_dev->available_scan_masks = bmi088_accel_scan_masks;
->         indio_dev->modes = INDIO_DIRECT_MODE;
->         indio_dev->info = &bmi088_accel_info;
-> diff --git a/drivers/iio/accel/bmi088-accel-spi.c b/drivers/iio/accel/bmi088-accel-spi.c
-> index dd1e3f6cf211..0fed0081e1fd 100644
-> --- a/drivers/iio/accel/bmi088-accel-spi.c
-> +++ b/drivers/iio/accel/bmi088-accel-spi.c
-> @@ -42,7 +42,6 @@ static struct regmap_bus bmi088_regmap_bus = {
->  static int bmi088_accel_probe(struct spi_device *spi)
->  {
->         struct regmap *regmap;
-> -       const struct spi_device_id *id = spi_get_device_id(spi);
->
->         regmap = devm_regmap_init(&spi->dev, &bmi088_regmap_bus,
->                         spi, &bmi088_regmap_conf);
-> @@ -52,8 +51,7 @@ static int bmi088_accel_probe(struct spi_device *spi)
->                 return PTR_ERR(regmap);
->         }
->
-> -       return bmi088_accel_core_probe(&spi->dev, regmap, spi->irq, id->name,
-> -                                      true);
-> +       return bmi088_accel_core_probe(&spi->dev, regmap, spi->irq, true);
->  }
->
->  static int bmi088_accel_remove(struct spi_device *spi)
-> diff --git a/drivers/iio/accel/bmi088-accel.h b/drivers/iio/accel/bmi088-accel.h
-> index 5c25f16b672c..c32afe9606a8 100644
-> --- a/drivers/iio/accel/bmi088-accel.h
-> +++ b/drivers/iio/accel/bmi088-accel.h
-> @@ -12,7 +12,7 @@ extern const struct regmap_config bmi088_regmap_conf;
->  extern const struct dev_pm_ops bmi088_accel_pm_ops;
->
->  int bmi088_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
-> -                           const char *name, bool block_supported);
-> +                           bool block_supported);
->  int bmi088_accel_core_remove(struct device *dev);
->
->  #endif /* BMI088_ACCEL_H */
-> --
-> 2.25.1
->
+greg k-h's patch email bot
