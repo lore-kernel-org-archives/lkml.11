@@ -2,183 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71394C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 21:34:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87C0BC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 21:38:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358762AbiELVeQ (ORCPT
+        id S1358777AbiELVi2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 17:34:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34620 "EHLO
+        Thu, 12 May 2022 17:38:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358767AbiELVeK (ORCPT
+        with ESMTP id S239064AbiELViY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 17:34:10 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4803E20F9FC
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 14:34:09 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id v11so5959959pff.6
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 14:34:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=kT78jyQCJ+GjJAeDh/CUyZPg5Qs8hQDQelAq6dcamx4=;
-        b=TbnoKUTn9MWKJoGeq6DDC0iiPcfCJI7YfoyanGnASP69yBxEK13C98sh2T8Ne5MCav
-         GoqAODRkuNBKBYSadp7+H6LYdV0EeUg/SJHZRoJ5zYw+ch0kX+EbjZH00AI/5Yqa7Hcd
-         QLDPlpDX7Y11+DAkezRcpzh+sCF31GK7XPf02Xi+YFu6rLQ/h/vmASwgjEuHcgd8wmAc
-         xwIkJASAHQMcXLSyQtNlfCW371PCPuwYm+vHDNRZGmpTuFGHC7lp8SF2L8z02DLxwKMA
-         K1xEMCAw2tgdsYAmZ3GRwzsO9tXhfHKn2Q2IERY8h6e/Hol0D8oN168iS5g0C0wca55R
-         Z8gQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kT78jyQCJ+GjJAeDh/CUyZPg5Qs8hQDQelAq6dcamx4=;
-        b=OlFeZHRU5lwjl2VeSVqKMzNTxqUXjN4gsdD308X6HBfQMtqWFrAdcznSBj+KHfD3jx
-         9G31VNLPaeMlV2WbnQEamu26F3173TCoxGWYWeAA/Zkc/1HMNsF7LeGsehMC3swOKZ1F
-         fcHrCbcIWrNGBuJIf48EhTtkS9M/qkP3yiPXteOo7IofLuHkuazatVjw7Eh03PQEPycA
-         y32wEMu2itVHX7a6+e7X602YA5TEDtu0vly7xaQ0f5wCQJmSgqVQ8SXH2W3mCwL0VLNg
-         8z1a1ZOMhxRd+Acrlarp/yO4zC0OAkVE+MHvWkr0sa/nK+hyEy+n98Y2HMxj6Hqm7YDp
-         1WTA==
-X-Gm-Message-State: AOAM531vJkbxWvWVuebtg+PRHluLSbm308KIBeytCG/PUJ/JgO7aAG+q
-        43ScVwwESPUwHyUkeWPaaNPh2ShhCmEwEg==
-X-Google-Smtp-Source: ABdhPJxBsszXtqmVCuTr0ewsW5pmZeyX6uRxwnsl4HJP2Cqdv1b7f9oSaoRwYRWswBNiOYWcu6gqLA==
-X-Received: by 2002:a05:6a00:10d3:b0:4fe:5d:75c8 with SMTP id d19-20020a056a0010d300b004fe005d75c8mr1520624pfu.6.1652391248629;
-        Thu, 12 May 2022 14:34:08 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id p7-20020a17090a428700b001dcc0cb262asm275495pjg.17.2022.05.12.14.34.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 14:34:08 -0700 (PDT)
-Date:   Thu, 12 May 2022 21:34:04 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Subject: Re: [PATCH 16/22] KVM: x86/mmu: remove redundant bits from extended
- role
-Message-ID: <Yn19TPJgdrzDLmbf@google.com>
-References: <20220414074000.31438-1-pbonzini@redhat.com>
- <20220414074000.31438-17-pbonzini@redhat.com>
- <Ynmv2X5eLz2OQDMB@google.com>
- <e1fc28b6-996f-a436-2664-d6b044d07c82@redhat.com>
- <Yn0XNnqnbstGSiEl@google.com>
- <8c92f44f-3e56-5a5d-76c2-b50b8fe58b3d@redhat.com>
+        Thu, 12 May 2022 17:38:24 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 218B85DD31;
+        Thu, 12 May 2022 14:38:18 -0700 (PDT)
+X-UUID: b82524a4edff423f84b75bc94a81e01c-20220513
+X-CID-P-RULE: Spam_GS6885AD
+X-CID-O-INFO: VERSION:1.1.4,REQID:cda7d05d-f1bf-4473-8742-7059f31d5a96,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:55,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS6885AD
+        ,ACTION:quarantine,TS:160
+X-CID-INFO: VERSION:1.1.4,REQID:cda7d05d-f1bf-4473-8742-7059f31d5a96,OB:0,LOB:
+        0,IP:0,URL:5,TC:0,Content:55,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_US65DF41,A
+        CTION:quarantine,TS:160
+X-CID-META: VersionHash:faefae9,CLOUDID:a27b1aa7-eab7-4b74-a74d-5359964535a9,C
+        OID:cc3953f54a13,Recheck:0,SF:28|16|19|48|801,TC:nil,Content:3,EDM:-3,File
+        :nil,QS:0,BEC:nil
+X-UUID: b82524a4edff423f84b75bc94a81e01c-20220513
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <sean.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 301289705; Fri, 13 May 2022 05:38:14 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Fri, 13 May 2022 05:38:14 +0800
+Received: from mtkswgap22.mediatek.inc (172.21.77.33) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 13 May 2022 05:38:13 +0800
+From:   <sean.wang@mediatek.com>
+To:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>
+CC:     <sean.wang@mediatek.com>, <Soul.Huang@mediatek.com>,
+        <YN.Chen@mediatek.com>, <Leon.Yen@mediatek.com>,
+        <Eric-SY.Chang@mediatek.com>, <Deren.Wu@mediatek.com>,
+        <km.lin@mediatek.com>, <robin.chiu@mediatek.com>,
+        <Eddie.Chen@mediatek.com>, <ch.yeh@mediatek.com>,
+        <posh.sun@mediatek.com>, <ted.huang@mediatek.com>,
+        <Eric.Liang@mediatek.com>, <Stella.Chang@mediatek.com>,
+        <Tom.Chou@mediatek.com>, <steve.lee@mediatek.com>,
+        <jsiuda@google.com>, <frankgor@google.com>,
+        <abhishekpandit@google.com>, <michaelfsun@google.com>,
+        <mcchou@chromium.org>, <shawnku@google.com>,
+        <linux-bluetooth@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Yake Yang <yake.yang@mediatek.com>
+Subject: [PATCH 1/2] Bluetooth: btmtksdio: fix the reset takes too long
+Date:   Fri, 13 May 2022 05:38:11 +0800
+Message-ID: <e26167a3fcefdeae1151162e8676c9a467a8100d.1652390894.git.objelf@gmail.com>
+X-Mailer: git-send-email 1.7.9.5
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8c92f44f-3e56-5a5d-76c2-b50b8fe58b3d@redhat.com>
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022, Paolo Bonzini wrote:
-> On 5/12/22 16:18, Sean Christopherson wrote:
-> > On Thu, May 12, 2022, Paolo Bonzini wrote:
-> > > On 5/10/22 02:20, Sean Christopherson wrote:
-> > > > --
-> > > > From: Sean Christopherson<seanjc@google.com>
-> > > > Date: Mon, 9 May 2022 17:13:39 -0700
-> > > > Subject: [PATCH] KVM: x86/mmu: Return true from is_cr4_pae() iff CR0.PG is set
-> > > > 
-> > > > Condition is_cr4_pae() on is_cr0_pg() in addition to the !4-byte gPTE
-> > > > check.  From the MMU's perspective, PAE is disabling if paging is
-> > > > disabled.  The current code works because all callers check is_cr0_pg()
-> > > > before invoking is_cr4_pae(), but relying on callers to maintain that
-> > > > behavior is unnecessarily risky.
-> > > > 
-> > > > Fixes: faf729621c96 ("KVM: x86/mmu: remove redundant bits from extended role")
-> > > > Signed-off-by: Sean Christopherson<seanjc@google.com>
-> > > > ---
-> > > >    arch/x86/kvm/mmu/mmu.c | 2 +-
-> > > >    1 file changed, 1 insertion(+), 1 deletion(-)
-> > > > 
-> > > > diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-> > > > index 909372762363..d1c20170a553 100644
-> > > > --- a/arch/x86/kvm/mmu/mmu.c
-> > > > +++ b/arch/x86/kvm/mmu/mmu.c
-> > > > @@ -240,7 +240,7 @@ static inline bool is_cr0_pg(struct kvm_mmu *mmu)
-> > > > 
-> > > >    static inline bool is_cr4_pae(struct kvm_mmu *mmu)
-> > > >    {
-> > > > -        return !mmu->cpu_role.base.has_4_byte_gpte;
-> > > > +        return is_cr0_pg(mmu) && !mmu->cpu_role.base.has_4_byte_gpte;
-> > > >    }
-> > > > 
-> > > >    static struct kvm_mmu_role_regs vcpu_to_role_regs(struct kvm_vcpu *vcpu)
-> > > 
-> > > Hmm, thinking more about it this is not needed for two kind of opposite
-> > > reasons:
-> > > 
-> > > * if is_cr4_pae() really were to represent the raw CR4.PAE value, this is
-> > > incorrect and it should be up to the callers to check is_cr0_pg()
-> > > 
-> > > * if is_cr4_pae() instead represents 8-byte page table entries, then it does
-> > > even before this patch, because of the following logic in
-> > > kvm_calc_cpu_role():
-> > > 
-> > >          if (!____is_cr0_pg(regs)) {
-> > >                  role.base.direct = 1;
-> > >                  return role;
-> > >          }
-> > > 	...
-> > >          role.base.has_4_byte_gpte = !____is_cr4_pae(regs);
-> > > 
-> > > 
-> > > So whatever meaning we give to is_cr4_pae(), there is no need for the
-> > > adjustment.
-> > 
-> > I disagree, because is_cr4_pae() doesn't represent either of those things.  It
-> > represents the effective (not raw) CR4.PAE from the MMU's perspective.
-> 
-> Doh, you're right that has_4_byte_gpte is actually 0 if CR0.PG=0. Swapping
-> stuff back is hard.
-> 
-> What do you think about a WARN_ON_ONCE(!is_cr0_pg(mmu))?
+From: Sean Wang <sean.wang@mediatek.com>
 
-Why bother?  WARN and continue would be rather silly as we'd knowingly let KVM
-do something wrong for no benefit.  And this
+Sending WMT command during the reset in progress is invalid and would get
+no response from firmware until the reset is complete, so we ignore the WMT
+command here to resolve the issue which causes the whole reset process
+taking too long.
 
-	return !WARN_ON_ONCE(!is_cr0_pg(mmu)) && !role.base.has_4_byte_gpte;
+Fixes: 8fafe702253d ("Bluetooth: mt7921s: support bluetooth reset mechanism")
+Co-developed-by: Yake Yang <yake.yang@mediatek.com>
+Signed-off-by: Yake Yang <yake.yang@mediatek.com>
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+---
+ drivers/bluetooth/btmtksdio.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-feels wrong because there's nothing fundamentally broke with calling is_cr4_pae()
-without first checking CR0.PG.
-
-If you really want to avoid the is_cr0_pg() check, why not just use has_4_byte_gpte
-directly?  Logically I think that's easy enough to follow, e.g. 64 bits == 8 bytes,
-32 bits == 4 bytes.  We can always revisit the need for is_cr4_pae() if the MMU
-needs to identify PAE paging for some reason, e.g. for PDPTR awareness.
-
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 909372762363..b05190027e20 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -238,11 +238,6 @@ static inline bool is_cr0_pg(struct kvm_mmu *mmu)
-         return mmu->cpu_role.base.level > 0;
- }
-
--static inline bool is_cr4_pae(struct kvm_mmu *mmu)
--{
--        return !mmu->cpu_role.base.has_4_byte_gpte;
--}
--
- static struct kvm_mmu_role_regs vcpu_to_role_regs(struct kvm_vcpu *vcpu)
- {
-        struct kvm_mmu_role_regs regs = {
-@@ -4855,7 +4850,7 @@ static void init_kvm_tdp_mmu(struct kvm_vcpu *vcpu,
-
-        if (!is_cr0_pg(context))
-                context->gva_to_gpa = nonpaging_gva_to_gpa;
--       else if (is_cr4_pae(context))
-+       else if (!context->cpu_role.base.has_4_byte_gpte)
-                context->gva_to_gpa = paging64_gva_to_gpa;
-        else
-                context->gva_to_gpa = paging32_gva_to_gpa;
-@@ -4877,7 +4872,7 @@ static void shadow_mmu_init_context(struct kvm_vcpu *vcpu, struct kvm_mmu *conte
-
-        if (!is_cr0_pg(context))
-                nonpaging_init_context(context);
--       else if (is_cr4_pae(context))
-+       else if (!context->cpu_role.base.has_4_byte_gpte)
-                paging64_init_context(context);
-        else
-                paging32_init_context(context);
+diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c
+index 4ae6631a7c29..26e27fd79a21 100644
+--- a/drivers/bluetooth/btmtksdio.c
++++ b/drivers/bluetooth/btmtksdio.c
+@@ -1189,6 +1189,10 @@ static int btmtksdio_shutdown(struct hci_dev *hdev)
+ 	 */
+ 	pm_runtime_get_sync(bdev->dev);
+ 
++	/* wmt command only works until the reset is complete */
++	if (test_bit(BTMTKSDIO_HW_RESET_ACTIVE, &bdev->tx_state))
++		goto ignore_wmt_cmd;
++
+ 	/* Disable the device */
+ 	wmt_params.op = BTMTK_WMT_FUNC_CTRL;
+ 	wmt_params.flag = 0;
+@@ -1202,6 +1206,7 @@ static int btmtksdio_shutdown(struct hci_dev *hdev)
+ 		return err;
+ 	}
+ 
++ignore_wmt_cmd:
+ 	pm_runtime_put_noidle(bdev->dev);
+ 	pm_runtime_disable(bdev->dev);
+ 
+-- 
+2.25.1
 
