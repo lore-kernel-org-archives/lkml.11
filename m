@@ -2,122 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73FF5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 21:18:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E242C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 21:19:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358683AbiELVS4 (ORCPT
+        id S1358693AbiELVTp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 17:18:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41248 "EHLO
+        Thu, 12 May 2022 17:19:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358678AbiELVSy (ORCPT
+        with ESMTP id S1358689AbiELVTf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 17:18:54 -0400
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E77018D6B8
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 14:18:52 -0700 (PDT)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-2f7d7e3b5bfso71322547b3.5
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 14:18:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=l4JJk+ewG2LNWAOShIee96q+d5mTnr66IKaxT9DB1Ig=;
-        b=p+VLViJPr40k3kQbPAzBNiPW9Kmv8o59a0sJPe4L6FHZdn06b8e+lqxEm2icfgN7M8
-         cuRdhC5ct+EW4wfjW5CqaunZnXi5GplVU/oqKuWLEWMXx4BRMgVOV7uqsCV6VeR3oedB
-         Sw30gbGMsyOlN+n9zcA6doK9KeWdvJIpmxOn+R0/mmXkxggbp0GjblysEKck1PDWvfg/
-         aMDknvoRWiwQ2n9nMOWZwW6OrbuX/SnQl3fCWF09MRAZu+QZ4SpBLuhg1SYbWLI5iz1a
-         3RFmsjz0aWJ3ZsuOLAlXkWhwLn32n1DfyWOOHLjrCHcANtTOmjpItAzkB07EW9JfAurL
-         jQSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=l4JJk+ewG2LNWAOShIee96q+d5mTnr66IKaxT9DB1Ig=;
-        b=Tx7xtnckFo2Ir7OxR4qhj3iKAfIdNwqDae1ac1jX8YxizNp5rg8PKQU7eEtRsYGE8r
-         shXAkVjPVokZlknJnqK3deyLC+q1mhm87feTAoIU3Sk9Snm83vrh8DfIoWuMpylopjuc
-         rIaGjwpoSqeoQhWtiU6HU0f5Uz2VInpcfRF4X+lri/65q92Yh5RqKLqtwJXgNmSZEWEV
-         sBPYlI8Vnl2LrpSefg+ML1bgyHGAN0Q06VjcQC9ppP/lMYOmHwIWGrW9Fn1jsGXYTnGb
-         wfNoJa5ncf594PadDwAa/fVM9HN/m8BaRs/e4wJvhXKHDHdApuFWdk7PJU/olTnJ54fB
-         mafg==
-X-Gm-Message-State: AOAM530HJ0+WU12WSDG4gSkd29mbNQq0nzhbMxI218DgXYIOSjHCgV8P
-        bYnOd8oRvrKVAbFC33a1Y+N3L1FelyXRT1I/be4h4Q==
-X-Google-Smtp-Source: ABdhPJyP2X1EcFupaifbXZ28oMOBGFHPAjxR2D1ve+Lki2Tw6rePByxEyHT+aLUhrc6jA0aD9BnBKmE85kLCzc6+PLE=
-X-Received: by 2002:a0d:cbd8:0:b0:2fb:958e:d675 with SMTP id
- n207-20020a0dcbd8000000b002fb958ed675mr2270591ywd.264.1652390331960; Thu, 12
- May 2022 14:18:51 -0700 (PDT)
+        Thu, 12 May 2022 17:19:35 -0400
+Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [202.36.163.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D6D61A8E3A
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 14:19:32 -0700 (PDT)
+Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id BE39C2C00E8;
+        Thu, 12 May 2022 21:19:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1652390369;
+        bh=CAJVfbLRnIberFA3/D7eHStqIi/ycjSlAeXdnxJB2ss=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=eg2LIM/3JBDJtb4ZdYqee367jH0rk96OveYu6CNWhuoVbogXy1tLZf8UVYKisaTqy
+         TL1Y7BSna0rkygFbcHSnbbwZIWNdgfcUPXv0qvdV1fh3MVRKi3a5B0t6y5ysPOTrRR
+         df+ksFT6yAseC1swu4fMWsCiUwcS26QnMT46ydTZtlkaIsRwL4RVaQuu1tR9ShcF5G
+         DUIw8uwNicyljI34xqiTUAQUrPBBM3IwwRjfARQRUxoRcKLKYVGsjpmuEjbsJAFxVr
+         BnRx7QMo/ylyig1bd4gYBWNNG7oTDjy1QeRvhfe2UqcDfxUeIyO696YA8vxMkkC898
+         LOIQW8UdwFMYg==
+Received: from svr-chch-ex1.atlnz.lc (Not Verified[2001:df5:b000:bc8::77]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
+        id <B627d79e10001>; Fri, 13 May 2022 09:19:29 +1200
+Received: from svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8:409d:36f5:8899:92e8)
+ by svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8:409d:36f5:8899:92e8) with
+ Microsoft SMTP Server (TLS) id 15.0.1497.32; Fri, 13 May 2022 09:19:30 +1200
+Received: from svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8]) by
+ svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8%12]) with mapi id
+ 15.00.1497.033; Fri, 13 May 2022 09:19:30 +1200
+From:   Chris Packham <Chris.Packham@alliedtelesis.co.nz>
+To:     Andrew Lunn <andrew@lunn.ch>, Elad Nachman <enachman@marvell.com>
+CC:     Vadym Kochan <vadym.kochan@plvision.eu>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "gregory.clement@bootlin.com" <gregory.clement@bootlin.com>,
+        "sebastian.hesselbarth@gmail.com" <sebastian.hesselbarth@gmail.com>,
+        "Kostya Porotchkin" <kostap@marvell.com>,
+        "robert.marko@sartura.hr" <robert.marko@sartura.hr>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: Re: [EXT] Re: [PATCH v5 1/2] arm64: dts: marvell: Add Armada 98DX2530
+ SoC and RD-AC5X board
+Thread-Topic: [EXT] Re: [PATCH v5 1/2] arm64: dts: marvell: Add Armada
+ 98DX2530 SoC and RD-AC5X board
+Thread-Index: AQHYZVGaM5HNJyVFK0yMg5+dPH+INq0ZEh4AgABvp4CAABwDAIAAaYGAgABhrgCAAI8oAA==
+Date:   Thu, 12 May 2022 21:19:29 +0000
+Message-ID: <65093185-dc36-af34-8fa7-6f7c08edabaa@alliedtelesis.co.nz>
+References: <20220504044624.951841-1-chris.packham@alliedtelesis.co.nz>
+ <20220511161003.GE10145@plvision.eu> <YnviMOtXX+us+IA4@lunn.ch>
+ <c781f7eb-86f2-16c4-1380-b08b974900ff@alliedtelesis.co.nz>
+ <YnxXWIloDzfg8bh0@lunn.ch>
+ <BN9PR18MB4251F84C9D4C538DB6D63CFCDBCB9@BN9PR18MB4251.namprd18.prod.outlook.com>
+ <Yn0ByoU6Ta5Kmq0u@lunn.ch>
+In-Reply-To: <Yn0ByoU6Ta5Kmq0u@lunn.ch>
+Accept-Language: en-NZ, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.32.1.11]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <8D1B9DC094DB79479ABC3CEEBA7718DA@atlnz.lc>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20220512103322.380405-1-liujian56@huawei.com> <CANn89iJ7Lo7NNi4TrpKsaxzFrcVXdgbyopqTRQEveSzsDL7CFA@mail.gmail.com>
-In-Reply-To: <CANn89iJ7Lo7NNi4TrpKsaxzFrcVXdgbyopqTRQEveSzsDL7CFA@mail.gmail.com>
-From:   Marco Elver <elver@google.com>
-Date:   Thu, 12 May 2022 23:18:15 +0200
-Message-ID: <CANpmjNPRB-4f3tUZjycpFVsDBAK_GEW-vxDbTZti+gtJaEx2iw@mail.gmail.com>
-Subject: Re: [PATCH net] tcp: Add READ_ONCE() to read tcp_orphan_count
-To:     Eric Dumazet <edumazet@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     Liu Jian <liujian56@huawei.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=U+Hs8tju c=1 sm=1 tr=0 a=Xf/6aR1Nyvzi7BryhOrcLQ==:117 a=xqWC_Br6kY4A:10 a=oKJsc7D3gJEA:10 a=IkcTkHD0fZMA:10 a=oZkIemNP1mAA:10 a=trsHGxiVvyFGy2KKG6kA:9 a=QEXdDO2ut3YA:10
+X-SEG-SpamProfiler-Score: 0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 12 May 2022 at 22:06, Eric Dumazet <edumazet@google.com> wrote:
->
-> On Thu, May 12, 2022 at 3:32 AM Liu Jian <liujian56@huawei.com> wrote:
-> >
-> > The tcp_orphan_count per-CPU variable is read locklessly, so this commit
-> > add the READ_ONCE() to a load in order to avoid below KCSAN warnning:
-> >
-> > BUG: KCSAN: data-race in tcp_orphan_count_sum net/ipv4/tcp.c:2476 [inline]
-> > BUG: KCSAN: data-race in tcp_orphan_update+0x64/0x100 net/ipv4/tcp.c:2487
-> >
-> > race at unknown origin, with read to 0xffff9c63bbdac7a8 of 4 bytes by interrupt on cpu 2:
-> >  tcp_orphan_count_sum net/ipv4/tcp.c:2476 [inline]
-> >  tcp_orphan_update+0x64/0x100 net/ipv4/tcp.c:2487
-> >  call_timer_fn+0x33/0x210 kernel/time/timer.c:1414
-> >
-> > Fixes: 19757cebf0c5 ("tcp: switch orphan_count to bare per-cpu counters")
-> > Signed-off-by: Liu Jian <liujian56@huawei.com>
-> > ---
-> >  net/ipv4/tcp.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> > index cf18fbcbf123..7245609f41e6 100644
-> > --- a/net/ipv4/tcp.c
-> > +++ b/net/ipv4/tcp.c
-> > @@ -2718,7 +2718,7 @@ int tcp_orphan_count_sum(void)
-> >         int i, total = 0;
-> >
-> >         for_each_possible_cpu(i)
-> > -               total += per_cpu(tcp_orphan_count, i);
-> > +               total += READ_ONCE(per_cpu(tcp_orphan_count, i));
->
-> We might raise the discussion to lkml and/or KCSAN supporters.
->
-> Presumably, all per_cpu() uses in the kernel will have the same issue ?
->
-> By definition per-cpu data can be changed by other cpus.
->
-> So maybe per_cpu() should contain the annotation, instead of having to
-> annotate all users.
-
-I guess the question is, is it the norm that per_cpu() retrieves data
-that can legally be modified concurrently, or not. If not, and in most
-cases it's a bug, the annotations should be here.
-
-Paul, was there any guidance/documentation on this, but I fail to find
-it right now? (access-marking.txt doesn't say much about per-CPU
-data.)
-
-Thanks,
--- Marco
+DQpPbiAxMy8wNS8yMiAwMDo0NywgQW5kcmV3IEx1bm4gd3JvdGU6DQo+PiBCYXNpY2FsbHksIHRo
+ZSBjcHUtc3Vic3lzdGVtcyBvZiBQcmVzdGVyYSA5OERYMjV4eCAoQUM1KSBhbmQgUHJlc3RlcmEg
+OThEWDM1eHggKEFDNVgpIGFyZSB0aGUgc2FtZS4NCj4gR3JlYXQsIHRoYW5rcyBmb3IgdGhlIGNv
+bmZvcm1hdGlvbi4NCj4NCj4+IFRoZSBEVFNJIENocmlzIHByb3Bvc2VkIGhhZCB0aGUgUENJZSBw
+b3J0aW9uIHJlbW92ZWQuDQo+PiBXZSBoYXZlIFBDSWUgc3VwcG9ydCBmb3IgQUM1L0FDNVggc28g
+d2Ugd291bGQgb2J2aW91c2x5IGxpa2UgdG8NCj4+IGluY2x1ZGUgdGhpcyBwb3J0aW9uIGluIGJv
+dGggdGhlIERUU0kgYW5kIGFzIGEgcGF0Y2ggdG8gdGhlIEFybWFkYThLDQo+PiBQQ0llIGRyaXZl
+ci4NCj4gU28geW91IGNhbiBhZGQgdGhlIG5lZWRlZCBub2RlIHRvIHRoZSAuZHRzaSBhcyBwYXJ0
+IG9mIHRoZSBwYXRjaCB0bw0KPiB0aGUgcGNpLWFhcmR2YXJrLmMgZHJpdmVyLiBUaGF0IHNvdW5k
+cyBPLksuDQoNCkkgZGVsaWJlcmF0ZWx5IGxlZnQgdGhlIHBjaSBzdHVmZiBvdXQgb2YgbXkgc3Vi
+bWlzc2lvbiB0byBrZWVwIHRoaW5ncyANCnNpbXBsZSBhbmQgYmVjYXVzZSBJIGhhdmUgbm8gd2F5
+IG9mIHRlc3RpbmcgaXQuIEV2ZW50dWFsbHkgd2UgKGFsbGllZCANCnRlbGVzaXMpIGFyZSBwbGFu
+bmluZyBhIHByb2R1Y3QgdmFyaWFudCB0aGF0IHdpbGwgbmVlZCBhIDJuZCBzd2l0Y2ggDQpjb25u
+ZWN0ZWQgdmlhIHBjaSBzbyBJJ2xsIGJlIHJldmlzaXRpbmcgdGhlIHBjaSBzdHVmZiB0aGVuICh1
+bmxlc3MgDQpzb21lb25lIGVsc2UgYmVhdHMgbWUgdG8gaXQpLg0KDQo=
