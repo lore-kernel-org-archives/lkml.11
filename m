@@ -2,152 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F966C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 16:24:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1020C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 16:26:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356449AbiELQYI (ORCPT
+        id S1356466AbiELQ0j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 12:24:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35230 "EHLO
+        Thu, 12 May 2022 12:26:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344263AbiELQYF (ORCPT
+        with ESMTP id S1356473AbiELQ0P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 12:24:05 -0400
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C461C1E5EF6;
-        Thu, 12 May 2022 09:24:04 -0700 (PDT)
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2f863469afbso63293587b3.0;
-        Thu, 12 May 2022 09:24:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=thtHMzRehtI+V+OgK8quGY/Of/jRrIGIaRefx1ZVDTI=;
-        b=PTQE8JAxKqopuPrNPNM6tNRWwFy3tBU04wqFII4+R+eYp8mGI49u4ZeyFGSOfV1CFE
-         Ppw8ISAsAD2k5mgpM3UuML2AjYZQM/+b2FAWWZXj+JjngsB2IPa8v+Fk0ELRPgWZi5fK
-         qN6QhC9Sj3v/wP1ABV3L6nu8HBSfWyKLNBVgakCB3bqBCc+KWUovpI/wp5wRnZ7pL5ur
-         5T46RvJg/Ul0djnhjrPrBJyhZc79ifSoy0eFT+GJXr/S6hRuH8uk7sWbLdqMQEKQ5Oi9
-         D0nTxbKNUxgmvbvaY8e2Br4asRTd6StQa0CxAC+94jI0D08cpmsy9Fag06Mi1+kAHAq7
-         rcWQ==
-X-Gm-Message-State: AOAM5326p4YHm9c1Ny14KX/k0AY8pLYMAgo9hwZ1trlc/x8Feqznax6V
-        tQ8BnQhYsjfVOO1z8D+HySxJ9sIiXQQXmrOAqDIOG7zy
-X-Google-Smtp-Source: ABdhPJz5dHgHC4COVczQNzeU9FkZjxePoGFWPsWRtlbTZa0wsX+dudZRgsfCf1jg1+hP3iVguixQSQXTVQz0uyo21DY=
-X-Received: by 2002:a81:4b8e:0:b0:2ef:5240:69fc with SMTP id
- y136-20020a814b8e000000b002ef524069fcmr932781ywa.19.1652372643823; Thu, 12
- May 2022 09:24:03 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220512135231.10076-1-schspa@gmail.com> <20220512135231.10076-2-schspa@gmail.com>
- <CAJZ5v0htGfZ3G+BWgZSxvcEAhNd_LONm8rNMetdPts3uZ=Tcxw@mail.gmail.com> <CAMA88TodZJYmd2GnWty=qCw7T=LG9jihEAmT+RPK8tSBqdiubA@mail.gmail.com>
-In-Reply-To: <CAMA88TodZJYmd2GnWty=qCw7T=LG9jihEAmT+RPK8tSBqdiubA@mail.gmail.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Thu, 12 May 2022 18:23:52 +0200
-Message-ID: <CAJZ5v0h5QbKRg+1428EdEziV-ovuav396c6fwAaOnrDe=NU46A@mail.gmail.com>
-Subject: Re: [PATCH v4 2/2] cpufreq: make interface functions and lock holding
- state clear
-To:     Schspa Shi <schspa@gmail.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 12 May 2022 12:26:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 688951D0C4;
+        Thu, 12 May 2022 09:26:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F2D2261F38;
+        Thu, 12 May 2022 16:26:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 513FCC34117;
+        Thu, 12 May 2022 16:26:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652372773;
+        bh=VwS1IMdx40foTuyZRyqzdlwtdVrEe4ScwvbrYNkBDzM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=E7cD59b6uJMxohBzVdnByQtXEmY0oS0T+j4/7WzT96YUwGZYXR/BMex9Wr8n45c2k
+         X0GgsDM7dDRAbxGEEU+7OfQyjCOQOBmajODJo7jApm6Nn/eoylx52v2qnX86M7ksJr
+         I0EkxjUwrt3w+D+bzyK4+YLIrwbOEIgDrGP2G2rRak5r/O5B2c9tVacni+pzm+mK7k
+         EQSq5o79f9N34MH+/BBiUXYNVG3j9ICCz/WlvoQna+nrDlXczDvJeyqD5qzyTCFkCO
+         +axOrOrQ1I2yUlVTnXyiSWQTO+ED6K8vfiIKkSG24aoBzsYI11iTlGEKMzlmU0RuJo
+         aVB81tiVSd6GQ==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1npBdi-00Avri-QG; Thu, 12 May 2022 17:26:10 +0100
+Date:   Thu, 12 May 2022 17:26:10 +0100
+Message-ID: <87v8ua67kt.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Subject: Re: [PATCH v3 3/5] gpio: gpiolib: Allow free() callback to be overridden
+In-Reply-To: <CA+V-a8v9WodNNK7AL4XemDnSrrWc9wG+qDKZb7SmbWixs5Q3Nw@mail.gmail.com>
+References: <20220511183210.5248-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        <20220511183210.5248-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        <87y1z75770.wl-maz@kernel.org>
+        <CA+V-a8tf1RmT-cX5y807rTAPES2NXLJHp=u1WUG11fLrtt-5Mg@mail.gmail.com>
+        <87wneq6fz3.wl-maz@kernel.org>
+        <CA+V-a8v9WodNNK7AL4XemDnSrrWc9wG+qDKZb7SmbWixs5Q3Nw@mail.gmail.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: prabhakar.csengg@gmail.com, prabhakar.mahadev-lad.rj@bp.renesas.com, geert+renesas@glider.be, linus.walleij@linaro.org, tglx@linutronix.de, robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, brgl@bgdev.pl, p.zabel@pengutronix.de, linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org, phil.edworthy@renesas.com, biju.das.jz@bp.renesas.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 6:01 PM Schspa Shi <schspa@gmail.com> wrote:
->
-> "Rafael J. Wysocki" <rafael@kernel.org> writes:
->
-> > On Thu, May 12, 2022 at 3:52 PM Schspa Shi <schspa@gmail.com> wrote:
-> >>
-> >> cpufreq_offline() calls offline() and exit() under the policy rwsem
-> >> But they are called outside the rwsem in cpufreq_online().
-> >>
-> >> This patch move the offline(), exit(), online(), init() to be inside
-> >> of policy rwsem to achieve a clear lock relationship.
-> >>
-> >> All the init() online() implement only initialize policy object without
-> >> holding this lock and won't call cpufreq APIs need to hold this lock.
-> >>
-> >> Signed-off-by: Schspa Shi <schspa@gmail.com>
+On Thu, 12 May 2022 14:50:05 +0100,
+"Lad, Prabhakar" <prabhakar.csengg@gmail.com> wrote:
+> 
+> Hi Marc,
+> 
+> On Thu, May 12, 2022 at 2:24 PM Marc Zyngier <maz@kernel.org> wrote:
 > >
-> > IMV this still addresses 2 different issues and so it should be split
-> > into 2 different patches.
+> > On Thu, 12 May 2022 13:48:53 +0100,
+> > "Lad, Prabhakar" <prabhakar.csengg@gmail.com> wrote:
+> > >
+> > > Hi Marc,
+> > >
+> > > Thank you for the review.
+> > >
+> > > On Thu, May 12, 2022 at 12:19 PM Marc Zyngier <maz@kernel.org> wrote:
+> > > >
+> > > > On Wed, 11 May 2022 19:32:08 +0100,
+> > > > Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> > > > >
+> > > > > Allow free() callback to be overridden from irq_domain_ops for
+> > > > > hierarchical chips.
+> > > > >
+> > > > > This allows drivers to free any resources which are allocated during
+> > > > > populate_parent_alloc_arg().
+> > > >
+> > > > Do you mean more than the fwspec? I don't see this being used.
+> > > >
+> > > The free callback is used in patch 5/5 where free is overridden by
+> > > rzg2l_gpio_irq_domain_free. I just gave an example there as an
+> > > populate_parent_alloc_arg()  In actual in the child_to_parent_hwirq
+> > > callback I am using a bitmap [0] to get a free tint slot, this bitmap
+> > > needs freeing up when the GPIO interrupt is released from the driver
+> > > that as when overridden free callback frees the allocated tint slot so
+> > > that its available for re-use.
 > >
-> >> ---
-> >>  drivers/cpufreq/cpufreq.c | 5 ++---
-> >>  1 file changed, 2 insertions(+), 3 deletions(-)
-> >>
-> >> diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
-> >> index 35dffd738580..f242d5488364 100644
-> >> --- a/drivers/cpufreq/cpufreq.c
-> >> +++ b/drivers/cpufreq/cpufreq.c
-> >
-> > Patch 1:
-> >
-> >> @@ -1343,12 +1343,12 @@ static int cpufreq_online(unsigned int cpu)
-> >>                 down_write(&policy->rwsem);
-> >>                 policy->cpu = cpu;
-> >>                 policy->governor = NULL;
-> >> -               up_write(&policy->rwsem);
-> >>         } else {
-> >>                 new_policy = true;
-> >>                 policy = cpufreq_policy_alloc(cpu);
-> >>                 if (!policy)
-> >>                         return -ENOMEM;
-> >> +               down_write(&policy->rwsem);
-> >>         }
-> >>
-> >>         if (!new_policy && cpufreq_driver->online) {
-> >> @@ -1388,7 +1388,6 @@ static int cpufreq_online(unsigned int cpu)
-> >>                 cpumask_copy(policy->related_cpus, policy->cpus);
-> >>         }
-> >>
-> >> -       down_write(&policy->rwsem);
-> >>         /*
-> >>          * affected cpus must always be the one, which are online. We aren't
-> >>          * managing offline cpus here.
-> >
-> > which addresses the problem that cpufreq_online() updates the
-> > policy->cpus and related_cpus masks without holding the policy rwsem
-> > (since the policy kobject has been registered already at this point,
-> > this is generally unsafe).
-> >
-> > A side-effect of it is that ->online() and ->init() will be called
-> > under the policy rwsem now, but that should be fine and is more
-> > consistent than the current code too.
-> >
-> > Patch 2:
-> >
-> >> @@ -1540,7 +1539,6 @@ static int cpufreq_online(unsigned int cpu)
-> >>                 remove_cpu_dev_symlink(policy, get_cpu_device(j));
-> >>
-> >>         cpumask_clear(policy->cpus);
-> >> -       up_write(&policy->rwsem);
-> >>
-> >>  out_offline_policy:
-> >>         if (cpufreq_driver->offline)
-> >> @@ -1549,6 +1547,7 @@ static int cpufreq_online(unsigned int cpu)
-> >>  out_exit_policy:
-> >>         if (cpufreq_driver->exit)
-> >>                 cpufreq_driver->exit(policy);
-> >> +       up_write(&policy->rwsem);
-> >>
-> >>  out_free_policy:
-> >>         cpufreq_policy_free(policy);
-> >> --
-> >
-> > which addressed the issue of calling ->offline() and ->exit() without
-> > holding the policy rwsem that is at best inconsistent with
-> > cpufreq_offline().
->
-> No, we can't split this into two different patches. which will cause a
-> uninitialized unlock for policy rwsem.
-> This will make the git bitsec unusable.
->
-> Which Dan Carpenter reported, and cause the patch of the v1 version to
-> be reverted.
->
-> Link: https://lore.kernel.org/all/YnKZCGaig+EXSowf@kili/
+> > Right, so that's actually a different life-cycle, and the whole
+> > populate_parent_alloc_arg() is a red herring. What you want is to free
+> > resources that have been allocated via some other paths. It'd be good
+> Is there any other path which I have missed where I can free up resources?
 
-Ah, OK.  Never mind.
+No, that's the only one. It is just that usually, the alloc()
+callback is where you are supposed to perform... allocations.
+
+It'd be good if you could move your allocation there, as I would
+expect calls to child_to_parent_hwirq() to be idempotent.
+
+>
+> > if your commit message actually reflected this instead of using an
+> > example that doesn't actually exist.
+> >
+> My bad, I will update the commit message.
+> 
+> > >
+> > > > There is also the question of why we need to have dynamic allocation
+> > > > for the fwspec itself. Why isn't that a simple stack allocation in the
+> > > > context of gpiochip_hierarchy_irq_domain_alloc()?
+> > > >
+> > > you mean gpio core itself should handle the fwspec
+> > > allocation/freeing?
+> >
+> > Yes. The only reason we resort to dynamic allocation is because
+> > ThunderX is using MSI-based GPIOs, and thus doesn't use a fwspec (no
+> > firmware is involved here).
+> >
+> I see..
+> 
+> > If we had a union of the two types, we could just have a stack
+> > variable, and pass that along, completely sidestepping the whole
+> > dynamic allocation/freeing business.
+> >
+> Right agreed.
+
+FWIW, I've just posted a PoC patch[1].
+
+Thanks,
+
+	M.
+
+[1] https://lore.kernel.org/r/20220512162320.2213488-1-maz@kernel.org
+
+-- 
+Without deviation from the norm, progress is not possible.
