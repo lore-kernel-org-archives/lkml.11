@@ -2,216 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2181C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 04:48:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C16BBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 04:49:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348398AbiELEs3 (ORCPT
+        id S1344264AbiELEs7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 00:48:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37644 "EHLO
+        Thu, 12 May 2022 00:48:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348518AbiELEsJ (ORCPT
+        with ESMTP id S1348701AbiELEsP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 00:48:09 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C6B42CCA6
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 21:47:56 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id l11-20020a17090a49cb00b001d923a9ca99so3858269pjm.1
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 21:47:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=lV5EqWUJeu9NiPA/kLK56rAUvj5r/7m7kXc0Lxi4HQU=;
-        b=vEdnQCvwGKZH3KBEgV/hEl8AX4D2GxUvAZ3VQiUrbIDlifvTSa/BIuTjsBv2jTELlY
-         4gxguKg5L2J3PbyDN18HSD8su+QORRgVq0wuXWZ6rgrPaxpkOr6Ad24cbhTCNqpLXief
-         FOreoW9B88ZO+wClsHBKA8YWZFWhmS3POOsIAbrasVsr+UgOvyj6Uk/+KhhgT4J2aDeI
-         bf5r5DBpbyTcy5DzBciwgV+kNc+qQIDVHHi2ZMf6qQJQZjZE0djDQhIb+SqiZMmfDib4
-         wvHQNPHZk/a+jj9cDrtQdRcgaXjHDAYUPMXZaN3riW7m45C/iFAhUFWlv1Q0ktu1dqDZ
-         Y/QA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=lV5EqWUJeu9NiPA/kLK56rAUvj5r/7m7kXc0Lxi4HQU=;
-        b=3dbQDKUlNEx+VlkgnpdjEC2KrQNEC4aBKt/dRAgJPKSx6p6G30Xe9y7gagM160huRD
-         kFEcM2LGgK5eXl7pIrj4ElbJTou75csKutoFrVyGmYiZPPWXWItue5FEV9WkwW36tlDk
-         /UCqtZvwvMYcT3fFv2G3/IRZExmBEo7ZEn8J+djRgE9CpcXeV1NGRaetiJom+rJC+JxE
-         XzzqBUsOXhgb/RI1SPVtFzCbU0IdjDMmr2cgNbfeOJZSDKolJxMszsqS6mfqgD94seN/
-         6+wt6h9XvHVhaRgmjXtWM8Feu6moPjaNubwEyyG2sZOEn9CK6bEtXVDm219b8nFcp/7s
-         KtrQ==
-X-Gm-Message-State: AOAM532v44jW/a56YQaRBPkxjVGPCCzq7sv0Z6IUIbfaVh8GuhgFjqzW
-        0rwSXT/QzpmOu2dC+F084wdGXw==
-X-Google-Smtp-Source: ABdhPJwzSzpqvu17RyZaImuVVXfRwCqv4PsquKh6+mxBIzxD361DDWk3HS5eFZVma3nchUiQEDg2Hw==
-X-Received: by 2002:a17:903:1051:b0:15c:f02f:cd0e with SMTP id f17-20020a170903105100b0015cf02fcd0emr28805111plc.81.1652330875710;
-        Wed, 11 May 2022 21:47:55 -0700 (PDT)
-Received: from localhost.localdomain ([139.177.225.253])
-        by smtp.gmail.com with ESMTPSA id 5-20020a170902e9c500b0015edc07dcf3sm2790824plk.21.2022.05.11.21.47.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 21:47:55 -0700 (PDT)
-From:   Gang Li <ligang.bdlg@bytedance.com>
-To:     akpm@linux-foundation.org
-Cc:     songmuchun@bytedance.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
-        svens@linux.ibm.com, ebiederm@xmission.com, keescook@chromium.org,
-        viro@zeniv.linux.org.uk, rostedt@goodmis.org, mingo@redhat.com,
-        peterz@infradead.org, acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
-        namhyung@kernel.org, david@redhat.com, imbrenda@linux.ibm.com,
-        apopple@nvidia.com, adobriyan@gmail.com,
-        stephen.s.brennan@oracle.com, ohoono.kwon@samsung.com,
-        haolee.swjtu@gmail.com, kaleshsingh@google.com,
-        zhengqi.arch@bytedance.com, peterx@redhat.com, shy828301@gmail.com,
-        surenb@google.com, ccross@google.com, vincent.whitchurch@axis.com,
-        tglx@linutronix.de, bigeasy@linutronix.de, fenghua.yu@intel.com,
-        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org,
-        Gang Li <ligang.bdlg@bytedance.com>
-Subject: [PATCH 3/5 v1] mm: add numa fields for tracepoint rss_stat
-Date:   Thu, 12 May 2022 12:46:32 +0800
-Message-Id: <20220512044634.63586-4-ligang.bdlg@bytedance.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220512044634.63586-1-ligang.bdlg@bytedance.com>
-References: <20220512044634.63586-1-ligang.bdlg@bytedance.com>
+        Thu, 12 May 2022 00:48:15 -0400
+Received: from esa2.hc1455-7.c3s2.iphmx.com (esa2.hc1455-7.c3s2.iphmx.com [207.54.90.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C6F3B007
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 21:48:13 -0700 (PDT)
+X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="72425221"
+X-IronPort-AV: E=Sophos;i="5.91,218,1647270000"; 
+   d="scan'208";a="72425221"
+Received: from unknown (HELO oym-r1.gw.nic.fujitsu.com) ([210.162.30.89])
+  by esa2.hc1455-7.c3s2.iphmx.com with ESMTP; 12 May 2022 13:48:11 +0900
+Received: from oym-m1.gw.nic.fujitsu.com (oym-nat-oym-m1.gw.nic.fujitsu.com [192.168.87.58])
+        by oym-r1.gw.nic.fujitsu.com (Postfix) with ESMTP id 6EC4AED502
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 13:48:10 +0900 (JST)
+Received: from m3003.s.css.fujitsu.com (m3003.s.css.fujitsu.com [10.128.233.114])
+        by oym-m1.gw.nic.fujitsu.com (Postfix) with ESMTP id AA90BD9C46
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 13:48:09 +0900 (JST)
+Received: from localhost.localdomain (unknown [10.125.5.220])
+        by m3003.s.css.fujitsu.com (Postfix) with ESMTP id 65FDB203EF3D;
+        Thu, 12 May 2022 13:48:09 +0900 (JST)
+From:   Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>
+To:     linmiaohe@huawei.com
+Cc:     akpm@linux-foundation.org, aquini@redhat.com, ddutile@redhat.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        mgorman@techsingularity.net, vvghjk1234@gmail.com,
+        yamamoto.rei@jp.fujitsu.com
+Subject: Re: [PATCH] mm, compaction: fast_find_migrateblock() should return pfn in the target zone
+Date:   Thu, 12 May 2022 13:27:33 +0900
+Message-Id: <20220512042733.17976-1-yamamoto.rei@jp.fujitsu.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <4cf33f9c-89bc-f845-10d7-2aa62a20f5e5@huawei.com>
+References: <4cf33f9c-89bc-f845-10d7-2aa62a20f5e5@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since we add numa_count for mm->rss_stat, the tracepoint should
-also be modified. Now the output looks like this:
+On Thu, 12 May 2022 10:27:44 +0800 Miaohe Lin <linmiaohe@huawei.com> wrote:
+> On 2022/5/12 9:47, Rei Yamamoto wrote:
+>> On Wed, 11 May 2022 17:26:16 Miaohe Lin wrote:
+>>> On 2022/5/11 15:07, Rei Yamamoto wrote:
+>>>> On Wed, 11 May 2022 14:25:34 Miaohe Lin wrote:
+>>>>> On 2022/5/11 12:43, Rei Yamamoto wrote:
+>>>>>> Prevent returning a pfn outside the target zone in case that not
+>>>>>> aligned with pageblock boundary.
+>>>>>> Otherwise isolate_migratepages_block() would handle pages not in
+>>>>>> the target zone.
+>>>>>>
+>>>>>
+>>>>> IIUC, the sole caller isolate_migratepages will ensure the pfn won't outside
+>>>>> the target zone. So the below code change might not be necessary. Or am I miss
+>>>>> something ?
+>>>>
+>>>> While block_start_pfn is ensured, this variable is not used as the argument for 
+>>>> isolate_migratepages_block():
+>>>>   -----
+>>>>   static isolate_migrate_t isolate_migratepages(struct compact_control *cc)
+>>>>   {
+>>>>   :
+>>>>           low_pfn = fast_find_migrateblock(cc);
+>>>>           block_start_pfn = pageblock_start_pfn(low_pfn);
+>>>>           if (block_start_pfn < cc->zone->zone_start_pfn)
+>>>>                   block_start_pfn = cc->zone->zone_start_pfn;  <--- block_start_pfn is ensured not outside 
+>>>>                                                                     the target zone
+>>>>   :
+>>>>           block_end_pfn = pageblock_end_pfn(low_pfn);
+>>>>   :
+>>>>           for (; block_end_pfn <= cc->free_pfn;
+>>>>                           fast_find_block = false,
+>>>>                           cc->migrate_pfn = low_pfn = block_end_pfn,
+>>>>                           block_start_pfn = block_end_pfn,
+>>>>                           block_end_pfn += pageblock_nr_pages) {
+>>>>   :
+>>>>                   if (isolate_migratepages_block(cc, low_pfn, block_end_pfn,  <--- low_pfn is passed as 
+>>>>                                                                                    the argument
+>>>
+>>> Sorry, I think you're right. And could you please add the runtime effect of this issue?
+>>>
+>>> Anyway, this patch looks good to me now. Thanks!
+>> 
+>> Thank you for your review.
+>> The runtime effect is that compaction become unintended behavior.
+>> For example, pages not in the target zone are added to cc->migratepages list in isolate_migratepages_block().
+>> As a result, pages migrate between nodes unintentionally.
+>
+> Many thanks for clarifying. :) Is this worth a Fixes tag or even CC stable?
+>
+> Thanks!
 
-```
-sleep-660   [002]   918.524333: rss_stat:             mm_id=1539334265 curr=0 type=MM_NO_TYPE type_size=0B node=2 node_size=32768B diff_size=-8192B
-sleep-660   [002]   918.524333: rss_stat:             mm_id=1539334265 curr=0 type=MM_FILEPAGES type_size=4096B node=-1 node_size=0B diff_size=-4096B
-sleep-660   [002]   918.524333: rss_stat:             mm_id=1539334265 curr=0 type=MM_NO_TYPE type_size=0B node=1 node_size=0B diff_size=-4096B
-```
+Thank you for your reply.
 
-Signed-off-by: Gang Li <ligang.bdlg@bytedance.com>
----
- include/linux/mm.h          |  9 +++++----
- include/trace/events/kmem.h | 27 ++++++++++++++++++++-------
- mm/memory.c                 |  5 +++--
- 3 files changed, 28 insertions(+), 13 deletions(-)
+If add a Fixes tag, I think the following commit:
+  Fixes: 70b4459 ("mm, compaction: use free lists to quickly locate a migration source")
 
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 1b6c2e912ec8..cde5529285d6 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -2007,27 +2007,28 @@ static inline unsigned long get_mm_counter(struct mm_struct *mm, int member, int
- 	return (unsigned long)val;
- }
- 
--void mm_trace_rss_stat(struct mm_struct *mm, int member, long count);
-+void mm_trace_rss_stat(struct mm_struct *mm, int member, long member_count, int node,
-+		       long numa_count, long diff_count);
- 
- static inline void add_mm_counter(struct mm_struct *mm, int member, long value, int node)
- {
- 	long count = atomic_long_add_return(value, &mm->rss_stat.count[member]);
- 
--	mm_trace_rss_stat(mm, member, count);
-+	mm_trace_rss_stat(mm, member, count, NUMA_NO_NODE, 0, value);
- }
- 
- static inline void inc_mm_counter(struct mm_struct *mm, int member, int node)
- {
- 	long count = atomic_long_inc_return(&mm->rss_stat.count[member]);
- 
--	mm_trace_rss_stat(mm, member, count);
-+	mm_trace_rss_stat(mm, member, count, NUMA_NO_NODE, 0, 1);
- }
- 
- static inline void dec_mm_counter(struct mm_struct *mm, int member, int node)
- {
- 	long count = atomic_long_dec_return(&mm->rss_stat.count[member]);
- 
--	mm_trace_rss_stat(mm, member, count);
-+	mm_trace_rss_stat(mm, member, count, NUMA_NO_NODE, 0, -1);
- }
- 
- /* Optimized variant when page is already known not to be PageAnon */
-diff --git a/include/trace/events/kmem.h b/include/trace/events/kmem.h
-index ddc8c944f417..2f4707d94624 100644
---- a/include/trace/events/kmem.h
-+++ b/include/trace/events/kmem.h
-@@ -347,7 +347,8 @@ static unsigned int __maybe_unused mm_ptr_to_hash(const void *ptr)
- 	EM(MM_FILEPAGES)	\
- 	EM(MM_ANONPAGES)	\
- 	EM(MM_SWAPENTS)		\
--	EMe(MM_SHMEMPAGES)
-+	EM(MM_SHMEMPAGES)	\
-+	EMe(MM_NO_TYPE)
- 
- #undef EM
- #undef EMe
-@@ -367,29 +368,41 @@ TRACE_EVENT(rss_stat,
- 
- 	TP_PROTO(struct mm_struct *mm,
- 		int member,
--		long count),
-+		long member_count,
-+		int node,
-+		long node_count,
-+		long diff_count),
- 
--	TP_ARGS(mm, member, count),
-+	TP_ARGS(mm, member, member_count, node, node_count, diff_count),
- 
- 	TP_STRUCT__entry(
- 		__field(unsigned int, mm_id)
- 		__field(unsigned int, curr)
- 		__field(int, member)
--		__field(long, size)
-+		__field(long, member_size)
-+		__field(int, node)
-+		__field(long, node_size)
-+		__field(long, diff_size)
- 	),
- 
- 	TP_fast_assign(
- 		__entry->mm_id = mm_ptr_to_hash(mm);
- 		__entry->curr = !!(current->mm == mm);
- 		__entry->member = member;
--		__entry->size = (count << PAGE_SHIFT);
-+		__entry->member_size = (member_count << PAGE_SHIFT);
-+		__entry->node = node;
-+		__entry->node_size = (node_count << PAGE_SHIFT);
-+		__entry->diff_size = (diff_count << PAGE_SHIFT);
- 	),
- 
--	TP_printk("mm_id=%u curr=%d type=%s size=%ldB",
-+	TP_printk("mm_id=%u curr=%d type=%s type_size=%ldB node=%d node_size=%ldB diff_size=%ldB",
- 		__entry->mm_id,
- 		__entry->curr,
- 		__print_symbolic(__entry->member, TRACE_MM_PAGES),
--		__entry->size)
-+		__entry->member_size,
-+		__entry->node,
-+		__entry->node_size,
-+		__entry->diff_size)
- 	);
- #endif /* _TRACE_KMEM_H */
- 
-diff --git a/mm/memory.c b/mm/memory.c
-index adb07fb0b483..2d3040a190f6 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -170,9 +170,10 @@ static int __init init_zero_pfn(void)
- }
- early_initcall(init_zero_pfn);
- 
--void mm_trace_rss_stat(struct mm_struct *mm, int member, long count)
-+void mm_trace_rss_stat(struct mm_struct *mm, int member, long member_count, int node,
-+		       long numa_count, long diff_count)
- {
--	trace_rss_stat(mm, member, count);
-+	trace_rss_stat(mm, member, member_count, node, numa_count, diff_count);
- }
- 
- #if defined(SPLIT_RSS_COUNTING)
--- 
-2.20.1
+Andrew, how do you think about this? 
 
+Thanks,
+Rei
