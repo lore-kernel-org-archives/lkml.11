@@ -2,187 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF256C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 08:51:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1EA6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 08:51:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351704AbiELIvf (ORCPT
+        id S1351734AbiELIvj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 04:51:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41322 "EHLO
+        Thu, 12 May 2022 04:51:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351716AbiELIvI (ORCPT
+        with ESMTP id S1351742AbiELIvT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 04:51:08 -0400
-Received: from outbound-smtp17.blacknight.com (outbound-smtp17.blacknight.com [46.22.139.234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDD094ECC3
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 01:51:07 -0700 (PDT)
-Received: from mail.blacknight.com (pemlinmail04.blacknight.ie [81.17.254.17])
-        by outbound-smtp17.blacknight.com (Postfix) with ESMTPS id EEA091C5944
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 09:51:05 +0100 (IST)
-Received: (qmail 14619 invoked from network); 12 May 2022 08:51:05 -0000
-Received: from unknown (HELO morpheus.112glenside.lan) (mgorman@techsingularity.net@[84.203.198.246])
-  by 81.17.254.9 with ESMTPA; 12 May 2022 08:51:05 -0000
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Mel Gorman <mgorman@techsingularity.net>
-Subject: [PATCH 1/6] mm/page_alloc: Add page->buddy_list and page->pcp_list
-Date:   Thu, 12 May 2022 09:50:38 +0100
-Message-Id: <20220512085043.5234-2-mgorman@techsingularity.net>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220512085043.5234-1-mgorman@techsingularity.net>
-References: <20220512085043.5234-1-mgorman@techsingularity.net>
+        Thu, 12 May 2022 04:51:19 -0400
+Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A1356F96;
+        Thu, 12 May 2022 01:51:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:Subject:
+        From:References:Cc:To:MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe
+        :List-Post:List-Owner:List-Archive;
+        bh=xx9m5dm8MmD9z6KyI04KVvncdp5gOEhfIk9XzqJfOxg=; b=eRgiK+ggyPqj6IGjUVzf59mDDq
+        XpWwjL7Vau9dZb/Lwy3EXBhz8YWsnZ62iBAo3kpWt03/kIwEeOr/fw48fHnUimA0TGDpB6J0e0F0Y
+        2HTjAmNI2g5ljskIURDyyufHxpJCi6dSKIuH6K+GETZqT/FG/Bp+6ikLtW9SniX5egb4=;
+Received: from p200300daa70ef20035fe11ecec42601a.dip0.t-ipconnect.de ([2003:da:a70e:f200:35fe:11ec:ec42:601a] helo=nf.local)
+        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <nbd@nbd.name>)
+        id 1np4XI-0001va-5j; Thu, 12 May 2022 10:51:04 +0200
+Message-ID: <0ef1e0c2-1623-070d-fbf5-e7f09fc199ca@nbd.name>
+Date:   Thu, 12 May 2022 10:51:03 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220510094014.68440-1-nbd@nbd.name>
+ <20220510123724.i2xqepc56z4eouh2@skbuf>
+ <5959946d-1d34-49b9-1abe-9f9299cc194e@nbd.name>
+ <20220510165233.yahsznxxb5yq6rai@skbuf>
+ <bc4bde22-c2d6-1ded-884a-69465b9d1dc7@nbd.name>
+ <20220510222101.od3n7gk3cofwhbks@skbuf>
+ <376b13ac-d90b-24e0-37ed-a96d8e5f80da@nbd.name>
+ <20220511093245.3266lqdze2b4odh5@skbuf> <YnvJFmX+BRscJOtm@lunn.ch>
+From:   Felix Fietkau <nbd@nbd.name>
+Subject: Re: [PATCH v2] net: dsa: tag_mtk: add padding for tx packets
+In-Reply-To: <YnvJFmX+BRscJOtm@lunn.ch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The page allocator uses page->lru for storing pages on either buddy or
-PCP lists. Create page->buddy_list and page->pcp_list as a union with
-page->lru. This is simply to clarify what type of list a page is on
-in the page allocator.
 
-No functional change intended.
+On 11.05.22 16:32, Andrew Lunn wrote:
+>> Let's see what others have to say. I've been wanting to make the policy
+>> of whether to call __skb_put_padto() standardized for all tagging protocol
+>> drivers (similar to what is done in dsa_realloc_skb() and below it).
+>> We pad for tail taggers, maybe we can always pad and this removes a
+>> conditional, and simplifies taggers. Side note, I already dislike that
+>> the comment in tag_brcm.c is out of sync with the code. It says that
+>> padding up to ETH_ZLEN is necessary, but proceeds to pad up until
+>> ETH_ZLEN + tag len, only to add the tag len once more below via skb_push().
+>> It would be nice if we could use the simple eth_skb_pad().
+> 
+> There are some master devices which will perform padding on their own,
+> in hardware. So for taggers which insert the header at the head,
+> forcing such padding would be a waste of CPU time.
+> 
+> For tail taggers, padding short packets by default does however make
+> sense. The master device is probably going to pad in the wrong way if
+> it does padding.
+I just ran some more tests, here's what I found:
+The switch automatically pads all forwarded packets to 64 bytes.
+When packets are forwarded from one external port to another, the 
+padding is all zero.
+Only when packets are sent from a CPU port to an external port, the last 
+4 bytes contain garbage. The garbage bytes are different for every 
+packet, and I can't tell if it's leaking contents of previous packets or 
+what else is in there.
+Based on that, I'm pretty sure that the hardware simply has a quirk 
+where it does not account for the special tag when generating its own 
+padding internally.
 
-[minchan: Fix page lru fields in macros]
-Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
-Tested-by: Minchan Kim <minchan@kernel.org>
-Acked-by: Minchan Kim <minchan@kernel.org>
----
- include/linux/mm_types.h |  5 +++++
- mm/page_alloc.c          | 24 ++++++++++++------------
- 2 files changed, 17 insertions(+), 12 deletions(-)
+I found that replacing my __skb_put_padto call with eth_skb_pad also 
+works, so I'm going to send v3 with that and an updated comment.
 
-diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-index 8834e38c06a4..a2782e8af307 100644
---- a/include/linux/mm_types.h
-+++ b/include/linux/mm_types.h
-@@ -87,6 +87,7 @@ struct page {
- 			 */
- 			union {
- 				struct list_head lru;
-+
- 				/* Or, for the Unevictable "LRU list" slot */
- 				struct {
- 					/* Always even, to negate PageTail */
-@@ -94,6 +95,10 @@ struct page {
- 					/* Count page's or folio's mlocks */
- 					unsigned int mlock_count;
- 				};
-+
-+				/* Or, free page */
-+				struct list_head buddy_list;
-+				struct list_head pcp_list;
- 			};
- 			/* See page-flags.h for PAGE_MAPPING_FLAGS */
- 			struct address_space *mapping;
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 2db95780e003..f58f85fdb05f 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -780,7 +780,7 @@ static inline bool set_page_guard(struct zone *zone, struct page *page,
- 		return false;
- 
- 	__SetPageGuard(page);
--	INIT_LIST_HEAD(&page->lru);
-+	INIT_LIST_HEAD(&page->buddy_list);
- 	set_page_private(page, order);
- 	/* Guard pages are not available for any usage */
- 	__mod_zone_freepage_state(zone, -(1 << order), migratetype);
-@@ -957,7 +957,7 @@ static inline void add_to_free_list(struct page *page, struct zone *zone,
- {
- 	struct free_area *area = &zone->free_area[order];
- 
--	list_add(&page->lru, &area->free_list[migratetype]);
-+	list_add(&page->buddy_list, &area->free_list[migratetype]);
- 	area->nr_free++;
- }
- 
-@@ -967,7 +967,7 @@ static inline void add_to_free_list_tail(struct page *page, struct zone *zone,
- {
- 	struct free_area *area = &zone->free_area[order];
- 
--	list_add_tail(&page->lru, &area->free_list[migratetype]);
-+	list_add_tail(&page->buddy_list, &area->free_list[migratetype]);
- 	area->nr_free++;
- }
- 
-@@ -981,7 +981,7 @@ static inline void move_to_free_list(struct page *page, struct zone *zone,
- {
- 	struct free_area *area = &zone->free_area[order];
- 
--	list_move_tail(&page->lru, &area->free_list[migratetype]);
-+	list_move_tail(&page->buddy_list, &area->free_list[migratetype]);
- }
- 
- static inline void del_page_from_free_list(struct page *page, struct zone *zone,
-@@ -991,7 +991,7 @@ static inline void del_page_from_free_list(struct page *page, struct zone *zone,
- 	if (page_reported(page))
- 		__ClearPageReported(page);
- 
--	list_del(&page->lru);
-+	list_del(&page->buddy_list);
- 	__ClearPageBuddy(page);
- 	set_page_private(page, 0);
- 	zone->free_area[order].nr_free--;
-@@ -1489,11 +1489,11 @@ static void free_pcppages_bulk(struct zone *zone, int count,
- 		do {
- 			int mt;
- 
--			page = list_last_entry(list, struct page, lru);
-+			page = list_last_entry(list, struct page, pcp_list);
- 			mt = get_pcppage_migratetype(page);
- 
- 			/* must delete to avoid corrupting pcp list */
--			list_del(&page->lru);
-+			list_del(&page->pcp_list);
- 			count -= nr_pages;
- 			pcp->count -= nr_pages;
- 
-@@ -3053,7 +3053,7 @@ static int rmqueue_bulk(struct zone *zone, unsigned int order,
- 		 * for IO devices that can merge IO requests if the physical
- 		 * pages are ordered properly.
- 		 */
--		list_add_tail(&page->lru, list);
-+		list_add_tail(&page->pcp_list, list);
- 		allocated++;
- 		if (is_migrate_cma(get_pcppage_migratetype(page)))
- 			__mod_zone_page_state(zone, NR_FREE_CMA_PAGES,
-@@ -3303,7 +3303,7 @@ void mark_free_pages(struct zone *zone)
- 
- 	for_each_migratetype_order(order, t) {
- 		list_for_each_entry(page,
--				&zone->free_area[order].free_list[t], lru) {
-+				&zone->free_area[order].free_list[t], buddy_list) {
- 			unsigned long i;
- 
- 			pfn = page_to_pfn(page);
-@@ -3392,7 +3392,7 @@ static void free_unref_page_commit(struct page *page, int migratetype,
- 	__count_vm_event(PGFREE);
- 	pcp = this_cpu_ptr(zone->per_cpu_pageset);
- 	pindex = order_to_pindex(migratetype, order);
--	list_add(&page->lru, &pcp->lists[pindex]);
-+	list_add(&page->pcp_list, &pcp->lists[pindex]);
- 	pcp->count += 1 << order;
- 
- 	/*
-@@ -3655,8 +3655,8 @@ struct page *__rmqueue_pcplist(struct zone *zone, unsigned int order,
- 				return NULL;
- 		}
- 
--		page = list_first_entry(list, struct page, lru);
--		list_del(&page->lru);
-+		page = list_first_entry(list, struct page, pcp_list);
-+		list_del(&page->pcp_list);
- 		pcp->count -= 1 << order;
- 	} while (check_new_pcp(page, order));
- 
--- 
-2.34.1
-
+- Felix
