@@ -2,115 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE432C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 15:11:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EAD9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 15:11:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355810AbiELPLh (ORCPT
+        id S1355807AbiELPLo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 11:11:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36862 "EHLO
+        Thu, 12 May 2022 11:11:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355732AbiELPKq (ORCPT
+        with ESMTP id S1355805AbiELPLf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 11:10:46 -0400
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 200DA261F9C
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 08:10:39 -0700 (PDT)
-Received: by mail-io1-xd30.google.com with SMTP id f2so5636498ioh.7
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 08:10:39 -0700 (PDT)
+        Thu, 12 May 2022 11:11:35 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E76F554B3
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 08:11:29 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id dk23so10848928ejb.8
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 08:11:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ObrabPeHCvU+7dJRKxpHSNrTAOTtMCoM5TrsgPoZkdA=;
-        b=LqDnul8IKgFzWCT9AVCqtSZZI7UcE9n96UHYaVIKrZD7cdeC9oVar/qF2tycyK52L9
-         oTwaHrqibKBzBzgpvySd/H2RB/YciH6aGzeX/lWqQp9oX6W4iaacU5tp2j7iCwLVbEf1
-         GtR0YBHiKSfuaWOIMt/cKZfC32ZkeRcQGMe46B8O7O2/AM1BadvnVdhlI4iLHtVg6qdN
-         nWNG0+bxOEAWljR6Fykxtaq2gos/WENZtVibwse/JhU0gZ2KSlMPM4b9etNg9CjFdYQd
-         C0fX3bE2KW57tZf3GFsI/X/F1hXKRO9qApQ9VmpBwg5OKzgjX04snqiC8uHg72rFCopV
-         /GfA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0AwmGRZiz5OBa3h7F2JloJbsspAv/u88JHvx56Jj1Qw=;
+        b=eSsQw/2koso7HKgPGY+qaB5sAH4bsxeOrb4Hiypsv/qbj9Yua5XDR0oXLO8kLzOwii
+         oUFZjt8YDj0Y3S1sTOy9xJwK1yGNmdTBm1o84VgSlmii1GealU4f9wgfZm5hT6docTaM
+         F1/QpgsCsWfR5K4dv0xDPRp82d2GhBTzCX+VhI2YVgLtFY4Gkpq34HTZyniCs2rBNPaf
+         kjCHxe9F/12Qom2jDIcpUc8u+84s1MbkBVgaxuULnkWwxdXFqR+iCjy8Wa0JwCYkfADw
+         jo9lbaqw/yRvIZbeghEq9MkMx/IZ/8VPKszrxp2zJ4iMDuTVoYkZW5CFiOAXl91Y7uvH
+         AtsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ObrabPeHCvU+7dJRKxpHSNrTAOTtMCoM5TrsgPoZkdA=;
-        b=f1etw4v4a3X3Ips0ovyOo3pfYILOGuQ+o1ICvwIUd7T4nMwG8oQ09G+bana93nI+OZ
-         kknTDlFN2YQqgu0sRb/yryGG/j9BhQp5d828ZemoCZAlUuZxeQ1A1f8SYZWr5zyXTS0A
-         NQay4dNaC1onP20Oi1bf84447FguboPtwa3CJuoGdFDwRh127XrQBoP1dWwkRvbPLoga
-         A4WgLLKGSMVZsPB683MvSFabWJt6VyOIW/4CFR5c20IIL4s0tZ5cWJMAi4G0vRzsHJps
-         5cceOtRLqwsN0ag0ME6kRx3+vPWOI8loXWderjHVSjObo8CuW/9WoPk7vFlVKtdqC5JB
-         3Afw==
-X-Gm-Message-State: AOAM533/5YcQYLiDNoxf4vMIobsCq44hE2HdZKq47BgmiKkt15z77edE
-        Yaam4ccWyeCw+TAtf2+7svcwaA==
-X-Google-Smtp-Source: ABdhPJwQ7Zbh5j7m5lhCWjOFBKmPPzLvKaDYU8LgG42BXrcHI9hZ5ehn3NWDUSTp+qJkpYDhcAsLZQ==
-X-Received: by 2002:a02:84ac:0:b0:32b:a11b:4586 with SMTP id f41-20020a0284ac000000b0032ba11b4586mr202328jai.231.1652368238418;
-        Thu, 12 May 2022 08:10:38 -0700 (PDT)
-Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id p15-20020a6b8d0f000000b0065a47e16f3fsm18217iod.17.2022.05.12.08.10.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 08:10:38 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
-Cc:     lkp@intel.com, mka@chromium.org, evgreen@chromium.org,
-        bjorn.andersson@linaro.org, quic_cpratapa@quicinc.com,
-        quic_avuyyuru@quicinc.com, quic_jponduru@quicinc.com,
-        quic_subashab@quicinc.com, elder@kernel.org,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net 1/3] net: ipa: certain dropped packets aren't accounted for
-Date:   Thu, 12 May 2022 10:10:31 -0500
-Message-Id: <20220512151033.211592-2-elder@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220512151033.211592-1-elder@linaro.org>
-References: <20220512151033.211592-1-elder@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0AwmGRZiz5OBa3h7F2JloJbsspAv/u88JHvx56Jj1Qw=;
+        b=be5F2h1jJTJPyR5+qGrBY51H8a4y0BoUfA4tg3+y99HEf7i5yRBz2EKTM3vyX9EDak
+         lyiEFCLbad96nT0bmqMhWLmMrm08zvv6UWy2YeRZ5H+/zvwcjb8x7FDPRFkNTBNKUluu
+         B88HG0wzcNlrwQv45n2RtpXdM/t2VeceZG6REWok9yShzsTYCVyQCUhn1vdKfwNkVCFG
+         MN9xcbyaSRlxJldGDU/XgjPjYFntG+dI6q7ooHLez1h4mcWaHMPNjtIgQsLZh6sfL5EU
+         JzrBsuAnNOp1MgDV5IsqRdKFr7X55tnGXavQR6TE1pqv0i/TGgjxv0vtJDGqol7SGeDD
+         8yQQ==
+X-Gm-Message-State: AOAM530W4IBAYdcEX1g7d1yf7W3rzhh+Iyad30GoF5Damk834ZwzHSWW
+        uFIGLKcjsEAKNmmpFxGTJXom9VqwFXxMlb8MAFlnmQ==
+X-Google-Smtp-Source: ABdhPJz2dDA+OPU/KX/Q+/9cZuuZabKhHqEim53rurCejKAXVoPdzgRMBPGG81WG8lgIKAv/XGbRxv7cltM+5BmnP+U=
+X-Received: by 2002:a17:907:1c06:b0:6df:b257:cbb3 with SMTP id
+ nc6-20020a1709071c0600b006dfb257cbb3mr310876ejc.631.1652368287563; Thu, 12
+ May 2022 08:11:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220512083627.885338-1-tzungbi@kernel.org> <20220512083627.885338-3-tzungbi@kernel.org>
+In-Reply-To: <20220512083627.885338-3-tzungbi@kernel.org>
+From:   Guenter Roeck <groeck@google.com>
+Date:   Thu, 12 May 2022 08:11:16 -0700
+Message-ID: <CABXOdTeZCo-dL8k=1VaGfTycj==USab+hQFvmnyT3uyXkAfOQw@mail.gmail.com>
+Subject: Re: [PATCH 2/6] platform/chrome: correct cros_ec_prepare_tx() usage
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        chrome-platform@lists.linux.dev,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If an RX endpoint receives packets containing status headers, and a
-packet in the buffer is not dropped, ipa_endpoint_skb_copy() is
-responsible for wrapping the packet data in an SKB and forwarding it
-to ipa_modem_skb_rx() for further processing.
+On Thu, May 12, 2022 at 1:36 AM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
+>
+> cros_ec_prepare_tx() returns either:
+> - >= 0 for number of prepared bytes.
+> - < 0 for -errno.
+>
+> Correct the comment and make sure all callers check the return code.
+>
+> Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
 
-If ipa_endpoint_skb_copy() gets a null pointer from build_skb(), it
-just returns early.  But in the process it doesn't record that as a
-dropped packet in the network device statistics.
+Makes sense in the context of the next patch.
 
-Instead, call ipa_modem_skb_rx() whether or not the SKB pointer is
-NULL; that function ensures the statistics are properly updated.
+Reviewed-by: Guenter Roeck <groeck@chromim.org>
 
-Fixes: 1b65bbcc9a710 ("net: ipa: skip SKB copy if no netdev")
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/ipa_endpoint.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index 888e94278a84f..cea7b2e2ce969 100644
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -1150,13 +1150,12 @@ static void ipa_endpoint_skb_copy(struct ipa_endpoint *endpoint,
- 		return;
- 
- 	skb = __dev_alloc_skb(len, GFP_ATOMIC);
--	if (!skb)
--		return;
--
--	/* Copy the data into the socket buffer and receive it */
--	skb_put(skb, len);
--	memcpy(skb->data, data, len);
--	skb->truesize += extra;
-+	if (skb) {
-+		/* Copy the data into the socket buffer and receive it */
-+		skb_put(skb, len);
-+		memcpy(skb->data, data, len);
-+		skb->truesize += extra;
-+	}
- 
- 	ipa_modem_skb_rx(endpoint->netdev, skb);
- }
--- 
-2.32.0
-
+> ---
+>  drivers/platform/chrome/cros_ec_i2c.c   | 2 ++
+>  drivers/platform/chrome/cros_ec_ishtp.c | 4 +++-
+>  drivers/platform/chrome/cros_ec_lpc.c   | 2 ++
+>  drivers/platform/chrome/cros_ec_proto.c | 2 +-
+>  drivers/platform/chrome/cros_ec_rpmsg.c | 2 ++
+>  drivers/platform/chrome/cros_ec_spi.c   | 4 ++++
+>  6 files changed, 14 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/platform/chrome/cros_ec_i2c.c b/drivers/platform/chrome/cros_ec_i2c.c
+> index 22feb0fd4ce7..a4f305f1eb0e 100644
+> --- a/drivers/platform/chrome/cros_ec_i2c.c
+> +++ b/drivers/platform/chrome/cros_ec_i2c.c
+> @@ -89,6 +89,8 @@ static int cros_ec_pkt_xfer_i2c(struct cros_ec_device *ec_dev,
+>
+>         ec_dev->dout++;
+>         ret = cros_ec_prepare_tx(ec_dev, msg);
+> +       if (ret < 0)
+> +               goto done;
+>         ec_dev->dout--;
+>
+>         /* send command to EC and read answer */
+> diff --git a/drivers/platform/chrome/cros_ec_ishtp.c b/drivers/platform/chrome/cros_ec_ishtp.c
+> index 4020b8354bae..cb2031cf7106 100644
+> --- a/drivers/platform/chrome/cros_ec_ishtp.c
+> +++ b/drivers/platform/chrome/cros_ec_ishtp.c
+> @@ -521,7 +521,9 @@ static int cros_ec_pkt_xfer_ish(struct cros_ec_device *ec_dev,
+>         out_msg->hdr.status = 0;
+>
+>         ec_dev->dout += OUT_MSG_EC_REQUEST_PREAMBLE;
+> -       cros_ec_prepare_tx(ec_dev, msg);
+> +       rv = cros_ec_prepare_tx(ec_dev, msg);
+> +       if (rv < 0)
+> +               goto end_error;
+>         ec_dev->dout -= OUT_MSG_EC_REQUEST_PREAMBLE;
+>
+>         dev_dbg(dev,
+> diff --git a/drivers/platform/chrome/cros_ec_lpc.c b/drivers/platform/chrome/cros_ec_lpc.c
+> index 8eeef85a96b1..7677ab3c0ead 100644
+> --- a/drivers/platform/chrome/cros_ec_lpc.c
+> +++ b/drivers/platform/chrome/cros_ec_lpc.c
+> @@ -147,6 +147,8 @@ static int cros_ec_pkt_xfer_lpc(struct cros_ec_device *ec,
+>         u8 *dout;
+>
+>         ret = cros_ec_prepare_tx(ec, msg);
+> +       if (ret < 0)
+> +               goto done;
+>
+>         /* Write buffer */
+>         cros_ec_lpc_ops.write(EC_LPC_ADDR_HOST_PACKET, ret, ec->dout);
+> diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
+> index db1c8ba43171..2d6d3fbfa905 100644
+> --- a/drivers/platform/chrome/cros_ec_proto.c
+> +++ b/drivers/platform/chrome/cros_ec_proto.c
+> @@ -164,7 +164,7 @@ static int send_command(struct cros_ec_device *ec_dev,
+>   * only SPI uses it. Once LPC uses the same protocol it can start using it.
+>   * I2C could use it now, with a refactor of the existing code.
+>   *
+> - * Return: 0 on success or negative error code.
+> + * Return: number of prepared bytes on success or negative error code.
+>   */
+>  int cros_ec_prepare_tx(struct cros_ec_device *ec_dev,
+>                        struct cros_ec_command *msg)
+> diff --git a/drivers/platform/chrome/cros_ec_rpmsg.c b/drivers/platform/chrome/cros_ec_rpmsg.c
+> index d96d15b8ca94..39d3b50a7c09 100644
+> --- a/drivers/platform/chrome/cros_ec_rpmsg.c
+> +++ b/drivers/platform/chrome/cros_ec_rpmsg.c
+> @@ -89,6 +89,8 @@ static int cros_ec_pkt_xfer_rpmsg(struct cros_ec_device *ec_dev,
+>
+>         ec_msg->result = 0;
+>         len = cros_ec_prepare_tx(ec_dev, ec_msg);
+> +       if (len < 0)
+> +               return len;
+>         dev_dbg(ec_dev->dev, "prepared, len=%d\n", len);
+>
+>         reinit_completion(&ec_rpmsg->xfer_ack);
+> diff --git a/drivers/platform/chrome/cros_ec_spi.c b/drivers/platform/chrome/cros_ec_spi.c
+> index 8493af0f680e..589f18e9537d 100644
+> --- a/drivers/platform/chrome/cros_ec_spi.c
+> +++ b/drivers/platform/chrome/cros_ec_spi.c
+> @@ -401,6 +401,8 @@ static int do_cros_ec_pkt_xfer_spi(struct cros_ec_device *ec_dev,
+>         unsigned long delay;
+>
+>         len = cros_ec_prepare_tx(ec_dev, ec_msg);
+> +       if (len < 0)
+> +               return len;
+>         dev_dbg(ec_dev->dev, "prepared, len=%d\n", len);
+>
+>         /* If it's too soon to do another transaction, wait */
+> @@ -544,6 +546,8 @@ static int do_cros_ec_cmd_xfer_spi(struct cros_ec_device *ec_dev,
+>         unsigned long delay;
+>
+>         len = cros_ec_prepare_tx(ec_dev, ec_msg);
+> +       if (len < 0)
+> +               return len;
+>         dev_dbg(ec_dev->dev, "prepared, len=%d\n", len);
+>
+>         /* If it's too soon to do another transaction, wait */
+> --
+> 2.36.0.512.ge40c2bad7a-goog
+>
