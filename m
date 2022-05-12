@@ -2,185 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2144C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:52:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6817C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:53:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357361AbiELRw6 (ORCPT
+        id S1357346AbiELRxp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 13:52:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60638 "EHLO
+        Thu, 12 May 2022 13:53:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357318AbiELRwt (ORCPT
+        with ESMTP id S1344469AbiELRxm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 13:52:49 -0400
-Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D11D9D4FD;
-        Thu, 12 May 2022 10:52:48 -0700 (PDT)
-Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-2f7b815ac06so65728717b3.3;
-        Thu, 12 May 2022 10:52:48 -0700 (PDT)
+        Thu, 12 May 2022 13:53:42 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABEB424D617
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 10:53:41 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id m20so11684660ejj.10
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 10:53:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rF5TwgxqcKOTnH6e3JjjcZnpXw1SrE4T3AtfEU9WAmA=;
+        b=P4dnIDAHRA//qYjQW/VtuRT1f+AWqvasomN7glq/CP85sbLSclvxORqzKSRJM1nU2n
+         YuEZ0fA5uFsuc8M0MyjCWNI16kSGNp1Bn0JaPlMXkXq9uJhFaAqfW9+1XVsuBt9B1FZD
+         FkscgFHN5nMwNd8rQfi8GxrRbWQTg0pReDu0V+PLnpBTT9hNN1edF876C646DmZv+KkA
+         zC4D3lga+dg51lx5QdUOr2seNJYbzMVa4dGQTr3qy1zY6MmkzUn6meRL0VV3P7P4m1EG
+         0adXneAez5QIHnDMyZORoVOqznwj4GMwROiJnTlAdfC3EVjNrHAL/GQAWinypgQeeSPU
+         Q8fw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=uBss9hrCuzZOJevykbo5hNyYyc/K/PeGC6/bLZL7lmM=;
-        b=jmVo1myFREvhykbGOkQEemjM4TchoWyzAH5Oq10RoBeb53PaOizKvxnHUMHXsPblGY
-         nNHxUU0IapKpApL5/p/otsMdUm1Ds5d/6lpOR6/L/RxktMhflSqsas36LvTF4Kain9I4
-         kbSrSIlfaL1yMZie1brGZVskD/xrDUcNdQj00R7sd3fK+rVnzGqzHbJFdQKsEmgw8v6x
-         9ldOYl2BUISesEnRDCa/ufCxjvEPM7WJXFoY94DqPhKqIMD1QxQ4V58YvNZex4YpZwFX
-         QlR1hEHKvRCWsV+fl44WKwA5Eeupd+oDnUnFYh78yrkDm+yVjsLsrccBnycMc+8/e5ui
-         VnUg==
-X-Gm-Message-State: AOAM531SoMYBY7a0LDdP6Wl+UuC+DxwYYEZk/Qv0ngeQLG9oGeIuZVeS
-        eaFQ6hbXKEcA8VNi1/24ceoR/wIMn8DIddHlpjk=
-X-Google-Smtp-Source: ABdhPJxn7gDezTFI9vZy41RhNiS3+8pRdX0nKFtKHgYCvrkr24aeyO9uBN1olsZ7qiQfkaDbWKLNEUPOvk/DSisa3fc=
-X-Received: by 2002:a81:260a:0:b0:2f4:ca82:a42f with SMTP id
- m10-20020a81260a000000b002f4ca82a42fmr1330494ywm.149.1652377967329; Thu, 12
- May 2022 10:52:47 -0700 (PDT)
+        bh=rF5TwgxqcKOTnH6e3JjjcZnpXw1SrE4T3AtfEU9WAmA=;
+        b=kgpWI+42vexhj2ehUBu/Yi5Gd6RsLaw/AGa0UHJ9gMd1J4beIYqfvtbGfhsx//kXdd
+         ObpepkG9ipavybKxYujVB5JL42dWX3iD7OWxaGNMISkDszyW2eU4HAKJqQpr1T4LwRJ4
+         Omkk3tN/nz9cAdCeduPU75xbxUTimxujLKkQKr+qlaMahcuDrSy1TAcHYApN7nSujyiK
+         lHzAaj+BrsWsW/wgcF0Ji4MIF3D1RynKVswTzedhfK7L07iJP9BtYs9d2TO75KULhaa/
+         iwUAY9Wgx+Yuohq+SBnVr8Lmya3Mi4hzRNSiTXk0/gAVeFoHYkgbacpmjPNIMzPZlhMH
+         YqSg==
+X-Gm-Message-State: AOAM5320CQFaMpntoRMDlN30uV+xElxaMsm2acJ2AkEbOkoH4rPBVeFD
+        OyscAzZ0kWfv0pa8qWSNjdOiGzfBnMOnD3TmAylDMA==
+X-Google-Smtp-Source: ABdhPJwzEeDAwH5SCYP3hdfs32D2Sa5DcGVldegaz4uvByNdImHvnt0LUPxtSRUmmoIiyMmSLPVsFX+pLbmjUjvooTo=
+X-Received: by 2002:a17:907:8a24:b0:6f4:82c9:9adc with SMTP id
+ sc36-20020a1709078a2400b006f482c99adcmr978237ejc.223.1652378020059; Thu, 12
+ May 2022 10:53:40 -0700 (PDT)
 MIME-Version: 1.0
-References: <70d0c0d4-093f-ae8a-9654-5a433285ab12@intel.com> <20220512174239.GA851224@bhelgaas>
-In-Reply-To: <20220512174239.GA851224@bhelgaas>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Thu, 12 May 2022 19:52:36 +0200
-Message-ID: <CAJZ5v0g_p+Yb-VLo8b6-SYU17=GQOqZh2E5-52dkq-3rzU=57A@mail.gmail.com>
-Subject: Re: [PATCH v5 2/2] PCI/PM: Fix pci_pm_suspend_noirq() to disable PTM
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Rajvi Jingar <rajvi.jingar@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        David Box <david.e.box@linux.intel.com>,
-        Linux PCI <linux-pci@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>
+References: <20220426173334.3871399-1-dlatypov@google.com> <20220426173334.3871399-2-dlatypov@google.com>
+In-Reply-To: <20220426173334.3871399-2-dlatypov@google.com>
+From:   Brendan Higgins <brendanhiggins@google.com>
+Date:   Thu, 12 May 2022 13:53:28 -0400
+Message-ID: <CAFd5g44V99m1Rgy_FEPZYPWzSLr9T07ShnX-1H1PcwYrKBmXyw@mail.gmail.com>
+Subject: Re: [PATCH 2/3] kunit: tool: make parser stop overwriting status of
+ suites w/ no_tests
+To:     Daniel Latypov <dlatypov@google.com>
+Cc:     davidgow@google.com, linux-kernel@vger.kernel.org,
+        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
+        skhan@linuxfoundation.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 7:42 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+On Tue, Apr 26, 2022 at 1:33 PM Daniel Latypov <dlatypov@google.com> wrote:
 >
-> Hi Rajvi,
+> Consider this invocation
+> $ ./tools/testing/kunit/kunit.py parse <<EOF
+>   TAP version 14
+>   1..2
+>   ok 1 - suite
+>     # Subtest: no_tests_suite
+>     # catastrophic error!
+>   not ok 1 - no_tests_suite
+> EOF
 >
-> I received your v1, v2, v3, v4, v5 postings because they were sent
-> directly to bhelgaas@google.com, but for some reason vger doesn't like
-> them so they don't show up on the mailing list:
+> It will have a 0 exit code even though there's a "not ok".
 >
->   https://lore.kernel.org/all/?q=a%3Arajvi.jingar
+> Consider this one:
+> $ ./tools/testing/kunit/kunit.py parse <<EOF
+>   TAP version 14
+>   1..2
+>   ok 1 - suite
+>   not ok 1 - no_tests_suite
+> EOF
 >
-> I looked at the ones I received directly and don't see an obvious
-> problem.  Maybe there's a hint here?
+> It will a non-zero exit code.
 >
->   http://vger.kernel.org/majordomo-info.html
+> Why?
+> We have this line in the kunit_parser.py
+> > parent_test = parse_test_header(lines, test)
+> where we have special handling when we see "# Subtest" and we ignore the
+> explicit reported "not ok 1" status!
 >
-> All patches should appear on the linux-pci mailing list before
-> applying them, so we need to figure this out somehow.  In fact, I read
-> and review patches from linux-pci, so I often don't even see things
-> that are just sent directly to bhelgaas@google.com.
+> Also, NO_TESTS at a suite-level only results in a non-zero status code
+> where then there's only one suite atm.
 >
-> On Thu, May 12, 2022 at 03:49:18PM +0200, Rafael J. Wysocki wrote:
-> > On 4/29/2022 11:05 PM, Rajvi Jingar wrote:
-> > > For the PCIe devices (like nvme) that do not go into D3 state still need to
-> > > disable PTM to allow the port to enter a lower-power PM state and the SoC
-> > > to reach a lower-power idle state as a whole. Move the pci_disable_ptm()
-> > > out of pci_prepare_to_sleep() as this code path is not followed for devices
-> > > that do not go into D3. This fixes the issue seen on Dell XPS 9300 with
-> > > Ice Lake CPU and Dell Precision 5530 with Coffee Lake CPU platforms to get
-> > > improved residency in low power idle states.
+> This change is the minimal one to make sure we don't overwrite it.
 >
-> I think the paragraph above is a distraction, and the real reason is
-> the paragraph below.
->
-> > > Also, on receiving a PTM Request from a downstream device, if PTM is
-> > > disabled on the root port, as per PCIe r6.0, sec 6.21.3, such a request
-> > > would cause an Unsupported Request error. So it must first disable PTM in
-> > > any downstream devices.
-> > >
-> > > Fixes: a697f072f5da ("PCI: Disable PTM during suspend to save power")
-> > > Signed-off-by: Rajvi Jingar <rajvi.jingar@intel.com>
-> > > Suggested-by: David E. Box <david.e.box@linux.intel.com>
-> > > ---
-> > >   v1 -> v2: add Fixes tag in commit message
-> > >   v2 -> v3: move changelog after "---" marker
-> > >   v3 -> v4: add "---" marker after changelog
-> > >   v4 -> v5: move pci_disable_ptm() out of the pci_dev->state_saved check.
-> > >        disable PTM for all devices, not just root ports.
-> > > ---
-> > >   drivers/pci/pci-driver.c | 28 +++++++++++++++++++---------
-> > >   drivers/pci/pci.c        | 10 ----------
-> > >   2 files changed, 19 insertions(+), 19 deletions(-)
-> > >
-> > > diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-> > > index 8b55a90126a2..400dd18a9cf5 100644
-> > > --- a/drivers/pci/pci-driver.c
-> > > +++ b/drivers/pci/pci-driver.c
-> > > @@ -813,6 +813,7 @@ static int pci_pm_suspend_late(struct device *dev)
-> > >   static int pci_pm_suspend_noirq(struct device *dev)
-> > >   {
-> > > +   unsigned int dev_state_saved;
-> > >     struct pci_dev *pci_dev = to_pci_dev(dev);
-> > >     const struct dev_pm_ops *pm = dev->driver ? dev->driver->pm : NULL;
-> > > @@ -845,16 +846,25 @@ static int pci_pm_suspend_noirq(struct device *dev)
-> > >             }
-> > >     }
-> > > -   if (!pci_dev->state_saved) {
-> > > +   dev_state_saved = pci_dev->state_saved;
-> >
-> > If pci_dev->state_saved is set here, the device may be in D3cold already and
-> > disabling PTM for it will not work.  Of course, it is not necessary to
-> > disable PTM for it then, but this case need to be taken care of.
-> >
-> > > +   if (!dev_state_saved)
-> > >             pci_save_state(pci_dev);
-> > > -           /*
-> > > -            * If the device is a bridge with a child in D0 below it, it needs to
-> > > -            * stay in D0, so check skip_bus_pm to avoid putting it into a
-> > > -            * low-power state in that case.
-> > > -            */
-> > > -           if (!pci_dev->skip_bus_pm && pci_power_manageable(pci_dev))
-> > > -                   pci_prepare_to_sleep(pci_dev);
-> > > -   }
-> > > +
-> > > +   /*
-> > > +    * There are systems (for example, Intel mobile chips since Coffee
-> > > +    * Lake) where the power drawn while suspended can be significantly
-> > > +    * reduced by disabling PTM as this allows the SoC to reach a
-> > > +    * lower-power idle state as a whole.
->
-> I think the argument for disabling PTM is that:
->
->   - If a PTM Requester is put in a low-power state, a PTM Responder
->     upstream from it may also be put in a low-power state.
->
->   - Putting a Port in D1, D2, or D3hot does not prohibit it from
->     sending or responding to PTM Requests (I'd be glad to be corrected
->     about this).
->
->   - We want to disable PTM on Responders when they are in a low-power
->     state.
->
->   - Per 6.21.3, a PTM Requester must not be enabled when the upstream
->     PTM Responder is disabled.
->
->   - Therefore, we must disable all PTM on all downstream PTM
->     Requesters before disabling it on the PTM Responder, e.g., a Root
->     Port.
->
-> This has nothing specifically to do with Coffee Lake or other Intel
-> chips, so I think the comment should be merely something to the
-> effect that "disabling PTM reduces power consumption."
->
-> > Something like this should suffice IMV:
-> >
-> > if (!dev_state_saved || pci_dev->current_state != PCI_D3cold)
-> >
-> >         pci_disable_ptm(pci_dev);
->
-> It makes sense to me that we needn't disable PTM if the device is in
-> D3cold.  But the "!dev_state_saved" condition depends on what the
-> driver did.  Why is that important?  Why should we not do the
-> following?
->
->   if (pci_dev->current_state != PCI_D3cold)
->     pci_disable_ptm(pci_dev);
+> Signed-off-by: Daniel Latypov <dlatypov@google.com>
 
-We can do this too.  I thought we could skip the power state check if
-dev_state_saved was unset, because then we would know that the power
-state was not D3cold.  It probably isn't worth the hassle though.
+Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
