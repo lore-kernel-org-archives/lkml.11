@@ -2,242 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4AE9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 18:36:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE72C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 18:36:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357736AbiELSgA (ORCPT
+        id S1357778AbiELSgh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 14:36:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43498 "EHLO
+        Thu, 12 May 2022 14:36:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357721AbiELSfx (ORCPT
+        with ESMTP id S1357733AbiELSgV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 14:35:53 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F60E1EAE6
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 11:35:52 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id l26-20020a25ad5a000000b0064adb7991f6so5309078ybe.8
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 11:35:52 -0700 (PDT)
+        Thu, 12 May 2022 14:36:21 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CD496973F
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 11:36:17 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id x52so5560050pfu.11
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 11:36:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=2enWvaqrdYbCiB3VbP1vtMoCf+yvavsfo9hN39o4ARU=;
-        b=osSgR96Irq0ZXTGAx3528oBnX2l8VQha+YDW9a1K8M6JzfuN/5Hw061dtBi9fv3LzU
-         CZitgNW0WdsfFySDTvrzC44fPPgdZimFxJuIOTw29puXw16JHtIF9fZN6bc9Y03zH6SU
-         mS3dUC5UwuHyVs5neSK46S+MUlFgBPzHnWPiGkyOk/L6P8gNoo+/dDYQqbRnt3NMZQQU
-         K0TtfI5mwe3UwmpvJxkrGucNv3Q+z8L4rRr+JZu4CHVODYt/TVQ26cG0T2TZeUgCy02c
-         AliND4yzRBKo0I2LbgBxWgnh4l0U37OoKJeBaKNm381r2a9m8htp7Sfk+t4xmieNWrVp
-         Ffyw==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fmzD9rNsECSReNQ5PrX3joY4B7VTF62mQ/BHRo7HwuU=;
+        b=N49+Dheimvina9OkQYZAVLkd9Q3lwiCjCh9sNuFHhqrLreJ6tlSo97fTk8fAnVBi1h
+         vxhemUFg0vioU9jONE5wueJGvxXGa07iS1pR/lny5tD5sU+MpcxGx/ywzUiboxdnvweM
+         t0nLLbHACIWKEXEDinlxTqo5dWSXjITrhkYow=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=2enWvaqrdYbCiB3VbP1vtMoCf+yvavsfo9hN39o4ARU=;
-        b=gorlFDs47EuCZdqVaUMG+dvAnqJkE5dXbNSbttxdvjluG0PIFDJs2VP4oCM+vs7fhY
-         BDkcspMYgplbk0HRBG5ulrRmuExta5BSQ82i+dCriPCUjDpmDN3f5zGhJz18y7Pmxewc
-         SYDib39/sr5t0zQxQn0A6s84+iKk5dfCK/QfvDyrNchTQBX6+1yTVUzwAR4Wao0E31eJ
-         INgSmlk6RaliWIxoOzOgDT2MpwpHaDuHC1YtDti2aRRrseOXGKgZ03qVjq3kPt/Sd5la
-         TLNcTcjPKHVEaZxys8djbJlKfaMvbC/kezHh1otHev/2jy+NpON+y+3dbcA857HoDJ1O
-         o+nQ==
-X-Gm-Message-State: AOAM533zmrepNwALec35WQWEDxcvPPjBsT0HAZWwd7VtlGpLZL3DegAC
-        s6hBq5ez0q5s+37cPkd5C8HYNGuL5jCNPg==
-X-Google-Smtp-Source: ABdhPJwnyRj2IOHbbkYsRi3JUd6TluH/OeIflbIOyZvh62YNtEDnq+6dZINlUgXLZcd7F/0aimR3R8Yxo298rw==
-X-Received: from dlatypov.svl.corp.google.com ([2620:15c:2cd:202:648d:cdc5:d51:4873])
- (user=dlatypov job=sendgmr) by 2002:a25:48c8:0:b0:648:be07:a758 with SMTP id
- v191-20020a2548c8000000b00648be07a758mr1210783yba.346.1652380551466; Thu, 12
- May 2022 11:35:51 -0700 (PDT)
-Date:   Thu, 12 May 2022 11:35:38 -0700
-In-Reply-To: <20220512183538.3787321-1-dlatypov@google.com>
-Message-Id: <20220512183538.3787321-3-dlatypov@google.com>
-Mime-Version: 1.0
-References: <20220512183538.3787321-1-dlatypov@google.com>
-X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
-Subject: [PATCH v2 3/3] kunit: tool: minor cosmetic cleanups in kunit_parser.py
-From:   Daniel Latypov <dlatypov@google.com>
-To:     brendanhiggins@google.com, davidgow@google.com
-Cc:     linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
-        linux-kselftest@vger.kernel.org, skhan@linuxfoundation.org,
-        Daniel Latypov <dlatypov@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fmzD9rNsECSReNQ5PrX3joY4B7VTF62mQ/BHRo7HwuU=;
+        b=6UiB0kMNXsRDgtQU1AhC1yZ8XyCUvPzJsBEdNjrJfteCww8zi95NrWu9rHne7ZKOuv
+         M2FBwkEIfMFo5x0Kwhdwc/R8S1zWqSEtdBz1005qQ23rBLfdSsGj5GTFqJXiKg0KMMIP
+         rIqV7uoj7Hu10PV3gnZ5fKOURvCXQk5gKB3Izagt5g8h2YyYRgiX89YMnkK0vbCK3mXf
+         jvOim5NXIzCzukZE+2X9h1fCWA7un1ODgNx6mjxpsLy/PEXDV9S01LM57DGYw23/BcLf
+         fJVat9DYlDb997TFkC6jeHYFZjOZ6wwZ894uVomd//izBEtggh2MFOVOgmHXCLmNmOSD
+         xi5Q==
+X-Gm-Message-State: AOAM530mwmUHgf+gmvJqgQi6xmtNptd+nQNAlCBwk7wlEV3apnuuLnHl
+        a+FEEED7rb5WePtbed0KN+Juw2MSKAT7bw==
+X-Google-Smtp-Source: ABdhPJwQs8f0+Tlghx0styILjotSwjlFz4Ulfnsvrgj0+wEnl9O0MbW/zC+b8ijhKT7PqZW+frim+g==
+X-Received: by 2002:a63:e218:0:b0:3c6:7449:15a2 with SMTP id q24-20020a63e218000000b003c6744915a2mr740941pgh.515.1652380577330;
+        Thu, 12 May 2022 11:36:17 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id 16-20020a621610000000b0050dc76281a7sm153076pfw.129.2022.05.12.11.36.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 May 2022 11:36:16 -0700 (PDT)
+From:   Kees Cook <keescook@chromium.org>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: [RFC][PATCH] lkdtm/usercopy: Add tests for other memory types
+Date:   Thu, 12 May 2022 11:36:13 -0700
+Message-Id: <20220512183613.1069697-1-keescook@chromium.org>
+X-Mailer: git-send-email 2.32.0
+MIME-Version: 1.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4054; h=from:subject; bh=d/WHu6d3wldPfChuAXknC/QD9Uq1559cFGHibNpURL8=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBifVOdEMza0XMDYVrnEzmFV5A91gOAs4JnXuF20cjf +9cNusmJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYn1TnQAKCRCJcvTf3G3AJlHWEA CDs2DWMYK2GxdiM6GVRzOvgg71voEFbmx+GYgdPlJ0IZYzAIuaw43olfhV7Y09XkaPAAdjD0cQF/VU sEx90P8GzXQSQ4ffHwBJuJX2CPKXBoI9RZ5YQ7skvlh5EnDet++uggnNIcPBmm5GXeL9Gf97ndpQGC UsO0V7CXeOx4pYGabqM5681lXr9JmZJPjo5vnXFQ4j8IoD02Hly2kYA0LLkWOXX78NGgU6z60rJHTf oFA4Ov2T8bAi1VIvVT+WLSuNx/LdGpjPrEaVPWAEzAS2E1tZhSfa9VPZsKN6KewWwmmWDqBlLH+9u/ e4LP2hOfC+eMJ6nHh9/NEz9y/CBzw8ZbuHL62PFxgg/we4YbHaA0IMC4cckWQn/UtcC5uMx8MIWZ5q drkQ3ulQPjEYAAaiEXuPj1F1T9HyOQ7VDwCBPj5+GRvXKydiTZ4xw+q7n2tQUjJtjZI9GIi9O4hDTw hfn2yU9Yvp0Y8txOn3xEcTAUKml1/2VcNeBNYmFzWnkQRlaEG7NegyXE1byGSza9G3eZnxX9pnxWDm 8TTTWN2CDnhzImKGxFapXhnF480voTx8q7ltMBMMETMV5qBaFlTKcK+GdhBE5rTw/NnMWCqAg1vSJ2 ZMZ5dqBPDjyaBB+Wg7pq2kBaF7UTm6OGeFKBgWAT7c9C3EEDvyKzgM808QKw==
+X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There should be no behavioral changes from this patch.
+Add coverage for the recently added usercopy checks for vmap, kmap, and
+folios.
 
-This patch removes redundant comment text, inlines a function used in
-only one place, and other such minor tweaks.
-
-Signed-off-by: Daniel Latypov <dlatypov@google.com>
-Reviewed-by: David Gow <davidgow@google.com>
-Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Matthew Wilcox (Oracle) <willy@infradead.org>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
-v1 -> v2: rebase onto -kselftest/kunit branch, minor merge conflict
-(a nearby comment got reworded)
----
- tools/testing/kunit/kunit_parser.py | 71 +++++++----------------------
- 1 file changed, 17 insertions(+), 54 deletions(-)
+Hi,
 
-diff --git a/tools/testing/kunit/kunit_parser.py b/tools/testing/kunit/kunit_parser.py
-index 9f5a73f36c2d..98264177b0bd 100644
---- a/tools/testing/kunit/kunit_parser.py
-+++ b/tools/testing/kunit/kunit_parser.py
-@@ -46,10 +46,8 @@ class Test(object):
+So, this kmap test fails the "good" copy step... Is copy_to_user()
+limited somewhere else to not touch kmap'd pages? I can't find it...
+
+Also, is my use of folios correct here?
+
+-Kees
+---
+ drivers/misc/lkdtm/usercopy.c | 104 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 104 insertions(+)
+
+diff --git a/drivers/misc/lkdtm/usercopy.c b/drivers/misc/lkdtm/usercopy.c
+index 945806db2a13..d1c585bb7a8d 100644
+--- a/drivers/misc/lkdtm/usercopy.c
++++ b/drivers/misc/lkdtm/usercopy.c
+@@ -5,6 +5,7 @@
+  */
+ #include "lkdtm.h"
+ #include <linux/slab.h>
++#include <linux/highmem.h>
+ #include <linux/vmalloc.h>
+ #include <linux/sched/task_stack.h>
+ #include <linux/mman.h>
+@@ -341,6 +342,106 @@ static void lkdtm_USERCOPY_KERNEL(void)
+ 	vm_munmap(user_addr, PAGE_SIZE);
+ }
  
- 	def __str__(self) -> str:
- 		"""Returns string representation of a Test class object."""
--		return ('Test(' + str(self.status) + ', ' + self.name +
--			', ' + str(self.expected_count) + ', ' +
--			str(self.subtests) + ', ' + str(self.log) + ', ' +
--			str(self.counts) + ')')
-+		return (f'Test({self.status}, {self.name}, {self.expected_count}, '
-+			f'{self.subtests}, {self.log}, {self.counts})')
++/*
++ * This expects "kaddr" to point to a PAGE_SIZE allocation, which means
++ * a more complete test that would include copy_from_user() would risk
++ * memory corruption. Just test copy_to_user() here, as that exercises
++ * almost exactly the same code paths.
++ */
++static void do_usercopy_page_span(const char *name, void *kaddr)
++{
++	unsigned long uaddr;
++
++	uaddr = vm_mmap(NULL, 0, PAGE_SIZE, PROT_READ | PROT_WRITE,
++			MAP_ANONYMOUS | MAP_PRIVATE, 0);
++	if (uaddr >= TASK_SIZE) {
++		pr_warn("Failed to allocate user memory\n");
++		return;
++	}
++
++	/* Initialize contents. */
++	memset(kaddr, 0xAA, PAGE_SIZE);
++
++	/* Bump the kaddr forward to detect a page-spanning overflow. */
++	kaddr += PAGE_SIZE / 2;
++
++	pr_info("attempting good copy_to_user() from kernel %s: %px\n",
++		name, kaddr);
++	if (copy_to_user((void __user *)uaddr, kaddr,
++			 unconst + (PAGE_SIZE / 2))) {
++		pr_err("copy_to_user() failed unexpectedly?!\n");
++		goto free_user;
++	}
++
++	pr_info("attempting bad copy_to_user() from kernel %s: %px\n",
++		name, kaddr);
++	if (copy_to_user((void __user *)uaddr, kaddr,
++			 unconst + PAGE_SIZE)) {
++		pr_warn("Good, copy_to_user() failed, but lacked Oops(?!)\n");
++		goto free_user;
++	}
++
++	pr_err("FAIL: bad copy_to_user() not detected!\n");
++	pr_expected_config_param(CONFIG_HARDENED_USERCOPY, "hardened_usercopy");
++
++free_user:
++	vm_munmap(uaddr, PAGE_SIZE);
++}
++
++static void lkdtm_USERCOPY_VMALLOC(void)
++{
++	void *addr;
++
++	addr = vmalloc(PAGE_SIZE);
++	if (!addr) {
++		pr_err("vmalloc() failed!?\n");
++		return;
++	}
++	do_usercopy_page_span("vmalloc", addr);
++	vfree(addr);
++}
++
++static void lkdtm_USERCOPY_KMAP(void)
++{
++	struct page *page;
++	void *addr;
++
++	page = alloc_pages(GFP_KERNEL | __GFP_ZERO, 0);
++	if (!page) {
++		pr_err("alloc_pages() failed!?\n");
++		return;
++	}
++	addr = kmap_atomic(page);
++	if (addr) {
++		do_usercopy_page_span("kmap", addr);
++		kunmap_atomic(addr);
++	} else {
++		pr_err("kmap_atomic() failed!?\n");
++	}
++	__free_pages(page, 0);
++}
++
++static void lkdtm_USERCOPY_FOLIO(void)
++{
++	struct folio *folio;
++	void *addr;
++
++	/*
++	 * FIXME: Folio checking currently misses 0-order allocations, so
++	 * allocate and bump forward to the last page.
++	 */
++	folio = folio_alloc(GFP_KERNEL | __GFP_ZERO, 1);
++	if (!folio) {
++		pr_err("folio_alloc() failed!?\n");
++		return;
++	}
++	addr = page_address(&folio->page);
++	if (addr) {
++		do_usercopy_page_span("folio", addr + PAGE_SIZE);
++	}
++	folio_put(folio);
++}
++
+ void __init lkdtm_usercopy_init(void)
+ {
+ 	/* Prepare cache that lacks SLAB_USERCOPY flag. */
+@@ -365,6 +466,9 @@ static struct crashtype crashtypes[] = {
+ 	CRASHTYPE(USERCOPY_STACK_FRAME_TO),
+ 	CRASHTYPE(USERCOPY_STACK_FRAME_FROM),
+ 	CRASHTYPE(USERCOPY_STACK_BEYOND),
++	CRASHTYPE(USERCOPY_VMALLOC),
++	CRASHTYPE(USERCOPY_KMAP),
++	CRASHTYPE(USERCOPY_FOLIO),
+ 	CRASHTYPE(USERCOPY_KERNEL),
+ };
  
- 	def __repr__(self) -> str:
- 		"""Returns string representation of a Test class object."""
-@@ -58,7 +56,7 @@ class Test(object):
- 	def add_error(self, error_message: str) -> None:
- 		"""Records an error that occurred while parsing this test."""
- 		self.counts.errors += 1
--		print_error('Test ' + self.name + ': ' + error_message)
-+		print_with_timestamp(red('[ERROR]') + f' Test: {self.name}: {error_message}')
- 
- class TestStatus(Enum):
- 	"""An enumeration class to represent the status of a test."""
-@@ -92,8 +90,7 @@ class TestCounts:
- 		self.errors = 0
- 
- 	def __str__(self) -> str:
--		"""Returns the string representation of a TestCounts object.
--		"""
-+		"""Returns the string representation of a TestCounts object."""
- 		statuses = [('passed', self.passed), ('failed', self.failed),
- 			('crashed', self.crashed), ('skipped', self.skipped),
- 			('errors', self.errors)]
-@@ -130,30 +127,19 @@ class TestCounts:
- 		if self.total() == 0:
- 			return TestStatus.NO_TESTS
- 		elif self.crashed:
--			# If one of the subtests crash, the expected status
--			# of the Test is crashed.
-+			# Crashes should take priority.
- 			return TestStatus.TEST_CRASHED
- 		elif self.failed:
--			# Otherwise if one of the subtests fail, the
--			# expected status of the Test is failed.
- 			return TestStatus.FAILURE
- 		elif self.passed:
--			# Otherwise if one of the subtests pass, the
--			# expected status of the Test is passed.
-+			# No failures or crashes, looks good!
- 			return TestStatus.SUCCESS
- 		else:
--			# Finally, if none of the subtests have failed,
--			# crashed, or passed, the expected status of the
--			# Test is skipped.
-+			# We have only skipped tests.
- 			return TestStatus.SKIPPED
- 
- 	def add_status(self, status: TestStatus) -> None:
--		"""
--		Increments count of inputted status.
--
--		Parameters:
--		status - status to be added to the TestCounts object
--		"""
-+		"""Increments the count for `status`."""
- 		if status == TestStatus.SUCCESS:
- 			self.passed += 1
- 		elif status == TestStatus.FAILURE:
-@@ -283,11 +269,9 @@ def check_version(version_num: int, accepted_versions: List[int],
- 	test - Test object for current test being parsed
- 	"""
- 	if version_num < min(accepted_versions):
--		test.add_error(version_type +
--			' version lower than expected!')
-+		test.add_error(f'{version_type} version lower than expected!')
- 	elif version_num > max(accepted_versions):
--		test.add_error(
--			version_type + ' version higher than expected!')
-+		test.add_error(f'{version_type} version higer than expected!')
- 
- def parse_ktap_header(lines: LineStream, test: Test) -> bool:
- 	"""
-@@ -440,8 +424,7 @@ def parse_test_result(lines: LineStream, test: Test,
- 	# Check test num
- 	num = int(match.group(2))
- 	if num != expected_num:
--		test.add_error('Expected test number ' +
--			str(expected_num) + ' but found ' + str(num))
-+		test.add_error(f'Expected test number {expected_num} but found {num}')
- 
- 	# Set status of test object
- 	status = match.group(1)
-@@ -529,7 +512,7 @@ def format_test_divider(message: str, len_message: int) -> str:
- 		# calculate number of dashes for each side of the divider
- 		len_1 = int(difference / 2)
- 		len_2 = difference - len_1
--	return ('=' * len_1) + ' ' + message + ' ' + ('=' * len_2)
-+	return ('=' * len_1) + f' {message} ' + ('=' * len_2)
- 
- def print_test_header(test: Test) -> None:
- 	"""
-@@ -545,20 +528,13 @@ def print_test_header(test: Test) -> None:
- 	message = test.name
- 	if test.expected_count:
- 		if test.expected_count == 1:
--			message += (' (' + str(test.expected_count) +
--				' subtest)')
-+			message += ' (1 subtest)'
- 		else:
--			message += (' (' + str(test.expected_count) +
--				' subtests)')
-+			message += f' ({test.expected_count} subtests)'
- 	print_with_timestamp(format_test_divider(message, len(message)))
- 
- def print_log(log: Iterable[str]) -> None:
--	"""
--	Prints all strings in saved log for test in yellow.
--
--	Parameters:
--	log - Iterable object with all strings saved in log for test
--	"""
-+	"""Prints all strings in saved log for test in yellow."""
- 	for m in log:
- 		print_with_timestamp(yellow(m))
- 
-@@ -635,20 +611,7 @@ def print_summary_line(test: Test) -> None:
- 		color = yellow
- 	else:
- 		color = red
--	counts = test.counts
--	print_with_timestamp(color('Testing complete. ' + str(counts)))
--
--def print_error(error_message: str) -> None:
--	"""
--	Prints error message with error format.
--
--	Example:
--	"[ERROR] Test example: missing test plan!"
--
--	Parameters:
--	error_message - message describing error
--	"""
--	print_with_timestamp(red('[ERROR] ') + error_message)
-+	print_with_timestamp(color(f'Testing complete. {test.counts}'))
- 
- # Other methods:
- 
-@@ -794,7 +757,7 @@ def parse_test(lines: LineStream, expected_num: int, log: List[str]) -> Test:
- def parse_run_tests(kernel_output: Iterable[str]) -> Test:
- 	"""
- 	Using kernel output, extract KTAP lines, parse the lines for test
--	results and print condensed test results and summary line .
-+	results and print condensed test results and summary line.
- 
- 	Parameters:
- 	kernel_output - Iterable object contains lines of kernel output
 -- 
-2.36.0.550.gb090851708-goog
+2.32.0
 
