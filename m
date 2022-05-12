@@ -2,199 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 752AAC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 02:20:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81DCCC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 02:20:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239888AbiELCUO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 22:20:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56256 "EHLO
+        id S239924AbiELCUU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 22:20:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232482AbiELCUC (ORCPT
+        with ESMTP id S239106AbiELCUE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 22:20:02 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64B9553B59;
-        Wed, 11 May 2022 19:19:59 -0700 (PDT)
-X-UUID: 0a60c9f8ac2c4e40bc50afdb3eedd46e-20220512
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:74c6ed9b-4a02-48d8-9d78-ae44766c27b9,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:-15
-X-CID-META: VersionHash:faefae9,CLOUDID:631e8827-a01c-4223-8f5a-12d972216e7b,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: 0a60c9f8ac2c4e40bc50afdb3eedd46e-20220512
-Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw02.mediatek.com
-        (envelope-from <yunfei.dong@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 827126756; Thu, 12 May 2022 10:19:54 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 12 May 2022 10:19:52 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 12 May 2022 10:19:51 +0800
-From:   Yunfei Dong <yunfei.dong@mediatek.com>
-To:     Yunfei Dong <yunfei.dong@mediatek.com>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        Nicolas Dufresne <nicolas@ndufresne.ca>,
-        "Hans Verkuil" <hverkuil-cisco@xs4all.nl>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tomasz Figa <tfiga@google.com>
-CC:     George Sun <george.sun@mediatek.com>,
-        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Fritz Koenig <frkoenig@chromium.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Irui Wang <irui.wang@mediatek.com>,
-        "Steve Cho" <stevecho@chromium.org>, <linux-media@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v12, 00/17] media: mtk-vcodec: support for M8192 decoder
-Date:   Thu, 12 May 2022 10:19:33 +0800
-Message-ID: <20220512021950.29087-1-yunfei.dong@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+        Wed, 11 May 2022 22:20:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D58453B6E
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 19:20:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3654160C7D
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 02:20:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 478C9C34113;
+        Thu, 12 May 2022 02:20:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1652322001;
+        bh=JfwZ2pwW5nLhYNwObsjPgvyS/UJ8orNHcTY7KYaw6sA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=cHpUR9Lw7xgMxAuGTStnfVwconAUReWk29VSvUL9d2P/lW6z8GT3yZUm8pfV8IFrE
+         r3E9xK4S/iEMQY7PR6fBC7j5bWPOKgg369M3bT5xzYs/X7RfkoyzzWtbPRUVfK8ICu
+         X1H/OCcuhNb3UoITPP27qQvN9eYeik2vUO0gQ/T0=
+Date:   Wed, 11 May 2022 19:20:00 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>
+Cc:     linmiaohe@huawei.com, aquini@redhat.com, ddutile@redhat.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        mgorman@techsingularity.net, vvghjk1234@gmail.com
+Subject: Re: [PATCH] mm, compaction: fast_find_migrateblock() should return
+ pfn in the target zone
+Message-Id: <20220511192000.d4851d55c5560e720e1e2914@linux-foundation.org>
+In-Reply-To: <20220512014736.16376-1-yamamoto.rei@jp.fujitsu.com>
+References: <07e0ceb8-a637-b011-bbf6-ba760a0b12e4@huawei.com>
+        <20220512014736.16376-1-yamamoto.rei@jp.fujitsu.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series adds support for mt8192 h264/vp8/vp9 decoder drivers. Firstly, refactor
-power/clock/interrupt interfaces for mt8192 is lat and core architecture.
+On Thu, 12 May 2022 10:47:36 +0900 Rei Yamamoto <yamamoto.rei@jp.fujitsu.com> wrote:
 
-Secondly, add new functions to get frame buffer size and resolution according
-to decoder capability from scp side. Then add callback function to get/put
-capture buffer in order to enable lat and core decoder in parallel, need to
-adjust GStreamer at the same time. 
+> ...
+>
+> > Sorry, I think you're right. And could you please add the runtime effect of this issue?
+> >
+> > Anyway, this patch looks good to me now. Thanks!
+> 
+> Thank you for your review.
+> The runtime effect is that compaction become unintended behavior.
+> For example, pages not in the target zone are added to cc->migratepages list in isolate_migratepages_block().
+> As a result, pages migrate between nodes unintentionally.
 
-Then add to support MT21C compressed mode and fix v4l2-compliance fail.
+Thanks.   I updated the changelog thusly:
 
-Next, extract H264 request api driver to let mt8183 and mt8192 use the same
-code, and adds mt8192 frame based h264 driver for stateless decoder.
-
-Lastly, add vp8 and vp9 stateless decoder drivers.
-
-Patches 1 refactor power/clock/interrupt interface.
-Patches 2~4 get frame buffer size and resolution according to decoder capability.
-Patches 5 set capture queue bytesused.
-Patches 6 adjust GStreamer.
-Patch 7~11 add to support MT21C compressed mode and fix v4l2-compliance fail.
-patch 12 record capture queue format type.
-Patch 13~14 extract h264 driver and add mt8192 frame based driver for h264 decoder.
-Patch 15~16 add vp8 and vp9 stateless decoder drivers.
-Patch 17 prevent kernel crash when rmmod mtk-vcodec-dec.ko
----
-changes compared with v11:
-- fix __iomem not reasonable, align share memory to dram.
-changes compared with v10:
-- fix sparse and smatch check fail for patch 13/14/16
-- fix 32bit build fail for patch 14
-changes compared with v9:
-- fix kernel robot build fail for patch 16
-changes compared with v8:
-- fix vp9 build error
-- fix kernel-doc fail
-changes compared with v7:
-- adjust GStreamer, separate src buffer done with v4l2_ctrl_request_complete for patch 6.
-- remove v4l2_m2m_set_dst_buffered.
-- add new patch to set each plane bytesused in buf prepare for patch 5.
-- using upstream interface to update vp9 prob tables for patch 16.
-- fix maintainer comments.
-- test the driver with chrome VD and GStreamer(H264/VP9/VP8/AV1).
-changes compared with v6:
-- rebase to the latest media stage and fix conficts
-- fix memcpy to memcpy_fromio or memcpy_toio
-- fix h264 crash when test field bitstream
-changes compared with v5:
-- fix vp9 comments for patch 15
-- fix vp8 comments for patch 14.
-- fix comments for patch 12.
-- fix build errors.
-changes compared with v4:
-- fix checkpatch.pl fail.
-- fix kernel-doc fail.
-- rebase to the latest media codec driver.
-changes compared with v3:
-- remove enum mtk_chip for patch 2.
-- add vp8 stateless decoder drivers for patch 14.
-- add vp9 stateless decoder drivers for patch 15.
-changes compared with v2:
-- add new patch 11 to record capture queue format type.
-- separate patch 4 according to tzung-bi's suggestion.
-- re-write commit message for patch 5 according to tzung-bi's suggestion.
-changes compared with v1:
-- rewrite commit message for patch 12.
-- rewrite cover-letter message.
----
-Yunfei Dong (17):
-  media: mediatek: vcodec: Add vdec enable/disable hardware helpers
-  media: mediatek: vcodec: Using firmware type to separate different
-    firmware architecture
-  media: mediatek: vcodec: get capture queue buffer size from scp
-  media: mediatek: vcodec: Read max resolution from dec_capability
-  media: mediatek: vcodec: set each plane bytesused in buf prepare
-  media: mediatek: vcodec: Refactor get and put capture buffer flow
-  media: mediatek: vcodec: Refactor supported vdec formats and
-    framesizes
-  media: mediatek: vcodec: Getting supported decoder format types
-  media: mediatek: vcodec: Add format to support MT21C
-  media: mediatek: vcodec: disable vp8 4K capability
-  media: mediatek: vcodec: Fix v4l2-compliance fail
-  media: mediatek: vcodec: record capture queue format type
-  media: mediatek: vcodec: Extract H264 common code
-  media: mediatek: vcodec: support stateless H.264 decoding for mt8192
-  media: mediatek: vcodec: support stateless VP8 decoding
-  media: mediatek: vcodec: support stateless VP9 decoding
-  media: mediatek: vcodec: prevent kernel crash when rmmod
-    mtk-vcodec-dec.ko
-
- .../media/platform/mediatek/vcodec/Kconfig    |    1 +
- .../media/platform/mediatek/vcodec/Makefile   |    4 +
- .../platform/mediatek/vcodec/mtk_vcodec_dec.c |   62 +-
- .../mediatek/vcodec/mtk_vcodec_dec_drv.c      |    8 +-
- .../mediatek/vcodec/mtk_vcodec_dec_pm.c       |  166 +-
- .../mediatek/vcodec/mtk_vcodec_dec_pm.h       |    6 +-
- .../mediatek/vcodec/mtk_vcodec_dec_stateful.c |   19 +-
- .../vcodec/mtk_vcodec_dec_stateless.c         |  257 ++-
- .../platform/mediatek/vcodec/mtk_vcodec_drv.h |   41 +-
- .../mediatek/vcodec/mtk_vcodec_enc_drv.c      |    5 -
- .../platform/mediatek/vcodec/mtk_vcodec_fw.c  |    6 +
- .../platform/mediatek/vcodec/mtk_vcodec_fw.h  |    1 +
- .../vcodec/vdec/vdec_h264_req_common.c        |  310 +++
- .../vcodec/vdec/vdec_h264_req_common.h        |  274 +++
- .../mediatek/vcodec/vdec/vdec_h264_req_if.c   |  438 +---
- .../vcodec/vdec/vdec_h264_req_multi_if.c      |  626 +++++
- .../mediatek/vcodec/vdec/vdec_vp8_req_if.c    |  437 ++++
- .../vcodec/vdec/vdec_vp9_req_lat_if.c         | 2030 +++++++++++++++++
- .../platform/mediatek/vcodec/vdec_drv_if.c    |   37 +-
- .../platform/mediatek/vcodec/vdec_drv_if.h    |    3 +
- .../platform/mediatek/vcodec/vdec_ipi_msg.h   |   36 +
- .../platform/mediatek/vcodec/vdec_msg_queue.c |    2 +
- .../platform/mediatek/vcodec/vdec_msg_queue.h |    2 +
- .../platform/mediatek/vcodec/vdec_vpu_if.c    |   53 +-
- .../platform/mediatek/vcodec/vdec_vpu_if.h    |   15 +
- .../platform/mediatek/vcodec/venc_vpu_if.c    |    2 +-
- include/linux/remoteproc/mtk_scp.h            |    2 +
- 27 files changed, 4242 insertions(+), 601 deletions(-)
- create mode 100644 drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_common.c
- create mode 100644 drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_common.h
- create mode 100644 drivers/media/platform/mediatek/vcodec/vdec/vdec_h264_req_multi_if.c
- create mode 100644 drivers/media/platform/mediatek/vcodec/vdec/vdec_vp8_req_if.c
- create mode 100644 drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c
-
--- 
-2.18.0
+: At present, pages not in the target zone are added to cc->migratepages
+: list in isolate_migratepages_block().  As a result, pages may migrate
+: between nodes unintentionally.
+: 
+: Avoid returning a pfn outside the target zone in the case that it is
+: not aligned with a pageblock boundary.  Otherwise
+: isolate_migratepages_block() will handle pages not in the target zone.
 
