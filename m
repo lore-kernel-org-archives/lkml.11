@@ -2,212 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C5EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 16:05:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AAEEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 16:05:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356260AbiELQF0 (ORCPT
+        id S1356280AbiELQFa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 12:05:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56714 "EHLO
+        Thu, 12 May 2022 12:05:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356236AbiELQFN (ORCPT
+        with ESMTP id S1356256AbiELQFR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 12:05:13 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6C2C62233
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 09:05:12 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id cq17-20020a17090af99100b001dc0386cd8fso5286959pjb.5
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 09:05:12 -0700 (PDT)
+        Thu, 12 May 2022 12:05:17 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 326CC263DBC;
+        Thu, 12 May 2022 09:05:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=wl6H6/ZeYYFL+udhozFko8xO2rpE47Y82z32+dXEgkU=;
-        b=m7OSpe1tZ/cyPq27UV0tY1eL/crWhI78b9PzFapLWaB+gxOFWFRUetg2jbulMEhqt3
-         5Kp0ifj0Mh/4bStbSENrHUothijQnISCFdIQeSMy+OCg+5QLtdgf8TXPLOCanYorYF0a
-         /FLEK8gPDbHnk5jj7awz6FmLWXLSe/5rptUX4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wl6H6/ZeYYFL+udhozFko8xO2rpE47Y82z32+dXEgkU=;
-        b=asgOEVMuT0GY9jNa/t8v7dqT2iJh9n3rKjuuTA25YDGjA7yLFLVgZMxK3eYTP67T7y
-         Kbmix1LCPlFpNAnHHUAYrZO12vPj+vDy/wK/2xbDHy5EPflwJk/q4Tn7hcZOw+2dvLHV
-         q9Cyg07LXrak4UXgXw7mFs/eJw3yr0Hjyhc98rfU6myqYx7YYmcDv/Nh98+vJv+PVhBu
-         fcHUIhOxQGxerfXGowv4/vFsLIe0pKzQHukWTqTBWjTVHk6oilXplCUPYRT0dzb22hHF
-         iHUvT6/DDPKwJViMT0s+3YTMSwGQUb53U8f5rAyfbdIo0TXOKH3xFOQzO6cTYmxPAZ6Q
-         rSDg==
-X-Gm-Message-State: AOAM5310uXuggE3cOs5ucgfXgenUnLU5ip0svMh41u0RUoYqNFPfXEU7
-        eQW7yI21WknbWAOb1LxXiG8xUQ==
-X-Google-Smtp-Source: ABdhPJwQurYXyEcyUiofx57PFK80uo9DFEvuuSj3LhQA5PscmC4dWtlFvBkLqMyIUtSyQcjuTueBWw==
-X-Received: by 2002:a17:902:70c9:b0:15f:a78:fd15 with SMTP id l9-20020a17090270c900b0015f0a78fd15mr464592plt.12.1652371512360;
-        Thu, 12 May 2022 09:05:12 -0700 (PDT)
-Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:504e:720d:de58:4f66])
-        by smtp.gmail.com with ESMTPSA id b15-20020a62a10f000000b0050dc762817esm21381pff.88.2022.05.12.09.05.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 09:05:12 -0700 (PDT)
-From:   Douglas Anderson <dianders@chromium.org>
-To:     Rob Herring <robh@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Stephen Boyd <swboyd@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Alexandru M Stan <amstan@chromium.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rajendra Nayak <quic_rjendra@quicinc.com>,
-        "Joseph S . Barrera III" <joebar@chromium.org>,
-        Julius Werner <jwerner@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Andy Gross <agross@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Stephen Boyd <sboyd@codeaurora.org>,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] dt-bindings: arm: qcom: Add more sc7180 Chromebook board bindings
-Date:   Thu, 12 May 2022 09:04:47 -0700
-Message-Id: <20220512090429.3.Ie8713bc0377672ed8dd71189e66fc0b77226fb85@changeid>
-X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
-In-Reply-To: <20220512090429.1.I9804fcd5d6c8552ab25f598dd7a3ea71b15b55f0@changeid>
-References: <20220512090429.1.I9804fcd5d6c8552ab25f598dd7a3ea71b15b55f0@changeid>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1652371516; x=1683907516;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=SbkIAr8kDAHWGtaAPt3QNiXsXJ4IT42PUqH47lTn8JY=;
+  b=y0CUDKYSWqdE6VY0YfgbgFJvyYqZK08HyqkArf0UF0xoJlrXHovIWusB
+   VT4aeFOcQefRsFED0pETmnAWJA7r3zzeNcxeY9fbn33Abf5XMpab5LO7x
+   5bUirAnGNES++SZTLP6VtUH5/ODwx7OHOhbFktixzb9/ZBbunER9GjpM2
+   A=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 12 May 2022 09:05:16 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 09:05:15 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 12 May 2022 09:05:15 -0700
+Received: from [10.110.47.233] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 12 May
+ 2022 09:05:14 -0700
+Message-ID: <fa713d4a-a3ef-2837-d220-857ed1e5538c@quicinc.com>
+Date:   Thu, 12 May 2022 09:05:13 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v3 1/2] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
+Content-Language: en-US
+To:     Pavel Skripkin <paskripkin@gmail.com>,
+        <ath9k-devel@qca.qualcomm.com>, <kvalo@kernel.org>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <toke@toke.dk>,
+        <linville@tuxdriver.com>
+CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <syzbot+03110230a11411024147@syzkaller.appspotmail.com>,
+        <syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com>
+References: <80962aae265995d1cdb724f5362c556d494c7566.1644265120.git.paskripkin@gmail.com>
+From:   Jeff Johnson <quic_jjohnson@quicinc.com>
+In-Reply-To: <80962aae265995d1cdb724f5362c556d494c7566.1644265120.git.paskripkin@gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds board bindings for boards that are downstream but not quite
-upstream yet.
+On 2/7/2022 12:24 PM, Pavel Skripkin wrote:
+[...snip...]
+>   
+>   #ifdef CONFIG_ATH9K_HTC_DEBUGFS
+> -
+> -#define TX_STAT_INC(c) (hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
+> -#define TX_STAT_ADD(c, a) (hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
+> -#define RX_STAT_INC(c) (hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
+> -#define RX_STAT_ADD(c, a) (hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
+> +#define __STAT_SAVE(expr) (hif_dev->htc_handle->drv_priv ? (expr) : 0)
+> +#define TX_STAT_INC(c) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
+> +#define TX_STAT_ADD(c, a) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
+> +#define RX_STAT_INC(c) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
+> +#define RX_STAT_ADD(c, a) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
 
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
----
+it is unfortunate that the existing macros don't abide by the coding style:
+	Things to avoid when using macros:
+	macros that depend on having a local variable with a magic name
 
- .../devicetree/bindings/arm/qcom.yaml         | 92 +++++++++++++++++++
- 1 file changed, 92 insertions(+)
+the companion macros in ath9k/debug.h do the right thing
 
-diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
-index c7ab028d54a0..98ff98e9d0bb 100644
---- a/Documentation/devicetree/bindings/arm/qcom.yaml
-+++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-@@ -258,6 +258,16 @@ properties:
-           - const: google,homestar
-           - const: qcom,sc7180
- 
-+      # Google Kingoftown (rev0)
-+      - items:
-+          - const: google,kingoftown-rev0
-+          - const: qcom,sc7180
-+
-+      # Google Kingoftown (newest rev)
-+      - items:
-+          - const: google,kingoftown
-+          - const: qcom,sc7180
-+
-       # Google Lazor (rev0)
-       - items:
-           - const: google,lazor-rev0
-@@ -359,6 +369,48 @@ properties:
-           - const: google,lazor-sku6
-           - const: qcom,sc7180
- 
-+      # Google Mrbland with AUO panel (rev0)
-+      - items:
-+          - const: google,mrbland-rev0-sku0
-+          - const: qcom,sc7180
-+
-+      # Google Mrbland with AUO panel (newest rev)
-+      - items:
-+          - const: google,mrbland-sku1536
-+          - const: qcom,sc7180
-+
-+      # Google Mrbland with BOE panel (rev0)
-+      - items:
-+          - const: google,mrbland-rev0-sku16
-+          - const: qcom,sc7180
-+
-+      # Google Mrbland with BOE panel (newest rev)
-+      - items:
-+          - const: google,mrbland-sku1024
-+          - const: google,mrbland-sku768
-+          - const: qcom,sc7180
-+
-+      # Google Pazquel with Parade (newest rev)
-+      - items:
-+          - const: google,pazquel-sku5
-+          - const: qcom,sc7180
-+
-+      # Google Pazquel with TI (newest rev)
-+      - items:
-+          - const: google,pazquel-sku1
-+          - const: qcom,sc7180
-+
-+      # Google Pazquel with LTE and Parade (newest rev)
-+      - items:
-+          - const: google,pazquel-sku4
-+          - const: qcom,sc7180
-+
-+      # Google Pazquel with LTE and TI (newest rev)
-+      - items:
-+          - const: google,pazquel-sku0
-+          - const: google,pazquel-sku2
-+          - const: qcom,sc7180
-+
-       # Google Pompom (rev1)
-       - items:
-           - const: google,pompom-rev1
-@@ -389,6 +441,16 @@ properties:
-           - const: google,pompom-sku0
-           - const: qcom,sc7180
- 
-+      # Google Quackingstick (newest rev)
-+      - items:
-+          - const: google,quackingstick-sku1537
-+          - const: qcom,sc7180
-+
-+      # Google Quackingstick with LTE (newest rev)
-+      - items:
-+          - const: google,quackingstick-sku1536
-+          - const: qcom,sc7180
-+
-       # Google Trogdor (newest rev)
-       - items:
-           - const: google,trogdor
-@@ -399,6 +461,36 @@ properties:
-           - const: google,trogdor-sku0
-           - const: qcom,sc7180
- 
-+      # Google Wormdingler with BOE panel (rev0)
-+      - items:
-+          - const: google,wormdingler-rev0-sku16
-+          - const: qcom,sc7180
-+
-+      # Google Wormdingler with BOE panel (newest rev)
-+      - items:
-+          - const: google,wormdingler-sku1024
-+          - const: qcom,sc7180
-+
-+      # Google Wormdingler with BOE panel and rt5682s (newest rev)
-+      - items:
-+          - const: google,wormdingler-sku1025
-+          - const: qcom,sc7180
-+
-+      # Google Wormdingler with INX panel (rev0)
-+      - items:
-+          - const: google,wormdingler-rev0-sku0
-+          - const: qcom,sc7180
-+
-+      # Google Wormdingler with INX panel (newest rev)
-+      - items:
-+          - const: google,wormdingler-sku0
-+          - const: qcom,sc7180
-+
-+      # Google Wormdingler with INX panel and rt5682s (newest rev)
-+      - items:
-+          - const: google,wormdingler-sku1
-+          - const: qcom,sc7180
-+
-       # Qualcomm Technologies, Inc. sc7280 CRD platform (rev3 - 4)
-       - items:
-           - const: qcom,sc7280-crd
--- 
-2.36.0.550.gb090851708-goog
-
+perhaps this could be given to Kernel Janitors for subsequent cleanup?
