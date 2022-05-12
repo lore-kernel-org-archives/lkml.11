@@ -2,97 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFCAFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 02:08:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C1B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 02:10:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234973AbiELCIW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 22:08:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48708 "EHLO
+        id S237827AbiELCKg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 22:10:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237383AbiELCIR (ORCPT
+        with ESMTP id S237316AbiELCKe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 22:08:17 -0400
-Received: from esa4.hc1455-7.c3s2.iphmx.com (esa4.hc1455-7.c3s2.iphmx.com [68.232.139.117])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A80846D85E
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 19:08:15 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="72336034"
-X-IronPort-AV: E=Sophos;i="5.91,218,1647270000"; 
-   d="scan'208";a="72336034"
-Received: from unknown (HELO yto-r4.gw.nic.fujitsu.com) ([218.44.52.220])
-  by esa4.hc1455-7.c3s2.iphmx.com with ESMTP; 12 May 2022 11:08:13 +0900
-Received: from yto-m2.gw.nic.fujitsu.com (yto-nat-yto-m2.gw.nic.fujitsu.com [192.168.83.65])
-        by yto-r4.gw.nic.fujitsu.com (Postfix) with ESMTP id 7B5E0D3EB0
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 11:08:12 +0900 (JST)
-Received: from m3002.s.css.fujitsu.com (msm3.b.css.fujitsu.com [10.128.233.104])
-        by yto-m2.gw.nic.fujitsu.com (Postfix) with ESMTP id AF517F28A1
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 11:08:11 +0900 (JST)
-Received: from localhost.localdomain (unknown [10.125.5.220])
-        by m3002.s.css.fujitsu.com (Postfix) with ESMTP id 7629E200B383;
-        Thu, 12 May 2022 11:08:11 +0900 (JST)
-From:   Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>
-To:     linmiaohe@huawei.com
-Cc:     akpm@linux-foundation.org, aquini@redhat.com, ddutile@redhat.com,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        mgorman@techsingularity.net, vvghjk1234@gmail.com,
-        yamamoto.rei@jp.fujitsu.com
-Subject: Re: [PATCH] mm, compaction: fast_find_migrateblock() should return pfn in the target zone
-Date:   Thu, 12 May 2022 10:47:36 +0900
-Message-Id: <20220512014736.16376-1-yamamoto.rei@jp.fujitsu.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <07e0ceb8-a637-b011-bbf6-ba760a0b12e4@huawei.com>
-References: <07e0ceb8-a637-b011-bbf6-ba760a0b12e4@huawei.com>
+        Wed, 11 May 2022 22:10:34 -0400
+Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 427F36D4E5;
+        Wed, 11 May 2022 19:10:33 -0700 (PDT)
+Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-d39f741ba0so5005570fac.13;
+        Wed, 11 May 2022 19:10:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:content-language:to
+         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=fQPyapFD5yK80jYccvbvTBqZpr7+hTPz6GZIBB/rNbA=;
+        b=Ni3GZ9Qc0o3tjDRWDIeIxobqwxfiOAI7j7D0aepL2h5WqmHnZVW9IN9PMJV9D6MN3m
+         JYzymJ6BdNipNzEKnCH7sh5v7o1sqUPhpm/9F/KRwsn6l9o+u/wU/sID9efPj97LR1T2
+         VxiYchU7dJOlqU/FRK67LOBAMc9+BqQe2BF10NyUn+SnLShEVkTyPw8nWwNTtvqAedIm
+         QaX8cGY9JfzeqNVmd63gjHJQCssHXcmbsPy1zKEXF1zDKQs+Y7D8g9XduPik/98ZMzoy
+         +3fCHsjIdXZi2Bf2D/vCdn+00hjE9/0HBgYgKaBfum1tnCPj3agFpSpHZsUZ56zYyYKo
+         dbaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=fQPyapFD5yK80jYccvbvTBqZpr7+hTPz6GZIBB/rNbA=;
+        b=t1RhQtP+RDIFZzX1Yz65b7Jo5m+/HFvr6EOE33gnILjk1qwwrllhDtq7MLYWEp7fVx
+         QzGpC2VS1JY1/RH0bX2ksCELhhN7dsAQavv4FtNfmQrFNvkoCnnlpXFBqD232WFTcps+
+         xZ39vdTopCxv18Hn0xXAzKsC2uebzLumEE1i7S3rJ0mF33on3nIqZX/hkO6ar6K9ykpm
+         GxxHC00PMkf0FufcibXLhlMg5EWBsb0S91qhNNgqdGielrG6Q6vKdRwuS36SVI3WF7wW
+         7AIpuVNTZ6BbCz+yLGnw+mVtRnF4HKjRSACUDOAFSiiPqBO4pcKD2qkJch2B5AO3eNY3
+         CVfA==
+X-Gm-Message-State: AOAM533iEngov2z8/ECyzJZ1etpNHXa/h4Kak5zHvDTnk3U6pac4xuEB
+        yV7absZzC73/pZQtzQ4d6JA=
+X-Google-Smtp-Source: ABdhPJwih7XGoH9aHoDALG7XhRniGayDQ/zJFlFdwZodO4DdCTjGWMpPmnclN9++nJeq/Nr2LEp8Pw==
+X-Received: by 2002:a05:6870:b010:b0:e5:ff56:61d1 with SMTP id y16-20020a056870b01000b000e5ff5661d1mr4468918oae.47.1652321432596;
+        Wed, 11 May 2022 19:10:32 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id f6-20020a056830056600b006062836c4f4sm1459845otc.71.2022.05.11.19.10.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 May 2022 19:10:31 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <e5f6c712-efed-2126-de2b-9a0d09150e7b@roeck-us.net>
+Date:   Wed, 11 May 2022 19:10:29 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Content-Language: en-US
+To:     Corentin Labbe <clabbe@baylibre.com>, jdelvare@suse.com
+Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Zhang Rui <rui.zhang@intel.com>
+References: <20220509063010.3878134-1-clabbe@baylibre.com>
+ <20220509063010.3878134-3-clabbe@baylibre.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v3 2/2] hwmon: acpi_power_meter: convert to
+ hwmon_device_register_with_info
+In-Reply-To: <20220509063010.3878134-3-clabbe@baylibre.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 11 May 2022 17:26:16 Miaohe Lin wrote:
-> On 2022/5/11 15:07, Rei Yamamoto wrote:
->> On Wed, 11 May 2022 14:25:34 Miaohe Lin wrote:
->>> On 2022/5/11 12:43, Rei Yamamoto wrote:
->>>> Prevent returning a pfn outside the target zone in case that not
->>>> aligned with pageblock boundary.
->>>> Otherwise isolate_migratepages_block() would handle pages not in
->>>> the target zone.
->>>>
->>>
->>> IIUC, the sole caller isolate_migratepages will ensure the pfn won't outside
->>> the target zone. So the below code change might not be necessary. Or am I miss
->>> something ?
->> 
->> While block_start_pfn is ensured, this variable is not used as the argument for 
->> isolate_migratepages_block():
->>   -----
->>   static isolate_migrate_t isolate_migratepages(struct compact_control *cc)
->>   {
->>   :
->>           low_pfn = fast_find_migrateblock(cc);
->>           block_start_pfn = pageblock_start_pfn(low_pfn);
->>           if (block_start_pfn < cc->zone->zone_start_pfn)
->>                   block_start_pfn = cc->zone->zone_start_pfn;  <--- block_start_pfn is ensured not outside 
->>                                                                     the target zone
->>   :
->>           block_end_pfn = pageblock_end_pfn(low_pfn);
->>   :
->>           for (; block_end_pfn <= cc->free_pfn;
->>                           fast_find_block = false,
->>                           cc->migrate_pfn = low_pfn = block_end_pfn,
->>                           block_start_pfn = block_end_pfn,
->>                           block_end_pfn += pageblock_nr_pages) {
->>   :
->>                   if (isolate_migratepages_block(cc, low_pfn, block_end_pfn,  <--- low_pfn is passed as 
->>                                                                                    the argument
->
-> Sorry, I think you're right. And could you please add the runtime effect of this issue?
->
-> Anyway, this patch looks good to me now. Thanks!
+Corentin,
 
-Thank you for your review.
-The runtime effect is that compaction become unintended behavior.
-For example, pages not in the target zone are added to cc->migratepages list in isolate_migratepages_block().
-As a result, pages migrate between nodes unintentionally.
+On 5/8/22 23:30, Corentin Labbe wrote:
+> Booting lead to a hwmon_device_register() is deprecated. Please convert the driver to use hwmon_device_register_with_info().
+> So let's convert the driver to use hwmon_device_register_with_info().
+> 
+> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+> ---
+[ ... ]
+
+> @@ -836,20 +740,20 @@ static void acpi_power_meter_notify(struct acpi_device *device, u32 event)
+>   		if (res)
+>   			break;
+>   
+> -		remove_attrs(resource);
+> +		remove_domain_devices(resource);
+>   		setup_attrs(resource);
+
+Zhang Rui found an interesting problem with this code:
+It needs a call to sysfs_update_groups(hwmon_dev->groups)
+to update sysfs attribute visibility, probably between
+remove_domain_devices() and setup_attrs().
+
+>   		break;
+>   	case METER_NOTIFY_TRIP:
+> -		sysfs_notify(&device->dev.kobj, NULL, POWER_AVERAGE_NAME);
+> +		hwmon_notify_event(&device->dev, hwmon_power, hwmon_power_average, 0);
+
+... which makes realize: The notification device should be the hwmon device.
+That would be resource->hwmon_dev, not the acpi device.
 
 Thanks,
-Rei
+Guenter
