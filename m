@@ -2,127 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30DB5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 16:57:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09FABC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 16:57:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356746AbiELQ5A (ORCPT
+        id S1356758AbiELQ52 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 12:57:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39626 "EHLO
+        Thu, 12 May 2022 12:57:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356747AbiELQ44 (ORCPT
+        with ESMTP id S1356747AbiELQ5X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 12:56:56 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CD954A3DF
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 09:56:48 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id r71so4799918pgr.0
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 09:56:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=C9OapljaiZ/OiA13d4g/3jGQ7Gr1SYoZDM7IohOZJMw=;
-        b=WZHk4r4OdUURkV+uv/i+IHW79scgXxJNk6w0bmDQkegUWDRjxTbgQVx113wplBoJM1
-         y5jFwCRqa1gjhe4GuODsCQCVb7gSoPXdT4QCo976FlDsbb/AivuuzAVIGFEPi61SzpzO
-         nljfmMTEyNQHN3D3mZpGJpgh6StbNqO5noiQyFyPVJ+QMvXft1fQZamwCcIeD8f5LWxd
-         SZ0fHCXEjezwVBmdLC2EEJZF8QZFSXTo3IVxsH3/d9U1J4NqBbuvPSxhTMX4KHqvgPja
-         SRKWeEi2FqmDjcfDBBA3X8y3ZZGbwszxGKv5qWTds9A6yCrajfaj8AyQWRfagYlcoqlG
-         svsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=C9OapljaiZ/OiA13d4g/3jGQ7Gr1SYoZDM7IohOZJMw=;
-        b=Qz5fpEjpRTJwRK/BrMWaebpz0bWwzl4cLa8EqGYF6UkzFZW1sczIesIZIcJcklhS9t
-         I1hY3qnz3ouqNA63g4j41cT5n1KijZSXVGQVgWG2Mje+j7eulyZn9uKudMgU6DEaaVeE
-         1ZmSLksx4K2lBGQcX9PEr4ChbJnu0tvoMYnGGcFkiagegQm+pmI0rmb/pbzIlqu5XaHe
-         klZD7fgESk4Yb+M9NPOjYyszHlaGSFaYQwQCWUo8M2YYEKwa9OrfbyptGUhilhAmz+Uj
-         dNtsMYetximGwSW9oD7+QVkj3CLBmGPwwB3weTP7IMGMT6+jTDWAvXMjifWKjRt8oA4G
-         Ds0Q==
-X-Gm-Message-State: AOAM5320gNJnhGt6dHK/vLMA0EvB8k/vdqYlS9PpiwqDdisdJBpHZSh9
-        iWGDcvVrXiq+yBNawudqRP8=
-X-Google-Smtp-Source: ABdhPJwYRz8NfONMA8aHt4KsoL4b3aqUVkTDSkVKWpClzGdbbD4dNG9CZX74biI2lpbFKpk5hxGZig==
-X-Received: by 2002:a63:6c01:0:b0:3db:5a80:16b8 with SMTP id h1-20020a636c01000000b003db5a8016b8mr477327pgc.394.1652374607962;
-        Thu, 12 May 2022 09:56:47 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::4:6c64])
-        by smtp.gmail.com with ESMTPSA id b9-20020a170902650900b0015e8d4eb263sm130399plk.173.2022.05.12.09.56.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 09:56:47 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Thu, 12 May 2022 06:56:45 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 (repost)] workqueue: Warn flushing of kernel-global
- workqueues
-Message-ID: <Yn08TdfdsFjKx+qw@slm.duckdns.org>
-References: <2efd5461-fccd-f1d9-7138-0a6767cbf5fe@I-love.SAKURA.ne.jp>
- <CAHk-=wgiCVcF4vJCOcg1hDw9PMT6zNSgt-pPuZL8ihWEcVv3eg@mail.gmail.com>
- <e4203c4f-9c3d-6e33-06e8-052676cc5af1@I-love.SAKURA.ne.jp>
- <YjivtdkpY+reW0Gt@slm.duckdns.org>
- <YnzjrnnP622mad1y@google.com>
- <33772dcb-c5dd-c5e7-30c8-d2397d21b26c@I-love.SAKURA.ne.jp>
- <Yn0H/68tagxaj/ke@google.com>
+        Thu, 12 May 2022 12:57:23 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B71D527C7;
+        Thu, 12 May 2022 09:57:22 -0700 (PDT)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24CGrGbH026828;
+        Thu, 12 May 2022 16:57:16 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=OXuueVf6s3X6JCfPwwHQM04N6RRuZKVbCAo/pD8gmoE=;
+ b=dEosWFIzVsDsbbtzhV1OnaOE9QKKGrrtJsChiEBl5p0RrQsEs1b4cyux8gVYqiE7KOk4
+ srho2/2gHQjf/zeTJ+1lNg0cCXYf5aUINuam4yBRjnvzFk86d6I1vOaj3AguHvLjGo//
+ j9uEz9mXePTSHuPVflIw5ZWEoQU7sLeL0uZB8LhhgjZqhZaKoyAoo9BkIHbGgjQTnmqa
+ N4reKmoDgBgurQfeyplQgmAXCfVLCCeJigJ9PbGwLM0e3X27Z9C4vgB6fiYbTWIC8M22
+ ngHgfiTFQk1UUId/cuRdndSVpaXyWvr5lDIipKOf/BrVdoJGnEBaT16TehP02SZglj4O rw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g15pm0q0f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 12 May 2022 16:57:16 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24CGuAuQ009564;
+        Thu, 12 May 2022 16:57:15 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g15pm0pyr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 12 May 2022 16:57:15 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24CGnB3O011576;
+        Thu, 12 May 2022 16:52:12 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma03ams.nl.ibm.com with ESMTP id 3fwgd8ybrp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 12 May 2022 16:52:12 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24CGqA7k45089078
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 12 May 2022 16:52:10 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6BB61AE058;
+        Thu, 12 May 2022 16:52:10 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 617BEAE04D;
+        Thu, 12 May 2022 16:52:09 +0000 (GMT)
+Received: from sig-9-65-70-87.ibm.com (unknown [9.65.70.87])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 12 May 2022 16:52:09 +0000 (GMT)
+Message-ID: <24a84723b246c45a6525016d9cd5cd13d121a0bf.camel@linux.ibm.com>
+Subject: Re: [PATCH] tpm: sleep at least <...> ms in tpm_msleep()
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     James Bottomley <James.Bottomley@HansenPartnership.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Johannes Holland <johannes.holland@infineon.com>,
+        Nayna <nayna@linux.vnet.ibm.com>
+Cc:     linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        peterhuewe@gmx.de, jgg@ziepe.ca
+Date:   Thu, 12 May 2022 12:52:08 -0400
+In-Reply-To: <eb9ef8aeab4c0284028c013a2c86b248719a46ae.camel@HansenPartnership.com>
+References: <20220510112902.23213-1-johannes.holland@infineon.com>
+         <YnvTSqRgYkWu0qgp@kernel.org>
+         <99541f08e8b554dea59334005cafb0af978f9a05.camel@linux.ibm.com>
+         <eb9ef8aeab4c0284028c013a2c86b248719a46ae.camel@HansenPartnership.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: TIycx0oP3tEWP8P7EXEnK9UwVbyPMsgB
+X-Proofpoint-GUID: QLPjj_TuljSeiaS3Yn7m6pKQtgsdcwFi
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yn0H/68tagxaj/ke@google.com>
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-12_14,2022-05-12_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ suspectscore=0 mlxscore=0 spamscore=0 phishscore=0 impostorscore=0
+ mlxlogscore=999 priorityscore=1501 bulkscore=0 malwarescore=0 adultscore=0
+ clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205120078
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello, Dmitry.
-
-On Thu, May 12, 2022 at 06:13:35AM -0700, Dmitry Torokhov wrote:
-> > > This means that now the code has to keep track of all work items that it
-> > > allocated, instead of being able "fire and forget" works (when dealing
-> > > with extremely infrequent events) and rely on flush_workqueue() to
-> > > cleanup.
+On Thu, 2022-05-12 at 08:32 -0400, James Bottomley wrote:
+> On Thu, 2022-05-12 at 08:21 -0400, Mimi Zohar wrote:
+> > On Wed, 2022-05-11 at 18:16 +0300, Jarkko Sakkinen wrote:
+> > > On Tue, May 10, 2022 at 01:29:03PM +0200, Johannes Holland wrote:
+> > > > To comply with protocol requirements, minimum polling times must
+> > > > often
+> > > > be adhered to. Therefore, a macro like tpm_msleep() should sleep
+> > > > at
+> > > > least the given amount of time (not up to the given period). Have
+> > > > tpm_msleep() sleep at least the given number of milliseconds.
+> > > > 
+> > > > Signed-off-by: Johannes Holland <johannes.holland@infineon.com>
+> > > > ---
+> > > >  drivers/char/tpm/tpm.h | 4 ++--
+> > > >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > > > 
+> > > > diff --git a/drivers/char/tpm/tpm.h b/drivers/char/tpm/tpm.h
+> > > > index 2163c6ee0d36..0971b55fffe3 100644
+> > > > --- a/drivers/char/tpm/tpm.h
+> > > > +++ b/drivers/char/tpm/tpm.h
+> > > > @@ -185,8 +185,8 @@ int tpm_pm_resume(struct device *dev);
+> > > >  
+> > > >  static inline void tpm_msleep(unsigned int delay_msec)
+> > > >  {
+> > > > -	usleep_range((delay_msec * 1000) - TPM_TIMEOUT_RANGE_US,
+> > > > -		     delay_msec * 1000);
+> > > > +	usleep_range(delay_msec * 1000, (delay_msec * 1000)
+> > > > +		     + TPM_TIMEOUT_RANGE_US);
+> > > >  };
+> > > >  
+> > > >  int tpm_chip_start(struct tpm_chip *chip);
+> > > > -- 
+> > > > 2.34.1
+> > > > 
+> > > 
+> > > For this I would really like to hear a 2nd opinion from Nayna and
+> > > Mimi.
 > > 
-> > Yes. Moreover, a patch to catch and refuse at compile time was proposed at
-> > https://lkml.kernel.org/r/738afe71-2983-05d5-f0fc-d94efbdf7634@I-love.SAKURA.ne.jp .
+> > This patch reverts commit 5ef924d9e2e8 ("tpm: use tpm_msleep() value
+> > as max delay").    Are you experiencing TPM issues that require it?
 > 
-> My comment was not a wholesale endorsement of Tejun's statement, but
-> rather a note of the fact that it again adds complexity (at least as far
-> as driver writers are concerned) to the kernel code.
-
-I was more thinking about cases where there are a small number of static
-work items. If there are multiple dynamic work items, creating a workqueue
-as a flush domain is the way to go. It does add a bit of complexity but
-shouldn't be too bad - e.g. it just adds the alloc_workqueue() during init
-and the exit path can simply use destroy_workqueue() instead of flush.
-
-> > >          That flush typically happens in module unload path, and I
-> > > wonder if the restriction on flush_workqueue() could be relaxed to allow
-> > > calling it on unload.
-> > 
-> > A patch for drivers/input/mouse/psmouse-smbus.c is waiting for your response at
-> > https://lkml.kernel.org/r/25e2b787-cb2c-fb0d-d62c-6577ad1cd9df@I-love.SAKURA.ne.jp .
-> > Like many modules, flush_workqueue() happens on only module unload in your case.
+> I am:
 > 
-> Yes, I saw that patch, and that is what prompted my response. I find it
-> adding complexity and I was wondering if it could be avoided. It also
-> unclear to me if there is an additional cost coming from allocating a
-> dedicated workqueue.
+> https://lore.kernel.org/linux-integrity/1531328689.3260.8.camel@HansenPartnership.com/
+> 
+> I'm about 24h into a soak test of the patch with no TPM failure so far.
+> I think it probably needs to run another 24h just to be sure, but it
+> does seem the theory is sound (my TPM gets annoyed by being poked too
+> soon) so reverting 5ef924d9e2e8 looks to be the correct action.  The
+> only other ways I've found to fix this are either revert the
+> usleep_range patch altogether or increase the timings:
+> 
+> https://lore.kernel.org/linux-integrity/1531329074.3260.9.camel@HansenPartnership.com/
+> 
+> Which obviously pushes the min past whatever issue my TPM is having
+> even with 5ef924d9e2e8 applied.
+> 
+> Given that even the commit message for 5ef924d9e2e8 admits it only
+> shaves about 12% off the TPM response time, that would appear to be an
+> optimization too far if it's going to cause some TPMs to fail.
 
-A workqueue without WQ_RECLAIM is really cheap. All it does is tracking
-what's in flight for that particular frontend while interfacing with the
-shared worker pool.
+I'd like to understand how pervasive the problem is and which problem
+Johannes Holland is trying to address.  Wasn't there already a patch to
+limit TPM performance degradation to a single buggy TPM chip already
+upstreamed?
 
-> I understand that for some of them the change makes sense, but it would
-> be nice to continue using simple API under limited circumstances.
+thanks,
 
-Hmmm... unfortunately, I can't think of a way to guarantee that a module
-unloading path can't get involved in a deadlock scenario through system_wq.
-Given that the added complexity should be something like half a dozen lines
-of code, switching to separte workqueues feels like the right direction to
-me.
+Mimi
 
-Thanks.
-
--- 
-tejun
