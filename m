@@ -2,63 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91485C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 21:52:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FE50C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 21:53:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359027AbiELVwv (ORCPT
+        id S1358998AbiELVxC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 17:52:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39894 "EHLO
+        Thu, 12 May 2022 17:53:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358977AbiELVv0 (ORCPT
+        with ESMTP id S1358984AbiELVve (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 17:51:26 -0400
-X-Greylist: delayed 1011 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 12 May 2022 14:51:23 PDT
-Received: from mail.mutex.one (mail.mutex.one [62.77.152.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AA7230556;
-        Thu, 12 May 2022 14:51:21 -0700 (PDT)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by mail.mutex.one (Postfix) with ESMTP id 008AD16C0067;
-        Fri, 13 May 2022 00:34:28 +0300 (EEST)
-X-Virus-Scanned: Debian amavisd-new at mail.mutex.one
-Received: from mail.mutex.one ([127.0.0.1])
-        by localhost (mail.mutex.one [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id SDOVAbhfpF0o; Fri, 13 May 2022 00:34:26 +0300 (EEST)
-From:   Marian Postevca <posteuca@mutex.one>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mutex.one; s=default;
-        t=1652391266; bh=aak8G0G2h1L0uLPzaC7njJr131nH10XmNxDTv3BtLtQ=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=ELBoTSOMnkxliWHU4oJ1PWOdxoCyp/y6Xg/bBct47eFZPuJukdNfcfiurAkZf6Udm
-         G2bLTy5faSVCOFAzf0jToHKcvZLLoNnaHh0KwZUinaTT8aNr750VHeCvbbs+9EVuua
-         qfo9r6tEEda01JSsXEvhWhMhDyWMfaFl8I7oQFhs=
-To:     Maximilian Senftleben <kernel@mail.msdigital.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: PROBLEM: No static MAC address for usb gadget ethernet via
- kernel parameter any more.
-In-Reply-To: <dfaa54ab-1b03-7aec-5927-d52a4233e56a@msdigital.de>
-References: <dfaa54ab-1b03-7aec-5927-d52a4233e56a@msdigital.de>
-Date:   Fri, 13 May 2022 00:34:23 +0300
-Message-ID: <87sfpe4eqo.fsf@mutex.one>
+        Thu, 12 May 2022 17:51:34 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEC0035A8D
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 14:51:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652392293; x=1683928293;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=mUHbs3CGqeDWe+cfjYsXwi1cDVhyW8WsG1CjemSY2+o=;
+  b=SHPELwRpuG++G6KEMsBeu/VkTm0tb5+mzlo4iZ9RKS1T8bvTP7K0K3Rc
+   5AkSYiPPr9MqEjAajrdcCFoDbQ5ycFjS0/FdpTaTWOjCeu041sw5TkMwT
+   JvW7878q0MS529W/lihb3geKzU8uINZEwrsZjIcWGRs2uxvnBcNyv1qDk
+   q7oT2xEJFxSrsNCtCAGh4icV99PVtli93Z3NrbtG7E/FlkUyii7V0sWl/
+   DyczuoMGQRNatpjeIyHwyTnmL0/KqnTfJKr8tzlPLZB+juGY9KkBu0rBy
+   WQDc9O1VHhlx4sPcq4H3WFaWT0qfU/k8pk/Q8dV5amk9YQiXZFaKV58F4
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="268980896"
+X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
+   d="scan'208";a="268980896"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 14:51:33 -0700
+X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
+   d="scan'208";a="572707221"
+Received: from wdwickar-mobl1.amr.corp.intel.com (HELO [10.252.130.245]) ([10.252.130.245])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 14:51:32 -0700
+Message-ID: <55176b79-90af-4a47-dc06-9f5f2f2c123d@intel.com>
+Date:   Thu, 12 May 2022 14:51:31 -0700
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [RFCv2 00/10] Linear Address Masking enabling
+Content-Language: en-US
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>, x86@kernel.org,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "H . J . Lu" <hjl.tools@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+References: <20220511022751.65540-1-kirill.shutemov@linux.intel.com>
+ <20220511064943.GR76023@worktop.programming.kicks-ass.net>
+ <20bada85-9203-57f4-2502-57a6fd11f3ea@intel.com> <875ymav8ul.ffs@tglx>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <875ymav8ul.ffs@tglx>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Maximilian Senftleben <kernel@mail.msdigital.de> writes:
+On 5/12/22 12:39, Thomas Gleixner wrote:
+>> It's OK for a debugging build that runs on one kind of hardware.  But,
+>> if we want LAM-using binaries to be portable, we have to do something
+>> different.
+>>
+>> One of the stated reasons for adding LAM hardware is that folks want to
+>> use sanitizers outside of debugging environments.  To me, that means
+>> that LAM is something that the same binary might run with or without.
+> On/off yes, but is there an actual use case where such a mechanism would
+> at start time dynamically chose the number of bits?
 
-> [1.] One line summary of the problem:
->
-> No static MAC address for usb gadget ethernet via kernel boot parameter 
-> any more.
->
-> [2.] Full description of the problem/report:
->
-> In 5.15. and before we were able to set a static MAC address for the usb 
-> gadget ethernet connection using kernel parameters "g_ether.dev_addr" 
-> and "g_ether.host_addr".
+I'd love to hear from folks doing the userspace side of this.  Will
+userspace be saying: "Give me all the bits you can!".  Or, will it
+really just be looking for 6 bits only, and it doesn't care whether it
+gets 6 or 15, it will use only 6?
 
-By taking a quick look I don't see yet how this commit would cause the regression,
-but I will take a deeper look.
+Do the sanitizers have more overhead with more bits?  Or *less* overhead
+because they can store more metadata in the pointers?
 
+Will anyone care about the difference about potentially missing 1/64
+issues with U57 versus 1/32768 with U48?
