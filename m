@@ -2,159 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 943ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 00:27:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26B65C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 00:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349640AbiELA1C (ORCPT
+        id S1349650AbiELA2X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 20:27:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54408 "EHLO
+        Wed, 11 May 2022 20:28:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242707AbiELA07 (ORCPT
+        with ESMTP id S1349641AbiELA2V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 20:26:59 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4072335DE7
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 17:26:58 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id e24so3705071pjt.2
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 17:26:58 -0700 (PDT)
+        Wed, 11 May 2022 20:28:21 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A4F18C06D
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 17:28:20 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id p10so6271356lfa.12
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 17:28:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=lSOQOgP92/YiU5VAWj+NdXGc95/DnozpR5AdrSptpI4=;
-        b=nj48KdFh+/sfMu3rISqNM01K4uo221UQg9EECYj9I1566x6pbwZ2im6XJF1nepDYAR
-         rAS1n9HuNI+9hF04K4JpP2/eftkYUUNbN9BhUht3NRASeQ136OfBwoQBHzoCUD29mOXX
-         c0P2aAmQdLPSObjwvEzC+qqDiOo9GskHVMz51V3OvVdhdrZFbUcw9YJJRHB7hUUNDMiK
-         tSWV01HrIsISPKBi90rk4a7dgXhLP6d4mfqxDvBM9Y3gFGU0zfLhimu8NYEO2/SgyeVP
-         ul/LtTlNBnN6zwuJz9kni2nCqJ0V8JnFtjWJPcfpdYuxqbeKnAGPl8/Lu1wwVAqxzyYl
-         csTQ==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=c2ws23UBcUn/cg2bNLq1AZlNJZpHLdEd3cBqMWxwPHE=;
+        b=ImISWlaf/fsowhzZ+LUJhuc8wWq73oxuQdC8Jg+B/b6IgYMhQ+3HwaaCLhndMaU1x7
+         EuPSVxwcUYtxvoBKntk8Y2fvl4eouOdlxJiJMNqn8wY4VRZQ6OUOYpvY+t0N9xeqONMh
+         KNJ+Tlr63HkniBbjUvrauMRJxeLp/M/HN/hyFZCgFxYcwFWXO7/GPoCvm166Eqg/xygR
+         3o7vQxh9/hgWog03zMK4N+VacdMrpJ8oqnjmQS3Y+b5uuxIl806in1JBQRCIBenaKuV6
+         lp7MArZYE5UiHGzCLgLeUxhVrq8O7wFXBKuvFuhER5KXbI1LYd5DY/gh+zzz3O7hVges
+         0gmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition
-         :content-transfer-encoding:in-reply-to;
-        bh=lSOQOgP92/YiU5VAWj+NdXGc95/DnozpR5AdrSptpI4=;
-        b=q91AyuE6PHcwYY9GQzjdQ+NjDzvp0gKG2uo6trMIU9VGBo3i/DgEaJR8ClInsuZ/2v
-         Gxxsjy4zb8dBoJSnkaQW3eNtrxF65KmQ/XeS8U+I6Ck8Y3QXXTie8U+eOJIC52X7h3YW
-         p6swTJ6awPpY/ztcA8DQAxRPkbkZT1k4DDZjSczbCG+rZYxvqSR2QuBn+LlxVCU+e+2U
-         J3oekyl8yAF6WITdI9WIO0QNY7gaUnoFqtVgCWO5I/uTHRtFfbsvlRWeOpOInAZ8Yl3R
-         K1S2OlkAx40iLE0MB7z/wavtG4D1tdFdoLTAsLZCp7ydebGRvmDZRkiuEWTGDrnodvHE
-         JQ0A==
-X-Gm-Message-State: AOAM5312y9YwXF+4X3w3uWFgKC1CgXkzXhYPRBXC4wJkRJVNEAyYcvBg
-        af5BgbPZPS6HZq9hsQrj6Mk=
-X-Google-Smtp-Source: ABdhPJyh51RrSZyzGueYZU+R57NkHQ8GfEjV+AaZcM12tnOzVv5rZ2hD+66yclGja+Q1K83BPJkE4Q==
-X-Received: by 2002:a17:90b:4a84:b0:1dc:67e9:a92c with SMTP id lp4-20020a17090b4a8400b001dc67e9a92cmr7878081pjb.141.1652315217763;
-        Wed, 11 May 2022 17:26:57 -0700 (PDT)
-Received: from google.com ([2620:15c:211:201:69ef:9c87:7816:4f74])
-        by smtp.gmail.com with ESMTPSA id d6-20020a170902654600b0015f44241a31sm77278pln.110.2022.05.11.17.26.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 17:26:57 -0700 (PDT)
-Sender: Minchan Kim <minchan.kim@gmail.com>
-Date:   Wed, 11 May 2022 17:26:55 -0700
-From:   Minchan Kim <minchan@kernel.org>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     John Hubbard <jhubbard@nvidia.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-mm <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        John Dias <joaodias@google.com>,
-        David Hildenbrand <david@redhat.com>
-Subject: Re: [PATCH v4] mm: fix is_pinnable_page against on cma page
-Message-ID: <YnxUTxnCJ6EsmjEi@google.com>
-References: <YnwupNzDNv7IbjRQ@google.com>
- <54b5d177-f2f4-cef2-3a68-cd3b0b276f86@nvidia.com>
- <Ynw6mauQuNhrOAHy@google.com>
- <f7bcda22-8ffe-67be-36bc-fcde58d8884a@nvidia.com>
- <YnxCCPZUfgQNXSg6@google.com>
- <8f083802-7ab0-15ec-b37d-bc9471eea0b1@nvidia.com>
- <20220511234534.GG1790663@paulmck-ThinkPad-P17-Gen-1>
- <ea64b36c-ecc1-74db-dd2e-909e7e507ef8@nvidia.com>
- <0d90390c-3624-4f93-f8bd-fb29e92237d3@nvidia.com>
- <20220512002207.GJ1790663@paulmck-ThinkPad-P17-Gen-1>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=c2ws23UBcUn/cg2bNLq1AZlNJZpHLdEd3cBqMWxwPHE=;
+        b=WddMhxVad7XRHQO1XOZeUj7rnw1GHiTsRiW2qSV9P57z+M/zsk5gzMzW8tQCEm4WvJ
+         P6dJR1Km8f/VbGRHBmhQ+Hfm8xZQgaEAmy8nRLb1b7OkaV3Ui68948C295EYNDaHBfP1
+         RaVS7+LnqFh3DwUdpr7kTtun57/E+I4RbzXzh4hhOZawQSgZE+gyTDmum8ABwdj97s14
+         7kx5/uc2f8zn+7sBWs2CD7r3zwBlLNITw9lYA3wUfDg2Kf5PynnvAU5k/5OOphxpsBpy
+         xQxPci8nWP8M4qazte+IMVLa6j/ncqUoVXajnmyWc9zCuf9rh6EaO/AUspevKmeoZ0oR
+         fjew==
+X-Gm-Message-State: AOAM530Ucv1gr4Iu9olt2OnwqFJZx6UTZ27/69yTvTmv39fNYQ1tYVqo
+        OCS/7U6sFWJtHac4ah8t4qhLlhCEFHvaeeJRogptJg==
+X-Google-Smtp-Source: ABdhPJxZTVXxFfY2MEayuNV9TOxNJm0RpADQb0nB7hh1xfftZ6O9193T3hSRc29a+ayd2kJhGIgVP9PfwL4JI+Y+GFI=
+X-Received: by 2002:ac2:5e86:0:b0:473:d044:60f5 with SMTP id
+ b6-20020ac25e86000000b00473d04460f5mr22047290lfq.87.1652315298341; Wed, 11
+ May 2022 17:28:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220512002207.GJ1790663@paulmck-ThinkPad-P17-Gen-1>
+References: <20220511160319.1045812-1-mailhol.vincent@wanadoo.fr>
+ <20220512000340.1171988-1-mailhol.vincent@wanadoo.fr> <20220512000340.1171988-2-mailhol.vincent@wanadoo.fr>
+In-Reply-To: <20220512000340.1171988-2-mailhol.vincent@wanadoo.fr>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Wed, 11 May 2022 17:28:06 -0700
+Message-ID: <CAKwvOdnnDaiJcV1gr9vV+ya-jWxx7+2KJNTDThyFctVDOgt9zQ@mail.gmail.com>
+Subject: Re: [PATCH v3 1/2] x86/asm/bitops: ffs: use __builtin_ffs to evaluate
+ constant expressions
+To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, David Howells <dhowells@redhat.com>,
+        Jan Beulich <JBeulich@suse.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 05:22:07PM -0700, Paul E. McKenney wrote:
-> On Wed, May 11, 2022 at 05:12:32PM -0700, John Hubbard wrote:
-> > On 5/11/22 16:57, John Hubbard wrote:
-> > > On 5/11/22 16:45, Paul E. McKenney wrote:
-> > > > > 
-> > > > > Well no, because the "&" operation is a single operation on the CPU, and
-> > > > > isn't going to get split up like that.
-> > > > 
-> > > > Chiming in a bit late...
-> > > 
-> > > Much appreciated!
-> > > 
-> > > > 
-> > > > The usual way that this sort of thing causes trouble is if there is a
-> > > > single store instruction that changes the value from MIGRATE_ISOLATE
-> > > > to MIGRATE_CMA, and if the compiler decides to fetch twice, AND twice,
-> > > 
-> > > Doing an AND twice for "x & constant" this definitely blows my mind. Is
-> > > nothing sacred? :)
-> > > 
-> > > > and then combine the results.  This could give a zero outcome where the
-> > > > underlying variable never had the value zero.
-> > > > 
-> > > > Is this sort of thing low probability?
-> > > > 
-> > > > Definitely.
-> > > > 
-> > > > Isn't this sort of thing prohibited?
-> > > > 
-> > > > Definitely not.
-> > > > 
-> > > > So what you have will likely work for at least a while longer, but it
-> > > > is not guaranteed and it forces you to think a lot harder about what
-> > > > the current implementations of the compiler can and cannot do to you.
-> > > > 
-> > > > The following LWN article goes through some of the possible optimizations
-> > > > (vandalisms?) in this area: https://lwn.net/Articles/793253/
-> > > > 
-> > > 
-> > > hmm, I don't think we hit any of those  cases, do we? Because here, the
-> > > "write" side is via a non-inline function that I just don't believe the
-> > > compiler is allowed to call twice. Or is it?
-> > > 
-> > > Minchan's earlier summary:
-> > > 
-> > > CPU 0                         CPU1
-> > > 
-> > > 
-> > >                                set_pageblock_migratetype(MIGRATE_ISOLATE)
-> > > 
-> > > if (get_pageblock_migrate(page) & MIGRATE_CMA)
-> > > 
-> > >                                set_pageblock_migratetype(MIGRATE_CMA)
-> > > 
-> > > if (get_pageblock_migrate(page) & MIGRATE_ISOLATE)
-> > > 
-> > > ...where set_pageblock_migratetype() is not inline.
-> > > 
-> > > thanks,
-> > 
-> > Let me try to say this more clearly: I don't think that the following
-> > __READ_ONCE() statement can actually help anything, given that
-> > get_pageblock_migratetype() is non-inlined:
-> > 
-> > +	int __mt = get_pageblock_migratetype(page);
-> > +	int mt = __READ_ONCE(__mt);
-> > +
-> > +	if (mt & (MIGRATE_CMA | MIGRATE_ISOLATE))
-> > +		return false;
-> > 
-> > 
-> > Am I missing anything here?
-> 
-> In the absence of future aggression from link-time optimizations (LTO),
-> you are missing nothing.
+On Wed, May 11, 2022 at 5:04 PM Vincent Mailhol
+<mailhol.vincent@wanadoo.fr> wrote:
+>
+> And finally, Nick Desaulniers pointed out in [2] that this also fixes
+> a constant propagation missed-optimization in clang.
+>
+> [2] https://lore.kernel.org/all/CAKwvOdnH_gYv4qRN9pKY7jNTQK95xNeH1w1KZJJmvCkh8xJLBg@mail.gmail.com/
 
-A thing I want to note is Android kernel uses LTO full mode.
+Regarding
+https://github.com/llvm/llvm-project/issues/55394
+it seems that functions with static linkage cannot be considered
+library functions, so libcall optimization will not run on calls to
+them. So the compiler might be able to do a better job for constants
+if ffs() and friends indeed were not defined in a header as static
+inline.  But that relies on the compiler knowing these tricks; I think
+the kernel's approach is just fine (better in fact, because we should
+inline these tiny functions, regardless of LTO), but like this series
+shows, there may be room for improvement for other functions within
+the kernel that are defined as static inline in headers that are
+normally found in a libc.
+
+So I no longer think there's a missed optimization here, but at this
+point, it's not worth a respin of the series IMO to just let sleeping
+dogs lie.
+
+Unless the x86 maintainers wouldn't mind dropping that line and link
+when applying?
+-- 
+Thanks,
+~Nick Desaulniers
