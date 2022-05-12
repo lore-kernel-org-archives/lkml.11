@@ -2,109 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2B89C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 08:50:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF256C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 08:51:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351698AbiELIuN (ORCPT
+        id S1351704AbiELIvf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 04:50:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39936 "EHLO
+        Thu, 12 May 2022 04:51:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237718AbiELIuJ (ORCPT
+        with ESMTP id S1351716AbiELIvI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 04:50:09 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E89D2265C7
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 01:50:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652345409; x=1683881409;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=BP5YD06y/O3Sw9t3ytaTO/BdhrPRV/VfhyJt+TilrsM=;
-  b=Srw9LerPCatelqFatshSHKdQ7jw7pl49OUqAi8oRUVQyTkNPs9C6x00s
-   lCiUhA8rjBje/8YGE6IELdDingtDVOCSw6fa0rOTAxqvosRU8CzVGd6Pu
-   jVcCxafs4m13UYqOfW0GqCgVl95g0nms/FZGDEojUxr/UlcFZQXsXiOmh
-   3R9eCvdP9m6AxQJ6pNxvBqlDmE9GJbfDX67tfpHqk4+3KsQryMOHOUwUC
-   RKLuHi3P9s1gUjQ0ba8iHVuzBU+YaaQ80rnf+oG7f6acHSo2N4mxxHFPZ
-   0D97arH7F1rwBT+g1BfDp9NIB2itQWPLTsCFNPmAvqy6WUTmHuSfVUYqp
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="269614835"
-X-IronPort-AV: E=Sophos;i="5.91,219,1647327600"; 
-   d="scan'208";a="269614835"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 01:50:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,219,1647327600"; 
-   d="scan'208";a="739598351"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 12 May 2022 01:50:06 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1np4WM-000KDc-6n;
-        Thu, 12 May 2022 08:50:06 +0000
-Date:   Thu, 12 May 2022 16:50:04 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Marek Szyprowski <m.szyprowski@samsung.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [mszyprow:v5.18-next-20220511-dsi-rework 30/35]
- drivers/gpu/drm/drm_mipi_dsi.c:1233: warning: expecting prototype for
- mipi_dsi_init(). Prototype was for mipi_dsi_host_init() instead
-Message-ID: <202205121652.A7CaHuUB-lkp@intel.com>
+        Thu, 12 May 2022 04:51:08 -0400
+Received: from outbound-smtp17.blacknight.com (outbound-smtp17.blacknight.com [46.22.139.234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDD094ECC3
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 01:51:07 -0700 (PDT)
+Received: from mail.blacknight.com (pemlinmail04.blacknight.ie [81.17.254.17])
+        by outbound-smtp17.blacknight.com (Postfix) with ESMTPS id EEA091C5944
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 09:51:05 +0100 (IST)
+Received: (qmail 14619 invoked from network); 12 May 2022 08:51:05 -0000
+Received: from unknown (HELO morpheus.112glenside.lan) (mgorman@techsingularity.net@[84.203.198.246])
+  by 81.17.254.9 with ESMTPA; 12 May 2022 08:51:05 -0000
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Michal Hocko <mhocko@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Mel Gorman <mgorman@techsingularity.net>
+Subject: [PATCH 1/6] mm/page_alloc: Add page->buddy_list and page->pcp_list
+Date:   Thu, 12 May 2022 09:50:38 +0100
+Message-Id: <20220512085043.5234-2-mgorman@techsingularity.net>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220512085043.5234-1-mgorman@techsingularity.net>
+References: <20220512085043.5234-1-mgorman@techsingularity.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/mszyprow/linux.git v5.18-next-20220511-dsi-rework
-head:   d29c9c083847e486080eaa98808c232b9937f85f
-commit: b34dc79ad31fa0497197519a9060be3ef2e72484 [30/35] drm/mipi-dsi: add support for host initialize callbacks
-config: x86_64-randconfig-a001-20220509 (https://download.01.org/0day-ci/archive/20220512/202205121652.A7CaHuUB-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 18dd123c56754edf62c7042dcf23185c3727610f)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/mszyprow/linux/commit/b34dc79ad31fa0497197519a9060be3ef2e72484
-        git remote add mszyprow https://github.com/mszyprow/linux.git
-        git fetch --no-tags mszyprow v5.18-next-20220511-dsi-rework
-        git checkout b34dc79ad31fa0497197519a9060be3ef2e72484
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/gpu/drm/
+The page allocator uses page->lru for storing pages on either buddy or
+PCP lists. Create page->buddy_list and page->pcp_list as a union with
+page->lru. This is simply to clarify what type of list a page is on
+in the page allocator.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+No functional change intended.
 
-All warnings (new ones prefixed by >>):
+[minchan: Fix page lru fields in macros]
+Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+Tested-by: Minchan Kim <minchan@kernel.org>
+Acked-by: Minchan Kim <minchan@kernel.org>
+---
+ include/linux/mm_types.h |  5 +++++
+ mm/page_alloc.c          | 24 ++++++++++++------------
+ 2 files changed, 17 insertions(+), 12 deletions(-)
 
->> drivers/gpu/drm/drm_mipi_dsi.c:1233: warning: expecting prototype for mipi_dsi_init(). Prototype was for mipi_dsi_host_init() instead
-
-
-vim +1233 drivers/gpu/drm/drm_mipi_dsi.c
-
-  1225	
-  1226	/**
-  1227	 * mipi_dsi_init() - initialize MIPI DSI host
-  1228	 * @dsi: DSI peripheral device
-  1229	 *
-  1230	 * Return: 0 on success or a negative error code on failure.
-  1231	 */
-  1232	int mipi_dsi_host_init(struct mipi_dsi_device *dsi)
-> 1233	{
-  1234		const struct mipi_dsi_host_ops *ops = dsi->host->ops;
-  1235	
-  1236		if (!ops)
-  1237			return -ENOSYS;
-  1238		if (!ops->init)
-  1239			return 0;
-  1240	
-  1241		return ops->init(dsi->host);
-  1242	}
-  1243	EXPORT_SYMBOL(mipi_dsi_host_init);
-  1244	
-
+diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+index 8834e38c06a4..a2782e8af307 100644
+--- a/include/linux/mm_types.h
++++ b/include/linux/mm_types.h
+@@ -87,6 +87,7 @@ struct page {
+ 			 */
+ 			union {
+ 				struct list_head lru;
++
+ 				/* Or, for the Unevictable "LRU list" slot */
+ 				struct {
+ 					/* Always even, to negate PageTail */
+@@ -94,6 +95,10 @@ struct page {
+ 					/* Count page's or folio's mlocks */
+ 					unsigned int mlock_count;
+ 				};
++
++				/* Or, free page */
++				struct list_head buddy_list;
++				struct list_head pcp_list;
+ 			};
+ 			/* See page-flags.h for PAGE_MAPPING_FLAGS */
+ 			struct address_space *mapping;
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 2db95780e003..f58f85fdb05f 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -780,7 +780,7 @@ static inline bool set_page_guard(struct zone *zone, struct page *page,
+ 		return false;
+ 
+ 	__SetPageGuard(page);
+-	INIT_LIST_HEAD(&page->lru);
++	INIT_LIST_HEAD(&page->buddy_list);
+ 	set_page_private(page, order);
+ 	/* Guard pages are not available for any usage */
+ 	__mod_zone_freepage_state(zone, -(1 << order), migratetype);
+@@ -957,7 +957,7 @@ static inline void add_to_free_list(struct page *page, struct zone *zone,
+ {
+ 	struct free_area *area = &zone->free_area[order];
+ 
+-	list_add(&page->lru, &area->free_list[migratetype]);
++	list_add(&page->buddy_list, &area->free_list[migratetype]);
+ 	area->nr_free++;
+ }
+ 
+@@ -967,7 +967,7 @@ static inline void add_to_free_list_tail(struct page *page, struct zone *zone,
+ {
+ 	struct free_area *area = &zone->free_area[order];
+ 
+-	list_add_tail(&page->lru, &area->free_list[migratetype]);
++	list_add_tail(&page->buddy_list, &area->free_list[migratetype]);
+ 	area->nr_free++;
+ }
+ 
+@@ -981,7 +981,7 @@ static inline void move_to_free_list(struct page *page, struct zone *zone,
+ {
+ 	struct free_area *area = &zone->free_area[order];
+ 
+-	list_move_tail(&page->lru, &area->free_list[migratetype]);
++	list_move_tail(&page->buddy_list, &area->free_list[migratetype]);
+ }
+ 
+ static inline void del_page_from_free_list(struct page *page, struct zone *zone,
+@@ -991,7 +991,7 @@ static inline void del_page_from_free_list(struct page *page, struct zone *zone,
+ 	if (page_reported(page))
+ 		__ClearPageReported(page);
+ 
+-	list_del(&page->lru);
++	list_del(&page->buddy_list);
+ 	__ClearPageBuddy(page);
+ 	set_page_private(page, 0);
+ 	zone->free_area[order].nr_free--;
+@@ -1489,11 +1489,11 @@ static void free_pcppages_bulk(struct zone *zone, int count,
+ 		do {
+ 			int mt;
+ 
+-			page = list_last_entry(list, struct page, lru);
++			page = list_last_entry(list, struct page, pcp_list);
+ 			mt = get_pcppage_migratetype(page);
+ 
+ 			/* must delete to avoid corrupting pcp list */
+-			list_del(&page->lru);
++			list_del(&page->pcp_list);
+ 			count -= nr_pages;
+ 			pcp->count -= nr_pages;
+ 
+@@ -3053,7 +3053,7 @@ static int rmqueue_bulk(struct zone *zone, unsigned int order,
+ 		 * for IO devices that can merge IO requests if the physical
+ 		 * pages are ordered properly.
+ 		 */
+-		list_add_tail(&page->lru, list);
++		list_add_tail(&page->pcp_list, list);
+ 		allocated++;
+ 		if (is_migrate_cma(get_pcppage_migratetype(page)))
+ 			__mod_zone_page_state(zone, NR_FREE_CMA_PAGES,
+@@ -3303,7 +3303,7 @@ void mark_free_pages(struct zone *zone)
+ 
+ 	for_each_migratetype_order(order, t) {
+ 		list_for_each_entry(page,
+-				&zone->free_area[order].free_list[t], lru) {
++				&zone->free_area[order].free_list[t], buddy_list) {
+ 			unsigned long i;
+ 
+ 			pfn = page_to_pfn(page);
+@@ -3392,7 +3392,7 @@ static void free_unref_page_commit(struct page *page, int migratetype,
+ 	__count_vm_event(PGFREE);
+ 	pcp = this_cpu_ptr(zone->per_cpu_pageset);
+ 	pindex = order_to_pindex(migratetype, order);
+-	list_add(&page->lru, &pcp->lists[pindex]);
++	list_add(&page->pcp_list, &pcp->lists[pindex]);
+ 	pcp->count += 1 << order;
+ 
+ 	/*
+@@ -3655,8 +3655,8 @@ struct page *__rmqueue_pcplist(struct zone *zone, unsigned int order,
+ 				return NULL;
+ 		}
+ 
+-		page = list_first_entry(list, struct page, lru);
+-		list_del(&page->lru);
++		page = list_first_entry(list, struct page, pcp_list);
++		list_del(&page->pcp_list);
+ 		pcp->count -= 1 << order;
+ 	} while (check_new_pcp(page, order));
+ 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.34.1
+
