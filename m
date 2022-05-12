@@ -2,106 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C91EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 15:12:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C414C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 15:12:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355753AbiELPME (ORCPT
+        id S1355746AbiELPMV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 11:12:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37240 "EHLO
+        Thu, 12 May 2022 11:12:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355759AbiELPKy (ORCPT
+        with ESMTP id S1355775AbiELPMK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 11:10:54 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5990627CF4
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 08:10:51 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id c12so6609711edv.10
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 08:10:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CLayYmfjkhcAMg8+8D2BY7rGeeiUMg34h820M4oj538=;
-        b=VPP3gLLeF4MsNjONZX20D0qECvCgMzDr/5BarO8M+QHDbT9F5GNFmOArZlZmpzFdG0
-         TXPBEolFTiiouK+wbBblSCABFom5RMZOmlPPEGXwSjZAm0sJgeWREmnkns6WFJfjekOV
-         NAyCPZ+GlathNET+WBdpkMN9yxVOjZBLiUnhlSSGOGTQHDt+TrdoXgBRAt51wZyHTyRq
-         IjC9t554stlsG9/g4B3HLzW+Lv8LCsMztExZcmo2vtQEqQrJqLKEZXhLIEydnif/7RWK
-         c2OiX6gZAUp+Ru4D5mNaHjlikY6TWKkdhNmmk6JFU9ZbUAkjSCcOfik52vmudTUjPNGq
-         HFwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CLayYmfjkhcAMg8+8D2BY7rGeeiUMg34h820M4oj538=;
-        b=XcJ4qMFlmvrztY7Hx2SZgEOOZmBHn4AiX733uRpAKazn8NgrY+STmaVwCjwlNPYLuB
-         AM1cd2MUafKOZV7Exccfp6UlHDUQXf/UOj5LAVVbZJfokfqsr3qG3L7PTWc30SiA8F1f
-         x75PdS30PpBjXo6FW6qAlW5zLQaTyOFudvpUuBVixuKNTWq8yStIQXYUE8Fr1tt6B/5B
-         4zf0iJsES3GG7v83Qv1Pr2W7ZRLpXVSYvDiRxcMIB38+h5ep4ndDQxRVQn89qQysxFuI
-         N0dUZlqWqmBexWC8ppV5RUdw8ZSJujwosg76yDjWtzAlsf/RX7YCsJFHb/TdCGzFVxy1
-         Ppvw==
-X-Gm-Message-State: AOAM532UjJyK/4HABeYg5YDPMULSRsxSGAB5QQ/z66KTeaKCa+tmGJwJ
-        j1UMT9NdG7r3T//OC52cr9WYXFU0Ku0xMtK4Z767dA==
-X-Google-Smtp-Source: ABdhPJyTJELgoNqWKtKc/a0Pq3BIgBopqi4EtQVTw75F8NJKDSHOkrQaZCuY63irAg0w41nA9fSJXqT4rvMVcGPVPL4=
-X-Received: by 2002:a05:6402:43c4:b0:41d:9403:8dca with SMTP id
- p4-20020a05640243c400b0041d94038dcamr35277391edc.184.1652368249576; Thu, 12
- May 2022 08:10:49 -0700 (PDT)
+        Thu, 12 May 2022 11:12:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0DA0554A7
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 08:12:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E145861E42
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 15:12:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC39CC385B8;
+        Thu, 12 May 2022 15:12:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652368328;
+        bh=uYvMyxzmEzgGs3lP9laB6AIOtldLOsLsxFxjFqAdLXo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=sBQRfnUv/ca+85vrpjesPIxdKdgiMljkmIZppAtfxQyk09MZXAbwlvvUqjcOt2n2A
+         dEoXTis3MD4xnnsEaPMpa1EgKQuBHkApCeNPkNLbxdkHELHL3KI67rGzSblRcD+QV0
+         FJf7Uho/8upVG7WGp9d0OPH50jm4xBuV0pw2//XGqjgaSkCKkxhzM7BQKNVfcOX/IC
+         4a71yQ5fJ/PbpfUBVmnzL209EriGr+YpbR4Wbjq+XdTj/FNUVHwJ0oNntwBaXvgAE4
+         AGOeYW+imMB0UgQ8F+c3VKyve3jttJYDNBYEEwb3wt6tZ6zEWnn2A0VHQ3PKJ7pn2D
+         AeV6sG/T2RCoA==
+Date:   Thu, 12 May 2022 08:12:06 -0700
+From:   Josh Poimboeuf <jpoimboe@kernel.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "aik@ozlabs.ru" <aik@ozlabs.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "naveen.n.rao@linux.vnet.ibm.com" <naveen.n.rao@linux.vnet.ibm.com>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        Sathvika Vasireddy <sv@linux.ibm.com>
+Subject: Re: [RFC PATCH 3/3] objtool/mcount: Add powerpc specific functions
+Message-ID: <20220512151206.dphxz5jyeshwc4jb@treble>
+References: <20220318105140.43914-1-sv@linux.ibm.com>
+ <20220318105140.43914-4-sv@linux.ibm.com>
+ <YjR6kHq4c/rjCTpr@hirez.programming.kicks-ass.net>
+ <0b55f122-4760-c1ba-840a-0911cefec2ad@csgroup.eu>
+ <20220328195920.dqlfra3lcardko6r@treble>
+ <b8fac6e2-c117-86cf-2901-5ae0852ca403@csgroup.eu>
 MIME-Version: 1.0
-References: <20220512083627.885338-1-tzungbi@kernel.org> <20220512083627.885338-4-tzungbi@kernel.org>
-In-Reply-To: <20220512083627.885338-4-tzungbi@kernel.org>
-From:   Guenter Roeck <groeck@google.com>
-Date:   Thu, 12 May 2022 08:10:38 -0700
-Message-ID: <CABXOdTf1Hk3mZMrVGLxQfkBuoJ=bL-yprNtphZLRQu8zvt2U_g@mail.gmail.com>
-Subject: Re: [PATCH 3/6] platform/chrome: cros_ec_proto: drop BUG_ON() in cros_ec_prepare_tx()
-To:     Tzung-Bi Shih <tzungbi@kernel.org>
-Cc:     Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        chrome-platform@lists.linux.dev,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <b8fac6e2-c117-86cf-2901-5ae0852ca403@csgroup.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 1:36 AM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
->
-> It is overkill to crash the kernel if the given message is oversize.
->
-> Drop the BUG_ON() and return -EINVAL instead.
->
-> Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
+On Thu, May 12, 2022 at 02:52:40PM +0000, Christophe Leroy wrote:
+> Hi Josh,
+> 
+> Le 28/03/2022 à 21:59, Josh Poimboeuf a écrit :
+> > On Sun, Mar 27, 2022 at 09:09:20AM +0000, Christophe Leroy wrote:
+> >> What are current works in progress on objtool ? Should I wait Josh's
+> >> changes before starting looking at all this ? Should I wait for anything
+> >> else ?
+> > 
+> > I'm not making any major changes to the code, just shuffling things
+> > around to make the interface more modular.  I hope to have something
+> > soon (this week).  Peter recently added a big feature (Intel IBT) which
+> > is already in -next.
+> > 
+> 
+> Were you able to send out something ?
 
-Reviewed-by: Guenter Roeck <groeck@chromium.org>
+Yes, the objtool rewrite is now in tip/objtool/core and linux-next.
 
-> ---
->  drivers/platform/chrome/cros_ec_proto.c | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
-> index 2d6d3fbfa905..9ce3374846ff 100644
-> --- a/drivers/platform/chrome/cros_ec_proto.c
-> +++ b/drivers/platform/chrome/cros_ec_proto.c
-> @@ -60,7 +60,8 @@ static int prepare_packet(struct cros_ec_device *ec_dev,
->         int i;
->         u8 csum = 0;
->
-> -       BUG_ON(msg->outsize + sizeof(*request) > ec_dev->dout_size);
-> +       if (msg->outsize + sizeof(*request) > ec_dev->dout_size)
-> +               return -EINVAL;
->
->         out = ec_dev->dout;
->         request = (struct ec_host_request *)out;
-> @@ -176,7 +177,9 @@ int cros_ec_prepare_tx(struct cros_ec_device *ec_dev,
->         if (ec_dev->proto_version > 2)
->                 return prepare_packet(ec_dev, msg);
->
-> -       BUG_ON(msg->outsize > EC_PROTO2_MAX_PARAM_SIZE);
-> +       if (msg->outsize > EC_PROTO2_MAX_PARAM_SIZE)
-> +               return -EINVAL;
-> +
->         out = ec_dev->dout;
->         out[0] = EC_CMD_VERSION0 + msg->version;
->         out[1] = msg->command;
-> --
-> 2.36.0.512.ge40c2bad7a-goog
->
+-- 
+Josh
