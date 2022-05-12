@@ -2,82 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9385EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:41:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C64AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:42:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357164AbiELRlx (ORCPT
+        id S1357200AbiELRmF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 13:41:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45122 "EHLO
+        Thu, 12 May 2022 13:42:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357169AbiELRkw (ORCPT
+        with ESMTP id S1357183AbiELRl5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 13:40:52 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1426013F27;
-        Thu, 12 May 2022 10:40:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=AQe6N02jfGCt1Tpv9ElZ85pDuhThz61shKfOKRMru0s=; b=BEvRkLgW7vQHVOsVfskg7QHDzS
-        ni062Z+K9j8D+UEoCD+CUDlULmp8G0eqE7AShtpjvFXFN2noQCTx9si+LrIB/IWFcRZVwVaLjzXCH
-        MJzaAZlkx1BkeZASvknqLNqpdNWlO1rC/DSvmazJzxaxaMLkFZJS2vr6qVWm687oHI8E/0f0m5Ea0
-        WMXDQR9Emlr7kX8uSpzaU023iE3UxIpBFsp+FCPMTpDur0kK9BrrBvRMt6Fmh1VZitdsV6v99tEMm
-        GCNNP1IX3GWFBEOA3faGjezvK6sBmnOfRYHi4cLJoXX+2o0ExMwpNiOCq7gg2kE0Sfr1wAT4YmLgv
-        1QMG3h9g==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1npCnq-00D1Um-8K; Thu, 12 May 2022 17:40:42 +0000
-Date:   Thu, 12 May 2022 10:40:42 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>
-Cc:     Lennart Poettering <mzxreary@0pointer.de>,
-        linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
-Subject: Re: [PATCH 1/2] sysctl: read() must consume poll events, not poll()
-Message-ID: <Yn1GmlWKIvuoJJby@bombadil.infradead.org>
-References: <20220502140602.130373-1-Jason@zx2c4.com>
- <Ym/5EEYHbk56hV1H@zx2c4.com>
- <Ym/8GTW2RfhnbqiF@gardel-login>
- <YnERsPIsiOCa8cty@zx2c4.com>
+        Thu, 12 May 2022 13:41:57 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BD2E60BAB;
+        Thu, 12 May 2022 10:41:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652377315; x=1683913315;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ZJ1onh2Zr7lWF0ZhgH2Zhxb8WH3RUU0eJg8bTS9xfQg=;
+  b=Z0xXA5C3z34Lv+yU8ibYWBBBRG0AKvZUAActEIVby6AXVjQ1fbToYRix
+   UPNfgw3vkRHySAF/v5MEVhjz1dzEkoEvvSh3Swgrm38qoKlWRdIutnJZv
+   NpKFzNd4KmK757U8k446xdtrGsGMiZPwKzos1FggpJbXPxUq4/58Trlws
+   ldosR7vUB86qzD2D4FppIs3kum1fFU0P6SYkVaUVLR+6Vil8kgFi4bKw5
+   tTyV+ck/8cXWJibq7gLU08MWqCGRhvux8MPRUw/sfpEGi7unifcw4s/Rb
+   FSQRi8BhUt+vbaUngbqfrfo5vSDqQwDFzWmv2vLkF/oJ/BUvS12XH4Zye
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="270026663"
+X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
+   d="scan'208";a="270026663"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 10:39:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
+   d="scan'208";a="712025245"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga001.fm.intel.com with ESMTP; 12 May 2022 10:39:34 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 4609A45; Thu, 12 May 2022 20:39:33 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        linux-gpio@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Andy Shevchenko <andy@kernel.org>
+Subject: [PATCH v1 2/5] Documentation: gpio: Advertise irqd_to_hwirq() helper in the examples
+Date:   Thu, 12 May 2022 20:39:18 +0300
+Message-Id: <20220512173921.8210-2-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220512173921.8210-1-andriy.shevchenko@linux.intel.com>
+References: <20220512173921.8210-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YnERsPIsiOCa8cty@zx2c4.com>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 03, 2022 at 01:27:44PM +0200, Jason A. Donenfeld wrote:
-> On Mon, May 02, 2022 at 05:43:21PM +0200, Lennart Poettering wrote:
-> > On Mo, 02.05.22 17:30, Jason A. Donenfeld (Jason@zx2c4.com) wrote:
-> > 
-> > > Just wanted to double check with you that this change wouldn't break how
-> > > you're using it in systemd for /proc/sys/kernel/hostname:
-> > >
-> > > https://github.com/systemd/systemd/blob/39cd62c30c2e6bb5ec13ebc1ecf0d37ed015b1b8/src/journal/journald-server.c#L1832
-> > > https://github.com/systemd/systemd/blob/39cd62c30c2e6bb5ec13ebc1ecf0d37ed015b1b8/src/resolve/resolved-manager.c#L465
-> > >
-> > > I couldn't find anybody else actually polling on it. Interestingly, it
-> > > looks like sd_event_add_io uses epoll() inside, but you're not hitting
-> > > the bug that Jann pointed out (because I suppose you're not poll()ing on
-> > > an epoll fd).
-> > 
-> > Well, if you made sure this still works, I am fine either way ;-)
-> 
-> Actually... ugh. It doesn't work. systemd uses uname() to read the host
-> name, and doesn't actually read() the file descriptor after receiving
-> the poll event on it. So I guess I'll forget this, and maybe we'll have
-> to live with sysctl's poll() being broken. :(
+Instead of direct dereferencing the IRQ data in order to get HW IRQ number
+use the irqd_to_hwirq() helper.
 
-A kconfig option may let you do what you want, and allow older kernels
-to not break, however I am more curious how sysctl's approach to poll
-went unnnoticed for so long. But also, I'm curious if it was based on
-another poll implementation which may have been busted.
+Fixes: 5644b66a9c63 ("Documentation: Update the recommended pattern for GPIO irqchips")
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ Documentation/driver-api/gpio/driver.rst | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-But more importantly, how do we avoid this in the future?
+diff --git a/Documentation/driver-api/gpio/driver.rst b/Documentation/driver-api/gpio/driver.rst
+index 964d09118d17..70ff43ac4fcc 100644
+--- a/Documentation/driver-api/gpio/driver.rst
++++ b/Documentation/driver-api/gpio/driver.rst
+@@ -430,6 +430,7 @@ call into the core gpiolib code:
+   static void my_gpio_mask_irq(struct irq_data *d)
+   {
+       struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
++      irq_hw_number_t hwirq = irqd_to_hwirq(d);
+ 
+       /*
+        * Perform any necessary action to mask the interrupt,
+@@ -437,14 +438,15 @@ call into the core gpiolib code:
+        * state.
+        */
+ 
+-      gpiochip_disable_irq(gc, d->hwirq);
++      gpiochip_disable_irq(gc, hwirq);
+   }
+ 
+   static void my_gpio_unmask_irq(struct irq_data *d)
+   {
+       struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
++      irq_hw_number_t hwirq = irqd_to_hwirq(d);
+ 
+-      gpiochip_enable_irq(gc, d->hwirq);
++      gpiochip_enable_irq(gc, hwirq);
+ 
+       /*
+        * Perform any necessary action to unmask the interrupt,
+@@ -502,6 +504,7 @@ the interrupt separately and go with it:
+   static void my_gpio_mask_irq(struct irq_data *d)
+   {
+       struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
++      irq_hw_number_t hwirq = irqd_to_hwirq(d);
+ 
+       /*
+        * Perform any necessary action to mask the interrupt,
+@@ -509,14 +512,15 @@ the interrupt separately and go with it:
+        * state.
+        */
+ 
+-      gpiochip_disable_irq(gc, d->hwirq);
++      gpiochip_disable_irq(gc, hwirq);
+   }
+ 
+   static void my_gpio_unmask_irq(struct irq_data *d)
+   {
+       struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
++      irq_hw_number_t hwirq = irqd_to_hwirq(d);
+ 
+-      gpiochip_enable_irq(gc, d->hwirq);
++      gpiochip_enable_irq(gc, hwirq);
+ 
+       /*
+        * Perform any necessary action to unmask the interrupt,
+@@ -577,6 +581,7 @@ In this case the typical set-up will look like this:
+   static void my_gpio_mask_irq(struct irq_data *d)
+   {
+       struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
++      irq_hw_number_t hwirq = irqd_to_hwirq(d);
+ 
+       /*
+        * Perform any necessary action to mask the interrupt,
+@@ -584,15 +589,16 @@ In this case the typical set-up will look like this:
+        * state.
+        */
+ 
+-      gpiochip_disable_irq(gc, d->hwirq);
++      gpiochip_disable_irq(gc, hwirq);
+       irq_mask_mask_parent(d);
+   }
+ 
+   static void my_gpio_unmask_irq(struct irq_data *d)
+   {
+       struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
++      irq_hw_number_t hwirq = irqd_to_hwirq(d);
+ 
+-      gpiochip_enable_irq(gc, d->hwirq);
++      gpiochip_enable_irq(gc, hwirq);
+ 
+       /*
+        * Perform any necessary action to unmask the interrupt,
+-- 
+2.35.1
 
-  Luis
