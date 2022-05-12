@@ -2,170 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E39DBC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:01:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D98CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:01:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354881AbiELOBS (ORCPT
+        id S1354915AbiELOBl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 10:01:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39802 "EHLO
+        Thu, 12 May 2022 10:01:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354932AbiELOBG (ORCPT
+        with ESMTP id S1354904AbiELOBf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 10:01:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D7D92FFC7;
-        Thu, 12 May 2022 07:01:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 500D2B82833;
-        Thu, 12 May 2022 14:01:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E1EBC385B8;
-        Thu, 12 May 2022 14:01:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652364062;
-        bh=vG0c5NdOF8Y08/Dxnr4xnnOdio+reSdLGOl6h5nExNw=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=K1mXObEY11mAWpCV7a6Aahlj/2UZ+KVxVjlSXY7WmHIkR7dBAp9XvpRiw/ouNfIka
-         tRn7sOrb/ervDy459RSe4ddukj6B5Cwkhu2VrWe3UPSje2B6o1WCoJTj4EkIr8AGdW
-         XOtdX7ggwmJETB3sYiPhyF1lQSvNN0J2qU92IFPzk5jIcMFCrpXxt8J2iF1zS+BJrs
-         tnrLcXgOyupU8WgzLHoagRXsag5cZSJZsVSq8Om3zJvK28CBXcT6vY2xuGElbrheNx
-         iPR/wIhDvXmmtAC1jvFhWEqTFfdoWLEjbK2aj7WdwCnbm5Tb505WMmCy3Q++pV+rIs
-         NjTMs1Xj0dGig==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 999C85C032C; Thu, 12 May 2022 07:01:01 -0700 (PDT)
-Date:   Thu, 12 May 2022 07:01:01 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Joel Fernandes <joel@joelfernandes.org>
-Cc:     "Uladzislau Rezki (Sony)" <urezki@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>, RCU <rcu@vger.kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <neeraj.iitr10@gmail.com>,
-        Oleksiy Avramchenko <oleksiy.avramchenko@sony.com>
-Subject: Re: [PATCH v2 1/1] rcu/nocb: Add an option to ON/OFF an offloading
- from RT context
-Message-ID: <20220512140101.GM1790663@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220511085703.101596-1-urezki@gmail.com>
- <Ynx61yH8RFkaXG6M@google.com>
+        Thu, 12 May 2022 10:01:35 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A7A854014
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 07:01:33 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id n8so4975864plh.1
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 07:01:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=LuitxF/LxlyDzAJ6WiMHBPYI6+2/9TqSBGYdKA4Kdbk=;
+        b=hXQKiSvErap40hy+dXmzuEfIjSuO7mQ4+LF6SI7ROCaq0cCea+dX7+6p0kYgipc7r7
+         fAg178C7ZxY+IqXATlnRL/PWrtggp5bfkNR5xPTvVlNa8oMEWEDqlRGJ9oJMB6ZXe86z
+         +ZQrfP6/9HOrmnkiutVcL7IbUW00wvqgViWkgP9Mcuun52KPbP9NdRaRFFz6gO9kwvAS
+         V4NwrLQnBi/ClLHsSCYEj+e1J6kqvb3kHPR7cjYWZv1HP/PkLOMnuG8CwLyhC3AxTRzn
+         A7NZBi+LXLeFf9kCkxUTUpaFh8abRrajqDJZoLIreRRPDK9m4TUh6DTMkeNw4lt/rXF8
+         WQ6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=LuitxF/LxlyDzAJ6WiMHBPYI6+2/9TqSBGYdKA4Kdbk=;
+        b=w7cE4GfDcsqZbZxJh5zp3YOIPhuV1m2Df3JSVvY9vvQ2XlDMBYIbWDcs4zKjOKTVgG
+         gprO72mtfhnoasE7NVDCcLzSez5GyctGMj6Ww+y5AzpRe3phCDP0GN1BQB0cpmNdzZ3Q
+         FZm0yeeMtPg77iolftVd2HyIDWq9YKF3DE0RrpT5Wd8c6IyqKZj8HGLkQzPLFgpzebhs
+         YdYr8rPlQ10i+YT7V+loWiqX/5GPKE3s40SRXL6OM05SP7qv6A4BKMRls+fsiYoR5AQL
+         FKJY3K5H4rkt/G4OPi8ZMtnQY6Lkhy8U1AEuqv+vyP3f1G8AYbBoSPHpFrS6g78y0NVn
+         GFJA==
+X-Gm-Message-State: AOAM532W9+72fqnBGjfaljCV1hzhvQ6BAs15nB3pD6EouBQAyARA9ERp
+        630K4/DcD0XYLSrMZ59lQxjw
+X-Google-Smtp-Source: ABdhPJxaAVTBu9QCUOg7jBzjc3IVOzl4NbzJYJxeufqURrOTTpDV1PE/u6pG6jCUU+sYZ0fh/cw2LQ==
+X-Received: by 2002:a17:90a:fcb:b0:1dc:f0ce:69fb with SMTP id 69-20020a17090a0fcb00b001dcf0ce69fbmr11084857pjz.198.1652364092878;
+        Thu, 12 May 2022 07:01:32 -0700 (PDT)
+Received: from thinkpad ([117.202.184.202])
+        by smtp.gmail.com with ESMTPSA id ch9-20020a056a00288900b0050dc76281c2sm3683732pfb.156.2022.05.12.07.01.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 May 2022 07:01:32 -0700 (PDT)
+Date:   Thu, 12 May 2022 19:31:24 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Frank Li <Frank.Li@nxp.com>, Rob Herring <robh+dt@kernel.org>,
+        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 11/17] PCI: dwc: Simplify in/outbound iATU setup
+ methods
+Message-ID: <20220512140124.GD35848@thinkpad>
+References: <20220503214638.1895-1-Sergey.Semin@baikalelectronics.ru>
+ <20220503214638.1895-12-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <Ynx61yH8RFkaXG6M@google.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220503214638.1895-12-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 03:11:19AM +0000, Joel Fernandes wrote:
-> On Wed, May 11, 2022 at 10:57:03AM +0200, Uladzislau Rezki (Sony) wrote:
-> > Introduce a RCU_NOCB_CPU_CB_BOOST kernel option. So a user can
-> > decide if an offloading has to be done in a high-prio context or
-> > not. Please note an option depends on RCU_NOCB_CPU and RCU_BOOST
-> > parameters. For CONFIG_PREEMPT_RT kernel both RCU_BOOST and the
-> > RCU_NOCB_CPU_CB_BOOST are active by default.
-> > 
-> > This patch splits the CONFIG_RCU_BOOST config into two peaces:
-> > a) boosting preempted RCU readers and the kthreads which are
-> >    directly responsible for driving expedited grace periods
-> >    forward;
-> > b) boosting offloading-kthreads in a way that their scheduling
-> >    class are changed from SCHED_NORMAL to SCHED_FIFO.
-> > 
-> > The main reason of such split is, for example on Android there
-> > are some workloads which require fast expedited grace period to
-> > be done whereas offloading in RT context can lead to starvation
-> > and hogging a CPU for a long time what is not acceptable for
-> > latency sensitive environment. For instance:
-> > 
-> > <snip>
-> > <...>-60 [006] d..1 2979.028717: rcu_batch_start: rcu_preempt CBs=34619 bl=270
-> > <snip>
-> > 
-> > invoking 34 619 callbacks will take time thus making other CFS
-> > tasks waiting in run-queue to be starved due to such behaviour.
-> > 
-> > v1 -> v2:
-> > - fix the comment about the rcuc/rcub/rcuop;
-> > - check the kthread_prio against zero value;
-> > - by default the RCU_NOCB_CPU_CB_BOOST is ON for PREEMPT_RT.
-> > 
-> > Signed-off-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
+On Wed, May 04, 2022 at 12:46:32AM +0300, Serge Semin wrote:
+> From maintainability and scalability points of view it has been wrong to
+> use different iATU inbound and outbound regions accessors for the viewport
+> and unrolled versions of the iATU CSRs mapping. Seeing the particular iATU
+> region-wise registers layout is almost fully compatible for different
+> IP-core versions, there were no much points in splitting the code up that
+> way since it was possible to implement a common windows setup methods for
+> both viewport and unrolled iATU CSRs spaces. While what we can observe in
+> the current driver implementation of these methods, is a lot of code
+> duplication, which consequently worsen the code readability,
+> maintainability and scalability. Note the current implementation is a bit
+> more performant than the one suggested in this commit since it implies
+> having less MMIO accesses. But the gain just doesn't worth having the
+> denoted difficulties especially seeing the iATU setup methods are mainly
+> called on the DW PCIe controller and peripheral devices initialization
+> stage.
 > 
-> Acked-by: Joel Fernandes (Google) <joel@joelfernandes.org>
+> Here we suggest to move the iATU viewport and unrolled CSR access
+> specifics in the dw_pcie_readl_atu() and dw_pcie_writel_atu() method, and
+> convert the dw_pcie_prog_outbound_atu() and
+> dw_pcie_prog_{ep_}inbound_atu() functions to being generic instead of
+> having a different methods for each viewport and unrolled types of iATU
+> CSRs mapping. Nothing complex really. First of all the dw_pcie_readl_atu()
+> and dw_pcie_writel_atu() are converted to accept relative iATU CSRs
+> address together with the iATU region direction (inbound or outbound) and
+> region index. If DW PCIe controller doesn't have the unrolled iATU CSRs
+> space, then the accessors will need to activate a iATU viewport based on
+> the specified direction and index, otherwise a base address for the
+> corresponding region CSRs will be calculated by means of the
+> PCIE_ATU_UNROLL_BASE() macro. The CSRs macro have been modified in
+> accordance with that logic in the pcie-designware.h header file.
+> 
+> The rest of the changes in this commit just concern converting the iATU
+> in-/out-bound setup methods and iATU regions detection procedure to be
+> compatible with the new accessors semantics. As a result we've dropped the
+> no more required dw_pcie_prog_outbound_atu_unroll(),
+> dw_pcie_prog_inbound_atu_unroll() and dw_pcie_iatu_detect_regions_unroll()
+> methods.
+> 
+> Note aside with the denoted code improvements, there is an additional
+> positive side effect of this change. If at some point an atomic iATU
+> configs setup procedure is required, it will be possible to be done with
+> no much effort just by adding the synchronization into the
+> dw_pcie_readl_atu() and dw_pcie_writel_atu() accessors.
+> 
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> 
+> ---
+> 
+> Changelog v2:
+> - Move the iATU region selection procedure into a helper function (@Rob).
+> - Simplify the iATU region selection procedure by recalculating the base
+>   address only if the space is unrolled. The iATU viewport base address
+>   is saved in the pci->atu_base field from now.
+> ---
+>  drivers/pci/controller/dwc/pcie-designware.c | 293 ++++++-------------
+>  drivers/pci/controller/dwc/pcie-designware.h |  48 ++-
 
-Thank you both, and I will apply Joel's ack on the next rebase.
+In this patch, you also need to fix "pcie-tegra194-acpi.c" driver that makes
+use of the removed macros.
 
-						Thanx, Paul
+Thanks,
+Mani
 
-> thanks,
-> 
->  - Joel
-> 
-> 
-> > ---
-> >  kernel/rcu/Kconfig     | 14 ++++++++++++++
-> >  kernel/rcu/tree.c      |  6 +++++-
-> >  kernel/rcu/tree_nocb.h |  3 ++-
-> >  3 files changed, 21 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/kernel/rcu/Kconfig b/kernel/rcu/Kconfig
-> > index 27aab870ae4c..a4ed7b5e2b75 100644
-> > --- a/kernel/rcu/Kconfig
-> > +++ b/kernel/rcu/Kconfig
-> > @@ -275,6 +275,20 @@ config RCU_NOCB_CPU_DEFAULT_ALL
-> >  	  Say Y here if you want offload all CPUs by default on boot.
-> >  	  Say N here if you are unsure.
-> >  
-> > +config RCU_NOCB_CPU_CB_BOOST
-> > +	bool "Offload RCU callback from real-time kthread"
-> > +	depends on RCU_NOCB_CPU && RCU_BOOST
-> > +	default y if PREEMPT_RT
-> > +	help
-> > +	  Use this option to offload callbacks from the SCHED_FIFO context
-> > +	  to make the process faster. As a side effect of this approach is
-> > +	  a latency especially for the SCHED_OTHER tasks which will not be
-> > +	  able to preempt an offloading kthread. That latency depends on a
-> > +	  number of callbacks to be invoked.
-> > +
-> > +	  Say Y here if you want to set RT priority for offloading kthreads.
-> > +	  Say N here if you are unsure.
-> > +
-> >  config TASKS_TRACE_RCU_READ_MB
-> >  	bool "Tasks Trace RCU readers use memory barriers in user and idle"
-> >  	depends on RCU_EXPERT && TASKS_TRACE_RCU
-> > diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-> > index 9dc4c4e82db6..1c3852b1e0c8 100644
-> > --- a/kernel/rcu/tree.c
-> > +++ b/kernel/rcu/tree.c
-> > @@ -154,7 +154,11 @@ static void sync_sched_exp_online_cleanup(int cpu);
-> >  static void check_cb_ovld_locked(struct rcu_data *rdp, struct rcu_node *rnp);
-> >  static bool rcu_rdp_is_offloaded(struct rcu_data *rdp);
-> >  
-> > -/* rcuc/rcub/rcuop kthread realtime priority */
-> > +/*
-> > + * rcuc/rcub/rcuop kthread realtime priority. The "rcuop"
-> > + * real-time priority(enabling/disabling) is controlled by
-> > + * the extra CONFIG_RCU_NOCB_CPU_CB_BOOST configuration.
-> > + */
-> >  static int kthread_prio = IS_ENABLED(CONFIG_RCU_BOOST) ? 1 : 0;
-> >  module_param(kthread_prio, int, 0444);
-> >  
-> > diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h
-> > index 60cc92cc6655..fa8e4f82e60c 100644
-> > --- a/kernel/rcu/tree_nocb.h
-> > +++ b/kernel/rcu/tree_nocb.h
-> > @@ -1315,8 +1315,9 @@ static void rcu_spawn_cpu_nocb_kthread(int cpu)
-> >  	if (WARN_ONCE(IS_ERR(t), "%s: Could not start rcuo CB kthread, OOM is now expected behavior\n", __func__))
-> >  		goto end;
-> >  
-> > -	if (kthread_prio)
-> > +	if (IS_ENABLED(CONFIG_RCU_NOCB_CPU_CB_BOOST) && kthread_prio)
-> >  		sched_setscheduler_nocheck(t, SCHED_FIFO, &sp);
-> > +
-> >  	WRITE_ONCE(rdp->nocb_cb_kthread, t);
-> >  	WRITE_ONCE(rdp->nocb_gp_kthread, rdp_gp->nocb_gp_kthread);
-> >  	return;
-> > -- 
-> > 2.30.2
-> > 
+-- 
+மணிவண்ணன் சதாசிவம்
