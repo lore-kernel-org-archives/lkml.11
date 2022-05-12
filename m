@@ -2,212 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68DC1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:50:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FDD0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 17:50:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357302AbiELRuB (ORCPT
+        id S1357103AbiELRul (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 13:50:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48772 "EHLO
+        Thu, 12 May 2022 13:50:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357298AbiELRty (ORCPT
+        with ESMTP id S1343791AbiELRuh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 13:49:54 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E4E71FC7F3;
-        Thu, 12 May 2022 10:49:52 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24CHR6VK004627;
-        Thu, 12 May 2022 17:49:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=bpeD2HFfkn9EV8kkYW+dcwfbSEJuOsOHuCZmm+RJp30=;
- b=HnLki8b/0C8RcG/0Tl1nLQFH9WFzQ/UBN5eIl5SLqfP7UON+JzXpzYFWFjJsJHYItpuv
- sllDVi1qMCUAg2i/ah9059O/voYRBR4s/sHAPqZsxJR6xuN5K4DgMyIMiMISnOVA6dyf
- nQu3oilBfqETU6Jmbs4O6rSo8dPGKMfB4nzscdqG9jnX11hTYb/QF2jJQj0NiJDYaWd0
- kLkD2FiUwd8CgeMnUFM2IeLeMtBY9+FZbdZ3HCDi/C+m1B78hnVtnYFzPmFzx1Agx+7e
- 0zQrjiHm49j/D1MO8eG5lwa4SOgLjA/UTROXzGhKA/o+Nia0mzU2smLEPihzsxnE5DSw 7w== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g12xyxtty-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 May 2022 17:49:49 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24CHctVP010426;
-        Thu, 12 May 2022 17:49:49 GMT
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g12xyxtt7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 May 2022 17:49:49 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24CHI4sK017372;
-        Thu, 12 May 2022 17:25:56 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma04fra.de.ibm.com with ESMTP id 3g0ma1h3tg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 May 2022 17:25:56 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24CHPej059375960
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 12 May 2022 17:25:40 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 508B15204F;
-        Thu, 12 May 2022 17:25:40 +0000 (GMT)
-Received: from osiris (unknown [9.145.44.123])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTPS id D17EE5204E;
-        Thu, 12 May 2022 17:25:39 +0000 (GMT)
-Date:   Thu, 12 May 2022 19:25:38 +0200
-From:   Heiko Carstens <hca@linux.ibm.com>
-To:     Heiko Carstens <hca@linux.ibm.com>
-Cc:     Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Jonas Paulsson <paulsson@linux.vnet.ibm.com>,
-        Ulrich Weigand <ulrich.weigand@de.ibm.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Alexander Egorenkov <egorenar@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Andreas Krebbel <krebbel@linux.ibm.com>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
-Subject: Re: [PATCH 5/8] s390/purgatory: workaround llvm's IAS limitations
-Message-ID: <Yn1DEkfK0vxw8Ta8@osiris>
-References: <20220511120532.2228616-1-hca@linux.ibm.com>
- <20220511120532.2228616-6-hca@linux.ibm.com>
+        Thu, 12 May 2022 13:50:37 -0400
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam07on2059.outbound.protection.outlook.com [40.107.95.59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03C9F200F71;
+        Thu, 12 May 2022 10:50:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FbaGVYOcXJYANYOJQIavbvoHqTjjO6XTA0P/kejE4L3Ml2zgokTELDqWGE90l943Yt0/To4ggt9IdrCRzmvGSmqnMvN1BfbxH6ESLRa/Ka1oU5Vz/73XPSBUVkLp/B7GpHJBt5dm9DQ2bvZZTmbNTqTsOy8HNQpXo6fwJDn050KCrBWNIFQWQBkx27Vs3RcUrNDHEu4HQ/4ZGdXuGLzACEFyB3ge4c/hMPxM7lht3/T33r10h/lpbXuzOunCSFuW5APW87kLp90v9gPwVRQyoUWieuyhaeln0D4LPjrKuqhv1bn8hnt+KVNA/khaBiVmRvgvlrI+EWI1AQKrdxBMXQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=oxAQRpOmixBXIvokS1soBBBWR++1JhD5wRYAi5ix8ZU=;
+ b=k+AYLJ0rEq+QiS3cINv3zVTvgxvapalN1x/J2i4QLzTyqygzDJf/L8u9ye5JFRvCUgWzkXtltMsNVR/fIvBiVqEJNqLPviscH7JGn2MjgCFOHugII0p61v/TEmPRSYmV73LEj+0LkhgTc6+KEokJmEqLknQZvY+alIE8RH8/suYmE5vsLVgSZLoxtU9ODN1WcnuMeYbzebR1A64G+Ja8np3uqaPMnZN7dP7EU2dnpQQ4ZbOua7bZ5t+ArpGsDr2/p+G4mxa+BV/M8o1GBsG1SIzYSH6r6UTgX+2GRH1TsZnVAwG0db5d1dL15AXnFjzmC192fcxogoppTJC0eyUz0w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=linaro.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oxAQRpOmixBXIvokS1soBBBWR++1JhD5wRYAi5ix8ZU=;
+ b=oBxPOKvNBkHRtkECkOtWqb7rPrL4xypbOcqeEima7Ep4z5ioICXk0yEAYYSySVA/RMFvEqhFkwkDYhuDV+nqkFD7X48mqDCOMY/APBZhX3lqYyKGxDyQ2XokWUhuUH4reXk9oqTiDkz6CPGos3GnqbNi0uMqVHOMKlgKjUDO11UWvwYCHtQYFL9ogdRd5WW/8e1DarxEHAPAYkdKHlp6V31XL6qMa01zBnd29hnw4Iw1UdCEq5Ex0MtvrLsCNNDWqYhvuFOyU9RvUbVV8aYvU5IGBpgNRmTbcvK5k4WUGRQtI1KQfTFYsANJNToLo3IJO5a9DCTRRpr0jgfLeoVaYA==
+Received: from DS7PR03CA0117.namprd03.prod.outlook.com (2603:10b6:5:3b7::32)
+ by DM6PR12MB2939.namprd12.prod.outlook.com (2603:10b6:5:18b::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23; Thu, 12 May
+ 2022 17:50:34 +0000
+Received: from DM6NAM11FT046.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:3b7:cafe::6) by DS7PR03CA0117.outlook.office365.com
+ (2603:10b6:5:3b7::32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.24 via Frontend
+ Transport; Thu, 12 May 2022 17:50:34 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.234) by
+ DM6NAM11FT046.mail.protection.outlook.com (10.13.172.121) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5250.13 via Frontend Transport; Thu, 12 May 2022 17:50:34 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ DRHQMAIL101.nvidia.com (10.27.9.10) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.32; Thu, 12 May 2022 17:50:11 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 12 May 2022 10:50:10 -0700
+Received: from dipenp.nvidia.com (10.127.8.10) by mail.nvidia.com
+ (10.126.190.182) with Microsoft SMTP Server id 15.2.986.22 via Frontend
+ Transport; Thu, 12 May 2022 10:50:10 -0700
+From:   Dipen Patel <dipenp@nvidia.com>
+To:     <thierry.reding@gmail.com>, <linux-kernel@vger.kernel.org>,
+        <linux-tegra@vger.kernel.org>, <linus.walleij@linaro.org>,
+        <devicetree@vger.kernel.org>, <robh+dt@kernel.org>
+CC:     Dipen Patel <dipenp@nvidia.com>
+Subject: [PATCH] dt-bindings: Renamed hte directory to timestamp
+Date:   Thu, 12 May 2022 10:50:11 -0700
+Message-ID: <20220512175011.28753-1-dipenp@nvidia.com>
+X-Mailer: git-send-email 2.17.1
+X-NVConfidentiality: public
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220511120532.2228616-6-hca@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: BKgVOrTk00M1wkzpD_i7KO6_sBD5f96I
-X-Proofpoint-ORIG-GUID: ukOQ5NmzVerh34wRy9VErqmr7gqepddf
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-12_14,2022-05-12_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
- priorityscore=1501 suspectscore=0 lowpriorityscore=0 adultscore=0
- mlxlogscore=984 spamscore=0 malwarescore=0 clxscore=1015 mlxscore=0
- impostorscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2202240000 definitions=main-2205120080
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: afe384b8-ec5f-4a36-b7c8-08da343fea43
+X-MS-TrafficTypeDiagnostic: DM6PR12MB2939:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB2939514DDC716801AA459201AECB9@DM6PR12MB2939.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: qRyOy78YJ9Iwv5SPdzEWFNefLVgiSBSXT0Sqpp8PUTDHp3C619nLXd5FmReJz1v49qHfjxhSzz8PLFwgfeZLN9WNH3SbNrJEaubR0wyujBTzELQsz8WV14kD8fcBWbDk6/VQmJxDiNNJ3lfH1D7DDDA8u+Lgz7Ilojx9IxCnA0G/DTYTY1IfepxRfKHw+h9Gs7l9QMfjH8qga5wRiGq6OrN5qP72AhNHt9UhrvRSpfq1tRjlSotFL6qsMp1JX6PIlCNO9R/27tarS0A8lODDmZWEUvsfs7C4FbMQbePixz31Abe5yqe7Az+dEK1p57NOWmxDdLUaQOkOHONXe7nTEKM1gVolg3vGm77WgxXnuUMCXV1exCENxahg1ay+BOAeDITD4p2FdFVuksSm7WmYoWxQvcNZNMaQOYIokql4JYXGovxXUGhuZtbSWxxfUDplzfIC7ngThLqePlH+h3lvgzXLacTzBqQK1o0fVBRZZMhuKtToO+E9KkNyN5GONJkDclJGUEeIms5fFw7Bg4Qv+IF0kEx8MRG0oCxu2qV+3mtU9MuVQZpHSGlfi5ovipavZy3/MmdhAsE0q2ykYa3EezMOT+D1hL6kPaiclXT1yPUr1E05P7n2YpumEbECmDwzi0kK7VZl8PqhZT7xUNHx14EQPy82FqrjOlBzn87FBTTRAHXZAswSbnBbtg9vWmYHe6Wz0R/kmczt6CTp/VohgRyihmFxQdgB3tr0y+Gqmx0=
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(83380400001)(36756003)(4326008)(8676002)(2906002)(82310400005)(47076005)(5660300002)(426003)(336012)(2616005)(186003)(26005)(1076003)(107886003)(7696005)(81166007)(508600001)(8936002)(36860700001)(316002)(356005)(70206006)(70586007)(40460700003)(110136005)(86362001)(36900700001)(2101003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2022 17:50:34.2674
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: afe384b8-ec5f-4a36-b7c8-08da343fea43
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT046.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2939
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 02:05:29PM +0200, Heiko Carstens wrote:
-> llvm's integrated assembler cannot handle immediate values which are
-> calculated with two local labels:
-> 
-> arch/s390/purgatory/head.S:139:11: error: invalid operand for instruction
->  aghi %r8,-(.base_crash-purgatory_start)
-> 
-> Workaround this by partially rewriting the code.
-> 
-> Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
-> ---
->  arch/s390/purgatory/head.S | 29 ++++++++++++++++++++++-------
->  1 file changed, 22 insertions(+), 7 deletions(-)
-...
-> -	aghi	%r10,stack-purgatory_start
-> +	larl	%r0,purgatory_start
-> +	slgrk	%r0,%r7,%r0
-> +	agr	%r10,%r0
+Renamed hte dt binding directory to timestamp according review comment.
+Addressed minor comment about having HTE acronym first in the common dt
+binding document.
 
-Same problem here: slgrk does not work for MARCH=z10. So new version
-looks like:
+The change reflects above renaming in MAINTAINERS files too.
 
-From 99e011fa48d9fe90f6d3d58cf89f738afddf394f Mon Sep 17 00:00:00 2001
-From: Heiko Carstens <hca@linux.ibm.com>
-Date: Sat, 7 May 2022 20:08:55 +0200
-Subject: [PATCH 4/7] s390/purgatory: workaround llvm's IAS limitations
-
-llvm's integrated assembler cannot handle immediate values which are
-calculated with two local labels:
-
-arch/s390/purgatory/head.S:139:11: error: invalid operand for instruction
- aghi %r8,-(.base_crash-purgatory_start)
-
-Workaround this by partially rewriting the code.
-
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Dipen Patel <dipenp@nvidia.com>
 ---
- arch/s390/purgatory/head.S | 30 +++++++++++++++++++++++-------
- 1 file changed, 23 insertions(+), 7 deletions(-)
+This patch is on top of old series (Intro to Hardware timestamping
+engine V6) present in linux-next tentatively in preparation for
+merge.
 
-diff --git a/arch/s390/purgatory/head.S b/arch/s390/purgatory/head.S
-index 3d1c31e0cf3d..6f835124ee82 100644
---- a/arch/s390/purgatory/head.S
-+++ b/arch/s390/purgatory/head.S
-@@ -44,11 +44,14 @@
- .endm
+ .../{hte => timestamp}/hardware-timestamps-common.yaml      | 6 +++---
+ .../bindings/{hte => timestamp}/hte-consumer.yaml           | 0
+ .../bindings/{hte => timestamp}/nvidia,tegra194-hte.yaml    | 0
+ MAINTAINERS                                                 | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+ rename Documentation/devicetree/bindings/{hte => timestamp}/hardware-timestamps-common.yaml (71%)
+ rename Documentation/devicetree/bindings/{hte => timestamp}/hte-consumer.yaml (100%)
+ rename Documentation/devicetree/bindings/{hte => timestamp}/nvidia,tegra194-hte.yaml (100%)
+
+diff --git a/Documentation/devicetree/bindings/hte/hardware-timestamps-common.yaml b/Documentation/devicetree/bindings/timestamp/hardware-timestamps-common.yaml
+similarity index 71%
+rename from Documentation/devicetree/bindings/hte/hardware-timestamps-common.yaml
+rename to Documentation/devicetree/bindings/timestamp/hardware-timestamps-common.yaml
+index 3e26de605f08..4c25ba248a72 100644
+--- a/Documentation/devicetree/bindings/hte/hardware-timestamps-common.yaml
++++ b/Documentation/devicetree/bindings/timestamp/hardware-timestamps-common.yaml
+@@ -10,9 +10,9 @@ maintainers:
+   - Dipen Patel <dipenp@nvidia.com>
  
- .macro MEMSWAP dst,src,buf,len
--10:	cghi	\len,bufsz
-+10:	larl	%r0,purgatory_end
-+	larl	%r1,stack
-+	slgr	%r0,%r1
-+	cgr	\len,%r0
- 	jh	11f
- 	lgr	%r4,\len
- 	j	12f
--11:	lghi	%r4,bufsz
-+11:	lgr	%r4,%r0
+ description:
+-  Some devices/SoCs have hardware time stamping engines which can use hardware
+-  means to timestamp entity in realtime. The entity could be anything from
+-  GPIOs, IRQs, Bus and so on. The hardware timestamp engine (HTE) present
++  Some devices/SoCs have hardware timestamp engines (HTE) which can use
++  hardware means to timestamp entity in realtime. The entity could be anything
++  from GPIOs, IRQs, Bus and so on. The hardware timestamp engine present
+   itself as a provider with the bindings described in this document.
  
- 12:	MEMCPY	\buf,\dst,%r4
- 	MEMCPY	\dst,\src,%r4
-@@ -135,12 +138,18 @@ ENTRY(purgatory_start)
- 
- .start_crash_kernel:
- 	/* Location of purgatory_start in crash memory */
-+	larl	%r0,.base_crash
-+	larl	%r1,purgatory_start
-+	slgr	%r0,%r1
- 	lgr	%r8,%r13
--	aghi	%r8,-(.base_crash-purgatory_start)
-+	sgr	%r8,%r0
- 
- 	/* Destination for this code i.e. end of memory to be swapped. */
-+	larl	%r0,purgatory_end
-+	larl	%r1,purgatory_start
-+	slgr	%r0,%r1
- 	lg	%r9,crash_size-.base_crash(%r13)
--	aghi	%r9,-(purgatory_end-purgatory_start)
-+	sgr	%r9,%r0
- 
- 	/* Destination in crash memory, i.e. same as r9 but in crash memory. */
- 	lg	%r10,crash_start-.base_crash(%r13)
-@@ -149,15 +158,19 @@ ENTRY(purgatory_start)
- 	/* Buffer location (in crash memory) and size. As the purgatory is
- 	 * behind the point of no return it can re-use the stack as buffer.
- 	 */
--	lghi	%r11,bufsz
-+	larl	%r11,purgatory_end
- 	larl	%r12,stack
-+	slgr	%r11,%r12
- 
- 	MEMCPY	%r12,%r9,%r11	/* dst	-> (crash) buf */
- 	MEMCPY	%r9,%r8,%r11	/* self -> dst */
- 
- 	/* Jump to new location. */
- 	lgr	%r7,%r9
--	aghi	%r7,.jump_to_dst-purgatory_start
-+	larl	%r0,.jump_to_dst
-+	larl	%r1,purgatory_start
-+	slgr	%r0,%r1
-+	agr	%r7,%r0
- 	br	%r7
- 
- .jump_to_dst:
-@@ -169,7 +182,10 @@ ENTRY(purgatory_start)
- 
- 	/* Load new buffer location after jump */
- 	larl	%r7,stack
--	aghi	%r10,stack-purgatory_start
-+	lgr	%r0,%r7
-+	larl	%r1,purgatory_start
-+	slgr	%r0,%r1
-+	agr	%r10,%r0
- 	MEMCPY	%r10,%r7,%r11	/* (new) buf -> (crash) buf */
- 
- 	/* Now the code is set up to run from its designated location. Start
+ properties:
+diff --git a/Documentation/devicetree/bindings/hte/hte-consumer.yaml b/Documentation/devicetree/bindings/timestamp/hte-consumer.yaml
+similarity index 100%
+rename from Documentation/devicetree/bindings/hte/hte-consumer.yaml
+rename to Documentation/devicetree/bindings/timestamp/hte-consumer.yaml
+diff --git a/Documentation/devicetree/bindings/hte/nvidia,tegra194-hte.yaml b/Documentation/devicetree/bindings/timestamp/nvidia,tegra194-hte.yaml
+similarity index 100%
+rename from Documentation/devicetree/bindings/hte/nvidia,tegra194-hte.yaml
+rename to Documentation/devicetree/bindings/timestamp/nvidia,tegra194-hte.yaml
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 4e1e6dbb1ad8..74a61ea4beef 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -9057,7 +9057,7 @@ F:	drivers/input/touchscreen/htcpen.c
+ HTE SUBSYSTEM
+ M:	Dipen Patel <dipenp@nvidia.com>
+ S:	Maintained
+-F:	Documentation/devicetree/bindings/hte/
++F:	Documentation/devicetree/bindings/timestamp/
+ F:	Documentation/hte/
+ F:	drivers/hte/
+ F:	include/linux/hte.h
+
+base-commit: 6107040c99d5dfc920721c198d45ed2d639b113a
 -- 
-2.32.0
+2.17.1
 
