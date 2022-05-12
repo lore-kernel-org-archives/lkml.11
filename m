@@ -2,165 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0010AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 07:30:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F197CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 07:32:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350212AbiELHaC (ORCPT
+        id S1351026AbiELHcE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 03:30:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50440 "EHLO
+        Thu, 12 May 2022 03:32:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351041AbiELH3y (ORCPT
+        with ESMTP id S229502AbiELHcB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 03:29:54 -0400
-Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E670E13C4F2;
-        Thu, 12 May 2022 00:29:49 -0700 (PDT)
-Received: by mail-qv1-f45.google.com with SMTP id h13so3814182qvh.0;
-        Thu, 12 May 2022 00:29:49 -0700 (PDT)
+        Thu, 12 May 2022 03:32:01 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E5E833A3A;
+        Thu, 12 May 2022 00:32:00 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id cu23-20020a17090afa9700b001d98d8e53b7so5544023pjb.0;
+        Thu, 12 May 2022 00:32:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PK+zEjT0FwnfyuqNzIGPbA6J7wMPiAnBkII/UnzliNo=;
+        b=I9ocdOKHMOQzPWcvTeVkMOm3iPrQGP6UTm/mB5DEmvSJsxSwCkmrtMDfYgSuPWKFP5
+         8FvYLhAGh+qlInjBDGuAPwJfxldrH8jQigVYJGDwLlCfzs6pUpmlhfybK78tIGDtG+hC
+         M/a5YLrYlHt3VKZAzXvGR9o1A+eq0kZL6S4tlfnbzbDlrae0K/EjWRmlIlEJNMvelERB
+         2FT3s1ChLewqy9+xI9v4iODVSpU8PvF3FNEcSNhrRsTXthBU5vPV8E9Rw5z0EZ0NLvA9
+         yqLK41Untd+oJaad1jYWBBQ8nd2I6PnaRD5TV3G/D+J9ud1XQVMNkuSLC6IZy/87Vgfj
+         9NeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=r2Mjon8tDago0stqZjye2DqrZ9qBLDemw/CYSCXDVYo=;
-        b=GYbntmWUfjRS87Kpx8ZINI0JaZ9LaDt/5pJoG51qAllglwCFhtVkTOYpyNdUdJVl01
-         rlXeJHWP7olORRdWItj5hzsMrlJJQ1ioyBiy0AHpwnsxZdvnqT1GKJ3tZd1980jm9Olo
-         5yd2Y0o+o0Vii7mRWfGH/7QU7zMhyrWgtfPWCexU0+Wxx1GLIDR6T3PbXbjumfeLCsCd
-         o5joPSM0fY0/4epieB9ywGYud/ITtONVs01So0mSGjWEZ7sJaLkaf7ibUFau2YRdn9Gv
-         4NDmcfWjGbNv9FOAiQdtqCpaqwbGtKQj5IIwG64wwBqjm97Q5FVeNPkm+eWCjIktTzXc
-         v1Fw==
-X-Gm-Message-State: AOAM5332LrA3Cce7UOqDexd8urbCw8rrY5Rhshc+pQvPrPuaBWEwjShw
-        y1fsE4bfxD5m+FOLnqfm+FfpQO+pWz24ug==
-X-Google-Smtp-Source: ABdhPJxD4fdBBnAmA/pKo7J1uN7PFs0kfOKBHyUOMhXwi8gOV35ue7L1wCDtbj7mw4zO7vB6g6ajaw==
-X-Received: by 2002:a0c:aad7:0:b0:45a:9960:6097 with SMTP id g23-20020a0caad7000000b0045a99606097mr26345268qvb.55.1652340588840;
-        Thu, 12 May 2022 00:29:48 -0700 (PDT)
-Received: from mail-yb1-f176.google.com (mail-yb1-f176.google.com. [209.85.219.176])
-        by smtp.gmail.com with ESMTPSA id e2-20020ac84e42000000b002f39b99f6c6sm2876638qtw.96.2022.05.12.00.29.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 May 2022 00:29:47 -0700 (PDT)
-Received: by mail-yb1-f176.google.com with SMTP id s30so8158880ybi.8;
-        Thu, 12 May 2022 00:29:46 -0700 (PDT)
-X-Received: by 2002:a25:448:0:b0:64a:94d6:e420 with SMTP id
- 69-20020a250448000000b0064a94d6e420mr22441804ybe.89.1652340586589; Thu, 12
- May 2022 00:29:46 -0700 (PDT)
+        bh=PK+zEjT0FwnfyuqNzIGPbA6J7wMPiAnBkII/UnzliNo=;
+        b=zFi4xMpG2Hg7YV4sGz483m6vptml3eLOPhvkhXmm9UoTmnVntLoieHseMQDolM+600
+         sTyF3Dw13Qn3ooGW2EgsRSuqTPn2sKtXKleGrvju/vq9i7YIQqj9x9zFY8iSCFVa2fu+
+         6DfdTNqe0SZ/I6OcSoKXKhha/02rIk4XQ6DWTRYzwexKFqiW6CymPXnJc1xVYHDZu75b
+         Ishd3vN0G5Wm0dfSca4hzPCGMfytDmhwoW6r4OwdpRwe5CbUxHTsUhGyqVXtki3bVRDc
+         Us79J+QUNJfj2VkIZ7J+v7JzEQFV5r7tkDZKQsPfPHphkLHbKFs4G0uQu7rfcb4Gl+wu
+         9hOA==
+X-Gm-Message-State: AOAM533mxTs5F9P7jbKNZNWV+TY/Zhgx8v52xr49Ytj18WWtjKsR24cp
+        cL25rUpPPHWde6B0e7Dfe4+0YVURZu3IqahuMNQ=
+X-Google-Smtp-Source: ABdhPJyNy2ltsylm+FZOgVt68fjIenNg5NWdfleHLhcviWLXS4BlU+/cc1KWA/xpzG7S/mnkaEmG/SnQe+e3DclLVeQ=
+X-Received: by 2002:a17:903:20f:b0:158:d86a:f473 with SMTP id
+ r15-20020a170903020f00b00158d86af473mr29201585plh.92.1652340719755; Thu, 12
+ May 2022 00:31:59 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220511183210.5248-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20220511183210.5248-5-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20220511183210.5248-5-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 12 May 2022 09:29:34 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUiq3svPa+OMmG70HP-3h4gKV6puoT8QUm3WgPw+e4i=A@mail.gmail.com>
-Message-ID: <CAMuHMdUiq3svPa+OMmG70HP-3h4gKV6puoT8QUm3WgPw+e4i=A@mail.gmail.com>
-Subject: Re: [PATCH v3 4/5] gpio: gpiolib: Add ngirq member to struct gpio_irq_chip
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
+References: <20220510141753.3878390-1-Qing-wu.Li@leica-geosystems.com.cn> <20220510141753.3878390-4-Qing-wu.Li@leica-geosystems.com.cn>
+In-Reply-To: <20220510141753.3878390-4-Qing-wu.Li@leica-geosystems.com.cn>
+From:   Alexandru Ardelean <ardeleanalex@gmail.com>
+Date:   Thu, 12 May 2022 10:31:48 +0300
+Message-ID: <CA+U=Dsqu_5JVyhs8juznQ5SyBx1V6Q5yT-fsnYuoYHX9ESE=Tg@mail.gmail.com>
+Subject: Re: [PATCH V2 3/6] iio: accel: bmi088: modified the device name
+To:     LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        mchehab+huawei@kernel.org, linux-iio <linux-iio@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Prabhakar <prabhakar.csengg@gmail.com>
+        Mike Looijmans <mike.looijmans@topic.nl>,
+        devicetree <devicetree@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Prabhakar,
-
-On Wed, May 11, 2022 at 8:32 PM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Supported GPIO IRQs by the chip is not always equal to the number of GPIO
-> pins. For example on Renesas RZ/G2L SoC where it has GPIO0-122 pins but at
-> a give point a maximum of only 32 GPIO pins can be used as IRQ lines in
-> the IRQC domain.
+On Tue, May 10, 2022 at 5:18 PM LI Qingwu
+<Qing-wu.Li@leica-geosystems.com.cn> wrote:
 >
-> This patch adds ngirq member to struct gpio_irq_chip and passes this as a
-> size to irq_domain_create_hierarchy()/irq_domain_create_simple() if it is
-> being set in the driver otherwise fallbacks to using ngpio.
+> It is possible to have multiple sensors connected on the same platform,
+> To support multiple sensors, the commit makes it possible to obtain the
+> device name by reading the chip ID instead of the device-tree name.
+> To be compatible with previous versions, renam bmi088a to bmi088-accel.
+
+// my spellcheck in GMail found this :p
+
+typo: renam -> rename
+
+I also have a comment about a duplication that is highlighted by this change.
+
+You can disregard my comment about the duplication and leave this change as-is.
+
 >
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-
-Thanks for your patch!
-
-> --- a/drivers/gpio/gpiolib.c
-> +++ b/drivers/gpio/gpiolib.c
-> @@ -1221,7 +1221,7 @@ static int gpiochip_hierarchy_add_domain(struct gpio_chip *gc)
->         gc->irq.domain = irq_domain_create_hierarchy(
->                 gc->irq.parent_domain,
->                 0,
-> -               gc->ngpio,
-> +               gc->irq.ngirq ?: gc->ngpio,
->                 gc->irq.fwnode,
->                 &gc->irq.child_irq_domain_ops,
->                 gc);
-> @@ -1574,7 +1574,7 @@ static int gpiochip_add_irqchip(struct gpio_chip *gc,
->         } else {
->                 /* Some drivers provide custom irqdomain ops */
->                 gc->irq.domain = irq_domain_create_simple(fwnode,
-> -                       gc->ngpio,
-> +                       gc->irq.ngirq ?: gc->ngpio,
->                         gc->irq.first,
->                         gc->irq.domain_ops ?: &gpiochip_domain_ops,
->                         gc);
-
-OK.
-
-gpiochip_irqchip_remove() does:
-
-        /* Remove all IRQ mappings and delete the domain */
-        if (gc->irq.domain) {
-                unsigned int irq;
-
-                for (offset = 0; offset < gc->ngpio; offset++) {
-                       if (!gpiochip_irqchip_irq_valid(gc, offset))
-
-Hence it relies on gc->irq.valid_mask, which I think is OK in general.
-
-                                continue;
-
-                        irq = irq_find_mapping(gc->irq.domain, offset);
-                        irq_dispose_mapping(irq);
-                }
-
-                irq_domain_remove(gc->irq.domain);
-
-        }
-
-> --- a/include/linux/gpio/driver.h
-> +++ b/include/linux/gpio/driver.h
-> @@ -51,6 +51,14 @@ struct gpio_irq_chip {
->          */
->         const struct irq_domain_ops *domain_ops;
+> Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+> ---
+>  drivers/iio/accel/bmi088-accel-core.c | 6 +++---
+>  drivers/iio/accel/bmi088-accel-spi.c  | 4 +---
+>  drivers/iio/accel/bmi088-accel.h      | 2 +-
+>  3 files changed, 5 insertions(+), 7 deletions(-)
 >
-> +       /**
-> +        * @ngirq:
-> +        *
-> +        * The number of GPIO IRQ's handled by this IRQ domain; usually is
-> +        * equal to ngpio.
+> diff --git a/drivers/iio/accel/bmi088-accel-core.c b/drivers/iio/accel/bmi088-accel-core.c
+> index 8fee1d02e773..de2385e4dad5 100644
+> --- a/drivers/iio/accel/bmi088-accel-core.c
+> +++ b/drivers/iio/accel/bmi088-accel-core.c
+> @@ -459,7 +459,7 @@ static const struct iio_chan_spec bmi088_accel_channels[] = {
+>
+>  static const struct bmi088_accel_chip_info bmi088_accel_chip_info_tbl[] = {
+>         [0] = {
+> -               .name = "bmi088a",
+> +               .name = "bmi088-accel",
+>                 .chip_id = 0x1E,
+>                 .channels = bmi088_accel_channels,
+>                 .num_channels = ARRAY_SIZE(bmi088_accel_channels),
+> @@ -524,7 +524,7 @@ static int bmi088_accel_chip_init(struct bmi088_accel_data *data)
+>  }
+>
+>  int bmi088_accel_core_probe(struct device *dev, struct regmap *regmap,
+> -       int irq, const char *name, bool block_supported)
+> +       int irq, bool block_supported)
+>  {
+>         struct bmi088_accel_data *data;
+>         struct iio_dev *indio_dev;
+> @@ -545,7 +545,7 @@ int bmi088_accel_core_probe(struct device *dev, struct regmap *regmap,
+>
+>         indio_dev->channels = data->chip_info->channels;
+>         indio_dev->num_channels = data->chip_info->num_channels;
+> -       indio_dev->name = name ? name : data->chip_info->name;
+> +       indio_dev->name = data->chip_info->name;
 
-"If not set, ngpio will be used."
+(with this change) i can better see, a bit of duplication between the
+spi_device table and the chip_info table
 
-> +        */
-> +       u16 ngirq;
-> +
->  #ifdef CONFIG_IRQ_DOMAIN_HIERARCHY
->         /**
->          * @fwnode:
+this was not introduced by this change, but it was made a bit more
+obvious by this change;
 
-Gr{oetje,eeting}s,
+one way to address this, is to remove the `const char *name;` and
+continue using the `name` provided as a parameter from
+bmi088_accel_core_probe();
+(apologies if I seem to have changed my mind (from the previous
+changeset), but I did not see it too well before)
 
-                        Geert
+and we can convert
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+enum {
+   ID_BMI088,
+   ID_BMI085,
+   ...
+};
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+ static const struct bmi088_accel_chip_info bmi088_accel_chip_info_tbl[] = {
+         [ID_BMI088] = {
+                 .chip_id = 0x1E,
+                 .channels = bmi088_accel_channels,
+                .num_channels = ARRAY_SIZE(bmi088_accel_channels),
+        },
+         [ID_BMI085] = {
+         ........
+
+>         indio_dev->available_scan_masks = bmi088_accel_scan_masks;
+>         indio_dev->modes = INDIO_DIRECT_MODE;
+>         indio_dev->info = &bmi088_accel_info;
+> diff --git a/drivers/iio/accel/bmi088-accel-spi.c b/drivers/iio/accel/bmi088-accel-spi.c
+> index dd1e3f6cf211..0fed0081e1fd 100644
+> --- a/drivers/iio/accel/bmi088-accel-spi.c
+> +++ b/drivers/iio/accel/bmi088-accel-spi.c
+> @@ -42,7 +42,6 @@ static struct regmap_bus bmi088_regmap_bus = {
+>  static int bmi088_accel_probe(struct spi_device *spi)
+>  {
+>         struct regmap *regmap;
+> -       const struct spi_device_id *id = spi_get_device_id(spi);
+>
+>         regmap = devm_regmap_init(&spi->dev, &bmi088_regmap_bus,
+>                         spi, &bmi088_regmap_conf);
+> @@ -52,8 +51,7 @@ static int bmi088_accel_probe(struct spi_device *spi)
+>                 return PTR_ERR(regmap);
+>         }
+>
+> -       return bmi088_accel_core_probe(&spi->dev, regmap, spi->irq, id->name,
+> -                                      true);
+> +       return bmi088_accel_core_probe(&spi->dev, regmap, spi->irq, true);
+>  }
+>
+>  static int bmi088_accel_remove(struct spi_device *spi)
+> diff --git a/drivers/iio/accel/bmi088-accel.h b/drivers/iio/accel/bmi088-accel.h
+> index 5c25f16b672c..c32afe9606a8 100644
+> --- a/drivers/iio/accel/bmi088-accel.h
+> +++ b/drivers/iio/accel/bmi088-accel.h
+> @@ -12,7 +12,7 @@ extern const struct regmap_config bmi088_regmap_conf;
+>  extern const struct dev_pm_ops bmi088_accel_pm_ops;
+>
+>  int bmi088_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
+> -                           const char *name, bool block_supported);
+> +                           bool block_supported);
+>  int bmi088_accel_core_remove(struct device *dev);
+>
+>  #endif /* BMI088_ACCEL_H */
+> --
+> 2.25.1
+>
