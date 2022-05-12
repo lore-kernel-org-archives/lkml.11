@@ -2,179 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D013C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 20:58:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47264C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 20:59:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358610AbiELU6F (ORCPT
+        id S1358554AbiELU7I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 16:58:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57400 "EHLO
+        Thu, 12 May 2022 16:59:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358554AbiELU46 (ORCPT
+        with ESMTP id S1358550AbiELU7E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 16:56:58 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0818A674FF;
-        Thu, 12 May 2022 13:56:31 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: nfraprado)
-        with ESMTPSA id C77991F458B7
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1652388984;
-        bh=AeFfex/JVD/zQPvVyInmERUi6VeIDf4H1bEVg6p3hq4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oelGi46TkTSVx9U5OYpY1f1QGBQpol128N84Wt7Qg+e8HbVTUcjJcRVSNBSn1qpVD
-         zrLG45adeLt2RFtWGWLXpNbPh0hCC0w4zwZKr4PTIuoAQvBv4krIj0FNhc+IrF53dK
-         wfL/T+rvMzMPQl6JxpEALD8vNg6iauaa7bO9TCYF/FAGSQkRKrqDqypOhS9PpT7e45
-         FX9N8B1rE5jpTvGW593HZWKEX2e3qqKICKqL9U/5eIvR8RXv9nRFdpYWPV/tiTqc4+
-         fxlkwV32OM7wYyH2LYtqB5vmuicT6WfjnbIdyrhW1ivE0ftP7gMdbK9yMBMSTCg9B9
-         B5qUmnoojj7RQ==
-From:   =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
-        <nfraprado@collabora.com>
-To:     Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Chen-Yu Tsai <wenst@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, kernel@collabora.com,
-        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
-        <nfraprado@collabora.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH v3 07/16] arm64: dts: mediatek: asurada: Add ChromeOS EC
-Date:   Thu, 12 May 2022 16:55:53 -0400
-Message-Id: <20220512205602.158273-8-nfraprado@collabora.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220512205602.158273-1-nfraprado@collabora.com>
-References: <20220512205602.158273-1-nfraprado@collabora.com>
+        Thu, 12 May 2022 16:59:04 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85C6427BC54
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 13:59:03 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id bu29so11296050lfb.0
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 13:59:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=+QzGJTvCvX/Tp+rKIYyLc9ObXbm26PwN+ZPeeu5sbv8=;
+        b=F/PZNisIZWAXwRg66sgt2TnzUNMrHlKMf9QBjNVbNSzou/e3RFLvySuHID2qefJ8Kx
+         Mc1faerfTJpyTNYejLm4Q3gdMcKl0wKSfdVprabvrsTDVqOmGZVfGUAFNwGMmb1NJ0fG
+         nr/EbgkzTuabVCRO/9mF6//63TjJtddzo/f6dbNrIsVU0x6zIwyFlXGWSEIL1fJerpwf
+         V0sUqCsdJhNdaktWHgm+/dNrRxssTS8YqROM/eMi77Ifmg57o4iX8bkg6D6ymAP2smK5
+         HJ+yVF/N2dwdGhVjxSloraxEPfX/Z+URDEaahNJFtPjmQXixzc3rOFffDOkudIESCLV3
+         FeIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=+QzGJTvCvX/Tp+rKIYyLc9ObXbm26PwN+ZPeeu5sbv8=;
+        b=MG6CqGvF1Lm+4azJHaolAk8F8XG4CzBm0mDdLHt3lGrb9Nv5METFB6q86oy8Hv/99V
+         ZBg8+e0nFrnN95mdxDls6r5jPVRfvvnq5jNG3fR4n0wkN7aiE6KaNFNm2kZfLnjaMHkP
+         PxaI/snrZuvIiav3DI6wa5VXUCvSgwFM6tcwNTBAiTdopQMxB//qmdYIkvA20KEuNobm
+         azhXu2f8Y9sfIOJaDIok/s720omb5yDNi5lWu1mR/ugbz7eXVbD8lVp3en/R6viYFCAw
+         1XBSXij1PtmwpYZidMzKV+/eMaQSlnB2e1ORMA+Z/6r+ae/6J8lcvz5LGsNZXhu32Rv3
+         52Ng==
+X-Gm-Message-State: AOAM532yj8v7JYKpoGxf0ssq+UnTz9LXZZdOJNsXcVx4JWXYADKE/D1H
+        NoldT/yXQmPEWcl0Jp3/tP1GWhddEbA82A==
+X-Google-Smtp-Source: ABdhPJxY3vfl5CmuGdfluIk7eDh4d454OFIFjElvC9u6pF71RXntAwwzhyEQi/MvSrdXhDzrB0duwQ==
+X-Received: by 2002:a05:6512:321c:b0:46b:b7fd:1eca with SMTP id d28-20020a056512321c00b0046bb7fd1ecamr1123052lfe.481.1652389141810;
+        Thu, 12 May 2022 13:59:01 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id c13-20020a2ebf0d000000b0025052e35be2sm85333ljr.130.2022.05.12.13.59.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 May 2022 13:59:01 -0700 (PDT)
+Message-ID: <e8d75148-22ee-5809-fc65-d0fb38ad4876@linaro.org>
+Date:   Thu, 12 May 2022 23:58:59 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v3] drm/msm/dsi: only powerup at modeset time if
+ "early_poweron" modparam
+Content-Language: en-GB
+To:     Douglas Anderson <dianders@chromium.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>
+Cc:     Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>, Sean Paul <sean@poorly.run>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Vinod Koul <vkoul@kernel.org>, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220512135134.v3.1.Ia196e35ad985059e77b038a41662faae9e26f411@changeid>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <20220512135134.v3.1.Ia196e35ad985059e77b038a41662faae9e26f411@changeid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for the ChromeOS Embedded Controller present on the Asurada
-platform. It is connected through the SPI1 bus and offers several
-functionalities: base detection, PWM controller, I2C tunneling,
-regulators, Type-C connector management, keyboard and Smart Battery
-Metrics (SBS).
+On 12/05/2022 23:52, Douglas Anderson wrote:
+> Commit 7d8e9a90509f ("drm/msm/dsi: move DSI host powerup to modeset
+> time") caused sc7180 Chromebooks that use the parade-ps8640 bridge
+> chip to fail to turn the display back on after it turns off.
+> 
+> Unfortunately, it doesn't look easy to fix the parade-ps8640 driver to
+> handle the new power sequence. The Linux driver has almost nothing in
+> it and most of the logic for this bridge chip is in black-box firmware
+> that the bridge chip uses.
+> 
+> Also unfortunately, reverting the patch will break "tc358762".
+> 
+> The long term solution here is probably Dave Stevenson's series [1]
+> that would give more flexibility. However, that is likely not a quick
+> fix.
+> 
+> For the short term, let's introduce a module parameter that selects
+> between the two behaviors. This is a short term hack but at least can
+> keep both users working. We'll default the value of the module
+> parameter to the old behavior. Given that the old behavior has existed
+> for longer it's probably a safer default.
+> 
+> [1] https://lore.kernel.org/r/cover.1646406653.git.dave.stevenson@raspberrypi.com
+> 
+> Fixes: 7d8e9a90509f ("drm/msm/dsi: move DSI host powerup to modeset time")
+> Suggested-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
 
-Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Tested-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
----
+Two minor issues below.
 
-(no changes since v2)
+> ---
+> 
+> Changes in v3:
+> - No longer a revert; now a module parameter.
+> 
+> Changes in v2:
+> - Remove the mud from my face.
+> 
+>   drivers/gpu/drm/msm/dsi/dsi_manager.c | 10 +++++++++-
+>   1 file changed, 9 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/gpu/drm/msm/dsi/dsi_manager.c b/drivers/gpu/drm/msm/dsi/dsi_manager.c
+> index 50b987658b1f..2bf4123ef5df 100644
+> --- a/drivers/gpu/drm/msm/dsi/dsi_manager.c
+> +++ b/drivers/gpu/drm/msm/dsi/dsi_manager.c
+> @@ -34,6 +34,10 @@ static struct msm_dsi_manager msm_dsim_glb;
+>   #define IS_SYNC_NEEDED()	(msm_dsim_glb.is_sync_needed)
+>   #define IS_MASTER_DSI_LINK(id)	(msm_dsim_glb.master_dsi_link_id == id)
+>   
+> +bool early_poweron;
+> +MODULE_PARM_DESC(early_poweron, "Power DSI controller early");
+> +module_param(early_poweron, bool, 0600);
 
-Changes in v2:
-- Renamed PWM subnode to avoid dt-binding warning (ec-pwm -> pwm)
+Nit: dsi_early_poweron (to be clear that it related to DSI only).
 
- .../boot/dts/mediatek/mt8192-asurada.dtsi     | 79 +++++++++++++++++++
- 1 file changed, 79 insertions(+)
+I thought about suggesting 'dsi_no_early_poweron' instead to catch 
+possible issues with other bridges. But... I think with Dave's series 
+will have to enable bridges one by one, so it doesn't make real sense.
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi b/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
-index 4fce48d0f653..bcfa688b67f7 100644
---- a/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
-@@ -353,6 +353,14 @@ &pio {
- 			  "AUD_DAT_MISO0",
- 			  "AUD_DAT_MISO1";
- 
-+	cros_ec_int: cros-ec-irq-default-pins {
-+		pins-ec-ap-int-odl {
-+			pinmux = <PINMUX_GPIO5__FUNC_GPIO5>;
-+			input-enable;
-+			bias-pull-up;
-+		};
-+	};
-+
- 	i2c0_pins: i2c0-default-pins {
- 		pins-bus {
- 			pinmux = <PINMUX_GPIO204__FUNC_SCL0>,
-@@ -432,6 +440,74 @@ &spi1 {
- 	mediatek,pad-select = <0>;
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&spi1_pins>;
-+
-+	cros_ec: ec@0 {
-+		compatible = "google,cros-ec-spi";
-+		reg = <0>;
-+		interrupts-extended = <&pio 5 IRQ_TYPE_LEVEL_LOW>;
-+		spi-max-frequency = <3000000>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&cros_ec_int>;
-+
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		base_detection: cbas {
-+			compatible = "google,cros-cbas";
-+		};
-+
-+		cros_ec_pwm: pwm {
-+			compatible = "google,cros-ec-pwm";
-+			#pwm-cells = <1>;
-+
-+			status = "disabled";
-+		};
-+
-+		i2c_tunnel: i2c-tunnel {
-+			compatible = "google,cros-ec-i2c-tunnel";
-+			google,remote-bus = <0>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+		};
-+
-+		mt6360_ldo3_reg: regulator@0 {
-+			compatible = "google,cros-ec-regulator";
-+			reg = <0>;
-+			regulator-min-microvolt = <1800000>;
-+			regulator-max-microvolt = <3300000>;
-+		};
-+
-+		mt6360_ldo5_reg: regulator@1 {
-+			compatible = "google,cros-ec-regulator";
-+			reg = <1>;
-+			regulator-min-microvolt = <3300000>;
-+			regulator-max-microvolt = <3300000>;
-+		};
-+
-+		typec {
-+			compatible = "google,cros-ec-typec";
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			usb_c0: connector@0 {
-+				compatible = "usb-c-connector";
-+				reg = <0>;
-+				label = "left";
-+				power-role = "dual";
-+				data-role = "host";
-+				try-power-role = "source";
-+			};
-+
-+			usb_c1: connector@1 {
-+				compatible = "usb-c-connector";
-+				reg = <1>;
-+				label = "right";
-+				power-role = "dual";
-+				data-role = "host";
-+				try-power-role = "source";
-+			};
-+		};
-+	};
- };
- 
- &spi5 {
-@@ -446,3 +522,6 @@ &spi5 {
- &uart0 {
- 	status = "okay";
- };
-+
-+#include <arm/cros-ec-keyboard.dtsi>
-+#include <arm/cros-ec-sbs.dtsi>
+> +
+>   static inline struct msm_dsi *dsi_mgr_get_dsi(int id)
+>   {
+>   	return msm_dsim_glb.dsi[id];
+> @@ -389,6 +393,9 @@ static void dsi_mgr_bridge_pre_enable(struct drm_bridge *bridge)
+>   	if (is_bonded_dsi && !IS_MASTER_DSI_LINK(id))
+>   		return;
+>   
+> +	if (!early_poweron)
+> +		dsi_mgr_bridge_power_on(bridge);
+> +
+>   	/* Always call panel functions once, because even for dual panels,
+>   	 * there is only one drm_panel instance.
+>   	 */
+> @@ -570,7 +577,8 @@ static void dsi_mgr_bridge_mode_set(struct drm_bridge *bridge,
+>   	if (is_bonded_dsi && other_dsi)
+>   		msm_dsi_host_set_display_mode(other_dsi->host, adjusted_mode);
+>   
+> -	dsi_mgr_bridge_power_on(bridge);
+> +	if (early_poweron)
+> +		dsi_mgr_bridge_power_on(bridge);
+>   }
+>   
+>   static enum drm_mode_status dsi_mgr_bridge_mode_valid(struct drm_bridge *bridge,
+
+
 -- 
-2.36.1
-
+With best wishes
+Dmitry
