@@ -2,66 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE1BBC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 01:03:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 940D1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 01:04:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349778AbiELBDP (ORCPT
+        id S1349784AbiELBEB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 21:03:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56394 "EHLO
+        Wed, 11 May 2022 21:04:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344632AbiELBDO (ORCPT
+        with ESMTP id S244841AbiELBD7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 21:03:14 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CD306FD0E
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 18:03:13 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id q4so3433086plr.11
-        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 18:03:13 -0700 (PDT)
+        Wed, 11 May 2022 21:03:59 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A42F6FD14
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 18:03:57 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id 31so3208446pgp.8
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 18:03:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=sender:date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=ib18wyAnvSIua7ptS/vQLbuy/7W7pnuSm126r6BKOSs=;
-        b=luNq9qJhTeqeDz3jT2Otg0cIhK29IpVjShyS2KDcJkwi7jSwu2hMrifrzrMN+6U6+u
-         NwYNytU9esey4C8SeY5plISOZTfF4Mf/795/trgQPdZWIrW2wEib3yZbqIOcNXOKPihO
-         SbF0keTJDEjxypzqMCtinwlmr7zuItC0HTNSoZO45KyTGZsLlNC0dG8Y+LzbVMksuo9G
-         mriKEH5S5uLAgPe85v/cObdBIUhbEJHTtYg4AvS67zUBd236Dnfeezh7SAgQvzOh4/6o
-         JLkWna84ndlHWY4T3Pd77NrEH/kjvmQ3kSinhKxiofT4zwcn0XO4ODng52INcp/+Pfaf
-         PVVw==
+        bh=YzFXSZxGmGSXKrpoxhKMarCqVBVEsKmErajixcy/MMU=;
+        b=Z7Xz3sS26Xj8FvLqt4cX8EjKc0XNm1zZohZUe5c0G358Yb5n36jVW9H0RikEXRgfxS
+         54x9k3rizbf+Wv3uutl5yQ86B5MkjRAU4fIZx1Mmg+Rw2+KYHew3fHP3sym8mAyx+W6m
+         30I2o5JO2MpJM7aESRASihDhdo3IThm4mHp+iRAZBqGKIymsgGQL+R77ih+IOTmIRKRM
+         bXFCUsNM7/kVSM5XCwavx2BQSomZh2Newf5/921cIfRu93hptHITn3rWbXXfLj7JQPut
+         IA96QUXBhIPM+nHPK5ED2tYLm0ImajXx2YzpNVERrbrMJHQjY5jsmW4S0YCuA3YHw2Cs
+         O1LA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
          :references:mime-version:content-disposition:in-reply-to;
-        bh=ib18wyAnvSIua7ptS/vQLbuy/7W7pnuSm126r6BKOSs=;
-        b=WAolAfSQtR8EN4ib0KibhAbR2+uu2g/koYQg8ruCxJabzYvSavk8fK5Fqb/j7v76Lt
-         xISff51birGQqjDZMxxAdeoehTFwYJ5XquS4+qou5JGKBf+i0PIg2HoJ1+Sggiu5TszI
-         HoxGp6D/LFA/aB1Z42rirs7F0RK6mq8uIzewbfxdjLuCNhtJjuC18X5wB/FcR62uc1xF
-         rjTqYmtKjtQ+SwEdc1rHI18wLaf2V3iv+VYKhg12yUBkD7RmMVaN+nto+BAzESYpbv3R
-         iqygBF+NnjN/UJqnY7a659erbBzyiYp6txhrDIrHxHbvUb5x2tHhVp0Xzp2Bn1luhoYZ
-         I+2A==
-X-Gm-Message-State: AOAM5325/LAglbvi1kTvluMB61/WunwA33CNFGZyY3gkLTOjQN8SFVxK
-        4HiaNrGYaK/q3ZwQEdudo1E=
-X-Google-Smtp-Source: ABdhPJypZJJ+M7FuetbveO+yXJMaW8UPZDVSuK1xTeClfN77hv8ltvUPBR98KEUR0WPwoIGvGC52Tw==
-X-Received: by 2002:a17:902:cf05:b0:156:8445:ce0f with SMTP id i5-20020a170902cf0500b001568445ce0fmr27880201plg.99.1652317392666;
-        Wed, 11 May 2022 18:03:12 -0700 (PDT)
+        bh=YzFXSZxGmGSXKrpoxhKMarCqVBVEsKmErajixcy/MMU=;
+        b=SjfdXMuyaU++dT7EFyjNwblFRD92/CYlIJDmL+pjOnPUfjr3gKBN9vfD+S0gGYmJUG
+         Jo4KLLJsEFTomCGbXFg3QkUo+C1VygHfVt0VYCE16912bMLKjPUWWH9BM+ixWoPhM3Ui
+         4RgeQmZXDg/ZKAuQ1rdlHuMfRMt8yWom1mZsEzq77XAvLDK1vb/PleOw/V1o+d7wSbiT
+         lHc8f5m687gyd6asp2YB6EOuWu/ik21+QXRlaecZafz5DPQ+BilTbVEoSPrbq1NSDyGF
+         RfvMpffY4R/lpV8IlIwmFKIgdHW926PrkVSPl+OmaYz/VTMy3ZYYQy5hD6aWxnh+8qUS
+         xZLQ==
+X-Gm-Message-State: AOAM530O4sPCGu/fY1D2kSo0jyihs18FOs3gAVMcXjk2j+j/Moxq8Q//
+        ksCFJlms+Zyd9KgX1RimdXI=
+X-Google-Smtp-Source: ABdhPJyY6dSsLzH3mjIMEuwXY4gMz4p+SK5XnFgWDsWYY31BI0/Qk36ETSD4JGyoQkWaK2KW7J69ww==
+X-Received: by 2002:a63:834a:0:b0:3db:5307:6115 with SMTP id h71-20020a63834a000000b003db53076115mr1963000pge.134.1652317437032;
+        Wed, 11 May 2022 18:03:57 -0700 (PDT)
 Received: from google.com ([2620:15c:211:201:69ef:9c87:7816:4f74])
-        by smtp.gmail.com with ESMTPSA id e15-20020a170902784f00b0015e8d4eb252sm2561773pln.156.2022.05.11.18.03.11
+        by smtp.gmail.com with ESMTPSA id c5-20020a170902b68500b0015f0dcd1579sm2578305pls.9.2022.05.11.18.03.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 18:03:12 -0700 (PDT)
+        Wed, 11 May 2022 18:03:56 -0700 (PDT)
 Sender: Minchan Kim <minchan.kim@gmail.com>
-Date:   Wed, 11 May 2022 18:03:10 -0700
+Date:   Wed, 11 May 2022 18:03:54 -0700
 From:   Minchan Kim <minchan@kernel.org>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     John Hubbard <jhubbard@nvidia.com>,
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
         linux-mm <linux-mm@kvack.org>,
         LKML <linux-kernel@vger.kernel.org>,
         John Dias <joaodias@google.com>,
         David Hildenbrand <david@redhat.com>
 Subject: Re: [PATCH v4] mm: fix is_pinnable_page against on cma page
-Message-ID: <YnxczoehQJ+x6m9Y@google.com>
-References: <f7bcda22-8ffe-67be-36bc-fcde58d8884a@nvidia.com>
+Message-ID: <Ynxc+p4G6ju6GyHi@google.com>
+References: <Ynw6mauQuNhrOAHy@google.com>
+ <f7bcda22-8ffe-67be-36bc-fcde58d8884a@nvidia.com>
  <YnxCCPZUfgQNXSg6@google.com>
  <8f083802-7ab0-15ec-b37d-bc9471eea0b1@nvidia.com>
  <20220511234534.GG1790663@paulmck-ThinkPad-P17-Gen-1>
@@ -70,71 +71,54 @@ References: <f7bcda22-8ffe-67be-36bc-fcde58d8884a@nvidia.com>
  <20220512002207.GJ1790663@paulmck-ThinkPad-P17-Gen-1>
  <YnxUTxnCJ6EsmjEi@google.com>
  <f7ff4186-e629-a5da-3f4d-ec629b0c8dd9@nvidia.com>
- <20220512004949.GK1790663@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220512004949.GK1790663@paulmck-ThinkPad-P17-Gen-1>
+In-Reply-To: <f7ff4186-e629-a5da-3f4d-ec629b0c8dd9@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, May 11, 2022 at 05:49:49PM -0700, Paul E. McKenney wrote:
-> On Wed, May 11, 2022 at 05:34:52PM -0700, John Hubbard wrote:
-> > On 5/11/22 17:26, Minchan Kim wrote:
-> > > > > Let me try to say this more clearly: I don't think that the following
-> > > > > __READ_ONCE() statement can actually help anything, given that
-> > > > > get_pageblock_migratetype() is non-inlined:
-> > > > > 
-> > > > > +	int __mt = get_pageblock_migratetype(page);
-> > > > > +	int mt = __READ_ONCE(__mt);
-> > > > > +
-> > > > > +	if (mt & (MIGRATE_CMA | MIGRATE_ISOLATE))
-> > > > > +		return false;
-> > > > > 
-> > > > > 
-> > > > > Am I missing anything here?
+On Wed, May 11, 2022 at 05:34:52PM -0700, John Hubbard wrote:
+> On 5/11/22 17:26, Minchan Kim wrote:
+> > > > Let me try to say this more clearly: I don't think that the following
+> > > > __READ_ONCE() statement can actually help anything, given that
+> > > > get_pageblock_migratetype() is non-inlined:
 > > > > 
-> > > > In the absence of future aggression from link-time optimizations (LTO),
-> > > > you are missing nothing.
+> > > > +	int __mt = get_pageblock_migratetype(page);
+> > > > +	int mt = __READ_ONCE(__mt);
+> > > > +
+> > > > +	if (mt & (MIGRATE_CMA | MIGRATE_ISOLATE))
+> > > > +		return false;
+> > > > 
+> > > > 
+> > > > Am I missing anything here?
 > > > 
-> > > A thing I want to note is Android kernel uses LTO full mode.
+> > > In the absence of future aggression from link-time optimizations (LTO),
+> > > you are missing nothing.
 > > 
-> > Thanks Paul for explaining the state of things.
-> > 
-> > Minchan, how about something like very close to your original draft,
-> > then, but with a little note, and the "&" as well:
-> > 
-> > int __mt = get_pageblock_migratetype(page);
-> > 
-> > /*
-> >  * Defend against future compiler LTO features, or code refactoring
-> >  * that inlines the above function, by forcing a single read. Because, this
-> >  * routine races with set_pageblock_migratetype(), and we want to avoid
-> >  * reading zero, when actually one or the other flags was set.
-> >  */
-> > int mt = __READ_ONCE(__mt);
-> > 
-> > if (mt & (MIGRATE_CMA | MIGRATE_ISOLATE))
-> >     return false;
-> > 
-> > 
-> > ...which should make everyone comfortable and protected from the
-> > future sins of the compiler and linker teams? :)
+> > A thing I want to note is Android kernel uses LTO full mode.
 > 
-> This would work, but it would force a store to the stack and an immediate
-> reload.  Which might be OK on this code path.
+> Thanks Paul for explaining the state of things.
 > 
-> But using READ_ONCE() in (I think?) __get_pfnblock_flags_mask()
-> would likely generate the same code that is produced today.
+> Minchan, how about something like very close to your original draft,
+> then, but with a little note, and the "&" as well:
 > 
-> 	word = READ_ONCE(bitmap[word_bitidx]);
+> int __mt = get_pageblock_migratetype(page);
 > 
-> But I could easily have missed a turn in that cascade of functions.  ;-)
+> /*
+>  * Defend against future compiler LTO features, or code refactoring
+>  * that inlines the above function, by forcing a single read. Because, this
+>  * routine races with set_pageblock_migratetype(), and we want to avoid
+>  * reading zero, when actually one or the other flags was set.
+>  */
+> int mt = __READ_ONCE(__mt);
 > 
-> Or there might be some code path that really hates a READ_ONCE() in
-> that place.
+> if (mt & (MIGRATE_CMA | MIGRATE_ISOLATE))
+>     return false;
+> 
+> 
+> ...which should make everyone comfortable and protected from the
+> future sins of the compiler and linker teams? :)
 
-My worry about chaning __get_pfnblock_flags_mask is it's called
-multiple hot places in mm codes so I didn't want to add overhead
-to them.
+Will take. Thanks.
