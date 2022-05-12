@@ -2,178 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A388C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 16:46:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D36D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 16:46:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356677AbiELQqX (ORCPT
+        id S1351578AbiELQqs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 12:46:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56576 "EHLO
+        Thu, 12 May 2022 12:46:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356659AbiELQqA (ORCPT
+        with ESMTP id S1356673AbiELQqk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 12:46:00 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA3A5FDA;
-        Thu, 12 May 2022 09:45:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652373956; x=1683909956;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=aSoD9A65PeW90ZHA6KeiB1hT1IPWY6t/5WyFpaRGgNg=;
-  b=HLMRkUeFcDBwnFtG7mnPZjvOrOBkIx5kEjMIHp6gaBD/xHjW4OqLOCHR
-   3MixoC9hhxOQf7x5W0rjvL0FLi8tu1/SG8KGEa49y8FTH7reGzNxxSUeg
-   M0ixu5jiBhF2xN/CttK2kTMCHnRG1nB49MtyxWdjCK6PMvQbU7dQCHinN
-   JcH7rAb3as07TINOtnphLjda2eLn8N1H8ihZ7VTUu5leuMrGEQsg/jA4I
-   EREp4P3rEzATAIORLX3jPTK5w7aiFIRdsmUtNjjgw978UZq6y75kTulig
-   StrmvW/da2VDPHlE54ipYX1lxx+lPeI8L5edzwXsgzN/iZb6DQ/3Gw2DD
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="268888929"
-X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
-   d="scan'208";a="268888929"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 09:21:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
-   d="scan'208";a="670909190"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 12 May 2022 09:21:37 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1npBZI-000Kfo-LM;
-        Thu, 12 May 2022 16:21:36 +0000
-Date:   Fri, 13 May 2022 00:20:53 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Jonas Paulsson <paulsson@linux.vnet.ibm.com>,
-        Ulrich Weigand <ulrich.weigand@de.ibm.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Alexander Egorenkov <egorenar@linux.ibm.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Andreas Krebbel <krebbel@linux.ibm.com>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
-Subject: Re: [PATCH 3/8] s390/entry: shorten OUTSIDE macro
-Message-ID: <202205130050.x6Is9kJO-lkp@intel.com>
-References: <20220511120532.2228616-4-hca@linux.ibm.com>
+        Thu, 12 May 2022 12:46:40 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F3FA268653
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 09:46:26 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id x23so5313640pff.9
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 09:46:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=+/6qmbmcP5AokRkbZn/xg32IG6zFnvDICjqZUz86mKs=;
+        b=oIhkT9a8+AOL4JI7Qk/U6odJZm+0v8MQsEwzhADBYZXDwvu58jVVmyYBMNMQl7v5ap
+         9KkPPEmGEpKFtcDdq8B9f/4K/xMVoHNzFH2mbb9YOjFAWYmha8NvJPUvSM2D4WBiz0LK
+         JMJfoSjl7jNgx6wZzPcy1U0cTM1SJcfU24lsUYglc3U6jLWRGTktN7TlojDq3dzJD+5s
+         izETkmw4tM83dNMFn7+PNoeyx0GL3K4rJGMNM42/ptX822vNdPabInHByWiEtpxwWcYr
+         p78E9khLDmr3WeCT2wJwcfu9KkCANu4rjcDoHL4Oq5+73rcwQC5w0gZQmfb++q5RZ+sQ
+         sFZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=+/6qmbmcP5AokRkbZn/xg32IG6zFnvDICjqZUz86mKs=;
+        b=0uu2agfSotJtL3jQqYeUvKbIXZqoQ5RvffocSukq+vNHU3yJg0gzzpMzxbhl0s7qyK
+         Z/7CwUcAwZyhSpHrQV7c9oQVyCj4aQIaJ9VXvrmSBBN9ZlbCR0UfeV1/saOxIsqFyQq2
+         6eJ9CK7+X/3uwjdn0LkvomWZa7WqX0A8uh2aC7FPHb2mbjWIXgDtVZlnjP9x/ZaiV/k2
+         5GrSfxrsw6bu/dFi3Jfz+fMG0CH+y+PD+TZzdxAn2jSfs7Pe79NRPPglSS+Zz6kLSMrl
+         Ya9p7/LE0ueaSoEwWQ8/mmRzRD+K7HG9EmpPtH4BAVCDa5TETMLu1//3z6CAF4sD42zg
+         Oc9Q==
+X-Gm-Message-State: AOAM532f8SKiZfT533l+ovQcg7kiXQROQH5wxbgkdesRbeVETKZX6uUz
+        hMCEO1h1KUNGq24OxSk/uyY=
+X-Google-Smtp-Source: ABdhPJwO+DuCUU5o9DMk576E6z5ybMRQPZuq7c1PyPVSqveeVp1yLTlHGjhOv8Y/Aq9/rrbdO8OgiA==
+X-Received: by 2002:a63:64c2:0:b0:3c6:2d70:9188 with SMTP id y185-20020a6364c2000000b003c62d709188mr455077pgb.186.1652373986078;
+        Thu, 12 May 2022 09:46:26 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::4:6c64])
+        by smtp.gmail.com with ESMTPSA id q9-20020a170902a3c900b0015e8d4eb210sm138646plb.90.2022.05.12.09.46.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 May 2022 09:46:25 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Thu, 12 May 2022 06:46:23 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Joe Perches <joe@perches.com>,
+        Andy Whitcroft <apw@canonical.com>,
+        Dwaipayan Ray <dwaipayanray1@gmail.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: Re: [PATCH] checkpatch: warn about flushing system-wide workqueues
+Message-ID: <Yn0538VavQPv+/Ws@slm.duckdns.org>
+References: <d34dac10-c12f-8bda-35c4-9cb158781db2@I-love.SAKURA.ne.jp>
+ <a6288570ed3534b0316723061f5604e3871accef.camel@perches.com>
+ <6e4ed62e-888b-6e7a-c13d-67656f39ca94@I-love.SAKURA.ne.jp>
+ <738afe71-2983-05d5-f0fc-d94efbdf7634@I-love.SAKURA.ne.jp>
+ <YnQKNea6KWFaWNis@slm.duckdns.org>
+ <a0d6b5e4-b9c8-1a43-570f-4c73b0f6fc0c@I-love.SAKURA.ne.jp>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220511120532.2228616-4-hca@linux.ibm.com>
+In-Reply-To: <a0d6b5e4-b9c8-1a43-570f-4c73b0f6fc0c@I-love.SAKURA.ne.jp>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Heiko,
+Hello,
 
-I love your patch! Yet something to improve:
+On Fri, May 06, 2022 at 08:29:07AM +0900, Tetsuo Handa wrote:
+> On 2022/05/06 2:32, Tejun Heo wrote:
+> > Given that we'll need runtime check anyway, why not resurrect the original
+> > runtime warning but exempt flush_schedule_work() if that's the only thing
+> > remaining right now (using a special flag or whatever)?
+> 
+> Yes, we will also need runtime check for robustness, for we can't catch usage
+> like
+> 
+> 	struct workqueue_struct *my_wq = alloc_workqueue();
+> 	if (!my_wq)
+> 		my_wq = system_long_wq;
+> 	flush_workqueue(my_wq);
+> 
+> using compile time checks.
+> 
+> I found that it is not easy to trigger flush_workqueue() paths. For example,
+> several modules are using flush_workqueue() only upon module unloading.
 
-[auto build test ERROR on s390/features]
-[also build test ERROR on tip/locking/core masahiroy-kbuild/for-next linus/master v5.18-rc6 next-20220512]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Ah, yeah, good point.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Heiko-Carstens/s390-allow-to-build-with-llvm-s-integrated-assembler/20220511-201054
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/s390/linux.git features
-config: s390-randconfig-r003-20220512 (https://download.01.org/0day-ci/archive/20220513/202205130050.x6Is9kJO-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 18dd123c56754edf62c7042dcf23185c3727610f)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install s390 cross compiling tool for clang build
-        # apt-get install binutils-s390x-linux-gnu
-        # https://github.com/intel-lab-lkp/linux/commit/ad8a0a6488ba252aaa84b813dee2c949ae59d88a
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Heiko-Carstens/s390-allow-to-build-with-llvm-s-integrated-assembler/20220511-201054
-        git checkout ad8a0a6488ba252aaa84b813dee2c949ae59d88a
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash
+> Therefore, I'm trying to catch obvious flush_workqueue() paths at compile
+> time when possible.
+> 
+> >                                                         If we're sure that
+> > we aren't triggering it spuriously, we can ask Andrew to take the warning
+> > patch into -mm so that it floats on top of everything else and gets pulled
+> > into the trunk during the coming merge window.
+> 
+> OK, the coming merge window means 5.19.
+> 
+> The original runtime checking will be used anyway. Is "workqueue: Wrap
+> flush_workqueue() using a macro" OK for you as a compile time check?
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Sounds good to me.
 
-All errors (new ones prefixed by >>):
-
->> <instantiation>:2:2: error: instruction requires: distinct-ops
-    slgrk %r14,%r9,%r14
-    ^
-   arch/s390/kernel/entry.S:378:2: note: while in macro instantiation
-    OUTSIDE %r9,.Lsie_gmap,.Lsie_done,1f
-    ^
-   <instantiation>:3:13: error: invalid operand for instruction
-    clgfi %r14,.Lsie_done - .Lsie_gmap
-               ^
-   arch/s390/kernel/entry.S:378:2: note: while in macro instantiation
-    OUTSIDE %r9,.Lsie_gmap,.Lsie_done,1f
-    ^
->> <instantiation>:2:2: error: instruction requires: distinct-ops
-    slgrk %r14,%r9,%r14
-    ^
-   <instantiation>:12:2: note: while in macro instantiation
-    OUTSIDE %r9,.Lsie_gmap,.Lsie_done,0f
-    ^
-   arch/s390/kernel/entry.S:488:1: note: while in macro instantiation
-   INT_HANDLER ext_int_handler,304,do_ext_irq
-   ^
-   <instantiation>:3:13: error: invalid operand for instruction
-    clgfi %r14,.Lsie_done - .Lsie_gmap
-               ^
-   <instantiation>:12:2: note: while in macro instantiation
-    OUTSIDE %r9,.Lsie_gmap,.Lsie_done,0f
-    ^
-   arch/s390/kernel/entry.S:488:1: note: while in macro instantiation
-   INT_HANDLER ext_int_handler,304,do_ext_irq
-   ^
->> <instantiation>:2:2: error: instruction requires: distinct-ops
-    slgrk %r14,%r9,%r14
-    ^
-   <instantiation>:12:2: note: while in macro instantiation
-    OUTSIDE %r9,.Lsie_gmap,.Lsie_done,0f
-    ^
-   arch/s390/kernel/entry.S:489:1: note: while in macro instantiation
-   INT_HANDLER io_int_handler,368,do_io_irq
-   ^
-   <instantiation>:3:13: error: invalid operand for instruction
-    clgfi %r14,.Lsie_done - .Lsie_gmap
-               ^
-   <instantiation>:12:2: note: while in macro instantiation
-    OUTSIDE %r9,.Lsie_gmap,.Lsie_done,0f
-    ^
-   arch/s390/kernel/entry.S:489:1: note: while in macro instantiation
-   INT_HANDLER io_int_handler,368,do_io_irq
-   ^
->> <instantiation>:2:2: error: instruction requires: distinct-ops
-    slgrk %r14,%r9,%r14
-    ^
-   arch/s390/kernel/entry.S:554:2: note: while in macro instantiation
-    OUTSIDE %r9,.Lsie_gmap,.Lsie_done,6f
-    ^
-   <instantiation>:3:13: error: invalid operand for instruction
-    clgfi %r14,.Lsie_done - .Lsie_gmap
-               ^
-   arch/s390/kernel/entry.S:554:2: note: while in macro instantiation
-    OUTSIDE %r9,.Lsie_gmap,.Lsie_done,6f
-    ^
->> <instantiation>:2:2: error: instruction requires: distinct-ops
-    slgrk %r14,%r9,%r14
-    ^
-   arch/s390/kernel/entry.S:555:2: note: while in macro instantiation
-    OUTSIDE %r9,.Lsie_entry,.Lsie_skip,4f
-    ^
-   <instantiation>:3:13: error: invalid operand for instruction
-    clgfi %r14,.Lsie_skip - .Lsie_entry
-               ^
-   arch/s390/kernel/entry.S:555:2: note: while in macro instantiation
-    OUTSIDE %r9,.Lsie_entry,.Lsie_skip,4f
-    ^
+Thanks.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+tejun
