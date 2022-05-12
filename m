@@ -2,116 +2,249 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1935AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 08:54:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C546AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 08:56:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351522AbiELIyW (ORCPT
+        id S1351456AbiELI4k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 04:54:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45016 "EHLO
+        Thu, 12 May 2022 04:56:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351759AbiELIxH (ORCPT
+        with ESMTP id S1350313AbiELIz6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 04:53:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 88E9362CE6
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 01:52:18 -0700 (PDT)
+        Thu, 12 May 2022 04:55:58 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D278AF16
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 01:55:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652345445;
+        s=mimecast20190719; t=1652345750;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=UKp9aLk27aL43H7c2N2+dMv60Nwmc08LYvDNv9z3Fuw=;
-        b=K9LVtcTQKqAngzmhybB/2zHUkolJN0GakkzhOLUGkySB5Fjf/FbC7Xa8hkB1uZEDV52EsR
-        nbVbY8fg6VdyXEtAWetqpz6WHGxYRFhfXz/mij2tgjnrG3IGDuroXx5YBYlvxPEBrwaqTp
-        8gKI5uxS3xFgD9ceGjhPgJKvZXJcezQ=
+        bh=7g2+Ytw7LOFNSmUdcgJm+KVblwr69gQPARUIhiHhirk=;
+        b=alLsoOZScoigVFm+ZWFWp49vGePUcTNtqm1WPHN//E0/HslL8uPY2Zrmf3nMbAeb6AfJ1F
+        3axm6M8d5khC1PSkjvcsrLqMWEzCE1o/RtwXN71zOgemB7RTpDpE9tU6nt0sfLNam8dsGD
+        5KlOVxtkJiOUq/+I1PSCCm/KsXJ/KN8=
 Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
  [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-33-90v4VXJ2NjSd4FChpylBCw-1; Thu, 12 May 2022 04:27:42 -0400
-X-MC-Unique: 90v4VXJ2NjSd4FChpylBCw-1
-Received: by mail-wm1-f72.google.com with SMTP id e9-20020a05600c4e4900b00394779649b1so4074826wmq.3
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 01:27:35 -0700 (PDT)
+ us-mta-588-ehV-65bgPniGVd3W_Pk-Zw-1; Thu, 12 May 2022 04:55:48 -0400
+X-MC-Unique: ehV-65bgPniGVd3W_Pk-Zw-1
+Received: by mail-wm1-f72.google.com with SMTP id k16-20020a7bc310000000b0038e6cf00439so1435352wmj.0
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 01:55:48 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=UKp9aLk27aL43H7c2N2+dMv60Nwmc08LYvDNv9z3Fuw=;
-        b=cwz/5BkeY7tuWoL0tl6l8asGS6R/wU0AZ6n9yG+anwKoH5irnMDYoH4qOF58fuT4+6
-         rq0uY1QyNjsGrJJjIK71S5JtCKQzFtUnLf40Ko1K57HpdSYwRTBR1J5eNXOFZEFF7yYk
-         IFdR/LvU6+DgoMyIH9E7wj3k5WZ/axLes9Q3MSPDdbf38sjZfB6XL6MsPzHzgfQSvZHk
-         zuFEUpYM1ryGChPo7ZAdfbiUf6Rm0NuoB/ang6g5HNpeMVAUvmotpBnEykhYCMBDEUku
-         czqDnhXo1DUlV5BSFbNwsG6F02tTiG56G+9uIqcglkOLAmMvIXwQPqPspyrv4Xw3QYa2
-         cHrw==
-X-Gm-Message-State: AOAM532le9zjH+OCbodhHkM9c8HPCuTEWoL+kbfpcHOiMw6DpY7fooYY
-        ffRtiNJQ/MW5zoEqw6HxVBCvYeQQXH1nuwACIYl5ixGR9TAdI6NyTpCW/C2b6FIWGndwi4oUWuA
-        r4Repq4UYkG+p1LZIK/UeKjHa
-X-Received: by 2002:a05:6000:188a:b0:20c:e43e:83f3 with SMTP id a10-20020a056000188a00b0020ce43e83f3mr2638238wri.621.1652344040107;
-        Thu, 12 May 2022 01:27:20 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwJKp/EGxLuFwK2435tzLC+FszxD5/D2QoHQy3dbiyqh5SVzzFU/Rf/vZO6yE8G7CspN33WEQ==
-X-Received: by 2002:a05:6000:188a:b0:20c:e43e:83f3 with SMTP id a10-20020a056000188a00b0020ce43e83f3mr2638213wri.621.1652344039853;
-        Thu, 12 May 2022 01:27:19 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-113-89.dyn.eolo.it. [146.241.113.89])
-        by smtp.gmail.com with ESMTPSA id l7-20020a056000022700b0020c5253d8ecsm3470186wrz.56.2022.05.12.01.27.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 01:27:19 -0700 (PDT)
-Message-ID: <4f7e80c47826315e498edf45e7c1442cd54e95c7.camel@redhat.com>
-Subject: Re: [PATCH net-next] net: wwan: t7xx: Fix return type of
- t7xx_dl_add_timedout()
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     "Martinez, Ricardo" <ricardo.martinez@linux.intel.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        chandrashekar.devegowda@intel.com, linuxwwan@intel.com,
-        chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
-        m.chetan.kumar@linux.intel.com, loic.poulain@linaro.org,
-        ryazanov.s.a@gmail.com, johannes@sipsolutions.net,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Thu, 12 May 2022 10:27:17 +0200
-In-Reply-To: <add45b0e-3081-3ca0-d03c-fe306526cc01@linux.intel.com>
-References: <20220511071907.29120-1-yuehaibing@huawei.com>
-         <add45b0e-3081-3ca0-d03c-fe306526cc01@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=7g2+Ytw7LOFNSmUdcgJm+KVblwr69gQPARUIhiHhirk=;
+        b=0oCQMfcTm2gcdkpjXYaHuEHBAFBo7/2YhdTd6RAcizjAnUarzKhHCVmXmA9ceVUWyc
+         xrFowcbHOUrPtBklBppYth9uVyLBN4jAYz4Wntmtir0oZ9lNGWzmBDTlorXDaEM/3s8h
+         kGvQYui0hQ7W6TuaEXAH4TVgOFlcg69D6/GOg8+lKh9pXnJUC26iGngcQQfb242GEHKm
+         KSBBgg2XD18hxln1w+Ya0vx6SC8ajfKMEDHfNYi0RSFGDT6Jrobz7q9kLNCMqi/XNi8S
+         EprYDFsLPjUu3KELyX9KRu+ZQ76YjMatg8536MsSse1/si70Av/oh/0IynqG5VLNgZ8J
+         Xk9w==
+X-Gm-Message-State: AOAM5330DtE8boT2hx7PbRGnInKV4Iaolzp1Zth2af0vJo7ADRqh2pnA
+        sdajNpXXKFSiRvhugdax1Iz9zSyKT26JmAn9MBISAqRq1GuVeGmaHo7JBuCJfytmju6ZaTgF6IO
+        k4uLRE8izyH/hOPoklO+1snet
+X-Received: by 2002:adf:d081:0:b0:20c:7f56:abd1 with SMTP id y1-20020adfd081000000b0020c7f56abd1mr25102324wrh.386.1652345747426;
+        Thu, 12 May 2022 01:55:47 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzgDUaV0Pvl8E9KjWZrA4Ta4cxlJ4ZfqSzMPCrJAB9wK4ZmY3C5NwvXHdv7bDy0pOSmbYgYaQ==
+X-Received: by 2002:adf:d081:0:b0:20c:7f56:abd1 with SMTP id y1-20020adfd081000000b0020c7f56abd1mr25102301wrh.386.1652345747118;
+        Thu, 12 May 2022 01:55:47 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c701:d200:ee5d:1275:f171:136d? (p200300cbc701d200ee5d1275f171136d.dip0.t-ipconnect.de. [2003:cb:c701:d200:ee5d:1275:f171:136d])
+        by smtp.gmail.com with ESMTPSA id bv30-20020a0560001f1e00b0020c5253d900sm3278670wrb.76.2022.05.12.01.55.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 May 2022 01:55:46 -0700 (PDT)
+Message-ID: <2f7b7320-6899-93a0-420c-523d53363f58@redhat.com>
+Date:   Thu, 12 May 2022 10:55:45 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v2 1/6] Documentation: filesystems: proc: update meminfo
+ section
+Content-Language: en-US
+To:     Johannes Weiner <hannes@cmpxchg.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Seth Jennings <sjenning@redhat.com>,
+        Dan Streetman <ddstreet@ieee.org>,
+        Minchan Kim <minchan@kernel.org>, linux-mm@kvack.org,
+        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-team@fb.com
+References: <20220510152847.230957-1-hannes@cmpxchg.org>
+ <20220510152847.230957-2-hannes@cmpxchg.org>
+ <7a6f8520-a496-e3c3-1fd9-8a30b7a12b14@redhat.com>
+ <YnwFraZlVWQoCjz3@cmpxchg.org>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <YnwFraZlVWQoCjz3@cmpxchg.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-05-11 at 17:35 -0700, Martinez, Ricardo wrote:
-> On 5/11/2022 12:19 AM, YueHaibing wrote:
-> > t7xx_dl_add_timedout() now return int 'ret', but the return type
-> > is bool. Change the return type to int for furthor errcode upstream.
-> > 
-> > Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> > ---
-> >   drivers/net/wwan/t7xx/t7xx_dpmaif.c | 2 +-
-> >   1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/net/wwan/t7xx/t7xx_dpmaif.c b/drivers/net/wwan/t7xx/t7xx_dpmaif.c
-> > index c8bf6929af51..8ee15af1a1ce 100644
-> > --- a/drivers/net/wwan/t7xx/t7xx_dpmaif.c
-> > +++ b/drivers/net/wwan/t7xx/t7xx_dpmaif.c
-> > @@ -1043,7 +1043,7 @@ unsigned int t7xx_dpmaif_dl_dlq_pit_get_wr_idx(struct dpmaif_hw_info *hw_info,
-> >   	return value & DPMAIF_DL_RD_WR_IDX_MSK;
-> >   }
-> >   
-> > -static bool t7xx_dl_add_timedout(struct dpmaif_hw_info *hw_info)
-> > +static int t7xx_dl_add_timedout(struct dpmaif_hw_info *hw_info)
-> yes, int is the right return type, thanks!
+On 11.05.22 20:51, Johannes Weiner wrote:
+> On Wed, May 11, 2022 at 07:11:06PM +0200, David Hildenbrand wrote:
+>> On 10.05.22 17:28, Johannes Weiner wrote:
+>>> Add new entries. Minor corrections and cleanups.
+>>>
+>>> Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
+>>> ---
+>>>  Documentation/filesystems/proc.rst | 155 ++++++++++++++++++-----------
+>>>  1 file changed, 99 insertions(+), 56 deletions(-)
+>>>
+>>> diff --git a/Documentation/filesystems/proc.rst b/Documentation/filesystems/proc.rst
+>>> index 061744c436d9..736ed384750c 100644
+>>> --- a/Documentation/filesystems/proc.rst
+>>> +++ b/Documentation/filesystems/proc.rst
+>>> @@ -942,56 +942,71 @@ can be substantial.  In many cases there are other means to find out
+>>>  additional memory using subsystem specific interfaces, for instance
+>>>  /proc/net/sockstat for TCP memory allocations.
+>>>  
+>>> -The following is from a 16GB PIII, which has highmem enabled.
+>>> -You may not have all of these fields.
+>>> +Example output. You may not have all of these fields.
+>>>  
+>>>  ::
+>>>  
+>>>      > cat /proc/meminfo
+>>>  
+>>> -    MemTotal:     16344972 kB
+>>> -    MemFree:      13634064 kB
+>>> -    MemAvailable: 14836172 kB
+>>> -    Buffers:          3656 kB
+>>> -    Cached:        1195708 kB
+>>> -    SwapCached:          0 kB
+>>> -    Active:         891636 kB
+>>> -    Inactive:      1077224 kB
+>>> -    HighTotal:    15597528 kB
+>>> -    HighFree:     13629632 kB
+>>> -    LowTotal:       747444 kB
+>>> -    LowFree:          4432 kB
+>>> -    SwapTotal:           0 kB
+>>> -    SwapFree:            0 kB
+>>> -    Dirty:             968 kB
+>>> -    Writeback:           0 kB
+>>> -    AnonPages:      861800 kB
+>>> -    Mapped:         280372 kB
+>>> -    Shmem:             644 kB
+>>> -    KReclaimable:   168048 kB
+>>> -    Slab:           284364 kB
+>>> -    SReclaimable:   159856 kB
+>>> -    SUnreclaim:     124508 kB
+>>> -    PageTables:      24448 kB
+>>> -    NFS_Unstable:        0 kB
+>>> -    Bounce:              0 kB
+>>> -    WritebackTmp:        0 kB
+>>> -    CommitLimit:   7669796 kB
+>>> -    Committed_AS:   100056 kB
+>>> -    VmallocTotal:   112216 kB
+>>> -    VmallocUsed:       428 kB
+>>> -    VmallocChunk:   111088 kB
+>>> -    Percpu:          62080 kB
+>>> -    HardwareCorrupted:   0 kB
+>>> -    AnonHugePages:   49152 kB
+>>> -    ShmemHugePages:      0 kB
+>>> -    ShmemPmdMapped:      0 kB
+>>> +    MemTotal:       32858820 kB
+>>> +    MemFree:        21001236 kB
+>>> +    MemAvailable:   27214312 kB
+>>> +    Buffers:          581092 kB
+>>> +    Cached:          5587612 kB
+>>> +    SwapCached:            0 kB
+>>> +    Active:          3237152 kB
+>>> +    Inactive:        7586256 kB
+>>> +    Active(anon):      94064 kB
+>>> +    Inactive(anon):  4570616 kB
+>>> +    Active(file):    3143088 kB
+>>> +    Inactive(file):  3015640 kB
+>>> +    Unevictable:           0 kB
+>>> +    Mlocked:               0 kB
+>>> +    SwapTotal:             0 kB
+>>> +    SwapFree:              0 kB
+>>> +    Dirty:                12 kB
+>>> +    Writeback:             0 kB
+>>> +    AnonPages:       4654780 kB
+>>> +    Mapped:           266244 kB
+>>> +    Shmem:              9976 kB
+>>> +    KReclaimable:     517708 kB
+>>> +    Slab:             660044 kB
+>>> +    SReclaimable:     517708 kB
+>>> +    SUnreclaim:       142336 kB
+>>> +    KernelStack:       11168 kB
+>>> +    PageTables:        20540 kB
+>>> +    NFS_Unstable:          0 kB
+>>> +    Bounce:                0 kB
+>>> +    WritebackTmp:          0 kB
+>>> +    CommitLimit:    16429408 kB
+>>> +    Committed_AS:    7715148 kB
+>>> +    VmallocTotal:   34359738367 kB
+>>> +    VmallocUsed:       40444 kB
+>>> +    VmallocChunk:          0 kB
+>>> +    Percpu:            29312 kB
+>>> +    HardwareCorrupted:     0 kB
+>>> +    AnonHugePages:   4149248 kB
+>>> +    ShmemHugePages:        0 kB
+>>> +    ShmemPmdMapped:        0 kB
+>>> +    FileHugePages:         0 kB
+>>> +    FilePmdMapped:         0 kB
+>>> +    CmaTotal:              0 kB
+>>> +    CmaFree:               0 kB
+>>> +    HugePages_Total:       0
+>>> +    HugePages_Free:        0
+>>> +    HugePages_Rsvd:        0
+>>> +    HugePages_Surp:        0
+>>> +    Hugepagesize:       2048 kB
+>>> +    Hugetlb:               0 kB
+>>> +    DirectMap4k:      401152 kB
+>>> +    DirectMap2M:    10008576 kB
+>>> +    DirectMap1G:    24117248 kB
+>>>  
+>>>  MemTotal
+>>>                Total usable RAM (i.e. physical RAM minus a few reserved
+>>>                bits and the kernel binary code)
+>>>  MemFree
+>>> -              The sum of LowFree+HighFree
+>>> +              Total free RAM. On highmem systems, the sum of LowFree+HighFree
+>>>  MemAvailable
+>>>                An estimate of how much memory is available for starting new
+>>>                applications, without swapping. Calculated from MemFree,
+>>> @@ -1005,8 +1020,9 @@ Buffers
+>>>                Relatively temporary storage for raw disk blocks
+>>>                shouldn't get tremendously large (20MB or so)
+>>>  Cached
+>>> -              in-memory cache for files read from the disk (the
+>>> -              pagecache).  Doesn't include SwapCached
+>>> +              In-memory cache for files read from the disk (the
+>>> +              pagecache) as well as tmpfs & shmem.
+>>> +              Doesn't include SwapCached.
+>>>  SwapCached
+>>>                Memory that once was swapped out, is swapped back in but
+>>>                still also is in the swapfile (if memory is needed it
+>>> @@ -1018,6 +1034,11 @@ Active
+>>>  Inactive
+>>>                Memory which has been less recently used.  It is more
+>>>                eligible to be reclaimed for other purposes
+>>> +Unevictable
+>>> +              Memory that cannot be reclaimed, such as mlocked pages,
+>>> +              ramfs backing pages, secret memfd pages etc.
+>>
+>>
+>> A little imprecise, because this only includes memory to be mapped into
+>> user space. For example, all kernel allocations are unevictable but not
+>> accounted here.
 > 
+> True. How about the below?
 
-Changing the return type without using the different error code in the
-caller is quite useless. Additionally t7xx_dl_add_timedout() (via
-ioread32_poll_timeout_atomic()) can produce a single error value
-(ETIMEOUT). IMHO this change is not needed.
+Sounds good, thanks!
 
-You may want to remove the 'ret' local variable instead (in the same
-function)
 
-Cheers,
+-- 
+Thanks,
 
-Paolo
+David / dhildenb
 
