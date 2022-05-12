@@ -2,54 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A469C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 07:46:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F36BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 07:47:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351148AbiELHqk (ORCPT
+        id S1351167AbiELHra (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 03:46:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47210 "EHLO
+        Thu, 12 May 2022 03:47:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351086AbiELHqf (ORCPT
+        with ESMTP id S1351163AbiELHrX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 03:46:35 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AC3533363
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 00:46:32 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id s14so4127033plk.8
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 00:46:32 -0700 (PDT)
+        Thu, 12 May 2022 03:47:23 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A2D51B578A
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 00:47:15 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id d22so4120265plr.9
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 00:47:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=JqKmOBdyvSAB2RQPk7pfmb7qvk5aEFRk658+MP9/8GA=;
-        b=X4zHvSs2OtqDypNXNfmaomwFgwxRLmD9XFu2ESdk4XQ3Uo78qZHFVISztp97Ta0n5C
-         zUvEnltHgHmaGdFZuMmZC4i1jGM+WMi80vrB6Vm7t3uylzs0fyVNgSsiyfuhb8ZSW4X6
-         c0sO9TyaPmS/P1YxVxgltuTIUOiideMbzhVdsJLHSkqYLoryuttMYunBYcna1c0UJwtH
-         cCsR/TuKr+aVNYoZCAszIiEnjCR58xTRjK7W0p/kFsxnxIfktE4pJmvNaRGj8wSfKYv9
-         mWMRe6RySEHVF+qBMm7MZvYjpgOtR164GYbLAE4He+rsh0CQ1XzMfh9Bou6AgBrOh+Fk
-         zQvg==
+        bh=vwkfMqkkpGs1FVotSl8gOPBh3VAjsH5HCd0W5khKpM0=;
+        b=QwOMO2oq5TbAyOFDFvpvkgkWVG6EaFOmZlzyuwsRB7Flg+Ox5gGrxGlgd257ueDece
+         fAIvn+7oEvIbuelneZQjTzbxL+CSaBt4skadbYywXlDR4ZoqdF4Jo5aIouhWpRx2qpsl
+         bpaVmdL7fcragnIuna4eczG35NFsj5Fgjn6TXwwsJ+P6s/WXLxqPiSVc5kHe1LyILLw1
+         5Kuc9nX8N/8UVRcAjKl9ry49jeTRNn8+5BE/tPtuTlGEQ5h3osSjs+0ywkuWTx/M2HQY
+         ZZmO8ghKDlLqpecBME9A6nLni9x7hRLyp8im5ldlY/plFQEKIeDSSiEOVFZNZD3X6A0N
+         Z3RQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=JqKmOBdyvSAB2RQPk7pfmb7qvk5aEFRk658+MP9/8GA=;
-        b=IWPczXIE9gKf9NnYepBtUwRXExMoyy7JC0u3BuuL7SEby5Q5mpSKLM3W6Y43X/5Cue
-         iYYQnVjaBQEgavCmqAg8z0Qa4tTMrvs2ruZpHYtl7AN+CKMEjZ+1Kjr6POKvCEyTEUbR
-         CRueTh00D+HtJT2i/A58rSb8j1lNhCtB0IITLJdNaYRk/2OfdsLHHVtUPR+gmZJtcWz+
-         yzYauaDUrvWBy9pNWS0Ihod2CkLDG0zfu0Wx6UeZg1+qabDhLdZMJyz1f1Dzh0bD+1Xt
-         /bVJvxquzj5VaVmYpB6m+i4EKWCO2kTBB2psAjPUwFV6b8l6SY+VJ0msf4I8jPKZbIff
-         ZZ7Q==
-X-Gm-Message-State: AOAM533PBjRsCxuMQvCIl27ReeHpVrOcHRu9DWixHBS3a0yU7WijPBwQ
-        wiQaaeENM1PoYc/uaTqjq3/4cA==
-X-Google-Smtp-Source: ABdhPJwUqx1pbyIyvspuWNontshAmCuEcq5ZJyBlMDjfIBLljoOQH3ZGhCvC+DWmIKArMfbLLu2iAw==
-X-Received: by 2002:a17:90a:4d04:b0:1d9:3f18:f4dd with SMTP id c4-20020a17090a4d0400b001d93f18f4ddmr9482641pjg.111.1652341592056;
-        Thu, 12 May 2022 00:46:32 -0700 (PDT)
+        bh=vwkfMqkkpGs1FVotSl8gOPBh3VAjsH5HCd0W5khKpM0=;
+        b=mlbr5y1hMNoHND5XE4QxZ/gxPxZ+4aEQHK/RyNB+1qZRJsg82TE+FYn4T3P0OMmVE7
+         Raa9bcodef0dj3zE+n/W8kwMNNe7/GqXRh6U82yHLDWotszcc0/M56pL/+llIJhiaz0R
+         fjdUJzwxb2kW/sZ3ygkWnOJVvxT+MzLmBYrLzCCPpbzSH+MzPplZUirBSIvTSy1hScEs
+         9njwIHhzlfClHCyauDLNlk05rR2EiXkw+ISlmDVGYVP+vrhgTBp9pwbXz4WlYMjLkusf
+         ju3CbcDfA/b5AvzZHVzr58OuvMugJsGZ8J4aYrRIsn4HnKN2WvjK3iAI8NtNe1yv78x6
+         suRg==
+X-Gm-Message-State: AOAM532uBkqhJCLCo/U/X80S6F4JbyMqJiTP4envB/rhxBbm6Rm4VZeJ
+        IAS5fdIHt5uY5TyXBtNm1AJPLw==
+X-Google-Smtp-Source: ABdhPJx0gFtg0LRz6XpvrQ6zmby9LlayUCFmF87pWSFCFPlW3HOI/+gcMgEygACnvoeQR4T/ohb3ug==
+X-Received: by 2002:a17:902:f78d:b0:14d:522e:deb3 with SMTP id q13-20020a170902f78d00b0014d522edeb3mr29111982pln.173.1652341635112;
+        Thu, 12 May 2022 00:47:15 -0700 (PDT)
 Received: from localhost ([122.162.234.2])
-        by smtp.gmail.com with ESMTPSA id w8-20020aa78588000000b0050dc76281a8sm3009761pfn.130.2022.05.12.00.46.30
+        by smtp.gmail.com with ESMTPSA id z12-20020a170902708c00b0015e8d4eb1desm3180431plk.40.2022.05.12.00.47.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 00:46:31 -0700 (PDT)
-Date:   Thu, 12 May 2022 13:16:29 +0530
+        Thu, 12 May 2022 00:47:14 -0700 (PDT)
+Date:   Thu, 12 May 2022 13:17:12 +0530
 From:   Viresh Kumar <viresh.kumar@linaro.org>
 To:     Pierre Gondois <pierre.gondois@arm.com>
 Cc:     linux-kernel@vger.kernel.org, Ionela.Voinescu@arm.com,
@@ -58,14 +58,14 @@ Cc:     linux-kernel@vger.kernel.org, Ionela.Voinescu@arm.com,
         Robert Moore <robert.moore@intel.com>,
         linux-acpi@vger.kernel.org, linux-pm@vger.kernel.org,
         devel@acpica.org
-Subject: Re: [PATCH v1 4/5] cpufreq: CPPC: Enable fast_switch
-Message-ID: <20220512074629.3cewdk4pu3oydlfg@vireshk-i7>
+Subject: Re: [PATCH v1 5/5] cpufreq: CPPC: Enable dvfs_possible_from_any_cpu
+Message-ID: <20220512074712.oaf7qaqeds5hlg63@vireshk-i7>
 References: <20220511134559.1466925-1-pierre.gondois@arm.com>
- <20220511134559.1466925-4-pierre.gondois@arm.com>
+ <20220511134559.1466925-5-pierre.gondois@arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220511134559.1466925-4-pierre.gondois@arm.com>
+In-Reply-To: <20220511134559.1466925-5-pierre.gondois@arm.com>
 User-Agent: NeoMutt/20180716-391-311a52
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -75,25 +75,29 @@ On 11-05-22, 15:45, Pierre Gondois wrote:
 > From: Pierre Gondois <Pierre.Gondois@arm.com>
 > 
 > The communication mean of the _CPC desired performance can be
-> PCC, System Memory, System IO, or Functional Fixed Hardware.
+> PCC, System Memory, System IO, or Functional Fixed Hardware (FFH).
 > 
-> commit b7898fda5bc7 ("cpufreq: Support for fast frequency switching")
-> fast_switching is 'for switching CPU frequencies from interrupt
-> context'.
-> Writes to SystemMemory and SystemIo are fast and suitable this.
-> This is not the case for PCC and might not be the case for FFH.
-> 
-> Enable fast_switching for the cppc_cpufreq driver in above cases.
-> 
-> Add cppc_allow_fast_switch() to check the desired performance
-> register address space and set fast_switching accordingly.
+> PCC, SystemMemory and SystemIo address spaces are available from any
+> CPU. Thus, dvfs_possible_from_any_cpu should be enabled in such case.
+> For FFH, let the FFH implementation do smp_call_function_*() calls.
 > 
 > Signed-off-by: Pierre Gondois <pierre.gondois@arm.com>
 > ---
->  drivers/acpi/cppc_acpi.c       | 17 +++++++++++++++++
->  drivers/cpufreq/cppc_cpufreq.c | 24 ++++++++++++++++++++++++
->  include/acpi/cppc_acpi.h       |  5 +++++
->  3 files changed, 46 insertions(+)
+>  drivers/cpufreq/cppc_cpufreq.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/cpufreq/cppc_cpufreq.c b/drivers/cpufreq/cppc_cpufreq.c
+> index 000a0c610c30..ad1535fbf389 100644
+> --- a/drivers/cpufreq/cppc_cpufreq.c
+> +++ b/drivers/cpufreq/cppc_cpufreq.c
+> @@ -558,6 +558,7 @@ static int cppc_cpufreq_cpu_init(struct cpufreq_policy *policy)
+>  	}
+>  
+>  	policy->fast_switch_possible = cppc_allow_fast_switch();
+> +	policy->dvfs_possible_from_any_cpu = true;
+>  
+>  	/*
+>  	 * If 'highest_perf' is greater than 'nominal_perf', we assume CPU Boost
 
 Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
 
