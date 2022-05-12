@@ -2,170 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 945F3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:32:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 504E2C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:32:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355302AbiELOcN (ORCPT
+        id S1355306AbiELOct (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 10:32:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46262 "EHLO
+        Thu, 12 May 2022 10:32:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355294AbiELOcE (ORCPT
+        with ESMTP id S1355304AbiELOcq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 10:32:04 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC74B56231;
-        Thu, 12 May 2022 07:31:59 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id q130so6742332ljb.5;
-        Thu, 12 May 2022 07:31:59 -0700 (PDT)
+        Thu, 12 May 2022 10:32:46 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19EAE6212F
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 07:32:45 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id a14-20020a7bc1ce000000b00393fb52a386so5280061wmj.1
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 07:32:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=manC7iWfn9O9mSZZf/Btg4vn4iIWLjuT6FYutQmRzFY=;
-        b=ozDrfX1l+/RUW8QJ1TMix/At6wyNsvaD9ODXyDqQrCaB9eSbfLWUA6SeaDJXwGU4Ms
-         Pee9Z2CzInoumsPAtCWVoFDjAFLl0hiFTaCzL49q+oSbtalZ5Vp+JSv9GheL57GfLYoF
-         QvJI+Z9V2kwvSRlhCbx5WRrjJXXmfhA1+2nRHZTvR4nLsh3/McCXa93fs7uvzKi0cKL1
-         2dm27fPhZL5zV6XBuRb+/owrt0DPbt92JcyFQZXLf/I/DoYIG9tMQCgxOXOvSjN0XCNK
-         1eHGXg/tH/lS9uDyEa7LDlEgpmaPi7yfszTfc4Te0mdYbYmhmq67p3GgLiCjdnOytdFc
-         8Blw==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=gfV6hdj+G/eKhil+K8KKf6Xy30nkm2zLFDY36R9t3Bg=;
+        b=N2yYG9TriNOJkpOXXy+kvvvM/AVOyWksfsEqkamccWwpC1p89jHbnFVmMIbjpVpHqn
+         ijVwQn5PbA+yltYmAjcbEzdfyMcGeik0hu/dBbEjKrW96bUcGb/31M2/C2xVd75uvGxQ
+         7Lu+Ojd2bUFvks7wdtkzdhLxEf1xlOe2mO+vit3gJb4HFJ3V/J/gDz6mwInwXvjDlMS7
+         Bu8hBAteXfuNqmRV0VLeKs0YUIIa6pUjdm+qvUS2f/h2cl2LauaSzKOh6WE8miCAm/VN
+         CaNlV4gGIPF67/MjFTemRYxuNztld9/UNCXJm51mBxAgRN3DowKDKH3mOu5UnjLxaV6n
+         cbhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=manC7iWfn9O9mSZZf/Btg4vn4iIWLjuT6FYutQmRzFY=;
-        b=dvUjsXUhZ8K/UpzU8y7LQHh9NUa+118Rzzb67pfqc1CSqUGOyd2vM7V/PIcCr5iqyn
-         Wk3qVvkhibTjS1Pq9uyzNwjlO/KpWiqTMIGJC3h4yPlBKYOjPELUeEPjuyOXF7EhVK6P
-         sSeJgTbUP8kPl3uLvPWaiy+YJZYQGgQq140BPG3S46RrlxWwvBOVyB/yqaz2XsVcCda5
-         VMWbaOgx1hrXLpEep47atgauttMUCdqn+tIP7jhkFbfgwjFKnRhd9CjXBILzy7y3mxSA
-         DA/sezO4eXJhjwfwpuBreVjsdWUEyMWVDw1xiT+4zixYukIcQel6IdcfDo6vMufIxASv
-         U1zA==
-X-Gm-Message-State: AOAM532Apby1kbrYzghjWSqf6knzD+LNfYIQvKp8zBfUScwXLpGAFpE6
-        /wSZTnMngDt66u018z5RlDE=
-X-Google-Smtp-Source: ABdhPJxPMcqx1CMFsYmZMBXkj4J0Io9idgJtMFiS4ZUOw9GabuWBPo2zvHAFBH0SAeWcFpq0rvCz7A==
-X-Received: by 2002:a2e:9019:0:b0:250:8205:dfb4 with SMTP id h25-20020a2e9019000000b002508205dfb4mr183915ljg.396.1652365918175;
-        Thu, 12 May 2022 07:31:58 -0700 (PDT)
-Received: from mobilestation ([95.79.189.214])
-        by smtp.gmail.com with ESMTPSA id l6-20020a19c206000000b0047255d210f1sm814755lfc.32.2022.05.12.07.31.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 07:31:57 -0700 (PDT)
-Date:   Thu, 12 May 2022 17:31:55 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Hannes Reinecke <hare@suse.de>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Rob Herring <robh+dt@kernel.org>, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH v3 10/23] ata: libahci_platform: Parse ports-implemented
- property in resources getter
-Message-ID: <20220512143155.c6gbufrwju3z5wmi@mobilestation>
-References: <20220511231810.4928-1-Sergey.Semin@baikalelectronics.ru>
- <20220511231810.4928-11-Sergey.Semin@baikalelectronics.ru>
- <1e349868-b302-1473-188a-1a6f2bb88cd5@suse.de>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=gfV6hdj+G/eKhil+K8KKf6Xy30nkm2zLFDY36R9t3Bg=;
+        b=jErUDPcWUp7mHau52+G3SrmNYPGSoKjXod2jof063ewghAzrGFRFA/CV/ak6SWaoWM
+         vgVFjXqAwMlfbfNXtjiR1zvMwPpGmbk+PEtKdCms5m06TAuoHM15Mziu2OA7OBJWWVGe
+         9N55r9Fhz1APaH3UL0I7b28Q15B88T//EILrbdsm4TRntspwzQGoig7EhCVczmIIgk3D
+         b6y+l5Mf0tGKvRCrsmjxF/n9fGE0ax/IGgWMv6Q/QdRYyzTuaj+RsrhVgDp41MUQEqNW
+         2jXPVa+IW9R6TZA45ENS0gm0weacALnjgigPIAmRXtjDP+HibG61XWsnofH5gCGvdP6g
+         nGNA==
+X-Gm-Message-State: AOAM531bHn6HhMghH14Qm44DtkGyR71l18aPE4o3NZuluovknWheuOzv
+        rPC4Gx5DCv6tZAp//rmTQ7cOeA==
+X-Google-Smtp-Source: ABdhPJzn0NdYnZ6arUr+7JV+G5AsR7rJ0k6j66fzM/lksa0zMGVqxos0KZ1oxRF7R+mdChnOviCSnQ==
+X-Received: by 2002:a05:600c:b47:b0:394:1200:957b with SMTP id k7-20020a05600c0b4700b003941200957bmr10506789wmr.2.1652365963660;
+        Thu, 12 May 2022 07:32:43 -0700 (PDT)
+Received: from [192.168.0.161] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id o15-20020a5d684f000000b0020c5253d8fesm4459561wrw.74.2022.05.12.07.32.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 May 2022 07:32:42 -0700 (PDT)
+Message-ID: <a219c974-a291-7fb5-bdd0-1979d9083eb1@linaro.org>
+Date:   Thu, 12 May 2022 16:32:41 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1e349868-b302-1473-188a-1a6f2bb88cd5@suse.de>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v6 7/7] arm64: dts: mt8195: Add thermal zone
+Content-Language: en-US
+To:     Alexandre Bailon <abailon@baylibre.com>, robh+dt@kernel.org,
+        krzk+dt@kernel.org, matthias.bgg@gmail.com, p.zabel@pengutronix.de
+Cc:     rafael@kernel.org, daniel.lezcano@linaro.org, amitk@kernel.org,
+        rui.zhang@intel.com, michael.kao@mediatek.com,
+        ben.tseng@mediatek.com, ethan.chang@mediatek.com,
+        frank-w@public-files.de, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, khilman@baylibre.com,
+        Tinghan Shen <tinghan.shen@mediatek.com>
+References: <20220512122433.1399802-1-abailon@baylibre.com>
+ <20220512122433.1399802-8-abailon@baylibre.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220512122433.1399802-8-abailon@baylibre.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 08:48:24AM +0200, Hannes Reinecke wrote:
-> On 5/12/22 01:17, Serge Semin wrote:
-> > The ports-implemented property is mainly used on the OF-based platforms
-> > with no ports mapping initialized by a bootloader/BIOS firmware. Seeing
-> > the same of_property_read_u32()-based pattern has already been implemented
-> > in the generic AHCI LLDD (glue) driver and in the Mediatek, St AHCI
-> > drivers let's move the property read procedure to the generic
-> > ahci_platform_get_resources() method. Thus we'll have the forced ports
-> > mapping feature supported for each OF-based platform which requires that,
-> > and stop re-implementing the same pattern in there a bit simplifying the
-> > code.
-> > 
-> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> > ---
-> >   drivers/ata/ahci_mtk.c         | 2 --
-> >   drivers/ata/ahci_platform.c    | 3 ---
-> >   drivers/ata/ahci_st.c          | 3 ---
-> >   drivers/ata/libahci_platform.c | 3 +++
-> >   4 files changed, 3 insertions(+), 8 deletions(-)
-> > 
-> > diff --git a/drivers/ata/ahci_mtk.c b/drivers/ata/ahci_mtk.c
-> > index 1f6c85fde983..c056378e3e72 100644
-> > --- a/drivers/ata/ahci_mtk.c
-> > +++ b/drivers/ata/ahci_mtk.c
-> > @@ -118,8 +118,6 @@ static int mtk_ahci_parse_property(struct ahci_host_priv *hpriv,
-> >   				   SYS_CFG_SATA_EN);
-> >   	}
-> > -	of_property_read_u32(np, "ports-implemented", &hpriv->force_port_map);
-> > -
-> >   	return 0;
-> >   }
-> > diff --git a/drivers/ata/ahci_platform.c b/drivers/ata/ahci_platform.c
-> > index 28a8de5b48b9..9b56490ecbc3 100644
-> > --- a/drivers/ata/ahci_platform.c
-> > +++ b/drivers/ata/ahci_platform.c
-> > @@ -56,9 +56,6 @@ static int ahci_probe(struct platform_device *pdev)
-> >   	if (rc)
-> >   		return rc;
-> > -	of_property_read_u32(dev->of_node,
-> > -			     "ports-implemented", &hpriv->force_port_map);
-> > -
-> >   	if (of_device_is_compatible(dev->of_node, "hisilicon,hisi-ahci"))
-> >   		hpriv->flags |= AHCI_HFLAG_NO_FBS | AHCI_HFLAG_NO_NCQ;
-> > diff --git a/drivers/ata/ahci_st.c b/drivers/ata/ahci_st.c
-> > index 7526653c843b..068621099c00 100644
-> > --- a/drivers/ata/ahci_st.c
-> > +++ b/drivers/ata/ahci_st.c
-> > @@ -168,9 +168,6 @@ static int st_ahci_probe(struct platform_device *pdev)
-> >   	st_ahci_configure_oob(hpriv->mmio);
-> > -	of_property_read_u32(dev->of_node,
-> > -			     "ports-implemented", &hpriv->force_port_map);
-> > -
-> >   	err = ahci_platform_init_host(pdev, hpriv, &st_ahci_port_info,
-> >   				      &ahci_platform_sht);
-> >   	if (err) {
-> > diff --git a/drivers/ata/libahci_platform.c b/drivers/ata/libahci_platform.c
-> > index 4e54e19f07b2..f7f9cac10cb1 100644
-> > --- a/drivers/ata/libahci_platform.c
-> > +++ b/drivers/ata/libahci_platform.c
-> > @@ -512,6 +512,9 @@ struct ahci_host_priv *ahci_platform_get_resources(struct platform_device *pdev,
-> >   		goto err_out;
-> >   	}
-
-> > +	of_property_read_u32(dev->of_node,
-> > +			     "ports-implemented", &hpriv->force_port_map);
-> > +
-> >   	if (child_nodes) {
-> >   		for_each_child_of_node(dev->of_node, child) {
-> >   			u32 port;
+On 12/05/2022 14:24, Alexandre Bailon wrote:
+> From: Tinghan Shen <tinghan.shen@mediatek.com>
 > 
-> What happens on the other platforms?
-> Won't they register an error if that property isn't implemented?
-
-No. The force_port_map field will be left unmodified (zero by default) in case
-if the optional 'ports-implemented' property is unavailable. See the
-of_property_read_u32_array() method kdoc:
-https://elixir.bootlin.com/linux/latest/source/include/linux/of.h#L1261
-
--Sergey
-
+> This adds the thermal zone for the mt8195.
 > 
-> Cheers,
+> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+> Signed-off-by: Ben Tseng <ben.tseng@mediatek.com>
+> Signed-off-by: Alexandre Bailon <abailon@baylibre.com>
+> ---
+>  arch/arm64/boot/dts/mediatek/mt8195.dtsi | 103 +++++++++++++++++++++++
+>  1 file changed, 103 insertions(+)
 > 
-> Hannes
-> -- 
-> Dr. Hannes Reinecke		           Kernel Storage Architect
-> hare@suse.de			                  +49 911 74053 688
-> SUSE Software Solutions Germany GmbH, Maxfeldstr. 5, 90409 Nürnberg
-> HRB 36809 (AG Nürnberg), GF: Felix Imendörffer
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+> index 12887fb4d0d1..d6e5b595a89f 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+> @@ -823,6 +823,21 @@ spi0: spi@1100a000 {
+>  			status = "disabled";
+>  		};
+>  
+> +		lvts: lvts@1100b000 {
+
+Generic node names.
+
+> +			compatible = "mediatek,mt8195-lvts";
+> +			#thermal-sensor-cells = <1>;
+> +			reg = <0 0x1100b000 0 0x1000>,
+> +				<0 0x11278000 0 0x1000>;
+> +			interrupts = <GIC_SPI 169 IRQ_TYPE_LEVEL_HIGH 0>,
+> +					<GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH 0>;
+> +			clocks = <&infracfg_ao CLK_INFRA_AO_THERM>;
+> +			clock-names = "lvts_clk";
+> +			resets = <&infracfg_rst 1>,
+> +					<&infracfg_rst 2>;
+> +			nvmem-cells = <&lvts_e_data1 &lvts_e_data2>;
+> +			nvmem-cell-names = "e_data1","e_data2";
+> +		};
+> +
+>  		spi1: spi@11010000 {
+>  			compatible = "mediatek,mt8195-spi",
+>  				     "mediatek,mt6765-spi";
+> @@ -1627,4 +1642,92 @@ vencsys_core1: clock-controller@1b000000 {
+>  			#clock-cells = <1>;
+>  		};
+>  	};
+> +
+> +	thermal_zones: thermal-zones {
+> +		cpu_big1 {
+
+No underscores in node names. Generic node names - please open existing
+thermal zones schema and look how it is done. This probably fails
+validation, so be sure your DTS passes make dtbs_check.
+
+Best regards,
+Krzysztof
