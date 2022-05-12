@@ -2,106 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DB34C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 12:20:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37F50C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 12:21:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353621AbiELMUt (ORCPT
+        id S1353628AbiELMV2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 08:20:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51154 "EHLO
+        Thu, 12 May 2022 08:21:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349371AbiELMUo (ORCPT
+        with ESMTP id S1353620AbiELMVX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 08:20:44 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE42819C34
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 05:20:40 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id b19so6977935wrh.11
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 05:20:40 -0700 (PDT)
+        Thu, 12 May 2022 08:21:23 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A89061627
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 05:21:22 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id h186so1798072pgc.3
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 05:21:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:organization:in-reply-to:content-transfer-encoding;
-        bh=RB4UFWflnqT7YBqkDdk/tHJ953wpGWAq9+2dQip5Mgk=;
-        b=SYyQEfdTxPtJhqIjDzLvhoXxyWDkBykTLx2EMy2UIBn9ANURE3n1SbvvtNKJiZRdb9
-         QxgtIFjOVr0i1qU7eFxs7SAlFzFLIMyOfqJQRMcVZwp89iY5o2qN8fB/bRpKe413XYx6
-         080m+FmyhUnWUdQhf33FL6LXzpjGiaJP383/f5NwouESb9+/Ap6JFzbb4ituiGdzm1o0
-         no25PcXJuN67b6sN8hdFf4Fu9mryvYGvwYBqx35zXirO6yTRdPLYG2GInX6XHZoHBDGA
-         w8y4OdbFAKcH+ezHiHm+UjUB5pt9wJuEFHUQvmwwSAUJOpdM4SXx2ohi5d2cuja7KxzU
-         nCAA==
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=Jgm8O8QZGGLjUWsD23VHBOnQF7wIvt3edd/9XoWMzcU=;
+        b=juxKek8KLq57IuDoeCVxD1MW+MnPDdbkH7xLyUUk4e4h5EB/BfI1umGD3SG4XLSnBm
+         nxz4w7SXVNYER069+B8cInWuQpa6p3ktEqMJya3Dz179u8l38J9MGJilFYpc7dXkXMc3
+         AJoWj8yKGBZjvlb8z5Dwyqysnxyj+yXF3CXBdXWUGuj+mGsgkc0frCnzB0qQProF4MoB
+         uMDWtrmK+bEwJaQOmr1tsU6FxeshEwEFMQ9usC83cKbd40mQe5avw0H97vfzU4lQ7FMK
+         OLBemcxYt4u4pD/p/7VN/jKSpQzpshhL3cxDl6ZVHcJuCGVgnBbbjiOyMgrhIRG8oqOX
+         0tFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:organization:in-reply-to
+         :content-language:to:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=RB4UFWflnqT7YBqkDdk/tHJ953wpGWAq9+2dQip5Mgk=;
-        b=kFkO1m6Gv1QhGDju2ajo3ts6mjGdaIcrY5/y4KVI0piOGjXiz1Hn67TZ1bA7ZspuCU
-         zLMhbFTAH+ZH6H2rjVvFGStevIk5v6R1JQ5ZQ/rvH4DdixnTn0kwxr5Vw7rv+Yh/dwyn
-         jr4RGX1ZFs7YOtSooBqK4Op6pI7blY5EOvx+9GFTZRTZKOUd8ebCZY+xCS5EZI+Sqtu0
-         Cqj2EZMu5mCcD75mI+QbCYsimmk24aqMRQTo7ioQC8g/KrSgIuc2y4Pq8VyaXX1mBttn
-         980LO5FQrOEFa8THS+EUR4+xlSzZpZwcVXFvpYVJMaHiSImrRaLRMW/pgZuA2iJLObRm
-         QCmw==
-X-Gm-Message-State: AOAM533slmCvrd9CJhbVB33XCmvz5Dsiq4hXTPd9jNjMoXsrayK330y4
-        96FZRL1+E+Gta48sxA3PUIBQPtZ429nBmXW2
-X-Google-Smtp-Source: ABdhPJyu1aKN5KiuDTzkBD61oRd1v63Bb1+xpDXJPlEui//nYUG2arMwW3pCr9WkbGGiND0niBZcfg==
-X-Received: by 2002:a05:6000:144f:b0:20c:6090:3040 with SMTP id v15-20020a056000144f00b0020c60903040mr26377831wrx.479.1652358039271;
-        Thu, 12 May 2022 05:20:39 -0700 (PDT)
-Received: from ?IPV6:2001:861:44c0:66c0:8073:a89f:6230:abb? ([2001:861:44c0:66c0:8073:a89f:6230:abb])
-        by smtp.gmail.com with ESMTPSA id c1-20020a5d4cc1000000b0020c5253d8ccsm4104892wrt.24.2022.05.12.05.20.37
+        bh=Jgm8O8QZGGLjUWsD23VHBOnQF7wIvt3edd/9XoWMzcU=;
+        b=vBmPi9wM8FKHoFt9a4My4PY3QK5H/RqxrDK1+yKGtZSlOzkdgTDQJbE6fUrxqhPrAq
+         yPfEBCjBH8w810u3aUlsdJyVxJLi2axYDO5z2Jx5P92hRWceD5yUs8j5rY2UQqHjhS8J
+         5YhTQx/cZMxmz0h3C5Rto21483I3JfHkrcbLAbOE551Gx9J7qY53RhIRUWoZTzoNms0c
+         YkMyHphZ8xn/eKIRPDDuYw4lo4+VJLXZHgJJh2opRrgAJwEjEUQEN1CE1+YqLLS1vRpn
+         X0OKBd3TYLo/YV1YfntYxfxK4pPW5WAgCjoVy2nS2uuqzLqygMN/09zUemP5ZaKe1fcE
+         45Sg==
+X-Gm-Message-State: AOAM5310BcHGyW7Yc0Z0LIaSLusX5lR+1HUoQHFyhL/CY1Jj2LeOWiUd
+        Pvspp++BFVxlyoKLg5PPPOa/kpCgpeTk2g==
+X-Google-Smtp-Source: ABdhPJyxNnUrVAwCXlEhKqTYnXL1NS8M/Xz/9h5vBdFJvEbq+nNoBYUOZuexz28QXw63vGphXJn9Ww==
+X-Received: by 2002:a63:5151:0:b0:3db:6074:1180 with SMTP id r17-20020a635151000000b003db60741180mr2609998pgl.310.1652358081523;
+        Thu, 12 May 2022 05:21:21 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id v4-20020aa78504000000b0050dc762819esm3639779pfn.120.2022.05.12.05.21.20
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 May 2022 05:20:38 -0700 (PDT)
-Message-ID: <dabe6a15-b0ba-0458-bbd7-a07224071920@baylibre.com>
-Date:   Thu, 12 May 2022 14:20:37 +0200
+        Thu, 12 May 2022 05:21:20 -0700 (PDT)
+Message-ID: <7427ccc1-c830-56c1-1577-dee5afff3809@kernel.dk>
+Date:   Thu, 12 May 2022 06:21:19 -0600
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] drm/meson: Fix refcount leak in meson_encoder_hdmi_init
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] io_uring: Fix incorrect variable type in
+ io_fixed_fd_install
 Content-Language: en-US
-To:     Miaoqian Lin <linmq006@gmail.com>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        dri-devel@lists.freedesktop.org, linux-amlogic@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220511054052.51981-1-linmq006@gmail.com>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-Organization: Baylibre
-In-Reply-To: <20220511054052.51981-1-linmq006@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Wan Jiabing <wanjiabing@vivo.com>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        io-uring@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220512120511.4306-1-wanjiabing@vivo.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <20220512120511.4306-1-wanjiabing@vivo.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/05/2022 07:40, Miaoqian Lin wrote:
-> of_find_device_by_node() takes reference, we should use put_device()
-> to release it when not need anymore.
-> Add missing put_device() in error path to avoid refcount
-> leak.
+On 5/12/22 6:05 AM, Wan Jiabing wrote:
+> Fix following coccicheck warning:
+> fs/io_uring.c:5352:15-24: WARNING: Unsigned expression compared with zero: file_slot < 0
 > 
-> Fixes: 0af5e0b41110 ("drm/meson: encoder_hdmi: switch to bridge DRM_BRIDGE_ATTACH_NO_CONNECTOR")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> ---
->   drivers/gpu/drm/meson/meson_encoder_hdmi.c | 4 +++-
->   1 file changed, 3 insertions(+), 1 deletion(-)
+> 'file_slot' is an unsigned variable and it can't be less than 0.
+> Use 'ret' instead to check the error code from io_file_bitmap_get().
 > 
-> diff --git a/drivers/gpu/drm/meson/meson_encoder_hdmi.c b/drivers/gpu/drm/meson/meson_encoder_hdmi.c
-> index 5e306de6f485..de87f02cd388 100644
-> --- a/drivers/gpu/drm/meson/meson_encoder_hdmi.c
-> +++ b/drivers/gpu/drm/meson/meson_encoder_hdmi.c
-> @@ -435,8 +435,10 @@ int meson_encoder_hdmi_init(struct meson_drm *priv)
->   		cec_fill_conn_info_from_drm(&conn_info, meson_encoder_hdmi->connector);
->   
->   		notifier = cec_notifier_conn_register(&pdev->dev, NULL, &conn_info);
-> -		if (!notifier)
-> +		if (!notifier) {
-> +			put_device(&pdev->dev);
->   			return -ENOMEM;
-> +		}
->   
->   		meson_encoder_hdmi->cec_notifier = notifier;
->   	}
+> And using bool to declare 'alloc_slot' makes the code better.  
 
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Thanks, I'm going to fold this one in.
+
+-- 
+Jens Axboe
+
