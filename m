@@ -2,143 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFEC0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 01:34:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93B9BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 01:39:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231449AbiELBek (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 11 May 2022 21:34:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53974 "EHLO
+        id S232760AbiELBjd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 11 May 2022 21:39:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229615AbiELBef (ORCPT
+        with ESMTP id S231600AbiELBjY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 11 May 2022 21:34:35 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26DA6163F52;
-        Wed, 11 May 2022 18:34:34 -0700 (PDT)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24C10qWi007812;
-        Thu, 12 May 2022 01:34:11 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=UKpb/O5tAGRbc/8/27SzriP9fD5S6Pn2HVidREwISr0=;
- b=e93goE2MQGqJE1pJHJ3CSTu0bR/1MlKmXBo8W49lnVryqQuMlWypFr6m+y7pmgZE4M4h
- aJY0fJixKPbMfBvzyvDgiK/1eJ5g58TvRf+9YzJD0LaX6Hxc624ZcaNFvgIwv4kskUwG
- VHqTEjTg3qY4iJs3vODfv3/H8eUD3Grg3E140JstdffaShwGGL7lndqqy8JoIvynCKob
- MV02W9rSP9YSTod1xMocPX+uuvfBzzY7Ob+litHtfdmbBTuX13ma0anlNMYLJH+mPNFz
- HvaCoDPY9CVmRIUdXCRJQxewsW+Nzmc/mVYyy0adSAefPTu3XMzoltp4pbbiZ9IQRfVY Zg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g0cme6upv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 May 2022 01:34:11 +0000
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24C1Rvhc008924;
-        Thu, 12 May 2022 01:34:10 GMT
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g0cme6up7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 May 2022 01:34:10 +0000
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24C1OUaC007319;
-        Thu, 12 May 2022 01:34:08 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma06fra.de.ibm.com with ESMTP id 3fwg1hvtgh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 May 2022 01:34:08 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24C1Y5lt37683554
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 12 May 2022 01:34:05 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9AD2E5204F;
-        Thu, 12 May 2022 01:34:05 +0000 (GMT)
-Received: from sig-9-65-89-202.ibm.com (unknown [9.65.89.202])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 2D6A15204E;
-        Thu, 12 May 2022 01:34:04 +0000 (GMT)
-Message-ID: <11153650a1c4a70bb83ce67724280313120d07d5.camel@linux.ibm.com>
-Subject: Re: [PATCH v3] x86/kexec: Carry forward IMA measurement log on kexec
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Jonathan McDowell <noodles@fb.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>
-Date:   Wed, 11 May 2022 21:34:03 -0400
-In-Reply-To: <67f0fe5874638241bc2f2401dc2bc12c51becc0b.camel@linux.ibm.com>
-References: <YmKyvlF3my1yWTvK@noodles-fedora-PC23Y6EG>
-         <YmgjXZphkmDKgaOA@noodles-fedora-PC23Y6EG>
-         <YnuJCH75GrhVm0Tp@noodles-fedora.dhcp.thefacebook.com>
-         <67f0fe5874638241bc2f2401dc2bc12c51becc0b.camel@linux.ibm.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: QH3eQL91NtugomYoPs1JIfWyjlJK7qD1
-X-Proofpoint-GUID: zmEDd7AYErMVBKvORzeN3hlYM9h8WHNa
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-11_07,2022-05-11_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 suspectscore=0
- mlxlogscore=999 adultscore=0 lowpriorityscore=0 malwarescore=0 spamscore=0
- phishscore=0 impostorscore=0 priorityscore=1501 bulkscore=0 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2205120006
+        Wed, 11 May 2022 21:39:24 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA10A1BDDA6
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 18:39:23 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id x18so3508570plg.6
+        for <linux-kernel@vger.kernel.org>; Wed, 11 May 2022 18:39:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=m9ERJPHY7kNCC9Xfh4Q+AkiSYUdqRfKbbcRRUQeYgLE=;
+        b=Z06Ja5WZl9m0TF+V4ASWgDlsqd8133ZXTovokih+muSLVR2g8+24M1+IN9QdAR3N3U
+         e2o/Gub2GRardsqIPiwc276hWMs29fQ4zNng8YvaeC9UVArnkPSS0g9E+qvSD4FT18/v
+         SlDiN2pU7okZ+ZA9o2sy+z15nLlkycNMpCipk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=m9ERJPHY7kNCC9Xfh4Q+AkiSYUdqRfKbbcRRUQeYgLE=;
+        b=glVtp0A31fSa4nuzWd9k0EGpWvwIh06RznrpKRZLhL4YLEf+m5tjxj6hjwvLq7tTLU
+         FnU7PDBDmHZAEBQwqPp/jqawPMcz442WNrovf/NDC25QZBHmBppiwJPd904AcMDTDOwr
+         VdrVIqMxYopjDuBYHdh2vlf3AtKCzyteNE7KMiAOLli/eQBvFP+a+2S4q1Dzq7U4YRrC
+         0+cONQjdK5S3FH3eKW6s05L7r5vVlHwdRgkgwuaG0XZySEYjZ1LYF6BXTMdUaAmv2Ztl
+         IAzaV0R5V5vuYo6SDN15GufISLNXd5EVqCvtGG+UwazFWzE2PHBe0t6SwGbL3elP+6D7
+         qWcA==
+X-Gm-Message-State: AOAM533dB3zWEjRmvNbZvvDsfGFss18xQk+Q0TsBDqpQQV+mT95SUcjL
+        k2dGu4izodCORurhXe/QqhHiAA==
+X-Google-Smtp-Source: ABdhPJzQSFqqWRopUsS9Ny2+LAOvm0JvWTV+LFjBFcsxtSZ6UTSfRFIbkBy2cP3F0lMN/eiotWHAtw==
+X-Received: by 2002:a17:902:d3c6:b0:15f:186a:69f0 with SMTP id w6-20020a170902d3c600b0015f186a69f0mr14901445plb.144.1652319563296;
+        Wed, 11 May 2022 18:39:23 -0700 (PDT)
+Received: from smtp.gmail.com ([2620:15c:202:201:193f:f17a:ab0d:1f83])
+        by smtp.gmail.com with ESMTPSA id b7-20020a170902d50700b0015e8d4eb2cfsm2614766plg.281.2022.05.11.18.39.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 May 2022 18:39:22 -0700 (PDT)
+From:   Stephen Boyd <swboyd@chromium.org>
+To:     Rob Herring <robh+dt@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        chrome-platform@lists.linux.dev,
+        Guenter Roeck <groeck@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Craig Hesling <hesling@chromium.org>,
+        Tom Hughes <tomhughes@chromium.org>,
+        Alexandru M Stan <amstan@chromium.org>,
+        Tzung-Bi Shih <tzungbi@kernel.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Benson Leung <bleung@chromium.org>,
+        Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH v5 0/3] dt-bindings: cros-ec: Update for fingerprint devices
+Date:   Wed, 11 May 2022 18:39:18 -0700
+Message-Id: <20220512013921.164637-1-swboyd@chromium.org>
+X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-05-11 at 13:53 -0400, Mimi Zohar wrote:
-> Hi Jonathan,
-> 
-> On Wed, 2022-05-11 at 09:59 +0000, Jonathan McDowell wrote:
-> > On kexec file load Integrity Measurement Architecture (IMA) subsystem
-> > may verify the IMA signature of the kernel and initramfs, and measure
-> > it. The command line parameters passed to the kernel in the kexec call
-> > may also be measured by IMA. A remote attestation service can verify
-> > a TPM quote based on the TPM event log, the IMA measurement list, and
-> > the TPM PCR data. This can be achieved only if the IMA measurement log
-> > is carried over from the current kernel to the next kernel across
-> > the kexec call.
-> > 
-> > powerpc and ARM64 both achieve this using device tree with a
-> > "linux,ima-kexec-buffer" node. x86 platforms generally don't make use of
-> > device tree, so use the setup_data mechanism to pass the IMA buffer to
-> > the new kernel.
-> > 
-> > Signed-off-by: Jonathan McDowell <noodles@fb.com>
+This patch series introduces a DT binding for chromeos fingerprint
+devices. The first two patches tighten up the existing binding and the
+final patch introduces the fingerprint binding. As there aren't any
+driver patches this can probably go directly through the DT binding tree
+if Lee can ack the patches. Or go through mfd tree if DT maintainers
+ack/review.
 
-Thanks, Jonathan.  The measurement list is now properly being restored
-independently of CONFIG_IMA_KEXEC being configured.
+Changes from v4 (https://lore.kernel.org/r/20220321191100.1993-1-swboyd@chromium.org):
+ * Drop last patch that implemented driver logic
+ * Drop second to last patch because it's not really needed until
+   compatible is used.
+ * Rolled cros-ec-spi into cros-ec-fp compatible to get all the pieces
 
-> > +++ b/include/linux/ima.h
-> > @@ -140,6 +140,9 @@ static inline int ima_measure_critical_data(const char *event_label,
-> >  
-> >  #endif /* CONFIG_IMA */
-> > 
+Changes from v3 (https://lore.kernel.org/r/20220318015451.2869388-1-swboyd@chromium.org):
+ * Drop spi_device_id because it isn't used
+ * Dropped struct members for gpios
+ * Picked up tags
 
-#ifdef CONFIG_HAVE_IMA_KEXEC
+Changes from v2 (https://lore.kernel.org/r/20220317005814.2496302-1-swboyd@chromium.org):
+ * Dropped cros-ec spi dt properties that aren't of use right now
+ * Picked up tags
 
-> > +int ima_free_kexec_buffer(void);
-> > +int ima_get_kexec_buffer(void **addr, size_t *size);
+Changes from v1 (https://lore.kernel.org/r/20220314232214.4183078-1-swboyd@chromium.org):
+ * Properly do the boot sequence
+ * Add a message that we're booting and delaying a while
+ * Fix typo in commit text
+ * Change binding to not spell out reset-gpios and indicate that boot0
+   is about asserting boot mode
+ * Split device id to different patch as it's a different topic from
+   booting
 
-#endif
-> 
-> Wouldn't moving these function definitions here imply they are
-> implemented on all architectures or are using the version in
-> drivers/of/kexec.c.
+Stephen Boyd (3):
+  dt-bindings: cros-ec: Fix a typo in description
+  dt-bindings: cros-ec: Reorganize property availability
+  dt-bindings: cros-ec: Add ChromeOS fingerprint binding
 
-Adding the ifdef around these functions should resolve any issues.
+ .../bindings/mfd/google,cros-ec.yaml          | 121 ++++++++++++++----
+ 1 file changed, 99 insertions(+), 22 deletions(-)
 
-thanks,
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc: <devicetree@vger.kernel.org>
+Cc: <chrome-platform@lists.linux.dev>
+Cc: Guenter Roeck <groeck@chromium.org>
+Cc: Douglas Anderson <dianders@chromium.org>
+Cc: Craig Hesling <hesling@chromium.org>
+Cc: Tom Hughes <tomhughes@chromium.org>
+Cc: Alexandru M Stan <amstan@chromium.org>
+Cc: Tzung-Bi Shih <tzungbi@kernel.org>
+Cc: Matthias Kaehlcke <mka@chromium.org>
+Cc: Benson Leung <bleung@chromium.org>
+Cc: Lee Jones <lee.jones@linaro.org>
 
-Mimi
+base-commit: ffb217a13a2eaf6d5bd974fc83036a53ca69f1e2
+-- 
+https://chromeos.dev
 
