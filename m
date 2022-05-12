@@ -2,131 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABAA0C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 05:51:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9413EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 05:51:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349999AbiELFv1 (ORCPT
+        id S1350015AbiELFvi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 01:51:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52396 "EHLO
+        Thu, 12 May 2022 01:51:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241110AbiELFvY (ORCPT
+        with ESMTP id S237798AbiELFvY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 12 May 2022 01:51:24 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 003E5506E8;
-        Wed, 11 May 2022 22:51:18 -0700 (PDT)
-X-UUID: bc075dd5dd7149c5a3d19c88f1121c7e-20220512
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:e210bcc1-f115-4f11-af59-f2692a195f82,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:9,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:14
-X-CID-META: VersionHash:faefae9,CLOUDID:f4a128f6-13a6-4067-b017-3b2864319134,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:3,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: bc075dd5dd7149c5a3d19c88f1121c7e-20220512
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
-        (envelope-from <yong.wu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 147289659; Thu, 12 May 2022 13:51:14 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 12 May 2022 13:51:12 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 12 May 2022 13:51:11 +0800
-Message-ID: <2ff41b86a7f7c7ce73cf800a7c1ecb531b835786.camel@mediatek.com>
-Subject: Re: [PATCH] iommu/dma: Fix iova map result check bug
-From:   Yong Wu <yong.wu@mediatek.com>
-To:     <yf.wang@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "Logan Gunthorpe" <logang@deltatee.com>,
-        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>
-CC:     <wsd_upstream@mediatek.com>, Libo Kang <Libo.Kang@mediatek.com>,
-        Ning Li <Ning.Li@mediatek.com>, <stable@vger.kernel.org>
-Date:   Thu, 12 May 2022 13:51:11 +0800
-In-Reply-To: <20220507085204.16914-1-yf.wang@mediatek.com>
-References: <20220507085204.16914-1-yf.wang@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+X-Greylist: delayed 366 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 11 May 2022 22:51:18 PDT
+Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [IPv6:2001:67c:2050:0:465::202])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0033E506C6;
+        Wed, 11 May 2022 22:51:17 -0700 (PDT)
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [10.196.197.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4KzLMh0dpMz9t2F;
+        Thu, 12 May 2022 07:45:04 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dylanvanassche.be;
+        s=MBO0001; t=1652334304;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Mjrv/G6HrIBpduWu1g0fC288vFkgwsi6v+XkaQ1EIAw=;
+        b=fyaBxxNAJxPwOOSm4Ko49ricSxn6uh/uoCvNEjbnzlK9D6D+JvaYq4SVn3wuRfS902o1It
+        mVW7wJRowWQ7hOBLhWtC040pkFck2OWyHOmeD/ffcaLpG4jb7aF8x+Z/N1rcc5RYAxcWtH
+        HSRAAL/d2qjSLFrTMDSM6GDSua39ssYm38AKrc8T1sTeooZAGhaZvLRS/BaOWrJBS2+njE
+        5PMrFcAXbkAEW/g4cSk/GWcZAjalBNscC4cXMP9OYF0XY6hho1GB8Zj2DzjVpzaPK5Zfhq
+        oAbjT1Mpq0VyJ0H4TvY7ubxKVa3o70QNTOPt9dS+I/Cn8qbamD/3wp0zxbOY9Q==
+From:   Dylan Van Assche <me@dylanvanassche.be>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Dylan Van Assche <me@dylanvanassche.be>
+Subject: [PATCH] arm64: dts: qcom/sdm845-shift-axolotl: Enable pmi9889 LPG LED
+Date:   Thu, 12 May 2022 07:44:39 +0200
+Message-Id: <20220512054439.13971-1-me@dylanvanassche.be>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 2022-05-07 at 16:52 +0800, yf.wang@mediatek.com wrote:
-> From: Yunfei Wang <yf.wang@mediatek.com>
-> 
-> The data type of the return value of the iommu_map_sg_atomic
-> is ssize_t, but the data type of iova size is size_t,
-> e.g. one is int while the other is unsigned int.
-> 
-> When iommu_map_sg_atomic return value is compared with iova size,
-> it will force the signed int to be converted to unsigned int, if
-> iova map fails and iommu_map_sg_atomic return error code is less
-> than 0, then (ret < iova_len) is false, which will to cause not
-> do free iova, and the master can still successfully get the iova
-> of map fail, which is not expected.
-> 
-> Therefore, we need to check the return value of iommu_map_sg_atomic
-> in two cases according to whether it is less than 0.
-> 
-> Fixes: ad8f36e4b6b1 ("iommu: return full error code from
-> iommu_map_sg[_atomic]()")
-> Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
-> Cc: <stable@vger.kernel.org> # 5.15.*
-> ---
->  drivers/iommu/dma-iommu.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 09f6e1c0f9c0..2932281e93fc 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -776,6 +776,7 @@ static struct page
-> **__iommu_dma_alloc_noncontiguous(struct device *dev,
->  	unsigned int count, min_size, alloc_sizes = domain-
-> >pgsize_bitmap;
->  	struct page **pages;
->  	dma_addr_t iova;
-> +	ssize_t ret;
->  
->  	if (static_branch_unlikely(&iommu_deferred_attach_enabled) &&
->  	    iommu_deferred_attach(dev, domain))
-> @@ -813,8 +814,8 @@ static struct page
-> **__iommu_dma_alloc_noncontiguous(struct device *dev,
->  			arch_dma_prep_coherent(sg_page(sg), sg-
-> >length);
->  	}
->  
-> -	if (iommu_map_sg_atomic(domain, iova, sgt->sgl, sgt-
-> >orig_nents, ioprot)
-> -			< size)
-> +	ret = iommu_map_sg_atomic(domain, iova, sgt->sgl, sgt-
-> >orig_nents, ioprot);
-> +	if (ret < 0 || ret < size)
+Enables the RGB notification LED on the SHIFT 6mq (sdm845-shift-axolotl)
+with the Qualcomm Light Pulse Generator bindings by Bjorn Andersson [1].
+Patches are merged in for-next branch of linux-leds.
+Tested these changes on the SHIFT 6mq.
 
-        if (IS_ERR_VALUE(ret) || ret < size) for readable?
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git/commit/?h=for-next&id=a8e53db46f19f67be6a26488aafb7d10c78e33bd
 
->  		goto out_free_sg;
->  
->  	sgt->sgl->dma_address = iova;
-> @@ -1209,7 +1210,7 @@ static int iommu_dma_map_sg(struct device *dev,
-> struct scatterlist *sg,
->  	 * implementation - it knows better than we do.
->  	 */
->  	ret = iommu_map_sg_atomic(domain, iova, sg, nents, prot);
-> -	if (ret < iova_len)
-> +	if (ret < 0 || ret < iova_len)
->  		goto out_free_iova;
->  
->  	return __finalise_sg(dev, sg, nents, iova);
+Signed-off-by: Dylan Van Assche <me@dylanvanassche.be>
+---
+ .../boot/dts/qcom/sdm845-shift-axolotl.dts    | 29 +++++++++++++++++++
+ 1 file changed, 29 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/sdm845-shift-axolotl.dts b/arch/arm64/boot/dts/qcom/sdm845-shift-axolotl.dts
+index 847f6217a77b..af412ac2c9d0 100644
+--- a/arch/arm64/boot/dts/qcom/sdm845-shift-axolotl.dts
++++ b/arch/arm64/boot/dts/qcom/sdm845-shift-axolotl.dts
+@@ -2,11 +2,13 @@
+ /*
+  * Copyright (c) 2022, Alexander Martinz <amartinz@shiftphones.com>
+  * Copyright (c) 2022, Caleb Connolly <caleb@connolly.tech>
++ * Copyright (c) 2022, Dylan Van Assche <me@dylanvanassche.be>
+  */
+ 
+ /dts-v1/;
+ 
+ #include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/leds/common.h>
+ #include <dt-bindings/regulator/qcom,rpmh-regulator.h>
+ #include "sdm845.dtsi"
+ #include "pm8998.dtsi"
+@@ -554,6 +556,33 @@ &pmi8998_smb2 {
+ 	monitored-battery = <&battery>;
+ };
+ 
++&pmi8998_lpg {
++	status = "okay";
++
++	multi-led {
++		color = <LED_COLOR_ID_RGB>;
++		function = LED_FUNCTION_STATUS;
++
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		led@3 {
++			reg = <3>;
++			color = <LED_COLOR_ID_BLUE>;
++		};
++
++		led@4 {
++			reg = <4>;
++			color = <LED_COLOR_ID_GREEN>;
++		};
++
++		led@5 {
++			reg = <5>;
++			color = <LED_COLOR_ID_RED>;
++		};
++	};
++};
++
+ &qup_uart9_default {
+ 	pinconf-rx {
+ 		pins = "gpio5";
+-- 
+2.36.1
 
