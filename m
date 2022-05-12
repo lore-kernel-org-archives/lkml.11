@@ -2,138 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2745C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:35:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23D46C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 14:36:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355405AbiELOfy (ORCPT
+        id S1355410AbiELOgw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 10:35:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58748 "EHLO
+        Thu, 12 May 2022 10:36:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349939AbiELOfw (ORCPT
+        with ESMTP id S236997AbiELOgu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 10:35:52 -0400
-X-Greylist: delayed 1669 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 12 May 2022 07:35:48 PDT
-Received: from hostingweb31-40.netsons.net (hostingweb31-40.netsons.net [89.40.174.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DED8218B;
-        Thu, 12 May 2022 07:35:46 -0700 (PDT)
-Received: from lmontsouris-655-1-15-199.w80-11.abo.wanadoo.fr ([80.11.122.199]:54250 helo=[192.168.1.105])
-        by hostingweb31.netsons.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <luca@lucaceresoli.net>)
-        id 1np9Tu-000GvQ-K8; Thu, 12 May 2022 16:07:54 +0200
-Message-ID: <615718f9-151e-20fb-fcb0-56063ae61ca6@lucaceresoli.net>
-Date:   Thu, 12 May 2022 16:07:51 +0200
+        Thu, 12 May 2022 10:36:50 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5379549F29;
+        Thu, 12 May 2022 07:36:49 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id bo5so4974282pfb.4;
+        Thu, 12 May 2022 07:36:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:from:content-transfer-encoding;
+        bh=vBCXkB1qSkIS16SbYowUF9XTh+lgeGc7WrxqFAqEQoI=;
+        b=eBimJOVi0jjQ+6pApezhKgthZsHwrX7D9plBjpPTiXj/EUp0KISAnLqaLVa/XsQzPp
+         4YQR0iUuMEGkifs4cR3ISAlXK26e3rdWYoyiqJ5626WmXqV/SUp6+FYgfQfkaxhclqYD
+         4pSyHHwkasI1X2uoRuDphQdXJwz1YbMQj61PqIzFwea02bPZ3JXbKXv6PTqOv30D/4en
+         iaRgVeC0sDAkpxrGjZwETPuZgi4tWTxCMkZhnak85iM1WizhLU7Gp5cGRQOvmL1q0eIY
+         eoxugRVI+yOoeuq8xArZLF+1zjjv2o24r6gcC5MBApFYZrsdCZRz5XIWcnjdvo0RB8Yl
+         nloQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:from:content-transfer-encoding;
+        bh=vBCXkB1qSkIS16SbYowUF9XTh+lgeGc7WrxqFAqEQoI=;
+        b=IrLfUpr8l+KIgRuhU6sdRkJzQi4thugCRChRwR0T9NHtHqf228VmCOcI8inbExyNEj
+         7C4AWJwTEq0sNOuybLKZbTV2a7HPtAeszL4CqWdKxKLRhIxPzvB94AKi8u0V00LMYtvM
+         AzErfNYBrgKDrhCmn+Qwra2G5DQsKLzS3O2khnxKs1+9uZqcffOA+osfgjsUUIw9DqQy
+         wRPPpU0QpOiYiclt1N4CkNlSQ7/Qhx+OZQWJTAekkzeUznNz/clvJVegHSMGOyJpTvFW
+         5o4YFo0bgRJ1Z60kPOjkAq/A4uGKPyW1GsPcnFhyokxoz57ncW9SVJ6CFrOC9lUiD6xK
+         36DA==
+X-Gm-Message-State: AOAM533IW+1CpASUcU23vp5nhflSmW87z4iNNzjwd1KmqNQILYdqppvG
+        ye2CaiRArND7gXQ+fKOBzW+n7Yw9lkIkmQ==
+X-Google-Smtp-Source: ABdhPJxG5hF3kDe8iW+C+xsOfGGd5qLYzePD4+p24NcnZ2gfawl52ThXEi7FlM7pl2q3JeqAMBC7sw==
+X-Received: by 2002:a63:c057:0:b0:3db:2558:3ea with SMTP id z23-20020a63c057000000b003db255803eamr35829pgi.222.1652366208755;
+        Thu, 12 May 2022 07:36:48 -0700 (PDT)
+Received: from [192.168.0.107] ([103.249.234.205])
+        by smtp.gmail.com with ESMTPSA id a78-20020a621a51000000b0050dc76281easm3876334pfa.196.2022.05.12.07.36.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 May 2022 07:36:48 -0700 (PDT)
+Message-ID: <4e6187a4-d0f8-4750-e407-e09cc1c91789@gmail.com>
+Date:   Thu, 12 May 2022 20:06:45 +0530
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: Re: [PATCH 1/2] PCI: dra7xx: Fix link removal on probe error
+Subject: [PATCH] spi: Doc fix - Describe add_lock and dma_map_dev in
+ spi_controller
 Content-Language: en-US
-To:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>
-Cc:     Saravana Kannan <saravanak@google.com>,
-        PCI <linux-pci@vger.kernel.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-omap <linux-omap@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Sekhar Nori <nsekhar@ti.com>
-References: <20211214221450.589884-1-luca@lucaceresoli.net>
- <CAL_Jsq+GQTcx1EGKHug2ZcDZufrKM-4k6PB0vQeTCTG42MHzvA@mail.gmail.com>
- <59a23c89-0810-eb28-acd9-7051ac34d438@lucaceresoli.net>
- <4579940c-27dc-733e-4022-ebea4671c839@lucaceresoli.net>
- <CAL_JsqJ5nr6xJoTv3A6UPMMDXhWKcwSEUA3ux3kK8OMWQxdc6w@mail.gmail.com>
- <YnvnNUrsCOUxMu8A@lpieralisi>
-From:   Luca Ceresoli <luca@lucaceresoli.net>
-In-Reply-To: <YnvnNUrsCOUxMu8A@lpieralisi>
+To:     Mark Brown <broonie@kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        "Shuah Khan (Linux)" <skhan@linuxfoundation.org>
+Cc:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org
+From:   Siddh Raman Pant <siddhpant.gh@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - hostingweb31.netsons.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - lucaceresoli.net
-X-Get-Message-Sender-Via: hostingweb31.netsons.net: authenticated_id: luca@lucaceresoli.net
-X-Authenticated-Sender: hostingweb31.netsons.net: luca@lucaceresoli.net
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Lorenzo,
+This fixes the corresponding warnings during building the docs.
 
-On 11/05/22 18:41, Lorenzo Pieralisi wrote:
-> On Sat, Jan 15, 2022 at 10:02:00AM -0600, Rob Herring wrote:
->> +Saravana
->>
->> On Tue, Jan 11, 2022 at 4:35 AM Luca Ceresoli <luca@lucaceresoli.net> wrote:
->>>
->>> Hi Rob,
->>>
->>> On 16/12/21 10:08, Luca Ceresoli wrote:
->>>> Hi Rob,
->>>>
->>>> thanks for the quick feedback!
->>>>
->>>> On 14/12/21 23:42, Rob Herring wrote:
->>>>> On Tue, Dec 14, 2021 at 4:15 PM Luca Ceresoli <luca@lucaceresoli.net> wrote:
->>>>>>
->>>>>> If a devm_phy_get() calls fails with phy_count==N (N > 0), then N links
->>>>>> have already been added by device_link_add() and won't be deleted by
->>>>>> device_link_del() because the code calls 'return' and not 'goto err_link'.
->>>>>>
->>>>>> Fix in a very simple way by doing all the devm_phy_get() calls before all
->>>>>> the device_link_add() calls.
->>>>>>
->>>>>> Fixes: 7a4db656a635 ("PCI: dra7xx: Create functional dependency between PCIe and PHY")
->>>>>> Signed-off-by: Luca Ceresoli <luca@lucaceresoli.net>
->>>>>> ---
->>>>>>  drivers/pci/controller/dwc/pci-dra7xx.c | 2 ++
->>>>>>  1 file changed, 2 insertions(+)
->>>>>>
->>>>>> diff --git a/drivers/pci/controller/dwc/pci-dra7xx.c b/drivers/pci/controller/dwc/pci-dra7xx.c
->>>>>> index f7f1490e7beb..2ccc53869e13 100644
->>>>>> --- a/drivers/pci/controller/dwc/pci-dra7xx.c
->>>>>> +++ b/drivers/pci/controller/dwc/pci-dra7xx.c
->>>>>> @@ -757,7 +757,9 @@ static int dra7xx_pcie_probe(struct platform_device *pdev)
->>>>>>                 phy[i] = devm_phy_get(dev, name);
->>>>>>                 if (IS_ERR(phy[i]))
->>>>>>                         return PTR_ERR(phy[i]);
->>>>>> +       }
->>>>>>
->>>>>> +       for (i = 0; i < phy_count; i++) {
->>>>>>                 link[i] = device_link_add(dev, &phy[i]->dev, DL_FLAG_STATELESS);
->>>>>
->>>>> I think this should happen automatically now with fw_devlink being
->>>>> enabled by default. Can you try?
->>>>
->>>> Do you mean removal should be done automatically? I think they are not
->>>> due to the DL_FLAG_STATELESS flag.
->>>
->>> I would love to have feedback because, as said, I think my patch is
->>> correct, but if I'm wrong (which might well be) I have to drop patch 1
->>> and rewrite patch 2 in a slightly more complex form.
->>
->> I mean that why do you need explicit dependency tracking here when
->> dependencies on a PHY should happen automatically now. IOW, what is
->> special about this driver and dependency?
-> 
-> Any update on this patch ? I think patch 2 can be merged, please
-> let me know if this one can be dropped.
+Signed-off-by: Siddh Raman Pant <siddhpant.gh@gmail.com>
+---
+ include/linux/spi/spi.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Thanks for the feedback! You would say yes, you can merge patch 2,
-except it probably does not even apply as it is written in a way that is
-based on the changes in patch 1.
-
-I could rewrite patch 2 to not depend on patch 1 of course, but it
-wouldn't make code simpler, perhaps more complex. And moreover the
-hardware that I used to have access to has phy_count==1 so I could never
-test the failing case, and sadly now I have no access to that hardware.
-
+diff --git a/include/linux/spi/spi.h b/include/linux/spi/spi.h
+index f0177f9b6..d361ba262 100644
+--- a/include/linux/spi/spi.h
++++ b/include/linux/spi/spi.h
+@@ -349,6 +349,7 @@ extern struct spi_device *spi_new_ancillary_device(struct spi_device *spi, u8 ch
+  * @max_message_size: function that returns the max message size for
+  *	a &spi_device; may be %NULL, so the default %SIZE_MAX will be used.
+  * @io_mutex: mutex for physical bus access
++ * @add_lock: mutex to avoid adding devices to the same chipselect
+  * @bus_lock_spinlock: spinlock for SPI bus locking
+  * @bus_lock_mutex: mutex for exclusion of multiple callers
+  * @bus_lock_flag: indicates that the SPI bus is locked for exclusive use
+@@ -363,6 +364,7 @@ extern struct spi_device *spi_new_ancillary_device(struct spi_device *spi, u8 ch
+  * @transfer: adds a message to the controller's transfer queue.
+  * @cleanup: frees controller-specific state
+  * @can_dma: determine whether this controller supports DMA
++ * @dma_map_dev: device which can be used for DMA mapping
+  * @queued: whether this controller is providing an internal message queue
+  * @kworker: pointer to thread struct for message pump
+  * @pump_messages: work struct for scheduling work to the message pump
 -- 
-Luca
+2.35.1
