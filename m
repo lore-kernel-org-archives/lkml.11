@@ -2,257 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBD25C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 13:57:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4D2EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 13:57:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354773AbiELN5N (ORCPT
+        id S1354798AbiELN5j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 09:57:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52696 "EHLO
+        Thu, 12 May 2022 09:57:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354780AbiELN46 (ORCPT
+        with ESMTP id S1354800AbiELN5f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 09:56:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAA381C6C81;
-        Thu, 12 May 2022 06:56:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58465B82834;
-        Thu, 12 May 2022 13:56:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E3BFC385B8;
-        Thu, 12 May 2022 13:56:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652363813;
-        bh=u0smFFjUMhTt/JBgvJi9NyfEjj+cWk3ypDQeMQ3aJQ4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=YQSjZ/8qzkUrg4jBFbJ0ShB7zfZdd5+Vz6ERJ0AfwP1CsLwbxnsUyOX0WZD2QZwxz
-         enYTZorYc+5wR27nsoX76nz3wjw9qNHrybHqm70Egb09wnOWMNPaOIju7I5C17wS01
-         0M31Rt/yoGjKYDvuxrs63VwAGhB8Hk06yMZthHINx7MuNheHwm11UqpzlWdKIwBheo
-         Wd2zR0EUPDgxWoHybXb6WkgP+1bMa/emh8qjnaKvZg4MHPB8Ax3I0g53tTvoGx8iyv
-         EhKLYRmTy5cdCN7xbt3MV3/Xkk/O0d0cmknxF2lmDTsTMGMibQ8+z9XkpZCB4kdUuq
-         YJ0E29+vf9nOg==
-From:   Josh Poimboeuf <jpoimboe@kernel.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
-        linux-s390@vger.kernel.org
-Subject: [PATCH v2] bug: Use normal relative pointers in 'struct bug_entry'
-Date:   Thu, 12 May 2022 06:56:23 -0700
-Message-Id: <f0e05be797a16f4fc2401eeb88c8450dcbe61df6.1652362951.git.jpoimboe@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Thu, 12 May 2022 09:57:35 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 833011C764D
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 06:57:17 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id t11-20020a17090ad50b00b001d95bf21996so7903172pju.2
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 06:57:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=bEMB8902D/xSU2Wdpg64G1D2JXiY+ZOywalt6UyCaAU=;
+        b=KBOVdXRXiA3SV/T+G1ZfRjvvRftP7tuv2XeCQJ4JMfONBt7Iem5S38vET1/BKiFv68
+         9T8Nump6nZmyPNrTqZqmyl3y69JddhrPpkRrs6H+obAVIs+fEh0p9pVc+iNrupcEJlh/
+         d/WWStFYFjNRTJA82nDajzuza8T28jdT/vfR4OHkZLxJVo/leY3RInh2WoZWIsMxpaKF
+         8fhEqE5EFo/Sw1VyuEtwC64/+pSFBuXRppH7Erm99JpJpjP1lIBV7WLnGx+b+4IgIpez
+         WNqXiXm34oc7pRN5YkNPMZDvFwIb1/UMx0N9zJdB2+Z0E9vzwqTdNXC8hxDhH8gJbpOT
+         dGZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=bEMB8902D/xSU2Wdpg64G1D2JXiY+ZOywalt6UyCaAU=;
+        b=u/qsqC2eZ5AdG2dYJYefKpW7wmjMXkwrO2/BMYDI5ICa6Ylx65CpXyZuFSVIs7GJ+9
+         4/5p5llnpa4OtnQQeZX3sC6W0plsj3GOsFDZt4dh0J7CHVDGhm5g1S/NSXxNuQ3SyNng
+         5buVjXlWknNSI/Zxb6oC26IGoF5DRdH2Qg5BduonqKzfWMHSh6vB4IR5tyi5XrhvrD0+
+         E+bhZb9vAPn+ovUIaWqv7hsZwL5mqCLVXtGFzi7t0gX162EwfVU1X1/JIOjNAXo9O97w
+         1Ani4TT8PUwGNZwZsLvTDlojMl8NdZu97dN1P5WzRp+bIdKmD4P8X8mvdjOgrZZ2Kj03
+         el2w==
+X-Gm-Message-State: AOAM533TmAFzNdJKkdI8xkABiXwe6+SDP4o/Z9WqRI9VjRAE/GBqwDJC
+        4i9umTCer6rP9qsp+kw3Q8Pu
+X-Google-Smtp-Source: ABdhPJxSLuAcsbVDDjyWjII+1YMoRHbRkN60hJS1s/nQ2Zdb0HS/vNX+LP2GdewUYC4YFMMcvDCZCw==
+X-Received: by 2002:a17:90b:38c7:b0:1dc:77aa:e3d5 with SMTP id nn7-20020a17090b38c700b001dc77aae3d5mr10963534pjb.51.1652363836958;
+        Thu, 12 May 2022 06:57:16 -0700 (PDT)
+Received: from thinkpad ([117.202.184.202])
+        by smtp.gmail.com with ESMTPSA id o24-20020a17090ad25800b001dcf49d92a1sm1861938pjw.28.2022.05.12.06.57.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 May 2022 06:57:16 -0700 (PDT)
+Date:   Thu, 12 May 2022 19:27:08 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Frank Li <Frank.Li@nxp.com>, Rob Herring <robh+dt@kernel.org>,
+        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 15/17] PCI: dwc: Introduce dma-ranges property support
+ for RC-host
+Message-ID: <20220512135708.GC35848@thinkpad>
+References: <20220503214638.1895-1-Sergey.Semin@baikalelectronics.ru>
+ <20220503214638.1895-16-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-Content-type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220503214638.1895-16-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With CONFIG_GENERIC_BUG_RELATIVE_POINTERS, the addr/file relative
-pointers are calculated weirdly: based on the beginning of the bug_entry
-struct address, rather than their respective pointer addresses.
+On Wed, May 04, 2022 at 12:46:36AM +0300, Serge Semin wrote:
+> In accordance with the generic PCIe Root Port DT-bindings the "dma-ranges"
+> property has the same format as the "ranges" property. The only difference
+> is in their semantics. The "dma-ranges" property describes the PCIe-to-CPU
+> memory mapping in opposite to the CPU-to-PCIe mapping of the "ranges"
+> property. Even though the DW PCIe controllers are normally equipped with
+> internal Address Translation Unit which inbound and outbound tables can be
+> used to implement both properties semantics, it was surprise for me to
+> discover that the host-related part of the DW PCIe driver currently
+> supports the "ranges" property only while the "dma-ranges" windows are
+> just ignored. Having the "dma-ranges" supported in the driver would be
+> very handy for the platforms, that don't tolerate the 1:1 CPU-PCIe memory
+> mapping and require customized the PCIe memory layout. So let's fix that
+> by introducing the "dma-ranges" property support.
+> 
+> First of all we suggest to rename the dw_pcie_prog_inbound_atu() method to
+> dw_pcie_prog_ep_inbound_atu() and create a new version of the
+> dw_pcie_prog_inbound_atu() function. Thus we'll have two methods for RC
+> and EP controllers respectively in the same way as it has been developed
+> for the outbound ATU setup methods.
+> 
+> Secondly aside with the memory window index and type the new
+> dw_pcie_prog_inbound_atu() function will accept CPU address, PCIe address
+> and size as its arguments. These parameters define the PCIe and CPU memory
+> ranges which will be used to setup the respective inbound ATU mapping. The
+> passed parameters need to be verified against the ATU ranges constraints
+> in the same way as it is done for the outbound ranges.
+> 
+> Finally the DMA-ranges detected for the PCIe controller need to be
+> converted into the inbound ATU entries during the host controller
+> initialization procedure. It will be done in the framework of the
+> dw_pcie_iatu_setup() method. Note before setting the inbound ranges up we
+> need to disable all the inbound ATU entries in order to prevent unexpected
+> PCIe TLPs translations defined by some third party software like
+> bootloader.
+> 
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> ---
+>  .../pci/controller/dwc/pcie-designware-ep.c   |  4 +-
+>  .../pci/controller/dwc/pcie-designware-host.c | 32 ++++++++++-
+>  drivers/pci/controller/dwc/pcie-designware.c  | 57 ++++++++++++++++++-
+>  drivers/pci/controller/dwc/pcie-designware.h  |  6 +-
+>  4 files changed, 90 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/pci/controller/dwc/pcie-designware-ep.c b/drivers/pci/controller/dwc/pcie-designware-ep.c
+> index c62640201246..9b0540cfa9e8 100644
+> --- a/drivers/pci/controller/dwc/pcie-designware-ep.c
+> +++ b/drivers/pci/controller/dwc/pcie-designware-ep.c
+> @@ -167,8 +167,8 @@ static int dw_pcie_ep_inbound_atu(struct dw_pcie_ep *ep, u8 func_no, int type,
+>  		return -EINVAL;
+>  	}
+>  
+> -	ret = dw_pcie_prog_inbound_atu(pci, func_no, free_win, type,
+> -				       cpu_addr, bar);
+> +	ret = dw_pcie_prog_ep_inbound_atu(pci, func_no, free_win, type,
+> +					  cpu_addr, bar);
+>  	if (ret < 0) {
+>  		dev_err(pci->dev, "Failed to program IB window\n");
+>  		return ret;
+> diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
+> index 7caca6c575a5..9cb406f5c185 100644
+> --- a/drivers/pci/controller/dwc/pcie-designware-host.c
+> +++ b/drivers/pci/controller/dwc/pcie-designware-host.c
+> @@ -612,12 +612,15 @@ static int dw_pcie_iatu_setup(struct pcie_port *pp)
+>  	}
+>  
+>  	/*
+> -	 * Ensure all outbound windows are disabled before proceeding with
+> -	 * the MEM/IO ranges setups.
+> +	 * Ensure all out/inbound windows are disabled before proceeding with
+> +	 * the MEM/IO (dma-)ranges setups.
+>  	 */
+>  	for (i = 0; i < pci->num_ob_windows; i++)
+>  		dw_pcie_disable_atu(pci, PCIE_ATU_REGION_DIR_OB, i);
+>  
+> +	for (i = 0; i < pci->num_ib_windows; i++)
+> +		dw_pcie_disable_atu(pci, PCIE_ATU_REGION_DIR_IB, i);
+> +
+>  	i = 0;
+>  	resource_list_for_each_entry(entry, &pp->bridge->windows) {
+>  		if (resource_type(entry->res) != IORESOURCE_MEM)
+> @@ -654,9 +657,32 @@ static int dw_pcie_iatu_setup(struct pcie_port *pp)
+>  	}
+>  
+>  	if (pci->num_ob_windows <= i)
+> -		dev_warn(pci->dev, "Resources exceed number of ATU entries (%d)\n",
+> +		dev_warn(pci->dev, "Ranges exceed outbound iATU size (%d)\n",
+>  			 pci->num_ob_windows);
+>  
+> +	i = 0;
+> +	resource_list_for_each_entry(entry, &pp->bridge->dma_ranges) {
+> +		if (resource_type(entry->res) != IORESOURCE_MEM)
+> +			continue;
+> +
+> +		if (pci->num_ib_windows <= i)
+> +			break;
+> +
+> +		ret = dw_pcie_prog_inbound_atu(pci, i++, PCIE_ATU_TYPE_MEM,
+> +					       entry->res->start,
+> +					       entry->res->start - entry->offset,
+> +					       resource_size(entry->res));
+> +		if (ret) {
+> +			dev_err(pci->dev, "Failed to set DMA range %pr\n",
+> +				entry->res);
+> +			return ret;
+> +		}
+> +	}
+> +
+> +	if (pci->num_ib_windows <= i)
+> +		dev_warn(pci->dev, "Dma-ranges exceed inbound iATU size (%u)\n",
+> +			 pci->num_ib_windows);
+> +
+>  	return 0;
+>  }
+>  
+> diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
+> index 747e252c09e6..33718ed6c511 100644
+> --- a/drivers/pci/controller/dwc/pcie-designware.c
+> +++ b/drivers/pci/controller/dwc/pcie-designware.c
+> @@ -397,8 +397,61 @@ static inline void dw_pcie_writel_atu_ib(struct dw_pcie *pci, u32 index, u32 reg
+>  	dw_pcie_writel_atu(pci, PCIE_ATU_REGION_DIR_IB, index, reg, val);
+>  }
+>  
+> -int dw_pcie_prog_inbound_atu(struct dw_pcie *pci, u8 func_no, int index,
+> -			     int type, u64 cpu_addr, u8 bar)
+> +int dw_pcie_prog_inbound_atu(struct dw_pcie *pci, int index, int type,
+> +			     u64 cpu_addr, u64 pci_addr, u64 size)
+> +{
+> +	u64 limit_addr = pci_addr + size - 1;
+> +	u32 retries, val;
+> +
+> +	if ((limit_addr & ~pci->region_limit) != (pci_addr & ~pci->region_limit) ||
+> +	    !IS_ALIGNED(cpu_addr, pci->region_align) ||
+> +	    !IS_ALIGNED(pci_addr, pci->region_align) ||
+> +	    !IS_ALIGNED(size, pci->region_align) ||
 
-Make the relative pointers less surprising to both humans and tools by
-calculating them the normal way.
+Why do you want the size to be aligned? What if I want to transfer a small size
+buffer?
 
-Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Sven Schnelle <svens@linux.ibm.com> # s390
-Reviewed-by: Mark Rutland <mark.rutland@arm.com>
-Tested-by: Mark Rutland <mark.rutland@arm.com> [arm64]
-Acked-by: Michael Ellerman <mpe@ellerman.id.au> (powerpc)
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
----
-v2:
-- fix ppc64le C macros (and actually test them)
+Same question applies to outbound programming as well.
 
- arch/arm64/include/asm/asm-bug.h |  4 ++--
- arch/powerpc/include/asm/bug.h   | 14 ++++++++------
- arch/riscv/include/asm/bug.h     |  4 ++--
- arch/s390/include/asm/bug.h      |  5 +++--
- arch/x86/include/asm/bug.h       |  2 +-
- lib/bug.c                        | 15 +++++++--------
- 6 files changed, 23 insertions(+), 21 deletions(-)
+Thanks,
+Mani
 
-diff --git a/arch/arm64/include/asm/asm-bug.h b/arch/arm64/include/asm/asm-bug.h
-index 03f52f84a4f3..c762038ba400 100644
---- a/arch/arm64/include/asm/asm-bug.h
-+++ b/arch/arm64/include/asm/asm-bug.h
-@@ -14,7 +14,7 @@
- 	14472:	.string file;					\
- 		.popsection;					\
- 								\
--		.long 14472b - 14470b;				\
-+		.long 14472b - .;				\
- 		.short line;
- #else
- #define _BUGVERBOSE_LOCATION(file, line)
-@@ -25,7 +25,7 @@
- #define __BUG_ENTRY(flags) 				\
- 		.pushsection __bug_table,"aw";		\
- 		.align 2;				\
--	14470:	.long 14471f - 14470b;			\
-+	14470:	.long 14471f - .;			\
- _BUGVERBOSE_LOCATION(__FILE__, __LINE__)		\
- 		.short flags; 				\
- 		.popsection;				\
-diff --git a/arch/powerpc/include/asm/bug.h b/arch/powerpc/include/asm/bug.h
-index ecbae1832de3..61a4736355c2 100644
---- a/arch/powerpc/include/asm/bug.h
-+++ b/arch/powerpc/include/asm/bug.h
-@@ -13,7 +13,8 @@
- #ifdef CONFIG_DEBUG_BUGVERBOSE
- .macro __EMIT_BUG_ENTRY addr,file,line,flags
- 	 .section __bug_table,"aw"
--5001:	 .4byte \addr - 5001b, 5002f - 5001b
-+5001:	 .4byte \addr - .
-+	 .4byte 5002f - .
- 	 .short \line, \flags
- 	 .org 5001b+BUG_ENTRY_SIZE
- 	 .previous
-@@ -24,7 +25,7 @@
- #else
- .macro __EMIT_BUG_ENTRY addr,file,line,flags
- 	 .section __bug_table,"aw"
--5001:	 .4byte \addr - 5001b
-+5001:	 .4byte \addr - .
- 	 .short \flags
- 	 .org 5001b+BUG_ENTRY_SIZE
- 	 .previous
-@@ -49,15 +50,16 @@
- #ifdef CONFIG_DEBUG_BUGVERBOSE
- #define _EMIT_BUG_ENTRY				\
- 	".section __bug_table,\"aw\"\n"		\
--	"2:\t.4byte 1b - 2b, %0 - 2b\n"		\
--	"\t.short %1, %2\n"			\
-+	"2:	.4byte 1b - .\n"		\
-+	"	.4byte %0 - .\n"		\
-+	"	.short %1, %2\n"		\
- 	".org 2b+%3\n"				\
- 	".previous\n"
- #else
- #define _EMIT_BUG_ENTRY				\
- 	".section __bug_table,\"aw\"\n"		\
--	"2:\t.4byte 1b - 2b\n"			\
--	"\t.short %2\n"				\
-+	"2:	.4byte 1b - .\n"		\
-+	"	.short %2\n"			\
- 	".org 2b+%3\n"				\
- 	".previous\n"
- #endif
-diff --git a/arch/riscv/include/asm/bug.h b/arch/riscv/include/asm/bug.h
-index d3804a2f9aad..1aaea81fb141 100644
---- a/arch/riscv/include/asm/bug.h
-+++ b/arch/riscv/include/asm/bug.h
-@@ -30,8 +30,8 @@
- typedef u32 bug_insn_t;
- 
- #ifdef CONFIG_GENERIC_BUG_RELATIVE_POINTERS
--#define __BUG_ENTRY_ADDR	RISCV_INT " 1b - 2b"
--#define __BUG_ENTRY_FILE	RISCV_INT " %0 - 2b"
-+#define __BUG_ENTRY_ADDR	RISCV_INT " 1b - ."
-+#define __BUG_ENTRY_FILE	RISCV_INT " %0 - ."
- #else
- #define __BUG_ENTRY_ADDR	RISCV_PTR " 1b"
- #define __BUG_ENTRY_FILE	RISCV_PTR " %0"
-diff --git a/arch/s390/include/asm/bug.h b/arch/s390/include/asm/bug.h
-index 0b25f28351ed..aebe1e22c7be 100644
---- a/arch/s390/include/asm/bug.h
-+++ b/arch/s390/include/asm/bug.h
-@@ -15,7 +15,8 @@
- 		"1:	.asciz	\""__FILE__"\"\n"		\
- 		".previous\n"					\
- 		".section __bug_table,\"awM\",@progbits,%2\n"	\
--		"2:	.long	0b-2b,1b-2b\n"			\
-+		"2:	.long	0b-.\n"				\
-+		"	.long	1b-.\n"				\
- 		"	.short	%0,%1\n"			\
- 		"	.org	2b+%2\n"			\
- 		".previous\n"					\
-@@ -30,7 +31,7 @@
- 	asm_inline volatile(					\
- 		"0:	mc	0,0\n"				\
- 		".section __bug_table,\"awM\",@progbits,%1\n"	\
--		"1:	.long	0b-1b\n"			\
-+		"1:	.long	0b-.\n"				\
- 		"	.short	%0\n"				\
- 		"	.org	1b+%1\n"			\
- 		".previous\n"					\
-diff --git a/arch/x86/include/asm/bug.h b/arch/x86/include/asm/bug.h
-index aaf0cb0db4ae..a3ec87d198ac 100644
---- a/arch/x86/include/asm/bug.h
-+++ b/arch/x86/include/asm/bug.h
-@@ -18,7 +18,7 @@
- #ifdef CONFIG_X86_32
- # define __BUG_REL(val)	".long " __stringify(val)
- #else
--# define __BUG_REL(val)	".long " __stringify(val) " - 2b"
-+# define __BUG_REL(val)	".long " __stringify(val) " - ."
- #endif
- 
- #ifdef CONFIG_DEBUG_BUGVERBOSE
-diff --git a/lib/bug.c b/lib/bug.c
-index 45a0584f6541..c223a2575b72 100644
---- a/lib/bug.c
-+++ b/lib/bug.c
-@@ -6,8 +6,7 @@
- 
-   CONFIG_BUG - emit BUG traps.  Nothing happens without this.
-   CONFIG_GENERIC_BUG - enable this code.
--  CONFIG_GENERIC_BUG_RELATIVE_POINTERS - use 32-bit pointers relative to
--	the containing struct bug_entry for bug_addr and file.
-+  CONFIG_GENERIC_BUG_RELATIVE_POINTERS - use 32-bit relative pointers for bug_addr and file
-   CONFIG_DEBUG_BUGVERBOSE - emit full file+line information for each BUG
- 
-   CONFIG_BUG and CONFIG_DEBUG_BUGVERBOSE are potentially user-settable
-@@ -53,10 +52,10 @@ extern struct bug_entry __start___bug_table[], __stop___bug_table[];
- 
- static inline unsigned long bug_addr(const struct bug_entry *bug)
- {
--#ifndef CONFIG_GENERIC_BUG_RELATIVE_POINTERS
--	return bug->bug_addr;
-+#ifdef CONFIG_GENERIC_BUG_RELATIVE_POINTERS
-+	return (unsigned long)&bug->bug_addr_disp + bug->bug_addr_disp;
- #else
--	return (unsigned long)bug + bug->bug_addr_disp;
-+	return bug->bug_addr;
- #endif
- }
- 
-@@ -131,10 +130,10 @@ void bug_get_file_line(struct bug_entry *bug, const char **file,
- 		       unsigned int *line)
- {
- #ifdef CONFIG_DEBUG_BUGVERBOSE
--#ifndef CONFIG_GENERIC_BUG_RELATIVE_POINTERS
--	*file = bug->file;
-+#ifdef CONFIG_GENERIC_BUG_RELATIVE_POINTERS
-+	*file = (const char *)&bug->file_disp + bug->file_disp;
- #else
--	*file = (const char *)bug + bug->file_disp;
-+	*file = bug->file;
- #endif
- 	*line = bug->line;
- #else
 -- 
-2.34.1
-
+மணிவண்ணன் சதாசிவம்
