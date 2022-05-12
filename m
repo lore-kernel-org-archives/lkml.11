@@ -2,193 +2,480 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EDD5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 09:23:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F42DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 09:24:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351981AbiELJXb (ORCPT
+        id S1351948AbiELJYM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 05:23:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39728 "EHLO
+        Thu, 12 May 2022 05:24:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351949AbiELJWl (ORCPT
+        with ESMTP id S1351986AbiELJXh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 05:22:41 -0400
-X-Greylist: delayed 504 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 12 May 2022 02:22:28 PDT
-Received: from mta-01.yadro.com (mta-02.yadro.com [89.207.88.252])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE95D52E5A;
-        Thu, 12 May 2022 02:22:28 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mta-01.yadro.com (Postfix) with ESMTP id EBDDD41263;
-        Thu, 12 May 2022 09:14:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=yadro.com; h=
-        content-type:content-type:content-transfer-encoding:mime-version
-        :x-mailer:message-id:date:date:subject:subject:from:from
-        :received:received:received:received; s=mta-01; t=1652346841; x=
-        1654161242; bh=6CKUUGiEfJJY6nOsVYJXO5jvAWuz+fxsRrRh0XO1fNg=; b=V
-        X+Jz3UAq7V11zajUqpOBhdlUIfASwYAih5jXFp7KQU1aViL9ltB3LsqgW38qKkvh
-        /2Ei6QBc9grESkv96yB6jCKL/dP9jyoHzq8bMBB+B6ItkiNPadwbES2cxJsVRb/6
-        mZYfZNZ+TYR8FPBHAhxZyf1kgWZgILeJiCmUayzYFA=
-X-Virus-Scanned: amavisd-new at yadro.com
-Received: from mta-01.yadro.com ([127.0.0.1])
-        by localhost (mta-01.yadro.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id SpVT0JrDacfB; Thu, 12 May 2022 12:14:01 +0300 (MSK)
-Received: from T-EXCH-02.corp.yadro.com (t-exch-02.corp.yadro.com [172.17.10.102])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mta-01.yadro.com (Postfix) with ESMTPS id 4F6C74125E;
-        Thu, 12 May 2022 12:14:01 +0300 (MSK)
-Received: from T-Exch-05.corp.yadro.com (172.17.10.109) by
- T-EXCH-02.corp.yadro.com (172.17.10.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
- 15.1.669.32; Thu, 12 May 2022 12:14:01 +0300
-Received: from v.yadro.com (10.199.17.194) by T-Exch-05.corp.yadro.com
- (172.17.10.109) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3; Thu, 12 May 2022
- 12:14:00 +0300
-From:   Viacheslav Mitrofanov <v.v.mitrofanov@yadro.com>
-To:     Green Wan <green.wan@sifive.com>, Vinod Koul <vkoul@kernel.org>,
-        <dmaengine@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <david.abdurachmanov@sifive.com>, <linux@yadro.com>,
-        Viacheslav Mitrofanov <v.v.mitrofanov@yadro.com>
-Subject: [PATCH] dmaengine: sf-pdma: Add multithread support for a DMA channel
-Date:   Thu, 12 May 2022 12:13:27 +0300
-Message-ID: <20220512091327.349563-1-v.v.mitrofanov@yadro.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 12 May 2022 05:23:37 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D7EE5D1B7;
+        Thu, 12 May 2022 02:23:15 -0700 (PDT)
+X-UUID: be08157d067b43c4aaa515ee5bf44d24-20220512
+X-CID-P-RULE: Spam_GS6885AD
+X-CID-O-INFO: VERSION:1.1.4,REQID:85f3342c-21cc-42de-907e-6e9592ebb177,OB:0,LO
+        B:0,IP:0,URL:25,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS6885AD,
+        ACTION:quarantine,TS:120
+X-CID-INFO: VERSION:1.1.4,REQID:85f3342c-21cc-42de-907e-6e9592ebb177,OB:0,LOB:
+        0,IP:0,URL:25,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,AC
+        TION:quarantine,TS:120
+X-CID-META: VersionHash:faefae9,CLOUDID:e237f7f1-ab23-4aed-a67b-f96514452486,C
+        OID:19bfa590fc26,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
+        ,QS:0,BEC:nil
+X-UUID: be08157d067b43c4aaa515ee5bf44d24-20220512
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <moudy.ho@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1424953473; Thu, 12 May 2022 17:23:09 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 12 May 2022 17:23:07 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 12 May 2022 17:23:07 +0800
+From:   Moudy Ho <moudy.ho@mediatek.com>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>
+CC:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Rob Landley <rob@landley.net>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        <tfiga@chromium.org>, <drinkcat@chromium.org>,
+        <pihsun@chromium.org>, <hsinyi@google.com>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        daoyuan huang <daoyuan.huang@mediatek.com>,
+        Ping-Hsun Wu <ping-hsun.wu@mediatek.com>,
+        <allen-kh.cheng@mediatek.com>, <xiandong.wang@mediatek.com>,
+        <randy.wu@mediatek.com>, <moudy.ho@mediatek.com>,
+        <jason-jh.lin@mediatek.com>, <roy-cw.yeh@mediatek.com>,
+        <river.cheng@mediatek.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <cellopoint.kai@gmail.com>
+Subject: [PATCH v15 1/3] dt-binding: mediatek: add bindings for MediaTek MDP3 components
+Date:   Thu, 12 May 2022 17:23:04 +0800
+Message-ID: <20220512092306.6895-2-moudy.ho@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220512092306.6895-1-moudy.ho@mediatek.com>
+References: <20220512092306.6895-1-moudy.ho@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.199.17.194]
-X-ClientProxiedBy: T-EXCH-01.corp.yadro.com (172.17.10.101) To
- T-Exch-05.corp.yadro.com (172.17.10.109)
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When we get a DMA channel and try to use it in multiple threads it
-will cause oops and hanging the system.
+This patch adds DT binding documents for Media Data Path 3 (MDP3)
+a unit in multimedia system combined with several components and
+used for scaling and color format convert.
 
-% echo 64 > /sys/module/dmatest/parameters/threads_per_chan
-% echo 10000 > /sys/module/dmatest/parameters/iterations
-% echo 1 > /sys/module/dmatest/parameters/run
-[   89.480664] Unable to handle kernel NULL pointer dereference at virtual
-               address 00000000000000a0
-[   89.488725] Oops [#1]
-[   89.494708] CPU: 2 PID: 1008 Comm: dma0chan0-copy0 Not tainted
-               5.17.0-rc5
-[   89.509385] epc : vchan_find_desc+0x32/0x46
-[   89.513553]  ra : sf_pdma_tx_status+0xca/0xd6
-
-This happens because of data race. Each thread rewrite channels's
-descriptor as soon as device_prep_dma_memcpy() is called. It leads to the
-situation when the driver thinks that it uses right descriptor that
-actually is freed or substituted for other one.
-
-With current fixes a descriptor changes it's value only when it has
-been used. A new descriptor is acquired from vc->desc_issued queue that
-is already filled with descriptors that are ready to be sent. Threads
-have no direct access to DMA channel descriptor, now it is just possible
-to queue a descriptor for further processing.
-
-Fixes: 6973886ad58e ("dmaengine: sf-pdma: add platform DMA support for HiFive Unleashed A00")
-Signed-off-by: Viacheslav Mitrofanov <v.v.mitrofanov@yadro.com>
+Signed-off-by: Moudy Ho <moudy.ho@mediatek.com>
 ---
- drivers/dma/sf-pdma/sf-pdma.c | 44 ++++++++++++++++++++++++-----------
- 1 file changed, 30 insertions(+), 14 deletions(-)
+ .../bindings/media/mediatek,mdp3-rdma.yaml    | 85 +++++++++++++++++++
+ .../bindings/media/mediatek,mdp3-rsz.yaml     | 65 ++++++++++++++
+ .../bindings/media/mediatek,mdp3-wrot.yaml    | 70 +++++++++++++++
+ .../bindings/soc/mediatek/mediatek,ccorr.yaml | 58 +++++++++++++
+ .../bindings/soc/mediatek/mediatek,wdma.yaml  | 71 ++++++++++++++++
+ 5 files changed, 349 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/media/mediatek,mdp3-rdma.yaml
+ create mode 100644 Documentation/devicetree/bindings/media/mediatek,mdp3-rsz.yaml
+ create mode 100644 Documentation/devicetree/bindings/media/mediatek,mdp3-wrot.yaml
+ create mode 100644 Documentation/devicetree/bindings/soc/mediatek/mediatek,ccorr.yaml
+ create mode 100644 Documentation/devicetree/bindings/soc/mediatek/mediatek,wdma.yaml
 
-diff --git a/drivers/dma/sf-pdma/sf-pdma.c b/drivers/dma/sf-pdma/sf-pdma.c
-index f12606aeff87..70bb032c59c2 100644
---- a/drivers/dma/sf-pdma/sf-pdma.c
-+++ b/drivers/dma/sf-pdma/sf-pdma.c
-@@ -52,16 +52,6 @@ static inline struct sf_pdma_desc *to_sf_pdma_desc(struct virt_dma_desc *vd)
- static struct sf_pdma_desc *sf_pdma_alloc_desc(struct sf_pdma_chan *chan)
- {
- 	struct sf_pdma_desc *desc;
--	unsigned long flags;
--
--	spin_lock_irqsave(&chan->lock, flags);
--
--	if (chan->desc && !chan->desc->in_use) {
--		spin_unlock_irqrestore(&chan->lock, flags);
--		return chan->desc;
--	}
--
--	spin_unlock_irqrestore(&chan->lock, flags);
- 
- 	desc = kzalloc(sizeof(*desc), GFP_NOWAIT);
- 	if (!desc)
-@@ -111,7 +101,6 @@ sf_pdma_prep_dma_memcpy(struct dma_chan *dchan,	dma_addr_t dest, dma_addr_t src,
- 	desc->async_tx = vchan_tx_prep(&chan->vchan, &desc->vdesc, flags);
- 
- 	spin_lock_irqsave(&chan->vchan.lock, iflags);
--	chan->desc = desc;
- 	sf_pdma_fill_desc(desc, dest, src, len);
- 	spin_unlock_irqrestore(&chan->vchan.lock, iflags);
- 
-@@ -170,11 +159,17 @@ static size_t sf_pdma_desc_residue(struct sf_pdma_chan *chan,
- 	unsigned long flags;
- 	u64 residue = 0;
- 	struct sf_pdma_desc *desc;
--	struct dma_async_tx_descriptor *tx;
-+	struct dma_async_tx_descriptor *tx = NULL;
- 
- 	spin_lock_irqsave(&chan->vchan.lock, flags);
- 
--	tx = &chan->desc->vdesc.tx;
-+	list_for_each_entry(vd, &chan->vchan.desc_submitted, node)
-+		if (vd->tx.cookie == cookie)
-+			tx = &vd->tx;
+diff --git a/Documentation/devicetree/bindings/media/mediatek,mdp3-rdma.yaml b/Documentation/devicetree/bindings/media/mediatek,mdp3-rdma.yaml
+new file mode 100644
+index 000000000000..4fe704e476dc
+--- /dev/null
++++ b/Documentation/devicetree/bindings/media/mediatek,mdp3-rdma.yaml
+@@ -0,0 +1,85 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/media/mediatek,mdp3-rdma.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+	if (!tx)
-+		goto out;
++title: Mediatek Read Direct Memory Access
 +
- 	if (cookie == tx->chan->completed_cookie)
- 		goto out;
- 
-@@ -241,6 +236,19 @@ static void sf_pdma_enable_request(struct sf_pdma_chan *chan)
- 	writel(v, regs->ctrl);
- }
- 
-+static struct sf_pdma_desc *sf_pdma_get_first_pending_desc(struct sf_pdma_chan *chan)
-+{
-+	struct virt_dma_chan *vchan = &chan->vchan;
-+	struct virt_dma_desc *vdesc;
++maintainers:
++  - Matthias Brugger <matthias.bgg@gmail.com>
++  - Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
 +
-+	if (list_empty(&vchan->desc_issued))
-+		return NULL;
++description: |
++  Mediatek Read Direct Memory Access(RDMA) component used to do read DMA.
++  It contains one line buffer to store the sufficient pixel data, and
++  must be siblings to the central MMSYS_CONFIG node.
++  For a description of the MMSYS_CONFIG binding, see
++  Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
++  for details.
 +
-+	vdesc = list_first_entry(&vchan->desc_issued, struct virt_dma_desc, node);
++properties:
++  compatible:
++    items:
++      - const: mediatek,mt8183-mdp3-rdma
 +
-+	return container_of(vdesc, struct sf_pdma_desc, vdesc);
-+}
++  reg:
++    maxItems: 1
 +
- static void sf_pdma_xfer_desc(struct sf_pdma_chan *chan)
- {
- 	struct sf_pdma_desc *desc = chan->desc;
-@@ -268,8 +276,11 @@ static void sf_pdma_issue_pending(struct dma_chan *dchan)
- 
- 	spin_lock_irqsave(&chan->vchan.lock, flags);
- 
--	if (vchan_issue_pending(&chan->vchan) && chan->desc)
-+	if ((chan->desc == NULL) && vchan_issue_pending(&chan->vchan)) {
-+		/* vchan_issue_pending has made a check that desc in not NULL */
-+		chan->desc = sf_pdma_get_first_pending_desc(chan);
- 		sf_pdma_xfer_desc(chan);
-+	}
- 
- 	spin_unlock_irqrestore(&chan->vchan.lock, flags);
- }
-@@ -298,6 +309,11 @@ static void sf_pdma_donebh_tasklet(struct tasklet_struct *t)
- 	spin_lock_irqsave(&chan->vchan.lock, flags);
- 	list_del(&chan->desc->vdesc.node);
- 	vchan_cookie_complete(&chan->desc->vdesc);
++  mediatek,gce-client-reg:
++    $ref: '/schemas/types.yaml#/definitions/phandle-array'
++    items:
++      items:
++        - description: phandle of GCE
++        - description: GCE subsys id
++        - description: register offset
++        - description: register size
++    description: The register of client driver can be configured by gce with
++      4 arguments defined in this property. Each GCE subsys id is mapping to
++      a client defined in the header include/dt-bindings/gce/<chip>-gce.h.
 +
-+	chan->desc = sf_pdma_get_first_pending_desc(chan);
-+	if (chan->desc)
-+		sf_pdma_xfer_desc(chan);
++  power-domains:
++    maxItems: 1
 +
- 	spin_unlock_irqrestore(&chan->vchan.lock, flags);
- }
- 
++  clocks:
++    items:
++      - description: RDMA clock
++      - description: RSZ clock
++
++  iommus:
++    maxItems: 1
++
++  mboxes:
++    items:
++      - description: used for 1st data pipe from RDMA
++      - description: used for 2nd data pipe from RDMA
++
++required:
++  - compatible
++  - reg
++  - mediatek,gce-client-reg
++  - power-domains
++  - clocks
++  - iommus
++  - mboxes
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/mt8183-clk.h>
++    #include <dt-bindings/gce/mt8183-gce.h>
++    #include <dt-bindings/power/mt8183-power.h>
++    #include <dt-bindings/memory/mt8183-larb-port.h>
++
++    mdp3_rdma0: mdp3-rdma0@14001000 {
++      compatible = "mediatek,mt8183-mdp3-rdma";
++      reg = <0x14001000 0x1000>;
++      mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x1000 0x1000>;
++      power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
++      clocks = <&mmsys CLK_MM_MDP_RDMA0>,
++               <&mmsys CLK_MM_MDP_RSZ1>;
++      iommus = <&iommu>;
++      mboxes = <&gce 20 CMDQ_THR_PRIO_LOWEST>,
++               <&gce 21 CMDQ_THR_PRIO_LOWEST>;
++    };
+diff --git a/Documentation/devicetree/bindings/media/mediatek,mdp3-rsz.yaml b/Documentation/devicetree/bindings/media/mediatek,mdp3-rsz.yaml
+new file mode 100644
+index 000000000000..7b566fbec3c0
+--- /dev/null
++++ b/Documentation/devicetree/bindings/media/mediatek,mdp3-rsz.yaml
+@@ -0,0 +1,65 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/media/mediatek,mdp3-rsz.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Mediatek Resizer
++
++maintainers:
++  - Matthias Brugger <matthias.bgg@gmail.com>
++  - Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
++
++description: |
++  One of Media Data Path 3 (MDP3) components used to do frame resizing.
++
++properties:
++  compatible:
++    items:
++      - enum:
++          - mediatek,mt8183-mdp3-rsz
++
++  reg:
++    maxItems: 1
++
++  mediatek,gce-client-reg:
++    $ref: /schemas/types.yaml#/definitions/phandle-array
++    items:
++      items:
++        - description: phandle of GCE
++        - description: GCE subsys id
++        - description: register offset
++        - description: register size
++    description: The register of client driver can be configured by gce with
++      4 arguments defined in this property. Each GCE subsys id is mapping to
++      a client defined in the header include/dt-bindings/gce/<chip>-gce.h.
++
++  clocks:
++    minItems: 1
++
++required:
++  - compatible
++  - reg
++  - mediatek,gce-client-reg
++  - clocks
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/mt8183-clk.h>
++    #include <dt-bindings/gce/mt8183-gce.h>
++
++    mdp3_rsz0: mdp3-rsz0@14003000 {
++      compatible = "mediatek,mt8183-mdp3-rsz";
++      reg = <0x14003000 0x1000>;
++      mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x3000 0x1000>;
++      clocks = <&mmsys CLK_MM_MDP_RSZ0>;
++    };
++
++    mdp3_rsz1: mdp3-rsz1@14004000 {
++      compatible = "mediatek,mt8183-mdp3-rsz";
++      reg = <0x14004000 0x1000>;
++      mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x4000 0x1000>;
++      clocks = <&mmsys CLK_MM_MDP_RSZ1>;
++    };
+diff --git a/Documentation/devicetree/bindings/media/mediatek,mdp3-wrot.yaml b/Documentation/devicetree/bindings/media/mediatek,mdp3-wrot.yaml
+new file mode 100644
+index 000000000000..5481d4e43315
+--- /dev/null
++++ b/Documentation/devicetree/bindings/media/mediatek,mdp3-wrot.yaml
+@@ -0,0 +1,70 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/media/mediatek,mdp3-wrot.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Mediatek Write DMA with Rotation
++
++maintainers:
++  - Matthias Brugger <matthias.bgg@gmail.com>
++  - Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
++
++description: |
++  One of Media Data Path 3 (MDP3) components used to write DMA with frame rotation.
++
++properties:
++  compatible:
++    items:
++      - enum:
++          - mediatek,mt8183-mdp3-wrot
++
++  reg:
++    maxItems: 1
++
++  mediatek,gce-client-reg:
++    $ref: /schemas/types.yaml#/definitions/phandle-array
++    items:
++      items:
++        - description: phandle of GCE
++        - description: GCE subsys id
++        - description: register offset
++        - description: register size
++    description: The register of client driver can be configured by gce with
++      4 arguments defined in this property. Each GCE subsys id is mapping to
++      a client defined in the header include/dt-bindings/gce/<chip>-gce.h.
++
++  power-domains:
++    maxItems: 1
++
++  clocks:
++    minItems: 1
++
++  iommus:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - mediatek,gce-client-reg
++  - power-domains
++  - clocks
++  - iommus
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/mt8183-clk.h>
++    #include <dt-bindings/gce/mt8183-gce.h>
++    #include <dt-bindings/power/mt8183-power.h>
++    #include <dt-bindings/memory/mt8183-larb-port.h>
++
++    mdp3_wrot0: mdp3-wrot0@14005000 {
++      compatible = "mediatek,mt8183-mdp3-wrot";
++      reg = <0x14005000 0x1000>;
++      mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x5000 0x1000>;
++      power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
++      clocks = <&mmsys CLK_MM_MDP_WROT0>;
++      iommus = <&iommu>;
++    };
+diff --git a/Documentation/devicetree/bindings/soc/mediatek/mediatek,ccorr.yaml b/Documentation/devicetree/bindings/soc/mediatek/mediatek,ccorr.yaml
+new file mode 100644
+index 000000000000..20d02cb4ad0a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/soc/mediatek/mediatek,ccorr.yaml
+@@ -0,0 +1,58 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/soc/mediatek/mediatek,ccorr.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Mediatek color correction
++
++maintainers:
++  - Matthias Brugger <matthias.bgg@gmail.com>
++  - Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
++
++description: |
++  Mediatek color correction with 3X3 matrix.
++
++properties:
++  compatible:
++    items:
++      - enum:
++          - mediatek,mt8183-mdp3-ccorr
++
++  reg:
++    maxItems: 1
++
++  mediatek,gce-client-reg:
++    $ref: /schemas/types.yaml#/definitions/phandle-array
++    items:
++      items:
++        - description: phandle of GCE
++        - description: GCE subsys id
++        - description: register offset
++        - description: register size
++    description: The register of client driver can be configured by gce with
++      4 arguments defined in this property. Each GCE subsys id is mapping to
++      a client defined in the header include/dt-bindings/gce/<chip>-gce.h.
++
++  clocks:
++    minItems: 1
++
++required:
++  - compatible
++  - reg
++  - mediatek,gce-client-reg
++  - clocks
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/mt8183-clk.h>
++    #include <dt-bindings/gce/mt8183-gce.h>
++
++    mdp3_ccorr: mdp3-ccorr@1401c000 {
++      compatible = "mediatek,mt8183-mdp3-ccorr";
++      reg = <0x1401c000 0x1000>;
++      mediatek,gce-client-reg = <&gce SUBSYS_1401XXXX 0xc000 0x1000>;
++      clocks = <&mmsys CLK_MM_MDP_CCORR>;
++    };
+diff --git a/Documentation/devicetree/bindings/soc/mediatek/mediatek,wdma.yaml b/Documentation/devicetree/bindings/soc/mediatek/mediatek,wdma.yaml
+new file mode 100644
+index 000000000000..102d9e163139
+--- /dev/null
++++ b/Documentation/devicetree/bindings/soc/mediatek/mediatek,wdma.yaml
+@@ -0,0 +1,71 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/soc/mediatek/mediatek,wdma.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Mediatek Write Direct Memory Access
++
++maintainers:
++  - Matthias Brugger <matthias.bgg@gmail.com>
++  - Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
++
++description: |
++  Mediatek Write Direct Memory Access(WDMA) component used to write
++  the data into DMA.
++
++properties:
++  compatible:
++    items:
++      - enum:
++          - mediatek,mt8183-mdp3-wdma
++
++  reg:
++    maxItems: 1
++
++  mediatek,gce-client-reg:
++    $ref: /schemas/types.yaml#/definitions/phandle-array
++    items:
++      items:
++        - description: phandle of GCE
++        - description: GCE subsys id
++        - description: register offset
++        - description: register size
++    description: The register of client driver can be configured by gce with
++      4 arguments defined in this property. Each GCE subsys id is mapping to
++      a client defined in the header include/dt-bindings/gce/<chip>-gce.h.
++
++  power-domains:
++    maxItems: 1
++
++  clocks:
++    minItems: 1
++
++  iommus:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - mediatek,gce-client-reg
++  - power-domains
++  - clocks
++  - iommus
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/mt8183-clk.h>
++    #include <dt-bindings/gce/mt8183-gce.h>
++    #include <dt-bindings/power/mt8183-power.h>
++    #include <dt-bindings/memory/mt8183-larb-port.h>
++
++    mdp3_wdma: mdp3-wdma@14006000 {
++      compatible = "mediatek,mt8183-mdp3-wdma";
++      reg = <0x14006000 0x1000>;
++      mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x6000 0x1000>;
++      power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
++      clocks = <&mmsys CLK_MM_MDP_WDMA0>;
++      iommus = <&iommu>;
++    };
 -- 
-2.25.1
+2.18.0
 
