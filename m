@@ -2,153 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76E02C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 16:09:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C165EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 16:09:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354932AbiELQJP (ORCPT
+        id S1356283AbiELQJ2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 12:09:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43874 "EHLO
+        Thu, 12 May 2022 12:09:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352687AbiELQJN (ORCPT
+        with ESMTP id S1356019AbiELQJR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 12:09:13 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD5DA266068
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 09:09:11 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id n10so11214308ejk.5
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 09:09:11 -0700 (PDT)
+        Thu, 12 May 2022 12:09:17 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 764A5266C8C;
+        Thu, 12 May 2022 09:09:16 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id t25so7110024ljd.6;
+        Thu, 12 May 2022 09:09:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VaY2rLWp3pO0OJ/5icmS8i2NVrNx34Il4vDW2evzpCs=;
-        b=Zxb+Bz2pv/5QB78scWHIaA57av54R28lFDARmGDs0Gzcn9kCxyUYNfi4X1LoD6x7uT
-         fjOf5lARZyafvfFxxR/zHnAz/cdZnnL8FjII30pXTJXzCogEV/R8ZCSIeoEengVehqn+
-         FEdRf5j5wo93uMoFuXLCEVUrJvIpSi7MWO8FQ=
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to;
+        bh=q7HVl+Utpg1SyMvAWZN6OnIK4mbZ1eVpTUJ6pJovLcE=;
+        b=OBqdcsDBk+kcAKGXC1nZg0aATlSM/88AxbkEe9ntiMnWfeDtzBkYLrTJbvEWwUqc2D
+         6HV3kHE8tuesP1AK/hCjTDKo0gq5qDoVPfNlAwElUMn8fbA/jNb9tVN1mQ43fWuBmigA
+         rsjJODCeX9kJspK6LL6ICV7dhjl5DGH4WAwlIcE1UqkK5S6w3pdHn7i/TkKfMypadOuB
+         dwv1h6mbpqiF3ktbiEYS2gCJwMmoQ0wbhCK1TKwBrJ4mDYFISGuywMLrfEf0p3kI0DrC
+         jVrNjptkCSFrIHudGxUFWegU/m6NqrT76xcnixD9SskPNkZSss/f0+aisnYbijEOSMFf
+         cgxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VaY2rLWp3pO0OJ/5icmS8i2NVrNx34Il4vDW2evzpCs=;
-        b=FLmvXhiCxcly8zUsb4jBSKZVJJDsBF15N7b2Hov2ZGsERbtVGqO+7TdBm5rMdF9Bsv
-         3+OhLs47glFGrGviTKtp34iVScq/VSranVL6FkRmk9Cfnk8A/G2VF+Wxe5K2mrQIpte8
-         Jv0GuZIoBuvajZ7V/AYuwVMTIlxLnFpkBq9trCjJZ2mA/DvdF1HmChmN3GG0V2/jBBgS
-         FtwaxQYIxxn4gxhumwc9J+AdefGAKRyMLjJt8JpVSzLe+BT4lWQN0BNwQaYRHm8bBJpE
-         I9foRdx6PnOgUmbGtcTd++jPk3Kfp/f7e2RyoVTdj9K0KFrDQXIlgy8j6LqKUxQGextu
-         xiQQ==
-X-Gm-Message-State: AOAM530O2AvXcrb1Jp9fJUjhkvwvMitpKCFOXrw4iuurCxGQSF6QoFVM
-        rEYAYAzdkrZqiCrQzPj/+kyAu4vO9XTRePyN
-X-Google-Smtp-Source: ABdhPJx93Vky5UjnrmuHkVyCMgLKUjbNWY2cIHTkZH2cgJh5ArRuvidbYOBPbRYg6jKC6kCk3DtEOw==
-X-Received: by 2002:a17:906:2b0c:b0:6f3:8095:ebb2 with SMTP id a12-20020a1709062b0c00b006f38095ebb2mr561706ejg.756.1652371750185;
-        Thu, 12 May 2022 09:09:10 -0700 (PDT)
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com. [209.85.221.51])
-        by smtp.gmail.com with ESMTPSA id d2-20020a50fe82000000b0042617ba63cesm2671195edt.88.2022.05.12.09.09.07
-        for <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to;
+        bh=q7HVl+Utpg1SyMvAWZN6OnIK4mbZ1eVpTUJ6pJovLcE=;
+        b=gxaJ0jwkjMd9YmjajT3DCfNFOuLlbPyKDyVo2R+ByN9CMXooKtr8CIgxR97dVi15Hx
+         0QwOApugTV7F7vaVqeKoWpvOViQEqtfcyF7M36fmwaUCzfg85Sc6X1914YsabRQXT/r6
+         CXsjit9HtVQ/Xyedg1UcpEjEjB7ZhQSWYDr+9LNt53ivOadYXUWze0vU3LDBE/QK89jv
+         ec7MIgX2Igc8ftFwqFRjE8hVr9o0+iQjrjC8nSPusaGhPt1XZrcQgIdyI5xlOr3NrNei
+         u3xISf6LvufLlwE85veGDQONYsv2r4QT2PLmz6SLCN7vrZLCv9yh0EFaSkALCNr34eOV
+         A/+g==
+X-Gm-Message-State: AOAM532xONiyxfIcpvtMzt+7EYFQkpyC65gKRlxBujzLv8dhQdk29keN
+        NbiBf1lcIvma71M8PjlHC0Q=
+X-Google-Smtp-Source: ABdhPJy81TMx3aN1urlNOKVhb1nwGm9zpqK9JHGLQADFcS01Wx2lV6Lup8GM9bGeGjQbIYrRSD7wrw==
+X-Received: by 2002:a2e:93d0:0:b0:24f:255d:4bb1 with SMTP id p16-20020a2e93d0000000b0024f255d4bb1mr415847ljh.525.1652371754612;
+        Thu, 12 May 2022 09:09:14 -0700 (PDT)
+Received: from [192.168.1.11] ([217.117.245.216])
+        by smtp.gmail.com with ESMTPSA id h13-20020a2e9ecd000000b0024f3d1daee2sm912260ljk.106.2022.05.12.09.09.13
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 May 2022 09:09:08 -0700 (PDT)
-Received: by mail-wr1-f51.google.com with SMTP id i5so7891054wrc.13
-        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 09:09:07 -0700 (PDT)
-X-Received: by 2002:a05:6000:2c1:b0:20c:5e37:3ed1 with SMTP id
- o1-20020a05600002c100b0020c5e373ed1mr353564wry.342.1652371747051; Thu, 12 May
- 2022 09:09:07 -0700 (PDT)
+        Thu, 12 May 2022 09:09:13 -0700 (PDT)
+Message-ID: <2d0f70e2-947f-62ff-b5e5-31e78123b07a@gmail.com>
+Date:   Thu, 12 May 2022 19:09:12 +0300
 MIME-Version: 1.0
-References: <20220330090947.9100-1-chenxiangrui@huaqin.corp-partner.google.com>
- <a0eb6bf9-256a-29b1-2211-496df710f531@linaro.org> <CAD=FV=UjyLofXZqnj=bL89fza5JS6O5Np9W-A4V4WK+na0hdrw@mail.gmail.com>
- <b7ff08b8-60fb-7629-9399-3d5cca46ab9e@linaro.org> <CAD=FV=Vx5g_xTRZGc9wW=ZLnfsOcubTYFcnYQRC5jLm+n3en0w@mail.gmail.com>
- <606cc762-a0c2-49a4-3e5d-d2dbd4595bc7@linaro.org> <CAD=FV=W_SA-3PfDFi-Gkjk9pew5bchFNjQhXX8MkZyuy5UohEQ@mail.gmail.com>
- <CAJKOXPdt5WTg4VU-TEW3dmPHR76dKg63XVxRQfa7ZSKc_jz6Ag@mail.gmail.com>
- <CAD=FV=XQqQSQDNh-zXqEQkwsrax5Qb3OtfKZoQLkncJj_4mcQw@mail.gmail.com>
- <daf66d41-42ac-50dc-3f8d-c261da8e452d@linaro.org> <CAD=FV=WhA=n_=Ys6NfedPtNPddL81HnG6Qws_R+vq9w8Nrsn5A@mail.gmail.com>
- <ce2ea308-b63d-ad27-4cea-7353268f8ebb@linaro.org> <CAODwPW857CkH0+ZnBaUeowW4te-hSy6nrdeeX6-OLPOs5TptsQ@mail.gmail.com>
- <55dcf917-7ac0-efe9-8531-b77be682125a@linaro.org> <CAD=FV=UPKo4CxRVmdHr05rRPaNHFYfaQTqmBJAU5ZF61ccKgEA@mail.gmail.com>
- <b619b455-c944-0cc6-ca83-e65490612ed7@linaro.org> <CAD=FV=VTNk_WPw+1sVRdToZLvDH_ve9QL+-+-unNEAK0k2hGMg@mail.gmail.com>
-In-Reply-To: <CAD=FV=VTNk_WPw+1sVRdToZLvDH_ve9QL+-+-unNEAK0k2hGMg@mail.gmail.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Thu, 12 May 2022 09:08:54 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=XnsVEmPLKFjz4o-CTbvcVotOgrQ2NESkoFsYp1bO4d4g@mail.gmail.com>
-Message-ID: <CAD=FV=XnsVEmPLKFjz4o-CTbvcVotOgrQ2NESkoFsYp1bO4d4g@mail.gmail.com>
-Subject: Re: [PATCH] CHROMIUM: arm64: dts: qcom: Add sc7180-gelarshie
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Rob Herring <robh@kernel.org>,
-        Julius Werner <jwerner@chromium.org>,
-        =?UTF-8?Q?Krzysztof_Koz=C5=82owski?= <k.kozlowski.k@gmail.com>,
-        Mars Chen <chenxiangrui@huaqin.corp-partner.google.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 1/2] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
+Content-Language: en-US
+To:     Jeff Johnson <quic_jjohnson@quicinc.com>,
+        ath9k-devel@qca.qualcomm.com, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, toke@toke.dk,
+        linville@tuxdriver.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+03110230a11411024147@syzkaller.appspotmail.com,
+        syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
+References: <80962aae265995d1cdb724f5362c556d494c7566.1644265120.git.paskripkin@gmail.com>
+ <fa713d4a-a3ef-2837-d220-857ed1e5538c@quicinc.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <fa713d4a-a3ef-2837-d220-857ed1e5538c@quicinc.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------FbSSUQGk3h5hwARZTDS5doC2"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------FbSSUQGk3h5hwARZTDS5doC2
+Content-Type: multipart/mixed; boundary="------------syyuxWf8nyyz7ywzlMgWOBQB";
+ protected-headers="v1"
+From: Pavel Skripkin <paskripkin@gmail.com>
+To: Jeff Johnson <quic_jjohnson@quicinc.com>, ath9k-devel@qca.qualcomm.com,
+ kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org, toke@toke.dk,
+ linville@tuxdriver.com
+Cc: linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ syzbot+03110230a11411024147@syzkaller.appspotmail.com,
+ syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
+Message-ID: <2d0f70e2-947f-62ff-b5e5-31e78123b07a@gmail.com>
+Subject: Re: [PATCH v3 1/2] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
+References: <80962aae265995d1cdb724f5362c556d494c7566.1644265120.git.paskripkin@gmail.com>
+ <fa713d4a-a3ef-2837-d220-857ed1e5538c@quicinc.com>
+In-Reply-To: <fa713d4a-a3ef-2837-d220-857ed1e5538c@quicinc.com>
 
-On Wed, May 11, 2022 at 10:49 AM Doug Anderson <dianders@chromium.org> wrote:
->
-> Hi,
->
-> On Wed, May 11, 2022 at 10:36 AM Krzysztof Kozlowski
-> <krzysztof.kozlowski@linaro.org> wrote:
-> >
-> > > * If we want to change our scheme, we'd need to sit down and come to
-> > > an agreement that satisfies everyone, if such a thing is possible.
-> >
-> > There is open CFP for ELCE 2022 (in Ireland). Maybe we could organize
-> > some session there? But we for sure would need Rob, so the arrangements
-> > should rather focus on him, not on my availability.
->
-> Looks plausible to me to make it.
->
->
-> > > I mean, to be fair I said it _seems_ pure overhead and then said that
-> > > we could do it if it makes some tools happy. ...but before doing that,
-> > > I wanted to make sure it was actually valuable. I still have doubts
-> > > about the assertion that the most specific compatible is guaranteed to
-> > > uniquely identify hardware. So if the whole reason for doing this is
-> > > to make the validation tools happy and there's no other value, then at
-> > > least it's plausible to argue that the tools could simply be fixed to
-> > > allow this and not shout about it.
-> >
-> > Instead of adding bindings, you can indeed change/fix the tools. Go
-> > ahead. :)
->
-> I will try to take a quick look to see what this would look like.
+--------------syyuxWf8nyyz7ywzlMgWOBQB
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-I looked a bit and decided that unless maintainers agreed that we
-should do this that it would just be a waste of time. I guess I'll
-save it for the next time I see Rob...
+SGkgSmVmZiwNCg0KT24gNS8xMi8yMiAxOTowNSwgSmVmZiBKb2huc29uIHdyb3RlOg0KPiBP
+biAyLzcvMjAyMiAxMjoyNCBQTSwgUGF2ZWwgU2tyaXBraW4gd3JvdGU6DQo+IFsuLi5zbmlw
+Li4uXQ0KPj4gICANCj4+ICAgI2lmZGVmIENPTkZJR19BVEg5S19IVENfREVCVUdGUw0KPj4g
+LQ0KPj4gLSNkZWZpbmUgVFhfU1RBVF9JTkMoYykgKGhpZl9kZXYtPmh0Y19oYW5kbGUtPmRy
+dl9wcml2LT5kZWJ1Zy50eF9zdGF0cy5jKyspDQo+PiAtI2RlZmluZSBUWF9TVEFUX0FERChj
+LCBhKSAoaGlmX2Rldi0+aHRjX2hhbmRsZS0+ZHJ2X3ByaXYtPmRlYnVnLnR4X3N0YXRzLmMg
+Kz0gYSkNCj4+IC0jZGVmaW5lIFJYX1NUQVRfSU5DKGMpIChoaWZfZGV2LT5odGNfaGFuZGxl
+LT5kcnZfcHJpdi0+ZGVidWcuc2ticnhfc3RhdHMuYysrKQ0KPj4gLSNkZWZpbmUgUlhfU1RB
+VF9BREQoYywgYSkgKGhpZl9kZXYtPmh0Y19oYW5kbGUtPmRydl9wcml2LT5kZWJ1Zy5za2Jy
+eF9zdGF0cy5jICs9IGEpDQo+PiArI2RlZmluZSBfX1NUQVRfU0FWRShleHByKSAoaGlmX2Rl
+di0+aHRjX2hhbmRsZS0+ZHJ2X3ByaXYgPyAoZXhwcikgOiAwKQ0KPj4gKyNkZWZpbmUgVFhf
+U1RBVF9JTkMoYykgX19TVEFUX1NBVkUoaGlmX2Rldi0+aHRjX2hhbmRsZS0+ZHJ2X3ByaXYt
+PmRlYnVnLnR4X3N0YXRzLmMrKykNCj4+ICsjZGVmaW5lIFRYX1NUQVRfQUREKGMsIGEpIF9f
+U1RBVF9TQVZFKGhpZl9kZXYtPmh0Y19oYW5kbGUtPmRydl9wcml2LT5kZWJ1Zy50eF9zdGF0
+cy5jICs9IGEpDQo+PiArI2RlZmluZSBSWF9TVEFUX0lOQyhjKSBfX1NUQVRfU0FWRShoaWZf
+ZGV2LT5odGNfaGFuZGxlLT5kcnZfcHJpdi0+ZGVidWcuc2ticnhfc3RhdHMuYysrKQ0KPj4g
+KyNkZWZpbmUgUlhfU1RBVF9BREQoYywgYSkgX19TVEFUX1NBVkUoaGlmX2Rldi0+aHRjX2hh
+bmRsZS0+ZHJ2X3ByaXYtPmRlYnVnLnNrYnJ4X3N0YXRzLmMgKz0gYSkNCj4gDQo+IGl0IGlz
+IHVuZm9ydHVuYXRlIHRoYXQgdGhlIGV4aXN0aW5nIG1hY3JvcyBkb24ndCBhYmlkZSBieSB0
+aGUgY29kaW5nIHN0eWxlOg0KPiAJVGhpbmdzIHRvIGF2b2lkIHdoZW4gdXNpbmcgbWFjcm9z
+Og0KPiAJbWFjcm9zIHRoYXQgZGVwZW5kIG9uIGhhdmluZyBhIGxvY2FsIHZhcmlhYmxlIHdp
+dGggYSBtYWdpYyBuYW1lDQo+IA0KPiB0aGUgY29tcGFuaW9uIG1hY3JvcyBpbiBhdGg5ay9k
+ZWJ1Zy5oIGRvIHRoZSByaWdodCB0aGluZw0KPiANCj4gcGVyaGFwcyB0aGlzIGNvdWxkIGJl
+IGdpdmVuIHRvIEtlcm5lbCBKYW5pdG9ycyBmb3Igc3Vic2VxdWVudCBjbGVhbnVwPw0KDQpU
+aGFua3MgZm9yIHBvaW50aW5nIHRoYXQgb3V0IQ0KDQpJIHdpbGwgY2xlYW4gdGhlbSB1cCBp
+biBuZXh0IHZlcnNpb24uIEkgdGhpbmssIGl0IHdpbGwgYmUgbXVjaCBlYXNpZXIgDQp0aGFu
+IHByb3Bvc2luZyB0aGlzIHRhc2sgdG8gS2VybmVsIEphbml0b3JzLg0KDQoNCg0KDQpXaXRo
+IHJlZ2FyZHMsDQpQYXZlbCBTa3JpcGtpbg0K
 
+--------------syyuxWf8nyyz7ywzlMgWOBQB--
 
-> > > Since there no properties associated with the
-> > > top-level compatible string, it's mostly just checking did some one
-> > > copy-paste the compatible string from one file (the dts file) to the
-> > > other file (the yaml file) correctly. To me, that does not feel like a
-> > > useful check.
-> >
-> > Still it can detect messing of SoC compatibles or not defining any
-> > board-level compatible thus pretending that someone's board is just
-> > SC7180. Imagine now user-space or bootloader trying to parse it...
-> >
-> > BTW, the bindings validation of top-level compatible might actually help
-> > you - to be sure that DTSes have proper compatibles matching what
-> > bootloader expects.
->
-> I'm still not seeing the help here. Is it somehow going to be easier
-> for someone to sneak in a dts file to the kernel tree that is just
-> "sc7180" than it will be to sneak an entry into the bindings that is
-> just "sc7180"? The people reviewing the dts and the list of allowed
-> boards in the bindings are the same people, right? Every entry in the
-> bindings gets used to match exactly one board, so, as I said, it's
-> pretty much just a question of whether you copy-pasted properly...
+--------------FbSSUQGk3h5hwARZTDS5doC2
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
 
-After a bit of time of copy pasting, we now have a 3-patch series that
-starts with:
+-----BEGIN PGP SIGNATURE-----
 
-https://lore.kernel.org/r/20220512090429.1.I9804fcd5d6c8552ab25f598dd7a3ea71b15b55f0@changeid
+wsF5BAABCAAjFiEER3XL3TplLQE8Qi40bk1w61LbBA0FAmJ9MSgFAwAAAAAACgkQbk1w61LbBA2L
+Vw/7BqiVrZrr6FJjuJLk7/VjIxnUDfogD9V/hfdJLB+ojqKI4jAr491Cy4n4pwzhJo1QZr9N/r9k
+K7XXOqEyteQ3P3HfA0H4NmfRtYY02ybvqJuOrle0SU+NNCug2tYUZXo9wGlHwl7fF8zRGtUnI8ds
+3n+mOfjFnrGDi+y8s7qMnnrz4nV7NR1QF+g5WEq2W5fN5ZdlfXnIov/Ccnzr3DJU3152IpL5RjTE
+yW/5NHYZxLrCgzyWgnascigOBQuFdqEWvWUrDdMOCx1qCaFlMXcpKlGUxlrbBdmmvRLQrTRIPEMl
+XZO79M+OJiBXiKORe9WPJgoanSXz6Cq5cX1BgTVmCRe1GpzZLPBakNrcJUilGm6RSEZ86wyKByCf
+Fa0HnR26ir8NHL1RDJgcPHnCU5cgzBY8TLXbGU5H8jRAx2/mWNq4SsMhAvxDxxE1h3k2luGkFB5U
+oehS7ah+iW/E8qDM5V+3y2izC9Bs2B/AsRJU5OCFh5g+yaaGBQWN4OMSzdsc2Gkq1NpfjWjFnSbK
+fux2rTZvLQm9A/PvkzjDqQ5nnjRqhdJsVlkTx1lu+MEB44M1zd5tAO7gfuSB39TbUl4eY00zzRru
++bus6qfu5HXcGZNZ/fpky33TD8gI6tQHRBYhzfe2V9rZFK/7K33vsSzIP4KtvYGrOvBLFvU1Au8C
+fCE=
+=wQOx
+-----END PGP SIGNATURE-----
 
--Doug
+--------------FbSSUQGk3h5hwARZTDS5doC2--
