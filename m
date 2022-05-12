@@ -2,105 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C5F4C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 10:30:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC0F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 12 May 2022 10:30:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352621AbiELKaS (ORCPT
+        id S1352641AbiELKad (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 12 May 2022 06:30:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48796 "EHLO
+        Thu, 12 May 2022 06:30:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235697AbiELKaP (ORCPT
+        with ESMTP id S1352623AbiELKaZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 12 May 2022 06:30:15 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CF72222C28;
-        Thu, 12 May 2022 03:30:09 -0700 (PDT)
-X-UUID: c2120aac2697453a82e4dac9089f2101-20220512
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:4756a4c6-a249-4f39-be8f-99541c429198,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:45
-X-CID-INFO: VERSION:1.1.4,REQID:4756a4c6-a249-4f39-be8f-99541c429198,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
-        N:release,TS:45
-X-CID-META: VersionHash:faefae9,CLOUDID:a61a0fa7-eab7-4b74-a74d-5359964535a9,C
-        OID:1347ce9edb3e,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
-        ,QS:0,BEC:nil
-X-UUID: c2120aac2697453a82e4dac9089f2101-20220512
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 674903071; Thu, 12 May 2022 18:30:06 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 12 May 2022 18:30:05 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 12 May 2022 18:30:05 +0800
-Message-ID: <694b90f3d95d6e029d343d98e84c888ddf4eb855.camel@mediatek.com>
-Subject: Re: [PATCH v18 1/6] soc: mediatek: mutex: add common interface for
- modules setting
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     Moudy Ho <moudy.ho@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>
-CC:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Rob Landley <rob@landley.net>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        <tfiga@chromium.org>, <drinkcat@chromium.org>,
-        <pihsun@chromium.org>, <hsinyi@google.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        daoyuan huang <daoyuan.huang@mediatek.com>,
-        Ping-Hsun Wu <ping-hsun.wu@mediatek.com>,
-        <allen-kh.cheng@mediatek.com>, <xiandong.wang@mediatek.com>,
-        <randy.wu@mediatek.com>, <jason-jh.lin@mediatek.com>,
-        <roy-cw.yeh@mediatek.com>, <river.cheng@mediatek.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <cellopoint.kai@gmail.com>
-Date:   Thu, 12 May 2022 18:30:05 +0800
-In-Reply-To: <20220512084139.15086-2-moudy.ho@mediatek.com>
-References: <20220512084139.15086-1-moudy.ho@mediatek.com>
-         <20220512084139.15086-2-moudy.ho@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Thu, 12 May 2022 06:30:25 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC24223840
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 03:30:23 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id s11so1884031edy.6
+        for <linux-kernel@vger.kernel.org>; Thu, 12 May 2022 03:30:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Jl+ZZLPEmKFGVogvW81THWaOFnfrMcq7xgsxNJKbp8Y=;
+        b=GzHOlN0ZzVY4PrqYpKqPssLC3MnbSsdquS7slbkn7dcdXDOrQpCRO8USwHNEsG3Ysf
+         jju6K0tEIHtYxB4vhKQcLCXTFcb2Y9juE/nPZnI9LSD+xuSwFndkivKRNQ+dZA+wYnyD
+         oYxi6rdcJ3ZBUG08tLjCMUb3wUfGdt1yHBdL754NRw1j1CoCHU1rkKgEl8haN/BCf0k3
+         qzmFdXoKxi+jkWpLJSnhloCSptQ+ruWOvyhvxxsimbDX+8Xl6g9xn3e8ZsaYaKvdCClH
+         w8qbLG6rSSGpdpTFjHHKAV3ZKzzLMCLF4hWyUZVEL5r/gyg+vxdCkctA67GXkCCWANDg
+         8ulA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Jl+ZZLPEmKFGVogvW81THWaOFnfrMcq7xgsxNJKbp8Y=;
+        b=TcezCYQGWRxhtLfVCHhawZPgWyWcvN4u80uaLgWmvDUOB43ltDTTe7e4BX2fekpp+W
+         nANgqjis2aB+a+GNb51vpFzI0nnbdkVP2qKEGRAdU8ODJtoYW3QUY5CqxadgZlf7e1X+
+         Jn3B59eZE4tD28MZNwDaDPbZwNs95p6I27v9ySVBnA6DQ1BwI4PGKHgfsRcOdPP6TVko
+         1eMFTqVtYxkKjApVopZFpbs/D3u/0zR159HgiM8F2fntURt98yHiw35XwJ79s8yOhWBl
+         4qez+w13SZIeXBXkXtHXoosaifyguf2N1cbAPrj2Iq7ULYf563/CanDH7zKVxMW34MIN
+         3/rQ==
+X-Gm-Message-State: AOAM533reTMEOfAjltoR1uJn9Kq8u7se54+YfSOsDJaKRpCRWx2SO0lN
+        ex7fUECOP7eCt+UZp52B0hhZng==
+X-Google-Smtp-Source: ABdhPJyfG2D7eWQvDaS2cd6jcMEovgXAcO4kNIJd+zFA4btjO+0kmpY2e/uHtr9ENXd4dF29PFCiUA==
+X-Received: by 2002:a05:6402:948:b0:425:ea37:96b8 with SMTP id h8-20020a056402094800b00425ea3796b8mr34018713edz.90.1652351421995;
+        Thu, 12 May 2022 03:30:21 -0700 (PDT)
+Received: from [192.168.0.158] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id q20-20020a170906941400b006f3ef214dd1sm1991452ejx.55.2022.05.12.03.30.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 May 2022 03:30:21 -0700 (PDT)
+Message-ID: <5b32cecf-873a-6367-df87-1b8d45e63cec@linaro.org>
+Date:   Thu, 12 May 2022 12:30:20 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [v4 1/3] dt-bindings: phy: qcom,usb-snps-femto-v2: Add phy
+ override params bindings
+Content-Language: en-US
+To:     Krishna Kurapati PSSNV <quic_kriskura@quicinc.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Wesley Cheng <quic_wcheng@quicinc.com>,
+        Vinod Koul <vkoul@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-phy@lists.infradead.org, quic_pkondeti@quicinc.com,
+        quic_ppratap@quicinc.com, quic_vpulyala@quicinc.com,
+        Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+References: <1652282793-5580-1-git-send-email-quic_kriskura@quicinc.com>
+ <1652282793-5580-2-git-send-email-quic_kriskura@quicinc.com>
+ <d296720d-ccbe-27f0-8ba1-9653af25dd52@linaro.org>
+ <9644d608-4ab9-ed0d-50fb-0016e4331361@quicinc.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <9644d608-4ab9-ed0d-50fb-0016e4331361@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-05-12 at 16:41 +0800, Moudy Ho wrote:
-> In order to allow multiple modules to operate MUTEX hardware through
-> a common interfrace, a flexible index "mtk_mutex_table_index" needs
-> to
-> be added to replace original component ID so that like DDP and MDP
-> can add their own MUTEX table settings independently.
+On 12/05/2022 07:57, Krishna Kurapati PSSNV wrote:
 > 
-> In addition, 4 generic interface "mtk_mutex_set_mod",
-> "mtk_mutex_set_sof",
-> "mtk_mutex_clear_mod" and "mtk_mutex_clear_sof" have been added,
-> which is
-> expected to replace the "mtk_mutex_add_comp" and
-> "mtk_mutex_remove_comp"
-> pair originally dedicated to DDP in the future.
+> On 5/11/2022 11:49 PM, Krzysztof Kozlowski wrote:
+>> On 11/05/2022 17:26, Krishna Kurapati wrote:
+>>> From: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+>>>
+>>> Add device tree bindings for SNPS phy tuning parameters.
+>>>
+>>> Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+>>> Signed-off-by: Krishna Kurapati <quic_kriskura@quicinc.com>
+>>> ---
+>>>   .../bindings/phy/qcom,usb-snps-femto-v2.yaml       | 87 ++++++++++++++++++++++
+>>>   1 file changed, 87 insertions(+)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/phy/qcom,usb-snps-femto-v2.yaml b/Documentation/devicetree/bindings/phy/qcom,usb-snps-femto-v2.yaml
+>>> index 1ce251d..70efffe 100644
+>>> --- a/Documentation/devicetree/bindings/phy/qcom,usb-snps-femto-v2.yaml
+>>> +++ b/Documentation/devicetree/bindings/phy/qcom,usb-snps-femto-v2.yaml
+>>> @@ -53,6 +53,93 @@ properties:
+>>>     vdda33-supply:
+>>>       description: phandle to the regulator 3.3V supply node.
+>>>   
+>>> +  qcom,hs-disconnect-bps:
+>>> +    $ref: /schemas/types.yaml#/definitions/int32
+>>> +    description:
+>>> +      This adjusts the voltage level for the threshold used to
+>>> +      detect a disconnect event at the host. Possible values are.
+>>> +      The values defined are in multiples of basis points (1bp = 0.01%).
+>> This means there is some minimum and maximum (100%)?
 > 
-> Signed-off-by: Moudy Ho <moudy.ho@mediatek.com>
-> Reviewed-by: AngeloGioacchino Del Regno <
-> angelogioacchino.delregno@collabora.com>
-> ---
+> Hi Krzystof,
+> 
+> Yes there are max and min for each parameter (not necessarily 0%/100%)
+> 
+> As an example if we take squelch detector threshold, the register value 
+> vs actual percentage changer as per data book is as follows :
+> 
+> % change in voltage    |     corresponding reg value
+> 
+>   -20.90%                        |    7
+>   -15.60%                        |    6
+> -10.30%                         |    5
+> -5.30%                           |    4
+> 0%                                  |    3
+> 5.30%                            |    2
+> 10.60%                          |    1
+> 15.90%                          |    0
+> 
+> Here the min and max are 15.9% to -20.9%
+> 
+> The min and max differ for each parameter and might not be necessarily 
+> 0% and 100%
 
-Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Then it seems possible to define minimum and maximum values - please add
+them ("minimum: xxxx").
 
+
+Best regards,
+Krzysztof
